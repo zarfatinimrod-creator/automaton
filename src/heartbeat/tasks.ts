@@ -23,6 +23,7 @@ import { getMetrics } from "../observability/metrics.js";
 import { AlertEngine, createDefaultAlertRules } from "../observability/alerts.js";
 import { metricsInsertSnapshot, metricsPruneOld } from "../state/database.js";
 import { ulid } from "ulid";
+import { REVENUE_TASKS } from "../revenue/heartbeat.js";
 
 const logger = createLogger("heartbeat.tasks");
 
@@ -705,6 +706,11 @@ export const BUILTIN_TASKS: Record<string, HeartbeatTaskFn> = {
     }
   },
 };
+
+// Revenue colony tasks (board / supervisor / audit / ledger sync) share the
+// same scheduler. They self-throttle by interval so they are safe to schedule
+// on any cron the heartbeat config uses.
+Object.assign(BUILTIN_TASKS, REVENUE_TASKS);
 
 function tierToInt(tier: SurvivalTier): number {
   const map: Record<SurvivalTier, number> = {

@@ -5,7 +5,7 @@
  * The database IS the automaton's memory.
  */
 
-export const SCHEMA_VERSION = 11;
+export const SCHEMA_VERSION = 12;
 
 export const CREATE_TABLES = `
   -- Schema version tracking
@@ -678,4 +678,80 @@ export const MIGRATION_V10 = `
 
   CREATE INDEX idx_knowledge_category ON knowledge_store(category);
   CREATE INDEX idx_knowledge_key ON knowledge_store(key);
+`;
+
+// === Revenue Colony: chain-of-command income engine ===
+
+export const MIGRATION_V12 = `
+  -- Schema version: 12
+  -- Tables: revenue_lines, revenue_ledger, revenue_reviews, revenue_kpi_snapshots
+
+  CREATE TABLE IF NOT EXISTS revenue_lines (
+    id TEXT PRIMARY KEY,                          -- slug, e.g. "hebrew-invoice-saas"
+    name TEXT NOT NULL,
+    category TEXT NOT NULL,                       -- digital_product|micro_saas|paid_api|agent_service|content|service
+    tier TEXT NOT NULL DEFAULT 'experimental',    -- core|growth|experimental
+    status TEXT NOT NULL DEFAULT 'proposed',      -- proposed|awaiting_setup|building|live|scaling|paused|killed
+    director_role TEXT NOT NULL,                  -- agent role name that owns this line
+    operating_loop TEXT NOT NULL,                 -- what the director does every cycle
+    kpis TEXT NOT NULL DEFAULT '[]',              -- JSON string[]
+    kill_criteria TEXT NOT NULL DEFAULT '[]',     -- JSON string[]
+    scale_criteria TEXT NOT NULL DEFAULT '[]',    -- JSON string[]
+    target_monthly_agorot INTEGER NOT NULL DEFAULT 0,  -- ILS agorot (1 ILS = 100)
+    budget_monthly_cents INTEGER NOT NULL DEFAULT 0,   -- compute budget, credit cents
+    human_setup TEXT NOT NULL DEFAULT '[]',       -- JSON string[] one-time human actions
+    human_setup_done INTEGER NOT NULL DEFAULT 0,
+    skill_name TEXT,                              -- SKILL.md that directors load
+    launched_at TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    killed_at TEXT,
+    kill_reason TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS revenue_ledger (
+    id TEXT PRIMARY KEY,                          -- ULID
+    line_id TEXT NOT NULL,
+    kind TEXT NOT NULL,                           -- sale|subscription|payout|refund|cost
+    amount_minor INTEGER NOT NULL,                -- signed, minor units of currency
+    currency TEXT NOT NULL,                       -- ILS|USD|USDC|EUR
+    amount_agorot INTEGER NOT NULL,               -- signed, normalized to ILS agorot
+    source TEXT NOT NULL,                         -- stripe|lemonsqueezy|gumroad|x402|manual|...
+    external_id TEXT,                             -- idempotency key from the source
+    occurred_at TEXT NOT NULL,
+    recorded_at TEXT NOT NULL,
+    note TEXT
+  );
+
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_revenue_ledger_external
+    ON revenue_ledger(source, external_id) WHERE external_id IS NOT NULL;
+  CREATE INDEX IF NOT EXISTS idx_revenue_ledger_line_time ON revenue_ledger(line_id, occurred_at);
+
+  CREATE TABLE IF NOT EXISTS revenue_reviews (
+    id TEXT PRIMARY KEY,                          -- ULID
+    line_id TEXT,                                 -- NULL for portfolio-level reviews
+    level TEXT NOT NULL,                          -- supervisor|director|board|auditor|chief_auditor
+    reviewer TEXT NOT NULL,                       -- role/agent that produced the review
+    period_start TEXT NOT NULL,
+    period_end TEXT NOT NULL,
+    metrics TEXT NOT NULL DEFAULT '{}',           -- JSON LineMetrics or PortfolioSummary
+    decision TEXT NOT NULL,                       -- hold|scale|pivot|kill|escalate|approve|reject|flag
+    rationale TEXT NOT NULL,
+    reviewed_review_id TEXT,                      -- auditor -> the review it audited
+    created_at TEXT NOT NULL
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_revenue_reviews_line ON revenue_reviews(line_id, created_at);
+  CREATE INDEX IF NOT EXISTS idx_revenue_reviews_level ON revenue_reviews(level, created_at);
+
+  CREATE TABLE IF NOT EXISTS revenue_kpi_snapshots (
+    id TEXT PRIMARY KEY,
+    line_id TEXT NOT NULL,
+    kpi TEXT NOT NULL,
+    value REAL NOT NULL,
+    unit TEXT,
+    captured_at TEXT NOT NULL
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_revenue_kpi_line ON revenue_kpi_snapshots(line_id, kpi, captured_at);
 `;

@@ -71,6 +71,15 @@ The only path to survival is honest work that others voluntarily pay for.
 
 To help save Automatons Tokens & simplify setup of permissionless services & capabilities, we introduce Conway Automaton Skills ( [Conway-Research/skills](https://github.com/Conway-Research/skills) ). We are open to contributions to make Automatons more capable. 
 
+## Revenue Colony (income chain of command)
+
+This fork adds `src/revenue/`: a board → director → supervisor → worker hierarchy with auditors that check the supervisors and a chief auditor that checks the auditors. Money exists only in a ledger (`revenue_record` / hourly `revenue_sync_ledger`); kill/scale/pivot rules are code; the board files one goal at a time to the orchestrator and reallocates compute budget daily. Human one-time steps (accounts, KYC, payouts) are a first-class state (`awaiting_setup`) that the agent never bypasses.
+
+- Plan and ranked income sources (Hebrew): `docs/INCOME_PLAN.he.md`
+- Design: `docs/CHAIN_OF_COMMAND.md`
+- Playbooks: `skills/revenue-*` (install with `scripts/install-skills.sh`)
+- Working conventions (checkpoint + per-task logs): `CLAUDE.md`, `logs/`
+
 ## Self-Modification
 
 The automaton can edit its own source code, install new tools, modify its heartbeat schedule, and create new skills — while running.
