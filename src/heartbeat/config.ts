@@ -55,6 +55,31 @@ const DEFAULT_HEARTBEAT_CONFIG: HeartbeatConfig = {
       task: "check_social_inbox",
       enabled: true,
     },
+    // Revenue colony: the income loop (each task also self-throttles by interval)
+    {
+      name: "revenue_ledger_sync",
+      schedule: "7 * * * *",
+      task: "revenue_ledger_sync",
+      enabled: true,
+    },
+    {
+      name: "revenue_supervisor_review",
+      schedule: "20 */6 * * *",
+      task: "revenue_supervisor_review",
+      enabled: true,
+    },
+    {
+      name: "revenue_board_review",
+      schedule: "*/30 * * * *",
+      task: "revenue_board_review",
+      enabled: true,
+    },
+    {
+      name: "revenue_audit",
+      schedule: "45 5 * * *",
+      task: "revenue_audit",
+      enabled: true,
+    },
   ],
   defaultIntervalMs: 60_000,
   lowComputeMultiplier: 4,

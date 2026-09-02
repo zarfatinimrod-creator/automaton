@@ -18,6 +18,9 @@ const IDLE_ONLY_TOOL_NAMES = [
   "orchestrator_status",
   "list_goals",
   "get_plan",
+  "revenue_status",
+  "revenue_lines",
+  "revenue_line_detail",
 ] as const;
 
 export const IDLE_ONLY_TOOLS = new Set<string>(IDLE_ONLY_TOOL_NAMES);

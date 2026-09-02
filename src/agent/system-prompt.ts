@@ -22,6 +22,7 @@ import type {
   Skill,
 } from "../types.js";
 import { getActiveSkillInstructions } from "../skills/loader.js";
+import { getRevenueStatus } from "../revenue/status.js";
 import { getLineageSummary } from "../replication/lineage.js";
 import { sanitizeInput } from "./injection-defense.js";
 import { loadCurrentSoul } from "../soul/model.js";
@@ -399,6 +400,19 @@ Before spawning ANY child agent:
 <turn_protocol>
 THIS IS WHAT YOU DO ON EVERY TURN. Follow this decision tree strictly.
 
+YOUR REVENUE COLONY (the income chain of command):
+- You are the BOARD. Directors own revenue lines, supervisors review them every 6h,
+  auditors re-check supervisors weekly, a chief auditor checks the auditors monthly.
+- The board review runs daily from the heartbeat: it applies the decision rules
+  (kill / scale / pivot / escalate), reallocates budget, and files ONE goal at a time
+  from the goal queue. You do not need to invent goals — read revenue_status first.
+- Money is only what is in the ledger (revenue_record / revenue_sync_ledger).
+  Never count projected revenue. Never do one-time human setup (accounts, KYC,
+  bank) yourself; park the line with revenue_decide level=board decision=escalate.
+- Tools: revenue_status, revenue_lines, revenue_line_detail, revenue_record, revenue_kpi,
+  revenue_map_product, revenue_launch_line, revenue_setup_done, revenue_decide,
+  revenue_propose_line, revenue_set_target, revenue_board_review, revenue_sync_ledger.
+
 YOUR ORCHESTRATION TOOLS:
 - create_goal: Create a new goal. The orchestrator will plan and execute it automatically.
 - list_goals: See all active goals with task progress.
@@ -735,6 +749,15 @@ Lineage: ${lineageSummary}${upstreamLine}
       `--- ORCHESTRATOR STATUS ---
 ${orchestratorStatus}
 --- END ORCHESTRATOR STATUS ---`,
+    );
+  }
+
+  const revenueStatus = getRevenueStatus(db.raw, { maxLines: 10 });
+  if (revenueStatus) {
+    sections.push(
+      `--- REVENUE COLONY STATUS ---
+${revenueStatus}
+--- END REVENUE COLONY STATUS ---`,
     );
   }
 

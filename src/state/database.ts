@@ -46,6 +46,7 @@ import {
   MIGRATION_V9_ALTER_CHILDREN_ROLE,
   MIGRATION_V10,
   MIGRATION_V11,
+  MIGRATION_V12,
 } from "./schema.js";
 import type {
   RiskLevel,
@@ -624,6 +625,10 @@ function applyMigrations(db: DatabaseType): void {
       apply: () => {
         try { db.exec(MIGRATION_V11); } catch { /* column may already exist */ }
       },
+    },
+    {
+      version: 12,
+      apply: () => db.exec(MIGRATION_V12),
     },
   ];
 
