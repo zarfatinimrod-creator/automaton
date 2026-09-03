@@ -1,28 +1,48 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-02 (סשן ענן, branch `claude/monthly-income-plan-pfs7vu`)
+עדכון: 2026-09-03 04:05 UTC · branch `claude/monthly-income-plan-pfs7vu` · הקומיט האחרון: `1b9e73d`
 
-## בתהליך עכשיו (2026-09-03 03:15 UTC)
-- הוראה חדשה מהבעלים: לעבוד רק עם Fable 5.1; כשהמכסה נגמרת - לעצור ולהמשיך כשמתחדשת (נרשם ב-CLAUDE.md וב-Routine).
-- הבעלים שלח סרטון YouTube (m5qtqoDFCx0) ואת web4.ai ללמידה. שניהם חסומים ב-proxy של הסנדבוקס; web4.ai נלמד דרך חיפוש (Sigil Wen / Conway Research: אוטומטונים עם ארנק, x402, "earn or die"). הסרטון לא נצפה - לבקש מהבעלים כותרת/נקודות.
-- Netlify: נוצר פרויקט `il-biz-tools` (site id 2087c2ed-5270-4407-8746-675d6ea41d5e, כתובת il-biz-tools.netlify.app, גישה ציבורית). פריסה מהסנדבוקס חסומה ברשת; הבעלים מקשר את הריפו ב-Netlify UI (Link repository → branch claude/monthly-income-plan-pfs7vu → publish dir products/il-biz-tools) או מריץ מקומית `npx netlify-cli deploy --prod --dir products/il-biz-tools --site 2087c2ed-5270-4407-8746-675d6ea41d5e`.
-- Base44: קיימת אפליקציה אחת ("Velocity Strike", משחק) - לא קשורה.
-- בונים עכשיו 3 מוצרים ב-`products/` (Apify Actor לנתונים פתוחים ישראליים, אתר כלים לעסקים בעברית, שרת API עם x402). אם הסשן נחתך - לבדוק מה קיים ב-`products/` ולהמשיך משם.
+קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
 
-## מצב
-- **הושלם**: מודול `src/revenue/` (שרשרת פיקוד, לדג'ר, חוקי kill/scale, תור goals, heartbeat, כלים, קונקטורים), מיגרציית סכמה v12, חיווט ל-loop/heartbeat/system-prompt, 31 בדיקות עוברות, typecheck נקי, פלייבוקים ב-`skills/`, מסמכים `docs/INCOME_PLAN.he.md` ו-`docs/CHAIN_OF_COMMAND.md`, נוהל לוגים ב-`CLAUDE.md`.
-- **מחקר**: 4 מתוך 8 סוכני-סריקה הושלמו (מוצרים דיגיטליים, micro-SaaS/APIs, כלכלת סוכנים, תוכן). שלב האימות האדברסרי והסינתזה לא רצו (מגבלת סשן). תוצרי הסריקה הגולמיים נשמרו ביומן המשימה.
-- **לא נעשה / חסום**: הפעלה אמיתית של האוטומטון (דורשת מפתחות/ארנק/קרדיטים של הבעלים); פתיחת חשבונות תשלום (רק הבעלים יכול); גישה לכונן MY BOOK (D:) — אין גישה מהענן.
+## מה עובד עכשיו
 
-## הצעד הבא המדויק
-1. הבעלים: לבצע את הצ'קליסט בסעיף 6 של `docs/INCOME_PLAN.he.md` (PayPal → Apify KYC → Paddle → Etsy/Payoneer → עוסק פטור).
-2. הסוכן: להריץ את המחקר החסר (ישראל/תשלומים, שירותים/bounties, עיצוב ארגון) ואת שלב האימות כשמגבלת הסשן מאפשרת; לעדכן את `src/revenue/portfolio.ts` בהתאם.
-3. הסוכן: לבנות את המוצר הראשון של קו `agent-services` ו-`telegram-bots` (לא דורשים צעד אנושי) ולהריץ `node dist/index.js --run` בסביבה עם מפתח inference.
-4. לשקול פתיחת PR מ-`claude/monthly-income-plan-pfs7vu` ל-`main` (לא נפתח — לא התבקש).
+- **הלופ רץ באמת.** `scripts/colony.ts` מריץ את מחזור הממשל (סנכרון כסף → ביקורת מפקח → ישיבת דירקטוריון → ביקורת) מקובץ SQLite בלבד, בלי ארנק, בלי Conway, בלי inference. `.github/workflows/colony.yml` מריץ אותו כל שעה ודוחף את `state/colony/` חזרה לריפו, כך שכל החלטה של הדירקטוריון נשמרת בהיסטוריית ה-git. אומת מקצה לקצה: הטיק הראשון זרע 9 קווים, טיק מיידי שני לא הריץ כלום (חסימת אינטרוולים), מכירת x402 של ₪450 קידמה קו ל-live והייתה אידמפוטנטית, והדירקטוריון הקצה לו את כל התקציב.
+- **ארבעה מוצרים, 127 בדיקות עוברות**: `apify-il-open-data` (41), `il-biz-tools` (60), `telegram-il-tools-bot` (11), `x402-il-api` (15).
+- **מנוע ההכנסה** `src/revenue/` עם 49 בדיקות; typecheck נקי.
+- **חוק המודלים** ב-`CLAUDE.md`: Opus 5 מנוע, Fable 5.1 שמור לאימות ולשיפוט, מיושם לכל סוכן בנפרד ב-workflows.
 
-## המשך אוטומטי אחרי מגבלת סשן
-- נוצר Routine בשם "Income plan — resume from checkpoint" (id `trig_01J5PYKxw746R7rW1sWBb8Ee`) שמתעורר כל 6 שעות לתוך הסשן הזה וממשיך מהצעד הבא בקובץ זה. לביטול: למחוק את ה-Routine מרשימת ה-Routines ב-claude.ai או לבקש מהסוכן.
+## מה תוקן בסבב הזה (שני באגים אמיתיים)
 
-## איך ממשיכים בסשן חדש
-- לקרוא את הקובץ הזה, ואז `logs/2026-09-02-monthly-income-plan.md`.
-- `pnpm install && pnpm typecheck && npx vitest run src/__tests__/revenue`.
+1. **x402 לא יכול היה לקבל שקל.** `defaultPaywall` קרא ל-`require()` בתוך מודול ESM; החריגה נבלעה וכל endpoint החזיר 503 ברגע שהוגדר ארנק. תוקן עם `createRequire`, ואומת מול שרת רץ: בקשה לא משולמת מחזירה 402 עם הסכום והארנק.
+2. **ה-Pro של il-biz-tools היה הונאה בפוטנציה.** מכר לוגו ממותג שלא היה קיים, ורשימת לקוחות ומספור אוטומטי שכבר היו חינמיים; שום דבר לא קרא את `?pro=1`. עכשיו Pro מוכר רק מיתוג אמיתי, עם מפתח רישיון חתום שמאומת אופליין, והכפתור מופיע רק כשגם Paddle וגם המפתח הציבורי מוגדרים.
+
+## מה רץ ברקע כרגע (שלושה מחקרים)
+
+| Workflow | Run ID | מה הוא מחזיר |
+|---|---|---|
+| השלמת מחקר ההכנסה | `wf_d846d2e8-694` | 4 הסריקות החסרות + אימות אדברסרי + סינתזה |
+| סריקת GitHub | `wf_ec0fe76f-82c` | skills, סוכנים, MCP, כלים לאמץ |
+| סריקת YouTube | `wf_def6b5f0-7e0` | פלייבוקים, ביקוש לא מסופק, מה להוסיף |
+
+כשהם מסתיימים: לקפל את התוצאות ל-`src/revenue/portfolio.ts`, ל-`docs/INCOME_PLAN.he.md` ולפלייבוקים ב-`skills/`.
+
+## הצעד הבא של הבעלים (חד-פעמי, לפי סדר)
+
+הצ'קליסט המלא בסעיף 6 של `docs/INCOME_PLAN.he.md`. בקצרה: PayPal Israel ← Apify + KYC ← Paddle ← Etsy + Payoneer ← עוסק פטור. שני קווים לא דורשים כלום: `agent-services` (x402) ו-`telegram-bots` (רק יצירת בוט ב-BotFather).
+
+אחרי כל צעד: `pnpm exec tsx scripts/colony.ts setup-done <lineId> --evidence "..."`.
+
+## חסום, ולמה
+
+- **פריסה ל-Netlify** — האתר `il-biz-tools` נוצר (site id `2087c2ed-5270-4407-8746-675d6ea41d5e`), אבל api.netlify.com חסום ב-proxy של הסנדבוקס. הבעלים מקשר את הריפו ב-Netlify UI (base `products/il-biz-tools`, publish `_site`, build `node scripts/build-site.js`) או מריץ מקומית `npx netlify-cli deploy --prod`.
+- **ביצוע של דירקטורים** — הלופ מנהל, אבל לא מבצע. דירקטור צריך inference; עד שהאוטומטון יקבל מפתח, הדוח מסמן כל goal תקוע כחוסם ולא מעמיד פנים שמישהו עובד עליו.
+- **הסרטון שנשלח** (YouTube) — חסום ב-proxy; המחקר עוקף דרך תמלולים וסיכומים.
+
+## איך ממשיכים
+
+```bash
+pnpm install
+pnpm exec tsx scripts/colony.ts status      # מה מצב התיק
+pnpm exec tsx scripts/colony.ts tick        # מחזור אחד
+npx vitest run src/__tests__/revenue        # 49 בדיקות
+```
