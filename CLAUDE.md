@@ -1,5 +1,9 @@
 # CLAUDE.md — working conventions for this repository
 
+## Read this first
+- `MISSION.md` is the heart of this repo: the owner's mandate and the rules it implies. Read it before anything else, every session.
+- Then `logs/CHECKPOINT.md` for where the last session stopped.
+
 ## Checkpoint (always)
 - `logs/CHECKPOINT.md` is the single "where we stopped" file. Update it before ending any session or long task: current branch, what is done, what is in progress, exact next steps, open questions for the owner.
 - Read it first at the start of every session and continue from there.
@@ -18,7 +22,8 @@ Create `logs/YYYY-MM-DD-<task-slug>.md` with these sections, in this order:
 Write the log in Hebrew (the owner's language); code identifiers stay in English. Commit logs together with the work.
 
 ## Model rule (owner's instruction)
-- Work only with Claude Fable 5.1 (`claude-fable-5-1`). When its quota is exhausted, stop, write "waiting for Fable 5.1 quota" in `logs/CHECKPOINT.md`, and resume after the quota renews. Never switch to another model to keep going.
+- Claude Fable 5.1 (`claude-fable-5-1`) is the default. When its quota runs out, stop, write "waiting for Fable 5.1 quota" in `logs/CHECKPOINT.md`, and resume when it renews.
+- Never switch models on your own initiative. But if the owner switches the model manually, that overrides: continue immediately on whatever model they chose, without asking.
 
 ## Build / test
 - `pnpm install`, `pnpm typecheck`, `pnpm test` (full suite takes >10 minutes here; run targeted files with `npx vitest run <path>` while iterating).

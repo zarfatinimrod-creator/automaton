@@ -1,0 +1,51 @@
+/**
+ * Runtime configuration. Everything comes from the environment so the same
+ * image runs free (dev) or paywalled (production) without a code change.
+ */
+export interface PriceEntry {
+  path: string;
+  method: string;
+  priceUsd: number;
+  description: string;
+}
+
+export interface Config {
+  port: number;
+  payTo: string | null;
+  network: string;
+  facilitatorUrl: string | null;
+  defaultPriceUsd: number;
+  paywallEnabled: boolean;
+}
+
+const num = (raw: string | undefined, fallback: number): number => {
+  const v = Number(raw);
+  return Number.isFinite(v) && v > 0 ? v : fallback;
+};
+
+export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
+  const payTo = env.X402_PAY_TO?.trim() || null;
+  return {
+    port: num(env.PORT, 8402),
+    payTo,
+    network: env.X402_NETWORK?.trim() || "base",
+    facilitatorUrl: env.X402_FACILITATOR_URL?.trim() || null,
+    // The Coinbase CDP facilitator charges $0.001 per settlement beyond 1,000
+    // free per month, so the floor price must stay meaningfully above that.
+    defaultPriceUsd: num(env.X402_PRICE_USD, 0.002),
+    paywallEnabled: Boolean(payTo),
+  };
+}
+
+/** Every billable endpoint. /health and /pricing stay free so agents can discover us. */
+export function priceList(config: Config): PriceEntry[] {
+  const p = config.defaultPriceUsd;
+  return [
+    { path: "/v1/validate/israeli-id", method: "POST", priceUsd: p, description: "Israeli ID (teudat zehut) checksum validation" },
+    { path: "/v1/validate/phone", method: "POST", priceUsd: p, description: "Israeli phone validation and E.164 normalisation" },
+    { path: "/v1/validate/bank", method: "POST", priceUsd: p, description: "Israeli bank/branch/account format check (format only)" },
+    { path: "/v1/hebrew-date", method: "GET", priceUsd: p, description: "Gregorian to Hebrew date conversion" },
+    { path: "/v1/transliterate", method: "POST", priceUsd: p, description: "Hebrew to Latin transliteration (approximate)" },
+    { path: "/v1/json/repair", method: "POST", priceUsd: p * 2, description: "Repair malformed JSON produced by LLMs" },
+  ];
+}
