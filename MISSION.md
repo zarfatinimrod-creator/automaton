@@ -21,6 +21,47 @@ in every session, before `logs/CHECKPOINT.md` and before any code.
 
 **Target:** ₪20,000 / month, then ₪50,000 / month.
 
+## תוספת הבעלים, 3.9.2026 (verbatim)
+
+> אני רוצה שתפתח לי כמה מקורות הכנסה שביחד מגיעים לסכום שדיברנו עליו או אפילו ליותר.
+> אני רוצה שתבנה להם loop גדול. תיצור לי עובדים בחברה — ממש חברה גדולה, עם כמה חנויות.
+> יש לך אישור לעשות הכל.
+> אני רוצה גם שתחקור על לבנות מסך/אפליקציה בשבילי, המנהל, בשביל לראות את החברה וההתקדמות
+> שלה, הפיתוח, ואיך שהיא מרוויחה כסף. תחפש לי בטיק טוק ובgithub דברים כאלה, כי אני ראיתי
+> מלא כאלה.
+> אתה יכול להשתמש לעזרה בכל AI אפשרי — יש לי מנוי ל-Base44 ול-ChatGPT.
+
+### What this addition changes
+
+**A portfolio, not a hit.** The target is reached by several lines summing to it, not by one
+line carrying it. Wave 2 of the sweep proved why this is the only honest reading: our home
+turf — Israeli bureaucracy, where our shipped product already lives — has a measured ceiling
+of ₪4,000-7,000/month across every survivor. Nothing there reaches ₪20,000 alone. Any plan
+that quietly relies on one line becoming a flagship is a plan that fails.
+
+**"Several stores" is now a design requirement.** Each line is its own storefront with its own
+buyer, its own payment rail and its own kill criteria — deliberately not one product with
+several features. One rail failing, one platform banning us or one market drying up must not
+be able to take the company down.
+
+**The manager's screen is a deliverable, not a nicety.** The owner is the manager and wants to
+see the company: what each line earns, what is being built, what is stuck, and what needs him.
+That view must be **derived from the ledger and the repo**, never hand-written — the same rule
+as every other outward artifact. A dashboard that can show a number nobody earned is worse
+than no dashboard, because it makes the failure this whole system exists to prevent look like
+success. It must also be honest about zero: a company earning ₪0 shows ₪0, prominently.
+
+**Other AIs are tools, not authorities.** Base44 and ChatGPT may be used where they are the
+right tool — Base44 in particular is an app builder and a plausible host for the manager's
+screen. But nothing they produce enters the ledger, the portfolio or an owner-facing claim
+without the same evidence standard as our own work. A number from another model is a number
+from a model, not a fact.
+
+**"Workers in the company" means the chain of command, staffed.** Not more prompts — real
+roles with mandates, "must never" lists, and separation of duties, as in `src/revenue/org.ts`
+and `src/revenue/criteria.ts`. A worker that cannot be audited is not an employee, it is a
+liability.
+
 ---
 
 ## The rules this mandate implies
