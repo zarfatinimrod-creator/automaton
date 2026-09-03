@@ -1,148 +1,190 @@
-# Scout: agent-markets / apify
+# Scout notes — agent-markets / "Apify Store deeper"
 
-**Criterion:** Apify Store deeper — pay-per-event economics, evidence of actual actor revenue,
-rent-an-actor model, which categories are saturated and which are unserved, payout to Israel.
+Scout: WORKER-SCOUT `apify`, group **agent-markets**. Date of research: **2026-09-03**.
+Criterion: *Apify Store deeper: pay-per-event economics, evidence of actual actor revenue,
+rent-an-actor model, which categories are saturated and which are unserved, and payout to Israel.*
 
-**Date of research:** 2026-09-03. **Search budget spent:** 8 WebSearch calls (the cap), plus
-5 free GitHub/raw.githubusercontent fetches.
+Search budget used: **6 WebSearch calls** (cap was 8). No searches were refused.
+Egress: `apify.com`, `blog.apify.com`, `api.apify.com` are ALL blocked by the proxy
+(`EGRESS_BLOCKED`). Everything primary below came from **`raw.githubusercontent.com/apify/apify-docs`**,
+which renders fully and is Apify's own docs source of truth. That is the route to use for this
+platform in future waves — it costs zero search budget.
 
-## Evidence ledger
+## Evidence strength key
+- **[RENDERED]** — I fetched and read the page/file myself.
+- **[SNIPPET]** — a search result summary quoting a page I could not open. Weaker.
+- **[BLOCKED]** — the URL a human or unblocked agent must open to close the question.
 
-### Strong (rendered primary source — Apify's own docs repo)
+---
 
-1. `https://raw.githubusercontent.com/apify/apify-docs/master/sources/platform/actors/monetizing/pay_per_event.mdx`
-   — rendered 2026-09-03.
-   - Developer profit formula stated as `profit = (0.8 * revenue) - platform costs`.
-   - Synthetic events: `apify-actor-start` default **$0.00005 per start** (covers ~5 seconds of
-     compute; scales with memory allocation), and `apify-default-dataset-item` charged per pushed item.
-   - Prices are per event type **and per discount tier** (Bronze/Silver/Gold subscriber tiers).
-   - Optionally the developer can pass platform usage costs straight to the user and keep the full
-     80%; the doc says this **takes 14 days to enable**, reduces pricing transparency and **hurts the
-     Actor's quality score**. Can be disabled immediately.
-   - Worked example in the doc: social-media monitor at $0.002/post, $0.005/profile,
-     $0.01/sentiment-analysis → $31 user revenue − $4 platform cost → **$20.80 developer profit**.
-     (This is Apify's illustration, not measured revenue.)
+## 1. Pay-per-event (PPE) economics — RENDERED, primary
 
-2. `https://raw.githubusercontent.com/apify/apify-docs/master/sources/platform/actors/monetizing/monthly-payouts.mdx`
-   — rendered 2026-09-03. **This is the payout gate.**
-   - Minimum payout: **"$20 for PayPal and Wise"**, **"$100 for other payout methods"**.
-   - Payout invoices auto-generated on the **11th of each month**, auto-approved on the **14th**
-     if the developer takes no action.
-   - **KYC required.** Individuals: full legal name matching the ID card, and a clear
-     high-resolution photo of ID card or driver's licence (screenshots / paper copies / damaged
-     documents are automatically rejected). Companies: name of the verifying person plus the
-     official company name.
-   - Both individuals and companies are eligible.
-   - **No restricted-country list appears in this file.** Absence is not proof; see open questions.
+Source (rendered): https://raw.githubusercontent.com/apify/apify-docs/master/sources/platform/actors/monetizing/pay_per_event.mdx
+Source (rendered): https://raw.githubusercontent.com/apify/apify-docs/master/sources/academy/build-and-publish/apify-store-basics/how_actor_monetization_works.md
+Source (rendered): https://raw.githubusercontent.com/apify/apify-docs/master/sources/legal/latest/terms/store-publishing-terms-and-conditions.md
 
-3. `https://raw.githubusercontent.com/apify/apify-docs/master/sources/academy/build-and-publish/apify-store-basics/how_actor_monetization_works.md`
-   — rendered 2026-09-03.
-   - Two models: pay-per-event (PPE) and **Rental — explicitly marked as currently sunsetting**.
-   - Rental structure was e.g. 7-day free trial then $30/month, developer keeps 80%.
-   - Developer earns "80% of the revenue minus platform usage costs".
-   - The doc gives **no** payout thresholds, methods, country list, or real earnings figures.
+- Developer profit formula, verbatim from the docs: `profit = (0.8 * revenue) - platform costs`.
+  Store Publishing T&C §10.2.1: **"80% of the fees paid by Users for your Actor, minus Platform usage costs"**; Apify keeps 20%.
+- **Only revenue from users on PAID Apify plans counts.** Free-plan users generate usage but no developer revenue.
+  This is the single most under-appreciated number in the model: a popular free-tier actor can be net-negative.
+- Two synthetic events charge automatically without developer code:
+  `apify-actor-start` (default **$0.00005**/event) and `apify-default-dataset-item` (per dataset item pushed).
+- A **"Pay per event + usage"** toggle lets you pass platform cost to the user. Docs warn it
+  **reduces pricing transparency and lowers the Actor quality score**, and (see §3 below) it
+  **disqualifies the Actor from agentic payments**. Recommendation in docs: use only while calibrating price.
+- Per-run user spend limit is enforced by the platform: once hit, `Actor.charge()` stops charging and
+  `Actor.pushData()` stops pushing, then the run aborts. So runaway charging is impossible — good for honesty,
+  and it caps per-run revenue.
+- Price benchmark from Apify's own academy page [RENDERED]: **"most prices on Apify Store range between $1-10 per 1,000 results"**.
+  Worked example given in that page: two users produced $5.373 revenue, $0.527 platform cost, ~$4.748 developer profit.
+- Quality score explicitly rewards PPE over other models, and rewards offering Bronze/Silver/Gold subscriber discounts.
+  Source (rendered): sources/platform/actors/publishing/quality_score.mdx (via GitHub code search).
 
-4. `https://raw.githubusercontent.com/apify/apify-docs/master/sources/platform/actors/publishing/quality_score.mdx`
-   — rendered 2026-09-03. Eight quality-score dimensions: Reliability (run success rate + automated
-   QA), Popularity (users, saves, return usage), Feedback/Community (reviews, ratings), Ease of Use,
-   **Pricing Transparency (PPE explicitly named as the transparent model)**, Trustworthiness
-   (limited permissions), History of Success (prior successful actors by the same developer),
-   Congruency (title/description/docs/schema alignment). Quality score drives ranking in Store
-   search **and in the MCP server's actor-search tool**; recalculated several times a day; results
-   are also personalised per user.
+**Implication for us:** the money model is real, mechanical and agent-operable. The lever that matters
+is not price-per-event, it is *what fraction of your users are on paid plans*, which we cannot control and cannot see before launch.
 
-5. `https://raw.githubusercontent.com/apify/apify-docs/master/sources/platform/actors/development/programming_interface/actor_standby.md`
-   — rendered 2026-09-03. **This is the real "rent-an-actor" successor.**
-   - Standby = the Actor runs a **persistent HTTP server**, answering proxied user requests in real
-     time (GET/POST/PUT/DELETE, input via query string or body) instead of cold-starting per run.
-   - Readiness probe header: `x-apify-container-server-readiness-probe`.
-   - Limits: **5 minutes** total to return a first response; **2 minutes** for the platform to pick
-     which run serves the request.
-   - Monetised "just like any other Actor"; the doc **recommends PPE for Standby**, where users pay
-     both the platform usage cost of the run and the event cost.
-   - Note: Standby is a *serving mode*, not a subscription — an Actor can be started in Standby or
-     standard mode; the code must check `metaOrigin`.
+## 2. Rent-an-actor model — DEAD, with dates. RENDERED, primary.
 
-6. `https://raw.githubusercontent.com/apify/apify-docs/master/sources/legal/old/fair-share-program-terms-and-conditions.md`
-   (seen via GitHub code search 2026-09-03) — the Fair Share "Active Developer Tier" **requires**
-   monetising via Pay-Per-Event, and may grant "a temporary discount on computing resources or other
-   incentives for your open-source Actor subject to a separate agreement with Apify". Filed under
-   `legal/old/`, so treat the programme as possibly retired.
+Source (rendered): https://raw.githubusercontent.com/apify/apify-docs/master/sources/_partials/_rental-sunsetting.mdx
+Source (rendered): https://raw.githubusercontent.com/apify/apify-docs/master/sources/platform/actors/monetizing/rental.mdx
 
-### Weaker (search snippets — NOT rendered pages; listed with the URL a human must open)
+Verbatim milestones:
+- **2026-04-01:** "You can no longer publish new rental Actors or change pricing on existing ones."
+- **2026-10-01:** "Rental Actors are fully retired. All remaining Actors are migrated to pay-per-usage pricing."
 
-7. Rental sunset dates. Snippets from a 2026-09-03 search quote:
-   - Apify stopped accepting new rental listings / rental price changes on **2026-03-31 / 2026-04-01**.
-   - Rental **fully retires 2026-10-01**; un-migrated actors are moved to **pay-per-usage, which
-     pays the developer nothing**.
-   - Snippet claims developers who did the maths saw **40–70% revenue drops** moving rental → PPU
-     without a proper PPE plan (source: godberrystudios.com, a third-party blog — low authority).
-   - Apify ships an official migration tool: `https://apify.com/apify/rental-to-pay-per-event-calculator`.
-   - **To close:** open `https://blog.apify.com/migrating-to-pay-per-event-pricing/`,
-     `https://blog.apify.com/standardizing-actor-pricing/`, and
-     `https://docs.apify.com/actors/publishing/monetize/rental`. All three are egress-blocked here.
+Today is 2026-09-03, so **rental is already closed to new entrants and dies in 28 days.**
+Also, before the sunset the docs already listed as a disadvantage:
+**"Apify's MCP server explicitly excludes rental Actors from search results"** — i.e. rental actors were
+invisible to AI agents. Rent-an-actor is a **hard dead end**; any colony plan that mentions it is stale.
 
-8. Aggregate developer earnings. Snippet from the same search: **"Apify pays out $1.4M monthly
-   across roughly 3,000 developers, averaging about $470 per developer"**, with "top independent
-   creators exceed $10,000 monthly recurring revenue and many developers clear $1,000 a month".
-   Attributed in the result set to `https://agentbyline.com/articles/apify-actor-passive-income-what-really-earns-in-2026-67lcfr`
-   and/or `https://apify.com/partners/actor-developers`. **This is the single most load-bearing
-   number in this report and it is snippet-only.** To close, open
-   `https://apify.com/partners/actor-developers` and
-   `https://help.apify.com/en/articles/8684010-make-money-publishing-your-actors-on-apify-store`.
-   Note $1.4M/3,000 = $467, so the "average" is arithmetic on the two other figures, and the
-   distribution is certainly long-tailed — the **median** developer earns far less than $470.
+The current monetization overview page lists only **two** live models: **pay per event** and **pay per usage**
+(pay-per-usage = developer earns nothing, user pays platform costs only).
+Source (rendered): https://raw.githubusercontent.com/apify/apify-docs/master/sources/platform/actors/monetizing/index.mdx
 
-9. Store size and category concentration. Snippets citing `https://apifystats.com/stats.html`
-   (an independent daily census; the domain is egress-blocked here):
-   - **42,715 actors from 2,148 publishers**; **190.6M runs in the last 30 days**; **96.8% run
-     success rate**; **33,439 actors used this month (78.3% of the store)**.
-   - Highest-traffic categories 2026: **Google Maps** (Compass's scraper, 426K users),
-     **Instagram** (Apify's official scraper, 277K), **TikTok** (Clockworks, 185K), **LinkedIn**,
-     **lead generation**.
-   - An older figure also surfaced: "by late 2024 the store held more than 35,000 actors, used by
-     52,000 customers."
-   - **To close:** open `https://apifystats.com/stats.html` and `https://apifystats.com/publishers/`.
+## 3. Agentic payments — the actual unserved frontier. RENDERED, primary.
 
-10. Store-intelligence meta-niche. A single search returned at least seven distinct actors already
-    doing "find the gap in Apify Store": `apify.com/extractmaster01/apify-store-scraper`,
-    `apify.com/zinin/apify-niche-demand-radar`, `apify.com/synergistic_freedom/apify-store-competitor-intelligence`,
-    `apify.com/adamjosh/apify-store-opportunity-finder`, `apify.com/signalcrawl/apify-store-quality-radar`,
-    `apify.com/scraper_guru/apify-store-analyzer`, `apify.com/ryanclinton/actor-competitor-scanner`,
-    `apify.com/agentictools/apify-store-search`. Search-result titles only; none rendered.
+Source (rendered): sources/platform/actors/monetizing/index.mdx, verbatim:
+> "Agentic payments let AI agents discover, run, and pay for your Actor without an Apify account,
+> using protocols such as x402 and Skyfire. Eligible Actors are flagged with `allowsAgenticUsers=true`
+> and surface in agentic discovery."
 
-11. MCP / agent demand. Snippets: the Apify MCP server lets agents discover and run Store actors;
-    native integrations named for LangGraph, CrewAI, Mastra.ai; "developers keep 80 percent of
-    revenue after platform compute costs"; PPE named as the AI/MCP-compatible model.
-    Primary repo that DOES render: `https://github.com/apify/apify-mcp-server`.
-    Marketing pages `https://apify.com/mcp/developers` and `https://apify.com/ai-agents` are blocked.
+Eligibility, verbatim from https://raw.githubusercontent.com/apify/apify-docs/master/sources/_partials/_agentic-payments-eligibility.mdx :
+- MUST use pay-per-event. "Rental and pay-per-usage Actors are not supported."
+- MUST charge **only** for events — "Actors with the **Pay per event + usage** option switched on are excluded."
+- MUST run with **limited permissions** — full-permission Actors excluded.
+- MUST NOT use **Standby** mode.
 
-## What this means for the colony
+Discovery API (this is the query that measures the size of the unserved niche):
+`https://api.apify.com/v2/store?allowsAgenticUsers=true`
+Source (rendered): sources/platform/integrations/ai/skyfire.md and apify-api/openapi/paths/store/store.yaml.
+**[BLOCKED]** — `api.apify.com` is egress-blocked here, so I could NOT count how many Actors qualify.
+A human or unblocked agent should open that URL; the count vs. the ~67k store total is the whole
+saturation answer for this niche.
 
-- **PPE is now the only forward-looking model.** Rental is dead on 2026-10-01. Never design a line
-  around a monthly Apify rental fee.
-- **The head of the store is closed.** Google Maps / Instagram / TikTok / LinkedIn / lead-gen are held
-  by Compass, Apify itself and Clockworks at 185K–426K users each. A no-brand new entrant does not
-  win those. Our shipped `apify-il-open-data` sits in exactly the right place: a language- and
-  jurisdiction-gated dataset that the big publishers have no reason to build.
-- **Distribution is the binding constraint, not build time.** 42,715 actors, 2,148 publishers, and
-  ranking is a quality score in which "History of Success" (prior successful actors by the same
-  developer) is an explicit input — i.e. the score is structurally biased against a first actor.
-- **Payout to Israel is fine; KYC is the one human step.** PayPal or Wise at a $20 threshold both
-  serve Israel. The unavoidable owner action is a one-time government-ID upload.
+x402 mechanics [RENDERED]: https://raw.githubusercontent.com/apify/apify-docs/master/sources/platform/integrations/ai/x402.md
+- USDC on **Base** mainnet, Coinbase Agentic Wallet, minimum **$1** purchase, prepaid token valid **14 days**,
+  unused balance non-refundable, balance is a hard spend cap. Explicitly labelled experimental.
+- Note the strategic fit: we already shipped `products/x402-il-api`. Same payment rail, same buyer.
 
-## Open questions a human or unblocked agent must close
+## 4. Payout to Israel — YES, with one named human blocker. RENDERED, primary.
 
-1. Does Apify's payout provider exclude Israel? Nothing in `monthly-payouts.mdx` says so, but the
-   live billing page must be checked: `https://console.apify.com/billing` (authenticated).
-2. Real revenue distribution — the $470 average is snippet-only and is an average, not a median.
-3. Per-category actor counts and users-per-actor (the actual saturation metric) — `apifystats.com`.
-4. Whether the Fair Share programme still exists (its terms live under `legal/old/`).
+Source (rendered): https://raw.githubusercontent.com/apify/apify-docs/master/sources/platform/actors/monetizing/monthly-payouts.mdx
+Source (rendered): store-publishing-terms-and-conditions.md §10.1–10.3
 
-## Dead ends encountered
+- Payout methods: **PayPal and Wise, minimum $20**; "other payout methods" minimum **$100** (T&C §10.3.2 says
+  $20 for PayPal / $100 other; the docs page adds Wise to the $20 tier).
+- Cadence: payout invoice auto-generated on the **11th** of each month, 3 days to review, auto-approved on the **14th**.
+- Below-threshold balances **roll over**; balances unpaid for **12+ months are "deemed abandoned and forfeited"** (§10.3.2).
+- KYC (§10.1.2) is mandatory before payout: **"government-issued identification, proof of address, tax documentation"**.
+  Individuals must give a "full name that matches your legal ID card" with photo documentation. Companies may be used instead.
+  §10.1.4: "Verification is an ongoing obligation. We may require updated documentation at any time."
+- Country restriction: **none named for Israel.** §10.1.5 only reserves suspension where "you or your associated
+  entities appear on any applicable sanctions or watchlists". Israel is not sanctioned by the EU/Czechia
+  (Apify is a Czech company). I found **no** clause excluding Israeli creators.
+- Wise pays ILS into Israeli bank accounts [SNIPPET, wise.com]: https://wise.com/us/send-money/send-money-to-israel
+  and https://www.wise.com/help/articles/2932361/guide-to-ils-transfers . Note also
+  https://wise.com/help/articles/6NpTb4T6tqnDiY1hA2icDI/getting-verified-in-israel — snippet says
+  "from 31 March 2025, all customers residing in Israel need to be verified to continue using Wise services."
+  **[BLOCKED-ish]** — I did not render wise.com; a human should confirm before choosing Wise over PayPal.
 
-- `apifystats.com` — EGRESS_BLOCKED (confirmed by an actual failed fetch, not assumed).
-- `apify.com`, `blog.apify.com`, `docs.apify.com`, `help.apify.com` — not attempted after the
-  apifystats block and the standing egress warning; all evidence about them here is snippet-level.
-- No source anywhere in this sweep publishes **per-actor revenue**. Apify does not expose it, and
-  neither does the independent census. Any claim of "actor X earns $Y/month" would be invented.
+**Merchant-of-record warning (§4.1–4.2, RENDERED):** "the contractual relationship for the use of your Actor is
+established between you and the User, not between Apify and the User." Apify is **not** the merchant of record.
+That is a tax/VAT fact the owner's accountant needs: unlike Paddle (which is MoR for il-biz-tools),
+Apify income is the owner's own B2B income, invoiced by Apify to the owner as a creator payout.
+
+## 5. Evidence of actual actor revenue — mixed strength
+
+- **Strongest datum I found:** Apify's own X post [SNIPPET, could not render x.com]:
+  https://x.com/apify/status/2054547299485745273 — "Apify hit $1M paid to creators in a single month.
+  A year ago: $222K. That's 5x in 12 months." This is a first-party claim but I only saw it as a snippet.
+- [SNIPPET, weak] "$1.4M paid out monthly across roughly 3,000 developers ... averaging about $470 per developer,
+  with the store growing to 53,954 tools" and "the most successful independent creators ... make over $10,000
+  monthly recurring revenue, while many others make more than $1,000 every month."
+  These came back attributed to a mix of https://apify.com/partners/actor-developers ,
+  https://help.apify.com/en/articles/8684010-make-money-publishing-your-actors-on-apify-store and
+  https://agentbyline.com/articles/apify-actor-passive-income-what-really-earns-in-2026-67lcfr .
+  agentbyline.com looks like an AI-content site — **do not treat the $470 average as verified.**
+  The direction it implies is nonetheless the one a sceptic expects: a long tail earning ~nothing.
+- Case study [SNIPPET]: https://blog.apify.com/building-98-actors-on-apify-store/ — "How I built 98 production
+  Actors in 6 months on Apify Store", reported **855 monthly users across 98 actors** and **explicitly declined
+  to state revenue**. Revenue "became meaningful but inconsistent in months 3-4"; a catalogue/cross-discovery
+  effect by months 5-6. 855 users / 98 actors ≈ **8.7 users per actor.** That is the honest base rate.
+- [SNIPPET] https://dev.to/agenthustler/the-apify-actor-survival-guide-why-99-of-scrapers-get-zero-users-and-how-to-fix-it-5eoh
+  — title alone asserts "99% of scrapers get zero users". dev.to is egress-blocked; treat as folklore, not data.
+
+**[BLOCKED] URLs a human must open to close the revenue question:**
+`https://apify.com/partners/actor-developers`, `https://blog.apify.com/building-98-actors-on-apify-store/`,
+`https://help.apify.com/en/articles/8684010-...`, `https://x.com/apify/status/2054547299485745273`.
+
+## 6. Saturated vs unserved categories
+
+Store size, conflicting numbers, all [SNIPPET]:
+- Page title of https://apify.com/store returned as **"Apify Store - 67,000+ web scraping and automation tools"** (Sept 2026).
+- Third-party pages say "30,000+" and "53,954". Use **67,000+** (Apify's own page title) and note the spread.
+
+**Saturated (do NOT build):** Google Maps / Google Places, LinkedIn, Instagram, TikTok, Twitter/X, Facebook,
+YouTube, Amazon, Trustpilot, Glassdoor — the generic lead-gen and social scrapers.
+Evidence [SNIPPET]: https://apify.com/compass/crawler-google-places is quoted at **426K–571K users**; an incumbent
+that large with Apify's own team behind it cannot be displaced by a new no-brand entrant.
+Also note there is now a whole **meta-category of "find me a gap" actors** —
+https://apify.com/shelvick/apify-opportunity-scout , https://apify.com/adamjosh/apify-store-opportunity-finder ,
+https://apify.com/ryanclinton/market-gap-finder , https://apify.com/scraper_guru/apify-store-analyzer ,
+https://apify.com/extractmaster01/apify-store-scraper — which is itself a saturation signal: when the gap-finders
+are a crowded category, the obvious gaps are gone.
+
+**Genuinely unserved, in order of fit for us:**
+1. **`allowsAgenticUsers=true` actors.** Structurally new (x402/Skyfire), gated by four mechanical eligibility rules
+   most existing actors fail (standby mode and usage-passthrough are both common). Count unverified — see §3.
+2. **Non-English / country-specific public data.** Our shipped `products/apify-il-open-data` is exactly this shape.
+   No competitor found in searches for Israeli government open data actors. Language is a real moat against the
+   98-actors-in-6-months crowd because they cannot read the source schemas.
+3. Quality-score arbitrage in mid-tail categories: incumbents with <4.3 rating or no update in 6 months are
+   flagged as red flags to buyers [SNIPPET, use-apify.com]. Deprecation is automatic — 3 consecutive failed
+   daily tests → "under maintenance" label, +28 days of failures → deprecated
+   [RENDERED, sources/academy/build-and-publish/apify-store-basics/how_store_works.md]. Abandoned actors
+   really do leave holes.
+
+## 7. Cost side — Creator Plan
+
+[SNIPPET] https://apify.com/pricing/creator-plan — "$1/month, $500 of platform usage for the first 6 months",
+capped at 10 GB residential proxy and 10,000 SERPs/month, and it **limits access to Actors on Apify Store**.
+Free plan: **$5/month** of prepaid usage, no card. **[BLOCKED]** — apify.com unreachable; verify before relying.
+If true this makes build-and-test cost ≈ $1/month for six months, which is the cheapest developer runway in the sweep.
+
+## 8. ToS / constitution check
+
+Store Publishing T&C (RENDERED) §2.2.4.2 forbids exactly the things our constitution forbids:
+(i) "directly or indirectly offer, link to, or promote any product or service outside of the Platform" —
+**this is a real constraint on us: we may not use an Actor README to funnel buyers to il-biz-tools or our x402 API.**
+(ii) "Offer incentives for reviews, solicit fake reviews, use multiple accounts to influence ratings".
+§2.2.3 forbids copying another creator's code/readme/description.
+Building original PPE actors over documented public APIs is **GREEN**. Scraping actors targeting sites whose
+terms forbid it would be AMBER/RED and are out of scope for us regardless.
+
+## Dead ends (do not re-search)
+- **Rent-an-actor**: closed to new entrants 2026-04-01, fully retired 2026-10-01. Zero.
+- **Pay-per-usage**: developer earns $0 by definition. Only useful as a free-tier funnel.
+- **api.apify.com / apify.com / blog.apify.com / help.apify.com**: all egress-blocked. Do not retry.
+- **Named per-actor revenue numbers**: nobody publishes them. The 98-actor builder deliberately withheld
+  the figure. Any specific "actor X earns $Y" claim in this colony should be treated as fabricated
+  unless it links to a rendered first-party page.

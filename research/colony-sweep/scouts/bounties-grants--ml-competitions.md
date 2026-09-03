@@ -1,178 +1,57 @@
 # Scout notes — bounties-grants / ml-competitions
-
-Scout: WORKER-SCOUT "ml-competitions" (group: bounties, grants, prizes, creator funds)
+Date: 2026-09-03. Scout: WORKER-SCOUT "ml-competitions".
 Criterion: Kaggle and other ML competitions — prize money, eligibility rules, compute costs, and whether prizes pay to Israel.
-Date of research: 2026-09-03
-Web searches spent: 8 of 8 allowed. Search budget exhausted; nothing below is filled in from memory.
 
-## Evidence conditions (important for anyone re-checking)
+## Method and constraints
+- Web tools loaded via ToolSearch (WebSearch, WebFetch).
+- Search budget: 8 WebSearch calls used (the cap). No further searching after that; nothing below is filled in from memory.
+- Egress proxy blocked EVERY platform domain I tried to render:
+  - www.kaggle.com — EGRESS_BLOCKED
+  - docs.numer.ai — EGRESS_BLOCKED
+  - www.drivendata.org — EGRESS_BLOCKED
+  - arxiv.org — EGRESS_BLOCKED
+  - mlcontests.github.io — EGRESS_BLOCKED
+- The ONLY primary, rendered source I obtained is the Numerai documentation repo on GitHub (raw.githubusercontent.com), which is the platform's own docs checked into a public repo. Everything else in this file is a SEARCH SNIPPET and is labelled as such.
 
-Egress proxy blocked EVERY primary source I tried:
-- `https://www.kaggle.com/competitions` — EGRESS_BLOCKED
-- `https://mlcontests.com/state-of-machine-learning-competitions-2025/` — EGRESS_BLOCKED
-- `https://www.drivendata.org/competitions/` — EGRESS_BLOCKED
-- `https://arxiv.org/html/2604.08001v1` — EGRESS_BLOCKED
-- `https://arcprize.org/competitions/2026/paper` — EGRESS_BLOCKED
+## Rendered primary sources (strong evidence)
+1. https://raw.githubusercontent.com/numerai/docs/master/SUMMARY.md — full page index of Numerai's official docs (tournament, signals, crypto, staking, bounties).
+2. https://raw.githubusercontent.com/numerai/docs/master/numerai-tournament/staking.md — staking mechanics. Verbatim mechanics:
+   - `score = corr20 * corr_multiplier + mmc20 * mmc_multiplier`
+   - `payout = stake * clip(payout_factor * score, -0.05, 0.05)` → max payout OR BURN is ±5% of stake per round.
+   - `payout_factor = min(1, stake_threshold / total_at_risk)`; stake_threshold: Numerai 72,000 NMR, Signals 36,000 NMR, Crypto 10,000 NMR.
+   - Currency NMR, "purchasable via Coinbase or Uniswap". Negative scores BURN staked NMR.
+   - No country/eligibility restriction appears on this page.
+3. https://raw.githubusercontent.com/numerai/docs/master/numerai-tournament/bounties.md — Numerai's own bounty programme:
+   - Bugs: display/styling/broken links/typos 0.1–1 NMR; data errors, scoring problems, broken services 1–5 NMR.
+   - Security: low impact 0.1–2 NMR; moderate risk to funds 2–10 NMR; high 10–100 NMR; catastrophic 100+ NMR.
+   - Credentials leaks: 0.1 NMR per non-exploitable leaked account; up to full stake if exploitable.
+   - Rules: no spam, no DoS, no rate-limit exploitation, no attacking other users' accounts, no public disclosure, PoC required.
+   - Payment: requires an active Numerai Tournament account; US recipients over $600 file W-9; recipient responsible for taxes; Numerai has sole discretion; 5–10 business days to respond.
+4. https://raw.githubusercontent.com/numerai/docs/master/numerai-tournament/scoring/grandmasters-and-seasons.md — Grandmaster/Masters/Experts tiers are PRESTIGE ONLY. Explicitly: no prize pools, cash amounts or NMR distribution specified. Qualification = 20 on-time rounds with ≥1 NMR staked. So "become a Numerai Grandmaster" is not an income line.
 
-Only two source classes rendered: GitHub raw (numerai/docs) and WebSearch snippets.
-So: **one claim below rests on a rendered page (Numerai staking doc, GitHub). Everything else rests on
-search snippets that quote the platform's own pages.** Snippet-only claims are marked SNIPPET and each
-one names the exact URL a human or unblocked agent must open to close it.
+## Search-snippet evidence (weaker — a human or unblocked agent must open the URLs to close these)
+5. Kaggle standard competition rules — prize eligibility (snippet, 2026-09-03):
+   - "You are not eligible to receive any Prize in the Competition if you are a resident of a country designated by the United States Treasury's Office of Foreign Assets Control." Also "if a winner is located in a country where prizes cannot be awarded, then they are not eligible".
+   - Israel is NOT an OFAC-designated/comprehensively-sanctioned jurisdiction, so Israeli residents are eligible on the face of this clause. This is an inference from a snippet of the clause, not a rendered rules page.
+   - URLs to open to confirm: https://www.kaggle.com/competitions/kaggle-llm-science-exam/rules , https://www.kaggle.com/c/acquire-valued-shoppers-challenge/rules
+6. Kaggle prize-payment mechanics (snippet): winners must sign and return US tax forms — IRS Form W-9 (US) or **Form W-8BEN (foreign resident)**; documents due within two weeks of notification or the prize is forfeited and re-awarded; prizes paid ~30 days after documents received; taxes are the winner's responsibility and prizes are net of required withholding.
+   - URL to open: https://www.kaggle.com/competitions/kaggle-llm-science-exam/rules
+7. ARC Prize 2026 (snippet, 2026-09-03): prize pool "over $1 million"; Paper Track bonus prize of $375,000 divided equally among ALL papers scoring above 4.5/5 on the rubric; solutions must be open-sourced and attached to an official Solution Writeup within 7 days of the deadline or the entry is removed; submissions run as Kaggle notebooks in under 12 hours; **$10,000 USD maximum runtime cost including commercial API calls**; no internet access during Kaggle evaluation (no GPT/Claude API calls at eval time); no limit on pre-training compute.
+   - URLs to open: https://arcprize.org/competitions/2026 , https://arcprize.org/competitions/2026/paper , https://arcprize.org/competitions/2026/arc-agi-2
+8. Market size (snippet of mlcontests "State of Machine Learning Competitions 2025"): more than 390 ML competitions ended in 2025 across 30+ platforms, total prize pool over $16 million (cash and liquid crypto only; travel grants excluded). Note: $16M/year across the ENTIRE global field, split among winners of 390 contests.
+   - URL to open: https://mlcontests.com/state-of-machine-learning-competitions-2025/
+9. Zindi (snippet): prize payment "only to individual players or to the team leader", after code review and leaderboard sealing; explicit geographic limitation — "due to the ongoing Russia-Ukraine conflict, Zindi is not currently able to make prize payments to winners located in Russia". No statement found either way about Israel. Zindi is explicitly Africa-focused and many challenges are restricted to African citizens/residents.
+   - URL to open: https://zindi.world/rules
+10. AIcrowd (snippet): winners must provide a valid unexpired ID card or passport for identity verification before a cash prize transfer; solutions must be released under an open-source licence to be prize-eligible. No country list found.
+    - URL to open: https://www.aicrowd.com/challenges/insurance-pricing-game/challenge_rules
+11. Kaggle Community Competition Creator Prize (snippet): "Starting in March 2022, Kaggle awards up to five $5,000 monthly prizes (one per month) to Kaggle Community Competition hosts who create high-quality Community Competitions"; competition need only be live at some point during the award month; judged by Kaggle judges at their discretion. The programme's start date is 2022 and I could not verify it is still running in 2026 — treat as unverified.
+    - URLs to open: https://www.kaggle.com/community-competition-creator-prize , https://www.kaggle.com/community-competition-creator-prize-rules
 
-## S1 — Kaggle eligibility and the Israel question
+## Not established (do not claim these)
+- Kaggle free GPU/TPU notebook quota in 2026 — not verified this session, no evidence gathered. Unknown.
+- NMR/USD or NMR/ILS exchange rate — not verified. Every NMR figure above is therefore unvalued; I refuse to convert.
+- Whether Israeli residents specifically have ever been paid by Kaggle/AIcrowd/Zindi — no evidence found either way.
+- DrivenData and bitgrit prize/eligibility specifics — blocked domain, no usable snippet. Genuinely unknown.
 
-Query: Kaggle competition rules eligibility "not a resident of" Crimea Cuba Iran Syria North Korea prize payment 2026
-Snippets quoting Kaggle's standard competition rules (several competition /rules pages plus
-https://www.kaggle.com/community-competition-creator-prize-rules) state:
-
-> open to residents of the United States and worldwide, except that if you are a resident of Crimea,
-> so-called Donetsk People's Republic (DNR) or Luhansk People's Republic (LNR), Cuba, Iran, Syria, or
-> North Korea, or are subject to U.S. export controls or sanctions, you may not enter
-
-Also: entrant must hold a Kaggle account and be 18+ / age of majority. And:
-> the Competition Host reserves the right to forego or award alternative Prizes where needed to comply
-> with local laws, and if a winner is located in a country where prizes cannot be awarded, then they are
-> not eligible to receive a prize
-
-**Israel is not on the exclusion list.** Israel is a US ally, not under OFAC country sanctions.
-Conclusion: Israel eligible = YES. Evidence class: SNIPPET quoting Kaggle's own rules text, seen on
-multiple independent competition rules pages, which is as consistent as snippet evidence gets.
-URL to open to confirm: https://www.kaggle.com/competitions/llm-classification-finetuning/rules
-and https://www.kaggle.com/community-competition-creator-prize-rules
-
-Caveat I could NOT close: per-competition rules are host-written. Some hosts (US government, defence,
-some pharma) restrict to US persons. Must be read per competition.
-
-## S2 — Active Kaggle competitions and prize sizes (2026)
-
-Query: Kaggle active competitions 2026 prize pool $50,000 leaderboard deadline list
-SNIPPET results:
-- BirdCLEF+ 2026 — $50,000 prize pool
-- ARC Prize 2026 (ARC-AGI-2) — part of a large pool; milestone deadlines 2026-06-30 and 2026-09-30,
-  each paying 1st $25K / 2nd $10K / 3rd $2.5K
-- CROO AI AGENT Hackathon — $10,000 pool
-- INFORMS RAS 2026, MuseumSCAT@ECCV26 — academic, prize unknown
-URLs to open: https://www.kaggle.com/competitions?group=active&sortBy=prize
-
-## S3 — Other platforms
-
-Query: DrivenData AIcrowd Zindi 2026 machine learning competition prize money eligibility payout international
-SNIPPETS:
-- AIcrowd is among the top five platforms by total prize money.
-- DrivenData: "$4,976,000+ in prizes" disbursed historically across 260,000+ submissions;
-  "DrivenData payouts are checks or wire transfers; US winners receive a 1099."
-  (that payout sentence came from a third-party page, gigs.sh/p/drivendata — weak source)
-- Zindi described as part of the 2018-2020 wave of platforms. No eligibility detail obtained.
-URLs to open: https://www.drivendata.org/competitions/ , https://zindi.africa/competitions ,
-https://www.aicrowd.com/challenges , https://mlcontests.com/state-of-machine-learning-competitions-2025/
-
-## S4 — Numerai (the only continuous, fully-software line in this criterion)
-
-Query: Numerai tournament payouts NMR stake 2026 ... plus RENDERED page:
-https://raw.githubusercontent.com/numerai/docs/master/numerai-tournament/staking.md  (RENDERED — strong)
-
-From the rendered staking doc:
-- Payout = stake x clipped payout_factor x score, **capped at ±5% per round**.
-- Score = (20-day correlation x corr multiplier) + (20-day MMC x MMC multiplier).
-- Negative scores **burn** staked NMR. You must have capital at risk to earn anything.
-- payout_factor = min(1, stake_threshold / total_at_risk); thresholds Numerai 72,000 NMR,
-  Signals 36,000, Crypto 10,000. More total staking => smaller individual payouts.
-- Minimum stake 0.01 NMR.
-- "staking availability depends on your region" — **no country list given in the doc**. Israel status
-  therefore UNKNOWN.
-SNIPPET (blog.numer.ai): "Numerai paid out $182,039 worth of NMR in January (2026)" across all users.
-SNIPPET (docs): withdrawal restriction — account must be 30 days old, or withdraw more than 0.1 NMR.
-URLs to open: https://numer.ai/terms , https://docs.numer.ai/numerai-tournament/staking
-
-Economic reading: $182k/month paid across the entire global modeller population against thousands of
-stakers. A new entrant with zero capital earns exactly zero. This is a return on staked crypto, not a
-prize — closer to running a small quant book than to winning a competition, and it can lose principal.
-
-## S5 — Kaggle Community Competition Creator Prize
-
-Query: "Kaggle" "Community Competition Creator Prize" rules amount how much paid eligibility
-SNIPPETS quoting kaggle.com:
-- "up to five $5,000 monthly prizes (one per month) to Kaggle Community Competition hosts who create
-  high-quality Community Competitions"
-- "At the end of five months, the Kaggle team, at their sole discretion, may select one competition for
-  consideration to become a Featured Competition"
-- Eligibility: worldwide except Crimea/DNR/LNR, Cuba, Iran, Syria, North Korea. => **Israel eligible.**
-This is the single most agent-shippable item in the whole criterion: producing a well-designed community
-competition (original dataset + task + baseline notebooks + clear rules) is pure software work.
-BUT: "up to five monthly prizes" reads like a **time-boxed five-month program**, and the announcement
-thread (kaggle.com/general/309836) is old. I could not confirm the program is still live in 2026.
-URLs to open (BLOCKING QUESTION): https://www.kaggle.com/community-competition-creator-prize and
-https://www.kaggle.com/community-competition-creator-prize-rules
-
-## S6 — ARC Prize 2026
-
-Query: ARC Prize 2026 rules eligibility open source paper award compute limit Kaggle efficiency prize payout international
-SNIPPETS (arcprize.org + kaggle.com pages):
-- Total prize pool stated as $2,000,000 in one snippet and $700,000 in another — **inconsistent, unresolved**.
-- Tracks: ARC-AGI-2, ARC-AGI-3, Paper Track. Paper Track headline "$75,000 awards" (one third-party page
-  said "$450,000 Kaggle Hackathon").
-- **"Papers scoring above 4.5/5 on the evaluation rubric qualify for a $375,000 bonus pool (divided
-  equally among all qualifying papers)."** This is the only non-winner-take-all structure I found in the
-  whole criterion: you do not have to beat anyone, you have to clear a bar.
-- Paper submissions must be linked to a Kaggle code submission (ARC-AGI-2 or -3) "though the code
-  submission need not achieve a high score to be eligible."
-- All submitter-authored code must be open sourced under CC0/MIT-0 before receiving private scores.
-  Third-party code must be under a public-sharing licence.
-- Teams up to eight members.
-- ARC-AGI-2 objective: 85% on the private eval set **within the Kaggle efficiency limits** => solutions
-  run on Kaggle-provided compute, so marginal compute cost to the entrant is ~zero for that track.
-- Milestone dates: 2026-06-30 (passed) and 2026-09-30 (open as of today).
-URLs to open: https://arcprize.org/competitions/2026/paper ,
-https://www.kaggle.com/competitions/arc-prize-2026-paper-track ,
-https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2
-
-## S7 — Kaggle prize payment mechanics
-
-Query: Kaggle winner prize payment process W-8BEN wire transfer international winners ... GPU quota
-SNIPPETS quoting Kaggle rules text:
-- "Prizes will be awarded within approximately thirty (30) days after receipt by Competition Sponsor or
-  Kaggle of the required Prize acceptance documents."
-- "Payments to potential winners are subject to the express requirement that they submit all
-  documentation requested ... for compliance with applicable state, federal, local and foreign
-  (including provincial) tax reporting and withholding requirements."
-- "All taxes imposed on prizes are the sole responsibility of the winners." US residents get a 1099.
-- Failure to provide documentation => prize forfeited, alternate winner selected.
-- Winners of many competitions must also deliver Winning Model Documentation and open-source-licence the
-  solution (https://www.kaggle.com/WinningModelDocumentationGuidelines).
-NOT CONFIRMED: the exact form for a non-US individual (W-8BEN is the standard IRS form for this but I got
-no snippet naming it), and Kaggle's free GPU quota in hours. Do not quote a GPU-hours number from me.
-URLs to open: https://www.kaggle.com/general/17952 (payment schedule),
-https://www.kaggle.com/docs/competitions , https://www.kaggle.com/docs/notebooks (accelerator quota)
-
-## S8 — Largest pools
-
-Query: 2026 open AI benchmark bounty prize competition ... AIMO / Konwinski
-SNIPPETS:
-- AIMO Prize (XTX Markets): $10M challenge fund; $5M grand prize for the first publicly-shared AI model
-  at IMO gold standard; up to $5M in progress prizes. Progress Prize 2 winner took "just over a quarter
-  of a million dollars" with 34/50.
-- **AIMO Progress Prize 3: prizes totalling $2,207,152, 110 original problems, ends April 2026** — i.e.
-  it CLOSED roughly five months before today's date. No successor confirmed.
-- Konwinski Prize edition 1: winner took $50k for resolving 8% of GitHub issues in the test set.
-URLs to open: https://aimoprize.com/ , https://www.kaggle.com/competitions/konwinski-prize/rules
-
-## Honest read of the whole criterion
-
-1. **Prize competitions are lottery-shaped and lump-sum. They are structurally the wrong instrument for a
-   20,000 ILS/month recurring target.** Even a win produces one payment ~30 days after paperwork, then
-   nothing. Nothing here compounds.
-2. **Winner-take-all against the world.** BirdCLEF-class competitions draw 1,000-3,000 teams; the money
-   goes to the top 3. A no-brand new entrant's expected monthly value is ~0 ILS, and honesty requires
-   saying that rather than multiplying a prize by a hopeful probability.
-3. The two structures that are NOT winner-take-all are the only ones worth the colony's attention:
-   the ARC Paper Track pooled bonus (clear a rubric bar, share a fixed pool) and the Kaggle Community
-   Competition Creator Prize (judged, one winner per month, far fewer entrants than a leaderboard).
-4. Israel payability is **YES for Kaggle-hosted prizes** (Israel absent from the sanctioned-country list
-   in Kaggle's standard rules, snippet-confirmed on several pages) and **UNKNOWN per-competition** where
-   the host writes US-persons-only rules, and **UNKNOWN for Numerai staking** ("depends on your region").
-5. Compute cost is genuinely low: Kaggle code competitions run on Kaggle-provided accelerators inside
-   efficiency limits (explicit for ARC-AGI-2), so the entrant's marginal compute bill is near zero.
-   Uncapped-compute competitions elsewhere are where the money is lost.
-6. Owner blockers are real but small and one-time-per-prize: the account must be a real person 18+,
-   and any prize requires the owner to personally sign prize-acceptance and tax documents and supply
-   bank details. Agents can do 100% of the modelling and submission; they cannot sign.
+## Judgement against MISSION.md
+The whole criterion is structurally a LOTTERY, not an income line. $16M of global prize money across 390 competitions in 2025 is the entire addressable pool; Kaggle featured competitions routinely draw thousands of teams and pay only the top few; ARC Prize allows $10,000 of runtime cost per submission, i.e. it costs real money to compete. A no-brand new entrant's honest expected monthly revenue is 0 ILS, and the mission counts ledgered transactions, not expected values. Nothing here should be built as a revenue line. The one structurally different item — Numerai bounties — is real, small, paid in an unvalued token, and its "find bugs fast" shape sits one step away from rate-limit abuse that Numerai's own rules forbid, so it is AMBER for automated hunting and must not be recommended as a build.

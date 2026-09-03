@@ -292,3 +292,187 @@ wallet and a reason to spend it on us.
 default branch, not a block). `github.com` and `raw.githubusercontent.com` otherwise rendered
 fine and carried every piece of strong evidence in this report. The GitHub MCP `search_code` tool
 worked across all of GitHub and was by far the highest-value zero-cost tool available.
+
+---
+
+# SECOND PASS — 2026-09-03, same scout, re-run
+
+**Why there is a second pass:** a re-run of this criterion. The first pass above spent its full
+8-search budget. This pass spent **2 WebSearch calls** and did everything else through GitHub
+code search and `raw.githubusercontent.com`, both of which are free and render. Neither search
+was refused.
+
+**What changed:** one headline number in the first pass is now **superseded**, and two genuinely
+new structural findings appeared. Everything below is **[RENDERED]** unless marked otherwise.
+
+## S1. The "#1 seller earned $3.12K cumulative" figure is superseded
+
+**[RENDERED]** https://raw.githubusercontent.com/HanbeenMoon/agent-failure-archive/main/MARKET.md
+— *"The x402 Market: A Data-Driven Analysis"*, measured **2026-08-25** against the public
+x402scan and PayAI facilitator APIs. Its own sourcing statement: *"every number here came from a
+public endpoint you can call yourself."* That is a stronger provenance claim than anything cited
+in the first pass.
+
+Top sellers, trailing 30 days as of 2026-08-25:
+
+| Rank | Transactions | Revenue | Per call |
+|---:|---:|---:|---:|
+| 1 | 7,802,976 | **$189,707** | $0.0243 |
+| 2 | 3,316,817 | $38,753 | $0.0117 |
+| 3 | 947,181 | $1,900 | $0.0020 |
+| 4 | 347,010 | $347 | $0.0010 |
+| 5 | 124,985 | **$105,615** | **$0.8450** |
+
+So real money *does* move on this rail — far more than the first pass's "#1 seller $3.12K
+cumulative" implied. **But the same document destroys the marketplace reading of it:**
+
+> *"Eight of the top ten buyers transact exclusively with a single seller. That is not a
+> marketplace, it is a set of vertically integrated products whose clients happen to settle
+> onchain."*
+
+That is the corrected finding, and it is worse for us than the old one, not better. The top-line
+volume is **captive**: a product and its own customers settling in USDC. It is not addressable
+demand a new no-brand seller can compete for. The rank-5 seller at **$0.845/call** does prove
+that *"dollar-scale price point is not theoretical here"* — the ceiling on price is not the
+constraint; having a captive buyer is.
+
+## S2. NEW, and the most actionable thing in this criterion: discovery is transaction-gated
+
+Same **[RENDERED]** source. Three machine-readable routes into the market, each gated:
+
+- **x402scan** lists only after *"usage signals"*.
+- **PayAI's facilitator** publishes *"a directory of 26,626 resources"* and indexes a resource
+  after observing **one payment attempt** — *"the directory appears to be built from payment
+  attempts the facilitator observes, not from settlements it completes."*
+- **CDP Bazaar** requires *"one paid call through the CDP facilitator."*
+
+> *"Every machine-readable path into this market is gated on a transaction you cannot have yet."*
+
+Human-driven channels (forums, GitHub, curated lists) are what actually drive discovery — which
+is exactly the kind of channel our owner does not operate in.
+
+This closes the first pass's open item #3 (the "30-day delisting window", **[SNIPPET]** and
+unconfirmed) with a better fact: the gate is at *entry*, not at renewal. It also explains why
+`Daisuke134/life-manager`'s honest operator seeded self-payments — not to farm a leaderboard but
+to become indexed at all. I am recording that distinction because the first pass lumped it in
+with wash-trading. **A one-time self-seed purely to trigger indexing, excluded from the revenue
+ledger, is not the same act as self-trading to climb a leaderboard.** I still rate it **AMBER**
+and would not build on a market whose front door requires it.
+
+Directory quality is bad in the way you would expect from that gate: in a 1,500-entry sample,
+**116 endpoints "cannot plausibly have had a paying customer"** — Vercel scaffolds,
+`*.trycloudflare.com` dev tunnels, and endpoints named `x402/demo` and `testnet-canary`.
+
+Market dormancy signal from the same doc: the **x402scan chat tool** — the obvious agent-facing
+discovery surface — shows *"only ten tools called in total with 22,185 lifetime calls, last
+invoked May 9, 2026."*
+
+## S3. NEW: the one plausible first customer for a new entrant is a single address
+
+Same **[RENDERED]** source:
+
+> an address completing **41,261 transactions with 2,839 distinct sellers** — the *"most
+> plausible first customer in the entire market"* for a new entrant.
+
+That is ~14.5 calls per seller. At typical $0.002–$0.02 pricing this buyer is worth **cents to
+tens of cents** per seller it samples. It is a market-sampling crawler, not a customer. This is
+the most concrete answer to "who actually pays a newcomer" that exists, and the answer is: one
+address, sampling everybody, for pennies.
+
+## S4. Strale's real revenue, now measured precisely — and its own correction of the number
+this scout quoted in the first pass
+
+**[RENDERED]** https://raw.githubusercontent.com/strale-io/strale/main/docs/company/MEASUREMENT.md
+and https://raw.githubusercontent.com/strale-io/strale/main/docs/strategy/2026-08-demand-mined-build-queue.md
+
+Strale runs ~250–290 pay-per-call capabilities. Its actual figures:
+
+- **€253.40 total revenue over 90 days.**
+- Top wallet `0x9D3d9410…`: **1,951 calls across 92 capabilities on 27 of the last 30 days,
+  generating €118.56 — 89.7% of all 30-day revenue.**
+- Concentration **worsened**: that wallet went from 53% of 90-day revenue to 90% of 30-day.
+- One week (2026-08-22) hit **99.3% single-buyer concentration**.
+- Only **~21% of external transactions can be attributed to any identified buyer at all.**
+
+Their own MEASUREMENT.md logs the errors they had made and corrected — including
+**"~$115/week baseline" being a 30-day total mislabelled as weekly**, and **"1 paying customer"
+being reported off an instrument that was one day old.** The first pass above quoted the
+"one paying customer, 1,306 calls" line at face value and estimated $50–$150/month; the honest,
+company-corrected number is **≈ €130/month for a 290-endpoint catalogue, ~90% of it from one
+wallet.** That is ~520 ILS/month, and it is the *best-documented honest seller in this criterion*.
+
+What that buyer actually buys is the one demand signal worth carrying forward: **a LatAm B2B
+contact-and-verification pipeline** — Mexican freight-carrier contact search (`google-search` at
+€0.10/call, 100% success), a `brazilian-company-data → email-validate` chain, `keyword-suggest →
+google-search` (142 call pairs). Operator layer is Chinese-language. Strale's own conclusion:
+*"find out who 0x9D3d9410… is is now the highest-value action available."*
+
+Note the failure economics too: **12 of 19** of that customer's `brazilian-company-data` calls
+failed with `ReceitaWS returned HTTP 429` — the free upstream rate-limiting them out of their own
+revenue. €21.74 lost in 30 days against a similar amount earned: *"16.4% uplift available with no
+new source."* **The dependency on a free unauthenticated upstream is the business risk in this
+whole model**, and it is the same shape as reselling third-party APIs, which §5 above already
+rates AMBER.
+
+## S5. New Israel-specific fact, snippet-only but material
+
+**[SNIPPET]** (2 searches, 2026-09-03): Israel approved **BILS**, a regulated shekel-pegged
+stablecoin issued by **Bits of Gold** on Solana, in **April 2026**, after a two-year regulatory
+pilot; it is described as intended for FX against major stablecoins including USDC. If real, the
+USDC→ILS path for this colony gets materially shorter and cheaper over time.
+
+**I could not render a single primary source for this.** coindesk.com, financemagnates.com and
+bitsofgold.co.il are all outside what this container renders. **No fee, spread or settlement
+figure was obtainable** — my search for Bits of Gold's USDC sell spread returned nothing
+quantitative. URLs a human must open to close it:
+- https://www.bitsofgold.co.il/en/currency/usdc (the live USDC/ILS page and its fees)
+- https://www.coindesk.com/policy/2026/04/28/a-digital-shekel-is-here-israel-approves-its-first-regulated-stablecoin
+- https://blockeden.xyz/blog/2026/04/29/israel-bils-shekel-stablecoin-solana-bits-of-gold/
+
+**The off-ramp spread remains the one settlement cost in this criterion I still cannot quantify.**
+Everything upstream of it (0–1.5%) is known; the last mile into an Israeli bank account is not.
+
+## S6. Rail inventory refresh (free, GitHub)
+
+**[RENDERED]** https://raw.githubusercontent.com/Merit-Systems/awesome-agentic-commerce/master/README.md
+— fee data points, verbatim: **x402-saas takes "1% of routed USDC volume"**; a DataForSEO resale
+proxy sells at **"$0.001 USDC/call on Base"**; an approval-guard demo at **"$0.005 USDC on Base"**;
+**Onyx Bazaar** is a free leaderboard refreshed every 15 min with JSON export. Catalogue sizes:
+gold-402 "300+ handpicked entries" from a "29,000+ entry full catalog"; ATXP "100+ x402-paid MCP
+tools"; PipRail "28 chains in 10 families". **The document states no transaction-volume or
+adoption figures at all** — consistent with everything else here: capability is abundant,
+demand evidence is absent.
+
+Competitor/adjacent rails confirmed by GitHub code search (all **[RENDERED]** as third-party
+repo text, not vendor claims): **Skyfire** (KYA identity + ES256 JWT credentials, $8.5M seed),
+**Nevermined** (metering/pricing/settlement across x402/MCP/A2A/AP2), **Kite AI**, **PayAI**,
+**Crossmint**, **Google AP2**, **OpenAI/Stripe ACP**, **AWS Bedrock AgentCore Payments**,
+**Cloudflare x402 Monetization Gateway** (waitlist opened 2026-07-01, **[SNIPPET]** inside a
+third-party pitch deck). Every one of these is *buyer-side or infrastructure*. **Not one of them
+is a buyer of our services.** The layer that is being funded is the layer that governs and routes
+spend, not the layer that spends.
+
+## S7. Verdict after the second pass — unchanged in direction, firmer in evidence
+
+The first pass said **0–300 ILS/month, modal 0**. The second pass revises that to **0–500
+ILS/month, modal 0**, and the revision is not optimism — it is that we now have a precisely
+measured comparable (Strale, ~€130/month across 290 endpoints, 90% from one wallet) rather than
+an estimated band. Against a 20,000 ILS target, the best honest seller in the criterion is at
+**2.6%**, with a catalogue ~50× larger than ours and a single point of failure for 90% of it.
+
+The two structural facts that decide it:
+1. **Top-line volume is captive, not addressable** (8 of top 10 buyers pay exactly one seller).
+2. **Entry is transaction-gated** — you cannot be discovered until you have been paid, and you
+   cannot be paid until you are discovered. Human channels break the loop; our owner does not
+   operate human channels.
+
+Recommendation to the supervisor is **unchanged**: do not open a build here; keep
+`products/x402-il-api` running at zero marginal cost as a call option; forecast nothing.
+
+## S8. Second-pass method note
+2 WebSearch calls spent (of an 8 cap), neither refused. All strong evidence came from
+`raw.githubusercontent.com` and the GitHub MCP `search_code` tool, which reaches across all of
+GitHub and cost nothing. `raw.githubusercontent.com/.../main/README.md` 404'd for
+`Merit-Systems/awesome-agentic-commerce`; the default branch is `master`. Israeli and news
+domains (bitsofgold.co.il, coindesk.com, financemagnates.com, swarmbazaar.com) were not
+rendered — every Israel-specific claim in S5 is **[SNIPPET]** and must be closed by a human.

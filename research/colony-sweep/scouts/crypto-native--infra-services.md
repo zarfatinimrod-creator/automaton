@@ -249,3 +249,209 @@ claiming it here.
 - I did not investigate: Akash/Fluence-style decentralised compute, Arweave/Filecoin storage
   providers, or restaking-based AVS operation (EigenLayer). Those are arguably in-criterion for a
   wider reading of "paid infrastructure" and are genuinely unexamined here, not dismissed.
+
+---
+
+# SECOND PASS — 2026-09-03 (same criterion, the gaps the first pass named)
+
+**Scout:** WORKER-SCOUT `infra-services`, second wave. **Web searches spent: 2 of an 8
+allowance** (deliberately low; the rest of the work was done through GitHub, which costs no
+search budget). The first pass above closed The Graph, POKT, self-hosted RPC resale, Chainlink
+and Celestia. It ended by naming three things it had **not** examined: restaking/AVS operation,
+Filecoin/Arweave storage providers, and Akash-style decentralised compute. It also left the Lava
+stake figure unresolved. This pass closes all four. **Nothing in the first pass is retracted.**
+
+Evidence tiers used below: **(S)** rendered primary source from the platform's own repo;
+**(G)** GitHub code-search snippet of a platform's own repo file (strong — it is the vendor's own
+text, but I did not render the whole file); **(N)** web-search snippet of a page I could not
+render (weakest). Memory is not used anywhere.
+
+## Closed: Lava Network provider stake (the first pass's open question)
+
+The first pass carried a third-party README claiming "50,000 LAVA per chain" and flagged it
+low-confidence. Lava's own docs repo settles it.
+
+- (S) `https://raw.githubusercontent.com/lavanet/docs/main/docs/provider/provider-setup.md`
+  — rendered 2026-09-03: "The amount you will have to stake is determined in the specification of
+  the chain under the `min_stake_provider` parameter." Prerequisites are "A synced node for your
+  target chain", "`lavap` installed", "A wallet funded with LAVA tokens". "a new Provider stake is
+  only applied on the start of the next epoch. Currently, an epoch is defined as 30 blocks."
+- (G) `lavanet/docs` `docs/specs/spec-guide.md`: `"min_stake_provider": { "denom": "ulava",
+  "amount": "50000000000" }` = **50,000 LAVA**.
+- (G) `lavanet/docs` `docs/specs/spec-reference.md`: `"amount": "5000000000"` = **5,000 LAVA**.
+- (G) `lavanet/docs` `docs/provider/provider-setup.md` and `provider-features.mdx` stake example:
+  `lavap tx pairing stake-provider "ETH1" "50000000000ulava" ...` — the worked example for
+  Ethereum is 50,000 LAVA.
+- (G) `lavanet/docs` `docs/intro/faq.md`: "No registration is required. Lava Network is
+  permissionless - anyone can join as a Lava RPC Node Provider."
+- (G) `lavanet/docs` `docs/provider/provider-rewards-service.md`: providers earn from
+  "subscriptions, commission on restaked LAVA, Lava Public RPC Pools and variable Provider Drops",
+  and "A subscription is not to an individual Provider, and this 95% is shared between all
+  Providers who have served the relays under that subscription".
+
+**Verdict.** The third-party 50,000-LAVA figure is **corroborated by Lava's own docs** as the
+per-chain spec value for a major chain, though the parameter is per-chain and one spec example is
+5,000. It is permissionless — but note what the provider is actually required to have: *a synced
+node for the target chain*, i.e. exactly the $500–1,500/month box the first pass already priced.
+Lava does not remove the hardware cost, it adds a token stake on top of it, and then shares the
+subscription pool across every provider who served relays. Same inverted-margin shape as POKT.
+**Honest ceiling: negative.** ToS GREEN (permissionless by the vendor's own FAQ), payability YES
+(LAVA to a wallet), but the line does not pay.
+
+## New: EigenLayer / EigenDA operator (restaking AVS) — DEAD, doubly gated
+
+- (S/G) `Layr-Labs/eigencloud-docs` `docs/eigencloud/legal/terms-of-service.md`: "By opting in to
+  secure an AVS, the Operator agrees to be subject to the technical parameters, operating
+  requirements, and rewards structure defined by the AVS Provider for that AVS ('AVS Conditions').
+  These may include, without limitation, reward structures, minimum uptime thresholds, performance
+  benchmarks, penalties for violations of AVS Conditions, hardware and software requirements. **AVS
+  Conditions are determined independently by each AVS Provider and enforced by the Protocol.**"
+  Penalties "may include ejection of the Operator from the Operator Set, forfeiture of rewards or
+  reduced compensation."
+- (S) `https://raw.githubusercontent.com/Layr-Labs/eigencloud-docs/main/docs/eigenda/operator-guides/run-a-node/registration.mdx`
+  — rendered 2026-09-03: operators must "have a minimum amount of stake delegated within each
+  quorum to be registered"; "If you attempt to opt-in to both quorums ('0,1') you must have
+  sufficient TVL to opt-in to the active Operator set for both quorums, otherwise the entire
+  opt-in attempt will fail for both quorums"; churn errors instruct you to "increase your
+  Operator's delegated TVL to the required minimum and retry"; "Following ejection from a quorum,
+  there is a cooldown of 3 days on mainnet".
+
+**Verdict.** This is the same trap as Chainlink, wearing different clothes. The *operator set is
+capped* and entry is by **out-staking an incumbent** — and the stake is *delegated* TVL, meaning
+you must persuade restakers to delegate to you. That is a marketing-and-relationships job, which
+MISSION.md forecloses. On top of that, each AVS sets its own admission conditions unilaterally.
+**Honest ceiling: ₪0. Not a build.** ToS GREEN as written (operating is permitted), but
+unreachable. **What a human should open to double-check:** `docs.eigencloud.xyz/products/eigenda/
+operator-guides/requirements/protocol-SLA` (named in the ToS itself; egress-blocked here).
+
+## New: Filecoin classic storage provider (sealing) — DEAD on capital
+
+- (G) `filecoin-project/filecoin-docs` `storage-providers/infrastructure/reference-architectures.md`:
+  "PoST workers require **128 GiB of memory at the minimum** and require a capable **GPU with 10GB
+  of memory and 3500 or more CUDA cores**"; "The first critical hardware component for PC1 is the
+  CPU. This must be a CPU with SHA-256 extensions. Most storage providers opt for **AMD Epyc**
+  (Rome, Milan or Genova) processors".
+- (G) same repo, `storage-providers/architecture/sealing-pipeline.md`: "Sealing several sectors
+  multiplies the requirements on CPU cores, RAM, and scratch space by the number of sectors being
+  sealed in parallel."
+- (G) same repo, `storage-providers/filecoin-economics/fil-collateral.md`: "_Initial pledge
+  collateral_, an initial commitment of FIL that a miner must provide **with each sector**."
+
+**Verdict.** Epyc + datacentre GPU + 128 GiB + per-sector FIL pledge. This is a hardware business
+with a token deposit attached. **Honest ceiling: negative.** Not a software-only line at all.
+
+## New: Filecoin PDP / Warm Storage provider — the interesting one, and still not a build
+
+This is the closest thing in the whole criterion to a cheap door, and it deserves to be recorded
+carefully because it will look attractive to the next scout.
+
+- (S) `https://raw.githubusercontent.com/filecoin-project/filecoin-docs/main/storage-providers/pdp/install-and-run-pdp.md`
+  — rendered 2026-09-03. Hardware, verbatim: "**RAM**: 32 GiB+ / **CPU**: 8 Core+ / **Storage**:
+  1 TiB Fast storage (NVMe/SSD), 10 TiB Long-term storage (HDD)". Working balance: "we recommend
+  **8 FIL for Mainnet** & 5 tFIL for Calibration to ensure uninterrupted PDP operation during
+  initial setup and testing." Providers set their own price: "Select **Update PDP Offering** and
+  set ... **Storage Price (USDFC per TiB per day)**", registering through "the on-chain FWSS
+  contract".
+- (G) `filecoin-project/filecoin-docs` `build/cookbook/filecoin-pin/getting-started.md`: "Deposit
+  USDFC into Filecoin Pay so storage providers can be paid." Payment is a **stablecoin stream to a
+  wallet** — no bank, no platform payout, no country gate.
+
+That all reads permissionless. **It is not.** The decisive clause is in the SDK's own docs:
+
+- (S) `https://raw.githubusercontent.com/FilOzone/synapse-sdk/main/docs/src/content/docs/core-concepts/storage-providers.mdx`
+  — rendered 2026-09-03: "Satisfying the Dealbot criteria makes a provider *eligible*, but
+  **approval is not automatic**." A **SAFE multisig controls the on-chain approved set** and must
+  sign off on additions or removals. Endorsement is stricter still: "Endorsement is granted and
+  removed **manually**; there is no automated path to endorsement", and endorsed providers "commit
+  to operational standards beyond automated quality checks, such as **support response times and
+  incident handling**". Selection consequence: "The Synapse SDK places at least one replica of your
+  data with an **endorsed** provider by default (the primary copy)"; approved providers get
+  "secondary copies"; non-approved providers are "not selected by the SDK".
+- (G) `FilOzone/filecoin-services` `service_contracts/src/FilecoinWarmStorageService.sol`:
+  "// Approved provider list  mapping(uint256 providerId => bool) internal approvedProviders;"
+  and `service_contracts/tools/warm-storage-manage-approved-provider.sh` — an owner-run script to
+  "Inspect and manage FWSS approved provider IDs".
+- (G) `FilOzone/dealbot` `apps/web/src/pages/Landing.tsx`: DealBot "computes stats for each SP to
+  help determine which SPs are **eligible for approval** in Filecoin Warm Storage Service
+  contracts."
+- (N) Demand side, search snippet 2026-09-03 (I could not render filecoin.io — egress-blocked):
+  early metrics from the January 2026 mainnet launch reported as "over 100 teams building on FOC,
+  **49.41 TiB of data across 478 datasets**, 81 connected payment wallets". Acceptance criteria
+  quoted in the same snippet: "storage success rate of 95%+, PDP fault rate below 1%, and
+  retrieval success rate above 95%". Sources listed: `https://www.filecoin.io/blog/filecoin-onchain-cloud-is-live-on-mainnet`,
+  `https://docs.filecoin.cloud/developer-guides/storage/storage-costs/`, `https://filecoin.cloud/service-providers`.
+  **Snippet-grade — a human must open those three to confirm.**
+
+**Verdict.** Two independent kills. (1) **Admission is a human committee.** Passing DealBot makes
+you *eligible*; a SAFE multisig decides, and the tier that actually receives primary traffic is
+granted "manually" and expects "support response times and incident handling" — a human on call.
+MISSION.md forecloses both. (2) **The demand is not there yet anyway.** 49 TiB across the entire
+network: even at a generous price this is a few hundred dollars a month spread over every provider
+on it, against 10 TiB of HDD and a machine running 24/7. **Honest ceiling: ₪0.** Payability YES
+(USDFC to a wallet). ToS GREEN. **Not a build.**
+
+## New: Akash Network provider (decentralised compute) — DEAD on demand
+
+- (N) Search snippet 2026-09-03, Messari "State of Akash Q1 2026": network-wide **lease revenue
+  $253,250 in Q1 2026, down 45% quarter-over-quarter**; all-time compute spend crossed $5M in the
+  first 90 days of 2026. Sources listed: `https://messari.io/report/state-of-akash-q1-2026-final`,
+  `https://akash.network/blog/akash-network-q1-2026-report/`. **Snippet-grade; a human should open
+  the Messari report.** Note also that a provider-profitability calculator exists as a third-party
+  site (`https://akashcalculator.com/`) — I did not render it and do not rely on it.
+
+**Verdict.** ~$84k/month of lease revenue **across every provider on the network**, shrinking
+45% QoQ, in a business where the entrant must buy or rent GPUs first. The arithmetic is the same
+one that killed The Graph in the first pass. **Honest ceiling: negative.**
+
+## New: AR.IO gateway operator (Arweave gateways) — permissionless, but no buyer
+
+- (S) `https://raw.githubusercontent.com/ar-io/docs/main/content/build/run-a-gateway/join-the-network.mdx`
+  — rendered 2026-09-03: "To join the network as a gateway operator, you need **20,000 ARIO
+  tokens** as the minimum stake requirement." Requires "a fully functional ar.io Gateway running
+  with a custom domain and SSL certificates". Registration is direct, via the Network Portal or
+  CLI, with no approval step. "You will begin to receive rewards based on your gateway performance."
+- (G) `ar-io/docs` `content/build/run-a-gateway/manage/troubleshooting.mdx`: "There is a **30 day
+  locking period** when withdrawing delegated stake or excess operator stake from your gateway.
+  This locking period can be skipped, for a fee. The fee starts at **50% of the withdrawal
+  amount**."
+- (G) `ar-io/docs` SDK page: `new ARIOToken(10_000)` is commented "minimum operator stake allowed"
+  — i.e. 10,000 ARIO is the floor to *remain* staked, 20,000 to *join*. Both numbers are the
+  vendor's own text; I did not reconcile the difference and a human should.
+
+**Verdict.** Genuinely permissionless — which is a real and rare finding in this criterion. But
+read what the operator is paid *by*: "rewards based on your gateway performance", assessed by the
+Observer protocol. **That is a protocol emission, not a customer.** No nameable buyer sends money;
+the income is a token distribution whose value is the ARIO price, exit is locked 30 days (or 50%
+haircut), and the operator must run a bandwidth-heavy public gateway serving Arweave data for free
+to the public. This is a token-yield position wearing an infrastructure costume, and MISSION.md's
+ledger wants platform transaction ids from buyers. **Honest ceiling: unknown, and structurally not
+customer revenue. Not a build.**
+
+## The pattern, restated with the new evidence
+
+The first pass named the pattern: paid crypto infrastructure sells a commodity at a price set by a
+venture-subsidised free tier or a token emission, below the operator's hardware cost. Six more
+lines confirm it, and this pass adds a **second, independent gate** that was not visible before:
+
+> Wherever the *hardware* bar is low enough for a software-only operation — Graph Horizon's 555
+> GRT services, Filecoin PDP's 32 GiB box, EigenDA's opt-in — the **admission** bar is a human:
+> a SAFE multisig, a delegated-TVL churn auction, an AVS provider's private conditions, a beta
+> allowlist. And wherever admission is genuinely open — Lava, AR.IO, POKT — the **payment** is a
+> shared emission pool, not a buyer.
+
+Cheap-and-open and paying-by-a-customer are, across every line examined in two passes, mutually
+exclusive. That is a strong enough regularity that the colony should treat "run paid crypto
+infrastructure" as **closed** and stop re-searching it, unless a specific named consumer appears
+first and asks us to serve them.
+
+## Honest limits of this second pass
+
+- 2 web searches used; **no search was refused**. Everything else came from GitHub.
+- Snippet-grade and therefore most in need of human verification: the Akash Q1 2026 lease-revenue
+  figure ($253,250, Messari), and the Filecoin Onchain Cloud 49.41 TiB / 478 datasets figure.
+- I rendered no vendor website. filecoin.io, akash.network, docs.eigencloud.xyz, docs.lavanet.xyz,
+  ar.io and messari.io are all egress-blocked from this container. Every (S) source above is a
+  file in the platform's own public GitHub repository.
+- Still unexamined in this criterion, honestly: Livepeer orchestrators, Hyperlane/LayerZero
+  relayers, Walrus/Irys storage, and Solana RPC "shared-node reseller" programs. I judged them
+  likely to repeat the same pattern but I did not check, and that judgement is not evidence.

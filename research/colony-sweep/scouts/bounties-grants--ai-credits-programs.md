@@ -187,3 +187,96 @@ community grant request) because it has literally zero owner blockers and can be
 agent — and even that is worth doing only if a product actually needs GPU inference, which today none
 does. Everything else in this criterion demands an incorporated company, a pitch, or a VC, and returns
 infrastructure we are not short of.
+
+---
+
+# WAVE 2 PASS — 2026-09-03 (second scout run on the same criterion)
+
+The wave-1 notes above stand. This pass did NOT re-search what wave 1 already covered. It spent
+**2 web searches** (of the 8 cap) and used free GitHub/raw fetches and `search_code` for everything
+else, to close the two things wave 1 left open:
+(a) does anything in this criterion actually reduce **LLM token cost**, which is our real bill?
+(b) is Microsoft Founders Hub open to Israel?
+
+## New sources actually fetched this pass
+- [R-vendor, STRONG] https://raw.githubusercontent.com/cloudflare/cloudflare-docs/production/src/content/docs/workers-ai/platform/pricing.mdx
+  — Cloudflare's **own** docs repo. "10,000 Neurons per day at no charge" on both Free and Paid
+  Workers plans; beyond that **$0.011 / 1,000 Neurons**, and overage requires the Workers **Paid**
+  plan (Free-plan accounts are hard-capped at the daily allowance, they cannot buy more).
+- [R-vendorish] https://raw.githubusercontent.com/t3-sh/cloudcredits.io/main/src/content/programs/cerebras/cerebras-free-llm-credits.yaml
+  — "1,000,000 free tokens per day", overage $0.50/M, **open to all developers**, API key on signup,
+  **no waitlist, no approval, no company**. Sources: https://cloud.cerebras.ai/ , https://cerebras.ai/build-with-us
+- [R-vendorish] https://raw.githubusercontent.com/t3-sh/cloudcredits.io/main/src/content/programs/openai/openai-data-sharing-and-complimentary-tokens-program.yaml
+  — OpenAI **Data Sharing / complimentary tokens**. Usage tiers 1–2: up to **250,000 tokens/day** on
+  gpt-4.5-preview / gpt-4.1 / gpt-4o / o1 / o1-preview and up to **2,500,000 tokens/day** on the mini
+  models; tiers 3–5: 1M/day and 10M/day. Refreshes daily 00:00 UTC. Price of admission: you share
+  "feedback, evaluation data, **prompts, completions**, and API usage traces" with OpenAI. Not
+  available with Zero Data Retention or certain Enterprise plans. Opt in/out at
+  https://platform.openai.com/account/data-sharing
+- [R-vendorish] .../cloudflare/cloudflare-for-startups.yaml — up to $250,000 Flex Usage credits
+  (R2 capped at $10,000), 1 year, non-transferable, **not redeemable for cash**. Eligibility:
+  software product, founded <5 years, "valid website and email address", free Cloudflare account
+  **with a valid credit card**, plus an application form. https://www.cloudflare.com/forstartups/
+- [R-vendorish] .../elevenlabs/elevenlabs-grants.yaml — 3 months free Business tier, 11M characters
+  /month (33M total), ≤25 employees, pre-seed–Series A, "global applicants", rolling.
+  https://www.elevenlabs.io/grants
+- [R-vendorish] .../mistral/mistral-ai-ambassador-program.yaml — free API credits **in exchange for**
+  at least one technical content piece / event / community-support activity **per month**, prior
+  public advocacy required, six-month term **August 2025 – January 2026**, application deadline
+  **1 July 2025**. i.e. expired, and structurally a promotional-labour contract.
+- [R-vendorish, via search_code fragment] .../adaline/adaline-api-credits-program.yaml — claims
+  $10,000 API credits to the "first 100 eligible **team workspaces**". Not read in full.
+- [R-vendorish, via search_code fragment] .../lamini/lamini-on-demand.yaml — "$300 free credit upon
+  signup", $0.50/M inference tokens.
+- [S] Microsoft for Startups Founders Hub geography — snippets say Founders Hub requires HQ in an
+  Azure-supported country (140+), and Microsoft runs a dedicated Israel arm
+  (https://www.microsoftrnd.co.il/MFS). Israel is therefore **almost certainly eligible**, but no
+  official country list was rendered. Still UNKNOWN-leaning-YES; close it at
+  https://www.microsoft.com/en-us/startups
+- [S] Cerebras terms — https://d7umqicpi7263.cloudfront.net/eula/... and
+  https://discourse.cerebras.net/tos say the service is subject to OFAC/EAR and users must not be
+  sanctioned parties. No country list rendered. Israel is not an OFAC-embargoed jurisdiction, so
+  eligibility is expected, but that last step is **inference, not evidence**.
+
+## Searches run this pass (2)
+1. Microsoft for Startups Founders Hub eligible countries list Israel eligibility 2026
+2. Cerebras Cloud free tier terms of service restricted countries Israel available
+
+## What changed in the conclusion
+Wave 1 concluded "credits do not touch our real cost". That is **right about grants and wrong about
+free tiers**. Three no-blocker, no-company, no-application lines DO cut real marginal cost:
+1. **Cerebras** — 1M tokens/day free inference on open models. Zero owner blockers.
+2. **Cloudflare Workers AI** — 10,000 neurons/day free, and our products already sit on Cloudflare-
+   shaped infrastructure. Zero owner blockers.
+3. **OpenAI data-sharing tokens** — the largest free allocation of the three, but it is paid for in
+   **user data**. Our shipped products handle Israeli SMB tax/VAT inputs. Piping buyer data into a
+   training-data-sharing programme to save token cost would be selling out the buyer's privacy for
+   our own margin. Under the constitution ("no deceiving a buyer") that is **AMBER and not to be
+   used on any buyer-supplied data**. It is defensible only on internal, synthetic, non-customer
+   workloads, and only if we say so plainly.
+None of the three is revenue. All three are cost floor. That distinction is the useful output of
+this criterion.
+
+## Additional dead ends found this pass
+- **Mistral Ambassador Program is expired and, worse, is unpaid promotional labour** — monthly
+  content and event presence in exchange for credits, explicitly "no direct financial payment". Two
+  independent disqualifications against the mandate.
+- **Cloudflare for Startups' $250,000 is a headline, not an offer**: R2 capped at $10,000, credits
+  expire in 12 months, are non-transferable and explicitly cannot be redeemed for cash, and the
+  application asks for product and team details. It also demands a credit card on file.
+- **Adaline's $10,000 is scoped to "team workspaces"** and to the first 100 — a solo builder is a
+  poor fit and the offer is likely already exhausted. Not pursued.
+- **The GitHub tree page for the programmes directory truncates at ~100 entries** and the WebFetch
+  summariser hallucinated an entire fake alphabetical word list when pushed past the truncation.
+  Do not trust a WebFetch summary of a truncated GitHub tree. Use `mcp__github__search_code` with
+  `repo:` + `path:` filters instead — it reaches the whole repo and costs no search budget. That
+  is how the OpenAI entry was found; the tree listing never showed it.
+- Searches were not refused this pass.
+
+## Recommendation to the supervisor (wave 2)
+Unchanged on grants: **do not spend colony hours applying for anything**. Every programme with a
+number worth having wants an incorporated entity, a website, a form, or a relationship.
+Changed on free tiers: **wire Cerebras and Cloudflare Workers AI in as fallback inference lanes for
+non-Claude-critical work** (classification, extraction, bulk enrichment in products/apify-il-open-data
+and the Telegram bot). That is a build task under 40 hours with zero owner blockers and it lowers the
+only cost that actually scales with our traffic. Do **not** enable OpenAI data sharing.

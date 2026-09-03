@@ -236,3 +236,128 @@ are exactly the saturated categories E1 warns about — do not enter those.
   `TheoryofShadows/Mcp` (MARKET.md), `Deesmo/Arch-AI-Tools` (for-providers.html,
   migrate-from-rapidapi.html)
 - /home/user/automaton/research/colony-sweep/scouts/payment-rails--paypal-israel.md (sibling scout)
+
+---
+
+# ADDENDUM — second pass, same day (2026-09-03)
+
+This criterion had already been swept earlier today by the same scout slot (everything above).
+That pass spent the full 8-search cap. Re-spending 8 searches on an already-covered criterion
+would have burned shared budget for answers already on disk, so this pass spent **1 WebSearch**
+and did the rest through **free GitHub code search** (`mcp__github__search_code`), which costs
+nothing against the shared budget. It closed three of the open questions and — more importantly —
+found the first **real, dated, named-seller revenue series** for a RapidAPI listing.
+
+## New evidence
+
+### E9 (STRONG — rendered, primary, a real seller's own published books)
+`mtlynch/mtlynch.io` — Michael Lynch's monthly retrospectives, checked into a public repo,
+each one publishing his actual RapidAPI earnings for **Zestful**, a niche ingredient-parsing API.
+Rendered as GitHub code-search fragments on 2026-09-03. Source files:
+- `content/retrospectives/2020/01/index.md` … `2021/04/index.md` (repo `mtlynch/mtlynch.io`,
+  repo id 92781049; browsable at https://github.com/mtlynch/mtlynch.io/tree/master/content/retrospectives)
+
+Actual monthly **RapidAPI** earnings, as published by the seller:
+
+| Month (revenue month) | RapidAPI earnings |
+|---|---|
+| Nov 2019 | $65.33 |
+| Dec 2019 | $50.43 |
+| Jan 2020 | $79.67 |
+| Feb 2020 | $2.27 |
+| Mar 2020 | $3.67 |
+| Apr 2020 | $32.19 |
+| May 2020 | $6.48 |
+| Jun 2020 | $5.86 |
+| Jul 2020 | $18.05 |
+| Aug 2020 | $9.36 |
+| Sep 2020 | $12.27 |
+| Oct 2020 | $35.05 |
+| Nov 2020 | $28.37 |
+| Dec 2020 | $103.33 |
+| Feb 2021 | $32.52 |
+| Mar 2021 | $21.97 |
+
+Range **$2.27 – $103.33/month**, median in the **$10–$35** band. His own words:
+- 2020-10: *"Pay-as-you-go usage continues to generate $10-$50/month silently in the background."*
+- 2020-11: *"Zestful continues its multi-month streak of sub-$100 revenue from low-volume clients."*
+- 2021-04: *"bringing in slightly more than the $7/month it costs me to run it on Heroku."*
+- 2021-01: the $103.33 spike — *"95% of that came from a single user who seems to have used
+  Zestful in a one-off bulk parsing."* i.e. the good month was one whale doing one bulk job.
+
+**The structural finding, and it is the most important thing in this whole criterion:**
+the same tables carry a separate line, **"Enterprise Plan Earnings"** — $3,883.70 (Dec 2019),
+$679.40 (Jul 2020), $872.63 (Dec 2020). Those are **10x–100x the marketplace line**, and they came
+from **inbound enterprise inquiries he negotiated as a human** ("Three customers requested
+Enterprise pricing"; "I got an unexpected spike of inbound inquiries for enterprise plans").
+So on RapidAPI the *self-serve marketplace* pays tens of dollars a month and the *money* is in
+human-negotiated enterprise contracts. Under MISSION.md the owner does not negotiate, does not
+sell and does not talk to people — **which means our operation is structurally locked out of the
+only part of this channel that ever paid well.** This is a caveat on data, not an opinion.
+
+Caveat on the data itself: it is 2019–2021, i.e. pre-Nokia and pre-enshittification. E1 (above)
+says discoverability has since got *worse*, not better. So treat this range as an **optimistic**
+ceiling for a cold 2026 listing, not a conservative one.
+
+### E10 (WEAK — third-party agent-authored skill doc, not a first-party quote)
+`arthrod/redline-endpoint` → `.claude/skills/rapidAPI/SKILL.md` and `troubleshooting.md`,
+rendered 2026-09-03:
+- *"Payouts processed monthly for previous month's revenue"*
+- *"Minimum payout threshold: $50"*
+- *"Payment methods: PayPal, bank transfer (availability varies by region)"*
+- troubleshooting: *"Verify minimum threshold met ($50)"*
+
+This partially closes open question 8 above (payout schedule + threshold) and adds a **bank
+transfer** option alongside PayPal — but it is a skill file written by an agent, quite possibly
+from the same model memory this scout is forbidden to trust, so it is **weak evidence**. Note it
+also **conflicts** with E1/E3, which said PayPal **only**. Unresolved. The $50 threshold matters:
+at Zestful-scale earnings ($10–35/mo) a provider waits **2–5 months per payout**.
+
+### E11 (MEDIUM — independent research repo, dated entry)
+`tyschacht/nanoclaw_passive` → `content/research/_all-ideas.md` and `content/index.md`,
+rendered 2026-09-03. Entry dated **2026-04-15**, sourced to `api.market/seller` (April 2026):
+- **api.market: 80% revenue share; NOT_VIABLE — "no CLI listing (Import Wizard only)"**;
+  judged "redundant with MCPize/AgenticMarket at worse rev share; same pattern as
+  rapidapi-rest-marketplace-distribution".
+This closes dead-end #7 above (api.market was uninvestigated): 80/20, and **listing is a browser
+wizard, not an API** — a friction point for a software-only operation, though a one-time one.
+Same repo independently classifies the whole `rapidapi-rest-marketplace-distribution` pattern as
+a known, previously-evaluated channel.
+
+### E12 (WEAK — search snippet, 2026-09-03)
+Search "RapidAPI provider monetization new API listing 2026 …" returned, among the results,
+`https://get.rapidapi.com/api-provider` (a live provider-acquisition landing page ⇒ **the provider
+programme is still open**) and `https://rapidapi.com/blog/how-to-monetize-your-api`. The result
+summary states the hub "remains the dominant API marketplace by traffic" while "the public
+marketplace is still accessible but has seen **a significant decline in active API listings and
+developer activity**." Corroborates E1's medium-confidence decline story from a second direction.
+`get.rapidapi.com` was then **fetched and returned EGRESS_BLOCKED** — snippet only.
+
+### E13 (incidental, rendered)
+`mtlynch.io` 2020/09: an alternative marketplace, **Servernope** (servernope.com), onboarded
+Zestful *on the seller's behalf* after he said he had no time to set it up. Evidence that small
+hubs will do the listing work to get supply — a lead for a zero-effort multi-home, but the site
+is unverified and 6 years stale. Not a finding, a note.
+
+## What the addendum changes
+
+- **F1's ceiling is now anchored in real numbers, and it drops.** The earlier pass guessed
+  "~0–800 ILS/month in the first 6 months" with no data. The only real seller series found says
+  **$2–$100/month (≈7–370 ILS)** for a genuinely useful niche API, in a *better* era, and that the
+  serious money required human enterprise sales we cannot do. Revised honest ceiling for a
+  no-brand cold listing: **~0–150 ILS/month**, and often literally single-digit shekels.
+- **Payout threshold $50 (if E10 is right) makes it worse:** at those earnings the money sits
+  unpaid for months, and 25% + processing + PayPal-ILS conversion comes off the top of it.
+- **api.market is no longer an open question:** 80/20, browser-only listing.
+- Conclusion unchanged in direction but firmer in degree: **multi-homing an already-built origin
+  is cheap and worth doing as a distribution experiment (F5), and nothing here should be built
+  *for* these marketplaces.** As a route to 20,000 ILS/month this criterion is a dead end.
+
+## Searches spent this pass
+1 (one) WebSearch. Everything else was free GitHub code search or a blocked fetch.
+
+## Additional URLs rendered this pass
+- GitHub code-search fragments from `mtlynch/mtlynch.io` (content/retrospectives/2020/01…2021/04/index.md)
+- GitHub code-search fragments from `arthrod/redline-endpoint` (.claude/skills/rapidAPI/SKILL.md, troubleshooting.md)
+- GitHub code-search fragments from `tyschacht/nanoclaw_passive` (content/index.md, content/research/_all-ideas.md)
+- https://get.rapidapi.com/api-provider — attempted, EGRESS_BLOCKED

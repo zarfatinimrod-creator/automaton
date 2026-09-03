@@ -1,99 +1,114 @@
 # Scout notes — agent-markets / inference-hosting
-**Criterion:** Hugging Face Spaces and Replicate: monetizable endpoints, pricing mechanics, what earns, payout rails, cost floor of serving a model.
-**Date of research:** 2026-09-03. **Search budget used:** 6 of 8 allowed WebSearch calls.
+Criterion: Hugging Face Spaces and Replicate — monetizable endpoints, pricing mechanics, what earns, payout rails, cost floor of serving a model.
+Date of research: 2026-09-03. Scout model: Opus 5. Web searches spent: 6 of 8 allowed.
 
-## Evidence inventory (kind matters)
+## Evidence-grade key
+- **RENDERED** = I fetched the page and read it.
+- **SNIPPET** = a search result summary quoting a page I could not open. Weaker.
+- Memory is not used as evidence anywhere below.
 
-### RENDERED PRIMARY SOURCES (strong) — huggingface/hub-docs on raw.githubusercontent.com
-All fetched 2026-09-03, `main` branch.
+## Network reality in this container
+- `replicate.com` — **EGRESS_BLOCKED** (verified by attempt).
+- `huggingface.co` — **EGRESS_BLOCKED** (verified by attempt, both /pricing and /terms-of-service).
+- `raw.githubusercontent.com` — works. Hugging Face checks its whole documentation site into
+  `huggingface/hub-docs`, so all HF docs below are primary-source rendered clauses.
+- Replicate has no equivalent public docs repo I could find (`org:replicate` code search for
+  pricing terms returned 0 hits), so every Replicate number below is SNIPPET-grade only.
 
-1. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/spaces-gpus.md
-   - CPU Basic free; CPU Upgrade $0.03/hr.
-   - T4-small $0.40/hr, T4-medium $0.60/hr, 1x L4 $0.80/hr, 4x L4 $3.80/hr, 1x L40S $1.80/hr,
-     4x L40S $8.30/hr, 8x L40S $23.50/hr, A10G-small $1.00/hr, A10G-large $1.50/hr,
-     2x A10G-large $3.00/hr, 4x A10G-large $5.00/hr, A100-large $2.50/hr, 4x A100 $10.00/hr, 8x A100 $20.00/hr.
-   - Billed by the minute while running; build time free. "Upgraded Spaces run indefinitely by default,
-     even if there is no usage" — sleep threshold must be set explicitly or you pay 24/7.
-2. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/billing.md
-   - Three billed areas: subscriptions (PRO/Team/Enterprise), compute usage (Spaces, Inference Endpoints,
-     Inference Providers, Jobs), storage overage $18/TB/month in 1TB increments.
-   - "The only payment method supported for Hugging Face compute services is credit cards." (Stripe.)
-   - **Contains no mention whatsoever of payments to Space authors or creator revenue share.**
-3. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/spaces-zerogpu.md
-   - ZeroGPU = shared NVIDIA RTX Pro 6000 Blackwell, dynamically allocated. Free to host and to use.
-   - Host limits: free verified account (30+ days old) 2 ZeroGPU Spaces; PRO 10; Team/Enterprise org 50.
-   - Daily caller quota: anonymous 2 min, free 5 min, PRO 40 min, Team/Enterprise 40-60 min.
-   - Extra quota purchasable at "$1 per 10 minutes".
-4. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/spaces-api-endpoints.md
-   - "If you can use a Space in your browser, you can call it as an API." Every Gradio Space auto-exposes
-     an OpenAPI spec at `https://<sub>.hf.space/gradio_api/openapi.json`, POST `/gradio_api/call/{endpoint}`
-     then poll/stream the event id. Public Spaces callable with no token; `Authorization: Bearer $HF_TOKEN`
-     for better rate limits; private Spaces need a READ token.
-5. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/spaces-mcp-servers.md
-   - `pip install "gradio[mcp]"` + `launch(mcp_server=True)` turns a Gradio Space into an MCP server with an
-     MCP badge; addable to Claude Code / Cursor / VSCode from Hub MCP settings with a READ token.
-   - "ZeroGPU Spaces consume your quota when called" — i.e. the **caller's** quota, not the host's.
-6. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/spaces-get-user-plan.md
-   - A Space can `window.parent.postMessage({type:"USER_PLAN_REQUEST"})` and receive
-     `{user: "anonymous"|"pro"|"free", plan: undefined|"team"|"enterprise"|"plus"|"academia"}`.
-   - Documented use case: "gate premium features based on subscription tier". This is HF's own docs
-     endorsing premium gating inside a Space — but it gates on *HF's* subscription, and HF pays the author nothing.
-7. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/jobs-pricing.md
-   - Jobs need a positive credit balance. Billed per minute while Starting/Running; build free.
-   - CPU Basic (2 vCPU/16GB) $0.01/hr up to CPU Performance (32 vCPU/256GB) $1.90/hr.
-   - GPU T4-small $0.40/hr up to 8x H200 $40/hr; 8x L40S $23.50/hr. Exposing ports +$0.01/hr.
-   - Default 30-minute timeout.
-8. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/_toctree.yml
-   - Full Spaces/billing/enterprise doc index. There is exactly one billing page and one jobs-pricing page,
-     and **no page named monetization, payout, earnings, marketplace or revenue**. Negative evidence, but from
-     the platform's own table of contents.
+## Primary sources rendered (no search budget spent)
+1. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/spaces-gpus.md — RENDERED
+   Full Spaces hardware price list, billed **per minute**, charged "for every minute the Space runs
+   on the requested hardware, regardless of whether the Space is used". Not billed during builds.
+   - CPU Basic (2 vCPU/16GB) — free, static only; suspends after 48h idle
+   - CPU Upgrade — $0.03/hr
+   - T4 small $0.40/hr · T4 medium $0.60/hr
+   - 1x L4 $0.80/hr · 4x L4 $3.80/hr
+   - 1x L40S $1.80/hr · 4x L40S $8.30/hr · 8x L40S $23.50/hr
+   - A10G small $1.00/hr · A10G large $1.50/hr · 2x A10G $3.00/hr · 4x A10G $5.00/hr
+   - A100 large $2.50/hr · 4x A100 $10.00/hr · 8x A100 $20.00/hr
+   Sleep schedules stop the charge while asleep.
+2. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/spaces-zerogpu.md — RENDERED
+   ZeroGPU daily quota: unauthenticated 2 min, free account 5 min, PRO 40 min, Team 40, Enterprise 60.
+   Extension credits: **$1 per 10 minutes** of ZeroGPU time (PRO/Team/Enterprise only) => $6/GPU-hour.
+   Hardware: `large` = half an RTX Pro 6000 Blackwell (48GB VRAM); `xlarge` = full GPU (96GB), burns 2x quota.
+   Hosting limits: free account 2 ZeroGPU Spaces (verified email, account 30+ days), PRO 10, Team/Enterprise 50.
+   "Remaining quota directly impacts priority in ZeroGPU queues."
+3. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/billing.md — RENDERED
+   "The only payment method supported for Hugging Face compute services is credit cards." Stripe processes.
+   Team subscription also payable by AWS account / AWS Marketplace.
+   Pay-as-you-go services: Jobs, Inference Providers, Inference Endpoints, GPU Spaces, ZeroGPU extra quota,
+   Private Storage. **No mention anywhere of creator payouts or revenue sharing.**
+4. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/inference-providers/pricing.md — RENDERED
+   Monthly credits: Free $0.10 (Inference Providers only), PRO $2.00, Team/Enterprise $2.00 per seat,
+   usable across Inference Providers, Inference Endpoints, upgraded Spaces hardware, Jobs.
+   "Hugging Face charges you the same rates as the provider, with no additional fees. We just pass through
+   the provider costs directly." Custom provider key => billed directly by the provider.
+5. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/inference-providers/register-as-a-provider.md — RENDERED
+   The only documented route by which money flows *to* a third party through HF. Nine steps: implement HF
+   task API schemas; PR into huggingface.js; register model mappings; **expose a billing HTTP endpoint that
+   reports cost in nano-USD per request, which HF polls every minute**; PR into huggingface_hub; server-side
+   registration + SVG icon; provider docs; hub-docs PR; joint promotion. Hard gate: "upgrade their Hub account
+   to a Team or Enterprise plan" before model-mapping registration. Users pay standard provider rates, HF takes
+   no markup. The doc does not say how HF is compensated.
+6. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/spaces-api-endpoints.md — RENDERED
+   "If you can use a Space in your browser, you can call it as an API." Python/JS clients + raw HTTP.
+   Auth header required for private Spaces and gives better rate limits on public ones. ZeroGPU calls consume
+   the **caller's** daily quota, so an unauthenticated third party hitting your Space uses the throttled
+   anonymous pool, not your budget.
+7. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/spaces-mcp-servers.md — RENDERED
+   Gradio Spaces are usable directly as MCP servers by MCP clients; ZeroGPU quota is consumed by the caller.
+   Cited example: a PRO account "lets you generate up to 600 images per day using FLUX.1-schnell" within 40 min.
+8. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/spaces-agents.md — RENDERED
+   "Most popular Spaces run on ZeroGPU, which uses the caller's daily quota. Agents should always pass an
+   `$HF_TOKEN` so calls are billed to your account rather than a throttled anonymous pool."
+9. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/enterprise.md — RENDERED (via code search)
+   Enterprise: "5% of ACV included" as compute credits; other tiers get none, bulk purchase available.
+10. https://raw.githubusercontent.com/huggingface/hub-docs/main/docs/hub/pro.md — RENDERED
+   PRO benefits list; the doc itself does **not** state the price, it links to huggingface.co/pro (blocked here).
 
-### SEARCH SNIPPETS ONLY (weaker — must be marked as such)
-9. WebSearch 2026-09-03, "Replicate pricing per second GPU": snippets citing https://replicate.com/pricing and
-   https://replicate.com/blog/nvidia-l40s-gpus-are-here give public-model rates **L40S $0.000975/sec ($3.51/hr)**
-   and **A100 80GB $0.001400/sec ($5.04/hr)**; a 20s A100 run = $0.028. NOT independently rendered — replicate.com
-   is egress-blocked. A human must open https://replicate.com/pricing to confirm.
-10. WebSearch 2026-09-03, "Replicate deployments idle billing": snippets citing
-   https://replicate.com/docs/topics/billing — public models bill only active prediction time; **private models
-   and deployments bill setup + idle + active** ("you pay for all the time an instance is online"), exception:
-   fast-booting fine-tunes. CPU-only $0.000025/sec ($0.09/hr) small, $0.000100/sec ($0.36/hr) standard.
-   `min_instances: 1` on an H100 deployment ≈ **$36.60/day** (~$1,100/month). Snippet-only.
-11. WebSearch 2026-09-03, "Replicate model authors get paid": the search returned Replicate's own
-   https://replicate.com/docs/topics/models/publish-a-model and .../how-does-replicate-work and the summary was
-   explicit that **no author-compensation or revenue-share information exists in the indexed docs**. Absence of
-   evidence, from the pages where it would live. To close: open https://replicate.com/docs/topics/models/publish-a-model.
-12. WebSearch 2026-09-03, "HF pay Space creators": snippets state HF has **no per-query revenue share** for
-   creators; monetisation is indirect — gate features behind HF PRO, link to your own paid service, or use the
-   Space as a top-of-funnel demo. Sources indexed: sacra.com/c/hugging-face, research.contrary.com/report/hugging-face,
-   valueaddvc.com. Third-party commentary, not HF docs — weak, but consistent with items 2 and 8.
-13. WebSearch 2026-09-03, "HF Inference Providers how providers get paid": snippets citing
-   https://huggingface.co/docs/api-inference/main/en/pricing and https://huggingface.co/blog/baseten —
-   HF is a **routing and billing layer with pass-through pricing and no markup**; partners are fal, Replicate,
-   SambaNova, Together AI, Baseten, Public AI. "In the future HF may establish revenue-sharing agreements with
-   provider partners, but this is not yet implemented." Monthly included credits: free <$0.10, PRO $2.00,
-   Enterprise $2.00/seat. Snippet-only.
-14. WebSearch 2026-09-03, HF ToS on monetizing a Space: no authoritative clause found. Only a forum thread
-   (https://discuss.huggingface.co/t/rules-guidelines-best-practices-for-monetizing-a-hf-space/139230) where users
-   ask the question; no staff answer surfaced in the snippet. **This question is OPEN.**
+## Search-snippet-grade claims (must be closed by opening the URL)
+- Replicate public A100 ~**$0.0014/second** (= $5.04/hr). SNIPPET from
+  https://www.spheron.network/blog/replicate-pricing-2026-per-second-cost/ and
+  https://computeprices.com/providers/replicate . Close by opening https://replicate.com/pricing (blocked here).
+- Replicate L40S / multi-GPU: rates "require committed spend contracts", not published. SNIPPET, same source.
+- HF PRO **$9/month**, Team **$20/seat/month**, Enterprise **$50/seat/month**. SNIPPET from
+  https://comparedge.com/tools/hugging-face/pricing and https://www.eesel.ai/blog/hugging-face-pricing .
+  Close by opening https://huggingface.co/pricing .
+- Whether Replicate shares revenue with model authors: **six searches found no source either way**, and
+  Replicate's own billing/deploy docs are unreachable. One AI-written summary asserted HF "pays via Spaces
+  revenue" — I treat that as unsupported and do not use it. Close by opening
+  https://replicate.com/docs/topics/billing and https://replicate.com/terms .
 
-### BLOCKED (do not retry — EGRESS_BLOCKED confirmed this session)
-huggingface.co, discuss.huggingface.co, replicate.com, techbytes.app, www.spheron.network.
-GitHub MCP is scoped to zarfatinimrod-creator/automaton only; raw.githubusercontent.com is the working channel.
+## Searches run (6)
+1. "Replicate pricing per second GPU Nvidia A100 L40S price 2026"
+2. "Replicate does not pay model authors revenue share creators earn money publishing model" (expanded into
+   several sub-searches by the tool and returned nothing usable — the single most wasteful call of the run)
+3. "Hugging Face become an Inference Provider partner requirements onboard provider revenue"
+4. ""Hugging Face" Spaces monetize paywall Stripe inside a Space allowed terms creator payout"
+5. "Hugging Face PRO subscription price per month 2026"
+(2 counted as multiple internally; treat the budget as spent.)
 
-## URLs a human or unblocked agent must open to close the open questions
-- https://huggingface.co/terms-of-service — is charging your own customers through a Space permitted?
-- https://huggingface.co/content-guidelines — same question, content side.
-- https://replicate.com/docs/topics/models/publish-a-model — does publishing earn anything? (expected: no)
-- https://replicate.com/pricing — confirm per-second rates.
-- https://replicate.com/docs/topics/billing — confirm idle billing on deployments.
+## The load-bearing conclusion
+Neither Hugging Face nor Replicate is an income platform for a model/Space author. Every documented money
+flow points **from** the account holder **to** the platform: Spaces hardware per minute, ZeroGPU credits,
+Inference Endpoints, Jobs, storage, PRO/Team/Enterprise seats. There is no creator payout page, no payout
+settings, no revenue-share clause anywhere in HF's own docs repo — and the only mechanism by which a third
+party gets paid through HF is the Inference **Provider** registration, which is a B2B integration for a
+company that already operates GPU serving, gated behind a Team/Enterprise plan, where HF explicitly takes no
+markup and the provider bills through its own billing endpoint.
 
-## What the numbers mean for the colony
-- **Cost floor of serving a model, honest version:** ~0 ILS/month if you fit on HF CPU Basic or ZeroGPU, because
-  ZeroGPU burns the *caller's* daily quota rather than the host's. The moment you need a dedicated GPU it jumps to
-  a hard $288/month (T4-small always-on) or ~$1,100/month (Replicate H100 deployment with min_instances=1).
-  There is no middle. Everything we ship on these platforms should stay in the free tier by design.
-- **Neither platform is a payout rail.** HF pays authors nothing; Replicate pays authors nothing. Both are
-  *outbound* payments from an Israeli credit card. Any money must arrive through a rail we already own
-  (Paddle, Telegram Stars, Apify pay-per-event, x402).
-- **Reselling raw inference is a dead business.** Our cost equals the public list price of four commodity vendors
-  that HF itself routes to at zero markup. There is no margin and no nameable buyer.
+Therefore payability to Israel is not primarily a platform question here: there is nothing to be paid out.
+Israel-payability only becomes relevant on the *own-rails* layer (Paddle/Stripe/x402), which this repo already
+operates. HF's inbound side is credit-card only via Stripe, which an Israeli card handles.
+
+## Cost floor of serving a model (the number the colony actually needs)
+- Cheapest always-on GPU on HF Spaces: **1x L4 at $0.80/hr = ~$576/month = ~2,100 ILS/month** if never asleep.
+  At an assumed ~3.6 ILS/USD. That is the break-even a hosted-model product must clear before any profit.
+- Cheapest burst GPU on HF: **ZeroGPU at $1/10 min = $6/GPU-hour**, but only when the *operator's* quota is
+  charged; if callers authenticate with their own tokens the compute is free to the operator and rate-limited
+  to the caller (5 min/day free, 40 min/day PRO).
+- Replicate: per-second, no idle charge — SNIPPET $0.0014/s A100. Structurally cheaper than an always-on Space
+  below roughly one-third utilisation; more expensive above it.
+- Consequence: **the only economically sane serving posture for this colony is burst/serverless with the
+  caller's quota or per-second billing, never an always-on GPU Space.** An always-on L4 alone eats 10% of the
+  20,000 ILS target before a single customer.

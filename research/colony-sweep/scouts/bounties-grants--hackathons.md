@@ -1,87 +1,130 @@
 # Scout notes — bounties-grants / hackathons
-Criterion: Online hackathons with cash prizes that accept solo and AI-assisted entries: real prize pools, judging, and how payouts are made.
-Scout: WORKER-SCOUT "hackathons". Date of research: 2026-09-03. Web-search budget used: 8/8.
+**Criterion:** Online hackathons with cash prizes that accept solo and AI-assisted entries: real prize pools, judging, and how payouts are made.
+**Date of research:** 2026-09-03. **Search budget used:** 8 of 8 allowed (hard stop).
 
-## Evidence strength legend
-- **RENDERED** = I actually fetched the page and read it.
-- **MIRROR** = I rendered a third-party GitHub mirror/transcription of an official rules page. Strong wording, but it is somebody else's copy, not the official page. Must be re-confirmed on the official URL.
-- **SNIPPET** = search-result summary quoting a page I could not render (host egress-blocked).
-- Memory is not used as evidence anywhere in this file.
+## Evidence-strength key
+- **[R]** rendered page I actually fetched (strong)
+- **[S]** search snippet quoting a page I could not render (weaker — must be re-opened by an unblocked agent)
+- **[3P]** third-party repo transcribing a platform's rules (medium — verbatim quotes, but not the platform's own server)
 
-## Egress reality
-Blocked (confirmed this session, EGRESS_BLOCKED): help.devpost.com, devpost.com, www.kaggle.com, ethglobal.com, dorahacks.io.
-Working: WebSearch (snippets), github.com API code search, raw.githubusercontent.com.
-Consequence: every official hackathon rules page is unreachable from this container. All rules text below came from GitHub mirrors that participants checked into their own repos, plus search snippets.
+## Hosts that are EGRESS-BLOCKED from this container (no primary source obtainable)
+help.devpost.com, worldslargesthackathon.devpost.com (all *.devpost.com), www.kaggle.com,
+dorahacks.io, microsoft.github.io. github.com and raw.githubusercontent.com DO render and
+carried the only two rendered sources below.
 
-## Sources actually used
-RENDERED (raw.githubusercontent.com):
-1. https://raw.githubusercontent.com/alejandro-publius/blackbox-datahub/61f459076cf5f5d7774e95a91a6b4b478c4d0647/docs/HACKATHON_REQUIREMENTS.md — mirror of https://datahub.devpost.com/rules (participant states all four datahub.devpost.com pages were live-fetched by them).
-2. https://raw.githubusercontent.com/asin2000/forge/fc6c4a18fabb76574c6bd269cc498718d5073af5/docs/HACKATHON-OFFICIAL-REQUIREMENTS.md — mirror of https://allthingsagentichackathon.devpost.com/rules
-3. https://raw.githubusercontent.com/KaustubhUp025/gpuyantra/6bd27b1e415ec3f9689219fe4e2276083d281e8d/submission-docs/01-hackathon-rules-and-evaluation-baseline.md — second independent mirror of the same All Things Agentic rules
-4. https://raw.githubusercontent.com/ducktyper17/velvetmint-diagnostic-agent/16bd3fa83159272a95d2f48224d8dc7d94a09692/00-shared/hackathon-rules.md — mirror of https://rapid-agent.devpost.com/ rules
+## Rendered sources [R]
+1. https://raw.githubusercontent.com/ducktyper17/velvetmint-diagnostic-agent/16bd3fa83159272a95d2f48224d8dc7d94a09692/00-shared/hackathon-rules.md
+   — a participant's transcription of the **Rapid Agent Hackathon** (Devpost, sponsored by Google
+   Cloud + Fivetran/Arize/MongoDB/Elastic/GitLab/Dynatrace). Fetched 2026-09-03. Key content:
+   - **Solo participation: allowed.**
+   - Restricted countries listed: Italy, Brazil, Quebec, Crimea, Cuba, Iran, Syria, North Korea,
+     Sudan, Belarus, Russia, Afghanistan, Antarctica, China, Djibouti, Iraq, Kazakhstan, Somalia,
+     Venezuela, Vietnam, Western Sahara, occupied Ukrainian territories. **Israel is NOT on the list.**
+   - Verbatim AI clause: *"Projects are required to utilize Google Cloud artificial intelligence
+     tools ... All other artificial intelligence tools are not permitted."* Prohibited in-project:
+     OpenAI, Anthropic Claude, Cohere, Mistral.
+   - Requirements: public GitHub repo under MIT/Apache-2.0, working public demo live during judging,
+     ≤3-minute demo video on YouTube/Vimeo, submit ≥48h before deadline.
+   - Judging: Technological Implementation / Design & UX / Potential Impact / Idea Quality, equal weight.
+   - Prize pool amounts were NOT in this document.
+2. https://github.com/otaliptus/effe/blob/master/project_plan_v0.md — a builder's plan for
+   **ETHGlobal HackMoney 2026** (online). Fetched 2026-09-03. Sponsor cash bounties enumerated:
+   Yellow $15,000, Uniswap Foundation $10,000 (two tracks), Sui $10,000, Arc/Circle $10,000,
+   LI.FI $6,000, ENS $5,000 = ~$56,000. Finalist pack: **1000 USDC per finalist team member**,
+   flight reimbursement, AWS credits. Constraints quoted: projects must start from scratch during
+   the event; teams up to 5, each member individually accepted; a small ETH stake to secure a spot.
+   (This is [3P] for ETHGlobal's own rules — it is one participant's reading.)
 
-GitHub code search (rendered result fragments), 2026-09-03, query `"Crimea, Cuba, Iran" hackathon eligibility prize in:file language:markdown` — 77 hits; exclusion-list text quoted from mirrors of:
-- https://arm-ai-optimization-challenge.devpost.com/rules (yuanhawk/latticejack)
-- https://qloo.devpost.com rules (Technikole/FlickyPlots)
-- Google Gemini 3 Hackathon rules (cianfhoghlaim/cianfhoghlaim, BrnEzekiel/fluxOS)
-- Gemini Live Agent Challenge rules (david-ac1/red-eye, nikships/Voidpilot)
-- Chrome Built-in AI Challenge rules (vietanhdev/IntelliPen)
-- an OpenAI-sponsored hackathon rules copy (mylokaye/OpenForm)
-- https://agentic-cinema.devpost.com/rules (ArpitKumar8649/Agentic-Cinema)
-- https://backblaze-generative-media.devpost.com/rules (HawaleShailesh004/provledger)
+## Search-snippet evidence [S] (URL a human/unblocked agent must open to close the claim)
+- Devpost payout mechanics — https://help.devpost.com/article/114-how-to-claim-your-hackathon-cash-prize-winners-only
+  Snippet (2026-09-03): winners get an eligibility-verification email from prizes@devpost.com asking
+  full legal name, date of birth, city/country of residence, sponsor-employee status. International
+  individual winners upload **W-8BEN** (orgs: W-8BEN-E); **non-US winners choose PayPal, Payoneer or
+  Wise**, account must accept USD international transfers with no cap below the prize. Without a
+  W-8BEN, 30% US withholding by default.
+- Devpost generic exclusions — https://worldslargesthackathon.devpost.com/rules
+  Snippet: ineligible = residents of Brazil, Quebec, Russia, Crimea, Cuba, Iran, North Korea, Syria
+  and other OFAC-designated countries. **Israel not listed.** Prize pool "$1M+".
+- Kaggle rules — https://www.kaggle.com/competitions/arc-prize-2025/rules (and generic Kaggle rules)
+  Snippet: entry barred for Crimea, DNR/LNR, Cuba, Iran, Syria, North Korea and OFAC-designated
+  residents; **prizes awarded ~30 days after receipt of prize acceptance documents**; team prizes
+  split evenly unless the team says otherwise; winners bear all taxes and must supply tax documents.
+  **Israel not excluded.**
+- DoraHacks payouts — https://dorahacks.io/blog/news/prize-distribution/
+  Snippet: organizer dashboard prize distribution; **payout services and compliance handled by Merit
+  Systems**; organizer funds by bank transfer or **USDC on Base**; **winners verified through GitHub
+  accounts**. Example pools: Injective Illuminate $100K, DomainFi Challenge $1M+ USDC.
+- ETHGlobal — https://ethglobal.com/events/ethonline2025/prizes and https://ethglobal.com/rules
+  Snippet: finalist team members receive **1000 USDC to verified wallets** (500 USDC at London 2024);
+  Classic track work must begin after the hackathon starts; undisclosed pre-existing work =
+  disqualification, prize revocation, ban.
+- AI-authorship policy — https://www.hackerearth.com/lp/challenges/microsoft-build-ai
+  Snippet: the solution "must clearly demonstrate meaningful human creativity, judgment, and
+  engineering — AI-generated boilerplate alone does not constitute a good submission." AI tools are
+  allowed as assistants; no blanket ban found anywhere in the 2026 results.
+- Live 2026 events with cash, online, solo-friendly (snippets, 2026-09-03):
+  - Qwen Cloud Global AI Hackathon Series — https://qwencloud-hackathon.devpost.com/ — "$70,000+ in
+    cash and cloud credits across five tracks" (cash/credit split unverified).
+  - AssemblyAI hackathon, Sept 1-30 2026 — $10,000 pool stated as $5k cash + $5k AAI credits.
+  - Alpaca Trading Agents hackathon, Aug 28-Sep 4 2026 — $6,000 pool.
+  - RevenueCat Shipaton 2026 — https://revenuecat-shipaton-2026.devpost.com/rules (rules page exists;
+    prize structure unverified).
+  - Google Cloud "Agents for Impact" — https://cloud.google.com/resources/agents-for-impact-2026 —
+    Phase III **digital** hackathon Jan–Mar 2027, rolling submissions, cash prizes.
+  - All Things Agentic — https://allthingsagentichackathon.devpost.com/ ; DevNetwork AI+ML 2026 —
+    https://devnetwork-ai-ml-hack-2026.devpost.com/ ; UC Berkeley AI Hackathon 2026 —
+    https://ai-hackathon-2026.devpost.com/ (solo teams allowed; 1st $1,500 / 2nd $1,000 / 3rd $500).
 
-SNIPPET sources (URL a human/unblocked agent must open to close the claim):
-- https://help.devpost.com/article/114-how-to-claim-your-hackathon-cash-prize-winners-only — payout rails
-- https://help.devpost.com/hc/en-us/articles/360058308652-What-are-the-standard-exceptions-for-global-eligibility
-- https://revenuecat-shipaton-2026.devpost.com/
-- https://dorahacks.io/blog/news/prize-distribution/ and https://dorahacks.io/hackathon/circle-developer-bounties-1/detail
-- https://blog.colosseum.com/announcing-the-solana-frontier-hackathon/
-- https://www.kaggle.com/community-competition-creator-prize-rules
+## Payability to Israel — verdict
+**YES**, on both rails, but only at snippet strength:
+- Fiat (Devpost-administered / Kaggle / sponsor-paid): Israel appears on no exclusion list I saw;
+  payout via PayPal / Payoneer / Wise after a W-8BEN. All three serve Israel.
+- Crypto (ETHGlobal, DoraHacks): USDC to a self-custodied wallet; no country gate beyond sanctions.
+Open item a human must close: read the actual eligibility clause of each specific hackathon before
+entering — exclusion lists vary a lot per sponsor (the Rapid Agent list excludes Italy and Kazakhstan;
+the Bolt list excludes Brazil and Quebec). Israel was absent from every list seen, but per-event.
 
-## Core factual findings
+## Owner blockers (one-time, human-legally-required)
+1. Winner eligibility form: full legal name, date of birth, country of residence (Devpost).
+2. Signed **W-8BEN** (individual) — required to avoid 30% US withholding.
+3. A payout account in the owner's own legal name: PayPal, Payoneer or Wise, USD-capable.
+4. For crypto rails: a wallet the owner controls; ETHGlobal also requires wallet verification and
+   (per [3P]) a small ETH stake to hold a spot.
+5. Some events require a **live pitch / on-site finals** (e.g. hybrid AMD ACT III, ETHGlobal finals).
+   Those are structurally incompatible with the mandate — the colony must filter to async-judged,
+   video-only events. A demo video is agent-producible (screen capture + TTS) with no owner on camera.
+6. Israeli tax reporting on prize income is the owner's (or his accountant's) responsibility.
 
-### 1. Israel is NOT on any exclusion list I saw
-Across ~10 independently mirrored Devpost/Google/OpenAI hackathon rule sets, the ineligible-residency lists are variations of: Brazil, Italy, Quebec, Russia, Belarus, Crimea, Cuba, Iran, Syria, North Korea, Sudan, Venezuela, Donetsk/Luhansk, plus "any other country designated by OFAC". Israel appears in none of them. (MIRROR, multiple independent repos — this convergence is the strongest evidence in this file.)
-Caveat: individual sponsors vary a lot. One mirror (AlvinGeorge-AG/campusops) shows a rule set that additionally excludes Argentina, Australia, Hong Kong, Indonesia, Italy, Malaysia, Philippines, Singapore, Thailand, UAE and Vietnam. So eligibility must be re-read per hackathon; there is no blanket answer.
+## ToS / constitution risk
+- **GREEN** for entering async online hackathons solo with agent-written code: no rule found anywhere
+  in 2026 that bans AI-assisted development; AI hackathons require it.
+- **AMBER** for events whose rules restrict which AI vendors may be used inside the project
+  (Google-Cloud-sponsored ones ban Anthropic/OpenAI models in the submission) — buildable only if the
+  colony actually swaps the runtime model to Gemini, and never by misdescribing what was used.
+- **AMBER** for any event demanding an attestation of "meaningful human creativity" or that the
+  submitter personally built it. A fully autonomous entry submitted under the owner's name against
+  such a clause is a deception of the judge and is barred by our constitution regardless of payout.
+- **RED** for mass-submitting near-identical entries across many hackathons (the "AI slop" pattern).
+  It is spam, it is what will get a name banned, and it is out of bounds.
+- ETHGlobal's from-scratch rule means reusing our shipped products as a submission is a
+  disqualification-and-ban offence. Every entry must be built inside the event window.
 
-### 2. Payout rails reach Israel
-"Devpost winners can choose from PayPal, Payoneer, or Wise for payment, or receive a paper check if they are a US resident... Prizes will be delivered within 60 days of Devpost's receipt of the completed Required Forms. Winners are responsible for any fees." (SNIPPET of help.devpost.com/article/114.) PayPal, Payoneer and Wise all serve Israeli residents. Corroborating MIRROR: "Prize affidavits must be completed and verified before anyone is declared a winner. Prizes delivered within 60 days of receipt of completed forms. Winner bears all fees and taxes."
-US/non-US tax paperwork: W-9 for US residents, W-8BEN for others; Devpost may withhold to comply with tax law (SNIPPET).
+## Honest ceiling
+Prize income is lumpy, non-recurring and probabilistic. Nothing here is monthly revenue: a hackathon
+pays once, months after the build, and most entries pay zero. A no-brand solo entrant with strong
+async execution might plausibly average low-single-thousand ILS per month over a year while earning
+₪0 in most individual months. This criterion is a **variance line, not a base line** — it cannot be
+counted on for the ₪20,000 target and should never be projected into a ledger before a transaction id
+exists.
 
-### 3. AI-assisted building is explicitly permitted (usually)
-- All Things Agentic (Google, $180,000, Aug 3–31 2026): "standard tools, frameworks, libraries, and AI coding assistants permitted"; a second mirror adds "Allowed without disclosure: ... AI coding assistants. No attribution is required." (MIRROR x2)
-- DataHub Agent Hackathon: "AI coding assistants and frameworks are permitted; disclose any other pre-existing code." (MIRROR)
-- Counter-example: Rapid Agent Hackathon required Google Cloud AI tools and stated "All other artificial intelligence tools are not permitted" — OpenAI, Anthropic Claude, Llama, Mistral banned. (MIRROR) So a Claude-driven colony is disqualified from that class of sponsor-locked hackathon unless it swaps model provider.
-- Universal constraint in every rule set: the project must be NEWLY created during the submission window and be the entrant's original, solely-owned work.
-
-### 4. Solo entries are standard
-"Solo participants (18+), teams, and organizations are eligible" (DataHub, MIRROR). "Individuals, teams, or organizations may compete... solo entries are eligible for Grand Prize, track-specific prizes, and individual categories" (All Things Agentic, MIRROR).
-
-### 5. Real prize numbers seen in rendered mirrors
-- All Things Agentic (Google): $180,000 pool, $50,000 grand prize, 14+ categories, ~6,126 participants (participant-reported), Aug 3–31 2026. One track: $20,000 cash + $2,000 GCP credits for 1st in category. Judging: Innovation & Operational Utility 40%, Architecture/Stack 30%, Demo & Production Readiness 30%. Max one prize per project.
-- Build with DataHub: The Agent Hackathon: $20,500 pool — Grand $6,000; 4 category winners $3,000 each; 2 honourable mentions $1,000; 10 feedback prizes $50. ~2,969 registered participants. Jul 6 – Aug 10 2026. Two-stage judging (pass/fail viability, then six equally weighted criteria).
-- Arm Create: AI Optimization Challenge: $8,000 pool, $3,000 overall winner. (GitHub search fragment)
-- Gemini Live Agent Challenge: $80,000 in prizes, $25,000 grand prize cash. (GitHub search fragment)
-- RevenueCat Shipaton 2026: "over $700,000 in cash prizes", submissions Aug 1 – Sep 30 2026 (SNIPPET).
-- Colosseum Solana Frontier Hackathon 2026: $2.75M in prizes + pre-seed; ran Apr 6 – May 11 2026; 10,000+ participants, 150 countries, 2,857 final submissions, 26 winners (SNIPPET). Base rate visible here: 26/2857 ≈ 0.9% of submissions won anything.
-
-### 6. Submission mechanics are camera-free but not owner-free
-Typical required artefacts: public GitHub repo with an OSS licence, a working demo URL judges can test, a public video under 3 minutes showing the project working, a text description. A screen recording with synthetic narration satisfies the video requirement — no face, no live pitch. But: winners must respond to verification within ~2 business days, sign a prize affidavit, and supply full legal name, DOB and country of residence. That is a human-identity step the owner cannot delegate.
-
-### 7. Crypto-native hackathons are a separate payout regime
-DoraHacks: "All successful teams will need to pass KYC verification before prizes can be awarded"; prize funds "deposited via bank transfer or USDC (Base), processed by Merit Systems"; example bounty tier 1,500 USDC per track (SNIPPET, dorahacks.io blocked). Israel payability here is UNKNOWN — it depends on the Merit Systems / DoraHacks KYC provider's country list, which I could not render. Do not assume.
-
-## Honest economics
-Every one of these is a lottery with a real, judged payout — not a wage. The one hard base rate I have is Colosseum's 26 winners out of 2,857 submissions (~0.9%). DataHub's shape (17 paying slots incl. $50 feedback prizes, ~2,969 registrants) is friendlier but registrants >> submissions, so the true rate is unknown. A no-brand new entrant should model this as: several sub-40h builds per month, most returning zero, occasional $1,000–$6,000 hits. Any number presented as a monthly income is a guess; I have set ceilings low and marked confidence accordingly.
-
-## Constitution / ToS guardrails
-- Entering many hackathons with genuine, original, working builds is squarely permitted and is what the rules describe. GREEN.
-- Mass-submitting low-effort near-duplicate entries across many hackathons to farm expected value would collide with "original work product, solely owned", with judges' time, and with our own honest-value rule. That variant is AMBER/RED and must not be built.
-- Sponsor-locked hackathons that ban non-sponsor AI tools (Rapid Agent) must be skipped, not worked around.
-- Every rule set grants the sponsor a perpetual, irrevocable, worldwide, royalty-free licence to the submitted project (All Things Agentic §12, MIRROR). Do not submit anything the colony intends to sell exclusively.
-
-## Dead ends and unclosed questions
-- Kaggle: kaggle.com is egress-blocked and my one search on Kaggle prize eligibility returned nothing usable. Kaggle competitions are also arguably a different criterion (leaderboard competitions, not judged hackathons). Unclosed: https://www.kaggle.com/community-competition-creator-prize-rules
-- I could not enumerate what is open RIGHT NOW (Sept 2026), because devpost.com itself is blocked and search only surfaced a mix of past and current events. The live list at https://devpost.com/hackathons?status[]=open must be opened by an unblocked agent before any build decision.
-- No official Devpost help-centre page was rendered; the payout-rails claim rests on a search snippet only.
-- Israel-specific eligibility was established by absence from exclusion lists, not by an affirmative statement. No page said "Israel is eligible".
+## Dead ends and gaps
+- Every hackathon platform's own domain is blocked here. Not one platform rule page was rendered.
+- lablab.ai: appeared in two searches; I could not verify whether its prizes are cash or credits.
+  Unresolved — open https://lablab.ai/ai-hackathons.
+- Prize pools for Qwen Cloud ($70k "cash and cloud credits"), Shipaton and the Bolt $1M were snippet
+  only; the cash-vs-credits split is the single most important unverified number in this report,
+  because credits are worth ~nothing to us.
+- No source found on realistic win rates or entry counts per hackathon — I deliberately did not
+  estimate them rather than invent a number.
+- Search budget hit its cap at 8; several natural follow-ups (lablab, HackerEarth payouts, Colosseum/
+  Solana, Encode Club, Israeli-winner payout reports) were not run.
