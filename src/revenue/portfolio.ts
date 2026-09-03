@@ -239,17 +239,33 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     category: "micro_saas",
     tier: "experimental",
     directorRole: "director-dev-extensions",
+    // Narrowed 2026-09-03 from "Chrome/Edge and VS Code" to VS Code first, because
+    // the store-promotion sweep rejected the Chrome Web Store twice over and this
+    // line was still pointing at it. As a portfolio it is banned outright — no
+    // developer, related account or affiliate may submit multiple extensions with
+    // duplicate experiences — and as a single listing it is install-count-locked
+    // with no documented cold-start lane and no published ranking. See
+    // docs/REJECTED.md. Chrome is not forbidden here, but it may not be the
+    // channel this line is planned around, and it must never be a portfolio.
     operatingLoop: [
-      "Build Chrome/Edge and VS Code extensions that fix a specific daily annoyance (RTL/Hebrew text handling, JSON/CSV tooling, Israeli-format helpers, privacy-first local dev tools) with a free core and a pro tier unlocked by a license key sold through the merchant-of-record store.",
+      "Build VS Code extensions that fix a specific daily annoyance (RTL/Hebrew text handling, JSON/CSV tooling, Israeli-format helpers, privacy-first local dev tools) with a free core and a pro tier unlocked by a license key sold through the merchant-of-record store.",
       "Loop: ship the free core to the marketplace → collect installs and reviews → add one pro feature users ask for → measure license activations → repeat.",
+      "A single Chrome extension is permitted once one VS Code extension has real users, and only as a second listing for a proven tool — never as a portfolio, which the Web Store bans by name.",
     ].join(" "),
     kpis: ["installs", "weekly active users", "license activations", "monthly revenue in ILS"],
     killCriteria: ["under ₪400 in 30 days after 60 days live", "marketplace listing rejected twice"],
     scaleCriteria: ["30-day revenue at or above target", "1,000+ weekly active users"],
     targetMonthlyAgorot: agorotFromIls(2500),
     budgetMonthlyCents: 2000,
+    // The Chrome $5 developer fee is deliberately NOT an owner step. MISSION.md
+    // restricts that catalogue to identity, KYC and payout steps a platform
+    // legally requires of a human, and the store-promotion auditor caught this
+    // group inventing exactly this kind of entry (a WordPress.org account, which
+    // needs no verification at all). A $5 fee is a purchase, and the ₪200 owner
+    // float in budget.ts exists so that the colony pays for things like it
+    // instead of adding a line to the owner's list.
     humanSetup: [
-      "Pay the one-time Chrome Web Store developer fee ($5) with a Google account that has 2-step verification; create a Microsoft/Azure DevOps publisher for VS Code (free); reuse the merchant-of-record account from il-biz-tools for license keys",
+      "Create a Microsoft/Azure DevOps publisher for VS Code (free, no identity verification) and reuse the merchant-of-record account from il-biz-tools for license keys",
     ],
     skillName: "revenue-dev-extensions",
   },
