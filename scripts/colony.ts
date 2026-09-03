@@ -76,7 +76,9 @@ record options:
   --amount <n>         Amount in MINOR units: 1990 = $19.90             (required)
   --currency <code>    ILS | USD | USDC | EUR | GBP                     (required)
   --source <name>      stripe | lemonsqueezy | gumroad | x402 | manual  (required)
-  --external-id <id>   Platform transaction id — makes the entry idempotent
+  --external-id <id>   Platform transaction id. REQUIRED for sale, subscription,
+                       payout and refund — money only counts when it carries the
+                       platform's id. Only a cost may omit it.
   --note <text>        Free text
   --occurred-at <iso>  Defaults to now
 
@@ -212,6 +214,12 @@ async function main(): Promise<void> {
         const currency = values.currency ?? fail("--currency is required");
         const source = values.source ?? fail("--source is required");
         if (!getLine(db.raw, lineId)) fail(`no revenue line "${lineId}"`);
+        if (!values["external-id"]?.trim() && kind !== "cost") {
+          fail(
+            `--external-id is required for a ${kind}. Money counts only when it carries the platform's ` +
+            "transaction id, which is also what makes the entry idempotent. Only --kind cost may omit it.",
+          );
+        }
 
         const entry = recordLedgerEntry(db.raw, {
           lineId,

@@ -16,6 +16,7 @@ import {
   type CommandLevel,
   type LedgerEntry,
   type LedgerEntryInput,
+  type LedgerKind,
   type LineMetrics,
   type PortfolioSummary,
   type ReviewDecision,
@@ -335,8 +336,22 @@ export function setLineTarget(db: Database, id: string, targetMonthlyAgorot: num
 // ─── Ledger ──────────────────────────────────────────────────────
 
 /**
+ * Kinds that move money through someone else's system, and therefore always
+ * have a transaction id on the other side. `cost` is the exception: our own
+ * compute and infrastructure spending has no platform receipt to quote.
+ */
+const PLATFORM_MEDIATED_KINDS: readonly LedgerKind[] = ["sale", "subscription", "payout", "refund"];
+
+/**
  * Record a ledger entry. Idempotent on (source, externalId): a second call
  * with the same pair returns null instead of double-counting.
+ *
+ * MISSION rule 2: a shekel counts when it is recorded with a platform
+ * transaction id. So money in — and refunds out — must carry one. Without it
+ * an entry is unverifiable AND undeduplicated, because the idempotency check
+ * has nothing to key on: the same imagined sale can be booked repeatedly and
+ * the portfolio would show revenue nobody ever paid. That is the one failure
+ * this whole system exists to prevent.
  */
 export function recordLedgerEntry(db: Database, input: LedgerEntryInput): LedgerEntry | null {
   if (!Number.isFinite(input.amountMinor) || !Number.isInteger(input.amountMinor)) {
@@ -346,6 +361,14 @@ export function recordLedgerEntry(db: Database, input: LedgerEntryInput): Ledger
   const source = input.source.trim().toLowerCase();
   if (!source) throw new Error("source is required");
   const externalId = input.externalId?.trim() || null;
+
+  if (!externalId && PLATFORM_MEDIATED_KINDS.includes(input.kind)) {
+    throw new Error(
+      `externalId is required for a ${input.kind}: money only counts when it carries the platform's ` +
+      "transaction id (MISSION rule 2). Without one the entry cannot be verified against the platform " +
+      "and cannot be deduplicated, so the same amount can be booked twice. Only 'cost' may omit it.",
+    );
+  }
 
   if (externalId) {
     const existing = db
