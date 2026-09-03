@@ -1,0 +1,16 @@
+{
+  "siteUrl": "https://il-biz-tools.netlify.app",
+  "siteName": "כלים לעסק",
+  "year": 2026,
+  "paddle": {
+    "clientToken": "",
+    "priceId": "",
+    "environment": "sandbox"
+  },
+  "analytics": {
+    "provider": "none",
+    "plausibleDomain": "",
+    "posthogKey": "",
+    "posthogHost": "https://eu.i.posthog.com"
+  }
+}

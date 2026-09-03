@@ -5,6 +5,8 @@
 ## בתהליך עכשיו (2026-09-03 03:15 UTC)
 - הוראה חדשה מהבעלים: לעבוד רק עם Fable 5.1; כשהמכסה נגמרת - לעצור ולהמשיך כשמתחדשת (נרשם ב-CLAUDE.md וב-Routine).
 - הבעלים שלח סרטון YouTube (m5qtqoDFCx0) ואת web4.ai ללמידה. שניהם חסומים ב-proxy של הסנדבוקס; web4.ai נלמד דרך חיפוש (Sigil Wen / Conway Research: אוטומטונים עם ארנק, x402, "earn or die"). הסרטון לא נצפה - לבקש מהבעלים כותרת/נקודות.
+- Netlify: נוצר פרויקט `il-biz-tools` (site id 2087c2ed-5270-4407-8746-675d6ea41d5e, כתובת il-biz-tools.netlify.app, גישה ציבורית). פריסה מהסנדבוקס חסומה ברשת; הבעלים מקשר את הריפו ב-Netlify UI (Link repository → branch claude/monthly-income-plan-pfs7vu → publish dir products/il-biz-tools) או מריץ מקומית `npx netlify-cli deploy --prod --dir products/il-biz-tools --site 2087c2ed-5270-4407-8746-675d6ea41d5e`.
+- Base44: קיימת אפליקציה אחת ("Velocity Strike", משחק) - לא קשורה.
 - בונים עכשיו 3 מוצרים ב-`products/` (Apify Actor לנתונים פתוחים ישראליים, אתר כלים לעסקים בעברית, שרת API עם x402). אם הסשן נחתך - לבדוק מה קיים ב-`products/` ולהמשיך משם.
 
 ## מצב

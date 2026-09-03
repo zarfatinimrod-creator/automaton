@@ -1,0 +1,26 @@
+{
+  "name": "apify-il-open-data",
+  "version": "1.0.0",
+  "description": "Apify Actor: clean, English-keyed JSON from Israeli government open data (data.gov.il CKAN API). Pay per record.",
+  "type": "module",
+  "private": true,
+  "main": "dist/main.js",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "tsc && node dist/main.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "apify": "3.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}

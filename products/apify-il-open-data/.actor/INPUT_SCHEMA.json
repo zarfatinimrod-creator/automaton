@@ -1,0 +1,89 @@
+{
+  "title": "Israel Open Data (data.gov.il) input",
+  "description": "Search the data.gov.il catalogue or fetch records from a specific datastore resource. Records come back as clean JSON with English keys.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "mode": {
+      "title": "Mode",
+      "type": "string",
+      "description": "search_datasets: find datasets/resources by keyword. fetch_records: pull rows from one datastore resource (needs resourceId).",
+      "editor": "select",
+      "enum": ["search_datasets", "fetch_records"],
+      "enumTitles": ["Search datasets (catalogue)", "Fetch records (datastore)"],
+      "default": "fetch_records"
+    },
+    "query": {
+      "title": "Query",
+      "type": "string",
+      "description": "Free-text search. In search_datasets it searches dataset titles/descriptions (Hebrew or English). In fetch_records it is a full-text filter over the records (CKAN 'q').",
+      "editor": "textfield",
+      "prefill": "חברות"
+    },
+    "resourceId": {
+      "title": "Resource ID",
+      "type": "string",
+      "description": "UUID of the datastore resource (from search_datasets output, or from the data.gov.il resource page URL). Required in fetch_records mode.",
+      "editor": "textfield",
+      "pattern": "^[0-9a-fA-F-]{36}$"
+    },
+    "filters": {
+      "title": "Filters",
+      "type": "object",
+      "description": "Exact-match filters as a JSON object, using the ORIGINAL (Hebrew) column names, e.g. {\"סטטוס חברה\": \"פעילה\"}. Values may be a string or an array of strings.",
+      "editor": "json",
+      "prefill": {}
+    },
+    "maxRecords": {
+      "title": "Max records",
+      "type": "integer",
+      "description": "Maximum number of records (fetch_records) or datasets (search_datasets) to return. You are charged only for what is returned.",
+      "default": 100,
+      "minimum": 1,
+      "maximum": 500000,
+      "unit": "records"
+    },
+    "offset": {
+      "title": "Offset",
+      "type": "integer",
+      "description": "Skip this many records before returning results (for manual pagination between runs).",
+      "default": 0,
+      "minimum": 0
+    },
+    "translateFields": {
+      "title": "Translate field names to English",
+      "type": "boolean",
+      "description": "Map common Hebrew column names (מספר חברה, שם עמותה, ...) to snake_case English keys. Unknown columns keep their original name. The full mapping used is saved to the key-value store as FIELD_MAP.",
+      "default": true
+    },
+    "coerceTypes": {
+      "title": "Coerce types",
+      "type": "boolean",
+      "description": "Convert numeric/date/boolean columns to proper JSON types based on the datastore field metadata, and empty strings to null.",
+      "default": true
+    },
+    "outputFormat": {
+      "title": "Output format",
+      "type": "string",
+      "description": "json: one dataset item per record. csv: additionally writes OUTPUT.csv to the key-value store (English headers when translateFields is on).",
+      "editor": "select",
+      "enum": ["json", "csv"],
+      "enumTitles": ["JSON (dataset items)", "JSON + CSV file"],
+      "default": "json"
+    },
+    "sort": {
+      "title": "Sort",
+      "type": "string",
+      "description": "CKAN sort expression using ORIGINAL column names, e.g. \"תאריך התאגדות desc\". Optional.",
+      "editor": "textfield"
+    },
+    "baseUrl": {
+      "title": "CKAN base URL",
+      "type": "string",
+      "description": "Advanced: another CKAN 2.x portal. Defaults to https://data.gov.il.",
+      "editor": "textfield",
+      "default": "https://data.gov.il"
+    }
+  },
+  "required": ["mode"]
+}
