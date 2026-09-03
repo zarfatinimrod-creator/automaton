@@ -76,3 +76,26 @@ describe("the manager's screen", () => {
     expect(html()).toContain("ללא שום תוצר מאז שנפתח");
   });
 });
+
+describe("the dashboard shows what the money travels on", () => {
+  it("names both rail sides and says which failure is worse", () => {
+    const db = createInMemoryDb();
+    seedDefaultPortfolio(db);
+    const html = renderDashboard(db, { nowIso: "2026-09-03T12:00:00.000Z" });
+
+    expect(html).toContain("על מה הכסף עובר");
+    expect(html).toContain("paddle");
+    expect(html).toContain("payoneer");
+    // The asymmetry is the point: a dead payin rail stops sales, a dead payout
+    // rail strands money the ledger says we already have.
+    expect(html).toMatch(/הלדג'ר אומר שיש לנו אותו/);
+  });
+
+  it("flags the line whose payout route is unknown rather than hiding it", () => {
+    const db = createInMemoryDb();
+    seedDefaultPortfolio(db);
+    const html = renderDashboard(db, { nowIso: "2026-09-03T12:00:00.000Z" });
+    expect(html).toContain("oss-bounties");
+    expect(html).toContain("לא ניתן למשיכה");
+  });
+});

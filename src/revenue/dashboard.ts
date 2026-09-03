@@ -26,6 +26,7 @@ import { sweepCoverage } from "./criteria.js";
 import { findStalledLines } from "./watchdog.js";
 import { FINAL_GOAL_MONTHLY_ILS, MEASURED_ASSUMPTIONS, storesNeededFor } from "./growth.js";
 import { ownerFloatState } from "./budget.js";
+import { linesWithUnknownPayout, railConcentration } from "./rails.js";
 import type { LineMetrics } from "./types.js";
 
 const esc = (v: unknown): string =>
@@ -54,6 +55,8 @@ export interface DashboardOptions {
 }
 
 export function renderDashboard(db: Database, options: DashboardOptions = {}): string {
+  const rails = railConcentration();
+  const unknownPayout = linesWithUnknownPayout();
   const nowIso = options.nowIso ?? new Date().toISOString();
   const nowMs = Date.parse(nowIso);
   const summary = computePortfolioSummary(db, nowIso);
@@ -184,6 +187,17 @@ ${ownerBlocks}
 ${rows}
       </tbody>
     </table>
+  </div>
+
+  <h2>על מה הכסף עובר</h2>
+  <div class="card">
+    <p class="note">מסילה אחת שנופלת לא אמורה להפיל את החברה. הצד של <strong>הגבייה</strong> נופל ומפסיק מכירות; הצד של <strong>המשיכה</strong> נופל ומשאיר כסף שכבר הרווחנו תקוע — וזה הגרוע מבין השניים, כי הלדג'ר אומר שיש לנו אותו.</p>
+    <div class="basis">
+      <div>גבייה</div><div>${rails.payin.map((r) => `${esc(r.rail)} ${Math.round(r.share * 100)}%`).join(" · ")}</div>
+      <div>משיכה</div><div>${rails.payout.map((r) => `${esc(r.rail)} ${Math.round(r.share * 100)}%`).join(" · ")}</div>
+    </div>
+    <p class="note">${rails.verdict === "ok" ? "✔ " : "⚠ "}${esc(rails.reason)}</p>
+    ${unknownPayout.length ? `<p class="note">מסלול המשיכה לא ידוע ב: ${unknownPayout.map((l) => `<code>${esc(l)}</code>`).join(", ")}. כסף שיירשם שם עלול להיות לא ניתן למשיכה.</p>` : ""}
   </div>
 
   <h2>חסימות ותקיעות</h2>
