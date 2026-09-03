@@ -102,3 +102,18 @@ describe("waves can exclude criteria that are already swept", () => {
     expect(script).toContain("or exclude emptied every one");
   });
 });
+
+describe("the survivor cap is a ceiling, not a quota", () => {
+  const script = renderSweepWorkflow();
+
+  it("tells the supervisor that ranking none is a valid answer", () => {
+    // Both audited groups ranked a candidate the supervisor had already argued
+    // against in its own text. A floor of six is what produces that.
+    expect(script).toContain("SIX IS A CEILING, NOT A QUOTA");
+    expect(script).toContain("rank NONE and say so");
+  });
+
+  it("tells the auditor's counterpart where to look first", () => {
+    expect(script).toContain("Your auditor will check the bottom of your list first");
+  });
+});
