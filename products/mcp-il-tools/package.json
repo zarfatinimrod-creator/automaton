@@ -1,0 +1,42 @@
+{
+  "name": "@zarfatinimrod/mcp-il-tools",
+  "version": "0.1.0",
+  "description": "MCP server for Israeli data validation: teudat zehut, phone numbers, bank accounts, Hebrew dates, Hebrew-to-Latin transliteration.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "mcp-il-tools": "dist/server.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "israel",
+    "hebrew",
+    "validation",
+    "teudat-zehut"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "start": "node dist/server.js",
+    "prepublishOnly": "tsc"
+  },
+  "dependencies": {
+    "@hebcal/core": "^5.4.8",
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/node": "^22.10.0",
+    "vitest": "4.1.11"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

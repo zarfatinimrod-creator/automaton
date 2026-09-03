@@ -13,3 +13,4 @@ dist
 .automaton/wallet.json
 .automaton/state.db
 
+products/mcp-il-tools/dist/
