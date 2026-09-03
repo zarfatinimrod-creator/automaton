@@ -57,13 +57,24 @@
 
 ## מצב הסריקה
 
-**39 מתוך 120 קריטריונים נסרקו**, ב-15 קבוצות.
+**53 מתוך 120 קריטריונים נסרקו**, ב-15 קבוצות. (המספר זז תוך כדי — שני גלים רצו בזמן הכתיבה.)
 
 | הושלמו (8/8) | חלקיות | טרם התחילו |
 |---|---|---|
-| `payment-rails`, `risk-governance`, `israel-bureaucracy`, `store-promotion` | `storefronts` (5/8), `agent-markets` (2/8) | `plugin-ecosystems`, `data-apis`, `vertical-niches`, `content-seo`, `bounties-grants`, `crypto-native`, `licensing-ip`, `productized-services`, `distribution` |
+| `payment-rails`, `risk-governance`, `israel-bureaucracy`, `store-promotion`, `agent-markets` | `storefronts` (5/8), `bounties-grants` (5/8), `productized-services` (בריצה) | `plugin-ecosystems`, `data-apis`, `vertical-niches`, `content-seo`, `crypto-native`, `licensing-ip`, `distribution` |
 
-הרשומה האמיתית של מה שנסרק היא הקבצים ב-`research/colony-sweep/scouts/` — שם קובץ לכל קריטריון. אפשר לחשב את הכיסוי בכל רגע:
+**כך ממשיכים את הסריקה, בשתי פקודות:**
+
+```bash
+pnpm exec tsx scripts/colony.ts criteria --reconcile   # מסנכרן את מצב הסריקה מהדיסק
+pnpm exec tsx scripts/colony.ts criteria --wave-args crypto-native,data-apis
+# → {"groups":["crypto-native","data-apis"],"exclude":[...]}  ← זה בדיוק ה-args ל-Workflow
+```
+
+ואז `Workflow({scriptPath: 'workflows/colony-criteria-sweep.js', args: <מה שהודפס>})`.
+ה-`exclude` הוא לא נוחות: בלעדיו הגל חוזר על קריטריונים שכבר נסרקו, ושורף 8 חיפושים על כל אחד מתוך תקציב משותף של ~200.
+
+הרשומה האמיתית של מה שנסרק היא הקבצים ב-`research/colony-sweep/scouts/` — שם קובץ לכל קריטריון. אפשר לחשב את הכיסוי גם ידנית:
 
 ```bash
 npx tsx -e "import {CRITERIA_GROUPS} from './src/revenue/criteria.ts';import fs from 'node:fs';
