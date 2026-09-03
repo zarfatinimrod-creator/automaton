@@ -58,11 +58,34 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     // and history-of-success need existing users. A new Actor is disadvantaged, not
     // invisible. See research/colony-sweep/scouts/store-promotion--marketplace-ranking.md.
     //
+    // And the counterweight, from the store-promotion AUDIT the same day, because
+    // the group supervisor pushed this correction much too far. Apify's own
+    // how_store_works.md: "Search ranking evaluates parameters similar to those in
+    // the Actor quality score. As a result, the two correlate strongly." So
+    // accumulated usage IS a ranking input here, exactly as on the marketplaces we
+    // rejected for that reason — Apify is LESS usage-locked than Etsy or Figma, not
+    // exempt. "History of success" also means a portfolio of dead listings actively
+    // harms the next one, which is a direct argument for the kill discipline below
+    // rather than for publishing more.
+    //
+    // Maintenance is the real constraint, and Apify quantifies it: why_publish.md
+    // says reserve ~2 hours per week per public Actor, with a publicly visible
+    // support response time. Forty Actors is eighty hours a week, forever. Any plan
+    // here is bounded by that, not by build hours.
+    //
     // And a hard one: Actors requesting full permissions "might even be excluded
     // from search results" in autonomous-agent workflows. For a line whose buyers
     // are agents, minimum permissions is a launch requirement, not a nicety.
     killCriteria: ["under 25 monthly users across all Actors after 60 days live with 10+ Actors", "under ₪500 in 30 days after 90 days live", "two Actors deprecated for failing health checks in one month", "Store terms violation notice", "any Actor priced below its own platform usage cost — Apify zeroes a negative-profit Actor's payout for the whole month"],
     scaleCriteria: ["30-day payout at or above target", "any single Actor above ₪1,500 per month", "any Actor in the top 3 of its Store category"],
+    // Audited down from ₪4,000 by the store-promotion auditor and left at ₪3,000
+    // here deliberately: the auditor's ₪1,500 is its 12-month ceiling for a small
+    // maintained set, and this target is what the board measures against, not a
+    // forecast. If the line is still under ₪1,500 at 12 months the kill criteria
+    // below fire long before the gap matters. What the audit did change is the
+    // reason to believe: $1.4M/month across ~3,000 developers is a ~$470 mean on a
+    // power-law distribution, so the median developer earns far less, and a new
+    // entrant should not be planned above the mean of everyone already there.
     targetMonthlyAgorot: agorotFromIls(3000),
     budgetMonthlyCents: 6000,
     // Apify's binding Store Publishing Terms, read directly from their own docs

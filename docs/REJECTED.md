@@ -216,10 +216,16 @@ every sweep. Full report: `research/colony-sweep/groups/store-promotion.md`.
 **The structural finding, which outranks every entry below.** Roughly 40% of AI citations
 and most marketplace social proof come from human community participation. That lever is
 closed to us by the mission itself, not by a policy we might route around. It is the ceiling
-on this whole group, and it is why the group's honest combined ceiling is ≈₪15,500/month
-with only its top line above `medium` confidence. **This group cannot reach ₪20,000/month.**
-That is a finding, not a research failure, and it should not be re-attempted from a
-different angle.
+on this whole group. **This group cannot reach ₪20,000/month.** That is a finding, not a
+research failure, and it should not be re-attempted from a different angle.
+
+**The supervisor's ceilings did not survive audit, and the audited numbers are the ones to
+plan against.** The supervisor summed its five survivors to ≈₪15,500/month while its own
+headline said "almost no money here" — 78% of the target from a group it had just called
+empty. The auditor corrected the same five to **₪3,000/month combined, and ₪0 in month one
+for every one of them** (`research/colony-sweep/audits/store-promotion.md`). It also found
+twelve errors in the report, including a selective quotation that dropped `popularity` from
+Apify's own sort options — the one value contradicting the report's central claim.
 
 | Rejected | Why | What would reopen it |
 |---|---|---|
@@ -255,16 +261,44 @@ different angle.
   payment is PayPal or SWIFT from the Czech Republic. Israel is not *named*. Confirm at first payout.
 - **Etsy Payments for Israel — UNVERIFIED**, and moot given three other kills above.
 
-### The five that survived, so this list is not read as "nothing works"
+### The four that survived audit, so this list is not read as "nothing works"
 
-Ranked, with honest ceilings: **Apify Store multi-Actor portfolio** (₪4,000, the only channel here
-where a listing demonstrably converts to money and where a zero-run listing is not structurally
-invisible), **Hebrew-first AI-answer visibility monitoring** (₪4,000 — a measurement, never
-optimisation advice, because our own scouts killed the advice), **WordPress.org plugin with a Paddle
-Pro tier** (₪4,000, and a 3-5 plugin play rather than a 300-plugin one), **RapidAPI Hub as a second
-storefront for the existing Israeli endpoints** (₪1,500), and **the Amazon Solicitations API review
-agent** (₪2,000, included mainly because the seller supplies no message body, making it the one
-review surface that cannot be built dishonestly even by accident).
+Supervisor's ceiling → audited ceiling:
+
+- **Apify Store multi-Actor portfolio** — ₪4,000 → **₪1,500**. Apify pays $1.4M/month across ~3,000
+  developers, a mean of ~$470 (~₪1,730) on a power-law distribution, so the median earns far less
+  and the supervisor had set a brand-new entrant above the mean of everyone already there. The
+  "zero-run listings are not structurally invisible" claim is also overstated: `how_store_works.md`
+  says store search ranking correlates with the quality score, whose categories include Popularity
+  (users, saves, return usage) and History of success. Five of eight categories are controllable on
+  day one — disadvantaged, not invisible, and not the clean exception the report claimed.
+- **Hebrew-first AI-answer visibility monitoring** — ₪4,000 → **₪0-500**. The price floor is zero,
+  not $29: Semrush's checker is free with three checks a day and no account, Ahrefs' is free, and AI
+  Rank Lab gives 25 free prompts — all covering more engines than the proposed 15-prompt, two-engine
+  product. This is the exact test the supervisor used to kill the Shopify review SaaS and did not run
+  on its own candidate.
+- **WordPress.org plugin with a Paddle Pro tier** — ₪4,000 → **₪1,000**. Guideline 5 forbids
+  trialware outright: no code inside a directory-hosted plugin may be locked behind payment. Building
+  it compliantly means the Pro code ships outside the directory, which is a real design constraint the
+  report never mentioned. The review queue stood at 4,715 plugins, 3,854 older than a week.
+- **RapidAPI Hub as a second storefront for the existing Israeli endpoints** — ₪1,500 → **₪500**, and
+  ₪0 for at least 90 days: 25% marketplace fee since 15 Nov 2025, PayPal-only payout, and a documented
+  ~60-day payout lag on top.
+
+**The Amazon Solicitations API review agent was ranked fifth and is now rejected outright.** The API
+property is real — the seller supplies no message body, so it cannot be built dishonestly. But
+registration needs an Amazon Professional selling account at **$39.99/month, recurring**, against this
+repo's ₪200 total enforced budget, and Amazon seller identity verification is commonly a **live video
+call**. MISSION.md says the owner does not appear on camera. That is a mandate violation, not a KYC
+carve-out, and no ceiling makes it eligible.
+
+**Two things the group missed that outrank all four.** Its own `cross-promotion` scout wrote the
+refutation of the entire ranking: "cross-promotion is a multiplier on traffic, and a multiplier on
+zero is zero — the colony's acquisition problem is upstream of this criterion." And four of the five
+survivors have nothing to do with Israel or Hebrew, so they compete with the whole world on generic
+ground, while the one that uses our actual asset has no distribution. The obvious candidate the
+ranking never constructed is the intersection: Israeli-dataset Actors on Apify Store, extending
+`products/apify-il-open-data`, where the niche is thin and the knowledge is already ours.
 
 ---
 
