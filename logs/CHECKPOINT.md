@@ -79,6 +79,17 @@ for(const g of CRITERIA_GROUPS)console.log(g.criteria.filter(c=>d.has(c.id)).len
 
 **מה שהקבוצות שהושלמו כבר קבעו, ואסור לחזור ולחקור:** `docs/REJECTED.md` מחזיק את מה שנפסל — פרסום בתשלום בכל תקציב, TikTok כקו הכנסה, ושתי חומות מבניות בישראל. דוח `research/colony-sweep/groups/store-promotion.md` מחזיק שש מגבלות שמחייבות כל קו בתיק, לא רק את הקבוצה שלו.
 
+### סדר הגלים הבא, ולמה דווקא הוא
+
+הקבוצות לא שוות מבחינת תקציב החיפוש. חלקן אפשר לחקור כמעט לגמרי מ-github.com, שלא עולה תקציב חיפוש בכלל, כי הפלטפורמות מכניסות את התנאים, המדיניות והתיעוד שלהן לריפו ציבורי. הסדר נבחר לפי זה, לא לפי כמה הקבוצה נשמעת מבטיחה:
+
+1. `bounties-grants` — GitHub הוא הזירה עצמה (Algora, Gitcoin, HackerOne, Devpost, מענקי פרוטוקולים). הכי זול, ורץ עכשיו.
+2. `crypto-native` — פרוטוקולים מתועדים בריפואים, x402 כבר אומת ככה.
+3. `data-apis` — מקורות נתונים ישראליים; כל דומיין ממשלתי חסום ב-proxy, אז GitHub הוא הדרך היחידה בכל מקרה.
+4. `plugin-ecosystems` — WordPress, Chrome ו-Shopify מפרסמים מדיניות בריפו.
+5. `storefronts` (3 שנותרו) ו-`agent-markets` — משלימים קבוצות שכבר התחילו.
+6. אחרונות, ובמודע: `vertical-niches`, `content-seo`, `distribution`, `licensing-ip`. הן שאלות שוק — גודל, מחיר, ביקוש — ואי אפשר לענות עליהן מ-GitHub. הן ייצאו דקות יותר, וזה עדיף על לשרוף עליהן את התקציב לפני הקבוצות שאפשר לענות עליהן בזול.
+
 ## הצעד הבא של הבעלים (חד-פעמי, לפי סדר)
 
 הצ'קליסט המלא בסעיף 6 של `docs/INCOME_PLAN.he.md`. בקצרה: PayPal Israel ← Apify + KYC ← Paddle ← Etsy + Payoneer ← עוסק פטור. שני קווים לא דורשים כלום: `agent-services` (x402) ו-`telegram-bots` (רק יצירת בוט ב-BotFather).
