@@ -1,6 +1,6 @@
 # Revenue colony — board report
 
-Generated 2026-09-03T14:09:39.056Z
+Generated 2026-09-03T14:47:57.039Z
 
 ## Where we are
 
@@ -44,7 +44,7 @@ Ran: revenue_ledger_sync, revenue_supervisor_review, revenue_board_review, reven
 
 - Ledger sync: 0 new entries, 0 already known, sources [none configured]
 - Supervisors reviewed 9 line(s), escalating 8
-- Audit sampled 36 review(s), flagged 0
+- Audit sampled 45 review(s), flagged 0
 
 ### Board decisions
 
