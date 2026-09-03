@@ -2,6 +2,7 @@ export * from "./types.js";
 export * from "./money.js";
 export * from "./ledger.js";
 export * from "./rules.js";
+export * from "./constraints.js";
 export * from "./org.js";
 export * from "./goal-queue.js";
 export * from "./portfolio.js";
