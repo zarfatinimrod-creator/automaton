@@ -49,8 +49,12 @@ Two questions are worth spending search budget on, and the rest is noise:
 1. **Which discovery surface is real and reachable today**, and what exactly registration requires
    — because our problem is a missing sign, not a missing shop.
 2. **Whether anything out there measurably pays**, as opposed to publishing a spec. Our own
-   measured figure for the whole x402 protocol is on the order of $28k/day at a median clearing
-   price near $0.028 per call, which is why `paid-apis` targets ₪1,200/month and not ₪10,000.
+   figure for the whole x402 protocol is about **$800k/day** ($24M over 30 days) at ~$0.32 average
+   per payment, across ~22,000 sellers — a **mean of ~$1,090 per seller per month**, and far less
+   for the median in a power-law market. (Corrected 2026-09-03: an earlier version of this file
+   said $28k/day at $0.028, which was wrong by roughly 29x and 11x. See
+   `research/colony-sweep/scouts/agent-markets--x402-economy.md`. The conclusion held; the number
+   did not.) That per-seller figure is why `paid-apis` targets ₪1,200/month and not ₪10,000.
    Any claim of a large agent economy has to survive that number.
 
 Everything else in the agentic-web space — new wallets, new identity schemes, new payment rails —

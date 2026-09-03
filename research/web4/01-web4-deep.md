@@ -112,8 +112,10 @@ projections. The platform's own constitution forbids spam and extraction, which 
 honest-value rule is enforced from two directions.
 
 **Avoid:** the field's standard failure, which is publishing a protocol and calling it an economy.
-Our own measured figure — order of $28k/day across the entire x402 protocol at a median clearing
-price near $0.028 per call — is the number any claim about a large agent economy has to survive.
+The number any claim about a large agent economy has to survive is the per-seller one: the x402
+protocol moved about **$24M over 30 days across ~22,000 sellers** in mid-2026, a mean of roughly
+**$1,090 per seller per month** and far less for the median. (Corrected 2026-09-03 — this file
+first said $28k/day at $0.028 per call, wrong by ~29x and ~11x, though the conclusion was right.)
 It is why `paid-apis` targets ₪1,200/month rather than ₪10,000, and why the final goal's arithmetic
 rests on hundreds of small storefronts rather than on one machine-to-machine bonanza.
 

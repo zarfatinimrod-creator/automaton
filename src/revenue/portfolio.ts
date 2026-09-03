@@ -130,14 +130,23 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
       "Serve every endpoint over x402 (USDC on Base, no account needed by the buyer) and cross-list on an API marketplace with a free tier and metered paid tiers; share the code with the Apify line where possible.",
       "Loop: ship one endpoint with docs and tests → list it → track calls, paying subscribers and error rate → improve the endpoint with the most free-tier usage → repeat. Tag every inbound x402 payment with [line:paid-apis].",
     ].join(" "),
-    // Genuine agent-to-API commerce across the whole x402 protocol is on the order
-    // of $28k/day, at a median clearing price near $0.028 per call. Our earlier
-    // ₪2,500 target implied capturing a fraction of all worldwide x402 traffic that
-    // is not credible. The marketplace subscriptions, not x402, carry this line;
-    // x402 is the zero-KYC option attached to it. Volume is the honest early signal
-    // because revenue at these prices lags far behind usage.
+    // Corrected 2026-09-03. This comment previously said the protocol runs at
+    // ~$28k/day and ~$0.028 per call. Reported figures for mid-2026 are ~$800k/day
+    // ($24M over 30 days) at ~$0.32 average per payment, across ~22,000 sellers and
+    // ~94,000 buyers — so we were off by roughly 29x on volume and 11x on price.
+    // See research/colony-sweep/scouts/agent-markets--x402-economy.md.
+    //
+    // The conclusion survives: $24M/month across 22,000 sellers is a MEAN of about
+    // $1,090/seller/month, and in a power-law market the median earns far less. This
+    // is still a small market per participant, and the marketplace subscriptions —
+    // not x402 — carry this line; x402 is the zero-KYC option attached to it.
+    //
+    // What did change is the KPI. At $0.32/call the ₪1,200 target needs ~1,014 paid
+    // calls a month, not ~11,600. The old kill criterion demanded 2,000 calls, which
+    // at $0.32 is ~₪2,370 — nearly double this line's own target, so a line hitting
+    // target exactly would have been killed by its own rule. Fixed below.
     kpis: ["API calls per day", "paying subscribers", "x402 paid requests", "error rate", "monthly revenue in ILS"],
-    killCriteria: ["under 2,000 paid calls in 30 days after 60 days live", "under ₪400 in 30 days after 90 days live", "error rate above 2% for two reviews"],
+    killCriteria: ["under 300 paid calls in 30 days after 60 days live (~₪355 at the ₪1.18/call protocol average — unambiguously failing, not merely below target)", "under ₪400 in 30 days after 90 days live", "error rate above 2% for two reviews"],
     scaleCriteria: ["30-day revenue at or above target", "10+ paying subscribers or 5+ recurring paying agents"],
     targetMonthlyAgorot: agorotFromIls(1200),
     budgetMonthlyCents: 3000,
