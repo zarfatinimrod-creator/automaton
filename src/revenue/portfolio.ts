@@ -371,9 +371,17 @@ export interface TargetBasis {
 
 export const TARGET_BASIS: Record<string, TargetBasis> = {
   "apify-actors": {
-    ils: 3000, grade: "measured",
-    basis: "Apify's own partner page implies roughly $470/developer/month on average, with about $4k MRR for the single most successful independent creator. Revenue is a portfolio effect across many Actors, never one hit.",
-    source: "research/colony-sweep/scouts/ — apify criterion; portfolio comment above the line",
+    // Downgraded from "measured" 2026-09-03 by the agent-markets audit, which
+    // caught this file contradicting itself: the grade said measured while the
+    // comment on the line said the same figures are UNVERIFIED. It cannot be
+    // both. $1.4M/month across ~3,000 developers is also a power-law MEAN, so
+    // the median developer earns far less and a new entrant should not be
+    // planned above it. Two audits separately found Israeli data on Apify Store
+    // already occupied, which removes the reason this line was sized above the
+    // platform average in the first place.
+    ils: 3000, grade: "inferred",
+    basis: "Apify's partner page implies roughly $470/developer/month across ~3,000 developers — a power-law mean, not a median, and not in Apify's own documentation. UNVERIFIED at source. Revenue is a portfolio effect across many Actors, never one hit. The auditors' corrected 12-month ceilings for the Apify surface are ₪1,500 (store-promotion) and ₪200 (agent-markets); the ₪3,000 target is what the board measures against, and the kill criteria fire long before the gap matters.",
+    source: "research/colony-sweep/audits/agent-markets.md and audits/store-promotion.md",
   },
   "il-biz-tools": {
     ils: 1500, grade: "measured",
@@ -382,7 +390,11 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
   },
   "paid-apis": {
     ils: 1200, grade: "measured",
-    basis: "Genuine agent-to-API commerce across the whole x402 protocol runs on the order of $28k/day at a median clearing price near $0.028 per call. Marketplace subscriptions carry this line; x402 is the zero-KYC option attached to it.",
+    // Corrected 2026-09-03: this entry still carried the $28k/day figure that
+    // was found wrong by ~29x earlier the same day and fixed everywhere else.
+    // A stale number in the basis is worse than no basis, because the grade
+    // launders it.
+    basis: "Agent-to-API commerce across the whole x402 protocol runs on the order of $800k/day at a median clearing price near $0.32 per call. But the registry's own 30-day time series is the sobering number: 302,072 calls at a $0.01 median across 1,772 providers, with 91.2% of listings failing to reach 10 calls a month. Marketplace subscriptions carry this line; x402 is the zero-KYC option attached to it.",
     source: "portfolio comment above the line",
   },
   "agent-services": {

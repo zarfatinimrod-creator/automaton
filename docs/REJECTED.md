@@ -480,6 +480,64 @@ been treating as inferred.
 
 ---
 
+## `bounties-grants` — keep the framing, kill the numbers, audited 2026-09-03
+
+The audit is at `research/colony-sweep/audits/bounties-grants.md`. Its supervisor produced the best
+framing in the sweep — it refused to score on headline prizes and scored on what a line can produce
+every month, which is the right instinct against a monthly target: a ₪90,000 grant that lands once
+is a cash event, not an income line. Then three of its five ceilings turned out to rest on numbers
+that appear nowhere in its own evidence.
+
+**Corrected total: ₪7,800/month → ₪800/month at twelve months, with ₪0 in month one on every line.**
+
+| Refuted | Why |
+|---|---|
+| **Base / Talent Protocol Builder Rewards** | The base rate was invented — its own scout said so first — and the ceiling it was given **exceeds what the top of the entire Base leaderboard receives** at any plausible ETH price. Its `firstStep` is also the group's only spend proposal: a mainnet deploy plus a Basename registration, paid from the ₪200 float, on a line whose corrected ceiling is about ₪60/month and whose own scout wrote "do not build for this". |
+| **Tenstorrent tt-metal bounties** | The `firstStep` points at an issue **someone else has already submitted a PR for**. |
+| **Kaggle Community Competition Creator Prize** | A programme that ran for five months in 2022. |
+
+### What survives, and two of them are worth more than the ceilings were
+
+1. **The structural findings hold.** Prizes are not revenue. The authorised bug-bounty branch is
+   dead on platform terms rather than economics — HackerOne bans automated report delivery outright
+   and Bugcrowd requires a live webcam selfie before a single submission, which is our operating
+   model prohibited twice. And 2026 is the year open source turned against agent-authored
+   contributions: curl closed its bug bounty after 20 AI-generated non-vulnerabilities in 21 days.
+   Any bounty line needs an intake filter excluding repos hostile to AI contributions — the Algora
+   filter is the group's one reusable artefact.
+2. **Free-inference tiers are the finding that changes the company's arithmetic**, and the report
+   put them in its rejection table. Google AI Studio (1M tokens/day) and Cloudflare Workers AI
+   (10k neurons/day) cut **the colony's only cost that scales with traffic**, with **zero owner
+   blockers** — no company, no application, no KYC. That is real ₪/month against MISSION constraint
+   1, it belongs to no other group, and nobody has to win anything for it to pay.
+3. **TaskBounty and the agent-native bounty category were dropped without a word**, despite the
+   scout naming it as structurally different because payout is gated on automated sandbox
+   verification rather than a maintainer's mood.
+4. **This is the only group whose rails are genuinely independent** — PayPal/Payoneer/Wise, Stripe
+   Connect Express, and a self-custodied wallet. MISSION requires that one rail failing cannot take
+   the company down, and this group satisfies it better than any other and never claimed the credit.
+
+### Two things nobody priced, and they apply to the whole group
+
+**Every line pays the owner as a natural person.** Thirty percent US withholding by default without
+a W-8BEN, Israeli personal income tax on foreign prize income, transfer fees and ILS conversion on
+top. All five ceilings were gross, some by a large margin.
+
+**And it is not clear this money is bookable at all.** MISSION counts money only "in the ledger with
+a real platform transaction id". A hackathon prize arrives as a PayPal transfer initiated by a
+sponsor's finance team; a Tenstorrent bounty by an unspecified rail. Whether either produces a
+platform transaction id — and if not, how the ledger and the manager's screen record it honestly —
+is unanswered, and it applies to every line here.
+
+### The one place constraint 7 comes out favourable
+
+This is the only group in the sweep where the acquisition constraint points the right way: **a prize
+sponsor announces the event and publishes the judging, so the buyer finds us rather than the
+reverse.** The report was entitled to make that argument and did not. It is rare enough in this
+sweep to be worth naming.
+
+---
+
 ## Earlier rejections
 
 Kept in `docs/INCOME_PLAN.he.md` §4 with one-line reasons: Envato (bans AI files, 50%
