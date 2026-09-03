@@ -57,11 +57,11 @@
 
 ## מצב הסריקה
 
-**53 מתוך 120 קריטריונים נסרקו**, ב-15 קבוצות. (המספר זז תוך כדי — שני גלים רצו בזמן הכתיבה.)
+**65 מתוך 120 קריטריונים נסרקו**, ב-15 קבוצות.
 
 | הושלמו (8/8) | חלקיות | טרם התחילו |
 |---|---|---|
-| `payment-rails`, `risk-governance`, `israel-bureaucracy`, `store-promotion`, `agent-markets` | `storefronts` (5/8), `bounties-grants` (5/8), `productized-services` (בריצה) | `plugin-ecosystems`, `data-apis`, `vertical-niches`, `content-seo`, `crypto-native`, `licensing-ip`, `distribution` |
+| `payment-rails`, `risk-governance`, `israel-bureaucracy`, `store-promotion`, `agent-markets`, `bounties-grants`, `productized-services` | `storefronts` (5/8), `crypto-native` (4/8) | `plugin-ecosystems`, `data-apis`, `vertical-niches`, `content-seo`, `licensing-ip`, `distribution` |
 
 **כך ממשיכים את הסריקה, בשתי פקודות:**
 
@@ -81,6 +81,29 @@ npx tsx -e "import {CRITERIA_GROUPS} from './src/revenue/criteria.ts';import fs 
 const d=new Set(fs.readdirSync('research/colony-sweep/scouts').map(f=>f.replace(/\.md$/,'').replace('--','/')));
 for(const g of CRITERIA_GROUPS)console.log(g.criteria.filter(c=>d.has(c.id)).length+'/8  '+g.id);"
 ```
+
+### שלבים חסרים — צופים שסיימו בלי מפקח או מבקר
+
+**זה לא אותו דבר כמו "הקבוצה הושלמה".** קבוצה מוכנה רק כשעברה צופים → מפקח → מבקר. שלושה גלים נקטעו על **מגבלת סשן** (`You've hit your session limit`), והמצב שנשאר:
+
+| קבוצה | צופים | מפקח | מבקר |
+|---|---|---|---|
+| `agent-markets` | 8/8 ✔ | ✘ נכשל | ✘ |
+| `productized-services` | 8/8 ✔ | ✘ נכשל | ✘ |
+| `bounties-grants` | 8/8 ✔ | ✔ | ✘ נכשל |
+| `crypto-native` | 4/8 | ✘ נכשל | ✘ |
+
+שלושת הגלים ניתנים ל-**resume**, וסוכנים שהצליחו חוזרים מה-cache בלי לעלות כלום:
+
+```
+Workflow({scriptPath:'workflows/colony-criteria-sweep.js', resumeFromRunId:'wf_4acd4888-f20', args:{groups:['crypto-native'],exclude:[]}})
+Workflow({scriptPath:'workflows/colony-criteria-sweep.js', resumeFromRunId:'wf_138013e9-02e', args:{groups:['bounties-grants']}})
+Workflow({scriptPath:'workflows/colony-criteria-sweep.js', resumeFromRunId:'wf_ed3fcb19-937', args:{groups:['agent-markets','productized-services']}})
+```
+
+**דוח מפקח בלי מבקר הוא לא מסקנה, והפעם זה נאכף.** דוח `bounties-grants` נמצא בדיסק ומדבר על תקרה של ₪5,000–8,000, **והמספר הזה לא הועתק לשום מסמך שאתה קורא** — כי המבקר שלו לא רץ. זה הלקח מהיום: בשתי הקבוצות שכן נבדקו, המבקר הוריד את המספרים ב-80% ומעלה.
+
+**מגבלת סשן היא מצב כשל נפרד מ-529.** 529 נכשל לפני ששרף אסימונים; מגבלת סשן נכשלת אחרי שהצופים כבר עבדו, ולוקחת דווקא את שלב הסינתזה. הכלל: **לשגר גל אחד בכל פעם ולתת לו לסיים**, ולא שלושה במקביל כמו שעשיתי.
 
 **החסם האמיתי הוא תקציב החיפוש, לא כמות הסוכנים.** ל-WebSearch יש כ-200 קריאות משותפות לכל הסשן, לכל הסוכנים הרצים בו-זמנית. 81 קריטריונים שנותרו, גם ב-8 חיפושים כל אחד, הם 648 קריאות — פי שלושה מהתקציב. **סריקה מלאה של 120 הקריטריונים לא נכנסת לסשן אחד, ואי אפשר לתקן את זה בעוד סוכנים.** מה שכן עובד: גלים קטנים לפי קבוצה, ו-github.com כמקור ראשוני שלא עולה תקציב חיפוש בכלל.
 
