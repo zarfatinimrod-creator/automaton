@@ -6,6 +6,8 @@ import {
   modelPortfolio,
   scenarioTable,
   storesNeededFor,
+  checkHonestStorePlan,
+  distinctSourcesNeededFor,
   promotionLoadHours,
   perStoreEffortCeilingHours,
   promotionFits,
@@ -128,5 +130,51 @@ describe("promotion effort hits the same wall as maintenance cost", () => {
     expect(() => promotionLoadHours(-1, 1)).toThrow(/non-negative/);
     expect(() => promotionLoadHours(10, -1)).toThrow(/non-negative/);
     expect(() => perStoreEffortCeilingHours(10, -1)).toThrow(/non-negative/);
+  });
+});
+
+describe("the cap that decides the final goal: distinct data, not build hours", () => {
+  it("rejects a plan whose stores outnumber the things it has to sell", () => {
+    const plan = checkHonestStorePlan(900, 12);
+    expect(plan.ok).toBe(false);
+    expect(plan.honestCeiling).toBe(12);
+    expect(plan.shortfall).toBe(888);
+    // The wording matters: the board must hear that the risk lands on the whole
+    // set, not only on the stores that could not be justified.
+    expect(plan.reason).toMatch(/whole set/);
+  });
+
+  it("does not grade a substitution portfolio on a curve", () => {
+    // 93% of stores backed by real data is not 93% honest. It is a doorway
+    // network with a real part inside it, and the verdict is binary.
+    expect(checkHonestStorePlan(100, 93).ok).toBe(false);
+    expect(checkHonestStorePlan(100, 100).ok).toBe(true);
+  });
+
+  it("passes a plan that has one source per store", () => {
+    const plan = checkHonestStorePlan(40, 40);
+    expect(plan.ok).toBe(true);
+    expect(plan.shortfall).toBe(0);
+  });
+
+  it("treats zero stores as trivially honest rather than an error", () => {
+    expect(checkHonestStorePlan(0, 0).ok).toBe(true);
+  });
+
+  it("restates the final goal as a number of datasets somebody has to count", () => {
+    const needed = distinctSourcesNeededFor(FINAL_GOAL_MONTHLY_ILS, MEASURED_ASSUMPTIONS);
+    expect(needed.stores).toBe(storesNeededFor(FINAL_GOAL_MONTHLY_ILS, MEASURED_ASSUMPTIONS).stores);
+    expect(needed.reason).toMatch(/distinct datasets/);
+    expect(needed.reason).not.toMatch(/copies of one\b(?!.)/);
+  });
+
+  it("carries the impossibility through instead of inventing a dataset count", () => {
+    // When upkeep swallows average earnings, storesNeededFor returns null. The
+    // dataset question is meaningless there and must not be answered anyway.
+    const treadmill = distinctSourcesNeededFor(FINAL_GOAL_MONTHLY_ILS, {
+      ...MEASURED_ASSUMPTIONS,
+      maintenanceIlsPerStore: 1000,
+    });
+    expect(treadmill.stores).toBeNull();
   });
 });

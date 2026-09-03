@@ -205,3 +205,80 @@ export function promotionFits(
 ): boolean {
   return promotionLoadHours(stores, hoursPerStorePerMonth) <= monthlyHoursAvailable;
 }
+
+// ── The cap nobody costed: distinct data, not build hours ──
+//
+// Every version of the many-stores plan so far has been bounded by effort —
+// build hours, maintenance shekels, promotion hours. All three are real and all
+// three are the wrong binding constraint.
+//
+// The store-promotion sweep produced a rule that changes the arithmetic:
+// storefront N+1 may not be storefront N with a city, a niche or a keyword
+// substituted (`constraints.ts`, `unique-data-per-store`). Google names that in
+// four spam policies at once, and treats the whole set as one property. So the
+// honest store count is not "how many can we build" — it is **how many
+// genuinely distinct datasets, tools or audiences we can actually source**.
+//
+// That number is far smaller than the build-hours number, and it is the one
+// that decides whether the final goal is reachable. 878 stores needs 878
+// distinct things to sell. Nobody has counted them, and until somebody does,
+// the store target is a wish rather than a plan.
+
+/** A store must rest on its own data. One dataset supports one honest store. */
+export const STORES_PER_DISTINCT_DATASET = 1;
+
+export interface HonestStorePlan {
+  /** Stores the plan calls for. */
+  storesPlanned: number;
+  /** Distinct datasets, tools or audiences actually sourced for them. */
+  distinctSources: number;
+  /** The most stores those sources honestly support. */
+  honestCeiling: number;
+  /** How many stores the plan cannot justify. */
+  shortfall: number;
+  ok: boolean;
+  /** Why, in the words the board should hear. */
+  reason: string;
+}
+
+/**
+ * Check a store-count plan against the data it actually has.
+ *
+ * This is deliberately blunt: a plan for 900 stores backed by 12 datasets is
+ * not 93% honest, it is a substitution portfolio with 12 real stores in it.
+ */
+export function checkHonestStorePlan(storesPlanned: number, distinctSources: number): HonestStorePlan {
+  if (!Number.isFinite(storesPlanned) || storesPlanned < 0) throw new Error("storesPlanned must be a non-negative number");
+  if (!Number.isFinite(distinctSources) || distinctSources < 0) throw new Error("distinctSources must be a non-negative number");
+
+  const honestCeiling = distinctSources * STORES_PER_DISTINCT_DATASET;
+  const shortfall = Math.max(0, storesPlanned - honestCeiling);
+  const ok = shortfall === 0;
+
+  return {
+    storesPlanned,
+    distinctSources,
+    honestCeiling,
+    shortfall,
+    ok,
+    reason: ok
+      ? `${storesPlanned} stores rest on ${distinctSources} distinct sources. Each store has something of its own to sell.`
+      : `${storesPlanned} stores rest on only ${distinctSources} distinct sources, so ${shortfall} of them would have to be variations of another store. That is doorway abuse under Google's own definition, and it risks the whole set, not just the ${shortfall}. Either source ${shortfall} more datasets or plan ${honestCeiling} stores.`,
+  };
+}
+
+/**
+ * The distinct sources the final goal needs, given the same hit-rate model the
+ * rest of this file uses. This is the number to go and count.
+ */
+export function distinctSourcesNeededFor(
+  targetIls: number,
+  a: GrowthAssumptions = MEASURED_ASSUMPTIONS,
+): StoresNeeded {
+  const needed = storesNeededFor(targetIls, a);
+  if (needed.stores === null) return needed;
+  return {
+    ...needed,
+    reason: `${needed.stores} stores at these assumptions, and under the unique-data constraint that is ${needed.stores} distinct datasets, tools or audiences — not ${needed.stores} copies of one. Counting them is the open question the store target rests on.`,
+  };
+}

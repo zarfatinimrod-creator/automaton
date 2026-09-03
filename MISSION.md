@@ -98,7 +98,7 @@ already includes ₪5/month of upkeep per store, which is why the answer is 878 
 you get by ignoring maintenance — and the gap between those two numbers is the entire subject of
 constraint 1 below.
 
-### The five constraints that decide whether it works
+### The six constraints that decide whether it works
 
 **1. Marginal cost per store must approach zero, or the portfolio eats itself.** 833 stores at
 ₪50/month of upkeep is ₪41,650/month — half the target, spent on maintenance. This is the
@@ -134,6 +134,22 @@ scale that way.
 portfolio drowns in dead weight and the real winners become invisible. Kill criteria are not
 hygiene here, they are the mechanism that makes multiplication survivable.
 
+**6. Every store needs something of its own to sell — and this is the constraint that actually
+decides the number.** The other five bound *effort*: build hours, upkeep shekels, promotion
+hours, kill discipline. This one bounds *supply*. Storefront N+1 may not be storefront N with a
+city, a niche or a keyword substituted: Google names that in four spam policies at once, and
+doorway abuse covers "multiple websites with slight variations to the URL and home page"
+verbatim. It does not penalise the copies — it treats the whole set as one property. So a plan
+for 900 stores backed by 12 datasets is not 93% honest; it is twelve real stores and a doorway
+network wrapped around them.
+
+The consequence for the final goal is direct and uncomfortable: **878 stores means 878 distinct
+datasets, tools or audiences, and nobody has counted them.** Until somebody does, the store
+number is a wish rather than a plan. `checkHonestStorePlan` in `src/revenue/growth.ts` gives a
+binary verdict on any store count against the sources behind it, and `constraints.ts` screens a
+proposal's own wording for the substitution pattern — so this is checkable rather than
+arguable. Counting the sources we can honestly serve is the single most valuable open question
+in this file.
 ### תקציב — תוספת הבעלים, 3.9.2026 (verbatim)
 
 > אני רוצה לתת לך סכום קטן שממנו אתה משתמש, וגודל מקסימום 200 שקל.
