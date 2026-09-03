@@ -326,6 +326,16 @@ ground, while the one that uses our actual asset has no distribution. The obviou
 ranking never constructed is the intersection: Israeli-dataset Actors on Apify Store, extending
 `products/apify-il-open-data`, where the niche is thin and the knowledge is already ours.
 
+> **Correction, 2026-09-03, from `research/colony-sweep/audits/productized-services.md`.** That
+> last sentence is wrong and it was repeated across this repo. **Someone already constructed the
+> intersection.** `apify.com/swerve/supermarket-prices` is an Israeli statutory price-file scraper
+> across 25 chains, normalising portal dialects into one schema, refreshed daily — and the same
+> creator runs `swerve/madlan-analytics` and `swerve/yad2-scraper`. That is an Israeli-dataset
+> Actor portfolio, already on the Store. The niche is not thin and it is not unoccupied.
+> *(Snippet grade: `apify.com` is EGRESS_BLOCKED here, so the listings were seen in search results,
+> not rendered. A human must open the first URL to close it — but a claim that a niche is empty
+> cannot survive the first search finding it occupied.)*
+
 ---
 
 ## The risk-governance group produced no revenue line — audited 2026-09-03
@@ -381,6 +391,92 @@ finished and deliver nothing.
 
 The group's own honest self-assessment — it said out loud that almost nothing was rendered — is
 its best feature, and the auditor said so.
+
+---
+
+## `productized-services` — one ranked line, refuted to ₪0, audited 2026-09-03
+
+The audit is at `research/colony-sweep/audits/productized-services.md`. Its supervisor was the
+most disciplined so far — it counted its scout files rather than asserting coverage, and it killed
+five criteria correctly on a price-floor-of-zero test. Then it did not run that test on its own
+number one, which is the same error the `store-promotion` audit recorded one group earlier.
+
+**The ranked line — Israeli statutory price-transparency data sold pay-per-event on Apify — is
+₪0, twice over:**
+
+- **The price floor is zero.** The same GitHub organisation whose scraper the supervisor read,
+  `OpenIsraeliSupermarkets`, also runs `daily-publish-supermarket-data` — a cron job publishing a
+  **new Kaggle dataset version every midnight** — plus a public website, a public API host, a
+  FastAPI REST server, and a status page monitoring all three. The free alternative is not a
+  library the buyer must operate; it is already-parsed data, versioned daily, with an API. The
+  proposed product is a strictly smaller offer at a strictly higher price.
+- **The slot is taken.** See the correction above: `swerve/supermarket-prices` already ships this
+  exact specification.
+
+**And it was never net-new anyway.** The report conceded the line is a slice of the ₪1,500 Apify
+ceiling this file already assigned to `store-promotion`. A board reading the ranked list would
+have added ₪500 to the portfolio total. It must not.
+
+**What survived is worth more than the ranked line**, and two items are now acted on rather than
+filed:
+
+1. **Freemius belongs in the rails catalogue** — Israeli-founded, ILS payouts with no conversion
+   fee, pays by Wire / Wise / Payoneer / PayPal, fully self-serve checkout with no buyer contact.
+   The supervisor found it, said it "should outlive this group", and then left it in a section
+   grading its own scouts. Our Israeli rails are thin (PayPal, now with 18% VAT on fees;
+   Payoneer; Etsy/Gumroad ILS deposit), and MISSION requires that one rail failing does not take
+   the company down. It is now recorded in `src/revenue/rails.ts`.
+2. **The group's structural finding:** in this category the engine is always free and the paid
+   layer is always brand and sales. That is a rule about where our software can and cannot earn,
+   and it survives the rejection of every candidate under it.
+
+**The single action the auditor asked for, and it is the right one:** publish
+`products/apify-il-open-data` free, today, and count runs from strangers for 30 days. Zero owner
+involvement, zero build, zero money — and every Apify ceiling in this repo, ₪1,500 and ₪500 and
+₪3,000 alike, resolves either to ₪0 or to a measurement on its result. It is the cheapest test of
+MISSION constraint 7 anywhere in the project.
+
+---
+
+## `agent-markets` — the negative findings are the best in the sweep, the positive one is refuted, audited 2026-09-03
+
+The audit is at `research/colony-sweep/audits/agent-markets.md`. Its supervisor read a smart-contract
+config and a JSON schema instead of marketing copy, ranked exactly one line out of eight criteria,
+and said plainly that seven produced nothing. Seven of its eight rejections are well-sourced and
+hold. Its one ranked line does not survive two searches.
+
+**The decisive finding, and it is the second time today two auditors reached it independently:
+Israeli data on Apify Store is not unoccupied ground.** The ranked line rested on the sentence
+"the scout's searches for Israeli government open-data Actors returned no competitor". Apify Store
+already carries at least five Israeli-data Actors — **two of them wrapping the identical
+`data.gov.il/api/3/action/datastore_search` endpoint our own shipped product wraps**, one priced at
+$7.50 per 1,000 results, and one advertising coverage of **33 Israeli data sources**, which is more
+than the supervisor's own estimate of how many distinct Israeli datasets exist to serve.
+
+With the "no competitor" premise gone, the Hebrew-schema moat and the supply estimate go with it,
+and what remains is a paid convenience wrapper over a free, keyless, documented public API.
+Corrected ceiling **₪600 → ₪200/month at twelve months, ₪0 for the first nine** — below the sweep's
+own ₪300 rejection bar, so by the group's own rule it should have been rejected rather than ranked.
+*(Snippet grade: `apify.com` is EGRESS_BLOCKED, so these are canonical Store URLs and their search
+descriptions. That is enough to refute a claim of absence.)*
+
+### Two facts from this audit that outlive the rejection
+
+1. **Apify prohibits the funnel play by name.** Store Publishing Terms §2.2.4.2(i), rendered from
+   Apify's own docs repo: a publisher may not *"directly or indirectly offer, link to, or promote
+   any product or service outside of the Platform in your Actors or in any other content you
+   publish on Apify Store."* Two lines in this repo rested partly on a listing being a funnel and
+   neither had read the terms. This is now the seventh promotion constraint in
+   `src/revenue/constraints.ts`, written as a per-platform check rather than a fact about Apify:
+   an app store, a plugin directory and a registry all have a reason to stop a listing exporting
+   its buyer.
+2. **KYC is the fifth agentic-payments requirement**, not just a payout gate: *"The Actor's
+   developer must have finished identity verification (KYC). Until this verification is complete,
+   their Actors remain ineligible."* Already reflected in the `apify-actors` owner setup.
+
+The Store Publishing Terms also carry **no country or jurisdiction restriction of any kind** — the
+auditor confirmed the absence directly, which strengthens the Israel-payable verdict this repo has
+been treating as inferred.
 
 ---
 

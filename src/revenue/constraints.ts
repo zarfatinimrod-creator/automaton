@@ -137,6 +137,24 @@ export const PROMOTION_CONSTRAINTS: PromotionConstraint[] = [
     reopensIf: "Nothing. Five regimes would have to change at once, and the constitution forbids it independently of all five.",
   },
   {
+    id: "no-offsite-funnel-from-a-marketplace-listing",
+    rule: "Never plan a marketplace listing as a funnel to something we sell elsewhere. Check the platform's terms for an anti-promotion clause before a listing is costed as distribution.",
+    because:
+      "Apify's Store Publishing Terms §2.2.4.2(i), rendered from their own docs repo: a publisher may not 'directly or indirectly offer, link to, or promote any product or service outside of the Platform in your Actors or in any other content you publish on Apify Store.' That is the funnel play prohibited by name, on the one marketplace where this colony has verified that listings turn into money. The same shape recurs — an app store, a plugin directory and a registry each have a reason to stop a listing exporting its buyer — so the clause is a thing to look for, not a fact about Apify alone. This repo had two lines whose value rested partly on being a funnel; neither had read the terms.",
+    verdict: "AMBER",
+    tripwires: [
+      "as a funnel",
+      "funnel to our",
+      "drive traffic to our site",
+      "link back to our",
+      "readme links to",
+      "listing promotes our",
+      "משפך",
+    ],
+    reopensIf:
+      "It is per-platform, so it reopens per platform: a marketplace whose terms carry no such clause may be used as a funnel. The rule is to check, and a proposal that has not checked has not cleared it.",
+  },
+  {
     id: "llms-txt-is-hygiene",
     rule: "Ship llms.txt as one hour of hygiene and forecast zero from it. Never sell it, never sell a generator for it, never cite it as a distribution channel.",
     because:

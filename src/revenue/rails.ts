@@ -174,3 +174,38 @@ export function linesWithUnknownPayout(rails: Record<string, LineRails> = LINE_R
     .filter(([, r]) => r.payout === "unknown")
     .map(([id]) => id);
 }
+
+// ── Rails we have evaluated but do not yet use ──
+//
+// The concentration check above measures the rails in service. This is the
+// shelf: routes a scout or auditor established are real, that nothing has
+// adopted yet. It exists because the productized-services audit found one
+// buried in a paragraph grading scout quality — its supervisor wrote that
+// Freemius "belongs in the rails catalogue and should outlive this group" and
+// then filed it nowhere. A rail that reaches Israel is too scarce to lose in a
+// report card.
+
+export interface CandidateRail {
+  id: string;
+  what: string;
+  /** Why it matters to a portfolio whose Israeli rails are thin. */
+  whyItMatters: string;
+  /** What has to be true before a line may depend on it. */
+  beforeUse: string;
+  /** How strong the evidence is, stated rather than implied. */
+  evidence: "rendered" | "snippet" | "vendor-claim";
+  source: string;
+}
+
+export const CANDIDATE_RAILS: CandidateRail[] = [
+  {
+    id: "freemius",
+    what: "Merchant-of-record checkout for software and plugins. Israeli-founded, pays out in ILS with no conversion fee, by wire, Wise, Payoneer or PayPal, with a fully self-serve checkout and no buyer contact.",
+    whyItMatters:
+      "Our Israeli rails are thin and correlated: PayPal (now carrying 18% Israeli VAT on its fees since 6 July 2026), Payoneer, and ILS deposit through a storefront. MISSION.md requires that one rail failing does not take the company down, and an ILS-native merchant of record is the most direct answer to the payability gate that killed four candidates in the productized-services group alone.",
+    beforeUse:
+      "A human opens Freemius's own pricing and payout pages and confirms the ILS payout and fee structure, and confirms it accepts a seller who is an osek patur rather than a company. Nothing here is rendered.",
+    evidence: "snippet",
+    source: "research/colony-sweep/scouts/productized-services--localization.md, via research/colony-sweep/audits/productized-services.md §5.3",
+  },
+];

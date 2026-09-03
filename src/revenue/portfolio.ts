@@ -73,6 +73,25 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     // support response time. Forty Actors is eighty hours a week, forever. Any plan
     // here is bounded by that, not by build hours.
     //
+    // And the assumption underneath this line's whole thesis is now contradicted.
+    // Three places in this repo said Israeli data on Apify Store is unoccupied
+    // ground where our knowledge is the edge. The productized-services audit ran
+    // one search: apify.com/swerve/supermarket-prices already scrapes the statutory
+    // price files across 25 chains into one normalised schema, refreshed daily, and
+    // the same creator runs swerve/madlan-analytics and swerve/yad2-scraper. That
+    // is an Israeli-dataset Actor portfolio, shipped, by someone else. Snippet
+    // grade — apify.com is egress-blocked here — but a claim that a niche is empty
+    // does not survive the first search finding it occupied.
+    //
+    // What this changes: not the line, which still has the best-evidenced rail and
+    // the only surface where a listing demonstrably converts. It changes the reason
+    // to believe. The edge was never "nobody is there"; it has to be something we
+    // can still say after meeting swerve. Until we know what that is, the honest
+    // first move is the auditor's: publish products/apify-il-open-data free and
+    // count runs from strangers for 30 days. Zero build, zero owner involvement,
+    // zero money — and every Apify ceiling in this repo resolves to 0 or to a
+    // measurement on its result.
+    //
     // And a hard one: Actors requesting full permissions "might even be excluded
     // from search results" in autonomous-agent workflows. For a line whose buyers
     // are agents, minimum permissions is a launch requirement, not a nicety.
