@@ -5,6 +5,8 @@ import {
 } from '../src/lib/invoice.js';
 import { formatILS, parseAmount } from '../src/lib/money.js';
 import { isProConfigured, openProCheckout } from '../src/lib/paddle.js';
+import { loadStoredLicense, storeLicense, verifyLicense } from '../src/lib/license.js';
+import { applyBranding, DEFAULT_ACCENT, emptyBranding, isValidLogo, MAX_LOGO_BYTES, normalizeBranding } from '../src/lib/branding.js';
 
 initPage();
 const store = createStore(localStorage);
@@ -150,15 +152,111 @@ $('#client-name').addEventListener('change', () => {
   if (c) { doc.client = { ...c }; $('#client-id').value = c.id ?? ''; $('#client-address').value = c.address ?? ''; renderPreview(); }
 });
 
-// --- Pro gate (Paddle overlay when configured, otherwise "בקרוב")
-if (isProConfigured(site)) {
+// --- Pro: branding, gated on a signed licence key
+//
+// Branding is the only thing Pro sells. The saved client list and the automatic
+// numbering above are free and stay free - selling something the buyer already
+// has would be dishonest, and the constitution puts that above revenue.
+const BRANDING_KEY = 'ilbiz.branding';
+let branding = emptyBranding();
+let proActive = false;
+
+try {
+  branding = normalizeBranding(JSON.parse(localStorage.getItem(BRANDING_KEY) ?? 'null'));
+} catch { branding = emptyBranding(); }
+
+function saveBranding() {
+  try { localStorage.setItem(BRANDING_KEY, JSON.stringify(branding)); } catch { /* private mode */ }
+}
+
+function refreshBranding() {
+  applyBranding($('#preview'), branding, proActive);
+  $('#branding-fields').hidden = !proActive;
+  if (proActive) {
+    $('#brand-accent').value = branding.accent || DEFAULT_ACCENT;
+    $('#license-clear').hidden = false;
+  }
+}
+
+async function activate(key, { announce = true } = {}) {
+  const publicKey = site?.pro?.publicKey ?? null;
+  const result = await verifyLicense(key, publicKey);
+  proActive = result.valid;
+  if (result.valid) {
+    storeLicense(key);
+    if (announce) $('#license-note').textContent = 'הרישיון אומת. המיתוג פעיל.';
+  } else if (announce) {
+    const reasons = {
+      not_a_license_key: 'המפתח אינו בפורמט הנכון.',
+      bad_signature: 'המפתח אינו תקף.',
+      no_public_key_configured: 'המיתוג עדיין לא הופעל באתר הזה.',
+      web_crypto_unavailable: 'הדפדפן אינו תומך באימות המפתח.',
+    };
+    $('#license-note').textContent = reasons[result.reason] ?? 'לא ניתן לאמת את המפתח.';
+  }
+  refreshBranding();
+  return result.valid;
+}
+
+$('#license-apply').addEventListener('click', () => { activate($('#license-key').value.trim()); });
+$('#license-clear').addEventListener('click', () => {
+  storeLicense(null);
+  proActive = false;
+  $('#license-key').value = '';
+  $('#license-note').textContent = 'הרישיון הוסר מהדפדפן הזה.';
+  refreshBranding();
+});
+
+$('#brand-accent').addEventListener('input', () => {
+  branding.accent = $('#brand-accent').value;
+  saveBranding(); refreshBranding();
+});
+
+$('#brand-logo').addEventListener('change', () => {
+  const file = $('#brand-logo').files?.[0];
+  if (!file) return;
+  if (file.size > MAX_LOGO_BYTES) {
+    $('#brand-note').textContent = 'הקובץ גדול מדי (עד 512KB).';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (!isValidLogo(reader.result)) { $('#brand-note').textContent = 'סוג הקובץ אינו נתמך.'; return; }
+    branding.logo = reader.result;
+    saveBranding(); refreshBranding();
+    $('#brand-note').textContent = 'הלוגו נשמר בדפדפן שלך בלבד.';
+  };
+  reader.readAsDataURL(file);
+});
+
+$('#brand-clear').addEventListener('click', () => {
+  branding.logo = null;
+  $('#brand-logo').value = '';
+  saveBranding(); refreshBranding();
+});
+
+// Checkout is offered only when Paddle is configured AND a public key exists to
+// verify the licence it will produce. Selling a key nobody can verify would be
+// taking money for nothing.
+if (isProConfigured(site) && site?.pro?.publicKey) {
   const cta = $('#pro-cta');
   cta.disabled = false;
   cta.textContent = 'שדרוג ל-Pro';
-  $('#pro h3').textContent = 'Pro';
-  $('#pro-note').textContent = 'תשלום מאובטח דרך Paddle.';
-  cta.addEventListener('click', () => openProCheckout(site, { successUrl: `${location.origin}${location.pathname}?pro=1` }).catch((e) => { $('#pro-note').textContent = `שגיאה בפתיחת התשלום: ${e.message}`; }));
+  $('#pro-note').textContent = 'תשלום מאובטח דרך Paddle. לאחר התשלום יישלח אליך מפתח רישיון.';
+  cta.addEventListener('click', () => {
+    openProCheckout(site, { successUrl: `${location.origin}${location.pathname}?purchased=1` })
+      .catch((e) => { $('#pro-note').textContent = `שגיאה בפתיחת התשלום: ${e.message}`; });
+  });
 }
+
+if (new URLSearchParams(location.search).get('purchased') === '1') {
+  $('#pro-activate').open = true;
+  $('#license-note').textContent = 'תודה! הזן כאן את מפתח הרישיון שקיבלת במייל.';
+}
+
+const stored = loadStoredLicense();
+if (stored) activate(stored, { announce: false });
+refreshBranding();
 
 // --- init
 const savedBiz = store.getBusiness();

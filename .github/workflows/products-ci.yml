@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        product: [apify-il-open-data, il-biz-tools, x402-il-api]
+        product: [apify-il-open-data, il-biz-tools, telegram-il-tools-bot, x402-il-api]
     defaults:
       run:
         working-directory: products/${{ matrix.product }}

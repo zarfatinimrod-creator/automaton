@@ -104,11 +104,33 @@
   </form>
 
   <section class="card pro-box" id="pro">
-    <h3>Pro – בקרוב</h3>
-    <p>PDF ממותג עם לוגו וצבעי העסק, רשימת לקוחות שמורה, ומספור אוטומטי לכל סוג מסמך. תשלום חד-פעמי קטן.</p>
+    <h3>Pro – מיתוג המסמך</h3>
+    <p>הוספת הלוגו של העסק וצבע מותג למסמך המודפס. כל שאר הכלים באתר – שמירת לקוחות, מספור אוטומטי, יצוא ל-PDF והמסמכים השמורים – חינמיים ונשארים חינמיים.</p>
     <div class="actions">
       <button type="button" class="btn" id="pro-cta" disabled>בקרוב</button>
-      <span class="note" id="pro-note">התכונה תיפתח לרכישה כשהחנות תופעל.</span>
+      <span class="note" id="pro-note">המיתוג ייפתח לרכישה כשהחנות תופעל.</span>
+    </div>
+    <details id="pro-activate">
+      <summary>יש לי מפתח רישיון</summary>
+      <div class="field">
+        <label for="license-key">מפתח רישיון</label>
+        <input type="text" id="license-key" placeholder="ILBIZ1..." autocomplete="off" spellcheck="false">
+      </div>
+      <div class="actions">
+        <button type="button" class="btn secondary" id="license-apply">הפעלה</button>
+        <button type="button" class="btn secondary" id="license-clear" hidden>הסרת הרישיון</button>
+        <span class="note" id="license-note"></span>
+      </div>
+    </details>
+    <div id="branding-fields" hidden>
+      <div class="row">
+        <div class="field"><label for="brand-logo">לוגו (PNG/JPG/SVG, עד 512KB)</label><input type="file" id="brand-logo" accept="image/png,image/jpeg,image/webp,image/svg+xml"></div>
+        <div class="field"><label for="brand-accent">צבע מותג</label><input type="color" id="brand-accent" value="#1f3a5f"></div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn secondary" id="brand-clear">הסרת הלוגו</button>
+        <span class="note" id="brand-note">המיתוג נשמר בדפדפן שלך בלבד.</span>
+      </div>
     </div>
   </section>
 
@@ -123,6 +145,7 @@
     <p class="original">מקור</p>
     <header>
       <div class="biz">
+        <img data-brand-logo alt="" class="brand-logo" hidden>
         <h2 id="p-biz-name">שם העסק</h2>
         <p><span id="p-biz-kind">עוסק פטור</span> מס' <span class="num" id="p-biz-id"></span></p>
         <p id="p-biz-address"></p>

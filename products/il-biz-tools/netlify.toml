@@ -1,7 +1,9 @@
-# Static site: no build step. Publish the repository folder as-is.
+# Publish an explicit allowlist rather than the whole folder, so package.json,
+# README.md, tests/ and scripts/ are never uploaded. Opening index.html locally
+# still works - the build only copies, it does not transform.
 [build]
-  publish = "."
-  command = ""
+  publish = "_site"
+  command = "node scripts/build-site.js"
 
 [[headers]]
   for = "/*"

@@ -107,3 +107,14 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); out
   .doc { border: 0; padding: 0; max-width: none; margin: 0; }
   .container { max-width: none; padding: 0; }
 }
+
+/* Pro branding: the accent variable is only set when a valid licence is active,
+   so the free tier renders the document exactly as it always did. */
+.doc { --brand-accent: inherit; }
+.doc .brand-logo { max-height: 64px; max-width: 220px; margin-bottom: .5rem; display: block; }
+.doc[style*="--brand-accent"] .doc-type,
+.doc[style*="--brand-accent"] h2 { color: var(--brand-accent); }
+.doc[style*="--brand-accent"] .totals .grand td { border-top: 2px solid var(--brand-accent); }
+.pro-box details { margin-top: .75rem; }
+.pro-box summary { cursor: pointer; }
+@media print { .pro-box, #branding-fields { display: none !important; } }

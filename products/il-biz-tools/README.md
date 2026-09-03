@@ -10,7 +10,7 @@ small businesses. No framework, no build step: the deploy artifact is this folde
 | VAT calculator (מחשבון מע"מ) | `vat.html` | yes | — |
 | Osek patur ceiling tracker (מעקב תקרת עוסק פטור) | `osek-patur.html` | yes | — |
 | Net salary estimator (אומדן שכר נטו) | `net-salary.html` | yes | — |
-| Receipt / invoice generator (קבלה / חשבונית עסקה) | `invoice.html` | print / PDF, local save | branded PDF (logo + colours), saved client list, per-type auto numbering |
+| Receipt / invoice generator (קבלה / חשבונית עסקה) | `invoice.html` | print / PDF, local save, saved client list, per-type auto numbering | document branding: your logo and accent colour |
 
 Audience: the ~600k Israeli self-employed, especially **עוסקים פטורים** (freelancers under the
 VAT threshold) who need a receipt today and want to know when they will cross the ceiling.
@@ -19,7 +19,7 @@ answering the exact questions people search), plus sharing in freelancer Faceboo
 
 ### Pricing suggestion
 - Free tools: free forever (they are the SEO funnel).
-- **Pro: one-time ₪79** (or ₪29/year) via Paddle overlay checkout. Paddle is the merchant of record
+- **Pro (document branding): one-time ₪79** via Paddle overlay checkout. Paddle is the merchant of record
   and handles Israeli VAT on the digital sale. Alternative processors that work for an individual
   in Israel: PayPal Business, Payoneer Checkout. Stripe is not available in Israel.
 
@@ -77,6 +77,35 @@ There are **no server-side env vars** — this is a static site. Public configur
 | Key | Meaning | Default |
 |---|---|---|
 | `siteUrl` | Canonical origin, used for `<link rel=canonical>`; also edit `sitemap.xml` and `robots.txt` | `https://il-biz-tools.netlify.app` |
+## The Pro tier, and what it honestly is
+
+Pro sells **one** thing: your logo and accent colour on the printed document. The saved
+client list, the per-document-type numbering, the PDF export and the stored documents are
+free and stay free. An earlier version of this page advertised those free features as Pro
+and also promised branding that did not exist; that was fixed rather than shipped, because
+charging for something the buyer already has is a scam whatever the price.
+
+**How entitlement works without a server.** The site is static, so there is nobody to ask
+"did this person pay?". Pro is unlocked by a licence key: a short token signed with the
+owner's private key and verified in the browser against the public key in
+`src/config/site.json` (ECDSA P-256 via Web Crypto). Nobody can mint a key without the
+private half. A determined user can still bypass client-side gating by editing JavaScript
+— that is true of every static site, and it is not a reason to pretend otherwise.
+
+**Setting it up (owner, once):**
+
+```bash
+node scripts/make-license.js init            # writes .license-key.json (gitignored - back it up)
+                                             # and fills pro.publicKey in src/config/site.json
+node scripts/make-license.js issue buyer@example.com   # per sale: print the key to send
+```
+
+Until `pro.publicKey` is set, the Pro box stays disabled and says so. The checkout button
+appears only when **both** the Paddle credentials and the public key are configured —
+selling a key that nothing can verify would be taking money for nothing.
+
+**Losing `.license-key.json` invalidates every key already issued.** Back it up.
+
 | `paddle.clientToken` | Paddle **client-side** token (`test_…` / `live_…`) — this is the `PADDLE_CLIENT_TOKEN` | `""` (Pro shows "בקרוב") |
 | `paddle.priceId` | Paddle price id (`pri_…`) for the Pro product | `""` |
 | `paddle.environment` | `sandbox` or `production` | `sandbox` |
@@ -105,7 +134,7 @@ GitHub Pages, Vercel) works too — copy the headers from `netlify.toml` if the 
 1. **Paddle** (merchant of record; supports Israeli individuals): sign up at paddle.com, complete
    identity/KYC and payout details (Payoneer or bank), get the site domain approved, create the
    Pro product + price, copy the *client-side token* and *price id* into `site.json`, switch
-   `environment` to `production`. Until then the Pro box shows **בקרוב**.
+   `environment` to `production`, and run `make-license.js init`. Until both are done the Pro box shows **בקרוב**.
    Fallbacks: PayPal Business "buy now" link or Payoneer Checkout — replace `openProCheckout` in
    `assets/page-invoice.js` with a link.
 2. **Netlify** account + domain purchase (or use the free `*.netlify.app` subdomain).
