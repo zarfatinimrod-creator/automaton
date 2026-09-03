@@ -29,6 +29,7 @@ import { seedDefaultPortfolio } from "../src/revenue/portfolio.js";
 import { getRevenueStatus } from "../src/revenue/status.js";
 import { renderCommitSummary, renderReport, tick, type TickResult } from "../src/revenue/runner.js";
 import { enqueueGoal } from "../src/revenue/goal-queue.js";
+import { renderDashboard } from "../src/revenue/dashboard.js";
 import {
   ALL_CRITERIA,
   CRITERIA_GROUPS,
@@ -43,6 +44,7 @@ import type { LedgerKind } from "../src/revenue/types.js";
 
 const DEFAULT_DB = "state/colony/colony.db";
 const DEFAULT_REPORT = "state/colony/REPORT.md";
+const DEFAULT_DASHBOARD = "state/colony/dashboard.html";
 
 const USAGE = `colony — the revenue colony's governance loop
 
@@ -58,10 +60,12 @@ Commands:
   setup-done <lineId>  Mark a line's one-time owner setup as done and queue its build goal.
   target               Set the monthly target (and optional stretch target) in shekels.
   criteria             Show the search criteria and how much of the space is covered.
+  dashboard            Regenerate the manager's screen (HTML) from the ledger.
 
 Common options:
   --db <path>          SQLite file (default ${DEFAULT_DB})
   --report <path>      Report file written by tick/report (default ${DEFAULT_REPORT})
+  --html <path>        Manager dashboard written by tick/dashboard (default ${DEFAULT_DASHBOARD})
   --json               Print machine-readable JSON instead of prose
 
 tick options:
@@ -128,6 +132,7 @@ async function main(): Promise<void> {
     options: {
       db: { type: "string", default: DEFAULT_DB },
       report: { type: "string", default: DEFAULT_REPORT },
+      html: { type: "string", default: DEFAULT_DASHBOARD },
       json: { type: "boolean", default: false },
       force: { type: "boolean", default: false },
       // node:util parseArgs has no --no-<flag> negation, so the negative forms
@@ -174,6 +179,7 @@ async function main(): Promise<void> {
           seed: !values["no-seed"],
         });
         writeReport(values.report!, renderReport(db.raw, result));
+        writeReport(values.html!, renderDashboard(db.raw, { nowIso: values.now, blockers: result.blockers }));
         if (values.json) {
           console.log(JSON.stringify(result, null, 2));
         } else {
@@ -196,6 +202,7 @@ async function main(): Promise<void> {
         const result = await tick(db.raw, { nowIso: values.now, force: false, feedGoals: false, seed: false });
         // A report-only run must not consume the intervals it just checked.
         writeReport(values.report!, renderReport(db.raw, result));
+        writeReport(values.html!, renderDashboard(db.raw, { nowIso: values.now, blockers: result.blockers }));
         console.log(`Report written to ${values.report}`);
         break;
       }
@@ -270,6 +277,13 @@ async function main(): Promise<void> {
         const stretch = values.stretch === undefined ? undefined : num(values.stretch, "stretch");
         setTargets(db.raw, agorotFromIls(ils), stretch === undefined ? undefined : agorotFromIls(stretch));
         console.log(`Target set to ${formatIls(agorotFromIls(ils))}/month${stretch !== undefined ? `, stretch ${formatIls(agorotFromIls(stretch))}` : ""}.`);
+        break;
+      }
+
+      case "dashboard": {
+        const html = renderDashboard(db.raw, { nowIso: values.now });
+        writeReport(values.html!, html);
+        console.log(`Manager dashboard written to ${values.html}`);
         break;
       }
 

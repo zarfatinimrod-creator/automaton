@@ -1,6 +1,6 @@
 # Revenue colony — board report
 
-Generated 2026-09-03T13:45:50.465Z
+Generated 2026-09-03T13:53:14.933Z
 
 ## Where we are
 
@@ -40,10 +40,34 @@ Unevidenced targets: `templates`, `telegram-bots`, `dev-extensions`, `oss-bounti
 
 ## This tick
 
-Ran: revenue_ledger_sync
-Skipped as not yet due: revenue_supervisor_review, revenue_board_review, revenue_audit
+Ran: revenue_ledger_sync, revenue_supervisor_review, revenue_board_review, revenue_audit
 
 - Ledger sync: 0 new entries, 0 already known, sources [none configured]
+- Supervisors reviewed 9 line(s), escalating 8
+- Audit sampled 18 review(s), flagged 0
+
+### Board decisions
+
+- **apify-actors → ESCALATE** — blocked on one-time human setup: Create an Apify account in your name and complete Apify KYC (government ID, proof of address, tax document, beneficial-ownership info). This one step gates ALL THREE of: receiving any payout, setting a price on an Actor, and x402/agentic eligibility. Publishing free Actors is the only thing possible before it.; Open a PayPal account in your name (PayPal Israel) and link it as the Apify payout method (minimum payout $20 for PayPal and Wise, $100 for other methods); Register as osek patur (self-service online form) before the first payout
+- **il-biz-tools → ESCALATE** — blocked on one-time human setup: Open a merchant-of-record seller account (Paddle; Lemon Squeezy as fallback) in your name and complete identity/tax verification; Add an Israeli bank account (IBAN/SWIFT) or PayPal for payouts; Register as osek patur (self-service online form) before the first payout
+- **templates → ESCALATE** — blocked on one-time human setup: Open an Etsy shop in your name (ID verification) and enrol in Etsy Payments with a Payoneer account (KYC) linked to your Israeli bank
+- **paid-apis → ESCALATE** — blocked on one-time human setup: Create the API marketplace provider account in your name and add a PayPal payout method (x402 needs nothing; converting USDC to ILS later needs a one-time Israeli exchange account with KYC)
+- **telegram-bots → ESCALATE** — blocked on one-time human setup: Create the bot in Telegram with @BotFather from your own Telegram account (2 minutes) and hand over the bot token as TELEGRAM_BOT_TOKEN; no KYC, but a bot must belong to a Telegram user
+- **dev-extensions → ESCALATE** — blocked on one-time human setup: Pay the one-time Chrome Web Store developer fee ($5) with a Google account that has 2-step verification; create a Microsoft/Azure DevOps publisher for VS Code (free); reuse the merchant-of-record account from il-biz-tools for license keys
+- **hebrew-content → ESCALATE** — blocked on one-time human setup: Open the affiliate program accounts in your name (they require a tax form and a PayPal or Payoneer payout) and provide the affiliate IDs
+- **oss-bounties → ESCALATE** — blocked on one-time human setup: Connect your GitHub account to a bounty platform and complete its payout onboarding (verify it pays to Israel before enabling this line)
+
+### Actions taken
+
+- waiting on creator for apify-actors: Create an Apify account in your name and complete Apify KYC (government ID, proof of address, tax document, beneficial-ownership info). This one step gates ALL THREE of: receiving any payout, setting a price on an Actor, and x402/agentic eligibility. Publishing free Actors is the only thing possible before it.; Open a PayPal account in your name (PayPal Israel) and link it as the Apify payout method (minimum payout $20 for PayPal and Wise, $100 for other methods); Register as osek patur (self-service online form) before the first payout
+- waiting on creator for il-biz-tools: Open a merchant-of-record seller account (Paddle; Lemon Squeezy as fallback) in your name and complete identity/tax verification; Add an Israeli bank account (IBAN/SWIFT) or PayPal for payouts; Register as osek patur (self-service online form) before the first payout
+- waiting on creator for templates: Open an Etsy shop in your name (ID verification) and enrol in Etsy Payments with a Payoneer account (KYC) linked to your Israeli bank
+- waiting on creator for paid-apis: Create the API marketplace provider account in your name and add a PayPal payout method (x402 needs nothing; converting USDC to ILS later needs a one-time Israeli exchange account with KYC)
+- waiting on creator for telegram-bots: Create the bot in Telegram with @BotFather from your own Telegram account (2 minutes) and hand over the bot token as TELEGRAM_BOT_TOKEN; no KYC, but a bot must belong to a Telegram user
+- waiting on creator for dev-extensions: Pay the one-time Chrome Web Store developer fee ($5) with a Google account that has 2-step verification; create a Microsoft/Azure DevOps publisher for VS Code (free); reuse the merchant-of-record account from il-biz-tools for license keys
+- waiting on creator for hebrew-content: Open the affiliate program accounts in your name (they require a tax form and a PayPal or Payoneer payout) and provide the affiliate IDs
+- waiting on creator for oss-bounties: Connect your GitHub account to a bounty platform and complete its payout onboarding (verify it pays to Israel before enabling this line)
+- goal filing disabled for this review (no executor attached)
 
 Goal queue: agent-services:build
 
