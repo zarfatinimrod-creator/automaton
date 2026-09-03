@@ -337,5 +337,8 @@ and the repo has been treating them as one.
 
 **Nothing may be rejected on this ground until it is settled.** What settles it: open
 `https://stripe.com/global` and check whether Israel appears in the supported-countries list.
+**That page cannot be opened from this container** — `stripe.com` returns `EGRESS_BLOCKED`,
+confirmed 2026-09-03 — so no agent here can close this. It is an owner step, and a thirty-second
+one.
 Until then the claim marks a line for checking, not for killing — and the rejections above that
 rest on it (Substack, beehiiv, Medium Partner, Polar) are provisional, not closed.
