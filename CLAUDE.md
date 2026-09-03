@@ -17,6 +17,9 @@ Create `logs/YYYY-MM-DD-<task-slug>.md` with these sections, in this order:
 
 Write the log in Hebrew (the owner's language); code identifiers stay in English. Commit logs together with the work.
 
+## Model rule (owner's instruction)
+- Work only with Claude Fable 5.1 (`claude-fable-5-1`). When its quota is exhausted, stop, write "waiting for Fable 5.1 quota" in `logs/CHECKPOINT.md`, and resume after the quota renews. Never switch to another model to keep going.
+
 ## Build / test
 - `pnpm install`, `pnpm typecheck`, `pnpm test` (full suite takes >10 minutes here; run targeted files with `npx vitest run <path>` while iterating).
 - Revenue colony: `src/revenue/`, docs in `docs/CHAIN_OF_COMMAND.md` and `docs/INCOME_PLAN.he.md`, playbooks in `skills/`.

@@ -136,7 +136,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     directorRole: "director-telegram-bots",
     operatingLoop: [
       "Build small Telegram bots that do one useful thing well and charge per use or per month in Telegram Stars: PDF/image conversion, Hebrew text tools (nikud, transliteration), receipt and invoice bots for Israeli freelancers, reminder and form-filling helpers.",
-      "Bots are created through BotFather with no human account, and Stars are withdrawn to a wallet the automaton controls; converting to ILS later needs the creator's one-time exchange account.",
+      "The creator creates each bot once with BotFather (no KYC) and provides the token; Stars are withdrawn to a wallet the automaton controls; converting to ILS later needs the creator's one-time exchange account.",
       "Loop: ship one bot → list it in bot directories and the bot's own landing page → track daily active users and Stars received → improve the most-used bot → repeat.",
     ].join(" "),
     kpis: ["bots live", "daily active users", "Stars received", "paying users"],
@@ -144,7 +144,9 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     scaleCriteria: ["30-day revenue at or above target", "a bot with 100+ paying users"],
     targetMonthlyAgorot: agorotFromIls(1500),
     budgetMonthlyCents: 1500,
-    humanSetup: [],
+    humanSetup: [
+      "Create the bot in Telegram with @BotFather from your own Telegram account (2 minutes) and hand over the bot token as TELEGRAM_BOT_TOKEN; no KYC, but a bot must belong to a Telegram user",
+    ],
     skillName: "revenue-telegram-bots",
   },
   {
