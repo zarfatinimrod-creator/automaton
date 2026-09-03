@@ -60,8 +60,15 @@ export function estimateNetSalary({ gross, creditPoints, pensionRate = 0, config
   const ni = nationalInsurance(g, config.nationalInsurance);
   const pensionDeduction = g * pension;
 
-  const totalDeductions = incomeTax + ni.total + pensionDeduction;
-  const net = g - totalDeductions;
+  // Round each component first so the displayed breakdown always sums exactly.
+  const rounded = {
+    incomeTax: round0(incomeTax),
+    bituachLeumi: round0(ni.bituachLeumi),
+    health: round0(ni.health),
+    pension: round0(pensionDeduction),
+  };
+  const totalDeductions = rounded.incomeTax + rounded.bituachLeumi + rounded.health + rounded.pension;
+  const net = round0(g) - totalDeductions;
 
   const marginalRate = slices.length ? slices[slices.length - 1].rate : 0;
 
@@ -71,12 +78,9 @@ export function estimateNetSalary({ gross, creditPoints, pensionRate = 0, config
     incomeTaxBeforeCredits: round0(rawTax),
     creditValue: round0(creditValue),
     creditUsed: round0(creditUsed),
-    incomeTax: round0(incomeTax),
-    bituachLeumi: round0(ni.bituachLeumi),
-    health: round0(ni.health),
-    pension: round0(pensionDeduction),
-    totalDeductions: round0(totalDeductions),
-    net: round0(net),
+    ...rounded,
+    totalDeductions,
+    net,
     effectiveRate: g ? Math.round((totalDeductions / g) * 1000) / 10 : 0,
     marginalRate,
     slices,
