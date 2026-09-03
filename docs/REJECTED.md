@@ -160,10 +160,36 @@ publishes only as HTML or PDF, or must be bulk, automation or export — never t
 citizen can already get free. **Charging for a free answer is a constitution violation, not a
 pricing decision.**
 
-**And the honest ceiling for the whole group: ₪4,000-7,000/month at maturity**, with the best
-single build (a PCN874 builder) at about ₪2,500. This is the colony's home turf and it cannot
-reach ₪20,000 on its own. It earns credibility and traffic that other groups monetise. Treating it
-as the flagship would be a mistake — recorded here so no future session quietly re-assumes it.
+**The ceiling, and then the audited ceiling.** The supervisor put the whole group at
+₪4,000-7,000/month at maturity with its best single build — a PCN874 builder — at about ₪2,500.
+Its auditor (`research/colony-sweep/audits/israel-bureaucracy.md`) cut that build to **₪300-600
+at 12-month maturity and ₪0 in month one**, and the three reasons all hold up:
+
+- The supervisor's own `firstStep` told a builder to check that **`validatePcn874()`** covers the
+  needed record types. The auditor rendered the package: its only exports are `EntryType` and
+  `pcnGenerator`. **The function does not exist.** It is a fabricated symbol inside an instruction
+  written to be executed verbatim — and this group had flagged exactly that failure in someone
+  else's public skill ("a fake Amendment 157 and invented endpoints") before committing it.
+- The open-source accelerator it leaned on is frozen at 0.4.1 from **February 2024**, with
+  validation still in its TODO, and it predates the entire allocation-number era — no
+  allocation-number field at all.
+- The buyer is being eroded from both sides, and both erosions sit in the supervisor's own top
+  source. The ITA already exempted this cohort from itemising invoices under ₪5,000 (aggregate
+  under fixed supplier code 77777772) and lets an individual osek **defer the whole obligation to
+  1.1.2027** — which removes the product's two selling points, complexity and deadline. Meanwhile
+  the allocation-number ladder reaching ₪5,000 on 1.6.2026 pushes the same cohort into invoicing
+  suites, **and every suite that solves allocation numbers already emits PCN874**.
+
+The group's own conclusion stands and gets stronger: this is the colony's home turf and **it
+cannot reach ₪20,000 on its own.** It earns credibility and traffic that other groups monetise.
+Treating it as the flagship would be a mistake — recorded so no future session quietly re-assumes
+it.
+
+**The unpriced risk the whole group carries.** A wrong PCN874 is a wrong VAT filing, and the harm
+lands on the user, not on us. No line here carries a disclaimer, an accuracy bound or a liability
+analysis, while a Paddle refund policy is a binding commitment. In a group whose entire product
+surface is regulated numbers derived from search snippets, that is the largest thing nobody
+costed.
 
 **Evidence grade: the worst in any group so far, and not the scouts' fault.** gov.il, btl.gov.il,
 kolzchut.org.il, data.gov.il, ica.justice.gov.il and every Israeli vendor domain are egress-blocked.
