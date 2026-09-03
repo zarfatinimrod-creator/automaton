@@ -4,6 +4,8 @@ dist
 *.log
 .DS_Store
 *.db
+# The colony's own state is the audit trail the owner reads; it must be versioned.
+!state/colony/colony.db
 *.db-journal
 *.db-wal
 *.db-shm

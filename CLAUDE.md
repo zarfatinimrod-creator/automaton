@@ -21,9 +21,31 @@ Create `logs/YYYY-MM-DD-<task-slug>.md` with these sections, in this order:
 
 Write the log in Hebrew (the owner's language); code identifiers stay in English. Commit logs together with the work.
 
-## Model rule (owner's instruction)
-- Claude Fable 5.1 (`claude-fable-5-1`) is the default. When its quota runs out, stop, write "waiting for Fable 5.1 quota" in `logs/CHECKPOINT.md`, and resume when it renews.
-- Never switch models on your own initiative. But if the owner switches the model manually, that overrides: continue immediately on whatever model they chose, without asking.
+## Model routing rule (owner's instruction)
+
+The owner authorised routing work between models at our own discretion. **Claude Opus 5
+is the driver; Claude Fable 5.1 is reserved for the hard thinking.** Fable costs exactly
+twice as much ($10/$50 per 1M tokens versus $5/$25) and its quota has died mid-run twice
+on this project, so spending it on routine work buys nothing and costs the session.
+
+| Route to **Opus 5** (default) | Route to **Fable 5.1** (reserved) |
+|---|---|
+| Writing and wiring code, tests, CI | Adversarial verification of research findings |
+| Documentation, READMEs, playbooks | Deciding where money goes: portfolio synthesis, kill/scale calls |
+| Product build-out and refactors | Architecture decisions with long-lived consequences |
+| Routine research sweeps and data gathering | Subtle bug hunts and security review |
+| Anything mechanical or well-specified | Anything where being wrong is expensive and hard to detect |
+
+How to apply it:
+- **In subagents and workflows**, set the model explicitly per agent: `model: 'opus'` for
+  sweeps and build work, `model: 'fable'` for verification and judgement stages. This is
+  the main lever and needs no owner action.
+- **For the session model**, only the owner can switch. Say plainly when a step deserves
+  Fable and let them decide; never stall waiting for it.
+- **When Fable's quota runs out**, do not stop the project. Record it in
+  `logs/CHECKPOINT.md`, continue the Opus-suitable work, and queue the Fable-suitable
+  steps for when it renews.
+- Never downgrade below these two for project work. Haiku and Sonnet are not in the rota.
 
 ## Build / test
 - `pnpm install`, `pnpm typecheck`, `pnpm test` (full suite takes >10 minutes here; run targeted files with `npx vitest run <path>` while iterating).
