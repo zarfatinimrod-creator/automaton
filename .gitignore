@@ -14,3 +14,6 @@ dist
 .automaton/state.db
 
 products/mcp-il-tools/dist/
+
+# Archify visual-check screenshots are regenerable evidence, not artifacts.
+docs/diagrams/*.visual-check.*.png
