@@ -112,6 +112,24 @@ money goes. Two Fable agents at the top of a 142-agent fleet is the whole point 
 rule — Fable costs twice as much and its quota has died mid-run before, so it is spent
 only where being wrong is expensive and hard to detect.
 
+## What the scouts can actually reach
+
+The egress proxy blocks `WebFetch` for nearly every domain — paddle.com, dev.to, news
+sites, vendor docs all return `EGRESS_BLOCKED`. What works is **WebSearch** (snippets plus
+a synthesized answer) and **WebFetch against github.com**. `curl` never works.
+
+That is an evidence ceiling, not a detail. A scout can usually establish *what a page
+says* through a snippet quoting it, but not read the page itself, so claims come back one
+grade weaker than they look. The scout prompt therefore requires each claim to name the
+kind of evidence under it — rendered page, search snippet, or nothing — and, where a claim
+matters and only a snippet was available, to print the exact URL a human or an unblocked
+agent must open to settle it.
+
+The first sweep's Paddle scout did this correctly and it is the model: it marked "is Israel
+on Paddle's supported-seller list" as UNKNOWN-leaning-YES rather than YES, and named the
+two pages that would close the question. Read a scout that reports no such limits with
+suspicion.
+
 ## Why a scout cannot lie usefully
 
 Every scout is required to return a URL it actually opened, and to answer three questions

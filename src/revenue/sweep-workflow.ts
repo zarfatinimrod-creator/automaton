@@ -29,8 +29,9 @@ const MISSION = [
 
 const SCOUT_RULES = [
   "RULES:",
-  '1. Load web tools first: ToolSearch with query "select:WebSearch,WebFetch". The container has no outbound network, but those tools work. curl will fail; do not use it.',
+  '1. Load web tools first: ToolSearch with query "select:WebSearch,WebFetch". curl will fail - the container has no outbound network - and so will most of WebFetch: the egress proxy blocks nearly every domain (paddle.com, dev.to, news.ycombinator.com and the rest all return EGRESS_BLOCKED). WebSearch works and returns snippets. WebFetch works for github.com. Plan for that: search widely, and do not waste turns re-trying a blocked host.',
   '2. Every finding needs at least one real URL you actually fetched or a search result you actually saw, with a date. Never invent a number, a price, a user count or a revenue figure. "unknown" is a valid, useful answer.',
+  '2b. Say which kind of evidence each claim rests on. A rendered page is strong; a search snippet quoting that page is weaker and must be marked as such; your own memory is not evidence at all. When a claim matters and you could only get a snippet, list the exact URL a human or an unblocked agent must open to close it.',
   "3. Judge payability to Israel explicitly (YES / NO / UNKNOWN) with evidence. A NO is a first-class finding, not a failure.",
   "4. Judge ToS/legal risk: GREEN (clearly permitted), AMBER (unclear or restricted), RED (violates terms, law, or our constitution). Never recommend AMBER or RED as a build.",
   '5. Prefer things a software-only operation can ship in under 40 hours and that a specific, nameable buyer pays for. Say who the buyer is. "Everyone" means you have not found the buyer.',
