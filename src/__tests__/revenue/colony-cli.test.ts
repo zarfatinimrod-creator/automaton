@@ -44,3 +44,25 @@ describe("the scheduled workflow and the CLI agree on flags", () => {
     }
   });
 });
+
+describe("the wave-args helper the sweep depends on", () => {
+  const cli = cliSource;
+
+  it("declares --wave-args as a string option", () => {
+    expect(cli).toContain('"wave-args": { type: "string" }');
+  });
+
+  it("refuses to emit args for a wave with nothing left to sweep", () => {
+    // Launching a wave whose every criterion is already swept spends the search
+    // budget re-answering answered questions, which is the exact failure
+    // args.exclude exists to prevent.
+    expect(cli).toContain("is already swept — nothing for a wave to do");
+  });
+
+  it("prints the args on stdout and the human summary on stderr", () => {
+    // The JSON is meant to be piped or copied into the Workflow tool; mixing the
+    // summary into it would make that fail.
+    expect(cli).toContain("console.log(JSON.stringify({ groups: wanted, exclude }))");
+    expect(cli).toMatch(/console\.error\(`\\n\$\{remaining\} unswept/);
+  });
+});

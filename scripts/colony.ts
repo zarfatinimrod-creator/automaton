@@ -67,6 +67,8 @@ Commands:
                        --reconcile marks swept everything with a scout report on
                        disk, dated by the file's mtime. Run it after a sweep wave:
                        the workflow writes reports and cannot reach this database.
+                       --wave-args <group,group> prints the Workflow args for the
+                       next wave, with already-swept criteria pre-excluded.
   dashboard            Regenerate the manager's screen (HTML) from the ledger.
   growth               Model the path to the final goal (₪1M/year) and print the scenarios.
 
@@ -167,6 +169,7 @@ async function main(): Promise<void> {
       mark: { type: "string" },
       supervised: { type: "string" },
       reconcile: { type: "boolean", default: false },
+      "wave-args": { type: "string" },
       help: { type: "boolean", default: false },
     },
   });
@@ -321,6 +324,23 @@ async function main(): Promise<void> {
         const nowMs = values.now ? Date.parse(values.now) : Date.now();
         if (!Number.isFinite(nowMs)) fail("--now must be an ISO timestamp");
 
+        if (values["wave-args"]) {
+          // Hands the Workflow tool its args, already filled in. Assembling this
+          // by hand is how a wave ends up re-running swept criteria and blinding
+          // the ones that matter — see args.exclude in sweep-workflow.ts.
+          const dir = path.resolve(SCOUT_REPORT_DIR);
+          const done = fs.existsSync(dir)
+            ? new Set(criteriaFromReportFilenames(fs.readdirSync(dir)).known)
+            : new Set<string>();
+          const wanted = values["wave-args"].split(",").map((g) => g.trim()).filter(Boolean);
+          const groups = wanted.map((id) => CRITERIA_GROUPS.find((g) => g.id === id) ?? fail(`no criterion group "${id}"`));
+          const exclude = groups.flatMap((g) => g.criteria.filter((c) => done.has(c.id)).map((c) => c.id));
+          const remaining = groups.reduce((n, g) => n + g.criteria.filter((c) => !done.has(c.id)).length, 0);
+          if (remaining === 0) fail(`every criterion in ${wanted.join(", ")} is already swept — nothing for a wave to do`);
+          console.log(JSON.stringify({ groups: wanted, exclude }));
+          console.error(`\n${remaining} unswept criteri${remaining === 1 ? "on" : "a"}; ${exclude.length} excluded as already swept.`);
+          break;
+        }
         if (values.reconcile) {
           // The scout reports on disk are the durable record; the kv rows are a
           // convenience. When they disagree, disk wins, and the file's mtime is
