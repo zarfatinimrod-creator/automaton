@@ -154,7 +154,8 @@ in this file.
 **7. Nobody knows how a stranger finds any of this, and until they do every ceiling in this
 document is ₪0.** This is the constraint I am least comfortable writing down, because it
 invalidates more of the plan than the other six combined — and two independent auditors reached
-it separately, from opposite ends of the sweep. The `israel-bureaucracy` auditor: *"without an
+it separately, from opposite ends of the sweep. The `israel-bureaucracy` auditor
+(`research/colony-sweep/audits/israel-bureaucracy.md`): *"without an
 owner-free acquisition channel, every ceiling in this group is ₪0 regardless of build quality.
 This is the group's central unexamined assumption."* The `store-promotion` scout, in a report
 its own supervisor buried: *"cross-promotion is a multiplier on traffic, and a multiplier on zero
