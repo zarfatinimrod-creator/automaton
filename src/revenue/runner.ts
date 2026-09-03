@@ -124,6 +124,75 @@ export function findStuckGoals(db: Database, nowMs: number, alertDays = NO_EXECU
   return stuck;
 }
 
+/**
+ * The hourly schedule missing this long means the loop stopped, not that it was
+ * quiet. Six hours is five missed runs — long enough not to fire on a delayed
+ * cron, short enough that a broken workflow is caught the same day.
+ */
+export const LOOP_GAP_ALERT_MS = 6 * 60 * 60 * 1000;
+
+/** A live line with no money moving for this long has stopped earning. */
+export const SILENT_LINE_ALERT_DAYS = 14;
+
+export interface LivenessFinding {
+  kind: "loop_gap" | "silent_line";
+  detail: string;
+}
+
+/**
+ * Watch the loop itself.
+ *
+ * A dead colony looks exactly like a quiet one: the report still renders, the
+ * numbers are still there, and nothing says the last tick was a week ago. The
+ * scheduled workflow is the sole writer, so if it breaks, silence is the only
+ * symptom. Call this at the START of a tick, before markRan overwrites the
+ * evidence of how long the loop was down.
+ */
+export function checkLiveness(db: Database, nowMs: number): LivenessFinding[] {
+  const findings: LivenessFinding[] = [];
+
+  // markRan stores an ISO string, not epoch ms — Number() here would be NaN and
+  // the watchdog would silently never fire, which is the exact failure it exists
+  // to catch.
+  const last = getKv(db, lastRunKey("revenue_ledger_sync"));
+  const lastMs = last ? Date.parse(last) : NaN;
+  if (Number.isFinite(lastMs)) {
+    const gap = nowMs - lastMs;
+    if (gap > LOOP_GAP_ALERT_MS) {
+      const hours = Math.round(gap / (60 * 60 * 1000));
+      findings.push({
+        kind: "loop_gap",
+        detail:
+          `the loop did not run for ${hours} hours (last ledger sync ${new Date(lastMs).toISOString()}). ` +
+          "Check the colony workflow in Actions: a failing schedule is invisible from the numbers alone.",
+      });
+    }
+  }
+
+  const cutoff = new Date(nowMs - SILENT_LINE_ALERT_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  const silent = db
+    .prepare(
+      `SELECT r.id AS id, MAX(l.occurred_at) AS last_money
+         FROM revenue_lines r
+         LEFT JOIN revenue_ledger l
+           ON l.line_id = r.id AND l.kind IN ('sale', 'subscription', 'payout')
+        WHERE r.status = 'live'
+        GROUP BY r.id
+       HAVING last_money IS NULL OR last_money < ?`,
+    )
+    .all(cutoff) as { id: string; last_money: string | null }[];
+  for (const line of silent) {
+    findings.push({
+      kind: "silent_line",
+      detail: line.last_money
+        ? `${line.id} is live but has taken no money since ${line.last_money.slice(0, 10)}`
+        : `${line.id} is live but has never taken money`,
+    });
+  }
+
+  return findings;
+}
+
 export interface TickOptions {
   nowIso?: string;
   policy?: DecisionPolicy;
@@ -147,6 +216,7 @@ export interface TickResult {
   board: BoardReviewResult | null;
   audit: AuditResult | null;
   stuckGoals: StuckGoal[];
+  liveness: LivenessFinding[];
   blockers: string[];
   summary: PortfolioSummary | null;
 }
@@ -171,6 +241,7 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
     board: null,
     audit: null,
     stuckGoals: [],
+    liveness: [],
     blockers: [],
     summary: null,
   };
@@ -183,6 +254,10 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
     );
     return result;
   }
+
+  // Before anything writes a last_run: the gap is the evidence.
+  result.liveness = checkLiveness(db, nowMs);
+  for (const finding of result.liveness) result.blockers.push(finding.detail);
 
   const shouldRun = (task: TaskName): boolean => {
     if (force || isDue(db, task, nowMs)) return true;

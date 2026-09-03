@@ -2,11 +2,14 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import type BetterSqlite3 from "better-sqlite3";
 import { createInMemoryDb } from "../orchestration/test-db.js";
 import {
+  checkLiveness,
   findStuckGoals,
   isDue,
+  LOOP_GAP_ALERT_MS,
   markRan,
   renderCommitSummary,
   renderReport,
+  SILENT_LINE_ALERT_DAYS,
   tick,
   TASK_ORDER,
 } from "../../revenue/runner.js";
@@ -194,5 +197,88 @@ describe("revenue/runner report rendering", () => {
     expect(summary).toContain("₪0.00");
     expect(summary).toContain("blocker");
     expect(summary.split("\n")).toHaveLength(1);
+  });
+});
+
+
+describe("revenue/runner liveness watchdog", () => {
+  let db: BetterSqlite3.Database;
+  const t0 = Date.parse("2026-09-03T00:00:00.000Z");
+  const DAY = 24 * HOUR;
+
+  beforeEach(() => { db = createInMemoryDb(); });
+  afterEach(() => { db.close(); });
+
+  // Seed through the real writer, not hand-rolled SQL: a test that invents its
+  // own schema stops testing the one the colony actually uses.
+  const seedLiveLine = (id: string) => {
+    const at = new Date(t0).toISOString();
+    db.prepare(
+      `INSERT INTO revenue_lines (id, name, category, tier, status, director_role, operating_loop,
+        target_monthly_agorot, budget_monthly_cents, human_setup_done, launched_at, created_at, updated_at)
+       VALUES (?, ?, ?, ?, 'live', ?, '', 100000, 1000, 1, ?, ?, ?)`,
+    ).run(id, id, DEFAULT_PORTFOLIO[0].category, DEFAULT_PORTFOLIO[0].tier, `director-${id}`, at, at, at);
+  };
+
+  it("says nothing on a colony that has never ticked", () => {
+    // No last_run means a first run, not a dead loop. Alerting here would cry
+    // wolf on every fresh database.
+    expect(checkLiveness(db, t0)).toEqual([]);
+  });
+
+  it("stays quiet while the schedule is keeping up", () => {
+    markRan(db, "revenue_ledger_sync", t0);
+    expect(checkLiveness(db, t0 + LOOP_GAP_ALERT_MS - 1)).toEqual([]);
+  });
+
+  it("reports the gap once the loop has actually stopped", () => {
+    markRan(db, "revenue_ledger_sync", t0);
+    const findings = checkLiveness(db, t0 + LOOP_GAP_ALERT_MS + HOUR);
+    expect(findings).toHaveLength(1);
+    expect(findings[0].kind).toBe("loop_gap");
+    expect(findings[0].detail).toContain("7 hours");
+    expect(findings[0].detail).toContain("Actions");
+  });
+
+  it("reports a live line that has never taken money", () => {
+    seedLiveLine("never-paid");
+    const findings = checkLiveness(db, t0);
+    expect(findings.map((f) => f.kind)).toContain("silent_line");
+    expect(findings.find((f) => f.kind === "silent_line")!.detail).toContain("never taken money");
+  });
+
+  it("goes quiet once that line takes money, and speaks again when it stops", () => {
+    seedLiveLine("paid-once");
+    recordLedgerEntry(db, {
+      lineId: "paid-once", kind: "sale", amountMinor: 45000, currency: "ILS",
+      source: "manual", externalId: "tx-1", occurredAt: new Date(t0).toISOString(),
+    });
+    expect(checkLiveness(db, t0)).toEqual([]);
+    expect(checkLiveness(db, t0 + (SILENT_LINE_ALERT_DAYS - 1) * DAY)).toEqual([]);
+
+    const late = checkLiveness(db, t0 + (SILENT_LINE_ALERT_DAYS + 1) * DAY);
+    expect(late).toHaveLength(1);
+    expect(late[0].detail).toContain("no money since 2026-09-03");
+  });
+
+  it("ignores costs: spending is not earning", () => {
+    seedLiveLine("spender");
+    recordLedgerEntry(db, {
+      lineId: "spender", kind: "cost", amountMinor: 5000, currency: "ILS",
+      source: "manual", externalId: "cost-1", occurredAt: new Date(t0).toISOString(),
+    });
+    expect(checkLiveness(db, t0).map((f) => f.kind)).toContain("silent_line");
+  });
+
+  it("does not chase lines that are not live yet", () => {
+    // proposed/building/awaiting_setup lines have no revenue by definition.
+    expect(checkLiveness(db, t0)).toEqual([]);
+  });
+
+  it("surfaces liveness findings through a tick as blockers", async () => {
+    seedLiveLine("silent");
+    const result = await tick(db, { nowIso: new Date(t0).toISOString(), feedGoals: false, seed: false });
+    expect(result.liveness.some((f) => f.kind === "silent_line")).toBe(true);
+    expect(result.blockers.some((b) => b.includes("never taken money"))).toBe(true);
   });
 });
