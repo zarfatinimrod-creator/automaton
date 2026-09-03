@@ -17,6 +17,20 @@ or take the whole set with `source: "git"` and this repository's URL.
 
 The URLs below point at the branch these were built on, verified working today. Once it merges they are also reachable on `main` at the same paths.
 
+## Before this index is advertised anywhere
+
+**The install URLs below point at a repository that is public under the owner's personal
+account, so they carry his username.** He has asked that nothing published carry any
+connection to his name, and a raw.githubusercontent.com URL cannot be anonymised while the
+repository lives where it lives — replacing these links with a brand URL that does not exist
+yet would just ship a table of 404s.
+
+So this index works and is correct, and it is **not** to be promoted, submitted to a
+directory, or linked from a product until the repository is moved to an organisation account.
+That move is the owner's to make; it is recorded in `docs/INCOME_PLAN.he.md` §6 with the other
+one-time steps. Everything else about the skills is unaffected: they install fine today for
+anyone who already has the URL.
+
 ## What each one is for
 
 These are operating playbooks, not prompts: each names the loop to run, the KPIs, the kill

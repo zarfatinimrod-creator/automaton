@@ -11,12 +11,12 @@ Free, MIT, no account, no key, no network calls. Everything runs locally.
 ```json
 {
   "mcpServers": {
-    "il-tools": { "command": "npx", "args": ["-y", "@zarfatinimrod/mcp-il-tools"] }
+    "il-tools": { "command": "npx", "args": ["-y", "@bediyuk/mcp-il-tools"] }
   }
 }
 ```
 
-Registry name: `io.github.zarfatinimrod-creator/il-tools`.
+Registry name: `com.bediyuk/il-tools`.
 
 ## Tools
 

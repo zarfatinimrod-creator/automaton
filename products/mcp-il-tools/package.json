@@ -1,5 +1,5 @@
 {
-  "name": "@zarfatinimrod/mcp-il-tools",
+  "name": "@bediyuk/mcp-il-tools",
   "version": "0.1.0",
   "description": "MCP server for Israeli data validation: teudat zehut, phone numbers, bank accounts, Hebrew dates, Hebrew-to-Latin transliteration.",
   "type": "module",

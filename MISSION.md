@@ -166,6 +166,40 @@ recurring cost is the owner's decision, every time, not a draw against this pot.
 cannot be counted as progress. Money still only counts when it arrives in the ledger with a
 transaction id, in the other direction.
 
+### פרסום בעילום שם — תוספת הבעלים, 3.9.2026 (verbatim)
+
+> מתי שמפרסמים שלא יהיה שום קשר לשם שלי בשום דבר.
+
+**Nothing we publish carries the owner's name, username, or personal identifiers.** Not a
+package name, not a registry namespace, not a repository URL in a manifest, not a byline, not a
+tool description, not a support address. The company has a name of its own and that is the only
+name on the outside.
+
+Applied, in the places it was already leaking: the MCP server's npm scope is
+`@bediyuk/mcp-il-tools`, and its registry name is `com.bediyuk/il-tools` rather than
+`io.github.<username>/…`. That second change is not cosmetic — the registry's GitHub
+authentication **derives the namespace from the account**, so the only way to publish without
+the username in the identifier is DNS verification against a company domain. The domain is
+therefore a prerequisite for listing, not a nice-to-have.
+
+**What cannot be anonymised, stated plainly so it is not discovered later.** Three things will
+carry his real legal name no matter what we do:
+
+1. **Payout and platform identity.** Paddle, PayPal, Payoneer and Apify all verify a real human
+   and pay a real bank account. A merchant of record helps — Paddle appears as the seller to the
+   buyer — but the account behind it is his.
+2. **Israeli tax invoices.** An invoice issued to an Israeli customer must name the עוסק. This is
+   law, not a setting.
+3. **The repository, while it lives under his personal account.** Every
+   `raw.githubusercontent.com/<username>/…` URL carries it, including the skills index. Moving
+   the repo to an organisation is the fix and it is his to make; until then that index is not to
+   be advertised anywhere, and the links are left working rather than replaced with a brand URL
+   that would 404.
+
+So the rule is: **the brand is the only public face, and where the law requires a name, it is
+never volunteered beyond what the law requires.** No bylines, no "built by", no personal contact
+details, no name in a commit that ships inside a package.
+
 ### What this does not change
 
 Nothing in this addition loosens the constitution. A thousand honest stores is the goal; one

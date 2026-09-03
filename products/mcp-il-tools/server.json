@@ -1,16 +1,18 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.zarfatinimrod-creator/il-tools",
+  "name": "com.bediyuk/il-tools",
   "description": "Israeli data validation: teudat zehut check digit, phone number classification, bank and branch codes, Hebrew calendar conversion, and Hebrew-to-Latin transliteration.",
   "version": "0.1.0",
-  "websiteUrl": "https://github.com/zarfatinimrod-creator/automaton/tree/main/products/mcp-il-tools",
+  "websiteUrl": "https://bediyuk.co.il",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "@zarfatinimrod/mcp-il-tools",
+      "identifier": "@bediyuk/mcp-il-tools",
       "version": "0.1.0",
-      "transport": { "type": "stdio" }
+      "transport": {
+        "type": "stdio"
+      }
     }
   ]
 }
