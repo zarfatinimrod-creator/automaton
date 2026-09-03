@@ -46,7 +46,9 @@
     "test:security": "vitest run --grep 'security|injection|policy'",
     "test:financial": "vitest run --grep 'financial|spend|treasury'",
     "test:ci": "vitest run --reporter=verbose",
-    "clean": "rm -rf dist && pnpm -r clean"
+    "clean": "rm -rf dist && pnpm -r clean",
+    "colony": "tsx scripts/colony.ts",
+    "gen:sweep": "tsx scripts/gen-sweep-workflow.ts"
   },
   "dependencies": {
     "@types/better-sqlite3": "^7.6.0",

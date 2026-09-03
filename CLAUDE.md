@@ -47,6 +47,13 @@ How to apply it:
   steps for when it renews.
 - Never downgrade below these two for project work. Haiku and Sonnet are not in the rota.
 
+**Fleets (many agents at once).** The same split scales: the searching tier runs on Opus,
+the deciding tier on Fable. In the 142-agent criteria sweep that means 112 scouts, 14
+supervisors and 14 auditors on Opus, and exactly two agents — the chief auditor and the
+board — on Fable. Putting Fable in the fan-out is how the quota died before; putting it
+at the top is what the rule is for. Set `model` explicitly on every agent in a fleet:
+inheriting the session model means a session switch silently re-tiers a hundred agents.
+
 ## Build / test
 - `pnpm install`, `pnpm typecheck`, `pnpm test` (full suite takes >10 minutes here; run targeted files with `npx vitest run <path>` while iterating).
 - Revenue colony: `src/revenue/`, docs in `docs/CHAIN_OF_COMMAND.md` and `docs/INCOME_PLAN.he.md`, playbooks in `skills/`.

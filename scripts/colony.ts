@@ -29,6 +29,16 @@ import { seedDefaultPortfolio } from "../src/revenue/portfolio.js";
 import { getRevenueStatus } from "../src/revenue/status.js";
 import { renderCommitSummary, renderReport, tick, type TickResult } from "../src/revenue/runner.js";
 import { enqueueGoal } from "../src/revenue/goal-queue.js";
+import {
+  ALL_CRITERIA,
+  CRITERIA_GROUPS,
+  criteriaDueForSweep,
+  criterionById,
+  markSupervised,
+  markSwept,
+  readLastSwept,
+  sweepCoverage,
+} from "../src/revenue/criteria.js";
 import type { LedgerKind } from "../src/revenue/types.js";
 
 const DEFAULT_DB = "state/colony/colony.db";
@@ -47,6 +57,7 @@ Commands:
   record               Record one ledger entry by hand.
   setup-done <lineId>  Mark a line's one-time owner setup as done and queue its build goal.
   target               Set the monthly target (and optional stretch target) in shekels.
+  criteria             Show the search criteria and how much of the space is covered.
 
 Common options:
   --db <path>          SQLite file (default ${DEFAULT_DB})
@@ -76,6 +87,13 @@ setup-done options:
 target options:
   --ils <n>            Monthly target in shekels                         (required)
   --stretch <n>        Stretch target in shekels
+
+criteria options:
+  --due                List only the criteria due for a fresh search
+  --group <id>         Restrict to one criterion group
+  --briefs             Print each criterion's full search brief
+  --mark <id>          Record a criterion as swept now (id, or a group id for all of it)
+  --supervised <id>    Record that a group's supervisor filed its report
 `;
 
 function fail(message: string): never {
@@ -125,6 +143,11 @@ async function main(): Promise<void> {
       undo: { type: "boolean", default: false },
       ils: { type: "string" },
       stretch: { type: "string" },
+      due: { type: "boolean", default: false },
+      group: { type: "string" },
+      briefs: { type: "boolean", default: false },
+      mark: { type: "string" },
+      supervised: { type: "string" },
       help: { type: "boolean", default: false },
     },
   });
@@ -236,6 +259,55 @@ async function main(): Promise<void> {
         const stretch = values.stretch === undefined ? undefined : num(values.stretch, "stretch");
         setTargets(db.raw, agorotFromIls(ils), stretch === undefined ? undefined : agorotFromIls(stretch));
         console.log(`Target set to ${formatIls(agorotFromIls(ils))}/month${stretch !== undefined ? `, stretch ${formatIls(agorotFromIls(stretch))}` : ""}.`);
+        break;
+      }
+
+      case "criteria": {
+        const nowMs = values.now ? Date.parse(values.now) : Date.now();
+        if (!Number.isFinite(nowMs)) fail("--now must be an ISO timestamp");
+
+        if (values.mark) {
+          const atIso = new Date(nowMs).toISOString();
+          const group = CRITERIA_GROUPS.find((g) => g.id === values.mark);
+          const targets = group ? group.criteria : [criterionById(values.mark) ?? fail(`no criterion or group "${values.mark}"`)];
+          for (const c of targets) markSwept(db.raw, c.id, atIso);
+          console.log(`Marked ${targets.length} criteri${targets.length === 1 ? "on" : "a"} swept at ${atIso}.`);
+          break;
+        }
+        if (values.supervised) {
+          const group = CRITERIA_GROUPS.find((g) => g.id === values.supervised)
+            ?? fail(`no criterion group "${values.supervised}"`);
+          markSupervised(db.raw, group.id, new Date(nowMs).toISOString());
+          console.log(`Group "${group.id}" marked supervised at ${new Date(nowMs).toISOString()}.`);
+          break;
+        }
+
+        const coverage = sweepCoverage(db.raw, nowMs);
+        const dueIds = new Set(criteriaDueForSweep(readLastSwept(db.raw), nowMs).map((c) => c.id));
+        const groups = values.group
+          ? [CRITERIA_GROUPS.find((g) => g.id === values.group) ?? fail(`no criterion group "${values.group}"`)]
+          : CRITERIA_GROUPS;
+
+        if (values.json) {
+          console.log(JSON.stringify({ totalCriteria: ALL_CRITERIA.length, due: dueIds.size, coverage }, null, 2));
+          break;
+        }
+
+        console.log(`Search space: ${ALL_CRITERIA.length} criteria in ${CRITERIA_GROUPS.length} groups, one scout each, one supervisor per group.`);
+        console.log(`Due for a fresh search: ${dueIds.size}.\n`);
+        for (const g of groups) {
+          const cov = coverage.find((c) => c.groupId === g.id)!;
+          const supervised = cov.lastSupervisedIso ? `supervised ${cov.lastSupervisedIso.slice(0, 10)}` : "never supervised";
+          console.log(`## ${g.id} — ${g.title}`);
+          console.log(`   ${cov.swept}/${cov.total} swept, ${cov.due} due, ${supervised}`);
+          for (const c of g.criteria) {
+            const isDue = dueIds.has(c.id);
+            if (values.due && !isDue) continue;
+            console.log(`   ${isDue ? "[ ]" : "[x]"} ${c.id}`);
+            if (values.briefs) console.log(`       ${c.brief}`);
+          }
+          console.log("");
+        }
         break;
       }
 

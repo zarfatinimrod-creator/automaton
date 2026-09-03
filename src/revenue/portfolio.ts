@@ -32,9 +32,14 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
       "watch the daily health tests and quality score, auto-fix breaking site changes → answer issues in the Actor's issue tab → each week kill zero-run Actors and clone winners into adjacent niches → record the monthly payout invoice in the ledger.",
     ].join(" "),
     kpis: ["actors published", "monthly runs", "paying users", "quality score", "monthly payout in ILS"],
-    killCriteria: ["under ₪500 in 30 days after 60 days live with 10+ Actors", "two Actors deprecated for failing health checks in one month", "Store terms violation notice"],
-    scaleCriteria: ["30-day payout at or above target", "any single Actor above ₪1,500 per month"],
-    targetMonthlyAgorot: agorotFromIls(5000),
+    // Apify's own partner page implies roughly $470/developer/month on average and
+    // about $4k MRR for the single most successful independent creator, so revenue
+    // here is a portfolio effect, never one hit. Store ranking is driven by existing
+    // usage, which makes a new actor structurally invisible: users lead revenue by
+    // weeks, so the kill trigger watches users, not shekels.
+    killCriteria: ["under 25 monthly users across all Actors after 60 days live with 10+ Actors", "under ₪500 in 30 days after 90 days live", "two Actors deprecated for failing health checks in one month", "Store terms violation notice"],
+    scaleCriteria: ["30-day payout at or above target", "any single Actor above ₪1,500 per month", "any Actor in the top 3 of its Store category"],
+    targetMonthlyAgorot: agorotFromIls(3000),
     budgetMonthlyCents: 6000,
     humanSetup: [
       "Create an Apify account in your name and complete Apify KYC (government ID, proof of address, tax document)",
@@ -99,10 +104,16 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
       "Serve every endpoint over x402 (USDC on Base, no account needed by the buyer) and cross-list on an API marketplace with a free tier and metered paid tiers; share the code with the Apify line where possible.",
       "Loop: ship one endpoint with docs and tests → list it → track calls, paying subscribers and error rate → improve the endpoint with the most free-tier usage → repeat. Tag every inbound x402 payment with [line:paid-apis].",
     ].join(" "),
+    // Genuine agent-to-API commerce across the whole x402 protocol is on the order
+    // of $28k/day, at a median clearing price near $0.028 per call. Our earlier
+    // ₪2,500 target implied capturing a fraction of all worldwide x402 traffic that
+    // is not credible. The marketplace subscriptions, not x402, carry this line;
+    // x402 is the zero-KYC option attached to it. Volume is the honest early signal
+    // because revenue at these prices lags far behind usage.
     kpis: ["API calls per day", "paying subscribers", "x402 paid requests", "error rate", "monthly revenue in ILS"],
-    killCriteria: ["under ₪400 in 30 days after 60 days live", "error rate above 2% for two reviews"],
+    killCriteria: ["under 2,000 paid calls in 30 days after 60 days live", "under ₪400 in 30 days after 90 days live", "error rate above 2% for two reviews"],
     scaleCriteria: ["30-day revenue at or above target", "10+ paying subscribers or 5+ recurring paying agents"],
-    targetMonthlyAgorot: agorotFromIls(2500),
+    targetMonthlyAgorot: agorotFromIls(1200),
     budgetMonthlyCents: 3000,
     humanSetup: [
       "Create the API marketplace provider account in your name and add a PayPal payout method (x402 needs nothing; converting USDC to ILS later needs a one-time Israeli exchange account with KYC)",
@@ -121,9 +132,11 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
       "Loop: ship one endpoint → announce in the registry → measure paid requests per day → add the endpoint agents ask for most → repeat. Tag every inbound payment with [line:agent-services].",
     ].join(" "),
     kpis: ["paid requests per day", "unique paying agents", "USDC received", "p95 latency"],
-    killCriteria: ["under ₪300 in 30 days after 60 days live", "no unique paying agent in 30 days"],
+    killCriteria: ["under ₪300 in 30 days after 90 days live", "no unique paying agent in 30 days"],
     scaleCriteria: ["30-day revenue at or above target", "5+ recurring paying agents"],
-    targetMonthlyAgorot: agorotFromIls(1500),
+    // Kept deliberately small: zero setup makes it the first line that can earn,
+    // but protocol-wide volume caps what it can become. It funds compute, not rent.
+    targetMonthlyAgorot: agorotFromIls(800),
     budgetMonthlyCents: 1500,
     humanSetup: [],
     skillName: "revenue-agent-services",
@@ -139,7 +152,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
       "The creator creates each bot once with BotFather (no KYC) and provides the token; Stars are withdrawn to a wallet the automaton controls; converting to ILS later needs the creator's one-time exchange account.",
       "Loop: ship one bot → list it in bot directories and the bot's own landing page → track daily active users and Stars received → improve the most-used bot → repeat.",
     ].join(" "),
-    kpis: ["bots live", "daily active users", "Stars received", "paying users"],
+    kpis: ["bots live", "daily active users", "Stars received", "paying users", "share of purchases made on desktop/web"],
     killCriteria: ["under ₪300 in 30 days after 60 days live", "no paying user in 30 days"],
     scaleCriteria: ["30-day revenue at or above target", "a bot with 100+ paying users"],
     targetMonthlyAgorot: agorotFromIls(1500),
@@ -178,9 +191,10 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     operatingLoop: [
       "Publish genuinely useful Hebrew guides, first-hand tool tests and continuously refreshed calculators on a niche with buying intent (small-business software, personal finance and bureaucracy for Israelis) on a domain the automaton owns.",
       "Every page is original, fact-checked against primary sources and disclosed as AI-assisted; monetise with affiliate programs that pay Israel (Impact.com, PartnerStack, Amazon Associates via Payoneer) and, once traffic qualifies, an entry ad network. Volume AI content is penalised in 2026, so quality and freshness beat quantity.",
-      "Loop: research keyword gaps → publish 3-5 guides or calculators per week → track impressions, clicks and affiliate conversions → double down on what converts → repeat. Expect months, not weeks.",
+      "Loop: research keyword gaps → publish working tools first and prose only to explain a tool's own output → track impressions, clicks and conversions → double down on what converts → repeat. Expect months, not weeks.",
+      "Monetisation order is fixed: conversion into our own products first, affiliate second, display ads last and only as a residual. Hebrew is a small market with low ad rates, so ads can never carry this line. Volume is not a KPI - a page count target is the exact production pattern search engines now penalise.",
     ].join(" "),
-    kpis: ["indexed pages", "weekly organic visits", "affiliate clicks", "affiliate revenue in ILS"],
+    kpis: ["working tools published", "weekly organic visits", "affiliate clicks", "affiliate revenue in ILS", "conversions into our own products"],
     killCriteria: ["under ₪300 in 30 days after 120 days live", "search traffic flat for 60 days after 100 pages"],
     scaleCriteria: ["30-day revenue at or above target", "10,000+ monthly organic visits"],
     targetMonthlyAgorot: agorotFromIls(1500),
