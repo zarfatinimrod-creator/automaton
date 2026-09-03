@@ -34,9 +34,20 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     kpis: ["actors published", "monthly runs", "paying users", "quality score", "monthly payout in ILS", "per-Actor margin over platform usage cost"],
     // Apify's own partner page implies roughly $470/developer/month on average and
     // about $4k MRR for the single most successful independent creator, so revenue
-    // here is a portfolio effect, never one hit. Store ranking is driven by existing
-    // usage, which makes a new actor structurally invisible: users lead revenue by
-    // weeks, so the kill trigger watches users, not shekels.
+    // here is a portfolio effect, never one hit. Users lead revenue by weeks, so the
+    // kill trigger watches users, not shekels.
+    //
+    // Corrected 2026-09-03 from Apify's own docs repo: an earlier comment here said
+    // ranking is driven by existing usage and a new Actor is "structurally
+    // invisible". Too strong. The quality score has eight categories and FIVE are
+    // controllable on day one — reliability, ease of use, pricing transparency,
+    // trustworthiness (least privilege) and congruency. Only popularity, feedback
+    // and history-of-success need existing users. A new Actor is disadvantaged, not
+    // invisible. See research/colony-sweep/scouts/store-promotion--marketplace-ranking.md.
+    //
+    // And a hard one: Actors requesting full permissions "might even be excluded
+    // from search results" in autonomous-agent workflows. For a line whose buyers
+    // are agents, minimum permissions is a launch requirement, not a nicety.
     killCriteria: ["under 25 monthly users across all Actors after 60 days live with 10+ Actors", "under ₪500 in 30 days after 90 days live", "two Actors deprecated for failing health checks in one month", "Store terms violation notice", "any Actor priced below its own platform usage cost — Apify zeroes a negative-profit Actor's payout for the whole month"],
     scaleCriteria: ["30-day payout at or above target", "any single Actor above ₪1,500 per month", "any Actor in the top 3 of its Store category"],
     targetMonthlyAgorot: agorotFromIls(3000),
