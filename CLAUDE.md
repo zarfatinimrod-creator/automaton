@@ -57,8 +57,20 @@ inheriting the session model means a session switch silently re-tiers a hundred 
 ## Skills installed in this repo (added 3.9.2026 at the owner's request)
 
 **`.claude/skills/` holds the 14 [Superpowers](https://github.com/obra/superpowers) skills**, vendored
-rather than installed. They are plain markdown, they load straight from the checkout, and vendoring
-means a fresh container has them without a network call. Do not "install" them again.
+rather than installed, so a fresh container has them without a network call.
+
+**One thing about them is unverified, and it matters at the start of the next session.** They were
+copied to `.claude/skills/` in the repo *and* to `~/.claude/skills/` at the same time, so the fact
+that they loaded proves nothing about which copy did it. I tried to separate the two by removing one
+skill from the user directory; the skill list did not refresh, so the experiment was inconclusive.
+**If a session starts and the Superpowers skills are not offered, the repo copy does not register on
+its own** — run this once and they will be:
+
+```bash
+cp -r "$CLAUDE_PROJECT_DIR/.claude/skills/." ~/.claude/skills/
+```
+
+If they *are* offered at session start, this note can be deleted and the claim made properly.
 
 The three that matter most for the failure modes this repo actually has:
 
