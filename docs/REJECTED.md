@@ -172,6 +172,38 @@ search, which is unblocked and free — future scouts on Israeli criteria should
 
 ---
 
+## Paid advertising, at any budget — REJECTED 2026-09-03
+
+Not "too expensive for now". **Structurally incompatible with the portfolio model**, and it would
+stay that way if the float were a hundred times larger. Full working:
+`research/colony-sweep/scouts/store-promotion--paid-acquisition-floor.md`.
+
+**The budget argument, briefly.** ₪200 is about $54. At Meta's practical floor of $50-150/day it
+buys 0.4 to 1.1 days; Google Ads needs $1,000-2,500/month before its campaigns have enough data to
+learn, so ₪200 is 5.4% of one month at the low end and 1.1% of what Smart Bidding wants.
+
+**The argument that matters.** These platforms optimise against conversion volume. A new store has
+no conversion history, so a sub-threshold budget is consumed entirely by the learning phase and
+produces **no signal at all** — a threshold effect, not a linear one. Spending less does not buy a
+smaller result; it buys nothing.
+
+**And the portfolio arithmetic closes it.** Paid acquisition is a recurring per-store cost, which
+is the exact opposite of MISSION constraint 1. At even $1/day per store: 100 stores is
+$3,000/month, and 878 stores — the count the final goal requires — is **$26,340/month against a
+target of ₪83,333 (~$22,500)**. The cheapest possible ad spend on every store exceeds the revenue
+those stores are meant to produce.
+
+**What would reopen it:** a single line earning enough to fund its own ads above the learning
+threshold, judged on that line's own ledger. Never a portfolio-wide ad budget, and never the
+owner's float.
+
+**Evidence grade: snippet.** Platform pages are egress-blocked; the figures come from marketing
+blogs citing them, and they agree with each other. The conclusion survives an order-of-magnitude
+error in any single figure. LinkedIn, Telegram Ads and the Israeli networks are unchecked — they
+do not change the portfolio argument, which is platform-independent.
+
+---
+
 ## Earlier rejections
 
 Kept in `docs/INCOME_PLAN.he.md` §4 with one-line reasons: Envato (bans AI files, 50%
