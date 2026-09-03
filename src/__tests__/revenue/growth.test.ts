@@ -6,6 +6,9 @@ import {
   modelPortfolio,
   scenarioTable,
   storesNeededFor,
+  promotionLoadHours,
+  perStoreEffortCeilingHours,
+  promotionFits,
 } from "../../revenue/growth.js";
 
 describe("the final goal's arithmetic", () => {
@@ -89,5 +92,41 @@ describe("the final goal's arithmetic", () => {
       const counts = row.byCeiling.map((c) => c.stores!);
       expect([...counts].sort((a, b) => b - a)).toEqual(counts);
     }
+  });
+});
+
+describe("promotion effort hits the same wall as maintenance cost", () => {
+  it("shows that per-store promotion is arithmetically impossible at scale", () => {
+    // One hour per store per month, at the store count the final goal needs.
+    expect(promotionLoadHours(878, 1)).toBe(878);
+    // Even six minutes a store a month is most of a working week.
+    expect(promotionLoadHours(878, 0.1)).toBeCloseTo(87.8);
+  });
+
+  it("gives a per-store effort ceiling that shrinks as the portfolio grows", () => {
+    // 160 hours a month of agent time is a generous allowance.
+    expect(perStoreEffortCeilingHours(10, 160)).toBe(16);
+    expect(perStoreEffortCeilingHours(878, 160)).toBeCloseTo(0.182, 3);
+    // ~11 minutes per store per month at 878 stores. Anything touching a store
+    // individually is out; only portfolio-wide promotion survives.
+    expect(perStoreEffortCeilingHours(878, 160) * 60).toBeLessThan(12);
+  });
+
+  it("answers whether a specific tactic fits", () => {
+    expect(promotionFits(878, 0.1, 160)).toBe(true);
+    expect(promotionFits(878, 1, 160)).toBe(false);
+    // A structural tactic costs the same whatever the store count.
+    expect(promotionFits(878, 0, 160)).toBe(true);
+  });
+
+  it("treats an empty portfolio as having the whole budget", () => {
+    expect(perStoreEffortCeilingHours(0, 160)).toBe(160);
+    expect(promotionLoadHours(0, 5)).toBe(0);
+  });
+
+  it("rejects nonsense rather than returning it", () => {
+    expect(() => promotionLoadHours(-1, 1)).toThrow(/non-negative/);
+    expect(() => promotionLoadHours(10, -1)).toThrow(/non-negative/);
+    expect(() => perStoreEffortCeilingHours(10, -1)).toThrow(/non-negative/);
   });
 });

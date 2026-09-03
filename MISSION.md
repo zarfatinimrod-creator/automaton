@@ -98,7 +98,7 @@ already includes ₪5/month of upkeep per store, which is why the answer is 878 
 you get by ignoring maintenance — and the gap between those two numbers is the entire subject of
 constraint 1 below.
 
-### The four constraints that decide whether it works
+### The five constraints that decide whether it works
 
 **1. Marginal cost per store must approach zero, or the portfolio eats itself.** 833 stores at
 ₪50/month of upkeep is ₪41,650/month — half the target, spent on maintenance. This is the
@@ -119,7 +119,18 @@ templated formats and shared infrastructure — which is what a colony looks lik
 its own product for its own buyer on a platform whose terms permit it. Where it is not, the honest
 move is fewer, better stores.
 
-**4. Killing must be as automatic as building.** If 95% earn ₪0 and nothing removes them, the
+**4. Promotion must be structural, never per-store.** 878 stores nobody can find earn ₪0, so
+promotion is the critical path — and it hits the same wall as maintenance, in hours instead of
+shekels. At one hour per store per month a 878-store portfolio consumes 878 hours; at a generous
+160 agent-hours a month the ceiling is **about eleven minutes per store per month**. That rules
+out a whole class of otherwise sensible ideas: posting about each store, answering comments per
+listing, building links per shop. What survives is one system promoting every store at once — a
+hub, a sitemap, a machine-readable catalogue, one submission covering the portfolio.
+`src/revenue/growth.ts` computes the ceiling so a proposal can be checked against it rather than
+argued about, and the `store-promotion` criterion group exists to find the tactics that actually
+scale that way.
+
+**5. Killing must be as automatic as building.** If 95% earn ₪0 and nothing removes them, the
 portfolio drowns in dead weight and the real winners become invisible. Kill criteria are not
 hygiene here, they are the mechanism that makes multiplication survivable.
 

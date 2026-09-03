@@ -157,3 +157,51 @@ export function scenarioTable(
     })),
   }));
 }
+
+// ── Promotion effort, which is the same wall as maintenance cost ──
+//
+// 878 stores that nobody can find earn ₪0, so promotion is the critical path
+// to the final goal. But per-store promotion runs into arithmetic before it
+// runs into creativity: at even one hour per store per month, a 878-store
+// portfolio consumes 878 hours a month. That is not a scheduling problem, it
+// is an impossibility, and it rules out a whole class of otherwise sensible
+// ideas — "post about each store", "answer comments per listing", "build
+// backlinks per shop".
+//
+// What survives is STRUCTURAL promotion: one system that promotes every store
+// at once, whose cost does not scale with the store count. A hub site, a
+// sitemap, a machine-readable catalogue, one newsletter, one directory
+// submission covering the portfolio. These helpers exist so the board can
+// check a promotion proposal against the wall instead of arguing about it.
+
+/** Hours per month a portfolio consumes at a given per-store effort. */
+export function promotionLoadHours(stores: number, hoursPerStorePerMonth: number): number {
+  if (!Number.isFinite(stores) || stores < 0) throw new Error("stores must be a non-negative number");
+  if (!Number.isFinite(hoursPerStorePerMonth) || hoursPerStorePerMonth < 0) {
+    throw new Error("hoursPerStorePerMonth must be a non-negative number");
+  }
+  return stores * hoursPerStorePerMonth;
+}
+
+/**
+ * The most per-store effort a portfolio can carry inside a monthly hour
+ * budget. Approaches zero as the store count rises, which is the point: past a
+ * few hundred stores, any promotion that touches a store individually is out,
+ * however cheap it looks per store.
+ */
+export function perStoreEffortCeilingHours(stores: number, monthlyHoursAvailable: number): number {
+  if (stores <= 0) return monthlyHoursAvailable;
+  if (!Number.isFinite(monthlyHoursAvailable) || monthlyHoursAvailable < 0) {
+    throw new Error("monthlyHoursAvailable must be a non-negative number");
+  }
+  return monthlyHoursAvailable / stores;
+}
+
+/** True when a promotion tactic scales to this many stores inside the budget. */
+export function promotionFits(
+  stores: number,
+  hoursPerStorePerMonth: number,
+  monthlyHoursAvailable: number,
+): boolean {
+  return promotionLoadHours(stores, hoursPerStorePerMonth) <= monthlyHoursAvailable;
+}

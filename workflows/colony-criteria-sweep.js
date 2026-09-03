@@ -4,14 +4,14 @@
 // Regenerate: pnpm exec tsx scripts/gen-sweep-workflow.ts
 //
 // The revenue colony's chain of command, run as one workflow:
-//   112 scouts (one per criterion) -> 14 supervisors (one per group)
-//   -> 14 auditors (one per supervisor) -> chief auditor -> board.
+//   120 scouts (one per criterion) -> 15 supervisors (one per group)
+//   -> 15 auditors (one per supervisor) -> chief auditor -> board.
 
 export const meta = {
   name: 'colony-criteria-sweep',
-  description: '112 scout agents search one income criterion each; a supervisor per criterion group, an auditor per supervisor, then chief auditor and board',
+  description: '120 scout agents search one income criterion each; a supervisor per criterion group, an auditor per supervisor, then chief auditor and board',
   phases: [
-    { title: 'Scouts', detail: '112 workers, one per criterion, across 14 groups' },
+    { title: 'Scouts', detail: '120 workers, one per criterion, across 15 groups' },
     { title: 'Supervisors', detail: 'one supervisor per criterion group: dedupe, score, reject' },
     { title: 'Auditors', detail: 'one auditor per group, adversarially refuting the supervisor' },
     { title: 'Board', detail: 'chief auditor then board: portfolio decisions' },
@@ -1101,6 +1101,44 @@ const ALL_GROUPS = [
     ]
   },
   {
+    "id": "store-promotion",
+    "title": "Promoting hundreds of storefronts, without a human and without becoming spam",
+    "criteria": [
+      [
+        "promotion-at-scale",
+        "The core question of the final goal: how does anyone promote 100-900 separate storefronts when per-store human effort is impossible? Find operators who actually run portfolios at that scale — domain and template portfolios, plugin publishers, Apify Actor publishers, print-on-demand shops — and describe what they really do rather than what they sell courses about. Where exactly does portfolio promotion stop being marketing and become a spam cluster in the eyes of Google, the marketplaces and the ad networks? Quote the policies that draw that line."
+      ],
+      [
+        "answer-engine-optimisation",
+        "Being found through AI answers rather than search results: ChatGPT, Perplexity, Google AI Overviews, Claude. What is actually known in 2026 about why a page gets cited, whether llms.txt is read by anyone, whether structured data helps, and — the question that decides whether this matters — does a citation send measurable traffic and buyers, or does the answer engine satisfy the user and keep them? Prefer studies and creator-reported measurements over agency blog posts, and say which is which."
+      ],
+      [
+        "marketplace-ranking",
+        "The algorithms INSIDE marketplaces, which are not SEO: Etsy search, Apify Store ranking, Chrome Web Store, RapidAPI, npm, Notion and Figma galleries. For each: what ranks a listing that has zero sales, zero reviews and no history, how long the cold start lasts, and whether ranking is driven by existing usage (which makes a new listing structurally invisible). Name the levers a publisher genuinely controls."
+      ],
+      [
+        "machine-discovery",
+        "Being found by other agents rather than by people: MCP server registries, the x402 Bazaar and CDP facilitator listings, .well-known descriptors, schema.org/JSON-LD, agent cards on ERC-8004, llms.txt and robots directives for AI crawlers. For each: is it read by anything today, what does listing require, does it produce actual paying callers, and what is the measurable volume? This repo already serves paid x402 endpoints that no agent can discover, so treat \"does listing produce buyers\" as the deciding question."
+      ],
+      [
+        "first-reviews-honestly",
+        "The social-proof cold start: how a new store gets its first ratings and reviews without buying or faking any. What each major platform permits — review requests, follow-up messages, incentives, samples — and quote the clauses, because this is the single easiest place to violate terms and the constitution at once. Also: how much a first review is actually worth in conversion, and whether a store can sell at all with none."
+      ],
+      [
+        "cross-promotion",
+        "A portfolio promoting itself: internal linking between our own stores, a shared hub site, bundles, footers, one newsletter across many products. What is legitimate and what Google treats as a private blog network or a link scheme — quote the guideline. Whether marketplaces permit cross-listing between a seller own products. And the honest question: does cross-promotion between low-traffic stores move anything, or is it zero times zero?"
+      ],
+      [
+        "paid-acquisition-floor",
+        "We have a total float of ₪200, once. Establish whether any paid channel is reachable at all: minimum spends, account requirements and realistic 2026 CPC/CPM for Google Ads, Meta, Reddit, X, LinkedIn, Telegram Ads and the Israeli networks, plus whether each serves Israeli advertisers and demands a business entity. Expect the answer to be no, and measure it precisely enough that nobody re-proposes paid ads for a year. If any channel is genuinely reachable for ₪200, say exactly what it would buy."
+      ],
+      [
+        "attribution-without-analytics",
+        "How we learn which promotion worked when no analytics is deployed and the ledger only records completed sales. Options and their honesty: marketplace-provided seller stats, referrer and UTM data surviving to checkout, server log counting, privacy-preserving analytics that need no consent banner under Israeli and EU law, and per-store landing URLs. What can be measured without collecting personal data at all, and what a store must NOT do to attribute a sale."
+      ]
+    ]
+  },
+  {
     "id": "payment-rails",
     "title": "Payment and payout rails for an Israeli operator — the feasibility gate",
     "criteria": [
@@ -1178,7 +1216,7 @@ const ALL_GROUPS = [
   }
 ]
 
-// Waves. A full fan-out of 142 agents does not fit inside one usage
+// Waves. A full fan-out of 152 agents does not fit inside one usage
 // window - the first full run died on the session limit with 123 of 128 agents
 // unstarted. So the sweep is resumable by design:
 //   args = { groups: ['storefronts', 'payment-rails'] }  sweep those groups only
@@ -1325,7 +1363,7 @@ const chief = await agent([
 })
 
 const board = await agent([
-  'You are the BOARD of the revenue colony. You decide where effort and money go. Everything below has already been searched by 112 scouts, ranked by 14 supervisors, attacked by 14 auditors and re-checked by the chief auditor.',
+  'You are the BOARD of the revenue colony. You decide where effort and money go. Everything below has already been searched by 120 scouts, ranked by 15 supervisors, attacked by 15 auditors and re-checked by the chief auditor.',
   '',
   MISSION,
   '',
