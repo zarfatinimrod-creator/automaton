@@ -124,6 +124,14 @@ Workflow({scriptPath:'workflows/colony-criteria-sweep.js', resumeFromRunId:'wf_e
 5. `storefronts` (3 שנותרו) ו-`agent-markets` — משלימים קבוצות שכבר התחילו.
 6. אחרונות, ובמודע: `vertical-niches`, `content-seo`, `distribution`, `licensing-ip`. הן שאלות שוק — גודל, מחיר, ביקוש — ואי אפשר לענות עליהן מ-GitHub. הן ייצאו דקות יותר, וזה עדיף על לשרוף עליהן את התקציב לפני הקבוצות שאפשר לענות עליהן בזול.
 
+## מה הותקן ב-3.9 (בקשת הבעלים)
+
+- **Superpowers** — 14 מיומנויות ב-`.claude/skills/`, vendored ולא מותקנות ממרקטפלייס, כי הקונטיינר נמחק בין סשנים. שלוש מהן נוגעות ישירות לכשלים של הריפו הזה: `verification-before-completion`, `systematic-debugging`, `writing-plans`. **`MISSION.md` גובר על כל מיומנות.**
+- **archify** — לא vendored (7.5MB). שורת ההחזרה ב-`CLAUDE.md`. התוצר הראשון: `docs/diagrams/colony.html` — מפת המושבה בעברית, אינטראקטיבית, עם 9/9 בדיקות ו-containment שעובר בארבעה רזולוציות בשני מצבים.
+- **awesome** — לא מיומנות. הפכה ל-`docs/AWESOME_ROUTE.md` ולכלל 9 בפרומפט הצופים: אינדקס של ~620 רשימות מוסדרות, כולן ב-GitHub, כלומר **מפה חינמית של שוק שלא נוגעת בתקציב החיפוש**. עם האזהרה: רשימה היא ספרייה, לא ביקוש.
+
+**כלל שנלמד ביוקר:** `resumeFromRunId` משחזר רק סקריפט שלא נערך. ערכתי את סקריפט הסריקה בין הריצה ל-resume, וכל 15 הצופים רצו מחדש במקום לחזור מה-cache. אחרי עריכה, resume הוא ריצה מחדש בתחפושת.
+
 ## הצעד הבא של הבעלים (חד-פעמי, לפי סדר)
 
 הצ'קליסט המלא בסעיף 6 של `docs/INCOME_PLAN.he.md`. בקצרה: PayPal Israel ← Apify + KYC ← Paddle ← Etsy + Payoneer ← עוסק פטור. שני קווים לא דורשים כלום: `agent-services` (x402) ו-`telegram-bots` (רק יצירת בוט ב-BotFather).
