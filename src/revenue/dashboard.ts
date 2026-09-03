@@ -24,7 +24,8 @@ import { formatIls } from "./money.js";
 import { summarizeTargetBasis, TARGET_BASIS } from "./portfolio.js";
 import { sweepCoverage } from "./criteria.js";
 import { findStalledLines } from "./watchdog.js";
-import { FINAL_GOAL_MONTHLY_ILS, MEASURED_ASSUMPTIONS, modelPortfolio, storesNeededFor } from "./growth.js";
+import { FINAL_GOAL_MONTHLY_ILS, MEASURED_ASSUMPTIONS, storesNeededFor } from "./growth.js";
+import { ownerFloatState } from "./budget.js";
 import type { LineMetrics } from "./types.js";
 
 const esc = (v: unknown): string =>
@@ -69,6 +70,7 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
     .map((l) => ({ id: l.id, name: l.name, steps: l.humanSetup }));
 
   const storesNeeded = storesNeededFor(FINAL_GOAL_MONTHLY_ILS);
+  const float = ownerFloatState(db);
   const liveLines = lines.filter((l) => l.status === "live" || l.status === "scaling").length;
   const sweptTotal = coverage.reduce((n, g) => n + g.swept, 0);
   const criteriaTotal = coverage.reduce((n, g) => n + g.total, 0);
@@ -189,6 +191,20 @@ ${rows}
     ${stallItems.length === 0 && blockerItems.length === 0
       ? '<p class="empty">אין חסימות פתוחות מלבד ההרשמות שלך.</p>'
       : `<ul>${[...stallItems, ...blockerItems].map((b) => `<li>${esc(b)}</li>`).join("")}</ul>`}
+  </div>
+
+  <h2>הכסף שלך</h2>
+  <div class="card">
+    <div class="basis">
+      <div>מה שאישרת</div><div>${esc(formatIls(float.capAgorot))}</div>
+      <div>מה שהוצא${float.spendCount ? ` (${float.spendCount} חיובים)` : ""}</div><div>${esc(formatIls(float.spentAgorot))}</div>
+      <div>מה שנשאר</div><div>${esc(formatIls(float.remainingAgorot))}</div>
+    </div>
+    <p class="note">
+      התקרה נבדקת בקוד לפני כל התחייבות, לא אחריה, וכל חיוב נרשם בלדג'ר עם מזהה קבלה.
+      זה סכום חד-פעמי ולא הרשאה חודשית — אם התכוונת אחרת, תגיד ואשנה.
+      ${float.spentAgorot === 0 ? "עוד לא הוצא שקל." : ""}
+    </p>
   </div>
 
   <h2>המטרה הסופית</h2>

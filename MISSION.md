@@ -123,6 +123,38 @@ move is fewer, better stores.
 portfolio drowns in dead weight and the real winners become invisible. Kill criteria are not
 hygiene here, they are the mechanism that makes multiplication survivable.
 
+### תקציב — תוספת הבעלים, 3.9.2026 (verbatim)
+
+> אני רוצה לתת לך סכום קטן שממנו אתה משתמש, וגודל מקסימום 200 שקל.
+
+Until now the rule was absolute: never spend the owner's money. This is the single relaxation of
+it, and it is enforced in code rather than promised — `src/revenue/budget.ts`, with the ceiling
+checked *before* any commitment and every spend written to the ledger as an ordinary cost, so the
+board, the auditor and the manager's screen all see it without special-casing.
+
+Two readings were available and the conservative one is implemented, stated here so the owner can
+correct it:
+
+- **₪200 is a total, not a monthly allowance.** ₪200 once. If he means ₪200 every month he can say
+  so and the ceiling moves; guessing the more generous reading with someone else's money is not
+  ours to do.
+- **A spend from the float requires the platform's receipt id.** Ordinary cost entries may omit
+  one, because our own compute has no receipt. This is different: it is real money leaving a real
+  account, and a charge nobody can trace is what an owner should refuse to fund.
+
+**What the float is for:** the small unavoidable one-off fees that stop a line from earning at all
+— a developer-account fee, a domain, a listing charge. It is not working capital and it does not
+change constraint 1 above: marginal cost per store must still approach zero, and ₪0 options are
+still preferred over cheap ones.
+
+**What it must never become is a subscription.** ₪200 against a recurring charge is a slow death
+with a fixed end date — the colony would be paying rent out of revenue it does not yet have. Any
+recurring cost is the owner's decision, every time, not a draw against this pot.
+
+**And it never touches the target.** ₪200 of the owner's money spent well might unblock a line; it
+cannot be counted as progress. Money still only counts when it arrives in the ledger with a
+transaction id, in the other direction.
+
 ### What this does not change
 
 Nothing in this addition loosens the constitution. A thousand honest stores is the goal; one
