@@ -32,10 +32,23 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
       "watch the daily health tests and quality score, auto-fix breaking site changes → answer issues in the Actor's issue tab → each week kill zero-run Actors and clone winners into adjacent niches → record the monthly payout invoice in the ledger.",
     ].join(" "),
     kpis: ["actors published", "monthly runs", "paying users", "quality score", "monthly payout in ILS", "per-Actor margin over platform usage cost"],
-    // Apify's own partner page implies roughly $470/developer/month on average and
-    // about $4k MRR for the single most successful independent creator, so revenue
-    // here is a portfolio effect, never one hit. Users lead revenue by weeks, so the
-    // kill trigger watches users, not shekels.
+    // UNVERIFIED (checked 2026-09-03): the "$470/developer/month average, ~$4k MRR
+    // for the top independent creator" figures come from a partner/marketing page,
+    // NOT from Apify's documentation, which states no revenue share and no typical
+    // earnings. Same evidence class as the x402 number that proved 29x wrong. Not
+    // disproved, and we have nothing better — but it must not be quoted as measured.
+    // Revenue here is a portfolio effect either way, never one hit, and users lead
+    // revenue by weeks, so the kill trigger watches users rather than shekels.
+    //
+    // VERIFIED from apify-docs (monthly-payouts.mdx): payouts are $20 minimum for
+    // PayPal and Wise, $100 for other methods; invoices generate on the 11th and
+    // auto-approve on the 14th. And the one that matters for the final goal — a
+    // loss-making Actor has its profit set to $0 for the month, because "a single
+    // Actor's loss doesn't reduce your total payout". Failures are FLOORED, not
+    // netted against winners, so publishing many Actors carries no downside drag on
+    // the payout. That makes this one of the few surfaces where the many-stores
+    // model has no structural penalty for the ~95% that earn nothing.
+    // See research/colony-sweep/scouts/agent-markets--apify.md.
     //
     // Corrected 2026-09-03 from Apify's own docs repo: an earlier comment here said
     // ranking is driven by existing usage and a new Actor is "structurally
