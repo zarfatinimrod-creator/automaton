@@ -8,6 +8,14 @@ name: colony
 # the colony works from the SQLite file alone. Director and worker EXECUTION
 # still needs the automaton runtime; until that exists the report says so.
 
+# ⚠️ THIS DOES NOT RUN UNTIL IT IS ON THE DEFAULT BRANCH.
+# GitHub fires `schedule` only on the repository's default branch (main). While
+# this file lives on a feature branch it is not even registered — the Actions
+# API returns 404 for it — so the hourly loop is not running, however correct
+# the code is. Verified 2026-09-03: only ci, products-ci and release exist.
+# Until it is merged, colony state is produced by running the tick by hand:
+#   pnpm exec tsx scripts/colony.ts tick --no-feed
+
 on:
   schedule:
     # Hourly. Each task inside the tick self-gates on its own interval, so the

@@ -130,8 +130,11 @@ async function main(): Promise<void> {
       report: { type: "string", default: DEFAULT_REPORT },
       json: { type: "boolean", default: false },
       force: { type: "boolean", default: false },
-      feed: { type: "boolean", default: true },
-      seed: { type: "boolean", default: true },
+      // node:util parseArgs has no --no-<flag> negation, so the negative forms
+      // are declared explicitly. The scheduled workflow invokes `--no-feed`,
+      // and without this the very first run dies parsing its own arguments.
+      "no-feed": { type: "boolean", default: false },
+      "no-seed": { type: "boolean", default: false },
       now: { type: "string" },
       line: { type: "string" },
       kind: { type: "string" },
@@ -167,8 +170,8 @@ async function main(): Promise<void> {
         const result: TickResult = await tick(db.raw, {
           nowIso: values.now,
           force: values.force,
-          feedGoals: values.feed,
-          seed: values.seed,
+          feedGoals: !values["no-feed"],
+          seed: !values["no-seed"],
         });
         writeReport(values.report!, renderReport(db.raw, result));
         if (values.json) {
