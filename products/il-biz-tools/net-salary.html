@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מחשבון שכר נטו 2026 – אומדן מברוטו לנטו עם מס הכנסה וביטוח לאומי</title>
+<meta name="description" content="אומדן שכר נטו לשנת 2026: הזינו שכר ברוטו ונקודות זיכוי וקבלו פירוט של מס הכנסה לפי מדרגות המס החדשות, דמי ביטוח לאומי, מס בריאות והפרשה לפנסיה. חינמי, ללא הרשמה.">
+<link rel="canonical" href="https://il-biz-tools.netlify.app/net-salary.html">
+<meta property="og:title" content="מחשבון שכר נטו 2026 (אומדן)">
+<meta property="og:description" content="מברוטו לנטו לפי מדרגות המס 2026, נקודות זיכוי וביטוח לאומי.">
+<link rel="stylesheet" href="assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "מהן מדרגות מס הכנסה לשנת 2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "מדרגות המס החודשיות ל-2026 (לאחר ריווח המדרגות שאושר במרץ 2026): 10% עד 7,010 ₪, 14% עד 10,060 ₪, 20% עד 19,000 ₪, 31% עד 25,100 ₪, 35% עד 46,690 ₪, 47% עד 60,130 ₪ ו-50% מעל. על הכנסה שנתית מעל 721,560 ₪ חל מס יסף של 3%." }
+    },
+    {
+      "@type": "Question",
+      "name": "כמה שווה נקודת זיכוי ב-2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "242 ₪ לחודש (2,904 ₪ לשנה). תושב ישראל זכאי ל-2.25 נקודות, ואישה ל-2.75 נקודות. נקודות נוספות ניתנות בגין ילדים, תואר אקדמי, שירות צבאי ועוד." }
+    },
+    {
+      "@type": "Question",
+      "name": "כמה מנכים לביטוח לאומי ומס בריאות משכר של שכיר ב-2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "עד 7,703 ₪ (60% מהשכר הממוצע) מנכים 4.27% (1.04% ביטוח לאומי + 3.23% בריאות). מעל סכום זה ועד תקרת 51,910 ₪ מנכים 12.17% (7% + 5.17%)." }
+    },
+    {
+      "@type": "Question",
+      "name": "למה התוצאה מסומנת כאומדן?",
+      "acceptedAnswer": { "@type": "Answer", "text": "המחשבון אינו מביא בחשבון נקודות זיכוי מיוחדות, זיכוי בגין הפרשות לפנסיה, שווי רכב, קרן השתלמות, החזרי הוצאות ועוד. השכר המדויק מופיע בתלוש. הנתונים נלקחו מפרסומים ציבוריים ויש לאמתם מול רשות המסים וביטוח לאומי." }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header"><div class="container">
+  <a class="logo" href="./">כלים <span>לעסק</span></a>
+  <nav aria-label="ניווט ראשי"><ul>
+    <li><a href="vat.html">מחשבון מע״מ</a></li>
+    <li><a href="osek-patur.html">תקרת עוסק פטור</a></li>
+    <li><a href="net-salary.html">שכר נטו</a></li>
+    <li><a href="invoice.html">קבלה / חשבונית</a></li>
+  </ul></nav>
+</div></header>
+
+<main class="container">
+  <h1>אומדן שכר נטו <span class="badge estimate">אומדן</span></h1>
+  <p class="lead">מברוטו לנטו לפי מדרגות המס, נקודות הזיכוי וטבלאות ביטוח לאומי לשנת <span id="year">2026</span>. התוצאה היא אומדן בלבד ואינה תחליף לתלוש שכר.</p>
+
+  <form class="card" id="salary-form" novalidate>
+    <div class="row">
+      <div class="field">
+        <label for="gross">שכר ברוטו חודשי (₪)</label>
+        <input type="number" id="gross" inputmode="decimal" min="0" step="1" placeholder="לדוגמה: 15000" autofocus>
+      </div>
+      <div class="field">
+        <label for="points">נקודות זיכוי</label>
+        <input type="number" id="points" inputmode="decimal" min="0" step="0.25" value="2.25">
+        <div class="note">גבר: 2.25 · אישה: 2.75 · <a href="#" id="pts-male">2.25</a> / <a href="#" id="pts-female">2.75</a></div>
+      </div>
+      <div class="field">
+        <label for="pension">הפרשת עובד לפנסיה (%)</label>
+        <input type="number" id="pension" inputmode="decimal" min="0" max="20" step="0.5" value="6">
+        <div class="note">0 אם אין; ברירת מחדל 6%.</div>
+      </div>
+    </div>
+  </form>
+
+  <section class="card result" aria-live="polite">
+    <table>
+      <tr><td>שכר ברוטו</td><td class="num" id="o-gross">₪0</td></tr>
+      <tr><td>מס הכנסה לפני זיכויים</td><td class="num" id="o-tax-raw">₪0</td></tr>
+      <tr><td>זיכוי בגין נקודות זיכוי</td><td class="num" id="o-credit">₪0</td></tr>
+      <tr><td>מס הכנסה לתשלום</td><td class="num" id="o-tax">₪0</td></tr>
+      <tr><td>דמי ביטוח לאומי</td><td class="num" id="o-bl">₪0</td></tr>
+      <tr><td>דמי ביטוח בריאות</td><td class="num" id="o-health">₪0</td></tr>
+      <tr><td>הפרשת עובד לפנסיה</td><td class="num" id="o-pension">₪0</td></tr>
+      <tr><td>סה״כ ניכויים</td><td class="num" id="o-deductions">₪0</td></tr>
+      <tr class="total"><td>שכר נטו (אומדן)</td><td class="num" id="o-net">₪0</td></tr>
+      <tr><td>שיעור ניכוי אפקטיבי</td><td class="num" id="o-eff">0%</td></tr>
+      <tr><td>מדרגת מס שולית</td><td class="num" id="o-marginal">0%</td></tr>
+    </table>
+    <p class="note" id="disclaimer">
+      <strong>אומדן בלבד.</strong> לא כולל: זיכוי בגין הפרשות לפנסיה, נקודות זיכוי מיוחדות (ילדים, תואר, שירות צבאי), שווי רכב/טלפון, קרן השתלמות, מס יסף. הטבלאות מבוססות על פרסומים ציבוריים ל-2026 ולא אומתו מול המקור הרשמי – ראו מקורות ב-README.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>הטבלאות שבשימוש (2026)</h2>
+    <div class="result"><table id="brackets-table"><thead><tr><th>עד (₪ לחודש)</th><th>שיעור מס</th></tr></thead><tbody></tbody></table></div>
+    <p class="note" id="ni-note"></p>
+  </section>
+
+  <section class="faq card">
+    <h2>שאלות נפוצות</h2>
+    <details open><summary>מהן מדרגות מס הכנסה לשנת 2026?</summary><p>10% עד 7,010 ₪, 14% עד 10,060 ₪, 20% עד 19,000 ₪, 31% עד 25,100 ₪, 35% עד 46,690 ₪, 47% עד 60,130 ₪ ו-50% מעל (חודשי, לאחר ריווח המדרגות שאושר במרץ 2026 בתוקף רטרואקטיבי מינואר). מעל 721,560 ₪ בשנה מתווסף מס יסף 3%.</p></details>
+    <details><summary>כמה שווה נקודת זיכוי ב-2026?</summary><p>242 ₪ לחודש (2,904 ₪ לשנה). תושב ישראל זכאי ל-2.25 נקודות, אישה ל-2.75. נקודות נוספות ניתנות בגין ילדים, תואר אקדמי, שירות צבאי ועוד.</p></details>
+    <details><summary>כמה מנכים לביטוח לאומי ומס בריאות ב-2026?</summary><p>עד 7,703 ₪ בחודש: 4.27% (1.04% ביטוח לאומי + 3.23% בריאות). מעל סכום זה ועד תקרת 51,910 ₪: 12.17% (7% + 5.17%).</p></details>
+    <details><summary>למה התוצאה מסומנת כאומדן?</summary><p>המחשבון מפשט: אין בו זיכוי בגין פנסיה, נקודות זיכוי מיוחדות, שווי הטבות ומס יסף. השכר המדויק מופיע בתלוש. לפני החלטות – רואה חשבון או יועץ מס.</p></details>
+  </section>
+</main>
+
+<footer class="site-footer"><div class="container">
+  © <span data-year>2026</span> כלים לעסק · המידע באתר אינו מהווה ייעוץ מס. · <a href="./">דף הבית</a>
+</div></footer>
+<script type="module" src="assets/page-net-salary.js"></script>
+</body>
+</html>

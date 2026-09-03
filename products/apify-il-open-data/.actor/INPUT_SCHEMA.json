@@ -77,6 +77,14 @@
       "description": "CKAN sort expression using ORIGINAL column names, e.g. \"תאריך התאגדות desc\". Optional.",
       "editor": "textfield"
     },
+    "pageSize": {
+      "title": "Page size",
+      "type": "integer",
+      "description": "Advanced: records per API request (1-1000). Lower it if the portal times out on wide tables.",
+      "default": 1000,
+      "minimum": 1,
+      "maximum": 1000
+    },
     "baseUrl": {
       "title": "CKAN base URL",
       "type": "string",

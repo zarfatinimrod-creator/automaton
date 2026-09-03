@@ -17,7 +17,7 @@ export const PAYMENT_METHODS = {
   other: 'אחר',
 };
 
-export const OSEK_PATUR_NOTE = 'עוסק פטור - לא חייב במע"מ';
+export const OSEK_PATUR_NOTE = 'עוסק פטור - לא חייב במע״מ';
 
 export const STORAGE_KEYS = {
   business: 'ilbiz.business',

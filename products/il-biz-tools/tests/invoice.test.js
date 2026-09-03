@@ -13,7 +13,7 @@ function sampleDoc(kind = 'patur') {
   const d = emptyDocument(new Date(2026, 8, 3));
   d.number = '1001';
   d.business = { name: 'סטודיו דנה', id: '123456789', kind };
-  d.client = { name: 'לקוח בע"מ' };
+  d.client = { name: 'לקוח בע״מ' };
   d.lines = [
     { description: 'עיצוב לוגו', quantity: 1, unitPrice: 1500 },
     { description: 'שעות ייעוץ', quantity: 2.5, unitPrice: 300 },

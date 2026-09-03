@@ -15,6 +15,8 @@ export interface ActorInput {
   outputFormat?: OutputFormat;
   sort?: string;
   baseUrl?: string;
+  /** Advanced: rows per API request (1-1000, default 1000). */
+  pageSize?: number;
 }
 
 /** CKAN datastore field metadata: { id: "מספר חברה", type: "text" | "int" | "numeric" | "timestamp" | ... } */

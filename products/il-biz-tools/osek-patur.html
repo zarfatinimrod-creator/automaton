@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מעקב תקרת עוסק פטור 2026 – כמה נשאר עד ₪122,833?</title>
+<meta name="description" content="הזינו את ההכנסות החודשיות שלכם וראו בזמן אמת כמה נותר עד תקרת עוסק פטור לשנת 2026 (122,833 ₪), מה התחזית השנתית ומתי כדאי להיערך למעבר לעוסק מורשה.">
+<link rel="canonical" href="https://il-biz-tools.netlify.app/osek-patur.html">
+<meta property="og:title" content="מעקב תקרת עוסק פטור 2026">
+<meta property="og:description" content="כמה נשאר לכם עד תקרת 122,833 ₪? מעקב חודשי עם התרעה.">
+<link rel="stylesheet" href="assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "מהי תקרת עוסק פטור לשנת 2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "תקרת המחזור השנתי לעוסק פטור בשנת 2026 היא 122,833 ₪. מדובר במחזור העסקאות (סך התקבולים), לא ברווח." }
+    },
+    {
+      "@type": "Question",
+      "name": "מה קורה אם עוברים את התקרה?",
+      "acceptedAnswer": { "@type": "Answer", "text": "חובה לדווח למע\"מ ולעבור לרישום כעוסק מורשה. מהנקודה שבה חרגתם יש לגבות מע\"מ ולהוציא חשבוניות מס. מומלץ להיערך מראש כשמתקרבים ל-85% מהתקרה." }
+    },
+    {
+      "@type": "Question",
+      "name": "האם התקרה מחושבת לפי רווח או לפי מחזור?",
+      "acceptedAnswer": { "@type": "Answer", "text": "לפי מחזור – סך התקבולים מלקוחות בשנה הקלנדרית, לפני ניכוי הוצאות." }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header"><div class="container">
+  <a class="logo" href="./">כלים <span>לעסק</span></a>
+  <nav aria-label="ניווט ראשי"><ul>
+    <li><a href="vat.html">מחשבון מע״מ</a></li>
+    <li><a href="osek-patur.html">תקרת עוסק פטור</a></li>
+    <li><a href="net-salary.html">שכר נטו</a></li>
+    <li><a href="invoice.html">קבלה / חשבונית</a></li>
+  </ul></nav>
+</div></header>
+
+<main class="container">
+  <h1>מעקב תקרת עוסק פטור <span id="year">2026</span></h1>
+  <p class="lead">תקרת המחזור השנתי: <strong class="num" id="ceiling">₪122,833</strong>. הזינו את ההכנסה (מחזור) של כל חודש. הנתונים נשמרים בדפדפן שלכם בלבד.</p>
+
+  <form class="card" id="tracker" novalidate>
+    <div class="months" id="months"></div>
+    <div class="actions no-print">
+      <button type="button" class="btn secondary small" id="clear">ניקוי הכל</button>
+    </div>
+  </form>
+
+  <section class="card result" aria-live="polite">
+    <div class="meter" id="meter"><i style="width:0%"></i><span class="band" title="רצועת אזהרה – 85%"></span></div>
+    <div class="status-box ok" id="status">
+      <strong id="status-label">במסגרת התקרה</strong> – <span id="status-text"></span>
+    </div>
+    <table>
+      <tr><td>סה״כ מחזור עד כה</td><td class="num" id="total">₪0</td></tr>
+      <tr><td>ניצול התקרה</td><td class="num" id="percent">0%</td></tr>
+      <tr class="total"><td>נותר עד התקרה</td><td class="num" id="remaining">₪122,833</td></tr>
+      <tr><td>ממוצע חודשי (חודשים שהוזנו)</td><td class="num" id="avg">₪0</td></tr>
+      <tr><td>תחזית שנתית לפי הממוצע</td><td class="num" id="projection">₪0</td></tr>
+      <tr><td>ממוצע חודשי מותר ליתרת השנה</td><td class="num" id="safe">₪0</td></tr>
+    </table>
+    <p class="note">תקרה ורצועת אזהרה ניתנות לעריכה בקובץ <code>src/config/osek-patur.json</code>.</p>
+  </section>
+
+  <section class="faq card">
+    <h2>שאלות נפוצות</h2>
+    <details open><summary>מהי תקרת עוסק פטור לשנת 2026?</summary><p>122,833 ₪ מחזור שנתי. מדובר בסך התקבולים מלקוחות, לא ברווח שנשאר אחרי הוצאות.</p></details>
+    <details><summary>מה קורה אם עוברים את התקרה?</summary><p>חובה לדווח למע״מ ולעבור לרישום כעוסק מורשה. מהנקודה שבה חרגתם יש לגבות מע״מ ולהוציא חשבוניות מס. לכן הכלי מסמן רצועת אזהרה ב-85% מהתקרה – זמן טוב להתייעץ עם רואה חשבון.</p></details>
+    <details><summary>האם התקרה מחושבת לפי רווח או לפי מחזור?</summary><p>לפי מחזור – סך התקבולים בשנה הקלנדרית, לפני ניכוי הוצאות. ההכנסות מחושבות לפי מועד קבלת התשלום.</p></details>
+  </section>
+</main>
+
+<footer class="site-footer"><div class="container">
+  © <span data-year>2026</span> כלים לעסק · המידע באתר אינו מהווה ייעוץ מס. · <a href="./">דף הבית</a>
+</div></footer>
+<script type="module" src="assets/page-osek-patur.js"></script>
+</body>
+</html>

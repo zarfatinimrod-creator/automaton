@@ -53,6 +53,7 @@ export interface ResolvedInput {
   outputFormat: 'json' | 'csv';
   sort: string | undefined;
   baseUrl: string;
+  pageSize: number;
 }
 
 export function resolveInput(raw: Partial<ActorInput> | null | undefined): ResolvedInput {
@@ -92,6 +93,10 @@ export function resolveInput(raw: Partial<ActorInput> | null | undefined): Resol
   if (outputFormat !== 'json' && outputFormat !== 'csv') {
     throw new InputError(`"outputFormat" must be "json" or "csv" (got ${JSON.stringify(outputFormat)}).`);
   }
+  const pageSize = Math.floor(Number(input.pageSize ?? DATASTORE_PAGE_SIZE));
+  if (!Number.isFinite(pageSize) || pageSize < 1 || pageSize > DATASTORE_PAGE_SIZE) {
+    throw new InputError(`"pageSize" must be an integer between 1 and ${DATASTORE_PAGE_SIZE} (got ${JSON.stringify(input.pageSize)}).`);
+  }
   return {
     mode,
     query,
@@ -99,6 +104,7 @@ export function resolveInput(raw: Partial<ActorInput> | null | undefined): Resol
     filters,
     maxRecords,
     offset,
+    pageSize,
     translateFields: input.translateFields ?? true,
     coerceTypes: input.coerceTypes ?? true,
     outputFormat,
@@ -172,7 +178,7 @@ async function runFetchRecords(input: ResolvedInput, deps: RunDeps): Promise<Run
       sort: input.sort,
       offset: input.offset,
       maxRecords: input.maxRecords,
-      pageSize: DATASTORE_PAGE_SIZE,
+      pageSize: input.pageSize,
     })) {
       if (!fieldMap) {
         fieldMap = buildFieldMap(page.fields, options);
