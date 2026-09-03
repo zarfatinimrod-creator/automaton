@@ -79,3 +79,26 @@ describe("sweep workflow generation", () => {
     expect(rendered).toContain("Payability to Israel is a hard gate");
   });
 });
+
+describe("waves can exclude criteria that are already swept", () => {
+  const script = renderSweepWorkflow();
+
+  it("filters the fan-out by args.exclude and drops groups it empties", () => {
+    expect(script).toContain("const EXCLUDE = Array.isArray(WAVE.exclude) ? WAVE.exclude : []");
+    expect(script).toContain("EXCLUDE.indexOf(g.id + '/' + c[0]) === -1");
+    expect(script).toContain(".filter((g) => g.criteria.length > 0)");
+  });
+
+  it("tells the supervisor to read the group's other reports off disk", () => {
+    // Excluding a criterion removes its scout from the supervisor's input too.
+    // Without this instruction a wave would judge a slice while reporting on the
+    // whole group — which is exactly the coverage error the store-promotion
+    // supervisor made from the other direction.
+    expect(script).toContain("research/colony-sweep/scouts/");
+    expect(script).toContain("judging a slice while claiming to judge the group");
+  });
+
+  it("still fails loudly when a wave selects nothing", () => {
+    expect(script).toContain("or exclude emptied every one");
+  });
+});

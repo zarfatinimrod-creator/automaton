@@ -1223,12 +1223,28 @@ const ALL_GROUPS = [
 //   args = { board: true }                               judge what is already on disk
 //   args omitted                                          the full run
 // In wave mode the board is skipped: it decides across ALL groups, not a slice.
+//
+// `exclude` drops individual criteria from the fan-out:
+//   args = { groups: ['storefronts'], exclude: ['storefronts/gumroad'] }
+// A workflow script has no filesystem, so it cannot see which criteria already
+// have a scout report - the caller passes them. This is not an optimisation:
+// re-running a swept criterion spends 8 searches out of a ~200-call session
+// budget shared by every agent, so a wave that redoes five of its eight
+// criteria makes the three that matter blind. Get the list with
+// `colony criteria --json` or from research/colony-sweep/scouts/.
+// An excluded criterion's scout does NOT run, so its report is not in the
+// supervisor's input either - only the reports on disk. The supervisor prompt
+// therefore names the directory and tells it to read the group's other reports
+// itself. Without that step a wave would silently narrow the group it judges.
 const WAVE = Array.isArray(args) ? { groups: args } : (args || {})
 const BOARD_ONLY = WAVE.board === true
-const GROUPS = BOARD_ONLY ? [] : (WAVE.groups && WAVE.groups.length
+const EXCLUDE = Array.isArray(WAVE.exclude) ? WAVE.exclude : []
+const GROUPS = (BOARD_ONLY ? [] : (WAVE.groups && WAVE.groups.length
   ? ALL_GROUPS.filter((g) => WAVE.groups.indexOf(g.id) !== -1)
-  : ALL_GROUPS)
-if (!BOARD_ONLY && GROUPS.length === 0) throw new Error('no criterion group matched args.groups')
+  : ALL_GROUPS))
+  .map((g) => ({ ...g, criteria: g.criteria.filter((c) => EXCLUDE.indexOf(g.id + '/' + c[0]) === -1) }))
+  .filter((g) => g.criteria.length > 0)
+if (!BOARD_ONLY && GROUPS.length === 0) throw new Error('no criterion group matched args.groups, or exclude emptied every one')
 
 const scoutPrompt = (g, c) => [
   'You are WORKER-SCOUT "' + c[0] + '" reporting to the supervisor of the "' + g.id + '" group in the revenue colony chain of command.',
@@ -1251,8 +1267,11 @@ const supervisorPrompt = (g, scouts) => [
   '',
   'GROUP: ' + g.title,
   '',
-  'SCOUT REPORTS (JSON):',
+  'SCOUT REPORTS FROM THIS WAVE (JSON):',
   JSON.stringify(scouts.filter(Boolean), null, 1).slice(0, 120000),
+  '',
+  'BEFORE YOU START - READ THE REST OF YOUR GROUP FROM DISK.',
+  'Your group has ' + g.criteria.length + ' criteria in this wave, but the group as a whole may have more: criteria swept in an earlier wave are deliberately excluded from the fan-out so they do not spend the shared search budget twice. Their reports are on disk at /home/user/automaton/research/colony-sweep/scouts/, named ' + g.id + '--<criterion>.md. List that directory, read every file matching your group, and treat those reports as scout input exactly like the JSON above. A group report written from this wave alone would be judging a slice while claiming to judge the group.',
   '',
   'YOUR JOB:',
   '1. Merge and deduplicate across your scouts. The same opportunity often appears under several criteria; keep the best-evidenced version.',
