@@ -309,10 +309,33 @@ commission), Discord Premium Apps (US/UK/EU developers only), Figma plugins (not
 new sellers), Raycast (no payment mechanism), GPT Store (US-only revenue programme),
 Smithery ($30/month, pays nothing), Olas/Pearl (macOS-only, maintenance mode), Medium
 Partner (bans AI writing behind the paywall, pays via Stripe), Substack and beehiiv
-(Stripe — which does not serve Israeli accounts), bulk AI content and templated YouTube
+(Stripe — see the note below), bulk AI content and templated YouTube
 channels (penalised and demonetised through 2026), Google Play (£/$25 plus identity plus 12
 testers for 14 days — not worth a first experiment), freelance marketplaces and RLHF work
 (require an identified human who talks to clients).
 
 Shopify apps are **not** rejected — they are parked as a future candidate, gated on a
 manual review of one to four weeks and a selfie KYC.
+
+### A standing claim that has to be re-opened: "Stripe does not serve Israeli accounts"
+
+Several rejections above lean on it, and **the repo now contradicts itself about it in three
+places**:
+
+- The Figma entry a few rows up describes Figma as "a payable platform (Stripe, Israel listed)".
+- `research/colony-sweep/scouts/payment-rails--stripe-alternatives.md` says the sources
+  *conflict*: Stripe supports ILS and pays out to Israeli bank accounts, and only the
+  supported-*merchant*-country question is unresolved.
+- `research/colony-sweep/scouts/bounties-grants--oss-bounties.md` renders Algora's own source
+  file `lib/algora/psp/connect_countries.ex`, which lists `{"Israel","IL"}` among its Stripe
+  Connect countries, with `account_type/1` giving Israelis a Connect **Express** account. That
+  is a platform paying contributors today, and its code is public.
+
+The careful reading: **Stripe Connect through a platform appears to work for an Israeli; a
+standalone Israeli Stripe merchant account is still unverified.** Those are different products
+and the repo has been treating them as one.
+
+**Nothing may be rejected on this ground until it is settled.** What settles it: open
+`https://stripe.com/global` and check whether Israel appears in the supported-countries list.
+Until then the claim marks a line for checking, not for killing — and the rejections above that
+rest on it (Substack, beehiiv, Medium Partner, Polar) are provisional, not closed.
