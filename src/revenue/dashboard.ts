@@ -24,6 +24,7 @@ import { formatIls } from "./money.js";
 import { summarizeTargetBasis, TARGET_BASIS } from "./portfolio.js";
 import { sweepCoverage } from "./criteria.js";
 import { findStalledLines } from "./watchdog.js";
+import { FINAL_GOAL_MONTHLY_ILS, MEASURED_ASSUMPTIONS, modelPortfolio, storesNeededFor } from "./growth.js";
 import type { LineMetrics } from "./types.js";
 
 const esc = (v: unknown): string =>
@@ -67,6 +68,8 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
     .filter((l) => !l.humanSetupDone && l.humanSetup.length > 0)
     .map((l) => ({ id: l.id, name: l.name, steps: l.humanSetup }));
 
+  const storesNeeded = storesNeededFor(FINAL_GOAL_MONTHLY_ILS);
+  const liveLines = lines.filter((l) => l.status === "live" || l.status === "scaling").length;
   const sweptTotal = coverage.reduce((n, g) => n + g.swept, 0);
   const criteriaTotal = coverage.reduce((n, g) => n + g.total, 0);
 
@@ -186,6 +189,22 @@ ${rows}
     ${stallItems.length === 0 && blockerItems.length === 0
       ? '<p class="empty">אין חסימות פתוחות מלבד ההרשמות שלך.</p>'
       : `<ul>${[...stallItems, ...blockerItems].map((b) => `<li>${esc(b)}</li>`).join("")}</ul>`}
+  </div>
+
+  <h2>המטרה הסופית</h2>
+  <div class="card">
+    <div class="basis">
+      <div>מיליון ש״ח בשנה, בחודשים</div><div>₪${FINAL_GOAL_MONTHLY_ILS.toLocaleString("en")}</div>
+      <div>חנויות שצריך להשיק כדי להגיע לשם</div><div>${storesNeeded.stores === null ? "לא ניתן בהנחות האלה" : storesNeeded.stores.toLocaleString("en")}</div>
+      <div>מהן צפויות לעבוד</div><div>${storesNeeded.stores === null ? "—" : Math.round(storesNeeded.stores * MEASURED_ASSUMPTIONS.hitRate).toLocaleString("en")}</div>
+      <div>קווים חיים כרגע</div><div>${liveLines}</div>
+    </div>
+    <p class="note">
+      ההנחות: ${(MEASURED_ASSUMPTIONS.hitRate * 100).toFixed(0)}% מהחנויות מגיעות ל-₪${MEASURED_ASSUMPTIONS.hitCeilingIls.toLocaleString("en")} לחודש,
+      השאר ל-₪${MEASURED_ASSUMPTIONS.missIls}, ותחזוקה של ₪${MEASURED_ASSUMPTIONS.maintenanceIlsPerStore} לחנות לחודש.
+      זה מודל עם קלט מוצהר, לא תחזית — הקלט משתנה כשהמדידות משתנות.
+      אם חנות עולה בתחזוקה יותר ממה שהיא מרוויחה בממוצע, עוד חנויות רק מפסידות יותר.
+    </p>
   </div>
 
   <h2>כמה מהשוק כבר נסרק</h2>

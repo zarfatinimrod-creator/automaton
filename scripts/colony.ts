@@ -30,6 +30,7 @@ import { getRevenueStatus } from "../src/revenue/status.js";
 import { renderCommitSummary, renderReport, tick, type TickResult } from "../src/revenue/runner.js";
 import { enqueueGoal } from "../src/revenue/goal-queue.js";
 import { renderDashboard } from "../src/revenue/dashboard.js";
+import { FINAL_GOAL_MONTHLY_ILS, MEASURED_ASSUMPTIONS, scenarioTable, storesNeededFor } from "../src/revenue/growth.js";
 import {
   ALL_CRITERIA,
   CRITERIA_GROUPS,
@@ -61,6 +62,7 @@ Commands:
   target               Set the monthly target (and optional stretch target) in shekels.
   criteria             Show the search criteria and how much of the space is covered.
   dashboard            Regenerate the manager's screen (HTML) from the ledger.
+  growth               Model the path to the final goal (₪1M/year) and print the scenarios.
 
 Common options:
   --db <path>          SQLite file (default ${DEFAULT_DB})
@@ -277,6 +279,27 @@ async function main(): Promise<void> {
         const stretch = values.stretch === undefined ? undefined : num(values.stretch, "stretch");
         setTargets(db.raw, agorotFromIls(ils), stretch === undefined ? undefined : agorotFromIls(stretch));
         console.log(`Target set to ${formatIls(agorotFromIls(ils))}/month${stretch !== undefined ? `, stretch ${formatIls(agorotFromIls(stretch))}` : ""}.`);
+        break;
+      }
+
+      case "growth": {
+        const need = storesNeededFor(FINAL_GOAL_MONTHLY_ILS);
+        if (values.json) {
+          console.log(JSON.stringify({ goalMonthlyIls: FINAL_GOAL_MONTHLY_ILS, assumptions: MEASURED_ASSUMPTIONS, need, scenarios: scenarioTable() }, null, 2));
+          break;
+        }
+        console.log(`Final goal: ₪1,000,000/year = ₪${FINAL_GOAL_MONTHLY_ILS.toLocaleString("en")}/month.\n`);
+        console.log(`On the measured assumptions (${(MEASURED_ASSUMPTIONS.hitRate * 100).toFixed(0)}% of stores reach ₪${MEASURED_ASSUMPTIONS.hitCeilingIls}, upkeep ₪${MEASURED_ASSUMPTIONS.maintenanceIlsPerStore}/store):`);
+        console.log(`  ${need.reason}\n`);
+        console.log("Stores that must be LAUNCHED, by hit rate and per-hit ceiling:");
+        const ceilings = [1000, 2000, 3000, 5000];
+        console.log("  hit rate | " + ceilings.map((c) => `₪${c}`.padStart(9)).join(" | "));
+        for (const row of scenarioTable()) {
+          const cells = row.byCeiling.map((c) => (c.stores === null ? "never" : c.stores.toLocaleString("en")).padStart(9));
+          console.log(`  ${(row.hitRate * 100).toFixed(0).padStart(7)}% | ` + cells.join(" | "));
+        }
+        console.log("\nThese are launches, not successes. A store whose upkeep exceeds what it earns on");
+        console.log("average makes the portfolio worse the more of them there are — see src/revenue/growth.ts.");
         break;
       }
 
