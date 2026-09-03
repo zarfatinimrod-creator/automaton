@@ -71,7 +71,14 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     kpis: ["weekly visitors", "free tool uses", "paid conversions", "MRR in ILS", "refund rate"],
     killCriteria: ["under ₪500 in 30 days after 45 days live", "refund rate above 15% for two reviews", "merchant account rejected"],
     scaleCriteria: ["30-day revenue at or above target with 50%+ margin", "conversion above 2% on paid pages"],
-    targetMonthlyAgorot: agorotFromIls(5000),
+    // Wave 2 of the criteria sweep measured this funnel at ₪1,500/month merged,
+    // not ₪5,000. The hard datum: a live Israeli legal site's own Google Search
+    // Console export, checked into a public repo, shows its severance-calculator
+    // page at 0 clicks and 0 impressions over 16 months while sibling pages show
+    // 58k-81k. Head terms here are owned by funded incumbents (Morning, iCount,
+    // Invoice4u, Kol Zchut, and btl.gov.il's own free simulators). This is
+    // long-tail work, and the target now says so.
+    targetMonthlyAgorot: agorotFromIls(1500),
     budgetMonthlyCents: 5000,
     humanSetup: [
       "Open a merchant-of-record seller account (Paddle; Lemon Squeezy as fallback) in your name and complete identity/tax verification",
@@ -245,4 +252,106 @@ export function seedDefaultPortfolio(db: Database, seeds: RevenueLineSeed[] = DE
 
 export function portfolioTargetAgorot(seeds: RevenueLineSeed[] = DEFAULT_PORTFOLIO): number {
   return seeds.reduce((sum, s) => sum + s.targetMonthlyAgorot, 0);
+}
+
+/**
+ * Where each target number came from.
+ *
+ * MISSION rule 5 is "serious means measured". A target with no stated basis is
+ * a wish with a currency symbol, and the failure mode is specific: numbers get
+ * chosen so the portfolio adds up to the goal, and then the goal looks reachable
+ * because the arithmetic was fitted to it rather than derived.
+ *
+ * So every line states its basis and an evidence grade, a test asserts the
+ * numbers here match the portfolio, and the board report prints how much of the
+ * total rests on nothing. `unevidenced` is not a sin — it is a research task
+ * that has not been done yet, and it should be visible until it is.
+ */
+export type TargetGrade = "measured" | "inferred" | "unevidenced";
+
+export interface TargetBasis {
+  /** Must equal the line's targetMonthlyAgorot, in whole shekels. */
+  ils: number;
+  grade: TargetGrade;
+  basis: string;
+  /** Required for `measured`: where the number can be checked. */
+  source?: string;
+}
+
+export const TARGET_BASIS: Record<string, TargetBasis> = {
+  "apify-actors": {
+    ils: 3000, grade: "measured",
+    basis: "Apify's own partner page implies roughly $470/developer/month on average, with about $4k MRR for the single most successful independent creator. Revenue is a portfolio effect across many Actors, never one hit.",
+    source: "research/colony-sweep/scouts/ — apify criterion; portfolio comment above the line",
+  },
+  "il-biz-tools": {
+    ils: 1500, grade: "measured",
+    basis: "Sweep wave 2 measured the merged funnel at ₪1,500/month. A competing Israeli legal site's own Search Console export shows its severance calculator at 0 impressions over 16 months; head terms belong to funded incumbents and to the state's free simulators.",
+    source: "research/colony-sweep/groups/israel-bureaucracy.md, ranked survivor #3",
+  },
+  "paid-apis": {
+    ils: 1200, grade: "measured",
+    basis: "Genuine agent-to-API commerce across the whole x402 protocol runs on the order of $28k/day at a median clearing price near $0.028 per call. Marketplace subscriptions carry this line; x402 is the zero-KYC option attached to it.",
+    source: "portfolio comment above the line",
+  },
+  "agent-services": {
+    ils: 800, grade: "measured",
+    basis: "Same x402 volume evidence as paid-apis, applied to a line with no marketplace tier behind it.",
+    source: "portfolio comment above the line",
+  },
+  templates: {
+    ils: 3000, grade: "unevidenced",
+    basis: "Carried over from the first plan. The storefronts group is only 5/8 swept and Etsy digital-download economics for a new Israeli seller have not been measured. Treat as a research task, not a forecast.",
+  },
+  "telegram-bots": {
+    ils: 1500, grade: "unevidenced",
+    basis: "Carried over from the first plan, and worse than unevidenced: the payment-rails wave found that Fragment withdrawal eligibility for an Israeli resident is unverified. If Stars cannot be withdrawn to Israel this line's ceiling is ₪0. One owner login settles it.",
+  },
+  "dev-extensions": {
+    ils: 2500, grade: "unevidenced",
+    basis: "Carried over from the first plan. The plugin-ecosystems group has not been swept; Chrome Web Store paid-extension economics after in-app payments shut down are unmeasured.",
+  },
+  "hebrew-content": {
+    ils: 1500, grade: "inferred",
+    basis: "Ad and affiliate revenue on Hebrew traffic, inferred from the content-seo group's unswept criteria and from wave 2's finding that Israeli head terms are held by incumbents. Ordering matters: own products first, affiliate second, ads last.",
+  },
+  "oss-bounties": {
+    ils: 1500, grade: "unevidenced",
+    basis: "Carried over from the first plan. The bounties-grants group has not been swept, and payability to Israel on the bounty platforms is unverified.",
+  },
+};
+
+export interface TargetBasisSummary {
+  totalIls: number;
+  measuredIls: number;
+  inferredIls: number;
+  unevidencedIls: number;
+  /** Lines whose target rests on nothing measured yet. */
+  unevidencedLines: string[];
+}
+
+/**
+ * What the portfolio's targets actually rest on. The board report prints this
+ * so nobody reads a sum of wishes as a forecast.
+ */
+export function summarizeTargetBasis(
+  seeds: RevenueLineSeed[] = DEFAULT_PORTFOLIO,
+  basis: Record<string, TargetBasis> = TARGET_BASIS,
+): TargetBasisSummary {
+  const out: TargetBasisSummary = {
+    totalIls: 0, measuredIls: 0, inferredIls: 0, unevidencedIls: 0, unevidencedLines: [],
+  };
+  for (const seed of seeds) {
+    const ils = Math.round(seed.targetMonthlyAgorot / 100);
+    out.totalIls += ils;
+    const entry = basis[seed.id];
+    const grade: TargetGrade = entry?.grade ?? "unevidenced";
+    if (grade === "measured") out.measuredIls += ils;
+    else if (grade === "inferred") out.inferredIls += ils;
+    else {
+      out.unevidencedIls += ils;
+      out.unevidencedLines.push(seed.id);
+    }
+  }
+  return out;
 }

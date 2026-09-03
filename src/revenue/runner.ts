@@ -13,6 +13,7 @@
 
 import type { Database } from "better-sqlite3";
 import { describeStall, findStalledLines, type StalledLine } from "./watchdog.js";
+import { summarizeTargetBasis } from "./portfolio.js";
 import {
   computePortfolioSummary,
   getLine,
@@ -360,6 +361,28 @@ export function renderReport(db: Database, result: TickResult): string {
     out.push(`| Costs (30d) | ${formatIls(s.totalCost30dAgorot)} |`);
     out.push(`| Net (30d) | ${formatIls(s.net30dAgorot)} |`);
     out.push("");
+
+    // What the plan rests on, not just what it adds up to. A sum of targets is
+    // not a forecast, and the difference has to be visible to the owner.
+    const basis = summarizeTargetBasis();
+    const goalIls = Math.round(s.targetMonthlyAgorot / 100);
+    out.push("### What the plan rests on");
+    out.push("");
+    out.push(`| | |`);
+    out.push(`|---|---|`);
+    out.push(`| Line targets, summed | ₪${basis.totalIls.toLocaleString("en")} against a ₪${goalIls.toLocaleString("en")} goal |`);
+    out.push(`| Of that, **measured** | ₪${basis.measuredIls.toLocaleString("en")} |`);
+    out.push(`| Inferred | ₪${basis.inferredIls.toLocaleString("en")} |`);
+    out.push(`| **Resting on nothing yet** | ₪${basis.unevidencedIls.toLocaleString("en")} |`);
+    out.push("");
+    if (basis.unevidencedLines.length) {
+      out.push(
+        `Unevidenced targets: ${basis.unevidencedLines.map((l) => `\`${l}\``).join(", ")}. ` +
+        "These are research tasks that have not been done, not forecasts. Until a sweep measures them, " +
+        `the honest reachable figure is the measured ₪${basis.measuredIls.toLocaleString("en")}, not the ₪${basis.totalIls.toLocaleString("en")} total.`,
+      );
+      out.push("");
+    }
   }
 
   const lines = listLines(db).filter((l) => l.status !== "killed");
