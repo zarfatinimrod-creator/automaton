@@ -54,6 +54,43 @@ board — on Fable. Putting Fable in the fan-out is how the quota died before; p
 at the top is what the rule is for. Set `model` explicitly on every agent in a fleet:
 inheriting the session model means a session switch silently re-tiers a hundred agents.
 
+## Skills installed in this repo (added 3.9.2026 at the owner's request)
+
+**`.claude/skills/` holds the 14 [Superpowers](https://github.com/obra/superpowers) skills**, vendored
+rather than installed. They are plain markdown, they load straight from the checkout, and vendoring
+means a fresh container has them without a network call. Do not "install" them again.
+
+The three that matter most for the failure modes this repo actually has:
+
+- **`verification-before-completion`** — evidence before assertions. This repo's recurring defect is
+  a confident claim nobody checked: a ledger that accepted money nobody paid, a checkpoint that said
+  the loop ran hourly when the workflow had never fired, a `firstStep` telling a builder to call a
+  function that does not exist. Invoke it before writing "done", "fixed" or "passing".
+- **`systematic-debugging`** — before proposing a fix. The `allocateBudget` mistake (a "fix" that
+  would have made budgets only ever fall) came from acting on a misread, not from a hard bug.
+- **`brainstorming`** and **`writing-plans`** — before building anything the owner will be asked to
+  care about.
+
+`using-superpowers` says to invoke a matching skill before responding. That is fine and it says so
+itself: **user instructions and `MISSION.md` take precedence over any skill.** Where a skill and the
+mission disagree, the mission wins.
+
+**`archify`** (https://github.com/tt-a1i/archify) is NOT vendored — it is 7.5 MB of renderer assets
+and it would bloat every clone. It is a global skill and the container forgets it, so reinstall it in
+a session that needs a diagram:
+
+```bash
+npx -y skills@latest add tt-a1i/archify --skill archify --agent claude-code --global --copy --yes
+```
+
+It turns a typed JSON spec into a self-contained interactive HTML system map. Its use here is the
+owner-facing picture of the colony — what the chain of command actually is, and where money enters.
+
+**`sindresorhus/awesome`** is not a skill and installs nothing. It is a curated index of curated
+lists, all on GitHub — which matters because GitHub is one of the few hosts this container's egress
+proxy does not block. It is a **research source for the criteria sweep**, and it costs zero of the
+shared WebSearch budget. See `docs/CRITERIA_SWEEP.md`.
+
 ## Build / test
 - `pnpm install`, `pnpm typecheck`, `pnpm test` (full suite takes >10 minutes here; run targeted files with `npx vitest run <path>` while iterating).
 - Revenue colony: `src/revenue/`, docs in `docs/CHAIN_OF_COMMAND.md` and `docs/INCOME_PLAN.he.md`, playbooks in `skills/`.
