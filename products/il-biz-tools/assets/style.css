@@ -118,3 +118,15 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); out
 .pro-box details { margin-top: .75rem; }
 .pro-box summary { cursor: pointer; }
 @media print { .pro-box, #branding-fields { display: none !important; } }
+
+/* Allocation-number verdict */
+.verdict { margin-top: 1rem; padding: 1rem; border-radius: 8px; font-weight: 600; font-size: 1.05rem; }
+.verdict.required { background: #fff4e5; border: 1px solid #e6a23c; }
+.verdict.not-required { background: #eefaf0; border: 1px solid #4caf7d; }
+.verdict.unknown { background: #f2f4f7; border: 1px solid #b0b7c3; }
+.verdict .note { font-weight: 400; margin: .5rem 0 0; }
+
+/* Threshold timeline and similar read-only tables outside the printable doc */
+.data-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+.data-table th, .data-table td { border: 1px solid var(--line); padding: 8px; text-align: right; }
+.data-table th { background: #f0f2f5; }

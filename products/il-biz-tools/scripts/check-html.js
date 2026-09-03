@@ -3,7 +3,7 @@ import { readFile, access } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const root = new URL('..', import.meta.url).pathname;
-const pages = ['index.html', 'vat.html', 'osek-patur.html', 'net-salary.html', 'invoice.html'];
+const pages = ['index.html', 'vat.html', 'osek-patur.html', 'net-salary.html', 'invoice.html', 'allocation.html'];
 let failures = 0;
 const fail = (p, msg) => { failures++; console.error(`  x ${p}: ${msg}`); };
 

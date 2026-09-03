@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מספר הקצאה לחשבונית – בדיקה מהירה לפי סף 5,000 ₪ (2026)</title>
+<meta name="description" content="בודק חינמי: האם החשבונית שלכם חייבת מספר הקצאה מרשות המסים? מ-1 ביוני 2026 הסף הוא 5,000 ₪ לפני מע״מ בעסקאות עסק-לעסק. בלי מספר הקצאה תקין מקבל החשבונית לא יוכל לנכות מס תשומות.">
+<link rel="canonical" href="https://il-biz-tools.netlify.app/allocation.html">
+<meta property="og:title" content="האם החשבונית צריכה מספר הקצאה?">
+<meta property="og:description" content="בדיקה לפי סכום ותאריך, כולל לוח הזמנים של הורדת הסף.">
+<link rel="stylesheet" href="assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "מה זה מספר הקצאה?",
+      "acceptedAnswer": { "@type": "Answer", "text": "מספר בן 9 ספרות שרשות המסים מנפיקה לחשבונית מס במסגרת מודל חשבוניות ישראל. מטרתו למנוע חשבוניות פיקטיביות. בלי מספר הקצאה תקין, מקבל החשבונית לא יכול לנכות את מס התשומות בגינה." }
+    },
+    {
+      "@type": "Question",
+      "name": "מאיזה סכום חייבים מספר הקצאה ב-2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "מ-1 בינואר 2026 הסף היה 10,000 ₪ לפני מע״מ, ומ-1 ביוני 2026 הוא ירד ל-5,000 ₪ לפני מע״מ. הסף נמדד תמיד לפני מע״מ." }
+    },
+    {
+      "@type": "Question",
+      "name": "על אילו עסקאות החובה חלה?",
+      "acceptedAnswer": { "@type": "Answer", "text": "על עסקאות עסק-לעסק מקומיות בלבד. חשבונית ללקוח פרטי, לגוף ממשלתי או ללקוח בחו״ל אינה נכללת בחובה." }
+    },
+    {
+      "@type": "Question",
+      "name": "מי נפגע אם אין מספר הקצאה?",
+      "acceptedAnswer": { "@type": "Answer", "text": "בעיקר מקבל החשבונית: הוא לא יוכל לנכות מס תשומות. לכן לקוחות עסקיים בודקים את זה, וספק שלא מנפיק מספר הקצאה עלול לאבד אותם." }
+    },
+    {
+      "@type": "Question",
+      "name": "האם הכלי הזה מנפיק מספר הקצאה?",
+      "acceptedAnswer": { "@type": "Answer", "text": "לא. הכלי עונה רק על שאלת הסף. את מספר ההקצאה עצמו מקבלים ממערכת החשבוניות שלכם או ישירות מרשות המסים באופן מקוון. אין כאן ייעוץ מס." }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header"><div class="container">
+  <a class="logo" href="./">כלים <span>לעסק</span></a>
+  <nav aria-label="ניווט ראשי"><ul>
+    <li><a href="vat.html">מחשבון מע״מ</a></li>
+    <li><a href="osek-patur.html">תקרת עוסק פטור</a></li>
+    <li><a href="net-salary.html">שכר נטו</a></li>
+    <li><a href="invoice.html">קבלה / חשבונית</a></li>
+    <li><a href="allocation.html" aria-current="page">מספר הקצאה</a></li>
+  </ul></nav>
+</div></header>
+
+<main class="container">
+  <h1>האם החשבונית שלי צריכה מספר הקצאה?</h1>
+  <p class="lead">מ-1 ביוני 2026 חובת מספר ההקצאה חלה על חשבונית מס מעל <strong>5,000 ₪ לפני מע״מ</strong> בעסקה בין עסקים. בלי מספר הקצאה תקין, מקבל החשבונית לא יוכל לנכות מס תשומות.</p>
+
+  <section class="card">
+    <form id="alloc-form" novalidate>
+      <div class="row">
+        <div class="field">
+          <label for="amount">סכום החשבונית <strong>לפני מע״מ</strong> (₪)</label>
+          <input type="number" id="amount" inputmode="decimal" min="0" step="0.01" value="6000" required>
+        </div>
+        <div class="field">
+          <label for="date">תאריך החשבונית</label>
+          <input type="date" id="date" required>
+        </div>
+      </div>
+      <div class="field">
+        <label for="b2b">סוג הלקוח</label>
+        <select id="b2b">
+          <option value="yes">עסק ישראלי (עוסק / חברה)</option>
+          <option value="no">לקוח פרטי, גוף ממשלתי או לקוח בחו״ל</option>
+        </select>
+      </div>
+    </form>
+
+    <div id="verdict" class="verdict" role="status" aria-live="polite"></div>
+    <p class="note" id="proximity"></p>
+    <p class="note" id="next-change"></p>
+  </section>
+
+  <section class="card">
+    <h2>לוח הזמנים של הסף</h2>
+    <table class="data-table" id="timeline">
+      <thead><tr><th>בתוקף מ-</th><th>סף (לפני מע״מ)</th><th>הערה</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="note">הסף נמדד תמיד לפני מע״מ, והחובה חלה על עסקאות עסק-לעסק מקומיות בלבד.</p>
+  </section>
+
+  <section class="faq card">
+    <h2>שאלות נפוצות</h2>
+    <details open><summary>מה זה מספר הקצאה?</summary><p>מספר בן 9 ספרות שרשות המסים מנפיקה לחשבונית מס במסגרת מודל חשבוניות ישראל, כדי למנוע חשבוניות פיקטיביות. בלי מספר תקין, מקבל החשבונית לא יכול לנכות מס תשומות.</p></details>
+    <details><summary>מי בעצם נפגע אם אין מספר?</summary><p>בעיקר הקונה, שלא יוכל לנכות מס תשומות. לכן לקוחות עסקיים בודקים את זה, וספק שלא מנפיק עלול לאבד אותם.</p></details>
+    <details><summary>האם הכלי הזה מנפיק את המספר?</summary><p>לא. הוא עונה רק על שאלת הסף. את המספר עצמו מקבלים ממערכת החשבוניות שלכם או ישירות מרשות המסים באופן מקוון.</p></details>
+    <details><summary>מה עם חשבונית שהוצאה בעבר?</summary><p>הזינו את תאריך החשבונית והכלי יבדוק לפי הסף שהיה בתוקף באותו מועד. <a href="invoice.html">מחולל הקבלות</a> יוצר את המסמך עצמו.</p></details>
+  </section>
+
+  <p class="note">הכלי מספק מידע כללי לפי לוח הזמנים שפרסמה רשות המסים ואינו מהווה ייעוץ מס. באחריותכם לוודא מול רואה החשבון או מייצג מס.</p>
+</main>
+
+<footer class="site-footer"><div class="container">
+  © <span data-year>2026</span> כלים לעסק · המידע באתר אינו מהווה ייעוץ מס. · <a href="./">דף הבית</a>
+</div></footer>
+<script type="module" src="assets/page-allocation.js"></script>
+</body>
+</html>
