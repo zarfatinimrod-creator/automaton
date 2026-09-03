@@ -330,6 +330,34 @@ say so.**
 
 ---
 
+## The payment-rails group earns nothing either — audited 2026-09-03
+
+The same fold-in failure as `risk-governance`: the audit has been on disk since the group
+report and nothing had read it. Its verdict on six candidates: **zero confirmed on external
+evidence, one confirmed on reasoning, five downgraded, and all six ceilings corrected to ₪0.**
+One `israelPayable` corrected from YES to UNKNOWN (Payoneer). It also opened four cited URLs
+and found that they do not support the claims attached to them.
+
+**The correction that matters most is not a rejection — it is a schedule.** The group's headline
+was "payment rails are not the bottleneck; demand is", and this repo has been repeating it. The
+auditor's reading, which the evidence supports:
+
+> The critical path is not "four one-time owner steps". It is **one** owner step (the tax file),
+> then a **Paddle application that may be refused**, then roughly **10–16 hours of
+> webhook-to-ledger engineering that no entry budgeted**. Until then this colony's rails carry
+> ₪0 and the ledger stays empty.
+
+That is not an argument against starting. It is an argument against believing money begins to
+move the moment the owner finishes his checklist. `src/revenue/ledger.ts` already has the
+`(source, external_id)` uniqueness machinery those rails have to feed, and **not one candidate
+in the group referenced the schema it would have to write into** — which is how a rail can look
+finished and deliver nothing.
+
+The group's own honest self-assessment — it said out loud that almost nothing was rendered — is
+its best feature, and the auditor said so.
+
+---
+
 ## Earlier rejections
 
 Kept in `docs/INCOME_PLAN.he.md` §4 with one-line reasons: Envato (bans AI files, 50%
