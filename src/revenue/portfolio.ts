@@ -31,19 +31,27 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
       "Loop: find under-served categories with the store's own search → build the Actor (Crawlee/TypeScript) with an input schema, README and tests → push → set pay-per-event pricing and allow agentic buyers →",
       "watch the daily health tests and quality score, auto-fix breaking site changes → answer issues in the Actor's issue tab → each week kill zero-run Actors and clone winners into adjacent niches → record the monthly payout invoice in the ledger.",
     ].join(" "),
-    kpis: ["actors published", "monthly runs", "paying users", "quality score", "monthly payout in ILS"],
+    kpis: ["actors published", "monthly runs", "paying users", "quality score", "monthly payout in ILS", "per-Actor margin over platform usage cost"],
     // Apify's own partner page implies roughly $470/developer/month on average and
     // about $4k MRR for the single most successful independent creator, so revenue
     // here is a portfolio effect, never one hit. Store ranking is driven by existing
     // usage, which makes a new actor structurally invisible: users lead revenue by
     // weeks, so the kill trigger watches users, not shekels.
-    killCriteria: ["under 25 monthly users across all Actors after 60 days live with 10+ Actors", "under ₪500 in 30 days after 90 days live", "two Actors deprecated for failing health checks in one month", "Store terms violation notice"],
+    killCriteria: ["under 25 monthly users across all Actors after 60 days live with 10+ Actors", "under ₪500 in 30 days after 90 days live", "two Actors deprecated for failing health checks in one month", "Store terms violation notice", "any Actor priced below its own platform usage cost — Apify zeroes a negative-profit Actor's payout for the whole month"],
     scaleCriteria: ["30-day payout at or above target", "any single Actor above ₪1,500 per month", "any Actor in the top 3 of its Store category"],
     targetMonthlyAgorot: agorotFromIls(3000),
     budgetMonthlyCents: 6000,
+    // Apify's binding Store Publishing Terms, read directly from their own docs
+    // repo (sources/legal/latest/terms/store-publishing-terms-and-conditions.md
+    // §10.1.2-10.1.3): KYC gates the payout AND becoming a Verified Creator.
+    // Their agentic-payments eligibility partial adds that "the Actor's
+    // developer must also have completed identity verification (KYC)... Until
+    // they do, none of their Actors are eligible" — so x402 is NOT a way around
+    // it on the sell side. Until the owner does this, we can publish free
+    // Actors and nothing else: no price, no x402, no payout.
     humanSetup: [
-      "Create an Apify account in your name and complete Apify KYC (government ID, proof of address, tax document)",
-      "Open a PayPal account in your name (PayPal Israel) and link it as the Apify payout method (minimum payout $20)",
+      "Create an Apify account in your name and complete Apify KYC (government ID, proof of address, tax document, beneficial-ownership info). This one step gates ALL THREE of: receiving any payout, setting a price on an Actor, and x402/agentic eligibility. Publishing free Actors is the only thing possible before it.",
+      "Open a PayPal account in your name (PayPal Israel) and link it as the Apify payout method (minimum payout $20 for PayPal and Wise, $100 for other methods)",
       "Register as osek patur (self-service online form) before the first payout",
     ],
     skillName: "revenue-apify-actors",

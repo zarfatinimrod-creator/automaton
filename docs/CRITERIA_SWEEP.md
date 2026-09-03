@@ -82,7 +82,20 @@ not fit inside one window. So the script takes `args`:
 | `{ board: true }` | No scouts. The chief auditor and board read the group reports off disk and decide. |
 | omitted | Everything. Only sane on a fresh window with nothing else running. |
 
-Two or three groups per wave (roughly 20-30 agents) is the size that reliably lands. The
+**One group per wave.** The first wave ran two groups and proved why: `WebSearch` is a
+*shared session budget* of roughly 200 calls across every agent running at once. The
+`payment-rails` scouts spent it, and then all eight `risk-governance` scouts — and their
+supervisor — ran with the budget already refused at 200/200. Their supervisor caught it and
+reported it upward as "a colony governance defect, not a scout failure", which is exactly
+right. Eight scouts at a 20-search cap is the arithmetic that fits.
+
+The second half of that fix is source choice: **github.com and raw.githubusercontent.com
+render**, and platforms check their own terms and docs into public repos. The
+`risk-governance` supervisor found Apify's binding Store Publishing Terms that way after its
+scout had marked them "blocked and unread" — and the clause it found reversed one of our
+standing assumptions. A rendered clause beats ten snippets and costs no search budget.
+
+Two or three groups per wave (roughly 20-30 agents) fits the token quota, but not the search
 board is deliberately skipped inside a wave: it decides across the whole portfolio, and a
 board that judges a slice is deciding without the evidence it needs. Run the board wave
 once every group has been swept — and it is told to name the groups still missing, because

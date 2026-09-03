@@ -37,6 +37,8 @@ const SCOUT_RULES = [
   '5. Prefer things a software-only operation can ship in under 40 hours and that a specific, nameable buyer pays for. Say who the buyer is. "Everyone" means you have not found the buyer.',
   "6. Report dead ends. A criterion that is genuinely empty is worth knowing and saves the colony from re-searching it.",
   "7. Aim for at least 5 findings; if the criterion honestly yields fewer, say so in deadEnds rather than padding.",
+  "8. WEB SEARCH IS A SHARED, FINITE BUDGET - roughly 200 calls for the whole session, across every agent running at once. Spend at most 20, on the questions you cannot answer any other way. When early scouts burn the budget the later ones are structurally blind, and a blind scout that keeps a confident tone is worse than no scout: there is nothing underneath it. If your searches start being refused, say so in deadEnds, mark everything you had to infer as low confidence, and stop - do not fill the gap from memory.",
+  "9. github.com and raw.githubusercontent.com DO render, and platforms check their own terms, policies, docs and pricing into public repos. Use them as primary sources wherever the answer lives in a repo. A rendered clause from a platform's own docs repo beats ten search snippets and costs no search budget.",
 ];
 
 const SCOUT_SCHEMA = {
