@@ -1,6 +1,6 @@
 # Revenue colony — board report
 
-Generated 2026-09-03T12:12:46.058Z
+Generated 2026-09-03T12:30:59.039Z
 
 ## Where we are
 
@@ -17,23 +17,23 @@ Generated 2026-09-03T12:12:46.058Z
 
 | Line | Tier | Status | 30d | Target | Last supervisor call |
 |---|---|---|---|---|---|
-| `apify-actors` | core | awaiting_setup | ₪0.00 | ₪3,000.00 | — |
-| `il-biz-tools` | core | awaiting_setup | ₪0.00 | ₪5,000.00 | — |
-| `templates` | growth | awaiting_setup | ₪0.00 | ₪3,000.00 | — |
-| `paid-apis` | growth | awaiting_setup | ₪0.00 | ₪1,200.00 | — |
-| `agent-services` | experimental | proposed | ₪0.00 | ₪800.00 | — |
-| `telegram-bots` | experimental | awaiting_setup | ₪0.00 | ₪1,500.00 | — |
-| `dev-extensions` | experimental | awaiting_setup | ₪0.00 | ₪2,500.00 | — |
-| `hebrew-content` | experimental | awaiting_setup | ₪0.00 | ₪1,500.00 | — |
-| `oss-bounties` | experimental | awaiting_setup | ₪0.00 | ₪1,500.00 | — |
+| `apify-actors` | core | awaiting_setup | ₪0.00 | ₪3,000.00 | escalate |
+| `il-biz-tools` | core | awaiting_setup | ₪0.00 | ₪5,000.00 | escalate |
+| `templates` | growth | awaiting_setup | ₪0.00 | ₪3,000.00 | escalate |
+| `paid-apis` | growth | awaiting_setup | ₪0.00 | ₪1,200.00 | escalate |
+| `agent-services` | experimental | proposed | ₪0.00 | ₪800.00 | hold |
+| `telegram-bots` | experimental | awaiting_setup | ₪0.00 | ₪1,500.00 | escalate |
+| `dev-extensions` | experimental | awaiting_setup | ₪0.00 | ₪2,500.00 | escalate |
+| `hebrew-content` | experimental | awaiting_setup | ₪0.00 | ₪1,500.00 | escalate |
+| `oss-bounties` | experimental | awaiting_setup | ₪0.00 | ₪1,500.00 | escalate |
 
 ## This tick
 
 Ran: revenue_ledger_sync, revenue_supervisor_review, revenue_board_review, revenue_audit
 
 - Ledger sync: 0 new entries, 0 already known, sources [none configured]
-- Supervisors reviewed 0 line(s), escalating 0
-- Audit sampled 0 review(s), flagged 0; chief audit ran
+- Supervisors reviewed 9 line(s), escalating 8
+- Audit sampled 9 review(s), flagged 0
 
 ### Board decisions
 
@@ -48,7 +48,6 @@ Ran: revenue_ledger_sync, revenue_supervisor_review, revenue_board_review, reven
 
 ### Actions taken
 
-- seeded default portfolio with 9 revenue lines
 - waiting on creator for apify-actors: Create an Apify account in your name and complete Apify KYC (government ID, proof of address, tax document, beneficial-ownership info). This one step gates ALL THREE of: receiving any payout, setting a price on an Actor, and x402/agentic eligibility. Publishing free Actors is the only thing possible before it.; Open a PayPal account in your name (PayPal Israel) and link it as the Apify payout method (minimum payout $20 for PayPal and Wise, $100 for other methods); Register as osek patur (self-service online form) before the first payout
 - waiting on creator for il-biz-tools: Open a merchant-of-record seller account (Paddle; Lemon Squeezy as fallback) in your name and complete identity/tax verification; Add an Israeli bank account (IBAN/SWIFT) or PayPal for payouts; Register as osek patur (self-service online form) before the first payout
 - waiting on creator for templates: Open an Etsy shop in your name (ID verification) and enrol in Etsy Payments with a Payoneer account (KYC) linked to your Israeli bank
@@ -57,7 +56,6 @@ Ran: revenue_ledger_sync, revenue_supervisor_review, revenue_board_review, reven
 - waiting on creator for dev-extensions: Pay the one-time Chrome Web Store developer fee ($5) with a Google account that has 2-step verification; create a Microsoft/Azure DevOps publisher for VS Code (free); reuse the merchant-of-record account from il-biz-tools for license keys
 - waiting on creator for hebrew-content: Open the affiliate program accounts in your name (they require a tax form and a PayPal or Payoneer payout) and provide the affiliate IDs
 - waiting on creator for oss-bounties: Connect your GitHub account to a bounty platform and complete its payout onboarding (verify it pays to Israel before enabling this line)
-- queued build goal for agent-services
 - goal filing disabled for this review (no executor attached)
 
 Goal queue: agent-services:build

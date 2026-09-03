@@ -12,6 +12,7 @@
  */
 
 import type { Database } from "better-sqlite3";
+import { describeStall, findStalledLines, type StalledLine } from "./watchdog.js";
 import {
   computePortfolioSummary,
   getLine,
@@ -217,6 +218,7 @@ export interface TickResult {
   audit: AuditResult | null;
   stuckGoals: StuckGoal[];
   liveness: LivenessFinding[];
+  stalledLines: StalledLine[];
   blockers: string[];
   summary: PortfolioSummary | null;
 }
@@ -242,6 +244,7 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
     audit: null,
     stuckGoals: [],
     liveness: [],
+    stalledLines: [],
     blockers: [],
     summary: null,
   };
@@ -303,6 +306,11 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
     }
     for (const finding of result.audit.chiefFindings) result.blockers.push(`chief audit: ${finding}`);
   }
+
+  // Alive is not working. A line that should be producing and is not gets named
+  // here, or the report shows a healthy portfolio doing nothing.
+  result.stalledLines = findStalledLines(db, nowMs);
+  for (const stall of result.stalledLines) result.blockers.push(describeStall(stall));
 
   result.stuckGoals = findStuckGoals(db, nowMs);
   for (const goal of result.stuckGoals) {
