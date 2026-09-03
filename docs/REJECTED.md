@@ -302,6 +302,34 @@ ranking never constructed is the intersection: Israeli-dataset Actors on Apify S
 
 ---
 
+## The risk-governance group produced no revenue line — audited 2026-09-03
+
+Its supervisor ranked three candidates. Its auditor cut all three, and the numbers are the
+point: **₪150, ₪200 and ₪0 of ceiling, all three UNKNOWN rather than YES on Israeli
+payability.** This never reached the kill list until now, which is a fold-in failure, not a
+research one — the audit is dated the same day as the group report and sat in
+`research/colony-sweep/audits/risk-governance.md` unused.
+
+**The group's real output was never a portfolio.** It is the owner-KYC catalogue, the Apify
+finding that KYC gates Actor *pricing* and x402 eligibility rather than only payout, and the
+governance standards the rest of the colony inherits. Those are worth more than the three
+candidates were, and the group should be read that way.
+
+| Rejected | Why | What would reopen it |
+|---|---|---|
+| **Browser-only Hebrew document redaction** | Downgraded to ₪150/month, and the moat argument is a category error. The supervisor ranked it partly because the best Hebrew NER prior art is a 0-star student project — but the product's own identifiers (ת״ז, phone, IBAN, email, address) are regex and checksum work, not NER, so Israeli NER is irrelevant to four of the five. Worse, **the detector already exists in this repo**: `products/x402-il-api/src/israeli.ts` implements the ת״ז checksum, the full phone regex set and the Bank of Israel institution codes. The claimed technical moat is already written and already open source. | A measured buyer. The Hebrew gap in Presidio, `wuming` and `worka-ai/pii` is real and independently confirmed — what is missing is anyone paying for it. |
+| **WordPress AI-disclosure plugin** | Downgraded to ₪200/month, ToS GREEN → AMBER, and the number is not a corrected estimate — it was derived from the wrong instrument. The supervisor reasoned from GitHub stars while its own `firstStep` said the right metric is `active_installs`; WordPress users install from wp-admin and never see GitHub. Both `api.wordpress.org` and `wordpress.org` are egress-blocked, so **demand here is entirely unmeasured**. The lead competitor is also far stronger than reported: `eu-ai-act-ready` is at v2.2.3 with 76 commits, WPML translations and a commercial domain. | An `active_installs` reading from `api.wordpress.org`, from a network that can open it. Until then there is no demand number at all, in either direction. |
+| **C2PA / IPTC provenance-signing API** | Refuted to ₪0. The make-or-break question — whether a solo Israeli operator can obtain a trust-listed signing certificate — is unresolved and unresolvable from here, and the supervisor said itself that this is "not a detail, it is the whole product". The one new datum points the wrong way: `contentauth/c2pa-mcp` refers to curated "Interim Trust Lists". The demand evidence is a repo with 2 commits, abandoned four days after creation. And hosted signing means holding customers' media on our servers, which contradicts the zero-PII standard this same group published and the reasoning that made DSAR SaaS RED. | A published, self-serve route to a C2PA trust list for an individual. Not a research question — a policy change. |
+
+**The pattern worth naming.** In both audited groups the supervisor ranked a candidate it had
+already argued against in its own text — here, "last, and I would not start it" followed by a
+rank; in `store-promotion`, a line whose price floor it had just proved was zero. A ranked list
+with a floor of six invites padding. The instruction to supervisors is "at most 6 survive", and
+it should be read as a ceiling only: **a group whose honest answer is one line, or none, must
+say so.**
+
+---
+
 ## Earlier rejections
 
 Kept in `docs/INCOME_PLAN.he.md` §4 with one-line reasons: Envato (bans AI files, 50%
