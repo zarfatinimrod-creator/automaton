@@ -1,7 +1,11 @@
+import { renderSweepWorkflow } from "../../revenue/sweep-workflow.js";
 import { describe, it, expect } from "vitest";
 import {
   ALL_CRITERIA,
   CRITERIA_GROUPS,
+  SCOUT_REPORT_DIR,
+  criteriaFromReportFilenames,
+  scoutReportFilename,
   SWEEP_INTERVAL_DAYS,
   criteriaDueForSweep,
   criterionById,
@@ -126,5 +130,38 @@ describe("sweep roles", () => {
     const spec = sweepGoalSpec(group);
     for (const c of group.criteria) expect(spec.description).toContain(c.id);
     expect(spec.title).toContain(group.title);
+  });
+});
+
+describe("reconciling the registry with the scout reports on disk", () => {
+  it("round-trips every criterion id through its report filename", () => {
+    const names = ALL_CRITERIA.map((c) => scoutReportFilename(c.id));
+    const { known, unknown } = criteriaFromReportFilenames(names);
+    expect(unknown).toEqual([]);
+    expect(new Set(known)).toEqual(new Set(ALL_CRITERIA.map((c) => c.id)));
+  });
+
+  it("reports files that match no criterion instead of dropping them", () => {
+    const { known, unknown } = criteriaFromReportFilenames([
+      scoutReportFilename(ALL_CRITERIA[0]!.id),
+      "storefronts--a-criterion-we-renamed.md",
+      "README.md",
+    ]);
+    expect(known).toEqual([ALL_CRITERIA[0]!.id]);
+    // A renamed criterion and a stray file both surface; silently ignoring them
+    // is how a registry and its evidence lose touch.
+    expect(unknown).toEqual(["storefronts--a-criterion-we-renamed.md", "README.md"]);
+  });
+
+  it("ignores non-markdown files without calling them unknown", () => {
+    const { known, unknown } = criteriaFromReportFilenames([".gitkeep", "notes.txt"]);
+    expect(known).toEqual([]);
+    expect(unknown).toEqual([]);
+  });
+
+  it("names the directory the sweep workflow actually writes to", () => {
+    // The workflow prompt hard-codes this path; if the constant and the prompt
+    // drift, reconcile silently finds nothing.
+    expect(renderSweepWorkflow()).toContain(SCOUT_REPORT_DIR);
   });
 });

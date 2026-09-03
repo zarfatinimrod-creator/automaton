@@ -38,6 +38,9 @@ import {
   criterionById,
   markSupervised,
   markSwept,
+  SCOUT_REPORT_DIR,
+  criteriaFromReportFilenames,
+  scoutReportFilename,
   readLastSwept,
   sweepCoverage,
 } from "../src/revenue/criteria.js";
@@ -61,6 +64,9 @@ Commands:
   setup-done <lineId>  Mark a line's one-time owner setup as done and queue its build goal.
   target               Set the monthly target (and optional stretch target) in shekels.
   criteria             Show the search criteria and how much of the space is covered.
+                       --reconcile marks swept everything with a scout report on
+                       disk, dated by the file's mtime. Run it after a sweep wave:
+                       the workflow writes reports and cannot reach this database.
   dashboard            Regenerate the manager's screen (HTML) from the ledger.
   growth               Model the path to the final goal (₪1M/year) and print the scenarios.
 
@@ -160,6 +166,7 @@ async function main(): Promise<void> {
       briefs: { type: "boolean", default: false },
       mark: { type: "string" },
       supervised: { type: "string" },
+      reconcile: { type: "boolean", default: false },
       help: { type: "boolean", default: false },
     },
   });
@@ -314,6 +321,25 @@ async function main(): Promise<void> {
         const nowMs = values.now ? Date.parse(values.now) : Date.now();
         if (!Number.isFinite(nowMs)) fail("--now must be an ISO timestamp");
 
+        if (values.reconcile) {
+          // The scout reports on disk are the durable record; the kv rows are a
+          // convenience. When they disagree, disk wins, and the file's mtime is
+          // the honest sweep date — better than "now", which would reset the
+          // 30-day re-sweep clock on work done weeks ago.
+          const dir = path.resolve(SCOUT_REPORT_DIR);
+          if (!fs.existsSync(dir)) fail(`no scout report directory at ${dir}`);
+          const { known, unknown } = criteriaFromReportFilenames(fs.readdirSync(dir));
+          for (const id of known) {
+            const at = fs.statSync(path.join(dir, scoutReportFilename(id))).mtime.toISOString();
+            markSwept(db.raw, id, at);
+          }
+          console.log(`Reconciled ${known.length} of ${ALL_CRITERIA.length} criteria from ${SCOUT_REPORT_DIR}.`);
+          if (unknown.length) {
+            console.log(`\n${unknown.length} file(s) match no criterion in the registry — a rename or a stray:`);
+            for (const name of unknown) console.log(`  ${name}`);
+          }
+          break;
+        }
         if (values.mark) {
           const atIso = new Date(nowMs).toISOString();
           const group = CRITERIA_GROUPS.find((g) => g.id === values.mark);

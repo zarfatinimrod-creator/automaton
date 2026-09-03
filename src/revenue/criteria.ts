@@ -496,3 +496,44 @@ export function sweepCoverage(db: KvDb, nowMs: number, intervalDays: number = SW
     };
   });
 }
+
+// ── Reconciling the database with what is actually on disk ──
+//
+// The durable record of a completed sweep is the scout's report file, not a kv
+// row: the workflow writes the file, and nothing in the workflow can reach the
+// colony database. So the two drift, and they drifted badly — the checkpoint
+// claimed 30 swept while 39 reports sat in the directory, because marking is a
+// separate manual step that nobody remembers to run.
+//
+// The file names carry the criterion id (`<group>--<criterion>.md`), so the
+// directory listing is a complete, self-describing record. These helpers turn it
+// back into state. Parsing is split from the filesystem so the mapping can be
+// tested without a directory.
+
+/** Where scout reports are written, relative to the repo root. */
+export const SCOUT_REPORT_DIR = "research/colony-sweep/scouts";
+
+/** The file a scout writes for a criterion. */
+export function scoutReportFilename(criterionId: string): string {
+  return `${criterionId.replace("/", "--")}.md`;
+}
+
+/**
+ * Criterion ids for the report files in a directory listing.
+ *
+ * Unknown names are returned separately rather than dropped: a file that maps to
+ * no criterion means either a renamed criterion or a stray file, and silently
+ * ignoring it is how a registry and its evidence lose touch.
+ */
+export function criteriaFromReportFilenames(filenames: string[]): { known: string[]; unknown: string[] } {
+  const byId = new Map(ALL_CRITERIA.map((c) => [c.id, c]));
+  const known: string[] = [];
+  const unknown: string[] = [];
+  for (const name of filenames) {
+    if (!name.endsWith(".md")) continue;
+    const id = name.slice(0, -3).replace("--", "/");
+    if (byId.has(id)) known.push(id);
+    else unknown.push(name);
+  }
+  return { known, unknown };
+}
