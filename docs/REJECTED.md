@@ -139,6 +139,39 @@ re-verification.
 
 ---
 
+## Two standing walls in the Israeli-bureaucracy space — established 2026-09-03
+
+Not rejections of a single idea, but constraints that kill whole families of them. A candidate in
+this space must clear both before it is ranked. Source:
+`research/colony-sweep/groups/israel-bureaucracy.md`.
+
+**1. The Tax Authority is a gate, not a platform.** Every idea that *calls* the ITA — requesting
+allocation numbers, transmitting VAT reports, pulling withholding certificates, filing refunds —
+dies on software-house registration plus signed documents plus a discretionary approval, or on a
+licensed מייצג / יועץ מס. These are not one-time KYC steps the owner can do once and be finished
+with; they are ongoing human and professional dependencies, which MISSION §1 puts out of scope.
+Build *around* the ITA, never *into* it.
+
+**2. The state is our free competitor, and that is not a pricing problem.** The ITA publishes a
+free allocation-number request service, a free supplier-invoice verification service, a free
+PCN874 simulator, a free work-grant eligibility checker and a free personal-import calculator;
+Bituach Leumi publishes its own simulators. Anything we charge for must be something the state
+publishes only as HTML or PDF, or must be bulk, automation or export — never the single answer a
+citizen can already get free. **Charging for a free answer is a constitution violation, not a
+pricing decision.**
+
+**And the honest ceiling for the whole group: ₪4,000-7,000/month at maturity**, with the best
+single build (a PCN874 builder) at about ₪2,500. This is the colony's home turf and it cannot
+reach ₪20,000 on its own. It earns credibility and traffic that other groups monetise. Treating it
+as the flagship would be a mistake — recorded here so no future session quietly re-assumes it.
+
+**Evidence grade: the worst in any group so far, and not the scouts' fault.** gov.il, btl.gov.il,
+kolzchut.org.il, data.gov.il, ica.justice.gov.il and every Israeli vendor domain are egress-blocked.
+Nine agents rendered zero primary Israeli sources. What carried the group was GitHub code and repo
+search, which is unblocked and free — future scouts on Israeli criteria should lead with it.
+
+---
+
 ## Earlier rejections
 
 Kept in `docs/INCOME_PLAN.he.md` §4 with one-line reasons: Envato (bans AI files, 50%

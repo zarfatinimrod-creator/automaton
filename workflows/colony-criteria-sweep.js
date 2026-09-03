@@ -39,7 +39,7 @@ const SCOUT_RULES = [
   "6. Report dead ends. A criterion that is genuinely empty is worth knowing and saves the colony from re-searching it.",
   "7. Aim for at least 5 findings; if the criterion honestly yields fewer, say so in deadEnds rather than padding.",
   "8. WEB SEARCH IS A SHARED, FINITE BUDGET - roughly 200 calls for the whole session, across every agent running at once. Spend at most 20, on the questions you cannot answer any other way. When early scouts burn the budget the later ones are structurally blind, and a blind scout that keeps a confident tone is worse than no scout: there is nothing underneath it. If your searches start being refused, say so in deadEnds, mark everything you had to infer as low confidence, and stop - do not fill the gap from memory.",
-  "9. github.com and raw.githubusercontent.com DO render, and platforms check their own terms, policies, docs and pricing into public repos. Use them as primary sources wherever the answer lives in a repo. A rendered clause from a platform's own docs repo beats ten search snippets and costs no search budget."
+  "9. github.com and raw.githubusercontent.com DO render, and platforms check their own terms, policies, docs and pricing into public repos. Use them as primary sources wherever the answer lives in a repo. A rendered clause from a platform's own docs repo beats ten search snippets and costs no search budget. LEAD with GitHub code and repo search on Israeli criteria in particular: gov.il, btl.gov.il, kolzchut.org.il, data.gov.il, ica.justice.gov.il and every Israeli vendor domain are egress-blocked, so nine agents in one wave rendered zero primary Israeli sources and GitHub carried the entire group's best evidence."
 ].join('\n')
 
 const SCOUT_SCHEMA = {
