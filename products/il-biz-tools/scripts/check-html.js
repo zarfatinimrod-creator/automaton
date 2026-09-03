@@ -22,6 +22,31 @@ for (const p of pages) {
   }
   console.log(`  ok ${p}`);
 }
+// Every class a page uses must be defined in the stylesheet.
+//
+// allocation.html shipped with a header, footer and table markup the site CSS
+// does not define. Every check above passed and the page still rendered as
+// unstyled text, because nothing here compared the markup to the stylesheet.
+const css = await readFile(join(root, 'assets/style.css'), 'utf8');
+const defined = new Set([...css.matchAll(/\.(-?[_a-zA-Z][\w-]*)/g)].map((m) => m[1]));
+// Classes applied at runtime by page scripts, not present in any HTML source.
+for (const file of ['common.js', 'page-vat.js', 'page-osek-patur.js', 'page-net-salary.js', 'page-invoice.js', 'page-allocation.js']) {
+  try {
+    const js = await readFile(join(root, 'assets', file), 'utf8');
+    for (const m of js.matchAll(/class(?:Name|List)[^\n]*?['"`]([^'"`]+)['"`]/g)) {
+      for (const c of m[1].split(/\s+/)) if (c) defined.add(c);
+    }
+  } catch { /* a page without its own script is fine */ }
+}
+
+for (const p of pages) {
+  const html = await readFile(join(root, p), 'utf8');
+  const used = new Set();
+  for (const m of html.matchAll(/\sclass="([^"]+)"/g)) for (const c of m[1].split(/\s+/)) if (c) used.add(c);
+  const orphans = [...used].filter((c) => !defined.has(c));
+  if (orphans.length) fail(p, `class(es) with no rule in style.css: ${orphans.join(', ')}`);
+}
+
 const sitemap = await readFile(join(root, 'sitemap.xml'), 'utf8');
 for (const p of pages.filter((x) => x !== 'index.html')) if (!sitemap.includes(p)) fail('sitemap.xml', `missing ${p}`);
 if (failures) { console.error(`${failures} problem(s)`); process.exit(1); }
