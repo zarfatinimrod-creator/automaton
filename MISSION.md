@@ -98,7 +98,7 @@ already includes ₪5/month of upkeep per store, which is why the answer is 878 
 you get by ignoring maintenance — and the gap between those two numbers is the entire subject of
 constraint 1 below.
 
-### The six constraints that decide whether it works
+### The seven constraints that decide whether it works
 
 **1. Marginal cost per store must approach zero, or the portfolio eats itself.** 833 stores at
 ₪50/month of upkeep is ₪41,650/month — half the target, spent on maintenance. This is the
@@ -150,6 +150,27 @@ binary verdict on any store count against the sources behind it, and `constraint
 proposal's own wording for the substitution pattern — so this is checkable rather than
 arguable. Counting the sources we can honestly serve is the single most valuable open question
 in this file.
+
+**7. Nobody knows how a stranger finds any of this, and until they do every ceiling in this
+document is ₪0.** This is the constraint I am least comfortable writing down, because it
+invalidates more of the plan than the other six combined — and two independent auditors reached
+it separately, from opposite ends of the sweep. The `israel-bureaucracy` auditor: *"without an
+owner-free acquisition channel, every ceiling in this group is ₪0 regardless of build quality.
+This is the group's central unexamined assumption."* The `store-promotion` scout, in a report
+its own supervisor buried: *"cross-promotion is a multiplier on traffic, and a multiplier on zero
+is zero — the colony's acquisition problem is upstream of this criterion."*
+
+Every ceiling in this repo assumes a buyer arrives. The owner does not sell, does not post, does
+not appear, and paid advertising is rejected on portfolio arithmetic (`docs/REJECTED.md`). What
+is left is a short list of channels where a platform's own search does the distribution — Apify
+Store relevance, WordPress.org directory search, npm and marketplace ranking — and every one of
+them is a *hypothesis we have not tested with a single real buyer*.
+
+So the constraint is procedural rather than numeric: **a line may not be built before its
+acquisition channel is named, and the first thing built on any line is the cheapest test that a
+stranger can find it.** Not the product. The first transaction id in the ledger is worth more
+than the next ten ceilings, because it is the only thing that turns this constraint from an
+assumption into a measurement.
 ### תקציב — תוספת הבעלים, 3.9.2026 (verbatim)
 
 > אני רוצה לתת לך סכום קטן שממנו אתה משתמש, וגודל מקסימום 200 שקל.
