@@ -204,6 +204,70 @@ do not change the portfolio argument, which is platform-independent.
 
 ---
 
+## The store-promotion sweep — nineteen rejections, 2026-09-03
+
+The `store-promotion` group asked one question: how do we promote hundreds of storefronts
+without a human and without becoming spam? Its answer was that **almost nothing in the
+category survives**, and the value of the group is this list plus the six constraints that
+came with it. The constraints are code now — `src/revenue/constraints.ts`, screened against
+the shipped portfolio by a test — because a rule that lives only in a report gets re-argued
+every sweep. Full report: `research/colony-sweep/groups/store-promotion.md`.
+
+**The structural finding, which outranks every entry below.** Roughly 40% of AI citations
+and most marketplace social proof come from human community participation. That lever is
+closed to us by the mission itself, not by a policy we might route around. It is the ceiling
+on this whole group, and it is why the group's honest combined ceiling is ≈₪15,500/month
+with only its top line above `medium` confidence. **This group cannot reach ₪20,000/month.**
+That is a finding, not a research failure, and it should not be re-attempted from a
+different angle.
+
+| Rejected | Why | What would reopen it |
+|---|---|---|
+| **Chrome Web Store extension portfolio** | RED, structurally banned. Verified verbatim: no developer, related account or affiliate may submit multiple extensions with duplicate experiences or functionality. The minimum-functionality policy separately bans "template extensions that only vary slightly". Dead twice over. | Google removing the duplicate-experience clause. The rendered copy self-dates 2022-11-01 from an archived repo, so a human should confirm the live text before anyone quotes the date. |
+| **Chrome Web Store, one extension** | Not policy — ranking. Install-count-locked with no documented cold-start lane, and Google publishes nothing official about how ranking works. The ceiling is not defensible. | Google publishing ranking inputs a new listing can influence. |
+| **Multi-shop Etsy / print-on-demand** | RED. The entire operator literature above ~5 shops is about defeating Etsy's account-linking detection — anti-detect browsers, separate payment instruments and addresses. That is manipulation of platform processes. Ranking is also conversion-history-locked, and Israeli payability is unverified. Three independent kills. | Nothing at portfolio scale. A single shop is a different question and is not rejected here. |
+| **Amazon Merch on Demand** | The tier ladder starts at 10 live designs and advances only by sales; Israel appears on no eligible-marketplace list we saw; the application is human-reviewed. | Israel appearing on the eligible list. |
+| **Amazon Vine** | Requires Brand Registry, which requires a registered trademark — a multi-month human and legal process. Sanctioned, but out of reach. | The owner registering a trademark, which he has not been asked to do and which the mission does not require. |
+| **Ad-monetised storefront portfolios (AdSense / MFA)** | AdSense forbids pages with more advertising than content, and the made-for-advertising ecosystem is blocklisted advertiser-side. There is no honest demand side. | Nothing. The model requires the thing the policy prohibits. |
+| **Shopify / WooCommerce review-request SaaS** | The price floor is zero. Judge.me's Forever Free plan is verified to include unlimited orders *and* unlimited review requests, against a single flat $15 tier. The only differentiator anyone still markets is review gating, which is RED in five regimes at once. | Judge.me metering its free tier. Even then the gating constraint stands. |
+| **llms.txt as a service, or a generator for it** | Selling a placebo. 97% of published files are never fetched; crawlers do not probe for it on domains that lack it; OpenAI fetched robots.txt 3,990 times against llms.txt 7. Google has said it affects neither Search nor AI Overviews. | A major assistant publishing that it reads the file, *and* fetch counts on our own domains showing it. The counts are the test, not the announcement. |
+| **Reddit / YouTube citation seeding** | RED, permanently. Astroturfing under Reddit's content policy and under our own constitution. | Nothing. |
+| **x402 Bazaar listing, as a revenue line** | Ceiling. The entire registry turned over 302,072 calls in 30 days at a $0.01 median — about $3,020/month gross shared by 1,772 providers, roughly ₪6 per provider per month, with 91.2% of listings failing to reach 10 calls a month. Verified first-hand. Issue #2112 is open with no maintainer response and indexing appears broken for external EOA payees, which is our configuration. | Registry volume rising by two orders of magnitude. Keep the one-hour config change as hygiene; never model revenue from it. |
+| **MCP server on the public registries, as a line** | Ceiling ₪300 and no rail: registries pay nothing, reportedly under 5% of servers earn anything, and the official registry README names no consuming client and publishes no usage numbers. | A registry shipping a payment rail, or a named client publishing install numbers. Ship `products/mcp-il-tools` as a funnel meanwhile — that decision stands. |
+| **npm package hygiene, as a line** | ₪0 direct. npm pays nothing. | Nothing — but it is real as *distribution*: two of npm's three ranking components (quality, maintenance) are publisher hygiene, so a clean new package is not penalised for being new. Kept as a funnel note. |
+| **ERC-8004 agent identity + A2A agent card, as a line** | 22,000+ registered agents against no measured buyer traffic. A July 2026 scan found 65 agent cards across 22,341 domains, only 10 of them conformant. On-chain registration burns gas against zero measured demand. | Measured buyer traffic arriving through an agent registry. The JSON file alone is ~1h and harmless, so ship that if it is ever cheap to. |
+| **Notion Marketplace localized templates** | The whole play rests on one unrendered sentence about featured refreshes, plus a creator waitlist reviewed by Notion staff on an unbounded timeline. A channel gated behind an unbounded human queue is not agent-operable. | The waitlist closing, or Notion publishing a review SLA. |
+| **Webflow / Framer template marketplaces** | Evidence is vendor-adjacent blogs only: no marketplace size, no revenue share, no payout-country data. Both curate submissions, so a mass-produced portfolio would not pass review regardless. Israeli payability UNKNOWN. | Primary docs on revenue share and payout countries. |
+| **Figma Community** | Every documented ranking input — users, views, saves, likes, comments — is accumulated usage, and there is no editorial or "newest" lane. A clean example of a payable platform (Stripe, Israel listed) that is worth zero to a new entrant. | A newest or editorial surface appearing. |
+| **Cloudflare pay-per-crawl** | Private beta gated behind "leading industry partners" or a Cloudflare representative — **a human conversation the mission forbids** — with no published payout-country terms. We also have no crawl-worthy corpus. | Open self-serve signup with published terms. |
+| **ChatGPT Shopping / Agentic Commerce enrolment for our own stores** | US-only, with OpenAI business verification of a US entity. | Israel becoming eligible. It survives only as software sold to US merchants who apply themselves, which scored below the AEO line and duplicates it. |
+| **G2 / Capterra incentivised review campaigns** | Rejected as a line — it is a cost, not revenue — and marked **AMBER** as an enabler. The permission is narrow and conditional (nominal, sentiment-neutral, offered to all, disclosed) and known to us only from snippets. | A human reading the current guidelines in full. Until then, do not run one. |
+| **Applying AEO to our own shipped storefronts, as a line** | No independent buyer and roughly zero traffic to uplift. | Nothing — but keep the ~8 hours as hygiene under the one-domain constraint, not as a revenue entry. |
+
+### Payability gates this group opened and could not close
+
+- **Shopify Partner payouts to Israel — UNKNOWN.** No supported-country list found, and virtual
+  accounts such as Payoneer are reportedly not accepted, which removes the usual Israeli
+  workaround. **Every Shopify-App-Store-billed proposal is blocked** until a human opens the
+  Partner payout page from an Israeli account. The mitigation is architectural and free: sell
+  direct via Paddle.
+- **Apify payouts to Israel — YES, but by absence.** No country restriction appears in the terms;
+  payment is PayPal or SWIFT from the Czech Republic. Israel is not *named*. Confirm at first payout.
+- **Etsy Payments for Israel — UNVERIFIED**, and moot given three other kills above.
+
+### The five that survived, so this list is not read as "nothing works"
+
+Ranked, with honest ceilings: **Apify Store multi-Actor portfolio** (₪4,000, the only channel here
+where a listing demonstrably converts to money and where a zero-run listing is not structurally
+invisible), **Hebrew-first AI-answer visibility monitoring** (₪4,000 — a measurement, never
+optimisation advice, because our own scouts killed the advice), **WordPress.org plugin with a Paddle
+Pro tier** (₪4,000, and a 3-5 plugin play rather than a 300-plugin one), **RapidAPI Hub as a second
+storefront for the existing Israeli endpoints** (₪1,500), and **the Amazon Solicitations API review
+agent** (₪2,000, included mainly because the seller supplies no message body, making it the one
+review surface that cannot be built dishonestly even by accident).
+
+---
+
 ## Earlier rejections
 
 Kept in `docs/INCOME_PLAN.he.md` §4 with one-line reasons: Envato (bans AI files, 50%
