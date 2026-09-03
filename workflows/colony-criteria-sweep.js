@@ -640,7 +640,7 @@ const BOARD_SCHEMA = {
   ]
 }
 
-const GROUPS = [
+const ALL_GROUPS = [
   {
     "id": "storefronts",
     "title": "Storefronts and marketplaces that pay an Israeli software-only seller",
@@ -1175,6 +1175,20 @@ const GROUPS = [
   }
 ]
 
+// Waves. A full fan-out of 142 agents does not fit inside one usage
+// window - the first full run died on the session limit with 123 of 128 agents
+// unstarted. So the sweep is resumable by design:
+//   args = { groups: ['storefronts', 'payment-rails'] }  sweep those groups only
+//   args = { board: true }                               judge what is already on disk
+//   args omitted                                          the full run
+// In wave mode the board is skipped: it decides across ALL groups, not a slice.
+const WAVE = Array.isArray(args) ? { groups: args } : (args || {})
+const BOARD_ONLY = WAVE.board === true
+const GROUPS = BOARD_ONLY ? [] : (WAVE.groups && WAVE.groups.length
+  ? ALL_GROUPS.filter((g) => WAVE.groups.indexOf(g.id) !== -1)
+  : ALL_GROUPS)
+if (!BOARD_ONLY && GROUPS.length === 0) throw new Error('no criterion group matched args.groups')
+
 const scoutPrompt = (g, c) => [
   'You are WORKER-SCOUT "' + c[0] + '" reporting to the supervisor of the "' + g.id + '" group in the revenue colony chain of command.',
   '',
@@ -1233,7 +1247,10 @@ const auditorPrompt = (g, sup) => [
 
 // The loop: scouts -> supervisor -> auditor, per group, with no barrier between groups.
 phase('Scouts')
-log('Chain of command: ' + GROUPS.length + ' criterion groups, 112 scouts, one supervisor and one auditor per group.')
+log(BOARD_ONLY
+  ? 'Board wave: judging the group reports already on disk, no scouts.'
+  : 'Chain of command: ' + GROUPS.length + '/' + ALL_GROUPS.length + ' criterion groups, ' +
+    GROUPS.reduce((n, g) => n + g.criteria.length, 0) + ' scouts, one supervisor and one auditor per group.')
 
 const groupResults = await pipeline(
   GROUPS,
@@ -1270,13 +1287,22 @@ log(groups.length + '/' + GROUPS.length + ' groups completed the supervisor and 
 
 phase('Board')
 
+// A wave stops here: partial groups are not a portfolio, and a board that
+// decides on a slice would be deciding without the evidence it needs.
+if (!BOARD_ONLY && WAVE.groups && WAVE.groups.length) {
+  log('Wave complete. Run again with args = { board: true } once every group has been swept.')
+  return { wave: WAVE.groups, groupsCompleted: groups.length, groupHeadlines: groups.map((r) => ({ group: r.group, headline: r.supervisor && r.supervisor.headline })) }
+}
+
 const chief = await agent([
   'You are the CHIEF AUDITOR of the revenue colony. Each supervisor was checked by an auditor. You check the auditors.',
   '',
   MISSION,
   '',
-  'ALL GROUP RESULTS (supervisor rankings and their audits, JSON):',
-  JSON.stringify(groups.map((r) => ({ group: r.group, ranked: r.supervisor && r.supervisor.ranked, headline: r.supervisor && r.supervisor.headline, audit: r.audit })), null, 1).slice(0, 250000),
+  (BOARD_ONLY
+    ? 'THIS IS A BOARD-ONLY WAVE. The group reports are on disk, not in this prompt. Read every file in /home/user/automaton/research/colony-sweep/groups/ and /home/user/automaton/research/colony-sweep/audits/ before you judge anything, and say which groups are missing entirely - a missing group is an unsearched part of the space, not an empty one.'
+    : 'ALL GROUP RESULTS (supervisor rankings and their audits, JSON):'),
+  (BOARD_ONLY ? '' : JSON.stringify(groups.map((r) => ({ group: r.group, ranked: r.supervisor && r.supervisor.ranked, headline: r.supervisor && r.supervisor.headline, audit: r.audit })), null, 1).slice(0, 250000)),
   '',
   'YOUR JOB:',
   '1. Find auditors who rubber-stamped: every verdict CONFIRMED, no corrections, no missed angles. Name them.',
@@ -1303,8 +1329,10 @@ const board = await agent([
   'CHIEF AUDITOR REPORT (JSON):',
   JSON.stringify(chief, null, 1).slice(0, 120000),
   '',
-  'GROUP HEADLINES AND RANKINGS (JSON):',
-  JSON.stringify(groups.map((r) => ({ group: r.group, headline: r.supervisor && r.supervisor.headline, ranked: r.supervisor && r.supervisor.ranked })), null, 1).slice(0, 180000),
+  (BOARD_ONLY
+    ? 'The group rankings are on disk: read /home/user/automaton/research/colony-sweep/groups/ and /home/user/automaton/research/colony-sweep/audits/.'
+    : 'GROUP HEADLINES AND RANKINGS (JSON):'),
+  (BOARD_ONLY ? '' : JSON.stringify(groups.map((r) => ({ group: r.group, headline: r.supervisor && r.supervisor.headline, ranked: r.supervisor && r.supervisor.ranked })), null, 1).slice(0, 180000)),
   '',
   'Read src/revenue/portfolio.ts and docs/INCOME_PLAN.he.md before deciding: they hold the lines that already exist.',
   '',
@@ -1326,7 +1354,7 @@ const board = await agent([
 })
 
 return {
-  scoutsRun: 112,
+  scoutsRun: GROUPS.reduce((n, g) => n + g.criteria.length, 0),
   groupsCompleted: groups.length,
   groupHeadlines: groups.map((r) => ({ group: r.group, headline: r.supervisor && r.supervisor.headline, top: ((r.supervisor && r.supervisor.ranked) || []).slice(0, 3).map((x) => x.name) })),
   chief,

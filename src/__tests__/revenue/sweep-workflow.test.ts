@@ -47,9 +47,19 @@ describe("sweep workflow generation", () => {
     for (const g of CRITERIA_GROUPS) expect(rendered).toContain(`"${g.title}"`);
   });
 
+  it("supports waves, because a full fan-out does not fit in one usage window", () => {
+    // The first full run died on the session limit with 123 of 128 agents
+    // unstarted. Waves are the fix, and the board must not judge a slice.
+    expect(rendered).toContain("const BOARD_ONLY = WAVE.board === true");
+    expect(rendered).toContain("WAVE.groups.indexOf(g.id) !== -1");
+    expect(rendered).toContain("no criterion group matched args.groups");
+    const waveGuard = rendered.slice(rendered.indexOf("// A wave stops here"), rendered.indexOf("const chief = await agent"));
+    expect(waveGuard).toContain("return {");
+  });
+
   it("spawns one agent per criterion plus a supervisor and auditor per group", () => {
     const parsed = JSON.parse(
-      rendered.slice(rendered.indexOf("const GROUPS = ") + "const GROUPS = ".length, rendered.indexOf("\n\nconst scoutPrompt")),
+      rendered.slice(rendered.indexOf("const ALL_GROUPS = ") + "const ALL_GROUPS = ".length, rendered.indexOf("\n\n// Waves.")),
     ) as { id: string; criteria: [string, string][] }[];
     expect(parsed).toHaveLength(CRITERIA_GROUPS.length);
     expect(parsed.reduce((n, g) => n + g.criteria.length, 0)).toBe(ALL_CRITERIA.length);

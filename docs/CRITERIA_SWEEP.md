@@ -70,6 +70,27 @@ Then run `workflows/colony-criteria-sweep.js` through the Workflow tool. Results
 `research/colony-sweep/`: `scouts/<group>--<criterion>.md`, `groups/<group>.md`,
 `audits/<group>.md`, `CHIEF-AUDIT.md`, `BOARD.md`.
 
+### Run it in waves. This is not optional.
+
+The first full run died on the usage limit with **123 of 128 agents unstarted** — five
+scout reports out of 112, and the chief auditor and board never ran at all. 142 agents do
+not fit inside one window. So the script takes `args`:
+
+| `args` | What runs |
+|---|---|
+| `{ groups: ["storefronts", "payment-rails"] }` | Those groups only: their scouts, supervisors and auditors. The board is skipped. |
+| `{ board: true }` | No scouts. The chief auditor and board read the group reports off disk and decide. |
+| omitted | Everything. Only sane on a fresh window with nothing else running. |
+
+Two or three groups per wave (roughly 20-30 agents) is the size that reliably lands. The
+board is deliberately skipped inside a wave: it decides across the whole portfolio, and a
+board that judges a slice is deciding without the evidence it needs. Run the board wave
+once every group has been swept — and it is told to name the groups still missing, because
+an unsearched group is not an empty one.
+
+A run that dies can also be replayed rather than repeated: `Workflow({scriptPath,
+resumeFromRunId})` returns every completed agent from cache and only re-runs what failed.
+
 Track coverage from the CLI:
 
 ```bash
