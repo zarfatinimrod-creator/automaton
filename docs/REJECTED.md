@@ -538,6 +538,71 @@ sweep to be worth naming.
 
 ---
 
+## `crypto-native` — zero rankable lines, confirmed; four reasons corrected, audited 2026-09-04
+
+The audit is at `research/colony-sweep/audits/crypto-native.md`. Its verdict on the ranking is the
+same as its supervisor's — **no line in this group reaches ₪300/month, and the auditor found nothing
+the supervisor missed that would.** But it reached that verdict partly by luck, and **a wrong reason
+is a re-open trigger nobody notices**, which is why the corrections matter more than the confirmation.
+
+### The x402 numbers do not reconcile, and this repo now holds three of them
+
+| Figure | Source | Implies |
+|---|---|---|
+| ~$800k/day at ~$0.32/call | what `portfolio.ts` carried after a correction on 3.9 | large market |
+| ~$37k/day | **x402scan**, the ecosystem's own explorer: $1.11M across 3.69M transactions in 30 days, May 2026 | small market |
+| ~$3,020/month network-wide | the Bazaar registry's own 30-day series, 302,072 calls at a $0.01 median across 1,772 providers, verified first-hand | tiny market |
+
+They differ by more than an order of magnitude and **cannot all be right**. Nobody has reconciled
+them, and this file previously presented the first as settled. What all three agree on is the only
+thing the decision needs: **per-provider revenue is single-digit shekels a month**, and 91.2% of
+listings never reach ten calls a month. The `paid-apis` basis now carries all three side by side
+rather than the most flattering one.
+
+The auditor also caught a method problem behind this: the supervisor's two most load-bearing numbers
+came from **two anonymous, unaudited GitHub markdown files**, and it wrote "CONFIRMED" against them.
+What was confirmed is that the files say what the scout said they say — not that the numbers are
+true. "Quoted accurately" and "verified" are different claims and the sweep has been conflating them.
+
+### BILS — the one 2026 development that would change this group's shape, and it was in a single clause
+
+The supervisor dismissed it as "institution-only". That holds today. What the group never rendered:
+**BILS is live, 1:1 shekel-backed with reserves in segregated Israeli bank accounts, audited by EY,
+custodied through Fireblocks, issued on Solana by a CMA-licensed financial asset service provider
+(Bits of Gold), approved April 2026 after a two-year review.** That is a shekel-denominated on-chain
+settlement rail that exists.
+
+**If BILS opens beyond the institutional pilot, this group's central finding — "the rail pays but
+there is no shekel-native buyer" — changes shape.** It is now a re-open trigger.
+
+### The Israeli crypto tax-report line was killed on a number that does not hold
+
+The stated reason was that Israel's crypto voluntary-disclosure window drew "a reported 58 filers".
+The auditor could not corroborate that figure at all in Hebrew or English, and **it is the wrong
+denominator even if true**: voluntary disclosure (גילוי מרצון) is a criminal-immunity procedure for
+people confessing past undeclared holdings. It counts confessions, not compliance. The buyer of a
+tax-report tool files a normal annual return with crypto gains — a different population entirely.
+
+And the group missed the largest demand event in the space: **CARF**. Israel is among the 48
+jurisdictions where crypto-asset service providers began collecting customer and transaction data on
+**1 January 2026**, with the first cross-border exchange landing in **2027**. Israeli holders are
+about to become automatically visible to the Tax Authority, which is precisely the condition under
+which compliance tooling gets bought. No scout in the group mentions CARF once.
+
+**The line is still not ranked**, and for a reason that survives: a filing-ready Israeli crypto
+computation edges into regulated advice, and a wrong number costs the buyer money with our name on
+it. That is AMBER on its own. But the record now says **"demand unmeasured, AMBER on regulated
+advice"** rather than "demand measured at 58" — so when CARF data lands in 2027 it is not mistaken
+for a case already refuted.
+
+### Re-open triggers for this group
+
+1. BILS opening beyond the institutional pilot.
+2. A rendered Bits of Gold fee schedule — it gates every crypto number in the portfolio.
+3. CARF data landing in 2027 against the corrected tax-report reason above.
+
+---
+
 ## Earlier rejections
 
 Kept in `docs/INCOME_PLAN.he.md` §4 with one-line reasons: Envato (bans AI files, 50%
