@@ -57,11 +57,11 @@
 
 ## מצב הסריקה
 
-**65 מתוך 120 קריטריונים נסרקו**, ב-15 קבוצות.
+**70 מתוך 120 קריטריונים נסרקו**, ב-15 קבוצות — ו**שבע קבוצות עברו את השרשרת המלאה** (צופים → מפקח → מבקר).
 
 | הושלמו (8/8) | חלקיות | טרם התחילו |
 |---|---|---|
-| `payment-rails`, `risk-governance`, `israel-bureaucracy`, `store-promotion`, `agent-markets`, `bounties-grants`, `productized-services` | `storefronts` (5/8), `crypto-native` (4/8) | `plugin-ecosystems`, `data-apis`, `vertical-niches`, `content-seo`, `licensing-ip`, `distribution` |
+| `payment-rails`, `risk-governance`, `israel-bureaucracy`, `store-promotion`, `agent-markets`, `bounties-grants`, `productized-services` — כולן עם מפקח **ומבקר**. `storefronts` 8/8 צופים, בהמתנה למפקח. | `crypto-native` (6/8, בריצה) | `plugin-ecosystems`, `data-apis`, `vertical-niches`, `content-seo`, `licensing-ip`, `distribution` |
 
 **כך ממשיכים את הסריקה, בשתי פקודות:**
 
@@ -82,28 +82,25 @@ const d=new Set(fs.readdirSync('research/colony-sweep/scouts').map(f=>f.replace(
 for(const g of CRITERIA_GROUPS)console.log(g.criteria.filter(c=>d.has(c.id)).length+'/8  '+g.id);"
 ```
 
-### שלבים חסרים — צופים שסיימו בלי מפקח או מבקר
+### שבע ביקורות, וכולן חתכו
 
-**זה לא אותו דבר כמו "הקבוצה הושלמה".** קבוצה מוכנה רק כשעברה צופים → מפקח → מבקר. שלושה גלים נקטעו על **מגבלת סשן** (`You've hit your session limit`), והמצב שנשאר:
+**כל ביקורת בלי יוצא מן הכלל הורידה את המספרים של המפקח שלה**, וכמה מהן לאפס. זה הממצא החשוב ביותר על הלופ עצמו: המבקרים לא דקורטיביים, והדוחות שלהם הם המקור האמין ולא דוחות המפקחים.
 
-| קבוצה | צופים | מפקח | מבקר |
+| קבוצה | מפקח | מבקר | מה נשאר |
 |---|---|---|---|
-| `agent-markets` | 8/8 ✔ | ✘ נכשל | ✘ |
-| `productized-services` | 8/8 ✔ | ✘ נכשל | ✘ |
-| `bounties-grants` | 8/8 ✔ | ✔ | ✘ נכשל |
-| `crypto-native` | 4/8 | ✘ נכשל | ✘ |
+| `store-promotion` | ₪15,500 | **₪3,000** | 12 שגיאות מפקח, כולל ציטוט סלקטיבי שהשמיט את `popularity` |
+| `payment-rails` | "המסילות לא צוואר הבקבוק" | **כל שש התקרות ₪0** | ארבעה URL שלא תומכים בטענות; Payoneer ירד מ-YES ל-UNKNOWN |
+| `israel-bureaucracy` | PCN874 ₪2,500 | **₪300–600** | `firstStep` שקורא לפונקציה שלא קיימת |
+| `risk-governance` | שלושה מועמדים | **₪150 / ₪200 / ₪0** | כולם UNKNOWN על זכאות ישראל |
+| `agent-markets` | ₪600 | **₪200** — מתחת לרף ה-₪300 של הסריקה עצמה | "אין מתחרה" הופרך בשני חיפושים |
+| `productized-services` | ₪500 | **₪0**, וגם ₪0 נטו לתיק | רצפת מחיר אפס + הליסטינג כבר קיים |
+| `bounties-grants` | ₪7,800 | **₪800** | שיעור בסיס שהומצא; תקרה מעל ראש הטבלה של Base |
 
-שלושת הגלים ניתנים ל-**resume**, וסוכנים שהצליחו חוזרים מה-cache בלי לעלות כלום:
+**שתי הנחות של הריפו נפלו הערב:**
+1. **"מידע ישראלי ב-Apify Store הוא שטח לא תפוס"** — הופרך בנפרד על ידי שני מבקרים. יש שם כבר Actors ישראליים, שניים מהם עוטפים את אותו endpoint של `data.gov.il` שהמוצר שלנו עוטף.
+2. **"Stripe לא פתוח לישראלים"** — מעולם לא אומת, והריפו סתר את עצמו בשלושה מקומות.
 
-```
-Workflow({scriptPath:'workflows/colony-criteria-sweep.js', resumeFromRunId:'wf_4acd4888-f20', args:{groups:['crypto-native'],exclude:[]}})
-Workflow({scriptPath:'workflows/colony-criteria-sweep.js', resumeFromRunId:'wf_138013e9-02e', args:{groups:['bounties-grants']}})
-Workflow({scriptPath:'workflows/colony-criteria-sweep.js', resumeFromRunId:'wf_ed3fcb19-937', args:{groups:['agent-markets','productized-services']}})
-```
-
-**דוח מפקח בלי מבקר הוא לא מסקנה, והפעם זה נאכף.** דוח `bounties-grants` נמצא בדיסק ומדבר על תקרה של ₪5,000–8,000, **והמספר הזה לא הועתק לשום מסמך שאתה קורא** — כי המבקר שלו לא רץ. זה הלקח מהיום: בשתי הקבוצות שכן נבדקו, המבקר הוריד את המספרים ב-80% ומעלה.
-
-**מגבלת סשן היא מצב כשל נפרד מ-529.** 529 נכשל לפני ששרף אסימונים; מגבלת סשן נכשלת אחרי שהצופים כבר עבדו, ולוקחת דווקא את שלב הסינתזה. הכלל: **לשגר גל אחד בכל פעם ולתת לו לסיים**, ולא שלושה במקביל כמו שעשיתי.
+**הפעולה שהמבקרים ביקשו, והיא הצעד הבא:** לפרסם את `apify-il-open-data` **בחינם** ולספור ריצות מזרים 30 יום. ההנחיות המלאות ב-`products/apify-il-open-data/docs/PUBLISH.md` — שישה צעדים, בלי KYC ובלי כסף.
 
 **החסם האמיתי הוא תקציב החיפוש, לא כמות הסוכנים.** ל-WebSearch יש כ-200 קריאות משותפות לכל הסשן, לכל הסוכנים הרצים בו-זמנית. 81 קריטריונים שנותרו, גם ב-8 חיפושים כל אחד, הם 648 קריאות — פי שלושה מהתקציב. **סריקה מלאה של 120 הקריטריונים לא נכנסת לסשן אחד, ואי אפשר לתקן את זה בעוד סוכנים.** מה שכן עובד: גלים קטנים לפי קבוצה, ו-github.com כמקור ראשוני שלא עולה תקציב חיפוש בכלל.
 
