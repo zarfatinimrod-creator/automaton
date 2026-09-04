@@ -77,7 +77,7 @@ export const LINE_RAILS: Record<string, LineRails> = {
   "il-biz-tools": {
     payin: "paddle",
     payout: "bank-transfer",
-    note: "Paddle is merchant of record, so it collects and remits. But ILS is NOT a Paddle payout currency: an Israeli seller takes USD by international SWIFT at 5% + $0.50 per transaction, a $15 SWIFT fee, the receiving bank's own charge and ~1.5% FX, against a $100 minimum paid on the 1st and landing by the 15th. This entry previously said the payout lands in an Israeli bank account, which is true only in the sense that the money eventually arrives.",
+    note: "NO PADDLE ACCOUNT EXISTS YET — site.json holds empty credentials in sandbox mode and the Pro box renders 'coming soon'. Paddle CODE ships; the rail does not. Sign-up, identity/KYC, payout details and domain approval are all outstanding owner steps. When it does exist: Paddle is merchant of record, so it collects and remits. But ILS is NOT a Paddle payout currency: an Israeli seller takes USD by international SWIFT at 5% + $0.50 per transaction, a $15 SWIFT fee, the receiving bank's own charge and ~1.5% FX, against a $100 minimum paid on the 1st and landing by the 15th. This entry previously said the payout lands in an Israeli bank account, which is true only in the sense that the money eventually arrives.",
     platformAccount: "paddle:one-seller-account",
     observable: true,
   },

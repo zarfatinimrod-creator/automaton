@@ -191,6 +191,16 @@ stranger can find it.** Not the product. The first transaction id in the ledger 
 than the next ten ceilings, because it is the only thing that turns this constraint from an
 assumption into a measurement.
 
+> **Stronger than "nobody knows", as of 2026-09-04.** We have now checked three platforms' actual
+> ranking code, and all three gate discovery on prior success. Gumroad: `recommendable?` requires
+> `sale_made`, so Discover cannot source a first sale, ever. Apify: Store search correlates with a
+> quality score whose categories include Popularity and History of success. WordPress.org: the
+> search `function_score` weights `active_installs`, `support_threads_resolved` and `rating` — about
+> a 100–200× handicap on day one, before query relevance is applied. Three platforms, three
+> independent auditors, three different implementations, one property. **Platform search ranks on
+> prior success, so it cannot deliver the first customer.** The channel the plan leans on is closed
+> to a day-one listing by construction, and constraint 8 names the shapes that survive it.
+
 **8. A line whose every input is public has a price floor of zero — and the mandate is what puts it
 there.** This is what the whole sweep was actually producing, and no single group could see it. Run
 the price-floor test across the seven audited groups and it hits in **six**: a free Semrush checker,

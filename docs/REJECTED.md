@@ -668,6 +668,77 @@ gate, not on the channel it claimed to be testing.
 
 ---
 
+## `plugin-ecosystems` — the tenth group, the tenth cut, audited 2026-09-04
+
+The audit is at `research/colony-sweep/audits/plugin-ecosystems.md`. Its supervisor earned real
+credit — it **measured** the Obsidian cohort instead of arguing about it (newest plugins: median 27
+users, while every paid success there was listed in 2020–21), and it read all eight scout files off
+disk rather than trusting the wave's JSON, which carried seven. Its one ranked line still does not
+survive intact.
+
+| | Supervisor | Audited |
+|---|---|---|
+| WordPress plugin + Paddle Pro | ₪1,000/month | **₪0–200/month in the first 12 months** |
+| Israel payable | YES, "proven" | **UNKNOWN** |
+| Owner KYC needed | none | **Paddle identity/KYC, payout details and domain approval, all outstanding** |
+
+### "Paddle already ships il-biz-tools" is false, and the disproof is in our own repo
+
+The supervisor called payability *proven rather than inferred* on that basis. But
+`products/il-biz-tools/src/config/site.json` holds `{"clientToken": "", "priceId": "",
+"environment": "sandbox"}` — empty credentials, sandbox — the Pro box renders **"בקרוב"** with the
+token unset, the product README lists sign-up, identity/KYC, payout details and domain approval
+under steps only the owner can do, and 30-day revenue is ₪0.00 with no transaction id anywhere in
+`state/`.
+
+**Paddle *code* ships. No Paddle *account* exists.** That distinction had been quietly collapsing
+across several groups, and `src/revenue/rails.ts` now says it in the entry itself.
+
+### The acquisition channel is refuted from WordPress's own ranking code
+
+This was the line's load-bearing differentiator: "backed by a named platform-search acquisition
+channel". The auditor opened `class-plugin-search.php` in `WordPress/wordpress.org` — the repository
+the supervisor cited without opening this file — and read the Elasticsearch `function_score`. Three
+of its six factors are accumulated history a new entrant cannot have:
+
+| factor | new plugin | an ordinary established one | handicap |
+|---|---:|---:|---:|
+| `active_installs` (log2p ×0.375) | 0.30 | 2.58 | **8.6×** |
+| `support_threads_resolved` (log2p ×0.25) | 0.33 | 1.16 | **3.5×** |
+| `rating` (sqrt ×0.25) | 0.79 | 4.74 | **6.0×** |
+
+They compose multiplicatively: **roughly a 100–200× score handicap before the query-relevance term
+is even applied.** The two factors a newcomer can max — `plugin_modified` and `tested` — are already
+maxed by every maintained competitor, so they buy parity, not advantage. And the cold-start lane is
+worse than assumed: the "Newest" tab was removed from the directory navigation in the redesign.
+
+That is install-count-locked ranking — **the identical mechanism this same supervisor used to kill
+"Chrome Web Store, single paid extension" in the same report.** Fifth group in a row where a
+supervisor did not run its own test on its own winner.
+
+## The pattern across three platforms, and it is the most important thing the sweep has produced
+
+Three times now, a "platform search will find us" claim has died in the platform's own source code,
+and each time from a different mechanism:
+
+| Platform | The gate, in their code | Found by |
+|---|---|---|
+| **Gumroad** | `recommendable?` requires `sale_made: sales.counts_towards_volume.exists?` — Discover cannot source a first sale, ever | `audits/storefronts.md` |
+| **Apify** | Store search correlates with a quality score whose categories include Popularity (users, saves, return usage) and History of success | `audits/store-promotion.md`, `audits/agent-markets.md` |
+| **WordPress.org** | `function_score` weights `active_installs`, `support_threads_resolved` and `rating` — a 100–200× handicap on day one | `audits/plugin-ecosystems.md` |
+
+Three platforms, three independent auditors, three different implementations, one property:
+**platform search ranks on prior success, so it cannot deliver the first customer.** MISSION
+constraint 7 said nobody knows how a stranger finds us. It is now stronger than that — we have
+checked, three times, and the answer is that the channel the whole plan leans on is closed to a
+day-one listing by construction.
+
+The shapes that survive this are the ones constraint 8 names: an input that is not public,
+accumulated history that compounds, an obligation someone must discharge, or work performed on
+demand for a payer who announces the job.
+
+---
+
 ## Earlier rejections
 
 Kept in `docs/INCOME_PLAN.he.md` §4 with one-line reasons: Envato (bans AI files, 50%
