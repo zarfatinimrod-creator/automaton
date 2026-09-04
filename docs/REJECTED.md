@@ -716,6 +716,98 @@ That is install-count-locked ranking — **the identical mechanism this same sup
 "Chrome Web Store, single paid extension" in the same report.** Fifth group in a row where a
 supervisor did not run its own test on its own winner.
 
+## `distribution` — the group that was supposed to answer constraint 7, and answers ₪0, audited 2026-09-04
+
+Full audit: `research/colony-sweep/audits/distribution.md`. Supervisor report:
+`research/colony-sweep/groups/distribution.md`. Eleventh group audited, eleventh cut.
+
+This is the group `MISSION.md` constraint 7 depends on — *nobody knows how a stranger finds any of
+this, and until they do every ceiling in the repo is ₪0*. It was swept last on purpose, because it
+is the only unswept group where an answer would change the plan rather than lengthen the kill list.
+**It changed the plan.**
+
+**The supervisor's headline is the finding, and it is right:** distribution is not a revenue line at
+all. It is the precondition for every other group's revenue. Across 8 scouts and ~40 findings there
+is **no buyer who pays us for distribution**. Every candidate is a channel that would convert on a
+rail we already own.
+
+**The structural result, which is what makes this group matter:**
+
+> Every human-audience channel is closed to us by the platform's own written rules, and every
+> machine-audience channel ranks on prior success. Those are not two problems. They are one problem
+> with two faces, and between them they close the entire surface.
+
+- Hacker News forbids "generated text or AI-edited text" verbatim, and has no write API.
+- Product Hunt names "bots… or other artificial activity" as prohibited, and requires a photographed
+  personal account with a maker present in the comments through the day.
+- Reddit's Responsible Builder Policy requires bots to disclose themselves and forbids
+  "substantially similar content across subreddits" — **the compliant bot is the one that may not
+  promote**.
+- Facebook removed the Groups publishing API and `publish_to_groups` on 2024-04-22.
+- WhatsApp has no Channels publishing API, and business-initiated messages need prior opt-in.
+- Israeli SMB and municipal business groups are joined by a human sending a WhatsApp message.
+- Apify Store, Chrome Web Store, Shopify App Store and Gumroad Discover rank on installs, ratings,
+  popularity or a prior sale — the last three already proven from platform source code.
+
+`sindresorhus/awesome` was re-tested and the rejection holds verbatim: its PR template rejects
+AI-generated pull requests and requires four substantive reviews. The `awesome` route in
+`docs/AWESOME_ROUTE.md` remains what it always said it was — a research source, never a channel.
+
+### Both survivors fall below the repo's own reject bar
+
+| Candidate | Supervisor | Audited | israelPayable |
+|---|---|---|---|
+| Apify Store listing built for the four day-one quality-score categories | ₪500 | **₪200**, and ₪0 for the first 90+ days | YES (holds; snippet-grade on the PayPal leg) |
+| Hebrew transactional tool pages on `il-biz-tools` | ₪400 | **₪0** through month 12 | YES → **UNKNOWN** |
+
+`src/revenue/criteria.ts:362` rejects "an honest ceiling under ₪300/month". Corrected, both are
+below it. **Net-new contribution to the ₪20,000 target: ₪0**, and the two survivors sit inside
+ceilings other groups already counted, so they must not be added to the portfolio total.
+
+Three supervisor errors worth keeping, because they are the same errors as every other group's:
+
+1. **It monetised a product it never opened.** The Hebrew-pages ceiling rests on "the already-shipped
+   Paddle Pro tier, ₪79 one-time". `site.json` holds empty Paddle credentials, `invoice.html:111`
+   renders a disabled "בקרוב" button, and `isProConfigured()` returns false. **There is no
+   checkout.** A conversion rate times an unbuyable product is ₪0 — the recurring defect `MISSION.md`
+   names by name.
+2. **It used its own kill criterion as its expected value.** 300 clicks/month at month 8 is the
+   floor below which the line dies; the ceiling arithmetic treats it as the forecast.
+3. **It took the more favourable of two conflicting sibling audits without disclosing the conflict** —
+   claiming a ₪500 share of an Apify whole that `audits/agent-markets.md` had already refuted to ₪200.
+
+### What this group did settle
+
+- **Israeli §30א at ₪1,000 per message closes cold list-building** as an acquisition channel outright.
+- **The MCP Registry publishes with no human review** (`mcp-publisher login github` → `publish`),
+  and an **n8n verified community node** is submitted through a portal, not a conversation. Both are
+  channels an agent can actually walk end to end. Neither has a measured ceiling yet, and neither is
+  a buyer — but they are the only two doors in the whole group that are not locked.
+- **Apify's quality score ranks on both Store search and MCP server search**, and four of its eight
+  categories (Reliability, Popularity, Feedback, History of success) cannot be moved on day one.
+  That is the same day-one handicap already proven for Gumroad and WordPress, now on a fourth
+  platform.
+
+### One thing to hold carefully: the Stripe kill in this group is narrower than it looks
+
+The supervisor killed newsletter sponsorship (beehiiv, Paved) on *"Stripe doesn't support self-serve
+cross-border payouts to countries outside"* US/UK/EEA/Canada/Switzerland, and the auditor credited
+it. **It was reached by WebSearch snippet with `docs.stripe.com` egress-blocked, and the auditor did
+not re-render it either.** It is also a *different claim* from the open question at the end of this
+file: a platform's ability to self-serve a cross-border payout is not the same product as an Israeli
+holding a Connect Express account, which Algora's public source shows working today. Both can be
+true at once. **The reopened Stripe question stays open**, and this kill is provisional on the same
+thirty-second owner check as the four rejections listed there.
+
+### What goes to the board
+
+`ranked: []`, headline unchanged. The auditor's recommendation, which matches task #20 already
+standing: publish `apify-il-open-data` **free** and count runs from strangers for 30 days. Free
+publishing needs no KYC, no price and no README polish, and it starts the one clock — History of
+success — that cannot be bought. Route the push through GitHub Actions, since `apify.com`,
+`api.apify.com` and `console.apify.com` are all egress-blocked from this container (re-confirmed
+this session).
+
 ## The pattern across three platforms, and it is the most important thing the sweep has produced
 
 Three times now, a "platform search will find us" claim has died in the platform's own source code,
