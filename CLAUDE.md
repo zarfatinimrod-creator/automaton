@@ -54,23 +54,37 @@ board — on Fable. Putting Fable in the fan-out is how the quota died before; p
 at the top is what the rule is for. Set `model` explicitly on every agent in a fleet:
 inheriting the session model means a session switch silently re-tiers a hundred agents.
 
-## Skills installed in this repo (added 3.9.2026 at the owner's request)
+## Skills installed in this repo (added 3.9.2026 and 4.9.2026 at the owner's request)
 
-**`.claude/skills/` holds the 14 [Superpowers](https://github.com/obra/superpowers) skills**, vendored
-rather than installed, so a fresh container has them without a network call.
+**`.claude/skills/` holds 115 vendored skills**, so a fresh container has them without a network
+call: the 14 [Superpowers](https://github.com/obra/superpowers) skills, plus 101 selected on 4.9.2026
+from four collections the owner sent — `addyosmani/agent-skills` (25), `mattpocock/skills` (23),
+`affaan-m/ECC` (37 of 286) and `NousResearch/hermes-agent` (16 of 196). All MIT.
+
+**Read `docs/SKILL_SOURCES.md` before adding more.** Those four repos hold 651 skills between them
+and taking all of them would cost ~32,600 tokens of every session's context; the 101 chosen cost
+~8,200. The allowlist is code, in `scripts/install-skills.mjs`, so the choice can be re-derived and
+edited rather than guessed at. The fifth repo the owner sent, `mrdoob/three.js`, is a 3D rendering
+library and not a skill at all — it was deliberately not installed, and the reasoning is recorded
+rather than dropped.
 
 **One thing about them is unverified, and it matters at the start of the next session.** They were
 copied to `.claude/skills/` in the repo *and* to `~/.claude/skills/` at the same time, so the fact
 that they loaded proves nothing about which copy did it. I tried to separate the two by removing one
 skill from the user directory; the skill list did not refresh, so the experiment was inconclusive.
-**If a session starts and the Superpowers skills are not offered, the repo copy does not register on
+**If a session starts and these skills are not offered, the repo copy does not register on
 its own** — run this once and they will be:
 
 ```bash
 cp -r "$CLAUDE_PROJECT_DIR/.claude/skills/." ~/.claude/skills/
 ```
 
-If they *are* offered at session start, this note can be deleted and the claim made properly.
+**The 4.9.2026 install repeated the same flaw and did not settle it** — `install-skills.mjs --user`
+copied to both places again, so the fact that all 101 registered immediately still proves nothing
+about which copy did it. The next fresh container settles it for free and needs no experiment: the
+user directory starts empty and only the git-tracked repo copy survives. If the skills are offered at
+that session's start, the repo copy registers on its own, this note can be deleted, and the claim
+made properly. Run `install-skills.mjs` **without** `--user` to keep that test clean.
 
 The three that matter most for the failure modes this repo actually has:
 
