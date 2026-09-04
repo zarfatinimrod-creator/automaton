@@ -808,6 +808,83 @@ success — that cannot be bought. Route the push through GitHub Actions, since 
 `api.apify.com` and `console.apify.com` are all egress-blocked from this container (re-confirmed
 this session).
 
+## `data-apis` — zero survivors, ranked zero by the supervisor itself, audited 2026-09-04
+
+Full audit: `research/colony-sweep/audits/data-apis.md`. Supervisor report:
+`research/colony-sweep/groups/data-apis.md`. Twelfth group audited.
+
+**The first supervisor in the whole sweep to rank nothing at all**, without an auditor having to
+cut it there. Its own words: *"Not 'small', not 'needs more research' — zero."* The auditor's
+response is the right one — *"a zero-survivor report is the cheapest possible report to write and
+the hardest to falsify, so it deserves more scrutiny than a ranked one, not less"* — and it then
+tried to break both of the supervisor's kills and **found stronger evidence for both**.
+
+Three walls, each independently sufficient:
+
+1. **The issuer is the free competitor.** CBS, Bank of Israel, data.gov.il, SEC EDGAR, GLEIF, UK
+   Companies House, the EU's TEDB, Open-Meteo, Israel's MOT GTFS — every one publishes its own free
+   API or bulk file. A perfect licence on a free substrate is not a business.
+2. **The applied layer is free too, and usually MIT.** `@il-address/core` eats the address product,
+   `@skills-il/boi-exchange-mcp` eats the Bank of Israel FX product, `vatnode/eu-vat-rates-data-js`
+   eats the VAT-rates product, Hasadna's Open Bus eats Israeli transit — and **CBS itself publishes
+   an indexation-calculator API endpoint**, which killed the group's own highest-ranked scout
+   recommendation.
+3. **Where money exists, access is human-gated.** TASE Data Hub, IGDB, TMDB, MetaBrainz, MOT SIRI,
+   Snowflake Marketplace, Datarade, OpenCorporates — a signed contract, a discretionary approval or
+   a sales conversation. That is not the identity/KYC exception `MISSION.md` permits. It disqualifies.
+
+That is the price-floor-of-zero finding for a **sixth** group: what an agent can build alone from
+public inputs, anyone can build alone from public inputs.
+
+### The hole the auditor found, and it is the most interesting thing in the group
+
+**Israeli government tenders were never enumerated by any of the eight scouts** — although
+`products/apify-il-open-data`'s own README already lists "government tenders" among its datasets and
+"procurement intelligence" among its target buyers. The market exists and is priced:
+
+- **Govi (`govi.co.il`) sells Israeli government-tender alerts at ₪249 + VAT per month**, no
+  commitment, after a 14-day trial.
+- The Israel Export Institute sells tender alerts at ₪1,500/year to members or ~$1,000/year to the
+  public, plus ₪550/month for an analyst add-on.
+- The Tel Aviv Chamber of Commerce runs a free weekly alert as membership marketing.
+
+**This is a direct counterexample to the wall this whole group is built on.** The issuer
+(`mr.gov.il`, `data.gov.il`) publishes the tenders free, and people pay monthly anyway — for the
+alerting layer. Every group so far has concluded that a free substrate sets the price at zero; here
+is a live Israeli business charging ₪249/month on top of one.
+
+**It is deliberately NOT ranked, and the auditor's reasons are good ones:** Govi is an entrenched
+incumbent, part of what buyers pay for is a human analyst reading the tender, and **no buyer has
+been observed paying us**. It is a lead, not a line. But "this vertical was never examined" is a
+real hole in a report concluding the group is empty, and **the group is not CLOSED until tenders has
+been swept once** (task #25).
+
+### What else the audit corrected
+
+- **The AWS Data Exchange blocker is factually wrong, in the direction of pessimism** — the report
+  overstated what it requires.
+- Two claims marked "verified" are snippet-grade; the Open-Meteo floor is misstated; RapidAPI
+  payability was left more unknown than the evidence supports.
+- **The report never tells the board that its own rejections condemn two shipped products** —
+  `products/apify-il-open-data` and `products/il-biz-tools` both sit on substrate this group has
+  just declared worthless. That handoff has to be made before task #20 spends thirty days measuring.
+- **The x402 rail was never considered by anyone in the group.** Every payability discussion here is
+  about KYC-gated marketplaces, while `products/x402-il-api` sells per-request with no account and no
+  KYC. Several rejections rest on a payout uncertainty that rail does not have. Whether x402 demand
+  exists is a separate and probably fatal question — but the group never asked it.
+- **Free MCP servers were counted only as competitors, never as a channel**, though the colony
+  already ships `products/mcp-il-tools` into exactly that surface.
+
+### The method fix, now permanent
+
+Nine agents in this group reported "no Israeli primary source could be rendered" and stopped. Nobody
+tried **GitHub code search over third-party repos that call the blocked endpoint**. One such call
+produced first-hand, code-grade evidence for the group's single most decisive claim. When a host is
+egress-blocked, stop searching for documentation about it and search for code that calls it — repos
+hard-code the URL, the parameters and the response shape. *"The site is blocked" and "the fact is
+unreachable" are different sentences.* This is now rule 9 of the scout brief in
+`src/revenue/sweep-workflow.ts`.
+
 ## The pattern across three platforms, and it is the most important thing the sweep has produced
 
 Three times now, a "platform search will find us" claim has died in the platform's own source code,
