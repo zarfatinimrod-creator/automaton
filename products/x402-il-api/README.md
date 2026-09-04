@@ -86,6 +86,50 @@ With an x402 client (`x402-fetch`, `x402-axios`, or any wallet that speaks the p
 
 Converting that USDC to shekels later needs a one-time Israeli exchange account with KYC. That step is only required to *cash out*, never to *earn*.
 
+## Open defect: this API is pinned to the abandoned half of the x402 SDK
+
+Found 4.9.2026 while chasing a lead from a third-party skill (`docs/SKILL_SOURCES.md`). Verified
+against the npm registry, which the proxy does reach; `x402.org` and `mpp.dev` it does not.
+
+| | package | latest | last published |
+|---|---|---|---|
+| what we ship | `x402-express` | **1.2.0** | **2026-04-16** |
+| what the ecosystem ships | `@x402/express` | **2.25.0** | **2026-09-04** |
+
+The scoped `@x402/*` line has 27 releases since 2025-12-11 and shipped twice in the two days before
+this was written; the unscoped package we depend on has not shipped in nearly five months. Neither is
+formally deprecated, so nothing breaks today — but the only rail in the portfolio that needs no KYC
+is running on the half of the SDK that stopped moving.
+
+It is the same publisher, not a typosquat: both packages list npm maintainers `erik_cb` and
+`carsonroscoe_cb`, Apache-2.0, and the repository `x402-foundation/x402` (the project moved out of
+`coinbase/x402`).
+
+**v2 is a breaking redesign, not a version bump.** From `@x402/express@2.25.0`'s own README:
+
+```ts
+// v1, what src/app.ts calls today
+paymentMiddleware(payTo, { "GET /path": { price: "$0.01", network: "base", config: {...} } })
+
+// v2
+const resourceServer = new x402ResourceServer(new HTTPFacilitatorClient({ url: ... }))
+  .register("eip155:84532", new ExactEvmScheme());
+paymentMiddleware({ "GET /path": { accepts: { scheme: "exact", price: "$0.10",
+  network: "eip155:84532", payTo: "0x..." }, description } }, resourceServer)
+```
+
+Three things change: the argument order, the per-route shape (`accepts`), and the network
+identifier — CAIP-2 `eip155:8453` replaces the `"base"` string this package defaults to in
+`src/config.ts`. v2 is also dual-published ESM+CJS with a real `import` condition, so the
+`createRequire` workaround in `src/app.ts` would go away.
+
+**Deliberately not migrated in the session that found it.** This is the file that already shipped one
+P0 where a broken paywall factory was swallowed by its own `try/catch` and every paid endpoint
+answered 503. Rewriting it against a README quick-start, with no facilitator to integration-test
+against, is how that bug comes back. The existing test proves a bare `/v1/*` request gets a 402 and
+not a 503, which is real but is not proof of settlement. The migration is its own task, with its own
+verification.
+
 ## Honesty
 
 Every validator checks **format and checksum only**. Nothing here verifies that a person, a phone line or a bank account exists, and no request is stored or logged beyond ordinary server output. The bank endpoint says so in its own response body. Transliteration is rule-based and documented as approximate, not a standard romanisation.
