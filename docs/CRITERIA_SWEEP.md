@@ -1,4 +1,4 @@
-# The criteria sweep — 112 scouts under the chain of command
+# The criteria sweep — 120 scouts under the chain of command
 
 The owner's instruction: *"at least 100 agents that search by criteria, and for each
 group of criteria a supervisor — use the chain of command loop."* This document is how
@@ -12,15 +12,15 @@ that is implemented, and how to run it again.
                      chief auditor         checks the auditors
                             ▲
         ┌───────────────────┼───────────────────┐
-     auditor             auditor             auditor          14 of them, one per group
+     auditor             auditor             auditor          15 of them, one per group
         ▲                   ▲                   ▲             their job is to refute
-    supervisor          supervisor          supervisor        14 of them, one per group
+    supervisor          supervisor          supervisor        15 of them, one per group
         ▲                   ▲                   ▲             merge, verify, rank, reject
    ┌────┴────┐         ┌────┴────┐         ┌────┴────┐
-  8 scouts   …        8 scouts   …        8 scouts   …        112 of them, one per criterion
+  8 scouts   …        8 scouts   …        8 scouts   …        120 of them, one per criterion
 ```
 
-**112 scouts, 14 supervisors, 14 auditors, 1 chief auditor, 1 board = 142 agents.**
+**120 scouts, 15 supervisors, 15 auditors, 1 chief auditor, 1 board = 152 agents.**
 
 Each level's mandate and its "must never" list come from `src/revenue/org.ts`, the same
 chain of command the live revenue lines run under. A scout can search and write notes; it
@@ -32,7 +32,7 @@ worth trusting.
 
 `src/revenue/criteria.ts` holds 14 groups of 8 criteria. Each criterion is a
 self-contained search brief — a scout receives one and needs no other context, which is
-exactly what lets 112 of them run at once.
+exactly what lets 120 of them run at once.
 
 | Group | What it searches |
 |---|---|
@@ -82,12 +82,55 @@ not fit inside one window. So the script takes `args`:
 | `{ board: true }` | No scouts. The chief auditor and board read the group reports off disk and decide. |
 | omitted | Everything. Only sane on a fresh window with nothing else running. |
 
-**One group per wave.** The first wave ran two groups and proved why: `WebSearch` is a
-*shared session budget* of roughly 200 calls across every agent running at once. The
-`payment-rails` scouts spent it, and then all eight `risk-governance` scouts — and their
-supervisor — ran with the budget already refused at 200/200. Their supervisor caught it and
-reported it upward as "a colony governance defect, not a scout failure", which is exactly
-right. Eight scouts at a 20-search cap is the arithmetic that fits.
+**One group per wave, and let it finish.** `WebSearch` is a *shared session budget* of
+roughly 200 calls across every agent running at once. The first wave ran two groups and the
+`payment-rails` scouts spent the lot; all eight `risk-governance` scouts and their supervisor
+then ran at 200/200 refused. Their supervisor caught it and reported it upward as "a colony
+governance defect, not a scout failure", which is exactly right. The per-scout cap is now
+**8**, not 20, because 20 was arithmetic that never fitted.
+
+**Session limits are a different failure from 529, and worse.** A 529 fails before burning
+anything. A session limit fails *after* the scouts have worked and takes the synthesis stage
+with it, because that runs last — three waves running in parallel lost two supervisors and an
+auditor that way, with all their scouts already paid for. Run one wave, wait for it.
+
+### Never re-sweep a criterion by accident
+
+Two commands make a wave cheap, and skipping them is how a wave spends 8 searches
+re-answering an answered question:
+
+```bash
+pnpm exec tsx scripts/colony.ts criteria --reconcile              # sync state from the reports on disk
+pnpm exec tsx scripts/colony.ts criteria --wave-args <group,...>  # prints the Workflow args, swept criteria excluded
+```
+
+The second prints `{"groups":[...],"exclude":[...]}` ready to hand to the Workflow tool. An
+excluded criterion's scout does not run, so its report is not in the supervisor's input
+either — which is why the supervisor prompt tells it to read its group's other reports off
+disk. Without that step a wave would judge a slice while reporting on the whole group.
+
+**And `resumeFromRunId` only replays a script you have not edited.** The cache keys on
+(prompt, opts). After any change to `sweep-workflow.ts`, a resume is a full re-run wearing a
+resume's name — fifteen scouts were re-run that way before anyone noticed.
+
+## A swept group is not a finished one
+
+This is the discipline that matters most, and it was learned expensively.
+
+A group is done when it has been through **scouts → supervisor → auditor**. Nine groups have
+now completed that, and **every single audit cut its supervisor's numbers** — several to
+zero: ₪15,500 → ₪3,000, six ceilings → ₪0, ₪7,800 → ₪800, ₪500 → ₪0. Three audits were found
+sitting on disk unread, each one overturning something the owner-facing docs still asserted.
+
+So two rules:
+
+1. **Never publish a supervisor's number before its auditor has run.** It was published once,
+   an hour before the audit cut it by 80%.
+2. **An audit that nothing has read fails the build.** `src/__tests__/revenue/fold-in.test.ts`
+   turns the build red until something in `docs/` or `MISSION.md` cites the audit by path, and
+   its failure message says what to record. It has fired four times in real use.
+
+The auditors' reports, not the supervisors', are the reliable record of this sweep.
 
 The second half of that fix is source choice: **github.com and raw.githubusercontent.com
 render**, and platforms check their own terms and docs into public repos. The
@@ -118,7 +161,7 @@ colony database's `kv` table, so it survives across sessions and machines.
 
 ## Model routing
 
-Per `CLAUDE.md`: the 112 scouts, 14 supervisors and 14 auditors run on **Opus 5** — they
+Per `CLAUDE.md`: the 120 scouts, 15 supervisors and 15 auditors run on **Opus 5** — they
 are sweeps and mechanical verification. The **chief auditor and the board run on Fable
 5.1**, because those two are the judgement calls: which findings survive, and where the
 money goes. Two Fable agents at the top of a 142-agent fleet is the whole point of the
