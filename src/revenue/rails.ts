@@ -38,6 +38,24 @@ export interface LineRails {
   payout: PayoutRail;
   /** Why this rail and not another — the sentence a supervisor would have to argue with. */
   note: string;
+  /**
+   * The single account or identity a ban, a KYC failure or a terms change would
+   * land on. Added 2026-09-04 because the synthesis critic showed this file could
+   * not see the risk it was built for: Apify carries the top-or-only survivor of
+   * FOUR of the seven audited groups, and `railConcentration` reported one line,
+   * because it keys by line id and all four collapse into `apify-actors`. Rails
+   * measure how the money moves; this measures what a single email from a
+   * platform takes away.
+   */
+  platformAccount: string;
+  /**
+   * Whether this colony can actually observe the platform — its dashboard, its
+   * API, its KPIs. `apify.com` and `api.apify.com` are EGRESS_BLOCKED from this
+   * container, confirmed independently by three auditors, so every kill
+   * criterion on the largest line in the code sits behind a wall we cannot see
+   * through. MISSION rule 5 says no line survives on hope.
+   */
+  observable: boolean;
 }
 
 /**
@@ -53,46 +71,64 @@ export const LINE_RAILS: Record<string, LineRails> = {
     payin: "apify",
     payout: "paypal",
     note: "Apify bills the user and pays the developer; PayPal at a $20 minimum, or SWIFT wire at $100.",
+    platformAccount: "apify:one-creator-account",
+    observable: false,
   },
   "il-biz-tools": {
     payin: "paddle",
     payout: "bank-transfer",
     note: "Paddle is merchant of record, so it collects and remits. But ILS is NOT a Paddle payout currency: an Israeli seller takes USD by international SWIFT at 5% + $0.50 per transaction, a $15 SWIFT fee, the receiving bank's own charge and ~1.5% FX, against a $100 minimum paid on the 1st and landing by the 15th. This entry previously said the payout lands in an Israeli bank account, which is true only in the sense that the money eventually arrives.",
+    platformAccount: "paddle:one-seller-account",
+    observable: true,
   },
   templates: {
     payin: "etsy",
     payout: "payoneer",
     note: "Etsy Payments is said to reach Israel through Payoneer. BOTH HALVES ARE OPEN: docs/REJECTED.md records Etsy Payments for Israel as UNVERIFIED, and the payment-rails audit corrected Payoneer's own Israel payability from YES to UNKNOWN. This entry previously called it 'the only documented route', which chained two unknowns together and described the result as documented.",
+    platformAccount: "etsy:one-shop",
+    observable: true,
   },
   "paid-apis": {
     payin: "x402",
     payout: "crypto-wallet",
     note: "USDC settles straight to a wallet the automaton controls. No platform can freeze it, and no KYC gates it.",
+    platformAccount: "self:wallet-and-host",
+    observable: true,
   },
   "agent-services": {
     payin: "x402",
     payout: "crypto-wallet",
     note: "Same rail as paid-apis by design — this line exists to sell work, not to diversify the rail.",
+    platformAccount: "self:wallet-and-host",
+    observable: true,
   },
   "telegram-bots": {
     payin: "telegram-stars",
     payout: "ton-wallet",
     note: "Stars convert through Fragment to TON. Whether Fragment withdrawal is open to an Israeli resident is unverified.",
+    platformAccount: "telegram:one-bot-owner",
+    observable: true,
   },
   "dev-extensions": {
     payin: "paddle",
     payout: "bank-transfer",
     note: "Deliberately reuses the il-biz-tools merchant account: licence keys, not a second merchant onboarding.",
+    platformAccount: "microsoft:one-publisher",
+    observable: true,
   },
   "hebrew-content": {
     payin: "affiliate-networks",
     payout: "payoneer",
     note: "Impact, PartnerStack and Amazon Associates pay Israel through PayPal or Payoneer against a tax form.",
+    platformAccount: "affiliate:several-accounts",
+    observable: true,
   },
   "oss-bounties": {
     payin: "bounty-platform",
     payout: "unknown",
     note: "Algora's own source lists Israel for Stripe Connect Express, but the Stripe-Israel question is reopened in docs/REJECTED.md. Unknown until a human opens stripe.com/global.",
+    platformAccount: "algora:one-connect-account",
+    observable: true,
   },
 };
 
@@ -165,6 +201,89 @@ export function railConcentration(
             .map((o) => `${o.rail} carries ${pct(o.share)} of the portfolio target on the ${o.side} side (${o.lineIds.join(", ")})`)
             .join("; ")}. MISSION.md requires that one rail failing does not take the company down.`
         : `No rail carries more than ${pct(threshold)} of the portfolio target on either side.`,
+  };
+}
+
+export interface PlatformShare {
+  platformAccount: string;
+  lineIds: string[];
+  targetAgorot: number;
+  share: number;
+  /** False when the colony cannot observe the platform it depends on. */
+  observable: boolean;
+}
+
+export interface PlatformConcentration {
+  platforms: PlatformShare[];
+  overexposed: PlatformShare[];
+  /** Share of the portfolio target riding on platforms we cannot observe. */
+  unobservableShare: number;
+  threshold: number;
+  verdict: "ok" | "concentrated";
+  reason: string;
+}
+
+/**
+ * How much of the portfolio one platform account can take away.
+ *
+ * `railConcentration` answers "how does the money move" and was blind to this:
+ * four separate audited candidates across four groups all live on one Apify
+ * creator identity — one KYC, one payout method, one set of Store terms — and a
+ * single clause (§2.2.4.2(i), no off-platform promotion) has already closed a
+ * play two of them counted on. MISSION.md requires that one platform banning us
+ * must not take the company down; that is a statement about accounts, not rails.
+ */
+export function platformConcentration(
+  seeds: RevenueLineSeed[] = DEFAULT_PORTFOLIO,
+  rails: Record<string, LineRails> = LINE_RAILS,
+  threshold: number = RAIL_CONCENTRATION_THRESHOLD,
+): PlatformConcentration {
+  const total = seeds.reduce((n, s) => n + s.targetMonthlyAgorot, 0);
+  const by = new Map<string, { lineIds: string[]; targetAgorot: number; observable: boolean }>();
+  for (const seed of seeds) {
+    const rail = rails[seed.id];
+    if (!rail) continue;
+    const row = by.get(rail.platformAccount) ?? { lineIds: [], targetAgorot: 0, observable: true };
+    row.lineIds.push(seed.id);
+    row.targetAgorot += seed.targetMonthlyAgorot;
+    row.observable = row.observable && rail.observable;
+    by.set(rail.platformAccount, row);
+  }
+
+  const platforms: PlatformShare[] = [...by.entries()]
+    .map(([platformAccount, row]) => ({ platformAccount, ...row, share: total > 0 ? row.targetAgorot / total : 0 }))
+    .sort((a, b) => b.share - a.share);
+
+  const overexposed = platforms.filter((p) => p.share > threshold);
+  const unobservableShare = platforms.filter((p) => !p.observable).reduce((n, p) => n + p.share, 0);
+  const pct = (n: number) => `${Math.round(n * 100)}%`;
+
+  const parts: string[] = [];
+  if (overexposed.length) {
+    parts.push(
+      overexposed
+        .map((p) => `${p.platformAccount} carries ${pct(p.share)} of the portfolio target across ${p.lineIds.join(", ")}`)
+        .join("; ") + ". MISSION.md requires that one platform banning us does not take the company down.",
+    );
+  }
+  if (unobservableShare > 0) {
+    parts.push(
+      `${pct(unobservableShare)} of the target rides on platforms this colony cannot observe: ${platforms
+        .filter((p) => !p.observable)
+        .map((p) => p.platformAccount)
+        .join(", ")}. Their KPIs and kill criteria cannot be checked from here.`,
+    );
+  }
+
+  return {
+    platforms,
+    overexposed,
+    unobservableShare,
+    threshold,
+    verdict: overexposed.length > 0 ? "concentrated" : "ok",
+    reason: parts.length
+      ? parts.join(" ")
+      : `No single platform account carries more than ${pct(threshold)} of the portfolio target, and every platform is observable from here.`,
   };
 }
 

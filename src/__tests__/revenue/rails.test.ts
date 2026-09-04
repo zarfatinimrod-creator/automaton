@@ -4,6 +4,7 @@ import {
   RAIL_CONCENTRATION_THRESHOLD,
   linesWithUnknownPayout,
   railConcentration,
+  platformConcentration,
 } from "../../revenue/rails.js";
 import { DEFAULT_PORTFOLIO } from "../../revenue/portfolio.js";
 import { agorotFromIls } from "../../revenue/money.js";
@@ -76,5 +77,54 @@ describe("payment rails", () => {
     // Writing "stripe" there would launder an open question into a fact — the
     // Stripe-Israel claim is reopened in docs/REJECTED.md.
     expect(linesWithUnknownPayout()).toEqual(["oss-bounties"]);
+  });
+});
+
+describe("platform concentration — the risk railConcentration was blind to", () => {
+  it("sees that the largest single platform account is one we cannot observe", () => {
+    // The synthesis critic's finding: Apify carries the top-or-only survivor of
+    // four of seven audited groups, and railConcentration reported one line
+    // because it keys by line id and all four collapse into `apify-actors`.
+    const c = platformConcentration();
+    const blind = c.platforms.filter((p) => !p.observable);
+    expect(blind.length).toBeGreaterThan(0);
+    expect(blind.map((p) => p.platformAccount)).toContain("apify:one-creator-account");
+    expect(c.unobservableShare).toBeGreaterThan(0);
+    expect(c.reason).toMatch(/cannot observe/);
+  });
+
+  it("groups lines by the account a ban would land on, not by the rail", () => {
+    // paid-apis and agent-services are separate lines on separate targets but a
+    // single wallet and host. One incident takes both.
+    const c = platformConcentration();
+    const self = c.platforms.find((p) => p.platformAccount === "self:wallet-and-host")!;
+    expect(self.lineIds.sort()).toEqual(["agent-services", "paid-apis"]);
+  });
+
+  it("shares sum to one", () => {
+    const c = platformConcentration();
+    expect(c.platforms.reduce((n, p) => n + p.share, 0)).toBeCloseTo(1, 6);
+  });
+
+  it("fires when one account carries more than half the target", () => {
+    const seeds = [
+      { ...DEFAULT_PORTFOLIO[0]!, id: "a", targetMonthlyAgorot: agorotFromIls(9000) },
+      { ...DEFAULT_PORTFOLIO[0]!, id: "b", targetMonthlyAgorot: agorotFromIls(1000) },
+    ] as RevenueLineSeed[];
+    const rails = {
+      a: { payin: "paddle", payout: "bank-transfer", note: "x".repeat(40), platformAccount: "one:account", observable: true },
+      b: { payin: "etsy", payout: "payoneer", note: "x".repeat(40), platformAccount: "other:account", observable: true },
+    } as typeof LINE_RAILS;
+    const c = platformConcentration(seeds, rails);
+    expect(c.verdict).toBe("concentrated");
+    expect(c.overexposed[0]!.platformAccount).toBe("one:account");
+    expect(c.reason).toMatch(/MISSION\.md/);
+  });
+
+  it("records an account and an observability verdict for every mapped line", () => {
+    for (const [id, rail] of Object.entries(LINE_RAILS)) {
+      expect(rail.platformAccount, id).toMatch(/^[a-z-]+:[a-z-]+$/);
+      expect(typeof rail.observable, id).toBe("boolean");
+    }
   });
 });
