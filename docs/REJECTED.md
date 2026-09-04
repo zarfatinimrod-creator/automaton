@@ -603,6 +603,71 @@ for a case already refuted.
 
 ---
 
+## `storefronts` — one fact worth staking money on, and a #1 ranking refuted from the same repo, audited 2026-09-04
+
+The audit is at `research/colony-sweep/audits/storefronts.md`.
+
+### The finding worth keeping, and it is the strongest payability evidence in the sweep
+
+**Gumroad pays an Israeli bank account in ILS.** Rendered from Gumroad's own production source,
+`_13-getting-paid.html.erb`, under the heading "We currently support bank payouts in the following
+countries": a row reading `Israel | ILS`. Not a snippet, not an inference from absence — the file
+that renders the help page.
+
+That is the second code-level Israeli payability proof in the whole 120-criterion sweep, alongside
+Algora's `connect_countries.ex`. Both belong in the rails catalogue. Neither is a storefront thesis.
+
+### Why the ranking is refuted, from a file in the repository the supervisor itself rendered
+
+Gumroad was ranked #1 on the case that Gumroad Discover is "a genuine platform-search acquisition
+channel priced purely on performance". Same repo, same branch,
+`app/modules/product/recommendations.rb`:
+
+```ruby
+def recommendable_reasons
+  reasons = { alive:, not_archived:, reviews_displayed:, not_sold_out:, taxonomy_filled:,
+              sale_made: sales.counts_towards_volume.exists? }
+```
+
+`recommendable?` requires **all** of them, and `merchant_center_feed_service.rb` names it as the
+Discover gate. **A product must already have made a sale to be recommendable.** Discover cannot
+source a new product's first sale — ever.
+
+That is MISSION constraint 7 written in someone else's source code, and it is the cleanest statement
+of the problem this whole sweep keeps circling: the platform-search channels we are counting on are
+gated on already having sold.
+
+It is also the exact condition on which this same supervisor rejected Ko-fi — *"it supplies no
+buyers… ceiling ₪200, below the ₪300 floor"* — while ranking Gumroad first at ₪700.
+
+**Corrected: ₪250/month gross at twelve months** (~₪195 net of the true 13–29% take), ₪0 in months
+1–3, first payout not before ~$100 gross plus a 1–3 week review. That is below the group's own ₪300
+floor. **The honest classification is not "best storefront" but "the colony's best-verified
+zero-cost, Israel-payable, merchant-of-record checkout rail"** — which is worth real money here, just
+not as a source of buyers.
+
+### Unity Asset Store — REFUTED to ₪0
+
+Israel payability UNKNOWN rather than YES, no programmatic path to list a package at all — the
+disqualifier for a software-only operation — and the supervisor claimed *"I re-verified the payout
+mechanics today"* while stating in the same entry that `unity.com` is egress-blocked. All five Unity
+primary URLs are unreachable.
+
+### The pattern, now on its fourth group
+
+The supervisor applied its own rejection criteria inconsistently three times in one report: Webflow
+and Payhip were rejected for lacking a programmatic listing path while Unity was ranked without the
+check; Envato was rejected for human-facing support obligations while Unity was ranked without it;
+Ko-fi was rejected for supplying no buyers while Gumroad was ranked first on a buyer-supply mechanism
+that provably cannot fire. It also **invented an owner blocker** (a W-8BEN) inside a list of
+otherwise-verbatim ones, against MISSION's explicit instruction never to add extras.
+
+And it wrote a kill criterion that cannot fail honestly: 25 Discover-attributed views in 60 days,
+when Discover views are structurally zero before the first sale. The test would have reported on the
+gate, not on the channel it claimed to be testing.
+
+---
+
 ## Earlier rejections
 
 Kept in `docs/INCOME_PLAN.he.md` §4 with one-line reasons: Envato (bans AI files, 50%

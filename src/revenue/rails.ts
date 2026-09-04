@@ -199,6 +199,16 @@ export interface CandidateRail {
 
 export const CANDIDATE_RAILS: CandidateRail[] = [
   {
+    id: "gumroad-ils",
+    what: "Gumroad as a merchant-of-record checkout that pays an Israeli bank account in ILS.",
+    whyItMatters:
+      "This is the strongest payability evidence the 120-criterion sweep produced. Not a snippet and not an inference from absence: Gumroad's own production source file _13-getting-paid.html.erb carries a row reading Israel | ILS under the heading 'We currently support bank payouts in the following countries'. Every other ILS-native claim in this repo is unverified — Paddle does not even pay out in ILS, and an Israeli seller there takes USD by SWIFT with fees stacked on it. Gumroad supplies no buyers (its Discover gate requires a sale to already exist), so it is a rail and not a storefront, and that is exactly what makes it worth cataloguing here.",
+    beforeUse:
+      "Confirm the take rate against app/models/purchase.rb rather than a blog — the audit found the supervisor's figure wrong on the fixed leg ($0.50 vs $0.80) — and confirm what an osek patur needs to provide at signup.",
+    evidence: "rendered",
+    source: "research/colony-sweep/audits/storefronts.md §1",
+  },
+  {
     id: "freemius",
     what: "Merchant-of-record checkout for software and plugins. Israeli-founded, pays out in ILS with no conversion fee, by wire, Wise, Payoneer or PayPal, with a fully self-serve checkout and no buyer contact.",
     whyItMatters:
