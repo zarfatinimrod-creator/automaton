@@ -439,8 +439,17 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
     basis: "Ad and affiliate revenue on Hebrew traffic, inferred from the content-seo group's unswept criteria and from wave 2's finding that Israeli head terms are held by incumbents. Ordering matters: own products first, affiliate second, ads last.",
   },
   "oss-bounties": {
-    ils: 1500, grade: "unevidenced",
-    basis: "Carried over from the first plan. The bounties-grants group has not been swept, and payability to Israel on the bounty platforms is unverified.",
+    // Regraded 2026-09-04. The basis said payability here is unverified. It is
+    // verified — and it is the ONLY code-level payability proof the entire
+    // 120-criterion sweep produced. Algora's own source file
+    // lib/algora/psp/connect_countries.ex contains {"Israel", "IL"}, and
+    // account_type/1 special-cases only Brazil, so an Israeli contributor falls
+    // through to a Stripe Connect Express account. Every other payability
+    // verdict in this repo is a snippet, an inference from absence, or an
+    // UNKNOWN. The repo's evidence hierarchy had this line at the bottom.
+    ils: 1500, grade: "inferred",
+    basis: "The bounties-grants group is swept and audited: its five ranked lines fell from ₪7,800 to ₪800 combined, so ₪1,500 is above the whole group's audited ceiling and the target is not defensible on volume. What IS verified, at code level and re-rendered independently by the synthesis critic, is Israeli payability — Algora's connect_countries.ex lists Israel and routes it to Stripe Connect Express. This is the only line in the portfolio whose acquisition problem runs backwards: the payer posts the job publicly, funds it in advance and publishes the acceptance criteria, so no stranger has to find us. Under MISSION constraint 7 that property outranks the ceiling.",
+    source: "research/colony-sweep/audits/bounties-grants.md; research/colony-sweep/CRITIC-synthesis.md §5",
   },
 };
 

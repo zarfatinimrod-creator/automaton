@@ -30,7 +30,7 @@ import { getRevenueStatus } from "../src/revenue/status.js";
 import { renderCommitSummary, renderReport, tick, type TickResult } from "../src/revenue/runner.js";
 import { enqueueGoal } from "../src/revenue/goal-queue.js";
 import { renderDashboard } from "../src/revenue/dashboard.js";
-import { FINAL_GOAL_MONTHLY_ILS, MEASURED_ASSUMPTIONS, scenarioTable, storesNeededFor } from "../src/revenue/growth.js";
+import { FINAL_GOAL_MONTHLY_ILS, PLANNING_ASSUMPTIONS, scenarioTable, storesNeededFor } from "../src/revenue/growth.js";
 import {
   ALL_CRITERIA,
   CRITERIA_GROUPS,
@@ -295,11 +295,11 @@ async function main(): Promise<void> {
       case "growth": {
         const need = storesNeededFor(FINAL_GOAL_MONTHLY_ILS);
         if (values.json) {
-          console.log(JSON.stringify({ goalMonthlyIls: FINAL_GOAL_MONTHLY_ILS, assumptions: MEASURED_ASSUMPTIONS, need, scenarios: scenarioTable() }, null, 2));
+          console.log(JSON.stringify({ goalMonthlyIls: FINAL_GOAL_MONTHLY_ILS, assumptions: PLANNING_ASSUMPTIONS, need, scenarios: scenarioTable() }, null, 2));
           break;
         }
         console.log(`Final goal: ₪1,000,000/year = ₪${FINAL_GOAL_MONTHLY_ILS.toLocaleString("en")}/month.\n`);
-        console.log(`On the measured assumptions (${(MEASURED_ASSUMPTIONS.hitRate * 100).toFixed(0)}% of stores reach ₪${MEASURED_ASSUMPTIONS.hitCeilingIls}, upkeep ₪${MEASURED_ASSUMPTIONS.maintenanceIlsPerStore}/store):`);
+        console.log(`On the measured assumptions (${(PLANNING_ASSUMPTIONS.hitRate * 100).toFixed(0)}% of stores reach ₪${PLANNING_ASSUMPTIONS.hitCeilingIls}, upkeep ₪${PLANNING_ASSUMPTIONS.maintenanceIlsPerStore}/store):`);
         console.log(`  ${need.reason}\n`);
         console.log("Stores that must be LAUNCHED, by hit rate and per-hit ceiling:");
         const ceilings = [1000, 2000, 3000, 5000];

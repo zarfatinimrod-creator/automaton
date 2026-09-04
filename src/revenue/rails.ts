@@ -57,12 +57,12 @@ export const LINE_RAILS: Record<string, LineRails> = {
   "il-biz-tools": {
     payin: "paddle",
     payout: "bank-transfer",
-    note: "Paddle is merchant of record, so it collects and remits; payout lands in an Israeli bank account.",
+    note: "Paddle is merchant of record, so it collects and remits. But ILS is NOT a Paddle payout currency: an Israeli seller takes USD by international SWIFT at 5% + $0.50 per transaction, a $15 SWIFT fee, the receiving bank's own charge and ~1.5% FX, against a $100 minimum paid on the 1st and landing by the 15th. This entry previously said the payout lands in an Israeli bank account, which is true only in the sense that the money eventually arrives.",
   },
   templates: {
     payin: "etsy",
     payout: "payoneer",
-    note: "Etsy Payments reaches Israel through Payoneer, which is the only documented route.",
+    note: "Etsy Payments is said to reach Israel through Payoneer. BOTH HALVES ARE OPEN: docs/REJECTED.md records Etsy Payments for Israel as UNVERIFIED, and the payment-rails audit corrected Payoneer's own Israel payability from YES to UNKNOWN. This entry previously called it 'the only documented route', which chained two unknowns together and described the result as documented.",
   },
   "paid-apis": {
     payin: "x402",

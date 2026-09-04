@@ -24,7 +24,7 @@ import { formatIls } from "./money.js";
 import { summarizeTargetBasis, TARGET_BASIS } from "./portfolio.js";
 import { sweepCoverage } from "./criteria.js";
 import { findStalledLines } from "./watchdog.js";
-import { FINAL_GOAL_MONTHLY_ILS, MEASURED_ASSUMPTIONS, storesNeededFor } from "./growth.js";
+import { FINAL_GOAL_MONTHLY_ILS, PLANNING_ASSUMPTIONS, storesNeededFor } from "./growth.js";
 import { ownerFloatState } from "./budget.js";
 import { linesWithUnknownPayout, railConcentration } from "./rails.js";
 import type { LineMetrics } from "./types.js";
@@ -228,12 +228,12 @@ ${rows}
     <div class="basis">
       <div>מיליון ש״ח בשנה, בחודשים</div><div>₪${FINAL_GOAL_MONTHLY_ILS.toLocaleString("en")}</div>
       <div>חנויות שצריך להשיק כדי להגיע לשם</div><div>${storesNeeded.stores === null ? "לא ניתן בהנחות האלה" : storesNeeded.stores.toLocaleString("en")}</div>
-      <div>מהן צפויות לעבוד</div><div>${storesNeeded.stores === null ? "—" : Math.round(storesNeeded.stores * MEASURED_ASSUMPTIONS.hitRate).toLocaleString("en")}</div>
+      <div>מהן צפויות לעבוד</div><div>${storesNeeded.stores === null ? "—" : Math.round(storesNeeded.stores * PLANNING_ASSUMPTIONS.hitRate).toLocaleString("en")}</div>
       <div>קווים חיים כרגע</div><div>${liveLines}</div>
     </div>
     <p class="note">
-      ההנחות: ${(MEASURED_ASSUMPTIONS.hitRate * 100).toFixed(0)}% מהחנויות מגיעות ל-₪${MEASURED_ASSUMPTIONS.hitCeilingIls.toLocaleString("en")} לחודש,
-      השאר ל-₪${MEASURED_ASSUMPTIONS.missIls}, ותחזוקה של ₪${MEASURED_ASSUMPTIONS.maintenanceIlsPerStore} לחנות לחודש.
+      ההנחות: ${(PLANNING_ASSUMPTIONS.hitRate * 100).toFixed(0)}% מהחנויות מגיעות ל-₪${PLANNING_ASSUMPTIONS.hitCeilingIls.toLocaleString("en")} לחודש,
+      השאר ל-₪${PLANNING_ASSUMPTIONS.missIls}, ותחזוקה של ₪${PLANNING_ASSUMPTIONS.maintenanceIlsPerStore} לחנות לחודש.
       זה מודל עם קלט מוצהר, לא תחזית — הקלט משתנה כשהמדידות משתנות.
       אם חנות עולה בתחזוקה יותר ממה שהיא מרוויחה בממוצע, עוד חנויות רק מפסידות יותר.
     </p>

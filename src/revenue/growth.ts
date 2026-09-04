@@ -36,16 +36,67 @@ export interface GrowthAssumptions {
 /**
  * Grounded in what the colony has actually measured, not in optimism:
  * Apify's own documentation says the large majority of Actors get no users in
- * their first month, and our own measured line ceilings sit at ₪1,500-3,000.
- * Maintenance is deliberately not zero — a store nobody maintains still costs
- * compute to check, and pretending otherwise is how the treadmill hides.
+ * their first month. Maintenance is deliberately not zero — a store nobody
+ * maintains still costs compute to check, and pretending otherwise is how the
+ * treadmill hides.
+ *
+ * RENAMED from MEASURED_ASSUMPTIONS on 2026-09-04, because the old name was a
+ * claim and the claim is false. The synthesis critic checked it: after seven
+ * audits the highest surviving 12-month ceiling for ANY single line in the whole
+ * sweep is ₪1,500, and it is a shared-surface number rather than a per-store one.
+ * The modal audited survivor is ₪200-500. `hitCeilingIls: 2000` is therefore
+ * above every audited line in the repo, and MISSION.md was resting the whole
+ * store-count thesis on it with the words "both plausible against what we have
+ * measured".
+ *
+ * The number is left at ₪2,000 on purpose rather than quietly lowered. Every
+ * figure in MISSION.md's final-goal section is downstream of it, and changing it
+ * silently would move the store count from 878 to somewhere between 1,191 and
+ * 4,167 without anyone deciding to. `auditedCeilingScenarios()` below shows what
+ * each choice costs, so the decision gets made rather than inherited.
  */
-export const MEASURED_ASSUMPTIONS: GrowthAssumptions = {
+export const PLANNING_ASSUMPTIONS: GrowthAssumptions = {
   hitRate: 0.05,
   hitCeilingIls: 2000,
   missIls: 0,
   maintenanceIlsPerStore: 5,
 };
+
+/** The best 12-month ceiling any single line survived audit with, across seven groups. */
+export const BEST_AUDITED_LINE_CEILING_ILS = 1500;
+
+/** What the modal audited survivor came in at. */
+export const MODAL_AUDITED_LINE_CEILING_ILS = 500;
+
+/**
+ * How many stores the final goal needs at each ceiling the audits actually
+ * support, rather than at the one the plan assumes.
+ *
+ * This exists because MISSION constraint 6 already says nobody has counted the
+ * 878 distinct datasets 878 stores would require, and calls that the single most
+ * valuable open question in the file. The audited evidence multiplies the
+ * required count by 1.4x to 4.7x, which makes that question harder, not easier.
+ */
+export function auditedCeilingScenarios(
+  targetIls: number = FINAL_GOAL_MONTHLY_ILS,
+  a: GrowthAssumptions = PLANNING_ASSUMPTIONS,
+): Array<{ ceilingIls: number; label: string; netPerStoreIls: number; stores: number | null }> {
+  const rows: Array<{ ceilingIls: number; label: string }> = [
+    { ceilingIls: a.hitCeilingIls, label: "assumed in the plan today" },
+    { ceilingIls: BEST_AUDITED_LINE_CEILING_ILS, label: "best line that survived audit" },
+    { ceilingIls: 1000, label: "midpoint" },
+    { ceilingIls: MODAL_AUDITED_LINE_CEILING_ILS, label: "modal audited survivor" },
+  ];
+  return rows.map(({ ceilingIls, label }) => {
+    const needed = storesNeededFor(targetIls, { ...a, hitCeilingIls: ceilingIls });
+    return {
+      ceilingIls,
+      label,
+      netPerStoreIls: Math.round((a.hitRate * ceilingIls - a.maintenanceIlsPerStore) * 100) / 100,
+      stores: needed.stores,
+    };
+  });
+}
 
 export interface GrowthModel {
   storesLaunched: number;
@@ -67,7 +118,7 @@ function assertAssumptions(a: GrowthAssumptions): void {
 }
 
 /** What a portfolio of `storesLaunched` stores earns, on these assumptions. */
-export function modelPortfolio(storesLaunched: number, a: GrowthAssumptions = MEASURED_ASSUMPTIONS): GrowthModel {
+export function modelPortfolio(storesLaunched: number, a: GrowthAssumptions = PLANNING_ASSUMPTIONS): GrowthModel {
   assertAssumptions(a);
   if (!Number.isFinite(storesLaunched) || storesLaunched < 0) {
     throw new Error("storesLaunched must be a non-negative number");
@@ -100,7 +151,7 @@ export interface StoresNeeded {
  */
 export function storesNeededFor(
   targetIls: number = FINAL_GOAL_MONTHLY_ILS,
-  a: GrowthAssumptions = MEASURED_ASSUMPTIONS,
+  a: GrowthAssumptions = PLANNING_ASSUMPTIONS,
 ): StoresNeeded {
   assertAssumptions(a);
   if (targetIls <= 0) return { stores: 0, reason: "target is zero or negative" };
@@ -134,7 +185,7 @@ export function storesNeededFor(
 export function maintenanceCeilingIls(
   storesLaunched: number,
   targetIls: number = FINAL_GOAL_MONTHLY_ILS,
-  a: GrowthAssumptions = MEASURED_ASSUMPTIONS,
+  a: GrowthAssumptions = PLANNING_ASSUMPTIONS,
 ): number {
   assertAssumptions(a);
   if (storesLaunched <= 0) return 0;
@@ -147,7 +198,7 @@ export function scenarioTable(
   targetIls: number = FINAL_GOAL_MONTHLY_ILS,
   hitRates: number[] = [0.01, 0.02, 0.05, 0.1, 0.2],
   ceilings: number[] = [1000, 2000, 3000, 5000],
-  a: GrowthAssumptions = MEASURED_ASSUMPTIONS,
+  a: GrowthAssumptions = PLANNING_ASSUMPTIONS,
 ): { hitRate: number; byCeiling: { ceilingIls: number; stores: number | null }[] }[] {
   return hitRates.map((hitRate) => ({
     hitRate,
@@ -273,7 +324,7 @@ export function checkHonestStorePlan(storesPlanned: number, distinctSources: num
  */
 export function distinctSourcesNeededFor(
   targetIls: number,
-  a: GrowthAssumptions = MEASURED_ASSUMPTIONS,
+  a: GrowthAssumptions = PLANNING_ASSUMPTIONS,
 ): StoresNeeded {
   const needed = storesNeededFor(targetIls, a);
   if (needed.stores === null) return needed;
