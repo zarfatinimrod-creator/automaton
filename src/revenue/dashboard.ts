@@ -26,7 +26,7 @@ import { sweepCoverage } from "./criteria.js";
 import { findStalledLines } from "./watchdog.js";
 import { FINAL_GOAL_MONTHLY_ILS, PLANNING_ASSUMPTIONS, storesNeededFor } from "./growth.js";
 import { ownerFloatState } from "./budget.js";
-import { linesWithUnknownPayout, railConcentration } from "./rails.js";
+import { linesWithUnknownPayout, platformConcentration, railConcentration } from "./rails.js";
 import type { LineMetrics } from "./types.js";
 
 const esc = (v: unknown): string =>
@@ -56,6 +56,7 @@ export interface DashboardOptions {
 
 export function renderDashboard(db: Database, options: DashboardOptions = {}): string {
   const rails = railConcentration();
+  const platforms = platformConcentration();
   const unknownPayout = linesWithUnknownPayout();
   const nowIso = options.nowIso ?? new Date().toISOString();
   const nowMs = Date.parse(nowIso);
@@ -200,6 +201,18 @@ ${rows}
     </div>
     <p class="note">${rails.verdict === "ok" ? "✔ " : "⚠ "}${esc(rails.reason)}</p>
     ${unknownPayout.length ? `<p class="note">מסלול המשיכה לא ידוע ב: ${unknownPayout.map((l) => `<code>${esc(l)}</code>`).join(", ")}. כסף שיירשם שם עלול להיות לא ניתן למשיכה.</p>` : ""}
+  </div>
+
+  <h2>מה מייל אחד מפלטפורמה יכול לקחת</h2>
+  <div class="card">
+    <p class="note">זה לא אותה שאלה כמו המסילות. מסילה עונה על "איך הכסף זז"; זה עונה על <strong>"מה חסימה אחת מוחקת"</strong> — כי קווים שונים יכולים לשבת על אותו חשבון אחד, עם אותו KYC ואותם תנאים.</p>
+    <table>
+      <thead><tr><th>חשבון</th><th>חלק מהיעד</th><th>קווים</th><th>נראה מכאן?</th></tr></thead>
+      <tbody>
+${platforms.platforms.map((p) => `        <tr><td><code>${esc(p.platformAccount)}</code></td><td>${Math.round(p.share * 100)}%</td><td>${p.lineIds.map((l) => esc(l)).join(", ")}</td><td>${p.observable ? "כן" : "<strong>לא</strong>"}</td></tr>`).join("\n")}
+      </tbody>
+    </table>
+    <p class="note">${platforms.verdict === "ok" && platforms.unobservableShare === 0 ? "✔ " : "⚠ "}${esc(platforms.reason)}</p>
   </div>
 
   <h2>חסימות ותקיעות</h2>

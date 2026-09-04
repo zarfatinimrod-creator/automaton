@@ -102,3 +102,24 @@ describe("the dashboard shows what the money travels on", () => {
     expect(html).toContain("לא ניתן למשיכה");
   });
 });
+
+describe("the screen shows what one platform can take away", () => {
+  it("names the platform the colony cannot observe, rather than leaving it to a table", () => {
+    const db = createInMemoryDb();
+    seedDefaultPortfolio(db);
+    const html = renderDashboard(db, { nowIso: "2026-09-03T12:00:00.000Z" });
+
+    expect(html).toContain("מה מייל אחד מפלטפורמה יכול לקחת");
+    expect(html).toContain("apify:one-creator-account");
+    // Every kill criterion on the largest line in the code sits behind an
+    // egress-blocked domain. The owner should not have to infer that.
+    expect(html).toMatch(/cannot observe|לא יכול|<strong>לא<\/strong>/);
+  });
+
+  it("distinguishes the platform question from the rail question in words", () => {
+    const db = createInMemoryDb();
+    seedDefaultPortfolio(db);
+    const html = renderDashboard(db, { nowIso: "2026-09-03T12:00:00.000Z" });
+    expect(html).toMatch(/מה חסימה אחת מוחקת/);
+  });
+});
