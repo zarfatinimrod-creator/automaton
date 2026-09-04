@@ -116,7 +116,7 @@ already includes ₪5/month of upkeep per store, which is why the answer is 878 
 you get by ignoring maintenance — and the gap between those two numbers is the entire subject of
 constraint 1 below.
 
-### The seven constraints that decide whether it works
+### The eight constraints that decide whether it works
 
 **1. Marginal cost per store must approach zero, or the portfolio eats itself.** 833 stores at
 ₪50/month of upkeep is ₪41,650/month — half the target, spent on maintenance. This is the
@@ -190,6 +190,43 @@ acquisition channel is named, and the first thing built on any line is the cheap
 stranger can find it.** Not the product. The first transaction id in the ledger is worth more
 than the next ten ceilings, because it is the only thing that turns this constraint from an
 assumption into a measurement.
+
+**8. A line whose every input is public has a price floor of zero — and the mandate is what puts it
+there.** This is what the whole sweep was actually producing, and no single group could see it. Run
+the price-floor test across the seven audited groups and it hits in **six**: a free Semrush checker,
+the free keyless `data.gov.il` API, a free daily Kaggle mirror with its own REST API, the state's own
+free simulators, an Israeli identifier detector that already exists free *inside this repo*, and free
+inference tiers. Six groups, six independent auditors, one pattern — neither coincidence nor bad luck.
+
+**The mandate causes it.** The owner does nothing: no selling, no talking, no camera, no manual ops.
+That selects for products an agent can build alone from public inputs — and a product built alone
+from public inputs is, by construction, one anybody else can build alone from public inputs. Several
+already have.
+
+So the rule is directional rather than defeatist: **before building a line, name the input it has
+that is not public.** On the audited evidence exactly three shapes qualify, and everything this
+colony builds should be one of them:
+
+1. **Accumulated operating history on a platform where history is a ranking input.** Apify's quality
+   score has a *developer-level* "History of success" category: it cannot be bought, cannot be
+   copied, and it compounds. This is the real argument for publishing a free Actor today, and it is
+   not the argument anyone made for it.
+2. **An obligation somebody must discharge and cannot get free.** The Israeli statutory cohort is
+   one. A larger one was found and dropped without a word by the supervisor that found it: the
+   **European Accessibility Act**, in force since 28 June 2025, reaching e-commerce sold to EU
+   consumers regardless of where the seller sits, against EN 301 549 / WCAG 2.1 AA. Same product
+   shape, same rails, a market two orders of magnitude larger, and no occupancy test has been run on
+   it.
+3. **Work performed on demand for a named payer.** Which is what a bounty is, and why `oss-bounties`
+   moved to the top of the ranking on a ceiling of a few hundred shekels.
+
+And the corollary, visible only across all seven groups: **diversification and revenue are currently
+inversely correlated here.** `bounties-grants` is the only group with three genuinely independent
+rails, the only one where constraint 7 comes out favourable, and the only one holding code-level
+Israeli payability proof — and it was cut hardest, and the code grades it `unevidenced`. The groups
+carrying the ceilings are the concentrated ones. This document requires independent rails per store;
+the money has been planned in the opposite direction.
+
 ### תקציב — תוספת הבעלים, 3.9.2026 (verbatim)
 
 > אני רוצה לתת לך סכום קטן שממנו אתה משתמש, וגודל מקסימום 200 שקל.
