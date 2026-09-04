@@ -123,6 +123,12 @@ identifier — CAIP-2 `eip155:8453` replaces the `"base"` string this package de
 `src/config.ts`. v2 is also dual-published ESM+CJS with a real `import` condition, so the
 `createRequire` workaround in `src/app.ts` would go away.
 
+This was found by hand, which is the part worth fixing: `scripts/check-deps-freshness.mjs` now
+flags it automatically (`node scripts/check-deps-freshness.mjs --dir products/x402-il-api`). Note
+what it took to catch — `x402-express` is an *optionalDependency*, and 1.2.0 really is its latest, so
+neither "read dependencies and devDependencies" nor "compare our pin to latest" sees anything wrong.
+The only detectable signal is that the package has published nothing for 140 days.
+
 **Deliberately not migrated in the session that found it.** This is the file that already shipped one
 P0 where a broken paywall factory was swallowed by its own `try/catch` and every paid endpoint
 answered 503. Rewriting it against a README quick-start, with no facilitator to integration-test
