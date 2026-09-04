@@ -1,8 +1,8 @@
 {
   "actorSpecification": 1,
   "name": "israel-open-data-api",
-  "title": "Israel Open Data (data.gov.il) - clean JSON, pay per record",
-  "description": "Search and fetch Israeli government open datasets (companies registrar, NGO registry, public tenders, municipalities and more) from data.gov.il as clean, English-keyed, typed, paginated JSON. Pay-per-event: 'dataset-search' per search, 'record' per returned record.",
+  "title": "Israel Open Data (data.gov.il) - clean, English-keyed JSON",
+  "description": "Search and fetch Israeli government open datasets (companies registrar, NGO registry, public tenders, municipalities and more) from data.gov.il as clean, English-keyed, typed, paginated JSON. Free while we measure demand; pay-per-event pricing is configured but not enabled.",
   "version": "1.0",
   "buildTag": "latest",
   "meta": {
@@ -29,7 +29,7 @@
     }
   },
   "ppeEvents": {
-    "_comment": "Documentation only. Pay-per-event prices are configured in Apify Console -> Actor -> Monetization. Event names here must match Actor.charge() calls in src/main.ts.",
+    "_comment": "Documentation only, and NOT ENABLED. Setting a price on an Apify Actor requires the developer to have completed Apify KYC, so the first publish is free by necessity as well as by choice - a free listing is the cheapest test of whether a stranger finds this at all, which is the open question MISSION.md constraint 7 names. Prices are configured in Apify Console -> Actor -> Monetization once KYC clears; event names here must match Actor.charge() calls in src/main.ts.",
     "dataset-search": {
       "title": "Dataset search",
       "description": "One search of the data.gov.il catalogue (mode=search_datasets). Charged once per run, regardless of the number of datasets returned.",

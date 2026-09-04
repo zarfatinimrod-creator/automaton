@@ -1,4 +1,4 @@
-# Israel Open Data API (data.gov.il) - clean JSON, pay per record
+# Israel Open Data API (data.gov.il) - clean, English-keyed JSON
 
 **Query Israeli government open data as clean, English-keyed, typed JSON.** This Actor wraps the
 official [data.gov.il](https://data.gov.il) CKAN API so developers and AI agents can pull records
@@ -13,7 +13,7 @@ numbers, inconsistent date formats or CKAN pagination quirks.
   `תאריך התאגדות` -> `incorporation_date` (200+ mappings; unknown columns are kept verbatim so
   nothing is lost). The exact mapping used is saved as `FIELD_MAP`.
 - **Real types**: numbers as numbers, dates as ISO strings, blanks as `null`.
-- **Pay only for what you get**: pay-per-event pricing - one event per record returned.
+- **Free right now.** This Actor is published unpriced while we find out whether anyone is looking for it. Planned pricing is below, and it is not enabled.
 - **Honest by design**: uses only the documented JSON API, no HTML scraping, no personal-data
   enrichment, respects portal rate limits (retries with backoff, 5 req/s cap).
 
@@ -103,7 +103,15 @@ Key-value store after a run: `FIELD_MAP` (original -> English -> type), `SUMMARY
 See [`docs/ISRAELI_DATASETS.md`](docs/ISRAELI_DATASETS.md) for a list of popular datasets and
 their resource ids.
 
-## Pricing (pay-per-event)
+## Pricing - planned, and NOT enabled
+
+**This Actor currently costs nothing to run.** The table below is the pricing that will be turned
+on later, published here so nobody is surprised by it. Two reasons it is off:
+
+1. Apify requires the developer to complete identity verification (KYC) before any Actor can carry
+   a price, so a free listing is the only thing possible until that is done.
+2. Nobody knows yet whether a stranger finds this Actor at all. Thirty days of run counts on a free
+   listing answers that for nothing, and it is worth more than a price on a listing nobody opens.
 
 | Event name | Charged when | Suggested price |
 |---|---|---|
