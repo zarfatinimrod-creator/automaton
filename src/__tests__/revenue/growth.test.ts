@@ -1,3 +1,4 @@
+import { portfolioTargetAgorot } from "../../revenue/portfolio.js";
 import { describe, it, expect } from "vitest";
 import {
   FINAL_GOAL_MONTHLY_ILS,
@@ -6,6 +7,8 @@ import {
   modelPortfolio,
   scenarioTable,
   storesNeededFor,
+  goalCoverage,
+  FIRST_TARGET_MONTHLY_ILS,
   checkHonestStorePlan,
   distinctSourcesNeededFor,
   promotionLoadHours,
@@ -176,5 +179,46 @@ describe("the cap that decides the final goal: distinct data, not build hours", 
       maintenanceIlsPerStore: 1000,
     });
     expect(treadmill.stores).toBeNull();
+  });
+});
+
+describe("the plan's own arithmetic against the owner's target", () => {
+  const plannedIls = portfolioTargetAgorot() / 100;
+
+  it("surfaces the shortfall the shipped portfolio actually has", () => {
+    // Found by the completeness critic across seven audited groups, and nobody
+    // had checked it: DEFAULT_PORTFOLIO's nine targets sum to ₪16,500 against a
+    // ₪20,000 first target. Every line could hit its number in full and the goal
+    // would still be missed.
+    const c = goalCoverage(plannedIls);
+    expect(c.coversGoal).toBe(false);
+    expect(c.gapIls).toBe(FIRST_TARGET_MONTHLY_ILS - plannedIls);
+    expect(c.gapIls).toBeGreaterThan(0);
+  });
+
+  it("tells whoever hits this failure what the honest fix is, and what it is not", () => {
+    // The tempting fix is to raise existing targets until they add up. That is
+    // the exact dishonesty the auditors keep finding in the research, applied to
+    // our own numbers.
+    const c = goalCoverage(plannedIls);
+    expect(c.reason).toMatch(/Do not raise existing targets/);
+    expect(c.reason).toMatch(/add(ing)? a line with evidence behind it/);
+  });
+
+  it("passes only when the plan genuinely aims at the number", () => {
+    expect(goalCoverage(20_000).coversGoal).toBe(true);
+    expect(goalCoverage(25_000).coversGoal).toBe(true);
+    expect(goalCoverage(19_999).coversGoal).toBe(false);
+  });
+
+  it("says nothing about whether the targets are earnable — a separate question", () => {
+    // goalCoverage answers the cheaper prior question. TARGET_BASIS grades
+    // achievability, and the auditors have been cutting those grades all week.
+    expect(goalCoverage(20_000).reason).toMatch(/separate question/);
+  });
+
+  it("rejects nonsense inputs rather than returning a misleading coverage", () => {
+    expect(() => goalCoverage(-1)).toThrow();
+    expect(() => goalCoverage(1000, 0)).toThrow();
   });
 });

@@ -282,3 +282,65 @@ export function distinctSourcesNeededFor(
     reason: `${needed.stores} stores at these assumptions, and under the unique-data constraint that is ${needed.stores} distinct datasets, tools or audiences — not ${needed.stores} copies of one. Counting them is the open question the store target rests on.`,
   };
 }
+
+// ── The gap between what the portfolio plans and what the mission asks ──
+//
+// The completeness critic across seven audited groups found something nobody had
+// checked: the nine targets in DEFAULT_PORTFOLIO sum to ₪16,500. The portfolio
+// cannot reach the ₪20,000 first target even if every line hits its number in
+// full — and the code has been quietly planning to 82.5% of that target since
+// before the sweep began.
+//
+// The wrong fix is to inflate targets until they add up. A target is a claim
+// about what a line can earn, and adding ₪3,500 of nothing to make the sum look
+// right is exactly the class of dishonesty this repo keeps finding in its own
+// research. The right fix is to make the gap impossible to hold quietly, so that
+// closing it means adding a line with evidence behind it, or telling the owner
+// the target is not reachable from the current portfolio.
+
+/** The owner's first target, from MISSION.md. Not a projection — the ask. */
+export const FIRST_TARGET_MONTHLY_ILS = 20_000;
+
+/** The owner's second target, once the first holds. */
+export const SECOND_TARGET_MONTHLY_ILS = 50_000;
+
+export interface GoalCoverage {
+  /** Sum of every line's target. */
+  plannedIls: number;
+  goalIls: number;
+  /** How much the plan is short. Zero when it covers the goal. */
+  gapIls: number;
+  /** Share of the goal the plan even attempts, 0..1. */
+  coverage: number;
+  coversGoal: boolean;
+  reason: string;
+}
+
+/**
+ * What the portfolio's own targets add up to against a goal.
+ *
+ * Deliberately says nothing about whether the targets are *achievable* — that is
+ * what TARGET_BASIS grades and what the auditors keep cutting. This answers the
+ * prior question, which is cheaper and had gone unasked: does the plan even aim
+ * at the number?
+ */
+export function goalCoverage(plannedIls: number, goalIls: number = FIRST_TARGET_MONTHLY_ILS): GoalCoverage {
+  if (!Number.isFinite(plannedIls) || plannedIls < 0) throw new Error("plannedIls must be a non-negative number");
+  if (!Number.isFinite(goalIls) || goalIls <= 0) throw new Error("goalIls must be a positive number");
+
+  const gapIls = Math.max(0, goalIls - plannedIls);
+  const coverage = plannedIls / goalIls;
+  const pct = Math.round(coverage * 100);
+
+  return {
+    plannedIls,
+    goalIls,
+    gapIls,
+    coverage,
+    coversGoal: gapIls === 0,
+    reason:
+      gapIls === 0
+        ? `The portfolio's targets sum to ₪${plannedIls.toLocaleString("en")} against a ₪${goalIls.toLocaleString("en")} goal. The plan at least aims at the number; whether the targets are earnable is a separate question and TARGET_BASIS answers it.`
+        : `The portfolio's targets sum to ₪${plannedIls.toLocaleString("en")} against a ₪${goalIls.toLocaleString("en")} goal — ${pct}% of it, short by ₪${gapIls.toLocaleString("en")}. Every line could hit its target in full and the goal would still be missed. Close it by adding a line with evidence behind it, or tell the owner the target is not reachable from this portfolio. Do not raise existing targets to make the sum work: a target is a claim about what a line earns, not a slot to fill.`,
+  };
+}
