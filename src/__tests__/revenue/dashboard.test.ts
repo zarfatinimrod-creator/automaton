@@ -37,7 +37,10 @@ describe("the manager's screen", () => {
     expect(h).toContain("נמדד");
     expect(h).toContain("ללא ראיה");
     // The measured figure must appear wherever the total does.
-    expect(h).toContain("הסכום הכנה כרגע");
+    expect(h).toContain("הסכום הכן כרגע");
+    // The fourth band: a target its own cited evidence argues against. Three
+    // lines are in it, and the screen must not let them read as merely unproven.
+    expect(h).toContain("מוכחש");
   });
 
   it("lists the owner's steps, and stops listing a line once its setup is done", () => {

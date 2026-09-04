@@ -170,8 +170,10 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
       <div><span class="g-measured">נמדד</span> — מבוסס על ראיה שאפשר לבדוק</div><div>₪${basis.measuredIls.toLocaleString("en")}</div>
       <div><span class="g-inferred">מוסק</span></div><div>₪${basis.inferredIls.toLocaleString("en")}</div>
       <div><span class="g-unevidenced">ללא ראיה</span> — משימת מחקר, לא תחזית</div><div>₪${basis.unevidencedIls.toLocaleString("en")}</div>
+      <div><span class="g-unevidenced">מוכחש</span> — הראיה שצוטטה טוענת <em>נגד</em> המספר</div><div>₪${basis.contradictedIls.toLocaleString("en")}</div>
     </div>
-    ${basis.unevidencedLines.length ? `<p class="note">הסכום הכנה כרגע הוא <strong>₪${basis.measuredIls.toLocaleString("en")}</strong>, לא ₪${basis.totalIls.toLocaleString("en")}. ללא ראיה: ${basis.unevidencedLines.map((l) => `<code>${esc(l)}</code>`).join(", ")}.</p>` : ""}
+    <p class="note">הסכום הכן כרגע הוא <strong>₪${basis.measuredIls.toLocaleString("en")}</strong>, לא ₪${basis.totalIls.toLocaleString("en")}.${basis.unevidencedLines.length ? ` ללא ראיה: ${basis.unevidencedLines.map((l) => `<code>${esc(l)}</code>`).join(", ")}.` : ""}${basis.contradictedLines.length ? ` <strong>מוכחשים</strong> — הראיה שצוטטה טוענת נגד היעד: ${basis.contradictedLines.map((l) => `<code>${esc(l)}</code>`).join(", ")}.` : ""}</p>
+    ${basis.totalIls < goalIls ? `<p class="note">ועוד דבר שאף אחד לא סכם: <strong>סכום כל היעדים הוא ₪${basis.totalIls.toLocaleString("en")} מול מטרה של ₪${goalIls.toLocaleString("en")}</strong>. גם אם כל קו יפגע ביעד שלו במלואו, המטרה תוחמץ.</p>` : ""}
   </div>
 
   <h2>מה מחכה לך (${needsOwner.length})</h2>

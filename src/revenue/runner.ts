@@ -374,7 +374,16 @@ export function renderReport(db: Database, result: TickResult): string {
     out.push(`| Of that, **measured** | ₪${basis.measuredIls.toLocaleString("en")} |`);
     out.push(`| Inferred | ₪${basis.inferredIls.toLocaleString("en")} |`);
     out.push(`| **Resting on nothing yet** | ₪${basis.unevidencedIls.toLocaleString("en")} |`);
+    out.push(`| **Contradicted by their own basis** | ₪${basis.contradictedIls.toLocaleString("en")} |`);
     out.push("");
+    if (basis.contradictedLines.length) {
+      out.push("");
+      out.push(
+        `Contradicted targets: ${basis.contradictedLines.map((l) => `\`${l}\``).join(", ")}. ` +
+        "These are not merely unproven — the evidence cited in each line's own basis field argues " +
+        "against its number. They are worse than the unevidenced ones and must not be summed with them.",
+      );
+    }
     if (basis.unevidencedLines.length) {
       out.push(
         `Unevidenced targets: ${basis.unevidencedLines.map((l) => `\`${l}\``).join(", ")}. ` +

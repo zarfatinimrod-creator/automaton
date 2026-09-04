@@ -358,7 +358,19 @@ export function portfolioTargetAgorot(seeds: RevenueLineSeed[] = DEFAULT_PORTFOL
  * total rests on nothing. `unevidenced` is not a sin — it is a research task
  * that has not been done yet, and it should be visible until it is.
  */
-export type TargetGrade = "measured" | "inferred" | "unevidenced";
+/**
+ * How much a target's number can be trusted.
+ *
+ * `contradicted` was added 2026-09-04 by the synthesis critic, and it is the one
+ * that earns its place. Three lines were graded `measured` while the evidence
+ * cited in their own `basis` field argued AGAINST the number — `paid-apis` was
+ * carrying a target 200x the arithmetic written in its own basis. There was no
+ * grade for that. `unevidenced` was wrong (evidence exists), `inferred` was wrong
+ * (it does not support the number), and `measured` was laundering a refutation
+ * into a forecast. A number its own source argues against is a distinct state and
+ * it must never be summed with a merely uncertain one.
+ */
+export type TargetGrade = "measured" | "inferred" | "unevidenced" | "contradicted";
 
 export interface TargetBasis {
   /** Must equal the line's targetMonthlyAgorot, in whole shekels. */
@@ -384,23 +396,31 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
     source: "research/colony-sweep/audits/agent-markets.md and audits/store-promotion.md",
   },
   "il-biz-tools": {
-    ils: 1500, grade: "measured",
-    basis: "Sweep wave 2 measured the merged funnel at ₪1,500/month. A competing Israeli legal site's own Search Console export shows its severance calculator at 0 impressions over 16 months; head terms belong to funded incumbents and to the state's free simulators.",
-    source: "research/colony-sweep/groups/israel-bureaucracy.md, ranked survivor #3",
+    // Was "measured", citing a supervisor its own auditor then cut to ₪200-400.
+    // The basis also refutes itself in its second sentence: a competing Israeli
+    // legal site's Search Console export shows 0 impressions over 16 months.
+    ils: 1500, grade: "contradicted",
+    basis: "Sweep wave 2 put the merged funnel at ₪1,500/month, and the audit of that exact survivor cut it to ₪200-400 with ₪0 in month one. The evidence in this very field argues against the number: a competing Israeli legal site's own Search Console export shows its severance calculator at 0 impressions over 16 months, and head terms belong to funded incumbents and to the state's own free simulators.",
+    source: "research/colony-sweep/audits/israel-bureaucracy.md §2.3",
   },
   "paid-apis": {
-    ils: 1200, grade: "measured",
     // Corrected 2026-09-03: this entry still carried the $28k/day figure that
     // was found wrong by ~29x earlier the same day and fixed everywhere else.
     // A stale number in the basis is worse than no basis, because the grade
-    // launders it.
-    basis: "Agent-to-API commerce across the whole x402 protocol runs on the order of $800k/day at a median clearing price near $0.32 per call. But the registry's own 30-day time series is the sobering number: 302,072 calls at a $0.01 median across 1,772 providers, with 91.2% of listings failing to reach 10 calls a month. Marketplace subscriptions carry this line; x402 is the zero-KYC option attached to it.",
-    source: "portfolio comment above the line",
+    // launders it. Regraded 2026-09-04: the arithmetic now in this basis divides
+    // out to ~₪6 per provider per month, so the field refutes its own number by
+    // about 200x. "measured" was doing the opposite of its job.
+    ils: 1200, grade: "contradicted",
+    basis: "Agent-to-API commerce across the whole x402 protocol runs on the order of $800k/day at a median clearing price near $0.32 per call. But the registry's own 30-day time series refutes this target rather than supporting it: 302,072 calls at a $0.01 median across 1,772 providers is roughly ₪6 per provider per month, verified first-hand, with 91.2% of listings failing to reach 10 calls a month. ₪1,200 is about 200x the arithmetic in this field. Marketplace subscriptions, not x402, would have to carry the whole line; nothing has measured those.",
+    source: "research/colony-sweep/scouts/agent-markets--x402-economy.md; docs/REJECTED.md line 267",
   },
   "agent-services": {
-    ils: 800, grade: "measured",
-    basis: "Same x402 volume evidence as paid-apis, applied to a line with no marketplace tier behind it.",
-    source: "portfolio comment above the line",
+    // The same refuted x402 evidence as paid-apis, with the one mitigation
+    // removed, and it was still graded "measured". If paid-apis is contradicted
+    // at ₪1,200 with a marketplace tier behind it, this is contradicted harder.
+    ils: 800, grade: "contradicted",
+    basis: "The same x402 volume evidence as paid-apis — which divides out to roughly ₪6 per provider per month — applied to a line that does not even have the marketplace tier paid-apis leans on. The evidence argues against this number more strongly than against that one.",
+    source: "research/colony-sweep/scouts/agent-markets--x402-economy.md; docs/REJECTED.md",
   },
   templates: {
     ils: 3000, grade: "unevidenced",
@@ -429,8 +449,12 @@ export interface TargetBasisSummary {
   measuredIls: number;
   inferredIls: number;
   unevidencedIls: number;
+  /** Targets the cited evidence argues against. Worse than unevidenced. */
+  contradictedIls: number;
   /** Lines whose target rests on nothing measured yet. */
   unevidencedLines: string[];
+  /** Lines whose own basis refutes their target. */
+  contradictedLines: string[];
 }
 
 /**
@@ -442,7 +466,8 @@ export function summarizeTargetBasis(
   basis: Record<string, TargetBasis> = TARGET_BASIS,
 ): TargetBasisSummary {
   const out: TargetBasisSummary = {
-    totalIls: 0, measuredIls: 0, inferredIls: 0, unevidencedIls: 0, unevidencedLines: [],
+    totalIls: 0, measuredIls: 0, inferredIls: 0, unevidencedIls: 0, contradictedIls: 0,
+    unevidencedLines: [], contradictedLines: [],
   };
   for (const seed of seeds) {
     const ils = Math.round(seed.targetMonthlyAgorot / 100);
@@ -451,7 +476,10 @@ export function summarizeTargetBasis(
     const grade: TargetGrade = entry?.grade ?? "unevidenced";
     if (grade === "measured") out.measuredIls += ils;
     else if (grade === "inferred") out.inferredIls += ils;
-    else {
+    else if (grade === "contradicted") {
+      out.contradictedIls += ils;
+      out.contradictedLines.push(seed.id);
+    } else {
       out.unevidencedIls += ils;
       out.unevidencedLines.push(seed.id);
     }

@@ -42,7 +42,15 @@ describe("every target states where its number came from", () => {
   it("summarises the portfolio by how much of it rests on evidence", () => {
     const s = summarizeTargetBasis();
     expect(s.totalIls * 100).toBe(portfolioTargetAgorot());
-    expect(s.measuredIls + s.inferredIls + s.unevidencedIls).toBe(s.totalIls);
+    // Every shekel lands in exactly one band. The fourth, "contradicted", was
+    // added after three lines turned out to be graded "measured" while the
+    // evidence in their own basis field argued against the number — one of them
+    // by about 200x. Leaving it out of this sum is how that stayed invisible.
+    expect(s.measuredIls + s.inferredIls + s.unevidencedIls + s.contradictedIls).toBe(s.totalIls);
+    expect(s.contradictedLines.length).toBeGreaterThan(0);
+    // And the figure the board should be reading: nothing in this portfolio is
+    // measured any more.
+    expect(s.measuredIls).toBe(0);
     // Not asserting a particular split — that changes as the sweep proceeds.
     // Asserting only that unevidenced lines are named, so they stay visible.
     expect(s.unevidencedLines.length).toBeGreaterThan(0);
