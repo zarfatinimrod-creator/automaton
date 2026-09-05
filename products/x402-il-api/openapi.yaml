@@ -29,7 +29,7 @@ paths:
                 properties:
                   status: { type: string, example: ok }
                   paywall: { type: string, enum: [x402, free] }
-                  network: { type: string, example: base }
+                  network: { type: string, example: "eip155:8453", description: CAIP-2 network id }
   /pricing:
     get:
       summary: Machine-readable price list
