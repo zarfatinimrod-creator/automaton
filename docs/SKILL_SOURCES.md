@@ -81,7 +81,7 @@ corrections and one live defect — see `products/x402-il-api/README.md` and `lo
 2. **The skill's Express claim is wrong.** It lists `mppx/express` among the server middlewares.
    `mppx@0.9.2` exports `./hono`, `./elysia`, `./nextjs`, `./server` — **there is no `./express`**.
    `products/x402-il-api` is an Express app, so MPP is not a drop-in for it.
-3. **A real defect in our own product**, found on the way: we pin `x402-express@1.2.0`, last
+3. **A real defect in our own product**, found on the way (**migrated 5.9.2026**, see the product README): we pinned `x402-express@1.2.0`, last
    published 2026-04-16. The ecosystem moved to the scoped `@x402/*` line, which shipped
    **`@x402/express@2.25.0` on 2026-09-04** — the same day this was checked. Same two npm
    maintainers (`erik_cb`, `carsonroscoe_cb`), same Apache-2.0 licence, same repo, so it is the

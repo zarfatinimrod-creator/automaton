@@ -233,9 +233,9 @@ components:
     Pricing:
       type: object
       properties:
-        x402Version: { type: integer, example: 1 }
+        x402Version: { type: integer, example: 2 }
         payTo: { type: string, nullable: true, description: Null in free mode }
-        network: { type: string, example: base }
+        network: { type: string, example: "eip155:8453", description: CAIP-2 network id }
         currency: { type: string, example: USDC }
         endpoints:
           type: array
@@ -260,22 +260,44 @@ components:
           schema: { $ref: "#/components/schemas/Error" }
     PaymentRequired:
       description: |
-        Payment required. Returned when the paywall is armed and the request carried
-        no valid x402 payment. The body holds the payment requirements; retry with an
-        x402-capable client.
-      content:
-        application/json:
+        Payment required (x402 v2). Returned when the paywall is armed and the request
+        carried no valid payment. The payment requirements are NOT in the body: they are
+        in the PAYMENT-REQUIRED response header, base64-encoded JSON. The body is this
+        API's own pointer. Retry with an x402 v2 client (@x402/fetch, @x402/axios), which
+        reads the header and sends the payment in a PAYMENT-SIGNATURE request header.
+        v1 clients (x402-fetch, x402-axios) cannot pay this API.
+      headers:
+        PAYMENT-REQUIRED:
+          description: base64(JSON) of the requirements object below
           schema:
+            type: string
+          x-decoded-schema:
             type: object
             properties:
-              x402Version: { type: integer }
+              x402Version: { type: integer, example: 2 }
+              error: { type: string, description: Present when a submitted payment was rejected }
+              resource:
+                type: object
+                properties:
+                  url: { type: string }
+                  description: { type: string }
               accepts:
                 type: array
                 items:
                   type: object
                   properties:
                     scheme: { type: string, example: exact }
-                    network: { type: string, example: base }
+                    network: { type: string, example: "eip155:8453" }
+                    asset: { type: string, description: USDC contract address on the network }
+                    amount: { type: string, example: "2000", description: Atomic units (USDC has 6 decimals) }
                     payTo: { type: string }
-                    maxAmountRequired: { type: string }
-                    asset: { type: string, example: USDC }
+                    maxTimeoutSeconds: { type: integer }
+                    extra: { type: object }
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string, example: payment_required }
+              message: { type: string }
+              pricing: { type: string, example: /pricing }

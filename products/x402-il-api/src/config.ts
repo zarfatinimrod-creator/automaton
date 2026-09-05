@@ -22,12 +22,17 @@ export interface FacilitatorLike {
 
 export interface Config {
   port: number;
+  /** EVM address that receives USDC, or null for free mode. See validatePayTo. */
   payTo: string | null;
   /** CAIP-2 network id, e.g. `eip155:8453` (Base mainnet). See normaliseNetwork. */
   network: string;
   facilitatorUrl: string | null;
+  /** Bearer token sent to the facilitator on verify/settle/supported, if it requires one. */
+  facilitatorAuthToken: string | null;
   /** Injected facilitator (tests). Null means build the real HTTP client. */
   facilitatorClient: FacilitatorLike | null;
+  /** Public origin, e.g. https://api.example.com, used for the resource URL advertised in a 402. */
+  publicBaseUrl: string | null;
   defaultPriceUsd: number;
   paywallEnabled: boolean;
 }
@@ -44,15 +49,79 @@ const LEGACY_NETWORK_NAMES: Record<string, string> = {
   "base-sepolia": "eip155:84532",
 };
 
+/**
+ * Only `eip155:<chainId>` is accepted, because this API registers only the EVM
+ * `exact` scheme: any other CAIP-2 id would load, advertise itself on /health,
+ * and then fail every paid request. Lower-cased first, because the SDK matches
+ * the facilitator's kinds by exact string and `EIP155:8453` would never match.
+ */
+const EVM_CAIP2 = /^eip155:\d+$/;
+
 export function normaliseNetwork(raw: string | undefined): string {
-  const value = (raw ?? "").trim() || "base";
+  const value = (raw ?? "").trim().toLowerCase() || "base";
   const mapped = LEGACY_NETWORK_NAMES[value];
   if (mapped) return mapped;
-  if (/^[a-z0-9-]+:[A-Za-z0-9-]+$/i.test(value)) return value;
+  if (EVM_CAIP2.test(value)) return value;
   throw new Error(
-    `X402_NETWORK="${value}" is not a CAIP-2 network id (e.g. eip155:8453) and not one of the ` +
-    `legacy names ${Object.keys(LEGACY_NETWORK_NAMES).join(", ")}. Refusing to guess a settlement chain.`,
+    `X402_NETWORK="${raw}" is not an EVM CAIP-2 network id (eip155:<chainId>, e.g. eip155:8453) and not one of the ` +
+    `legacy names ${Object.keys(LEGACY_NETWORK_NAMES).join(", ")}. This API only registers the EVM exact scheme, ` +
+    "so nothing else can settle. Refusing to guess a settlement chain.",
   );
+}
+
+/** One atomic unit of USDC (6 decimals). Below this a price cannot be represented at all. */
+export const MIN_PRICE_USD = 0.000001;
+export const DEFAULT_PRICE_USD = 0.002;
+
+/**
+ * A set-but-invalid price is a configuration error, not a reason to fall back
+ * to the default silently: the operator asked for a number and would otherwise
+ * be charging something else. Prices with more than six decimals are refused
+ * rather than truncated, because the truncated amount would be less than what
+ * /pricing advertises.
+ */
+export function parsePriceUsd(raw: string | undefined): number {
+  if (raw === undefined || raw.trim() === "") return DEFAULT_PRICE_USD;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new Error(`X402_PRICE_USD="${raw}" is not a positive number.`);
+  }
+  if (value < MIN_PRICE_USD) {
+    throw new Error(`X402_PRICE_USD="${raw}" is below ${MIN_PRICE_USD}, one atomic unit of USDC; it cannot be charged.`);
+  }
+  const rounded = Math.round(value * 1e6) / 1e6;
+  if (Math.abs(rounded - value) > 1e-12) {
+    throw new Error(`X402_PRICE_USD="${raw}" has more than six decimal places; USDC cannot represent it and the charge would be less than advertised.`);
+  }
+  return rounded;
+}
+
+/**
+ * The one price formatter, used both for /pricing and for the string the x402
+ * middleware parses, so the two can never disagree. Never exponent notation:
+ * JavaScript renders 0.0000005 as "5e-7", which the SDK rejects as money.
+ */
+export function formatUsd(usd: number): string {
+  return `$${usd.toFixed(6).replace(/0+$/, "").replace(/\.$/, "")}`;
+}
+
+/**
+ * Shape check only: 0x plus forty hex digits, and not the zero address. A
+ * mixed-case address's EIP-55 checksum is verified later by the paywall
+ * factory, which has viem available; this file stays free of the optional
+ * packages. A wrong-but-well-formed address cannot be caught by anyone but the
+ * owner, and the README says so.
+ */
+export function validatePayTo(raw: string | undefined): string | null {
+  const value = raw?.trim() || null;
+  if (!value) return null;
+  if (!/^0x[0-9a-fA-F]{40}$/.test(value)) {
+    throw new Error(`X402_PAY_TO="${value}" is not an EVM address (0x followed by 40 hex characters).`);
+  }
+  if (/^0x0{40}$/.test(value)) {
+    throw new Error("X402_PAY_TO is the zero address; anything sent there is burned.");
+  }
+  return value;
 }
 
 const num = (raw: string | undefined, fallback: number): number => {
@@ -61,16 +130,18 @@ const num = (raw: string | undefined, fallback: number): number => {
 };
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
-  const payTo = env.X402_PAY_TO?.trim() || null;
+  const payTo = validatePayTo(env.X402_PAY_TO);
   return {
     port: num(env.PORT, 8402),
     payTo,
     network: normaliseNetwork(env.X402_NETWORK),
     facilitatorUrl: env.X402_FACILITATOR_URL?.trim() || null,
+    facilitatorAuthToken: env.X402_FACILITATOR_AUTH?.trim() || null,
     facilitatorClient: null,
+    publicBaseUrl: env.X402_PUBLIC_URL?.trim().replace(/\/+$/, "") || null,
     // The Coinbase CDP facilitator charges $0.001 per settlement beyond 1,000
-    // free per month, so the floor price must stay meaningfully above that.
-    defaultPriceUsd: num(env.X402_PRICE_USD, 0.002),
+    // free per month, so the default stays meaningfully above that.
+    defaultPriceUsd: parsePriceUsd(env.X402_PRICE_USD),
     paywallEnabled: Boolean(payTo),
   };
 }

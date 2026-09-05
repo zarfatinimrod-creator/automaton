@@ -58,11 +58,13 @@ X402_PAY_TO=0xYourWallet X402_NETWORK=base node dist/index.js
 |---|---|---|
 | `X402_PAY_TO` | unset | Wallet that receives USDC. **Unset means free mode.** |
 | `X402_NETWORK` | `base` → `eip155:8453` | Settlement network, CAIP-2. `base` and `base-sepolia` are mapped; anything else must be CAIP-2 |
-| `X402_FACILITATOR_URL` | unset (`https://x402.org/facilitator`) | Override the facilitator. Paid mode's one network dependency |
-| `X402_PRICE_USD` | `0.002` | Price per billable request |
+| `X402_FACILITATOR_URL` | unset (`https://x402.org/facilitator`) | The facilitator. Paid mode's one network dependency — see below before relying on the default |
+| `X402_FACILITATOR_AUTH` | unset | Bearer token sent to the facilitator on verify, settle and supported, if it requires one |
+| `X402_PUBLIC_URL` | unset | Public origin (`https://api.example.com`) used for the resource URL in a 402; behind a TLS-terminating proxy the API otherwise advertises `http://` |
+| `X402_PRICE_USD` | `0.002` | Price per billable request. At most six decimals, at least `0.000001`; JSON repair charges double |
 | `PORT` | `8402` | Listen port |
 
-Deploy on any Node 20+ host: a Conway sandbox with an exposed port, Fly, Railway, a VPS. No database, no state, no build step beyond `tsc`.
+Deploy on any Node 22.12+ host (the runtime itself runs on 20, the test runner does not): a Conway sandbox with an exposed port, Fly, Railway, a VPS. No database, no state, no build step beyond `tsc`.
 
 ## Calling it as an agent
 
@@ -71,10 +73,10 @@ Unpaid request returns the challenge:
 ```bash
 curl -sS -X POST https://your-host/v1/validate/israeli-id \
   -H 'content-type: application/json' -d '{"id":"000000018"}'
-# HTTP 402 + the x402 payment requirements
+# HTTP 402; requirements in the PAYMENT-REQUIRED response header (base64 JSON)
 ```
 
-With an x402 client (`x402-fetch`, `x402-axios`, or any wallet that speaks the protocol) the payment header is attached automatically and the same call returns:
+With an x402 **v2** client (`@x402/fetch`, `@x402/axios`, or any wallet that speaks v2) the `PAYMENT-SIGNATURE` header is attached automatically and the same call returns:
 
 ```json
 { "input": "000000018", "normalized": "000000018", "valid": true }
@@ -103,10 +105,40 @@ settlement chain for real money.
 
 **The operational change.** v2 will not build a single 402 until it has asked the facilitator which
 (scheme, network) pairs it supports. v1 built the challenge locally. So paid mode now has one
-network dependency — the facilitator (`https://x402.org/facilitator` unless `X402_FACILITATOR_URL`
-says otherwise) — and if that call fails, the first paid request answers with a **5xx and the
-endpoint stays shut**. It never falls through to a free response. Free mode and the discovery
-endpoints are unaffected.
+network dependency — the facilitator — and it can fail two different ways, which the bootstrap
+distinguishes on purpose:
+
+- **Facilitator unreachable** (network error). The API starts, discovery endpoints serve, and every
+  paid request answers **5xx** until it is reachable. Nothing is served free.
+- **Facilitator reachable but does not list `exact` on our network.** Nothing this process can do
+  will ever earn, so `index.ts` asks before listening and **refuses to start** with a sentence naming
+  what the facilitator did offer. (Without that check the SDK's own background init would exit the
+  process a few hundred milliseconds after "listening" — same outcome, worse message.)
+
+**The facilitator is an owner decision, not a default.** The SDK defaults to
+`https://x402.org/facilitator`, and upstream's README says plainly: *"Do not assume the public
+x402.org facilitator is the default production path for mainnet EVM routes."* Whether it lists Base
+mainnet cannot be checked from this repo's sandbox. Before the first paid deploy, from a machine
+with egress:
+
+```bash
+curl -s https://x402.org/facilitator/supported | jq '.kinds[] | select(.network=="eip155:8453")'
+```
+
+If that prints nothing, set `X402_FACILITATOR_URL` to a facilitator that does (and
+`X402_FACILITATOR_AUTH` if it wants a bearer token). Paste the output into this section when known.
+
+**Clients.** v1 clients (`x402-fetch`, `x402-axios`) read requirements from the 402 body and send an
+`X-PAYMENT` header; neither works here any more. Use `@x402/fetch` or `@x402/axios` (2.25.0,
+published the same day as the server packages).
+
+**What refuses to start, and why.** `X402_PAY_TO` must be `0x` plus forty hex characters and not the
+zero address; a mixed-case address must pass its EIP-55 checksum, because a typo there sends every
+payment to nobody. A well-formed wrong address cannot be caught by anyone but you. `X402_NETWORK`
+must be `eip155:<chainId>` (or `base` / `base-sepolia`, which are mapped) — the API registers only the
+EVM exact scheme. `X402_PRICE_USD`, if set, must be a positive number with at most six decimals and at
+least `0.000001`; anything else is refused rather than silently replaced, because the operator asked
+for a number and would otherwise be charging a different one.
 
 **What the tests now prove that they did not before.** The real middleware, the real EVM scheme, the
 real price-to-USDC conversion and the real route matching all run in the suite; only the facilitator

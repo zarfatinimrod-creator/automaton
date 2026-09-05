@@ -1,7 +1,9 @@
+import { createRequire } from "node:module";
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import { createApp, defaultPaywall } from "../src/app.js";
-import { normaliseNetwork, type FacilitatorLike } from "../src/config.js";
+import { buildPaywall, PaywallConfigError, probeFacilitator, type ModuleLoader } from "../src/app.js";
+import { formatUsd, normaliseNetwork, parsePriceUsd, priceList, validatePayTo, type FacilitatorLike } from "../src/config.js";
 import { loadConfig } from "../src/config.js";
 
 const freeApp = () => createApp({ config: loadConfig({} as NodeJS.ProcessEnv) });
@@ -85,21 +87,12 @@ describe("billable endpoints in free mode", () => {
 describe("paywalled mode", () => {
   const paidConfig = loadConfig({ X402_PAY_TO: "0x1111111111111111111111111111111111111111", X402_NETWORK: "base" } as NodeJS.ProcessEnv);
 
-  it("wires every billable route into the paywall with a price", () => {
-    const seen: Record<string, unknown> = {};
-    createApp({
-      config: paidConfig,
-      paywall: (config) => {
-        for (const e of [
-          "/v1/validate/israeli-id", "/v1/validate/phone", "/v1/validate/bank",
-          "/v1/hebrew-date", "/v1/transliterate", "/v1/json/repair",
-        ]) seen[e] = config.payTo;
-        return null;
-      },
-    });
-    expect(Object.keys(seen)).toHaveLength(6);
+  it("prices six billable routes, JSON repair at double, all above the facilitator's per-settlement fee", () => {
+    const entries = priceList(paidConfig);
+    expect(entries).toHaveLength(6);
     expect(paidConfig.paywallEnabled).toBe(true);
     expect(paidConfig.defaultPriceUsd).toBeGreaterThan(0.001);
+    expect(entries.find((e) => e.path === "/v1/json/repair")?.priceUsd).toBe(paidConfig.defaultPriceUsd * 2);
   });
 
   it("returns the 402 challenge produced by the middleware and leaves discovery free", async () => {
@@ -148,7 +141,8 @@ describe("paywalled mode", () => {
 // x402 v2 will not build a 402 until it has asked the facilitator which
 // (scheme, network) pairs it supports, so the one thing stubbed here is that
 // network hop. Everything else — the real middleware, the real EVM scheme, the
-// real price-to-USDC conversion, the real route matching — runs for real.
+// real price-to-USDC conversion, the real route matching, the real verify and
+// settle sequencing — runs for real.
 const PAY_TO = "0x1111111111111111111111111111111111111111";
 const BASE = "eip155:8453";
 
@@ -156,18 +150,30 @@ const BASE = "eip155:8453";
 const paymentRequired = (res: { headers: Record<string, string | string[] | undefined> }) => {
   const raw = res.headers["payment-required"];
   expect(raw, "PAYMENT-REQUIRED header must be present on a 402").toBeTruthy();
-  const b64 = String(raw).replace(/-/g, "+").replace(/_/g, "/");
-  return JSON.parse(Buffer.from(b64, "base64").toString("utf8"));
+  return JSON.parse(Buffer.from(String(raw), "base64").toString("utf8"));
+};
+const decodeHeader = (raw: string | string[] | undefined) =>
+  raw ? JSON.parse(Buffer.from(String(raw), "base64").toString("utf8")) : undefined;
+/** A v2 payment that echoes the server's own requirements back, the way a real client does. */
+const paymentFor = (accepted: unknown, mutate: (a: Record<string, unknown>) => void = () => {}) => {
+  const copy = JSON.parse(JSON.stringify(accepted)) as Record<string, unknown>;
+  mutate(copy);
+  return Buffer.from(JSON.stringify({
+    x402Version: 2,
+    accepted: copy,
+    payload: { signature: "0xstub", authorization: { from: PAY_TO, to: PAY_TO, value: copy.amount } },
+  })).toString("base64");
 };
 
-const facilitatorStub = (overrides: Partial<FacilitatorLike> = {}): FacilitatorLike => ({
+type StubCalls = { verify: unknown[][]; settle: unknown[][] };
+const facilitatorStub = (overrides: Partial<FacilitatorLike> = {}, calls: StubCalls = { verify: [], settle: [] }): FacilitatorLike => ({
   getSupported: async () => ({
     kinds: [{ x402Version: 2, scheme: "exact", network: BASE }],
     extensions: [],
     signers: {},
   }),
-  verify: async () => ({ isValid: false, invalidReason: "stub_rejects_everything" }),
-  settle: async () => ({ success: false, errorReason: "stub", transaction: "", network: BASE }),
+  verify: async (...args) => { calls.verify.push(args); return { isValid: false, invalidReason: "stub_rejects_everything" }; },
+  settle: async (...args) => { calls.settle.push(args); return { success: false, errorReason: "stub", transaction: "", network: BASE }; },
   ...overrides,
 });
 
@@ -181,51 +187,146 @@ describe("defaultPaywall (the real production path)", () => {
     expect(defaultPaywall(loadConfig({} as NodeJS.ProcessEnv))).toBeNull();
   });
 
-  it("loads the @x402 packages and builds real middleware when a wallet is configured", () => {
+  it("loads the @x402 packages and builds real middleware, not the fail-closed fallback", async () => {
     const middleware = defaultPaywall(paidConfig);
     expect(typeof middleware).toBe("function");
+    // The fallback also has typeof "function"; only a 402 with the v2 header proves the real thing loaded.
+    const app = createApp({ config: paidConfig });
+    const res = await request(app).post("/v1/validate/israeli-id").send({ id: "000000018" });
+    expect(res.status).toBe(402);
+    expect(res.headers["payment-required"]).toBeTruthy();
   });
 
-  it("challenges an unpaid /v1 request with a v2 402 that names our wallet, network and price", async () => {
+  it("challenges an unpaid request on every billable route with the advertised amount", async () => {
     const app = createApp({ config: paidConfig });
-
-    const challenge = await request(app).post("/v1/validate/israeli-id").send({ id: "000000018" });
-    // 503 means the middleware failed to load and we fell back to fail-closed.
-    expect(challenge.status).not.toBe(503);
-    expect(challenge.status).toBe(402);
-    // The body is ours and says where to look; the requirements are in the header.
-    expect(challenge.body.error).toBe("payment_required");
-    expect(challenge.body.pricing).toBe("/pricing");
-    const required = paymentRequired(challenge);
-    expect(required.x402Version).toBe(2);
-    expect(required.accepts).toHaveLength(1);
-    const req = required.accepts[0];
-    expect(req.scheme).toBe("exact");
-    expect(req.network).toBe(BASE);
-    expect(req.payTo).toBe(PAY_TO);
-    // $0.002 in USDC (6 decimals) is 2000 atomic units. If this ever reads "0" or
-    // "2", the price conversion silently gave the endpoint away or overcharged.
-    expect(req.amount).toBe("2000");
-    expect(req.asset).toMatch(/^0x[0-9a-fA-F]{40}$/);
+    for (const entry of priceList(paidConfig)) {
+      const res = entry.method === "GET"
+        ? await request(app).get(entry.path)
+        : await request(app).post(entry.path).send({});
+      expect(res.status, `${entry.method} ${entry.path}`).toBe(402);
+      expect(res.body.error).toBe("payment_required");
+      expect(res.body.pricing).toBe("/pricing");
+      const required = paymentRequired(res);
+      expect(required.x402Version).toBe(2);
+      expect(required.accepts).toHaveLength(1);
+      const req = required.accepts[0];
+      expect(req.scheme).toBe("exact");
+      expect(req.network).toBe(BASE);
+      expect(req.payTo).toBe(PAY_TO);
+      // The amount is atomic USDC (6 decimals). If this ever reads "0" or "2",
+      // the price conversion silently gave the endpoint away or overcharged.
+      expect(req.amount).toBe(String(Math.round(entry.priceUsd * 1e6)));
+      expect(req.asset).toMatch(/^0x[0-9a-fA-F]{40}$/);
+    }
   });
 
-  it("prices JSON repair at double, through the real conversion", async () => {
+  it("also paywalls HEAD on a paid GET route, which Express would otherwise serve", async () => {
     const app = createApp({ config: paidConfig });
-    const challenge = await request(app).post("/v1/json/repair").send("{bad json");
-    expect(challenge.status).toBe(402);
-    expect(paymentRequired(challenge).accepts[0].amount).toBe("4000");
+    const res = await request(app).head("/v1/hebrew-date?date=2026-09-05");
+    expect(res.status).toBe(402);
   });
 
-  it("does not unlock a paid route for a bogus payment header", async () => {
-    const app = createApp({ config: paidConfig });
+  it("rejects a malformed payment header before the facilitator is consulted", async () => {
+    const calls: StubCalls = { verify: [], settle: [] };
+    const app = createApp({ config: { ...paidConfig, facilitatorClient: facilitatorStub({}, calls) } });
     for (const header of ["payment-signature", "x-payment"]) {
       const res = await request(app)
         .post("/v1/validate/israeli-id")
         .set(header, "definitely-not-a-signed-payment")
         .send({ id: "000000018" });
-      expect(res.status, `${header} must not unlock the route`).not.toBe(200);
+      expect(res.status, `${header} must not unlock the route`).toBe(402);
       expect(res.body.valid).toBeUndefined();
     }
+    expect(calls.verify).toHaveLength(0);
+  });
+
+  it("asks the facilitator to verify a well-formed payment, and a rejection stays a 402", async () => {
+    const calls: StubCalls = { verify: [], settle: [] };
+    const app = createApp({ config: { ...paidConfig, facilitatorClient: facilitatorStub({}, calls) } });
+    const challenge = await request(app).post("/v1/validate/israeli-id").send({ id: "000000018" });
+    const accepted = paymentRequired(challenge).accepts[0];
+
+    const res = await request(app)
+      .post("/v1/validate/israeli-id")
+      .set("payment-signature", paymentFor(accepted))
+      .send({ id: "000000018" });
+    expect(res.status).toBe(402);
+    expect(res.body.valid).toBeUndefined();
+    expect(calls.verify).toHaveLength(1);
+    // The facilitator was handed the SERVER's requirements, with our wallet, never the client's copy.
+    expect((calls.verify[0][1] as { payTo: string }).payTo).toBe(PAY_TO);
+    expect(calls.settle).toHaveLength(0);
+  });
+
+  it("serves the response only after settlement succeeds, and reports it in PAYMENT-RESPONSE", async () => {
+    const calls: StubCalls = { verify: [], settle: [] };
+    const app = createApp({
+      config: {
+        ...paidConfig,
+        facilitatorClient: facilitatorStub({
+          verify: async (...args) => { calls.verify.push(args); return { isValid: true, payer: PAY_TO }; },
+          settle: async (...args) => { calls.settle.push(args); return { success: true, transaction: "0xabc", network: BASE, payer: PAY_TO }; },
+        }, calls),
+      },
+    });
+    const challenge = await request(app).post("/v1/validate/israeli-id").send({ id: "000000018" });
+    const accepted = paymentRequired(challenge).accepts[0];
+
+    const res = await request(app)
+      .post("/v1/validate/israeli-id")
+      .set("payment-signature", paymentFor(accepted))
+      .send({ id: "000000018" });
+    expect(res.status).toBe(200);
+    expect(res.body.valid).toBe(true);
+    expect(calls.verify).toHaveLength(1);
+    expect(calls.settle).toHaveLength(1);
+    const receipt = decodeHeader(res.headers["payment-response"]);
+    expect(receipt?.success).toBe(true);
+    expect(receipt?.transaction).toBe("0xabc");
+  });
+
+  it("withholds the response when settlement fails, and says so", async () => {
+    const app = createApp({
+      config: {
+        ...paidConfig,
+        facilitatorClient: facilitatorStub({
+          verify: async () => ({ isValid: true, payer: PAY_TO }),
+          settle: async () => ({ success: false, errorReason: "insufficient_funds", transaction: "", network: BASE }),
+        }),
+      },
+    });
+    const challenge = await request(app).post("/v1/validate/israeli-id").send({ id: "000000018" });
+    const accepted = paymentRequired(challenge).accepts[0];
+
+    const res = await request(app)
+      .post("/v1/validate/israeli-id")
+      .set("payment-signature", paymentFor(accepted))
+      .send({ id: "000000018" });
+    expect(res.status).toBe(402);
+    expect(res.body.valid).toBeUndefined();
+    expect(res.body.error).toBe("settlement_failed");
+    expect(res.body.reason).toBe("insufficient_funds");
+  });
+
+  it("rejects a payment whose accepted requirements were tampered with, before verify", async () => {
+    const calls: StubCalls = { verify: [], settle: [] };
+    const app = createApp({ config: { ...paidConfig, facilitatorClient: facilitatorStub({}, calls) } });
+    const challenge = await request(app).post("/v1/json/repair").send("{bad");
+    const accepted = paymentRequired(challenge).accepts[0];
+
+    for (const mutate of [
+      (a: Record<string, unknown>) => { a.payTo = "0x2222222222222222222222222222222222222222"; },
+      (a: Record<string, unknown>) => { a.amount = "1"; },
+      (a: Record<string, unknown>) => { a.network = "eip155:84532"; },
+    ]) {
+      const res = await request(app)
+        .post("/v1/json/repair")
+        .set("payment-signature", paymentFor(accepted, mutate))
+        .send("{bad");
+      expect(res.status).toBe(402);
+      expect(paymentRequired(res).error).toBe("No matching payment requirements");
+    }
+    expect(calls.verify).toHaveLength(0);
   });
 
   it("keeps discovery free while paid mode is on", async () => {
@@ -238,15 +339,16 @@ describe("defaultPaywall (the real production path)", () => {
     expect(pricing.body.x402Version).toBe(2);
     expect(pricing.body.network).toBe(BASE);
     expect(pricing.body.payTo).toBe(PAY_TO);
+    expect(pricing.body.endpoints.map((e: { price: string }) => e.price)).toEqual(["$0.002", "$0.002", "$0.002", "$0.002", "$0.002", "$0.004"]);
   });
 
-  it("fails closed with a 5xx, never 200, when the facilitator cannot be reached", async () => {
+  it("fails closed with a 5xx that is not the fallback's 503 when the facilitator cannot be reached", async () => {
     // This is the operational change v2 brings: the first paid request needs
     // the facilitator's supported-kinds list. If that call fails, the honest
     // answer is "payment infrastructure unavailable", not a free response.
     // The SDK answers 502 for a facilitator HTTP error and 500 for anything
-    // else (a network failure is a plain Error); either way it is a 5xx and
-    // the endpoint stays shut.
+    // else (a network failure is a plain Error); either way the endpoint stays
+    // shut. 503 would mean the packages failed to load, a different failure.
     const app = createApp({
       config: {
         ...paidConfig,
@@ -256,31 +358,124 @@ describe("defaultPaywall (the real production path)", () => {
       },
     });
     const res = await request(app).post("/v1/validate/phone").send({ phone: "0501234567" });
-    expect(res.status).toBeGreaterThanOrEqual(500);
-    expect(res.status).toBeLessThan(600);
+    expect([500, 502]).toContain(res.status);
     expect(res.body.valid).toBeUndefined();
+    expect(res.body.error).not.toBe("payment_unavailable");
 
     const health = await request(app).get("/health");
     expect(health.status).toBe(200);
   });
+
+  it("refuses to build for a wallet that fails its EIP-55 checksum", () => {
+    // Mixed case with a wrong checksum: the classic one-character typo.
+    const badChecksum = "0xAbcdef1234567890abcdef1234567890ABCDEF12";
+    expect(() => buildPaywall({ ...paidConfig, payTo: badChecksum })).toThrow(PaywallConfigError);
+  });
+
+  it("refuses to build for an EVM network the exact scheme has no USDC asset for", () => {
+    expect(() => buildPaywall({ ...paidConfig, network: "eip155:99999999" })).toThrow(PaywallConfigError);
+  });
 });
 
-describe("normaliseNetwork", () => {
-  it("maps the two legacy names this product has shipped with to CAIP-2", () => {
+describe("the fail-closed fallback (packages missing)", () => {
+  const missing: ModuleLoader = (id) => { throw new Error(`Cannot find module '${id}'`); };
+  const paidConfig = loadConfig({ X402_PAY_TO: PAY_TO } as NodeJS.ProcessEnv);
+
+  it("answers 503 on /v1 whatever the letter case, and keeps discovery up", async () => {
+    const app = createApp({ config: paidConfig, paywall: (config) => buildPaywall(config, missing) });
+    for (const path of ["/v1/validate/israeli-id", "/V1/validate/israeli-id", "/v1/json/repair", "/V1/JSON/REPAIR"]) {
+      const res = await request(app).post(path).send({ id: "000000018" });
+      expect(res.status, path).toBe(503);
+      expect(res.body.error).toBe("payment_unavailable");
+      expect(res.body.valid).toBeUndefined();
+    }
+    const res = await request(app).head("/V1/hebrew-date");
+    expect(res.status).toBe(503);
+    expect((await request(app).get("/health")).status).toBe(200);
+  });
+
+  it("falls closed if any ONE of the three packages is missing", async () => {
+    for (const absent of ["@x402/express", "@x402/core/server", "@x402/evm/exact/server", "@x402/evm"]) {
+      const loader: ModuleLoader = (id) => {
+        if (id === absent) throw new Error(`Cannot find module '${id}'`);
+        return createRequire(import.meta.url)(id);
+      };
+      const app = createApp({ config: paidConfig, paywall: (config) => buildPaywall(config, loader) });
+      const res = await request(app).post("/v1/validate/phone").send({ phone: "0501234567" });
+      expect(res.status, `with ${absent} missing`).toBe(503);
+    }
+  });
+});
+
+describe("probeFacilitator (what index.ts asks before listening)", () => {
+  const base = loadConfig({ X402_PAY_TO: PAY_TO } as NodeJS.ProcessEnv);
+
+  it("reports supported when the facilitator lists exact on our network", async () => {
+    expect(await probeFacilitator({ ...base, facilitatorClient: facilitatorStub() })).toEqual({ status: "supported" });
+  });
+
+  it("reports unsupported, with what was offered, when it does not — the case that would exit the process", async () => {
+    const probe = await probeFacilitator({
+      ...base,
+      facilitatorClient: facilitatorStub({
+        getSupported: async () => ({ kinds: [{ x402Version: 2, scheme: "exact", network: "eip155:84532" }], extensions: [], signers: {} }),
+      }),
+    });
+    expect(probe.status).toBe("unsupported");
+    expect((probe as { kinds: unknown[] }).kinds).toHaveLength(1);
+  });
+
+  it("reports unreachable, not unsupported, on a network error", async () => {
+    const probe = await probeFacilitator({
+      ...base,
+      facilitatorClient: facilitatorStub({ getSupported: async () => { throw new Error("ECONNREFUSED"); } }),
+    });
+    expect(probe).toEqual({ status: "unreachable", error: "ECONNREFUSED" });
+  });
+});
+
+describe("config validation", () => {
+  it("normaliseNetwork maps the two legacy names, lower-cases, and passes EVM CAIP-2 through", () => {
     expect(normaliseNetwork("base")).toBe("eip155:8453");
-    expect(normaliseNetwork("base-sepolia")).toBe("eip155:84532");
+    expect(normaliseNetwork("Base-Sepolia")).toBe("eip155:84532");
     expect(normaliseNetwork(undefined)).toBe("eip155:8453");
     expect(normaliseNetwork("  ")).toBe("eip155:8453");
-  });
-
-  it("passes CAIP-2 ids through untouched", () => {
     expect(normaliseNetwork("eip155:8453")).toBe("eip155:8453");
-    expect(normaliseNetwork("eip155:84532")).toBe("eip155:84532");
+    // The SDK matches the facilitator's kinds by exact string; upper case would never match.
+    expect(normaliseNetwork("EIP155:8453")).toBe("eip155:8453");
   });
 
-  it("refuses to guess a settlement chain from an unknown name", () => {
-    expect(() => normaliseNetwork("bsae")).toThrow(/not a CAIP-2/);
-    expect(() => normaliseNetwork("ethereum mainnet")).toThrow(/not a CAIP-2/);
+  it("normaliseNetwork refuses anything the exact EVM scheme cannot settle on", () => {
+    for (const bad of ["bsae", "ethereum mainnet", "eip155:8453x", "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp", "polygon-ish"]) {
+      expect(() => normaliseNetwork(bad), bad).toThrow(/not an EVM CAIP-2/);
+    }
     expect(() => loadConfig({ X402_PAY_TO: PAY_TO, X402_NETWORK: "polygon-ish" } as NodeJS.ProcessEnv)).toThrow();
+  });
+
+  it("parsePriceUsd defaults when unset and refuses a set-but-unusable value instead of silently replacing it", () => {
+    expect(parsePriceUsd(undefined)).toBe(0.002);
+    expect(parsePriceUsd("  ")).toBe(0.002);
+    expect(parsePriceUsd("0.01")).toBe(0.01);
+    expect(parsePriceUsd("0.000001")).toBe(0.000001);
+    for (const bad of ["0", "-1", "abc", "1e-7", "0.0000005", "0.0000015", "0.1234567"]) {
+      expect(() => parsePriceUsd(bad), bad).toThrow();
+    }
+  });
+
+  it("formatUsd never emits exponent notation and matches what the middleware parses", () => {
+    expect(formatUsd(0.002)).toBe("$0.002");
+    expect(formatUsd(0.004)).toBe("$0.004");
+    expect(formatUsd(0.000001)).toBe("$0.000001");
+    expect(formatUsd(1)).toBe("$1");
+    expect(formatUsd(12.5)).toBe("$12.5");
+  });
+
+  it("validatePayTo accepts a shape-valid address and refuses a short one, a non-hex one, and the zero address", () => {
+    expect(validatePayTo(undefined)).toBeNull();
+    expect(validatePayTo(" ")).toBeNull();
+    expect(validatePayTo(PAY_TO)).toBe(PAY_TO);
+    expect(() => validatePayTo("0x111111111111111111111111111111111111111")).toThrow(/not an EVM address/);
+    expect(() => validatePayTo("not-an-address")).toThrow(/not an EVM address/);
+    expect(() => validatePayTo("0x0000000000000000000000000000000000000000")).toThrow(/zero address/);
   });
 });
