@@ -22,10 +22,14 @@
     "@types/supertest": "6.0.3",
     "supertest": "7.2.2",
     "typescript": "5.9.3",
-    "vitest": "4.1.11"
+    "vitest": "5.0.0"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "optionalDependencies": {
-    "x402-express": "1.2.0"
-  },
-  "engines": { "node": ">=20" }
+    "@x402/core": "2.25.0",
+    "@x402/evm": "2.25.0",
+    "@x402/express": "2.25.0"
+  }
 }

@@ -41,7 +41,7 @@ The Coinbase CDP facilitator gives 1,000 free settlements per month and charges 
 
 ```bash
 npm install
-npm test          # 15 tests, including the real paywall factory
+npm test          # 22 tests, including the real paywall factory against the real v2 middleware
 npm run build
 node dist/index.js
 ```
@@ -57,8 +57,8 @@ X402_PAY_TO=0xYourWallet X402_NETWORK=base node dist/index.js
 | Variable | Default | Meaning |
 |---|---|---|
 | `X402_PAY_TO` | unset | Wallet that receives USDC. **Unset means free mode.** |
-| `X402_NETWORK` | `base` | Settlement network |
-| `X402_FACILITATOR_URL` | unset | Override the default facilitator |
+| `X402_NETWORK` | `base` → `eip155:8453` | Settlement network, CAIP-2. `base` and `base-sepolia` are mapped; anything else must be CAIP-2 |
+| `X402_FACILITATOR_URL` | unset (`https://x402.org/facilitator`) | Override the facilitator. Paid mode's one network dependency |
 | `X402_PRICE_USD` | `0.002` | Price per billable request |
 | `PORT` | `8402` | Listen port |
 
@@ -86,55 +86,48 @@ With an x402 client (`x402-fetch`, `x402-axios`, or any wallet that speaks the p
 
 Converting that USDC to shekels later needs a one-time Israeli exchange account with KYC. That step is only required to *cash out*, never to *earn*.
 
-## Open defect: this API is pinned to the abandoned half of the x402 SDK
+## x402 v2 — migrated 5.9.2026, and what changed underneath
 
-Found 4.9.2026 while chasing a lead from a third-party skill (`docs/SKILL_SOURCES.md`). Verified
-against the npm registry, which the proxy does reach; `x402.org` and `mpp.dev` it does not.
+This API ran on `x402-express@1.2.0` (v1 protocol, last published 2026-04-16) until 5.9.2026, while
+the ecosystem had moved to the scoped `@x402/*` line (2.25.0 published 2026-09-04, same maintainers,
+same Apache-2.0, same `x402-foundation/x402` repo). Found by `scripts/check-deps-freshness.mjs`'s
+predecessor — by hand — and now on `@x402/express`, `@x402/core` and `@x402/evm` at 2.25.0.
 
-| | package | latest | last published |
-|---|---|---|---|
-| what we ship | `x402-express` | **1.2.0** | **2026-04-16** |
-| what the ecosystem ships | `@x402/express` | **2.25.0** | **2026-09-04** |
+**The protocol change a client has to know about.** In v2 the payment requirements travel in the
+`PAYMENT-REQUIRED` response header, base64-encoded JSON, not in the 402 body. This API's 402 body is
+a small JSON of its own — `error: "payment_required"` plus a pointer to `/pricing` — so an agent that
+only reads bodies still learns where to look. Network ids are CAIP-2 (`eip155:8453` for Base
+mainnet); `X402_NETWORK=base` and `base-sepolia` are still accepted and mapped, anything else must
+already be CAIP-2 or the process refuses to start, because a guessed network is a guessed
+settlement chain for real money.
 
-The scoped `@x402/*` line has 27 releases since 2025-12-11 and shipped twice in the two days before
-this was written; the unscoped package we depend on has not shipped in nearly five months. Neither is
-formally deprecated, so nothing breaks today — but the only rail in the portfolio that needs no KYC
-is running on the half of the SDK that stopped moving.
+**The operational change.** v2 will not build a single 402 until it has asked the facilitator which
+(scheme, network) pairs it supports. v1 built the challenge locally. So paid mode now has one
+network dependency — the facilitator (`https://x402.org/facilitator` unless `X402_FACILITATOR_URL`
+says otherwise) — and if that call fails, the first paid request answers with a **5xx and the
+endpoint stays shut**. It never falls through to a free response. Free mode and the discovery
+endpoints are unaffected.
 
-It is the same publisher, not a typosquat: both packages list npm maintainers `erik_cb` and
-`carsonroscoe_cb`, Apache-2.0, and the repository `x402-foundation/x402` (the project moved out of
-`coinbase/x402`).
+**What the tests now prove that they did not before.** The real middleware, the real EVM scheme, the
+real price-to-USDC conversion and the real route matching all run in the suite; only the facilitator
+hop is stubbed, through a seam in `Config`. So the suite asserts, from a real 402, that the wallet is
+ours, the network is `eip155:8453`, `$0.002` became exactly `2000` atomic units and JSON repair
+`4000`, that a bogus `payment-signature` or `x-payment` header does not unlock a route, and that an
+unreachable facilitator produces a 5xx rather than a 200. 22 tests.
 
-**v2 is a breaking redesign, not a version bump.** From `@x402/express@2.25.0`'s own README:
+**Two things found on the way, recorded because they will bite again:**
 
-```ts
-// v1, what src/app.ts calls today
-paymentMiddleware(payTo, { "GET /path": { price: "$0.01", network: "base", config: {...} } })
-
-// v2
-const resourceServer = new x402ResourceServer(new HTTPFacilitatorClient({ url: ... }))
-  .register("eip155:84532", new ExactEvmScheme());
-paymentMiddleware({ "GET /path": { accepts: { scheme: "exact", price: "$0.10",
-  network: "eip155:84532", payTo: "0x..." }, description } }, resourceServer)
-```
-
-Three things change: the argument order, the per-route shape (`accepts`), and the network
-identifier — CAIP-2 `eip155:8453` replaces the `"base"` string this package defaults to in
-`src/config.ts`. v2 is also dual-published ESM+CJS with a real `import` condition, so the
-`createRequire` workaround in `src/app.ts` would go away.
-
-This was found by hand, which is the part worth fixing: `scripts/check-deps-freshness.mjs` now
-flags it automatically (`node scripts/check-deps-freshness.mjs --dir products/x402-il-api`). Note
-what it took to catch — `x402-express` is an *optionalDependency*, and 1.2.0 really is its latest, so
-neither "read dependencies and devDependencies" nor "compare our pin to latest" sees anything wrong.
-The only detectable signal is that the package has published nothing for 140 days.
-
-**Deliberately not migrated in the session that found it.** This is the file that already shipped one
-P0 where a broken paywall factory was swallowed by its own `try/catch` and every paid endpoint
-answered 503. Rewriting it against a README quick-start, with no facilitator to integration-test
-against, is how that bug comes back. The existing test proves a bare `/v1/*` request gets a 402 and
-not a 503, which is real but is not proof of settlement. The migration is its own task, with its own
-verification.
+- **The old dependency tree was a browser wallet UI inside a headless API.** `x402-express@1.2.0`
+  pulled `x402` → `wagmi` → `porto` → `react` and `@tanstack/react-query`. The v2 server packages
+  depend on none of it. `npm install` had only ever succeeded because the lockfile froze a
+  consistent tree; touching it exposed a React 18-vs-19 peer conflict entirely inside the old
+  packages.
+- **npm 10.9.7 crashes on `vitest@4.1.11` + `@x402/*` in the same manifest** — `Cannot read
+  properties of null (reading 'edgesOut')` in arborist's `#loadPeerSet`, reproducible in an empty
+  directory. Bisected: remove vitest and it installs; keep vitest and pass `--legacy-peer-deps` and it
+  installs; move to `vitest@5.0.0` and it installs cleanly with no flag. This product is on vitest 5
+  for that reason and no other. The other four products are still on 4.1.11 and unaffected until
+  they take an `@x402` dependency.
 
 ## Honesty
 

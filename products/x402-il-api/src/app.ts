@@ -19,30 +19,61 @@ export type PaywallFactory = (config: Config) => express.RequestHandler | null;
 export const defaultPaywall: PaywallFactory = (config) => {
   if (!config.paywallEnabled) return null;
   try {
-    // x402-express is dual-published (CJS + ESM). This module is ESM, so bare
-    // `require` is not defined here; createRequire loads the CJS build without
-    // making this factory async (createApp calls it synchronously).
+    // The @x402/* packages are dual-published (CJS + ESM). This module is ESM,
+    // so bare `require` is not defined here; createRequire loads the CJS builds
+    // without making this factory async (createApp calls it synchronously).
+    // They are optionalDependencies on purpose: the API must boot in free mode
+    // even where they are absent, and paid mode fails closed below if they are.
     const requireCjs = createRequire(import.meta.url);
-    const { paymentMiddleware } = requireCjs("x402-express") as {
-      paymentMiddleware: (payTo: string, routes: Record<string, unknown>, facilitator?: unknown) => express.RequestHandler;
+    const { paymentMiddleware, x402ResourceServer } = requireCjs("@x402/express") as {
+      paymentMiddleware: (routes: Record<string, unknown>, server: unknown) => express.RequestHandler;
+      x402ResourceServer: new (facilitator: unknown) => unknown;
     };
+    const { HTTPFacilitatorClient } = requireCjs("@x402/core/server") as {
+      HTTPFacilitatorClient: new (options?: { url: string }) => unknown;
+    };
+    const { registerExactEvmScheme } = requireCjs("@x402/evm/exact/server") as {
+      registerExactEvmScheme: (server: unknown, options?: { networks: string[] }) => unknown;
+    };
+
+    // v2 asks the facilitator which (scheme, network) pairs it supports before it
+    // will build a single 402 — so paid mode has one network dependency, and it is
+    // this client. Tests inject a stub through config; production talks to the
+    // default facilitator unless X402_FACILITATOR_URL says otherwise.
+    const facilitator = config.facilitatorClient
+      ?? new HTTPFacilitatorClient(config.facilitatorUrl ? { url: config.facilitatorUrl } : undefined);
+    const server = registerExactEvmScheme(new x402ResourceServer(facilitator), { networks: [config.network] });
+
+    // v2 puts the payment requirements in the PAYMENT-REQUIRED response header
+    // (base64 JSON) and, by default, sends an empty JSON body. An agent that
+    // only reads bodies would see a bare 402 and nothing else, so say where to
+    // look. This is the API's own text, not the protocol's.
+    const unpaidResponseBody = () => ({
+      contentType: "application/json",
+      body: {
+        error: "payment_required",
+        message: "This endpoint is paid over x402. The payment requirements are in the PAYMENT-REQUIRED response header (base64 JSON). The full price list is at GET /pricing.",
+        pricing: "/pricing",
+      },
+    });
     const routes: Record<string, unknown> = {};
     for (const entry of priceList(config)) {
       routes[`${entry.method} ${entry.path}`] = {
-        price: `$${entry.priceUsd}`,
-        network: config.network,
-        config: { description: entry.description },
+        accepts: {
+          scheme: "exact",
+          price: `$${entry.priceUsd}`,
+          network: config.network,
+          payTo: config.payTo!,
+        },
+        description: entry.description,
+        unpaidResponseBody,
       };
     }
-    return paymentMiddleware(
-      config.payTo!,
-      routes,
-      config.facilitatorUrl ? { url: config.facilitatorUrl } : undefined,
-    );
+    return paymentMiddleware(routes, server);
   } catch (error) {
     console.error(
-      `x402 paywall requested but x402-express could not be loaded (${(error as Error).message}). ` +
-      "Refusing to serve paid endpoints for free — install x402-express or unset X402_PAY_TO.",
+      `x402 paywall requested but the @x402 packages could not be loaded (${(error as Error).message}). ` +
+      "Refusing to serve paid endpoints for free — install @x402/express, @x402/core and @x402/evm, or unset X402_PAY_TO.",
     );
     // Fail closed: block the billable routes rather than give them away.
     return (req, res, next) => {
@@ -72,7 +103,7 @@ export function createApp(options: { config?: Config; paywall?: PaywallFactory }
   });
 
   const pricingBody = () => ({
-    x402Version: 1,
+    x402Version: 2,
     payTo: config.paywallEnabled ? config.payTo : null,
     network: config.network,
     currency: "USDC",
@@ -80,7 +111,7 @@ export function createApp(options: { config?: Config; paywall?: PaywallFactory }
       method: e.method, path: e.path, price: `$${e.priceUsd}`, description: e.description,
     })),
     note: config.paywallEnabled
-      ? "Send an x402 payment header; a bare request returns 402 with the payment requirements."
+      ? "Send an x402 v2 payment. A bare request returns 402 with the requirements in the PAYMENT-REQUIRED response header (base64 JSON)."
       : "Running in free mode (X402_PAY_TO is unset). No payment is required.",
   });
   app.get("/pricing", (_req, res) => res.json(pricingBody()));
