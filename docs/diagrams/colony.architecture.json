@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "מושבת ההכנסה — שרשרת הפיקוד ומסלול הכסף",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1120,
+      515
+    ],
+    "views": [
+      {
+        "id": "money-loop",
+        "label": "מסלול הכסף",
+        "focus": [
+          "board",
+          "director",
+          "supervisor",
+          "worker",
+          "products",
+          "buyers",
+          "rails",
+          "ledger"
+        ],
+        "note": "הלולאה הסגורה: הדירקטוריון מקצה תקציב, עובד בונה מוצר, קונה משלם, והלדג'ר מחזיר את המדידה לדירקטוריון."
+      },
+      {
+        "id": "oversight",
+        "label": "מי בודק את מי",
+        "focus": [
+          "supervisor",
+          "auditor",
+          "chief-auditor",
+          "ledger"
+        ],
+        "note": "מבקר בודק מפקח, ומבקר ראשי בודק מבקר. שתי ביקורות הורידו תקרות ב-80% ומעלה."
+      },
+      {
+        "id": "owner-gates",
+        "label": "מה תלוי בבעלים",
+        "focus": [
+          "owner",
+          "gates",
+          "rails"
+        ],
+        "note": "הצעדים החד-פעמיים היחידים שדורשים אדם: אימות זהות ומסלול תשלום. כל השאר תוכנה."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "board",
+      "type": "backend",
+      "label": "הדירקטוריון",
+      "sublabel": "מקצה תקציב, הורג וממנף",
+      "pos": [
+        70,
+        50
+      ],
+      "size": [
+        160,
+        68
+      ],
+      "tag": "מחליט"
+    },
+    {
+      "id": "director",
+      "type": "backend",
+      "label": "דירקטור לקו",
+      "sublabel": "אחראי על מקור הכנסה אחד",
+      "pos": [
+        330,
+        50
+      ],
+      "size": [
+        160,
+        68
+      ]
+    },
+    {
+      "id": "supervisor",
+      "type": "backend",
+      "label": "מפקח",
+      "sublabel": "ממזג, מדרג, פוסל",
+      "pos": [
+        590,
+        50
+      ],
+      "size": [
+        160,
+        68
+      ]
+    },
+    {
+      "id": "worker",
+      "type": "backend",
+      "label": "עובד",
+      "sublabel": "מחפש, בונה, מתחזק",
+      "pos": [
+        850,
+        50
+      ],
+      "size": [
+        160,
+        68
+      ]
+    },
+    {
+      "id": "chief-auditor",
+      "type": "security",
+      "label": "מבקר ראשי",
+      "sublabel": "בודק את המבקרים",
+      "pos": [
+        330,
+        165
+      ],
+      "size": [
+        160,
+        68
+      ]
+    },
+    {
+      "id": "auditor",
+      "type": "security",
+      "label": "מבקר",
+      "sublabel": "תפקידו להפריך, לא להסכים",
+      "pos": [
+        590,
+        165
+      ],
+      "size": [
+        160,
+        68
+      ]
+    },
+    {
+      "id": "ledger",
+      "type": "database",
+      "label": "הלדג'ר",
+      "sublabel": "כסף נחשב רק כאן",
+      "pos": [
+        70,
+        280
+      ],
+      "size": [
+        160,
+        68
+      ],
+      "tag": "מקור האמת"
+    },
+    {
+      "id": "rails",
+      "type": "external",
+      "label": "מסילות תשלום",
+      "sublabel": "Paddle · Apify · x402 · Stars",
+      "pos": [
+        330,
+        280
+      ],
+      "size": [
+        160,
+        68
+      ]
+    },
+    {
+      "id": "buyers",
+      "type": "external",
+      "label": "הקונים",
+      "sublabel": "עסקים, מפתחים, סוכנים",
+      "pos": [
+        590,
+        280
+      ],
+      "size": [
+        160,
+        68
+      ]
+    },
+    {
+      "id": "products",
+      "type": "frontend",
+      "label": "המוצרים",
+      "sublabel": "ארבעה קווים חיים",
+      "pos": [
+        850,
+        280
+      ],
+      "size": [
+        160,
+        68
+      ]
+    },
+    {
+      "id": "owner",
+      "type": "external",
+      "label": "הבעלים",
+      "sublabel": "זהות בלבד — לא תפעול",
+      "pos": [
+        70,
+        395
+      ],
+      "size": [
+        160,
+        68
+      ]
+    },
+    {
+      "id": "gates",
+      "type": "security",
+      "label": "שערי KYC",
+      "sublabel": "חד-פעמי, חוסם עד שנפתח",
+      "pos": [
+        330,
+        395
+      ],
+      "size": [
+        160,
+        68
+      ],
+      "tag": "חוסם"
+    }
+  ],
+  "connections": [
+    {
+      "id": "board-director",
+      "from": "board",
+      "to": "director",
+      "label": "תקציב ומטרה",
+      "variant": "emphasis"
+    },
+    {
+      "id": "director-supervisor",
+      "from": "director",
+      "to": "supervisor",
+      "label": "יעד חודשי"
+    },
+    {
+      "id": "supervisor-worker",
+      "from": "supervisor",
+      "to": "worker",
+      "label": "משימה"
+    },
+    {
+      "id": "worker-products",
+      "from": "worker",
+      "to": "products",
+      "label": "בונה ומתחזק",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 57
+    },
+    {
+      "id": "products-buyers",
+      "from": "products",
+      "to": "buyers",
+      "label": "נמכר"
+    },
+    {
+      "id": "buyers-rails",
+      "from": "buyers",
+      "to": "rails",
+      "label": "משלמים"
+    },
+    {
+      "id": "rails-ledger",
+      "from": "rails",
+      "to": "ledger",
+      "label": "מזהה עסקה",
+      "variant": "emphasis"
+    },
+    {
+      "id": "ledger-board",
+      "from": "ledger",
+      "to": "board",
+      "label": "מדידה, לא תחזית",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "variant": "emphasis"
+    },
+    {
+      "id": "auditor-supervisor",
+      "from": "auditor",
+      "to": "supervisor",
+      "label": "מפריך",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "variant": "dashed"
+    },
+    {
+      "id": "chief-auditor-auditor",
+      "from": "chief-auditor",
+      "to": "auditor",
+      "label": "בודק",
+      "variant": "dashed"
+    },
+    {
+      "id": "owner-gates",
+      "from": "owner",
+      "to": "gates",
+      "label": "זהות חד-פעמית"
+    },
+    {
+      "id": "gates-rails",
+      "from": "gates",
+      "to": "rails",
+      "label": "פותח תשלום",
+      "fromSide": "top",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "הלולאה סגורה במכוון",
+      "items": [
+        "הלדג'ר מזין את הדירקטוריון, לא להפך",
+        "כסף נחשב רק עם מזהה עסקה מהפלטפורמה"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "מה עדיין תלוי בך",
+      "items": [
+        "אימות זהות ומסלול תשלום, פעם אחת לכל פלטפורמה",
+        "בלי זה הקווים חיים אבל לא מקבלים כסף"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "מה עוד לא נפתר",
+      "items": [
+        "אף אחד לא יודע איך זר מוצא את המוצרים",
+        "עד שיהיה ערוץ רכישה, כל תקרה בתוכנית היא אפס"
+      ]
+    }
+  ]
+}

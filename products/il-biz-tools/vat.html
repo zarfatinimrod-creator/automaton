@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מחשבון מע״מ 2026 – חישוב מע״מ 18% מברוטו לנטו ולהפך</title>
+<meta name="description" content="מחשבון מע״מ חינמי ומדויק: הוסיפו מע״מ 18% לסכום נטו, חלצו מע״מ מסכום ברוטו או חשבו לפי סכום המע״מ. מתאים לעוסקים מורשים, עוסקים פטורים ולקוחות פרטיים.">
+<link rel="canonical" href="https://il-biz-tools.netlify.app/vat.html">
+<meta property="og:title" content="מחשבון מע״מ 18% – 2026">
+<meta property="og:description" content="חישוב מע״מ מהיר מברוטו לנטו ולהפך.">
+<link rel="stylesheet" href="assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "מה שיעור המע\"מ בישראל ב-2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "שיעור המע\"מ בישראל הוא 18% החל מ-1 בינואר 2025, והוא נשאר 18% גם בשנת 2026." }
+    },
+    {
+      "@type": "Question",
+      "name": "איך מחשבים מע\"מ מסכום ברוטו?",
+      "acceptedAnswer": { "@type": "Answer", "text": "מחלקים את הסכום הכולל ב-1.18 כדי לקבל את הנטו, וההפרש בין הברוטו לנטו הוא סכום המע\"מ. לדוגמה: 1,180 ₪ ברוטו = 1,000 ₪ נטו + 180 ₪ מע\"מ." }
+    },
+    {
+      "@type": "Question",
+      "name": "האם עוסק פטור צריך להוסיף מע\"מ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "לא. עוסק פטור אינו גובה מע\"מ מלקוחותיו ואינו מקזז מע\"מ על הוצאות. הוא מוציא קבלות בלבד, ולא חשבוניות מס." }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header"><div class="container">
+  <a class="logo" href="./">כלים <span>לעסק</span></a>
+  <nav aria-label="ניווט ראשי"><ul>
+    <li><a href="vat.html">מחשבון מע״מ</a></li>
+    <li><a href="osek-patur.html">תקרת עוסק פטור</a></li>
+    <li><a href="net-salary.html">שכר נטו</a></li>
+    <li><a href="invoice.html">קבלה / חשבונית</a></li>
+    <li><a href="allocation.html">מספר הקצאה</a></li>
+  </ul></nav>
+</div></header>
+
+<main class="container">
+  <h1>מחשבון מע״מ</h1>
+  <p class="lead">שיעור המע״מ הנוכחי: <strong id="rate-label">18%</strong>. הזינו סכום ובחרו מה הוא מייצג.</p>
+
+  <form class="card" id="vat-form" novalidate>
+    <div class="row">
+      <div class="field">
+        <label for="amount">סכום (₪)</label>
+        <input type="number" id="amount" inputmode="decimal" min="0" step="0.01" placeholder="לדוגמה: 1000" autofocus>
+      </div>
+      <div class="field">
+        <label for="mode">הסכום שהזנתי הוא</label>
+        <select id="mode">
+          <option value="net">נטו (לפני מע״מ) – הוסף מע״מ</option>
+          <option value="gross">ברוטו (כולל מע״מ) – חלץ מע״מ</option>
+          <option value="vat">סכום המע״מ בלבד</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="rate">שיעור מע״מ (%)</label>
+        <input type="number" id="rate" inputmode="decimal" min="0" max="99" step="0.5" value="18">
+      </div>
+    </div>
+    <div class="result">
+      <table>
+        <tr><td>נטו (לפני מע״מ)</td><td class="num" id="out-net">₪0.00</td></tr>
+        <tr><td>מע״מ</td><td class="num" id="out-vat">₪0.00</td></tr>
+        <tr class="total"><td>ברוטו (כולל מע״מ)</td><td class="num" id="out-gross">₪0.00</td></tr>
+      </table>
+    </div>
+    <div class="actions no-print">
+      <button type="button" class="btn secondary" id="copy">העתקת התוצאה</button>
+      <span class="note" id="copied" hidden>הועתק ✓</span>
+    </div>
+  </form>
+
+  <section class="faq card">
+    <h2>שאלות נפוצות</h2>
+    <details open><summary>מה שיעור המע״מ בישראל ב-2026?</summary><p>שיעור המע״מ הוא 18% החל מ-1 בינואר 2025, והוא נשאר 18% גם בשנת 2026. אפשר לשנות את השיעור בשדה למעלה לחישובים היסטוריים (למשל 17%).</p></details>
+    <details><summary>איך מחשבים מע״מ מסכום ברוטו?</summary><p>מחלקים את הסכום הכולל ב-1.18 כדי לקבל את הנטו; ההפרש הוא המע״מ. לדוגמה: 1,180 ₪ ברוטו = 1,000 ₪ נטו + 180 ₪ מע״מ.</p></details>
+    <details><summary>האם עוסק פטור צריך להוסיף מע״מ?</summary><p>לא. עוסק פטור אינו גובה מע״מ ואינו מקזז מע״מ על הוצאות. הוא מוציא קבלות בלבד. בדקו את <a href="osek-patur.html">מעקב תקרת עוסק פטור</a>.</p></details>
+  </section>
+</main>
+
+<footer class="site-footer"><div class="container">
+  © <span data-year>2026</span> כלים לעסק · המידע באתר אינו מהווה ייעוץ מס. · <a href="./">דף הבית</a>
+</div></footer>
+<script type="module" src="assets/page-vat.js"></script>
+</body>
+</html>

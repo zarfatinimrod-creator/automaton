@@ -1,0 +1,29 @@
+name: products-ci
+
+on:
+  push:
+    paths:
+      - "products/**"
+      - ".github/workflows/products-ci.yml"
+  pull_request:
+    paths:
+      - "products/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        product: [apify-il-open-data, il-biz-tools, mcp-il-tools, telegram-il-tools-bot, x402-il-api]
+    defaults:
+      run:
+        working-directory: products/${{ matrix.product }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: test -f package.json || { echo "no package.json for ${{ matrix.product }}"; exit 0; }
+      - run: npm install --no-audit --no-fund
+      - run: npm test

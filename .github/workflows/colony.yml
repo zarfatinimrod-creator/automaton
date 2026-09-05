@@ -1,0 +1,106 @@
+name: colony
+
+# The revenue colony's governance loop. Runs the board's own cycle - ledger sync,
+# supervisor review, board review, audit - and commits the resulting state and
+# report back, so the owner can read every decision in the git history.
+#
+# This needs no wallet, no Conway key and no inference: the governance half of
+# the colony works from the SQLite file alone. Director and worker EXECUTION
+# still needs the automaton runtime; until that exists the report says so.
+
+# ⚠️ THIS DOES NOT RUN UNTIL IT IS ON THE DEFAULT BRANCH.
+# GitHub fires `schedule` only on the repository's default branch (main). While
+# this file lives on a feature branch it is not even registered — the Actions
+# API returns 404 for it — so the hourly loop is not running, however correct
+# the code is. Verified 2026-09-03: only ci, products-ci and release exist.
+# Until it is merged, colony state is produced by running the tick by hand:
+#   pnpm exec tsx scripts/colony.ts tick --no-feed
+
+on:
+  schedule:
+    # Hourly. Each task inside the tick self-gates on its own interval, so the
+    # daily board review still runs once a day and the weekly audit once a week.
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Run every step regardless of its interval"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+# Never let two ticks write the state file at once.
+concurrency:
+  group: colony-state
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Committing needs real history, not a shallow clone.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: pnpm/action-setup@v4
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Run one colony tick
+        env:
+          # Present only once the owner adds them; each connector is skipped
+          # while its key is unset, and the tick makes no network calls at all
+          # when none are set.
+          LEMONSQUEEZY_API_KEY: ${{ secrets.LEMONSQUEEZY_API_KEY }}
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          # No orchestrator runs here, so filing a goal nothing can execute
+          # would freeze the queue at depth one. Governance runs; execution waits.
+          pnpm exec tsx scripts/colony.ts tick --no-feed ${{ inputs.force && '--force' || '' }} | tee /tmp/colony-tick.txt
+
+      - name: Commit state and report
+        run: |
+          set -euo pipefail
+          git config user.name "colony-bot"
+          git config user.email "colony-bot@users.noreply.github.com"
+
+          # -f because .gitignore's *.db rule would otherwise skip the database.
+          # Stage first, then compare the index: on the very first run these files
+          # are untracked, and `git diff` alone would report no change and skip
+          # the commit forever.
+          git add -f state/colony
+          if git diff --cached --quiet; then
+            echo "No state change this tick."
+            exit 0
+          fi
+
+          SUMMARY=$(head -n 1 /tmp/colony-tick.txt)
+          # [skip ci] keeps the state commit from retriggering the test workflows.
+          git commit -m "${SUMMARY} [skip ci]"
+
+          # Another tick or a human push may have landed while this one ran.
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push rejected; rebasing and retrying (attempt ${attempt})."
+            git pull --rebase --autostash
+          done
+          echo "Could not push colony state after 3 attempts." >&2
+          exit 1
+
+      - name: Surface the report in the run summary
+        if: always()
+        run: |
+          if [ -f state/colony/REPORT.md ]; then
+            cat state/colony/REPORT.md >> "$GITHUB_STEP_SUMMARY"
+          fi

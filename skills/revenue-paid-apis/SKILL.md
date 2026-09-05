@@ -8,7 +8,7 @@ auto-activate: false
 
 Endpoints (start with what the Apify line already needs): Hebrew nikud/transliteration, RTL-correct PDF/image rendering, Israeli ID/bank/phone validators, Hebrew date conversion, structured extraction, PDF→Markdown.
 
-Rails: x402 (USDC on Base) via the automaton's wallet — no human setup; the facilitator gives 1,000 free settlements/month, then $0.001 each; register the endpoints on the agent card and in the x402 bazaar. Cross-list on an API marketplace (creator opens the provider account + PayPal payout once); free tier + metered PRO tiers.
+Rails: x402 (USDC on Base) via the automaton's wallet — no human setup for receiving; the Coinbase CDP facilitator settles Base/Polygon/Arbitrum/Solana with 1,000 free settlements per month, then $0.001 each (billing since Feb 2026), so price each call above $0.002; register the endpoints on the agent card and in the x402 bazaar. Ready code: products/x402-il-api. Cross-list on an API marketplace (creator opens the provider account + PayPal payout once); free tier + metered PRO tiers.
 
 Loop
 1. One endpoint per iteration: OpenAPI spec, tests, p95 under 500 ms, clear error codes, rate limits.

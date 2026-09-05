@@ -1,0 +1,65 @@
+{
+  "help": "https://data.gov.il/api/3/action/help_show?name=datastore_search",
+  "success": true,
+  "result": {
+    "include_total": true,
+    "limit": 3,
+    "offset": 3,
+    "resource_id": "f004176c-b85f-4542-8901-7b3176f9a054",
+    "fields": [
+      { "id": "_id", "type": "int" },
+      { "id": "מספר חברה", "type": "text" },
+      { "id": "שם חברה", "type": "text" },
+      { "id": "שם באנגלית", "type": "text" },
+      { "id": "סוג תאגיד", "type": "text" },
+      { "id": "סטטוס חברה", "type": "text" },
+      { "id": "תאריך התאגדות", "type": "timestamp" },
+      { "id": "הון מניות", "type": "numeric" },
+      { "id": "מפרה", "type": "text" },
+      { "id": "שנת דוח אחרון", "type": "int" },
+      { "id": "שם ישוב", "type": "text" },
+      { "id": "כתובת", "type": "text" },
+      { "id": "עמודה לא מוכרת", "type": "text" },
+      { "id": "Some English Field", "type": "text" }
+    ],
+    "records": [
+      {
+        "_id": 4,
+        "מספר חברה": "510000004",
+        "שם חברה": "רביעית בע\"מ",
+        "שם באנגלית": "FOURTH LTD",
+        "סוג תאגיד": "חברה פרטית",
+        "סטטוס חברה": "פעילה",
+        "תאריך התאגדות": "2020-01-01T00:00:00",
+        "הון מניות": "10",
+        "מפרה": "לא",
+        "שנת דוח אחרון": "2025",
+        "שם ישוב": "באר שבע",
+        "כתובת": "שד' רגר 5",
+        "עמודה לא מוכרת": "y",
+        "Some English Field": "q"
+      },
+      {
+        "_id": 5,
+        "מספר חברה": "510000005",
+        "שם חברה": "חמישית בע\"מ",
+        "שם באנגלית": "FIFTH LTD",
+        "סוג תאגיד": "חברה פרטית",
+        "סטטוס חברה": "פעילה",
+        "תאריך התאגדות": "2021-02-02T00:00:00",
+        "הון מניות": "20",
+        "מפרה": "לא",
+        "שנת דוח אחרון": "2025",
+        "שם ישוב": "אילת",
+        "כתובת": "מרכז מסחרי",
+        "עמודה לא מוכרת": "w",
+        "Some English Field": "r"
+      }
+    ],
+    "_links": {
+      "start": "/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&limit=3",
+      "prev": "/api/3/action/datastore_search?resource_id=f004176c-b85f-4542-8901-7b3176f9a054&limit=3&offset=0"
+    },
+    "total": 5
+  }
+}
