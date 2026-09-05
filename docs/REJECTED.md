@@ -885,6 +885,78 @@ hard-code the URL, the parameters and the response shape. *"The site is blocked"
 unreachable" are different sentences.* This is now rule 9 of the scout brief in
 `src/revenue/sweep-workflow.ts`.
 
+## `vertical-niches` — one channel confirmed, one product left, audited 2026-09-05
+
+Full audit: `research/colony-sweep/audits/vertical-niches.md`. Supervisor report:
+`research/colony-sweep/groups/vertical-niches.md`. Thirteenth group audited, thirteenth cut.
+**Group revenue today: ₪0. Honest twelve-month figure for the whole group: ₪150–400/month, from
+one line.**
+
+The supervisor's headline — *"almost no money here"* — was right and the audit credits it. Seven
+scouts proposed roughly forty opportunities; thirty-eight died on the mission's own gates. The
+supervisor killed three of the four best-looking ones itself, by one search each: the PCN874
+validator duplicates `israel-bureaucracy` and its validation half is published free by the Tax
+Authority; the Wix restaurant-reservations app competes with Eat App and Hostme already listed in
+that category; the Wix wellness intake app is shipped first-party by Wix. Its `ownerBlockersFound`
+carries an explicit **"NOT owner blockers"** section, which the auditor calls the best single
+artefact the group produced. It should be copied.
+
+### The two survivors
+
+| Candidate | Supervisor | Audited | israelPayable |
+|---|---|---|---|
+| Israeli gym/studio health-declaration service with the statutory expiry clock | ₪800, 30h, score 44 | **DOWNGRADED: ₪250** at twelve months, **₪0 month one**, 45–80h, score ~25 | YES (stands) |
+| Wix App Market entry, "verified channel, product not yet chosen" | ranked, with a ceiling and build hours | **REFUTED** — a channel with an admitted-undetermined product is not a candidate; three numbers attached to nothing | see below |
+
+**The health-declaration line is real and three to five times overstated.** Its single
+differentiating claim — *"none of them sells the clock"* — was never checked, and the named
+incumbent's own marketing advertises both halves of it. Two live competitors were missed:
+`tofsy.co.il` sells the automation wedge by name, and `easydo` gives the gym declaration away
+**free with no signup** — the report lists easydo among vendors that *sell* it. The build estimate
+omits the thing the buyer is actually buying, and the DPO justification is inconsistent with the
+report's own ceiling.
+
+**The Wix App Market entry is a duplicate of an entry `storefronts` already closed**, reopened
+without meeting either of the reopen conditions that entry sets — the exact failure the supervisor
+charges its own `accountants` scout with. Its payability evidence was drawn from **two Wix programs
+that are not the App Market** (Wix Studio partner revenue share; Wix Marketplace freelancer terms),
+after `storefronts.md` had explicitly warned that these are confusable. The channel fact itself — the
+App Market is Israel-payable, free to enter, and bills the customer — was not overturned; the audit
+says the supervisor *did not find what the rail actually is*. So the fact stands at the grade it had
+in `storefronts`, and it is not a line.
+
+### Supervisor errors worth naming, because they are this sweep's errors
+
+- **Claimed a verification it cannot reproduce**: *"I opened it; it held"* about a regulation on
+  `nevo.co.il`, a host that is egress-blocked from this container. The regulation's content is
+  independently corroborated and stands — but the claimed method is the sin the report convicts its
+  own fitness scout of, and the defect `CLAUDE.md` names as this repo's recurring one.
+- **Stated Wix revenue splits, thresholds and exclusions as fact without rendering a single Wix
+  first-party page**, while disclosing elsewhere that those hosts are blocked. The disclosure did not
+  change the verdict.
+- **Omitted the 2.5% transaction fee** from a money model that says "100% of revenue".
+- **Never states the group's revenue.** Under MISSION rule 2 it is ₪0; the headline is a ranking.
+
+### What the group missed, and one of them is the interesting shape in the whole wave
+
+- **The clock generalises; the group scoped it to gyms.** The same "statutory declaration with a
+  recurring expiry" recurs across Israeli law — swimming pools, school and student declarations
+  (easydo already ships a `הצהרת בריאות לתלמידים` form), summer camps, weapons licensing. If the
+  renewal clock is the wedge, the product is a **multi-vertical Israeli statutory-declaration
+  clock**, not a gym tool — a materially larger line the group never asked about. **This is the only
+  new product shape in the wave**, and it sits exactly where the colony's one durable advantage —
+  Hebrew and Israeli regulation — meets an obligation someone must discharge (MISSION constraint 8's
+  second surviving shape).
+- **The buyer already pays somebody.** No analysis of whether a gym paying Arbox ₪140–860/month adds
+  a second subscription, nor of the obvious alternative: an Arbox add-on rather than a competitor.
+- **The Israeli angle on Wix was never taken.** Wix is an Israeli company with a large Hebrew SMB
+  base; a Hebrew/Israeli-compliance Wix app is where the group's home turf meets its one open
+  channel, and the proposed occupancy scan is of *English* categories.
+- **No occupancy test of the Wix App Market was run**, though it was the entry's own `firstStep` and
+  costs the two hours the entry says. The group ranked the intention instead of executing it.
+- **Kill criteria are not instrumented** — "5 studios created an account, 2 paid" needs analytics and
+  a ledger hook that do not exist. A kill criterion nobody can measure will not fire.
+
 ## The pattern across three platforms, and it is the most important thing the sweep has produced
 
 Three times now, a "platform search will find us" claim has died in the platform's own source code,
