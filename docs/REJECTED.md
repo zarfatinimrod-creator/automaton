@@ -1018,6 +1018,69 @@ through a report without checking it still exists, and citing curated lists as e
 egress note — method stated up front, blocked hosts listed at the end — is the shape every report
 should take.
 
+## `content-seo` — zero survivors, the fifteenth and last group, audited 2026-09-06
+
+Full audit: `research/colony-sweep/audits/content-seo.md`. Supervisor report:
+`research/colony-sweep/groups/content-seo.md`. Fifteenth group audited, fifteenth cut — the criteria
+sweep is complete. **Group revenue today: ₪0. Month one: ₪0. Honest twelve-month figure: ₪0/month.**
+Nine scouts including `clipping-campaigns`, added the same morning after the owner sent the word.
+
+**What closes the group.** Every money model any scout found — ads, affiliate links, sponsorships,
+featured listings, newsletter CPMs, lead sales, per-view clipping — is a multiplier on traffic, and no
+scout named a channel that brings traffic without the owner's voice. Five of nine reached that sentence
+independently; it is constraint 7 in its purest form. The one comparable with real revenue (a curated
+open-source-alternatives directory) got its audience from Product Hunt and a founder's Twitter, both
+closed to this operator. Constraint 8 lands here hardest of any group: a calculator, a comparison, a
+directory of public tools is by construction something anyone can build from public inputs.
+
+**Clipping, specifically, because the owner asked.** Whop does pay Israel. The scout rendered a vendored
+mirror of Whop's own payout docs (country grid contains Israel; the sanctioned list does not), and the
+string was confirmed twice, by code search and by rendering — the auditor, who reached no rendered source,
+graded it "unearned", and on the evidence the scout's grade stands with two caveats the auditor is right
+about: the mirror is pinned to a commit and can go stale, and payability to Israel is not the same as a
+campaign's `allowed_country_codes` admitting an Israeli. That reverses the repo's TikTok verdict for one
+mechanism: the payer is a US platform, not TikTok. It changes nothing about the line. The blended paid
+rate is ~$0.39 per 1,000 views, so the target needs ~13.8M views a month; the wage floor is set by human
+clippers at $300–1,500 per million views; and the only human-free way to that volume is many
+machine-cut accounts, which TikTok's originality policy de-distributes (from 15 Sep 2025), YouTube's
+inauthentic-content policy demonetises (from 15 Jul 2025), and Whop's fraud terms claw back across
+"accounts that appear to be related". Payout also needs a one-time ID upload, which is the owner's.
+Rejected; the rail is recorded as reusable by any line selling to a US audience.
+
+**Three of the supervisor's reasons were wrong, and the verdict does not need them.** The Mediavine
+and Journey gates are stale by eight months: Journey accepts 1,000 Tier-1 sessions since January 2026
+and Mediavine main accepts on $5,000 of annual ad revenue — the real gate is Tier-1 *geography*, which a
+Hebrew property fails by construction, plus AI-content risk, which is narrower than stated (the published
+prohibition is on mass-produced, unedited, undisclosed AI content; reported terminations were for
+overuse). AdSense payability to Israel is not UNKNOWN: Israel is on the access list, the payments help is
+localised in Hebrew, wire and EFT are the rails — a grade that, if inherited, would wrongly poison every
+Google-Payments line. And the "10× traffic error" charged against a scout is a unit confusion (pageviews
+against uniques); the true error was ~2.7×. Ezoic's 250,000-user floor (19 Feb 2026) is confirmed, but
+its Incubator programme for smaller sites was omitted. The ad rejection survives on ceiling arithmetic
+alone: ~1–2.7 million monthly pageviews for the target on AdSense.
+
+**The hole the auditor found is a method hole, and it is this repo's.** Nobody measured. The whole group
+argues from "traffic the colony does not have" without one Search Console or analytics number for the
+four shipped products. A zero that was never counted is an assertion. The two cheapest things this group
+could have done were not done: pull the baseline for the live properties, and propose the 90-day measured
+test that one domain against the ₪200 float would buy. Both are queued as owner-free steps.
+
+**Angles missed.** An English-language property — nothing in the mandate requires Hebrew, and every
+reachable gate is Tier-1 geography, not volume, which turns "unreachable" into "reachable, low RPM,
+probably still below the bar", a different and testable claim. GitHub as the distribution channel — the
+comparable that killed the directory line started as a GitHub list, and a GitHub-native resource needs
+no face, no voice and no launch; it is the one channel shaped like this mandate and no scout examined it.
+The no-minimum ad tier (Infolinks, Media.net, Adsterra, PropellerAds) — pays worse, and its popunder and
+push inventory needs a written constitution refusal like the one given to directory submission.
+Answer-engine referral as a measurable channel. Price elasticity of a listing (₪30/month to twenty Israeli
+vendors is a different, still small, business). Buying a property rather than building one is
+budget-bound, not absent.
+
+**Kept as permanent rejections, on the supervisor's reasoning the audit confirmed:** paid communities
+(the product is a host who answers people; a hostless one deceives the buyer), Raptive (its review is for
+human-made content; passing it would be deceit), beehiiv Boosts (engagement farming in shape), Kol Zchut
+(licence), directory submission as a service, Israeli-vendor affiliate programmes.
+
 ## The pattern across three platforms, and it is the most important thing the sweep has produced
 
 Three times now, a "platform search will find us" claim has died in the platform's own source code,
