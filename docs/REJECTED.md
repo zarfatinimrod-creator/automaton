@@ -957,6 +957,67 @@ in `storefronts`, and it is not a line.
 - **Kill criteria are not instrumented** — "5 studios created an account, 2 paid" needs analytics and
   a ledger hook that do not exist. A kill criterion nobody can measure will not fire.
 
+## `licensing-ip` — zero survivors, and the walls were wrong, audited 2026-09-06
+
+Full audit: `research/colony-sweep/audits/licensing-ip.md`. Supervisor report:
+`research/colony-sweep/groups/licensing-ip.md`. Fourteenth group audited, fourteenth cut.
+**Group revenue today: ₪0. Month one: ₪0. Honest twelve-month figure for the whole group: ₪0/month.**
+
+**`licensing-ip` — zero survivors, and the walls were wrong.** The verdict stands: ₪0 today, ₪0 at
+twelve months. Two of the three walls do not. The price floor is zero only for what we can make —
+Hebrew fonts publish ₪350–450 a weight — and AI supply is not universally refused: Cults3D's
+`createCreation` takes a writable `madeWithAi`. What closes the group is narrower: Adobe pays the
+only non-trivial rate and its AI declaration is portal-only (no contributor upload API), and every
+API-driven venue either hides AI work by default or pays $0.04–0.07 a download. Iconfinder,
+researched as live, shut on 15 Nov 2025; unverified contributors lost their balances. Reopen only
+on Adobe's own page showing the declaration set without a per-batch human.
+
+**Why the walls matter when the verdict stands.** A wall is a re-open trigger. A future session that
+finds "the price floor is zero" and "every venue refuses AI" both false — and both are refutable from
+this group's own files in under an hour — will conclude the group was closed carelessly and re-open
+all of it. So the audit replaces them. Wall 1 was built on two `awesome-*` directories, which
+`docs/AWESOME_ROUTE.md` forbids as evidence of demand, and which the `stock-media` scout had itself
+labelled "directory… not that anyone buys" before the supervisor promoted it to the headline. Per
+asset class the floor is not zero: Hebrew retail fonts list ₪350–450 a weight and ₪590 for a web
+licence, Adobe stock stills pay $0.33–0.99 a download, a self-serve code licence (Qt) is €546 a
+year. It *is* zero for what this colony can produce — generic stock, icons, consumer STL, datasets
+without provable provenance. Wall 2 fails at code grade: the `createCreation` mutation on Cults3D
+takes `madeWithAi` as a writable argument, verified in four independent repos, so on at least one
+paying venue the honest AI declaration needs no human and no portal. The ban is a *media*-marketplace
+fact the supervisor applied to fonts, datasets and code, where it does not reach. Wall 3 is true of
+Freepik, itch.io and Creative Fabrica and false of Adobe, and "cannot be shown to pay an Israeli" is
+an evidence gap stated as a fact — the supervisor's own scout graded Creative Market payable and this
+repo already holds the rendered finding that Gumroad pays ILS.
+
+**The only testable candidate is dead for a corrected reason.** Adobe Stock has no contributor
+upload API: the CSV it accepts has five columns and no AI field (`Filename,Title,Keywords,Category,
+Releases`, rendered from the spec), and a 2026-08-25 research document in a public repo states that
+every action "must occur in the Contributor Portal" with login and CAPTCHA "user-controlled" — which
+also defeats the unattended-browser fallback. Its economics were never the killer: measured against
+this repo's ₪300/month floor rather than ₪20,000, Adobe needs 82–246 downloads a month, not the
+supervisor's 5,500–16,000. The supervisor measured against the wrong number by a factor of 66.
+
+**What nine agents missed.** Iconfinder, carried through the whole report as a live venue, shut on
+15 November 2025 and unverified contributors lost their balances — a marketplace balance is not
+money, which is this repo's ledger rule from the other side. Creative Fabrica and Canva Creators,
+live venues in exactly this group's categories, were never named by any agent and appear nowhere in
+the repo; Canva pays creators *for training rights to human-made content*, the inverse of what the
+group was selling. Hebrew speech and TTS, the one Hebrew asset class nobody checked, is already free
+(`ivrit.ai`, 20,000+ hours, and MAFAT's NLP hub) and needs a human speaker's consent. MyMiniFactory
+acquired Thingiverse in February 2026 with an anti-AI stance — a 2026 move in the group's own
+vertical that nobody found. Dual licensing was proven possible and never argued as the sequencing
+shape constraint 8 allows. Getty/iStock and Alamy were not examined.
+
+**Reopen condition, stated once.** Adobe's own contributor pages showing the AI declaration settable
+without a per-batch human; or 250 paid downloads inside one month read from a contributor dashboard.
+Nothing short of that, and no directory count in either direction.
+
+**For the next supervisor.** The audit names eleven errors; three recur across groups and are worth
+copying into the brief: measuring against ₪20,000 instead of the ₪300 floor, carrying a venue
+through a report without checking it still exists, and citing curated lists as evidence. The audit's
+egress note — method stated up front, blocked hosts listed at the end — is the shape every report
+should take.
+
 ## The pattern across three platforms, and it is the most important thing the sweep has produced
 
 Three times now, a "platform search will find us" claim has died in the platform's own source code,
