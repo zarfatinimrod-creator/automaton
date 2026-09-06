@@ -3,8 +3,8 @@
  *
  * The owner asked for at least a hundred agents searching by criteria, with a
  * supervisor over each group of criteria, run through the chain of command.
- * This file is that mandate as data: 14 criterion groups of 8 criteria each,
- * 112 in total, each one a self-contained search brief a scout can be given
+ * This file is that mandate as data: 15 criterion groups of 8 criteria each (content-seo has 9),
+ * 121 in total, each one a self-contained search brief a scout can be given
  * with no further context.
  *
  * It lives in src/ rather than in a workflow script so both executors can use
@@ -146,6 +146,7 @@ const RAW_GROUPS: RawGroup[] = [
       ['hebrew-seo', 'Hebrew SEO opportunity: keyword volumes for Israeli business and tax queries, the incumbents (Kol Zchut, Green Invoice magazine, accountants blogs), and where a small site can actually win.'],
       ['ai-content-policy', 'Google policy and observed treatment of AI-generated content through 2026, AI Overviews impact on tool-site traffic, and what survives versus what gets deindexed.'],
       ['newsletters-communities', 'Newsletters and paid communities: can they run without a human voice, what sponsors pay, platform payout rails, and honest assessment of whether this fits an operator who does not talk to people.'],
+      ['clipping-campaigns', 'Paid "clipping": creators, streamers and brands paying clippers per 1,000 views for short cuts posted to TikTok, Reels and Shorts — Whop clipping campaigns, Clipping.gg, direct programmes. Real payout rates and caps in 2026, proof anyone was paid, whether a faceless machine-run account carrying no owner name can enrol and be paid, KYC on the payout side, platform rules on reposted and machine-cut content, and the honest income curve for one operator running many accounts.'],
     ],
   },
   {

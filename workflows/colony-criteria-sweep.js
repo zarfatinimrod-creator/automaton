@@ -4,14 +4,14 @@
 // Regenerate: pnpm exec tsx scripts/gen-sweep-workflow.ts
 //
 // The revenue colony's chain of command, run as one workflow:
-//   120 scouts (one per criterion) -> 15 supervisors (one per group)
+//   121 scouts (one per criterion) -> 15 supervisors (one per group)
 //   -> 15 auditors (one per supervisor) -> chief auditor -> board.
 
 export const meta = {
   name: 'colony-criteria-sweep',
-  description: '120 scout agents search one income criterion each; a supervisor per criterion group, an auditor per supervisor, then chief auditor and board',
+  description: '121 scout agents search one income criterion each; a supervisor per criterion group, an auditor per supervisor, then chief auditor and board',
   phases: [
-    { title: 'Scouts', detail: '120 workers, one per criterion, across 15 groups' },
+    { title: 'Scouts', detail: '121 workers, one per criterion, across 15 groups' },
     { title: 'Supervisors', detail: 'one supervisor per criterion group: dedupe, score, reject' },
     { title: 'Auditors', detail: 'one auditor per group, adversarially refuting the supervisor' },
     { title: 'Board', detail: 'chief auditor then board: portfolio decisions' },
@@ -907,6 +907,10 @@ const ALL_GROUPS = [
       [
         "newsletters-communities",
         "Newsletters and paid communities: can they run without a human voice, what sponsors pay, platform payout rails, and honest assessment of whether this fits an operator who does not talk to people."
+      ],
+      [
+        "clipping-campaigns",
+        "Paid \"clipping\": creators, streamers and brands paying clippers per 1,000 views for short cuts posted to TikTok, Reels and Shorts — Whop clipping campaigns, Clipping.gg, direct programmes. Real payout rates and caps in 2026, proof anyone was paid, whether a faceless machine-run account carrying no owner name can enrol and be paid, KYC on the payout side, platform rules on reposted and machine-cut content, and the honest income curve for one operator running many accounts."
       ]
     ]
   },
@@ -1216,7 +1220,7 @@ const ALL_GROUPS = [
   }
 ]
 
-// Waves. A full fan-out of 152 agents does not fit inside one usage
+// Waves. A full fan-out of 153 agents does not fit inside one usage
 // window - the first full run died on the session limit with 123 of 128 agents
 // unstarted. So the sweep is resumable by design:
 //   args = { groups: ['storefronts', 'payment-rails'] }  sweep those groups only
@@ -1382,7 +1386,7 @@ const chief = await agent([
 })
 
 const board = await agent([
-  'You are the BOARD of the revenue colony. You decide where effort and money go. Everything below has already been searched by 120 scouts, ranked by 15 supervisors, attacked by 15 auditors and re-checked by the chief auditor.',
+  'You are the BOARD of the revenue colony. You decide where effort and money go. Everything below has already been searched by 121 scouts, ranked by 15 supervisors, attacked by 15 auditors and re-checked by the chief auditor.',
   '',
   MISSION,
   '',

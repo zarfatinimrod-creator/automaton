@@ -54,37 +54,35 @@ board — on Fable. Putting Fable in the fan-out is how the quota died before; p
 at the top is what the rule is for. Set `model` explicitly on every agent in a fleet:
 inheriting the session model means a session switch silently re-tiers a hundred agents.
 
-## Skills installed in this repo (added 3.9.2026 and 4.9.2026 at the owner's request)
+## Skills installed in this repo (added 3.9, 4.9 and 6.9.2026 at the owner's request)
 
-**`.claude/skills/` holds 115 vendored skills**, so a fresh container has them without a network
-call: the 14 [Superpowers](https://github.com/obra/superpowers) skills, plus 101 selected on 4.9.2026
+**`.claude/skills/` holds 138 vendored skills**, so a fresh container has them without a network
+call: the 14 [Superpowers](https://github.com/obra/superpowers) skills, 101 selected on 4.9.2026
 from four collections the owner sent — `addyosmani/agent-skills` (25), `mattpocock/skills` (23),
-`affaan-m/ECC` (37 of 286) and `NousResearch/hermes-agent` (16 of 196). All MIT.
+`affaan-m/ECC` (37 of 286) and `NousResearch/hermes-agent` (16 of 196) — and 23 added on 6.9.2026
+from three more: `Panniantong/Agent-Reach` (its one skill, `agent-reach`), `diegosouzapw/OmniRoute`
+(`or-*`, 7 of 47) and `AgriciDaniel/claude-obsidian` (`co-*`, all 15). All MIT.
 
-**Read `docs/SKILL_SOURCES.md` before adding more.** Those four repos hold 651 skills between them
-and taking all of them would cost ~32,600 tokens of every session's context; the 101 chosen cost
-~8,200. The allowlist is code, in `scripts/install-skills.mjs`, so the choice can be re-derived and
-edited rather than guessed at. The fifth repo the owner sent, `mrdoob/three.js`, is a 3D rendering
-library and not a skill at all — it was deliberately not installed, and the reasoning is recorded
-rather than dropped.
+**Read `docs/SKILL_SOURCES.md` before adding more.** The seven repos hold over 1,200 `SKILL.md`
+files between them and taking all of them would cost ~78,800 tokens of every session's context; the
+124 chosen cost ~10,300. The allowlist is code, in `scripts/install-skills.mjs`, so the choice can be
+re-derived and edited rather than guessed at. The eighth repo the owner sent, `mrdoob/three.js`, is a
+3D rendering library and not a skill at all — it was deliberately not installed, and the reasoning is
+recorded rather than dropped.
 
-**One thing about them is unverified, and it matters at the start of the next session.** They were
-copied to `.claude/skills/` in the repo *and* to `~/.claude/skills/` at the same time, so the fact
-that they loaded proves nothing about which copy did it. I tried to separate the two by removing one
-skill from the user directory; the skill list did not refresh, so the experiment was inconclusive.
-**If a session starts and these skills are not offered, the repo copy does not register on
-its own** — run this once and they will be:
+**The repo copy registers on its own — settled 6.9.2026.** The 23 new skills were written only to
+`.claude/skills/` (the installer was run without `--user`; `~/.claude/skills/` does not contain them)
+and the harness offered all 23 in the same session. No copy to the user directory is needed, and
+`install-skills.mjs --user` is now just a convenience for a machine outside this repo.
 
-```bash
-cp -r "$CLAUDE_PROJECT_DIR/.claude/skills/." ~/.claude/skills/
-```
-
-**The 4.9.2026 install repeated the same flaw and did not settle it** — `install-skills.mjs --user`
-copied to both places again, so the fact that all 101 registered immediately still proves nothing
-about which copy did it. The next fresh container settles it for free and needs no experiment: the
-user directory starts empty and only the git-tracked repo copy survives. If the skills are offered at
-that session's start, the repo copy registers on its own, this note can be deleted, and the claim
-made properly. Run `install-skills.mjs` **without** `--user` to keep that test clean.
+**`vendor/claude-obsidian/` is runtime, not a skill.** The 15 `co-*` skills execute a stdlib-only
+Python 3.11 core (`scripts/claude-obsidian.py`, `claude_obsidian/`), vendored so they run from a fresh
+clone; each skill's `PRODUCT_ROOT` line is rewritten by the installer to point at it. Verified 6.9.2026
+by initialising, doctoring and linting a scratch vault from that path. Two of the seven `or-*` skills
+are worth knowing by name: `or-ponytail` (the laziest solution that works — YAGNI, stdlib before
+dependencies) is the general one; the other six are the operator manual for standing up OmniRoute as
+an inference gateway, and do nothing until it runs. `agent-reach` needs `pip install agent-reach` and
+a host with egress; in this container only GitHub-hosted feeds get through (verified).
 
 The three that matter most for the failure modes this repo actually has:
 
