@@ -4,7 +4,7 @@ import {
   validateDocument, createStore, formatDateHe,
 } from '../src/lib/invoice.js';
 import { formatILS, parseAmount } from '../src/lib/money.js';
-import { isProConfigured, openProCheckout } from '../src/lib/paddle.js';
+import { proButtonState, openProCheckout } from '../src/lib/gumroad.js';
 import { loadStoredLicense, storeLicense, verifyLicense } from '../src/lib/license.js';
 import { applyBranding, DEFAULT_ACCENT, emptyBranding, isValidLogo, MAX_LOGO_BYTES, normalizeBranding } from '../src/lib/branding.js';
 
@@ -235,23 +235,30 @@ $('#brand-clear').addEventListener('click', () => {
   saveBranding(); refreshBranding();
 });
 
-// Checkout is offered only when Paddle is configured AND a public key exists to
-// verify the licence it will produce. Selling a key nobody can verify would be
+// Every state of the Pro button is decided in src/lib/gumroad.js, not here, so
+// the honest states are unit-tested rather than trusted. Checkout opens only
+// when a Gumroad product URL exists AND a public key exists to verify the
+// licence that purchase produces - selling a key nothing can verify would be
 // taking money for nothing.
-if (isProConfigured(site) && site?.pro?.publicKey) {
-  const cta = $('#pro-cta');
-  cta.disabled = false;
-  cta.textContent = 'שדרוג ל-Pro';
-  $('#pro-note').textContent = 'תשלום מאובטח דרך Paddle. לאחר התשלום יישלח אליך מפתח רישיון.';
-  cta.addEventListener('click', () => {
-    openProCheckout(site, { successUrl: `${location.origin}${location.pathname}?purchased=1` })
-      .catch((e) => { $('#pro-note').textContent = `שגיאה בפתיחת התשלום: ${e.message}`; });
+const proState = proButtonState(site);
+const proCta = $('#pro-cta');
+proCta.textContent = proState.label;
+proCta.disabled = !proState.enabled;
+$('#pro-note').textContent = proState.note;
+if (proState.enabled) {
+  proCta.addEventListener('click', () => {
+    try {
+      openProCheckout(site);
+    } catch (e) {
+      $('#pro-note').textContent = `שגיאה בפתיחת הרכישה: ${e.message}`;
+    }
   });
 }
 
+// Gumroad can be told to send the buyer back here after the purchase.
 if (new URLSearchParams(location.search).get('purchased') === '1') {
   $('#pro-activate').open = true;
-  $('#license-note').textContent = 'תודה! הזן כאן את מפתח הרישיון שקיבלת במייל.';
+  $('#license-note').textContent = 'תודה! הזן כאן את מפתח הרישיון שקיבלת עם המוצר ב-Gumroad.';
 }
 
 const stored = loadStoredLicense();

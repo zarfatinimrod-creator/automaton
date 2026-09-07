@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Issue Pro licence keys. The owner runs this after a Paddle purchase.
+// Issue Pro licence keys. The owner runs this after a Gumroad sale and puts
+// the key in the product content / licence field Gumroad delivers to the buyer.
 //
 //   node scripts/make-license.js init            # once: create the signing keypair
 //   node scripts/make-license.js issue <buyer>   # per sale: print the key to send
@@ -45,7 +46,7 @@ if (command === 'init') {
 
 if (command === 'issue') {
   if (!subject) {
-    console.error('Usage: node scripts/make-license.js issue <buyer email or Paddle order id>');
+    console.error('Usage: node scripts/make-license.js issue <buyer email or Gumroad sale id>');
     process.exit(1);
   }
   if (!existsSync(PRIVATE_FILE)) {

@@ -130,3 +130,16 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); out
 .data-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
 .data-table th, .data-table td { border: 1px solid var(--line); padding: 8px; text-align: right; }
 .data-table th { background: #f0f2f5; }
+
+/* Registrar annual-fee page */
+.status-box { background: #f2f4f7; border-color: var(--line); }
+.verdict.reduced { background: var(--ok-bg); border: 1px solid var(--ok); }
+.verdict.full { background: var(--warn-bg); border: 1px solid var(--warn); }
+.legal-note { border-top: 1px solid var(--line); margin-top: 1rem; padding-top: 1rem; font-size: .95rem; }
+.legal-note h3 { margin: 0 0 .5rem; font-size: 1.05rem; }
+.legal-note p { margin: 0 0 .75rem; }
+fieldset { border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin: 12px 0; }
+fieldset[disabled] { opacity: .65; background: #fafbfc; }
+legend { font-weight: 700; padding: 0 6px; color: var(--muted); }
+.checkbox-field label { display: flex; align-items: flex-start; gap: 8px; font-weight: 400; }
+.checkbox-field input { margin-top: .35rem; }
