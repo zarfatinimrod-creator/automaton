@@ -115,6 +115,18 @@ lists, all on GitHub — which matters because GitHub is one of the few hosts th
 proxy does not block. It is a **research source for the criteria sweep**, and it costs zero of the
 shared WebSearch budget. See `docs/CRITERIA_SWEEP.md`.
 
+## Agent worktrees (learned 7.9.2026, three times in one day)
+
+- **An isolated agent worktree can start on an old base.** Three builders in a row found their worktree
+  at `90816df` (a merge with no `products/`, no `research/`, no `state/`). Every brief for a worktree
+  agent must open with: run `git log --oneline -1` and `ls products/ src/revenue/`; if anything is
+  missing, `git reset --hard <branch>` before touching a file.
+- **Merging a finished worktree is a script, not a ritual:** `scripts/merge-worktree.sh <branch> "<subject>"`
+  merges with `--no-ff` and the repo trailers, runs typecheck and the revenue suite, pushes, and removes the
+  worktree and branch. On a conflict it stops with the file list; resolve, commit, re-run.
+- Worktree agents must not edit `logs/CHECKPOINT.md` (the main thread owns it) and should write their own
+  `logs/YYYY-MM-DD-<slug>.md`; two agents editing the checkpoint is a guaranteed conflict.
+
 ## Build / test
 - `pnpm install`, `pnpm typecheck`, `pnpm test` (full suite takes >10 minutes here; run targeted files with `npx vitest run <path>` while iterating).
 - Revenue colony: `src/revenue/`, docs in `docs/CHAIN_OF_COMMAND.md` and `docs/INCOME_PLAN.he.md`, playbooks in `skills/`.
