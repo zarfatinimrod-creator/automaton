@@ -47,11 +47,9 @@ on:
     # delayed there. Note GitHub only runs `schedule` from the default branch; on a
     # feature branch this workflow is dispatch-only until it merges.
     - cron: "23 5 * * 2"
-  push:
-    paths:
-      - ".github/workflows/render-watch.yml"
-      - "scripts/render-watch.mjs"
-      - "research/rendered/urls.txt"
+  # No `push` trigger, on purpose: a push of urls.txt plus a manual dispatch made two
+  # runs race for the same files on 7.9.2026, and the loser's rebase conflicted on the
+  # regenerated captures. Adding a URL is: push urls.txt, then dispatch once.
 
 # The job commits the fetched pages back to the branch it ran on.
 permissions:
@@ -90,6 +88,17 @@ jobs:
       # refusing us is data about the site, not a broken build. It exits non-zero
       # only when the script itself is broken: a malformed urls.txt, a duplicate
       # slug, an unwritable output directory. Bodies are capped at 5 MB.
+      # A queued run checks out the sha it was queued on. By the time it starts, the run
+      # before it may have committed fresh captures to the branch. Fetch from the tip
+      # so this run's "changed since last time" compares against those, not against
+      # a stale tree — that stale comparison is what produced two commits fighting
+      # over the same meta files on 7.9.2026.
+      - name: Move to the branch tip before fetching
+        run: |
+          git config user.name "colony-bot"
+          git config user.email "colony-bot@users.noreply.github.com"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+
       - name: Fetch the pages the research says would settle a question
         env:
           RENDER_WATCH_URLS: ${{ inputs.urls }}
@@ -126,7 +135,9 @@ jobs:
               exit 0
             fi
             echo "Push rejected; rebasing and retrying (attempt ${attempt})."
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+            # `-X theirs` during a rebase keeps the commit being replayed — this run's
+            # fresh capture — when both sides rewrote the same regenerated file.
+            git pull --rebase -X theirs --autostash origin "${GITHUB_REF_NAME}"
           done
           echo "Could not push the fetched pages after 3 attempts." >&2
           exit 1
