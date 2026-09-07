@@ -157,8 +157,9 @@ Instrument summary, verbatim in the part that asserts fact:
 > NIS) is entitled to a significant tax benefit: automatic deduction of expenses at a rate of 30% of turnover."*
 
 **Analysis.** Top-3 domains: **greeninvoice.co.il, kolzchut.org.il, ucan2.co.il.** Holders: Green Invoice's
-content magazine at #1, Kol Zchut at #2, then three accountant/advisory firms (#4 גיל הלוי גולד רו״ח, #5 cpa-ea,
-#6 יובלים) and one business-services site (#3). **Small independent tool site: none. Tools of any kind: none.**
+content magazine at #1, Kol Zchut at #2, then three accountant/advisory firms (positions 4, 5 and 6 — גיל הלוי
+גולד רו״ח, cpa-ea, יובלים) and one business-services site (#3). **Small independent tool site: none. Tools of
+any kind: none.**
 
 This is `content-seo` §1–3's predicted incumbent set with nothing left over: the NGO encyclopedia, the invoicing
 SaaS doing content marketing, and the accountants' blogs, in that order. Two observations that matter more than
@@ -362,8 +363,9 @@ Four patterns, each supported by more than one query:
 MISSION constraint 7: *"a line may not be built before its acquisition channel is named, and the first thing
 built on any line is the cheapest test that a stranger can find it."*
 
-### `il-biz-tools` — **channel NAMED and PARTIALLY DEMONSTRATED. Build #4 proceeds as a measurement. The Pro
-feature does not.**
+### `il-biz-tools` — channel NAMED and PARTIALLY DEMONSTRATED
+
+**Build #4 proceeds as a measurement. The Pro feature does not.**
 
 The channel passes the naming test with better evidence than any platform channel in this repo: two of six SERPs
 are held by small independent tool sites, so a Hebrew calculator page is not structurally barred from page one
@@ -382,8 +384,9 @@ because it is a measurement and this pull says the measurement is worth taking. 
 arriving from search; it shows free tools ranking and paid ones absent. The pages worth publishing are worth
 ₪0 by construction; the page worth money has the worst SERP of the six.
 
-### `pcn874` — **channel NAMED and BEST-EVIDENCED IN THE PULL. Build #3 proceeds in the board's stated order,
-validator first. The spec gate still outranks it.**
+### `pcn874` — channel NAMED and BEST-EVIDENCED IN THE PULL
+
+**Build #3 proceeds in the board's stated order, validator first. The spec gate still outranks it.**
 
 Nine results, zero tools. The shape the board bet on — a standalone spreadsheet-to-PCN874 converter, and a free
 validator in front of it — **is not served by anybody on this SERP**, and the competition for the term is

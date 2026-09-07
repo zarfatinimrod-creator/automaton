@@ -35,9 +35,15 @@ would upload. A wrong PCN874 file is the user's VAT exposure (harm asymmetry not
    citation; only then remove the "unverified" wording.
 2. **Generator second:** spreadsheet or CSV → validated PCN874 file, built on the validator, with fixtures
    from the reconciled spec. Not before step 1.
-3. **Acquisition channel, named before launch** (constraint 7): Hebrew long-tail on the statutory term
-   (one SERP pull to `research/measurements/serp/`), plus the open-source core published on GitHub/npm under
-   the brand — the validator is the free version and the funnel; the generator is what is sold.
+3. **Acquisition channel, named before launch** (constraint 7): Hebrew long-tail on the statutory term,
+   plus the open-source core published on GitHub/npm under the brand — the validator is the free version and
+   the funnel; the generator is what is sold. **SERP pull done 7.9.2026**
+   (`research/measurements/serp/2026-09-07-hebrew-calculators.md`): nine results for the statutory term,
+   **zero standalone tools** — six accounting-software help pages, two mirrors of the Tax Authority's manual,
+   gov.il. Verdict: channel NAMED and the best-evidenced in the pull. Two qualifications travel with it: six
+   of the nine are vendors whose software already emits the file (the strongest counter-hypothesis to the
+   ₪600 ceiling, and a SERP cannot settle it), and the pull is an instrument reading, not demand. The
+   board's order — free validator first, count downloads — is the right test of both.
 4. **Rail:** Gumroad, ILS (owner step 3). Price band from the audit: a one-time licence or a per-period
    file; test two prices. Annual before monthly.
 5. **Record money only as money:** every sale through the Gumroad connector with its sale id. A download of

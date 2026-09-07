@@ -41,8 +41,14 @@ is why `MISSION.md` rule 4 exists.
 1. **Deploy through CI, not by hand:** Netlify linked to the repo (owner step 6), base `products/il-biz-tools`,
    build `node scripts/build-site.js`, publish `_site` — the allowlist `netlify.toml` declares.
 2. **Measure before pricing:** page views and tool uses (PostHog cookieless, only when a project key is set),
-   checkout starts, paid conversions → `revenue_kpi` daily. One Hebrew SERP pull for the calculator terms
-   goes to `research/measurements/serp/` verbatim; it is never automated (Google's terms).
+   checkout starts, paid conversions → `revenue_kpi` daily. The Hebrew SERP pull for the calculator terms is
+   done (`research/measurements/serp/2026-09-07-hebrew-calculators.md`, 7.9.2026, six queries, all SNIPPET)
+   and is never automated (Google's terms). **Constraint-7 verdict: channel NAMED and PARTIALLY
+   DEMONSTRATED.** The two calculator SERPs (VAT, net salary) are held by small independent tool sites, so a
+   new Hebrew page carries no day-one ranking handicap — but those are the free pages; the invoice query that
+   the Pro feature depends on returns zero tools, Kol Zchut first and a vendor advertising free invoicing in
+   its title. Build #4 proceeds as a measurement. **No SEO hour goes into `invoice.html`**, and the ₪400 keeps
+   its `contradicted` grade until a sale exists.
 3. **Ship one tool per SEO page in Hebrew** (title, meta, FAQ, schema.org). The registrar annual-fee page
    (board build #6) is the next one: a deadline calculator and a **free** reminder sign-up that stays disabled
    until 100 weekly views are measured, with the §30א(ג) disclosure at capture and Amendment 13 handling.
