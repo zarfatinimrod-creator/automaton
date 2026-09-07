@@ -69,6 +69,14 @@ accessalyze/pricing, accessiguard/pricing, `govi.co.il/` (הדוח לא נקב �
 - **דפוס חדש לריפו:** כל "חסום מכאן" עם URL שמופיע במחקר — נכנס ל-`research/rendered/urls.txt` ונפתר בריצה
   אחת של CI. הכלל נשאר: הבייטים אינם ממצא עד שסשן קרא אותם וכתב אותו לקובץ מחקר עם ציטוט שורה.
 
+**הריצה השנייה (19:20 UTC, `7176e4a`) סגרה גם את שאלת המטבע** (`a65a5b2`): מכירות ב-ILS מומרות ל-USD ברגע
+הרכישה ונכנסות ליתרת USD; רק USD/GBP/EUR מחזיקים אמצעי תשלום נפרד; **Wise והעברה בנקאית תומכים ב"מטבע המרה
+לתשלום" — אפשר לקבל שקלים לבנק ישראלי מיתרת USD**. $100 מינימום, תשלום ב-10 לחודש עם פיגור חישוב של חודש
+(~40–70 יום ממכירה לכסף), 3–6 ימי עסקים, בלי Stripe Connect. **מותר: SaaS כולל "REST APIs" ו-"AI-powered
+services"** — Freemius הוא ה-MoR היחיד שייקח מוצר בצורת x402/MCP ש-Gumroad אוסר. אסור: SaaS שמסופק על ידי
+בני אדם, תוכן AI מזיק, רפואי, מבוגרים. **עוד לא רונדר: העמלה ואימות הזהות** — שני העמודים בתור, **ריצה שלישית
+שוגרה ב-19:35 UTC**. `rails.ts` נושא הכול עם מספרי שורות.
+
 **(היסטוריה) רץ אז (18:45 UTC), סוכן Opus אחד:** (#30) `render-watch.yml` + `scripts/render-watch.mjs` + `research/rendered/urls.txt` ב-worktree —
 GitHub Actions כ-egress: מביא את עמוד המדינות הנתמכות של Freemius, חיפוש Apify Store (`/v2/store?search=accessibility`)
 ומחיר Govi ל-`research/rendered/`. **כשנוחת: למזג בסקריפט, ואז להפעיל על הענף הזה דרך `actions_run_trigger`
