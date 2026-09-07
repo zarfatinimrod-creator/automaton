@@ -1255,6 +1255,25 @@ that Actor's 30-day stranger count says anyone is looking. And the EAA scout's l
 agent skills in that category is the clearest picture the repo has of what "GitHub-native distribution" looks
 like when a category is being given away: it is where the free version lives, not where the first sale is.
 
+## Freemius as a second Israeli rail — UNKNOWN, and the ILS claim refuted, measured 7.9.2026
+
+Full report: `research/measurements/freemius-rail.md`. The candidate rail was carried in `src/revenue/rails.ts`
+on a scout's claim that Freemius "pays out in ILS with no conversion fee". Freemius's own code refutes that:
+every ILS occurrence (`class-fs-payment.php`, `CheckoutPopupOptions.ts`, `Pricing.js`) is a **buyer-side**
+checkout currency, no public file describes a payout currency, and the one payout sentence it ships is in the
+affiliate form. What is rendered: Freemius, Inc. (New York) is the merchant of record and the seller's "sole
+customer" under its EULA (mirrored in full on GitHub); SaaS and AI-powered software are explicitly allowed;
+payout by PayPal, Payoneer, wire or Wise at a $100 minimum with a ~40-day hold and ~10–11% all-in — all
+snippet-grade. **Whether Freemius pays an Israeli seller at all is unknown**: `freemius.com`, `web.archive.org`
+and `archive.org` are all egress-blocked from the container, and no mirror of the supported-countries page
+exists. The rail stays unusable, the portfolio's Gumroad concentration stays reported, and task #21 is closed
+as measured-unknown. **Re-open trigger: one rendered page**,
+`freemius.com/help/documentation/selling-with-freemius/supported-countries/`, fetched from a host with egress
+(a CI job, as `pcn874-spec-watch.yml` does), showing Israel and the payout currency. An anti-finding is on
+record: a search summary volunteered "ILS is supported, suggesting Israel is among the supported countries" —
+the exact inference that put the wrong line in `rails.ts`; buyer-side ISO dropdowns list Iran and North Korea
+too.
+
 ## Earlier rejections
 
 Kept in `docs/INCOME_PLAN.he.md` §4 with one-line reasons: Envato (bans AI files, 50%
