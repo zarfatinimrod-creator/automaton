@@ -29,13 +29,28 @@ Freemius עצמם** (ILS הוא מטבע קונה בלבד; שום קובץ צי
 עמודים חסומים (Freemius, חיפוש Apify Store, מחיר Govi) ל-`research/rendered/` — ואז מפעילים אותו על הענף
 דרך `actions_run_trigger`.
 
-**רץ עכשיו (18:10 UTC), ארבעה סוכני Opus — צד הקוד של בניות שחסומות על צעדי בעלים:** (#28) מסנן באונטי
-Algora ב-worktree — `src/revenue/bounties/{policy,intake,disclosure}.ts` + בדיקות + פלייבוק `revenue-oss-bounties`;
-(#29) `il-biz-tools` ב-worktree — Gumroad במקום Paddle ב-`site.json`, שער "לא מאומת" על שיעורי מס, דף אגרת רשם
-החברות עם מחשבון מועדים, גילוי §30א(ג) ותיקון 13, PostHog אופציונלי; (#21) מדידת Freemius כמסילה שנייה →
-`research/measurements/freemius-rail.md`. **כשנוחתים: `scripts/merge-worktree.sh <branch> "<subject>"` לשניים
-הראשונים; Freemius נקלט ל-`rails.ts` (`beforeUse`) ול-`REJECTED.md`.** אחר כך פתוח: #5 (MCP Registry — דומיין +
-ארגון), פלייבוק `revenue-pcn874`, ותשובות הבעלים (א'/ב' ל-Algora, Paddle, Devpost).
+**נחתו ומוזגו דרך `scripts/merge-worktree.sh` (18:20–18:45 UTC):**
+- **בנייה #2 — מסנן באונטי Algora** (`4c76e0d`): `src/revenue/bounties/{policy,intake,disclosure}.ts`, 89 בדיקות
+  (361 revenue סה"כ), פלייבוק `revenue-oss-bounties` נכתב מחדש. **רצפה: ₪37.50 לשעת-הערכה** — נגזרת ב-4 צעדים
+  מ-₪300/חודש (20% מהפורטפוליו → 32 שעות סוכן → ₪9.375/שעה ממומשת → ×4 לפי סף ה-kill של 25% הצלחה), מפורמטת
+  בקוד כדי שמבקר יגזור מחדש. **מה לא אומת:** אף CONTRIBUTING עם סעיף AI לא רונדר בסריקה — כללי המדיניות הם
+  צורות-משפט עם `provenance`, לא ציטוטים; שורת הסכום של `algora-pbc[bot]` לא רונדרה — הפרסר משווה לסכום שהמתקשר
+  מסר, ואי-התאמה = דילוג. false positive אחד מכוון ומתועד (איסור ואמירת-authorship באותו משפט → forbidden).
+- **בניות #4 (צד קוד) + #6 — `il-biz-tools`** (`0a1364b`): Paddle הוסר (`src/lib/paddle.js` נמחק, CSP בלי
+  `cdn.paddle.com`), בלוק `gumroad` ריק ב-`site.json` וכפתור Pro במצב "לא זמין עדיין" עד לקישור המוצר; **שער
+  פרסום**: עמוד שמרנדר שיעור מקובץ `verified:false` **לא מועתק ל-`_site/`** — במקומו הודעת "לא מאומת" עם
+  `noindex`, ומחוץ ל-sitemap; `check-html.js` נכשל על עמוד שלא סווג ב-`PAGE_RATE_SOURCES`. **`net-salary.html`
+  מוחזק** בגלל `tax-2026.json`. דף אגרת רשם החברות: מחשבון מועדים (31.3 / 1.4, מסומן "לא אומת מול מקור ראשוני"),
+  **הסכומים ₪1,338/₪1,777 לא מודפסים** (`renderAmounts:false`, בדיקה מוודאת שה-HTML לא מכיל אותם), הרשמה
+  לתזכורת מושבתת עד 100 צפיות שבועיות, גילוי §30א(ג) ותיקון 13 כטיוטה מסומנת. PostHog cookieless רק כשמפתח
+  קיים (שמות האופציות רונדרו מהתיעוד של PostHog). תיקון אגב: ה-FAQ וה-JSON-LD בדף הבית עדיין מכרו את רשימת
+  הלקוחות החינמית כ-Pro — תוקן. 120 בדיקות מוצר, `check-html` ירוק, `build-site` מייצר `_site/` עם הדף החדש.
+
+**רץ עכשיו (18:45 UTC), סוכן Opus אחד:** (#30) `render-watch.yml` + `scripts/render-watch.mjs` + `research/rendered/urls.txt` ב-worktree —
+GitHub Actions כ-egress: מביא את עמוד המדינות הנתמכות של Freemius, חיפוש Apify Store (`/v2/store?search=accessibility`)
+ומחיר Govi ל-`research/rendered/`. **כשנוחת: למזג בסקריפט, ואז להפעיל על הענף הזה דרך `actions_run_trigger`
+(workflow_dispatch רץ מכל ענף) — זה מה שסוגר את הטריגרים הפתוחים של Freemius, EAA ומכרזים בלי בעלים.**
+אחר כך פתוח: #5 (MCP Registry — דומיין + ארגון), ותשובות הבעלים (א'/ב' ל-Algora, Paddle, Devpost, 7 הצעדים).
 
 ## ✅ פסק הדירקטוריון נקלט לריפו (7.9.2026, 16:00–16:30 UTC, Opus, ב-worktree)
 
