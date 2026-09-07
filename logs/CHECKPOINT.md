@@ -21,7 +21,15 @@ Gumroad אחד) — הדירקטוריון קיבל את זה במודע, והב
 free Personal Account", לשימוש אוטומטי בלבד) ונכנס למדריך; `scripts/merge-worktree.sh` + מוסכמות worktree
 ב-`CLAUDE.md` (`e296979`); גוף PR #2 עודכן למצב הנוכחי (121/121, דירקטוריון, 6 מוצרים, 138 סקילים, המדריך).
 
-**רץ עכשיו (17:40 UTC), שלושה סוכני Opus — צד הקוד של בניות שחסומות על צעדי בעלים:** (#28) מסנן באונטי
+**נסגר (17:40–18:10 UTC):** שלושת הפלייבוקים של הקווים החיים נכתבו מחדש לפי הדירקטוריון + `revenue-pcn874`
+חדש (`cac58ae`). **Freemius (#21): נמדד — UNKNOWN**, והטענה ב-`rails.ts` ש"משלם בשקלים" **הופרכה מהקוד של
+Freemius עצמם** (ILS הוא מטבע קונה בלבד; שום קובץ ציבורי לא מתאר מטבע תשלום; `web.archive.org` גם חסום).
+`rails.ts` תוקן (`e6019fb`), פסקה ב-`REJECTED.md`, טריגר אחד: לרנדר את עמוד המדינות הנתמכות של Freemius
+ממארח עם egress. **מכאן הרעיון: GitHub Actions כ-egress.** סוכן רביעי (#30) בונה `render-watch.yml` שמביא
+עמודים חסומים (Freemius, חיפוש Apify Store, מחיר Govi) ל-`research/rendered/` — ואז מפעילים אותו על הענף
+דרך `actions_run_trigger`.
+
+**רץ עכשיו (18:10 UTC), ארבעה סוכני Opus — צד הקוד של בניות שחסומות על צעדי בעלים:** (#28) מסנן באונטי
 Algora ב-worktree — `src/revenue/bounties/{policy,intake,disclosure}.ts` + בדיקות + פלייבוק `revenue-oss-bounties`;
 (#29) `il-biz-tools` ב-worktree — Gumroad במקום Paddle ב-`site.json`, שער "לא מאומת" על שיעורי מס, דף אגרת רשם
 החברות עם מחשבון מועדים, גילוי §30א(ג) ותיקון 13, PostHog אופציונלי; (#21) מדידת Freemius כמסילה שנייה →
