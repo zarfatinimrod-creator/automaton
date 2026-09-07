@@ -366,3 +366,15 @@ credit prices rendered second-hand here) · `https://www.a11yscope.com/blog/acce
 > Prices: €0–30/month self-serve, $39–99 mid, $25k–150k/year enterprise.
 > **Re-open only on** a non-public EAA input — an enforcement register or a required filing — **or** a channel
 > that does not rank on prior success.
+
+
+## 10. Rendered 7.9.2026, after this report — by `render-watch.yml`
+
+`https://api.apify.com/v2/store?search=accessibility` was fetched by a GitHub Actions runner
+(`research/rendered/apify-store-accessibility.json`, HTTP 200, 3,027,635 bytes, 803 items — the search is
+loose). **[RENDERED]** Filtering title/name/description for accessib|wcag|eaa|axe gives 108 items. The free
+axe-core audit Actor `katzino/actor-web-a11y-audit` shows **84 total users, 3 in the last 30 days, 1,986 runs**;
+`constant_quadruped/lighthouse-auditor` (FREE) 164 users / 32 in 30 days / 5,411 runs. §8.1 asked whether the
+channel is "crowded" or merely "claimed": **it transacts — for free listings.** That does not re-open the line
+(constraint 8 still bites); it sharpens the verdict. `accessalyze.com` failed to resolve from the runner and
+`accessiguard.app`'s pricing text did not contain plan prices (client-rendered), so §8.2 stays open.

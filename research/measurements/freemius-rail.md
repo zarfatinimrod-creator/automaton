@@ -323,3 +323,15 @@ Eleven GitHub `search_code` calls and one `search_repositories` call, at zero se
 > Tel Aviv. Payouts: monthly, $100 minimum, PayPal/Payoneer/wire/Wise, roughly 40–70 days late, ~10–11% all-in.
 > SaaS and AI-powered software are permitted; resold, PLR and unregulated medical products are not. **No source
 > names Israel on the payout list; freemius.com and web.archive.org are both blocked.** Do not adopt.
+
+
+## 12. Rendered 7.9.2026, after this report — by `render-watch.yml`
+
+The supported-countries page was fetched by a GitHub Actions runner and stored as
+`research/rendered/freemius-supported-countries.{html,txt,meta.json}` (HTTP 200, 69,706 bytes). **[RENDERED]**
+"Supported Countries for Payouts" contains **Israel** (line 308 of the text extraction); the "Unsupported
+Countries" list (from line 574) holds Cuba, Iran and the other US-sanctioned states. Payout methods on the same
+page: PayPal MassPay (default), Payoneer, wire transfer (IBAN/SWIFT), Wise; "at least one payout method is
+available" per listed country. **Verdict revised: PAYS ISRAEL = YES (rendered).** Currency, fee, hold, KYC and
+the prohibited list remain as graded above; the pages that settle them (`/your-earnings/`,
+`/allowed-prohibited-products/`) are queued in `research/rendered/urls.txt`.

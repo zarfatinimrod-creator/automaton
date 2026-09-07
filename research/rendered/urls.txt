@@ -72,3 +72,9 @@ https://govi.co.il/	govi-home
 # or an empty page here is a fact about the runner's location, not about the portal.
 # --------------------------------------------------------------------------------
 https://mr.gov.il/ilgstorefront/he/	mr-gov-il-storefront
+
+# Linked from the rendered supported-countries page (research/rendered/freemius-supported-countries.html,
+# href="/help/documentation/selling-with-freemius/your-earnings/" and ".../allowed-prohibited-products/").
+# Settles the payout currency / fee / hold and the prohibited-products list that freemius-rail.md left snippet-grade.
+https://freemius.com/help/documentation/selling-with-freemius/your-earnings/	freemius-your-earnings
+https://freemius.com/help/documentation/selling-with-freemius/allowed-prohibited-products/	freemius-allowed-prohibited

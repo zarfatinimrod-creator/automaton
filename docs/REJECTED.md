@@ -1255,7 +1255,7 @@ that Actor's 30-day stranger count says anyone is looking. And the EAA scout's l
 agent skills in that category is the clearest picture the repo has of what "GitHub-native distribution" looks
 like when a category is being given away: it is where the free version lives, not where the first sale is.
 
-## Freemius as a second Israeli rail — UNKNOWN, and the ILS claim refuted, measured 7.9.2026
+## Freemius as a second Israeli rail — pays Israel (rendered), currency still unknown, ILS claim refuted, 7.9.2026
 
 Full report: `research/measurements/freemius-rail.md`. The candidate rail was carried in `src/revenue/rails.ts`
 on a scout's claim that Freemius "pays out in ILS with no conversion fee". Freemius's own code refutes that:
@@ -1273,6 +1273,17 @@ as measured-unknown. **Re-open trigger: one rendered page**,
 record: a search summary volunteered "ILS is supported, suggesting Israel is among the supported countries" —
 the exact inference that put the wrong line in `rails.ts`; buyer-side ISO dropdowns list Iran and North Korea
 too.
+
+**Rendered the same evening, by CI.** `.github/workflows/render-watch.yml` — GitHub's runner has the egress
+this container lacks — fetched Freemius's own "Supported Countries" page (`research/rendered/
+freemius-supported-countries.txt`). **Israel is listed under "Supported Countries for Payouts"** (line 308,
+between Isle of Man and Italy); the "Unsupported Countries" list that follows holds Cuba, Iran and the other
+US-sanctioned states. Payout methods rendered verbatim: PayPal MassPay (default), Payoneer, wire, Wise.
+**So the rail pays an Israeli seller.** What is still not rendered: the payout currency (presume USD — the ILS
+claim stays refuted), the fee and hold, and the prohibited-products list; the two pages that settle them are
+queued in `research/rendered/urls.txt`. `src/revenue/rails.ts` now grades Freemius `rendered` for payability and
+tells a line it may plan on a USD rail with an Israeli payout method. This is the first re-open trigger in the
+repo closed by a CI fetch rather than by a person.
 
 ## Earlier rejections
 

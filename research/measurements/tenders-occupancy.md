@@ -268,3 +268,12 @@ and an open-source clone syncing 78 publishers, zero stars, no price. No segment
 ₪249 buys aggregation plus a human editor, and several of those publishers geo-block non-Israeli traffic — the
 layer we cannot build. No usable channel was named. **Re-open only on a rendered Israeli tender product at or
 under ₪80/month, or a named owner-free channel to an Israeli SMB bidder.**
+
+
+## 11. Rendered 7.9.2026, after this report — by `render-watch.yml`
+
+A GitHub Actions runner fetched `govi.co.il/` → **HTTP 403** (`research/rendered/govi-home.meta.json`): the
+publisher geo-blocks or WAF-blocks non-Israeli traffic exactly as §3 predicted for other Israeli publishers, so
+§8.2 (a rendered Govi pricing page) stays open and cannot be closed from CI either. `mr.gov.il/ilgstorefront/he/`
+returned HTTP 200 (80,391 bytes) but its text extraction contains no alert/subscription wording, consistent with
+a client-rendered portal; §8.3 (free per-interest alerts) stays **unverified**.
