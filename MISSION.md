@@ -319,7 +319,7 @@ These are binding. When a decision is unclear, decide by these.
 Payment platforms pay identified humans only. A small number of one-time identity
 and payout steps are legally unavoidable. Everything else is ours.
 
-- Batch every unavoidable step into **one ordered checklist** (`docs/INCOME_PLAN.he.md`, section 6).
+- Batch every unavoidable step into **one ordered checklist** (`docs/OWNER_STEPS.he.md` — seven steps, encoded as data in `src/revenue/owner-steps.ts`; `docs/INCOME_PLAN.he.md` §6 now only points there).
 - Never invent a step that isn't required.
 - **Never** open an account in the owner's name, answer an identity check, or mark
   setup done on our own initiative. A line blocked on the owner sits in
@@ -366,7 +366,8 @@ Every task ends with a log in `logs/` per the format in `CLAUDE.md`.
 | Live state and the readable board report | `state/colony/` |
 | Sellable products | `products/` |
 | Per-line playbooks the directors load | `skills/revenue-*/` |
-| The ranked list of ways to earn, and the owner's checklist | `docs/INCOME_PLAN.he.md` |
+| The ranked list of ways to earn | `docs/INCOME_PLAN.he.md` |
+| The owner's checklist — seven one-time steps, what each does and unlocks | `docs/OWNER_STEPS.he.md` |
 | How the chain of command works | `docs/CHAIN_OF_COMMAND.md` |
 | Where we stopped | `logs/CHECKPOINT.md` |
 | Working conventions | `CLAUDE.md` |
