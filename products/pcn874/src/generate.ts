@@ -3,9 +3,20 @@
  *
  * Built on the validator, and it refuses to hand back a file the validator
  * rejects: `text` is `null` whenever this module's own `validatePcn874` run
- * reports a single `error` finding. That is the whole safety story. A wrong
- * PCN874 is the filer's exposure to the Tax Authority, not ours, so the
- * generator would rather produce nothing than produce something malformed.
+ * reports a single `error` finding, and the refused result carries no records
+ * either, so the refused file is not reachable through `validation` (see
+ * `withoutRecords`). A wrong PCN874 is the filer's exposure to the Tax
+ * Authority, not ours, so the generator would rather produce nothing than
+ * produce something malformed.
+ *
+ * **What that refusal does and does not cover.** The validator checks layout,
+ * field types, the two record counts and Appendix C's permitted values; it
+ * cross-checks NO amount at all, and deliberately so (docs/SPEC.md §5.2). So
+ * "the generator does not write a file its validator rejects" is a statement
+ * about the file's SHAPE and its counts — not about its totals being the ones
+ * the filer's books hold. The input rules in this file are what stand between a
+ * mistyped CSV and a wrong amount, which is why a ragged row and an amount this
+ * module cannot read without guessing are both refusals.
  *
  * Three rules govern what it will and will not compute:
  *
@@ -246,17 +257,42 @@ interface Amount {
 }
 
 /**
+ * A comma is a THOUSANDS separator here and nothing else.
+ *
+ * Stripping every comma — which this generator used to do — cannot tell a
+ * thousands separator from a decimal one, so a foreign-locale export of
+ * `"1800,00"` was read as ₪180,000 and written to the file with no finding of
+ * any kind. Israel writes the decimal point as a period, so the safe rule is:
+ * a comma is accepted only where a thousands separator can stand (groups of
+ * exactly three digits, the first group one to three), and any other comma is
+ * refused rather than guessed at.
+ */
+const AMOUNT = /^([+-]?)(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d+))?$/;
+
+/** `1800,00`, `10,00` — a decimal comma, which is not a thousands separator. */
+const DECIMAL_COMMA = /^[+-]?\d+,\d{1,2}$/;
+
+/**
+ * `1.000`, `12.500` — a period before exactly three digits, with at most three
+ * digits in front of it. It is ₪1 read as a decimal point and ₪1,000 read as a
+ * European thousands separator, and nothing in the cell says which. Refused,
+ * not guessed: the two readings are a thousandfold apart.
+ */
+const AMBIGUOUS_GROUP = /^[+-]?\d{1,3}\.\d{3}$/;
+
+/**
  * Parse a shekel amount and round it to a whole shekel, on the decimal string
  * rather than on a float, so 0.5 is a tie because it is one and not because of
  * binary rounding.
  */
 function parseAmount(raw: string): Amount | null {
-  const cleaned = raw.replace(/[\s,₪]/g, '');
+  const cleaned = raw.replace(/[\s₪]/g, '');
   if (cleaned === '') return { shekels: 0, tie: false };
-  const m = /^([+-]?)(\d+)(?:\.(\d+))?$/.exec(cleaned);
+  if (AMBIGUOUS_GROUP.test(cleaned)) return null;
+  const m = AMOUNT.exec(cleaned);
   if (!m) return null;
   const negative = m[1] === '-';
-  const whole = Number(m[2]);
+  const whole = Number(m[2]!.replace(/,/g, ''));
   const frac = m[3] ?? '';
   let up = false;
   let tie = false;
@@ -270,6 +306,34 @@ function parseAmount(raw: string): Amount | null {
   }
   const magnitude = whole + (up ? 1 : 0);
   return { shekels: negative ? -magnitude : magnitude, tie };
+}
+
+/**
+ * Why an amount was refused, in words that name the shape that was written.
+ *
+ * The two locale shapes get their own sentence because they are the ones that
+ * used to be read as an amount a hundred or a thousand times off, silently.
+ */
+function amountHint(raw: string): string {
+  const cleaned = raw.replace(/[\s₪]/g, '');
+  if (DECIMAL_COMMA.test(cleaned)) {
+    return (
+      ' The comma here is not a thousands separator, and this generator will not guess what it is: dropping it ' +
+      'would turn "1800,00" into ₪180,000. Write the agorot after a period ("1800.00"), or leave them out. A ' +
+      'comma is read only between groups of three digits ("1,800.00").'
+    );
+  }
+  if (AMBIGUOUS_GROUP.test(cleaned)) {
+    return (
+      ' A period before exactly three digits is ambiguous: "1.000" is ₪1 with three decimal digits and ₪1,000 ' +
+      'with a European thousands separator, and nothing in the cell says which. Write it without a separator ' +
+      '("1000"), or with fewer decimal digits ("1.0").'
+    );
+  }
+  return (
+    ' Write it as digits with an optional sign and an optional decimal part; a comma is read only as a ' +
+    'thousands separator ("1,800.00").'
+  );
 }
 
 /** "+" for zero and above, "-" below. Official line 174 for the zero case. */
@@ -325,7 +389,10 @@ function parseCsv(text: string, firstLine: number): CsvRow[] {
   };
   const endRow = (): void => {
     endCell();
-    if (!(cells.length === 1 && cells[0]!.trim() === '')) {
+    // A row of nothing but empty cells is dropped, however many cells it has.
+    // Excel writes a trailing ",,,,,,,," row routinely, and it carries no
+    // document: reading it as one produced `entry type ""` and refused the file.
+    if (!cells.every(c => c.trim() === '')) {
       rows.push({ line: rowLine, cells });
     }
     cells = [];
@@ -475,6 +542,36 @@ function parseRows(
         ...(officialText ? { officialText } : {}),
       });
 
+    // --- the row's width, before a single cell is read
+    //
+    // Cells are read by POSITION. A row that is not exactly as wide as the
+    // column header therefore shifts every cell after the gap into the wrong
+    // field, and the amounts land in fields Appendix A types as shekels rounded
+    // to the nearest shekel: an unquoted "1,800" split a ₪1,800/₪10,000 sale
+    // into VAT ₪1 and a total of ₪800, exit code 0, no warning. A truncated row
+    // read its missing cells as empty, and empty means zero, so it wrote a ₪0
+    // zero-rated sale. Neither is recoverable from the file, so neither is
+    // written.
+    if (row.cells.length !== columns.length) {
+      problems.add({
+        code: 'csv.row.cellCount',
+        severity: 'error',
+        line: row.line,
+        column: null,
+        message:
+          `this row has ${row.cells.length} cell(s) and the column header has ${columns.length}. Cells are read ` +
+          'by position, so a row of a different width puts the amounts in the wrong fields — silently, because ' +
+          'nothing in the file says which cell was meant to be where. The usual cause is a comma inside an ' +
+          'unquoted amount ("1,800" is two cells); quote the cell ("1,800") or write the amount without ' +
+          'separators. A short row is the other cause: every missing cell would be read as empty, and empty ' +
+          'means zero.',
+        sources: [ita('142-144'), ita('148-149')],
+        officialText:
+          'Total VAT in invoice / total VAT that is allowed (1/4…. 2/3…)   N(9)   Rounded to the nearest shekel – always a positive value; Invoice total not incl. VAT   N(10)   Always the 100%, always a positive value, rounded to the nearest shekel',
+      });
+      continue;
+    }
+
     const entryType = cell('entryType');
     if (!RECORD_TYPE_LETTERS.includes(entryType)) {
       fail(
@@ -508,7 +605,7 @@ function parseRows(
       fail(
         'row.amount.unreadable',
         vatAmount === null ? 'vatSum' : 'invoiceSum',
-        `${vatAmount === null ? 'vatSum' : 'invoiceSum'} ${JSON.stringify(vatAmount === null ? cell('vatSum') : cell('invoiceSum'))} is not a shekel amount. Write it as digits with an optional sign and an optional decimal part.`,
+        `${vatAmount === null ? 'vatSum' : 'invoiceSum'} ${JSON.stringify(vatAmount === null ? cell('vatSum') : cell('invoiceSum'))} is not a shekel amount.${amountHint(vatAmount === null ? cell('vatSum') : cell('invoiceSum'))}`,
         [ita('142-144'), ita('148-149')],
         'Total VAT in invoice / total VAT that is allowed (1/4…. 2/3…)   N(9)   Rounded to the nearest shekel – always a positive value',
       );
@@ -528,6 +625,55 @@ function parseRows(
         productChoice: HALF_AWAY_FROM_ZERO,
       });
     }
+    // --- the two ways a sale changes header total without anyone saying so
+    //
+    // Appendix C tells a taxable sale from a zero-rated one by the VAT cell
+    // being zeros (lines 271-283 against 250-270), and this generator applies
+    // that test to the value it is about to WRITE — a whole shekel. So a sale
+    // whose VAT cell was left empty, and a sale whose VAT rounds to zero, both
+    // move their whole amount out of "Total amount of taxable sales" and into
+    // "Total of zero value/exempt sales for period". Documented in both cases,
+    // and until now silent in both; a forgotten cell is not a decision.
+    const rawVat = cell('vatSum');
+    if (type.side === 'sale' && rawVat === '') {
+      problems.add({
+        code: 'row.vatSum.empty',
+        severity: 'warning',
+        line: row.line,
+        column: 'vatSum',
+        message:
+          'this sale row has no VAT, so its whole amount was counted in "Total of zero value/exempt sales for ' +
+          'period" rather than in the taxable sales total. An empty cell means zeros here, which is what tells ' +
+          'a zero-rated sale from a taxable one in Appendix C — write an explicit 0 if that is what you mean, ' +
+          'and the row stops being reported.',
+        sources: [ita('116-117'), ita('107')],
+        officialText:
+          '+/- symbol for total of zero value and exempt sales   +/-; Total of zero value/exempt sales for period   N(11)',
+      });
+    }
+    if (type.side === 'sale' && vatAmount.shekels === 0 && /[1-9]/.test(rawVat)) {
+      problems.add({
+        code: 'row.vat.roundedToZero',
+        severity: 'warning',
+        line: row.line,
+        column: 'vatSum',
+        message:
+          `this sale row's VAT is ${JSON.stringify(rawVat)}, which rounds to zero shekels, so the row was ` +
+          'counted in "Total of zero value/exempt sales for period" rather than in the taxable sales total. ' +
+          'The rounding decided which header total the amount joined.',
+        sources: [ita('142-144'), ita('116-117'), ita('107')],
+        officialText:
+          'Total VAT in invoice / total VAT that is allowed (1/4…. 2/3…)   N(9)   Rounded to the nearest shekel – always a positive value',
+        productChoice:
+          'Appendix C separates a zero-rated sale from a taxable one by the VAT cell being zeros (the "Zero ' +
+          'Value/Exempt \'SL\' – not export" row, lines 271-283, against the regular sale row, lines 250-270), ' +
+          'and the circular requires every amount "rounded to the nearest shekel" (lines 142-144). It never ' +
+          'says whether the classification is made before or after that rounding. This generator classifies on ' +
+          'the rounded VAT, because that is the value the file actually carries. That is a product choice, not ' +
+          'a rule of the circular, and it is reported wherever it decided a total.',
+      });
+    }
+
     if (vatAmount.shekels < 0 && sumAmount.shekels > 0) {
       fail(
         'row.sign.conflict',
@@ -693,8 +839,15 @@ function parseRows(
  *   (the "Zero Value/Exempt 'SL' – not export" row, lines 271-283). So a sale
  *   record whose VAT is zero feeds `zeroOrExemptSalesAmount` and one whose VAT
  *   is not feeds `taxableSalesAmount` and `taxableSalesVat`.
- * - **Signs.** A cancellation is "reported as an opposite sign" (lines 592-593),
- *   so a credit's amounts subtract from the totals rather than adding to them.
+ * - **Signs.** A cancellation is "reported as an opposite sign" (lines 592-593)
+ *   — which is a rule about the RECORD's sign, and the only thing lines 592-593
+ *   state. No rendered line says how a header total is formed from signed
+ *   records. What this generator reads instead is the header's own shape: each
+ *   total has a "+/-" field of its own (lines 106, 108, 116, 118, 120-122), and
+ *   a sign field carries no information unless the total can go negative, which
+ *   it can only do if a credit subtracts. So a credit's amounts subtract from
+ *   the totals rather than adding to them. That is a reading of the header's
+ *   sign fields, not a sentence anyone wrote.
  */
 function computeTotals(rows: readonly ParsedRow[]): {
   taxableSalesAmount: number;
@@ -761,7 +914,25 @@ export function generatePcn874(csvText: string, options: GenerateOptions = {}): 
     // to contain a colon ("# no reportedVat: refuse") has a space in front of it
     // and stays a comment; a mistyped one-word key is caught below.
     const m = /^([A-Za-z][A-Za-z0-9_-]*)\s*:\s*(.*)$/.exec(body);
-    if (!m) continue; // a free comment line
+    if (!m) {
+      // A `#` line whose first word IS one of the directive names but which
+      // carries no colon is a mistyped directive, not a comment. Dropping it in
+      // silence and then refusing the file for the directive being "not
+      // supplied" tells the user nothing about the line they actually wrote.
+      const word = /^([A-Za-z][A-Za-z0-9_-]*)/.exec(body)?.[1];
+      const key = word === undefined ? undefined : DIRECTIVE_BY_NORM.get(norm(word));
+      if (key !== undefined) {
+        problems.add({
+          code: 'meta.malformed',
+          severity: 'error',
+          line: i + 1,
+          column: key,
+          message: `header line ${JSON.stringify(raw.trim())} begins with the directive ${JSON.stringify(key)} and has no colon after it, so it would have been read as a free comment and ${key} reported missing. Write it as "# ${key}: <value>".`,
+          sources: [ita('94-126')],
+        });
+      }
+      continue; // a free comment line
+    }
     const key = DIRECTIVE_BY_NORM.get(norm(m[1]!));
     if (key === undefined) {
       problems.add({
@@ -938,7 +1109,8 @@ export function generatePcn874(csvText: string, options: GenerateOptions = {}): 
       officialText:
         '+/- symbol for total of zero value and exempt sales   +/-; Total of zero value/exempt sales for period   N(11)',
       productChoice:
-        'An export sale carries zeros VAT by Appendix C (line 564), and the header field names zero-value and ' +
+        'An export sale carries zeros VAT by Appendix C (note D, "The sum of the VAT will include zeros", ' +
+        'lines 563-564), and the header field names zero-value and ' +
         'exempt sales without excluding exports. This generator therefore counts a Y record as a zero-value ' +
         'sale for that total. No rendered line states it either way; if the Authority reads it differently, ' +
         'this total is the field that moves.',
@@ -1007,11 +1179,30 @@ export function generatePcn874(csvText: string, options: GenerateOptions = {}): 
     ok,
     text: ok ? text : null,
     problems: problems.list,
-    validation,
+    // On a refusal the findings are kept and the RECORDS are dropped. The
+    // validator's `parsed.records[*].raw` is the refused file byte for byte, so
+    // returning it whole handed a library caller the very file this package
+    // refused to write — which made "there is no other way to get a file out of
+    // this package" false everywhere it was written down. Now it is true.
+    validation: ok ? validation : withoutRecords(validation),
     counts: {
       error: problems.errors + validation.counts.error,
       warning: problems.list.filter(p => p.severity === 'warning').length + validation.counts.warning,
     },
+  };
+}
+
+/**
+ * The validator's verdict without the file it was passed.
+ *
+ * `findings` and `counts` are what a caller needs to know why the file was
+ * refused; `parsed.records` is the refused file itself, and a refused file is
+ * exactly what this package undertakes not to hand out.
+ */
+function withoutRecords(validation: ValidationResult): ValidationResult {
+  return {
+    ...validation,
+    parsed: { ...validation.parsed, records: [] },
   };
 }
 

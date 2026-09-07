@@ -921,6 +921,41 @@ function checkFileShape(c: Collector, parsed: ParsedPcn874): void {
     });
   }
 
+  // Every length in this file is counted in JS string length — one unit per
+  // code point — and so is every offset the fields are sliced at. A reader that
+  // counts BYTES sees a different record the moment a character outside ASCII
+  // appears: a two-letter Hebrew reference group makes a 60-character record 62
+  // bytes wide under UTF-8, and every field after it moves. A WARNING and not an
+  // error, on the same reasoning as `file.encoding.ascii` above: the circular
+  // calls the file "of a fixed structure" (line 40) and never states an
+  // encoding, so nothing here can say the file is wrong — only that its two
+  // possible widths disagree, which the reader should know before sending it.
+  const wideRecords = records
+    .map(r => ({ record: r, bytes: Buffer.byteLength(r.raw, 'utf8') }))
+    .filter(r => r.bytes !== r.record.raw.length);
+  if (wideRecords.length > 0) {
+    c.add({
+      rule: 'file.byteWidth',
+      severity: 'warning',
+      record: 'file',
+      line: wideRecords[0]!.record.line,
+      field: null,
+      message:
+        `${wideRecords.length} record(s) are wider in bytes than in characters under UTF-8: ` +
+        `${wideRecords
+          .slice(0, 5)
+          .map(r => `${recordLabel(r.record)} is ${r.record.raw.length} characters and ${r.bytes} bytes`)
+          .join('; ')}${wideRecords.length > 5 ? '; …' : ''}. Every offset and width in Appendix A is counted ` +
+        'in characters here, so a reader that counts bytes would find the fields after the non-ASCII ' +
+        'character shifted. Which of the two a Tax Authority reader counts is not stated anywhere.',
+      sources: [ita('40-42'), ita('96-161'), ita('139')],
+      officialText:
+        'Due to the fact that the file is of a fixed structure, any instance where the field is in reality ' +
+        '"shorter" than that required by the technical specifications, it is necessary to add preliminary zeros.',
+      openQuestion: A_N_ALPHABET_OPEN,
+    });
+  }
+
   if (parsed.lineEnding === 'mixed') {
     c.add({
       rule: 'file.lineEnding.mixed',

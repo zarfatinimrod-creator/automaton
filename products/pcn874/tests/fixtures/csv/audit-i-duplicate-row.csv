@@ -1,0 +1,8 @@
+# case i — the same document twice. Two sales records, 20,000 taxable; reportedVat stays 1800.
+# licensedDealerId: 514457282
+# reportMonth: 202601
+# generationDate: 20260210
+# reportedVat: 1800
+entryType,counterpartyVatId,invoiceDate,refGroup,refNumber,vatSum,invoiceSum,allocationNumber,inputKind
+S,512345678,20260112,0001,000000101,1800,10000,123456789,
+S,512345678,20260112,0001,000000101,1800,10000,123456789,

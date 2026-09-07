@@ -1,0 +1,7 @@
+# case h2 — a misspelled directive name.
+# licensedDealerId: 514457282
+# reportMonth: 202601
+# generationDate: 20260210
+# reportdVat: 1800
+entryType,counterpartyVatId,invoiceDate,refGroup,refNumber,vatSum,invoiceSum,allocationNumber,inputKind
+S,512345678,20260112,0001,000000101,1800,10000,123456789,

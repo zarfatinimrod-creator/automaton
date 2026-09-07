@@ -39,7 +39,7 @@ The document **contradicted all three of them in one place**, and the old valida
 | **Petty cash is capped** at 2% of the file's VAT or ₪2,000, whichever is greater | note E, `ita:…:566-568` |
 | The record counts cover **all** sales letters and **all** input letters | `ita:…:114-115,124` with the Table of Values |
 
-257 tests cover every rule the validator emits and every path through the generator, in `tests/`, over 26 generated fixed-width fixtures and 8 generated CSV inputs.
+311 tests cover every rule the validator emits and every path through the generator, in `tests/`, over 26 generated fixed-width fixtures and 35 generated CSV inputs — the latter including one file per input the generator's own refutation audit constructed.
 
 ## The refutation audit, and what it changed
 
@@ -68,6 +68,32 @@ second test that reads the cited lines out of the extracted circular and require
 and those lines to share four consecutive words — which immediately caught two more paraphrases
 presented as quotes, in `detail.length` and `file.record.unknown`. See [`docs/SPEC.md` §4.1](docs/SPEC.md)
 for exactly what each test does and does not prove.
+
+### The generator was refuted separately, and lost three files
+
+The audit above is of the **validator**. A second refuter took the **generator** the evening it was
+built and ran 26 constructed CSVs through it
+([`research/colony-sweep/audits/pcn874-generator.md`](../../research/colony-sweep/audits/pcn874-generator.md)).
+All seven computed header totals held on membership, sign and arithmetic. Three inputs did not: each
+one **wrote a file with wrong amounts, exit code 0, and no warning of any kind**, because the
+validator cross-checks no amount and so had nothing to say about them.
+
+| what was written | why | now |
+|---|---|---|
+| a ₪1,800 / ₪10,000 sale written as VAT ₪1 and a total of ₪800 | a comma inside an unquoted amount split the row, and cells are read by position | error `csv.row.cellCount` |
+| a truncated row written as a ₪0 zero-rated sale | missing cells read as empty, and empty means zero | error `csv.row.cellCount` |
+| `"1800,00"` written as ₪180,000 | every comma was stripped, so a decimal comma became a thousands separator | error `row.amount.unreadable`; a comma is now read only between groups of three digits, and `1.000` is refused as ambiguous rather than read as ₪1 |
+
+Six more findings were implemented with it: a refused file no longer comes back through the library
+(`validation.parsed.records` is emptied, which is what makes *"there is no other way to get a file out
+of this package"* true rather than nearly true); a refusal names a **stale file already at `--out`**
+instead of only saying nothing was written; a record wider in bytes than in characters is reported
+(`file.byteWidth`); the two silent reclassifications of a sale — an empty VAT cell and a VAT that
+rounds to zero — are reported (`row.vatSum.empty`, `row.vat.roundedToZero`); a row of nothing but empty
+cells is dropped rather than refused as `entry type ""`; a directive written without its colon is named
+(`meta.malformed`); and an empty `--reported-vat` is a usage error rather than a silent override. Each
+of the audit's 26 inputs is now a fixture in `tests/fixtures/csv/audit-*.csv` with a test that names
+what it must produce.
 
 ## The seven disagreements, resolved
 
@@ -106,7 +132,7 @@ Plus **§6.9**, which was never in the log because all three implementations agr
 
 ```bash
 npm install
-npm test          # 257 tests
+npm test          # 311 tests
 npm run typecheck
 npm run build
 node dist/cli.js validate path/to/PCN874.txt
@@ -144,8 +170,11 @@ import { generatePcn874 } from './src/index.js';
 
 const result = generatePcn874(csvText, { reportedVat: '1800' });
 // result.text is null whenever result.ok is false, and ok is false whenever the
-// generator's own validatePcn874 run reported an error. There is no other way
-// to get a file out of this package.
+// generator's own validatePcn874 run reported an error. On a refusal the
+// validator's parsed records are dropped too, so the refused file is not
+// reachable through result.validation either: text is the only thing that ever
+// carries a file. What the check covers is the layout, the field types and the
+// two record counts — it cross-checks no amount (docs/SPEC.md §5.2).
 ```
 
 `result.problems` are about the **input** (a bad column, an amount that is not an amount, a missing `reportedVat`); `result.validation.findings` are about the **output**, from the validator itself.
@@ -215,6 +244,8 @@ Two of the three implementations cannot be copied from: `adam2314/linet3` is AGP
 זהו **מאמת** (validator) **ומחולל** (generator) לקובץ הדיווח המפורט למע"מ, PCN874 — הקובץ בעל המבנה הקבוע שעוסק מעלה לרשות המסים. המאמת קורא קובץ קיים, מפרק אותו לרשומות ולשדות, ומחזיר רשימת ממצאים: איזו רשומה, איזה שדה, איזה כלל, ומאיזו שורה של איזה מסמך הכלל נלקח.
 
 **המחולל (7.9.2026):** מקבל קובץ CSV ובו שורה אחת לכל מסמך — עסקאות ותשומות — ובונה ממנו את הקובץ. העמודות, ומה כל אחת ממלאת במבנה הרשומה, מתועדות ב-[`docs/GENERATOR.md`](docs/GENERATOR.md). שני דברים שהוא **לא** עושה: הוא **לא מחשב את הסכום המדווח** (`reportedVat`) — המסמך הרשמי מגדיר את השדה (שורה 126) ואינו אומר לעולם איך מחשבים אותו, ולכן הערך נלקח מהמשתמש, ובלעדיו המחולל מסרב לייצר קובץ ואומר בדיוק למה; והוא **לא כותב קובץ שהמאמת שלו פוסל** — הוא בונה את הקובץ, מריץ עליו את `validatePcn874`, ואם יש ולו שגיאה אחת הוא מדפיס אותה ולא כותב דבר. אזהרות מודפסות והקובץ נכתב. הסכומים ב-CSV הם בשקלים (מותר עם אגורות) ומעוגלים לשקל השלם, כלשון החוזר; **כיוון העיגול של חצי שקל בדיוק הוא בחירה של המוצר, לא כלל של החוזר**, והוא מדווח כאזהרה בשורה שבה הבחירה הכריעה ספרה.
+
+**ביקורת הפרכה למחולל (7.9.2026):** מבקר שני בדק את **המחולל** עצמו והריץ דרכו 26 קבצי CSV בנויים. כל שבעת סכומי הכותרת המחושבים עמדו במבחן. שלושה קלטים לא: כל אחד מהם **כתב קובץ עם סכומים שגויים, קוד יציאה 0 ובלי שום אזהרה** — פסיק בתוך סכום לא מצוטט פיצל את השורה, והתאים נקראים לפי מיקום, כך שמכירה של 1,800/10,000 ש"ח נכתבה כמע"מ 1 וסכום 800; שורה קטועה נקראה כמכירה בשיעור אפס של 0 ש"ח; ו-`"1800,00"` בפורמט לועזי נכתב כ-180,000 ש"ח. הסיבה שהמאמת לא תפס אף אחד מהם היא ש**הוא אינו מצליב שום סכום** — ההבטחה "לא נכתב קובץ שהמאמת פוסל" היא על **מבנה** הקובץ ועל הספירות, לא על הסכומים. כל שלושת המקרים נדחים היום (`csv.row.cellCount`, `row.amount.unreadable`), פסיק נקרא רק כמפריד אלפים, ו-`1.000` נדחה כדו-משמעי במקום להיקרא כ-1. נוספו גם: קובץ שנדחה כבר אינו ניתן לשחזור דרך הספרייה, דיווח על קובץ ישן שנשאר ב-`--out`, אזהרה על רשומה שרוחבה בבתים שונה מרוחבה בתווים, ואזהרות על שתי הסיווגים השקטים של מכירה (תא מע"מ ריק, ומע"מ שמתעגל לאפס).
 
 **מה שהשתנה ב-7.9.2026:** עד היום המבנה כאן נגזר משלושה מימושי קוד פתוח בלבד, כי המסמך הרשמי של רשות המסים היה חסום מהמכולה. הוא כבר לא. **המקור הראשי הוא כעת החוזר של רשות המסים ליצרני תוכנות הנהלת חשבונות** — נספח א' (מבנה הרשומות), נספח ב' (קובץ איחוד למייצגים) ונספח ג' (הערכים המותרים בכל שדה). כל כלל מצטט שורה מתוך `research/rendered/pcn874-gov-il-874-eng.txt`. שלושת המימושים עדיין מצוטטים — כאישוש, לא כסמכות.
 
