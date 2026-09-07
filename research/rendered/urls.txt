@@ -78,3 +78,9 @@ https://mr.gov.il/ilgstorefront/he/	mr-gov-il-storefront
 # Settles the payout currency / fee / hold and the prohibited-products list that freemius-rail.md left snippet-grade.
 https://freemius.com/help/documentation/selling-with-freemius/your-earnings/	freemius-your-earnings
 https://freemius.com/help/documentation/selling-with-freemius/allowed-prohibited-products/	freemius-allowed-prohibited
+
+# Linked from the rendered earnings/prohibited pages (research/rendered/freemius-your-earnings.html,
+# href="/help/documentation/selling-with-freemius/verification/" and "/help/documentation/getting-started/our-pricing/").
+# Settles seller identity verification (KYC) and the platform fee that freemius-rail.md left snippet-grade.
+https://freemius.com/help/documentation/selling-with-freemius/verification/	freemius-verification
+https://freemius.com/help/documentation/getting-started/our-pricing/	freemius-our-pricing

@@ -1255,7 +1255,7 @@ that Actor's 30-day stranger count says anyone is looking. And the EAA scout's l
 agent skills in that category is the clearest picture the repo has of what "GitHub-native distribution" looks
 like when a category is being given away: it is where the free version lives, not where the first sale is.
 
-## Freemius as a second Israeli rail — pays Israel (rendered), currency still unknown, ILS claim refuted, 7.9.2026
+## Freemius as a second Israeli rail — pays Israel, USD balance with ILS payout via Wise/wire, SaaS and AI services allowed — rendered 7.9.2026
 
 Full report: `research/measurements/freemius-rail.md`. The candidate rail was carried in `src/revenue/rails.ts`
 on a scout's claim that Freemius "pays out in ILS with no conversion fee". Freemius's own code refutes that:
@@ -1284,6 +1284,16 @@ claim stays refuted), the fee and hold, and the prohibited-products list; the tw
 queued in `research/rendered/urls.txt`. `src/revenue/rails.ts` now grades Freemius `rendered` for payability and
 tells a line it may plan on a USD rail with an Israeli payout method. This is the first re-open trigger in the
 repo closed by a CI fetch rather than by a person.
+
+**Second render, an hour later, closed the currency question too.** The earnings page: ILS sales are converted
+to USD at purchase and land in a USD balance; only USD, GBP and EUR keep separate payout methods; Wise and wire
+transfers can convert a payout to the seller's local currency. So an Israeli seller is paid in ILS to an Israeli
+bank via Wise or wire, from a USD balance — not "in ILS with no conversion fee" as the scout had it. $100 minimum,
+paid on the 10th of each month with a one-month calculation lag (about 40–70 days sale-to-cash), no Stripe
+Connect. The prohibited-products page allows SaaS including "REST APIs" and "AI-powered services" and forbids
+human-fulfilled SaaS — which makes Freemius the one merchant of record that would carry the x402- and MCP-shaped
+products Gumroad's terms exclude, if any of them ever earns its place back. Fee and identity verification remain
+snippet-grade until the two queued pages render. `rails.ts` carries all of it with line numbers.
 
 ## Earlier rejections
 

@@ -335,3 +335,25 @@ page: PayPal MassPay (default), Payoneer, wire transfer (IBAN/SWIFT), Wise; "at 
 available" per listed country. **Verdict revised: PAYS ISRAEL = YES (rendered).** Currency, fee, hold, KYC and
 the prohibited list remain as graded above; the pages that settle them (`/your-earnings/`,
 `/allowed-prohibited-products/`) are queued in `research/rendered/urls.txt`.
+
+
+## 13. Second render, same evening — earnings and prohibited-products pages
+
+`research/rendered/freemius-your-earnings.txt` (HTTP 200, 78,140 bytes) and
+`freemius-allowed-prohibited.txt` (HTTP 200, 67,521 bytes). **[RENDERED]**
+- **Currency:** "For USD, GBP, and EUR, you can set up separate payout methods. However, other currencies, such
+  as AUD, CAD, **ILS**, CHF, RSD and PLN, are converted to USD at the time of purchase and added to your USD
+  balance" (lines 141–143). "Only Wise and wire transfers support payout conversion currencies … you can convert
+  payouts to your local currency" (147–154). So: ILS sales → USD balance → ILS bank payout possible via Wise or
+  wire. The original "pays in ILS with no conversion fee" claim stays refuted as stated.
+- **Schedule:** "$100 minimum payout threshold", "processed automatically on the 10th of each month"; January
+  earnings calculated 1 March, eligible 10 March (166–176); transfers 3–6 business days (227); "minus Freemius
+  fees" (170) — the fee figure is not on this page. No Stripe Connect onboarding (184).
+- **Allowed:** "SaaS (Software-as-a-Service) — Examples: Analytics tools, REST APIs, design platforms,
+  productivity apps, AI-powered services" and downloadable software, plugins, extensions (100–106).
+  **Prohibited:** non-software products, "SaaS products requiring fulfillment through human services",
+  harmful/infringing AI content generation, medical advice, adult (114–135).
+- **Queued next:** `/selling-with-freemius/verification/` (KYC) and `/getting-started/our-pricing/` (fee).
+
+**Verdict now:** PAYS ISRAEL YES (rendered); USD balance with ILS payout via Wise/wire; $100 / 10th monthly /
+~40–70 days; SaaS and AI-powered services allowed; fee and KYC still snippet-grade pending the two queued pages.
