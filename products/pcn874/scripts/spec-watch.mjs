@@ -6,6 +6,13 @@
  * below is blocked, so running this locally is expected to report every source
  * unreachable and exit 0 with nothing recorded.
  *
+ * As of 2026-09-07 all three documents HAVE been fetched and read: the extracted
+ * text lives in research/rendered/ and docs/SPEC.md cites it line by line. What
+ * this job is for has therefore changed. It is no longer "get us a copy"; it is
+ * "tell us when the Authority re-issues the document", because docs/SPEC.md and
+ * src/layout.ts are derived from a specific 2009 circular and a new edition
+ * would silently make them wrong.
+ *
  * The URLs come from products/pcn874/src/sources.ts (OFFICIAL_SPEC_URLS), where
  * each one carries its provenance. None of them was invented here.
  *
@@ -91,9 +98,11 @@ const lock = readLock();
 lock.sources ??= {};
 lock.note =
   'SHA-256 of the official PCN874 specification as downloaded by ' +
-  '.github/workflows/pcn874-spec-watch.yml. Recorded so a change is noticed, and so a session ' +
-  'with egress can diff the real document against docs/SPEC-FROM-SOURCES.md. ' +
-  'A hash here does NOT mean anybody has read the document.';
+  '.github/workflows/pcn874-spec-watch.yml. The three documents were fetched and read on ' +
+  '2026-09-07; their extracted text is in research/rendered/ and docs/SPEC.md cites it line by ' +
+  'line. This lock exists so a NEW EDITION is noticed: a changed hash means the layout in ' +
+  'docs/SPEC.md and src/layout.ts may no longer match what the Authority publishes, and must be ' +
+  're-derived before anything ships. A hash here does NOT mean the new bytes have been read.';
 
 mkdirSync(downloadDir, { recursive: true });
 
@@ -142,7 +151,7 @@ if (!anyReachable) {
   process.stdout.write(
     '\nNo specification URL was reachable from here. That is the expected result inside the\n' +
       'automaton build container, where gov.il and both vendor mirrors are egress-blocked; in\n' +
-      'GitHub Actions it means the URLs have moved and docs/SPEC-FROM-SOURCES.md §6 needs a look.\n' +
+      'GitHub Actions it means the URLs have moved and docs/SPEC.md §1 needs a look.\n' +
       'Not treated as a failure, because a network result is not evidence about the format.\n',
   );
   process.exit(0);
@@ -150,9 +159,10 @@ if (!anyReachable) {
 
 if (changed) {
   process.stderr.write(
-    '\nA specification hash changed. products/pcn874/docs/SPEC-FROM-SOURCES.md may now be wrong.\n' +
-      'Download the artefact this run uploaded, read it, and update the table before shipping\n' +
-      'anything that depends on it.\n',
+    '\nA specification hash changed. products/pcn874/docs/SPEC.md and src/layout.ts are derived from\n' +
+      'the 2009 circular whose hash this job recorded; a new edition may move a width or an offset.\n' +
+      'Download the artefact this run uploaded, extract it (node scripts/pdf-text.mjs), diff it\n' +
+      'against docs/SPEC.md, and update the table before shipping anything that depends on it.\n',
   );
   process.exit(1);
 }

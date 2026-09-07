@@ -33,16 +33,37 @@ describe('pcn874 validate', () => {
     expect(code).toBe(0);
     expect(out).toContain('VALID');
     expect(out).not.toContain('INVALID');
-    expect(out).toContain('not the Tax Authority specification');
+    // The caveat changed with the evidence: the rules ARE the Authority's now,
+    // but "valid" still is not "the Authority will accept this".
+    expect(out).toContain('Checked against the Tax Authority circular');
+    expect(out).toContain('not a statement that the file will be accepted');
+    expect(out).toContain('misim.gov.il');
   });
 
-  it('exits 1 and prints the rule, message and source on a bad file', () => {
+  it('exits 1 and prints the rule, message and the document behind it on a bad file', () => {
     const { code, out } = capture(() => run(['validate', fixturePath('invalid-footer-z.txt')]));
     expect(code).toBe(1);
     expect(out).toContain('INVALID');
     expect(out).toContain('footer.recordType.literal');
-    expect(out).toContain('source: Urigo/accounter-fullstack');
-    expect(out).toContain('sources disagree:');
+    // The Z/X question is settled now, so this finding prints the Authority's
+    // own words rather than "sources disagree" (docs/SPEC.md §6.5).
+    expect(out).toContain('Tax Authority: Closing Entry: Entry Type');
+    expect(out).toContain('source: Israel Tax Authority');
+    expect(out).toContain('research/rendered/pcn874-gov-il-874-eng.txt:158');
+    expect(out).not.toContain('sources disagree:');
+  });
+
+  it('prints "still open" only where nothing settles the question', () => {
+    const { out } = capture(() => run(['validate', fixturePath('warnings-only.txt')]));
+    // R's reference number: Appendix C says zeros, note D on the same row does not.
+    expect(out).toContain('still open:');
+    expect(out).toContain('detail.R.refNumberZeros');
+    // ...and not on a rule the document settles outright.
+    const { out: settled } = capture(() =>
+      run(['validate', fixturePath('invalid-sign-of-zero.txt')]),
+    );
+    expect(settled).toContain('signOfZero');
+    expect(settled).not.toContain('still open:');
   });
 
   it('exits 0 on a file whose only findings are warnings, and says so', () => {
@@ -58,7 +79,7 @@ describe('pcn874 validate', () => {
       run(['validate', fixturePath('warnings-only.txt'), '--quiet']),
     );
     expect(code).toBe(0);
-    expect(out).not.toContain('detail.L.vatIdZeros');
+    expect(out).not.toContain('detail.R.refNumberZeros');
     expect(out).toContain('4 warning(s)');
   });
 
@@ -97,6 +118,7 @@ describe('pcn874 validate', () => {
     const { code, out } = capture(() => run(['--help']));
     expect(code).toBe(0);
     expect(out).toContain('Exit codes:');
-    expect(out).toContain('docs/SPEC-FROM-SOURCES.md');
+    expect(out).toContain('docs/SPEC.md');
+    expect(out).toContain("Israel Tax Authority's own circular");
   });
 });

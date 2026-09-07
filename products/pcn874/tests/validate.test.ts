@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parsePcn874 } from '../src/parse.js';
-import { SOURCES } from '../src/sources.js';
+import { SOURCES, kindOf } from '../src/sources.js';
 import { validatePcn874, type Finding, type ValidationResult } from '../src/validate.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -12,9 +12,11 @@ const fixture = (name: string): string => readFileSync(join(here, 'fixtures', na
 const rules = (result: ValidationResult): string[] => result.findings.map(f => f.rule);
 const errors = (result: ValidationResult): Finding[] =>
   result.findings.filter(f => f.severity === 'error');
+const find = (result: ValidationResult, rule: string): Finding =>
+  result.findings.find(f => f.rule === rule)!;
 
 describe('valid fixtures', () => {
-  it.each(['valid-minimal.txt', 'valid-mixed.txt', 'valid-crlf.txt'])(
+  it.each(['valid-minimal.txt', 'valid-mixed.txt', 'valid-crlf.txt', 'valid-refgroup-alpha.txt'])(
     '%s validates with no errors',
     name => {
       const result = validatePcn874(fixture(name));
@@ -39,9 +41,10 @@ describe('valid fixtures', () => {
     const result = validatePcn874(fixture('valid-no-details.txt'));
     expect(result.valid).toBe(true);
     expect(rules(result)).toContain('file.detail.none');
-    const finding = result.findings.find(f => f.rule === 'file.detail.none')!;
+    const finding = find(result, 'file.detail.none');
     expect(finding.severity).toBe('warning');
-    expect(finding.disagreement).toMatch(/rcbuilder|fewer than three/);
+    // §5.5: the circular lists transaction entries but never states a minimum.
+    expect(finding.openQuestion).toMatch(/never says a minimum of one/);
   });
 });
 
@@ -50,34 +53,41 @@ describe('record grammar', () => {
     const result = validatePcn874(fixture('invalid-header-length.txt'));
     expect(result.valid).toBe(false);
     expect(rules(result)).toContain('header.length');
-    const finding = result.findings.find(f => f.rule === 'header.length')!;
+    const finding = find(result, 'header.length');
     expect(finding.message).toContain('131');
-    expect(finding.disagreement).toContain('129');
+    expect(finding.basis).toBe('official');
+    // The 131 is now Appendix A's own arithmetic, not two repos and a sample file.
+    expect(finding.officialText).toContain('sum to 131');
   });
 
-  it('rejects a detail record that is not 60 characters', () => {
+  it('rejects a transaction record that is not 60 characters', () => {
     const result = validatePcn874(fixture('invalid-detail-length.txt'));
     expect(result.valid).toBe(false);
     expect(rules(result)).toContain('detail.length');
   });
 
-  it('rejects a record type nobody defines', () => {
+  it('rejects an entry type the Table of Values does not have', () => {
     const result = validatePcn874(fixture('invalid-record-type.txt'));
     expect(result.valid).toBe(false);
     expect(rules(result)).toContain('file.record.unknown');
-    expect(result.findings[0]!.message).toContain('C, H, I, K, L, M, P, R, S, T, Y');
+    expect(find(result, 'file.record.unknown').message).toContain('C, H, I, K, L, M, P, R, S, T, Y');
   });
 
-  it('rejects the linet3 "Z" trailer and names the disagreement', () => {
+  it('rejects a "Z" closing entry and says which file "Z" belongs to', () => {
     const result = validatePcn874(fixture('invalid-footer-z.txt'));
     expect(result.valid).toBe(false);
-    const finding = result.findings.find(f => f.rule === 'footer.recordType.literal')!;
+    const finding = find(result, 'footer.recordType.literal');
     expect(finding.severity).toBe('error');
-    expect(finding.disagreement).toContain('linet3');
-    expect(finding.disagreement).toContain('§5.5');
+    expect(finding.basis).toBe('official');
+    // Resolved §6.5: X closes Appendix A's file; Z is Appendix B's summary entry.
+    expect(finding.officialText).toContain('"X" – fixed value');
+    expect(finding.officialText).toContain('Appendix B');
+    expect(finding.message).toContain('representative');
+    // It is no longer "the sources disagree" — the document settled it.
+    expect(finding.openQuestion).toBeUndefined();
   });
 
-  it('rejects a trailer dealer id that differs from the header', () => {
+  it('rejects a closing-entry dealer id that differs from the header', () => {
     const result = validatePcn874(fixture('invalid-footer-dealer.txt'));
     expect(result.valid).toBe(false);
     expect(rules(result)).toContain('footer.licensedDealerId.matchesHeader');
@@ -87,15 +97,17 @@ describe('record grammar', () => {
     const result = validatePcn874(fixture('invalid-header-digits.txt'));
     expect(result.valid).toBe(false);
     expect(rules(result)).toContain('header.licensedDealerId.digits');
+    expect(find(result, 'header.licensedDealerId.digits').message).toContain('preliminary zeros');
   });
 
   it('rejects a file with no records', () => {
     const result = validatePcn874('');
     expect(result.valid).toBe(false);
     expect(rules(result)).toEqual(['file.empty']);
+    expect(find(result, 'file.empty').basis).toBe('official');
   });
 
-  it('rejects a missing header and a missing trailer', () => {
+  it('rejects a missing header and a missing closing entry', () => {
     const detailOnly = fixture('valid-minimal.txt').split('\n')[1]!;
     const result = validatePcn874(detailOnly);
     expect(rules(result)).toContain('file.header.missing');
@@ -103,7 +115,7 @@ describe('record grammar', () => {
     expect(result.valid).toBe(false);
   });
 
-  it('rejects a trailer that is not last', () => {
+  it('rejects a closing entry that is not last', () => {
     const [header, detail, footer] = fixture('valid-minimal.txt').split('\n');
     const result = validatePcn874([header, footer, detail].join('\n'));
     expect(rules(result)).toContain('file.footer.position');
@@ -122,7 +134,7 @@ describe('record grammar', () => {
     expect(rules(result)).toContain('file.header.duplicate');
   });
 
-  it('rejects two trailers', () => {
+  it('rejects two closing entries', () => {
     const [header, detail, footer] = fixture('valid-minimal.txt').split('\n');
     const result = validatePcn874([header, detail, footer, footer].join('\n'));
     expect(rules(result)).toContain('file.footer.duplicate');
@@ -134,11 +146,24 @@ describe('record grammar', () => {
     expect(result.valid).toBe(false);
   });
 
-  it('warns on mixed line endings without invalidating the file', () => {
+  it('warns on mixed line endings without invalidating the file, and says nothing settles it', () => {
     const lines = fixture('valid-minimal.txt').split('\n');
     const result = validatePcn874(`${lines[0]}\r\n${lines[1]}\n${lines[2]}`);
     expect(rules(result)).toContain('file.lineEnding.mixed');
     expect(result.valid).toBe(true);
+    const finding = find(result, 'file.lineEnding.mixed');
+    // §5.3 / §6.6: STILL OPEN. This is the only rule with no official citation.
+    expect(finding.basis).toBe('oss-only');
+    expect(finding.openQuestion).toMatch(/never states a record separator/);
+  });
+
+  it('names Appendix B when handed a representative alignment file', () => {
+    const result = validatePcn874(fixture('invalid-representative-file.txt'));
+    expect(result.valid).toBe(false);
+    const finding = find(result, 'file.record.unknown');
+    expect(finding.message).toContain('Appendix B');
+    expect(finding.message).toContain('several users');
+    expect(finding.officialText).toContain('"A" – fixed value');
   });
 });
 
@@ -156,7 +181,7 @@ describe('header field rules', () => {
 
   it('rejects a header that does not start with "O"', () => {
     const result = validatePcn874(swap(base, 0, 'A'));
-    // an 'A' first character makes the record unclassifiable, not a bad header
+    // an 'A' first character is Appendix B's initial entry, not a header
     expect(rules(result)).toContain('file.record.unknown');
     expect(result.valid).toBe(false);
   });
@@ -167,10 +192,12 @@ describe('header field rules', () => {
     expect(result.valid).toBe(false);
   });
 
-  it('rejects an impossible generation date', () => {
+  it('rejects an impossible generation date, and names the document\'s own inconsistency', () => {
     const result = validatePcn874(swap(base, 17, '20260230'));
     expect(rules(result)).toContain('header.generationDate.calendar');
     expect(result.valid).toBe(false);
+    // §5.1: N(8) but a comment reading "Yyyymm form". Flagged, not hidden.
+    expect(find(result, 'header.generationDate.calendar').openQuestion).toMatch(/Yyyymm form/);
   });
 
   it('accepts a real leap day', () => {
@@ -184,94 +211,211 @@ describe('header field rules', () => {
     expect(result.valid).toBe(false);
   });
 
-  it('accepts "-" on any signed field', () => {
+  it('accepts "-" on a signed field whose amount is not zero', () => {
     const result = validatePcn874(swap(base, 119, '-'));
     expect(errors(result)).toEqual([]);
   });
 
   it('warns, but does not fail, when a reserved field is non-zero', () => {
     const result = validatePcn874(swap(base, 48, '00000000001'));
-    const finding = result.findings.find(f => f.rule === 'header.differentRateSalesAmount.reserved')!;
+    const finding = find(result, 'header.differentRateSalesAmount.reserved');
     expect(finding.severity).toBe('warning');
+    expect(finding.officialText).toContain('Currently zeros – for future use');
     expect(result.valid).toBe(true);
   });
 });
 
-describe('per-record-type constraints (warnings: only one source states them)', () => {
-  it('flags an L record carrying a customer VAT id', () => {
-    const result = validatePcn874(fixture('warnings-only.txt'));
-    const finding = result.findings.find(f => f.rule === 'detail.L.vatIdZeros')!;
-    expect(finding.severity).toBe('warning');
-    expect(finding.sources[0]).toContain('schemas.ts');
+/**
+ * One test per disagreement the old SPEC-FROM-SOURCES.md recorded, asserting the
+ * behaviour the official document settled it to. The section numbers are the old
+ * file's, kept so the history stays checkable — see docs/SPEC.md §6.
+ */
+describe('the recorded disagreements, as the Tax Authority document settles them', () => {
+  it('§6.1 reportedVat is 11 digits, so the header is 131 — not linet3\'s 129', () => {
+    const header = fixture('valid-minimal.txt').split('\n')[0]!;
+    expect(header).toHaveLength(131);
+    const parsed = parsePcn874(fixture('valid-minimal.txt'));
+    expect(parsed.records[0]!.fields['reportedVat']).toHaveLength(11);
+    // A 129-character header (linet3's reading) must be rejected.
+    const short = header.slice(0, 119) + header.slice(121);
+    const result = validatePcn874([short, ...fixture('valid-minimal.txt').split('\n').slice(1)].join('\n'));
+    expect(rules(result)).toContain('header.length');
+    expect(find(result, 'header.length').message).toContain('found 129');
+  });
+
+  it('§6.2 the last 9 characters accept both zeros and a real allocation number', () => {
+    const lines = fixture('valid-minimal.txt').split('\n');
+    const withAllocation = lines[1]!; // already carries 123456789
+    expect(withAllocation.slice(51)).toBe('123456789');
+    expect(validatePcn874(fixture('valid-minimal.txt')).valid).toBe(true);
+
+    const zeroed = withAllocation.slice(0, 51) + '000000000';
+    const result = validatePcn874([lines[0], zeroed, lines[2]].join('\n'));
     expect(result.valid).toBe(true);
+    expect(result.findings.filter(f => f.field === 'allocationNumber')).toEqual([]);
   });
 
-  it('flags an R record carrying a reference number', () => {
-    const result = validatePcn874(fixture('warnings-only.txt'));
-    expect(rules(result)).toContain('detail.R.refNumberZeros');
+  it('§6.3 zeroOrExemptSalesAmount is an amount: it has its own sign field', () => {
+    const parsed = parsePcn874(fixture('valid-mixed.txt'));
+    const header = parsed.records[0]!;
+    expect(header.fields['zeroOrExemptSalesAmountSign']).toBe('+');
+    expect(header.fields['zeroOrExemptSalesAmount']).toBe('00000005000');
+    // 5000 shekels of zero-rated sales with one Y record: an amount, not a count.
+    expect(validatePcn874(fixture('valid-mixed.txt')).valid).toBe(true);
   });
 
-  it('flags a K record with a VAT id or a zero reference number', () => {
-    const lines = fixture('valid-mixed.txt').split('\n');
-    const header = lines[0]!;
-    const footer = lines[lines.length - 1]!;
-    const k =
-      'K' + '512345678' + '20260131' + '0000' + '000000000' + '000000126' + '+' + '0000000700' + '000000000';
-    expect(k).toHaveLength(60);
-    const result = validatePcn874([header, k, footer].join('\n'));
-    expect(rules(result)).toContain('detail.K.vatIdZeros');
-    expect(rules(result)).toContain('detail.K.refNumberNonZero');
-    expect(errors(result)).toEqual([]);
+  it('§6.4 all six input letters count toward inputsCount, and a mismatch is now an error', () => {
+    const result = validatePcn874(fixture('invalid-counts.txt'));
+    expect(result.valid).toBe(false);
+    const inputs = find(result, 'totals.inputsCount');
+    expect(inputs.severity).toBe('error');
+    expect(inputs.basis).toBe('official');
+    expect(inputs.message).toContain('C, H, K, P, R, T');
+    expect(inputs.officialText).toContain('rcbuilder counts only T records');
+
+    const sales = find(result, 'totals.salesRecordCount');
+    expect(sales.severity).toBe('error');
+    expect(sales.message).toContain('I, L, M, S, Y');
   });
 
-  it('flags a Y (export) record carrying VAT', () => {
-    const lines = fixture('valid-mixed.txt').split('\n');
-    const header = lines[0]!;
-    const footer = lines[lines.length - 1]!;
-    const y =
-      'Y' + '999999999' + '20260121' + '0000' + '000000104' + '000000900' + '+' + '0000005000' + '000000000';
-    const result = validatePcn874([header, y, footer].join('\n'));
-    expect(rules(result)).toContain('detail.Y.vatZeros');
-    expect(errors(result)).toEqual([]);
+  it('§6.4 a K, R, P, H or C record counts as an input', () => {
+    const [header, , footer] = fixture('valid-minimal.txt').split('\n');
+    const zeroCountHeader = header.slice(0, 69) + '000000000' + header.slice(78, 110) + '000000005' + header.slice(119);
+    expect(zeroCountHeader).toHaveLength(131);
+    const inputs = ['K', 'R', 'P', 'H', 'C'].map(
+      t => t + '000000000' + '20260115' + '0000' + '000000001' + '000000100' + '+' + '0000000500' + '000000000',
+    );
+    const result = validatePcn874([zeroCountHeader, ...inputs, footer].join('\n'));
+    expect(rules(result)).not.toContain('totals.inputsCount');
   });
 
-  it('does not flag a compliant L, K, R or Y record', () => {
-    const result = validatePcn874(fixture('valid-mixed.txt'));
-    expect(result.findings).toEqual([]);
-  });
-});
-
-describe('header/detail cross-checks (warnings: the sources disagree on scope)', () => {
-  it('warns when the declared sales count does not match the records', () => {
-    const result = validatePcn874(fixture('warnings-only.txt'));
-    const finding = result.findings.find(f => f.rule === 'totals.salesRecordCount')!;
-    expect(finding.severity).toBe('warning');
-    expect(finding.message).toContain('declares 9 sales records');
-    expect(finding.message).toContain('contains 1');
+  it('§6.5 the closing entry is "X"; "Z" is rejected with Appendix B named', () => {
+    expect(validatePcn874(fixture('invalid-footer-z.txt')).valid).toBe(false);
+    expect(validatePcn874(fixture('valid-minimal.txt')).valid).toBe(true);
   });
 
-  it('warns when the declared inputs count does not match the records', () => {
-    const result = validatePcn874(fixture('warnings-only.txt'));
-    const finding = result.findings.find(f => f.rule === 'totals.inputsCount')!;
-    expect(finding.severity).toBe('warning');
-    expect(finding.disagreement).toContain('K/R/P/H/C');
+  it('§6.6 line endings and a detail-free file stay open, so both stay warnings', () => {
+    expect(validatePcn874(fixture('valid-crlf.txt')).valid).toBe(true);
+    const cr = validatePcn874(fixture('valid-minimal.txt').replace(/\n/g, '\r'));
+    expect(cr.valid).toBe(true);
+    const trailing = validatePcn874(`${fixture('valid-minimal.txt')}\n`);
+    expect(trailing.valid).toBe(true);
+    expect(validatePcn874(fixture('valid-no-details.txt')).valid).toBe(true);
   });
 
-  it('leaves the file valid: an unsettled rule never fails a filing', () => {
-    const result = validatePcn874(fixture('warnings-only.txt'));
-    expect(result.valid).toBe(true);
-    expect(result.counts.error).toBe(0);
-    expect(result.counts.warning).toBe(4);
-  });
-
-  it('implements no reportedVat arithmetic check — three sources, three formulas', () => {
-    // valid-minimal declares +1800 to pay with one sale of 1800 VAT and no inputs;
-    // change it to a number that fits no formula and nothing should be reported.
+  it('§6.7 implements no reportedVat arithmetic check — the document never gives a formula', () => {
+    // valid-minimal declares +1800 to pay against one sale of 1800 VAT and no
+    // inputs; change it to a number that fits no formula and nothing is reported.
     const base = fixture('valid-minimal.txt');
     const tampered = base.slice(0, 120) + '00000009999' + base.slice(131);
     const result = validatePcn874(tampered);
     expect(rules(result).some(r => r.startsWith('totals.reportedVat'))).toBe(false);
     expect(result.valid).toBe(true);
+  });
+
+  it('§6.8 a zero amount must carry "+", and "-" on it is an error', () => {
+    const result = validatePcn874(fixture('invalid-sign-of-zero.txt'));
+    expect(result.valid).toBe(false);
+    const finding = find(result, 'header.equipmentInputsVatSign.signOfZero');
+    expect(finding.severity).toBe('error');
+    expect(finding.basis).toBe('official');
+    expect(finding.officialText).toContain('will be "+"');
+    expect(finding.message).toContain('equipmentInputsVat');
+  });
+
+  it('§6.8 the same rule applies to a transaction record\'s own sign', () => {
+    const [header, detail, footer] = fixture('valid-minimal.txt').split('\n');
+    // invoice total of zero, signed "-"
+    const zeroSum = detail!.slice(0, 40) + '-' + '0000000000' + detail!.slice(51);
+    expect(zeroSum).toHaveLength(60);
+    const result = validatePcn874([header, zeroSum, footer].join('\n'));
+    expect(rules(result)).toContain('detail.invoiceSumSign.signOfZero');
+  });
+
+  it('§6.9 the reference group takes letters: A(4), which all three implementations get wrong', () => {
+    const result = validatePcn874(fixture('valid-refgroup-alpha.txt'));
+    expect(result.valid).toBe(true);
+    expect(result.findings).toEqual([]);
+    expect(parsePcn874(fixture('valid-refgroup-alpha.txt')).records[1]!.fields['refGroup']).toBe(
+      'BR2A',
+    );
+  });
+
+  it('§6.9 but a reference group with a character that is neither is still an error', () => {
+    const [header, detail, footer] = fixture('valid-minimal.txt').split('\n');
+    const bad = detail!.slice(0, 18) + 'a-1!' + detail!.slice(22);
+    const result = validatePcn874([header, bad, footer].join('\n'));
+    expect(rules(result)).toContain('detail.refGroup.alphanumeric');
+    expect(find(result, 'detail.refGroup.alphanumeric').message).toContain('A(4)');
+  });
+
+  it('§6.10 the entry type is one character; S covers taxable and zero-rated alike', () => {
+    const [header, detail, footer] = fixture('valid-minimal.txt').split('\n');
+    // the same S record with zeros VAT is the zero-rated variant, equally legal
+    const zeroRated = detail!.slice(0, 31) + '000000000' + detail!.slice(40);
+    expect(zeroRated).toHaveLength(60);
+    const result = validatePcn874([header, zeroRated, footer].join('\n'));
+    expect(errors(result)).toEqual([]);
+  });
+});
+
+describe('per-entry-type constraints from Appendix C', () => {
+  it('an L record carrying a customer VAT id is an ERROR now, not a warning', () => {
+    const result = validatePcn874(fixture('invalid-detail-semantics.txt'));
+    const finding = find(result, 'detail.L.vatIdZeros');
+    expect(finding.severity).toBe('error');
+    expect(finding.basis).toBe('official');
+    expect(finding.officialText).toContain('Private Customer');
+    expect(result.valid).toBe(false);
+  });
+
+  it('a Y (export) record carrying VAT is an ERROR now, not a warning', () => {
+    const result = validatePcn874(fixture('invalid-detail-semantics.txt'));
+    const finding = find(result, 'detail.Y.vatZeros');
+    expect(finding.severity).toBe('error');
+    expect(finding.officialText).toContain('The sum of the VAT will include zeros');
+  });
+
+  it('a K record with a customer VAT id is an error', () => {
+    const [header, , footer] = fixture('valid-minimal.txt').split('\n');
+    const noSales = header!.slice(0, 69) + '000000000' + header!.slice(78, 110) + '000000001' + header!.slice(119);
+    const k =
+      'K' + '512345678' + '20260131' + '0000' + '000000007' + '000000126' + '+' + '0000000700' + '000000000';
+    const result = validatePcn874([noSales, k, footer].join('\n'));
+    expect(find(result, 'detail.K.vatIdZeros').severity).toBe('error');
+  });
+
+  it('a K record with a zero invoice count stays a WARNING: the document never forbids it', () => {
+    const result = validatePcn874(fixture('warnings-only.txt'));
+    const finding = find(result, 'detail.K.refNumberInvoiceCount');
+    expect(finding.severity).toBe('warning');
+    expect(finding.basis).toBe('official');
+    expect(finding.officialText).toContain('No. of Invoices');
+  });
+
+  it('an R record carrying a reference number stays a WARNING: the document contradicts itself', () => {
+    const result = validatePcn874(fixture('warnings-only.txt'));
+    const finding = find(result, 'detail.R.refNumberZeros');
+    expect(finding.severity).toBe('warning');
+    // §5.4: Appendix C's R row says Zeros; note D on the same row says otherwise.
+    expect(finding.openQuestion).toMatch(/comment marker "D"/);
+  });
+
+  it('an S record with no customer number is a warning, because small sales may be aggregated', () => {
+    const result = validatePcn874(fixture('warnings-only.txt'));
+    const finding = find(result, 'detail.S.counterpartyExpected');
+    expect(finding.severity).toBe('warning');
+    expect(finding.officialText).toContain('5,000 NIS');
+  });
+
+  it('does not flag a compliant S, L, Y, T, K or R record', () => {
+    expect(validatePcn874(fixture('valid-mixed.txt')).findings).toEqual([]);
+  });
+
+  it('warnings-only.txt is exactly four warnings and no errors', () => {
+    const result = validatePcn874(fixture('warnings-only.txt'));
+    expect(result.valid).toBe(true);
+    expect(result.counts).toEqual({ error: 0, warning: 4, info: 0 });
   });
 });
 
@@ -281,6 +425,7 @@ describe('every finding is traceable', () => {
     'valid-mixed.txt',
     'valid-no-details.txt',
     'valid-crlf.txt',
+    'valid-refgroup-alpha.txt',
     'warnings-only.txt',
     'invalid-header-length.txt',
     'invalid-header-digits.txt',
@@ -288,6 +433,10 @@ describe('every finding is traceable', () => {
     'invalid-record-type.txt',
     'invalid-footer-z.txt',
     'invalid-footer-dealer.txt',
+    'invalid-sign-of-zero.txt',
+    'invalid-counts.txt',
+    'invalid-detail-semantics.txt',
+    'invalid-representative-file.txt',
   ];
 
   it.each(allFixtures)('%s: every finding cites a known source', name => {
@@ -300,6 +449,16 @@ describe('every finding is traceable', () => {
       }
       expect(finding.message.length).toBeGreaterThan(10);
       expect(['error', 'warning', 'info']).toContain(finding.severity);
+      expect(['official', 'vendor-manual', 'oss-only']).toContain(finding.basis);
+    }
+  });
+
+  it.each(allFixtures)('%s: every ERROR is backed by the Tax Authority document', name => {
+    for (const finding of validatePcn874(fixture(name)).findings) {
+      if (finding.severity !== 'error') continue;
+      expect(finding.basis, `${finding.rule} is an error on non-official authority`).toBe('official');
+      expect(finding.officialText, `${finding.rule} quotes nothing`).toBeTruthy();
+      expect(finding.sources.some(s => kindOf(s) === 'official')).toBe(true);
     }
   });
 

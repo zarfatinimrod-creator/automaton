@@ -10,10 +10,10 @@ import {
   DETAIL,
   FOOTER,
   FOOTER_RECORD_TYPE,
-  FOOTER_RECORD_TYPE_LINET3,
   HEADER,
   HEADER_RECORD_TYPE,
   RECORD_TYPE_LETTERS,
+  REPRESENTATIVE_SUMMARY_RECORD_TYPE,
   type RecordSpec,
 } from './layout.js';
 
@@ -60,10 +60,19 @@ function specFor(kind: RecordKind): RecordSpec | undefined {
   return undefined;
 }
 
+/**
+ * Classify a record by its first character.
+ *
+ * "Z" is classified as a closing record even though Appendix A's closing entry
+ * is "X": Z is Appendix B's summary entry for a representative's multi-user file
+ * (official line 209), and linet3 writes it in an individual merchant's file.
+ * Treating it as a malformed closing record gets the reader a finding that
+ * explains the difference, rather than "unknown record type".
+ */
 function classify(raw: string): RecordKind {
   const first = raw.charAt(0);
   if (first === HEADER_RECORD_TYPE) return 'header';
-  if (first === FOOTER_RECORD_TYPE || first === FOOTER_RECORD_TYPE_LINET3) return 'footer';
+  if (first === FOOTER_RECORD_TYPE || first === REPRESENTATIVE_SUMMARY_RECORD_TYPE) return 'footer';
   if (RECORD_TYPE_LETTERS.includes(first)) return 'detail';
   return 'unknown';
 }
