@@ -30,13 +30,22 @@ verdict on the code:
 - **`il-biz-tools` moved from Paddle to Gumroad.** Gumroad is the only merchant of record with rendered
   proof of ILS payout to an Israeli bank. Paddle is now an option the owner may choose knowing three
   named risks, recorded in `src/revenue/rails.ts` — never a step on his checklist.
-- **`pcn874` is the one new product.** Its validator exists (`products/pcn874/`, 88 tests): the record
-  layout was rendered from **three** independent open-source implementations, not from the Israel Tax
-  Authority specification, which is egress-blocked here — `products/pcn874/docs/SPEC-FROM-SOURCES.md` cites
-  every field and records the seven places the sources disagree. It has no price and no generator yet, and
-  nothing legal ships from it until the real document has been read; `.github/workflows/pcn874-spec-watch.yml`
-  is the step that makes reading it possible from a session with egress. A wrong PCN874 file is the user's
-  VAT exposure.
+- **`pcn874` is the one new product.** Its validator exists (`products/pcn874/`, 134 tests). **Since
+  7.9.2026 its record layout comes from the Israel Tax Authority's own circular to software houses** —
+  Appendix A (layout), B (representatives' file), C (permitted values) — which `render-watch.yml` fetched
+  from GitHub Actions and which is stored as extracted text in `research/rendered/`. Every rule in
+  `products/pcn874/docs/SPEC.md` cites that document by line; the three open-source implementations it
+  was previously built from are now corroboration. **Six of the seven recorded disagreements are
+  resolved** (five by the document, one by a newer vendor manual); the `reportedVat` arithmetic and the
+  line-ending/empty-file questions **stay open, and no rule was invented for them**. The document also
+  contradicted all three implementations once — the reference-group field takes letters, and the old
+  validator would have rejected a legal file — which is what that caveat was for.
+  **What is still not verified:** the circular is from **2009** and carries no version number; no later
+  edition of the layout has been rendered, and the two newer Hebrew documents are vendor user manuals
+  that do not restate the byte layout. `.github/workflows/pcn874-spec-watch.yml` watches all three
+  hashes so a new edition is noticed rather than assumed away. It has no price and no generator yet, it
+  still never says a file will be accepted — it points at the Authority's free simulator for that — and
+  a wrong PCN874 file is the user's VAT exposure.
 
 **Products with no line:** `mcp-il-tools`, which is a distribution channel test rather than a
 storefront, and whose registry listing is blocked on the domain (step 5) and the organisation (step 7).

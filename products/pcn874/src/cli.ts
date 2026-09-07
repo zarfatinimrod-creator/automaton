@@ -3,13 +3,14 @@
  * pcn874 validate <file> [--json] [--quiet]
  *
  * Exit code 0 when the file has no `error` findings, 1 when it has, 2 on a usage
- * or I/O problem. Warnings never change the exit code: they are the places the
- * open-source sources disagree, and failing a build on a disagreement would be
- * asserting more than we know.
+ * or I/O problem. Warnings never change the exit code: they are the places where
+ * the Tax Authority's document gives a field its meaning without forbidding a
+ * value, or where nothing rendered settles the question, and failing a build on
+ * an open question would be asserting more than we know.
  */
 
 import { readFileSync } from 'node:fs';
-import { describeCitation } from './sources.js';
+import { ITA_SIMULATOR_URL, describeCitation } from './sources.js';
 import { validatePcn874, type Finding, type ValidationResult } from './validate.js';
 
 const USAGE = `pcn874 — validator for the Israeli VAT detailed report file (PCN874)
@@ -28,9 +29,11 @@ Exit codes:
   1  at least one error finding
   2  usage or I/O problem
 
-This validator checks a file against a layout rendered from three independent
-open-source implementations, not against the Israel Tax Authority specification,
-which we could not open. See docs/SPEC-FROM-SOURCES.md.`;
+Rules come from the Israel Tax Authority's own circular to software houses —
+Appendix A (record layout), Appendix C (permitted values) — cited line by line in
+docs/SPEC.md. This tool does NOT tell you the Authority will accept your file.
+The Authority's free simulator is the thing that answers that:
+  ${ITA_SIMULATOR_URL}`;
 
 const SEVERITY_LABEL: Record<Finding['severity'], string> = {
   error: 'error  ',
@@ -47,8 +50,9 @@ export function formatHuman(result: ValidationResult, quiet: boolean): string {
     const field = f.field ? ` [${f.field}]` : '';
     lines.push(`${SEVERITY_LABEL[f.severity]} ${where}${field}  ${f.rule}`);
     lines.push(`         ${f.message}`);
+    if (f.officialText) lines.push(`         Tax Authority: ${f.officialText}`);
     for (const s of f.sources) lines.push(`         source: ${describeCitation(s)}`);
-    if (f.disagreement) lines.push(`         sources disagree: ${f.disagreement}`);
+    if (f.openQuestion) lines.push(`         still open: ${f.openQuestion}`);
     lines.push('');
   }
 
@@ -59,11 +63,13 @@ export function formatHuman(result: ValidationResult, quiet: boolean): string {
   );
   if (result.valid && warning > 0) {
     lines.push(
-      'Warnings are rules only one source states, or places the sources disagree. They do not make the file invalid.',
+      'Warnings are places the Tax Authority document gives a field its meaning without forbidding the value, ' +
+        'or where nothing rendered settles the question. They do not make the file invalid.',
     );
   }
   lines.push(
-    'Checked against three open-source implementations, not the Tax Authority specification. See docs/SPEC-FROM-SOURCES.md.',
+    'Checked against the Tax Authority circular (Appendices A and C); see docs/SPEC.md for what remains open. ' +
+      `This is not a statement that the file will be accepted — use the Authority's simulator: ${ITA_SIMULATOR_URL}`,
   );
   return lines.join('\n');
 }

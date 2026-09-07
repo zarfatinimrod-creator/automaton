@@ -35,12 +35,28 @@ describe('spec-watch stays honest about what it is for', () => {
     expect(workflow).toContain('schedule');
   });
 
-  it('starts with an empty lock file that claims nothing', () => {
+  it('has a lock file whose note says what a hash does and does not mean', () => {
+    // Still empty: the hashes in research/rendered/*.meta.json came from the
+    // render-watch workflow, not from this job, which has never run in CI.
     expect(lock.sources).toEqual({});
-    expect(lock.note).toContain('does NOT mean anybody has read the document');
+    // The note changed on 2026-09-07 with the evidence. The documents HAVE now
+    // been read (docs/SPEC.md cites them line by line), so the job's purpose is
+    // no longer "get us a copy" but "tell us when a new edition appears".
+    expect(lock.note).toContain('fetched and read on 2026-09-07');
+    expect(lock.note).toContain('a NEW EDITION is noticed');
+    expect(lock.note).toContain('does NOT mean the new bytes have been read');
   });
 
-  it('says in the workflow that it does not turn agreement into authority', () => {
+  it('tells a reader what to do when a hash changes: re-derive, do not assume', () => {
+    expect(watcher).toContain('docs/SPEC.md');
+    expect(watcher).toContain('a new edition may move a width or an offset');
+    expect(watcher).not.toContain('SPEC-FROM-SOURCES.md');
+  });
+
+  it('is still wired to a workflow that says it does not turn agreement into authority', () => {
+    // The workflow's own wording still describes the pre-2026-09-07 situation
+    // ("egress-blocked"). It lives outside products/pcn874/ and was deliberately
+    // left alone by the reconciliation; docs/SPEC.md §1 records the true state.
     expect(workflow).toContain('egress-blocked');
     expect(workflow).toMatch(/does NOT do/);
   });
