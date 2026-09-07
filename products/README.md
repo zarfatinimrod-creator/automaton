@@ -30,7 +30,7 @@ verdict on the code:
 - **`il-biz-tools` moved from Paddle to Gumroad.** Gumroad is the only merchant of record with rendered
   proof of ILS payout to an Israeli bank. Paddle is now an option the owner may choose knowing three
   named risks, recorded in `src/revenue/rails.ts` — never a step on his checklist.
-- **`pcn874` is the one new product.** Its validator exists (`products/pcn874/`, 134 tests). **Since
+- **`pcn874` is the one new product.** Its validator exists (`products/pcn874/`, 199 tests). **Since
   7.9.2026 its record layout comes from the Israel Tax Authority's own circular to software houses** —
   Appendix A (layout), B (representatives' file), C (permitted values) — which `render-watch.yml` fetched
   from GitHub Actions and which is stored as extracted text in `research/rendered/`. Every rule in
@@ -40,6 +40,16 @@ verdict on the code:
   line-ending/empty-file questions **stay open, and no rule was invented for them**. The document also
   contradicted all three implementations once — the reference-group field takes letters, and the old
   validator would have rejected a legal file — which is what that caveat was for.
+  **A refutation audit then went over the whole thing** (`research/colony-sweep/audits/pcn874-reconciliation.md`):
+  all thirteen resolutions held on their primary quote, but several of the *rules* built on them did
+  not, and it built files to prove it both ways. **Nine rules moved.** Two counter-party gaps became
+  errors (`T M C P I` must name their party; an identified sale above ₪5,000 must name its customer)
+  and two new warnings appeared (note E's petty-cash cap; `H`'s counter party). Five rules were
+  demoted from error to warning because no cited line states them — the alphabet of an `A(4)` field,
+  the file's encoding, a closing dealer id differing from the header's, the generation date's format,
+  and the sign of a zero invoice total when the VAT is not zero. The test that was supposed to guard
+  this passed with three unsupported errors because it only checked that a citation *existed*; there
+  is now a second test that reads the cited lines and requires the finding's quote to come from them.
   **What is still not verified:** the circular is from **2009** and carries no version number; no later
   edition of the layout has been rendered, and the two newer Hebrew documents are vendor user manuals
   that do not restate the byte layout. `.github/workflows/pcn874-spec-watch.yml` watches all three

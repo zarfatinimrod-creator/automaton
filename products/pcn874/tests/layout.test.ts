@@ -245,4 +245,48 @@ describe('docs/SPEC.md stays in step with the code', () => {
   it('still says plainly what the tool does not tell you', () => {
     expect(spec).toContain('**it does not say your file will be accepted**');
   });
+
+  /**
+   * The refutation audit's findings must be visible in the spec, not only in the
+   * code — the failure it found was a document claiming more than the rules did.
+   */
+  it('carries the refutation audit\'s ledger and names every rule whose severity moved', () => {
+    expect(spec).toContain('### 6.11');
+    expect(spec).toContain('research/colony-sweep/audits/pcn874-reconciliation.md');
+    for (const rule of [
+      'detail.refGroup.alphanumeric',
+      'file.encoding.ascii',
+      'footer.licensedDealerId.matchesHeader',
+      'detail.invoiceSumSign.signOfZero',
+      'detail.S.counterpartyExpected',
+      'detail.{T,M,C,P,I}.counterpartyExpected',
+      'detail.H.counterpartyExpected',
+      'totals.pettyCashCap',
+      'header.generationDate.calendar',
+    ]) {
+      expect(spec, `${rule} missing from the spec`).toContain(rule);
+    }
+  });
+
+  it('says what the A(n) alphabet question is, and lists the vendor-only facts as vendor-only', () => {
+    expect(spec).toContain("### 5.7 The alphabet of an `A(n)` field");
+    expect(spec).toContain('### 5.8 What the vendor manuals say that the circular does not');
+    // A vendor fact must never be presented as the Authority's.
+    expect(spec).toContain('**vendor-sourced facts**, never as the Authority\'s');
+  });
+
+  it('narrows the claim its own ERROR test proves, rather than overstating it', () => {
+    expect(spec).toContain('### 4.1');
+    expect(spec).toContain('**"every error cites the document"** — no more');
+    expect(spec).toContain('**Neither test can settle whether a rule is right.**');
+  });
+
+  it('has the three miscited line numbers corrected', () => {
+    // herp rounding passage, herp ₪20,000 sentence, rivhit edition line.
+    expect(spec).toContain('the H-ERP manual (lines 1185-1190)');
+    expect(spec).not.toContain('lines 1163-1168');
+    expect(spec).toContain('₪20,000 on line 1638');
+    expect(spec).not.toContain('₪20,000 on line 1637');
+    expect(spec).toContain('**edition 1.51, updated 7/7/2011** (line 10)');
+  });
 });

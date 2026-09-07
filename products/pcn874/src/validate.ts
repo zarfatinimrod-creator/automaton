@@ -76,8 +76,26 @@ export interface ValidationResult {
 }
 
 const DIGITS = /^\d+$/;
-/** A(n) in Appendix A: the Latin letters and the digits, as the file is ASCII. */
-const ALPHANUMERIC = /^[A-Z0-9]+$/;
+/**
+ * A(n) in Appendix A. The document types the field and never states its
+ * alphabet, so this is the set nothing disputes: the Latin letters in either
+ * case, and the digits. Anything outside it is a WARNING, not an error — see
+ * {@link A_N_ALPHABET_OPEN}.
+ */
+const ALPHANUMERIC = /^[A-Za-z0-9]+$/;
+
+/**
+ * Why a character outside `[A-Za-z0-9]` in an A(n) field is a warning rather
+ * than an error, and why the same reasoning demotes `file.encoding.ascii`.
+ */
+const A_N_ALPHABET_OPEN =
+  'Appendix A types the reference group A(4) — "Series etc.   zeros are possible at this stage" ' +
+  '(line 139) — and Appendix C\'s notes call its content "internal characters of the submitter ' +
+  '(series/branch etc.)" (lines 580-581). Neither line, and nothing else in the circular or in ' +
+  'either vendor manual, defines the character set of an A(n) field: not case, not punctuation, ' +
+  'not script, and not the byte encoding of the file. So a value outside the Latin letters and the ' +
+  'digits is reported, but not as the breach of a stated rule. Whether the Authority\'s reader ' +
+  'accepts it is unknown, and rejecting a legal file is as much a defect as accepting an illegal one.';
 
 function isValidYyyymmdd(value: string): boolean {
   if (!/^\d{8}$/.test(value)) return false;
@@ -195,8 +213,9 @@ function checkOneField(
         c.add({
           ...base,
           rule: `${rulePrefix}.${field.id}.alphanumeric`,
-          severity: 'error',
-          message: `${field.english}: expected ${field.length} letters or digits at offset ${field.offset}, found ${JSON.stringify(value)}. Appendix A declares this field A(${field.length}) — letters ARE permitted here, which no open-source implementation knows.`,
+          severity: 'warning',
+          message: `${field.english}: ${JSON.stringify(value)} at offset ${field.offset} contains a character that is neither a Latin letter nor a digit. Appendix A declares this field A(${field.length}) and never says which characters an A(n) field admits, so this is reported rather than rejected. Letters in either case and digits pass with no finding at all.`,
+          openQuestion: A_N_ALPHABET_OPEN,
         });
       }
       break;
@@ -217,9 +236,23 @@ function checkOneField(
 
 /**
  * "In a '+/-' field: When the amount field is zero, the value of the '+/-' field
- * will be '+'." — official line 174, restated by the sign table at line 535
- * ("Zero value field: +"). rcbuilder writes "-" on a zero reportedVat; the
- * document says otherwise, twice.
+ * will be '+'." — official line 174, and line 174 alone. Appendix C §2's table
+ * of signs used to be quoted here as a restatement; it is not one. Four of its
+ * five columns are kinds of TRANSACTION (sale to the customer, credit to the
+ * customer, purchase from supplier, credit from supplier) and the fifth is
+ * headed "Zero value / field" — and the document uses "zero value" to mean
+ * zero-RATED throughout (lines 57, 169-170, 271, 551). Read that way the column
+ * says "a zero-rated transaction takes +", which is a different rule. The quote
+ * now rests on 174.
+ *
+ * The header carries one amount per sign, so 174 is unambiguous there. A
+ * TRANSACTION record has one sign and two amount fields — the VAT sum (lines
+ * 142-144) and the invoice total excluding VAT (lines 148-149) — and line 524
+ * says the sign "represents the positive/negative sign of the value of the
+ * input", i.e. of the document rather than of one named amount. Which amount 174
+ * means there is not stated, so a record whose invoice total is zero while its
+ * VAT is not — a VAT-only correction or credit — gets a warning, and only a
+ * record with BOTH amounts zero gets the error.
  */
 function checkSignOfZero(
   c: Collector,
@@ -236,17 +269,49 @@ function checkSignOfZero(
   const digits = record.fields[magnitude.id];
   if (digits === undefined || digits.length !== magnitude.length || !isZeros(digits)) return;
 
-  c.add({
+  const common = {
     rule: `${rulePrefix}.${field.id}.signOfZero`,
-    severity: 'error',
     record: label,
     line: record.line,
     field: field.id,
-    message: `${field.english}: the amount in ${magnitude.id} is zero, so this sign must be "+", not "-".`,
-    sources: [ita('174'), ita('523-535'), `accounter:packages/pcn874-generator/src/utils/data-handlers.ts:28`],
-    officialText:
-      'In a "+/-" field: When the amount field is zero, the value of the "+/-" field will be "+" (line 174). ' +
-      'Appendix C §2 repeats it in its table of signs: the "Zero value field" takes "+" (lines 523-535).',
+  };
+  const officialText =
+    'In a "+/-" field: When the amount field is zero, the value of the "+/-" field will be "+" (line 174).';
+
+  if (spec.kind === 'detail') {
+    const vat = record.fields['totalVat'] ?? '';
+    const vatIsZero = DIGITS.test(vat) && vat.length === 9 && isZeros(vat);
+    if (!vatIsZero) {
+      c.add({
+        ...common,
+        severity: 'warning',
+        message: `${field.english}: ${magnitude.id} is zero, but totalVat is ${JSON.stringify(vat)}. Line 174 says a "+/-" field whose amount is zero takes "+"; a transaction record has ONE sign and TWO amounts, and the document never says which of them line 174 means. A VAT-only correction or credit is a real document, so this is reported rather than rejected.`,
+        sources: [ita('174'), ita('523-524'), ita('142-144'), ita('148-149')],
+        officialText:
+          `${officialText} Appendix C §2: "Table of possible values for a field marked/designated "+/-". ` +
+          'This field represents the positive/negative sign of the value of the input" (lines 523-524).',
+        openQuestion:
+          'A transaction record carries one "+/-" field (lines 145-146) and two amount fields — the VAT ' +
+          'sum (lines 142-144) and the invoice total excluding VAT (lines 148-149). Line 174 says "the ' +
+          'amount field", singular, and line 524 says the sign is that "of the value of the input" — of ' +
+          'the document, not of a named amount. Nothing rendered says which amount governs when the two ' +
+          'disagree, so this validator reports an error only when BOTH are zero, and warns when the ' +
+          'invoice total alone is.',
+      });
+      return;
+    }
+  }
+
+  c.add({
+    ...common,
+    severity: 'error',
+    message:
+      `${field.english}: the amount in ${magnitude.id} is zero, so this sign must be "+", not "-".` +
+      (spec.kind === 'detail'
+        ? ' Both amount fields of this record are zero, so the two readings of line 174 agree here.'
+        : ''),
+    sources: [ita('174'), `accounter:packages/pcn874-generator/src/utils/data-handlers.ts:28`],
+    officialText,
   });
 }
 
@@ -293,12 +358,19 @@ function checkHeader(c: Collector, header: Pcn874Record): void {
   const generationDate = header.fields['generationDate'] ?? '';
   if (DIGITS.test(generationDate) && !isValidYyyymmdd(generationDate)) {
     c.add({
+      // A WARNING, not an error, and the reason is this file's own severity
+      // rule: line 105 types the field N(8) and describes it as "Yyyymm form",
+      // which cannot both be right. Reading it as YYYYMMDD is what all three
+      // implementations do, not what the Authority states, and "two parts of the
+      // document pull in different directions" is the definition of a warning
+      // here. The practical risk is small — every implementation writes
+      // YYYYMMDD — but the rule may not claim the document says so.
       rule: 'header.generationDate.calendar',
-      severity: 'error',
+      severity: 'warning',
       record: 'header',
       line: header.line,
       field: 'generationDate',
-      message: `file generation date must be a real YYYYMMDD, found ${JSON.stringify(generationDate)}.`,
+      message: `file generation date is not a real YYYYMMDD date: ${JSON.stringify(generationDate)}. Line 105 types this field N(8) and then describes it as "Yyyymm form", which is the six-character comment the report-month field carries on line 102; the two cannot both be right. YYYYMMDD is the reading all three implementations write, so this is reported rather than rejected.`,
       sources: [ita('105'), 'accounter:packages/pcn874-generator/src/schemas.ts:12,22-25'],
       officialText: 'File Generation Date   N(8)   Yyyymm form',
       openQuestion: HEADER.fields.find(f => f.id === 'generationDate')?.openQuestion,
@@ -372,19 +444,149 @@ function checkFooter(c: Collector, footer: Pcn874Record, header: Pcn874Record | 
   const footerDealer = footer.fields['licensedDealerId'];
   if (headerDealer && footerDealer && headerDealer !== footerDealer) {
     c.add({
+      // A WARNING, not an error. No line of the circular says the two numbers
+      // are equal: line 101 names the header's field "Customer's Licensed Dealer
+      // identification Number" and lines 159-161 name the closing entry's
+      // "Licensed Dealer Identification Number OF SUBMITTER". Appendix A is
+      // headed "Individual Merchant" (line 91), which implies identity without
+      // stating it, and the vendor manuals describe production types the
+      // circular does not (H-ERP lines 990-1002). Reporting it as an error
+      // claimed `basis: official` for an inference.
       rule: 'footer.licensedDealerId.matchesHeader',
-      severity: 'error',
+      severity: 'warning',
       record: 'footer',
       line: footer.line,
       field: 'licensedDealerId',
-      message: `closing entry dealer id ${JSON.stringify(footerDealer)} does not match the header's ${JSON.stringify(headerDealer)}. One file is one merchant's report for one period; a representative reporting for several merchants uses the Appendix B alignment file, which this validator does not check.`,
-      sources: [ita('101'), ita('159-161'), ita('194-215')],
+      message: `closing entry dealer id ${JSON.stringify(footerDealer)} does not match the header's ${JSON.stringify(headerDealer)}. Appendix A is headed "Individual Merchant", where the two are the same number — but the document names the header field the CUSTOMER's and the closing field the SUBMITTER's and never says they are equal, so this is reported rather than rejected. A representative reporting for several merchants uses the Appendix B alignment file, which this validator does not check.`,
+      sources: [
+        ita('101'),
+        ita('159-161'),
+        ita('91'),
+        ita('194-215'),
+        'herp:research/rendered/pcn874-h-erp-mirror.txt:990-1002',
+      ],
       officialText:
         "Header: Customer's Licensed Dealer identification Number   N(9) (line 101). Closing Entry: Licensed " +
-        'Dealer Identification Number of submitter   N(9) (lines 159-161).',
+        'Dealer Identification Number of submitter   N(9) (lines 159-161). The appendix is headed ' +
+        '"Appendix \'A\' – PCN874 File Structure – New – Individual Merchant" (line 91).',
+      openQuestion:
+        'No rendered line states that the closing entry\'s dealer number equals the header\'s. The document ' +
+        'calls one "Customer\'s Licensed Dealer identification Number" (line 101) and the other "Licensed ' +
+        'Dealer Identification Number of submitter" (lines 159-161); Appendix A\'s "Individual Merchant" ' +
+        'heading (line 91) implies they coincide for that file without saying so. The H-ERP manual ' +
+        'describes three production types the circular never mentions — a single-dealer file, a file ' +
+        'shared by several dealers "relevant for representatives", and a union of dealers (lines 990-1002) ' +
+        '— and says nothing about what the closing record of those carries. So: reported, not rejected.',
     });
   }
 }
+
+/**
+ * The Appendix C rows whose counter-party cell names a party rather than
+ * "Zeros", with the row quoted as the document prints it.
+ *
+ * `L` and `K` are absent because their cell IS "Zeros" — those two are the
+ * opposite rule, `detail.L.vatIdZeros` and `detail.K.vatIdZeros`. `S` is absent
+ * because note A qualifies it with a figure and is handled on its own. `Y` and
+ * `R` are absent because their cells are an export entry number (or
+ * "999999999") and an import entry number, which are not VAT identification
+ * numbers and which note D lets be zeros "for service without an export entry"
+ * (lines 564-565).
+ *
+ * `H` is a warning and the rest are errors: note F ends "Counter file number:
+ * in accordance with 'Sha'am' guidelines" (line 574), and those guidelines are
+ * not in any rendered document, so the circular itself defers on that row.
+ */
+const COUNTERPARTY_ROWS: Readonly<
+  Record<
+    string,
+    {
+      readonly severity: Severity;
+      readonly what: string;
+      /** The counter-party cell, as Appendix C prints it. */
+      readonly cell: string;
+      /** The whole row, cell by cell, as Appendix C prints it. */
+      readonly rowQuote: string;
+      /** The `ita` line range of the row. */
+      readonly rowLines: string;
+      readonly extraMessage?: string;
+      readonly extraSources?: readonly string[];
+      readonly extraText?: string;
+      readonly openQuestion?: string;
+    }
+  >
+> = Object.freeze({
+  M: {
+    severity: 'error',
+    what: 'a self-invoice sale',
+    cell: 'Supplier',
+    rowQuote: '"SL" – Self Invoice   M   Supplier   V   Zeros/V   V   V   V   V   Zeros   C',
+    rowLines: '335-355',
+    extraMessage:
+      'A self-invoice sale carries the SUPPLIER\'s number, which note C states outright — so "there is no customer" is not a reason for zeros here.',
+    extraSources: [ita('556-557')],
+    extraText:
+      'Note C: "Self Invoice Sales – the supplier number will be entered in the place of the counter party ' +
+      'file number" (lines 556-557).',
+  },
+  I: {
+    severity: 'error',
+    what: 'a sale to a Palestinian Authority customer',
+    cell: 'Customer',
+    rowQuote:
+      '"SL"- Palestinian Authority Customer   I   Customer   V   Zeros/V   V   V   V   V   Zeros',
+    rowLines: '377-395',
+  },
+  T: {
+    severity: 'error',
+    what: 'a regular input from an Israeli supplier',
+    cell: 'Supplier',
+    rowQuote:
+      '"IN"-"regular" from Israeli Supplier   T   Supplier   V   Zeros/V   V   V   V   V   Zeros',
+    rowLines: '396-414',
+    extraMessage:
+      'An input with no identified supplier has no entry type that fits: the aggregating input row is petty cash, "IN"-Petty Cash   K, and it is capped by note E.',
+  },
+  C: {
+    severity: 'error',
+    what: 'a self-invoice input',
+    cell: 'Supplier',
+    rowQuote: '"IN"-Self Invoice   C   Supplier   V   Zeros/V   V   V   V   V   Zeros   C',
+    rowLines: '415-435',
+    extraSources: [ita('556-557')],
+    extraText:
+      'The row carries note C, which says of the sale side: "Self Invoice Sales – the supplier number will ' +
+      'be entered in the place of the counter party file number" (lines 556-557).',
+  },
+  P: {
+    severity: 'error',
+    what: 'an input from a Palestinian Authority supplier',
+    cell: 'Supplier',
+    rowQuote:
+      '"IN"-Supplier from Palestinian Authority   P   Supplier   V   Zeros/V   V   V   V   V   Zeros',
+    rowLines: '478-496',
+  },
+  H: {
+    severity: 'warning',
+    what: 'an input on another document permitted by law',
+    cell: 'Supplier',
+    rowQuote:
+      '"IN"-Other Document (by law)   H   Supplier   V   Zeros/V   V   V   V   V   Zeros   F',
+    rowLines: '497-517',
+    extraMessage:
+      'Reported rather than rejected: this is the one row whose comment marker sends the counter-party field to a document nobody here has — note F.',
+    extraSources: [ita('573-574')],
+    extraText:
+      'The row carries note F: "Other Document Input: Reference Number – if unknown: will be entered as ' +
+      'zeros. Counter file number: in accordance with "Sha\'am" guidelines" (lines 573-574).',
+    openQuestion:
+      'Appendix C gives the H row\'s counter party as "Supplier" under "All fields are compulsory", but the ' +
+      'row\'s own comment marker is F, and note F says the counter file number is "in accordance with ' +
+      '\'Sha\'am\' guidelines" (line 574). Those guidelines are not in the circular and not in either vendor ' +
+      'manual, so nothing rendered says whether zeros is among the values they allow. A warning is the ' +
+      'ceiling this row supports.',
+  },
+});
 
 /**
  * Per-entry-type constraints, from Appendix 'C' — the table of permitted values
@@ -426,17 +628,64 @@ function checkDetailSemantics(c: Collector, record: Pcn874Record): void {
   };
 
   if (type === 'S' && vatId.length === 9 && isZeros(vatId)) {
+    // Note A puts a figure on it: above ₪5,000 before VAT the customer's
+    // merchant number is "obligatory", and below it identification is
+    // "optional" and the sale may be aggregated instead. So the same missing
+    // number is an error above the figure and a warning at or below it. The
+    // figure itself is one the document says may move (lines 586-588), which is
+    // quoted into both findings rather than hidden.
+    const invoiceSum = record.fields['invoiceSum'] ?? '';
+    const readable = invoiceSum.length === 10 && DIGITS.test(invoiceSum);
+    const amount = readable ? Number(invoiceSum) : null;
+    const aboveNoteA = amount !== null && amount > 5000;
+    const officialTextS =
+      'Appendix C, "Regular \'SL\' – identified commercial customer   S   Customer   V …" (lines 250-268), ' +
+      'where "V" symbolizes a compulsory field. Note A: "Regular local sale to commercial customer – In a ' +
+      "sale where the pre-VAT amount is higher than 5,000 NIS, it is obligatory to state the customer's " +
+      'merchant number (it is a prerequisite to customer input offset). In sales with lower amounts the ' +
+      'identification of a commercial customer is optional and they may be reported either as a separate ' +
+      'entries or as one or more aggregated entries" (lines 537-542). The document adds: "Parameter values ' +
+      'may change from time to time. These changes will be published in memos and will be valid for a ' +
+      'specified period e.g 5000 shekels/2% etc." (lines 586-588).';
+
     at(
       'detail.S.counterpartyExpected',
-      'warning',
+      aboveNoteA ? 'error' : 'warning',
       'counterpartyVatId',
-      'entry type S is a sale to an identified commercial customer, and Appendix C marks the counter-party number compulsory for it. An unidentified or aggregated sale is reported as L, whose counter-party field is zeros. A warning rather than an error because the document also allows a small identified sale to be aggregated instead.',
-      [ita('250-268'), ita('537-542')],
-      'Appendix C, "Regular \'SL\' – identified commercial customer   S   Customer   V …" (lines 250-268), ' +
-        'where "V" symbolizes a compulsory field. Note A: "In a sale where the pre-VAT amount is higher than ' +
-        '5,000 NIS, it is obligatory to state the customer\'s merchant number … In sales with lower amounts ' +
-        'the identification of a commercial customer is optional and they may be reported either as a separate ' +
-        'entries or as one or more aggregated entries" (lines 537-542).',
+      aboveNoteA
+        ? `entry type S is a sale to an identified commercial customer and this record's pre-VAT total is ${amount} shekels, above the 5,000 note A names, where stating the customer's merchant number is "obligatory". The counter-party field is zeros. The aggregation note A allows for smaller sales does not reach this amount; an unidentified sale of this size has no entry type that fits.`
+        : `entry type S is a sale to an identified commercial customer, and Appendix C marks the counter-party number compulsory for it; the field is zeros. Reported rather than rejected because this record's pre-VAT total${amount === null ? ' could not be read' : ` is ${amount} shekels`}, at or below the 5,000 above which note A makes the customer's number obligatory, and below that figure note A calls identification optional and allows the sale to be aggregated instead (an aggregated or unidentified sale is entry type L, whose counter-party field is zeros).`,
+      [ita('250-268'), ita('537-542'), ita('586-588')],
+      officialTextS,
+      aboveNoteA
+        ? 'The 5,000-shekel figure is the document\'s own, but the document also says parameter values ' +
+          '"may change from time to time … e.g 5000 shekels/2% etc." (lines 586-588), and no memo issued ' +
+          'since 2009 has been rendered in this repository. The H-ERP manual, current to 2025, still shows ' +
+          '5,000 (lines 300-301, 911-913). If the Authority has since moved the figure, this rule is ' +
+          'reporting against the old one.'
+        : undefined,
+    );
+  }
+
+  // Appendix C names a counter party for every one of these rows, under "All
+  // fields are compulsory" (line 224), and — unlike S — no note offers
+  // aggregation as a way out. Before this the validator said nothing at all
+  // about them: a `T` input or an `M` self-invoice sale with a zeros counter
+  // party came back with zero findings, while the same omission on `S` got a
+  // warning. The circular treats the rows alike.
+  const counterparty = COUNTERPARTY_ROWS[type];
+  if (counterparty && vatId.length === 9 && isZeros(vatId)) {
+    at(
+      `detail.${type}.counterpartyExpected`,
+      counterparty.severity,
+      'counterpartyVatId',
+      `entry type ${type} is ${counterparty.what}, and Appendix C gives its counter-party cell as "${counterparty.cell}" under "All fields are compulsory"; the field is zeros.${counterparty.extraMessage ? ` ${counterparty.extraMessage}` : ''}`,
+      [ita(counterparty.rowLines), ita('224-225'), ...(counterparty.extraSources ?? [])],
+      `Appendix C: "${counterparty.rowQuote}" (lines ${counterparty.rowLines}). General Explanation: ` +
+        '"All fields are compulsory. Below are the possible values for each field in each situation. ' +
+        '"V" symbolizes a compulsory field in accordance with the column heading or the value stated in the ' +
+        `table" (lines 224-225).${counterparty.extraText ? ` ${counterparty.extraText}` : ''}`,
+      counterparty.openQuestion,
     );
   }
 
@@ -577,24 +826,98 @@ function checkTotals(c: Collector, header: Pcn874Record, details: readonly Pcn87
   }
 }
 
+/**
+ * Note E's cap on petty cash — Appendix C, official lines 566-570.
+ *
+ * > "Petty Cash Input – The entry may appear a number of times, even on the same
+ * > date, provided that the total VAT for these entries is less than 2% of the
+ * > total VAT of the file's entries or 2,000 NIS (the greater of them). The
+ * > restrictions regarding the Petty Cash may change from time to time…"
+ *
+ * A WARNING, and for two reasons the document gives itself: it says the
+ * restriction may change (lines 569-570), and it never defines what "the total
+ * VAT of the file's entries" is — sales VAT, input VAT, or both. This rule takes
+ * the widest reading, the VAT of every transaction record, which is the reading
+ * most favourable to the file.
+ */
+function checkPettyCashCap(c: Collector, details: readonly Pcn874Record[]): void {
+  const vatOf = (r: Pcn874Record): number | null => {
+    const v = r.fields['totalVat'] ?? '';
+    return v.length === 9 && DIGITS.test(v) ? Number(v) : null;
+  };
+
+  const pettyCash = details.filter(d => d.fields['recordType'] === 'K');
+  if (pettyCash.length === 0) return;
+
+  let petty = 0;
+  let total = 0;
+  for (const r of details) {
+    const v = vatOf(r);
+    // A record whose VAT cannot be read is already reported by its own rule;
+    // guessing a total from the rest would be worse than saying nothing.
+    if (v === null) return;
+    total += v;
+    if (r.fields['recordType'] === 'K') petty += v;
+  }
+
+  const twoPercent = total * 0.02;
+  const cap = Math.max(2000, twoPercent);
+  if (petty <= cap) return;
+
+  c.add({
+    rule: 'totals.pettyCashCap',
+    severity: 'warning',
+    record: 'file',
+    line: null,
+    field: null,
+    message: `the ${pettyCash.length} petty-cash (K) record(s) carry ${petty} shekels of VAT between them. Note E allows petty-cash entries to repeat "provided that the total VAT for these entries is less than 2% of the total VAT of the file's entries or 2,000 NIS (the greater of them)" — here 2% of ${total} is ${twoPercent.toFixed(2)}, so the greater is ${cap.toFixed(2)}. Reported rather than rejected: the document says the restriction may change, and never says which entries "the file's entries" means.`,
+    sources: [ita('566-570'), ita('436-456'), ita('586-588')],
+    officialText:
+      'Note E: "Petty Cash Input – The entry may appear a number of times, even on the same date, provided ' +
+      "that the total VAT for these entries is less than 2% of the total VAT of the file's entries or 2,000 " +
+      'NIS (the greater of them). The restrictions regarding the Petty Cash may change from time to time as ' +
+      'to be determined in the internal regulations that will be made public" (lines 566-570).',
+    openQuestion:
+      'Two things note E leaves open. First, its base: "the total VAT of the file\'s entries" could be the ' +
+      'sales VAT, the input VAT or both, and nothing rendered says which — this rule sums the VAT of every ' +
+      'transaction record, the widest base and so the most permissive. Second, the figures themselves: ' +
+      'lines 569-570 say the petty-cash restrictions "may change from time to time as to be determined in ' +
+      'the internal regulations that will be made public", and lines 586-588 name "2%" among the parameters ' +
+      'that move; no such regulation or memo is rendered in this repository. Note E also words the cap as ' +
+      '"less than", so a total exactly at the cap is outside it too, while this rule reports only above it. ' +
+      'Separately, the Rivhit manual states a per-invoice cap the circular does not: an invoice whose VAT ' +
+      'is above ₪300 may not be reported as petty cash (rivhit lines 318-319, edition 1.51, 2011). That is ' +
+      'a vendor statement, so no rule is built on it.',
+  });
+}
+
 function checkFileShape(c: Collector, parsed: ParsedPcn874): void {
   const { records } = parsed;
 
   if (parsed.nonAsciiOffsets.length > 0) {
     c.add({
+      // A WARNING, not an error. The cited range declares field TYPES; it does
+      // not declare an encoding, and §2 of the spec says so itself. Nothing is
+      // lost by demoting it: every N(n), "+/-" and literal field already rejects
+      // a non-ASCII byte on its own authority, as an error. The only field this
+      // rule ever added anything to is the A(4) reference group, whose alphabet
+      // the document leaves open — the same open question, so the same severity.
       rule: 'file.encoding.ascii',
-      severity: 'error',
+      severity: 'warning',
       record: 'file',
       line: null,
       field: null,
-      message: `file contains ${parsed.nonAsciiOffsets.length} character(s) outside printable ASCII, first at offset ${parsed.nonAsciiOffsets[0]}. Every field in Appendix A is N(n) digits, A(n) letters or a "+/-" sign; no other character has a defined meaning.`,
+      message: `file contains ${parsed.nonAsciiOffsets.length} character(s) outside printable ASCII, first at offset ${parsed.nonAsciiOffsets[0]}. Every field in Appendix A is typed N(n), A(n) or "+/-", and a non-ASCII character in an N(n), "+/-" or fixed-value field is already an error under that field's own rule. This whole-file finding is a warning because the document declares no encoding at all, so an A(n) field is the one place it might legitimately appear.`,
       sources: [
         ita('96-161'),
+        ita('139'),
+        ita('580-581'),
         'accounter:packages/pcn874-generator/src/utils/builders.ts:22,37,41',
         'rcbuilder:CODE/PCN-874/PCN874_Sample.txt (ASCII text)',
       ],
       officialText:
         'Appendix A types every field as A(n), N(n) or "+/-"; the file has no declared encoding beyond that.',
+      openQuestion: A_N_ALPHABET_OPEN,
     });
   }
 
@@ -659,7 +982,9 @@ function checkFileShape(c: Collector, parsed: ParsedPcn874): void {
         : [ita('100'), ita('158'), ita('176-192')],
       officialText: representative
         ? 'Appendix B, Initial Entry: Entry Type   A(1)   "A" – fixed value (line 198).'
-        : 'Header Entry: "O" – fixed value (line 100); Closing Entry: "X" – fixed value (line 158); Table of Values (lines 176-192).',
+        : 'Header Entry: "Entry Type   A(1)   "O" – fixed value" (line 100). Closing Entry: "Entry Type   ' +
+          'A(1)   "X" – fixed value" (line 158). "Table of Values for the Entry Type Field . The values will ' +
+          'be derived from transaction type" (lines 176-177), listing eleven letters (lines 181-191).',
     });
   }
 
@@ -789,6 +1114,7 @@ export function validatePcn874(input: string | ParsedPcn874): ValidationResult {
   }
   if (footer) checkFooter(c, footer, header);
   if (header && header.raw.length === HEADER.length) checkTotals(c, header, details);
+  checkPettyCashCap(c, details);
 
   const findings = c.findings;
   const counts = {

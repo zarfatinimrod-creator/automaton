@@ -83,7 +83,7 @@ export const SOURCES: Readonly<Record<string, SourceRepo>> = Object.freeze({
       'Vendor manual, all rights reserved. Cited for facts only; nothing copied. A user guide to Rivhit’s software; it does not restate the byte layout.',
     renderedPath: 'research/rendered/pcn874-rivhit-mirror.txt',
     documentDate:
-      'edition 1.51, updated 7/7/2011 (line 9: "מהדורה 1.51 , לתאריך מעודכן 7/7/2011"). 33 pages.',
+      'edition 1.51, updated 7/7/2011 (line 10: "מהדורה 1.51 , לתאריך   מעודכן 7/7/2011"). 33 pages.',
   },
   herp: {
     key: 'herp',
