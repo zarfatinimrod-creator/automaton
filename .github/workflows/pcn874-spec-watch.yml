@@ -2,23 +2,21 @@ name: pcn874-spec-watch
 
 # Why this exists.
 #
-# products/pcn874 validates against a layout rendered from three open-source
-# implementations, NOT from the Israel Tax Authority's own PCN874 specification —
-# gov.il and both commercial mirrors of the document are egress-blocked from the
-# container the product was built in (verified 2026-09-07: the proxy answers the
-# CONNECT with 403).
+# products/pcn874 validates against the layout in the Israel Tax Authority's own
+# circular to software houses (Appendix A), rendered on 2026-09-07 by
+# .github/workflows/render-watch.yml into research/rendered/pcn874-*.{pdf,txt} and
+# reconciled field by field in products/pcn874/docs/SPEC.md. gov.il and the two
+# vendor mirrors are egress-blocked from the container the product was built in
+# (the proxy answers the CONNECT with 403), which is why a GitHub runner fetched
+# them.
 #
-# GitHub Actions has egress. This job downloads the specification from the URLs
-# products/pcn874/src/sources.ts records — every one of which came from a source
-# (the accounter repo's own README, or the colony sweep's audit), none invented —
-# stores the SHA-256 of what came back, and fails when a stored hash changes.
-#
-# What it buys: a later session with an unblocked path can pull the artefact this
-# job proves is reachable and diff the real document against
-# products/pcn874/docs/SPEC-FROM-SOURCES.md, instead of re-deriving the layout.
-# What it does NOT do: read the PDF, or turn "three implementations agree" into
-# "the Tax Authority says". Only a human or an agent that reads the document does
-# that.
+# This job is the watch, not the fetch: it downloads the same three documents from
+# the URLs products/pcn874/src/sources.ts records — every one taken from a source,
+# none invented — stores the SHA-256 of what came back, and fails when a stored hash
+# changes. The circular is from 2009, carries no version number, and announces
+# later changes it does not specify; a changed hash is the only signal that a new
+# edition exists, and a new edition must be diffed against docs/SPEC.md before
+# anything ships. A green run means "unchanged", never "compliant".
 
 on:
   schedule:

@@ -57,7 +57,10 @@ with more confidence.
 | `revenue-pcn874` | Playbook for the PCN874 line — the Israeli VAT detailed-report file, validator first, no legal figure until the spec is rendered (core). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-pcn874/SKILL.md) |
 | `revenue-oss-bounties` | Playbook for open-source bounties on Algora, from the brand machine account (payability proved at code level, not yet at account level). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-oss-bounties/SKILL.md) |
 
-**`revenue-pcn874` was added on 7.9.2026**, the same day the validator landed in `products/pcn874/`. The board had put the playbook at P1, after the 874 record layout was rendered from two independent open-source implementations; it was rendered from three (`products/pcn874/docs/SPEC-FROM-SOURCES.md`). The official Tax Authority document is still unrendered, and the playbook's first rule is that no legal figure ships until it is.
+**`revenue-pcn874` was added on 7.9.2026**, the same day the validator landed in `products/pcn874/`. The board had put the playbook at P1,
+after the 874 record layout was rendered from two independent open-source implementations; it was rendered from three, and the same
+evening the Tax Authority's own circular was fetched by CI and reconciled field by field (`products/pcn874/docs/SPEC.md`). The playbook's
+first rule stands: no "compliant", no `reportedVat` formula, and no width assumed to have survived an edition nobody has rendered.
 
 ## Start with two
 
