@@ -1,6 +1,6 @@
 # יומן משימה — 7.9.2026 — פסק הדירקטוריון, מדריך הבעלים, והבניות הראשונות
 
-branch: `claude/monthly-income-plan-pfs7vu` · מודל הסשן: Fable 5.1 (בחירת הבעלים) · 00:25–17:30 UTC
+branch: `claude/monthly-income-plan-pfs7vu` · מודל הסשן: Fable 5.1 (בחירת הבעלים) · 00:25–18:40 UTC
 (יומני המשנה של הסוכנים: `2026-09-07-apify-publish-and-measure.md`, `2026-09-07-pcn874-validator.md`,
 `2026-09-07-board-decision-folded-in.md`, `2026-09-07-algora-intake-filter.md`.)
 
@@ -87,7 +87,7 @@ branch: `claude/monthly-income-plan-pfs7vu` · מודל הסשן: Fable 5.1 (ב�
   בריפים; שייך ל-`CLAUDE.md`.
 - **בדיקה אדברסרית של מסמך לבעלים**: אותו בריף (INVENTED/WRONG/MISSING/MANDATE/SECRET NAMES) ישרת כל מסמך כזה.
 
-## 2ג. המשך (18:20–18:40 UTC): המדריך כ-PDF, לבקשת הבעלים
+## 2ג. המשך (18:15–18:25 UTC): המדריך כ-PDF, לבקשת הבעלים
 
 - `scripts/owner-steps-pdf.mjs`: Markdown → HTML (marked, תלות-פיתוח חדשה בשורש, אפס תלויות משנה) עם עיצוב
   RTL (DejaVu Sans, קוד LTR, טבלאות, `@page A4`) → Chromium headless (`--print-to-pdf`, הבינארי מ-`/opt/pw-browsers`).
@@ -96,7 +96,7 @@ branch: `claude/monthly-income-plan-pfs7vu` · מודל הסשן: Fable 5.1 (ב�
 - טעות בדרך: ניסיון לחתוך תמונה ב-PIL (לא מותקן) ואז `translateY` על גוף הדף (מסך ריק) — הפתרון: לרנדר את
   הקטע לבד. ~6k אסימונים.
 
-## 2ד. המשך (18:24–19:05 UTC): המפרט הרשמי של PCN874 רונדר; מדידת SERP נקלטה
+## 2ד. המשך (18:24–18:40 UTC): המפרט הרשמי של PCN874 רונדר; מדידת SERP נקלטה
 
 - **הרוטינה העירה ב-18:24.** `pcn874-spec-watch.yml` הופעל ידנית: runner של GitHub הביא את שלושת מסמכי המפרט
   (gov.il אנגלית, מראה Rivhit, מראה H-ERP) אבל ה-workflow רק מגבב. שלושת ה-URL הועתקו מילה במילה מ-`spec-watch.mjs`
