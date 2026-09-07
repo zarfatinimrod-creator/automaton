@@ -139,23 +139,65 @@ companies for $2 versus hours of Hebrew CSV wrangling.
 
 ### One-time steps (only you can do these)
 
-1. **Apify account + KYC**: sign up at apify.com, verify email, and complete payout details under
-   *Settings -> Payouts* (Apify pays creators via **PayPal** or bank transfer/**Payoneer**; Stripe is
-   not required from your side). An Israeli individual can receive PayPal payouts; keep the
-   *עוסק פטור* invoices for the Israeli tax authority.
-2. **Publish the Actor** in Apify Store and turn on **Monetization -> Pay per event**. Add the two
-   events with the exact names `dataset-search` and `record` (see table above) and set prices.
-3. Optional: register a short domain / landing page and add the Store link there.
+**To publish free and start measuring — this is the whole list:**
 
-### Deploy steps
+1. **Apify account**: sign up at apify.com and verify the email. That is all; **no identity
+   verification, no payout details, no money.** A free, unpriced Actor requires none of it.
+2. **Create an API token** (*Settings → Integrations → Personal API tokens*) and paste it into
+   GitHub as a repository secret named exactly `APIFY_TOKEN`. CI does the rest — see
+   *Published free through CI* below.
+3. The first push creates the Actor privately. Open it in the Console once and press
+   **Publication → Publish to Store** to make it visible. One click, once.
+
+**Later, only if the run counts justify charging for it:**
+
+4. Complete Apify's payout details (*Settings → Payouts*; Apify pays creators via **PayPal** or
+   bank transfer/**Payoneer** — Stripe is not required from your side). An Israeli individual can
+   receive PayPal payouts; keep the *עוסק פטור* invoices for the Israeli tax authority.
+5. Turn on **Monetization → Pay per event** and add the two events with the exact names
+   `dataset-search` and `record` (see table above). Nothing in this repository can do this for
+   you, and nothing in it will do it by accident.
+6. Optional: register a short domain / landing page and add the Store link there.
+
+### Published free through CI
+
+Deploying is not a manual step any more. `.github/workflows/apify-publish.yml` does it, and the
+only thing it needs is one repository secret named exactly **`APIFY_TOKEN`** (Apify Console →
+*Settings → Integrations → Personal API tokens*; this is step 6 of the owner checklist). **No
+identity verification is required** — a free, unpriced Actor needs none.
+
+| Trigger | What happens |
+|---|---|
+| Push to `main` touching `products/apify-il-open-data/**` | Test, build, validate the schemas, then `apify push` — the Actor is created or updated and rebuilt on the platform. |
+| Manual dispatch | Both jobs. |
+| Daily, 05:41 UTC | `scripts/apify-runs.mjs` reads this Actor's runs from the Apify API and commits `state/colony/measurements/apify-runs.json` back to `main`. |
+
+Three things about it are deliberate:
+
+- **It stays free.** A guard step greps `.actor/actor.json` and fails the build if any pricing key
+  appears in it. The workflow passes no pricing flag (`apify push` has none) and never calls a
+  monetization endpoint. Turning a price on remains a conscious act in the Apify Console, after
+  KYC — not something a commit can do by accident.
+- **A missing token is not a failed build.** Until `APIFY_TOKEN` is pasted, both jobs print one
+  notice explaining which step is outstanding and exit 0.
+- **The run count separates strangers from us.** Our own smoke runs carry our account's `userId`
+  and are subtracted, so the headline number is people who are not us pressing Start. That number
+  is a demand signal and nothing more — revenue is counted only in the ledger, with a transaction
+  id.
+
+### Deploy steps by hand (fallback)
 
 ```bash
 cd products/apify-il-open-data
 npm install
 npm test                       # 41 tests, offline fixtures
-npx apify login                # once; paste your Apify API token
-npx apify push                 # builds the Docker image on Apify and creates/updates the Actor
+npx apify-cli login --token <your Apify API token>   # writes ~/.apify/auth.json
+npx apify-cli push             # builds the Docker image on Apify and creates/updates the Actor
 ```
+
+`apify push` does **not** read `APIFY_TOKEN` from the environment — it needs the credentials file
+that `login` writes. And `login` exits 0 even when the token is rejected, so check that
+`~/.apify/auth.json` exists before assuming it worked.
 
 `.actor/actor.json` names the Actor `israel-open-data-api`; change `name`/`title` before the
 first push if you prefer a different Store slug. After pushing, open the Actor in the Console,

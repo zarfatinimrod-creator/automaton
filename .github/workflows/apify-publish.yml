@@ -1,0 +1,280 @@
+name: apify-publish
+
+# Publish `products/apify-il-open-data` to the Apify Store as a FREE Actor, and
+# then count — every day, for as long as it takes — how many strangers run it.
+#
+# WHY. MISSION.md constraint 7 is the one that invalidates more of the plan than
+# the other six combined: nobody knows how a stranger finds anything this colony
+# builds, so every ceiling in the repo is ₪0 until somebody measures it. The
+# chief audit asked for the cheapest possible measurement, and this is it. A free
+# Apify listing needs no KYC and no money; Apify's own API then reports, for
+# free, exactly how many people who are not us pressed Start. Thirty days of that
+# number is worth more than the next ten ceiling estimates.
+#
+# WHY FREE, AND WHY IT STAYS FREE. Two reasons, and the second is the real one:
+#   1. Apify requires developer identity verification before any Actor can carry
+#      a price. The owner has not done that and should not have to for a test.
+#   2. Publishing free is the only version of this that measures anything. A
+#      price on a listing nobody opens teaches us nothing; a run count on a free
+#      listing answers the actual question. MISSION.md constraint 8 adds the
+#      third reason: Apify's quality score has a developer-level "History of
+#      success" category, which is one of exactly three non-public inputs this
+#      colony can accumulate, and it only starts accumulating once something is
+#      published.
+# The `no pricing block` step below enforces this mechanically rather than by
+# good intentions — see its own comment for what it does and does not catch.
+#
+# WHAT THE OWNER HAS TO DO: paste one repository secret named exactly
+# APIFY_TOKEN. That is docs/OWNER_STEPS.he.md step 6 and it is already written
+# down there. Until he does, every job here prints a notice and exits 0. A
+# missing secret is a thing that has not happened yet, not a broken build, and
+# a red X on a repo he reads would be a lie about the state of the work.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "products/apify-il-open-data/**"
+      - ".github/workflows/apify-publish.yml"
+  workflow_dispatch:
+  schedule:
+    # Daily, for the run count. Deliberately not on the hour and not at :00 —
+    # GitHub's own docs warn that the top of the hour is the busiest slot and
+    # scheduled runs get delayed there.
+    - cron: "41 5 * * *"
+
+permissions:
+  contents: write
+
+# Two publishes racing each other would fight over the Actor version, and two
+# counts racing each other would fight over the same committed file. Serialise
+# both. `cancel-in-progress: false` because a publish half-done is worse than a
+# publish that waits.
+#
+# Note this is deliberately NOT colony.yml's `colony-state` group even though
+# both write under state/colony/. Sharing the group would serialise across the
+# two workflows, but GitHub keeps only one pending run per group, so a daily
+# count could be silently cancelled by an hourly tick and a day of measurement
+# would vanish without a trace. The cross-workflow race is handled where it
+# actually occurs instead: the rebase-and-retry loop in the commit step.
+concurrency:
+  group: apify-publish
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Publish the Actor. Runs on a push that touches the product, and on demand.
+  # ---------------------------------------------------------------------------
+  publish:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: products/apify-il-open-data
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: products/apify-il-open-data/package-lock.json
+
+      # THE GUARD. This Actor must remain unpriced, and "we promised not to" is
+      # not a control. So: list every key in the manifest whose name mentions a
+      # price, and fail if anything other than the one known-harmless key is
+      # there.
+      #
+      # `suggestedPriceUsd` is the allowed one. It lives inside the `ppeEvents`
+      # block, which is this repo's own documentation of what a price WOULD be —
+      # `ppeEvents` is not a field in Apify's actor.json specification at all, so
+      # `apify push` cannot read it and cannot act on it. Monetization is set in
+      # the Apify Console (Publishing -> Monetization), never from this file and
+      # never from this workflow, and nothing here calls a pricing endpoint.
+      #
+      # What this catches: `pricingModel`, `pricingInfos`, `pricePerUnitUsd`,
+      # `pricingPerEvent` or any future key with "pric" in its name being added
+      # to the manifest. What it does not catch: somebody enabling monetization
+      # by hand in the Console. Nothing in a repository can catch that, and
+      # saying so is better than implying otherwise.
+      - name: Guard - the Actor carries no pricing block
+        run: |
+          set -euo pipefail
+          FOUND=$(grep -oE '"[A-Za-z0-9_]*[Pp]ric[A-Za-z0-9_]*"[[:space:]]*:' .actor/actor.json \
+                    | sed -E 's/[[:space:]]*:$//' | sort -u || true)
+          UNEXPECTED=$(printf '%s\n' "$FOUND" | grep -v '^"suggestedPriceUsd"$' | grep -v '^$' || true)
+          if [ -n "$UNEXPECTED" ]; then
+            echo "::error file=products/apify-il-open-data/.actor/actor.json::This Actor is published FREE. Pricing keys found in the manifest: ${UNEXPECTED}"
+            echo "Remove them, or if a price is genuinely intended, change this workflow deliberately rather than sneaking past it." >&2
+            exit 1
+          fi
+          echo "No pricing keys beyond the documentation-only suggestedPriceUsd. The Actor stays free."
+
+      # Build and test before publishing, not after. Shipping an untested Actor
+      # to a public store is exactly the class of thing MISSION.md rule 4 rules
+      # out — and the suite is offline fixtures, so it costs seconds.
+      - run: npm ci --no-audit --no-fund
+      - run: npm test
+      - run: npm run build
+
+      # Offline manifest check. Catches a broken INPUT_SCHEMA.json or dataset
+      # view before the platform does, and needs no token.
+      - name: Validate the Actor schemas
+        run: npx --yes apify-cli@1.10.0 validate-schema
+
+      - name: Is the owner's Apify token here yet?
+        id: token
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${APIFY_TOKEN:-}" ]; then
+            NOTICE="Not publishing: repository secret APIFY_TOKEN is not set yet. This is not a failure. The owner adds it once - docs/OWNER_STEPS.he.md step 6 (Apify Console -> Settings -> Integrations -> Personal API tokens, then paste it here as a repository secret named exactly APIFY_TOKEN). No identity verification is needed: the Actor is published free."
+            echo "$NOTICE"
+            echo "$NOTICE" >> "$GITHUB_STEP_SUMMARY"
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "APIFY_TOKEN is present; publishing."
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # `apify push` does NOT read APIFY_TOKEN from the environment - verified
+      # against apify-cli 1.10.0: with APIFY_TOKEN set and no stored credentials
+      # it still exits 1 with "You are not logged in with your Apify account."
+      # So log in first, which writes ~/.apify/auth.json.
+      #
+      # And `apify login` exits 0 EVEN WHEN THE TOKEN IS REJECTED - also verified
+      # - so its exit code proves nothing. What a failed login does not do is
+      # write the credentials file, so that is what gets checked. Without this,
+      # a bad token would sail through login and fail confusingly two steps later.
+      - name: Log in to Apify
+        if: steps.token.outputs.present == 'true'
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          APIFY_CLI_DISABLE_TELEMETRY: "1"
+        run: |
+          set -euo pipefail
+          npx --yes apify-cli@1.10.0 login --token "$APIFY_TOKEN"
+          if [ ! -f "$HOME/.apify/auth.json" ]; then
+            echo "::error::Apify rejected the token. The login command exits 0 either way, so this checks for the credentials file it writes only on success. Re-create the token in Apify Console -> Settings -> Integrations and update the APIFY_TOKEN repository secret."
+            exit 1
+          fi
+          echo "Logged in."
+
+      # Pinned to 1.10.0 on purpose. This repo already owns a script whose entire
+      # reason for existing is a dependency that moved underneath it
+      # (scripts/check-deps-freshness.mjs), and an unpinned npx on the step that
+      # publishes to a public store is the same bet. The pin is what makes the
+      # two verified facts above stay true. When it is time to move it, run
+      # `npx apify-cli@<new> push --help` and re-check both.
+      #
+      # -w 900: wait up to 15 minutes for the platform build, so a build failure
+      # fails this job instead of being discovered by a stranger. The CLI's own
+      # help notes that if the wait elapses with the build still running it exits
+      # 0 - so a very slow build reads as success here, which is the one crack in
+      # this step and is stated rather than hidden. (`--no-wait-for-finish`, which
+      # the CLI's EXAMPLES block suggests, is rejected by its own flag parser in
+      # 1.10.0.)
+      #
+      # No pricing flag is passed, and none exists on this command. `apify push`
+      # creates or updates the Actor and its build. Making it PUBLIC in the Store
+      # is a one-click step in the Console the first time (Publication -> Publish
+      # to Store); the API path to do that is a monetization/publishing endpoint
+      # and this workflow deliberately does not touch that surface.
+      - name: Push the Actor to Apify (free, unpriced)
+        if: steps.token.outputs.present == 'true'
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+          APIFY_CLI_DISABLE_TELEMETRY: "1"
+        run: |
+          set -euo pipefail
+          npx --yes apify-cli@1.10.0 push --wait-for-finish=900
+          echo "Pushed products/apify-il-open-data to Apify." >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # Count the runs. Runs on the daily schedule and on demand; never on a push,
+  # because a push has nothing new to count.
+  # ---------------------------------------------------------------------------
+  count-runs:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Committing needs real history, not a shallow clone.
+          fetch-depth: 0
+          # The measurement belongs on main whichever branch a manual dispatch
+          # came from - it is one series over time, and a series split across
+          # branches is not a series.
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # No install step: scripts/apify-runs.mjs is stdlib plus the built-in
+      # fetch, on purpose. A daily measurement that depends on a package tree is
+      # a daily measurement that can be broken by somebody else's release.
+      - name: Count the Actor's runs
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: node scripts/apify-runs.mjs
+
+      - name: Commit the measurement back to main
+        run: |
+          set -euo pipefail
+          MEASUREMENT=state/colony/measurements/apify-runs.json
+          if [ ! -f "$MEASUREMENT" ]; then
+            echo "No measurement written - no token yet, or the Actor is not published yet. Nothing to commit."
+            exit 0
+          fi
+
+          git config user.name "colony-bot"
+          git config user.email "colony-bot@users.noreply.github.com"
+
+          # Stage first, then compare the index: on the very first run the file
+          # is untracked and `git diff` alone would report no change and skip the
+          # commit forever. (Same trap colony.yml documents.)
+          git add "$MEASUREMENT"
+          if git diff --cached --quiet; then
+            echo "Measurement unchanged since the last run."
+            exit 0
+          fi
+
+          SUBJECT=$(node -e 'const j=require("./state/colony/measurements/apify-runs.json");process.stdout.write("measure(apify): "+j.runsLast30Days+" runs in the last 30 days, "+j.strangerRunsLast30Days+" of them by strangers");')
+          # [skip ci] keeps a measurement commit from retriggering the test workflows.
+          git commit -m "${SUBJECT} [skip ci]"
+
+          # The hourly colony tick commits under state/colony/ too, so a push can
+          # legitimately lose a race. Rebase and retry rather than failing a day
+          # of measurement.
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push rejected; rebasing and retrying (attempt ${attempt})."
+            git pull --rebase --autostash
+          done
+          echo "Could not push the Apify measurement after 3 attempts." >&2
+          exit 1
+
+      - name: Surface the measurement in the run summary
+        if: always()
+        run: |
+          set -euo pipefail
+          MEASUREMENT=state/colony/measurements/apify-runs.json
+          if [ ! -f "$MEASUREMENT" ]; then
+            exit 0
+          fi
+          {
+            echo "### Apify run count"
+            echo ""
+            node -e 'const j=require("./state/colony/measurements/apify-runs.json");
+              console.log("- Actor: "+j.actor.storeUrl);
+              console.log("- Measured at: "+j.measuredAt);
+              console.log("- Runs all time: "+j.totalRuns);
+              console.log("- Runs in the last "+j.window.days+" days: "+j.runsLast30Days);
+              console.log("- Of those, started by someone other than us: "+j.strangerRunsLast30Days);
+              console.log("");
+              console.log("A run count is a demand signal, not revenue. Money counts only in revenue_ledger with a transaction id.");'
+          } >> "$GITHUB_STEP_SUMMARY"
