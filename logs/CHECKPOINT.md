@@ -87,11 +87,29 @@ Gumroad לא "מוכר בשבילנו"; הקליק "Publish to Store" בקונס
 המשתמש ב-Algora — חשבון-מכונה של המותג כן). **שאלות פתוחות לבעלים:** מסלול Algora (א/ב, המלצה ב'), Paddle
 (המלצה לא), Devpost (ברירת מחדל לא).
 
-**רץ עכשיו (7.9, 15:55 UTC), שני סוכני Opus ב-worktrees נפרדים:** (א) משימה #20 — `apify-publish.yml`,
-`scripts/apify-runs.mjs`, בדיקות; (ב) קליטת P0 של הדירקטוריון — `portfolio.ts` + `target-basis.test.ts`,
-`owner-steps.ts` + בדיקה, `rails.ts` (Gumroad ברירת מחדל), `REPORT.md` מחודש, `REJECTED.md`, `products/README.md`,
-מחיקת 6 סקילים של קווים מתים, `INCOME_PLAN §6` → מצביע. **כשנוחתים: למזג את שני הקומיטים מה-worktrees לענף
-(`git merge` או `cherry-pick`), typecheck + בדיקות, push.**
+**נחתו ומוזגו (7.9, 16:05–16:35 UTC):**
+- **משימה #20** — `.github/workflows/apify-publish.yml` (פרסום חינם + ספירת הרצות של זרים יומית ל-
+  `state/colony/measurements/apify-runs.json`), `scripts/apify-runs.mjs`, 27 בדיקות. מיזוג `788d112`, CI ירוק.
+  **מה הבונה גילה בניסוי:** `apify push` לא קורא `APIFY_TOKEN` מהסביבה (חייב `login` קודם); `apify login`
+  מחזיר 0 גם על טוקן שגוי (בודקים את `~/.apify/auth.json`); הדגל `--no-wait-for-finish` מהדוגמאות של ה-CLI
+  נדחה על ידי הפרסר שלו (1.10.0 ננעל). **הפעלה בפועל: בעלים מדביק `APIFY_TOKEN` + קליק "Publish to Store".**
+- **בנייה #3 של הדירקטוריון** — `products/pcn874/`: ולידטור PCN874 שנגזר משלושה מימושי OSS בלתי-תלויים
+  (`Urigo/accounter-fullstack` MIT, `adam2314/linet3` AGPL, `RcBuilder/Scripts` ללא רישיון; ארטיפקט פלט
+  מרונדר אימת את הפריסה תו-תו: header 131, detail 60, trailer 10). `docs/SPEC-FROM-SOURCES.md` מצטט כל שדה;
+  **7 אי-הסכמות בין המקורות נרשמו ולא הוכרעו בשקט** (רוחב השדה האחרון בכותרת, אות ה-trailer X/Z, 9 התווים
+  האחרונים ברשומה, היקף `inputsCount`, ועוד); `reportedVat` — אין כלל, ובדיקה שמוודאת שאין. 88 בדיקות, CLI,
+  `pcn874-spec-watch.yml` שמוריד את המפרט הרשמי ממראות ב-CI (כאן 403). **תיקון לסריקה:** `validatePcn874()`
+  קיים היום ב-`@accounter/pcn874-generator@0.6.7` — הביקורת צדקה על 0.4.1 והתיישנה. מיזוג `7d72e55`.
+  **המפרט הרשמי עדיין לא רונדר** — "שלושה מימושים מסכימים" ≠ "רשות המסים אומרת"; זה כתוב ב-README, ב-CLI
+  וב-`products/README.md`. אין מחולל, אין מחיר, אין Gumroad עדיין.
+
+**רץ עכשיו (16:40 UTC), שלושה סוכני Opus:** (א) קליטת P0 של הדירקטוריון ב-worktree — `portfolio.ts` +
+`target-basis.test.ts`, `owner-steps.ts` + בדיקה, `rails.ts` (Gumroad ברירת מחדל), `REPORT.md` מחודש,
+`REJECTED.md`, `products/README.md`, מחיקת 6 סקילים של קווים מתים, `INCOME_PLAN §6` → מצביע; **ייתכן קונפליקט
+עם `products/README.md` שה-PCN874 כבר שינה — לפתור במיזוג.** (ב) מדידת EAA (#22) → `research/measurements/eaa-occupancy.md`;
+(ג) מדידת מכרזים (#25) → `research/measurements/tenders-occupancy.md`. **כשנוחתים: למזג (א), typecheck + בדיקות,
+לקלוט (ב)+(ג) ל-`REJECTED.md`/`INCOME_PLAN`, push.** אחר כך: בנייה #2 (מסנן באונטי Algora — מחכה לחשבון המותג),
+#4 (פריסת il-biz-tools על Gumroad — מחכה לדומיין ולטוקן), #5 (MCP Registry — מחכה לדומיין ולארגון).
 
 ## ▶ הבעלים אישר להמשיך (7.9.2026, 15:30 UTC) — "תתחיל ותמשיך"
 
