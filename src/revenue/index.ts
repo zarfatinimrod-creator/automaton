@@ -4,6 +4,9 @@ export * from "./ledger.js";
 export * from "./rules.js";
 export * from "./constraints.js";
 export * from "./rails.js";
+// Build #2 (BOARD.md): the Algora bounty intake filter. Pure modules only —
+// nothing here is wired into the heartbeat until owner steps 7 and 4 are done.
+export * from "./bounties/index.js";
 export * from "./org.js";
 export * from "./goal-queue.js";
 export * from "./portfolio.js";
