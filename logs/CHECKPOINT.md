@@ -53,6 +53,22 @@ accessalyze/pricing, accessiguard/pricing, `govi.co.il/` (הדוח לא נקב �
 `git pull --rebase`.** תוצאה של 403 מ-runner של GitHub היא עובדה על מיקום ה-runner (לא בישראל), לא על האתר;
 `meta.json` נכתב מחדש רק כשהתוכן/הסטטוס השתנו, אז `fetchedAt` = מועד השינוי האחרון, לא הבדיקה האחרונה.
 
+**הריצה הראשונה של render-watch הצליחה (19:05 UTC, קומיט `bb310ef` שה-workflow דחף בעצמו; 6 עמודים):**
+- **Freemius משלם לישראל — RENDERED.** עמוד "Supported Countries" של Freemius (200, 69KB): **Israel ברשימת
+  "Supported Countries for Payouts"** (שורה 308 בטקסט, בין Isle of Man ל-Italy); ברשימת "Unsupported" — קובה,
+  איראן ושאר המדינות תחת סנקציות. אמצעי תשלום: PayPal MassPay, Payoneer, העברה בנקאית, Wise. **מטבע התשלום
+  עדיין לא רונדר** (ILS הופרך; נניח USD). `rails.ts` דורג `rendered` לתשלומיות (`7f9877c`); שני העמודים שסוגרים
+  מטבע/עמלה/מוצרים אסורים (`/your-earnings/`, `/allowed-prohibited-products/`) נוספו ל-`urls.txt`, **ריצה שנייה
+  שוגרה ב-19:15 UTC** — כשנוחתת: `git pull --rebase`, לקרוא, לקלוט ל-`rails.ts` ול-`REJECTED.md`.
+  **זה הטריגר הראשון בריפו שנסגר על ידי CI ולא על ידי אדם.**
+- **Apify Store (`/v2/store?search=accessibility`, 3MB JSON, 803 פריטים):** ה-Actor החינמי של axe-core
+  `katzino/actor-web-a11y-audit` — 84 משתמשים, 1,986 הרצות; `lighthouse-auditor` (חינם) — 164 משתמשים. הערוץ
+  **מתקיים, בחינם** — מחדד את פסק EAA, לא פותח אותו.
+- **Govi → 403 מ-runner של GitHub** (חסימה גאוגרפית/WAF, כפי שהדוח חזה); `mr.gov.il` 200 אבל הטקסט ריק
+  מהתראות (פורטל client-rendered) — הטענה על התראות חינם נשארת לא מאומתת; `accessalyze.com` לא נפתר ב-DNS.
+- **דפוס חדש לריפו:** כל "חסום מכאן" עם URL שמופיע במחקר — נכנס ל-`research/rendered/urls.txt` ונפתר בריצה
+  אחת של CI. הכלל נשאר: הבייטים אינם ממצא עד שסשן קרא אותם וכתב אותו לקובץ מחקר עם ציטוט שורה.
+
 **(היסטוריה) רץ אז (18:45 UTC), סוכן Opus אחד:** (#30) `render-watch.yml` + `scripts/render-watch.mjs` + `research/rendered/urls.txt` ב-worktree —
 GitHub Actions כ-egress: מביא את עמוד המדינות הנתמכות של Freemius, חיפוש Apify Store (`/v2/store?search=accessibility`)
 ומחיר Govi ל-`research/rendered/`. **כשנוחת: למזג בסקריפט, ואז להפעיל על הענף הזה דרך `actions_run_trigger`
