@@ -11106,22 +11106,22 @@
         "name": "threads-replies-scraper",
         "username": "futurizerush",
         "stats": {
-          "totalBuilds": 182,
-          "totalRuns": 155392,
+          "totalBuilds": 183,
+          "totalRuns": 156207,
           "totalUsers": 1298,
           "totalUsers7Days": 87,
           "totalUsers30Days": 276,
           "totalUsers90Days": 557,
-          "lastRunStartedAt": "2026-09-07T10:21:26.386Z",
+          "lastRunStartedAt": "2026-09-07T17:08:52.884Z",
           "actorReviewCount": 2,
           "actorReviewRating": 1.788259889882642,
           "bookmarkCount": 22,
           "publicActorRunStats30Days": {
             "ABORTED": 14,
-            "FAILED": 8502,
-            "SUCCEEDED": 54998,
+            "FAILED": 8660,
+            "SUCCEEDED": 55456,
             "TIMED-OUT": 0,
-            "TOTAL": 63514
+            "TOTAL": 64130
           }
         },
         "description": "Extract public Threads post replies and comments with author info, available engagement metrics, media details, quote/repost signals, and verification status. The original post row includes public view count when available. Batch multiple posts with no login required.",
@@ -15543,7 +15543,7 @@
         "name": "threads-replies-scraper-zh-tw",
         "username": "futurizerush",
         "stats": {
-          "totalBuilds": 127,
+          "totalBuilds": 128,
           "totalRuns": 9028,
           "totalUsers": 56,
           "totalUsers7Days": 3,
