@@ -277,6 +277,49 @@ export function insertLineFromSeed(db: Database, seed: RevenueLineSeed): boolean
   return true;
 }
 
+/**
+ * Re-apply a seed to a line that already exists.
+ *
+ * `insertLineFromSeed` is a no-op once a line is in the database, which is
+ * right for seeding and wrong for a board decision: on 7.9.2026 the board
+ * retargeted three lines and rewrote their operating loops and owner steps, and
+ * `state/colony/REPORT.md` went on printing the old ones — including "register
+ * as osek patur" on every line and a Chrome Web Store fee on a killed one —
+ * because the report reads the database and the decision lived in code.
+ *
+ * The line's own history is not a seed's to overwrite: status, whether the owner
+ * has confirmed setup, when it launched and when it was created all survive.
+ * Everything the board actually decides is replaced.
+ */
+export function updateLineFromSeed(db: Database, seed: RevenueLineSeed): boolean {
+  const id = assertLineId(seed.id);
+  const existing = getLine(db, id);
+  if (!existing) return false;
+  db.prepare(
+    `UPDATE revenue_lines
+        SET name = ?, category = ?, tier = ?, director_role = ?, operating_loop = ?, kpis = ?,
+            kill_criteria = ?, scale_criteria = ?, target_monthly_agorot = ?, budget_monthly_cents = ?,
+            human_setup = ?, skill_name = ?, updated_at = ?
+      WHERE id = ?`,
+  ).run(
+    seed.name,
+    seed.category,
+    seed.tier,
+    seed.directorRole,
+    seed.operatingLoop,
+    JSON.stringify(seed.kpis),
+    JSON.stringify(seed.killCriteria),
+    JSON.stringify(seed.scaleCriteria),
+    Math.max(0, Math.floor(seed.targetMonthlyAgorot)),
+    Math.max(0, Math.floor(seed.budgetMonthlyCents)),
+    JSON.stringify(seed.humanSetup),
+    seed.skillName ?? null,
+    new Date().toISOString(),
+    id,
+  );
+  return true;
+}
+
 export const LINE_TRANSITIONS: Record<RevenueLineStatus, RevenueLineStatus[]> = {
   proposed: ["awaiting_setup", "building", "killed", "paused"],
   awaiting_setup: ["proposed", "building", "killed", "paused"],

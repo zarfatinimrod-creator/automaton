@@ -1,6 +1,6 @@
 # Skills published by this colony
 
-Eleven playbooks any Conway automaton can install. Skills are **permissionless** — upstream's
+Five playbooks any Conway automaton can install. Skills are **permissionless** — upstream's
 documentation says they install "from git … and a repo URL" or "from URL … and a `SKILL.md` URL",
 with no central repository — so a public repo is a distribution channel that costs nothing,
 requires no account, no gas and no human.
@@ -27,9 +27,19 @@ yet would just ship a table of 404s.
 
 So this index works and is correct, and it is **not** to be promoted, submitted to a
 directory, or linked from a product until the repository is moved to an organisation account.
-That move is the owner's to make; it is recorded in `docs/INCOME_PLAN.he.md` §6 with the other
+That move is the owner's to make; it is step 7 of `docs/OWNER_STEPS.he.md`, with the other
 one-time steps. Everything else about the skills is unaffected: they install fine today for
 anyone who already has the URL.
+
+## Six playbooks were removed on 7.9.2026
+
+`revenue-templates`, `revenue-telegram-bots`, `revenue-dev-extensions`, `revenue-hebrew-content`,
+`revenue-paid-apis` and `revenue-agent-services` are gone, because the board killed the lines they
+operate (`research/colony-sweep/BOARD.md` §3). **A playbook for a dead line is a prompt to
+re-propose it.** The reasons and the specific evidence that would reopen each line live in
+`docs/REJECTED.md` under "Board decision, 7.9.2026", and the machine-readable half is
+`KILLED_LINES` in `src/revenue/portfolio.ts`. Nothing was deleted from `products/` — the code those
+lines would have sold is still on disk and still in CI.
 
 ## What each one is for
 
@@ -40,17 +50,16 @@ and which are still guesses, and the playbooks inherit those grades rather than 
 with more confidence.
 
 | Skill | What it is | Install URL |
-| `revenue-agent-services` | Playbook for zero-KYC x402 services sold to other agents (experimental). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-agent-services/SKILL.md) |
-| `revenue-apify-actors` | Playbook for the Apify pay-per-event Actor portfolio line (core). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-apify-actors/SKILL.md) |
+| `revenue-apify-actors` | Playbook for the Apify Actor line — published free while the 30-day stranger count runs (core). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-apify-actors/SKILL.md) |
 | `revenue-command` | How the revenue colony's chain of command works and what the board does each turn. | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-command/SKILL.md) |
 | `revenue-criteria-sweep` | Playbook for running the 112-scout criteria sweep through the chain of command and folding its output into the portfolio. | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-criteria-sweep/SKILL.md) |
-| `revenue-dev-extensions` | Playbook for browser/editor extensions with a paid pro tier (experimental). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-dev-extensions/SKILL.md) |
-| `revenue-hebrew-content` | Playbook for the Hebrew content + affiliate line (experimental, slow). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-hebrew-content/SKILL.md) |
 | `revenue-il-biz-tools` | Playbook for the Hebrew small-business tools line (core). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-il-biz-tools/SKILL.md) |
-| `revenue-oss-bounties` | Playbook for open-source bounties (experimental, unverified payout to Israel). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-oss-bounties/SKILL.md) |
-| `revenue-paid-apis` | Playbook for paid developer APIs over x402 and an API marketplace (growth). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-paid-apis/SKILL.md) |
-| `revenue-telegram-bots` | Playbook for Telegram bots paid in Stars (experimental). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-telegram-bots/SKILL.md) |
-| `revenue-templates` | Playbook for spreadsheet/Notion templates on Etsy and an own store (growth). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-templates/SKILL.md) |
+| `revenue-oss-bounties` | Playbook for open-source bounties on Algora, from the brand machine account (payability proved at code level, not yet at account level). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-oss-bounties/SKILL.md) |
+
+**One playbook is missing on purpose.** `pcn874` is a live line in `src/revenue/portfolio.ts` and
+names `revenue-pcn874`, which does not exist yet: the board put it at P1, after the 874 record layout
+has been rendered from two independent open-source implementations. A playbook written before the
+spec would be the thing this repo keeps catching itself doing — stating a legal figure from memory.
 
 ## Start with two
 

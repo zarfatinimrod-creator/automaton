@@ -1104,6 +1104,120 @@ demand for a payer who announces the job.
 
 ---
 
+## Board decision, 7.9.2026 — six lines killed, three retargeted, one added
+
+Full decision: `research/colony-sweep/BOARD.md`. It rests on `research/colony-sweep/CHIEF-AUDIT.md`
+§2.1 (the survivor list) and §4 (the owner-blocker catalogue), whose haircut — supervisors ₪39,400 →
+auditors ₪2,200–3,500 — the board accepted in full, along with its rule that the auditor's number
+always wins. **The portfolio went from nine lines and ₪16,500 of targets to four lines and ₪1,500,
+plus ₪700 the board refused to commit to.** The arithmetic of the kills is ₪10,500 of targets
+removed; the arithmetic of the retargets is another ₪4,500. Nothing here was killed for being small:
+`oss-bounties` survived at ₪300 and `apify-actors` at ₪200. They were killed for having no channel,
+no rail, or a rail that collides with the mandate.
+
+The kills are in `src/revenue/portfolio.ts` as `KILLED_LINES`, with the same reasons and the same
+re-open triggers, so a test can assert none of them carries a target and nothing re-proposes them by
+accident. The six playbooks under `skills/` were removed with them: a playbook for a dead line is a
+prompt to re-propose it, and this file is the memory.
+
+### `templates` (₪3,000 → killed) — Etsy, spreadsheet and Notion templates
+
+No channel, no rail, no evidence, in that order. Etsy needs an identity-verified shop plus a Payoneer
+account, and `research/colony-sweep/audits/payment-rails.md` corrected Payoneer's own Israel
+payability from YES to **UNKNOWN** — the same audit that found the Paddle account this repo kept
+assuming it had does not exist, which is what moved `il-biz-tools` to Gumroad below;
+`research/colony-sweep/audits/storefronts.md` closed Etsy on its own terms. It is also an
+account-per-store platform, which MISSION constraint 2 rejects before anyone asks whether it would
+earn — a thousand storefronts behind few accounts is achievable, a thousand Etsy shops is not. Its
+target was the oldest unevidenced number in the file, carried over from the first plan and never
+measured.
+
+### `paid-apis` (₪1,200 → killed) — paid developer APIs over x402 and a marketplace
+
+Killed as a revenue line by its own basis field. Three incompatible x402 volume figures sit in this
+repo and they differ by more than an order of magnitude, but every one of them agrees on the only
+thing the target needed: **per-provider revenue is single-digit shekels a month**, and 91.2% of
+listings never reach ten calls. ₪1,200 was roughly 200× the most favourable per-provider arithmetic
+available. Marketplace subscriptions, not x402, would have had to carry the whole line, and nothing
+measured those.
+
+**What survives is a rail on standby, not a line.** `products/x402-il-api` may stay deployed **only
+while it costs ₪0/month**. Any USDC that arrives is booked through `src/revenue/connectors/x402-local.ts`
+like any other money; nothing is planned on it, no target rests on it, and no build hour is spent on
+it. A free endpoint that might one day catch a payment is worth keeping; a line that forecasts one is
+not.
+
+### `agent-services` (₪800 → killed) — x402 services sold to other agents
+
+The same refuted evidence as `paid-apis`, without even the marketplace tier that line leaned on — so
+if `paid-apis` is contradicted at ₪1,200, this is contradicted harder at ₪800. It fails a second and
+independent test, which is the constitutional one: **never sell what is already free.** The Israeli
+identifier detector it would have metered per call ships free inside this repository.
+
+### `telegram-bots` (₪1,500 → killed) — bots paid in Telegram Stars
+
+**A mandate collision, not a weak ceiling.** Fragment's payout KYC is an ID scan **plus a selfie** —
+a camera step the owner's brief forbids outright, and the same collision that closed Bugcrowd and
+that keeps Paddle off the checklist. Whether Fragment offers withdrawal to an Israeli resident at all
+was never verified, so the ceiling may be ₪0 for a second, independent reason. A product whose only
+rail collides with the mandate is not a line, however good the product is.
+
+`products/telegram-il-tools-bot` **stays on disk and is parked** — not deleted, and not removed from
+the products CI matrix. The code is fine; the way it gets paid is not.
+
+### `dev-extensions` (₪2,500 → killed) — browser and editor extensions with a pro tier
+
+No named channel with evidence behind it, which under MISSION constraint 7 is disqualifying on its
+own. The Chrome Web Store was rejected twice in this file. The VS Code marketplace, which the line
+had been narrowed to, was never audited and its ranking is unread. No auditor in the fifteen-group
+sweep ranked this line at all. And its basis still claimed that `plugin-ecosystems` had not been
+swept — it has been, and its single survivor (a WordPress.org plugin) is ₪0–200 sitting behind a
+rendered 100–200× day-one search handicap.
+
+### `hebrew-content` (₪1,500 → killed) — Hebrew guides and calculators with affiliate and ad revenue
+
+`content-seo`: fifteen criteria, **zero survivors**, and the reason is the one this whole file keeps
+arriving at. Every money model here — ads, affiliate, sponsorship, listings — is a multiplier on
+traffic, and the colony has no channel that brings traffic without the owner's voice. A multiplier on
+zero is zero. The working tools this line would have written are not lost: they are build #4, and
+they belong to `il-biz-tools`, which at least has a rail.
+
+### Re-open triggers, each with the evidence that fires it
+
+Every kill above is reversible by a specific, findable piece of evidence. None of them is reversible
+by an argument.
+
+| Closed | Re-opens when |
+|---|---|
+| `templates` / Etsy | A rendered Etsy page showing Israeli seller payouts through a route this repo can verify, **and** a storefront model that does not need one verified identity per store. |
+| `paid-apis`, `agent-services`, x402→ILS | A rendered per-provider median **≥ ₪100/month** on x402scan or the Bazaar series; **or** BILS opening beyond the institutional pilot. Any USDC that arrives before then is booked, not planned. |
+| `telegram-bots` | A rendered Fragment page offering withdrawal to an Israeli resident **without** a selfie or liveness step. |
+| `dev-extensions` | A rendered VS Code marketplace ranking mechanism that does not gate discovery on existing installs; or a rendered change to WordPress.org's `class-plugin-search.php` removing the `active_installs` weight. Practically never. |
+| `hebrew-content` | A **measured** Hebrew organic channel: `il-biz-tools` showing 100+ weekly page views from search. Until a page of ours is found by a stranger, content is a cost. |
+| Devpost / Kaggle hackathons (deferred, not killed) | The owner answers yes to per-win paperwork **and** an intake wave finds ≥3 events per quarter that explicitly permit AI-built entries with no human-authorship attestation. |
+| Registrar reminder as a paid product (conditional) | The static fee page on `il-biz-tools` reaches 100 weekly views. |
+| Paddle | Only if the owner chooses it, knowing the selfie-video risk, the discretionary approval and the USD-only payout. It is an option in `src/revenue/rails.ts`, never a step. |
+| Freemius as a second ILS rail | Rendered ILS payout terms and acceptance of an עוסק פטור seller, **found by GitHub code search** — a research task of ours, not an errand for the owner. |
+| The whole ₪20,000 plan | The first transaction id in the ledger. Every ceiling in this repo is re-based on that measurement, and not before. |
+
+### What was retargeted rather than killed, and why the numbers moved
+
+| Line | Was | Now | Why |
+|---|---|---|---|
+| `apify-actors` | ₪3,000 | **₪200** | Five groups' survivors collapse into one creator account. The ₪1,500 that the store-promotion auditor allowed is recorded in `TARGET_BASIS` as the **contested upper bound**, on an unverified marketing mean; ₪200 rests on the only rendered base rate (8.7 users per Actor). There is no argument for ₪3,000 the board was willing to sign: "what the board measures against" was a target fitted to the goal. |
+| `il-biz-tools` | ₪1,500 | **₪400** | Audited band ₪200–400 with ₪0 through month 12. The grade stays `contradicted`, not because the number is large but because nothing has measured it: a smaller unmeasured number is still unmeasured. Rail moved from Paddle to **Gumroad**. |
+| `oss-bounties` | ₪1,500 | **₪300** | The whole audited group is ₪800 and Algora's share is ₪300. It keeps its rank on MISSION constraint 7 rather than on ceiling: the payer posts the job, so no stranger has to find us, and it holds the sweep's only code-level Israeli payability proof. Its pull requests now come from a **brand machine account**, never the owner's handle — a PR is a published byline. |
+| `pcn874` | — | **₪600** (new) | The only line in the sweep with a verified, dated, legally created cohort. Sold through Gumroad in ILS; no legal figure ships until the 874 record layout is rendered from two independent sources. |
+
+**The concentration this creates, stated rather than hidden.** `il-biz-tools` and `pcn874` sit behind
+one Gumroad seller account — ₪1,000 of the ₪1,500 committed — so `railConcentration()` and
+`platformConcentration()` in `src/revenue/rails.ts` now both report `concentrated`, and their tests
+assert the warning instead of a green light. The board accepted that knowingly because exactly one
+rendered ILS rail exists. The mitigation is to render Freemius as a second one, not to invent a
+fourth rail and not to silence the check.
+
+---
+
 ## Earlier rejections
 
 Kept in `docs/INCOME_PLAN.he.md` §4 with one-line reasons: Envato (bans AI files, 50%

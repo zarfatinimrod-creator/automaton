@@ -190,9 +190,12 @@ describe("the plan's own arithmetic against the owner's target", () => {
 
   it("surfaces the shortfall the shipped portfolio actually has", () => {
     // Found by the completeness critic across seven audited groups, and nobody
-    // had checked it: DEFAULT_PORTFOLIO's nine targets sum to ₪16,500 against a
-    // ₪20,000 first target. Every line could hit its number in full and the goal
-    // would still be missed.
+    // had checked it: DEFAULT_PORTFOLIO's nine targets summed to ₪16,500 against
+    // a ₪20,000 first target. Every line could hit its number in full and the
+    // goal would still be missed. The board's cut of 7.9.2026 took the sum to
+    // ₪1,500, so the shortfall is now larger and honest rather than small and
+    // fitted — which is exactly what this test asserts and why it has no upper
+    // bound on the gap.
     const c = goalCoverage(plannedIls);
     expect(c.coversGoal).toBe(false);
     expect(c.gapIls).toBe(FIRST_TARGET_MONTHLY_ILS - plannedIls);

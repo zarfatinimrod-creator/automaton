@@ -46,52 +46,38 @@
 <body>
 <div class="wrap">
   <h1>החברה עדיין לא הרוויחה שקל.</h1>
-  <p class="lede">8 מקורות הכנסה בנויים ומחכים להרשמות חד-פעמיות שלך. כל עוד הן לא בוצעו, אף אחד מהם לא יכול לקבל כסף.</p>
+  <p class="lede">4 מקורות הכנסה בנויים ומחכים להרשמות חד-פעמיות שלך. כל עוד הן לא בוצעו, אף אחד מהם לא יכול לקבל כסף.</p>
 
   <h2>מה התוכנית נשענת עליו</h2>
   <div class="card">
     <div class="basis">
-      <div>סכום היעדים של כל הקווים</div><div>₪16,500 מול מטרה של ₪20,000</div>
-      <div><span class="g-measured">נמדד</span> — מבוסס על ראיה שאפשר לבדוק</div><div>₪6,500</div>
-      <div><span class="g-inferred">מוסק</span></div><div>₪1,500</div>
-      <div><span class="g-unevidenced">ללא ראיה</span> — משימת מחקר, לא תחזית</div><div>₪8,500</div>
+      <div>סכום היעדים של כל הקווים</div><div>₪1,500 מול מטרה של ₪20,000</div>
+      <div><span class="g-measured">נמדד</span> — מבוסס על ראיה שאפשר לבדוק</div><div>₪0</div>
+      <div><span class="g-inferred">מוסק</span></div><div>₪1,100</div>
+      <div><span class="g-unevidenced">ללא ראיה</span> — משימת מחקר, לא תחזית</div><div>₪0</div>
+      <div><span class="g-unevidenced">מוכחש</span> — הראיה שצוטטה טוענת <em>נגד</em> המספר</div><div>₪400</div>
     </div>
-    <p class="note">הסכום הכנה כרגע הוא <strong>₪6,500</strong>, לא ₪16,500. ללא ראיה: <code>templates</code>, <code>telegram-bots</code>, <code>dev-extensions</code>, <code>oss-bounties</code>.</p>
+    <p class="note">הסכום הכן כרגע הוא <strong>₪0</strong>, לא ₪1,500. <strong>מוכחשים</strong> — הראיה שצוטטה טוענת נגד היעד: <code>il-biz-tools</code>.</p>
+    <p class="note">ועוד דבר שאף אחד לא סכם: <strong>סכום כל היעדים הוא ₪1,500 מול מטרה של ₪20,000</strong>. גם אם כל קו יפגע ביעד שלו במלואו, המטרה תוחמץ.</p>
   </div>
 
-  <h2>מה מחכה לך (8)</h2>
+  <h2>מה מחכה לך (4)</h2>
   <div class="card">
       <details>
-        <summary>Apify pay-per-event Actors (Israeli data sources + long-tail scrapers)</summary>
-        <ol><li>Create an Apify account in your name and complete Apify KYC (government ID, proof of address, tax document, beneficial-ownership info). This one step gates ALL THREE of: receiving any payout, setting a price on an Actor, and x402/agentic eligibility. Publishing free Actors is the only thing possible before it.</li><li>Open a PayPal account in your name (PayPal Israel) and link it as the Apify payout method (minimum payout $20 for PayPal and Wise, $100 for other methods)</li><li>Register as osek patur (self-service online form) before the first payout</li></ol>
+        <summary>Apify Actors on one creator account (published free while the stranger count runs)</summary>
+        <ol><li>Sign up at Apify with the brand as the username — the Store URL apify.com/&lt;username&gt;/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). Nothing else: publishing free and counting stranger runs needs no identity verification. Apify KYC and a PayPal payout are deferred until stranger runs exist.</li></ol>
       </details>
       <details>
         <summary>Hebrew small-business web tools (invoices, receipts, VAT, net salary)</summary>
-        <ol><li>Open a merchant-of-record seller account (Paddle; Lemon Squeezy as fallback) in your name and complete identity/tax verification</li><li>Add an Israeli bank account (IBAN/SWIFT) or PayPal for payouts</li><li>Register as osek patur (self-service online form) before the first payout</li></ol>
+        <ol><li>Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder&#39;s name in Latin characters, and mint one access token (owner step 3)</li><li>Buy the company domain at a registrar with WHOIS privacy on by default (owner step 5)</li><li>Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6)</li></ol>
       </details>
       <details>
-        <summary>Spreadsheet and Notion business templates (Hebrew + English) on Etsy and an own store</summary>
-        <ol><li>Open an Etsy shop in your name (ID verification) and enrol in Etsy Payments with a Payoneer account (KYC) linked to your Israeli bank</li></ol>
+        <summary>Open-source bounties on Algora, from the brand machine account</summary>
+        <ol><li>Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7)</li><li>Sign in to Algora AS THE BRAND MACHINE ACCOUNT and complete Stripe Connect Express onboarding in your legal identity — individual, ID, Israeli address, Israeli bank account (owner step 4, done after step 7)</li></ol>
       </details>
       <details>
-        <summary>Paid developer APIs (Hebrew NLP, RTL PDF, Israeli validators) over x402 and an API marketplace</summary>
-        <ol><li>Create the API marketplace provider account in your name and add a PayPal payout method (x402 needs nothing; converting USDC to ILS later needs a one-time Israeli exchange account with KYC)</li></ol>
-      </details>
-      <details>
-        <summary>Telegram bots paid with Stars (Hebrew utility bots + file/format tools)</summary>
-        <ol><li>Create the bot in Telegram with @BotFather from your own Telegram account (2 minutes) and hand over the bot token as TELEGRAM_BOT_TOKEN; no KYC, but a bot must belong to a Telegram user</li></ol>
-      </details>
-      <details>
-        <summary>Browser and editor extensions with a paid pro tier (license keys)</summary>
-        <ol><li>Pay the one-time Chrome Web Store developer fee ($5) with a Google account that has 2-step verification; create a Microsoft/Azure DevOps publisher for VS Code (free); reuse the merchant-of-record account from il-biz-tools for license keys</li></ol>
-      </details>
-      <details>
-        <summary>Hebrew evergreen guides and calculators with affiliate and ad revenue</summary>
-        <ol><li>Open the affiliate program accounts in your name (they require a tax form and a PayPal or Payoneer payout) and provide the affiliate IDs</li></ol>
-      </details>
-      <details>
-        <summary>Open-source bounties</summary>
-        <ol><li>Connect your GitHub account to a bounty platform and complete its payout onboarding (verify it pays to Israel before enabling this line)</li></ol>
+        <summary>PCN874 builder — spreadsheet to a validated מע&quot;מ detailed-report file</summary>
+        <ol><li>Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses</li><li>Create the GitHub organisation under the brand name so the open-source core and the npm scope carry it and not your username (owner step 7)</li></ol>
       </details>
   </div>
 
@@ -101,70 +87,60 @@
       <thead><tr><th>קו</th><th>מצב</th><th>30 יום</th><th>יעד</th><th>החלטת מפקח</th></tr></thead>
       <tbody>
       <tr>
-        <td><strong>Apify pay-per-event Actors (Israeli data sources + long-tail scrapers)</strong><br><code>apify-actors</code></td>
+        <td><strong>Apify Actors on one creator account (published free while the stranger count runs)</strong><br><code>apify-actors</code></td>
         <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
         <td class="num">₪0.00</td>
-        <td class="num">₪3,000.00<br><span class="grade g-measured">נמדד</span></td>
+        <td class="num">₪200.00<br><span class="grade g-inferred">מוסק</span></td>
         <td>escalate</td>
       </tr>
       <tr>
         <td><strong>Hebrew small-business web tools (invoices, receipts, VAT, net salary)</strong><br><code>il-biz-tools</code></td>
         <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
         <td class="num">₪0.00</td>
-        <td class="num">₪5,000.00<br><span class="grade g-measured">נמדד</span></td>
+        <td class="num">₪400.00<br><span class="grade g-contradicted">undefined</span></td>
         <td>escalate</td>
       </tr>
       <tr>
-        <td><strong>Spreadsheet and Notion business templates (Hebrew + English) on Etsy and an own store</strong><br><code>templates</code></td>
+        <td><strong>Open-source bounties on Algora, from the brand machine account</strong><br><code>oss-bounties</code></td>
         <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
         <td class="num">₪0.00</td>
-        <td class="num">₪3,000.00<br><span class="grade g-unevidenced">ללא ראיה</span></td>
+        <td class="num">₪300.00<br><span class="grade g-inferred">מוסק</span></td>
         <td>escalate</td>
       </tr>
       <tr>
-        <td><strong>Paid developer APIs (Hebrew NLP, RTL PDF, Israeli validators) over x402 and an API marketplace</strong><br><code>paid-apis</code></td>
+        <td><strong>PCN874 builder — spreadsheet to a validated מע&quot;מ detailed-report file</strong><br><code>pcn874</code></td>
         <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
         <td class="num">₪0.00</td>
-        <td class="num">₪1,200.00<br><span class="grade g-measured">נמדד</span></td>
-        <td>escalate</td>
-      </tr>
-      <tr>
-        <td><strong>x402 services for other agents (zero-KYC line)</strong><br><code>agent-services</code></td>
-        <td><span class="pill s-proposed">מוצע</span></td>
-        <td class="num">₪0.00</td>
-        <td class="num">₪800.00<br><span class="grade g-measured">נמדד</span></td>
-        <td>hold</td>
-      </tr>
-      <tr>
-        <td><strong>Telegram bots paid with Stars (Hebrew utility bots + file/format tools)</strong><br><code>telegram-bots</code></td>
-        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
-        <td class="num">₪0.00</td>
-        <td class="num">₪1,500.00<br><span class="grade g-unevidenced">ללא ראיה</span></td>
-        <td>escalate</td>
-      </tr>
-      <tr>
-        <td><strong>Browser and editor extensions with a paid pro tier (license keys)</strong><br><code>dev-extensions</code></td>
-        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
-        <td class="num">₪0.00</td>
-        <td class="num">₪2,500.00<br><span class="grade g-unevidenced">ללא ראיה</span></td>
-        <td>escalate</td>
-      </tr>
-      <tr>
-        <td><strong>Hebrew evergreen guides and calculators with affiliate and ad revenue</strong><br><code>hebrew-content</code></td>
-        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
-        <td class="num">₪0.00</td>
-        <td class="num">₪1,500.00<br><span class="grade g-inferred">מוסק</span></td>
-        <td>escalate</td>
-      </tr>
-      <tr>
-        <td><strong>Open-source bounties</strong><br><code>oss-bounties</code></td>
-        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
-        <td class="num">₪0.00</td>
-        <td class="num">₪1,500.00<br><span class="grade g-unevidenced">ללא ראיה</span></td>
+        <td class="num">₪600.00<br><span class="grade g-inferred">מוסק</span></td>
         <td>escalate</td>
       </tr>
       </tbody>
     </table>
+  </div>
+
+  <h2>על מה הכסף עובר</h2>
+  <div class="card">
+    <p class="note">מסילה אחת שנופלת לא אמורה להפיל את החברה. הצד של <strong>הגבייה</strong> נופל ומפסיק מכירות; הצד של <strong>המשיכה</strong> נופל ומשאיר כסף שכבר הרווחנו תקוע — וזה הגרוע מבין השניים, כי הלדג'ר אומר שיש לנו אותו.</p>
+    <div class="basis">
+      <div>גבייה</div><div>gumroad 67% · bounty-platform 20% · apify 13%</div>
+      <div>משיכה</div><div>bank-transfer 67% · unknown 20% · paypal 13%</div>
+    </div>
+    <p class="note">⚠ gumroad carries 67% of the portfolio target on the payin side (il-biz-tools, pcn874); bank-transfer carries 67% of the portfolio target on the payout side (il-biz-tools, pcn874). MISSION.md requires that one rail failing does not take the company down.</p>
+    <p class="note">מסלול המשיכה לא ידוע ב: <code>oss-bounties</code>. כסף שיירשם שם עלול להיות לא ניתן למשיכה.</p>
+  </div>
+
+  <h2>מה מייל אחד מפלטפורמה יכול לקחת</h2>
+  <div class="card">
+    <p class="note">זה לא אותה שאלה כמו המסילות. מסילה עונה על "איך הכסף זז"; זה עונה על <strong>"מה חסימה אחת מוחקת"</strong> — כי קווים שונים יכולים לשבת על אותו חשבון אחד, עם אותו KYC ואותם תנאים.</p>
+    <table>
+      <thead><tr><th>חשבון</th><th>חלק מהיעד</th><th>קווים</th><th>נראה מכאן?</th></tr></thead>
+      <tbody>
+        <tr><td><code>gumroad:one-seller-account</code></td><td>67%</td><td>il-biz-tools, pcn874</td><td>כן</td></tr>
+        <tr><td><code>algora:one-connect-account</code></td><td>20%</td><td>oss-bounties</td><td>כן</td></tr>
+        <tr><td><code>apify:one-creator-account</code></td><td>13%</td><td>apify-actors</td><td><strong>לא</strong></td></tr>
+      </tbody>
+    </table>
+    <p class="note">⚠ gumroad:one-seller-account carries 67% of the portfolio target across il-biz-tools, pcn874. MISSION.md requires that one platform banning us does not take the company down. 13% of the target rides on platforms this colony cannot observe: apify:one-creator-account. Their KPIs and kill criteria cannot be checked from here.</p>
   </div>
 
   <h2>חסימות ותקיעות</h2>
@@ -204,12 +180,12 @@
 
   <h2>כמה מהשוק כבר נסרק</h2>
   <div class="card">
-    <div class="bar"><i style="width:28.3%"></i></div>
-    <p class="note">34 מתוך 120 קריטריונים נסרקו, ב-3 קבוצות שעברו פיקוח.</p>
+    <div class="bar"><i style="width:100.0%"></i></div>
+    <p class="note">121 מתוך 121 קריטריונים נסרקו, ב-3 קבוצות שעברו פיקוח.</p>
   </div>
 
   <footer>
-    נוצר מהלדג'ר ב-2026-09-03T17:11:22.957Z.
+    נוצר מהלדג'ר ב-2026-09-07T16:12:28.159Z.
     כל מספר בדף הזה מגיע מ-<code>state/colony/colony.db</code> — אין כאן שדה שאפשר למלא ביד.
   </footer>
 </div>

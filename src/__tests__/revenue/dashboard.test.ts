@@ -3,7 +3,7 @@ import type BetterSqlite3 from "better-sqlite3";
 import { createInMemoryDb } from "../orchestration/test-db.js";
 import { renderDashboard } from "../../revenue/dashboard.js";
 import { recordLedgerEntry, setHumanSetupDone, updateLineStatus } from "../../revenue/ledger.js";
-import { seedDefaultPortfolio } from "../../revenue/portfolio.js";
+import { seedDefaultPortfolio, summarizeTargetBasis } from "../../revenue/portfolio.js";
 
 const NOW = "2026-09-03T12:00:00.000Z";
 
@@ -23,8 +23,8 @@ describe("the manager's screen", () => {
   it("reports revenue only once it is in the ledger, and the exact amount", () => {
     expect(html()).not.toContain("₪450.00");
     recordLedgerEntry(db, {
-      lineId: "agent-services", kind: "sale", amountMinor: 45000, currency: "ILS",
-      source: "x402", externalId: "0xabc", occurredAt: NOW,
+      lineId: "oss-bounties", kind: "sale", amountMinor: 45000, currency: "ILS",
+      source: "stripe", externalId: "0xabc", occurredAt: NOW,
     });
     const h = html();
     expect(h).toContain("₪450.00");
@@ -38,9 +38,32 @@ describe("the manager's screen", () => {
     expect(h).toContain("ללא ראיה");
     // The measured figure must appear wherever the total does.
     expect(h).toContain("הסכום הכן כרגע");
-    // The fourth band: a target its own cited evidence argues against. Three
-    // lines are in it, and the screen must not let them read as merely unproven.
+    // The fourth band: a target its own cited evidence argues against. The
+    // screen must not let it read as merely unproven.
     expect(h).toContain("מוכחש");
+  });
+
+  it("can never print a measured figure larger than the basis it is derived from", () => {
+    // The regression this exists to make impossible: state/colony/REPORT.md sat
+    // for four days telling the owner "the honest reachable figure is the
+    // measured ₪6,500" while TARGET_BASIS graded not one shekel measured. The
+    // number came from an older render and nothing recomputed it. MISSION: a
+    // dashboard that can show a number nobody earned is worse than no dashboard.
+    const basis = summarizeTargetBasis();
+    expect(basis.measuredIls).toBeLessThanOrEqual(basis.totalIls);
+    expect(basis.measuredIls).toBe(0);
+
+    const h = html();
+    // Every ₪ figure the basis card prints must come from summarizeTargetBasis,
+    // and the measured one must be exactly its measuredIls.
+    const card = h.slice(h.indexOf('<div class="basis">'), h.indexOf("</div>", h.indexOf("הסכום הכן כרגע")));
+    const measured = card.match(/נמדד<\/span>[^]*?<div>₪([\d,]+)<\/div>/);
+    expect(measured, "the manager's screen no longer prints a measured figure").toBeTruthy();
+    const printed = Number(measured![1].replace(/,/g, ""));
+    expect(printed).toBe(basis.measuredIls);
+    expect(printed).toBeLessThanOrEqual(basis.totalIls);
+    // And the specific stale sentence must be gone for good.
+    expect(h).not.toContain("₪6,500");
   });
 
   it("lists the owner's steps, and stops listing a line once its setup is done", () => {
@@ -53,7 +76,7 @@ describe("the manager's screen", () => {
 
   it("escapes text that comes from the database", () => {
     db.prepare("UPDATE revenue_lines SET name = ? WHERE id = ?")
-      .run('<script>alert("x")</script>', "agent-services");
+      .run('<script>alert("x")</script>', "oss-bounties");
     const h = html();
     expect(h).not.toContain('<script>alert("x")</script>');
     expect(h).toContain("&lt;script&gt;");
@@ -72,10 +95,10 @@ describe("the manager's screen", () => {
   });
 
   it("names a stalled line rather than showing a healthy portfolio doing nothing", () => {
-    updateLineStatus(db, "agent-services", "building", { force: true });
+    updateLineStatus(db, "pcn874", "building", { force: true });
     db.prepare("UPDATE revenue_lines SET created_at = ? WHERE id = ?")
-      .run("2026-01-01T00:00:00.000Z", "agent-services");
-    expect(html()).toContain("agent-services");
+      .run("2026-01-01T00:00:00.000Z", "pcn874");
+    expect(html()).toContain("pcn874");
     expect(html()).toContain("ללא שום תוצר מאז שנפתח");
   });
 });
@@ -87,8 +110,8 @@ describe("the dashboard shows what the money travels on", () => {
     const html = renderDashboard(db, { nowIso: "2026-09-03T12:00:00.000Z" });
 
     expect(html).toContain("על מה הכסף עובר");
-    expect(html).toContain("paddle");
-    expect(html).toContain("payoneer");
+    expect(html).toContain("gumroad");
+    expect(html).toContain("bank-transfer");
     // The asymmetry is the point: a dead payin rail stops sales, a dead payout
     // rail strands money the ledger says we already have.
     expect(html).toMatch(/הלדג'ר אומר שיש לנו אותו/);

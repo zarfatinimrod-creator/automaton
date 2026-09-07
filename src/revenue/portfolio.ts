@@ -1,124 +1,98 @@
 /**
  * Revenue Colony — default portfolio
  *
- * The seed portfolio the board starts from. Every line is something an AI
- * director can build, list, price, and operate end to end. The only human
- * involvement is the one-time setup listed per line (accounts that must be in
- * the creator's name for legal/KYC reasons); the board parks such lines in
- * `awaiting_setup` until the creator confirms with `revenue_setup_done`.
+ * The portfolio the board operates. Every line is something an AI director can
+ * build, list, price and operate end to end. The only human involvement is the
+ * owner's one-time checklist (`src/revenue/owner-steps.ts`, written out for him
+ * in `docs/OWNER_STEPS.he.md`); the board parks a line in `awaiting_setup` until
+ * he confirms with `revenue_setup_done`.
  *
  * Targets are ILS agorot per 30 days. Budgets are credit cents per month and
  * are re-allocated by the board on every review; the values here are only the
  * initial split.
+ *
+ * ─── Board decision, 7.9.2026 (research/colony-sweep/BOARD.md §3) ───────────
+ *
+ * Nine lines summing to ₪16,500 became four lines summing to **₪1,500**, plus
+ * ₪700 the board refused to commit to (`CONDITIONAL_TARGETS`). Six lines were
+ * killed outright and are recorded in `KILLED_LINES` with the board's reason and
+ * the evidence that would reopen each one — a killed line does not disappear,
+ * because a portfolio that forgets what it rejected re-proposes it.
+ *
+ * The ₪1,500 is the chief audit's ₪2,200 with the conditions made explicit. It
+ * is a sum of audited ceilings that **no buyer has confirmed**; it is the honest
+ * planning number and it is still a hypothesis. Against the owner's ₪20,000 that
+ * is 7.5% committed, 11% with the conditionals.
  */
 
 import type { Database } from "better-sqlite3";
-import { insertLineFromSeed } from "./ledger.js";
+import { removeQueuedGoals } from "./goal-queue.js";
+import { getLine, insertLineFromSeed, listLines, updateLineFromSeed, updateLineStatus } from "./ledger.js";
 import { agorotFromIls } from "./money.js";
 import type { RevenueLineSeed } from "./types.js";
 
 export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
   {
     id: "apify-actors",
-    name: "Apify pay-per-event Actors (Israeli data sources + long-tail scrapers)",
+    name: "Apify Actors on one creator account (published free while the stranger count runs)",
     category: "paid_api",
     tier: "core",
     directorRole: "director-apify-actors",
     operatingLoop: [
-      "Publish a portfolio of narrowly scoped, well-documented Actors on Apify Store priced pay-per-event (roughly $1-5 per 1,000 results):",
-      "(a) Israeli public sources nobody serves in English (gov.il tenders, public company registrar records, job boards, real-estate listings where the site's terms allow it),",
-      "(b) global long-tail sources that are under-covered in the store. Never scrape personal data or sites whose terms forbid it; prefer public records and business data.",
-      "Loop: find under-served categories with the store's own search → build the Actor (Crawlee/TypeScript) with an input schema, README and tests → push → set pay-per-event pricing and allow agentic buyers →",
-      "watch the daily health tests and quality score, auto-fix breaking site changes → answer issues in the Actor's issue tab → each week kill zero-run Actors and clone winners into adjacent niches → record the monthly payout invoice in the ledger.",
+      "Publish `products/apify-il-open-data` to Apify Store FREE through CI (`apify push` from a workflow holding APIFY_TOKEN; the container cannot reach apify.com, GitHub Actions runners can), and count runs by strangers for 30 days.",
+      "The listing states that the source is free at data.gov.il and that anything ever charged for is the maintained, English-keyed normalisation and uptime — never the data itself.",
+      "Loop: publish free → a daily stats job writes strangerRuns30d and strangerUsers30d through recordKpi → read the count at day 30 → under 10 stranger users, this line stays an instrument and no second Actor is built; 10-49, keep counting and fix what the runs show; 50+, build one Actor on the most-requested dataset and put Apify KYC to the owner; 200+, design pricing.",
+      "Minimum permissions on every Actor: Apify says full-permission Actors 'might even be excluded from search results' in autonomous-agent workflows, and this line's buyers are agents.",
     ].join(" "),
-    kpis: ["actors published", "monthly runs", "paying users", "quality score", "monthly payout in ILS", "per-Actor margin over platform usage cost"],
-    // UNVERIFIED (checked 2026-09-03): the "$470/developer/month average, ~$4k MRR
-    // for the top independent creator" figures come from a partner/marketing page,
-    // NOT from Apify's documentation, which states no revenue share and no typical
-    // earnings. Same evidence class as the x402 number that proved 29x wrong. Not
-    // disproved, and we have nothing better — but it must not be quoted as measured.
-    // Revenue here is a portfolio effect either way, never one hit, and users lead
-    // revenue by weeks, so the kill trigger watches users rather than shekels.
-    //
+    kpis: ["strangerRuns30d", "strangerUsers30d", "actors published", "quality score", "monthly payout in ILS"],
     // VERIFIED from apify-docs (monthly-payouts.mdx): payouts are $20 minimum for
     // PayPal and Wise, $100 for other methods; invoices generate on the 11th and
-    // auto-approve on the 14th. And the one that matters for the final goal — a
-    // loss-making Actor has its profit set to $0 for the month, because "a single
-    // Actor's loss doesn't reduce your total payout". Failures are FLOORED, not
-    // netted against winners, so publishing many Actors carries no downside drag on
-    // the payout. That makes this one of the few surfaces where the many-stores
-    // model has no structural penalty for the ~95% that earn nothing.
-    // See research/colony-sweep/scouts/agent-markets--apify.md.
+    // auto-approve on the 14th. A loss-making Actor has its profit set to $0 for
+    // the month rather than being netted against winners, so publishing many
+    // Actors carries no downside drag on the payout.
     //
-    // Corrected 2026-09-03 from Apify's own docs repo: an earlier comment here said
-    // ranking is driven by existing usage and a new Actor is "structurally
-    // invisible". Too strong. The quality score has eight categories and FIVE are
-    // controllable on day one — reliability, ease of use, pricing transparency,
-    // trustworthiness (least privilege) and congruency. Only popularity, feedback
-    // and history-of-success need existing users. A new Actor is disadvantaged, not
-    // invisible. See research/colony-sweep/scouts/store-promotion--marketplace-ranking.md.
+    // Apify's Store search "evaluates parameters similar to those in the Actor
+    // quality score", whose categories include Popularity and History of success
+    // (how_store_works.md). Accumulated usage is a ranking input, so a portfolio
+    // of dead listings actively harms the next one — which is an argument for the
+    // kill discipline below rather than for publishing more. It is also the whole
+    // reason to start the clock today: developer-level history cannot be bought
+    // or copied, and it is one of the three non-public inputs MISSION constraint 8
+    // says a line must have.
     //
-    // And the counterweight, from the store-promotion AUDIT the same day, because
-    // the group supervisor pushed this correction much too far. Apify's own
-    // how_store_works.md: "Search ranking evaluates parameters similar to those in
-    // the Actor quality score. As a result, the two correlate strongly." So
-    // accumulated usage IS a ranking input here, exactly as on the marketplaces we
-    // rejected for that reason — Apify is LESS usage-locked than Etsy or Figma, not
-    // exempt. "History of success" also means a portfolio of dead listings actively
-    // harms the next one, which is a direct argument for the kill discipline below
-    // rather than for publishing more.
+    // Maintenance is the real constraint and Apify quantifies it: why_publish.md
+    // says reserve ~2 hours per week per public Actor with a publicly visible
+    // support response time. Any plan here is bounded by that, not by build hours.
     //
-    // Maintenance is the real constraint, and Apify quantifies it: why_publish.md
-    // says reserve ~2 hours per week per public Actor, with a publicly visible
-    // support response time. Forty Actors is eighty hours a week, forever. Any plan
-    // here is bounded by that, not by build hours.
-    //
-    // And the assumption underneath this line's whole thesis is now contradicted.
-    // Three places in this repo said Israeli data on Apify Store is unoccupied
-    // ground where our knowledge is the edge. The productized-services audit ran
-    // one search: apify.com/swerve/supermarket-prices already scrapes the statutory
-    // price files across 25 chains into one normalised schema, refreshed daily, and
-    // the same creator runs swerve/madlan-analytics and swerve/yad2-scraper. That
-    // is an Israeli-dataset Actor portfolio, shipped, by someone else. Snippet
-    // grade — apify.com is egress-blocked here — but a claim that a niche is empty
-    // does not survive the first search finding it occupied.
-    //
-    // What this changes: not the line, which still has the best-evidenced rail and
-    // the only surface where a listing demonstrably converts. It changes the reason
-    // to believe. The edge was never "nobody is there"; it has to be something we
-    // can still say after meeting swerve. Until we know what that is, the honest
-    // first move is the auditor's: publish products/apify-il-open-data free and
-    // count runs from strangers for 30 days. Zero build, zero owner involvement,
-    // zero money — and every Apify ceiling in this repo resolves to 0 or to a
-    // measurement on its result.
-    //
-    // And a hard one: Actors requesting full permissions "might even be excluded
-    // from search results" in autonomous-agent workflows. For a line whose buyers
-    // are agents, minimum permissions is a launch requirement, not a nicety.
-    killCriteria: ["under 25 monthly users across all Actors after 60 days live with 10+ Actors", "under ₪500 in 30 days after 90 days live", "two Actors deprecated for failing health checks in one month", "Store terms violation notice", "any Actor priced below its own platform usage cost — Apify zeroes a negative-profit Actor's payout for the whole month"],
-    scaleCriteria: ["30-day payout at or above target", "any single Actor above ₪1,500 per month", "any Actor in the top 3 of its Store category"],
-    // Audited down from ₪4,000 by the store-promotion auditor and left at ₪3,000
-    // here deliberately: the auditor's ₪1,500 is its 12-month ceiling for a small
-    // maintained set, and this target is what the board measures against, not a
-    // forecast. If the line is still under ₪1,500 at 12 months the kill criteria
-    // below fire long before the gap matters. What the audit did change is the
-    // reason to believe: $1.4M/month across ~3,000 developers is a ~$470 mean on a
-    // power-law distribution, so the median developer earns far less, and a new
-    // entrant should not be planned above the mean of everyone already there.
-    targetMonthlyAgorot: agorotFromIls(3000),
-    budgetMonthlyCents: 6000,
-    // Apify's binding Store Publishing Terms, read directly from their own docs
-    // repo (sources/legal/latest/terms/store-publishing-terms-and-conditions.md
-    // §10.1.2-10.1.3): KYC gates the payout AND becoming a Verified Creator.
-    // Their agentic-payments eligibility partial adds that "the Actor's
-    // developer must also have completed identity verification (KYC)... Until
-    // they do, none of their Actors are eligible" — so x402 is NOT a way around
-    // it on the sell side. Until the owner does this, we can publish free
-    // Actors and nothing else: no price, no x402, no payout.
+    // And the thesis under this line is contradicted: apify.com/swerve/supermarket-prices
+    // already scrapes the statutory Israeli price files across 25 chains into one
+    // normalised schema, refreshed daily, alongside swerve/madlan-analytics and
+    // swerve/yad2-scraper. The niche is occupied. That is why the first thing
+    // built here is a measurement and not a product.
+    killCriteria: [
+      "strangerUsers30d under 10 at day 30 → instrument only: no second Actor, no KYC request to the owner, permanently unless the count later crosses 50",
+      "revenue_ledger holds no Apify payout 90 days after the first priced Actor goes live",
+      "two Actors deprecated for failing health checks in one month",
+      "Store terms violation notice",
+      "any Actor priced below its own platform usage cost — Apify zeroes a negative-profit Actor's payout for the whole month",
+    ],
+    scaleCriteria: [
+      "strangerUsers30d at or above 50 → one more Actor on the most-requested dataset, and Apify KYC goes to the owner",
+      "strangerUsers30d at or above 200 → design pricing, with the free-source disclosure on the listing",
+      "30-day payout at or above target",
+    ],
+    // Board §3: RETARGET ₪3,000 → ₪200. The ₪1,500 that five groups' survivors
+    // collapsed into is recorded in TARGET_BASIS as the contested upper bound, not
+    // as the target. See CONTESTED_UPPER_BOUNDS.
+    targetMonthlyAgorot: agorotFromIls(200),
+    budgetMonthlyCents: 4000,
+    // Board §3, humanSetup split: publishing free needs only the token. Apify's
+    // own Store Publishing Terms (§10.1.2-10.1.3) gate payout, pricing AND x402
+    // eligibility on KYC — so KYC is real, but it is deferred to the moment
+    // stranger runs exist (chief audit §4B.7-8), not asked for today.
+    // "Register as osek patur" is gone from every line: it is owner step 2, once.
     humanSetup: [
-      "Create an Apify account in your name and complete Apify KYC (government ID, proof of address, tax document, beneficial-ownership info). This one step gates ALL THREE of: receiving any payout, setting a price on an Actor, and x402/agentic eligibility. Publishing free Actors is the only thing possible before it.",
-      "Open a PayPal account in your name (PayPal Israel) and link it as the Apify payout method (minimum payout $20 for PayPal and Wise, $100 for other methods)",
-      "Register as osek patur (self-service online form) before the first payout",
+      "Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). Nothing else: publishing free and counting stranger runs needs no identity verification. Apify KYC and a PayPal payout are deferred until stranger runs exist.",
     ],
     skillName: "revenue-apify-actors",
   },
@@ -130,205 +104,101 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     directorRole: "director-il-biz-tools",
     operatingLoop: [
       "Ship a Hebrew/RTL web app with free calculators and paid exports for Israeli freelancers (osek patur / osek murshe):",
-      "receipt and invoice generator matching Israeli formats, VAT and advance-payment calculators, net-salary calculator, Bituach Leumi estimator, osek patur threshold tracker.",
-      "Free tools drive search traffic; the paid tier (branded PDF exports, saved clients, monthly pack) is sold through a merchant-of-record checkout (Paddle lists Israel as a supported seller country) so VAT is handled by the platform.",
-      "Loop: build one tool → publish with a Hebrew SEO page → measure visits and paid conversions via revenue_kpi → improve the tool with the best visit-to-pay ratio → repeat.",
+      "receipt and invoice generator matching Israeli formats, VAT and advance-payment calculators, net-salary calculator, Bituach Leumi estimator, osek patur threshold tracker, and the redaction feature folded in from risk-governance.",
+      "The paid tier is sold through GUMROAD, not Paddle: Gumroad is the only merchant of record with rendered proof of ILS payout to an Israeli bank. Retire the Paddle block in src/config/site.json and put a Gumroad checkout link on the Pro box in place of 'בקרוב'.",
+      "Every page that depends on tax-2026.json stays UNPUBLISHED until its rates are confirmed against two independent GitHub-hosted implementations and `verified` flips to true. Publishing an unverified rate is selling a wrong number.",
+      "Loop: deploy under the domain → one Hebrew SERP read before any SEO hour → cookieless page views through the PostHog snippet, written weekly as KPIs → improve the tool with the best visit-to-pay ratio → repeat.",
     ].join(" "),
-    kpis: ["weekly visitors", "free tool uses", "paid conversions", "MRR in ILS", "refund rate"],
-    killCriteria: ["under ₪500 in 30 days after 45 days live", "refund rate above 15% for two reviews", "merchant account rejected"],
+    kpis: ["weekly page views (cookieless)", "free tool uses", "paid conversions", "MRR in ILS", "refund rate"],
+    killCriteria: [
+      "revenue_ledger under ₪200 in 30 days after 90 days live with the domain deployed",
+      "weekly page views under 100 for 8 consecutive weeks after deployment",
+      "refund rate above 15% for two reviews",
+      "Gumroad account rejected or the seller review fails",
+    ],
     scaleCriteria: ["30-day revenue at or above target with 50%+ margin", "conversion above 2% on paid pages"],
-    // Wave 2 of the criteria sweep measured this funnel at ₪1,500/month merged,
-    // not ₪5,000. The hard datum: a live Israeli legal site's own Google Search
-    // Console export, checked into a public repo, shows its severance-calculator
-    // page at 0 clicks and 0 impressions over 16 months while sibling pages show
-    // 58k-81k. Head terms here are owned by funded incumbents (Morning, iCount,
-    // Invoice4u, Kol Zchut, and btl.gov.il's own free simulators). This is
-    // long-tail work, and the target now says so.
-    targetMonthlyAgorot: agorotFromIls(1500),
-    budgetMonthlyCents: 5000,
+    // Board §3: RETARGET ₪1,500 → ₪400, and the grade STAYS `contradicted` until
+    // a page-view or Search Console reading exists. The audited band is ₪200-400
+    // with ₪0 through month 12, and the evidence in this line's own basis argues
+    // against any number above it: a competing Israeli legal site's own Search
+    // Console export shows its severance calculator at 0 impressions over 16
+    // months while sibling pages show 58k-81k.
+    targetMonthlyAgorot: agorotFromIls(400),
+    budgetMonthlyCents: 4000,
     humanSetup: [
-      "Open a merchant-of-record seller account (Paddle; Lemon Squeezy as fallback) in your name and complete identity/tax verification",
-      "Add an Israeli bank account (IBAN/SWIFT) or PayPal for payouts",
-      "Register as osek patur (self-service online form) before the first payout",
+      "Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3)",
+      "Buy the company domain at a registrar with WHOIS privacy on by default (owner step 5)",
+      "Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6)",
     ],
     skillName: "revenue-il-biz-tools",
   },
   {
-    id: "templates",
-    name: "Spreadsheet and Notion business templates (Hebrew + English) on Etsy and an own store",
-    category: "digital_product",
-    tier: "growth",
-    directorRole: "director-templates",
-    operatingLoop: [
-      "Produce finished, tested templates that solve one painful admin task: freelancer bookkeeping in Hebrew, Israeli VAT / osek patur tracker, rental-property tracking, event budget in ILS, small-business CRM and inventory sheets, Hebrew/RTL planners and Jewish-holiday printables.",
-      "Sell on Etsy (Etsy Payments supports Israel via Payoneer; AI-assisted products must be disclosed and designed by the seller — no prompt packs or templated resale) and mirror on an own store through the merchant-of-record checkout.",
-      "Loop: research what buyers search for → build the template with a walkthrough PDF and 'make a copy' link → publish with previews → track views-to-sales → iterate the listing (title, images, price) → build the next template in the best-selling category.",
-    ].join(" "),
-    kpis: ["templates published", "listing views", "sales per week", "average order value in ILS", "refund rate"],
-    killCriteria: ["under ₪400 in 30 days after 45 days live with 20+ listings", "refund rate above 10%", "shop suspended"],
-    scaleCriteria: ["30-day revenue at or above target", "a template with 20+ sales"],
-    targetMonthlyAgorot: agorotFromIls(3000),
-    budgetMonthlyCents: 2500,
-    humanSetup: [
-      "Open an Etsy shop in your name (ID verification) and enrol in Etsy Payments with a Payoneer account (KYC) linked to your Israeli bank",
-    ],
-    skillName: "revenue-templates",
-  },
-  {
-    id: "paid-apis",
-    name: "Paid developer APIs (Hebrew NLP, RTL PDF, Israeli validators) over x402 and an API marketplace",
-    category: "paid_api",
-    tier: "growth",
-    directorRole: "director-paid-apis",
-    operatingLoop: [
-      "Expose small, reliable HTTP APIs developers and agents pay for per call: Hebrew nikud/transliteration, RTL-correct PDF and image rendering, Israeli ID/bank/phone validation, Hebrew date conversion, structured extraction, PDF→Markdown.",
-      "Serve every endpoint over x402 (USDC on Base, no account needed by the buyer) and cross-list on an API marketplace with a free tier and metered paid tiers; share the code with the Apify line where possible.",
-      "Loop: ship one endpoint with docs and tests → list it → track calls, paying subscribers and error rate → improve the endpoint with the most free-tier usage → repeat. Tag every inbound x402 payment with [line:paid-apis].",
-    ].join(" "),
-    // Corrected 2026-09-03. This comment previously said the protocol runs at
-    // ~$28k/day and ~$0.028 per call. Reported figures for mid-2026 are ~$800k/day
-    // ($24M over 30 days) at ~$0.32 average per payment, across ~22,000 sellers and
-    // ~94,000 buyers — so we were off by roughly 29x on volume and 11x on price.
-    // See research/colony-sweep/scouts/agent-markets--x402-economy.md.
-    //
-    // The conclusion survives: $24M/month across 22,000 sellers is a MEAN of about
-    // $1,090/seller/month, and in a power-law market the median earns far less. This
-    // is still a small market per participant, and the marketplace subscriptions —
-    // not x402 — carry this line; x402 is the zero-KYC option attached to it.
-    //
-    // What did change is the KPI. At $0.32/call the ₪1,200 target needs ~1,014 paid
-    // calls a month, not ~11,600. The old kill criterion demanded 2,000 calls, which
-    // at $0.32 is ~₪2,370 — nearly double this line's own target, so a line hitting
-    // target exactly would have been killed by its own rule. Fixed below.
-    kpis: ["API calls per day", "paying subscribers", "x402 paid requests", "error rate", "monthly revenue in ILS"],
-    killCriteria: ["under 300 paid calls in 30 days after 60 days live (~₪355 at the ₪1.18/call protocol average — unambiguously failing, not merely below target)", "under ₪400 in 30 days after 90 days live", "error rate above 2% for two reviews"],
-    scaleCriteria: ["30-day revenue at or above target", "10+ paying subscribers or 5+ recurring paying agents"],
-    targetMonthlyAgorot: agorotFromIls(1200),
-    budgetMonthlyCents: 3000,
-    humanSetup: [
-      "Create the API marketplace provider account in your name and add a PayPal payout method (x402 needs nothing; converting USDC to ILS later needs a one-time Israeli exchange account with KYC)",
-    ],
-    skillName: "revenue-paid-apis",
-  },
-  {
-    id: "agent-services",
-    name: "x402 services for other agents (zero-KYC line)",
-    category: "agent_service",
-    tier: "experimental",
-    directorRole: "director-agent-services",
-    operatingLoop: [
-      "Run paid endpoints that other automatons and agents call with x402 micropayments in USDC: structured extraction from HTML/PDF, Hebrew↔English translation, JSON repair, agent-card verification, pay-per-prompt inference resale.",
-      "Register the services on the agent card and in agent registries so they are discoverable; keep prices low (cents) and latency predictable. This is the only line that needs no human account at all; demand is thin today, so it runs on a small budget.",
-      "Loop: ship one endpoint → announce in the registry → measure paid requests per day → add the endpoint agents ask for most → repeat. Tag every inbound payment with [line:agent-services].",
-    ].join(" "),
-    kpis: ["paid requests per day", "unique paying agents", "USDC received", "p95 latency"],
-    killCriteria: ["under ₪300 in 30 days after 90 days live", "no unique paying agent in 30 days"],
-    scaleCriteria: ["30-day revenue at or above target", "5+ recurring paying agents"],
-    // Kept deliberately small: zero setup makes it the first line that can earn,
-    // but protocol-wide volume caps what it can become. It funds compute, not rent.
-    targetMonthlyAgorot: agorotFromIls(800),
-    budgetMonthlyCents: 1500,
-    humanSetup: [],
-    skillName: "revenue-agent-services",
-  },
-  {
-    id: "telegram-bots",
-    name: "Telegram bots paid with Stars (Hebrew utility bots + file/format tools)",
-    category: "micro_saas",
-    tier: "experimental",
-    directorRole: "director-telegram-bots",
-    operatingLoop: [
-      "Build small Telegram bots that do one useful thing well and charge per use or per month in Telegram Stars: PDF/image conversion, Hebrew text tools (nikud, transliteration), receipt and invoice bots for Israeli freelancers, reminder and form-filling helpers.",
-      "The creator creates each bot once with BotFather (no KYC) and provides the token; Stars are withdrawn to a wallet the automaton controls; converting to ILS later needs the creator's one-time exchange account.",
-      "Loop: ship one bot → list it in bot directories and the bot's own landing page → track daily active users and Stars received → improve the most-used bot → repeat.",
-    ].join(" "),
-    kpis: ["bots live", "daily active users", "Stars received", "paying users", "share of purchases made on desktop/web"],
-    killCriteria: ["under ₪300 in 30 days after 60 days live", "no paying user in 30 days"],
-    scaleCriteria: ["30-day revenue at or above target", "a bot with 100+ paying users"],
-    targetMonthlyAgorot: agorotFromIls(1500),
-    budgetMonthlyCents: 1500,
-    humanSetup: [
-      "Create the bot in Telegram with @BotFather from your own Telegram account (2 minutes) and hand over the bot token as TELEGRAM_BOT_TOKEN; no KYC, but a bot must belong to a Telegram user",
-    ],
-    skillName: "revenue-telegram-bots",
-  },
-  {
-    id: "dev-extensions",
-    name: "Browser and editor extensions with a paid pro tier (license keys)",
-    category: "micro_saas",
-    tier: "experimental",
-    directorRole: "director-dev-extensions",
-    // Narrowed 2026-09-03 from "Chrome/Edge and VS Code" to VS Code first, because
-    // the store-promotion sweep rejected the Chrome Web Store twice over and this
-    // line was still pointing at it. As a portfolio it is banned outright — no
-    // developer, related account or affiliate may submit multiple extensions with
-    // duplicate experiences — and as a single listing it is install-count-locked
-    // with no documented cold-start lane and no published ranking. See
-    // docs/REJECTED.md. Chrome is not forbidden here, but it may not be the
-    // channel this line is planned around, and it must never be a portfolio.
-    operatingLoop: [
-      "Build VS Code extensions that fix a specific daily annoyance (RTL/Hebrew text handling, JSON/CSV tooling, Israeli-format helpers, privacy-first local dev tools) with a free core and a pro tier unlocked by a license key sold through the merchant-of-record store.",
-      "Loop: ship the free core to the marketplace → collect installs and reviews → add one pro feature users ask for → measure license activations → repeat.",
-      "A single Chrome extension is permitted once one VS Code extension has real users, and only as a second listing for a proven tool — never as a portfolio, which the Web Store bans by name.",
-    ].join(" "),
-    kpis: ["installs", "weekly active users", "license activations", "monthly revenue in ILS"],
-    killCriteria: ["under ₪400 in 30 days after 60 days live", "marketplace listing rejected twice"],
-    scaleCriteria: ["30-day revenue at or above target", "1,000+ weekly active users"],
-    targetMonthlyAgorot: agorotFromIls(2500),
-    budgetMonthlyCents: 2000,
-    // The Chrome $5 developer fee is deliberately NOT an owner step. MISSION.md
-    // restricts that catalogue to identity, KYC and payout steps a platform
-    // legally requires of a human, and the store-promotion auditor caught this
-    // group inventing exactly this kind of entry (a WordPress.org account, which
-    // needs no verification at all). A $5 fee is a purchase, and the ₪200 owner
-    // float in budget.ts exists so that the colony pays for things like it
-    // instead of adding a line to the owner's list.
-    humanSetup: [
-      "Create a Microsoft/Azure DevOps publisher for VS Code (free, no identity verification) and reuse the merchant-of-record account from il-biz-tools for license keys",
-    ],
-    skillName: "revenue-dev-extensions",
-  },
-  {
-    id: "hebrew-content",
-    name: "Hebrew evergreen guides and calculators with affiliate and ad revenue",
-    category: "content",
-    tier: "experimental",
-    directorRole: "director-hebrew-content",
-    operatingLoop: [
-      "Publish genuinely useful Hebrew guides, first-hand tool tests and continuously refreshed calculators on a niche with buying intent (small-business software, personal finance and bureaucracy for Israelis) on a domain the automaton owns.",
-      "Every page is original, fact-checked against primary sources and disclosed as AI-assisted; monetise with affiliate programs that pay Israel (Impact.com, PartnerStack, Amazon Associates via Payoneer) and, once traffic qualifies, an entry ad network. Volume AI content is penalised in 2026, so quality and freshness beat quantity.",
-      "Loop: research keyword gaps → publish working tools first and prose only to explain a tool's own output → track impressions, clicks and conversions → double down on what converts → repeat. Expect months, not weeks.",
-      "Monetisation order is fixed: conversion into our own products first, affiliate second, display ads last and only as a residual. Hebrew is a small market with low ad rates, so ads can never carry this line. Volume is not a KPI - a page count target is the exact production pattern search engines now penalise.",
-    ].join(" "),
-    kpis: ["working tools published", "weekly organic visits", "affiliate clicks", "affiliate revenue in ILS", "conversions into our own products"],
-    killCriteria: ["under ₪300 in 30 days after 120 days live", "search traffic flat for 60 days after 100 pages"],
-    scaleCriteria: ["30-day revenue at or above target", "10,000+ monthly organic visits"],
-    targetMonthlyAgorot: agorotFromIls(1500),
-    budgetMonthlyCents: 1500,
-    humanSetup: [
-      "Open the affiliate program accounts in your name (they require a tax form and a PayPal or Payoneer payout) and provide the affiliate IDs",
-    ],
-    skillName: "revenue-hebrew-content",
-  },
-  {
     id: "oss-bounties",
-    name: "Open-source bounties",
+    name: "Open-source bounties on Algora, from the brand machine account",
     category: "service",
-    tier: "experimental",
+    tier: "growth",
     directorRole: "director-oss-bounties",
     operatingLoop: [
-      "Find funded bounties on open-source issues (bounty platforms attached to GitHub), pick ones that match the colony's strengths (TypeScript, Python, docs, tests), solve them to the maintainer's standard, open the pull request from the creator's account, and claim the payout when merged.",
-      "Loop: scan new bounties daily → attempt at most two in parallel → only claim what is merged → record the payout with its bounty id → repeat.",
+      "ALGORA ONLY. Find funded bounties the way the payer publishes them: GitHub issues carrying algora-pbc[bot] bounty comments, found by GitHub search — the one host this container reaches.",
+      "Filter before attempting: exclude repositories whose CONTRIBUTING or policy files ban AI-authored pull requests, require TypeScript / Python / docs / tests, and emit at most two candidates.",
+      "EVERY pull request is opened from the BRAND MACHINE ACCOUNT, never from the owner's GitHub handle — a PR is a published byline and the mandate forbids his name on it (board §5, owner step 7).",
+      "Disclose AI authorship on every pull request, attach a short demo video per claim, attempt at most two in parallel, and stop on a maintainer's first request.",
+      "Loop: scan daily → attempt at most two → only claim what is merged → record the payout with its bounty id → repeat. Devpost is optional and conditional on the owner's answer about per-win paperwork; it is not part of this loop today.",
     ].join(" "),
     kpis: ["bounties attempted", "pull requests merged", "payouts in ILS", "acceptance rate"],
-    killCriteria: ["under ₪500 in 30 days after 60 days live", "acceptance rate under 25% over 10 attempts"],
+    killCriteria: [
+      "revenue_ledger holds no Algora payout 90 days after the first attempted bounty",
+      "acceptance rate under 25% over 10 attempts",
+      "a maintainer policy ban on AI-authored PRs found in more than half of the candidate repositories in a month",
+    ],
     scaleCriteria: ["30-day revenue at or above target", "acceptance rate above 60%"],
-    targetMonthlyAgorot: agorotFromIls(1500),
-    budgetMonthlyCents: 1000,
+    // Board §3: RETARGET ₪1,500 → ₪300. The whole audited group is ₪800 and
+    // Algora's share of it is ₪300. This line keeps its rank on MISSION
+    // constraint 7 rather than on its ceiling: it is the only line whose
+    // acquisition runs backwards — the payer posts the job, funds it in advance
+    // and publishes the acceptance criteria, so no stranger has to find us — and
+    // the only code-level Israeli payability proof the 121-criterion sweep
+    // produced (lib/algora/psp/connect_countries.ex lists {"Israel","IL"} and
+    // routes it to a Stripe Connect Express account, rendered twice).
+    targetMonthlyAgorot: agorotFromIls(300),
+    budgetMonthlyCents: 3000,
     humanSetup: [
-      "Connect your GitHub account to a bounty platform and complete its payout onboarding (verify it pays to Israel before enabling this line)",
+      "Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7)",
+      "Sign in to Algora AS THE BRAND MACHINE ACCOUNT and complete Stripe Connect Express onboarding in your legal identity — individual, ID, Israeli address, Israeli bank account (owner step 4, done after step 7)",
     ],
     skillName: "revenue-oss-bounties",
+  },
+  {
+    id: "pcn874",
+    name: "PCN874 builder — spreadsheet to a validated מע\"מ detailed-report file",
+    category: "digital_product",
+    tier: "core",
+    directorRole: "director-pcn874",
+    operatingLoop: [
+      "Turn a bookkeeper's spreadsheet into a PCN874 file the Tax Authority accepts: a validator first, then the builder.",
+      "SPEC BEFORE CODE: render the 874 record layout from at least two independent open-source implementations found by GitHub code search into products/pcn874/spec/FORMAT.md with both sources cited. gov.il and both commercial mirrors are egress-blocked from this container. NO LEGAL FIGURE SHIPS UNTIL TWO SOURCES AGREE — a wrong file is the user's VAT exposure, not ours.",
+      "Two channels, both named before the build: (a) Hebrew long-tail organic on the exact statutory terms, measured by a SERP pull BEFORE the build; (b) an open-source `pcn874` core under the brand GitHub org and npm scope, so GitHub and npm search carry the free tier.",
+      "Sold through Gumroad in ILS. Loop: validator with fixtures → free open-source core → paid builder → measure which of the two channels brought the buyer → repeat.",
+    ].join(" "),
+    kpis: ["weekly page views (cookieless)", "npm downloads", "GitHub stars and clones", "paid conversions", "MRR in ILS"],
+    killCriteria: [
+      "revenue_ledger under ₪150 in 30 days after 90 days live",
+      "no independent second source for the 874 record layout found in 30 days — the product does not ship at all in that case",
+      "weekly page views under 100 for 8 consecutive weeks after publication",
+    ],
+    scaleCriteria: ["30-day revenue at or above target", "npm downloads of the free core above 200 in 30 days"],
+    // Board §3: ADD at ₪600, grade `inferred`, basis = chief audit §2.1 #2.
+    // The only line in the whole sweep with a verified, dated, legally created
+    // cohort: VAT-registered עוסקים and the bookkeepers who file for them. Its
+    // buyer exists because the law made it, which is MISSION constraint 8 shape
+    // 2 — an obligation somebody must discharge and cannot get free.
+    targetMonthlyAgorot: agorotFromIls(600),
+    budgetMonthlyCents: 4000,
+    humanSetup: [
+      "Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses",
+      "Create the GitHub organisation under the brand name so the open-source core and the npm scope carry it and not your username (owner step 7)",
+    ],
+    skillName: "revenue-pcn874",
   },
 ];
 
@@ -357,6 +227,13 @@ export function portfolioTargetAgorot(seeds: RevenueLineSeed[] = DEFAULT_PORTFOL
  * numbers here match the portfolio, and the board report prints how much of the
  * total rests on nothing. `unevidenced` is not a sin — it is a research task
  * that has not been done yet, and it should be visible until it is.
+ *
+ * Two fields were added by the board on 7.9.2026 and they are not decoration.
+ * MISSION constraint 7 says **a line may not be built before its acquisition
+ * channel is named**, and the whole portfolio sits on three rails of which two
+ * are unverified at the account level. Both facts used to live in prose that no
+ * test could read, so `rail` and `acquisitionChannel` are required here and
+ * `target-basis.test.ts` refuses a line that leaves either blank.
  */
 /**
  * How much a target's number can be trusted.
@@ -379,79 +256,218 @@ export interface TargetBasis {
   basis: string;
   /** Required for `measured`: where the number can be checked. */
   source?: string;
+  /** How the money reaches us. Cross-checked against `rails.ts` by its own test. */
+  rail: string;
+  /** MISSION constraint 7: how a stranger finds this line. Never blank. */
+  acquisitionChannel: string;
+  /**
+   * A larger figure that exists in the evidence and that the board refused to
+   * commit to. Recorded so it cannot come back as a target without someone
+   * deciding to, and so the owner sees the range rather than only the floor.
+   */
+  contestedUpperBoundIls?: number;
 }
 
 export const TARGET_BASIS: Record<string, TargetBasis> = {
   "apify-actors": {
-    // Downgraded from "measured" 2026-09-03 by the agent-markets audit, which
-    // caught this file contradicting itself: the grade said measured while the
-    // comment on the line said the same figures are UNVERIFIED. It cannot be
-    // both. $1.4M/month across ~3,000 developers is also a power-law MEAN, so
-    // the median developer earns far less and a new entrant should not be
-    // planned above it. Two audits separately found Israeli data on Apify Store
-    // already occupied, which removes the reason this line was sized above the
-    // platform average in the first place.
-    ils: 3000, grade: "inferred",
-    basis: "Apify's partner page implies roughly $470/developer/month across ~3,000 developers — a power-law mean, not a median, and not in Apify's own documentation. UNVERIFIED at source. Revenue is a portfolio effect across many Actors, never one hit. The auditors' corrected 12-month ceilings for the Apify surface are ₪1,500 (store-promotion) and ₪200 (agent-markets); the ₪3,000 target is what the board measures against, and the kill criteria fire long before the gap matters.",
-    source: "research/colony-sweep/audits/agent-markets.md and audits/store-promotion.md",
+    // Board §3, accepting chief audit §5.3: ₪200, with ₪1,500 recorded as the
+    // contested upper bound. There is no argument for ₪3,000 the board was
+    // willing to sign — "what the board measures against" was a target fitted to
+    // the goal, which is the exact failure TARGET_BASIS exists to prevent.
+    ils: 200, grade: "inferred",
+    contestedUpperBoundIls: 1500,
+    basis:
+      "Five groups' survivors collapse into ONE Apify creator account. The auditors' two corrected 12-month ceilings for that account are ₪1,500 (store-promotion) and ₪200 (agent-markets); the board committed to ₪200 and records ₪1,500 as the CONTESTED UPPER BOUND, not as a target. The ₪1,500 rests on a generic 5-8 Actor scraper set at ~2 h/week/Actor priced off an unverified marketing mean ($470/developer/month across ~3,000 developers, a power-law MEAN and not in Apify's own documentation). The ₪200 rests on the only real base rate anyone rendered: 8.7 users per Actor. Month one is ₪0 and the first ledger entry is ~month 9. The line is kept as the constraint-7 instrument at forecast ₪0: publish free, count strangers for 30 days, start the developer-level history-of-success clock that MISSION constraint 8 names as a non-public input.",
+    source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #1; audits/agent-markets.md and audits/store-promotion.md",
+    rail: "Apify Store → PayPal or Wise (payout deferred: KYC only after stranger runs exist)",
+    acquisitionChannel:
+      "Apify Store search and Apify MCP-server search — platform search that ranks on accumulated history, which is precisely why the clock starts now and why nothing is priced before it has run.",
   },
   "il-biz-tools": {
-    // Was "measured", citing a supervisor its own auditor then cut to ₪200-400.
-    // The basis also refutes itself in its second sentence: a competing Israeli
-    // legal site's Search Console export shows 0 impressions over 16 months.
-    ils: 1500, grade: "contradicted",
-    basis: "Sweep wave 2 put the merged funnel at ₪1,500/month, and the audit of that exact survivor cut it to ₪200-400 with ₪0 in month one. The evidence in this very field argues against the number: a competing Israeli legal site's own Search Console export shows its severance calculator at 0 impressions over 16 months, and head terms belong to funded incumbents and to the state's own free simulators.",
-    source: "research/colony-sweep/audits/israel-bureaucracy.md §2.3",
-  },
-  "paid-apis": {
-    // Corrected 2026-09-03: this entry still carried the $28k/day figure that
-    // was found wrong by ~29x earlier the same day and fixed everywhere else.
-    // A stale number in the basis is worse than no basis, because the grade
-    // launders it. Regraded 2026-09-04: the arithmetic now in this basis divides
-    // out to ~₪6 per provider per month, so the field refutes its own number by
-    // about 200x. "measured" was doing the opposite of its job.
-    ils: 1200, grade: "contradicted",
-    basis: "THREE INCOMPATIBLE x402 VOLUME FIGURES NOW SIT IN THIS REPO and no one has reconciled them: ~$800k/day at ~$0.32 per call (the figure this file carried after a correction on 2026-09-03), ~$37k/day from x402scan — the ecosystem's own explorer, $1.11M across 3.69M transactions in 30 days, May 2026, cited by the crypto-native audit — and the Bazaar registry's own 30-day series of 302,072 calls at a $0.01 median across 1,772 providers, which is about $3,020/month network-wide and was verified first-hand. They differ by more than an order of magnitude and cannot all be right. What every one of them agrees on is the only thing this target needs: per-provider revenue is single-digit shekels a month, and 91.2% of listings fail to reach ten calls a month. ₪1,200 is roughly 200x the most favourable per-provider arithmetic available. Marketplace subscriptions, not x402, would have to carry the whole line, and nothing has measured those.",
-    source: "research/colony-sweep/scouts/agent-markets--x402-economy.md; docs/REJECTED.md line 267",
-  },
-  "agent-services": {
-    // The same refuted x402 evidence as paid-apis, with the one mitigation
-    // removed, and it was still graded "measured". If paid-apis is contradicted
-    // at ₪1,200 with a marketplace tier behind it, this is contradicted harder.
-    ils: 800, grade: "contradicted",
-    basis: "The same x402 volume evidence as paid-apis — which divides out to roughly ₪6 per provider per month — applied to a line that does not even have the marketplace tier paid-apis leans on. The evidence argues against this number more strongly than against that one.",
-    source: "research/colony-sweep/scouts/agent-markets--x402-economy.md; docs/REJECTED.md",
-  },
-  templates: {
-    ils: 3000, grade: "unevidenced",
-    basis: "Carried over from the first plan. The storefronts group is only 5/8 swept and Etsy digital-download economics for a new Israeli seller have not been measured. Treat as a research task, not a forecast.",
-  },
-  "telegram-bots": {
-    ils: 1500, grade: "unevidenced",
-    basis: "Carried over from the first plan, and worse than unevidenced: the payment-rails wave found that Fragment withdrawal eligibility for an Israeli resident is unverified. If Stars cannot be withdrawn to Israel this line's ceiling is ₪0. One owner login settles it.",
-  },
-  "dev-extensions": {
-    ils: 2500, grade: "unevidenced",
-    basis: "Carried over from the first plan. The plugin-ecosystems group has not been swept; Chrome Web Store paid-extension economics after in-app payments shut down are unmeasured.",
-  },
-  "hebrew-content": {
-    ils: 1500, grade: "inferred",
-    basis: "Ad and affiliate revenue on Hebrew traffic, inferred from the content-seo group's unswept criteria and from wave 2's finding that Israeli head terms are held by incumbents. Ordering matters: own products first, affiliate second, ads last.",
+    // Board §3: retarget to ₪400; the grade STAYS `contradicted` until a page-view
+    // or Search Console reading exists. A number nobody has measured against a
+    // channel nobody has tested does not get promoted for being smaller.
+    ils: 400, grade: "contradicted",
+    basis:
+      "Audited band ₪200-400 with ₪0 through month 12 as things stand (chief audit §2.1 #3). The evidence in this very field argues against any number here: a competing Israeli legal site's own Google Search Console export, checked into a public repo, shows its severance-calculator page at 0 clicks and 0 impressions over 16 months while sibling pages show 58k-81k; head terms belong to funded incumbents (Morning, iCount, Invoice4u, Kol Zchut) and to btl.gov.il's own free simulators. Three preconditions before any SEO hour: deploy, buy the domain, read one Hebrew SERP. The grade stays `contradicted` until a page-view or Search Console reading exists — a smaller unmeasured number is still unmeasured.",
+    source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #3; research/colony-sweep/audits/israel-bureaucracy.md §2.3",
+    rail: "Gumroad (merchant of record, ILS payout rendered from Gumroad's own source). Paddle retired from this line by board §3.",
+    acquisitionChannel:
+      "Hebrew long-tail organic, measured rather than assumed: one SERP pull now, cookieless page views from PostHog written weekly as KPIs, Search Console only later and only if the owner chooses to add the property.",
   },
   "oss-bounties": {
-    // Regraded 2026-09-04. The basis said payability here is unverified. It is
-    // verified — and it is the ONLY code-level payability proof the entire
-    // 120-criterion sweep produced. Algora's own source file
-    // lib/algora/psp/connect_countries.ex contains {"Israel", "IL"}, and
+    // Regraded 2026-09-04 and retargeted by the board 7.9.2026. Payability here
+    // is the one code-level proof in the sweep: Algora's own
+    // lib/algora/psp/connect_countries.ex contains {"Israel","IL"} and
     // account_type/1 special-cases only Brazil, so an Israeli contributor falls
-    // through to a Stripe Connect Express account. Every other payability
-    // verdict in this repo is a snippet, an inference from absence, or an
-    // UNKNOWN. The repo's evidence hierarchy had this line at the bottom.
-    ils: 1500, grade: "inferred",
-    basis: "The bounties-grants group is swept and audited: its five ranked lines fell from ₪7,800 to ₪800 combined, so ₪1,500 is above the whole group's audited ceiling and the target is not defensible on volume. What IS verified, at code level and re-rendered independently by the synthesis critic, is Israeli payability — Algora's connect_countries.ex lists Israel and routes it to Stripe Connect Express. This is the only line in the portfolio whose acquisition problem runs backwards: the payer posts the job publicly, funds it in advance and publishes the acceptance criteria, so no stranger has to find us. Under MISSION constraint 7 that property outranks the ceiling.",
-    source: "research/colony-sweep/audits/bounties-grants.md; research/colony-sweep/CRITIC-synthesis.md §5",
+    // through to a Stripe Connect Express account. Every other payability verdict
+    // in this repo is a snippet, an inference from absence, or an UNKNOWN.
+    ils: 300, grade: "inferred",
+    basis:
+      "The bounties-grants group is swept and audited: its five ranked lines fell from ₪7,800 to ₪800 combined, and Algora's own share of that is ₪300 (chief audit §2.1 #6). Month one is ₪0; money arrives 2-5 days after a first rewarded PR, which is weeks away. What IS verified, at code level and re-rendered independently, is Israeli payability — Algora's connect_countries.ex lists Israel and routes it to Stripe Connect Express. This is the only line in the portfolio whose acquisition problem runs backwards: the payer posts the job publicly, funds it in advance and publishes the acceptance criteria, so no stranger has to find us. Under MISSION constraint 7 that property outranks the ceiling, which is why the line keeps its rank at ₪300.",
+    source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #6; research/colony-sweep/audits/bounties-grants.md; research/colony-sweep/CRITIC-synthesis.md §5",
+    rail: "Stripe Connect Express via Algora (connect_countries.ex rendered twice). Unverified at the ACCOUNT level until owner step 4 succeeds.",
+    acquisitionChannel:
+      "The payer posts the job: bounties are GitHub issues carrying algora-pbc[bot] bounty comments, found by GitHub search — the only host this container reaches, and the only channel in the portfolio that does not need a stranger to find us first.",
+  },
+  pcn874: {
+    // Board §3: ADD at ₪600. The band is ₪300-600 and the board took the top of
+    // it, which needs saying out loud: it is the only line in the sweep whose
+    // cohort is verified, dated and created by law rather than inferred from a
+    // market. That is a reason to believe the band, not a reason to exceed it.
+    ils: 600, grade: "inferred",
+    basis:
+      "Chief audit §2.1 #2: audited ceiling ₪600, band ₪300-600, month one ₪0, Israel payability YES via Gumroad (rendered `Israel | ILS`). The only line in the sweep with a verified, dated, legally created cohort — VAT-registered עוסקים filing the מע\"מ detailed report, and the bookkeepers who file for them — confirmed across CPA circulars. Graded GREEN with a harm asymmetry the target does not capture: a wrong file is the USER's VAT exposure, so no legal figure ships until the 874 record layout is rendered from two independent open-source implementations. Known headwinds already priced in: the dependency this displaces is stale (Feb 2024, no validatePcn874()), and ITA easements (sub-₪5,000 aggregation, deferral to 2027) shrink the pain.",
+    source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #2",
+    rail: "Gumroad (merchant of record, ILS payout rendered). Shared with il-biz-tools — see railConcentration(), which now reports this as concentrated.",
+    acquisitionChannel:
+      "Two, both named before the build: Hebrew long-tail organic on the exact statutory terms (measured by the SERP pull that precedes the build), and an open-source `pcn874` core under the brand GitHub org and npm scope so GitHub and npm search carry the free tier.",
   },
 };
+
+/**
+ * Targets the board did NOT commit to.
+ *
+ * The chief audit's portfolio figure is ₪2,200/month at twelve months. ₪1,500 of
+ * it is committed above; the remaining ₪700 depends on something that has not
+ * happened, and the board's rule is that the owner is never told a conditional
+ * number as a plan (BOARD.md §6.2, ruling on chief audit §5.1). These are
+ * therefore not lines, carry no budget, and are excluded from
+ * `portfolioTargetAgorot()` — they exist so the ₪700 is visible rather than
+ * quietly folded into the total or quietly lost.
+ */
+export interface ConditionalTarget {
+  id: string;
+  name: string;
+  ils: number;
+  /** The specific thing that must be true before this becomes a line. */
+  conditionalOn: string;
+  rail: string;
+  acquisitionChannel: string;
+  source: string;
+}
+
+export const CONDITIONAL_TARGETS: ConditionalTarget[] = [
+  {
+    id: "registrar-reminder",
+    name: "Company-registrar annual-fee deadline reminder",
+    ils: 300,
+    conditionalOn:
+      "The static registrar fee/deadline page on il-biz-tools reaches 100 weekly page views. Below that the product is not built: the Registrar emails the deadline itself, so demand is the whole question.",
+    rail: "Gumroad",
+    acquisitionChannel: "The same Hebrew long-tail organic as il-biz-tools; the registrar term is measured in the same SERP pull.",
+    source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #4 (band ₪150-300, at the bar, not above it); BOARD.md §2 build #6",
+  },
+  {
+    id: "devpost-hackathons",
+    name: "Devpost sponsored AI hackathons",
+    ils: 400,
+    conditionalOn:
+      "The owner answers YES to signing a winner-eligibility form, a W-8BEN and a prize affidavit within ~2 business days of every win (BOARD.md §8 question 1; default is NO) AND an intake wave finds at least 3 events per quarter that explicitly permit AI-built entries with no human-authorship attestation. Two mandate collisions, not one: recurring owner paperwork breaks MISSION §1's one-time rule, and the 'meaningful human creativity' attestation cannot be signed honestly for agent-built work.",
+    rail: "PayPal / Payoneer / Wise against a W-8BEN, ≤60 days (snippet-grade, re-read per event)",
+    acquisitionChannel: "Devpost's own event listings — the payer posts the job, as with bounties.",
+    source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #5; BOARD.md §2 (deliberately not on the build list) and §8",
+  },
+];
+
+/**
+ * Lines the board killed on 7.9.2026, kept because a portfolio that forgets what
+ * it rejected re-proposes it. `docs/REJECTED.md` §"Board decision, 7.9.2026"
+ * carries the same six with the full reasoning; this is the machine-readable
+ * half, and `target-basis.test.ts` asserts none of them carries a target.
+ */
+export interface KilledLine {
+  id: string;
+  name: string;
+  /** Always 0. A killed line has no target, and the test enforces it. */
+  targetMonthlyAgorot: 0;
+  /** What it was carrying when the board killed it, so the haircut is legible. */
+  formerTargetIls: number;
+  killedOn: string;
+  reason: string;
+  /** The specific evidence that would reopen it (BOARD.md §7.2). */
+  reopensIf: string;
+  /** The playbook removed with it, if any. */
+  skillRemoved: string | null;
+  /** Something that stays on disk at ₪0 cost without being a line. */
+  standby?: string;
+}
+
+export const KILLED_LINES: KilledLine[] = [
+  {
+    id: "templates",
+    name: "Spreadsheet and Notion business templates on Etsy and an own store",
+    targetMonthlyAgorot: 0,
+    formerTargetIls: 3000,
+    killedOn: "2026-09-07",
+    reason:
+      "No channel, no rail, no evidence. Etsy needs an identity-verified shop plus Payoneer KYC, and Payoneer's own Israel payability was corrected from YES to UNKNOWN by the payment-rails audit. It is also an account-per-store platform, which MISSION constraint 2 rejects before anyone asks whether it would earn. The storefronts audit closed Etsy.",
+    reopensIf:
+      "A rendered Etsy page showing Israeli seller payouts through a route this repo can verify, AND a storefront model that does not need one verified identity per store.",
+    skillRemoved: "revenue-templates",
+  },
+  {
+    id: "paid-apis",
+    name: "Paid developer APIs over x402 and an API marketplace",
+    targetMonthlyAgorot: 0,
+    formerTargetIls: 1200,
+    killedOn: "2026-09-07",
+    reason:
+      "Killed as a revenue line: its own basis divides x402 out to roughly ₪6 per provider per month, and 91.2% of listings never reach ten calls a month. ₪1,200 was about 200x the most favourable per-provider arithmetic available.",
+    reopensIf:
+      "A rendered per-provider median at or above ₪100/month on x402scan or the Bazaar series, OR BILS opening beyond the institutional pilot. Any USDC that arrives before then is booked, not planned.",
+    skillRemoved: "revenue-paid-apis",
+    standby:
+      "products/x402-il-api stays deployed only while it costs ₪0/month, as a RAIL ON STANDBY rather than a line: any USDC that arrives is booked through src/revenue/connectors/x402-local.ts, and nothing is planned on it.",
+  },
+  {
+    id: "agent-services",
+    name: "x402 services for other agents (zero-KYC line)",
+    targetMonthlyAgorot: 0,
+    formerTargetIls: 800,
+    killedOn: "2026-09-07",
+    reason:
+      "The same refuted x402 evidence as paid-apis, without even the marketplace tier that line leaned on. It also fails 'never sell what is already free': the Israeli identifier detector it would meter exists free inside this repository.",
+    reopensIf: "The same trigger as paid-apis, and a metered product whose free equivalent does not already ship in this repo.",
+    skillRemoved: "revenue-agent-services",
+  },
+  {
+    id: "telegram-bots",
+    name: "Telegram bots paid with Stars",
+    targetMonthlyAgorot: 0,
+    formerTargetIls: 1500,
+    killedOn: "2026-09-07",
+    reason:
+      "A MANDATE COLLISION, not a weak ceiling. Fragment's payout KYC is ID plus SELFIE — a camera step the owner's brief forbids, the same collision that closed Bugcrowd and the Paddle liveness video. Withdrawal to an Israeli resident is unverified on top of that. A product whose only rail collides with the mandate is not a line.",
+    reopensIf: "A rendered Fragment page offering withdrawal to an Israeli resident without a selfie or liveness step.",
+    skillRemoved: "revenue-telegram-bots",
+    standby: "products/telegram-il-tools-bot stays on disk and is PARKED — it is not deleted, and it leaves the CI matrix only if a product is ever removed.",
+  },
+  {
+    id: "dev-extensions",
+    name: "Browser and editor extensions with a paid pro tier",
+    targetMonthlyAgorot: 0,
+    formerTargetIls: 2500,
+    killedOn: "2026-09-07",
+    reason:
+      "No named channel with evidence behind it. The Chrome Web Store was rejected twice; the VS Code marketplace was never audited and its ranking is unread; no auditor ranked this line. Its basis still claimed 'plugin-ecosystems has not been swept' — it has been, and its one survivor (WordPress.org) is ₪0-200 behind a rendered 100-200x day-one search handicap.",
+    reopensIf:
+      "A rendered VS Code marketplace ranking mechanism that does not gate discovery on existing installs, or a rendered change to WordPress.org's class-plugin-search.php removing the active_installs weight.",
+    skillRemoved: "revenue-dev-extensions",
+  },
+  {
+    id: "hebrew-content",
+    name: "Hebrew evergreen guides and calculators with affiliate and ad revenue",
+    targetMonthlyAgorot: 0,
+    formerTargetIls: 1500,
+    killedOn: "2026-09-07",
+    reason:
+      "content-seo: fifteen criteria, ZERO survivors. Every money model here is a multiplier on traffic the colony has no channel to bring, and a multiplier on zero is zero. The working tools this line would have written are build #4 — they belong to il-biz-tools, which at least has a rail.",
+    reopensIf:
+      "A measured Hebrew organic channel: il-biz-tools showing 100+ weekly page views from search. Until a page of ours is found by a stranger, content is a cost.",
+    skillRemoved: "revenue-hebrew-content",
+  },
+];
 
 export interface TargetBasisSummary {
   totalIls: number;
@@ -494,4 +510,69 @@ export function summarizeTargetBasis(
     }
   }
   return out;
+}
+
+export interface PortfolioSyncResult {
+  inserted: string[];
+  updated: string[];
+  killed: { id: string; reason: string }[];
+  /** Lines in the database that this file knows nothing about. Never touched. */
+  unknown: string[];
+}
+
+/**
+ * Make a colony database say what this file says.
+ *
+ * A board decision that lives only in code is a decision the owner never sees:
+ * `state/colony/REPORT.md` and the manager's screen read the DATABASE for the
+ * line table, the owner's steps and the blockers, and read this file only for
+ * the target basis. On 7.9.2026 that gap would have produced a report claiming
+ * ₪1,500 of committed targets above a table of nine lines totalling ₪16,500,
+ * with the owner still being asked to open an Etsy shop.
+ *
+ * So the decision is applied rather than described: new lines are inserted,
+ * surviving lines are refreshed from their seed, and killed lines are moved to
+ * `killed` with the board's reason attached. Nothing else is touched — a line in
+ * the database that this file does not know about is reported, not deleted,
+ * because deleting a line the board never ruled on would lose its ledger history
+ * silently.
+ */
+export function syncPortfolio(
+  db: Database,
+  seeds: RevenueLineSeed[] = DEFAULT_PORTFOLIO,
+  killed: KilledLine[] = KILLED_LINES,
+): PortfolioSyncResult {
+  const out: PortfolioSyncResult = { inserted: [], updated: [], killed: [], unknown: [] };
+
+  for (const seed of seeds) {
+    if (insertLineFromSeed(db, seed)) out.inserted.push(seed.id);
+    else if (updateLineFromSeed(db, seed)) out.updated.push(seed.id);
+  }
+
+  for (const dead of killed) {
+    const line = getLine(db, dead.id);
+    if (!line) continue;
+    // Queued goals go whether or not the status change is new: a build goal for
+    // a dead line is work nobody decided to do, and the first regenerated report
+    // printed exactly that — "Goal queue: agent-services:build" under a portfolio
+    // that no longer had an agent-services.
+    removeQueuedGoals(db, dead.id);
+    if (line.status === "killed") continue;
+    updateLineStatus(db, dead.id, "killed", { reason: dead.reason, force: true });
+    out.killed.push({ id: dead.id, reason: dead.reason });
+  }
+
+  const known = new Set([...seeds.map((s) => s.id), ...killed.map((k) => k.id)]);
+  out.unknown = listLines(db).filter((l) => !known.has(l.id)).map((l) => l.id);
+  return out;
+}
+
+/** ₪/month the board committed to: the sum of the live lines' targets. */
+export function committedTargetIls(seeds: RevenueLineSeed[] = DEFAULT_PORTFOLIO): number {
+  return Math.round(portfolioTargetAgorot(seeds) / 100);
+}
+
+/** ₪/month that exists in the audit but depends on a condition nobody has met. */
+export function conditionalTargetIls(targets: ConditionalTarget[] = CONDITIONAL_TARGETS): number {
+  return targets.reduce((sum, t) => sum + t.ils, 0);
 }
