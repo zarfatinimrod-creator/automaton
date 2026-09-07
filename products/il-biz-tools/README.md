@@ -119,7 +119,7 @@ The Paddle **API key** (server-side secret) is never needed by this site; only t
 ## Deploy (Netlify, exact steps)
 
 1. Push the repo. In Netlify: *Add new site → Import from Git*, pick the repo.
-2. Base directory: `products/il-biz-tools`. Build command: *(empty)*. Publish directory: `.`
+2. Base directory: `products/il-biz-tools`. Build command: `node scripts/build-site.js`. Publish directory: `_site` (what `netlify.toml` declares: an explicit allowlist, so `package.json`, `README.md`, `tests/` and `scripts/` are never uploaded).
    (`netlify.toml` already declares this; headers/CSP/redirects are in the same file).
 3. Deploy. Then set the custom domain and update `siteUrl` in `src/config/site.json`,
    `sitemap.xml` and `robots.txt` to the real domain; commit.
