@@ -53,11 +53,13 @@ describe('spec-watch stays honest about what it is for', () => {
     expect(watcher).not.toContain('SPEC-FROM-SOURCES.md');
   });
 
-  it('is still wired to a workflow that says it does not turn agreement into authority', () => {
-    // The workflow's own wording still describes the pre-2026-09-07 situation
-    // ("egress-blocked"). It lives outside products/pcn874/ and was deliberately
-    // left alone by the reconciliation; docs/SPEC.md §1 records the true state.
-    expect(workflow).toContain('egress-blocked');
-    expect(workflow).toMatch(/does NOT do/);
+  it('is wired to a workflow that calls itself the watch for a new edition, never a compliance check', () => {
+    // Rewritten on 2026-09-07 after the reconciliation: the header now says the
+    // circular is rendered and reconciled in docs/SPEC.md, that a changed hash is
+    // the only signal of a new edition, and that green means "unchanged".
+    expect(workflow).toContain('docs/SPEC.md');
+    expect(workflow).toContain('never "compliant"');
+    expect(workflow).toContain('a new edition must be diffed against docs/SPEC.md');
+    expect(workflow).not.toContain('SPEC-FROM-SOURCES.md');
   });
 });
