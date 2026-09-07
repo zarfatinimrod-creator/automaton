@@ -264,9 +264,7 @@ by any future Israeli-data line.
 this buyer: twelve Israeli (Govi, OptiMatch, WizBiz, יפעת, נוגה, מאגרים, GOVO, לשכת המסחר, מכון היצוא and three
 more) and five English aggregators, including israeltenders.com. Two price at ₪249 + VAT/month; nothing exists
 below about ₪133, because the tier beneath is free — the chamber's weekly mailing, BudgetKey's keyless SQL API,
-and an open-source clone syncing 78 publishers that even extracts small-business-preference tenders, with zero
-stars and no price. No segment is unserved at ₪30–80. The ₪249 buys aggregation across those 78 publishers plus
-a human editor, and several of them geo-block non-Israeli traffic — the one layer we cannot build. No usable
-channel was named: search is carpeted by incumbents, chambers need a salesperson, the groups are closed.
-**Re-open only on a rendered Israeli tender product at or under ₪80/month, or a named owner-free channel to an
-Israeli SMB bidder.**
+and an open-source clone syncing 78 publishers, zero stars, no price. No segment is unserved at ₪30–80. The
+₪249 buys aggregation plus a human editor, and several of those publishers geo-block non-Israeli traffic — the
+layer we cannot build. No usable channel was named. **Re-open only on a rendered Israeli tender product at or
+under ₪80/month, or a named owner-free channel to an Israeli SMB bidder.**
