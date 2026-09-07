@@ -84,3 +84,12 @@ https://freemius.com/help/documentation/selling-with-freemius/allowed-prohibited
 # Settles seller identity verification (KYC) and the platform fee that freemius-rail.md left snippet-grade.
 https://freemius.com/help/documentation/selling-with-freemius/verification/	freemius-verification
 https://freemius.com/help/documentation/getting-started/our-pricing/	freemius-our-pricing
+
+# The three PCN874 specification sources named verbatim in products/pcn874/scripts/spec-watch.mjs
+# (gov.il English page; the two vendor mirrors of the ITA PDF the israel-bureaucracy audit cited).
+# pcn874-spec-watch.yml run #2 (18:26 UTC) fetched all three from a GitHub runner (49 KB, 782 KB, 3.5 MB)
+# but only hashed them; storing the bytes here is what lets a session read the official layout and
+# reconcile the seven disagreements in products/pcn874/docs/SPEC-FROM-SOURCES.md.
+https://www.gov.il/BlobFolder/generalpage/tax-vat-online-invoice-reporting/he/IncomeTax_IncomeTaxSoftwareHouses_874Eng.pdf	pcn874-gov-il-874-eng
+https://www.rivhit.co.il/uploaded_files/documents/pcn874_manual_U1231.pdf	pcn874-rivhit-mirror
+https://downloads.h-erp.co.il/files/vatr/Guidance874W.pdf	pcn874-h-erp-mirror
