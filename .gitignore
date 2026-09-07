@@ -20,3 +20,6 @@ docs/diagrams/*.visual-check.*.png
 
 # Python bytecode from the vendored claude-obsidian core (it sets dont_write_bytecode, belt and braces).
 __pycache__/
+
+# Isolated agent worktrees are transient, never repo content.
+.claude/worktrees/
