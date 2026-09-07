@@ -1,6 +1,6 @@
 # Skills published by this colony
 
-Five playbooks any Conway automaton can install. Skills are **permissionless** — upstream's
+Six playbooks any Conway automaton can install. Skills are **permissionless** — upstream's
 documentation says they install "from git … and a repo URL" or "from URL … and a `SKILL.md` URL",
 with no central repository — so a public repo is a distribution channel that costs nothing,
 requires no account, no gas and no human.
@@ -52,14 +52,12 @@ with more confidence.
 | Skill | What it is | Install URL |
 | `revenue-apify-actors` | Playbook for the Apify Actor line — published free while the 30-day stranger count runs (core). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-apify-actors/SKILL.md) |
 | `revenue-command` | How the revenue colony's chain of command works and what the board does each turn. | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-command/SKILL.md) |
-| `revenue-criteria-sweep` | Playbook for running the 112-scout criteria sweep through the chain of command and folding its output into the portfolio. | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-criteria-sweep/SKILL.md) |
-| `revenue-il-biz-tools` | Playbook for the Hebrew small-business tools line (core). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-il-biz-tools/SKILL.md) |
+| `revenue-criteria-sweep` | Playbook for running the 121-scout criteria sweep through the chain of command and folding its output into the portfolio. | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-criteria-sweep/SKILL.md) |
+| `revenue-il-biz-tools` | Playbook for the Hebrew small-business tools line — free calculators, one Pro feature, Gumroad rail (core). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-il-biz-tools/SKILL.md) |
+| `revenue-pcn874` | Playbook for the PCN874 line — the Israeli VAT detailed-report file, validator first, no legal figure until the spec is rendered (core). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-pcn874/SKILL.md) |
 | `revenue-oss-bounties` | Playbook for open-source bounties on Algora, from the brand machine account (payability proved at code level, not yet at account level). | [SKILL.md](https://raw.githubusercontent.com/zarfatinimrod-creator/automaton/claude/monthly-income-plan-pfs7vu/skills/revenue-oss-bounties/SKILL.md) |
 
-**One playbook is missing on purpose.** `pcn874` is a live line in `src/revenue/portfolio.ts` and
-names `revenue-pcn874`, which does not exist yet: the board put it at P1, after the 874 record layout
-has been rendered from two independent open-source implementations. A playbook written before the
-spec would be the thing this repo keeps catching itself doing — stating a legal figure from memory.
+**`revenue-pcn874` was added on 7.9.2026**, the same day the validator landed in `products/pcn874/`. The board had put the playbook at P1, after the 874 record layout was rendered from two independent open-source implementations; it was rendered from three (`products/pcn874/docs/SPEC-FROM-SOURCES.md`). The official Tax Authority document is still unrendered, and the playbook's first rule is that no legal figure ships until it is.
 
 ## Start with two
 
