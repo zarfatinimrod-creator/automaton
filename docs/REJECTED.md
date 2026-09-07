@@ -1033,6 +1033,13 @@ open-source-alternatives directory) got its audience from Product Hunt and a fou
 closed to this operator. Constraint 8 lands here hardest of any group: a calculator, a comparison, a
 directory of public tools is by construction something anyone can build from public inputs.
 
+**Addendum 7.9.2026, from the Hebrew SERP pull** (`research/measurements/serp/2026-09-07-hebrew-calculators.md`):
+the incumbent set this group predicted is what the six queries returned — Kol Zchut, Green Invoice's magazine,
+accountants' blogs — with one name to add: **iCount**, ranking through its help centre rather than a magazine
+(#5 on the osek-patur invoice query, #1 on the PCN874 query). The one pattern the pull adds to this group's
+verdict: *compute this number* queries are held by small independent tool sites and let a new page rank;
+*tell me the rule* queries return no tool at all. Neither changes the ₪0 — the rankable pages are the free ones.
+
 **Clipping, specifically, because the owner asked.** Whop does pay Israel. The scout rendered a vendored
 mirror of Whop's own payout docs (country grid contains Israel; the sanctioned list does not), and the
 string was confirmed twice, by code search and by rendering — the auditor, who reached no rendered source,
