@@ -460,7 +460,7 @@ export const HEADER: RecordSpec = {
         'formula anywhere in Appendix A, B or C, and neither Hebrew manual gives one. The three implementations ' +
         'give three different answers (rcbuilder: taxable-sales VAT minus other inputs; linet3: sales VAT only; ' +
         'accounter: none, the caller supplies it). So this validator implements no arithmetic check on it. ' +
-        'A related fact from the H-ERP manual (lines 1163-1168) argues the same way for every amount: the ' +
+        'A related fact from the H-ERP manual (lines 1185-1190) argues the same way for every amount: the ' +
         'Authority requires each journal entry to be rounded before summing, so the header totals can differ ' +
         'from the unrounded books "by a few tens of shekels", and that difference must not stop the filing.',
     },
@@ -482,9 +482,11 @@ export const DETAIL: RecordSpec = {
     `${R}:CODE/PCN-874/PCN874_Sample.txt:2-43 (measured: 60 characters each)`,
   ],
   officialText:
-    'Appendix A lists the transaction entry as 9 fields whose declared widths sum to 60 characters. ' +
-    'The entry type is A(1) — one character — which settles the question the implementations left open: ' +
-    'the two-character codes S1/S2/L1/L2 exist only in software APIs, never in the file.',
+    'Appendix A lists the transaction entry as 9 fields whose declared widths sum to 60 characters, the ' +
+    'first of them "Entry Type (document type)   A(1)   See attached table of values" (line 133) and the ' +
+    'last "Space for   future   data   N(9)" (line 150). A(1) — one character — settles the question the ' +
+    'implementations left open: the two-character codes S1/S2/L1/L2 exist only in software APIs, never in ' +
+    'the file.',
   fields: [
     {
       id: 'recordType',
@@ -618,8 +620,12 @@ export const DETAIL: RecordSpec = {
       ],
       officialText:
         '+/- symbol: credit/summary invoice   A(1)   Cancellation/credit from supplier or customer – always in ' +
-        'minus. Appendix C §2 gives the whole table: sale "+", credit to the customer "-", purchase "+", ' +
-        'credit from the supplier "-", zero-value field "+".',
+        'minus. Appendix C §2 tabulates the field: "Transaction   Sale to the customer / Cancellation/credit ' +
+        'to the customer / Purchase from supplier / Cancellation/credit from supplier / Zero value field", ' +
+        'signs "+   -   +   -   +" (lines 525-535). Four of those five columns are kinds of transaction, and ' +
+        'the document uses "zero value" to mean zero-RATED elsewhere (lines 57, 169-170, 271, 551), so the ' +
+        'fifth column is AMBIGUOUS and is not quoted here as a rule about a zero amount. The rule that a zero ' +
+        'amount takes "+" rests on line 174 alone.',
     },
     {
       id: 'invoiceSum',
@@ -664,13 +670,19 @@ export const DETAIL: RecordSpec = {
         'to 2025 SP2, describes the regime that arrived: from 1/1/26 an invoice of ₪10,000 or more before VAT ' +
         'must carry an allocation number, of which "the 9 rightmost characters" are recorded. So both zeros and ' +
         'a real 9-digit number are legitimate, depending on the period and the invoice — this validator accepts ' +
-        'either and asserts nothing about which is required.',
+        'either and asserts nothing about which is required. Note the manual says "9 התווים" — nine ' +
+        'CHARACTERS — while the circular types the field N(9), nine digits. This validator enforces N(9), on ' +
+        'the circular\'s authority, so a non-digit allocation number is rejected by the right document.',
       openQuestion:
         'The 2009 circular says zeros; the only rendered source for the allocation-number regime is a software ' +
         'vendor\'s manual, not a Tax Authority document. Whether a given invoice REQUIRES an allocation number ' +
         'is a legal question about the filer\'s own invoices, and this product does not answer it. The H-ERP ' +
-        'manual is itself inconsistent about the threshold — ₪10,000 on lines 126, 303 and 507, ₪20,000 on ' +
-        'line 1637 — which is exactly why no threshold is encoded here.',
+        'manual carries two figures attached to two contexts and explains neither: ₪10,000 on lines 126-127, ' +
+        '303 and 507-508, each of them expressly dated "from 1/1/26", and ₪20,000 on line 1638, undated, ' +
+        'describing a warning window in the release the manual documents (2025 SP2, line 1397) whose stated ' +
+        'consequence is that the VAT is not deductible (line 1641) rather than that the file is malformed. ' +
+        'No Tax Authority document in this repository states either figure or any schedule, which is exactly ' +
+        'why no threshold is encoded here.',
     },
   ],
 };

@@ -31,12 +31,43 @@ The document **contradicted all three of them in one place**, and the old valida
 | Every field's offset, width and type — `A(n)`, `N(n)` or `+/-` | Appendix A, cited individually in `src/layout.ts` |
 | The sign is a separate 1-character field before the digits; short fields take **leading zeros** | `ita:…:40-42` and Appendix A's own "+/- symbol" rows |
 | Amounts are whole shekels, rounded, always positive in the digits | `ita:…:144,148-149` |
-| **A zero amount takes `+`, never `-`** | `ita:…:174`, restated by the sign table at `ita:…:523-535` |
-| **The reference group is `A(4)` — letters are legal** | `ita:…:139` and `ita:…:580-581` |
+| **A zero amount takes `+`, never `-`** — in the header. In a transaction record, which of its *two* amounts line 174 means is not stated, so the error needs both to be zero | `ita:…:174` (Appendix C §2 is **not** a restatement of it — see below) |
+| **The reference group is `A(4)` — letters are legal**, in either case | `ita:…:139` and `ita:…:580-581` |
 | Per-entry-type values: `L` and `K` carry a zeros counter-party id, `Y` carries zeros VAT, `R`'s reference number is zeros, `K`'s is an invoice count | Appendix C's table, `ita:…:220-517`, and its notes at `ita:…:536-574` |
+| **`T`, `M`, `C`, `P` and `I` must name their counter party**, and `M` (a self-invoice *sale*) names its **supplier** | Appendix C's cells at `ita:…:400,339,419,482,381` under *"All fields are compulsory"* (`ita:…:224`), and note C at `ita:…:556-557` |
+| **An identified sale above ₪5,000 before VAT must name its customer** | note A, `ita:…:537-539` |
+| **Petty cash is capped** at 2% of the file's VAT or ₪2,000, whichever is greater | note E, `ita:…:566-568` |
 | The record counts cover **all** sales letters and **all** input letters | `ita:…:114-115,124` with the Table of Values |
 
-134 tests cover every rule the validator emits, in `tests/`.
+199 tests cover every rule the validator emits, in `tests/`, over 26 generated fixtures.
+
+## The refutation audit, and what it changed
+
+On 2026-09-07 a refuter graded this package line by line against the extracted circular and wrote up
+the result in [`research/colony-sweep/audits/pcn874-reconciliation.md`](../../research/colony-sweep/audits/pcn874-reconciliation.md).
+**All thirteen resolutions below held on their primary quote.** Several of the *rules* built on them
+did not, and it built files to prove it in both directions — four legal files this validator rejected,
+four illegal ones it accepted. Every finding is implemented; [`docs/SPEC.md` §6.11](docs/SPEC.md) is
+the ledger and each file is now a fixture.
+
+| rule | was | is | why |
+|---|---|---|---|
+| `detail.{T,M,C,P,I}.counterpartyExpected` | *did not exist* | **error** | Appendix C names a party in each of those cells under "All fields are compulsory", and no note offers aggregation as a way out. A `T` input with a zeros supplier used to come back with zero findings. |
+| `detail.H.counterpartyExpected` | *did not exist* | **warning** | Same cell, but note F sends the counter file number to "Sha'am" guidelines nothing here has rendered. |
+| `totals.pettyCashCap` | *did not exist* | **warning** | Note E's cap had no rule at all. A warning because the note says the restriction may change and never defines its base. |
+| `detail.S.counterpartyExpected` | warning always | **error above ₪5,000**, warning at or below | Note A calls the customer's number "obligatory" above that figure. A ₪100,000 unidentified sale used to be a warning. |
+| `detail.refGroup.alphanumeric` | error | **warning**, and `[A-Za-z0-9]` now passes silently | `A(4)` types the field and stops. The rule still rejected `br2a`, `A/01` and `אב01` as errors on lines that mention neither case, punctuation nor script. |
+| `file.encoding.ascii` | error | **warning** | The cited lines declare field *types*, not an encoding. Nothing is lost: an `N(n)`, `+/-` or fixed-value field still errors on a non-ASCII character under its own rule. |
+| `footer.licensedDealerId.matchesHeader` | error | **warning** | No line says the two are equal — one is the *customer's* number, the other the *submitter's*. |
+| `detail.invoiceSumSign.signOfZero` | error whenever the invoice total was zero | **error only when both amounts are zero**, warning otherwise | Line 174 says "the amount field", singular; a transaction record has two. A VAT-only credit is a real document. |
+| `header.generationDate.calendar` | error | **warning** | Line 105 types the field `N(8)` and calls it "Yyyymm form". `YYYYMMDD` is the implementations' reading, not the Authority's. |
+
+The audit also found that the test *"every ERROR is backed by the Tax Authority document"* passed
+with three of those rules **because it only checked that an `ita:` citation existed**. There is now a
+second test that reads the cited lines out of the extracted circular and requires the finding's quote
+and those lines to share four consecutive words — which immediately caught two more paraphrases
+presented as quotes, in `detail.length` and `file.record.unknown`. See [`docs/SPEC.md` §4.1](docs/SPEC.md)
+for exactly what each test does and does not prove.
 
 ## The seven disagreements, resolved
 
@@ -51,14 +82,17 @@ The old spec logged eight numbered places where the implementations disagreed. [
 | 6.5 | closing letter `X` or `Z`? | **RESOLVED (official)** — `X`. `Z` is real but belongs to Appendix B's representative file. |
 | 6.6 | line endings, trailing newline, empty file | **STILL OPEN** — the document never states a record separator or a minimum transaction count. Warnings only. |
 | 6.7 | the `reportedVat` arithmetic | **STILL OPEN (official is silent)** — the document defines the field and never its computation. **No rule is implemented.** |
-| 6.8 | the sign of exactly zero | **RESOLVED (official)** — `+`. Now an error. |
+| 6.8 | the sign of exactly zero | **RESOLVED (official)** — `+`, on line 174 alone. An error in the header; in a transaction record, which of its two amounts line 174 means is unstated, so the error needs both zero and a VAT-only credit is a warning. |
 
-Plus **§6.9**, which was never in the log because all three implementations agreed and agreement was mistaken for evidence: the **reference group is `A(4)`, not `N(4)`**. A branch code like `BR2A` — which the document expressly permits, calling it "internal characters of the submitter" — was rejected as invalid by the old validator. `tests/fixtures/valid-refgroup-alpha.txt` is the regression test.
+Plus **§6.9**, which was never in the log because all three implementations agreed and agreement was mistaken for evidence: the **reference group is `A(4)`, not `N(4)`**. A branch code like `BR2A` — which the document expressly permits, calling it "internal characters of the submitter" — was rejected as invalid by the old validator. The first fix did not go far enough either: it still rejected `br2a`, `A/01` and `אב01`. Five fixtures now pin the whole range, from `valid-refgroup-alpha.txt` to `warnings-refgroup-hebrew.txt`.
 
 ## What is still NOT verified
 
 - **No later edition of the layout has been rendered.** The circular is from **2009** — it carries no version number, and it is dated by its own content (*"The PCN874 file production must be completed by 01/01/2010"*). It announces two later changes without specifying either. The two Hebrew documents we rendered are **newer but are vendor user manuals**, and neither restates the byte layout, so neither can confirm a width. `.github/workflows/pcn874-spec-watch.yml` watches all three hashes so a new edition is noticed rather than assumed away.
-- **The document contradicts itself on one field's format.** `File Generation Date   N(8)   Yyyymm form` — eight digits, described with a six-character format string. The width is not in doubt; the format comment cannot be right. We read it as `YYYYMMDD` and the finding says so. ([`docs/SPEC.md` §5.1](docs/SPEC.md))
+- **The document contradicts itself on one field's format.** `File Generation Date   N(8)   Yyyymm form` — eight digits, described with a six-character format string. The width is not in doubt; the format comment cannot be right. We read it as `YYYYMMDD`, and because that reading is the implementations' and not the Authority's, an impossible date there is a **warning**. ([`docs/SPEC.md` §5.1](docs/SPEC.md))
+- **The document never says which characters an `A(n)` field admits** — not case, not punctuation, not script, and not the file's byte encoding, so not whether a Hebrew series code survives the Authority's reader. Letters and digits pass; anything else is a warning. ([`docs/SPEC.md` §5.7](docs/SPEC.md))
+- **Which of a transaction record's two amounts the sign belongs to is not stated.** One `+/-` field, a VAT sum and an invoice total. ([`docs/SPEC.md` §6.8](docs/SPEC.md))
+- **Whether the closing entry's "submitter" may differ from the header's "customer"** — for a representative, or a union of dealers. A warning, not a rejection. ([`docs/SPEC.md` §6.11](docs/SPEC.md))
 - **No `reportedVat` arithmetic check is implemented**, because no source states a formula — not Appendix A, B or C, not either Hebrew manual. The H-ERP manual points the same way for every amount: the Authority requires per-entry rounding before summing, so the header can differ from the books *"by a few tens of shekels"* without that stopping the filing. An amount cross-check that failed a file on that difference would be worse than no check.
 - **An import entry's reference number is ambiguous in the document itself**: Appendix C's `R` row says zeros, and the comment marker on the same row points at a note that says the opposite. Kept a warning, with both readings in the finding text.
 - **Line endings and a detail-free file remain unsettled.** They are warnings, and the line-ending warning is the only rule in the product whose authority is open-source code alone. It says so in its own text.
@@ -71,7 +105,7 @@ Plus **§6.9**, which was never in the log because all three implementations agr
 
 ```bash
 npm install
-npm test          # 134 tests
+npm test          # 199 tests
 npm run typecheck
 npm run build
 node dist/cli.js validate path/to/PCN874.txt
@@ -112,11 +146,11 @@ Every finding carries a `basis`, derived from its own citations so it cannot dri
 
 | severity | means | example |
 |---|---|---|
-| `error` | the circular states it outright, in words that admit no second reading | the closing entry is `X`; a zero amount takes `+`; an `L` record's counter-party id is zeros |
-| `warning` | the document gives a field its meaning without forbidding the value; or two parts of the document pull against each other; or the only source is a manual or an implementation | a `K` record whose invoice count is zero; an `R` record carrying a reference number; mixed line endings |
+| `error` | the circular states it outright, in words that admit no second reading | the closing entry is `X`; an `L` record's counter-party id is zeros and a `T` record's is not; a header amount of zero takes `+`; an identified sale above ₪5,000 names its customer |
+| `warning` | the document gives a field its meaning without forbidding the value; or two parts of the document pull against each other; or the document is simply silent; or the only source is a manual or an implementation | a `K` record whose invoice count is zero; a reference group with punctuation in it; a closing dealer id that differs from the header's; petty cash over note E's cap; mixed line endings |
 | `info` | reserved; nothing emits it today | — |
 
-Before 2026-09-07 the ladder was "how many repositories agree". It is now "how the Authority states it", which moved five rules: the sign of zero, the two record counts, and the `L` and `Y` constraints became errors; the reference-group check stopped rejecting letters.
+Before 2026-09-07 the ladder was "how many repositories agree". It is now "how the Authority states it", which moved five rules: the sign of zero, the two record counts, and the `L` and `Y` constraints became errors; the reference-group check stopped rejecting letters. The refutation audit then moved nine more, in both directions — see the table above. The dividing line is **what the cited line says**, not how serious the mistake feels: a rule that rejects a file on an inference is a rule that can reject a legal file, and here that is as much a defect as accepting an illegal one.
 
 ### What changed for anyone consuming the API
 
@@ -127,10 +161,13 @@ The reconciliation renamed a few things. Rule ids are still meant to be depended
 | `Finding.disagreement` | `Finding.openQuestion` | it no longer means "the sources disagree" — it means nothing rendered settles it, and most findings no longer carry one |
 | — | `Finding.basis` | `official` \| `vendor-manual` \| `oss-only`, derived from the finding's own citations |
 | — | `Finding.officialText` | the Authority's own words for the rule |
-| `detail.refGroup.digits` | `detail.refGroup.alphanumeric` | the field is `A(4)`; the old rule rejected legal files |
+| `detail.refGroup.digits` | `detail.refGroup.alphanumeric` | the field is `A(4)`; the old rule rejected legal files. Now a **warning**, and `[A-Za-z0-9]` passes silently |
 | `detail.K.refNumberNonZero` | `detail.K.refNumberInvoiceCount` | named for what the document says the field holds |
-| — | `header.<field>Sign.signOfZero`, `detail.invoiceSumSign.signOfZero` | new: a zero amount must take `+` |
-| — | `detail.S.counterpartyExpected` | new warning from Appendix C |
+| — | `header.<field>Sign.signOfZero`, `detail.invoiceSumSign.signOfZero` | new: a zero amount must take `+`. The detail rule is an error only when **both** of the record's amounts are zero |
+| — | `detail.S.counterpartyExpected` | new: **error** above ₪5,000 before VAT, warning at or below |
+| — | `detail.{T,M,C,P,I}.counterpartyExpected` | new errors from Appendix C's own cells |
+| — | `detail.H.counterpartyExpected` | new warning; note F defers to "Sha'am" guidelines |
+| — | `totals.pettyCashCap` | new warning from note E |
 | `FOOTER_RECORD_TYPE_LINET3` | `REPRESENTATIVE_SUMMARY_RECORD_TYPE` | `Z` is Appendix B's summary entry, not one implementation's quirk |
 | `docs/SPEC-FROM-SOURCES.md` | `docs/SPEC.md` | it is a specification now, not a reading of other people's code |
 
@@ -145,7 +182,7 @@ The reconciliation renamed a few things. Rule ids are still meant to be depended
 | `src/validate.ts` | `validatePcn874` — the rules, each carrying its citations |
 | `src/cli.ts` | `pcn874 validate` |
 | `scripts/make-fixtures.mjs` | regenerates `tests/fixtures/`. **Not a PCN874 generator; must not be used for a filing.** |
-| `tests/fixtures/*.txt` | sixteen files, all generated from the layout table with invented digits |
+| `tests/fixtures/*.txt` | twenty-six files, all generated from the layout table with invented digits. The prefix is the assertion: `valid-*` and `warnings-*` must validate, `invalid-*` must not, and a test compares the directory listing against the list the suite walks so a new fixture cannot slip past |
 
 ### On the fixtures and the licences
 
@@ -162,6 +199,8 @@ Two of the three implementations cannot be copied from: `adam2314/linet3` is AGP
 **מה שאומת מול המסמך הרשמי:** אורכי הרשומות (כותרת 131, תנועה 60, סיום 10), הסדר, הרוחב והסוג של כל שדה, אחת-עשרה אותיות סוגי התנועה, מוסכמת הסימן, ההשלמה באפסים מובילים, הכלל שסכום אפס נושא `+`, והערכים המותרים לכל סוג תנועה מנספח ג'. **שבע המחלוקות שנרשמו קודם הוכרעו**: חמש לפי המסמך, אחת לפי מדריך ספק חדש יותר, ואחת — החישוב של הסכום המדווח — **נשארה פתוחה, כי המסמך פשוט לא אומר איך מחשבים אותו**, ולכן לא נכתב עליו שום כלל.
 
 **מקום אחד שבו המסמך סותר את כל שלושת המימושים:** שדה "קבוצת אסמכתא" הוא `A(4)` — כלומר **מותרות בו אותיות**, "תווים פנימיים של המדווח (סדרה/סניף)". שלושת המימושים כותבים ספרות בלבד, והמאמת הקודם היה פוסל קובץ חוקי בגלל זה. זו בדיוק התקלה שהאזהרה "שלושה מימושים מסכימים אינו 'רשות המסים אומרת'" נועדה למנוע, והיא הייתה אמיתית.
+
+**ביקורת הפרכה (7.9.2026):** מבקר חיצוני בדק את החבילה שורה מול שורה מול המסמך הרשמי. **כל שלוש-עשרה ההכרעות עמדו במבחן**, אבל חלק מהכללים שנבנו עליהן לא: הוא בנה ארבעה קבצים חוקיים שהמאמת פסל וארבעה קבצים פסולים שהמאמת קיבל. כל הממצאים תוקנו. **מה שנוסף כשגיאה:** חובת זיהוי הצד הנגדי ברשומות `T M C P I` (נספח ג' נוקב בצד הנגדי בכל אחת מהן, תחת "כל השדות חובה"), וחובת מספר עוסק בעסקה מזוהה מעל ₪5,000 (הערה A). **מה שנוסף כאזהרה:** תקרת קופה קטנה של הערה E, וזיהוי הצד הנגדי ב-`H` (הערה F מפנה להנחיות שע"ם שלא רונדרו). **מה שהורד משגיאה לאזהרה** — כי שום שורה מצוטטת לא אומרת את הכלל: תו שאינו אות לטינית או ספרה בשדה `A(n)`, קידוד שאינו ASCII, מספר עוסק בשורת הסיום השונה מזה שבכותרת, תאריך הפקה שאינו תאריך אמיתי, וסימן "-" על סכום חשבונית אפס כשסכום המע"מ אינו אפס. **פסילת קובץ חוקי היא תקלה חמורה בדיוק כמו קבלת קובץ פסול.**
 
 **מה שעדיין לא אומת:** החוזר הוא מ-**2009** ואין לו מספר גרסה; לא רונדרה מהדורה מאוחרת יותר של המבנה עצמו. שני המסמכים בעברית שרונדרו חדשים יותר אך הם מדריכי משתמש של ספקי תוכנה ואינם מכילים את מבנה הבתים.
 

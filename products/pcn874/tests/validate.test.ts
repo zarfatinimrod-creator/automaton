@@ -1,13 +1,17 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parsePcn874 } from '../src/parse.js';
-import { SOURCES, kindOf } from '../src/sources.js';
+import { OFFICIAL_TEXT_PATH, SOURCES, kindOf } from '../src/sources.js';
 import { validatePcn874, type Finding, type ValidationResult } from '../src/validate.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixture = (name: string): string => readFileSync(join(here, 'fixtures', name), 'utf8');
+/** The extracted circular itself, so a citation can be read rather than trusted. */
+const officialLines = readFileSync(join(here, '..', '..', '..', OFFICIAL_TEXT_PATH), 'utf8').split(
+  '\n',
+);
 
 const rules = (result: ValidationResult): string[] => result.findings.map(f => f.rule);
 const errors = (result: ValidationResult): Finding[] =>
@@ -16,14 +20,18 @@ const find = (result: ValidationResult, rule: string): Finding =>
   result.findings.find(f => f.rule === rule)!;
 
 describe('valid fixtures', () => {
-  it.each(['valid-minimal.txt', 'valid-mixed.txt', 'valid-crlf.txt', 'valid-refgroup-alpha.txt'])(
-    '%s validates with no errors',
-    name => {
-      const result = validatePcn874(fixture(name));
-      expect(errors(result), JSON.stringify(errors(result), null, 2)).toEqual([]);
-      expect(result.valid).toBe(true);
-    },
-  );
+  it.each([
+    'valid-minimal.txt',
+    'valid-mixed.txt',
+    'valid-crlf.txt',
+    'valid-refgroup-alpha.txt',
+    'valid-refgroup-lowercase.txt',
+    'valid-refgroup-zeropad.txt',
+  ])('%s validates with no errors', name => {
+    const result = validatePcn874(fixture(name));
+    expect(errors(result), JSON.stringify(errors(result), null, 2)).toEqual([]);
+    expect(result.valid).toBe(true);
+  });
 
   it('valid-mixed.txt has no warnings either: its declared counts match its records', () => {
     const result = validatePcn874(fixture('valid-mixed.txt'));
@@ -87,10 +95,18 @@ describe('record grammar', () => {
     expect(finding.openQuestion).toBeUndefined();
   });
 
-  it('rejects a closing-entry dealer id that differs from the header', () => {
-    const result = validatePcn874(fixture('invalid-footer-dealer.txt'));
-    expect(result.valid).toBe(false);
-    expect(rules(result)).toContain('footer.licensedDealerId.matchesHeader');
+  it('reports, but does not reject, a closing-entry dealer id that differs from the header', () => {
+    const result = validatePcn874(fixture('warnings-footer-dealer.txt'));
+    const finding = find(result, 'footer.licensedDealerId.matchesHeader');
+    // Demoted from `error`. No line of the circular says the two numbers are
+    // equal: line 101 names one the CUSTOMER's, lines 159-161 the SUBMITTER's,
+    // and Appendix A's "Individual Merchant" heading implies identity without
+    // stating it. Rejecting a file on an inference is what `basis: official`
+    // must never be allowed to mean.
+    expect(finding.severity).toBe('warning');
+    expect(finding.openQuestion).toMatch(/Individual Merchant/);
+    expect(finding.openQuestion).toMatch(/990-1002/);
+    expect(result.valid).toBe(true);
   });
 
   it('rejects a non-digit in a digits field', () => {
@@ -140,9 +156,15 @@ describe('record grammar', () => {
     expect(rules(result)).toContain('file.footer.duplicate');
   });
 
-  it('rejects non-ASCII content', () => {
+  it('reports non-ASCII content as a warning; the field rules do the rejecting', () => {
     const result = validatePcn874(`${fixture('valid-minimal.txt')}שלום`);
-    expect(rules(result)).toContain('file.encoding.ascii');
+    const finding = find(result, 'file.encoding.ascii');
+    // Demoted from `error`: lines 96-161 declare field TYPES, not an encoding.
+    // Nothing is lost — the four Hebrew characters land inside the closing
+    // entry, which is still rejected on its own length rule.
+    expect(finding.severity).toBe('warning');
+    expect(finding.openQuestion).toMatch(/never states its alphabet|does not define|defines the character set/);
+    expect(rules(result)).toContain('footer.length');
     expect(result.valid).toBe(false);
   });
 
@@ -192,12 +214,16 @@ describe('header field rules', () => {
     expect(result.valid).toBe(false);
   });
 
-  it('rejects an impossible generation date, and names the document\'s own inconsistency', () => {
+  it('reports an impossible generation date as a WARNING, naming the document\'s own inconsistency', () => {
     const result = validatePcn874(swap(base, 17, '20260230'));
-    expect(rules(result)).toContain('header.generationDate.calendar');
-    expect(result.valid).toBe(false);
-    // §5.1: N(8) but a comment reading "Yyyymm form". Flagged, not hidden.
-    expect(find(result, 'header.generationDate.calendar').openQuestion).toMatch(/Yyyymm form/);
+    const finding = find(result, 'header.generationDate.calendar');
+    // §5.1: line 105 types the field N(8) and calls it "Yyyymm form". Reading it
+    // as YYYYMMDD comes from the three implementations, not from the Authority,
+    // and this file's own severity rule puts "two parts of the document pull in
+    // different directions" under `warning`. Demoted for that consistency.
+    expect(finding.severity).toBe('warning');
+    expect(finding.openQuestion).toMatch(/Yyyymm form/);
+    expect(result.valid).toBe(true);
   });
 
   it('accepts a real leap day', () => {
@@ -313,7 +339,7 @@ describe('the recorded disagreements, as the Tax Authority document settles them
     expect(result.valid).toBe(true);
   });
 
-  it('§6.8 a zero amount must carry "+", and "-" on it is an error', () => {
+  it('§6.8 a zero amount must carry "+", and "-" on it is an error in the header', () => {
     const result = validatePcn874(fixture('invalid-sign-of-zero.txt'));
     expect(result.valid).toBe(false);
     const finding = find(result, 'header.equipmentInputsVatSign.signOfZero');
@@ -321,15 +347,33 @@ describe('the recorded disagreements, as the Tax Authority document settles them
     expect(finding.basis).toBe('official');
     expect(finding.officialText).toContain('will be "+"');
     expect(finding.message).toContain('equipmentInputsVat');
+    // The header carries exactly one amount per sign, so line 174 is unambiguous
+    // there. It no longer claims Appendix C §2 restates it — see §6.8.
+    expect(finding.officialText).not.toContain('523-535');
+    expect(finding.sources).not.toContain(
+      'ita:research/rendered/pcn874-gov-il-874-eng.txt:523-535',
+    );
   });
 
-  it('§6.8 the same rule applies to a transaction record\'s own sign', () => {
+  it('§6.8 in a transaction record the error needs BOTH amounts zero', () => {
     const [header, detail, footer] = fixture('valid-minimal.txt').split('\n');
-    // invoice total of zero, signed "-"
-    const zeroSum = detail!.slice(0, 40) + '-' + '0000000000' + detail!.slice(51);
-    expect(zeroSum).toHaveLength(60);
-    const result = validatePcn874([header, zeroSum, footer].join('\n'));
-    expect(rules(result)).toContain('detail.invoiceSumSign.signOfZero');
+    // invoice total of zero, signed "-", VAT also zeroed: the one case where the
+    // two readings of line 174 agree, so it is still an error.
+    const bothZero = detail!.slice(0, 31) + '000000000' + '-' + '0000000000' + detail!.slice(51);
+    expect(bothZero).toHaveLength(60);
+    const result = validatePcn874([header, bothZero, footer].join('\n'));
+    const finding = find(result, 'detail.invoiceSumSign.signOfZero');
+    expect(finding.severity).toBe('error');
+    expect(finding.message).toContain('Both amount fields');
+  });
+
+  it('§6.8 a VAT-only credit is a WARNING: one sign, two amounts, no rule for which', () => {
+    const result = validatePcn874(fixture('warnings-vat-only-credit.txt'));
+    const finding = find(result, 'detail.invoiceSumSign.signOfZero');
+    expect(finding.severity).toBe('warning');
+    expect(finding.openQuestion).toMatch(/one "\+\/-" field/);
+    expect(finding.openQuestion).toMatch(/BOTH are zero/);
+    expect(result.valid).toBe(true);
   });
 
   it('§6.9 the reference group takes letters: A(4), which all three implementations get wrong', () => {
@@ -341,12 +385,30 @@ describe('the recorded disagreements, as the Tax Authority document settles them
     );
   });
 
-  it('§6.9 but a reference group with a character that is neither is still an error', () => {
+  it('§6.9 lowercase and zero-padded letters pass with no finding at all', () => {
+    for (const name of ['valid-refgroup-lowercase.txt', 'valid-refgroup-zeropad.txt']) {
+      expect(validatePcn874(fixture(name)).findings, name).toEqual([]);
+    }
+    expect(parsePcn874(fixture('valid-refgroup-lowercase.txt')).records[1]!.fields['refGroup']).toBe(
+      'br2a',
+    );
+    expect(parsePcn874(fixture('valid-refgroup-zeropad.txt')).records[1]!.fields['refGroup']).toBe(
+      '00AB',
+    );
+  });
+
+  it('§6.9 a reference group with punctuation is a WARNING, not an error', () => {
     const [header, detail, footer] = fixture('valid-minimal.txt').split('\n');
     const bad = detail!.slice(0, 18) + 'a-1!' + detail!.slice(22);
     const result = validatePcn874([header, bad, footer].join('\n'));
-    expect(rules(result)).toContain('detail.refGroup.alphanumeric');
-    expect(find(result, 'detail.refGroup.alphanumeric').message).toContain('A(4)');
+    const finding = find(result, 'detail.refGroup.alphanumeric');
+    // The document types the field A(4) and never says which characters an A(n)
+    // field admits. Rejecting "A/01" as an error claimed the circular forbids
+    // punctuation; it does not mention punctuation at all.
+    expect(finding.severity).toBe('warning');
+    expect(finding.message).toContain('A(4)');
+    expect(finding.openQuestion).toMatch(/internal characters of the submitter/);
+    expect(result.valid).toBe(true);
   });
 
   it('§6.10 the entry type is one character; S covers taxable and zero-rated alike', () => {
@@ -401,11 +463,25 @@ describe('per-entry-type constraints from Appendix C', () => {
     expect(finding.openQuestion).toMatch(/comment marker "D"/);
   });
 
-  it('an S record with no customer number is a warning, because small sales may be aggregated', () => {
+  it('an S record of ₪4,000 with no customer number is a warning: note A allows aggregation there', () => {
     const result = validatePcn874(fixture('warnings-only.txt'));
     const finding = find(result, 'detail.S.counterpartyExpected');
     expect(finding.severity).toBe('warning');
     expect(finding.officialText).toContain('5,000 NIS');
+    expect(finding.message).toContain('4000 shekels');
+  });
+
+  it('an S record of ₪100,000 with no customer number is an ERROR: note A calls it obligatory', () => {
+    const result = validatePcn874(fixture('invalid-s-large-unidentified.txt'));
+    const finding = find(result, 'detail.S.counterpartyExpected');
+    expect(finding.severity).toBe('error');
+    expect(finding.basis).toBe('official');
+    expect(finding.message).toContain('100000 shekels');
+    expect(finding.officialText).toContain('it is obligatory to state the customer');
+    // The document's own caveat on its own figure travels with the finding.
+    expect(finding.officialText).toContain('Parameter values may change from time to time');
+    expect(finding.openQuestion).toMatch(/586-588/);
+    expect(result.valid).toBe(false);
   });
 
   it('does not flag a compliant S, L, Y, T, K or R record', () => {
@@ -419,6 +495,112 @@ describe('per-entry-type constraints from Appendix C', () => {
   });
 });
 
+/**
+ * The counter-party rows of Appendix C that had no rule at all.
+ *
+ * Before this the validator said nothing about a `T`, `M`, `C`, `P`, `I` or `H`
+ * record whose counter-party field was zeros, while the same omission on `S` got
+ * a warning — so a file breaking a stated Appendix C cell came back
+ * "VALID — 0 error(s), 0 warning(s)". The circular treats the rows alike.
+ */
+describe('the counter-party rows Appendix C names', () => {
+  it('a T input with a zeros supplier is an error, on the same authority as L and K', () => {
+    const result = validatePcn874(fixture('invalid-input-counterparty.txt'));
+    const finding = find(result, 'detail.T.counterpartyExpected');
+    expect(finding.severity).toBe('error');
+    expect(finding.basis).toBe('official');
+    expect(finding.officialText).toContain('All fields are compulsory');
+    expect(finding.officialText).toContain('"IN"-"regular" from Israeli Supplier');
+    expect(result.valid).toBe(false);
+  });
+
+  it('M, I, C and P are errors too, and M quotes note C for why a sale carries a supplier', () => {
+    const result = validatePcn874(fixture('invalid-self-invoice-counterparty.txt'));
+    expect(result.counts).toEqual({ error: 4, warning: 0, info: 0 });
+    for (const letter of ['M', 'I', 'C', 'P']) {
+      const finding = find(result, `detail.${letter}.counterpartyExpected`);
+      expect(finding.severity, letter).toBe('error');
+      expect(finding.basis, letter).toBe('official');
+    }
+    const m = find(result, 'detail.M.counterpartyExpected');
+    expect(m.officialText).toContain(
+      'the supplier number will be entered in the place of the counter party file number',
+    );
+  });
+
+  it('H is a WARNING and not an error, because its own note defers to Sha\'am guidelines', () => {
+    const result = validatePcn874(fixture('warnings-h-counterparty.txt'));
+    const finding = find(result, 'detail.H.counterpartyExpected');
+    expect(finding.severity).toBe('warning');
+    expect(finding.officialText).toContain('in accordance with "Sha\'am" guidelines');
+    expect(finding.openQuestion).toMatch(/not in the circular and not in either vendor manual/);
+    expect(result.valid).toBe(true);
+  });
+
+  it('says nothing about L, K, Y or R, whose cells are not a counter-party number', () => {
+    // L and K are "Zeros" by their own rules; Y's cell is an export entry number
+    // (or 999999999) and R's an import entry number, neither of which is a VAT
+    // identification number, and note D lets Y's be zeros for a service.
+    const result = validatePcn874(fixture('valid-mixed.txt'));
+    for (const letter of ['L', 'K', 'Y', 'R']) {
+      expect(rules(result), letter).not.toContain(`detail.${letter}.counterpartyExpected`);
+    }
+  });
+
+  it('a compliant counter-party number produces no finding on any of the six', () => {
+    const [header, , footer] = fixture('valid-minimal.txt').split('\n');
+    const zeroCounts =
+      header!.slice(0, 69) + '000000003' + header!.slice(78, 110) + '000000003' + header!.slice(119);
+    const records = ['M', 'I', 'T', 'C', 'P', 'H'].map(
+      t =>
+        t +
+        '513333333' +
+        '20260115' +
+        '0000' +
+        '000000001' +
+        '000000100' +
+        '+' +
+        '0000000500' +
+        '000000000',
+    );
+    const result = validatePcn874([zeroCounts, ...records, footer].join('\n'));
+    expect(rules(result).filter(r => r.endsWith('.counterpartyExpected'))).toEqual([]);
+  });
+});
+
+/**
+ * Note E's cap on petty cash — the fourth file the refuter built that the
+ * validator accepted with no finding at all.
+ */
+describe("note E's petty-cash cap", () => {
+  it('warns when the K records carry more VAT than 2% of the file or ₪2,000, whichever is greater', () => {
+    const result = validatePcn874(fixture('warnings-petty-cash-cap.txt'));
+    const finding = find(result, 'totals.pettyCashCap');
+    expect(finding.severity).toBe('warning');
+    expect(finding.basis).toBe('official');
+    expect(finding.officialText).toContain('less than 2% of the total VAT');
+    // ₪5,000 of petty-cash VAT in a file whose transaction VAT totals ₪6,800.
+    expect(finding.message).toContain('5000 shekels');
+    expect(finding.message).toContain('2000.00');
+    expect(result.valid).toBe(true);
+  });
+
+  it('is a warning, not an error, and says why: the base and the figures both move', () => {
+    const finding = find(validatePcn874(fixture('warnings-petty-cash-cap.txt')), 'totals.pettyCashCap');
+    expect(finding.openQuestion).toMatch(/the file's entries/);
+    expect(finding.openQuestion).toMatch(/may change from time to time/);
+    // The Rivhit manual's ₪300 per-invoice cap is recorded as vendor-only and no
+    // rule is built on it.
+    expect(finding.openQuestion).toMatch(/rivhit lines 318-319/);
+  });
+
+  it('says nothing when the petty cash is inside the cap, and nothing when there is none', () => {
+    expect(rules(validatePcn874(fixture('valid-mixed.txt')))).not.toContain('totals.pettyCashCap');
+    expect(rules(validatePcn874(fixture('warnings-only.txt')))).not.toContain('totals.pettyCashCap');
+    expect(rules(validatePcn874(fixture('valid-minimal.txt')))).not.toContain('totals.pettyCashCap');
+  });
+});
+
 describe('every finding is traceable', () => {
   const allFixtures = [
     'valid-minimal.txt',
@@ -426,18 +608,35 @@ describe('every finding is traceable', () => {
     'valid-no-details.txt',
     'valid-crlf.txt',
     'valid-refgroup-alpha.txt',
+    'valid-refgroup-lowercase.txt',
+    'valid-refgroup-zeropad.txt',
     'warnings-only.txt',
+    'warnings-footer-dealer.txt',
+    'warnings-refgroup-punctuation.txt',
+    'warnings-refgroup-hebrew.txt',
+    'warnings-vat-only-credit.txt',
+    'warnings-petty-cash-cap.txt',
+    'warnings-h-counterparty.txt',
     'invalid-header-length.txt',
     'invalid-header-digits.txt',
     'invalid-detail-length.txt',
     'invalid-record-type.txt',
     'invalid-footer-z.txt',
-    'invalid-footer-dealer.txt',
     'invalid-sign-of-zero.txt',
     'invalid-counts.txt',
     'invalid-detail-semantics.txt',
     'invalid-representative-file.txt',
+    'invalid-input-counterparty.txt',
+    'invalid-self-invoice-counterparty.txt',
+    'invalid-s-large-unidentified.txt',
   ];
+
+  it('covers every file in tests/fixtures/, so a new fixture cannot escape these checks', () => {
+    const onDisk = readdirSync(join(here, 'fixtures'))
+      .filter(n => n.endsWith('.txt'))
+      .sort();
+    expect(onDisk).toEqual([...allFixtures].sort());
+  });
 
   it.each(allFixtures)('%s: every finding cites a known source', name => {
     const result = validatePcn874(fixture(name));
@@ -460,6 +659,78 @@ describe('every finding is traceable', () => {
       expect(finding.officialText, `${finding.rule} quotes nothing`).toBeTruthy();
       expect(finding.sources.some(s => kindOf(s) === 'official')).toBe(true);
     }
+  });
+
+  /**
+   * The test above used to be the whole of this claim, and it was not enough.
+   * `research/colony-sweep/audits/pcn874-reconciliation.md` §3 found three rules
+   * that were errors on lines which do not state them — `file.encoding.ascii`,
+   * `header.generationDate.calendar` and `footer.licensedDealerId.matchesHeader`
+   * — and all three passed, because "an `ita:` citation exists" is not "the
+   * cited line says this". So: read the cited lines out of the extracted
+   * circular and require the finding's quote and those lines to share four
+   * consecutive words. It cannot prove the rule follows from the document, but
+   * it does catch a quote that has drifted from the line it names, which is the
+   * defect that actually occurred, three times.
+   */
+  const normalise = (text: string): string =>
+    text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+  const RUN = 4;
+  const wordRuns = (text: string): Set<string> => {
+    const words = normalise(text).split(' ').filter(Boolean);
+    const out = new Set<string>();
+    for (let i = 0; i + RUN <= words.length; i++) out.add(words.slice(i, i + RUN).join(' '));
+    return out;
+  };
+
+  /** The text of the lines a citation like `ita:…:94-126` or `…:114,124` names. */
+  const citedText = (citation: string): string => {
+    const ref = citation.slice(citation.lastIndexOf(':') + 1);
+    const out: string[] = [];
+    for (const chunk of ref.split(',')) {
+      const [from, to] = chunk.split('-').map(Number);
+      expect(Number.isInteger(from), `bad line reference ${citation}`).toBe(true);
+      expect(from, `${citation} points before line 1`).toBeGreaterThan(0);
+      expect(to ?? from, `${citation} points past the end of the document`).toBeLessThanOrEqual(
+        officialLines.length,
+      );
+      for (let n = from!; n <= (to ?? from!); n++) out.push(officialLines[n - 1] ?? '');
+    }
+    return out.join(' ');
+  };
+
+  it.each(allFixtures)('%s: every ERROR quotes a line that really says it', name => {
+    for (const finding of validatePcn874(fixture(name)).findings) {
+      if (finding.severity !== 'error') continue;
+      const official = finding.sources.filter(s => kindOf(s) === 'official');
+      const cited = official.map(citedText).join(' ');
+      const inCited = wordRuns(cited);
+      const shared = [...wordRuns(finding.officialText!)].filter(run => inCited.has(run));
+      expect(
+        shared.length,
+        `${finding.rule}: its officialText and the lines it cites (${official.join(', ')}) share no ` +
+          `run of ${RUN} words, so the quote does not come from the cited lines.\n` +
+          `quote: ${finding.officialText}\ncited: ${cited.slice(0, 900)}`,
+      ).toBeGreaterThan(0);
+    }
+  });
+
+  it('the strengthened check would have caught the three rules the refuter found', () => {
+    // A rule whose quote does not appear at the lines it cites must fail, or the
+    // test above is decoration. Build one and prove the machinery rejects it.
+    const inCited = wordRuns(citedText('ita:x:174'));
+    const honest = [...wordRuns('In a "+/-" field: When the amount field is zero')].filter(r =>
+      inCited.has(r),
+    );
+    expect(honest.length).toBeGreaterThan(0);
+    const invented = [...wordRuns('the closing entry repeats the header dealer identification')].filter(
+      r => inCited.has(r),
+    );
+    expect(invented).toEqual([]);
   });
 
   it('valid is exactly "no error findings"', () => {
