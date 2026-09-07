@@ -1,0 +1,17 @@
+{
+  "url": "https://downloads.h-erp.co.il/files/vatr/Guidance874W.pdf",
+  "slug": "pcn874-h-erp-mirror",
+  "fetchedAt": "2026-09-07T18:28:28.034Z",
+  "status": 200,
+  "contentType": "application/pdf",
+  "byteLength": 3495477,
+  "sha256": "e9c7104644ec1f97de955af3d1d913eba71d4724ce20f3d3b9aa3a6b8fe0ef63",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/pcn874-h-erp-mirror.pdf",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

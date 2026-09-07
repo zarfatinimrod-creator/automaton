@@ -1,0 +1,17 @@
+{
+  "url": "https://www.gov.il/BlobFolder/generalpage/tax-vat-online-invoice-reporting/he/IncomeTax_IncomeTaxSoftwareHousesInfo_874-eng.pdf",
+  "slug": "pcn874-gov-il-874-eng",
+  "fetchedAt": "2026-09-07T18:28:25.561Z",
+  "status": 200,
+  "contentType": "application/pdf",
+  "byteLength": 49176,
+  "sha256": "072e03fbb4c5a1f9742dd14f2c225903b0ea27c7f22ad8fd154d28a2763fc61b",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/pcn874-gov-il-874-eng.pdf",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
