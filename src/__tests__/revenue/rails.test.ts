@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import {
+  CANDIDATE_RAILS,
+  DEFAULT_MERCHANT_OF_RECORD,
   LINE_RAILS,
+  MERCHANT_OF_RECORD_RAILS,
   RAIL_CONCENTRATION_THRESHOLD,
   linesWithUnknownPayout,
   railConcentration,
@@ -31,10 +34,21 @@ describe("payment rails", () => {
     }
   });
 
-  it("passes on today's portfolio — the finding was that nothing checked, not that it failed", () => {
+  it("reports the portfolio the board knowingly concentrated, rather than passing it", () => {
+    // Until 7.9.2026 this expected "ok". The board's ruling changed the answer
+    // and not the check: il-biz-tools moved from Paddle to Gumroad and pcn874
+    // was added on Gumroad too, so two of four lines and ₪1,000 of ₪1,500 ride
+    // one merchant account. BOARD.md §2 accepts that knowingly, because exactly
+    // one rendered ILS rail exists — and the mitigation is to render Freemius as
+    // a second one, not to silence this check. A green light here would be the
+    // dishonest outcome, so the test asserts the warning and names the lines.
     const c = railConcentration();
-    expect(c.verdict).toBe("ok");
-    expect(c.overexposed).toEqual([]);
+    expect(c.verdict).toBe("concentrated");
+    const gumroad = c.overexposed.find((o) => o.rail === "gumroad" && o.side === "payin");
+    expect(gumroad, "gumroad carries two of four lines and the check must say so").toBeDefined();
+    expect(gumroad!.lineIds.sort()).toEqual(["il-biz-tools", "pcn874"]);
+    expect(gumroad!.share).toBeCloseTo(1000 / 1500, 6);
+    expect(c.reason).toMatch(/MISSION\.md/);
   });
 
   it("shares sum to one on each side", () => {
@@ -94,11 +108,14 @@ describe("platform concentration — the risk railConcentration was blind to", (
   });
 
   it("groups lines by the account a ban would land on, not by the rail", () => {
-    // paid-apis and agent-services are separate lines on separate targets but a
-    // single wallet and host. One incident takes both.
+    // il-biz-tools and pcn874 are separate lines with separate buyers and
+    // separate targets, behind ONE Gumroad seller account. One suspension email
+    // takes both, and ₪1,000 of the ₪1,500 the board committed to.
     const c = platformConcentration();
-    const self = c.platforms.find((p) => p.platformAccount === "self:wallet-and-host")!;
-    expect(self.lineIds.sort()).toEqual(["agent-services", "paid-apis"]);
+    const gumroad = c.platforms.find((p) => p.platformAccount === "gumroad:one-seller-account")!;
+    expect(gumroad.lineIds.sort()).toEqual(["il-biz-tools", "pcn874"]);
+    expect(c.verdict).toBe("concentrated");
+    expect(c.overexposed.map((p) => p.platformAccount)).toContain("gumroad:one-seller-account");
   });
 
   it("shares sum to one", () => {
@@ -126,5 +143,47 @@ describe("platform concentration — the risk railConcentration was blind to", (
       expect(rail.platformAccount, id).toMatch(/^[a-z-]+:[a-z-]+$/);
       expect(typeof rail.observable, id).toBe("boolean");
     }
+  });
+});
+
+describe("the merchant of record — Gumroad by default, Paddle only if the owner says so", () => {
+  it("makes Gumroad the default and Paddle an option", () => {
+    // Eight group reports assumed "Paddle already ships / already pays us" and
+    // no test could contradict them. This one can: the default is code, the
+    // option is code, and the difference between them is who may choose it.
+    expect(DEFAULT_MERCHANT_OF_RECORD).toBe("gumroad");
+    const byId = Object.fromEntries(MERCHANT_OF_RECORD_RAILS.map((r) => [r.id, r]));
+    expect(byId.gumroad.status).toBe("default");
+    expect(byId.gumroad.chosenBy).toBe("the board");
+    expect(byId.gumroad.evidence).toBe("rendered");
+    expect(byId.paddle.status).toBe("option");
+    expect(byId.paddle.chosenBy).toBe("the owner, and only the owner");
+  });
+
+  it("names three risks on Paddle, because an option with no stated cost is a recommendation", () => {
+    const paddle = MERCHANT_OF_RECORD_RAILS.find((r) => r.id === "paddle")!;
+    expect(paddle.risks).toHaveLength(3);
+    expect(paddle.risks.join(" ")).toMatch(/SELFIE VIDEO/i);
+    expect(paddle.risks.join(" ")).toMatch(/DISCRETIONARY/i);
+    expect(paddle.risks.join(" ")).toMatch(/not a Paddle payout currency/i);
+    // A default with risks nobody wrote down is the same failure in reverse.
+    expect(MERCHANT_OF_RECORD_RAILS.find((r) => r.status === "default")!.risks).toEqual([]);
+  });
+
+  it("puts no live line on Paddle", () => {
+    // The ruling is only real if nothing depends on it. il-biz-tools was the
+    // line that did, and it moved.
+    for (const [id, rail] of Object.entries(LINE_RAILS)) {
+      expect(rail.payin, `${id} is still on Paddle`).not.toBe("paddle");
+    }
+  });
+
+  it("turns the Freemius check into a render task rather than an owner errand", () => {
+    // MISSION rule 1 says never invent an owner step. "A human opens Freemius's
+    // pricing page" was one — and Freemius is the mitigation for the Gumroad
+    // concentration above, so it is not optional work, it is simply ours.
+    const freemius = CANDIDATE_RAILS.find((r) => r.id === "freemius")!;
+    expect(freemius.beforeUse).toMatch(/GITHUB CODE SEARCH/i);
+    expect(freemius.beforeUse).not.toMatch(/A human opens/i);
   });
 });

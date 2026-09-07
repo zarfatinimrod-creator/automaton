@@ -23,6 +23,7 @@ import { DEFAULT_PORTFOLIO } from "./portfolio.js";
 import type { RevenueLineSeed } from "./types.js";
 
 export type PayinRail =
+  | "gumroad"
   | "paddle"
   | "etsy"
   | "apify"
@@ -70,67 +71,82 @@ export const LINE_RAILS: Record<string, LineRails> = {
   "apify-actors": {
     payin: "apify",
     payout: "paypal",
-    note: "Apify bills the user and pays the developer; PayPal at a $20 minimum, or SWIFT wire at $100.",
+    note: "Apify bills the user and pays the developer; PayPal or Wise at a $20 minimum, other methods at $100. The payout side is DEFERRED by the board of 7.9.2026: publishing free and counting stranger runs needs no KYC and no payout method, and neither is requested from the owner until stranger runs exist. Note the fuse in Apify's own terms: an accrued balance is forfeited after twelve continuous months without KYC.",
     platformAccount: "apify:one-creator-account",
     observable: false,
   },
   "il-biz-tools": {
-    payin: "paddle",
+    payin: "gumroad",
     payout: "bank-transfer",
-    note: "NO PADDLE ACCOUNT EXISTS YET — site.json holds empty credentials in sandbox mode and the Pro box renders 'coming soon'. Paddle CODE ships; the rail does not. Sign-up, identity/KYC, payout details and domain approval are all outstanding owner steps. When it does exist: Paddle is merchant of record, so it collects and remits. But ILS is NOT a Paddle payout currency: an Israeli seller takes USD by international SWIFT at 5% + $0.50 per transaction, a $15 SWIFT fee, the receiving bank's own charge and ~1.5% FX, against a $100 minimum paid on the 1st and landing by the 15th. This entry previously said the payout lands in an Israeli bank account, which is true only in the sense that the money eventually arrives.",
-    platformAccount: "paddle:one-seller-account",
+    note: "GUMROAD, not Paddle — changed by the board on 7.9.2026. Gumroad is the only merchant of record with rendered proof of ILS payout to an Israeli bank: its own production source file _13-getting-paid.html.erb carries a row reading `Israel | ILS`. Paddle was retired from this line for three reasons the audits rendered: no Paddle account exists (site.json holds empty sandbox credentials and the Pro box renders 'בקרוב'), ILS is not a Paddle payout currency at all, and Sumsub may demand a selfie video, which collides with the mandate. Gumroad's take is 12.9% + $0.80, plus 2.9% + $0.30 because an Israeli seller cannot attach their own Stripe — about 22% on a $9 product, which is why cheap products are not sold here.",
+    platformAccount: "gumroad:one-seller-account",
     observable: true,
   },
-  templates: {
-    payin: "etsy",
-    payout: "payoneer",
-    note: "Etsy Payments is said to reach Israel through Payoneer. BOTH HALVES ARE OPEN: docs/REJECTED.md records Etsy Payments for Israel as UNVERIFIED, and the payment-rails audit corrected Payoneer's own Israel payability from YES to UNKNOWN. This entry previously called it 'the only documented route', which chained two unknowns together and described the result as documented.",
-    platformAccount: "etsy:one-shop",
-    observable: true,
-  },
-  "paid-apis": {
-    payin: "x402",
-    payout: "crypto-wallet",
-    note: "USDC settles straight to a wallet the automaton controls. No platform can freeze it, and no KYC gates it.",
-    platformAccount: "self:wallet-and-host",
-    observable: true,
-  },
-  "agent-services": {
-    payin: "x402",
-    payout: "crypto-wallet",
-    note: "Same rail as paid-apis by design — this line exists to sell work, not to diversify the rail.",
-    platformAccount: "self:wallet-and-host",
-    observable: true,
-  },
-  "telegram-bots": {
-    payin: "telegram-stars",
-    payout: "ton-wallet",
-    note: "Stars convert through Fragment to TON. Whether Fragment withdrawal is open to an Israeli resident is unverified.",
-    platformAccount: "telegram:one-bot-owner",
-    observable: true,
-  },
-  "dev-extensions": {
-    payin: "paddle",
+  pcn874: {
+    payin: "gumroad",
     payout: "bank-transfer",
-    note: "Deliberately reuses the il-biz-tools merchant account: licence keys, not a second merchant onboarding.",
-    platformAccount: "microsoft:one-publisher",
-    observable: true,
-  },
-  "hebrew-content": {
-    payin: "affiliate-networks",
-    payout: "payoneer",
-    note: "Impact, PartnerStack and Amazon Associates pay Israel through PayPal or Payoneer against a tax form.",
-    platformAccount: "affiliate:several-accounts",
+    note: "The same single Gumroad seller account as il-biz-tools, and the board accepted that concentration KNOWINGLY: exactly one rendered ILS rail exists, so two of the four lines ride it and railConcentration() below now reports `concentrated`. The mitigation is to render Freemius as a second ILS rail (CANDIDATE_RAILS), not to invent a fourth rail or to hide the number.",
+    platformAccount: "gumroad:one-seller-account",
     observable: true,
   },
   "oss-bounties": {
     payin: "bounty-platform",
     payout: "unknown",
-    note: "Algora's own source lists Israel for Stripe Connect Express, but the Stripe-Israel question is reopened in docs/REJECTED.md. Unknown until a human opens stripe.com/global.",
+    note: "Algora's own source file lib/algora/psp/connect_countries.ex lists {\"Israel\",\"IL\"} and routes it to a Stripe Connect Express account — rendered twice, and the only code-level Israeli payability proof the whole sweep produced. It stays `unknown` here because that settles the COUNTRY question and not the ACCOUNT one: no Connect account exists until owner step 4 succeeds, and writing a rail here before the form is submitted would launder an open question into a fact. Step 4 answers it either way, and the same form settles the Stripe-Israel question for every other Connect platform in docs/REJECTED.md.",
     platformAccount: "algora:one-connect-account",
     observable: true,
   },
 };
+
+// ── Merchant-of-record rails: which one a new ILS line uses, and who decides ──
+//
+// Board ruling, 7.9.2026 (BOARD.md §6.1 and §7.1): Gumroad becomes the DEFAULT
+// merchant of record for ILS and Paddle becomes an OPTION the owner may choose,
+// knowing three named risks. It is stated as code rather than as advice because
+// eight group reports assumed "Paddle already ships / already pays us" and no
+// test could contradict them.
+
+/** The merchant of record a new ILS line uses unless the owner chooses otherwise. */
+export const DEFAULT_MERCHANT_OF_RECORD: PayinRail = "gumroad";
+
+export interface MerchantOfRecordRail {
+  id: PayinRail;
+  status: "default" | "option";
+  what: string;
+  /** Named, rendered risks. Empty for the default; never empty for an option. */
+  risks: string[];
+  /** Who may put this rail on a line. */
+  chosenBy: "the board" | "the owner, and only the owner";
+  evidence: "rendered" | "snippet" | "vendor-claim";
+  source: string;
+}
+
+export const MERCHANT_OF_RECORD_RAILS: MerchantOfRecordRail[] = [
+  {
+    id: "gumroad",
+    status: "default",
+    what:
+      "Merchant-of-record checkout that collects from the buyer, holds seven days, and pays out to an Israeli bank account in ILS above a $100 balance. Take: 12.9% + $0.80, plus 2.9% + $0.30 because an Israeli seller cannot attach their own Stripe.",
+    risks: [],
+    chosenBy: "the board",
+    evidence: "rendered",
+    source: "Gumroad's own _13-getting-paid.html.erb (`Israel | ILS`); research/colony-sweep/audits/storefronts.md §1",
+  },
+  {
+    id: "paddle",
+    status: "option",
+    what:
+      "Merchant-of-record checkout for software. Not on the owner's checklist and not on any line. It does the same job as Gumroad for the same products, and the board recommends against it — but the choice is his, and it is recorded here so the answer does not have to be re-derived each time it is raised.",
+    risks: [
+      "Sumsub identity verification may demand a short SELFIE VIDEO — a camera step the owner's brief forbids, and the same collision that killed telegram-bots.",
+      "Approval is DISCRETIONARY and pre-revenue sellers have been refused; there is no self-serve guarantee at the end of the work.",
+      "ILS is NOT a Paddle payout currency. An Israeli seller takes USD by international SWIFT: 5% + $0.50 per transaction, a $15 SWIFT fee, the receiving bank's charge and ~1.5% FX, against a $100 minimum paid on the 1st and landing by the 15th.",
+    ],
+    chosenBy: "the owner, and only the owner",
+    evidence: "snippet",
+    source: "research/colony-sweep/CHIEF-AUDIT.md §3.1 and §4A.2; BOARD.md §7.1",
+  },
+];
 
 export interface RailShare<R extends string> {
   rail: R;
@@ -333,7 +349,7 @@ export const CANDIDATE_RAILS: CandidateRail[] = [
     whyItMatters:
       "Our Israeli rails are thin and correlated: PayPal (now carrying 18% Israeli VAT on its fees since 6 July 2026), Payoneer, and ILS deposit through a storefront. MISSION.md requires that one rail failing does not take the company down, and an ILS-native merchant of record is the most direct answer to the payability gate that killed four candidates in the productized-services group alone.",
     beforeUse:
-      "A human opens Freemius's own pricing and payout pages and confirms the ILS payout and fee structure, and confirms it accepts a seller who is an osek patur rather than a company. Nothing here is rendered.",
+      "RENDER IT, do not ask the owner. The board's ruling of 7.9.2026 turned this from an owner check into a research task with a method: find Freemius's ILS payout terms and its acceptance of an osek patur seller by GITHUB CODE SEARCH — GitHub is one of the few hosts this container reaches, and it is where Gumroad's `Israel | ILS` row was found. Freemius is the mitigation for the Gumroad concentration this file now reports, so the task is not optional; it is simply not the owner's.",
     evidence: "snippet",
     source: "research/colony-sweep/scouts/productized-services--localization.md, via research/colony-sweep/audits/productized-services.md §5.3",
   },

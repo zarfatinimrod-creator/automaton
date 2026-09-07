@@ -16,7 +16,7 @@ import {
 import { getLine, listLines, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
 import { REVENUE_TASK_INTERVALS_MS } from "../../revenue/heartbeat.js";
 import { getActiveGoals } from "../../state/database.js";
-import { DEFAULT_PORTFOLIO } from "../../revenue/portfolio.js";
+import { DEFAULT_PORTFOLIO, portfolioTargetAgorot, summarizeTargetBasis } from "../../revenue/portfolio.js";
 
 const HOUR = 3_600_000;
 
@@ -90,20 +90,33 @@ describe("revenue/runner tick", () => {
     expect(result.board?.actions.some((a) => a.includes("goal filing disabled"))).toBe(true);
   });
 
-  it("files exactly one goal when feeding is allowed", async () => {
-    await tick(db, { nowIso: "2026-09-03T00:00:00.000Z", feedGoals: true });
+  it("files no goal while every line is blocked on the owner", async () => {
+    // Changed by the board decision of 7.9.2026. `agent-services` used to be the
+    // one line needing no owner setup, so the first tick always filed its build
+    // goal; it is killed, and all four survivors are blocked on the checklist —
+    // apify-actors on the token, the rest on Gumroad, the domain and the org.
+    // So the honest state of a fresh colony is: nothing to build until the owner
+    // does step 1. That must be visible as a blocker, not as silence.
+    const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z", feedGoals: true });
+    expect(getActiveGoals(db)).toHaveLength(0);
+    expect(result.blockers.length).toBe(DEFAULT_PORTFOLIO.length);
+
+    // And it starts the moment he confirms one.
+    setHumanSetupDone(db, "oss-bounties", true);
+    const after = await tick(db, { nowIso: "2026-09-04T02:00:00.000Z", force: true, feedGoals: true });
     expect(getActiveGoals(db)).toHaveLength(1);
+    expect(after.board?.goalFiled?.lineId).toBe("oss-bounties");
   });
 
   it("counts real money and moves the line to live", async () => {
     await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
-    updateLineStatus(db, "agent-services", "building", { force: true });
+    updateLineStatus(db, "oss-bounties", "building", { force: true });
     recordLedgerEntry(db, {
-      lineId: "agent-services", kind: "sale", amountMinor: 45_000,
-      currency: "ILS", source: "x402", externalId: "0xabc",
+      lineId: "oss-bounties", kind: "sale", amountMinor: 45_000,
+      currency: "ILS", source: "stripe", externalId: "0xabc",
       occurredAt: "2026-09-03T01:00:00.000Z",
     });
-    expect(getLine(db, "agent-services")?.status).toBe("live");
+    expect(getLine(db, "oss-bounties")?.status).toBe("live");
 
     const later = await tick(db, { nowIso: "2026-09-04T02:00:00.000Z" });
     expect(later.summary?.total30dAgorot).toBe(45_000);
@@ -131,7 +144,9 @@ describe("revenue/runner stuck-goal detection", () => {
   });
 
   it("flags a goal that no orchestrator ever decomposed", async () => {
-    await tick(db, { nowIso: "2026-09-03T00:00:00.000Z", feedGoals: true });
+    await tick(db, { nowIso: "2026-09-03T00:00:00.000Z", feedGoals: false });
+    setHumanSetupDone(db, "oss-bounties", true);
+    await tick(db, { nowIso: "2026-09-03T00:00:00.000Z", force: true, feedGoals: true });
     const goal = getActiveGoals(db)[0];
     db.prepare("UPDATE goals SET created_at = ? WHERE id = ?")
       .run("2026-08-20T00:00:00.000Z", goal.id);
@@ -147,7 +162,9 @@ describe("revenue/runner stuck-goal detection", () => {
   });
 
   it("says nothing once a planner has decomposed the goal", async () => {
-    await tick(db, { nowIso: "2026-09-03T00:00:00.000Z", feedGoals: true });
+    await tick(db, { nowIso: "2026-09-03T00:00:00.000Z", feedGoals: false });
+    setHumanSetupDone(db, "oss-bounties", true);
+    await tick(db, { nowIso: "2026-09-03T00:00:00.000Z", force: true, feedGoals: true });
     const goal = getActiveGoals(db)[0];
     db.prepare("UPDATE goals SET created_at = ? WHERE id = ?").run("2026-08-20T00:00:00.000Z", goal.id);
     db.prepare(
@@ -173,6 +190,27 @@ describe("revenue/runner report rendering", () => {
     expect(report).toContain("What the owner has to do");
     expect(report).toContain("colony.ts setup-done");
     expect(report).toContain("Projections are never counted");
+  });
+
+  it("can never print a measured figure larger than the summed basis", async () => {
+    // The bug this makes impossible: state/colony/REPORT.md told the owner "the
+    // honest reachable figure is the measured ₪6,500" for four days after
+    // TARGET_BASIS had been regraded to zero measured. The sentence was rendered
+    // once and never recomputed, and nothing in the build could tell.
+    const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
+    const report = renderReport(db, result);
+    const basis = summarizeTargetBasis();
+
+    const measured = report.match(/\| Of that, \*\*measured\*\* \| ₪([\d,]+) \|/);
+    expect(measured, "the report no longer prints what the plan rests on").toBeTruthy();
+    const printed = Number(measured![1].replace(/,/g, ""));
+    expect(printed).toBe(basis.measuredIls);
+    expect(printed).toBeLessThanOrEqual(basis.totalIls);
+    expect(printed).toBeLessThanOrEqual(portfolioTargetAgorot() / 100);
+
+    // The summed figure must be the portfolio's own, not a remembered one.
+    expect(report).toContain(`| Line targets, summed | ₪${basis.totalIls.toLocaleString("en")} `);
+    expect(report).not.toContain("₪6,500");
   });
 
   it("drops the owner checklist once every setup is confirmed", async () => {

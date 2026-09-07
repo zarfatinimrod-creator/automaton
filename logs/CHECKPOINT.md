@@ -1,8 +1,38 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-06 06:45 UTC · branch `claude/monthly-income-plan-pfs7vu` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-07 16:30 UTC · branch `claude/monthly-income-plan-pfs7vu` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
+
+## ✅ פסק הדירקטוריון נקלט לריפו (7.9.2026, 16:00–16:30 UTC, Opus, ב-worktree)
+
+**כל רשימת ה-P0 של `research/colony-sweep/BOARD.md` מבוצעת בקוד, בבדיקות ובמסמכים.** יומן מלא:
+`logs/2026-09-07-board-decision-folded-in.md`.
+
+**התיק עכשיו: ארבעה קווים, ₪1,500 מחויבים** — `apify-actors` 200, `oss-bounties` 300, `il-biz-tools` 400,
+`pcn874` 600 (חדש) — **ועוד ₪700 מותנים** (`registrar-reminder` 300 על תנועה, `devpost-hackathons` 400 על
+תשובת הבעלים) שיושבים ב-`CONDITIONAL_TARGETS` ו**לא** נספרים בסכום. יחד ₪2,200 = המספר של המבקר הראשי.
+**שישה קווים נהרגו** (`templates`, `paid-apis`, `agent-services`, `telegram-bots`, `dev-extensions`,
+`hebrew-content`) ויושבים ב-`KILLED_LINES` עם נימוק, היעד שנשאו, וטריגר פתיחה מחדש. שש תיקיות ה-SKILL
+הוסרו. `products/` לא נגע: בוט הטלגרם **מוחנה**, `x402-il-api` הוא **מסילת המתנה ב-₪0/חודש**, לא קו.
+
+**מה חדש בקוד:** `src/revenue/owner-steps.ts` (הצ'קליסט כנתונים, סדר 1→2→3→5→7→4→6, חצי ה-Apify של צעד 6
+מותר מיד אחרי 1) עם בדיקה שאוסרת צעד שמיני; `syncPortfolio` + `colony.ts sync-portfolio` שמחיל פסק
+דירקטוריון על בסיס הנתונים; `updateLineFromSeed` ב-`ledger.ts`. `rails.ts`: **Gumroad ברירת מחדל ל-MoR,
+Paddle אפשרות של הבעלים עם שלושה סיכונים**, Freemius הפך למשימת רינדור שלנו ולא לסידור של הבעלים.
+
+**`REPORT.md` יוצר מחדש דרך הכלים עצמם** (`sync-portfolio` ואז `report`): "₪6,500 נמדד" איננו, "נמדד ₪0",
+ארבעה קווים בטבלה. **שתי בדיקות חדשות חוסמות את החזרה של הבאג:** הדוח ומסך המנהל לא יכולים להדפיס "נמדד"
+גדול מסכום הבסיס. ולידציה: `tsc` נקי, `npx vitest run src/__tests__/revenue` — 245 בדיקות ירוקות.
+
+**שינוי התנהגות שכדאי לדעת עליו מראש: כל ארבעת הקווים חסומים על הבעלים, ולכן הלולאה לא מגישה שום מטרת
+בנייה** עד שצעד אחד מאושר. עד היום `agent-services` לא דרש הרשמה וכיסה על זה. עכשיו "אין מה לבנות עד
+צעד 1" הוא המצב, והוא מופיע כחוסם מפורש לכל קו — וזה נכון, לא תקלה.
+
+**מה נשאר מ-P0 ולא בוצע:** שורת `MISSION.md` בטבלת §6.1 (שהמנדט יצביע על `docs/OWNER_STEPS.he.md` במקום
+על §6) — לא הייתה ברשימה שנמסרה לסוכן, ו-§6 עדיין מצביע הלאה, אז אין הפניה שבורה. **P1 הבא לפי הדירקטוריון:**
+`.github/workflows/apify-publish.yml` + `connectors/apify-stats.ts` (בנייה #1), `bounties/intake.ts` (#2),
+`products/pcn874/` (#3), ו-`skills/revenue-pcn874/SKILL.md` שהתיק כבר מצביע עליו ועוד לא קיים.
 
 ## הסבב האחרון (6.9.2026, 06:25–06:45 UTC, על Fable 5.1 בהחלטת הבעלים)
 

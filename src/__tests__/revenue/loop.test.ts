@@ -31,20 +31,22 @@ describe("revenue/loop (board → queue → orchestrator)", () => {
     expect(result.ran).toBe(true);
     const lines = listLines(db);
     expect(lines.length).toBe(DEFAULT_PORTFOLIO.length);
-    // Lines that need creator setup are parked; lines with no setup get a build goal.
+    // Every line the board of 7.9.2026 kept is blocked on the owner's checklist,
+    // so every line is parked and NO goal is filed. That is the honest state of
+    // a fresh colony, and it used to be hidden: `agent-services` needed no setup,
+    // so the first board review always had something to build.
     const noSetup = DEFAULT_PORTFOLIO.filter((s) => s.humanSetup.length === 0).map((s) => s.id);
-    expect(noSetup.length).toBeGreaterThan(0);
-    const active = getActiveGoals(db);
-    expect(active).toHaveLength(1);
-    expect(result.goalFiled?.lineId).toBe(noSetup[0]);
-    expect(getLine(db, noSetup[0])?.status).toBe("building");
-    // The goal description carries the operating loop and the human-setup rule.
-    expect(active[0].description).toContain("OPERATING LOOP");
-    expect(active[0].description).toContain("revenue_setup_done");
+    expect(noSetup).toEqual([]);
+    expect(getActiveGoals(db)).toHaveLength(0);
+    expect(result.goalFiled).toBeNull();
     // Parked lines are still awaiting setup and not queued.
     const parked = lines.filter((l) => l.status === "awaiting_setup");
-    expect(parked.length).toBe(DEFAULT_PORTFOLIO.length - noSetup.length);
+    expect(parked.length).toBe(DEFAULT_PORTFOLIO.length);
     expect(listQueuedGoals(db).some((q) => parked.some((p) => p.id === q.lineId))).toBe(false);
+    // And each one is named as waiting on the owner rather than sitting silent.
+    for (const line of parked) {
+      expect(result.actions.some((a) => a.startsWith(`waiting on creator for ${line.id}`))).toBe(true);
+    }
     expect(kv(db, REVENUE_KV.lastBoardDirective)).toContain("Board review");
     expect(listReviews(db, { level: "board", lineId: null })).toHaveLength(1);
   });
@@ -58,22 +60,28 @@ describe("revenue/loop (board → queue → orchestrator)", () => {
 
   it("queues a build goal once the creator marks setup done, and feeds it when the orchestrator frees up", () => {
     seedDefaultPortfolio(db);
-    runBoardReview(db); // files the first no-setup goal
-    const parked = listLines(db).find((l) => l.status === "awaiting_setup")!;
-    setHumanSetupDone(db, parked.id, true);
+    // Nothing is filed on the first review any more: after the board decision of
+    // 7.9.2026 every surviving line is blocked on the owner's checklist.
+    expect(runBoardReview(db).goalFiled).toBeNull();
+    expect(getActiveGoals(db)).toHaveLength(0);
+
+    const first = listLines(db).find((l) => l.status === "awaiting_setup")!;
+    setHumanSetupDone(db, first.id, true);
+    expect(runBoardReview(db).goalFiled?.lineId).toBe(first.id);
+    expect(getLine(db, first.id)?.status).toBe("building");
+
+    // A second unblocked line queues behind it rather than being filed too.
+    const second = listLines(db).find((l) => l.status === "awaiting_setup")!;
+    setHumanSetupDone(db, second.id, true);
     runBoardReview(db);
-    expect(listQueuedGoals(db).map((q) => q.lineId)).toContain(parked.id);
-    // Orchestrator still busy with the first goal → nothing else filed.
+    expect(listQueuedGoals(db).map((q) => q.lineId)).toContain(second.id);
     expect(getActiveGoals(db)).toHaveLength(1);
-    // Simulate goal completions until the queue reaches the newly unblocked line
-    // (lines that never needed setup were queued ahead of it).
-    let fed: ReturnType<typeof feedNextGoal> = null;
-    for (let i = 0; i < 5 && fed?.lineId !== parked.id; i += 1) {
-      db.prepare("UPDATE goals SET status = 'completed', completed_at = ? WHERE status = 'active'").run(new Date().toISOString());
-      fed = feedNextGoal(db);
-    }
-    expect(fed?.lineId).toBe(parked.id);
-    expect(getLine(db, parked.id)?.status).toBe("building");
+
+    // And it is fed the moment the orchestrator frees up.
+    db.prepare("UPDATE goals SET status = 'completed', completed_at = ? WHERE status = 'active'").run(new Date().toISOString());
+    const fed = feedNextGoal(db);
+    expect(fed?.lineId).toBe(second.id);
+    expect(getLine(db, second.id)?.status).toBe("building");
   });
 
   it("kills a line below the floor after grace, removes its queued goals, and records the decision", () => {
@@ -140,6 +148,9 @@ describe("revenue/loop (board → queue → orchestrator)", () => {
   it("allocates the monthly compute budget across active lines", () => {
     seedDefaultPortfolio(db);
     setMonthlyComputeBudgetCents(db, 9_000);
+    // A line has to be unblocked first: every line now starts parked on the
+    // owner's checklist, and budget follows work rather than intentions.
+    setHumanSetupDone(db, "oss-bounties", true);
     runBoardReview(db);
     const active = listLines(db).filter((l) => l.status === "building" || l.status === "live" || l.status === "scaling");
     const total = active.reduce((s, l) => s + l.budgetMonthlyCents, 0);

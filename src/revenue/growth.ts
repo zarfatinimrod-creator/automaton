@@ -337,10 +337,13 @@ export function distinctSourcesNeededFor(
 // ── The gap between what the portfolio plans and what the mission asks ──
 //
 // The completeness critic across seven audited groups found something nobody had
-// checked: the nine targets in DEFAULT_PORTFOLIO sum to ₪16,500. The portfolio
-// cannot reach the ₪20,000 first target even if every line hits its number in
-// full — and the code has been quietly planning to 82.5% of that target since
-// before the sweep began.
+// checked: the nine targets then in DEFAULT_PORTFOLIO summed to ₪16,500. The
+// portfolio could not reach the ₪20,000 first target even if every line hit its
+// number in full — and the code had been quietly planning to 82.5% of that
+// target since before the sweep began. After the board decision of 7.9.2026 the
+// four surviving targets sum to ₪1,500 (7.5%), which does not make the gap
+// smaller, only visible: the board cut rather than inflated, which is the fix
+// this comment goes on to describe.
 //
 // The wrong fix is to inflate targets until they add up. A target is a claim
 // about what a line can earn, and adding ₪3,500 of nothing to make the sum look

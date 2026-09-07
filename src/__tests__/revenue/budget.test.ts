@@ -18,8 +18,11 @@ describe("the owner's ₪200 float", () => {
   beforeEach(() => { db = createInMemoryDb(); seedDefaultPortfolio(db); });
   afterEach(() => { db.close(); });
 
-  const spend = (ils: number, id: string, purpose = "chrome web store developer fee") =>
-    recordFloatSpend(db, { lineId: "dev-extensions", amountMinor: agorotFromIls(ils), currency: "ILS", externalId: id, purpose });
+  // The float's one budgeted use is the first year of the company domain (owner
+  // step 5). The renewal is the owner's decision each time, never a draw — the
+  // line that used to appear here, `dev-extensions`, was killed on 7.9.2026.
+  const spend = (ils: number, id: string, purpose = "first year of the company domain") =>
+    recordFloatSpend(db, { lineId: "il-biz-tools", amountMinor: agorotFromIls(ils), currency: "ILS", externalId: id, purpose });
 
   it("starts at ₪200 with nothing spent", () => {
     const s = ownerFloatState(db);
@@ -52,13 +55,13 @@ describe("the owner's ₪200 float", () => {
 
   it("demands a receipt, because it is his money", () => {
     expect(() => recordFloatSpend(db, {
-      lineId: "dev-extensions", amountMinor: 500, currency: "ILS", externalId: "  ", purpose: "something",
+      lineId: "il-biz-tools", amountMinor: 500, currency: "ILS", externalId: "  ", purpose: "something",
     })).toThrow(/receipt id/);
   });
 
   it("demands to know what the money bought", () => {
     expect(() => recordFloatSpend(db, {
-      lineId: "dev-extensions", amountMinor: 500, currency: "ILS", externalId: "r-1", purpose: "  ",
+      lineId: "il-biz-tools", amountMinor: 500, currency: "ILS", externalId: "r-1", purpose: "  ",
     })).toThrow(/what the money bought/);
   });
 
@@ -72,11 +75,11 @@ describe("the owner's ₪200 float", () => {
     setFxRate(db, "USD", 3.7);
     // $50 is ₪185 — inside the cap. $60 would be ₪222, outside it.
     recordFloatSpend(db, {
-      lineId: "dev-extensions", amountMinor: 5000, currency: "USD", externalId: "usd-1", purpose: "domain",
+      lineId: "il-biz-tools", amountMinor: 5000, currency: "USD", externalId: "usd-1", purpose: "domain",
     });
     expect(ownerFloatState(db).spentAgorot).toBe(18_500);
     expect(() => recordFloatSpend(db, {
-      lineId: "dev-extensions", amountMinor: 6000, currency: "USD", externalId: "usd-2", purpose: "another domain",
+      lineId: "il-biz-tools", amountMinor: 6000, currency: "USD", externalId: "usd-2", purpose: "another domain",
     })).toThrow(/refusing to spend/);
   });
 

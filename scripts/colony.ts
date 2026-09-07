@@ -25,7 +25,7 @@ import {
   updateLineStatus,
 } from "../src/revenue/ledger.js";
 import { agorotFromIls, formatIls } from "../src/revenue/money.js";
-import { seedDefaultPortfolio } from "../src/revenue/portfolio.js";
+import { seedDefaultPortfolio, syncPortfolio } from "../src/revenue/portfolio.js";
 import { getRevenueStatus } from "../src/revenue/status.js";
 import { renderCommitSummary, renderReport, tick, type TickResult } from "../src/revenue/runner.js";
 import { enqueueGoal } from "../src/revenue/goal-queue.js";
@@ -60,6 +60,12 @@ Commands:
   status               Print the portfolio status block.
   report               Re-render the report from current state without ticking.
   seed                 Seed the default portfolio (no-op for lines that exist).
+  sync-portfolio       Apply a board decision from src/revenue/portfolio.ts to this
+                       database: insert new lines, refresh existing ones from their
+                       seed (targets, operating loop, owner steps), and kill the
+                       lines in KILLED_LINES with the board's stated reason. Run it
+                       after a board ruling, then \`report\`, or the report keeps
+                       printing the portfolio the board just replaced.
   record               Record one ledger entry by hand.
   setup-done <lineId>  Mark a line's one-time owner setup as done and queue its build goal.
   target               Set the monthly target (and optional stretch target) in shekels.
@@ -222,6 +228,26 @@ async function main(): Promise<void> {
       case "seed": {
         const inserted = seedDefaultPortfolio(db.raw);
         console.log(inserted > 0 ? `Seeded ${inserted} revenue line(s).` : "Portfolio already seeded; nothing added.");
+        for (const line of listLines(db.raw)) {
+          console.log(`  ${line.id} [${line.tier}/${line.status}] target ${formatIls(line.targetMonthlyAgorot)}`);
+        }
+        break;
+      }
+
+      case "sync-portfolio": {
+        const result = syncPortfolio(db.raw);
+        if (values.json) {
+          console.log(JSON.stringify(result, null, 2));
+          break;
+        }
+        console.log(`Inserted ${result.inserted.length}, refreshed ${result.updated.length}, killed ${result.killed.length}.`);
+        for (const id of result.inserted) console.log(`  + ${id}`);
+        for (const id of result.updated) console.log(`  ~ ${id}`);
+        for (const k of result.killed) console.log(`  x ${k.id}: ${k.reason}`);
+        if (result.unknown.length) {
+          console.log(`\n${result.unknown.length} line(s) in this database are not in portfolio.ts and were left alone:`);
+          for (const id of result.unknown) console.log(`  ? ${id}`);
+        }
         for (const line of listLines(db.raw)) {
           console.log(`  ${line.id} [${line.tier}/${line.status}] target ${formatIls(line.targetMonthlyAgorot)}`);
         }
