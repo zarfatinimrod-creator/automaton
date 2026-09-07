@@ -1,0 +1,34 @@
+{
+  "name": "pcn874",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Validator for the Israeli VAT detailed report file (PCN874 / דוח מע\"מ מפורט), checked against a layout rendered from three independent open-source implementations",
+  "main": "dist/index.js",
+  "bin": {
+    "pcn874": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "fixtures": "node scripts/make-fixtures.mjs",
+    "start": "node dist/cli.js",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "pcn874",
+    "israel",
+    "vat",
+    "tax",
+    "validator"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "typescript": "5.9.3",
+    "vitest": "5.0.0"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

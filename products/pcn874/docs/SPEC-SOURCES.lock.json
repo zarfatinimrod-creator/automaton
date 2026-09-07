@@ -1,0 +1,4 @@
+{
+  "note": "SHA-256 of the official PCN874 specification as downloaded by .github/workflows/pcn874-spec-watch.yml. Recorded so a change is noticed, and so a session with egress can diff the real document against docs/SPEC-FROM-SOURCES.md. A hash here does NOT mean anybody has read the document.",
+  "sources": {}
+}
