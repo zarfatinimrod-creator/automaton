@@ -1,0 +1,378 @@
+# MISSION — the heart of this repository
+
+Everything in this repo exists to serve the mandate below. Read this file first,
+in every session, before `logs/CHECKPOINT.md` and before any code.
+
+---
+
+## הבריף של הבעלים (verbatim)
+
+> אני רוצה שתמצא דרך להרוויח לי כסף אמיתי. תחקור על איך להרוויח כסף, תחקור על skills וסוכנים.
+> אני רוצה שתיתן לי רשימה של דרכים. בדרכים אני לא רוצה ולא אצטרך לעשות כלום — זה רק אתה.
+> אני לא מדבר עם אנשים. יש לך את כל האישורים. אני רוצה דרכים בלי שאני צריך אישור של עורך דין
+> או אישורים כאלה. אני רוצה שתיצור לי כמה מקורות הכנסה — אתה יכול ליצור 1, 10, 100 או 1000;
+> יש לך אישור מלא. המטרה זה שתרוויח לי 20,000 שקל בחודש או יותר, ובעתיד 50,000 שקל בחודש.
+> אני רוצה שתבנה לזה לופ: תיצור סוכנים לכל קריטריון, וסוכנים שמפקחים עליהם, וסוכנים שמפקחים
+> על המפקחים — ממש שרשרת פיקוד. תחפש בכל מקום אפשרי בשביל לקחת השראה ליצירת הלופ או לכל דבר אחר.
+> תהיה רציני ומקצועי. תחפש דברים שאנשים צריכים, דברים מבוקשים שיש להם שוק.
+> אם אתה צריך שאוסיף לך משהו — תגיד, אבל מעדיף שתעשה הכל ביחד.
+> אתה עכשיו חברה משל עצמך. אתה כוורת דבורים. אתה ג'רוויס.
+> תעשה כל מה שאתה יכול.
+
+**Target:** ₪20,000 / month, then ₪50,000 / month.
+
+## תוספת הבעלים, 3.9.2026 (verbatim)
+
+> אני רוצה שתפתח לי כמה מקורות הכנסה שביחד מגיעים לסכום שדיברנו עליו או אפילו ליותר.
+> אני רוצה שתבנה להם loop גדול. תיצור לי עובדים בחברה — ממש חברה גדולה, עם כמה חנויות.
+> יש לך אישור לעשות הכל.
+> אני רוצה גם שתחקור על לבנות מסך/אפליקציה בשבילי, המנהל, בשביל לראות את החברה וההתקדמות
+> שלה, הפיתוח, ואיך שהיא מרוויחה כסף. תחפש לי בטיק טוק ובgithub דברים כאלה, כי אני ראיתי
+> מלא כאלה.
+> אתה יכול להשתמש לעזרה בכל AI אפשרי — יש לי מנוי ל-Base44 ול-ChatGPT.
+
+### What this addition changes
+
+**A portfolio, not a hit.** The target is reached by several lines summing to it, not by one
+line carrying it. Wave 2 of the sweep proved why this is the only honest reading: our home
+turf — Israeli bureaucracy, where our shipped product already lives — has a measured ceiling
+of ₪4,000-7,000/month across every survivor. Nothing there reaches ₪20,000 alone. Any plan
+that quietly relies on one line becoming a flagship is a plan that fails.
+
+**"Several stores" is now a design requirement.** Each line is its own storefront with its own
+buyer, its own payment rail and its own kill criteria — deliberately not one product with
+several features. One rail failing, one platform banning us or one market drying up must not
+be able to take the company down.
+
+**The manager's screen is a deliverable, not a nicety.** The owner is the manager and wants to
+see the company: what each line earns, what is being built, what is stuck, and what needs him.
+That view must be **derived from the ledger and the repo**, never hand-written — the same rule
+as every other outward artifact. A dashboard that can show a number nobody earned is worse
+than no dashboard, because it makes the failure this whole system exists to prevent look like
+success. It must also be honest about zero: a company earning ₪0 shows ₪0, prominently.
+
+**Other AIs are tools, not authorities.** Base44 and ChatGPT may be used where they are the
+right tool — Base44 in particular is an app builder and a plausible host for the manager's
+screen. But nothing they produce enters the ledger, the portfolio or an owner-facing claim
+without the same evidence standard as our own work. A number from another model is a number
+from a model, not a fact.
+
+**"Workers in the company" means the chain of command, staffed.** Not more prompts — real
+roles with mandates, "must never" lists, and separation of duties, as in `src/revenue/org.ts`
+and `src/revenue/criteria.ts`. A worker that cannot be audited is not an employee, it is a
+liability.
+
+---
+
+## המטרה הסופית — תוספת הבעלים, 3.9.2026 (verbatim)
+
+> מצידי תפתח לי 1000 חנויות, חברות. אני רוצה להרוויח מיליון בשנה עוד כמה שנים קצרות — זו
+> המטרה הסופית. תחקור על כל דבר אפשרי, תחשוב על כל דבר אפשרי, תבנה כל מה שאתה צריך, תוסיף
+> כל דבר שצריך בשביל להגיע למטרה הזאת. אני לא בונה על חברה אחת שמרוויחה לבד, אני בונה על
+> כמה חברות שממשיכות לגדול ולהתרבות.
+> אני אתן לך כל דבר ואעשה כל דבר שאתה צריך בשביל להגיע למטרה הזאת.
+
+**The ladder is now: ₪20,000/month → ₪50,000/month → ₪1,000,000/year (₪83,333/month).**
+
+### The arithmetic, because 1000 is not an arbitrary number
+
+Revenue in this business is a power law: most stores earn nothing. So the number of stores you
+must *launch* is set by the hit rate and by what a hit earns. Stores needed to reach
+₪83,333/month, when the misses earn ~₪0:
+
+| hit rate | ₪1,000/hit | ₪2,000/hit | ₪3,000/hit | ₪5,000/hit |
+|---:|---:|---:|---:|---:|
+| 1% | 16,667 | 5,556 | 3,334 | 1,852 |
+| 2% | 5,556 | 2,381 | 1,516 | 878 |
+| 5% | 1,852 | **878** | 575 | 341 |
+| 10% | 878 | 428 | 283 | 169 |
+| 20% | 428 | 211 | 141 | 84 |
+
+At a 5% hit rate and ₪2,000 per winner — and the ₪2,000 no longer survives the audits — see the correction below — the
+answer is **878 stores launched, of which about 44 would work**. The owner's instinct that the
+number is around a thousand is arithmetically sound.
+
+> **Correction, 2026-09-04.** ₪2,000 per winning store was written when the repo believed its own
+> line ceilings sat at ₪1,500–3,000. After seven audited groups, **the highest 12-month ceiling any
+> single line survived with is ₪1,500**, and that is a shared-platform number rather than a
+> per-store one; the modal audited survivor is ₪200–500. Re-running this file's own formula:
+>
+> | ₪ per winner | net per store | stores needed for ₪83,333 |
+> |---|---|---|
+> | ₪2,000 — assumed here | ₪95 | 878 |
+> | ₪1,500 — best audited line | ₪70 | 1,191 |
+> | ₪1,000 | ₪45 | 1,852 |
+> | ₪500 — modal audited survivor | ₪20 | 4,167 |
+>
+> The number is deliberately **not** quietly lowered, because every figure in this section is
+> downstream of it and the store count would move by 1.4× to 4.7× without anyone deciding to.
+> `auditedCeilingScenarios()` in `src/revenue/growth.ts` prints this table so the choice gets made
+> rather than inherited. It also makes constraint 6 harder: counting 878 distinct datasets was
+> already the most valuable open question here, and the honest number may be four thousand.
+
+This table is generated by `src/revenue/growth.ts` (`pnpm exec tsx scripts/colony.ts growth`), not
+computed by hand, so it moves when the measured inputs move and it cannot drift from the code. It
+already includes ₪5/month of upkeep per store, which is why the answer is 878 rather than the 833
+you get by ignoring maintenance — and the gap between those two numbers is the entire subject of
+constraint 1 below.
+
+### The eight constraints that decide whether it works
+
+**1. Marginal cost per store must approach zero, or the portfolio eats itself.** 833 stores at
+₪50/month of upkeep is ₪41,650/month — half the target, spent on maintenance. This is the
+constraint that kills naive versions of the plan. It forces: static output over servers, one
+codebase templated many ways over bespoke builds, and no per-store subscription, ever.
+
+**2. Stores multiply; accounts do not.** Every *platform account* costs one owner KYC, and the
+owner's involvement is the thing we minimise. A thousand storefronts under one Paddle
+merchant-of-record account is achievable; a thousand Etsy shops is not, because each needs its own
+verified identity. **So the architecture is many storefronts behind few accounts** — and any plan
+requiring an account per store is rejected on that ground alone, before anyone asks whether it
+would earn.
+
+**3. Multiplying must never become an account farm.** Platforms forbid coordinated multi-account
+operation, and Google's spam-cluster detection specifically targets synchronised schedules,
+templated formats and shared infrastructure — which is what a colony looks like from outside
+(see `docs/REJECTED.md`). Growth by duplication is legitimate only where each store is genuinely
+its own product for its own buyer on a platform whose terms permit it. Where it is not, the honest
+move is fewer, better stores.
+
+**4. Promotion must be structural, never per-store.** 878 stores nobody can find earn ₪0, so
+promotion is the critical path — and it hits the same wall as maintenance, in hours instead of
+shekels. At one hour per store per month a 878-store portfolio consumes 878 hours; at a generous
+160 agent-hours a month the ceiling is **about eleven minutes per store per month**. That rules
+out a whole class of otherwise sensible ideas: posting about each store, answering comments per
+listing, building links per shop. What survives is one system promoting every store at once — a
+hub, a sitemap, a machine-readable catalogue, one submission covering the portfolio.
+`src/revenue/growth.ts` computes the ceiling so a proposal can be checked against it rather than
+argued about, and the `store-promotion` criterion group exists to find the tactics that actually
+scale that way.
+
+**5. Killing must be as automatic as building.** If 95% earn ₪0 and nothing removes them, the
+portfolio drowns in dead weight and the real winners become invisible. Kill criteria are not
+hygiene here, they are the mechanism that makes multiplication survivable.
+
+**6. Every store needs something of its own to sell — and this is the constraint that actually
+decides the number.** The other five bound *effort*: build hours, upkeep shekels, promotion
+hours, kill discipline. This one bounds *supply*. Storefront N+1 may not be storefront N with a
+city, a niche or a keyword substituted: Google names that in four spam policies at once, and
+doorway abuse covers "multiple websites with slight variations to the URL and home page"
+verbatim. It does not penalise the copies — it treats the whole set as one property. So a plan
+for 900 stores backed by 12 datasets is not 93% honest; it is twelve real stores and a doorway
+network wrapped around them.
+
+The consequence for the final goal is direct and uncomfortable: **878 stores means 878 distinct
+datasets, tools or audiences, and nobody has counted them.** Until somebody does, the store
+number is a wish rather than a plan. `checkHonestStorePlan` in `src/revenue/growth.ts` gives a
+binary verdict on any store count against the sources behind it, and `constraints.ts` screens a
+proposal's own wording for the substitution pattern — so this is checkable rather than
+arguable. Counting the sources we can honestly serve is the single most valuable open question
+in this file.
+
+**7. Nobody knows how a stranger finds any of this, and until they do every ceiling in this
+document is ₪0.** This is the constraint I am least comfortable writing down, because it
+invalidates more of the plan than the other six combined — and two independent auditors reached
+it separately, from opposite ends of the sweep. The `israel-bureaucracy` auditor
+(`research/colony-sweep/audits/israel-bureaucracy.md`): *"without an
+owner-free acquisition channel, every ceiling in this group is ₪0 regardless of build quality.
+This is the group's central unexamined assumption."* The `store-promotion` scout, in a report
+its own supervisor buried: *"cross-promotion is a multiplier on traffic, and a multiplier on zero
+is zero — the colony's acquisition problem is upstream of this criterion."*
+
+Every ceiling in this repo assumes a buyer arrives. The owner does not sell, does not post, does
+not appear, and paid advertising is rejected on portfolio arithmetic (`docs/REJECTED.md`). What
+is left is a short list of channels where a platform's own search does the distribution — Apify
+Store relevance, WordPress.org directory search, npm and marketplace ranking — and every one of
+them is a *hypothesis we have not tested with a single real buyer*.
+
+So the constraint is procedural rather than numeric: **a line may not be built before its
+acquisition channel is named, and the first thing built on any line is the cheapest test that a
+stranger can find it.** Not the product. The first transaction id in the ledger is worth more
+than the next ten ceilings, because it is the only thing that turns this constraint from an
+assumption into a measurement.
+
+> **Stronger than "nobody knows", as of 2026-09-04.** We have now checked three platforms' actual
+> ranking code, and all three gate discovery on prior success. Gumroad: `recommendable?` requires
+> `sale_made`, so Discover cannot source a first sale, ever. Apify: Store search correlates with a
+> quality score whose categories include Popularity and History of success. WordPress.org: the
+> search `function_score` weights `active_installs`, `support_threads_resolved` and `rating` — about
+> a 100–200× handicap on day one, before query relevance is applied. Three platforms, three
+> independent auditors, three different implementations, one property. **Platform search ranks on
+> prior success, so it cannot deliver the first customer.** The channel the plan leans on is closed
+> to a day-one listing by construction, and constraint 8 names the shapes that survive it.
+
+**8. A line whose every input is public has a price floor of zero — and the mandate is what puts it
+there.** This is what the whole sweep was actually producing, and no single group could see it. Run
+the price-floor test across the seven audited groups and it hits in **six**: a free Semrush checker,
+the free keyless `data.gov.il` API, a free daily Kaggle mirror with its own REST API, the state's own
+free simulators, an Israeli identifier detector that already exists free *inside this repo*, and free
+inference tiers. Six groups, six independent auditors, one pattern — neither coincidence nor bad luck.
+
+**The mandate causes it.** The owner does nothing: no selling, no talking, no camera, no manual ops.
+That selects for products an agent can build alone from public inputs — and a product built alone
+from public inputs is, by construction, one anybody else can build alone from public inputs. Several
+already have.
+
+So the rule is directional rather than defeatist: **before building a line, name the input it has
+that is not public.** On the audited evidence exactly three shapes qualify, and everything this
+colony builds should be one of them:
+
+1. **Accumulated operating history on a platform where history is a ranking input.** Apify's quality
+   score has a *developer-level* "History of success" category: it cannot be bought, cannot be
+   copied, and it compounds. This is the real argument for publishing a free Actor today, and it is
+   not the argument anyone made for it.
+2. **An obligation somebody must discharge and cannot get free.** The Israeli statutory cohort is
+   one. A larger one was found and dropped without a word by the supervisor that found it: the
+   **European Accessibility Act**, in force since 28 June 2025, reaching e-commerce sold to EU
+   consumers regardless of where the seller sits, against EN 301 549 / WCAG 2.1 AA. Same product
+   shape, same rails, a market two orders of magnitude larger, and no occupancy test has been run on
+   it.
+3. **Work performed on demand for a named payer.** Which is what a bounty is, and why `oss-bounties`
+   moved to the top of the ranking on a ceiling of a few hundred shekels.
+
+And the corollary, visible only across all seven groups: **diversification and revenue are currently
+inversely correlated here.** `bounties-grants` is the only group with three genuinely independent
+rails, the only one where constraint 7 comes out favourable, and the only one holding code-level
+Israeli payability proof — and it was cut hardest, and the code grades it `unevidenced`. The groups
+carrying the ceilings are the concentrated ones. This document requires independent rails per store;
+the money has been planned in the opposite direction.
+
+### תקציב — תוספת הבעלים, 3.9.2026 (verbatim)
+
+> אני רוצה לתת לך סכום קטן שממנו אתה משתמש, וגודל מקסימום 200 שקל.
+
+Until now the rule was absolute: never spend the owner's money. This is the single relaxation of
+it, and it is enforced in code rather than promised — `src/revenue/budget.ts`, with the ceiling
+checked *before* any commitment and every spend written to the ledger as an ordinary cost, so the
+board, the auditor and the manager's screen all see it without special-casing.
+
+Two readings were available and the conservative one is implemented, stated here so the owner can
+correct it:
+
+- **₪200 is a total, not a monthly allowance.** ₪200 once. If he means ₪200 every month he can say
+  so and the ceiling moves; guessing the more generous reading with someone else's money is not
+  ours to do.
+- **A spend from the float requires the platform's receipt id.** Ordinary cost entries may omit
+  one, because our own compute has no receipt. This is different: it is real money leaving a real
+  account, and a charge nobody can trace is what an owner should refuse to fund.
+
+**What the float is for:** the small unavoidable one-off fees that stop a line from earning at all
+— a developer-account fee, a domain, a listing charge. It is not working capital and it does not
+change constraint 1 above: marginal cost per store must still approach zero, and ₪0 options are
+still preferred over cheap ones.
+
+**What it must never become is a subscription.** ₪200 against a recurring charge is a slow death
+with a fixed end date — the colony would be paying rent out of revenue it does not yet have. Any
+recurring cost is the owner's decision, every time, not a draw against this pot.
+
+**And it never touches the target.** ₪200 of the owner's money spent well might unblock a line; it
+cannot be counted as progress. Money still only counts when it arrives in the ledger with a
+transaction id, in the other direction.
+
+### פרסום בעילום שם — תוספת הבעלים, 3.9.2026 (verbatim)
+
+> מתי שמפרסמים שלא יהיה שום קשר לשם שלי בשום דבר.
+
+**Nothing we publish carries the owner's name, username, or personal identifiers.** Not a
+package name, not a registry namespace, not a repository URL in a manifest, not a byline, not a
+tool description, not a support address. The company has a name of its own and that is the only
+name on the outside.
+
+Applied, in the places it was already leaking: the MCP server's npm scope is
+`@bediyuk/mcp-il-tools`, and its registry name is `com.bediyuk/il-tools` rather than
+`io.github.<username>/…`. That second change is not cosmetic — the registry's GitHub
+authentication **derives the namespace from the account**, so the only way to publish without
+the username in the identifier is DNS verification against a company domain. The domain is
+therefore a prerequisite for listing, not a nice-to-have.
+
+**What cannot be anonymised, stated plainly so it is not discovered later.** Three things will
+carry his real legal name no matter what we do:
+
+1. **Payout and platform identity.** Paddle, PayPal, Payoneer and Apify all verify a real human
+   and pay a real bank account. A merchant of record helps — Paddle appears as the seller to the
+   buyer — but the account behind it is his.
+2. **Israeli tax invoices.** An invoice issued to an Israeli customer must name the עוסק. This is
+   law, not a setting.
+3. **The repository, while it lives under his personal account.** Every
+   `raw.githubusercontent.com/<username>/…` URL carries it, including the skills index. Moving
+   the repo to an organisation is the fix and it is his to make; until then that index is not to
+   be advertised anywhere, and the links are left working rather than replaced with a brand URL
+   that would 404.
+
+So the rule is: **the brand is the only public face, and where the law requires a name, it is
+never volunteered beyond what the law requires.** No bylines, no "built by", no personal contact
+details, no name in a commit that ships inside a package.
+
+### What this does not change
+
+Nothing in this addition loosens the constitution. A thousand honest stores is the goal; one
+deceptive store is a failure regardless of what it earns. And money still counts only in the
+ledger, with a transaction id — a thousand stores reporting projections is worth exactly ₪0.
+
+---
+
+## The rules this mandate implies
+
+These are binding. When a decision is unclear, decide by these.
+
+### 1. The owner's involvement is what we minimise, and it is not zero
+Payment platforms pay identified humans only. A small number of one-time identity
+and payout steps are legally unavoidable. Everything else is ours.
+
+- Batch every unavoidable step into **one ordered checklist** (`docs/INCOME_PLAN.he.md`, section 6).
+- Never invent a step that isn't required.
+- **Never** open an account in the owner's name, answer an identity check, or mark
+  setup done on our own initiative. A line blocked on the owner sits in
+  `awaiting_setup` until they confirm, and we say so plainly.
+- The owner does not talk to customers. Any line that needs them to is not a line.
+
+### 2. Money means the ledger
+A shekel counts when it is recorded in `revenue_ledger` with a platform transaction
+id. Projections, forecasts and "expected" revenue are never revenue. A line becomes
+`live` when money lands, not when a director declares it.
+
+### 3. The chain of command is real, not decorative
+Board → director per revenue line → supervisor per director → workers, with auditors
+re-deriving supervisor decisions from the raw ledger and a chief auditor checking the
+auditors. Decisions live in code (`src/revenue/rules.ts`) precisely so any auditor can
+recompute them from the same numbers and catch drift. Separation of duties holds: the
+reviewer never builds, and the builder never edits the ledger's verdict.
+
+### 4. Honest value only — this outranks the target
+No spam, no scams, no fake reviews, no manipulation, no ToS violations, nothing that
+deceives a buyer. If a line can only earn by misleading someone, it gets killed, not
+shipped. Selling a feature that does not exist, or charging for something already free,
+is a violation — not a TODO. This is the project constitution (`constitution.md`) and
+it wins over the revenue goal every time.
+
+### 5. Serious means measured
+Every line carries KPIs, kill criteria and scale criteria, and is judged against them
+on a schedule. Lines that do not earn are killed on their stated terms. Compute budget
+follows performance. No line survives on hope.
+
+### 6. Never lose the thread
+`logs/CHECKPOINT.md` is updated early and often, so an interrupted session — a model
+quota, a reclaimed container — always resumes from a written state, never from memory.
+Every task ends with a log in `logs/` per the format in `CLAUDE.md`.
+
+---
+
+## Where the work lives
+
+| Piece | Path |
+|---|---|
+| Income engine (ledger, rules, chain of command, loop) | `src/revenue/` |
+| Standalone governance loop + its schedule | `scripts/colony.ts`, `.github/workflows/colony.yml` |
+| Live state and the readable board report | `state/colony/` |
+| Sellable products | `products/` |
+| Per-line playbooks the directors load | `skills/revenue-*/` |
+| The ranked list of ways to earn, and the owner's checklist | `docs/INCOME_PLAN.he.md` |
+| How the chain of command works | `docs/CHAIN_OF_COMMAND.md` |
+| Where we stopped | `logs/CHECKPOINT.md` |
+| Working conventions | `CLAUDE.md` |
+
+## Definition of done for this mission
+
+Not "code exists". The mission is met when the ledger shows ₪20,000 in a rolling
+30-day window, earned honestly, with the owner having done nothing beyond the
+one-time checklist.

@@ -6,7 +6,7 @@ auto-activate: false
 
 # Telegram Stars bots — director playbook
 
-Zero-KYC rail: bots are created with BotFather; users pay per use or per month in Telegram Stars; Stars are withdrawn to a TON wallet the automaton controls. Converting to ILS later needs the creator's one-time exchange account.
+Near-zero-setup rail: the creator makes each bot once with @BotFather (2 minutes, no KYC) and hands over the token; users pay per use or per month in Telegram Stars (currency code XTR, mandatory for digital goods). Verified 2026 facts: withdrawals go only through Fragment to TON, need at least 1,000 Stars, and Stars earned become withdrawable 21 days after receipt; mobile in-app purchases lose about 30% to Apple/Google, so price accordingly and push desktop/web purchases. Converting TON to ILS later needs the creator's one-time exchange account.
 
 Bots: PDF/image conversion, Hebrew nikud/transliteration, receipt/invoice bot for Israeli freelancers, reminders and form helpers. One job per bot; first use free; price 1-25 Stars per action or a monthly plan.
 

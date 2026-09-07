@@ -1,0 +1,420 @@
+#!/usr/bin/env -S node --import tsx
+/**
+ * Revenue colony — standalone CLI.
+ *
+ *   pnpm exec tsx scripts/colony.ts tick
+ *   pnpm exec tsx scripts/colony.ts status
+ *   pnpm exec tsx scripts/colony.ts record --line paid-apis --kind sale --amount 200 --currency USD --source x402 --external-id 0xabc
+ *   pnpm exec tsx scripts/colony.ts setup-done apify-actors --evidence "owner confirmed 2026-09-03"
+ *
+ * The governance half of the colony needs only a SQLite file: no wallet, no
+ * Conway key, no inference. This is what the scheduled workflow runs, and what
+ * the owner can run locally to see the board's reasoning.
+ */
+
+import fs from "node:fs";
+import path from "node:path";
+import { parseArgs } from "node:util";
+import { createDatabase } from "../src/state/database.js";
+import {
+  getLine,
+  listLines,
+  recordLedgerEntry,
+  setHumanSetupDone,
+  setTargets,
+  updateLineStatus,
+} from "../src/revenue/ledger.js";
+import { agorotFromIls, formatIls } from "../src/revenue/money.js";
+import { seedDefaultPortfolio } from "../src/revenue/portfolio.js";
+import { getRevenueStatus } from "../src/revenue/status.js";
+import { renderCommitSummary, renderReport, tick, type TickResult } from "../src/revenue/runner.js";
+import { enqueueGoal } from "../src/revenue/goal-queue.js";
+import { renderDashboard } from "../src/revenue/dashboard.js";
+import { FINAL_GOAL_MONTHLY_ILS, PLANNING_ASSUMPTIONS, scenarioTable, storesNeededFor } from "../src/revenue/growth.js";
+import {
+  ALL_CRITERIA,
+  CRITERIA_GROUPS,
+  criteriaDueForSweep,
+  criterionById,
+  markSupervised,
+  markSwept,
+  SCOUT_REPORT_DIR,
+  criteriaFromReportFilenames,
+  scoutReportFilename,
+  readLastSwept,
+  sweepCoverage,
+} from "../src/revenue/criteria.js";
+import type { LedgerKind } from "../src/revenue/types.js";
+
+const DEFAULT_DB = "state/colony/colony.db";
+const DEFAULT_REPORT = "state/colony/REPORT.md";
+const DEFAULT_DASHBOARD = "state/colony/dashboard.html";
+
+const USAGE = `colony — the revenue colony's governance loop
+
+Usage: pnpm exec tsx scripts/colony.ts <command> [options]
+
+Commands:
+  tick                 Run one cycle: ledger sync, supervisor review, board review, audit.
+                       Each step runs only when its own interval says it is due.
+  status               Print the portfolio status block.
+  report               Re-render the report from current state without ticking.
+  seed                 Seed the default portfolio (no-op for lines that exist).
+  record               Record one ledger entry by hand.
+  setup-done <lineId>  Mark a line's one-time owner setup as done and queue its build goal.
+  target               Set the monthly target (and optional stretch target) in shekels.
+  criteria             Show the search criteria and how much of the space is covered.
+                       --reconcile marks swept everything with a scout report on
+                       disk, dated by the file's mtime. Run it after a sweep wave:
+                       the workflow writes reports and cannot reach this database.
+                       --wave-args <group,group> prints the Workflow args for the
+                       next wave, with already-swept criteria pre-excluded.
+  dashboard            Regenerate the manager's screen (HTML) from the ledger.
+  growth               Model the path to the final goal (₪1M/year) and print the scenarios.
+
+Common options:
+  --db <path>          SQLite file (default ${DEFAULT_DB})
+  --report <path>      Report file written by tick/report (default ${DEFAULT_REPORT})
+  --html <path>        Manager dashboard written by tick/dashboard (default ${DEFAULT_DASHBOARD})
+  --json               Print machine-readable JSON instead of prose
+
+tick options:
+  --force              Ignore interval gating and run every step
+  --no-feed            Do not file a goal (use when no orchestrator can execute one)
+  --no-seed            Do not seed the portfolio even if the colony is empty
+  --now <iso>          Override the clock (testing)
+
+record options:
+  --line <id>          Revenue line id                                  (required)
+  --kind <kind>        sale | subscription | payout | refund | cost     (required)
+  --amount <n>         Amount in MINOR units: 1990 = $19.90             (required)
+  --currency <code>    ILS | USD | USDC | EUR | GBP                     (required)
+  --source <name>      stripe | lemonsqueezy | gumroad | x402 | manual  (required)
+  --external-id <id>   Platform transaction id. REQUIRED for sale, subscription,
+                       payout and refund — money only counts when it carries the
+                       platform's id. Only a cost may omit it.
+  --note <text>        Free text
+  --occurred-at <iso>  Defaults to now
+
+setup-done options:
+  --evidence <text>    Where and when the owner confirmed                (required)
+  --undo               Mark setup as NOT done and park the line again
+
+target options:
+  --ils <n>            Monthly target in shekels                         (required)
+  --stretch <n>        Stretch target in shekels
+
+criteria options:
+  --due                List only the criteria due for a fresh search
+  --group <id>         Restrict to one criterion group
+  --briefs             Print each criterion's full search brief
+  --mark <id>          Record a criterion as swept now (id, or a group id for all of it)
+  --supervised <id>    Record that a group's supervisor filed its report
+`;
+
+function fail(message: string): never {
+  console.error(`Error: ${message}`);
+  process.exit(1);
+}
+
+function openDb(dbPath: string) {
+  const resolved = path.resolve(dbPath);
+  fs.mkdirSync(path.dirname(resolved), { recursive: true });
+  return createDatabase(resolved);
+}
+
+function writeReport(reportPath: string, body: string): void {
+  const resolved = path.resolve(reportPath);
+  fs.mkdirSync(path.dirname(resolved), { recursive: true });
+  fs.writeFileSync(resolved, body);
+}
+
+function num(value: string | undefined, name: string): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) fail(`--${name} must be a number`);
+  return parsed;
+}
+
+async function main(): Promise<void> {
+  const { values, positionals } = parseArgs({
+    args: process.argv.slice(2),
+    allowPositionals: true,
+    options: {
+      db: { type: "string", default: DEFAULT_DB },
+      report: { type: "string", default: DEFAULT_REPORT },
+      html: { type: "string", default: DEFAULT_DASHBOARD },
+      json: { type: "boolean", default: false },
+      force: { type: "boolean", default: false },
+      // node:util parseArgs has no --no-<flag> negation, so the negative forms
+      // are declared explicitly. The scheduled workflow invokes `--no-feed`,
+      // and without this the very first run dies parsing its own arguments.
+      "no-feed": { type: "boolean", default: false },
+      "no-seed": { type: "boolean", default: false },
+      now: { type: "string" },
+      line: { type: "string" },
+      kind: { type: "string" },
+      amount: { type: "string" },
+      currency: { type: "string" },
+      source: { type: "string" },
+      "external-id": { type: "string" },
+      note: { type: "string" },
+      "occurred-at": { type: "string" },
+      evidence: { type: "string" },
+      undo: { type: "boolean", default: false },
+      ils: { type: "string" },
+      stretch: { type: "string" },
+      due: { type: "boolean", default: false },
+      group: { type: "string" },
+      briefs: { type: "boolean", default: false },
+      mark: { type: "string" },
+      supervised: { type: "string" },
+      reconcile: { type: "boolean", default: false },
+      "wave-args": { type: "string" },
+      help: { type: "boolean", default: false },
+    },
+  });
+
+  const command = positionals[0];
+  if (!command || values.help) {
+    console.log(USAGE);
+    return;
+  }
+
+  const db = openDb(values.db!);
+  try {
+    switch (command) {
+      case "tick": {
+        const result: TickResult = await tick(db.raw, {
+          nowIso: values.now,
+          force: values.force,
+          feedGoals: !values["no-feed"],
+          seed: !values["no-seed"],
+        });
+        writeReport(values.report!, renderReport(db.raw, result));
+        writeReport(values.html!, renderDashboard(db.raw, { nowIso: values.now, blockers: result.blockers }));
+        if (values.json) {
+          console.log(JSON.stringify(result, null, 2));
+        } else {
+          console.log(renderCommitSummary(result));
+          if (result.ran.length) console.log(`Ran: ${result.ran.join(", ")}`);
+          if (result.skipped.length) console.log(`Not due: ${result.skipped.join(", ")}`);
+          for (const blocker of result.blockers) console.log(`Blocked: ${blocker}`);
+          console.log(`Report written to ${values.report}`);
+        }
+        break;
+      }
+
+      case "status": {
+        const status = getRevenueStatus(db.raw, { maxLines: 40 });
+        console.log(status || "Revenue colony has no data yet. Run `tick` to seed it.");
+        break;
+      }
+
+      case "report": {
+        const result = await tick(db.raw, { nowIso: values.now, force: false, feedGoals: false, seed: false });
+        // A report-only run must not consume the intervals it just checked.
+        writeReport(values.report!, renderReport(db.raw, result));
+        writeReport(values.html!, renderDashboard(db.raw, { nowIso: values.now, blockers: result.blockers }));
+        console.log(`Report written to ${values.report}`);
+        break;
+      }
+
+      case "seed": {
+        const inserted = seedDefaultPortfolio(db.raw);
+        console.log(inserted > 0 ? `Seeded ${inserted} revenue line(s).` : "Portfolio already seeded; nothing added.");
+        for (const line of listLines(db.raw)) {
+          console.log(`  ${line.id} [${line.tier}/${line.status}] target ${formatIls(line.targetMonthlyAgorot)}`);
+        }
+        break;
+      }
+
+      case "record": {
+        const lineId = values.line ?? fail("--line is required");
+        const kind = (values.kind ?? fail("--kind is required")) as LedgerKind;
+        const amount = num(values.amount, "amount");
+        if (!Number.isInteger(amount) || amount === 0) fail("--amount must be a non-zero integer in minor units");
+        const currency = values.currency ?? fail("--currency is required");
+        const source = values.source ?? fail("--source is required");
+        if (!getLine(db.raw, lineId)) fail(`no revenue line "${lineId}"`);
+        if (!values["external-id"]?.trim() && kind !== "cost") {
+          fail(
+            `--external-id is required for a ${kind}. Money counts only when it carries the platform's ` +
+            "transaction id, which is also what makes the entry idempotent. Only --kind cost may omit it.",
+          );
+        }
+
+        const entry = recordLedgerEntry(db.raw, {
+          lineId,
+          kind,
+          amountMinor: amount,
+          currency,
+          source,
+          externalId: values["external-id"] ?? null,
+          occurredAt: values["occurred-at"],
+          note: values.note ?? null,
+        });
+        if (!entry) {
+          console.log(`Already recorded: ${source}/${values["external-id"]}. Nothing changed.`);
+        } else {
+          console.log(`Recorded ${entry.kind} ${formatIls(entry.amountAgorot)} on ${entry.lineId} via ${entry.source}.`);
+          const line = getLine(db.raw, lineId)!;
+          console.log(`  ${line.id} is now ${line.status}.`);
+        }
+        break;
+      }
+
+      case "setup-done": {
+        const lineId = positionals[1] ?? values.line ?? fail("pass the line id: colony setup-done <lineId>");
+        const line = getLine(db.raw, lineId) ?? fail(`no revenue line "${lineId}"`);
+        if (values.undo) {
+          setHumanSetupDone(db.raw, lineId, false);
+          if (line.status !== "killed" && line.status !== "awaiting_setup") {
+            updateLineStatus(db.raw, lineId, "awaiting_setup", { force: true });
+          }
+          console.log(`${lineId}: setup marked incomplete; line parked in awaiting_setup.`);
+          break;
+        }
+        const evidence = values.evidence
+          ?? fail("--evidence is required: say where and when the owner confirmed the setup");
+        setHumanSetupDone(db.raw, lineId, true);
+        if (line.status === "awaiting_setup") updateLineStatus(db.raw, lineId, "proposed");
+        const queued = enqueueGoal(db.raw, { lineId, phase: "build", extra: `owner setup confirmed: ${evidence}` });
+        console.log(`${lineId}: setup confirmed (${evidence}).`);
+        console.log(queued ? "Build goal queued." : "A goal for this line was already queued or active.");
+        break;
+      }
+
+      case "target": {
+        const ils = num(values.ils, "ils");
+        const stretch = values.stretch === undefined ? undefined : num(values.stretch, "stretch");
+        setTargets(db.raw, agorotFromIls(ils), stretch === undefined ? undefined : agorotFromIls(stretch));
+        console.log(`Target set to ${formatIls(agorotFromIls(ils))}/month${stretch !== undefined ? `, stretch ${formatIls(agorotFromIls(stretch))}` : ""}.`);
+        break;
+      }
+
+      case "growth": {
+        const need = storesNeededFor(FINAL_GOAL_MONTHLY_ILS);
+        if (values.json) {
+          console.log(JSON.stringify({ goalMonthlyIls: FINAL_GOAL_MONTHLY_ILS, assumptions: PLANNING_ASSUMPTIONS, need, scenarios: scenarioTable() }, null, 2));
+          break;
+        }
+        console.log(`Final goal: ₪1,000,000/year = ₪${FINAL_GOAL_MONTHLY_ILS.toLocaleString("en")}/month.\n`);
+        console.log(`On the measured assumptions (${(PLANNING_ASSUMPTIONS.hitRate * 100).toFixed(0)}% of stores reach ₪${PLANNING_ASSUMPTIONS.hitCeilingIls}, upkeep ₪${PLANNING_ASSUMPTIONS.maintenanceIlsPerStore}/store):`);
+        console.log(`  ${need.reason}\n`);
+        console.log("Stores that must be LAUNCHED, by hit rate and per-hit ceiling:");
+        const ceilings = [1000, 2000, 3000, 5000];
+        console.log("  hit rate | " + ceilings.map((c) => `₪${c}`.padStart(9)).join(" | "));
+        for (const row of scenarioTable()) {
+          const cells = row.byCeiling.map((c) => (c.stores === null ? "never" : c.stores.toLocaleString("en")).padStart(9));
+          console.log(`  ${(row.hitRate * 100).toFixed(0).padStart(7)}% | ` + cells.join(" | "));
+        }
+        console.log("\nThese are launches, not successes. A store whose upkeep exceeds what it earns on");
+        console.log("average makes the portfolio worse the more of them there are — see src/revenue/growth.ts.");
+        break;
+      }
+
+      case "dashboard": {
+        const html = renderDashboard(db.raw, { nowIso: values.now });
+        writeReport(values.html!, html);
+        console.log(`Manager dashboard written to ${values.html}`);
+        break;
+      }
+
+      case "criteria": {
+        const nowMs = values.now ? Date.parse(values.now) : Date.now();
+        if (!Number.isFinite(nowMs)) fail("--now must be an ISO timestamp");
+
+        if (values["wave-args"]) {
+          // Hands the Workflow tool its args, already filled in. Assembling this
+          // by hand is how a wave ends up re-running swept criteria and blinding
+          // the ones that matter — see args.exclude in sweep-workflow.ts.
+          const dir = path.resolve(SCOUT_REPORT_DIR);
+          const done = fs.existsSync(dir)
+            ? new Set(criteriaFromReportFilenames(fs.readdirSync(dir)).known)
+            : new Set<string>();
+          const wanted = values["wave-args"].split(",").map((g) => g.trim()).filter(Boolean);
+          const groups = wanted.map((id) => CRITERIA_GROUPS.find((g) => g.id === id) ?? fail(`no criterion group "${id}"`));
+          const exclude = groups.flatMap((g) => g.criteria.filter((c) => done.has(c.id)).map((c) => c.id));
+          const remaining = groups.reduce((n, g) => n + g.criteria.filter((c) => !done.has(c.id)).length, 0);
+          if (remaining === 0) fail(`every criterion in ${wanted.join(", ")} is already swept — nothing for a wave to do`);
+          console.log(JSON.stringify({ groups: wanted, exclude }));
+          console.error(`\n${remaining} unswept criteri${remaining === 1 ? "on" : "a"}; ${exclude.length} excluded as already swept.`);
+          break;
+        }
+        if (values.reconcile) {
+          // The scout reports on disk are the durable record; the kv rows are a
+          // convenience. When they disagree, disk wins, and the file's mtime is
+          // the honest sweep date — better than "now", which would reset the
+          // 30-day re-sweep clock on work done weeks ago.
+          const dir = path.resolve(SCOUT_REPORT_DIR);
+          if (!fs.existsSync(dir)) fail(`no scout report directory at ${dir}`);
+          const { known, unknown } = criteriaFromReportFilenames(fs.readdirSync(dir));
+          for (const id of known) {
+            const at = fs.statSync(path.join(dir, scoutReportFilename(id))).mtime.toISOString();
+            markSwept(db.raw, id, at);
+          }
+          console.log(`Reconciled ${known.length} of ${ALL_CRITERIA.length} criteria from ${SCOUT_REPORT_DIR}.`);
+          if (unknown.length) {
+            console.log(`\n${unknown.length} file(s) match no criterion in the registry — a rename or a stray:`);
+            for (const name of unknown) console.log(`  ${name}`);
+          }
+          break;
+        }
+        if (values.mark) {
+          const atIso = new Date(nowMs).toISOString();
+          const group = CRITERIA_GROUPS.find((g) => g.id === values.mark);
+          const targets = group ? group.criteria : [criterionById(values.mark) ?? fail(`no criterion or group "${values.mark}"`)];
+          for (const c of targets) markSwept(db.raw, c.id, atIso);
+          console.log(`Marked ${targets.length} criteri${targets.length === 1 ? "on" : "a"} swept at ${atIso}.`);
+          break;
+        }
+        if (values.supervised) {
+          const group = CRITERIA_GROUPS.find((g) => g.id === values.supervised)
+            ?? fail(`no criterion group "${values.supervised}"`);
+          markSupervised(db.raw, group.id, new Date(nowMs).toISOString());
+          console.log(`Group "${group.id}" marked supervised at ${new Date(nowMs).toISOString()}.`);
+          break;
+        }
+
+        const coverage = sweepCoverage(db.raw, nowMs);
+        const dueIds = new Set(criteriaDueForSweep(readLastSwept(db.raw), nowMs).map((c) => c.id));
+        const groups = values.group
+          ? [CRITERIA_GROUPS.find((g) => g.id === values.group) ?? fail(`no criterion group "${values.group}"`)]
+          : CRITERIA_GROUPS;
+
+        if (values.json) {
+          console.log(JSON.stringify({ totalCriteria: ALL_CRITERIA.length, due: dueIds.size, coverage }, null, 2));
+          break;
+        }
+
+        console.log(`Search space: ${ALL_CRITERIA.length} criteria in ${CRITERIA_GROUPS.length} groups, one scout each, one supervisor per group.`);
+        console.log(`Due for a fresh search: ${dueIds.size}.\n`);
+        for (const g of groups) {
+          const cov = coverage.find((c) => c.groupId === g.id)!;
+          const supervised = cov.lastSupervisedIso ? `supervised ${cov.lastSupervisedIso.slice(0, 10)}` : "never supervised";
+          console.log(`## ${g.id} — ${g.title}`);
+          console.log(`   ${cov.swept}/${cov.total} swept, ${cov.due} due, ${supervised}`);
+          for (const c of g.criteria) {
+            const isDue = dueIds.has(c.id);
+            if (values.due && !isDue) continue;
+            console.log(`   ${isDue ? "[ ]" : "[x]"} ${c.id}`);
+            if (values.briefs) console.log(`       ${c.brief}`);
+          }
+          console.log("");
+        }
+        break;
+      }
+
+      default:
+        console.log(USAGE);
+        fail(`unknown command "${command}"`);
+    }
+  } finally {
+    db.close();
+  }
+}
+
+main().catch((error) => {
+  console.error(error instanceof Error ? error.stack ?? error.message : String(error));
+  process.exit(1);
+});

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>הקולוניה — מסך המנהל</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --line:#e3e6ea; --ink:#16191d; --muted:#666e79;
+          --ok:#1f7a4d; --warn:#a8620a; --bad:#a3242b; --accent:#2b5fd9; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#12151a; --card:#1a1f26; --line:#2b323b; --ink:#e8ebef; --muted:#98a1ac;
+            --ok:#4fbf87; --warn:#e0a458; --bad:#e0737b; --accent:#7aa2f7; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 system-ui,-apple-system,"Segoe UI",Arial,sans-serif; }
+  .wrap { max-width:900px; margin:0 auto; padding:20px 16px 56px; }
+  h1 { font-size:1.45rem; margin:.2em 0 .1em; }
+  h2 { font-size:1.05rem; margin:1.8em 0 .5em; color:var(--muted); font-weight:600;
+       text-transform:uppercase; letter-spacing:.04em; }
+  .lede { font-size:1.05rem; color:var(--muted); margin:.2em 0 1.4em; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin:10px 0; }
+  table { width:100%; border-collapse:collapse; }
+  th,td { text-align:right; padding:9px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:.8rem; color:var(--muted); font-weight:600; }
+  td.num { font-variant-numeric:tabular-nums; white-space:nowrap; }
+  code { font-size:.78rem; color:var(--muted); }
+  .pill { display:inline-block; padding:2px 9px; border-radius:99px; font-size:.78rem; border:1px solid var(--line); white-space:nowrap; }
+  .s-live,.s-scaling { color:var(--ok); border-color:var(--ok); }
+  .s-awaiting_setup { color:var(--warn); border-color:var(--warn); }
+  .s-building { color:var(--accent); border-color:var(--accent); }
+  .grade { font-size:.72rem; }
+  .g-measured { color:var(--ok); } .g-inferred { color:var(--warn); } .g-unevidenced { color:var(--bad); }
+  .basis { display:grid; grid-template-columns:1fr auto; gap:6px 12px; }
+  .basis div:nth-child(even) { font-variant-numeric:tabular-nums; text-align:left; }
+  .note { color:var(--muted); font-size:.9rem; }
+  .empty { color:var(--muted); }
+  ul,ol { margin:.4em 0; padding-inline-start:1.2em; }
+  li { margin:.3em 0; }
+  details summary { cursor:pointer; font-weight:600; }
+  footer { color:var(--muted); font-size:.8rem; margin-top:2em; border-top:1px solid var(--line); padding-top:12px; }
+  .bar { height:8px; background:var(--line); border-radius:99px; overflow:hidden; margin:6px 0 2px; }
+  .bar > i { display:block; height:100%; background:var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>החברה עדיין לא הרוויחה שקל.</h1>
+  <p class="lede">8 מקורות הכנסה בנויים ומחכים להרשמות חד-פעמיות שלך. כל עוד הן לא בוצעו, אף אחד מהם לא יכול לקבל כסף.</p>
+
+  <h2>מה התוכנית נשענת עליו</h2>
+  <div class="card">
+    <div class="basis">
+      <div>סכום היעדים של כל הקווים</div><div>₪16,500 מול מטרה של ₪20,000</div>
+      <div><span class="g-measured">נמדד</span> — מבוסס על ראיה שאפשר לבדוק</div><div>₪6,500</div>
+      <div><span class="g-inferred">מוסק</span></div><div>₪1,500</div>
+      <div><span class="g-unevidenced">ללא ראיה</span> — משימת מחקר, לא תחזית</div><div>₪8,500</div>
+    </div>
+    <p class="note">הסכום הכנה כרגע הוא <strong>₪6,500</strong>, לא ₪16,500. ללא ראיה: <code>templates</code>, <code>telegram-bots</code>, <code>dev-extensions</code>, <code>oss-bounties</code>.</p>
+  </div>
+
+  <h2>מה מחכה לך (8)</h2>
+  <div class="card">
+      <details>
+        <summary>Apify pay-per-event Actors (Israeli data sources + long-tail scrapers)</summary>
+        <ol><li>Create an Apify account in your name and complete Apify KYC (government ID, proof of address, tax document, beneficial-ownership info). This one step gates ALL THREE of: receiving any payout, setting a price on an Actor, and x402/agentic eligibility. Publishing free Actors is the only thing possible before it.</li><li>Open a PayPal account in your name (PayPal Israel) and link it as the Apify payout method (minimum payout $20 for PayPal and Wise, $100 for other methods)</li><li>Register as osek patur (self-service online form) before the first payout</li></ol>
+      </details>
+      <details>
+        <summary>Hebrew small-business web tools (invoices, receipts, VAT, net salary)</summary>
+        <ol><li>Open a merchant-of-record seller account (Paddle; Lemon Squeezy as fallback) in your name and complete identity/tax verification</li><li>Add an Israeli bank account (IBAN/SWIFT) or PayPal for payouts</li><li>Register as osek patur (self-service online form) before the first payout</li></ol>
+      </details>
+      <details>
+        <summary>Spreadsheet and Notion business templates (Hebrew + English) on Etsy and an own store</summary>
+        <ol><li>Open an Etsy shop in your name (ID verification) and enrol in Etsy Payments with a Payoneer account (KYC) linked to your Israeli bank</li></ol>
+      </details>
+      <details>
+        <summary>Paid developer APIs (Hebrew NLP, RTL PDF, Israeli validators) over x402 and an API marketplace</summary>
+        <ol><li>Create the API marketplace provider account in your name and add a PayPal payout method (x402 needs nothing; converting USDC to ILS later needs a one-time Israeli exchange account with KYC)</li></ol>
+      </details>
+      <details>
+        <summary>Telegram bots paid with Stars (Hebrew utility bots + file/format tools)</summary>
+        <ol><li>Create the bot in Telegram with @BotFather from your own Telegram account (2 minutes) and hand over the bot token as TELEGRAM_BOT_TOKEN; no KYC, but a bot must belong to a Telegram user</li></ol>
+      </details>
+      <details>
+        <summary>Browser and editor extensions with a paid pro tier (license keys)</summary>
+        <ol><li>Pay the one-time Chrome Web Store developer fee ($5) with a Google account that has 2-step verification; create a Microsoft/Azure DevOps publisher for VS Code (free); reuse the merchant-of-record account from il-biz-tools for license keys</li></ol>
+      </details>
+      <details>
+        <summary>Hebrew evergreen guides and calculators with affiliate and ad revenue</summary>
+        <ol><li>Open the affiliate program accounts in your name (they require a tax form and a PayPal or Payoneer payout) and provide the affiliate IDs</li></ol>
+      </details>
+      <details>
+        <summary>Open-source bounties</summary>
+        <ol><li>Connect your GitHub account to a bounty platform and complete its payout onboarding (verify it pays to Israel before enabling this line)</li></ol>
+      </details>
+  </div>
+
+  <h2>מקורות ההכנסה</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>קו</th><th>מצב</th><th>30 יום</th><th>יעד</th><th>החלטת מפקח</th></tr></thead>
+      <tbody>
+      <tr>
+        <td><strong>Apify pay-per-event Actors (Israeli data sources + long-tail scrapers)</strong><br><code>apify-actors</code></td>
+        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪3,000.00<br><span class="grade g-measured">נמדד</span></td>
+        <td>escalate</td>
+      </tr>
+      <tr>
+        <td><strong>Hebrew small-business web tools (invoices, receipts, VAT, net salary)</strong><br><code>il-biz-tools</code></td>
+        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪5,000.00<br><span class="grade g-measured">נמדד</span></td>
+        <td>escalate</td>
+      </tr>
+      <tr>
+        <td><strong>Spreadsheet and Notion business templates (Hebrew + English) on Etsy and an own store</strong><br><code>templates</code></td>
+        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪3,000.00<br><span class="grade g-unevidenced">ללא ראיה</span></td>
+        <td>escalate</td>
+      </tr>
+      <tr>
+        <td><strong>Paid developer APIs (Hebrew NLP, RTL PDF, Israeli validators) over x402 and an API marketplace</strong><br><code>paid-apis</code></td>
+        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪1,200.00<br><span class="grade g-measured">נמדד</span></td>
+        <td>escalate</td>
+      </tr>
+      <tr>
+        <td><strong>x402 services for other agents (zero-KYC line)</strong><br><code>agent-services</code></td>
+        <td><span class="pill s-proposed">מוצע</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪800.00<br><span class="grade g-measured">נמדד</span></td>
+        <td>hold</td>
+      </tr>
+      <tr>
+        <td><strong>Telegram bots paid with Stars (Hebrew utility bots + file/format tools)</strong><br><code>telegram-bots</code></td>
+        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪1,500.00<br><span class="grade g-unevidenced">ללא ראיה</span></td>
+        <td>escalate</td>
+      </tr>
+      <tr>
+        <td><strong>Browser and editor extensions with a paid pro tier (license keys)</strong><br><code>dev-extensions</code></td>
+        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪2,500.00<br><span class="grade g-unevidenced">ללא ראיה</span></td>
+        <td>escalate</td>
+      </tr>
+      <tr>
+        <td><strong>Hebrew evergreen guides and calculators with affiliate and ad revenue</strong><br><code>hebrew-content</code></td>
+        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪1,500.00<br><span class="grade g-inferred">מוסק</span></td>
+        <td>escalate</td>
+      </tr>
+      <tr>
+        <td><strong>Open-source bounties</strong><br><code>oss-bounties</code></td>
+        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪1,500.00<br><span class="grade g-unevidenced">ללא ראיה</span></td>
+        <td>escalate</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>חסימות ותקיעות</h2>
+  <div class="card">
+    <p class="empty">אין חסימות פתוחות מלבד ההרשמות שלך.</p>
+  </div>
+
+  <h2>הכסף שלך</h2>
+  <div class="card">
+    <div class="basis">
+      <div>מה שאישרת</div><div>₪200.00</div>
+      <div>מה שהוצא</div><div>₪0.00</div>
+      <div>מה שנשאר</div><div>₪200.00</div>
+    </div>
+    <p class="note">
+      התקרה נבדקת בקוד לפני כל התחייבות, לא אחריה, וכל חיוב נרשם בלדג'ר עם מזהה קבלה.
+      זה סכום חד-פעמי ולא הרשאה חודשית — אם התכוונת אחרת, תגיד ואשנה.
+      עוד לא הוצא שקל.
+    </p>
+  </div>
+
+  <h2>המטרה הסופית</h2>
+  <div class="card">
+    <div class="basis">
+      <div>מיליון ש״ח בשנה, בחודשים</div><div>₪83,333</div>
+      <div>חנויות שצריך להשיק כדי להגיע לשם</div><div>878</div>
+      <div>מהן צפויות לעבוד</div><div>44</div>
+      <div>קווים חיים כרגע</div><div>0</div>
+    </div>
+    <p class="note">
+      ההנחות: 5% מהחנויות מגיעות ל-₪2,000 לחודש,
+      השאר ל-₪0, ותחזוקה של ₪5 לחנות לחודש.
+      זה מודל עם קלט מוצהר, לא תחזית — הקלט משתנה כשהמדידות משתנות.
+      אם חנות עולה בתחזוקה יותר ממה שהיא מרוויחה בממוצע, עוד חנויות רק מפסידות יותר.
+    </p>
+  </div>
+
+  <h2>כמה מהשוק כבר נסרק</h2>
+  <div class="card">
+    <div class="bar"><i style="width:28.3%"></i></div>
+    <p class="note">34 מתוך 120 קריטריונים נסרקו, ב-3 קבוצות שעברו פיקוח.</p>
+  </div>
+
+  <footer>
+    נוצר מהלדג'ר ב-2026-09-03T17:11:22.957Z.
+    כל מספר בדף הזה מגיע מ-<code>state/colony/colony.db</code> — אין כאן שדה שאפשר למלא ביד.
+  </footer>
+</div>
+</body>
+</html>

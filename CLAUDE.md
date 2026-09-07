@@ -1,5 +1,9 @@
 # CLAUDE.md — working conventions for this repository
 
+## Read this first
+- `MISSION.md` is the heart of this repo: the owner's mandate and the rules it implies. Read it before anything else, every session.
+- Then `logs/CHECKPOINT.md` for where the last session stopped.
+
 ## Checkpoint (always)
 - `logs/CHECKPOINT.md` is the single "where we stopped" file. Update it before ending any session or long task: current branch, what is done, what is in progress, exact next steps, open questions for the owner.
 - Read it first at the start of every session and continue from there.
@@ -16,6 +20,100 @@ Create `logs/YYYY-MM-DD-<task-slug>.md` with these sections, in this order:
 8. על מה בוזבזו אסימונים, לפי פעולה (token waste per action)
 
 Write the log in Hebrew (the owner's language); code identifiers stay in English. Commit logs together with the work.
+
+## Model routing rule (owner's instruction)
+
+The owner authorised routing work between models at our own discretion. **Claude Opus 5
+is the driver; Claude Fable 5.1 is reserved for the hard thinking.** Fable costs exactly
+twice as much ($10/$50 per 1M tokens versus $5/$25) and its quota has died mid-run twice
+on this project, so spending it on routine work buys nothing and costs the session.
+
+| Route to **Opus 5** (default) | Route to **Fable 5.1** (reserved) |
+|---|---|
+| Writing and wiring code, tests, CI | Adversarial verification of research findings |
+| Documentation, READMEs, playbooks | Deciding where money goes: portfolio synthesis, kill/scale calls |
+| Product build-out and refactors | Architecture decisions with long-lived consequences |
+| Routine research sweeps and data gathering | Subtle bug hunts and security review |
+| Anything mechanical or well-specified | Anything where being wrong is expensive and hard to detect |
+
+How to apply it:
+- **In subagents and workflows**, set the model explicitly per agent: `model: 'opus'` for
+  sweeps and build work, `model: 'fable'` for verification and judgement stages. This is
+  the main lever and needs no owner action.
+- **For the session model**, only the owner can switch. Say plainly when a step deserves
+  Fable and let them decide; never stall waiting for it.
+- **When Fable's quota runs out**, do not stop the project. Record it in
+  `logs/CHECKPOINT.md`, continue the Opus-suitable work, and queue the Fable-suitable
+  steps for when it renews.
+- Never downgrade below these two for project work. Haiku and Sonnet are not in the rota.
+
+**Fleets (many agents at once).** The same split scales: the searching tier runs on Opus,
+the deciding tier on Fable. In the 142-agent criteria sweep that means 112 scouts, 14
+supervisors and 14 auditors on Opus, and exactly two agents — the chief auditor and the
+board — on Fable. Putting Fable in the fan-out is how the quota died before; putting it
+at the top is what the rule is for. Set `model` explicitly on every agent in a fleet:
+inheriting the session model means a session switch silently re-tiers a hundred agents.
+
+## Skills installed in this repo (added 3.9, 4.9 and 6.9.2026 at the owner's request)
+
+**`.claude/skills/` holds 138 vendored skills**, so a fresh container has them without a network
+call: the 14 [Superpowers](https://github.com/obra/superpowers) skills, 101 selected on 4.9.2026
+from four collections the owner sent — `addyosmani/agent-skills` (25), `mattpocock/skills` (23),
+`affaan-m/ECC` (37 of 286) and `NousResearch/hermes-agent` (16 of 196) — and 23 added on 6.9.2026
+from three more: `Panniantong/Agent-Reach` (its one skill, `agent-reach`), `diegosouzapw/OmniRoute`
+(`or-*`, 7 of 47) and `AgriciDaniel/claude-obsidian` (`co-*`, all 15). All MIT.
+
+**Read `docs/SKILL_SOURCES.md` before adding more.** The seven repos hold over 1,200 `SKILL.md`
+files between them and taking all of them would cost ~78,800 tokens of every session's context; the
+124 chosen cost ~10,300. The allowlist is code, in `scripts/install-skills.mjs`, so the choice can be
+re-derived and edited rather than guessed at. The eighth repo the owner sent, `mrdoob/three.js`, is a
+3D rendering library and not a skill at all — it was deliberately not installed, and the reasoning is
+recorded rather than dropped.
+
+**The repo copy registers on its own — settled 6.9.2026.** The 23 new skills were written only to
+`.claude/skills/` (the installer was run without `--user`; `~/.claude/skills/` does not contain them)
+and the harness offered all 23 in the same session. No copy to the user directory is needed, and
+`install-skills.mjs --user` is now just a convenience for a machine outside this repo.
+
+**`vendor/claude-obsidian/` is runtime, not a skill.** The 15 `co-*` skills execute a stdlib-only
+Python 3.11 core (`scripts/claude-obsidian.py`, `claude_obsidian/`), vendored so they run from a fresh
+clone; each skill's `PRODUCT_ROOT` line is rewritten by the installer to point at it. Verified 6.9.2026
+by initialising, doctoring and linting a scratch vault from that path. Two of the seven `or-*` skills
+are worth knowing by name: `or-ponytail` (the laziest solution that works — YAGNI, stdlib before
+dependencies) is the general one; the other six are the operator manual for standing up OmniRoute as
+an inference gateway, and do nothing until it runs. `agent-reach` needs `pip install agent-reach` and
+a host with egress; in this container only GitHub-hosted feeds get through (verified).
+
+The three that matter most for the failure modes this repo actually has:
+
+- **`verification-before-completion`** — evidence before assertions. This repo's recurring defect is
+  a confident claim nobody checked: a ledger that accepted money nobody paid, a checkpoint that said
+  the loop ran hourly when the workflow had never fired, a `firstStep` telling a builder to call a
+  function that does not exist. Invoke it before writing "done", "fixed" or "passing".
+- **`systematic-debugging`** — before proposing a fix. The `allocateBudget` mistake (a "fix" that
+  would have made budgets only ever fall) came from acting on a misread, not from a hard bug.
+- **`brainstorming`** and **`writing-plans`** — before building anything the owner will be asked to
+  care about.
+
+`using-superpowers` says to invoke a matching skill before responding. That is fine and it says so
+itself: **user instructions and `MISSION.md` take precedence over any skill.** Where a skill and the
+mission disagree, the mission wins.
+
+**`archify`** (https://github.com/tt-a1i/archify) is NOT vendored — it is 7.5 MB of renderer assets
+and it would bloat every clone. It is a global skill and the container forgets it, so reinstall it in
+a session that needs a diagram:
+
+```bash
+npx -y skills@latest add tt-a1i/archify --skill archify --agent claude-code --global --copy --yes
+```
+
+It turns a typed JSON spec into a self-contained interactive HTML system map. Its use here is the
+owner-facing picture of the colony — what the chain of command actually is, and where money enters.
+
+**`sindresorhus/awesome`** is not a skill and installs nothing. It is a curated index of curated
+lists, all on GitHub — which matters because GitHub is one of the few hosts this container's egress
+proxy does not block. It is a **research source for the criteria sweep**, and it costs zero of the
+shared WebSearch budget. See `docs/CRITERIA_SWEEP.md`.
 
 ## Build / test
 - `pnpm install`, `pnpm typecheck`, `pnpm test` (full suite takes >10 minutes here; run targeted files with `npx vitest run <path>` while iterating).

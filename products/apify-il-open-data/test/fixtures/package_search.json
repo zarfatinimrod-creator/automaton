@@ -1,0 +1,66 @@
+{
+  "help": "https://data.gov.il/api/3/action/help_show?name=package_search",
+  "success": true,
+  "result": {
+    "count": 2,
+    "sort": "score desc, metadata_modified desc",
+    "facets": {},
+    "results": [
+      {
+        "id": "246d949c-a253-4a36-a4d5-d0c2e4b5b2c1",
+        "name": "ica_companies",
+        "title": "רשם החברות - חברות",
+        "notes": "רשימת כל החברות הרשומות אצל רשם החברות, כולל סטטוס, סוג תאגיד וכתובת.",
+        "metadata_created": "2016-05-15T08:12:33.120423",
+        "metadata_modified": "2026-08-31T02:10:07.552813",
+        "license_title": "רישיון ממשלתי חופשי",
+        "organization": { "name": "ica", "title": "רשות התאגידים" },
+        "tags": [{ "name": "חברות", "display_name": "חברות" }, { "name": "רשם החברות", "display_name": "רשם החברות" }],
+        "num_resources": 1,
+        "resources": [
+          {
+            "id": "f004176c-b85f-4542-8901-7b3176f9a054",
+            "name": "חברות",
+            "description": "טבלת החברות המלאה",
+            "format": "csv",
+            "url": "https://data.gov.il/dataset/246d949c-a253-4a36-a4d5-d0c2e4b5b2c1/resource/f004176c-b85f-4542-8901-7b3176f9a054/download/companies.csv",
+            "datastore_active": true,
+            "last_modified": "2026-08-31T02:10:05.011201",
+            "created": "2016-05-15T08:13:01.001000",
+            "size": 412345678,
+            "mimetype": "text/csv"
+          }
+        ]
+      },
+      {
+        "id": "8b0a6c9e-3b2f-4d1e-9a7c-1f2e3d4c5b6a",
+        "name": "moital_amutot",
+        "title": "רשם העמותות - עמותות",
+        "notes": null,
+        "metadata_created": "2017-01-02T10:00:00",
+        "metadata_modified": "2026-08-30T01:00:00",
+        "license_title": null,
+        "organization": null,
+        "tags": [],
+        "num_resources": 2,
+        "resources": [
+          {
+            "id": "be5b7935-3922-45d4-9638-08871b17ec95",
+            "name": "עמותות",
+            "format": "CSV",
+            "url": "https://data.gov.il/dataset/x/resource/be5b7935-3922-45d4-9638-08871b17ec95/download/amutot.csv",
+            "datastore_active": true,
+            "last_modified": null
+          },
+          {
+            "id": "0d9c2f7a-1111-4222-8333-444455556666",
+            "name": "הסבר שדות",
+            "format": "PDF",
+            "url": "https://data.gov.il/dataset/x/resource/0d9c2f7a-1111-4222-8333-444455556666/download/fields.pdf",
+            "datastore_active": false
+          }
+        ]
+      }
+    ]
+  }
+}

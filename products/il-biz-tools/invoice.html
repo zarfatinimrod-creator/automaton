@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מחולל קבלות וחשבוניות עסקה לעוסק פטור – הדפסה ושמירה כ-PDF</title>
+<meta name="description" content="הפיקו קבלה או חשבונית עסקה נקייה ומקצועית בעברית תוך דקה: שם העסק, מספר עוסק, מספר קבלה רץ, פרטי לקוח, פירוט, אמצעי תשלום והערת עוסק פטור. הדפסה או שמירה כ-PDF, הכל נשמר בדפדפן שלכם.">
+<link rel="canonical" href="https://il-biz-tools.netlify.app/invoice.html">
+<meta property="og:title" content="מחולל קבלות וחשבוניות עסקה בעברית">
+<meta property="og:description" content="קבלה מקצועית לעוסק פטור – הדפסה או PDF, בלי הרשמה.">
+<link rel="stylesheet" href="assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "מה ההבדל בין קבלה לחשבונית עסקה?",
+      "acceptedAnswer": { "@type": "Answer", "text": "חשבונית עסקה היא דרישת תשלום – מוציאים אותה לפני קבלת הכסף. קבלה מאשרת שהתשלום התקבל בפועל, ומוציאים אותה מיד עם קבלת התשלום. עוסק פטור אינו מוציא חשבונית מס." }
+    },
+    {
+      "@type": "Question",
+      "name": "אילו פרטים חייבים להופיע בקבלה של עוסק פטור?",
+      "acceptedAnswer": { "@type": "Answer", "text": "שם העסק ומספר העוסק (ת.ז.), המילה \"קבלה\", מספר סידורי רץ, תאריך, שם הלקוח, פירוט התשלום, הסכום, אמצעי התשלום, ומומלץ הערה \"עוסק פטור – לא חייב במע\"מ\". יש לשמור עותק." }
+    },
+    {
+      "@type": "Question",
+      "name": "איך שומרים את הקבלה כ-PDF?",
+      "acceptedAnswer": { "@type": "Answer", "text": "לוחצים על \"הדפסה / PDF\", ובחלון ההדפסה של הדפדפן בוחרים ביעד \"שמירה כ-PDF\". המסמך מעוצב להדפסה על דף A4." }
+    },
+    {
+      "@type": "Question",
+      "name": "איפה נשמרות הקבלות שלי?",
+      "acceptedAnswer": { "@type": "Answer", "text": "בזיכרון המקומי של הדפדפן במכשיר שלכם בלבד (localStorage). שום מידע לא נשלח לשרת. ניקוי נתוני האתר בדפדפן ימחק אותן – שמרו PDF לכל קבלה." }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header"><div class="container">
+  <a class="logo" href="./">כלים <span>לעסק</span></a>
+  <nav aria-label="ניווט ראשי"><ul>
+    <li><a href="vat.html">מחשבון מע״מ</a></li>
+    <li><a href="osek-patur.html">תקרת עוסק פטור</a></li>
+    <li><a href="net-salary.html">שכר נטו</a></li>
+    <li><a href="invoice.html">קבלה / חשבונית</a></li>
+    <li><a href="allocation.html">מספר הקצאה</a></li>
+  </ul></nav>
+</div></header>
+
+<main class="container">
+  <div class="editor">
+  <h1>קבלה / חשבונית עסקה</h1>
+  <p class="lead">מלאו את הפרטים, בדקו את התצוגה המקדימה ולחצו על "הדפסה / PDF". פרטי העסק והקבלות נשמרים בדפדפן שלכם בלבד.</p>
+
+  <form id="doc-form" novalidate>
+    <section class="card">
+      <h2>פרטי העסק</h2>
+      <div class="row">
+        <div class="field"><label for="biz-name">שם העסק / שם מלא</label><input type="text" id="biz-name" autocomplete="organization" required></div>
+        <div class="field"><label for="biz-id">מספר עוסק / ת.ז.</label><input type="text" id="biz-id" inputmode="numeric" required></div>
+        <div class="field"><label for="biz-kind">סוג עוסק</label><select id="biz-kind"><option value="patur">עוסק פטור</option><option value="murshe">עוסק מורשה</option></select></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="biz-address">כתובת</label><input type="text" id="biz-address" autocomplete="street-address"></div>
+        <div class="field"><label for="biz-phone">טלפון</label><input type="tel" id="biz-phone" autocomplete="tel"></div>
+        <div class="field"><label for="biz-email">אימייל</label><input type="email" id="biz-email" autocomplete="email"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>המסמך</h2>
+      <div class="row">
+        <div class="field"><label for="doc-type">סוג מסמך</label><select id="doc-type"></select></div>
+        <div class="field"><label for="doc-number">מספר מסמך</label><input type="text" id="doc-number" inputmode="numeric" required></div>
+        <div class="field"><label for="doc-date">תאריך</label><input type="date" id="doc-date" required></div>
+      </div>
+      <h2>פרטי הלקוח</h2>
+      <div class="row">
+        <div class="field"><label for="client-name">שם הלקוח</label><input type="text" id="client-name" list="clients-list" required><datalist id="clients-list"></datalist></div>
+        <div class="field"><label for="client-id">ח.פ. / ת.ז. (לא חובה)</label><input type="text" id="client-id" inputmode="numeric"></div>
+        <div class="field"><label for="client-address">כתובת / אימייל (לא חובה)</label><input type="text" id="client-address"></div>
+      </div>
+      <h2>פירוט</h2>
+      <table class="lines-table" id="lines">
+        <thead><tr><th>תיאור</th><th class="qty">כמות</th><th class="price">מחיר ליחידה (₪)</th><th class="remove"></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="actions"><button type="button" class="btn secondary small" id="add-line">+ שורה</button></div>
+      <div class="row" style="margin-top:14px">
+        <div class="field"><label for="pay-method">אמצעי תשלום</label><select id="pay-method"></select></div>
+        <div class="field"><label for="pay-details">פרטי תשלום (לא חובה)</label><input type="text" id="pay-details" placeholder="למשל: 4 ספרות אחרונות, מספר צ'ק, אסמכתה"></div>
+      </div>
+      <div class="field"><label for="notes">הערות</label><textarea id="notes" rows="2"></textarea></div>
+    </section>
+
+    <ul class="error-list" id="errors" hidden></ul>
+    <div class="actions">
+      <button type="button" class="btn" id="print">הדפסה / PDF</button>
+      <button type="button" class="btn secondary" id="save">שמירה בדפדפן</button>
+      <button type="button" class="btn secondary" id="new">מסמך חדש</button>
+    </div>
+  </form>
+
+  <section class="card pro-box" id="pro">
+    <h3>Pro – מיתוג המסמך</h3>
+    <p>הוספת הלוגו של העסק וצבע מותג למסמך המודפס. כל שאר הכלים באתר – שמירת לקוחות, מספור אוטומטי, יצוא ל-PDF והמסמכים השמורים – חינמיים ונשארים חינמיים.</p>
+    <div class="actions">
+      <button type="button" class="btn" id="pro-cta" disabled>בקרוב</button>
+      <span class="note" id="pro-note">המיתוג ייפתח לרכישה כשהחנות תופעל.</span>
+    </div>
+    <details id="pro-activate">
+      <summary>יש לי מפתח רישיון</summary>
+      <div class="field">
+        <label for="license-key">מפתח רישיון</label>
+        <input type="text" id="license-key" placeholder="ILBIZ1..." autocomplete="off" spellcheck="false">
+      </div>
+      <div class="actions">
+        <button type="button" class="btn secondary" id="license-apply">הפעלה</button>
+        <button type="button" class="btn secondary" id="license-clear" hidden>הסרת הרישיון</button>
+        <span class="note" id="license-note"></span>
+      </div>
+    </details>
+    <div id="branding-fields" hidden>
+      <div class="row">
+        <div class="field"><label for="brand-logo">לוגו (PNG/JPG/SVG, עד 512KB)</label><input type="file" id="brand-logo" accept="image/png,image/jpeg,image/webp,image/svg+xml"></div>
+        <div class="field"><label for="brand-accent">צבע מותג</label><input type="color" id="brand-accent" value="#1f3a5f"></div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn secondary" id="brand-clear">הסרת הלוגו</button>
+        <span class="note" id="brand-note">המיתוג נשמר בדפדפן שלך בלבד.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>מסמכים שמורים</h2>
+    <ul class="doc-list" id="saved-docs"><li class="note">אין עדיין מסמכים שמורים.</li></ul>
+  </section>
+  </div>
+
+  <h2 class="no-print">תצוגה מקדימה</h2>
+  <article class="doc" id="preview" aria-live="polite">
+    <p class="original">מקור</p>
+    <header>
+      <div class="biz">
+        <img data-brand-logo alt="" class="brand-logo" hidden>
+        <h2 id="p-biz-name">שם העסק</h2>
+        <p><span id="p-biz-kind">עוסק פטור</span> מס' <span class="num" id="p-biz-id"></span></p>
+        <p id="p-biz-address"></p>
+        <p><span id="p-biz-phone"></span> <span id="p-biz-email"></span></p>
+      </div>
+      <div class="meta">
+        <div class="doc-type" id="p-type">קבלה</div>
+        <p>מס' <strong class="num" id="p-number"></strong></p>
+        <p>תאריך: <span class="num" id="p-date"></span></p>
+      </div>
+    </header>
+    <section class="party">
+      <strong>לכבוד:</strong> <span id="p-client-name"></span>
+      <span id="p-client-id"></span>
+      <div id="p-client-address"></div>
+    </section>
+    <table class="items">
+      <thead><tr><th>#</th><th>תיאור</th><th>כמות</th><th>מחיר ליחידה</th><th>סה״כ</th></tr></thead>
+      <tbody id="p-lines"></tbody>
+    </table>
+    <table class="totals">
+      <tr id="p-subtotal-row"><td>סכום לפני מע״מ</td><td class="num" id="p-subtotal"></td></tr>
+      <tr id="p-vat-row"><td>מע״מ <span id="p-vat-rate"></span></td><td class="num" id="p-vat"></td></tr>
+      <tr class="grand"><td id="p-total-label">סה״כ לתשלום</td><td class="num" id="p-total"></td></tr>
+    </table>
+    <p class="vat-note" id="p-vat-note"></p>
+    <p><strong>אמצעי תשלום:</strong> <span id="p-pay-method"></span> <span id="p-pay-details"></span></p>
+    <p id="p-notes"></p>
+    <footer>הופק באמצעות כלים לעסק · המסמך הופק דיגיטלית ואינו דורש חתימה</footer>
+  </article>
+
+  <section class="faq card">
+    <h2>שאלות נפוצות</h2>
+    <details open><summary>מה ההבדל בין קבלה לחשבונית עסקה?</summary><p>חשבונית עסקה היא דרישת תשלום – מוציאים אותה לפני קבלת הכסף. קבלה מאשרת שהתשלום התקבל בפועל. עוסק פטור אינו מוציא חשבונית מס.</p></details>
+    <details><summary>אילו פרטים חייבים להופיע בקבלה של עוסק פטור?</summary><p>שם העסק ומספר העוסק, המילה "קבלה", מספר סידורי רץ, תאריך, שם הלקוח, פירוט, סכום, אמצעי תשלום, והערה "עוסק פטור – לא חייב במע״מ". שמרו עותק של כל קבלה.</p></details>
+    <details><summary>איך שומרים את הקבלה כ-PDF?</summary><p>לוחצים "הדפסה / PDF" ובוחרים ביעד "שמירה כ-PDF" בחלון ההדפסה. המסמך מעוצב לדף A4.</p></details>
+    <details><summary>איפה נשמרות הקבלות שלי?</summary><p>בזיכרון המקומי של הדפדפן במכשיר שלכם בלבד. ניקוי נתוני האתר ימחק אותן – שמרו PDF לכל קבלה.</p></details>
+  </section>
+</main>
+
+<footer class="site-footer"><div class="container">
+  © <span data-year>2026</span> כלים לעסק · המידע באתר אינו מהווה ייעוץ מס או ייעוץ משפטי. · <a href="./">דף הבית</a>
+</div></footer>
+<script type="module" src="assets/page-invoice.js"></script>
+</body>
+</html>
