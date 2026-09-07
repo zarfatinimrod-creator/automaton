@@ -1,6 +1,6 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-07 18:40 UTC · branch `claude/monthly-income-plan-pfs7vu` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-07 19:45 UTC · branch `claude/monthly-income-plan-pfs7vu` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
 
@@ -120,8 +120,13 @@ services"** — Freemius הוא ה-MoR היחיד שייקח מוצר בצורת
 error בלי שורה שאומרת זאת; `signOfZero` נכון לכותרת ומוטעה לרשומה (שני סכומים). **והמבקר בנה קבצים שסווגו הפוך:** קלט `T`
 עם צד-נגדי אפסים (ita:400 "Supplier", ita:224 "All fields are compulsory"), חשבונית עצמית `M` באפסים, קופה קטנה `K` מעל תקרת
 הערה E — כולם `VALID`; ו-`br2a`, `A/01` וסוגר עם מזהה שונה מהכותרת — נפסלו כ-official. הבדיקה "כל error מגובה במסמך"
-בדקה רק שקיים ציטוט `ita:`, לא שהשורה אומרת את הכלל. **רץ עכשיו: סוכן Opus ב-worktree** מיישם את שבעת ממצאי §7a,
-הופך את הקבצים של §4 ל-fixtures, מחזק את הבדיקה, ומתקן את §7b. אחריו: מיזוג בסקריפט, ואז "נבדק" — לא לפני.
+בדקה רק שקיים ציטוט `ita:`, לא שהשורה אומרת את הכלל. **תוקן ומוזג (19:45 UTC, `c23d3b2`): שבעת הממצאים.** 134 → **199 בדיקות**; 26 fixtures, כולם מסווגים לפי הקידומת.
+הורדו ל-warning: `refGroup.alphanumeric` (ו-`[A-Za-z0-9]` עובר בלי ממצא), `encoding.ascii`, `footer.licensedDealerId.matchesHeader`,
+`generationDate.calendar`, ו-`signOfZero` ברשומה (error רק כששני הסכומים אפס). נוספו כ-error: `counterpartyExpected` ל-`T M C P I`
+ול-`S` מעל ₪5,000; כ-warning: `H` (הערה F) ותקרת קופה קטנה (הערה E). הבדיקה המחוזקת תפסה בדרך שני `officialText` שהיו
+פרפראזה ולא ציטוט. **מצב הקו:** הפריסה מיושבת ומבוקרת; `reportedVat` בלי כלל (אין נוסחה באף מקור); השער היחיד שנשאר —
+מהדורה חדשה של החוזר (2009, בלי מספר גרסה). נקלט ל-`INCOME_PLAN.he.md` §2ב (בדיקת fold-in). **משימה #31 סגורה.**
+הבא בקו: מחולל (גיליון → קובץ) על הוולידטור, בלי `reportedVat` מחושב, מפנה לסימולטור.
 
 **(היסטוריה) רץ אז (כ-16:45 UTC), סוכן Opus אחד:** (#30) `render-watch.yml` + `scripts/render-watch.mjs` + `research/rendered/urls.txt` ב-worktree —
 GitHub Actions כ-egress: מביא את עמוד המדינות הנתמכות של Freemius, חיפוש Apify Store (`/v2/store?search=accessibility`)
