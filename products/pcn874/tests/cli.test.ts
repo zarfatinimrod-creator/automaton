@@ -243,6 +243,72 @@ describe('pcn874 generate', () => {
     ).toBe(2);
   });
 
+  it('says an earlier file is still at --out when it refuses', () => {
+    const target = out();
+    // First a run that writes, then a run that refuses to the same path.
+    expect(capture(() => run(['generate', csvPath('minimal.csv'), '--out', target])).code).toBe(0);
+    const before = readFileSync(target, 'utf8');
+    const { code, out: printed } = capture(() =>
+      run(['generate', csvPath('no-reported-vat.csv'), '--out', target]),
+    );
+    expect(code).toBe(1);
+    expect(printed).toContain('REFUSED');
+    expect(printed).toContain('An earlier file is still at');
+    expect(printed).toContain('did not produce it');
+    // ...and the earlier file is untouched: it may be a file the user owns.
+    expect(readFileSync(target, 'utf8')).toBe(before);
+  });
+
+  it('says nothing about an earlier file when there is none', () => {
+    const { out: printed } = capture(() =>
+      run(['generate', csvPath('no-reported-vat.csv'), '--out', out()]),
+    );
+    expect(printed).toContain('REFUSED');
+    expect(printed).not.toContain('An earlier file is still at');
+  });
+
+  it('exits 2 on an empty --reported-vat rather than reading it as absent', () => {
+    const target = out();
+    const { code, err } = capture(() =>
+      run(['generate', csvPath('minimal.csv'), '--out', target, '--reported-vat', '']),
+    );
+    expect(code).toBe(2);
+    expect(err).toContain('the --reported-vat value is empty');
+    expect(existsSync(target)).toBe(false);
+  });
+
+  it('reports the byte width of a record that is not all ASCII', () => {
+    const { code, out: printed } = capture(() =>
+      run(['generate', csvPath('audit-d-refgroup-hebrew.csv'), '--out', out()]),
+    );
+    expect(code).toBe(0);
+    expect(printed).toContain('file.byteWidth');
+    expect(printed).toContain('60 characters and 62 bytes');
+  });
+
+  it('refuses the three inputs that used to be written silently wrong', () => {
+    for (const [name, rule] of [
+      ['audit-c2-extra-cells.csv', 'csv.row.cellCount'],
+      ['audit-l-short-row.csv', 'csv.row.cellCount'],
+      ['audit-n-decimal-comma.csv', 'row.amount.unreadable'],
+    ] as const) {
+      const target = out(`${name}.txt`);
+      const { code, out: printed } = capture(() =>
+        run(['generate', csvPath(name), '--out', target]),
+      );
+      expect(code, name).toBe(1);
+      expect(existsSync(target), name).toBe(false);
+      expect(printed, name).toContain(rule);
+    }
+  });
+
+  it('says what the validator check does and does not cover', () => {
+    const { out: printed } = capture(() =>
+      run(['generate', csvPath('minimal.csv'), '--out', out()]),
+    );
+    expect(printed).toContain('cross-checks NO amount');
+  });
+
   it('exits 2 when the output path cannot be written, and still wrote nothing', () => {
     const { code, err } = capture(() =>
       run(['generate', csvPath('minimal.csv'), '--out', join(dir, 'no', 'such', 'dir', 'f.txt')]),

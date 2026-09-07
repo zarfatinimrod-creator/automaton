@@ -11,6 +11,14 @@
  * reproduce `tests/fixtures/valid-minimal.txt` byte for byte, which is the golden
  * test: the generator and the hand-built fixture have to agree on the same file.
  *
+ * **The `reportedVat` figures here are literals, chosen by hand, and embody no
+ * rule.** Several of them happen to equal their rows' sales VAT minus their input
+ * VAT; that is a coincidence of the numbers picked, not an arithmetic. There is
+ * no arithmetic anywhere in this script — grep it — and nothing in the package
+ * computes the field, because no rendered source states how it is reached
+ * (docs/SPEC.md §5.2, §6.7). The audit fixtures below all carry the same 1800
+ * whatever their rows come to, which is the cheapest possible demonstration.
+ *
  * Run:  node scripts/make-csv-fixtures.mjs
  */
 
@@ -259,6 +267,259 @@ const warnings = csv({ ...BASE_META, reportedVat: 720 }, [
   },
 ]);
 
+// --- the refuter's constructed inputs --------------------------------------
+//
+// `research/colony-sweep/audits/pcn874-generator.md` §4 ran 26 hand-built CSVs
+// through the generator and recorded what each produced. Three of them wrote a
+// silently wrong file, two silently moved a document between header totals, one
+// wrote a record whose byte width was not its character width. Every case is a
+// file here, so what it does is asserted by a test rather than described in a
+// report, and a regression shows up as a failing test rather than as an audit
+// nobody re-ran. The letters are the audit's own.
+//
+// `reportedVat` is 1800 in all of them — the same invented figure the audit's
+// header block carried, kept identical across the whole set precisely so that
+// it visibly does NOT follow the rows: case e1's rows come to 1782 and case i's
+// to 3600, and the field stays 1800 in both. Nothing computes it and nothing
+// here implies an arithmetic for it.
+
+const AUDIT_META = { ...BASE_META, reportedVat: 1800 };
+
+/** `# key: value` lines, in order, for a literal preamble. */
+const metaLines = meta =>
+  Object.entries(meta)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => `# ${key}: ${value}`);
+
+/** A file written line by line, for the cases that are about a line's SHAPE. */
+const literal = lines => `${lines.join('\n')}\n`;
+
+const HEADER_LINE = COLUMNS.join(',');
+/** The audit's data row: the one sale of minimal.csv, written as one line. */
+const SALE_LINE = COLUMNS.map(c => quote(minimalSale[c])).join(',');
+const AUDIT_PREAMBLE = metaLines(AUDIT_META);
+
+/** a — a UTF-8 BOM before the first "#", CRLF throughout. Must still be minimal.csv. */
+const auditA = `﻿${minimal.replace(/\n/g, '\r\n')}`;
+
+/** b — Excel's quoted, formatted numbers. The commas are thousands separators. */
+const auditB = csv(
+  AUDIT_META,
+  [{ ...minimalSale, vatSum: '1,800.00', invoiceSum: '10,000.00' }],
+  ['case b — quoted thousands separators. Written; the amounts are 1800 and 10000.'],
+);
+
+/** c1 — the same numbers UNQUOTED: eleven cells against nine columns. */
+const auditC1 = literal([
+  '# case c1 — an unquoted "1,800.00" splits into two cells and shifts every cell after it.',
+  ...AUDIT_PREAMBLE,
+  HEADER_LINE,
+  SALE_LINE.replace(',1800,10000,', ',1,800.00,10,000.00,'),
+]);
+
+/** c2 — a sales-only sheet (no inputKind column) with an unquoted thousands comma. */
+const auditC2 = literal([
+  '# case c2 — eight columns, ten cells. This used to write VAT 1 and a total of 800 for a',
+  '# 1,800 / 10,000 sale, exit code 0, no warning.',
+  ...AUDIT_PREAMBLE,
+  COLUMNS.filter(c => c !== 'inputKind').join(','),
+  COLUMNS.filter(c => c !== 'inputKind')
+    .map(c => quote(minimalSale[c]))
+    .join(',')
+    .replace(',1800,', ',1,800,'),
+]);
+
+/** c3 — the comma in the invoice total instead. */
+const auditC3 = literal([
+  '# case c3 — an unquoted "10,000" in the invoice total.',
+  ...AUDIT_PREAMBLE,
+  HEADER_LINE,
+  SALE_LINE.replace(',10000,', ',10,000,'),
+]);
+
+/** d — a Hebrew reference group: A(4) admits letters, and the circular names no alphabet. */
+const auditD = csv(
+  AUDIT_META,
+  [{ ...minimalSale, refGroup: 'אב' }],
+  ['case d — a Hebrew reference group. Written, with warnings; the record is 60 characters and 62 bytes.'],
+);
+
+/** e1 — a credit note: the record carries "-" and the totals subtract. */
+const auditE1 = csv(
+  AUDIT_META,
+  [
+    minimalSale,
+    {
+      entryType: 'S',
+      counterpartyVatId: '512345678',
+      invoiceDate: '20260113',
+      refGroup: '0001',
+      refNumber: '000000102',
+      vatSum: -18,
+      invoiceSum: -100,
+      allocationNumber: '123456790',
+    },
+  ],
+  ['case e1 — a credit note. The totals become 9,900 and 1,782; reportedVat stays the supplied 1800.'],
+);
+
+/** e2 — a negative VAT against a positive total: one "+/-" field cannot carry both. */
+const auditE2 = csv(
+  AUDIT_META,
+  [{ ...minimalSale, vatSum: 18, invoiceSum: -100 }],
+  ['case e2 — the two amounts disagree about the record\'s one sign field.'],
+);
+
+/** e3 — accountants' parentheses, which are not silently read as positive. */
+const auditE3 = csv(
+  AUDIT_META,
+  [{ ...minimalSale, vatSum: '(18)', invoiceSum: '(100)' }],
+  ['case e3 — parentheses are not an amount here.'],
+);
+
+/** f — a 10,000 sale with every optional column empty. Note A wants the customer. */
+const auditF = csv(
+  AUDIT_META,
+  [{ entryType: 'S', invoiceDate: '20260112', invoiceSum: 10000 }],
+  ['case f — an identified sale above note A\'s 5,000 with no customer number, and no VAT cell.'],
+);
+
+/** g — the invoiceDate column left out of the header row. */
+const auditG = literal([
+  '# case g — a required column missing from the header row.',
+  ...AUDIT_PREAMBLE,
+  COLUMNS.filter(c => c !== 'invoiceDate').join(','),
+  COLUMNS.filter(c => c !== 'invoiceDate')
+    .map(c => quote(minimalSale[c]))
+    .join(','),
+]);
+
+/** h1 — "reportedVAT" in another case. Names are matched normalised, so this is not a typo. */
+const auditH1 = literal([
+  '# case h1 — a directive name in another case.',
+  ...metaLines(BASE_META),
+  '# reportedVAT: 1800',
+  HEADER_LINE,
+  SALE_LINE,
+]);
+
+/** h2 — a one-letter misspelling, which must not become a default. */
+const auditH2 = literal([
+  '# case h2 — a misspelled directive name.',
+  ...metaLines(BASE_META),
+  '# reportdVat: 1800',
+  HEADER_LINE,
+  SALE_LINE,
+]);
+
+/** h3 — the directive written without its colon. */
+const auditH3 = literal([
+  '# case h3 — a directive with no colon. It used to be dropped as a comment and then',
+  '# reported missing, which told the reader nothing about the line they wrote.',
+  ...metaLines(BASE_META),
+  '# reportedVat 1800',
+  HEADER_LINE,
+  SALE_LINE,
+]);
+
+/** i — the same document twice. No rendered source forbids it; the counts must add up. */
+const auditI = csv(AUDIT_META, [minimalSale, minimalSale], [
+  'case i — the same document twice. Two sales records, 20,000 taxable; reportedVat stays 1800.',
+]);
+
+/** j1 — "# Note:" is a one-word key before a colon, so it is a directive and refused. */
+const auditJ1 = literal([
+  '# Note: exported from the ledger on 2026-02-01',
+  ...AUDIT_PREAMBLE,
+  HEADER_LINE,
+  SALE_LINE,
+]);
+
+/** j2 — the same sentence with a space before the colon: a comment, and written. */
+const auditJ2 = literal([
+  '# Exported from the ledger: 2026-02-01',
+  ...AUDIT_PREAMBLE,
+  HEADER_LINE,
+  SALE_LINE,
+]);
+
+/** j3 — a URL after a word: "see " is followed by "h", not ":". A comment. */
+const auditJ3 = literal([
+  '# see https://example.com/export',
+  ...AUDIT_PREAMBLE,
+  HEADER_LINE,
+  SALE_LINE,
+]);
+
+/** k — Excel's trailing row of nothing but commas. */
+const auditK = literal([
+  '# case k — a trailing row of empty cells, which Excel writes routinely.',
+  ...AUDIT_PREAMBLE,
+  HEADER_LINE,
+  SALE_LINE,
+  COLUMNS.map(() => '').join(','),
+]);
+
+/** l — a truncated row: three cells against nine columns. */
+const auditL = literal([
+  '# case l — a truncated row. The missing cells used to read as empty, and empty means',
+  '# zero, so this wrote a 0 zero-rated sale with exit code 0.',
+  ...AUDIT_PREAMBLE,
+  HEADER_LINE,
+  SALE_LINE.split(',').slice(0, 3).join(','),
+]);
+
+/** m — semicolons, which some European exports use as the separator. */
+const auditM = literal([
+  '# case m — a semicolon-separated export.',
+  ...AUDIT_PREAMBLE,
+  COLUMNS.join(';'),
+  SALE_LINE.replace(/,/g, ';'),
+]);
+
+/** n — a quoted decimal COMMA. Stripping it read 1800,00 as 180,000. */
+const auditN = csv(
+  AUDIT_META,
+  [{ ...minimalSale, vatSum: '1800,00', invoiceSum: '10000,00' }],
+  ['case n — a foreign-locale decimal comma. Refused rather than read a hundredfold high.'],
+);
+
+/** n2 — the mirror: a European thousands separator, which used to read as 1. */
+const auditN2 = csv(
+  AUDIT_META,
+  [{ ...minimalSale, vatSum: '1.000', invoiceSum: '10000' }],
+  ['case n2 — "1.000" is 1 under a decimal point and 1,000 under a European separator.'],
+);
+
+/** o — a forgotten VAT cell on a taxable sale. Documented, and until now silent. */
+const auditO = csv(
+  AUDIT_META,
+  [{ ...minimalSale, vatSum: '' }],
+  ['case o — an empty VAT cell moves 10,000 of turnover into the zero-value/exempt total.'],
+);
+
+/** p — a spreadsheet column the record has no field for. */
+const auditP = literal([
+  '# case p — an extra description column.',
+  ...AUDIT_PREAMBLE,
+  `${HEADER_LINE},customerName`,
+  `${SALE_LINE},Some Customer Ltd`,
+]);
+
+/** q — a VAT that rounds to zero, which moves the sale into the other total. */
+const auditQ = csv(
+  AUDIT_META,
+  [{ ...minimalSale, vatSum: '0.36', invoiceSum: 2 }],
+  ['case q — 0.36 of VAT rounds to zero shekels, and the rounding decides the header total.'],
+);
+
+/** s — negative half-shekel ties: the tie-break is symmetric and the sign survives. */
+const auditS = csv(
+  AUDIT_META,
+  [{ ...minimalSale, vatSum: '-0.5', invoiceSum: '-2.5' }],
+  ['case s — two negative half-shekel ties. Rounded away from zero, to -1 and -3.'],
+);
+
 const fixtures = {
   'minimal.csv': minimal,
   'mixed.csv': mixed,
@@ -268,6 +529,33 @@ const fixtures = {
   'rounding.csv': rounding,
   'equipment.csv': equipment,
   'warnings.csv': warnings,
+  'audit-a-bom-crlf.csv': auditA,
+  'audit-b-quoted-thousands.csv': auditB,
+  'audit-c1-unquoted-thousands.csv': auditC1,
+  'audit-c2-extra-cells.csv': auditC2,
+  'audit-c3-unquoted-total.csv': auditC3,
+  'audit-d-refgroup-hebrew.csv': auditD,
+  'audit-e1-credit.csv': auditE1,
+  'audit-e2-sign-conflict.csv': auditE2,
+  'audit-e3-parentheses.csv': auditE3,
+  'audit-f-bare-sale.csv': auditF,
+  'audit-g-missing-column.csv': auditG,
+  'audit-h1-directive-case.csv': auditH1,
+  'audit-h2-directive-typo.csv': auditH2,
+  'audit-h3-directive-no-colon.csv': auditH3,
+  'audit-i-duplicate-row.csv': auditI,
+  'audit-j1-note-directive.csv': auditJ1,
+  'audit-j2-comment-with-colon.csv': auditJ2,
+  'audit-j3-comment-url.csv': auditJ3,
+  'audit-k-empty-row.csv': auditK,
+  'audit-l-short-row.csv': auditL,
+  'audit-m-semicolons.csv': auditM,
+  'audit-n-decimal-comma.csv': auditN,
+  'audit-n2-european-thousands.csv': auditN2,
+  'audit-o-empty-vat.csv': auditO,
+  'audit-p-extra-column.csv': auditP,
+  'audit-q-vat-rounds-to-zero.csv': auditQ,
+  'audit-s-negative-ties.csv': auditS,
 };
 
 mkdirSync(outDir, { recursive: true });

@@ -1,0 +1,8 @@
+# case c2 — eight columns, ten cells. This used to write VAT 1 and a total of 800 for a
+# 1,800 / 10,000 sale, exit code 0, no warning.
+# licensedDealerId: 514457282
+# reportMonth: 202601
+# generationDate: 20260210
+# reportedVat: 1800
+entryType,counterpartyVatId,invoiceDate,refGroup,refNumber,vatSum,invoiceSum,allocationNumber
+S,512345678,20260112,0001,000000101,1,800,10000,123456789

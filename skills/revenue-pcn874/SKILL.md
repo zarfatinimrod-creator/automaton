@@ -13,7 +13,7 @@ created by law — every עוסק מורשה above the reporting threshold must 
 ## What exists
 
 `products/pcn874/`: `parsePcn874`, `validatePcn874`, `generatePcn874` (built 7.9.2026 — see `docs/GENERATOR.md`),
-a CLI (`pcn874 validate <file>`, `pcn874 generate <input.csv> --out <file>`), 257 tests, and
+a CLI (`pcn874 validate <file>`, `pcn874 generate <input.csv> --out <file>`), 311 tests, and
 `docs/SPEC.md` — **the record layout from the Israel Tax Authority's own circular to software houses**
 (Appendix A the layout, B the representatives' alignment file, C the permitted values per document type),
 rendered by `render-watch.yml` on 7.9.2026 and stored as extracted text in `research/rendered/`. Every

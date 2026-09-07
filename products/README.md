@@ -30,7 +30,7 @@ verdict on the code:
 - **`il-biz-tools` moved from Paddle to Gumroad.** Gumroad is the only merchant of record with rendered
   proof of ILS payout to an Israeli bank. Paddle is now an option the owner may choose knowing three
   named risks, recorded in `src/revenue/rails.ts` — never a step on his checklist.
-- **`pcn874` is the one new product.** Its validator and its generator exist (`products/pcn874/`, 257 tests over 26 fixed-width fixtures and 8 CSV inputs). **Since
+- **`pcn874` is the one new product.** Its validator and its generator exist (`products/pcn874/`, 311 tests over 26 fixed-width fixtures and 35 CSV inputs). **Since
   7.9.2026 its record layout comes from the Israel Tax Authority's own circular to software houses** —
   Appendix A (layout), B (representatives' file), C (permitted values) — which `render-watch.yml` fetched
   from GitHub Actions and which is stored as extracted text in `research/rendered/`. Every rule in
@@ -62,6 +62,14 @@ verdict on the code:
   states no arithmetic for it, so the figure is taken from the user and the generator refuses without
   one. It has no price, it still never says a file will be accepted — it points at the Authority's free
   simulator for that — and a wrong PCN874 file is the user's VAT exposure.
+  **A second refuter then took the generator apart the same evening**
+  (`research/colony-sweep/audits/pcn874-generator.md`): all seven computed header totals held, but three
+  constructed CSVs each produced a file with wrong amounts, exit code 0 and no warning — a comma inside
+  an unquoted amount shifted the row, a truncated row became a zero-value sale, and a foreign-locale
+  `"1800,00"` was written as ₪180,000. The reason none of them was caught is the boundary that now sits
+  next to the refusal claim in the docs: **the validator cross-checks no amount**, so "it does not write
+  a file its validator rejects" is about the file's shape and its counts, not about its totals. All ten
+  code findings are implemented, and each of the audit's 26 inputs is a fixture with a test.
 
 **Products with no line:** `mcp-il-tools`, which is a distribution channel test rather than a
 storefront, and whose registry listing is blocked on the domain (step 5) and the organisation (step 7).

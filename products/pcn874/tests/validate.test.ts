@@ -168,6 +168,28 @@ describe('record grammar', () => {
     expect(result.valid).toBe(false);
   });
 
+  /**
+   * The refutation audit of the generator (§4 case d) found that a two-letter
+   * Hebrew reference group makes a 60-character transaction record 62 bytes
+   * wide under UTF-8, and that neither existing warning said so: every length
+   * here is counted in characters, so a reader that counts bytes sees different
+   * fields. A warning and not an error, because the circular states no encoding
+   * at all — the same reason `file.encoding.ascii` is one.
+   */
+  it('warns when a record is wider in bytes than in characters, and names both', () => {
+    const result = validatePcn874(fixture('warnings-refgroup-hebrew.txt'));
+    const finding = find(result, 'file.byteWidth');
+    expect(finding.severity).toBe('warning');
+    expect(finding.message).toMatch(/60 characters and 62 bytes/);
+    expect(finding.openQuestion).toBeTruthy();
+    expect(result.valid).toBe(true);
+  });
+
+  it('says nothing about byte width on an all-ASCII file', () => {
+    expect(rules(validatePcn874(fixture('valid-minimal.txt')))).not.toContain('file.byteWidth');
+    expect(rules(validatePcn874(fixture('valid-mixed.txt')))).not.toContain('file.byteWidth');
+  });
+
   it('warns on mixed line endings without invalidating the file, and says nothing settles it', () => {
     const lines = fixture('valid-minimal.txt').split('\n');
     const result = validatePcn874(`${lines[0]}\r\n${lines[1]}\n${lines[2]}`);

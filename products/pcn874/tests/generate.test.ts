@@ -22,6 +22,156 @@ const officialLines = readFileSync(join(here, '..', '..', '..', OFFICIAL_TEXT_PA
 );
 const generatorDoc = readFileSync(join(here, '..', 'docs', 'GENERATOR.md'), 'utf8');
 
+/**
+ * The refutation audit's constructed inputs
+ * (`research/colony-sweep/audits/pcn874-generator.md` §4), one file per case.
+ *
+ * `problems` and `findings` are what must be REPORTED, `absent` what must not
+ * be. Three of these cases used to write a silently wrong file with exit code 0
+ * — c2 and l shifted the amounts by reading cells positionally in a row of the
+ * wrong width, n read a decimal comma as a thousands separator — so what they
+ * assert is a refusal, by name, and not merely "not ok".
+ */
+const AUDIT_CASES: readonly {
+  readonly file: string;
+  readonly what: string;
+  readonly ok: boolean;
+  readonly problems?: readonly string[];
+  /** Reported, and reported as a warning, whether or not the file was written. */
+  readonly warnings?: readonly string[];
+  readonly findings?: readonly string[];
+  readonly absent?: readonly string[];
+}[] = [
+  { file: 'audit-a-bom-crlf.csv', what: 'a BOM and CRLF are read, and change nothing', ok: true },
+  { file: 'audit-b-quoted-thousands.csv', what: 'quoted thousands separators are read', ok: true },
+  {
+    file: 'audit-c1-unquoted-thousands.csv',
+    what: 'an unquoted "1,800.00" is refused, not read shifted',
+    ok: false,
+    problems: ['csv.row.cellCount'],
+  },
+  {
+    file: 'audit-c2-extra-cells.csv',
+    what: 'a sales-only sheet with an unquoted comma is refused',
+    ok: false,
+    problems: ['csv.row.cellCount'],
+  },
+  {
+    file: 'audit-c3-unquoted-total.csv',
+    what: 'an unquoted comma in the invoice total is refused',
+    ok: false,
+    problems: ['csv.row.cellCount'],
+  },
+  {
+    file: 'audit-d-refgroup-hebrew.csv',
+    what: 'a Hebrew reference group is written, and its byte width is reported',
+    ok: true,
+    findings: ['file.byteWidth', 'file.encoding.ascii', 'detail.refGroup.alphanumeric'],
+  },
+  { file: 'audit-e1-credit.csv', what: 'a credit note is written and subtracts', ok: true },
+  {
+    file: 'audit-e2-sign-conflict.csv',
+    what: 'two amounts that disagree about the one sign field are refused',
+    ok: false,
+    problems: ['row.sign.conflict'],
+  },
+  {
+    file: 'audit-e3-parentheses.csv',
+    what: "accountants' parentheses are refused, not read as positive",
+    ok: false,
+    problems: ['row.amount.unreadable'],
+  },
+  {
+    file: 'audit-f-bare-sale.csv',
+    what: 'a bare sale above note A\'s cap is refused by the validator',
+    ok: false,
+    warnings: ['row.vatSum.empty'],
+    findings: ['detail.S.counterpartyExpected'],
+  },
+  {
+    file: 'audit-g-missing-column.csv',
+    what: 'a required column missing from the header row is refused',
+    ok: false,
+    problems: ['csv.column.missing'],
+  },
+  { file: 'audit-h1-directive-case.csv', what: 'a directive name in another case is read', ok: true },
+  {
+    file: 'audit-h2-directive-typo.csv',
+    what: 'a misspelled directive cannot become a default',
+    ok: false,
+    problems: ['meta.unknown', 'meta.reportedVat.missing'],
+  },
+  {
+    file: 'audit-h3-directive-no-colon.csv',
+    what: 'a directive without its colon is named, not dropped as a comment',
+    ok: false,
+    problems: ['meta.malformed'],
+  },
+  { file: 'audit-i-duplicate-row.csv', what: 'the same document twice is the user\'s data', ok: true },
+  {
+    file: 'audit-j1-note-directive.csv',
+    what: '"# Note:" is a one-word key before a colon, so it is refused as a directive',
+    ok: false,
+    problems: ['meta.unknown'],
+  },
+  { file: 'audit-j2-comment-with-colon.csv', what: 'a space before the colon keeps it a comment', ok: true },
+  { file: 'audit-j3-comment-url.csv', what: 'a URL after a word stays a comment', ok: true },
+  {
+    file: 'audit-k-empty-row.csv',
+    what: "Excel's trailing row of empty cells is dropped, not refused",
+    ok: true,
+    absent: ['row.entryType.unknown', 'csv.row.cellCount'],
+  },
+  {
+    file: 'audit-l-short-row.csv',
+    what: 'a truncated row is refused, not read as a ₪0 zero-rated sale',
+    ok: false,
+    problems: ['csv.row.cellCount'],
+  },
+  {
+    file: 'audit-m-semicolons.csv',
+    what: 'a semicolon-separated export is refused on its header line',
+    ok: false,
+    problems: ['csv.column.unknown'],
+  },
+  {
+    file: 'audit-n-decimal-comma.csv',
+    what: 'a decimal comma is refused, not read a hundredfold high',
+    ok: false,
+    problems: ['row.amount.unreadable'],
+  },
+  {
+    file: 'audit-n2-european-thousands.csv',
+    what: 'a European thousands separator is refused, not read as ₪1',
+    ok: false,
+    problems: ['row.amount.unreadable'],
+  },
+  {
+    file: 'audit-o-empty-vat.csv',
+    what: 'an empty VAT cell on a sale is written and reported',
+    ok: true,
+    problems: ['row.vatSum.empty'],
+  },
+  {
+    file: 'audit-p-extra-column.csv',
+    what: 'an extra spreadsheet column is refused',
+    ok: false,
+    problems: ['csv.column.unknown'],
+  },
+  {
+    file: 'audit-q-vat-rounds-to-zero.csv',
+    what: 'a VAT that rounds to zero is written and the moved total is reported',
+    ok: true,
+    problems: ['row.vat.roundedToZero'],
+  },
+  {
+    file: 'audit-s-negative-ties.csv',
+    what: 'negative half-shekel ties round away from zero and are reported',
+    ok: true,
+    problems: ['row.amount.roundingTie'],
+  },
+];
+
 const CSV_FIXTURES = [
   'equipment.csv',
   'input-no-supplier.csv',
@@ -31,6 +181,7 @@ const CSV_FIXTURES = [
   'rounding.csv',
   'sign-of-zero.csv',
   'warnings.csv',
+  ...AUDIT_CASES.map(c => c.file),
 ];
 
 /** The generated file's header record, sliced at the layout's offsets. */
@@ -292,10 +443,18 @@ describe('it refuses to write a file its own validator rejects', () => {
   /**
    * What this test proves, exactly: over every CSV fixture and a battery of
    * mutations of them, `generatePcn874` never returned text that fails
-   * validation. It cannot prove a universal, but `text` is the only way any
-   * caller obtains a file, and it is assigned in exactly one place — `ok ? text
-   * : null`, where `ok` is "the validator found no error". The CLI writes
-   * nothing else.
+   * validation. It cannot prove a universal, but `text` is assigned in exactly
+   * one place — `ok ? text : null`, where `ok` is "the validator found no
+   * error" — and it is now the only thing that carries a file at all: the
+   * refutation audit's §5 showed that `validation.parsed.records` used to hand
+   * a refused file back byte for byte, and the test above proves those records
+   * are gone. The CLI writes nothing else.
+   *
+   * What it does NOT prove is that the amounts are right. The validator
+   * cross-checks no amount (docs/SPEC.md §5.2), so "the validator accepts it"
+   * is about layout and counts; the input rules in `parseRows` are what stand
+   * between a mistyped CSV and a wrong total, and the audit cases above are the
+   * tests for those.
    */
   it('never returns text that the validator rejects, over every fixture and mutation', () => {
     const inputs: string[] = CSV_FIXTURES.map(csv);
@@ -520,6 +679,226 @@ describe('the CSV itself', () => {
     const result = generatePcn874(crlf);
     expect(result.ok, JSON.stringify(result.problems)).toBe(true);
     expect(result.text).toBe(fixture('valid-minimal.txt'));
+  });
+});
+
+describe("the refutation audit's constructed inputs", () => {
+  const outcome = (
+    file: string,
+  ): { ok: boolean; codes: string[]; rules: string[]; text: string | null } => {
+    const result = generatePcn874(csv(file));
+    return {
+      ok: result.ok,
+      codes: result.problems.map(p => p.code),
+      rules: (result.validation?.findings ?? []).map(f => f.rule),
+      text: result.text,
+    };
+  };
+
+  it.each(AUDIT_CASES)(
+    '$file — $what',
+    ({ file, ok, problems = [], warnings = [], findings = [], absent = [] }) => {
+      const seen = outcome(file);
+      const where = `${file}: problems=${seen.codes.join(',')} findings=${seen.rules.join(',')}`;
+      expect(seen.ok, where).toBe(ok);
+      expect(seen.text === null, `${file}: text must be null exactly when the file is refused`).toBe(
+        !ok,
+      );
+      for (const code of [...problems, ...warnings]) expect(seen.codes, where).toContain(code);
+      for (const rule of findings) expect(seen.rules, where).toContain(rule);
+      for (const name of absent) {
+        expect(seen.codes, where).not.toContain(name);
+        expect(seen.rules, where).not.toContain(name);
+      }
+    },
+  );
+
+  it('a refused case reports its rule as an error, a written one as a warning', () => {
+    for (const c of AUDIT_CASES) {
+      const result = generatePcn874(csv(c.file));
+      for (const code of c.problems ?? []) {
+        const problem = result.problems.find(p => p.code === code)!;
+        expect(problem.severity, `${c.file} / ${code}`).toBe(c.ok ? 'warning' : 'error');
+      }
+      for (const code of c.warnings ?? []) {
+        expect(result.problems.find(p => p.code === code)!.severity, `${c.file} / ${code}`).toBe(
+          'warning',
+        );
+      }
+    }
+  });
+
+  // --- the three that used to be written, silently wrong (audit §4 c2, l, n)
+
+  it('c2: the shifted row wrote VAT ₪1 and a total of ₪800 for a ₪1,800/₪10,000 sale', () => {
+    const result = generatePcn874(csv('audit-c2-extra-cells.csv'));
+    const problem = result.problems.find(p => p.code === 'csv.row.cellCount')!;
+    expect(problem.message).toMatch(/9 cell\(s\) and the column header has 8/);
+    expect(problem.message).toMatch(/comma inside an unquoted amount/);
+    expect(result.text).toBeNull();
+  });
+
+  it('l: a truncated row is not a ₪0 zero-rated sale', () => {
+    const problem = generatePcn874(csv('audit-l-short-row.csv')).problems.find(
+      p => p.code === 'csv.row.cellCount',
+    )!;
+    expect(problem.message).toMatch(/3 cell\(s\) and the column header has 9/);
+    expect(problem.message).toMatch(/every missing cell would be read as empty/);
+  });
+
+  it('n: a decimal comma is named as such, not silently multiplied by a hundred', () => {
+    const problem = generatePcn874(csv('audit-n-decimal-comma.csv')).problems.find(
+      p => p.code === 'row.amount.unreadable',
+    )!;
+    expect(problem.message).toMatch(/"1800,00" into ₪180,000/);
+    expect(problem.message).toMatch(/thousands separator/);
+  });
+
+  it('n2: "1.000" is refused as ambiguous rather than read either way', () => {
+    const problem = generatePcn874(csv('audit-n2-european-thousands.csv')).problems.find(
+      p => p.code === 'row.amount.unreadable',
+    )!;
+    expect(problem.message).toMatch(/₪1 with three decimal digits and ₪1,000/);
+  });
+
+  it('a comma is read as a thousands separator and nothing else', () => {
+    const amount = (raw: string): string | null => {
+      const result = generatePcn874(csv('minimal.csv').replace(',1800,10000,', `,"${raw}",10000,`));
+      if (!result.ok) return null;
+      return parsePcn874(result.text!).records.filter(r => r.kind === 'detail')[0]!.fields[
+        'totalVat'
+      ]!;
+    };
+    expect(amount('1,800')).toBe('000001800');
+    expect(amount('1,800.00')).toBe('000001800');
+    expect(amount('1,234,567')).toBe('001234567');
+    expect(amount('1800,00')).toBeNull();
+    expect(amount('1,80')).toBeNull();
+    expect(amount('1.000')).toBeNull();
+    expect(amount('18,00,00')).toBeNull();
+  });
+
+  // --- the two that silently moved a document between header totals
+
+  it('o: an empty VAT cell is written into the zero-value total, and said so', () => {
+    const result = generatePcn874(csv('audit-o-empty-vat.csv'));
+    const header = headerOf(result);
+    expect(Number(header['taxableSalesAmount'])).toBe(0);
+    expect(Number(header['zeroOrExemptSalesAmount'])).toBe(10000);
+    const warning = result.problems.find(p => p.code === 'row.vatSum.empty')!;
+    expect(warning.severity).toBe('warning');
+    expect(warning.message).toMatch(/Total of zero value\/exempt sales for period/);
+  });
+
+  it('o: an EXPLICIT zero is silent, so a ledger that writes 0 is not spammed', () => {
+    const explicit = generatePcn874(csv('audit-o-empty-vat.csv').replace(/,,10000,/, ',0,10000,'));
+    expect(explicit.problems.map(p => p.code)).not.toContain('row.vatSum.empty');
+    expect(explicit.ok).toBe(true);
+  });
+
+  it('q: a VAT that rounds to zero moves the sale, and the choice is named as ours', () => {
+    const result = generatePcn874(csv('audit-q-vat-rounds-to-zero.csv'));
+    const header = headerOf(result);
+    expect(Number(header['taxableSalesAmount'])).toBe(0);
+    expect(Number(header['zeroOrExemptSalesAmount'])).toBe(2);
+    const warning = result.problems.find(p => p.code === 'row.vat.roundedToZero')!;
+    expect(warning.severity).toBe('warning');
+    expect(warning.productChoice).toMatch(/product choice, not a rule of the circular/);
+    expect(warning.productChoice).toMatch(/never says whether the classification is made before or after/);
+  });
+
+  // --- the ones that must still come out exactly right
+
+  it('a: a BOM and CRLF produce the golden file byte for byte', () => {
+    expect(generatePcn874(csv('audit-a-bom-crlf.csv')).text).toBe(fixture('valid-minimal.txt'));
+  });
+
+  it('b: quoted thousands separators produce the golden file too', () => {
+    expect(generatePcn874(csv('audit-b-quoted-thousands.csv')).text).toBe(
+      fixture('valid-minimal.txt'),
+    );
+  });
+
+  it('k: the empty row is dropped, and the rest is the golden file', () => {
+    expect(generatePcn874(csv('audit-k-empty-row.csv')).text).toBe(fixture('valid-minimal.txt'));
+  });
+
+  it('e1: the credit subtracts from both totals and the record keeps "-"', () => {
+    const result = generatePcn874(csv('audit-e1-credit.csv'));
+    const header = headerOf(result);
+    expect(Number(header['taxableSalesAmount'])).toBe(9900);
+    expect(header['taxableSalesAmountSign']).toBe('+');
+    expect(Number(header['taxableSalesVat'])).toBe(1782);
+    const credit = parsePcn874(result.text!).records.filter(r => r.kind === 'detail')[1]!;
+    expect(credit.fields['invoiceSumSign']).toBe('-');
+    // ...and reportedVat did not move with them: it is the supplied 1800.
+    expect(Number(header['reportedVat'])).toBe(1800);
+  });
+
+  it('i: the same document twice is counted twice', () => {
+    const header = headerOf(generatePcn874(csv('audit-i-duplicate-row.csv')));
+    expect(Number(header['salesRecordCount'])).toBe(2);
+    expect(Number(header['taxableSalesAmount'])).toBe(20000);
+    expect(Number(header['reportedVat'])).toBe(1800); // still the supplied figure
+  });
+
+  it('s: negative half-shekel ties round away from zero, digits positive', () => {
+    const detail = parsePcn874(generatePcn874(csv('audit-s-negative-ties.csv')).text!).records.filter(
+      r => r.kind === 'detail',
+    )[0]!;
+    expect(Number(detail.fields['totalVat'])).toBe(1);
+    expect(Number(detail.fields['invoiceSum'])).toBe(3);
+    expect(detail.fields['invoiceSumSign']).toBe('-');
+  });
+
+  it('d: the Hebrew reference group makes the record wider in bytes than in characters', () => {
+    const result = generatePcn874(csv('audit-d-refgroup-hebrew.csv'));
+    const detail = parsePcn874(result.text!).records.filter(r => r.kind === 'detail')[0]!;
+    expect(detail.raw.length).toBe(60);
+    expect(Buffer.byteLength(detail.raw, 'utf8')).toBe(62);
+    const finding = result.validation!.findings.find(f => f.rule === 'file.byteWidth')!;
+    expect(finding.severity).toBe('warning');
+    expect(finding.message).toMatch(/60 characters and 62 bytes/);
+    expect(finding.openQuestion).toBeTruthy();
+  });
+
+  it('h3: the malformed directive names the line and the form it wanted', () => {
+    const problem = generatePcn874(csv('audit-h3-directive-no-colon.csv')).problems.find(
+      p => p.code === 'meta.malformed',
+    )!;
+    expect(problem.severity).toBe('error');
+    expect(problem.message).toMatch(/# reportedVat: <value>/);
+    expect(problem.line).toBe(6);
+  });
+});
+
+describe('a refused file is not reachable through the result', () => {
+  /**
+   * The audit's §5: `text` is null on a refusal, but `validation.parsed.records`
+   * used to carry the refused file byte for byte, so a library caller could
+   * reassemble and write exactly the file this package refused to produce. The
+   * records are dropped now, and the findings — which are the point — stay.
+   */
+  it('a post-build refusal carries findings and no records', () => {
+    const result = generatePcn874(csv('input-no-supplier.csv'));
+    expect(result.ok).toBe(false);
+    expect(result.text).toBeNull();
+    expect(result.validation).not.toBeNull();
+    expect(result.validation!.parsed.records).toEqual([]);
+    expect(result.validation!.findings.map(f => f.rule)).toContain('detail.T.counterpartyExpected');
+    expect(result.validation!.counts.error).toBeGreaterThan(0);
+  });
+
+  it('no record of the refused file survives anywhere in the result', () => {
+    for (const name of CSV_FIXTURES) {
+      const result = generatePcn874(csv(name));
+      if (result.ok) continue;
+      const serialised = JSON.stringify(result);
+      // The closing entry is "X" + the dealer id, and it appears in no message.
+      expect(serialised, `${name} still carries the closing entry`).not.toContain('X514457282');
+      // The header record begins with "O" + the dealer id.
+      expect(serialised, `${name} still carries the header record`).not.toContain('O514457282');
+    }
   });
 });
 

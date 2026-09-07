@@ -11,7 +11,7 @@
  * an open question would be asserting more than we know.
  */
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { generatePcn874, type GenerateResult, type GeneratorProblem } from './generate.js';
 import { ITA_SIMULATOR_URL, describeCitation } from './sources.js';
 import { validatePcn874, type Finding, type ValidationResult } from './validate.js';
@@ -91,7 +91,13 @@ export function formatHuman(result: ValidationResult, quiet: boolean): string {
  * "approved": what it can say is that the file matches the record layout in the
  * circular, and where to go for the other question.
  */
-export function formatGenerate(result: GenerateResult, outPath: string, input: string): string {
+export function formatGenerate(
+  result: GenerateResult,
+  outPath: string,
+  input: string,
+  /** True when a file already exists at `outPath`. Only read on a refusal. */
+  outExists = false,
+): string {
   const lines: string[] = [];
 
   const problem = (p: GeneratorProblem): void => {
@@ -129,8 +135,15 @@ export function formatGenerate(result: GenerateResult, outPath: string, input: s
       result.validation === null
         ? 'The input was refused before a file was built.'
         : 'A file was built and then checked with this package\'s own validator, which reported an error. ' +
-          'The generator does not write a file its validator rejects.',
+          'The generator does not write a file its validator rejects, and the refused file is not returned ' +
+          'either: the result carries the findings and no records.',
     );
+    if (outExists) {
+      lines.push(
+        `An earlier file is still at ${outPath}. This run did not produce it and did not touch it — do not ` +
+          'upload it in the belief that it came from this input.',
+      );
+    }
     return lines.join('\n');
   }
 
@@ -144,6 +157,11 @@ export function formatGenerate(result: GenerateResult, outPath: string, input: s
       "with this package's own validator before being written. That is the whole of the claim: whether the " +
       'Authority will take the file is a different question, and the Authority answers it itself with a free ' +
       `simulator — upload the file there: ${ITA_SIMULATOR_URL}`,
+  );
+  lines.push(
+    'What that check covers: the record layout, the field types, the two record counts and Appendix C\'s ' +
+      'permitted values. It cross-checks NO amount (docs/SPEC.md §5.2), so it says nothing about whether the ' +
+      'totals in this file are the ones your books hold.',
   );
   lines.push(
     'reportedVat was taken from your input and never computed: the circular defines the field (Appendix A, ' +
@@ -241,6 +259,15 @@ function runGenerate(args: readonly string[]): number {
     process.stderr.write(`pcn874: --reported-vat needs a value, in shekels\n\n${USAGE}\n`);
     return 2;
   }
+  // An empty value is a usage problem, not a figure. Passing it through made it
+  // override a "# reportedVat:" line in the CSV and then read as absent, so the
+  // file was refused for a directive the user had actually supplied.
+  if (reportedVat === '') {
+    process.stderr.write(
+      `pcn874: the --reported-vat value is empty. Give the period's total VAT in shekels ("+" to pay, "-" to receive), or leave the flag off to use the CSV's "# reportedVat:" line\n\n${USAGE}\n`,
+    );
+    return 2;
+  }
 
   let csv: string;
   try {
@@ -255,8 +282,14 @@ function runGenerate(args: readonly string[]): number {
     sourceName: paths[0]!,
   });
 
+  // Does a file already sit at the output path? Read BEFORE the write, so a
+  // refusal can say that what is there is older than this run. Nothing here
+  // deletes it: it may be a file the user owns.
+  const outExisted = existsSync(out);
+
   // The one place a file is written, and only when the generator says so. If
-  // `text` is null the generator refused; there is no other way to get text out.
+  // `text` is null the generator refused, and the refused result carries no
+  // records either, so nothing in it holds the file.
   if (result.ok && result.text !== null) {
     try {
       writeFileSync(out, result.text, 'utf8');
@@ -281,7 +314,7 @@ function runGenerate(args: readonly string[]): number {
       )}\n`,
     );
   } else {
-    process.stdout.write(`${formatGenerate(result, out, paths[0]!)}\n`);
+    process.stdout.write(`${formatGenerate(result, out, paths[0]!, outExisted)}\n`);
   }
 
   return result.ok ? 0 : 1;
