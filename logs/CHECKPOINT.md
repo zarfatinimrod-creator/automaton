@@ -46,7 +46,14 @@ Freemius עצמם** (ILS הוא מטבע קונה בלבד; שום קובץ צי
   קיים (שמות האופציות רונדרו מהתיעוד של PostHog). תיקון אגב: ה-FAQ וה-JSON-LD בדף הבית עדיין מכרו את רשימת
   הלקוחות החינמית כ-Pro — תוקן. 120 בדיקות מוצר, `check-html` ירוק, `build-site` מייצר `_site/` עם הדף החדש.
 
-**רץ עכשיו (18:45 UTC), סוכן Opus אחד:** (#30) `render-watch.yml` + `scripts/render-watch.mjs` + `research/rendered/urls.txt` ב-worktree —
+**render-watch (#30) מוזג (`07f6ee9`, 410 בדיקות revenue) והופעל על הענף הזה דרך `actions_run_trigger` ב-19:00 UTC.**
+שש כתובות, כולן מצוטטות מקבצי המחקר: Freemius supported-countries, `api.apify.com/v2/store?search=accessibility`,
+accessalyze/pricing, accessiguard/pricing, `govi.co.il/` (הדוח לא נקב בנתיב מחירים — השורש נזרע ונאמר למה),
+`mr.gov.il/ilgstorefront/he/`. **ה-workflow מקמט בעצמו ל-`research/rendered/` על הענף — לפני כל push הבא:
+`git pull --rebase`.** תוצאה של 403 מ-runner של GitHub היא עובדה על מיקום ה-runner (לא בישראל), לא על האתר;
+`meta.json` נכתב מחדש רק כשהתוכן/הסטטוס השתנו, אז `fetchedAt` = מועד השינוי האחרון, לא הבדיקה האחרונה.
+
+**(היסטוריה) רץ אז (18:45 UTC), סוכן Opus אחד:** (#30) `render-watch.yml` + `scripts/render-watch.mjs` + `research/rendered/urls.txt` ב-worktree —
 GitHub Actions כ-egress: מביא את עמוד המדינות הנתמכות של Freemius, חיפוש Apify Store (`/v2/store?search=accessibility`)
 ומחיר Govi ל-`research/rendered/`. **כשנוחת: למזג בסקריפט, ואז להפעיל על הענף הזה דרך `actions_run_trigger`
 (workflow_dispatch רץ מכל ענף) — זה מה שסוגר את הטריגרים הפתוחים של Freemius, EAA ומכרזים בלי בעלים.**
