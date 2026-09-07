@@ -1218,6 +1218,43 @@ fourth rail and not to silence the check.
 
 ---
 
+## The two measurements the board ordered first — both closed, 7.9.2026
+
+The board's decision (`research/colony-sweep/BOARD.md`) made two things conditional on a measurement rather
+than a build: the "English-language property" on an EAA-compliance scanner, and the tenders vertical the
+`data-apis` audit had found as the sweep's one priced counterexample. Both measurements ran the same day as
+GitHub-first scouts with the sweep's evidence grades. Both close. Full reports:
+`research/measurements/eaa-occupancy.md`, `research/measurements/tenders-occupancy.md`.
+
+**EAA compliance scanning — CLOSED on measurement, 7.9.2026.** The board gated the next new product on
+finding ≤3 cheap API-first EAA scanners. The scout found **eight** with rendered evidence, sixteen with named
+prices, and **at least eleven that are free** — including a free EAA-branded axe-core Actor on Apify, our own
+named channel, and a GPL WordPress plugin that scans WCAG 2.1 AA and writes the Article 13 statement. The
+engine is axe-core (MPL-2.0), the statement generator is W3C's, and PageSpeed Insights returns the same audit
+free: constraint 8 fires, price floor zero. The money sits in human audits (€319–€6,000) we cannot sell.
+Prices: €0–30/month self-serve, $39–99 mid, $25k–150k/year enterprise. An honesty ceiling on top: automated
+checks find ~57% of issues by Deque's own figure, so a scan may never be sold as EAA conformance (rule 4).
+**Re-open only on** a non-public EAA input — an enforcement register or a required filing — **or** a channel
+that does not rank on prior success. Task #22 closed.
+
+**Israeli tender alerts — measured 7.9.2026, rejected as occupied and unbuildable.** Seventeen sellers reach
+this buyer: twelve Israeli (Govi, OptiMatch, WizBiz, יפעת, נוגה, מאגרים, GOVO, לשכת המסחר, מכון היצוא and three
+more) and five English aggregators, including israeltenders.com. Two price at ₪249 + VAT/month; nothing exists
+below about ₪133, because the tier beneath is free — the chamber's weekly mailing, BudgetKey's keyless SQL API,
+and an open-source clone syncing 78 publishers, zero stars, no price. No segment is unserved at ₪30–80. The
+₪249 buys aggregation plus a human editor, and several of those publishers geo-block non-Israeli traffic — the
+layer we cannot build. No usable channel was named (constraint 7). All vendor prices are snippet-grade, and
+the scout's own search did not reproduce Govi's ₪249. **Re-open only on a rendered Israeli tender product at
+or under ₪80/month, or a named owner-free channel to an Israeli SMB bidder.** Task #25 closed.
+
+**What is kept from the two, because a closed line can still leave an asset.** `next.obudget.org/api/query`
+(OpenBudget / BudgetKey) is a free, keyless, CORS-enabled SQL API with an Elasticsearch layer over Israeli
+procurement, budget, supports and entity data, verified working anonymously from code that calls it. It is a
+better substrate than what `products/apify-il-open-data` normalises today, and the place to look first when
+that Actor's 30-day stranger count says anyone is looking. And the EAA scout's list of free MCP servers and
+agent skills in that category is the clearest picture the repo has of what "GitHub-native distribution" looks
+like when a category is being given away: it is where the free version lives, not where the first sale is.
+
 ## Earlier rejections
 
 Kept in `docs/INCOME_PLAN.he.md` §4 with one-line reasons: Envato (bans AI files, 50%
