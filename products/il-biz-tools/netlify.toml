@@ -13,8 +13,10 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
-    # Paddle overlay + optional Plausible/PostHog are the only third parties.
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.paddle.com https://*.paddle.com https://plausible.io https://*.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.paddle.com https://plausible.io https://*.posthog.com; frame-src https://*.paddle.com; base-uri 'self'; form-action 'self'"
+    # Optional Plausible/PostHog are the only third parties left. Paddle is gone:
+    # Gumroad replaced it, and the Gumroad checkout is a link to their product
+    # page - no SDK, no overlay, no iframe - so the policy got smaller, not bigger.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io https://*.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://plausible.io https://*.posthog.com; frame-src 'none'; base-uri 'self'; form-action 'self'"
 
 [[headers]]
   for = "/assets/*"

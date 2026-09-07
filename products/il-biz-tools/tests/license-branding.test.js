@@ -154,13 +154,18 @@ describe('the honesty constraint', () => {
   it('never offers checkout without a way to verify what it sells', async () => {
     const { readFileSync } = await import('node:fs');
     const page = readFileSync(new URL('../assets/page-invoice.js', import.meta.url), 'utf8');
-    expect(page).toContain('isProConfigured(site) && site?.pro?.publicKey');
+    // The decision lives in src/lib/gumroad.js (proButtonState) and is tested
+    // there; the page must defer to it rather than re-deriving the condition.
+    expect(page).toContain('proButtonState(site)');
+    expect(page).toContain('proCta.disabled = !proState.enabled');
+    expect(page).not.toContain('paddle');
   });
 
   it('ships with Pro disabled until the owner generates a keypair', async () => {
     const { readFileSync } = await import('node:fs');
     const config = JSON.parse(readFileSync(new URL('../src/config/site.json', import.meta.url), 'utf8'));
     expect(config.pro.publicKey).toBeNull();
-    expect(config.paddle.clientToken).toBe('');
+    expect(config.gumroad.productUrl).toBe('');
+    expect(config.paddle).toBeUndefined();
   });
 });
