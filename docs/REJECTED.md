@@ -1292,8 +1292,11 @@ bank via Wise or wire, from a USD balance — not "in ILS with no conversion fee
 paid on the 10th of each month with a one-month calculation lag (about 40–70 days sale-to-cash), no Stripe
 Connect. The prohibited-products page allows SaaS including "REST APIs" and "AI-powered services" and forbids
 human-fulfilled SaaS — which makes Freemius the one merchant of record that would carry the x402- and MCP-shaped
-products Gumroad's terms exclude, if any of them ever earns its place back. Fee and identity verification remain
-snippet-grade until the two queued pages render. `rails.ts` carries all of it with line numbers.
+products Gumroad's terms exclude, if any of them ever earns its place back. A third render, minutes later, closed those too: **4.7% platform fee plus ~3.5% gateway, about 8.2%
+all-in** (Gumroad is 17–22% at small tickets), and verification is a dashboard form with supporting
+documents reviewed in days, with no camera step on the page. The one thing no page settles is whether an
+individual עוסק פטור passes that form; only an application would. `rails.ts` carries all of it with line
+numbers. Nothing is added to the owner's seven steps: Freemius becomes a step only when a line chooses it.
 
 ## Earlier rejections
 

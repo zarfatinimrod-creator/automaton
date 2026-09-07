@@ -357,3 +357,24 @@ the prohibited list remain as graded above; the pages that settle them (`/your-e
 
 **Verdict now:** PAYS ISRAEL YES (rendered); USD balance with ILS payout via Wise/wire; $100 / 10th monthly /
 ~40–70 days; SaaS and AI-powered services allowed; fee and KYC still snippet-grade pending the two queued pages.
+
+
+## 14. Third render — fee and verification pages
+
+`research/rendered/freemius-our-pricing.txt` (HTTP 200, 58,656 bytes) and `freemius-verification.txt`
+(HTTP 200, 54,864 bytes). **[RENDERED]**
+- **Fee:** "4.7% per successful transaction" for SaaS and software (line 92); the WordPress & Templates plan
+  adds 2.3% (120); "Gateway fees may vary … the current average effective rate is 3.5% … Freemius does not take
+  any portion" (124); high-volume tiers 4.7% → 4.5% → 4.0% → 3.0% → 2.0% (136–148) and "as little as 0.5% on
+  sales beyond $100,000 per month" (130). All-in ≈ 8.2% for a SaaS seller — versus Gumroad's ~17–22% at
+  $9–$19 tickets (`audits/storefronts.md` §3).
+- **Verification:** sandbox works without it; "some products require verification before you can start selling
+  in production"; the form asks for "details about your company and product, along with relevant supporting
+  documentation", reviewed "in a few days". No camera, selfie or liveness step appears. **Whether an individual
+  עוסק פטור passes is not on the page** — the one remaining unknown, settled only by an application (owner-side).
+
+**Final verdict of this measurement:** Freemius is a usable second merchant-of-record rail for an Israeli
+seller: pays Israel (rendered), USD balance with ILS payout via Wise or wire, $100 minimum on the 10th monthly
+(~40–70 days sale-to-cash), ≈8.2% all-in, SaaS and AI-powered services allowed, verification by form. It is
+the only rail in the catalogue that would carry an x402- or MCP-shaped product. It becomes an owner step only
+when a line actually chooses it; nothing is added to the seven steps today.
