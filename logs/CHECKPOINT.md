@@ -16,10 +16,18 @@
 כדי שהדוח יקרא את הפורטפוליו החדש; `railConcentration()` עכשיו מחזיר `concentrated` בכוונה (₪1,000 מ-₪1,500 על
 Gumroad אחד) — הדירקטוריון קיבל את זה במודע, והבדיקה מאשרת את האזהרה במקום להשתיק אותה.
 
-**מה עדיין פתוח מהדירקטוריון:** בנייה #2 (מסנן באונטי Algora) — מחכה להכרעת הבעלים א'/ב' ולחשבון המותג; #4
-(פריסת il-biz-tools על Gumroad) — מחכה לדומיין ולטוקן; #5 (MCP Registry) — לדומיין ולארגון; #6 (דף אגרת הרשם);
-שורת `MISSION.md` §1 שמפנה ל-`OWNER_STEPS` במקום ל-§6; פלייבוק `revenue-pcn874`; ואימות סעיף "משתמש-מכונה"
-בתנאי GitHub לפני שאומרים לבעלים לפתוח חשבון שני.
+**מה נסגר אחר כך (17:00–17:40 UTC):** `MISSION.md` §1 מפנה ל-`OWNER_STEPS` (`24573af`); סעיף "משתמש-מכונה"
+**רונדר מ-`github/site-policy`** דרך `search_code` ("no more than one free machine account in addition to your
+free Personal Account", לשימוש אוטומטי בלבד) ונכנס למדריך; `scripts/merge-worktree.sh` + מוסכמות worktree
+ב-`CLAUDE.md` (`e296979`); גוף PR #2 עודכן למצב הנוכחי (121/121, דירקטוריון, 6 מוצרים, 138 סקילים, המדריך).
+
+**רץ עכשיו (17:40 UTC), שלושה סוכני Opus — צד הקוד של בניות שחסומות על צעדי בעלים:** (#28) מסנן באונטי
+Algora ב-worktree — `src/revenue/bounties/{policy,intake,disclosure}.ts` + בדיקות + פלייבוק `revenue-oss-bounties`;
+(#29) `il-biz-tools` ב-worktree — Gumroad במקום Paddle ב-`site.json`, שער "לא מאומת" על שיעורי מס, דף אגרת רשם
+החברות עם מחשבון מועדים, גילוי §30א(ג) ותיקון 13, PostHog אופציונלי; (#21) מדידת Freemius כמסילה שנייה →
+`research/measurements/freemius-rail.md`. **כשנוחתים: `scripts/merge-worktree.sh <branch> "<subject>"` לשניים
+הראשונים; Freemius נקלט ל-`rails.ts` (`beforeUse`) ול-`REJECTED.md`.** אחר כך פתוח: #5 (MCP Registry — דומיין +
+ארגון), פלייבוק `revenue-pcn874`, ותשובות הבעלים (א'/ב' ל-Algora, Paddle, Devpost).
 
 ## ✅ פסק הדירקטוריון נקלט לריפו (7.9.2026, 16:00–16:30 UTC, Opus, ב-worktree)
 
