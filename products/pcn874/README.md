@@ -1,10 +1,10 @@
 # pcn874
 
-A validator for the Israeli VAT detailed report file — **PCN874**, `דוח מע"מ מפורט` — the fixed-width text file a VAT-registered business uploads to the Israel Tax Authority.
+A validator **and generator** for the Israeli VAT detailed report file — **PCN874**, `דוח מע"מ מפורט` — the fixed-width text file a VAT-registered business uploads to the Israel Tax Authority.
 
 Revenue line: `pcn874` in the automaton's revenue colony. Rail: Gumroad. Owner one-time step: **step 3** of [`docs/OWNER_STEPS.he.md`](../../docs/OWNER_STEPS.he.md).
 
-Nothing in this package is for sale yet and no price is set. The board's build order was **validator first**, and a validator that nobody can check is worth less than none.
+Nothing in this package is for sale yet and no price is set. The board's build order was **validator first**, and a validator that nobody can check is worth less than none. The generator was added on 2026-09-07, on top of it: it turns a documented CSV of documents into the file, and it **refuses to write a file the validator rejects** — see [`docs/GENERATOR.md`](docs/GENERATOR.md).
 
 ---
 
@@ -39,7 +39,7 @@ The document **contradicted all three of them in one place**, and the old valida
 | **Petty cash is capped** at 2% of the file's VAT or ₪2,000, whichever is greater | note E, `ita:…:566-568` |
 | The record counts cover **all** sales letters and **all** input letters | `ita:…:114-115,124` with the Table of Values |
 
-199 tests cover every rule the validator emits, in `tests/`, over 26 generated fixtures.
+257 tests cover every rule the validator emits and every path through the generator, in `tests/`, over 26 generated fixed-width fixtures and 8 generated CSV inputs.
 
 ## The refutation audit, and what it changed
 
@@ -97,7 +97,8 @@ Plus **§6.9**, which was never in the log because all three implementations agr
 - **An import entry's reference number is ambiguous in the document itself**: Appendix C's `R` row says zeros, and the comment marker on the same row points at a note that says the opposite. Kept a warning, with both readings in the finding text.
 - **Line endings and a detail-free file remain unsettled.** They are warnings, and the line-ending warning is the only rule in the product whose authority is open-source code alone. It says so in its own text.
 - **This validator does not tell you your file is acceptable to the Tax Authority.** It tells you the file matches the layout in the Authority's circular. A file can pass here and still be rejected — for the contents of its numbers, for a rule in a later memo, for anything the simulator checks and we do not. **The Authority publishes a free simulator; use it:** `http://www.misim.gov.il/EmDvhmfrt/wUploadFileHeshboniotSim.aspx`
-- There is **no generator**. Not an oversight: a wrong generated PCN874 is the filer's exposure, not ours.
+- **The generator does not compute `reportedVat` and never will on this evidence.** It takes the figure from you and refuses to build a file without one, saying which lines define the field and that none of them defines its arithmetic.
+- **The generator's readings, where the circular stops short, are named rather than assumed**: that a sale is zero-rated when its VAT is zeros, that a credit subtracts from the period's totals, that an export counts as a zero-value sale (a warning on every file that has one), and that a half shekel rounds away from zero (a warning on the row where it decided a digit). All four are in [`docs/GENERATOR.md`](docs/GENERATOR.md), with what the document does and does not say.
 
 ---
 
@@ -105,17 +106,21 @@ Plus **§6.9**, which was never in the log because all three implementations agr
 
 ```bash
 npm install
-npm test          # 199 tests
+npm test          # 257 tests
 npm run typecheck
 npm run build
 node dist/cli.js validate path/to/PCN874.txt
+node dist/cli.js generate documents.csv --out PCN874.TXT --reported-vat 1800
 ```
 
 ```
 pcn874 validate <file> [--json] [--quiet]
+pcn874 generate <input.csv> --out <file> [--reported-vat <shekels>] [--json]
 ```
 
-Exit `0` when there is no error finding, `1` when there is, `2` on a usage or I/O problem. Warnings never change the exit code.
+`validate` exits `0` when there is no error finding, `1` when there is, `2` on a usage or I/O problem. `generate` exits `0` when the file was written, `1` when it refused — either because the input was wrong or because its own validator rejected the file it built — and `2` on a usage or I/O problem. Warnings never change either exit code.
+
+**`--reported-vat` is in shekels**, signed: `+` is VAT to pay, `-` VAT to receive. It is the one number the generator will not compute, because no rendered source states how it is computed ([`docs/SPEC.md` §5.2](docs/SPEC.md)); without it, `generate` refuses. The CSV's columns, the header block, and every total that IS computed are documented in [`docs/GENERATOR.md`](docs/GENERATOR.md).
 
 ### As a library
 
@@ -133,6 +138,17 @@ for (const f of findings) {
 ```
 
 `parsePcn874(text)` returns records with their fields sliced at the layout offsets and judges nothing; `validatePcn874(text | parsed)` returns `{ valid, findings, parsed, counts }`. `valid` is exactly "no finding of severity `error`".
+
+```ts
+import { generatePcn874 } from './src/index.js';
+
+const result = generatePcn874(csvText, { reportedVat: '1800' });
+// result.text is null whenever result.ok is false, and ok is false whenever the
+// generator's own validatePcn874 run reported an error. There is no other way
+// to get a file out of this package.
+```
+
+`result.problems` are about the **input** (a bad column, an amount that is not an amount, a missing `reportedVat`); `result.validation.findings` are about the **output**, from the validator itself.
 
 Every finding carries a `basis`, derived from its own citations so it cannot drift away from them:
 
@@ -180,8 +196,12 @@ The reconciliation renamed a few things. Rule ids are still meant to be depended
 | `src/layout.ts` | the layout as data — every field with offset, width, class, the document's own words, and any open question |
 | `src/parse.ts` | `parsePcn874` — forgiving; a malformed file must still parse |
 | `src/validate.ts` | `validatePcn874` — the rules, each carrying its citations |
-| `src/cli.ts` | `pcn874 validate` |
-| `scripts/make-fixtures.mjs` | regenerates `tests/fixtures/`. **Not a PCN874 generator; must not be used for a filing.** |
+| `src/generate.ts` | `generatePcn874` — CSV in, file out, self-validated before it is handed back |
+| `src/cli.ts` | `pcn874 validate` and `pcn874 generate` |
+| `docs/GENERATOR.md` | the CSV's columns and header block, each with the `SPEC.md` field it fills and the circular's line; what is computed and how; the readings taken where the document stops |
+| `scripts/make-fixtures.mjs` | regenerates `tests/fixtures/`. **Not the generator, and must not be used for a filing** — it exists so the validator's fixtures are demonstrably built from the layout table. |
+| `scripts/make-csv-fixtures.mjs` | regenerates `tests/fixtures/csv/` — the generator's sample inputs, built from the same column list the code uses |
+| `tests/fixtures/csv/*.csv` | eight sample inputs, including the two that must be refused (`no-reported-vat.csv`, `input-no-supplier.csv`). `minimal.csv` is built to reproduce `valid-minimal.txt` byte for byte, and a test asserts it |
 | `tests/fixtures/*.txt` | twenty-six files, all generated from the layout table with invented digits. The prefix is the assertion: `valid-*` and `warnings-*` must validate, `invalid-*` must not, and a test compares the directory listing against the list the suite walks so a new fixture cannot slip past |
 
 ### On the fixtures and the licences
@@ -192,7 +212,9 @@ Two of the three implementations cannot be copied from: `adam2314/linet3` is AGP
 
 ## בעברית — מה זה, ומה זה לא
 
-זהו **מאמת** (validator) לקובץ הדיווח המפורט למע"מ, PCN874 — הקובץ בעל המבנה הקבוע שעוסק מעלה לרשות המסים. הוא קורא קובץ קיים, מפרק אותו לרשומות ולשדות, ומחזיר רשימת ממצאים: איזו רשומה, איזה שדה, איזה כלל, ומאיזו שורה של איזה מסמך הכלל נלקח.
+זהו **מאמת** (validator) **ומחולל** (generator) לקובץ הדיווח המפורט למע"מ, PCN874 — הקובץ בעל המבנה הקבוע שעוסק מעלה לרשות המסים. המאמת קורא קובץ קיים, מפרק אותו לרשומות ולשדות, ומחזיר רשימת ממצאים: איזו רשומה, איזה שדה, איזה כלל, ומאיזו שורה של איזה מסמך הכלל נלקח.
+
+**המחולל (7.9.2026):** מקבל קובץ CSV ובו שורה אחת לכל מסמך — עסקאות ותשומות — ובונה ממנו את הקובץ. העמודות, ומה כל אחת ממלאת במבנה הרשומה, מתועדות ב-[`docs/GENERATOR.md`](docs/GENERATOR.md). שני דברים שהוא **לא** עושה: הוא **לא מחשב את הסכום המדווח** (`reportedVat`) — המסמך הרשמי מגדיר את השדה (שורה 126) ואינו אומר לעולם איך מחשבים אותו, ולכן הערך נלקח מהמשתמש, ובלעדיו המחולל מסרב לייצר קובץ ואומר בדיוק למה; והוא **לא כותב קובץ שהמאמת שלו פוסל** — הוא בונה את הקובץ, מריץ עליו את `validatePcn874`, ואם יש ולו שגיאה אחת הוא מדפיס אותה ולא כותב דבר. אזהרות מודפסות והקובץ נכתב. הסכומים ב-CSV הם בשקלים (מותר עם אגורות) ומעוגלים לשקל השלם, כלשון החוזר; **כיוון העיגול של חצי שקל בדיוק הוא בחירה של המוצר, לא כלל של החוזר**, והוא מדווח כאזהרה בשורה שבה הבחירה הכריעה ספרה.
 
 **מה שהשתנה ב-7.9.2026:** עד היום המבנה כאן נגזר משלושה מימושי קוד פתוח בלבד, כי המסמך הרשמי של רשות המסים היה חסום מהמכולה. הוא כבר לא. **המקור הראשי הוא כעת החוזר של רשות המסים ליצרני תוכנות הנהלת חשבונות** — נספח א' (מבנה הרשומות), נספח ב' (קובץ איחוד למייצגים) ונספח ג' (הערכים המותרים בכל שדה). כל כלל מצטט שורה מתוך `research/rendered/pcn874-gov-il-874-eng.txt`. שלושת המימושים עדיין מצוטטים — כאישוש, לא כסמכות.
 

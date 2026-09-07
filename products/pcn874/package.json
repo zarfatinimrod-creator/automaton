@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Validator for the Israeli VAT detailed report file (PCN874 / דוח מע\"מ מפורט), checked against a layout rendered from three independent open-source implementations",
+  "description": "Validator and generator for the Israeli VAT detailed report file (PCN874 / דוח מע\"מ מפורט), checked against the record layout in the Israel Tax Authority's own circular to software houses",
   "main": "dist/index.js",
   "bin": {
     "pcn874": "dist/cli.js"
@@ -11,6 +11,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "fixtures": "node scripts/make-fixtures.mjs",
+    "fixtures:csv": "node scripts/make-csv-fixtures.mjs",
     "start": "node dist/cli.js",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"

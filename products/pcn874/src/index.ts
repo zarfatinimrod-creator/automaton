@@ -9,13 +9,24 @@
  * cited; the document decides.
  *
  * It does NOT decide whether a filing is correct or will be accepted: the
- * Authority publishes a simulator for that (`ITA_SIMULATOR_URL`). There is no
- * generator here on purpose — the board's order was validator first, and a wrong
- * generated file is the filer's exposure.
+ * Authority publishes a simulator for that (`ITA_SIMULATOR_URL`). The board's
+ * order was validator first, and the generator added on 2026-09-07 is built on
+ * top of it: `generatePcn874` validates its own output and returns no text at
+ * all when that validation reports an error, because a wrong generated file is
+ * the filer's exposure. It does not compute `reportedVat` — no rendered source
+ * states that arithmetic (docs/SPEC.md §5.2, §6.7).
  */
 
 export { parsePcn874, isParsed } from './parse.js';
 export type { ParsedPcn874, Pcn874Record, RecordKind, LineEnding } from './parse.js';
+
+export { generatePcn874, GENERATOR_COLUMNS, GENERATOR_DIRECTIVES } from './generate.js';
+export type {
+  GenerateOptions,
+  GenerateResult,
+  GeneratorProblem,
+  ProblemSeverity,
+} from './generate.js';
 
 export { validatePcn874, basisOf } from './validate.js';
 export type { Finding, Severity, Basis, ValidationResult } from './validate.js';

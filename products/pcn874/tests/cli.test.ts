@@ -1,10 +1,13 @@
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { run } from '../src/cli.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixturePath = (name: string): string => join(here, 'fixtures', name);
+const csvPath = (name: string): string => join(here, 'fixtures', 'csv', name);
 
 function capture(fn: () => number): { code: number; out: string; err: string } {
   let out = '';
@@ -105,7 +108,7 @@ describe('pcn874 validate', () => {
   });
 
   it('exits 2 on an unknown command and on no arguments', () => {
-    expect(capture(() => run(['generate', 'x.txt'])).code).toBe(2);
+    expect(capture(() => run(['simulate', 'x.txt'])).code).toBe(2);
     expect(capture(() => run([])).code).toBe(2);
   });
 
@@ -120,5 +123,131 @@ describe('pcn874 validate', () => {
     expect(out).toContain('Exit codes:');
     expect(out).toContain('docs/SPEC.md');
     expect(out).toContain("Israel Tax Authority's own circular");
+  });
+
+  it('--help documents generate beside validate', () => {
+    const { out } = capture(() => run(['--help']));
+    expect(out).toContain('pcn874 generate <input.csv> --out <file>');
+    expect(out).toContain('--reported-vat');
+    expect(out).toContain('in SHEKELS');
+    expect(out).toContain('docs/GENERATOR.md');
+  });
+});
+
+describe('pcn874 generate', () => {
+  let dir: string;
+  const out = (name = 'PCN874.TXT'): string => join(dir, name);
+
+  beforeEach(() => {
+    dir = mkdtempSync(join(tmpdir(), 'pcn874-cli-'));
+  });
+  afterEach(() => rmSync(dir, { recursive: true, force: true }));
+
+  it('exits 0, writes the file, and points at the Authority\'s own simulator', () => {
+    const target = out();
+    const { code, out: printed } = capture(() =>
+      run(['generate', csvPath('minimal.csv'), '--out', target]),
+    );
+    expect(code).toBe(0);
+    expect(printed).toContain('WROTE');
+    expect(printed).toContain('matches the record layout in the Tax Authority circular');
+    expect(printed).toContain('http://www.misim.gov.il/EmDvhmfrt/wUploadFileHeshboniotSim.aspx');
+    expect(readFileSync(target, 'utf8')).toBe(readFileSync(fixturePath('valid-minimal.txt'), 'utf8'));
+  });
+
+  it('never says the output is compliant, accepted or approved', () => {
+    const { out: printed } = capture(() =>
+      run(['generate', csvPath('mixed.csv'), '--out', out()]),
+    );
+    expect(printed).not.toMatch(/\b(compliant|accepted|approved)\b/i);
+    expect(printed).not.toMatch(/תקין|מאושר|קביל/);
+  });
+
+  it('exits 1 and writes nothing when no reportedVat is supplied', () => {
+    const target = out();
+    const { code, out: printed } = capture(() =>
+      run(['generate', csvPath('no-reported-vat.csv'), '--out', target]),
+    );
+    expect(code).toBe(1);
+    expect(existsSync(target)).toBe(false);
+    expect(printed).toContain('REFUSED');
+    expect(printed).toContain('meta.reportedVat.missing');
+    expect(printed).toContain('states no arithmetic for it');
+  });
+
+  it('--reported-vat supplies it, and accepts a negative figure', () => {
+    const target = out();
+    expect(
+      capture(() =>
+        run(['generate', csvPath('no-reported-vat.csv'), '--out', target, '--reported-vat', '-1746']),
+      ).code,
+    ).toBe(0);
+    const header = readFileSync(target, 'utf8').split('\n')[0]!;
+    expect(header.slice(119)).toBe('-00000001746');
+  });
+
+  it('exits 1 and writes nothing when its own validator rejects the file it built', () => {
+    const target = out();
+    const { code, out: printed } = capture(() =>
+      run(['generate', csvPath('input-no-supplier.csv'), '--out', target]),
+    );
+    expect(code).toBe(1);
+    expect(existsSync(target)).toBe(false);
+    expect(printed).toContain('detail.T.counterpartyExpected');
+    expect(printed).toContain('does not write a file its validator rejects');
+  });
+
+  it('writes the file on warnings and prints them', () => {
+    const target = out();
+    const { code, out: printed } = capture(() =>
+      run(['generate', csvPath('warnings.csv'), '--out', target]),
+    );
+    expect(code).toBe(0);
+    expect(existsSync(target)).toBe(true);
+    expect(printed).toContain('row.refNumber.rightmostNine');
+    expect(printed).toContain('detail.refGroup.alphanumeric');
+    expect(printed).toContain('warning');
+  });
+
+  it('the generated file validates through the CLI itself', () => {
+    const target = out();
+    expect(capture(() => run(['generate', csvPath('mixed.csv'), '--out', target])).code).toBe(0);
+    const { code, out: printed } = capture(() => run(['validate', target]));
+    expect(code).toBe(0);
+    expect(printed).toContain('VALID');
+  });
+
+  it('--json reports what was written and what was found', () => {
+    const target = out();
+    const { code, out: printed } = capture(() =>
+      run(['generate', csvPath('rounding.csv'), '--out', target, '--json']),
+    );
+    expect(code).toBe(0);
+    const parsed = JSON.parse(printed) as {
+      written: boolean;
+      out: string;
+      problems: { code: string }[];
+    };
+    expect(parsed.written).toBe(true);
+    expect(parsed.out).toBe(target);
+    expect(parsed.problems.map(p => p.code)).toContain('row.amount.roundingTie');
+  });
+
+  it('exits 2 without --out, without an input, and on an unreadable input', () => {
+    expect(capture(() => run(['generate', csvPath('minimal.csv')])).code).toBe(2);
+    expect(capture(() => run(['generate', '--out', out()])).code).toBe(2);
+    expect(capture(() => run(['generate', csvPath('nope.csv'), '--out', out()])).code).toBe(2);
+    expect(capture(() => run(['generate', csvPath('minimal.csv'), '--out'])).code).toBe(2);
+    expect(
+      capture(() => run(['generate', csvPath('minimal.csv'), '--out', out(), '--reported-vat'])).code,
+    ).toBe(2);
+  });
+
+  it('exits 2 when the output path cannot be written, and still wrote nothing', () => {
+    const { code, err } = capture(() =>
+      run(['generate', csvPath('minimal.csv'), '--out', join(dir, 'no', 'such', 'dir', 'f.txt')]),
+    );
+    expect(code).toBe(2);
+    expect(err).toContain('cannot write');
   });
 });
