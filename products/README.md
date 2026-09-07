@@ -6,7 +6,7 @@ Sellable products built by the revenue colony. Each directory is standalone (own
 |---|---|---|---|
 | `apify-il-open-data` | apify-actors | Apify Store, **published free** while the 30-day stranger count runs | step 6 — Apify sign-up with the brand username + `APIFY_TOKEN` (allowed straight after step 1; **no KYC**) |
 | `il-biz-tools` | il-biz-tools | **Gumroad** (merchant of record, ILS payout rendered) — Paddle retired 7.9.2026 | step 3 — Gumroad account + token; step 5 — domain; step 6 — Netlify link |
-| `pcn874` | pcn874 | **Gumroad** (ILS) — validator only today, no price | step 3 — Gumroad account + token |
+| `pcn874` | pcn874 | **Gumroad** (ILS) — validator and generator built, no price set | step 3 — Gumroad account + token |
 | `mcp-il-tools` | (channel test, not a line) | none — free | step 5 — domain (DNS verification for the brand namespace); step 7 — GitHub organisation |
 | `telegram-il-tools-bot` | ~~telegram-bots~~ — **PARKED** | ~~Telegram Stars → TON via Fragment~~ — killed: Fragment's payout KYC needs a selfie | none — do not start it |
 | `x402-il-api` | ~~paid-apis / agent-services~~ — **standby rail, not a line** | x402 (USDC on Base), kept only while it costs ₪0/month | none |
@@ -30,7 +30,7 @@ verdict on the code:
 - **`il-biz-tools` moved from Paddle to Gumroad.** Gumroad is the only merchant of record with rendered
   proof of ILS payout to an Israeli bank. Paddle is now an option the owner may choose knowing three
   named risks, recorded in `src/revenue/rails.ts` — never a step on his checklist.
-- **`pcn874` is the one new product.** Its validator exists (`products/pcn874/`, 199 tests). **Since
+- **`pcn874` is the one new product.** Its validator and its generator exist (`products/pcn874/`, 257 tests over 26 fixed-width fixtures and 8 CSV inputs). **Since
   7.9.2026 its record layout comes from the Israel Tax Authority's own circular to software houses** —
   Appendix A (layout), B (representatives' file), C (permitted values) — which `render-watch.yml` fetched
   from GitHub Actions and which is stored as extracted text in `research/rendered/`. Every rule in
@@ -53,9 +53,15 @@ verdict on the code:
   **What is still not verified:** the circular is from **2009** and carries no version number; no later
   edition of the layout has been rendered, and the two newer Hebrew documents are vendor user manuals
   that do not restate the byte layout. `.github/workflows/pcn874-spec-watch.yml` watches all three
-  hashes so a new edition is noticed rather than assumed away. It has no price and no generator yet, it
-  still never says a file will be accepted — it points at the Authority's free simulator for that — and
-  a wrong PCN874 file is the user's VAT exposure.
+  hashes so a new edition is noticed rather than assumed away.
+  **The generator was built on 7.9.2026** (`products/pcn874/docs/GENERATOR.md`): a documented CSV of
+  documents in, the fixed-width file out, widths taken from the layout table and every header total the
+  circular defines as a sum or a count computed from the details. It **refuses to write a file its own
+  validator rejects** — it builds the text, runs `validatePcn874` on it, and returns nothing at all if
+  that reports an error — and it **will not compute `reportedVat`**: the circular defines the field and
+  states no arithmetic for it, so the figure is taken from the user and the generator refuses without
+  one. It has no price, it still never says a file will be accepted — it points at the Authority's free
+  simulator for that — and a wrong PCN874 file is the user's VAT exposure.
 
 **Products with no line:** `mcp-il-tools`, which is a distribution channel test rather than a
 storefront, and whose registry listing is blocked on the domain (step 5) and the organisation (step 7).

@@ -1,6 +1,6 @@
 ---
 name: revenue-pcn874
-description: Playbook for the PCN874 line — the Israeli VAT detailed-report file, validator first; the Tax Authority spec is rendered and reconciled, generator next (core).
+description: Playbook for the PCN874 line — the Israeli VAT detailed-report file; the Tax Authority spec is rendered and reconciled, validator and generator built (core).
 auto-activate: false
 ---
 
@@ -12,7 +12,8 @@ created by law — every עוסק מורשה above the reporting threshold must 
 
 ## What exists
 
-`products/pcn874/`: `parsePcn874`, `validatePcn874`, a CLI (`pcn874 validate <file>`), 199 tests, and
+`products/pcn874/`: `parsePcn874`, `validatePcn874`, `generatePcn874` (built 7.9.2026 — see `docs/GENERATOR.md`),
+a CLI (`pcn874 validate <file>`, `pcn874 generate <input.csv> --out <file>`), 257 tests, and
 `docs/SPEC.md` — **the record layout from the Israel Tax Authority's own circular to software houses**
 (Appendix A the layout, B the representatives' alignment file, C the permitted values per document type),
 rendered by `render-watch.yml` on 7.9.2026 and stored as extracted text in `research/rendered/`. Every
@@ -53,10 +54,13 @@ chief audit).
 1. **Render the spec — DONE 7.9.2026.** What is left of this step: re-run the spec-watch workflow when a
    hash changes, and if the Authority has re-issued the circular, diff the new text against `docs/SPEC.md`
    before anything ships. Never assume a new edition kept a width.
-2. **Generator second, and it is now unblocked for the layout.** Spreadsheet or CSV → validated PCN874 file,
-   built on the validator, fixtures from the reconciled spec. Two hard limits carry over from step 1: it may
-   **not** compute `reportedVat` (no source gives the formula — take it from the user and validate nothing
-   about it), and it must **not** claim the output will be accepted. Ship it pointing at the simulator.
+2. **Generator second — BUILT 7.9.2026.** CSV → validated PCN874 file, built on the validator, sample
+   inputs generated from the same column list the code uses (`docs/GENERATOR.md`). Both hard limits from
+   step 1 are enforced in code and in tests: it does **not** compute `reportedVat` (it refuses without one,
+   naming the lines that define the field and stating that none defines its arithmetic), and it makes **no**
+   claim about the output being accepted — the success line says the file matches the layout in the circular
+   and points at the simulator. It also refuses to write a file its own validator rejects. What is left of
+   this step: a price, and the acquisition test in step 3.
 3. **Acquisition channel, named before launch** (constraint 7): Hebrew long-tail on the statutory term,
    plus the open-source core published on GitHub/npm under the brand — the validator is the free version and
    the funnel; the generator is what is sold. **SERP pull done 7.9.2026**
