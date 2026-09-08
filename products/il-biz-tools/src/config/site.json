@@ -1,0 +1,23 @@
+{
+  "siteUrl": "https://il-biz-tools.netlify.app",
+  "siteName": "כלים לעסק",
+  "year": 2026,
+  "gumroad": {
+    "productUrl": "",
+    "_comment": "Paste the full https URL of the Gumroad product page here (owner step 3). While it is empty the Pro button stays disabled and says so - it never pretends a shop exists. Nothing from Gumroad is loaded into this site; the button is a link."
+  },
+  "analytics": {
+    "provider": "none",
+    "plausibleDomain": "",
+    "_comment": "provider: \"none\" or \"plausible\". PostHog moved to its own block below because it is configured cookieless."
+  },
+  "posthog": {
+    "projectKey": "",
+    "apiHost": "https://eu.i.posthog.com",
+    "_comment": "Optional page-view measurement, cookieless. Empty by default: with no projectKey no snippet is emitted and nothing third-party loads. Filling it also needs 'Cookieless server hash mode' enabled in the PostHog project settings - see README."
+  },
+  "pro": {
+    "publicKey": null,
+    "_comment": "Run `node scripts/make-license.js init` on your own machine to generate the signing keypair. It writes the private half to .license-key.json (gitignored, back it up) and fills publicKey here. Until publicKey is set, Pro stays disabled and the site shows it as unavailable."
+  }
+}

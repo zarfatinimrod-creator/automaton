@@ -1,0 +1,19 @@
+{
+  "name": "il-biz-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Static Hebrew (RTL) toolkit for Israeli freelancers: VAT calculator, osek patur tracker, net salary estimator, receipt/invoice generator.",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "serve": "node scripts/serve.js",
+    "check:html": "node scripts/check-html.js"
+  },
+  "devDependencies": {
+    "vitest": "4.1.11"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -73,6 +73,8 @@ To help save Automatons Tokens & simplify setup of permissionless services & cap
 
 ## Revenue Colony (income chain of command)
 
+**Start with [`MISSION.md`](MISSION.md)** — the owner's mandate and the rules every part of this fork serves.
+
 This fork adds `src/revenue/`: a board → director → supervisor → worker hierarchy with auditors that check the supervisors and a chief auditor that checks the auditors. Money exists only in a ledger (`revenue_record` / hourly `revenue_sync_ledger`); kill/scale/pivot rules are code; the board files one goal at a time to the orchestrator and reallocates compute budget daily. Human one-time steps (accounts, KYC, payouts) are a first-class state (`awaiting_setup`) that the agent never bypasses.
 
 - Plan and ranked income sources (Hebrew): `docs/INCOME_PLAN.he.md`

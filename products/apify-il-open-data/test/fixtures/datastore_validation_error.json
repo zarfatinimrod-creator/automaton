@@ -1,0 +1,8 @@
+{
+  "help": "https://data.gov.il/api/3/action/help_show?name=datastore_search",
+  "success": false,
+  "error": {
+    "filters": ["field \"סטטוס\" not in table"],
+    "__type": "Validation Error"
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "note": "SHA-256 of the official PCN874 specification as downloaded by .github/workflows/pcn874-spec-watch.yml. The three documents were fetched and read on 2026-09-07; their extracted text is in research/rendered/ and docs/SPEC.md cites it line by line. This lock exists so a NEW EDITION is noticed: a changed hash means the layout in docs/SPEC.md and src/layout.ts may no longer match what the Authority publishes, and must be re-derived before anything ships. A hash here does NOT mean the new bytes have been read.",
+  "sources": {}
+}

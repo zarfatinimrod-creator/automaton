@@ -1,0 +1,17 @@
+{
+  "url": "https://mr.gov.il/ilgstorefront/he/",
+  "slug": "mr-gov-il-storefront",
+  "fetchedAt": "2026-09-07T18:28:19.616Z",
+  "status": 200,
+  "contentType": "text/html;charset=UTF-8",
+  "byteLength": 80395,
+  "sha256": "a79346a611dcff4a1f27e1058487a681c2993e06173870fb49fd429d4634eb6e",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/mr-gov-il-storefront.html",
+  "textPath": "research/rendered/mr-gov-il-storefront.txt",
+  "changed": true,
+  "firstFetch": false,
+  "previousSha256": "85d43234d5581ba2d3d9c513e5fad6f727d0fa502bd57f31294fad38763e0b35",
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

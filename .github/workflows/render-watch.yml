@@ -1,0 +1,143 @@
+name: render-watch
+
+# Why this exists.
+#
+# Three measurements in research/measurements/ end in a verdict of UNKNOWN and a
+# sentence naming ONE page that would change it:
+#
+#   - freemius-rail.md §10.1 — the Freemius supported-countries page. "That single
+#     page converts this whole report from UNKNOWN to a verdict." docs/REJECTED.md
+#     spells out the mechanism it wants: "fetched from a host with egress (a CI job,
+#     as pcn874-spec-watch.yml does)". This is that CI job.
+#   - eaa-occupancy.md §8.1-8.2 — one JSON call to the Apify store, and two cheap
+#     scanners' pricing pages.
+#   - tenders-occupancy.md §8.2-8.3 — a rendered Govi pricing page, and whether
+#     mr.gov.il offers free per-interest alerts.
+#
+# Every one of those URLs is egress-blocked from the container the research ran in,
+# and so is web.archive.org, which is the usual rescue — freemius-rail.md records
+# the proxy's 403 on both, one attempt each, no routing around it. GitHub's runners
+# have egress. So the pages get fetched here and committed into the repository, and
+# a later session reads them out of git instead of re-running six blocked fetches.
+#
+# What this buys: a claim can move from [SNIPPET] to [RENDERED] with the bytes in
+# the repo to back it. What it does NOT do: read the pages, or grade anything.
+# Storing a page is not evidence of a fact — research/rendered/README.md says how
+# the hand-off from stored bytes to a graded claim actually works, and it needs a
+# session that reads the text.
+#
+# Same shape as pcn874-spec-watch.yml, widened from one document to a list, plus the
+# commit-back pattern from apify-publish.yml's count-runs job.
+
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: >-
+          Optional. Override the list for this one run: one URL per line, an optional
+          slug after whitespace, `#` for a comment — the same syntax as
+          research/rendered/urls.txt. Leave empty to fetch that file. Nothing typed
+          here is written back to urls.txt; a URL worth keeping goes in the file with
+          the research sentence that names it.
+        required: false
+        type: string
+  schedule:
+    # Weekly, Tuesday. Deliberately not on the hour and not at :00 — GitHub's own
+    # docs warn the top of the hour is the busiest slot and scheduled runs get
+    # delayed there. Note GitHub only runs `schedule` from the default branch; on a
+    # feature branch this workflow is dispatch-only until it merges.
+    - cron: "23 5 * * 2"
+  # No `push` trigger, on purpose: a push of urls.txt plus a manual dispatch made two
+  # runs race for the same files on 7.9.2026, and the loser's rebase conflicted on the
+  # regenerated captures. Adding a URL is: push urls.txt, then dispatch once.
+
+# The job commits the fetched pages back to the branch it ran on.
+permissions:
+  contents: write
+
+# Two runs fetching the same six pages would fight over the same files and produce
+# two commits racing for the same ref. Serialise them. `cancel-in-progress: false`
+# because a half-written capture is worse than a capture that waits — same reasoning
+# as apify-publish.yml, and a separate group from it because these write different
+# paths and must not silently cancel each other.
+concurrency:
+  group: render-watch-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Committing needs real history, not a shallow clone. The default ref is
+          # the one the workflow ran on, which is where the commit belongs: a
+          # dispatch from a feature branch stores its pages on that branch.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # No install step: scripts/render-watch.mjs is stdlib plus the built-in fetch,
+      # on purpose. A weekly fetch that depends on a package tree is a weekly fetch
+      # somebody else's release can break.
+      #
+      # The script never throws on a bad page. A 403, a timeout, a 404 — each is
+      # recorded in that page's .meta.json and the run still exits 0, because a site
+      # refusing us is data about the site, not a broken build. It exits non-zero
+      # only when the script itself is broken: a malformed urls.txt, a duplicate
+      # slug, an unwritable output directory. Bodies are capped at 5 MB.
+      # A queued run checks out the sha it was queued on. By the time it starts, the run
+      # before it may have committed fresh captures to the branch. Fetch from the tip
+      # so this run's "changed since last time" compares against those, not against
+      # a stale tree — that stale comparison is what produced two commits fighting
+      # over the same meta files on 7.9.2026.
+      - name: Move to the branch tip before fetching
+        run: |
+          git config user.name "colony-bot"
+          git config user.email "colony-bot@users.noreply.github.com"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+
+      - name: Fetch the pages the research says would settle a question
+        env:
+          RENDER_WATCH_URLS: ${{ inputs.urls }}
+        run: node scripts/render-watch.mjs
+
+      - name: Commit the fetched pages back to this branch
+        run: |
+          set -euo pipefail
+
+          git config user.name "colony-bot"
+          git config user.email "colony-bot@users.noreply.github.com"
+
+          # Stage first, then compare the index: on the very first run every file
+          # under research/rendered/ is untracked and `git diff` alone would report
+          # no change and skip the commit forever. (The same trap apify-publish.yml
+          # and colony.yml both document.)
+          git add research/rendered/
+          if git diff --cached --quiet; then
+            echo "No page changed since the last run. Nothing to commit."
+            echo "No page changed since the last run." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          CHANGED=$(git diff --cached --name-only -- 'research/rendered/*.meta.json' | wc -l | tr -d ' ')
+          # [skip ci] keeps a capture commit from retriggering the test workflows —
+          # nothing under research/rendered/ is code.
+          git commit -m "render: ${CHANGED} page(s) changed [skip ci]"
+
+          # Another job can legitimately land on this branch between our checkout and
+          # our push. Rebase and retry rather than throwing away a capture.
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              echo "Committed ${CHANGED} changed page(s) to ${GITHUB_REF_NAME}." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Push rejected; rebasing and retrying (attempt ${attempt})."
+            # `-X theirs` during a rebase keeps the commit being replayed — this run's
+            # fresh capture — when both sides rewrote the same regenerated file.
+            git pull --rebase -X theirs --autostash origin "${GITHUB_REF_NAME}"
+          done
+          echo "Could not push the fetched pages after 3 attempts." >&2
+          exit 1

@@ -14,6 +14,14 @@ jobs:
       - uses: pnpm/action-setup@v4
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck
+      # The two steps below treat a timeout (exit 124) as success, and on 2026-09-07 both ran
+      # to exactly their limit on every commit — a failing test in src/__tests__/revenue passed
+      # CI that way. The revenue colony suite takes ~6 s, so it runs here on its own, with its
+      # real exit code. Nothing about money, the ledger, the portfolio or the fold-in rule may
+      # go green by timing out.
+      - name: Run revenue colony tests (real exit code)
+        timeout-minutes: 5
+        run: npx vitest run src/__tests__/revenue
       - name: Run tests
         timeout-minutes: 10
         run: |

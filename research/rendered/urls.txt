@@ -1,0 +1,95 @@
+# research/rendered/urls.txt — the pages a research file says would settle a question.
+#
+# Format: one URL per line, an optional slug after a TAB. A line starting with `#`
+# is a comment; a `#` inside a line is a URL fragment, not a comment marker.
+# Fetched by .github/workflows/render-watch.yml -> scripts/render-watch.mjs.
+#
+# THE ONE RULE FOR THIS FILE: every URL here must appear verbatim in a file in this
+# repository, and the comment above it must say which file and which section. No URL
+# is invented, guessed, or extrapolated from a pattern — including "the same site
+# probably has a /pricing page". A URL nobody wrote down is a URL nobody can cite.
+#
+# Adding one: quote the sentence that names it. Removing one: the question it was
+# going to settle has been answered, or the line it belonged to is closed for good.
+
+# --------------------------------------------------------------------------------
+# 1. Freemius — the whole rail hangs on this single page.
+# research/measurements/freemius-rail.md §10 item 1: "One page, twenty seconds, by a
+# human or an unblocked agent: […] search for 'Israel', and while there record which
+# payout methods the page shows against it and what currency an Israeli account
+# receives. That single page converts this whole report from UNKNOWN to a verdict."
+# docs/REJECTED.md, Freemius section: "Re-open trigger: one rendered page, […]
+# fetched from a host with egress (a CI job, as pcn874-spec-watch.yml does)."
+# --------------------------------------------------------------------------------
+https://freemius.com/help/documentation/selling-with-freemius/supported-countries/	freemius-supported-countries
+
+# --------------------------------------------------------------------------------
+# 2. Apify store search — the cheapest measurement in the EAA report.
+# research/measurements/eaa-occupancy.md §8 item 1: "One JSON call a human can make
+# in ten seconds: https://api.apify.com/v2/store?search=accessibility ([BLOCKED]
+# here). If it shows the six Actors with near-zero users, that is evidence the Apify
+# channel is listed-but-not-transacting."
+# --------------------------------------------------------------------------------
+https://api.apify.com/v2/store?search=accessibility	apify-store-accessibility
+
+# --------------------------------------------------------------------------------
+# 3+4. The two cheap-scanner pricing pages.
+# research/measurements/eaa-occupancy.md §8 item 2: "A rendered price page for two of
+# the eight cheap API scanners, confirming they are live products with working
+# checkouts rather than parked landing pages." The URL block that closes §8 names
+# exactly two of them with a /pricing path; those two are taken and no other site's
+# pricing path is guessed at.
+# --------------------------------------------------------------------------------
+https://accessalyze.com/pricing	accessalyze-pricing
+https://www.accessiguard.app/pricing	accessiguard-pricing
+
+# --------------------------------------------------------------------------------
+# 5. Govi — the ₪249 anchor of the tenders verdict.
+# research/measurements/tenders-occupancy.md §8 item 2: "A rendered Govi pricing page.
+# ₪249 + VAT is the anchor of this measurement and it is still SNIPPET-grade at two
+# removes. My own search did not reproduce it."
+# The report names NO dedicated pricing URL. §9 item 1 gives the site root and calls
+# it the pricing page: "https://govi.co.il/ — the pricing page and what the ₪249 tier
+# actually includes." That root is what is fetched. A /pricing path would be invented,
+# so it is not here; whoever reads the stored page finds the real path and adds it
+# with this comment updated.
+# --------------------------------------------------------------------------------
+https://govi.co.il/	govi-home
+
+# --------------------------------------------------------------------------------
+# 6. mr.gov.il — the alerts claim the tenders report refused to rely on.
+# research/measurements/tenders-occupancy.md §8 item 3: "Evidence that mr.gov.il
+# itself offers free per-interest email alerts. One search summary asserted the
+# government portal lets users 'register for email alerts based on areas of
+# interest'; a targeted follow-up search failed to confirm it, so it is recorded as
+# unverified and not relied on. If true, it collapses the incumbents' core feature to
+# ₪0 and makes the vertical worse, not better."
+# §9 item 5 gives the URL: "https://mr.gov.il/ilgstorefront/he/ — does the portal
+# offer free per-interest email alerts, and is there any RSS or API behind the
+# storefront?"
+# NOTE, so the result is not misread: the tenders report records that several Israeli
+# publishers geo-block non-Israeli traffic. A GitHub runner is not in Israel. A block
+# or an empty page here is a fact about the runner's location, not about the portal.
+# --------------------------------------------------------------------------------
+https://mr.gov.il/ilgstorefront/he/	mr-gov-il-storefront
+
+# Linked from the rendered supported-countries page (research/rendered/freemius-supported-countries.html,
+# href="/help/documentation/selling-with-freemius/your-earnings/" and ".../allowed-prohibited-products/").
+# Settles the payout currency / fee / hold and the prohibited-products list that freemius-rail.md left snippet-grade.
+https://freemius.com/help/documentation/selling-with-freemius/your-earnings/	freemius-your-earnings
+https://freemius.com/help/documentation/selling-with-freemius/allowed-prohibited-products/	freemius-allowed-prohibited
+
+# Linked from the rendered earnings/prohibited pages (research/rendered/freemius-your-earnings.html,
+# href="/help/documentation/selling-with-freemius/verification/" and "/help/documentation/getting-started/our-pricing/").
+# Settles seller identity verification (KYC) and the platform fee that freemius-rail.md left snippet-grade.
+https://freemius.com/help/documentation/selling-with-freemius/verification/	freemius-verification
+https://freemius.com/help/documentation/getting-started/our-pricing/	freemius-our-pricing
+
+# The three PCN874 specification sources named verbatim in products/pcn874/scripts/spec-watch.mjs
+# (gov.il English page; the two vendor mirrors of the ITA PDF the israel-bureaucracy audit cited).
+# pcn874-spec-watch.yml run #2 (18:26 UTC) fetched all three from a GitHub runner (49 KB, 782 KB, 3.5 MB)
+# but only hashed them; storing the bytes here is what lets a session read the official layout and
+# reconcile the seven disagreements in products/pcn874/docs/SPEC-FROM-SOURCES.md.
+https://www.gov.il/BlobFolder/generalpage/tax-vat-online-invoice-reporting/he/IncomeTax_IncomeTaxSoftwareHousesInfo_874-eng.pdf	pcn874-gov-il-874-eng
+https://www.rivhit.co.il/uploaded_files/documents/pcn874_manual_U1231.pdf	pcn874-rivhit-mirror
+https://downloads.h-erp.co.il/files/vatr/Guidance874W.pdf	pcn874-h-erp-mirror

@@ -16,6 +16,7 @@ import {
   type CommandLevel,
   type LedgerEntry,
   type LedgerEntryInput,
+  type LedgerKind,
   type LineMetrics,
   type PortfolioSummary,
   type ReviewDecision,
@@ -276,6 +277,49 @@ export function insertLineFromSeed(db: Database, seed: RevenueLineSeed): boolean
   return true;
 }
 
+/**
+ * Re-apply a seed to a line that already exists.
+ *
+ * `insertLineFromSeed` is a no-op once a line is in the database, which is
+ * right for seeding and wrong for a board decision: on 7.9.2026 the board
+ * retargeted three lines and rewrote their operating loops and owner steps, and
+ * `state/colony/REPORT.md` went on printing the old ones — including "register
+ * as osek patur" on every line and a Chrome Web Store fee on a killed one —
+ * because the report reads the database and the decision lived in code.
+ *
+ * The line's own history is not a seed's to overwrite: status, whether the owner
+ * has confirmed setup, when it launched and when it was created all survive.
+ * Everything the board actually decides is replaced.
+ */
+export function updateLineFromSeed(db: Database, seed: RevenueLineSeed): boolean {
+  const id = assertLineId(seed.id);
+  const existing = getLine(db, id);
+  if (!existing) return false;
+  db.prepare(
+    `UPDATE revenue_lines
+        SET name = ?, category = ?, tier = ?, director_role = ?, operating_loop = ?, kpis = ?,
+            kill_criteria = ?, scale_criteria = ?, target_monthly_agorot = ?, budget_monthly_cents = ?,
+            human_setup = ?, skill_name = ?, updated_at = ?
+      WHERE id = ?`,
+  ).run(
+    seed.name,
+    seed.category,
+    seed.tier,
+    seed.directorRole,
+    seed.operatingLoop,
+    JSON.stringify(seed.kpis),
+    JSON.stringify(seed.killCriteria),
+    JSON.stringify(seed.scaleCriteria),
+    Math.max(0, Math.floor(seed.targetMonthlyAgorot)),
+    Math.max(0, Math.floor(seed.budgetMonthlyCents)),
+    JSON.stringify(seed.humanSetup),
+    seed.skillName ?? null,
+    new Date().toISOString(),
+    id,
+  );
+  return true;
+}
+
 export const LINE_TRANSITIONS: Record<RevenueLineStatus, RevenueLineStatus[]> = {
   proposed: ["awaiting_setup", "building", "killed", "paused"],
   awaiting_setup: ["proposed", "building", "killed", "paused"],
@@ -335,8 +379,22 @@ export function setLineTarget(db: Database, id: string, targetMonthlyAgorot: num
 // ─── Ledger ──────────────────────────────────────────────────────
 
 /**
+ * Kinds that move money through someone else's system, and therefore always
+ * have a transaction id on the other side. `cost` is the exception: our own
+ * compute and infrastructure spending has no platform receipt to quote.
+ */
+const PLATFORM_MEDIATED_KINDS: readonly LedgerKind[] = ["sale", "subscription", "payout", "refund"];
+
+/**
  * Record a ledger entry. Idempotent on (source, externalId): a second call
  * with the same pair returns null instead of double-counting.
+ *
+ * MISSION rule 2: a shekel counts when it is recorded with a platform
+ * transaction id. So money in — and refunds out — must carry one. Without it
+ * an entry is unverifiable AND undeduplicated, because the idempotency check
+ * has nothing to key on: the same imagined sale can be booked repeatedly and
+ * the portfolio would show revenue nobody ever paid. That is the one failure
+ * this whole system exists to prevent.
  */
 export function recordLedgerEntry(db: Database, input: LedgerEntryInput): LedgerEntry | null {
   if (!Number.isFinite(input.amountMinor) || !Number.isInteger(input.amountMinor)) {
@@ -346,6 +404,14 @@ export function recordLedgerEntry(db: Database, input: LedgerEntryInput): Ledger
   const source = input.source.trim().toLowerCase();
   if (!source) throw new Error("source is required");
   const externalId = input.externalId?.trim() || null;
+
+  if (!externalId && PLATFORM_MEDIATED_KINDS.includes(input.kind)) {
+    throw new Error(
+      `externalId is required for a ${input.kind}: money only counts when it carries the platform's ` +
+      "transaction id (MISSION rule 2). Without one the entry cannot be verified against the platform " +
+      "and cannot be deduplicated, so the same amount can be booked twice. Only 'cost' may omit it.",
+    );
+  }
 
   if (externalId) {
     const existing = db

@@ -1,0 +1,180 @@
+Complete Verification to Start Selling in Production | Freemius Developer Documentation
+
+Skip to main content
+
+Log in
+Start selling
+
+Docs All SaaS & Apps WordPress
+
+Get Started API Reference FAQ
+
+Getting Started
+
+Selling with Freemius
+So, what exactly does it do?
+Supported Countries
+Allowed & Prohibited Products
+Getting Paid (Your Earnings)
+Refund Policy
+Refund Payment
+The License Renewals Mechanism
+Set Up Trials
+Multi-Currency Pricing & Support
+Coupon Discounts
+Verification
+Change Product Store
+Product Retirement
+
+Checkout
+
+Setup for SaaS & Apps
+
+Build with AI
+
+SDKs & Starter Kits
+
+Setup for WordPress
+
+WordPress SDK
+
+Setup for Templates
+
+Analytics
+
+Customer Portal
+
+Release Management
+
+Emails
+
+Marketing Automation
+
+Affiliate Platform
+
+3rd Party Integrations
+
+Security
+
+Migration
+
+API Reference
+
+Home
+Docs
+Selling with Freemius
+Verification
+
+Previous Section Step 1: Go to the Verification Page
+Step 2: Fill Out the Verification Form
+
+Step 1: Go to the Verification Page
+Step 2: Fill Out the Verification Form
+Step 3: Wait for Review
+
+Complete Verification to Start Selling in Production
+Copy page
+
+You can integrate and test your product as soon as you create it to validate your purchase flow without waiting; everything works immediately in the sandbox environment .
+
+However, some products require verification before you can start selling in production.
+
+Submitting the required information usually takes only a few minutes and helps keep the platform safe and reliable for everyone.
+
+Step 1: Go to the Verification Page ​
+
+In the Freemius Developer Dashboard , navigate to the product and click Account Verification in the left sidebar to open up the verification form.
+
+Step 2: Fill Out the Verification Form ​
+
+Complete each section of the form providing details about your company and product, along with relevant supporting documentation.
+
+Your Files Are Secure
+Any files you upload are stored securely using encryption and are not accessible to third parties.
+
+Once you have finished, click the Submit button to have your information reviewed.
+
+Save and Continue Later
+You can leave the form anytime and return to complete it later. Your progress will be saved automatically.
+
+Step 3: Wait for Review ​
+
+After you submit the form, the page displays your verification status. Check back in a few days to see whether your product has been approved or additional information is required.
+
+If you need help with the verification process, please contact our support team .
+
+Still stuck? How can we help?
+
+Coupon Discounts
+Change Product Store
+
+On this page:
+Step 1: Go to the Verification Page
+Step 2: Fill Out the Verification Form
+Step 3: Wait for Review
+
+Subscribe to our newsletter
+Subscribe
+
+© Freemius. All rights reserved
+GitHub YouTube X LinkedIn Facebook Instagram
+
+Features ▼
+Subscriptions
+Checkout
+Customer portal
+Software licensing
+Cart abandonment recovery
+Affiliate platform
+
+Build with AI ▼
+AI tools
+llms-full.txt
+llms.txt
+OpenAPI
+
+Compliance ▼
+GDPR readiness
+Sales Tax
+EU VAT collection
+SCA & 3DS 2.0
+
+Compare with ▼
+Stripe
+Paddle
+Lemon Squeezy
+Polar
+Envato
+Easy Digital Downloads
+WooCommerce
+
+Company ▼
+About us
+Pricing
+Customers
+Careers
+Brand assets
+Contact
+
+Learn ▼
+Selling WordPress plugins
+Blog
+Plugin.fm podcast
+YouTube
+
+Helpful Links ▼
+FAQ
+Documentation
+WordPress SDK
+PHP SDK
+System Status
+Changelog
+
+Legal ▼
+Terms of Service
+Vendor terms
+Privacy policy
+Cookie policy
+
+We use essential cookies to enable our site to function. With your consent, we also use analytics and advertising cookies to understand how visitors interact with our site and to improve our services.
+Accept Learn More Reject

@@ -1,0 +1,17 @@
+{
+  "url": "https://freemius.com/help/documentation/getting-started/our-pricing/",
+  "slug": "freemius-our-pricing",
+  "fetchedAt": "2026-09-07T17:16:05.034Z",
+  "status": 200,
+  "contentType": "text/html",
+  "byteLength": 58656,
+  "sha256": "4677ec91a81eb646e85f13d8acc536bc74c38c0ddf4e34c7eda7c021284971cb",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/freemius-our-pricing.html",
+  "textPath": "research/rendered/freemius-our-pricing.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

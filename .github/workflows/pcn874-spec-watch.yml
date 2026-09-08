@@ -1,0 +1,53 @@
+name: pcn874-spec-watch
+
+# Why this exists.
+#
+# products/pcn874 validates against the layout in the Israel Tax Authority's own
+# circular to software houses (Appendix A), rendered on 2026-09-07 by
+# .github/workflows/render-watch.yml into research/rendered/pcn874-*.{pdf,txt} and
+# reconciled field by field in products/pcn874/docs/SPEC.md. gov.il and the two
+# vendor mirrors are egress-blocked from the container the product was built in
+# (the proxy answers the CONNECT with 403), which is why a GitHub runner fetched
+# them.
+#
+# This job is the watch, not the fetch: it downloads the same three documents from
+# the URLs products/pcn874/src/sources.ts records — every one taken from a source,
+# none invented — stores the SHA-256 of what came back, and fails when a stored hash
+# changes. The circular is from 2009, carries no version number, and announces
+# later changes it does not specify; a changed hash is the only signal that a new
+# edition exists, and a new edition must be diffed against docs/SPEC.md before
+# anything ships. A green run means "unchanged", never "compliant".
+
+on:
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/pcn874-spec-watch.yml"
+      - "products/pcn874/docs/SPEC-SOURCES.lock.json"
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: products/pcn874
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Download the specification and compare hashes
+        run: node scripts/spec-watch.mjs
+      - name: Keep the downloaded specification for a future session
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pcn874-spec
+          path: products/pcn874/.spec-downloads/
+          if-no-files-found: ignore
+          retention-days: 90

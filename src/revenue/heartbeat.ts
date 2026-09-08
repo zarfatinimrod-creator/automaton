@@ -232,7 +232,7 @@ export interface BoardReviewResult {
 
 export function runBoardReview(
   db: Database,
-  opts: { nowIso?: string; policy?: DecisionPolicy; seed?: boolean } = {},
+  opts: { nowIso?: string; policy?: DecisionPolicy; seed?: boolean; feedGoals?: boolean } = {},
 ): BoardReviewResult {
   const nowIso = opts.nowIso ?? new Date().toISOString();
   const policy = opts.policy ?? DEFAULT_DECISION_POLICY;
@@ -348,13 +348,19 @@ export function runBoardReview(
   }
 
   // 5) Feed the orchestrator (a fed line becomes `building`, so it must precede allocation).
+  // feedGoals=false keeps governance running without filing a goal no one can
+  // execute — used when the colony runs standalone with no orchestrator attached.
   let goalFiled: BoardReviewResult["goalFiled"] = null;
-  try {
-    goalFiled = feedNextGoal(db);
-    if (goalFiled) actions.push(`filed ${goalFiled.phase} goal ${goalFiled.goalId} for ${goalFiled.lineId}`);
-  } catch (error) {
-    actions.push(`failed to file next goal: ${(error as Error).message}`);
-    logger.warn("feedNextGoal failed", { error: (error as Error).message });
+  if (opts.feedGoals === false) {
+    actions.push("goal filing disabled for this review (no executor attached)");
+  } else {
+    try {
+      goalFiled = feedNextGoal(db);
+      if (goalFiled) actions.push(`filed ${goalFiled.phase} goal ${goalFiled.goalId} for ${goalFiled.lineId}`);
+    } catch (error) {
+      actions.push(`failed to file next goal: ${(error as Error).message}`);
+      logger.warn("feedNextGoal failed", { error: (error as Error).message });
+    }
   }
 
   // 6) Budget allocation across lines that are actually working.

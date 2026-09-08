@@ -91,7 +91,7 @@ describe("revenue/ledger", () => {
   it("stores costs and refunds as negative amounts", () => {
     insertLineFromSeed(db, seed());
     const cost = recordLedgerEntry(db, { lineId: "test-line", kind: "cost", amountMinor: 250, currency: "ILS", source: "manual" });
-    const refund = recordLedgerEntry(db, { lineId: "test-line", kind: "refund", amountMinor: 500, currency: "ILS", source: "manual" });
+    const refund = recordLedgerEntry(db, { lineId: "test-line", kind: "refund", amountMinor: 500, currency: "ILS", source: "manual", externalId: "r1" });
     expect(cost!.amountAgorot).toBe(-250);
     expect(refund!.amountAgorot).toBe(-500);
   });
@@ -134,8 +134,8 @@ describe("revenue/ledger", () => {
     insertLineFromSeed(db, seed({ id: "line-a", targetMonthlyAgorot: 100_000 }));
     insertLineFromSeed(db, seed({ id: "line-b", targetMonthlyAgorot: 100_000 }));
     setTargets(db, 200_000, 500_000);
-    recordLedgerEntry(db, { lineId: "line-a", kind: "sale", amountMinor: 50_000, currency: "ILS", source: "manual" });
-    recordLedgerEntry(db, { lineId: "line-b", kind: "sale", amountMinor: 30_000, currency: "ILS", source: "manual" });
+    recordLedgerEntry(db, { lineId: "line-a", kind: "sale", amountMinor: 50_000, currency: "ILS", source: "manual", externalId: "pa" });
+    recordLedgerEntry(db, { lineId: "line-b", kind: "sale", amountMinor: 30_000, currency: "ILS", source: "manual", externalId: "pb" });
     const s = computePortfolioSummary(db);
     expect(s.total30dAgorot).toBe(80_000);
     expect(s.attainment).toBeCloseTo(0.4, 5);
@@ -163,5 +163,50 @@ describe("revenue/ledger", () => {
     expect(toAgorot(db, 100, "ILS")).toBe(100);
     expect(toAgorot(db, 100, "USD")).toBe(360);
     expect(() => setFxRate(db, "USD", 0)).toThrow();
+  });
+});
+
+
+describe("the ledger will not book money nobody paid", () => {
+  let db: BetterSqlite3.Database;
+  beforeEach(() => {
+    db = createInMemoryDb();
+    insertLineFromSeed(db, seed());
+  });
+  afterEach(() => { db.close(); });
+
+  const entry = (over: Partial<Parameters<typeof recordLedgerEntry>[1]> = {}) => ({
+    lineId: "test-line", kind: "sale" as const, amountMinor: 10_000,
+    currency: "ILS", source: "manual", ...over,
+  });
+
+  it("refuses money in without the platform's transaction id", () => {
+    // MISSION rule 2. Without an id the entry is unverifiable AND undeduplicated:
+    // the idempotency check has nothing to key on, so the same imagined sale can
+    // be booked again and again.
+    for (const kind of ["sale", "subscription", "payout"] as const) {
+      expect(() => recordLedgerEntry(db, entry({ kind }))).toThrow(/externalId is required/);
+      expect(() => recordLedgerEntry(db, entry({ kind, externalId: "   " }))).toThrow(/externalId is required/);
+    }
+  });
+
+  it("refuses a refund without one either, so refunds cannot be double-counted", () => {
+    expect(() => recordLedgerEntry(db, entry({ kind: "refund" }))).toThrow(/externalId is required/);
+  });
+
+  it("still lets us record our own costs, which have no platform receipt", () => {
+    const cost = recordLedgerEntry(db, entry({ kind: "cost", amountMinor: 500 }));
+    expect(cost?.amountMinor).toBe(-500);
+    expect(cost?.externalId).toBeNull();
+  });
+
+  it("points the caller at the rule rather than just failing", () => {
+    expect(() => recordLedgerEntry(db, entry())).toThrow(/MISSION rule 2/);
+  });
+
+  it("records nothing at all when it refuses", () => {
+    expect(() => recordLedgerEntry(db, entry())).toThrow();
+    const count = db.prepare("SELECT COUNT(*) AS c FROM revenue_ledger").get() as { c: number };
+    expect(count.c).toBe(0);
   });
 });

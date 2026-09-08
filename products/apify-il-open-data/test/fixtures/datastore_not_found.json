@@ -1,0 +1,8 @@
+{
+  "help": "https://data.gov.il/api/3/action/help_show?name=datastore_search",
+  "success": false,
+  "error": {
+    "message": "Not found: Resource \"00000000-0000-0000-0000-000000000000\" was not found.",
+    "__type": "Not Found Error"
+  }
+}
