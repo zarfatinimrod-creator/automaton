@@ -1,34 +1,30 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-08 00:35 UTC · branch `claude/monthly-income-plan-pfs7vu` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-08 00:30 UTC · branch `claude/monthly-income-plan-pfs7vu` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
 
-## ▶ הבעלים: "תמשיך מה צריך לעשות" (8.9.2026, ~00:30 UTC) — שני workflows רצים
+## ⛔ עצירה בהוראת הבעלים (8.9.2026, 00:26 UTC) — "תעצור את מה שאתה עושה לעכשיו"
 
-ultracode פעיל (workflow על כל משימה מהותית). מה שנשאר בלי הבעלים, ורץ עכשיו כשני workflows במקביל:
+**מצב: עצור. שום דבר לא רץ. הרוטינה `trig_01J5PYKxw746R7rW1sWBb8Ee` הושבתה (enabled=false). אפס עבודה עד שהבעלים אומר להמשיך.**
+העץ נקי, אין worktrees, הכול דחוף. הסשן ממשיך רק על הודעה של הבעלים; רוטינה לא מעירה אותו.
 
-1. **`pcn874-browser-funnel`** (משימה #34, run `wf_0d9dea8a-69c`): דף חינמי ב-`products/il-biz-tools` שמריץ את הוולידטור בדפדפן —
-   המשפך למונח הסטטוטורי שמדידת ה-SERP מצאה בלי אף כלי — והמחולל כפיצ'ר Pro מאחורי מפתח הרישיון הקיים. Understand (3 קוראים
-   Opus) → Design (2 עיצובים Opus, שופט Fable) → Implement (Opus ב-worktree) → Review (3 עדשות Opus, מפריך Fable לכל ממצא) →
-   Fix → בדיקה סופית. **כשנוחת:** למזג את הענף שהוא מחזיר דרך `scripts/merge-worktree.sh <branch> "<subject>" --no-push`,
-   להריץ `npm test` ב-`products/il-biz-tools` וב-`products/pcn874`, ורק אז push. Pro נשאר מושבת עד `pro.publicKey` ו-`gumroad.productUrl`
-   (צעד 3 של הבעלים) — הדף לעולם לא מעמיד פנים שיש חנות.
-2. **`owner-docs-claim-audit`** (משימה #35, run `wf_3a9fddfc-cba`): כל טענה ב-9 המסמכים שהבעלים פועל לפיהם (OWNER_STEPS,
-   INCOME_PLAN, MISSION, products/README, 4 פלייבוקים, ראש הצ'קפוינט) מחולצת (Opus), נבדקת מול הריפו בלבד (Fable לחוקי/כספי,
-   Opus לשאר), וכל WRONG/STALE/OVERCLAIM עובר מפריך Fable. **כשנוחת:** להחיל את התיקונים ששרדו, ל-`OWNER_STEPS.he.md` גם ב-PDF
-   (`node scripts/owner-steps-pdf.mjs`), לקמט, לדחוף.
+מה נעצר באמצע (הופעל 00:15 UTC אחרי "תמשיך מה צריך לעשות", עם ultracode):
 
-אם סשן חדש קורא את זה והם לא הסתיימו: `Workflow({scriptPath, resumeFromRunId})` עם הנתיבים תחת
-`~/.claude/projects/-home-user-automaton/16c2e431-06c3-594a-9f87-1e3e6c622e9d/workflows/scripts/`. לא להריץ מחדש מאפס.
+1. **`pcn874-browser-funnel`** (משימה #34, run `wf_0d9dea8a-69c`): דף חינמי ב-`products/il-biz-tools` שמריץ את הוולידטור בדפדפן
+   (המשפך למונח הסטטוטורי שמדידת ה-SERP מצאה בלי אף כלי) והמחולל כפיצ'ר Pro מאחורי מפתח הרישיון הקיים. **הושלם ונשמר במטמון:**
+   שלושת הקוראים של שלב Understand. **נהרג באמצע:** שני המעצבים. עוד לא רץ: שופט (Fable), בנייה ב-worktree, ביקורת, תיקון.
+2. **`owner-docs-claim-audit`** (משימה #35, run `wf_3a9fddfc-cba`): כל טענה ב-9 המסמכים שהבעלים פועל לפיהם, מול הריפו בלבד,
+   מפריך Fable על כל WRONG. **הושלמו:** 2 מ-9 חילוצים. השאר לא רץ.
 
+**להמשיך (רק בהוראת הבעלים):** `Workflow({scriptPath: "<dir>/pcn874-browser-funnel-wf_0d9dea8a-69c.js", resumeFromRunId: "wf_0d9dea8a-69c"})`
+ואותו דבר ל-`owner-docs-claim-audit-wf_3a9fddfc-cba.js` / `wf_3a9fddfc-cba`; `<dir>` =
+`~/.claude/projects/-home-user-automaton/16c2e431-06c3-594a-9f87-1e3e6c622e9d/workflows/scripts/`. סוכנים שהושלמו חוזרים מהמטמון;
+לא להריץ מאפס. אחרי הדף: מיזוג דרך `scripts/merge-worktree.sh <branch> "<subject>" --no-push`, `npm test` בשני המוצרים, ואז push.
+Pro נשאר מושבת עד `pro.publicKey` ו-`gumroad.productUrl` (צעד 3 של הבעלים). אחרי הביקורת: להחיל תיקונים, לחדש את ה-PDF
+(`node scripts/owner-steps-pdf.mjs`), לקמט.
 
-> זמנים: השעות בקובץ הזה הן UTC. ב-7.9 אחר הצהריים נרשמו כמה שעות כשעתיים מאוחר מדי; מה שנעוג לקומיט תוקן
-> ב-18:40 לפי `git log --date=format:%H:%M`. כשזמן חשוב — הקומיט הוא המקור, לא הטקסט.
-
-> **CI השורש (`ci.yml`, ירושה מ-upstream) לא בדק כלום מאז ומעולם:** שני שלבי הבדיקות רצים עד ה-timeout (300/180 שניות)
-> ו-exit 124 נחשב הצלחה. ב-`c23d3b2` בדיקת fold-in נכשלה מקומית וה-check היה ירוק. מ-20:10 UTC סוויטת revenue רצה בשלב
-> משלה עם קוד יציאה אמיתי (6 שניות). `products-ci` תמיד היה אמיתי. ירוק ב-"CI" לפני זה = typecheck בלבד.
+**מה שנשאר בלי קשר לשני אלה — אצל הבעלים:** שבעת הצעדים ב-`docs/OWNER_STEPS.he.md`. הראשון: למזג את PR #2 או לומר "תמזג".
 
 ## המדידות שהדירקטוריון הזמין — שתיהן נסגרו (7.9.2026, 16:30–17:00 UTC)
 
