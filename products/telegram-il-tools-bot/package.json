@@ -1,0 +1,25 @@
+{
+  "name": "telegram-il-tools-bot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Hebrew utility Telegram bot (Israeli ID/phone validation, Hebrew dates) paid with Telegram Stars",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "node --loader ts-node/esm src/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@hebcal/core": "6.9.2",
+    "grammy": "1.46.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  },
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,329 @@
+Check Earnings, Setup Payout Methods and Get Paid with Freemius | Freemius Developer Documentation
+
+Skip to main content
+
+Log in
+Start selling
+
+Docs All SaaS & Apps WordPress
+
+Get Started API Reference FAQ
+
+Getting Started
+
+Selling with Freemius
+So, what exactly does it do?
+Supported Countries
+Allowed & Prohibited Products
+Getting Paid (Your Earnings)
+Refund Policy
+Refund Payment
+The License Renewals Mechanism
+Set Up Trials
+Multi-Currency Pricing & Support
+Coupon Discounts
+Verification
+Change Product Store
+Product Retirement
+
+Checkout
+
+Setup for SaaS & Apps
+
+Build with AI
+
+SDKs & Starter Kits
+
+Setup for WordPress
+
+WordPress SDK
+
+Setup for Templates
+
+Analytics
+
+Customer Portal
+
+Release Management
+
+Emails
+
+Marketing Automation
+
+Affiliate Platform
+
+3rd Party Integrations
+
+Security
+
+Migration
+
+API Reference
+
+Home
+Docs
+Selling with Freemius
+Getting Paid (Your Earnings)
+
+Previous Section How to Check Your Earnings
+Set Up Billing Information <span class="fs-doc-alias-anchor-heading"></span>
+
+How to Check Your Earnings
+Set Up Billing Information
+Set Up Payout Methods Supported Payout Methods
+Supported Payout Currencies
+
+How and When Freemius Transfers Your Earnings When your earnings are calculated
+When you get paid
+Why is there a delay before the first payout?
+Faster payouts for new AI SaaS products
+
+How Freemius Notifies You About Payouts Payout Schedule Email
+Payout Email
+
+FAQ Is it possible to expedite this month’s payout?
+Why is the refund amount in the Dashboard different from the refund amount shown in the My Earnings section?
+
+Check Earnings, Setup Payout Methods and Get Paid with Freemius
+Copy page
+
+Once you cross the minimum earnings threshold, Freemius automatically makes payments to you for your hard work. All you need to do is add your payout method on the "My Profile" page.
+
+note
+If you're looking for what countries you can sell from, please take a look at our Supported Countries guide.
+
+How to Check Your Earnings ​
+
+To see your current earnings status:
+
+Log in to your Freemius account via the Developer Dashboard .
+
+Click to toggle the menu at the top-right corner of the screen.
+
+Navigate to the My Earnings screen.
+
+On the My Earnings screen, you can see your payable earnings amount based on your accumulated monthly sales.
+
+Set Up Billing Information ​
+
+Before you can receive your payouts, you need to set up your billing information.
+
+Click to toggle the menu at the top-right corner of the screen.
+
+Navigate to the "My Profile" page.
+
+Scroll to the Billing Information section and fill in the relevant fields.
+
+The billing information is used when generating the pro-forma and reverse invoices .
+
+Set Up Payout Methods ​
+
+To get paid, you need to set up your payout methods and payout conversion currencies (if applicable). Here's how:
+
+Click the My Profile menu item in the dropdown at the top-right corner of the screen.
+
+Scroll to the Payout Method(s) section.
+
+Configure your payout method for each selling currency.
+
+Supported Payout Methods ​
+
+The following payout methods are supported:
+
+PayPal (default payment method, using PayPal MassPay)
+
+Payoneer
+
+Wire transfer (international and domestic / IBAN / SWIFT)
+
+Wise (formerly TransferWise)
+
+For USD , GBP , and EUR , you can set up separate payout methods.
+
+However, other currencies, such as AUD , CAD , ILS , CHF , RSD and PLN , are converted to USD at the time of purchase and added to your USD balance.
+
+Supported Payout Currencies ​
+
+For international Wise and wire transfers, you can set a different payout conversion currency for each selling currency.
+For example, you can convert payouts to your local currency.
+
+For international wire transfers, due to our high volumes, we have negotiated favorable terms with our bank, including competitive conversion rates and a complete fee waiver on foreign-currency international wires.
+
+Important
+
+Please note that only Wise and wire transfers support payout conversion currencies.
+
+PayPal and Payoneer payouts are always made in the selling currency.
+
+Other than USD, GBP, and EUR, all other selling currencies are converted to USD at the time of purchase and added to your USD balance.
+
+How and When Freemius Transfers Your Earnings ​
+
+When your earnings are calculated ​
+
+Earnings generated during a given month are calculated on the 1st of the second following month.
+
+For example, earnings generated during January are calculated on March 1st and, if they meet the minimum payout threshold, become eligible for payout on March 10th.
+
+Any refunds processed during that period are deducted before your earnings are calculated.
+
+For example, if you generated $1,000 in gross revenue in January and processed $500 in refunds for those January purchases by the end of February, your earnings calculated on March 1st would be $500, minus Freemius fees .
+
+When you get paid ​
+
+Eligible payouts are processed automatically on the 10th of each month , with a $100 minimum payout threshold .
+
+If your available earnings are below $100, they remain in your balance and are automatically carried over to the next payout cycle.
+
+Once you receive your first payout, you'll generally continue receiving payouts every month . The additional delay mainly affects when your first month of earnings becomes eligible for payout.
+
+Why is there a delay before the first payout? ​
+
+The additional time allows refunds and payment disputes to surface before we transfer the funds to you.
+
+Freemius makes it easy to start selling without requiring a two-way connection to your bank account or forcing you to receive payouts through Stripe Connect, which can also come with additional payout fees. This removes extra onboarding steps for legitimate software makers and eliminates unnecessary payout costs, but it also means we can't simply debit your account later if a transaction turns out to be fraudulent or gets disputed.
+
+For example, someone could purchase $10,000 of their own product, receive the payout, and then attempt to refund or dispute those transactions. Freemius could be left covering that loss.
+
+The payout delay gives us time to identify and account for these cases while keeping onboarding and payouts simple for everyone else.
+
+Faster payouts for new AI SaaS products ​
+
+If you're just launching an AI SaaS product, we understand that cash flow can be especially important. You may need to cover your underlying AI infrastructure and model costs at the end of each month, so having access to your revenue sooner can make a meaningful difference.
+
+In these cases, we can evaluate your account individually and may offer a faster monthly payout schedule with a rolling reserve .
+
+With a rolling reserve, Freemius holds a percentage of your monthly revenue for an additional 30-day cooling period, while the remaining eligible balance can be paid out earlier. The reserve percentage is determined by our risk team based on your product, transaction history, refund and dispute risk, and other relevant factors.
+
+This allows us to improve your cash flow while still maintaining a buffer against refunds, disputes, fraud, and the other risks described above.
+
+This option is evaluated case by case and isn't automatically available to every AI SaaS product. If you're facing cash flow challenges because you need to cover your AI infrastructure costs before your Freemius earnings become available, contact us and we'll be happy to review your account.
+
+note
+For any clarifications about your earnings, please feel free to contact us .
+
+How Freemius Notifies You About Payouts ​
+
+As part of the payout process, Freemius sends two emails:
+
+Payout Schedule Email ​
+
+On the 1st of every month, Freemius sends you an email about an upcoming payout. This email has the expected payout details and a link to the pro-forma invoice. You can use the invoice to notify your bank or other system about the upcoming payment.
+
+Payout Email ​
+
+Once the payout has been completed, Freemius sends you a confirmation email. It includes a link to a reverse invoice, which you can use for accounting and other legal purposes.
+
+In practice, this is the invoice you are expected to send to Freemius for the payout; however, we generate it on your behalf. It also displays any volume discount , if applicable.
+
+FAQ ​
+
+Is it possible to expedite this month’s payout? ​
+
+We understand that timely payouts are important, and we strive to process them as quickly as possible. To provide some transparency, here’s an overview of how our payout process works.
+
+On the 1st of each month, we run a script to calculate the exact payout amounts and how they should be distributed. To optimize for the best foreign exchange (FX) conversion rates, we use multiple payout channels. This FX optimization can save you as much as 4% on conversions, which is a significant amount. Additionally, we work to minimize payout transfer costs by using the most efficient payment methods, such as ACH for USD payouts within the US and a UK bank for GBP payouts.
+
+Once the calculations are complete, we initiate transfers to fund the necessary accounts. Payouts are then processed as soon as the funds arrive. Depending on the payout channel and source of funding, this process can take 3-6 business days.
+
+Please note that weekends and holidays may occasionally cause delays, as banks do not process transfers during these times. Our team also takes a well-deserved break on weekends, which can impact the processing speed.
+
+While we currently cannot expedite the payout process, we have designed it to be as efficient as possible while ensuring you benefit from the best FX conversion rates and minimized transfer costs.
+
+Why is the refund amount in the Dashboard different from the refund amount shown in the My Earnings section? ​
+
+The refund amount shown in the Dashboard represents the $-value of refunds processed during the selected date range. On the other hand, the refund amount shown in earnings for month(X) is the $-value of:
+
+Refunds processed during month(X) and month(X+1) for payments received during month(X) ; plus
+
+Late refunds processed during month(X) of payments that were received before month(X-2)
+
+This process protects against refunds abuse where an attacker can purchase many licenses (e.g., $100,000 worth of licenses) on month(X) and then refund all of the payments on month(X+1) . If we ignore the refunds of month(X+1) when calculating the earnings for month(X) , the attacker can steal money that way.
+
+Still stuck? How can we help?
+
+Allowed & Prohibited Products
+Refund Policy
+
+On this page:
+How to Check Your Earnings
+Set Up Billing Information
+Set Up Payout Methods Supported Payout Methods
+Supported Payout Currencies
+
+How and When Freemius Transfers Your Earnings When your earnings are calculated
+When you get paid
+Why is there a delay before the first payout?
+Faster payouts for new AI SaaS products
+
+How Freemius Notifies You About Payouts Payout Schedule Email
+Payout Email
+
+FAQ Is it possible to expedite this month’s payout?
+Why is the refund amount in the Dashboard different from the refund amount shown in the My Earnings section?
+
+Subscribe to our newsletter
+Subscribe
+
+© Freemius. All rights reserved
+GitHub YouTube X LinkedIn Facebook Instagram
+
+Features ▼
+Subscriptions
+Checkout
+Customer portal
+Software licensing
+Cart abandonment recovery
+Affiliate platform
+
+Build with AI ▼
+AI tools
+llms-full.txt
+llms.txt
+OpenAPI
+
+Compliance ▼
+GDPR readiness
+Sales Tax
+EU VAT collection
+SCA & 3DS 2.0
+
+Compare with ▼
+Stripe
+Paddle
+Lemon Squeezy
+Polar
+Envato
+Easy Digital Downloads
+WooCommerce
+
+Company ▼
+About us
+Pricing
+Customers
+Careers
+Brand assets
+Contact
+
+Learn ▼
+Selling WordPress plugins
+Blog
+Plugin.fm podcast
+YouTube
+
+Helpful Links ▼
+FAQ
+Documentation
+WordPress SDK
+PHP SDK
+System Status
+Changelog
+
+Legal ▼
+Terms of Service
+Vendor terms
+Privacy policy
+Cookie policy
+
+We use essential cookies to enable our site to function. With your consent, we also use analytics and advertising cookies to understand how visitors interact with our site and to improve our services.
+Accept Learn More Reject

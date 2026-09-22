@@ -1,0 +1,597 @@
+1
+To:
+Computerized Accounts Systems Managements Program Producers
+Update: Deployment for PCN874 File Generation based on PC874 file structure
+1. General
+
+Further to Tax Authority Senior Deputy Mr. Boaz Sofer's letter, you are required to
+deploy in anticipation of the generation of the PCN874 file which will be produced
+every month by all users, and will be electronically transferred to the Tax Authority.
+2. Timetable
+
+The PCN874 file production must be completed by 01/01/2010.
+3. Technical Information and Support
+
+Technical queries can be sent to e-mail: 874@shaam.gov.il
+In order to efficiently deal with your queries, please state your name and telephone
+number for return communication.
+Additional explanations and an assortment of common questions and answers can be
+seen on the Authority's website at:
+http://ozar.mof.gov.il/taxes/bikoret_memuhshevet/PCN874.htm
+We thank you for your cooperation.
+Yours Faithfully,
+Anat Glasner   Amir Bar Oz
+Manager, Computerized Inspection Department   Senior Manager – Procedures
+Tax Authority   Development and Efficiency
+Tax Authority
+
+=== page 1 end ===
+
+2
+
+Clarifications regarding the structure of the PCN874 invoices file.
+
+1.   Computerized accounts management systems will produce the PCN874 file according to
+the structure detailed in Appendix 'A'. The file is based on the PC874 file generated today
+for VAT refunds in some of the computerized accounts management systems, and will by
+default include data relating to the calendar month prior to that of the file production.
+
+2.   The file will include a header (summary) entry, transaction entries and a closing entry as
+detailed in Appendix 'A'. Due to the fact that the file is of a fixed structure, any instance
+where the field is in reality "shorter" than that required by the technical specifications, it
+is necessary to add preliminary zeros.
+
+3.   "Sha'am" will enable representatives (CPAs, tax advisors etc.) to submit information for a
+number of users by means of the financial alignment – each file including reports for the
+same period. Use of this alignment will be optional and intended for those representatives
+interested in simultaneously submitting reports for a number of users (as detailed in
+Appendix 'B').
+
+4.   Below are the main changes in the structure of the PCN874 file compared to the PC874
+file:
+a.   New fields have been added to the header entry including: the date of file creation
+and areas for future use.
+b.   Additional fields have been added to the transaction entries including: value of the
+sale/input before VAT
+c.   The individual transactions will be detailed in addition to the input figure –
+including "zero value" and exempt transactions.
+
+5.   From 1/2011"Sha'am" will allocate account numbers to users and therefore provision
+must be made to enable the storage of an additional reference number in the program (or
+to replace one of the existing fields), and to print it on the customer's invoice.
+
+6.   From 1/2012 this file will replace the periodical VAT report.
+
+7.   Additional remarks/comments
+a.   It will be obligatory to generate a separate tax invoice for each sale exceeding
+5,000 NIS (not incl. VAT). If the sale was made with a cash register and a tax
+invoice generated, it will be neutralized from the register's total transactions in
+order to prevent it appearing twice (under "Z" and in the detailed description).
+b.   While generating the invoice, arrangements should be made for the entering of the
+customer's licensed dealer identification number and printing it on the invoice.
+This is in order to enable the merchant to meet those bookkeeping requirements
+that obligate, in certain cases, the mention of the customer's licensed dealer
+identification number. It is recommended that the program advice if there is a
+"problem" in the check digit, but enable the entry of other values (tourist etc.).
+
+8.   Appendix "C" includes comments and clarifications regarding the possible values in the
+various fields in the variables entries.
+
+9.   It is strongly recommended that the computerized accounting system will perform
+preliminary validity check of the entries fields like control digit, dates etc. It also would
+allow to the user to see visually/print the whole report or at least the summarized data
+(included in the header entry).
+In the nearest time Sha'am will place on-line simulator to enable automatic validity
+checks on trial reports.
+
+=== page 2 end ===
+
+3
+
+Appendix 'A' – PCN874 File Structure – New – Individual Merchant
+
+File Name: PCN874.TXT
+Header Entry
+
+Name   Technical
+Description
+Comments
+
+Entry Type   A(1)   "O" – fixed value
+Customer's Licensed Dealer identification Number   N(9)
+Month for which detailed report is being submitted   N(6)   Yyyymm form
+Report Type   N(1)   Field Value=1, Future changes
+possible
+File Generation Date   N(8)   Yyyymm form
++/- symbol for total taxable sales   +/-
+Total amount of taxable sales (excluding VAT)   N(11)   In the reported file
++/- symbol for total VAT on taxable sales   +/-
+Total VAT on taxable sales   N(9)   In the reported file
++/- symbol for total sales taxable at   different rate   +/-   Currently "+"
+Total of sales taxable at different rate (excluding VAT)   N(11)   Currently zeros – for future use
++/- symbol for total VAT on sales taxable at different rate   +/-   Currently "+"
+Total VAT on sales taxable at different rate   N(9)   Currently zeros – for future use
+Total number of records for "sales"*   N(9)   Number of sales records - both
+taxable and zero-rated/ exempt
++/- symbol for total of zero value and exempt sales   +/-
+Total of zero value/exempt sales for period   N(11)
++/- symbol for total VAT on "other" (non-capital) inputs   +/-
+Total VAT on "other" inputs required during period   N(9)
++/- symbol for total VAT on "equipment" inputs required
+during period
++/-
+Total VAT on "equipment" inputs required during period   N(9)
+Total number of records for inputs (other and equipment)   N(9)
++/- symbol for total VAT to pay / receive   +/-   + symbol to pay
+Total VAT to pay / receive for period   N(11)
+Transaction Entries
+
+Name   Technical
+Description
+Comments
+
+Entry Type (document type)   A(1)   See attached table of values
+VAT identification number – of the
+other side of the transaction
+N(9)   For transactions entries – the customer
+For inputs – the supplier
+Invoice Date/Reference   N(8)   YYYYMMDD
+Reference group   A(4)   Series etc.   zeros are possible at this stage
+
+Reference number   N(9)   First 9 positions from the right
+Total VAT in invoice / total VAT that
+is allowed (1/4…. 2/3…)
+N(9)   Rounded to the nearest shekel – always a positive value
++/- symbol: credit/summary invoice   A(1)   Cancellation/credit from supplier or customer –   always
+in minus
+
+Invoice total not incl. VAT   N(10)   Always the 100%, always a positive value, rounded to
+the nearest shekel
+Space for   future   data   N(9)   Reference number to be allocated by "Sha'am" to the
+
+supplier
+
+Closing Entry:
+
+Name   Technical Description   Comments
+
+Entry Type   A(1)   "X" – fixed value
+Licensed Dealer Identification
+Number of submitter
+N(9)
+
+=== page 3 end ===
+
+4
+
+Remarks/Notes/Comments:
+
+•   "Mixed" invoices which include goods/services both exempt from and liable for
+taxation or zero value transactions, will be counted and summarized as taxable
+invoices, even if the VAT received is less than the "statutory rate", or as two separate
+entries.
+
+•   In a "+/-" field: When the amount field is zero, the value of the "+/-" field will be "+".
+
+Table of Values for the Entry Type Field . The values will be derived from
+transaction type / details are in the account card.
+
+Name   Value   *Comments/Notes
+
+Sales – "regular" sale   S
+Sales – for unidentified (private) customer   L
+Sales – self invoice   M
+Sales – export   Y
+Sales – Palestinian Authority customer   I   Palestinian customer – Invoice I
+Input – "regular" from Israeli Supplier   T
+Input – Petty Cash   K   Various suppliers – Petty Cash
+Input – Import   R   Overseas supplier
+Input – Supplier from Palestinian Authority   P   Palestinian supplier – Invoice P
+Input – Single document   by law   H   Such as Import entry, bank document etc.
+Input – self invoice   C
+Possible values and further comments appear in Appendix "C".
+
+Appendix "B" – Structure of file for consecutive multiple user reporting by
+representative
+Initial Entry
+
+Entry Type   A(1)   "A" – fixed value
+Representative VAT
+identification number
+N(9)
+Month for which detailed report
+is given
+N(6)   Yyyymm form
+Reports for individual users
+
+Summary Entries
+
+Entry Type   A(1)   "Z" – fixed value
+Number of users included in
+report
+N(9)   For control purposes
+Number of accounting entries
+included in report
+N(9)   For control purposes
+
+=== page 4 end ===
+
+5 
+Appendix "C" – Clarifications regarding values in the various document types in the fields of variables entries
+
+1.
+
+General Explanation: All fields are compulsory. Below are the possible values for each field in each situation.
+"V" symbolizes a compulsory field in accordance with the column heading or the value stated in the
+table e.g in the "reference number" field – in some cases the reference number may be entered and in others, the
+number of transactions.
+Type: "SL"= Sale; "IN"=Input
+
+Entry
+(Type)
+Counter Party
+Identification
+Number
+Invoice Date
+
+Reference
+Group
+Reference
+Number
+Sum of
+VAT
++/-
+Sign
+100%
+Sum
+For Future
+Allocation
+Comments
+Regular "SL" – identified
+commercial customer
+S
+
+Customer
+
+V
+
+Zeros/V
+
+V
+
+V
+
+V
+
+V
+
+Zeros
+
+A
+Zero Value/Exempt "SL" –
+not export
+S
+
+Customer
+
+V
+
+Zeros/V
+
+V
+
+Zeros
+
+V
+
+V
+
+Zeros
+
+A
+Private Customer
+"SL"/unidentified-cash
+register aggregation etc.
+L
+
+Zeros
+
+Date of Aggregation
+
+Zeros/V
+
+V/No. of sale
+invoices
+V
+
+V
+
+V
+
+Zeros
+
+B
+Zero Value/Exempt "SL" –
+private customer – aggregated
+L
+
+Zeros
+
+Date of Aggregation
+
+Zeros/V
+
+V/No. of sale
+invoices
+Zeros
+
+V
+
+V
+
+Zeros
+
+B
+"SL" – Self Invoice
+
+M
+
+Supplier
+
+V
+
+Zeros/V
+
+V
+
+V
+
+V
+
+V
+
+Zeros
+
+C
+"SL" – Export Entry
+
+Y
+
+Export Entry or
+"999999999"
+Export Entry Date
+
+Zeros/V
+
+V
+
+Zeros
+
+V
+
+V
+
+Zeros
+
+D
+"SL"- Palestinian Authority
+Customer
+I
+
+Customer
+
+V
+
+Zeros/V
+
+V
+
+V
+
+V
+
+V
+
+Zeros
+"IN"-"regular" from Israeli
+Supplier
+T
+
+Supplier
+
+V
+
+Zeros/V
+
+V
+
+V
+
+V
+
+V
+
+Zeros
+"IN"-Self Invoice
+
+C
+
+Supplier
+
+V
+
+Zeros/V
+
+V
+
+V
+
+V
+
+V
+
+Zeros
+
+C
+"IN"-Petty Cash
+
+K
+
+Zeros
+
+Entry Date
+
+Zeros/V
+
+No. of Invoices
+
+V
+
+V
+
+V
+
+Zeros
+
+E
+"IN"-Import Entry
+
+R
+
+Import Entry
+
+Import Entry Date
+
+Zeros/V
+
+Zeros
+
+V
+
+V
+
+V
+
+Zeros
+
+D
+"IN"-Supplier from
+Palestinian Authority
+P
+
+Supplier
+
+V
+
+Zeros/V
+
+V
+
+V
+
+V
+
+V
+
+Zeros
+"IN"-Other Document (by
+law)
+H
+
+Supplier
+
+V
+
+Zeros/V
+
+V
+
+V
+
+V
+
+V
+
+Zeros
+
+F
+
+=== page 5 end ===
+
+6
+
+2.   Table of possible values for a field marked/designated "+/-". This field
+represents the positive/negative sign of the value of the input .
+Transaction   Sale to the
+customer
+Cancellation/credit
+to the customer
+Purchase
+from supplier
+Cancellation/credit
+from supplier
+Zero value
+field
+Sign   +   -   +   -   +
+3. Additional Comments relating to the Variables Entry Field (in 2010 fiscal year)
+A.   Regular local sale to commercial customer – In a sale where the pre-VAT
+amount is higher than 5,000 NIS, it is obligatory to state the customer's
+merchant number (it is a prerequisite to customer input offset). In sales with
+lower amounts the identification of a commercial customer is optional and
+they may be reported either as a separate entries or as one or more
+aggregated entries
+B.   Regular local sale to unidentified customer (including cash registers etc.).
+1)   This entry will aggregate all sales less than 5,000 NIS (e.g all cash
+registers in a given month). The total number of aggregated sales
+will be entered in the reference field.
+2)   The last date of the aggregated list will be entered in the date field
+– in a monthly aggregation – the last day of the month will be
+entered.
+
+•   A "mixed" transaction (exempt/zero value and regular) enacted with a cash register
+or invoice, will be reported as a single listing L/S when the VAT percentage is
+lower than the official VAT rate determined by law. Alternatively, it will be
+reported twice: once as invoice with a "normal" tax rate and once again at a zero
+rate, both with the same type of document, customer, date and reference number.
+C.   Self Invoice Sales – the supplier number will be entered in the place of the
+counter party file number. The transaction can be reported as a sale and
+possibly also as a "self" input (it is possible that the input VAT will be less
+than the sum of VAT in the "self" sale – in the case of partial deductibility).
+D.   Export Entry Sale – the opposite party identification field will include the
+export entry number. In the case of exporting services or intangible goods,
+the opposite party will be "999999999". The date will be the export entry
+date. The reference number will include the invoice number. The sum of the
+VAT will include zeros (for service without an export entry – the opposite
+side will be zeros).
+E.   Petty Cash Input – The entry may appear a number of times, even on the
+same date, provided that the total VAT for these entries is less than 2% of
+the total VAT of the file's entries or 2,000 NIS (the greater of them). The
+restrictions regarding the Petty Cash may change from time to time as to be
+determined in the internal regulations that will be made public.
+
+•   The reference number will reflect the number of invoices in the entry.
+F.   Other Document Input: Reference Number – if unknown: will be entered as
+zeros. Counter file number: in accordance with "Sha'am" guidelines.
+
+=== page 6 end ===
+
+7
+
+•   Reference Group Field – enables attribution of reference to branch etc., zero values
+or internal characters of the submitter (series/branch etc.)
+
+•   Future Field – intended for the subject of ascribing invoices as transactions. At this
+stage, the value in this field will be zeros.
+
+•   Parameter values may change from time to time. These changes will be published
+in memos and will be valid for a specified period e.g 5000 shekels/2% etc. and
+therefore the accountant must be able to amend them.
+
+•   Detail Amendment "procedure" for an invoice included in a previously submitted
+report or in a current report.
+A.   The incorrect invoice will be cancelled – reported as an opposite sign. All other
+details will be identical to those reported.
+B.   The invoice will be reported again – with the correct details.
+
+=== page 7 end ===
+

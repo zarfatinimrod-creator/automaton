@@ -1,0 +1,7 @@
+# licensedDealerId: 514457282
+# reportMonth: 202601
+# generationDate: 20260210
+# reportedVat: 1234.49
+entryType,counterpartyVatId,invoiceDate,refGroup,refNumber,vatSum,invoiceSum,allocationNumber,inputKind
+S,512345678,20260112,0001,000000101,1799.50,9997.49,123456789,
+T,513333333,20260113,,000000302,565.51,3141.59,,

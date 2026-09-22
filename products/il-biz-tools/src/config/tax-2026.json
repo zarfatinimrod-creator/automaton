@@ -1,0 +1,32 @@
+{
+  "year": 2026,
+  "verified": false,
+  "notes": "מדרגות חודשיות לפי ריווח מדרגות המס שאושר ב-30.3.2026 (רטרואקטיבית מ-1.1.2026). ביטוח לאומי לפי תיקון 252 והוראת השעה לשנים 2025-2026. יש לאמת מול לוח העזר של רשות המסים ואיגרת המעסיק של ביטוח לאומי לפני הסתמכות.",
+  "sources": [
+    "https://www.mako.co.il/news-money/calculators/Article-54d2f6451f9ff91027.htm",
+    "https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2026.pdf",
+    "https://www.kolzchut.org.il/he/דמי_ביטוח_לאומי_לעובד_שכיר",
+    "https://www.btl.gov.il/Insurance/Health_Insurance/Pages/שיעורי דמי ביטוח בריאות.aspx"
+  ],
+  "incomeTax": {
+    "monthlyBrackets": [
+      { "upTo": 7010, "rate": 0.10 },
+      { "upTo": 10060, "rate": 0.14 },
+      { "upTo": 19000, "rate": 0.20 },
+      { "upTo": 25100, "rate": 0.31 },
+      { "upTo": 46690, "rate": 0.35 },
+      { "upTo": 60130, "rate": 0.47 },
+      { "upTo": null, "rate": 0.50 }
+    ],
+    "creditPointMonthlyValue": 242,
+    "defaultCreditPoints": { "male": 2.25, "female": 2.75 }
+  },
+  "nationalInsurance": {
+    "reducedTierUpTo": 7703,
+    "maxInsurableIncome": 51910,
+    "employee": {
+      "reduced": { "nationalInsurance": 0.0104, "health": 0.0323 },
+      "full": { "nationalInsurance": 0.07, "health": 0.0517 }
+    }
+  }
+}

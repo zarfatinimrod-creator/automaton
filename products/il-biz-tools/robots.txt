@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /node_modules/
+Disallow: /tests/
+Sitemap: https://il-biz-tools.netlify.app/sitemap.xml

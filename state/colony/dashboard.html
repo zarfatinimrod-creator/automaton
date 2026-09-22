@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>הקולוניה — מסך המנהל</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --line:#e3e6ea; --ink:#16191d; --muted:#666e79;
+          --ok:#1f7a4d; --warn:#a8620a; --bad:#a3242b; --accent:#2b5fd9; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#12151a; --card:#1a1f26; --line:#2b323b; --ink:#e8ebef; --muted:#98a1ac;
+            --ok:#4fbf87; --warn:#e0a458; --bad:#e0737b; --accent:#7aa2f7; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 system-ui,-apple-system,"Segoe UI",Arial,sans-serif; }
+  .wrap { max-width:900px; margin:0 auto; padding:20px 16px 56px; }
+  h1 { font-size:1.45rem; margin:.2em 0 .1em; }
+  h2 { font-size:1.05rem; margin:1.8em 0 .5em; color:var(--muted); font-weight:600;
+       text-transform:uppercase; letter-spacing:.04em; }
+  .lede { font-size:1.05rem; color:var(--muted); margin:.2em 0 1.4em; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin:10px 0; }
+  table { width:100%; border-collapse:collapse; }
+  th,td { text-align:right; padding:9px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:.8rem; color:var(--muted); font-weight:600; }
+  td.num { font-variant-numeric:tabular-nums; white-space:nowrap; }
+  code { font-size:.78rem; color:var(--muted); }
+  .pill { display:inline-block; padding:2px 9px; border-radius:99px; font-size:.78rem; border:1px solid var(--line); white-space:nowrap; }
+  .s-live,.s-scaling { color:var(--ok); border-color:var(--ok); }
+  .s-awaiting_setup { color:var(--warn); border-color:var(--warn); }
+  .s-building { color:var(--accent); border-color:var(--accent); }
+  .grade { font-size:.72rem; }
+  .g-measured { color:var(--ok); } .g-inferred { color:var(--warn); } .g-unevidenced { color:var(--bad); }
+  .basis { display:grid; grid-template-columns:1fr auto; gap:6px 12px; }
+  .basis div:nth-child(even) { font-variant-numeric:tabular-nums; text-align:left; }
+  .note { color:var(--muted); font-size:.9rem; }
+  .empty { color:var(--muted); }
+  ul,ol { margin:.4em 0; padding-inline-start:1.2em; }
+  li { margin:.3em 0; }
+  details summary { cursor:pointer; font-weight:600; }
+  footer { color:var(--muted); font-size:.8rem; margin-top:2em; border-top:1px solid var(--line); padding-top:12px; }
+  .bar { height:8px; background:var(--line); border-radius:99px; overflow:hidden; margin:6px 0 2px; }
+  .bar > i { display:block; height:100%; background:var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>החברה עדיין לא הרוויחה שקל.</h1>
+  <p class="lede">4 מקורות הכנסה בנויים ומחכים להרשמות חד-פעמיות שלך. כל עוד הן לא בוצעו, אף אחד מהם לא יכול לקבל כסף.</p>
+
+  <h2>מה התוכנית נשענת עליו</h2>
+  <div class="card">
+    <div class="basis">
+      <div>סכום היעדים של כל הקווים</div><div>₪1,500 מול מטרה של ₪20,000</div>
+      <div><span class="g-measured">נמדד</span> — מבוסס על ראיה שאפשר לבדוק</div><div>₪0</div>
+      <div><span class="g-inferred">מוסק</span></div><div>₪1,100</div>
+      <div><span class="g-unevidenced">ללא ראיה</span> — משימת מחקר, לא תחזית</div><div>₪0</div>
+      <div><span class="g-unevidenced">מוכחש</span> — הראיה שצוטטה טוענת <em>נגד</em> המספר</div><div>₪400</div>
+    </div>
+    <p class="note">הסכום הכן כרגע הוא <strong>₪0</strong>, לא ₪1,500. <strong>מוכחשים</strong> — הראיה שצוטטה טוענת נגד היעד: <code>il-biz-tools</code>.</p>
+    <p class="note">ועוד דבר שאף אחד לא סכם: <strong>סכום כל היעדים הוא ₪1,500 מול מטרה של ₪20,000</strong>. גם אם כל קו יפגע ביעד שלו במלואו, המטרה תוחמץ.</p>
+  </div>
+
+  <h2>מה מחכה לך (4)</h2>
+  <div class="card">
+      <details>
+        <summary>Apify Actors on one creator account (published free while the stranger count runs)</summary>
+        <ol><li>Sign up at Apify with the brand as the username — the Store URL apify.com/&lt;username&gt;/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). Nothing else: publishing free and counting stranger runs needs no identity verification. Apify KYC and a PayPal payout are deferred until stranger runs exist.</li></ol>
+      </details>
+      <details>
+        <summary>Hebrew small-business web tools (invoices, receipts, VAT, net salary)</summary>
+        <ol><li>Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder&#39;s name in Latin characters, and mint one access token (owner step 3)</li><li>Buy the company domain at a registrar with WHOIS privacy on by default (owner step 5)</li><li>Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6)</li></ol>
+      </details>
+      <details>
+        <summary>Open-source bounties on Algora, from the brand machine account</summary>
+        <ol><li>Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7)</li><li>Sign in to Algora AS THE BRAND MACHINE ACCOUNT and complete Stripe Connect Express onboarding in your legal identity — individual, ID, Israeli address, Israeli bank account (owner step 4, done after step 7)</li></ol>
+      </details>
+      <details>
+        <summary>PCN874 builder — spreadsheet to a validated מע&quot;מ detailed-report file</summary>
+        <ol><li>Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses</li><li>Create the GitHub organisation under the brand name so the open-source core and the npm scope carry it and not your username (owner step 7)</li></ol>
+      </details>
+  </div>
+
+  <h2>מקורות ההכנסה</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>קו</th><th>מצב</th><th>30 יום</th><th>יעד</th><th>החלטת מפקח</th></tr></thead>
+      <tbody>
+      <tr>
+        <td><strong>Apify Actors on one creator account (published free while the stranger count runs)</strong><br><code>apify-actors</code></td>
+        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪200.00<br><span class="grade g-inferred">מוסק</span></td>
+        <td>escalate</td>
+      </tr>
+      <tr>
+        <td><strong>Hebrew small-business web tools (invoices, receipts, VAT, net salary)</strong><br><code>il-biz-tools</code></td>
+        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪400.00<br><span class="grade g-contradicted">undefined</span></td>
+        <td>escalate</td>
+      </tr>
+      <tr>
+        <td><strong>Open-source bounties on Algora, from the brand machine account</strong><br><code>oss-bounties</code></td>
+        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪300.00<br><span class="grade g-inferred">מוסק</span></td>
+        <td>escalate</td>
+      </tr>
+      <tr>
+        <td><strong>PCN874 builder — spreadsheet to a validated מע&quot;מ detailed-report file</strong><br><code>pcn874</code></td>
+        <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
+        <td class="num">₪0.00</td>
+        <td class="num">₪600.00<br><span class="grade g-inferred">מוסק</span></td>
+        <td>escalate</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>על מה הכסף עובר</h2>
+  <div class="card">
+    <p class="note">מסילה אחת שנופלת לא אמורה להפיל את החברה. הצד של <strong>הגבייה</strong> נופל ומפסיק מכירות; הצד של <strong>המשיכה</strong> נופל ומשאיר כסף שכבר הרווחנו תקוע — וזה הגרוע מבין השניים, כי הלדג'ר אומר שיש לנו אותו.</p>
+    <div class="basis">
+      <div>גבייה</div><div>gumroad 67% · bounty-platform 20% · apify 13%</div>
+      <div>משיכה</div><div>bank-transfer 67% · unknown 20% · paypal 13%</div>
+    </div>
+    <p class="note">⚠ gumroad carries 67% of the portfolio target on the payin side (il-biz-tools, pcn874); bank-transfer carries 67% of the portfolio target on the payout side (il-biz-tools, pcn874). MISSION.md requires that one rail failing does not take the company down.</p>
+    <p class="note">מסלול המשיכה לא ידוע ב: <code>oss-bounties</code>. כסף שיירשם שם עלול להיות לא ניתן למשיכה.</p>
+  </div>
+
+  <h2>מה מייל אחד מפלטפורמה יכול לקחת</h2>
+  <div class="card">
+    <p class="note">זה לא אותה שאלה כמו המסילות. מסילה עונה על "איך הכסף זז"; זה עונה על <strong>"מה חסימה אחת מוחקת"</strong> — כי קווים שונים יכולים לשבת על אותו חשבון אחד, עם אותו KYC ואותם תנאים.</p>
+    <table>
+      <thead><tr><th>חשבון</th><th>חלק מהיעד</th><th>קווים</th><th>נראה מכאן?</th></tr></thead>
+      <tbody>
+        <tr><td><code>gumroad:one-seller-account</code></td><td>67%</td><td>il-biz-tools, pcn874</td><td>כן</td></tr>
+        <tr><td><code>algora:one-connect-account</code></td><td>20%</td><td>oss-bounties</td><td>כן</td></tr>
+        <tr><td><code>apify:one-creator-account</code></td><td>13%</td><td>apify-actors</td><td><strong>לא</strong></td></tr>
+      </tbody>
+    </table>
+    <p class="note">⚠ gumroad:one-seller-account carries 67% of the portfolio target across il-biz-tools, pcn874. MISSION.md requires that one platform banning us does not take the company down. 13% of the target rides on platforms this colony cannot observe: apify:one-creator-account. Their KPIs and kill criteria cannot be checked from here.</p>
+  </div>
+
+  <h2>חסימות ותקיעות</h2>
+  <div class="card">
+    <p class="empty">אין חסימות פתוחות מלבד ההרשמות שלך.</p>
+  </div>
+
+  <h2>הכסף שלך</h2>
+  <div class="card">
+    <div class="basis">
+      <div>מה שאישרת</div><div>₪200.00</div>
+      <div>מה שהוצא</div><div>₪0.00</div>
+      <div>מה שנשאר</div><div>₪200.00</div>
+    </div>
+    <p class="note">
+      התקרה נבדקת בקוד לפני כל התחייבות, לא אחריה, וכל חיוב נרשם בלדג'ר עם מזהה קבלה.
+      זה סכום חד-פעמי ולא הרשאה חודשית — אם התכוונת אחרת, תגיד ואשנה.
+      עוד לא הוצא שקל.
+    </p>
+  </div>
+
+  <h2>המטרה הסופית</h2>
+  <div class="card">
+    <div class="basis">
+      <div>מיליון ש״ח בשנה, בחודשים</div><div>₪83,333</div>
+      <div>חנויות שצריך להשיק כדי להגיע לשם</div><div>878</div>
+      <div>מהן צפויות לעבוד</div><div>44</div>
+      <div>קווים חיים כרגע</div><div>0</div>
+    </div>
+    <p class="note">
+      ההנחות: 5% מהחנויות מגיעות ל-₪2,000 לחודש,
+      השאר ל-₪0, ותחזוקה של ₪5 לחנות לחודש.
+      זה מודל עם קלט מוצהר, לא תחזית — הקלט משתנה כשהמדידות משתנות.
+      אם חנות עולה בתחזוקה יותר ממה שהיא מרוויחה בממוצע, עוד חנויות רק מפסידות יותר.
+    </p>
+  </div>
+
+  <h2>כמה מהשוק כבר נסרק</h2>
+  <div class="card">
+    <div class="bar"><i style="width:100.0%"></i></div>
+    <p class="note">121 מתוך 121 קריטריונים נסרקו, ב-3 קבוצות שעברו פיקוח.</p>
+  </div>
+
+  <footer>
+    נוצר מהלדג'ר ב-2026-09-07T16:12:28.159Z.
+    כל מספר בדף הזה מגיע מ-<code>state/colony/colony.db</code> — אין כאן שדה שאפשר למלא ביד.
+  </footer>
+</div>
+</body>
+</html>

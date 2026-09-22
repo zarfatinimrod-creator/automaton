@@ -1,0 +1,7 @@
+# case f — an identified sale above note A's 5,000 with no customer number, and no VAT cell.
+# licensedDealerId: 514457282
+# reportMonth: 202601
+# generationDate: 20260210
+# reportedVat: 1800
+entryType,counterpartyVatId,invoiceDate,refGroup,refNumber,vatSum,invoiceSum,allocationNumber,inputKind
+S,,20260112,,,,10000,,

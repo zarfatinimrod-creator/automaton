@@ -1,0 +1,27 @@
+{
+  "verified": false,
+  "renderAmounts": false,
+  "updated": "2026-09-07",
+  "notes": "אגרה שנתית לרשם החברות. הכלל: תעריף מוזל למי שמשלם עד 31 במרץ, ותעריף מלא מ-1 באפריל. התאריכים מוצגים באתר; הסכומים לא. הסכומים שלמטה מגיעים ממחקר פנימי שנשען על חוזרי רואי חשבון בלבד – לא נפתח שום מקור ראשוני (תקנות החברות (אגרות) או אתר רשות התאגידים), ולכן הם לא מוצגים למשתמשים. כשמישהו יפתח את המקור הראשוני ויאשר: לעדכן את הסכומים, להעביר verified ל-true ואת renderAmounts ל-true.",
+  "deadline": {
+    "reducedRateThrough": "03-31",
+    "fullRateFrom": "04-01"
+  },
+  "amountsAwaitingVerification": {
+    "forYear": 2026,
+    "reducedIls": 1338,
+    "fullIls": 1777,
+    "corroboration": "שישה חוזרי רואי חשבון עצמאיים – Stark, YFCPA, PKF Amit Halfon, Gabbay & Shlafman, Brit Pikuach, Erlich – כפי שמצוטט ב-research/colony-sweep/audits/israel-bureaucracy.md §2.2 וב-research/colony-sweep/groups/israel-bureaucracy.md",
+    "whyNotPublished": "אף אחד מהמקורות אינו ראשוני. groups/israel-bureaucracy.md קובע במפורש: 'Not one primary Israeli legal or government source was rendered by any of the nine agents in this group ... That is enough to decide where to build; it is not enough to publish to users as guidance.' MISSION כלל 4 אוסר לפרסם מספר משפטי לא מאומת."
+  },
+  "primarySourceToOpen": {
+    "name": "רשות התאגידים – רשם החברות (gov.il), ותקנות החברות (אגרות)",
+    "url": "",
+    "note": "הכתובת המדויקת לא נפתחה מכאן (gov.il חסום לסוכנים בקונטיינר הזה). לא נרשמת כאן כתובת מנוחשת."
+  },
+  "internalSources": [
+    "research/colony-sweep/groups/israel-bureaucracy.md",
+    "research/colony-sweep/audits/israel-bureaucracy.md",
+    "research/colony-sweep/CHIEF-AUDIT.md §2.1"
+  ]
+}

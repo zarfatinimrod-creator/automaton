@@ -160,6 +160,12 @@ export function experimentsToPause(
  * (1 + clamp(targetAttainment, 0, 2)). Lines the rules say to kill get zero.
  * A floor guarantees each surviving line at least `floorCents` so an
  * experiment is never starved before it had a chance.
+ *
+ * Note on `line.budgetMonthlyCents`: it is the board's CURRENT allocation, which
+ * the board review overwrites from this function's output — not a static ceiling
+ * declared by the line. Reading it as a ceiling and capping allocations at it
+ * looks like a safety fix and is actually a ratchet: budgets could then only
+ * ever fall. The real ceiling is the portfolio total passed in as `totalCents`.
  */
 export function allocateBudget(
   totalCents: number,

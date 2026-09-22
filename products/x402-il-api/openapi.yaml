@@ -1,0 +1,303 @@
+openapi: 3.0.3
+info:
+  title: x402-il-api
+  version: 0.1.0
+  description: |
+    Israeli and Hebrew utility endpoints sold per request over the x402 protocol
+    (HTTP 402, USDC on Base). Discovery endpoints are free; every /v1 endpoint is
+    billable when X402_PAY_TO is configured.
+
+    All validators check format and checksum only. Nothing here verifies that a
+    person, phone line or bank account actually exists.
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:8402
+    description: Local
+paths:
+  /health:
+    get:
+      summary: Liveness and paywall mode
+      tags: [discovery]
+      responses:
+        "200":
+          description: Service is up
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  paywall: { type: string, enum: [x402, free] }
+                  network: { type: string, example: "eip155:8453", description: CAIP-2 network id }
+  /pricing:
+    get:
+      summary: Machine-readable price list
+      tags: [discovery]
+      responses:
+        "200":
+          description: Endpoints and prices
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Pricing" }
+  /.well-known/x402.json:
+    get:
+      summary: Price list at the conventional discovery path
+      tags: [discovery]
+      responses:
+        "200":
+          description: Endpoints and prices
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Pricing" }
+  /v1/validate/israeli-id:
+    post:
+      summary: Validate an Israeli ID (teudat zehut) checksum
+      tags: [validation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id:
+                  oneOf: [{ type: string }, { type: integer }]
+                  description: Up to 9 digits; shorter values are left-padded with zeros.
+                  example: "000000018"
+      responses:
+        "200":
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  input: { type: string }
+                  normalized: { type: string, nullable: true, description: Zero-padded to 9 digits }
+                  valid: { type: boolean }
+                  reason: { type: string, description: Present only when invalid }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "402": { $ref: "#/components/responses/PaymentRequired" }
+  /v1/validate/phone:
+    post:
+      summary: Validate and normalise an Israeli phone number
+      tags: [validation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              properties:
+                phone: { type: string, example: "+972 50-123-4567" }
+      responses:
+        "200":
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  input: { type: string }
+                  valid: { type: boolean }
+                  type: { type: string, enum: [mobile, landline, voip, premium] }
+                  national: { type: string, example: "050-123-4567" }
+                  e164: { type: string, example: "+972501234567", description: Absent for premium 1-700/800/900 numbers }
+                  reason: { type: string }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "402": { $ref: "#/components/responses/PaymentRequired" }
+  /v1/validate/bank:
+    post:
+      summary: Check Israeli bank, branch and account number format
+      description: Format only. Does not verify that the account exists or belongs to anyone.
+      tags: [validation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bank, branch, account]
+              properties:
+                bank: { type: string, description: Bank of Israel institution code, example: "12" }
+                branch: { type: string, example: "600" }
+                account: { type: string, example: "123456" }
+      responses:
+        "200":
+          description: Format check result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid: { type: boolean }
+                  bankCode: { type: string }
+                  bankName: { type: string, example: Bank Hapoalim }
+                  branch: { type: string, description: Zero-padded to 3 digits }
+                  account: { type: string }
+                  reason: { type: string }
+                  note: { type: string, description: Always states that this is a format check only }
+        "402": { $ref: "#/components/responses/PaymentRequired" }
+  /v1/hebrew-date:
+    get:
+      summary: Convert a Gregorian date to the Hebrew calendar
+      tags: [calendar]
+      parameters:
+        - in: query
+          name: date
+          required: false
+          schema: { type: string, format: date, example: "2025-09-23" }
+          description: Defaults to today (UTC).
+      responses:
+        "200":
+          description: Hebrew date
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gregorian: { type: string, format: date }
+                  hebrew: { type: string, description: Gematriya rendering, example: "א׳ תִּשְׁרֵי תשפ״ו" }
+                  hebrewLatin: { type: string, example: "1 Tishrei 5786" }
+                  year: { type: integer, example: 5786 }
+                  month: { type: string, example: Tishrei }
+                  day: { type: integer, example: 1 }
+                  isLeapYear: { type: boolean }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "402": { $ref: "#/components/responses/PaymentRequired" }
+  /v1/transliterate:
+    post:
+      summary: Transliterate Hebrew to Latin characters
+      description: Rule-based and approximate; not a standard romanisation.
+      tags: [text]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text: { type: string, example: "שלום עולם" }
+      responses:
+        "200":
+          description: Transliteration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  input: { type: string }
+                  latin: { type: string }
+                  note: { type: string }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "402": { $ref: "#/components/responses/PaymentRequired" }
+  /v1/json/repair:
+    post:
+      summary: Repair malformed JSON
+      description: Accepts a raw text body or a JSON object with a `json` field.
+      tags: [text]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                json: { type: string, example: "{name: 'x', ok: True,}" }
+          text/plain:
+            schema: { type: string }
+      responses:
+        "200":
+          description: Repaired JSON
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  repaired: { type: string }
+                  parsed: { description: The repaired document, parsed }
+                  changed: { type: boolean }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "402": { $ref: "#/components/responses/PaymentRequired" }
+        "422":
+          description: Input could not be repaired into valid JSON
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+components:
+  schemas:
+    Pricing:
+      type: object
+      properties:
+        x402Version: { type: integer, example: 2 }
+        payTo: { type: string, nullable: true, description: Null in free mode }
+        network: { type: string, example: "eip155:8453", description: CAIP-2 network id }
+        currency: { type: string, example: USDC }
+        endpoints:
+          type: array
+          items:
+            type: object
+            properties:
+              method: { type: string }
+              path: { type: string }
+              price: { type: string, example: "$0.002" }
+              description: { type: string }
+        note: { type: string }
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+        message: { type: string }
+  responses:
+    BadRequest:
+      description: Missing or malformed input
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    PaymentRequired:
+      description: |
+        Payment required (x402 v2). Returned when the paywall is armed and the request
+        carried no valid payment. The payment requirements are NOT in the body: they are
+        in the PAYMENT-REQUIRED response header, base64-encoded JSON. The body is this
+        API's own pointer. Retry with an x402 v2 client (@x402/fetch, @x402/axios), which
+        reads the header and sends the payment in a PAYMENT-SIGNATURE request header.
+        v1 clients (x402-fetch, x402-axios) cannot pay this API.
+      headers:
+        PAYMENT-REQUIRED:
+          description: base64(JSON) of the requirements object below
+          schema:
+            type: string
+          x-decoded-schema:
+            type: object
+            properties:
+              x402Version: { type: integer, example: 2 }
+              error: { type: string, description: Present when a submitted payment was rejected }
+              resource:
+                type: object
+                properties:
+                  url: { type: string }
+                  description: { type: string }
+              accepts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    scheme: { type: string, example: exact }
+                    network: { type: string, example: "eip155:8453" }
+                    asset: { type: string, description: USDC contract address on the network }
+                    amount: { type: string, example: "2000", description: Atomic units (USDC has 6 decimals) }
+                    payTo: { type: string }
+                    maxTimeoutSeconds: { type: integer }
+                    extra: { type: object }
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string, example: payment_required }
+              message: { type: string }
+              pricing: { type: string, example: /pricing }
