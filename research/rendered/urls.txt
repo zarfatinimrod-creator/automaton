@@ -93,3 +93,25 @@ https://freemius.com/help/documentation/getting-started/our-pricing/	freemius-ou
 https://www.gov.il/BlobFolder/generalpage/tax-vat-online-invoice-reporting/he/IncomeTax_IncomeTaxSoftwareHousesInfo_874-eng.pdf	pcn874-gov-il-874-eng
 https://www.rivhit.co.il/uploaded_files/documents/pcn874_manual_U1231.pdf	pcn874-rivhit-mirror
 https://downloads.h-erp.co.il/files/vatr/Guidance874W.pdf	pcn874-h-erp-mirror
+
+# --------------------------------------------------------------------------------
+# Sweep 2 (22.9.2026): the nine "one url that would settle it" pages, one per shortlisted
+# candidate in research/colony-sweep/SWEEP-2.md. Each URL is quoted there in that candidate's
+# "One URL that would settle it" line, named by the scout that proposed it — none is invented
+# here, and none is extrapolated from a pattern.
+#
+# WHY THEY ARE QUEUED BEFORE THE CANDIDATES ARE SCREENED: the adversarial screeners died on a
+# model quota, and every one of them would have had to open these pages to reach a verdict.
+# Fetching them costs nothing, needs no owner, and turns the re-run from guesswork into reading.
+# Storing bytes is not evidence of a fact — SWEEP-2.md says so and so does this file's header.
+# A page that 403s or returns a login shell is itself the answer for that candidate.
+# --------------------------------------------------------------------------------
+https://www.swiftness.co.il/%D7%9B%D7%9C%D7%9C%D7%99-%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA/	sweep2-pension-memsakim-rules
+https://data.gov.il/dataset/ica-changes	sweep2-ica-changes-dataset
+https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/vrp-faq.md	sweep2-google-vrp-faq
+https://github.com/marketplace	sweep2-github-marketplace
+https://algora.io/PrimeIntellect-ai/bounties	sweep2-algora-primeintellect
+https://huntr.com/guidelines	sweep2-huntr-guidelines
+https://apps.odoo.com/apps/modules/category/Localization/browse	sweep2-odoo-localization
+https://www.metaculus.com/tournament-rules/	sweep2-metaculus-rules
+https://github.com/adam2314/linet3	sweep2-linet3-licence
