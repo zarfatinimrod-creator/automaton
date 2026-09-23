@@ -1,6 +1,6 @@
 # Revenue colony — board report
 
-Generated 2026-09-22T22:07:05.270Z
+Generated 2026-09-23T00:30:36.417Z
 
 ## Where we are
 
