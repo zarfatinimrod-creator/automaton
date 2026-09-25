@@ -252,3 +252,17 @@ delivery.
    work or a one-time owner click.
 3. Write tests for the new verifier (flag handling, 404, 429, network error → keep cached Pro) before
    touching `license.js` / `page-invoice.js`.
+
+## Independent check (25.9.2026, workflow `wf_e654995b-cc6`)
+
+A second Opus agent re-fetched every cited Gumroad file at commit `af1ae267` and confirmed **all six answers**
+(Q1, Q2, Q3-in-code, Q4a, Q4b = UNKNOWN, Q5). Two small corrections that change no answer: the subscription
+fields are at `purchase.rb:1198-1200`, not 1197-1198; and for recurring products `chargebacked` is not set by
+`as_json_for_license` — `refunded` and `disputed` still arrive through the ping payload.
+
+**Still open, and decisive for options B-D:** whether the live edge in front of api.gumroad.com keeps the CORS
+headers. `.github/workflows/gumroad-cors-probe.yml` makes the two requests a browser would make (preflight, then a
+POST with a key that cannot exist) from a GitHub runner; its log is the evidence.
+
+**The choice between the options is not made here.** It is an architecture decision with long-lived consequences
+(model rule: Fable), queued with the other Fable items in `logs/CHECKPOINT.md`.
