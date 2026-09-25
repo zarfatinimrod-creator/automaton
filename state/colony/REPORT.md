@@ -1,6 +1,6 @@
 # Revenue colony — board report
 
-Generated 2026-09-25T01:28:41.032Z
+Generated 2026-09-25T07:45:57.054Z
 
 ## Where we are
 
@@ -44,6 +44,7 @@ Skipped as not yet due: revenue_board_review, revenue_audit
 
 ## Blocked on
 
+- the loop did not run for 6 hours (last ledger sync 2026-09-25T01:28:41.032Z). Check the colony workflow in Actions: a failing schedule is invisible from the numbers alone.
 - apify-actors is waiting on the owner: Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). Nothing else: publishing free and counting stranger runs needs no identity verification. Apify KYC and a PayPal payout are deferred until stranger runs exist.
 - il-biz-tools is waiting on the owner: Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3); Buy the company domain at a registrar with WHOIS privacy on by default (owner step 5); Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6)
 - oss-bounties is waiting on the owner: Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7); Sign in to Algora AS THE BRAND MACHINE ACCOUNT and complete Stripe Connect Express onboarding in your legal identity — individual, ID, Israeli address, Israeli bank account (owner step 4, done after step 7)
