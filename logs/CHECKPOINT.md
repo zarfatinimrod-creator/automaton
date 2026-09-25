@@ -1,6 +1,6 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-25 23:25 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-25 23:36 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
 
@@ -72,7 +72,11 @@
 - **⚠️ אחרי שמיזוג PR #3 ל-main:** להריץ על main `pnpm exec tsx scripts/colony.ts sync-portfolio` ואז `report` ולקמט את
   `state/colony/` — אחרת טקסט ה-humanSetup המתוקן (Apify: קליק Publish + סף 50; bounties: BRAND_GITHUB_TOKEN; pcn874:
   דומיין + GUMROAD_ACCESS_TOKEN) לא יגיע ל-db. **לא הורץ על הענף** בכוונה: colony.db בינארי ומקומט כל שעה על main.
-- **תור Fable עכשיו:** (1) שופט+red-team YouTube; (2) 26 ממצאי JUDGEMENT של המסמכים (`APPLIED.md` §Queued); (3) סריקה 2.
+- **תור Fable עכשיו:** (1) שופט+red-team YouTube; (2) 26 ממצאי JUDGEMENT של המסמכים (`APPLIED.md` §Queued); (3) סריקה 2;
+  (4) **בחירת מנגנון הרישיון של Pro** (`research/measurements/gumroad-native-licenses.md`, אפשרויות A–E; החוקר ממליץ C:
+  מפתח Gumroad מקורי, אימות פעם אחת ואז מטמון). **נמדד חי מ-runner (23:32 UTC): ה-CORS של api.gumroad.com פתוח**
+  (`access-control-allow-origin: *` גם ב-preflight וגם ב-POST) — דף סטטי יכול לאמת מפתח מהדפדפן. זה מסיר את הצעד
+  החוזר של הבעלים (`make-license.js issue` לכל מכירה). אחרי ההחלטה: בנייה על Opus.
   יומן המשימה נכתב כבר עכשיו: `logs/2026-09-25-faceless-youtube-reel.md` (יעודכן אחרי הפסק).
 
 ## סריקה שנייה — 18 מועמדים, אפס מאומתים, מכסת Fable נגמרה (22.9.2026, 18:50–19:40 UTC)

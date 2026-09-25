@@ -260,9 +260,17 @@ A second Opus agent re-fetched every cited Gumroad file at commit `af1ae267` and
 fields are at `purchase.rb:1198-1200`, not 1197-1198; and for recurring products `chargebacked` is not set by
 `as_json_for_license` — `refunded` and `disputed` still arrive through the ping payload.
 
-**Still open, and decisive for options B-D:** whether the live edge in front of api.gumroad.com keeps the CORS
-headers. `.github/workflows/gumroad-cors-probe.yml` makes the two requests a browser would make (preflight, then a
-POST with a key that cannot exist) from a GitHub runner; its log is the evidence.
+**Settled live, 25.9.2026 23:32 UTC** — `gumroad-cors-probe.yml`, run 36201382229, job 108288573430, from a GitHub
+runner (Azure eastus), through Cloudflare (`server: cloudflare`, `cf-ray … IAD`):
+
+| Request | Status | CORS headers returned |
+|---|---|---|
+| `OPTIONS /v2/licenses/verify`, `Origin: https://example.org`, `Access-Control-Request-Method: POST`, `-Headers: content-type` | **200** | `access-control-allow-origin: *`, `access-control-allow-methods: GET, POST, PUT, DELETE`, `access-control-allow-headers: content-type`, `access-control-max-age: 7200` |
+| `POST /v2/licenses/verify`, same Origin, a product id and key that cannot exist | **404**, `{"success":false,"message":"That license does not exist for the provided product."}` | `access-control-allow-origin: *`, `vary: Accept, Origin` |
+
+**Q3 is now YES, measured, not only in code:** the edge keeps the headers, so a static page on any origin can
+call verify from the buyer's browser. (The response also set two anonymous Gumroad session cookies; they are not
+copied here.) Q4b (rate limit) stays UNKNOWN.
 
 **The choice between the options is not made here.** It is an architecture decision with long-lived consequences
 (model rule: Fable), queued with the other Fable items in `logs/CHECKPOINT.md`.
