@@ -1,6 +1,6 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-25 22:45 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-25 23:25 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
 
@@ -64,6 +64,15 @@
   **MECHANICAL** (מסמך שסותר את הקוד/הריפו — נבדק בפקודה) → מפריך Opus נפרד בודק מול HEAD, ועורך Opus נפרד מחיל רק את
   המאושרים (המפריך לא עורך, העורך לא שופט); ממצא **JUDGEMENT** (תחזית, סכום, העולם החיצוני, הכרעה בין מסמכים) → נשאר
   בתור Fable. run `wf_f3c464ed-d34`. REPORT.md נוצר מקוד — תיקונים אליו הולכים לגנרטור, לא לקובץ.
+- **תוצאה (23:20 UTC):** 177 ממצאים נשפטו מול HEAD — 131 MECHANICAL/CONFIRMED, 18 הופרכו, 2 כבר תוקנו, 26 JUDGEMENT →
+  Fable. **124 תיקונים הוחלו ב-8 מסמכים** (`ab24bda`; פירוט ב-`research/owner-docs-audit/APPLIED.md`); ה-PDF חודש (9 עמ').
+  7 התיקונים של REPORT.md נעשו בגנרטור (`31e6f4c`): הדוח מונה לכל קו את **מספרי הצעדים הפתוחים מתוך `owner-steps.ts`**
+  (צעד 2 הופיע בו אפס פעמים), `OwnerStep.doneOn` (צעד 1 = 22.9, `31cda66`) + בדיקת סחף מול "✅ בוצע", והדוח כבר לא אומר
+  לבעלים להריץ `setup-done` (זה כתב ל-db מקומי שהלולאה לא קוראת). 415/415, typecheck נקי.
+- **⚠️ אחרי שמיזוג PR #3 ל-main:** להריץ על main `pnpm exec tsx scripts/colony.ts sync-portfolio` ואז `report` ולקמט את
+  `state/colony/` — אחרת טקסט ה-humanSetup המתוקן (Apify: קליק Publish + סף 50; bounties: BRAND_GITHUB_TOKEN; pcn874:
+  דומיין + GUMROAD_ACCESS_TOKEN) לא יגיע ל-db. **לא הורץ על הענף** בכוונה: colony.db בינארי ומקומט כל שעה על main.
+- **תור Fable עכשיו:** (1) שופט+red-team YouTube; (2) 26 ממצאי JUDGEMENT של המסמכים (`APPLIED.md` §Queued); (3) סריקה 2.
   יומן המשימה נכתב כבר עכשיו: `logs/2026-09-25-faceless-youtube-reel.md` (יעודכן אחרי הפסק).
 
 ## סריקה שנייה — 18 מועמדים, אפס מאומתים, מכסת Fable נגמרה (22.9.2026, 18:50–19:40 UTC)
