@@ -1,8 +1,17 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-25 23:42 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-26 00:00 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
+
+## ▶ תור Fable עבר לקובץ אחד: `logs/FABLE_QUEUE.md` (26.9.2026, 00:00 UTC)
+
+**כל פריט בתור הוא עכשיו סקריפט בריפו** (`scripts/workflows/fable-*.js`) שרץ מ-clone נקי, פותח בבדיקת מילה אחת
+על Fable ונעצר שם אם המכסה עדיין בחוץ. הסיבה: הסקריפטים והמטמון של ה-Workflow יושבים ב-`/root/.claude` ומתים עם
+הקונטיינר (8.9 ו-22.9). הרוטינה `trig_01PZGNQvBbngU1KK9Mcc8xdC` (07:41 UTC) קוראת עכשיו את הקובץ ומריצה לפי הסדר.
+**הסוקרים של סריקה 2 רצים על Opus עכשיו** (`scripts/workflows/sweep-2-screen.js`, run `wf_cd1f24c5-b07`, פלט
+ל-`research/colony-sweep/screen-2/`) — לפי חוק הצי: שכבת הבדיקה על Opus, רק הדירקטוריון על Fable. ב-22.9 כל 27
+הסוקרים הוצבו על Fable, ושם המכסה מתה. הדירקטוריון (`fable-sweep-2-board.js`) הוא פריט 4 בתור.
 
 ## ▶ הבעלים שלח את הריל כצילומי מסך (25.9.2026, 14:40 UTC) — ענף `claude/new-session-j071dx`
 
