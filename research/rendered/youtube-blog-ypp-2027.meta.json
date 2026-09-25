@@ -1,0 +1,17 @@
+{
+  "url": "https://blog.youtube/news-and-events/youtube-partner-program-updates-2027-new-opportunities-earn/",
+  "slug": "youtube-blog-ypp-2027",
+  "fetchedAt": "2026-09-25T16:04:06.949Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 124681,
+  "sha256": "031295127fd77ae675c0e1dae0517d1af7f747466a68aa051e7e6c1853b18a55",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/youtube-blog-ypp-2027.html",
+  "textPath": "research/rendered/youtube-blog-ypp-2027.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
