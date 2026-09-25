@@ -1,12 +1,12 @@
 # products/
 
-Sellable products built by the revenue colony. Each directory is standalone (own package.json, tests, README with deploy steps and the owner's one-time setup). They are intentionally outside the root pnpm workspace so the automaton runtime build stays independent.
+Sellable products built by the revenue colony. Each directory is standalone (own package.json, tests and README; most READMEs carry deploy steps and the owner's one-time setup, but `mcp-il-tools`'s has neither). They are intentionally outside the root pnpm workspace so the automaton runtime build stays independent.
 
 | Product | Revenue line | Rail | Owner one-time step |
 |---|---|---|---|
-| `apify-il-open-data` | apify-actors | Apify Store, **published free** while the 30-day stranger count runs | step 6 — Apify sign-up with the brand username + `APIFY_TOKEN` (allowed straight after step 1; **no KYC**) |
-| `il-biz-tools` | il-biz-tools | **Gumroad** (merchant of record, ILS payout rendered) — Paddle retired 7.9.2026 | step 3 — Gumroad account + token; step 5 — domain; step 6 — Netlify link |
-| `pcn874` | pcn874 | **Gumroad** (ILS) — validator and generator built, no price set | step 3 — Gumroad account + token |
+| `apify-il-open-data` | apify-actors | Apify Store, **published free** while the 30-day stranger count runs | step 6 — Apify sign-up with the brand username + `APIFY_TOKEN` (allowed straight after step 1; **no KYC**), then one Console click after the first CI push: Actor → **Publication → Publish to Store** (the push creates the Actor private) |
+| `il-biz-tools` | il-biz-tools | **Gumroad** (merchant of record, ILS payout rendered) — Paddle retired 7.9.2026 | step 3 — Gumroad account + token; step 5 — domain; step 6 — Netlify link + `GUMROAD_ACCESS_TOKEN` as a GitHub Actions secret |
+| `pcn874` | pcn874 | **Gumroad** (ILS) — validator and generator built, no price set | step 3 — Gumroad account + token; step 5 — domain; step 7 — GitHub organisation; step 6 — tokens into GitHub secrets |
 | `mcp-il-tools` | (channel test, not a line) | none — free | step 5 — domain (DNS verification for the brand namespace); step 7 — GitHub organisation |
 | `telegram-il-tools-bot` | ~~telegram-bots~~ — **PARKED** | ~~Telegram Stars → TON via Fragment~~ — killed: Fragment's payout KYC needs a selfie | none — do not start it |
 | `x402-il-api` | ~~paid-apis / agent-services~~ — **standby rail, not a line** | x402 (USDC on Base), kept only while it costs ₪0/month | none |
@@ -25,8 +25,8 @@ verdict on the code:
   an Israeli resident (`docs/REJECTED.md`).
 - **`x402-il-api` is a rail on standby.** `paid-apis` and `agent-services` were killed because the
   x402 arithmetic divides out to single-digit shekels per provider per month. The endpoint may stay
-  deployed **only while it costs ₪0/month**; any USDC that arrives is booked through
-  `src/revenue/connectors/x402-local.ts`, and nothing is planned on it.
+  deployed **only while it costs ₪0/month**; any USDC that arrives is not yet booked
+  automatically — `src/revenue/connectors/x402-local.ts` imports only `transactions` rows tagged `[line:<id>]`, and no code writes such a row for an inbound USDC payment — and nothing is planned on it.
 - **`il-biz-tools` moved from Paddle to Gumroad.** Gumroad is the only merchant of record with rendered
   proof of ILS payout to an Israeli bank. Paddle is now an option the owner may choose knowing three
   named risks, recorded in `src/revenue/rails.ts` — never a step on his checklist.
@@ -34,10 +34,10 @@ verdict on the code:
   7.9.2026 its record layout comes from the Israel Tax Authority's own circular to software houses** —
   Appendix A (layout), B (representatives' file), C (permitted values) — which `render-watch.yml` fetched
   from GitHub Actions and which is stored as extracted text in `research/rendered/`. Every rule in
-  `products/pcn874/docs/SPEC.md` cites that document by line; the three open-source implementations it
-  was previously built from are now corroboration. **Six of the seven recorded disagreements are
-  resolved** (five by the document, one by a newer vendor manual); the `reportedVat` arithmetic and the
-  line-ending/empty-file questions **stay open, and no rule was invented for them**. The document also
+  `products/pcn874/docs/SPEC.md` but one cites that document by line (the exception, the mixed-line-ending warning, rests on the open-source implementations and says so); the three open-source implementations it
+  was previously built from are now corroboration. **Five of the seven recorded disagreements are
+  resolved** (four by the document, one by a newer vendor manual); the `reportedVat` arithmetic and the
+  line-ending/empty-file questions **stay open**: no rule was written for `reportedVat`, and the line-ending and empty-file questions carry warnings only. The document also
   contradicted all three implementations once — the reference-group field takes letters, and the old
   validator would have rejected a legal file — which is what that caveat was for.
   **A refutation audit then went over the whole thing** (`research/colony-sweep/audits/pcn874-reconciliation.md`):
@@ -49,15 +49,15 @@ verdict on the code:
   the file's encoding, a closing dealer id differing from the header's, the generation date's format,
   and the sign of a zero invoice total when the VAT is not zero. The test that was supposed to guard
   this passed with three unsupported errors because it only checked that a citation *existed*; there
-  is now a second test that reads the cited lines and requires the finding's quote to come from them.
+  is now a second test that reads the cited lines and requires each error's quote to share a run of four consecutive words with them.
   **What is still not verified:** the circular is from **2009** and carries no version number; no later
   edition of the layout has been rendered, and the two newer Hebrew documents are vendor user manuals
-  that do not restate the byte layout. `.github/workflows/pcn874-spec-watch.yml` watches all three
-  hashes so a new edition is noticed rather than assumed away.
+  that do not restate the byte layout. `.github/workflows/pcn874-spec-watch.yml` downloads all three
+  documents but cannot yet notice a new edition: its lock file (`products/pcn874/docs/SPEC-SOURCES.lock.json`) holds no hashes and the job does not commit one, so every run reports the three as new and passes.
   **The generator was built on 7.9.2026** (`products/pcn874/docs/GENERATOR.md`): a documented CSV of
   documents in, the fixed-width file out, widths taken from the layout table and every header total the
   circular defines as a sum or a count computed from the details. It **refuses to write a file its own
-  validator rejects** — it builds the text, runs `validatePcn874` on it, and returns nothing at all if
+  validator rejects** — it builds the text, runs `validatePcn874` on it, and returns no file text, only the findings, if
   that reports an error — and it **will not compute `reportedVat`**: the circular defines the field and
   states no arithmetic for it, so the figure is taken from the user and the generator refuses without
   one. It has no price, it still never says a file will be accepted — it points at the Authority's free
@@ -71,7 +71,7 @@ verdict on the code:
   a file its validator rejects" is about the file's shape and its counts, not about its totals. All ten
   code findings are implemented, and each of the audit's 26 inputs is a fixture with a test.
 
-**Products with no line:** `mcp-il-tools`, which is a distribution channel test rather than a
+**Products with no line:** the parked `telegram-il-tools-bot` and the standby `x402-il-api` (above), and `mcp-il-tools`, which is a distribution channel test rather than a
 storefront, and whose registry listing is blocked on the domain (step 5) and the organisation (step 7).
 
 **Lines with no product:** `oss-bounties`, which never gets one — it sells work performed on demand for
