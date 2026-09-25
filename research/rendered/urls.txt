@@ -122,3 +122,37 @@ https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits	yout
 https://www.pexels.com/license/	pexels-license
 https://www.pexels.com/api/documentation/	pexels-api-docs
 https://pixabay.com/service/license-summary/	pixabay-license-summary
+
+# --------------------------------------------------------------------------------
+# 8. Faceless YouTube, round 2: the pages the 25.9 scouts and auditors name as the ones that
+# would move a load-bearing claim from SNIPPET to RENDERED before the (Fable) judge rules.
+# Every URL below is quoted verbatim, with its purpose, in a "URLs to render" / "What I could
+# not verify" list under research/faceless-youtube/{scouts,audits}/ - file and line per group.
+# --------------------------------------------------------------------------------
+# audits/monetization-gates.md:171-187 - Israel's YPP eligibility, the thresholds, the 1 Feb
+# 2027 doubling to 8,000 watch hours, US withholding and the treaty rate, brand deals.
+https://support.google.com/youtube/answer/7101720?hl=en	youtube-ypp-availability
+https://support.google.com/youtube/answer/72851?hl=en&co=GENIE.Platform%3DAndroid	youtube-ypp-overview
+https://blog.youtube/news-and-events/youtube-partner-program-updates-2027-new-opportunities-earn/	youtube-blog-ypp-2027
+https://support.google.com/youtube/answer/12843009?hl=en	youtube-ypp-2027-terms
+https://support.google.com/youtube/answer/10390801?hl=en	youtube-us-tax
+https://www.irs.gov/pub/irs-trty/israel.pdf	irs-us-israel-treaty
+https://support.google.com/youtube/answer/9385307?hl=en&co=GENIE.CountryCode%3DUS	youtube-creator-partnerships
+# scouts/policy.md:486 - "The first-party changelog is https://support.google.com/youtube/answer/10008196, not rendered."
+https://support.google.com/youtube/answer/10008196	youtube-policy-changelog
+# audits/monetization-gates.md:186-187, audits/upload-automation.md:211-216 - the private lock on
+# unaudited API uploads, the Developer Policies consent clause, refresh-token expiry, no-appeal wording.
+https://developers.google.com/youtube/v3/docs/videos/insert	youtube-api-videos-insert
+https://developers.google.com/youtube/v3/revision_history	youtube-api-revision-history
+https://developers.google.com/youtube/terms/developer-policies	youtube-developer-policies
+https://support.google.com/youtube/answer/7300965?hl=en	youtube-private-lock-help
+https://developers.google.com/identity/protocols/oauth2	google-oauth2
+# scouts/upload-automation.md:351 - whether a Brand Account channel shows only the brand.
+https://support.google.com/youtube/answer/7286468?hl=en	youtube-brand-account
+# audits/discovery.md:168 - impressions and CTR, the constraint-7 measurement YouTube itself provides.
+https://support.google.com/youtube/answer/7628154?hl=en	youtube-impressions-ctr
+# audits/rpm-evidence.md:151 - YouTube's own RPM definition.
+https://support.google.com/youtube/answer/9314357/understand-ad-revenue-analytics	youtube-rpm-definition
+# audits/production-stack.md:270-272 - the Sora shutdown and Kokoro's model card (licence, training data).
+https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation	openai-sora-discontinuation
+https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md	kokoro-82m-model-card
