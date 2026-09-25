@@ -19,6 +19,12 @@ name: gumroad-cors-probe
 
 on:
   workflow_dispatch:
+  # GitHub only dispatches a workflow that already exists on the default branch, and this
+  # one is born on a feature branch. A push that changes this file runs it once from
+  # any branch; it runs again only if the file itself is edited.
+  push:
+    paths:
+      - ".github/workflows/gumroad-cors-probe.yml"
 
 permissions:
   contents: read
