@@ -93,3 +93,32 @@ https://freemius.com/help/documentation/getting-started/our-pricing/	freemius-ou
 https://www.gov.il/BlobFolder/generalpage/tax-vat-online-invoice-reporting/he/IncomeTax_IncomeTaxSoftwareHousesInfo_874-eng.pdf	pcn874-gov-il-874-eng
 https://www.rivhit.co.il/uploaded_files/documents/pcn874_manual_U1231.pdf	pcn874-rivhit-mirror
 https://downloads.h-erp.co.il/files/vatr/Guidance874W.pdf	pcn874-h-erp-mirror
+
+# --------------------------------------------------------------------------------
+# 7. Faceless YouTube, reassessed against the owner's 25.9 reel (research/faceless-youtube/).
+# The 3.9 rejection rests on YouTube policy text nobody here has read first-hand.
+# research/tiktok/06-faceless-video-tooling.md §9 item 2: "Re-read
+# support.google.com/youtube/answer/1311392 from an unblocked network and replace my
+# paraphrase with the verbatim policy text before this document is cited in a board
+# decision." Canonical page named in §3.2 of the same file.
+# --------------------------------------------------------------------------------
+https://support.google.com/youtube/answer/1311392	youtube-monetization-policies
+# research/colony-sweep/scouts/risk-governance--ai-disclosure.md, "What I could NOT verify":
+# "https://support.google.com/youtube/answer/14328491 — YouTube altered/synthetic content
+# disclosure. **Unverified.**" The reel proposes Sora 2 clips, so this disclosure rule applies.
+https://support.google.com/youtube/answer/14328491	youtube-altered-synthetic-disclosure
+# research/colony-sweep/scouts/bounties-grants--creator-funds.md §1 (YPP payout rail):
+# "Snippets from https://support.google.com/adsense/answer/3372975 ,
+# https://support.google.com/adsense/answer/7164703 , https://support.google.com/youtube/answer/14728151"
+https://support.google.com/youtube/answer/14728151	youtube-ypp-payout
+https://support.google.com/adsense/answer/3372975	adsense-payment-3372975
+https://support.google.com/adsense/answer/7164703	adsense-payment-7164703
+# research/colony-sweep/scouts/distribution--short-video.md, "Seen as search results / snippets
+# only (2026-09-04), weaker": the two pages that decide whether uploads can be automated at all.
+https://developers.google.com/youtube/v3/determine_quota_cost	youtube-api-quota-cost
+https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits	youtube-api-compliance-audits
+# research/tiktok/06-faceless-video-tooling.md §5.1-5.2: the licence and API-guideline texts
+# behind rejection reason 5 ("The licensing trap is structural"), all marked blocked there.
+https://www.pexels.com/license/	pexels-license
+https://www.pexels.com/api/documentation/	pexels-api-docs
+https://pixabay.com/service/license-summary/	pixabay-license-summary
