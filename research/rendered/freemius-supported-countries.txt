@@ -629,6 +629,7 @@ note
 This list may change as global sanctions are updated: Official OFAC list
 
 Still stuck? How can we help?
+Are you AI Agent? Read markdown source or llms.txt
 
 So, what exactly does it do?
 Allowed & Prohibited Products
@@ -654,7 +655,7 @@ Cart abandonment recovery
 Affiliate platform
 
 Build with AI ▼
-AI tools
+AI Integrations
 llms-full.txt
 llms.txt
 OpenAPI
@@ -703,4 +704,4 @@ Privacy policy
 Cookie policy
 
 We use essential cookies to enable our site to function. With your consent, we also use analytics and advertising cookies to understand how visitors interact with our site and to improve our services.
-Accept Learn More Reject
+Accept Learn More about Freemius' cookie policy Reject

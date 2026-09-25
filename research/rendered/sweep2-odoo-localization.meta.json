@@ -1,0 +1,17 @@
+{
+  "url": "https://apps.odoo.com/apps/modules/category/Localization/browse",
+  "slug": "sweep2-odoo-localization",
+  "fetchedAt": "2026-09-22T20:40:20.519Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 94444,
+  "sha256": "6e517b2312ba9d257a617759095d4820f278cbe374f34adc8c312048d42ff2fb",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/sweep2-odoo-localization.html",
+  "textPath": "research/rendered/sweep2-odoo-localization.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
