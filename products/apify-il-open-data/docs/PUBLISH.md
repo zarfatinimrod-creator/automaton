@@ -24,8 +24,10 @@ Publishing free is the one thing possible before KYC. So the sequencing is not a
 Six steps. Nothing here is KYC, nothing costs money, and none of it is reversible in a way that
 matters.
 
-1. **Create an Apify account** at `apify.com` in your own name. Email and password. No identity
-   documents at this stage.
+1. **Create an Apify account** at `apify.com` with **the brand as the username**, not your name: the
+   Store URL `apify.com/<username>/…` is public, so the username is a published name (`MISSION.md`,
+   anonymity; `src/revenue/portfolio.ts` says the same). Email and password. No identity documents at
+   this stage.
 2. **Install the CLI and log in**, from a machine with the repo checked out:
    ```bash
    npm install -g apify-cli
