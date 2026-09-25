@@ -92,7 +92,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     // stranger runs exist (chief audit §4B.7-8), not asked for today.
     // "Register as osek patur" is gone from every line: it is owner step 2, once.
     humanSetup: [
-      "Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). Nothing else: publishing free and counting stranger runs needs no identity verification. Apify KYC and a PayPal payout are deferred until stranger runs exist.",
+      "Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify KYC and a PayPal or Wise payout are deferred until 50 stranger users in 30 days (scaleCriteria); under 10 at day 30 they are not asked for.",
     ],
     skillName: "revenue-apify-actors",
   },
@@ -165,6 +165,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     humanSetup: [
       "Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7)",
       "Sign in to Algora AS THE BRAND MACHINE ACCOUNT and complete Stripe Connect Express onboarding in your legal identity — individual, ID, Israeli address, Israeli bank account (owner step 4, done after step 7)",
+      "Paste the brand machine account's token as BRAND_GITHUB_TOKEN in GitHub Actions secrets, so bounty PRs leave from the brand account (owner step 6; bounties/intake.ts is blocked on it)",
     ],
     skillName: "revenue-oss-bounties",
   },
@@ -197,6 +198,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     humanSetup: [
       "Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses",
       "Create the GitHub organisation under the brand name so the open-source core and the npm scope carry it and not your username (owner step 7)",
+      "Buy the company domain (owner step 5) and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — both shared with il-biz-tools; without the token the loop cannot see a sale",
     ],
     skillName: "revenue-pcn874",
   },

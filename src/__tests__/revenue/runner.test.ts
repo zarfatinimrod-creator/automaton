@@ -13,6 +13,7 @@ import {
   tick,
   TASK_ORDER,
 } from "../../revenue/runner.js";
+import { OWNER_STEPS, ownerStepsForLine } from "../../revenue/owner-steps.js";
 import { getLine, listLines, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
 import { REVENUE_TASK_INTERVALS_MS } from "../../revenue/heartbeat.js";
 import { getActiveGoals } from "../../state/database.js";
@@ -190,6 +191,35 @@ describe("revenue/runner report rendering", () => {
     expect(report).toContain("What the owner has to do");
     expect(report).toContain("colony.ts setup-done");
     expect(report).toContain("Projections are never counted");
+  });
+
+  it("lists each waiting line's open owner steps from the checklist itself, step 2 included", async () => {
+    // The bug: every line's list came from portfolio.ts humanSetup alone, which leaves
+    // out the steps shared by all lines — so owner step 2 (the tax file) appeared
+    // nowhere in the report, and pcn874/oss-bounties lost steps 5 and 6.
+    const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
+    const report = renderReport(db, result);
+    for (const line of listLines(db).filter((l) => l.status === "awaiting_setup")) {
+      const open = ownerStepsForLine(line.id).filter((s) => !s.doneOn).map((s) => s.number);
+      expect(open.length, `${line.id} has no open owner step`).toBeGreaterThan(0);
+      expect(report).toContain(`Owner steps still open for \`${line.id}\` (docs/OWNER_STEPS.he.md): ${open.join(", ")}`);
+    }
+    expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*\b2\b[^\n]*\b5\b[^\n]*\b6\b/);
+    // a step recorded as done is not asked for again
+    const done = OWNER_STEPS.filter((s) => s.doneOn).map((s) => s.number);
+    expect(done).toContain(1);
+    expect(report).not.toMatch(/Owner steps still open for `[^`]+` \(docs\/OWNER_STEPS\.he\.md\): 1,/);
+  });
+
+  it("asks the owner to tell Claude, not to run the ledger command on his own machine", async () => {
+    // setup-done writes to a local state/colony/colony.db; the scheduled loop reads the
+    // committed copy and runs `tick --no-feed`, which never builds. The owner's part is
+    // saying which step is done; recording it is ours.
+    const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
+    const report = renderReport(db, result);
+    expect(report).toContain("tell Claude which step is done and when");
+    expect(report).not.toContain("```bash");
+    expect(report).toContain("Revenue here is only what reached the ledger with a platform transaction id; costs may be entered by hand without one.");
   });
 
   it("can never print a measured figure larger than the summed basis", async () => {

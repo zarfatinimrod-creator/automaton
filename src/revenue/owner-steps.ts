@@ -78,6 +78,11 @@ export interface OwnerStep {
   earlyPart?: { what: string; afterStep: OwnerStepId; minutes: number };
   /** A decision the board left to the owner inside this step. Not a step itself. */
   ownerDecision?: string;
+  /**
+   * Set only when the step is verifiably done, with the evidence. The report stops
+   * asking for it, and a test keeps the Hebrew heading's "✅ בוצע" in step with it.
+   */
+  doneOn?: { date: string; evidence: string };
 }
 
 export const OWNER_STEPS: OwnerStep[] = [
@@ -91,6 +96,7 @@ export const OWNER_STEPS: OwnerStep[] = [
       "Consent, not identity: it puts colony.yml and every future workflow on `main`, and GitHub runs scheduled work only there. Nothing CI-executed — the Apify push, the Netlify deploys, the hourly ledger sync — runs before it, so it gates the MEASUREMENTS and not only the hourly report. The agent does not merge on its own initiative.",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: null,
+    doneOn: { date: "2026-09-22", evidence: "merge commit 31cda66 (PR #2); colony.yml runs hourly on main since" },
   },
   {
     id: "tax-file",
