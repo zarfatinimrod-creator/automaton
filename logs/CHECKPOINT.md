@@ -1,8 +1,34 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-22 18:25 UTC · branch `claude/monthly-income-plan-pfs7vu` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-25 14:55 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
+
+## ▶ הבעלים שלח את הריל כצילומי מסך (25.9.2026, 14:40 UTC) — ענף `claude/new-session-j071dx`
+
+**הריל נקרא.** שישה פרומפטים של ChatGPT לערוץ YouTube ללא פנים (`gptprompts.ai`): מציאת נישה עם RPM מעל $7,
+רעיונות ויראליים, תסריט בהשראת מתחרה, סטוק + Sora 2, לוח 30 יום, מונטיזציה ב-30 יום. תמלול מילה במילה:
+`research/faceless-youtube/00-owner-reel-2026-09-25.md` (בלי התמונות — יש בהן את תמונת הפרופיל של הבעלים).
+**זה לא הווריאנט שנדחה ב-3.9** (עברית, Shorts/TikTok, בנפח) אלא ערוץ אחד, אנגלית, ארוך, נישה יקרה — ולכן הערכה מחדש.
+
+- **render-watch run #11** (`b55845b`): 7 מתוך 10 עמודים רונדרו מ-runner — מדיניות המונטיזציה של YouTube (ניסוח
+  "inauthentic content" מ-15.7.2025 עכשיו RENDERED, לא snippet), גילוי תוכן סינתטי, תשלומי YPP/AdSense, מכסות
+  ו-audit של ה-Data API. Pexels/Pixabay → 403 גם מה-runner.
+- **workflow `faceless-youtube-reassess`** (run `wf_492fcdd8-d40`): 7 צופים + 7 מבקרים על Opus → שופט Fable →
+  red-team Fable. פלט ל-`research/faceless-youtube/{scouts,audits}/`, `VERDICT.md`, `RED-TEAM.md`.
+  להמשיך אם נפל: `Workflow({scriptPath: "/root/.claude/projects/-home-user-automaton-research-rendered/ad9f6939-0ae8-504a-8945-82eb5f3c951c/workflows/scripts/faceless-youtube-reassess-wf_492fcdd8-d40.js", resumeFromRunId: "wf_492fcdd8-d40"})`.
+- **הבעלים (15:00 UTC): "תעבוד ותעשה דברים לבד תלמד ממה שעשינו עד עכשיו"** — עובדים בלי לחכות לאישור.
+- **נבנה ונדחף בזמן ההמתנה — MoneyPrinterTurbo PR #1 (טיוטה, `658e29e`):** מנוע קריינות מקומי Kokoro-82M
+  (משקולות Apache-2.0, `kokoro-onnx` MIT — רישיונות נקראו מ-raw.githubusercontent), כתוביות עם זמן אמיתי לכל משפט.
+  7 בדיקות חדשות, מוטציה נתפסה, 967 עוברות; הרצה אמיתית: סרטון 1920x1080 מגרפים מקוריים דרך ה-CLI, בלי מפתח
+  ובלי Pexels. זה סוגר בקוד את תנאי "TTS licence that permits commercial use" של 3.9. **מגבלה שנמצאה:** ויזואלים
+  מקומיים לא מתוזמנים למשפט (מחזוריות של 5 שניות) — רשום ב-PR.
+- **ממצא מוקדם מהצופים, RENDERED** (`research/rendered/youtube-monetization-policies.txt:242-252`): "AI Personas
+  Related to Sensitive Topics" — ערוץ עם פרסונת AI שנותנת עצה בבריאות/משפט/כספים/פוליטיקה לא יכול להרוויח כסף,
+  כולל "AI-generated podcast hosts offering financial guidance". בדיוק הנישות של RPM>$7 בריל. ועוד (SNIPPET):
+  סף YPP עולה ל-8,000 שעות צפייה ב-1.2.2027.
+- **הצעד הבא:** לקרוא פסק + red-team; אם ניסוי — workflow שני שמריץ את ששת הפרומפטים בגרסה הכנה + סרטון פיילוט
+  מקומי (Kokoro, ויזואלים מקוריים); לעדכן `REJECTED.md`; יומן; PR.
 
 ## ▶ הבעלים חזר (22.9.2026, 18:20 UTC) — ריל שלישי, ושוב לא קריא
 
