@@ -45,4 +45,5 @@ The checking tier never waits for Fable — only the deciding tier does:
 | 25.9 16:05, 17:37, 19:38, 22:40, 23:40 | 429 |
 | 26.9 07:42 | 429 — first probe run from `fable-faceless-youtube-judge.js` (run `wf_7b3ae66a-267`): one call, 288 ms, stopped as designed; nothing else ran |
 | 26.9 15:42 | 429 (run `wf_ada0bd46-4a7`, one call, stopped as designed) — about 24 hours out now |
-| next | 26.9 ~23:43, then every 8 hours while it fails |
+| 26.9 23:43 | 429 (run `wf_071169cc-d06`, one call) — ~32 hours out |
+| next | 27.9 ~07:44, then every 8 hours while it fails |
