@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/youtube/answer/1311392",
+  "slug": "youtube-monetization-policies",
+  "fetchedAt": "2026-09-25T14:48:17.941Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1617448,
+  "sha256": "2cef0990bb4c6eb861b4ed2a26caee0f14f3d28d435a253bfa3d39e81fef9c08",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/youtube-monetization-policies.html",
+  "textPath": "research/rendered/youtube-monetization-policies.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

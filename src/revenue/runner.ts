@@ -14,6 +14,7 @@
 import type { Database } from "better-sqlite3";
 import { describeStall, findStalledLines, type StalledLine } from "./watchdog.js";
 import { summarizeTargetBasis } from "./portfolio.js";
+import { ownerStepsForLine } from "./owner-steps.js";
 import {
   computePortfolioSummary,
   getLine,
@@ -323,7 +324,10 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
 
   for (const line of listLines(db)) {
     if (line.status === "awaiting_setup" && !line.humanSetupDone) {
-      result.blockers.push(`${line.id} is waiting on the owner: ${line.humanSetup.join("; ")}`);
+      result.blockers.push(
+        `${line.id} is waiting on the owner: steps ${openOwnerSteps(line.id).join(", ")} of docs/OWNER_STEPS.he.md; ` +
+          line.humanSetup.join("; "),
+      );
     }
   }
 
@@ -461,20 +465,26 @@ export function renderReport(db: Database, result: TickResult): string {
     out.push("");
     for (const line of waiting) {
       out.push(`**${line.name}** (\`${line.id}\`)`);
+      out.push(
+        `Owner steps still open for \`${line.id}\` (docs/OWNER_STEPS.he.md): ${openOwnerSteps(line.id).join(", ")}`,
+      );
       for (const step of line.humanSetup) out.push(`- [ ] ${step}`);
       out.push("");
     }
-    out.push("When a line's steps are done, confirm it so the colony can start building:");
-    out.push("");
-    out.push("```bash");
-    out.push(`pnpm exec tsx scripts/colony.ts setup-done ${waiting[0].id} --evidence "done on <date>"`);
-    out.push("```");
+    out.push(
+      "When you finish a step, tell Claude which step is done and when. Claude records it " +
+        "(`scripts/colony.ts setup-done <line> --evidence \"...\"`) and commits state/colony, which moves the line " +
+        "out of awaiting_setup and queues its build goal. The scheduled loop runs `tick --no-feed` and does not build.",
+    );
     out.push("");
   }
 
   out.push("---");
   out.push("");
-  out.push("Money here is only what reached the ledger with a platform transaction id. Projections are never counted.");
+  out.push(
+    "Revenue here is only what reached the ledger with a platform transaction id; costs may be entered by hand " +
+      "without one. Projections are never counted.",
+  );
   return out.join("\n") + "\n";
 }
 
@@ -494,4 +504,9 @@ export function renderCommitSummary(result: TickResult): string {
 export function summarizeLine(db: Database, lineId: string): string | null {
   const line = getLine(db, lineId);
   return line ? `${line.id} [${line.tier}/${line.status}] target ${formatIls(line.targetMonthlyAgorot)}` : null;
+}
+
+/** The checklist step numbers a line still waits on, in execution order; done steps drop out. */
+function openOwnerSteps(lineId: string): number[] {
+  return ownerStepsForLine(lineId).filter((s) => !s.doneOn).map((s) => s.number);
 }

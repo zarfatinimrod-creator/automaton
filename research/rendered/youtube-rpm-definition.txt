@@ -1,0 +1,340 @@
+Understand ad revenue analytics - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Analyze performance with analytics
+Understand ad revenue analytics
+
+Understand ad revenue analytics
+You can check your YouTube revenue and channel performance with metrics in YouTube Analytics. Some metrics seem similar, but their differences are important for understanding your YouTube ad revenue.
+
+RPM
+
+Revenue Per Mille (RPM) is a metric that represents how much money you've earned per 1,000 video views. RPM is based on several revenue sources, including: ads, channel memberships, YouTube Premium revenue, Super Chat, and Super Stickers.
+
+RPM is calculated per 1,000 engaged views,.
+
+Why is my RPM lower than my CPM?
+
+RPM is lower than CPM because RPM:
+
+is calculated after YouTube's revenue share.
+
+includes all views, including ones that weren’t monetized.
+
+The amount of revenue you make hasn't been changed as part of addition of the RPM metric.
+
+What’s the difference between RPM and CPM?
+
+CPM is the cost per 1000 ad impressions before YouTube revenue share. RPM is your total revenue (after YouTube's revenue share) per 1000 views.
+
+RPM
+
+CPM
+
+Creator-focused metric
+
+Includes total revenue reported in YouTube Analytics including ads, YouTube Premium, Channel Memberships, Super Chat, and Super Stickers
+
+For Shorts, it includes all engaged views. For Videos, it includes all views.
+
+The actual revenue earned after revenue share .
+
+Advertiser-focused metric
+
+Includes only revenue from ads and YouTube Premium
+
+Includes only views from the videos that monetized (i.e ads were shown)
+
+Earnings before revenue share
+
+Why is RPM important?
+
+RPM helps you understand how effective your monetization is overall.
+
+How can I increase my RPM?
+
+To improve your RPM you should improve your total revenue. Here are some steps to maximize RPM:
+
+Turn on monetization on all videos.
+
+Turn on mid-roll ads.
+
+Turn on AltMon features (for example, memberships, Super Chat) to diversify your revenue streams.
+
+Keep in mind that each feature has its own requirements and guidelines.
+
+If my RPM is going up or going down, what does it mean?
+
+RPM is a snapshot of the rate at which you’re earning money on YouTube. If it goes up, it means you’re earning more money for every 1000 views, and if it goes down, you’re earning less. Note that your RPM may go down when there’s an increase in unmonetized views, even if your revenue was the same.
+
+Whether RPM goes up or down, it’s a good indication of what is or isn't working in your revenue strategy. Understanding what influences RPM can help you identify opportunities to improve your monetization strategy.
+
+What doesn't RPM tell me about my revenue?
+
+RPM is a useful monetization metric for creators, but it can’t tell your whole revenue story. Here’s what it doesn’t include:
+
+Revenue made from selling merchandise or using the merch shelf.
+
+Revenue made through brand deals and sponsorships (excluding YouTube Creator Partnerships).
+
+Any other revenue generated indirectly through YouTube (services, speaking, consulting fees).
+
+RPM can’t tell you which revenue source is responsible for swings in your overall revenue
+
+Because RPM combines several metrics, it can’t tell you which revenue source is responsible for swings in your revenue.
+
+For example, you might see a decrease in RPM because your views may be up, but not all are ad-enabled views. Or you may see your RPM go up with no significant change to views because viewers are signing up for Channel Memberships.
+
+We recommend you use all the different analytics YouTube gives to help you fully understand changes in your RPM.
+
+CPM
+
+Cost per 1,000 impressions (CPM) is a metric that represents how much money advertisers are spending to show ads on YouTube. You’ll see a few different CPM metrics in YouTube Analytics:
+
+CPM: The cost an advertiser pays for 1,000 ad impressions. An ad impression is counted anytime an ad is displayed.
+
+Playback-based CPM: The cost an advertiser pays for 1,000 video playbacks where an ad is displayed.
+
+What’s the difference between CPM and playback-based CPM?
+
+Videos on YouTube can have more than one ad. CPM focuses on the advertiser cost for ad impressions. Playback-based CPM focuses on the advertiser cost for video playbacks that include one or more ads. Your playback-based CPM is often higher than your CPM.
+
+For example, say your video is viewed 5,000 times. 1,000 views included one ad and 500 other views included two ads, for a total of 1,500 views with ads. This instance means there were 2,000 individual ad impressions, but only 1,500 monetized playbacks.
+
+Let’s say the advertiser paid $7 total. The video’s cost per impression would equal the $7 advertiser cost divided by the 2,000 ad impressions, or, $0.0035. The CPM, or cost per 1000 impressions, would then equal $0.0035 times 1,000, or, $3.50 . The playback-based CPM would equal $7 divided by the 1,500 monetized playbacks, times 1,000, or $4.67 .
+
+Why is CPM important?
+
+You get a cut of what advertisers pay when an ad serves on your video. The more an advertiser pays for that ad, the more money you make. Your CPM is a good indicator of how valuable advertisers find your videos and audience for achieving their own business goals.
+
+Your revenue will not be equal to your CPM times your views because CPM reflects what advertisers pay, not what you earn. Also, not all views will have ads. If they aren’t advertiser-friendly , some videos are ineligible for ads altogether. Other video views may not include ads due to lack of available ads. Views that included ads are referred to as monetized playbacks.
+
+Why is my CPM changing?
+
+Fluctuations in your CPM over time are normal, and happen for many reasons, such as:
+
+Time of year: Advertisers tend to bid higher or lower depending on the time of year. For instance, many advertisers bid higher just before holidays.
+
+Changes in viewer geography: Advertisers can control which geographies they’d like to reach with their ads. Different locations will have different levels of competition in the ad market, so CPMs will vary by geography. If there’s a shift in where most of your views are coming from, you may see a shift in CPM. For instance, if you previously had views from a geography with higher CPMs, but are now getting more views from geographies with lower CPMs, you may see a decrease in your CPM.
+
+Shifts in distribution of available ad formats: Different ad types tend to have different CPMs. If, for instance, there are more available non-skippable ads in the ad inventory, CPM might be higher.
+
+Estimated revenue vs. ad revenue
+
+Estimated revenue: Revenue from all revenue types including channel memberships, YouTube Premium revenue, and Super Chat. You’ll see this metric on the Revenue tab.
+
+Estimated ad revenue: Revenue just from ads on your videos. You’ll see this metric in the revenue sources report.
+
+Views, ad impressions, & estimated monetized playbacks
+
+Views: The number of times your video was played.
+
+Ad impressions: The number of times individual ads were viewed on your videos.
+
+Estimated monetized playbacks: The number of times your video was watched with ads.
+
+If your video is viewed 10 times, and 8 of those views contained ads, you would have 10 views and 8 estimated monetized playbacks. If one of those estimated monetized playbacks actually had 2 ads, you would have 9 ad impressions.
+
+Not all views on YouTube have an ad. A view may not have an ad if:
+
+The video is not advertiser-friendly .
+
+Ads are turned off for that video.
+
+There isn’t an ad available to show to that particular viewer. Advertisers can choose to target specific devices, demographics, and interests. Your viewer may not match this targeting. Learn more about available targeting methods for video ads .
+
+A range of other factors, including the viewer’s geography, how recently they’ve seen an ad, whether they have a Premium subscription, and so on.
+
+Because of these different views, you’ll likely have more views than estimated monetized playbacks.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+Analyze performance with analytics
+1 of 2
+Check your YouTube revenue
+2 of 2
+Understand ad revenue analytics
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+7609602373764561906
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

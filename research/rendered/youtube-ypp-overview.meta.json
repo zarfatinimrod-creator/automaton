@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/youtube/answer/72851?hl=en&co=GENIE.Platform%3DAndroid",
+  "slug": "youtube-ypp-overview",
+  "fetchedAt": "2026-09-25T16:04:05.653Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1598907,
+  "sha256": "111f0082c4d6d5e1815310f8d4d892276f44bef8fa42e19e2679f24745a99e1f",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/youtube-ypp-overview.html",
+  "textPath": "research/rendered/youtube-ypp-overview.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

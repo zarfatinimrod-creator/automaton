@@ -1,0 +1,742 @@
+Localization | Odoo Apps Store
+
+Skip to Content
+
+Odoo
+
+Menu
+
+Sign in
+
+Try it free
+
+Apps
+
+Finance
+
+Accounting
+
+Invoicing
+
+Expenses
+
+Spreadsheet (BI)
+
+Documents
+
+Sign
+
+Sales
+
+CRM
+
+Sales
+
+POS Shop
+
+POS Restaurant
+
+Subscriptions
+
+Rental
+
+Websites
+
+Website Builder
+
+eCommerce
+
+Blog
+
+Forum
+
+Live Chat
+
+eLearning
+
+Supply Chain
+
+Inventory
+
+Manufacturing
+
+PLM
+
+Purchase
+
+Maintenance
+
+Quality
+
+Human Resources
+
+Employees
+
+Recruitment
+
+Time Off
+
+Appraisals
+
+Referrals
+
+Fleet
+
+Marketing
+
+Social Marketing
+
+Email Marketing
+
+SMS Marketing
+
+Events
+
+Marketing Automation
+
+Surveys
+
+Services
+
+Project
+
+Timesheets
+
+Field Service
+
+Helpdesk
+
+Planning
+
+Appointments
+
+Productivity
+
+Discuss
+
+Artificial Intelligence
+
+IoT
+
+VoIP
+
+Knowledge
+
+WhatsApp
+
+Third party apps
+Odoo Studio
+Odoo Cloud Platform
+
+Industries
+
+Retail
+
+Book Store
+
+Clothing Store
+
+Furniture Store
+
+Grocery Store
+
+Hardware Store
+
+Toy Store
+
+Food & Hospitality
+
+Bar and Pub
+
+Restaurant
+
+Fast Food
+
+Guest House
+
+Beverage Distributor
+
+Hotel
+
+Real Estate
+
+Real Estate Agency
+
+Architecture Firm
+
+Construction
+
+Property Management
+
+Gardening
+
+Property Owner Association
+
+Consulting
+
+Accounting Firm
+
+Odoo Partner
+
+Marketing Agency
+
+Law firm
+
+Talent Acquisition
+
+Audit & Certification
+
+Manufacturing
+
+Textile
+
+Metal
+
+Furnitures
+
+Food
+
+Brewery
+
+Corporate Gifts
+
+Health & Fitness
+
+Sports Club
+
+Eyewear Store
+
+Fitness Center
+
+Wellness Practitioners
+
+Pharmacy
+
+Hair Salon
+
+Trades
+
+Handyman
+
+IT Hardware & Support
+
+Solar Energy Systems
+
+Shoe Maker
+
+Cleaning Services
+
+HVAC Services
+
+Others
+
+Nonprofit Organization
+
+Environmental Agency
+
+Billboard Rental
+
+Photography
+
+Bike Leasing
+
+Software Reseller
+
+Browse all Industries &#10230
+
+Community
+
+Learn
+
+Tutorials
+
+Documentation
+
+Certifications
+
+Training
+
+Blog
+
+Podcast
+
+Empower Education
+
+Education Program
+
+Scale Up! Business Game
+
+Visit Odoo
+
+Get the Software
+
+Download
+
+Compare Editions
+
+Releases
+
+Collaborate
+
+Github
+
+Forum
+
+Events
+
+Translations
+
+Become a Partner
+
+Services for Partners
+
+Register your Accounting Firm
+
+Affiliate Program
+
+Get Services
+
+Find a Partner
+
+Find an Accountant
+
+Get a Tailored Demo
+
+Implementation Services
+
+Customer References
+
+Support
+
+Upgrades
+
+Github
+Youtube
+Twitter
+Linkedin
+Instagram
+Facebook
+
+Spotify
+
++32 2 290 34 90
+
+Get a Tailored Demo
+
+Pricing
+
+Help
+
+APPS
+INDUSTRIES
+THEMES
+
+SUBMIT
+
+Categories
+Localization
+
+Categories
+
+All
+
+Accounting
+
+Discuss
+
+Document Management
+
+eCommerce
+
+Human Resources
+
+Industries
+
+Localization
+
+Manufacturing
+
+Marketing
+
+Point of Sale
+
+Productivity
+
+Project
+
+Purchases
+
+Sales
+
+Warehouse
+
+Website
+
+Extra Tools
+
+Tutorial
+
+All Prices
+
+All Prices
+Open Source
+Paid
+
+All Platforms
+
+All Platforms
+Odoo Online
+
+All versions
+
+All versions
+
+20.0
+
+19.0
+
+18.0
+
+17.0
+
+16.0
+
+15.0
+
+14.0
+
+13.0
+
+12.0
+
+11.0
+
+10.0
+
+9.0
+
+8.0
+
+7.0
+
+6.1
+
+6.0
+
+5.0
+
+FAQ
+
+Sales Conditions
+
+Vendor Guidelines
+
+Localization
+
+Apps
+
+1485
+Apps found.
+
+category:
+Localization
+×
+
+Sort by
+
+Relevance
+
+Sort by
+
+Relevance
+
+Best Sellers
+
+Name
+
+Ratings
+
+Lowest Price
+
+Highest Price
+
+Downloads
+
+Purchases
+
+Newest
+
+Install all Ukrainian localization modules
+
+Ukraine - Full Localization
+
+Many2one
+
+$ 287.25
+
+1
+
+Query NAV Online Szamla inbound supplier invoices and reconcile them against Odoo vendor bills (BYOK)
+
+Hungary NAV Inbound
+
+Pokutsoft
+
+$ 114.27
+
+1
+
+Margin VAT for second-hand goods, works of art, collectibles and antiques (EU Directive 2006/112/EC, Art. 312-325)
+
+EU - Margin VAT (Second-Hand Goods)
+
+Powerstreet
+
+$ 114.79
+
+7
+
+EDI Fiscal Legend Complement for the Mexican Localization
+
+Vauxoo
+
+$ 99.09
+
+2
+
+Honduras SAR CAI authorization ranges, compliant 16-digit invoice numbering and range control (Acuerdo 481-2017 reformado por el 609-2017); ISV 15% / 18% selectivo / exento tax set booked on the ISV payable account, exonerado fiscal position and currency mentions
+
+Honduras SAR CAI
+
+Pokutsoft
+
+$ 88.53
+
+2
+
+Saudi Tax Invoice — ZATCA Phase 2 | Bilingual | SAR Symbol | Custom Header & Footer
+
+CorePulse
+
+$ 85.61
+
+1
+
+Complete Indian TDS & TCS — section-wise deduction, journal entries, Form 26Q/27EQ export
+
+TDS / TCS Management (CodeTrade)
+
+CodeTrade India Pvt. Ltd.
+
+$ 70.00
+
+1
+
+Facturacion electronica Costa Rica v4.4 para Odoo CE y EE. Requiere suscripcion Factico API.
+
+Factura Electronica V4.4
+
+Factico
+
+$ 49.74
+
+1
+
+ZATCA Phase 1 & Phase 2 e-invoicing compliance for Odoo 17 Community
+
+Saudi Arabia - ZATCA E-Invoicing
+
+YNot Technologies
+
+$ 49.26
+
+1
+
+Asset classification, MOF coding, capitalization threshold, depreciation, tagging and physical verification for Saudi government entities
+
+Saudi Government Fixed Asset Management (MOF Compliant)
+
+MTO
+
+$ 34.47
+
+1
+
+Complete GST Compliance Solution | Generate GSTR-1, GSTR-2, GSTR-3B & GSTR-9 Reports |
+B2B, B2C, B2CL, CDNR, HSN Summary | Indian GST Filing Made Easy
+
+Indian GST Reports - GSTR 1, 2, 3B & 9
+
+Lucidbrainz
+
+$ 32.11
+
+12
+
+Consulta RUC y DNI en Perú usando apiperu.dev
+
+Integración de consulta RUC/DNI con apiperu.dev
+
+Raul Garcia
+
+$ 19.77
+
+2
+
+Bank Statement Import Indonesia, BCA, Mandiri, BRI, BNI, Mutasi Rekening, Rekening Koran, CSV Import, Excel Import, XLSX Parser, Bank Reconciliation, L10n Indonesia, Indonesian Localization, Account Bank Statement, Auto Detect Format, Indonesian Number Format, Indonesian Date Format, OWL Preview Widget, Bank Journal Import, BCA Mutasi CSV, Mandiri e-Statement, BRI Mutasi XLSX, BNI CSV Import, Audit Trail, Statement Parser, Multi Bank Format, ID Banking, Indonesia Accounting, Community Compatible
+
+Indonesia Bank Statement Import (BCA/Mandiri/BRI/BNI)
+
+Lema Core Technologies
+
+$ 19.73
+
+1
+
+SV DTE Import (JSON a facturas)
+
+Ing. Brenda Chacon
+, Ing. Karen Burgos
+, …
+
+$ 14.80
+
+2
+
+change defult font to nice arabic font
+
+Nati arabic font
+
+Mali
+, MuhlhelITS
+
+FREE
+
+3300
+
+Official Algerian wilayas and communes — 69 wilayas, 1,541 communes, French and Arabic official names
+
+'2026' Algeria Wilayas & Communes
+
+Yacine Bendou
+
+FREE
+
+103
+
+Compta Malagasy Comptabilité Madagascar PCG 2005 — Plan comptable, TVA, positions fiscales, Ariary MGA, l10n_mg
+
+Comptabilité Malagasy (PCG 2005)
+
+SofteamG
+
+FREE
+
+70
+
+VAS - Kế toán Việt Nam | Giải pháp kế toán tích hợp theo chuẩn mực kế toán Việt Nam (VAS).
+
+VAS - Vietnamese Accounting Standards
+
+Hub2S Vietnam Co.
+, Ltd
+
+FREE
+
+29
+
+Temporary fix for ZATCA warning BR-KSA-EN16931-09 until Odoo core restores the second TaxTotal node.
+
+Digits ZATCA | Tax Total (Fix Issue)
+
+Digital Integrated Transformation Solutions (DigitsCode)
+
+FREE
+
+15
+
+Hijri (Islamic Lunar) & Shamsi (Afghan Solar Hijri)
+
+Hijri & Shamsi Calendar
+
+Mohammad Hameed Masjedi
+
+FREE
+
+42
+
+1
+
+2
+
+3
+
+4
+
+…
+
+75
+
+Community
+
+Tutorials
+
+Documentation
+
+Forum
+
+Open Source
+
+Download
+
+Github
+
+Runbot
+
+Translations
+
+Services
+
+Odoo.sh Hosting
+
+Support
+
+Upgrade
+
+Custom Developments
+
+Education
+
+Find an Accountant
+
+Find a Partner
+
+Become a Partner
+
+About us
+
+Our company
+
+Brand Assets
+
+Contact us
+
+Jobs
+
+Events
+
+Podcast
+
+Blog
+
+Customers
+
+Legal • Privacy
+
+Security
+
+Odoo is a suite of open source business apps that cover all your company needs: CRM, eCommerce, accounting, inventory, point of sale, project management, etc.
+
+Odoo's unique value proposition is to be at the same time very easy to use and fully integrated.
+
+Website made with

@@ -1,0 +1,244 @@
+Impressions & click-through-rate FAQs - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Analyze performance with analytics
+Impressions & click-through-rate FAQs
+
+Impressions & click-through-rate FAQs
+Get answers to top questions about impressions and click-through-rate data with the following FAQs.
+
+Why does my video have a high click-through-rate and average view duration but low impressions?
+
+While creators compare against other videos within their channel, YouTube’s systems rank each video against all the other videos a viewer might watch. Even if a video is performing well compared with other videos on your channel, it may be that videos from other channels are performing even better. It’s also common for videos with fewer impressions and views to have higher click-through-rates and average view duration. These higher numbers are because they've been viewed by a narrower, more loyal audience. While comparing video performance, keep in mind that the data may be more reflective of the differences in the audiences.
+
+What should I avoid doing with my click-through-rate data?
+
+Deciding without enough data. It’s important to look over your click-through-rate after getting a substantial number of impressions. Avoid checking your click-through-rate immediately after uploading.
+
+Improving for small changes in click-through-rate. It’s common to have small variations in click-through-rate, and isn’t cause for immediate action. Improvements might be helpful if a change in click-through-rate is statistically significant.
+
+Testing several thumbnails or titles on the same video. It’s difficult to make sure each video is being seen by the same audience. Differences in click-through-rate might be due to traffic sources, rather than the title or thumbnail.
+
+How do I know if my impressions click-through rate is high or low?
+
+Impressions click-through rate measures how often viewers watched a video after seeing a registered impression on YouTube. It likely represents a subset of your channel's total views, since not all impressions are counted in this metric, such those on external websites or end screens.
+
+Impressions click-through rate will vary based on the type of content, audience, and where on YouTube the impression was shown. Keep in mind that your video thumbnails are always competing against other videos, whether on the homepage, “Up Next” on the watch page, in search results, and even in subscription feeds.
+
+Half of all channels and videos on YouTube have an impressions CTR that can range between 2% and 10%.
+
+New videos or channels (like those less than a week old), or videos with fewer than 100 views can see an even wider range. If a video gets a lot of impressions (such as if it appears on the Home Page), it's natural for the CTR to be lower. Videos where most of the impressions are from sources like your channel page may have a higher rate.
+
+Ultimately, it's best to compare CTRs between videos over the long-term and keep in mind how their traffic sources will affect their CTRs.
+
+Avoid trying to increase your CTR using thumbnails or titles that are clickbait . YouTube will recommend a video to viewers if the video is relevant to them and if the video's average view duration indicates that viewers find it interesting. Clickbait videos tend to have low average view duration and therefore are less likely to get recommended by YouTube. You can tell if your thumbnail is clickbait if it's getting high CTR but low average view duration and lower than expected Impressions.
+
+Why do I have more views than impressions?
+
+If a large amount of traffic to your video comes from outside of YouTube, you may have more views than impressions. Not every instance where a viewer sees a video thumbnail will count as an impression and not all views come from thumbnail impressions. Learn what counts as a registered impression .
+
+Why doesn't the click-through-rate metric match my calculations?
+
+Click-through rate is based on views that come from counted impressions . If you divide the total views on your video by the number of impressions you may not see the same number as the click-through rate. Some views do not originate from thumbnail impressions.
+
+How do impressions relate to monetization?
+
+If a video is not suitable for a broad audience according to our Community Guidelines , it can limit the number of impressions the video gets. This limitation could also lead to fewer views and less revenue. In addition, if a video is not suitable for most advertisers according to the advertiser-friendly content guidelines , the video may get limited or no ads.
+
+Note : Keep in mind that these suggestions are based on aggregate success rates across YouTube. They do not guarantee any particular outcome for your specific case.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+Analyze performance with analytics
+1 of 4
+Understand your YouTube video reach
+2 of 4
+Check your YouTube thumbnail impressions and watch time
+3 of 4
+Impressions & click-through-rate FAQs
+4 of 4
+Learn where viewers clicked Subscribe
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+3501899655983796940
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

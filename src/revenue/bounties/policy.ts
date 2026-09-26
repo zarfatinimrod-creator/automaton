@@ -4,7 +4,13 @@
  * BOARD.md build #2 and CHIEF-AUDIT.md §2.1 row 6 both grade this line **AMBER**
  * for one reason and it is not Algora's terms: *"Algora's terms do not prohibit
  * agent-authored PRs — the risk is per-repo maintainer policy, and it is real."*
- * (`research/colony-sweep/groups/bounties-grants.md` §4). The line is permitted
+ * (`research/colony-sweep/groups/bounties-grants.md` §4). That sentence quoted no
+ * clause. The terms were first read on 26.9.2026 (`research/rendered/algora-terms.txt`):
+ * they are silent on who authors a PR, but they forbid "any robot, spider, or other
+ * automatic device, process, or means to access Service for any purpose" (lines
+ * 258-260), Service being the web pages at algora.io. Nothing in this module or its
+ * callers touches algora.io; whether a GitHub-only automated claim is "access" is
+ * open (`research/measurements/algora-terms-question.md`). The line is permitted
  * only behind a filter that reads the repository's own contribution policy first
  * and refuses to attempt anything that bans AI-authored work. Without the filter
  * the line violates the constitution regardless of what the platform allows, and

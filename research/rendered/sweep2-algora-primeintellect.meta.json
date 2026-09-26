@@ -1,0 +1,17 @@
+{
+  "url": "https://algora.io/PrimeIntellect-ai/bounties",
+  "slug": "sweep2-algora-primeintellect",
+  "fetchedAt": "2026-09-22T20:40:17.682Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 30422,
+  "sha256": "6b05d599afe2fc890d2646ed507692b80308a4ab91f3a004a743ff2f4c310975",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/sweep2-algora-primeintellect.html",
+  "textPath": "research/rendered/sweep2-algora-primeintellect.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

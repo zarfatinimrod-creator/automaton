@@ -1,0 +1,17 @@
+{
+  "url": "https://developers.google.com/youtube/v3/docs/videos/insert",
+  "slug": "youtube-api-videos-insert",
+  "fetchedAt": "2026-09-25T16:04:18.017Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 168395,
+  "sha256": "4b4f0433d32c617cb1b36e97148b938d638f6e7ca57209e2bed473c242691595",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/youtube-api-videos-insert.html",
+  "textPath": "research/rendered/youtube-api-videos-insert.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

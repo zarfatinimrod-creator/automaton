@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/youtube/answer/9314357/understand-ad-revenue-analytics",
+  "slug": "youtube-rpm-definition",
+  "fetchedAt": "2026-09-25T16:04:27.788Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1593708,
+  "sha256": "19b52a286bd969b8a5100cba1fbaf6f17060acb3e69fd8bd83740db34f067df1",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/youtube-rpm-definition.html",
+  "textPath": "research/rendered/youtube-rpm-definition.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

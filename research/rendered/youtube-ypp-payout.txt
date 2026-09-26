@@ -1,0 +1,355 @@
+Understand AdSense for YouTube’s payment process - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Understand AdSense for YouTube’s payment process
+Want to know when you’ll get paid? Creators in the YouTube Partner Program are paid through AdSense for YouTube , which follows a monthly cycle. This guide explains what happens during the payment cycle and when you can expect to be paid.
+
+When Will I Get Paid? YouTube Partner Program Payment Timelines
+
+Subscribe to the YouTube Creators channel for the latest news, updates, and tips.
+
+When will I get paid?
+
+How payments work
+
+Your YouTube channel accrues earnings over the course of the month. Once the month ends, your estimated earnings from the previous month may get adjusted for:
+
+Invalid traffic
+
+Copyright claims and disputes
+
+Certain ad campaign types (like cost-per-day campaigns)
+
+Taxes on earnings from US viewers
+
+If you’re outside of the US, you may also be liable to pay taxes to your country or region of residence. Learn more here or check with local tax authorities for guidance.
+
+Earnings are finalized and posted in AdSense for YouTube.
+
+Total balance must reach the payment threshold and any changes to payment info must be completed to be paid that month.
+
+Payment issued and a "Payment pending" line item appears in AdSense for YouTube.
+
+Between the 7th–12th of the month
+
+Earnings are finalized and posted in AdSense for YouTube.
+
+Your estimated earnings for the previous month are finalized during this time.
+
+To view payment info, sign in to your AdSense for YouTube account and select Payments .
+
+This page will also show any deductions related to adjustments or fees.
+
+If you have a single channel associated with your AdSense for YouTube account, you can use the YouTube Studio app to view payment info.
+
+On the 20th of the month
+
+Total balance must reach the payment threshold and any changes to payment info must be completed to be paid that month.
+
+Payment Threshold: Your total balance on the 20th must reach the payment threshold of your currency to be paid that month. If your balance doesn't meet the payment threshold, it's rolled over to the next month.
+
+If you have separate payments accounts for AdSense and AdSense for YouTube, each account will need to reach the payment threshold to be paid.
+
+Payment info changes: Any changes to your payment info (including removing payment holds ) must be completed on or before the 20th of the month. Changes made after the 20th won't take effect until the next month's payment cycle.
+
+For example, if you remove a payment hold after the 20th, you won’t be paid that month. Your balance will roll over to the next month.
+
+Between the 21st–26th of the month
+
+Payment issued and a "Payment pending" line item should appear in AdSense for YouTube.
+
+If the 21st falls on a weekend or holiday, payments may be issued on the first business day following the 21st of that month. The exact time you get your payment depends on your time zone and your chosen payment method :
+
+Electronic Funds Transfer (EFT): After payment is issued, allow up to 7 business days for the transfer to complete. If you haven't received payment after 7 business days, follow these troubleshooting steps .
+
+Check: Checks are mailed for eligible accounts. Allow 2-4 weeks for your check to arrive in the mail. Arrival times may vary depending on the postal service in your area.
+
+Hyperwallet: After payment is issued, allow 1-2 days for your earnings to become available in your Hyperwallet account. Note that once your earnings are deposited to your Hyperwallet account, they can't be transferred back to AdSense for YouTube.
+
+Wire transfer: After the wire transfer is initiated, allow up to 15 business days for the transfer to complete. Wire transfer times may vary depending on your banking institution. If you haven't received payment after 15 business days, follow these troubleshooting steps .
+
+Western Union Quick Cash: After payment is issued, it can be picked up at any Western Union location in your country after 1 business day . Please note that Western Union is no longer available for creators to select when choosing a form of payment.
+
+Note: At any time, payment may be withheld and/or earnings may be deducted if your account violates the AdSense Program policies and either the AdSense Terms and Conditions or the AdSense for YouTube Terms and Conditions (whichever is applicable). Withholding and/or deductions may begin from when Google initiates its investigation of potential violations.
+
+Frequently Asked Questions (FAQs)
+
+Can I get paid early?
+
+No, we can’t issue payments outside of our standard payment timeline (outlined above) for any reason.
+
+My "Transactions" page is missing several payments. How can I view my full transaction history?
+
+The default view of your "Transactions" page will show the last three months of transactions in your account. To view your full transaction history, select All time in the date range selector.
+
+If you'd like to view transactions before your AdSense for YouTube payment account was created, you'll have to check your old AdSense payment account .
+
+My EFT payment was sent to a closed bank account, what do I do?
+
+If your form of payment is EFT and your payment was issued to a recently closed bank account, then the payment will be automatically returned in a few days. When the payment is returned, your earnings will be credited back to your account. If you have a new bank account verified in your account, then your returned payment will be re-issued in a few days. You can expect the entire process to take about a week.
+
+Can I get a tracking number for my local courier check delivery?
+
+We do not offer tracking numbers for check deliveries.
+
+My check didn’t arrive. How do I get a new check?
+
+There are two main reasons why your check might not have arrived:
+
+The check went to the wrong address. In this case, you'll need to change the payee information in your AdSense for YouTube account before you request a new check.
+
+The check may have been misplaced in the postal service of your country.
+
+It takes approximately 2-4 weeks after the mailing date for creators to get their check. But, it may take longer depending on the postal service in your location. If you need to request a reissue of your check, please wait 60 days from the date of issue.
+
+If it’s been more than 60 days, you can request a reissue of your check:
+
+Sign in to your AdSense for YouTube account.
+
+Click Payments Payments info .
+
+On your "Transactions" page, find the issue date and current status of your check.
+
+If your check still hasn’t been cashed after 60 days, a "Reissue payment" link will surface next to the check’s status.
+
+Click Reissue payment and confirm that you want to reissue the payment.
+
+A new line item will surface, showing that the check has been stopped and that your reissue is in progress.
+
+What is the sender address for Western Union payments?
+
+You can find the sender address on your payment receipt. Keep in mind that Western Union is no longer available as an option for creators when choosing a form of payment. Learn more about receiving payments by Western Union .
+
+Can I change my payment currency?
+
+Unfortunately, it's not possible to change your payment currency.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+AdSense
+1 of 21
+AdSense for YouTube
+2 of 21
+How to get paid on YouTube
+3 of 21
+Set up an AdSense for YouTube account to get paid on YouTube
+4 of 21
+Enter your payments information in AdSense
+5 of 21
+Verify your identity
+6 of 21
+Change your linked AdSense for YouTube account
+7 of 21
+Meet YouTube’s revenue thresholds for payment
+8 of 21
+Understand AdSense for YouTube’s payment process
+9 of 21
+Address verification (PIN) overview
+10 of 21
+Verify your address with PIN in AdSense for YouTube
+11 of 21
+Fix problems with AdSense address verification (PIN)
+12 of 21
+How to request a replacement PIN
+13 of 21
+Add your payment method for AdSense for YouTube
+14 of 21
+Add your payment method for AdSense or AdSense for YouTube
+15 of 21
+Payment timelines for AdSense
+16 of 21
+Add a user to your account
+17 of 21
+Wire transfer FAQ
+18 of 21
+Reactivate a closed AdSense account
+19 of 21
+Check your AdSense account type
+20 of 21
+Close your AdSense for YouTube account
+21 of 21
+AdSense account closed by Google for policy reasons
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+4243717803322884652
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

@@ -93,3 +93,104 @@ https://freemius.com/help/documentation/getting-started/our-pricing/	freemius-ou
 https://www.gov.il/BlobFolder/generalpage/tax-vat-online-invoice-reporting/he/IncomeTax_IncomeTaxSoftwareHousesInfo_874-eng.pdf	pcn874-gov-il-874-eng
 https://www.rivhit.co.il/uploaded_files/documents/pcn874_manual_U1231.pdf	pcn874-rivhit-mirror
 https://downloads.h-erp.co.il/files/vatr/Guidance874W.pdf	pcn874-h-erp-mirror
+
+# --------------------------------------------------------------------------------
+# Sweep 2 (22.9.2026): the nine "one url that would settle it" pages, one per shortlisted
+# candidate in research/colony-sweep/SWEEP-2.md. Each URL is quoted there in that candidate's
+# "One URL that would settle it" line, named by the scout that proposed it — none is invented
+# here, and none is extrapolated from a pattern.
+#
+# WHY THEY ARE QUEUED BEFORE THE CANDIDATES ARE SCREENED: the adversarial screeners died on a
+# model quota, and every one of them would have had to open these pages to reach a verdict.
+# Fetching them costs nothing, needs no owner, and turns the re-run from guesswork into reading.
+# Storing bytes is not evidence of a fact — SWEEP-2.md says so and so does this file's header.
+# A page that 403s or returns a login shell is itself the answer for that candidate.
+# --------------------------------------------------------------------------------
+https://www.swiftness.co.il/%D7%9B%D7%9C%D7%9C%D7%99-%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA/	sweep2-pension-memsakim-rules
+https://data.gov.il/dataset/ica-changes	sweep2-ica-changes-dataset
+https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/vrp-faq.md	sweep2-google-vrp-faq
+https://github.com/marketplace	sweep2-github-marketplace
+# REMOVED 26.9.2026: https://algora.io/PrimeIntellect-ai/bounties (sweep2-algora-primeintellect).
+# Algora's terms forbid "any robot, spider, or other automatic device, process, or means to access
+# Service for any purpose, including monitoring" (research/rendered/algora-terms.txt:258-260), and
+# the candidate is closed (research/colony-sweep/screen-2/primeintellect-bounties.md). The capture
+# stays as the record; the weekly job must not fetch algora.io again.
+https://huntr.com/guidelines	sweep2-huntr-guidelines
+https://apps.odoo.com/apps/modules/category/Localization/browse	sweep2-odoo-localization
+https://www.metaculus.com/tournament-rules/	sweep2-metaculus-rules
+https://github.com/adam2314/linet3	sweep2-linet3-licence
+
+# 7. Faceless YouTube, reassessed against the owner's 25.9 reel (research/faceless-youtube/).
+# The 3.9 rejection rests on YouTube policy text nobody here has read first-hand.
+# research/tiktok/06-faceless-video-tooling.md §9 item 2: "Re-read
+# support.google.com/youtube/answer/1311392 from an unblocked network and replace my
+# paraphrase with the verbatim policy text before this document is cited in a board
+# decision." Canonical page named in §3.2 of the same file.
+# --------------------------------------------------------------------------------
+https://support.google.com/youtube/answer/1311392	youtube-monetization-policies
+# research/colony-sweep/scouts/risk-governance--ai-disclosure.md, "What I could NOT verify":
+# "https://support.google.com/youtube/answer/14328491 — YouTube altered/synthetic content
+# disclosure. **Unverified.**" The reel proposes Sora 2 clips, so this disclosure rule applies.
+https://support.google.com/youtube/answer/14328491	youtube-altered-synthetic-disclosure
+# research/colony-sweep/scouts/bounties-grants--creator-funds.md §1 (YPP payout rail):
+# "Snippets from https://support.google.com/adsense/answer/3372975 ,
+# https://support.google.com/adsense/answer/7164703 , https://support.google.com/youtube/answer/14728151"
+https://support.google.com/youtube/answer/14728151	youtube-ypp-payout
+https://support.google.com/adsense/answer/3372975	adsense-payment-3372975
+https://support.google.com/adsense/answer/7164703	adsense-payment-7164703
+# research/colony-sweep/scouts/distribution--short-video.md, "Seen as search results / snippets
+# only (2026-09-04), weaker": the two pages that decide whether uploads can be automated at all.
+https://developers.google.com/youtube/v3/determine_quota_cost	youtube-api-quota-cost
+https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits	youtube-api-compliance-audits
+# research/tiktok/06-faceless-video-tooling.md §5.1-5.2: the licence and API-guideline texts
+# behind rejection reason 5 ("The licensing trap is structural"), all marked blocked there.
+https://www.pexels.com/license/	pexels-license
+https://www.pexels.com/api/documentation/	pexels-api-docs
+https://pixabay.com/service/license-summary/	pixabay-license-summary
+
+# --------------------------------------------------------------------------------
+# 8. Faceless YouTube, round 2: the pages the 25.9 scouts and auditors name as the ones that
+# would move a load-bearing claim from SNIPPET to RENDERED before the (Fable) judge rules.
+# Every URL below is quoted verbatim, with its purpose, in a "URLs to render" / "What I could
+# not verify" list under research/faceless-youtube/{scouts,audits}/ - file and line per group.
+# --------------------------------------------------------------------------------
+# audits/monetization-gates.md:171-187 - Israel's YPP eligibility, the thresholds, the 1 Feb
+# 2027 doubling to 8,000 watch hours, US withholding and the treaty rate, brand deals.
+https://support.google.com/youtube/answer/7101720?hl=en	youtube-ypp-availability
+https://support.google.com/youtube/answer/72851?hl=en&co=GENIE.Platform%3DAndroid	youtube-ypp-overview
+https://blog.youtube/news-and-events/youtube-partner-program-updates-2027-new-opportunities-earn/	youtube-blog-ypp-2027
+https://support.google.com/youtube/answer/12843009?hl=en	youtube-ypp-2027-terms
+https://support.google.com/youtube/answer/10390801?hl=en	youtube-us-tax
+https://www.irs.gov/pub/irs-trty/israel.pdf	irs-us-israel-treaty
+https://support.google.com/youtube/answer/9385307?hl=en&co=GENIE.CountryCode%3DUS	youtube-creator-partnerships
+# scouts/policy.md:486 - "The first-party changelog is https://support.google.com/youtube/answer/10008196, not rendered."
+https://support.google.com/youtube/answer/10008196	youtube-policy-changelog
+# audits/monetization-gates.md:186-187, audits/upload-automation.md:211-216 - the private lock on
+# unaudited API uploads, the Developer Policies consent clause, refresh-token expiry, no-appeal wording.
+https://developers.google.com/youtube/v3/docs/videos/insert	youtube-api-videos-insert
+https://developers.google.com/youtube/v3/revision_history	youtube-api-revision-history
+https://developers.google.com/youtube/terms/developer-policies	youtube-developer-policies
+https://support.google.com/youtube/answer/7300965?hl=en	youtube-private-lock-help
+https://developers.google.com/identity/protocols/oauth2	google-oauth2
+# scouts/upload-automation.md:351 - whether a Brand Account channel shows only the brand.
+https://support.google.com/youtube/answer/7286468?hl=en	youtube-brand-account
+# audits/discovery.md:168 - impressions and CTR, the constraint-7 measurement YouTube itself provides.
+https://support.google.com/youtube/answer/7628154?hl=en	youtube-impressions-ctr
+# audits/rpm-evidence.md:151 - YouTube's own RPM definition.
+https://support.google.com/youtube/answer/9314357/understand-ad-revenue-analytics	youtube-rpm-definition
+# audits/production-stack.md:270-272 - the Sora shutdown and Kokoro's model card (licence, training data).
+https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation	openai-sora-discontinuation
+https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md	kokoro-82m-model-card
+
+# --------------------------------------------------------------------------------
+# 9. Algora's terms of service — does a committed line's permission hold?
+# research/measurements/algora-terms-question.md, "The one page that settles it": the
+# oss-bounties line rests on "Algora's terms do not prohibit agent-authored PRs"
+# (groups/bounties-grants.md:133-134), which quotes no clause; a third-party project says
+# the terms "prohibit robotic access", also without a clause. The URL is Algora's own footer
+# link, href="/legal/terms", in research/rendered/sweep2-algora-primeintellect.html.
+# --------------------------------------------------------------------------------
+# Fetched once, 26.9.2026 00:44 UTC (research/rendered/algora-terms.*), then REMOVED: the page itself
+# forbids automated access to algora.io (algora-terms.txt:258-260), and the one fetch answered the
+# question (research/measurements/algora-terms-question.md, "Answer"). Re-reading it later is a
+# human's job, not the weekly runner's.

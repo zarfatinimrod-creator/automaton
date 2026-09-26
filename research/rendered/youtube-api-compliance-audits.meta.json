@@ -1,0 +1,17 @@
+{
+  "url": "https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits",
+  "slug": "youtube-api-compliance-audits",
+  "fetchedAt": "2026-09-25T14:49:07.049Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 74264,
+  "sha256": "9bc3a686e8920fb1b594f3c07c7c16b90376e52889f1ada3e63603d1b72d67f6",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/youtube-api-compliance-audits.html",
+  "textPath": "research/rendered/youtube-api-compliance-audits.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

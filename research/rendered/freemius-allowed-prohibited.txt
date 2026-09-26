@@ -254,6 +254,7 @@ If you have other actively selling products on Freemius, where existing income c
 In these cases, pre-orders may be allowed, but we may need to adjust your payout terms—holding some or all funds until fulfillment is verified.
 
 Still stuck? How can we help?
+Are you AI Agent? Read markdown source or llms.txt
 
 Supported Countries
 Getting Paid (Your Earnings)
@@ -291,7 +292,7 @@ Cart abandonment recovery
 Affiliate platform
 
 Build with AI ▼
-AI tools
+AI Integrations
 llms-full.txt
 llms.txt
 OpenAPI
@@ -340,4 +341,4 @@ Privacy policy
 Cookie policy
 
 We use essential cookies to enable our site to function. With your consent, we also use analytics and advertising cookies to understand how visitors interact with our site and to improve our services.
-Accept Learn More Reject
+Accept Learn More about Freemius' cookie policy Reject

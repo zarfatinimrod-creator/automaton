@@ -1,8 +1,8 @@
 # il-biz-tools — כלים לעסק
 
 A static, dependency-free, Hebrew (RTL) micro-site with six tools for Israeli freelancers and
-small businesses. No framework, no dependencies at runtime: the build only copies files, and
-the deploy artifact is `_site/`.
+small businesses. No framework, no dependencies at runtime: the build copies an allowlist of files, writes a
+no-figures notice in place of any withheld page and filters the sitemap; the deploy artifact is `_site/`.
 
 ## What it sells, to whom
 
@@ -23,9 +23,10 @@ answering the exact questions people search), plus sharing in freelancer Faceboo
 ### Pricing suggestion
 - Free tools: free forever (they are the SEO funnel).
 - **Pro (document branding): one-time ₪79** through **Gumroad**, which replaced Paddle here.
-  Gumroad is the merchant of record, sells in ILS (the one payment rail this repo has rendered
-  evidence for), and needs no liveness video to open — the Paddle onboarding step that collides
-  with the mandate. Stripe is not available to an Israeli individual; PayPal Business and Payoneer
+  Gumroad is the merchant of record, pays out in ILS to an Israeli bank (the one payment rail this repo
+  has rendered evidence of that for), and no source reports a liveness video in its onboarding — the Paddle onboarding step that collides
+  with the mandate. Stripe does not take an Israeli individual as a direct merchant (the one Stripe path on the owner
+  checklist is Connect Express through Algora, step 4); PayPal Business and Payoneer
   Checkout remain the fallbacks.
 - Gumroad's rules allow a downloadable/licence product, which is exactly what Pro is: a file-free
   licence key that unlocks branding in the buyer's own browser. It is not an AI service and must
@@ -51,9 +52,11 @@ army), benefits in kind, study fund.
 
 ## The unverified-rate gate (why `net-salary.html` is not on the public site)
 
-MISSION rule 4 — never publish an unverified legal figure — used to be kept by hand: `tax-2026.json`
+MISSION rule 4 (honest value only), read here as "never publish an unverified legal figure", used to be kept by hand: `tax-2026.json`
 says `"verified": false`, the page wears an **אומדן** badge, and everyone hoped the badge was enough.
-It is not, so the rule is now enforced by the build.
+It is not, so the rule is now enforced by the build for rendered pages. The config files themselves still ship
+under `/src/config/` (the build copies that folder whole, `tax-2026.json` and `registrar-fee.json` included),
+so the unverified figures are reachable by URL even though no published page renders them.
 
 `src/lib/publish-gate.js` maps every page to the config files whose **figures it renders**.
 `node scripts/build-site.js` reads those configs and, for any page depending on one that is not
@@ -66,8 +69,9 @@ flagged `"verified": true`:
 
 Nothing in the source tree moves, so `npm run serve`, the tests and local development still see the
 real page; the day the rates are confirmed against the Tax Authority booklet, flipping one JSON flag
-republishes it. `node scripts/check-html.js` prints the same verdict, and **fails** if an HTML page
-is missing from the map — a page nobody classified is a page nobody decided about.
+republishes it. `node scripts/check-html.js` prints the same verdict for its fixed list of 7 pages plus
+`404.html`. What **fails** on an HTML page missing from the map is the build (`scripts/build-site.js`) and
+`tests/publish-gate.test.js` — a page nobody classified is a page nobody decided about.
 
 Today the gate withholds exactly one page: `net-salary.html`. Nothing here marks anything verified.
 
@@ -87,9 +91,10 @@ once that has passed — the next window and the days to it. Pure calendar arith
 `src/lib/registrar-fee.js`, no registry lookup, no company data.
 
 What it refuses to answer: **how much the fee is.** The repo's research corroborated ₪1,338 reduced
-and ₪1,777 from 1.4.2026 across six independent accountancy circulars, and the same research file
-states that not one primary Israeli legal or government source was ever opened — "enough to decide
-where to build, not enough to publish to users as guidance". So the amounts stay in
+and ₪1,777 from 1.4.2026 across six independent accountancy circulars (`audits/israel-bureaucracy.md` §2.2), and the group
+report (`groups/israel-bureaucracy.md`) states that not one primary Israeli legal or government source was
+rendered by any of the nine agents in that group — "That is enough to decide where to build; it is not
+enough to publish to users as guidance". So the amounts stay in
 `registrar-fee.json` with `verified: false` and `renderAmounts: false`, `feeAmountDisclosure()`
 refuses to hand them out, the page tells the reader to check רשות התאגידים, and a test asserts the
 shipped HTML contains neither number. The `חברה מפרה` status half of the original product idea is not
@@ -152,7 +157,7 @@ There are **no server-side env vars** — this is a static site. Public configur
 
 | Key | Meaning | Default |
 |---|---|---|
-| `siteUrl` | Canonical origin, used for `<link rel=canonical>`; also edit `sitemap.xml` and `robots.txt` | `https://il-biz-tools.netlify.app` |
+| `siteUrl` | Canonical origin; `assets/common.js` rewrites `<link rel=canonical>` from it at runtime. The static canonical in all 7 pages and the JSON-LD `url` in `index.html` are hard-coded, so edit those too, plus `sitemap.xml` and `robots.txt` | `https://il-biz-tools.netlify.app` |
 | `gumroad.productUrl` | Full `https://` URL of the Gumroad product page. Empty ⇒ the Pro button is disabled and says the shop is not open | `""` |
 | `analytics.provider` | `none` or `plausible` | `none` (off) |
 | `analytics.plausibleDomain` | Plausible site domain | `""` |
@@ -211,7 +216,8 @@ node scripts/make-license.js init            # writes .license-key.json (gitigno
 node scripts/make-license.js issue buyer@example.com   # per sale: print the key to send
 ```
 
-**Losing `.license-key.json` invalidates every key already issued.** Back it up.
+**Losing `.license-key.json` means no new key can be issued; re-running `init` to recover replaces
+`pro.publicKey`, and every key already issued stops verifying.** Back it up.
 
 **The Pro button has exactly four states**, all decided in `src/lib/gumroad.js` (`proButtonState`)
 and unit-tested rather than trusted:
@@ -238,35 +244,46 @@ The saved client list, the numbering, the PDF export and the stored documents ar
 
 ## Deploy (Netlify, exact steps)
 
-1. Push the repo. In Netlify: *Add new site → Import from Git*, pick the repo.
-2. Base directory: `products/il-biz-tools`. Build command: `node scripts/build-site.js`. Publish directory: `_site` (what `netlify.toml` declares: an explicit allowlist, so `package.json`, `README.md`, `tests/` and `scripts/` are never uploaded).
-   (`netlify.toml` already declares this; headers/CSP/redirects are in the same file).
-3. Deploy. Then set the custom domain and update `siteUrl` in `src/config/site.json`,
-   `sitemap.xml` and `robots.txt` to the real domain; commit.
+1. In Netlify, open the existing site `il-biz-tools` (site id `2087c2ed-5270-4407-8746-675d6ea41d5e`) → build & deploy settings → *Link repository* → `automaton`, branch `main`. Only if that site is gone: *Add new site → Import an existing project* (owner step 6 in `docs/OWNER_STEPS.he.md`).
+2. Base directory: `products/il-biz-tools`. Build command: `node scripts/build-site.js`. Publish directory: `_site` (written by `scripts/build-site.js` from an explicit allowlist, so `package.json`, `README.md`, `tests/` and `scripts/` are never uploaded).
+   (`netlify.toml` declares the build command and the publish directory, not the base directory, which is set here in the UI; headers/CSP/redirects are in the same file).
+3. Deploy. Then set the custom domain and replace `https://il-biz-tools.netlify.app` with the real domain in
+   `siteUrl` (`src/config/site.json`), the static `<link rel="canonical">` of all 7 pages, the JSON-LD `url` in
+   `index.html`, `sitemap.xml` and `robots.txt`; commit.
 4. Submit `https://<domain>/sitemap.xml` in Google Search Console.
 
-CLI alternative: `npx netlify-cli deploy --dir=products/il-biz-tools --prod`
+CLI alternative, from `products/il-biz-tools`: `node scripts/build-site.js && npx netlify-cli deploy --dir=_site --prod`
 (needs `NETLIFY_AUTH_TOKEN` + `NETLIFY_SITE_ID`). Any other static host (Cloudflare Pages,
 GitHub Pages, Vercel) works too — copy the headers from `netlify.toml` if the host supports them.
 
 ## One-time steps only the owner can do
 
 1. **Gumroad** (merchant of record; this is owner step 3 in `docs/OWNER_STEPS.he.md` — the Paddle
-   account was never opened and is not on the list): create the store under the brand name, complete
-   identity and payout details, create the Pro product, then paste its full product URL into
-   `gumroad.productUrl` and run `make-license.js init`. Until **both** the URL and the public key
+   account was never opened and is not on the list): sign up with the brand name as the store name,
+   complete payout and identity details, and mint the access token (`GUMROAD_ACCESS_TOKEN`, pasted into
+   GitHub secrets at step 6). Creating the Pro product, pasting its URL into `gumroad.productUrl` and running
+   `make-license.js init` are not part of that step. Until **both** the URL and the public key
    exist, the Pro box stays on **בקרוב** and nothing can be bought.
-   Fallbacks if Gumroad refuses: PayPal Business "buy now" link or Payoneer Checkout — swap the one
-   `openProCheckout` call in `assets/page-invoice.js`.
-2. **Netlify** account + domain purchase (or use the free `*.netlify.app` subdomain).
-3. **Google Search Console** verification for the domain.
+   Fallbacks if Gumroad refuses: PayPal Business "buy now" link or Payoneer Checkout. Swapping the one
+   `openProCheckout` call in `assets/page-invoice.js` is not enough: the button is enabled only by
+   `proButtonState` in `src/lib/gumroad.js` (a `gumroad.productUrl` plus a public key), and the buyer-facing
+   notes in `gumroad.js` and `page-invoice.js` name Gumroad.
+2. **Domain** (owner step 5 in `docs/OWNER_STEPS.he.md`): buy one `.com` with WHOIS privacy and configure nothing;
+   the DNS records come from the agent. **Netlify** (owner step 6): the account and the `il-biz-tools` site already
+   exist; what is left is *Link repository*. The free `*.netlify.app` subdomain is not a substitute: without a
+   domain no line that depends on search exists (`src/revenue/owner-steps.ts`).
+3. **Google Search Console** — optional, not a checklist step (`research/colony-sweep/BOARD.md` §6.3, §8): only if
+   the owner chooses to add the property in his own Google account, and asked for only after the site shows traffic.
 4. Optional: Plausible, or PostHog (`posthog.projectKey` + the cookieless server-hash-mode toggle).
 5. Tax: income from the site is business income — an Israeli osek patur/murshe registration is
    the owner's responsibility (Gumroad invoices the buyer, the owner reports Gumroad payouts).
-6. **Before `net-salary.html` can be published at all:** confirm the 2026 brackets and NI rates
-   against the Tax Authority booklet and flip `verified` in `tax-2026.json`. Nobody here may flip it.
-7. **Before any shekel amount appears on `registrar-fee.html`:** open the primary source
-   (תקנות החברות (אגרות) / רשות התאגידים), correct the amounts in `registrar-fee.json`, and set both
+6. Not an owner step (`docs/OWNER_STEPS.he.md` step 3: "זה אצלי, לא אצלך"): `net-salary.html` stays
+   unpublished until the 2026 brackets and NI rates in `tax-2026.json` are confirmed against two independent
+   GitHub-hosted implementations and `verified` flips to true (`research/colony-sweep/BOARD.md` §2 build #4, §7.1).
+7. Not an owner step either (`docs/OWNER_STEPS.he.md` has none): before any shekel amount appears on
+   `registrar-fee.html`, a human or an unblocked agent (the research's own wording,
+   `research/colony-sweep/groups/israel-bureaucracy.md`) opens the primary source
+   (תקנות החברות (אגרות) / רשות התאגידים), corrects the amounts in `registrar-fee.json`, and sets both
    `verified` and `renderAmounts` to true.
 
 ## Constitution notes

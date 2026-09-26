@@ -1,0 +1,490 @@
+Submitting your U.S. tax info to Google - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Notification
+
+Submitting your U.S. tax info to Google
+
+Important: Make sure you submit a tax form, and if eligible, claim a tax treaty benefit by Dec. 10th each year. This applies to all creators, even if you don't live in the US.
+
+Monetizing creators should check and update their tax info in AdSense for YouTube each year. Even if nothing has changed, your tax forms expire at the end of the third full calendar year, after the year of signing. This means that you will need to submit your tax info again every few years, even if nothing changes. Learn more about tax form expiration .
+
+If you don’t share tax info, Google may be required to withhold taxes worldwide using the maximum tax rate. Your tax rate will depend on your AdSense for YouTube account type and country.
+
+Check your tax info and claim a tax treaty benefit:
+
+Make sure we got your tax info. Double check that your tax form status is a green “Approved” in AdSense for YouTube.
+
+Confirm with your tax advisor if you’re eligible to make a claim for treaty benefits. A tax treaty benefit can reduce the tax withholding rate for certain income types:
+
+Other Copyright Royalties (such as YouTube Partner Program and Google Play)
+
+Services (such as Google AdSense)
+
+Learn more about tax withholding on YouTube or review FAQs on submitting your U.S. tax info to Google .
+
+To help with submitting your U.S. tax info in AdSense for YouTube, we’ve collected some useful FAQs you can use for reference. These will help you understand more details around the information you’ll need to provide when submitting your U.S. tax info to Google.
+
+While the questions in the tax form are available in your AdSense for YouTube supported language, the fields in the tax form only support upper- or lower-case letters (a-z, A-Z), numbers (0-9), spaces, hyphens (-) and ampersands (&). This is due to tax reporting requirements by the Internal Revenue Service (the U.S. tax authority, also known as the IRS).
+
+Note: YouTube and Google can’t provide advice on tax issues. Consult a tax professional to better understand your tax situation.
+
+Submitting tax info to Google
+
+All monetizing creators on YouTube, regardless of their location in the world, are required to provide tax info. Creators are also required to re-submit their tax info every few years, or if their circumstances change enough that it impacts the validity of the form. Please submit your tax info as soon as possible. If tax info isn’t provided, Google may be required to deduct up to 24% of your total earnings worldwide.
+
+You can follow the instructions below to submit your U.S. tax info to Google. Note that you may be asked to re-submit tax info every three years.
+
+Sign in to your AdSense for YouTube account.
+
+Click Payments Payments info .
+
+Click Manage settings .
+
+Scroll to "Payments profile" and click edit next to "United States tax info".
+
+Click Manage tax info .
+
+On this page you'll find a guide that will help you to select the appropriate form for your tax situation.
+Tip: After you submit your tax information, follow the instructions above to check the “United States tax info” section of your Payments profile to find the tax withholding rates that may apply to your payments.
+You’ll also be able to make any edits in case your individual or business circumstances change. If you've changed your address, make sure your updated permanent address is the same in both sections: "Permanent residence address" and "Legal address". This will ensure that your year-end tax forms (e.g., 1099-MISC, 1099-K, 1042-S) are delivered to the correct location. If you’re in the US, you must resubmit your W-9 form with your updated legal address.
+
+To see more context on U.S. tax requirements, go to U.S. tax requirements for YouTube earnings . For MCN-specific guidance, go to Tax requirements for MCNs and affiliate channels
+
+Important : Google will never send unsolicited messages asking for your password or other personal info. Before clicking a link, always check that the email is sent from an @youtube.com or @google.com email address.
+
+Getting ready to fill out your tax forms
+
+Why am I being asked to complete this form?
+
+You're being asked to complete this form in order for Google to comply with its obligations under the United States ("US") Internal Revenue Code Chapters 3 and 61.
+
+This form is used to identify the correct rate of withholding on applicable payments made to you, if withholding is applicable on future payments.
+
+The Internal Revenue Service ("IRS") also requires Google to refresh its non-US partners and vendors tax forms at the earlier of
+
+(1) Every 3 full calendar years after the year of submission.
+
+(2) If there has been a change in circumstances that would impact the validity of the form.
+
+Google is updating its payees to confirm compliance with these IRS rules.
+
+For example, if you submitted your tax info in June 2021 and your circumstances don’t change, your form would expire at the end of 2024. You would need to resubmit your tax info before the end of 2024. Your tax forms are valid the year you submit them and an additional 3 calendar years.
+
+As another example, if you submitted your tax info in November 2021 and your circumstances changed enough to impact the validity of the form in 2023, your form would no longer be valid as of the date of the change. You would need to resubmit your tax info immediately upon notifying Google of the change in circumstances.
+
+We recommend checking your tax info every year, and if eligible, claiming a tax treaty benefit by Dec. 10th.
+
+What if I'm not the right person to complete the form?
+
+If you're not the right person to complete the required form, you can forward the email to the correct person within your organization to sign in. That person must have administrator access to the Google Payments account. They can then use the information provided in the email to complete the form. To give the signatory administrator access to the account, follow these steps .
+
+Why can't I fill out the tax form in my local language?
+
+While the questions in the tax form are available in your AdSense for YouTube supported language, the fields in the tax form only support upper- or lower-case letters (a-z, A-Z), numbers (0-9), spaces, hyphens (-) and ampersands (&).
+
+If using an accented character, use the letter equivalent, such as n for ñ or a for á . The Internal Revenue Service (the United States tax authority) requires that tax information be reported in letters (a-z, A-Z), numbers (0-9), spaces, hyphens (-) and ampersands (&). Where possible, reference existing documentation that contains your name or address in letters like a Passport or a Driver's License. If this is not available, you may need to transcribe it.
+
+Selecting tax forms
+
+What’s the difference between Individual and Non-Individual accounts?
+
+An individual account is owned and operated by an individual person and not a legal organization. Taxes are filed in the owner’s name on a personal tax return.
+
+A non-individual account or entity account is a business account that’s separate from its owner for tax purposes.
+
+How do I know which tax form to complete?
+
+The appropriate tax form is automatically generated based on the answers you provide. If you have any doubts, consult your tax advisor.
+
+A Form W-9 will be required from US persons, companies, partnerships, and so on.
+
+Generally, a Form W-8BEN or Form W-8BEN-E is required from individuals and entities (respectively) outside of the US who are the beneficial owner of the income received. It may be used to claim a treaty benefit (in other words, a reduced rate of withholding).
+
+A Form W-8ECI is used by persons claiming income received and is effectively connected with a US trade or business. A US TIN will be required for all payees that provide a Form W-8ECI.
+
+A Form W-8IMY is required for certain intermediaries, partnerships and flow-through entities outside of the US. If this form is provided, Google may ask for additional documentation (for example, an allocation statement).
+
+A Form W-8EXP is used by entities to establish non-US beneficial owner status and eligibility for a reduced rate of tax withholding as a non-US government central bank, international organization, non-US tax exempt organization, non-US foreign private foundation or government of a US possession.
+
+Addresses, ID verification, and limitations on benefits
+
+What should I expect while I complete this process?
+
+Below are some key points you should consider as you complete the process:
+
+Do not use a PO Box or “In Care Of Address” as a permanent residence address: We found that some individuals and businesses provide a post office box or “in care of” address as their permanent residence address. If your permanent residence address is at a PO Box, in-care-of address, or a corporate services provider (such as a law firm or trust company), you may need to upload a copy of your articles of incorporation or other appropriate document showing that the address is your registered legal address.
+
+Identity Verification: You may be required to verify your identity if one of the following situations applies:
+
+Missing TIN or TIN not 9-digit numeric
+
+TIN entered is not currently issued
+
+TIN and Name combination does not match IRS records
+
+Invalid TIN matching request
+
+US addresses require extra support: If you claim non-US person residency status and have a permanent or mailing address located in the United States, you need to supply additional information to support the fact that you're not a US person.
+
+Limitations on benefits (entities only): Entities that claim treaty benefits must certify that they satisfy the limitation on benefits clause of the relevant tax treaty. To determine whether you qualify for tax treaty benefits, consult your applicable tax treaty or a professional tax adviser.
+
+Tax identity
+
+What are some key terms when it comes to tax identification?
+
+Legal name
+
+Put in your legal name exactly as it appears on your legal documents.
+
+If you’re earning income as an Individual: Provide your legal name in the name field. You may have to provide a translated name as reflected in your legal documents (for example, your passport).
+
+If you have a business that you want to associate with the form, please include that in the DBA field. If your payment profile is under a business name, please include that name in the DBA field.
+
+If you’re earning income as an entity: The name of your entity needs to be in the name field. If your payment profile is under an individual name, please include that name in the DBA field.
+
+You may be asked to provide additional documentation to verify your legal name. If you need to update your payment profile, follow these instructions .
+
+DBA name
+
+A doing-business-as (DBA) name is a company name different from the owner’s name. Depending on the type of form you provide, you may also provide a person’s legal name.
+
+Disregarded entity
+
+A disregarded entity is a business entity that has a single owner, isn't a corporation under US tax law, and isn’t considered an entity separate from its owner for US federal income tax purposes. Learn more about disregarded entities from the IRS (the US tax authority).
+
+What is a TIN (taxpayer identification number)?
+
+A taxpayer identification number (TIN) is a tax processing number required by the IRS (the U.S. tax authority) for all U.S. tax forms. Non-U.S. citizens may need an individual TIN (ITIN). If you are claiming a tax treaty benefit, you are required to provide either a Foreign TIN or a U.S. TIN. Learn more about TINs from the IRS .
+
+Note that pages on the IRS website aren’t maintained or reviewed by Google and Google can't confirm the accuracy of the information presented. If you have further questions, you may want to seek professional tax advice.
+
+To determine acceptable Tax Identification Numbers, please reference your local tax authority or seek professional tax advice . Google can't provide tax advice.
+
+Examples of Foreign TINs from around the globe may include (this list isn't exhaustive):
+
+India: Permanent Account Number (PAN).
+
+Indonesia: Nomor Pokok Wajib Pajak (NPWP).
+
+Japan: Individual Number (nicknamed "My Number").
+
+Russia: Taxpayer Personal Identification Number known as INN.
+
+United Kingdom: Unique Taxpayer Reference (UTR), National Insurance Number (NINO).
+
+Please reference your local tax authority or seek professional tax advice to determine acceptable Tax Identification Numbers. Google cannot provide tax advice.
+
+Tax treaty benefits
+
+My country and the United States have an income tax treaty. How can I ensure that the treaty details are applied?
+
+If your country and the United States have an income tax treaty in place, then the tax tool in AdSense will identify the details of that during tax form submission.
+
+Want to know if your country has a tax treaty with the United States? Refer to the IRS website . This is an IRS website and isn't maintained or reviewed by Google and Google can't confirm the accuracy of the information presented. If you have further questions, you may want to seek professional tax advice.
+
+Why are there multiple payment types and which do I select?
+
+Payments made in relation to Google products can sometimes fall into multiple categories. YouTube, AdSense, and Play partners should select all income types for which they’re eligible to claim treaty benefits to ensure they receive appropriate withholding tax rates. Google withholds at the appropriate rate based on the income type being paid and corresponding treaty claim. Google won’t use additional treaty claims unless such income type is paid. To help you decide which payment types relate to your partnership with Google, use the following:
+
+Other Copyright Royalties (such as Play and YouTube Partner Program)
+
+Motion Picture & TV Royalties (such as certain YouTube Movies and Shows and Play partners)
+
+Services (such as AdSense)
+
+Previewing tax documents
+
+Can I get a preview of my tax forms that I filled out?
+
+Google will generate PDFs of the IRS tax forms that were filled out. You'll be required to verify the accuracy of your documents. If you need to make changes, simply return to AdSense and make a revision.
+
+Tax certification
+
+What are US activities?
+
+US activities are the performance of a service in the United States. This can include having employees or owning equipment in the US that are involved in generating revenue.
+
+What is an affidavit of unchanged circumstances?
+
+An affidavit of unchanged circumstances can be provided with a valid W-8. It allows Google to apply the newly provided form to a prior period in which a creator has been paid. This means that Google may treat any payments made during the prior period to which the affidavit relates as having the same tax status as presently determined by the new tax form.
+
+This can be used to help Google provide a withholding tax refund, provided the form entitles the creator to a lower withholding rate and they have made a claim for a refund within the legal timeline for providing refunds (December 31 of the year in which withholding occurs).
+
+Submission and reviews
+
+What's the status of my tax form?
+
+In review : Your submitted tax info is being reviewed. This may take up to 7 business days. If additional documents are required to validate your tax information or verify your identity, we notify you in the Google payments center and by email.
+
+Approved : Your tax information is submitted, reviewed, and accepted.
+
+Declined : Your tax information may be declined for a few reasons:
+
+The tax identification number (TIN) you entered couldn't be found in IRS records. This may be because the IRS system didn’t update or you recently created a TIN.
+
+The TIN and name combination you entered doesn't match IRS records.
+
+Your tax information can’t be validated with the documents you provided.
+
+If your form is declined, we notify you in the Google payments center and by email. Submit a new form or contact your tax adviser. In your billing profile, make sure your legal information matches exactly the information on your tax form before you submit.
+
+Why are my documents under review?
+
+The information you provide in the tax tool goes through a series of checks to ensure safety, accuracy, and completeness. Sometimes, even a small error on your documents may flag your tax info as "in review". Ensuring that the tax info you provide matches your payments profile info is the best way to minimize delays in processing your tax info.
+
+Some common cases that will result in a review include:
+
+For W9 Forms :
+
+The "legal name" provided in the tax tool does not match the name on your payments profile.
+
+The "disregarded entity" name provided in the tax tool does not match the name on your payments profile.
+
+The Social Security Number (SSN) provided in the tax tool is invalid or belongs to a person whose name does not match the name on the account. This may take longer to review.
+
+For W8 Forms :
+
+The "legal name" provided in the tax tool does not match the name on your payments profile
+
+The "disregarded entity" name provided in the tax tool does not match the name on your payments profile.
+
+The "residence address" or "mailing address" provided in the tax tool is in the United States or does not match the country where you are claiming treaty benefits.
+
+An "in care of" or "P.O. Box" address is provided in the tax tool.
+
+The form field "capacity" is populated in the tax tool.
+
+Note that all W8-IMY Forms submitted will be put under review.
+
+Why am I being asked to provide verification documents?
+
+You may be required to verify your identity if one of the following situations applies:
+
+Missing TIN or TIN not 9-digit numeric
+
+TIN entered is not currently issued
+
+TIN and Name combination does not match IRS records
+
+Invalid TIN matching request
+
+Learn more about the documentation accepted for each tax form .
+
+Which documents do I need to prepare if my U.S. tax info is flagged for review?
+
+If your U.S. tax info is flagged for additional review, you may need to provide an additional form of identification. To see which documents and forms of identification you can use, please refer to this Help Center page: Approved tax documents . PNG, JPEG, and PDF files are accepted.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+Overview
+1 of 13
+How to earn money on YouTube
+2 of 13
+YouTube partner earnings overview
+3 of 13
+Check your YouTube revenue
+4 of 13
+Understand ad revenue analytics
+5 of 13
+U.S. tax requirements for YouTube earnings
+6 of 13
+Tax requirements for MCNs and affiliate channels
+7 of 13
+Submitting your U.S. tax info to Google
+8 of 13
+Common issues
+9 of 13
+Country pass-throughs
+10 of 13
+Rights clearance adjustments
+11 of 13
+View your payment activity in the YouTube Studio app
+12 of 13
+Tanzania tax information
+13 of 13
+Kenya tax information
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+12275938824943241814
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false
