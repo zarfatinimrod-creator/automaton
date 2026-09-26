@@ -177,3 +177,13 @@ https://support.google.com/youtube/answer/9314357/understand-ad-revenue-analytic
 # audits/production-stack.md:270-272 - the Sora shutdown and Kokoro's model card (licence, training data).
 https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation	openai-sora-discontinuation
 https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md	kokoro-82m-model-card
+
+# --------------------------------------------------------------------------------
+# 9. Algora's terms of service — does a committed line's permission hold?
+# research/measurements/algora-terms-question.md, "The one page that settles it": the
+# oss-bounties line rests on "Algora's terms do not prohibit agent-authored PRs"
+# (groups/bounties-grants.md:133-134), which quotes no clause; a third-party project says
+# the terms "prohibit robotic access", also without a clause. The URL is Algora's own footer
+# link, href="/legal/terms", in research/rendered/sweep2-algora-primeintellect.html.
+# --------------------------------------------------------------------------------
+https://algora.io/legal/terms	algora-terms

@@ -25,7 +25,7 @@ died twice). When one finishes, mark it done here with the date and the commit t
 | 1 | `fable-faceless-youtube-judge.js` | judge, red-team | `research/faceless-youtube/DIGEST.md`, `REGRADE.md` | `VERDICT.md`, `RED-TEAM.md` there | fold into `docs/REJECTED.md`; if REOPEN, the pilot workflow (task #4); update `logs/2026-09-25-faceless-youtube-reel.md` | waiting since 25.9 16:00 UTC |
 | 2 | `fable-owner-docs-judgement.js` | one refuter (+ Opus editors) | `research/owner-docs-audit/APPLIED.md` §Queued (26 rows) | `JUDGEMENT.md` there; edits to 8 owner docs | regenerate `docs/OWNER_STEPS.he.pdf` (`node scripts/owner-steps-pdf.mjs`); apply any `codeChange` | waiting since 25.9 23:20 UTC |
 | 3 | `fable-license-choice.js` | one decider | `research/measurements/gumroad-native-licenses.md` | `gumroad-license-decision.md` there | build the chosen option on Opus against its acceptance tests; drop the per-sale owner step | waiting since 25.9 23:40 UTC |
-| 4 | `fable-sweep-2-board.js` | one board (plays chief auditor too) | `research/colony-sweep/screen-2/*.md` (Opus screeners, 26.9) | `research/colony-sweep/BOARD-2.md` | kills → `docs/REJECTED.md`; admissions → `src/revenue/portfolio.ts`; approved tests → CI jobs | needs `screen-2/` first (running 26.9) |
+| 4 | `fable-sweep-2-board.js` | one board (plays chief auditor too) | `research/colony-sweep/screen-2/*.md` (Opus screeners, 26.9) | `research/colony-sweep/BOARD-2.md` | kills → `docs/REJECTED.md`; admissions → `src/revenue/portfolio.ts`; approved tests → CI jobs | ready — `screen-2/` complete 26.9 (9 of 9 KILL, `SCREEN-2.md`) |
 
 ## What already ran on Opus instead of waiting
 

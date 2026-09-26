@@ -7,6 +7,11 @@ line in `docs/REJECTED.md` had to survive. Nothing in this file may be promoted,
 until it has. The repo's own history says why that matters: the first sweep's supervisors ranked lines the
 auditors then cut to zero, every single time.
 
+**Update 26.9.2026: the nine shortlisted candidates have now been screened — on Opus, one screener each —
+and all nine were killed.** See [`SCREEN-2.md`](SCREEN-2.md). The Fable board that may overrule a screener
+is queued (`logs/FABLE_QUEUE.md`, item 4); the resume command under "What happens next" below is dead, because
+its cache died with the 22.9 container.
+
 ## Why this sweep was framed the way it was
 
 The first sweep's most important finding is that **platform search ranks on prior success**, proven in the

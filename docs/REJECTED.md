@@ -1139,6 +1139,29 @@ that label: the supply that does exist is dominated by synthetic repositories ra
 overstate income; the eighteen candidates from the same sweep are not recorded as anything at all until
 they are refuted.
 
+**26.9.2026 — the nine shortlisted candidates, screened on Opus: nine kills.** One adversarial screener per
+candidate (`research/colony-sweep/SCREEN-2.md`, reports in `screen-2/`). These are screener verdicts; the
+Fable board (item 4 of `logs/FABLE_QUEUE.md`) may overrule one, and a board reversal would be recorded here.
+Each re-open condition below is the screener's own, abridged — all of its parts must hold.
+
+| Candidate | Killed on | Re-open only if |
+|---|---|---|
+| ממשק מעסיקים pension-file toolkit | No payer left: payroll software emits the file, and the pension institutions turn manual entry into it free for small employers; the developer half is priced at zero by its own MIT library. | A rendered institution page showing small employers must upload a finished file, and a named unserved segment, and a measured SERP. |
+| ICA-ARCHIVE, registrar change history | Both named rails are closed by standing rulings: a paid Apify Actor needs 200 stranger users first (`BOARD.md:328`), and x402 is a recorded death. | ≥200 Apify stranger users in 30 days, plus a board ruling on selling rows the state no longer publishes, plus a named self-serve buyer. |
+| Google OSS VRP | Reports and every triage reply go through a signed-in web form (`bughunters.google.com/report`) — the owner at a browser, per report. | A documented submission channel a machine account can operate, and a 30-day dry run with a finding that meets the bar. |
+| Paid GitHub App on Marketplace | 100 installations before any paid plan (github/docs, re-read 26.9), with no channel for them but being found — already dead here as a law. | 100+ stranger installs in 90 days, measured from CI. |
+| Prime Intellect bounties on Algora | The payer closed it: *"The bounty program closed in June 2026"* (PrimeIntellect-ai/community-environments PR #784, 7.9.2026); the rendered board shows 0 open, 0 completed. | A funded relaunch after 7.9.2026 and ≥3 open bounties on a board this repo can render. |
+| huntr AI/ML bounties | Signed-in web form per report and per triage exchange; huntr.com is blocked here and its guidelines 404 from the runner. | A rendered huntr policy allowing a machine-operated researcher account, and Israel on its payout list. |
+| Paid Odoo module, Israeli VAT export | Measured demand: page 1 of the Localization category, paid modules median 1 lifetime purchase, best 12 (rendered 22.9). | A comparable statutory module sustaining ≥2 purchases a month over 12 months, plus agent-only support terms. |
+| PCN874 embed licence for ERP vendors | The named buyer is the ITA circular's own addressee and has shipped the file since 2010, with free regulator support; new entrants build it themselves (BillOS, npm, 8.9.2026). | A named vendor lacking the export, a paid artefact that is not already free, and delivery with no per-sale owner action. |
+| Metaculus bot tournaments | Every prize needs the owner's per-season paperwork: identity, nationality and residency checks, W-8BEN, a survey. | The owner says yes to that paperwork for Metaculus (`BOARD.md` §8.1), and a runner test shows a template bot in the prize band. |
+
+**What the screening turned up about committed lines** (details in `SCREEN-2.md`, "Found on the way"):
+`oss-bounties` now has two open questions — whether Algora's terms allow an automated contributor at all
+(`research/measurements/algora-terms-question.md`; the terms page is queued for render-watch), and a named
+cause for the June 2026 supply drop measured above (Prime Intellect closed its programme). `pcn874` has a new
+entrant that builds the file into its own invoicing product.
+
 ---
 
 ## Board decision, 7.9.2026 — six lines killed, three retargeted, one added
