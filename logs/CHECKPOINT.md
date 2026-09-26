@@ -1,6 +1,6 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-26 00:00 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-26 00:50 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
 
@@ -12,6 +12,13 @@
 **הסוקרים של סריקה 2 רצים על Opus עכשיו** (`scripts/workflows/sweep-2-screen.js`, run `wf_cd1f24c5-b07`, פלט
 ל-`research/colony-sweep/screen-2/`) — לפי חוק הצי: שכבת הבדיקה על Opus, רק הדירקטוריון על Fable. ב-22.9 כל 27
 הסוקרים הוצבו על Fable, ושם המכסה מתה. הדירקטוריון (`fable-sweep-2-board.js`) הוא פריט 4 בתור.
+
+**תוצאה (00:40 UTC): 9 מתוך 9 — KILL** (`research/colony-sweep/SCREEN-2.md`, נכנס ל-`docs/REJECTED.md` כהכרעות סוקר;
+הדירקטוריון יכול להפוך). **הממצא החשוב הוא על קו מחויב:** ההיתר של `oss-bounties` נשען על משפט בלי ציטוט ("Algora's
+terms do not prohibit agent-authored PRs"), ופרויקט אחר הרג את Algora כי התנאים "prohibit robotic access". דף התנאים
+נשלח ל-render-watch (`urls.txt` §9, הופעל ידנית 00:45 UTC); מה כל תשובה עושה — `research/measurements/algora-terms-question.md`.
+**עד שהדף נקרא: לא בונים יותר על `oss-bounties`, ולא מבקשים מהבעלים את צעד 4 בשבילו.** כלי חדש:
+`scripts/verify-quotes.py`. יומן: `logs/2026-09-26-fable-queue-and-sweep2-screen.md`.
 
 ## ▶ הבעלים שלח את הריל כצילומי מסך (25.9.2026, 14:40 UTC) — ענף `claude/new-session-j071dx`
 
