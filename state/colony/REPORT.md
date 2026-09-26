@@ -1,6 +1,6 @@
 # Revenue colony — board report
 
-Generated 2026-09-26T17:08:49.666Z
+Generated 2026-09-26T19:50:35.487Z
 
 ## Where we are
 
@@ -36,11 +36,10 @@ Contradicted targets: `il-biz-tools`. These are not merely unproven — the evid
 
 ## This tick
 
-Ran: revenue_ledger_sync, revenue_supervisor_review
-Skipped as not yet due: revenue_board_review, revenue_audit
+Ran: revenue_ledger_sync
+Skipped as not yet due: revenue_supervisor_review, revenue_board_review, revenue_audit
 
 - Ledger sync: 0 new entries, 0 already known, sources [none configured]
-- Supervisors reviewed 4 line(s), escalating 4
 
 ## Blocked on
 
