@@ -16,7 +16,10 @@
 **תוצאה (00:40 UTC): 9 מתוך 9 — KILL** (`research/colony-sweep/SCREEN-2.md`, נכנס ל-`docs/REJECTED.md` כהכרעות סוקר;
 הדירקטוריון יכול להפוך). **הממצא החשוב הוא על קו מחויב:** ההיתר של `oss-bounties` נשען על משפט בלי ציטוט ("Algora's
 terms do not prohibit agent-authored PRs"), ופרויקט אחר הרג את Algora כי התנאים "prohibit robotic access". דף התנאים
-נשלח ל-render-watch (`urls.txt` §9, הופעל ידנית 00:45 UTC); מה כל תשובה עושה — `research/measurements/algora-terms-question.md`.
+נקרא (00:44 UTC, `research/rendered/algora-terms.txt`): **שותקים על מי כותב PR, ואוסרים "any robot, spider, or other
+automatic device, process, or means to access Service"** — Service = דפי algora.io. הקוד שלנו לא נוגע ב-algora.io; ה-render-watch
+שלנו כן, פעמיים — שתי הכתובות הוסרו מ-`urls.txt`. האם `/claim` אוטומטי ב-GitHub הוא "access" — שיפוט, לדירקטוריון
+(פריט 4); כלל ההריגה שנכתב לפני הקריאה נורה מילולית, ורשום בגלוי ב-`research/measurements/algora-terms-question.md`.
 **עד שהדף נקרא: לא בונים יותר על `oss-bounties`, ולא מבקשים מהבעלים את צעד 4 בשבילו.** כלי חדש:
 `scripts/verify-quotes.py`. יומן: `logs/2026-09-26-fable-queue-and-sweep2-screen.md`.
 

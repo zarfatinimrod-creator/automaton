@@ -71,8 +71,13 @@ These are not about the nine candidates, and they matter more than any of them:
    rests on *"Algora's terms do not prohibit agent-authored PRs"* (`groups/bounties-grants.md:133`), which
    quotes no clause. The huntr screener found a comparable autonomous project (`joyelgeorge/Taskman`) that
    killed the same venue because *"Algora's terms prohibit robotic access"* — also without a clause. Nobody
-   has read the terms. Queued for render-watch (`research/rendered/urls.txt` §9); the question and what
-   each answer does are in `research/measurements/algora-terms-question.md`.
+   had read the terms. **Read 26.9.2026 (rendered, `research/rendered/algora-terms.txt`):** they are silent on
+   who authors a PR, and they forbid *"any robot, spider, or other automatic device, process, or means to
+   access Service for any purpose"* (lines 258-260), Service being the web pages at algora.io. The colony's
+   code never touches algora.io; our own render-watch did, twice, and both URLs are now off its list. Whether
+   a GitHub-only automated `/claim` is "access" is a judgement for the board —
+   `research/measurements/algora-terms-question.md` has the clause, both readings, and the kill rule written
+   before the page was read.
 2. **`oss-bounties`, supply:** the Prime Intellect screener found the payer's own statement that *"The bounty
    program closed in June 2026"* (PrimeIntellect-ai/community-environments PR #784, 7.9.2026). That lines up
    with the 22.9 measurement in `docs/REJECTED.md` — Algora-labelled bounty issues stopping after
@@ -87,8 +92,8 @@ These are not about the nine candidates, and they matter more than any of them:
 38 URLs across the nine reports, listed so a board that wants one can find it. None is queued for
 render-watch: every kill's decisive fact is already sourced (a rendered page, source code on GitHub, or the
 payer's own PR), and none of these pages could reopen a candidate on its own — each report's "What would
-change my mind" section needs several conditions at once. The one exception, Algora's terms, is queued
-because it concerns a committed line.
+change my mind" section needs several conditions at once. The one exception, Algora's terms, was fetched once
+because it concerns a committed line, and then taken off the list because the page forbids automated access.
 
 - `pension-mimshak`: https://www.swiftness.co.il/%D7%9B%D7%9C%D7%9C%D7%99-%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA/
 - `pension-mimshak`: https://www.fnx.co.il/takanottashlum/

@@ -110,7 +110,11 @@ https://www.swiftness.co.il/%D7%9B%D7%9C%D7%9C%D7%99-%D7%9E%D7%A2%D7%A8%D7%9B%D7
 https://data.gov.il/dataset/ica-changes	sweep2-ica-changes-dataset
 https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/vrp-faq.md	sweep2-google-vrp-faq
 https://github.com/marketplace	sweep2-github-marketplace
-https://algora.io/PrimeIntellect-ai/bounties	sweep2-algora-primeintellect
+# REMOVED 26.9.2026: https://algora.io/PrimeIntellect-ai/bounties (sweep2-algora-primeintellect).
+# Algora's terms forbid "any robot, spider, or other automatic device, process, or means to access
+# Service for any purpose, including monitoring" (research/rendered/algora-terms.txt:258-260), and
+# the candidate is closed (research/colony-sweep/screen-2/primeintellect-bounties.md). The capture
+# stays as the record; the weekly job must not fetch algora.io again.
 https://huntr.com/guidelines	sweep2-huntr-guidelines
 https://apps.odoo.com/apps/modules/category/Localization/browse	sweep2-odoo-localization
 https://www.metaculus.com/tournament-rules/	sweep2-metaculus-rules
@@ -186,4 +190,7 @@ https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md	kokoro-82m-model-c
 # the terms "prohibit robotic access", also without a clause. The URL is Algora's own footer
 # link, href="/legal/terms", in research/rendered/sweep2-algora-primeintellect.html.
 # --------------------------------------------------------------------------------
-https://algora.io/legal/terms	algora-terms
+# Fetched once, 26.9.2026 00:44 UTC (research/rendered/algora-terms.*), then REMOVED: the page itself
+# forbids automated access to algora.io (algora-terms.txt:258-260), and the one fetch answered the
+# question (research/measurements/algora-terms-question.md, "Answer"). Re-reading it later is a
+# human's job, not the weekly runner's.

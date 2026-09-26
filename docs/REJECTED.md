@@ -1158,8 +1158,9 @@ Each re-open condition below is the screener's own, abridged — all of its part
 
 **What the screening turned up about committed lines** (details in `SCREEN-2.md`, "Found on the way"):
 `oss-bounties` now has two open questions — whether Algora's terms allow an automated contributor at all
-(`research/measurements/algora-terms-question.md`; the terms page is queued for render-watch), and a named
-cause for the June 2026 supply drop measured above (Prime Intellect closed its programme). `pcn874` has a new
+(read 26.9: they forbid automated access to algora.io and are silent on PR authorship; whether a GitHub-only
+`/claim` is "access" is for the board — `research/measurements/algora-terms-question.md`), and a named cause for
+the June 2026 supply drop measured above (Prime Intellect closed its programme). `pcn874` has a new
 entrant that builds the file into its own invoicing product.
 
 ---
