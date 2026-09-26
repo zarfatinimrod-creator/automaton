@@ -44,4 +44,5 @@ The checking tier never waits for Fable — only the deciding tier does:
 | 25.9 ~16:00 | 429 — the judge died mid-run |
 | 25.9 16:05, 17:37, 19:38, 22:40, 23:40 | 429 |
 | 26.9 07:42 | 429 — first probe run from `fable-faceless-youtube-judge.js` (run `wf_7b3ae66a-267`): one call, 288 ms, stopped as designed; nothing else ran |
-| next | 26.9 ~15:42, then every 8 hours while it fails |
+| 26.9 15:42 | 429 (run `wf_ada0bd46-4a7`, one call, stopped as designed) — about 24 hours out now |
+| next | 26.9 ~23:43, then every 8 hours while it fails |
