@@ -38,8 +38,9 @@ route exists, for the cost of one honest short video and one owner sign-in. If i
 - It must pass `checkPublication()` (G1-G10) like any other video: licence snapshot on disk, no advice, a separate
   auditor's fact-check, description attributing the dataset and licence.
 - Upload parameters: `privacyStatus = public` (the executing code sends `privacyStatus`, not the `privacy_status` a
-  vendor reference shows); `containsSyntheticMedia` set explicitly — the vendor's n8n node defaults it to false (the
-  board decides the AI-use flag once — VERDICT §12; charts and TTS are non-realistic content); title and description as
+  vendor reference shows); `containsSyntheticMedia` set explicitly to **true** — the vendor's n8n node defaults it to false;
+  the board ruled `true` for chart + synthetic-narration videos, with a fixed disclosure sentence in the description
+  and Kokoro as the only allowed engine (PREREG-DECISIONS.md §2, enforced in G7); title and description as
   gated. **No `youtube_publish_at`:** a scheduled video stays private until its time, which is indistinguishable from a
   lock. Nothing cross-posted: the free tier counts each platform as an upload (T1 + six videos = 7 of 10).
 - It is a real video, not a throwaway: if T1 passes it stays up and counts toward nothing but itself.
@@ -85,7 +86,8 @@ The judge wrote 20-40 minutes; the red team measured the omissions and made it *
   27.9) against Google's own report tables [RENDERED yt-analytics-channel-reports.txt:1004-1050]. Two facts from them:
   the traffic-source report has no `averageViewPercentage`, so the Search diagnostic is derived (minutes over views ×
   our video length) and labelled so; and it offers both `views` and `engagedViews`, so the RED-TEAM §2.4 pin is a
-  choice between two real metrics — pending the board, and until it is made K0 reads null, not zero.
+  choice between two real metrics. **Pinned 27.9 by the board: `engagedViews`** (PREREG-DECISIONS.md §1); an all-zero
+  `engagedViews` beside real plays is an instrument fault (unmeasured), never a K0 FAIL.
 - **Nothing** of AdSense, tax forms, PIN letters or YPP. Those are stage B, and stage B is not even put to the board
   below 1,200 stranger watch hours per 28 days (`k3EscalateAtOrAbove`, RED-TEAM §2.3).
 

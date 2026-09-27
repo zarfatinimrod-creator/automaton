@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   CC_BY_3_0_IGO_URI,
+  SYNTHETIC_VOICE_DISCLOSURE,
   checkPublication,
   igoNoEndorsementSentence,
   type ChannelState,
@@ -16,7 +17,8 @@ function video(overrides: Partial<VideoManifest> = {}): VideoManifest {
     author: "opus-writer",
     title: "How fast did solar capacity grow after 2010?",
     description:
-      "Every chart is computed from Our World in Data, CO2 and Greenhouse Gas Emissions dataset, licensed CC BY 4.0.",
+      "Every chart is computed from Our World in Data, CO2 and Greenhouse Gas Emissions dataset, licensed CC BY 4.0. " +
+      SYNTHETIC_VOICE_DISCLOSURE,
     topic: "technology adoption",
     script:
       "Solar capacity grew roughly tenfold between 2010 and 2020. The data shows the steepest rise after 2015. " +
@@ -33,6 +35,7 @@ function video(overrides: Partial<VideoManifest> = {}): VideoManifest {
     factCheck: { auditor: "opus-auditor", verdict: "PASS", figuresChecked: 7 },
     promiseMatch: { auditor: "opus-auditor", verdict: "PASS" },
     containsSyntheticMedia: true,
+    narration: { engine: "kokoro-82m", voiceId: "af_heart" },
     scheduledAt: "2026-11-10T09:00:00.000Z",
     runnerMinutes: 20,
     tokenCostIls: 8,
@@ -95,7 +98,7 @@ describe("publication gate G1-G10 (VERDICT §12)", () => {
       video({
         title: "Which countries will have the oldest populations by 2050?",
         topic: "population ageing",
-        description: `Every figure is computed from ${citation} Licensed CC BY 3.0 IGO, ${CC_BY_3_0_IGO_URI} ${igoNoEndorsementSentence(UN)}`,
+        description: `Every figure is computed from ${citation} Licensed CC BY 3.0 IGO, ${CC_BY_3_0_IGO_URI} ${igoNoEndorsementSentence(UN)} ${SYNTHETIC_VOICE_DISCLOSURE}`,
         datasets: [{ name: citation, licence: "CC-BY-3.0-IGO", licenceSnapshot: "research/rendered/un-wpp-downloads.txt", upstream: [], licensor: UN }],
       });
     const run = (v: VideoManifest, c = channel()) => checkPublication(v, c, "publish", existsIgo).failures.map((f) => `${f.gate}:${f.reason}`);
@@ -208,6 +211,16 @@ describe("publication gate G1-G10 (VERDICT §12)", () => {
   describe("G7 disclosure and attribution", () => {
     it("fails when the synthetic-media flag was never decided", () => {
       expect(failed(checkPublication(video({ containsSyntheticMedia: null }), channel(), "publish", exists))).toContain("G7");
+    });
+    it("fails when the flag is false: the board ruled true for chart + synthetic-narration videos", () => {
+      expect(failed(checkPublication(video({ containsSyntheticMedia: false }), channel(), "publish", exists))).toContain("G7");
+    });
+    it("fails when the description lacks the synthetic-voice sentence", () => {
+      const noVoice = "Every chart is computed from Our World in Data, CO2 and Greenhouse Gas Emissions dataset, licensed CC BY 4.0.";
+      expect(failed(checkPublication(video({ description: noVoice }), channel(), "publish", exists))).toContain("G7");
+    });
+    it("fails on any narration engine but Kokoro: a voice that imitates a real person is never made", () => {
+      expect(failed(checkPublication(video({ narration: { engine: "voice-clone-x", voiceId: "someone" } }), channel(), "publish", exists))).toContain("G7");
     });
     it("fails when the description does not attribute the source and licence", () => {
       expect(failed(checkPublication(video({ description: "A video about solar." }), channel(), "publish", exists))).toContain("G7");

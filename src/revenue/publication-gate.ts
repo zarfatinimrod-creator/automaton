@@ -54,8 +54,10 @@ export interface VideoManifest {
   originality: AuditVerdict | null;
   factCheck: (AuditVerdict & { figuresChecked: number }) | null;
   promiseMatch: AuditVerdict | null;
-  /** YouTube's altered-or-synthetic flag: must be decided (true/false), never left unset. */
+  /** YouTube's altered-or-synthetic flag: must be decided, and for this video class the board ruled `true` (G7). */
   containsSyntheticMedia: boolean | null;
+  /** What speaks. Only an engine in ALLOWED_NARRATION_ENGINES passes; a voice imitating a real person is never made (§2c). */
+  narration: { engine: string; voiceId: string };
   scheduledAt: string;
   runnerMinutes: number;
   tokenCostIls: number;
@@ -108,6 +110,31 @@ export const ALLOWED_DATA_LICENCES: ReadonlySet<string> = new Set([
   "Unlicense",
   "ODC-PDDL-1.0",
 ]);
+
+/**
+ * YouTube's altered-or-synthetic flag for this video class — charts drawn by code plus Kokoro narration: `true`.
+ * Board ruling 27.9.2026, research/faceless-youtube/PREREG-DECISIONS.md §2a. The narration is synthetic media by the
+ * API field's own name (youtube-api-revision-history.txt:245, :401-405); a human-sounding voice is what the disclosure is
+ * for (youtube-altered-synthetic-disclosure.txt:61); disclosing costs nothing (:173) and the label for non-photorealistic
+ * content lands in the description (:171). The publisher's node defaults the field to false (T1-PROTOCOL.md), so G7
+ * checks the value, not only that it was decided.
+ */
+export const CHART_TTS_SYNTHETIC_MEDIA = true;
+
+/**
+ * The sentence every description carries verbatim (PREREG-DECISIONS.md §2b), beside the data attribution G7 already
+ * requires. The platform label only "may appear" (disclosure.txt:171); this one is ours and always there.
+ */
+export const SYNTHETIC_VOICE_DISCLOSURE =
+  "Narration: a synthetic voice (Kokoro text-to-speech), not a recording of any person and not an imitation of anyone. " +
+  "Charts are drawn by code from the data cited below. Produced with AI systems.";
+
+/**
+ * Narration engines whose stock voices are nobody's (PREREG-DECISIONS.md §2c). Kokoro's training excluded "custom voice
+ * clones" (kokoro-82m-model-card.txt:237). A cloning engine, or a voice that imitates an identifiable person, cannot pass
+ * this gate with or without the flag: such a video is never made.
+ */
+export const ALLOWED_NARRATION_ENGINES: ReadonlySet<string> = new Set(["kokoro-82m"]);
 
 /**
  * Licences whose licensor is (or may be) an intergovernmental organisation (CC BY 3.0 IGO §1(a), §1(c)). A dataset
@@ -283,9 +310,17 @@ export function checkPublication(
     fail("G6", `${recent.length} upload(s) in the 7 days before ${video.scheduledAt}; at most ${MAX_PER_SEVEN_DAYS} per 7 days`);
   }
 
-  // G7 — the synthetic-media flag decided, and every dataset attributed with its licence in the description.
+  // G7 — the synthetic-media flag as the board ruled, the voice disclosure sentence, a nobody's-voice engine, and every
+  // dataset attributed with its licence in the description (PREREG-DECISIONS.md §2).
   if (video.containsSyntheticMedia === null) fail("G7", "containsSyntheticMedia was never decided");
+  else if (video.containsSyntheticMedia !== CHART_TTS_SYNTHETIC_MEDIA) {
+    fail("G7", `containsSyntheticMedia is ${video.containsSyntheticMedia}; the board ruled ${CHART_TTS_SYNTHETIC_MEDIA} for chart + synthetic-narration videos`);
+  }
   const desc = normLicence(video.description);
+  if (!desc.includes(normLicence(SYNTHETIC_VOICE_DISCLOSURE))) fail("G7", "the description does not carry the synthetic-voice disclosure sentence verbatim");
+  if (!ALLOWED_NARRATION_ENGINES.has(video.narration.engine)) {
+    fail("G7", `narration engine "${video.narration.engine}" is not one whose voices imitate nobody; such a video is never made`);
+  }
   for (const d of video.datasets) {
     if (!desc.includes(normLicence(d.name)) || (d.licence && !desc.includes(normLicence(d.licence)))) {
       fail("G7", `the description does not attribute ${d.name} with its licence ${d.licence ?? ""}`.trim());

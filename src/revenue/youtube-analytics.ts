@@ -28,14 +28,15 @@ export const STRANGER_TRAFFIC_SOURCES = ["YT_SEARCH", "RELATED_VIDEO", "SUBSCRIB
 export type ViewMetric = "views" | "engagedViews";
 
 /**
- * Which view count K0 reads. RED-TEAM §2.4: "before the first upload, record which view metric the Analytics API
- * returns for long-form (first-frame vs engaged) and pin the threshold to that definition". The API offers both:
- * `engagedViews` is "viewed past the first frame, or the user clicks/taps to play" (yt-analytics-metrics.txt:200-202),
- * and since August 2026 a `view` is counted "the moment a video begins to play" (youtube-policy-changelog.txt:62).
- * The 35-view floor was measured under the older counting. Choosing is a pre-registration decision, so it waits for the
- * board: until it is pinned, K0 is unreadable (null), never zero. Both numbers are always recorded.
+ * Which view count K0 reads. RED-TEAM §2.4 required the pin before the first upload; the board decided it on 27.9.2026
+ * (research/faceless-youtube/PREREG-DECISIONS.md §1): `engagedViews` — "viewed past the first frame, or the user
+ * clicks/taps to play" (yt-analytics-metrics.txt:200-202). Since August 2026 a `view` is counted "the moment a video
+ * begins to play" (youtube-policy-changelog.txt:62); the 35-view floor was measured in 2022 under the older counting, and
+ * `engagedViews` is the metric that keeps that definition. A K0 FAIL therefore means fewer than 35 strangers chose the
+ * median video, which is the claim K0 exists to make. Both counts are still recorded on every read, so the pin can be
+ * audited against the same data. Passing `viewMetric: null` explicitly still yields an unreadable (null) K0.
  */
-export const PINNED_VIEW_METRIC: ViewMetric | null = null;
+export const PINNED_VIEW_METRIC: ViewMetric | null = "engagedViews";
 
 export const MAX_VIDEOS_PER_QUERY = 500;
 export const MAX_VIDEO_DAYS = 50_000;
@@ -121,6 +122,7 @@ export interface VideoStrangerReading {
   views: number;
   engagedViews: number;
   minutes: number;
+  /** Search-only: plays under the pinned view metric (the diagnostic's denominator), and minutes. */
   search: { views: number; minutes: number };
 }
 
@@ -176,7 +178,9 @@ export function computeYoutubeReadings(input: {
     reading.engagedViews += num(row.engagedViews);
     reading.minutes += num(row.estimatedMinutesWatched);
     if (source === "YT_SEARCH") {
-      reading.search.views += num(row.views);
+      // The diagnostic's denominator is the same pinned metric K0 reads: one definition of "a view" per reading
+      // (PREREG-DECISIONS.md §1). Unpinned (null) falls back to `views` only because the median is null anyway.
+      reading.search.views += num(row[viewMetric ?? "views"]);
       reading.search.minutes += num(row.estimatedMinutesWatched);
     }
   }
@@ -187,6 +191,13 @@ export function computeYoutubeReadings(input: {
     engagedViews: median(perVideo.map((v) => v.engagedViews)),
   };
   if (viewMetric === null) notes.push("view metric not pinned (RED-TEAM §2.4): K0 is unreadable until it is; both medians are recorded");
+  // PREREG-DECISIONS.md §1, pre-registered: engaged views all zero while plays exist is an instrument fault — recorded
+  // as such and read as unmeasured (null), never as a K0 FAIL and never silently swapped to `views`.
+  const instrumentFault =
+    viewMetric === "engagedViews" && perVideo.every((v) => v.engagedViews === 0) && perVideo.some((v) => v.views > 0);
+  if (instrumentFault) {
+    notes.push("instrument fault: engagedViews is 0 for every video while views > 0 — K0 unreadable until fixed (PREREG-DECISIONS.md §1)");
+  }
 
   let searchSeconds = 0;
   let searchPlayableSeconds = 0;
@@ -205,7 +216,7 @@ export function computeYoutubeReadings(input: {
 
   return {
     viewMetric,
-    medianStrangerViews: viewMetric === null ? null : medianByMetric[viewMetric],
+    medianStrangerViews: viewMetric === null || instrumentFault ? null : medianByMetric[viewMetric],
     medianByMetric,
     strangerWatchHours28d,
     averageViewPercentage,

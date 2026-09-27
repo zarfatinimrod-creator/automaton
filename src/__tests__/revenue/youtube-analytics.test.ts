@@ -77,12 +77,32 @@ describe("computeYoutubeReadings", () => {
     expect(computeYoutubeReadings({ videos: VIDEOS, trafficTable: table, viewMetric: "engagedViews" }).medianStrangerViews).toBe(5);
   });
 
-  it("leaves K0 unreadable — null, not zero — until the view metric is pinned", () => {
-    expect(PINNED_VIEW_METRIC).toBeNull();
+  it("K0 reads engagedViews by default (PREREG-DECISIONS.md §1); an explicit null still leaves it unreadable", () => {
+    expect(PINNED_VIEW_METRIC).toBe("engagedViews");
     const r = computeYoutubeReadings({ videos: VIDEOS, trafficTable: table });
+    expect(r.viewMetric).toBe("engagedViews");
+    expect(r.medianStrangerViews).toBe(5);
+    expect(r.medianByMetric).toEqual({ views: 6, engagedViews: 5 });
+    // The diagnostic's denominator follows the pin: 120 min × 60 over 30 engaged Search plays × 600 s = 40%.
+    expect(r.averageViewPercentage).toBeCloseTo(40, 10);
+    const unpinned = computeYoutubeReadings({ videos: VIDEOS, trafficTable: table, viewMetric: null });
+    expect(unpinned.medianStrangerViews).toBeNull();
+    expect(unpinned.medianByMetric.views).toBe(6);
+    expect(unpinned.notes.join(" ")).toMatch(/not pinned/);
+  });
+
+  it("reads engaged views all zero beside real plays as an instrument fault — unmeasured, never a K0 FAIL", () => {
+    const broken = traffic([
+      ["vidAAAAAAAA", "YT_SEARCH", 40, 0, 120],
+      ["vidBBBBBBBB", "SUBSCRIBER", 6, 0, 9],
+    ]);
+    const r = computeYoutubeReadings({ videos: VIDEOS, trafficTable: broken });
     expect(r.medianStrangerViews).toBeNull();
-    expect(r.medianByMetric.views).toBe(6);
-    expect(r.notes.join(" ")).toMatch(/not pinned/);
+    expect(r.medianByMetric.engagedViews).toBe(0);
+    expect(r.notes.join(" ")).toMatch(/instrument fault/);
+    // A genuinely empty channel — no plays at all — is a real zero, not a fault.
+    const empty = computeYoutubeReadings({ videos: VIDEOS, trafficTable: traffic([]) });
+    expect(empty.medianStrangerViews).toBe(0);
   });
 
   it("derives the Search view percentage from minutes, views and our own video lengths", () => {
