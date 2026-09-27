@@ -1,8 +1,28 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-27 09:15 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-27 09:50 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
+
+## ▶ ההוראות של BOARD-2 בוצעו (27.9, 09:50 UTC) — התור של Fable ריק
+
+- **oss-bounties:** ספירת היצע שבועית (`algora-supply.yml`, רק מ-main, שני 06:23 UTC + פעם אחת במיזוג) → KPI
+  `claimableBounties`. שבוע 4, ממוצע: ≥10 שומר ₪300; 3-9 → ₪100; <3 → הריגה. **צעד 4 לא מתבקש עד שבוע 4.** תנאי
+  Algora בקוד: הצהרה בכל PR, בדיקה שאוסרת פנייה ל-algora.io, שם חשבון בלי `bot`, הריגה באותו יום (`4ae25c2`).
+- **Metaculus: KILL** — ה-API דורש חשבון ("only available to authenticated users"), נבדק בשני ערוצים מ-runner
+  (`research/measurements/metaculus-template-2026.md`). סריקה 2: 9/9 KILL. לא נוסף לפורטפוליו.
+- **il-biz-tools Pro = Option C** (מפתחות Gumroad), 217/217; AT-15/16 מחכות ל-`GUMROAD_ACCESS_TOKEN` (צעד 6).
+- **spec-watch של PCN874** יכול עכשיו לומר CHANGED (`58c6904`).
+- מסמכי הבעלים + PDF מעודכנים (`35ce69e`). revenue 578/578. יומן: `logs/2026-09-27-board2-handoff.md`.
+
+**הצעדים הבאים:**
+1. **faceless-YouTube (משימה #4), מה שלא תלוי בבעלים:** מרנדר + סרטון T1 (נשמר, לא מתפרסם), קורא אנליטיקס,
+   ערכת זהות לערוץ. זרוע האינטרנט חסומה על הדומיין (צעד 5).
+2. **אחרי ש-PR #3 מתמזג ל-main:** `pnpm exec tsx scripts/colony.ts sync-portfolio`, אחר כך `report`, ולקמט
+   את `state/colony`. `algora-supply` רץ בפעם הראשונה במיזוג; לבדוק שהקובץ נכתב ונקרא ל-KPI.
+3. לעקוב אחרי automaton#3 ו-MoneyPrinterTurbo#1.
+
+**החלטה קטנה פתוחה (שלי, לא של הבעלים):** Unlicense ו-CC BY 3.0 IGO ברשימת הרישיונות המותרים — עד אז השער דוחה.
 
 ## ▶ Fable חזר (27.9, 07:44 UTC) — פריט 1 בתור הוכרע: faceless-YouTube = ניסוי מדוד
 
