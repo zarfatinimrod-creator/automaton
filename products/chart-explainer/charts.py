@@ -215,7 +215,7 @@ def coverage_lines(an: Analysis, figs: dict[str, Figure], spec: dict[str, Any], 
         ax.annotate(f"{lang}: {ys[-1]}", (xs[-1], ys[-1]), xytext=(16, 0), textcoords="offset points", va="center",
                     fontsize=22, color=TEXT)
     ax.axhline(len(an.panel), color=TEXT_2, linewidth=2, linestyle=(0, (6, 4)))
-    ax.annotate(f"Fixed set used in this video: {figs['panel_economies'].text}", (xs[0], len(an.panel)),
+    ax.annotate(f"Fixed set followed here: {figs['panel_economies'].text}", (xs[0], len(an.panel)),
                 xytext=(0, -30), textcoords="offset points", fontsize=22, color=TEXT)
     _quarter_axis(ax, an)
     ax.set_ylim(0, max(an.reported_count(an.b, q) for q in an.quarters) * 1.15)
