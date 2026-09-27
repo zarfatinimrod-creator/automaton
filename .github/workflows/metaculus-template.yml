@@ -1,0 +1,130 @@
+name: metaculus-template
+
+# BOARD-2 §1.9 — the Metaculus TEST_FIRST, as the board wrote it: "a small GitHub
+# Actions workflow that, unauthenticated first, reads the finished Spring 2026 and
+# Summer 2026 tournament leaderboards through the endpoints the open-source
+# forecasting-tools MetaculusClient uses ... the workflow takes them from the
+# library so no URL is invented". Zero cost, no owner, no secret.
+#
+# The first call is itself the channel test: the board's first KILL line is "the
+# API refuses an unauthenticated GitHub runner". A refusal is therefore data, not a
+# broken build — it is recorded and the job stays green. render-watch.yml already
+# tried the same two URLs with its browser User-Agent on 27.9 (403, empty body);
+# this job repeats the call through the library's own HTTP stack (`requests`, the
+# library's `Accept-Language: en`) so the kill rests on the channel the board
+# named. It cannot use the library's client object itself: `_get_auth_headers`
+# raises without METACULUS_TOKEN (metaculus_client.py:596-600), and a token needs a
+# Metaculus account — an owner step the board ruled out until the owner says yes.
+#
+# Nothing here is revenue, and a PASS does not admit the line (BOARD-2 §1.9).
+
+on:
+  workflow_dispatch:
+  # Once when this workflow or its arithmetic changes on a working branch. Never on
+  # main: a one-shot test has no business committing to main on merge; dispatch it
+  # there if a re-run is ever wanted. The commit this job makes touches neither
+  # path, so it cannot retrigger itself.
+  push:
+    branches-ignore: [main]
+    paths:
+      - ".github/workflows/metaculus-template.yml"
+      - "scripts/metaculus-template.mjs"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: metaculus-template-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  read:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The URL comes from the library, not from us: base URL and season ids are read
+      # out of the pinned release's own source and checked against the constants in
+      # scripts/metaculus-template.mjs. If the library moved, the job fails loudly
+      # rather than reading a leaderboard nobody chose.
+      - name: Take the base URL and season ids from forecasting-tools
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet "requests==2.32.*"
+          python -m pip download --quiet --no-deps "forecasting-tools==0.3.1" -d /tmp/ft
+          unzip -q -o /tmp/ft/forecasting_tools-0.3.1-py3-none-any.whl 'forecasting_tools/helpers/metaculus_client.py' -d /tmp/ft
+          python - <<'PY'
+          import re, pathlib
+          src = pathlib.Path("/tmp/ft/forecasting_tools/helpers/metaculus_client.py").read_text()
+          base = re.search(r'default_base_url\s*=\s*"([^"]+)"', src).group(1)
+          spring = re.search(r'AIB_SPRING_2026_ID\s*=\s*(\d+)', src).group(1)
+          summer = re.search(r'FE_SUMMER_2026_ID\s*=\s*\(?\s*(\d+)', src).group(1)
+          mine = pathlib.Path("scripts/metaculus-template.mjs").read_text()
+          assert f'API_BASE = "{base}"' in mine, f"library base URL {base} differs from the script's"
+          for name, value in (("AIB_SPRING_2026_ID", spring), ("FE_SUMMER_2026_ID", summer)):
+              assert re.search(rf'id: {value}, name: "[^"]+", constant: "{name}"', mine), f"{name}={value} differs from the script's"
+          print(f"library: base={base} spring={spring} summer={summer} — match the script")
+          PY
+
+      - name: Read both leaderboards, unauthenticated, through requests
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, pathlib, datetime, requests
+          out = pathlib.Path("research/rendered")
+          for pid in (32916, 33022):
+              url = f"https://www.metaculus.com/api/leaderboards/project/{pid}/"
+              slug = f"metaculus-lb-{pid}-client"
+              meta = {"url": url, "slug": slug, "channel": "requests (forecasting-tools' HTTP stack), Accept-Language: en, no Authorization",
+                      "fetchedAt": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")}
+              try:
+                  r = requests.get(url, headers={"Accept-Language": "en"}, timeout=30)
+                  body = r.content
+                  meta.update(status=r.status_code, contentType=r.headers.get("content-type"), byteLength=len(body),
+                              sha256=hashlib.sha256(body).hexdigest() if body else None, error=None if r.ok else f"HTTP {r.status_code}",
+                              server=r.headers.get("server"), bodyPath=None)
+                  if r.status_code == 200:
+                      (out / f"{slug}.json").write_bytes(body)
+                      meta["bodyPath"] = f"research/rendered/{slug}.json"
+                  else:
+                      meta["bodyHead"] = body[:300].decode("utf-8", "replace")
+              except Exception as e:  # a refusal or a timeout is data about the channel
+                  meta.update(status=None, error=f"{type(e).__name__}: {e}", bodyPath=None)
+              (out / f"{slug}.meta.json").write_text(json.dumps(meta, indent=2) + "\n")
+              print(pid, meta["status"], meta.get("error"))
+          PY
+
+      - name: Grade it against the board's pre-registered lines
+        run: node scripts/metaculus-template.mjs
+
+      - name: Commit the captures and the report back to this branch
+        run: |
+          set -euo pipefail
+          git config user.name "colony-bot"
+          git config user.email "colony-bot@users.noreply.github.com"
+          git add research/rendered/metaculus-lb-*-client.* research/measurements/metaculus-template-2026.md
+          if git diff --cached --quiet; then
+            echo "Nothing changed." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git commit -m "metaculus-template: $(sed -n 's/^## Verdict: //p' research/measurements/metaculus-template-2026.md) [skip ci]"
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              sed -n '/^## Verdict/,/^| Season/p' research/measurements/metaculus-template-2026.md >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            git pull --rebase -X theirs origin "${GITHUB_REF_NAME}"
+          done
+          echo "Could not push after 3 attempts." >&2
+          exit 1
