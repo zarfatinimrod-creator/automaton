@@ -1,0 +1,153 @@
+name: gumroad-pro-product
+
+# Create the il-biz-tools Pro product on Gumroad, with Gumroad's own licence-key
+# block in its content - and, in a second dispatch, enable it.
+#
+# WHY. research/measurements/gumroad-license-decision.md chose Option C: Pro is
+# unlocked by the licence key Gumroad itself mints for every sale and prints in
+# the buyer's receipt, and the site checks it against Gumroad from the buyer's
+# browser. The one precondition is a product whose content carries Gumroad's
+# licence-key block. The dashboard-minted token the owner already pastes at
+# step 6 carries edit_products (Gumroad's doorkeeper.rb:10,
+# oauth_application.rb:121-122), so creating that product is agent work - this
+# job - and nothing is ever done per sale.
+#
+# WHAT IS NOT KNOWN YET, stated so nobody inherits it as fact: Gumroad's own
+# help FAQ says products cannot be created through the API; its code
+# (links_controller.rb #create at af1ae267) says they can. The first run of this
+# job IS the evidence (AT-15). If Gumroad refuses, the script stops with the
+# reason and the fallback - one dashboard click, "Insert -> License key" - is
+# raised with the owner BEFORE anything is sold. It is never added to his
+# checklist silently.
+#
+# HOW TO RUN.
+#   1. Dispatch with action=create. The product is created AS A DRAFT (or the
+#      one already named the same is reused), read back, and required to hold a
+#      licenseKey node. The log prints its public id and short_url, and a PR
+#      writes both into products/il-biz-tools/src/config/site.json.
+#   2. Merge that PR and let Netlify deploy.
+#   3. Dispatch with action=enable. It checks that the DEPLOYED
+#      <siteUrl>/src/config/site.json carries the same id - so a buyer could
+#      actually activate the key they would receive - and only then enables.
+#   4. Run gumroad-pro-probe.yml (AT-16).
+#   Paste the logs of 1, 3 and 4 into a follow-up section of the decision file.
+#
+# WHAT THE OWNER HAS TO DO: nothing new. GUMROAD_ACCESS_TOKEN is already step 6
+# of docs/OWNER_STEPS.he.md. Until it exists every step prints a notice and the
+# job exits 0: a missing secret is a thing that has not happened yet, not a
+# broken build.
+#
+# The token is passed by env, sent to Gumroad as a Bearer header, and never
+# echoed. Inputs reach the script through env, never interpolated into shell.
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "create (draft + read-back + PR with id and URL) or enable (only once the deployed site.json carries the id)"
+        type: choice
+        options: [create, enable]
+        default: create
+      price_cents:
+        description: "Price in the currency's minor unit (7900 = ₪79, the board's one-time price)"
+        type: string
+        default: "7900"
+      currency:
+        description: "Gumroad price_currency_type (ils is in Gumroad's currencies.json)"
+        type: string
+        default: "ils"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# Two creates racing each other could make two products with the same name.
+concurrency:
+  group: gumroad-pro-product
+  cancel-in-progress: false
+
+jobs:
+  product:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: products/il-biz-tools
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Is the owner's Gumroad token here yet?
+        id: token
+        env:
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GUMROAD_ACCESS_TOKEN:-}" ]; then
+            NOTICE="Not calling Gumroad: repository secret GUMROAD_ACCESS_TOKEN is not set yet. This is not a failure. The owner mints it once at docs/OWNER_STEPS.he.md step 3 and pastes it at step 6; the same token creates the Pro product here. Until then Pro stays on 'בקרוב' and nothing can be bought."
+            echo "$NOTICE"
+            echo "$NOTICE" >> "$GITHUB_STEP_SUMMARY"
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "GUMROAD_ACCESS_TOKEN is present."
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # The script is stdlib plus the built-in fetch: no install step, so a
+      # dependency release cannot change what this job sends to Gumroad.
+      - name: Create the Pro product as a draft (or reuse it) and read it back
+        id: create
+        if: steps.token.outputs.present == 'true' && inputs.action == 'create'
+        env:
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+          PRICE_CENTS: ${{ inputs.price_cents }}
+          CURRENCY: ${{ inputs.currency }}
+        run: node scripts/gumroad-pro-product.js create --write-site-json
+
+      - name: Open a PR that writes the product id and URL into site.json
+        if: steps.token.outputs.present == 'true' && inputs.action == 'create'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE: ${{ github.ref_name }}
+          PRODUCT_ID: ${{ steps.create.outputs.product_id }}
+          SHORT_URL: ${{ steps.create.outputs.short_url }}
+        run: |
+          set -euo pipefail
+          FILE=src/config/site.json
+          # Stage first, then compare the index (the same trap colony.yml documents).
+          git add "$FILE"
+          if git diff --cached --quiet; then
+            echo "site.json already carries this product id and URL - no PR needed."
+            exit 0
+          fi
+          git config user.name "colony-bot"
+          git config user.email "colony-bot@users.noreply.github.com"
+          BRANCH="gumroad-pro-product/run-${GITHUB_RUN_ID}"
+          git switch -c "$BRANCH"
+          git commit -m "il-biz-tools: Gumroad Pro product id and URL into site.json (gumroad-pro-product run ${GITHUB_RUN_ID})"
+          git push -u origin "$BRANCH"
+          BODY=$(printf '%s\n' \
+            "Written by the gumroad-pro-product workflow, run ${GITHUB_RUN_ID}." \
+            "" \
+            "- gumroad.productId: \`${PRODUCT_ID}\`" \
+            "- gumroad.productUrl: ${SHORT_URL}" \
+            "" \
+            "The product was created as a DRAFT (or reused) and read back with a licenseKey node in its content - see the run log." \
+            "After this merges and Netlify deploys, dispatch gumroad-pro-product with action=enable, then gumroad-pro-probe." \
+            "Decision: research/measurements/gumroad-license-decision.md (Option C, AT-15).")
+          if gh pr create --base "$BASE" --head "$BRANCH" --title "il-biz-tools: write the Gumroad Pro product id and URL into site.json" --body "$BODY"; then
+            echo "PR opened from ${BRANCH}." >> "$GITHUB_STEP_SUMMARY"
+          else
+            # Repositories can forbid Actions from opening PRs. The branch is pushed either way.
+            MSG="Branch ${BRANCH} is pushed but the PR could not be opened from Actions (the repository may not allow Actions to create pull requests). A session opens it from that branch; nothing is needed from the owner."
+            echo "::warning::${MSG}"
+            echo "${MSG}" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Enable the product (second dispatch, only once the deployed site carries the id)
+        if: steps.token.outputs.present == 'true' && inputs.action == 'enable'
+        env:
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+        run: node scripts/gumroad-pro-product.js enable
