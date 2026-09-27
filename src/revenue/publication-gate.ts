@@ -23,7 +23,11 @@ export interface DatasetUse {
   licence: string | null;
   /** Repo path of the stored licence text (a render-watch capture or a GitHub LICENSE). */
   licenceSnapshot: string | null;
-  /** Third-party series inside a derived dataset keep their own licences (OWID says so). */
+  /**
+   * Third-party series inside a derived dataset keep their own licences (OWID says so). List the upstream source of
+   * every indicator the video actually uses, not of the whole file: owid/co2-data carries Global Carbon Project
+   * emissions beside Energy Institute energy columns, and only the columns used decide the gate.
+   */
   upstream: { source: string; licence: string | null }[];
 }
 
