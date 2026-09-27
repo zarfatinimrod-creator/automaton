@@ -1,8 +1,23 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-27 10:05 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-27 10:40 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
+
+## ▶ 27.9, 10:40 UTC — שם המותג נקבע, סרטון T1 נבנה ונבדק, ותיקון ראשון בדרך
+
+- **שם המותג: Mehudak / מהודק** (`mehudak`), בחירת Fable מתוך 6 שמות שנמצאו פנויים מ-runner (.com, GitHub, YouTube).
+  כל מקומות ה-placeholder שונו (`mcp-il-tools`, `portfolio.ts`); צעדי הבעלים נותנים עכשיו את השם, `mehudak.com`,
+  ארגון `mehudak`, חשבון מכונה `mehudak-ci`; "אם תפוס — עצור ותגיד לי". PDF חודש.
+- **פסיקות Fable לפני העלאה:** K0 קורא `engagedViews` (ה-35 נשאר; אפס מלא לצד צפיות = תקלת מכשיר, לא FAIL);
+  `containsSyntheticMedia = true` + משפט גילוי קבוע + Kokoro בלבד — הכול באכיפת G7.
+- **סרטון T1 נבנה** (`products/chart-explainer/`): "Is TypeScript catching up with JavaScript on GitHub?" מ-GitHub
+  Innovation Graph (CC0), 107.8 שנ', 1920x1080, אומת על ידי (ffprobe, שחזור עצמאי של המספרים). **לא פורסם; אין קוד העלאה.**
+- **ביקורות נפרדות:** G3 מקוריות PASS; **G4 עובדות FAIL** (כל 25 המספרים נכונים — הבעיה במסגור: Octoverse 2025
+  של GitHub קבע ש-TypeScript #1 לפי תורמים; וגם 32 מספרים על הגרפים לא עוברים דרך figures.json); **G5 הבטחה FAIL**
+  (החצי "לא" של התשובה נאמר אחרי 0:30; והנתונים סופרים מפתח תחת *כל* שפה בריפו — HTML 5.69M > JS 4.80M — וזה לא נאמר).
+  פסקי דין קשורים ל-hash של התסריט, כך שביקורת ישנה לא עוברת לתסריט מתוקן (`manifest.merge_audits`).
+- **רץ עכשיו:** הבונה מתקן לפי כל 8 הדרישות + ממלא את שם המותג בדף. אחרי זה: שלושה מבקרים חדשים על ה-hash החדש.
 
 ## ▶ 27.9, 10:05 UTC — קורא אנליטיקס, רישיון IGO, ושם המותג
 
