@@ -261,11 +261,11 @@ instead (upload-post-skill SKILL.md:72, 155-164) and does not have this ambiguit
 | Question | URL | Where it was seen | Tried here |
 |---|---|---|---|
 | Q3: YouTube's metric names | `https://api.upload-post.com/api/uploadposts/platform-metrics` | base `https://api.upload-post.com/api` (upload-post-npm `index.js:6`) + path `/uploadposts/platform-metrics` (`index.js:1351`; n8n node :1411); "(no auth)" per Marketing-Autopilot spike :74 | 1 attempt, proxy 403 |
-| Q3: per-post analytics fields | `https://docs.upload-post.com/api/get-analytics/` | Marketing-Autopilot spike :74 | not tried (docs host blocked) |
+| Q3: per-post analytics fields | `https://docs.upload-post.com/api/get-analytics/` | Marketing-Autopilot spike :74 | **RENDERED 27.9** (`research/rendered/upload-post-get-analytics.txt`): YouTube gets `views`, `watch_time_minutes` "over the last 30 days (YouTube Analytics estimatedMinutesWatched)" and `average_view_duration_seconds` (:206, :220-222) — no traffic source, no subscribed status. The "measuring — no" answer above now rests on the vendor's own page |
 | Q2/Q3/Q4: whole API, LLM-readable | `https://docs.upload-post.com/llm.txt` | upload-post-skill SKILL.md:13 | 1 attempt, proxy 403 |
 | Q2: plan limits (file size, daily cap) | `https://docs.upload-post.com/resources/pricing-and-limits/` | Marketing-Autopilot spike :70 | not tried |
 | Q4: upload fields | `https://docs.upload-post.com/api/upload-video/` | Marketing-Autopilot spike :3, :37 | not tried |
-| Q4: AI labels | `https://docs.upload-post.com/guides/ai-content-labeling/` | Marketing-Autopilot spike :32 | not tried |
+| Q4: AI labels | `https://docs.upload-post.com/guides/ai-content-labeling/` | Marketing-Autopilot spike :32 | **RENDERED 27.9** (`research/rendered/upload-post-ai-content-labeling.txt`): YouTube's `containsSyntheticMedia` is passed per platform and a platform-specific value overrides the alias (:77-85); the vendor's own reading of when YouTube needs it (:113-117) is vendor text, not policy |
 | Q2: vendor pricing | `https://www.upload-post.com/pricing-comparison/` | search 3; muzzamilhassan research :123; earlier audits | pricing page: 1 attempt on www.upload-post.com, proxy 403 |
 | Q2: the contrary claim | `https://www.linkstartai.com/en/agents/upload-post`, `https://postqued.com/blog/best-upload-post-alternatives` | cabin-visuals :86, :124 | 1 attempt each, proxy 403 |
 | Q1: vendor's "verified" wording | `https://www.upload-post.com/` | search 1 | host blocked |
