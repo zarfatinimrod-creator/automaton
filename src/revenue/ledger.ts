@@ -34,6 +34,7 @@ export const LINE_STATUSES: RevenueLineStatus[] = [
   "proposed",
   "awaiting_setup",
   "building",
+  "measuring",
   "live",
   "scaling",
   "paused",
@@ -42,6 +43,7 @@ export const LINE_STATUSES: RevenueLineStatus[] = [
 
 export const ACTIVE_LINE_STATUSES: ReadonlySet<RevenueLineStatus> = new Set([
   "building",
+  "measuring",
   "live",
   "scaling",
 ]);
@@ -323,10 +325,12 @@ export function updateLineFromSeed(db: Database, seed: RevenueLineSeed): boolean
 export const LINE_TRANSITIONS: Record<RevenueLineStatus, RevenueLineStatus[]> = {
   proposed: ["awaiting_setup", "building", "killed", "paused"],
   awaiting_setup: ["proposed", "building", "killed", "paused"],
-  building: ["live", "paused", "killed", "awaiting_setup"],
+  building: ["live", "measuring", "paused", "killed", "awaiting_setup"],
+  // Out of `measuring` only by a gate verdict or a board decision; `live` needs a platform payment id first.
+  measuring: ["building", "live", "paused", "killed"],
   live: ["scaling", "paused", "killed", "building"],
   scaling: ["live", "paused", "killed"],
-  paused: ["proposed", "building", "live", "killed"],
+  paused: ["proposed", "building", "measuring", "live", "killed"],
   killed: [],
 };
 

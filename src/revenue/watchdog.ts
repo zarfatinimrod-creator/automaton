@@ -25,7 +25,7 @@ import type { RevenueLineStatus } from "./types.js";
 export const STALL_DAYS = 7;
 
 /** Statuses where silence is a problem. Others are legitimately quiet. */
-const WORKING_STATUSES: readonly RevenueLineStatus[] = ["building", "live", "scaling"];
+const WORKING_STATUSES: readonly RevenueLineStatus[] = ["building", "measuring", "live", "scaling"];
 
 export interface StalledLine {
   lineId: string;
