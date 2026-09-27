@@ -18,8 +18,8 @@ The forecast is in `research/channel-loop/FORECAST.md`.
 
 | | |
 |---|---|
-| Last tick | tick 0: 27.9.2026 ~22:30 UTC (design written, loop switched on) |
-| Branch | `claude/new-session-j071dx`, restarted from `main` after PR #3 merged (`61fae4e`). The standing consent means the loop merges its own green PRs. |
+| Last tick | tick 1: 27.9.2026 23:50 UTC — PR #4 merged (`baab472`), three worktree builds merged, 5 ₪0 tests read, algora-supply week 1 measured |
+| Branch | `claude/new-session-j071dx`, restarted from `main` after PR #4 merged (`baab472`). The standing consent means the loop merges its own green PRs. |
 | Routine | "Channel loop tick", every 6 h (`11 1,7,13,19 * * *` UTC), fires into this session; see §11 |
 | Fable | available at 27.9 ~21:30 UTC (two agents ran). The daily sitting is the ~07:11 UTC tick. |
 | Running channels / ledger | 0 / ₪0.00 |
@@ -104,9 +104,9 @@ Stages run in this order:
 | Channel | Stage | Rail / ledger path | Owner steps it waits on | Next action (loop) | Unpark when |
 |---|---|---|---|---|---|
 | apify-actors (Actor over data.gov.il, free) | parked-owner | Apify, `observable:false`; declared a ₪0 instrument | 6a (Apify sign-up + `APIFY_TOKEN`) | pre-write the "Publish" message; check on main that the publish job creates the Actor as private | secret present, so the publish job stops being a no-op |
-| il-biz-tools (Hebrew business tools) | building (launch preparation) | Gumroad connector wired (`colony.yml`) | deploy route: ask #2 or the Netlify click in 6b; selling needs 2, 3, 6b | fix the `build-site.js:32` config leak; accessibility statement; remove the Facebook/WhatsApp line (`README.md:20`); brand-named PostHog key; identifier grep | network allowlist widened, or repo linked in Netlify |
+| il-biz-tools (Hebrew business tools) | launch-ready except one gap | Gumroad connector wired (`colony.yml`) | deploy route: ask 1 (network) or the Netlify click in 6b | Done in tick 1: `_site` ships only files that shipped pages load; the accessibility statement is in; the Facebook/WhatsApp line is gone (364 tests). **The publish gate blocks until a brand-owned accessibility contact exists (proposed step 8, brand mailbox).** | the network allowlist is widened AND a brand contact exists |
 | pcn874 (VAT detailed-report file) | admitted: free validator page to build | Gumroad (same account) | none for the free page; 2, 3, 6b, 5 for the paid builder | build a client-side validator page inside il-biz-tools (2-3 days) once that site's preparation is done | rides the il-biz-tools deploy |
-| oss-bounties (Algora) | building (instrument fix) | Algora via Stripe Express; no connector (payout recorded by hand) | none until the week-4 mean | The first run on main (run 36355862817) refused: GitHub counted 554 issues and served 551. A two-pass fix is in progress; it records GitHub's unserved count instead of failing. | fix merged, then the first reading; then the week-4 mean |
+| oss-bounties (Algora) | parked-window (week 1 of 4 read) | Algora via Stripe Express. **Stripe does not pay Israel self-serve** (`research/measurements/stripe-israel.md`), so the rail is in doubt. Fable, `FABLE_QUEUE` row 10. | step 4 held | Week 1 (27.9 23:43): **108 claimable, $74,065**, of 551 labelled (3 unserved), `research/measurements/algora-supply.md`. The board expected under 10. The next reading comes Mondays 06:23 UTC. | the week-4 mean AND a Fable ruling on the payout rail |
 | mcp-il-tools (free MCP server) | building (preparation), then parked-owner | none, a ₪0 channel test | proposed step 9 (npm), 5, 7 | fix the two defects (`README.md:21`, `:32`); `mcp-publish.yml` gated on `NPM_TOKEN` | npm yes plus token |
 | T1 web arm (faceless-YouTube experiment) | building (preparation) | ₪0 experiment | deploy route (ask #2) | optional cookieless PostHog in `page.py`; pre-register the reach floor; sub-brand name | deploy route open; the day-56 clock starts at that deploy |
 | T1 video | held by protocol | ₪0 experiment | Stage A, only after the day-56 web read | none | web arm passes at day 56 |
@@ -205,6 +205,13 @@ These are in `logs/FABLE_QUEUE.md`, rows 8-9:
 - **A command that must not be run.** Main's `REPORT.md` still prints `setup-done`. The fix is on the branch.
 
 ## 10. Next tick's first action
+
+**Tick 2:**
+- Render the Bituach Leumi salaried-plus-self-employed page (`urls.txt` §12, last line) and the next pages for CrazyGames (developer terms PDF, /payouts/), Wix (payout account) and Stripe Global Payouts recipient requirements, all in ONE dispatch.
+- Add a cookieless-analytics option to `page.py` for the T1 web arm.
+- The Fable sitting at 07:11 UTC takes `FABLE_QUEUE` rows 8-10. Row 10 now carries both the Stripe finding and week 1's 108.
+
+**Tick 1 (done 27.9):**
 
 **Tick 1:**
 - In il-biz-tools, fix the `build-site.js:32` leak: `src/config` is copied into `_site` wholesale, so the unverified `tax-2026.json` would ship.
