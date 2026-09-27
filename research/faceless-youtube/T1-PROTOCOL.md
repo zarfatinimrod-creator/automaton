@@ -17,8 +17,12 @@ route exists, for the cost of one honest short video and one owner sign-in. If i
 
 1. ✅ Kill gates and the `measuring` status in code (`src/revenue/experiments.ts`, `c7e1d87`).
 2. ✅ The publication gate G1-G10 in code (`src/revenue/publication-gate.ts`, `9a40ec3`).
-3. ⏳ Public-source pre-check of the publisher (`T1-PRECHECK.md`): is it an audited client, does its free tier allow
-   long-form API uploads, can it return the analytics K0/K3 need. **If the pre-check says no, the owner is not asked.**
+3. ✅ Public-source pre-check of the publisher (`T1-PRECHECK.md`, 27.9): **uploading — yes** (one dated public field
+   test: a free-plan API upload honoured its requested visibility, no private lock; free tier includes API access,
+   10 uploads/month counted per platform); **measuring — no** (Upload-Post's audience splits are TikTok-only; for
+   YouTube it exposes lifetime views and nothing that computes K0/K3). So T1 is worth the owner's minutes **only if the
+   same sitting includes the analytics-only consent** below. Two unknowns T1 itself settles: whether long-form uploads
+   work on the free tier, and whether Upload-Post's Google sign-in can select a Brand Account channel.
 4. ⏳ The web comparison arm — the same analyses as pages — read at day 56 with its own reach floor. It is a free prior:
    a web null does not prove a YouTube null, but zero stranger reach for the substance is a reason not to spend the
    owner's minutes. (It needs the brand domain, owner step 5, which two other lines already wait on.)
@@ -33,8 +37,11 @@ route exists, for the cost of one honest short video and one owner sign-in. If i
   no generative imagery.
 - It must pass `checkPublication()` (G1-G10) like any other video: licence snapshot on disk, no advice, a separate
   auditor's fact-check, description attributing the dataset and licence.
-- Upload parameters: `privacyStatus = public`; `containsSyntheticMedia` set deliberately (the board decides the AI-use
-  flag once — VERDICT §12; charts and TTS are non-realistic content); title and description as gated.
+- Upload parameters: `privacyStatus = public` (the executing code sends `privacyStatus`, not the `privacy_status` a
+  vendor reference shows); `containsSyntheticMedia` set explicitly — the vendor's n8n node defaults it to false (the
+  board decides the AI-use flag once — VERDICT §12; charts and TTS are non-realistic content); title and description as
+  gated. **No `youtube_publish_at`:** a scheduled video stays private until its time, which is indistinguishable from a
+  lock. Nothing cross-posted: the free tier counts each platform as an upload (T1 + six videos = 7 of 10).
 - It is a real video, not a throwaway: if T1 passes it stays up and counts toward nothing but itself.
 
 ## Pass and fail — observable facts only (RED-TEAM §2.7)
@@ -50,7 +57,8 @@ all of these are true, recorded with timestamps:
 | P4 | No auto-privating and no forced sign-out within 72 h | channel state via the publisher; the manager account |
 | P5 | The instrument works: per-video views and watch time split by traffic source **and** by subscribed status | the publisher's analytics API if it has one; otherwise the analytics-only consent below |
 
-T1 **fails** on any of P1-P4. Then `K-T1` fires: the experiment stays rejected unless the owner explicitly chooses a
+T1 **fails** on any of P1-P4 — including the case where Upload-Post's sign-in cannot select the Brand Account channel,
+which fails T1 for a reason unrelated to the lock and is recorded as such. Then `K-T1` fires: the experiment stays rejected unless the owner explicitly chooses a
 paid publisher tier or per-batch confirmation — asked, never assumed, and never paid from the ₪200 float.
 P5 failing does not fail T1; it adds one step to Stage A (below). An experiment nobody can read is not an experiment
 (MISSION rule 5; `K0-unmeasured` and `K3-unmeasured` kill).
@@ -67,8 +75,10 @@ The judge wrote 20-40 minutes; the red team measured the omissions and made it *
   added as manager [RENDERED youtube-brand-account.txt:61]. 2-Step Verification on the manager account uses TOTP (the
   colony can hold it), not SMS (RED-TEAM §2.8).
 - One sign-in to the publisher's free tier to connect the channel through its OAuth.
-- **Only if P5 fails:** an analytics-only Google Cloud project on the brand account and one consent for
-  `yt-analytics.readonly` — no upload scopes, no audit (RED-TEAM §2.1 fix b). About 10-15 minutes.
+- **The analytics-only consent — in the same sitting, not later.** The pre-check found Upload-Post cannot return the
+  K0/K3 split, so P5 is expected to fail: an analytics-only Google Cloud project on the brand account and one consent
+  for `yt-analytics.readonly` — no upload scopes, no audit (RED-TEAM §2.1 fix b). About 10-15 minutes, inside the
+  40-60. Asking for T1 without it would buy an experiment nobody can read.
 - **Nothing** of AdSense, tax forms, PIN letters or YPP. Those are stage B, and stage B is not even put to the board
   below 1,200 stranger watch hours per 28 days (`k3EscalateAtOrAbove`, RED-TEAM §2.3).
 
