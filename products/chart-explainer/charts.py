@@ -61,18 +61,25 @@ def footer_text(spec: dict[str, Any]) -> str:
     d = spec["dataset"]
     ex = ", ".join(spec["params"]["excludeEconomies"])
     return (
-        f"Source: {d['name']} ({d['homepage'].removeprefix('https://')}), {d['file']} at commit {d['commit'][:7]}. "
-        f"Licence: {d['licence']} (Creative Commons CC0 1.0 Universal).\n"
-        f"Chart computed from the data; the {ex} aggregate is excluded. Public activity only."
+        f"Source: {d['name']} ({d['homepage'].removeprefix('https://')}), {d['file']} at commit {d['commit'][:7]}.\n"
+        f"Licence: {d['licence']} (Creative Commons CC0 1.0 Universal). Chart computed from the data; "
+        f"the {ex} aggregate is excluded; public activity only."
     )
 
 
-def _frame(title: str, subtitle: str, spec: dict[str, Any]) -> tuple[MplFigure, Any]:
+def _fit(fig: MplFigure, artist, max_frac: float = 0.9, min_size: float = 14) -> None:
+    """Shrink a text artist until it fits inside `max_frac` of the frame width: a clipped title is a broken frame."""
+    renderer = fig.canvas.get_renderer()
+    while artist.get_window_extent(renderer=renderer).width > WIDTH * max_frac and artist.get_fontsize() > min_size:
+        artist.set_fontsize(artist.get_fontsize() - 1)
+
+
+def _frame(title: str, subtitle: str, spec: dict[str, Any], left: float = 0.085) -> tuple[MplFigure, Any]:
     fig = plt.figure(figsize=(WIDTH / DPI, HEIGHT / DPI), dpi=DPI, facecolor=SURFACE)
-    fig.text(0.05, 0.925, title, fontsize=40, fontweight="bold", color=TEXT, va="center")
-    fig.text(0.05, 0.855, subtitle, fontsize=24, color=TEXT_2, va="center")
-    fig.text(0.05, 0.045, footer_text(spec), fontsize=17, color=TEXT_2, va="center", linespacing=1.5)
-    ax = fig.add_axes([0.085, 0.19, 0.83, 0.60], facecolor=SURFACE)
+    for text, y, size, weight, colour in ((title, 0.925, 40, "bold", TEXT), (subtitle, 0.855, 24, "normal", TEXT_2)):
+        _fit(fig, fig.text(0.05, y, text, fontsize=size, fontweight=weight, color=colour, va="center"))
+    _fit(fig, fig.text(0.05, 0.045, footer_text(spec), fontsize=17, color=TEXT_2, va="center", linespacing=1.5))
+    ax = fig.add_axes([left, 0.19, 0.915 - left, 0.60], facecolor=SURFACE)
     ax.grid(axis="y", color=GRID, linewidth=1.2)
     ax.set_axisbelow(True)
     ax.tick_params(length=0, pad=10)
@@ -130,19 +137,22 @@ def ratio_line(an: Analysis, figs: dict[str, Figure], spec: dict[str, Any], titl
 
 def growth_bars(an: Analysis, figs: dict[str, Figure], spec: dict[str, Any], title: str) -> MplFigure:
     rows = sorted(((lang, *an.growth(lang)) for lang in an.top_languages()), key=lambda r: r[1])
-    fig, ax = _frame(title, f"The {figs['top_n'].text} languages with the most pushers in {figs['last_quarter'].text}: "
-                     f"pushers then ÷ pushers in {figs['first_quarter'].text}", spec)
+    fig, ax = _frame(title, f"Top {figs['top_n'].text} languages by pushers in {figs['last_quarter'].text}; "
+                     f"pushers then ÷ pushers in {figs['first_quarter'].text}", spec, left=0.2)
     ax.grid(axis="y", visible=False)
     ax.grid(axis="x", color=GRID, linewidth=1.2)
     colours = [COLOUR_A if r[0] == an.a else COLOUR_B if r[0] == an.b else NEUTRAL for r in rows]
-    labels = [r[0] if r[2] == len(an.panel) else f"{r[0]} ({r[2]} economies)" for r in rows]
-    ax.barh(labels, [r[1] for r in rows], color=colours, height=0.62, edgecolor=SURFACE, linewidth=2)
+    ax.barh([r[0] for r in rows], [r[1] for r in rows], color=colours, height=0.62, edgecolor=SURFACE, linewidth=2)
     for i, r in enumerate(rows):
+        note = "" if r[2] == len(an.panel) else f"   ({r[2]} of the {len(an.panel)} economies reported at both ends)"
         ax.annotate(f"{r[1]:.1f}×", (r[1], i), xytext=(10, 0), textcoords="offset points", va="center",
                     fontsize=22, color=TEXT, fontweight="bold" if r[0] in (an.a, an.b) else "normal")
+        if note:
+            ax.annotate(note, (r[1], i), xytext=(70, 0), textcoords="offset points", va="center", fontsize=18,
+                        color=TEXT_2)
     ax.set_xlim(0, max(r[1] for r in rows) * 1.15)
-    ax.set_xlabel(f"Growth multiple (×), summed over the {figs['panel_economies'].text} economies "
-                  f"(or those of them reported at both ends)", labelpad=12)
+    ax.set_xlabel(f"Growth multiple (×), pushers summed over the {figs['panel_economies'].text} economies",
+                  labelpad=12)
     ax.tick_params(axis="y", labelsize=22, labelcolor=TEXT)
     return fig
 
@@ -181,15 +191,17 @@ def ratio_histogram(an: Analysis, figs: dict[str, Figure], spec: dict[str, Any],
                 ax.annotate(str(n), (c, n), xytext=(0, 6), textcoords="offset points", ha="center", fontsize=18,
                             color=TEXT)
     t = float(spec["params"]["thresholdPct"])
+    ymax = ax.get_ylim()[1] * 1.3
+    ax.set_ylim(0, ymax)
     ax.axvline(t, color=TEXT_2, linewidth=2, linestyle=(0, (6, 4)))
-    ax.annotate(f"{figs['threshold_pct'].text}: {figs['econ_at_threshold_last'].text} economies at or above in "
-                f"{an.last[0]}", (t, ax.get_ylim()[1]), xytext=(12, -8), textcoords="offset points", va="top",
+    ax.annotate(f"{figs['econ_at_threshold_last'].text} economies at or above {figs['threshold_pct'].text} in "
+                f"{an.last[0]}  →", (t, ymax), xytext=(-12, -10), textcoords="offset points", ha="right", va="top",
                 fontsize=22, color=TEXT)
     ax.set_xlim(0, edges[-1])
     ax.set_xticks(edges)
     ax.set_xlabel(f"{an.a} pushers as % of {an.b} pushers (%), per economy", labelpad=12)
     ax.set_ylabel("Economies (count)", labelpad=12)
-    ax.legend(loc="upper right")
+    ax.legend(loc="upper left", bbox_to_anchor=(0.36, 0.86))
     return fig
 
 
