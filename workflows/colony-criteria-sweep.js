@@ -1134,7 +1134,7 @@ const ALL_GROUPS = [
       ],
       [
         "paid-acquisition-floor",
-        "We have a total float of ₪200, once. Establish whether any paid channel is reachable at all: minimum spends, account requirements and realistic 2026 CPC/CPM for Google Ads, Meta, Reddit, X, LinkedIn, Telegram Ads and the Israeli networks, plus whether each serves Israeli advertisers and demands a business entity. Expect the answer to be no, and measure it precisely enough that nobody re-proposes paid ads for a year. If any channel is genuinely reachable for ₪200, say exactly what it would buy."
+        "The owner's float is ₪0: by their rule of 27.9.2026 nothing is spent until income arrives and they decide to spend (the one-off ₪200 authorised on 3.9.2026 is suspended until then). Paid advertising was already rejected at any budget (docs/REJECTED.md). Re-check only whether that still holds for the day the owner might reopen a small one-off budget: minimum spends, account requirements and realistic 2026 CPC/CPM for Google Ads, Meta, Reddit, X, LinkedIn, Telegram Ads and the Israeli networks, plus whether each serves Israeli advertisers and demands a business entity. Expect the answer to be no, and measure it precisely enough that nobody re-proposes paid ads for a year. If any channel is genuinely reachable for ₪200, say exactly what it would buy — and say plainly that it would need the owner to reopen the budget."
       ],
       [
         "attribution-without-analytics",

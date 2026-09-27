@@ -330,6 +330,30 @@ inventory, because a product nobody can see earns nothing.
 honest value only, the brand as the only public face, the one-off ₪200 float, no subscriptions,
 money only in the ledger, and no account ever opened in the owner's name by us.
 
+## אישור קבוע וכלל ה-0 ₪ — תוספת הבעלים, 27.9.2026 (verbatim)
+
+> תמזג, ויש לך אישור קבוע למזג ולפרסם תחת המותג, אני רוצה להתחיל בלי לבזבז כסף מתי שהכסף יכנס ואני
+> יראה שזה עובד ומרוויחים אז אני מוכן לשים כסף עד אז תנסה למצוא דרכים שאני לא ישלם כלום אפילו לא שקל
+
+### What this addition changes
+
+**A standing consent.** We merge our own green pull requests to `main` and put up public surfaces under the brand
+without asking each time. The owner revokes it by saying "עצור". It does not reach the owner's own clicks: identity,
+payout, and anything bought.
+
+**₪0 until the ledger shows it works.** The ₪200 float authorised on 3.9 is suspended, not cancelled. The ceiling in
+`src/revenue/budget.ts` is ₪0, and only the owner raises it, after money has landed and they say so. Until then:
+- **Nothing is bought.** That includes the domain (step 5, frozen). Sites stay on free hosting under the brand
+  (`*.netlify.app`), and the MCP registry namespace comes from the GitHub organisation instead of a domain.
+- **No step that costs the owner anything is asked for until its cost is checked** from the official source. Step 2
+  (tax file and Bituach Leumi) is asked only when a paid product is ready. Before that, the colony renders what
+  registering costs someone in the owner's position.
+- **Platform fees that come out of a sale are not the owner paying.** Gumroad's cut is taken from the buyer's money,
+  never from the owner's pocket. A line that needs the owner to pay first waits.
+
+**What it does not change.** Honest value, the brand as the only public face, money only in the ledger, and no
+account opened by us in the owner's name.
+
 ---
 
 ## The rules this mandate implies

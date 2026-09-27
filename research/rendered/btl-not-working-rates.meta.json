@@ -1,0 +1,17 @@
+{
+  "url": "https://www.btl.gov.il/Insurance/Rates/Pages/%D7%9E%D7%99%20%D7%A9%D7%90%D7%99%D7%A0%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D%20%D7%95%D7%91%D7%A2%D7%9C%D7%99%20%D7%94%D7%9B%D7%A0%D7%A1%D7%94%20%D7%A9%D7%9C%D7%90%20%D7%9E%D7%A2%D7%91%D7%95%D7%93%D7%94.aspx",
+  "slug": "btl-not-working-rates",
+  "fetchedAt": "2026-09-27T22:46:09.579Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 144970,
+  "sha256": "46704c71fca70440d27cd2fd438d75281aefba897b9be0a11d22d7dba08bc309",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/btl-not-working-rates.html",
+  "textPath": "research/rendered/btl-not-working-rates.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

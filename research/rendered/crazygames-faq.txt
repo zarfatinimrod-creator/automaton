@@ -1,0 +1,832 @@
+FAQ & Contact - CrazyGames Documentation
+
+Skip to content
+
+CrazyGames Documentation
+
+FAQ & Contact
+
+Initializing search
+
+Submit a game
+
+CrazyGames Documentation
+
+Introduction
+
+Requirements
+
+Requirements
+
+Introduction
+
+Technical
+
+Gameplay
+
+Advertisement
+
+Account integration
+
+Multiplayer
+
+Game covers
+
+Quality guidelines
+
+SDK
+
+SDK
+
+Introduction
+
+Video ads
+
+Banners
+
+Game
+
+User
+
+Data
+
+In-game purchases
+
+Leaderboards
+
+Leaderboards
+
+Introduction
+
+Leaderboards SDK
+
+Leaderboards API
+
+Other engines
+
+Other engines
+
+GDevelop ↗
+
+Defold ↗
+
+Wonderland ↗
+
+Resources
+
+Resources
+
+General
+
+General
+
+Mouse control
+
+CrazyGames App
+
+Basic Launch Guide
+
+Game Loading Tips
+
+Monetization
+
+Monetization
+
+Ad Monetization Guide
+
+Mastering Rewarded Ads
+
+Optimizing Midgame Ads
+
+Banner Ad Best Practices
+
+Hypercasual & IO
+
+Midcore, RPG & Idle
+
+Puzzle
+
+Action
+
+Clicker
+
+Word
+
+Driving
+
+HTML5
+
+HTML5
+
+Sitelock
+
+Common fixes
+
+Unity
+
+Unity
+
+Custom build
+
+Optimization tips
+
+Optimizer package
+
+Common Issues
+
+Addressables guide
+
+References
+
+References
+
+External resources
+
+Partners
+
+FAQ & Contact
+
+FAQ & Contact
+
+Table of contents
+
+Part 1: Getting your game live on CrazyGames
+
+What game engines and technology does CrazyGames support?
+
+Does CrazyGames have an SDK?
+
+Do I need the CrazyGames SDK?
+
+Can I publish my game if it's already live elsewhere or has been published before?
+
+Do I still own my game?
+
+Can I test my game before publishing?
+
+Do you accept submissions from all countries?
+
+How do you decide which games to launch on CrazyGames?
+
+Can players access my game across different devices?
+
+Step A: Initial Quality Assurance (QA) check
+
+Step B: Basic Launch
+
+Step C: Full Launch
+
+How long does it take for an update to go live?
+
+Why are ads disabled during Basic Launch?
+
+Will you iframe my game if it's hosted by another game portal?
+
+Will you iframe my game if it's hosted on my own domain?
+
+What are the required dimensions for my game?
+
+Does CrazyGames support portrait and landscape games?
+
+Can I implement a chat function in my game?
+
+Do I need to add a CrazyGames logo to my game?
+
+How do I know if my game has been accepted or not?
+
+Can I submit a rejected game again?
+
+Can I see the traffic my game is receiving?
+
+Do I receive player feedback?
+
+Can I update my game? How?
+
+How is the ranking of games calculated?
+
+Will my game appear on the homepage of CrazyGames?
+
+Will I earn money by publishing my game?
+
+Can I choose any ad provider for my game?
+
+My game is published on Steam, Google Play Store, Apple App Store or Facebook, is it still eligible for revenue share?
+
+How much will I earn?
+
+How will I be paid?
+
+Does CrazyGames provide a CDN?
+
+Can I use StreamingAssets/Addressables with Unity?
+
+What browsers should be supported?
+
+My game works in the browser but shows a white screen in the CrazyGames iOS app
+
+Do you provide a server for multiplayer games?
+
+Part 2: Web Games 101
+
+Can you earn significant revenue as a developer on CrazyGames?
+
+How much does user acquisition (UA) cost for web games?
+
+Is user acquisition more expensive for web games or mobile apps?
+
+Do web platforms and CrazyGames support in-game purchases (IAP)?
+
+Is web gaming profitable for developers?
+
+What are the largest and most popular web gaming platforms?
+
+Who is the audience on CrazyGames?
+
+What sets CrazyGames apart from other web gaming platforms?
+
+Is it worth publishing my game on CrazyGames?
+
+How is the HTML5 (web gaming) market trending?
+
+What are the advantages of building a web game instead of a mobile app?
+
+Where should I publish my HTML5 game?
+
+What services and benefits do developers get when publishing on CrazyGames?
+
+Can hobby developers submit games to CrazyGames?
+
+Do I need to learn to code to make web games?
+
+Can I publish my game on CrazyGames if it's already live on other platforms?
+
+How do I publish a game on CrazyGames?
+
+How easy is it to integrate the CrazyGames SDK, and is full integration required?
+
+Contact
+
+Payouts
+
+Table of contents
+
+Part 1: Getting your game live on CrazyGames
+
+What game engines and technology does CrazyGames support?
+
+Does CrazyGames have an SDK?
+
+Do I need the CrazyGames SDK?
+
+Can I publish my game if it's already live elsewhere or has been published before?
+
+Do I still own my game?
+
+Can I test my game before publishing?
+
+Do you accept submissions from all countries?
+
+How do you decide which games to launch on CrazyGames?
+
+Can players access my game across different devices?
+
+Step A: Initial Quality Assurance (QA) check
+
+Step B: Basic Launch
+
+Step C: Full Launch
+
+How long does it take for an update to go live?
+
+Why are ads disabled during Basic Launch?
+
+Will you iframe my game if it's hosted by another game portal?
+
+Will you iframe my game if it's hosted on my own domain?
+
+What are the required dimensions for my game?
+
+Does CrazyGames support portrait and landscape games?
+
+Can I implement a chat function in my game?
+
+Do I need to add a CrazyGames logo to my game?
+
+How do I know if my game has been accepted or not?
+
+Can I submit a rejected game again?
+
+Can I see the traffic my game is receiving?
+
+Do I receive player feedback?
+
+Can I update my game? How?
+
+How is the ranking of games calculated?
+
+Will my game appear on the homepage of CrazyGames?
+
+Will I earn money by publishing my game?
+
+Can I choose any ad provider for my game?
+
+My game is published on Steam, Google Play Store, Apple App Store or Facebook, is it still eligible for revenue share?
+
+How much will I earn?
+
+How will I be paid?
+
+Does CrazyGames provide a CDN?
+
+Can I use StreamingAssets/Addressables with Unity?
+
+What browsers should be supported?
+
+My game works in the browser but shows a white screen in the CrazyGames iOS app
+
+Do you provide a server for multiplayer games?
+
+Part 2: Web Games 101
+
+Can you earn significant revenue as a developer on CrazyGames?
+
+How much does user acquisition (UA) cost for web games?
+
+Is user acquisition more expensive for web games or mobile apps?
+
+Do web platforms and CrazyGames support in-game purchases (IAP)?
+
+Is web gaming profitable for developers?
+
+What are the largest and most popular web gaming platforms?
+
+Who is the audience on CrazyGames?
+
+What sets CrazyGames apart from other web gaming platforms?
+
+Is it worth publishing my game on CrazyGames?
+
+How is the HTML5 (web gaming) market trending?
+
+What are the advantages of building a web game instead of a mobile app?
+
+Where should I publish my HTML5 game?
+
+What services and benefits do developers get when publishing on CrazyGames?
+
+Can hobby developers submit games to CrazyGames?
+
+Do I need to learn to code to make web games?
+
+Can I publish my game on CrazyGames if it's already live on other platforms?
+
+How do I publish a game on CrazyGames?
+
+How easy is it to integrate the CrazyGames SDK, and is full integration required?
+
+Contact
+
+Frequently Asked Questions
+
+Looking for answers? You'll find everything you need here, whether you're exploring web games or getting ready to publish on CrazyGames.
+
+We've split this FAQ into two parts to make things easier to navigate:
+
+Publishing on CrazyGames focuses on getting your game live, from submission to launch and beyond
+
+Web Game 101 gives you a high-level overview of the space, from how these games reach players to how developers generate revenue
+
+Browse each section based on what you're looking for, or jump straight to a specific question.
+
+Part 1: Getting your game live on CrazyGames
+
+Got questions about getting your game live on CrazyGames? Start with our Launching on CrazyGames guide — it covers the full process from submission to Full Launch. This section handles the most common questions, with links to the full details where you need them.
+
+1. Getting Started
+What game engines and technology does CrazyGames support?
+
+We support a wide range of engines, including Unity, Godot, Phaser, Construct, Pixi.js, BabylonJS, PlayCanvas, and GameMaker.
+
+Your game doesn't need to be mobile-first, but it should work well across devices where possible. See our full list of game engines we support here .
+
+Does CrazyGames have an SDK?
+
+Yes, we provide you with an SDK for in-game advertisements, profile info, saving progress and much more. Check out the SDK pages for details .
+
+Do I need the CrazyGames SDK?
+
+It depends on where you are in the launch process.
+
+Basic Launch: The SDK is optional. You can go live without it, and monetization isn't available at this stage.
+
+Full Launch: The SDK is required. It unlocks monetization and key platform features, and for most developers it's a one-time setup that adds:
+
+Ads and monetization
+
+Analytics
+
+Cloud saves
+
+Social features (e.g. multiplayer invites)
+
+It's designed to be straightforward to integrate, with clear documentation and adapters for major engines. See the full integration requirements .
+
+Can I publish my game if it's already live elsewhere or has been published before?
+
+Yes. You can publish on CrazyGames even if your game is already live or has been previously published on mobile, Steam, or other platforms, as long as you hold the distribution rights.
+
+Many developers use a multi-platform strategy to diversify revenue and reach new audiences. CrazyGames works as a complementary channel, not a conflicting one.
+
+Do I still own my game?
+
+Yes, 100%. You retain full ownership. (See our Terms & Conditions .)
+
+Can I test my game before publishing?
+
+Yes, we provide a preview environment via our Developer Portal to test how your game will look on CrazyGames. You can easily reach it via Submit a game and test different versions before actually submitting. Once your game passes the initial QA check, the game moves into Basic Launch. This is a soft launch where we test how your game performs with real players before giving it a wider rollout.
+
+Learn more about Basic Launch and Full Launch here .
+
+Do you accept submissions from all countries?
+
+We welcome submissions from developers all around the world, there are no location restrictions. What matters most to us is the quality of your game, not where you're based.
+
+How do you decide which games to launch on CrazyGames?
+
+We welcome a wide variety of games on our platform. Our goal is to offer something for every player, and a place where every developer can find their audience. However, submissions must meet the standards our players expect when they play a game on CrazyGames. Our curation and launch process includes the following steps — for more details, check Launching on CrazyGames .
+
+Learn more about launching on CrazyGames.
+
+Can players access my game across different devices?
+
+Yes. CrazyGames is a cross-platform platform, meaning players can enjoy your game on both desktop and mobile devices. Many games are played seamlessly in the browser, and with our mobile app, players can easily return to their favourite games on the go.
+
+For developers, this means you can reach a broader audience. We recommend optimising your game for both desktop and mobile to make the most of that reach and deliver the best player experience.
+
+2. Submitting & Publishing Your Game
+To submit your game, you'll need:
+
+Your game build for the web
+
+SDK integration
+
+Game metadata (description, instructions, thumbnails)
+
+Design and video for the game cover and game trailer
+
+Step A: Initial Quality Assurance (QA) check
+
+Every game goes through an initial review by our QA team. We spend time playing each submission to check that it works smoothly, meets our quality standards, and is fun to play.
+
+Sometimes, a game might not make it through this stage. This can happen for a few reasons, including (but not limited to):
+
+Bugs or broken mechanics
+
+Missing English-language support
+
+Unoriginal content (e.g. clones or asset flips)
+
+Inappropriate themes or content
+
+Not meeting our Developer Requirements, Terms & Conditions , or ethical standards
+
+Does not adhere to PEGI-12 guidelines
+
+Content is targeted for kids
+
+Upon review, we of course make sure that we share constructive feedback to help you reach the needed standards. Check our Requirements page for all details.
+
+Step B: Basic Launch
+
+Once your game passes the initial QA check, it moves into Basic Launch. This is a soft launch where we test how your game performs with real players before giving it a wider rollout.
+
+At this stage, your game only needs to meet our Basic Requirements. It will be shown to a small segment of players, helping us understand how it performs in a live environment. Even if it doesn't meet all performance thresholds yet, you'll still get useful insights and engagement data to build on.
+
+Why we do this
+
+Keep the initial QA process fast and efficient for you
+
+Gather real player data (retention, playtime, CTR, conversion to gameplay)
+
+Understand player behaviour at scale and spot issues early
+
+Read more about our launch process on the Launching on CrazyGames guide.
+
+Step C: Full Launch
+
+Games that perform well during Basic Launch and are updated to meet our Full Requirements are reviewed once more by our QA team before moving to full launch.
+
+From there, your game is ready to reach millions of players around the world — a big milestone and an exciting next step.
+
+Check our Requirements page for full details.
+
+More FAQs about submitting your game to CrazyGames
+
+How long does it take for an update to go live?
+
+It's quick — updates are usually processed within the same working day. Once live, changes will be visible to players after the cache refreshes.
+
+Game and art updates for games in Basic Launch go live instantly. Updates that violate the Terms and Conditions will result in the games being terminated immediately.
+
+Why are ads disabled during Basic Launch?
+
+During Basic Launch, ads are temporarily disabled for a few key reasons:
+
+To create the best possible player experience and reduce friction during early testing
+
+To ensure engagement metrics aren't influenced by ad interruptions
+
+To focus on understanding true player interest and retention
+
+Once your game shows strong performance and passes Basic Launch, it becomes eligible for Full Launch. At that point, ads are enabled and your game can start benefiting from broader promotional exposure.
+
+Will you iframe my game if it's hosted by another game portal?
+
+We do not iframe games from competing browser game portals. We only iframe games hosted on independent domains, not from other browser game portals.
+
+Will you iframe my game if it's hosted on my own domain?
+
+Yes, we'll consider it a regular submission, but we strongly recommend hosting the game on CrazyGames so you can take full advantage of our optimizations. Keep in mind that games hosted on external domains (or submitted game files of such games) only generate revenue if our SDK is correctly integrated.
+
+What are the required dimensions for my game?
+
+Read about this on the gameplay requirements page.
+
+Does CrazyGames support portrait and landscape games?
+
+Yes, we support both portrait (vertical) and landscape (horizontal) games. Portrait games are welcome, especially if they're designed with mobile in mind. To ensure they also work well on desktop, you can display them with side padding (such as black bars or background images).
+
+You're responsible for how your game is presented across different screen sizes, and there are several ways to set the right aspect ratio to make this work smoothly.
+
+For full details, check our Requirements page.
+
+Can I implement a chat function in my game?
+
+Yes, however, make sure to monitor the chat and implement a profanity filter. Our SDK also offers a preference setting to disable chat. More technical info on the multiplayer requirements page.
+
+Do I need to add a CrazyGames logo to my game?
+
+You don't need to, but it's much appreciated. However, we're currently updating our brand and logo, we'll share a new assets page link by September.
+
+How do I know if my game has been accepted or not?
+
+We'll let you know via email.
+
+Can I submit a rejected game again?
+
+Yes, you're welcome to resubmit your game. Before doing so, please make sure you've made meaningful improvements and that the game meets our requirements. We're always happy to take another look once those updates are in place.
+
+3. Managing your Game Post-launch
+Can I see the traffic my game is receiving?
+
+Yes. You can track your game's performance through the dashboard in your Developer Portal, where you'll find detailed stats and insights.
+
+Do I receive player feedback?
+
+Yes. When players leave a negative rating, they're prompted to share why. You can view all feedback in the Developer Portal, where you can also manage your email notification settings to avoid inbox overload.
+
+Can I update my game? How?
+
+Yes, you can update your game at any time through your developer account. Simply upload the updated files and submit them for approval.
+
+How is the ranking of games calculated?
+
+We use a range of game selection algorithms across the platform to surface the most relevant and engaging games for each user. Selection is based on factors like device, country, and operating system, with some placements also personalised based on a player's previous activity.
+
+We also aim to maintain a fair and dynamic ecosystem. For example, new games may receive an initial boost to help them reach an audience.
+
+Ultimately, rankings are driven by player engagement metrics such as play count, average playtime, retention, conversion, and player feedback.
+
+4. Earn Money with Your Game
+Will my game appear on the homepage of CrazyGames?
+
+The new games carousel is on the homepage and it gets the game in front of millions of gamers every day. From there, visibility depends on ongoing performance, including metrics like playtime, retention, and conversion.
+
+Will I earn money by publishing my game?
+
+Yes, once your game meets our requirements, you can start earning through our monetization system.
+
+To be eligible, your game needs to:
+
+Not include branding from another game portal
+
+Integrate the CrazyGames SDK
+
+Not contain external advertisements
+
+Be original and clearly distinguishable from existing games
+
+For full details, see our Terms & Conditions .
+
+Can I choose any ad provider for my game?
+
+We handle monetization through the CrazyGames SDK, which is designed to make ad integration simple and effective.
+
+This allows us to optimise performance and revenue across the platform, while giving you a seamless setup. The SDK is available for all major game engines and frameworks including Unity WebGL, HTML, and JavaScript games. See the full list here .
+
+My game is published on Steam, Google Play Store, Apple App Store or Facebook, is it still eligible for revenue share?
+
+Yes. Publishing your game on other platforms doesn't affect your eligibility for revenue share on CrazyGames. You can find more details in our Terms & Conditions .
+
+How much will I earn?
+
+Earnings vary depending on how your game performs. Key factors include player engagement, retention, and overall popularity, as well as advertiser demand.
+
+The better your game performs with players, the more it can earn. For more details, see our Terms & Conditions .
+
+How will I be paid?
+
+Payments are made monthly once your balance reaches the €100 minimum threshold. If you don't reach this amount in a given month, your earnings roll over to the next.
+
+We support payouts via wire transfer or PayPal. For more information, see our Terms & Conditions .
+
+5. Technical Questions
+Does CrazyGames provide a CDN?
+
+All the game files you upload on Developer Portal are hosted by us, and they are distributed via a CDN. This means that they are cached around the world and load fast for the players. You don't need to worry about the caching, and don't need to implement a cache invalidation mechanism, as this is handled by us.
+
+Can I use StreamingAssets/Addressables with Unity?
+
+Yes and we recommend it as it decreases the initial download size! Check our optimization tips about this topic. When uploading your Unity game that uses StreamingAssets/Addressables you don't need to do anything special: Just drag the Build and StreamingAssets folder in the upload area on our developer portal.
+
+What browsers should be supported?
+
+Your game should run well at least in Chrome and Edge. We also recommend you to ensure your game runs smoothly in other popular browsers, like Safari or Firefox.
+
+My game works in the browser but shows a white screen in the CrazyGames iOS app
+
+If your game is an iframe game that is sitelocked with a Content-Security-Policy: frame-ancestors header, its bare host entries (like *.crazygames.com ) only allow ancestors served over https . Our iOS app is a native WebView whose origin is capacitor://app.crazygames.com , so the host matches but the scheme doesn't and the game is blocked without a JavaScript error.
+
+Adding the origins of our apps to your policy solves it, read all about it in Sitelock in the CrazyGames App .
+
+Do you provide a server for multiplayer games?
+
+No, we only host the game files. For multiplayer servers, you'll need your own solution, for example, Photon .
+
+Part 2: Web Games 101
+
+New to web games or just looking to learn more? You're in the right place.
+
+We've pulled together answers to some of the most common questions from developers on CrazyGames and beyond. Curious about monetization, audiences, or how web games perform? Dive into sections 1–5.
+
+1. Monetization & Revenue
+Can you earn significant revenue as a developer on CrazyGames?
+
+Yes. CrazyGames reaches over 50 million monthly players, with a particularly strong audience in the United States and other Tier 1 markets. Developers monetize through advertising revenue share and optional in-game purchases. Because games are instantly playable without installation, strong titles can scale quickly if they demonstrate good retention, session length, and player engagement. Many developers publish on CrazyGames without paying for user acquisition, which significantly improves profit margins compared to mobile-first launches.
+
+How much does user acquisition (UA) cost for web games?
+
+User acquisition costs for web games are typically lower than mobile. On CrazyGames, developers launch directly to over 50 million monthly active users with zero user acquisition costs.
+
+There is no need to pay for installs or compete in crowded app store auctions. Your game is exposed to a large, established audience from day one, reducing risk and significantly improving profit margins compared to mobile-first launches.
+
+Is user acquisition more expensive for web games or mobile apps?
+
+In many cases, user acquisition for mobile apps is more expensive due to app store competition and install friction. Web games benefit from instant play and lower barriers to entry, which can reduce acquisition costs.
+
+Do web platforms and CrazyGames support in-game purchases (IAP)?
+
+Yes. Modern web platforms, including CrazyGames, support in-game purchases (IAP) alongside advertising monetization.
+
+On CrazyGames, developers can integrate optional purchases that enhance progression, unlock content, or provide cosmetic upgrades. These purchases are designed to work smoothly within the browser environment and must follow platform guidelines to ensure a safe and transparent user experience.
+
+Web-based IAP differs slightly from mobile app store payments, as it does not rely on Apple App Store or Google Play billing systems. Instead, it is implemented directly through web-compatible payment solutions and the CrazyGames SDK. This allows developers to monetize engaged players beyond ads while maintaining instant, frictionless access.
+
+When combined with player-friendly ad placements, in-game purchases can meaningfully increase revenue per user, particularly for games with strong retention and progression systems.
+
+Is web gaming profitable for developers?
+
+Yes, web gaming can be highly profitable for developers, especially on large platforms like CrazyGames, which reaches over 50 million monthly players with a strong concentration in Tier 1 markets such as the United States.
+
+Compared to mobile, web games eliminate install friction and often reduce or completely remove the need for paid user acquisition. On CrazyGames, developers launch directly into an existing audience, which can significantly improve margins. On mobile, high UA costs and platform fees can make scaling expensive and risky.
+
+Compared to Steam or PC platforms, web games benefit from instant accessibility. Players can start playing within seconds, without downloads, updates, or hardware requirements. This lowers the barrier to entry and enables faster validation, quicker iteration, and broader reach across devices.
+
+When a web game demonstrates strong retention, session length, and engagement, it can scale quickly through organic discovery, making browser distribution a viable and sustainable revenue channel.
+
+2. Audience & Platform Reach
+What are the largest and most popular web gaming platforms?
+
+CrazyGames serves over 50 million monthly players globally, with a strong concentration in the US, UK, and other English-speaking markets. The audience spans Gen Z through older demographics, making CrazyGames the largest web gaming platform with a broad, general audience rather than one focused primarily on children.
+
+Players engage across a wide range of genres from competitive .io and action games popular with younger audiences to puzzle, simulation, and strategy titles that resonate strongly with older players. This cross-generational appeal allows developers to reach a more balanced and commercially diverse player base on a single platform.
+
+Who is the audience on CrazyGames?
+
+CrazyGames serves over 50 million monthly players globally, with a strong concentration in the US, UK, and other English-speaking markets. The audience spans Gen Z to older demographics. Genre preference varies by age — for example, teenagers often prefer competitive .io games, while older players gravitate toward puzzle games.
+
+What sets CrazyGames apart from other web gaming platforms?
+
+CrazyGames stands out for its scale, audience quality, and developer-first approach. The platform reaches over 50 million monthly active players, with a strong concentration in Tier 1 markets such as the United States, the United Kingdom, and Australia. Unlike platforms that primarily cater to children, CrazyGames serves a broad, cross-generational audience across multiple genres.
+
+Games launch instantly with zero install friction and gain exposure to a large built-in audience without zero user acquisition. In addition, CrazyGames combines monetization tools, analytics, cloud saves, multiplayer features, and practical developer support in a single platform.
+
+This combination of massive organic reach, high-value traffic, instant play, and hands-on support makes CrazyGames one of the leading platforms for serious web game developers.
+
+Is it worth publishing my game on CrazyGames?
+
+Publishing on CrazyGames gives developers instant access to millions of players with zero marketing costs. Instead of competing for installs in crowded app stores, your game launches directly into a built-in global audience. Combined with monetization tools, analytics, and developer support, this makes the platform attractive for teams that want fast validation and scalable reach.
+
+3. Market & Industry Trends
+How is the HTML5 (web gaming) market trending?
+
+The HTML5 and web gaming market is seeing strong momentum. Advances in HTML5, WebGL, and WebGPU have significantly improved browser performance and visual fidelity, enabling more complex, content-rich games to run smoothly on the web. As cross-device play becomes standard and players increasingly value instant access without downloads, web gaming is now viewed as a serious and sustainable distribution channel.
+
+As one of the largest web gaming platforms in the western market, CrazyGames is well positioned within this growth. With over 50 million monthly players and strong visibility in Tier 1 countries, it has become a leading destination for high-quality HTML5 games and a key platform for developers looking to tap into the expanding web gaming audience.
+
+What are the advantages of building a web game instead of a mobile app?
+
+Web games eliminate app store friction, allow instant updates, require no downloads, and can be shared via a simple link. Developers can iterate faster, test quickly, and reach players across desktop and mobile browsers. This flexibility makes the web an efficient channel for experimentation and growth.
+
+4. Building and Publishing a Web Game
+Where should I publish my HTML5 game?
+
+The right publishing platform depends on your goals, but scale and audience quality matter. CrazyGames reaches over 50 million monthly active players, with its largest audiences in Tier 1 markets such as the United States, the United Kingdom, and Australia. The platform serves a broad global audience across multiple age demographics, and players engage with a wide variety of genres, from .io and action games to puzzles, simulations, strategy, casual titles and much more. CrazyGames has something for everyone.
+
+Rather than requiring developers to generate their own traffic, CrazyGames brings a large, established, and diverse player base directly to your game. Compared to self-hosting, where you must build an audience yourself, or mobile app stores, where paid user acquisition is often necessary, publishing on CrazyGames allows developers to launch into an existing, high-value audience from day one. This enables fast validation, real engagement data, and monetization without heavy upfront marketing investment.
+
+What services and benefits do developers get when publishing on CrazyGames?
+
+Publishing on CrazyGames gives you access to:
+
+A built-in audience of 50M+ monthly players
+
+Integrated monetization (ads and optional IAP)
+
+Analytics to track performance and engagement
+
+Developer support and QA feedback
+
+Platform features like cloud saves and multiplayer tools
+
+For selected games, we also help scale beyond the web. Read on for more information.
+
+Developers who publish on CrazyGames gain immediate access to a built-in audience of over 50 million monthly active players, with a strong concentration in Tier 1 markets such as the United States, the United Kingdom, and Australia. This allows games to launch with instant exposure and zero user acquisition costs.
+
+The platform provides integrated monetization through player-friendly ads and optional in-game purchases, along with a revenue share model and reliable payment infrastructure. Developers also get access to analytics dashboards with insights into plays, revenue, engagement, and geographic performance, enabling data-driven iteration.
+
+In addition, CrazyGames offers developer support, QA feedback, soft-launch opportunities, and tools such as cloud saves, multiplayer invite links, and performance optimization features through the SDK. For selected titles, the publishing team can help scale successful games across additional platforms, including mobile stores.
+
+Together, this combination of distribution, monetization, analytics, and hands-on support helps developers turn a browser game into a profitable business.
+
+Can hobby developers submit games to CrazyGames?
+
+Yes. CrazyGames works with a wide range of developers, from solo creators and hobbyists to indie teams and established studios. Team size is not the deciding factor. Quality, performance, and player experience are what matter most.
+
+For hobby developers and solo creators in particular, web platforms are especially attractive. Publishing a browser game is significantly more accessible than launching on traditional app stores. On CrazyGames, you can upload your HTML5 build, integrate the SDK, and reach over 50 million monthly active players without spending anything on user acquisition.
+
+This low barrier to entry makes the web, and CrazyGames specifically, a popular platform for developers who want to test ideas, build an audience, and turn passion projects into real revenue without needing a marketing budget or a large team.
+
+Do I need to learn to code to make web games?
+
+If you want to build high-quality, fully customized games, learning to code will make things much easier and give you far more control. Many popular web games on CrazyGames are built using frameworks and engines like Unity or Phaser, which rely on programming skills.
+
+That said, coding isn't the only path. There are no-code and low-code tools like Construct and GDevelop that let you create games using visual interfaces and logic systems instead of traditional programming.
+
+AI is also changing the landscape. Today, you can use AI tools to:
+
+Generate code snippets or even entire game mechanics
+
+Create art, sound effects, and music
+
+Prototype ideas quickly without deep technical knowledge
+
+Get real-time help debugging or improving your game
+
+In practice, many developers now combine these approaches, using AI to speed things up, no-code tools to prototype, and coding to refine and scale their games.
+
+Can I publish my game on CrazyGames if it's already live on other platforms?
+
+Yes. You can publish your game on CrazyGames even if it is already live on other platforms, including mobile app stores or PC storefronts, as long as you hold the necessary distribution rights.
+
+Many developers use a multi-platform strategy, releasing on the web alongside mobile or Steam to diversify revenue and reach different audiences. Publishing on CrazyGames allows you to tap into over 50 million monthly players without requiring additional user acquisition, making it a complementary channel rather than a conflicting one.
+
+How do I publish a game on CrazyGames?
+
+To publish a game on CrazyGames, developers submit their HTML5 build through the developer portal , integrate the CrazyGames SDK, and provide required metadata such as descriptions, thumbnails, and instructions. The team reviews submissions to ensure quality, technical performance, and compliance before approval.
+
+How easy is it to integrate the CrazyGames SDK, and is full integration required?
+
+The CrazyGames SDK is designed to be simple to integrate, with clear documentation and adapters available for major HTML5 engines such as Unity and Godot. For most developers, integration is a one-time implementation that unlocks core platform features including advertising, analytics, cloud saves, and social tools like multiplayer invite links.
+
+Basic integration is straightforward and can typically be completed quickly, especially when using a supported engine. The SDK also includes performance-focused features such as WebGL optimizations to help reduce build size and improve load times.
+
+Core SDK integration is required to access monetization and key platform functionality. Games that fully integrate the SDK benefit from better analytics visibility, smoother ad implementation, and stronger alignment with platform features, which can positively impact performance and discoverability.
+
+Contact
+
+Need help, have a question, or want to suggest a feature? Our Developer Support team is here for you .
+
+Before reaching out about a technical issue, please:
+
+Check your browser console for any errors
+
+If the issue occurs in preview, include a link to your preview environment in your message
+
+This helps us get to the root of the issue faster and support you more effectively.
+
+Made with
+
+Material for MkDocs
+
+Ask AI

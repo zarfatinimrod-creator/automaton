@@ -1,8 +1,14 @@
 # il-biz-tools — כלים לעסק
 
 A static, dependency-free, Hebrew (RTL) micro-site with six tools for Israeli freelancers and
-small businesses. No framework, no dependencies at runtime: the build copies an allowlist of files, writes a
-no-figures notice in place of any withheld page and filters the sitemap; the deploy artifact is `_site/`.
+small businesses. No framework, no dependencies at runtime: the build ships only the files the shipped pages
+load, writes a no-figures notice in place of any withheld page, filters the sitemap, and refuses to build at all
+while a publish blocker stands; the deploy artifact is `_site/`.
+
+> **Open blocker (27.9.2026): the site cannot be published yet.** The accessibility statement
+> (`accessibility.html`) needs a contact for accessibility requests. No brand mailbox exists and the owner's
+> personal details may never appear, so the contact is a marked placeholder and `node scripts/build-site.js`
+> refuses while it is there. See [The accessibility statement](#the-accessibility-statement-and-the-publish-blocker).
 
 ## What it sells, to whom
 
@@ -17,8 +23,10 @@ no-figures notice in place of any withheld page and filters the sitemap; the dep
 
 Audience: Israeli self-employed (no headcount is sourced in this repo), especially **עוסקים פטורים** (freelancers under the
 VAT threshold) who need a receipt today and want to know when they will cross the ceiling.
-Traffic model: Hebrew SEO (each page has a title, description, canonical, and a FAQPage JSON-LD
-answering the exact questions people search), plus sharing in freelancer Facebook/WhatsApp groups.
+Traffic model: Hebrew SEO only (each tool page has a title, description, canonical, and a FAQPage JSON-LD
+answering the exact questions people search). Nothing else is planned: no posting in groups, no outreach,
+no paid ads. The owner does not talk to people and the colony does not post into communities, so if
+search sends no one, the page-view kill rule is what answers it.
 
 ### Pricing suggestion
 - Free tools: free forever (they are the SEO funnel).
@@ -59,9 +67,30 @@ army), benefits in kind, study fund.
 
 MISSION rule 4 (honest value only), read here as "never publish an unverified legal figure", used to be kept by hand: `tax-2026.json`
 says `"verified": false`, the page wears an **אומדן** badge, and everyone hoped the badge was enough.
-It is not, so the rule is now enforced by the build for rendered pages. The config files themselves still ship
-under `/src/config/` (the build copies that folder whole, `tax-2026.json` and `registrar-fee.json` included),
-so the unverified figures are reachable by URL even though no published page renders them.
+It is not, so the rule is now enforced by the build for rendered pages — and, since 27.9.2026, for the config
+files themselves. Until then the build copied `src/config/` (and `src/lib/`) into `_site/` whole, so
+`tax-2026.json` and the registrar amounts were reachable at `/src/config/` although no published page rendered
+them.
+
+**What reaches `_site/` now.** Nothing is copied by folder. `src/lib/site-deps.js` follows every local reference
+from the HTML that will ship — `<script src>`, `<link href>`, `<img src>`, imports inside an inline module — then
+every `import` and every `fetch('literal')` in the modules those load, and the build copies exactly that set.
+Each JSON file reached then goes through `CONFIG_PUBLISH_RULES` (`src/lib/publish-gate.js`):
+
+| Config | Rule | What ships today |
+|---|---|---|
+| `vat.json`, `osek-patur.json`, `allocation-number.json` | `verified` — ships only while `"verified": true` | the whole file |
+| `tax-2026.json` | `verified` | **nothing**: no shipped page loads it (its page is withheld), and if one did the build would stop |
+| `registrar-fee.json` | whole once verified; until then only `verified`, `renderAmounts`, `updated`, `deadline` | the dates and the two flags, rewritten into a fresh file — **no amount, no notes, no internal sources** |
+| `site.json` | `no-figures` (site metadata) | the whole file |
+
+Fail closed: a JSON file with no rule never ships, and a shipped page that loads one stops the build; so does a
+shipped page that loads a `verified`-rule config which is not verified, a reference that climbs out of the
+product or points at a missing file, and a dynamic `import()` with a computed target. A withheld page's notice
+loads only the stylesheet, so `net-salary.js` and `page-net-salary.js` no longer ship either, and neither do the
+build-time modules (`publish-gate.js`, `site-deps.js`, `a11y-check.js`). `tests/build-site.test.js` runs the real
+build in a throwaway copy and asserts no unverified config and no registrar amount is in the output; putting the
+old folder copy back turns four of its tests red.
 
 `src/lib/publish-gate.js` maps every page to the config files whose **figures it renders**.
 `node scripts/build-site.js` reads those configs and, for any page depending on one that is not
@@ -74,8 +103,8 @@ flagged `"verified": true`:
 
 Nothing in the source tree moves, so `npm run serve`, the tests and local development still see the
 real page; the day the rates are confirmed against the Tax Authority booklet, flipping one JSON flag
-republishes it. `node scripts/check-html.js` prints the same verdict for its fixed list of 7 pages plus
-`404.html`. What **fails** on an HTML page missing from the map is the build (`scripts/build-site.js`) and
+republishes it. `node scripts/check-html.js` prints the same verdict for its fixed list of 8 pages (the 7 tool
+pages and `accessibility.html`) plus `404.html`. What **fails** on an HTML page missing from the map is the build (`scripts/build-site.js`) and
 `tests/publish-gate.test.js` — a page nobody classified is a page nobody decided about.
 
 Today the gate withholds exactly one page: `net-salary.html`. Nothing here marks anything verified.
@@ -87,6 +116,52 @@ hand the amounts out while `verified` is false, the page tells the reader to che
 the *rule* and the *calendar* — which carry the same evidence grade, are labelled as such on the
 page, and differ in what a mistake costs: a wrong date sends someone to check early, a wrong amount
 is a number they act on.
+
+## The accessibility statement and the publish blocker
+
+An Israeli commercial site owes an accessibility statement (הצהרת נגישות) and IS 5568 conformance
+(`research/colony-sweep/audits/israel-bureaucracy.md`, the two places that name it). `accessibility.html` is
+that statement, and it says only what is true:
+
+- **Not claimed:** conformance with IS 5568. The site has had no full IS 5568 audit and no accessibility
+  expert or certified auditor (מורשה נגישות) has looked at it, and the page says exactly that.
+- **What was checked, how, when:** on 27.9.2026, an automated check of every page's source and of the stylesheet,
+  without a browser — the 13 checks in `A11Y_CHECKS` (`src/lib/a11y-check.js`): lang/dir, title, zoom not blocked,
+  image alt, form-control labels, button and link names, one h1 and no skipped heading level, unique ids, `main`
+  and named `nav`, no positive tabindex, focus outline not removed, and 26 text/background pairs read from
+  `assets/style.css` at ≥ 4.5:1 by the WCAG 2.0 formula. `tests/a11y-check.test.js` holds the page's list equal
+  to `A11Y_CHECKS`, word for word, so the statement cannot list a check the code does not run or skip one it does.
+- **What the first run fixed:** `--brand` `#0f6fff`→`#0b63e6`, `--ok` `#1a8f4e`→`#157a45`, `--warn`
+  `#c77d00`→`#8f5b00` (links, button labels and two badges were 3.0–4.4:1), and the home page's tool-card
+  headings went from `h3` to `h2` (they skipped a level).
+- **What was not checked:** a screen reader, keyboard use in a real browser, 200% zoom, content the scripts
+  create at runtime, the printed / PDF receipt, and the accent colour a Pro user picks.
+
+The build runs the same checks on every page it would ship and refuses to publish if any fails, so the
+statement's "checked" stays true.
+
+**The blocker.** A statement normally names a contact for accessibility requests. No brand mailbox exists, and
+the owner's personal details may never appear on the site, so the contact is a placeholder marked
+`data-publish-blocker="accessibility-contact"`. `publishBlockers()` (`src/lib/publish-gate.js`) refuses the
+publish unless all of these hold, and deleting the marker satisfies only the first:
+
+1. no shipped page carries a `data-publish-blocker` marker, written any way HTML allows (quoted, unquoted,
+   without a value, any letter case, inside a comment);
+2. no shipped page carries the placeholder's words (`ממלא מקום`, `לא לפרסום`), however they are spaced, split
+   by tags or entity-encoded;
+3. `accessibility.html` has at least one visible `<a data-a11y-contact href="…">` inside `<main>` whose href is
+   `mailto:` with exactly one address, `https:`, or `tel:` with a full number, at a public domain (reserved
+   example/test domains are refused), with visible link text; every element marked `data-a11y-contact` must
+   pass;
+4. `accessibility.html` is in the build at all.
+
+On any failure `node scripts/build-site.js` exits 1 and deletes `_site/`, so Netlify's build fails and no stale
+copy is left to upload. `node scripts/build-site.js --preview` builds the identical tree into `_preview/` (never
+`_site/`, gitignored) and lists the blockers instead of stopping, for inspection only. To clear it: replace
+that one `<p>` with a paragraph holding the real, brand-owned contact as
+`<a data-a11y-contact href="mailto:…">…</a>` (or an `https:` form or a `tel:` number). The gate can check that
+a contact is well-formed and visible; it cannot check that someone reads it. Choosing the contact is a decision,
+not code — it is on the owner-ask list, not solved here.
 
 ## The registrar annual-fee page (`registrar-fee.html`)
 
@@ -125,17 +200,19 @@ The page itself carries a plain-Hebrew "נוסח טיוטה, טרם נבדק מ�
 
 ```
 index.html  vat.html  osek-patur.html  net-salary.html  invoice.html
-allocation.html  registrar-fee.html  404.html
+allocation.html  registrar-fee.html  accessibility.html  404.html
 assets/style.css            shared RTL styles incl. @media print for the receipt
 assets/common.js            nav, canonical, optional analytics
 assets/page-*.js            DOM glue per page (no logic)
 src/lib/*.js                pure ES modules: vat, osek-patur, net-salary, invoice, allocation,
-                            registrar-fee, gumroad, license, branding, analytics, publish-gate, money
+                            registrar-fee, gumroad, license, branding, analytics, money - and three
+                            build-time ones that never ship: publish-gate, site-deps, a11y-check
 src/config/*.json           vat.json, osek-patur.json, tax-2026.json, allocation-number.json,
                             registrar-fee.json, site.json
-tests/*.test.js             vitest (node environment)
+tests/*.test.js             vitest (node environment); tests/helpers/ builds in a throwaway copy
 scripts/serve.js            zero-dependency local server
-scripts/build-site.js       copies the allowlist into _site/ and applies the unverified-rate gate
+scripts/build-site.js       ships only what the shipped pages load, applies the unverified-rate and
+                            config gates, runs the accessibility checks, refuses on a publish blocker
 scripts/check-html.js       checks title/description/canonical/JSON-LD/links/classes on every page
 scripts/gumroad-pro-product.js  creates the Pro product on Gumroad (draft, licence-key block) and later
                             enables it; run only by .github/workflows/gumroad-pro-product.yml
@@ -147,9 +224,10 @@ netlify.toml robots.txt sitemap.xml
 ```bash
 cd products/il-biz-tools
 npm install          # vitest only
-npm test             # 217 unit tests (vitest, 14 files; re-measured 27.9.2026 after Option C)
+npm test             # 364 tests (vitest, 17 files; re-measured 27.9.2026 after the contact gate)
 npm run check:html   # static page sanity checks + what the publish gate will withhold
-node scripts/build-site.js   # writes _site/ exactly as it will be deployed
+node scripts/build-site.js   # writes _site/ exactly as it will be deployed - or refuses (exit 1) on a blocker
+node scripts/build-site.js --preview   # the same tree into _preview/, blockers listed, for inspection only
 npm run serve        # http://localhost:8080
 ```
 
@@ -164,7 +242,7 @@ There are **no server-side env vars** — this is a static site. Public configur
 
 | Key | Meaning | Default |
 |---|---|---|
-| `siteUrl` | Canonical origin; `assets/common.js` rewrites `<link rel=canonical>` from it at runtime. The static canonical in all 7 pages and the JSON-LD `url` in `index.html` are hard-coded, so edit those too, plus `sitemap.xml` and `robots.txt` | `https://il-biz-tools.netlify.app` |
+| `siteUrl` | Canonical origin; `assets/common.js` rewrites `<link rel=canonical>` from it at runtime. The static canonical in all 8 pages and the JSON-LD `url` in `index.html` are hard-coded, so edit those too, plus `sitemap.xml` and `robots.txt` | `https://il-biz-tools.netlify.app` |
 | `gumroad.productUrl` | Full `https://` URL of the Gumroad product page. Empty ⇒ the Pro button is disabled and says the shop is not open. Written by the product-creation job | `""` |
 | `gumroad.productId` | Gumroad's public product id — what the licence check sends with the key. Empty ⇒ the button stays disabled (`no_product_id`) and activation sends nothing. Written by the product-creation job | `""` |
 | `analytics.provider` | `none` or `plausible` | `none` (off) |
@@ -286,10 +364,10 @@ The saved client list, the numbering, the PDF export and the stored documents ar
 ## Deploy (Netlify, exact steps)
 
 1. In Netlify, open the existing site `il-biz-tools` (site id `2087c2ed-5270-4407-8746-675d6ea41d5e`) → build & deploy settings → *Link repository* → `automaton`, branch `main`. Only if that site is gone: *Add new site → Import an existing project* (owner step 6 in `docs/OWNER_STEPS.he.md`).
-2. Base directory: `products/il-biz-tools`. Build command: `node scripts/build-site.js`. Publish directory: `_site` (written by `scripts/build-site.js` from an explicit allowlist, so `package.json`, `README.md`, `tests/` and `scripts/` are never uploaded).
+2. Base directory: `products/il-biz-tools`. Build command: `node scripts/build-site.js`. Publish directory: `_site` (written by `scripts/build-site.js` with only the files the shipped pages load, so `package.json`, `README.md`, `tests/`, `scripts/` and any unverified config are never uploaded). **Today this build refuses** — the accessibility contact is still a placeholder — so a deploy fails until that blocker is cleared.
    (`netlify.toml` declares the build command and the publish directory, not the base directory, which is set here in the UI; headers/CSP/redirects are in the same file).
 3. Deploy. Then set the custom domain and replace `https://il-biz-tools.netlify.app` with the real domain in
-   `siteUrl` (`src/config/site.json`), the static `<link rel="canonical">` of all 7 pages, the JSON-LD `url` in
+   `siteUrl` (`src/config/site.json`), the static `<link rel="canonical">` of all 8 pages, the JSON-LD `url` in
    `index.html`, `sitemap.xml` and `robots.txt`; commit. If the Pro product already exists on Gumroad, its
    description and activation text name the old `invoice.html` URL too (`scripts/gumroad-pro-product.js` writes
    them at creation and does not update a reused product), so they need the same edit on Gumroad's side.
@@ -316,7 +394,7 @@ GitHub Pages, Vercel) works too — copy the headers from `netlify.toml` if the 
    exist; what is left is *Link repository*. The free `*.netlify.app` subdomain is not a substitute: without a
    domain no line that depends on search exists (`src/revenue/owner-steps.ts`).
 3. **Google Search Console** — optional, not a checklist step (`research/colony-sweep/BOARD.md` §6.3, §8): only if
-   the owner chooses to add the property in his own Google account, and asked for only after the site shows traffic.
+   the owner chooses to add the property in their own Google account, and asked for only after the site shows traffic.
 4. Not an owner step: analytics. The board assigned page views to the PostHog connector attached to the agent's session (`research/colony-sweep/BOARD.md` §6.3), so the project key and the cookieless server-hash toggle are ours to set; `posthog.projectKey` stays empty until then, and Plausible is not planned.
 5. Tax: income from the site is business income — an Israeli osek patur/murshe registration is
    the owner's responsibility (Gumroad invoices the buyer, the owner reports Gumroad payouts).
@@ -366,10 +444,19 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
 
 **שער הפרסום:** דף שמציג נתון מקובץ שמסומן `"verified": false` לא מתפרסם בכלל. כרגע זה
 `net-salary.html`: במקומו עולה הודעה קצרה בלי אף מספר, והכתובת יורדת מה-sitemap. ברגע שהמדרגות
-יאומתו מול לוח העזר של רשות המסים – היפוך דגל אחד מחזיר את הדף.
+יאומתו מול לוח העזר של רשות המסים – היפוך דגל אחד מחזיר את הדף. גם קובצי הנתונים עצמם לא עולים
+לאתר כמו שהם: ה-build מעתיק רק קבצים שדף מתפרסם באמת טוען, ו-`tax-2026.json` לא ביניהם. מ-`registrar-fee.json`
+עולים רק התאריכים ושני הדגלים – בלי אף סכום.
+
+**הצהרת נגישות – חוסם פתוח:** `accessibility.html` אומרת רק מה שנכון: האתר לא עבר בדיקה מלאה לפי ת"י 5568,
+ומה כן נבדק (13 בדיקות אוטומטיות על קוד הדפים, 27.9.2026), מה תוקן (שלושה צבעים הוכהו, כותרות בדף הבית) ומה
+לא נבדק. בהצהרה חסרה דרך פנייה בנושא נגישות: אין עדיין תיבת דואר של המותג, ופרטים אישיים של הבעלים לא יופיעו
+באתר לעולם. לכן השורה מסומנת כממלא מקום, וה-build מסרב לבנות את `_site/` כל עוד היא שם. מחיקת הסימון לבדה
+לא משחררת את השער: הוא מסרב גם כשמילות ממלא המקום נשארות בדף, וגם כשאין בהצהרה קישור פנייה אמיתי וגלוי
+(`<a data-a11y-contact href="mailto:…">` או `https:` או `tel:`, בדומיין ציבורי ולא בדומיין דוגמה).
 
 **צעדים שרק הבעלים יכול לבצע:** פתיחת חנות Gumroad על שם המותג (KYC + פרטי משיכה) והטוקן שלה,
 חשבון Netlify ודומיין, אימות ב-Google Search Console. יצירת מוצר ה-Pro והדבקת הכתובת והמזהה שלו
 ב-`site.json` הן עבודה שלי, דרך אותו טוקן (`.github/workflows/gumroad-pro-product.yml`).
 
-**בדיקות:** `npm install && npm test` (217 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.
+**בדיקות:** `npm install && npm test` (364 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.

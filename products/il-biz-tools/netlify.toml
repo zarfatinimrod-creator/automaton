@@ -1,6 +1,9 @@
-# Publish an explicit allowlist rather than the whole folder, so package.json,
-# README.md, tests/ and scripts/ are never uploaded. Opening index.html locally
-# still works - the build only copies, it does not transform.
+# Publish only what the shipped pages load, never the whole folder, so
+# package.json, README.md, tests/, scripts/ and unverified configs are never
+# uploaded. The build exits 1 - and this deploy fails - while a publish blocker
+# stands (today: the accessibility contact placeholder). Never point this at
+# _preview/ or add --preview: that tree ignores the blockers on purpose.
+# Opening index.html locally still works - the source tree does not move.
 [build]
   publish = "_site"
   command = "node scripts/build-site.js"

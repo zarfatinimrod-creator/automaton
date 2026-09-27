@@ -233,3 +233,28 @@ https://population.un.org/wpp/downloads/	un-wpp-downloads
 https://databrowser.uis.unesco.org/terms-and-conditions	unesco-uis-databrowser-terms
 # LICENCE-IGO-DECISION.md §1: the UIS main-site terms page a search summarised as "Attribution-ShareAlike 3.0 IGO".
 https://uis.unesco.org/en/terms-and-conditions	unesco-uis-terms
+
+# --------------------------------------------------------------------------------
+# 12. The channel loop's ₪0 tests and the step-2 cost check under the owner's ₪0 rule (27.9.2026).
+# Each URL is listed, with the question it must answer, in research/channel-loop/ZERO-TESTS.md (rows 1-9).
+# --------------------------------------------------------------------------------
+# research/channel-loop/ZERO-TESTS.md row 1 — CrazyGames developer FAQ (submission, payouts, account).
+https://docs.crazygames.com/faq/	crazygames-faq
+# ZERO-TESTS.md row 2 — Astro Theme Catalogue API, paid lane (ordering fields, count).
+https://portal.astro.build/api/themes?price[]=paid	astro-themes-paid
+# ZERO-TESTS.md row 3 — Stripe's country list (Israel as an account country).
+https://stripe.com/global	stripe-global
+# ZERO-TESTS.md row 4 — Stripe Connect cross-border payouts (Express recipients by country).
+https://docs.stripe.com/connect/cross-border-payouts	stripe-cross-border-payouts
+# ZERO-TESTS.md row 5 — Wix App Market payments and billing FAQ (payout countries, $200 floor).
+https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payments-and-billing-faqs	wix-app-payments-faq
+# ZERO-TESTS.md row 6 — Topcoder active challenges (auto-scored, prize-bearing).
+https://api.topcoder.com/v6/challenges?status=ACTIVE	topcoder-active-challenges
+# ZERO-TESTS.md row 7 — Bituach Leumi rates for the self-employed.
+https://www.btl.gov.il/Insurance/National%20Insurance/type_list/Self_Employed/Pages/rates.aspx	btl-self-employed-rates
+# ZERO-TESTS.md row 8 — Bituach Leumi minimum for those not working / income not from work.
+https://www.btl.gov.il/Insurance/Rates/Pages/%D7%9E%D7%99%20%D7%A9%D7%90%D7%99%D7%A0%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D%20%D7%95%D7%91%D7%A2%D7%9C%D7%99%20%D7%94%D7%9B%D7%A0%D7%A1%D7%94%20%D7%A9%D7%9C%D7%90%20%D7%9E%D7%A2%D7%91%D7%95%D7%93%D7%94.aspx	btl-not-working-rates
+# ZERO-TESTS.md row 9 — Kol Zchut: contributions for an employee who also has self-employment income.
+https://www.kolzchut.org.il/he/%D7%93%D7%9E%D7%99_%D7%91%D7%99%D7%98%D7%95%D7%97_%D7%9C%D7%90%D7%95%D7%9E%D7%99_%D7%9C%D7%A9%D7%9B%D7%99%D7%A8_%D7%A2%D7%9D_%D7%9E%D7%A7%D7%95%D7%A8%D7%95%D7%AA_%D7%94%D7%9B%D7%A0%D7%A1%D7%94_%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D	kolzchut-employee-plus-self-employed
+# research/measurements/step2-cost.md ("The page that settles the salaried case") — Bituach Leumi: salaried AND self-employed.
+https://www.btl.gov.il/Insurance/National%20Insurance/type_list/%D7%A2%D7%95%D7%91%D7%93%20%D7%A9%D7%9B%D7%99%D7%A8%20%D7%95%D7%92%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%20%D7%A2%D7%A6%D7%9E%D7%90%D7%99/Pages/default.aspx	btl-employee-and-self-employed

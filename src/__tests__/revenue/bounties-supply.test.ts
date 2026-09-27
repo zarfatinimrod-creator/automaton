@@ -13,6 +13,7 @@ import {
   readAlgoraComments,
   readBoardVerdict,
   renderSupplyMarkdown,
+  searchUnservedAllowance,
   type SupplyComment,
   type SupplyIssue,
   type SupplyReading,
@@ -294,6 +295,35 @@ describe("buildSupplyMeasurement", () => {
     );
   });
 
+  // GitHub search can count index entries it never serves (hidden, deleted or transferred issues). supply-github.ts
+  // accepts such a gap only when two full passes served the identical set and it is within searchUnservedAllowance;
+  // it arrives here as method.searchUnserved, and is carried beside the count, never into it.
+  it("accepts a search that served fewer than it counted when the gap is recorded as searchUnserved", () => {
+    const { evaluated, repos } = fixtureRun();
+    const m = buildSupplyMeasurement({ measuredAt: "2026-09-28T06:30:00.000Z", evaluated, repos, method: { ...METHOD, searchTotalCount: 9, searchUnserved: 3 } });
+    expect(m.labelledOpenIssues).toBe(6);
+    expect(m.claimableBounties).toBe(1);
+    expect(m.method.searchTotalCount).toBe(9);
+    expect(m.method.searchUnserved).toBe(3);
+  });
+
+  it("still refuses a gap the recorded searchUnserved does not cover", () => {
+    const { evaluated, repos } = fixtureRun();
+    expect(() =>
+      buildSupplyMeasurement({ measuredAt: "2026-09-28T06:30:00.000Z", evaluated, repos, method: { ...METHOD, searchTotalCount: 9, searchUnserved: 2 } }),
+    ).toThrow(/6 of 9/);
+  });
+
+  it("refuses a recorded gap larger than a stale index explains, or one that is not a count", () => {
+    const { evaluated, repos } = fixtureRun();
+    const build = (searchTotalCount: number, searchUnserved: number) => () =>
+      buildSupplyMeasurement({ measuredAt: "2026-09-28T06:30:00.000Z", evaluated, repos, method: { ...METHOD, searchTotalCount, searchUnserved } });
+    expect(build(12, 6)).toThrow(/6 unserved.*allows 5/);
+    expect(build(6, -1)).toThrow(/searchUnserved/);
+    expect(build(7, 0.5)).toThrow(/searchUnserved/);
+    expect(searchUnservedAllowance(12)).toBe(5);
+  });
+
   it("carries the weekly history forward and adds this week's reading", () => {
     const { evaluated, repos } = fixtureRun();
     const previous: SupplyReading[] = [{ week: "2026-W39", measuredAt: "2026-09-21T06:30:00.000Z", claimable: 4 }];
@@ -362,6 +392,26 @@ describe("renderSupplyMarkdown", () => {
     for (const f of SUPPLY_FILTERS) expect(md).toContain(`\`${f.id}\``);
     expect(md).toMatch(/\| `acme\/widget` \| 3 \| 1 \|/);
     expect(md).toMatch(/week 1 of 4/i);
+  });
+
+  it("says how many issues GitHub counted and did not serve, beside the number — never inside it", () => {
+    const { evaluated, repos } = fixtureRun();
+    const md = renderSupplyMarkdown(
+      buildSupplyMeasurement({ measuredAt: "2026-09-28T06:30:00.000Z", evaluated, repos, method: { ...METHOD, searchTotalCount: 9, searchUnserved: 3 } }),
+    );
+    expect(md).toContain("GitHub counted 3 issues it did not serve; the claimable count could be up to 3 higher.");
+    expect(md).toMatch(/\*\*1 claimable bounty\*\*/);
+    expect(md).toMatch(/search reported 9 and served 6 \(3 unserved\)/);
+  });
+
+  it("renders a measurement from before the field existed without inventing a gap", () => {
+    const { evaluated, repos } = fixtureRun();
+    const m = buildSupplyMeasurement({ measuredAt: "2026-09-28T06:30:00.000Z", evaluated, repos, method: METHOD });
+    expect(m.method.searchUnserved).toBe(0);
+    const { searchUnserved: _dropped, ...olderMethod } = m.method;
+    const md = renderSupplyMarkdown({ ...m, method: olderMethod });
+    expect(md).not.toMatch(/did not serve|\d+ unserved/);
+    expect(md).toMatch(/search reported 6\./);
   });
 
   it("escapes third-party titles so an issue title cannot break the table", () => {

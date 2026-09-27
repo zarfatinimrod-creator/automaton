@@ -13,7 +13,7 @@ import {
   tick,
   TASK_ORDER,
 } from "../../revenue/runner.js";
-import { OWNER_STEPS, ownerStepsForLine } from "../../revenue/owner-steps.js";
+import { OWNER_STEPS, isOwnerStepOpen, ownerStepById, ownerStepsForLine } from "../../revenue/owner-steps.js";
 import { getLine, listLines, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
 import { REVENUE_TASK_INTERVALS_MS } from "../../revenue/heartbeat.js";
 import { getActiveGoals } from "../../state/database.js";
@@ -200,15 +200,89 @@ describe("revenue/runner report rendering", () => {
     const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
     const report = renderReport(db, result);
     for (const line of listLines(db).filter((l) => l.status === "awaiting_setup")) {
-      const open = ownerStepsForLine(line.id).filter((s) => !s.doneOn).map((s) => s.number);
+      const open = ownerStepsForLine(line.id).filter(isOwnerStepOpen).map((s) => s.number);
       expect(open.length, `${line.id} has no open owner step`).toBeGreaterThan(0);
       expect(report).toContain(`Owner steps still open for \`${line.id}\` (docs/OWNER_STEPS.he.md): ${open.join(", ")}`);
+      // Step 2 gates every line and is still named on every line — held, not dropped.
+      const row = report.split("\n").find((l) => l.startsWith(`Owner steps still open for \`${line.id}\``))!;
+      expect(row, `${line.id} lost step 2 from its row`).toMatch(/\bstep 2 /);
     }
-    expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*\b2\b[^\n]*\b5\b[^\n]*\b6\b/);
+    expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*: 3, 7, 6 \(not asked now: /);
     // a step recorded as done is not asked for again
     const done = OWNER_STEPS.filter((s) => s.doneOn).map((s) => s.number);
     expect(done).toContain(1);
     expect(report).not.toMatch(/Owner steps still open for `[^`]+` \(docs\/OWNER_STEPS\.he\.md\): 1,/);
+  });
+
+  it("names the frozen domain step as frozen, never as something for the owner to do", async () => {
+    // The owner's ₪0 rule of 27.9.2026 froze step 5 (the only step that costs
+    // money). It still gates il-biz-tools and pcn874, so the report says so —
+    // but outside the list of steps being asked for, and no checklist line
+    // tells the owner to buy a domain.
+    const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
+    const report = renderReport(db, result);
+    for (const id of ["il-biz-tools", "pcn874"]) {
+      const line = report.split("\n").find((l) => l.startsWith(`Owner steps still open for \`${id}\``))!;
+      expect(line, `${id} has no open-steps line`).toBeTruthy();
+      const [asked, notAsked] = line.split(" (not asked now: ");
+      expect(asked).not.toMatch(/\b5\b/);
+      expect(notAsked).toMatch(/(^|; )step 5 frozen by the owner's ₪0 rule of 27\.9\.2026\)$/);
+    }
+    expect(report).not.toMatch(/- \[ \] Buy the company domain/);
+    expect(result.blockers.find((b) => b.startsWith("pcn874 is waiting on the owner")))
+      .toMatch(/not asked now: [^)]*step 5 frozen/);
+    // Lines the domain never gated carry no frozen note.
+    expect(report).not.toMatch(/Owner steps still open for `apify-actors`[^\n]*frozen/);
+  });
+
+  it("does not ask for step 2 before a paid product is ready and the official cost check is done", async () => {
+    // The fail-open: step 2's precondition was prose the report never read, so
+    // the hourly report asked for step 2 FIRST on every line ("steps 2, 6",
+    // "steps 2, 3, 6", …). A ₪0-rule owner following it could open the file and
+    // start recurring payments before the colony checked whether registering
+    // costs anything. Step 2 still gates every line, so it is named — outside
+    // the asked-now list, with its precondition, in both places it appears.
+    const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
+    const report = renderReport(db, result);
+    const held = "step 2 only when a paid product is ready, after the official cost check";
+    const waiting = listLines(db).filter((l) => l.status === "awaiting_setup" && !l.humanSetupDone);
+    expect(waiting.length).toBeGreaterThan(0);
+    for (const line of waiting) {
+      const row = report.split("\n").find((l) => l.startsWith(`Owner steps still open for \`${line.id}\``))!;
+      const blocker = result.blockers.find((b) => b.startsWith(`${line.id} is waiting on the owner`))!;
+      expect(row, `${line.id} has no open-steps line`).toBeTruthy();
+      expect(blocker, `${line.id} has no blocker line`).toBeTruthy();
+
+      const askedRow = row.split(" (not asked now: ")[0].split("): ")[1];
+      expect(askedRow.split(", "), `${line.id} report row asks for step 2`).not.toContain("2");
+      expect(row, `${line.id} report row does not name the held step`).toContain(`(not asked now: ${held}`);
+
+      const askedBlocker = blocker.split(" of docs/OWNER_STEPS.he.md")[0].split("steps ")[1];
+      expect(askedBlocker.split(", "), `${line.id} blocker asks for step 2`).not.toContain("2");
+      expect(blocker, `${line.id} blocker does not name the held step`).toContain(`(not asked now: ${held}`);
+    }
+    // The four lines as the reviewer read them on the real database.
+    expect(result.blockers.find((b) => b.startsWith("apify-actors is waiting")))
+      .toMatch(/^apify-actors is waiting on the owner: steps 6 of docs\/OWNER_STEPS\.he\.md \(not asked now: step 2 only/);
+    expect(report).toMatch(/Owner steps still open for `il-biz-tools`[^\n]*: 3, 6 \(not asked now: step 2 only when a paid product is ready, after the official cost check; step 5 frozen by the owner's ₪0 rule of 27\.9\.2026\)/);
+    expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*: 3, 7, 6 \(not asked now: step 2 [^;]+; step 5 frozen/);
+    expect(report).toMatch(/Owner steps still open for `oss-bounties`[^\n]*: 7, 4, 6 \(not asked now: step 2 [^;)]+\)$/m);
+  });
+
+  it("asks for step 2 once the colony records its precondition met", async () => {
+    // metOn is the switch: set it (with evidence) and the report asks again.
+    const tax = ownerStepById("tax-file")!;
+    const saved = tax.precondition!;
+    tax.precondition = { ...saved, metOn: { date: "2026-10-01", evidence: "test only" } };
+    try {
+      const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
+      const report = renderReport(db, result);
+      expect(report).toMatch(/Owner steps still open for `apify-actors` \(docs\/OWNER_STEPS\.he\.md\): 2, 6$/m);
+      expect(report).not.toContain("after the official cost check");
+    } finally {
+      tax.precondition = saved;
+    }
+    expect(ownerStepById("tax-file")!.precondition!.metOn).toBeUndefined();
   });
 
   it("asks the owner to tell Claude, not to run the ledger command on his own machine", async () => {

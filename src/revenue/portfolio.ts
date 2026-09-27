@@ -107,7 +107,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
       "receipt and invoice generator matching Israeli formats, VAT and advance-payment calculators, net-salary calculator, Bituach Leumi estimator, osek patur threshold tracker, and the redaction feature folded in from risk-governance.",
       "The paid tier is sold through GUMROAD, not Paddle: Gumroad is the only merchant of record with rendered proof of a native ILS payout to an Israeli bank; Freemius (rendered 7.9.2026) pays Israel from a USD balance with ILS only by Wise or wire conversion (rails.ts, CANDIDATE_RAILS). Retire the Paddle block in src/config/site.json and put a Gumroad checkout link on the Pro box in place of 'בקרוב'.",
       "Every page that depends on tax-2026.json stays UNPUBLISHED until its rates are confirmed against two independent GitHub-hosted implementations and `verified` flips to true. Publishing an unverified rate is selling a wrong number.",
-      "Loop: deploy under the domain → one Hebrew SERP read before any SEO hour → cookieless page views through the PostHog snippet, written weekly as KPIs → improve the tool with the best visit-to-pay ratio → repeat.",
+      "Loop: deploy (on *.netlify.app while owner step 5, the domain, is frozen by the owner's ₪0 rule of 27.9.2026) → one Hebrew SERP read before any SEO hour → cookieless page views through the PostHog snippet, written weekly as KPIs → improve the tool with the best visit-to-pay ratio → repeat.",
     ].join(" "),
     kpis: ["weekly page views (cookieless)", "free tool uses", "paid conversions", "MRR in ILS", "refund rate"],
     killCriteria: [
@@ -127,7 +127,9 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     budgetMonthlyCents: 4000,
     humanSetup: [
       "Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3)",
-      "Buy the company domain at a registrar with WHOIS privacy on by default (owner step 5)",
+      // Owner step 5 (the domain) is not asked for: it is frozen by the owner's
+      // ₪0 rule of 27.9.2026, and the site ships on *.netlify.app until the owner
+      // decides to spend after income. owner-steps.ts keeps the step and says so.
       "Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6)",
     ],
     skillName: "revenue-il-biz-tools",
@@ -214,7 +216,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     humanSetup: [
       "Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses",
       "Create the GitHub organisation under the brand name so the open-source core's repository URL carries it and not your username (owner step 7). The npm scope `@mehudak` (the brand the board chose on 27.9.2026) is a separate namespace on npm, not created by the GitHub organisation; publishing to it is our work and no workflow does it yet.",
-      "Buy the company domain (owner step 5) and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — both shared with il-biz-tools; without the token the loop cannot see a sale",
+      "Paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — shared with il-biz-tools; without the token the loop cannot see a sale. (The company domain, owner step 5, is frozen by the owner's ₪0 rule of 27.9.2026 and is not asked for.)",
     ],
     skillName: "revenue-pcn874",
   },

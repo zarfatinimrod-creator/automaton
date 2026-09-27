@@ -10,23 +10,94 @@ import {
   setOwnerFloatIls,
 } from "../../revenue/budget.js";
 import { seedDefaultPortfolio } from "../../revenue/portfolio.js";
-import { agorotFromIls } from "../../revenue/money.js";
-import { setFxRate } from "../../revenue/money.js";
+import { agorotFromIls, setFxRate } from "../../revenue/money.js";
+import { recordLedgerEntry } from "../../revenue/ledger.js";
 
-describe("the owner's ₪200 float", () => {
+describe("the owner's float is ₪0 by their rule of 27.9.2026", () => {
   let db: BetterSqlite3.Database;
   beforeEach(() => { db = createInMemoryDb(); seedDefaultPortfolio(db); });
   afterEach(() => { db.close(); });
 
-  // The float's one budgeted use is the first year of the company domain (owner
-  // step 5). The renewal is the owner's decision each time, never a draw — the
-  // line that used to appear here, `dev-extensions`, was killed on 7.9.2026.
+  it("starts at ₪0 with nothing spent and nothing remaining", () => {
+    const s = ownerFloatState(db);
+    expect(DEFAULT_OWNER_FLOAT_AGOROT).toBe(0);
+    expect(s.capAgorot).toBe(0);
+    expect(s.spentAgorot).toBe(0);
+    expect(s.remainingAgorot).toBe(0);
+    expect(s.spendCount).toBe(0);
+  });
+
+  it("refuses ANY spend, down to one agora, and says why in the owner's terms", () => {
+    // "אפילו לא שקל" — and the refusal has to explain itself, because a bare
+    // "insufficient funds" invites a session to go looking for a way round it.
+    for (const agorot of [1, 100, agorotFromIls(10), agorotFromIls(200)]) {
+      expect(() => assertCanSpend(db, agorot, "first year of the company domain")).toThrow(/float is ₪0/);
+    }
+    let message = "";
+    try { assertCanSpend(db, agorotFromIls(40), "first year of the company domain"); }
+    catch (err) { message = (err as Error).message; }
+    expect(message).toMatch(/refusing to spend ₪40\.00 on "first year of the company domain"/);
+    expect(message).toMatch(/27\.9\.2026/);
+    expect(message).toMatch(/not even one shekel/);
+    expect(message).toMatch(/₪200 authorised on 3\.9\.2026 is suspended/);
+    expect(message).toMatch(/ledger shows income AND the owner says so/);
+    expect(message).toMatch(/setOwnerFloatIls/);
+    expect(message).toMatch(/do not work around this/);
+  });
+
+  it("records nothing when it refuses, even with a perfectly good receipt", () => {
+    expect(() => recordFloatSpend(db, {
+      lineId: "il-biz-tools", amountMinor: agorotFromIls(40), currency: "ILS",
+      externalId: "domain-receipt-1", purpose: "first year of the company domain",
+    })).toThrow(/float is ₪0/);
+    expect(ownerFloatState(db).spendCount).toBe(0);
+    const rows = db.prepare("SELECT COUNT(*) AS n FROM revenue_ledger WHERE source = ?").get(OWNER_FLOAT_SOURCE) as { n: number };
+    expect(rows.n).toBe(0);
+  });
+
+  it("refuses a dollar charge too — the ceiling is ₪0 in every currency", () => {
+    setFxRate(db, "USD", 3.7);
+    expect(() => recordFloatSpend(db, {
+      lineId: "il-biz-tools", amountMinor: 100, currency: "USD", externalId: "usd-0", purpose: "a one-dollar fee",
+    })).toThrow(/float is ₪0/);
+  });
+
+  it("does not reopen on its own when income arrives: income is the owner's condition, not their decision", () => {
+    recordLedgerEntry(db, {
+      lineId: "il-biz-tools", kind: "sale", amountMinor: agorotFromIls(500), currency: "ILS",
+      source: "gumroad", externalId: "sale-1",
+    });
+    expect(ownerFloatState(db).capAgorot).toBe(0);
+    expect(() => assertCanSpend(db, agorotFromIls(40), "domain")).toThrow(/float is ₪0/);
+  });
+
+  it("opens only when the owner raises it, and closes again if they set it back to ₪0", () => {
+    setOwnerFloatIls(db, 200);
+    expect(() => assertCanSpend(db, agorotFromIls(40), "domain")).not.toThrow();
+    setOwnerFloatIls(db, 0);
+    expect(() => assertCanSpend(db, agorotFromIls(40), "domain")).toThrow(/float is ₪0/);
+  });
+});
+
+describe("the float's mechanics, once the owner raises it (as they would, to ₪200)", () => {
+  let db: BetterSqlite3.Database;
+  beforeEach(() => {
+    db = createInMemoryDb();
+    seedDefaultPortfolio(db);
+    // What the owner would do after income arrives and they decide to spend.
+    // Nothing in the colony does this on its own.
+    setOwnerFloatIls(db, 200);
+  });
+  afterEach(() => { db.close(); });
+
+  // The float's one budgeted use, if it is ever reopened, is the first year of
+  // the company domain (owner step 5, frozen by the 27.9 rule). The renewal is
+  // the owner's decision each time, never a draw.
   const spend = (ils: number, id: string, purpose = "first year of the company domain") =>
     recordFloatSpend(db, { lineId: "il-biz-tools", amountMinor: agorotFromIls(ils), currency: "ILS", externalId: id, purpose });
 
-  it("starts at ₪200 with nothing spent", () => {
+  it("holds exactly what the owner set, with nothing spent", () => {
     const s = ownerFloatState(db);
-    expect(s.capAgorot).toBe(DEFAULT_OWNER_FLOAT_AGOROT);
     expect(s.capAgorot).toBe(20_000);
     expect(s.spentAgorot).toBe(0);
     expect(s.remainingAgorot).toBe(20_000);
@@ -53,7 +124,7 @@ describe("the owner's ₪200 float", () => {
     expect(ownerFloatState(db).spendCount).toBe(0);
   });
 
-  it("demands a receipt, because it is his money", () => {
+  it("demands a receipt, because it is their money", () => {
     expect(() => recordFloatSpend(db, {
       lineId: "il-biz-tools", amountMinor: 500, currency: "ILS", externalId: "  ", purpose: "something",
     })).toThrow(/receipt id/);

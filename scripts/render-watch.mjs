@@ -28,6 +28,8 @@
  *   - the raw body is stored under research/rendered/<slug>.<ext>, the extension
  *     chosen from the response Content-Type (html / json / pdf / xml / txt / bin)
  *   - for HTML, a deterministic text extraction is stored at <slug>.txt
+ *   - secret-shaped strings (vendor docs print sample keys) are masked before the
+ *     body is hashed or stored, and the meta file counts them as `redacted`
  *   - research/rendered/<slug>.meta.json records url, fetchedAt, status,
  *     contentType, byteLength, sha256 and whether the body changed
  *   - a non-2xx response or a network error is RECORDED IN THE META FILE and
@@ -275,6 +277,46 @@ export function sha256(bytes) {
 }
 
 /**
+ * Secret-shaped strings that GitHub push protection refuses. Vendor docs print
+ * sample keys in exactly these shapes: on 27.9.2026 Stripe's cross-border payouts
+ * page carried one, push protection rejected the capture commit, and the whole
+ * run's pages were lost. A capture is for citing prose, never for reusing a key,
+ * so the key is masked before anything is hashed or written.
+ */
+export const SECRET_PATTERNS = [
+  { kind: "stripe-secret-key", re: /\b(?:sk|rk)_(?:test|live)_[0-9A-Za-z]{10,}\b/g },
+  { kind: "stripe-webhook-secret", re: /\bwhsec_[0-9A-Za-z]{20,}\b/g },
+  { kind: "github-token", re: /\b(?:gh[pousr]_[0-9A-Za-z]{36,}|github_pat_[0-9A-Za-z_]{40,})\b/g },
+  { kind: "aws-access-key-id", re: /\b(?:AKIA|ASIA)[0-9A-Z]{16}\b/g },
+  { kind: "slack-token", re: /\bxox[abprs]-[0-9A-Za-z-]{10,}\b/g },
+  { kind: "private-key", re: /-----BEGIN (?:[A-Z]+ )?PRIVATE KEY-----[\s\S]*?-----END (?:[A-Z]+ )?PRIVATE KEY-----/g },
+];
+
+function isTextLike(contentType) {
+  const ct = String(contentType ?? "").toLowerCase();
+  return isHtml(ct) || ct.startsWith("text/") || ct.includes("json") || ct.includes("xml") || ct.includes("javascript");
+}
+
+/**
+ * Mask secret-shaped strings in a text body. A body with none comes back as the
+ * same bytes, so its hash (and the quiet git history) does not change; binary
+ * bodies are never rewritten. Returns the bytes to store and how many were masked.
+ */
+export function redactSecrets(bytes, contentType) {
+  if (!bytes || !isTextLike(contentType)) return { bytes, count: 0 };
+  const original = bytes.toString("utf8");
+  let text = original;
+  let count = 0;
+  for (const { kind, re } of SECRET_PATTERNS) {
+    text = text.replace(re, () => {
+      count += 1;
+      return `[redacted:${kind}]`;
+    });
+  }
+  return count === 0 ? { bytes, count: 0 } : { bytes: Buffer.from(text, "utf8"), count };
+}
+
+/**
  * Did anything worth committing change? The body hash is the main answer, but a
  * page that starts answering 403 has changed too, and so has one whose network
  * error appeared or cleared.
@@ -306,6 +348,7 @@ export function buildMeta({
   error = null,
   bodyPath = null,
   textPath = null,
+  redacted = 0,
 }) {
   const next = {
     url,
@@ -316,6 +359,8 @@ export function buildMeta({
     byteLength,
     sha256: hash,
     truncated,
+    // Present only when something was masked, so every other page's meta keeps its shape.
+    ...(redacted > 0 ? { redacted } : {}),
     error,
     bodyPath,
     textPath,
@@ -500,7 +545,11 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     let hash = null;
     let byteLength = 0;
 
+    let redacted = 0;
     if (result.bytes) {
+      const masked = redactSecrets(result.bytes, result.contentType);
+      result.bytes = masked.bytes;
+      redacted = masked.count;
       byteLength = result.bytes.length;
       hash = sha256(result.bytes);
       const extension = extensionFor(result.contentType);
@@ -521,6 +570,7 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
       error: result.error,
       bodyPath,
       textPath,
+      redacted,
     });
 
     if (result.error) failedCount += 1;

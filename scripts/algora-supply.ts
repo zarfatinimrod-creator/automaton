@@ -15,6 +15,8 @@
  *
  * Exit 0 only when both files were written. On any API failure, an exhausted rate-limit budget or a partial search,
  * NOTHING is written and the exit code is 1: a week that could not be measured is a missing reading, never a zero.
+ * The one gap accepted is GitHub counting issues it never serves — the same ids on two full passes, at most
+ * max(5, 1%) of its total — and that gap is written beside the count as `searchUnserved` (supply-github.ts).
  *
  * Requests go to api.github.com only (the client refuses any other host). Algora's own site is never requested:
  * its terms forbid automated access (research/rendered/algora-terms.txt:258-260).

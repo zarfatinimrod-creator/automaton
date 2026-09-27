@@ -35,6 +35,10 @@ is why `MISSION.md` rule 4 exists.
   The build refuses or banners such pages; nobody marks a rate verified without a rendered source.
 - Every URL is still `*.netlify.app` until owner step 5 (domain). Every published link carries the owner's
   GitHub username until step 7 (organisation). Do not promote before both.
+  **Step 5 is frozen by the owner's ₪0 rule of 27.9.2026** (`src/revenue/owner-steps.ts`, `frozen`): no domain is
+  bought until income arrives and the owner decides to spend. Read literally, this gate therefore holds with no end
+  date. Whether promotion may go ahead on `*.netlify.app` after step 7 is the board's call, not the director's —
+  raise it; do not buy, and do not promote on your own reading.
 
 ## Loop
 

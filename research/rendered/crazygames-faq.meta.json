@@ -1,0 +1,17 @@
+{
+  "url": "https://docs.crazygames.com/faq/",
+  "slug": "crazygames-faq",
+  "fetchedAt": "2026-09-27T22:45:58.479Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 100974,
+  "sha256": "b134daf3d30414638aa23b3af90a4c33875206105641f4390b98871bc74466a2",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/crazygames-faq.html",
+  "textPath": "research/rendered/crazygames-faq.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

@@ -52,6 +52,27 @@ export const SUPPLY_THRESHOLDS = { weeks: 4, keepAtOrAbove: 10, killBelow: 3, ke
 /** The re-open trigger the board wrote for the kill branch, verbatim. */
 export const REOPEN_TRIGGER = "≥10 claimable bounties a week for four consecutive weekly runs";
 
+/**
+ * The most issues GitHub search may count and not serve before a run is refused: max(5, 1% of the reported total).
+ *
+ * Search's `total_count` includes index entries it never serves — issues that are hidden, deleted or transferred, or
+ * sit in repositories that became unavailable. The first push-triggered run (27.9, run 36355862817) failed on exactly
+ * that: 554 reported, 551 served. `supply-github.ts` accepts such a gap only when a second full pass serves the
+ * identical issues and the gap is within this allowance; the gap is then recorded as `searchUnserved` and shown beside
+ * the count — never added to it, never dropped. Anything larger, or passes that differ, is still a failed run.
+ */
+export const SEARCH_UNSERVED_FLOOR = 5;
+
+export function searchUnservedAllowance(reportedTotal: number): number {
+  return Math.max(SEARCH_UNSERVED_FLOOR, Math.floor(reportedTotal / 100));
+}
+
+/** The one sentence the Markdown and the run message both carry when GitHub counted issues it did not serve. */
+export function unservedCaveat(unserved: number): string | null {
+  if (!(unserved > 0)) return null;
+  return `GitHub counted ${unserved} ${unserved === 1 ? "issue" : "issues"} it did not serve; the claimable count could be up to ${unserved} higher.`;
+}
+
 // ── The filters ──────────────────────────────────────────────────────────────
 
 export type SupplyStage = "search" | "repo" | "comments" | "policy";
@@ -377,8 +398,14 @@ export interface CollectedRepo {
 
 export interface SupplyMethod {
   query: string;
-  /** What GitHub search reported; the evaluated list must account for every one. */
+  /** What GitHub search reported; the evaluated list, plus `searchUnserved`, must account for every one. */
   searchTotalCount: number;
+  /**
+   * Issues GitHub search counted and did not serve on two full passes that served the identical set, within
+   * `searchUnservedAllowance`. Reported beside the count, never inside it. Absent in files written before 28.9.2026,
+   * which is read as 0: those runs accepted no gap at all.
+   */
+  searchUnserved?: number;
   authenticated: boolean;
   requests: { search: number; core: number };
   rateLimitWaitSeconds: number;
@@ -426,6 +453,7 @@ export interface SupplyMeasurement {
   claimable: ClaimableBounty[];
   history: SupplyReading[];
   boardReading: BoardSupplyReading;
+  /** `searchUnserved` is always written (0 when search served everything); a file from before it existed lacks it. */
   method: SupplyMethod & { notes: string[] };
 }
 
@@ -435,7 +463,8 @@ export const METHOD_NOTES: readonly string[] = [
   `Amount: read from the algora-pbc[bot] bounty comment by parseAlgoraBotComment (intake.ts); ≥ $${MIN_CLAIMABLE_USD} counts, inclusive.`,
   "Payout: an algora-pbc[bot] comment saying the bounty \"has been awarded\" (notify_transfer.ex), or the 💰 Rewarded label the same job adds. Merge: the bot's \"has been merged. The bounty can be rewarded\" comment does not drop an issue (it is not on the board's list); it is reported as the stricter number beside the count.",
   "Policy: assessRepoPolicy over CONTRIBUTING, CODE_OF_CONDUCT, the pull-request template and the README, located in .github/, the root and docs/ in GitHub's own precedence, plus the issue body. Read only for repositories with a bounty that passed every cheaper filter. `unknown` is counted.",
-  "Failure: any API error, an exhausted rate-limit budget, or a search that returns fewer issues than it reports writes nothing and fails the job — an unmeasured week is a missing reading, never a zero.",
+  "Failure: any API error, an exhausted rate-limit budget, or a search that returns fewer issues than it reports (past the one exception below) writes nothing and fails the job — an unmeasured week is a missing reading, never a zero.",
+  `Search gaps: GitHub's reported total can include index entries it never shows (hidden, deleted or transferred issues, unavailable repositories). A query that falls short is read a second full time. Only if both passes serve the identical issues, and the gap to the larger reported total is at most max(${SEARCH_UNSERVED_FLOOR}, 1% of that total) per query and over the whole search, is the run accepted, with the gap recorded as \`searchUnserved\` beside the count, never in it. Passes that differ fail the run as above, even when the second pass is complete on its own (an issue that left the results between page fetches): the short first pass is not overruled by a pass that disagrees with it. A larger gap fails the run too.`,
 ];
 
 function refOf(i: SupplyIssue): string {
@@ -463,8 +492,21 @@ export function buildSupplyMeasurement(input: {
   }
   const unique = new Set(evaluated.map((e) => refOf(e.issue)));
   if (unique.size !== evaluated.length) throw new Error("the evaluated list holds the same issue twice; nothing is written.");
-  if (evaluated.length < method.searchTotalCount) {
-    throw new Error(`GitHub search reported ${method.searchTotalCount} labelled issues and ${evaluated.length} were evaluated (${evaluated.length} of ${method.searchTotalCount}); a partial count is not a count, so nothing is written.`);
+  const unserved = method.searchUnserved ?? 0;
+  if (!Number.isInteger(unserved) || unserved < 0) {
+    throw new TypeError(`buildSupplyMeasurement: searchUnserved must be a whole number of issues, not ${unserved}; nothing is written.`);
+  }
+  if (evaluated.length + unserved < method.searchTotalCount) {
+    throw new Error(
+      `GitHub search reported ${method.searchTotalCount} labelled issues and ${evaluated.length} were evaluated (${evaluated.length} of ${method.searchTotalCount}` +
+        `${unserved ? `, ${unserved} recorded as unserved` : ""}); a partial count is not a count, so nothing is written.`,
+    );
+  }
+  const allowance = searchUnservedAllowance(method.searchTotalCount);
+  if (unserved > allowance) {
+    throw new Error(
+      `GitHub search counted ${unserved} unserved of ${method.searchTotalCount}; the rule allows ${allowance} (max(${SEARCH_UNSERVED_FLOOR}, 1% of the reported total)), so nothing is written.`,
+    );
   }
 
   const droppedByFilter = Object.fromEntries(SUPPLY_FILTERS.map((f) => [f.id, 0])) as Record<SupplyFilterId, number>;
@@ -536,7 +578,7 @@ export function buildSupplyMeasurement(input: {
     claimable,
     history,
     boardReading: readBoardVerdict(history),
-    method: { ...method, notes: [...METHOD_NOTES, ...(method.notes ?? [])] },
+    method: { ...method, searchUnserved: unserved, notes: [...METHOD_NOTES, ...(method.notes ?? [])] },
   };
 }
 
@@ -577,6 +619,16 @@ export function renderSupplyMarkdown(m: SupplyMeasurement): string {
       "are left out — funded and unpaid, but promised to that solver. The board's thresholds read the number above, on its own definition; this one is shown so the week-4 reader can weigh both.",
   );
   out.push("");
+  const unserved = m.method.searchUnserved ?? 0;
+  const caveat = unservedCaveat(unserved);
+  if (caveat) {
+    out.push(
+      `**${caveat}** Search reported ${m.method.searchTotalCount}; each query that stayed short was read twice in full and served the identical issues both times, ` +
+        "so the gap is index entries GitHub counts and will not show (hidden, deleted or transferred issues, or repositories no longer available). " +
+        `It is within the allowance of ${searchUnservedAllowance(m.method.searchTotalCount)} (max(${SEARCH_UNSERVED_FLOOR}, 1% of the reported total)). The count above is of what was served; the gap is carried here, not added to it or read as a zero.`,
+    );
+    out.push("");
+  }
   out.push("A count of jobs a payer has posted, not revenue: money counts only in `revenue_ledger` with a platform transaction id (MISSION rule 2).");
   out.push("");
 
@@ -641,7 +693,8 @@ export function renderSupplyMarkdown(m: SupplyMeasurement): string {
   for (const note of m.method.notes) out.push(`- ${note}`);
   out.push(
     `- This run: ${m.method.authenticated ? "authenticated (GITHUB_TOKEN)" : "unauthenticated"}, ${m.method.requests.search} search and ${m.method.requests.core} REST requests, ` +
-      `${m.method.rateLimitWaitSeconds}s spent waiting on rate limits; search reported ${m.method.searchTotalCount}.`,
+      `${m.method.rateLimitWaitSeconds}s spent waiting on rate limits; search reported ${m.method.searchTotalCount}` +
+      `${unserved ? ` and served ${m.labelledOpenIssues} (${unserved} unserved)` : ""}.`,
   );
   out.push("");
   return out.join("\n");

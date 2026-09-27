@@ -2,11 +2,12 @@
 // (research/measurements/gumroad-license-decision.md §5, §6, §8).
 //
 // AT-10 retirement, AT-12 CSP, AT-13 copy, AT-17 language gate, AT-18 build.
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { copyProduct, removeCopy, runBuild } from './helpers/product-copy.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -165,21 +166,30 @@ describe('AT-17 language gate', () => {
   });
 });
 
+// Built in a throwaway copy: the publish build refuses while the accessibility
+// contact is a placeholder (tests/build-site.test.js), so this reads the
+// --preview tree, which is the same files the publish build would write.
 describe('AT-18 the build ships the disclosure and nothing private', () => {
+  let copy;
+  let out;
   let built;
   beforeAll(() => {
-    execFileSync(process.execPath, [join(root, 'scripts/build-site.js')], { stdio: 'pipe' });
-    built = walk(join(root, '_site'), new Set());
+    copy = copyProduct();
+    const r = runBuild(copy, '--preview');
+    if (r.status !== 0) throw new Error(`preview build failed: ${r.stderr}`);
+    out = join(copy, '_preview');
+    built = walk(out, new Set());
   });
+  afterAll(() => removeCopy(copy));
 
-  it('writes _site/invoice.html with the disclosure', () => {
-    const html = readFileSync(join(root, '_site/invoice.html'), 'utf8');
+  it('writes invoice.html with the disclosure', () => {
+    const html = readFileSync(join(out, 'invoice.html'), 'utf8');
     expect(html).toContain(DISCLOSURE_LINE);
     expect(textOf(elementById(html, 'pro-privacy').replace(/<summary>[^<]*<\/summary>/, ''))).toBe(DISCLOSURE);
   });
 
   it('copies no key file and no scripts', () => {
-    const names = built.map((p) => p.slice(join(root, '_site').length + 1));
+    const names = built.map((p) => p.slice(out.length + 1));
     expect(names.filter((n) => /license-key|\.pem$|private/i.test(n))).toEqual([]);
     expect(names.filter((n) => n.startsWith('scripts/'))).toEqual([]);
   });

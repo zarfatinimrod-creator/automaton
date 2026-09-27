@@ -1,0 +1,18 @@
+{
+  "url": "https://docs.stripe.com/connect/cross-border-payouts",
+  "slug": "stripe-cross-border-payouts",
+  "fetchedAt": "2026-09-27T22:46:03.216Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 356880,
+  "sha256": "096b5fad23453a7a2e4e4b1c339e607b0d6ffb247d2406f4f21576ed5587e956",
+  "truncated": false,
+  "redacted": 1,
+  "error": null,
+  "bodyPath": "research/rendered/stripe-cross-border-payouts.html",
+  "textPath": "research/rendered/stripe-cross-border-payouts.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

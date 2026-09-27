@@ -3,7 +3,12 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   OWNER_STEPS,
+  frozenOwnerStepsForLine,
+  hasPendingPrecondition,
+  heldOwnerStepsForLine,
+  isOwnerStepOpen,
   linesWithNoOwnerStep,
+  openOwnerStepsForLine,
   ownerStepById,
   ownerStepMinutes,
   ownerStepsForLine,
@@ -117,6 +122,115 @@ describe("every line's human setup maps to a step, and every step unlocks a line
   });
 });
 
+describe("the owner's ₪0 rule and standing consent of 27.9.2026", () => {
+  it("freezes exactly one step — the domain, the only one that costs money", () => {
+    const frozen = OWNER_STEPS.filter((s) => s.frozen);
+    expect(frozen.map((s) => s.id)).toEqual(["domain"]);
+    const f = ownerStepById("domain")!.frozen!;
+    expect(f.since).toBe("2026-09-27");
+    expect(f.rule).toBe("the owner's ₪0 rule of 27.9.2026");
+    // Frozen is not done: it comes back when the owner decides, so it keeps its
+    // number and its lines, and it must not be recorded as finished.
+    expect(ownerStepById("domain")!.doneOn).toBeUndefined();
+    expect(ownerStepById("domain")!.number).toBe(5);
+  });
+
+  it("says plainly what going without the domain costs, and what replaces it free", () => {
+    const f = ownerStepById("domain")!.frozen!;
+    expect(f.costs).toMatch(/netlify\.app/);
+    expect(f.costs).toMatch(/search|SEO/i);
+    expect(f.costs).toMatch(/com\.mehudak/);
+    expect(f.freeInstead).toMatch(/\*\.netlify\.app/);
+    expect(f.freeInstead).toMatch(/io\.github\./);
+    expect(f.freeInstead).toMatch(/step 7/);
+    expect(f.returnsWhen).toMatch(/income/);
+    // The step's own decision text no longer says the ₪200 is there to spend.
+    expect(ownerStepById("domain")!.ownerDecision).toMatch(/suspended/);
+    expect(ownerStepById("domain")!.ownerDecision).not.toMatch(/is the one card payment from the ₪200 float/);
+  });
+
+  it("stops asking for a frozen step without losing which lines it gates", () => {
+    expect(isOwnerStepOpen(ownerStepById("domain")!)).toBe(false);
+    expect(isOwnerStepOpen(ownerStepById("merge-pr")!)).toBe(false);
+    expect(isOwnerStepOpen(ownerStepById("gumroad")!)).toBe(true);
+    for (const id of ["il-biz-tools", "pcn874"]) {
+      expect(ownerStepsForLine(id).map((s) => s.id)).toContain("domain");
+      expect(openOwnerStepsForLine(id).map((s) => s.id)).not.toContain("domain");
+      expect(frozenOwnerStepsForLine(id).map((s) => s.id)).toEqual(["domain"]);
+    }
+    // Step 2 is not asked either: it is held by its precondition (next describe).
+    expect(openOwnerStepsForLine("pcn874").map((s) => s.number)).toEqual([3, 7, 6]);
+    expect(frozenOwnerStepsForLine("apify-actors")).toEqual([]);
+  });
+
+  it("no longer asks the owner, in any line's setup notes, to buy a domain", () => {
+    for (const line of DEFAULT_PORTFOLIO) {
+      for (const note of line.humanSetup) {
+        expect(note, `${line.id}: "${note}"`).not.toMatch(/^Buy the company domain/);
+        expect(note, `${line.id}: "${note}"`).not.toMatch(/Buy the company domain \(owner step 5\) and/);
+      }
+    }
+  });
+
+  it("records the standing consent to merge and publish, and PR #3's merge", () => {
+    const merge = ownerStepById("merge-pr")!;
+    expect(merge.unlocks).toMatch(/standing consent/);
+    expect(merge.unlocks).toMatch(/עצור/);
+    expect(merge.unlocks).not.toMatch(/does not merge on its own initiative/);
+    expect(merge.doneOn!.evidence).toMatch(/61fae4e/);
+  });
+
+  it("holds step 2 back until a paid product is ready and its cost is checked at the official source", () => {
+    const tax = ownerStepById("tax-file")!;
+    expect(tax.precondition!.what).toMatch(/paid product is ready/);
+    expect(tax.precondition!.what).toMatch(/official sources/);
+    expect(tax.precondition!.what).toMatch(/minimum monthly payments/);
+    expect(tax.precondition!.short).toMatch(/paid product is ready/);
+    expect(tax.precondition!.short).toMatch(/official cost check/);
+    // It states no figure: the colony has not rendered that source.
+    for (const text of [tax.precondition!.what, tax.precondition!.short]) {
+      expect(text.replaceAll("₪0 rule", "")).not.toMatch(/₪\s?\d|\d+\s?(ILS|NIS|shekel)/i);
+    }
+  });
+
+  it("does not ask the owner for step 2 while its precondition is unmet, but keeps it gating every line", () => {
+    // The fail-open this closes: the precondition used to be prose nobody read,
+    // so the hourly report went on asking for step 2 first — and a ₪0-rule owner
+    // following it could register and start recurring payments before the
+    // colony had checked whether registering costs anything.
+    const tax = ownerStepById("tax-file")!;
+    expect(tax.precondition!.metOn).toBeUndefined();
+    expect(hasPendingPrecondition(tax)).toBe(true);
+    expect(isOwnerStepOpen(tax)).toBe(false);
+    expect(tax.doneOn).toBeUndefined();
+    for (const id of tax.lines) {
+      expect(ownerStepsForLine(id).map((s) => s.id), id).toContain("tax-file");
+      expect(openOwnerStepsForLine(id).map((s) => s.id), id).not.toContain("tax-file");
+      expect(heldOwnerStepsForLine(id).map((s) => s.id), id).toEqual(["tax-file"]);
+    }
+    // Only step 2 is held; a frozen step is reported as frozen, not as held.
+    expect(OWNER_STEPS.filter(hasPendingPrecondition).map((s) => s.id)).toEqual(["tax-file"]);
+    expect(heldOwnerStepsForLine("il-biz-tools").map((s) => s.id)).not.toContain("domain");
+  });
+
+  it("asks for step 2 again once the colony records its precondition met", () => {
+    const met = OWNER_STEPS.map((s) =>
+      s.id === "tax-file"
+        ? { ...s, precondition: { ...s.precondition!, metOn: { date: "2026-10-01", evidence: "test" } } }
+        : s,
+    );
+    const tax = met.find((s) => s.id === "tax-file")!;
+    expect(hasPendingPrecondition(tax)).toBe(false);
+    expect(isOwnerStepOpen(tax)).toBe(true);
+    expect(openOwnerStepsForLine("pcn874", met).map((s) => s.number)).toEqual([2, 3, 7, 6]);
+    expect(heldOwnerStepsForLine("pcn874", met)).toEqual([]);
+  });
+
+  it("keeps the board's pinned order: the ₪0 sequence is text until the board re-rules", () => {
+    expect(ownerStepsInOrder().map((s) => s.number)).toEqual([1, 2, 3, 5, 7, 4, 6]);
+  });
+});
+
 describe("the Hebrew document has not drifted from the code", () => {
   it("carries the same seven numbered headings", () => {
     const numbers = [...doc.matchAll(/^##\s*צעד\s*(\d+)\s*—/gm)].map((m) => Number(m[1]));
@@ -141,6 +255,71 @@ describe("the Hebrew document has not drifted from the code", () => {
       const step = OWNER_STEPS.find((s) => s.number === Number(num))!;
       expect(rest.includes("✅ בוצע"), `step ${num}: heading and doneOn disagree`).toBe(Boolean(step.doneOn));
     }
+  });
+
+  it("quotes, for each held step, exactly what the hourly report prints", () => {
+    // The document tells the owner how a held step looks in REPORT.md. If the
+    // report's wording changes and the document does not, the owner looks for a
+    // phrase that is no longer there.
+    for (const step of OWNER_STEPS.filter(hasPendingPrecondition)) {
+      expect(doc, `step ${step.number}: the document does not quote the report's held note`)
+        .toContain(`not asked now: step ${step.number} ${step.precondition!.short}`);
+    }
+  });
+
+  it("marks exactly the steps the code records as frozen", () => {
+    const headings = [...doc.matchAll(/^##\s*צעד\s*(\d+)\s*—(.*)$/gm)];
+    for (const [, num, rest] of headings) {
+      const step = OWNER_STEPS.find((s) => s.number === Number(num))!;
+      expect(rest.includes("⏸ מוקפא"), `step ${num}: heading and frozen disagree`).toBe(Boolean(step.frozen));
+    }
+  });
+
+  it("opens with the ₪0 rule in the owner's own words, and the free steps first", () => {
+    const box = doc.slice(doc.indexOf("### כלל ה-0 ₪ (27.9)"), doc.indexOf("סדר ביצוע של הדירקטוריון"));
+    expect(box.length, "the ₪0 box is missing or comes after the board's order").toBeGreaterThan(200);
+    expect(box).toContain("אפילו לא שקל");
+    expect(box).toMatch(/ה-₪200 שאישרת ב-3\.9 \*\*מושהים\*\*/);
+    // The free sequence, in order: Apify half of 6, then 7, then Netlify half of
+    // 6, then 3, then 2 only when a paid product is ready.
+    const at = (needle: string) => {
+      const i = box.indexOf(needle);
+      expect(i, `the ₪0 box does not mention "${needle}"`).toBeGreaterThan(-1);
+      return i;
+    };
+    const order = [
+      at("**צעד 6 — רק החלק של Apify**"),
+      at("**צעד 7**"),
+      at("**צעד 6 — חיבור Netlify.**"),
+      at("**צעד 3 — חשבון Gumroad.**"),
+      at("**צעד 2 — רק כשמוצר בתשלום מוכן למכירה**"),
+    ];
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+    // And it says the code's order awaits the board, rather than silently diverging.
+    expect(box).toContain("ממתין לפסיקה");
+  });
+
+  it("records the standing consent and PR #3 where it talks about merging", () => {
+    const step1 = doc.slice(doc.indexOf("## צעד 1"), doc.indexOf("## צעד 2"));
+    expect(step1).toContain("61fae4e");
+    expect(step1).toContain("אישור קבוע");
+    expect(step1).toContain("\"עצור\"");
+  });
+
+  it("says in step 2 that the cost is checked at the official source first, and names no figure for it", () => {
+    const step2 = doc.slice(doc.indexOf("## צעד 2"), doc.indexOf("## צעד 3"));
+    expect(step2).toContain("מהמקור הרשמי");
+    expect(step2).toContain("תשלום חודשי מינימלי");
+    expect(step2).toContain("רק כשמוצר בתשלום מוכן");
+  });
+
+  it("says in step 5 what the freeze costs and what replaces it free", () => {
+    const step5 = doc.slice(doc.indexOf("## צעד 5"), doc.indexOf("## צעד 6"));
+    expect(step5).toContain("netlify.app");
+    expect(step5).toContain("io.github.mehudak");
+    expect(step5).toContain("com.mehudak");
+    expect(step5).toContain("גוגל");
+    expect(step5).not.toContain("תשלום אחד מתוך ה-₪200 שאישרת");
   });
 
   it("still tells the owner the Apify token may go in right after step 1", () => {
