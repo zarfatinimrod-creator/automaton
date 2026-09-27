@@ -10,6 +10,7 @@ import {
   MAX_BYTES,
   parseUrlList,
   readCappedBody,
+  redactSecrets,
   resolveListText,
   sha256,
   slugFromUrl,
@@ -432,5 +433,55 @@ describe("resolveListText", () => {
 describe("the timeout the brief fixed", () => {
   it("is 30 s", () => {
     expect(TIMEOUT_MS).toBe(30_000);
+  });
+});
+
+describe("redactSecrets — a captured page must never trip push protection", () => {
+  // Built at runtime so this test file does not itself contain a secret-shaped string:
+  // on 27.9.2026 Stripe's own docs page carried a sample test key, GitHub push
+  // protection refused the capture commit, and every page in that run was lost.
+  const stripeSample = ["sk", "test", "4eC39HqLyjWDarjtT1zdp7dc"].join("_");
+  const githubSample = "ghp" + "_" + "a".repeat(36);
+  const awsSample = "AKIA" + "IOSFODNN7EXAMPLE";
+
+  it("masks documented sample keys in text bodies and says how many it masked", () => {
+    const html = Buffer.from(`<code>curl -u ${stripeSample}:</code><p>${githubSample}</p><i>${awsSample}</i>`);
+    const r = redactSecrets(html, "text/html; charset=utf-8");
+    const out = r.bytes.toString("utf8");
+    expect(out).not.toContain(stripeSample);
+    expect(out).not.toContain(githubSample);
+    expect(out).not.toContain(awsSample);
+    expect(out).toContain("[redacted:stripe-secret-key]");
+    expect(out).toContain("[redacted:github-token]");
+    expect(out).toContain("[redacted:aws-access-key-id]");
+    expect(r.count).toBe(3);
+  });
+
+  it("leaves a page with nothing secret-shaped byte-identical, so its hash and history do not churn", () => {
+    const html = Buffer.from("<p>Use sk_test keys in test mode; see the ghp docs. AKIA is a prefix.</p>");
+    const r = redactSecrets(html, "text/html");
+    expect(r.count).toBe(0);
+    expect(r.bytes.equals(html)).toBe(true);
+  });
+
+  it("does not rewrite a binary body", () => {
+    const pdf = Buffer.from(`%PDF-1.7 ${stripeSample}`);
+    const r = redactSecrets(pdf, "application/pdf");
+    expect(r.count).toBe(0);
+    expect(r.bytes.equals(pdf)).toBe(true);
+  });
+
+  it("covers JSON and plain-text bodies too", () => {
+    expect(redactSecrets(Buffer.from(`{"key":"${stripeSample}"}`), "application/json").count).toBe(1);
+    expect(redactSecrets(Buffer.from(stripeSample), "text/plain").count).toBe(1);
+  });
+});
+
+
+describe("buildMeta — the redaction count", () => {
+  it("records `redacted` only when something was masked, keeping every other meta's shape", () => {
+    const base = { url: "https://example.com/", slug: "ex", fetchedAt: "2026-09-27T00:00:00.000Z" };
+    expect("redacted" in buildMeta(base)).toBe(false);
+    expect(buildMeta({ ...base, redacted: 2 }).redacted).toBe(2);
   });
 });
