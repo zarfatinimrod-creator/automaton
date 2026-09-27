@@ -27,6 +27,9 @@ Quarter = tuple[int, int]
 EXPECTED_COLUMNS = ["num_pushers", "language", "language_type", "iso2_code", "year", "quarter"]
 
 PLACEHOLDER = re.compile(r"\{fig:([a-z][a-z0-9_]*)\}")
+# `{src:<id>}` fills an attributed sentence from another publication (sources.py). It is not a figure, and its one
+# permitted number, the source's year, is checked there — the only exception to the rule below.
+ANY_PLACEHOLDER = re.compile(r"\{(?:fig|src):[a-z][a-z0-9_]*\}")
 
 # A number typed by hand is a number nobody computed. Digits are caught directly; these words are how the same
 # thing slips in as prose ("doubled", "half", "ten languages").
@@ -191,11 +194,17 @@ def format_figure(kind: str, value: Any, decimals: int) -> tuple[str, Any]:
         return f"{_num(r, decimals)}%", float(r)
     if kind == "times":
         return f"{_num(r, decimals)} times", float(r)
+    if kind == "times_sign":
+        return f"{_num(r, decimals)}×", float(r)
+    if kind == "signed":
+        return (f"+{_num(r, decimals)}" if r >= 0 else f"−{_num(-r, decimals)}"), float(r)
     if kind == "pts":
         unit = "percentage point" if r == 1 else "percentage points"
         return f"{_num(r, decimals)} {unit}", float(r)
     raise FigureError(f"unknown figure kind {kind!r}")
 
+
+ROUNDED_KINDS = ("pct", "times", "pts", "millions", "times_sign", "signed")
 
 UNITS = {
     "count": "count",
@@ -206,6 +215,8 @@ UNITS = {
     "pct": "percent",
     "times": "multiple (last quarter / first quarter)",
     "pts": "percentage points",
+    "times_sign": "multiple (×), chart label",
+    "signed": "percentage points, signed chart label",
 }
 
 
@@ -229,6 +240,7 @@ class Figure:
     text: str
     description: str
     code: str
+    chart: str = ""
 
     def as_json(self) -> dict[str, Any]:
         v = list(self.value) if isinstance(self.value, tuple) else self.value
@@ -238,7 +250,7 @@ class Figure:
             "value": v,
             "rounded": self.rounded,
             "decimals": self.decimals,
-            "rounding": "half-up" if self.kind in ("pct", "times", "pts", "millions") else "none",
+            "rounding": "half-up" if self.kind in ROUNDED_KINDS else "none",
             "unit": self.unit,
             "description": self.description,
             "code": self.code,
@@ -415,6 +427,87 @@ def compute_figures(an: Analysis) -> dict[str, Figure]:
 
 
 # ---------------------------------------------------------------------------------------------------------------
+# Chart figures: every number drawn on a chart, with the same half-up rounding as the narration (G4, R2).
+# charts.py reads these back from figures.json and draws their `text`; charts.untraced_chart_numbers() refuses a frame
+# that shows any number figures.json does not hold. Axis scale ticks (a label equal to its own tick position) and the
+# footer (spec metadata only) are the two things not registered here.
+
+HIST_BIN_WIDTH = 5  # percentage points per histogram bin; bins include their lower edge
+
+
+def slug(name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", name.lower().replace("+", "p")).strip("_")
+
+
+def histogram_bins(an: Analysis) -> list[int]:
+    """Lower edges of the histogram bins, wide enough for both quarters."""
+    top = max(max(an.ratio_by_economy(q).values()) for q in (an.first, an.last))
+    return list(range(0, int(top // HIST_BIN_WIDTH + 1) * HIST_BIN_WIDTH, HIST_BIN_WIDTH))
+
+
+def _chart_pushers_lines(an: Analysis, add) -> None:
+    add("pushers_lines.a_last_millions", "millions", an.a_series[-1], 2, f"{an.a} pushers, panel sum, latest quarter.")
+    add("pushers_lines.b_last_millions", "millions", an.b_series[-1], 2, f"{an.b} pushers, panel sum, latest quarter.")
+
+
+def _chart_growth_bars(an: Analysis, add) -> None:
+    for lang in an.top_languages():
+        multiple, n = an.growth(lang)
+        add(f"growth_bars.growth.{slug(lang)}", "times_sign", multiple, 1,
+            f"{lang}: pushers latest / first quarter, over panel economies reported for it at both ends.")
+        add(f"growth_bars.economies.{slug(lang)}", "count", n, 0,
+            f"{lang}: panel economies reported for it in both the first and the latest quarter.")
+
+
+def _chart_yearly_gain_bars(an: Analysis, add) -> None:
+    for a, b, gain in an.yearly_gain:
+        key = f"{a[0]}_{b[0]}"
+        add(f"yearly_gain_bars.gain.{key}", "signed", gain, 1,
+            f"A/B ratio (percent) at {b[0]} Q{b[1]} minus at {a[0]} Q{a[1]}, percentage points.")
+        add(f"yearly_gain_bars.label.{key}", "text", f"{a[0]}–{str(b[0])[2:]}", 0, "Bar label: the year step.")
+
+
+def _chart_ratio_histogram(an: Analysis, add) -> None:
+    for period, q in (("first", an.first), ("last", an.last)):
+        values = list(an.ratio_by_economy(q).values())
+        for lo in histogram_bins(an):
+            n = sum(1 for v in values if lo <= v < lo + HIST_BIN_WIDTH)
+            add(f"ratio_histogram.{period}.{lo:02d}_{lo + HIST_BIN_WIDTH:02d}", "count", n, 0,
+                f"Panel economies with A/B x 100 in [{lo}, {lo + HIST_BIN_WIDTH}), {q[0]} Q{q[1]}.")
+
+
+def _chart_coverage_lines(an: Analysis, add) -> None:
+    add("coverage_lines.b_reported_last", "count", an.reported_count(an.b, an.last), 0,
+        f"Economies (all, EU excluded) reported for {an.b}, latest quarter.")
+
+
+CHART_BLOCKS = {
+    "pushers_lines": _chart_pushers_lines,
+    "growth_bars": _chart_growth_bars,
+    "yearly_gain_bars": _chart_yearly_gain_bars,
+    "ratio_histogram": _chart_ratio_histogram,
+    "coverage_lines": _chart_coverage_lines,
+}
+
+
+def compute_chart_figures(an: Analysis, charts: list[str] | None = None) -> dict[str, Figure]:
+    out: dict[str, Figure] = {}
+    for chart, block in CHART_BLOCKS.items():
+        if charts is not None and chart not in charts:
+            continue
+        code = inspect.getsource(block)
+
+        def add(name, kind, value, decimals, description, _chart=chart, _code=code):
+            if name in out:
+                raise FigureError(f"chart figure {name} defined twice")
+            text, rounded = format_figure(kind, value, decimals)
+            out[name] = Figure(name, kind, decimals, UNITS[kind], value, rounded, text, description, _code, _chart)
+
+        block(an, add)
+    return out
+
+
+# ---------------------------------------------------------------------------------------------------------------
 # Claims: the words in the narration that assert something about the numbers.
 
 
@@ -426,9 +519,9 @@ class Claim:
 
 
 CLAIMS: list[Claim] = [
-    Claim("ratio_rose", "'Relative to JavaScript, yes': the A/B ratio is higher at the end than at the start.",
+    Claim("ratio_rose", "'As a share of JavaScript, yes': the A/B ratio is higher at the end than at the start.",
           lambda an, f: an.ratio_pct[-1] > an.ratio_pct[0]),
-    Claim("gap_widened", "'JavaScript's lead grew': B minus A is larger at the end than at the start.",
+    Claim("gap_widened", "'in raw numbers, no: JavaScript's lead grew': B minus A is larger at the end than at the start.",
           lambda an, f: f["gap_last_millions"].value > f["gap_first_millions"].value),
     Claim("both_grew", "'because both languages grew' and 'grew ... over': both growth multiples exceed 1.",
           lambda an, f: f["a_growth_x"].value > 1 and f["b_growth_x"].value > 1),
@@ -461,8 +554,9 @@ def check_claims(an: Analysis, figs: dict[str, Figure]) -> list[dict[str, Any]]:
 
 
 def hand_typed_numbers(template: str) -> list[str]:
-    """Digits or number words in a template outside its placeholders. Empty means every number is a figure."""
-    bare = PLACEHOLDER.sub(" ", template)
+    """Digits or number words in a template outside its placeholders. Empty means every number is a figure (or the
+    year of an attributed source, which sources.py checks on its own)."""
+    bare = ANY_PLACEHOLDER.sub(" ", template)
     return _DIGIT.findall(bare) + [m.group(0) for m in _NUMBER_WORD.finditer(bare)]
 
 
@@ -470,8 +564,9 @@ def placeholders(template: str) -> list[str]:
     return PLACEHOLDER.findall(template)
 
 
-def fill(template: str, figs: dict[str, Figure]) -> str:
-    """Replace every `{fig:name}` with that figure's text. A hand-typed number or an unknown figure is an error."""
+def fill(template: str, figs: dict[str, Figure], spec: dict[str, Any] | None = None) -> str:
+    """Replace every `{fig:name}` with that figure's text and every `{src:id}` with the spec's attributed sentence.
+    A hand-typed number, an unknown figure or an unknown source is an error."""
     typed = hand_typed_numbers(template)
     if typed:
         raise FigureError(f"hand-typed number(s) {typed} in: {template!r}")
@@ -479,15 +574,21 @@ def fill(template: str, figs: dict[str, Figure]) -> str:
     if unknown:
         raise FigureError(f"unknown figure(s) {unknown} in: {template!r}")
     filled = PLACEHOLDER.sub(lambda m: figs[m.group(1)].text, template)
+    if "{src:" in filled:
+        if spec is None:
+            raise FigureError(f"a source placeholder needs the spec: {template!r}")
+        from sources import fill_sources  # sources imports this module
+
+        filled = fill_sources(filled, spec)
     if "{" in filled or "}" in filled:
         raise FigureError(f"malformed placeholder left in: {filled!r}")
     return filled
 
 
-def untraced_numbers(filled: str, figs: dict[str, Figure]) -> list[str]:
-    """Numbers in filled text that no figure's text contains. Empty means every spoken number is traceable."""
+def untraced_numbers(filled: str, figs: dict[str, Figure], allowed: set[str] | frozenset[str] = frozenset()) -> list[str]:
+    """Numbers in filled text that no figure's text contains (and that are not an attributed source's year)."""
     texts = [f.text for f in figs.values()]
-    return [n for n in _NUMBER_TOKEN.findall(filled) if not any(n in t for t in texts)]
+    return [n for n in _NUMBER_TOKEN.findall(filled) if n not in allowed and not any(n in t for t in texts)]
 
 
 @dataclass
@@ -505,19 +606,24 @@ TEXT_FIELDS = ("narration", "alt", "chartTitle")
 
 def fill_spec(spec: dict[str, Any], figs: dict[str, Figure]) -> FilledSpec:
     """Fill every text field of every scene, plus the title and question; each goes through the same rule."""
-    title = fill(spec["title"], figs)
-    fill(spec["question"], figs)
+    title = fill(spec["title"], figs, spec)
+    fill(spec["question"], figs, spec)
     scenes = []
     for s in spec["scenes"]:
         filled = dict(s)
         for key in TEXT_FIELDS:
-            filled[key] = fill(s[key], figs)
+            filled[key] = fill(s[key], figs, spec)
         scenes.append(filled)
     return FilledSpec(title=title, scenes=scenes)
 
 
-def figures_json(figs: dict[str, Figure], claims: list[dict[str, Any]], spec: dict[str, Any], analysis: Analysis) -> dict[str, Any]:
+def figures_json(figs: dict[str, Figure], claims: list[dict[str, Any]], spec: dict[str, Any], analysis: Analysis,
+                 chart_figs: dict[str, Figure] | None = None) -> dict[str, Any]:
     used = sorted({n for s in spec["scenes"] for k in TEXT_FIELDS for n in placeholders(s[k])})
+    chart_figs = chart_figs or {}
+    counts: dict[str, int] = {}
+    for f in chart_figs.values():
+        counts[f.chart] = counts.get(f.chart, 0) + 1
     return {
         "analysis": spec["id"],
         "dataset": {k: spec["dataset"][k] for k in ("name", "url", "commit", "sha256", "licence")},
@@ -529,4 +635,11 @@ def figures_json(figs: dict[str, Figure], claims: list[dict[str, Any]], spec: di
         "usedInNarration": used,
         "figures": [figs[n].as_json() for n in FIGURES],
         "claims": claims,
+        "chartFigureCounts": counts,
+        "chartFigures": [dict(f.as_json(), chart=f.chart) for f in chart_figs.values()],
     }
+
+
+def labels_from_json(fj: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Name -> entry for every figure and chart figure in a loaded figures.json: what charts.py draws from."""
+    return {e["name"]: e for e in fj["figures"] + fj.get("chartFigures", [])}
