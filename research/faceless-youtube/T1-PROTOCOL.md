@@ -23,10 +23,14 @@ route exists, for the cost of one honest short video and one owner sign-in. If i
    YouTube it exposes lifetime views and nothing that computes K0/K3). So T1 is worth the owner's minutes **only if the
    same sitting includes the analytics-only consent** below. Two unknowns T1 itself settles: whether long-form uploads
    work on the free tier, and whether Upload-Post's Google sign-in can select a Brand Account channel.
-4. ⏳ The web comparison arm — the same analyses as pages — read at day 56 with its own reach floor. It is a free prior:
+4. ⏳ **Next.** The web comparison arm (the page is built: `releases/t1/page.html`) — the same analyses as pages — read at day 56 with its own reach floor. It is a free prior:
    a web null does not prove a YouTube null, but zero stranger reach for the substance is a reason not to spend the
    owner's minutes. (It needs the brand domain, owner step 5, which two other lines already wait on.)
-5. The T1 video itself, built and gate-passed, held unpublished.
+5. ✅ **The T1 video itself, built and gate-passed, held unpublished (27.9).** "Is TypeScript catching up with
+   JavaScript on GitHub?" (GitHub Innovation Graph, CC0), 116.7 s. First audit: G3 PASS, G4 and G5 FAIL (numbers
+   right; framing: GitHub's Octoverse 2025 headline unaddressed, the per-repository language counting unsaid, the "no"
+   half after 0:30). Revision 1 answered every required change; re-audit G3/G4/G5 PASS on script `bf98a1b0…`;
+   `checkPublication()` 0 failures. Evidence: `products/chart-explainer/releases/t1/`.
 6. **Only then** Stage A is put to the owner, with the pre-check and the web result attached to the ask.
 7. T1 runs. Six real videos are rendered only after it passes.
 

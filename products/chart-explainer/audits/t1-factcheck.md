@@ -1,5 +1,133 @@
 # G4 fact-check audit: T1, "Is TypeScript catching up with JavaScript on GitHub?"
 
+# Revision 1: current verdict
+
+- **Audited at:** 2026-09-27T10:56:14Z
+- **Audited script sha256:** `bf98a1b066eab0b8ca26a474759e9a3fa0e5cfccbb47a7cfd6a5fed1e17a86a6`. I computed it from `out/t1/manifest.json` → `script`. The SRT equals that script word for word.
+- **Supersedes** the original audit below (script `ded6992c…`, verdict FAIL).
+- **Verdict: PASS.**
+  - Narration figures: 25 of 25 recomputed figures match.
+  - Chart figures: 61 of 61 match.
+  - Claims: 9 of 9 hold.
+  - Viewer-facing numbers: every number on the PNGs, in the script and on the page traces.
+  - Limits: all 4 are supported.
+  - Octoverse: the framing risk is now addressed.
+  - One fix before publishing, not blocking G4: a year on the page is printed as "2,020".
+
+## R1: the Octoverse sentence (resolved)
+
+The narration now reads, in scene s2:
+
+> GitHub's Octoverse 2025 report named TypeScript the most used language on GitHub in August 2025, by contributor counts. That is a different count from the quarterly pushers in this video.
+
+The rendered page is `research/rendered/github-octoverse-2025.txt`. Its html sha256 is `733e76b1…`, which matches its meta file, and it was fetched with status 200 and not truncated. The relevant lines:
+
+- **l.672:** "By GitHub contributor counts, August 2025 marks the first time TypeScript emerged as the most used language on GitHub, surpassing Python by ~42k contributors (other industry indices use different methodologies and may still rank JavaScript and Python higher)." All four `mustMatchQuote` terms appear on this line.
+- **l.292 and l.300:** "TypeScript overtook both Python and JavaScript in August 2025 to become the most used language on GitHub". So "most used" does mean ahead of JavaScript.
+- **l.976:** "“most used” languages are ranked by the number of distinct monthly contributors who committed code in that language."
+- **l.1064:** "Attribution: primary language is repository-level; TypeScript/JavaScript mixes may appear under one language."
+
+Set l.976 and l.1064 against datasheet l.37, which counts quarterly unique developers who pushed to a repository with the language. Together they make "a different count" accurate, and they name the specific difference. The sentence contains no data figure; its only number, the year, belongs to the source. It is attributed on the page and in the video description, with the URL: <https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/>.
+
+**Judgement.** A viewer who knows the Octoverse headline now hears it named in the video and is told the two counts measure different things. The video is no longer misleading by omission.
+
+## R2: chart numbers (resolved)
+
+I extended my own script from the first audit (plain Python on the CSV, independent of `figures.py`). It recomputes every one of the 61 `chartFigures`, checking three things for each: the value, the half-up text, and the `rounded` field.
+
+| Chart | Entries | Result |
+|---|---|---|
+| pushers_lines | a_last 2,350,133 → "2.35 million"; b_last 4,804,768 → "4.80 million" | 2 of 2 MATCH |
+| growth_bars | 10 multiples (3.4198→3.4×, 3.4435→3.4×, 3.3679→3.4×, 4.2826→4.3×, 9.5021→9.5×, 2.9346→2.9×, 4.7142→4.7×, 1.5037→1.5×, 2.3591→2.4×, 3.9064→3.9×) plus 10 economy counts (92,92,92,92,92,90,83,92,83,74) | 20 of 20 MATCH |
+| yearly_gain_bars | 6 gains (2.9752→+3.0, 3.6685→+3.7, 4.2862→+4.3, 3.6781→+3.7, 4.5386→+4.5, 12.0405→+12.0) plus 6 year labels | 12 of 12 MATCH |
+| ratio_histogram | 13 bins × 2 quarters, each bin [lo, lo+5); 2020 Q1: 0,3,7,37,32,10,2,1,0,0,0,0,0; 2026 Q1: 0,0,0,0,0,0,0,3,8,34,31,14,2 | 26 of 26 MATCH (no ratio sits exactly on a bin edge) |
+| coverage_lines | JavaScript economies reported, 2026 Q1, EU excluded: 181 | 1 of 1 MATCH |
+
+No half-up value in `figures` or `chartFigures` sits on an exact .5 tie.
+
+I read all six re-rendered PNGs. Every number drawn on them traces:
+
+- s1: 4.80 million and 2.35 million come from chartFigures; 92 is a figure.
+- s2: 18%, 49% and 92 are figures.
+- s3: the ten multiples and the notes "83 / 74 / 90 / 83 of the 92" come from chartFigures; "Top 10", the quarters and 92 are figures.
+- s4: the six gains and the six year labels come from chartFigures.
+- s5: the thirteen non-zero bin counts come from chartFigures; "47 … 50% … 2026", 92 and the quarter legends are figures.
+- s6: 181 comes from chartFigures; 162 and "Fixed set followed here: 92" are figures.
+
+`charts.py` now draws these labels from the registered text.
+
+The s1 title changed to "Developers who pushed to repositories containing TypeScript or JavaScript", and the s2 subtitle changed. Both are accurate.
+
+## R3: the page (resolved), with one formatting fix
+
+The page's figures table now has "Unrounded value" and "Rounding" columns, and every entry agrees with my numbers. For example, `ratio_gain_max_earlier_pts` reads 4.5386, half-up to 0 decimals, which is consistent with the +4.5 on s4. A collapsible table lists all 61 chart figures the same way. Its "Sources quoted" section reproduces four quotes, and I checked each one against the stored text at its cited line: Octoverse l.672 and l.976, docs l.257, and datasheet l.37. `{{BRAND}}` is now "Mehudak".
+
+- **Fix before publishing (non-blocking):** the `first_year` row shows its unrounded value as **"2,020"**, a year printed with a thousands separator. The value is correct and "As shown" reads 2020, so no fact is wrong, but it is a viewer-facing number in the wrong form. Format year-unit figures without grouping in `page.py`. The script hash does not change.
+- **Nit:** on the page, s2 ends "…the quarterly pushers in this video." Consider "in this analysis" on the web arm.
+
+## The 25 narration figures on the new script
+
+`figures.json` holds the same 25 values as before. My script recomputed each of them again from the CSV, and all 25 match, including the half-up spoken form. The panel is the same 92 economies. The 9 claims hold on my numbers, as tabulated in the original audit below.
+
+## Every sentence of the new script
+
+| # | Sentence | Check |
+|---|---|---|
+| 1 | Is TypeScript catching up with JavaScript on GitHub? | Question. |
+| 2 | As a share of JavaScript, yes, and quickly; in raw numbers, no: JavaScript's lead grew. | The ratio rose from 17.73% to 48.91%, and the gap widened from 1,147,998 to 2,454,635. ✔ |
+| 3 | Every quarter, GitHub counts the developers in each economy who push to repositories containing each language; a repository that holds both languages counts for both. | Datasheet l.37 plus docs l.257; see "Counting rule" below. ✔ |
+| 4 | We follow the 92 economies reported for both in every quarter. | 92. ✔ |
+| 5 | In the first quarter of 2020, TypeScript had 18% as many pushers as JavaScript. | 17.7255 → 18. ✔ |
+| 6 | By the first quarter of 2026, it had 49%. | 48.9125 → 49. ✔ |
+| 7 | In raw numbers, though, JavaScript's lead grew, from 1.1 million to 2.5 million pushers, because both languages grew. | 1,147,998 → 1.1 and 2,454,635 → 2.5. ✔ (The "because" is loose; optional note carried over.) |
+| 8 | GitHub's Octoverse 2025 report named TypeScript the most used language on GitHub in August 2025, by contributor counts. | Octoverse l.672. ✔ |
+| 9 | That is a different count from the quarterly pushers in this video. | Octoverse l.976 and l.1064 against datasheet l.37. ✔ |
+| 10 | Over the 6 years, TypeScript pushers grew 9.5 times over, and JavaScript pushers 3.4 times. | 24 quarter-steps = 6 years; 9.502 → 9.5; 3.443 → 3.4. "The 6 years" refers back to sentences 5 and 6. ✔ |
+| 11 | Among the 10 languages with the most pushers, the fastest growing was TypeScript. | ✔, and robust under all 4 definitions I tested. |
+| 12 | The ratio moved fastest in the last year: it rose 12 percentage points, against at most 5 percentage points in any earlier year. | 12.04; max earlier 4.54 (4.90 over any four-quarter window ending by 2025 Q1). ✔ |
+| 13 | Economy by economy, the picture is the same. | Median 19.75 → 50.42; all 92 economies rose. ✔ |
+| 14 | TypeScript reached 50% of JavaScript's pushers in 47 of the 92 economies, up from 0 in 2020. | 47 at or above 50% unrounded; 0 in every quarter of 2020 (max 39.0%). ✔ |
+| 15 | The highest ratio was 61%. | Serbia at 60.54 → 61, within the 92. ✔ |
+| 16 | Limits: GitHub omits economies with too few active developers; those reported for TypeScript rose from 93 to 162, hence the fixed set. | Datasheet l.25 and l.120; 93 and 162, EU excluded. ✔ |
+| 17 | Only public repositories count, developers can count under both, and location comes from IP addresses. | l.126; l.37 plus docs l.257; l.27 and l.129. ✔ |
+| 18 | The data shows how many pushed, not why. | ✔ |
+| 19 | Source: GitHub's Innovation Graph, public domain. | l.143 CC0-1.0 and the licence snapshot. ✔ |
+
+Every number in the script is one of 0, 1.1, 10, 12, 18, 2.5, 2020, 2026, 3.4, 47, 49, 5, 50, 6, 61, 9.5, 92, 93, 162 and 2025. Each is a narration figure except "2025", which appears twice inside the attributed Octoverse sentence. The video runs 116.7 s, within the spec's 60–120 s.
+
+## Counting rule: "a repository that holds both languages counts for both"
+
+**SUPPORTED** by two GitHub documents read together:
+
+- Datasheet l.37: "the number of unique developers in each economy who made at least one git push to a repository with a given programming language during each quarter. See our documentation for repository languages … for more information about how we detect programming languages."
+- That documentation, `github-about-repository-languages.txt` l.257: "The files and directories within a repository determine the languages that make up the repository." A repository therefore has several languages, and a repository that holds both is a repository "with" each of them.
+
+The file itself corroborates this reading. Dockerfile (1.42M panel pushers) ranks above Java (0.90M), and Makefile and Batchfile are in the programming top 10. Neither pattern could occur if only a repository's primary language counted. Octoverse l.1064 marks its own primary-language attribution as the contrast.
+
+Neither document says "every language, not only the primary" in so many words, so this is a documented reading rather than a verbatim rule. It is also the strongest reading available. "Developers can count under both" in the limits rests on the same basis.
+
+## Limits (re-checked against the new wording)
+
+1. **"GitHub omits economies with too few active developers"**: l.25 "Metrics for economies are only reported when there are 100 or more unique developers performing the relevant activity within the time period." ✔
+2. **"Only public repositories count"**: l.126 "For metrics related to repositories, we only report on numbers and activity related to those that are public." ✔
+3. **"Developers can count under both"**: l.37 counts unique developers per language, with nothing de-duplicating across languages; docs l.257 as above. ✔
+4. **"Location comes from IP addresses"**: l.27 "Metrics of activity are assigned to a location based on the relevant user as determined by their IP address when interacting with GitHub." ✔
+
+## Verdict, revision 1
+
+**PASS.**
+
+- Figures: 25 of 25 narration figures and 61 of 61 chart figures match my independent recomputation, and all 9 claims hold.
+- Traceability: every number a viewer sees traces to `figures.json`, apart from the attributed Octoverse year.
+- Sources: every limit and the counting rule are supported by rendered GitHub sources.
+- Framing: the Octoverse headline is addressed with an accurate, attributed sentence.
+
+Before publishing, fix "2,020" on the page (P1, non-blocking).
+
+---
+
+# Original audit (script `ded6992c…`, 2026-09-27T10:31:19Z): superseded by Revision 1
+
 - **Gate:** G4 (fact-check), `src/revenue/publication-gate.ts`
 - **Auditor:** `opus-factcheck-auditor`. The author is `opus-builder`; this audit is by a different agent.
 - **Audited at:** 2026-09-27T10:31:19Z

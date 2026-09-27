@@ -48,14 +48,15 @@ def _img(path: Path) -> str:
     return "data:image/png;base64," + base64.b64encode(Path(path).read_bytes()).decode("ascii")
 
 
-def unrounded(value: Any) -> str:
-    """The raw value as computed: integers whole, floats to four decimals, quarters as 'YYYY Qn'."""
+def unrounded(value: Any, unit: str = "") -> str:
+    """The raw value as computed: integers whole, floats to four decimals, quarters as 'YYYY Qn', and calendar
+    years without a thousands separator (the G4 re-audit caught "2,020")."""
     if isinstance(value, list) and len(value) == 2:
         return f"{value[0]} Q{value[1]}"
     if isinstance(value, bool) or isinstance(value, str):
         return str(value)
     if isinstance(value, int):
-        return f"{value:,}"
+        return str(value) if "year" in unit and "years" not in unit else f"{value:,}"
     return f"{value:,.4f}"
 
 
@@ -71,7 +72,7 @@ def _rows(entries: list[dict[str, Any]], with_chart: bool = False) -> str:
         chart = f"<td>{_e(e['chart'])}</td>" if with_chart else ""
         out.append(
             f"<tr>{chart}<td><code>{_e(e['name'])}</code></td><td>{_e(e['text'])}</td>"
-            f"<td>{_e(unrounded(e['value']))}</td><td>{_e(rounding(e))}</td><td>{_e(e['description'])}</td></tr>"
+            f"<td>{_e(unrounded(e['value'], e.get('unit', '')))}</td><td>{_e(rounding(e))}</td><td>{_e(e['description'])}</td></tr>"
         )
     return "\n".join(out)
 

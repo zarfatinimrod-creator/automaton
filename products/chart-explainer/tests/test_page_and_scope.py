@@ -73,3 +73,12 @@ def test_no_upload_or_publishing_code_in_the_product():
                                       "manifest.py", "render.py"}
     for p in code:
         assert not UPLOAD.search(p.read_text()), p
+
+
+def test_calendar_years_are_printed_without_a_thousands_separator():
+    # The G4 re-audit of revision 1 caught "2,020" in the page's unrounded column.
+    import page
+
+    assert page.unrounded(2020, "calendar year") == "2020"
+    assert page.unrounded(1147998, "pushers") == "1,147,998"
+    assert page.unrounded(6, "years") == "6"
