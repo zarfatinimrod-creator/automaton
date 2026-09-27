@@ -17,8 +17,10 @@
  *    requests an hour for the repository, 30 searches a minute); without it the unauthenticated limits apply
  *    (60 an hour, 10 a minute), which a full count will usually exhaust — and then the run says so and stops.
  *  - **Paging is deterministic.** Search is sorted by creation date, oldest first, 100 per page; a query GitHub
- *    would cap at 1,000 results is split by creation date until every piece fits. Any page GitHub marks incomplete,
- *    or a total the pages do not reach, fails the run.
+ *    would cap at 1,000 results is split by creation date until every piece fits. Any page GitHub marks incomplete
+ *    fails the run. A total the pages do not reach is read a second full time: a complete second pass is an ordinary
+ *    reading; two passes that serve the identical issues, short by at most `searchUnservedAllowance` of the reported
+ *    total, are accepted with the gap recorded as `searchUnserved`; anything else fails the run (`searchAllIssues`).
  *
  * Failure writes nothing (`runAlgoraSupply`): a week that could not be measured is a missing reading, never a zero.
  */
@@ -26,10 +28,13 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import {
+  SEARCH_UNSERVED_FLOOR,
   SUPPLY_SEARCH_QUERY,
   buildSupplyMeasurement,
   evaluateIssue,
   renderSupplyMarkdown,
+  searchUnservedAllowance,
+  unservedCaveat,
   type CollectedRepo,
   type EvaluatedIssue,
   type IssueVerdict,
@@ -237,19 +242,50 @@ async function searchPage(client: GithubClient, q: string, page: number): Promis
   throw new Error(`GitHub search marked "${q}" page ${page} incomplete twice; a partial list is not a count.`);
 }
 
+interface SearchPass {
+  /** What GitHub reported on the pass's first page. */
+  total: number;
+  /** What the pages served, by id. */
+  got: Map<string, unknown>;
+}
+
+/** Every page of `q`, starting from its already-fetched first page. */
+async function readPass(client: GithubClient, q: string, first: SearchPage): Promise<SearchPass> {
+  const got = new Map<string, unknown>();
+  const add = (list: unknown[]) => {
+    for (const it of list) got.set(String((it as { id?: unknown }).id ?? JSON.stringify(it)), it);
+  };
+  add(first.items);
+  const pages = Math.ceil(first.total_count / PAGE_SIZE);
+  for (let page = 2; page <= pages; page += 1) add((await searchPage(client, q, page)).items);
+  return { total: first.total_count, got };
+}
+
+const sameIds = (a: Map<string, unknown>, b: Map<string, unknown>): boolean => a.size === b.size && [...a.keys()].every((id) => b.has(id));
+
 /**
  * Every issue matching `baseQuery`, oldest first. Ranges over GitHub's 1,000-result cap are split by creation date.
- * Throws when a range cannot be split further or when the pages do not reach the total GitHub reported.
+ *
+ * GitHub's `total_count` is not always what the pages serve, for two known reasons, and a range that falls short is
+ * read a second full time to tell them apart:
+ *  - an issue left the results between page fetches, so offset paging skipped the one behind it — the second pass
+ *    sees the list as it now is, and when it is complete on its own it is an ordinary reading;
+ *  - the index counts entries it never serves (hidden, deleted or transferred issues, repositories no longer
+ *    available) — both passes serve the identical ids, and the gap is accepted when it is at most
+ *    `searchUnservedAllowance` of the reported total, and returned as `unserved` so it is recorded, not absorbed.
+ * Anything else throws: passes that differ, a gap past the allowance — per query and over the whole search — or a
+ * range that cannot be split further. A partial list is not a count.
  */
 export async function searchAllIssues(
   client: GithubClient,
   baseQuery: string,
   today: string,
   since: string = SEARCH_SINCE,
-): Promise<{ items: unknown[]; totalCount: number; queries: string[] }> {
+): Promise<{ items: unknown[]; totalCount: number; unserved: number; queries: string[] }> {
   const items: unknown[] = [];
   const queries: string[] = [];
   let totalCount = 0;
+  let unserved = 0;
 
   async function range(from: string, to: string): Promise<void> {
     const q = `${baseQuery} created:${from}..${to}`;
@@ -261,22 +297,46 @@ export async function searchAllIssues(
       return;
     }
     queries.push(q);
-    totalCount += first.total_count;
-    const got = new Map<string, unknown>();
-    const add = (list: unknown[]) => {
-      for (const it of list) got.set(String((it as { id?: unknown }).id ?? JSON.stringify(it)), it);
-    };
-    add(first.items);
-    const pages = Math.ceil(first.total_count / PAGE_SIZE);
-    for (let page = 2; page <= pages; page += 1) add((await searchPage(client, q, page)).items);
-    if (got.size < first.total_count) {
-      throw new Error(`GitHub search reported ${first.total_count} issues for "${q}" and the pages held ${got.size}; a partial list is not a count.`);
+    let pass = await readPass(client, q, first);
+    if (pass.got.size < pass.total) {
+      const short = `GitHub search reported ${pass.total} issues for "${q}" and the pages held ${pass.got.size}`;
+      const again = await searchPage(client, q, 1);
+      if (again.total_count > SEARCH_RESULT_CAP) {
+        throw new Error(`${short}, and a second pass reported ${again.total_count}, past the ${SEARCH_RESULT_CAP}-result cap; a partial list is not a count.`);
+      }
+      const second = await readPass(client, q, again);
+      if (second.got.size < second.total) {
+        if (!sameIds(pass.got, second.got)) {
+          throw new Error(`${short}, and a second pass served a different set (${second.got.size} of ${second.total}); a partial list is not a count.`);
+        }
+        const reported = Math.max(pass.total, second.total);
+        const gap = reported - second.got.size;
+        const allowance = searchUnservedAllowance(reported);
+        if (gap > allowance) {
+          throw new Error(
+            `${short}; a second pass served the same ${second.got.size}, and ${gap} unserved is more than the ${allowance} a stale index explains ` +
+              `(max(${SEARCH_UNSERVED_FLOOR}, 1% of the reported total)); a partial list is not a count.`,
+          );
+        }
+        unserved += gap;
+        pass = { total: reported, got: second.got };
+      } else {
+        pass = second;
+      }
     }
-    items.push(...got.values());
+    totalCount += pass.total;
+    items.push(...pass.got.values());
   }
 
   await range(since, today);
-  return { items, totalCount, queries };
+  const allowance = searchUnservedAllowance(totalCount);
+  if (unserved > allowance) {
+    throw new Error(
+      `GitHub search reported ${totalCount} issues across ${queries.length} queries and served ${items.length}: ${unserved} unserved is more than the ${allowance} ` +
+        `a stale index explains (max(${SEARCH_UNSERVED_FLOOR}, 1% of the reported total)); a partial list is not a count.`,
+    );
+  }
+  return { items, totalCount, unserved, queries };
 }
 
 /** `https://api.github.com/repos/owner/name` → `owner/name`. */
@@ -398,6 +458,8 @@ export interface CollectedSupply {
   query: string;
   queries: string[];
   searchTotalCount: number;
+  /** Issues search counted and did not serve on two identical passes, within the allowance (`searchAllIssues`). */
+  searchUnserved: number;
 }
 
 /** Search, then feed each issue exactly the data its next filter needs, cheapest stage first. */
@@ -406,6 +468,7 @@ export async function collectSupply(client: GithubClient, opts: { today: string;
   const search = await searchAllIssues(client, SUPPLY_SEARCH_QUERY, opts.today);
   const issues = search.items.map(toSupplyIssue).sort((a, b) => a.repo.localeCompare(b.repo) || a.number - b.number);
   log(`search: ${issues.length} open issues labelled across ${new Set(issues.map((i) => i.repo)).size} repositories`);
+  if (search.unserved) log(`search: GitHub reported ${search.totalCount}; ${search.unserved} counted and not served on two identical passes (recorded)`);
 
   const repos: Record<string, CollectedRepo> = {};
   const contexts = new Map<SupplyIssue, SupplyContext>();
@@ -447,7 +510,7 @@ export async function collectSupply(client: GithubClient, opts: { today: string;
   const undecided = evaluated.find((e) => e.verdict.kind === "needs");
   if (undecided) throw new Error(`${undecided.issue.repo}#${undecided.issue.number} was left undecided; nothing is written.`);
   for (const r of Object.keys(repos)) if (Object.keys(repos[r]!).length === 0) delete repos[r];
-  return { evaluated, repos, query: SUPPLY_SEARCH_QUERY, queries: search.queries, searchTotalCount: search.totalCount };
+  return { evaluated, repos, query: SUPPLY_SEARCH_QUERY, queries: search.queries, searchTotalCount: search.totalCount, searchUnserved: search.unserved };
 }
 
 // ── The run ──────────────────────────────────────────────────────────────────
@@ -507,6 +570,7 @@ export async function runAlgoraSupply(opts: RunAlgoraSupplyOptions = {}): Promis
       method: {
         query: collected.query,
         searchTotalCount: collected.searchTotalCount,
+        searchUnserved: collected.searchUnserved,
         authenticated: client.authenticated,
         requests: { search: stats.search, core: stats.core },
         rateLimitWaitSeconds: Math.round(stats.waitedMs / 1000),
@@ -514,6 +578,7 @@ export async function runAlgoraSupply(opts: RunAlgoraSupplyOptions = {}): Promis
       },
     });
     const markdown = renderSupplyMarkdown(measurement);
+    const caveat = unservedCaveat(measurement.method.searchUnserved ?? 0);
     mkdirSync(dirname(outJson), { recursive: true });
     mkdirSync(dirname(outMd), { recursive: true });
     writeFileSync(outJson, `${JSON.stringify(measurement, null, 2)}\n`);
@@ -523,7 +588,7 @@ export async function runAlgoraSupply(opts: RunAlgoraSupplyOptions = {}): Promis
       measurement,
       message:
         `Algora supply: ${measurement.claimableBounties} claimable bounties ($${measurement.claimableUsd}) of ${measurement.labelledOpenIssues} labelled open issues ` +
-        `in ${measurement.repositories} repositories. ${measurement.boardReading.text} Written to ${outJson} and ${outMd}.`,
+        `in ${measurement.repositories} repositories.${caveat ? ` ${caveat}` : ""} ${measurement.boardReading.text} Written to ${outJson} and ${outMd}.`,
     };
   } catch (error) {
     const stats = client.stats();

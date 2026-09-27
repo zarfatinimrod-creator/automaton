@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import {
   GITHUB_API,
   GithubApiError,
@@ -15,7 +15,7 @@ import {
   splitDateRange,
   toSupplyIssue,
 } from "../../revenue/bounties/supply-github.js";
-import { BOUNTY_LABEL, REWARDED_LABEL, SUPPLY_SEARCH_QUERY } from "../../revenue/bounties/supply.js";
+import { BOUNTY_LABEL, REWARDED_LABEL, SUPPLY_SEARCH_QUERY, searchUnservedAllowance } from "../../revenue/bounties/supply.js";
 import { ALGORA_BOT_LOGIN } from "../../revenue/bounties/intake.js";
 
 /**
@@ -34,6 +34,11 @@ interface FakeIssue {
   body?: string | null;
   comments?: { login: string; type?: string; body: string }[];
   pr?: boolean;
+  /**
+   * An index entry search counts in `total_count` but never serves — an issue that is hidden, deleted, transferred
+   * or in a repository that became unavailable. It keeps its slot in the ordering, so the page it falls on is short.
+   */
+  hidden?: boolean;
 }
 
 interface FakeWorld {
@@ -43,6 +48,11 @@ interface FakeWorld {
   files?: Record<string, Record<string, Record<string, string>>>;
   /** Respond to the Nth request (1-based) with this instead. */
   override?: (n: number, url: URL) => Response | undefined;
+  /**
+   * What search sees, by pass and page: `pass` counts the page-1 requests made for that query so far (1-based), so a
+   * second full pass over the same range can be shown a different index than the first. Defaults to `issues`.
+   */
+  searchIssues?: (pass: number, page: number) => FakeIssue[];
 }
 
 const json = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
@@ -65,6 +75,7 @@ function fakeGithub(world: FakeWorld) {
     ...(i.pr ? { pull_request: { url: "x" } } : {}),
   });
 
+  const passes = new Map<string, number>();
   const fetchImpl = async (input: string | URL | Request, init?: RequestInit): Promise<Response> => {
     const url = new URL(String(input));
     calls.push(`${url.pathname}${url.search}`);
@@ -79,11 +90,13 @@ function fakeGithub(world: FakeWorld) {
       expect(url.searchParams.get("sort")).toBe("created");
       expect(url.searchParams.get("order")).toBe("asc");
       const range = /created:(\d{4}-\d{2}-\d{2})\.\.(\d{4}-\d{2}-\d{2})/.exec(q);
-      let all = world.issues.filter((i) => !range || (i.created >= range[1]! && i.created <= range[2]!));
-      all = [...all].sort((a, b) => a.created.localeCompare(b.created) || a.number - b.number);
       const perPage = Number(url.searchParams.get("per_page"));
       const page = Number(url.searchParams.get("page"));
-      const slice = all.slice((page - 1) * perPage, Math.min(page * perPage, 1000));
+      if (page === 1) passes.set(q, (passes.get(q) ?? 0) + 1);
+      const pool = world.searchIssues?.(passes.get(q) ?? 1, page) ?? world.issues;
+      let all = pool.filter((i) => !range || (i.created >= range[1]! && i.created <= range[2]!));
+      all = [...all].sort((a, b) => a.created.localeCompare(b.created) || a.number - b.number);
+      const slice = all.slice((page - 1) * perPage, Math.min(page * perPage, 1000)).filter((i) => !i.hidden);
       return json({ total_count: all.length, incomplete_results: false, items: slice.map(toItem) });
     }
 
@@ -290,6 +303,108 @@ describe("searchAllIssues", () => {
     expect(r.queries.length).toBeGreaterThan(1);
   });
 
+  // ── GitHub counting more than it serves (algora-supply.yml run 36355862817, 27.9: 554 reported, 551 served) ──
+  //
+  // Two known causes, and the rule has to be right for both. (1) Search's total_count includes index entries it never
+  // serves — hidden, deleted or transferred issues, or repositories that became unavailable: the same ids come back
+  // every pass and the gap is stable. (2) Offset paging skips an item when an earlier one leaves the results between
+  // page fetches: a second pass sees a different list. Only (1), small and repeated, is accepted, and it is recorded.
+
+  /** `n` visible issues a day apart from 2026-01-01, plus `hidden` index entries search counts and never serves. */
+  const indexWith = (n: number, hidden: number, repo = "big/repo"): FakeIssue[] => [
+    ...Array.from({ length: n }, (_, k) => ({ repo, number: k + 1, created: new Date(Date.UTC(2026, 0, 1) + (k % 250) * 86_400_000).toISOString().slice(0, 10) })),
+    ...Array.from({ length: hidden }, (_, k) => ({ repo, number: 5000 + k, created: "2026-02-15", hidden: true })),
+  ];
+  const searchCalls = (calls: string[]) => calls.filter((c) => c.startsWith("/search/issues"));
+  const pageOnes = (calls: string[]) => searchCalls(calls).filter((c) => /[?&]page=1(?:&|$)/.test(c));
+
+  it("allows a stale-index gap of at most max(5, 1% of the reported total)", () => {
+    expect(searchUnservedAllowance(0)).toBe(5);
+    expect(searchUnservedAllowance(554)).toBe(5);
+    expect(searchUnservedAllowance(1000)).toBe(10);
+    expect(searchUnservedAllowance(1299)).toBe(12);
+  });
+
+  it("554 reported, 551 served, the same 551 on a second full pass: accepted, and the 3 are recorded — not dropped", async () => {
+    const gh = fakeGithub({ issues: indexWith(551, 3) });
+    const clock = fakeClock();
+    const client = createGithubClient({ token: "t", fetchImpl: gh.fetchImpl, now: clock.now, sleep: clock.sleep });
+    const r = await searchAllIssues(client, SUPPLY_SEARCH_QUERY, "2026-09-28");
+    expect(r.items).toHaveLength(551);
+    expect(r.totalCount).toBe(554);
+    expect(r.unserved).toBe(3);
+    // The whole range was read twice: six pages, two passes.
+    expect(pageOnes(gh.calls)).toHaveLength(2);
+    expect(searchCalls(gh.calls)).toHaveLength(12);
+  });
+
+  it("a complete search is read once and records nothing unserved", async () => {
+    const gh = fakeGithub({ issues: indexWith(551, 0) });
+    const clock = fakeClock();
+    const client = createGithubClient({ token: "t", fetchImpl: gh.fetchImpl, now: clock.now, sleep: clock.sleep });
+    const r = await searchAllIssues(client, SUPPLY_SEARCH_QUERY, "2026-09-28");
+    expect(r).toMatchObject({ totalCount: 551, unserved: 0 });
+    expect(pageOnes(gh.calls)).toHaveLength(1);
+  });
+
+  it("fails when the two passes serve different issues — a list that moves under the pages is not a count", async () => {
+    const first = indexWith(551, 3);
+    // Second pass: issue #1 is gone and a new one is there instead, and the gap is still 3.
+    const second = [...first.filter((i) => i.number !== 1), { repo: "big/repo", number: 777, created: "2026-03-03" }];
+    const gh = fakeGithub({ issues: first, searchIssues: (pass) => (pass === 1 ? first : second) });
+    const clock = fakeClock();
+    const client = createGithubClient({ token: "t", fetchImpl: gh.fetchImpl, now: clock.now, sleep: clock.sleep });
+    await expect(searchAllIssues(client, SUPPLY_SEARCH_QUERY, "2026-09-28")).rejects.toThrow(
+      /reported 554 issues for ".*" and the pages held 551.*second pass.*different.*a partial list is not a count/,
+    );
+    expect(pageOnes(gh.calls)).toHaveLength(2);
+  });
+
+  it("fails when the gap is more than a stale index explains — 20 of 554, the same on both passes", async () => {
+    const gh = fakeGithub({ issues: indexWith(534, 20) });
+    const clock = fakeClock();
+    const client = createGithubClient({ token: "t", fetchImpl: gh.fetchImpl, now: clock.now, sleep: clock.sleep });
+    await expect(searchAllIssues(client, SUPPLY_SEARCH_QUERY, "2026-09-28")).rejects.toThrow(
+      /reported 554 issues for ".*" and the pages held 534;.*a partial list is not a count/,
+    );
+    expect(pageOnes(gh.calls)).toHaveLength(2);
+  });
+
+  it("an issue that left the results between page fetches: the complete second pass is an ordinary count", async () => {
+    // Pass 1 reads page 1 with #1 in it; #1 then closes, everything shifts left, and page 2 starts at what was #102 —
+    // #101 is skipped. Pass 2 reads the list as it now is, complete.
+    const before = indexWith(150, 0);
+    const after = before.filter((i) => i.number !== 1);
+    const gh = fakeGithub({ issues: before, searchIssues: (pass, page) => (pass === 1 && page === 1 ? before : after) });
+    const clock = fakeClock();
+    const client = createGithubClient({ token: "t", fetchImpl: gh.fetchImpl, now: clock.now, sleep: clock.sleep });
+    const r = await searchAllIssues(client, SUPPLY_SEARCH_QUERY, "2026-09-28");
+    expect(r).toMatchObject({ totalCount: 149, unserved: 0 });
+    expect(r.items.map((i) => (i as { number: number }).number).sort((a, b) => a - b)).toEqual(after.map((i) => i.number));
+  });
+
+  it("holds a split search to the bound on its whole reported total, not each piece to its own", async () => {
+    // Two pieces after the split: 400 served + 5 hidden, and 700 served + 7 hidden. Each piece is within its own
+    // allowance (5 and 7); together 12 unserved of 1,112 is more than the 11 the whole total allows.
+    const pieces = (hiddenLate: number): FakeIssue[] => [
+      ...Array.from({ length: 400 }, (_, k) => ({ repo: "big/repo", number: k + 1, created: "2026-02-01" })),
+      ...Array.from({ length: 5 }, (_, k) => ({ repo: "big/repo", number: 3000 + k, created: "2026-02-01", hidden: true })),
+      ...Array.from({ length: 700 }, (_, k) => ({ repo: "big/repo", number: 1000 + k, created: "2026-08-01" })),
+      ...Array.from({ length: hiddenLate }, (_, k) => ({ repo: "big/repo", number: 4000 + k, created: "2026-08-01", hidden: true })),
+    ];
+    const clock = fakeClock();
+    const tooMany = fakeGithub({ issues: pieces(7) });
+    await expect(
+      searchAllIssues(createGithubClient({ token: "t", fetchImpl: tooMany.fetchImpl, now: clock.now, sleep: clock.sleep }), SUPPLY_SEARCH_QUERY, "2026-09-28"),
+    ).rejects.toThrow(/reported 1112 issues across \d+ queries and served 1100.*12 unserved.*11.*a partial list is not a count/);
+
+    const within = fakeGithub({ issues: pieces(1) });
+    const r = await searchAllIssues(createGithubClient({ token: "t", fetchImpl: within.fetchImpl, now: clock.now, sleep: clock.sleep }), SUPPLY_SEARCH_QUERY, "2026-09-28");
+    expect(r).toMatchObject({ totalCount: 1106, unserved: 6 });
+    expect(r.items).toHaveLength(1100);
+    expect(r.queries.length).toBeGreaterThan(1);
+  });
+
   it("fails rather than return part of the list", async () => {
     const issues: FakeIssue[] = Array.from({ length: 120 }, (_, k) => ({ repo: "big/repo", number: k + 1, created: "2026-04-01" }));
     const gh = fakeGithub({
@@ -387,6 +502,20 @@ describe("collectSupply — fetches only what the cheaper filters let through", 
     expect(gh.calls.filter((u) => u === "/repos/acme/widget")).toHaveLength(1);
     expect(c.repos["acme/widget"]!.policyDocs).toEqual({ contributing: "Please add tests.", readme: "# Widget" });
     expect(c.searchTotalCount).toBe(6);
+    expect(c.searchUnserved).toBe(0);
+  });
+
+  it("carries a stable stale-index gap through to the evaluated list, unfilled", async () => {
+    const w = world();
+    const ghosts: FakeIssue[] = [0, 1, 2].map((k) => ({ repo: "gone/repo", number: 90 + k, created: "2026-03-07", hidden: true }));
+    const gh = fakeGithub({ ...w, issues: [...w.issues, ...ghosts] });
+    const clock = fakeClock();
+    const client = createGithubClient({ token: "t", fetchImpl: gh.fetchImpl, now: clock.now, sleep: clock.sleep });
+    const c = await collectSupply(client, { today: "2026-09-28" });
+    expect(c.evaluated).toHaveLength(6);
+    expect(c.searchTotalCount).toBe(9);
+    expect(c.searchUnserved).toBe(3);
+    expect(gh.calls.some((u) => u.startsWith("/repos/gone/repo"))).toBe(false);
   });
 
   it("fails when an issue's comments come back empty against the count the search reported", async () => {
@@ -422,6 +551,62 @@ describe("runAlgoraSupply — writes both files, or nothing", () => {
     const md = readFileSync(p.outMd, "utf8");
     expect(md).toMatch(/\*\*1 claimable bounty\*\*/);
     expect(r.message).toMatch(/1 claimable/);
+  });
+
+  it("records nothing unserved on a complete search", async () => {
+    const p = paths();
+    const clock = fakeClock();
+    await runAlgoraSupply({ ...p, env: { GITHUB_TOKEN: "t" }, fetchImpl: fakeGithub(world()).fetchImpl, now: clock.now, sleep: clock.sleep });
+    const m = JSON.parse(readFileSync(p.outJson, "utf8"));
+    expect(m.method.searchUnserved).toBe(0);
+    expect(readFileSync(p.outMd, "utf8")).not.toMatch(/did not serve/);
+  });
+
+  it("writes a stable stale-index gap into the JSON, the Markdown and the message — never silently", async () => {
+    const p = paths();
+    const clock = fakeClock();
+    const w = world();
+    const ghosts: FakeIssue[] = [0, 1, 2].map((k) => ({ repo: "gone/repo", number: 90 + k, created: "2026-03-07", hidden: true }));
+    const r = await runAlgoraSupply({ ...p, env: { GITHUB_TOKEN: "t" }, fetchImpl: fakeGithub({ ...w, issues: [...w.issues, ...ghosts] }).fetchImpl, now: clock.now, sleep: clock.sleep });
+    expect(r.code).toBe(0);
+    const m = JSON.parse(readFileSync(p.outJson, "utf8"));
+    expect(m.claimableBounties).toBe(1);
+    expect(m.labelledOpenIssues).toBe(6);
+    expect(m.method.searchTotalCount).toBe(9);
+    expect(m.method.searchUnserved).toBe(3);
+    const sentence = "GitHub counted 3 issues it did not serve; the claimable count could be up to 3 higher";
+    expect(readFileSync(p.outMd, "utf8")).toContain(sentence);
+    expect(r.message).toContain(sentence);
+  });
+
+  it("writes nothing when the gap is past the allowance, as before", async () => {
+    const p = paths();
+    const clock = fakeClock();
+    const w = world();
+    const ghosts: FakeIssue[] = Array.from({ length: 20 }, (_, k) => ({ repo: "gone/repo", number: 90 + k, created: "2026-03-07", hidden: true }));
+    const r = await runAlgoraSupply({ ...p, env: { GITHUB_TOKEN: "t" }, fetchImpl: fakeGithub({ ...w, issues: [...w.issues, ...ghosts] }).fetchImpl, now: clock.now, sleep: clock.sleep });
+    expect(r.code).not.toBe(0);
+    expect(r.message).toMatch(/NOT measured: GitHub search reported 26 issues/);
+    expect(existsSync(p.outJson)).toBe(false);
+    expect(existsSync(p.outMd)).toBe(false);
+  });
+
+  it("reads last week's file even when it predates the unserved field", async () => {
+    const p = paths();
+    const clock = fakeClock();
+    mkdirSync(dirname(p.outJson), { recursive: true });
+    const older = {
+      measuredAt: "2026-09-21T06:23:00.000Z",
+      claimableBounties: 2,
+      labelledOpenIssues: 6,
+      history: [{ week: "2026-W39", measuredAt: "2026-09-21T06:23:00.000Z", claimable: 2 }],
+      method: { query: SUPPLY_SEARCH_QUERY, searchTotalCount: 6, authenticated: true, requests: { search: 1, core: 9 }, rateLimitWaitSeconds: 0, notes: [] },
+    };
+    writeFileSync(p.outJson, JSON.stringify(older));
+    const r = await runAlgoraSupply({ ...p, env: { GITHUB_TOKEN: "t" }, fetchImpl: fakeGithub(world()).fetchImpl, now: clock.now, sleep: clock.sleep });
+    expect(r.code).toBe(0);
+    const m = JSON.parse(readFileSync(p.outJson, "utf8"));
+    expect(m.history.map((h: { week: string }) => h.week)).toEqual(["2026-W39", "2026-W40"]);
   });
 
   it("writes nothing and fails on an API error — an unmeasured week is never a zero", async () => {

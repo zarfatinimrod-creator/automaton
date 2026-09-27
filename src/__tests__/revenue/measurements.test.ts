@@ -92,6 +92,12 @@ describe("ingestAlgoraSupplyMeasurement — the weekly supply count → claimabl
     expect(k.claimableBounties.unit).toMatch(/≥ \$50/);
   });
 
+  it("records the count as usual when the file carries a stale-index gap (method.searchUnserved) beside it", () => {
+    write({ measuredAt: "2026-09-28T06:30:00.000Z", claimableBounties: 4, labelledOpenIssues: 551, method: { searchTotalCount: 554, searchUnserved: 3 } });
+    expect(ingestAlgoraSupplyMeasurement(db, dir)).toMatchObject({ status: "recorded", recorded: ["claimableBounties"] });
+    expect(latestKpis(db, "oss-bounties").claimableBounties.value).toBe(4);
+  });
+
   it("records a real zero as 0 — the job writes nothing when it cannot measure, so a file is always a reading", () => {
     write({ measuredAt: "2026-09-28T06:30:00.000Z", claimableBounties: 0 });
     expect(ingestAlgoraSupplyMeasurement(db, dir).status).toBe("recorded");
