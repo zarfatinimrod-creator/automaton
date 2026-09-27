@@ -15,7 +15,7 @@ no-figures notice in place of any withheld page and filters the sitemap; the dep
 | Allocation-number check (מספר הקצאה) | `allocation.html` | yes | — |
 | Companies-Registrar annual fee (אגרה שנתית לרשם החברות) | `registrar-fee.html` | deadline calculator; **no shekel amounts** — see the gate below | — |
 
-Audience: the ~600k Israeli self-employed, especially **עוסקים פטורים** (freelancers under the
+Audience: Israeli self-employed (no headcount is sourced in this repo), especially **עוסקים פטורים** (freelancers under the
 VAT threshold) who need a receipt today and want to know when they will cross the ceiling.
 Traffic model: Hebrew SEO (each page has a title, description, canonical, and a FAQPage JSON-LD
 answering the exact questions people search), plus sharing in freelancer Facebook/WhatsApp groups.
@@ -28,16 +28,14 @@ answering the exact questions people search), plus sharing in freelancer Faceboo
   with the mandate. Stripe does not take an Israeli individual as a direct merchant (the one Stripe path on the owner
   checklist is Connect Express through Algora, step 4); PayPal Business and Payoneer
   Checkout remain the fallbacks.
-- Gumroad's rules allow a downloadable/licence product, which is exactly what Pro is: a file-free
-  licence key that unlocks branding in the buyer's own browser. It is not an AI service and must
-  never be sold as one.
+- Whether Gumroad's rules admit Pro in its current shape is **not settled**: the one reading of them in this repo (`research/colony-sweep/scouts/storefronts--gumroad.md` §3, from Gumroad's own `prohibited.html.erb`) prohibits products with no content attached and services fulfilled outside Gumroad, and describes licence keys for downloadable tools. A file-free key that unlocks a feature on our site sits near both lines, so the safe shape is a downloadable file delivered on Gumroad (the branding guide carrying the key). It is not an AI service and must never be sold as one.
 
 ## Verified figures and sources (September 2026)
 
 | Figure | Value in config | Status | Source |
 |---|---|---|---|
 | VAT rate | 18% (`src/config/vat.json`) | verified | [ynet – taxes 2026](https://www.ynet.co.il/economy/article/yokra14629288), [mako](https://www.mako.co.il/finances-news/Article-f27f6c987b8fa91027.htm) |
-| Osek patur ceiling 2026 | ₪122,833 (`src/config/osek-patur.json`) | verified | [Kol Zchut](https://www.kolzchut.org.il/he/עוסק_פטור), [Bizportal](https://www.bizportal.co.il/guides/news/article/20039167) |
+| Osek patur ceiling 2026 | ₪122,833 (`src/config/osek-patur.json`) | verified against secondary sources only (Kol Zchut, Bizportal, mako, CPA circulars); no gov.il page rendered from here | [Kol Zchut](https://www.kolzchut.org.il/he/עוסק_פטור), [Bizportal](https://www.bizportal.co.il/guides/news/article/20039167) |
 | Income-tax monthly brackets 2026 | 10% ≤7,010; 14% ≤10,060; 20% ≤19,000; 31% ≤25,100; 35% ≤46,690; 47% ≤60,130; 50% above (`src/config/tax-2026.json`) | **estimate (אומדן)** — widened brackets approved 30.3.2026, retroactive to 1.1.2026; verify against the Tax Authority booklet | [N12/mako](https://www.mako.co.il/news-money/calculators/Article-54d2f6451f9ff91027.htm), [Tax Authority monthly deductions booklet 2026 (PDF)](https://www.gov.il/BlobFolder/generalpage/income-tax-monthly-deductions-booklet/he/generalInformation_income-tax-monthly-deductions-booklet_monthly-deductions-booklet-2026.pdf), [Knesset research (PDF)](https://fs.knesset.gov.il/globaldocs/MMM/a4622f6b-9905-f111-a13e-005056aa7c52/2_a4622f6b-9905-f111-a13e-005056aa7c52_11_21431.pdf) |
 | Credit point value | ₪242/month (frozen 2025–2027) | estimate | [mako](https://www.mako.co.il/news-money/calculators/Article-54d2f6451f9ff91027.htm), [msl.org.il](https://msl.org.il/מחקר/מדרגות-מס/) |
 | Surtax (מס יסף) | 3% above ₪721,560/yr — **not modelled** | n/a | same |
@@ -232,11 +230,7 @@ and unit-tested rather than trusted:
 Nothing from Gumroad is loaded into this site: no SDK, no overlay, no iframe. The button is a link,
 which is why removing Paddle made the CSP **smaller** (`frame-src 'none'`, no `cdn.paddle.com`).
 
-**How the buyer gets the key.** After a sale the owner runs `make-license.js issue <sale id>` and
-puts the resulting key where Gumroad delivers it to the buyer — the product's content / licence
-field. 🔍 **Unverified:** no Gumroad account exists yet, so nobody here has seen that screen. The
-mechanism is written down as the plan, not as a rendered fact; confirm it at owner step 3 and correct
-this paragraph if Gumroad's actual delivery differs.
+**How the buyer gets the key — unresolved, and not an owner task.** `make-license.js issue` is written as a per-sale run, and a per-sale owner action is recurring work the mandate forbids (`MISSION.md` §1; it appears on no step in `docs/OWNER_STEPS.he.md`, which records this as "עוד לא נפתר"). Until issuance is automated — a CI job that reacts to each Gumroad sale and holds the signing key as a secret, or Gumroad's own per-sale licence keys (`POST /v2/licenses/verify`, seen in Gumroad's `routes.rb`) checked in the browser — Pro is not sold. 🔍 **Unverified:** no Gumroad account exists yet, so nobody here has seen the delivery screen; the mechanism is a plan, not a rendered fact.
 
 **What Pro must never claim.** One thing only: your logo and accent colour on the printed document.
 The saved client list, the numbering, the PDF export and the stored documents are free and stay free
@@ -274,7 +268,7 @@ GitHub Pages, Vercel) works too — copy the headers from `netlify.toml` if the 
    domain no line that depends on search exists (`src/revenue/owner-steps.ts`).
 3. **Google Search Console** — optional, not a checklist step (`research/colony-sweep/BOARD.md` §6.3, §8): only if
    the owner chooses to add the property in his own Google account, and asked for only after the site shows traffic.
-4. Optional: Plausible, or PostHog (`posthog.projectKey` + the cookieless server-hash-mode toggle).
+4. Not an owner step: analytics. The board assigned page views to the PostHog connector attached to the agent's session (`research/colony-sweep/BOARD.md` §6.3), so the project key and the cookieless server-hash toggle are ours to set; `posthog.projectKey` stays empty until then, and Plausible is not planned.
 5. Tax: income from the site is business income — an Israeli osek patur/murshe registration is
    the owner's responsibility (Gumroad invoices the buyer, the owner reports Gumroad payouts).
 6. Not an owner step (`docs/OWNER_STEPS.he.md` step 3: "זה אצלי, לא אצלך"): `net-salary.html` stays

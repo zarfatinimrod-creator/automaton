@@ -6,7 +6,7 @@ Revenue lines: none. `paid-apis` and `agent-services` were killed on 7.9.2026 (`
 
 ## Why this line exists
 
-x402 is the only rail in the portfolio that needs **no account and no KYC from the owner**. Payments land directly in the automaton's own wallet. That makes it the first thing that can earn while every other line is still waiting on a one-time signup.
+x402 needs **no account and no KYC from the owner** to receive USDC, which is why the endpoint is kept on standby at ₪0/month instead of deleted. It is not one of the portfolio's rails (`src/revenue/rails.ts`), nothing is planned on it, and it is not expected to earn first or at all: the board read the x402 series at roughly ₪6 per provider per month, with 91% of listings never reaching ten calls (`KILLED_LINES` in `src/revenue/portfolio.ts`). Any USDC that ever arrives is booked, not planned — and turning it into shekels would need a KYC'd Israeli exchange account.
 
 Honest caveat: organic x402 demand in 2026 is small. This line is deliberately cheap to run and shares its validators with `products/mcp-il-tools` (a byte-identical copy of `src/israeli.ts`, enforced by that package's tests) rather than being a standalone bet.
 
@@ -84,7 +84,7 @@ With an x402 **v2** client (`@x402/fetch`, `@x402/axios`, or any wallet that spe
 
 ## What the owner has to do
 
-**For x402: nothing.** No account, no KYC, no payout setup — earnings accrue as USDC in the wallet the automaton already controls, and they can pay for the automaton's own compute directly.
+**For x402: nothing.** No account, no KYC, no payout setup. If the API were deployed in paid mode, USDC would accrue at whatever address `X402_PAY_TO` names — an environment variable set by whoever deploys it, not read from the automaton's wallet — and today it is unset: the API is not deployed, runs in free mode when started, and nothing accrues anywhere.
 
 Converting that USDC to shekels later needs a one-time Israeli exchange account with KYC. That step is only required to *cash out*, never to *earn*.
 
@@ -115,11 +115,10 @@ distinguishes on purpose:
   what the facilitator did offer. (Without that check the SDK's own background init would exit the
   process a few hundred milliseconds after "listening" — same outcome, worse message.)
 
-**The facilitator is an owner decision, not a default.** The SDK defaults to
+**The facilitator is a deploy-time decision, and it is ours — not the owner's** (his list is `docs/OWNER_STEPS.he.md`, and x402 is on no step; see "What the owner has to do" above). The SDK defaults to
 `https://x402.org/facilitator`, and upstream's README says plainly: *"Do not assume the public
 x402.org facilitator is the default production path for mainnet EVM routes."* Whether it lists Base
-mainnet cannot be checked from this repo's sandbox. Before the first paid deploy, from a machine
-with egress:
+mainnet cannot be checked from this repo's sandbox. No paid deploy is planned while this API is a rail on standby; if one is ever made, this check runs first from a GitHub Actions runner (which has egress; the container does not):
 
 ```bash
 curl -s https://x402.org/facilitator/supported | jq '.kinds[] | select(.x402Version==2 and .scheme=="exact" and .network=="eip155:8453")'

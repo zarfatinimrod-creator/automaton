@@ -28,7 +28,7 @@ verdict on the code:
   deployed **only while it costs ₪0/month**; any USDC that arrives is not yet booked
   automatically — `src/revenue/connectors/x402-local.ts` imports only `transactions` rows tagged `[line:<id>]`, and no code writes such a row for an inbound USDC payment — and nothing is planned on it.
 - **`il-biz-tools` moved from Paddle to Gumroad.** Gumroad is the only merchant of record with rendered
-  proof of ILS payout to an Israeli bank. Paddle is now an option the owner may choose knowing three
+  proof of a native ILS payout to an Israeli bank (its own source lists `Israel | ILS`); Freemius, rendered 7.9.2026, pays Israel from a USD balance with ILS only by Wise or wire conversion (`src/revenue/rails.ts`, `CANDIDATE_RAILS`). Paddle is now an option the owner may choose knowing three
   named risks, recorded in `src/revenue/rails.ts` — never a step on his checklist.
 - **`pcn874` is the one new product.** Its validator and its generator exist (`products/pcn874/`, 311 tests over 26 fixed-width fixtures and 35 CSV inputs). **Since
   7.9.2026 its record layout comes from the Israel Tax Authority's own circular to software houses** —
@@ -72,7 +72,7 @@ verdict on the code:
   code findings are implemented, and each of the audit's 26 inputs is a fixture with a test.
 
 **Products with no line:** the parked `telegram-il-tools-bot` and the standby `x402-il-api` (above), and `mcp-il-tools`, which is a distribution channel test rather than a
-storefront, and whose registry listing is blocked on the domain (step 5) and the organisation (step 7).
+storefront, and whose registry listing is blocked on the domain (step 5) and the organisation (step 7) — and on work that is ours, not the owner's: `@bediyuk/mcp-il-tools` is not published to npm and no `mcp-publish.yml` workflow exists yet (`products/mcp-il-tools/README.md`).
 
 **Lines with no product:** `oss-bounties`, which never gets one — it sells work performed on demand for
 a named payer, so its "product" is a pull request.
