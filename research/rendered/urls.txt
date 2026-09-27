@@ -194,3 +194,28 @@ https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md	kokoro-82m-model-c
 # forbids automated access to algora.io (algora-terms.txt:258-260), and the one fetch answered the
 # question (research/measurements/algora-terms-question.md, "Answer"). Re-reading it later is a
 # human's job, not the weekly runner's.
+
+# --------------------------------------------------------------------------------
+# 10. faceless-YouTube open questions — research/faceless-youtube/VERDICT.md §14 item 7:
+# "render-watch URLs to close the open questions (§15): AdSense answer/9905 (supported
+# countries), YouTube answer/14728152, /14727140, /157667 (Israel rail, threshold, PIN),
+# /7628154, /16767369, /16559651 (reach reports), google-ads answer/7515513 (advertiser AI
+# exclusion), the Brand Account → channel permissions article, Upload-Post docs."
+# 7628154 and the Brand Account article (7286468) are already in §8. Each URL below is
+# quoted verbatim from the file named above it. Added 27.9.2026.
+# --------------------------------------------------------------------------------
+# research/colony-sweep/scouts/content-seo--hebrew-seo.md:47 — AdSense supported countries.
+https://support.google.com/adsense/answer/9905	adsense-supported-countries
+# research/faceless-youtube/audits/monetization-gates.md:175-177 — threshold, payment method, PIN.
+https://support.google.com/youtube/answer/14727140	youtube-revenue-threshold
+https://support.google.com/youtube/answer/14728152	youtube-payment-method
+https://support.google.com/youtube/answer/157667	youtube-address-pin
+# research/faceless-youtube/audits/discovery.md:169 — reach reports ("Decoding CTR & impressions").
+https://support.google.com/youtube/answer/16767369?hl=en	youtube-decoding-ctr
+# research/faceless-youtube/audits/discovery.md:170 — possible first-party "experiments … small creators" line.
+https://support.google.com/youtube/answer/16559651?hl=en	youtube-small-creators
+# research/faceless-youtube/audits/rpm-evidence.md:153 — advertiser content exclusions (AI content).
+https://support.google.com/google-ads/answer/7515513?hl=en	google-ads-content-exclusions
+# research/faceless-youtube/T1-PRECHECK.md:264, :268 — Upload-Post's analytics fields and AI-label guide.
+https://docs.upload-post.com/api/get-analytics/	upload-post-get-analytics
+https://docs.upload-post.com/guides/ai-content-labeling/	upload-post-ai-content-labeling
