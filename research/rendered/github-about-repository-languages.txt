@@ -1,0 +1,284 @@
+About repository languages - GitHub Docs
+Skip to main content
+
+Skip to content
+GitHub Docs
+
+Search or ask Copilot /
+Menu
+
+Collapse sidebar Expand sidebar
+Scroll breadcrumbs left Home
+Repositories
+Manage repository settings
+Customize your repository
+Repository languages
+
+Scroll breadcrumbs right
+
+Repositories
+
+Create & manage repositories
+About repositories
+
+Best practices
+
+Quickstart for repositories
+
+Repository limits
+
+Creating a new repository
+
+Access to repositories
+
+Create from a template
+
+Create a template repo
+
+Issues-only repository
+
+Duplicating a repository
+
+Cloning a repository
+
+Troubleshooting cloning errors
+
+Renaming a repository
+
+Transferring a repository
+
+Deleting a repository
+
+Restore deleted repository
+
+View all repositories
+
+Manage repository settings
+Repository access and collaboration
+Invite collaborators
+
+Remove a collaborator
+
+Repository permissions
+
+Remove yourself
+
+Ownership continuity
+
+Customize your repository
+About READMEs
+
+Licensing a repository
+
+Display a sponsor button
+
+Social media preview
+
+Classify with topics
+
+About code owners
+
+Repository languages
+
+About CITATION files
+
+Enable features
+Disabling issues
+
+Disabling pull requests
+
+Disable projects
+
+Manage GitHub Actions settings
+
+Discussions
+
+Security & analysis
+
+Manage repository settings
+Repository visibility
+
+Teams & people
+
+Manage the forking policy
+
+Manage pull request reviews
+
+Manage default branch name
+
+Manage the commit signoff policy
+
+Manage the push policy
+
+Managing Git LFS objects in archives
+
+Email notifications for pushes
+
+Configure autolinks
+
+Manage auto-closing issues
+
+Branches and merges
+Manage branches
+View branches
+
+Renaming a branch
+
+Change the default branch
+
+Delete & restore branches
+
+Configure PR merges
+About merge methods
+
+Configure commit merging
+
+Configure commit squashing
+
+Configure commit rebasing
+
+Managing merge queue
+
+Manage branch updates
+
+Manage auto merge
+
+Automatic branch deletion
+
+Manage protected branches
+About protected branches
+
+Branch protection rule
+
+Manage rulesets
+About rulesets
+
+Create a ruleset
+
+Manage a ruleset
+
+Convert to rulesets
+
+Available rules
+
+Troubleshooting
+
+Work with files
+Managing files
+Creating new files
+
+Add a file
+
+Move a file
+
+Edit files
+
+Renaming a file
+
+Delete files
+
+How changed files appear
+
+Using files
+Navigating code on GitHub
+
+View and understand files
+
+Permanent links to files
+
+Source code archives
+
+Working with non-code files
+
+Download files
+
+Managing large files
+Large files
+
+Git Large File Storage
+
+Install Git LFS
+
+Configure Git LFS
+
+Collaboration
+
+Move a file to Git LFS
+
+Remove files
+
+Resolve upload failures
+
+Release projects
+About releases
+
+Manage releases
+
+View releases & tags
+
+Searching releases
+
+Linking to releases
+
+Comparing releases
+
+Automated release notes
+
+Automate release forms
+
+View activity and data
+View deployment activity
+
+About repository graphs
+
+Using Pulse
+
+View repository traffic
+
+View project contributors
+
+Analyze changes
+
+Connections between repositories
+
+Using the activity view
+
+Archive a repository
+Archiving repositories
+
+Archive content & data
+
+Reference & cite content
+
+Backing up a repository
+
+About repository languages
+
+The files and directories within a repository determine the languages that make up the repository. You can view a repository's languages to get a quick overview of the repository.
+
+Copy markdown
+
+GitHub uses the open source Linguist library to
+determine file languages for syntax highlighting and repository statistics. Language statistics will update after you push changes to your default branch.
+
+Some files are hard to identify, and sometimes projects contain more library and vendor files than their primary code. If you're receiving incorrect results, please consult the Linguist troubleshooting guide for help. Note that Linguist only works for repositories with fewer than 100,000 files.
+
+Markup languages
+
+Markup languages are rendered to HTML and displayed inline using our open-source Markup library . At this time, we are not accepting new markup languages to show within GitHub. However, we do actively maintain our current markup languages. If you see a problem, please create an issue .
+
+Back to top
+
+Help and support
+Was this Doc helpful?
+Yes
+No
+
+Help us make GitHub Docs great!
+All Docs are open source. See something that's wrong or unclear? Submit a pull request.
+Make a contribution
+
+Still need help?
+Ask the GitHub community Contact support Expert services Blog
+
+GitHub Inc. © 2026 Terms Privacy Status Pricing
