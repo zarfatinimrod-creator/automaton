@@ -1,6 +1,6 @@
 # mcp-il-tools
 
-An MCP server for the Israeli data checks that agents get wrong: the teudat-zehut
+An MCP server for the Israeli data checks that are easy to get wrong: the teudat-zehut
 check digit, phone number classification, bank and branch codes, the Hebrew calendar,
 and Hebrew-to-Latin transliteration.
 

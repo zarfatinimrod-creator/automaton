@@ -118,7 +118,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "חשבון Gumroad + טוקן",
     minutes: [20, 20],
     unlocks:
-      "The only merchant-of-record rail with RENDERED proof of ILS payout to an Israeli bank (Gumroad's own _13-getting-paid.html.erb carries a row reading `Israel | ILS`). It collects from the buyer, holds 7 days, and pays out in shekels above a $100 balance. It supplies no buyers — its Discover gate requires a sale to already exist — so it is a rail, not a storefront.",
+      "The only merchant-of-record rail with RENDERED proof of a native ILS payout to an Israeli bank (Freemius pays Israel from a USD balance, ILS only via Wise or wire) (Gumroad's own _13-getting-paid.html.erb carries a row reading `Israel | ILS`). It collects from the buyer, holds 7 days, and pays out in shekels above a $100 balance. It supplies no buyers — its Discover gate requires a sale to already exist — so it is a rail, not a storefront.",
     lines: ["il-biz-tools", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.2",
     ownerDecision:

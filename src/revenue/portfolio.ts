@@ -105,7 +105,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     operatingLoop: [
       "Ship a Hebrew/RTL web app with free calculators and paid exports for Israeli freelancers (osek patur / osek murshe):",
       "receipt and invoice generator matching Israeli formats, VAT and advance-payment calculators, net-salary calculator, Bituach Leumi estimator, osek patur threshold tracker, and the redaction feature folded in from risk-governance.",
-      "The paid tier is sold through GUMROAD, not Paddle: Gumroad is the only merchant of record with rendered proof of ILS payout to an Israeli bank. Retire the Paddle block in src/config/site.json and put a Gumroad checkout link on the Pro box in place of 'בקרוב'.",
+      "The paid tier is sold through GUMROAD, not Paddle: Gumroad is the only merchant of record with rendered proof of a native ILS payout to an Israeli bank; Freemius (rendered 7.9.2026) pays Israel from a USD balance with ILS only by Wise or wire conversion (rails.ts, CANDIDATE_RAILS). Retire the Paddle block in src/config/site.json and put a Gumroad checkout link on the Pro box in place of 'בקרוב'.",
       "Every page that depends on tax-2026.json stays UNPUBLISHED until its rates are confirmed against two independent GitHub-hosted implementations and `verified` flips to true. Publishing an unverified rate is selling a wrong number.",
       "Loop: deploy under the domain → one Hebrew SERP read before any SEO hour → cookieless page views through the PostHog snippet, written weekly as KPIs → improve the tool with the best visit-to-pay ratio → repeat.",
     ].join(" "),
@@ -197,7 +197,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     budgetMonthlyCents: 4000,
     humanSetup: [
       "Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses",
-      "Create the GitHub organisation under the brand name so the open-source core and the npm scope carry it and not your username (owner step 7)",
+      "Create the GitHub organisation under the brand name so the open-source core's repository URL carries it and not your username (owner step 7). The npm scope `@bediyuk` is a separate namespace on npm, not created by the GitHub organisation; publishing to it is our work and no workflow does it yet.",
       "Buy the company domain (owner step 5) and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — both shared with il-biz-tools; without the token the loop cannot see a sale",
     ],
     skillName: "revenue-pcn874",

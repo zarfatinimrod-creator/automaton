@@ -41,7 +41,7 @@ export function buildServer(): McpServer {
       title: "Validate an Israeli ID number",
       description:
         "Validate an Israeli teudat zehut (תעודת זהות). Checks the Luhn-style check digit and " +
-        "pads to nine digits, which is the step most implementations get wrong. Returns the " +
+        "pads to nine digits, a step that is easy to skip. Returns the " +
         "normalized nine-digit form, whether it is valid, and why not when it is not.",
       inputSchema: { id: z.string().describe("ID number, with or without leading zeros or separators") },
       annotations: { readOnlyHint: true, openWorldHint: false },

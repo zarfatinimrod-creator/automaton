@@ -41,7 +41,7 @@ Exit codes:
 Rules come from the Israel Tax Authority's own circular to software houses —
 Appendix A (record layout), Appendix C (permitted values) — cited line by line in
 docs/SPEC.md; the CSV's columns are documented in docs/GENERATOR.md. This tool
-does NOT tell you the Authority will accept your file. The Authority's free
+does NOT tell you the Authority will accept your file. The Authority's
 simulator is the thing that answers that:
   ${ITA_SIMULATOR_URL}`;
 
@@ -155,7 +155,7 @@ export function formatGenerate(
   lines.push(
     'The file matches the record layout in the Tax Authority circular (Appendices A and C) and was checked ' +
       "with this package's own validator before being written. That is the whole of the claim: whether the " +
-      'Authority will take the file is a different question, and the Authority answers it itself with a free ' +
+      'Authority will take the file is a different question, and the Authority answers it itself with its ' +
       `simulator — upload the file there: ${ITA_SIMULATOR_URL}`,
   );
   lines.push(

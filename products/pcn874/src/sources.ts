@@ -182,9 +182,10 @@ export const OFFICIAL_SPEC_URLS: readonly {
 ]);
 
 /**
- * The Tax Authority's own free simulator. Named by the official circular
+ * The Tax Authority's simulator. Named by the official circular
  * ("In the nearest time Sha'am will place on-line simulator", line 84) and given
- * as a URL by the H-ERP manual (line 1263). It is the only thing that tells a
+ * as a URL by the H-ERP manual (line 1263), which also says it checks the file only partially; no rendered
+ * source states a price or confirms the address today. It is the only thing that tells a
  * filer their file is acceptable; this validator never claims to.
  */
 export const ITA_SIMULATOR_URL = 'http://www.misim.gov.il/EmDvhmfrt/wUploadFileHeshboniotSim.aspx';
