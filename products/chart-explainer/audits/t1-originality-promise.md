@@ -169,3 +169,106 @@ Nothing is clickbait, and every figure I spot-checked holds on its count. The fa
 ## The sentence I am least sure of
 
 RC3's **"a repository that holds both languages counts for both."** GitHub does not say it in those words. It is my reading of datasheet l.37 ("a repository with a given programming language"), backed by the file's own evidence (HTML above JavaScript, 1.4M Dockerfile pushers). G4 should confirm it before it is spoken.
+
+---
+
+# Revision 1 (2026-09-27T10:54Z): re-audit of the revised render
+
+The original audit above covers script `ded6992c…dd31`, which no longer applies. This section covers the new render.
+
+- **Audited script sha256:** `bf98a1b066eab0b8ca26a474759e9a3fa0e5cfccbb47a7cfd6a5fed1e17a86a6`. I computed it myself from `out/t1/manifest.json` `script`, and it matches the main thread's value.
+- **Revision:** the builder applied G5 RC1-RC4 and the G4 auditor's R1-R3 (`audits/t1-factcheck.json`), then re-rendered.
+
+| Gate | Verdict | One line |
+|---|---|---|
+| G3 originality | **PASS** | The Octoverse sentence cites GitHub's headline in order to set this video's own count against it, which is the reverse of reused content. The template caution for videos 2-6 still stands. |
+| G5 promise match | **PASS** | Both halves of the answer land at 0:03.2-0:08.7, the counting rule by 0:19.9, and the Octoverse contradiction is named and scoped. Duration is 116.7 s. |
+
+**Required changes: none, for either gate.**
+
+## What was re-read
+
+- The new SRT (all 30 cues), `manifest.json` (title, description and script), `render-report.json` and `figures.json` (all nine claims `holds: true`; the new `chartFigures` block).
+- `analyses/t1.json`, including the new `promise`, `externalSources` and `citations` blocks.
+- The s1 and s2 PNGs. s3-s6 have the same byte sizes as the set audited above.
+- MP4 frames at 5 s and 50 s, and ffprobe for the duration.
+- The newly rendered sources the revision relies on:
+  - `research/rendered/github-octoverse-2025.txt` lines 292, 300, 672, 682, 732, 976 and 1064;
+  - `research/rendered/github-about-repository-languages.txt:257`.
+- No new web search. The original search result (section above) still stands.
+
+## G5, checked against the new SRT
+
+| Cue | Time | Text | Role |
+|---|---|---|---|
+| 1 | 00:00:00,000-00:00:02,944 | "Is TypeScript catching up with JavaScript on GitHub?" | question |
+| 2-3 | **00:00:03,194-00:00:08,719** | "As a share of JavaScript, yes, and quickly; in raw numbers, no: JavaScript's lead grew." | **both halves land (RC1)** |
+| 4-6 | 00:00:08,969-00:00:19,871 | "…push to repositories containing each language; a repository that holds both languages counts for both." | counting rule (RC3) |
+| 7 | 00:00:20,121-00:00:24,217 | "We follow the 92 economies reported for both in every quarter." | panel |
+| 8-9 | 00:00:24,733-00:00:34,690 | 18% … 49% | numeric support, share |
+| 10-11 | 00:00:34,940-00:00:43,623 | "…JavaScript's lead grew, from 1.1 million to 2.5 million pushers…" | numeric support, raw numbers |
+| 12-14 | 00:00:43,873-00:00:56,795 | Octoverse 2025 sentence + "That is a different count…" | context (G4 R1) |
+| 30 | …-00:01:56,227 | "Source: GitHub's Innovation Graph, public domain." | end |
+
+**Original reason 1 (timing): resolved.**
+- Both halves now land by 8.7 s. A viewer who leaves at 0:30 has heard yes-as-a-share, no-in-raw-numbers, how GitHub counts, and the 18% starting point.
+- RC2 is done: the duplicate "Relative to JavaScript…" is gone.
+
+**Original reason 2 (scope): resolved.**
+- The counting rule is spoken at 0:09-0:20. It is sourced to datasheet l.37 ("who made at least one git push to a repository with a given programming language") and to GitHub Docs l.257 ("The files and directories within a repository determine the languages that make up the repository.").
+- That settles the sentence I was least sure of in the original audit. GitHub's own docs say a repository's languages are those of its files, and the Innovation Graph counts pushes to "a repository with" the language. So a repository holding both languages is a repository with each.
+- The Octoverse contrast is accurate against the page:
+  - "named TypeScript the most used language on GitHub in August 2025, by contributor counts" matches `github-octoverse-2025.txt:672`: "By GitHub contributor counts, August 2025 marks the first time TypeScript emerged as the most used language on GitHub". At :292 the page adds that TypeScript "overtook both Python and JavaScript in August 2025".
+  - "That is a different count from the quarterly pushers in this video" is backed by :976: "'most used' languages are ranked by the number of distinct monthly contributors who committed code in that language".
+  - The page itself adds, at :672: "(other industry indices use different methodologies and may still rank JavaScript and Python higher)". That is exactly the framing the video uses.
+
+**Duration:** 116.733 s by ffprobe and in `render-report.json`, at or under the 120 s cap.
+
+**Charts:**
+- s1 is retitled "Developers who pushed to repositories containing TypeScript or JavaScript" (RC4), and the 5 s frame confirms it in the MP4. The alt text was updated.
+- The s2 subtitle is reworded, with no change of meaning.
+- s3-s6 are unchanged and match their narration as before.
+
+**Description:** the new "Counting:" paragraph states the same rule with its two sources. The "Context:" paragraph repeats the Octoverse sentence with the URL. Neither goes beyond its source.
+
+**Clickbait or overstatement:** none. The title is a genuine question answered by 0:08.7, and every qualitative word still has a claim that holds in `figures.json`.
+
+**Non-blocking weaknesses:**
+- The gap sentence and the Octoverse sentence are both spoken over the ratio chart, so s2 is a 32.6 s static hold while the chart showing the gap was on screen at 0:00-0:24.
+- The Octoverse sentence says the counts differ but not why they point in opposite directions.
+- Only 3.3 s remain before the 120 s cap, so any further sentence needs a matching cut.
+
+**Verdict:** PASS. I would defend it to a YouTube reviewer.
+
+## G3, re-judged
+
+**Does originality still hold with the Octoverse sentence? Yes, and it is stronger.**
+- The sentence is one attributed statement plus one line of scoping, about 12.9 s of 116.7 s. It is used to set this video's count against GitHub's headline, not to relay it.
+- That is neither "Content that exclusively features readings of other materials you did not originally create" (youtube-monetization-policies.txt:204) nor repurposing "without adding significant original commentary" (:144).
+- Placing the video's finding against the best-known headline, and saying why they can differ, is the "creator's original, authentic insights or perspective" that :140 asks for.
+
+**The description with the counting rule.**
+- Reviewers look at "Video descriptions" (:154), and "Reused content from other online sources where the creator … explains how the creator added to the content" is the allowed case (:180).
+- The Method, Counting and Context paragraphs do that explicitly. They help rather than hurt.
+
+**The rest is unchanged from the original audit.** The analysis is unpublished elsewhere, the charts are code-drawn from the pinned CSV, and the narration is question-specific, with every qualitative word guarded by a claim.
+
+**Slideshow note.** The longest static hold is now s2 at 32.6 s, previously s6 at 29.2 s. The video is still outside :138 because it carries narrative and educational value. It still departs from `VERDICT.md:326` ("sentence-synced").
+
+**Template-storyline caution for later videos: still stands, recorded, not a T1 blocker.**
+- `analyses/t1.json` is still parameterised by `languageA`, `languageB`, `topN` and `thresholdPct`.
+- Its six-scene skeleton would carry over unchanged to any language pair: answer, then share and gap, growth bars, yearly gain, per-economy histogram and coverage limits.
+- The revision's T1-specific additions (the `promise` block and the Octoverse `externalSources`) make T1 itself less templated. They do nothing for a second "Is X catching up with Y?" video, which would be the "highly similar storyline template across multiple videos" of :136 and would feel "interchangeable from video to video" (:130).
+- Videos 2-6 need distinct question shapes, and the limits paragraph should vary between videos from the same dataset.
+
+**Verdict:** PASS.
+
+## Remaining required changes
+
+None.
+
+**Optional, and only with a matching cut to stay at or under 120 s:** after "That is a different count from the quarterly pushers in this video." add "Here, a TypeScript project that also holds JavaScript files counts for JavaScript too." This would change the script hash and need fresh G3, G4 and G5 verdicts.
+
+## The sentence I am least sure of (revision 1)
+
+"The Octoverse sentence says the counts differ but not why they point in opposite directions" is the gap I am least sure matters to viewers. A developer who already knows the Octoverse headline may still find "a different count" thin. I judged that the counting rule at 0:09-0:20 closes it, but that is a judgement about the audience, not a checked fact.
