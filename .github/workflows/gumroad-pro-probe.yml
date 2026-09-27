@@ -1,0 +1,99 @@
+name: gumroad-pro-probe
+
+# AT-16 of research/measurements/gumroad-license-decision.md: the live check
+# against the REAL Pro product, from the site's own origin.
+#
+# gumroad-cors-probe.yml proved on 25.9 that api.gumroad.com answers a foreign
+# origin with `access-control-allow-origin: *` - but with a product id that
+# cannot exist. This sibling repeats the two requests a browser makes with the
+# product id the site actually ships (src/config/site.json, written by
+# gumroad-pro-product.yml) and the site's own origin, and a key that cannot
+# exist, so no buyer's data can appear in the log. It expects:
+#   - OPTIONS preflight: `access-control-allow-origin: *`
+#   - POST verify: HTTP 404, the exact body
+#     {"success":false,"message":"That license does not exist for the provided product."},
+#     and `access-control-allow-origin: *`.
+# It cannot tell a wrong product id from a right one (both give that 404);
+# gumroad-pro-product's read-back is what proves the id.
+#
+# Run it after gumroad-pro-product (create, merge, deploy, enable). Until
+# site.json carries a product id there is nothing to probe: it prints a notice
+# and exits 0. That id only exists once the owner's GUMROAD_ACCESS_TOKEN
+# (docs/OWNER_STEPS.he.md step 6) has let gumroad-pro-product run; this job
+# itself needs no secret - the verify endpoint is public.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Which product, from which origin?
+        id: cfg
+        run: |
+          set -euo pipefail
+          node -e '
+            const fs = require("fs");
+            const site = JSON.parse(fs.readFileSync("products/il-biz-tools/src/config/site.json", "utf8"));
+            const id = String((site.gumroad && site.gumroad.productId) || "").trim();
+            const origin = new URL(site.siteUrl).origin;
+            const out = process.env.GITHUB_OUTPUT;
+            if (!id) {
+              const notice = "Nothing to probe yet: products/il-biz-tools/src/config/site.json has no gumroad.productId. It is written by gumroad-pro-product.yml, which runs once the owner has pasted GUMROAD_ACCESS_TOKEN (docs/OWNER_STEPS.he.md step 6). This is not a failure.";
+              console.log(notice);
+              fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, notice + "\n");
+              fs.appendFileSync(out, "present=false\n");
+              process.exit(0);
+            }
+            if (!/^[A-Za-z0-9_=+\/-]{1,128}$/.test(id)) { console.error("::error::gumroad.productId has unexpected characters; refusing to use it."); process.exit(1); }
+            console.log("product_id=" + id + " origin=" + origin);
+            fs.appendFileSync(out, "present=true\nproduct_id=" + id + "\norigin=" + origin + "\n");
+          '
+
+      - name: Preflight (OPTIONS) from the site's own origin
+        if: steps.cfg.outputs.present == 'true'
+        env:
+          ORIGIN: ${{ steps.cfg.outputs.origin }}
+        run: |
+          set -euo pipefail
+          curl -sS -D preflight.headers -o /dev/null -X OPTIONS "https://api.gumroad.com/v2/licenses/verify" \
+            -H "Origin: ${ORIGIN}" \
+            -H "Access-Control-Request-Method: POST" \
+            -H "Access-Control-Request-Headers: content-type"
+          tr -d '\r' < preflight.headers | tee preflight.clean
+          if ! grep -qiE '^access-control-allow-origin: \*$' preflight.clean; then
+            echo "::error::Preflight from ${ORIGIN} did not return access-control-allow-origin: *"
+            exit 1
+          fi
+          echo "preflight: access-control-allow-origin: * (from ${ORIGIN})" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: POST verify - the real product id, a key that cannot exist
+        if: steps.cfg.outputs.present == 'true'
+        env:
+          ORIGIN: ${{ steps.cfg.outputs.origin }}
+          PRODUCT_ID: ${{ steps.cfg.outputs.product_id }}
+        run: |
+          set -euo pipefail
+          STATUS=$(curl -sS -D verify.headers -o verify.body -w '%{http_code}' -X POST "https://api.gumroad.com/v2/licenses/verify" \
+            -H "Origin: ${ORIGIN}" \
+            --data-urlencode "product_id=${PRODUCT_ID}" \
+            --data-urlencode "license_key=00000000-00000000-00000000-00000000")
+          tr -d '\r' < verify.headers | tee verify.clean
+          echo "body: $(cat verify.body)"
+          FAIL=0
+          if [ "$STATUS" != "404" ]; then echo "::error::expected HTTP 404, got ${STATUS}"; FAIL=1; fi
+          if ! grep -qiE '^access-control-allow-origin: \*$' verify.clean; then echo "::error::no access-control-allow-origin: * on the POST"; FAIL=1; fi
+          if ! node -e 'const b = JSON.parse(require("fs").readFileSync("verify.body", "utf8")); process.exit(b.success === false && b.message === "That license does not exist for the provided product." ? 0 : 1)'; then
+            echo "::error::the body is not exactly {\"success\":false,\"message\":\"That license does not exist for the provided product.\"}"
+            FAIL=1
+          fi
+          if [ "$FAIL" = 0 ]; then
+            echo "verify: HTTP 404, the exact 'does not exist' body, access-control-allow-origin: * (product ${PRODUCT_ID}, origin ${ORIGIN})" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          exit "$FAIL"

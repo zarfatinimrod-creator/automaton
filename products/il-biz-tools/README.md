@@ -147,7 +147,7 @@ netlify.toml robots.txt sitemap.xml
 ```bash
 cd products/il-biz-tools
 npm install          # vitest only
-npm test             # 120 unit tests
+npm test             # 217 unit tests (vitest, 14 files; re-measured 27.9.2026 after Option C)
 npm run check:html   # static page sanity checks + what the publish gate will withhold
 node scripts/build-site.js   # writes _site/ exactly as it will be deployed
 npm run serve        # http://localhost:8080
@@ -253,8 +253,8 @@ through the API while its code says they can; the first `create` run settles it.
 stops and the fallback — one dashboard click, *Insert → License key* — is raised with the owner **before**
 anything is sold, never added to his checklist silently.
 
-**First real key verified: not yet — the first sale is the test.** No Gumroad account or product exists yet,
-so no real key has ever reached `verify` from a browser. What is measured: CORS on preflight and POST
+**First real key verified: not yet — the first sale is the test.** No Pro product exists on Gumroad yet, so
+no real key has ever reached `verify` from a browser. What is measured: CORS on preflight and POST
 through Cloudflare, and the exact 404 body for a key that does not exist (runner probe, 25.9). What is only
 read in Gumroad's code: that a real key returns the documented 200 payload with those flags. This line
 changes only when a `gumroad:<productId>` sale is in `revenue_ledger` and the buyer-side outcome is noted in
@@ -290,7 +290,9 @@ The saved client list, the numbering, the PDF export and the stored documents ar
    (`netlify.toml` declares the build command and the publish directory, not the base directory, which is set here in the UI; headers/CSP/redirects are in the same file).
 3. Deploy. Then set the custom domain and replace `https://il-biz-tools.netlify.app` with the real domain in
    `siteUrl` (`src/config/site.json`), the static `<link rel="canonical">` of all 7 pages, the JSON-LD `url` in
-   `index.html`, `sitemap.xml` and `robots.txt`; commit.
+   `index.html`, `sitemap.xml` and `robots.txt`; commit. If the Pro product already exists on Gumroad, its
+   description and activation text name the old `invoice.html` URL too (`scripts/gumroad-pro-product.js` writes
+   them at creation and does not update a reused product), so they need the same edit on Gumroad's side.
 4. Submit `https://<domain>/sitemap.xml` in Google Search Console.
 
 CLI alternative, from `products/il-biz-tools`: `node scripts/build-site.js && npx netlify-cli deploy --dir=_site --prod`
@@ -370,4 +372,4 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
 חשבון Netlify ודומיין, אימות ב-Google Search Console. יצירת מוצר ה-Pro והדבקת הכתובת והמזהה שלו
 ב-`site.json` הן עבודה שלי, דרך אותו טוקן (`.github/workflows/gumroad-pro-product.yml`).
 
-**בדיקות:** `npm install && npm test` (120 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.
+**בדיקות:** `npm install && npm test` (217 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.

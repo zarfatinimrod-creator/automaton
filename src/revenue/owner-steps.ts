@@ -118,7 +118,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "חשבון Gumroad + טוקן",
     minutes: [20, 20],
     unlocks:
-      "The only merchant-of-record rail with RENDERED proof of a native ILS payout to an Israeli bank (Freemius pays Israel from a USD balance, ILS only via Wise or wire) (Gumroad's own _13-getting-paid.html.erb carries a row reading `Israel | ILS`). It collects from the buyer, holds 7 days, and pays out in shekels above a $100 balance. It supplies no buyers — its Discover gate requires a sale to already exist — so it is a rail, not a storefront.",
+      "The only merchant-of-record rail with RENDERED proof of a native ILS payout to an Israeli bank (Freemius pays Israel from a USD balance, ILS only via Wise or wire) (Gumroad's own _13-getting-paid.html.erb carries a row reading `Israel | ILS`). It collects from the buyer, holds 7 days, and pays out in shekels above a $100 balance. It supplies no buyers — its Discover gate requires a sale to already exist — so it is a rail, not a storefront. The dashboard-minted token carries edit_products (Gumroad doorkeeper.rb:10, oauth_application.rb:121-122), so the agent creates the Pro product with Gumroad's own licence-key block, and Gumroad mints and emails a key per sale — there is no per-sale owner step (research/measurements/gumroad-license-decision.md, Option C).",
     lines: ["il-biz-tools", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.2",
     ownerDecision:
@@ -168,7 +168,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "לחבר את Netlify, להדביק את הטוקנים ב-GitHub, וקליק אחד ב-Apify",
     minutes: [15, 20],
     unlocks:
-      "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; BRAND_GITHUB_TOKEN lets bounty PRs leave the brand account. The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can.",
+      "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; the same token creates the il-biz-tools Pro product once (Option C, Gumroad-native licences); BRAND_GITHUB_TOKEN lets bounty PRs leave the brand account. The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can.",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.5",
     earlyPart: {
