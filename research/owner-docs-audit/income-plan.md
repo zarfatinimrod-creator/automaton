@@ -12,7 +12,7 @@ published, nothing committed. The document was not edited.
 ## The fact that changes most of this document
 
 **PR #2 was merged by the owner on 2026-09-22.** `git log origin/main --format='%h %ad %an %s'` →
-`31cda66 2026-09-22 21:39:15 +0300 Nimrod zarfati Merge pull request #2 — the revenue colony, six products, the criteria
+`31cda66 2026-09-22 21:39:15 +0300 <owner> Merge pull request #2 — the revenue colony, six products, the criteria
 sweep and the board's decision`. `.github/workflows/colony.yml` is on `origin/main` (`git show
 origin/main:.github/workflows/colony.yml` succeeds) and `colony-bot` has committed 16 ticks since
 (`2026-09-22 18:40:14 +0000` … `2026-09-25 13:44:58 +0000`, all reporting `30d ₪0.00`). `logs/CHECKPOINT.md` (22.9,
@@ -164,7 +164,7 @@ Status key: C = CORRECT, W = WRONG, S = STALE, U = UNSUPPORTED. Line numbers are
 ### F1 — L299 — STALE — HIGH
 **Claim:** `| 1 | למזג את PR #2 | 2 | הסכמה, לא זהות: מעביר את הלולאה ל-main. …`
 **Evidence:** `git log origin/main --format='%h %ad %an %s' --date=iso` →
-`31cda66 2026-09-22 21:39:15 +0300 Nimrod zarfati Merge pull request #2 — the revenue colony, six products, the
+`31cda66 2026-09-22 21:39:15 +0300 <owner> Merge pull request #2 — the revenue colony, six products, the
 criteria sweep and the board's decision`. `git show origin/main:.github/workflows/colony.yml` returns the file; 16
 `colony-bot` "colony tick" commits since `2026-09-22 18:40:14 +0000`. The owner did step 1 three days ago; the
 document still lists it as the first thing to do, and therefore does not tell him that the Apify half of step 6

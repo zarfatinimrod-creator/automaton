@@ -309,6 +309,27 @@ Nothing in this addition loosens the constitution. A thousand honest stores is t
 deceptive store is a failure regardless of what it earns. And money still counts only in the
 ledger, with a transaction id — a thousand stores reporting projections is worth exactly ₪0.
 
+## ערוצים בלי הפסקה — תוספת הבעלים, 27.9.2026 (verbatim)
+
+> ותוסיף גם מטרה לפתוח כמות ערוצים בלי הגבלה להגיע למספרים גבוהים כמה שיותר יותר טוב אני רוצה
+> שתפתח ערוצים בלי הפסקה מתי שערוץ מוכן ורץ חלק בונים את הערוץ הבא את הדבר הבא בלי הפסקה בloop
+
+### What this addition changes
+
+**There is no cap on the number of channels, and the work does not stop.** Opening channels is
+now a standing loop, not a sweep the owner has to ask for: when a channel is ready and running,
+the next one is built. The loop's protocol, its queue and where it stopped live in
+`logs/CHANNEL_LOOP.md`, which every session reads after `logs/CHECKPOINT.md`.
+
+**Waiting is not a reason to stop.** A channel blocked on an owner step or on a measurement
+window does not hold the loop: the loop moves to the next channel it can advance. What it may
+not do is pile up built-but-unlaunched products without end — the protocol caps that
+inventory, because a product nobody can see earns nothing.
+
+**It changes nothing above.** "Unlimited" is a number of channels, not a loosening of the rules:
+honest value only, the brand as the only public face, the one-off ₪200 float, no subscriptions,
+money only in the ledger, and no account ever opened in the owner's name by us.
+
 ---
 
 ## The rules this mandate implies
@@ -370,6 +391,7 @@ Every task ends with a log in `logs/` per the format in `CLAUDE.md`.
 | The owner's checklist — seven one-time steps, what each does and unlocks | `docs/OWNER_STEPS.he.md` |
 | How the chain of command works | `docs/CHAIN_OF_COMMAND.md` |
 | Where we stopped | `logs/CHECKPOINT.md` |
+| The non-stop channel loop — protocol, queue, where it stopped | `logs/CHANNEL_LOOP.md` |
 | Working conventions | `CLAUDE.md` |
 
 ## Definition of done for this mission
