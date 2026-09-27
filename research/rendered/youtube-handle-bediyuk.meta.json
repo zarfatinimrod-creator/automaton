@@ -1,0 +1,17 @@
+{
+  "url": "https://www.youtube.com/@bediyuk",
+  "slug": "youtube-handle-bediyuk",
+  "fetchedAt": "2026-09-27T09:56:40.519Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 871930,
+  "sha256": "407d5c190141097ef7196ed1ba4a248e4489e36fbe5ca8313de761784df15be0",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/youtube-handle-bediyuk.html",
+  "textPath": "research/rendered/youtube-handle-bediyuk.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
