@@ -1,0 +1,17 @@
+{
+  "url": "https://www.metaculus.com/api/leaderboards/project/33022/",
+  "slug": "metaculus-lb-33022",
+  "fetchedAt": "2026-09-27T09:31:37.264Z",
+  "status": 403,
+  "contentType": "text/plain;charset=UTF-8",
+  "byteLength": 0,
+  "sha256": null,
+  "truncated": false,
+  "error": "HTTP 403 Forbidden",
+  "bodyPath": null,
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
