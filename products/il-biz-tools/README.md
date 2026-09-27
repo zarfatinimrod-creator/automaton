@@ -28,7 +28,14 @@ answering the exact questions people search), plus sharing in freelancer Faceboo
   with the mandate. Stripe does not take an Israeli individual as a direct merchant (the one Stripe path on the owner
   checklist is Connect Express through Algora, step 4); PayPal Business and Payoneer
   Checkout remain the fallbacks.
-- Whether Gumroad's rules admit Pro in its current shape is **not settled**: the one reading of them in this repo (`research/colony-sweep/scouts/storefronts--gumroad.md` §3, from Gumroad's own `prohibited.html.erb`) prohibits products with no content attached and services fulfilled outside Gumroad, and describes licence keys for downloadable tools. A file-free key that unlocks a feature on our site sits near both lines, so the safe shape is a downloadable file delivered on Gumroad (the branding guide carrying the key). It is not an AI service and must never be sold as one.
+- Whether Gumroad's rules admit Pro in its current shape is read from Gumroad's own help text, **not ruled on**:
+  licence keys "can help creators verify purchases through their application and authorize or revoke access to
+  the software they have created" (`_76-license-keys.html.erb`), and the outside-fulfilment rule is about products
+  with **nothing** attached — "A product that has real files or content is never affected by this"
+  (`_155-things-you-cant-sell-on-gumroad.html.erb`). So the product carries real content: written Hebrew
+  activation instructions plus Gumroad's licence-key block (a downloadable guide would be better still and is not
+  built). Gumroad's own review after the first 3–4 sales is the actual ruling
+  (`research/measurements/gumroad-license-decision.md` §1, §9). It is not an AI service and must never be sold as one.
 
 ## Verified figures and sources (September 2026)
 
@@ -130,6 +137,8 @@ tests/*.test.js             vitest (node environment)
 scripts/serve.js            zero-dependency local server
 scripts/build-site.js       copies the allowlist into _site/ and applies the unverified-rate gate
 scripts/check-html.js       checks title/description/canonical/JSON-LD/links/classes on every page
+scripts/gumroad-pro-product.js  creates the Pro product on Gumroad (draft, licence-key block) and later
+                            enables it; run only by .github/workflows/gumroad-pro-product.yml
 netlify.toml robots.txt sitemap.xml
 ```
 
@@ -156,16 +165,17 @@ There are **no server-side env vars** — this is a static site. Public configur
 | Key | Meaning | Default |
 |---|---|---|
 | `siteUrl` | Canonical origin; `assets/common.js` rewrites `<link rel=canonical>` from it at runtime. The static canonical in all 7 pages and the JSON-LD `url` in `index.html` are hard-coded, so edit those too, plus `sitemap.xml` and `robots.txt` | `https://il-biz-tools.netlify.app` |
-| `gumroad.productUrl` | Full `https://` URL of the Gumroad product page. Empty ⇒ the Pro button is disabled and says the shop is not open | `""` |
+| `gumroad.productUrl` | Full `https://` URL of the Gumroad product page. Empty ⇒ the Pro button is disabled and says the shop is not open. Written by the product-creation job | `""` |
+| `gumroad.productId` | Gumroad's public product id — what the licence check sends with the key. Empty ⇒ the button stays disabled (`no_product_id`) and activation sends nothing. Written by the product-creation job | `""` |
 | `analytics.provider` | `none` or `plausible` | `none` (off) |
 | `analytics.plausibleDomain` | Plausible site domain | `""` |
 | `posthog.projectKey` | PostHog project key (`phc_…`). Empty ⇒ **no snippet at all** | `""` |
 | `posthog.apiHost` | PostHog host | `https://eu.i.posthog.com` |
-| `pro.publicKey` | Licence-verification public key, written by `make-license.js init` | `null` |
 
 Optional CI variables (never committed): `NETLIFY_AUTH_TOKEN`, `NETLIFY_SITE_ID` for CLI deploys.
-No server-side secret is needed by this site at all — the Gumroad checkout is a link, and the
-licence signing key never leaves the owner's machine.
+No server-side secret is needed by this site at all — the checkout is a link and the licence keys are
+Gumroad's; verification needs only the public product id. (`GUMROAD_ACCESS_TOKEN` is a GitHub secret the
+product-creation job and the hourly sales sync use; the site never sees it.)
 
 ### PostHog page views (optional, cookieless, off by default)
 
@@ -199,38 +209,75 @@ free and stay free. An earlier version of this page advertised those free featur
 and also promised branding that did not exist; that was fixed rather than shipped, because
 charging for something the buyer already has is a scam whatever the price.
 
-**How entitlement works without a server.** The site is static, so there is nobody to ask
-"did this person pay?". Pro is unlocked by a licence key: a short token signed with the
-owner's private key and verified in the browser against the public key in
-`src/config/site.json` (ECDSA P-256 via Web Crypto). Nobody can mint a key without the
-private half. A determined user can still bypass client-side gating by editing JavaScript
-— that is true of every static site, and it is not a reason to pretend otherwise.
+**How entitlement works without a server — Option C** (`research/measurements/gumroad-license-decision.md`).
+Gumroad mints and emails the key per sale (its `purchase.rb:2144-2171`); no owner action per sale exists.
+The buyer pastes the key into the Pro box on `invoice.html`, and the browser sends it, with the public
+`gumroad.productId`, in one `POST` to `https://api.gumroad.com/v2/licenses/verify` — a form-encoded CORS
+simple request, `credentials: 'omit'`, 8-second timeout. On a yes the page keeps the key, the product id and
+the check time in `localStorage` under `ilbiz.license` and discards everything else Gumroad returns (the
+buyer's own email, name, price, card display). From then on the cached licence is honoured offline. At most
+once every 7 days, in the background, the page asks again with `increment_uses_count=false`, using the
+product id the key was activated with, so a later config change cannot orphan an existing buyer.
 
-**Setting it up (owner, once):**
+**Only a definitive answer switches Pro off:** one of Gumroad's three 404 bodies (key disabled, key not
+found for this product, access revoked — `licenses_controller.rb:38,86,89`), or a 200 with `success: true`
+whose purchase is refunded, chargebacked, disputed and not won, or has a subscription end date. Everything
+else — no network, timeout, 429, 5xx, 400, a challenge page, a body that is not JSON, a 200 without
+`success: true`, and Gumroad's generic JSON 404 that names no key — is *unknown* and leaves the stored licence
+exactly as it was, including its last-check time. A first activation that gets *unknown* is kept as
+`pending`, the buyer is told nothing is lost, and the next page load retries it once on its own. A refund
+therefore switches Pro off at the next weekly re-check, not instantly; that lag is the price of offline use
+and is accepted in the decision.
 
-```bash
-node scripts/make-license.js init            # writes .license-key.json (gitignored - back it up)
-                                             # and fills pro.publicKey in src/config/site.json
-node scripts/make-license.js issue buyer@example.com   # per sale: print the key to send
-```
+All of it is in `src/lib/license.js` (`classifyVerifyResponse`, `verifyWithGumroad`, `shouldRecheck`,
+`createLicenseController`) and unit-tested with injected `fetch` and a fake `localStorage`; the page glue in
+`assets/page-invoice.js` is tested by loading the real page against a fake DOM. A determined user can still
+bypass client-side gating by editing JavaScript — that is true of every static site, and it is not a reason
+to pretend otherwise. Key sharing is not enforced (no seat count); the seller sees `uses` in Gumroad.
 
-**Losing `.license-key.json` means no new key can be issued; re-running `init` to recover replaces
-`pro.publicKey`, and every key already issued stops verifying.** Back it up.
+**Setting it up — agent work, not an owner step.** The token the owner already mints at step 3 and pastes at
+step 6 carries `edit_products` (Gumroad's `doorkeeper.rb:10`, `oauth_application.rb:121-122`).
+`.github/workflows/gumroad-pro-product.yml` (manual dispatch only) uses it to:
+
+1. `create` — reuse the product by exact name, or `POST /v2/products` **as a draft** with the price
+   (₪79 by default), a description of exactly what Pro is, and content holding Hebrew activation instructions
+   plus Gumroad's `licenseKey` block; read it back and require that block; print the public `id` and
+   `short_url`; open a PR writing both into `src/config/site.json`.
+2. `enable` — a second dispatch, only once the **deployed** `src/config/site.json` carries the same id:
+   `PUT /v2/products/:id/enable`.
+
+Without the secret both exit 0 with a notice. `.github/workflows/gumroad-pro-probe.yml` then checks the real
+product id from the site's own origin (expects the exact "does not exist" 404 for an impossible key and
+`access-control-allow-origin: *`). 🔍 **Not yet rendered:** Gumroad's help FAQ says products cannot be created
+through the API while its code says they can; the first `create` run settles it. If Gumroad refuses, the job
+stops and the fallback — one dashboard click, *Insert → License key* — is raised with the owner **before**
+anything is sold, never added to his checklist silently.
+
+**First real key verified: not yet — the first sale is the test.** No Gumroad account or product exists yet,
+so no real key has ever reached `verify` from a browser. What is measured: CORS on preflight and POST
+through Cloudflare, and the exact 404 body for a key that does not exist (runner probe, 25.9). What is only
+read in Gumroad's code: that a real key returns the documented 200 payload with those flags. This line
+changes only when a `gumroad:<productId>` sale is in `revenue_ledger` and the buyer-side outcome is noted in
+the decision file. Until then Pro may be described as on sale — once it is — and as nothing more.
 
 **The Pro button has exactly four states**, all decided in `src/lib/gumroad.js` (`proButtonState`)
 and unit-tested rather than trusted:
 
-| `gumroad.productUrl` | `pro.publicKey` | state | button |
+| `gumroad.productUrl` | `gumroad.productId` | state | button |
 |---|---|---|---|
 | empty | anything | `unconfigured` | disabled, "בקרוב", "המיתוג עדיין לא נמכר – החנות טרם נפתחה" |
 | not an `https://` URL | anything | `invalid_url` | disabled, and it says the URL is malformed |
-| set | missing | `no_public_key` | disabled — a licence key nothing can verify is nothing |
+| set | missing | `no_product_id` | disabled — a licence key nothing can check against its product is nothing |
 | set | set | `ready` | opens the Gumroad product page in a new tab (`noopener`) |
 
-Nothing from Gumroad is loaded into this site: no SDK, no overlay, no iframe. The button is a link,
-which is why removing Paddle made the CSP **smaller** (`frame-src 'none'`, no `cdn.paddle.com`).
+No Gumroad code runs on this site: no SDK, no overlay, no iframe. The only contact is one `fetch` from the
+buyer's browser to `api.gumroad.com/v2/licenses/verify`, at activation and at most every 7 days after. The
+button is a link, which is why removing Paddle made the CSP **smaller** (`frame-src 'none'`, no
+`cdn.paddle.com`); the licence check added exactly one `connect-src` entry, `https://api.gumroad.com`.
 
-**How the buyer gets the key — unresolved, and not an owner task.** `make-license.js issue` is written as a per-sale run, and a per-sale owner action is recurring work the mandate forbids (`MISSION.md` §1; it appears on no step in `docs/OWNER_STEPS.he.md`, which records this as "עוד לא נפתר"). Until issuance is automated — a CI job that reacts to each Gumroad sale and holds the signing key as a secret, or Gumroad's own per-sale licence keys (`POST /v2/licenses/verify`, seen in Gumroad's `routes.rb`) checked in the browser — Pro is not sold. 🔍 **Unverified:** no Gumroad account exists yet, so nobody here has seen the delivery screen; the mechanism is a plan, not a rendered fact.
+What the buyer is told, verbatim, sits in the Pro box: one line beside the key input ("מפתח הרישיון נבדק מול
+Gumroad פעם אחת בהפעלה, ואחר כך לכל היותר פעם בשבוע.") and the full "מה נשלח לאן" text in a `<details>`
+(decision §6). The home-page FAQ and the invoice FAQ carry the same exception.
 
 **What Pro must never claim.** One thing only: your logo and accent colour on the printed document.
 The saved client list, the numbering, the PDF export and the stored documents are free and stay free
@@ -255,13 +302,13 @@ GitHub Pages, Vercel) works too — copy the headers from `netlify.toml` if the 
 1. **Gumroad** (merchant of record; this is owner step 3 in `docs/OWNER_STEPS.he.md` — the Paddle
    account was never opened and is not on the list): sign up with the brand name as the store name,
    complete payout and identity details, and mint the access token (`GUMROAD_ACCESS_TOKEN`, pasted into
-   GitHub secrets at step 6). Creating the Pro product, pasting its URL into `gumroad.productUrl` and running
-   `make-license.js init` are not part of that step. Until **both** the URL and the public key
-   exist, the Pro box stays on **בקרוב** and nothing can be bought.
+   GitHub secrets at step 6). Creating the Pro product and pasting its URL into `gumroad.productUrl` are not part of that step. Until both the URL and the product id exist (both written into site.json by the product-creation job), the Pro box stays on **בקרוב** and nothing can be bought.
+   Nothing happens per sale: Gumroad mints and emails each buyer's key itself.
    Fallbacks if Gumroad refuses: PayPal Business "buy now" link or Payoneer Checkout. Swapping the one
    `openProCheckout` call in `assets/page-invoice.js` is not enough: the button is enabled only by
-   `proButtonState` in `src/lib/gumroad.js` (a `gumroad.productUrl` plus a public key), and the buyer-facing
-   notes in `gumroad.js` and `page-invoice.js` name Gumroad.
+   `proButtonState` in `src/lib/gumroad.js` (a `gumroad.productUrl` plus a `gumroad.productId`), the licence
+   keys themselves are Gumroad's (another rail needs another licence mechanism), and the buyer-facing
+   notes in `gumroad.js`, `license.js`, `page-invoice.js` and `invoice.html` name Gumroad.
 2. **Domain** (owner step 5 in `docs/OWNER_STEPS.he.md`): buy one `.com` with WHOIS privacy and configure nothing;
    the DNS records come from the agent. **Netlify** (owner step 6): the account and the `il-biz-tools` site already
    exist; what is left is *Link repository*. The free `*.netlify.app` subdomain is not a substitute: without a
@@ -283,7 +330,8 @@ GitHub Pages, Vercel) works too — copy the headers from `netlify.toml` if the 
 ## Constitution notes
 Honest value only: every figure is sourced, unverified ones are labelled אומדן in the UI, and — since
 this change — a page whose figures are unverified is not published at all.
-No personal data is collected; receipts and clients stay in the visitor's `localStorage`. The
+No personal data is collected by this site; receipts and clients stay in the visitor's `localStorage`. The one
+request that leaves the page is the Pro licence check, from the buyer's browser to Gumroad, disclosed in the Pro box. The
 registrar reminder form ships **disabled** and posts nowhere: no address is collected for a service
 that does not exist, and the §30א(ג) and Amendment 13 copy is written and flagged for legal review
 before it ever does.
@@ -303,7 +351,10 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
 - **מחולל קבלות / חשבוניות עסקה** – מסמך נקי להדפסה או ל-PDF (`@media print`), כולל הערת
   "עוסק פטור - לא חייב במע"מ", מספור רץ, שמירה ב-localStorage. שמירת הלקוחות, המספור והייצוא
   חינמיים. התוספת היחידה בתשלום היא **Pro – מיתוג המסמך** (לוגו וצבע), דרך Gumroad: כשממלאים
-  `gumroad.productUrl` ויש מפתח ציבורי, הכפתור פותח את דף המוצר; אחרת מוצג "בקרוב".
+  `gumroad.productUrl` ו-`gumroad.productId`, הכפתור פותח את דף המוצר; אחרת מוצג "בקרוב". מפתח הרישיון
+  הוא של Gumroad עצמה: היא מייצרת אותו לכל קונה ושולחת בקבלה, והדפדפן של הקונה בודק אותו מולה פעם אחת
+  בהפעלה ואחר כך לכל היותר פעם בשבוע. אין לבעלים שום פעולה אחרי מכירה. מפתח אמיתי ראשון עוד לא אומת –
+  המכירה הראשונה היא הבדיקה.
 - **בודק מספר הקצאה** – לפי סכום, תאריך וסוג הלקוח.
 - **אגרה שנתית לרשם החברות** – מחשבון מועדים: מתי נסגר חלון התעריף המוזל (31 במרץ) ומתי מתחיל
   התעריף המלא (1 באפריל). **בלי סכומים**: שיעורי האגרה לא אומתו מול מקור ראשוני, ולכן הדף אומר
@@ -315,7 +366,8 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
 `net-salary.html`: במקומו עולה הודעה קצרה בלי אף מספר, והכתובת יורדת מה-sitemap. ברגע שהמדרגות
 יאומתו מול לוח העזר של רשות המסים – היפוך דגל אחד מחזיר את הדף.
 
-**צעדים שרק הבעלים יכול לבצע:** פתיחת חנות Gumroad על שם המותג (KYC + פרטי משיכה), יצירת המוצר
-והדבקת כתובתו, חשבון Netlify ודומיין, אימות ב-Google Search Console.
+**צעדים שרק הבעלים יכול לבצע:** פתיחת חנות Gumroad על שם המותג (KYC + פרטי משיכה) והטוקן שלה,
+חשבון Netlify ודומיין, אימות ב-Google Search Console. יצירת מוצר ה-Pro והדבקת הכתובת והמזהה שלו
+ב-`site.json` הן עבודה שלי, דרך אותו טוקן (`.github/workflows/gumroad-pro-product.yml`).
 
 **בדיקות:** `npm install && npm test` (120 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.

@@ -2,16 +2,17 @@
 //
 // Why the swap: the Paddle account was never opened and its onboarding needs a
 // liveness video the mandate forbids, while Gumroad is the one payment rail
-// this repo holds rendered evidence for (Israel / ILS). So this file is the
-// whole integration - there is no SDK, no overlay and no third-party script.
-// The button is a link to the product page. That is deliberate: a link cannot
+// this repo holds rendered evidence for (Israel / ILS). This file and the
+// licence check in license.js are the whole integration - there is no SDK, no
+// overlay and no third-party script. The button is a link to the product page. That is deliberate: a link cannot
 // leak the visitor to a tracker, and it let the site's CSP get smaller rather
 // than larger.
 //
-// What the buyer gets is the licence key that src/lib/license.js already
-// verifies offline. Gumroad delivers that key as the product's content /
-// licence field - see README, where the exact mechanism is flagged as
-// unverified, because no Gumroad account exists yet to render it.
+// Gumroad mints a key per sale and prints it in the receipt; license.js
+// verifies it against api.gumroad.com once and caches the result
+// (research/measurements/gumroad-license-decision.md, Option C). That check
+// needs the product's public id, which is why the button needs it too: a key
+// the page cannot check against the product it was sold for is nothing.
 
 /** A product URL we are willing to send a buyer to: absolute, https, nothing else. */
 export function isValidProductUrl(url) {
@@ -30,9 +31,20 @@ export function gumroadProductUrl(cfg) {
   return isValidProductUrl(url) ? String(url).trim() : null;
 }
 
-/** True once a real product page exists to send the buyer to. */
+/**
+ * Gumroad's public product id (the `product_id` the verify endpoint takes), or
+ * null. Written into site.json by the product-creation job, never by hand.
+ */
+export function gumroadProductId(cfg) {
+  const id = cfg?.gumroad?.productId;
+  if (typeof id !== 'string') return null;
+  const trimmed = id.trim();
+  return trimmed !== '' && trimmed.length <= 128 && !/\s/.test(trimmed) ? trimmed : null;
+}
+
+/** True once there is both a product page to send the buyer to and a product id to check keys against. */
 export function isProConfigured(cfg) {
-  return gumroadProductUrl(cfg) !== null;
+  return gumroadProductUrl(cfg) !== null && gumroadProductId(cfg) !== null;
 }
 
 /**
@@ -42,14 +54,15 @@ export function isProConfigured(cfg) {
  *
  * Two conditions must BOTH hold before we take money:
  *   1. a product URL to send the buyer to, and
- *   2. a public key, because a licence key nothing can verify is nothing.
+ *   2. the product id, because the licence key Gumroad issues is checked
+ *      against exactly that product - without it nothing can verify the key.
  *
  * @returns {{state:string, enabled:boolean, label:string, href:string|null, note:string}}
  */
 export function proButtonState(cfg) {
   const raw = cfg?.gumroad?.productUrl ?? '';
   const url = gumroadProductUrl(cfg);
-  const hasKey = Boolean(cfg?.pro?.publicKey);
+  const hasProductId = gumroadProductId(cfg) !== null;
 
   if (!url) {
     const empty = String(raw).trim() === '';
@@ -63,13 +76,13 @@ export function proButtonState(cfg) {
         : 'כתובת המוצר בהגדרות אינה כתובת https תקינה, ולכן הכפתור סגור.',
     };
   }
-  if (!hasKey) {
+  if (!hasProductId) {
     return {
-      state: 'no_public_key',
+      state: 'no_product_id',
       enabled: false,
       label: 'בקרוב',
       href: null,
-      note: 'החנות מוגדרת אך עדיין אין מפתח ציבורי לאימות הרישיון, ולכן אי אפשר למכור.',
+      note: 'החנות מוגדרת אך עדיין אין מזהה מוצר לאימות הרישיון, ולכן אי אפשר למכור.',
     };
   }
   return {
@@ -77,13 +90,14 @@ export function proButtonState(cfg) {
     enabled: true,
     label: 'שדרוג ל-Pro',
     href: url,
-    note: 'התשלום מתבצע ב-Gumroad. מפתח הרישיון נמסר יחד עם המוצר, והזנתו כאן מפעילה את המיתוג.',
+    note: 'התשלום מתבצע ב-Gumroad. מפתח הרישיון מגיע בקבלה במייל מ-Gumroad; הזנתו כאן נבדקת מול Gumroad פעם אחת ומפעילה את המיתוג.',
   };
 }
 
 /**
- * Open the product page. A plain navigation - no SDK, no overlay, nothing
- * loaded from Gumroad into this page.
+ * Open the product page. A plain navigation - no SDK, no overlay, no Gumroad
+ * code in this page. (The one request to Gumroad is the licence check in
+ * license.js.)
  */
 export function openProCheckout(cfg, win = globalThis) {
   const state = proButtonState(cfg);
