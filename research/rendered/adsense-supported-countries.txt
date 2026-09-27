@@ -1,0 +1,328 @@
+Steps to getting paid - Google AdSense Help
+Skip to main content
+
+Google AdSense Help
+
+Sign in
+
+Google Help
+
+Help Center
+Community
+Google AdSense
+
+Privacy Policy
+Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Announcements
+
+Google AdSense
+
+Payment process
+Steps to getting paid
+
+Notification
+Please make sure to visit Your AdSense Page where you can find personalized information about your account to help you succeed with AdSense.
+
+Payments
+Steps to getting paid
+Next: Payment timelines for AdSense
+
+Wondering when your first AdSense payment will arrive? This guide explains the steps to getting paid.
+
+When you'll get your first payment
+
+Complete these steps to get your account set for your first AdSense payment.
+
+Earning minimum
+
+Identity verification
+
+Bank details
+
+Payment minimum
+
+Payment sent
+
+Tip : To find out what you need to do next to get paid, sign in to your account and check the "Steps to get paid" on your AdSense home page.
+
+1. Earning minimum
+
+First, your ad earnings need to reach $10 (or local equivalent ). To generate ad revenue, place the AdSense ad code on every page where you want to show ads. Learn more about how to set up ads on your site .
+
+Add your tax information
+
+Depending on your location, we may be required to collect tax-related information. For more information, check out how to submit your tax information to Google .
+
+Note : All monetizing creators on YouTube, regardless of their location in the world, are required to provide tax information .
+
+2. Identity verification
+
+When your earnings reach the verification threshold , you're required to confirm your personal information. Make sure your payment name and address are correct, as we use this information to verify your identity and send you a Personal Identification Number (PIN). If you need to correct any information, read change your payment name or address .
+
+Verify your identity
+
+To continue to show ads and receive payments from AdSense, you need to verify your identity . This is to confirm the accuracy of your account information and protect you from fraud. You have 45 days from the date we first ask you to verify your identity to submit the required documents in your account.
+
+Verify your address
+
+After you've verified your identity, we mail a PIN to the payment address in your AdSense account. You must enter this PIN into your AdSense account before we can issue any payments. Your PIN will be sent by standard post and may take up to 2-3 weeks to arrive. You have 4 months from the date your PIN is generated to complete your address verification.
+
+For more information about PINs, refer to the Address (PIN) verification overview .
+
+Note : If you have separate payments accounts for AdSense and YouTube, you verify your information when either of your payments accounts reaches the verification threshold. You only need to verify your information once.
+
+3. Bank details
+
+When your earnings reach the payment method selection threshold , you can select your form of payment. Depending on your payment address, there may be several forms of payment available to you, including Electronic Funds Transfer (EFT), wire transfer, etc.
+
+Learn how to set up your form of payment .
+
+Note : If you have separate payments accounts for AdSense and YouTube, you select a form of payment for each payments account when it reaches the threshold.
+
+4. Payment minimum
+
+If your current balance reaches the payment threshold by the end of the month, and there are no other payment holds, you'll be issued a payment between the 21st and the 26th of the month. After the processing period ends, we'll issue you a payment.
+
+Learn more about payment timelines .
+
+Note : If you have separate payments accounts for AdSense and YouTube, each payments account needs to reach the payment threshold to be paid out.
+
+If your current balance hasn’t yet reached the payment threshold, your finalized earnings will roll over to the next month and your balance will accrue until the threshold is met.
+
+Example
+
+Let's say the payment threshold for your account is $100. If your current balance reached $100 during January and you've completed all the steps above, then we would issue you a payment at the end of February.
+
+5. Payment sent
+
+Your payment is being processed and will be in your account soon.
+
+Tip : If you have more questions about AdSense payments, try the Payments FAQs .
+
+Next: Payment timelines for AdSense
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+Contact us Tell us more and we’ll help you get there
+
+true
+Payments
+1 of 8
+Payments FAQs
+2 of 8
+Payment process 1 of 10
+Steps to getting paid
+2 of 10
+Payment timelines for AdSense
+3 of 10
+Homepage reports: understand your earnings
+4 of 10
+Estimated vs finalized earnings
+5 of 10
+What's the difference between earnings and payments?
+6 of 10
+Does AdSense provide an invoice or payment receipt?
+7 of 10
+How AdSense determines the exchange rate for your earnings
+8 of 10
+Place a temporary hold on your AdSense payments
+9 of 10
+Abandoned property adjustment
+10 of 10
+Common AdSense payment hold issues
+
+3 of 8
+Payment thresholds 1 of 2
+Payment thresholds
+2 of 2
+Change your AdSense payment threshold
+
+4 of 8
+Payments profile 1 of 4
+Your payments account
+2 of 4
+About your payments profile
+3 of 4
+Manage payments users in your AdSense account
+4 of 4
+Access your AdSense payments in the Google payments center
+
+5 of 8
+Verification 1 of 3
+Verify your identity
+2 of 3
+Address (PIN) verification
+3 of 3
+Payment hold because you haven’t confirmed your personal information
+
+6 of 8
+Form of payment 1 of 7
+Add your payment method for AdSense or AdSense for YouTube
+2 of 7
+Electronic Funds Transfer (EFT)
+3 of 7
+Receive SEPA payments
+4 of 7
+Wire transfer
+5 of 7
+Check
+6 of 7
+Western Union
+7 of 7
+Receive your payments via PayPal Hyperwallet
+
+7 of 8
+Payment settings 1 of 5
+Check your AdSense account type
+2 of 5
+Change your payments profile name and address
+3 of 5
+Can I change my payment currency?
+4 of 5
+View your AdSense payment history
+5 of 5
+Update your bank account details
+
+8 of 8
+Tax information 1 of 14
+Submit your US tax info to Google
+2 of 14
+FAQs about submitting US tax info in AdSense
+3 of 14
+Submit your non-US tax info to Google
+4 of 14
+Find your contracting entity for tax information
+5 of 14
+Contracting entity is Google LLC
+6 of 14
+Contracting entity is Google Ireland
+7 of 14
+Contracting entity is Google Advertising (Shanghai) Company Limited
+8 of 14
+Contracting entity is Google Asia Pacific Pte. Ltd.
+9 of 14
+Will I have to pay taxes on my AdSense earnings?
+10 of 14
+What are U.S. Activities?
+11 of 14
+Local currency reporting and VAT
+12 of 14
+Taxpayer identification number (TIN) verification process
+13 of 14
+Submit tax information for a disregarded entity
+14 of 14
+Transitioning to AdSense China
+
+Unlock your revenue with personalized tips today! Visit the Optimization tips for AdSense page to see personalized suggestions to maximize your revenue.
+
+Unlock now
+
+©2026 Google Privacy Policy
+Terms of Service
+
+Language
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+Filipino&lrm;
+français&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+italiano&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+slovenčina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+български&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+मराठी&lrm;
+हिन्दी&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+ไทย&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+455238978614855539
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+157
+false
+
+false
+
+false
+false
+
+false

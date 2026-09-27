@@ -1,0 +1,153 @@
+Labeling AI-Generated Content | Upload Post Docs
+
+Skip to main content
+
+Upload-Post Documentation App
+OpenAPI llm.txt GitHub
+
+Introduction
+Getting Started
+Quickstart Guide
+Upload-Post API Overview
+API Reference
+SDK Examples
+
+Publish
+Upload Video
+Upload Photos
+Upload Text
+Upload Document
+
+After you post
+
+Accounts
+
+Analytics & comments
+
+Platform extras
+
+Ads
+
+Tools
+
+Guides
+Core
+Avoid Timeouts with Asynchronous Uploads
+API Error Handling: Upload Endpoints
+Limit of uploads
+Rate Limits
+AI Content Labeling
+AI Shorts Uploader
+
+Post by platform
+
+Integrations
+
+Other
+
+Limits & errors
+
+Resources
+
+Guides
+Core
+AI Content Labeling
+
+On this page
+Labeling AI-Generated Content
+
+If you publish AI-generated or AI-edited media through Upload-Post, several platforms let you (and in some cases require you to) disclose that the content is AI-generated. Upload-Post exposes each platform's native disclosure flag, plus a single cross-platform alias so you can set one field and have it mapped everywhere it is supported.
+
+The is_ai_generated flag ​
+
+Send is_ai_generated=true with any upload request ( /api/upload , /api/upload_photos ) and Upload-Post maps it to each target platform's native AI-disclosure field:
+
+Platform
+Native field set
+Effect
+
+TikTok (video, Direct Post)
+is_aigc
+Video is tagged "Creator labeled as AI-generated"
+
+Instagram (Reels, photos, carousels)
+is_ai_generated
+Meta stores the flag on the post (readable as is_ai_generated on the media object) and decides how the "AI info" label is shown: under the account name or only in the post menu; for carousels the label applies to the whole post
+
+YouTube
+containsSyntheticMedia
+Altered/synthetic content disclosure on the video
+
+X (Twitter)
+made_with_ai
+Disclosure that the post contains AI-generated media (media posts only)
+
+The per-platform parameters ( is_aigc , containsSyntheticMedia , made_with_ai , and Instagram's is_ai_generated ) keep working exactly as before — if you send a platform-specific value it takes precedence over the alias, so you can, for example, label a post on TikTok but not on YouTube in the same request.
+
+curl -X POST https://api.upload-post.com/api/upload \
+-H "Authorization: ApiKey YOUR_API_KEY" \
+-F 'user=YOUR_PROFILE' \
+-F 'platform[]=tiktok' -F 'platform[]=instagram' -F 'platform[]=youtube' \
+-F ' [email protected] ' \
+-F 'title=My video' \
+-F 'is_ai_generated=true'
+
+The flag is preserved for scheduled posts and can be reviewed in the calendar editor before publication.
+
+Platforms without an API-level label ​
+
+Some platforms have no public API parameter for AI disclosure; for those, is_ai_generated is a documented no-op and labeling happens through other channels:
+
+Facebook Pages — Reels accept facebook_is_ai_generated . Other Page posts: Meta applies labels via automatic detection of C2PA/IPTC metadata embedded in the media, or you disclose in-app.
+
+LinkedIn — labels applied automatically when images carry C2PA Content Credentials.
+
+Pinterest — applies its "Gen AI" label via IPTC metadata detection and its own classifiers.
+
+If your generation tool supports C2PA Content Credentials , keep them embedded in your media files — TikTok, Meta, LinkedIn, and Pinterest detect and auto-label C2PA-tagged uploads (auto-applied labels generally cannot be removed).
+
+When you should label ​
+
+Labeling accurately is your responsibility as the publisher:
+
+Platform policies require disclosure of realistic AI-generated or significantly synthetic media (TikTok, YouTube, and Meta may penalize unlabeled AI content their detectors catch).
+
+EU AI Act (Regulation 2024/1689), Article 50(4) : if you are subject to EU law and publish deep fakes, or AI-generated/manipulated text published to inform the public on matters of public interest, you must disclose that the content is artificially generated or manipulated. See our Terms of Use §3.3.
+
+Clearly unrealistic/stylized AI content (e.g. obvious cartoons) generally does not require YouTube's containsSyntheticMedia disclosure — check each platform's current policy.
+
+Upload-Post does not verify whether your content is AI-generated; the flag is a self-disclosure tool.
+
+Previous
+Rate Limits
+Next
+AI Shorts Uploader
+
+The is_ai_generated flag
+Platforms without an API-level label
+When you should label
+
+Documentation
+Getting Started
+API Reference
+Quickstart
+OpenAPI Spec
+
+Community
+X (Twitter)
+GitHub
+
+More
+Pricing
+Contact
+
+Legal
+Privacy Policy
+Terms of Use
+Cookie Policy
+Legal Notice
+Data Processing Agreement
+Subprocessors
+Cookie preferences
+
+© 2026 TONVI TECH SL · NIF B-19780394 · Calle Puerta del Mar 18, 5º, 29005 Málaga (España)

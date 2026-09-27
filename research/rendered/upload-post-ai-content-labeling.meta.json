@@ -1,0 +1,17 @@
+{
+  "url": "https://docs.upload-post.com/guides/ai-content-labeling/",
+  "slug": "upload-post-ai-content-labeling",
+  "fetchedAt": "2026-09-27T09:54:55.347Z",
+  "status": 200,
+  "contentType": "text/html",
+  "byteLength": 33623,
+  "sha256": "1e7d50e31434a82ddd2be6919c9df02320c6a4d09a337e9fbecc96931d6d0212",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/upload-post-ai-content-labeling.html",
+  "textPath": "research/rendered/upload-post-ai-content-labeling.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

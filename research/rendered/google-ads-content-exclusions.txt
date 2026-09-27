@@ -1,0 +1,434 @@
+About content exclusions for Video campaigns - Google Ads Help
+Skip to main content
+
+Google Ads Help
+
+Help Center Community Announcements
+
+Sign in
+
+Google Help
+
+Help Center
+Start advertising
+Campaigns
+Explore features
+Optimize performance
+Account & billing
+Fix issues
+Google Partners
+
+Community
+Google Ads
+
+Privacy Policy
+Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Announcements
+
+Google Ads
+
+Start advertising Your guide to Google Ads 8 steps to prepare your campaign for success Choose the right campaign type Determine your advertising goals How Google Ads can work for your industry Google Ads specs: ad formats, sizes, and best practices More advertising tools Google Ads basics Google Ads privacy Glossary
+
+Campaigns Performance Max AI Max for Search campaigns AI Max for Shopping campaigns Search campaigns Display campaigns Smart Campaigns App campaigns Shopping ads Video campaigns Hotel campaigns Demand Gen campaigns Call campaigns Things to do Events ticketing
+
+Explore features Ads, assets & landing pages Ad groups Keywords Bidding Targeting Measure results Bulk uploads & edits Campaign settings
+
+Optimize performance 12 tips to advertising with Google Ads Google Ads Best Practices Optimization features Create effective Search ads Generative AI tools in Google Ads Improve with AI-powered Search Finding success with Smart Bidding Measure results Optimize performance with App Connect Google Ads training on Skillshop The Google Ads mobile app
+
+Account & billing Billing Account settings Account access Manager accounts Account security and safety Cancel or reactivate your account Working with client accounts Useful tools
+
+Fix issues Ad disapprovals and reviews Billing & payments Compromised account issues Policy issues Performance issues Account access issues Reporting issues Request implementation support for Google Ads and YouTube Reserve Google Ads API
+
+Google Partners Google Partners Program
+
+Manage ads
+Target placements and topics
+Exclude placements and topics
+About content exclusions for Video campaigns
+
+About content exclusions for Video campaigns
+Our Video Ad Safety Promise is that certain types of content can’t be monetized for ads on YouTube and Google video partners: we'll automatically apply exclusions to prevent your ads from showing on the most controversial content, such as terrorist acts, nudity, and recent sensitive events.
+
+The content exclusion settings described below—inventory types, content types, and digital content labels—are meant to give you additional control and help you exclude types of content that, while in compliance with our policies, may not fit your brand or business. While content exclusions are done to the best of our ability, we can't guarantee that all related content will be excluded.
+
+This article provides an overview of content exclusion settings for Video campaigns. Learn more about setting up content exclusions for Video campaigns .
+
+Content exclusion settings
+
+You can use the following content exclusion settings for your Video campaigns, at the account level.
+
+Important : Starting September 2024, digital content labels, currently available in the Brand Safety settings, will no longer apply to ads served on YouTube. This will apply to all buying doors, Google Ads, DV360, and Connect Reserve. Digital content labels will continue to apply to the Google Display Network, including App inventory, and Content suitable for families (CSF) will continue to exist even after the deprecation of digital content labels.
+
+Inventory types
+
+With inventory types, you can opt out of groups of sensitive content that don’t align with the brand or message of your campaign.
+
+You can select from the following 3 inventory types. You can also view more details about what content types are included and excluded for each inventory type.
+
+Expanded inventory
+
+This option lets you show ads on all videos on YouTube and Google video partners that meet our standards for monetization. This option may be an appropriate choice for brands that want maximum access to the full breadth of videos eligible for ads, including, for example, videos that have strong profanity in the context of comedy or a documentary, or excessive violence as featured in video games.
+
+Standard inventory (recommended)
+
+All Google Ads accounts are opted in to this inventory type by default. This option lets you show ads across a wide range of content that’s appropriate for most brands, such as popular music videos, documentaries, and movie trailers. The content you can show ads on is based on our advertiser-friendly content guidelines that take into account, for example, the strength or frequency of profanity, or the appropriateness of subject matter like sensitive events. Ads won’t show, for example, on content with repeated strong profanity, strong sexual content, or graphic violence.
+
+Limited inventory
+
+This option lets you show ads on a reduced range of content that’s appropriate for brands with particularly strict guidelines around inappropriate language and sexual suggestiveness – above and beyond what our advertiser-friendly content guidelines address. The videos accessible in this inventory type meet heightened requirements, especially for inappropriate language and sexual suggestiveness. For example, your ads will be excluded from showing on some of YouTube's most popular music videos and other pop culture content across YouTube and Google video partners.
+
+Video Ad Safety Promise and inventory type content details
+
+Video Ad Safety Promise
+
+Your ads automatically will be excluded from showing on the following types of content, no matter what inventory type you choose.
+
+Video content
+
+Maximum inventory
+
+Moderate inventory
+
+Limited inventory
+
+Profanity in the title or thumbnail image, or profanity used repeatedly or throughout
+
+Excluded
+
+Excluded
+
+Excluded
+
+Full nudity, exposed nipples, animal mating, sexual abuse, or sexual content in the thumbnail
+
+Excluded
+
+Excluded
+
+Excluded
+
+Content showing abusing, buying, making, selling, or finding drugs
+
+Excluded
+
+Excluded
+
+Excluded
+
+Content discussing terrorism or sensitive current events like war, death, or tragedy
+
+Note : If these types of content are posted from authoritative news sources and comply with our advertiser-friendly content guidelines , these can run in “Moderate inventory”.
+
+Excluded
+
+Excluded
+
+Excluded
+
+Profanity
+
+Video content
+
+Expanded inventory
+
+Standard inventory
+
+Limited inventory
+
+Light profanity used in a non-hateful, comedic or artistic way
+
+Included
+
+Included
+
+Included
+
+Moderate profanity used in a non-hateful, comedic, or artistic manner, or a music video with frequent profanity
+
+Included
+
+Included
+
+Excluded
+
+Strong profanity used throughout or at the very beginning of the video in comedy, documentary, news, or education
+
+Included
+
+Excluded
+
+Excluded
+
+Sexualized content
+
+Video content
+
+Expanded inventory
+
+Standard inventory
+
+Limited inventory
+
+Romance, kissing, limited clothing in non-sexual settings, or general discussions of relationships or sexuality
+
+Included
+
+Included
+
+Included
+
+Limited clothing in sexual settings, sensual dancing, moderate sexually suggestive behavior, or a music video containing sexual content
+
+Included
+
+Included
+
+Excluded
+
+Blurred nudity, focus on sexual body parts, focus on sex as a topic, discussions about sex acts, implied or display of sex acts or sex toys without visible contact or nudity
+
+Included
+
+Excluded
+
+Excluded
+
+Violence
+
+Video content
+
+Expanded inventory
+
+Standard inventory
+
+Limited inventory
+
+Mild violence or injury without showing blood or graphic content
+
+Included
+
+Included
+
+Included
+
+Violence or graphic content in video games, comedy, or music videos
+
+Included
+
+Included
+
+Included
+
+Focus on blood, gore, and excessive violence in video games, animal violence, or animation; sports, accidents, pranks, or “fails” with serious injury; blood shown in body modification or medical procedures
+
+Included
+
+Excluded
+
+Excluded
+
+Drugs
+
+Video content
+
+Expanded inventory
+
+Standard inventory
+
+Limited inventory
+
+Content with humorous references, education, music, or statements without glorifying or promoting drugs
+
+Included
+
+Included
+
+Included
+
+Drug consumption, fabrication, and distribution in the context of music, comedy, news, education, or documentary
+
+Included
+
+Excluded
+
+Excluded
+
+Hurtful language
+
+Video content
+
+Expanded inventory
+
+Standard inventory
+
+Limited inventory
+
+News, documentary, or education content with words that could be considered biased, demeaning, or hate speech against a race, religion, gender, or other group
+
+Included
+
+Included
+
+Excluded
+
+Content types
+
+You can exclude specific content types so that your ads don’t run on those content types. This can help you avoid types of content that don’t fit your needs or that your customers don’t visit.
+
+Embedded YouTube videos : Videos embedded on websites outside of YouTube.com
+
+Live streaming videos : Video of live events streamed over the Internet
+
+Digital content labels
+
+Websites, pages, videos, and apps on the Display Network and YouTube are analyzed by Google classification technology and given a digital content label based on their suitability for various audiences. They’re similar to movie ratings like G and PG. For your Video campaigns, you can exclude specific digital content labels, so that your ads don’t show on content with these labels.
+
+DL-G : Content suitable for general audiences (can also select “Content suitable for families”)
+
+DL-PG : Content suitable for most audiences with parental guidance
+
+DL-T : Content suitable for teen and older audiences
+
+DL-MA : Content suitable only for mature audiences
+
+Not yet labeled : Content that hasn’t been labeled yet because they haven’t yet completed the classification process
+
+Related links
+
+Set content exclusions for Video campaigns
+
+About content suitability
+
+Was this helpful?
+How can we improve it?
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+Contact us Tell us more and we’ll help you get there
+
+false
+Target placements and topics
+1 of 8
+Set content exclusions for Display campaigns
+2 of 8
+About content exclusions for Video campaigns
+3 of 8
+Set content exclusions for Video campaigns
+4 of 8
+Exclude placements at the account level
+5 of 8
+Exclude pages about a specific topic
+6 of 8
+Exclude specific webpages and videos
+7 of 8
+Exclude IP addresses
+8 of 8
+About content suitability
+
+Achieve your advertising goals today! Attend our Performance Max Masterclass, a livestream workshop session bringing together industry and Google ads PMax experts.
+
+Register now
+
+©2026 Google Privacy Policy
+Terms of Service
+Google Ads Advertising Policies
+About the Help Center
+
+Send feedback on...
+This help content & information General Help Center experience
+Enable Dark Mode
+
+Language
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (Australia)&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+Filipino&lrm;
+français&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+italiano&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+български&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+&rlm; עברית
+&rlm; العربية
+हिन्दी&lrm;
+ไทย&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+16847482673781500549
+true
+
+Search Help Center
+true
+true
+
+true
+
+true
+
+true
+true
+73067
+false
+
+false
+
+true
+
+true
+false
+
+false

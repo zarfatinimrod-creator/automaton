@@ -1,0 +1,300 @@
+Address verification (PIN) overview - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Address verification (PIN) overview
+
+This article outlines the AdSense address verification (PIN) process, detailing timelines, entry instructions, and solutions for delivery or fraud issues.
+
+On this page
+
+How address verification works
+
+Address verification timeline
+
+If we can't verify your address due to fraudulent activity associated with that address
+
+If you have problems with your PIN
+
+Note : If you're having issues with your PIN, try our PIN troubleshooter .
+
+To protect the security of your account, Google requires you to verify your payments address before we can send you any payments.
+
+Note : Depending on your location, you may not need to complete address verification if you've already passed online identity verification. Click Payments , then Verification check to find out if you're required to complete address verification.
+
+Tip : Here are essential terms for managing your account and payments:
+
+Identity verification is a process where you provide a government-issued ID to confirm your account details and protect against fraud.
+
+Verification threshold is the specific amount of earnings your account must reach before you're required to verify your identity and address. The amount can vary depending on your location.
+
+Payment threshold is the minimum balance your earnings must reach for Google to issue a payment to your chosen payment method.
+
+How address verification works
+
+Address verification is a four-step process:
+
+You enter your payments address in AdSense when you set up your account.
+
+When your earnings reach the verification threshold , Google sends a unique 6-digit Personal Identity Number (PIN) to your payments address through international standard mail. Google doesn't provide a tracking number for the PIN mail, so make sure your payments address can receive standard mail.
+Note : If we've asked you to verify your identity , we won't send your PIN until after you've successfully completed identity verification.
+
+It usually takes 3 weeks for your PIN mail to arrive. If you haven’t received your PIN mail in 3 weeks, you can request a replacement PIN .
+
+When you receive your PIN mailer, enter your PIN in your account immediately.
+Note : If you enter your PIN incorrectly 3 times, your account will stop showing ads.
+
+Your payments address is now verified. You'll be paid out when your account balance reaches the payments threshold , as long as there are no holds on your account and you're in compliance with the AdSense Program policies .
+
+Address verification timeline
+
+You'll have 4 months from the date your PIN is generated to complete address verification. If you haven't verified your payments address after 4 months, we'll stop showing ads on your pages.
+
+If we can't verify your address due to fraudulent activity associated with that address
+
+If the address you provided has been associated with fraudulent activity , you'll need to change your payments address to a new, valid postal address that can receive your PIN. Your new address must be different from your previous one.
+
+After your new address is verified, you can request a PIN:
+
+Sign in to your AdSense account.
+
+Click Payments , then Verification check .
+
+Click Resend PIN .
+
+Note : If you can't provide a valid payments address, ads will stop showing on your site.
+
+If you have problems with your PIN
+
+If your PIN hasn't arrived, review Problems with your address verification (PIN) .
+
+If you've requested the 4th replacement PIN mail and you still haven't received it after 3 weeks, go to our PIN troubleshooter .
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+AdSense
+1 of 21
+AdSense for YouTube
+2 of 21
+How to get paid on YouTube
+3 of 21
+Set up an AdSense for YouTube account to get paid on YouTube
+4 of 21
+Enter your payments information in AdSense
+5 of 21
+Verify your identity
+6 of 21
+Change your linked AdSense for YouTube account
+7 of 21
+Meet YouTube’s revenue thresholds for payment
+8 of 21
+Understand AdSense for YouTube’s payment process
+9 of 21
+Address verification (PIN) overview
+10 of 21
+Verify your address with PIN in AdSense for YouTube
+11 of 21
+Fix problems with AdSense address verification (PIN)
+12 of 21
+How to request a replacement PIN
+13 of 21
+Add your payment method for AdSense for YouTube
+14 of 21
+Add your payment method for AdSense or AdSense for YouTube
+15 of 21
+Payment timelines for AdSense
+16 of 21
+Add a user to your account
+17 of 21
+Wire transfer FAQ
+18 of 21
+Reactivate a closed AdSense account
+19 of 21
+Check your AdSense account type
+20 of 21
+Close your AdSense for YouTube account
+21 of 21
+AdSense account closed by Google for policy reasons
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+9071996821714297666
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

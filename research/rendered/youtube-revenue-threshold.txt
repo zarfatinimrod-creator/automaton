@@ -1,0 +1,661 @@
+Meet YouTube’s revenue thresholds for payment - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Meet YouTube’s revenue thresholds for payment
+You're in the YouTube Partner Program (YPP) and have continued making cool content and building your audience. Now, you might be wondering, "When do I actually get paid?" There are a few revenue milestones called "thresholds" that you need to meet before you can get paid.
+
+The revenue thresholds you need to meet before getting paid are:
+
+Tax info threshold
+
+Verification threshold
+
+Payment method selection threshold
+
+Payment threshold
+
+Cancelation threshold
+
+Revenue thresholds vary based on the reporting currency listed in your AdSense for YouTube account. When you hit these thresholds, you need to take certain actions to make sure you get paid. You can view the value for all revenue thresholds in the table below.
+
+1. Tax info threshold
+
+If you’re a creator in YPP, then you’ve hit the tax info threshold and need to submit your tax info, no matter your location.
+
+Google is required to collect tax info from creators in YPP. If any tax deductions apply, Google withholds taxes on YouTube earnings from viewers in the US. If you don’t share your tax info with us, Google may be required to deduct up to 24% of your total earnings worldwide.
+
+Review the tax info threshold for your currency and learn how to submit your tax info to Google.
+
+2. Verification threshold
+
+When your YouTube earnings reach the verification threshold, you need to:
+
+Verify your identity and
+
+Verify your address
+
+If you have separate payments accounts for AdSense and AdSense for YouTube, you’ll verify your info when either of your payments accounts reaches the verification threshold. You’ll only have to verify your info once.
+
+Find the verification threshold for your currency.
+
+3. Payment method selection threshold
+
+When your earnings reach the payment method selection threshold, you can choose how you want to get your money. The forms of payment available will depend on your payment address. Learn how to set up your form of payment .
+
+If you have separate payments accounts for AdSense and AdSense for YouTube, you’ll need to select a form of payment for each account when it reaches the threshold.
+
+Find the payment method selection threshold for your currency.
+
+4. Payment threshold
+
+When your earnings reach the payment threshold, then you’ll get paid as long as there are no holds on your account and you’re following the:
+
+AdSense Program policies and
+
+AdSense for YouTube Terms and Conditions or AdSense Terms and Conditions (whichever is applicable)
+
+If you have a single channel associated with your AdSense for YouTube account, you can view your payments in the YouTube Studio mobile app . Find out when you can expect your payment .
+
+If you have separate payments accounts for AdSense and AdSense for YouTube, each account will need to reach the payment threshold to be paid.
+
+Find the payment threshold for your currency.
+
+5. Cancelation threshold
+
+If you decide to close your AdSense for YouTube account and your balance is greater than the cancelation threshold, you'll get a final payment. When you close your account, you’ll get paid within approximately 90 days after the end of the month, as long as you:
+
+Don’t have any holds
+
+Have completed all of the steps to get paid before closing your account
+
+Threshold values by currency
+
+Tax info threshold
+
+Verification threshold
+
+Payment method selection threshold
+
+Payment threshold
+
+Cancelation
+
+threshold
+
+U.S. Dollar (USD)
+
+$0
+
+$10
+
+$10
+
+$100
+
+$10
+
+Australian Dollar (AUD)
+
+N/A
+
+$10 equivalent
+
+A$15
+
+A$100
+
+A$15
+
+Canadian Dollar (CAD)
+
+C$0
+
+$10 equivalent
+
+C$10
+
+C$100
+
+C$10
+
+Chilean peso (CLP)
+
+N/A
+
+$10 equivalent
+
+CLP$6000
+
+CLP$60000
+
+CLP$6000
+
+Czech Koruna (CZK)
+
+N/A
+
+$10 equivalent
+
+Kč200
+
+Kč2000
+
+Kč200
+
+Danish Krone (DKK)
+
+N/A
+
+$10 equivalent
+
+kr60
+
+kr600
+
+kr60
+
+Egyptian Pound (EGP)
+
+N/A
+
+$10 equivalent
+
+EGP£500
+
+EGP£5000
+
+EGP£500
+
+Euro (EUR)
+
+N/A
+
+$10 equivalent
+
+€10
+
+€70
+
+€10
+
+Great British Pound (GBP)
+
+N/A
+
+$10 equivalent
+
+£10
+
+£60
+
+£10
+
+Hong Kong Dollar (HKD)
+
+N/A
+
+$10 equivalent
+
+HK$100
+
+HK$800
+
+HK$100
+
+Hungarian Forint (HUF)
+
+N/A
+
+$10 equivalent
+
+Ft2,000
+
+Ft20,000
+
+Ft2,000
+
+Indonesian rupiah (IDR)
+
+N/A
+
+$10 equivalent
+
+Rp130000
+
+Rp1300000
+
+Rp130000
+
+Israeli Shekel (ILS)
+
+N/A
+
+$10 equivalent
+
+₪40
+
+₪400
+
+₪40
+
+Japanese Yen (JPY)
+
+N/A
+
+$10 equivalent
+
+¥1000
+
+¥8000
+
+¥1000
+
+Jordanian dinar (JOD)
+
+N/A
+
+$10 equivalent
+
+دينار‎;7
+
+دينار‎;70
+
+‎دينار‎;7
+
+Mexican Peso (MXN)
+
+Mex$0
+
+$10 equivalent
+
+Mex$120
+
+Mex$1,200
+
+Mex$120
+
+Moroccan dirham (MAD)
+
+N/A
+
+$10 equivalent
+
+.د.م80
+
+.د.م800
+
+.د.م80
+
+New Zealand Dollar (NZD)
+
+N/A
+
+$10 equivalent
+
+$15
+
+$130
+
+$15
+
+Norwegian Krone (NOK)
+
+N/A
+
+$10 equivalent
+
+kr60
+
+kr600
+
+kr60
+
+Peruvian sol (PEN)
+
+N/A
+
+$10 equivalent
+
+S/30
+
+S/300
+
+S/30
+
+Polish Zloty (PLN)
+
+N/A
+
+$10 equivalent
+
+zł30
+
+zł300
+
+zł30
+
+Singapore Dollar (SGD)
+
+N/A
+
+$10 equivalent
+
+S$15
+
+S$150
+
+S$15
+
+South African Rand (ZAR)
+
+N/A
+
+$10 equivalent
+
+R100
+
+R1000
+
+R100
+
+Swedish Krona (SEK)
+
+N/A
+
+$10 equivalent
+
+kr70
+
+kr700
+
+kr70
+
+Swiss Franc (CHF)
+
+N/A
+
+$10 equivalent
+
+Fr10
+
+Fr100
+
+Fr10
+
+Tunisian dinar (TND)
+
+N/A
+
+$10 equivalent
+
+د.ت,20
+
+د.ت,200
+
+د.ت,20
+
+Turkish Lira (TRY)
+
+N/A
+
+$10 equivalent
+
+₺20
+
+₺200
+
+₺20
+
+United Arab Emirates dirham (AED)
+
+N/A
+
+$10 equivalent
+
+د.إ35
+
+د.إ350
+
+د.إ35
+
+Uruguayan peso (UYU)
+
+N/A
+
+$10 equivalent
+
+$U240
+
+$U2400
+
+$U240
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+AdSense
+1 of 21
+AdSense for YouTube
+2 of 21
+How to get paid on YouTube
+3 of 21
+Set up an AdSense for YouTube account to get paid on YouTube
+4 of 21
+Enter your payments information in AdSense
+5 of 21
+Verify your identity
+6 of 21
+Change your linked AdSense for YouTube account
+7 of 21
+Meet YouTube’s revenue thresholds for payment
+8 of 21
+Understand AdSense for YouTube’s payment process
+9 of 21
+Address verification (PIN) overview
+10 of 21
+Verify your address with PIN in AdSense for YouTube
+11 of 21
+Fix problems with AdSense address verification (PIN)
+12 of 21
+How to request a replacement PIN
+13 of 21
+Add your payment method for AdSense for YouTube
+14 of 21
+Add your payment method for AdSense or AdSense for YouTube
+15 of 21
+Payment timelines for AdSense
+16 of 21
+Add a user to your account
+17 of 21
+Wire transfer FAQ
+18 of 21
+Reactivate a closed AdSense account
+19 of 21
+Check your AdSense account type
+20 of 21
+Close your AdSense for YouTube account
+21 of 21
+AdSense account closed by Google for policy reasons
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+9082334390942117087
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false
