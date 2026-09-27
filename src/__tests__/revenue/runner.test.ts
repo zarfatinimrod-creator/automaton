@@ -200,15 +200,36 @@ describe("revenue/runner report rendering", () => {
     const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
     const report = renderReport(db, result);
     for (const line of listLines(db).filter((l) => l.status === "awaiting_setup")) {
-      const open = ownerStepsForLine(line.id).filter((s) => !s.doneOn).map((s) => s.number);
+      const open = ownerStepsForLine(line.id).filter((s) => !s.doneOn && !s.frozen).map((s) => s.number);
       expect(open.length, `${line.id} has no open owner step`).toBeGreaterThan(0);
       expect(report).toContain(`Owner steps still open for \`${line.id}\` (docs/OWNER_STEPS.he.md): ${open.join(", ")}`);
     }
-    expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*\b2\b[^\n]*\b5\b[^\n]*\b6\b/);
+    expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*: 2, 3, 7, 6\b/);
     // a step recorded as done is not asked for again
     const done = OWNER_STEPS.filter((s) => s.doneOn).map((s) => s.number);
     expect(done).toContain(1);
     expect(report).not.toMatch(/Owner steps still open for `[^`]+` \(docs\/OWNER_STEPS\.he\.md\): 1,/);
+  });
+
+  it("names the frozen domain step as frozen, never as something for the owner to do", async () => {
+    // The owner's ₪0 rule of 27.9.2026 froze step 5 (the only step that costs
+    // money). It still gates il-biz-tools and pcn874, so the report says so —
+    // but outside the list of steps being asked for, and no checklist line
+    // tells the owner to buy a domain.
+    const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
+    const report = renderReport(db, result);
+    for (const id of ["il-biz-tools", "pcn874"]) {
+      const line = report.split("\n").find((l) => l.startsWith(`Owner steps still open for \`${id}\``))!;
+      expect(line, `${id} has no open-steps line`).toBeTruthy();
+      const [asked, frozen] = line.split(" (not asked now: ");
+      expect(asked).not.toMatch(/\b5\b/);
+      expect(frozen).toMatch(/^step 5 frozen by the owner's ₪0 rule of 27\.9\.2026\)$/);
+    }
+    expect(report).not.toMatch(/- \[ \] Buy the company domain/);
+    expect(result.blockers.find((b) => b.startsWith("pcn874 is waiting on the owner")))
+      .toMatch(/not asked now: step 5 frozen/);
+    // Lines the domain never gated carry no frozen note.
+    expect(report).not.toMatch(/Owner steps still open for `apify-actors`[^\n]*not asked now/);
   });
 
   it("asks the owner to tell Claude, not to run the ledger command on his own machine", async () => {

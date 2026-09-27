@@ -4,6 +4,7 @@ import { createInMemoryDb } from "../orchestration/test-db.js";
 import { renderDashboard } from "../../revenue/dashboard.js";
 import { recordLedgerEntry, setHumanSetupDone, updateLineStatus } from "../../revenue/ledger.js";
 import { seedDefaultPortfolio, summarizeTargetBasis } from "../../revenue/portfolio.js";
+import { setOwnerFloatIls } from "../../revenue/budget.js";
 
 const NOW = "2026-09-03T12:00:00.000Z";
 
@@ -72,6 +73,25 @@ describe("the manager's screen", () => {
     setHumanSetupDone(db, "apify-actors", true);
     const after = (html().match(/<details>/g) ?? []).length;
     expect(after).toBe(before - 1);
+  });
+
+  it("tells the owner their float is ₪0 by their own rule, not that ₪200 is waiting to be spent", () => {
+    // The owner's rule of 27.9.2026: not even one shekel until income arrives
+    // and they decide. A screen that still read "₪200 authorised" would be
+    // telling them something they revoked.
+    const h = html();
+    expect(h).toContain("כלל ה-0 ₪ שלך (27.9)");
+    expect(h).toContain("ה-₪200 שאישרת ב-3.9 מושהים");
+    expect(h).not.toContain("זה סכום חד-פעמי ולא הרשאה חודשית");
+  });
+
+  it("shows the one-off ceiling note again only once the owner raises the float", () => {
+    expect(html()).toContain("<div>מה שאישרת</div><div>₪0.00</div>");
+    setOwnerFloatIls(db, 200);
+    const h = html();
+    expect(h).toContain("<div>מה שאישרת</div><div>₪200.00</div>");
+    expect(h).toContain("זה סכום חד-פעמי ולא הרשאה חודשית");
+    expect(h).not.toContain("כלל ה-0 ₪ שלך (27.9)");
   });
 
   it("escapes text that comes from the database", () => {

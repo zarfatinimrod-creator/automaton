@@ -1,27 +1,33 @@
 /**
  * Revenue Colony — the owner's float
  *
- * The owner has authorised a small pot of his own money, capped at ₪200, for
- * the unavoidable one-off fees that block a line from earning at all: a
- * developer-account fee, a domain, a store listing charge. Until now the rule
- * was absolute — never spend the owner's money — so this is the one place that
- * rule is relaxed, and it is relaxed under a checked ceiling rather than a
- * promise.
+ * **The float is ₪0.** On 27.9.2026 the owner set the rule in their own words:
+ * start without spending money; once money comes in and they see that it works
+ * and earns, they are ready to put money in; until then, find ways where they
+ * pay nothing, "not even one shekel". So nothing in the colony may spend the
+ * owner's money by default, and `assertCanSpend` refuses every amount.
  *
- * Two deliberate choices, both conservative, both stated so the owner can
- * correct them:
+ * History, kept because a suspended authorisation is not a forgotten one: on
+ * 3.9.2026 the owner authorised a one-off pot capped at ₪200 for unavoidable
+ * one-off fees (a developer-account fee, a domain, a store listing charge). That
+ * ₪200 is SUSPENDED by the 27.9 rule. It comes back only when two things are
+ * both true: the ledger shows income, and the owner says so. The colony does not
+ * decide that the first condition implies the second. Only the owner raises the
+ * ceiling, through `setOwnerFloatIls`; a session that calls it without the
+ * owner's words in hand is working around the owner, not for them.
  *
- * 1. **The cap is a total, not a monthly allowance.** ₪200 once. If he means
- *    ₪200 every month he can say so and `setOwnerFloatIls` raises it; guessing
- *    the more generous reading with someone else's money is not ours to do.
+ * What stays true whatever the ceiling is, so it is still enforced here:
+ *
+ * 1. **The cap is a total, not a monthly allowance.** If the owner raises it
+ *    and means a monthly amount, they can say so; guessing the more generous
+ *    reading with someone else's money is not ours to do.
  * 2. **Spending from the float requires a receipt.** Ordinary cost entries may
  *    omit an external id, because our own compute has no platform receipt. This
  *    is different: it is real money leaving a real account, and a spend nobody
  *    can trace is exactly what an owner should refuse to fund.
- *
- * What the float must never become is a subscription. ₪200 against a recurring
- * charge is a slow death with a fixed end date, and the colony would be paying
- * rent it cannot cover out of revenue it does not yet have.
+ * 3. **The float never becomes a subscription.** A recurring charge against a
+ *    fixed pot is a slow death with a fixed end date: the colony would be paying
+ *    rent out of revenue it does not yet have.
  */
 
 import type { Database } from "better-sqlite3";
@@ -29,8 +35,12 @@ import { recordLedgerEntry } from "./ledger.js";
 import { agorotFromIls, formatIls, toAgorot } from "./money.js";
 import type { LedgerEntry } from "./types.js";
 
-/** The owner's authorised ceiling, in agorot. Overridable via the kv store. */
-export const DEFAULT_OWNER_FLOAT_AGOROT = agorotFromIls(200);
+/**
+ * The owner's authorised ceiling, in agorot: ₪0, by the owner's rule of
+ * 27.9.2026. The ₪200 of 3.9.2026 is suspended, not the default. The kv store
+ * holds an override, and only the owner's word puts one there (`setOwnerFloatIls`).
+ */
+export const DEFAULT_OWNER_FLOAT_AGOROT = 0;
 
 /** Ledger `source` that marks a spend as coming from the owner's own money. */
 export const OWNER_FLOAT_SOURCE = "owner-float";
@@ -50,7 +60,11 @@ function getCap(db: Database): number {
   return Number.isFinite(parsed) && parsed >= 0 ? Math.floor(parsed) : DEFAULT_OWNER_FLOAT_AGOROT;
 }
 
-/** Raise or lower the float. Only the owner decides this. */
+/**
+ * Raise or lower the float. Only the owner decides this: call it only with the
+ * owner's own words recorded (MISSION.md), never because the ledger started to
+ * show income — income is the owner's condition for deciding, not the decision.
+ */
 export function setOwnerFloatIls(db: Database, ils: number): void {
   if (!Number.isFinite(ils) || ils < 0) throw new Error("the float must be a non-negative number of shekels");
   db.prepare("INSERT OR REPLACE INTO kv (key, value, updated_at) VALUES (?, ?, datetime('now'))")
@@ -85,11 +99,20 @@ export function assertCanSpend(db: Database, agorot: number, purpose: string): v
     throw new Error("a spend must be a positive whole number of agorot");
   }
   const state = ownerFloatState(db);
+  if (state.capAgorot === 0) {
+    throw new Error(
+      `refusing to spend ${formatIls(agorot)} on "${purpose}": the owner's float is ₪0. Their rule of 27.9.2026 is ` +
+      "to start without spending money and to put money in only once income arrives and they see it works — until " +
+      "then they pay nothing, not even one shekel. The ₪200 authorised on 3.9.2026 is suspended until the ledger " +
+      "shows income AND the owner says so; only the owner raises the ceiling (setOwnerFloatIls). Find the free way " +
+      "or ask them; do not work around this.",
+    );
+  }
   if (agorot > state.remainingAgorot) {
     throw new Error(
       `refusing to spend ${formatIls(agorot)} on "${purpose}": the owner authorised ` +
       `${formatIls(state.capAgorot)} in total, ${formatIls(state.spentAgorot)} is already spent, ` +
-      `and ${formatIls(state.remainingAgorot)} remains. Ask him before going further; do not work around this.`,
+      `and ${formatIls(state.remainingAgorot)} remains. Ask them before going further; do not work around this.`,
     );
   }
 }
@@ -114,7 +137,7 @@ export interface FloatSpendInput {
 export function recordFloatSpend(db: Database, input: FloatSpendInput): LedgerEntry {
   if (!input.externalId?.trim()) {
     throw new Error(
-      "a spend from the owner's float needs the platform's receipt id: it is his money, " +
+      "a spend from the owner's float needs the platform's receipt id: it is their money, " +
       "and a charge nobody can trace is what an owner should refuse to fund",
     );
   }

@@ -34,6 +34,26 @@
  * the org and its machine account must exist before Algora, because a bounty
  * pull request is a published byline and it may not carry the owner's handle;
  * and step 6 collects tokens that steps 3 and 7 produce.
+ *
+ * The owner's ₪0 rule of 27.9.2026 (MISSION.md; `budget.ts` enforces it): start
+ * without spending money, put money in only once income arrives and they see it
+ * works, and until then pay nothing — "not even one shekel". Two consequences
+ * here, and one thing deliberately NOT changed:
+ *
+ *   - Step 5 (the domain) is the one step that costs money, so it is `frozen`:
+ *     it keeps its number and its line mapping, the report stops asking for it,
+ *     and `frozen` says what it costs to go without and what replaces it free.
+ *   - The Hebrew document now leads with the free steps — the Apify half of 6,
+ *     then 7, then the Netlify half of 6, then 3 (free to open; its fees come
+ *     out of sales), and 2 only when a paid product is ready.
+ *   - The `order` field is still the board's 7.9 ruling, and the tests still pin
+ *     it. Re-sequencing is the board's call; until it re-rules, the ₪0 sequence
+ *     lives in the document as text and says that it awaits the board.
+ *
+ * The same day the owner also gave standing consent to merge and publish under
+ * the brand: the agent merges its own green pull requests without asking each
+ * time, revocable the moment the owner says "עצור" (stop). PR #3 was merged on
+ * that same message (merge commit 61fae4e, 22:36 UTC).
  */
 
 import { DEFAULT_PORTFOLIO } from "./portfolio.js";
@@ -83,6 +103,21 @@ export interface OwnerStep {
    * asking for it, and a test keeps the Hebrew heading's "✅ בוצע" in step with it.
    */
   doneOn?: { date: string; evidence: string };
+  /**
+   * Something the colony must establish itself BEFORE it asks the owner for this
+   * step. Not an owner action — the point is that the owner is not asked to find
+   * it out.
+   */
+  precondition?: string;
+  /**
+   * Set when the owner has put the step on hold. It stays on the list with its
+   * number and its lines, because it comes back when the owner decides; until
+   * then the report does not ask for it, and a test keeps the Hebrew heading's
+   * "⏸ מוקפא" in step with it. `rule` is a short name the report prints; `why`
+   * says what the rule is; `costs` is what going without the step costs, said
+   * plainly; `freeInstead` is what replaces it at ₪0.
+   */
+  frozen?: { since: string; rule: string; why: string; costs: string; freeInstead: string; returnsWhen: string };
 }
 
 export const OWNER_STEPS: OwnerStep[] = [
@@ -93,10 +128,14 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "למזג את PR #2 ב-GitHub (או להגיד לי \"תמזג\")",
     minutes: [2, 2],
     unlocks:
-      "Consent, not identity: it puts colony.yml and every future workflow on `main`, and GitHub runs scheduled work only there. Nothing CI-executed — the Apify push, the Netlify deploys, the hourly ledger sync — runs before it, so it gates the MEASUREMENTS and not only the hourly report. The agent does not merge on its own initiative.",
+      "Consent, not identity: it puts colony.yml and every future workflow on `main`, and GitHub runs scheduled work only there. Nothing CI-executed — the Apify push, the Netlify deploys, the hourly ledger sync — runs before it, so it gates the MEASUREMENTS and not only the hourly report. Since 27.9.2026 the owner's standing consent covers every later merge: the agent merges its own green pull requests and publishes under the brand without asking each time, until the owner says \"עצור\". The same message said \"תמזג\", and PR #3 was merged on it (merge commit 61fae4e, 27.9.2026 22:36 UTC).",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: null,
-    doneOn: { date: "2026-09-22", evidence: "merge commit 31cda66 (PR #2); colony.yml runs hourly on main since" },
+    doneOn: {
+      date: "2026-09-22",
+      evidence:
+        "merge commit 31cda66 (PR #2); colony.yml runs hourly on main since. PR #3 merged 27.9.2026 22:36 UTC (merge commit 61fae4e) on the owner's \"תמזג\" of that day, which also gave standing consent to merge and publish under the brand",
+    },
   },
   {
     id: "tax-file",
@@ -108,8 +147,10 @@ export const OWNER_STEPS: OwnerStep[] = [
       "The legal right to receive any shekel at all. This is the law rather than a platform's requirement: business income needs a file at the Tax Authority, and ₪10 counts. Written here ONCE — it used to be repeated in every line's humanSetup, which is how a six-item catalogue reads as eleven.",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.1",
+    precondition:
+      "Under the owner's ₪0 rule this step is asked for only when a paid product is ready to go on sale — nothing is put up for sale before it anyway — and before asking, the colony establishes from the official sources (the Tax Authority and Bituach Leumi themselves, rendered, not a summary) whether opening the file or registering costs anything or triggers minimum monthly payments. Until that is rendered the colony states no figure for it.",
     ownerDecision:
-      "The 'one paid conversation with an accountant' that used to sit inside this step is NOT a step — the owner's brief is verbatim 'אני לא מדבר עם אנשים'. Default until he says otherwise: treat all income as taxable and do not zero-rate under §30(א)(5). The switch to עוסק מורשה is raised by the watchdog at a number (₪8,000 rolling 30-day revenue), never by a conversation.",
+      "The 'one paid conversation with an accountant' that used to sit inside this step is NOT a step — the owner's brief is verbatim 'אני לא מדבר עם אנשים'. Default until they say otherwise: treat all income as taxable and do not zero-rate under §30(א)(5). The switch to עוסק מורשה is raised by the watchdog at a number (₪8,000 rolling 30-day revenue), never by a conversation.",
   },
   {
     id: "gumroad",
@@ -135,7 +176,17 @@ export const OWNER_STEPS: OwnerStep[] = [
     lines: ["il-biz-tools", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.4",
     ownerDecision:
-      "The first year is the one card payment from the ₪200 float, with the receipt id recorded as a cost in the ledger. The RENEWAL is a recurring cost, which MISSION says is the owner's decision every time; the watchdog raises it 30 days before expiry. The float never becomes a subscription.",
+      "If the owner reopens it after income, the first year is one card payment from the float the owner then sets (the ₪200 of 3.9.2026 is suspended by the 27.9 rule and the float is ₪0 until they say otherwise), with the receipt id recorded as a cost in the ledger. The RENEWAL is a recurring cost, which MISSION says is the owner's decision every time; the watchdog raises it 30 days before expiry. The float never becomes a subscription.",
+    frozen: {
+      since: "2026-09-27",
+      rule: "the owner's ₪0 rule of 27.9.2026",
+      why: "Nothing is spent until income arrives and the owner decides to spend, and a domain is the one step on this list that costs money.",
+      costs:
+        "Every site URL stays on *.netlify.app, which reads as a provider's address rather than a company's; Google search reach is weaker without a domain of our own, and the chief audit made a domain one of three preconditions before any SEO hour (TARGET_BASIS for il-biz-tools in portfolio.ts), so no SEO work is done while it is frozen and the search-dependent part of il-biz-tools and pcn874 rests on whatever Google finds unaided; and the MCP registry's reverse-DNS namespace (com.mehudak) is not available, because it is proven against a domain.",
+      freeInstead:
+        "Sites deploy on *.netlify.app (Netlify's free subdomain). The MCP registry namespace comes from GitHub instead: a GitHub Actions workflow in a repository the brand organisation owns may publish as io.github.<organisation>/* (read from the registry's source 27.9.2026: modelcontextprotocol/registry@bf4e88c, internal/api/handlers/v0/auth/github_oidc.go, buildPermissions grants io.github.<repository_owner>/*), so after step 7 it is io.github.mehudak and the owner's own handle still never appears. WHOIS privacy is moot: with no domain there is no registrant record.",
+      returnsWhen: "only when the owner decides to spend, after the ledger shows income",
+    },
   },
   {
     id: "github-org",
@@ -148,7 +199,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     lines: ["oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.6",
     ownerDecision:
-      "The alternative is accepting his own GitHub handle on bounty pull requests for that one line. The board's default is the machine account.",
+      "The alternative is accepting their own GitHub handle on bounty pull requests for that one line. The board's default is the machine account.",
   },
   {
     id: "algora-stripe",
@@ -192,6 +243,21 @@ export function ownerStepById(id: OwnerStepId, steps: OwnerStep[] = OWNER_STEPS)
 /** Every step a given revenue line is blocked on, in execution order. */
 export function ownerStepsForLine(lineId: string, steps: OwnerStep[] = OWNER_STEPS): OwnerStep[] {
   return ownerStepsInOrder(steps).filter((s) => s.lines.includes(lineId));
+}
+
+/** A step the owner is being asked for now: not done, and not frozen. */
+export function isOwnerStepOpen(step: OwnerStep): boolean {
+  return !step.doneOn && !step.frozen;
+}
+
+/** The steps a line still waits on and the owner is asked for, in execution order. */
+export function openOwnerStepsForLine(lineId: string, steps: OwnerStep[] = OWNER_STEPS): OwnerStep[] {
+  return ownerStepsForLine(lineId, steps).filter(isOwnerStepOpen);
+}
+
+/** The steps that gate a line but are frozen by the owner, so nobody asks for them. */
+export function frozenOwnerStepsForLine(lineId: string, steps: OwnerStep[] = OWNER_STEPS): OwnerStep[] {
+  return ownerStepsForLine(lineId, steps).filter((s) => !s.doneOn && Boolean(s.frozen));
 }
 
 /** Line ids that no step unlocks — always empty, and the test says why that matters. */
