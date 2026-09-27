@@ -1,0 +1,115 @@
+{
+  "gate": "G4",
+  "auditor": "opus-factcheck-auditor",
+  "verdict": "FAIL",
+  "figuresChecked": 25,
+  "auditedAt": "2026-09-27T10:31:19Z",
+  "auditedScriptSha256": "ded6992c3e0e2f22cb03eb0e6bfefb34112e9bbac9dc44a29d8801d71572dd31",
+  "auditedArtifacts": {
+    "figures": "products/chart-explainer/out/t1/figures.json",
+    "srt": "products/chart-explainer/out/t1/t1-typescript-javascript.srt",
+    "charts": "products/chart-explainer/out/t1/charts/s1..s6 *.png",
+    "page": "products/chart-explainer/out/t1/page/index.html",
+    "dataSha256": "795f7b9da010161544ed50359e2bce9a9c8757831c25f4cb939dbf0569215dc2"
+  },
+  "summary": {
+    "figuresRecomputed": 25,
+    "figuresMatched": 25,
+    "figuresMismatched": 0,
+    "claimsChecked": 9,
+    "claimsHold": 9,
+    "chartLabelsRecomputed": 43,
+    "chartLabelsCorrect": 43,
+    "chartLabelsNotInFiguresJson": 32,
+    "limitsSupported": 4,
+    "octoverseFramingRisk": "confirmed: the video misleads by omission until it addresses the difference"
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "blocking",
+      "area": "framing",
+      "finding": "GitHub's Octoverse 2025 report (https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/) says TypeScript became the most used language on GitHub in August 2025, overtaking Python and JavaScript, by contributor counts (2,636,006 monthly TypeScript contributors, per search-result text; the page itself was not rendered from this container). The video asks whether TypeScript is 'catching up with JavaScript on GitHub' and says JavaScript's lead grew to 2.5 million pushers. A viewer who knows the widely reported headline would reasonably hear this as wrong. The two sources count different things (Octoverse: contributors in one calendar month; Innovation Graph: developers who pushed to a repository with the language, per quarter and economy), but the video never says so."
+    },
+    {
+      "id": "F2",
+      "severity": "required",
+      "area": "traceability",
+      "finding": "32 numbers drawn on the charts are computed in charts.py and are not figures in figures.json: s1 end labels '4.80 million' and '2.35 million'; s3 multiples for the 8 other languages (4.7, 4.3, 3.9, 3.4, 3.4, 2.9, 2.4, 1.5) and the notes '83/74/90/83 of the 92 economies reported at both ends'; s4 bar labels +3.0, +3.7, +4.3, +3.7 (+4.5 and +12.0 are the figures at 1 dp); s5 histogram bin counts (3,7,37,32,10,2,1 and 3,8,34,31,14,2); s6 'JavaScript: 181'. I recomputed every one and each is correct today. They are not covered by figures.json or by the script hash, so a re-render could change them without re-audit. charts.py formats them with Python's format rounding (half-even on binary floats), not the stated half-up; no current label sits on a tie."
+    },
+    {
+      "id": "F3",
+      "severity": "required",
+      "area": "page",
+      "finding": "page/index.html says 'Each number in the text is a named figure, computed from the data with its rounding stated', but the figures table has no rounding column and no unrounded values. The table lists ratio_gain_max_earlier_pts as '5 percentage points' for 'Largest change ... over any earlier year', while chart s4 shows +4.5 (true value 4.54)."
+    },
+    {
+      "id": "F4",
+      "severity": "note",
+      "area": "limits",
+      "finding": "'a developer who pushes in both languages counts under each' is supported only by inference from the per-language definition (datasheet l.37); no sentence states it. The file's own ranking (HTML 1st, CSS 3rd, Dockerfile 7th above Java 8th, Makefile and Batchfile in the programming top 10) strongly suggests that a push counts under every language detected in the repository, not only its primary language. If so, many TypeScript developers are also counted as JavaScript pushers because TypeScript repositories contain JavaScript files. That is the most plausible reason this file and Octoverse disagree. It is not documented in the rendered datasheet, so it should not be narrated without a source."
+    },
+    {
+      "id": "F5",
+      "severity": "note",
+      "area": "wording",
+      "finding": "'JavaScript's lead grew ... because both languages grew' is loose causation: the gap widened because JavaScript added more pushers than TypeScript (3,409,441 against 2,102,804 in the panel). Not false as an explanation of why the ratio and the gap moved in opposite directions. Optional rewording: 'because JavaScript added more pushers than TypeScript did'."
+    },
+    {
+      "id": "F6",
+      "severity": "note",
+      "area": "wording",
+      "finding": "'The highest ratio was 61%' is correct for the 92-economy panel (RS 60.54%). Among all 162 economies reported for both in 2026 Q1, Angola is higher at 61.70%, which rounds to 62%. The sentence follows 'of the 92 economies', so the scope is clear enough. Optional: 'The highest of the 92 was 61%.'"
+    },
+    {
+      "id": "F7",
+      "severity": "note",
+      "area": "robustness",
+      "finding": "'47 of the 92' sits on a knife-edge: CN (49.955%) and EC (49.985%) are just under 50%. It is correct as stated (at or above 50%, unrounded). 'Up from 0 in 2020' holds for every quarter of 2020 (max 39.0%). All 92 economies' ratios rose from 2020 Q1 to 2026 Q1."
+    },
+    {
+      "id": "F8",
+      "severity": "note",
+      "area": "robustness",
+      "finding": "'at most 5 percentage points in any earlier year' holds for Q1-to-Q1 steps (max 4.54) and for any four-quarter window ending by 2025 Q1 (max 4.90). Windows overlapping the last year (e.g. 2024 Q4 to 2025 Q4, +10.72) are not 'earlier years'. TypeScript is the fastest of the top 10 under all four definitions tested: panel, all economies, per-language fixed sets, and programming-type only."
+    },
+    {
+      "id": "F9",
+      "severity": "note",
+      "area": "outside-G4",
+      "finding": "The page's title, header and footer carry the literal '{{BRAND}}' placeholder (intentional per page.py). It must be filled before publication. Not a G4 condition."
+    }
+  ],
+  "requiredChanges": [
+    {
+      "id": "R1",
+      "blocking": true,
+      "where": "narration, scene s2-answer, immediately after 'In raw numbers, though, JavaScript's lead grew, from {fig:gap_first_millions} to {fig:gap_last_millions} pushers, because both languages grew.'",
+      "addVerbatim": "GitHub's Octoverse 2025 report named TypeScript the most used language on GitHub in August 2025, counting contributors. That is a different count from the quarterly pushers in this video.",
+      "conditions": [
+        "Before adding it, the main thread has a runner render https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/ and confirms that the page says TypeScript became the most used language on GitHub in August 2025, measured by contributors. If the page's wording differs, change only the attributed clause so that it matches the page. Store the rendered page under research/rendered/ and record the quote with its URL in the analysis spec. It is an attributed external statement, not a {fig:} figure.",
+        "It adds about 25 words (about 11 s) to a 107.8 s video with maxSeconds 120. Measure after re-render.",
+        "The script changes, so auditedScriptSha256 changes and G4 must be re-audited on the new script. This verdict does not carry over."
+      ]
+    },
+    {
+      "id": "R2",
+      "blocking": true,
+      "where": "charts.py / figures.json",
+      "change": "Register the 32 chart-label numbers listed in F2 as named figures, or as a chartFigures block with value, rounding and code, and have charts.py read them from figures.json, so the next G4 recomputes them. Use half-up rounding for them as for the narration figures."
+    },
+    {
+      "id": "R3",
+      "blocking": true,
+      "where": "page.py line 87 / figures table",
+      "change": "Either add 'unrounded value' and 'rounding' columns to the figures table (e.g. ratio_gain_max_earlier_pts: 4.54, half-up to 5), or change the sentence to: 'Each number in the text is a named figure, computed from the data; none is typed by hand.'"
+    }
+  ],
+  "octoverse": {
+    "url": "https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/",
+    "statement": "In August 2025 TypeScript overtook Python and JavaScript to become the most used language on GitHub, by contributor counts (2,636,006 monthly TypeScript contributors, about +1.05M or +66.63% year on year; about 42k ahead of Python; JavaScript +24.79%).",
+    "howCounted": "Monthly unique contributors per language (a user can appear under several languages in one month); the Octoverse year is Sep 2024 to Aug 2025; public activity unless noted. Whether a contributor is assigned by the repository's primary language was NOT confirmed by the two searches.",
+    "evidenceLevel": "WebSearch result summaries of the github.blog page and of press coverage (InfoWorld, Visual Studio Magazine, Forbes). The github.blog page itself was not rendered (blocked from this container).",
+    "searchesUsed": 2
+  }
+}

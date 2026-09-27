@@ -1,0 +1,25 @@
+{
+  "gate": "G3",
+  "auditor": "opus-originality-auditor",
+  "verdict": "PASS",
+  "auditedAt": "2026-09-27T10:32:00Z",
+  "auditedScriptSha256": "ded6992c3e0e2f22cb03eb0e6bfefb34112e9bbac9dc44a29d8801d71572dd31",
+  "findings": [
+    "The video adds analysis that no published source carries. It uses a fixed panel of 92 economies to cancel GitHub's own coverage growth (TypeScript economies reported rose from 93 to 162). It splits the answer into relative (18% to 49%) and absolute (gap 1.1M to 2.5M) halves, counts economies at or above 50% (47 of 92, up from 0), and compares year-on-year ratio gains. None of this is a restatement of an Innovation Graph page or of Octoverse.",
+    "Search (1 call, 'TypeScript JavaScript GitHub Innovation Graph Octoverse TypeScript overtakes'): the comparable content is GitHub's Octoverse 2025 (github.blog, Oct 2025), which says TypeScript became #1 by monthly contributors in August 2025, and its press echoes (InfoWorld, Visual Studio Magazine, InfoQ 2026-03, 36kr, heise 2024, vibe-data.com). None uses the Innovation Graph languages.csv, a fixed economy panel, a relative-vs-absolute split or a per-economy count. Nothing found says what this video says. (Grade: search snippets, not fetched pages.)",
+    "The narration is written for this question, not boilerplate. analyses/t1.json is a {fig:} template, but its qualitative words are specific to TypeScript and JavaScript ('Relative to JavaScript, yes, and quickly', 'because both languages grew', 'which is why we followed a fixed set'). Each word is guarded by a claim check in figures.json (ratio_rose, gap_widened, both_grew, last_year_fastest, picture_same: all hold). Measured independently: the ratio rose in 92 of 92 economies and the last-year gain was positive in 92 of 92, so 'the picture is the same' is not filler.",
+    "All six visuals are drawn by code from the pinned CSV for this analysis: pushers lines, ratio line, top-10 growth bars, year-on-year gain bars, per-economy histogram and coverage lines. Each carries the source and licence. There is no stock footage, no generative imagery, no third-party chart and no music.",
+    "Reused-content rule (youtube-monetization-policies.txt:144, :200, :204): not triggered. The underlying numbers are GitHub's CC0 data, but nothing is copied from another online source; the aggregates and charts are new computations. The limits paragraph paraphrases the datasheet's method, which is attribution, not a reading of someone else's material.",
+    "Inauthentic-content rule (:114, :138, :140, :216): the format is a slideshow of six static charts, each held 8.7 to 29.2 s (assemble.py loops one still per scene). It falls outside the :138 example because that example requires 'minimal or no narrative, commentary, or educational value', and this video has a question, a two-sided answer, per-economy breadth and stated limits. It does add 'the creator's original, authentic insights' (:140) in the panel method and the relative/absolute split.",
+    "Deviation from the production spec, not a G3 failure: VERDICT.md:326 says charts are 'sentence-synced to narration', but the render syncs by scene. The longest static hold is s6 (29.2 s).",
+    "Channel-level risk for videos 2-6, not for T1: the analysis spec is parameterised (languageA, languageB, topN, thresholdPct). A second 'Is X catching up with Y on GitHub?' video from the same spec would be the 'highly similar storyline template across multiple videos' of :136 and would 'feel interchangeable' (:130). The limits paragraph would also recur in every Innovation Graph video.",
+    "The gate's text-similarity check passes trivially: the channel has no published videos.",
+    "This PASS is bound to the audited script hash. The G5 required changes alter the script, so G3 must be re-run on the new hash. Nothing in those changes affects originality, so the re-check should be short."
+  ],
+  "requiredChanges": [],
+  "recommendations": [
+    "For videos 2-6: do not reuse the t1.json spec for another language pair; each video needs a distinct question shape, not a new pair of names in the same six scenes (:120, :136).",
+    "For videos 2-6: add per-sentence builds (highlight the point being spoken, reveal series in step) so the render matches VERDICT.md:326 ('sentence-synced') and moves further from the :138 slideshow reading.",
+    "Vary the limits paragraph between videos from the same dataset."
+  ]
+}
