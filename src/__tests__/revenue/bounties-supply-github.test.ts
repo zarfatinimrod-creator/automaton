@@ -458,3 +458,42 @@ describe("runAlgoraSupply — writes both files, or nothing", () => {
     expect(readFileSync(p.outJson, "utf8")).toBe("{broken");
   });
 });
+
+describe(".github/workflows/algora-supply.yml", () => {
+  const wf = readFileSync(join(__dirname, "..", "..", "..", ".github", "workflows", "algora-supply.yml"), "utf8");
+
+  it("runs weekly and on demand, on main, as the count-runs job does", () => {
+    expect(wf).toMatch(/schedule:\s*\n\s*#[^\n]*\n\s*- cron: "\d+ \d+ \* \* 1"/);
+    expect(wf).toMatch(/workflow_dispatch:/);
+    expect(wf).toMatch(/ref: main/);
+    expect(wf).toMatch(/fetch-depth: 0/);
+  });
+
+  it("runs on push only from main, and only when the counter itself changes — never on its own commit", () => {
+    const push = /\n  push:\n([\s\S]*?)\n\n/.exec(wf)?.[1] ?? "";
+    expect(push).toMatch(/branches: \[main\]/);
+    const paths = [...push.matchAll(/- "([^"]+)"/g)].map((m) => m[1]!);
+    expect(paths.length).toBeGreaterThan(0);
+    for (const committed of ["state/colony/measurements/algora-supply.json", "research/measurements/algora-supply.md"]) {
+      expect(paths.some((p) => committed.startsWith(p.replace(/\*.*$/, "")))).toBe(false);
+    }
+  });
+
+  it("needs no owner secret — only the job's own GITHUB_TOKEN", () => {
+    const secrets = [...wf.matchAll(/secrets\.([A-Z0-9_]+)/g)].map((m) => m[1]);
+    expect(secrets).toEqual(["GITHUB_TOKEN"]);
+  });
+
+  it("runs the counter, then commits both files with [skip ci] and rebases on a lost race", () => {
+    expect(wf).toMatch(/pnpm exec tsx scripts\/algora-supply\.ts/);
+    expect(wf).toContain("state/colony/measurements/algora-supply.json");
+    expect(wf).toContain("research/measurements/algora-supply.md");
+    expect(wf).toMatch(/\[skip ci\]/);
+    expect(wf).toMatch(/for attempt in 1 2 3[\s\S]*git pull --rebase/);
+  });
+
+  it("shows the reading only after a successful count, so last week's file is never passed off as this run's", () => {
+    expect(wf).toMatch(/id: count/);
+    expect(wf).toMatch(/if: steps\.count\.outcome == 'success'/);
+  });
+});

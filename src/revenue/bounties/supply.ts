@@ -17,11 +17,12 @@
  * filter asks for its data only when the cheaper ones have passed (`evaluateIssue` returns `needs`), so the fetcher
  * never reads comments for an archived repository or policy files for a rewarded issue.
  *
- * One filter is **added** to the board's list and named as such: `solution-merged`. Algora comments *"The pull
- * request of @x has been merged. The bounty can be rewarded here"* when a claimed PR merges; the money then goes to
- * that solver. Such an issue is funded and unpaid but it is not claimable by anybody new, and counting it would be
- * the census's "being awarded does not close the issue" error one step earlier. It has its own drop count, so a
- * reader who disagrees can add it back.
+ * One stricter reading is reported **beside** the board's count, never inside it: `solutionMerged`. Algora comments
+ * *"The pull request of @x has been merged. The bounty can be rewarded here"* when a claimed PR merges; the money then
+ * goes to that solver, so such an issue is funded and unpaid but not claimable by anybody new. It is still counted in
+ * `claimableBounties`, because the board set its 10 and 3 against its own list above and a builder narrowing that list
+ * after the thresholds exist would be moving the line after the rule was written (review, 27.9). The measurement
+ * carries `claimableWithoutMergedSolution` too, so the week-4 reader sees both numbers and the board can choose.
  *
  * Algora's wording is not guessed. The payout, merge and bounty comments were read from `algora-io/algora` on GitHub
  * (27.9.2026): `lib/algora/bounties/jobs/notify_transfer.ex` adds the `💰 Rewarded` label and posts *"🎉🎈 @login has
@@ -60,7 +61,6 @@ export type SupplyFilterId =
   | "rewarded-label"
   | "archived-repo"
   | "payout-comment"
-  | "solution-merged"
   | "no-algora-bounty-comment"
   | "amount-unparseable"
   | "amount-under-minimum"
@@ -99,12 +99,6 @@ export const SUPPLY_FILTERS: readonly SupplyFilter[] = [
     stage: "comments",
     what: "Algora's bot already announced the payout",
     why: "\"has been awarded\" by algora-pbc[bot] (notify_transfer.ex): the bounty is paid even where the label was not added.",
-  },
-  {
-    id: "solution-merged",
-    stage: "comments",
-    what: "a claimed pull request was merged (added to the board's list)",
-    why: "\"The pull request of @x has been merged. The bounty can be rewarded\" (github_controller.ex): the money is committed to that solver; nobody new can claim it.",
   },
   {
     id: "no-algora-bounty-comment",
@@ -172,7 +166,14 @@ export interface SupplyContext {
 export type IssueVerdict =
   | { kind: "needs"; need: Exclude<SupplyStage, "search"> }
   | { kind: "dropped"; filter: SupplyFilterId; detail: string; amountUsd: number | null }
-  | { kind: "claimable"; amountUsd: number; policy: PolicyVerdict; detail: string };
+  | {
+      kind: "claimable";
+      amountUsd: number;
+      policy: PolicyVerdict;
+      detail: string;
+      /** Algora's "has been merged. The bounty can be rewarded" sentence, quoted, or null. Reported, not filtered. */
+      solutionMerged: string | null;
+    };
 
 export interface AlgoraCommentReading {
   /** The first bot comment that carries `/attempt` or `/claim` — Algora edits it in place when the prize changes. */
@@ -221,15 +222,18 @@ const dropped = (filter: SupplyFilterId, detail: string, amountUsd: number | nul
  */
 export function evaluateIssue(issue: SupplyIssue, ctx: SupplyContext = {}, minAmountUsd: number = MIN_CLAIMABLE_USD): IssueVerdict {
   const labels = issue.labels.map((l) => l.trim());
+  // GitHub's label search is case-insensitive, so the check is too: a lowercase variant the search returned is the
+  // same label, not a search mismatch.
+  const has = (label: string) => labels.some((l) => l.toLowerCase() === label.toLowerCase());
 
   // search stage — free, the result already carries it.
-  if (issue.isPullRequest || issue.state !== "open" || !labels.includes(BOUNTY_LABEL)) {
+  if (issue.isPullRequest || issue.state !== "open" || !has(BOUNTY_LABEL)) {
     return dropped(
       "not-an-open-labelled-issue",
       `${issue.isPullRequest ? "pull request" : `state ${issue.state}`}; labels: ${labels.join(", ") || "(none)"}`,
     );
   }
-  if (labels.includes(REWARDED_LABEL)) return dropped("rewarded-label", `labels: ${labels.join(", ")}`);
+  if (has(REWARDED_LABEL)) return dropped("rewarded-label", `labels: ${labels.join(", ")}`);
 
   // repo stage.
   if (!ctx.repo) return { kind: "needs", need: "repo" };
@@ -240,7 +244,6 @@ export function evaluateIssue(issue: SupplyIssue, ctx: SupplyContext = {}, minAm
   const read = readAlgoraComments(ctx.comments);
   const amount = read.bounty?.amountUsd ?? null;
   if (read.payout) return dropped("payout-comment", `algora-pbc[bot]: "${read.payout}"`, amount);
-  if (read.merged) return dropped("solution-merged", `algora-pbc[bot]: "${read.merged}"`, amount);
   if (!read.bounty) {
     return dropped(
       "no-algora-bounty-comment",
@@ -259,7 +262,7 @@ export function evaluateIssue(issue: SupplyIssue, ctx: SupplyContext = {}, minAm
     const ban = policy.reasons.find((r) => r.signal === "ban")!;
     return dropped("policy-forbidden", `${ban.document}: "${clip(ban.quote)}"`, amount);
   }
-  return { kind: "claimable", amountUsd: amount, policy: policy.verdict, detail: policy.summary };
+  return { kind: "claimable", amountUsd: amount, policy: policy.verdict, detail: policy.summary, solutionMerged: read.merged };
 }
 
 // ── The weekly series and the board's reading ────────────────────────────────
@@ -401,12 +404,16 @@ export interface ClaimableBounty {
   url: string;
   amountUsd: number;
   policy: PolicyVerdict;
+  /** A claimed pull request already merged; the bounty waits for its solver's payout. */
+  solutionMerged: boolean;
 }
 
 export interface SupplyMeasurement {
   measuredAt: string;
-  /** THE number: the KPI `claimableBounties` on the `oss-bounties` line. */
+  /** THE number: the KPI `claimableBounties` on the `oss-bounties` line, on the board's own definition. */
   claimableBounties: number;
+  /** The stricter reading beside it: claimable minus those whose claimed pull request already merged. Not gated. */
+  claimableWithoutMergedSolution: number;
   claimableUsd: number;
   labelledOpenIssues: number;
   repositories: number;
@@ -426,7 +433,7 @@ export const METHOD_NOTES: readonly string[] = [
   `Source: GitHub search \`${SUPPLY_SEARCH_QUERY}\`, sorted by creation date and paged 100 at a time (split by creation date when a query exceeds GitHub's 1,000-result cap), then the GitHub REST API for repositories, issue comments and policy files. No request goes to Algora's own site: its terms forbid automated access (research/rendered/algora-terms.txt:258-260).`,
   "Scope: labelled supply only. Algora adds the label only through its GitHub App installation (notify_bounty.ex); a bounty on a repository without the App gets a comment and no label, and is not counted here (the SWEEP-2.md github-native confound). The label count is a ceiling on labelled supply; this is the claimable part of it.",
   `Amount: read from the algora-pbc[bot] bounty comment by parseAlgoraBotComment (intake.ts); ≥ $${MIN_CLAIMABLE_USD} counts, inclusive.`,
-  "Payout: an algora-pbc[bot] comment saying the bounty \"has been awarded\" (notify_transfer.ex), or the 💰 Rewarded label the same job adds. Merge: the bot's \"has been merged. The bounty can be rewarded\" comment — an addition to the board's list, counted separately.",
+  "Payout: an algora-pbc[bot] comment saying the bounty \"has been awarded\" (notify_transfer.ex), or the 💰 Rewarded label the same job adds. Merge: the bot's \"has been merged. The bounty can be rewarded\" comment does not drop an issue (it is not on the board's list); it is reported as the stricter number beside the count.",
   "Policy: assessRepoPolicy over CONTRIBUTING, CODE_OF_CONDUCT, the pull-request template and the README, located in .github/, the root and docs/ in GitHub's own precedence, plus the issue body. Read only for repositories with a bounty that passed every cheaper filter. `unknown` is counted.",
   "Failure: any API error, an exhausted rate-limit budget, or a search that returns fewer issues than it reports writes nothing and fails the job — an unmeasured week is a missing reading, never a zero.",
 ];
@@ -484,7 +491,15 @@ export function buildSupplyMeasurement(input: {
     if (verdict.kind === "claimable") {
       row.claimable += 1;
       row.claimableUsd += verdict.amountUsd;
-      claimable.push({ repo: issue.repo, number: issue.number, title: issue.title, url: issue.url, amountUsd: verdict.amountUsd, policy: verdict.policy });
+      claimable.push({
+        repo: issue.repo,
+        number: issue.number,
+        title: issue.title,
+        url: issue.url,
+        amountUsd: verdict.amountUsd,
+        policy: verdict.policy,
+        solutionMerged: verdict.solutionMerged !== null,
+      });
     } else if (verdict.kind === "dropped") {
       droppedByFilter[verdict.filter] += 1;
       row.dropped[verdict.filter] = (row.dropped[verdict.filter] ?? 0) + 1;
@@ -509,6 +524,7 @@ export function buildSupplyMeasurement(input: {
   return {
     measuredAt,
     claimableBounties: claimable.length,
+    claimableWithoutMergedSolution: claimable.filter((c) => !c.solutionMerged).length,
     claimableUsd,
     labelledOpenIssues: evaluated.length,
     repositories: repoRows.size,
@@ -555,6 +571,12 @@ export function renderSupplyMarkdown(m: SupplyMeasurement): string {
       `${m.labelledOpenIssues} open ${plural(m.labelledOpenIssues, "issue", "issues")} carrying Algora's \`${BOUNTY_LABEL}\` label across ${m.repositories} ${plural(m.repositories, "repository", "repositories")}.`,
   );
   out.push("");
+  const merged = m.claimableBounties - m.claimableWithoutMergedSolution;
+  out.push(
+    `Stricter reading, not gated: **${m.claimableWithoutMergedSolution}** once the ${merged} ${plural(merged, "bounty", "bounties")} whose claimed pull request Algora already saw merged ` +
+      "are left out — funded and unpaid, but promised to that solver. The board's thresholds read the number above, on its own definition; this one is shown so the week-4 reader can weigh both.",
+  );
+  out.push("");
   out.push("A count of jobs a payer has posted, not revenue: money counts only in `revenue_ledger` with a platform transaction id (MISSION rule 2).");
   out.push("");
 
@@ -594,9 +616,11 @@ export function renderSupplyMarkdown(m: SupplyMeasurement): string {
   if (m.claimable.length === 0) {
     out.push("None this week.");
   } else {
-    out.push("| Repository | Issue | Amount | Policy | Title |");
-    out.push("|---|---|---:|---|---|");
-    for (const c of m.claimable) out.push(`| \`${c.repo}\` | [#${c.number}](${c.url}) | ${usd(c.amountUsd)} | ${c.policy} | ${cell(c.title)} |`);
+    out.push("| Repository | Issue | Amount | Policy | Solution merged | Title |");
+    out.push("|---|---|---:|---|---|---|");
+    for (const c of m.claimable) {
+      out.push(`| \`${c.repo}\` | [#${c.number}](${c.url}) | ${usd(c.amountUsd)} | ${c.policy} | ${c.solutionMerged ? "yes" : "no"} | ${cell(c.title)} |`);
+    }
   }
   out.push("");
 

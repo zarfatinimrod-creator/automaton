@@ -5,16 +5,44 @@
  * for one reason and it is not Algora's terms: *"Algora's terms do not prohibit
  * agent-authored PRs — the risk is per-repo maintainer policy, and it is real."*
  * (`research/colony-sweep/groups/bounties-grants.md` §4). That sentence quoted no
- * clause. The terms were first read on 26.9.2026 (`research/rendered/algora-terms.txt`):
- * they are silent on who authors a PR, but they forbid "any robot, spider, or other
- * automatic device, process, or means to access Service for any purpose" (lines
- * 258-260), Service being the web pages at algora.io. Nothing in this module or its
- * callers touches algora.io; whether a GitHub-only automated claim is "access" is
- * open (`research/measurements/algora-terms-question.md`). The line is permitted
- * only behind a filter that reads the repository's own contribution policy first
- * and refuses to attempt anything that bans AI-authored work. Without the filter
- * the line violates the constitution regardless of what the platform allows, and
- * MISSION rule 4 — honest value outranks revenue — decides that, not the ceiling.
+ * clause. The terms themselves, rendered 26.9.2026 (`research/rendered/algora-terms.txt`,
+ * HTTP 200, "Last updated: 08/17/2021" at line 61), quoted rather than summarised:
+ *
+ *   Scope (lines 81-86): "These Terms of Service (“Terms”, “Terms of Service”) govern
+ *   your use of our web pages located at https://algora.io" — and (lines 104-106)
+ *   "These Terms apply to all visitors, users and others who wish to access or use
+ *   Service."
+ *
+ *   The automation clause (lines 258-260), under "you agree not to": "Use any robot,
+ *   spider, or other automatic device, process, or means to access Service for any
+ *   purpose, including monitoring or copying any of the material on Service."
+ *
+ * The page says nothing about who or what authors a pull request, about AI, or about
+ * bounties.
+ *
+ * **The board's ruling (research/colony-sweep/BOARD-2.md §2.1, 27.9.2026): the clause
+ * does not fire against a contributor that works only on GitHub** — the automated
+ * account acts on GitHub, Algora's own GitHub App reads the `/claim`, and the colony
+ * performs no automatic access to algora.io's web pages; the one algora.io use in the
+ * design is owner step 4, a human at a browser, once. **Conditions attached**, and the
+ * line holds only while all of them do:
+ *   (a) this header quotes the clause and its scope instead of a summary;
+ *   (b) nothing under src/, scripts/ or .github/ requests algora.io
+ *       (`src/__tests__/revenue/no-algora-requests.test.ts`);
+ *   (c) the brand machine account is a GitHub `User`, not an App, and its login does
+ *       not end in "bot" (`brandAccountProblems` in `intake.ts`);
+ *   (d) any Algora or maintainer action against the account on grounds of automation
+ *       — a refused claim, a warning, a suspension — kills the line the same day,
+ *       recorded in docs/REJECTED.md with the message quoted (`portfolio.ts`).
+ * And it is not permission to be clever: Algora's handler is named `ensure_human_author`,
+ * so every pull request and every `/claim` discloses that the account is an automated
+ * brand account and the work is AI-authored and agent-operated (§2.1.2).
+ *
+ * The line is permitted only behind a filter that reads the repository's own
+ * contribution policy first and refuses to attempt anything that bans AI-authored
+ * work. Without the filter the line violates the constitution regardless of what the
+ * platform allows, and MISSION rule 4 — honest value outranks revenue — decides that,
+ * not the ceiling.
  *
  * What this module is, precisely: a **conservative reader of text somebody else
  * wrote**. It does not fetch anything (the caller supplies the documents), it

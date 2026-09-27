@@ -34,11 +34,14 @@ on:
   schedule:
     # Mondays 06:23 UTC. Not on the hour: GitHub delays top-of-the-hour schedules.
     - cron: "23 6 * * 1"
+  # On demand too. A second run inside the same ISO week replaces that week's
+  # reading rather than adding one (supply.ts appendWeeklyReading), so a manual
+  # dispatch cannot turn four weekly readings into five.
   workflow_dispatch:
-  # The first reading lands as soon as this is merged ("first run this week",
-  # BOARD-2 §2.2). The commit this job makes touches none of these paths, so it
-  # cannot retrigger itself; a second run in the same ISO week replaces that
-  # week's reading rather than adding one (supply.ts appendWeeklyReading).
+  # And once when the counter itself lands on main, so the first reading comes
+  # the week it merges ("first run this week", BOARD-2 §2.2) rather than waiting
+  # for a Monday. Main only: nothing runs from a feature branch. The commit this
+  # job makes touches none of these paths, so it cannot retrigger itself.
   push:
     branches: [main]
     paths:

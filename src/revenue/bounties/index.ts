@@ -1,9 +1,13 @@
 /**
  * Revenue Colony — Algora OSS bounties, build #2.
  *
- * Three pure modules and nothing wired: `policy.ts` reads a repository's own
+ * Four pure modules and nothing wired: `policy.ts` reads a repository's own
  * contribution policy, `intake.ts` decides which funded bounties the colony may
- * attempt, `disclosure.ts` writes the pull request body every attempt carries.
+ * attempt, `disclosure.ts` writes the pull request body every attempt carries,
+ * and `supply.ts` counts the claimable bounties the payer has posted (BOARD-2
+ * §2.2). Its GitHub half, `supply-github.ts`, is a CI tool run weekly by
+ * `algora-supply.yml` through `scripts/algora-supply.ts`, and is not re-exported;
+ * its reading reaches the colony only as a measurement file (`measurements.ts`).
  *
  * **Nothing here runs on the heartbeat, deliberately.** The line is blocked on
  * owner step 7 (the brand machine account, whose token is `BRAND_GITHUB_TOKEN`)
@@ -17,3 +21,4 @@
 export * from "./policy.js";
 export * from "./intake.js";
 export * from "./disclosure.js";
+export * from "./supply.js";

@@ -93,7 +93,6 @@ describe("evaluateIssue — the board's filters, cheapest first", () => {
       "rewarded-label",
       "archived-repo",
       "payout-comment",
-      "solution-merged",
       "no-algora-bounty-comment",
       "amount-unparseable",
       "amount-under-minimum",
@@ -106,6 +105,11 @@ describe("evaluateIssue — the board's filters, cheapest first", () => {
     expect(evaluateIssue(issue({ isPullRequest: true }))).toMatchObject({ kind: "dropped", filter: "not-an-open-labelled-issue" });
     expect(evaluateIssue(issue({ state: "closed" }))).toMatchObject({ kind: "dropped", filter: "not-an-open-labelled-issue" });
     expect(evaluateIssue(issue({ labels: ["bug"] }))).toMatchObject({ kind: "dropped", filter: "not-an-open-labelled-issue" });
+  });
+
+  it("compares labels the way GitHub's label search does — case-insensitively", () => {
+    expect(evaluateIssue(issue({ labels: ["💎 bounty"] }))).toEqual({ kind: "needs", need: "repo" });
+    expect(evaluateIssue(issue({ labels: [BOUNTY_LABEL, "💰 rewarded"] }))).toMatchObject({ kind: "dropped", filter: "rewarded-label" });
   });
 
   it("drops a rewarded issue on its label alone — no repository or comment read is needed", () => {
@@ -133,9 +137,12 @@ describe("evaluateIssue — the board's filters, cheapest first", () => {
     expect(v).toEqual({ kind: "needs", need: "policy" });
   });
 
-  it("drops an issue whose solving pull request Algora already saw merged", () => {
-    const v = evaluateIssue(issue(), { repo: LIVE_REPO, comments: [bountyComment(250, 12), mergedComment()] });
-    expect(v).toMatchObject({ kind: "dropped", filter: "solution-merged" });
+  it("keeps an issue whose solving pull request Algora already saw merged, and flags it — the board's list does not drop it", () => {
+    const v = evaluateIssue(issue(), { repo: LIVE_REPO, comments: [bountyComment(250, 12), mergedComment()], policyDocs: {} });
+    expect(v).toMatchObject({ kind: "claimable", amountUsd: 250 });
+    expect(v.kind === "claimable" && v.solutionMerged).toMatch(/has been merged/);
+    const plain = evaluateIssue(issue(), { repo: LIVE_REPO, comments: [bountyComment(250, 12)], policyDocs: {} });
+    expect(plain).toMatchObject({ kind: "claimable", solutionMerged: null });
   });
 
   it("drops an issue with no bounty comment from Algora's bot — anybody can type a dollar sign", () => {
@@ -240,8 +247,9 @@ describe("buildSupplyMeasurement", () => {
       "payout-comment": 1,
       "amount-under-minimum": 1,
       "policy-forbidden": 1,
-      "solution-merged": 0,
     });
+    expect(m.droppedByFilter).not.toHaveProperty("solution-merged");
+    expect(m.claimableWithoutMergedSolution).toBe(1);
     // The funnel walks the same numbers down to the count.
     expect(m.funnel[0]!.remaining).toBe(6 - m.funnel[0]!.dropped);
     expect(m.funnel.at(-1)!.remaining).toBe(1);

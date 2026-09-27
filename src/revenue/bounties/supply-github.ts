@@ -376,7 +376,8 @@ export function pickPolicyFiles(listings: { dir: string; entries: unknown }[]): 
 async function fetchPolicyDocs(client: GithubClient, repo: string): Promise<RepoPolicyTexts> {
   const listings: { dir: string; entries: unknown }[] = [];
   for (const dir of POLICY_DIRS) {
-    listings.push({ dir, entries: await client.json<unknown>(`/repos/${repoPath(repo)}/contents/${dir}`, { allow404: true }) });
+    const path = dir === "" ? `/repos/${repoPath(repo)}/contents` : `/repos/${repoPath(repo)}/contents/${dir}`;
+    listings.push({ dir, entries: await client.json<unknown>(path, { allow404: true }) });
   }
   const prefix = `${GITHUB_API}/repos/${repo}/contents/`.toLowerCase();
   const docs: RepoPolicyTexts = {};
