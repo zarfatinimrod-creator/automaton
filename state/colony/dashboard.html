@@ -65,7 +65,7 @@
   <div class="card">
       <details>
         <summary>Apify Actors on one creator account (published free while the stranger count runs)</summary>
-        <ol><li>Sign up at Apify with the brand as the username — the Store URL apify.com/&lt;username&gt;/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). Nothing else: publishing free and counting stranger runs needs no identity verification. Apify KYC and a PayPal payout are deferred until stranger runs exist.</li></ol>
+        <ol><li>Sign up at Apify with the brand as the username — the Store URL apify.com/&lt;username&gt;/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify KYC and a PayPal or Wise payout are deferred until 50 stranger users in 30 days (scaleCriteria); under 10 at day 30 they are not asked for.</li></ol>
       </details>
       <details>
         <summary>Hebrew small-business web tools (invoices, receipts, VAT, net salary)</summary>
@@ -73,11 +73,11 @@
       </details>
       <details>
         <summary>Open-source bounties on Algora, from the brand machine account</summary>
-        <ol><li>Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7)</li><li>Sign in to Algora AS THE BRAND MACHINE ACCOUNT and complete Stripe Connect Express onboarding in your legal identity — individual, ID, Israeli address, Israeli bank account (owner step 4, done after step 7)</li></ol>
+        <ol><li>Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in &quot;bot&quot; (BOARD-2 §2.1.3(c))</li><li>Sign in to Algora AS THE BRAND MACHINE ACCOUNT and complete Stripe Connect Express onboarding in your legal identity — individual, ID, Israeli address, Israeli bank account (owner step 4, done after step 7)</li><li>Paste the brand machine account&#39;s token as BRAND_GITHUB_TOKEN in GitHub Actions secrets, so bounty PRs leave from the brand account (owner step 6; bounties/intake.ts is blocked on it)</li></ol>
       </details>
       <details>
         <summary>PCN874 builder — spreadsheet to a validated מע&quot;מ detailed-report file</summary>
-        <ol><li>Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses</li><li>Create the GitHub organisation under the brand name so the open-source core and the npm scope carry it and not your username (owner step 7)</li></ol>
+        <ol><li>Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses</li><li>Create the GitHub organisation under the brand name so the open-source core&#39;s repository URL carries it and not your username (owner step 7). The npm scope `@mehudak` (the brand the board chose on 27.9.2026) is a separate namespace on npm, not created by the GitHub organisation; publishing to it is our work and no workflow does it yet.</li><li>Buy the company domain (owner step 5) and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — both shared with il-biz-tools; without the token the loop cannot see a sale</li></ol>
       </details>
   </div>
 
@@ -185,7 +185,7 @@
   </div>
 
   <footer>
-    נוצר מהלדג'ר ב-2026-09-27T22:08:44.418Z.
+    נוצר מהלדג'ר ב-2026-09-27T22:36:46.045Z.
     כל מספר בדף הזה מגיע מ-<code>state/colony/colony.db</code> — אין כאן שדה שאפשר למלא ביד.
   </footer>
 </div>
