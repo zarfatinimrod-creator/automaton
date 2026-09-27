@@ -142,13 +142,26 @@ statement's "checked" stays true.
 
 **The blocker.** A statement normally names a contact for accessibility requests. No brand mailbox exists, and
 the owner's personal details may never appear on the site, so the contact is a placeholder marked
-`data-publish-blocker="accessibility-contact"`. `publishBlockers()` (`src/lib/publish-gate.js`) finds any such
-marker in a page that would ship — and also refuses if `accessibility.html` itself is missing — and
-`node scripts/build-site.js` then exits 1 and deletes `_site/`, so Netlify's build fails and no stale copy is
-left to upload. `node scripts/build-site.js --preview` builds the identical tree into `_preview/` (never
-`_site/`, gitignored) and lists the blockers instead of stopping, for inspection only. To clear it: put a real,
-brand-owned contact route in place of that one `<p>` and delete the attribute. That needs a decision, not code —
-it is on the owner-ask list, not solved here.
+`data-publish-blocker="accessibility-contact"`. `publishBlockers()` (`src/lib/publish-gate.js`) refuses the
+publish unless all of these hold, and deleting the marker satisfies only the first:
+
+1. no shipped page carries a `data-publish-blocker` marker, written any way HTML allows (quoted, unquoted,
+   without a value, any letter case, inside a comment);
+2. no shipped page carries the placeholder's words (`ממלא מקום`, `לא לפרסום`), however they are spaced, split
+   by tags or entity-encoded;
+3. `accessibility.html` has at least one visible `<a data-a11y-contact href="…">` inside `<main>` whose href is
+   `mailto:` with exactly one address, `https:`, or `tel:` with a full number, at a public domain (reserved
+   example/test domains are refused), with visible link text; every element marked `data-a11y-contact` must
+   pass;
+4. `accessibility.html` is in the build at all.
+
+On any failure `node scripts/build-site.js` exits 1 and deletes `_site/`, so Netlify's build fails and no stale
+copy is left to upload. `node scripts/build-site.js --preview` builds the identical tree into `_preview/` (never
+`_site/`, gitignored) and lists the blockers instead of stopping, for inspection only. To clear it: replace
+that one `<p>` with a paragraph holding the real, brand-owned contact as
+`<a data-a11y-contact href="mailto:…">…</a>` (or an `https:` form or a `tel:` number). The gate can check that
+a contact is well-formed and visible; it cannot check that someone reads it. Choosing the contact is a decision,
+not code — it is on the owner-ask list, not solved here.
 
 ## The registrar annual-fee page (`registrar-fee.html`)
 
@@ -211,7 +224,7 @@ netlify.toml robots.txt sitemap.xml
 ```bash
 cd products/il-biz-tools
 npm install          # vitest only
-npm test             # 277 tests (vitest, 17 files; re-measured 27.9.2026 after the config gate)
+npm test             # 364 tests (vitest, 17 files; re-measured 27.9.2026 after the contact gate)
 npm run check:html   # static page sanity checks + what the publish gate will withhold
 node scripts/build-site.js   # writes _site/ exactly as it will be deployed - or refuses (exit 1) on a blocker
 node scripts/build-site.js --preview   # the same tree into _preview/, blockers listed, for inspection only
@@ -438,10 +451,12 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
 **הצהרת נגישות – חוסם פתוח:** `accessibility.html` אומרת רק מה שנכון: האתר לא עבר בדיקה מלאה לפי ת"י 5568,
 ומה כן נבדק (13 בדיקות אוטומטיות על קוד הדפים, 27.9.2026), מה תוקן (שלושה צבעים הוכהו, כותרות בדף הבית) ומה
 לא נבדק. בהצהרה חסרה דרך פנייה בנושא נגישות: אין עדיין תיבת דואר של המותג, ופרטים אישיים של הבעלים לא יופיעו
-באתר לעולם. לכן השורה מסומנת כממלא מקום, וה-build מסרב לבנות את `_site/` כל עוד היא שם.
+באתר לעולם. לכן השורה מסומנת כממלא מקום, וה-build מסרב לבנות את `_site/` כל עוד היא שם. מחיקת הסימון לבדה
+לא משחררת את השער: הוא מסרב גם כשמילות ממלא המקום נשארות בדף, וגם כשאין בהצהרה קישור פנייה אמיתי וגלוי
+(`<a data-a11y-contact href="mailto:…">` או `https:` או `tel:`, בדומיין ציבורי ולא בדומיין דוגמה).
 
 **צעדים שרק הבעלים יכול לבצע:** פתיחת חנות Gumroad על שם המותג (KYC + פרטי משיכה) והטוקן שלה,
 חשבון Netlify ודומיין, אימות ב-Google Search Console. יצירת מוצר ה-Pro והדבקת הכתובת והמזהה שלו
 ב-`site.json` הן עבודה שלי, דרך אותו טוקן (`.github/workflows/gumroad-pro-product.yml`).
 
-**בדיקות:** `npm install && npm test` (277 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.
+**בדיקות:** `npm install && npm test` (364 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.

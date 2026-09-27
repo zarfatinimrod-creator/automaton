@@ -19,9 +19,10 @@
 //      if verified (or not a figure file), cut down to named keys where a rule
 //      allows it (registrar-fee.json ships its dates, never its amounts), and a
 //      stopped build otherwise. A JSON file with no rule never ships.
-//   4. Blockers. A placeholder marked data-publish-blocker in any shipped page,
-//      a missing accessibility statement, or a failing check in
-//      src/lib/a11y-check.js refuses the publish.
+//   4. Blockers. A placeholder in any shipped page (its data-publish-blocker
+//      marker however written, or its words), a missing accessibility
+//      statement, a statement with no real contact link (data-a11y-contact),
+//      or a failing check in src/lib/a11y-check.js refuses the publish.
 //
 // Fail closed: a refused build exits 1 and deletes _site/, so no stale copy is
 // left for anyone to upload by hand. `--preview` builds the same tree into

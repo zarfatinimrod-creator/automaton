@@ -49,11 +49,24 @@ export const editIn = (dir, path, fn) => writeFileSync(join(dir, path), fn(readI
 /** The marked contact placeholder in the accessibility statement. */
 export const CONTACT_PLACEHOLDER = /<p\b[^>]*data-publish-blocker="accessibility-contact"[^>]*>[\s\S]*?<\/p>/;
 
+/**
+ * A contact of the shape the publish gate accepts, for test copies only.
+ *
+ * *.netlify.app has no mail service, so this address can never reach a person:
+ * it is well-formed, it is on the product's own planned host, and it names
+ * nobody. It is written only into throwaway copies and never ships.
+ */
+export const TEST_CONTACT_ADDRESS = 'test-only@il-biz-tools.netlify.app';
+export const TEST_CONTACT_LINK = `<a data-a11y-contact href="mailto:${TEST_CONTACT_ADDRESS}">${TEST_CONTACT_ADDRESS}</a>`;
+
+/** The statement's placeholder paragraph swapped for `replacement` (default: a well-formed test contact). */
+export function statementWithContact(html, replacement = `<p>פניות בנושא נגישות: ${TEST_CONTACT_LINK}</p>`) {
+  const next = html.replace(CONTACT_PLACEHOLDER, replacement);
+  if (next === html) throw new Error('contact placeholder not found in accessibility.html');
+  return next;
+}
+
 /** Stand in for the real contact the owner has not provided, so a copy can take the publish path. */
-export function fillContact(dir) {
-  editIn(dir, 'accessibility.html', (html) => {
-    const next = html.replace(CONTACT_PLACEHOLDER, '<p>פנייה לדוגמה, לבדיקה בלבד.</p>');
-    if (next === html) throw new Error('contact placeholder not found in accessibility.html');
-    return next;
-  });
+export function fillContact(dir, replacement) {
+  editIn(dir, 'accessibility.html', (html) => statementWithContact(html, replacement));
 }

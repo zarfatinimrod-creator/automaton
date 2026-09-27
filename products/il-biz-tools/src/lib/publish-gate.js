@@ -20,9 +20,12 @@
 //   - CONFIG_PUBLISH_RULES decides, per config file, whether and in what shape
 //     it may reach _site/ once a shipped page's code loads it. A config with no
 //     rule never ships.
-//   - publishBlockers() finds what must stop a publish outright: a marked
-//     placeholder (data-publish-blocker) left in any shipped page, or a
-//     required page - the accessibility statement - missing from the build.
+//   - publishBlockers() finds what must stop a publish outright: a placeholder
+//     left in any shipped page (its data-publish-blocker marker written any
+//     way, or its words), a required page - the accessibility statement -
+//     missing from the build, or a statement without a real contact link
+//     (data-a11y-contact). The contact is checked for being there, not only
+//     the marker for being gone: deleting the marker must not clear the gate.
 
 /**
  * Which config files each page renders FIGURES from.
@@ -206,6 +209,181 @@ export function configShipPlan(neededPaths, configs, rules = CONFIG_PUBLISH_RULE
 export const REQUIRED_PAGES = ['accessibility.html'];
 
 /**
+ * The page that must carry the contact for accessibility requests, and the
+ * attribute that marks it. The contact is the `<a>` element itself:
+ *
+ *   <a data-a11y-contact href="mailto:name@brand-domain.tld">name@brand-domain.tld</a>
+ *
+ * (an https: form page or a tel: number work the same way).
+ */
+export const CONTACT_PAGE = 'accessibility.html';
+export const CONTACT_ATTR = 'data-a11y-contact';
+
+/** The marker a placeholder wears in the page source. */
+export const BLOCKER_ATTR = 'data-publish-blocker';
+
+/**
+ * Words that mean "this is a placeholder" in this site's Hebrew copy. The
+ * statement's placeholder says both; a page that ships either one ships a
+ * placeholder, marker or not.
+ */
+export const PLACEHOLDER_PHRASES = ['ממלא מקום', 'לא לפרסום'];
+
+// ---------------------------------------------------------------------------
+// Reading the HTML. Regex-level, like the rest of the build (no parser is a
+// dependency here); every doubt below resolves to "blocked".
+
+const NAMED_ENTITIES = { amp: '&', nbsp: ' ', quot: '"', apos: "'", lt: '<', gt: '>', commat: '@', colon: ':', period: '.', sol: '/' };
+const codePoint = (n) => (Number.isInteger(n) && n >= 0 && n <= 0x10ffff ? String.fromCodePoint(n) : '');
+const decodeEntities = (s) =>
+  String(s)
+    .replace(/&#x([0-9a-f]+);?/gi, (_, h) => codePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);?/g, (_, d) => codePoint(Number(d)))
+    .replace(/&([a-z]+);/gi, (m, name) => NAMED_ENTITIES[name.toLowerCase()] ?? m);
+
+// Soft hyphen, zero-width characters, bidi marks and embeddings, word joiner, BOM.
+const INVISIBLE = /[­​-‏‪-‮⁠-⁤﻿]/g;
+/** Text as a reader sees it: entities decoded, invisible characters gone, any run of whitespace one space. */
+const normalizeText = (s) => decodeEntities(s).replace(INVISIBLE, '').replace(/\s+/g, ' ').trim();
+const stripTags = (s) => String(s).replace(/<[^>]*>/g, ' ');
+
+/** A phrase matched across any whitespace, maqaf or dash between its words. */
+const phrasePattern = (phrase) =>
+  new RegExp(phrase.split(/\s+/).map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('[\\s\\u05be\\u2010-\\u2015_-]+'));
+
+/** A tag, with `>` allowed inside quoted attribute values. */
+const TAG = /<(\/?)([a-zA-Z][a-zA-Z0-9:-]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g;
+const ATTR = /([^\s"'>/=]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g;
+const VOID = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);
+
+/** Attributes of one tag, names lower-cased; a valueless attribute maps to ''. The first of a repeated name wins, as in a browser. */
+function parseAttrs(text) {
+  const attrs = new Map();
+  for (const m of String(text).matchAll(ATTR)) {
+    const name = m[1].toLowerCase();
+    if (!attrs.has(name)) attrs.set(name, m[2] ?? m[3] ?? m[4] ?? '');
+  }
+  return attrs;
+}
+
+/** Markup a visitor can actually see: comments and script, style, template and noscript content removed. */
+const renderedMarkup = (html) =>
+  String(html ?? '')
+    .replace(/<!--[\s\S]*?(?:-->|$)/g, '')
+    .replace(/<(script|style|template|noscript)\b[^>]*>[\s\S]*?(?:<\/\1\s*>|$)/gi, '');
+
+const hides = (attrs) =>
+  attrs.has('hidden') ||
+  attrs.has('inert') ||
+  (attrs.get('aria-hidden') ?? '').trim().toLowerCase() === 'true' ||
+  /(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*(?:hidden|collapse)|content-visibility\s*:\s*hidden)/i.test(attrs.get('style') ?? '');
+
+/** Every start tag with the open elements around it. Unclosed elements stay open, which can only add ancestors. */
+function startTags(markup) {
+  const out = [];
+  const stack = [];
+  for (const m of markup.matchAll(TAG)) {
+    const [raw, closing, rawName, attrText] = m;
+    const name = rawName.toLowerCase();
+    if (closing) {
+      const at = stack.map((e) => e.name).lastIndexOf(name);
+      if (at !== -1) stack.length = at;
+      continue;
+    }
+    const el = { name, attrs: parseAttrs(attrText), start: m.index, end: m.index + raw.length };
+    out.push({ ...el, ancestors: [...stack] });
+    if (!VOID.has(name) && !/\/\s*$/.test(attrText)) stack.push(el);
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// The contact.
+
+// RFC 2606 / RFC 6761 names that can never be anybody's real contact.
+const RESERVED_DOMAIN = /(?:^|\.)(?:example|test|invalid|localhost|local)$|(?:^|\.)example\.(?:com|net|org)$/;
+
+function domainProblem(host) {
+  const h = String(host).toLowerCase().replace(/\.$/, '');
+  if (!/^[a-z0-9.-]+$/.test(h) || !/\.(?:[a-z]{2,}|xn--[a-z0-9-]+)$/.test(h)) return `"${host}" is not a public domain name`;
+  if (RESERVED_DOMAIN.test(h)) return `"${host}" is a reserved example/test domain, not a real contact`;
+  return null;
+}
+
+/**
+ * Why an href cannot be the accessibility contact, or null if it can.
+ * Accepted: mailto: with exactly one address at a public domain, https: at a
+ * public domain, tel: with a full number (7 to 15 digits).
+ */
+export function contactHrefProblem(rawHref) {
+  if (rawHref === undefined || rawHref === null) return 'has no href';
+  const href = decodeEntities(rawHref).trim();
+  if (!href) return 'has an empty href';
+  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(href)?.[1].toLowerCase();
+  let rest;
+  try {
+    rest = decodeURIComponent(href.slice((scheme?.length ?? 0) + 1));
+  } catch {
+    return `href cannot be decoded: "${href.slice(0, 60)}"`;
+  }
+  if (scheme === 'mailto') {
+    const address = rest.split('?')[0].trim();
+    const m = /^[^\s@<>()[\]\\,;:"]+@([^\s@<>()[\]\\,;:"]+)$/.exec(address);
+    if (!m) return `mailto: needs exactly one address like name@domain.tld, got "${address}"`;
+    return domainProblem(m[1]);
+  }
+  if (scheme === 'https') {
+    let url;
+    try {
+      url = new URL(href);
+    } catch {
+      return `https: link is not a valid URL: "${href.slice(0, 60)}"`;
+    }
+    if (url.username || url.password) return 'https: link carries credentials';
+    return domainProblem(url.hostname);
+  }
+  if (scheme === 'tel') {
+    if (!/^\+?\d{7,15}$/.test(rest.replace(/[\s\-().]/g, ''))) return `tel: needs a full phone number (7-15 digits), got "${rest}"`;
+    return null;
+  }
+  return `must be a mailto:, https: or tel: link, got "${href.slice(0, 60)}"`;
+}
+
+/**
+ * What is wrong with the contact on the statement page; empty means it has one.
+ * Every element marked data-a11y-contact must be a good contact, and there must
+ * be at least one.
+ */
+function contactProblems(html) {
+  const markup = renderedMarkup(html);
+  const marked = startTags(markup).filter((t) => t.attrs.has(CONTACT_ATTR));
+  if (!marked.length) {
+    return [
+      `no accessibility contact: the page needs <a ${CONTACT_ATTR} href="mailto:|https:|tel:..."> with a real, brand-owned address inside <main>`,
+    ];
+  }
+  const problems = [];
+  for (const tag of marked) {
+    const say = (why) => problems.push(`accessibility contact ${why}`);
+    if (tag.name !== 'a') {
+      say(`is marked on a <${tag.name}>; ${CONTACT_ATTR} goes on the <a> element itself`);
+      continue;
+    }
+    const hrefProblem = contactHrefProblem(tag.attrs.get('href'));
+    if (hrefProblem) say(hrefProblem);
+    const close = markup.slice(tag.end).search(/<\/a\s*>/i);
+    const text = normalizeText(stripTags(close === -1 ? '' : markup.slice(tag.end, tag.end + close)));
+    if (close === -1) say('has no closing </a>');
+    else if (!text) say('has no visible link text');
+    if (hides(tag.attrs) || tag.ancestors.some((a) => hides(a.attrs))) say('is hidden (hidden, inert, aria-hidden or display:none on it or around it)');
+    if (!tag.ancestors.some((a) => a.name === 'main')) say('is outside <main>');
+  }
+  return problems;
+}
+
+// ---------------------------------------------------------------------------
+
+/**
  * What must stop a publish outright.
  *
  * A placeholder is marked in the page source with `data-publish-blocker="<id>"`
@@ -213,19 +391,46 @@ export const REQUIRED_PAGES = ['accessibility.html'];
  * is a guess that ships; a marked one is a promise that the site does not go
  * out until someone replaces it with the real thing.
  *
+ * Removing the marker must not be enough to clear it, so there are three
+ * independent checks and a publish needs all of them to pass:
+ *   1. no page carries the marker, written any way HTML allows (quoted,
+ *      unquoted, without a value, any letter case - and inside a comment too:
+ *      the source ships, so the comment does);
+ *   2. no page carries the placeholder's words (PLACEHOLDER_PHRASES), however
+ *      they are spaced, split by tags or entity-encoded;
+ *   3. the statement page (CONTACT_PAGE) has at least one visible
+ *      `<a data-a11y-contact>` inside <main> with a real mailto:, https: or
+ *      tel: address, and every element so marked is one.
+ * And every page in `required` must be in the build.
+ *
  * @param {{path: string, html: string}[]} shipped  every HTML page that would ship
  * @returns {{path: string, blocker: string}[]}
  */
-export function publishBlockers(shipped, required = REQUIRED_PAGES) {
+export function publishBlockers(shipped, required = REQUIRED_PAGES, contactPage = CONTACT_PAGE) {
   const found = [];
   const paths = new Set(shipped.map((p) => p.path));
   for (const page of required) {
     if (!paths.has(page)) found.push({ path: page, blocker: 'required page is missing from the build' });
   }
   for (const { path, html } of shipped) {
-    for (const m of String(html ?? '').matchAll(/\sdata-publish-blocker\s*=\s*["']([^"']*)["']/g)) {
-      found.push({ path, blocker: `placeholder "${m[1]}" is still in the page` });
+    const source = String(html ?? '');
+
+    // 1. The marker. Found by name anywhere in the source; the value, when
+    //    there is one, only makes the message clearer.
+    for (const m of source.matchAll(new RegExp(`${BLOCKER_ATTR}(?:\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+)))?`, 'gi'))) {
+      const id = m[1] ?? m[2] ?? m[3];
+      found.push({ path, blocker: id ? `placeholder "${id}" is still in the page` : `a placeholder (${BLOCKER_ATTR}) is still in the page` });
     }
+
+    // 2. The words, in the source as written and in the text a reader sees.
+    const texts = [normalizeText(source), normalizeText(stripTags(source))];
+    for (const phrase of PLACEHOLDER_PHRASES) {
+      const pattern = phrasePattern(phrase);
+      if (texts.some((t) => pattern.test(t))) found.push({ path, blocker: `placeholder text "${phrase}" is still in the page` });
+    }
+
+    // 3. The contact.
+    if (path === contactPage) for (const blocker of contactProblems(source)) found.push({ path, blocker });
   }
   return found;
 }

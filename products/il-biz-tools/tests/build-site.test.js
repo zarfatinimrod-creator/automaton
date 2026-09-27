@@ -15,6 +15,8 @@ import {
   readIn,
   editIn,
   fillContact,
+  statementWithContact,
+  TEST_CONTACT_ADDRESS,
   productRoot,
 } from './helpers/product-copy.js';
 
@@ -138,6 +140,64 @@ describe('publishing once the contact is real', () => {
   it('and still no unverified config lands in it', () => {
     expect(listFiles(join(dir, '_site'))).not.toContain('src/config/tax-2026.json');
     assertNoUnverifiedConfig(join(dir, '_site'));
+  });
+});
+
+// The ways the adversarial review got the placeholder past the old gate, each run
+// through the real build. Every one must exit 1 and leave no _site/ behind.
+describe('the contact gate, end to end: the placeholder cannot ship', () => {
+  const MARKER = ' data-publish-blocker="accessibility-contact"';
+  const cases = {
+    'marker deleted, placeholder paragraph kept': {
+      edit: (h) => h.replace(MARKER, ''),
+      says: /placeholder text "ממלא מקום"[\s\S]*no accessibility contact|no accessibility contact[\s\S]*placeholder text "ממלא מקום"/,
+    },
+    'marker written unquoted': {
+      edit: (h) => h.replace(MARKER, ' data-publish-blocker=accessibility-contact'),
+      says: /placeholder "accessibility-contact"/,
+    },
+    'marker with no value': {
+      edit: (h) => h.replace(MARKER, ' data-publish-blocker'),
+      says: /placeholder/,
+    },
+    'contact section deleted': {
+      edit: (h) => h.replace(/<section class="card">\s*<h2>פנייה בנושא נגישות<\/h2>[\s\S]*?<\/section>/, ''),
+      says: /no accessibility contact/,
+    },
+    'a stub contact with no address': {
+      edit: (h) => statementWithContact(h, '<p>פניות בנושא נגישות: <a data-a11y-contact href="mailto:">כתבו לנו</a></p>'),
+      says: /accessibility contact .*mailto:/,
+    },
+    'a contact at an example domain': {
+      edit: (h) => statementWithContact(h, '<p>פניות: <a data-a11y-contact href="mailto:someone@example.com">someone@example.com</a></p>'),
+      says: /reserved/,
+    },
+  };
+  for (const [name, { edit, says }] of Object.entries(cases)) {
+    it(`refuses: ${name}`, () => {
+      const dir = fresh();
+      editIn(dir, 'accessibility.html', (h) => {
+        const next = edit(h);
+        if (next === h) throw new Error(`edit for "${name}" changed nothing`);
+        return next;
+      });
+      const r = runBuild(dir);
+      expect(r.status, r.stdout).toBe(1);
+      expect(r.stderr).toContain('refusing to build');
+      expect(r.stderr).toMatch(says);
+      expect(existsSync(join(dir, '_site'))).toBe(false);
+    });
+  }
+
+  it('publishes with a well-formed contact, and that contact is what ships', () => {
+    const dir = fresh();
+    fillContact(dir);
+    const r = runBuild(dir);
+    expect(r.status, r.stderr).toBe(0);
+    const shipped = readIn(join(dir, '_site'), 'accessibility.html');
+    expect(shipped).toContain(`href="mailto:${TEST_CONTACT_ADDRESS}"`);
+    expect(shipped).not.toContain('ממלא מקום');
+    expect(shipped).not.toMatch(/data-publish-blocker/i);
   });
 });
 
