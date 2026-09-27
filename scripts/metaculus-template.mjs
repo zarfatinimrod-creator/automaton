@@ -222,7 +222,8 @@ export function renderReport(result, { generatedAt }) {
       const slug = `metaculus-lb-${s.season.id}${a.slugSuffix}`;
       L.push(`- ${a.channel}: ${a.meta ? `HTTP ${a.meta.status ?? "none"}, ${a.meta.byteLength ?? 0} bytes` +
         `${a.meta.contentType ? ` \`${a.meta.contentType}\`` : ""}${a.meta.server ? `, server \`${a.meta.server}\`` : ""}` +
-        `${a.meta.sha256 ? `, sha256 \`${a.meta.sha256}\`` : ""}, fetched ${a.meta.fetchedAt} — \`research/rendered/${slug}.meta.json\`` : "not run"}.`);
+        `${a.meta.sha256 ? `, sha256 \`${a.meta.sha256}\`` : ""}, fetched ${a.meta.fetchedAt} — \`research/rendered/${slug}.meta.json\`` : "not run"}` +
+        `${a.meta?.bodyHead ? `. The server said: *"${String(a.meta.bodyHead).replace(/\s+/g, " ").trim()}"*` : ""}.`);
     }
     if (!m) continue;
     if (m.error) {

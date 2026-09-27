@@ -144,7 +144,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "להעביר את הריפו לארגון ב-GitHub (וחשבון מכונה בשם המותג)",
     minutes: [10, 15],
     unlocks:
-      "Takes the owner's name off every raw.githubusercontent.com URL in the repository, and creates the ONE brand machine account GitHub's terms allow alongside a personal account. That account is what authors bounty pull requests and signs in to Algora — an organisation cannot sign in anywhere, so the org alone does not fix the byline. Its personal access token becomes BRAND_GITHUB_TOKEN in step 6.",
+      "Takes the owner's name off every raw.githubusercontent.com URL in the repository, and creates the ONE brand machine account GitHub's terms allow alongside a personal account. That account is what authors bounty pull requests and signs in to Algora — an organisation cannot sign in anywhere, so the org alone does not fix the byline. Its personal access token becomes BRAND_GITHUB_TOKEN in step 6. It is an ordinary User account whose login does not end in \"bot\" — Algora's contributor queries drop %bot logins, and a GitHub App (type Bot) fails its human-author check (BOARD-2 §2.1.3(c); bounties/intake.ts brandAccountProblems).",
     lines: ["oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.6",
     ownerDecision:
@@ -157,7 +157,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "Stripe Connect Express דרך Algora",
     minutes: [15, 15],
     unlocks:
-      "The shortest documented path to a platform transaction id — 2-5 days after a rewarded pull request — and the one form that settles the most-contested payability question in the whole sweep for every other Stripe-Connect platform. Done SIGNED IN AS THE BRAND MACHINE ACCOUNT (which is why it now follows step 7); the Stripe form inside it stays in the owner's legal identity, which is exactly what the mandate allows.",
+      "The shortest documented path to a platform transaction id — 2-5 days after a rewarded pull request — and the one form that settles the most-contested payability question in the whole sweep for every other Stripe-Connect platform. Done SIGNED IN AS THE BRAND MACHINE ACCOUNT (which is why it now follows step 7); the Stripe form inside it stays in the owner's legal identity, which is exactly what the mandate allows. NOT requested for oss-bounties until the week-4 reading of the weekly claimable-supply count (BOARD-2 §2.2): ≥10 and it proceeds after step 7; 3-9 and it still proceeds, because it settles Stripe-Israel for the kill list; under 3 it is not asked for this line's sake.",
     lines: ["oss-bounties"],
     catalogueRef: "CHIEF-AUDIT §4A.3",
   },

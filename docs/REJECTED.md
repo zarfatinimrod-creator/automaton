@@ -1156,8 +1156,10 @@ they are refuted.
 **26.9.2026 — the nine shortlisted candidates, screened on Opus; 27.9.2026 — the Fable board ruled.** One adversarial
 screener per candidate (`research/colony-sweep/SCREEN-2.md`, reports in `screen-2/`); the board
 (`research/colony-sweep/BOARD-2.md`) re-checked each screener's decisive fact at its source and **upheld all nine
-screeners. Eight are KILL. Metaculus is TEST_FIRST** — not killed: a ₪0 CI job reads the 2026 leaderboards
-(BOARD-2.md §1.9), and the line stays in the deferred class at ₪0 counted, gated as before on the owner's paperwork.
+screeners. Eight are KILL. Metaculus was TEST_FIRST** — a ₪0 CI job to read the 2026 leaderboards (BOARD-2.md
+§1.9) — **and its test killed it the same day (27.9):** Metaculus's API answers every unauthenticated caller with
+*"Permission Error: The API is only available to authenticated users. Please create an account and use your API token
+to access the API."* (`research/measurements/metaculus-template-2026.md`). Nine of nine are now KILL.
 **Nothing was admitted.** Each re-open condition below is abridged — all of its parts must hold.
 
 | Candidate | Killed on | Re-open only if |
@@ -1170,7 +1172,7 @@ screeners. Eight are KILL. Metaculus is TEST_FIRST** — not killed: a ₪0 CI j
 | huntr AI/ML bounties | Signed-in web form per report and per triage exchange; huntr.com is blocked here and its guidelines 404 from the runner. | A rendered huntr policy allowing a machine-operated researcher account, and Israel on its payout list. |
 | Paid Odoo module, Israeli VAT export | Measured demand: page 1 of the Localization category, paid modules median 1 lifetime purchase, best 12 (rendered 22.9). | A comparable statutory module sustaining ≥2 purchases a month over 12 months, plus agent-only support terms. |
 | PCN874 embed licence for ERP vendors | The named buyer is the ITA circular's own addressee and has shipped the file since 2010, with free regulator support; new entrants build it themselves (BillOS, npm, 8.9.2026). | A named vendor lacking the export, a paid artefact that is not already free, and delivery with no per-sale owner action. |
-| Metaculus bot tournaments — **TEST_FIRST, not killed (board 27.9)** | Every prize needs the owner's per-season paperwork: identity, nationality and residency checks, W-8BEN, a survey. | The board ordered the runner test (BOARD-2.md §1.9): best template bot > 0 and top-15 among prize-eligible entries in both Spring and Summer 2026. Even a pass needs the owner's yes to the paperwork (`BOARD.md` §8.1). |
+| Metaculus bot tournaments — **TEST_FIRST (board 27.9), then KILL by its own pre-registered line (27.9)** | Every prize needs the owner's per-season paperwork: identity, nationality and residency checks, W-8BEN, a survey. The board's zero-cost test could not run: both 2026 leaderboards returned 403 to an unauthenticated GitHub runner on two channels — render-watch's browser request (empty body) and the library's own `requests` stack (*"The API is only available to authenticated users"*, Cloudflare). The library itself cannot call without a token (`metaculus_client.py:596-600`), and a token needs an account: an owner step. Kill line 1 of BOARD-2 §1.9 fired as written; the rules line did not (bots still prize-eligible, `futureeval-participate-tab.tsx:84,204`). | The owner answers yes to the per-win paperwork (`BOARD.md` §8.1) on their own, without a number — then the first step a yes adds (a Metaculus account under the brand, its token) also makes this test runnable, and it is re-run with that token before anything else is built (`metaculus-template.yml` carries no secret today, on purpose). Or Metaculus reopens its API to anonymous reads (`metaculus-template.yml`, dispatched, shows a 200). |
 
 **What the board ruled about committed lines** (BOARD-2.md §2):
 - **`oss-bounties`, Algora's terms:** the clause (automated access to algora.io's web pages) **does not fire** against

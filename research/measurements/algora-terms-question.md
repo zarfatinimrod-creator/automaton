@@ -1,7 +1,15 @@
 # Do Algora's terms allow an automated contributor? — an open question on a committed line
 
-**Status: READ (RENDERED 26.9.2026 00:44 UTC), answered in part; the part that decides the line is a
-judgement queued for the Fable board.** Raised 26.9.2026 by the huntr screener of sweep 2
+**Status: RULED (27.9.2026, `research/colony-sweep/BOARD-2.md` §2.1).** The clause covers algora.io's own pages, and
+the line's code touches none of them: the claim is a comment on GitHub that Algora's bot reads. The line may continue
+**on the disclosure condition and four more**, all now in code: every PR discloses that the account is automated (`disclosure.ts`);
+`policy.ts` quotes the scope (lines 81-86) and the clause (258-260) instead of a summary; a test forbids any request to
+`algora.io` from `src/`, `scripts/`, `.github/` and `urls.txt` (`no-algora-requests.test.ts`); the machine account is a
+`User` whose login does not end in "bot" (`intake.ts` `brandAccountProblems`); and any action against the account on
+grounds of automation kills the line the same day (`portfolio.ts`). The build freeze below is lifted — but owner step 4
+stays held for another reason: the weekly claimable-supply count (BOARD-2 §2.2) is read first, at week 4.
+Previously: READ (RENDERED 26.9.2026 00:44 UTC), answered in part; the part that decides the line was a judgement
+queued for the Fable board. Raised 26.9.2026 by the huntr screener of sweep 2
 (`research/colony-sweep/screen-2/huntr.md`, §L2, "One note outside this candidate, for the board").
 
 ## Answer — what the terms actually say
