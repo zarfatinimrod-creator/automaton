@@ -2,7 +2,7 @@
   "url": "https://www.metaculus.com/api/leaderboards/project/32916/",
   "slug": "metaculus-lb-32916-client",
   "channel": "requests (forecasting-tools' HTTP stack), Accept-Language: en, no Authorization",
-  "fetchedAt": "2026-09-27T09:38:39.151009Z",
+  "fetchedAt": "2026-09-27T09:41:51.350273Z",
   "status": 403,
   "contentType": "text/plain;charset=UTF-8",
   "byteLength": 134,
