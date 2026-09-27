@@ -1,0 +1,17 @@
+{
+  "url": "https://www.kolzchut.org.il/he/%D7%93%D7%9E%D7%99_%D7%91%D7%99%D7%98%D7%95%D7%97_%D7%9C%D7%90%D7%95%D7%9E%D7%99_%D7%9C%D7%A9%D7%9B%D7%99%D7%A8_%D7%A2%D7%9D_%D7%9E%D7%A7%D7%95%D7%A8%D7%95%D7%AA_%D7%94%D7%9B%D7%A0%D7%A1%D7%94_%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D",
+  "slug": "kolzchut-employee-plus-self-employed",
+  "fetchedAt": "2026-09-27T22:46:10.647Z",
+  "status": 403,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 0,
+  "sha256": null,
+  "truncated": false,
+  "error": "HTTP 403 Forbidden",
+  "bodyPath": null,
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

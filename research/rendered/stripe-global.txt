@@ -1,0 +1,1174 @@
+Stripe global availability
+
+Products
+
+Solutions
+
+Developers
+
+Resources
+
+Pricing
+
+Guide me
+
+Contact sales
+
+Back
+
+Products
+
+Solutions
+
+Developers
+
+Resources
+
+Pricing
+
+Not sure where to start?
+
+Get recommendations
+
+Tell us about your business
+
+See all products
+
+Explore our full product catalog
+
+Payments
+
+Payments
+
+Online payments
+
+Managed Payments
+
+Merchant of record solution
+
+Payment links
+
+No-code payments
+
+Checkout
+
+Prebuilt payment UIs
+
+Elements
+
+Flexible UI components
+
+Payment methods
+
+Access to 125+
+
+Terminal
+
+In-person payments
+
+Authorization Boost
+
+Acceptance optimizations
+
+Link
+
+Accelerated checkout
+
+Financial Connections
+
+Linked financial account data
+
+Revenue
+
+Billing
+
+Recurring revenue
+
+Metronome
+
+Usage-based billing
+
+Subscriptions
+
+Subscription management
+
+Invoicing
+
+One-time or recurring
+
+Tax
+
+Sales tax & VAT automation
+
+Revenue Recognition
+
+Accounting automation
+
+Stripe Sigma
+
+Custom reports
+
+Data Pipeline
+
+Data sync
+
+Money management
+
+Treasury
+
+Business finances
+
+Global Payouts
+
+Payouts to third parties
+
+Capital
+
+Business financing
+
+Crypto
+
+Wallet, stablecoin issuing, and card infrastructure
+
+Crypto Onramp
+
+Embeddable crypto purchases
+
+Platforms and marketplaces
+
+Connect
+
+Payments for platforms
+
+Capital for platforms
+
+Customer financing
+
+Treasury for platforms
+
+Embedded financial services
+
+Issuing
+
+Physical and virtual cards
+
+More
+
+Product roadmap
+
+See what’s ahead
+
+Radar
+
+Fraud prevention
+
+Atlas
+
+Startup incorporation
+
+Climate
+
+Carbon removal
+
+Identity
+
+Online identity verification
+
+Stripe Sessions 2026
+
+See how Stripe is building the economic infrastructure for AI.
+
+Watch now
+
+By stage
+
+Enterprises
+
+Startups
+
+By use case
+
+Agentic commerce
+
+Crypto
+
+Ecommerce
+
+Embedded finance
+
+Finance automation
+
+Global businesses
+
+In-app payments
+
+Marketplaces
+
+Money management
+
+Platforms
+
+SaaS
+
+By industry
+
+AI companies
+
+Creator economy
+
+Fintech
+
+Gaming
+
+Hospitality, travel, and leisure
+
+Insurance
+
+Media and entertainment
+
+Nonprofits
+
+Professional services
+
+Retail
+
+Ecosystem
+
+Partners
+
+Stripe App Marketplace
+
+Documentation
+
+Stripe docs
+
+API reference
+
+Libraries and SDKs
+
+Stripe Apps
+
+Guides
+
+Accept online payments
+
+Implement a prebuilt checkout
+
+Build a platform or marketplace
+
+Manage subscriptions
+
+Offer usage-based billing
+
+Issue stablecoin-backed cards
+
+Provision and manage services with agents
+
+Resources
+
+App integrations
+
+Code samples
+
+Developers blog
+
+API status
+
+Learn
+
+Blog
+
+Customer stories
+
+Guides
+
+Support
+
+Get support
+
+Managed support plans
+
+Professional services
+
+Company
+
+Product roadmap
+
+Sessions annual conference
+
+Careers
+
+Newsroom
+
+Stripe Press
+
+About
+
+Contact
+
+Contact sales
+
+Become a partner
+
+Start now
+
+Contact sales
+
+Payments
+
+Payments
+
+Online payments
+
+Managed Payments
+
+Merchant of record solution
+
+Payment links
+
+No-code payments
+
+Checkout
+
+Prebuilt payment UIs
+
+Elements
+
+Flexible UI components
+
+Payment methods
+
+Access to 125+
+
+Terminal
+
+In-person payments
+
+Authorization Boost
+
+Acceptance optimizations
+
+Link
+
+Accelerated checkout
+
+Financial Connections
+
+Linked financial account data
+
+Revenue
+
+Billing
+
+Recurring revenue
+
+Metronome
+
+Usage-based billing
+
+Subscriptions
+
+Subscription management
+
+Invoicing
+
+One-time or recurring
+
+Tax
+
+Sales tax & VAT automation
+
+Revenue Recognition
+
+Accounting automation
+
+Stripe Sigma
+
+Custom reports
+
+Data Pipeline
+
+Data sync
+
+Money management
+
+Treasury
+
+Business finances
+
+Global Payouts
+
+Payouts to third parties
+
+Capital
+
+Business financing
+
+Crypto
+
+Wallet, stablecoin issuing, and card infrastructure
+
+Crypto Onramp
+
+Embeddable crypto purchases
+
+Platforms and marketplaces
+
+Connect
+
+Payments for platforms
+
+Capital for platforms
+
+Customer financing
+
+Treasury for platforms
+
+Embedded financial services
+
+Issuing
+
+Physical and virtual cards
+
+Not sure where to start?
+
+Get recommendations
+
+Tell us about your business
+
+See all products
+
+Explore our full product catalog
+
+More
+
+Product roadmap
+
+See what’s ahead
+
+Radar
+
+Fraud prevention
+
+Atlas
+
+Startup incorporation
+
+Climate
+
+Carbon removal
+
+Identity
+
+Online identity verification
+
+Stripe Sessions 2026
+
+See how Stripe is building the economic infrastructure for AI.
+
+Watch now
+
+By stage
+
+Enterprises
+
+Startups
+
+By use case
+
+Agentic commerce
+
+Crypto
+
+Ecommerce
+
+Embedded finance
+
+Finance automation
+
+Global businesses
+
+In-app payments
+
+Marketplaces
+
+Money management
+
+Platforms
+
+SaaS
+
+By industry
+
+AI companies
+
+Creator economy
+
+Fintech
+
+Gaming
+
+Hospitality, travel, and leisure
+
+Insurance
+
+Media and entertainment
+
+Nonprofits
+
+Professional services
+
+Public sector
+
+Retail
+
+Ecosystem
+
+Partners
+
+Stripe App Marketplace
+
+Documentation
+
+Stripe docs
+
+API reference
+
+Libraries and SDKs
+
+Stripe Apps
+
+Guides
+
+Accept online payments
+
+Implement a prebuilt checkout
+
+Build a platform or marketplace
+
+Manage subscriptions
+
+Offer usage-based billing
+
+Issue stablecoin-backed cards
+
+Provision and manage services with agents
+
+Resources
+
+App integrations
+
+Code samples
+
+Developers blog
+
+API status
+
+Learn
+
+Blog
+
+Customer stories
+
+Guides
+
+Support
+
+Get support
+
+Managed support plans
+
+Professional services
+
+Company
+
+Product roadmap
+
+Sessions annual conference
+
+Careers
+
+Newsroom
+
+Stripe Press
+
+About
+
+Contact
+
+Contact sales
+
+Become a partner
+
+Accept payments from anywhere in the world
+
+Accept global payments, send payouts, and manage your business online.
+
+Global availability
+
+Stripe is currently supported in the following countries/regions, with more to come. Once Stripe is supported in your country/region, you’ll be able to sell to customers anywhere in the world.
+
+Australia
+
+Austria
+
+Belgium
+
+Brazil
+
+Bulgaria
+
+Canada
+
+Côte d'Ivoire
+
+Extended network
+
+Croatia
+
+Cyprus
+
+Czech Republic
+
+Denmark
+
+Estonia
+
+Finland
+
+France
+
+Germany
+
+Ghana
+
+Extended network
+
+Gibraltar
+
+Greece
+
+Hong Kong
+
+Hungary
+
+India
+
+Preview
+
+Indonesia
+
+Preview
+
+Ireland
+
+Italy
+
+Japan
+
+Kenya
+
+Extended network
+
+Latvia
+
+Liechtenstein
+
+Lithuania
+
+Luxembourg
+
+Malaysia
+
+Malta
+
+Mexico
+
+Netherlands
+
+New Zealand
+
+Nigeria
+
+Extended network
+
+Norway
+
+Poland
+
+Portugal
+
+Romania
+
+Singapore
+
+Slovakia
+
+Slovenia
+
+South Africa
+
+Extended network
+
+Spain
+
+Sweden
+
+Switzerland
+
+Thailand
+
+United Arab Emirates
+
+United Kingdom
+
+United States
+
+Is your business outside of a supported country/region?
+
+Use Stripe Treasury with stablecoins to manage your money globally— accessible from the USA and 100+ additional countries/regions . Payments not supported yet.
+
+Register interest
+
+Ready to get moving?
+
+Create an account and start accepting payments—no contracts or banking details required. Or, contact us to design a custom package for your business.
+
+Get started
+
+Contact sales
+
+Stripe Atlas
+
+Incorporate a US company from anywhere in the world with just a few clicks. You'll be able to open a US bank account, accept payments, and fundraise in two business days.
+
+Learn more about Atlas
+
+United States (English)
+
+Australia
+
+English
+
+Austria
+
+Deutsch
+
+English
+
+Belgium
+
+Nederlands
+
+Français
+
+Deutsch
+
+English
+
+Brazil
+
+Português
+
+English
+
+Bulgaria
+
+English
+
+Canada
+
+English
+
+Français
+
+Croatia
+
+English
+
+Italiano
+
+Cyprus
+
+English
+
+Czech Republic
+
+English
+
+Denmark
+
+English
+
+Estonia
+
+English
+
+Finland
+
+English
+
+Svenska
+
+France
+
+Français
+
+English
+
+Germany
+
+Deutsch
+
+English
+
+Gibraltar
+
+English
+
+Greece
+
+English
+
+Hong Kong SAR, China
+
+English
+
+简体中文
+
+Hungary
+
+English
+
+India
+
+English
+
+Ireland
+
+English
+
+Italy
+
+Italiano
+
+English
+
+Japan
+
+日本語
+
+English
+
+Latvia
+
+English
+
+Liechtenstein
+
+Deutsch
+
+English
+
+Lithuania
+
+English
+
+Luxembourg
+
+Français
+
+Deutsch
+
+English
+
+Mainland China
+
+简体中文
+
+English
+
+Malaysia
+
+English
+
+简体中文
+
+Malta
+
+English
+
+Mexico
+
+Español
+
+English
+
+Netherlands
+
+Nederlands
+
+English
+
+New Zealand
+
+English
+
+Norway
+
+English
+
+Poland
+
+English
+
+Portugal
+
+Português
+
+English
+
+Romania
+
+English
+
+Singapore
+
+English
+
+简体中文
+
+Slovakia
+
+English
+
+Slovenia
+
+English
+
+Italiano
+
+Spain
+
+Español
+
+English
+
+Sweden
+
+Svenska
+
+English
+
+Switzerland
+
+Deutsch
+
+Français
+
+Italiano
+
+English
+
+Thailand
+
+ไทย
+
+English
+
+United Arab Emirates
+
+English
+
+United Kingdom
+
+English
+
+United States
+
+English
+
+Español
+
+简体中文
+
+Products & pricing
+
+Pricing
+
+Atlas
+
+Authorization Boost
+
+Billing
+
+Capital
+
+Checkout
+
+Climate
+
+Connect
+
+Crypto
+
+Data Pipeline
+
+Elements
+
+Financial Connections
+
+Identity
+
+Invoicing
+
+Issuing
+
+Link
+
+Managed Payments
+
+Payment links
+
+Payments
+
+Payouts
+
+Radar
+
+Revenue Recognition
+
+Stripe Sigma
+
+Tax
+
+Terminal
+
+Treasury
+
+Solutions
+
+Enterprises
+
+Startups
+
+Agentic commerce
+
+Crypto
+
+Ecommerce
+
+Embedded finance
+
+Finance automation
+
+Global businesses
+
+In-app payments
+
+Marketplaces
+
+Money management
+
+Platforms
+
+SaaS
+
+AI companies
+
+Creator economy
+
+Fintech
+
+Gaming
+
+Hospitality, travel, and leisure
+
+Insurance
+
+Media and entertainment
+
+Nonprofits
+
+Professional services
+
+Public sector
+
+Retail
+
+Integrations & custom solutions
+
+Stripe App Marketplace
+
+Stripe Partner ecosystem
+
+Professional services
+
+Developers
+
+Documentation
+
+API reference
+
+API status
+
+API changelog
+
+Libraries and SDKs
+
+Stripe Projects
+
+Developer blog
+
+Resources
+
+Guides
+
+Customer stories
+
+Blog
+
+Community
+
+Sessions annual conference
+
+Privacy & terms
+
+Prohibited & restricted businesses
+
+Licenses
+
+Sitemap
+
+Cookie settings
+
+Your privacy choices
+
+More resources
+
+Company
+
+About
+
+Product roadmap
+
+Careers
+
+Newsroom
+
+Stripe Press
+
+Contact sales
+
+Support
+
+Get support
+
+Managed support plans
+
+CA residents:
++1 888 926 2289
+
+Sign in
+
+© 2026 Stripe, LLC

@@ -1,0 +1,159 @@
+Cross-border payouts | Stripe Documentation
+
+Skip to content
+
+Cross-border payouts
+
+Create account or Sign in
+
+Search
+
+/ Ask AI
+Create account Sign in
+
+Get started
+
+Payments
+
+Revenue
+
+Data
+
+Platforms and marketplaces
+
+Money management
+
+Developer resources
+
+APIs & SDKs Help
+
+Overview Get started with Connect
+
+Design your integration
+
+Integration fundamentals
+
+Example integrations
+
+Account management
+Onboard connected accounts
+
+Configure account Dashboards
+
+Capabilities and information requirements
+
+Work with connected account types
+
+Payment processing
+Accept payments
+
+Pay out to accounts Payouts to connected accounts
+Manage payout accounts for connected accounts
+Manage payout schedule
+Manual payouts
+Payout reversals
+Payout statement descriptors
+Instant Payouts
+Multiprocessor payouts for marketplaces
+Cross-border payouts
+Stablecoin payouts
+Customized start of day
+
+Platform administration
+Manage your Connect platform
+
+Tax forms for your Connect platform
+
+Embedded finance
+Treasury for platforms
+
+Issuing
+
+Capital for platforms
+
+Managed support
+
+United States
+English (United States)
+
+Home /
+Platforms and marketplaces /
+Pay out to accounts
+
+Cross-border payouts
+Transfer and pay out funds to connected accounts in other countries.
+
+Ask about this page
+Copy for LLM
+View as Markdown Install tools
+
+Use cross-border payouts to transfer funds to connected accounts in their local currencies when your platform and connected accounts are in different supported regions.
+Availability
+Platforms based in the US, UK, EEA, Canada, or Switzerland can transfer funds to connected accounts in any of those regions, regardless of the payment settlement currency. For example:
+A platform in the UK can pay out to a seller in the US.
+A platform in Germany can pay out to a seller in Canada.
+
+Stripe doesn’t support self-serve cross-border payouts to countries outside the listed regions. Contact sales to discuss alternatives, or use Global Payouts.
+Compare integrations
+Global Payouts allows platforms in certain countries to transfer funds to recipients in any supported country . Use the following table to choose between cross-border payouts and Global Payouts.
+Factor
+Connect cross-border payouts
+Global Payouts
+
+Behavior
+Onboard users to your platform and split payments or pay out balances to them.
+Send money directly to the bank account of a third party.
+
+Platform location
+US, UK, EEA, CA, and CH
+US, UK
+
+Best for
+Businesses that: Prefer a bundled solution for payments and payouts.
+Want to provide payee tools to track and manage earnings.
+
+Businesses that: Want to decouple payouts from payments.
+Want to pay out using only the recipient email address.
+
+Compliance
+Shift legal and compliance requirements to Stripe using the Stripe Money Transmitter license.
+Manage your own legal and compliance requirements. This might require a Money Transmitter license if you manage your customers’ funds.
+
+Use cases
+Marketplaces that exclusively use Stripe as their payments processor
+Global financial services and insurance platforms
+Franchises
+
+Insurance claims payouts
+Fintech salary advances and disbursements
+Rebate, warranty, and rewards payouts
+Affiliate payouts
+Marketplaces that use multiple payment processors, decouple payments from payouts, or require funds segregation
+
+Guidance
+This guide
+Global payouts
+
+Pricing
+Cross-border payout fees depend on the location of the recipient. See Connect payout pricing .
+Limitations
+Service agreement : You can’t make cross-border payouts to connected accounts under a recipient service agreement . For those accounts, use Global payouts .
+Supported funds flows : Cross border payments supports the following funds flows Separate charges and transfers without on _ behalf _ of
+Top-ups and transfers
+Destination charges without on _ behalf _ of
+
+See also
+Required verification information
+Supported settlement currencies
+Bank account formats
+
+Was this page helpful? Yes No
+
+Need help? Contact Support .
+Chat with Stripe developers on Discord .
+Check out our changelog .
+Questions? Contact Sales .
+LLM? Read llms.txt .
+Powered by Markdoc
+
+On this page
