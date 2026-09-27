@@ -60,6 +60,13 @@ def description(spec: dict[str, Any]) -> str:
             f"README and datasheet. GitHub did not produce, endorse or approve this video.",
             f"Method: every number is computed from that file; the {excluded} aggregate is excluded; the comparison "
             f"follows the economies reported for both languages in every quarter. Public activity only. Not advice.",
+            "Counting: GitHub counts the developers in each economy who push to repositories containing each "
+            "language, so a repository that holds both languages counts for both (GitHub Docs, "
+            "\"About repository languages\"; the dataset's datasheet).",
+            *(
+                f"Context: {src['sentence']} That is a different count from the quarterly pushers in this video. ({src['url']})"
+                for src in spec.get("externalSources", {}).values()
+            ),
         ]
     )
 

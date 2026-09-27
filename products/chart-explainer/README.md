@@ -29,16 +29,27 @@ unit in code. Word claims ("the gap widened", "fastest in the last year") are pr
 stops if one is false. `figures.json` lists each figure's name, value, spoken text and the source of the function that
 computes it, for the G4 auditor.
 
+**Charts obey the same rule.** Every number drawn on a chart is a `chartFigures` entry in `figures.json` (value, half-up
+rounding, code); `charts.py` draws from the file the render just wrote, and `charts.untraced_chart_numbers()` refuses a
+frame that shows any other number. Axis scale ticks and the footer (spec metadata only) are the two exemptions.
+
+**One narrow exception: an attributed source's year.** A sentence reporting what another publication said (e.g. GitHub's
+Octoverse 2025) enters through `{src:<id>}` from the spec's `externalSources`, with URL, rendered snapshot, line and
+quote. `sources.py` checks the quote is on that line, every `mustMatchQuote` phrase is in both quote and sentence, and
+the sentence carries no number but the source's own year. Spec `citations` (e.g. the counting rule, datasheet l.37)
+are checked against their rendered lines the same way. G5's timing promise (`promise`) is checked on the timeline.
+
 ## Files
 
 | File | Does |
 |---|---|
 | `fetch.py` | pinned GitHub URLs only; sha256 must match or the file is discarded; cache in `.cache/` (gitignored) |
-| `figures.py` | loads the CSV, computes every figure and claim, fills the templates |
-| `charts.py` | one 1920x1080 PNG per scene, DejaVu Sans, source and licence footer |
+| `figures.py` | loads the CSV, computes every figure, chart figure and claim, fills the templates |
+| `sources.py` | verifies attributed statements and citations against `research/rendered/`; the year-only exception |
+| `charts.py` | one 1920x1080 PNG per scene, DejaVu Sans, source and licence footer; numbers only from `figures.json` |
 | `tts.py` | Kokoro narration per scene, sentence by sentence, with the fork's pinned model URLs and verified hashes |
 | `assemble.py` | frame-exact scenes (image length = narration length), one H.264/AAC encode, SRT sidecar, probe |
-| `page.py` | the web comparison arm: one self-contained HTML page, `{{BRAND}}` placeholder, no scripts |
+| `page.py` | the web comparison arm: one self-contained HTML page with the brand from the spec (`page.brand`), no scripts; the video carries no brand |
 | `manifest.py` | `manifest.json` in the exact `VideoManifest` shape; auditor fields left null for the auditors |
 | `render.py` | runs all of it and writes `render-report.json` (timings, probe, runner minutes) |
 

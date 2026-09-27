@@ -1,42 +1,13 @@
 """Every narration number comes from a named, computed figure; rounding and units are explicit."""
 
-import json
 from decimal import Decimal
-from pathlib import Path
 
 import pytest
 
 import figures
 from figures import Analysis, FigureError, compute_figures, fill, format_figure, hand_typed_numbers, round_half_up
 
-PRODUCT = Path(__file__).resolve().parent.parent
-SPEC = json.loads((PRODUCT / "analyses" / "t1.json").read_text())
-PARAMS = {"languageA": "TypeScript", "languageB": "JavaScript", "topN": 2, "thresholdPct": 50,
-          "excludeEconomies": ["EU"]}
-
-
-def write_csv(path: Path, rows: list[tuple[int, str, str, int, int]]) -> Path:
-    lines = ["num_pushers,language,language_type,iso2_code,year,quarter"]
-    lines += [f"{n},{lang},programming,{econ},{y},{q}" for n, lang, econ, y, q in rows]
-    path.write_text("\n".join(lines) + "\n")
-    return path
-
-
-NINE_QUARTERS = [(2020 + i // 4, i % 4 + 1) for i in range(9)]  # two whole year steps
-
-
-def small_dataset(tmp_path: Path) -> Path:
-    """Two panel economies (AA, BB) over nine quarters, one economy (CC) missing a quarter, and an EU aggregate."""
-    quarters = NINE_QUARTERS
-    rows = []
-    for i, (y, q) in enumerate(quarters):
-        rows += [(100 + 10 * i, "TypeScript", "AA", y, q), (400, "JavaScript", "AA", y, q)]
-        rows += [(200 + 50 * i, "TypeScript", "BB", y, q), (400 + 20 * i, "JavaScript", "BB", y, q)]
-        rows += [(9999, "TypeScript", "EU", y, q), (9999, "JavaScript", "EU", y, q)]
-        rows += [(150, "Python", "AA", y, q), (150, "Python", "BB", y, q)]
-        if i != 2:
-            rows += [(500, "TypeScript", "CC", y, q), (500, "JavaScript", "CC", y, q)]
-    return write_csv(tmp_path / "languages.csv", rows)
+from helpers import NINE_QUARTERS, PARAMS, SPEC, small_dataset, write_csv
 
 
 # --- the rule: no hand-typed numbers ----------------------------------------------------------------------------
@@ -171,3 +142,52 @@ def test_a_changed_csv_schema_is_refused(tmp_path):
     p.write_text("pushers,language,iso2_code,year,quarter\n1,Go,AA,2020,1\n")
     with pytest.raises(FigureError, match="columns changed"):
         figures.load_languages(p)
+
+
+# --- attributed sources: the one narrow exception -----------------------------------------------------------------
+
+
+def test_a_source_placeholder_is_filled_from_the_spec_and_needs_it():
+    filled = fill("Before. {src:octoverse_2025} After.", {}, SPEC)
+    assert SPEC["externalSources"]["octoverse_2025"]["sentence"] in filled
+    with pytest.raises(FigureError, match="needs the spec"):
+        fill("Before. {src:octoverse_2025} After.", {})
+    with pytest.raises(FigureError, match="unknown source"):
+        fill("{src:no_such_source}", {}, SPEC)
+
+
+def test_the_filled_t1_script_holds_no_number_outside_figures_except_the_source_year(tmp_path):
+    an = Analysis(figures.load_languages(small_dataset(tmp_path), ["EU"]), PARAMS)
+    figs = compute_figures(an)
+    script = figures.fill_spec(SPEC, figs).script
+    assert "2025" in script
+    assert figures.untraced_numbers(script, figs, {"2025"}) == []
+    assert figures.untraced_numbers(script, figs) == ["2025", "2025"]  # without the exception, the year is caught
+
+
+# --- chart figures: every number drawn is a figure, rounded half-up -----------------------------------------------
+
+
+def test_chart_labels_round_half_up_where_format_would_round_half_even():
+    assert f"{2.25:.1f}" == "2.2" and f"{0.125:.2f}" == "0.12"  # what charts.py used to draw
+    assert format_figure("signed", 2.25, 1)[0] == "+2.3"
+    assert format_figure("times_sign", 0.25, 1)[0] == "0.3×"
+    assert format_figure("millions", 125_000, 2)[0] == "0.13 million"
+    assert format_figure("signed", -1.25, 1)[0] == "−1.3"
+
+
+def test_chart_figures_on_a_known_dataset(tmp_path):
+    an = Analysis(figures.load_languages(small_dataset(tmp_path), ["EU"]), PARAMS)
+    cf = figures.compute_chart_figures(an)
+    assert cf["pushers_lines.a_last_millions"].value == 780 and cf["pushers_lines.a_last_millions"].text == "0.00 million"
+    assert cf["growth_bars.growth.typescript"].text == "2.6×"
+    assert cf["growth_bars.economies.typescript"].value == 2
+    assert [k for k in cf if k.startswith("yearly_gain_bars.label.")] == [
+        "yearly_gain_bars.label.2020_2021", "yearly_gain_bars.label.2021_2022"]
+    assert cf["yearly_gain_bars.label.2020_2021"].text == "2020–21"
+    first = sum(f.value for k, f in cf.items() if k.startswith("ratio_histogram.first."))
+    assert first == len(an.panel)  # every panel economy lands in exactly one bin
+    assert cf["coverage_lines.b_reported_last"].value == 3  # AA, BB, CC
+    assert all(f.chart for f in cf.values()) and all("def _chart_" in f.code for f in cf.values())
+    fj = figures.figures_json(compute_figures(an), [], SPEC, an, cf)
+    assert sum(fj["chartFigureCounts"].values()) == len(fj["chartFigures"]) == len(cf)

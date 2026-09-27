@@ -65,27 +65,88 @@
     "minSeconds": 60,
     "maxSeconds": 120
   },
+  "promise": {
+    "answerSentence": "As a share of JavaScript, yes, and quickly; in raw numbers, no: JavaScript's lead grew.",
+    "endsBeforeSeconds": 30,
+    "why": "G5 RC1/RC5 (audits/t1-promise.json): both halves of the answer inside the first 30 seconds."
+  },
+  "externalSources": {
+    "octoverse_2025": {
+      "publisher": "GitHub",
+      "title": "Octoverse: A new developer joins GitHub every second as AI leads TypeScript to #1",
+      "url": "https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/",
+      "rendered": "research/rendered/github-octoverse-2025.txt",
+      "line": 672,
+      "quote": "By GitHub contributor counts, August 2025 marks the first time TypeScript emerged as the most used language on GitHub",
+      "year": 2025,
+      "sentence": "GitHub's Octoverse 2025 report named TypeScript the most used language on GitHub in August 2025, by contributor counts.",
+      "mustMatchQuote": [
+        "TypeScript",
+        "most used language on GitHub",
+        "August 2025",
+        "contributor counts"
+      ],
+      "supporting": [
+        {
+          "rendered": "research/rendered/github-octoverse-2025.txt",
+          "line": 976,
+          "quote": "languages are ranked by the number of distinct monthly contributors who committed code in that language",
+          "supports": "How Octoverse counts: monthly contributors who committed code in a language. With datasheet l.37 (quarterly developers who pushed to a repository containing the language) it backs 'That is a different count from the quarterly pushers in this video.'"
+        }
+      ],
+      "note": "Attributed statement, not a figure: nothing in it is computed from the dataset. Its one number, the year, is the only exception to the no-hand-typed-numbers rule (sources.py). Octoverse also gives JavaScript 2.15M contributors (l.682); the narration does not use it."
+    }
+  },
+  "citations": [
+    {
+      "id": "counting-rule-repository-languages",
+      "rendered": "research/rendered/github-about-repository-languages.txt",
+      "line": 257,
+      "url": "https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-repository-languages",
+      "quote": "The files and directories within a repository determine the languages that make up the repository.",
+      "supports": "RC3: 'a repository that holds both languages counts for both'"
+    },
+    {
+      "id": "counting-rule-datasheet",
+      "rendered": "research/rendered/github-innovationgraph-datasheet.txt",
+      "line": 37,
+      "quote": "who made at least one git push to a repository with a given programming language during each quarter",
+      "supports": "RC3 and the s1 counting sentence: the count is developers pushing to a repository with (containing) the language"
+    },
+    {
+      "id": "octoverse-count-definition",
+      "rendered": "research/rendered/github-octoverse-2025.txt",
+      "line": 976,
+      "quote": "languages are ranked by the number of distinct monthly contributors who committed code in that language",
+      "supports": "'That is a different count from the quarterly pushers in this video.'"
+    }
+  ],
+  "page": {
+    "brand": "Mehudak",
+    "brandSource": "research/measurements/brand-name-decision.md",
+    "note": "The web page carries the brand. The video carries no brand name (render.py refuses one in the title, description or script)."
+  },
   "scenes": [
     {
       "id": "s1-question",
       "chart": "pushers_lines",
-      "chartTitle": "Developers who pushed to TypeScript and JavaScript repositories",
-      "alt": "Line chart of developers pushing to TypeScript and to JavaScript repositories each quarter, summed over the {fig:panel_economies} economies reported for both languages in every quarter from {fig:first_quarter} to {fig:last_quarter}.",
-      "narration": "Is TypeScript catching up with JavaScript on GitHub? Every quarter, GitHub counts the developers in each economy who push code to repositories in each language. We followed the {fig:panel_economies} economies reported for both languages in every quarter, from {fig:first_quarter} to {fig:last_quarter}."
+      "chartTitle": "Developers who pushed to repositories containing TypeScript or JavaScript",
+      "alt": "Line chart of developers pushing to repositories containing TypeScript and to repositories containing JavaScript each quarter, summed over the {fig:panel_economies} economies reported for both languages in every quarter from {fig:first_quarter} to {fig:last_quarter}.",
+      "narration": "Is TypeScript catching up with JavaScript on GitHub? As a share of JavaScript, yes, and quickly; in raw numbers, no: JavaScript's lead grew. Every quarter, GitHub counts the developers in each economy who push to repositories containing each language; a repository that holds both languages counts for both. We follow the {fig:panel_economies} economies reported for both in every quarter."
     },
     {
       "id": "s2-answer",
       "chart": "ratio_line",
       "chartTitle": "TypeScript pushers as a share of JavaScript pushers",
       "alt": "Line chart of TypeScript pushers as a percentage of JavaScript pushers, rising from {fig:ratio_first_pct} in {fig:first_quarter} to {fig:ratio_last_pct} in {fig:last_quarter}.",
-      "narration": "Relative to JavaScript, yes, and quickly. In {fig:first_quarter}, TypeScript had {fig:ratio_first_pct} as many pushers as JavaScript. By {fig:last_quarter}, it had {fig:ratio_last_pct}. In raw numbers, though, JavaScript's lead grew, from {fig:gap_first_millions} to {fig:gap_last_millions} pushers, because both languages grew."
+      "narration": "In {fig:first_quarter}, TypeScript had {fig:ratio_first_pct} as many pushers as JavaScript. By {fig:last_quarter}, it had {fig:ratio_last_pct}. In raw numbers, though, JavaScript's lead grew, from {fig:gap_first_millions} to {fig:gap_last_millions} pushers, because both languages grew. {src:octoverse_2025} That is a different count from the quarterly pushers in this video."
     },
     {
       "id": "s3-growth",
       "chart": "growth_bars",
       "chartTitle": "How many times over each language's pushers grew",
       "alt": "Bar chart of the growth multiple of pushers for the {fig:top_n} languages with the most pushers in {fig:last_quarter}; {fig:fastest_top_language} grew fastest, {fig:a_growth_x} over.",
-      "narration": "Over those {fig:span_years} years, TypeScript pushers grew {fig:a_growth_x} over, and JavaScript pushers {fig:b_growth_x}. Among the {fig:top_n} languages with the most pushers, the fastest growing was {fig:fastest_top_language}."
+      "narration": "Over the {fig:span_years} years, TypeScript pushers grew {fig:a_growth_x} over, and JavaScript pushers {fig:b_growth_x}. Among the {fig:top_n} languages with the most pushers, the fastest growing was {fig:fastest_top_language}."
     },
     {
       "id": "s4-last-year",
@@ -106,7 +167,7 @@
       "chart": "coverage_lines",
       "chartTitle": "Economies GitHub reports, by language",
       "alt": "Line chart of how many economies GitHub reports each quarter for TypeScript and for JavaScript; for TypeScript it rose from {fig:econ_reported_a_first} to {fig:econ_reported_a_last}.",
-      "narration": "Some limits. GitHub leaves out economies with too few active developers; for TypeScript, the number reported rose from {fig:econ_reported_a_first} to {fig:econ_reported_a_last}, which is why we followed a fixed set. Only public repositories count, a developer who pushes in both languages counts under each, and location comes from IP addresses. The data shows how many developers pushed, not why. The data is GitHub's Innovation Graph, dedicated to the public domain."
+      "narration": "Limits: GitHub omits economies with too few active developers; those reported for TypeScript rose from {fig:econ_reported_a_first} to {fig:econ_reported_a_last}, hence the fixed set. Only public repositories count, developers can count under both, and location comes from IP addresses. The data shows how many pushed, not why. Source: GitHub's Innovation Graph, public domain."
     }
   ]
 }

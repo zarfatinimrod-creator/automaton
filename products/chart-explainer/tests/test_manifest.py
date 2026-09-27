@@ -96,3 +96,18 @@ def test_the_committed_fixture_is_a_real_t1_manifest():
     assert FIXTURE["author"] == "opus-builder"
     assert (REPO_ROOT / FIXTURE["datasets"][0]["licenceSnapshot"]).exists()
     assert figures.hand_typed_numbers(FIXTURE["script"]) != [], "the fixture holds the filled script"
+
+
+def test_the_video_carries_no_brand_and_the_description_carries_the_context():
+    m = manifest.build_manifest(SPEC, _filled(), runner_minutes=1, token_cost_ils=0, scheduled_at="x")
+    brand = SPEC["page"]["brand"].lower()
+    for key in ("title", "description", "script"):
+        assert brand not in m[key].lower(), key
+    assert brand not in json.dumps(FIXTURE).lower()
+    assert "a repository that holds both languages counts for both" in m["description"]
+    assert SPEC["externalSources"]["octoverse_2025"]["sentence"] in m["description"]
+
+
+def test_the_fixture_is_the_revised_script():
+    assert "As a share of JavaScript, yes, and quickly; in raw numbers, no: JavaScript's lead grew." in FIXTURE["script"]
+    assert "Relative to JavaScript, yes, and quickly." not in FIXTURE["script"]

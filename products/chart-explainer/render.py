@@ -30,6 +30,7 @@ import fetch  # noqa: E402
 import figures  # noqa: E402
 import manifest  # noqa: E402
 import page  # noqa: E402
+import sources  # noqa: E402
 import tts  # noqa: E402
 
 
@@ -62,16 +63,21 @@ def render(spec_path: Path, out: Path, clock_start: float | None, repo_root: Pat
     an = figures.Analysis(data, spec["params"])
     figs = figures.compute_figures(an)
     claims = figures.check_claims(an, figs)
+    sources_checked = sources.check_sources(spec, repo_root)
     filled = figures.fill_spec(spec, figs)
-    untraced = figures.untraced_numbers(filled.script, figs)
+    untraced = figures.untraced_numbers(filled.script, figs, sources.source_years(spec))
     if untraced:
         raise RenderError(f"numbers in the narration no figure accounts for: {untraced}")
-    _write_json(out / "figures.json", figures.figures_json(figs, claims, spec, an))
+    chart_figs = figures.compute_chart_figures(an, [s["chart"] for s in spec["scenes"]])
+    _write_json(out / "figures.json", figures.figures_json(figs, claims, spec, an, chart_figs))
+    # Charts draw from the file just written, so what is drawn is what an auditor recomputes.
+    fj = json.loads((out / "figures.json").read_text(encoding="utf-8"))
+    labels = figures.labels_from_json(fj)
     t = lap("figures", t)
 
     images = []
     for s in filled.scenes:
-        images.append(charts.render_scene_chart(s, an, figs, spec, out / "charts" / f"{s['id']}.png"))
+        images.append(charts.render_scene_chart(s, an, labels, spec, out / "charts" / f"{s['id']}.png"))
     t = lap("charts", t)
 
     model, voices = tts.ensure_models()
@@ -83,6 +89,7 @@ def render(spec_path: Path, out: Path, clock_start: float | None, repo_root: Pat
     tl = assemble.build_timeline([s["id"] for s in filled.scenes], images, audios)
     if not video["minSeconds"] <= tl.duration <= video["maxSeconds"]:
         raise RenderError(f"video is {tl.duration:.2f}s; the spec allows {video['minSeconds']}-{video['maxSeconds']}s")
+    promise = check_promise(spec, tl)
     mp4 = assemble.assemble(tl, audios, out / f"{spec['id']}.mp4", int(video["width"]), int(video["height"]),
                             out / "work")
     (out / f"{spec['id']}.srt").write_text(assemble.srt_text(tl.cues), encoding="utf-8")
@@ -91,7 +98,7 @@ def render(spec_path: Path, out: Path, clock_start: float | None, repo_root: Pat
     probe = assemble.probe(mp4)
     (out / "page").mkdir(exist_ok=True)
     (out / "page" / "index.html").write_text(
-        page.build_page(spec, filled, figs, {s["id"]: p for s, p in zip(filled.scenes, images)}), encoding="utf-8")
+        page.build_page(spec, filled, fj, {s["id"]: p for s, p in zip(filled.scenes, images)}), encoding="utf-8")
     t = lap("probeAndPage", t)
 
     finished = time.time()
@@ -99,6 +106,9 @@ def render(spec_path: Path, out: Path, clock_start: float | None, repo_root: Pat
     scheduled_at = datetime.fromtimestamp(finished, timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
     m = manifest.build_manifest(spec, filled, runner_minutes=runner_minutes, token_cost_ils=token_cost_ils,
                                 scheduled_at=scheduled_at)
+    brand = spec.get("page", {}).get("brand", "")
+    if brand and any(brand.lower() in m[k].lower() for k in ("title", "description", "script")):
+        raise RenderError(f"the brand {brand!r} is in the video's title, description or script; the video carries none")
     report = {
         "analysis": spec["id"],
         "renderedAt": scheduled_at,
@@ -116,6 +126,10 @@ def render(spec_path: Path, out: Path, clock_start: float | None, repo_root: Pat
             for p, a in zip(tl.scenes, audios)
         ],
         "words": len(filled.script.split()),
+        "scriptSha256": hashlib.sha256(m["script"].encode("utf-8")).hexdigest(),
+        "promiseCheck": promise,
+        "sourcesChecked": sources_checked,
+        "chartFigureCounts": fj["chartFigureCounts"],
         "mp4": {"path": mp4.name, "bytes": mp4.stat().st_size,
                 "sha256": hashlib.sha256(mp4.read_bytes()).hexdigest()},
         "probe": probe,
@@ -130,6 +144,21 @@ def render(spec_path: Path, out: Path, clock_start: float | None, repo_root: Pat
     return report
 
 
+def check_promise(spec: dict, tl: assemble.Timeline) -> dict:
+    """G5 RC5: the sentence giving both halves of the answer must finish inside the promised window."""
+    p = spec.get("promise")
+    if not p:
+        return {}
+    cues = [c for c in tl.cues if c.text == p["answerSentence"]]
+    if len(cues) != 1:
+        raise RenderError(f"the answer sentence is spoken {len(cues)} times, not once: {p['answerSentence']!r}")
+    c = cues[0]
+    if c.end >= p["endsBeforeSeconds"]:
+        raise RenderError(f"the answer sentence ends at {c.end:.2f}s, not before {p['endsBeforeSeconds']}s")
+    return {"sentence": c.text, "startSeconds": round(c.start, 3), "endSeconds": round(c.end, 3),
+            "endsBeforeSeconds": p["endsBeforeSeconds"]}
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("spec", type=Path)
@@ -141,7 +170,7 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     try:
         report = render(a.spec, a.out, a.clock_start, a.repo_root, a.token_cost_ils)
-    except (RenderError, figures.FigureError, fetch.FetchError, assemble.AssembleError) as e:
+    except (RenderError, figures.FigureError, fetch.FetchError, assemble.AssembleError, charts.ChartError) as e:
         print(f"render failed: {e}", file=sys.stderr)
         return 1
     print(json.dumps({k: report[k] for k in ("analysis", "durationSeconds", "runnerMinutes", "steps", "mp4")},
