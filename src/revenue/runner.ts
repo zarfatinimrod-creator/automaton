@@ -15,7 +15,7 @@ import type { Database } from "better-sqlite3";
 import { describeStall, findStalledLines, type StalledLine } from "./watchdog.js";
 import { summarizeTargetBasis } from "./portfolio.js";
 import { ownerStepsForLine } from "./owner-steps.js";
-import { DEFAULT_MEASUREMENTS_DIR, ingestApifyMeasurement, type IngestResult } from "./measurements.js";
+import { DEFAULT_MEASUREMENTS_DIR, ingestAlgoraSupplyMeasurement, ingestApifyMeasurement, type IngestResult } from "./measurements.js";
 import {
   computePortfolioSummary,
   getLine,
@@ -288,9 +288,12 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
     for (const error of result.ledgerSync.errors) result.blockers.push(`ledger sync: ${error}`);
 
     // Measurement jobs never open colony.db (the tick commits it too); their numbers enter the KPIs here.
-    const apify = ingestApifyMeasurement(db, options.measurementsDir ?? DEFAULT_MEASUREMENTS_DIR);
-    result.measurements.push(apify);
-    if (apify.status === "invalid") result.blockers.push(`measurement ${apify.file}: ${apify.detail}`);
+    const measurementsDir = options.measurementsDir ?? DEFAULT_MEASUREMENTS_DIR;
+    for (const ingest of [ingestApifyMeasurement, ingestAlgoraSupplyMeasurement]) {
+      const m = ingest(db, measurementsDir);
+      result.measurements.push(m);
+      if (m.status === "invalid") result.blockers.push(`measurement ${m.file}: ${m.detail}`);
+    }
   }
 
   if (shouldRun("revenue_supervisor_review")) {
