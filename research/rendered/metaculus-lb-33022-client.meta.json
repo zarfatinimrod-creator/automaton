@@ -1,0 +1,14 @@
+{
+  "url": "https://www.metaculus.com/api/leaderboards/project/33022/",
+  "slug": "metaculus-lb-33022-client",
+  "channel": "requests (forecasting-tools' HTTP stack), Accept-Language: en, no Authorization",
+  "fetchedAt": "2026-09-27T09:38:39.255127Z",
+  "status": 403,
+  "contentType": "text/plain;charset=UTF-8",
+  "byteLength": 134,
+  "sha256": "480b0bcd896918ddbd8bf784df748a2ba50956ed7a0133ffef07f31a87aea824",
+  "error": "HTTP 403",
+  "server": "cloudflare",
+  "bodyPath": null,
+  "bodyHead": "Permission Error: The API is only available to authenticated users. Please create an account and use your API token to access the API."
+}
