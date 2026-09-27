@@ -14,7 +14,7 @@
 import type { Database } from "better-sqlite3";
 import { describeStall, findStalledLines, type StalledLine } from "./watchdog.js";
 import { summarizeTargetBasis } from "./portfolio.js";
-import { frozenOwnerStepsForLine, openOwnerStepsForLine } from "./owner-steps.js";
+import { frozenOwnerStepsForLine, heldOwnerStepsForLine, openOwnerStepsForLine } from "./owner-steps.js";
 import { DEFAULT_MEASUREMENTS_DIR, ingestAlgoraSupplyMeasurement, ingestApifyMeasurement, type IngestResult } from "./measurements.js";
 import {
   computePortfolioSummary,
@@ -339,8 +339,8 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
   for (const line of listLines(db)) {
     if (line.status === "awaiting_setup" && !line.humanSetupDone) {
       result.blockers.push(
-        `${line.id} is waiting on the owner: steps ${openOwnerSteps(line.id).join(", ")} of docs/OWNER_STEPS.he.md` +
-          frozenNote(line.id) + "; " +
+        `${line.id} is waiting on the owner: steps ${askedNowList(line.id)} of docs/OWNER_STEPS.he.md` +
+          notAskedNowNote(line.id) + "; " +
           line.humanSetup.join("; "),
       );
     }
@@ -481,8 +481,8 @@ export function renderReport(db: Database, result: TickResult): string {
     for (const line of waiting) {
       out.push(`**${line.name}** (\`${line.id}\`)`);
       out.push(
-        `Owner steps still open for \`${line.id}\` (docs/OWNER_STEPS.he.md): ${openOwnerSteps(line.id).join(", ")}` +
-          frozenNote(line.id),
+        `Owner steps still open for \`${line.id}\` (docs/OWNER_STEPS.he.md): ${askedNowList(line.id)}` +
+          notAskedNowNote(line.id),
       );
       for (const step of line.humanSetup) out.push(`- [ ] ${step}`);
       out.push("");
@@ -523,21 +523,33 @@ export function summarizeLine(db: Database, lineId: string): string | null {
 }
 
 /**
- * The checklist step numbers a line still waits on, in execution order. Done
- * steps drop out, and so do steps the owner froze: the report asks only for
- * what the owner is actually being asked to do.
+ * The checklist step numbers a line still waits on and the owner is asked for
+ * now, in execution order. Done steps drop out, and so do steps the owner froze
+ * and steps held by a precondition the colony has not met: the report asks only
+ * for what the owner is actually being asked to do.
  */
 function openOwnerSteps(lineId: string): number[] {
   return openOwnerStepsForLine(lineId).map((s) => s.number);
 }
 
+/** The asked-now list as the report prints it; says so plainly when it is empty. */
+function askedNowList(lineId: string): string {
+  const open = openOwnerSteps(lineId);
+  return open.length ? open.join(", ") : "none asked now";
+}
+
 /**
- * A frozen step still gates the line, so it is named — but as frozen, with the
- * rule that froze it, never as something to do. Empty when nothing is frozen.
+ * A frozen or held step still gates the line, so it is named — but outside the
+ * asked-now list, with the reason it is not asked for, never as something to
+ * do. A frozen step names the rule that froze it; a held step names its
+ * precondition's short form. In execution order; empty when there is neither.
  */
-function frozenNote(lineId: string): string {
-  const frozen = frozenOwnerStepsForLine(lineId);
-  if (frozen.length === 0) return "";
-  const parts = frozen.map((s) => `step ${s.number} frozen by ${s.frozen!.rule}`);
+function notAskedNowNote(lineId: string): string {
+  const notAsked = [...frozenOwnerStepsForLine(lineId), ...heldOwnerStepsForLine(lineId)]
+    .sort((a, b) => a.order - b.order);
+  if (notAsked.length === 0) return "";
+  const parts = notAsked.map((s) =>
+    s.frozen ? `step ${s.number} frozen by ${s.frozen.rule}` : `step ${s.number} ${s.precondition!.short}`,
+  );
   return ` (not asked now: ${parts.join("; ")})`;
 }

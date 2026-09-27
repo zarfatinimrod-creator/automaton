@@ -43,6 +43,12 @@
  *   - Step 5 (the domain) is the one step that costs money, so it is `frozen`:
  *     it keeps its number and its line mapping, the report stops asking for it,
  *     and `frozen` says what it costs to go without and what replaces it free.
+ *   - Step 2 (the tax file) is HELD by a `precondition`: it is asked for only
+ *     when a paid product is ready and the colony has read, at the official
+ *     source, whether opening the file costs anything or starts minimum monthly
+ *     payments. Until `precondition.metOn` is set the report names it outside
+ *     the asked-now list, as it names the frozen domain — so an owner following
+ *     the hourly report is never sent to register before that check.
  *   - The Hebrew document now leads with the free steps — the Apify half of 6,
  *     then 7, then the Netlify half of 6, then 3 (free to open; its fees come
  *     out of sales), and 2 only when a paid product is ready.
@@ -104,11 +110,16 @@ export interface OwnerStep {
    */
   doneOn?: { date: string; evidence: string };
   /**
-   * Something the colony must establish itself BEFORE it asks the owner for this
-   * step. Not an owner action — the point is that the owner is not asked to find
-   * it out.
+   * Something that must be true BEFORE the owner is asked for this step, and
+   * that the colony establishes itself — not an owner action; the point is that
+   * the owner is not asked to find it out. While `metOn` is unset the step is
+   * HELD: it still gates its lines (they cannot earn without it), but the report
+   * does not ask for it — it names it outside the asked-now list, with `short`,
+   * exactly as it names a frozen step. `what` is the full condition; `short` is
+   * the phrase the report prints after "step N"; `metOn` is set, with evidence,
+   * only when every part of `what` holds, and only then is the step asked for.
    */
-  precondition?: string;
+  precondition?: { what: string; short: string; metOn?: { date: string; evidence: string } };
   /**
    * Set when the owner has put the step on hold. It stays on the list with its
    * number and its lines, because it comes back when the owner decides; until
@@ -147,8 +158,15 @@ export const OWNER_STEPS: OwnerStep[] = [
       "The legal right to receive any shekel at all. This is the law rather than a platform's requirement: business income needs a file at the Tax Authority, and ₪10 counts. Written here ONCE — it used to be repeated in every line's humanSetup, which is how a six-item catalogue reads as eleven.",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.1",
-    precondition:
-      "Under the owner's ₪0 rule this step is asked for only when a paid product is ready to go on sale — nothing is put up for sale before it anyway — and before asking, the colony establishes from the official sources (the Tax Authority and Bituach Leumi themselves, rendered, not a summary) whether opening the file or registering costs anything or triggers minimum monthly payments. Until that is rendered the colony states no figure for it.",
+    precondition: {
+      what:
+        "Under the owner's ₪0 rule this step is asked for only when a paid product is ready to go on sale — nothing is put up for sale before it anyway — and before asking, the colony establishes from the official sources (the Tax Authority and Bituach Leumi themselves, rendered, not a summary) whether opening the file or registering costs anything or triggers minimum monthly payments. Until that is rendered the colony states no figure for it.",
+      short: "only when a paid product is ready, after the official cost check",
+      // metOn stays unset until BOTH hold: a paid product is ready to go on sale,
+      // and the Tax Authority's and Bituach Leumi's own pages on the cost of
+      // opening the file are rendered and read. Setting it is what makes the
+      // hourly report ask the owner for step 2.
+    },
     ownerDecision:
       "The 'one paid conversation with an accountant' that used to sit inside this step is NOT a step — the owner's brief is verbatim 'אני לא מדבר עם אנשים'. Default until they say otherwise: treat all income as taxable and do not zero-rate under §30(א)(5). The switch to עוסק מורשה is raised by the watchdog at a number (₪8,000 rolling 30-day revenue), never by a conversation.",
   },
@@ -245,9 +263,14 @@ export function ownerStepsForLine(lineId: string, steps: OwnerStep[] = OWNER_STE
   return ownerStepsInOrder(steps).filter((s) => s.lines.includes(lineId));
 }
 
-/** A step the owner is being asked for now: not done, and not frozen. */
+/** True while a step's precondition exists and the colony has not recorded it met. */
+export function hasPendingPrecondition(step: OwnerStep): boolean {
+  return Boolean(step.precondition) && !step.precondition!.metOn;
+}
+
+/** A step the owner is being asked for now: not done, not frozen, and not held by a pending precondition. */
 export function isOwnerStepOpen(step: OwnerStep): boolean {
-  return !step.doneOn && !step.frozen;
+  return !step.doneOn && !step.frozen && !hasPendingPrecondition(step);
 }
 
 /** The steps a line still waits on and the owner is asked for, in execution order. */
@@ -258,6 +281,15 @@ export function openOwnerStepsForLine(lineId: string, steps: OwnerStep[] = OWNER
 /** The steps that gate a line but are frozen by the owner, so nobody asks for them. */
 export function frozenOwnerStepsForLine(lineId: string, steps: OwnerStep[] = OWNER_STEPS): OwnerStep[] {
   return ownerStepsForLine(lineId, steps).filter((s) => !s.doneOn && Boolean(s.frozen));
+}
+
+/**
+ * The steps that gate a line but are held by a precondition the colony has not
+ * yet recorded as met, so nobody asks for them yet. A frozen step is reported
+ * as frozen, not here, even if it also carries a precondition.
+ */
+export function heldOwnerStepsForLine(lineId: string, steps: OwnerStep[] = OWNER_STEPS): OwnerStep[] {
+  return ownerStepsForLine(lineId, steps).filter((s) => !s.doneOn && !s.frozen && hasPendingPrecondition(s));
 }
 
 /** Line ids that no step unlocks — always empty, and the test says why that matters. */

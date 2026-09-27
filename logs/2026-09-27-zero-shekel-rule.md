@@ -35,12 +35,23 @@ worktree מבודד (משימה B של ה-workflow), בסיס `df26984`. **לא*
    לבעלים של הארגון.) לא נשמר ל-`research/rendered/` — שם הקבצים נוצרים ב-CI עם meta; ציטוט הקובץ וה-SHA כאן ובקוד.
 9. **PDF:** `node scripts/owner-steps-pdf.mjs` רץ (Chromium מ-`/opt/pw-browsers`), 12 עמודים, 417,232 בתים;
    צילום העמוד הראשון נבדק — RTL תקין.
+10. **תיקון אחרי ביקורת עוינת (סבב 2):** המבקר מצא שהשדה `precondition` של צעד 2 לא נקרא בשום קוד — הדוח השעתי
+    המשיך לבקש את צעד 2 **ראשון** בכל קו ("steps 2, 6", "steps 2, 3, 6"), בזמן שהמסמך אומר "לא עכשיו". בעלים
+    שעוקב אחרי REPORT.md תחת כלל ה-0 ₪ היה יכול להירשם ולהתחיל תשלומים חודשיים לפני הבדיקה. **הוא צדק.** התיקון:
+    `precondition` הפך לאובייקט `{ what, short, metOn? }`; `hasPendingPrecondition` ו-`heldOwnerStepsForLine` חדשות;
+    `isOwnerStepOpen` מחזיר false לצעד "מוחזק" (precondition בלי `metOn`). ב-`runner.ts` הפונקציה `frozenNote`
+    הוחלפה ב-`notAskedNowNote`, שמציגה צעדים מוקפאים ומוחזקים יחד, לפי סדר הביצוע, **מחוץ** לרשימת "נשאל עכשיו" —
+    גם בשורת ה-blocker וגם בשורת "Owner steps still open". צעד 2 נשאר ברשימת השערים של כל קו (הוא באמת חוסם),
+    רק לא מבוקש. `order` של הדירקטוריון לא נגע. במסמך נוספה פסקה בצעד 2 שמצטטת בדיוק מה הדוח מדפיס, ובדיקה
+    ששומרת את הציטוט זהה ל-`short`. ה-PDF נוצר מחדש (12 עמודים, 421,619 בתים).
 
 ## 3. קבצים/מערכות ששונו
 `src/revenue/{budget,owner-steps,runner,portfolio,dashboard,criteria}.ts`,
 `src/__tests__/revenue/{budget,owner-steps,runner,dashboard}.test.ts`, `docs/OWNER_STEPS.he.md`,
 `docs/OWNER_STEPS.he.pdf`, `docs/INCOME_PLAN.he.md`, `skills/revenue-il-biz-tools/SKILL.md`,
 `workflows/colony-criteria-sweep.js` (נוצר), והיומן הזה.
+סבב 2: `src/revenue/{owner-steps,runner}.ts`, `src/__tests__/revenue/{owner-steps,runner}.test.ts`,
+`docs/OWNER_STEPS.he.md`, `docs/OWNER_STEPS.he.pdf`, והיומן הזה.
 
 ## 4. החלטות והנחות משמעותיות
 - **"מוקפא" ≠ "בוצע".** צעד 5 נשאר עם המספר, עם הקווים שלו (`lines`) ועם ההוראות — כדי שיחזור בלי שחזור. רק
@@ -55,6 +66,11 @@ worktree מבודד (משימה B של ה-workflow), בסיס `df26984`. **לא*
   ב-SKILL.md; הבסיס המבוקר ב-`TARGET_BASIS` ("buy the domain" כתנאי ל-SEO); `products/mcp-il-tools/server.json`
   שעדיין `com.mehudak/il-tools` ו-`websiteUrl: https://mehudak.com`. כולם מסומנים לחוט הראשי.
 - רשומות היסטוריות (`docs/REJECTED.md`, מחקר) לא נגעתי.
+- **צעד "מוחזק" ≠ "מוקפא".** מוקפא = החלטת הבעלים, חוזר רק כשהבעלים מחליט. מוחזק = תנאי שהמושבה בודקת בעצמה;
+  כשהוא מתקיים רושמים `precondition.metOn` עם ראיה, ורק אז הדוח מבקש את הצעד. שניהם מוצגים באותו סוגריים
+  "not asked now", כל אחד עם הסיבה שלו. בחרתי בדגל `metOn` (החלופה השנייה של המבקר) יחד עם ההצגה בסוגריים
+  (החלופה הראשונה) — הם משלימים, לא מתחרים.
+- כשכל הצעדים הפתוחים של קו מוחזקים/מוקפאים, הדוח כותב "none asked now" ולא רשימה ריקה. היום זה לא קורה לאף קו.
 
 ## 5. שגיאות וניסיונות שנכשלו
 - ה-worktree התחיל על `61fae4e` (לא צאצא של `df26984`) — `git reset --hard df26984` כמו שההנחיה אמרה. פעם רביעית.
@@ -62,6 +78,8 @@ worktree מבודד (משימה B של ה-workflow), בסיס `df26984`. **לא*
 - בדיקה ראשונה של צעד 2 נפלה: `/₪\s?\d/` תפס את המילים "₪0 rule" עצמן. תוקן בבדיקה, לא בטקסט.
 - `sweep-workflow.test.ts` נפל כי הקובץ המחולל לא התאים לבריף החדש — נוצר מחדש.
 - `colony.ts sync` לא קיים; הפקודה היא `sync-portfolio`.
+- **סבב 1 פספס את הבאג שהמבקר מצא:** כתבתי בסיכום "the step is asked for only when a paid product is ready", אבל
+  לא בדקתי שהקוד עושה את זה — השדה היה טקסט שאף פונקציה לא קוראת. בדיוק סוג הטענה-בלי-ראיה ש-CLAUDE.md מזהיר ממנו.
 
 ## 6. בדיקות ופעולות ולידציה
 - לפני השינוי: `npx vitest run src/__tests__/revenue` — 32 קבצים, 627 בדיקות, הכול עבר.
@@ -70,6 +88,12 @@ worktree מבודד (משימה B של ה-workflow), בסיס `df26984`. **לא*
 - הרצה על עותק של `state/colony/colony.db` ב-scratchpad: `sync-portfolio` ואז `report` — הדוח מראה "2, 3, 6 (not
   asked now: step 5 frozen…)" ל-`il-biz-tools`, "2, 3, 7, 6 (…)" ל-`pcn874`, ואין "- [ ] Buy the company domain".
   הדשבורד מראה "כלל ה-0 ₪ שלך (27.9)". ה-DB האמיתי לא נגע.
+- סבב 2: `npx vitest run src/__tests__/revenue` — 32 קבצים, **653 עברו, 0 נכשלו** (5 חדשות: צעד 2 לא נשאל
+  בשתי השורות של כל קו והטקסט שלו מוצג; `metOn` מחזיר את הבקשה; `hasPendingPrecondition`/`heldOwnerStepsForLine`;
+  המסמך מצטט את `short`). `pnpm -s typecheck` — יציאה 0. `report` על עותק של `colony.db` מ-HEAD ב-scratchpad:
+  `apify-actors … steps 6 (not asked now: step 2 only when a paid product is ready, after the official cost check)`,
+  `il-biz-tools … 3, 6 (not asked now: step 2 …; step 5 frozen …)`, `oss-bounties … 7, 4, 6 (…)`, `pcn874 … 3, 7, 6 (…)`.
+  `node scripts/owner-steps-pdf.mjs` — 12 עמודים.
 
 ## 7. עבודה ידנית שחזרה על עצמה וכדאי להפוך לאוטומטית
 - **ה-tick השעתי לא מריץ `sync-portfolio`.** כל שינוי ב-`portfolio.ts` מחייב מישהו להריץ `sync-portfolio` + `report`

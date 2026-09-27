@@ -4,6 +4,8 @@ import path from "node:path";
 import {
   OWNER_STEPS,
   frozenOwnerStepsForLine,
+  hasPendingPrecondition,
+  heldOwnerStepsForLine,
   isOwnerStepOpen,
   linesWithNoOwnerStep,
   openOwnerStepsForLine,
@@ -156,7 +158,8 @@ describe("the owner's ₪0 rule and standing consent of 27.9.2026", () => {
       expect(openOwnerStepsForLine(id).map((s) => s.id)).not.toContain("domain");
       expect(frozenOwnerStepsForLine(id).map((s) => s.id)).toEqual(["domain"]);
     }
-    expect(openOwnerStepsForLine("pcn874").map((s) => s.number)).toEqual([2, 3, 7, 6]);
+    // Step 2 is not asked either: it is held by its precondition (next describe).
+    expect(openOwnerStepsForLine("pcn874").map((s) => s.number)).toEqual([3, 7, 6]);
     expect(frozenOwnerStepsForLine("apify-actors")).toEqual([]);
   });
 
@@ -179,11 +182,48 @@ describe("the owner's ₪0 rule and standing consent of 27.9.2026", () => {
 
   it("holds step 2 back until a paid product is ready and its cost is checked at the official source", () => {
     const tax = ownerStepById("tax-file")!;
-    expect(tax.precondition).toMatch(/paid product is ready/);
-    expect(tax.precondition).toMatch(/official sources/);
-    expect(tax.precondition).toMatch(/minimum monthly payments/);
+    expect(tax.precondition!.what).toMatch(/paid product is ready/);
+    expect(tax.precondition!.what).toMatch(/official sources/);
+    expect(tax.precondition!.what).toMatch(/minimum monthly payments/);
+    expect(tax.precondition!.short).toMatch(/paid product is ready/);
+    expect(tax.precondition!.short).toMatch(/official cost check/);
     // It states no figure: the colony has not rendered that source.
-    expect(tax.precondition!.replaceAll("₪0 rule", "")).not.toMatch(/₪\s?\d|\d+\s?(ILS|NIS|shekel)/i);
+    for (const text of [tax.precondition!.what, tax.precondition!.short]) {
+      expect(text.replaceAll("₪0 rule", "")).not.toMatch(/₪\s?\d|\d+\s?(ILS|NIS|shekel)/i);
+    }
+  });
+
+  it("does not ask the owner for step 2 while its precondition is unmet, but keeps it gating every line", () => {
+    // The fail-open this closes: the precondition used to be prose nobody read,
+    // so the hourly report went on asking for step 2 first — and a ₪0-rule owner
+    // following it could register and start recurring payments before the
+    // colony had checked whether registering costs anything.
+    const tax = ownerStepById("tax-file")!;
+    expect(tax.precondition!.metOn).toBeUndefined();
+    expect(hasPendingPrecondition(tax)).toBe(true);
+    expect(isOwnerStepOpen(tax)).toBe(false);
+    expect(tax.doneOn).toBeUndefined();
+    for (const id of tax.lines) {
+      expect(ownerStepsForLine(id).map((s) => s.id), id).toContain("tax-file");
+      expect(openOwnerStepsForLine(id).map((s) => s.id), id).not.toContain("tax-file");
+      expect(heldOwnerStepsForLine(id).map((s) => s.id), id).toEqual(["tax-file"]);
+    }
+    // Only step 2 is held; a frozen step is reported as frozen, not as held.
+    expect(OWNER_STEPS.filter(hasPendingPrecondition).map((s) => s.id)).toEqual(["tax-file"]);
+    expect(heldOwnerStepsForLine("il-biz-tools").map((s) => s.id)).not.toContain("domain");
+  });
+
+  it("asks for step 2 again once the colony records its precondition met", () => {
+    const met = OWNER_STEPS.map((s) =>
+      s.id === "tax-file"
+        ? { ...s, precondition: { ...s.precondition!, metOn: { date: "2026-10-01", evidence: "test" } } }
+        : s,
+    );
+    const tax = met.find((s) => s.id === "tax-file")!;
+    expect(hasPendingPrecondition(tax)).toBe(false);
+    expect(isOwnerStepOpen(tax)).toBe(true);
+    expect(openOwnerStepsForLine("pcn874", met).map((s) => s.number)).toEqual([2, 3, 7, 6]);
+    expect(heldOwnerStepsForLine("pcn874", met)).toEqual([]);
   });
 
   it("keeps the board's pinned order: the ₪0 sequence is text until the board re-rules", () => {
@@ -214,6 +254,16 @@ describe("the Hebrew document has not drifted from the code", () => {
     for (const [, num, rest] of headings) {
       const step = OWNER_STEPS.find((s) => s.number === Number(num))!;
       expect(rest.includes("✅ בוצע"), `step ${num}: heading and doneOn disagree`).toBe(Boolean(step.doneOn));
+    }
+  });
+
+  it("quotes, for each held step, exactly what the hourly report prints", () => {
+    // The document tells the owner how a held step looks in REPORT.md. If the
+    // report's wording changes and the document does not, the owner looks for a
+    // phrase that is no longer there.
+    for (const step of OWNER_STEPS.filter(hasPendingPrecondition)) {
+      expect(doc, `step ${step.number}: the document does not quote the report's held note`)
+        .toContain(`not asked now: step ${step.number} ${step.precondition!.short}`);
     }
   });
 
