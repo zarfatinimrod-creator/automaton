@@ -161,9 +161,10 @@ def probe(path: Path) -> dict:
         data = json.loads(run.stdout)
         data["tool"] = "ffprobe"
         return data
-    run = subprocess.run([ffmpeg_exe(), "-hide_banner", "-i", str(path), "-map", "0:v", "-c", "copy", "-f", "null",
-                          "-"], capture_output=True, text=True)
-    err = run.stderr
+    # Decoding (not stream copy) makes ffmpeg report the frame count it actually read.
+    run = subprocess.run([ffmpeg_exe(), "-hide_banner", "-i", str(path), "-map", "0:v", "-f", "null", "-"],
+                         capture_output=True, text=True)
+    err = run.stderr.replace("\r", "\n")
     dur = re.search(r"Duration: (\d+):(\d+):(\d+\.\d+)", err)
     video = re.search(r"Stream #\S+.*?: Video: (\w+).*?, (\w+)\(?.*?, (\d+)x(\d+)[^,]*(?:,[^,]*)*?, ([\d.]+) fps", err)
     audio = re.search(r"Stream #\S+.*?: Audio: (\w+).*?, (\d+) Hz, (\w+)", err)

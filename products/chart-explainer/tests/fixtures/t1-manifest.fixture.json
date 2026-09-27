@@ -1,0 +1,32 @@
+{
+  "id": "t1-typescript-javascript",
+  "author": "opus-builder",
+  "title": "Is TypeScript catching up with JavaScript on GitHub?",
+  "description": "Is TypeScript catching up with JavaScript on GitHub? An explainer computed from GitHub's own quarterly counts of developers pushing code, economy by economy.\n\nNarration: a synthetic voice (Kokoro text-to-speech), not a recording of any person and not an imitation of anyone. Charts are drawn by code from the data cited below. Produced with AI systems.\n\nData: GitHub Innovation Graph, data/languages.csv at commit 078fb62ee4395d321bec9f4f06694cca68f6b6cb (https://github.com/github/innovationgraph). Licence: CC0-1.0 (Creative Commons CC0 1.0 Universal), as GitHub states it in the dataset's README and datasheet. GitHub did not produce, endorse or approve this video.\n\nMethod: every number is computed from that file; the EU aggregate is excluded; the comparison follows the economies reported for both languages in every quarter. Public activity only. Not advice.",
+  "topic": "programming languages on GitHub",
+  "script": "Is TypeScript catching up with JavaScript on GitHub? Every quarter, GitHub counts the developers in each economy who push code to repositories in each language. We followed the 92 economies reported for both languages in every quarter, from the first quarter of 2020 to the first quarter of 2026. Relative to JavaScript, yes, and quickly. In the first quarter of 2020, TypeScript had 18% as many pushers as JavaScript. By the first quarter of 2026, it had 49%. In raw numbers, though, JavaScript's lead grew, from 1.1 million to 2.5 million pushers, because both languages grew. Over those 6 years, TypeScript pushers grew 9.5 times over, and JavaScript pushers 3.4 times. Among the 10 languages with the most pushers, the fastest growing was TypeScript. The ratio moved fastest in the last year: it rose 12 percentage points, against at most 5 percentage points in any earlier year. Economy by economy, the picture is the same. TypeScript reached 50% of JavaScript's pushers in 47 of the 92 economies, up from 0 in 2020. The highest ratio was 61%. Some limits. GitHub leaves out economies with too few active developers; for TypeScript, the number reported rose from 93 to 162, which is why we followed a fixed set. Only public repositories count, a developer who pushes in both languages counts under each, and location comes from IP addresses. The data shows how many developers pushed, not why. The data is GitHub's Innovation Graph, dedicated to the public domain.",
+  "datasets": [
+    {
+      "name": "GitHub Innovation Graph",
+      "licence": "CC0-1.0",
+      "licenceSnapshot": "research/rendered/github-innovationgraph-licence.txt",
+      "upstream": [
+        {
+          "source": "GitHub (first-party aggregate of public platform activity; no third-party input)",
+          "licence": "CC0-1.0"
+        }
+      ]
+    }
+  ],
+  "originality": null,
+  "factCheck": null,
+  "promiseMatch": null,
+  "containsSyntheticMedia": true,
+  "narration": {
+    "engine": "kokoro-82m",
+    "voiceId": "af_heart"
+  },
+  "scheduledAt": "2026-09-27T10:10:56Z",
+  "runnerMinutes": 2.25,
+  "tokenCostIls": 0.0
+}
