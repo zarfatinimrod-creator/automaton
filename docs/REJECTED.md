@@ -1153,10 +1153,12 @@ that label: the supply that does exist is dominated by synthetic repositories ra
 overstate income; the eighteen candidates from the same sweep are not recorded as anything at all until
 they are refuted.
 
-**26.9.2026 — the nine shortlisted candidates, screened on Opus: nine kills.** One adversarial screener per
-candidate (`research/colony-sweep/SCREEN-2.md`, reports in `screen-2/`). These are screener verdicts; the
-Fable board (item 4 of `logs/FABLE_QUEUE.md`) may overrule one, and a board reversal would be recorded here.
-Each re-open condition below is the screener's own, abridged — all of its parts must hold.
+**26.9.2026 — the nine shortlisted candidates, screened on Opus; 27.9.2026 — the Fable board ruled.** One adversarial
+screener per candidate (`research/colony-sweep/SCREEN-2.md`, reports in `screen-2/`); the board
+(`research/colony-sweep/BOARD-2.md`) re-checked each screener's decisive fact at its source and **upheld all nine
+screeners. Eight are KILL. Metaculus is TEST_FIRST** — not killed: a ₪0 CI job reads the 2026 leaderboards
+(BOARD-2.md §1.9), and the line stays in the deferred class at ₪0 counted, gated as before on the owner's paperwork.
+**Nothing was admitted.** Each re-open condition below is abridged — all of its parts must hold.
 
 | Candidate | Killed on | Re-open only if |
 |---|---|---|
@@ -1168,14 +1170,21 @@ Each re-open condition below is the screener's own, abridged — all of its part
 | huntr AI/ML bounties | Signed-in web form per report and per triage exchange; huntr.com is blocked here and its guidelines 404 from the runner. | A rendered huntr policy allowing a machine-operated researcher account, and Israel on its payout list. |
 | Paid Odoo module, Israeli VAT export | Measured demand: page 1 of the Localization category, paid modules median 1 lifetime purchase, best 12 (rendered 22.9). | A comparable statutory module sustaining ≥2 purchases a month over 12 months, plus agent-only support terms. |
 | PCN874 embed licence for ERP vendors | The named buyer is the ITA circular's own addressee and has shipped the file since 2010, with free regulator support; new entrants build it themselves (BillOS, npm, 8.9.2026). | A named vendor lacking the export, a paid artefact that is not already free, and delivery with no per-sale owner action. |
-| Metaculus bot tournaments | Every prize needs the owner's per-season paperwork: identity, nationality and residency checks, W-8BEN, a survey. | The owner says yes to that paperwork for Metaculus (`BOARD.md` §8.1), and a runner test shows a template bot in the prize band. |
+| Metaculus bot tournaments — **TEST_FIRST, not killed (board 27.9)** | Every prize needs the owner's per-season paperwork: identity, nationality and residency checks, W-8BEN, a survey. | The board ordered the runner test (BOARD-2.md §1.9): best template bot > 0 and top-15 among prize-eligible entries in both Spring and Summer 2026. Even a pass needs the owner's yes to the paperwork (`BOARD.md` §8.1). |
 
-**What the screening turned up about committed lines** (details in `SCREEN-2.md`, "Found on the way"):
-`oss-bounties` now has two open questions — whether Algora's terms allow an automated contributor at all
-(read 26.9: they forbid automated access to algora.io and are silent on PR authorship; whether a GitHub-only
-`/claim` is "access" is for the board — `research/measurements/algora-terms-question.md`), and a named cause for
-the June 2026 supply drop measured above (Prime Intellect closed its programme). `pcn874` has a new
-entrant that builds the file into its own invoicing product.
+**What the board ruled about committed lines** (BOARD-2.md §2):
+- **`oss-bounties`, Algora's terms:** the clause (automated access to algora.io's web pages) **does not fire** against
+  an account that works only on GitHub; the one algora.io use is the owner's one-time step 4, by hand. Conditions
+  attached, because Algora's own webhook handler is named `ensure_human_author`: disclosure on every PR and `/claim`
+  that the account is automated and the work agent-made; a test that nothing in the repo requests algora.io; a brand
+  login that does not end in "bot"; and a same-day kill on any Algora or maintainer action against the account for
+  automation.
+- **`oss-bounties`, supply:** a weekly CI count of *claimable* bounties (open, not archived, not already rewarded,
+  amount ≥ $50, repo policy not forbidden) is now the line's first build step. Week-4 mean ≥ 10 keeps ₪300; 3-9
+  retargets to ₪100; < 3 kills the line. The board expects it under 10. A third-party census (5 claimable, $60
+  visible, of 561 labelled issues) points the same way. The screening's claim that Prime Intellect's closure "names
+  one cause" of the June drop is **overruled**: Prime Intellect never paid or labelled bounties through Algora.
+- **`pcn874`:** BillOS changes nothing — a developer-shaped buyer this line already excludes.
 
 ---
 
