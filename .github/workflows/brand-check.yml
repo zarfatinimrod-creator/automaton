@@ -1,0 +1,49 @@
+name: brand-check
+
+# Is a brand-name candidate free? `.com` (RDAP at Verisign), GitHub, YouTube handle — status codes only,
+# from a runner, because this container's proxy blocks all three (research/measurements/brand-name-check.md).
+# Writes research/measurements/brand-candidates.json and commits it to the branch it ran on. No secret, no
+# page body stored, nothing registered: a lookup is not a purchase.
+
+on:
+  workflow_dispatch:
+  # Once when the candidate list or the checker changes on a working branch; never on main.
+  push:
+    branches-ignore: [main]
+    paths:
+      - ".github/workflows/brand-check.yml"
+      - "scripts/brand-check.mjs"
+      - "research/measurements/brand-candidates.txt"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: brand-check-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/brand-check.mjs
+      - name: Commit the answers back to this branch
+        run: |
+          set -euo pipefail
+          git config user.name "colony-bot"
+          git config user.email "colony-bot@users.noreply.github.com"
+          git add research/measurements/brand-candidates.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "brand-check: $(node -e 'const j=require("./research/measurements/brand-candidates.json"); console.log(j.allFree.length + " of " + j.rows.length + " free on all three")') [skip ci]"
+          for attempt in 1 2 3; do
+            git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            git pull --rebase -X theirs origin "${GITHUB_REF_NAME}"
+          done
+          exit 1
