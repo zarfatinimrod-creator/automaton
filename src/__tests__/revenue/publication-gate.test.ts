@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
+  CC_BY_3_0_IGO_URI,
   checkPublication,
+  igoNoEndorsementSentence,
   type ChannelState,
   type VideoManifest,
 } from "../../revenue/publication-gate.js";
@@ -66,7 +68,7 @@ describe("publication gate G1-G10 (VERDICT §12)", () => {
       const v = video({ datasets: [{ ...video().datasets[0], licence, upstream: [] }] });
       expect(failed(checkPublication(v, channel(), "publish", exists))).not.toContain("G1");
     });
-    it.each(["MIT", "CC-BY-3.0-IGO", "CC-BY-SA-4.0"])("still fails %s", (licence) => {
+    it.each(["MIT", "CC-BY-SA-3.0-IGO", "CC-BY-SA-4.0", "CC-BY-NC-SA-3.0-IGO"])("still fails %s", (licence) => {
       const v = video({ datasets: [{ ...video().datasets[0], licence }] });
       expect(failed(checkPublication(v, channel(), "publish", exists))).toContain("G1");
     });
@@ -80,6 +82,56 @@ describe("publication gate G1-G10 (VERDICT §12)", () => {
     });
     it("fails a video that uses no dataset at all", () => {
       expect(failed(checkPublication(video({ datasets: [] }), channel(), "publish", exists))).toContain("G1");
+    });
+  });
+
+  describe("G1/G7 IGO conditions (LICENCE-IGO-DECISION.md C1-C5)", () => {
+    const UN = "United Nations";
+    const citation =
+      "United Nations, Department of Economic and Social Affairs, Population Division (2024). World Population Prospects 2024, Online Edition.";
+    const snapshots = new Set([...SNAPSHOTS, "research/rendered/un-wpp-downloads.txt"]);
+    const existsIgo = (p: string) => snapshots.has(p);
+    const igo = (): VideoManifest =>
+      video({
+        title: "Which countries will have the oldest populations by 2050?",
+        topic: "population ageing",
+        description: `Every figure is computed from ${citation} Licensed CC BY 3.0 IGO, ${CC_BY_3_0_IGO_URI} ${igoNoEndorsementSentence(UN)}`,
+        datasets: [{ name: citation, licence: "CC-BY-3.0-IGO", licenceSnapshot: "research/rendered/un-wpp-downloads.txt", upstream: [], licensor: UN }],
+      });
+    const run = (v: VideoManifest, c = channel()) => checkPublication(v, c, "publish", existsIgo).failures.map((f) => `${f.gate}:${f.reason}`);
+
+    it("passes a compliant UN WPP manifest", () => expect(run(igo())).toEqual([]));
+    it("C1 rejects a snapshot that is not a render-watch capture", () => {
+      const v = igo();
+      v.datasets[0].licenceSnapshot = "research/snapshots/owid-co2-licence.txt";
+      snapshots.add(v.datasets[0].licenceSnapshot);
+      expect(run(v).some((r) => r.startsWith("G1:") && /rendered/.test(r))).toBe(true);
+    });
+    it("C1 needs the licensor named", () => {
+      const v = igo();
+      delete v.datasets[0].licensor;
+      expect(run(v).some((r) => r.startsWith("G1:") && /licensor/.test(r))).toBe(true);
+    });
+    it("C2 requires the licence URI and a changes-made statement", () => {
+      expect(run(video({ ...igo(), description: igo().description.replace(CC_BY_3_0_IGO_URI, "") })).some((r) => /URI/.test(r))).toBe(true);
+      expect(run(video({ ...igo(), description: igo().description.replace("computed from", "about") })).some((r) => /§3\(b\)/.test(r))).toBe(true);
+    });
+    it("C3 requires the no-endorsement sentence", () => {
+      expect(run(video({ ...igo(), description: igo().description.replace(igoNoEndorsementSentence(UN), "") })).some((r) => /lacks the sentence/.test(r))).toBe(true);
+    });
+    it.each(["UN data: the oldest countries by 2050", "What the United Nations expects by 2050", "UNESCO's literacy numbers"])(
+      "C4 keeps the licensor out of the title: %s",
+      (title) => {
+        expect(run(video({ ...igo(), title })).some((r) => /title names the licensor/.test(r))).toBe(true);
+      },
+    );
+    it("C4 does not fire on un- words", () => expect(run(video({ ...igo(), title: "Unemployment and unit costs: an unusual decade" }))).toEqual([]));
+    it("C5 blocks publishing while a notice from the licensor is open, and only that licensor", () => {
+      expect(run(igo(), channel({ openLicensorNotices: [UN] })).some((r) => /notice from United Nations is open/.test(r))).toBe(true);
+      expect(run(igo(), channel({ openLicensorNotices: ["UNESCO"] }))).toEqual([]);
+    });
+    it("leaves a non-IGO manifest untouched by the IGO conditions", () => {
+      expect(checkPublication(video(), channel(), "publish", exists).failures).toEqual([]);
     });
   });
 

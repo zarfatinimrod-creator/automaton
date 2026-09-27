@@ -219,3 +219,17 @@ https://support.google.com/google-ads/answer/7515513?hl=en	google-ads-content-ex
 # research/faceless-youtube/T1-PRECHECK.md:264, :268 — Upload-Post's analytics fields and AI-label guide.
 https://docs.upload-post.com/api/get-analytics/	upload-post-get-analytics
 https://docs.upload-post.com/guides/ai-content-labeling/	upload-post-ai-content-labeling
+
+# --------------------------------------------------------------------------------
+# 11. Faceless YouTube, G1 for IGO licences (research/faceless-youtube/LICENCE-IGO-DECISION.md, condition C1).
+# DATASETS.md B1 quotes owid/etl `un_wpp_population_low.csv.dvc` l.23-25: "license: / name: CC BY 3.0 IGO /
+# url: https://population.un.org/wpp/downloads/". The rendered page is the only acceptable G1 snapshot for a UN
+# WPP dataset; the auditor confirms it says CC BY 3.0 IGO and records any added condition. Added 27.9.2026.
+# --------------------------------------------------------------------------------
+https://population.un.org/wpp/downloads/	un-wpp-downloads
+# DATASETS.md B1 quotes `education_sdgs.zip.dvc` l.15-17: "name: CC BY 3.0 IGO / url:
+# https://databrowser.uis.unesco.org/terms-and-conditions". LICENCE-IGO-DECISION.md §3: four records say UIS is
+# ShareAlike; UIS stays FAIL until this page is read. If it says BY-SA, the UIS entry is closed for good.
+https://databrowser.uis.unesco.org/terms-and-conditions	unesco-uis-databrowser-terms
+# LICENCE-IGO-DECISION.md §1: the UIS main-site terms page a search summarised as "Attribution-ShareAlike 3.0 IGO".
+https://uis.unesco.org/en/terms-and-conditions	unesco-uis-terms

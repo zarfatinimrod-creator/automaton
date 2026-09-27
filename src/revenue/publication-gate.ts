@@ -29,6 +29,11 @@ export interface DatasetUse {
    * emissions beside Energy Institute energy columns, and only the columns used decide the gate.
    */
   upstream: { source: string; licence: string | null }[];
+  /**
+   * The licensor's name as it must appear in the no-endorsement sentence, e.g. "United Nations". Required when the
+   * licence is in IGO_LICENCES (LICENCE-IGO-DECISION.md, condition C3); ignored otherwise.
+   */
+  licensor?: string;
 }
 
 export interface AuditVerdict {
@@ -60,6 +65,12 @@ export interface ChannelState {
   published: { id: string; publishedAt: string; script: string }[];
   yppReviewPending: boolean;
   dmcaCounterNoticeFiled: boolean;
+  /**
+   * Licensors who have sent any notice about our use of their data (CC BY 3.0 IGO §4(a) credit removal, §7(b) cure,
+   * §8(h) "settled amicably"). While one is open, nothing using that licensor's data publishes; the board closes it
+   * (LICENCE-IGO-DECISION.md, condition C5). Optional so existing channel states keep working.
+   */
+  openLicensorNotices?: string[];
 }
 
 export interface GateFailure {
@@ -77,18 +88,50 @@ export interface GateResult {
  *
  * `Unlicense` and `ODC-PDDL-1.0` were added 27.9.2026 (DATASETS.md B2): both are public-domain dedications, no
  * stricter than `public-domain`, and a manifest records the licence string the source actually uses rather than our
- * mapping of it. `MIT` stays out — a software licence whose notice must travel "in all copies or substantial
- * portions" has no clean place in a narrated video (R6, R7). `CC-BY-3.0-IGO` is not in the set pending a Fable ruling
- * (B1): it closes UN population and UNESCO education, and its IGO clauses are a legal judgement, not a mapping.
+ * mapping of it. `MIT` stays out: it licenses "the Software", and on a data repository it is the packager's licence
+ * for the code, not the producer's statement about the data (R7, R8) — so it is UNKNOWN in substance, not merely
+ * inconvenient (Fable, B2 ruling, LICENCE-IGO-DECISION.md §5).
+ *
+ * `CC-BY-3.0-IGO` was added 27.9.2026 by Fable ruling (research/faceless-youtube/LICENCE-IGO-DECISION.md). Its grant
+ * (§3: worldwide, royalty-free, Distribute "by sale", Adaptations) and its attribution clause (§4(b)) are CC BY 3.0's.
+ * What is IGO-specific — §8(g) no waiver of the licensor's privileges and immunities, §8(h) mediation then
+ * arbitration at the licensor's headquarters, §4(a) credit removal "inclusive of any logo, trademark, official mark
+ * or official emblem" on notice — only bites a licensee that contests, and G8 says this channel never contests.
+ * The conditions it carries are enforced below for every licence in IGO_LICENCES.
  */
 export const ALLOWED_DATA_LICENCES: ReadonlySet<string> = new Set([
   "CC0-1.0",
   "CC-BY-4.0",
   "CC-BY-3.0",
+  "CC-BY-3.0-IGO",
   "public-domain",
   "Unlicense",
   "ODC-PDDL-1.0",
 ]);
+
+/**
+ * Licences whose licensor is (or may be) an intergovernmental organisation (CC BY 3.0 IGO §1(a), §1(c)). A dataset
+ * under one of these carries the conditions of LICENCE-IGO-DECISION.md §4, checked in G1 and G7:
+ *   C1 the snapshot is the licensor's own page, rendered by render-watch — never a third party's record of it
+ *      (owid/etl's UNESCO records say "CC BY 3.0 IGO" beside a by-sa/3.0/igo URL; a record can be wrong);
+ *   C2 the description carries the licence URI (§4(a)) and a changes-made statement (§3(b));
+ *   C3 the description carries the no-endorsement sentence naming the licensor (§4(b), last sentence);
+ *   C4 the licensor's name and short forms stay out of the title (§4(b): the credit is "only ... for the purpose of
+ *      attribution"); no logo, emblem or official mark anywhere (§4(a));
+ *   C5 an open notice from the licensor blocks everything that uses its data until the board closes it.
+ */
+export const IGO_LICENCES: ReadonlySet<string> = new Set(["CC-BY-3.0-IGO"]);
+/** §4(a): "You must include a copy of, or the Uniform Resource Identifier (URI) for, this License with every copy". */
+export const CC_BY_3_0_IGO_URI = "https://creativecommons.org/licenses/by/3.0/igo/";
+/** C3, verbatim with the licensor's name substituted; G7 checks the description for it. */
+export const igoNoEndorsementSentence = (licensor: string): string =>
+  `${licensor} did not produce, endorse or approve this video, and no affiliation with ${licensor} is claimed.`;
+/** C2: §3(b) "clearly label, demarcate or otherwise identify that changes were made to the original Work". */
+const CHANGES_MADE = /\b(computed|derived|calculated|adapted|re-?computed) from\b/i;
+/** C4: short forms of the IGO licensors the channel uses; "UN" and "UIS" are case-sensitive on purpose. */
+const IGO_SHORT_NAMES = /\b(UN|U\.N\.|UNDESA|UNESCO|UIS)\b/;
+/** C1: a render-watch capture lives here (research/rendered/README.md); a GitHub file or a .dvc record does not. */
+const RENDERED_PREFIX = "research/rendered/";
 
 /**
  * Topics the verdict keeps the channel away from in any form that could read as advice (VERDICT §11, G2).
@@ -190,6 +233,17 @@ export function checkPublication(
         fail("G1", `${d.name}: upstream source ${u.source} has licence ${u.licence ?? "UNKNOWN"} — the derived dataset does not override it`);
       }
     }
+    if (d.licence && IGO_LICENCES.has(d.licence)) {
+      // C1 — the licensor's own page, rendered. OWID's record of UNESCO says BY beside a BY-SA URL; a record is not the licence.
+      if (!d.licenceSnapshot?.startsWith(RENDERED_PREFIX)) {
+        fail("G1", `${d.name}: an IGO licence needs the licensor's own terms page rendered under ${RENDERED_PREFIX}, not a third party's record`);
+      }
+      if (!d.licensor) fail("G1", `${d.name}: an IGO licence needs \`licensor\` set for the no-endorsement sentence`);
+      // C5 — a notice from the licensor is open: nothing that uses its data moves until the board has looked.
+      if (d.licensor && (channel.openLicensorNotices ?? []).includes(d.licensor)) {
+        fail("G1", `${d.name}: a notice from ${d.licensor} is open; comply first, publish after the board closes it`);
+      }
+    }
   }
 
   // G2 — no sensitive topic, no second-person advice.
@@ -235,6 +289,19 @@ export function checkPublication(
   for (const d of video.datasets) {
     if (!desc.includes(normLicence(d.name)) || (d.licence && !desc.includes(normLicence(d.licence)))) {
       fail("G7", `the description does not attribute ${d.name} with its licence ${d.licence ?? ""}`.trim());
+    }
+    if (d.licence && IGO_LICENCES.has(d.licence)) {
+      // C2 — §4(a) the licence URI travels with every copy; §3(b) changes made are identified.
+      if (!desc.includes(normLicence(CC_BY_3_0_IGO_URI))) fail("G7", `${d.name}: the description lacks the licence URI ${CC_BY_3_0_IGO_URI}`);
+      if (!CHANGES_MADE.test(video.description)) fail("G7", `${d.name}: the description does not say the figures were computed/derived from the data (§3(b))`);
+      // C3 — §4(b): no implied connection, sponsorship or endorsement.
+      if (d.licensor && !desc.includes(normLicence(igoNoEndorsementSentence(d.licensor)))) {
+        fail("G7", `${d.name}: the description lacks the sentence "${igoNoEndorsementSentence(d.licensor)}"`);
+      }
+      // C4 — the credit is for attribution only: the licensor is named in the description, never headlined.
+      const titleHit =
+        (d.licensor && video.title.toLowerCase().includes(d.licensor.toLowerCase())) || IGO_SHORT_NAMES.test(video.title) || /\bunited nations\b/i.test(video.title);
+      if (titleHit) fail("G7", `${d.name}: the title names the licensor; attribution belongs in the description (§4(b))`);
     }
   }
 

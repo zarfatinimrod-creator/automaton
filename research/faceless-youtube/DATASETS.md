@@ -62,7 +62,15 @@ C9, C10, C2 and C5 are substitutes. Energy is absent by construction (RED-TEAM Â
 
 ## Blockers and gate findings (read before building the renderer)
 
-**B1. `CC BY 3.0 IGO` is not in `ALLOWED_DATA_LICENCES`, and this closes two whole topics.**
+> **Ruled 27.9.2026 (Fable, `LICENCE-IGO-DECISION.md`): `CC-BY-3.0-IGO` is now in the set, with five conditions
+> enforced in G1/G7 (rendered licensor page, licence URI and changes-made statement, a no-endorsement sentence, the
+> licensor kept out of the title, an open licensor notice blocks publishing).** UN WPP/WUP become eligible once
+> `research/rendered/un-wpp-downloads.*` exists and says CC BY 3.0 IGO. **UNESCO UIS stays FAIL:** four independent
+> records say ShareAlike and OWID's own record contradicts itself; only a rendered data-browser terms page saying plain
+> BY would change that. B2 was upheld (Unlicense and ODC-PDDL-1.0 in, MIT out), with the MIT reason corrected: MIT on a
+> data repository is the packager's licence for code, not the producer's statement about the data.
+
+**B1. `CC BY 3.0 IGO` is not in `ALLOWED_DATA_LICENCES`, and this closes two whole topics.** *(Superseded by the ruling above; kept as written.)*
 
 - UN World Population Prospects is recorded as `CC BY 3.0 IGO`:
   `owid/etl/master/snapshots/un/2024-07-12/un_wpp_population_low.csv.dvc` l.23-25:
