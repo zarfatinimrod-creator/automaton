@@ -52,8 +52,11 @@
     "voice": "af_heart",
     "lang": "en-us",
     "speed": 1.0,
-    "sentencePauseSeconds": 0.3,
-    "sceneTailSeconds": 0.7
+    "sentencePauseSeconds": 0.25,
+    "sceneTailSeconds": 0.5,
+    "pronounce": {
+      "IP": "I P"
+    }
   },
   "video": {
     "width": 1920,
@@ -89,7 +92,7 @@
       "chart": "yearly_gain_bars",
       "chartTitle": "Year-on-year change in the TypeScript-to-JavaScript ratio",
       "alt": "Bar chart of the yearly change in the TypeScript-to-JavaScript ratio; the last year's rise of {fig:ratio_gain_last_pts} is the largest, against at most {fig:ratio_gain_max_earlier_pts} in earlier years.",
-      "narration": "The ratio moved fastest in the last year: it rose {fig:ratio_gain_last_pts}, against at most {fig:ratio_gain_max_earlier_pts} in any earlier year. That year, TypeScript pushers grew {fig:a_yoy_pct}, and JavaScript pushers {fig:b_yoy_pct}."
+      "narration": "The ratio moved fastest in the last year: it rose {fig:ratio_gain_last_pts}, against at most {fig:ratio_gain_max_earlier_pts} in any earlier year."
     },
     {
       "id": "s5-economies",
@@ -103,7 +106,7 @@
       "chart": "coverage_lines",
       "chartTitle": "Economies GitHub reports, by language",
       "alt": "Line chart of how many economies GitHub reports each quarter for TypeScript and for JavaScript; for TypeScript it rose from {fig:econ_reported_a_first} to {fig:econ_reported_a_last}.",
-      "narration": "Some limits. GitHub leaves out economies with too few active developers; for TypeScript, the number reported rose from {fig:econ_reported_a_first} to {fig:econ_reported_a_last}, which is why we followed a fixed set. Only public repositories count, a developer who pushes in both languages counts under each, and location comes from IP addresses. The data shows how many developers pushed, not why. The source is GitHub's Innovation Graph, which GitHub dedicates to the public domain."
+      "narration": "Some limits. GitHub leaves out economies with too few active developers; for TypeScript, the number reported rose from {fig:econ_reported_a_first} to {fig:econ_reported_a_last}, which is why we followed a fixed set. Only public repositories count, a developer who pushes in both languages counts under each, and location comes from IP addresses. The data shows how many developers pushed, not why. The data is GitHub's Innovation Graph, dedicated to the public domain."
     }
   ]
 }

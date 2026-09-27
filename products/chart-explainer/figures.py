@@ -341,16 +341,6 @@ def _fastest_top(an: Analysis) -> str:
     return max(an.top_languages(), key=lambda lang: an.growth(lang)[0])
 
 
-@figure("a_yoy_pct", "pct", "Panel A pushers, latest quarter vs the same quarter a year earlier, percent change.")
-def _a_yoy(an: Analysis) -> float:
-    return 100 * (an.a_series[-1] / an.a_series[an.year_idx[-2]] - 1)
-
-
-@figure("b_yoy_pct", "pct", "Panel B pushers, latest quarter vs the same quarter a year earlier, percent change.")
-def _b_yoy(an: Analysis) -> float:
-    return 100 * (an.b_series[-1] / an.b_series[an.year_idx[-2]] - 1)
-
-
 @figure("ratio_gain_last_pts", "pts", "Change in the A/B ratio (percent) over the latest year.")
 def _gain_last(an: Analysis) -> float:
     return an.yearly_gain[-1][2]
@@ -449,8 +439,6 @@ CLAIMS: list[Claim] = [
     Claim("no_earlier_gain_exceeds_spoken",
           "'in no earlier year did it rise more than X': the unrounded maximum is at most the spoken, rounded X.",
           lambda an, f: f["ratio_gain_max_earlier_pts"].value <= f["ratio_gain_max_earlier_pts"].rounded),
-    Claim("last_year_grew", "'That year, ... grew': both year-on-year changes are positive.",
-          lambda an, f: f["a_yoy_pct"].value > 0 and f["b_yoy_pct"].value > 0),
     Claim("picture_same", "'Economy by economy, the picture is the same': the median economy's ratio also rose.",
           lambda an, f: f["median_ratio_last_pct"].value > f["median_ratio_first_pct"].value),
     Claim("threshold_up_from", "'up from X': more economies at the threshold at the end than at the start.",
