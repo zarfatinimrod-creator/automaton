@@ -1,6 +1,6 @@
 # The brand name — "Bediyuk" is taken; the colony still owes the owner a name
 
-**Status: MEASURED 27.9.2026 from a GitHub runner. The 3.9 recommendation is withdrawn.**
+**Status: MEASURED 27.9.2026 from a GitHub runner. The 3.9 recommendation is withdrawn. RESOLVED the same day: Fable chose `mehudak` (Mehudak / מהודק) from six candidates free on all three lookups — `brand-name-decision.md`; the placeholders are renamed and the owner steps carry the name.**
 
 ## Why this matters
 Every owner step that makes something public carries the brand, not the owner's name (MISSION.md, anonymity):

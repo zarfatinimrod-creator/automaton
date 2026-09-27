@@ -8,19 +8,19 @@ Free, MIT, no account, no key, no network calls. Everything runs locally.
 
 ## Install
 
-**Not on npm yet.** `@bediyuk/mcp-il-tools` is not published (the npm registry returns 404 for it), and no workflow in this repository publishes it. The config below is what it will be:
+**Not on npm yet.** `@mehudak/mcp-il-tools` is not published (the npm registry returns 404 for it), and no workflow in this repository publishes it. The config below is what it will be:
 
 ```json
 {
   "mcpServers": {
-    "il-tools": { "command": "npx", "args": ["-y", "@bediyuk/mcp-il-tools"] }
+    "il-tools": { "command": "npx", "args": ["-y", "@mehudak/mcp-il-tools"] }
   }
 }
 ```
 
 Known defect, to fix before publishing: launched through `npx` (or any `node_modules/.bin` link), the server exits silently without answering. The start guard at the end of `src/server.ts` compares `import.meta.url` with the unresolved symlink path in `process.argv[1]`. `node dist/server.js` works.
 
-Registry name: `com.bediyuk/il-tools` (planned, not listed yet: the listing waits on the domain, owner step 5, and the GitHub organisation, owner step 7).
+Registry name: `com.mehudak/il-tools` (planned, not listed yet: the listing waits on the domain, owner step 5, and the GitHub organisation, owner step 7).
 
 ## Tools
 

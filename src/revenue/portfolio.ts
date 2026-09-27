@@ -213,7 +213,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     budgetMonthlyCents: 4000,
     humanSetup: [
       "Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses",
-      "Create the GitHub organisation under the brand name so the open-source core's repository URL carries it and not your username (owner step 7). The npm scope `@bediyuk` is a separate namespace on npm, not created by the GitHub organisation; publishing to it is our work and no workflow does it yet.",
+      "Create the GitHub organisation under the brand name so the open-source core's repository URL carries it and not your username (owner step 7). The npm scope `@mehudak` (the brand the board chose on 27.9.2026) is a separate namespace on npm, not created by the GitHub organisation; publishing to it is our work and no workflow does it yet.",
       "Buy the company domain (owner step 5) and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — both shared with il-biz-tools; without the token the loop cannot see a sale",
     ],
     skillName: "revenue-pcn874",
