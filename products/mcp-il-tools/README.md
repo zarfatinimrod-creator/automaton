@@ -1,6 +1,6 @@
 # mcp-il-tools
 
-An MCP server for the Israeli data checks that agents get wrong: the teudat-zehut
+An MCP server for the Israeli data checks that are easy to get wrong: the teudat-zehut
 check digit, phone number classification, bank and branch codes, the Hebrew calendar,
 and Hebrew-to-Latin transliteration.
 
@@ -8,28 +8,35 @@ Free, MIT, no account, no key, no network calls. Everything runs locally.
 
 ## Install
 
+**Not on npm yet.** `@mehudak/mcp-il-tools` is not published (the npm registry returns 404 for it), and no workflow in this repository publishes it. The config below is what it will be:
+
 ```json
 {
   "mcpServers": {
-    "il-tools": { "command": "npx", "args": ["-y", "@bediyuk/mcp-il-tools"] }
+    "il-tools": { "command": "npx", "args": ["-y", "@mehudak/mcp-il-tools"] }
   }
 }
 ```
 
-Registry name: `com.bediyuk/il-tools`.
+Known defect, to fix before publishing: launched through `npx` (or any `node_modules/.bin` link), the server exits silently without answering. The start guard at the end of `src/server.ts` compares `import.meta.url` with the unresolved symlink path in `process.argv[1]`. `node dist/server.js` works.
+
+Registry name: `com.mehudak/il-tools` (planned, not listed yet: the listing waits on the domain, owner step 5, and the GitHub organisation, owner step 7).
 
 ## Tools
 
 | Tool | What it answers |
 |---|---|
-| `validate_israeli_id` | Is this teudat zehut valid? Pads to nine digits first, which is the step most implementations skip. |
+| `validate_israeli_id` | Is this teudat zehut valid? Pads to nine digits first (IDs with dropped leading zeros are common, and the check digit needs all nine). |
 | `validate_israeli_phone` | Is this number valid, and is it mobile, landline, VoIP, toll-free (1-800), national-rate (1-700) or premium (1-900)? |
 | `validate_israeli_bank` | Is this bank code, branch and account plausible, and which bank is it? |
-| `hebrew_date` | What is this Gregorian date in the Hebrew calendar, and is it a Hebrew leap year? |
-| `transliterate_hebrew` | Latin transcription of Hebrew text, for slugs and filenames. Approximate by design. |
+| `hebrew_date` | What is this Gregorian date in the Hebrew calendar, and is it a Hebrew leap year? Known defect: on a machine west of UTC it currently returns the previous Hebrew day. |
+| `transliterate_hebrew` | Latin transcription of Hebrew text, a starting point for slugs and filenames: it keeps spaces and turns א and ע into an apostrophe. Approximate by design. |
 
 Each returns JSON. Invalid input comes back as a result explaining why, not an exception —
-callers are agents, and an agent can act on `{"valid": false, "reason": "..."}`.
+callers are agents, and an agent can act on `{"valid": false, "reason": "..."}` (`hebrew_date` answers
+`{"error": "bad_request", "message": "..."}` instead). One exception: an argument of the wrong
+type, such as an ID or phone number sent as a number, is rejected by the MCP SDK as a plain-text
+tool error, not JSON.
 
 ### On 1-800
 
@@ -44,14 +51,16 @@ because these prefixes are not internationally diallable.
 - **Transliteration is approximate.** It is rule-based, not a standard romanisation, and
   every response says so. Do not use it for legal names.
 - **Bank validation is structural.** It checks the code, branch and account shape and names
-  the bank. It cannot tell you the account exists or belongs to anyone.
+  the bank. It cannot tell you the account exists or belongs to anyone. The bank code is
+  looked up in a fixed table of 18 codes (the source calls it "the major banks"); any other code
+  is reported invalid.
 - **ID validation is a check digit.** A valid teudat zehut is a well-formed number, not a
   real person. It cannot confirm identity.
 
 ## The paid version, and why it is separate
 
-The same logic is sold per-call over the x402 protocol in
-[`products/x402-il-api`](../x402-il-api), for agents that would rather pay a fraction of a
+The same logic is exposed per-call over the x402 protocol in
+[`products/x402-il-api`](../x402-il-api) — an API that is not deployed and not a revenue line since 7.9.2026 (`KILLED_LINES` in `src/revenue/portfolio.ts`; it is kept as a rail on standby), so nothing is sold there today. It was built for agents that would rather pay a fraction of a
 cent than run a process. This package is not crippled to sell that one: identical
 validators, no rate limit, no telemetry, nothing withheld. The paid API exists for callers
 who want an HTTP endpoint instead of a dependency.

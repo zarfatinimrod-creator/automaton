@@ -55,6 +55,14 @@ export function decideLine(
     return decide("hold", "line not started yet");
   }
 
+  // A measurement experiment cannot earn before its platform's own thresholds, review and payment cycle, so the
+  // revenue floor below would kill it for a reason that says nothing. Its pre-registered gates judge it instead
+  // (experiments.ts: evaluateExperiment), from readings this function never sees — which keeps this function
+  // re-derivable by the auditor from ledger numbers alone.
+  if (line.status === "measuring") {
+    return decide("hold", "measurement experiment: judged by its pre-registered gates (src/revenue/experiments.ts), not by the revenue floor");
+  }
+
   const net30 = metrics.net30dAgorot;
   const rev30 = metrics.revenue30dAgorot - metrics.refunds30dAgorot;
 
@@ -147,7 +155,7 @@ export function experimentsToPause(
   policy: DecisionPolicy = DEFAULT_DECISION_POLICY,
 ): string[] {
   const active = lines
-    .filter((l) => l.tier === "experimental" && (l.status === "building" || l.status === "live" || l.status === "scaling"))
+    .filter((l) => l.tier === "experimental" && (l.status === "building" || l.status === "measuring" || l.status === "live" || l.status === "scaling"))
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   if (active.length <= policy.maxExperiments) return [];
   return active.slice(policy.maxExperiments).map((l) => l.id);
@@ -176,7 +184,7 @@ export function allocateBudget(
 ): Map<string, number> {
   const out = new Map<string, number>();
   const eligible = lines.filter((l) => {
-    if (!(l.status === "building" || l.status === "live" || l.status === "scaling")) return false;
+    if (!(l.status === "building" || l.status === "measuring" || l.status === "live" || l.status === "scaling")) return false;
     const d = decisionsById.get(l.id);
     return !(d && d.decision === "kill");
   });

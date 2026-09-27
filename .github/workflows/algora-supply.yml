@@ -1,0 +1,140 @@
+name: algora-supply
+
+# Count CLAIMABLE Algora bounties on GitHub, once a week, and commit the reading.
+#
+# WHY. research/colony-sweep/BOARD-2.md §2.2 made this the first build step of the
+# `oss-bounties` line (₪300 of the committed ₪1,500): "the cheapest test that the
+# payer is actually posting jobs". A third-party census found 5 claimable bounties
+# ($60) among 561 labelled issues; the board would not move the target on a number
+# this repo had not reproduced, so this job reproduces it weekly. At week 4 the
+# mean of four weekly readings decides the line: >= 10 keeps ₪300, 3-9 retargets
+# it to ₪100, under 3 kills it (src/revenue/portfolio.ts, oss-bounties).
+#
+# WHAT IT COUNTS: open issues labelled "💎 Bounty", in unarchived repositories,
+# without "💰 Rewarded" or an Algora payout comment, with a bot-posted amount of
+# at least $50, whose repository policy does not forbid AI-authored work. The
+# per-filter drop counts and the per-repository table are in
+# research/measurements/algora-supply.md; the JSON the hourly tick reads into the
+# KPI `claimableBounties` is state/colony/measurements/algora-supply.json.
+#
+# NO OWNER SECRET. It reads public GitHub data with the job's own GITHUB_TOKEN.
+# It never requests Algora's website - Algora's terms forbid automated access to
+# it (research/rendered/algora-terms.txt:258-260), and the client refuses any host
+# but api.github.com.
+#
+# NEVER A FAKE ZERO. On an API failure, an exhausted rate-limit budget or a partial
+# search the script writes nothing and exits 1, so this job goes red and no file
+# changes: a week that could not be measured is a missing reading, never a zero.
+#
+# Scheduled workflows run only from the default branch; like apify-publish's
+# count-runs job, this one checks out main and commits the reading there, because
+# it is one series over time.
+
+on:
+  schedule:
+    # Mondays 06:23 UTC. Not on the hour: GitHub delays top-of-the-hour schedules.
+    - cron: "23 6 * * 1"
+  # On demand too. A second run inside the same ISO week replaces that week's
+  # reading rather than adding one (supply.ts appendWeeklyReading), so a manual
+  # dispatch cannot turn four weekly readings into five.
+  workflow_dispatch:
+  # And once when the counter itself lands on main, so the first reading comes
+  # the week it merges ("first run this week", BOARD-2 §2.2) rather than waiting
+  # for a Monday. Main only: nothing runs from a feature branch. The commit this
+  # job makes touches none of these paths, so it cannot retrigger itself.
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/algora-supply.yml"
+      - "scripts/algora-supply.ts"
+      - "src/revenue/bounties/supply.ts"
+      - "src/revenue/bounties/supply-github.ts"
+
+permissions:
+  contents: write
+
+# Own group, not colony.yml's: GitHub keeps one pending run per group, so sharing
+# it could let an hourly tick silently cancel a weekly count. The cross-workflow
+# race on push is handled by the rebase-and-retry loop below.
+concurrency:
+  group: algora-supply
+  cancel-in-progress: false
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Committing needs real history, not a shallow clone.
+          fetch-depth: 0
+          # One series over time, on main, whichever branch a dispatch came from.
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: pnpm/action-setup@v4
+
+      # The counter reuses the line's own TypeScript (parseAlgoraBotComment,
+      # assessRepoPolicy), so it runs under tsx like scripts/colony.ts does.
+      - run: pnpm install --frozen-lockfile
+
+      - name: Count claimable Algora bounties
+        id: count
+        env:
+          # The job's own token: 1,000 REST requests an hour and 30 searches a
+          # minute against public data. Not an owner secret.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm exec tsx scripts/algora-supply.ts
+
+      - name: Commit the reading back to main
+        run: |
+          set -euo pipefail
+          JSON=state/colony/measurements/algora-supply.json
+          MD=research/measurements/algora-supply.md
+          if [ ! -f "$JSON" ] || [ ! -f "$MD" ]; then
+            echo "::error::The count reported success but a measurement file is missing; refusing to commit half a reading."
+            exit 1
+          fi
+
+          git config user.name "colony-bot"
+          git config user.email "colony-bot@users.noreply.github.com"
+
+          # Stage first, then compare the index: on the first run the files are
+          # untracked and `git diff` alone would report no change forever.
+          git add "$JSON" "$MD"
+          if git diff --cached --quiet; then
+            echo "Reading unchanged since the last run."
+            exit 0
+          fi
+
+          SUBJECT=$(node -e 'const j=require("./state/colony/measurements/algora-supply.json");process.stdout.write("measure(algora): "+j.claimableBounties+" claimable bounties of "+j.labelledOpenIssues+" labelled ("+j.boardReading.verdict+", week "+Math.min(j.boardReading.weeksRead,4)+" of 4)");')
+          # [skip ci] keeps a measurement commit from retriggering the test workflows.
+          git commit -m "${SUBJECT} [skip ci]"
+
+          # The hourly colony tick and the daily Apify count commit to main too,
+          # so a push can lose a race. Rebase and retry rather than lose a week.
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push rejected; rebasing and retrying (attempt ${attempt})."
+            git pull --rebase --autostash
+          done
+          echo "Could not push the Algora supply reading after 3 attempts." >&2
+          exit 1
+
+      # Only after a successful count: on failure the file on disk is last week's,
+      # and showing it here would pass an old number off as this run's. The script
+      # itself writes the failure reason to the summary.
+      - name: Surface the reading in the run summary
+        if: steps.count.outcome == 'success'
+        run: |
+          set -euo pipefail
+          MD=research/measurements/algora-supply.md
+          if [ -f "$MD" ]; then
+            cat "$MD" >> "$GITHUB_STEP_SUMMARY"
+          fi

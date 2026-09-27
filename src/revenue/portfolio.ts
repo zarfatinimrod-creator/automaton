@@ -92,7 +92,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     // stranger runs exist (chief audit §4B.7-8), not asked for today.
     // "Register as osek patur" is gone from every line: it is owner step 2, once.
     humanSetup: [
-      "Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). Nothing else: publishing free and counting stranger runs needs no identity verification. Apify KYC and a PayPal payout are deferred until stranger runs exist.",
+      "Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify KYC and a PayPal or Wise payout are deferred until 50 stranger users in 30 days (scaleCriteria); under 10 at day 30 they are not asked for.",
     ],
     skillName: "revenue-apify-actors",
   },
@@ -105,7 +105,7 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     operatingLoop: [
       "Ship a Hebrew/RTL web app with free calculators and paid exports for Israeli freelancers (osek patur / osek murshe):",
       "receipt and invoice generator matching Israeli formats, VAT and advance-payment calculators, net-salary calculator, Bituach Leumi estimator, osek patur threshold tracker, and the redaction feature folded in from risk-governance.",
-      "The paid tier is sold through GUMROAD, not Paddle: Gumroad is the only merchant of record with rendered proof of ILS payout to an Israeli bank. Retire the Paddle block in src/config/site.json and put a Gumroad checkout link on the Pro box in place of 'בקרוב'.",
+      "The paid tier is sold through GUMROAD, not Paddle: Gumroad is the only merchant of record with rendered proof of a native ILS payout to an Israeli bank; Freemius (rendered 7.9.2026) pays Israel from a USD balance with ILS only by Wise or wire conversion (rails.ts, CANDIDATE_RAILS). Retire the Paddle block in src/config/site.json and put a Gumroad checkout link on the Pro box in place of 'בקרוב'.",
       "Every page that depends on tax-2026.json stays UNPUBLISHED until its rates are confirmed against two independent GitHub-hosted implementations and `verified` flips to true. Publishing an unverified rate is selling a wrong number.",
       "Loop: deploy under the domain → one Hebrew SERP read before any SEO hour → cookieless page views through the PostHog snippet, written weekly as KPIs → improve the tool with the best visit-to-pay ratio → repeat.",
     ].join(" "),
@@ -142,16 +142,32 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
       "ALGORA ONLY. Find funded bounties the way the payer publishes them: GitHub issues carrying algora-pbc[bot] bounty comments, found by GitHub search — the one host this container reaches.",
       "Filter before attempting: exclude repositories whose CONTRIBUTING or policy files ban AI-authored pull requests, require TypeScript / Python / docs / tests, and emit at most two candidates.",
       "EVERY pull request is opened from the BRAND MACHINE ACCOUNT, never from the owner's GitHub handle — a PR is a published byline and the mandate forbids his name on it (board §5, owner step 7).",
-      "Disclose AI authorship on every pull request, attach a short demo video per claim, attempt at most two in parallel, and stop on a maintainer's first request.",
+      "That account's login must not end in \"bot\" and it must be a GitHub User, not a GitHub App: Algora's own code drops `type: Bot` authors (ensure_human_author) and `%bot` logins from its contributor queries, and presenting as a bot invites the refusal the disclosure exists to avoid (BOARD-2 §2.1.3(c); checked by brandAccountProblems in bounties/intake.ts).",
+      "Disclose on every pull request and in every /claim that the account is an automated brand account and the work is AI-authored and agent-operated, so the maintainer who merges and Algora who pays do so knowing (BOARD-2 §2.1.2); attach a short demo video per claim, attempt at most two in parallel, and stop on a maintainer's first request.",
+      "Nothing in this line ever requests Algora's own website: its terms forbid automated access to it (BOARD-2 §2.1; a test scans src/, scripts/ and .github/ for it). The one human use is owner step 4.",
+      "First build step, before any attempt (BOARD-2 §2.2): a weekly CI count of CLAIMABLE bounties (algora-supply.yml → claimableBounties), read at week 4 on the mean of four weekly readings.",
       "Loop: scan daily → attempt at most two → only claim what is merged → record the payout with its bounty id → repeat. Devpost is optional and conditional on the owner's answer about per-win paperwork; it is not part of this loop today.",
     ].join(" "),
-    kpis: ["bounties attempted", "pull requests merged", "payouts in ILS", "acceptance rate"],
+    kpis: [
+      "claimableBounties (weekly, from CI: open, labelled 💎 Bounty, unarchived, unrewarded, ≥ $50 from the bot's comment, policy not forbidden)",
+      "bounties attempted",
+      "pull requests merged",
+      "payouts in ILS",
+      "acceptance rate",
+    ],
     killCriteria: [
       "revenue_ledger holds no Algora payout 90 days after the first attempted bounty",
       "acceptance rate under 25% over 10 attempts",
       "a maintainer policy ban on AI-authored PRs found in more than half of the candidate repositories in a month",
+      "claimableBounties: mean of the first four weekly readings under 3 → the line is killed into docs/REJECTED.md with the re-open trigger \"≥10 claimable bounties a week for four consecutive weekly runs\"; owner step 4 is not requested for this line's sake (BOARD-2 §2.2)",
+      "claimableBounties: mean of the first four weekly readings from 3 to 9 → retarget ₪300 → ₪100, grade contradicted, the basis carrying both readings; owner step 4 still proceeds, because it also settles Stripe-Israel for the kill list (BOARD-2 §2.2)",
+      "any Algora or maintainer action against the account on grounds of automation — a refused claim, a warning, a suspension — kills the line the same day, recorded in docs/REJECTED.md with the message quoted (BOARD-2 §2.1.3(d))",
     ],
-    scaleCriteria: ["30-day revenue at or above target", "acceptance rate above 60%"],
+    scaleCriteria: [
+      "claimableBounties: mean of the first four weekly readings at or above 10 → ₪300 stands and owner step 4 proceeds in its ordered place, after step 7 (BOARD-2 §2.2)",
+      "30-day revenue at or above target",
+      "acceptance rate above 60%",
+    ],
     // Board §3: RETARGET ₪1,500 → ₪300. The whole audited group is ₪800 and
     // Algora's share of it is ₪300. This line keeps its rank on MISSION
     // constraint 7 rather than on its ceiling: it is the only line whose
@@ -163,8 +179,9 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     targetMonthlyAgorot: agorotFromIls(300),
     budgetMonthlyCents: 3000,
     humanSetup: [
-      "Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7)",
+      "Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in \"bot\" (BOARD-2 §2.1.3(c))",
       "Sign in to Algora AS THE BRAND MACHINE ACCOUNT and complete Stripe Connect Express onboarding in your legal identity — individual, ID, Israeli address, Israeli bank account (owner step 4, done after step 7)",
+      "Paste the brand machine account's token as BRAND_GITHUB_TOKEN in GitHub Actions secrets, so bounty PRs leave from the brand account (owner step 6; bounties/intake.ts is blocked on it)",
     ],
     skillName: "revenue-oss-bounties",
   },
@@ -196,7 +213,8 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     budgetMonthlyCents: 4000,
     humanSetup: [
       "Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses",
-      "Create the GitHub organisation under the brand name so the open-source core and the npm scope carry it and not your username (owner step 7)",
+      "Create the GitHub organisation under the brand name so the open-source core's repository URL carries it and not your username (owner step 7). The npm scope `@mehudak` (the brand the board chose on 27.9.2026) is a separate namespace on npm, not created by the GitHub organisation; publishing to it is our work and no workflow does it yet.",
+      "Buy the company domain (owner step 5) and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — both shared with il-biz-tools; without the token the loop cannot see a sale",
     ],
     skillName: "revenue-pcn874",
   },
@@ -304,8 +322,8 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
     // in this repo is a snippet, an inference from absence, or an UNKNOWN.
     ils: 300, grade: "inferred",
     basis:
-      "The bounties-grants group is swept and audited: its five ranked lines fell from ₪7,800 to ₪800 combined, and Algora's own share of that is ₪300 (chief audit §2.1 #6). Month one is ₪0; money arrives 2-5 days after a first rewarded PR, which is weeks away. What IS verified, at code level and re-rendered independently, is Israeli payability — Algora's connect_countries.ex lists Israel and routes it to Stripe Connect Express. This is the only line in the portfolio whose acquisition problem runs backwards: the payer posts the job publicly, funds it in advance and publishes the acceptance criteria, so no stranger has to find us. Under MISSION constraint 7 that property outranks the ceiling, which is why the line keeps its rank at ₪300.",
-    source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #6; research/colony-sweep/audits/bounties-grants.md; research/colony-sweep/CRITIC-synthesis.md §5",
+      "The bounties-grants group is swept and audited: its five ranked lines fell from ₪7,800 to ₪800 combined, and Algora's own share of that is ₪300 (chief audit §2.1 #6). Month one is ₪0; money arrives 2-5 days after a first rewarded PR, which is weeks away. What IS verified, at code level and re-rendered independently, is Israeli payability — Algora's connect_countries.ex lists Israel and routes it to Stripe Connect Express. This is the only line in the portfolio whose acquisition problem runs backwards: the payer posts the job publicly, funds it in advance and publishes the acceptance criteria, so no stranger has to find us. Under MISSION constraint 7 that property outranks the ceiling, which is why the line keeps its rank at ₪300. SUPPLY IS THE OPEN QUESTION (BOARD-2 §2.2): a third-party census found 5 claimable bounties, $60, among 561 labelled issues, and the repo's own 22.9 label count points the same way; the board kept ₪300 until a reading of ours replaces it and expects it to fall. The measurement is claimableBounties, counted weekly from CI (algora-supply.yml), read at week 4 on the mean of four weekly readings: ≥10 keeps ₪300; 3-9 retargets to ₪100 with grade contradicted; under 3 kills the line.",
+    source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #6; research/colony-sweep/audits/bounties-grants.md; research/colony-sweep/CRITIC-synthesis.md §5; research/colony-sweep/BOARD-2.md §2.1-2.2; research/measurements/algora-supply.md",
     rail: "Stripe Connect Express via Algora (connect_countries.ex rendered twice). Unverified at the ACCOUNT level until owner step 4 succeeds.",
     acquisitionChannel:
       "The payer posts the job: bounties are GitHub issues carrying algora-pbc[bot] bounty comments, found by GitHub search — the only host this container reaches, and the only channel in the portfolio that does not need a stranger to find us first.",

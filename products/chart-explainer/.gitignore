@@ -1,0 +1,6 @@
+# Downloaded data and Kokoro model files (325 MB): fetched by sha256, never committed.
+.cache/
+# Rendered MP4, audio, charts, page and manifests: regenerable output, never committed.
+out/
+__pycache__/
+.pytest_cache/

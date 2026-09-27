@@ -116,8 +116,11 @@ export function parseAlgoraBotComment(input: { author?: string; body: string }):
 
   // Algora's own docs: "The Algora bot will comment on the issue when the
   // contributor receives the payment." A comment saying the money already moved
-  // is not an open job.
-  const rewarded = /\b(?:has\s+been\s+rewarded|was\s+rewarded|received\s+the\s+payment|reward(?:ed)?\s+to|bounty\s+(?:has\s+been\s+)?(?:paid|awarded|claimed))\b/i.test(body);
+  // is not an open job. The actual sentence, read 27.9.2026 from algora-io/algora
+  // lib/algora/bounties/jobs/notify_transfer.ex, is "🎉🎈 @login has been awarded
+  // **$N** by **Name**! 🎈🎊" — "has been awarded" was missing until the supply
+  // count (supply.ts) needed to recognise it.
+  const rewarded = /\b(?:has\s+been\s+(?:rewarded|awarded)|was\s+rewarded|received\s+the\s+payment|reward(?:ed)?\s+to|bounty\s+(?:has\s+been\s+)?(?:paid|awarded|claimed))\b/i.test(body);
 
   let state: BotCommentState;
   if (rewarded) state = "rewarded";
@@ -134,6 +137,38 @@ export function parseAlgoraBotComment(input: { author?: string; body: string }):
     state,
     quotes,
   };
+}
+
+// ── The account that opens the pull request ──────────────────────────────────
+
+export interface GithubAccount {
+  login: string;
+  /** GitHub's `type` field on the user object: "User", "Organization" or "Bot". */
+  type: string;
+}
+
+/**
+ * BOARD-2 §2.1.3(c): the brand machine account's login must not end in "bot" and it must be a GitHub `User`, not a
+ * GitHub App (`type: "Bot"`).
+ *
+ * Why, from Algora's own code (read by the board, 27.9.2026): its webhook handler drops any event whose author is
+ * `type: "Bot"` in a function named `ensure_human_author`, and its contributor queries exclude logins matching
+ * `%bot`. An App account would be filtered out, and a `*bot` login presents as exactly the thing the line's
+ * disclosure is there to be honest about — inviting the refusal the disclosure exists to avoid. Passing these checks
+ * is not the permission; the disclosure on every PR and every `/claim` is (§2.1.2). Returns the problems, empty when
+ * the account is usable; nothing opens a pull request from an account with a non-empty list.
+ */
+export function brandAccountProblems(account: GithubAccount): string[] {
+  const problems: string[] = [];
+  const login = (account.login ?? "").trim();
+  if (login === "") problems.push("no login");
+  if (/bot$/i.test(login)) {
+    problems.push(`login "${login}" ends in "bot": Algora's contributor queries drop %bot logins (workspace.ex), and the account must not present as a bot while disclosing that it is automated.`);
+  }
+  if (account.type !== "User") {
+    problems.push(`type is "${account.type}", not "User": a GitHub App (type Bot) is dropped by Algora's ensure_human_author, and the board requires a machine *user* account (BOARD-2 §2.1.3(c)).`);
+  }
+  return problems;
 }
 
 // ── The pay floor, derived rather than picked ────────────────────────────────

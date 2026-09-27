@@ -78,6 +78,11 @@ export interface OwnerStep {
   earlyPart?: { what: string; afterStep: OwnerStepId; minutes: number };
   /** A decision the board left to the owner inside this step. Not a step itself. */
   ownerDecision?: string;
+  /**
+   * Set only when the step is verifiably done, with the evidence. The report stops
+   * asking for it, and a test keeps the Hebrew heading's "✅ בוצע" in step with it.
+   */
+  doneOn?: { date: string; evidence: string };
 }
 
 export const OWNER_STEPS: OwnerStep[] = [
@@ -91,6 +96,7 @@ export const OWNER_STEPS: OwnerStep[] = [
       "Consent, not identity: it puts colony.yml and every future workflow on `main`, and GitHub runs scheduled work only there. Nothing CI-executed — the Apify push, the Netlify deploys, the hourly ledger sync — runs before it, so it gates the MEASUREMENTS and not only the hourly report. The agent does not merge on its own initiative.",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: null,
+    doneOn: { date: "2026-09-22", evidence: "merge commit 31cda66 (PR #2); colony.yml runs hourly on main since" },
   },
   {
     id: "tax-file",
@@ -112,7 +118,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "חשבון Gumroad + טוקן",
     minutes: [20, 20],
     unlocks:
-      "The only merchant-of-record rail with RENDERED proof of ILS payout to an Israeli bank (Gumroad's own _13-getting-paid.html.erb carries a row reading `Israel | ILS`). It collects from the buyer, holds 7 days, and pays out in shekels above a $100 balance. It supplies no buyers — its Discover gate requires a sale to already exist — so it is a rail, not a storefront.",
+      "The only merchant-of-record rail with RENDERED proof of a native ILS payout to an Israeli bank (Freemius pays Israel from a USD balance, ILS only via Wise or wire) (Gumroad's own _13-getting-paid.html.erb carries a row reading `Israel | ILS`). It collects from the buyer, holds 7 days, and pays out in shekels above a $100 balance. It supplies no buyers — its Discover gate requires a sale to already exist — so it is a rail, not a storefront. The dashboard-minted token carries edit_products (Gumroad doorkeeper.rb:10, oauth_application.rb:121-122), so the agent creates the Pro product with Gumroad's own licence-key block, and Gumroad mints and emails a key per sale — there is no per-sale owner step (research/measurements/gumroad-license-decision.md, Option C).",
     lines: ["il-biz-tools", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.2",
     ownerDecision:
@@ -138,7 +144,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "להעביר את הריפו לארגון ב-GitHub (וחשבון מכונה בשם המותג)",
     minutes: [10, 15],
     unlocks:
-      "Takes the owner's name off every raw.githubusercontent.com URL in the repository, and creates the ONE brand machine account GitHub's terms allow alongside a personal account. That account is what authors bounty pull requests and signs in to Algora — an organisation cannot sign in anywhere, so the org alone does not fix the byline. Its personal access token becomes BRAND_GITHUB_TOKEN in step 6.",
+      "Takes the owner's name off every raw.githubusercontent.com URL in the repository, and creates the ONE brand machine account GitHub's terms allow alongside a personal account. That account is what authors bounty pull requests and signs in to Algora — an organisation cannot sign in anywhere, so the org alone does not fix the byline. Its personal access token becomes BRAND_GITHUB_TOKEN in step 6. It is an ordinary User account whose login does not end in \"bot\" — Algora's contributor queries drop %bot logins, and a GitHub App (type Bot) fails its human-author check (BOARD-2 §2.1.3(c); bounties/intake.ts brandAccountProblems).",
     lines: ["oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.6",
     ownerDecision:
@@ -151,7 +157,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "Stripe Connect Express דרך Algora",
     minutes: [15, 15],
     unlocks:
-      "The shortest documented path to a platform transaction id — 2-5 days after a rewarded pull request — and the one form that settles the most-contested payability question in the whole sweep for every other Stripe-Connect platform. Done SIGNED IN AS THE BRAND MACHINE ACCOUNT (which is why it now follows step 7); the Stripe form inside it stays in the owner's legal identity, which is exactly what the mandate allows.",
+      "The shortest documented path to a platform transaction id — 2-5 days after a rewarded pull request — and the one form that settles the most-contested payability question in the whole sweep for every other Stripe-Connect platform. Done SIGNED IN AS THE BRAND MACHINE ACCOUNT (which is why it now follows step 7); the Stripe form inside it stays in the owner's legal identity, which is exactly what the mandate allows. NOT requested for oss-bounties until the week-4 reading of the weekly claimable-supply count (BOARD-2 §2.2): ≥10 and it proceeds after step 7; 3-9 and it still proceeds, because it settles Stripe-Israel for the kill list; under 3 it is not asked for this line's sake.",
     lines: ["oss-bounties"],
     catalogueRef: "CHIEF-AUDIT §4A.3",
   },
@@ -162,7 +168,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "לחבר את Netlify, להדביק את הטוקנים ב-GitHub, וקליק אחד ב-Apify",
     minutes: [15, 20],
     unlocks:
-      "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; BRAND_GITHUB_TOKEN lets bounty PRs leave the brand account. The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can.",
+      "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; the same token creates the il-biz-tools Pro product once (Option C, Gumroad-native licences); BRAND_GITHUB_TOKEN lets bounty PRs leave the brand account. The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can.",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.5",
     earlyPart: {

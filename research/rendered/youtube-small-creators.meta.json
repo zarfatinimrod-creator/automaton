@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/youtube/answer/16559651?hl=en",
+  "slug": "youtube-small-creators",
+  "fetchedAt": "2026-09-27T09:54:50.463Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1582078,
+  "sha256": "6c70a3e3922c2d4a8104c2cdf0e2b7222964e34d49761c6cdb5f127820e68067",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/youtube-small-creators.html",
+  "textPath": "research/rendered/youtube-small-creators.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

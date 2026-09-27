@@ -1,0 +1,357 @@
+YouTube Partner Program overview & eligibility - Android - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+YouTube Partner Program overview & eligibility
+
+Starting February 1, 2027, we are introducing updates to the YouTube Partner Program (YPP) . To continue fully monetizing your content, review and accept the updated terms in YouTube Studio by January 31, 2027.
+
+The YouTube Partner Program (YPP) gives creators greater access to YouTube resources and monetization features, and access to our Creator Support teams. It also allows revenue sharing from ads being served on your content. Learn more about the features, eligibility criteria, and application details in this article.
+
+Intro to Making Money on YouTube
+
+Subscribe to the YouTube Creators channel for the latest news, updates, and tips.
+
+Want to apply to YPP, but need help building an audience first? Check out our tips to establish your fanbase , and our tips for the YouTube Partner Program .
+
+What you need to join
+
+Follow the YouTube channel monetization policies .
+
+These are a collection of policies and guidelines that allow you to monetize on YouTube, and compliance with them is required when you accept a partner agreement with YouTube.
+
+Live in a country/region where the YouTube Partner Program is available .
+
+Have no active Community Guidelines strikes on your channel.
+
+Make sure 2-Step Verification is turned on for your Google Account.
+
+Have advanced features access on YouTube.
+
+Have one active AdSense for YouTube account linked to your channel, or be ready to set one up in YouTube Studio if you don’t already have one (only create a new AdSense for YouTube account in YouTube Studio— learn more ).
+
+How you can become eligible
+
+Once you understand what you need to join, your channel can become eligible for YPP with either Shorts or long-form video. If you’d like us to notify you when you’re eligible, select Get notified in the Earn area of YouTube Studio. You’ll get an email once you’ve met either of the below eligibility thresholds.
+
+1. Get 1,000 subscribers with 4,000 qualified watch hours in the last 12 months, or
+
+2. Get 1,000 subscribers with 10 million qualified Shorts views in the last 90 days.
+
+Keep in mind that any qualified watch hours from Shorts views in the Shorts Feed won’t count towards the 4,000 qualified public watch hours threshold.
+
+More on eligibility thresholds
+
+These thresholds help us make a more informed decision about whether your channel meets our policies and guidelines. Once you apply, your channel will go through a standard review process to see whether your channel meets our policies and guidelines. If it meets our policies and guidelines, we’ll accept your channel into YPP. Keep in mind we continuously check channels in YPP to make sure they continue to meet our policies and guidelines over time.
+
+Where to apply
+
+✨ NEW✨ Earlier Access to YouTube Partner Program Features
+
+Once you have what you need and your channel is eligible to apply, sign up for YPP from either a desktop computer or a mobile device:
+
+Open the YouTube Studio app
+
+From the bottom menu, tap Earn
+
+Select Apply Now to get started
+
+Click Start to review and Accept Base terms
+
+Click Start to set up an AdSense for YouTube account, or link an existing active one
+
+Note: Currently only the application process is available in the YouTube Studio app. We're working on adding more features soon such as managing ads and other monetization features. For now, go to YouTube Studio using a web browser on a phone, tablet, or computer for access to all the features.
+
+Once done, you’ll see In Progress in the Get Reviewed step, which means we have your application!
+
+How we review your application
+
+Once you accept YPP terms and link an active AdSense for YouTube account, your channel will automatically be put in a review queue. Our automated systems and human reviewers will review your channel as a whole to make sure your channel follows all of our policies and guidelines. Check back in the Earn section of YouTube Studio anytime to see the status of your application.
+
+We’ll get back to you with a decision once your channel is reviewed ( typically in about 1 month ).
+
+Keep in mind delays are possible due to higher-than-usual application volumes, system issues, or resource limitations. All YPP applications are serviced in the order they’re received by us. Sometimes channels require multiple reviews, especially when several reviewers disagree on your channel’s suitability for YPP. This may increase the time required for a decision to be made.
+
+If your first application wasn’t successful, don’t worry - you can appeal the decision within 21 days or keep uploading original content and you’ll be able to re-apply after a 30-day period. If this isn’t your first application to be rejected, or you’ve previously re-applied, you can try again after a 90-day period. Our reviewers likely found that a significant portion of your channel doesn’t currently follow our policies and guidelines, so be sure to review those against your channel’s overall content and adjust your channel before re-applying. Learn more about steps you can take to strengthen your application for next time.
+
+Choose how to earn and get paid
+
+Once you’re in YPP, get started in YouTube Studio with Watch Page Ads, Shorts Feed Ads, Memberships, Supers, and more. To turn on monetization features, you’ll need to review and accept the relevant module terms. Learn more about the modules and their options here .
+
+After choosing how you want to monetize, you’ll be able to manage ad preferences, turn on monetization for your uploads, and more. Here’s a list of FAQs that we get from creators who have just joined YPP.
+
+Getting paid
+
+Visit our Help Center for an easier understanding of your earnings as a YouTube partner, learn all about AdSense for YouTube (Google’s program that lets creators in YPP get paid), and troubleshoot common payment issues.
+
+Stay active to keep making money
+
+As the YouTube Partner Program continues to grow, it's important to maintain a healthy, active ecosystem of channels. To focus our support for creators who are active and engaged with the community, we may turn off monetization on channels that haven’t uploaded a video or posted to the Posts tab for 6 months or more .
+
+FAQs around applying and more
+
+What if I don’t meet the program threshold?
+
+If you don’t meet the requirements yet, keep working to make original content and build your audience. Here are some resources that can help you grow your channel:
+
+Learn solutions from other YouTube users in the YouTube Help Forum .
+
+Discover quick-and-easy tips on how to grow and build your channel in our Creator Tips hub.
+
+Go to youtube.com/creators to learn, grow, and be connected to programs, resources, and events.
+
+Check out our YouTube Help channel and YouTube Creators channel to watch tutorials, troubleshooting, and tip videos from the YouTube Help team.
+
+If you have active Community Guidelines strikes on your channel, you can apply after your strikes expire. You can also apply after you've successfully appealed to have your Community Guidelines strikes removed. Current members of the program won't be removed when receiving Community Guidelines strikes.
+
+What do “qualified watch hours” and "qualified Shorts views" mean?
+
+Qualified watch hours
+
+What counts as a qualified watch hour:
+
+Qualified watch hours gained from long-form videos you’ve set public
+
+Watch hours gained through the following types of video don’t count towards YPP thresholds:
+
+Private videos
+
+Unlisted videos
+
+Deleted videos
+
+Ad campaigns
+
+YouTube Shorts
+
+Livestreams that are unlisted, deleted, or not converted to VOD (video on demand)
+
+Qualified Shorts views
+
+What counts as a qualified Short view:
+
+Qualified views from Shorts you’ve set public that appear in the Shorts Feed
+
+Shorts views gained through the following types of videos don’t count towards YPP thresholds:
+
+Private Shorts videos
+
+Unlisted Shorts videos
+
+Deleted Shorts videos
+
+Ad campaigns
+
+Image Posts appearing in the Shorts Feed
+
+Keep in mind that any qualified watch hours from Shorts views in the Shorts Feed don’t count towards the 4,000 qualified watch hours threshold. For info about Shorts view eligibility with regards to how we calculate payments, see our YouTube Shorts monetization policies .
+
+If I meet the threshold, do I automatically get into YPP?
+
+No. Every channel that meets the threshold will go through a standard review process. Our team will review your channel as a whole to check whether your channel meets our YouTube channel monetization policies . Your channel also must not have any active Community Guidelines strikes in order to apply. Channels that follow our policies and guidelines can monetize.
+
+What happens if my counts drop below the threshold after I apply?
+
+We’ll send your channel for review once you meet our qualified watch hours and subscriber threshold. So it doesn’t matter if your subscriber or watch hour counts drop below the threshold while waiting for review. If you’ve met the threshold and applied for YPP, we’ll still review your channel for YPP suitability.
+
+Changes to your video privacy settings or deletion of video might impact the status of your application. You can check the status of your application at any time in the Earn section of YouTube Studio.
+
+A channel needs to complete all the YPP signup steps (which currently include signing the contract and associating an AdSense for YouTube account) before they will be reviewed.
+
+If a channel is inactive and has not uploaded or posted posts for 6 months or more, YouTube reserves the right to remove its monetization.
+
+Channels will lose monetization when they violate any of the YouTube channel monetization policies . This loss of monetization will happen regardless of their watch hours and subscriber count.
+
+I’m no longer in YPP (or I was never in the program) and I’m seeing ads on my videos. Am I earning revenue from those ads?
+
+According to our Terms of Service, YouTube retains the right to serve ads on all content on the platform. If you do not currently meet the higher eligibility criteria of YPP you may still see ads being served on your content. In this case, you are not yet eligible to receive a share of the revenue.
+
+Once you qualify for the higher eligibility criteria for YPP, you will be eligible to receive a share of the revenue from ads served on your content.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Android Computer iPhone & iPad More
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+false
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+13826633480395229121
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

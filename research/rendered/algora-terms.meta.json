@@ -1,0 +1,17 @@
+{
+  "url": "https://algora.io/legal/terms",
+  "slug": "algora-terms",
+  "fetchedAt": "2026-09-26T00:44:35.882Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 56401,
+  "sha256": "d9ebc3a0f4c09f383c587ff50a3236f66cc4dde11a8c85fea27b32260cec9702",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/algora-terms.html",
+  "textPath": "research/rendered/algora-terms.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

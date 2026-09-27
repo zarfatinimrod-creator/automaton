@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   ALGORA_BOT_LOGIN,
   DEFAULT_ATTEMPT_WINDOW_DAYS,
+  brandAccountProblems,
   KILL_ACCEPTANCE_RATE,
   MAX_PARALLEL_ATTEMPTS,
   COLONY_AGENT_HOURS_PER_MONTH,
@@ -99,6 +100,19 @@ describe("the algora-pbc[bot] comment parser", () => {
       body: "The bounty has been paid to @somebody. 100% of the $250 bounty was rewarded.",
     });
     expect(parsed.state).toBe("rewarded");
+  });
+
+  it("recognises Algora's actual payout sentence (notify_transfer.ex, read 27.9.2026)", () => {
+    const parsed = parseAlgoraBotComment({
+      author: ALGORA_BOT_LOGIN,
+      body: "🎉🎈 @solver has been awarded **$250** by **Acme Inc**! 🎈🎊",
+    });
+    expect(parsed.state).toBe("rewarded");
+    expect(parsed.amountUsd).toBe(250);
+  });
+
+  it("does not read the bounty template's 'post-reward' line as a payout", () => {
+    expect(parseAlgoraBotComment({ author: ALGORA_BOT_LOGIN, body: botBody(250, 42) }).state).toBe("open");
   });
 
   it("recognises a comment that is not a bounty comment at all", () => {
@@ -403,5 +417,25 @@ describe("selectBounties — the two-in-parallel cap", () => {
     expect(sel.config.maxParallelAttempts).toBe(2);
     expect(sel.config.floorIlsPerHour).toBeCloseTo(37.5, 6);
     expect(sel.config.requiredStacks).toEqual(["typescript", "javascript", "python", "docs", "tests"]);
+  });
+});
+
+describe("the brand machine account (BOARD-2 §2.1.3(c))", () => {
+  it("accepts a machine user whose login does not end in 'bot'", () => {
+    expect(brandAccountProblems({ login: "acme-colony", type: "User" })).toEqual([]);
+    // "bot" inside the login is fine; the board's rule and Algora's %bot query are about the ending.
+    expect(brandAccountProblems({ login: "robotics-team", type: "User" })).toEqual([]);
+  });
+
+  it("refuses a login ending in 'bot', in any case", () => {
+    expect(brandAccountProblems({ login: "acme-bot", type: "User" }).join(" ")).toMatch(/ends in "bot"/);
+    expect(brandAccountProblems({ login: "AcmeBOT", type: "User" })).toHaveLength(1);
+  });
+
+  it("refuses a GitHub App or an organisation — it must be a User", () => {
+    expect(brandAccountProblems({ login: "acme-colony", type: "Bot" }).join(" ")).toMatch(/not "User"/);
+    expect(brandAccountProblems({ login: "acme-colony", type: "Organization" })).toHaveLength(1);
+    // An App's login is "name[bot]" — it ends in "]", so only the type check fires; that is the one that matters.
+    expect(brandAccountProblems({ login: "acme[bot]", type: "Bot" })).toHaveLength(1);
   });
 });

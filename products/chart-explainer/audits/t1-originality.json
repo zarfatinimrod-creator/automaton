@@ -1,0 +1,24 @@
+{
+  "gate": "G3",
+  "auditor": "opus-originality-auditor",
+  "verdict": "PASS",
+  "auditedAt": "2026-09-27T10:54:24Z",
+  "auditedScriptSha256": "bf98a1b066eab0b8ca26a474759e9a3fa0e5cfccbb47a7cfd6a5fed1e17a86a6",
+  "revision": 1,
+  "supersedes": "G3 PASS of 2026-09-27T10:32:00Z on script ded6992c3e0e2f22cb03eb0e6bfefb34112e9bbac9dc44a29d8801d71572dd31",
+  "findings": [
+    "The original G3 findings still hold on the revised script. The fixed 92-economy panel, the share-vs-raw-numbers split, the 47-of-92 count and the year-on-year gain bars are still computations nobody has published. The 1 search in the original audit found nothing saying this, and nothing in the revision copies from another source.",
+    "The added Octoverse sentence (SRT 00:00:43,873-00:00:56,795, about 12.9 s of 116.7 s) is an attributed external statement used to distinguish this video's count from GitHub's headline, not to repeat it. It matches the rendered page: github-octoverse-2025.txt:672 'By GitHub contributor counts, August 2025 marks the first time TypeScript emerged as the most used language on GitHub', and :976 'ranked by the number of distinct monthly contributors who committed code in that language'. One cited sentence is neither 'exclusively … readings of other materials' (youtube-monetization-policies.txt:204) nor repurposing without 'significant original commentary' (:144). Setting the finding against the best-known headline adds the 'original, authentic insights or perspective' that :140 asks for.",
+    "The description now carries 'Counting:' and 'Context:' paragraphs, sourced to GitHub Docs (github-about-repository-languages.txt:257), the datasheet (l.37) and the Octoverse URL. Reviewers read descriptions (:154), and a description that 'explains how the creator added to the content' is the allowed case (:180). This strengthens originality rather than weakening it.",
+    "The narration is still written for this question. The new promise sentence, the counting rule and the Octoverse contrast are specific to TypeScript and JavaScript. All nine claim checks in figures.json still hold, and the charts are still drawn by code from the pinned CSV (s1 retitled, s2 subtitle reworded, s3-s6 byte-identical in size to the audited set).",
+    "Slideshow form: still six stills, and the longest hold is now s2 at 32.6 s (the ratio chart under the numbers, the gap and the Octoverse sentence). It remains outside the :138 example ('with minimal or no narrative, commentary, or educational value'). It still departs from VERDICT.md:326 ('sentence-synced'). Not a T1 failure.",
+    "The template-storyline caution still stands for videos 2-6. analyses/t1.json is still parameterised (languageA, languageB, topN, thresholdPct), and its six-scene skeleton (answer → share and gap → growth bars → yearly gain → per-economy histogram → coverage limits) would carry over unchanged to any language pair. The revision's T1-specific parts (the promise block, the Octoverse externalSources) make T1 itself less templated but do not reduce the risk of a second pair video. That risk is the :136 'highly similar storyline template across multiple videos' and :130 'interchangeable from video to video'. Not a T1 blocker.",
+    "Gate text-similarity is still trivially satisfied, since the channel has no published videos."
+  ],
+  "requiredChanges": [],
+  "recommendations": [
+    "Videos 2-6: do not reuse the t1.json spec for another language pair; each needs a distinct question shape, not new names in the same six scenes (:120, :136).",
+    "Videos 2-6: add per-sentence builds so the render matches VERDICT.md:326 and long static holds (32.6 s here) do not accumulate across a channel.",
+    "Vary the limits paragraph between videos from the same dataset."
+  ]
+}

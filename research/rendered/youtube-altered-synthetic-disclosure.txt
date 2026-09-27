@@ -1,0 +1,350 @@
+Disclosing use of GenAI content - Computer - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+YouTube policies
+Disclosing use of GenAI content
+
+Disclosing use of GenAI content
+We encourage creators’ innovative and responsible use of content editing or generation tools. At the same time, we recognize that viewers want to know if what they’re watching or listening to is real.
+
+To help keep viewers informed about the content they're viewing, we require creators to disclose when they use AI to meaningfully alter or generate photorealistic content.
+
+Creators must disclose GenAI content that:
+
+Makes a real person appear to say or do something they didn’t do.
+
+Alters footage of a real event or place.
+
+Generates a realistic scene that didn’t actually occur.
+
+This could include content that is fully or partially altered or created using AI tools.
+
+AI disclosure requirements and examples
+
+To disclose content that is AI-generated or meaningfully AI-altered, the ‘AI use’ setting is available to creators using YouTube Studio on a computer or mobile device.
+
+After a creator selects this field and uploads content, the content will be labeled as AI generated or altered for viewers.
+
+Examples of GenAI content
+
+The following list includes examples of AI content. AI content can include content that is fully or partially altered or created using any AI audio, video, image creation or editing tools. Realistic AI content and meaningful changes require disclosure, while non-realistic or minor edits don’t. Keep in mind, this isn’t a complete list.
+
+Examples of content creators don’t have to disclose
+
+Creators don’t need to disclose non-realistic content that’s made with AI, or edits to realistic content that are minor. Minor edits are ones that are primarily aesthetic, and don't alter the content in a way that could mislead the viewer about what actually happened.
+
+Examples of content, edits, or video assistance that creators don’t need to disclose:
+
+Not realistic
+
+Someone riding a unicorn through a fantastical world
+
+Green screen used to depict someone floating in space
+
+Using an AI-generated or altered animation of a missile in a fully animated video
+
+Minor
+
+Applying beauty filters
+
+Color adjustment or lighting filters
+
+Special effects filters, like adding background blur or vintage effects
+
+Production assistance, like using generative AI tools to create or improve a video outline, script, thumbnail, title, or infographic
+
+Caption creation
+
+Video sharpening, upscaling or repair and voice or audio repair
+
+Idea generation
+
+Cloning one’s own voice to create voice overs or dubs
+
+Gameplay footage from video games
+
+AI generating or extending a backdrop to simulate a moving car
+
+Using effects to enhance previously recorded audio
+
+Keep in mind, the above list is not exhaustive.
+
+Examples of content creators need to disclose
+
+To help keep viewers informed about the content they're viewing, we require creators to disclose content that is generated or meaningfully altered with AI when it appears realistic.
+
+Examples of content, edits, or video assistance that creators need to disclose:
+
+AI generated music
+
+AI generated extra footage of a real place, like a video of a surfer in Maui for a promotional travel video
+
+AI generated realistic videos of a match between two real professional tennis players
+
+Making it appear as if someone gave advice that they did not actually give
+
+Showing a realistic depiction of a tornado or other weather events moving toward a real city that didn’t actually happen
+
+Making it appear as if hospital workers turned away sick or wounded patients
+
+Depicting a public figure stealing something they did not steal, or admitting to stealing something when they did not make that admission
+
+Making it look like a real person has been arrested or imprisoned
+
+Keep in mind, the above list is not exhaustive.
+
+How to disclose GenAI content
+
+We require creators to disclose AI-generated or altered content that seems realistic. Creators can make this disclosure during the upload process.
+
+Go to YouTube Studio .
+
+Follow the steps to upload content.
+
+In the Attributes section, under “AI use,” select Yes if your content meets the disclosure requirements or No if not.
+
+Continue to select other video details.
+
+Labels for AI content
+
+If creators select “Yes” to indicate that their content is realistic and generated by AI or meaningfully altered with AI, we’ll add a label to their video.
+
+Label on the video player for photorealistic AI content
+
+For AI content that is photorealistic, a label in the video player may also appear.
+
+Label in the expanded description field
+
+Labels may appear in the expanded description for AI content that is non-photorealistic or animated.
+
+Note: Disclosing AI content won’t limit a video’s audience or impact its eligibility to earn money.
+
+Automatic detection of AI content
+
+YouTube may automatically apply an AI label on the video player or in the expanded description for:
+
+Content made using YouTube's GenAI tools
+
+Content that contains C2PA metadata
+
+Content that our internal systems detect is Al generated or altered
+
+You will receive a notification in YouTube Studio if an AI label has been automatically applied on or below the video player.
+
+If our systems make an error, creators will have the ability to change AI disclosure in most cases by selecting No in the AI disclosure survey under “Attributes” in YouTube Studio. The notification in YouTube Studio will remain until the creator updates their disclosure survey.
+
+However, content made with YouTube’s AI tools, content containing C2PA metadata, or content labeled after manual review can not be adjusted.
+
+Risks of not disclosing
+
+Creators who consistently choose not to disclose this information may be subject to manual application of a label, or penalties from YouTube, including removal of content or suspension from the YouTube Partner Program.
+
+Remember, we apply our Community Guidelines to all content on YouTube, including content that is AI generated or altered using AI.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Computer Android iPhone & iPad More
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+YouTube policies
+1 of 9
+How YouTube evaluates Educational, Documentary, Scientific & Artistic (EDSA) content
+2 of 9
+Creator responsibility
+3 of 9
+Best practices for content with children
+4 of 9
+Reporting tools & policies for YouTube safety
+5 of 9
+Content policies for YouTube Kids
+6 of 9
+Disclosing use of GenAI content
+7 of 9
+Understanding ‘How this content was made’ disclosures on YouTube
+8 of 9
+Building trust on YouTube: ‘Captured with a camera’ disclosure
+9 of 9
+Your content & third-party training
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+361667235601267188
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

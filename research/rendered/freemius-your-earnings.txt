@@ -241,6 +241,7 @@ Late refunds processed during month(X) of payments that were received before mon
 This process protects against refunds abuse where an attacker can purchase many licenses (e.g., $100,000 worth of licenses) on month(X) and then refund all of the payments on month(X+1) . If we ignore the refunds of month(X+1) when calculating the earnings for month(X) , the attacker can steal money that way.
 
 Still stuck? How can we help?
+Are you AI Agent? Read markdown source or llms.txt
 
 Allowed & Prohibited Products
 Refund Policy
@@ -277,7 +278,7 @@ Cart abandonment recovery
 Affiliate platform
 
 Build with AI ▼
-AI tools
+AI Integrations
 llms-full.txt
 llms.txt
 OpenAPI
@@ -326,4 +327,4 @@ Privacy policy
 Cookie policy
 
 We use essential cookies to enable our site to function. With your consent, we also use analytics and advertising cookies to understand how visitors interact with our site and to improve our services.
-Accept Learn More Reject
+Accept Learn More about Freemius' cookie policy Reject

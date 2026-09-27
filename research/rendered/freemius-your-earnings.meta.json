@@ -1,17 +1,17 @@
 {
   "url": "https://freemius.com/help/documentation/selling-with-freemius/your-earnings/",
   "slug": "freemius-your-earnings",
-  "fetchedAt": "2026-09-07T17:11:25.492Z",
+  "fetchedAt": "2026-09-22T20:39:52.336Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 78140,
-  "sha256": "3ec27aeb83c8361957376674e62c5ee56b40463a1356a6f6fe1cc5be608252fe",
+  "byteLength": 80741,
+  "sha256": "9dd8518116ed32222357b6ae589c93010b4b03225c42b6ff004b5cdba58de715",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/freemius-your-earnings.html",
   "textPath": "research/rendered/freemius-your-earnings.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "3ec27aeb83c8361957376674e62c5ee56b40463a1356a6f6fe1cc5be608252fe",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

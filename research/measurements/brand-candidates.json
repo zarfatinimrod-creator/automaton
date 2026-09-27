@@ -1,0 +1,303 @@
+{
+  "measuredAt": "2026-09-27T10:00:02.019Z",
+  "note": "Status codes only; no page bodies stored. 404 = free, 200 = taken, anything else = unknown.",
+  "allFree": [
+    "mesudarit",
+    "tikufi",
+    "mehudak",
+    "shurota",
+    "tziyun",
+    "hashvaa"
+  ],
+  "unknown": [],
+  "rows": [
+    {
+      "name": "mesudar",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/mesudar.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/mesudar",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@mesudar",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "mesudarit",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/mesudarit.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/mesudarit",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@mesudarit",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "tikuf",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/tikuf.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/tikuf",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@tikuf",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "tikufi",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/tikufi.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/tikufi",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@tikufi",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "pinkas",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/pinkas.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/pinkas",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@pinkas",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "pinkasit",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/pinkasit.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/pinkasit",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@pinkasit",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "tamtzit",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/tamtzit.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/tamtzit",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@tamtzit",
+        "status": 200,
+        "verdict": "taken"
+      }
+    },
+    {
+      "name": "bahir",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/bahir.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/bahir",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@bahir",
+        "status": 200,
+        "verdict": "taken"
+      }
+    },
+    {
+      "name": "bahiron",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/bahiron.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/bahiron",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@bahiron",
+        "status": 200,
+        "verdict": "taken"
+      }
+    },
+    {
+      "name": "mehudak",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/mehudak.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/mehudak",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@mehudak",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "naki",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/naki.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/naki",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@naki",
+        "status": 200,
+        "verdict": "taken"
+      }
+    },
+    {
+      "name": "kavua",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/kavua.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/kavua",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@kavua",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "shurot",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/shurot.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/shurot",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@shurot",
+        "status": 200,
+        "verdict": "taken"
+      }
+    },
+    {
+      "name": "shurota",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/shurota.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/shurota",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@shurota",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "tziyun",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/tziyun.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/tziyun",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@tziyun",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "hashvaa",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/hashvaa.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/hashvaa",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@hashvaa",
+        "status": 404,
+        "verdict": "free"
+      }
+    }
+  ]
+}

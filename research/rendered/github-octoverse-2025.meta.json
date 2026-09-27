@@ -1,0 +1,17 @@
+{
+  "url": "https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/",
+  "slug": "github-octoverse-2025",
+  "fetchedAt": "2026-09-27T10:34:07.512Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 303429,
+  "sha256": "733e76b100d22a30f8fc5826aca96cab474e642dc97df3c2fe1a95e27279016a",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/github-octoverse-2025.html",
+  "textPath": "research/rendered/github-octoverse-2025.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

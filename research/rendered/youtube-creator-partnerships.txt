@@ -1,0 +1,453 @@
+Get started with YouTube Creator Partnerships - United States - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Get started with YouTube Creator Partnerships
+YouTube Creator Partnerships features enable brands to discover creators for brand deals. All eligible YouTube Partner Program creators will be discoverable to brands and have a Creator Partnerships tab in the “Earn” page of the YouTube Studio app and desktop. This tab aims to provide features and functionality that enhances brand deal management for creators.
+
+Creators may be discovered by brands and may receive inquiries periodically from brands through the Creator Partnerships tab. To opt-out of search recommendations and brand deal outreach inquiries, please reach out to youtube-brandconnect-opt-out@google.com to make the request.
+
+The YouTube Creator Partnerships tab features
+
+Streamlined inquiries: Self-service tools within YouTube Studio to manage campaign inquiries. Expect clearer and more concise briefs from potential brand partners.
+
+Customizable Media Kit: Get audience insights tailored to your channel, so that you can pitch yourself to brands and secure deals. Learn how to use your Media Kit .
+
+Set Preferences:
+
+Desired Rates: Set your desired rates for long-form video and Shorts partnerships.
+
+Business contact: Set a business manager or talent agent email that will be CC’d on all inquiries.
+
+Availability & eligibility requirements
+
+Note: The YouTube Creator Partnerships tab is only available to eligible creators in available countries/regions at this time.
+
+To have access to the Creator Partnerships tab, your channel must meet the minimum eligibility requirements:
+
+Be at least 18 years old
+
+In the YouTube Partner Program
+
+Based in one of the available countries/regions
+
+No active Community Guidelines strikes
+
+Your channel must also follow YouTube’s monetization policies , including:
+
+YouTube Terms of Service
+
+YouTube Community Guidelines
+
+YouTube Platform Policies
+
+Note: We also recommend that creators opt-in to channel insights sharing to provide advertisers more holistic data about your channel. Even if channel insights sharing is not turned on, you are still discoverable by brands and may receive brand deal inquiries periodically from brands.
+
+Availability in countries/regions
+
+Currently available to eligible creators in the following countries/regions:
+
+Note: Your experience on YouTube Creator Partnerships can differ based on your country/region.
+
+Countries/regions
+
+Australia
+
+Brazil
+
+Canada
+
+France
+
+Germany
+
+Hong Kong
+
+India
+
+Indonesia
+
+Israel
+
+Italy
+
+Japan
+
+Mexico
+
+Netherlands
+
+New Zealand
+
+Philippines
+
+Saudi Arabia
+
+Singapore
+
+South Korea
+
+Spain
+
+Switzerland
+
+Turkey
+
+United Arab Emirates (UAE)
+
+United Kingdom
+
+United States
+
+Enhance your brand deal profile with Creator Insights Sharing
+
+Creators can enable insights sharing in YouTube Studio. This will enhance the available data for advertisers as they search for creators for brand deals, making it easier for brands to find you. In addition, sharing your channel insights can increase earning potential from ads and the YouTube shopping affiliate program. Learn how to turn on channel insights sharing .
+
+Note: You might still be discoverable by brands even when this setting is turned off. However, having this additional information will improve your visibility in creator search and help brands select creators best suited for their campaign goals.
+
+Manage YouTube Creator Partnerships
+
+Note: Your experience on Creator Partnerships can differ based on your country or region.
+
+Creators that are eligible for Creator Partnerships may receive inquiries from brands through the Creator Partnerships tab and offline through email or their social handles. We recommend that creators verify their contact information is up to date:
+
+Make sure your business contact email is current and accurate. Learn how to change your email address .
+
+Make sure your social handle is up-to-date. Learn how to change your social handle .
+
+Set your preferences
+
+Creators can update their brand deal preferences, including preferred rates for long-form videos and Shorts brand deals, as well as a secondary business contact email.
+
+The business contact email is designed for a talent agent or manager that the creator wants to receive inquiries as well. When inquiries are received through the Creator Partnerships tab, creators will receive a notification on mobile and web, an email to their primary account email, and a secondary email to their business contact email.
+
+Go to the Earn section of YouTube Studio .
+
+Select the Creator Partnerships tab.
+
+Under “Preferences,” select Set suggested price or Business contact email .
+
+Campaign inquiry
+
+The “Campaign inquiry” section will outline the details for inquiries received through the Creator Partnerships tab.
+
+All campaigns will have information about:
+
+Brand: The brand name associated with this campaign's inquiry.
+
+About the Brand: A summary of the brand sending the campaign inquiry.
+
+Earn: The amount of money you can potentially earn for this deal. Be aware that these amounts are provided by the advertiser and are not meant to be confused with final offers, consider this a piece of information for your deal negotiation.
+
+About (brand): A high-level overview of the brand.
+
+Brand website: Link to the brand's website.
+
+Some campaigns will also have information about:
+
+Partnership details: An overview of the campaign and the product or service from the brand. This section will include any ideas the brand wants you to share with viewers and the action the brand wants you to encourage viewers to perform.
+
+Payment: The contract and payment terms for this campaign. Please work with the advertiser or agency directly.
+
+Campaign goals: An overview of the campaign and the product or service from the brand. This section will include any ideas the brand wants you to share with viewers and the action the brand wants you to encourage viewers to perform.
+
+Deliverables: What you must deliver to the brand for the campaign.
+
+Talking points: The key messaging advertisers and agencies want featured in the campaign content.
+
+Campaign call to actions: Ensure the campaign effectively communicates the desired call to action.
+
+Product information: Details on the product that the campaign is about.
+
+Responding to inquiries
+
+YouTube Creator Partnerships tab
+
+If you receive a deal directly from a brand through the Creator Partnerships tab, you can perform the following actions on that inquiry:
+
+Interested: If you select interested, we will share your contact details with the brand so they can contact you to negotiate a deal. When you confirm your interest, you can also add details to your confirmation, like contact preferences, which can help the brand know how best to contact you. To proceed with a deal, you will negotiate and sign an agreement directly with the brand, and you will be paid by the brand. Make sure you understand the terms of any agreement(s) you sign with a brand; you may wish to consult a legal professional.
+
+Not interested: If you choose Not interested , we will let the brand know you don't want to proceed with a discussion.
+
+Share brand partner access
+
+If you’ve partnered with a brand on a brand campaign, the brand may request that you share brand partner access to the video with them. Learn more about brand partner access .
+
+Creators can share brand partner access by:
+
+Initiating brand partner access (creator-initiated): Creators can establish a brand partner access request with a brand by:
+
+Selecting a reported brand deal during video upload or edit (available for any creator)
+
+Searching for a brand during video upload or edit (YPP creators only)
+
+Generating a code and sending to a brand partner (YPP creators only)
+
+Accepting a brand partner access request from the brand (brand-initiated): After video upload, brands can send a request to associate their Google Ads account to the relevant video.
+
+We encourage creators to respond to requests from brands you have existing partnerships with. This helps them measure sponsored content performance and allows them to use the video in creator partnerships boost campaigns if boosting has been negotiated as part of the campaign.
+
+Frequently Asked Questions
+
+How can I work with YouTube Creator Partnerships?
+
+Right now, YouTube Creator Partnerships is only available to YPP creators in the available countries/regions . If you’re eligible, the Creator Partnerships tab will surface automatically in the earn tab in YouTube Studio. We’re hoping to roll this feature out to more creators and countries/regions soon.
+
+Can agents or managers use the YouTube Creator Partnerships on behalf of the creators?
+
+Yes, creators could configure the business contact email in their Creator Partnerships preferences. This will allow the agent or manager to receive a copy of all inquiries. Creators can also add agents or managers as authorized users to have them manage deals for them directly in YouTube Studio.
+
+Should I approve a brand partner access request from a brand to my video?
+
+If you’ve partnered with a brand, the brand may send you a request to share the video from the campaign to their Google Ads account. It’s entirely up to you whether or not you accept the advertiser’s request and you should always do what’s best for your channel. Learn about creator-initiated brand partner access .
+
+If you accept the share request, the advertiser can view the content’s organic performance metrics in Google Ads and use linked videos in their advertising. Learn more about how to link your branded content to an advertiser .
+
+What other ways can I upload my video for brand deals?
+
+If your inquiry includes an “Campaigns videos” section, you can alternatively upload your video that way. Once you’ve accepted a brand deal, you can work on the content for your campaign. The “Campaign videos” section outlines next steps for you to upload your content, as Unlisted, and submit one or more videos to the brand for review and approval. If the brand has any feedback, you will get an email with your brand partner’s comments.
+
+In addition to brand reviews, your content is also reviewed against Google Ads policies and Community Guidelines . Once your content is fully approved, you get an email and status update in YouTube Studio. You can publish your content right away, or schedule when you want it to go live. Make sure you publish according to the timeline you agreed to with the brand.
+
+How do I turn off YouTube Creator Partnerships?
+
+You can turn off Creator Partnerships by reaching out to youtube-creator-partnerships-opt-out@google.com to make the request.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Australia
+Brazil
+Canada
+France
+Germany
+India
+Indonesia
+Israel
+Italy
+Japan
+Mexico
+Netherlands
+New Zealand
+Philippines
+Saudi Arabia
+Singapore
+South Korea
+Spain
+Switzerland
+Turkiye
+United Arab Emirates
+United Kingdom
+United States
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+Make money on YouTube
+1 of 14
+How to earn money on YouTube
+2 of 14
+Choose how you want to monetize
+3 of 14
+Understand your earnings
+4 of 14
+YouTube channel monetization policies
+5 of 14
+YouTube’s contest policies and guidelines
+6 of 14
+Get started with YouTube Creator Partnerships
+7 of 14
+YouTube Creator Partnerships Open Call program policies
+8 of 14
+Manage channel insights sharing with third-party advertisers, brands, and platforms
+9 of 14
+YouTube Commerce Products monetization policies
+10 of 14
+About our third-party partners
+11 of 14
+Virtual Items Program Policies for Creators
+12 of 14
+Live stream to members-only
+13 of 14
+Partner with brands through Open Call
+14 of 14
+Add dynamic brand segments to your YouTube videos
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+1229458256347015603
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

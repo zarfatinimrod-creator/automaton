@@ -1,0 +1,17 @@
+{
+  "url": "https://www.swiftness.co.il/%D7%9B%D7%9C%D7%9C%D7%99-%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA/",
+  "slug": "sweep2-pension-memsakim-rules",
+  "fetchedAt": "2026-09-22T20:40:11.642Z",
+  "status": null,
+  "contentType": null,
+  "byteLength": 0,
+  "sha256": null,
+  "truncated": false,
+  "error": "TypeError: fetch failed",
+  "bodyPath": null,
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

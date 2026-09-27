@@ -1,4 +1,38 @@
 {
   "note": "SHA-256 of the official PCN874 specification as downloaded by .github/workflows/pcn874-spec-watch.yml. The three documents were fetched and read on 2026-09-07; their extracted text is in research/rendered/ and docs/SPEC.md cites it line by line. This lock exists so a NEW EDITION is noticed: a changed hash means the layout in docs/SPEC.md and src/layout.ts may no longer match what the Authority publishes, and must be re-derived before anything ships. A hash here does NOT mean the new bytes have been read.",
-  "sources": {}
+  "sources": {
+    "gov-il-874-eng": {
+      "url": "https://www.gov.il/BlobFolder/generalpage/tax-vat-online-invoice-reporting/he/IncomeTax_IncomeTaxSoftwareHousesInfo_874-eng.pdf",
+      "provenance": "accounter:packages/pcn874-generator/README.md:5 — the repo names it as its own basis",
+      "sha256": "072e03fbb4c5a1f9742dd14f2c225903b0ea27c7f22ad8fd154d28a2763fc61b",
+      "bytes": 49176,
+      "contentType": "application/pdf",
+      "firstSeenAt": "2026-09-07T18:28:25.561Z",
+      "lastSeenAt": "2026-09-07T18:28:25.561Z",
+      "readByAHuman": true,
+      "baseline": "research/rendered/pcn874-gov-il-874-eng.pdf — the render-watch capture docs/SPEC.md was derived from; seeded 2026-09-27 (BOARD-2.md §2.4)"
+    },
+    "rivhit-mirror": {
+      "url": "https://www.rivhit.co.il/uploaded_files/documents/pcn874_manual_U1231.pdf",
+      "provenance": "research/colony-sweep/audits/israel-bureaucracy.md:188 — vendor mirror, edition 1.51",
+      "sha256": "bf2a1a974d3524f1901f76d7b30419ea0969d44bfb072bb8bfb097dc4c81a010",
+      "bytes": 782135,
+      "contentType": "application/pdf",
+      "firstSeenAt": "2026-09-07T18:28:26.849Z",
+      "lastSeenAt": "2026-09-07T18:28:26.849Z",
+      "readByAHuman": true,
+      "baseline": "research/rendered/pcn874-rivhit-mirror.pdf — the render-watch capture docs/SPEC.md was derived from; seeded 2026-09-27 (BOARD-2.md §2.4)"
+    },
+    "h-erp-mirror": {
+      "url": "https://downloads.h-erp.co.il/files/vatr/Guidance874W.pdf",
+      "provenance": "research/colony-sweep/audits/israel-bureaucracy.md:550 — second vendor mirror",
+      "sha256": "e9c7104644ec1f97de955af3d1d913eba71d4724ce20f3d3b9aa3a6b8fe0ef63",
+      "bytes": 3495477,
+      "contentType": "application/pdf",
+      "firstSeenAt": "2026-09-07T18:28:28.034Z",
+      "lastSeenAt": "2026-09-07T18:28:28.034Z",
+      "readByAHuman": true,
+      "baseline": "research/rendered/pcn874-h-erp-mirror.pdf — the render-watch capture docs/SPEC.md was derived from; seeded 2026-09-27 (BOARD-2.md §2.4)"
+    }
+  }
 }

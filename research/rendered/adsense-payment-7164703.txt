@@ -1,0 +1,325 @@
+Payment timelines for AdSense - Google AdSense Help
+Skip to main content
+
+Google AdSense Help
+
+Sign in
+
+Google Help
+
+Help Center
+Community
+Google AdSense
+
+Privacy Policy
+Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Announcements
+
+Google AdSense
+
+Payment process
+Payment timelines for AdSense
+
+Notification
+Please make sure to visit Your AdSense Page where you can find personalized information about your account to help you succeed with AdSense.
+
+Payments
+Payment timelines for AdSense
+Next: Homepage reports: understand your earnings
+
+The AdSense payment cycle is monthly. You accrue estimated earnings over the course of a month, and then at the beginning of the following month your earnings are finalized and posted to your balance on your Payments page. If your balance exceeds the payment threshold and you have no payment holds , you'll be issued a payment between the 21st and the 26th of the month. Note that the exact time you receive your payment will depend on your timezone, whether the 21st falls on a weekend or holiday, and your chosen form of payment.
+
+Note : If you have separate payments accounts for AdSense and YouTube, each payments account needs to reach the payment threshold to be paid out.
+
+Example : Let's say you accrue estimated earnings throughout the month of June. By July 3rd, you'll have your June 1st-30th finalized total earnings posted to your Payments page. You'll then be issued a payment for your June earnings and any other credits on your balance as one lump sum on or around July 21st.
+
+Note : Finalized YouTube earnings for the previous month are added to your YouTube payments account balance in AdSense between the 7th and 12th of the month. For example, if you’re in the United States and you earn $100 in June, you'll find this balance in your AdSense for YouTube homepage between July 7th-12th. To learn more, refer to Understand AdSense for YouTube’s payment process .
+
+Track the progress of your payments
+
+Your Payments page is updated to indicate the progress of your payments. You'll notice line items added and updated throughout the month as your earnings are finalized and then issued for payment. You also might notice other line items for various payments and credits. Click your form of payment below to view your customized payment timeline.
+
+Expand all Collapse all
+
+Electronic Funds Transfer (EFT)
+
+3rd : Your estimated earnings for the previous month are finalized and posted to your Payments page. On your Payments page, you'll notice a line item with your earnings total added to the previous month's transactions.
+
+Your Payments page will also display any deductions related to adjustments or fees. Note that you may not view line items for invalid activity deductions taken during the finalization process. Learn more about invalid activity deductions .
+
+20th : Changes to payment information (including removing payment holds) must be completed on or before the 20th. Changes made after the 20th of any month won't take effect until the following month's payment cycle.
+Your total balance on the 20th must reach the payment threshold . If your balance does not meet the payment threshold or if you have a payment hold, you will not be paid that month and your balance will be rolled over to the following month.
+
+21st-26th : Between the 21st and the 26th of the month, a "Payment pending" line appears on the Payments page, indicating that the earnings are processed and issued to your banking institution.
+
+You'll receive your payment up to seven business days after it was issued. If you haven't received it by the end of the month, follow up with your banking institution.
+
+Note : If the 21st falls on a weekend or holiday, payments may be issued on the first business day following the 21st of that month.
+
+Check
+
+Check payments for your previous month's earnings are issued between the 21st and the 26th of the month and can take as long as four weeks to arrive at your payment address.
+
+3rd : Previous month's estimated earnings are finalized and posted to your Payments page.
+
+20th : Changes to payment information (including removing payment holds) must be completed on or before the 20th. Changes made after the 20th of any month won't take effect until the following month's payment cycle. Also, your total balance on the 20th must reach the payment threshold . If your balance does not meet the payment threshold or if you have a payment hold, you will not be paid that month and your balance will be rolled over to the following month.
+
+21st-26th : Check mailed for eligible accounts. A "Payment pending" line item appears in your Payments page.
+
+Allow two to four weeks for your check to arrive in the mail. Arrival times may vary depending on the postal service in your area.
+
+Western Union Quick Cash
+
+Western Union Quick Cash payments are sent between the 21st and the 26th of the month and will be available for pick up at any Western Union location in your country one business day after they're issued.
+
+3rd : Previous month's estimated earnings are finalized and posted to your Payments page.
+
+20th : Changes to payment information (including removing payment holds) must be completed on or before the 20th. Changes made after the 20th of any month won't take effect until the following month's payment cycle. Also, your total balance on the 20th must reach the payment threshold . If your balance does not meet the payment threshold or if you have a payment hold, you will not be paid that month and your balance will be rolled over to the following month.
+
+21st-26th : Payment sent to Western Union. A "Payment pending" line item appears in your Payments page.
+
+You must pick up your payment within 60 days of issue otherwise the amount will be returned and credited back to your AdSense account.
+
+Wire transfer
+
+3rd : Previous month's estimated earnings are finalized and posted to your Payments page.
+
+20th : Changes to payment information (including removing payment holds) must be completed on or before the 20th. Changes made after the 20th of any month won't take effect until the following month's payment cycle. Also, your total balance on the 20th must reach the payment threshold . If your balance does not meet the payment threshold or if you have a payment hold, you will not be paid that month and your balance will be rolled over to the following month.
+
+21st-26th : Wire transfer initiated. A "Payment pending" line item appears in your Payments page.
+
+Allow up to 15 business days for the transfer to complete. The length of time it takes for your wire transfer to arrive in your bank account may vary depending on your banking institution.
+
+Note : If the 21st falls on a weekend or holiday, payments may be issued on the first business day following the 21st of that month.
+
+Note : If a publisher's account is found to be in violation of our Terms and Conditions or Program policies , we may at anytime withhold payment (beginning from when Google initiates its investigation of potential violations), deduct earnings from the publisher's account, and/or refund advertisers for clicks received on the publisher's site or AdSense for search results page.
+
+In addition, if a publisher is past due on any payment to Google in connection with the Google Ads program, we reserve the right to withhold payment until all outstanding payments have been made. For a complete description of payment terms, refer to the AdSense Terms and Conditions .
+
+Next: Homepage reports: understand your earnings
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+Contact us Tell us more and we’ll help you get there
+
+true
+Payments
+1 of 8
+Payments FAQs
+2 of 8
+Payment process 1 of 10
+Steps to getting paid
+2 of 10
+Payment timelines for AdSense
+3 of 10
+Homepage reports: understand your earnings
+4 of 10
+Estimated vs finalized earnings
+5 of 10
+What's the difference between earnings and payments?
+6 of 10
+Does AdSense provide an invoice or payment receipt?
+7 of 10
+How AdSense determines the exchange rate for your earnings
+8 of 10
+Place a temporary hold on your AdSense payments
+9 of 10
+Abandoned property adjustment
+10 of 10
+Common AdSense payment hold issues
+
+3 of 8
+Payment thresholds 1 of 2
+Payment thresholds
+2 of 2
+Change your AdSense payment threshold
+
+4 of 8
+Payments profile 1 of 4
+Your payments account
+2 of 4
+About your payments profile
+3 of 4
+Manage payments users in your AdSense account
+4 of 4
+Access your AdSense payments in the Google payments center
+
+5 of 8
+Verification 1 of 3
+Verify your identity
+2 of 3
+Address (PIN) verification
+3 of 3
+Payment hold because you haven’t confirmed your personal information
+
+6 of 8
+Form of payment 1 of 7
+Add your payment method for AdSense or AdSense for YouTube
+2 of 7
+Electronic Funds Transfer (EFT)
+3 of 7
+Receive SEPA payments
+4 of 7
+Wire transfer
+5 of 7
+Check
+6 of 7
+Western Union
+7 of 7
+Receive your payments via PayPal Hyperwallet
+
+7 of 8
+Payment settings 1 of 5
+Check your AdSense account type
+2 of 5
+Change your payments profile name and address
+3 of 5
+Can I change my payment currency?
+4 of 5
+View your AdSense payment history
+5 of 5
+Update your bank account details
+
+8 of 8
+Tax information 1 of 14
+Submit your US tax info to Google
+2 of 14
+FAQs about submitting US tax info in AdSense
+3 of 14
+Submit your non-US tax info to Google
+4 of 14
+Find your contracting entity for tax information
+5 of 14
+Contracting entity is Google LLC
+6 of 14
+Contracting entity is Google Ireland
+7 of 14
+Contracting entity is Google Advertising (Shanghai) Company Limited
+8 of 14
+Contracting entity is Google Asia Pacific Pte. Ltd.
+9 of 14
+Will I have to pay taxes on my AdSense earnings?
+10 of 14
+What are U.S. Activities?
+11 of 14
+Local currency reporting and VAT
+12 of 14
+Taxpayer identification number (TIN) verification process
+13 of 14
+Submit tax information for a disregarded entity
+14 of 14
+Transitioning to AdSense China
+
+Unlock your revenue with personalized tips today! Visit the Optimization tips for AdSense page to see personalized suggestions to maximize your revenue.
+
+Unlock now
+
+©2026 Google Privacy Policy
+Terms of Service
+
+Language
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+Filipino&lrm;
+français&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+italiano&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+slovenčina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+български&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+मराठी&lrm;
+हिन्दी&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+ไทย&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+10229565934868293472
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+157
+false
+
+false
+
+false
+false
+
+false

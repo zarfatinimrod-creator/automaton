@@ -1,0 +1,20 @@
+# Brand-name candidates, checked by scripts/brand-check.mjs from a runner (.com RDAP, GitHub, YouTube handle).
+# Why a new list: research/measurements/brand-name-check.md ("Bediyuk" is taken). Written 27.9.2026 by the main
+# thread (Opus). The choice among the survivors is Fable's; the owner may veto. Criteria: sayable in Hebrew and
+# English, spelled one obvious way, no owner name, no claim the colony cannot back (so no "certified", "official").
+mesudar     # מסודר — in order, sorted
+mesudarit   # מסודרית
+tikuf       # תיקוף — validation (the PCN874 validator's job)
+tikufi      # תיקופי
+pinkas      # פנקס — ledger, notebook
+pinkasit    # פנקסית
+tamtzit     # תמצית — essence, summary
+bahir       # בהיר — clear
+bahiron     # בהירון
+mehudak     # מהודק — tight, precise
+naki        # נקי — clean
+kavua       # קבוע — fixed, steady
+shurot      # שורות — rows
+shurota     # שורותא
+tziyun      # ציון — mark, score
+hashvaa     # השוואה — comparison

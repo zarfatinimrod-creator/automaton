@@ -1,0 +1,10 @@
+{
+  "originality": "t1-originality.json: PASS by opus-originality-auditor",
+  "factCheck": "t1-factcheck.json: PASS by opus-factcheck-auditor",
+  "promiseMatch": "t1-promise.json: PASS by opus-promise-auditor",
+  "containsSyntheticMedia": "true: board ruling 27.9.2026 (PREREG-DECISIONS.md §2a) for every chart + synthetic-narration video; the description carries SYNTHETIC_VOICE_DISCLOSURE verbatim (§2b).",
+  "narration": "Kokoro-82M stock voice; no cloned or imitated voice (PREREG-DECISIONS.md §2c).",
+  "scheduledAt": "NOT a schedule. T1 is held unpublished until Stage A; this is the render's finish time, the earliest moment a publish could happen, so G6 has a real date. The publish step must re-run the gate with the actual time, and must not schedule a later publish time: a scheduled video stays private until then (T1-PROTOCOL.md).",
+  "runnerMinutes": "wall-clock minutes measured by render.py from render.py start to the end of the render, rounded up to 0.01 (G9 cap: 60).",
+  "tokenCostIls": "0: no API-billed tokens. The script template was written by an Opus builder agent in a subscription session, and rendering calls no model API. Session tokens were not metered per video."
+}

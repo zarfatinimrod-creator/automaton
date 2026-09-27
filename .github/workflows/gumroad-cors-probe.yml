@@ -1,0 +1,48 @@
+name: gumroad-cors-probe
+
+# Why this exists.
+#
+# research/measurements/gumroad-native-licenses.md settles from Gumroad's own source
+# that api.gumroad.com/v2/licenses/verify needs no seller token and that the app sends
+# `Access-Control-Allow-Origin: *` for Host api.gumroad.com (config/initializers/cors.rb).
+# What the code cannot settle is whether the edge in front of the app keeps those
+# headers — and every option that removes the owner's per-sale licence step depends on
+# a static page being allowed to make that call from the buyer's browser.
+#
+# api.gumroad.com is egress-blocked from the research container; GitHub's runners are
+# not. So this job makes the two requests a browser would make and prints the headers.
+# It reads nothing back into the repo and has no inputs: the commands are fixed here,
+# so there is nothing to inject. The key and product id are deliberately ones that
+# cannot exist, so no buyer's data can appear in the log.
+#
+# Reading the result is a session's job: the log is evidence, not a verdict.
+
+on:
+  workflow_dispatch:
+  # GitHub only dispatches a workflow that already exists on the default branch, and this
+  # one is born on a feature branch. A push that changes this file runs it once from
+  # any branch; it runs again only if the file itself is edited.
+  push:
+    paths:
+      - ".github/workflows/gumroad-cors-probe.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preflight (OPTIONS) from a foreign origin, as a browser sends it
+        run: |
+          curl -sS -i -X OPTIONS "https://api.gumroad.com/v2/licenses/verify" \
+            -H "Origin: https://example.org" \
+            -H "Access-Control-Request-Method: POST" \
+            -H "Access-Control-Request-Headers: content-type" | sed -n '1,40p'
+
+      - name: POST verify with a key and product that cannot exist
+        run: |
+          curl -sS -i -X POST "https://api.gumroad.com/v2/licenses/verify" \
+            -H "Origin: https://example.org" \
+            --data-urlencode "product_id=colony-cors-probe-does-not-exist" \
+            --data-urlencode "license_key=00000000-00000000-00000000-00000000" | sed -n '1,40p'

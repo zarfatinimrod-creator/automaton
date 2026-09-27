@@ -1,0 +1,17 @@
+{
+  "url": "https://www.youtube.com/@bediyuk",
+  "slug": "youtube-handle-bediyuk",
+  "fetchedAt": "2026-09-27T09:56:40.519Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 871930,
+  "sha256": "407d5c190141097ef7196ed1ba4a248e4489e36fbe5ca8313de761784df15be0",
+  "truncated": false,
+  "error": null,
+  "bodyPath": null,
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Body removed 27.9.2026 by the main thread: the page is a private person's channel. The one fact needed is kept here and in research/measurements/brand-name-check.md: the handle @bediyuk resolves to an existing channel (canonicalBaseUrl /@bediyuk, externalId UCKTCO9dwqt0FP2Kwvd5Ej8Q) whose title describes an Israeli marketing and branding business named Bediyuk."
+}

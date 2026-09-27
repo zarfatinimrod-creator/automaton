@@ -1,0 +1,91 @@
+name: chart-explainer-render
+
+# Renders one chart-explainer analysis (T1 by default) on a runner and keeps the result as a workflow artifact.
+# Dispatch-only: no schedule, no push trigger. No secrets, no commit back, no upload anywhere but the run's own
+# artifact store. The video stays unpublished; publishing is a separate, later step that does not exist yet.
+
+on:
+  workflow_dispatch:
+    inputs:
+      analysis:
+        description: "Analysis spec, relative to products/chart-explainer"
+        required: true
+        default: "analyses/t1.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chart-explainer-render
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    # G9 caps a video at 60 runner-minutes; the job is stopped there rather than billed past it.
+    timeout-minutes: 60
+    steps:
+      - name: Start the runner clock (G9 counts the whole job, setup included)
+        run: echo "CLOCK_START=$(date +%s)" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install the pinned renderer dependencies
+        working-directory: products/chart-explainer
+        run: pip install -r requirements.txt
+
+      - name: Render
+        working-directory: products/chart-explainer
+        env:
+          ANALYSIS: ${{ inputs.analysis }}
+        run: python render.py "$ANALYSIS" --out out/render --clock-start "$CLOCK_START"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Gate check (G1-G10); the pending auditor gates G3-G5 are expected to fail
+        run: |
+          set -o pipefail
+          npx --yes tsx@4.21.0 scripts/publication-check.ts products/chart-explainer/out/render/manifest.json \
+            --expect G3,G4,G5 | tee products/chart-explainer/out/render/publication-check.txt
+
+      - name: Record runner minutes and the probe
+        if: always()
+        working-directory: products/chart-explainer
+        env:
+          ANALYSIS: ${{ inputs.analysis }}
+        run: |
+          elapsed=$(( $(date +%s) - CLOCK_START ))
+          {
+            echo "## chart-explainer render"
+            echo "- analysis: \`$ANALYSIS\`"
+            echo "- job wall-clock so far: $((elapsed / 60)) min $((elapsed % 60)) s (G9 cap: 60 min)"
+            if [ -f out/render/render-report.json ]; then
+              python -c "import json; r=json.load(open('out/render/render-report.json')); print('- runnerMinutes in manifest:', r['runnerMinutes']); print('- duration (s):', r['durationSeconds']); print('- probe:', json.dumps(r['probe']))"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the render as a workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chart-explainer-render
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            products/chart-explainer/out/render/*.mp4
+            products/chart-explainer/out/render/*.srt
+            products/chart-explainer/out/render/page/
+            products/chart-explainer/out/render/charts/
+            products/chart-explainer/out/render/figures.json
+            products/chart-explainer/out/render/manifest.json
+            products/chart-explainer/out/render/manifest.notes.json
+            products/chart-explainer/out/render/render-report.json
+            products/chart-explainer/out/render/publication-check.txt

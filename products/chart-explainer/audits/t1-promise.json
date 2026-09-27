@@ -1,0 +1,28 @@
+{
+  "gate": "G5",
+  "auditor": "opus-promise-auditor",
+  "verdict": "PASS",
+  "auditedAt": "2026-09-27T10:54:24Z",
+  "auditedScriptSha256": "bf98a1b066eab0b8ca26a474759e9a3fa0e5cfccbb47a7cfd6a5fed1e17a86a6",
+  "revision": 1,
+  "supersedes": "G5 FAIL of 2026-09-27T10:33:00Z on script ded6992c3e0e2f22cb03eb0e6bfefb34112e9bbac9dc44a29d8801d71572dd31",
+  "findings": [
+    "Both halves of the answer now land inside 30 s. RC1's sentence 'As a share of JavaScript, yes, and quickly; in raw numbers, no: JavaScript's lead grew.' runs 00:00:03,194 → 00:00:08,719 (SRT cues 2-3), directly after the question (00:00:00,000-00:00:02,944).",
+    "The counting rule now lands inside 30 s. RC3's 'Every quarter, GitHub counts the developers in each economy who push to repositories containing each language; a repository that holds both languages counts for both.' runs 00:00:08,969 → 00:00:19,871. It is sourced to datasheet l.37 and github-about-repository-languages.txt:257 ('The files and directories within a repository determine the languages that make up the repository.'). The panel sentence follows at 00:00:20,121-00:00:24,217.",
+    "The numeric support follows at 18% (00:00:24,733-00:00:30,749), 49% (00:00:30,999-00:00:34,690) and the gap of 1.1M to 2.5M (00:00:34,940-00:00:43,623). The window delivers the answer, and the numbers back it straight after. RC2 is done: the duplicate 'Relative to JavaScript, yes, and quickly.' is gone.",
+    "The Octoverse contrast at 00:00:43,873-00:00:56,795 is accurate against the rendered page. The narration says 'named TypeScript the most used language on GitHub in August 2025, by contributor counts'; github-octoverse-2025.txt:672 reads 'By GitHub contributor counts, August 2025 marks the first time TypeScript emerged as the most used language on GitHub', and :292 says it 'overtook both Python and JavaScript'. 'That is a different count' is backed by :976 (monthly contributors who committed code in a language) against datasheet l.37 (quarterly developers who pushed to a repository containing the language). The page's own caveat at :672, that 'other industry indices use different methodologies and may still rank JavaScript and Python higher', supports the framing. The contradiction a developer viewer would have raised is now named and scoped.",
+    "Duration is 116.733 s (ffprobe 116.733333; render-report 116.7333), at or under the 120 s maximum. The last cue ends at 00:01:56,227.",
+    "RC4 is done. The s1 chart title reads 'Developers who pushed to repositories containing TypeScript or JavaScript' (PNG inspected, and the MP4 frame at 5 s shows it), and the alt text was updated. The s2 subtitle now reads 'TypeScript pushers as % of JavaScript pushers, same 92 economies'. s3-s6 are unchanged and still match their narration, as in the original audit.",
+    "The description adds 'Counting:' (the same rule, sourced to GitHub Docs and the datasheet) and 'Context:' (the Octoverse sentence plus its URL). Both match the narration, and neither claims more than the source says.",
+    "Nothing is clickbait or overstated. The title is a genuine question answered by 0:08.7. All nine figures.json claims hold. 'yes, and quickly' is backed by 18% → 49%. 'in raw numbers, no' is backed by a gap that grew every year (measured in the original audit).",
+    "Would a viewer feel it delivered? Yes. A general viewer gets both halves in the first 9 s. A developer who knows the Octoverse headline hears it named and scoped at 0:44. I would defend this to a reviewer.",
+    "Non-blocking weakness 1: the gap sentence and the Octoverse sentence are both spoken over the ratio chart, making s2 a 32.6 s static hold, while the chart that shows the gap is on screen at 0:00-0:24.",
+    "Non-blocking weakness 2: the Octoverse sentence says the counts differ but not why their directions differ.",
+    "Non-blocking weakness 3: there are only 3.3 s left before the 120 s cap for any further edit."
+  ],
+  "requiredChanges": [],
+  "recommendations": [
+    "Optional: follow 'That is a different count from the quarterly pushers in this video.' with 'Here, a TypeScript project that also holds JavaScript files counts for JavaScript too.' Only do this if a matching cut elsewhere keeps the video at or under 120 s. It would need fresh G3, G4 and G5 verdicts.",
+    "Optional, for later videos: speak each absolute or level figure over the chart that shows it, rather than over a ratio chart."
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "url": "https://developers.google.com/youtube/v3/revision_history",
+  "slug": "youtube-api-revision-history",
+  "fetchedAt": "2026-09-25T16:04:19.334Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 434471,
+  "sha256": "1c04614418526d6ee3e858e0367b82fcb2892e1b09202754634afafde963d99c",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/youtube-api-revision-history.html",
+  "textPath": "research/rendered/youtube-api-revision-history.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

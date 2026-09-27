@@ -137,6 +137,20 @@ pricing pages were egress-blocked and are medium confidence. The TikTok-Israel i
 is the one load-bearing fact the scout could not source first-party and is flagged for
 re-verification.
 
+**27.9.2026 — a different variant, reopened as an EXPERIMENT (not a line).** The owner's 25.9 reel described one
+English long-form channel in a high-RPM niche — not what this entry judged. The Fable judge ruled
+**REOPEN_AS_EXPERIMENT** (`research/faceless-youtube/VERDICT.md`); the Fable red team found the decision holds and the
+design does not survive as written (`RED-TEAM.md`: zero FATAL, six MAJOR). **This rejection still stands for what it
+judged** — one-click Shorts/TikTok generators, Hebrew, at volume. What changed for the new variant, from rendered
+first-party pages: Israel is on YouTube's YPP availability list; Kokoro's Apache-2.0 grant closes the TTS leg for
+English; Hebrew RTL is moot for an English channel. What did not change: month 3/6/12 revenue is ₪0/₪0/₪0 in the modal
+case, and ₪20,000 would need 0.6-1.0 million views a month — this channel is not built to carry the target.
+The experiment's order, with the red team's amendments binding: kill gates in code first (a per-line decision policy
+in `src/revenue/rules.ts`); a free web arm of the same analyses; a pre-check of the audited publisher; **only then** the
+owner's one-time Stage A (40-60 minutes, the brand account — never the owner's personal account — as the channel's
+primary owner); stage B (AdSense, tax forms) only at 2-3x the 8,000-hour pace, not at it. Nothing counts without an
+AdSense payment id in the ledger.
+
 ---
 
 ## Two standing walls in the Israeli-bureaucracy space — established 2026-09-03
@@ -1108,6 +1122,71 @@ day-one listing by construction.
 The shapes that survive this are the ones constraint 8 names: an input that is not public,
 accumulated history that compounds, an obligation someone must discharge, or work performed on
 demand for a payer who announces the job.
+
+**A FOURTH platform, 22.9.2026, and this one does not even bother to hide it.** Sweep 2's GitHub-native
+scout read GitHub's own documentation repository and found the same law stated as an explicit precondition
+rather than as a ranking weight: **"GitHub Apps should have a minimum of 100 installations" / "OAuth Apps
+should have a minimum of 200 users"** before a paid plan may be published at all
+[CODE: `github/docs`, `content/apps/github-marketplace/creating-apps-for-github-marketplace/requirements-for-listing-an-app.md`].
+On Gumroad, Apify and WordPress.org prior success bought *visibility*; on GitHub Marketplace it is the
+**entry condition for charging money**. Two further gates from the same source: a paid plan requires an
+organisation that is a **verified publisher** (2FA, a verified domain, GitHub review), and **payout only
+begins at $500 in a month** — below roughly ₪1,650/month nothing is paid out at all, and GitHub keeps 5%
+[CODE: `.../selling-your-app-on-github-marketplace/receiving-payment-for-app-purchases.md`]. A GitHub
+**Action** can never carry a paid plan at all; only Apps can. Four platforms, four independent sources,
+one law. Treat any future "we will list it and be found" proposal as refuted until someone shows the
+platform's own code saying otherwise.
+
+**A warning about a line that is already committed, from the same scout.** `oss-bounties` carries ₪300 of
+the ₪1,500 committed plan. The first quantitative reading anyone here has taken of bounty *supply* says it
+may be drying up: **554 open issues carry Algora's "💎 Bounty" label, but 428 were created between
+2026-03-01 and 2026-06-22 and essentially none after** (`label:"💎 Bounty" created:>2026-06-22` returns 1,
+and that one is a bounty farm); **zero issues anywhere carry "/bounty $" in the body in the last 30 days**;
+2,909 carry "💰 Rewarded" all-time. Two confounds are stated rather than hidden: Algora bounties are
+normally created by a **comment**, and GitHub issue search does not index comments; and Prime Intellect's
+bounties are not labelled on GitHub at all. So this is **a lower bound, not a death certificate** — but it
+is the first number, and the board should look at it before re-committing. Also from the newest page of
+that label: the supply that does exist is dominated by synthetic repositories rather than funded work.
+
+**Neither finding has been through adversarial screening** — the screeners died on a model quota
+(`research/colony-sweep/SWEEP-2.md`). They are recorded here because they are *kills*, and a kill cannot
+overstate income; the eighteen candidates from the same sweep are not recorded as anything at all until
+they are refuted.
+
+**26.9.2026 — the nine shortlisted candidates, screened on Opus; 27.9.2026 — the Fable board ruled.** One adversarial
+screener per candidate (`research/colony-sweep/SCREEN-2.md`, reports in `screen-2/`); the board
+(`research/colony-sweep/BOARD-2.md`) re-checked each screener's decisive fact at its source and **upheld all nine
+screeners. Eight are KILL. Metaculus was TEST_FIRST** — a ₪0 CI job to read the 2026 leaderboards (BOARD-2.md
+§1.9) — **and its test killed it the same day (27.9):** Metaculus's API answers every unauthenticated caller with
+*"Permission Error: The API is only available to authenticated users. Please create an account and use your API token
+to access the API."* (`research/measurements/metaculus-template-2026.md`). Nine of nine are now KILL.
+**Nothing was admitted.** Each re-open condition below is abridged — all of its parts must hold.
+
+| Candidate | Killed on | Re-open only if |
+|---|---|---|
+| ממשק מעסיקים pension-file toolkit | No payer left: payroll software emits the file, and the pension institutions turn manual entry into it free for small employers; the developer half is priced at zero by its own MIT library. | A rendered institution page showing small employers must upload a finished file, and a named unserved segment, and a measured SERP. |
+| ICA-ARCHIVE, registrar change history | Both named rails are closed by standing rulings: a paid Apify Actor needs 200 stranger users first (`BOARD.md:328`), and x402 is a recorded death. | ≥200 Apify stranger users in 30 days, plus a board ruling on selling rows the state no longer publishes, plus a named self-serve buyer. |
+| Google OSS VRP | Reports and every triage reply go through a signed-in web form (`bughunters.google.com/report`) — the owner at a browser, per report. | A documented submission channel a machine account can operate, and a 30-day dry run with a finding that meets the bar. |
+| Paid GitHub App on Marketplace | 100 installations before any paid plan (github/docs, re-read 26.9), with no channel for them but being found — already dead here as a law. | 100+ stranger installs in 90 days, measured from CI. |
+| Prime Intellect bounties on Algora | The payer closed it: *"The bounty program closed in June 2026"* (PrimeIntellect-ai/community-environments PR #784, 7.9.2026); the rendered board shows 0 open, 0 completed. | A funded relaunch after 7.9.2026 and ≥3 open bounties on a board this repo can render. |
+| huntr AI/ML bounties | Signed-in web form per report and per triage exchange; huntr.com is blocked here and its guidelines 404 from the runner. | A rendered huntr policy allowing a machine-operated researcher account, and Israel on its payout list. |
+| Paid Odoo module, Israeli VAT export | Measured demand: page 1 of the Localization category, paid modules median 1 lifetime purchase, best 12 (rendered 22.9). | A comparable statutory module sustaining ≥2 purchases a month over 12 months, plus agent-only support terms. |
+| PCN874 embed licence for ERP vendors | The named buyer is the ITA circular's own addressee and has shipped the file since 2010, with free regulator support; new entrants build it themselves (BillOS, npm, 8.9.2026). | A named vendor lacking the export, a paid artefact that is not already free, and delivery with no per-sale owner action. |
+| Metaculus bot tournaments — **TEST_FIRST (board 27.9), then KILL by its own pre-registered line (27.9)** | Every prize needs the owner's per-season paperwork: identity, nationality and residency checks, W-8BEN, a survey. The board's zero-cost test could not run: both 2026 leaderboards returned 403 to an unauthenticated GitHub runner on two channels — render-watch's browser request (empty body) and the library's own `requests` stack (*"The API is only available to authenticated users"*, Cloudflare). The library itself cannot call without a token (`metaculus_client.py:596-600`), and a token needs an account: an owner step. Kill line 1 of BOARD-2 §1.9 fired as written; the rules line did not (bots still prize-eligible, `futureeval-participate-tab.tsx:84,204`). | The owner answers yes to the per-win paperwork (`BOARD.md` §8.1) on their own, without a number — then the first step a yes adds (a Metaculus account under the brand, its token) also makes this test runnable, and it is re-run with that token before anything else is built (`metaculus-template.yml` carries no secret today, on purpose). Or Metaculus reopens its API to anonymous reads (`metaculus-template.yml`, dispatched, shows a 200). |
+
+**What the board ruled about committed lines** (BOARD-2.md §2):
+- **`oss-bounties`, Algora's terms:** the clause (automated access to algora.io's web pages) **does not fire** against
+  an account that works only on GitHub; the one algora.io use is the owner's one-time step 4, by hand. Conditions
+  attached, because Algora's own webhook handler is named `ensure_human_author`: disclosure on every PR and `/claim`
+  that the account is automated and the work agent-made; a test that nothing in the repo requests algora.io; a brand
+  login that does not end in "bot"; and a same-day kill on any Algora or maintainer action against the account for
+  automation.
+- **`oss-bounties`, supply:** a weekly CI count of *claimable* bounties (open, not archived, not already rewarded,
+  amount ≥ $50, repo policy not forbidden) is now the line's first build step. Week-4 mean ≥ 10 keeps ₪300; 3-9
+  retargets to ₪100; < 3 kills the line. The board expects it under 10. A third-party census (5 claimable, $60
+  visible, of 561 labelled issues) points the same way. The screening's claim that Prime Intellect's closure "names
+  one cause" of the June drop is **overruled**: Prime Intellect never paid or labelled bounties through Algora.
+- **`pcn874`:** BillOS changes nothing — a developer-shaped buyer this line already excludes.
 
 ---
 

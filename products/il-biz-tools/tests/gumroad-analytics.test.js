@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   isValidProductUrl,
   gumroadProductUrl,
+  gumroadProductId,
   isProConfigured,
   proButtonState,
   openProCheckout,
@@ -15,7 +16,7 @@ import {
 } from '../src/lib/analytics.js';
 import site from '../src/config/site.json' with { type: 'json' };
 
-const READY = { gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro' }, pro: { publicKey: { x: 'k' } } };
+const READY = { gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro', productId: '32-nPAicqbLj8B_WswVlMw==' } };
 
 describe('gumroad product url', () => {
   it('accepts an https product page and nothing else', () => {
@@ -31,6 +32,17 @@ describe('gumroad product url', () => {
   });
 });
 
+describe('gumroad product id', () => {
+  it("accepts Gumroad's public external id and nothing empty or odd", () => {
+    expect(gumroadProductId({ gumroad: { productId: ' 32-nPAicqbLj8B_WswVlMw== ' } })).toBe('32-nPAicqbLj8B_WswVlMw==');
+    expect(gumroadProductId({ gumroad: { productId: '' } })).toBeNull();
+    expect(gumroadProductId({ gumroad: { productId: '   ' } })).toBeNull();
+    expect(gumroadProductId({ gumroad: { productId: 'has space' } })).toBeNull();
+    expect(gumroadProductId({ gumroad: { productId: 42 } })).toBeNull();
+    expect(gumroadProductId({})).toBeNull();
+  });
+});
+
 describe('pro button states', () => {
   it('ships not-for-sale: no product url means an honest "בקרוב"', () => {
     expect(isProConfigured(site)).toBe(false);
@@ -43,17 +55,17 @@ describe('pro button states', () => {
   });
 
   it('stays shut on a malformed product url instead of linking somewhere random', () => {
-    const s = proButtonState({ gumroad: { productUrl: 'gumroad.com/l/pro' }, pro: { publicKey: { x: 'k' } } });
+    const s = proButtonState({ gumroad: { productUrl: 'gumroad.com/l/pro', productId: 'P' } });
     expect(s.state).toBe('invalid_url');
     expect(s.enabled).toBe(false);
     expect(s.href).toBeNull();
   });
 
-  it('refuses to sell a licence key nothing can verify', () => {
-    const s = proButtonState({ gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro' }, pro: { publicKey: null } });
-    expect(s.state).toBe('no_public_key');
-    expect(s.enabled).toBe(false);
-    expect(s.href).toBeNull();
+  it('refuses to sell a licence key nothing can verify: a shop without a product id stays shut', () => {
+    const s = proButtonState({ gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro', productId: '' } });
+    expect(s).toMatchObject({ state: 'no_product_id', enabled: false, href: null });
+    expect(s.note).toBe('החנות מוגדרת אך עדיין אין מזהה מוצר לאימות הרישיון, ולכן אי אפשר למכור.');
+    expect(isProConfigured({ gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro', productId: '' } })).toBe(false);
   });
 
   it('opens only when there is both a shop and a way to verify what it sells', () => {
@@ -62,6 +74,18 @@ describe('pro button states', () => {
     expect(s.enabled).toBe(true);
     expect(s.href).toBe('https://kelim.gumroad.com/l/pro');
     expect(s.label).toBe('שדרוג ל-Pro');
+    expect(s.note).toBe('התשלום מתבצע ב-Gumroad. מפתח הרישיון מגיע בקבלה במייל מ-Gumroad; הזנתו כאן נבדקת מול Gumroad פעם אחת ומפעילה את המיתוג.');
+    expect(isProConfigured(READY)).toBe(true);
+  });
+
+  it('keeps the unconfigured and invalid-url states whatever the product id says', () => {
+    expect(proButtonState({ gumroad: { productUrl: '', productId: 'P' } }).state).toBe('unconfigured');
+    expect(proButtonState({ gumroad: { productUrl: 'http://x.gumroad.com/l/p', productId: 'P' } }).state).toBe('invalid_url');
+  });
+
+  it('ships with both fields empty', () => {
+    expect(site.gumroad.productUrl).toBe('');
+    expect(site.gumroad.productId).toBe('');
   });
 });
 

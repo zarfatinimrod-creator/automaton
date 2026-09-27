@@ -133,6 +133,16 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(order).toEqual(ownerStepsInOrder().map((s) => s.number));
   });
 
+  it("marks exactly the steps the code records as done", () => {
+    // The report stops asking for a step once the code records it done, so the
+    // document and the data must agree on which ones those are.
+    const headings = [...doc.matchAll(/^##\s*צעד\s*(\d+)\s*—(.*)$/gm)];
+    for (const [, num, rest] of headings) {
+      const step = OWNER_STEPS.find((s) => s.number === Number(num))!;
+      expect(rest.includes("✅ בוצע"), `step ${num}: heading and doneOn disagree`).toBe(Boolean(step.doneOn));
+    }
+  });
+
   it("still tells the owner the Apify token may go in right after step 1", () => {
     expect(doc).toMatch(/Apify/);
     expect(doc).toMatch(/מיד אחרי צעד 1|אחרי צעד 1/);

@@ -3,6 +3,7 @@
 ## Read this first
 - `MISSION.md` is the heart of this repo: the owner's mandate and the rules it implies. Read it before anything else, every session.
 - Then `logs/CHECKPOINT.md` for where the last session stopped.
+- Then `logs/CHANNEL_LOOP.md`: the owner's standing order (27.9.2026) to open income channels without stopping. Its protocol says what the next tick does.
 
 ## Checkpoint (always)
 - `logs/CHECKPOINT.md` is the single "where we stopped" file. Update it before ending any session or long task: current branch, what is done, what is in progress, exact next steps, open questions for the owner.

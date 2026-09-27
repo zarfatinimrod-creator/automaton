@@ -1,0 +1,2213 @@
+YouTube Analytics API: Channel Reports | YouTube Analytics and Reporting APIs | Google for Developers
+
+Skip to main content
+
+YouTube
+
+Analytics and Reporting APIs
+
+/
+
+English
+
+Deutsch
+
+Español
+
+Español – América Latina
+
+Français
+
+Indonesia
+
+Italiano
+
+Polski
+
+Português – Brasil
+
+Tiếng Việt
+
+Türkçe
+
+Русский
+
+עברית
+
+العربيّة
+
+فارسی
+
+हिंदी
+
+বাংলা
+
+ภาษาไทย
+
+中文 – 简体
+
+中文 – 繁體
+
+日本語
+
+한국어
+
+Sign in
+
+Home
+
+Overview
+
+Authorization
+
+Bulk Reports
+
+Targeted Queries
+
+Resources
+
+YouTube
+
+Analytics and Reporting APIs
+
+Home
+
+Overview
+
+Authorization
+
+Bulk Reports
+
+Targeted Queries
+
+Resources
+
+YouTube Analytics API
+
+Data Model
+
+Overview
+
+Dimensions
+
+Metrics
+
+Channel Reports
+
+Content Owner Reports
+
+Guides
+
+Sample requests
+
+API Reference
+
+Overview
+
+reports.query
+
+Groups
+
+Overview
+list
+insert
+update
+delete
+
+GroupItems
+
+Overview
+list
+insert
+delete
+
+Revision History
+
+Important: YouTube is updating its policy for how it counts views for all video formats. Learn more
+
+Home
+
+Products
+
+YouTube
+
+Analytics and Reporting APIs
+
+Targeted Queries
+
+YouTube Analytics API: Channel Reports
+
+Stay organized with collections
+
+Save and categorize content based on your preferences.
+
+Page Summary
+
+outlined_flag
+
+The YouTube Analytics API provides channel reports that measure user activity metrics, including video views, ratings, and subscriptions across various report types like video, playlist, and ad performance.
+
+To retrieve reports, use the ids parameter with channel==MINE for the authenticated user's channel or channel==CHANNEL_ID for a specific channel, requiring ownership, while requests require OAuth 2.0 authorization with specific scopes for user activity and monetary data.
+
+Report tables utilize dimensions for data categories (e.g., day , country ), metrics for quantitative measurements (e.g., views , likes ), and filters to refine data (e.g., country==US ), allowing customization based on the required report type.
+
+Playlist reports analyze user interactions within a channel's playlists, offering metrics like views , estimatedMinutesWatched , and playlistStarts , with options for geographic and time-based breakdowns, and specific filters, such as isCurated , that will be deprecated soon.
+
+Certain reports have constraints such as maxResults limitations, required sorting, and restrictions on using certain metrics or dimensions together, like liveOrOnDemand and averageViewPercentage , while certain traffic sources and report types might not be supported.
+
+This page lists reports that channel owners can retrieve with the YouTube Analytics API. Channel reports provide user activity metrics for a specified channel and measure things like video views, ratings, and subscription counts.
+
+Video reports provide statistics for all user activity related to a channel's videos.
+
+Playlist reports provide statistics that are specifically related to video views that occur in the context of a playlist.
+
+Ad performance reports contain metrics related to revenue and ad performance. They use the adType dimension to group metrics based on the types of ads that ran during video playbacks. The ad performance reports section explains the two types of ad performance metrics that the API supports.
+
+Retrieving a report
+
+To retrieve a channel report, you must set the ids parameter value in your API request to one of the following values:
+
+channel==MINE – The API returns data for the authenticated user's YouTube channel.
+
+channel== CHANNEL_ID – Set CHANNEL_ID to the unique channel ID of the channel for which you are retrieving data. The user authorizing the request must be the owner of the channel.
+
+The channel ID is currently a string that begins with the letters UC , though its format is subject to change. (You can find your channel's ID on the advanced account settings page for your YouTube channel, or you can retrieve your channel's ID programmatically using the YouTube Data API's channels.list method.)
+
+Authorization
+
+All YouTube Analytics API requests must be authorized. The Authorization guide explains how to use the OAuth 2.0 protocol to retrieve authorization tokens.
+
+YouTube Analytics API requests use the following authorization scopes:
+
+Scope
+
+Description
+
+https://www.googleapis.com/auth/yt-analytics.readonly
+
+View YouTube Analytics reports for your YouTube content. This scope provides access to user activity metrics, like view counts and rating counts.
+
+https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+
+View YouTube Analytics monetary reports for your YouTube content. This scope provides access to user activity metrics and to estimated revenue and ad performance metrics.
+
+https://www.googleapis.com/auth/youtube
+
+Manage your YouTube account. In the YouTube Analytics API, channel owners use this scope to manage YouTube Analytics groups and group items.
+
+https://www.googleapis.com/auth/youtubepartner
+
+View and manage YouTube assets and associated content on YouTube. In the YouTube Analytics API, content owners use this scope to manage YouTube Analytics groups and group items.
+
+Note: Estimated revenue and ad performance metrics are supported for channel reports. To access these metrics, your request must be authorized with the https://www.googleapis.com/auth/yt-analytics-monetary.readonly scope. Additionally, the authenticated user's channel must be a member of the YouTube Partner Program. Requesting monetary metrics for a channel that is not in the YouTube Partner Program results in a 403 Forbidden error.
+
+In the report tables throughout this page, metrics marked with an asterisk (*) are monetary metrics that require this scope and monetization status.
+
+Filters
+
+The tables that explain the supported reports identify the filters that can be used for each report. In the tables, filters shown in parentheses are optional. For example, for the filtering option video(,country) , the video filter is required, and the country filter is optional.
+
+The API also supports the ability to specify multiple values for the video and playlist filters. If you do specify multiple values for one of these filters, you can also add that filter to the list of dimensions that you specify for the request. This is true even if the filter is not listed as a supported dimension for a particular report.
+
+See the filters parameter definition for a complete explanation of how to filter API results for a specific value or set of values.
+
+Understanding report tables
+
+This section explains the formatting and terminology used in the tables that define reports that
+the API supports. The following table lists the dimensions, metrics, and filters supported for the
+playback details video report using the time dimension and the averageViewPercentage metric.
+
+Property
+
+Value
+
+Dimensions:
+
+Use 0 or more
+
+creatorContentType , subscribedStatus , youtubeProduct
+
+Use 0 or 1
+
+day , month
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage
+
+Filters:
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+subscribedStatus , youtubeProduct
+
+The table contains two rows for dimensions, one row for metrics, and three rows for filters. For
+dimensions and filters, values from each row can be combined in an API request as long as the
+combination follows the usage rules in the table. So, for example, valid dimensions
+parameter values for this report include:
+
+dimensions=day
+
+dimensions=day,subscribedStatus
+
+dimensions=month,subscribedStatus,youtubeProduct
+
+dimensions=month,youtubeProduct
+
+However, the parameter value day,month is invalid because it uses two time-based
+dimensions, and the request must use either 0 or 1.
+
+While report tables define supported dimensions, metrics, and filters, the API enforces cross-parameter constraints.
+Querying unsupported or mutually exclusive combinations (such as combining incompatible geographic filters or omitting required parameters) causes an HTTP 400 badRequest error with the message The query is not
+supported . Review individual report tables on this page for specific
+restrictions that apply to each report.
+
+Report table terminology
+
+Tables use the following terminology to indicate whether dimensions are required or optional:
+
+These terms mean a value is required:
+
+Required: You must include the value.
+
+Use exactly 1: You must include one value from the group.
+
+Use 1 or more: You can include any or all values from the group, but you must include at least one.
+
+These terms mean a value is optional:
+
+Optional: You have the option of include the value.
+
+Use 0 or 1: You have the option of including one value from the group.
+
+Use 0 or more: You have the option of including any or all values from the group.
+
+Video reports
+
+Basic stats
+
+Basic user activity statistics
+
+This report provides statistics related to users' actions on a channel. You can filter the report to only return data for a specific video or country.
+
+Property
+
+Value
+
+Dimensions:
+
+[None]
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , comments , likes , dislikes , videosAddedToPlaylists , videosRemovedFromPlaylists , shares , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage , annotationClickThroughRate , annotationCloseRate , annotationImpressions , annotationClickableImpressions , annotationClosableImpressions , annotationClicks , annotationCloses , cardClickRate , cardTeaserClickRate , cardImpressions , cardTeaserImpressions , cardClicks , cardTeaserClicks , subscribersGained , subscribersLost , estimatedRevenue *, estimatedAdRevenue *, grossRevenue *, estimatedRedPartnerRevenue *, monetizedPlaybacks *, playbackBasedCpm *, adImpressions *, cpm *
+
+Filters:
+
+Use 0 or 1
+
+country , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Basic user activity statistics for U.S. states
+
+This report provides statistics for a particular U.S. state or the District of Columbia. Note that this report only supports a subset of the metrics available in the country-specific report described above.
+
+Property
+
+Value
+
+Dimensions:
+
+[None]
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage , annotationClickThroughRate , annotationCloseRate , annotationImpressions , annotationClickableImpressions , annotationClosableImpressions , annotationClicks , annotationCloses , cardClickRate , cardTeaserClickRate , cardImpressions , cardTeaserImpressions , cardClicks , cardTeaserClicks
+
+Filters:
+
+Required
+
+province
+
+Use 0 or 1
+
+video , group
+
+Time-based
+
+User activity by country for specific time periods
+
+This report provides statistics related to user actions on a channel for specific time intervals. You can filter the report to only return data for a specific video or country.
+
+Property
+
+Value
+
+Dimensions:
+
+Use exactly 1
+
+day , month
+
+Optional
+
+creatorContentType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , comments , likes , dislikes , videosAddedToPlaylists , videosRemovedFromPlaylists , shares , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage , annotationClickThroughRate , annotationCloseRate , annotationImpressions , annotationClickableImpressions , annotationClosableImpressions , annotationClicks , annotationCloses , cardClickRate , cardTeaserClickRate , cardImpressions , cardTeaserImpressions , cardClicks , cardTeaserClicks , subscribersGained , subscribersLost , uniques , estimatedRevenue *, estimatedAdRevenue *, grossRevenue *, estimatedRedPartnerRevenue *, monetizedPlaybacks *, playbackBasedCpm *, adImpressions *, cpm *
+
+Filters:
+
+Use 0 or 1
+
+country , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+User activity in U.S. states for specific time periods
+
+This report provides statistics related to user activity for a particular U.S. state or the District of Columbia. Note that this report only supports a subset of the metrics available in the country-specific report described above.
+
+Property
+
+Value
+
+Dimensions:
+
+Use exactly 1
+
+day , month
+
+Optional
+
+creatorContentType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage , annotationClickThroughRate , annotationCloseRate , annotationImpressions , annotationClickableImpressions , annotationClosableImpressions , annotationClicks , annotationCloses , cardClickRate , cardTeaserClickRate , cardImpressions , cardTeaserImpressions , cardClicks , cardTeaserClicks
+
+Filters:
+
+Required
+
+province
+
+Use 0 or 1
+
+video , group
+
+User geography
+
+User activity by country
+
+This report provides statistics related to user activity on a country-by-country basis for a channel. You can filter the report to only return data for a specific video.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+country
+
+Optional
+
+creatorContentType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , comments , likes , dislikes , videosAddedToPlaylists , videosRemovedFromPlaylists , shares , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage , annotationClickThroughRate , annotationCloseRate , annotationImpressions , annotationClickableImpressions , annotationClosableImpressions , annotationClicks , annotationCloses , cardClickRate , cardTeaserClickRate , cardImpressions , cardTeaserImpressions , cardClicks , cardTeaserClicks , subscribersGained , subscribersLost , estimatedRevenue *, estimatedAdRevenue *, grossRevenue *, estimatedRedPartnerRevenue *, monetizedPlaybacks *, playbackBasedCpm *, adImpressions *, cpm *
+
+Filters:
+
+Use 0 or 1
+
+continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+User activity by province
+
+This report provides user activity statistics for U.S. states and the District of Columbia.
+For this report, you must set the filters parameter value to country==US .
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+province
+
+Optional
+
+creatorContentType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage , annotationClickThroughRate , annotationCloseRate , annotationImpressions , annotationClickableImpressions , annotationClosableImpressions , annotationClicks , annotationCloses , cardClickRate , cardTeaserClickRate , cardImpressions , cardTeaserImpressions , cardClicks , cardTeaserClicks
+
+Filters:
+
+Required
+
+country ==US
+
+Use 0 or 1
+
+video , group
+
+User activity by city (<= 250 results)
+
+Note: This report requires you to set the maxResults
+parameter to an integer value of 250 or less. Unlike most other reports, this report
+also requires you to specify a value for the sort request parameter.
+
+This report provides user activity statistics by city.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+city
+
+Use 0 or more
+
+creatorContentType , country , province , subscribedStatus
+
+Note: If you include the province dimension, you must also use the country ==US filter.
+
+Use 0 or 1
+
+day , month
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration , averageViewPercentage
+
+Filters:
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Sorting options:
+
+- views
+- estimatedMinutesWatched
+
+User activity by DMA
+
+This report provides user activity statistics by Designated Market Area (DMA). For this report,
+you must either set the filters parameter value to country==US or
+filter to a particular province (U.S. state).
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+dma
+
+Use 0 or 1
+
+day
+month
+creatorContentType
+subscribedStatus
+
+Metrics:
+
+Use 1 or more
+
+engagedViews
+views
+estimatedMinutesWatched
+averageViewDuration
+averageViewPercentage
+
+Filters:
+
+Use 0 or 1
+
+country ==US
+province
+
+Use 0 or 1
+
+video
+group
+
+Sorting options:
+
+- views
+- estimatedMinutesWatched
+
+Playback details
+
+Playback detail reports provide statistics related to the following viewing attributes:
+
+Was the view of a live video broadcast or an on-demand video?
+
+Was the viewer subscribed to the channel that owns the video?
+
+On which YouTube product did the view occur?
+
+Note: The liveOrOnDemand dimension and filter cannot be used in conjunction with the averageViewPercentage metric. As such, each of the following subsections lists two reports. One report supports the liveOrOnDemand dimension (and filter), while the other supports the averageViewPercentage metric.
+
+User activity by subscribed status
+
+This report provides user activity metrics for subscribed and unsubscribed viewers. Statistics can be grouped by time period ( day or month ), and the report can also be filtered by country , continent , or subContinent .
+
+Property
+
+Value
+
+Dimensions:
+
+Use 0 or more
+
+creatorContentType , subscribedStatus
+
+Use 0 or 1
+
+day , month
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , likes , dislikes , videosAddedToPlaylists , videosRemovedFromPlaylists , shares , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage , annotationClickThroughRate , annotationCloseRate , annotationImpressions , annotationClickableImpressions , annotationClosableImpressions , annotationClicks , annotationCloses , cardClickRate , cardTeaserClickRate , cardImpressions , cardTeaserImpressions , cardClicks , cardTeaserClicks
+
+Filters:
+
+Use 0 or 1
+
+country , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Optional
+
+subscribedStatus
+
+User activity by subscribed status for provinces
+
+This report provides user activity metrics for subscribed and unsubscribed viewers in U.S. states or the District of Columbia. This report supports fewer metrics than the previous report.
+
+Property
+
+Value
+
+Dimensions:
+
+Use 0 or more
+
+creatorContentType , subscribedStatus
+
+Use 0 or 1
+
+day , month
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage , annotationClickThroughRate , annotationCloseRate , annotationImpressions , annotationClickableImpressions , annotationClosableImpressions , annotationClicks , annotationCloses , cardClickRate , cardTeaserClickRate , cardImpressions , cardTeaserImpressions , cardClicks , cardTeaserClicks
+
+Filters:
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+province , subscribedStatus
+
+Playback details with optional time dimension
+
+The time dimension – day or month – is optional for these reports because, regardless, you need to use the startDate and endDate request parameters to specify the date range that the report will cover. The dimension, if present, indicates that you want data in the report to be aggregated by day, month, etc.
+
+Playback details with optional time dimension and liveOrOnDemand statistics
+
+This report provides playback detail statistics for specific time intervals. It supports the liveOrOnDemand dimension (and filter).
+
+Property
+
+Value
+
+Dimensions:
+
+Use 0 or more
+
+creatorContentType , liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Use 0 or 1
+
+day , month
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration
+
+Filters:
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Playback details with optional time dimension and averageViewPercentage metric
+
+This report provides playback detail statistics for specific time intervals. It supports the averageViewPercentage metric.
+
+Property
+
+Value
+
+Dimensions:
+
+Use 0 or more
+
+creatorContentType , subscribedStatus , youtubeProduct
+
+Use 0 or 1
+
+day , month
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage
+
+Filters:
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+subscribedStatus , youtubeProduct
+
+Playback details by country
+
+Playback details by country with liveOrOnDemand statistics
+
+This report provides playback detail statistics on a country-by-country basis. It supports the liveOrOnDemand dimension (and filter).
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+country
+
+Use 0 or more
+
+creatorContentType , liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration
+
+Filters:
+
+Use 0 or 1
+
+continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Playback details by country with averageViewPercentage metric
+
+The following report is similar to the previous one. It adds support for the averageViewPercentage metric, but it does not support liveOrOnDemand as a dimension or a filter.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+country
+
+Use 0 or more
+
+creatorContentType , subscribedStatus , youtubeProduct
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage
+
+Filters:
+
+Use 0 or 1
+
+continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+subscribedStatus , youtubeProduct
+
+Playback details by province
+
+Playback details by province with liveOrOnDemand statistics
+
+This report provides playback detail statistics for U.S. states and the District of Columbia. It supports the liveOrOnDemand dimension (and filter).
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+province
+
+Use 0 or more
+
+creatorContentType , liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration
+
+Filters:
+
+Required
+
+country ==US
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Playback details by province with averageViewPercentage metric
+
+The following report is similar to the previous one. It adds support for the averageViewPercentage metric, but it does not support liveOrOnDemand as a dimension or a filter.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+province
+
+Use 0 or more
+
+creatorContentType , subscribedStatus , youtubeProduct
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage
+
+Filters:
+
+Required
+
+country ==US
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+subscribedStatus , youtubeProduct
+
+Playback locations
+
+Video playback location report
+
+This report provides statistics related to the type of page or application where video playbacks occurred.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+insightPlaybackLocationType
+
+Use 0 or more
+
+creatorContentType , day , liveOrOnDemand , subscribedStatus
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched
+
+Filters:
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+liveOrOnDemand , subscribedStatus
+
+Playback location detail (<= 25 results)
+
+Note: This report requires you to set the maxResults parameter to an integer value of 25 or less. Unlike most other reports, this report also requires you to specify a value for the sort request parameter.
+
+This report identifies the embedded video players that generated the most views or viewing time for a channel's videos.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+insightPlaybackLocationDetail
+
+Optional
+
+creatorContentType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched
+
+Filters:
+
+Required
+
+insightPlaybackLocationType ==EMBEDDED
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+liveOrOnDemand , subscribedStatus
+
+Sorting options:
+
+- views
+- estimatedMinutesWatched
+
+Traffic sources
+
+Traffic source
+
+This report aggregates viewing statistics based on the manner in which viewers reached your video
+content. For example, it identifies the number of views that stemmed from a Google search or from
+a link to a related video.
+
+Note: This report returns an error if the product of
+# of queried videos X # of days in date range exceeds 50,000. For example, a query
+that retrieves data for 500 video IDs can request data for a maximum of 100 days. To reduce the
+number of rows that a request returns, split your query into multiple queries that specify fewer
+videos or set shorter date ranges.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+insightTrafficSourceType
+
+Use 0 or more
+
+creatorContentType , day , liveOrOnDemand , subscribedStatus
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched
+
+Filters:
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+liveOrOnDemand , subscribedStatus
+
+Traffic source detail (<= 25 results)
+
+Note: This report requires you to set the maxResults parameter to an integer value of 25 or less. Unlike most other reports, this report also requires you to specify a value for the sort request parameter.
+
+This report aggregates viewing statistics based on the referrers that generated the most views for the channel's content. Referrers are categorized by traffic source type, and the insightTrafficSourceDetail dimension's definition identifies the traffic sources for which the report is available. For example, if you set the insightTrafficSourceType filter to ADVERTISING , the report will list the types of ads that generated the most views or viewing time for the channel's content.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+insightTrafficSourceDetail
+
+Optional
+
+creatorContentType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched
+
+Filters:
+
+Required
+
+insightTrafficSourceType (see note below table)
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+liveOrOnDemand , subscribedStatus
+
+Sorting options:
+
+- views
+- estimatedMinutesWatched
+
+Note: This report is only supported for specific traffic sources. VIDEO_REMIXES , NOTIFICATION , END_SCREEN , CAMPAIGN_CARD , VIDEO_REMIXES , and NO_LINK_EMBEDDED traffic sources are some of the unsupported ones.
+
+Device type and operating system
+
+Device type
+
+This report aggregates viewing statistics based on the manner in which viewers reached your video content. For example, it identifies the number of views that occurred on mobile devices or game consoles.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+deviceType
+
+Use 0 or more
+
+creatorContentType , day , liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched
+
+Filters:
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+operatingSystem , liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Operating system
+
+This report aggregates viewing statistics based on viewers' operating systems. For example, it identifies the number of views that occurred on Android devices or on PlayStations.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+operatingSystem
+
+Use 0 or more
+
+creatorContentType , day , liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched
+
+Filters:
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+deviceType , liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Operating system and device type
+
+This report aggregates viewing statistics based on viewers' operating systems and device types. For example, it identifies the number of views that occurred on Android tablets or on Windows desktop devices.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+deviceType , operatingSystem
+
+Use 0 or more
+
+creatorContentType , day , liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched
+
+Filters:
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Viewer demographics
+
+This report aggregates viewing statistics based on viewers' age group and gender.
+
+Property
+
+Value
+
+Dimensions:
+
+Use 1 or more
+
+ageGroup , gender
+
+Use 0 or more
+
+creatorContentType , liveOrOnDemand , subscribedStatus
+
+Metrics:
+
+Use 1 or more
+
+viewerPercentage
+
+Filters:
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Use 0 or more
+
+liveOrOnDemand , subscribedStatus
+
+Note: The viewerPercentage values in this report are not normalized for different values or combinations of values for playback detail dimensions ( subscribedStatus , liveOrOnDemand , or youtubeProduct ).
+
+For example, a report that uses the subscribedStatus dimension returns viewerPercentage data adding up to 100 percent for subscribed views and viewerPercentage data adding up to 100 percent for unsubscribed views. (The total value of all viewerPercentage fields in the report is 200 percent.)
+
+You can use filters to ensure that the report only contains viewerPercentage data for one value (or combination of values) for playback detail dimensions.
+
+Engagement and content sharing
+
+This report provides statistics showing how frequently the channel's videos were shared on different social platforms.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+sharingService
+
+Use 0 or more
+
+creatorContentType , subscribedStatus
+
+Metrics:
+
+Use 1 or more
+
+shares
+
+Filters:
+
+Use 0 or 1
+
+country , continent , subContinent
+
+Use 0 or 1
+
+video , group
+
+Optional
+
+subscribedStatus
+
+Audience retention
+
+This report measures a video's ability to retain its audience and also shows how often specific
+parts of a video were watched. The elapsedVideoTimeRatio dimension measures
+the amount of the video that has elapsed for the corresponding metric values. The metrics can
+be broken down into two categories:
+
+Audience retention
+
+These metrics show how well the video retains its audience.
+
+audienceWatchRatio is a ratio that compares the number of times a
+portion of a video has been watched to the total number of views of the video.
+
+relativeRetentionPerformance shows how well a video retains viewers
+during playbacks relative to other YouTube videos of a similar length.
+
+Granular watch statistics
+
+These metrics provide information about how often specific parts of a video were watched.
+
+startedWatching indicates how often viewers started watching a video
+during a particular segment of the video.
+
+stoppedWatching indicates how often viewers stopped watching a video
+during a particular segment of the video.
+
+totalSegmentImpressions indicates how often a particular sgement of the
+video was viewed.
+
+Note: This report does not support the ability to specify a
+comma-separated list of values for the video filter; the value must specify a single
+video ID.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+elapsedVideoTimeRatio
+
+Metrics:
+
+Use 1 or more
+
+audienceWatchRatio
+relativeRetentionPerformance
+startedWatching
+stoppedWatching
+totalSegmentImpressions
+
+Filters:
+
+Required
+
+video
+
+Use 0 or more
+
+audienceType
+subscribedStatus
+youtubeProduct
+
+Concurrent viewers (for livestreams)
+
+This report shows the concurrent viewers at a given position for a single live-streamed video.
+The filter specifies the video. The position dimension generally represents a single minute.
+
+Property
+
+Value
+
+Dimensions:
+
+Use 0 or 1
+
+livestreamPosition
+
+Metrics:
+
+Use 1 or more
+
+averageConcurrentViewers
+peakConcurrentViewers
+
+Filters:
+
+Required
+
+video
+
+Top videos
+
+Note: These reports require you to set the maxResults parameter to an integer value of 200 or less. Before January 1, 2013 data is only available for the top 10 videos. Unlike most other reports, these reports also require you to specify a value for the sort request parameter.
+
+Top videos with optional regional filters (<= 200 results)
+
+This report lists the channel's top videos. The report can be filtered to list top videos by country , continent , or subContinent .
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+video
+
+Optional
+
+creatorContentType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , comments , likes , dislikes , videosAddedToPlaylists , videosRemovedFromPlaylists , shares , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage , annotationClickThroughRate , annotationCloseRate , annotationImpressions , annotationClickableImpressions , annotationClosableImpressions , annotationClicks , annotationCloses , cardClickRate , cardTeaserClickRate , cardImpressions , cardTeaserImpressions , cardClicks , cardTeaserClicks , subscribersGained , subscribersLost , estimatedRevenue *, estimatedAdRevenue *, grossRevenue *, estimatedRedPartnerRevenue *, monetizedPlaybacks *, playbackBasedCpm *, adImpressions *, cpm *
+
+Filters:
+
+Use 0 or 1
+
+country , continent , subContinent
+
+Sorting options:
+
+- views
+- redViews
+- estimatedRevenue
+- estimatedRedPartnerRevenue
+- estimatedMinutesWatched
+- estimatedRedMinutesWatched
+- subscribersGained
+- subscribersLost
+
+Top videos by state (<= 200 results)
+
+This report lists the channel's top videos in a particular U.S. state or the District of Columbia. Note that this report only supports a subset of the metrics available in the country-specific report described above.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+video
+
+Optional
+
+creatorContentType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage , annotationClickThroughRate , annotationCloseRate , annotationImpressions , annotationClickableImpressions , annotationClosableImpressions , annotationClicks , annotationCloses , cardClickRate , cardTeaserClickRate , cardImpressions , cardTeaserImpressions , cardClicks , cardTeaserClicks
+
+Filters:
+
+Required
+
+province
+
+Optional
+
+subscribedStatus
+
+Sorting options:
+
+- views
+- redViews
+- estimatedMinutesWatched
+- estimatedRedMinutesWatched
+
+Top videos for subscribed or unsubscribed viewers (<= 200 results)
+
+This report lists the channel's top videos for subscribed or unsubscribed viewers. The report can be filtered to list top videos by country , continent , or subContinent . The previous report lets you retrieve the top videos in a particular U.S. state for subscribed or unsubscribed viewers, but it supports fewer metrics than this report.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+video
+
+Optional
+
+creatorContentType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , likes , dislikes , videosAddedToPlaylists , videosRemovedFromPlaylists , shares , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage , annotationClickThroughRate , annotationCloseRate , annotationImpressions , annotationClickableImpressions , annotationClosableImpressions , annotationClicks , annotationCloses , cardClickRate , cardTeaserClickRate , cardImpressions , cardTeaserImpressions , cardClicks , cardTeaserClicks
+
+Filters:
+
+Optional
+
+subscribedStatus
+
+Use 0 or 1
+
+country , continent , subContinent
+
+Sorting options:
+
+- views
+- redViews
+- estimatedMinutesWatched
+- estimatedRedMinutesWatched
+
+Top videos by YouTube Product (<= 200 results)
+
+This report lists the channel's top videos and supports playback detail and geographic filters. This report is similar to the previous one, but it supports fewer metrics and adds support for the youtubeProduct filter.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+video
+
+Optional
+
+creatorContentType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration , averageViewPercentage
+
+Filters:
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or more
+
+subscribedStatus , youtubeProduct
+
+Sorting options:
+
+- views
+- redViews
+- estimatedMinutesWatched
+- estimatedRedMinutesWatched
+
+Top videos with playback detail filters (<= 200 results)
+
+This report lists the channel's top videos, filtering by any or all of the playback detail dimensions: liveOrOnDemand , subscribedStatus , and youtubeProduct . Unlike the previous report, this one supports the liveOrOnDemand filter and does not support the averageViewPercentage metric.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+video
+
+Optional
+
+creatorContentType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , redViews , estimatedMinutesWatched , estimatedRedMinutesWatched , averageViewDuration
+
+Filters:
+
+Use 0 or 1
+
+country , province , continent , subContinent
+
+Use 0 or more
+
+liveOrOnDemand , subscribedStatus , youtubeProduct
+
+Sorting options:
+
+- views
+- redViews
+- estimatedMinutesWatched
+- estimatedRedMinutesWatched
+
+Playlist reports
+
+Playlist reports contain metrics related to user activity related to videos in the channel
+owner's playlists. Two versions of these reports are available, and, for each available report,
+the following sections contain a description of each version:
+
+Aggregated video metrics
+
+These metrics provide user activity and impression metrics that are aggregated for all videos
+in the playlist that are also owned by the channel that owns the playlist. Metrics for videos
+owned by other channels are not computed in the aggregation. As a result, if a channel creates a
+playlist that contains only videos owned by other channels, reports for those playlists will not
+provide values for these metrics.
+
+See the supported playlist metrics section for a list
+of aggregated video metrics that YouTube supports.
+
+In-playlist metrics
+
+These metrics reflect user activity and engagement in the context of the playlist page. These
+metrics include views for all videos in the playlist, regardless of which channel owns them, but
+only counts views that occurred in the playlist context.
+
+Supported playlist metrics
+
+Metric type
+
+Metrics
+
+Aggregated video metrics
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration
+
+In-playlist metrics
+
+playlistViews , playlistEstimatedMinutesWatched , playlistAverageViewDuration ,
+playlistSaves , playlistStarts ,
+viewsPerPlaylistStart , averageTimeInPlaylist
+
+Basic stats
+
+This report provides statistics related to users' interactions with the videos in the channel's
+playlists. You can filter the report to only return data for a specific playlist.
+
+Property
+
+Value
+
+Dimensions:
+
+[None]
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration , averageTimeInPlaylist , playlistAverageViewDuration , playlistEstimatedMinutesWatched , playlistSaves , playlistStarts , playlistViews , viewsPerPlaylistStart
+
+Filters:
+
+Use exactly 1
+
+playlist , group
+
+Time-based
+
+This report provides statistics related to users' interactions with the videos in the channel's
+playlists. You can filter the report to only return data for a specific playlist.
+
+Property
+
+Value
+
+Dimensions:
+
+Use exactly 1
+
+day , month
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration , averageTimeInPlaylist , playlistAverageViewDuration , playlistEstimatedMinutesWatched , playlistSaves , playlistStarts , playlistViews , viewsPerPlaylistStart
+
+Filters:
+
+Use exactly 1
+
+playlist , group
+
+User geography
+
+Playlist activity by country
+
+This report provides statistics related to interactions that users in a particular country have
+with the videos in the channel's playlists.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+country
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration
+
+Filters:
+
+Use exactly 1
+
+playlist , group
+
+Use 0 or 1
+
+continent , subContinent
+
+Playlist activity by province
+
+This report provides playlist activity statistics for U.S. states and the District of Columbia.
+For this report, you must filter results to return data only for the United States.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+province
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration
+
+Filters:
+
+Required
+
+country ==US
+
+Use exactly 1
+
+playlist , group
+
+Playback locations
+
+This report provides statistics related to the type of page or application where playbacks
+of your playlist videos occurred.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+insightPlaybackLocationType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration , averageTimeInPlaylist , playlistAverageViewDuration , playlistEstimatedMinutesWatched , playlistStarts , playlistViews , viewsPerPlaylistStart
+
+Filters:
+
+Use exactly 1
+
+playlist , group
+
+Playback location detail (<= 25 results)
+
+Note: This report requires you to set the maxResults parameter to a integer value of 25 or less. Unlike most other reports, this report also requires you to specify a value for the sort request parameter.
+
+This report identifies the embedded video players that generated the most views or viewing time
+for the videos in the channel's playlists.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+insightPlaybackLocationDetail
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration , averageTimeInPlaylist , playlistAverageViewDuration , playlistEstimatedMinutesWatched , playlistStarts , playlistViews , viewsPerPlaylistStart
+
+Filters:
+
+Required
+
+insightPlaybackLocationType ==EMBEDDED
+
+Use exactly 1
+
+playlist , group
+
+Sorting options:
+
+- playlistViews
+- playlistEstimatedMinutesWatched
+- playlistStarts
+
+Traffic sources
+
+This report aggregates viewing statistics based on how viewers reached your playlist content.
+For example, it identifies the number of views that stemmed from a Google search.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+insightTrafficSourceType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration , averageTimeInPlaylist , playlistAverageViewDuration , playlistEstimatedMinutesWatched , playlistSaves , playlistStarts , playlistViews , viewsPerPlaylistStart
+
+Filters:
+
+Use exactly 1
+
+playlist , group
+
+Traffic source detail (<= 25 results)
+
+Note: This report requires you to set the maxResults
+parameter to a integer value of 25 or less. Unlike most other reports, this report
+also requires you to specify a value for the sort request parameter.
+
+This report aggregates viewing statistics based on the referrers that generated the most views
+for the videos in the channel's playlists. Referrers are categorized by traffic source type, and
+the insightTrafficSourceDetail dimension's definition identifies the traffic sources for
+which the report is available.
+
+For example, if you set the insightTrafficSourceType
+filter to ADVERTISING , the report will list the types of ads that generated the most
+views or viewing time for the channel's playlists.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+insightTrafficSourceDetail
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration , averageTimeInPlaylist , playlistAverageViewDuration , playlistEstimatedMinutesWatched , playlistSaves , playlistStarts , playlistViews , viewsPerPlaylistStart
+
+Filters:
+
+Required
+
+insightTrafficSourceType ==ADVERTISING (or another supported value)
+
+Use exactly 1
+
+playlist , group
+
+Sorting options:
+
+- playlistViews
+- playlistEstimatedMinutesWatched
+- playlistStarts
+
+Note: This report is only supported for specific traffic sources. VIDEO_REMIXES , NOTIFICATION , END_SCREEN , CAMPAIGN_CARD , VIDEO_REMIXES , and NO_LINK_EMBEDDED traffic sources are some of the unsupported ones.
+
+Device type and operating system
+
+Device type
+
+This report aggregates viewing statistics based on how viewers reached the videos in your
+playlists. For example, it identifies the number of views that occurred on mobile devices or game
+consoles.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+deviceType
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration , averageTimeInPlaylist , playlistAverageViewDuration , playlistEstimatedMinutesWatched , playlistStarts , playlistViews , viewsPerPlaylistStart
+
+Filters:
+
+Use exactly 1
+
+playlist , group
+
+Operating system
+
+This report aggregates viewing statistics based on viewers' operating systems. For example, it
+identifies the number of views that occurred on Android devices or on PlayStations.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+operatingSystem
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration , averageTimeInPlaylist , playlistAverageViewDuration , playlistEstimatedMinutesWatched , playlistStarts , playlistViews , viewsPerPlaylistStart
+
+Filters:
+
+Use exactly 1
+
+playlist , group
+
+Operating system and device type
+
+This report aggregates viewing statistics based on viewers' operating systems and device types.
+For example, it identifies how many views occurred on Android tablets or Windows desktop devices.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+deviceType , operatingSystem
+
+Metrics:
+
+Use 1 or more
+
+engagedViews , views , estimatedMinutesWatched , averageViewDuration , averageTimeInPlaylist , playlistAverageViewDuration , playlistEstimatedMinutesWatched , playlistStarts , playlistViews , viewsPerPlaylistStart
+
+Filters:
+
+Use exactly 1
+
+playlist , group
+
+Viewer demographics
+
+Property
+
+Value
+
+Dimensions:
+
+Use 1 or more
+
+ageGroup , gender
+
+Metrics:
+
+Required
+
+viewerPercentage
+
+Filters:
+
+Use exactly 1
+
+playlist , group
+
+Top playlists
+
+Note: These reports require you to set the maxResults parameter to an integer value of 200 or less. Before January 1, 2013 data is only available for the top 10 playlists. Unlike most other reports, these reports also require you to specify a value for the sort request parameter.
+
+This report lists the channel's top playlists based on the specified filtering and sorting criteria.
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+playlist
+
+Metrics:
+
+Use 1 or more
+
+averageTimeInPlaylist , playlistAverageViewDuration , playlistEstimatedMinutesWatched , playlistSaves , playlistStarts , playlistViews , viewsPerPlaylistStart
+
+Sorting options:
+
+- playlistViews
+- playlistEstimatedMinutesWatched
+- playlistStarts
+
+Membership reports
+
+Membership cancellations
+
+This report provides statistics showing why users canceled their channel memberships.
+
+Property
+
+Value
+
+Dimensions:
+
+Use 0 or 1
+
+membershipsCancellationSurveyReason
+
+Metrics:
+
+Required
+
+membershipsCancellationSurveyResponses
+
+Ad performance reports
+
+Note: Ad performance reports require an authorization token that grants access to the https://www.googleapis.com/auth/yt-analytics-monetary.readonly scope.
+
+Ad performance reports provide impression-based metrics for ads that ran during video playbacks. These metrics account for each ad impression, and each video playback can yield multiple impressions.
+
+The impression-based ad performance metrics are:
+
+grossRevenue
+
+adImpressions
+
+cpm
+
+In addition, some video reports support the following playback-based ad performance metrics. However, these metrics are not included in ad performance reports.
+
+playbackBasedCpm
+
+monetizedPlaybacks
+
+Ad performance by ad type
+
+Property
+
+Value
+
+Dimensions:
+
+Required
+
+adType
+
+Optional
+
+day
+
+Metrics:
+
+Use 1 or more
+
+grossRevenue , adImpressions , cpm
+
+Filters:
+
+Use 0 or 1
+
+video , group
+
+Use 0 or 1
+
+country , continent , subContinent
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License , and code samples are licensed under the Apache 2.0 License . For details, see the Google Developers Site Policies . Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-09-14 UTC.
+
+Blog
+
+The latest news on the YouTube blog
+
+Issue Tracker
+
+Something wrong? Send us a bug report!
+
+YouTube Researcher Program
+
+For researchers interested in using data from YouTube's global API
+
+Tools
+
+Google APIs Explorer
+
+YouTube Player Demo
+
+Configure a Subscribe Button
+
+Issue Tracker
+
+File a bug
+
+Request a feature
+
+See open issues
+
+Product Info
+
+Terms of Service
+
+Developer Policies
+
+Required Minimum Functionality
+
+Branding Guidelines
+
+Android
+
+Chrome
+
+Firebase
+
+Google Cloud Platform
+
+Google AI
+
+All products
+
+Terms
+
+Privacy
+
+Manage cookies
+
+English
+
+Deutsch
+
+Español
+
+Español – América Latina
+
+Français
+
+Indonesia
+
+Italiano
+
+Polski
+
+Português – Brasil
+
+Tiếng Việt
+
+Türkçe
+
+Русский
+
+עברית
+
+العربيّة
+
+فارسی
+
+हिंदी
+
+বাংলা
+
+ภาษาไทย
+
+中文 – 简体
+
+中文 – 繁體
+
+日本語
+
+한국어

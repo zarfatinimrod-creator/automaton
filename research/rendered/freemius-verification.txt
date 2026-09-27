@@ -104,6 +104,7 @@ After you submit the form, the page displays your verification status. Check bac
 If you need help with the verification process, please contact our support team .
 
 Still stuck? How can we help?
+Are you AI Agent? Read markdown source or llms.txt
 
 Coupon Discounts
 Change Product Store
@@ -128,7 +129,7 @@ Cart abandonment recovery
 Affiliate platform
 
 Build with AI ▼
-AI tools
+AI Integrations
 llms-full.txt
 llms.txt
 OpenAPI
@@ -177,4 +178,4 @@ Privacy policy
 Cookie policy
 
 We use essential cookies to enable our site to function. With your consent, we also use analytics and advertising cookies to understand how visitors interact with our site and to improve our services.
-Accept Learn More Reject
+Accept Learn More about Freemius' cookie policy Reject

@@ -1,0 +1,1243 @@
+Analytics API | Upload Post Docs
+
+Skip to main content
+
+Upload-Post Documentation App
+OpenAPI llm.txt GitHub
+
+Introduction
+Getting Started
+Quickstart Guide
+Upload-Post API Overview
+API Reference
+SDK Examples
+
+Publish
+Upload Video
+Upload Photos
+Upload Text
+Upload Document
+
+After you post
+
+Accounts
+
+Analytics & comments
+Analytics API
+Audience Insights
+Suggestions
+Media List
+Comments (all platforms)
+Comments
+Direct Messages
+AutoDM Monitors
+
+Platform extras
+
+Ads
+
+Tools
+
+Guides
+
+Limits & errors
+
+Resources
+
+Analytics & comments
+Analytics API
+
+On this page
+Analytics API
+
+The other half of the question
+This page answers how did my posts do . Two sibling endpoints answer the rest,
+and both are one endpoint with a platform — never one per network:
+Audience Insights (demographics, the hours followers are
+online, daily follower gains and losses, profile actions, category benchmark)
+and Suggestions (hashtags and the terms people search).
+On TikTok both need the profile_analytics
+capability ; type=keywords on
+Suggestions additionally needs a reconnected account.
+
+GET /api/analytics/profile_username ​
+
+Retrieves analytics data for a specified user profile across one or more social media platforms.
+
+Method: GET
+
+Endpoint URL: https://api.upload-post.com/api/analytics/profile_username
+
+Description:
+
+This endpoint provides key analytics metrics for a given social media profile associated with a user's account. It allows fetching data for multiple platforms in a single request. The system is designed to be extensible, with support for more platforms planned for the future.
+
+Authentication:
+
+A valid JSON Web Token (JWT) is required for authentication. The token must be included in the Authorization header as a Apikey token.
+
+Authorization: Apikey <YOUR_JWT_TOKEN>
+
+Parameters:
+
+Parameter
+Type
+Location
+Required
+Description
+
+profile_username
+string
+Path
+Yes
+The unique username of the profile for which you want to retrieve analytics.
+
+platforms
+string
+Query
+Yes
+A comma-separated list of platforms to fetch analytics for. E.g., ?platforms=instagram,youtube,threads,pinterest,reddit .
+
+page_id
+string
+Query
+No
+Required for Facebook analytics. The ID of the Facebook Page.
+
+days
+number
+Query
+No
+Facebook only. Size of the insights window in days, 1 – 365 (default 30 ). Metrics and time series are fetched live from Meta for exactly this range, so ?days=7 , ?days=90 or any custom value returns actual impressions/reach for that period. Ranges over 90 days are fetched in chunks transparently.
+
+page_urn
+string
+Query
+No
+LinkedIn only. Organization/company page URN or numeric ID to fetch analytics for. LinkedIn analytics are available only for organization/company pages you administer — personal profiles are not supported, because LinkedIn's API does not expose member-level analytics. If omitted, the first administered organization page is used.
+
+Supported Platforms:
+
+Currently, the following platforms are supported:
+
+instagram
+
+tiktok
+
+Linkedin
+
+Facebook
+
+X (Twitter)
+
+youtube
+
+threads
+
+pinterest
+
+reddit
+
+bluesky
+
+google_business
+
+Support for additional platforms will be added in the future. If you request a platform that is not yet supported, the response will include a message indicating this for that specific platform. Reddit posting is currently unavailable; analytics for an already-connected Reddit account may still return data or reddit_unavailable .
+
+Note: Discord, Telegram, and the credential-based channels (Slack, Mastodon, Nostr, Lemmy, Dev.to, Hashnode, WordPress, Whop, Listmonk) do not support analytics. Requesting analytics for any of them returns a graceful per-platform message (e.g. "Analytics are not supported for Discord." ) rather than an error, so a mixed request for other platforms still succeeds.
+
+Here is an example of how to call the endpoint to get analytics for the test profile on Instagram, YouTube, Threads, Pinterest, and Reddit.
+
+curl 'https://api.upload-post.com/api/analytics/test?platforms=instagram,youtube,threads,pinterest,reddit' \
+--header 'Authorization: Apikey XXX...'
+
+Example Successful Response (200 OK):
+
+The response is a JSON object where each key corresponds to a requested platform. The value is another object containing the specific analytics data for that platform.
+
+{
+"instagram" : {
+"followers" : 47 ,
+"reach" : 1250 ,
+"views" : 3400 ,
+"impressions" : 3400 ,
+"profileViews" : 89 ,
+"likes" : 120 ,
+"comments" : 15 ,
+"shares" : 8 ,
+"saves" : 22 ,
+"reach_timeseries" : [
+{
+"date" : "2025-07-04" ,
+"value" : 42
+} ,
+{
+"date" : "2025-07-05" ,
+"value" : 55
+} ,
+// ... more date entries
+{
+"date" : "2025-08-02" ,
+"value" : 38
+}
+] ,
+"follower_demographics" : {
+"age" : { "25-34" : 100 , "35-44" : 166 , "45-54" : 49 } ,
+"gender" : { "F" : 74 , "M" : 36 , "U" : 24 } ,
+"country" : { "ES" : 78 , "CO" : 13 , "PE" : 8 } ,
+"city" : { "Madrid, Comunidad de Madrid" : 18 , "Barcelona, Cataluña" : 2 }
+} ,
+"engaged_audience_demographics" : {
+"age" : { "25-34" : 61 , "35-44" : 88 , "45-54" : 20 } ,
+"gender" : { "F" : 44 , "M" : 21 , "U" : 9 } ,
+"country" : { "ES" : 52 , "CO" : 7 , "PE" : 4 } ,
+"city" : { "Madrid, Comunidad de Madrid" : 11 , "Barcelona, Cataluña" : 1 }
+} ,
+"metric_type" : "reach"
+}
+}
+
+Field Descriptions for Platform Analytics:
+
+followers : Total number of followers.
+
+reach : The number of unique accounts that have seen any of the profile's content.
+
+views : Total content views (Instagram, YouTube, TikTok). For Instagram, this is the official "views" metric from the Instagram API, which replaced the deprecated "impressions" metric.
+
+impressions : Alias for views on Instagram, YouTube, and TikTok. On other platforms (X, Pinterest, Threads), this represents content impressions. Kept for backwards compatibility.
+
+profileViews : Total number of times the profile was viewed. For Instagram, this represents "Accounts Engaged" (unique accounts that interacted with the content).
+
+likes : Total number of likes across the profile's content.
+
+comments : Total number of comments across the profile's content.
+
+shares : Total number of shares across the profile's content.
+
+saves : Total number of saves across the profile's content.
+
+watch_time_minutes (YouTube only): Total watch time in minutes over the last 30 days (YouTube Analytics estimatedMinutesWatched ).
+
+average_view_duration_seconds (YouTube only): Average view duration derived from watch time and views.
+
+engagement (Bluesky only): Likes + reposts + replies + quotes received by the profile's own posts of the last 30 days. Bluesky has no impressions/reach API, so this is the headline metric and what reach_timeseries charts (by post date, metric_type: "engagement" ). following , posts_count and quotes are also returned; shares are reposts and comments are replies.
+
+pin_clicks : Total number of clicks on pins (Pinterest only).
+
+outbound_clicks : Total number of clicks to external URLs from pins (Pinterest only).
+
+reach_timeseries : An array of objects showing the daily reach or views value over the last 30 days (or, for Facebook, over the window selected with days ). The dashboard filters this data client-side based on the selected date range.
+
+impressions_timeseries (Facebook only): Array of { date, value } objects with the actual daily impressions for the requested window, suitable for charting. Same window as reach_timeseries .
+
+period_days (Facebook only): Echo of the insights window actually used, in days.
+
+follower_demographics (Instagram only): Audience breakdown of the profile's followers as { age, gender, country, city } , each a map of segment → follower count (gender values F / M / U ; country as ISO codes). Sourced from the Instagram follower_demographics insight over the last 30 days. Only returned for accounts with 100+ followers — smaller accounts return {} (Meta restriction).
+
+engaged_audience_demographics (Instagram only): Same shape as follower_demographics ( { age, gender, country, city } ), but broken down by the accounts that engaged with the content rather than by followers. Sourced from the Instagram engaged_audience_demographics insight over the last 30 days. See the note below on when Meta populates it.
+
+metric_type : Indicates what the reach_timeseries represents for this platform. Values: "reach" (Facebook, Instagram, LinkedIn), "views" (YouTube, TikTok, Threads), "impressions" (X, Pinterest), "score" (Reddit). Use this to avoid double-counting when aggregating across platforms.
+
+primary_impressions_field : The field name used as the primary metric for aggregation on this platform (e.g., "reach" for Instagram, "impressions" for YouTube).
+
+available_metrics : Array of available metric keys for this platform.
+
+metric_labels : Object mapping metric keys to user-friendly labels for this platform.
+
+Instagram Demographics ( follower_demographics and engaged_audience_demographics ):
+
+Both objects have the same structure and are broken down by age , gender , country and city . They answer two different questions:
+
+Field
+Population measured
+
+follower_demographics
+Everyone who follows the account
+
+engaged_audience_demographics
+Only the accounts that engaged with the account's content
+
+Meta thresholds
+These are Meta restrictions, not Upload-Post ones:
+
+follower_demographics is only populated for accounts with 100+ followers .
+
+engaged_audience_demographics is only populated once the engaged audience clears its own floor of roughly 100 accounts , and it lands with a lag of roughly 48 hours .
+
+Below those thresholds Meta returns nothing, and the API surfaces that as empty objects ( {"age": {}, "gender": {}, "country": {}, "city": {}} — or {} ) rather than as an error. A brand-new or small account will therefore see empty demographics for a while; treat empty as "not enough data yet", not as a failure.
+
+For a unified total impressions metric across platforms, see the Total Impressions section below.
+
+Error Responses:
+
+400 Bad Request : The platforms query parameter is missing or invalid.
+
+401 Unauthorized : The JWT is missing, invalid, or expired.
+
+404 Not Found : The specified profile_username does not exist for the authenticated user.
+
+500 Internal Server Error : An unexpected error occurred on the server while fetching the data.
+
+title: 'Total Impressions API' ​
+
+GET /api/uploadposts/total-impressions/profile_username ​
+
+Returns a unified "total impressions" metric for a profile, aggregated from daily analytics snapshots across all connected platforms.
+
+Method: GET
+
+Endpoint URL: https://api.upload-post.com/api/uploadposts/total-impressions/profile_username
+
+Description:
+
+This endpoint provides a single, deduplicated "total impressions" metric that intelligently combines reach and views data across platforms. Since different platforms report different types of impression metrics (Facebook and Instagram report "reach", YouTube and TikTok report "views"), this endpoint uses the most representative metric for each platform to avoid double-counting.
+
+You can also request custom metrics aggregation by specifying which metrics to aggregate using the metrics parameter.
+
+Snapshot semantics — not a daily sum for every platform
+This endpoint aggregates the daily stored snapshots of each profile. For platforms whose snapshot stores a rolling 30-day total (Facebook is one), summing snapshots across a date range overstates the real value — each day's snapshot already contains the previous 30 days. For actual Facebook impressions over an exact date range (7/30/90 days or custom), use GET /api/analytics/<profile>?platforms=facebook&days=N instead, which queries Meta live and also returns a daily impressions_timeseries for charting.
+
+Authentication:
+
+A valid JSON Web Token (JWT) is required. Include it in the Authorization header:
+
+Authorization: Apikey <YOUR_JWT_TOKEN>
+
+Parameters:
+
+Parameter
+Type
+Location
+Required
+Description
+
+profile_username
+string
+Path
+Yes
+The unique username of the profile.
+
+date
+string
+Query
+No
+Single date in YYYY-MM-DD format. If provided, returns impressions for that day only.
+
+start_date
+string
+Query
+No
+Start of date range in YYYY-MM-DD format. Defaults to 30 days ago.
+
+end_date
+string
+Query
+No
+End of date range in YYYY-MM-DD format. Defaults to today.
+
+period
+string
+Query
+No
+Shortcut for date range: last_day , last_week , last_month , last_3months , last_year . Overrides start_date / end_date .
+
+platform
+string
+Query
+No
+Comma-separated list of platforms to filter by. E.g., ?platform=youtube,tiktok .
+
+breakdown
+string
+Query
+No
+Set to true to include per-platform and per-day breakdown in the response.
+
+metrics
+string
+Query
+No
+Comma-separated list of metrics to aggregate. E.g., ?metrics=likes,comments,shares . Available: followers , reach , views , impressions , likes , comments , shares , saves , profileViews , video_count , following , pin_clicks , outbound_clicks . When provided, returns a metrics object instead of total_impressions .
+
+Metric Selection per Platform (default mode):
+
+Platform
+Metric Used
+Reason
+
+Facebook
+reach
+Reports unique account reach
+
+Instagram
+reach
+Reports unique account reach. Note: Instagram renamed "impressions" to "views" in their API; both views and impressions fields are returned.
+
+LinkedIn
+reach
+Reports unique impressions
+
+YouTube
+impressions/views
+Reports video view counts
+
+TikTok
+impressions/views
+Reports video view counts
+
+X
+impressions
+Reports tweet impression counts
+
+Threads
+impressions/views
+Reports content view counts
+
+Pinterest
+impressions
+Reports pin impression counts
+
+Reddit
+impressions/score
+Reports post score as impressions proxy
+
+Example Request:
+
+curl 'https://api.upload-post.com/api/uploadposts/total-impressions/myprofile?start_date=2026-01-01&end_date=2026-01-31&breakdown=true' \
+--header 'Authorization: Apikey XXX...'
+
+Example Response (200 OK):
+
+{
+"success" : true ,
+"profile_username" : "myprofile" ,
+"start_date" : "2026-01-01" ,
+"end_date" : "2026-01-31" ,
+"total_impressions" : 45230 ,
+"per_platform" : {
+"instagram" : 12500 ,
+"youtube" : 18730 ,
+"tiktok" : 8000 ,
+"facebook" : 6000
+} ,
+"per_day" : {
+"2026-01-01" : 1200 ,
+"2026-01-02" : 1450 ,
+"2026-01-03" : 980
+}
+}
+
+Example with Period Shortcut:
+
+curl 'https://api.upload-post.com/api/uploadposts/total-impressions/myprofile?period=last_week' \
+--header 'Authorization: Apikey XXX...'
+
+{
+"success" : true ,
+"profile_username" : "myprofile" ,
+"start_date" : "2026-02-13" ,
+"end_date" : "2026-02-20" ,
+"total_impressions" : 8523
+}
+
+Example with Custom Metrics:
+
+curl 'https://api.upload-post.com/api/uploadposts/total-impressions/myprofile?period=last_month&metrics=likes,comments,shares&breakdown=true' \
+--header 'Authorization: Apikey XXX...'
+
+{
+"success" : true ,
+"profile_username" : "myprofile" ,
+"start_date" : "2026-01-21" ,
+"end_date" : "2026-02-20" ,
+"metrics" : {
+"likes" : 4520 ,
+"comments" : 312 ,
+"shares" : 189
+} ,
+"per_platform" : {
+"likes" : { "instagram" : 2100 , "youtube" : 1200 , "tiktok" : 1220 } ,
+"comments" : { "instagram" : 150 , "youtube" : 80 , "tiktok" : 82 } ,
+"shares" : { "instagram" : 90 , "youtube" : 45 , "tiktok" : 54 }
+} ,
+"per_day" : {
+"likes" : { "2026-01-21" : 150 , "2026-01-22" : 160 } ,
+"comments" : { "2026-01-21" : 10 , "2026-01-22" : 12 } ,
+"shares" : { "2026-01-21" : 6 , "2026-01-22" : 8 }
+}
+}
+
+Example with Single Date:
+
+curl 'https://api.upload-post.com/api/uploadposts/total-impressions/myprofile?date=2026-02-15' \
+--header 'Authorization: Apikey XXX...'
+
+{
+"success" : true ,
+"profile_username" : "myprofile" ,
+"start_date" : "2026-02-15" ,
+"end_date" : "2026-02-15" ,
+"total_impressions" : 1523
+}
+
+Example with Platform Filter:
+
+curl 'https://api.upload-post.com/api/uploadposts/total-impressions/myprofile?platform=youtube,tiktok&breakdown=true' \
+--header 'Authorization: Apikey XXX...'
+
+{
+"success" : true ,
+"profile_username" : "myprofile" ,
+"start_date" : "2026-01-20" ,
+"end_date" : "2026-02-19" ,
+"total_impressions" : 26730 ,
+"platforms_filter" : [ "youtube" , "tiktok" ] ,
+"per_platform" : {
+"youtube" : 18730 ,
+"tiktok" : 8000
+} ,
+"per_day" : {
+"2026-01-20" : 850 ,
+"2026-01-21" : 920
+}
+}
+
+Error Responses:
+
+400 Bad Request : Invalid date format (must be YYYY-MM-DD ) or invalid metric name.
+
+401 Unauthorized : The JWT is missing, invalid, or expired.
+
+500 Internal Server Error : An unexpected error occurred on the server.
+
+GET /api/uploadposts/post-analytics/request_id ​
+
+Returns analytics for a specific post across all platforms it was published to.
+
+Method: GET
+
+Endpoint URL: https://api.upload-post.com/api/uploadposts/post-analytics/request_id
+
+Description:
+
+This endpoint provides per-post analytics by looking up the upload record and cross-referencing with stored analytics snapshots. It returns the post metadata along with platform-specific metrics at the time of posting and the latest available metrics.
+
+Authentication:
+
+A valid JSON Web Token (JWT) is required. Include it in the Authorization header:
+
+Authorization: Apikey <YOUR_JWT_TOKEN>
+
+Parameters:
+
+Parameter
+Type
+Location
+Required
+Description
+
+request_id
+string
+Path
+Yes
+The request ID of the upload.
+
+platform
+string
+Query
+No
+Filter to a single platform (e.g., ?platform=x ). When provided, only metrics for that platform are fetched, which is significantly faster than fetching all platforms.
+
+Example Request:
+
+curl 'https://api.upload-post.com/api/uploadposts/post-analytics/abc123-def456' \
+--header 'Authorization: Apikey XXX...'
+
+Example Request (single platform):
+
+curl 'https://api.upload-post.com/api/uploadposts/post-analytics/abc123-def456?platform=youtube' \
+--header 'Authorization: Apikey XXX...'
+
+Example Response (200 OK):
+
+{
+"success" : true ,
+"post" : {
+"request_id" : "abc123-def456" ,
+"profile_username" : "myprofile" ,
+"post_title" : "My Video" ,
+"post_caption" : "Check this out!" ,
+"media_type" : "video" ,
+"upload_timestamp" : "2026-02-10 14:30:00"
+} ,
+"platforms" : {
+"youtube" : {
+"success" : true ,
+"platform_post_id" : "dQw4w9WgXcQ" ,
+"post_url" : "https://youtube.com/watch?v=dQw4w9WgXcQ" ,
+"post_metrics" : {
+"views" : 5200 ,
+"likes" : 120 ,
+"comments" : 8 ,
+"favorites" : 3
+} ,
+"post_metrics_source" : "platform_api" ,
+"profile_snapshot_at_post_date" : {
+"followers" : 1500 ,
+"impressions" : 45000 ,
+"likes" : 320 ,
+"comments" : 15 ,
+"shares" : 8
+} ,
+"profile_snapshot_latest" : {
+"followers" : 1650 ,
+"impressions" : 52000 ,
+"likes" : 410 ,
+"comments" : 22 ,
+"shares" : 12
+} ,
+"profile_snapshot_latest_date" : "2026-02-20"
+} ,
+"tiktok" : {
+"success" : true ,
+"platform_post_id" : "7123456789" ,
+"post_url" : "https://tiktok.com/@user/video/7123456789" ,
+"post_metrics_error" : "TikTok video not found (ID: 7123456789). The token may need to be refreshed." ,
+"profile_snapshot_at_post_date" : {
+"followers" : 800 ,
+"impressions" : 12000 ,
+"likes" : 500 ,
+"comments" : 30
+} ,
+"profile_snapshot_latest" : {
+"followers" : 950 ,
+"impressions" : 18500 ,
+"likes" : 780 ,
+"comments" : 45
+} ,
+"profile_snapshot_latest_date" : "2026-02-20"
+}
+}
+}
+
+Per-Platform Response Fields:
+
+success : Whether the post was successfully published to this platform.
+
+platform_post_id : The post's ID on the platform.
+
+post_url : Direct URL to the published post.
+
+post_metrics : Live metrics fetched from the platform's API for this specific post (views, likes, comments, shares, etc.).
+
+post_metrics_source : Source of post metrics (currently "platform_api" ).
+
+post_metrics_error : If post-level metrics could not be fetched, this field contains a human-readable error message explaining why.
+
+profile_snapshot_at_post_date : Profile-level metrics snapshot from the day the post was published.
+
+profile_snapshot_latest : Most recent profile-level metrics snapshot.
+
+profile_snapshot_latest_date : Date of the latest snapshot.
+
+Error Responses:
+
+401 Unauthorized : The JWT is missing, invalid, or expired.
+
+404 Not Found : No post found with the given request ID.
+
+500 Internal Server Error : An unexpected error occurred on the server.
+
+GET /api/uploadposts/post-analytics?platform_post_id= ​
+
+Returns analytics for any post (including organically published posts) using its native platform ID instead of a request ID.
+
+Method: GET
+
+Endpoint URL: https://api.upload-post.com/api/uploadposts/post-analytics?platform_post_id=XXXXX&platform=instagram&user=profile_username
+
+Description:
+
+This endpoint allows you to fetch live per-post analytics using the platform's native post ID (e.g., an Instagram media ID) rather than an Upload Post request_id . This is useful for retrieving metrics on organically published posts that were not uploaded through the API. You can obtain platform_post_id values from the GET /api/uploadposts/media endpoint.
+
+tip
+This endpoint queries the platform live, one post per call, and is limited to 100 requests per 5 minutes . To read metrics for thousands of posts, use GET /api/uploadposts/post-analytics/cached instead, which replays previously fetched results, paginated, and is not subject to that limit.
+
+Authentication:
+
+A valid JSON Web Token (JWT) is required. Include it in the Authorization header:
+
+Authorization: Apikey <YOUR_JWT_TOKEN>
+
+Parameters:
+
+Parameter
+Type
+Location
+Required
+Description
+
+platform_post_id
+string
+Query
+Yes
+The native post ID on the platform (e.g., Instagram media ID).
+
+platform
+string
+Query
+Yes
+The platform to query. One of: youtube , tiktok , instagram , facebook , linkedin , x , threads , pinterest , reddit .
+
+user
+string
+Query
+Yes
+The profile_username of the profile that owns the social account.
+
+Example Request:
+
+curl 'https://api.upload-post.com/api/uploadposts/post-analytics?platform_post_id=18330983293218037&platform=instagram&user=myprofile' \
+--header 'Authorization: Apikey XXX...'
+
+Example Response (200 OK):
+
+{
+"success" : true ,
+"post" : {
+"platform_post_id" : "18330983293218037" ,
+"platform" : "instagram" ,
+"profile_username" : "myprofile" ,
+"source" : "organic"
+} ,
+"platforms" : {
+"instagram" : {
+"success" : true ,
+"platform_post_id" : "18330983293218037" ,
+"post_metrics" : {
+"likes" : 340 ,
+"comments" : 12 ,
+"views" : 8500 ,
+"reach" : 6200 ,
+"impressions" : 9100 ,
+"saves" : 45 ,
+"shares" : 28
+} ,
+"post_metrics_source" : "platform_api" ,
+"available_metrics" : [ "followers" , "reach" , "views" , "impressions" , "profileViews" , "likes" , "comments" , "shares" , "saves" ] ,
+"metric_labels" : {
+"reach" : "Unique Reach" ,
+"views" : "Views" ,
+"impressions" : "Views" ,
+"profileViews" : "Accounts Engaged"
+} ,
+"primary_impressions_field" : "reach"
+}
+}
+}
+
+Response Fields:
+
+post.source : Either "organic" (post was not uploaded via the API) or "api_uploaded" (post was uploaded via the API and has an associated request_id ).
+
+post.request_id : Only present when source is "api_uploaded" — the original upload request ID.
+
+platforms.<platform>.post_metrics : Live metrics fetched from the platform's API.
+
+platforms.<platform>.post_metrics_source : Source of post metrics (currently "platform_api" ).
+
+platforms.<platform>.post_metrics_error : If metrics could not be fetched, a human-readable error message.
+
+platforms.<platform>.available_metrics : List of metrics available for this platform.
+
+TikTok: the full per-post breakdown ​
+
+For platform=tiktok , post_metrics carries much more than the four counters.
+It is the same single call, so there is nothing to opt into — the extra fields
+are simply there. This applies to both per-post endpoints ( {request_id} and
+?platform_post_id= ).
+
+{
+"platforms" : {
+"tiktok" : {
+"success" : true ,
+"platform_post_id" : "7401234567890123456" ,
+"post_metrics" : {
+"views" : 40218 ,
+"likes" : 3184 ,
+"comments" : 96 ,
+"shares" : 211 ,
+"reach" : 37904 ,
+"favorites" : 402 ,
+"new_followers" : 128 ,
+"profile_views" : 903 ,
+"full_video_watched_rate" : 0.184 ,
+"average_time_watched" : 7.4 ,
+"total_time_watched" : 297613 ,
+"is_ai_generated" : false ,
+"retention" : [
+{ "second" : "1" , "percentage" : 0.75 } ,
+{ "second" : "2" , "percentage" : 0.61 } ,
+{ "second" : "3" , "percentage" : 0.49 } ,
+{ "second" : "10" , "percentage" : 0.31 }
+] ,
+"impression_sources" : [
+{ "impression_source" : "For You" , "percentage" : 0.977 } ,
+{ "impression_source" : "Search" , "percentage" : 0.013 } ,
+{ "impression_source" : "Follow" , "percentage" : 0.007 } ,
+{ "impression_source" : "Personal Profile" , "percentage" : 0.002 } ,
+{ "impression_source" : "Others" , "percentage" : 0.001 }
+] ,
+"audience_types" : [
+{ "audience_type" : "New viewers" , "percentage" : 0.881 } ,
+{ "audience_type" : "Returning viewers" , "percentage" : 0.119 }
+]
+} ,
+"post_metrics_source" : "platform_api"
+}
+}
+}
+
+Field
+Description
+
+reach
+Unique accounts that saw the post, as opposed to views .
+
+favorites
+Times the post was saved.
+
+new_followers
+Followers the account gained from this post .
+
+profile_views
+Profile visits attributed to this post.
+
+full_video_watched_rate
+Fraction of viewers who watched to the end ( 0.184 = 18.4%).
+
+average_time_watched
+Average watch time, in seconds.
+
+total_time_watched
+Total watch time across all viewers, in seconds.
+
+is_ai_generated
+TikTok's own AI-content flag on the post.
+
+retention
+The retention curve, one point per second, already ordered by second . TikTok's own ordering is not numeric, so a chart drawn from the raw upstream data would plot second 10 before second 2.
+
+impression_sources
+Where the views came from: For You , Search , Follow , Personal Profile , Sound , Direct Message , Others . In the example 97.7% of the reach is For You.
+
+audience_types
+New vs returning viewers, and followers vs non-followers.
+
+audience
+Present when TikTok reported it: countries , cities and genders of this post's viewers.
+
+All percentage values are fractions of 1, not numbers out of 100.
+
+A missing field is not a zero
+Only what TikTok actually reported is included. A field TikTok did not answer for
+is omitted , never filled with 0 or an empty array — an empty retention
+rendered as a chart reads as "nobody watched", which is a different fact from
+"not reported yet". Read the keys defensively, and expect a post published
+minutes ago to carry few of them: TikTok fills them in over the following hours.
+
+Error Responses:
+
+400 Bad Request : Missing or invalid query parameters.
+
+401 Unauthorized : The JWT is missing, invalid, or expired.
+
+404 Not Found : User or profile not found.
+
+500 Internal Server Error : An unexpected error occurred on the server.
+
+GET /api/uploadposts/post-analytics/cached ​
+
+Reads back, in bulk, per-post metrics that Upload-Post already fetched for you, instead of calling the social platforms again.
+
+Method: GET
+
+Endpoint URL: https://api.upload-post.com/api/uploadposts/post-analytics/cached
+
+Description:
+
+The live per-post endpoints ( /api/uploadposts/post-analytics/{request_id} and /api/uploadposts/post-analytics?platform_post_id= ) query the platform APIs on every call, one post at a time, and are therefore subject to the platform analytics rate limit of 100 requests per 5 minutes . Walking an account with thousands of posts through them is not practical.
+
+This endpoint reads instead from a write-through cache : every time a post's metrics are fetched through one of the live endpoints, the result is stored. This endpoint replays those stored values, many posts per call, paginated, and is not subject to the 100 requests / 5 minutes platform analytics rate limit , because it never touches the platforms during the request. It is designed for re-reading a large back catalogue you have already fetched once.
+
+There is no background refresh
+This cache is filled as a side effect of live reads. Nothing updates it on its own. Three consequences:
+
+A post appears here only after it has been fetched at least once through a live per-post endpoint. A post you have never queried live will not be here at all.
+
+captured_at is the last time that post was fetched live — not "this morning". A post you last read a month ago will still show a month-old value.
+
+To refresh a post, call the live endpoint for it. The cache updates as a side effect of that call.
+
+So the pattern is: fetch live once (or whenever you want fresh numbers), then re-read as many times as you like from here for free. That is where the saving is — customers typically re-read the same post several times a day.
+If this endpoint seems to "stop" at some date, that date is simply the last time you called a live endpoint — publishing more posts does not move it. And because since / until filter the capture day, a post published yesterday but never read live falls outside every range you can ask for.
+Every response tells you where you stand: published_posts_in_range is how many posts you actually published in the range, and cached_posts_in_range is how many of them are in the cache. When the first is much larger than the second, you have posts you have never read live — that is the signal to seed them, not a bug.
+
+Authentication:
+
+A valid JSON Web Token (JWT) is required. Include it in the Authorization header:
+
+Authorization: Apikey <YOUR_JWT_TOKEN>
+
+Parameters:
+
+Parameter
+Type
+Location
+Required
+Description
+
+user
+string
+Query
+Yes
+The profile_username of the profile to read snapshots for.
+
+platform
+string
+Query
+No
+Restrict the result to a single platform. One of: instagram , tiktok , youtube , facebook , linkedin , threads , pinterest , reddit . When omitted, all platforms are returned and the response echoes "platform": null .
+
+limit
+integer
+Query
+No
+Number of posts per page. Defaults to 50 , maximum 200 .
+
+cursor
+string
+Query
+No
+Opaque token identifying the next page. Pass back exactly what the previous response returned in next_cursor . Do not build or parse these tokens yourself — an invalid cursor returns 400 .
+
+since
+string
+Query
+No
+Start of the date range in YYYY-MM-DD format. Filters on the day the metrics were captured (the live read), not the day the post was published. Defaults to 30 days ago.
+
+until
+string
+Query
+No
+End of the date range in YYYY-MM-DD format. Filters on the capture day, not the publish day. Defaults to today.
+
+Example Request:
+
+cURL
+Python
+JavaScript
+
+curl 'https://api.upload-post.com/api/uploadposts/post-analytics/cached?user=influencersde&limit=50' \
+--header 'Authorization: Apikey XXX...'
+
+import requests
+
+response = requests . get (
+"https://api.upload-post.com/api/uploadposts/post-analytics/cached" ,
+headers = { "Authorization" : "Apikey XXX..." } ,
+params = { "user" : "influencersde" , "limit" : 50 } ,
+)
+print ( response . json ( ) )
+
+const params = new URLSearchParams ( { user : "influencersde" , limit : "50" } ) ;
+
+const response = await fetch (
+` https://api.upload-post.com/api/uploadposts/post-analytics/cached? ${ params } ` ,
+{ headers : { Authorization : "Apikey XXX..." } }
+) ;
+console . log ( await response . json ( ) ) ;
+
+Example Response (200 OK):
+
+{
+"success" : true ,
+"profile_username" : "influencersde" ,
+"platform" : null ,
+"since" : "2026-06-28" ,
+"until" : "2026-07-28" ,
+"source" : "snapshot_cache" ,
+"posts" : [
+{
+"post_id" : "uAAYuyTX4P0" ,
+"platform" : "youtube" ,
+"profile_username" : "influencersde" ,
+"date" : "2026-07-28" ,
+"captured_at" : "2026-07-28T11:17:06.901000" ,
+"metrics" : {
+"views" : 412 ,
+"likes" : 3 ,
+"comments" : 0 ,
+"favorites" : 0
+} ,
+"post_url" : "https://www.youtube.com/watch?v=uAAYuyTX4P0" ,
+"media_type" : "video" ,
+"upload_timestamp" : "2026-07-17T08:01:50.228000"
+}
+] ,
+"limit" : 50 ,
+"next_cursor" : "eyJkIjoiMjAyNi0wNy0yOCIsInAiOi..." ,
+"has_more" : true ,
+"cached_posts_in_range" : 128 ,
+"published_posts_in_range" : 341
+}
+
+Response Fields:
+
+profile_username : The profile the snapshots belong to.
+
+platform : The platform filter that was applied, or null when no platform was requested.
+
+since / until : The effective date range covered by the response.
+
+source : Always "snapshot_cache" — a marker that these numbers were replayed from the cache, not fetched from the platform during this request.
+
+cached_posts_in_range : How many distinct posts of this profile are in the cache for the range, regardless of how many fit on this page.
+
+published_posts_in_range : How many posts this profile actually published in the range. Compare it with cached_posts_in_range to see how much you have yet to seed. Note the two count against different dates — the cache by capture day, this one by publish day — so a small difference is normal and a large one means unseeded posts. Both are null in the rare case the count could not be computed; the rest of the response is unaffected.
+
+posts : Array of per-post snapshot rows (see below).
+
+limit : The effective page size that was applied.
+
+next_cursor : Token to pass as cursor on the next request. null when there are no more pages.
+
+has_more : true when another page is available.
+
+Per-Post Fields:
+
+Field
+Type
+Description
+
+post_id
+String
+The post's native ID on the platform.
+
+platform
+String
+The platform this row belongs to.
+
+profile_username
+String
+The profile that owns the post.
+
+date
+String
+Snapshot date ( YYYY-MM-DD ) this row belongs to.
+
+captured_at
+String
+ISO 8601 timestamp of the last time this post was fetched live from the platform. Use this to judge freshness — nothing refreshes it in the background.
+
+metrics
+Object
+The metrics captured for this post. Keys vary per platform — see below.
+
+post_url
+String/null
+Direct URL to the published post.
+
+media_type
+String/null
+Type of media (e.g. video , image ).
+
+upload_timestamp
+String/null
+ISO 8601 timestamp of when the post was originally published.
+
+Metrics keys vary per platform
+metrics mirrors what each platform exposes for a post. YouTube returns views , likes , comments , favorites plus, when the YouTube Analytics report is available, watch_time_minutes , average_view_duration_seconds and average_view_percentage ; Bluesky (use the at:// URI returned on upload as platform_post_id ) returns likes , reposts , replies , quotes and engagement ; Instagram returns reach/saves/shares-style keys; TikTok, Pinterest and the rest each return their own set. Facebook posts return reactions , likes , comments , shares and — for Page posts where Meta serves post insights — reach (unique accounts, via post_total_media_view_unique with a fallback to the pre-2026 post_impressions_unique ), so engagement rate can be computed per post. Read the keys present on each row rather than assuming a fixed schema, and treat a missing key as "not reported by that platform".
+
+Paginating Through Everything:
+
+cURL
+Python
+JavaScript
+
+API_KEY="XXX..."
+CURSOR=""
+
+while :; do
+URL="https://api.upload-post.com/api/uploadposts/post-analytics/cached?user=influencersde&limit=200"
+[ -n "$CURSOR" ] && URL="$URL&cursor=$CURSOR"
+
+RESPONSE=$(curl -s "$URL" -H "Authorization: Apikey $API_KEY")
+echo "$RESPONSE" | jq -r '.posts[] | "\(.platform) \(.post_id)"'
+
+[ "$(echo "$RESPONSE" | jq -r '.has_more')" = "true" ] || break
+CURSOR=$(echo "$RESPONSE" | jq -r '.next_cursor')
+done
+
+import requests
+
+API_KEY = "XXX..."
+all_posts = [ ]
+cursor = None
+
+while True :
+params = { "user" : "influencersde" , "limit" : 200 , "since" : "2026-01-01" }
+if cursor :
+params [ "cursor" ] = cursor
+
+response = requests . get (
+"https://api.upload-post.com/api/uploadposts/post-analytics/cached" ,
+headers = { "Authorization" : f"Apikey { API_KEY } " } ,
+params = params ,
+)
+data = response . json ( )
+all_posts . extend ( data [ "posts" ] )
+
+if not data . get ( "has_more" ) :
+break
+cursor = data [ "next_cursor" ]
+
+print ( f"Fetched { len ( all_posts ) } post snapshots" )
+
+const API_KEY = "XXX..." ;
+const allPosts = [ ] ;
+let cursor = null ;
+
+while ( true ) {
+const params = new URLSearchParams ( {
+user : "influencersde" ,
+limit : "200" ,
+since : "2026-01-01" ,
+} ) ;
+if ( cursor ) params . set ( "cursor" , cursor ) ;
+
+const response = await fetch (
+` https://api.upload-post.com/api/uploadposts/post-analytics/cached? ${ params } ` ,
+{ headers : { Authorization : ` Apikey ${ API_KEY } ` } }
+) ;
+const data = await response . json ( ) ;
+allPosts . push ( ... data . posts ) ;
+
+if ( ! data . has_more ) break ;
+cursor = data . next_cursor ;
+}
+
+console . log ( ` Fetched ${ allPosts . length } post snapshots ` ) ;
+
+Live vs. Cached:
+
+GET /api/uploadposts/post-analytics (live)
+GET /api/uploadposts/post-analytics/cached
+
+Data source
+Platform API, in real time
+Upload-Post's write-through cache
+
+Freshness
+Current
+As of your last live read ( captured_at tells you)
+
+Rate limit
+100 requests / 5 minutes
+Not subject to the platform analytics rate limit
+
+Scope per call
+One post
+Up to 200 posts, paginated
+
+Covers a post published minutes ago
+Yes
+Only after you fetch it live once
+
+Best for
+Refreshing a post's numbers
+Re-reading in bulk what you already fetched
+
+Error Responses:
+
+400 Bad Request : Missing user , an invalid platform , a malformed since / until date, or an invalid/expired cursor .
+
+401 Unauthorized : The JWT is missing, invalid, or expired.
+
+404 Not Found : User or profile not found.
+
+500 Internal Server Error : An unexpected error occurred on the server.
+
+GET /api/uploadposts/platform-metrics ​
+
+Returns the available metrics configuration for all supported platforms.
+
+Method: GET
+
+Endpoint URL: https://api.upload-post.com/api/uploadposts/platform-metrics
+
+Description:
+
+This public endpoint returns the metrics configuration for each social platform, including which metrics are available and which field is used as the primary "impressions" metric for aggregation.
+
+Example Response (200 OK):
+
+{
+"instagram" : {
+"primary_impressions_field" : "reach" ,
+"available_metrics" : [ "followers" , "reach" , "views" , "impressions" , "profileViews" , "likes" , "comments" , "shares" , "saves" ] ,
+"metric_labels" : {
+"reach" : "Unique Reach" ,
+"views" : "Views" ,
+"impressions" : "Views" ,
+"profileViews" : "Accounts Engaged"
+}
+} ,
+"youtube" : {
+"primary_impressions_field" : "impressions" ,
+"available_metrics" : [ "followers" , "impressions" , "likes" , "comments" , "shares" ] ,
+"metric_labels" : {
+"impressions" : "Video Views" ,
+"followers" : "Subscribers"
+}
+}
+}
+
+Previous
+White-label Integration
+Next
+Audience Insights
+
+GET /api/analytics/profile_username
+title: 'Total Impressions API' GET /api/uploadposts/total-impressions/profile_username
+GET /api/uploadposts/post-analytics/request_id
+GET /api/uploadposts/post-analytics?platform_post_id=
+GET /api/uploadposts/post-analytics/cached
+GET /api/uploadposts/platform-metrics
+
+Documentation
+Getting Started
+API Reference
+Quickstart
+OpenAPI Spec
+
+Community
+X (Twitter)
+GitHub
+
+More
+Pricing
+Contact
+
+Legal
+Privacy Policy
+Terms of Use
+Cookie Policy
+Legal Notice
+Data Processing Agreement
+Subprocessors
+Cookie preferences
+
+© 2026 TONVI TECH SL · NIF B-19780394 · Calle Puerta del Mar 18, 5º, 29005 Málaga (España)

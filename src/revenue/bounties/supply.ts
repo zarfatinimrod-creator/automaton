@@ -1,0 +1,648 @@
+/**
+ * Revenue Colony — Algora OSS bounties: the weekly claimable-supply count.
+ *
+ * Ordered by the board as this line's first build step (research/colony-sweep/BOARD-2.md §2.2): *"the cheapest
+ * test that the payer is actually posting jobs"*. Two independent readings already point the same way — the repo's
+ * own 22.9 label count (`docs/REJECTED.md`) and a third-party census that found **5 claimable bounties, $60**, out of
+ * 561 labelled issues — and the board would not move the ₪300 on a number this repo had not reproduced. This module
+ * is the reproduction, and it owns the rule that reads it.
+ *
+ * It fetches nothing. `supply-github.ts` pages GitHub and hands the facts in; this module decides what each labelled
+ * issue is, adds the answers up, and writes the words. Everything here is pure so the tests can pin it with fixtures.
+ *
+ * ── The filters, in the order their data costs ──
+ *
+ * The board's list, verbatim: *"open issue carrying the label; repository not archived; no `💰 Rewarded` label and no
+ * Algora payout comment; a parseable amount ≥ $50; repository policy not `forbidden` under `policy.ts`."* Each
+ * filter asks for its data only when the cheaper ones have passed (`evaluateIssue` returns `needs`), so the fetcher
+ * never reads comments for an archived repository or policy files for a rewarded issue.
+ *
+ * One stricter reading is reported **beside** the board's count, never inside it: `solutionMerged`. Algora comments
+ * *"The pull request of @x has been merged. The bounty can be rewarded here"* when a claimed PR merges; the money then
+ * goes to that solver, so such an issue is funded and unpaid but not claimable by anybody new. It is still counted in
+ * `claimableBounties`, because the board set its 10 and 3 against its own list above and a builder narrowing that list
+ * after the thresholds exist would be moving the line after the rule was written (review, 27.9). The measurement
+ * carries `claimableWithoutMergedSolution` too, so the week-4 reader sees both numbers and the board can choose.
+ *
+ * Algora's wording is not guessed. The payout, merge and bounty comments were read from `algora-io/algora` on GitHub
+ * (27.9.2026): `lib/algora/bounties/jobs/notify_transfer.ex` adds the `💰 Rewarded` label and posts *"🎉🎈 @login has
+ * been awarded **$N** by **Name**! 🎈🎊"*; `lib/algora_web/controllers/webhooks/github_controller.ex` posts the merge
+ * sentence above; `lib/algora/bot_templates/bot_templates.ex` is the bounty comment `parseAlgoraBotComment` reads.
+ */
+
+import { ALGORA_BOT_LOGIN, parseAlgoraBotComment, type AlgoraBotComment } from "./intake.js";
+import { assessRepoPolicy, type PolicyVerdict, type RepoPolicyTexts } from "./policy.js";
+
+/** The label Algora's GitHub App puts on a funded issue (`workspace.ex`, `bounties.ex`). */
+export const BOUNTY_LABEL = "💎 Bounty";
+/** The label the same App adds when it pays (`notify_transfer.ex`). */
+export const REWARDED_LABEL = "💰 Rewarded";
+/** BOARD-2 §2.2: "a parseable amount ≥ $50". Inclusive. */
+export const MIN_CLAIMABLE_USD = 50;
+/** The census query; `supply-github.ts` pages it sorted by creation date so a run is repeatable. */
+export const SUPPLY_SEARCH_QUERY = `is:issue is:open label:"${BOUNTY_LABEL}"`;
+
+/**
+ * BOARD-2 §2.2, as numbers. Read at week 4 on the mean of the four weekly readings:
+ * ≥ 10 → ₪300 stands; 3-9 → retarget to ₪100, grade `contradicted`; < 3 → the line is killed.
+ * The portfolio carries the same numbers as text (`portfolio.ts`, oss-bounties), and a test holds the two together.
+ */
+export const SUPPLY_THRESHOLDS = { weeks: 4, keepAtOrAbove: 10, killBelow: 3, keepTargetIls: 300, retargetIls: 100 } as const;
+
+/** The re-open trigger the board wrote for the kill branch, verbatim. */
+export const REOPEN_TRIGGER = "≥10 claimable bounties a week for four consecutive weekly runs";
+
+// ── The filters ──────────────────────────────────────────────────────────────
+
+export type SupplyStage = "search" | "repo" | "comments" | "policy";
+
+export type SupplyFilterId =
+  | "not-an-open-labelled-issue"
+  | "rewarded-label"
+  | "archived-repo"
+  | "payout-comment"
+  | "no-algora-bounty-comment"
+  | "amount-unparseable"
+  | "amount-under-minimum"
+  | "policy-forbidden";
+
+export interface SupplyFilter {
+  id: SupplyFilterId;
+  /** Which fetched data the filter needs; the order of this table is the order the data costs. */
+  stage: SupplyStage;
+  what: string;
+  /** Why it drops the issue, and where the rule comes from. */
+  why: string;
+}
+
+export const SUPPLY_FILTERS: readonly SupplyFilter[] = [
+  {
+    id: "not-an-open-labelled-issue",
+    stage: "search",
+    what: "not an open issue carrying the label",
+    why: "The search result was a pull request, closed, or missing the `💎 Bounty` label. GitHub search should never return one; it is counted rather than trusted.",
+  },
+  {
+    id: "rewarded-label",
+    stage: "search",
+    what: "carries `💰 Rewarded`",
+    why: "Algora adds this label when it pays (notify_transfer.ex). The `💎 Bounty` label stays on a paid issue, which is why labelled supply is a ceiling, not a count.",
+  },
+  {
+    id: "archived-repo",
+    stage: "repo",
+    what: "repository archived",
+    why: "Archived repositories keep their bounty labels and cannot take a pull request — the census's second method finding (BOARD-2 §2.2).",
+  },
+  {
+    id: "payout-comment",
+    stage: "comments",
+    what: "Algora's bot already announced the payout",
+    why: "\"has been awarded\" by algora-pbc[bot] (notify_transfer.ex): the bounty is paid even where the label was not added.",
+  },
+  {
+    id: "no-algora-bounty-comment",
+    stage: "comments",
+    what: "no bounty comment from algora-pbc[bot]",
+    why: "The line's channel is the payer's own comment; a dollar sign from anybody else is not evidence of a funded bounty (intake.ts rule 5).",
+  },
+  {
+    id: "amount-unparseable",
+    stage: "comments",
+    what: "no amount readable from the bot comment",
+    why: "BOARD-2 §2.2 requires a parseable amount. An unreadable amount is an unknown, not a zero, so it is not counted either way.",
+  },
+  {
+    id: "amount-under-minimum",
+    stage: "comments",
+    what: `amount under $${MIN_CLAIMABLE_USD}`,
+    why: `BOARD-2 §2.2: "a parseable amount ≥ $${MIN_CLAIMABLE_USD}". The census's accessible long tail was $3-$245 tickets with a median of 8 competing comments.`,
+  },
+  {
+    id: "policy-forbidden",
+    stage: "policy",
+    what: "repository or issue bans AI-authored work",
+    why: "assessRepoPolicy (policy.ts) graded it `forbidden` from CONTRIBUTING, CODE_OF_CONDUCT, the pull-request template, the README or the issue itself. `unknown` is counted: silence is not a ban, and the colony discloses on every PR anyway.",
+  },
+];
+
+const FILTER_BY_ID = new Map(SUPPLY_FILTERS.map((f) => [f.id, f]));
+
+// ── Facts in, verdicts out ───────────────────────────────────────────────────
+
+/** One search result, reduced to what the filters read. */
+export interface SupplyIssue {
+  /** `owner/repo`. */
+  repo: string;
+  number: number;
+  title: string;
+  /** The issue's github.com page. */
+  url: string;
+  state: string;
+  isPullRequest: boolean;
+  labels: string[];
+  body: string | null;
+  createdAt: string;
+  /** From the search result; the comment fetch is checked against it. */
+  commentCount: number;
+}
+
+export interface SupplyComment {
+  author: string;
+  body: string;
+  createdAt?: string;
+}
+
+export interface SupplyRepoFacts {
+  archived: boolean;
+}
+
+export interface SupplyContext {
+  repo?: SupplyRepoFacts;
+  comments?: SupplyComment[];
+  policyDocs?: RepoPolicyTexts;
+}
+
+export type IssueVerdict =
+  | { kind: "needs"; need: Exclude<SupplyStage, "search"> }
+  | { kind: "dropped"; filter: SupplyFilterId; detail: string; amountUsd: number | null }
+  | {
+      kind: "claimable";
+      amountUsd: number;
+      policy: PolicyVerdict;
+      detail: string;
+      /** Algora's "has been merged. The bounty can be rewarded" sentence, quoted, or null. Reported, not filtered. */
+      solutionMerged: string | null;
+    };
+
+export interface AlgoraCommentReading {
+  /** The first bot comment that carries `/attempt` or `/claim` — Algora edits it in place when the prize changes. */
+  bounty: AlgoraBotComment | null;
+  /** The payout sentence, quoted, or null. */
+  payout: string | null;
+  /** The merge sentence, quoted, or null. */
+  merged: string | null;
+}
+
+/** github_controller.ex, the sentence Algora posts when a claimed pull request merges. */
+const MERGED_AWAITING_REWARD = /has\s+been\s+merged\.?\s+The\s+bounty\s+can\s+be\s+rewarded/i;
+
+const clip = (s: string, n = 160): string => {
+  const one = s.replace(/\s+/g, " ").trim();
+  return one.length > n ? `${one.slice(0, n - 3)}...` : one;
+};
+
+/** Read an issue's comments the way the filters need them. Only algora-pbc[bot] is believed. */
+export function readAlgoraComments(comments: SupplyComment[]): AlgoraCommentReading {
+  let bounty: AlgoraBotComment | null = null;
+  let payout: string | null = null;
+  let merged: string | null = null;
+  for (const c of comments) {
+    const parsed = parseAlgoraBotComment({ author: c.author, body: c.body });
+    if (!parsed.fromAlgoraBot) continue;
+    if (parsed.state === "rewarded" && payout === null) payout = clip(c.body);
+    if (MERGED_AWAITING_REWARD.test(c.body) && merged === null) merged = clip(c.body);
+    if (parsed.state === "open" && bounty === null) bounty = parsed;
+  }
+  return { bounty, payout, merged };
+}
+
+const dropped = (filter: SupplyFilterId, detail: string, amountUsd: number | null = null): IssueVerdict => ({
+  kind: "dropped",
+  filter,
+  detail,
+  amountUsd,
+});
+
+/**
+ * Decide one labelled issue, or say which data is needed to decide it.
+ *
+ * The fetcher calls this with whatever it has and supplies exactly what a `needs` verdict asks for, stage by stage —
+ * which is how "fetch only for candidates that passed the cheaper filters" is enforced by construction.
+ */
+export function evaluateIssue(issue: SupplyIssue, ctx: SupplyContext = {}, minAmountUsd: number = MIN_CLAIMABLE_USD): IssueVerdict {
+  const labels = issue.labels.map((l) => l.trim());
+  // GitHub's label search is case-insensitive, so the check is too: a lowercase variant the search returned is the
+  // same label, not a search mismatch.
+  const has = (label: string) => labels.some((l) => l.toLowerCase() === label.toLowerCase());
+
+  // search stage — free, the result already carries it.
+  if (issue.isPullRequest || issue.state !== "open" || !has(BOUNTY_LABEL)) {
+    return dropped(
+      "not-an-open-labelled-issue",
+      `${issue.isPullRequest ? "pull request" : `state ${issue.state}`}; labels: ${labels.join(", ") || "(none)"}`,
+    );
+  }
+  if (has(REWARDED_LABEL)) return dropped("rewarded-label", `labels: ${labels.join(", ")}`);
+
+  // repo stage.
+  if (!ctx.repo) return { kind: "needs", need: "repo" };
+  if (ctx.repo.archived) return dropped("archived-repo", `${issue.repo} is archived`);
+
+  // comments stage.
+  if (!ctx.comments) return { kind: "needs", need: "comments" };
+  const read = readAlgoraComments(ctx.comments);
+  const amount = read.bounty?.amountUsd ?? null;
+  if (read.payout) return dropped("payout-comment", `algora-pbc[bot]: "${read.payout}"`, amount);
+  if (!read.bounty) {
+    return dropped(
+      "no-algora-bounty-comment",
+      `${ctx.comments.length} comment${ctx.comments.length === 1 ? "" : "s"}, none from ${ALGORA_BOT_LOGIN} carrying /attempt or /claim`,
+    );
+  }
+  if (amount === null) return dropped("amount-unparseable", `bot comment: "${clip(read.bounty.quotes.join(" | "))}"`);
+  if (amount < minAmountUsd) return dropped("amount-under-minimum", `$${amount} < $${minAmountUsd}`, amount);
+
+  // policy stage.
+  if (!ctx.policyDocs) return { kind: "needs", need: "policy" };
+  const docs: RepoPolicyTexts = { ...ctx.policyDocs };
+  if (issue.body && issue.body.trim()) docs.issueText = issue.body;
+  const policy = assessRepoPolicy(docs);
+  if (policy.verdict === "forbidden") {
+    const ban = policy.reasons.find((r) => r.signal === "ban")!;
+    return dropped("policy-forbidden", `${ban.document}: "${clip(ban.quote)}"`, amount);
+  }
+  return { kind: "claimable", amountUsd: amount, policy: policy.verdict, detail: policy.summary, solutionMerged: read.merged };
+}
+
+// ── The weekly series and the board's reading ────────────────────────────────
+
+export interface SupplyReading {
+  /** ISO 8601 week, e.g. `2026-W40`. One reading per week. */
+  week: string;
+  measuredAt: string;
+  claimable: number;
+}
+
+/** ISO 8601 week-numbering year and week of an instant, in UTC. */
+export function isoWeek(iso: string): string {
+  const ms = Date.parse(iso);
+  if (Number.isNaN(ms)) throw new TypeError(`isoWeek: not a timestamp: ${iso}`);
+  const d = new Date(ms);
+  const day = d.getUTCDay() || 7; // Monday 1 … Sunday 7
+  const thursday = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 4 - day);
+  const year = new Date(thursday).getUTCFullYear();
+  const week = Math.floor((thursday - Date.UTC(year, 0, 1)) / 86_400_000 / 7) + 1;
+  return `${year}-W${String(week).padStart(2, "0")}`;
+}
+
+/**
+ * Add a reading, one per ISO week. A second run inside the same week (a manual dispatch) replaces that week's reading
+ * when it is newer, so four weekly readings stay four — the board's mean is over weeks, not over runs.
+ */
+export function appendWeeklyReading(history: SupplyReading[], reading: { measuredAt: string; claimable: number }): SupplyReading[] {
+  const week = isoWeek(reading.measuredAt);
+  const next = history.filter((r) => r.week !== week);
+  const existing = history.find((r) => r.week === week);
+  const keep = existing && Date.parse(existing.measuredAt) > Date.parse(reading.measuredAt) ? existing : { week, ...reading };
+  next.push(keep);
+  return next.sort((a, b) => a.week.localeCompare(b.week));
+}
+
+export type BoardSupplyVerdict = "pending" | "keep" | "retarget" | "kill";
+
+export interface BoardSupplyReading {
+  weeksRead: number;
+  /** The first four weekly readings — the board reads week 4 once; later weeks do not rewrite it. */
+  readings: SupplyReading[];
+  mean: number | null;
+  /** The four readings sit in four consecutive ISO weeks, as the board asked. */
+  consecutive: boolean | null;
+  verdict: BoardSupplyVerdict;
+  text: string;
+}
+
+function weekIndex(week: string): number {
+  const m = /^(\d{4})-W(\d{2})$/.exec(week);
+  if (!m) return NaN;
+  // Monday of ISO week 1 is the Monday on or before 4 January.
+  const jan4 = Date.UTC(Number(m[1]), 0, 4);
+  const monday1 = jan4 - ((new Date(jan4).getUTCDay() || 7) - 1) * 86_400_000;
+  return Math.round((monday1 + (Number(m[2]) - 1) * 7 * 86_400_000) / (7 * 86_400_000));
+}
+
+/**
+ * BOARD-2 §2.2's week-4 rule. It reads; it does not act — the target moves when the main thread applies the ruling
+ * to `portfolio.ts`, not because this function returned a word.
+ */
+export function readBoardVerdict(history: SupplyReading[]): BoardSupplyReading {
+  const sorted = [...history].sort((a, b) => a.week.localeCompare(b.week));
+  const t = SUPPLY_THRESHOLDS;
+  const readings = sorted.slice(0, t.weeks);
+  if (readings.length < t.weeks) {
+    return {
+      weeksRead: sorted.length,
+      readings,
+      mean: null,
+      consecutive: null,
+      verdict: "pending",
+      text:
+        `Week ${sorted.length} of ${t.weeks}. The board reads the mean of ${t.weeks} weekly readings: ≥ ${t.keepAtOrAbove} keeps ₪${t.keepTargetIls}; ` +
+        `${t.killBelow}-${t.keepAtOrAbove - 1} retargets to ₪${t.retargetIls} (grade contradicted); under ${t.killBelow} kills the line. ` +
+        "Until then the owner is not asked for step 4 on this line's account.",
+    };
+  }
+  const mean = readings.reduce((n, r) => n + r.claimable, 0) / readings.length;
+  const idx = readings.map((r) => weekIndex(r.week));
+  const consecutive = idx.every((w, i) => i === 0 || w === idx[i - 1]! + 1);
+  const shown = Number.isInteger(mean) ? String(mean) : mean.toFixed(2);
+  const gap = consecutive ? "" : " The four readings are not four consecutive weeks, which the board asked for; say so when applying it.";
+  let verdict: BoardSupplyVerdict;
+  let text: string;
+  if (mean >= t.keepAtOrAbove) {
+    verdict = "keep";
+    text = `Mean ${shown} ≥ ${t.keepAtOrAbove}: ₪${t.keepTargetIls} stands, and owner step 4 proceeds in its ordered place (after step 7).`;
+  } else if (mean >= t.killBelow) {
+    verdict = "retarget";
+    text = `Mean ${shown} is in the ${t.killBelow}-${t.keepAtOrAbove - 1} band: retarget ₪${t.keepTargetIls} → ₪${t.retargetIls}, grade \`contradicted\`, basis carries both readings; step 4 still proceeds (it settles Stripe-Israel for the kill list).`;
+  } else {
+    verdict = "kill";
+    text = `Mean ${shown} < ${t.killBelow}: oss-bounties is killed into docs/REJECTED.md with the re-open trigger "${REOPEN_TRIGGER}"; step 4 is not requested for this line's sake.`;
+  }
+  return { weeksRead: sorted.length, readings, mean, consecutive, verdict, text: `${text}${gap}` };
+}
+
+// ── Aggregation ──────────────────────────────────────────────────────────────
+
+export interface EvaluatedIssue {
+  issue: SupplyIssue;
+  verdict: IssueVerdict;
+}
+
+export interface CollectedRepo {
+  archived?: boolean;
+  /** Present only when the policy files were read — i.e. the repository had a bounty that reached the policy filter. */
+  policyDocs?: RepoPolicyTexts;
+}
+
+export interface SupplyMethod {
+  query: string;
+  /** What GitHub search reported; the evaluated list must account for every one. */
+  searchTotalCount: number;
+  authenticated: boolean;
+  requests: { search: number; core: number };
+  rateLimitWaitSeconds: number;
+  notes?: string[];
+}
+
+export interface RepoSupply {
+  repo: string;
+  labelledOpen: number;
+  claimable: number;
+  claimableUsd: number;
+  /** null when the repository object was never needed (every issue dropped on its labels). */
+  archived: boolean | null;
+  /** assessRepoPolicy over the repository's own files; null when they were never read. */
+  policy: PolicyVerdict | null;
+  dropped: Partial<Record<SupplyFilterId, number>>;
+}
+
+export interface ClaimableBounty {
+  repo: string;
+  number: number;
+  title: string;
+  url: string;
+  amountUsd: number;
+  policy: PolicyVerdict;
+  /** A claimed pull request already merged; the bounty waits for its solver's payout. */
+  solutionMerged: boolean;
+}
+
+export interface SupplyMeasurement {
+  measuredAt: string;
+  /** THE number: the KPI `claimableBounties` on the `oss-bounties` line, on the board's own definition. */
+  claimableBounties: number;
+  /** The stricter reading beside it: claimable minus those whose claimed pull request already merged. Not gated. */
+  claimableWithoutMergedSolution: number;
+  claimableUsd: number;
+  labelledOpenIssues: number;
+  repositories: number;
+  minAmountUsd: number;
+  funnel: { filter: SupplyFilterId; stage: SupplyStage; what: string; dropped: number; remaining: number }[];
+  droppedByFilter: Record<SupplyFilterId, number>;
+  /** Up to three issues per filter, so a reader can check a filter did what it says. */
+  examples: Partial<Record<SupplyFilterId, { ref: string; detail: string }[]>>;
+  byRepo: RepoSupply[];
+  claimable: ClaimableBounty[];
+  history: SupplyReading[];
+  boardReading: BoardSupplyReading;
+  method: SupplyMethod & { notes: string[] };
+}
+
+export const METHOD_NOTES: readonly string[] = [
+  `Source: GitHub search \`${SUPPLY_SEARCH_QUERY}\`, sorted by creation date and paged 100 at a time (split by creation date when a query exceeds GitHub's 1,000-result cap), then the GitHub REST API for repositories, issue comments and policy files. No request goes to Algora's own site: its terms forbid automated access (research/rendered/algora-terms.txt:258-260).`,
+  "Scope: labelled supply only. Algora adds the label only through its GitHub App installation (notify_bounty.ex); a bounty on a repository without the App gets a comment and no label, and is not counted here (the SWEEP-2.md github-native confound). The label count is a ceiling on labelled supply; this is the claimable part of it.",
+  `Amount: read from the algora-pbc[bot] bounty comment by parseAlgoraBotComment (intake.ts); ≥ $${MIN_CLAIMABLE_USD} counts, inclusive.`,
+  "Payout: an algora-pbc[bot] comment saying the bounty \"has been awarded\" (notify_transfer.ex), or the 💰 Rewarded label the same job adds. Merge: the bot's \"has been merged. The bounty can be rewarded\" comment does not drop an issue (it is not on the board's list); it is reported as the stricter number beside the count.",
+  "Policy: assessRepoPolicy over CONTRIBUTING, CODE_OF_CONDUCT, the pull-request template and the README, located in .github/, the root and docs/ in GitHub's own precedence, plus the issue body. Read only for repositories with a bounty that passed every cheaper filter. `unknown` is counted.",
+  "Failure: any API error, an exhausted rate-limit budget, or a search that returns fewer issues than it reports writes nothing and fails the job — an unmeasured week is a missing reading, never a zero.",
+];
+
+function refOf(i: SupplyIssue): string {
+  return `${i.repo}#${i.number}`;
+}
+
+/**
+ * Add the verdicts up. Throws if any issue is undecided or if the list does not account for every issue the search
+ * reported — a partial count is not a count.
+ */
+export function buildSupplyMeasurement(input: {
+  measuredAt: string;
+  evaluated: EvaluatedIssue[];
+  repos: Record<string, CollectedRepo>;
+  method: SupplyMethod;
+  previousHistory?: SupplyReading[];
+  minAmountUsd?: number;
+}): SupplyMeasurement {
+  const { measuredAt, repos, method } = input;
+  if (Number.isNaN(Date.parse(measuredAt))) throw new TypeError(`buildSupplyMeasurement: measuredAt is not a timestamp: ${measuredAt}`);
+  const evaluated = [...input.evaluated].sort((a, b) => a.issue.repo.localeCompare(b.issue.repo) || a.issue.number - b.issue.number);
+
+  for (const e of evaluated) {
+    if (e.verdict.kind === "needs") throw new Error(`${refOf(e.issue)} still needs ${e.verdict.need}; the evaluation is unfinished, so nothing is written.`);
+  }
+  const unique = new Set(evaluated.map((e) => refOf(e.issue)));
+  if (unique.size !== evaluated.length) throw new Error("the evaluated list holds the same issue twice; nothing is written.");
+  if (evaluated.length < method.searchTotalCount) {
+    throw new Error(`GitHub search reported ${method.searchTotalCount} labelled issues and ${evaluated.length} were evaluated (${evaluated.length} of ${method.searchTotalCount}); a partial count is not a count, so nothing is written.`);
+  }
+
+  const droppedByFilter = Object.fromEntries(SUPPLY_FILTERS.map((f) => [f.id, 0])) as Record<SupplyFilterId, number>;
+  const examples: SupplyMeasurement["examples"] = {};
+  const repoRows = new Map<string, RepoSupply>();
+  const claimable: ClaimableBounty[] = [];
+
+  for (const { issue, verdict } of evaluated) {
+    let row = repoRows.get(issue.repo);
+    if (!row) {
+      const facts = repos[issue.repo];
+      row = {
+        repo: issue.repo,
+        labelledOpen: 0,
+        claimable: 0,
+        claimableUsd: 0,
+        archived: typeof facts?.archived === "boolean" ? facts.archived : null,
+        policy: facts?.policyDocs ? assessRepoPolicy(facts.policyDocs).verdict : null,
+        dropped: {},
+      };
+      repoRows.set(issue.repo, row);
+    }
+    row.labelledOpen += 1;
+    if (verdict.kind === "claimable") {
+      row.claimable += 1;
+      row.claimableUsd += verdict.amountUsd;
+      claimable.push({
+        repo: issue.repo,
+        number: issue.number,
+        title: issue.title,
+        url: issue.url,
+        amountUsd: verdict.amountUsd,
+        policy: verdict.policy,
+        solutionMerged: verdict.solutionMerged !== null,
+      });
+    } else if (verdict.kind === "dropped") {
+      droppedByFilter[verdict.filter] += 1;
+      row.dropped[verdict.filter] = (row.dropped[verdict.filter] ?? 0) + 1;
+      const list = (examples[verdict.filter] ??= []);
+      if (list.length < 3) list.push({ ref: refOf(issue), detail: verdict.detail });
+    }
+  }
+
+  let remaining = evaluated.length;
+  const funnel = SUPPLY_FILTERS.map((f) => {
+    remaining -= droppedByFilter[f.id];
+    return { filter: f.id, stage: f.stage, what: f.what, dropped: droppedByFilter[f.id], remaining };
+  });
+
+  const byRepo = [...repoRows.values()].sort(
+    (a, b) => b.claimable - a.claimable || b.claimableUsd - a.claimableUsd || b.labelledOpen - a.labelledOpen || a.repo.localeCompare(b.repo),
+  );
+  claimable.sort((a, b) => b.amountUsd - a.amountUsd || a.repo.localeCompare(b.repo) || a.number - b.number);
+  const claimableUsd = claimable.reduce((n, c) => n + c.amountUsd, 0);
+  const history = appendWeeklyReading(input.previousHistory ?? [], { measuredAt, claimable: claimable.length });
+
+  return {
+    measuredAt,
+    claimableBounties: claimable.length,
+    claimableWithoutMergedSolution: claimable.filter((c) => !c.solutionMerged).length,
+    claimableUsd,
+    labelledOpenIssues: evaluated.length,
+    repositories: repoRows.size,
+    minAmountUsd: input.minAmountUsd ?? MIN_CLAIMABLE_USD,
+    funnel,
+    droppedByFilter,
+    examples,
+    byRepo,
+    claimable,
+    history,
+    boardReading: readBoardVerdict(history),
+    method: { ...method, notes: [...METHOD_NOTES, ...(method.notes ?? [])] },
+  };
+}
+
+// ── The human-readable file ──────────────────────────────────────────────────
+
+/** Third-party text inside a Markdown table: one line, no pipes, no HTML, capped. */
+function cell(text: string, max = 90): string {
+  const one = text.replace(/\s+/g, " ").trim().replace(/[<>]/g, "").replace(/`/g, "'");
+  const capped = one.length > max ? `${one.slice(0, max - 3)}...` : one;
+  return capped.replace(/\|/g, "\\|");
+}
+
+const usd = (n: number): string => `$${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+
+/** `research/measurements/algora-supply.md`, regenerated on every run. */
+export function renderSupplyMarkdown(m: SupplyMeasurement): string {
+  const out: string[] = [];
+  const b = m.boardReading;
+  const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
+
+  out.push("# Algora bounty supply — the weekly claimable count");
+  out.push("");
+  out.push(
+    `**Status: MEASURED ${m.measuredAt} by \`.github/workflows/algora-supply.yml\` (\`scripts/algora-supply.ts\`).** ` +
+      "Regenerated on every run — do not edit by hand. Ordered by `research/colony-sweep/BOARD-2.md §2.2` as the first build step of `oss-bounties`.",
+  );
+  out.push("");
+  out.push("## The number");
+  out.push("");
+  out.push(
+    `**${m.claimableBounties} claimable ${plural(m.claimableBounties, "bounty", "bounties")}** (${usd(m.claimableUsd)} in visible amounts) out of ` +
+      `${m.labelledOpenIssues} open ${plural(m.labelledOpenIssues, "issue", "issues")} carrying Algora's \`${BOUNTY_LABEL}\` label across ${m.repositories} ${plural(m.repositories, "repository", "repositories")}.`,
+  );
+  out.push("");
+  const merged = m.claimableBounties - m.claimableWithoutMergedSolution;
+  out.push(
+    `Stricter reading, not gated: **${m.claimableWithoutMergedSolution}** once the ${merged} ${plural(merged, "bounty", "bounties")} whose claimed pull request Algora already saw merged ` +
+      "are left out — funded and unpaid, but promised to that solver. The board's thresholds read the number above, on its own definition; this one is shown so the week-4 reader can weigh both.",
+  );
+  out.push("");
+  out.push("A count of jobs a payer has posted, not revenue: money counts only in `revenue_ledger` with a platform transaction id (MISSION rule 2).");
+  out.push("");
+
+  out.push(`## The board's reading — week ${Math.min(b.weeksRead, SUPPLY_THRESHOLDS.weeks)} of ${SUPPLY_THRESHOLDS.weeks}`);
+  out.push("");
+  out.push("| ISO week | Measured at | Claimable |");
+  out.push("|---|---|---:|");
+  for (const r of m.history) out.push(`| ${r.week} | ${r.measuredAt} | ${r.claimable} |`);
+  out.push("");
+  out.push(b.mean === null ? b.text : `**${b.verdict.toUpperCase()}.** ${b.text}`);
+  out.push("");
+  out.push("This file reads the rule; it does not apply it. The ₪300 target changes only when the main thread records the ruling in `src/revenue/portfolio.ts`.");
+  out.push("");
+
+  out.push("## What was excluded, and why");
+  out.push("");
+  out.push("| Filter | Dropped | Left | Why |");
+  out.push("|---|---:|---:|---|");
+  out.push(`| (labelled, open) | — | ${m.labelledOpenIssues} | GitHub search \`${SUPPLY_SEARCH_QUERY}\` |`);
+  for (const step of m.funnel) {
+    const f = FILTER_BY_ID.get(step.filter)!;
+    out.push(`| \`${step.filter}\` — ${f.what} | ${step.dropped} | ${step.remaining} | ${f.why} |`);
+  }
+  out.push("");
+  const exampleFilters = SUPPLY_FILTERS.filter((f) => (m.examples[f.id] ?? []).length > 0);
+  if (exampleFilters.length) {
+    out.push("Examples, up to three per filter, so each can be checked by hand:");
+    out.push("");
+    for (const f of exampleFilters) {
+      for (const e of m.examples[f.id]!) out.push(`- \`${f.id}\` — ${e.ref}: ${cell(e.detail, 200)}`);
+    }
+    out.push("");
+  }
+
+  out.push("## Claimable bounties");
+  out.push("");
+  if (m.claimable.length === 0) {
+    out.push("None this week.");
+  } else {
+    out.push("| Repository | Issue | Amount | Policy | Solution merged | Title |");
+    out.push("|---|---|---:|---|---|---|");
+    for (const c of m.claimable) {
+      out.push(`| \`${c.repo}\` | [#${c.number}](${c.url}) | ${usd(c.amountUsd)} | ${c.policy} | ${c.solutionMerged ? "yes" : "no"} | ${cell(c.title)} |`);
+    }
+  }
+  out.push("");
+
+  out.push("## Per repository");
+  out.push("");
+  out.push("| Repository | Labelled open | Claimable | Claimable $ | Archived | Policy | Dropped by |");
+  out.push("|---|---:|---:|---:|---|---|---|");
+  for (const r of m.byRepo) {
+    const drops = SUPPLY_FILTERS.filter((f) => r.dropped[f.id]).map((f) => `${f.id} ${r.dropped[f.id]}`).join(", ");
+    out.push(
+      `| \`${r.repo}\` | ${r.labelledOpen} | ${r.claimable} | ${usd(r.claimableUsd)} | ${r.archived === null ? "—" : r.archived ? "yes" : "no"} | ${r.policy ?? "—"} | ${drops || "—"} |`,
+    );
+  }
+  out.push("");
+
+  out.push("## Method");
+  out.push("");
+  for (const note of m.method.notes) out.push(`- ${note}`);
+  out.push(
+    `- This run: ${m.method.authenticated ? "authenticated (GITHUB_TOKEN)" : "unauthenticated"}, ${m.method.requests.search} search and ${m.method.requests.core} REST requests, ` +
+      `${m.method.rateLimitWaitSeconds}s spent waiting on rate limits; search reported ${m.method.searchTotalCount}.`,
+  );
+  out.push("");
+  return out.join("\n");
+}

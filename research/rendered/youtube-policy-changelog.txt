@@ -1,0 +1,549 @@
+YouTube policy updates - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+YouTube policy updates
+This article summarizes recent and past updates made to YouTube’s policies. For other updates relevant to YouTube creators, check out our Creator updates .
+
+Latest updates
+
+[August 2026] First frame view counting: Views will be counted the moment a video begins to play across all formats, including Shorts, long form video, and live streams. Learn more .
+
+[September 2026] Upcoming changes to paid promotions: We are officially transitioning from "Paid Product Placements" to "Branded Content Policy" to align with modern industry standards. When creators select Yes under the updated Paid promotion & brands section in YouTube Studio, they can now manually configure granular geographic visibility (including country-specific routing) and age gating (from 18 to 25+). Additionally, we are rolling out internal automated systems to identify undeclared promotional material and may automatically apply the viewer disclosure label. While creators may have the ability to manually edit their metadata in YouTube Studio and toggle this setting back to No , they remain responsible for accurate disclosures. Learn more .
+
+Learn more about YouTube's responsibility efforts .
+
+Expand all Collapse all
+
+Previous updates
+
+Terms of Service
+
+[December, 2021] Update to YouTube's Terms of Service . On January 5, 2022, we’re updating our YouTube Terms of Service to help clarify and make it easier to understand what to expect as you use the service. A summary of the changes and the updated Terms of Service are available here .
+
+[May, 2021] Update to YouTube's Terms of Service . On June 1, 2021, we will update the YouTube Terms of Service to clarify which activities are prohibited and how we monetize content on the Service.
+
+[March, 2021] Changes to YouTube's Terms of Service : In March, we will update the YouTube Terms of Service to clarify how children of all ages may use the Service. Learn more .
+
+[November, 2020] Updates to YouTube data processing terms: In mid-November, we will update the YouTube data processing terms to address a recent ruling of the Court of European Union on data transfers .
+
+Community Guidelines
+
+2026
+
+Community Guidelines
+
+[May 2026] Channel description policy enforcement : YouTube’s Community Guidelines apply to all types of content on our platform, including channel descriptions. Starting May 18, YouTube may hide channel descriptions that don’t follow our Community Guidelines, such as minors sharing personal contact information. You can edit your channel description at any time in Studio to align with our Community Guidelines and restore visibility.
+
+2025
+
+Community Guidelines
+
+[November 2025] Upcoming changes to enforcement on online gambling and graphic gaming content: YouTube is expanding enforcement of its gambling policy to cover gambling with additional items that have real-world monetary value, including digital goods, and age-restricting the facilitation and depiction of social casinos. We are also strengthening enforcement of our violent and graphic content policies to age-restrict an additional small subset of video game content that focuses on scenes of torture of a person or scenes of mass violence against non-combatants. Learn more here , here , and here .
+
+[October 2025] Upcoming changes to our Medical Misinformation policy: YouTube is updating its medical misinformation policy to enforce against content that falsely claims tobacco or nicotine are not addictive or harmful. Enforcement of this policy will begin on October 20, 2025. Content that violates the policy will be removed and may result in a channel strike. Learn more .
+
+[August 2025] Trending page has been removed and replaced with Charts: As of July 21, 2025, the Trending page has been removed from YouTube. Learn more about where you can continue discovering trending content across YouTube.
+
+[April 2025] Strengthening enforcement of violent or graphic content policies : To better protect younger viewers on our platform, we'll begin age-restricting scripted content with human actors that focuses on scenes of torture of a person or violent death of a person showing blood. This update brings our existing policies in closer alignment with industry standards for mature content commonly found in TV and film, and will start rolling out on May 1st, 2025. Learn more .
+
+[March 2025] Updates to Illegal or regulated goods or services policies : As of March 19th, 2025, our policy on gambling content will be updated to include a stricter stance on content facilitating access to online gambling sites or applications that have not been approved by Google. We may also remove content promising guaranteed returns regardless of whether the online gambling site or application has been approved by Google. Finally, content that does not violate our Community Guidelines but still features depictions or promotions of online casino sites or applications may be age-restricted , meaning it won’t be viewable to signed-out users or those under 18. Learn more .
+
+[March 2025] Updates to our COVID-19 Medical Misinformation Policy: In line with evolving global and local health authority guidance, we have updated our COVID-19 medical misinformation policies to align with our broader medical misinformation framework. Learn more .
+
+[February 2025] Upcoming changes to our Harassment policy: As of February 10, 2025, our Harassment policy is changing to prohibit content that realistically simulates deceased individuals describing their death or violence experienced. This means that such content will be removed. Learn more .
+
+[ January 2025] Updates to Elections misinformation policy: As of January 31, 2025, YouTube will remove content falsely claiming widespread fraud, errors, or glitches occurred, or that the certified results were false regarding the 2014, 2018, and 2022 Brazilian presidential elections only. Learn more .
+
+[ January 2025] Strengthening enforcement against misleading metadata : To ensure viewers aren’t misled about what they watch on YouTube, we're strengthening our enforcement against cases where metadata like the title or thumbnail promises viewers something that the video doesn't deliver, especially when that content focuses on breaking news, current events, or sensitive topics like elections or politics. We’re starting by rolling this out in India with more countries to follow over the next few months. Learn more .
+
+2024
+
+Community Guidelines
+
+[June, 2024] Upcoming changes to firearms policy : On June 18, 2024, content showing how to remove certain safety devices will be prohibited. Content showing the use of homemade firearms, automatic firearms, and certain firearm accessories will be age restricted. We will also expand enforcement on content sharing links where you can purchase firearms, ammo, or certain accessories. Learn more .
+
+[March, 2024] Upcoming changes to Harmful & Dangerous policy : As of March 18, 2024, our policy on Harmful & Dangerous content will be updated to include a stricter stance on audience disclaimers and updated guidelines to better assess the risk of potential harm of the act portrayed. Learn more .
+
+[January, 2024] Update to Harassment & cyberbullying enforcement : On January 16, we’ll begin striking content that realistically simulates deceased minors or victims of deadly or well-documented major violent events describing their death or violence experienced. Learn more .
+
+2023
+
+Community Guidelines
+
+[November, 2023] Community posts policy enforcement : YouTube’s Community Guidelines apply to all types of content on our platform, including Community posts. While we've always removed Community posts that violate our policies, starting November 17, 2023, Community posts that are removed from YouTube may result in a Community Guidelines strike applied to the channel. Learn more .
+
+[September, 2023] Update to our medical misinformation policy : Content that promotes harmful or ineffective cancer treatments will now be removed. Starting September 15, violations to this policy will result in a channel strike. Cancer treatment misinformation includes content that promotes unproven treatments in place of approved care or as a guaranteed cure. It also includes promotion of any treatments that have been specifically deemed harmful by health authorities. Learn more .
+
+[August, 2023] Upcoming changes to Community Guidelines warnings: Starting August 29, Community Guidelines warnings may now expire. Creators may now receive a warning for each policy area (for example, spam or impersonation) and can optionally take a training for their warning to expire after 90 days. This change will roll out gradually over the next few weeks. Learn more about the update .
+
+[July 2023] Upcoming changes to channel impersonation policy : Starting in August 2023, our channel impersonation policy is being updated to help viewers more easily discern between an original channel and a fan channel. If you operate a fan channel that is not affiliated with and does not represent that original artist, channel, creator, or entity, you now must clearly disclose this in your channel's name or handle. Learn more .
+
+[June 2023] Update to feature eligibility: Starting in July, to help protect the YouTube community, channels that are already using advanced features must continue to follow YouTube’s Community Guidelines to maintain access. Channels that lose access can regain it by rebuilding their channel history or completing verification. Learn more .
+
+[May 2023] Update to our Eating disorders policy: On April 18, 2023, our Eating disorders policy was updated to better protect the YouTube community from sensitive content that may pose a risk to some users. We now may remove imitable content, age-restrict content, and show a crisis resource panel on videos about eating disorders or self-harm topics. Learn more .
+
+[April 2023] External link removals : Under our existing external links policy, links that we can’t verify as safe may be removed . This policy applies to video, audio, video descriptions, comments, pinned comments, live streams, and any other YouTube product or feature. Learn more .
+
+[April 2023] Account Circumvention : Under our existing account circumvention policy, users whose channel or account has been terminated may not use or create any other YouTube channel or account to circumvent an account restriction or termination. Under this policy, users who have previously had accounts terminated may have their current accounts terminated. Any outstanding revenue associated with these accounts will be reclaimed. Users who violate this policy will be notified and may appeal the decision. Learn more .
+
+[March, 2023] Live streaming restrictions: Under our existing firearms policy, a channel that live streams content displaying someone holding, handling, or transporting a firearm may temporarily or permanently lose their ability to live stream. Learn more about live stream restrictions .
+
+2022
+
+Community Guidelines
+
+[December, 2022] Updates to our Violent criminal organizations policy : As of December 1st, we’ve updated our Violent criminal organizations policy to clarify that glorifying violence against civilians and aiding violent criminal, extremist, or terrorist organizations isn’t allowed on YouTube. Learn more .
+
+[November 2022] Changes to our Elections misinformation enforcement: Starting this month , our Elections misinformation policy includes the 2022 Brazil federal election. After the TSE certifies the final result of the election, we’ll remove content that advances false claims that widespread fraud, error, or glitches changed the election outcome or that the certified results were false. Learn more .
+
+[October 2022] Changes to Nudity and sexual content policy : On September 7, 2022, we updated our Nudity and sexual content policy to more consistently enforce our Community Guidelines. We’re taking a stricter stance on content that shows sexual acts or behaviors that are sexually gratifying. This content includes graphic or mature images on thumbnails, avatars, posts, and banners. We’re also aligning with industry standards on sex and nudity in educational and fictional content. Learn more .
+
+[September, 2022] Changes to Harassment & cyberbullying policy enforcement : On August 29, 2022, under our Harassment & cyberbullying policies, we’ll begin removing content that shows a staged meet-up that’s used to accuse an identifiable individual of egregious misconduct with a minor without law enforcement present. Learn more .
+
+[August, 2022] Changes to our violent or graphic content policy : As of July 18, 2022, our policy on violent or graphic content has changed. Content that shows animal abuse requires more educational, documentary, scientific, or artistic context to stay on YouTube. Read the full violent or graphic content policy .
+
+[August, 2022] Updates to Misinformation policy : As of July 19, 2022, YouTube began to remove certain types of content related to reproductive health under our Misinformation policy. Content that promotes or provides instruction to perform abortion methods alternative to those that health authorities have deemed safe may be removed. Additionally, content that claims that abortion methods deemed safe by health authorities cause specific side effects, like breast cancer, may also be removed. Learn more .
+
+[July, 2022] Upcoming changes to YouTube Kids policy : Starting July 27, 2022, we plan to remove low-quality kids and family content that uses deception, sensationalism, and/or manipulation to attract kids' attention and entice clicks or views from YouTube Kids. Learn more .
+
+[June, 2022] Changes to Elections misinformation policy : As of June 30, we clarified in our Elections misinformation policy that content alleging false claims that widespread fraud, errors, or glitches occurred in certain national elections will be removed. Read the full policy .
+
+[April, 2022] Changes to our Harassment and cyberbullying policy: As of April, we strengthened our policy about sharing personally identifiable information (PII). This change means that you can’t share someone’s medical records and more. Learn more about our Harassment & cyberbullying policy .
+
+[April, 2022] Changes to our Elections misinformation policy : As of March 22, our misinformation policy will remove content that makes demonstrably false claims about the 2018 Brazilian presidential election being determined by fraud. YouTube will also not allow demonstrably false claims about the security and integrity of electronic voting in the 2018 Brazilian presidential election. Read the full Elections misinformation policies .
+
+[April, 2022] Changes to OACs and Community Guideline strikes : Starting April 16, 2022, consistent with existing program criteria, your Official Artist Channel will be suspended and become a standard channel if it gets a Community Guidelines strike. Learn more .
+
+[February, 2022] Changes to our Unwanted Sexualization (UWS) policy : As of January, we're strengthening our Unwanted Sexualization (UWS) policy to increase protection for victims. UWS is sexualizing content shared or taken without a person's knowledge or consent. Learn more about our harassment policy .
+
+2021
+
+Community Guidelines
+
+[November, 2021] Medical misinformation policy expansion : On September 29th, we expanded our medical misinformation policies on YouTube with new guidelines around the safety, efficacy, and ingredients of currently administered vaccines that are approved and confirmed to be safe and effective by local health authorities and by the World Health Organization. Learn more .
+
+[November, 2021] Changes to our sexual assault policy : As of October 12th, we are strengthening our violent sexual assault policy to increase protection for victims. We remove any violent sexual assault footage even if it is blurred or has EDSA context, as this content poses serious risks of retraumatization for victims and viewers. Learn more .
+
+[October, 2021] Changes to Elections misinformation policy : As of September 23rd, our election integrity policy has expanded to include the 2021 Germany federal election. This means that content advancing false claims that widespread fraud, error, or glitches changed the outcome of the German federal election will be removed from YouTube, once the results are determined by the Federal Returning Officer. Learn more .
+
+[August, 2021] Upcoming changes to YouTube Kids policy : On August 9th, 2021, content that is overly commercial or promotional will not be allowed in YouTube Kids, such as a video that only focuses on product packaging or directly encourages children to spend money. Learn more .
+
+[August, 2021] We recently reorganized our Community Guidelines to provide further clarity around our policies related to Misinformation on YouTube. To review these policies, check out our articles on Misinformation and Elections misinformation .
+
+[June, 2021] Upcoming changes to animal abuse policy : On June 30, we are updating our animal abuse policy. This means that content in which someone deliberately inflicts physical suffering or harm to animals or humans is not allowed on YouTube. Learn more .
+
+[January, 2021] Changes to child safety policies : As of December 8, 2020, we may remove a video if the video’s audience is set as “Yes, it’s made for kids,” but contains themes that are mature and age-inappropriate for kids. In addition to titles, descriptions, and tags, creators need to ensure their audience selection matches the audience their content is suitable for. Learn more .
+
+[January, 2021] Update on Presidential Election Integrity Policy : On December 8, 2020, the safe harbor deadline, after official certification of U.S. presidential election results by enough U.S. states to determine a President-elect, we started applying our Presidential Election Integrity policy to the 2020 U.S. presidential election, meaning we remove content that misleads people by alleging that widespread fraud or errors changed the outcome of the 2020 U.S. presidential election uploaded on or after December 9, 2020. Learn more .
+
+2020
+
+Community Guidelines
+
+[November, 2020] Changes to the COVID-19 medical misinformation policy : As of October 14, 2020, we expanded our COVID medical misinformation policy and won’t allow content that includes claims about COVID-19 vaccinations that contradict expert consensus from local health authorities or the World Health Organization (WHO). Learn more .
+
+[November, 2020] Changes to our harassment policy: On October 15, 2020, we expanded our harassment policy against threats to remove certain harmful criminal conspiracy theories with links to real world violence when they target identifiable individuals. Learn more .
+
+[October, 2020] Policy update on age-gated content: As of September 22, 2020, we announced updates to YouTube’s age-restriction efforts as part of our ongoing commitment to keeping YouTube creators and viewers safe, informed by recent regulations, including AVMSD . Learn more .
+
+YouTube Partner Program
+
+2025
+
+YouTube Partner Program
+
+[September 2025] Changes to paid political promotions in the EU: Following the change to Google’s advertising policies for political advertising in the EU , EU political paid promotions on YouTube may not be made available to EU users, where they constitute ‘political advertising’ as defined by the new European Union Political Advertising Regulation 2024/900. Starting on October 10, 2025, creators must disclose if a video contains an EU political paid promotion, which will result in that video being unavailable to EU users. Users can also report content they believe to be ‘political advertising’. Google will review the video, and if the reviewed content contains ‘political advertising’, the video will become unavailable to EU users. Learn more .
+
+[July 2025] Updates to Ads sensitive categories : On July 15, 2025, the sensitive category “Bare Skin (Image Only)” will be removed in Ad categories in YouTube Studio. Those currently using the setting will have until August 15, 2025 before existing blocks will no longer apply. You can use other categories like “Reference to Sex” for finer control over your ads on your channel. Learn more .
+
+[July 2025] Updates to YouTube Partner Program (YPP) Monetization policies: In order to monetize as part of the YouTube Partner Program (YPP), YouTube has always required creators to upload “original” and "authentic" content. On July 15, 2025, YouTube is updating our guidelines to better identify mass-produced and repetitious content. This update better reflects what “inauthentic” content looks like today.
+
+[May 2025] Updates to Ads sensitive categories: On May 15, 2025, the sensitive category “Video Games (Casual & Online)” will be removed in Ad categories in YouTube Studio. Those currently using the setting will have until June 15, 2025 before existing blocks will no longer apply. The ability to block these ads will now exclusively exist within the "Video Games, Consoles & Accessories" and “Online Games & Puzzles” general categories and their subcategories, which offer finer control over video game ads on your channel. Learn more .
+
+[April 2025] Updates to mid-roll ads: In May 2025, we're tuning our ad serving system to shift more mid-roll ads into natural breakpoints, aiming to increase the overall mid-roll revenue opportunity for creators. Creators have until May 12 to opt out of YouTube adding automatic mid-roll ad slots to videos uploaded prior to February 24. Learn more .
+
+[March 2025] Additional reviews for ad suitability: On March 10, 2025, we're making improvements to our ad suitability review process. As a result, we may conduct additional reviews on new video uploads, even if visibility is set to private. In some cases, video monetization decisions may take up to 24 hours. This update is designed to improve the accuracy of monetization decisions and increase your channel’s overall monetization potential. Learn more .
+
+2024
+
+YouTube Partner Program
+
+[November, 2024] New monetization module and features: Starting November 13, we’re introducing the Virtual Items monetization policies, which applies to eligible creators in the US who use Virtual Items features like gifts on YouTube. Virtual Items are a new monetization feature that allows creators to engage with their viewers while diversifying their earnings and building community.
+
+[August, 2024] Upcoming changes to Ad blocking controls policy: As of Sept 3, our policy on Ad blocking control access and availability is changing. Ad blocking controls will be available to monetizing partners at the channel level via YouTube Studio. Previously ad blocking controls were only available at the Content Owner level via AdSense.
+
+[August, 2024] Monetization update in Russia: Due to ongoing developments in Russia, we will be deactivating all Russia-based AdSense and AdSense for YouTube accounts. This means creators will not be able to monetize any YouTube channels linked to AdSense for YouTube accounts based in Russia.
+
+[July, 2024] Upcoming Changes to YPP Suspension Appeals: Starting July 31st, some YPP suspensions will have a revised appeal process. Affected channels may get 7 days to appeal an upcoming suspension without losing monetization. If the appeal is denied, the channel will be removed from YPP, but may re-apply after 90 days.
+
+2023
+
+YouTube Partner Program
+
+[October, 2023] Upcoming changes to ad controls on long-form videos: Starting in November, we’re simplifying ad controls for pre-roll, post-roll, skippable, and non-skippable ads . This change optimizes creator earnings by making the best practice to turn on all ad formats the standard for everyone. If you turn on ads for new uploads, we’ll choose which ad formats to show before and after the video. Existing videos will retain their ad format selections. Learn more about the coming changes.
+
+[September, 2023] Upcoming changes to links on YouTube : Starting August 31, 2023, links posted in Shorts comments, Shorts descriptions, and in the vertical live feed will no longer be clickable. Viewers and creators will still be able to add links to these places, but they won’t be clickable. Learn more .
+
+[May 2023] Updates to YouTube Partner Program reapplication policy: Starting June 5, 2023, we’re extending our policy on reapplications to the YouTube Partner Program (YPP) from 30 days to 90 days. This means that channels that have been suspended or rejected more than once from YPP must now wait 90 days before reapplying to the program. If it’s your first time being rejected from YPP, you can still reapply after 30 days, but if you’re rejected again you need to wait 90 days before reapplying. This change doesn't affect our appeal policy and channels will still have 21 days to appeal rejection and suspension decisions. If your appeal isn't approved and it’s not your first time being rejected from YPP, you need to wait 90 days before reapplying to the program. Learn more .
+
+[March, 2023] Overlay ad format update : To improve the viewer experience and optimize for higher performing ad formats across devices, legacy desktop overlay ads will stop appearing on YouTube videos starting April 6, 2023. Learn more .
+
+[January, 2023] Shorts ad revenue sharing coming soon : Starting February 1, 2023, monetizing creators who’ve accepted the Shorts Monetization Module will begin accruing ad revenue from ads viewed in between Shorts in the Shorts Feed. This new revenue sharing model will replace the YouTube Shorts Fund. Learn more about monetizing YouTube Shorts .
+
+2022
+
+YouTube Partner Program
+
+[December, 2022] Updated YPP terms and program eligibility : Starting in mid-January next year, updated terms for the YouTube Partner Program (YPP) including new Modules will be made available for partners to begin reviewing and accepting. All monetizing creators must accept new terms by July 2023. Creators will also be able to start joining YPP in mid-January with new eligibility requirements for Shorts.
+
+[October 2022] New options to use music and earn money : Later this year, creators in the YouTube Partner Program (YPP) in the US get access to Creator Music, a feature that introduces new options for creators to use recognizable music in their long-form videos while retaining monetization. Creator Music also gives music rightsholders a new revenue source on YouTube. We plan to expand to more countries in 2023. Learn more .
+
+[March, 2022] Ads update in Russia : Due to the ongoing war in Ukraine, we’re pausing all Google and YouTube ads in Russia as well as access to all monetization features. As a result, viewers in Russia will not see ads or monetization features like Channel Memberships, Super Chat, Super Stickers, or Merch. This means YouTube creators will temporarily stop earning ad revenue on views received in Russia or revenue from other monetization features. This change doesn’t impact ads shown to users or revenue from other monetization features outside of Russia.
+
+[February, 2022] Ukraine War monetization update : In light of the war in Ukraine, we are pausing YouTube’s monetization of Russian Federation state-funded media channels. We will continue to actively monitor the situation and make adjustments as necessary.
+
+[February, 2022] Upcoming changes in AdSense for YouTube creators : Starting in March, YouTube will have its own payments account in AdSense. With this update, YouTube creators will be able to see their YouTube earnings separately from other AdSense earnings (where applicable).
+
+2021
+
+YouTube Partner Program
+
+[November, 2021] Upcoming changes to YPP policy : Starting in November, we will start demonetizing content that violates the quality principles for kids and family content, including channel suspension from the YouTube Partner Program and limited or no ads for individual videos. Learn more
+
+[September, 2021] Upcoming policy changes on 2-Step Verification : Starting November 1, all monetizing creators on YouTube will have to have 2-Step Verification enabled on the Google Accounts associated with their YouTube channels in order to access YouTube Studio or YouTube Content Manager. Learn more
+
+[June, 2021] Additional eligibility requirement for the YouTube Partner Program : Starting in July, we’re adding a new eligibility requirement for the YouTube Partner Program (YPP). Channels applying for YPP need to have no active Community Guidelines strikes in order to apply.
+
+2020
+
+YouTube Partner Program
+
+[October, 2020] Clarification of YouTube channel monetization policies: As of October 1, 2020, we will notify you about actions or changes that may affect your channel, such as future policy changes, and provide links to help you navigate enforcement policies and support channels. This update does not change any of our existing processes. Learn more .
+
+Advertiser-friendly guidelines
+
+Go to ad guideline updates
+
+Copyright and rights management policies
+
+[September, 2020] Content ID Eligible Content Policy: As of September 16, 2020, our requirements for what content is eligible as a Content ID reference will now be referred to as the “Eligible Content Policy,” which will prohibit monetizing reference content that violates YouTube’s policies. Learn more .
+
+[September, 2020] Content ID Responsible Asset Management Policy: As of September 16, 2020, our requirements for Content ID asset metadata will now be referred to as the “Responsible Asset Metadata Policy,” and will require Content ID asset metadata and art tracks be accurate and legible. Learn more .
+
+[September, 2020] Manual Actions Policy: As of September 16, 2020, this policy will explicitly require all manual actions, such as confirming pending claims, to comply with YouTube’s policies, including monetization. This means manual monetization claims on violative content may face penalties. Learn more .
+
+[September, 2020] Manual Claiming Policy: As of September 16, 2020, manual claiming may only be used within the scope of what’s potentially claimable with Content ID. This means you can’t manually claim thumbnails, still images, or other unsupported use cases. For these types of issues, we recommend rights holders file a legal takedown request. Learn more .
+
+[September, 2020] Accountable Access & Acquisitions Policy: As of September 16, 2020, the former ‘Subnetwork’ and ‘Acquisitions’ policies will be called the Accountable Access & Acquisitions policy and strictly forbid providing access to any CMS account to unaffiliated or prohibited third parties in exchange for compensation or other gain. Learn more .
+
+[September, 2020] Updates to our channel accountability policy: Starting October 1, 2020, partners with access to our Content Management System must have less than 30 abuse events (such as terminations, suspensions, or demonetizations) over a 90-day period. This policy applies to channels in both your affiliate and non-affiliate accounts. In addition, partners must also maintain fewer than 10 channel abuse events on their non-affiliate accounts. Learn more .
+
+Product and feature policies
+
+2026
+
+[August 2026] Updates to our creator responsibility policy: We are updating our Violent Content guidelines to clarify the monetization status of depictions of death within educational, documentary, or news reporting content. Learn more .
+
+[August 2026] Changes to AI content labels in Promote: By August 2, 2026, Promote users running campaigns with AI content can use self-disclosure tools to label their content. Use of the AI label setting in Google’s advertising products does not guarantee compliance with specific regulations and Promote users should take measures as needed to ensure compliance. Learn more .
+
+[June 2026] Updates to our Creator responsibility policy: Using YouTube's features, tools, or services to create new or modified content that harms or is intended to harm others is considered a serious violation. To better protect the YouTube community, this behavior may lead to access restrictions to certain YouTube features, tools, and services. Learn more .
+
+[May 2026] Channel description policy enforcement : YouTube’s Community Guidelines apply to all types of content on our platform, including channel descriptions. Starting May 18, YouTube may hide channel descriptions that don’t follow our Community Guidelines, such as minors sharing personal contact information. You can edit your channel description at any time in Studio to align with our Community Guidelines and restore visibility.
+
+[April 2026] Updates to Channel Memberships Pricing Flexibility: We're implementing pricing updates for new Channel Memberships members. These updates reflect current exchange rates and replace outdated currency rates. Creators will also gain the ability to modify their prices for new members without disrupting or deleting existing levels. Existing members will keep their current membership prices at this time. Learn more .
+
+[February 2026] Upcoming changes to the number of concurrent live streams: YouTube is reducing the number of maximum concurrent live streams allowed. An individual stream key or channel will be limited in the number of concurrent live streams it can broadcast. This update will roll out in the next few months.
+
+[January 2026] Safeguards for search results: To protect younger viewers, YouTube is adding a new search safety protection for teens that will prevent results from appearing for search terms linked to content that is either age-restricted or violative. Learn more about How YouTube Provides Age-Appropriate Experiences for Teens .
+
+2025
+
+Product and feature policies
+
+[September 2025] Upcoming changes to Channel Memberships purchasing options for viewers: As of August 25th, a new billing system for iOS will allow more viewers to be able to purchase memberships on iOS devices (such as iPhones & iPads). On September 16th, these updates will roll out to all channel memberships creators.
+
+[June 2025] Changes to live streaming access: We have always had a high bar for access to our live features. As of July 22, we are increasing the minimum age required to live stream to 16 years old. This means that creators will need to be 16 or older to be able to live stream on YouTube. Additionally, Live streams featuring 13-15 year olds who are not visibly accompanied by an adult may have their live chat disabled and the account may temporarily lose access to live chat or other features. Please note that, in the future, we plan to take down these live streams and the account may temporarily lose its ability to live stream. Learn more .
+
+[April 2025] Updates to Course requirements : Starting April 30, 2025, our new Courses Policy requires that content featured in a YouTube Course must have 1) an intent to teach, 2) consist of at least three non-repeating videos from the Course owner’s channel, and 3) contain no age-restricted content . Courses that don’t meet these criteria may be automatically converted to standard playlists within 30 days of this policy update. Learn more .
+
+[March 2025] Changes to Shorts view counting: Starting on March 31, 2025, YouTube Shorts views will now count every time a Short starts to play, with no minimum watch time. We will keep the existing Shorts view metric, now called “Engaged views,” in YouTube Analytics so you can see how many viewers chose to continue watching your video. This change will likely increase Shorts view counts.
+
+This change will not directly impact creator earnings or how creators become eligible for the YouTube Partner Program. Both will be based on “Engaged views.”
+
+Comparing views with engaged views will give you deeper insights into how your Shorts are performing. This will help you create your content strategy, show your work to potential partners, and give you a fuller picture of your reach. Learn more .
+
+2024
+
+Product and feature policies
+
+[December 2024] Changes to channel creation: Starting in December 2024, to help protect the YouTube community, creators may need access to advanced features in order to add additional channels to their account. Learn more .
+
+[October, 2024] Changes to news shelves: Starting October 2024, channels may no longer need to be registered with Google News in order to appear on YouTube news shelves. Learn more .
+
+[October, 2024] Upcoming changes to Shorts : Starting October 15, 2024, any new uploads with a square or vertical aspect ratio up to 3 minutes in length are considered a Short and will be part of the Shorts revenue sharing model. However, any square or taller video that is over 60 seconds in duration with an active Content ID claim of any type will be blocked globally on YouTube and will not be eligible for monetization. You will not get a copyright strike for blocked videos and can file a dispute or remove the claimed content to make your Shorts viewable. Learn more .
+
+[August, 2024] Changes to public playlists creation: Starting in August, to help protect the YouTube community, users will need access to advanced features in order to have higher daily creation limits for public playlists. Learn more .
+
+[March, 2024] Changes to Community posts : Starting in March, to help protect the YouTube community, creators need to have access to advanced features in order to pin comments on Community posts or add clickable external links to Community posts. Learn more .
+
+[March, 2024] : Setting unauthorized uploaded videos to private: Starting March 19, we may, in some cases, automatically set some videos to private when we detect that they may have been uploaded and published without the channel owner’s knowledge or permission. This update is part of our efforts to keep creators and their channels safe against hijacking. As an added precaution, the channel owner will be signed out of their account and notified by email.
+
+[March, 2024] Update to our privacy request process : Starting in March, YouTube is beginning to expand its privacy request process to allow individuals in the US and in India to request the removal of any AI-generated or other synthetic or altered content on YouTube that looks or sounds like them. The new process will expand to more regions in the coming months. Learn more .
+
+2023
+
+Product and feature policies
+
+[November, 2023] Shorts Monetization policy for music will apply to Dream Track audio: Starting November 16, 2023, our existing Shorts Monetization policy for music will apply to content made with audio from the new Dream Track experiment . Learn more .
+
+[November, 2023] Upcoming changes to our Channel Monetization policy for audio from the Dream Track experiment: Starting November 16, 2023, we are updating our channel monetization policies to reflect that long-form videos using audio from the Dream Track experiment can’t be monetized. Learn more .
+
+[October, 2023] New live ad options: In September, we introduced live ad options, which make it easier for creators to increase the possibility of maximizing earnings from live streams. Creators have the option to either “Let YT insert ads" at opportune moments or “Choose how ads appear.” Creators can also choose between high, medium, and low ad frequency. Learn more .
+
+[October, 2023] External links enforcement : Under our existing external links policy, violative URLs posted within the video itself or in the video’s metadata (titles, descriptions, and tags) may result in the video being removed. These links also include verbally directing users to other sites, encouraging viewers to visit creator profiles or pages on other sites, or promising violative content on other sites. This policy applies to any YouTube product or feature. Learn more .
+
+[October, 2023] New live ad options: In September, we introduced live ad options, which make it easier for creators to increase the possibility of maximizing earnings from live streams. Creators have the option to either “Let YT insert ads" at opportune moments or “Choose how ads appear.” Creators can also choose between high, medium, and low ad frequency. Learn more .
+
+[September, 2023] Upcoming changes to links on YouTube : Starting August 31, 2023, links posted in Shorts comments, Shorts descriptions, and in the vertical live feed will no longer be clickable. Viewers and creators will still be able to add links to these places, but they won’t be clickable. Learn more .
+
+[July 2023] Upcoming changes to handles policy enforcement : Starting July 16, 2023, handles that violate our Community Guidelines may be replaced with a new generic handle (e.g., “User-1234”). Users with violative handles will be notified by email with instructions to change their new generic handle, if desired. Learn more about handles .
+
+[June 2023] Stories feature update : YouTube will no longer be supporting Stories starting June 26, 2023. The option to create a Story will no longer be available to creators. Learn more .
+
+[May, 2023] Changes to pinned comments : Starting May 31, to help protect the YouTube community, creators need to have access to advanced features in order to pin comments on their videos. The ability to unpin comments won’t be affected, and already pinned comments will be retained. Learn more about how to get access to advanced features.
+
+[May 2023] Extending to paused mode policy for channel memberships: Starting June 5, 2023, we’re extending our “paused mode” policy from 90 days to 120 days. This means if you offer memberships and your channel is suspended from YPP, you'll now have 120 days to reenter the YouTube Partner Program (YPP) and resume channel memberships before your existing memberships are ended and members are refunded their last month's payment. Learn more .
+
+2022
+
+Product and feature policies
+
+[October 2022] Changes to the Official Artist Channel eligibility requirements : To be eligible for an Official Artist Channel, the artist must have at least one official music release on YouTube delivered and distributed by a music distributor or label. This is in addition to existing program criteria. Learn more .
+
+[September 2022] Artists with Official Artist Channels can turn on comments on Art Tracks: As of September 26, 2022, artists with Official Artist Channels can turn on comments on their Art Tracks. Other Art Tracks will continue to have comments turned off. Learn more about Art Tracks .
+
+[June, 2022] Changes to external links policy : As of June, the ability to add clickable external links to the video description will be gated. Now, only creators with access to advanced features can add clickable links in the video description. This change only applies to creators in countries/regions where advanced features are available. All existing links in video descriptions will continue to work. Learn more .
+
+[March, 2022] Updated channel verification limit : To help prevent abuse, in February we updated channel verification to limit the number of channels that can be associated with a phone number. A maximum of 2 channels per year can now be associated with a phone number. Learn more .
+
+2021
+
+Product and feature policies
+
+[November, 2021] Upcoming changes to automated merch selection on YouTube: As of Nov 23, 2021, our policy on merchandise ranking has changed. This means we will discontinue the merch rank feature that currently enables retailers to inform the order items are displayed on the merch shelf due to limited usage. Creators and artists will be able to either manually select which items to display, or will rely on our improved automated ranking which will include signals such as price and popularity. Learn more here .
+
+[October, 2021] Changes to daily custom thumbnail limit : In September, we began limiting the number of custom thumbnails a channel can upload per day. Learn more
+
+[August, 2021] Ticketing Shelf Migration : As of August 2nd, the ticketing shelf will no longer appear directly underneath the video player on YT Main mobile app. You can still find the ticketing feature within the watchfeed. Learn more .
+
+[July, 2021] Upcoming changes to older unlisted content : Starting July 23, 2021, older Unlisted videos will be made Private unless you opt out from this change. This is part of a security update to Unlisted videos that were uploaded before January 1, 2017. Unlisted content uploaded on or after January 1, 2017 is unaffected by this change. Learn more .
+
+2020
+
+Product and feature policies
+
+[December, 2020] Google Analytics linking discontinued: On November 17, 2020, we announced the removal of the option to link your channel to Google Analytics . If you linked your channel with Google Analytics on or before November 17, 2020 you can view updated channel page data until February 1, 2021. Learn more .
+
+[September, 2020] Live Control Room update : As of early August, 2020, we started removing access to classic streaming. This is consistent with our other broader messaging via the forum. Learn more.
+
+[September, 2020] Paid promotion, endorsement, or sponsorship notification update: As of September 17, 2020, the previously optional in-video disclosure message will now always show when creators confirm that they have a video with paid promotions. Learn more .
+
+Save a copy of these updates: Select “CTRL + p” on a PC or “Command + p” on a Mac and print or save as a PDF. These steps may vary depending on your browser or computer.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+Help
+1 of 5
+YouTube's Community Guidelines
+2 of 5
+YouTube policies
+3 of 5
+Reporting and enforcement
+4 of 5
+Privacy and safety center
+5 of 5
+Copyright and rights management
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+12093023770943775469
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

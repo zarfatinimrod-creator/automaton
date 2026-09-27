@@ -1,0 +1,889 @@
+Receive payments by wire transfer - Google AdSense Help
+Skip to main content
+
+Google AdSense Help
+
+Sign in
+
+Google Help
+
+Help Center
+Community
+Google AdSense
+
+Privacy Policy
+Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Announcements
+
+Google AdSense
+
+Form of payment
+Wire transfer
+Receive payments by wire transfer
+
+Notification
+Please make sure to visit Your AdSense Page where you can find personalized information about your account to help you succeed with AdSense.
+
+Receive payments by wire transfer
+A wire transfer is a method of electronic funds transfer. It allows you to receive funds directly into your bank account. Google sends your earnings in U.S. dollars or Euros, depending on your account currency, via international wire transfer to the bank of your choice and you get the money in the bank account you specify. This is a fast, simple, and secure method for receiving your payments.
+
+In this video, you'll learn how to ensure you're set up correctly to receive a wire transfer payment.
+
+How to ensure you are set up to receive a Wire Transfer AdSense Payment
+
+To view subtitles in your language, turn on YouTube captions . Select the Settings icon at the top right corner of the video player, select "Captions," and then specify your language.
+
+How you'll be paid through wire transfer
+
+Your revenue will be paid out once a month through a wire transfer to your bank account. To receive your payments, you’ll need to provide your bank account information in your AdSense account. The information varies per country and can be found on the Intro to AdSense payments page. If you have any questions, contact your bank and ask for instructions for receiving a wire transfer from abroad.
+
+Enter your bank account information
+
+When adding your bank account information, enter the details exactly as they appear on file with your bank. To enter your banking information:
+
+Sign in to your AdSense account.
+
+Click Payments , then Payments info .
+
+Click Manage payment methods .
+
+Click Add payment method .
+
+Choose the radio button for “Wire transfer to bank account” and click Continue .
+
+Enter your bank account information and click Confirm and continue .
+
+If you need additional assistance locating your financial information, please contact your bank and ask for instructions for receiving a wire transfer from abroad.
+
+Required information by country
+
+Depending on your country, you'll need to provide the following information to receive your payment:
+
+Wire instructions (required)
+
+Field
+
+Expected Length
+
+Example
+
+Account holder name
+
+Not applicable
+
+Jane Smith
+
+Bank name
+
+Not applicable
+
+Acme Bank & Trust
+
+SWIFT-BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+IBAN (International Bank Account Number)
+
+Consists of two-letter country code and up to 30 alphanumeric characters.
+
+XX1100110101000010001111111P1
+
+Intermediary bank details (optional)
+
+If your bank provides intermediary instructions for receiving wires from the United States, provide those here.
+
+Field
+
+Expected Length
+
+Example
+
+Intermediary bank details
+
+Not applicable
+
+Acme Bank and Trust
+
+Intermediary SWIFT-BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+For further credit details (optional)
+
+If your bank required For Further Credit (FFC) or For Benefit Of (FBO) instructions to receive a wire transfer, provide these here as specified by your bank.
+
+Field
+
+Expected Length
+
+Example
+
+For further credit / For benefit of
+
+This may be an account number OR account name on file with your bank
+
+1234567 OR John Smith
+
+Wire instructions (required)
+
+Field
+
+Expected Length
+
+Example
+
+Account holder name
+
+Not applicable
+
+Jane Smith
+
+Bank name
+
+Not applicable
+
+Acme Bank & Trust
+
+SWIFT-BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+Account number
+
+Up to sixteen digits
+
+1234567898765
+
+Re-type account number
+
+See above
+
+See above
+
+Intermediary bank details (optional)
+
+If your bank provides intermediary instructions for receiving wires from the United States, provide those here.
+
+Field
+
+Expected Length
+
+Example
+
+Intermediary bank details
+
+Not applicable
+
+Acme Bank and Trust
+
+Intermediary SWIFT-BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+For further credit details (optional)
+
+If your bank required For Further Credit (FFC) or For Benefit Of (FBO) instructions to receive a wire transfer, provide these here as specified by your bank.
+
+Field
+
+Expected Length
+
+Example
+
+For further credit / For benefit of
+
+This may be an account number OR account name on file with your bank
+
+1234567 OR John Smith
+
+Wire instructions (required)
+
+Field
+
+Expected Length
+
+Example
+
+Account holder name
+
+Not applicable
+
+Jane Smith
+
+Bank name
+
+Not applicable
+
+Acme Bank & Trust
+
+SWIFT BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+CBU (Clave Bancaria Uniforme)
+
+Twenty two digits
+
+1234567898765432123456
+
+Retype CBU
+
+Twenty two digits
+
+1234567898765432123456
+
+Intermediary bank details (optional)
+
+If your bank provides intermediary instructions for receiving wires from the United States, provide those here.
+
+Field
+
+Expected Length
+
+Example
+
+Intermediary bank details
+
+Not applicable
+
+Acme Bank and Trust
+
+Intermediary SWIFT-BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+For further credit details (optional)
+
+If your bank required For Further Credit (FFC) or For Benefit Of (FBO) instructions to receive a wire transfer, provide these here as specified by your bank.
+
+Field
+
+Expected Length
+
+Example
+
+For further credit / For benefit of
+
+This may be an account number OR account name on file with your bank
+
+1234567 OR John Smith
+
+Wire instructions (required)
+
+Field
+
+Expected Length
+
+Example
+
+Account holder name
+
+Not applicable
+
+Jane Smith
+
+Bank name
+
+Not applicable
+
+Acme Bank & Trust
+
+SWIFT-BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+IBAN (International Bank Account Number)
+
+Consists of two-letter country code and up to 30 alphanumeric characters.
+
+XX1100110101000010001111111P1
+
+Re-type IBAN
+
+See above
+
+See above
+
+Intermediary bank details (optional)
+
+If your bank provides intermediary instructions for receiving wires from the United States, provide those here.
+
+Field
+
+Expected Length
+
+Example
+
+Intermediary bank details
+
+Not applicable
+
+Acme Bank and Trust
+
+Intermediary SWIFT-BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+For further credit details (optional)
+
+If your bank required For Further Credit (FFC) or For Benefit Of (FBO) instructions to receive a wire transfer, provide these here as specified by your bank.
+
+Field
+
+Expected Length
+
+Example
+
+For further credit / For benefit of
+
+This may be an account number OR account name on file with your bank
+
+1234567 OR John Smith
+
+Wire instructions (required)
+
+Field
+
+Expected Length
+
+Example
+
+Account holder name
+
+Not applicable
+
+Jane Smith
+
+Bank name
+
+Not applicable
+
+Acme Bank & Trust
+
+IFSC (Indian Financial System Code)
+
+11 letters and numbers
+
+ABAB0001101
+
+SWIFT BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+Account number
+
+Twelve to seventeen digits
+
+1234567891234567
+
+Re-type account number
+
+Twelve to seventeen digits
+
+1234567891234567
+
+Intermediary bank details (optional)
+
+If your bank provides intermediary instructions for receiving wires from the United States, provide those here.
+
+Field
+
+Expected Length
+
+Example
+
+Intermediary bank details
+
+Not applicable
+
+Acme Bank and Trust
+
+Intermediary SWIFT-BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+For further credit details (optional)
+
+If your bank required For Further Credit (FFC) or For Benefit Of (FBO) instructions to receive a wire transfer, provide these here as specified by your bank.
+
+Field
+
+Expected Length
+
+Example
+
+For further credit / For benefit of
+
+This may be an account number OR account name on file with your bank
+
+1234567 OR John Smith
+
+Wire instructions (required)
+
+Field
+
+Expected Length
+
+Example
+
+Bank account holder name
+
+Not applicable
+
+Jane Smith
+
+Bank code
+
+Drop-down menu
+
+BANK XXXX
+
+Account number
+
+Twelve to seventeen digits
+
+1234567891234567
+
+Wire instructions (required)
+
+Field
+
+Expected Length
+
+Example
+
+Bank account holder name
+
+Not applicable
+
+Jane Smith
+
+Account number (RIB)
+
+Twenty four digits:
+
+-3 digit bank code
+
+-3 digit city/branch code
+
+-16 digit account number
+
+-2 digit verification code
+
+123456789123456789123456
+
+Wire instructions (required)
+
+Field
+
+Expected Length
+
+Example
+
+Bank account holder name
+
+Not applicable
+
+Jane Smith
+
+Account number (RIB)
+
+Twenty digits
+
+12345678912345678912
+
+Wire instructions (required)
+
+Field
+
+Expected Length
+
+Example
+
+Bank account holder name
+
+Not applicable
+
+Jane Smith
+
+RUC ID / DNI
+
+Eleven numbers for RUC ID / Eight numbers for DNI
+
+12345678912 / 12345678
+
+Account type
+
+Drop-down menu
+
+Checking
+
+Savings
+
+Account number (CCI)
+
+Three numbers for bank code / Three numbers for office code / Twelve digits for account number / Two digits for control digit
+
+123+123+123456789012+12
+
+Wire instructions (required)
+
+Field
+
+Expected Length
+
+Example
+
+Account holder name
+
+Not applicable
+
+Jane Smith
+
+Bank name
+
+Not applicable
+
+Acme Bank & Trust
+
+BIK (Bank Identification Code)
+
+9 digits
+
+123456789
+
+SWIFT-BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+IBAN (International Bank Account Number)
+
+Consists of two-letter country code and up to 30 alphanumeric characters.
+
+XX1100110101000010001111111P1
+
+Re-type IBAN
+
+See above
+
+See above
+
+Intermediary bank details (optional)
+
+If your bank provides intermediary instructions for receiving wires from the United States, provide those here.
+
+Field
+
+Expected Length
+
+Example
+
+Intermediary bank details
+
+Not applicable
+
+Acme Bank and Trust
+
+Intermediary SWIFT-BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+For further credit details (optional)
+
+If your bank required For Further Credit (FFC) or For Benefit Of (FBO) instructions to receive a wire transfer, provide these here as specified by your bank.
+
+Field
+
+Expected Length
+
+Example
+
+For further credit / For benefit of
+
+This may be an account number OR account name on file with your bank
+
+1234567 OR John Smith
+
+Wire instructions (required)
+
+Field
+
+Expected Length
+
+Example
+
+Bank account holder name
+
+Not applicable
+
+Jane Smith
+
+IBAN (International Bank Account Number)
+
+Consists of two-letter country code and up to 30 alphanumeric characters.
+
+XX1100110101000010001111111P1
+
+SWIFT-BIC
+
+The SWIFT BIC code is 8 or 11 characters:
+
+-4 letter bank code
+
+-2 letter country code
+
+-2 letter location code
+
+-3 letter branch code (optional)
+
+XXXXYYZZ
+
+Wire transfer payments are currently only available to a number of countries. Though we may offer wire transfer to other countries in the future, we do not have a date for when this may become available.
+
+For more information about wire transfers, refer to our wire transfer FAQs
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+Contact us Tell us more and we’ll help you get there
+
+true
+Wire transfer
+1 of 2
+Receive payments by wire transfer
+2 of 2
+Wire transfer FAQ
+
+Unlock your revenue with personalized tips today! Visit the Optimization tips for AdSense page to see personalized suggestions to maximize your revenue.
+
+Unlock now
+
+©2026 Google Privacy Policy
+Terms of Service
+
+Language
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+Filipino&lrm;
+français&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+italiano&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+slovenčina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+български&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+मराठी&lrm;
+हिन्दी&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+ไทย&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+8860370199081320141
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+157
+false
+
+false
+
+false
+false
+
+false

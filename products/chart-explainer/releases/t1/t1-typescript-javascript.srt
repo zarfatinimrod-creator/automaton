@@ -1,0 +1,139 @@
+1
+00:00:00,000 --> 00:00:02,944
+Is TypeScript catching up with JavaScript
+on GitHub?
+
+2
+00:00:03,194 --> 00:00:08,077
+As a share of JavaScript, yes, and
+quickly; in raw numbers, no: JavaScript's
+
+3
+00:00:08,077 --> 00:00:08,719
+lead grew.
+
+4
+00:00:08,969 --> 00:00:13,689
+Every quarter, GitHub counts the
+developers in each economy who push to
+
+5
+00:00:13,689 --> 00:00:18,807
+repositories containing each language; a
+repository that holds both languages
+
+6
+00:00:18,807 --> 00:00:19,871
+counts for both.
+
+7
+00:00:20,121 --> 00:00:24,217
+We follow the 92 economies reported for
+both in every quarter.
+
+8
+00:00:24,733 --> 00:00:30,749
+In the first quarter of 2020, TypeScript
+had 18% as many pushers as JavaScript.
+
+9
+00:00:30,999 --> 00:00:34,690
+By the first quarter of 2026, it had 49%.
+
+10
+00:00:34,940 --> 00:00:40,853
+In raw numbers, though, JavaScript's lead
+grew, from 1.1 million to 2.5 million
+
+11
+00:00:40,853 --> 00:00:43,623
+pushers, because both languages grew.
+
+12
+00:00:43,873 --> 00:00:49,614
+GitHub's Octoverse 2025 report named
+TypeScript the most used language on
+
+13
+00:00:49,614 --> 00:00:53,153
+GitHub in August 2025, by contributor
+counts.
+
+14
+00:00:53,403 --> 00:00:56,795
+That is a different count from the
+quarterly pushers in this video.
+
+15
+00:00:57,300 --> 00:01:04,329
+Over the 6 years, TypeScript pushers grew
+9.5 times over, and JavaScript pushers 3.4
+
+16
+00:01:04,329 --> 00:01:04,831
+times.
+
+17
+00:01:05,081 --> 00:01:09,055
+Among the 10 languages with the most
+pushers, the fastest growing was
+
+18
+00:01:09,055 --> 00:01:09,689
+TypeScript.
+
+19
+00:01:10,200 --> 00:01:15,462
+The ratio moved fastest in the last year:
+it rose 12 percentage points, against at
+
+20
+00:01:15,462 --> 00:01:18,349
+most 5 percentage points in any earlier
+year.
+
+21
+00:01:18,867 --> 00:01:21,704
+Economy by economy, the picture is the
+same.
+
+22
+00:01:21,954 --> 00:01:29,322
+TypeScript reached 50% of JavaScript's
+pushers in 47 of the 92 economies, up from
+
+23
+00:01:29,322 --> 00:01:30,231
+0 in 2020.
+
+24
+00:01:30,481 --> 00:01:32,828
+The highest ratio was 61%.
+
+25
+00:01:33,333 --> 00:01:39,661
+Limits: GitHub omits economies with too
+few active developers; those reported for
+
+26
+00:01:39,661 --> 00:01:43,723
+TypeScript rose from 93 to 162, hence the
+fixed set.
+
+27
+00:01:43,973 --> 00:01:49,390
+Only public repositories count, developers
+can count under both, and location comes
+
+28
+00:01:49,390 --> 00:01:50,565
+from IP addresses.
+
+29
+00:01:50,815 --> 00:01:52,991
+The data shows how many pushed, not why.
+
+30
+00:01:53,241 --> 00:01:56,227
+Source: GitHub's Innovation Graph, public
+domain.

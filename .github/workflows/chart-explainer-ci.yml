@@ -1,0 +1,32 @@
+name: chart-explainer-ci
+
+# products-ci.yml only runs products with a package.json; the chart explainer is Python, so it has its own job.
+# The tests need no network and no model files: TTS is exercised with a fake engine, assembly with tiny images.
+
+on:
+  push:
+    paths:
+      - "products/chart-explainer/**"
+      - ".github/workflows/chart-explainer-ci.yml"
+  pull_request:
+    paths:
+      - "products/chart-explainer/**"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: products/chart-explainer
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements-dev.txt
+      - run: python -m pytest -q

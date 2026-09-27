@@ -1,0 +1,101 @@
+{
+  "gate": "G4",
+  "auditor": "opus-factcheck-auditor",
+  "verdict": "PASS",
+  "figuresChecked": 25,
+  "auditedAt": "2026-09-27T10:56:14Z",
+  "auditedScriptSha256": "bf98a1b066eab0b8ca26a474759e9a3fa0e5cfccbb47a7cfd6a5fed1e17a86a6",
+  "revision": 1,
+  "supersedes": {
+    "auditedScriptSha256": "ded6992c3e0e2f22cb03eb0e6bfefb34112e9bbac9dc44a29d8801d71572dd31",
+    "verdict": "FAIL",
+    "auditedAt": "2026-09-27T10:31:19Z"
+  },
+  "auditedArtifacts": {
+    "figures": "products/chart-explainer/out/t1/figures.json (25 figures, 9 claims, 61 chartFigures)",
+    "srt": "products/chart-explainer/out/t1/t1-typescript-javascript.srt (equals manifest.script)",
+    "charts": "products/chart-explainer/out/t1/charts/s1..s6 *.png",
+    "page": "products/chart-explainer/out/t1/page/index.html",
+    "dataSha256": "795f7b9da010161544ed50359e2bce9a9c8757831c25f4cb939dbf0569215dc2",
+    "renderedSources": {
+      "research/rendered/github-octoverse-2025.html": "733e76b100d22a30f8fc5826aca96cab474e642dc97df3c2fe1a95e27279016a",
+      "research/rendered/github-about-repository-languages.html": "89edfff94e376ec9a771a25bdd6271d15b48cc94588af193715baeb71f10bdad"
+    }
+  },
+  "summary": {
+    "figuresRecomputed": 25,
+    "figuresMatched": 25,
+    "figuresMismatched": 0,
+    "chartFiguresRecomputed": 61,
+    "chartFiguresMatched": 61,
+    "chartFiguresMismatched": 0,
+    "claimsChecked": 9,
+    "claimsHold": 9,
+    "numbersOnPngsUntraced": 0,
+    "scriptNumbersUntraced": 0,
+    "limitsSupported": 4,
+    "priorRequiredChanges": {
+      "R1": "resolved",
+      "R2": "resolved",
+      "R3": "resolved"
+    }
+  },
+  "findings": [
+    {
+      "id": "V1",
+      "severity": "resolved",
+      "area": "framing (was F1/R1)",
+      "finding": "The narration now says: 'GitHub's Octoverse 2025 report named TypeScript the most used language on GitHub in August 2025, by contributor counts. That is a different count from the quarterly pushers in this video.' The rendered page, research/rendered/github-octoverse-2025.txt (sha256 of the html 733e76b1...), supports it at l.672: 'By GitHub contributor counts, August 2025 marks the first time TypeScript emerged as the most used language on GitHub'. l.292 and l.300 add that TypeScript overtook both Python and JavaScript. l.976 ('languages are ranked by the number of distinct monthly contributors who committed code in that language') against datasheet l.37 supports 'a different count'. l.1064 ('Attribution: primary language is repository-level; TypeScript/JavaScript mixes may appear under one language') names the very difference. The only number in the sentence is the year, which is the source's own. The framing risk is addressed."
+    },
+    {
+      "id": "V2",
+      "severity": "resolved",
+      "area": "traceability (was F2/R2)",
+      "finding": "My own code recomputed all 61 chartFigures from the CSV: value, half-up text and 'rounded' field. 61 of 61 match, with no exact .5 tie and no per-economy ratio on a 5-point histogram edge. I read every number on the six PNGs. Each traces to figures or chartFigures: s1 4.80M and 2.35M; s3 ten multiples and the notes 83/74/90/83; s4 six gains and year labels; s5 thirteen non-zero bin counts; s6 181. The rest are narration figures: 92, 18%, 49%, 47, 50%, 162, 'Top 10' and the quarters. charts.py now draws these labels from the registered figure text."
+    },
+    {
+      "id": "V3",
+      "severity": "resolved",
+      "area": "page (was F3/R3)",
+      "finding": "The page's figures table now has 'Unrounded value' and 'Rounding' columns, which agree with my numbers. ratio_gain_max_earlier_pts shows 4.5386, half-up to 0 decimals, so it no longer conflicts with the +4.5 on chart s4. A collapsible table lists all 61 chart figures the same way, and the brand placeholder is filled."
+    },
+    {
+      "id": "V4",
+      "severity": "supported",
+      "area": "counting sentence (was F4)",
+      "finding": "The sentence 'a repository that holds both languages counts for both' is SUPPORTED by two documents read together. Datasheet l.37 counts developers who pushed 'to a repository with a given programming language' and refers to GitHub's repository-languages documentation for how languages are detected. That documentation, at github-about-repository-languages.txt l.257, says 'The files and directories within a repository determine the languages that make up the repository.', so a repository has several languages. The file itself corroborates this: Dockerfile (1.42M panel pushers) ranks above Java (0.90M), and Makefile and Batchfile are in the programming top 10, which primary-language counting could not produce. No single sentence states 'every language, not only the primary', so this rests on a documented reading, not a verbatim rule. 'developers can count under both' (s6) rests on the same basis."
+    },
+    {
+      "id": "V5",
+      "severity": "fix-before-publish (non-blocking)",
+      "area": "page formatting",
+      "finding": "In the page's figures table, the 'Unrounded value' for first_year reads '2,020': a calendar year printed with a thousands separator. The value is correct, and 'As shown' reads 2020, so no fact is misstated. It is still a viewer-facing number in the wrong form. Fix it in page.py by formatting year-unit figures without grouping. This does not affect the script hash."
+    },
+    {
+      "id": "V6",
+      "severity": "note",
+      "area": "page wording",
+      "finding": "On the web page, the s2 paragraph ends '…the quarterly pushers in this video.' The phrase fits the video but reads oddly on a page. Optional: 'in this analysis'."
+    },
+    {
+      "id": "V7",
+      "severity": "note",
+      "area": "wording (carried over, optional)",
+      "finding": "These wording notes carry over from the first audit; neither is false. 'because both languages grew': JavaScript added more pushers than TypeScript did (+3,409,441 against +2,102,804). 'The highest ratio was 61%' holds for the 92 (Serbia, 60.54%), while Angola, outside the panel, is at 61.70%. The knife-edge on 47 of 92 remains: CN 49.955% and EC 49.985%."
+    },
+    {
+      "id": "V8",
+      "severity": "note",
+      "area": "script scope",
+      "finding": "Every number in the script is 0, 1.1, 10, 12, 18, 2.5, 2020, 2026, 3.4, 47, 49, 5, 50, 6, 61, 9.5, 92, 93, 162 or 2025. Each is a narration figure except 2025, which appears twice inside the attributed Octoverse sentence. The SRT equals manifest.script. Duration is 116.7 s, within the spec's 60 to 120 s."
+    }
+  ],
+  "requiredChanges": [],
+  "recommendedBeforePublish": [
+    {
+      "id": "P1",
+      "where": "page.py, figures table",
+      "change": "Render year-unit figures (first_year, last_year) without a thousands separator: '2020', not '2,020'."
+    }
+  ]
+}

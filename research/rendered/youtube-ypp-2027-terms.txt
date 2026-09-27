@@ -1,0 +1,307 @@
+Changes to the YouTube Partner Program - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Changes to the YouTube Partner Program
+NEW: Updates to the YouTube Partner Program
+
+Starting February 1, 2027, we are introducing updates to the YouTube Partner Program (YPP). To reflect how viewers watch today and ensure YouTube remains a sustainable, long-term growth engine for your business, we are making three main updates to the program:
+
+Expanding Premium Lite
+
+Evolving YouTube Shorts earnings and opportunities
+
+Updating YPP ads & Premium entry thresholds
+
+To continue fully monetizing your content, review and accept the updated terms in YouTube Studio by January 31, 2027.
+
+Expanding Premium Lite
+
+We are expanding Premium Lite to all countries where Premium is available. On average, creators earn more per user from Premium than from ads (based on 2026 performance).
+
+For Premium Lite, creators will share in a pool representing 60% of net subscription revenue. For Premium views, creators will share in a pool representing 30% of net subscription revenue. In YouTube Analytics, Premium Lite earnings are included in your standard YouTube Premium metrics.
+
+Evolving YouTube Shorts earnings and opportunities
+
+We’re introducing new options to reward consistent viewership and help creators build a more diverse business.
+
+Shorts Earnings & Minimum Performance
+
+To earn each month from the Shorts Creator Pool, creators will now need to maintain 10M qualified Shorts views over the last 90 days. If you miss this threshold, you will not be removed from YPP and this will not impact other YPP earnings, including long-form video.
+
+New Shorts Incentive Programs
+
+We are introducing programs that may offer bonuses for YouTube Shopping, production credits for brand deals, and earnings boosts for cultural trend activations. Eligible creators will get direct notifications on how to opt-in as these programs launch.
+
+Targeted Shorts Ads
+
+If an advertiser targets an ad to a group of five or fewer channels, eligible creators can earn a direct 45% revenue share from those placements. This is paid on top of your standard earnings from the general Shorts Creator Pool .
+
+Updating YPP ads & Premium entry thresholds
+
+Starting Feb. 1, 2027, YPP entry thresholds for new creators are changing to 8,000 qualified watch hours in the last 365 days, or 20M qualified Shorts views in the last 90 days, in addition to still needing 1k subscribers. If you are already in YPP, your status is not impacted by this update.
+
+There are no changes to the eligibility requirements for fan funding, YouTube Creator Partnerships, or YouTube Shopping. These products will continue to help creators to start their earning journeys even earlier when they reach 500 subscribers and either 3,000 qualified watch hours in the last year or 3M qualified Shorts views in the last 90 days.
+
+Updated channel activity requirements
+
+To better recognize creators' consistent effort and reflect the realities of different formats, we are updating how we consider channels active in YPP.
+
+Starting February 1, 2027, your channel is considered active if you meet any of the following requirements:
+
+1,000 qualified watch hours in the past 365 days, or
+
+1 million qualified Shorts views in the last 90 days, or
+
+2 long-form videos or 5 Shorts uploaded every 90 days
+
+Restore active status
+
+Most creators in YPP already meet YPP activity thresholds, but those that drop below will now have an extended 90-day window to meet either of these requirements to stay in the program:
+
+1,000 qualified watch hours in the past 365 days, or
+
+1 million qualified Shorts views in the last 90 days
+
+Updated Fan Funding terms
+
+For creators who enabled fan funding features (like channel memberships or Super Chat) before 2023, you may still be on an older version of the terms - the Commerce Product Addendum. To keep our legal terms consistent, we are moving everyone to the current Commerce Product Module. There are no changes to eligibility thresholds, how the products work, or revenue share.
+
+You’ll need to accept the Commerce Product Module in YouTube Studio by January 31, 2027. Starting February 1, 2027, if you haven’t accepted the terms, you’ll stop earning from the associated monetization features and need to accept the updated terms to regain access.
+
+Accept the new YPP terms
+
+To accept the new YouTube Partner Program terms:
+
+Sign into YouTube Studio on desktop or mobile.
+
+Find the terms notification in your YouTube Studio dashboard, or the Earn tab.
+
+Select Review for each updated module.
+
+Check the box to accept and select Next .
+
+Select Submit once you’ve reviewed all updated modules.
+
+Frequently asked questions
+
+Am I going to get kicked out of the YouTube Partner Program if I don't sign the updated contracts?
+
+No. If you don’t accept the updated terms by January 31, 2027, you’ll stop earning from the associated monetization features beginning February 1, 2027. To regain access to these monetization features you will need to accept the updated terms in YouTube Studio. Your decision to accept these terms does not impact your channel’s status in the YouTube Partner Program.
+
+Do I need to accept all the contract modules?
+
+You can accept some or all of the updated monetization modules, but we encourage you to accept all to reach your full earnings potential. This includes the Watch Page Monetization Module, the Shorts Monetization Module, and where applicable, the Commerce Product Module. If you don’t accept the updated terms by January 31, 2027, you’ll stop earning from the associated monetization features beginning February 1, 2027. To regain access to these monetization features you will need to accept the updated terms in YouTube Studio.
+
+There are no changes to other monetization features at this time and your decision to sign these terms does not impact your channel’s status in YPP.
+
+How does this work for channels in a Multi-Channel Network (MCN)?
+
+This depends on how the channels are managed within the MCN. For Owned-and-Operated (O&O) channels, the managing MCN will need to accept the updated terms by January 31, 2027 to ensure those channels continue to monetize.
+
+For affiliate channels, the managing MCN does not need to accept the new terms. Instead, the affiliate channels themselves must accept the updated terms in YouTube Studio—including the Watch Page Monetization, Shorts Monetization, and (if applicable) the Commerce Product Modules—to continue earning from these features. Affiliate channels must accept these terms by January 31, 2027, or they will stop earning from the associated monetization features beginning February 1, 2027. If an affiliate channel misses this deadline, they can regain access to these features at any time by accepting the terms later.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+YouTube Partner Program
+1 of 9
+Upcoming and recent ad guideline updates
+2 of 9
+Updated Terms of Service FAQs
+3 of 9
+My channel is approved to monetize FAQs
+4 of 9
+My channel was rejected for monetization FAQs
+5 of 9
+Limited or no ad earnings explained
+6 of 9
+Monetization systems or ‘the ads algorithm’ explained
+7 of 9
+How advertiser-friendly monetization reviews work
+8 of 9
+YouTube performance FAQ & Troubleshooting
+9 of 9
+Changes to the YouTube Partner Program
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+2448930126179146606
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

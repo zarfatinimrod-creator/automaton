@@ -28,6 +28,7 @@ export type RevenueLineStatus =
   | "proposed"        // in the portfolio, not yet started
   | "awaiting_setup"  // blocked on a one-time human action (account, KYC, bank)
   | "building"        // director has an active build goal
+  | "measuring"       // a pre-registered measurement experiment: judged by its own gates (experiments.ts), never by the revenue floor, never counted as live
   | "live"            // product/service is shipped and can take payments
   | "scaling"         // board approved scale; extra budget allocated
   | "paused"          // deliberately on hold (board decision)

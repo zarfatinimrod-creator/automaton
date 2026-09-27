@@ -1,0 +1,1089 @@
+[
+ {
+  "id": "pension-mimshak",
+  "verdict": "KILL",
+  "decisiveFact": "No paying buyer is left. The candidate's own entry concedes that both non-developer segments are already served: \"nearly all of them are already served: Malam, Hilan, Shekel and Rivhit emit the file inside payroll software the employer already pays for, and the pension companies run free 'מעסיקים אונליין' portals for tiny employers\" (research/colony-sweep/SWEEP-2.md:44). My WebSearch (SNIPPET) independently shows the institutions turning manual entry into the file free: \"בהפניקס אתה יכול לדווח גם באופן ידני והמערכת תמיר לך את הנתונים לקובץ ממשק מעסיקים ממוכן\", plus Altshuler's eASypay \"המיועדת למעסיקים עם עד 15 עובדים\". The only segment left is developers, and they are served by the candidate's own free MIT library, so the paid generator has a price floor of zero, the same death as the PCN874 npm library (SWEEP-2.md:272). Charging non-developers for what their institution does free breaks MISSION.md:344-345 (\"charging for something already free, is a violation\") and REJECTED.md wall 2 (lines 155-161).",
+  "facts": [
+   {
+    "fact": "Since 1.2.2025 every Israeli employer, including those with fewer than 3 employees, must report pension deposits as a machine file in the uniform structure",
+    "grade": "UNVERIFIED",
+    "evidence": "SNIPPET only, but consistent across the scout's sources and my WebSearch: 'החל מיום 1.2.2025 על כלל המעסיקים לדווח לחברה המנהלת אודות הפקדות תשלומים ... באופן ממוכן ובמבנה אחיד'. The primary circular was never rendered."
+   },
+   {
+    "fact": "The file is XML against a versioned XSD; the employer interface is type 12 at version 005 (v5.0), with versions v1 to v5 existing",
+    "grade": "CONFIRMED",
+    "evidence": "curl https://raw.githubusercontent.com/tamal-pension/ansible-api/master/roles/pension/files/resources/schema/shotef/Mimshak_Maasikim_Shotef_XSD_Schema_v5.xsd -> '200 88950'. Inside: SUG-MIMSHAK '<xsd:enumeration value=\"12\" />', MISPAR-GIRSAT-XML '<xsd:enumeration value=\"005\"/>'. mcp__github__search_code lists Mimshak_Maasikim_Shotef_XSD_Schema_v1..v5.xsd."
+   },
+   {
+    "fact": "The scout's binary test: are the XSDs downloadable by anyone, or gated behind the clearinghouse?",
+    "grade": "CONFIRMED",
+    "evidence": "Open: the full XSD set (shotef, negative, first v4-v9, mesakem, yearly, events, pitzuim) is public in tamal-pension/ansible-api on GitHub (fetch above). The scout's 'if gated, dead' branch does not fire. The primary Swiftness page stays BLOCKED: research/rendered/sweep2-pension-memsakim-rules.meta.json shows \"status\": null, \"error\": \"TypeError: fetch failed\", from a runner that fetched gov.il and rivhit.co.il fine."
+   },
+   {
+    "fact": "GitHub code search for the interface's XML tags returns total_count 0",
+    "grade": "CONTRADICTED",
+    "evidence": "The scout searched tags that are not in the schema. grep -c on the v5 XSD: MASKORET 0, KOD-MEZAHE-YATZRAN 0, NetuneyMaasik 0. The real names return hits (mcp__github__search_code, 26.9.2026): SUG-MIMSHAK total_count 38, KOD-SVIVAT-AVODA 32, MimshakMaasikim 22, PirteiOved 23."
+   },
+   {
+    "fact": "Zero open-source occupancy",
+    "grade": "CONTRADICTED",
+    "evidence": "Partly contradicted. manimorris/masav-zikuim (LICENSE: 'MIT License  Copyright (c) 2020 Mani Morris') ships src/lib/openformat-reader.ts, which parses the pension employer file (class OpenformatReader, PensionFundPayment), with a sample openformat/001000012345678EMPONG000005202603080809410001.DAT. ashuryasaf/phins (MIT, 2025) parses the sibling Mislaka interfaces. No open-source generator or validator was found, so that narrow part holds."
+   },
+   {
+    "fact": "npm has no package for the format",
+    "grade": "CONFIRMED",
+    "evidence": "curl https://registry.npmjs.org/-/v1/search?text=... -> 'mimshak => 0', 'maasikim => 0', 'mivne achid => 0', 'mislaka => 0', 'tlush => 0'."
+   },
+   {
+    "fact": "Micro-employers can meet the duty free through their pension institution, with no file tool",
+    "grade": "UNVERIFIED",
+    "evidence": "Conceded by the candidate at SWEEP-2.md:44 ('the pension companies run free מעסיקים אונליין portals for tiny employers'). WebSearch SNIPPET citing fnx.co.il and as-invest.co.il: manual entry converted to the employer-interface file; eASypay for up to 15 employees; file upload in the online employer account. Direct fetches were refused: 'www.fnx.co.il:443 — connect_rejected', 'www.clalbit.co.il:443 — connect_rejected'."
+   },
+   {
+    "fact": "Payers are payroll bureaus (לשכות שירות) and small software vendors who lack the file",
+    "grade": "UNVERIFIED",
+    "evidence": "No such bureau was named anywhere. The scout concedes (SWEEP-2.md:39) that Malam, Rivhit, Shekel and Hilan are 'NOT the buyer'. SNIPPET: Rivhit KB 'ממשק מעסיקים דיווח שוטף - הפקת קובץ XML'; T.M.L. 'מערכת שכר עם ממשק שידור פנסיה'; Maskoreshet is a web payroll system."
+   },
+   {
+    "fact": "Owner setup: the npm brand scope is already owner step 7",
+    "grade": "CONTRADICTED",
+    "evidence": "src/revenue/owner-steps.ts step ids: merge-pr, tax-file, gumroad, domain, github-org, algora-stripe, ci-tokens (none npm). research/owner-docs-audit/FINDINGS.md:223: 'No NPM_TOKEN or npm-account step exists (owner-steps.ts:42-49 has seven step ids, none of them npm)'."
+   },
+   {
+    "fact": "The rail is Gumroad, owner step 3",
+    "grade": "CONFIRMED",
+    "evidence": "owner-steps.ts:115 'id: \"gumroad\"'. Not done: the only doneOn is merge-pr at owner-steps.ts:99 ('2026-09-22')."
+   },
+   {
+    "fact": "The free validator lands on il-biz-tools, whose existing audience is Israeli self-employed",
+    "grade": "UNVERIFIED",
+    "evidence": "No audience has been measured. The Netlify deploy is in the undone ci-tokens step. BOARD.md:100: 'grade stays `contradicted` until a page-view or Search Console reading exists'."
+   },
+   {
+    "fact": "The spec churns (Feb-2025 version, 26.3.2026 update), and the churn is the moat",
+    "grade": "UNVERIFIED",
+    "evidence": "Five shotef XSD versions exist, but their dates are unknown. The 26.3.2026 gov.il file has not been rendered."
+   },
+   {
+    "fact": "No licence or regulator registration is needed because the tool never transmits",
+    "grade": "UNVERIFIED",
+    "evidence": "Plausible for a local file writer, but no primary text was read. The XSD mirror has no LICENSE (neither main nor master returned 200), so the schema may be cited but not bundled into an MIT package."
+   },
+   {
+    "fact": "Ceiling of ₪300-900/month at 12 months",
+    "grade": "UNVERIFIED",
+    "evidence": "The scout's own words: 'an estimate with no measured buyer'."
+   },
+   {
+    "fact": "npm discovery is not gated on prior success",
+    "grade": "CONFIRMED",
+    "evidence": "docs/REJECTED.md:269: 'two of npm's three ranking components (quality, maintenance) are publisher hygiene, so a clean new package is not penalised for being new'. The same line: 'npm pays nothing'. Search volume for these terms is unmeasured."
+   }
+  ],
+  "missionConflicts": [
+   "Charging non-developers for output their pension institution produces free (manual entry converted to the file) breaks MISSION.md:344-345, 'charging for something already free, is a violation'. It is also REJECTED.md wall 2 (lines 155-161) with the institution in the state's role.",
+   "The price floor is zero for the developer segment, created by the candidate's own free MIT half. This is the same death as the PCN874 npm library, SWEEP-2.md:272 (constraint 8).",
+   "There is no owner-free channel to payroll bureaus. It is the same wall as the EPR kill (SWEEP-2.md:255), and §30א closes cold outreach (REJECTED.md:781).",
+   "Harm asymmetry: a wrong file leaves an employee's pension uncredited, with liability on the employer who trusted the tool. This is the unpriced risk REJECTED.md:188-190 names for PCN874.",
+   "The files carry employee ID numbers and salaries, so any server-side processing engages privacy Amendment 13. The tool would have to run only locally or in the browser.",
+   "The XSD source (tamal-pension/ansible-api) has no licence, so the schema cannot be shipped inside an MIT package.",
+   "A new owner step (an npm account) is needed that is not among the seven, contrary to the candidate's claim of 'None new'."
+  ],
+  "newOwnerSteps": [
+   "Create an npm account and organisation under the brand (email-verified, 2FA) and mint an automation NPM_TOKEN into GitHub secrets. No npm step exists among the seven ids in src/revenue/owner-steps.ts."
+  ],
+  "firstStrangerPath": "None ends in a payment. A developer building Israeli payroll software might find the MIT library through npm or GitHub (the term is unowned there) and use it free. A small employer searching in Hebrew is routed to their pension company's portal, which enters the data and produces the file free. A payroll bureau already runs software that emits the file. No step on any of these paths needs to be paid for.",
+  "earliestMoney": "None on the evidence, because no payer segment remains. Mechanically, a Gumroad sale id cannot exist until all of these are done: owner steps tax-file, gumroad and ci-tokens (only merge-pr is done, owner-steps.ts:99), a new npm-account step, the Fable board and the build. That puts it at late October 2026 at the very earliest, and still with no identified buyer.",
+  "ceilingClearsFloor": "no",
+  "cheapestTest": "Render the institution employer pages via the existing render-watch.yml at ₪0: fnx.co.il/takanottashlum, as-invest payment_and_reporting_employers, and the Clal circular for employers of up to 3 employees. If they show small employers can enter deposits manually and have the file produced free, the kill stands. If every institution requires a finished uploaded XML file with no free manual entry, re-open only as a TEST_FIRST for a free browser generator, together with a measured Hebrew SERP for 'ממשק מעסיקים'. Even then a price would need a bulk segment that payroll software does not already serve.",
+  "testRunNow": "(1) The scout's own binary test: curl of the shotef v5 XSD from raw.githubusercontent.com (tamal-pension/ansible-api, master) returned '200 88950', with SUG-MIMSHAK=12 and MISPAR-GIRSAT-XML=005. The XSDs are open, not gated, so the scout's kill branch does not fire. (2) grep of the scout's search tags in that XSD: MASKORET 0, KOD-MEZAHE-YATZRAN 0, NetuneyMaasik 0, so the scout's zero-occupancy count used non-existent names. (3) mcp__github__search_code with real names: SUG-MIMSHAK 38, KOD-SVIVAT-AVODA 32, MimshakMaasikim 22, PirteiOved 23. One MIT reader (manimorris/masav-zikuim) exists; no generator was found. (4) npm registry search: mimshak 0, maasikim 0, 'mivne achid' 0, mislaka 0, tlush 0. (5) One curl attempt each to fnx.co.il and clalbit.co.il: both connect_rejected by the proxy, not retried. (6) Four WebSearch calls (SNIPPET grade), which found free manual-entry conversion at Phoenix, eASypay for up to 15 employees, and Rivhit / T.M.L. / Maskoreshet payroll products emitting the file.",
+  "killIf": "Already fired: the candidate's own text (SWEEP-2.md:44) plus snippets show every non-developer segment served free or already paid for through payroll software, and developers get the free MIT half. It stays killed if a render of the institution pages confirms free manual entry converted to the file.",
+  "passIf": "All three would be needed. (a) A rendered institution page showing small employers must upload a finished XML file with no free manual entry or conversion. (b) A named segment not served by payroll software, for example a vendor changelog or support thread showing a payroll product that does not emit version 005. (c) A measured Hebrew SERP for 'ממשק מעסיקים' whose first page is not held by the institutions and payroll vendors. Even then the verdict would move only to TEST_FIRST for a free tool, with the paid step still unnamed.",
+  "urlsToRender": [
+   {
+    "url": "https://www.swiftness.co.il/%D7%9B%D7%9C%D7%9C%D7%99-%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA/",
+    "why": "Already queued (SWEEP-2.md:46); it failed from the runner with 'TypeError: fetch failed'. The clearinghouse's employer-interface rules. Retry once before recording it as geo-blocked."
+   },
+   {
+    "url": "https://www.fnx.co.il/takanottashlum/",
+    "why": "Would settle whether Phoenix converts manual deposit entry into the employer-interface file free (the decisive free-alternative fact, currently SNIPPET)."
+   },
+   {
+    "url": "https://www.as-invest.co.il/interstedin/gemel/payment_and_reporting_employers/",
+    "why": "Would settle Altshuler Shaham's eASypay for employers with up to 15 employees and free file upload in the online employer account."
+   },
+   {
+    "url": "https://www.clalbit.co.il/media/brgb2lby/%D7%97%D7%95%D7%96%D7%A8-%D7%91%D7%A0%D7%95%D7%A9%D7%90-%D7%93%D7%99%D7%95%D7%95%D7%97-%D7%90%D7%97%D7%99%D7%93-%D7%95%D7%94%D7%A4%D7%A7%D7%93%D7%AA-%D7%AA%D7%A9%D7%9C%D7%95%D7%9E%D7%99%D7%9D.pdf",
+    "why": "Clal's circular for employers of up to 3 employees: how the newly obligated cohort must report, and whether a free route exists."
+   },
+   {
+    "url": "https://www.rivhit.co.il/knowledgebase/%D7%9E%D7%9E%D7%A9%D7%A7-%D7%9E%D7%A2%D7%A1%D7%99%D7%A7%D7%99%D7%9D-%D7%93%D7%99%D7%95%D7%95%D7%97-%D7%A9%D7%95%D7%98%D7%A3-%D7%94%D7%A4%D7%A7%D7%AA-%D7%A7%D7%95%D7%91%D7%A5-xml/",
+    "why": "Would confirm a mass-market payroll product emits the ongoing employer-interface XML as a standard feature, which removes the bureau segment."
+   },
+   {
+    "url": "https://www.swiftness.co.il/employers/shotef-dm/",
+    "why": "The clearinghouse's employer ongoing-reporting page, which may state what employers pay (if anything) to report through it."
+   }
+  ],
+  "reportPath": "/home/user/automaton/research/colony-sweep/screen-2/pension-mimshak.md"
+ },
+ {
+  "id": "ICA-ARCHIVE",
+  "verdict": "KILL",
+  "decisiveFact": "Every rail the candidate names is closed by a standing ruling. (1) The primary rail is a paid Apify Actor. research/colony-sweep/BOARD.md:328 closes it: \"Second Apify Actor / Apify KYC / Apify pricing | 50 / 50 / 200 stranger users in 30 days respectively … Under 10 at day 30: instrument only, permanently\". That count has not started (logs/CHECKPOINT.md:135 still lists APIFY_TOKEN as outstanding), and the only base rate is 8.7 users per Actor (CHIEF-AUDIT.md:94-98). (2) The fallback rail is x402, a recorded death (docs/REJECTED.md:1172-1185: \"per-provider revenue is single-digit shekels a month … nothing is planned on it\"). The scout concedes the rest (SWEEP-2.md:62): under 10 users the archive \"falls back to the x402/direct rail with no named channel\". So there is no open acquisition channel, which fails MISSION constraint 7.",
+  "facts": [
+   {
+    "fact": "The ica-changes file is a rolling one-year window, updated daily (the registrar's stated policy)",
+    "grade": "CONFIRMED",
+    "evidence": "Registrar's Hebrew description captured from CKAN metadata. Command: curl -sS https://raw.githubusercontent.com/danielrosehill/Israel-Open-Data-Changelog/HEAD/months/2019-04/datasets.csv | grep ica-changes → \"קובץ השינויים יתעדכן בתדירות יומיומית ויכיל כל שינוי שנעשה בתאגיד עד שנה אחורה מהתאריך הנוכחי\". Corroborated by alexmalin23/israel-mcp src/services/ica/resources.ts: \"registry changes in the last 12 months (liens etc.), updated daily\" (verified live 2026-09-22), and by dk-forge/talent-intelligence-tracker@f1e7407 collectors/israel_registrar.py:25-26. Not rendered first-hand."
+   },
+   {
+    "fact": "In practice the oldest row advances daily, so the truncation is real",
+    "grade": "UNVERIFIED",
+    "evidence": "Needs the scout's 14-CI-day series. The container is refused: curl …datastore_search?resource_id=28780ab5-3ef1-44c7-8377-da82c0aa6781&limit=1 → 'curl: (56) CONNECT tunnel failed, response 403'."
+   },
+   {
+    "fact": "The publisher destroys the history, so the archive would be the only multi-year record outside the registrar",
+    "grade": "CONTRADICTED",
+    "evidence": "The registrar keeps the record and sells it. Eliyahubi/israel-registrar-mcp israel_registrar_mcp.py, search_company_liens docstring: \"Shows type of action (שעבוד/שחרור/שינוי), not full lien details. For full details see justice.gov.il (paid service).\" CofaceBDI, a MoJ-authorised provider, sells 'detailed alerts about changes according to registrar chapters' (research/colony-sweep/audits/data-apis.md:80-85). Per-company extract at ~₪11 (WebSearch, SNIPPET). The earlier audit priced a change feed over this file at ₪0 (audits/data-apis.md:91)."
+   },
+   {
+    "fact": "Rows hold only company number, name, act, date, lien id and act code: no amount, investor or person",
+    "grade": "CONFIRMED",
+    "evidence": "dk-forge … israel_registrar.py:85-92: \"The columns are the company number, the company name, the act, the date, a pledge identifier and the act code — that is all of them. There is no share count, no price per share, no sum raised and no investor.\" alexmalin23/israel-mcp docs/services/ica.md: \"changes[] items: { date, type, lienId }\"."
+   },
+   {
+    "fact": "Director add/remove rows carry personal names, creating Amendment 13 exposure (scout's caution)",
+    "grade": "CONTRADICTED",
+    "evidence": "The registrar's description (same datasets.csv row) excludes them: \"(תשלום אגרה שנה נוכחית, מידע על מגבלות ופרטים אישיים של בעל תפקיד … – לא מופיעים בדוח השינויים)\". The row's machine translation inverts this, which is the likely source of the scout's error. The column list has no person field."
+   },
+   {
+    "fact": "Resource 28780ab5 is the changes file, not a separate liens register (the scout's naming conflict)",
+    "grade": "CONFIRMED",
+    "evidence": "Eliyahubi/israel-registrar-mcp README.md:29 \"search_company_liens | שעבודים ושינויים | ~564,000\" and README.md:142 \"Company Liens & Registry Changes\". It is the same file, and liens are among its act types."
+   },
+   {
+    "fact": "The licence is CC-BY; commercial redistribution is allowed with attribution",
+    "grade": "CONFIRMED",
+    "evidence": "datasets.csv row licence field \"Creative Commons Attribution\"; israel_registrar.py:111-113 \"The dataset's own licence, from package_show?id=ica-changes, is cc-by … isopen: true\"."
+   },
+   {
+    "fact": "A keyless GitHub Actions cron can reach data.gov.il and collect the file",
+    "grade": "UNVERIFIED",
+    "evidence": "The only runner request on record failed: research/rendered/sweep2-ica-changes-dataset.meta.json → \"status\": 404, \"error\": \"HTTP 404 Not Found\" (HTML page, 2026-09-22). search_code 'data.gov.il/api/3/action path:.github/workflows' → 1 hit (DavidOsherdiagnostica/data-gov-il-mcp). search_commits on that repo shows no automated refresh commit. dk-forge's collector is DORMANT (israel_registrar.py:129-134)."
+   },
+   {
+    "fact": "Nobody archives the history (unoccupied)",
+    "grade": "UNVERIFIED",
+    "evidence": "Confirmed on GitHub only: search_code '\"28780ab5-3ef1-44c7-8377-da82c0aa6781\"' → total_count 7 across 5 repos, all live lookups, none an archive. search_repositories 'רשם החברות' → 0. Commercial holders (registrar, CofaceBDI) and the Wayback Machine (archive.org is blocked) are unchecked."
+   },
+   {
+    "fact": "Who pays: self-serve buyers of Israeli corporate-event history",
+    "grade": "UNVERIFIED",
+    "evidence": "There is no buyer, price or demand signal anywhere. Scout: \"I cannot quantify it with a cited basis and will not invent one\" (SWEEP-2.md:65). The named payers are sales-gated (SWEEP-2.md:60, :315). audits/data-apis.md:91: demand \"low, entirely unevidenced\"."
+   },
+   {
+    "fact": "The first customer arrives via a paid Actor at month 12 from an account with accumulated 'History of success'",
+    "grade": "UNVERIFIED",
+    "evidence": "Pricing is closed until 200 stranger users (BOARD.md:328). The category measures success, not age, and a free Actor under 10 users accrues little of it. The new Actor still ranks on its own Popularity and Reliability (docs/REJECTED.md:1099)."
+   },
+   {
+    "fact": "The paid variant needs only APIFY_TOKEN from the owner",
+    "grade": "CONTRADICTED",
+    "evidence": "CHIEF-AUDIT.md:268-271: Apify KYC is \"Required before any Actor can be priced, paid, or made agentic-eligible.\" docs/OWNER_STEPS.he.md:284-287 lists Apify identity verification plus PayPal/Wise outside the seven steps."
+   }
+  ],
+  "missionConflicts": [
+   "Constraint 7: the only named channel (paid Apify Actor) is closed by BOARD.md:328 until the free Actor reaches 200 stranger users/30d; the fallback (x402) is a recorded kill (docs/REJECTED.md:1172-1192).",
+   "BOARD.md:316 standing ruling: 'Selling the data itself is a violation'. For rows inside the 12-month window this is charging for something free (MISSION rule 4). For older rows the board must rule whether data the state now sells as a ~₪11 paid extract still counts as free.",
+   "Falls under the recorded kill in research/colony-sweep/audits/data-apis.md §2.2 (registrar change/diff feed, ₪0). It escapes 'substrate is free' only for rows over a year old, and not 'incumbents sell change monitoring'.",
+   "The only demonstrated payers (CofaceBDI, D&B Israel, IVC) require a sales conversation, which the owner's brief forbids ('אני לא מדבר עם אנשים').",
+   "Constraint 8 fails in market terms: the input is non-public only against the free open-data file. The registrar and its authorised resellers hold and sell the full history, with shareholders and directors that this file lacks."
+  ],
+  "newOwnerSteps": [
+   "Apify Verified Creator KYC (government ID, proof of address, tax documentation, ultimate-beneficial-owner info). It is in the deferred catalogue (OWNER_STEPS.he.md:284-287 / CHIEF-AUDIT §4B.7), not among the seven, and is required before any Actor can be priced.",
+   "A PayPal-Israel or Wise payout account in the owner's legal name to receive Apify payouts (OWNER_STEPS.he.md:290, deferred catalogue).",
+   "Possibly: a private GitHub repository (or a token able to create one) to hold the archive, since a public repo zeroes its price (SWEEP-2.md:317) and colony-bot's GITHUB_TOKEN is scoped to its own repo. UNVERIFIED whether this is agent-doable or folds into step 7's organisation."
+  ],
+  "firstStrangerPath": "(1) Owner step 6: APIFY_TOKEN plus the Publish click (still pending). (2) The free apify-il-open-data Actor reaches ≥200 stranger users in 30 days (base rate 8.7/Actor). (3) Owner does Apify KYC and sets up PayPal or Wise (outside the seven steps). (4) The archive matures and a paid Actor over it launches at month 12–13. (5) A stranger searching Apify Store for Israeli corporate-act history finds the new listing, which still ranks on its own popularity. (6) The stranger pays per event, and Apify pays out monthly. Steps 2–5 are unmeasured or closed today, and no evidence exists of a single such searcher. The same stranger can buy a richer per-company history from the registrar for ~₪11.",
+  "earliestMoney": "December 2027 at the earliest, and only if the board's Apify count clears 200 stranger users. Archiving could start ~October 2026. On the scout's own design the paid Actor launches at month 12–13 (~Oct–Nov 2027), when the archive first holds a year the free source lacks, and Apify pays out the following month. Launching earlier would sell mostly rows the state still publishes free, which breaks BOARD.md:316. The x402 fallback has no planned money at all (REJECTED.md:1181-1185).",
+  "ceilingClearsFloor": "no",
+  "cheapestTest": "Three ₪0 tests, none of which can make this a line on its own. (1) Render the cited datastore URL and the ministry_of_justice package_search URL from a GitHub runner via render-watch. A 403/404 to the runner kills the collection design; a pass only shows collection is possible. (2) The scout's 14-CI-day series of datastore total and oldest/newest תאריך עדכון סטטוס. If the oldest date does not advance, the moat is dead. If it advances, there is a moat against the free file only, not against the registrar or CofaceBDI. (3) The only test that could re-open the channel is the board's existing Apify free-Actor count (owner step 6, 30 days): ≥200 stranger users re-opens pricing, and fewer keeps this dead.",
+  "testRunNow": "Ran from this container at ₪0, without the owner:\n(a) curl -sS -m 20 -o /dev/null -w \"%{http_code}\" \"https://data.gov.il/api/3/action/datastore_search?resource_id=28780ab5-3ef1-44c7-8377-da82c0aa6781&limit=1\" → 'curl: (56) CONNECT tunnel failed, response 403' / 000. Proxy-blocked; one attempt, not routed around.\n(b) mcp__github__search_code '\"28780ab5-3ef1-44c7-8377-da82c0aa6781\"' → total_count 7 in 5 repos, none archiving.\n(c) search_code '\"ica-changes\"' → 77 hits. The relevant new one is danielrosehill/Israel-Open-Data-Changelog, whose datasets.csv (fetched with curl from raw.githubusercontent.com) holds the registrar's verbatim Hebrew description. It settles the one-year daily window, the absence of office-holder personal details, and the liens question.\n(d) search_repositories 'רשם החברות' → 0; 'data.gov.il archive' → 0.\n(e) search_code '\"data.gov.il/api/3/action\" path:.github/workflows' → 1 hit. search_commits on it shows no automated refresh commit, so runner reachability is unproven.\n(f) curl of dk-forge israel_registrar.py@f1e7407 → 200. The scout's quotes are accurate, and the columns are at lines 85-92.\n(g) WebSearch, 3 calls: registrar extract ~₪11 with history (SNIPPET); CofaceBDI change-tracking (SNIPPET); data.gov.il from CI inconclusive.\nThe runner-side tests cannot be triggered without adding a workflow file, which this screen may not do.",
+  "killIf": "Already killed on the decisive fact. It stays dead if the Apify free Actor reads under 200 stranger users in 30 days (BOARD.md:328), or if a runner cannot reach the data.gov.il datastore API, or if the 14-day series shows the oldest date not advancing.",
+  "passIf": "Re-open only if all of these hold: (1) the Apify free Actor reads ≥200 stranger users in 30 days; (2) the board rules that selling rows the state no longer publishes free is not 'selling the data itself' (BOARD.md:316); (3) a named, owner-free, self-serve buyer of bulk Israeli corporate-act history is evidenced, or a rendered CofaceBDI/registrar page shows they sell current state only; (4) runner reachability and the rolling window are confirmed by tests 1 and 2.",
+  "urlsToRender": [
+   {
+    "url": "https://data.gov.il/api/3/action/datastore_search?resource_id=28780ab5-3ef1-44c7-8377-da82c0aa6781",
+    "why": "Cited in research/colony-sweep/SWEEP-2.md:70. Settles whether a GitHub runner can read the file at all (the collection design rests on it), plus the live total and field names."
+   },
+   {
+    "url": "https://data.gov.il/api/3/action/package_search?fq=organization:ministry_of_justice&rows=1000",
+    "why": "Cited in danielrosehill/Israel-Open-Data-Resources 060526/README.md:639. Returns the ica-changes package record and its three resources, showing whether a non-DataStore CSV already holds older history and confirming the description first-hand."
+   },
+   {
+    "url": "https://content.justice.gov.il/Corporations/ica-datagov-changes.pdf",
+    "why": "Cited in the registrar's own dataset description (Israel-Open-Data-Changelog months/2019-04/datasets.csv line 4). The official list of change types in the file."
+   },
+   {
+    "url": "https://www.bdicoface.co.il/service/corporations-authority/",
+    "why": "Returned by this screen's WebSearch. Upgrades from SNIPPET whether an authorised reseller already sells registrar change history, which decides whether 'only multi-year record' is false in the market."
+   }
+  ],
+  "reportPath": "/home/user/automaton/research/colony-sweep/screen-2/ica-archive.md"
+ },
+ {
+  "id": "google-oss-vrp",
+  "verdict": "KILL",
+  "decisiveFact": "Google's only channel is a signed-in web form, and the colony cannot reach it, so every report and every triage reply needs the owner at a browser talking to Google's security team. Evidence: (1) OSS VRP rules, line 312 of raw.githubusercontent.com/google/bughunters/main/bughunters/articles/about/rules/open-source/google-open-source-software-vulnerability-reward-program-rules.md: \"All bugs should be reported using the [vulnerability form](/report/vrp)\". (2) Code of Conduct lines 107-110: communication goes \"through the report you filed with us\". (3) angular/angular SECURITY.md:1 and protocolbuffers/protobuf SECURITY.md:13-14 both route to https://bughunters.google.com/report. (4) `curl https://bughunters.google.com/report/vrp` and `curl https://issuetracker.google.com/` both returned \"curl: (56) CONNECT tunnel failed, response 403\". No programmatic channel is documented anywhere in Google's mirror. This is recurring owner work and conversation, the collision the board already used to defer Devpost (BOARD.md:78-82), but here it fires per report rather than per win.",
+  "facts": [
+   {
+    "fact": "Google pays directly via its own Google Payments / p2p ('Legacy') route, not only via Bugcrowd",
+    "grade": "CONFIRMED",
+    "evidence": "OSS VRP rules line 362: 'If Google Payments is your selected payment option...'; research/rendered/sweep2-google-vrp-faq.txt:282 'There are two options for payment of a VRP Reward -- direct through Google or through Bugcrowd.' and :292 'Select Legacy to receive your payments through Google p2p payments processing.' Caveat :286 'Through Bugcrowd (preferred)'."
+   },
+   {
+    "fact": "Israel is not on the exclusion list",
+    "grade": "CONFIRMED",
+    "evidence": "OSS VRP rules lines 341-346 exclude sanctions-listed persons, Cuba, Iran, North Korea, Syria, Crimea, DPR/LPR, and Russia/Belarus; Israel absent."
+   },
+   {
+    "fact": "Scope covers every Google-owned OSS repository (scout's claim)",
+    "grade": "CONTRADICTED",
+    "evidence": "Rules lines 106-107: 'For all projects in the OT2 (Standard) and OT3 (Low-Priority) tiers, all types of \"Product Vulnerabilities\" are not eligible for monetary reward.' Parsed oss-repository-tier/external_repositories.txtpb: 70 unique repositories in OSS VRP product scope (26 OT0, 44 OT1)."
+   },
+   {
+    "fact": "Reward table $500-$7,500 OT0 product, $101-$3,133.7 OT1, up to $31,337 supply chain",
+    "grade": "CONFIRMED",
+    "evidence": "Rules lines 241-278; line 283 'The final amount is always chosen at the discretion of the reward panel'; lines 368-371 'experimental and discretionary rewards program ... we can cancel the program at any time'."
+   },
+   {
+    "fact": "No reputation or ranking input gates a first reward",
+    "grade": "CONFIRMED",
+    "evidence": "grep for reputation/SNR in the OSS VRP rules and Code of Conduct returns nothing. However, CoC lines 86-90 make 'a large number of unverified, out of scope or otherwise non-qualifying reports' a violation, and lines 257-260 allow suspension and permanent exclusion."
+   },
+   {
+    "fact": "AI-assisted reports are permitted (contradicts SWEEP-2.md:286 and :297)",
+    "grade": "CONFIRMED",
+    "evidence": "CoC lines 77-82: 'findings ... based on the output of automated tools, including AI tools. While those tools can be a valuable aid ... you ... must confirm the vulnerability and demonstrate its real-world impact yourself.'"
+   },
+   {
+    "fact": "OT0/OT1 memory-corruption reports need exact OSS-Fuzz reproduction steps or an already merged patch",
+    "grade": "CONFIRMED",
+    "evidence": "Rules lines 98-103 verbatim. The 19 March 2026 effective date is UNVERIFIED (SNIPPET only)."
+   },
+   {
+    "fact": "The merged-patch route needs a Google Individual CLA signed by a natural person",
+    "grade": "CONFIRMED",
+    "evidence": "google/brotli CONTRIBUTING.md:5-14: 'you must sign the [Google Individual Contributor License Agreement] ... before we can put your code into our codebase.'"
+   },
+   {
+    "fact": "The colony can reach the submission form and the report thread",
+    "grade": "CONTRADICTED",
+    "evidence": "curl https://bughunters.google.com/report/vrp and curl https://issuetracker.google.com/ each gave 'curl: (56) CONNECT tunnel failed, response 403'."
+   },
+   {
+    "fact": "A documented non-browser submission channel exists",
+    "grade": "UNVERIFIED",
+    "evidence": "mcp__github__search_code 'repo:google/bughunters \"vulnerability form\" OR \"report form\" OR \"submit your report\"' returned 0 results. Rules line 312 names only the form; the Angular and protobuf SECURITY.md files route to bughunters.google.com/report; Go defers to go.dev/security/policy, which was not rendered."
+   },
+   {
+    "fact": "Payment arrives 1-2 weeks after the reward decision, after one-time p2p-vrp enrolment",
+    "grade": "CONFIRMED",
+    "evidence": "sweep2-google-vrp-faq.txt:282-283. This is the Chrome VRP FAQ, which applies it to the 'first VRP reward for a Google program'. meta.json shows status 200, error null."
+   },
+   {
+    "fact": "p2p-vrp enrolment has no camera, selfie or liveness step",
+    "grade": "UNVERIFIED",
+    "evidence": "No reachable source describes it. FAQ:260 says only that Google 'will need to privately collect some identifying information'."
+   },
+   {
+    "fact": "The existing oss-bounties pipeline is well shaped for find-fix-merge-report",
+    "grade": "CONTRADICTED",
+    "evidence": "src/revenue/bounties/intake.ts:2 'Algora OSS bounties ... the intake filter'; :10 'GitHub search finds the issues carrying `algora-pbc[bot]`'; :53 ALGORA_BOT_LOGIN. It parses posted bounty comments and finds no vulnerabilities."
+   },
+   {
+    "fact": "The hit rate for an agent in the 70 paying repositories is high enough to clear ₪300/month (at least 2 accepted $500 reports a year)",
+    "grade": "UNVERIFIED",
+    "evidence": "No OSS-VRP-specific statistics exist; the only figure is the all-VRP aggregate of '$17 million to 747 researchers' (WebSearch, SNIPPET). 13 of 21 probed names already have google/oss-fuzz project.yaml files. Chrome FAQ:190 excludes reports if 'discovered by one of our internal tools within seven days'."
+   },
+   {
+    "fact": "Money reaches the ledger with a platform transaction id the colony can read",
+    "grade": "UNVERIFIED",
+    "evidence": "Payment is a Google p2p bank transfer; the payments profile is on a blocked host. The owner would have to relay a bank reference, which is the open question at docs/REJECTED.md:522-529."
+   },
+   {
+    "fact": "Google is keeping its OSS reward programmes open in 2026",
+    "grade": "CONTRADICTED",
+    "evidence": "google/bughunters osv-scalibr-patch-rewards-program-rules.md lines 1-2: 'As of July 6, 2026, this program is in a freeze for an indefinite amount of time'. Tsunami PRP is paused until 2027 (SWEEP-2.md:265). OSS VRP itself is live but cancellable (rules lines 368-371)."
+   }
+  ],
+  "missionConflicts": [
+   "Every submission is a signed-in form fill on a host the colony cannot reach, which makes it recurring owner work. This breaks the one-time-checklist rule (MISSION §1), the same ground on which the board deferred Devpost (BOARD.md:78-82).",
+   "Triage questions, severity disputes and patch coordination happen in the report thread under the owner's account, so the owner converses with the payer's security team: 'The owner does not talk to customers. Any line that needs them to is not a line.'",
+   "Honesty (AMBER): CoC lines 81-82 require the submitter to 'confirm the vulnerability and demonstrate its real-world impact yourself'. The account holder cannot verify anything technical, the same shape as the Devpost human-authorship attestation the board said cannot be signed honestly.",
+   "Prize-shaped cash event, not an income line (docs/REJECTED.md:486-488). The scout concedes 'a lumpy cash event, not a monthly line'.",
+   "Supply-chain rewards, the only money outside 70 repositories, require demonstrating an approval bypass on live Google GitHub or CI configuration (rules lines 62-66). An autonomous agent should not attempt that without human judgement.",
+   "A new legal instrument in the owner's name (the Google Individual CLA) and an unverified identity step at p2p-vrp enrolment."
+  ],
+  "newOwnerSteps": [
+   "Create a Google account and a brand Bug Hunters profile, and set Payment Options to 'Legacy' (Google p2p), not Bugcrowd.",
+   "File every report through the bughunters.google.com form while signed in and answer every triage comment in the report thread (recurring, per report).",
+   "Sign the Google Individual Contributor License Agreement so patches can be merged into Google repositories (needed for the OT0/OT1 memory-corruption merged-patch route).",
+   "On the first reward, complete p2p-vrp finance enrolment by email with Google's finance team (legal identity, bank, tax form; the identity check is unverified).",
+   "Relay each payment's bank reference so the ledger can record it; the colony cannot read Google Payments."
+  ],
+  "firstStrangerPath": "Google publishes a standing offer with no ranking gate, so the Gumroad/Apify/WordPress.org law does not fire. The chain: the colony finds and verifies a qualifying defect in one of 70 OT0/OT1 repositories. For memory corruption it also needs OSS-Fuzz reproduction against an existing fuzz target, or a patch merged after the owner signs the CLA. The owner files the bughunters.google.com form and handles triage in the report thread. The panel decides, p2p-vrp enrols the owner, and a bank transfer follows 1-2 weeks later. The path is not owner-free at the submission step, and its first step, a finding, has no base rate at all.",
+  "earliestMoney": "No defensible date. Everything is gated on a first accepted finding, for which no base rate exists; the scout itself expects 'zero accepted reports for a long time'. Even with a valid finding today, the chain is: owner setup (Google account, Bug Hunters profile, CLA), then form submission, triage, a merged patch for memory corruption, an OSS VRP panel of unpublished cadence, first-time p2p-vrp enrolment, and 1-2 weeks to pay (FAQ:283). That is weeks after a finding at best and, on the evidence in hand, not in 2026. The ledger entry would carry a bank reference relayed by the owner, not a platform transaction id the colony reads.",
+  "ceilingClearsFloor": "unknown",
+  "cheapestTest": "Look for a documented non-browser channel for OSS VRP submission and triage that a brand machine account can operate: an API, an email intake, or GitHub private vulnerability reporting accepted for VRP credit. This is ₪0, owner-free, a docs read from a CI runner (render https://bughunters.google.com/report and https://go.dev/security/policy). If none exists, the kill stands. If one exists, run a 30-day dry run over the 70 paying repositories with zero submissions, counting findings that meet the programme's own bar (OSS-Fuzz reproduction against an existing target, or a non-memory-corruption PoC against a recent build). Zero findings kills it on the ceiling too.",
+  "testRunNow": "Ran the scout's payment-route test at ₪0 from the rendered FAQ and Google's GitHub mirror: it passes ('Google Payments' in OSS VRP rules line 362; 'Legacy' p2p at FAQ:292). Other checks from this container:\n- curl of the OSS VRP rules, Code of Conduct and tier list from raw.githubusercontent.com/google/bughunters: 200 each; the tier list parses to 70 unique paying repositories (26 OT0, 44 OT1).\n- curl https://bughunters.google.com/report/vrp and https://issuetracker.google.com/: both 'CONNECT tunnel failed, response 403'.\n- search_code in google/bughunters: 'AI generated report' gave 9 hits including the CoC clause; 'Google Payments' gave 14 rules files; 'vulnerability form/report form/submit your report' gave 0.\n- SECURITY.md of angular, protobuf and go: the first two route to bughunters.google.com/report; Go defers to go.dev.\n- google/brotli CONTRIBUTING.md: a CLA is required.\n- 21 google/oss-fuzz project.yaml probes: 13 returned 200.\n- OSV-SCALIBR rules: frozen since 6 July 2026.\n- Two WebSearches (SNIPPET): an all-VRP aggregate only, plus the 2026 rule update.",
+  "killIf": "No documented channel exists through which the colony can submit reports and answer triage without the owner signed in at a browser. This is the current state of every source read: the rules name only the form, and both hosts are refused by the proxy. Separately, a 30-day zero-submission dry run producing no verified finding in the 70 paying repositories would kill it on the ceiling.",
+  "passIf": "Only a re-screen, never an automatic pass, and only if two things both hold. First, a primary source documents an OSS VRP submission and follow-up channel a brand machine account can operate (API, email, or GitHub-native reporting accepted for reward). Second, a 30-day dry run yields at least one finding that meets the programme's own acceptance bar. Even then the p2p-vrp enrolment identity step must be rendered before any owner action is requested, and the board must weigh the per-report owner exposure as it did Devpost.",
+  "urlsToRender": [
+   {
+    "url": "https://bughunters.google.com/report",
+    "why": "Cited in angular/angular SECURITY.md:1 and protocolbuffers/protobuf SECURITY.md:14. Would show whether the form requires Google sign-in and whether any alternative intake exists; this bears directly on the decisive fact."
+   },
+   {
+    "url": "https://go.dev/security/policy",
+    "why": "Cited in golang/go SECURITY.md:13. Would show whether Go, an OT0 project, accepts reports outside the bughunters form (for example by email)."
+   },
+   {
+    "url": "https://bughunters.google.com/blog/ossvrp-rule-updates-2026",
+    "why": "Cited at SWEEP-2.md:96. Gives the effective date of the OSS-Fuzz/merged-patch rule and anything the post says about AI-assisted reports, at primary grade."
+   },
+   {
+    "url": "https://blog.google/security/vrp-2025-year-in-review/",
+    "why": "Returned by WebSearch; the only place an OSS-VRP-specific reward or researcher count might appear, which is the missing base rate for the ceiling."
+   }
+  ],
+  "reportPath": "/home/user/automaton/research/colony-sweep/screen-2/google-oss-vrp.md"
+ },
+ {
+  "id": "github-marketplace-app",
+  "verdict": "KILL",
+  "decisiveFact": "GitHub makes 100 installations the condition for charging anything: \"GitHub Apps should have a minimum of 100 installations\" (github/docs content/apps/github-marketplace/creating-apps-for-github-marketplace/requirements-for-listing-an-app.md:72, re-fetched 2026-09-26). The candidate names no source for those installs except being found: \"installs accumulate from the free listing plus the repo\" (SWEEP-2.md:105). That is the proposal docs/REJECTED.md:1112-1125 already records as dead on this platform: \"Treat any future 'we will list it and be found' proposal as refuted until someone shows the platform's own code saying otherwise.\" The same rail is also a dead end at SWEEP-2.md:238-240. Two further facts compound it. The free listing is itself human-reviewed: \"After you submit your app for review, an onboarding expert will contact you\" (drafting-a-listing-for-your-app.md:62). And the named product is already free on GitHub: native SPDX SBOM export, plus anchore/sbom-action with upload-release-assets default \"true\".",
+  "facts": [
+   {
+    "fact": "A paid plan needs at least 100 installations (GitHub App) or 200 users (OAuth App)",
+    "grade": "CONFIRMED",
+    "evidence": "curl raw.githubusercontent.com/github/docs/main/content/apps/github-marketplace/creating-apps-for-github-marketplace/requirements-for-listing-an-app.md, lines 72-73: 'GitHub Apps should have a minimum of 100 installations.' / 'OAuth Apps should have a minimum of 200 users.'"
+   },
+   {
+    "fact": "A paid plan needs an organisation-owned app and a verified publisher (2FA, verified domain, GitHub review with no SLA)",
+    "grade": "CONFIRMED",
+    "evidence": "requirements-for-listing-an-app.md:66: 'your app must be owned by an organization that is a verified publisher'. applying-for-publisher-verification-for-your-organization.md:35: 'Click Request Verification. GitHub will review your details and let you know once your publisher verification is complete.'"
+   },
+   {
+    "fact": "The free listing is available on day one and needs only the general requirements",
+    "grade": "CONTRADICTED",
+    "evidence": "drafting-a-listing-for-your-app.md:62: 'you can click Submit for review. After you submit your app for review, an onboarding expert will contact you with additional information about the onboarding process.' submitting-your-listing-for-publication.md:28: 'An onboarding expert will reach out to you with additional information.' A free listing also needs a privacy policy, a support contact and purchase/cancel webhooks (requirements-for-listing-an-app.md:39-48)."
+   },
+   {
+    "fact": "The listing review takes weeks to months with no SLA",
+    "grade": "UNVERIFIED",
+    "evidence": "WebSearch snippets only: discussion #174681 reports 'a month and three weeks' and 'no clear guidance or SLAs'; #190613 is titled 'no response after 30 days'; #192774 is titled 'pending in review for the last 3 months'. None was rendered."
+   },
+   {
+    "fact": "The first 100 installers arrive from the free listing plus the repo",
+    "grade": "UNVERIFIED",
+    "evidence": "No channel is named. searching-github-marketplace.md:22-26 describes only a keyword box and filters, so ranking is undocumented. research/rendered/sweep2-github-marketplace.txt shows Featured (6 editorial picks: Render, LovableBot, Linear Code, OpenCode, CodeRabbit, Codemagic) and Recommended (20 incumbents: CircleCI, Codecov and others). A 'Recently added' category exists (txt lines 132, 207), but its contents are not in the payload. curl to it from this container returned 403."
+   },
+   {
+    "fact": "GitHub bills the buyer's existing GitHub payment method and is merchant of record; 14-day auto-enrolling trial",
+    "grade": "CONFIRMED",
+    "evidence": "pricing-plans-for-github-marketplace-apps.md:22: 'Customers purchase your app using a payment method attached to their account on GitHub'. Same file, line 56: 'Free trials have a fixed length of 14 days ... auto-enrolled'. github-marketplace-developer-agreement.md:130: 'GitHub will be the merchant of record'."
+   },
+   {
+    "fact": "95% remittance in USD; first remittance within 90 days of completed Registration",
+    "grade": "CONFIRMED",
+    "evidence": "github-marketplace-developer-agreement.md:134 (§6.3): 'GitHub will remit 95% of the sale price in USD ... GitHub will remit your share of first payment within 90 days of completed Registration.'"
+   },
+   {
+    "fact": "Payout threshold of $500 per month",
+    "grade": "CONFIRMED",
+    "evidence": "receiving-payment-for-app-purchases.md:25: 'Once your revenue reaches a minimum of 500 US dollars for the month, you'll receive an electronic payment from GitHub at the end of the following month.'"
+   },
+   {
+    "fact": "Months under $500 carry forward",
+    "grade": "UNVERIFIED",
+    "evidence": "Neither the docs nor the Developer Agreement says whether they accrue or are lost."
+   },
+   {
+    "fact": "Israel is a payable country for Marketplace payouts; the payout rail is named",
+    "grade": "UNVERIFIED",
+    "evidence": "mcp__github__search_code 'repo:github/docs path:content/apps/github-marketplace payout OR Stripe OR PayPal OR \"bank account\" OR country' returned total_count 0. The docs say only 'provide payment details ... financial onboarding' (receiving-payment-for-app-purchases.md:23). Israel is on the GitHub Sponsors list, which is a different programme."
+   },
+   {
+    "fact": "Owner setup needs no call, no camera and no documents",
+    "grade": "CONTRADICTED",
+    "evidence": "Developer Agreement §6.2 (line 132): registration requires '(i) name, (ii) address, (iii) telephone number, (iv) e-mail address, and (v) payment account details. GitHub may publicize Developer's information on Marketplace'. A human onboarding contact is documented at drafting-a-listing-for-your-app.md:62. Whether a camera step exists is not stated anywhere."
+   },
+   {
+    "fact": "Support is a standing duty, with an exposure penalty for failing it",
+    "grade": "CONFIRMED",
+    "evidence": "Developer Agreement §5.3 (line 122): 'solely responsible for support and maintenance ... Failure to provide adequate support ... may result in reduced product exposure, or in some cases removal from Marketplace.'"
+   },
+   {
+    "fact": "The product (a CRA per-release conformity-evidence archive) is not already free",
+    "grade": "CONTRADICTED",
+    "evidence": "(1) github/docs export-dependencies-as-sbom.md:18: 'You can export the current state of the dependency graph for your repository as a software bill of materials (SBOM) using the industry standard SPDX format.' (2) curl raw.githubusercontent.com/anchore/sbom-action/main/action.yml, lines 71-74: 'upload-release-assets: ... default: \"true\"'. (3) search_repositories '\"cyber resilience act\" in:name,description' returned total_count 116, including mhmtkas/fwscan ('Writes Cyber Resilience Act evidence') and Complaro/cra-scanner."
+   },
+   {
+    "fact": "Buyers (engineering orgs) will pay per seat for this app",
+    "grade": "UNVERIFIED",
+    "evidence": "No buyer, price or demand was measured. The scout concedes: 'That product half is NOT yet measured' (SWEEP-2.md:104)."
+   }
+  ],
+  "missionConflicts": [
+   "Recorded death: docs/REJECTED.md:1112-1125 names GitHub Marketplace as the fourth platform where prior success gates money. Its reopening condition is 'the platform's own code saying otherwise', and the candidate only rereads the same code. SWEEP-2.md:238-240 records the same rail as a dead end.",
+   "Unbounded human review queue on both the free listing and publisher verification, with no SLA. docs/REJECTED.md:271 (the Notion rule) says such a channel is not agent-operable.",
+   "Talking to people: 'an onboarding expert will contact you' at submission; GitHub recommends an individual (not group) contact email; complaints and support from paying orgs are the developer's to answer. No brand mailbox exists among the owner steps.",
+   "Anonymity: Developer Agreement §6.2 says 'GitHub may publicize Developer's information on Marketplace' (name, address, telephone). Nothing reachable says whether that is limited to the organisation.",
+   "Recurring duty: §5.3 support and maintenance, with a 'reduced product exposure' penalty; privacy deletion within 30 days; an always-on webhook endpoint required even for a free listing. This collides with constraint 1 (static output, not servers). Compare Atlassian (SWEEP-2.md:298) and Envato (REJECTED.md:660), both killed on support obligations.",
+   "Legal exposure: a California-law contract with indemnification (§9); a 'legally adequate privacy notice' and EU/UK data-protection addendum duties. This is lawyer-adjacent work of the kind MISSION forbids (SWEEP-2.md:254).",
+   "Price floor of zero (MISSION constraint 8): the named CRA product is free from GitHub itself and from a free Marketplace Action (SWEEP-2.md:243, :302)."
+  ],
+  "newOwnerSteps": [
+   "Enforce organisation-wide two-factor authentication on the brand org, as an org owner",
+   "Add the org domain-verification TXT record and confirm the Verified badge (goes beyond step 5's DNS paste)",
+   "Read and accept the GitHub Marketplace Developer Agreement as an org owner (only org owners may submit listings)",
+   "Handle the GitHub 'onboarding expert' contact after the listing is submitted, and again for the paid plan",
+   "Click Request Verification for publisher verification",
+   "Complete Marketplace financial onboarding: name, address, telephone, payment account details, and any tax form GitHub requires",
+   "Provide an individual contact email for the listing, which GitHub uses for payouts and marketing"
+  ],
+  "firstStrangerPath": "None is named that survives. The candidate's path: a stranger finds the free app through Marketplace or the repo, installs it, and becomes one of the first 100 installs. A paid plan is then approved, and an existing installer trials it and pays through GitHub billing. Only the first step matters, and it rests on being found. Marketplace ranking is undocumented. The rendered front page is editorial Featured picks plus 20 incumbent Recommended apps. The 'Recently added' lane cannot be seen from here. The repo route is the board's unmeasured GitHub-native channel test (BOARD.md:294-299), and that test is blocked on owner step 7. The whole arrival must repeat about 100 times before the first charge is even allowed.",
+  "earliestMoney": "No earliest date can be derived, because the 100-install step has no channel. If every unknown resolved in our favour: owner steps 5 and 7 (not done), then the build, then the listing review (reported at 1-3 months, SNIPPET), then 100 installs (taken as instant), then publisher verification (no SLA), then financial onboarding, a 14-day trial, and a month reaching $500 paid 'at the end of the following month', with the first remittance 'within 90 days of completed Registration'. That lands no earlier than about March-April 2027. The honest reading is possibly never. A transaction id would come from GitHub's Marketplace transactions view; no connector for it exists in src/revenue/connectors/.",
+  "ceilingClearsFloor": "unknown",
+  "cheapestTest": "A public GitHub App published under the brand org without a Marketplace listing, which skips the review queue. Count its installations with the installations API from a CI runner at day 30 and day 90. It passes only if at least 100 installs from strangers arrive within 90 days AND a product exists that is not already free on GitHub. Fewer than 10 installs at day 90 re-kills it permanently. This is really the board's GitHub-native distribution test and needs owner step 7 first. The scout's version, a free Marketplace listing, also needs the Developer Agreement accepted, a hosted webhook endpoint, a privacy policy and the review queue, so it is not zero-cost or owner-free.",
+  "testRunNow": "Ran at ₪0 from this container:\n- curl of 10 github/docs files from raw.githubusercontent.com (Marketplace requirements, overview, publisher verification, Developer Agreement, payment, pricing, search, drafting, submitting, and the SBOM export doc). All returned HTTP 200 and supply the quotes in the table.\n- curl raw.githubusercontent.com/anchore/sbom-action/main/action.yml: 'upload-release-assets' default \"true\" (lines 71-74).\n- search_code \"financial onboarding\" in github/docs: 3 files, none naming a payout rail or countries.\n- search_code for payout/Stripe/PayPal/bank/country under content/apps/github-marketplace: total_count 0.\n- search_repositories '\"cyber resilience act\" in:name,description': total_count 116 (1,095 with readme included).\n- Parsed the rendered Marketplace HTML's embedded JSON: featured=6, recommended=20, a 'Recently added' category present with no listings in the payload.\n- One curl to https://github.com/marketplace?type=apps&category=recently-added returned 403 ('sessions are bound to their configured repositories'); not retried.\n- 3 WebSearch calls (snippet grade only).",
+  "killIf": "Already killed. It stays dead unless a new GitHub App (ours or a documented third-party case) is measured reaching 100 or more stranger installs within 90 days with no launch or outreach, AND the product carried is shown not to be free on GitHub (no native feature and no free Marketplace Action or open-source kit does it). A day-90 count under 10 on the board's GitHub-native test confirms the kill permanently.",
+  "passIf": "It could reopen only if all of these hold:\n- 100 or more stranger installs within 90 days, measured by the installations API from CI.\n- A product with a non-public input or a named obligation that GitHub code search and Marketplace Actions show is not free.\n- Rendered primary terms naming the Marketplace payout rail with Israel payable.\n- Confirmation that §6.2 publicity is limited to the organisation, not the owner.\n- A brand mailbox that can absorb onboarding and support contact without the owner.",
+  "urlsToRender": [
+   {
+    "url": "https://github.com/orgs/community/discussions/174681",
+    "why": "'Question About GitHub App Listing Review Process Timeline'. Would settle the length of the free-listing review queue (snippet says a month and three weeks, no SLA). Seen in a WebSearch result and quoted in the report."
+   },
+   {
+    "url": "https://github.com/orgs/community/discussions/190613",
+    "why": "'GitHub Marketplace app listing review - no response after 30 days'. Corroborates the unbounded human queue on free listings."
+   },
+   {
+    "url": "https://github.com/orgs/community/discussions/192774",
+    "why": "'Github app pending in review for the last 3 months'. Upper bound on the review queue reported by developers."
+   }
+  ],
+  "reportPath": "/home/user/automaton/research/colony-sweep/screen-2/github-marketplace-app.md"
+ },
+ {
+  "id": "primeintellect-bounties",
+  "verdict": "KILL",
+  "decisiveFact": "The payer says the programme is over. PrimeIntellect-ai/community-environments PR #784 (author willccbb, author_association MEMBER, 2026-09-07) reads: \"The bounty program closed in June 2026. `docs/contributing.md` no longer points contributors at the bounty sheet, and the merge-bot workflow that told every merged PR to claim a bounty reward is removed.\" Found with mcp__github__search_pull_requests `repo:PrimeIntellect-ai/community-environments is:pr \"bounty program\"`. Two measurements corroborate it. The rendered board research/rendered/sweep2-algora-primeintellect.txt (status 200, fetchedAt 2026-09-22) shows \"Open 0 / Completed 0 / No open bounties\". And 0 PRs have merged in community-environments since 2026-06-26; the last was #467 on 2026-05-07, with 226 open.",
+  "facts": [
+   {
+    "fact": "Prime Intellect runs a funded, open environment bounty programme today",
+    "grade": "CONTRADICTED",
+    "evidence": "PR #784 body, MEMBER willccbb, 2026-09-07: 'The bounty program closed in June 2026.' via mcp__github__search_pull_requests repo:PrimeIntellect-ai/community-environments is:pr \"bounty program\""
+   },
+   {
+    "fact": "Bounties are listed on and paid through algora.io/PrimeIntellect-ai/bounties",
+    "grade": "CONTRADICTED",
+    "evidence": "research/rendered/sweep2-algora-primeintellect.txt: 'Open' '0' 'Completed' '0' 'No open bounties' (meta status 200, error null, fetchedAt 2026-09-22T20:40:17Z). In Algora's public source, Completed = rewarded_bounties_count + rewarded_tips_count (lib/algora_web/live/org/bounties_live.ex:91), computed in Bounties.fetch_stats (lib/algora/bounties/bounties.ex:1406) over all succeeded credit transactions with no date filter, so Prime Intellect has never paid through Algora. Caveat: the live page used an org_legacy LiveView session that is not in the public router."
+   },
+   {
+    "fact": "The payout rail is Algora / Stripe Connect Express",
+    "grade": "CONTRADICTED",
+    "evidence": "community-environments/.github/workflows/comment-on-merge.yml (mcp__github__search_code 'bounty repo:PrimeIntellect-ai/community-environments path:.github'): 'you have the choice of cash or compute for your reward. For cash, please fill out this [form](https://docs.google.com/forms/...). For compute, please ping @willccbb on Discord'. The rail is a Google Sheet, a Google Form and Discord, not Algora."
+   },
+   {
+    "fact": "Algora routes an Israeli payee to Stripe Connect Express",
+    "grade": "CONFIRMED",
+    "evidence": "curl -sS https://raw.githubusercontent.com/algora-io/algora/main/lib/algora/psp/connect_countries.ex shows line 58 {\"Israel\", \"IL\"}, line 151 def account_type(\"BR\"), do: :standard, line 152 def account_type(_), do: :express. Moot, because this payer does not pay via Algora."
+   },
+   {
+    "fact": "The first customer arrives because the payer posts funded jobs we can claim",
+    "grade": "CONTRADICTED",
+    "evidence": "0 open bounties on the rendered board. The programme is closed (PR #784). The community-environments docs/contributing.md:13 link on main ('Complete [bounties](https://docs.google.com/spreadsheets/d/13UDfRDjgIZXsMI2s9-...)') is stale, and #784 exists to remove it."
+   },
+   {
+    "fact": "Acceptance is a machine-run eval rather than a maintainer's merge",
+    "grade": "CONTRADICTED",
+    "evidence": "search 'repo:PrimeIntellect-ai/community-environments is:pr is:merged merged:>2026-06-26' returned total_count 0; 'merged:>2026-03-26' returned 5, the last #467 closed 2026-05-07T00:23:48Z; 'is:pr is:open' returned 226. Issue #758 (2026-07-30): '52 PRs already satisfy your automated acceptance gate and are unmerged'."
+   },
+   {
+    "fact": "prime-envs (whose AGENTS.md makes agent authorship GREEN) accepts outside contributions",
+    "grade": "CONTRADICTED",
+    "evidence": "raw prime-envs/README.md: 'A collection of environments maintained by the Prime Intellect Research Team. For community-contributed environments, check [community-environments]'. search 'repo:PrimeIntellect-ai/prime-envs is:pr is:merged' returned 525; adding '-author-association:MEMBER' returned 0."
+   },
+   {
+    "fact": "$1,000-5,000+ per environment in an Application-Only tier",
+    "grade": "UNVERIFIED",
+    "evidence": "SNIPPET only. The dated source, x.com/afurgs/status/1997292157212983300, decodes from its snowflake id to 2025-12-06, before the June 2026 closure. Contributor PR #767 shows the lane needed an application: 'BFCL-v4 row ($1,500, Application-Only)', 'Application submitted via typeform'."
+   },
+   {
+    "fact": "The Application-Only lane is agent-operable",
+    "grade": "CONTRADICTED",
+    "evidence": "Issue #759 (2026-08-03, 0 comments as of 2026-09-26): 'I've applied three times through the Application-Only form ... a silent form failure and a long assignment queue look identical'."
+   },
+   {
+    "fact": "The payer's repo is live and busy (prime-envs #826 filed 2026-09-22)",
+    "grade": "CONFIRMED",
+    "evidence": "mcp__github__search_issues: prime-envs #826 created 2026-09-22T16:39:05Z, author_association NONE. The busy part is member-only; the latest merged PRs #837/#838/#841 (2026-09-25) are all MEMBER. Not load-bearing."
+   },
+   {
+    "fact": "Third parties sponsor domain-specific bounties; 400+ environments crowdsourced; hundreds of thousands committed",
+    "grade": "UNVERIFIED",
+    "evidence": "SNIPPET only (primeintellect.ai blog is EGRESS_BLOCKED). It describes a programme since closed. No sponsored bounty is visible on any reachable surface."
+   }
+  ],
+  "missionConflicts": [
+   "Money means the ledger (MISSION rule 2): the payer's real cash rail is a Google Form and its underlying rail is unknown, so there is no known platform transaction id. The Algora transaction id the scout relied on does not exist for this payer (Completed 0, all-time).",
+   "The owner does not talk to people: the only lane above $500 was a human-reviewed Typeform application (issue #759, unanswered), and payout coordination ran through pinging named staff on Discord.",
+   "Owner setup is not 'no new step': owner step 4 is Stripe Connect via Algora, which this payer does not use, so getting paid would need new owner-identity steps outside the seven.",
+   "Recorded death: SWEEP-2 dead ends 'agent-economy: Prime Intellect Environments Hub bounties' (queue kill), '...Application-Only lane' (Typeform, not agent-operable) and 'Algora as a place to find work' (no discovery surface). This candidate repeats all three for the same payer.",
+   "docs/REJECTED.md bounties-grants: 'it is not clear this money is bookable at all ... by an unspecified rail'. That applies directly to a Google-Form cash payout.",
+   "Tax/terms: paid as a natural person by a US company on an unknown rail. The W-8BEN / 30% withholding exposure REJECTED.md names for the bounties group applies, with less clarity about the rail."
+  ],
+  "newOwnerSteps": [
+   "A Prime Intellect / Environments Hub account in a name that receives the payout. Contributors identify by a 'bounty alias on the Environments Hub' and 'the email associated with your Prime Intellect account'. KYC terms are unrendered.",
+   "Filling in Prime Intellect's cash-reward Google Form with the owner's legal identity and payout details, on a rail that is unknown and not covered by owner step 4 (Stripe Connect via Algora). Probably also a W-8BEN.",
+   "A Discord account and presence for payout coordination with named staff (the merge bot says 'ping @willccbb on Discord'; PR #533 says 'Discord #environments-hub for payout coordination')."
+  ],
+  "firstStrangerPath": "None exists today. The payer posts no jobs: the Algora board shows Open 0 and Completed 0, and Algora's source shows Completed is all-time. The programme is closed by a member's own statement (PR #784: 'closed in June 2026'). The merge that triggered the payout bot has not happened for any contributor since 2026-05-07. The design did run backwards (the payer announces the job), but no job is being announced and no external PR is being merged.",
+  "earliestMoney": "No date can be named. Three things are required and none exists or is announced: a relaunched programme after June 2026, a resumed community-environments merge queue (0 merges since 2026-06-26), and a payout rail that produces a platform transaction id for an Israeli individual. The payer has never paid through Algora, and its cash rail is a Google Form.",
+  "ceilingClearsFloor": "no",
+  "cheapestTest": "The scout's own cheapest test was to render https://algora.io/PrimeIntellect-ai/bounties. It has already run in CI (research/rendered/sweep2-algora-primeintellect.*, status 200, 2026-09-22) and returned Open 0 / Completed 0, which meets the scout's own kill line: 'fewer than three open bounties ... close the candidate'. The only remaining watch is the existing weekly render of that board plus one render of the Prime Intellect programme blog, to catch a relaunch.",
+  "testRunNow": "All at ₪0 from this container, no owner action. (1) Read research/rendered/sweep2-algora-primeintellect.meta.json (status 200, error null) and .txt ('Open 0', 'Completed 0', 'No open bounties'). (2) mcp__github__search_pull_requests 'repo:PrimeIntellect-ai/community-environments is:pr \"bounty program\"' found PR #784, MEMBER willccbb: 'The bounty program closed in June 2026.' (3) mcp__github__search_code 'bounty repo:PrimeIntellect-ai/community-environments path:.github' found comment-on-merge.yml: cash via Google Form, compute via '@willccbb on Discord'. (4) '... is:pr is:merged merged:>2026-06-26' returned total_count 0; 'merged:>2026-03-26' returned 5, the last 2026-05-07; 'is:pr is:open' returned 226. (5) 'repo:PrimeIntellect-ai/prime-envs is:pr is:merged -author-association:MEMBER' returned 0 of 525 merged. (6) curl raw prime-envs/README.md: 'maintained by the Prime Intellect Research Team. For community-contributed environments, check community-environments'. (7) curl algora-io/algora bounties_live.ex / bounties.ex / org/nav.ex: Completed is an all-time count of succeeded payouts, and an unknown handle raises NotFoundError. (8) curl algora connect_countries.ex: line 58 {\\\"Israel\\\", \\\"IL\\\"}, lines 151-152 :express for all but BR. (9) mcp__github__search_issues found #758 (queue measurement) and #759 (Typeform, 0 comments). (10) One WebSearch: the only 'stays open' hit is an X post decoded to 2025-12-06, before the closure. No relaunch found.",
+  "killIf": "Already met. The rendered Algora board shows fewer than three open bounties (0, with 0 ever completed), and a Prime Intellect member states the programme closed in June 2026.",
+  "passIf": "Reopen only if all four hold. (1) Prime Intellect publicly relaunches a funded programme after June 2026: a post dated after 2026-09-07, or PR #784 closed unmerged with a stated reason. (2) At least 3 open, non-application-gated bounties are visible on a board this repo can render. (3) community-environments merges external environment PRs again, at least 5 in a rolling 90 days. (4) The payout yields a platform transaction id on a rail that pays an Israeli individual, for example Algora 'Completed' for PrimeIntellect-ai rising above 0.",
+  "urlsToRender": [
+   {
+    "url": "https://www.primeintellect.ai/blog/scaling-environments-program",
+    "why": "Cited in research/colony-sweep/SWEEP-2.md line 139 as EGRESS_BLOCKED. Not needed for the kill; rendering it would only catch a relaunch announcement, the one thing that would reopen this candidate. The Algora board is already in research/rendered/urls.txt and will show a reopening on the weekly run."
+   }
+  ],
+  "reportPath": "/home/user/automaton/research/colony-sweep/screen-2/primeintellect-bounties.md"
+ },
+ {
+  "id": "huntr",
+  "verdict": "KILL",
+  "decisiveFact": "Every huntr report is filed through a signed-in web form (huntr.com/bounties/disclose), and every triage exchange after it happens in the same web app. This container cannot reach huntr.com: `curl https://huntr.com/guidelines` returned \"curl: (56) CONNECT tunnel failed, response 403\". That leaves two ways to run the line, and both are recorded deaths. (1) The owner submits and replies at a browser for every report, which is recurring owner work plus conversation with the payer. The board deferred Devpost for this (BOARD.md:79-82), and MISSION.md:327 says \"Any line that needs them to is not a line\". (2) A script drives huntr.com from a CI runner, which is the \"Fully autonomous submission agent against bug bounty programs … Explicitly forbidden\" recorded at groups/bounties-grants.md:174. The only huntr rule text any source quotes bans \"bots, scripts, scanners, and fuzzers\" (SWEEP-2.md:159, SNIPPET). The page that could carve out an exception, https://huntr.com/guidelines, returned HTTP 404 to a GitHub runner on 2026-09-22 (research/rendered/sweep2-huntr-guidelines.meta.json). Evidence that submission and triage live on huntr.com: REPORT_FOR_HUNTR.md:152 says \"Go to: https://huntr.com/bounties/disclose\"; the saved report page bountybench/bountytasks kedro/bounties/bounty_0/writeup/writeup.html:708-714 shows the researcher disputing scope in the thread on a report that paid $1,500.",
+  "facts": [
+   {
+    "fact": "huntr's disclosure programme is live in 2026",
+    "grade": "CONFIRMED",
+    "evidence": "search_code \"@huntr_ai\" repo:CVEProject/cvelistV5 path:cves/2026 → total_count 61; all 61 fetched from raw.githubusercontent.com: 58 PUBLISHED, 3 REJECTED. Published per month: Feb 2, Mar 7, Apr 9, May 10, Jun 13, Jul 10, Aug 7. Latest is CVE-2026-12570 (keras), datePublished 2026-08-10, reference huntr.com/bounties/a064f475-…"
+   },
+   {
+    "fact": "Accepted findings become GitHub advisories referencing huntr, and they concentrate on a few projects",
+    "grade": "CONFIRMED",
+    "evidence": "search_code \"huntr.com/bounties\" repo:github/advisory-database path:advisories/github-reviewed/2026 → 59; all fetched. mlflow 19, keras 9, nltk 8 (61% on 3 projects); two published 2026-09-08 (nltk)."
+   },
+   {
+    "fact": "huntr pays real per-finding amounts",
+    "grade": "CONFIRMED",
+    "evidence": "bountybench/bountytasks bounty_metadata.json: 46 files, 42 huntr, 41 with an amount. Median $600, mean $1,482, min $0, max $30,485. Examples: kedro CVE-2024-9701 \"disclosure_bounty\": \"1500\"; mlflow CVE-2025-0453 \"125\". Sample is 2022-25 and selection-biased; the 2026 schedule is UNVERIFIED."
+   },
+   {
+    "fact": "Payout monthly on the 25th via Stripe Connect",
+    "grade": "UNVERIFIED",
+    "evidence": "SNIPPET at SWEEP-2.md:155. Third-party repeats: gigs-sh content/listings/huntr.mdx:32 and lequangsang02 REPORT_FOR_HUNTR.md:159. No huntr page rendered."
+   },
+   {
+    "fact": "The huntr Stripe onboarding is the same form as owner step 4 (Algora): 'one form, not two'",
+    "grade": "CONTRADICTED",
+    "evidence": "The scout's own quote at SWEEP-2.md:155 says 'you will receive an email requesting you to create a Stripe Connect account'. REPORT_FOR_HUNTR.md:160 says 'First payment requires creating Stripe Connect account'. Algora's connect_countries.ex creates accounts under Algora's platform. So huntr needs a second KYC form."
+   },
+   {
+    "fact": "An Israeli resident can be paid cash by huntr",
+    "grade": "UNVERIFIED",
+    "evidence": "gigs-sh huntr.mdx:49 says 'Stripe-unsupported countries get donations only, not cash.' A WebSearch snippet says 'If your country is not in this list … can offer to donate your payout to charity.' So huntr keeps its own list. Algora's {\"Israel\",\"IL\"} (connect_countries.ex:58) says nothing about huntr's list."
+   },
+   {
+    "fact": "The disclosure programme permits automated or AI-assisted operation",
+    "grade": "UNVERIFIED",
+    "evidence": "The settling page returned 404. The only rule text is the Challenges ban 'any automated tooling gets you banned … bots, scripts, scanners, and fuzzers' (SNIPPET, SWEEP-2.md:159). Third party gigs-sh huntr.mdx:17 says 'Guidelines do not address AI agents directly' (verifiedAt 2026-05-18, before the 404)."
+   },
+   {
+    "fact": "The canonical policy URL https://huntr.com/guidelines still resolves",
+    "grade": "CONTRADICTED",
+    "evidence": "sweep2-huntr-guidelines.meta.json: \"status\": 404, \"error\": \"HTTP 404 Not Found\", fetchedAt 2026-09-22T20:40:18Z. It was canonical earlier: SecID registry/disclosure/com/huntr.json has \"disclosure_policy\": {\"url\": \"https://huntr.com/guidelines/\", \"checked\": \"2026-04-08\"}."
+   },
+   {
+    "fact": "Submission and triage happen only in huntr.com's web app",
+    "grade": "CONFIRMED",
+    "evidence": "REPORT_FOR_HUNTR.md:152 'Go to: https://huntr.com/bounties/disclose'. gigs-sh huntr.mdx:44 'Submit through the platform. Maintainer validates within 31 days'. kedro writeup.html:708-714 shows huntr-helper's out-of-scope flag and the researcher's reply 'Dear Team, Thank you for your feedback on my report'."
+   },
+   {
+    "fact": "The colony can reach huntr.com",
+    "grade": "CONTRADICTED",
+    "evidence": "curl -sS … https://huntr.com/guidelines → 'curl: (56) CONNECT tunnel failed, response 403' (one attempt)."
+   },
+   {
+    "fact": "A documented non-browser submission channel exists",
+    "grade": "UNVERIFIED",
+    "evidence": "None found: search_code \"huntr.com/guidelines\" (49 hits) and \"huntr\" \"Stripe Connect\" (25 hits). security@huntr.com in the CNA record is the CNA contact."
+   },
+   {
+    "fact": "Scanner-cheap vulnerability classes are excluded from pay",
+    "grade": "CONFIRMED",
+    "evidence": "huntr-helper quoted on saved pages: 'Serializing/deserializing python objects (pickle files) locally and not remotely over the network' (kedro writeup.html:712); 'Lack of rate limiting issues.' (mlflow bounty_3 writeup.html:709); 'Exceptions triggered in local libraries without networking components' (LibreChat bounty_2 writeup.html:644-646)."
+   },
+   {
+    "fact": "This colony's agents can produce a valid, non-duplicate, in-scope finding",
+    "grade": "UNVERIFIED",
+    "evidence": "Comparable agent colony joyelgeorge/Taskman docs/BRAIN-TRANSFER.md:362: 'No payable bug found yet in hardened flagships.' Its huntr-oss lane was killed on 2026-09-23 (docs/research/NOTES.md:55) by operator rule. Palo Alto Networks 'used Frontier AI models to uncover more than 14,000 previously unknown vulnerabilities in open source software' (WebSearch SNIPPET, Aug 2026)."
+   },
+   {
+    "fact": "No ranking or prior-success gate before a first payout",
+    "grade": "UNVERIFIED",
+    "evidence": "No ranking input in any source read, but no huntr rules were read (404). Harmless. The real gate is triage and duplicates."
+   },
+   {
+    "fact": "The payout is bookable in the ledger with a transaction id the colony reads",
+    "grade": "UNVERIFIED",
+    "evidence": "Funds land in an Express account under huntr's platform. No connector in src/revenue/connectors/ reads it, so a ledger row would need the owner to relay a reference."
+   }
+  ],
+  "missionConflicts": [
+   "Recurring owner work: every report must be filed through a signed-in form on huntr.com, which is unreachable from the container. This is the same collision the board deferred Devpost for (BOARD.md:79-82), fired once per report instead of once per win.",
+   "The owner talks to people: scope and severity disputes happen in the report thread with huntr admins and maintainers (kedro writeup.html:708-714). MISSION.md:327 says 'Any line that needs them to is not a line.'",
+   "The owner-free alternative, scripted browser submission from a CI runner, is the 'Fully autonomous submission agent against bug bounty programs' recorded dead at research/colony-sweep/groups/bounties-grants.md:174. The only huntr rule text quoted anywhere bans bots and scripts.",
+   "The repo's own rule at SWEEP-2.md:297 requires rendering the venue's current guidelines before opening any bounty line. The render returned 404, so the line cannot open.",
+   "Identity and publicity: MFV reports require a public proof-of-concept model on Hugging Face under a brand account, which publishes malicious artefacts. Hugging Face terms are UNVERIFIED (AMBER).",
+   "Honesty: unverified LLM-drafted vulnerability reports are RED (the first sweep's bug-bounty scout, citing curl's instant-ban policy). Only a PoC-gated pipeline is honest, and the cheap classes are excluded."
+  ],
+  "newOwnerSteps": [
+   "Create a huntr researcher account under the brand in a browser (huntr.com is blocked from the container) and accept huntr's terms.",
+   "On the first payment due, complete a second Stripe Connect onboarding from huntr's emailed link (legal name, ID, date of birth, address, Israeli bank, tax documents). This is separate from owner step 4's Algora onboarding.",
+   "Per report (recurring): file on huntr.com/bounties/disclose and answer huntr admins and maintainers in the report thread during validation (up to 31 days).",
+   "For MFV reports only: create a Hugging Face account under the brand to host public proof-of-concept model files.",
+   "Relay each payout reference so the ledger can record it, since the colony cannot read the huntr-platform Express account."
+  ],
+  "firstStrangerPath": "No stranger has to find us, which is the candidate's real strength. huntr publishes scope. The colony would prove a defect with a working proof of concept in an in-scope AI/ML repository, outside the excluded classes (local pickle deserialization, rate limiting, local exceptions). The report is filed on huntr.com, triaged by huntr, and validated by the maintainer within 31 days. The bounty joins the monthly run on the 25th, and the owner onboards to Stripe under huntr's platform on the first payment. Filing, triage replies and onboarding all need the owner at a browser on a host the colony cannot reach. The cash payout also depends on Israel being on huntr's own country list; unlisted countries get a charity donation instead.",
+  "earliestMoney": "None under this verdict. Mechanically: a valid, non-duplicate finding filed on 2026-10-01 has a validation window of up to 31 days, so the first payout run it could meet is 2026-11-25. Stripe first-time onboarding and bank settlement come after that, and the Stripe transfer would carry an id. There is no base rate for an agent's accepted finding, the channel needs the owner, and Israeli payability is unverified, so the honest date is 'not in 2026'.",
+  "ceilingClearsFloor": "unknown",
+  "cheapestTest": "Render huntr's current participation guidelines and FAQ from a CI runner. The known URL https://huntr.com/guidelines is now 404; the trailing-slash variant https://huntr.com/guidelines/ and https://huntr.com/faq are both cited in sources. Look for two things: (a) a non-browser submission and triage channel, or explicit permission to operate a researcher account programmatically; (b) whether Israel is on the payout-country list. Only if both pass, run a 30-day dry run with zero submissions, counting PoC-verified candidates in in-scope repositories that fall outside the excluded classes.",
+  "testRunNow": "1) curl -sS … https://huntr.com/guidelines → 'curl: (56) CONNECT tunnel failed, response 403'. 2) Read research/rendered/sweep2-huntr-guidelines.meta.json → status 404, byteLength 0, fetchedAt 2026-09-22. 3) search_code '\"huntr.com/bounties\" repo:github/advisory-database path:advisories/github-reviewed/2026' → 59; fetched all 59: mlflow 19, keras 9, nltk 8; two published 2026-09-08. 4) search_code '\"@huntr_ai\" repo:CVEProject/cvelistV5 path:cves/2026' → 61; fetched all 61: 58 published (Feb 2, Mar 7, Apr 9, May 10, Jun 13, Jul 10, Aug 7), 3 rejected, latest 2026-08-10. 5) search_code 'disclosure_bounty repo:bountybench/bountytasks filename:bounty_metadata.json' → 46; 42 huntr, 41 with amounts: median $600, mean $1,482, range $0-$30,485. 6) search_code for huntr guideline mirrors → SecID CNA record, gigs-sh listing, saved huntr report pages with triage exclusions, and a comparable agent colony (Taskman) with no payable bug found. 7) Four WebSearch calls (SNIPPET): automation policy, payout country list with charity fallback, Palo Alto Networks 2026, and the Frontier AI 14,000-vulnerability claim. The scout's 4-hour capability test was not run: it cannot change the verdict, because a real finding still has no owner-free channel to huntr.com and no verified Israeli payout.",
+  "killIf": "The rendered current huntr guidelines/FAQ show no non-browser channel and no explicit permission for programmatic account operation (the current state of every source read), or Israel is absent from huntr's payout-country list.",
+  "passIf": "A rendered huntr policy page documents a channel a brand machine account can operate, or explicitly allows programmatic operation of a researcher account, and huntr's payout list includes Israel. Even then the line only moves to TEST_FIRST, where a 30-day zero-submission dry run must find at least one PoC-verified, in-scope candidate outside the excluded classes.",
+  "urlsToRender": [
+   {
+    "url": "https://huntr.com/guidelines/",
+    "why": "Trailing-slash variant, cited as the CNA disclosure policy in CloudSecurityAlliance/SecID registry/disclosure/com/huntr.json and RogoLabs/CNAScoreCard web/data/cna/huntr_ai.json; the no-slash URL returned 404. It decides the automation clause and the submission channel."
+   },
+   {
+    "url": "https://huntr.com/faq",
+    "why": "Cited at SWEEP-2.md:155. It holds the payout mechanics and the payout-country list, which decides Israeli payability versus the charity fallback."
+   },
+   {
+    "url": "https://huntr.com/new-huntr-faq",
+    "why": "WebSearch result 'huntr: huntr.com migration FAQ'. It may state the account model and the country list."
+   },
+   {
+    "url": "https://huntr.com/bounties/hacktivity",
+    "why": "Cited in the SecID CNA record as 'Security advisories'. It shows current 2026 activity and amounts paid."
+   },
+   {
+    "url": "https://huntr.com/challenges/3AjanuyEaXoNr6ySHpyo6L/v1/rules",
+    "why": "Cited at SWEEP-2.md:159. It gives the verbatim automation-ban sentence and shows whether it binds anything beyond the Challenges."
+   },
+   {
+    "url": "https://unit42.paloaltonetworks.com/frontier-ai-vulnerability-burst/",
+    "why": "WebSearch result. It would verify at primary grade that huntr's parent industrialised frontier-model zero-day discovery in open source (14,000+ findings)."
+   },
+   {
+    "url": "https://docs.stripe.com/connect/cross-border-payouts",
+    "why": "WebSearch result. It shows whether Israel is a Stripe cross-border payout country at all, which is necessary but not sufficient for huntr's list."
+   }
+  ],
+  "reportPath": "/home/user/automaton/research/colony-sweep/screen-2/huntr.md"
+ },
+ {
+  "id": "odoo-il-vat",
+  "verdict": "KILL",
+  "decisiveFact": "The scout's own settling page rendered (research/rendered/sweep2-odoo-localization.meta.json: status 200, error null) and it measures demand against the candidate. The 14 paid modules on page 1 of the Localization category carry title attributes 'Total Purchases: 1,1,7,2,2,1,1,1,1,1,12,2,1,2' (research/rendered/sweep2-odoo-localization.html:683-1101): median 1 lifetime purchase, best 12 (Indian GST Reports, $32.11, html:1004). Every one shows 'Last month: 1', so the sample is biased toward success. The markets are far larger than Israel, and Israel does not appear at all in Odoo's own fiscal_localizations.rst. Clearing ₪300/month needs about 2 sales every month at 70% of about $60. Two independent kills are graded CONFIRMED from source. (1) odoo/documentation 19.0 content/administration/odoo_online.rst:15-16 says 'Odoo Online is incompatible with custom modules or modules from the Odoo Apps Store', so only developer-backed installs can buy, and SWEEP-2.md:272 already set the PCN874 price floor at zero for those buyers. (2) The shape-A 'non-public' input is a public gov.il PDF (research/rendered/pcn874-gov-il-874-eng.meta.json, status 200), mirrored free by two ERP vendors, with a free MIT generator at 48,037 monthly downloads.",
+  "facts": [
+   {
+    "fact": "Odoo core l10n_il ships no PCN874 detailed-report file export (only a box-summary report misleadingly named 'VAT Report (PCN874)')",
+    "grade": "CONFIRMED",
+    "evidence": "curl raw.githubusercontent.com/odoo/odoo/19.0/addons/l10n_il/__manifest__.py: data = account_account_tag.xml, account_tax_report_data.xml only; models/__init__.py: 'from . import template_il'; account_tax_report_data.xml:4 '<field name=\"name\">VAT Report (PCN874)</field>', line 17 'VAT SALES (BASE)'; search_code repo:odoo/odoo path:addons/l10n_il → 14 files, no exporter"
+   },
+   {
+    "fact": "Odoo Enterprise 19 l10n_il_reports adds no export either",
+    "grade": "CONFIRMED",
+    "evidence": "curl raw.githubusercontent.com/RickObid/Enterprise19/HEAD/l10n_il_reports/__manifest__.py: \"'name': 'Israel - Accounting Reports' ... 'data': ['data/account_return_data.xml']\"; that file holds one account.return.type record 'Tax' → l10n_il.vat_report (unofficial mirror, read only to see contents)"
+   },
+   {
+    "fact": "No competing Israeli PCN874 module exists on the Odoo Apps Store",
+    "grade": "UNVERIFIED",
+    "evidence": "curl https://apps.odoo.com/apps/modules/browse?search=Israel → 'CONNECT tunnel failed, response 403' (one attempt); WebSearch found none (snippet-grade absence)"
+   },
+   {
+    "fact": "First customer arrives via the Localization category filtered to their country; store routes by need, not popularity",
+    "grade": "CONTRADICTED",
+    "evidence": "sweep2-odoo-localization.txt:379-388 facets are only Categories/Prices/Platforms/versions, no country; txt:438-439 '1485 Apps found.'; txt:678 '75' pages; txt:447 default 'Relevance'; every page-1 card has last-month activity (html:683-1297; free ones ordered 29,19,18,16,15,15)"
+   },
+   {
+    "fact": "Demand can clear the ₪300/month per-line floor",
+    "grade": "CONTRADICTED",
+    "evidence": "sweep2-odoo-localization.html:683-1101 paid cards 'Total Purchases: 1,1,7,2,2,1,1,1,1,1,12,2,1,2' — median 1 lifetime, max 12 (html:1004 Indian GST $32.11)"
+   },
+   {
+    "fact": "The reconciliation corpus is a non-public input (shape A) that cannot be copied",
+    "grade": "CONTRADICTED",
+    "evidence": "research/rendered/pcn874-gov-il-874-eng.meta.json url https://www.gov.il/BlobFolder/generalpage/tax-vat-online-invoice-reporting/he/IncomeTax_IncomeTaxSoftwareHousesInfo_874-eng.pdf status 200; mirrors pcn874-h-erp-mirror and pcn874-rivhit-mirror status 200; curl registry.npmjs.org/-/v1/search?text=pcn874 → '@accounter/pcn874-generator 0.6.7 2026-06-24 ... {'monthly': 48037}'; free Python formatter EsthiF/pcn_converter/vat_processor.py"
+   },
+   {
+    "fact": "Israeli companies on Odoo Community or Enterprise can buy and install the module",
+    "grade": "CONTRADICTED",
+    "evidence": "odoo/documentation 19.0 content/administration/odoo_online.rst:15-16 'Odoo Online is incompatible with custom modules or modules from the `Odoo Apps Store`'; also odoo_sh/getting_started/create.rst:87"
+   },
+   {
+    "fact": "Implementation partners buy it white-label",
+    "grade": "UNVERIFIED",
+    "evidence": "No evidence offered; SWEEP-2.md:272 sets the developer-facing PCN874 price floor at zero; moshchot/BANKayma ships free AGPL-3 Israeli Odoo exports l10n_il_openformat ('Enables exports to OPENFORMAT'), l10n_il_hashavshevet, l10n_il_system1000 by 'Hunki Enterprises BV, Moshchot Coop, Odoo Community Association (OCA)'"
+   },
+   {
+    "fact": "Vendor receives 70% paid by SWIFT",
+    "grade": "UNVERIFIED",
+    "evidence": "Scout SNIPPET SWEEP-2.md:176; my WebSearch summary of apps.odoo.com/apps/faq repeats 70%, not SWIFT; apps.odoo.com egress-blocked"
+   },
+   {
+    "fact": "Payout only after POs reach €400 of unredeemed sales",
+    "grade": "UNVERIFIED",
+    "evidence": "WebSearch summary of https://apps.odoo.com/apps/faq: 'During each month, the platform will close the POs that have reached or exceeded 400 euros in unredeemed sales.' (SNIPPET)"
+   },
+   {
+    "fact": "Paid apps carry a mandatory author support duty",
+    "grade": "UNVERIFIED",
+    "evidence": "Scout SNIPPET SWEEP-2.md:177 of vendor-guidelines; page blocked"
+   },
+   {
+    "fact": "Owner setup is a one-time ZIP upload",
+    "grade": "UNVERIFIED",
+    "evidence": "FAQ snippet speaks of registering a Git repository ('replace it with a new Git one'), implying repo-based publishing that needs the brand org (step 7)"
+   },
+   {
+    "fact": "The Odoo vendor account is covered by the seven existing owner steps",
+    "grade": "CONTRADICTED",
+    "evidence": "docs/OWNER_STEPS.he.md headings at lines 30,71,105,140,180,205,256: PR merge, tax file, Gumroad, Stripe/Algora, domain, Netlify+tokens, GitHub org — no Odoo"
+   }
+  ],
+  "missionConflicts": [
+   "New owner step not in OWNER_STEPS.he.md: an Odoo.com vendor account with payout details (MISSION §1: never invent a step that isn't required)",
+   "Recurring human-shaped duty: paid-app support for a statutory VAT filing tool (precedents SWEEP-2.md:298 Atlassian, docs/REJECTED.md:660 Envato); no agent inbox exists in the repo",
+   "Constraint 8 price floor zero: every input is public (gov.il circular plus free mirrors, MIT generator at 48,037 monthly downloads, free Python code, free AGPL Israeli Odoo exports)",
+   "Falls under dead end SWEEP-2.md:272: developer-facing PCN874 has a zero price floor, and Odoo Online's exclusion guarantees the buyer has a developer",
+   "docs/REJECTED.md:188-191 unpriced harm: a wrong PCN874 is the user's wrong VAT filing, made into a commercial obligation",
+   "Possible recurring invoicing to Odoo S.A. if manual rather than automatic redemption is used"
+  ],
+  "newOwnerSteps": [
+   "Create an Odoo.com account under the brand and register as an Odoo Apps Store vendor",
+   "Enter payout details (bank account for Odoo S.A.'s transfer) and opt in to automatic redemption; otherwise send Odoo S.A. an invoice for each payout (recurring)",
+   "Accept or supervise a standing buyer-support duty for a paid statutory module (recurring; mission-incompatible if it needs a human)"
+  ],
+  "firstStrangerPath": "An Israeli company on Odoo.sh or on-premise (Odoo Online is excluded by Odoo's docs) that files VAT from Odoo data rather than from its accountant's own software types 'Israel' or 'PCN874' into apps.odoo.com keyword search. The category browse is ruled out, because page 1 of 75 holds only modules with last-month sales or downloads. It finds our module and pays by card instead of having its partner adapt the free MIT generator or free Python code. Whether keyword search also ranks on prior success is UNVERIFIED (blocked). The cohort is already narrowed three times: installable, developer-backed, and filing from Odoo.",
+  "earliestMoney": "Earliest sale record: November 2026 at best. That requires a Python port of products/pcn874, owner step 7 plus a new Odoo vendor step, publication, and a stranger buying in the first weeks. Even then, no automatic path writes a sale id to revenue_ledger: apps.odoo.com is egress-blocked and the dashboard is behind the owner's login. Earliest bank payout: plausibly never within 12 months. POs close only at €400 of unredeemed sales (SNIPPET), which is about 7 to 11 sales at ~$60, while the rendered median for a recently selling paid localization module is 1 sale in its lifetime.",
+  "ceilingClearsFloor": "no",
+  "cheapestTest": "The scout's cheapest test (render the Localization category from a GitHub runner) already ran on 2026-09-22, and reading it kills the line. The only reopening test is to render, via render-watch, the Localization category sorted by Best Sellers, a store search for 'Israel'/'PCN874', and the cited KSeF module pages. It reopens only if a comparable statutory module sustains 2 or more purchases a month over 12 months and no Israeli PCN874 module exists.",
+  "testRunNow": "1. Parsed research/rendered/sweep2-odoo-localization.html with python3 (split on loempia_app_card): 20 cards. Paid lifetime purchases were 1,1,7,2,2,1,1,1,1,1,12,2,1,2; free last-month downloads were 29,19,18,16,15,15; 0 Israeli entries.\n2. GitHub search_code 'pcn874 repo:odoo/odoo' returned 3 hits, all the box report's name. curl of the raw odoo/odoo 19.0 and 18.0 l10n_il manifests and report XML found no exporter. Enterprise l10n_il_reports holds one account.return.type record.\n3. curl of raw odoo/documentation 19.0 odoo_online.rst:15 printed 'Odoo Online is incompatible with custom modules or modules from the Odoo Apps Store'.\n4. curl of the npm registry search for pcn874 returned @accounter/pcn874-generator at 48,037 monthly downloads. PyPI pcn874 and pcn874-generator both returned 404.\n5. moshchot/BANKayma manifests showed 3 free AGPL Israeli Odoo export modules.\n6. One curl to apps.odoo.com/apps/modules/browse?search=Israel returned 'CONNECT tunnel failed, response 403'; not retried.\n7. Used 3 WebSearch calls: no Odoo PCN874 module found; FAQ snippet gives the €400 PO close and Git-repository registration.",
+  "killIf": "Already met. The rendered page-1 paid localization modules have a median of 1 lifetime purchase (max 12) against a floor needing about 2 per month. Odoo Online cannot install store modules. Every input is public, with a free 48k-downloads-a-month generator.",
+  "passIf": "All four must hold:\n1. A rendered store search shows no Israeli PCN874 module.\n2. A rendered purchase counter shows a comparable statutory module (e.g. KSeF) or the Best Sellers median sustaining 2 or more purchases a month over 12 months.\n3. The rendered vendor guidelines show support can be met by an agent-run written channel with no response-time commitment and no access to buyers' instances.\n4. The owner explicitly accepts an eighth step (an Odoo vendor account with automatic redemption).\nEven then the shape-A claim stays false.",
+  "urlsToRender": [
+   {
+    "url": "https://apps.odoo.com/apps/faq",
+    "why": "Cited at SWEEP-2.md:176 and 178. Settles the 70% share, the €400 PO close, automatic vs invoice redemption, whether SWIFT reaches Israel, and whether publishing is by Git repository or ZIP."
+   },
+   {
+    "url": "https://apps.odoo.com/apps/vendor-guidelines",
+    "why": "Cited at SWEEP-2.md:177. Settles the exact paid-app support duty, whether an unattended written channel can discharge it, and the lowest-price rule."
+   },
+   {
+    "url": "https://apps.odoo.com/apps/modules/19.0/ksef_integration",
+    "why": "Cited scheme-less at SWEEP-2.md:179. The purchase counter of a paid module for a hard 2026 statutory mandate in a much larger market bounds what an Israeli one could sell."
+   },
+   {
+    "url": "https://apps.odoo.com/apps/modules/19.0/oe_ksef",
+    "why": "Cited scheme-less at SWEEP-2.md:179. Second calibration point for mandate-driven paid localization demand."
+   }
+  ],
+  "reportPath": "/home/user/automaton/research/colony-sweep/screen-2/odoo-il-vat.md"
+ },
+ {
+  "id": "pcn874-embed",
+  "verdict": "KILL",
+  "decisiveFact": "The named buyer (Israeli invoicing/ERP vendors) is the ITA circular's own addressee and has shipped the PCN874 file since 2010. The circular is addressed to \"Computerized Accounts Systems Managements Program Producers\" and says \"The PCN874 file production must be completed by 01/01/2010\", with free regulator support at \"874@shaam.gov.il\" (research/rendered/pcn874-gov-il-874-eng.txt:3,12,15). The market shows the same: six of nine SERP results for the PCN874 term are vendors' help pages for their existing export (research/measurements/serp/2026-09-07-hebrew-calculators.md:225-233,247-249). New entrants build it themselves: BillOS, on npm since 2026-09-08, lists `billos vat ... --file PCN874.TXT`. Or they use the MIT @accounter/pcn874-generator (48,037 monthly downloads). The paid artefact (rule set plus fixtures) is itself MIT in our own engine (products/pcn874/package.json:26).",
+  "facts": [
+   {
+    "fact": "Israeli invoicing/ERP vendors need a PCN874 rule set they do not already have",
+    "grade": "CONTRADICTED",
+    "evidence": "pcn874-gov-il-874-eng.txt:3 'Computerized Accounts Systems Managements Program Producers', :12 'The PCN874 file production must be completed by 01/01/2010.'; SERP file :225-233 (6/9 results are iCount, H-ERP, Wizcloud, Linet export docs); docs/REJECTED.md:181 'every suite that solves allocation numbers already emits PCN874'; GitHub search_code 'PCN874' total_count 636 incl. adam2314/linet3 protected/views/data/pcn874.php; curl registry.npmjs.org/billos README: 'billos vat [--period 2026-08] [--months 2] [--file PCN874.TXT]'"
+   },
+   {
+    "fact": "Regulator support and free validation are insufficient for vendors",
+    "grade": "CONTRADICTED",
+    "evidence": "pcn874-gov-il-874-eng.txt:15 'Technical queries can be sent to e-mail: 874@shaam.gov.il'; :84 on-line simulator; products/pcn874/README.md:125 'The Authority publishes a free simulator; use it'"
+   },
+   {
+    "fact": "The paid rule set and 26 fixtures 'have never been free'",
+    "grade": "CONTRADICTED",
+    "evidence": "products/pcn874/package.json:26 '\"license\": \"MIT\"'; ls tests/fixtures/*.txt | wc -l -> 26; grep -c 'ita:' docs/SPEC.md -> 23; curl raw.githubusercontent.com/zarfatinimrod-creator/automaton/main/products/pcn874/package.json -> 200 (via session proxy)"
+   },
+   {
+    "fact": "A non-public input exists (citations, re-graded rules, adversarial corpus)",
+    "grade": "CONTRADICTED",
+    "evidence": "Work exists (README.md:53-63 nine re-graded rules) but all inputs are public: gov.il circular meta.json status 200, mirrored by h-erp and rivhit; README.md:113 'all three implementations agreed' (scout said disagreed); audits/pcn874-generator.md:8 the 26 inputs are CSV-parsing cases against our own generator"
+   },
+   {
+    "fact": "The rules rot, so a maintained feed has value",
+    "grade": "UNVERIFIED",
+    "evidence": "README.md:117 'No later edition of the layout has been rendered. The circular is from 2009'; change channel is regulator -> addressees; WebSearch SNIPPET: ITA software-houses API doc has 'Changes to the detailed report (PCN874 file)'"
+   },
+   {
+    "fact": "Free substitutes do not cover a developer buyer",
+    "grade": "CONTRADICTED",
+    "evidence": "curl -s 'https://registry.npmjs.org/-/v1/search?text=pcn874&size=20' -> '@accounter/pcn874-generator 0.6.7 2026-06-24 ... dl: {'monthly': 48037, 'weekly': 9972} | lic: MIT'; SWEEP-2.md:272 'The price floor for a developer-facing PCN874 library is zero'"
+   },
+   {
+    "fact": "pcn874-spec-watch already hashes three spec documents in CI",
+    "grade": "CONTRADICTED",
+    "evidence": "products/pcn874/docs/SPEC-SOURCES.lock.json has '\"sources\": {}'; .github/workflows/pcn874-spec-watch.yml:30-31 'permissions: contents: read' (never commits back); scripts/spec-watch.mjs:124-126 prints 'new' with no prior entry, so CHANGED cannot fire"
+   },
+   {
+    "fact": "First customer arrives inbound via the free browser validator (task #34)",
+    "grade": "UNVERIFIED",
+    "evidence": "logs/CHECKPOINT.md:162 task #34 pcn874-browser-funnel stopped midway, no build/deploy; host site needs owner steps 5 and 6"
+   },
+   {
+    "fact": "People searching PCN874 include vendor developers",
+    "grade": "UNVERIFIED",
+    "evidence": "SERP shows vendors publishing PCN874 content, not searching for it; GitHub search_issues 'PCN874' -> total_count 0"
+   },
+   {
+    "fact": "§30א closes cold outreach; inbound only is correct",
+    "grade": "CONFIRMED",
+    "evidence": "docs/REJECTED.md:781 'Israeli §30א at ₪1,000 per message closes cold list-building' (repo ruling; statute not rendered here)"
+   },
+   {
+    "fact": "Owner setup is only Gumroad; licence key issued at checkout",
+    "grade": "CONTRADICTED",
+    "evidence": "Needs owner steps 2, 3, 5, 6; products/il-biz-tools/README.md:235-236 'After a sale the owner runs `make-license.js issue <sale id>` and puts the resulting key where Gumroad delivers it'"
+   },
+   {
+    "fact": "Gumroad pays Israel in ILS; Freemius lists Israel for payouts",
+    "grade": "CONFIRMED",
+    "evidence": "docs/REJECTED.md:612 'Gumroad pays an Israeli bank account in ILS. Rendered from Gumroad's own production source'; :1316 'Israel is listed under \"Supported Countries for Payouts\"'"
+   },
+   {
+    "fact": "Upstream licences unknown (404), so a legal check is outstanding",
+    "grade": "CONTRADICTED",
+    "evidence": "research/rendered/sweep2-linet3-licence.txt:227-235 'subject to the GNU AFFERO GENERAL PUBLIC LICENSE Version 3.0'; products/pcn874/src/sources.ts:118-120 'AGPL-3.0 ... Cited for facts only; no code copied.'"
+   },
+   {
+    "fact": "Vendors will buy a contract-free, support-free card licence for a regulated component",
+    "grade": "UNVERIFIED",
+    "evidence": "No evidence offered or found; no precedent in repo; WebSearch found no commercial PCN874 SDK/component licence (SNIPPET)"
+   },
+   {
+    "fact": "Price/ceiling",
+    "grade": "UNVERIFIED",
+    "evidence": "SWEEP-2.md:208 scout: 'Cannot quantify'"
+   }
+  ],
+  "missionConflicts": [
+   "Constitution: charging for something already free (MISSION.md:344). The rule set and fixtures are MIT in products/pcn874, in a readable repo.",
+   "Recorded dead ends: SWEEP-2.md:272 (developer-facing PCN874 price floor is zero), SWEEP-2.md:316 (a paid spec-watch feed has no buyer of its own and is never to be scored as a line), SWEEP-2.md:275 and :280, docs/REJECTED.md:181 and :155-161 (ITA free simulator; charging for a free answer).",
+   "Constraint 8: every input is public (gov.il circular plus two vendor mirrors); 2026 AI-built repos show it can be reproduced.",
+   "Owner would talk to customers: embedding a third-party VAT rule set in a regulated product implies procurement, SLA and support. Same class as the Atlassian support-duty death at SWEEP-2.md:298.",
+   "Lawyer: warranty and liability terms for a VAT rule set embedded across a vendor's customer base. docs/REJECTED.md:188 already names the harm: 'A wrong PCN874 is a wrong VAT filing'.",
+   "Recurring owner work: per-sale licence issuance via make-license.js (products/il-biz-tools/README.md:235).",
+   "Tax friction (UNVERIFIED): an owner registered as עוסק פטור cannot issue the tax invoice that B2B buyers expect (SERP instrument summary, serp file:81-82)."
+  ],
+  "newOwnerSteps": [
+   "Issue a licence key per sale (`make-license.js issue <sale id>`), as products/il-biz-tools/README.md:235 documents the only licence path today.",
+   "Approve B2B licence (EULA) terms with warranty and liability limits for a VAT rule set embedded in third-party products; this is lawyer-shaped."
+  ],
+  "firstStrangerPath": "None survives. The designed path has four links: (1) a developer at an Israeli invoicing/ERP vendor searches 'PCN874'; (2) lands on our free browser validator; (3) clicks 'license this engine'; (4) pays on Gumroad. Link 1 fails: established vendors have shipped the export since 2010 against the regulator's own circular, and 2026 entrants build it (BillOS) or use the MIT library (48k/month). Link 2 fails: the SERP for the term is those vendors' own help pages. Link 3 fails: the page does not exist (task #34 stopped midway; site needs owner steps 5 and 6). Link 4 needs owner steps 2 and 3, plus a vendor willing to buy a regulated component with no contract, support or warranty (unevidenced).",
+  "earliestMoney": "No honest date: no buyer has been identified, and every identified member of the buyer class already has the product. Mechanical floor if one existed: mid-December 2026. That assumes owner steps 2, 3, 5 and 6 (none recorded done) in early October, then task #34 resumed and deployed, 2-4 weeks of indexing, the candidate's own 30-day click window before pricing, a sale, and Gumroad's 7-day hold.",
+  "ceilingClearsFloor": "no",
+  "cheapestTest": "A ₪0 occupancy count of the buyer class: name one Israeli invoicing/ERP vendor, or 2026 entrant, that lacks a PCN874 export or publicly asks for a maintained rule set. Run from this container with npm registry search, GitHub code, repo and issue search, and the existing SERP measurement. Result: every identified vendor ships the export; 2026 entrants build it; GitHub has zero PCN874 issues. The scout's 30-day click test cannot decide it: it needs four owner steps and an unbuilt page, and cookieless PostHog cannot tell a vendor developer from a bookkeeper.",
+  "testRunNow": "curl -s 'https://registry.npmjs.org/-/v1/search?text=pcn874&size=20' -> 4 MIT packages; '@accounter/pcn874-generator 0.6.7 2026-06-24 ... {'monthly': 48037, 'weekly': 9972}'; 'billos 0.3.0 2026-09-08'. curl -s https://registry.npmjs.org/billos -> README 'billos vat [--period 2026-08] [--months 2] [--file PCN874.TXT]'. GitHub search_code 'PCN874' -> total_count 636 (linet3, accounter, RcBuilder, amitpo23/cfo, priority-cpa-automation, openaccountants, skills-il). GitHub search_repositories 'pcn874' -> 4 repos, 3 created in 2026. GitHub search_issues 'PCN874' -> total_count 0. curl raw.githubusercontent.com/zarfatinimrod-creator/automaton/main/products/pcn874/package.json -> 200. Read SPEC-SOURCES.lock.json ('sources': {}) and spec-watch.mjs:124-126. WebSearch x2 (SNIPPET): no commercial PCN874 SDK/licence found; SAP S/4HANA ships 'PCN874 Files - Israel'; ITA software-houses API doc has 'Changes to the detailed report (PCN874 file)'.",
+  "killIf": "Already met: every identified member of the buyer class (iCount, H-ERP/Hashavshevet, Wizcloud, Rivhit, Linet, BillOS, SAP) ships a PCN874 export against the regulator's own circular. The artefact offered for sale is already MIT in our engine. Paid spec-watch feeds are a recorded non-line (SWEEP-2.md:316).",
+  "passIf": "All three would be needed. (1) A named Israeli invoicing/ERP vendor or funded entrant that demonstrably lacks a PCN874 export, or publicly asks for a maintained rule set. (2) A paid artefact that is neither MIT in our repo nor sent free by the regulator, such as a verified post-2009 edition caught by a watch that can actually fire. (3) A delivery path with no per-sale owner action and no support or warranty conversation, such as rendered Gumroad native licence keys plus terms a vendor accepts without a call.",
+  "urlsToRender": [
+   {
+    "url": "https://help.icount.co.il/reports/pcn874/",
+    "why": "Cited at research/measurements/serp/2026-09-07-hebrew-calculators.md:225. Would confirm from the page itself that a leading buyer-class vendor already ships the PCN874 export."
+   },
+   {
+    "url": "https://assets.kpmg.com/content/dam/kpmg/il/pdf/vat_software-houses-ENG.pdf",
+    "why": "Cited at research/colony-sweep/scouts/israel-bureaucracy--allocation-numbers.md:111,275. The ITA's API description for software houses; settles whether the regulator sends PCN874 changes directly to vendors, and whether our rule set misses a published change."
+   },
+   {
+    "url": "https://www.gov.il/he/pages/tax-vat-online-invoice-reporting",
+    "why": "Cited at research/measurements/serp/2026-09-07-hebrew-calculators.md:231. The official current page for the reporting duty; would show any edition newer than the 2009 circular, and the regulator's free tools."
+   }
+  ],
+  "reportPath": "/home/user/automaton/research/colony-sweep/screen-2/pcn874-embed.md"
+ },
+ {
+  "id": "metaculus-bots",
+  "verdict": "KILL",
+  "decisiveFact": "Every prize reaches the owner only through per-win paperwork he has to do himself. The source of Metaculus's own tournament-rules page says: \"prize winners must sign and return any and all acceptance documents ... (a) eligibility certifications or proof of identity; (b) U.S. tax forms (such as ... IRS Form W-8BEN ...); (c) payment delivery information\" (Metaculus/metaculus front_end/src/app/(main)/tournament-rules/page.tsx:197-206, raw.githubusercontent.com HTTP 200). The AIB rules add \"Prize recipients will be required to verify their identity, nationality, and residency\" (aib/contest-rules/page.tsx:61-62). The Fall 2025 survey adds \"Survey is required for earning prize\" every season. The board deferred Devpost on this exact collision: \"Recurring owner paperwork breaks MISSION §1's one-time rule ... Not built\" (research/colony-sweep/BOARD.md:312). The owner's default answer is \"no\" (BOARD.md:350). The class stays closed until he says yes (docs/REJECTED.md:1234).",
+  "facts": [
+   {
+    "fact": "Metaculus runs a bot-only seasonal tournament of about $50k, 3x/year, 4-month seasons starting Jan/May/Sep, 300-500 questions",
+    "grade": "CONFIRMED",
+    "evidence": "Metaculus/metaculus front_end/src/app/(futureeval)/futureeval/components/futureeval-participate-tab.tsx:204-207: title \"Seasonal Bot Tournament\", tag \"~$50k · 3x/year\", \"~4-month seasons starting every January, May, and September, each with 300–500 questions\"; Fall 2025 card heading2 \"$58,000\" (aib/components/cards-2025-fall.tsx)"
+   },
+   {
+    "fact": "A season is running now (Fall 2026 FutureEval, id 33121)",
+    "grade": "CONFIRMED",
+    "evidence": "Metaculus/forecasting-tools forecasting_tools/helpers/metaculus_client.py:119-120,156: FE_FALL_2026_ID = ( 33121 # https://www.metaculus.com/tournament/fall-futureeval-2026/ ; CURRENT_AI_COMPETITION_ID = FE_FALL_2026_ID"
+   },
+   {
+    "fact": "Bots are the required entrants (no human in the loop); outside bot tournaments, bots are ineligible for prizes",
+    "grade": "CONFIRMED",
+    "evidence": "tournament-rules/page.tsx:157-161 \"Unless otherwise specifically permitted in the Competition-specific rules, automated systems, bots, artificial intelligence ... are ineligible for tournament prizes\"; front_end/messages/en.json:1154 \"No human in the loop\""
+   },
+   {
+    "fact": "The official template runs unattended on GitHub Actions every 20 minutes",
+    "grade": "CONFIRMED",
+    "evidence": "Metaculus/metac-bot-template README.md:22 \"the bot will keep forecasting on new questions automatically every 20 minutes — no local setup needed\"; run_bot_on_tournament.yaml cron \"7,27,47 * * * *\""
+   },
+   {
+    "fact": "The template is what Metaculus runs as its own reference (metac-*) bots",
+    "grade": "CONFIRMED",
+    "evidence": "forecasting-tools official_bots/template_bot_2026_fall.py:42 \"This is a copy of what is used by Metaculus to run the Metac Bots in our benchmark\""
+   },
+   {
+    "fact": "No ranking on prior success: each season is scored only from its own questions; prize share = squared positive score",
+    "grade": "CONFIRMED",
+    "evidence": "Metaculus/metaculus scoring/utils.py:192-236 builds entries from that leaderboard's scores only; :231 \"entry.take = max(entry.score, 0) ** 2\"; :540 \"percent_prize = entry.take / (scoring_take or 1)\""
+   },
+   {
+    "fact": "Prizes below $50 are not paid and are redistributed upward",
+    "grade": "CONFIRMED",
+    "evidence": "scoring/models.py:199-205 minimum_prize_amount default=50.00, \"Any remaining money is redistributed.\"; scoring/utils.py:541-543"
+   },
+   {
+    "fact": "One prize-eligible bot per person, owned by a personal Metaculus account (owner step, cannot multiply)",
+    "grade": "CONFIRMED",
+    "evidence": "en.json:1156 \"One prize-eligible bot per user\"; en.json:1167 \"Create a personal Metaculus account to participate in the tournament\"; users/models.py:241-245 unique_primary_bot_per_bot_owner; scoring/utils.py:493 \"all non-primary bots are unconditionally excluded\""
+   },
+   {
+    "fact": "Owner setup is one-time, comparable to Stripe Connect onboarding (scout's claim)",
+    "grade": "CONTRADICTED",
+    "evidence": "tournament-rules/page.tsx:197-206 per-winner acceptance documents, proof of identity, W-8BEN, payment details; aib/contest-rules/page.tsx:61-62 \"Prize recipients will be required to verify their identity, nationality, and residency\"; Fall 2025 survey PDF p.1 \"Survey is required for earning prize\" — per paying season, not one-time"
+   },
+   {
+    "fact": "Code inspection is a prize condition; a code review 'with you' by an employee if the code is not public",
+    "grade": "CONFIRMED",
+    "evidence": "en.json:1157 \"allow a member of Metaculus to inspect their code\"; survey PDF Q16 \"we may still ask you for a code review, but in this case will have an employee unassociated with our AI initiatives review the code with you\" (PDF sha256 533a6437...cf5d, fetched from metaculus-web-media S3, HTTP 200)"
+   },
+   {
+    "fact": "Prize may be paid as gift card or prepaid card, at Metaculus's discretion",
+    "grade": "CONFIRMED",
+    "evidence": "tournament-rules/page.tsx:262-267 \"Monetary payouts may be paid in the form of cash or a cash equivalent, which may include but is not limited to prepaid virtual cards, gift cards, or similar methods, at the discretion of Metaculus\""
+   },
+   {
+    "fact": "Israel is not an excluded country",
+    "grade": "CONFIRMED",
+    "evidence": "aib/contest-rules/page.tsx:60-61 excludes \"Crimea, Cuba, Iran, Syria, North Korea, Sudan, Russia, or any other place prohibited by applicable law\" — Israel not listed"
+   },
+   {
+    "fact": "Prize money reaches an Israeli bank with a ledger-grade transaction id",
+    "grade": "UNVERIFIED",
+    "evidence": "No reachable source states the actual payout method for foreign winners; src/revenue/ledger.ts:408-411 requires externalId for a payout"
+   },
+   {
+    "fact": "No camera/liveness step in winner identity verification",
+    "grade": "UNVERIFIED",
+    "evidence": "Rules require identity/nationality/residency verification but name no method; scout's claim rests on absence only"
+   },
+   {
+    "fact": "LLM inference is free for seasonal entrants",
+    "grade": "UNVERIFIED",
+    "evidence": "Statement CONFIRMED at futureeval-participate-tab.tsx:323-324 \"LLM inference costs are covered free-of-charge, courtesy of OpenAI, Anthropic, and Google\"; how much and what the form https://forms.gle/aQdYMq9Pisrf1v7d8 requires is not visible"
+   },
+   {
+    "fact": "The venue is a lottery with ~₪0 expected value for a new entrant (scout's ceiling, ML-competitions ruling)",
+    "grade": "CONTRADICTED",
+    "evidence": "Parsed Metaculus's hardcoded leaderboards: aib/components/leaderboard-q1.tsx:65-66 metac-o1 rank 1; leaderboard-q2.tsx:73-74 metac-o3+asknews rank 2 (score 5131.07); Q2 2025: 19 of 53 non-Metaculus bots paid, 12 got >=$400; counterfactual template take share $4,808 (Q2) and $13,330 (Q1) of $30,000"
+   },
+   {
+    "fact": "Search snippet: template bots ranked 82nd of 96 in Q2 2025",
+    "grade": "CONTRADICTED",
+    "evidence": "leaderboard-q2.tsx: rank 82 is metac-gpt-4o+asknews (weak model); the same template with o3 ranked #2"
+   },
+   {
+    "fact": "A template bot still places in the money in 2026 seasons",
+    "grade": "UNVERIFIED",
+    "evidence": "2026 leaderboards are served only by metaculus.com: this container gets 'curl: (56) CONNECT tunnel failed, response 403'; runner got HTTP 403 (research/rendered/sweep2-metaculus-rules.meta.json); Metaculus/aib-analysis keeps its prize sheet in local/private_input_data (aib_analysis/survey_analysis/config.py:21-29)"
+   },
+   {
+    "fact": "US withholding (30%) likely not reduced by treaty for prize income",
+    "grade": "UNVERIFIED",
+    "evidence": "research/rendered/irs-us-israel-treaty.txt:7-39 lists Articles 1-32 with no 'Other Income' article; applying that to prize income is a legal inference, not a rendered rule"
+   },
+   {
+    "fact": "The settling page https://www.metaculus.com/tournament-rules/ could be rendered from a GitHub runner",
+    "grade": "CONTRADICTED",
+    "evidence": "research/rendered/sweep2-metaculus-rules.meta.json: \"status\": 403, \"error\": \"HTTP 403 Forbidden\", \"byteLength\": 0, fetchedAt 2026-09-22 — its source was read instead from raw.githubusercontent.com Metaculus/metaculus (HTTP 200, 15,130 bytes)"
+   }
+  ],
+  "missionConflicts": [
+   "Recurring owner paperwork every paying season (acceptance documents; identity, nationality and residency verification; W-8BEN; payment details; prize survey): the collision on which BOARD.md:312 deferred Devpost; owner default 'no' (BOARD.md:350); class closed at docs/REJECTED.md:1234",
+   "New owner account: a personal Metaculus account plus bot token — MISSION §1 forbids the colony opening an account in the owner's name",
+   "A code review 'with' a Metaculus employee if the bot code is not public (a conversation). Avoidable only by publishing the code under the brand org, which needs owner step 7",
+   "Payout form is Metaculus's choice, gift cards included — may not be bookable under MISSION rule 2 (money counts only with a platform transaction id)",
+   "Free LLM credits need a form; the alternative is a funded API key, a recurring spend the ₪200 float must never become",
+   "Identity-verification method unknown — a camera/liveness step cannot be ruled out",
+   "Tax exposure: likely 30% US withholding with no treaty 'Other Income' article, plus Israeli income tax on foreign prize income",
+   "One prize-eligible bot per person: a single store forever, cannot multiply"
+  ],
+  "newOwnerSteps": [
+   "Create a personal Metaculus account under a brand username, create the primary forecasting bot (Settings → My Forecasting Bots), and paste its token as GitHub secret METACULUS_TOKEN",
+   "Request the free seasonal LLM credits via the Metaculus Google Form (https://forms.gle/aQdYMq9Pisrf1v7d8), or fund an LLM API key",
+   "Every paying season: fill in the prize survey, sign and return the acceptance documents, verify identity/nationality/residency, submit a W-8BEN and payment details within Metaculus's deadline (≤180 days)",
+   "If the bot's code is not fully public: take part in a code review with a Metaculus employee"
+  ],
+  "firstStrangerPath": "Metaculus is the payer and announces the job: the Fall 2026 FutureEval season (id 33121), MiniBench (~$1k bi-weekly) and Market Pulse. A token-registered primary bot forecasts from a GitHub Actions cron and is scored only on that season's questions. Prize share is max(score,0)^2 over the eligible field (scoring/utils.py:231,540). No discovery or prior-success rank is involved. Money then flows: email notification → owner paperwork (survey, acceptance documents, ID/nationality/residency, W-8BEN, payment details) → payment in cash or a cash equivalent chosen by Metaculus.",
+  "earliestMoney": "No earlier than about March 2027, and only if the payout is cash with a reference. Nothing can run until the owner creates the Metaculus account. The current Fall 2026 season runs about four months from September, ending around the turn of the year. In Q2 2025 (ended 30 June) winners were announced on 2025-08-20 (X status 1958239204325879854), 51 days later. The Fall 2025 survey form was still being printed on 4/17/26. Then comes the owner's per-win paperwork (up to 180 days allowed) and a payment method Metaculus chooses. MiniBench (~$1k per fortnight) could pay earlier, but its payout cadence is unverified.",
+  "ceilingClearsFloor": "unknown",
+  "cheapestTest": "Zero-cost, no owner, from a GitHub Actions runner (metaculus.com refuses this container). Use forecasting-tools' MetaculusClient to read the finished Spring 2026 (32916) and Summer 2026 (33022) leaderboards through the public API. Find the best metac-* bot (Metaculus running the same template) and compute the share it would have taken if prize-eligible, as done here for 2025. The first API call also tests whether Metaculus's API answers a GitHub runner at all; render-watch got a 403 on an HTML page. This test only matters after the owner answers BOARD §8.1 'yes'.",
+  "testRunNow": "(1) One curl to https://www.metaculus.com/tournament-rules/ returned 'curl: (56) CONNECT tunnel failed, response 403'. (2) Read the page's source from raw.githubusercontent.com/Metaculus/metaculus/main/front_end/src/app/(main)/tournament-rules/page.tsx (HTTP 200, 15,130 bytes), plus aib/contest-rules/page.tsx (200, 34,750), scoring/utils.py, scoring/models.py, users/models.py, front_end/messages/en.json and futureeval-participate-tab.tsx. (3) Parsed the hardcoded AIB leaderboards leaderboard-q1.tsx and leaderboard-q2.tsx. Q2 2025: '96 rows; 19 paid; total $30,000; min prize $111; last paid rank 30'; 'metac-o3+asknews rank 2 score 5131.07 counterfactual share 0.160 -> $4808'. Q1 2025: 'metac-o1 rank 1 score 3631.12 counterfactual share 0.444 -> $13330'. (4) Fetched the Fall 2025 participant survey PDF from metaculus-web-media S3 (HTTP 200, 240,228 bytes, sha256 533a643783d7de2bffb94d357a6377a0e7dce2c80253e417de59dc5be7b1cf5d) and extracted its text: 'Survey is required for earning prize'.",
+  "killIf": "The owner answers BOARD §8.1 'no' or does not answer (the current default). Even after a 'yes', any one of these kills it: Metaculus's API refuses GitHub runners; the best metac-* template bot scores ≤ 0 in Spring or Summer 2026; its counterfactual prize is under $300 in either season; or Israeli winners are paid only in gift cards or prepaid cards with no bank transaction id.",
+  "passIf": "It reopens (as TEST_FIRST, not SURVIVES) only if the owner answers §8.1 'yes' for Metaculus specifically, knowing the full per-season paperwork list, AND the runner test shows the best template bot above zero, in the top 15 of prize-eligible entries, and worth at least $400 of the pool in both Spring and Summer 2026 — about ₪300/month over a season at ₪3-4 per dollar.",
+  "urlsToRender": [
+   {
+    "url": "https://forms.gle/aQdYMq9Pisrf1v7d8",
+    "why": "Free-LLM-credits form cited in Metaculus/metac-bot-template README.md:27; shows what the owner must supply, which decides whether 'free inference' costs an owner step or money"
+   },
+   {
+    "url": "https://www.metaculus.com/futureeval/participate/",
+    "why": "Current-season rules (README.md:2 'for more info and tournament rules'); the only AIB rules in source are the Q3 2024 edition. The runner got a 403 from metaculus.com on 2026-09-22, so a second 403 is likely and worth recording"
+   },
+   {
+    "url": "https://www.metaculus.com/tournament/fall-futureeval-2026/",
+    "why": "Current season's pool, dates and bot-eligibility status (metaculus_client.py:120)"
+   },
+   {
+    "url": "https://www.metaculus.com/notebooks/38928/ai-benchmark-resources/",
+    "why": "Token, credits and API-key mechanics (README.md:44)"
+   },
+   {
+    "url": "https://www.metaculus.com/help/scores-faq/#tournaments-section",
+    "why": "The Tournament Scoring Rules the prize follows (tournament-rules/page.tsx:254)"
+   },
+   {
+    "url": "https://metaculus-web-media.s3.us-west-2.amazonaws.com/Fall2025-AIB-Participant-Survey-Google-Forms.pdf",
+    "why": "The prize-survey requirement and code-review clause, read here from a scratch copy; rendering stores it in the repo so the quotes can be checked"
+   }
+  ],
+  "reportPath": "/home/user/automaton/research/colony-sweep/screen-2/metaculus-bots.md"
+ }
+]

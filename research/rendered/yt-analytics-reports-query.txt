@@ -1,0 +1,1058 @@
+Reports: Query | YouTube Analytics and Reporting APIs | Google for Developers
+
+Skip to main content
+
+YouTube
+
+Analytics and Reporting APIs
+
+/
+
+English
+
+Deutsch
+
+Español
+
+Español – América Latina
+
+Français
+
+Indonesia
+
+Italiano
+
+Polski
+
+Português – Brasil
+
+Tiếng Việt
+
+Türkçe
+
+Русский
+
+עברית
+
+العربيّة
+
+فارسی
+
+हिंदी
+
+বাংলা
+
+ภาษาไทย
+
+中文 – 简体
+
+中文 – 繁體
+
+日本語
+
+한국어
+
+Sign in
+
+Home
+
+Overview
+
+Authorization
+
+Bulk Reports
+
+Targeted Queries
+
+Resources
+
+YouTube
+
+Analytics and Reporting APIs
+
+Home
+
+Overview
+
+Authorization
+
+Bulk Reports
+
+Targeted Queries
+
+Resources
+
+YouTube Analytics API
+
+Data Model
+
+Overview
+
+Dimensions
+
+Metrics
+
+Channel Reports
+
+Content Owner Reports
+
+Guides
+
+Sample requests
+
+API Reference
+
+Overview
+
+reports.query
+
+Groups
+
+Overview
+list
+insert
+update
+delete
+
+GroupItems
+
+Overview
+list
+insert
+delete
+
+Revision History
+
+Important: YouTube is updating its policy for how it counts views for all video formats. Learn more
+
+Home
+
+Products
+
+YouTube
+
+Analytics and Reporting APIs
+
+Targeted Queries
+
+Reports: Query
+
+Stay organized with collections
+
+Save and categorize content based on your preferences.
+
+Important: API requests to this method now require access to the https://www.googleapis.com/auth/youtube.readonly scope.
+
+This method lets you retrieve many different Analytics reports. Each request uses query parameters to specify a channel ID or content owner, a start date, an end date, and at least one metric. You can also provide additional query parameters, such as dimensions, filters, and sorting instructions.
+
+Metrics are individual measurements of user activity, such as video views or ratings (likes and dislikes).
+
+Dimensions are common criteria that are used to aggregate data, such as the date on which the user activity occurred or the country where the users were located. In a report, each row of data has a unique combination of dimension values.
+
+Filters are dimension values that specify the data that will be retrieved.
+
+For example, you could retrieve data for a specific country, a specific video, or a group of videos.
+
+Note: Content owner reports are only accessible to YouTube content partners who participate in the YouTube Partner Program .
+
+Common use cases
+
+Request
+
+HTTP request
+
+GET https://youtubeanalytics.googleapis.com/v2/reports
+
+All YouTube Analytics API requests must be authorized. The Authorization guide explains how to use the OAuth 2.0 protocol to retrieve authorization tokens.
+
+YouTube Analytics API requests use the following authorization scopes:
+
+Scope
+
+Description
+
+https://www.googleapis.com/auth/yt-analytics.readonly
+
+View YouTube Analytics reports for your YouTube content. This scope provides access to user activity metrics, like view counts and rating counts.
+
+https://www.googleapis.com/auth/yt-analytics-monetary.readonly
+
+View YouTube Analytics monetary reports for your YouTube content. This scope provides access to user activity metrics and to estimated revenue and ad performance metrics.
+
+https://www.googleapis.com/auth/youtube
+
+Manage your YouTube account. In the YouTube Analytics API, channel owners use this scope to manage YouTube Analytics groups and group items.
+
+https://www.googleapis.com/auth/youtubepartner
+
+View and manage YouTube assets and associated content on YouTube. In the YouTube Analytics API, content owners use this scope to manage YouTube Analytics groups and group items.
+
+Parameters
+
+The following tables list required and optional query parameters for API requests to retrieve query reports. The standard query parameters listed in the table are also optional and are supported by many Google APIs.
+
+Parameter
+
+Description
+
+Required Parameters
+
+endDate
+
+string
+
+The end date for fetching YouTube Analytics data. The value should be in YYYY-MM-DD format.
+
+The API response contains data up until the last day for which all metrics in the query are available at the time of the query. So, for example, if the request specifies an end date of July 5, 2017, and values for all of the requested metrics are only available through July 3, 2017, that will be the last date for which data is included in the response. (That is true even if data for some of the requested metrics is available for July 4, 2017.)
+Note: In version 1 of the API, this parameter was named end-date .
+
+ids
+
+string
+
+Identifies the YouTube channel or content owner for which you are retrieving YouTube Analytics data.
+
+To request data for a YouTube channel, set the ids parameter value to either channel==MINE or channel== CHANNEL_ID , where CHANNEL_ID identifies the currently authenticated user's YouTube channel.
+
+To request data for a YouTube content owner, set the ids parameter value to contentOwner== OWNER_NAME , where OWNER_NAME is the content owner ID for the user.
+
+metrics
+
+string
+
+A comma-separated list of YouTube Analytics metrics, such as views or likes,dislikes . See the documentation for channel reports or content owner reports for a list of the reports that you can retrieve and the metrics available in each report. (The Metrics document contains definitions for all of the metrics.)
+
+startDate
+
+string
+
+The start date for fetching YouTube Analytics data. The value should be in YYYY-MM-DD format.
+Note: In version 1 of the API, this parameter was named start-date .
+
+Optional Parameters
+
+currency
+
+string
+
+The currency that the API will use to specify the following estimated revenue metrics: estimatedRevenue , estimatedAdRevenue , estimatedRedPartnerRevenue , grossRevenue , cpm , playbackBasedCpm . The values that the API returns for those metrics are estimates calculated using exchange rates that change on a daily basis. If none of those metrics are requested, the parameter is ignored.
+
+The parameter value is a three-letter ISO 4217 currency code from the list of currencies below. The API returns an error if an unsupported currency is specified. The default value is USD .
+
+See supported currencies
+
+Currency codes
+
+AED
+
+United Arab Emirates dirham
+
+ANG
+
+Netherlands Antillean guilder
+
+ARS
+
+Argentine peso
+
+AUD
+
+Australian dollar
+
+BDT
+
+Bangladeshi taka
+
+BGN
+
+Bulgarian lev
+
+BHD
+
+Bahraini dinar
+
+BND
+
+Brunei dollar
+
+BOB
+
+Boliviano
+
+BRL
+
+Brazilian real
+
+BWP
+
+Botswana pula
+
+CAD
+
+Canadian dollar
+
+CHF
+
+Swiss franc
+
+CLP
+
+Chilean peso
+
+CNY
+
+Chinese yuan
+
+COP
+
+Colombian peso
+
+CRC
+
+Costa Rican colon
+
+CZK
+
+Czech koruna
+
+DKK
+
+Danish krone
+
+DOP
+
+Dominican peso
+
+DZD
+
+Algerian dinar
+
+EGP
+
+Egyptian pound
+
+EUR
+
+Euro
+
+FJD
+
+Fiji dollar
+
+GBP
+
+Pound sterling
+
+GTQ
+
+Guatemalen quetzal
+
+HKD
+
+Hong Kong dollar
+
+HNL
+
+Honduran lempira
+
+HRK
+
+Croatian kuna
+
+HUF
+
+Hungarian forint
+
+IDR
+
+Indonesian rupiah
+
+ILS
+
+Israeli new shekel
+
+INR
+
+Indian rupee
+
+JMD
+
+Jamaican dollar
+
+JOD
+
+Jordanian dollar
+
+JPY
+
+Japanese yen
+
+KES
+
+Kenyan shilling
+
+KRW
+
+South Korean won
+
+KWD
+
+Kuwaiti dinar
+
+KYD
+
+Cayman Islands dollar
+
+KZT
+
+Kazakhstani tenge
+
+LBP
+
+Lebanese pound
+
+LKR
+
+Sri Lankan rupee
+
+MAD
+
+Moroccan dirham
+
+MDL
+
+Moldovan leu
+
+MKD
+
+Macedonian denar
+
+MUR
+
+Mauritian rupee
+
+MVR
+
+Maldivian rufiyaa
+
+MXN
+
+Mexican peso
+
+MYR
+
+Malaysian ringgit
+
+NAD
+
+Namibian dollar
+
+NGN
+
+Nigerian naira
+
+NIO
+
+Nicaraguan córdoba
+
+NOK
+
+Norwegian krone
+
+NPR
+
+Nepalese rupee
+
+NZD
+
+New Zealand dollar
+
+OMR
+
+Omana rial
+
+PEN
+
+Peruvian nuevo sol
+
+PGK
+
+Papua New Guinean kina
+
+PHP
+
+Philippine peso
+
+PKR
+
+Pakistani rupee
+
+PLN
+
+Polish złoty
+
+PYG
+
+Paraguayan guaraní
+
+QAR
+
+Qatari riyal
+
+RON
+
+Romanian new leu
+
+RSD
+
+Serbian dinar
+
+RUB
+
+Russian ruble
+
+SAR
+
+Saudi riyal
+
+SCR
+
+Seychelles rupee
+
+SEK
+
+Swedish krona/kronor
+
+SGD
+
+Singapore dollar
+
+SLL
+
+Sierra Leonean leone
+
+SVC
+
+Salvadoran colón
+
+THB
+
+Thai baht
+
+TND
+
+Tunisian dinar
+
+TRY
+
+Turkish lira
+
+TTD
+
+Trinidad and Tobago dollar
+
+TWD
+
+New Taiwan dollar
+
+TZS
+
+Tanzanian shilling
+
+UAH
+
+Ukrainian hryvnia
+
+UGX
+
+Ugandan shilling
+
+USD
+
+United States dollar
+
+UYU
+
+Uruguayan peso
+
+UZS
+
+Uzbekistan som
+
+VEF
+
+Venezuelan bolívar
+
+VND
+
+Vietnamese dong
+
+XAF
+
+CFA franc BEAC
+
+XOF
+
+CFA franc BCEAO
+
+YER
+
+Yemeni rial
+
+ZAR
+
+South African rand
+
+dimensions
+
+string
+
+A comma-separated list of YouTube Analytics dimensions, such as video or ageGroup,gender . See the documentation for channel reports or content owner reports for a list of the reports that you can retrieve and the dimensions used for those reports. (The Dimensions document contains definitions for all of the dimensions.)
+
+filters
+
+string
+
+A list of filters that should be applied when retrieving YouTube Analytics data. The documentation for channel reports and content owner reports identifies the dimensions that can be used to filter each report, and the Dimensions document defines those dimensions.
+
+If a request uses multiple filters, join them together with a semicolon ( ; ), and the returned result table will satisfy both filters. For example, a filters parameter value of video==dMH0bHeiRNg;country==IT restricts the result set to include data for the given video in Italy.
+
+Specifying multiple values for a filter
+
+The API supports the ability to specify multiple values for the video , playlist , and channel filters. To do so, specify a separated list of the video, playlist, or channel IDs for which the API response should be filtered. For example, a filters parameter value of video==pd1FJh59zxQ,Zhawgd0REhA;country==IT restricts the result set to include data for the given videos in Italy. The parameter value can specify up to 500 IDs. Note: Audience Retention reports ( dimensions=elapsedVideoTimeRatio ) only support filtering by a single video ID.
+
+When specifying multiple values for the same filter, you can also add that filter to the list of dimensions that you specify for the request. This is true even if the filter is not listed as a supported dimension for a particular report. If you do add the filter to the list of dimensions, then the API also uses the filter values to group results.
+
+For example, suppose you retrieve a channel's traffic source report , which aggregates viewing statistics based on the manner in which viewers reached the channel's video content. Also suppose that your request's filters parameter request identifies a list of 10 videos for which data should be returned.
+
+If you add video to the dimensions parameter's value, the API response will provide separate traffic source statistics for each of the 10 videos.
+
+If you do not add video to the dimensions parameter's value, the API response will aggregate the traffic source statistics for all of the 10 videos.
+
+includeHistoricalChannelData
+
+boolean
+
+Note: This parameter only applies to content owner reports .
+
+Indicates whether the API response should include channels' watch time and view data from the time period prior to when the channels were linked to the content owner. The default parameter value is false which means that the API response only includes watch time and view data from the dates that channels were linked to the content owner.
+
+It is important to remember that different channels might have been linked to a content owner on different dates. If the API request is retrieving data for multiple channels and the parameter value is false , then the API response contains data based on the linking date for each respective channel. If the parameter value is true , the API response contains data matching the dates specified in the API request.
+Note: In version 1 of the API, this parameter was named include-historical-channel-data .
+
+maxResults
+
+integer
+
+The maximum number of rows to include in the response.
+Note: In version 1 of the API, this parameter was named max-results .
+
+sort
+
+string
+
+A comma-separated list of dimensions or metrics that determine the sort order for YouTube Analytics data. By default the sort order is ascending. The - prefix causes descending sort order.
+
+startIndex
+
+integer
+
+The 1-based index of the first entity to retrieve. (The default value is 1 .) Use this parameter as a pagination mechanism along with the max-results parameter.
+Note: In version 1 of the API, this parameter was named start-index .
+
+Standard Parameters
+
+access_token
+
+OAuth 2.0 token for the current user.
+
+One possible way to provide an OAuth 2.0 token.
+
+alt
+
+This parameter is not supported in version 2 of the API, which only supports JSON responses. The data format for the API response.
+
+Valid values: json , csv
+
+Default value: json
+
+callback
+
+Callback function.
+
+Name of the JavaScript callback function that handles the response.
+
+Used in JavaScript JSON-P requests.
+
+prettyPrint
+
+Returns response with indentations and line breaks.
+
+Returns the response in a human-readable format if true .
+
+Default value: true .
+
+When this is false , it can reduce the response payload size, which might lead to better performance in some environments.
+
+quotaUser
+
+This parameter was supported in version 1 of the API, which is now deprecated. This parameter is not supported in version 2 of the API.
+
+userIp
+
+This parameter was supported in version 1 of the API, which is now deprecated. This parameter is not supported in version 2 of the API.
+
+Request body
+
+Do not send a request body when calling this method.
+
+Response
+
+As noted in the alt parameter definition, the API can return responses in JSON or CSV format. Information about the response body for each type is shown below:
+
+JSON
+
+{
+"kind": "youtubeAnalytics#resultTable",
+"columnHeaders": [
+{
+"name": string ,
+"dataType": string ,
+"columnType": string
+},
+... more headers ...
+],
+"rows": [
+[
+{value}, {value}, ...
+]
+]
+}
+
+Properties
+
+kind
+
+string
+
+This value specifies the type of data included in the API response. For the query method, the kind property value will be youtubeAnalytics#resultTable . However, if the API adds support for other methods, API responses for those methods may introduce other kind property values.
+
+columnHeaders[]
+
+list
+
+This value specifies information about the data returned in the rows fields. Each item in the columnHeaders list identifies a field returned in the rows value, which contains a list of comma-delimited data.
+
+The columnHeaders list begins with the dimensions specified in the API request, which are followed by the metrics specified in the API request. The order of both dimensions and metrics matches the ordering in the API request.
+
+For example, if the API request contains the parameters dimensions=ageGroup,gender&metrics=viewerPercentage , the API response returns columns in this order: ageGroup , gender , viewerPercentage .
+
+columnHeaders[]. name
+
+string
+
+The name of the dimension or metric.
+
+columnHeaders[]. columnType
+
+string
+
+The type of the column ( DIMENSION or METRIC ).
+
+columnHeaders[]. dataType
+
+string
+
+The type of the data in the column ( STRING , INTEGER , FLOAT , etc.).
+
+rows[]
+
+list
+
+The list contains all rows of the result table. Each item in the list is an array that contains comma-delimited data corresponding to a single row of data. The order of the comma-delimited data fields will match the order of the columns listed in the columnHeaders field.
+
+If no data is available for the given query, the rows element will be omitted from the response.
+
+The response for a query with the day dimension will not contain rows for the most recent days.
+
+CSV
+
+day, views, likes, ...
+"2012-01-01", 12.0, 3, ...
+"2012-01-02", 16.0, 2, ...
+"2012-01-03", 18.0, 8, ...
+...
+
+Examples
+
+Note: The following code samples may not represent all supported programming languages. See the client libraries documentation for a list of supported languages.
+
+JavaScript
+
+This example calls the YouTube Analytics API to retrieve daily views and other metrics for the authorizing user's
+channel for the 2017 calendar year. The sample uses the
+Google APIs JavaScript client library .
+
+Before running this sample locally for the first time, you need to set up authorization credentials for your project:
+
+Create or select a project in the Google Cloud console .
+
+Enable the YouTube Analytics API for your project.
+
+At the top of the Credentials page, select the OAuth consent screen tab. Select an Email address, enter a Product name if not already set, and click the Save button.
+On the Credentials page, click the Create credentials button and select Oauth client ID .
+
+Select the application type Web application.
+
+In the Authorized JavaScript origins field, enter the URL from which you will be serving the code sample. For example, you could use something like http://localhost:8000 or http://yourserver.example.com . You can leave the Authorized redirect URIs field blank.
+
+Click the Create button to finish creating your credentials.
+
+Before closing the dialog box, copy the client ID, which you will need to put into the code sample.
+
+Then, save the sample to a local file. In the sample, find the following line and replace YOUR_CLIENT_ID with the client ID you obtained when setting up your authorization credentials.
+
+gapi.auth2.init({client_id: ' YOUR_CLIENT_ID '});
+
+Now, you are ready to actually test the sample:
+
+Open the local file from a web browser, and open the debugging console in the browser. You should see a page that displays two buttons.
+
+Click the authorize and load button to launch the user authorization flow. If you authorize the app to retrieve your channel data, you should see the following lines print to the console in the browser:
+
+Sign-in successful
+GAPI client loaded for API
+
+If you see an error message instead of the lines above, confirm that you are loading the script from the authorized redirect URI that you set up for your project and that you put your client ID into the code as described above.
+
+Click the execute button to call the API. You should see a response object print to the console in the browser. In that object, the result property maps to an object that contains the API data.
+
+< script src = "https://apis.google.com/js/api.js" >< / script >
+< script >
+function authenticate () {
+return gapi . auth2 . getAuthInstance ()
+. signIn ({ scope : "https://www.googleapis.com/auth/yt-analytics.readonly" })
+. then ( function () { console . log ( "Sign-in successful" ); },
+function ( err ) { console . error ( "Error signing in" , err ); });
+}
+function loadClient () {
+return gapi . client . load ( "https://youtubeanalytics.googleapis.com/$discovery/rest?version=v2" )
+. then ( function () { console . log ( "GAPI client loaded for API" ); },
+function ( err ) { console . error ( "Error loading GAPI client for API" , err ); });
+}
+// Make sure the client is loaded and sign-in is complete before calling this method.
+function execute () {
+return gapi . client . youtubeAnalytics . reports . query ({
+"ids" : "channel==MINE" ,
+"startDate" : "2017-01-01" ,
+"endDate" : "2017-12-31" ,
+"metrics" : "views,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained" ,
+"dimensions" : "day" ,
+"sort" : "day"
+})
+. then ( function ( response ) {
+// Handle the results here (response.result has the parsed body).
+console . log ( "Response" , response );
+},
+function ( err ) { console . error ( "Execute error" , err ); });
+}
+gapi . load ( "client:auth2" , function () {
+gapi . auth2 . init ({ client_id : 'YOUR_CLIENT_ID' });
+});
+< /script >
+< button onclick = "authenticate().then(loadClient)" > authorize and load < / button >
+< button onclick = "execute()" > execute < / button >
+yt_analytics_v2 . html
+
+Python
+
+This example calls the YouTube Analytics API to retrieve daily views and other metrics for the authorizing user's
+channel for the 2017 calendar year. The sample uses the
+Google APIs Python client library .
+
+Before running this sample locally for the first time, you need to set up authorization credentials for your project:
+
+Create or select a project in the Google Cloud console .
+
+Enable the YouTube Analytics API for your project.
+
+At the top of the Credentials page, select the OAuth consent screen tab. Select an Email address, enter a Product name if not already set, and click the Save button.
+On the Credentials page, click the Create credentials button and select Oauth client ID .
+
+Select the application type Other , enter the name "YouTube Analytics API Quickstart", and click the Create button.
+
+Click OK to dismiss the resulting dialog.
+
+Click the file_download (Download JSON) button to the right of the client ID.
+
+Move the downloaded file to your working directory.
+
+You also need to install the Google APIs Client Library for Python and some additional libraries:
+
+pip install --upgrade google-api-python-client
+pip install --upgrade google-auth google-auth-oauthlib google-auth-httplib2
+
+Now, you are ready to actually test the sample:
+
+Copy the code sample below to your working directory.
+
+In the sample, update the value of the CLIENT_SECRETS_FILE variable to match the location of the file that you downloaded after setting up your authorization credentials.
+
+Run the sample code in a terminal window:
+
+python yt_analytics_v2.py
+
+Go through the authorization flow. The auth flow might automatically load in your browser, or you might need to copy the auth URL into a browser window. At the end of the authorization flow, if necessary, paste the authorization code displayed in the browser into your terminal window and click [return].
+
+The API query executes and the JSON response is output to the terminal window.
+
+# -*- coding: utf-8 -*-
+
+import os
+import google.oauth2.credentials
+import google_auth_oauthlib.flow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from google_auth_oauthlib.flow import InstalledAppFlow
+
+SCOPES = [ 'https://www.googleapis.com/auth/yt-analytics.readonly' ]
+
+API_SERVICE_NAME = 'youtubeAnalytics'
+API_VERSION = 'v2'
+CLIENT_SECRETS_FILE = 'YOUR_CLIENT_SECRET_FILE.json'
+def get_service ():
+flow = InstalledAppFlow . from_client_secrets_file ( CLIENT_SECRETS_FILE , SCOPES )
+credentials = flow . run_console ()
+return build ( API_SERVICE_NAME , API_VERSION , credentials = credentials )
+
+def execute_api_request ( client_library_function , ** kwargs ):
+response = client_library_function (
+** kwargs
+) . execute ()
+
+print ( response )
+
+if __name__ == '__main__' :
+# Disable OAuthlib's HTTPs verification when running locally.
+# *DO NOT* leave this option enabled when running in production.
+os . environ [ 'OAUTHLIB_INSECURE_TRANSPORT' ] = '1'
+
+youtubeAnalytics = get_service ()
+execute_api_request (
+youtubeAnalytics . reports () . query ,
+ids = 'channel==MINE' ,
+startDate = '2017-01-01' ,
+endDate = '2017-12-31' ,
+metrics = 'estimatedMinutesWatched,views,likes,subscribersGained'
+dimensions = 'day' ,
+sort = 'day'
+)
+yt_analytics_v2 . py
+
+Try it!
+
+Use the APIs Explorer to call this API and see the API request and response.
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License , and code samples are licensed under the Apache 2.0 License . For details, see the Google Developers Site Policies . Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-09-16 UTC.
+
+Blog
+
+The latest news on the YouTube blog
+
+Issue Tracker
+
+Something wrong? Send us a bug report!
+
+YouTube Researcher Program
+
+For researchers interested in using data from YouTube's global API
+
+Tools
+
+Google APIs Explorer
+
+YouTube Player Demo
+
+Configure a Subscribe Button
+
+Issue Tracker
+
+File a bug
+
+Request a feature
+
+See open issues
+
+Product Info
+
+Terms of Service
+
+Developer Policies
+
+Required Minimum Functionality
+
+Branding Guidelines
+
+Android
+
+Chrome
+
+Firebase
+
+Google Cloud Platform
+
+Google AI
+
+All products
+
+Terms
+
+Privacy
+
+Manage cookies
+
+English
+
+Deutsch
+
+Español
+
+Español – América Latina
+
+Français
+
+Indonesia
+
+Italiano
+
+Polski
+
+Português – Brasil
+
+Tiếng Việt
+
+Türkçe
+
+Русский
+
+עברית
+
+العربيّة
+
+فارسی
+
+हिंदी
+
+বাংলা
+
+ภาษาไทย
+
+中文 – 简体
+
+中文 – 繁體
+
+日本語
+
+한국어

@@ -4,8 +4,8 @@ import {
   validateDocument, createStore, formatDateHe,
 } from '../src/lib/invoice.js';
 import { formatILS, parseAmount } from '../src/lib/money.js';
-import { proButtonState, openProCheckout } from '../src/lib/gumroad.js';
-import { loadStoredLicense, storeLicense, verifyLicense } from '../src/lib/license.js';
+import { proButtonState, openProCheckout, gumroadProductId } from '../src/lib/gumroad.js';
+import { createLicenseController } from '../src/lib/license.js';
 import { applyBranding, DEFAULT_ACCENT, emptyBranding, isValidLogo, MAX_LOGO_BYTES, normalizeBranding } from '../src/lib/branding.js';
 
 initPage();
@@ -152,14 +152,20 @@ $('#client-name').addEventListener('change', () => {
   if (c) { doc.client = { ...c }; $('#client-id').value = c.id ?? ''; $('#client-address').value = c.address ?? ''; renderPreview(); }
 });
 
-// --- Pro: branding, gated on a signed licence key
+// --- Pro: branding, gated on Gumroad's own licence key
 //
 // Branding is the only thing Pro sells. The saved client list and the automatic
 // numbering above are free and stay free - selling something the buyer already
 // has would be dishonest, and the constitution puts that above revenue.
+//
+// The licence rules - check once against Gumroad, cache, re-check at most every
+// seven days, switch off only on a definitive answer - live in
+// src/lib/license.js (createLicenseController) and are unit-tested there. This
+// block only connects them to the page.
 const BRANDING_KEY = 'ilbiz.branding';
 let branding = emptyBranding();
 let proActive = false;
+let licenceStored = false;
 
 try {
   branding = normalizeBranding(JSON.parse(localStorage.getItem(BRANDING_KEY) ?? 'null'));
@@ -172,39 +178,27 @@ function saveBranding() {
 function refreshBranding() {
   applyBranding($('#preview'), branding, proActive);
   $('#branding-fields').hidden = !proActive;
-  if (proActive) {
-    $('#brand-accent').value = branding.accent || DEFAULT_ACCENT;
-    $('#license-clear').hidden = false;
-  }
+  $('#license-clear').hidden = !licenceStored;
+  if (proActive) $('#brand-accent').value = branding.accent || DEFAULT_ACCENT;
 }
 
-async function activate(key, { announce = true } = {}) {
-  const publicKey = site?.pro?.publicKey ?? null;
-  const result = await verifyLicense(key, publicKey);
-  proActive = result.valid;
-  if (result.valid) {
-    storeLicense(key);
-    if (announce) $('#license-note').textContent = 'הרישיון אומת. המיתוג פעיל.';
-  } else if (announce) {
-    const reasons = {
-      not_a_license_key: 'המפתח אינו בפורמט הנכון.',
-      bad_signature: 'המפתח אינו תקף.',
-      no_public_key_configured: 'המיתוג עדיין לא הופעל באתר הזה.',
-      web_crypto_unavailable: 'הדפדפן אינו תומך באימות המפתח.',
-    };
-    $('#license-note').textContent = reasons[result.reason] ?? 'לא ניתן לאמת את המפתח.';
-  }
-  refreshBranding();
-  return result.valid;
-}
+const licence = createLicenseController({
+  storage: localStorage,
+  // Wrapped, not passed bare: some browsers reject fetch called with a foreign `this`.
+  fetchImpl: typeof fetch === 'function' ? (url, init) => fetch(url, init) : undefined,
+  productId: () => gumroadProductId(site) ?? '',
+  render({ proActive: on, hasRecord, note }) {
+    proActive = on;
+    licenceStored = hasRecord;
+    if (note !== undefined) $('#license-note').textContent = note;
+    refreshBranding();
+  },
+});
 
-$('#license-apply').addEventListener('click', () => { activate($('#license-key').value.trim()); });
+$('#license-apply').addEventListener('click', () => { licence.activate($('#license-key').value); });
 $('#license-clear').addEventListener('click', () => {
-  storeLicense(null);
-  proActive = false;
+  licence.clear();
   $('#license-key').value = '';
-  $('#license-note').textContent = 'הרישיון הוסר מהדפדפן הזה.';
-  refreshBranding();
 });
 
 $('#brand-accent').addEventListener('input', () => {
@@ -237,9 +231,9 @@ $('#brand-clear').addEventListener('click', () => {
 
 // Every state of the Pro button is decided in src/lib/gumroad.js, not here, so
 // the honest states are unit-tested rather than trusted. Checkout opens only
-// when a Gumroad product URL exists AND a public key exists to verify the
-// licence that purchase produces - selling a key nothing can verify would be
-// taking money for nothing.
+// when a Gumroad product URL exists AND the product id exists to verify the
+// licence key that purchase produces - selling a key nothing can verify would
+// be taking money for nothing.
 const proState = proButtonState(site);
 const proCta = $('#pro-cta');
 proCta.textContent = proState.label;
@@ -258,11 +252,13 @@ if (proState.enabled) {
 // Gumroad can be told to send the buyer back here after the purchase.
 if (new URLSearchParams(location.search).get('purchased') === '1') {
   $('#pro-activate').open = true;
-  $('#license-note').textContent = 'תודה! הזן כאן את מפתח הרישיון שקיבלת עם המוצר ב-Gumroad.';
+  $('#license-note').textContent = 'תודה! מפתח הרישיון נמצא בקבלה שנשלחה אליך במייל מ-Gumroad. הזן אותו כאן.';
 }
 
-const stored = loadStoredLicense();
-if (stored) activate(stored, { announce: false });
+// An active licence turns Pro on right here, before any request; a re-check,
+// when one is due, runs in the background and can only switch Pro off on
+// Gumroad's own definitive answer.
+licence.load();
 refreshBranding();
 
 // --- init

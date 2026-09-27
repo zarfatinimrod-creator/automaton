@@ -301,6 +301,7 @@ Dispute and Chargeback fees ​
 We handle disputes and chargebacks on your behalf, achieving astoundingly high winning rates: 29.6% for credit card disputes, and nearly all PayPal disputes resolved in our favor. Keep in mind that a dispute fee of $15 to $20 is deducted directly by payment processors from your balance, if the dispute is lost.
 
 Still stuck? How can we help?
+Are you AI Agent? Read markdown source or llms.txt
 
 Explore the Customer Portal
 WordPress & Templates Pricing
@@ -335,7 +336,7 @@ Cart abandonment recovery
 Affiliate platform
 
 Build with AI ▼
-AI tools
+AI Integrations
 llms-full.txt
 llms.txt
 OpenAPI
@@ -384,4 +385,4 @@ Privacy policy
 Cookie policy
 
 We use essential cookies to enable our site to function. With your consent, we also use analytics and advertising cookies to understand how visitors interact with our site and to improve our services.
-Accept Learn More Reject
+Accept Learn More about Freemius' cookie policy Reject

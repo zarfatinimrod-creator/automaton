@@ -1,89 +1,8 @@
-import { describe, it, expect, beforeAll } from 'vitest';
-import { webcrypto } from 'node:crypto';
-import { parseLicense, signingInput, bytesToB64url, verifyLicense, storeLicense, loadStoredLicense } from '../src/lib/license.js';
+import { describe, it, expect } from 'vitest';
 import { applyBranding, emptyBranding, isValidAccent, isValidLogo, normalizeBranding, DEFAULT_ACCENT, MAX_LOGO_BYTES } from '../src/lib/branding.js';
 
-const subtle = webcrypto.subtle;
-const b64url = (bytes) => Buffer.from(bytes).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-
-let publicJwk;
-let otherPublicJwk;
-let goodKey;
-let forgedKey;
-
-async function issue(privateKey, payload) {
-  const signedPart = b64url(Buffer.from(JSON.stringify(payload), 'utf8'));
-  const sig = await subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, privateKey, signingInput(signedPart));
-  return `ILBIZ1.${signedPart}.${bytesToB64url(new Uint8Array(sig))}`;
-}
-
-beforeAll(async () => {
-  globalThis.atob ??= (s) => Buffer.from(s, 'base64').toString('binary');
-  globalThis.btoa ??= (s) => Buffer.from(s, 'binary').toString('base64');
-
-  const pair = await subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
-  const other = await subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
-  const pub = await subtle.exportKey('jwk', pair.publicKey);
-  const otherPub = await subtle.exportKey('jwk', other.publicKey);
-  publicJwk = { kty: pub.kty, crv: pub.crv, x: pub.x, y: pub.y };
-  otherPublicJwk = { kty: otherPub.kty, crv: otherPub.crv, x: otherPub.x, y: otherPub.y };
-
-  goodKey = await issue(pair.privateKey, { p: 'il-biz-pro', sub: 'buyer@example.com', iat: 1788400000 });
-  // Same payload, signed by a key we do not trust: this is the forgery attempt.
-  forgedKey = await issue(other.privateKey, { p: 'il-biz-pro', sub: 'thief@example.com', iat: 1788400000 });
-});
-
-describe('licence verification', () => {
-  it('accepts a key signed by the owner', async () => {
-    const result = await verifyLicense(goodKey, publicJwk, subtle);
-    expect(result.valid).toBe(true);
-    expect(result.payload.sub).toBe('buyer@example.com');
-  });
-
-  it('rejects a key signed by anyone else', async () => {
-    const result = await verifyLicense(forgedKey, publicJwk, subtle);
-    expect(result.valid).toBe(false);
-    expect(result.reason).toBe('bad_signature');
-  });
-
-  it('rejects a tampered payload', async () => {
-    const [prefix, payload, sig] = goodKey.split('.');
-    const swapped = b64url(Buffer.from(JSON.stringify({ p: 'il-biz-pro', sub: 'someone-else', iat: 1 }), 'utf8'));
-    expect(payload).not.toBe(swapped);
-    const result = await verifyLicense(`${prefix}.${swapped}.${sig}`, publicJwk, subtle);
-    expect(result.valid).toBe(false);
-  });
-
-  it('rejects junk without throwing', async () => {
-    for (const junk of ['', 'nonsense', 'ILBIZ1.abc', null, undefined, 42, 'ILBIZ1.!!!.!!!']) {
-      const result = await verifyLicense(junk, publicJwk, subtle);
-      expect(result.valid).toBe(false);
-    }
-  });
-
-  it('refuses to validate anything when no public key is configured', async () => {
-    const result = await verifyLicense(goodKey, null, subtle);
-    expect(result.valid).toBe(false);
-    expect(result.reason).toBe('no_public_key_configured');
-  });
-
-  it('will not accept a key issued for a different product', async () => {
-    expect(parseLicense('ILBIZ1.' + b64url(Buffer.from(JSON.stringify({ p: 'other' }))) + '.x')).toBeNull();
-  });
-
-  it('stores and reloads a key, surviving a storage that throws', () => {
-    const mem = new Map();
-    const storage = { getItem: (k) => mem.get(k) ?? null, setItem: (k, v) => mem.set(k, v), removeItem: (k) => mem.delete(k) };
-    expect(storeLicense(goodKey, storage)).toBe(true);
-    expect(loadStoredLicense(storage)).toBe(goodKey);
-    storeLicense(null, storage);
-    expect(loadStoredLicense(storage)).toBeNull();
-
-    const hostile = { getItem() { throw new Error('blocked'); }, setItem() { throw new Error('blocked'); } };
-    expect(loadStoredLicense(hostile)).toBeNull();
-    expect(storeLicense(goodKey, hostile)).toBe(false);
-  });
-});
+// The licence itself (Gumroad's key, checked against Gumroad) is tested in
+// tests/license.test.js and, through the real page, in tests/page-invoice.test.js.
 
 describe('branding', () => {
   const png = 'data:image/png;base64,iVBORw0KGgo=';
@@ -161,11 +80,13 @@ describe('the honesty constraint', () => {
     expect(page).not.toContain('paddle');
   });
 
-  it('ships with Pro disabled until the owner generates a keypair', async () => {
+  it('ships with Pro disabled until the product-creation job writes the product url and id', async () => {
     const { readFileSync } = await import('node:fs');
     const config = JSON.parse(readFileSync(new URL('../src/config/site.json', import.meta.url), 'utf8'));
-    expect(config.pro.publicKey).toBeNull();
     expect(config.gumroad.productUrl).toBe('');
+    expect(config.gumroad.productId).toBe('');
+    // The signing keypair is retired with Option C: no `pro` block, no public key.
+    expect(config.pro).toBeUndefined();
     expect(config.paddle).toBeUndefined();
   });
 });

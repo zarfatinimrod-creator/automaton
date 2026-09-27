@@ -1,0 +1,240 @@
+Good to know about recommendations for YouTube’s recommendation system - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Good to know about recommendations for YouTube’s recommendation system
+There’s no optimal length for YouTube videos
+
+There's no universal “ideal” length for YouTube videos. It depends on your content, audience, and the video's purpose. Instead, aim for the precise length needed to deliver your information or entertainment value effectively. Avoid filler and resist artificially stretching content, as audiences generally prefer concise, high-value information. Your focus should always be on providing value and sustaining engagement throughout the entire video.
+
+Utilize your audience retention curves in analytics. This data reveals if viewers are dropping off early, at specific points, or watching to completion, providing crucial insights to optimize video length for your unique audience and content type.
+
+In conclusion, reaching a larger audience on YouTube involves a mix of ideating and creating content ideas or concepts, packaging them up with compelling titles and thumbnails, and delivering content that provides value to the audience all throughout.
+
+Factors affecting video impressions
+
+Even with a great CTR and average view duration, content impression could be impacted by other factors.. The reality is, even with strong engagement, videos may not be getting as many impressions as you'd hope, and external factors play a big role. Beyond your channel's performance, high competition means your video is ranked against countless others. If other videos perform even better, your content may not reach as many viewers. Topic interest and seasonality also play a role, as some subjects have broader or shifting appeal.
+
+YouTube is constantly optimizing for user needs
+
+YouTube's diverse surfaces may be tuned to match different viewer objectives, influencing how content is ranked. For instance, YouTube search strives to surface relevant results according to keyword queries, also looking at which videos have driven the most engagement for a query. The Shorts feed, with its snackable and trendy nature, may tune up on the recency of content, making it great for the discovery of new content. Meanwhile, on the Subscriptions tab, viewers see the videos from the channels they are subscribed to, listed by most recent, reflecting their expectation for fresh content from their favorite creators. Learn more by diving into your traffic sources in YouTube Analytics .
+
+Where viewers watch, informs recommendations
+
+Our recommendation system aims to deliver the right content to the right viewer at the right time, optimized for each unique context. It learns from signals like time of day and device type to understand diverse viewing preferences. We aim to identify and cater to the user's unique routines—for example, if they prefer watching news on the phone in the morning and comedy on the TV at night. This means the content they see can differ, whether they're watching on a mobile phone versus TV, or in the morning versus at night. Content can be recommended on both TV and mobile, for instance, and if a video historically performs better for a given user on one device, it is more likely to be ranked higher there, but this doesn't preclude it from appearing on their other devices. In Analytics, you can check the percentage of watch time that comes from each device.
+
+We aim to understand viewers' diverse interests across all content formats
+
+The algorithm aims to understand a viewer’s interest across Shorts, long videos, live streams, and posts. For that reason, we use what a user discovers about topics or channels to inform recommendations across formats. For instance, a viewer that often engages with your long-form videos might see your Shorts recommended. It is important to note that while these connections exist, it is ultimately up to the viewers to engage with the content across formats. While our algorithm makes this possible, we notice that this is not common behavior from viewers; individual preferences vary, not just by topic but also by format (for example, enjoying dance related Shorts but not long-form dance content).
+
+Consider experimenting across formats
+
+This can help you learn what fits best your channel growth strategy and uncover what resonates with your audience. Experimenting with new content formats, such as Shorts, VODs, or livestreams, will not inherently confuse the algorithm or negatively impact a channel's overall performance. The system evaluates each piece of content individually, and its goal is to understand each user's preferred formats and topics. If a user isn't interested in a certain type of content, the system will avoid recommending it to them, but it will continue to show it to others who do enjoy it. Any perceived effect on a channel from new formats is typically due to how viewers react to the new content, rather than a direct algorithmic penalty.
+
+An individual video's underperformance does not penalize a channel overall
+
+What matters is how viewers respond to each video when it's recommended to them, as recommendations are designed to match viewers with content they are most likely to watch and enjoy. Long-term channel performance can be affected, however, if a particular viewer consistently stops watching videos from a channel when they are recommended, or if viewers increasingly engage with content from other channels on YouTube.
+
+Altering a video’s metadata can lead to a shift in performance
+
+Changing a video's title or thumbnail can lead to a shift in its performance, potentially resulting in more or fewer views. This is because altering the video's presentation changes how viewers interact with it. The systems respond to these new viewer interactions rather than the act of changing the title or thumbnail itself. While modifying metadata can sometimes increase views, it's advised not to change what is already working well. Generally, such changes are recommended when a video has a lower click-through rate (CTR) and is receiving fewer impressions than usual. If these adjustments do not improve performance, it may indicate that the video's topic appeals to a smaller audience.
+
+You can use unique viewers data to get a clearer picture of your audience size
+
+A channel's subscriber count reflects the number of times people have subscribed, not necessarily the size of its current active audience. For channels that have existed for many years, it's common for some subscribers to have become inactive. The subscriber feed traffic source directly illustrates how subscribers engage with content, often revealing that viewers skip a majority of videos in their subscription feeds. To gain a more accurate understanding of a channel's active audience size, creators should refer to the "Unique Viewers" metric in the Audience tab within YouTube Analytics.
+
+Getting a head start to your channel and growing a loyal viewer base
+
+Viewers are naturally drawn to channels that have already demonstrated expertise or a clear niche. For new channels, gaining this credibility and building a community takes time. A key factor here is developing a critical mass of content. When new viewers discover one of your videos, having a substantial library of other high-quality content allows them to delve deeper into your channel. This not only helps them establish a stronger connection and history with your brand, but it also signals to the algorithm that your content is valuable and engaging, making it more likely that your channel will be recommended to them and similar viewers in the future.
+
+YouTube's recommendation algorithm does not prioritize videos based on whether they are monetized
+
+The platform takes a long-term view, focusing on recommending videos that viewers will find satisfying, irrespective of their monetization status. Creators can confirm this by observing no impact on search or recommendation traffic when disabling monetization on a particular video.
+
+Similarly, our search and recommendation systems look at audience activity while a video is publicly available. Consequently, uploading a video as unlisted before making it public should not significantly impact its overall performance.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+false
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+13608560409226281735
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

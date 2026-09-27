@@ -1,0 +1,17 @@
+{
+  "url": "https://raw.githubusercontent.com/github/innovationgraph/078fb62ee4395d321bec9f4f06694cca68f6b6cb/LICENSE.md",
+  "slug": "github-innovationgraph-licence",
+  "fetchedAt": "2026-09-27T10:08:34.815Z",
+  "status": 200,
+  "contentType": "text/plain; charset=utf-8",
+  "byteLength": 6960,
+  "sha256": "e284d020a7562617d834aec6c981895f0ee55752d62e9d4de07166a388efae79",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/github-innovationgraph-licence.txt",
+  "textPath": "research/rendered/github-innovationgraph-licence.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, stored for citation only. Fetched by the chart-explainer builder (an agent session, not render-watch.yml) from raw.githubusercontent.com at the pinned commit 078fb62ee4395d321bec9f4f06694cca68f6b6cb, saved byte-for-byte as served. The dataset repository's LICENSE.md: the Creative Commons CC0 1.0 Universal legal text. The statement that the dataset is under it is README.md l.65 and docs/datasheet.md l.143 at the same commit; the datasheet is stored beside this file as github-innovationgraph-datasheet.txt. Not added to urls.txt: the commit pin makes these bytes immutable, so there is nothing for a weekly watch to notice."
+}

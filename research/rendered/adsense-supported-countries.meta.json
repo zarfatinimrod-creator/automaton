@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/adsense/answer/9905",
+  "slug": "adsense-supported-countries",
+  "fetchedAt": "2026-09-27T09:54:42.590Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1605312,
+  "sha256": "bac426e2d2123daf8ca9afca78b10abfe37d2cfd84f1fd5dfa4282b9f2047e23",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/adsense-supported-countries.html",
+  "textPath": "research/rendered/adsense-supported-countries.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
