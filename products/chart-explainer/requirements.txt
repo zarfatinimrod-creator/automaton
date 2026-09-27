@@ -1,0 +1,13 @@
+# Pinned to the versions the T1 render was measured with (27.9.2026, Python 3.11).
+# Everything else the renderer uses is the standard library (csv, wave, urllib, hashlib, json, base64).
+matplotlib==3.11.2
+numpy==2.4.6
+# Kokoro-82M through kokoro-onnx: weights Apache-2.0, kokoro-onnx MIT. It phonemises through espeak-ng /
+# phonemizer (GPL-3.0); that governs redistributing those libraries, not the audio they help make (fork note,
+# MoneyPrinterTurbo app/services/voice.py). Nothing here redistributes them.
+kokoro-onnx==0.6.1
+onnxruntime==1.30.0
+phonemizer==3.4.0
+espeakng-loader==0.2.4
+# A static ffmpeg binary (with libx264), so no system ffmpeg is needed.
+imageio-ffmpeg==0.6.0
