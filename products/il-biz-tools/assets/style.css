@@ -1,6 +1,9 @@
+/* --brand, --ok and --warn were darkened on 27.9.2026: as text (links, button
+   labels, badges) the old #0f6fff, #1a8f4e and #c77d00 fell under 4.5:1 on
+   their backgrounds. src/lib/a11y-check.js re-measures every pair on each build. */
 :root {
   --bg: #f7f8fa; --card: #ffffff; --text: #1a1f2b; --muted: #5b6472; --line: #e3e6eb;
-  --brand: #0f6fff; --brand-dark: #0a4fb8; --ok: #1a8f4e; --warn: #c77d00; --over: #c8332a;
+  --brand: #0b63e6; --brand-dark: #0a4fb8; --ok: #157a45; --warn: #8f5b00; --over: #c8332a;
   --ok-bg: #e7f6ec; --warn-bg: #fff4dd; --over-bg: #fdeaea; --radius: 12px;
   --font: "Segoe UI", "Heebo", "Assistant", "Arial Hebrew", Arial, sans-serif;
 }
@@ -24,7 +27,7 @@ h2 { font-size: 1.3rem; margin: 28px 0 10px; }
 .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
 .tool-card { text-decoration: none; color: inherit; display: block; }
 .tool-card:hover { border-color: var(--brand); }
-.tool-card h3 { margin: 0 0 6px; }
+.tool-card h2 { margin: 0 0 6px; font-size: 1.17rem; }
 .tool-card p { margin: 0; color: var(--muted); font-size: .95rem; }
 label { display: block; font-weight: 600; margin-bottom: 4px; font-size: .95rem; }
 input[type=text], input[type=number], input[type=date], input[type=email], input[type=tel], select, textarea {

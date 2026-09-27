@@ -14,6 +14,15 @@
 // real page, so the day a rate is confirmed the only change is one JSON flag.
 //
 // Fail closed: a page listing a config that cannot be read is withheld too.
+//
+// Two more jobs live here since the config leak (build-site.js used to copy
+// src/config/ into _site/ whole, unverified files included):
+//   - CONFIG_PUBLISH_RULES decides, per config file, whether and in what shape
+//     it may reach _site/ once a shipped page's code loads it. A config with no
+//     rule never ships.
+//   - publishBlockers() finds what must stop a publish outright: a marked
+//     placeholder (data-publish-blocker) left in any shipped page, or a
+//     required page - the accessibility statement - missing from the build.
 
 /**
  * Which config files each page renders FIGURES from.
@@ -25,7 +34,7 @@
  *     prints none of them - feeAmountDisclosure() in src/lib/registrar-fee.js
  *     refuses to hand them out while `verified` is false, and a test asserts
  *     the built page contains no shekel amount from that file.
- *   - index.html and 404.html carry copy, not calculators.
+ *   - index.html, accessibility.html and 404.html carry copy, not calculators.
  */
 export const PAGE_RATE_SOURCES = {
   'index.html': [],
@@ -35,6 +44,7 @@ export const PAGE_RATE_SOURCES = {
   'invoice.html': ['src/config/vat.json'],
   'allocation.html': ['src/config/allocation-number.json'],
   'registrar-fee.html': [],
+  'accessibility.html': [],
   '404.html': [],
 };
 
@@ -108,7 +118,7 @@ export function withheldPageHtml({ page, title = 'הדף אינו זמין', unv
   <p><a href="./">חזרה לכלים שכן מאומתים</a></p>
 </main>
 <footer class="site-footer"><div class="container">
-  © <span data-year>2026</span> כלים לעסק · המידע באתר אינו מהווה ייעוץ מס או ייעוץ משפטי.
+  © <span data-year>2026</span> כלים לעסק · המידע באתר אינו מהווה ייעוץ מס או ייעוץ משפטי. · <a href="accessibility.html">הצהרת נגישות</a>
 </div></footer>
 </body>
 </html>
@@ -125,4 +135,97 @@ export function filterSitemap(xml, withheldPages = []) {
       .join('\n');
   }
   return out;
+}
+
+/**
+ * How each config file may reach _site/ once a shipped page's code loads it
+ * (the build finds that out by following imports and fetches: src/lib/site-deps.js).
+ *
+ *   'verified'    ships only while `"verified": true`. If a shipped page loads
+ *                 it while it is not, PAGE_RATE_SOURCES is wrong about that page
+ *                 and the build stops rather than ship the file.
+ *   'no-figures'  carries no legal or tax figure (site metadata); ships as is.
+ *   { unverifiedFields: [...] }
+ *                 ships whole once verified; until then only the listed
+ *                 top-level keys ship, written into a fresh file, and every
+ *                 other key - the amounts, the notes, the internal sources - is
+ *                 dropped. registrar-fee.html needs the dates and the two flags
+ *                 that make feeAmountDisclosure() print no amount; it never
+ *                 needs the amounts, so they never leave the repo.
+ *
+ * A config with no entry here does not ship, and a shipped page that needs one
+ * stops the build: nobody decided about it.
+ */
+export const CONFIG_PUBLISH_RULES = {
+  'src/config/vat.json': 'verified',
+  'src/config/osek-patur.json': 'verified',
+  'src/config/tax-2026.json': 'verified',
+  'src/config/allocation-number.json': 'verified',
+  'src/config/registrar-fee.json': { unverifiedFields: ['verified', 'renderAmounts', 'updated', 'deadline'] },
+  'src/config/site.json': 'no-figures',
+};
+
+const has = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
+const pick = (obj, keys) => Object.fromEntries(keys.filter((k) => has(obj, k)).map((k) => [k, obj[k]]));
+
+/**
+ * Decide what each config the shipped pages load goes out as.
+ *
+ * @param {string[]} neededPaths  config paths the shipped pages load
+ * @param {Record<string, object|undefined>} configs  parsed contents (undefined if unreadable)
+ * @returns {{ship: {path: string, content: object, projected: boolean}[], refuse: {path: string, reason: string}[]}}
+ *   Any refusal means the build must stop.
+ */
+export function configShipPlan(neededPaths, configs, rules = CONFIG_PUBLISH_RULES) {
+  const ship = [];
+  const refuse = [];
+  for (const path of [...new Set(neededPaths)].sort()) {
+    const rule = has(rules, path) ? rules[path] : undefined;
+    const config = configs?.[path];
+    if (rule === undefined) {
+      refuse.push({ path, reason: 'no entry in CONFIG_PUBLISH_RULES (src/lib/publish-gate.js)' });
+    } else if (!config || typeof config !== 'object' || Array.isArray(config)) {
+      refuse.push({ path, reason: 'cannot be read as a JSON object' });
+    } else if (rule === 'no-figures' || isVerified(config)) {
+      ship.push({ path, content: config, projected: false });
+    } else if (Array.isArray(rule?.unverifiedFields)) {
+      ship.push({ path, content: pick(config, rule.unverifiedFields), projected: true });
+    } else if (rule === 'verified') {
+      refuse.push({
+        path,
+        reason: '"verified" is not true, yet a shipped page loads it - list it in PAGE_RATE_SOURCES for that page',
+      });
+    } else {
+      refuse.push({ path, reason: `unknown rule ${JSON.stringify(rule)}` });
+    }
+  }
+  return { ship, refuse };
+}
+
+/** Pages the public site may not go out without. */
+export const REQUIRED_PAGES = ['accessibility.html'];
+
+/**
+ * What must stop a publish outright.
+ *
+ * A placeholder is marked in the page source with `data-publish-blocker="<id>"`
+ * on the element that holds it. Marking is the point: an unmarked placeholder
+ * is a guess that ships; a marked one is a promise that the site does not go
+ * out until someone replaces it with the real thing.
+ *
+ * @param {{path: string, html: string}[]} shipped  every HTML page that would ship
+ * @returns {{path: string, blocker: string}[]}
+ */
+export function publishBlockers(shipped, required = REQUIRED_PAGES) {
+  const found = [];
+  const paths = new Set(shipped.map((p) => p.path));
+  for (const page of required) {
+    if (!paths.has(page)) found.push({ path: page, blocker: 'required page is missing from the build' });
+  }
+  for (const { path, html } of shipped) {
+    for (const m of String(html ?? '').matchAll(/\sdata-publish-blocker\s*=\s*["']([^"']*)["']/g)) {
+      found.push({ path, blocker: `placeholder "${m[1]}" is still in the page` });
+    }
+  }
+  return found;
 }

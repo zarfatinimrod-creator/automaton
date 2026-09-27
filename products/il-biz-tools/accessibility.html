@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>הצהרת נגישות – כלים לעסק</title>
+<meta name="description" content="הצהרת הנגישות של האתר כלים לעסק: מה נבדק באתר, איך ומתי, מה עדיין לא נבדק, ואיך פונים בנושא נגישות.">
+<link rel="canonical" href="https://il-biz-tools.netlify.app/accessibility.html">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site-header"><div class="container">
+  <a class="logo" href="./">כלים <span>לעסק</span></a>
+  <nav aria-label="ניווט ראשי"><ul>
+    <li><a href="vat.html">מחשבון מע״מ</a></li>
+    <li><a href="osek-patur.html">תקרת עוסק פטור</a></li>
+    <li><a href="net-salary.html">שכר נטו</a></li>
+    <li><a href="invoice.html">קבלה / חשבונית</a></li>
+    <li><a href="allocation.html">מספר הקצאה</a></li>
+    <li><a href="registrar-fee.html">אגרת רשם החברות</a></li>
+  </ul></nav>
+</div></header>
+
+<main class="container">
+  <h1>הצהרת נגישות</h1>
+  <p class="lead">האתר „כלים לעסק” הוא אתר סטטי של מחשבונים וכלים לעצמאים ולעסקים קטנים. אנחנו רוצים שכל אחד יוכל להשתמש בו, גם אנשים עם מוגבלות. בדף הזה כתוב מה נבדק באתר, איך ומתי – וגם מה עדיין לא נבדק.</p>
+
+  <section class="card">
+    <h2>מצב הנגישות באתר</h2>
+    <p>האתר <strong>לא</strong> עבר בדיקת נגישות מלאה לפי תקן ישראלי 5568, ולא נבדק בידי מורשה נגישות או מומחה נגישות. לכן איננו מצהירים שהאתר עומד בתקן. מה שכן נעשה מפורט כאן.</p>
+  </section>
+
+  <section class="card">
+    <h2>מה נבדק, איך ומתי</h2>
+    <p>ב-27 בספטמבר 2026 הורצה בדיקה אוטומטית על קוד המקור של כל דפי האתר ועל גיליון הסגנונות, בלי דפדפן. אותה בדיקה רצה שוב בכל בנייה של האתר, והאתר לא עולה לאוויר אם אחת הבדיקות נכשלת. אלה הבדיקות, כולן:</p>
+    <ul>
+      <li data-check="lang-dir">לכל דף מוגדרת שפה עברית וכיוון מימין לשמאל (lang="he" dir="rtl").</li>
+      <li data-check="title">לכל דף יש כותרת (title) שאינה ריקה.</li>
+      <li data-check="zoom">אף דף אינו חוסם הגדלה בטלפון (אין user-scalable=no ואין maximum-scale נמוך מ-2).</li>
+      <li data-check="img-alt">לכל תמונה יש טקסט חלופי (alt), גם אם ריק לתמונה דקורטיבית.</li>
+      <li data-check="control-names">לכל שדה בטופס (input, select, textarea) יש תווית מקושרת או שם נגיש.</li>
+      <li data-check="button-names">לכל כפתור יש טקסט או שם נגיש.</li>
+      <li data-check="link-names">לכל קישור יש טקסט או שם נגיש.</li>
+      <li data-check="headings">בכל דף יש כותרת ראשית אחת (h1), ורמות הכותרות לא מדלגות (למשל מ-h1 ישר ל-h3).</li>
+      <li data-check="unique-ids">אין שני רכיבים עם אותו מזהה (id) באותו דף, כך שכל תווית מצביעה על שדה אחד.</li>
+      <li data-check="landmarks">בכל דף יש אזור תוכן ראשי (main), ולכל אזור ניווט (nav) יש שם.</li>
+      <li data-check="tabindex">אין סדר מעבר מאולץ במקלדת (tabindex חיובי).</li>
+      <li data-check="focus-visible">גיליון הסגנונות לא מסתיר את סימון הפוקוס (אין outline: none), ולשדות הטופס יש מסגרת פוקוס מודגשת.</li>
+      <li data-check="contrast">יחס הניגודיות של צירופי הטקסט והרקע שבגיליון הסגנונות הוא 4.5:1 לפחות, לפי נוסחת WCAG 2.0.</li>
+    </ul>
+    <p>מה תוקן בעקבות הבדיקה הראשונה: שלושה צבעים הוכהו – הכחול של הקישורים והכפתורים, והירוק והכתום של התגיות – כי יחס הניגודיות שלהם היה נמוך מ-4.5:1. כותרות כרטיסי הכלים בדף הבית שונו מ-h3 ל-h2, כדי שרמות הכותרות לא ידלגו.</p>
+  </section>
+
+  <section class="card">
+    <h2>מה לא נבדק</h2>
+    <ul>
+      <li>שימוש באתר עם קורא מסך (כמו NVDA, JAWS או VoiceOver).</li>
+      <li>ניווט מלא במקלדת בדפדפן אמיתי.</li>
+      <li>הגדלת התצוגה ל-200% בדפדפן.</li>
+      <li>תוכן שנוצר בדפדפן בזמן השימוש: תוצאות החישוב, שורות שמוסיפים לטבלת הפריטים בקבלה והודעות. הבדיקה האוטומטית קוראת את קוד הדפים ולא רואה אותו.</li>
+      <li>המסמך להדפסה או לשמירה כ-PDF במחולל הקבלות.</li>
+      <li>צבע המיתוג שמשתמשי Pro בוחרים למסמך שלהם.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>פנייה בנושא נגישות</h2>
+    <p>נתקלתם בקושי באתר, או שחסרה לכם התאמה? נשמח לדעת.</p>
+    <p class="status-box warn" data-publish-blocker="accessibility-contact"><strong>ממלא מקום – לא לפרסום.</strong> כאן תופיע דרך הפנייה בנושא נגישות. דרך כזו עוד לא נקבעה, ולכן האתר כולו לא עולה לאוויר עד שהשורה הזו תוחלף בפרטי פנייה אמיתיים.</p>
+  </section>
+
+  <section class="card">
+    <h2>עדכון ההצהרה</h2>
+    <p>ההצהרה נכתבה ב-27 בספטמבר 2026. היא תעודכן כשישתנו הבדיקות או האתר.</p>
+  </section>
+</main>
+
+<footer class="site-footer"><div class="container">
+  © <span data-year>2026</span> כלים לעסק · המידע באתר אינו מהווה ייעוץ מס או ייעוץ משפטי. · <a href="./">דף הבית</a>
+</div></footer>
+<script type="module">import { initPage } from './assets/common.js'; initPage();</script>
+</body>
+</html>

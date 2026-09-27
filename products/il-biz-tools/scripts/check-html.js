@@ -4,7 +4,11 @@ import { join } from 'node:path';
 import { PAGE_RATE_SOURCES, publishPlan, unregisteredPages } from '../src/lib/publish-gate.js';
 
 const root = new URL('..', import.meta.url).pathname;
-const pages = ['index.html', 'vat.html', 'osek-patur.html', 'net-salary.html', 'invoice.html', 'allocation.html', 'registrar-fee.html'];
+// Tool pages answer search questions and carry FAQ JSON-LD; the accessibility
+// statement is a plain page and gets every other check.
+const toolPages = ['index.html', 'vat.html', 'osek-patur.html', 'net-salary.html', 'invoice.html', 'allocation.html', 'registrar-fee.html'];
+const plainPages = ['accessibility.html'];
+const pages = [...toolPages, ...plainPages];
 let failures = 0;
 const fail = (p, msg) => { failures++; console.error(`  x ${p}: ${msg}`); };
 
@@ -14,7 +18,7 @@ for (const p of pages) {
   if (!/<title>[^<]{5,}<\/title>/.test(html)) fail(p, 'missing <title>');
   if (!/<meta name="description" content="[^"]{20,}"/.test(html)) fail(p, 'missing meta description');
   if (!/<link rel="canonical"/.test(html)) fail(p, 'missing canonical');
-  if (!/application\/ld\+json/.test(html) || !/"FAQPage"/.test(html)) fail(p, 'missing FAQPage JSON-LD');
+  if (toolPages.includes(p) && (!/application\/ld\+json/.test(html) || !/"FAQPage"/.test(html))) fail(p, 'missing FAQPage JSON-LD');
   for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
     try { JSON.parse(m[1]); } catch (e) { fail(p, `invalid JSON-LD: ${e.message}`); }
   }
