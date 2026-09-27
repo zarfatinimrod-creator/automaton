@@ -119,7 +119,8 @@ def build_notes(manifest: dict[str, Any], render: dict[str, Any]) -> dict[str, s
         "narration": "Kokoro-82M stock voice; no cloned or imitated voice (PREREG-DECISIONS.md §2c).",
         "scheduledAt": "NOT a schedule. T1 is held unpublished until Stage A; this is the render's finish time, the "
         "earliest moment a publish could happen, so G6 has a real date. The publish step must re-run the gate with "
-        "the actual time, and must not send youtube_publish_at (T1-PROTOCOL.md).",
+        "the actual time, and must not schedule a later publish time: a scheduled video stays private until then "
+        "(T1-PROTOCOL.md).",
         "runnerMinutes": f"wall-clock minutes measured by render.py from {render['clockStartedBy']} to the end of "
         f"the render, rounded up to 0.01 (G9 cap: 60).",
         "tokenCostIls": "0: no API-billed tokens. The script template was written by an Opus builder agent in a "
