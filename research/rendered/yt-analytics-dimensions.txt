@@ -1,0 +1,1846 @@
+Dimensions | YouTube Analytics and Reporting APIs | Google for Developers
+
+Skip to main content
+
+YouTube
+
+Analytics and Reporting APIs
+
+/
+
+English
+
+Deutsch
+
+Español
+
+Español – América Latina
+
+Français
+
+Indonesia
+
+Italiano
+
+Polski
+
+Português – Brasil
+
+Tiếng Việt
+
+Türkçe
+
+Русский
+
+עברית
+
+العربيّة
+
+فارسی
+
+हिंदी
+
+বাংলা
+
+ภาษาไทย
+
+中文 – 简体
+
+中文 – 繁體
+
+日本語
+
+한국어
+
+Sign in
+
+Home
+
+Overview
+
+Authorization
+
+Bulk Reports
+
+Targeted Queries
+
+Resources
+
+YouTube
+
+Analytics and Reporting APIs
+
+Home
+
+Overview
+
+Authorization
+
+Bulk Reports
+
+Targeted Queries
+
+Resources
+
+YouTube Analytics API
+
+Data Model
+
+Overview
+
+Dimensions
+
+Metrics
+
+Channel Reports
+
+Content Owner Reports
+
+Guides
+
+Sample requests
+
+API Reference
+
+Overview
+
+reports.query
+
+Groups
+
+Overview
+list
+insert
+update
+delete
+
+GroupItems
+
+Overview
+list
+insert
+delete
+
+Revision History
+
+Important: YouTube is updating its policy for how it counts views for all video formats. Learn more
+
+Home
+
+Products
+
+YouTube
+
+Analytics and Reporting APIs
+
+Targeted Queries
+
+Dimensions
+
+Stay organized with collections
+
+Save and categorize content based on your preferences.
+
+Page Summary
+
+outlined_flag
+
+The YouTube Analytics API provides dimensions for categorizing data like date, location, video, traffic sources, device type and demographics.
+
+Dimensions are used in custom reports to analyze YouTube data and gain insights into viewer behavior and content performance.
+
+Content Owner reports require filtering by dimensions like claimedStatus or uploaderType .
+
+Filters can be applied to dimensions to refine reports, including specific data based on criteria such as country or traffic source.
+
+Some dimensions and filters have been deprecated or replaced with newer options, requiring updates to existing reporting configurations.
+
+This document defines the dimensions that the YouTube Analytics API supports. This API supports real-time, targeted queries to generate custom YouTube Analytics reports.
+
+Dimensions are common criteria that are used to aggregate data, such as the date on which user activity occurred or the country where users were located.
+
+Each query report identifies the dimensions that it supports. For example, when retrieving user activity by time, you choose the time period for which data will be reported: day or month . In any report, each row of data has a unique combination of dimension values.
+
+To retrieve a query report, call the YouTube Analytics API's reports.query method. In your request, use the dimensions parameter to specify the dimensions that YouTube will use to calculate metric values in the reports.
+
+Core dimensions
+
+While the YouTube Analytics API is subject to the Deprecation Policy
+defined in the Terms of Service , non-core dimensions (and
+non-core metrics) are not subject to the policy. In the definitions on this page, any dimension
+that is a core dimension is explicitly identified as such.
+
+The following list identifies the API's core dimensions.
+
+ageGroup
+
+channel
+
+country
+
+day
+
+gender
+
+month
+
+sharingService
+
+uploaderType
+
+video
+
+For more information, see the list of the YouTube APIs subject to the Deprecation Policy .
+
+Filters
+
+All query reports support filters. Filters identify dimension values that must be present in the retrieved dataset. As such, they limit an API response to only include data matching a particular value or set of values. For example, instead of retrieving user activity metrics for all countries, you could use a filter to only retrieve data for a particular country.
+
+In a request to retrieve a query report, the optional filters request parameter specifies the dimension values for which you want to filter data. For example, to retrieve user activity metrics for Europe, you would set the filters parameter value to continent==150 .
+
+Important: API requests to retrieve content owner reports must filter data by either using one of the reporting entity dimensions or using a supported combination of the claimedStatus and uploaderType dimensions.
+
+Dimensions
+
+The following sections define the dimensions that are used in the YouTube Analytics API's query reports. Unless otherwise noted, these dimensions are used in both channel and content owner reports. Dimensions that can only be used as filters are also identified.
+
+Resources
+
+These dimensions correspond to resources that channels and content owners manage on YouTube:
+
+video
+
+playlist
+
+channel
+
+group
+
+Note: The API lets you specify multiple values for the video , playlist , and channel dimensions when they are used as filters. To do so, set the filters parameter value to a comma-separated list of the video, playlist, or channel IDs for which the API response should be filtered. The parameter value can specify up to 500 IDs.
+
+video (core dimension)
+
+The ID of a YouTube video. In the YouTube Data API, this is the value of a video
+resource's id property. This is a core dimension and is subject to the Deprecation Policy .
+
+playlist
+
+The ID of a YouTube playlist. In the YouTube Data API, this is the value of a playlist resource's id property.
+
+channel (core dimension) (only used in content owner reports)
+
+The ID for a YouTube channel. In the YouTube Data API, this is the value of a channel resource's id property. This is a core dimension and is subject to the Deprecation Policy .
+
+The channel dimension is frequently used in content owner reports because those reports typically aggregate data for multiple channels.
+
+group (filter only)
+
+The ID of a YouTube Analytics group. You can retrieve this value using the YouTube Analytics API's groups.list method. When you use the group filter, the API response contains data for all of the videos, playlists, or channels in that group.
+
+Examples
+
+The following sample requests use reporting entity dimensions or filters:
+
+Channel examples
+
+Basic stats
+
+Top 10 – Most watched videos for a channel
+
+Top 10 – Annotation click-through rates for a channel's most viewed videos
+
+Statistics for a specific playlist
+
+Top 10 – Most watched playlists for a channel
+
+Geographic
+
+Top 10 – Most viewed videos in a specific country
+
+Top 10 – Most viewed videos in Europe
+
+Content owner examples
+
+Basic stats
+
+Top 10 - Most viewed videos for a content owner
+
+Top 10 - Most watched videos for a content owner
+
+Top 10 - Most viewed videos for a content owner's channel
+
+Top 10 – Annotation click-through rates for a channel's most viewed videos
+
+Top 10 – Most watched playlists for a content owner
+
+Geographic
+
+Top 10 - Most watched videos in Europe for a content owner
+
+Top 10 – Most started playlists in the United States
+
+Geographic areas
+
+These dimensions identify a geographic region associated with user activity, ad performance, or estimated revenue metrics.
+
+country (core dimension)
+
+The country associated with the metrics in the report row. The dimension value is a two-letter ISO-3166-1 country code, such as US , CN (China), or FR (France). The country code ZZ is used to report metrics for which YouTube could not identify the associated country. This is a core dimension and is subject to the Deprecation Policy .
+
+province
+
+The U.S. state or territory associated with the metrics in the report row. The dimension value is an ISO 3166-2 code that identifies a U.S. state or the District of Columbia, such as US-MI (Michigan) or US-TX (Texas). The province code US-ZZ is used to report metrics for which YouTube could not identify the associated U.S. state.
+
+When an API request includes province in the dimensions parameter value, the request must also restrict data to the United States by including country==US in the filters parameter value.
+
+Note: This dimension does not support ISO 3166-2 values that identify U.S. outlying areas since those territories also have their own ISO 3166-1 country codes. It also does not support subdivisions of countries other than the United States.
+
+dma
+
+The 3-digit identifier that Nielsen uses to identify the Designated Market Area (DMA)
+associated with the viewing events described in the data row.
+
+city
+
+The estimated city associated with the metrics in the report row. Data for this dimension is available for dates beginning January 1, 2022.
+
+continent (filter only)
+
+A United Nations (UN) statistical region code. The API supports the following values:
+
+Value
+
+Description
+
+002
+
+Africa
+
+019
+
+Americas (Northern America, Latin America, South America, and the Caribbean)
+
+142
+
+Asia
+
+150
+
+Europe
+
+009
+
+Oceania
+
+This dimension can only be used to filter data. To use this dimension, set the value of the
+filters parameter to
+continent==REGION_CODE , specifying a REGION_CODE value from the table.
+
+subContinent (filter only)
+
+A UN statistical region code that identifies a geographical sub-region. The United Nations Statistics Division lists sub-regions as well as the countries it associates with each region.
+
+Display the list of supported sub-regions.
+
+Value
+
+Region
+
+Sub-region
+
+014
+
+Africa
+
+Eastern Africa
+
+017
+
+Africa
+
+Middle Africa
+
+015
+
+Africa
+
+Northern Africa
+
+018
+
+Africa
+
+Southern Africa
+
+011
+
+Africa
+
+Western Africa
+
+029
+
+Americas
+
+Caribbean
+
+013
+
+Americas
+
+Central America
+
+021
+
+Americas
+
+Northern America
+
+005
+
+Americas
+
+South America
+
+143
+
+Asia
+
+Central Asia
+
+030
+
+Asia
+
+Eastern Asia
+
+034
+
+Asia
+
+Southern Asia
+
+035
+
+Asia
+
+Southeastern Asia
+
+145
+
+Asia
+
+Western Asia
+
+151
+
+Europe
+
+Eastern Europe
+
+154
+
+Europe
+
+Northern Europe
+
+039
+
+Europe
+
+Southern Europe
+
+155
+
+Europe
+
+Western Europe
+
+053
+
+Oceania
+
+Australia and New Zealand
+
+054
+
+Oceania
+
+Melanesia
+
+057
+
+Oceania
+
+Micronesia
+
+061
+
+Oceania
+
+Polynesia
+
+This dimension can only be used to filter data. To use this dimension, set the value of the filters parameter to subContinent==REGION_CODE , specifying a REGION_CODE value from the UN list.
+
+Examples
+
+The following sample requests use geographic dimensions or filters:
+
+Channel examples
+
+Basic stats : Country-specific view counts (and more) for a channel
+
+Geographic
+
+Country-specific watch time metrics for a channel's videos
+
+Country-specific annotation metrics for a channel's videos
+
+Province-specific metrics for U.S. states and Washington D.C.
+
+Country-specific watch time metrics for a channel's playlists
+
+Top 10 – Most started playlists in the United States
+
+Playback location : Daily view counts and watch time from different playback locations
+
+Traffic source : Viewcounts and watch time from different traffic sources in a country
+
+Demographic : Viewer demographics in California (age group and gender)
+
+Top videos
+
+Top 10 – Most viewed videos in a specific country
+
+Top 10 – Most viewed videos in Europe
+
+Content owner examples
+
+Basic stats : Country-specific view counts (and more) for all self-uploaded videos
+
+Geographic
+
+Country-specific watch time metrics for self-uploaded content
+
+Country-specific annotation metrics for self-uploaded content
+
+Province-specific metrics for U.S. states and Washington D.C.
+
+Country-specific watch time metrics for a content owner's playlists
+
+Top 10 – Most started playlists in the United States
+
+Playback location : Daily view counts and watch time from different playback locations
+
+Demographic : Viewer demographics in California (age group and gender)
+
+Top videos : Top 10 – Most watched videos in Europe for a content owner
+
+Revenue/Ad performance : Country-specific revenue and ad performance metrics
+
+Time periods
+
+These dimensions indicate that a report should aggregate data based on a time period, such as a day, a week, or a month. The startDate and endDate request parameters specify the time period for which the report includes data. Note that the report actually returns data up until the last day for which all metrics specified in the request are available at the time the query is made. In reports, dates are listed in YYYY-MM-DD format.
+
+Important: All dates refer to the time period beginning at 12:00AM Pacific time (UTC-7 or UTC-8) and ending at 11:59PM Pacific time on the specified day, month, and year. As a result, dates when clocks are adjusted forward for Daylight Savings Time represent a 23-hour period, and dates when clocks are adjusted backward represent a 25-hour period.
+
+The month dimension refers to the time period beginning at 12:00AM Pacific time (UTC-7 or UTC-8) on the first day of the specified month and year.
+
+day (core dimension)
+
+When you use this dimension, data in the report is aggregated on a daily basis and each row contains data for one day. You can use other dimensions to break down the data even further. For example, a traffic source report can aggregate daily viewing statistics based on the manner in which users reach your videos. This is a core dimension and is subject to the Deprecation Policy .
+
+month (core dimension)
+
+Data in the report is aggregated by calendar month. As with daily reports, you can use other filters to segment the data even further. In the report, dates are listed in YYYY-MM format.
+
+Note: If your API query uses the month dimension, then the start-date and end-date parameters must both be set to the first day of the month. This is a core dimension and is subject to the Deprecation Policy .
+
+Examples
+
+The following sample requests use temporal dimensions or filters:
+
+Channel examples
+
+Time-based
+
+Daily watch time metrics for a channel's videos
+
+Daily annotation metrics for a channel's videos
+
+Daily playlist views for a channel
+
+Playback location : Daily view counts and watch time from different playback locations
+
+Traffic source : Daily view counts and watch time from different traffic sources
+
+Device/OS
+
+Daily device type metrics for the Android operating system
+
+Daily operating system metrics for mobile devices
+
+Daily operating system and device type metrics
+
+Content owner examples
+
+Time-based
+
+Daily watch time metrics for self-uploaded content
+
+Annotation metrics for claimed content
+
+Daily playlist views for a content owner
+
+Playback location : Daily view counts and watch time from different playback locations
+
+Traffic source : Daily view counts and watch time from different traffic sources
+
+Device/OS
+
+Daily device type metrics for claimed videos
+
+Daily operating system metrics for claimed videos viewed on mobile devices
+
+Daily operating system and device type metrics
+
+Revenue/Ad performance : Daily revenue and ad performance metrics
+
+Playback locations
+
+These dimensions provide insight about the page or application where user activity occurred.
+
+insightPlaybackLocationType
+
+Data in the report is aggregated based on the type of page or application where video playbacks occurred. Possible values for this dimension are:
+
+BROWSE – The data describes views that took place on the YouTube home page or home screen, in the user's subscription feed, or in another YouTube browsing feature.
+
+CHANNEL – The data describes views that occurred on a channel page.
+
+EMBEDDED – The data describes views that occurred on another website or application where the video was embedded using an <iframe> or <object> embed.
+
+EXTERNAL_APP – The data describes views that occurred in a third-party application where the video was played using a method other than an <iframe> or <object> embed. For example, playbacks in applications that use the YouTube Android Player API would be categorized using this value.
+
+MOBILE – The data describes views that occurred on YouTube's mobile website or on approved YouTube API clients, including mobile devices.
+
+As of September 10, 2013, playbacks are no longer categorized as MOBILE playbacks in YouTube Analytics reports. The value may remain in reports since legacy data still falls under that category. However, following that date, mobile playbacks are classified as either WATCH , EMBEDDED , or EXTERNAL_APP playbacks, depending on the type of application where the playbacks occur.
+
+SEARCH – The data describes views that took place directly on the YouTube search results page.
+
+WATCH – The data describes views that occurred on the video's YouTube watch page or in an official YouTube application, such as the YouTube Android app.
+
+YT_OTHER – The data describes views that are not otherwise classified.
+
+insightPlaybackLocationDetail
+
+Data is aggregated based on the page where the player is located. Note that this report is only supported for views that occurred in embedded players, and it identifies the embedded players that generated the most views for a specified video. Thus, it provides a more fine-grained view than the playback location report by identifying the URLs or applications associated with the top embedded players.
+
+Examples
+
+The following sample requests use playback location dimensions:
+
+Channel examples
+
+Playback location
+
+Viewcounts and watch time from different playback locations
+
+Daily view counts and watch time from different playback locations
+
+Top 10 – Third-party sites that generate the most views for an embedded video
+
+Playlist view counts and watch time from different playback locations
+
+Daily playlist view counts and watch time from different playback locations
+
+Content owner examples
+
+Playback location
+
+Viewcounts and watch time from different playback locations
+
+Daily view counts and watch time from different playback locations
+
+Top 10 – Third-party sites that generate the most views for an embedded video
+
+Playlist view counts and watch time from different playback locations
+
+Daily playlist view counts and watch time from different playback locations
+
+Playback details
+
+creatorContentType
+
+This dimension identifies the type of content associated with the user activity metrics in the data row. Data for this dimension is available for dates beginning January 1, 2019.
+
+The following table lists dimension values:
+
+Value
+
+Description
+
+LIVE_STREAM
+
+The viewed content was a YouTube livestream .
+
+SHORTS
+
+The viewed content was a YouTube Short .
+
+STORY
+
+The viewed content was a YouTube Story .
+
+VIDEO_ON_DEMAND
+
+The viewed content was a YouTube video that does not fall under one of the other dimension values.
+
+UNSPECIFIED
+
+The content type of the viewed content is unknown.
+
+liveOrOnDemand
+
+This dimension indicates whether the user activity metrics in the data row are associated with views of a live broadcast. Data for this dimension is available for dates beginning April 1, 2014.
+
+The following table lists dimension values:
+
+Value
+
+Description
+
+LIVE
+
+The row's data describes user activity that occurred during a live broadcast.
+
+ON_DEMAND
+
+The row's data describes user activity that did not occur during a live broadcast.
+
+subscribedStatus
+
+This dimension indicates whether the user activity metrics in the data row are associated with viewers who were subscribed to the video's or playlist's channel.
+
+Possible values are SUBSCRIBED and UNSUBSCRIBED .
+
+Note that the dimension value is accurate as of the time that the user activity occurs. For example, suppose a user has not subscribed to a channel and watches one of that channel's videos, then subscribes to the channel and watches another video, all on the same day.
+
+The channel's report indicates that one view has a subscribedStatus value of SUBSCRIBED , and one view has a subscribedStatus value of UNSUBSCRIBED .
+
+youtubeProduct
+
+This dimension identifies the YouTube service on which the user activity occurred. Data for this dimension is available as of July 18, 2015.
+
+The following table lists dimension values:
+
+Value
+
+Description
+
+CORE
+
+The user activity that did not occur in one of the specialty YouTube applications (YouTube Gaming, YouTube Kids, or YouTube Music). Exception: User activity that occurred in YouTube Music before March 1, 2021, is included in CORE .
+
+GAMING
+
+The user activity occurred in YouTube Gaming.
+
+KIDS
+
+The user activity occurred in YouTube Kids.
+
+MUSIC
+
+The user activity occurred in YouTube Music on or after March 1, 2021. Data prior to March 1, 2021 is included in CORE . Real-time data is not recorded.
+
+UNKNOWN
+
+The user activity occurred prior to July 18, 2015.
+
+Traffic sources
+
+insightTrafficSourceType
+
+Data in the report is aggregated based on the referrer type, which describes the manner in which users reached the video. Possible values for this dimension are:
+
+ADVERTISING – The viewer was referred to the video by an advertisement. If you filter based on this traffic source, the insightTrafficSourceDetail field identifies the type of advertisement.
+
+ANNOTATION – Viewers reached the video by clicking on an annotation in another video.
+
+CAMPAIGN_CARD – Views originated from claimed, user-uploaded videos that the content owner used to promote the viewed content. This traffic source is only supported for content owner reports.
+
+END_SCREEN – The views were referred from the end screen of another video.
+
+EXT_URL – The video views were referred from a link on another website. If you filter based on this traffic source, the insightTrafficSourceDetail field identifies the web page. This traffic source includes referrals from Google Search results.
+
+HASHTAGS – Views originated from VOD hashtag pages or Shorts hashtag pivot pages.
+
+LIVE_REDIRECT - The video views were referred from Live Redirects .
+
+NO_LINK_EMBEDDED – The video was embedded on another website when it was viewed.
+
+NO_LINK_OTHER – YouTube did not identify a referrer for the traffic. This category encompasses direct traffic to a video as well as traffic on mobile apps.
+
+NOTIFICATION – The video views were referred from an email or notification from YouTube.
+
+PLAYLIST – The video views occurred while the video was being played as part of a playlist. It includes traffic coming from the playlist page.
+
+PRODUCT_PAGE - The video views were referred from a Product page.
+
+PROMOTED – The video views were referred from an unpaid YouTube promotion, such as the YouTube "Spotlight Videos" page.
+
+RELATED_VIDEO – The video views were referred from a related video listing on another video watch page. If you filter based on this traffic source, the insightTrafficSourceDetail field specifies the video ID for that video.
+
+SHORTS – The viewer was referred by swiping vertically from the previous video in the Shorts viewing experience.
+
+SOUND_PAGE – Views originated from Shorts sound pivot pages.
+
+SUBSCRIBER – The video views were referred from feeds on the YouTube homepage or from YouTube subscription features. If you filter based on this traffic source, the insightTrafficSourceDetail field specifies the homepage feed items or other page from which views were referred.
+
+YT_CHANNEL – The video views occurred on a channel page. If you filter based on this traffic source, the insightTrafficSourceDetail field specifies the channel ID for that channel.
+
+YT_OTHER_PAGE – The video views were referred from a link other than a search result or related video link that appeared on a YouTube page. If you filter based on this traffic source, the insightTrafficSourceDetail field identifies the page.
+
+YT_SEARCH – The video views were referred from YouTube search results. If you filter based on this traffic source, the insightTrafficSourceDetail field specifies the search term.
+
+VIDEO_REMIXES – The video views were referred from the remixed video link in the Shorts player. If you filter based on this traffic source, the insightTrafficSourceDetail field specifies the video from which the viewer was referred.
+
+WATCH_WITH – The video views were referred from a Creator Commentary / "Watch With" stream. If you filter based on this traffic source, the insightTrafficSourceDetail field specifies the video from which the viewer was referred.
+
+insightTrafficSourceDetail
+
+Data in the report is aggregated based on the referrers that generated the most views for a specified video and a specified traffic source type. The following list identifies the traffic sources for which this report is available. For each traffic source, the list identifies the information that the insightTrafficSourceDetail dimension provides.
+
+ADVERTISING – The type of advertisement that led to the views. Possible values are:
+
+Click-to-play engagement ad
+
+Engagement ad
+
+Google Search ads
+
+Homepage video ad
+
+Reserved skippable in-stream
+
+TrueView in-search and in-display
+
+TrueView in-stream
+
+Uncategorized YouTube advertising
+
+Video wall
+
+CAMPAIGN_CARD – The claimed video that led viewers to the video identified in the report.
+
+END_SCREEN – The video that led viewers to the video identified in the report.
+
+EXT_URL – The website that referred the viewers to the video.
+
+HASHTAGS – The hashtag that led to the views.
+
+NOTIFICATION – The email or notification that referred the traffic.
+
+RELATED_VIDEO – The related video that led viewers to the video covered in the report.
+
+SOUND_PAGE – The video that led to the views.
+
+SUBSCRIBER – The homepage feed item or YouTube subscription feature that led viewers to the video covered in the report. Valid values are:
+
+activity – Views from items in homepage subscription feeds that resulted from non-upload and non-social channel activity, including likes, favorites, bulletin posts, and playlist additions.
+
+blogged – Views from items in homepage subscription feeds that resulted from links from top blogs.
+
+mychannel – Views from items in other feeds listed on the homepage, such as "Likes," "Watch History," and "Watch Later."
+
+podcasts – Views originating from items in the Podcasts destination page.
+
+sdig – Views originating from subscription update emails.
+
+uploaded – Views from the uploaded items in homepage subscription feeds.
+
+/ – Other views originating from the YouTube homepage.
+
+/my_subscriptions – Views originating from users' My subscriptions pages on YouTube.
+
+YT_CHANNEL – The channel page where viewers watched the video.
+
+YT_OTHER_PAGE – The YouTube page from which viewers were referred to the video.
+
+YT_SEARCH – The search term that led viewers to the video.
+
+VIDEO_REMIXES – The video that led to the views.
+
+WATCH_WITH – The video that led to the views.
+
+Examples
+
+The following sample requests use traffic source dimensions:
+
+Channel examples
+
+Traffic source
+
+Viewcounts and watch time from different traffic sources in a country
+
+Daily view counts and watch time from different traffic sources
+
+Top 10 – YouTube search terms that generate the most traffic for a video
+
+Top 10 – Google Search terms that generate the most traffic for a video
+
+Playlist view counts and watch time from different traffic sources in a country
+
+Daily playlist view counts and watch time from different traffic sources
+
+Content owner examples
+
+Traffic source
+
+Viewcounts and watch time from different traffic sources
+
+Daily view counts and watch time from different traffic sources
+
+Top 10 – YouTube search terms that generate the most traffic for a video
+
+Top 10 – Google Search terms that generate the most traffic for a video
+
+Playlist view counts and watch time from different traffic sources in a country
+
+Daily playlist view counts and watch time from different traffic sources
+
+Devices
+
+deviceType
+
+This dimension identifies the physical form factor of the device on which the view occurred.
+
+The following list identifies the device types for which the API returns data. You can also use the deviceType dimension as a filter to restrict an operating system report to only contain data for a specific type of device.
+
+DESKTOP
+
+GAME_CONSOLE
+
+MOBILE
+
+TABLET
+
+TV
+
+AUTOMOTIVE
+
+WEARABLE
+
+UNKNOWN_PLATFORM
+
+operatingSystem
+
+This dimension identifies the software system of the device on which the view occurred.
+
+The following list identifies the operating systems for which the API returns data. You can also use the operatingSystem as a filter to restrict a device type report to only contain data for a specific operating system.
+
+ANDROID
+
+BADA
+
+BLACKBERRY
+
+CHROMECAST
+
+DOCOMO
+
+FIREFOX
+
+HIPTOP
+
+IOS
+
+KAIOS
+
+LINUX
+
+MACINTOSH
+
+MEEGO
+
+NINTENDO_3DS
+
+OTHER
+
+PLAYSTATION
+
+PLAYSTATION_VITA
+
+REALMEDIA
+
+SMART_TV
+
+SYMBIAN
+
+TIZEN
+
+VIDAA
+
+WEBOS
+
+WII
+
+WINDOWS
+
+WINDOWS_MOBILE
+
+XBOX
+
+Examples
+
+The following sample requests use device dimensions:
+
+Channel examples
+
+Device/OS
+
+Daily device type metrics for the Android operating system
+
+Daily operating system metrics for mobile devices
+
+Daily operating system and device type metrics
+
+Daily device type metrics for playlist views on the Android operating system
+
+Daily operating system metrics for playlist views on mobile devices
+
+Content owner examples
+
+Device/OS
+
+Daily device type metrics for claimed videos
+
+Daily operating system metrics for claimed videos viewed on mobile devices
+
+Daily operating system and device type metrics
+
+Daily device type metrics for playlist views on the Android operating system
+
+Daily operating system metrics for playlist views on mobile devices
+
+Demographics
+
+Demographic dimensions help you to understand the age range and gender distribution of your audience. The YouTube Help Center contains additional information about demographic data in YouTube Analytics reports.
+
+ageGroup (core dimension)
+
+This dimension identifies the age group of the logged-in users associated with the report data, and includes users that YouTube estimates to be under 18 years old. The API uses the following age groups:
+
+age13-17
+
+age18-24
+
+age25-34
+
+age35-44
+
+age45-54
+
+age55-64
+
+age65-
+
+This is a core dimension and is subject to the Deprecation Policy .
+
+gender (core dimension)
+
+This dimension identifies the gender of the logged-in users associated with the report data.
+
+Valid values are female , male and user_specified .
+
+This is a core dimension and is subject to the Deprecation Policy .
+
+Examples
+
+The following sample requests use demographic dimensions:
+
+Channel examples
+
+Demographic
+
+Viewer demographics in California (age group and gender)
+
+Playlist viewer demographics in California (age group and gender)
+
+Content owner examples
+
+Demographic
+
+Viewer demographics in California (age group and gender)
+
+Playlist viewer demographics in California (age group and gender)
+
+Engagement and content sharing
+
+sharingService (core dimension)
+
+This dimension identifies the service that was used to share videos. Videos can be shared on YouTube (or via the YouTube player) using the "Share" button. This is a core dimension and is subject to the Deprecation Policy .
+
+The following table lists valid dimension values:
+
+Sharing service
+
+API value
+
+Allo
+
+ALLO
+
+Ameba
+
+AMEBA
+
+Android Email
+
+ANDROID_EMAIL
+
+Android Messenger
+
+ANDROID_MESSENGER
+
+Android messaging
+
+ANDROID_MMS
+
+Android system share dialog
+
+ANDROID_SYSTEM_SHARE_DIALOG
+
+Blackberry Messenger
+
+BBM
+
+Get a reaction
+
+BLIND_REACT
+
+Blogger
+
+BLOGGER
+
+Copy to Clipboard
+
+COPY_PASTE
+
+Cyworld
+
+CYWORLD
+
+Digg
+
+DIGG
+
+Direct system activity dialog
+
+DIRECT_SYSTEM_ACTIVITY_DIALOG
+
+Discord
+
+DISCORD
+
+Displayed QR code
+
+DISPLAYED_QR_CODE
+
+Dropbox
+
+DROPBOX
+
+Embed
+
+EMBED
+
+Email
+
+MAIL
+
+Facebook
+
+FACEBOOK
+
+Facebook Lite
+
+FACEBOOK_LITE
+
+Facebook Messenger
+
+FACEBOOK_MESSENGER
+
+Facebook Pages
+
+FACEBOOK_PAGES
+
+Facebook share to group
+
+FACEBOOK_SHARE_TO_GROUP
+
+Facebook Stories
+
+FACEBOOK_STORIES
+
+Fotka
+
+FOTKA
+
+Gmail
+
+GMAIL
+
+goo
+
+GOO
+
+Google app
+
+GOOGLE_APP
+
+Google Chat
+
+GOOGLE_CHAT
+
+Google Chrome
+
+GOOGLE_CHROME
+
+Google Inbox
+
+INBOX
+
+Google Keep
+
+GOOGLE_KEEP
+
+Google+
+
+GOOGLEPLUS
+
+Go SMS
+
+GO_SMS
+
+GroupMe
+
+GROUPME
+
+Hangouts
+
+HANGOUTS
+
+hi5
+
+HI5
+
+HTC text message
+
+HTC_MMS
+
+IMO
+
+IMO
+
+Instagram
+
+INSTAGRAM
+
+Instagram Stories
+
+INSTAGRAM_STORIES
+
+Invite link (Android)
+
+INVITE_LINK_ANDROID
+
+Invite link (iOS)
+
+INVITE_LINK_IOS
+
+Invite playlist collaborators
+
+INVITE_PLAYLIST_COLLABORATORS
+
+iOS System Activity Dialog
+
+IOS_SYSTEM_ACTIVITY_DIALOG
+
+KAKAO Story
+
+KAKAO_STORY
+
+Kakao (Kakao Talk)
+
+KAKAO
+
+KaiOS messages
+
+KAIOS_MESSAGES
+
+Kik
+
+KIK
+
+LGE Email
+
+LGE_EMAIL
+
+Line
+
+LINE
+
+Linkedin
+
+LINKEDIN
+
+LiveJournal
+
+LIVEJOURNAL
+
+Maps copy/paste
+
+MAPS_COPY_PASTE
+
+Meet live sharing
+
+MEET_LIVE_SHARING
+
+menéame
+
+MENEAME
+
+mixi
+
+MIXI
+
+Motorola Messaging
+
+MOTOROLA_MESSAGING
+
+Myspace
+
+MYSPACE
+
+Naver
+
+NAVER
+
+Nearby Share
+
+NEARBY_SHARE
+
+NUjij
+
+NUJIJ
+
+Odnoklassniki (Одноклассники)
+
+ODNOKLASSNIKI
+
+Other
+
+OTHER
+
+Pinterest
+
+PINTEREST
+
+Quick Share
+
+QUICK_SHARE
+
+Quick Share (Samsung)
+
+QUICK_SHARE_SAMSUNG
+
+Rakuten (楽天市場)
+
+RAKUTEN
+
+reddit
+
+REDDIT
+
+Remix
+
+REMIX
+
+Samsung Messages
+
+SAMSUNG_MESSAGES
+
+Samsung Notes
+
+SAMSUNG_NOTES
+
+Save to device photos
+
+SAVE_TO_DEVICE_PHOTOS
+
+Share ad-free
+
+SHARE_AD_FREE
+
+Share to Snapchat camera
+
+SHARE_TO_SNAPCHAT_CAMERA
+
+Share with kids
+
+SHARE_WITH_KIDS
+
+Skype
+
+SKYPE
+
+Skyrock
+
+SKYBLOG
+
+Snapchat
+
+SNAPCHAT
+
+Sony Conversations
+
+SONY_CONVERSATIONS
+
+StumbleUpon
+
+STUMBLEUPON
+
+Telegram
+
+TELEGRAM
+
+Text message
+
+TEXT_MESSAGE
+
+Tuenti
+
+TUENTI
+
+tumblr.
+
+TUMBLR
+
+Twitter
+
+TWITTER
+
+Unknown
+
+UNKNOWN
+
+Verizon messages
+
+VERIZON_MMS
+
+Viber
+
+VIBER
+
+VKontakte (ВКонтакте)
+
+VKONTAKTE
+
+Web system activity dialog
+
+WEB_SYSTEM_ACTIVITY_DIALOG
+
+WeChat
+
+WECHAT
+
+Weibo
+
+WEIBO
+
+WhatsApp
+
+WHATS_APP
+
+WhatsApp Business
+
+WHATS_APP_BUSINESS
+
+Wykop
+
+WYKOP
+
+Yahoo! Japan
+
+YAHOO
+
+YouTube Community post
+
+YOUTUBE_COMMUNITY_POST
+
+YouTube Community repost
+
+YOUTUBE_COMMUNITY_REPOST
+
+YouTube Gaming
+
+YOUTUBE_GAMING
+
+YouTube Kids
+
+YOUTUBE_KIDS
+
+YouTube Mango
+
+YOUTUBE_MANGO
+
+YouTube Music
+
+YOUTUBE_MUSIC
+
+YouTube Music share to Snapchat preview
+
+YTM_SHARE_TO_SNAPCHAT_PREVIEW
+
+YouTube Shorts Green Screen
+
+YOUTUBE_SHORTS_GREEN_SCREEN
+
+YouTube TV
+
+YOUTUBE_TV
+
+YouTube Watch with Friends
+
+YOUTUBE_WATCH_WITH_FRIENDS
+
+See the help docs for more information.
+
+Examples
+
+The following sample requests use social dimensions:
+
+Channel examples
+
+Social : Sharing metrics, aggregated by service where videos were shared
+
+Content owner examples
+
+Social : Sharing metrics, aggregated by service where videos were shared
+
+Audience retention
+
+elapsedVideoTimeRatio
+
+This dimension specifies the ratio of the elapsed portion of the video to the video's length. Retention dimensions and metrics are used to measure audience retention over time, and the elapsedVideoTimeRatio dimension is the time measurement. For example, a value of 0.4 indicates that the corresponding report data shows retention data after 40 percent of the video has elapsed.
+
+The API returns 100 data points for each video with ratio values ranging from 0.01 to 1.0 . The times at which data is measured during video playbacks are equally spaced for each video. This means that for a two-minute video, the interval between data points is 1.2 seconds. However, for a two-hour video, the interval between data points is 72 seconds. The dimension's value denotes the exclusive end of the interval.
+
+audienceType
+
+(filter only)
+
+The dimension value identifies the type of traffic associated with the report data.
+
+Supported values are ORGANIC , AD_INSTREAM , and AD_INDISPLAY .
+
+See the YouTube Help Center for explanations of these traffic source types.
+
+Note that data for the audienceType filter is available as of September 25, 2013. The API does not return data for queries that use the filter to try to retrieve data from earlier dates. Queries that do not use the filter work for any date after July 1, 2008.
+
+Examples
+
+The following sample requests use audience retention dimensions:
+
+Channel examples
+
+Audience retention : Audience retention metrics for a video
+
+Content owner examples
+
+Audience retention : Audience retention metrics for a video
+
+Live streaming
+
+livestreamPosition
+
+This dimension specifies a particular minute during a live video stream. The report metrics
+indicate how many users were watching the livestream at that time.
+
+Membership cancellations
+
+membershipsCancellationSurveyReason
+
+The number of surveys completed by YouTube users who canceled their channel membership for the
+specified channel during the reporting period. The following table lists valid dimension values:
+
+API value
+
+Explanation
+
+UNKNOWN
+
+The user did not complete the survey.
+
+DISLIKE_PERKS
+
+The user did not like the perks of the membership.
+
+PERKS_NOT_DELIVERED
+
+The user said promised membership perks were not delivered.
+
+CANNOT_ACCESS_PERKS
+
+The user was not able to access the perks.
+
+NO_LONGER_INTERESTED
+
+The user is no longer interested in the channel membership.
+
+FEEL_UNAPPRECIATED
+
+The user felt unappreciated as a channel member.
+
+FINANCIAL_REASONS
+
+The user canceled for financial reasons.
+
+JOIN_LIMITED_TIME
+
+The user only intended to join for a limited time.
+
+OTHER
+
+The user had another reason for canceling.
+
+Ad performance
+
+adType
+
+The adType dimension is used in ad performance reports and aggregates the requested metrics based on the types of ads that ran during video playbacks.
+
+The following list explains possible dimension values. See the YouTube Help Center for more information about YouTube advertising formats.
+
+auctionBumperInstream – Non-skippable video ads, placed via auction, of up to 6 seconds that must be watched before a video can be viewed.
+
+auctionDisplay – A rich media or image ad that appears either as an overlay on the bottom of the video player, as a 300x250 ad unit on the video watch page, or as a combination of both. When the overlay runs, it automatically closes after displaying for a certain amount of time, and the user can close the overlay as well. If an overlay and a banner are shown together, each ad is counted as a separate impression.
+
+auctionInstream – Non-skippable video ads that run before, during, or after the main video.
+
+auctionTrueviewInslate – The viewer chooses one of several video ads from a selection of choices displayed before a video. See the TrueView documentation for more information.
+
+auctionTrueviewInstream – Skippable video ads that run before or during the main video.
+See the TrueView documentation for more information.
+
+auctionUnknown – An ad that was purchased via the AdWords auction but that has not been classified into one of the other ad types.
+
+reservedBumperInstream – Non-skippable video ads, sold on a reserved basis, of up to 6 seconds that must be watched before a video can be viewed.
+
+reservedClickToPlay – A video ad that the user must click to initiate playback. An ad impression is recorded any time the click-to-play ad unit displays, regardless of whether the user initiates a playback. These are sold on a reserved basis.
+
+reservedDisplay – A rich media or image ad that appears either as an overlay on the bottom of the video player, as a 300x250 ad unit on the video watch page, or as a combination of both. When the overlay runs, it automatically closes after displaying for a certain amount of time, and the user can close the overlay as well. If an overlay and a banner are shown together, each ad is counted as a separate impression.
+
+reservedInstream – Non-skippable video ads that are inserted before, during, or after the main video.
+
+reservedInstreamSelect
+
+reservedMasthead – A large ad, which can include video and graphic elements, that appears on the homepage.
+
+reservedUnknown – An ad that was sold on a reserved basis that could not be classified into one of the other ad types.
+
+unknown – YouTube could not classify this ad type.
+
+Examples
+
+The following sample reports retrieve ad performance or revenue metrics:
+
+Channel examples
+
+Revenue/Ads
+
+Channel revenue and ad performance metrics
+
+Daily revenue and ad performance metrics
+
+Country-specific revenue and ad performance metrics
+
+Top 10 – Videos with the highest revenue
+
+Ad performance metrics for different ad types
+
+Content owner examples
+
+Revenue/Ads
+
+Revenue and ad performance metrics for claimed content
+
+Daily revenue and ad performance metrics
+
+Country-specific revenue and ad performance metrics
+
+Top 10 – Videos with the highest revenue
+
+Ad performance metrics for different ad types
+
+Content owner dimensions
+
+The following dimensions are only supported for content owner reports.
+
+Important: API requests to retrieve content owner reports must filter data using one of the following dimensions:
+
+video
+
+channel
+
+A supported combination of the claimedStatus and uploaderType dimensions as defined below.
+
+claimedStatus (only used in content owner reports)
+
+This dimension lets you indicate that an API response should only contain metrics for claimed content. The only valid value for this dimension is claimed . If the filters parameter restricts the query to claimedStatus==claimed , the API will only retrieve data for claimed content. The table in the definition of the uploaderType dimension provides more detail about how to use this dimension.
+
+uploaderType (core dimension) (only used in content owner reports)
+
+This dimension lets you indicate whether an API response should contain metrics for content uploaded by the specified content owner and/or content uploaded by third parties, such as user-uploaded videos. Valid values are self and thirdParty . This is a core dimension and is subject to the Deprecation Policy .
+
+The following table shows the supported combinations for the claimedStatus and uploaderType dimensions, which are both used in the filters parameter:
+
+claimedStatus value
+
+uploaderType value
+
+Description
+
+[Not set]
+
+self
+
+Retrieves YouTube Analytics data for claimed and unclaimed content uploaded by the content owner.
+
+claimed
+
+[Not set]
+
+Retrieves data for claimed content uploaded by the content owner or by a third party.
+
+claimed
+
+self
+
+Retrieves data for claimed content uploaded by the content owner.
+
+claimed
+
+thirdParty
+
+Retrieves data for claimed content uploaded by a third party.
+
+Examples
+
+Many of the sample API requests for content owner reports use a supported combination of the claimedStatus and uploaderType dimensions to filter data.
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License , and code samples are licensed under the Apache 2.0 License . For details, see the Google Developers Site Policies . Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-09-15 UTC.
+
+Blog
+
+The latest news on the YouTube blog
+
+Issue Tracker
+
+Something wrong? Send us a bug report!
+
+YouTube Researcher Program
+
+For researchers interested in using data from YouTube's global API
+
+Tools
+
+Google APIs Explorer
+
+YouTube Player Demo
+
+Configure a Subscribe Button
+
+Issue Tracker
+
+File a bug
+
+Request a feature
+
+See open issues
+
+Product Info
+
+Terms of Service
+
+Developer Policies
+
+Required Minimum Functionality
+
+Branding Guidelines
+
+Android
+
+Chrome
+
+Firebase
+
+Google Cloud Platform
+
+Google AI
+
+All products
+
+Terms
+
+Privacy
+
+Manage cookies
+
+English
+
+Deutsch
+
+Español
+
+Español – América Latina
+
+Français
+
+Indonesia
+
+Italiano
+
+Polski
+
+Português – Brasil
+
+Tiếng Việt
+
+Türkçe
+
+Русский
+
+עברית
+
+العربيّة
+
+فارسی
+
+हिंदी
+
+বাংলা
+
+ภาษาไทย
+
+中文 – 简体
+
+中文 – 繁體
+
+日本語
+
+한국어

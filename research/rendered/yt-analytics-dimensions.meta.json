@@ -1,0 +1,17 @@
+{
+  "url": "https://developers.google.com/youtube/analytics/dimensions",
+  "slug": "yt-analytics-dimensions",
+  "fetchedAt": "2026-09-27T09:47:32.755Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 157535,
+  "sha256": "435457c535c4619d5bdb7ea5712c5424eebf5a671d49f4b7bcd4fdb77a084167",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yt-analytics-dimensions.html",
+  "textPath": "research/rendered/yt-analytics-dimensions.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

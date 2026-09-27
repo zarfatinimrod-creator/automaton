@@ -1,0 +1,17 @@
+{
+  "url": "https://developers.google.com/youtube/analytics/channel_reports",
+  "slug": "yt-analytics-channel-reports",
+  "fetchedAt": "2026-09-27T09:47:31.350Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 252854,
+  "sha256": "3899c61d360969cf1a6fb40c30b732f7ff36d423fa161183a6aa635c39a6e0ba",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yt-analytics-channel-reports.html",
+  "textPath": "research/rendered/yt-analytics-channel-reports.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

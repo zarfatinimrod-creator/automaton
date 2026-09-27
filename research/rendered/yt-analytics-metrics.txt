@@ -1,0 +1,647 @@
+Metrics | YouTube Analytics and Reporting APIs | Google for Developers
+
+Skip to main content
+
+YouTube
+
+Analytics and Reporting APIs
+
+/
+
+English
+
+Deutsch
+
+Español
+
+Español – América Latina
+
+Français
+
+Indonesia
+
+Italiano
+
+Polski
+
+Português – Brasil
+
+Tiếng Việt
+
+Türkçe
+
+Русский
+
+עברית
+
+العربيّة
+
+فارسی
+
+हिंदी
+
+বাংলা
+
+ภาษาไทย
+
+中文 – 简体
+
+中文 – 繁體
+
+日本語
+
+한국어
+
+Sign in
+
+Home
+
+Overview
+
+Authorization
+
+Bulk Reports
+
+Targeted Queries
+
+Resources
+
+YouTube
+
+Analytics and Reporting APIs
+
+Home
+
+Overview
+
+Authorization
+
+Bulk Reports
+
+Targeted Queries
+
+Resources
+
+YouTube Analytics API
+
+Data Model
+
+Overview
+
+Dimensions
+
+Metrics
+
+Channel Reports
+
+Content Owner Reports
+
+Guides
+
+Sample requests
+
+API Reference
+
+Overview
+
+reports.query
+
+Groups
+
+Overview
+list
+insert
+update
+delete
+
+GroupItems
+
+Overview
+list
+insert
+delete
+
+Revision History
+
+Important: YouTube is updating its policy for how it counts views for all video formats. Learn more
+
+Home
+
+Products
+
+YouTube
+
+Analytics and Reporting APIs
+
+Targeted Queries
+
+Metrics
+
+Stay organized with collections
+
+Save and categorize content based on your preferences.
+
+Page Summary
+
+outlined_flag
+
+This document outlines various YouTube analytics metrics, categorized into Core Metrics, Deprecated Core Metrics, Other Metrics, and Playlist Metrics, providing a comprehensive overview of video and channel performance indicators.
+
+The metrics cover a range of data points, including viewer engagement (likes, dislikes, comments, shares), audience retention, revenue, playlist interactions, annotation and card interactions, and livestream viewership data.
+
+The document differentiates between core metrics, which are subject to a deprecation policy, and non-core metrics, which are not, and it highlights the deprecation of some older metrics like "favoritesAdded" and "favoritesRemoved".
+
+Revenue metrics are detailed, including estimated net revenue from various sources like ads and YouTube Premium subscriptions, with distinctions between gross and net revenue, and information on currency handling.
+
+The document explains unique metrics related to playlists, such as in-playlist metrics, which track user activity within a specific playlist, and aggregated video metrics, which provide user activity and impressions for videos within a channel-owned playlist.
+
+This document defines the metrics that you can retrieve using the YouTube Analytics API. This API supports real-time queries to generate custom YouTube Analytics reports.
+
+Metrics are individual measurements of user activity, ad performance, or estimated revenue. User activity metrics include things like video view counts and ratings (likes and dislikes).
+
+Core metrics
+
+While the YouTube Analytics API is subject to the Deprecation Policy defined in the Terms of Service , non-core metrics (and non-core dimensions) are not subject to the policy. In the definitions on this page, any metric that is a core metric is explicitly identified as such.
+
+The list below identifies the API's core metrics.
+
+annotationClickThroughRate
+
+annotationCloseRate
+
+averageViewDuration
+
+comments
+
+dislikes
+
+engagedViews
+
+estimatedMinutesWatched
+
+estimatedRevenue
+
+likes
+
+shares
+
+subscribersGained
+
+subscribersLost
+
+viewerPercentage
+
+views
+
+See the list of YouTube APIs subject to the Deprecation Policy for more information.
+
+View metrics
+
+engagedViews (core metric)
+
+The number of times the channel's videos have been viewed past the first frame, or the user clicks/taps to play.
+
+views (core metric)
+
+This metric represents different numbers in different types of reports.
+This is a core metric and is subject to the Deprecation Policy .
+
+playlistViews
+
+This metric is defined in the playlist metrics section.
+
+redViews
+
+The number of times that a video was viewed by YouTube Premium (previously known as YouTube Red) members.
+
+viewerPercentage (core metric)
+
+The percentage of viewers who were logged in when watching the video or playlist. This is a core metric and is subject to the Deprecation Policy .
+
+Watch time metrics
+
+estimatedMinutesWatched (core metric)
+
+The number of minutes that users watched videos for the specified channel, content owner, video, or playlist. This is a core metric and is subject to the Deprecation Policy .
+
+estimatedRedMinutesWatched
+
+The number of minutes that YouTube Premium (previously known as YouTube Red) members watched a video.
+
+averageViewDuration (core metric)
+
+The average length, in seconds, of video playbacks. As of December 13, 2021, this metric excludes looping clips traffic. In a playlist report, the metric indicates the average length, in seconds, of video playbacks that occurred in the context of a playlist. This is a core metric and is subject to the Deprecation Policy .
+
+averageViewPercentage
+
+The average percentage of a video watched during a video playback. As of December 13, 2021, this metric excludes looping clips traffic.
+
+Engagement metrics
+
+comments (core metric)
+
+The number of times that users commented on a video. See the YouTube Help Center for more information. This is a core metric and is subject to the Deprecation Policy .
+
+likes (core metric)
+
+The number of times that users indicated that they liked a video by giving it a positive rating. This is a core metric and is subject to the Deprecation Policy .
+
+dislikes (core metric)
+
+The number of times that users indicated that they disliked a video by giving it a negative rating. This is a core metric and is subject to the Deprecation Policy .
+
+shares (core metric)
+
+The number of times that users shared a video through the Share button. See the YouTube Help Center for more information. This is a core metric and is subject to the Deprecation Policy .
+
+subscribersGained (core metric)
+
+The number of times that users subscribed to a channel. This is a core metric and is subject to the Deprecation Policy .
+
+Channels can gain or lose subscribers in several places, including the video watch page, the channel page, and the guide that appears on the YouTube home page.
+
+In channel reports, this metric includes subscribers gained from any of these places. However, in reports that use either the video dimension or the filter parameter to restrict the response to only include data for a particular video, the subscribersGained metric will only include statistics from the specified video's watch page.
+
+subscribersLost (core metric)
+
+The number of times that users unsubscribed from a channel. This is a core metric and is subject to the Deprecation Policy .
+
+Data for this metric is reported similarly to the subscribersGained metric.
+
+In channel reports, this metric includes subscribers lost through any mechanism through which users can unsubcribe from a channel. However, in reports that use either the video dimension or the filter parameter to restrict the response to only include data for a particular video, this metric only includes users who unsubscribed from the specified video's watch page.
+
+videosAddedToPlaylists
+
+The number of times that videos were added to any YouTube playlists. The videos could have been added to the video owner's playlist or to other channels' playlists.
+
+The metric value does include the number of times that videos were added to default playlists like the "Watch Later" playlist. However, it does not count playlists that a video is automatically added to, such as a channel's uploads playlist or a user's watch history.
+
+This metric returns an absolute number, meaning that if a user adds a video to a playlist, removes it, and then adds it again, the metric value reflects the video being added to a playlist twice. Data for this metric is not available for dates before October 1, 2014.
+
+videosRemovedFromPlaylists
+
+The number of times that videos were removed from any YouTube playlists. The videos could have been removed from the video owner's playlist or from other channels' playlists.
+
+The metric value includes the number of times that videos were removed from default playlists like the "Watch Later" playlist.
+
+This metric returns an absolute number, meaning that if a user adds a video to a playlist, removes it, adds it again, and then removes it again, the metric value reflects the video being removed from a playlist twice. Data for this metric is not available for dates before October 1, 2014.
+
+Playlist metrics
+
+Playlist reports contain two types of metrics that explain how viewers interact with the videos
+in a playlist:
+
+Aggregated video metrics provide user activity and impression metrics that are
+aggregated for all videos in the playlist that are also owned by the channel that owns the
+playlist. Metrics for videos owned by other channels are not computed in the aggregation. As a
+result, if a channel creates a playlist that contains only videos owned by other channels,
+reports for those playlists won't provide values for these metrics.
+
+Refer to the view metrics and
+watch time metrics sections of this document for definitions
+of supported aggregated video metrics.
+
+In-playlist metrics reflect user activity and engagement in the context of the
+playlist page. These metrics include views for all videos in the playlist, regardless of which
+channel owns them, but only counts views that occurred in the playlist context.
+
+Most of the following metrics are in-playlist metrics; the remaining metrics in the list, such
+as the playlistSaves metric, are about user interactions with the playlist itself and
+not with videos in the playlist. As such, those metrics wouldn't be characterized as either
+aggregated video metrics or in-playlist metrics.
+
+averageTimeInPlaylist
+
+The estimated average amount of time, in minutes, that a viewer viewed videos in a playlist
+after the playlist was initiated. Note that this metric includes only playlist views that
+occurred on the web.
+
+playlistAverageViewDuration
+
+The estimated average length, in seconds, watched per playlist view. Note that this metric
+represents the average length of views of individual videos within a playlist; the
+averageTimeInPlaylist metric, by contrast, represents the average time
+each viewer spends watching the playlist as a whole. This metric includes data for playlist
+videos that are owned by other channels.
+
+playlistEstimatedMinutesWatched
+
+The number of minutes that users watched the playlist content as a part of the playlist. Watch
+time that occurred in other contexts—for example, watch time from views that occurred when
+viewers were watching the same video as part of other playlists—is not counted. This metric
+includes data for playlist videos that are owned by other channels.
+
+playlistSaves
+
+The net number of times that users saved a playlist. See the
+YouTube Help Center for more
+information about saved playlists. This metric returns a net change number, meaning that if a
+user saves a playlist, removes it from the list of saved playlists, and saves it again, the
+metric value reflects one playlist save being added.
+
+playlistStarts
+
+The number of times that viewers initiated playback of a playlist. Note that this metric
+includes only playlist views that occurred on the web.
+
+playlistViews
+
+The number of times that videos in the playlist were viewed in the context of that playlist.
+This metric includes data for playlist videos that are owned by other channels.
+
+viewsPerPlaylistStart
+
+The average number of video views that occurred each time a playlist was initiated. Note that
+this metric includes only playlist views that occurred on the web.
+
+Annotations metrics
+
+Note: YouTube Analytics API reports only return data for the annotationClickThroughRate and annotationCloseRate metrics as of June 10, 2012. In addition, YouTube Analytics API reports only return data for the remaining annotation metrics as of July 16, 2013.
+
+annotationImpressions
+
+The total number of annotation impressions.
+
+annotationClickableImpressions
+
+The number of annotations that appeared and could be clicked.
+
+annotationClicks
+
+The number of clicked annotations.
+
+annotationClickThroughRate (core metric)
+
+The ratio of annotations that viewers clicked to the total number of clickable annotation impressions. This is a core metric and is subject to the Deprecation Policy . The YouTube Help Center has more information about creating annotations and using link annotations .
+
+annotationClosableImpressions
+
+The number of annotations that appeared and could be closed.
+
+annotationCloses
+
+The number of closed annotations.
+
+annotationCloseRate (core metric)
+
+The ratio of annotations that viewers closed to the total number of annotation impressions. This is a core metric and is subject to the Deprecation Policy .
+
+Card metrics
+
+The YouTube Help Center contains more detailed instructions for adding cards to your videos and the YouTube Analytics Cards Report .
+
+cardImpressions
+
+The number of times cards were displayed. When the card panel is opened, a card impression is logged for each of the video's cards.
+
+cardClicks
+
+The number of times that cards were clicked.
+
+cardClickRate
+
+The click-through-rate for cards, which is calculated as the ratio of card clicks to card impressions.
+
+cardTeaserImpressions
+
+The number of times that card teasers were displayed. A video view can generate multiple teaser impressions.
+
+cardTeaserClicks
+
+The number of clicks on card teasers. Card icon clicks are attributed to the last teaser displayed to the user.
+
+cardTeaserClickRate
+
+The click-through-rate for card teasers, which is calculated as the ratio of clicks on card teasers to the total number of card teaser impressions.
+
+Livestream metrics (concurrent viewers)
+
+averageConcurrentViewers
+
+The average number of concurrent viewers for a particular video. If the livestreamPosition
+dimension is specified for the report, then the averageConcurrentViewers value
+specifies the average number of concurrent viewers during a particular segment
+
+peakConcurrentViewers
+
+The peak number of concurrent viewers for a particular video. If the livestreamPosition
+dimension is specified for the report, then the peakConcurrentViewers value
+specifies the peak number of concurrent viewers during a particular segment of the video.
+
+Audience retention metrics
+
+audienceWatchRatio
+
+The absolute ratio of viewers watching the video at the given point in the video. The ratio is calculated by comparing the number of times a portion of a video has been watched to the total number of views of the video. The elapsedVideoTimeRatio dimension identifies the portion of the video to which the metric corresponds.
+
+Note that a portion of a video could be watched more than once (or not at all) in a given video view. For example, if users rewind and watch the same portion of a video multiple times, then the absolute ratio for that portion of the video the could be greater than 1 .
+
+The following examples illustrate how the value is calculated:
+
+A one-minute video is watched 100 times. Half of the viewers stop watching after 15 seconds and the rest watch the entire video. None of the viewers watch any parts of the video more than once. In this case, this metric's value would be 1 for time buckets in the first quarter of the video, and its value would be 0.50 for the remainder of the video.
+
+A one-minute video is watched 100 times. All of the viewers watch the entire video, but 20 of the viewers watch until the video's 45-second mark, then skip back to the video's 30-second mark, and then watch the remainder of the video. In this case, the metric's value would be 1 for time buckets in either the first half or the last quarter of the video. However, the value would be 1.2 for time buckets in the third quarter of the video since 100 percent of the viewers watched that segment of the video but 20% of those viewers watched the segment twice.
+
+relativeRetentionPerformance
+
+A measurement that shows how well a video retains viewers during playbacks in comparison to all YouTube videos of similar length. The metric has a value between 0 and 1 that identifies the video's relative retention performance at a given point in the video. The point in the video is provided by the elapsedVideoTimeRatio dimension.
+
+A value of 0 indicates that the video retains viewers worse than any other video of similar length, while a value of 1 indicates that the video retains viewers better than any other video of similar length. A median value of 0.5 indicates that half of the videos of similar length retain viewers better while half retain viewers worse.
+
+The following hypothetical example illustrates how the values might appear in a report. On average, 90 percent of viewers who watch videos that are 10 minutes long are still watching after three minutes and 70 percent are still watching after eight minutes. However, for a specific 10-minute-long video, only 80 percent of viewers are still watching after three minutes, but all of those viewers are still watching after eight minutes.
+
+At the elapsedVideoTimeRatio value that corresponds to the point that is three minutes into the video, the relativeRetentionPerformance metric would have a value under 0.5 since, at that time, the video performs worse than the average video.
+
+At the elapsedVideoTimeRatio value corresponding to the point that is eight minutes into the video, the relativeRetentionPerformance metric would have a value higher than 0.5 since, at that time, the video is performing better than other videos of similar length.
+
+startedWatching
+
+The number of times a particular segment of the video was the first segment seen during a
+video playback.
+
+For example, suppose Video X is 5 minutes long. For the purposes of this report, YouTube divides
+the video into 100 3-second segments, which are identified with the elapsedVideoTimeRatio
+dimension. A viewer visits YouTube and watches the first minute and ten seconds of the video,
+which includes all or part of the first 24 segments of the video. On a subsequent YouTube visit,
+the viewer watches the rest of the video, resuming playback in segment 24 and continuing through
+segment 100.
+
+This example would produce these watch metric values:
+
+The value of the startedWatching metric would be 1 for segments
+1 and 24, and the metric value would be 0 for all other segments.
+
+The value of the stoppedWatching metric would be 1 for segments
+24 and 100, and the metric value would be 0 for all other segments.
+
+The value of the totalSegmentImpressions metric would be 2 for
+segment 24, and the metric value would be 1 for all other segments.
+
+stoppedWatching
+
+The number of times a particular segment of the video was the last segment seen during a
+video playback. Refer to the definition of the startedWatching metric for an
+example of how this metric value is calculated.
+
+totalSegmentImpressions
+
+The number of times a particular segment of a video was viewed. Refer to the definition of the
+startedWatching metric for an example of how this metric value is calculated. Note
+that a viewer can watch the same segment of a video multiple times in the same playback.
+
+Membership cancellation metrics
+
+membershipsCancellationSurveyResponses
+
+The number of surveys completed by YouTube users who canceled their channel membership for the
+specified channel during the reporting period.
+
+Estimated revenue metrics
+
+Note: Estimated revenue metrics are subject to month-end adjustments don't not include partner-sold and partner-served advertising. See the YouTube Help Center for additional information and notes about estimated revenue figures.
+
+By default, all estimated revenue figures are reported in USD. However, the YouTube Analytics API supports the currency parameter for some estimated revenue and ad performance metrics, allowing you to retrieve estimated revenue data in other currencies.
+
+estimatedRevenue (core metric) (previously named earnings )
+
+The total estimated net revenue from all Google-sold advertising sources as well as from non-advertising sources for the selected date range and region.
+
+This is a core metric and is subject to the Deprecation Policy .
+
+Estimated revenue metrics are subject to month-end adjustment and don't include partner-sold and partner-served advertising.
+
+estimatedAdRevenue (previously named adEarnings )
+
+The total estimated net revenue from all Google-sold advertising sources for the selected date range and region.
+
+Estimated revenue metrics are subject to month-end adjustment and don't include partner-sold and partner-served advertising.
+
+estimatedRedPartnerRevenue (previously named redPartnerRevenue )
+
+The total estimated revenue earned from YouTube Premium (previously known as YouTube Red) subscriptions for the selected report dimensions. The metric's value reflects revenue from both music and non-music content and is subject to month-end adjustment.
+
+Ad performance metrics
+
+grossRevenue
+
+The estimated gross revenue, in USD, from all Google-sold or DoubleClick-partner-sold advertising for the selected date range and region. Gross revenue is subject to month-end adjustment and does not include partner-served advertising. Gross revenue shouldn't be confused with estimated revenue, or net revenue, which factors in your share of ownership and revenue-sharing agreements.
+
+cpm (previously named impressionBasedCpm )
+
+The estimated gross revenue per thousand ad impressions.
+
+adImpressions (previously named impressions )
+
+The number of verified ad impressions served.
+
+monetizedPlaybacks
+
+The number of instances when a viewer played your video and was shown at least one ad impression. A monetized playback is counted if a viewer is shown a preroll ad but quits watching the ad before your video ever starts. The expected estimated error for this figure is ±2.0%.
+
+playbackBasedCpm
+
+The estimated gross revenue per thousand playbacks.
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License , and code samples are licensed under the Apache 2.0 License . For details, see the Google Developers Site Policies . Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-09-14 UTC.
+
+Blog
+
+The latest news on the YouTube blog
+
+Issue Tracker
+
+Something wrong? Send us a bug report!
+
+YouTube Researcher Program
+
+For researchers interested in using data from YouTube's global API
+
+Tools
+
+Google APIs Explorer
+
+YouTube Player Demo
+
+Configure a Subscribe Button
+
+Issue Tracker
+
+File a bug
+
+Request a feature
+
+See open issues
+
+Product Info
+
+Terms of Service
+
+Developer Policies
+
+Required Minimum Functionality
+
+Branding Guidelines
+
+Android
+
+Chrome
+
+Firebase
+
+Google Cloud Platform
+
+Google AI
+
+All products
+
+Terms
+
+Privacy
+
+Manage cookies
+
+English
+
+Deutsch
+
+Español
+
+Español – América Latina
+
+Français
+
+Indonesia
+
+Italiano
+
+Polski
+
+Português – Brasil
+
+Tiếng Việt
+
+Türkçe
+
+Русский
+
+עברית
+
+العربيّة
+
+فارسی
+
+हिंदी
+
+বাংলা
+
+ภาษาไทย
+
+中文 – 简体
+
+中文 – 繁體
+
+日本語
+
+한국어
