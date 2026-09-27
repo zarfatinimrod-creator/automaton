@@ -308,7 +308,8 @@ describe("searchAllIssues", () => {
   // Two known causes, and the rule has to be right for both. (1) Search's total_count includes index entries it never
   // serves — hidden, deleted or transferred issues, or repositories that became unavailable: the same ids come back
   // every pass and the gap is stable. (2) Offset paging skips an item when an earlier one leaves the results between
-  // page fetches: a second pass sees a different list. Only (1), small and repeated, is accepted, and it is recorded.
+  // page fetches: a second pass sees a different list. Only (1), small and repeated, is accepted, and it is recorded;
+  // (2) fails the run, including when the second pass is complete on its own — a week retried, never a week guessed.
 
   /** `n` visible issues a day apart from 2026-01-01, plus `hidden` index entries search counts and never serves. */
   const indexWith = (n: number, hidden: number, repo = "big/repo"): FakeIssue[] => [
@@ -370,17 +371,50 @@ describe("searchAllIssues", () => {
     expect(pageOnes(gh.calls)).toHaveLength(2);
   });
 
-  it("an issue that left the results between page fetches: the complete second pass is an ordinary count", async () => {
+  it("an issue that left the results between page fetches fails the run — even when the second pass is complete", async () => {
     // Pass 1 reads page 1 with #1 in it; #1 then closes, everything shifts left, and page 2 starts at what was #102 —
-    // #101 is skipped. Pass 2 reads the list as it now is, complete.
+    // #101 is skipped. Pass 2 reads the list as it now is, complete, but not the set pass 1 served: passes that differ
+    // are not a count (brief item 3). The week is retried, not guessed.
     const before = indexWith(150, 0);
     const after = before.filter((i) => i.number !== 1);
     const gh = fakeGithub({ issues: before, searchIssues: (pass, page) => (pass === 1 && page === 1 ? before : after) });
     const clock = fakeClock();
     const client = createGithubClient({ token: "t", fetchImpl: gh.fetchImpl, now: clock.now, sleep: clock.sleep });
+    await expect(searchAllIssues(client, SUPPLY_SEARCH_QUERY, "2026-09-28")).rejects.toThrow(
+      /reported 150 issues for ".*" and the pages held 149.*second pass.*different.*a partial list is not a count/,
+    );
+    expect(pageOnes(gh.calls)).toHaveLength(2);
+  });
+
+  // A short first pass is evidence about the range. A second pass that is complete on its own does not overrule it
+  // unless it served the identical ids: otherwise a second pass that reports 0 would be written as a real zero.
+  it.each([
+    ["reports nothing at all", 0],
+    ["reports 300, all served", 300],
+  ])("554 reported, 551 served, then a complete second pass that %s: fails — a complete pass that differs is no count", async (_label, n) => {
+    const first = indexWith(551, 3);
+    const second = first.filter((i) => !i.hidden).slice(0, n);
+    const gh = fakeGithub({ issues: first, searchIssues: (pass) => (pass === 1 ? first : second) });
+    const clock = fakeClock();
+    const client = createGithubClient({ token: "t", fetchImpl: gh.fetchImpl, now: clock.now, sleep: clock.sleep });
+    await expect(searchAllIssues(client, SUPPLY_SEARCH_QUERY, "2026-09-28")).rejects.toThrow(
+      new RegExp(`reported 554 issues for ".*" and the pages held 551.*second pass.*different.*\\(${n} of ${n}\\).*a partial list is not a count`),
+    );
+    expect(pageOnes(gh.calls)).toHaveLength(2);
+  });
+
+  it("a second pass whose total fell to exactly the ids pass 1 served: accepted, and the gap pass 1 reported is still recorded", async () => {
+    // The same 551 ids both times; pass 1 said 554, pass 2 says 551. The larger reported total stands, so the three
+    // GitHub once counted are written down rather than forgotten because a later page 1 stopped counting them.
+    const first = indexWith(551, 3);
+    const second = first.filter((i) => !i.hidden);
+    const gh = fakeGithub({ issues: first, searchIssues: (pass) => (pass === 1 ? first : second) });
+    const clock = fakeClock();
+    const client = createGithubClient({ token: "t", fetchImpl: gh.fetchImpl, now: clock.now, sleep: clock.sleep });
     const r = await searchAllIssues(client, SUPPLY_SEARCH_QUERY, "2026-09-28");
-    expect(r).toMatchObject({ totalCount: 149, unserved: 0 });
-    expect(r.items.map((i) => (i as { number: number }).number).sort((a, b) => a - b)).toEqual(after.map((i) => i.number));
+    expect(r).toMatchObject({ totalCount: 554, unserved: 3 });
+    expect(r.items).toHaveLength(551);
+    expect(pageOnes(gh.calls)).toHaveLength(2);
   });
 
   it("holds a split search to the bound on its whole reported total, not each piece to its own", async () => {

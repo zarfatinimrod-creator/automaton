@@ -18,9 +18,10 @@
  *    (60 an hour, 10 a minute), which a full count will usually exhaust — and then the run says so and stops.
  *  - **Paging is deterministic.** Search is sorted by creation date, oldest first, 100 per page; a query GitHub
  *    would cap at 1,000 results is split by creation date until every piece fits. Any page GitHub marks incomplete
- *    fails the run. A total the pages do not reach is read a second full time: a complete second pass is an ordinary
- *    reading; two passes that serve the identical issues, short by at most `searchUnservedAllowance` of the reported
- *    total, are accepted with the gap recorded as `searchUnserved`; anything else fails the run (`searchAllIssues`).
+ *    fails the run. A total the pages do not reach is read a second full time: two passes that serve the identical
+ *    issues, short by at most `searchUnservedAllowance` of the reported total, are accepted with the gap recorded as
+ *    `searchUnserved`; anything else — a second pass that serves a different set, complete or not — fails the run
+ *    (`searchAllIssues`).
  *
  * Failure writes nothing (`runAlgoraSupply`): a week that could not be measured is a missing reading, never a zero.
  */
@@ -268,13 +269,15 @@ const sameIds = (a: Map<string, unknown>, b: Map<string, unknown>): boolean => a
  *
  * GitHub's `total_count` is not always what the pages serve, for two known reasons, and a range that falls short is
  * read a second full time to tell them apart:
- *  - an issue left the results between page fetches, so offset paging skipped the one behind it — the second pass
- *    sees the list as it now is, and when it is complete on its own it is an ordinary reading;
  *  - the index counts entries it never serves (hidden, deleted or transferred issues, repositories no longer
  *    available) — both passes serve the identical ids, and the gap is accepted when it is at most
- *    `searchUnservedAllowance` of the reported total, and returned as `unserved` so it is recorded, not absorbed.
- * Anything else throws: passes that differ, a gap past the allowance — per query and over the whole search — or a
- * range that cannot be split further. A partial list is not a count.
+ *    `searchUnservedAllowance` of the larger reported total, and returned as `unserved` so it is recorded, not absorbed;
+ *  - an issue left (or joined) the results between page fetches, so offset paging skipped one — the second pass
+ *    serves a different set, and the run fails. That holds even when the second pass is complete on its own: the
+ *    short first pass is evidence about the range, and a complete pass that disagrees with it (one reporting 0, say)
+ *    is not allowed to overrule it. The week is retried, not guessed.
+ * Anything else throws too: a gap past the allowance — per query and over the whole search — or a range that cannot
+ * be split further. A partial list is not a count.
  */
 export async function searchAllIssues(
   client: GithubClient,
@@ -305,24 +308,23 @@ export async function searchAllIssues(
         throw new Error(`${short}, and a second pass reported ${again.total_count}, past the ${SEARCH_RESULT_CAP}-result cap; a partial list is not a count.`);
       }
       const second = await readPass(client, q, again);
-      if (second.got.size < second.total) {
-        if (!sameIds(pass.got, second.got)) {
-          throw new Error(`${short}, and a second pass served a different set (${second.got.size} of ${second.total}); a partial list is not a count.`);
-        }
-        const reported = Math.max(pass.total, second.total);
-        const gap = reported - second.got.size;
-        const allowance = searchUnservedAllowance(reported);
-        if (gap > allowance) {
-          throw new Error(
-            `${short}; a second pass served the same ${second.got.size}, and ${gap} unserved is more than the ${allowance} a stale index explains ` +
-              `(max(${SEARCH_UNSERVED_FLOOR}, 1% of the reported total)); a partial list is not a count.`,
-          );
-        }
-        unserved += gap;
-        pass = { total: reported, got: second.got };
-      } else {
-        pass = second;
+      // The short first pass is evidence about this range, and a second pass is accepted only when it serves the very
+      // same ids. A second pass that is complete on its own but serves a different set does not overrule it: that is
+      // how a pass reporting 0 (or any other number) would become a real reading.
+      if (!sameIds(pass.got, second.got)) {
+        throw new Error(`${short}, and a second pass served a different set (${second.got.size} of ${second.total}); a partial list is not a count.`);
       }
+      const reported = Math.max(pass.total, second.total);
+      const gap = reported - second.got.size;
+      const allowance = searchUnservedAllowance(reported);
+      if (gap > allowance) {
+        throw new Error(
+          `${short}; a second pass served the same ${second.got.size}, and ${gap} unserved is more than the ${allowance} a stale index explains ` +
+            `(max(${SEARCH_UNSERVED_FLOOR}, 1% of the reported total)); a partial list is not a count.`,
+        );
+      }
+      unserved += gap;
+      pass = { total: reported, got: second.got };
     }
     totalCount += pass.total;
     items.push(...pass.got.values());
