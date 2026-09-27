@@ -266,7 +266,7 @@ cement's share of the world total peak?
 ### C6. MoMA collection: acquisition timing and object size (art)
 
 **Indicators.** From `Artworks.csv`: `Date, DateAcquired, Classification, Department, Medium, Height (cm), Width (cm)`.
-It has 160,700 records (README l.7). Content-Length is 73,218,527 bytes, last modified 2026-09-27 (MEASURED).
+It has 160,700 records (README l.6). Content-Length is 73,218,527 bytes, last modified 2026-09-27 (MEASURED).
 
 **Licence.** MoMA is the producer. Evidence is CODE, `MuseumofModernArt/collection/main/README.md` l.12:
 

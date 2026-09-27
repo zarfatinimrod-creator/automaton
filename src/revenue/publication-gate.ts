@@ -75,8 +75,42 @@ export interface GateResult {
 /** Licences a narrated chart video can carry with attribution alone. ShareAlike and NonCommercial are out. */
 export const ALLOWED_DATA_LICENCES: ReadonlySet<string> = new Set(["CC0-1.0", "CC-BY-4.0", "CC-BY-3.0", "public-domain"]);
 
-/** Topics the verdict keeps the channel away from in any form that could read as advice (VERDICT §11, G2). */
-const SENSITIVE_TOPIC = /\b(financ|invest|stock|crypto|tax|health|medic|disease|drug|legal|law|lawyer|court|politic|election|vot(e|ing)|war|religio|immigra|migra)/i;
+/**
+ * Topics the verdict keeps the channel away from in any form that could read as advice (VERDICT §11, G2).
+ * Whole words, not prefixes: the first version matched "taxonomy", "lawn" and "global warming" (found by the dataset
+ * research, DATASETS.md, 27.9.2026). A false block is the safe error, but a gate that blocks harmless topics gets
+ * worked around, which is worse.
+ */
+const SENSITIVE_TOPIC = new RegExp(
+  "\\b(" +
+    [
+      "financ(e|es|ial|ing)",
+      "invest(s|ed|ing|ment|ments|or|ors)?",
+      "stocks",
+      "stock (market|markets|price|prices|exchange|exchanges)",
+      "crypto(currency|currencies)?",
+      "tax(es|ation|ed)?",
+      "health(care)?",
+      "medic(al|ine|ines|ation|ations)",
+      "diseases?",
+      "drugs?",
+      "legal",
+      "laws?",
+      "lawyers?",
+      "courts?",
+      "politic(s|al|ian|ians)",
+      "elections?",
+      "vot(e|es|ed|ing|er|ers)",
+      "wars?",
+      "warfare",
+      "religio(n|ns|us)",
+      "immigra(nt|nts|tion)",
+      "migrants?",
+      "migration",
+    ].join("|") +
+    ")\\b",
+  "i",
+);
 
 /** Second-person advice and recommendation phrasing. The production-stack scout's own benchmark script failed this. */
 const ADVICE = [

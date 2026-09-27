@@ -88,6 +88,17 @@ describe("publication gate G1-G10 (VERDICT §12)", () => {
     it.each(["personal finance", "health outcomes", "election polling", "tax law"])("fails a sensitive topic: %s", (topic) => {
       expect(failed(checkPublication(video({ topic }), channel(), "publish", exists))).toContain("G2");
     });
+    // Found by the dataset research (DATASETS.md, 27.9): the first version matched word prefixes.
+    it.each(["taxonomy of airport runways", "lawn and park area", "global warming measurements", "livestock numbers", "diseased-free seed stock photos"])(
+      "does not flag a topic that only shares a prefix with a sensitive word: %s",
+      (topic) => {
+        const r = checkPublication(video({ topic }), channel(), "publish", exists);
+        expect(r.failures.filter((f) => f.gate === "G2" && /topic/.test(f.reason))).toEqual([]);
+      },
+    );
+    it.each(["taxes by country", "voters per district", "drug prices", "bird migration", "stock market returns", "tech stocks"])("still flags the whole word: %s", (topic) => {
+      expect(failed(checkPublication(video({ topic }), channel(), "publish", exists))).toContain("G2");
+    });
     it("does not flag third-person description of data", () => {
       const v = video({ script: "Countries that invested in grids early saw faster adoption. The data shows it." });
       expect(failed(checkPublication(v, channel(), "publish", exists))).not.toContain("G2");
