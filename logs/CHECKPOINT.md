@@ -1,8 +1,23 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-27 09:50 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-27 10:05 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
+
+## ▶ 27.9, 10:05 UTC — קורא אנליטיקס, רישיון IGO, ושם המותג
+
+- **קורא אנליטיקס של YouTube נבנה** (`src/revenue/youtube-analytics.ts`, `scripts/youtube-analytics.ts`) מול הטבלאות
+  של Google עצמה (רונדרו מ-runner). ממצאים: אין `averageViewPercentage` בדוח מקורות תנועה → הדיאגנוסטיקה נגזרת ומסומנת;
+  יש גם `views` וגם `engagedViews` → ה-pin של RED-TEAM §2.4 הוא בחירה בין שניהם (Fable, רץ). **דרישה חדשה ל-Stage A:**
+  פרויקט ה-OAuth חייב להיות "In production", אחרת ה-refresh token מת אחרי 7 ימים (`google-oauth2.txt:542-544`).
+- **CC BY 3.0 IGO נכנס לשער G1** בפסיקת Fable, עם 5 תנאים באכיפת קוד (C1-C5); UN WPP כשיר אחרי רינדור הדף;
+  UNESCO UIS נשאר בחוץ (ShareAlike). Unlicense ו-ODC-PDDL נכנסו; MIT בחוץ. revenue 610/610.
+- **"Bediyuk" תפוס**: `bediyuk.com` רשום אצל מישהו אחר, ו-`@bediyuk` ב-YouTube הוא עסק שיווק ומיתוג ישראלי
+  (`research/measurements/brand-name-check.md`). ההמלצה מ-3.9 בוטלה. 16 מועמדים נבדקו מ-runner; 6 פנויים בשלושתם.
+  **Fable בוחר עכשיו** (`brand-name-decision.md`). אחרי זה: לשנות את `products/mcp-il-tools` (package/server/README)
+  ואת `portfolio.ts:216`, ולמסור לבעלים את השם שמסמכי הצעדים מבטיחים.
+- **רץ ברקע:** בונה Opus של סרטון T1 (`products/chart-explainer/`, לא מקומט עדיין); Fable — pin של מדד הצפיות
+  ודגל התוכן הסינתטי (`PREREG-DECISIONS.md`); Fable — שם המותג. אם הקונטיינר מת: `logs/FABLE_QUEUE.md` שורות 5-6.
 
 ## ▶ ההוראות של BOARD-2 בוצעו (27.9, 09:50 UTC) — התור של Fable ריק
 
