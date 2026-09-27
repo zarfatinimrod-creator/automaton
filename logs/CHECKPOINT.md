@@ -1,8 +1,15 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-26 23:46 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-27 08:20 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
+
+## ▶ Fable חזר (27.9, 07:44 UTC) — פריט 1 בתור הוכרע: faceless-YouTube = ניסוי מדוד
+
+**REOPEN_AS_EXPERIMENT** (`research/faceless-youtube/VERDICT.md`, `RED-TEAM.md`, `020688a`). ה-red-team: הפסק מחזיק,
+6 תיקוני MAJOR לעיצוב מחייבים (פירוט ביומן 25.9 ובסוף REJECTED.md §faceless). **לא לבקש כלום מהבעלים עדיין** — הסדר:
+קוד שערי סגירה → זרוע אינטרנט חינמית → בדיקת Upload-Post מוקדמת → רק אז Stage A (40-60 דק', חשבון המותג כבעלים).
+פריט 2 (26 ממצאי JUDGEMENT) רץ מ-08:15 (`wf_9e50d5ef-d16`); אחריו 3 ו-4, אחד-אחד.
 
 ## ▶ תור Fable עבר לקובץ אחד: `logs/FABLE_QUEUE.md` (26.9.2026, 00:00 UTC)
 

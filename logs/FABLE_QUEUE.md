@@ -22,7 +22,7 @@ died twice). When one finishes, mark it done here with the date and the commit t
 
 | # | Script | Fable agents | Reads | Writes | Then (on Opus, main thread) | Status |
 |---|---|---|---|---|---|---|
-| 1 | `fable-faceless-youtube-judge.js` | judge, red-team | `research/faceless-youtube/DIGEST.md`, `REGRADE.md` | `VERDICT.md`, `RED-TEAM.md` there | fold into `docs/REJECTED.md`; if REOPEN, the pilot workflow (task #4); update `logs/2026-09-25-faceless-youtube-reel.md` | waiting since 25.9 16:00 UTC |
+| 1 | `fable-faceless-youtube-judge.js` | judge, red-team | `research/faceless-youtube/DIGEST.md`, `REGRADE.md` | `VERDICT.md`, `RED-TEAM.md` there | fold into `docs/REJECTED.md`; if REOPEN, the pilot workflow (task #4); update `logs/2026-09-25-faceless-youtube-reel.md` | **DONE 27.9** (run `wf_80e3a5c4-aa1`, commit `020688a`): REOPEN_AS_EXPERIMENT; red team — decision survives, 6 MAJOR amendments to the design |
 | 2 | `fable-owner-docs-judgement.js` | one refuter (+ Opus editors) | `research/owner-docs-audit/APPLIED.md` §Queued (26 rows) | `JUDGEMENT.md` there; edits to 8 owner docs | regenerate `docs/OWNER_STEPS.he.pdf` (`node scripts/owner-steps-pdf.mjs`); apply any `codeChange` | waiting since 25.9 23:20 UTC |
 | 3 | `fable-license-choice.js` | one decider | `research/measurements/gumroad-native-licenses.md` | `gumroad-license-decision.md` there | build the chosen option on Opus against its acceptance tests; drop the per-sale owner step | waiting since 25.9 23:40 UTC |
 | 4 | `fable-sweep-2-board.js` | one board (plays chief auditor too) | `research/colony-sweep/SCREEN-2.md`, `screen-2/*.md` (Opus screeners, 26.9), `research/measurements/algora-terms-question.md` (a committed line) | `research/colony-sweep/BOARD-2.md` | kills → `docs/REJECTED.md`; admissions → `src/revenue/portfolio.ts`; approved tests → CI jobs | ready — `screen-2/` complete 26.9 (9 of 9 KILL, `SCREEN-2.md`) |
@@ -46,4 +46,4 @@ The checking tier never waits for Fable — only the deciding tier does:
 | 26.9 07:42 | 429 — first probe run from `fable-faceless-youtube-judge.js` (run `wf_7b3ae66a-267`): one call, 288 ms, stopped as designed; nothing else ran |
 | 26.9 15:42 | 429 (run `wf_ada0bd46-4a7`, one call, stopped as designed) — about 24 hours out now |
 | 26.9 23:43 | 429 (run `wf_071169cc-d06`, one call) — ~32 hours out |
-| next | 27.9 ~07:44, then every 8 hours while it fails |
+| 27.9 07:44 | **OK — Fable answered** (probe 3.7 s). Item 1 ran; item 2 started ~08:15 |

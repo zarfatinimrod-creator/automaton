@@ -137,6 +137,20 @@ pricing pages were egress-blocked and are medium confidence. The TikTok-Israel i
 is the one load-bearing fact the scout could not source first-party and is flagged for
 re-verification.
 
+**27.9.2026 — a different variant, reopened as an EXPERIMENT (not a line).** The owner's 25.9 reel described one
+English long-form channel in a high-RPM niche — not what this entry judged. The Fable judge ruled
+**REOPEN_AS_EXPERIMENT** (`research/faceless-youtube/VERDICT.md`); the Fable red team found the decision holds and the
+design does not survive as written (`RED-TEAM.md`: zero FATAL, six MAJOR). **This rejection still stands for what it
+judged** — one-click Shorts/TikTok generators, Hebrew, at volume. What changed for the new variant, from rendered
+first-party pages: Israel is on YouTube's YPP availability list; Kokoro's Apache-2.0 grant closes the TTS leg for
+English; Hebrew RTL is moot for an English channel. What did not change: month 3/6/12 revenue is ₪0/₪0/₪0 in the modal
+case, and ₪20,000 would need 0.6-1.0 million views a month — this channel is not built to carry the target.
+The experiment's order, with the red team's amendments binding: kill gates in code first (a per-line decision policy
+in `src/revenue/rules.ts`); a free web arm of the same analyses; a pre-check of the audited publisher; **only then** the
+owner's one-time Stage A (40-60 minutes, the brand account — never the owner's personal account — as the channel's
+primary owner); stage B (AdSense, tax forms) only at 2-3x the 8,000-hour pace, not at it. Nothing counts without an
+AdSense payment id in the ledger.
+
 ---
 
 ## Two standing walls in the Israeli-bureaucracy space — established 2026-09-03
