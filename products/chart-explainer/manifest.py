@@ -9,7 +9,10 @@ The three constants below mirror `publication-gate.ts` (board ruling, research/f
 
 from __future__ import annotations
 
+import hashlib
+import json
 import math
+from pathlib import Path
 from typing import Any
 
 from figures import FilledSpec
@@ -107,6 +110,48 @@ def build_manifest(
     return m
 
 
+# G3-G5 verdicts come only from auditor files in products/chart-explainer/audits/, never from this builder.
+AUDIT_FIELDS = {"G3": "originality", "G4": "factCheck", "G5": "promiseMatch"}
+AUDITS_DIR = Path(__file__).resolve().parent / "audits"
+
+
+def script_sha256(script: str) -> str:
+    return hashlib.sha256(script.encode("utf-8")).hexdigest()
+
+
+def merge_audits(m: dict[str, Any], audits_dir: Path = AUDITS_DIR) -> tuple[dict[str, Any], dict[str, str]]:
+    """Fill originality / factCheck / promiseMatch from auditor verdict files — only those bound to THIS script.
+
+    A verdict file carries `gate`, `auditor`, `verdict`, (`figuresChecked` for G4) and `auditedScriptSha256`, the
+    sha256 of the exact script the auditor read. A verdict for another script — an earlier draft, before a fix — is
+    never carried over, and neither is one the author signed. The gate re-checks the author rule on its side.
+    Returns the manifest and one note per field saying which file filled it or why none did.
+    """
+    notes: dict[str, str] = {}
+    current = script_sha256(m["script"])
+    for p in sorted(audits_dir.glob("*.json")) if audits_dir.is_dir() else []:
+        a = json.loads(p.read_text(encoding="utf-8"))
+        field = AUDIT_FIELDS.get(a.get("gate"))
+        if field is None:
+            continue
+        if a.get("auditedScriptSha256") != current:
+            notes.setdefault(field, f"{p.name}: audited a different script (hash mismatch) — not carried over")
+            continue
+        if not a.get("auditor") or a["auditor"] == m["author"]:
+            notes[field] = f"{p.name}: auditor missing or the author itself — not carried over"
+            continue
+        if a.get("verdict") not in ("PASS", "FAIL"):
+            raise ValueError(f"{p.name}: verdict must be PASS or FAIL, got {a.get('verdict')!r}")
+        if m[field] is not None:
+            raise ValueError(f"{p.name}: a second {a['gate']} verdict for the same script; one auditor per gate")
+        verdict: dict[str, Any] = {"auditor": a["auditor"], "verdict": a["verdict"]}
+        if field == "factCheck":
+            verdict["figuresChecked"] = int(a.get("figuresChecked", 0))
+        m[field] = verdict
+        notes[field] = f"{p.name}: {a['verdict']} by {a['auditor']}"
+    return m, notes
+
+
 def build_notes(manifest: dict[str, Any], render: dict[str, Any]) -> dict[str, str]:
     """Why each non-obvious field holds what it holds. A sibling file, so manifest.json stays the exact shape."""
     return {
@@ -126,3 +171,32 @@ def build_notes(manifest: dict[str, Any], render: dict[str, Any]) -> dict[str, s
         "tokenCostIls": "0: no API-billed tokens. The script template was written by an Opus builder agent in a "
         "subscription session, and rendering calls no model API. Session tokens were not metered per video.",
     }
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Merge auditor verdicts into an already-rendered manifest, without re-rendering.
+
+        python manifest.py out/t1        # rewrites out/t1/manifest.json and manifest.notes.json
+    """
+    import sys
+
+    args = sys.argv[1:] if argv is None else argv
+    if len(args) != 1:
+        print("usage: python manifest.py <render-out-dir>", file=sys.stderr)
+        return 2
+    out = Path(args[0])
+    m = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
+    for field in AUDIT_FIELDS.values():
+        m[field] = None  # re-derived from the audit files every time, never kept from a previous merge
+    m, notes = merge_audits(m)
+    (out / "manifest.json").write_text(json.dumps(m, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    notes_path = out / "manifest.notes.json"
+    old = json.loads(notes_path.read_text(encoding="utf-8")) if notes_path.exists() else {}
+    notes_path.write_text(json.dumps({**old, **notes}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    for field in AUDIT_FIELDS.values():
+        print(f"{field}: {notes.get(field, 'no verdict file for this script')}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

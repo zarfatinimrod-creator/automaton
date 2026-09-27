@@ -123,8 +123,9 @@ def render(spec_path: Path, out: Path, clock_start: float | None, repo_root: Pat
         "tts": tts.PROVENANCE,
         "music": None,
     }
+    m, audit_notes = manifest.merge_audits(m)
     _write_json(out / "manifest.json", m)
-    _write_json(out / "manifest.notes.json", manifest.build_notes(m, report))
+    _write_json(out / "manifest.notes.json", {**manifest.build_notes(m, report), **audit_notes})
     _write_json(out / "render-report.json", report)
     return report
 
