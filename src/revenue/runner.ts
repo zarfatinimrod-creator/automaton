@@ -15,6 +15,7 @@ import type { Database } from "better-sqlite3";
 import { describeStall, findStalledLines, type StalledLine } from "./watchdog.js";
 import { summarizeTargetBasis } from "./portfolio.js";
 import { ownerStepsForLine } from "./owner-steps.js";
+import { DEFAULT_MEASUREMENTS_DIR, ingestApifyMeasurement, type IngestResult } from "./measurements.js";
 import {
   computePortfolioSummary,
   getLine,
@@ -207,6 +208,8 @@ export interface TickOptions {
   fetchImpl?: typeof fetch;
   /** Seed the default portfolio when the colony is empty (board review default). */
   seed?: boolean;
+  /** Where measurement jobs commit their JSON (default state/colony/measurements, relative to the cwd). */
+  measurementsDir?: string;
 }
 
 export interface TickResult {
@@ -215,6 +218,8 @@ export interface TickResult {
   ran: TaskName[];
   skipped: TaskName[];
   ledgerSync: LedgerSyncResult | null;
+  /** Measurement files read into KPI snapshots this tick (with the ledger sync, hourly). */
+  measurements: IngestResult[];
   supervisor: SupervisorReviewResult | null;
   board: BoardReviewResult | null;
   audit: AuditResult | null;
@@ -241,6 +246,7 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
     ran: [],
     skipped: [],
     ledgerSync: null,
+    measurements: [],
     supervisor: null,
     board: null,
     audit: null,
@@ -280,6 +286,11 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
       );
     }
     for (const error of result.ledgerSync.errors) result.blockers.push(`ledger sync: ${error}`);
+
+    // Measurement jobs never open colony.db (the tick commits it too); their numbers enter the KPIs here.
+    const apify = ingestApifyMeasurement(db, options.measurementsDir ?? DEFAULT_MEASUREMENTS_DIR);
+    result.measurements.push(apify);
+    if (apify.status === "invalid") result.blockers.push(`measurement ${apify.file}: ${apify.detail}`);
   }
 
   if (shouldRun("revenue_supervisor_review")) {

@@ -200,6 +200,42 @@ export function summariseRuns(runs, now, options = {}) {
   };
 }
 
+/**
+ * Distinct stranger users, from the Actor object's own stats — the number the board's thresholds read
+ * (BOARD.md §6.3.1; `strangerUsers30d` in src/revenue/portfolio.ts kill and scale criteria).
+ *
+ * Why not the runs list: it is listed with OUR token, and Apify reports other users' runs on a public Actor as
+ * aggregates on the Actor object (`stats.totalUsers30Days`, `stats.publicActorRunStats30Days` — the shape rendered
+ * in research/rendered/apify-store-accessibility.json). A runs list showing "0 strangers" may only mean the list
+ * never contained them. The Fable refuter ruled this on 27.9.2026 (research/owner-docs-audit/JUDGEMENT.md).
+ *
+ * `ownRunInWindow`: our own account counts as one of `totalUsers30Days` if it ran the Actor in the window (the
+ * smoke test after a push does), so one user is subtracted then — never more, never below zero.
+ * Missing stats give null, not 0: unknown is not nobody.
+ */
+export function summariseActorStats(actor, { ownRunInWindow = false } = {}) {
+  const stats = actor && typeof actor === "object" ? actor.stats : null;
+  const num = (v) => (typeof v === "number" && Number.isFinite(v) ? v : null);
+  const totalUsers30Days = num(stats?.totalUsers30Days);
+  const totalUsers = num(stats?.totalUsers);
+  const publicRuns30d = num(stats?.publicActorRunStats30Days?.TOTAL);
+  const strangerUsers30d = totalUsers30Days === null ? null : Math.max(0, totalUsers30Days - (ownRunInWindow ? 1 : 0));
+  return { strangerUsers30d, totalUsers30Days, totalUsers, publicRuns30d, ownRunInWindow: Boolean(ownRunInWindow) };
+}
+
+/** The Actor object (id, stats). Same two paths as the runs list, for the same reason. */
+export async function fetchActor(actorId, token, fetchImpl = fetch) {
+  const paths = [`/actors/${encodeURIComponent(actorId)}`, `/acts/${encodeURIComponent(actorId)}`];
+  try {
+    return { actor: await apiGet(paths[0], token, fetchImpl), endpoint: `${API_BASE}${paths[0]}` };
+  } catch (error) {
+    if (error instanceof ApifyHttpError && error.status === 404) {
+      return { actor: await apiGet(paths[1], token, fetchImpl), endpoint: `${API_BASE}${paths[1]}` };
+    }
+    throw error;
+  }
+}
+
 /** The Store slug comes from the Actor manifest, so the two can never drift apart. */
 export function actorNameFrom(actorDir = ACTOR_DIR) {
   const manifest = JSON.parse(readFileSync(join(actorDir, ".actor", "actor.json"), "utf8"));
@@ -324,8 +360,19 @@ export async function main(argv = process.argv.slice(2)) {
     throw error;
   }
 
+  const runs = summariseRuns(fetched.items, Date.now(), { ownUserId: me.id, windowDays });
+  const actorObject = await fetchActor(actorId, token);
+  const users = {
+    ...summariseActorStats(actorObject.actor, { ownRunInWindow: runs.byStarter.own > 0 && runs.runsLast30Days > 0 }),
+    source: actorObject.endpoint,
+  };
+
   const summary = {
-    ...summariseRuns(fetched.items, Date.now(), { ownUserId: me.id, windowDays }),
+    ...runs,
+    // The runs list is our token's view; whether it contains other users' runs on a public Actor is unverified.
+    // The board reads `users.strangerUsers30d`, not `strangerRunsLast30Days`.
+    runsListScope: "unverified",
+    users,
     actor: {
       name: actorName,
       id: actorId,
@@ -340,10 +387,11 @@ export async function main(argv = process.argv.slice(2)) {
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, `${JSON.stringify(summary, null, 2)}\n`);
 
+  const strangers = users.strangerUsers30d === null ? "unknown (the Actor object carried no stats)" : String(users.strangerUsers30d);
   notice(
-    `Apify runs for ${actorId}: ${summary.totalRuns} all time, ${summary.runsLast30Days} in the last ` +
-      `${windowDays} days, of which ${summary.strangerRunsLast30Days} started by someone other than us. ` +
-      `Written to ${outPath}.`,
+    `Apify ${actorId}: ${strangers} distinct stranger users in the last 30 days (from the Actor object). ` +
+      `Runs list (our token's view, scope unverified): ${summary.totalRuns} all time, ${summary.runsLast30Days} in the ` +
+      `last ${windowDays} days. Written to ${outPath}.`,
   );
   return 0;
 }

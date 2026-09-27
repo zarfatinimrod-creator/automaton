@@ -241,7 +241,10 @@ jobs:
             exit 0
           fi
 
-          SUBJECT=$(node -e 'const j=require("./state/colony/measurements/apify-runs.json");process.stdout.write("measure(apify): "+j.runsLast30Days+" runs in the last 30 days, "+j.strangerRunsLast30Days+" of them by strangers");')
+          # The subject reports distinct stranger USERS from the Actor object - the number the board reads. The
+          # runs list is our token's view and may not contain other users' runs at all, so its "stranger" count is
+          # never printed on its own (Fable ruling, research/owner-docs-audit/JUDGEMENT.md).
+          SUBJECT=$(node -e 'const j=require("./state/colony/measurements/apify-runs.json");const u=j.users&&j.users.strangerUsers30d;process.stdout.write("measure(apify): "+(u===null||u===undefined?"unknown":u)+" stranger users in the last 30 days, "+j.runsLast30Days+" runs in our token view");')
           # [skip ci] keeps a measurement commit from retriggering the test workflows.
           git commit -m "${SUBJECT} [skip ci]"
 
@@ -273,8 +276,9 @@ jobs:
               console.log("- Actor: "+j.actor.storeUrl);
               console.log("- Measured at: "+j.measuredAt);
               console.log("- Runs all time: "+j.totalRuns);
-              console.log("- Runs in the last "+j.window.days+" days: "+j.runsLast30Days);
-              console.log("- Of those, started by someone other than us: "+j.strangerRunsLast30Days);
+              const u=j.users&&j.users.strangerUsers30d;
+              console.log("- Distinct stranger users, last 30 days (Actor object): "+(u===null||u===undefined?"unknown":u));
+              console.log("- Runs in the last "+j.window.days+" days (our token view, scope unverified): "+j.runsLast30Days);
               console.log("");
               console.log("A run count is a demand signal, not revenue. Money counts only in revenue_ledger with a transaction id.");'
           } >> "$GITHUB_STEP_SUMMARY"

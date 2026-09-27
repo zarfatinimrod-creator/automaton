@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as check-deps-freshness.mjs)
-import { summariseRuns, classifyStarter, daysBetween, dayKey, toMs, DAY_MS, WINDOW_DAYS } from "../../../scripts/apify-runs.mjs";
+import { summariseRuns, summariseActorStats, classifyStarter, daysBetween, dayKey, toMs, DAY_MS, WINDOW_DAYS } from "../../../scripts/apify-runs.mjs";
+import { readFileSync } from "node:fs";
 
 /**
  * The measurement MISSION.md constraint 7 asks for: how many strangers ran the
@@ -242,5 +243,42 @@ describe("summariseRuns — strangers versus us, which is the whole point", () =
     expect(blind.strangerRunsLast30Days).toBe(0);
     // ...while still counting the runs themselves.
     expect(blind.runsLast30Days).toBe(5);
+  });
+});
+
+/**
+ * Distinct stranger users, from the Actor object — the number the board's thresholds read (BOARD.md §6.3.1;
+ * portfolio.ts kill/scale criteria). The runs list is listed with OUR token and may not contain other users' runs
+ * on a public Actor at all; Apify's own documentation reports those as aggregates on the Actor object. The Fable
+ * refuter (research/owner-docs-audit/JUDGEMENT.md, PUBLISH.md:53/55) ruled the count must come from there.
+ */
+describe("summariseActorStats — stranger users from the Actor object", () => {
+  // The real shape, rendered from Apify's own Store API (research/rendered/apify-store-accessibility.json).
+  const rendered = JSON.parse(readFileSync("research/rendered/apify-store-accessibility.json", "utf8"));
+  const actor = rendered.data.items[0];
+
+  it("reads totalUsers30Days and the public 30-day run total from the rendered shape", () => {
+    const s = summariseActorStats(actor, { ownRunInWindow: false });
+    expect(s.totalUsers30Days).toBe(actor.stats.totalUsers30Days);
+    expect(s.totalUsers).toBe(actor.stats.totalUsers);
+    expect(s.publicRuns30d).toBe(actor.stats.publicActorRunStats30Days.TOTAL);
+    expect(s.strangerUsers30d).toBe(actor.stats.totalUsers30Days);
+  });
+
+  it("subtracts our own account once when we ran it inside the window", () => {
+    const s = summariseActorStats({ stats: { totalUsers30Days: 5, totalUsers: 9, publicActorRunStats30Days: { TOTAL: 40 } } }, { ownRunInWindow: true });
+    expect(s.strangerUsers30d).toBe(4);
+  });
+
+  it("never goes below zero when the only user in the window is us", () => {
+    const s = summariseActorStats({ stats: { totalUsers30Days: 1, totalUsers: 1, publicActorRunStats30Days: { TOTAL: 3 } } }, { ownRunInWindow: true });
+    expect(s.strangerUsers30d).toBe(0);
+  });
+
+  it("returns null, not zero, when the Actor object carries no stats — unknown is not nobody", () => {
+    const s = summariseActorStats({ id: "x" }, { ownRunInWindow: false });
+    expect(s.strangerUsers30d).toBeNull();
+    expect(s.totalUsers30Days).toBeNull();
+    expect(s.publicRuns30d).toBeNull();
   });
 });

@@ -52,8 +52,14 @@ Six steps. Nothing here is KYC, nothing costs money, and nothing here commits yo
 For 30 days the only thing that matters is how many distinct people we did not tell ran it — `strangerUsers30d`, distinct users minus the brand account, the number the board's thresholds read (`research/colony-sweep/BOARD.md` §6.3.1; kill and scale criteria in `src/revenue/portfolio.ts`). The run count is a secondary signal. A daily
 GitHub Actions job (`count-runs` in `.github/workflows/apify-publish.yml`, 05:41 UTC) reads the
 Actor's runs from the Apify API with `APIFY_TOKEN` and commits
-`state/colony/measurements/apify-runs.json` to `main`. Nothing in the colony reads that file into
-its KPIs yet. **Unverified assumption in that job:** it lists the Actor's runs with the owner's token and splits them by `userId`. Apify's API has never been reached from this container, and Apify's own documentation describes other users' runs on a public Actor as an aggregate (`stats.totalUsers30Days`, `stats.publicActorRunStats30Days` on the Actor object — the shape the repo has rendered in `research/rendered/apify-store-accessibility.json`), not as rows in the owner's runs list. Until the first real response, a stranger count of 0 from the runs list must not be read as "nobody ran it"; the job should record the Actor object's `stats.totalUsers30Days` alongside it.
+`state/colony/measurements/apify-runs.json` to `main`; the hourly colony tick reads that file into the
+`apify-actors` KPIs (`src/revenue/measurements.ts`), once per measurement. **Which number counts:** the job also
+reads the Actor object and records `users.strangerUsers30d` from its `stats.totalUsers30Days` (minus our own account
+when we ran it in the window) — the number the board's thresholds read. The runs list is our token's view: Apify's
+own documentation describes other users' runs on a public Actor as an aggregate on the Actor object (the shape the
+repo has rendered in `research/rendered/apify-store-accessibility.json`), not as rows in the owner's runs list, so
+its stranger count is kept only as a secondary series marked "scope unverified" and must never be read as "nobody
+ran it". Apify's API has never been reached from this container; the first real response is the first check.
 
 - **If strangers run it:** constraint 7 has its first real answer — and the response is staged by the board, not switched on at once (`research/colony-sweep/BOARD.md` §6.3.1; `src/revenue/portfolio.ts` kill and scale criteria): under 10 stranger users at day 30 the line stays an instrument and no KYC is asked for; 10–49, keep counting and fix what the runs show; 50 or more, one more Actor and Apify KYC goes to the owner; 200 or more, pricing is designed, with the free `data.gov.il` source disclosed on the listing.
 - **If nobody runs it:** that is the more valuable result, and it arrives for free. It says the
