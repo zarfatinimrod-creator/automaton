@@ -3,9 +3,12 @@
 > **The owner's order (27.9.2026, verbatim in `MISSION.md`):** open income channels without limit and
 > without stopping; when a channel is ready and running, build the next one — in a loop.
 >
-> **Status in brief:** 0 channels running · ledger ₪0.00 (`origin/main` `state/colony/REPORT.md`, tick
-> `2a8e324`, 27.9 18:21 UTC) · 6 built but not launched, which is the cap · everything that goes live is
-> waiting on the owner (items 1-3 below, about 10 minutes, no identity).
+> **The owner's second order (27.9.2026, verbatim in `MISSION.md`):** a standing consent to merge and publish under
+> the brand, and **₪0**: nothing the owner pays for, not even a shekel, until the ledger shows it works.
+>
+> **Status in brief:** 0 channels running · ledger ₪0.00 · 6 built but not launched, which is the cap. PR #3 was
+> merged on 27.9 (`61fae4e`). What goes live next waits on two free owner actions with no identity check (items 1-2
+> below, about 7 minutes).
 
 This file is **rewritten on every tick** from probes, never from memory. It records where the loop stopped.
 The reasoning behind each rule is the board's design, `research/channel-loop/BOARD-LOOP.md` (Fable, 27.9).
@@ -16,7 +19,7 @@ The forecast is in `research/channel-loop/FORECAST.md`.
 | | |
 |---|---|
 | Last tick | tick 0: 27.9.2026 ~22:30 UTC (design written, loop switched on) |
-| Branch | `claude/new-session-j071dx` (PR #3 into `main`, draft, green) |
+| Branch | `claude/new-session-j071dx`, restarted from `main` after PR #3 merged (`61fae4e`). The standing consent means the loop merges its own green PRs. |
 | Routine | "Channel loop tick", every 6 h (`11 1,7,13,19 * * *` UTC), fires into this session; see §11 |
 | Fable | available at 27.9 ~21:30 UTC (two agents ran). The daily sitting is the ~07:11 UTC tick. |
 | Running channels / ledger | 0 / ₪0.00 |
@@ -103,7 +106,7 @@ Stages run in this order:
 | apify-actors (Actor over data.gov.il, free) | parked-owner | Apify, `observable:false`; declared a ₪0 instrument | 6a (Apify sign-up + `APIFY_TOKEN`) | pre-write the "Publish" message; check on main that the publish job creates the Actor as private | secret present, so the publish job stops being a no-op |
 | il-biz-tools (Hebrew business tools) | building (launch preparation) | Gumroad connector wired (`colony.yml`) | deploy route: ask #2 or the Netlify click in 6b; selling needs 2, 3, 6b | fix the `build-site.js:32` config leak; accessibility statement; remove the Facebook/WhatsApp line (`README.md:20`); brand-named PostHog key; identifier grep | network allowlist widened, or repo linked in Netlify |
 | pcn874 (VAT detailed-report file) | admitted: free validator page to build | Gumroad (same account) | none for the free page; 2, 3, 6b, 5 for the paid builder | build a client-side validator page inside il-biz-tools (2-3 days) once that site's preparation is done | rides the il-biz-tools deploy |
-| oss-bounties (Algora) | parked-owner, then parked-window | Algora via Stripe Express; no connector (payout recorded by hand) | ask #1 (merge PR #3) | after merge: `sync-portfolio`, `report`, confirm `research/measurements/algora-supply.md` | PR #3 merged; then the week-4 mean |
+| oss-bounties (Algora) | building (instrument fix) | Algora via Stripe Express; no connector (payout recorded by hand) | none until the week-4 mean | The first run on main (run 36355862817) refused: GitHub counted 554 issues and served 551. A two-pass fix is in progress; it records GitHub's unserved count instead of failing. | fix merged, then the first reading; then the week-4 mean |
 | mcp-il-tools (free MCP server) | building (preparation), then parked-owner | none, a ₪0 channel test | proposed step 9 (npm), 5, 7 | fix the two defects (`README.md:21`, `:32`); `mcp-publish.yml` gated on `NPM_TOKEN` | npm yes plus token |
 | T1 web arm (faceless-YouTube experiment) | building (preparation) | ₪0 experiment | deploy route (ask #2) | optional cookieless PostHog in `page.py`; pre-register the reach floor; sub-brand name | deploy route open; the day-56 clock starts at that deploy |
 | T1 video | held by protocol | ₪0 experiment | Stage A, only after the day-56 web read | none | web arm passes at day 56 |
@@ -120,6 +123,7 @@ The full reasoning for each is in `BOARD-LOOP.md`. The ₪0 test runs first and 
 | 9 | Polar.sh as a second merchant-of-record rail (rail research, not a channel) | render https://stripe.com/global and https://docs.stripe.com/connect/cross-border-payouts; read Polar's acceptable use on GitHub | not run (tick 1 dispatch) |
 | 11 | Wix App Market app for Israeli compliance | render https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payments-and-billing-faqs, then the occupancy scan | not run (tick 1 dispatch) |
 | 12 | Topcoder auto-scored challenges | fetch https://api.topcoder.com/v6/challenges?status=ACTIVE and the member terms / AI policy | not run (tick 1 dispatch) |
+| — | **Bituach Leumi cost of step 2** (not a channel: the ₪0 rule's check before the owner is asked) | render https://www.btl.gov.il/Insurance/National%20Insurance/type_list/Self_Employed/Pages/rates.aspx, https://www.btl.gov.il/Insurance/Rates/Pages/%D7%9E%D7%99%20%D7%A9%D7%90%D7%99%D7%A0%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D%20%D7%95%D7%91%D7%A2%D7%9C%D7%99%20%D7%94%D7%9B%D7%A0%D7%A1%D7%94%20%D7%A9%D7%9C%D7%90%20%D7%9E%D7%A2%D7%91%D7%95%D7%93%D7%94.aspx and https://www.kolzchut.org.il/he/%D7%93%D7%9E%D7%99_%D7%91%D7%99%D7%98%D7%95%D7%97_%D7%9C%D7%90%D7%95%D7%9E%D7%99_%D7%9C%D7%A9%D7%9B%D7%99%D7%A8_%D7%A2%D7%9D_%D7%9E%D7%A7%D7%95%D7%A8%D7%95%D7%AA_%D7%94%D7%9B%D7%A0%D7%A1%D7%94_%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D → `research/measurements/step2-cost.md` | tick 1 dispatch |
 | 13 | AI-allowed prize-event intake (instrument only) | weekly read of https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json | not built |
 | 14 | HTML5 syndication (GameMonetize, GameDistribution, Playgama) | none until a game passes CrazyGames Basic Launch | waiting |
 
@@ -143,24 +147,41 @@ No read is dated yet, because every clock starts with an owner action:
 - **T1 web arm:** day 56 from its deploy.
 - **K3:** day 112.
 
-## 6. Owner-ask batch (single ordered list)
+## 6. Owner-ask batch (single ordered list, under the ₪0 rule)
 
-1. **(2 min, consent)** Merge PR #3, and give a standing consent in one sentence: the loop may merge its own green PRs and put up new public surfaces under the brand without asking each time, revocable with "עצור".
-2. **(2 min, a settings change)** Network access for this environment: cloud environment menu → Edit → Network access. Add `api.netlify.com`, `netlify-mcp.netlify.app` and `*.netlify.app`. This lets the loop deploy every static surface itself. The alternative is the Netlify "Link repository" click in step 6b, once per site.
-3. **(5 min, no KYC)** Step 6a: sign up at Apify as `mehudak`, add the `APIFY_TOKEN` secret, then click Publish when told.
-4. **(60-90 min, identity)** Step 2: the עוסק פטור file and Bituach Leumi. Nothing is put up for sale before this.
-5. **(20 min, identity)** Step 3: a Gumroad account under the store name Mehudak, then the `GUMROAD_ACCESS_TOKEN` secret. This is the only rail wired into the ledger.
-6. **(10 min, one payment from the ₪200)** Step 5: buy `mehudak.com` with WHOIS privacy and keep the receipt id. Buying it is also the yes on the brand name.
-7. **(15-20 min)** Step 7: the GitHub organisation `mehudak`, transfer the repo, re-grant the Claude GitHub connector, and create the `mehudak-ci` machine account.
-8. **(1 min, a decision)** The repo is public, and its history on main carries the owner's real name and personal email as the merge author. Choose one: make the repo private (Actions minutes become metered), or accept the exposure knowingly. Until then, no public surface links to the repo.
-9. **(Proposed step 8, needs a yes)** A brand mailbox the agent can read. Every new-account candidate needs one for verification mail. The personal Gmail is never used.
-10. **(Proposed step 9, needs a yes)** An npm account `@mehudak` and the `NPM_TOKEN` secret.
+**Done 27.9:** "תמזג" plus the standing consent. PR #3 was merged as `61fae4e`.
+
+**Free, no identity (about 7 minutes in all):**
+1. **(2 min, a settings change)** Network access for this environment: cloud environment menu → Edit → Network
+   access. Add `api.netlify.com`, `netlify-mcp.netlify.app` and `*.netlify.app`. The loop then deploys every static
+   surface to free `*.netlify.app` hosting itself. The alternative is the Netlify "Link repository" click in step 6b,
+   once per site.
+2. **(5 min)** Step 6a: sign up at Apify with the username `mehudak` (the free plan), add the `APIFY_TOKEN` secret,
+   then one Publish click when told.
+3. **(15-20 min)** Step 7: create the GitHub organisation `mehudak` (Free plan), transfer the repo, re-grant the
+   Claude GitHub connector, and create the `mehudak-ci` machine account. This also gives the MCP registry a free
+   namespace (`io.github.mehudak`) in place of the domain.
+
+**Only when a paid product is ready, and only after its cost is checked:**
+4. Step 2, the עוסק פטור file and Bituach Leumi. Before it is asked for, the colony renders what registering costs
+   someone in the owner's position (§4 row "Bituach Leumi"). One fact the colony cannot find itself: is the owner
+   currently a salaried employee? The Bituach Leumi rules differ.
+5. Step 3, Gumroad. It is free to open, and fees come only out of sales. It needs identity: ID, proof of address and
+   an Israeli bank account.
+
+**Frozen by the ₪0 rule:** step 5 (the domain). **A decision still open:** item 8 of the old list. The repo is
+public, and its history on main carries the owner's real name and personal email as the merge author. Choose one:
+make it private (Actions minutes become metered, possibly a cost) or accept the exposure knowingly.
+
+**Proposed steps, each needing a yes (free):**
+- a brand mailbox the agent can read (step 8);
+- an npm account `@mehudak` and the `NPM_TOKEN` secret (step 9).
 
 **Held, not asked:**
-- step 4 (Stripe via Algora), until the week-4 supply read;
+- step 4, until the week-4 supply read;
 - YouTube Stage A, until the day-56 web read;
 - Apify KYC, until 50 stranger users;
-- CrazyGames, Polar, Wix, Topcoder and Bugzilla accounts, until their ₪0 tests pass;
+- the CrazyGames, Polar, Wix, Topcoder and Bugzilla accounts, until their ₪0 tests pass;
 - `BRAND_GITHUB_TOKEN`, until step 4.
 
 ## 7. Kills and admissions made by the loop
