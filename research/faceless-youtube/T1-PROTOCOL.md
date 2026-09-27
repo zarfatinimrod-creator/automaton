@@ -78,7 +78,14 @@ The judge wrote 20-40 minutes; the red team measured the omissions and made it *
 - **The analytics-only consent — in the same sitting, not later.** The pre-check found Upload-Post cannot return the
   K0/K3 split, so P5 is expected to fail: an analytics-only Google Cloud project on the brand account and one consent
   for `yt-analytics.readonly` — no upload scopes, no audit (RED-TEAM §2.1 fix b). About 10-15 minutes, inside the
-  40-60. Asking for T1 without it would buy an experiment nobody can read.
+  40-60. Asking for T1 without it would buy an experiment nobody can read. **The project's OAuth consent screen must
+  be published ("In production"), not left in "Testing"**: a Testing project "is issued a refresh token expiring in
+  7 days" [RENDERED google-oauth2.txt:542-544], which would stop the reader in week two and fire `K0-unmeasured`.
+  The reader that consumes this consent is built (`src/revenue/youtube-analytics.ts`, `scripts/youtube-analytics.ts`,
+  27.9) against Google's own report tables [RENDERED yt-analytics-channel-reports.txt:1004-1050]. Two facts from them:
+  the traffic-source report has no `averageViewPercentage`, so the Search diagnostic is derived (minutes over views ×
+  our video length) and labelled so; and it offers both `views` and `engagedViews`, so the RED-TEAM §2.4 pin is a
+  choice between two real metrics — pending the board, and until it is made K0 reads null, not zero.
 - **Nothing** of AdSense, tax forms, PIN letters or YPP. Those are stage B, and stage B is not even put to the board
   below 1,200 stranger watch hours per 28 days (`k3EscalateAtOrAbove`, RED-TEAM §2.3).
 
