@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -35,10 +36,29 @@ describe('spec-watch stays honest about what it is for', () => {
     expect(workflow).toContain('schedule');
   });
 
+  it('pins every watched document to the hash of the exact bytes docs/SPEC.md was derived from', () => {
+    // It used to assert an EMPTY lock. An empty lock plus a job that never commits back (permissions: contents:
+    // read) meant every run printed "new" and the watch could never print CHANGED — the defect the sweep-2 board
+    // found (research/colony-sweep/BOARD-2.md §2.4). The bytes that were read are the render-watch captures of the
+    // same three URLs (research/rendered/pcn874-<id>.pdf, fetched 2026-09-07); their hashes are the baseline.
+    const rendered = join(root, '..', '..', 'research', 'rendered');
+    const sources = lock.sources as Record<string, { url: string; sha256: string; readByAHuman: boolean }>;
+    const idOf = (renderedPath: string) => renderedPath.replace(/^research\/rendered\/pcn874-/, '').replace(/\.txt$/, '');
+    expect(Object.keys(sources).sort()).toEqual(OFFICIAL_SPEC_URLS.map(u => idOf(u.renderedPath)).sort());
+    for (const { url, renderedPath, sha256: recorded } of OFFICIAL_SPEC_URLS) {
+      const id = idOf(renderedPath);
+      expect(sources[id].sha256).toBe(recorded);
+      const meta = JSON.parse(readFileSync(join(rendered, `pcn874-${id}.meta.json`), 'utf8')) as { url: string; sha256: string };
+      const bytes = readFileSync(join(rendered, `pcn874-${id}.pdf`));
+      expect(meta.url).toBe(url);
+      expect(sources[id].url).toBe(url);
+      expect(sources[id].sha256).toBe(createHash('sha256').update(bytes).digest('hex'));
+      expect(sources[id].sha256).toBe(meta.sha256);
+      expect(sources[id].readByAHuman).toBe(true);
+    }
+  });
+
   it('has a lock file whose note says what a hash does and does not mean', () => {
-    // Still empty: the hashes in research/rendered/*.meta.json came from the
-    // render-watch workflow, not from this job, which has never run in CI.
-    expect(lock.sources).toEqual({});
     // The note changed on 2026-09-07 with the evidence. The documents HAVE now
     // been read (docs/SPEC.md cites them line by line), so the job's purpose is
     // no longer "get us a copy" but "tell us when a new edition appears".
