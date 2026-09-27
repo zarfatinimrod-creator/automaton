@@ -1,0 +1,17 @@
+{
+  "url": "https://raw.githubusercontent.com/github/innovationgraph/078fb62ee4395d321bec9f4f06694cca68f6b6cb/docs/datasheet.md",
+  "slug": "github-innovationgraph-datasheet",
+  "fetchedAt": "2026-09-27T10:08:35.006Z",
+  "status": 200,
+  "contentType": "text/plain; charset=utf-8",
+  "byteLength": 12450,
+  "sha256": "7d26f221a71c9079ea70d05edcf95d58807c3f29c3eed69f9d4e5bf67874c0c7",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/github-innovationgraph-datasheet.txt",
+  "textPath": "research/rendered/github-innovationgraph-datasheet.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, stored for citation only. Fetched by the chart-explainer builder (an agent session, not render-watch.yml) from raw.githubusercontent.com at the pinned commit 078fb62ee4395d321bec9f4f06694cca68f6b6cb, saved byte-for-byte as served. The dataset's datasheet. l.143: 'The dataset is made available under a CC0-1.0 license.' It also defines num_pushers (l.37), the 100-developer reporting threshold (l.25, l.120) and IP-based location (l.27), which the T1 narration relies on. Not added to urls.txt: the commit pin makes these bytes immutable, so there is nothing for a weekly watch to notice."
+}
