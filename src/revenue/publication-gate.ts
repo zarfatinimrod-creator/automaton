@@ -72,8 +72,23 @@ export interface GateResult {
   failures: GateFailure[];
 }
 
-/** Licences a narrated chart video can carry with attribution alone. ShareAlike and NonCommercial are out. */
-export const ALLOWED_DATA_LICENCES: ReadonlySet<string> = new Set(["CC0-1.0", "CC-BY-4.0", "CC-BY-3.0", "public-domain"]);
+/**
+ * Licences a narrated chart video can carry with attribution alone. ShareAlike and NonCommercial are out.
+ *
+ * `Unlicense` and `ODC-PDDL-1.0` were added 27.9.2026 (DATASETS.md B2): both are public-domain dedications, no
+ * stricter than `public-domain`, and a manifest records the licence string the source actually uses rather than our
+ * mapping of it. `MIT` stays out — a software licence whose notice must travel "in all copies or substantial
+ * portions" has no clean place in a narrated video (R6, R7). `CC-BY-3.0-IGO` is not in the set pending a Fable ruling
+ * (B1): it closes UN population and UNESCO education, and its IGO clauses are a legal judgement, not a mapping.
+ */
+export const ALLOWED_DATA_LICENCES: ReadonlySet<string> = new Set([
+  "CC0-1.0",
+  "CC-BY-4.0",
+  "CC-BY-3.0",
+  "public-domain",
+  "Unlicense",
+  "ODC-PDDL-1.0",
+]);
 
 /**
  * Topics the verdict keeps the channel away from in any form that could read as advice (VERDICT §11, G2).

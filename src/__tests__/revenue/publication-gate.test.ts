@@ -62,6 +62,14 @@ describe("publication gate G1-G10 (VERDICT §12)", () => {
       const v = video({ datasets: [{ ...video().datasets[0], licence: "CC-BY-NC-4.0" }] });
       expect(failed(checkPublication(v, channel(), "publish", exists))).toContain("G1");
     });
+    it.each(["Unlicense", "ODC-PDDL-1.0"])("passes a public-domain dedication recorded under its own name: %s (DATASETS.md B2)", (licence) => {
+      const v = video({ datasets: [{ ...video().datasets[0], licence, upstream: [] }] });
+      expect(failed(checkPublication(v, channel(), "publish", exists))).not.toContain("G1");
+    });
+    it.each(["MIT", "CC-BY-3.0-IGO", "CC-BY-SA-4.0"])("still fails %s", (licence) => {
+      const v = video({ datasets: [{ ...video().datasets[0], licence }] });
+      expect(failed(checkPublication(v, channel(), "publish", exists))).toContain("G1");
+    });
     it("fails a derived dataset whose upstream licence is unknown (RED-TEAM §2.6: OWID energy on the EI Review)", () => {
       const v = video({
         datasets: [{ ...video().datasets[0], upstream: [{ source: "Energy Institute Statistical Review", licence: null }] }],
