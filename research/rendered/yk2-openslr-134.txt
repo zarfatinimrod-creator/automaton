@@ -1,0 +1,79 @@
+openslr.org
+
+Open Speech and Language Resources
+
+Home
+Resources
+
+SASPEECH
+
+Identifier: SLR134
+
+Summary: Hebrew speech and transcripts by a single speaker (30 hours)
+
+Category: Speech
+
+License: Custom non-commercial (See README)
+
+Downloads (use a mirror closer to you):
+
+saspeech_gold_standard_v1.0.tar.gz [967M] ( Gold-standard subset (manual transcripts) - 4h
+) Mirrors:
+[EU]
+[EU]
+[CN]
+
+saspeech_automatic_data_v1.0.tar.gz [10G] ( Automatic subset (automated transcripts) - 26h
+) Mirrors:
+[EU]
+[EU]
+[CN]
+
+README.auto.md [4.9K] ( Readme for the automatic subset
+) Mirrors:
+[EU]
+[EU]
+[CN]
+
+README.gold.md [5.4K] ( Readme for the gold-standard subset
+) Mirrors:
+[EU]
+[EU]
+[CN]
+
+About this resource:
+
+This dataset contains approximately 30 hours of audio spoken by Shaul Amsterdamski in a recording studio at 44100Hz with corresponding transcriptions.
+
+The data is divided into a gold-standard subset of roughly 4 hours with manual transcriptions and an automatic subset with machine-generated transcriptions.
+
+See README files inside the archives for more details.
+
+The dataset was originally published as part of the robo-shaul competition with this license agreement (Hebrew-only).
+The license is also provided with the dataset archives in the file robo_shaul_terms.pdf. In case of conflict between the attached license and the version available online, the online version takes precedence.
+
+A summary of the terms in English:
+
+Copyright for the recordings and corresponding transcriptions is owned solely by the Israeli Public Broadcast Corporation, the IPBC.
+
+The dataset is free for use for non-commercial purposes, under the following limitations, whether by positive act or by omission:
+
+You may not present your use of the Dataset in a way that suggests that the IPBC supports or endorses you or your use of the Dataset
+
+You may not make use of the Dataset in a manner that brings harm to Shaul Amsterdamski and/or the IPBC, including defamation
+
+You may not make use of the Dataset for commercial or broadcast needs
+
+You may not make use of the Dataset for political needs
+
+You may not make use of the Dataset in a manner that breaches any applicable law
+
+You can cite the data using the following BibTeX entry:
+
+@inproceedings{sharoni23_interspeech,
+author={Orian Sharoni and Roee Shenberg and Erica Cooper},
+title={{SASPEECH: A Hebrew Single Speaker Dataset for Text To Speech and Voice Conversion}},
+year=2023,
+booktitle={Proc. Interspeech 2023},
+pages={To Appear}
+}

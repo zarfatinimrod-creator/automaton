@@ -1,0 +1,17 @@
+{
+  "url": "https://www.tiktok.com/safety/en/policies-and-engagement/cg-archive",
+  "slug": "tt2-cg-archive",
+  "fetchedAt": "2026-09-28T23:22:22.770Z",
+  "status": 200,
+  "contentType": "text/html",
+  "byteLength": 164039,
+  "sha256": "870cbdb9efeb88cd72a23545d5142bb0f9ce2ba3ac6055d20724adbb955de4b1",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt2-cg-archive.html",
+  "textPath": "research/rendered/tt2-cg-archive.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

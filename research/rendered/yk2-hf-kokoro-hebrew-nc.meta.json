@@ -1,0 +1,17 @@
+{
+  "url": "https://huggingface.co/thewh1teagle/kokoro-hebrew-nc",
+  "slug": "yk2-hf-kokoro-hebrew-nc",
+  "fetchedAt": "2026-09-28T23:21:57.342Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 104597,
+  "sha256": "f73285f6b1d538e627723b8128277726502d0ade44b960eed9620ca38b7a6aab",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk2-hf-kokoro-hebrew-nc.html",
+  "textPath": "research/rendered/yk2-hf-kokoro-hebrew-nc.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

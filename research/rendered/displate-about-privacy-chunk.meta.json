@@ -1,0 +1,17 @@
+{
+  "url": "https://assets-static-prod.displate.com/next-assets/_next/static/chunks/pages/about-privacy-8cabb3e3e05788f0.js",
+  "slug": "displate-about-privacy-chunk",
+  "fetchedAt": "2026-09-28T23:21:16.221Z",
+  "status": 200,
+  "contentType": "text/javascript; charset=utf-8",
+  "byteLength": 67536,
+  "sha256": "6a43b628f0347b5f873b230b3ab3a8c3f1dbda3b2cfd46880b2bdc0d0b3b32d4",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/displate-about-privacy-chunk.txt",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

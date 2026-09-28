@@ -1,0 +1,276 @@
+Monetization is disabled for my channel - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Monetization is disabled for my channel
+If monetization is disabled for your YouTube channel, it could be for several reasons. Any of these actions could result in suspension of payments:
+
+Attempting monetization of videos you don't own. If you're not sure if you have the right to upload the content, check the Copyright FAQ . Also make sure you know how fair use works .
+
+Attempting monetization of videos that don't meet our advertiser-friendly content guidelines . We may reserve the right to disable ads on your entire channel in situations where most of your content is not suitable for any advertisers. This condition can also include where there are repeated, serious violations (for example, uploading of incendiary, demeaning, or hateful content).
+
+You did not accept the updated YouTube Partner Program (YPP) terms as of July 11, 2023.
+
+Your channel is on a non-monetizing agreement with YouTube.
+
+Violations of YouTube channel monetization policies , YouTube spam policies , AdSense Program Policies , YouTube Terms of Service , or AdSense for YouTube Terms of Service.
+
+Severe violations of our YouTube channel monetization policies may result in monetization being permanently disabled on any of your accounts.
+
+If your channel’s monetization is paused (not disabled), it means that you need to link an active and approved AdSense for YouTube account to resume. Paused monetization is different from disabled monetization – learn more about paused monetization here .
+
+If you believe your copyright-protected work was posted on YouTube without authorization, you may submit a copyright infringement notification .
+
+Frequently asked questions
+
+How can I check my channel's monetization status?
+
+Check the monetization status by going directly to the Status and features section of your channel. You can also get there by following these steps:
+
+Sign in to YouTube Studio .
+
+In the left Menu, click Earn to view your status.
+
+Why was I suspended from the YouTube Partner Program?
+
+If it’s determined that your channel is no longer eligible for monetization, your channel may lose access to all monetization tools, features, and Modules associated with the YouTube Partner Program.
+
+Your channel will then no longer earn money from YouTube. This restriction includes revenue from advertising, YouTube Premium subscriptions, and products like channel memberships .
+
+You can keep uploading original content and building your audience on YouTube even if you're not in the YouTube Partner Program. You can appeal this decision within 21 days or re-apply to the program 90 days after suspension.
+
+We want you to have a chance to monetize again, but to do that you'll need to make some changes to your channel. Learn more .
+
+Why was I notified that my channel is scheduled for suspension from the YouTube Partner Program?
+
+In some cases, we’ll let you know that a portion of your channel may not be in line with YouTube’s channel monetization policies and that your channel is scheduled for suspension.
+
+If you’ve received this notification, we’ll give you 7 days to submit your video appeal or your channel will be suspended. If you submit your appeal within 7 days, we’ll pause the scheduled suspension as we review your channel. Our teams will respond to your appeal within 14 days with a decision. If your appeal is successful, your channel won’t be suspended from the YouTube Partner Program and you can continue to monetize. If your appeal is rejected, then you’ll be suspended from YPP and will lose access to monetization tools and features. You cannot appeal your suspension, but you can re-apply to YPP 90 days after your suspension date. Learn more .
+
+If you do not submit an appeal within 7 days of the scheduled suspension notification, then your channel will be suspended from the YouTube Partner Program. Since you didn’t submit an appeal before suspension, you can appeal this decision within 21 days or re-apply to the program 90 days after suspension. Learn more .
+
+Common issues and fixes
+
+Depending on the issue with your video or channel, you can take steps to reinstate monetization. To learn more, click below based on your monetization status. Severe violations of our YouTube channel monetization policies may result in monetization being permanently disabled on any of your accounts.
+
+Community Guidelines and copyright issues
+
+Videos with Community Guidelines strikes , copyright strikes , and videos with visuals matching third-party content may contribute to monetization suspension on all your related accounts.
+
+Important : Deleting the video will not fix Community Guidelines or copyright issues. To reinstate monetization on your channel, try to appeal Community Guidelines strikes or fix a copyright strike .
+
+If you can’t fix your existing copyright or Community Guidelines issues, we may reinstate monetization on your channel after 3 months. You'll need to meet the following criteria:
+
+You've not had any new copyright or Community Guidelines issues in the last 3 months.
+
+You use your channel in compliance with our policies (for example, by uploading content that you have the right to monetize).
+
+YouTube Partner Program participation was suspended
+
+You can appeal this decision within 21 days or re-apply to the program 90 days after suspension. Follow these general guidelines:
+
+Start by going to the Earn section of YouTube Studio to read more about the policy your channel violated.
+
+Then, review your videos against our YouTube channel monetization policies , advertiser-friendly content guidelines , and our Community Guidelines .
+
+The next step is to edit or delete any videos that violate our policies
+
+If you re-apply, our review team will carefully look over your content again. We'll email you to let you know when the process is complete (it takes about a month). You can also check the status of your application in the Earn section of YouTube Studio.
+
+Learn more about YouTube policies .
+
+Address or ID not verified in your AdSense for YouTube account
+
+To help keep your account secure, we require you to verify your address before we send you any payments. To do so, we mail a Personal Identification Number (PIN) to your payment address. You'll then need to enter this PIN within your account.
+
+Depending on your location, we may need to verify your identity using info like your name, address, or date of birth. If you're required to give this info, you typically won't be asked to verify your address until after you've successfully verified your identity.
+
+If your identity or PIN is not verified, your channel can't monetize. Once you verify your identity or PIN, you can monetize.
+
+Sign in to your AdSense for YouTube account to see whether you need to verify your identity or enter a PIN. You can learn more about PIN verification and identity verification .
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+false
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+15726373504601194668
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

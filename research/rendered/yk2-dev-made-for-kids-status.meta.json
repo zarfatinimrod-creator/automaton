@@ -1,0 +1,17 @@
+{
+  "url": "https://developers.google.com/youtube/v3/guides/made_for_kids_status",
+  "slug": "yk2-dev-made-for-kids-status",
+  "fetchedAt": "2026-09-28T23:21:48.150Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 73110,
+  "sha256": "80f225a56a892ef2e0729e78ff4884af0bc6f9659e87684a07bb621391ecee9a",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk2-dev-made-for-kids-status.html",
+  "textPath": "research/rendered/yk2-dev-made-for-kids-status.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

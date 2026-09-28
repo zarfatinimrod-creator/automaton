@@ -1,0 +1,410 @@
+Set up an AdSense for YouTube account to get paid on YouTube - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Set up an AdSense for YouTube account to get paid on YouTube
+
+Due to the ongoing war in Ukraine, we will be temporarily pausing Google and YouTube ads from serving to users located in Russia. Learn more .
+
+If you are earning money on YouTube , associate an approved AdSense for YouTube account to earn money and get paid.
+
+Important: You can only have one AdSense or AdSense for YouTube account under the same payee name per AdSense Terms and Conditions or AdSense for YouTube Terms of Service, as applicable. Duplicate accounts will not be approved and monetization will be turned off for the associated YouTube channel. When starting a new AdSense for YouTube account, only create one through YouTube Studio. Doing so on another site (such as the AdSense homepage) will not work.
+
+Create and link an AdSense for YouTube account
+
+You get paid on YouTube through the AdSense for YouTube account linked to your channel. Note that if you’re already in the YouTube Partner Program, you can change your linked AdSense for YouTube account if you need to. You can also monetize more than one YouTube channel using the same AdSense for YouTube account.
+
+Keep in mind that you can only change your linked AdSense for YouTube account once every 32 days.
+
+AdSense for YouTube Creators
+
+Subscribe to the YouTube Creators channel for the latest news, updates, and tips.
+
+You can create a new AdSense for YouTube account and link it to your channel:
+
+Sign in to YouTube Studio .
+
+In the left menu, select the Earn tab.
+
+Click START on the Sign-up for AdSense for YouTube card.
+
+When you're asked to,enter your YouTube account password and re-authenticate when required.
+
+Choose which Google account you would like to use for AdSense for YouTube.
+
+Note: if you already use AdSense for other reasons outside of YouTube, sign in with the Google account used with your existing AdSense account.
+
+You’re now in AdSense for YouTube. Once here, verify that the email address is correct at the top of the page. If it’s the wrong one, click Use a different account to switch accounts.
+
+Continue setting up your account. Provide your contact info and submit your AdSense for YouTube account application.
+
+After following the above steps, you’ll be taken back to YouTube Studio, where you’ll see a message verifying receipt of your AdSense for YouTube account application. We will inform you via email once your account has been approved, which can take up to several days. Once approved, you’ll see confirmation within YouTube Studio in the Sign up for AdSense for YouTube card that your AdSense for YouTube account is approved and active.
+
+Multi-channel networks (MCN): If you’re an affiliate channel partnering with a MCN, you have to link your own AdSense for YouTube account to your channel. Accessing a third party’s AdSense for YouTube account, even with their permission, is a violation of the AdSense Terms of Service or AdSense for YouTube Terms of Service, as applicable .
+
+I don’t know if I already have an AdSense or an Adsense for YouTube account
+
+Search your inboxes for emails from "adsense-noreply@google.com".
+
+You can only have one AdSense or AdSense for YouTube account under the same payee name per AdSense's Terms and Conditionsor AdSense for YouTube Terms of Service, as applicable. If you're found to have a duplicate, your AdSense for YouTube account will be disapproved and you'll be asked to close other related accounts.
+
+I already have an approved AdSense or AdSense for YouTube account
+
+Sign in to your YouTube account and go to https://studio.youtube.com/channel/UC/monetization
+
+Click Start on the “Sign up for AdSense for YouTube” card.
+
+You’ll need to enter your YouTube account password and re-authenticate. Learn how to re-authenticate your YouTube account .
+
+Choose the Google account you want to use to sign in to AdSense for YouTube. If you already have an AdSense or AdSense for YouTube account, you must sign in with the Google account that you use to access your existing account. This account may be different from the sign in credentials you use to sign in to YouTube.
+
+You'll be directed to an AdSense for YouTube sign-up page. Verify that the correct email is at the top of the page. If the account that's showing is the wrong one, click "Use a different account" to change accounts.
+
+Click Accept Association .
+
+You'll be redirected back to the Earn page in YouTube Studio.
+
+Once you’ve connected your AdSense for YouTube account, we’ll mark this step with a green “Done” sign on the “Sign up for AdSense for YouTube account” card.
+
+Set up AdSense for YouT ube using a Content Manager account
+
+If you've been granted rights to administer a Content Manager account , you can associate an AdSense for YouTube account with it.
+
+Sign in to your Content Manager account .
+
+Go to Settings.
+
+Under the Overview section, you’ll see AdSense for YouTube (you may need to scroll to see it).
+
+Click Edit .
+
+Click Continue to AdSense for YouTube.
+
+You’ll need to enter your YouTube account password and re-authenticate. Learn how to re-authenticate your YouTube account .
+
+Choose the Google Account you want to use to sign in to AdSense for YouTube. If you already have an AdSense or AdSense for YouTube account, you must sign in with the Google Account that you use to access your existing account.
+
+When asked, enter the password for your AdSense for YouTube account. This info may be different from the credentials you use to sign in to YouTube.
+
+Confirm the YouTube channel you're associating the AdSense for YouTube account with, and choose the primary language for the channel. Although you select one YouTube channel to complete the AdSense for YouTube association, YouTube will serve ads on all channels linked to your Content Manager .
+
+Click Accept Association and add your billing info, if asked.
+
+Once you've finished this process, you'll be redirected back to YouTube. Learn more about AdSense's application review waiting times .
+
+Common issues
+
+Use the below info to troubleshoot common issues when trying to link an AdSense for YouTube account to your channel.
+
+Can I transfer my AdSense for YouTube account ownership?
+
+The AdSense Terms and Conditions or AdSense for YouTube Terms of Service don't permit transfers of account ownership.
+
+I created a new AdSense for YouTube account, but it’s disapproved because I already have an existing AdSense or AdSense for YouTube account
+
+You can only have one AdSense or Adsense for YouT ube account under the same payee name per AdSense's Terms and Conditions or AdSense for YouTube Terms of Service, as applicable. If you’re found to have a duplicate account, your newly created AdSense for YouTube account will be disapproved.
+
+Search your email inboxes for an email with the subject “You already have an existing AdSense account or AdSense for YouTube account”. This message will contain info about your existing AdSense or AdSense for YouTube account. With this info, you have two choices to fix the issue:
+
+Use the existing (older) account
+
+Sign in to YouTube Studio and click Change Association .
+
+In the account selection menu, select the Google Account that uses your existing (older) AdSense or AdSense for YouTube account.
+
+Click Accept Association .
+
+You’ll be redirected back to YouTube Studio, where you can see the account linked to your channel.
+
+Use the new account you just created
+
+First, you’ll need to close the exiting (older) account
+
+Sign in to your existing AdSense or AdSense for YouTube account, as applicable.
+
+Follow the steps here to close your account.
+
+Once closed, sign in to your new AdSense for YouTube account to confirm you’ve closed the older one.
+
+Note: It can take a few days for your new AdSense for YouTube account to be approved and linked to your YouTube channel.
+
+Issues with Address (PIN) Verification
+
+Completing address (PIN) verification in your AdSense for YouTube account is required to maintain channel monetization and receive payments.
+
+If you’ve linked a new AdSense for YouTube account to your channel, a PIN verification card will be mailed to your physical address once you reach a $10 balance. This PIN verification card will include a PIN code for you to enter in your account to verify your address .
+
+If you’ve linked to an existing AdSense or AdSense for YouTube account, you may need to wait at least 3 weeks for the PIN verification card to arrive in the mail. If you haven’t got it after 3 weeks, you can request a replacement PIN verification card .
+
+Make sure that the address on file in your AdSense for YouTube account matches the address recognized by your local post office. Having the correct address helps the local post office deliver your mail. If they are different, you need to change the payment address in your account so they are the same.
+
+If you need help with address (PIN) verification, refer to these Help resources:
+
+Problems with PIN
+
+PIN troubleshooter
+
+What happens if I don’t verify my address?
+
+If you don’t verify your address within 4 months, monetization will be paused for your channel . This includes pausing access to features like:
+
+Channel memberships
+
+Super Chat, and more
+
+Monetization will resume on your channel once you verify your address.
+
+Other issues
+
+“Oops, something went wrong” is shown to me in YouTube Studio
+
+This error message may appear when trying to make changes with emails that aren’t recognized by YouTube Studio. To solve these issues, try the following:
+
+When linking an AdSense for YouTube account, YouTube Studio will ask you to Verify It’s You . Make sure you do this using the email address you use to sign in to YouTube.
+
+You’ll then be asked to select a Google Account to continue to AdSense for YouTube with. In this instance, you may select a different email address than the one you use to sign in to YouTube Studio.
+
+If your channel is linked to a Brand Account , you should sign in using the email address that originally created your channel. If you can’t sign in using that email address, recover your account by following our tips to complete account recovery steps .
+
+AdSense for YouTube is asking me for a website URL to sign up
+
+When linking a new AdSense for YouTube account to your YouTube channel, don’t go and create one on google.com/adsense or adsense.com for this purpose. If you do, your account will be disapproved and monetization will be disabled for your channel. Instead, create the AdSense for YouTube account from within YouTube Studio directly.
+
+Other errors
+
+If you’re experiencing other technical errors not outlined on this page, try the following:
+
+Close all browser tabs.
+
+Clear your browser cache and cookies.
+
+Use a private or incognito window (to make sure no other Google accounts are signed in).
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+AdSense
+1 of 21
+AdSense for YouTube
+2 of 21
+How to get paid on YouTube
+3 of 21
+Set up an AdSense for YouTube account to get paid on YouTube
+4 of 21
+Enter your payments information in AdSense
+5 of 21
+Verify your identity
+6 of 21
+Change your linked AdSense for YouTube account
+7 of 21
+Meet YouTube’s revenue thresholds for payment
+8 of 21
+Understand AdSense for YouTube’s payment process
+9 of 21
+Address verification (PIN) overview
+10 of 21
+Verify your address with PIN in AdSense for YouTube
+11 of 21
+Fix problems with AdSense address verification (PIN)
+12 of 21
+How to request a replacement PIN
+13 of 21
+Add your payment method for AdSense for YouTube
+14 of 21
+Add your payment method for AdSense or AdSense for YouTube
+15 of 21
+Payment timelines for AdSense
+16 of 21
+Add a user to your account
+17 of 21
+Wire transfer FAQ
+18 of 21
+Reactivate a closed AdSense account
+19 of 21
+Check your AdSense account type
+20 of 21
+Close your AdSense for YouTube account
+21 of 21
+AdSense account closed by Google for policy reasons
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+7737847368559331830
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

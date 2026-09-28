@@ -1,0 +1,305 @@
+Finding the MadeForKids status of a video | YouTube Data API | Google for Developers
+
+Skip to main content
+
+YouTube
+
+Data API
+
+/
+
+English
+
+Deutsch
+
+Español
+
+Español – América Latina
+
+Français
+
+Indonesia
+
+Italiano
+
+Polski
+
+Português – Brasil
+
+Tiếng Việt
+
+Türkçe
+
+Русский
+
+עברית
+
+العربيّة
+
+فارسی
+
+हिंदी
+
+বাংলা
+
+ภาษาไทย
+
+中文 – 简体
+
+中文 – 繁體
+
+日本語
+
+한국어
+
+Sign in
+
+Home
+
+Guides
+
+Reference
+
+Samples
+
+YouTube
+
+Data API
+
+Home
+
+Guides
+
+Reference
+
+Samples
+
+Overview
+
+Client Libraries
+
+Authorize Requests
+
+Overview
+Get Auth Credentials
+Server-side Web Apps
+Client-side Web Apps
+Installed Apps
+Devices
+
+Quickstarts
+
+Android
+Apps Script
+Go
+iOS
+Java
+JavaScript
+Node.js
+PHP
+Python
+Ruby
+
+Guides and Tutorials
+
+Quota costs for API requests
+Quota and Compliance Audits
+Upload a Video
+Send Resumable Uploads
+Find MadeForKids video status
+Subscribe to Push Notifications
+Work with Channel IDs
+Move from ClientLogin to OAuth
+
+Sample Requests
+
+Implementation Guide
+
+Overview
+Activities
+Captions
+Channels
+Comments
+Pagination
+Partial responses
+Playlists
+Ratings
+Search requests
+Subscriptions
+Videos
+
+Tools
+
+APIs Explorer
+
+Important: YouTube is updating its policy for how it counts views for all video formats. Learn more
+
+Home
+
+Products
+
+YouTube
+
+Data API
+
+Guides
+
+Finding the MadeForKids status of a video
+
+Stay organized with collections
+
+Save and categorize content based on your preferences.
+
+Page Summary
+
+outlined_flag
+
+Content designated as "MadeForKids" (MFK) on YouTube requires special handling due to specific legal requirements.
+
+Embedding MFK YouTube videos mandates disabling tracking and ensuring data collection complies with laws like COPPA.
+
+The YouTube Data API Service can be used to determine if a video is designated as MFK by calling the videos.list endpoint.
+
+You must use a Google developer account and add the YouTube API to a project to use the YouTube Data API.
+
+The status.madeForKids property within the videos resource will define if the video is an MFK video or not, when using the videos.list endpoint.
+
+Interactions with YouTube content that is specifically directed towards children, which
+YouTube labels "MadeForKids" or "MFK", require special care and attention.
+
+As an example, if you embed a YouTube video that is designated MadeForKids on your site or
+app, you are required by Section III.E.4.j of the
+Developer Policies to turn off tracking and make sure that all data collection, with
+respect to that player, is compliant with applicable laws, including U.S. Children's Online
+Privacy Protection Act (COPPA).
+
+If you are not sure whether a video is designated MadeForKids, you can check the status of a
+video at any given time via the YouTube Data API Service following the instructions outlined
+below:
+
+Create or access your Google developer account via
+https://console.cloud.google.com/ .
+
+Add the YouTube API to your selected API Project (if you haven’t already). Note that the
+default YouTube API Services quota is 10,000 daily quota points; this is sufficient to check
+the MadeForKids video status of up to 5000 videos.
+
+Using the YouTube Data API Service, call the
+videos.list endpoint.
+
+Include the relevant Video ID(s) in the request parameters.
+
+Include, at minimum, the id and status parts in the
+request's part parameter.
+
+Check the video resource
+returned for the MFK status, which is returned in the resource's
+status.madeForKids
+property.
+
+You can learn more about MadeForKids guidelines in the
+YouTube Help Center .
+
+Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License , and code samples are licensed under the Apache 2.0 License . For details, see the Google Developers Site Policies . Java is a registered trademark of Oracle and/or its affiliates.
+
+Last updated 2026-09-14 UTC.
+
+Blog
+
+The latest news on the YouTube blog
+
+Issue Tracker
+
+Something wrong? Send us a bug report!
+
+YouTube Researcher Program
+
+For researchers interested in using data from YouTube's global API
+
+Tools
+
+Google APIs Explorer
+
+YouTube Player Demo
+
+Configure a Subscribe Button
+
+Issue Tracker
+
+File a bug
+
+Request a feature
+
+See open issues
+
+Product Info
+
+Terms of Service
+
+Developer Policies
+
+Required Minimum Functionality
+
+Branding Guidelines
+
+Android
+
+Chrome
+
+Firebase
+
+Google Cloud Platform
+
+Google AI
+
+All products
+
+Terms
+
+Privacy
+
+Manage cookies
+
+English
+
+Deutsch
+
+Español
+
+Español – América Latina
+
+Français
+
+Indonesia
+
+Italiano
+
+Polski
+
+Português – Brasil
+
+Tiếng Việt
+
+Türkçe
+
+Русский
+
+עברית
+
+العربيّة
+
+فارسی
+
+हिंदी
+
+বাংলা
+
+ภาษาไทย
+
+中文 – 简体
+
+中文 – 繁體
+
+日本語
+
+한국어

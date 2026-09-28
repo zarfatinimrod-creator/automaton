@@ -1,0 +1,17 @@
+{
+  "url": "https://www.capitax.co.il/Attachments/26112024-2.pdf",
+  "slug": "tt2-capitax-26112024-2",
+  "fetchedAt": "2026-09-28T23:22:11.054Z",
+  "status": 200,
+  "contentType": "application/pdf",
+  "byteLength": 26678,
+  "sha256": "9c611a7936863ddc954b2d4295814501ccfe917854ef43eec7f4bc8175eb08fd",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt2-capitax-26112024-2.pdf",
+  "textPath": "research/rendered/tt2-capitax-26112024-2.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

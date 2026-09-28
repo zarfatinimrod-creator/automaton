@@ -1,0 +1,1782 @@
+
+
+<!DOCTYPE html>
+<html>
+    
+<head>
+    <meta charset="utf-8"/>
+    <title>Create and manage your StreetLib account - StreetLib Help Center</title>
+    <meta name="viewport" content="width=device-width, maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="description" content="StreetLib help center and knowledge base"/>
+    <meta name="author" content="StreetLib SRL"/>
+    <link rel="canonical" href="https://help.streetlib.com/category/72-create-and-manage-your-streetlib-account"/>
+    
+
+    
+        <link rel="stylesheet" href="//d3eto7onm69fcz.cloudfront.net/assets/stylesheets/launch-1790591500073.css">
+    
+    <style>
+        body { background: #ffffff; }
+        .navbar .navbar-inner { background: #ffffff; }
+        .navbar .nav li a, 
+        .navbar .icon-private-w  { color: #c0c0c0; }
+        .navbar .brand, 
+        .navbar .nav li a:hover, 
+        .navbar .nav li a:focus, 
+        .navbar .nav .active a, 
+        .navbar .nav .active a:hover, 
+        .navbar .nav .active a:focus  { color: #008ea1; }
+        .navbar a:hover .icon-private-w, 
+        .navbar a:focus .icon-private-w, 
+        .navbar .active a .icon-private-w, 
+        .navbar .active a:hover .icon-private-w, 
+        .navbar .active a:focus .icon-private-w { color: #008ea1; }
+        #serp-dd .result a:hover,
+        #serp-dd .result > li.active,
+        #fullArticle strong a,
+        #fullArticle a strong,
+        .collection a,
+        .contentWrapper a,
+        .most-pop-articles .popArticles a,
+        .most-pop-articles .popArticles a:hover span,
+        .category-list .category .article-count,
+        .category-list .category:hover .article-count { color: #008ea1; }
+        #fullArticle, 
+        #fullArticle p, 
+        #fullArticle ul, 
+        #fullArticle ol, 
+        #fullArticle li, 
+        #fullArticle div, 
+        #fullArticle blockquote, 
+        #fullArticle dd, 
+        #fullArticle table { color:#585858; }
+    </style>
+    
+        <link rel="stylesheet" href="//s3.amazonaws.com/helpscout.net/docs/assets/5fbf8a3f4cedfd00165b4392/attachments/6a0dc48ad3bc7dc682fb1257/style.streetlib.css">
+    
+    <link rel="apple-touch-icon-precomposed" href="//d33v4339jhl8k0.cloudfront.net/docs/assets/5fbf8a3f4cedfd00165b4392/images/6012ce1bcfe30d219ccdc749/logo_big.png">
+    <link rel="shortcut icon" type="image/png" href="//d33v4339jhl8k0.cloudfront.net/docs/assets/5fbf8a3f4cedfd00165b4392/images/6012ca31c64fe14d0e1ff83f/favicon.png">
+    <!--[if lt IE 9]>
+    
+        <script src="//d3eto7onm69fcz.cloudfront.net/assets/javascripts/html5shiv.min.js"></script>
+    
+    <![endif]-->
+    
+        <script type="application/ld+json">
+        {"@context":"https://schema.org","@type":"WebSite","url":"https://help.streetlib.com","potentialAction":{"@type":"SearchAction","target":"https://help.streetlib.com/search?query={query}","query-input":"required name=query"}}
+        </script>
+    
+        <script type="application/ld+json">
+        {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"StreetLib Help Center","item":"https://help.streetlib.com"},{"@type":"ListItem","position":2,"name":"Manage Your Account and Royalties","item":"https://help.streetlib.com/collection/69-manage-your-account-and-royalties"},{"@type":"ListItem","position":3,"name":"Create and manage your StreetLib account","item":"https://help.streetlib.com/category/72-create-and-manage-your-streetlib-account"}]}
+        </script>
+    
+    
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<script>
+    
+
+// StreetLib JS
+
+document.addEventListener("DOMContentLoaded", function (event) {
+
+    // Helpers
+    var setAttr = function (el, name, value) { if (el) el.setAttribute(name, value); };
+    var showEl = function (el) { if (el) el.style.display = ''; };
+    var hideEl = function (el) { if (el) el.style.display = 'none'; };
+    var removeAll = function (nodeList) { (nodeList || []).forEach(function (n) { if (n && n.parentNode) n.parentNode.removeChild(n); }); };
+    var insertAfter = function (ref, node) {
+        if (!ref || !ref.parentNode || !node) return;
+        if (ref.nextSibling) ref.parentNode.insertBefore(node, ref.nextSibling);
+        else ref.parentNode.appendChild(node);
+    };
+    var elementsHavingChild = function (selector, childSelector, root) {
+        var r = root || document;
+        return Array.prototype.slice.call(r.querySelectorAll(selector)).filter(function (el) {
+            return !!el.querySelector(childSelector);
+        });
+    };
+
+    // General
+    var page = document.querySelector('html');
+    var pathname = (window.location && window.location.pathname) ? window.location.pathname : '';
+    var protocol = (window.location && window.location.protocol) ? window.location.protocol : '';
+    var search = (window.location && window.location.search) ? window.location.search : '';
+
+    // Language priority: ?lang= query string > localStorage > browser default
+    var langMap = { en: 'en-EN', it: 'it-IT', de: 'de-DE' };
+    var qsLang = (function () {
+        var m = search.match(/(?:\?|&)lang=(en|it|de)(?:&|$)/);
+        return m ? langMap[m[1]] : null;
+    })();
+
+    var lastLang = localStorage.getItem("lastLang");
+    var userLang = navigator.language || navigator.userLanguage;
+    if (qsLang) {
+        userLang = qsLang;
+        localStorage.setItem("lastLang", qsLang);
+    } else if (lastLang !== 'undefined' &&
+        lastLang !== null &&
+        lastLang !== '[object Object]') {
+        userLang = lastLang;
+    }
+    // Normalize to supported languages (IT / EN / DE)
+    if (userLang === 'it' || userLang === 'it-IT') {
+        userLang = 'it-IT';
+    } else if (userLang === 'de' || userLang === 'de-DE') {
+        userLang = 'de-DE';
+    } else {
+        userLang = 'en-EN';
+    }
+
+    var header = document.getElementById('mainNav');
+    header = header.querySelector('.container-fluid');
+    var nav = header.querySelector('.nav');
+    var navItems = nav.querySelectorAll('li');
+    var hero = document.getElementById("docsSearch");
+    var footer = document.querySelector('footer');
+    var contentArea = document.getElementById('contentArea');
+    var fullArticle = document.getElementById('fullArticle');
+    var categoryHead = document.getElementById('categoryHead');
+    var serp = document.getElementById('serp');
+
+    // view=modern enables v2
+    var hasViewModern = (function () {
+        try {
+            return /(?:\?|&)view=modern(?:&|$)/.test(search);
+        } catch (e) {
+            return false;
+        }
+    })();
+    page.setAttribute('lang', userLang);
+
+
+    // v2 theme enablement: .sl-v2 on <html> only. ?slv2=1 or ?view=modern.
+    // Prototype logic scoped to category 1540-esplora-le-categorie.
+    var hasQueryFlag = (function () {
+        try {
+            return /(?:\?|&)slv2=1(?:&|$)/.test(search);
+        } catch (e) {
+            return false;
+        }
+    })();
+    var v2Enabled = hasQueryFlag || hasViewModern;
+
+    if (v2Enabled) {
+        document.documentElement.classList.add('sl-v2');
+    } else {
+        document.documentElement.classList.remove('sl-v2');
+    }
+
+    var setV2PageTypeClass = function () {
+        if (!v2Enabled) return;
+        // Clear previous markers (in case Help Scout swaps content without full reload)
+        page.classList.remove('sl-v2-page-home', 'sl-v2-page-category', 'sl-v2-page-article', 'sl-v2-page-search', 'sl-v2-page-collection');
+
+        if (fullArticle) {
+            page.classList.add('sl-v2-page-article');
+            return;
+        }
+        if (categoryHead) {
+            page.classList.add('sl-v2-page-category');
+            return;
+        }
+        if (serp) {
+            page.classList.add('sl-v2-page-search');
+            return;
+        }
+        if (hero) {
+            page.classList.add('sl-v2-page-home');
+            return;
+        }
+        // Collection page: has contentWrapper + articleList but no other markers
+        var cw = document.querySelector('.contentWrapper');
+        if (cw && cw.querySelector('.articleList')) {
+            page.classList.add('sl-v2-page-collection');
+        }
+    };
+
+    setV2PageTypeClass();
+
+
+    // Collections
+    //
+    // IMPORTANT:
+    // - Without `?slv2=1`: keep the current multi-collection structure per language (legacy).
+    // - With `?slv2=1`: show ONLY the test collection (v2 draft/test), hide all others.
+    //
+    // Current mapping (DO NOT overwrite).
+    var collectionSections = page.querySelectorAll('.collection-category');
+    var collectionCodes = ['en', 'it', 'fr', 'es', 'de'];
+
+    var collectionsCurrent = {
+        en: { code: 'en', items: ['5', '583', '590', '69', '65', '597', '641'] },
+        it: { code: 'it', items: ['551', '554', '557', '73', '79', '60', '636', '709'] },
+        fr: { code: 'fr', items: ['13', '17', '23', '28'] },
+        es: { code: 'es', items: ['40', '44', '48', '52', '36'] },
+        de: { code: 'de', items: ['1175', '968', '1012', '1110', '1466', '1492'] },
+    };
+
+    // NEW UI (TEMP): v2 test collection (visible only with ?slv2=1 or beta).
+    // Prototype logic is strictly scoped to category ID 1540-esplora-le-categorie.
+    var collectionsTestV2 = {
+        any: { code: 'any', items: ['1540'] },
+    };
+
+
+
+    // Right side buttons
+    var rightSideButtons = document.createElement('div');
+    if (v2Enabled) {
+        rightSideButtons.setAttribute('class', 'right-side-buttons');
+        header.appendChild(rightSideButtons);
+    }
+    // Help Center button
+
+    var hcBtn = document.createElement('button');
+    hcBtn.setAttribute('type', 'button');
+    hcBtn.setAttribute('class', 'hc-btn');
+    hcBtn.setAttribute('aria-label', 'Help Center');
+    hcBtn.textContent = 'Help Center';
+    if (v2Enabled) {
+        rightSideButtons.appendChild(hcBtn);
+    }
+
+    // Language switcher
+
+    var langSwitcher = document.createElement('div');
+    langSwitcher.setAttribute('class', 'language-switcher');
+    if (v2Enabled) {
+        rightSideButtons.appendChild(langSwitcher);
+    } else {
+        header.appendChild(langSwitcher);
+    }
+
+    var toggleLangBtn = document.createElement('button');
+    toggleLangBtn.setAttribute('type', 'button');
+    toggleLangBtn.setAttribute('class', 'dropdown-toggle');
+    toggleLangBtn.setAttribute('aria-haspopup', 'listbox');
+    toggleLangBtn.setAttribute('aria-expanded', 'false');
+    langSwitcher.appendChild(toggleLangBtn);
+
+    var dropdownMenu = document.createElement('div');
+    dropdownMenu.setAttribute('class', 'dropdown-menu lang-menu');
+    dropdownMenu.setAttribute('role', 'listbox');
+    dropdownMenu.setAttribute('aria-label', 'Select language');
+    langSwitcher.appendChild(dropdownMenu);
+
+    var dropdownMenuItems = [
+        { label: 'World (English)', code: 'en-EN' },
+        { label: 'Italiano', code: 'it-IT' },
+        { label: 'Deutsch', code: 'de-DE' },
+    ];
+
+
+
+    // Hero content
+
+    var heroTitle = {
+        en: {
+            text: 'How can we help?'
+        },
+        it: {
+            text: 'Come possiamo aiutarti?'
+        },
+        de: {
+            text: 'Wie können wir dir helfen?'
+        }
+    };
+
+    // Home (prototype-like) section header
+    var homeSectionTitle = {
+        en: { text: 'Explore categories' },
+        it: { text: 'Esplora le Categorie' },
+        de: { text: 'Kategorien entdecken' },
+    };
+
+    var communityTitle = {
+        en: {
+            text: "If you don't find what you're looking for or want to have a direct line to customer care, join our "
+        },
+        it: {
+            text: 'Se non trovi quello che stai cercando o vuoi avere un filo diretto con il customer care entra nella nostra '
+        },
+        de: {
+            text: 'Wenn du nicht findest, was du suchst, oder einen direkten Draht zum Kundenservice haben möchtest, tritt unserer '
+        }
+    };
+
+    var communityLink = {
+        en: {
+            text: "https://community.streetlib.com/join?invitation_token=85e63cefb5b4bee6a5189b583c71373edce210ed-71fab808-f308-48c5-bb14-9015c304fe99"
+        },
+        it: {
+            text: 'https://community.streetlib.it/join?invitation_token=57bf25bd62c271c740591843784a66998c8ed080-f98ad093-f307-401f-b577-adc5643e6e30'
+        },
+        de: {
+            text: 'https://community.streetlib.com/join?invitation_token=85e63cefb5b4bee6a5189b583c71373edce210ed-71fab808-f308-48c5-bb14-9015c304fe99' // TODO: Update with DE community link when available
+        }
+    };
+
+
+
+    // Unified i18n translations (IT + DE merged; `name` = English default)
+    // NOTE: Avoid :has() selector for 'Most Popular Articles' (not supported in many embedded browsers).
+    // We translate by scanning `.contentWrapper` containers that contain `.articleList`.
+    var i18nContents = [
+        { name: 'Search', el: '#docsSearch #searchBar button[type="submit"] span', it: 'Cerca', de: 'Suchen' },
+        { name: 'Search the knowledge base', el: '#searchBar input[type="text"]', it: 'Cerca nella knowledge base', de: 'Durchsuche den Hilfebereich', type: 'placeholder' },
+        { name: 'articles', el: '.category-list .article-count', it: ' articoli', de: ' Artikel', contents: 'has span', idx: '2' },
+        { name: 'Categories', el: '#sidebar > h3', it: 'Categorie', de: 'Kategorien' },
+        { name: 'Most Popular Articles', el: '.contentWrapper > h1', it: 'Articoli più popolari', de: 'Beliebteste Artikel' },
+        { name: 'Print this article', el: '#fullArticle .printArticle', it: 'Stampa questo articolo', de: 'Artikel drucken', type: 'title' },
+        { name: 'Still need help? ', el: '.articleFoot .help', it: 'Hai ancora bisogno di aiuto? ', de: 'Du brauchst weitere Hilfe? ', contents: 'has span', idx: '0' },
+        { name: 'Contact us', el: '.articleFoot .help a', it: 'Contattaci', de: 'Kontakt' },
+        { name: 'Contact', el: '#mainNav .contactUs', it: 'Contatti', de: 'Kontakt' },
+        {
+            name: 'Last updated on ', el: '.articleFoot time.lu',
+            it: 'Ultimo aggiornamento il ', de: 'Aktualisiert am ',
+            contents: 'has months',
+            months: {
+                en: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+                it: ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'],
+                de: ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember']
+            }
+        },
+        { name: 'Sort by default', el: '#sortBy option:first-child', it: 'Ordina per', de: 'Standardsortierung' },
+        { name: 'Sort A-Z', el: '#sortBy option[value="name"]', it: 'Ordina dalla A alla Z', de: 'Sortieren A-Z' },
+        { name: 'Sort by Popularity', el: '#sortBy option[value="popularity"]', it: 'Ordina per Popolarità', de: 'Sortieren nach Beliebtheit' },
+        { name: 'Sort by Last Updated', el: '#sortBy option[value="updatedAt"]', it: 'Ordina per Ultimo aggiornamento', de: 'Sortieren nach letztem Update' },
+        { name: 'Contact Us', el: '#contactModal > h2', it: 'Contattaci', de: 'Kontaktiere unseren Support' },
+        { name: 'Name', el: '#contactModal label[for="md-name"]', it: 'Nome', de: 'Name' },
+        { name: '(optional)', el: '#contactModal input#md-name', it: '(opzionale)', de: '(optional)', type: 'placeholder' },
+        { name: 'Subject', el: '#contactModal label[for="md-subject"]', it: 'Soggetto', de: 'Betreff' },
+        { name: 'Message', el: '#contactModal label[for="md-message"]', it: 'Messaggio', de: 'Nachricht' },
+        { name: 'Upload file', el: '#contactModal label[for="file-upload"]', it: 'Carica file', de: 'Datei hochladen' },
+        { name: 'Send', el: '#contactModal input[type="submit"]', it: 'Invia', de: 'Senden', type: 'value' },
+        { name: 'Email is required', el: '#contactModal [for="md-email"] + .controls .parsley-required', it: "L'email è necessaria", de: 'E-Mail ist erforderlich' },
+        { name: 'Subject is required', el: '#contactModal [for="md-subject"] + .controls .parsley-required', it: 'Il soggetto è necessario', de: 'Betreff ist erforderlich' },
+        { name: 'Message is required', el: '#contactModal [for="md-message"] + .controls .parsley-required', it: 'Il meggaggio è necessario', de: 'Nachricht ist erforderlich' },
+        { name: 'Message Sent. Thanks for contacting us!', el: '.appMessage.success', it: 'Messaggio inviato. Grazie per averci contattato!', de: 'Nachricht gesendet. Danke für dein Feedback!' },
+        { name: 'Search results for ', el: '#serp > h1', it: 'Risultati per ', de: 'Suchergebnisse für ', contents: 'has span', idx: '0' },
+        { name: ' articles found', el: '#serp .articlesFound', it: ' articoli trovati', de: ' Artikel gefunden', contents: 'has span', idx: '1' },
+        { name: 'No articles were found. Care to try again?', el: '#serp .nada', it: 'Nessun articolo trovato. Ti va di riprovare?', de: 'Keine Artikel gefunden - erneut versuchen?' },
+        { name: 'Help Center', el: '.hc-btn', it: 'Centro di Assistenza', de: 'Hilfe-Center' }
+    ];
+
+    var usersIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="lucide lucide-users"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><path d="M16 3.128a4 4 0 0 1 0 7.744"></path><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><circle cx="9" cy="7" r="4"></circle></svg>';
+
+    var messageIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="lucide lucide-message-circle"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"></path></svg>';
+
+    var mailIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="lucide lucide-mail"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>';
+
+
+
+    // Footer contents
+
+    var footerMenuItems = {
+        en: [
+            {
+                id: 'navigation',
+                title: 'StreetLib',
+                menu: [
+                    {
+                        label: 'About Us',
+                        link: 'https://www.streetlib.com/company/about'
+                    },
+                    {
+                        label: 'Distribution Partners',
+                        link: 'https://www.streetlib.com/distribution-partners'
+                    },
+                    {
+                        label: 'Pricing',
+                        link: 'https://www.streetlib.com/pricing'
+                    },
+                    {
+                        label: 'Lifetime Pro Plan',
+                        link: 'https://www.streetlib.com/pro-plan-lifetime'
+                    },
+                    {
+                        label: 'Contact Us',
+                        link: 'https://www.streetlib.com/company/contact'
+                    }
+                ]
+            },
+            {
+                id: 'services',
+                title: 'Services',
+                menu: [
+                    {
+                        label: 'Totem',
+                        link: 'https://totembooks.io',
+                        targetBlank: true
+                    },
+                    {
+                        label: 'Write',
+                        link: 'https://writeapp.io',
+                        targetBlank: true
+                    }
+                ]
+            },
+            {
+                id: 'resources',
+                title: 'Resources',
+                menu: [
+                    {
+                        label: 'Blog',
+                        link: 'https://blog.streetlib.com',
+                        targetBlank: true
+                    },
+                    {
+                        label: 'TNPS',
+                        link: 'https://thenewpublishingstandard.com',
+                        targetBlank: true
+                    },
+                    {
+                        label: 'Accessible Ebooks',
+                        link: 'https://www.streetlib.com/accessible-ebooks'
+                    }
+                ]
+            },
+            {
+                id: 'support',
+                title: 'Support',
+                menu: [
+                    {
+                        label: 'Help',
+                        link: 'https://help.streetlib.com/',
+                        targetBlank: true
+                    },
+                    {
+                        label: 'Legal Policy',
+                        link: 'https://www.streetlib.com/legalpolicy'
+                    }
+                ]
+            },
+        ],
+        it: [
+            {
+                id: 'navigation',
+                title: 'StreetLib',
+                menu: [
+                    {
+                        label: 'Chi Siamo',
+                        link: 'https://www.streetlib.it/chi-siamo',
+                    },
+                    {
+                        label: 'Distribuzione',
+                        link: 'https://www.streetlib.it/distribuzione-libri-ebook-audiobook',
+                    },
+                    {
+                        label: 'Prezzi',
+                        link: 'https://www.streetlib.it/prezzi-servizi',
+                    },
+                    {
+                        label: 'Contatti',
+                        link: 'https://www.streetlib.it/contatti',
+                    }
+                ]
+            },
+            {
+                id: 'services',
+                title: 'Servizi',
+                menu: [
+                    {
+                        label: 'Ready',
+                        link: 'https://ready.streetlib.com',
+                    },
+                    {
+                        label: 'Totem',
+                        link: 'https://totembooks.io',
+                    },
+                    {
+                        label: 'Write',
+                        link: 'https://writeapp.io',
+                    }
+                ]
+            },
+            {
+                id: 'resources',
+                title: 'Risorse',
+                menu: [
+                    {
+                        label: 'Blog',
+                        link: 'https://blog.streetlib.com/it/',
+                    },
+                    {
+                        label: 'TNPS',
+                        link: 'https://thenewpublishingstandard.com',
+                    },
+                    {
+                        label: 'Calcolatore Print',
+                        link: 'https://www.streetlib.it/calcolatore-stampa-e-royalties',
+                    },
+                    {
+                        label: 'Calcolatore Dorso',
+                        link: 'https://www.streetlib.it/calcolatore-dorso-pod',
+                    },
+                    {
+                        label: 'Ebook Accessibili',
+                        link: 'https://www.streetlib.it/ebook-accessibili',
+                    }
+                ]
+            },
+            {
+                id: 'distribution',
+                title: 'Distribuzione',
+                menu: [
+                    {
+                        label: 'Self Publishing',
+                        link: 'https://www.streetlib.it/self-publishing',
+                    },
+                    {
+                        label: 'Case editrici',
+                        link: 'https://www.streetlib.it/piattaforma-per-editori',
+                    }
+                ]
+            },
+            {
+                id: 'support',
+                title: 'Supporto',
+                menu: [
+                    {
+                        label: 'Community',
+                        link: 'https://community.streetlib.it/join?invitation_token=537dfc0d34f63b909adbd0539a65d42b285dd069-40fee83c-5960-439e-909c-28b03d0f1bb3',
+                    },
+                    {
+                        label: 'Aiuto',
+                        link: 'https://help.streetlib.com/',
+                    },
+                    {
+                        label: 'Legal Policy',
+                        link: 'https://www.streetlib.it/legalpolicy',
+                    }
+                ]
+            },
+        ],
+        de: [
+            {
+                id: 'services',
+                title: 'Services',
+                menu: [
+                    {
+                        label: 'Ebooks',
+                        link: 'https://www.streetlib.de/',
+                    },
+                    {
+                        label: 'Hörbücher',
+                        link: 'https://www.streetlib.de/',
+                    }
+                ]
+            },
+            {
+                id: 'company',
+                title: 'Unternehmen',
+                menu: [
+                    {
+                        label: 'Kontakt',
+                        link: 'https://www.streetlib.de/kontakt',
+                    },
+                    {
+                        label: 'Datenschutzerklärung',
+                        link: 'https://www.streetlib.de/datenschutzerklarung',
+                    },
+                    {
+                        label: 'Hilfe',
+                        link: 'https://help.streetlib.com/',
+                    }
+                ]
+            },
+        ]
+    };
+
+    var footerContents = {
+        en: {
+            text: 'This website is a property of StreetLib S.r.l. VAT number 05338720963. StreetLib S.r.l. owns all intellectual property rights for brands, logos and distinctive signs existing on the website. We kindly ask the user to read our <a href="https://www.streetlib.com/legalpolicy#privacy-policy" style="text-decoration: underline;" target="_blank">privacy policy</a> and conditions for the services offered by StreetLib.'
+        },
+        it: {
+            text: 'Il presente sito web è di proprietà di StreetLib S.r.l. C.F. e P.IVA 05338720963. StreetLib S.r.l. è titolare di tutti i diritti di proprietà intellettuale afferenti ai marchi, loghi e segni distintivi presenti sul sito web. Si invita l\'utente a prendere visione della <a href="https://www.streetlib.com/it/legalpolicy#privacy-policy" style="text-decoration: underline;" target="_blank">privacy policy</a> e delle condizioni relative ai singoli servizi offerti da StreetLib.'
+        },
+        de: {
+            text: 'Der StreetLib-Vertriebsservice wird im deutschsprachigen Raum angeboten von BookRix, Deutschland. BookRix und seine Muttergesellschaft StreetLib S.r.l. besitzen alle geistigen Eigentumsrechte für Marken, Logos und Unterscheidungszeichen, die auf den Websites der Domains streetlib.de und streetlib.com vorhanden sind. Wir bitten die Benutzer:innen, unsere <a href="https://www.streetlib.com/legalpolicy/#privacy-policy" style="text-decoration: underline;" target="_blank">Datenschutzbestimmungen</a> und die Bedingungen für die von StreetLib angebotenen Dienstleistungen zu lesen. Kontakt: <a href="mailto:support@streetlib.de" style="text-decoration: underline;">support@streetlib.de</a>'
+        }
+    };
+
+
+
+    // Translate site contents
+
+    var updateContents = function (lang, container, texts, type) {
+
+        if (texts[lang]) {
+            var el = document.querySelector(container);
+            var text = texts[lang].text;
+            if (!el) return;
+            if (type === 'link') {
+                setAttr(el, 'href', text);
+            } else {
+                el.textContent = text;
+            }
+        }
+
+    }
+
+    var translateContents = function (lang) {
+        var isNonEnglish = (lang === 'it' || lang === 'de');
+
+        var getArticleLabel = function (l, count) {
+            if (l === 'it') return count === 1 ? 'articolo' : 'articoli';
+            if (l === 'de') return 'Artikel';
+            return count === 1 ? 'article' : 'articles';
+        };
+
+        // Precompute: "Most Popular Articles" header(s) are not reliably targetable without :has().
+        var mostPopularHeaders = [];
+        var wrappers = document.querySelectorAll('.contentWrapper');
+        wrappers.forEach(function (w) {
+            if (w.querySelector('.articleList')) {
+                var h1 = w.querySelector(':scope > h1');
+                if (h1) mostPopularHeaders.push(h1);
+            }
+        });
+
+        i18nContents.forEach(function (item) {
+            var elements = (item.name === 'Most Popular Articles') ? mostPopularHeaders : document.querySelectorAll(item.el);
+            var text = isNonEnglish ? item[lang] : item.name;
+            var i = item.idx;
+
+            elements.forEach(function (el) {
+                if (item.type) {
+                    el.setAttribute(item.type, text);
+                    return;
+                }
+                if (item.contents === 'has span') {
+                    if (item.name === 'articles') {
+                        var countNode = el.querySelector('span.notranslate');
+                        var count = countNode ? parseInt((countNode.textContent || '').trim(), 10) : NaN;
+                        if (!Number.isNaN(count)) {
+                            el.childNodes[i].textContent = ' ' + getArticleLabel(lang, count);
+                        }
+                    } else if (isNonEnglish) {
+                        localStorage.setItem(item.name, el.childNodes[i].textContent);
+                        el.childNodes[i].textContent = item[lang];
+                    } else {
+                        var prev = (el.childNodes[i].textContent || '').replace(/\s/g, '');
+                        if (prev === 'articolo' || prev === 'article' || prev === 'Artikel') {
+                            el.childNodes[i].textContent = 'article';
+                        } else {
+                            var stored = localStorage.getItem(item.name);
+                            if (stored !== null) el.childNodes[i].textContent = stored;
+                        }
+                    }
+                } else if (item.name === 'Last updated on ' && isNonEnglish) {
+                    localStorage.setItem('enLastUpdate', el.innerText);
+                    text = el.innerText.replace(item.name, item[lang]);
+                    if (item.months) {
+                        var parts = el.innerText.split(' ');
+                        var day = parts[4].replace(',', '');
+                        item.months.en.forEach(function (month, idx) {
+                            if (parts[3] === month) {
+                                text = text.replace(parts[4], ' ').replace(month, day + ' ' + item.months[lang][idx]);
+                            }
+                        });
+                    }
+                    el.innerText = text;
+                } else {
+                    el.innerText = text;
+                }
+            });
+        });
+    };
+
+
+
+    // Manage languages and related elements
+
+    var languagesByCode = {};
+
+    for (i = 0; i < dropdownMenuItems.length; i++) {
+        var lang = dropdownMenuItems[i];
+        var btn = document.createElement('button');
+        btn.setAttribute('type', 'button');
+        var code = lang.code;
+        var codeShort = code.split('-')[0];
+        btn.setAttribute('class', 'lang-btn lang-' + codeShort);
+        btn.setAttribute('data-lang', code);
+        btn.setAttribute('role', 'option');
+        if (userLang === code || userLang === codeShort) {
+            btn.classList.toggle('toggled');
+            btn.setAttribute('aria-selected', 'true');
+        } else {
+            btn.setAttribute('aria-selected', 'false');
+        }
+        btn.textContent = lang.label;
+        btn.onclick = function () {
+            dropdownMenu.querySelectorAll('.lang-btn').forEach(b => {
+                b.classList.remove('toggled');
+                b.setAttribute('aria-selected', 'false');
+            });
+            this.classList.add('toggled');
+            this.setAttribute('aria-selected', 'true');
+            dropdownMenu.classList.remove('toggled');
+            toggleLangBtn.setAttribute('aria-expanded', 'false');
+            var langCode = this.getAttribute('data-lang');
+            page.setAttribute('lang', langCode);
+            localStorage.setItem("lastLang", langCode);
+            codeShort = langCode.split('-')[0];
+            toggleLangBtn.textContent = codeShort.toUpperCase();
+
+            if (collectionSections.length > 0) {
+                showCollections(codeShort);
+                createCategoriesList();
+            }
+
+            if (navItems.length > 0) updateNavMenu(codeShort);
+
+            if (hero) {
+                updateContents(codeShort, '#docsSearch h1', heroTitle);
+                updateContents(codeShort, '.sl-community-section h2 > span', communityTitle);
+                updateContents(codeShort, '.sl-community-section a', communityLink, 'link');
+            }
+
+            // Show community section only for Italian
+            if (codeShort === 'it') {
+                showEl(document.querySelector('.sl-community-section'));
+            } else {
+                hideEl(document.querySelector('.sl-community-section'));
+            }
+
+            updateFooterContents(codeShort);
+            translateContents(codeShort);
+            renderPreFooter(codeShort);
+        };
+
+        languagesByCode[code] = lang;
+        dropdownMenu.appendChild(btn);
+    }
+
+    var currentLanguage = languagesByCode[userLang];
+    localStorage.setItem("lastLang", currentLanguage.code);
+    var currentLanguageCode = userLang.split('-')[0];
+    if (currentLanguage) {
+        toggleLangBtn.textContent = currentLanguageCode.toUpperCase();
+    }
+
+    toggleLangBtn.addEventListener('click', event => {
+        event.stopPropagation();
+        var isExpanded = dropdownMenu.classList.toggle('toggled');
+        toggleLangBtn.setAttribute('aria-expanded', isExpanded);
+    });
+
+    // Close dropdowns when clicking outside
+    var navCollapse = document.querySelector('.nav-collapse');
+    var navToggleBtn = document.querySelector('.btn-navbar');
+
+    document.addEventListener('click', event => {
+        // Close language switcher dropdown
+        if (!langSwitcher.contains(event.target)) {
+            dropdownMenu.classList.remove('toggled');
+            toggleLangBtn.setAttribute('aria-expanded', 'false');
+        }
+        // Close navigation menu (hamburger)
+        if (navCollapse && navToggleBtn && !navCollapse.contains(event.target) && !navToggleBtn.contains(event.target)) {
+            navCollapse.classList.remove('in');
+            navCollapse.style.height = '0';
+        }
+    });
+
+    // Close dropdowns when pressing Escape key
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            dropdownMenu.classList.remove('toggled');
+            toggleLangBtn.setAttribute('aria-expanded', 'false');
+            if (navCollapse) {
+                navCollapse.classList.remove('in');
+                navCollapse.style.height = '0';
+            }
+        }
+    });
+
+    if (hero) {
+        updateContents(currentLanguageCode, '#docsSearch h1', heroTitle);
+    };
+
+    translateContents(currentLanguageCode);
+
+
+
+    // Show and hide collections according to the chosen language
+
+    var showCollections = function (lang) {
+        hideCollections();
+
+        // Choose which mapping to use based on v2Enabled
+        var itemsToShow = [];
+        if (v2Enabled) {
+            itemsToShow = (collectionsTestV2.any && collectionsTestV2.any.items) ? collectionsTestV2.any.items : [];
+        } else {
+            // fallback to EN if language not mapped
+            var langKey = (collectionsCurrent[lang] ? lang : 'en');
+            itemsToShow = (collectionsCurrent[langKey] && collectionsCurrent[langKey].items) ? collectionsCurrent[langKey].items : [];
+        }
+
+        itemsToShow.forEach((item) => {
+            var collectionID = '#collection-category-' + item;
+            var collection = document.querySelector(collectionID);
+            if (collection) {
+                collection.style.display = "block";
+                collection.classList.add('visible');
+            }
+        });
+    };
+
+    var hideCollections = function () {
+
+        collectionSections.forEach(collectionSection => {
+            if (collectionSection) {
+                collectionSection.style.display = "none";
+                collectionSection.classList.remove('visible');
+            }
+        });
+
+    };
+
+    if (collectionSections.length > 0) {
+
+        hideCollections();
+        showCollections(currentLanguageCode);
+
+    }
+
+    var updateNavMenu = function (lang) {
+
+        navItems.forEach(item => {
+            var itemID = item.getAttribute('id');
+            if (itemID === "contact" || itemID === "contactMobile") return;
+            else {
+                item.style.display = "none";
+            }
+            var itemLink = item.querySelector('a').getAttribute('href');
+            var splitText = '-' + itemID;
+            var shortLink = itemLink.split(splitText)[0];
+            shortLink = shortLink.split('/');
+            shortLink = shortLink[shortLink.length - 1];
+            if (shortLink === '') return;
+            else {
+                var itemsToShow = [];
+                if (v2Enabled) {
+                    itemsToShow = (collectionsTestV2.any && collectionsTestV2.any.items) ? collectionsTestV2.any.items : [];
+                } else {
+                    var langKey = (collectionsCurrent[lang] ? lang : 'en');
+                    itemsToShow = (collectionsCurrent[langKey] && collectionsCurrent[langKey].items) ? collectionsCurrent[langKey].items : [];
+                }
+                itemsToShow.forEach((i) => {
+                    if (shortLink == i) item.style.display = "block";
+                });
+            }
+        });
+
+    };
+
+    if (navItems.length > 0) {
+        updateNavMenu(currentLanguageCode);
+    }
+
+
+
+    // Add and update categories list inside hero section
+
+    var createCategoriesList = function () {
+        // Two modes:
+        // - default (no ?slv2=1): show a short categories list under the search bar
+        // - NEW UI (TEMP) (?slv2=1): show "Argomenti popolari" with 3 links (prototype)
+        if (v2Enabled) {
+            buildPopularTopics();
+            applyV2HomeUI();
+            return;
+        }
+
+        // Default mode: Populate quick-links list under the search bar with CATEGORY links.
+        var categories = [];
+        var categoriesSelector = '';
+        if (v2Enabled) {
+            categoriesSelector = '.collection-category.visible .category-list > a.category';
+        } else {
+            categoriesSelector = '.collection-category.visible > h2 > a';
+        }
+        categories = document.querySelectorAll(categoriesSelector);
+        var categoriesListChildren = categoriesList.children;
+        var categoriesListLength = categoriesListChildren.length;
+
+        if (categoriesListChildren.length > 0) {
+            for (i = 0; i < categoriesListLength; i++) {
+                var item = categoriesListChildren[0];
+                item.remove();
+            }
+        }
+
+        for (i = 0; i < categories.length; i++) {
+            // keep the list short (UX)
+            if (v2Enabled) {
+                if (i >= 3) break;
+            } else {
+                if (i >= 8) break;
+            }
+            var li = document.createElement('li');
+            var a = document.createElement('a');
+            a.setAttribute('href', categories[i].getAttribute('href'));
+            var titleNode = categories[i].querySelector('h3');
+            a.textContent = titleNode ? titleNode.textContent : categories[i].textContent;
+            li.appendChild(a);
+
+            categoriesList.appendChild(li);
+        }
+
+        applyV2HomeUI();
+    };
+
+    // NEW UI (TEMP): build the "popular topics" row like the prototype (3 links)
+    var buildPopularTopics = function () {
+        if (!hero) return;
+
+        // Remove legacy list (if present)
+        var oldList = document.getElementById('sl-hc-categories');
+        if (oldList && oldList.parentNode) oldList.parentNode.removeChild(oldList);
+
+        // Remove previous v2 blocks (if present)
+        var oldPopular = hero.querySelector('.sl-v2-popular-topics');
+        if (oldPopular) oldPopular.remove();
+        var oldCta = hero.querySelector('.sl-v2-community-cta');
+        if (oldCta) oldCta.remove();
+
+        var lang = (page.getAttribute('lang') || 'en-EN').split('-')[0];
+        if (lang !== 'it' && lang !== 'de') lang = 'en';
+
+        // Collect categories from the visible collection
+        var visibleCollection = document.querySelector('.collection-category.visible');
+        if (!visibleCollection) return;
+        var cats = Array.prototype.slice.call(visibleCollection.querySelectorAll('.category-list > a.category'));
+        if (!cats || cats.length === 0) return;
+
+        // Sort by article count (desc) when available
+        var parseCount = function (cat) {
+            var n = cat.querySelector('span.notranslate');
+            if (!n) return -1;
+            var v = parseInt((n.textContent || '').trim(), 10);
+            return Number.isNaN(v) ? -1 : v;
+        };
+        cats.sort(function (a, b) { return parseCount(b) - parseCount(a); });
+
+        // Pick first 3
+        var top = cats.slice(0, 3);
+
+        // Label helper: keep it short, like prototype (lowercase keywords)
+        var toLabel = function (title) {
+            var t = (title || '').toLowerCase().trim();
+            // take first "word" token
+            var token = t.split(/[\s\-–—,:;.!?()]+/).filter(Boolean)[0] || t;
+            return token;
+        };
+
+        var popularWrap = document.createElement('div');
+        popularWrap.className = 'sl-v2-popular-topics';
+        var labelText = (lang === 'it') ? 'Argomenti popolari:' : (lang === 'de' ? 'Beliebte Themen:' : 'Popular topics:');
+        var label = document.createElement('span');
+        label.textContent = labelText;
+        popularWrap.appendChild(label);
+
+        top.forEach(function (cat) {
+            var a = document.createElement('a');
+            a.setAttribute('href', cat.getAttribute('href'));
+            var titleNode = cat.querySelector('h3');
+            var titleText = titleNode ? titleNode.textContent : (cat.textContent || '');
+            a.textContent = toLabel(titleText);
+            popularWrap.appendChild(a);
+        });
+
+        // Insert after searchBar form
+        var form = document.getElementById('searchBar');
+        if (form && form.parentNode) {
+            form.parentNode.insertBefore(popularWrap, form.nextSibling);
+        } else {
+            hero.appendChild(popularWrap);
+        }
+
+        // Community CTA (only IT)
+        if (lang === 'it') {
+            var cta = document.createElement('p');
+            cta.className = 'sl-v2-community-cta';
+            // reuse existing text/link values
+            cta.innerHTML =
+                (communityTitle.it ? communityTitle.it.text : '') +
+                '<a href="' + (communityLink.it ? communityLink.it.text : '#') + '" target="_blank" rel="noopener noreferrer">Community</a>';
+            if (popularWrap.parentNode) popularWrap.parentNode.insertBefore(cta, popularWrap.nextSibling);
+        }
+
+        // NEW UI (TEMP): match prototype placeholder on home
+        var input = document.querySelector('#searchBar input[type=\"text\"]');
+        if (input) {
+            var ph = (lang === 'it') ? 'Fai una domanda...' : (lang === 'de' ? 'Stelle eine Frage…' : 'Ask a question...');
+            input.setAttribute('placeholder', ph);
+        }
+    };
+
+    // Enhance the Help Scout home page to match the prototype (without editing base HTML)
+    var applyV2HomeUI = function () {
+        if (!v2Enabled) {
+            page.classList.remove('sl-v2-home');
+            return;
+        }
+        // The home skin is still home-specific, but the prototype style is global (`sl-v2`).
+        // We consider "home" when the page-type marker says so.
+        var isHome = page.classList.contains('sl-v2-page-home');
+        if (!isHome) {
+            page.classList.remove('sl-v2-home'); // legacy marker kept for backwards compatibility
+            return;
+        }
+        page.classList.add('sl-v2-home'); // legacy marker (CSS now uses sl-v2-page-home)
+
+        // Ensure section header exists (inserted at top of content area)
+        var existingHeader = document.querySelector('.sl-v2-section-header');
+        if (!existingHeader) {
+            var headerWrap = document.createElement('div');
+            headerWrap.className = 'sl-v2-section-header';
+            headerWrap.innerHTML = '<h2></h2>';
+            if (contentArea && contentArea.firstChild) contentArea.insertBefore(headerWrap, contentArea.firstChild);
+            else if (contentArea) contentArea.appendChild(headerWrap);
+            existingHeader = headerWrap;
+        }
+
+        // Set header text by language
+        var lang = (page.getAttribute('lang') || 'en-EN').split('-')[0];
+        if (lang !== 'it' && lang !== 'de') lang = 'en';
+        var h2 = existingHeader.querySelector('h2');
+        if (h2 && homeSectionTitle[lang]) h2.textContent = homeSectionTitle[lang].text;
+
+        // Turn the visible categories into cards (SVG inline icons)
+        var visibleCollection = document.querySelector('.collection-category.visible');
+        if (!visibleCollection) return;
+        var cats = visibleCollection.querySelectorAll('.category-list > a.category');
+        if ('IntersectionObserver' in window) {
+            const observerOptions = {
+              threshold: 0.1,
+              rootMargin: '0px 0px -50px 0px',
+            };
+            const observer = new IntersectionObserver((entries) => {
+              entries.forEach((entry, index) => {
+                if (!entry.isIntersecting) return;
+                // Staggered reveal
+                setTimeout(() => entry.target.classList.add('animate-in-view'), index * 100);
+              });
+            }, observerOptions);
+            cats.forEach((cat) => observer.observe(cat));
+          } else {
+            // Fallback: show immediately
+            cats.forEach((cat) => cat.classList.add('animate-in-view'));
+          }
+        if (!cats || cats.length === 0) return;
+
+        var iconSvgs = [
+            // rocket
+            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="lucide lucide-rocket"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path></svg>',
+            // file-edit
+            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="lucide lucide-file-edit"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"></path></svg>',
+            // book-open
+            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="lucide lucide-book-open"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg>',
+            // trending-up
+            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="lucide lucide-trending-up"><path d="M16 7h6v6"></path><path d="m22 7-8.5 8.5-5-5L2 17"></path></svg>',
+            // credit-card
+            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="lucide lucide-credit-card"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>',
+            // layers
+            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="lucide lucide-layers"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path></svg>',
+        ];
+
+        var arrowSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>';
+
+        // Heuristic icon choice by category title (better than index-based placeholders)
+        var pickIconIdx = function (titleText) {
+            var t = (titleText || '').toLowerCase();
+            if (!t) return -1;
+            if (t.indexOf('iniz') >= 0 || t.indexOf('start') >= 0 || t.indexOf('vor') >= 0) return 0; // rocket
+            if (t.indexOf('cover') >= 0 || t.indexOf('copert') >= 0) return 5; // layers
+            if (t.indexOf('fixed') >= 0 || t.indexOf('layout') >= 0 || t.indexOf('pdf') >= 0) return 1; // file-edit
+            if (t.indexOf('reflow') >= 0 || t.indexOf('epub') >= 0) return 2; // book
+            if (t.indexOf('price') >= 0 || t.indexOf('prezzo') >= 0 || t.indexOf('billing') >= 0 || t.indexOf('fattur') >= 0) return 4; // card
+            if (t.indexOf('sales') >= 0 || t.indexOf('vend') >= 0 || t.indexOf('earn') >= 0 || t.indexOf('guad') >= 0) return 3; // trending
+            return -1;
+        };
+
+        cats.forEach(function (cat, idx) {
+            if (cat.dataset && cat.dataset.slV2 === '1') return;
+            if (cat.dataset) cat.dataset.slV2 = '1';
+            cat.classList.add('sl-v2-category-card');
+
+            // Remove empty paragraph blocks for cleaner layout
+            var emptyP = cat.querySelector('p');
+            if (emptyP && emptyP.textContent.trim() === '') emptyP.remove();
+
+            var title = cat.querySelector('h3');
+            var description = cat.querySelector('h3 + p');
+            var count = cat.querySelector('.article-count');
+
+            // Build new internal structure
+            var icon = document.createElement('div');
+            icon.className = 'sl-v2-card-icon';
+            var titleText = title ? title.textContent : '';
+            var chosen = pickIconIdx(titleText);
+            var iconIdx = chosen >= 0 ? chosen : Math.min(idx, iconSvgs.length - 1);
+            icon.innerHTML = iconSvgs[iconIdx];
+
+            var content = document.createElement('div');
+            content.className = 'sl-v2-card-content';
+            if (title) content.appendChild(title);
+            if (description && v2Enabled) content.appendChild(description);
+            if (count && !v2Enabled) content.appendChild(count);
+
+            var arrow = document.createElement('div');
+            arrow.className = 'sl-v2-card-arrow';
+            arrow.innerHTML = arrowSvg;
+
+            // Clear existing children (we already moved title/count)
+            while (cat.firstChild) cat.removeChild(cat.firstChild);
+            cat.appendChild(icon);
+            cat.appendChild(content);
+            cat.appendChild(arrow);
+        });
+    };
+
+    if (hero) {
+        var lang = userLang.split('-')[0];
+        var container = document.createElement('section');
+        container.setAttribute('class', 'container-fluid');
+        if (!v2Enabled) {
+            hero.appendChild(container);
+            var categoriesList = document.createElement('ul');
+            categoriesList.setAttribute('id', 'sl-hc-categories');
+            container.appendChild(categoriesList);
+
+            var communitySection = document.createElement('section');
+            communitySection.setAttribute('class', 'sl-community-section');
+            var communityHTML =
+                '<div class="container-fluid"><h2><span>' +
+                communityTitle[lang].text +
+                '</span><a href="' +
+                communityLink[lang].text +
+                '" target="_blank"><span>Community</span></a></h2></div>';
+            communitySection.innerHTML = communityHTML;
+
+            // Show community section only for Italian (on initial load too)
+            if (lang !== 'it') {
+                communitySection.style.display = 'none';
+            }
+            insertAfter(hero, communitySection);
+        }
+
+        createCategoriesList();
+
+    }
+
+
+
+    // NEW UI (TEMP): enhance collection page to match v2 prototype layout
+    var applyV2CollectionUI = function () {
+        if (!v2Enabled) return;
+        if (!page.classList.contains('sl-v2-page-collection')) return;
+
+        var lang = (page.getAttribute('lang') || 'en-EN').split('-')[0];
+        if (lang !== 'it' && lang !== 'de') lang = 'en';
+
+        var contentWrapper = document.querySelector('.contentWrapper');
+        if (!contentWrapper) return;
+
+        // 1. Inject breadcrumbs above contentWrapper (if not already present)
+        if (!contentWrapper.parentNode.querySelector('.sl-v2-breadcrumbs')) {
+            var breadcrumbs = document.createElement('div');
+            breadcrumbs.className = 'sl-v2-breadcrumbs';
+
+            var homeLink = document.createElement('a');
+            homeLink.href = '/';
+            homeLink.textContent = 'Home';
+            breadcrumbs.appendChild(homeLink);
+
+            var chevron = document.createElement('span');
+            chevron.className = 'sl-v2-breadcrumb-sep';
+            chevron.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>';
+            breadcrumbs.appendChild(chevron);
+
+            // Get collection title from h1 or page title
+            var h1 = contentWrapper.querySelector('h1');
+            var collectionTitle = document.createElement('span');
+            collectionTitle.className = 'sl-v2-breadcrumb-current';
+            var collectionName = {
+                it: 'Esplora le Categorie',
+                en: 'Explore Categories',
+                de: 'Kategorien entdecken'
+            };
+            collectionTitle.textContent = collectionName[lang] || collectionName.en;
+            breadcrumbs.appendChild(collectionTitle);
+
+            contentWrapper.parentNode.insertBefore(breadcrumbs, contentWrapper);
+        }
+
+        // 2. Style the h1 header: wrap with a header div
+        var h1 = contentWrapper.querySelector('h1');
+        if (h1 && !h1.parentNode.classList.contains('sl-v2-content-header')) {
+            var headerDiv = document.createElement('div');
+            headerDiv.className = 'sl-v2-content-header';
+            h1.parentNode.insertBefore(headerDiv, h1);
+            headerDiv.appendChild(h1);
+        }
+
+    };
+
+    applyV2CollectionUI();
+
+
+
+    // NEW UI (TEMP): enhance category page to match v2 prototype layout
+    var applyV2CategoryUI = function () {
+        if (!v2Enabled) return;
+        if (!page.classList.contains('sl-v2-page-category')) return;
+
+        var lang = (page.getAttribute('lang') || 'en-EN').split('-')[0];
+        if (lang !== 'it' && lang !== 'de') lang = 'en';
+
+        var contentWrapper = document.querySelector('.contentWrapper');
+        if (!contentWrapper) return;
+
+        var categoryHead = document.getElementById('categoryHead');
+
+        // 1. Inject breadcrumbs above contentWrapper (from structured data)
+        if (!contentWrapper.parentNode.querySelector('.sl-v2-breadcrumbs')) {
+            var breadcrumbs = document.createElement('div');
+            breadcrumbs.className = 'sl-v2-breadcrumbs';
+
+            // Parse breadcrumb data from ld+json if available
+            var breadcrumbData = [];
+            var ldScripts = document.querySelectorAll('script[type="application/ld+json"]');
+            ldScripts.forEach(function (s) {
+                try {
+                    var data = JSON.parse(s.textContent);
+                    if (data['@type'] === 'BreadcrumbList' && data.itemListElement) {
+                        breadcrumbData = data.itemListElement;
+                    }
+                } catch (e) {}
+            });
+
+            if (breadcrumbData.length > 0) {
+                breadcrumbData.forEach(function (item, index) {
+                    if (item.name === 'Esplora le Categorie') {
+                        return;
+                    }
+                    if (index > 0) {
+                        var sep = document.createElement('span');
+                        sep.className = 'sl-v2-breadcrumb-sep';
+                        sep.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>';
+                        breadcrumbs.appendChild(sep);
+                    }
+
+                    var isLast = (index === breadcrumbData.length - 1);
+                    if (isLast) {
+                        var current = document.createElement('span');
+                        current.className = 'sl-v2-breadcrumb-current';
+                        current.textContent = item.name;
+                        breadcrumbs.appendChild(current);
+                    } else {
+                        var link = document.createElement('a');
+                        link.href = item.item || '/';
+                        var isHome = item.item === 'https://help.streetlib.com';
+                        if (isHome) {
+                            link.textContent = 'Home';
+                        } else {
+                            link.textContent = item.name;
+                        }
+                        breadcrumbs.appendChild(link);
+                    }
+                });
+            } else {
+                // Fallback: Home > Category Name
+                var homeLink = document.createElement('a');
+                homeLink.href = '/';
+                homeLink.textContent = 'Home';
+                breadcrumbs.appendChild(homeLink);
+
+                var chevron = document.createElement('span');
+                chevron.className = 'sl-v2-breadcrumb-sep';
+                chevron.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>';
+                breadcrumbs.appendChild(chevron);
+
+                var h1 = categoryHead ? categoryHead.querySelector('h1') : null;
+                var current = document.createElement('span');
+                current.className = 'sl-v2-breadcrumb-current';
+                current.textContent = h1 ? h1.textContent.trim() : document.title.split(' - ')[0];
+                breadcrumbs.appendChild(current);
+            }
+
+            contentWrapper.parentNode.insertBefore(breadcrumbs, contentWrapper);
+        }
+
+        // 2. Wrap h1 + existing sort form in a content header row
+        if (categoryHead) {
+            var h1 = categoryHead.querySelector('h1');
+            if (h1 && !h1.parentNode.classList.contains('sl-v2-content-header')) {
+                var headerDiv = document.createElement('div');
+                headerDiv.className = 'sl-v2-content-header';
+                categoryHead.insertBefore(headerDiv, h1);
+                headerDiv.appendChild(h1);
+
+                // Move the existing sort form into the header
+                var sortWrapper = categoryHead.querySelector('.sort');
+                if (sortWrapper) {
+                    headerDiv.appendChild(sortWrapper);
+                    sortWrapper.style.display = 'block';
+                }
+            }
+        }
+
+    };
+
+    applyV2CategoryUI();
+
+
+
+    // Add the StreetLib menu inside footer
+
+
+
+    var createFooterMenu = function (lang) {
+        var footerChild = document.querySelector('footer > p');
+        var container = document.createElement('section');
+        container.className = 'sl-footer-menu-section';
+        footer.insertBefore(container, footerChild);
+
+
+        for (i = 0; i < footerMenuItems[lang].length; i++) {
+
+            var footerMenu = document.createElement('div');
+            footerMenu.setAttribute('class', 'footer-menu');
+
+            var footerMenuList = document.createElement('ul');
+            var listTitle = document.createElement('h6');
+
+            var menu = footerMenuItems[lang][i].menu;
+            listTitle.innerHTML = footerMenuItems[lang][i].title;
+
+            container.appendChild(footerMenu);
+            footerMenu.appendChild(listTitle);
+            footerMenu.appendChild(footerMenuList);
+
+            menu.forEach(item => {
+                var li = document.createElement('li');
+                var a = document.createElement('a');
+                a.innerHTML = item.label;
+                a.setAttribute('href', item.link);
+                if (item.targetBlank) {
+                    a.setAttribute('target', '_blank');
+                    a.setAttribute('rel', 'noopener noreferrer');
+                }
+                if (item.openBeacon) {
+                    a.setAttribute('onclick', "window.Beacon(\'open\')");
+                    a.setAttribute('target', '');
+                }
+                footerMenuList.appendChild(li);
+                li.appendChild(a);
+            });
+        }
+    };
+
+    if (footer) {
+        var footerCopyright = document.createElement('p');
+        footerCopyright.setAttribute('class', 'footer-copyright');
+        var lang = userLang.split('-')[0];
+        footerCopyright.innerHTML = footerContents[lang].text;
+        footer.appendChild(footerCopyright);
+
+        createFooterMenu(lang);
+    }
+
+    var updateFooterContents = function (lang) {
+
+        // Remove the generated footer menu container(s).
+        var footerMenuSections = elementsHavingChild('footer section', '.footer-menu');
+        removeAll(footerMenuSections);
+        var footerCopyright = document.querySelector('.footer-copyright');
+        footerCopyright.innerHTML = footerContents[lang].text;
+        createFooterMenu(lang);
+    };
+
+
+
+    // Add the AIRcall section
+
+    /** *************************************************************************
+     * Renders the pre-footer banner (Community & Support).
+     * *************************************************************************
+     */
+
+    var renderPreFooter = function (lang) {
+        var footerEl = document.querySelector('footer');
+        if (!footerEl) return;
+
+        // 1. Cleanup: remove any existing pre-footer
+        var existing = document.querySelector('.sl-prefooter');
+        if (existing) existing.remove();
+
+        var shortLang = (lang || 'en').toLowerCase().split('-')[0];
+        var communityHref = 'https://community.streetlib.it/join?invitation_token=57bf25bd62c271c740591843784a66998c8ed080-f98ad093-f307-401f-b577-adc5643e6e30';
+
+        var html = '';
+
+        if (v2Enabled) {
+            // --- MODERN V2 TEMPLATE (Sempre uguale per tutte le lingue) ---
+            var copyMapV2 = {
+                it: { h: 'Non hai trovato quello che stavi cercando?', p: 'La nostra Community e il supporto sono qui per aiutarti.', btnComm: 'Chiedi alla Community', btnCont: 'Contattaci' },
+                de: { h: 'Nicht gefunden, wonach du gesucht hast?', p: 'Unsere Community und unterstützungsspezialisten sind hier, um dir zu helfen.', btnComm: 'Community fragen', btnCont: 'Kontakt' },
+                en: { h: 'Didn\'t find what you were looking for?', p: 'Our Community and support team are here to help.', btnComm: 'Ask the Community', btnCont: 'Contact Us' }
+            };
+            var copyV2 = copyMapV2[shortLang] || copyMapV2.en;
+
+            html =
+                '<section class="sl-prefooter">' +
+                    '<div class="sl-prefooter-content">' +
+                        '<div class="sl-prefooter-icon">' + messageIcon + '</div>' +
+                        '<h2>' + copyV2.h + '</h2>' +
+                        '<p>' + copyV2.p + '</p>' +
+                        '<div class="sl-prefooter-actions">' +
+                            '<a href="' + communityHref + '" class="sl-prefooter-btn primary" target="_blank">' + usersIcon + copyV2.btnComm + '</a>' +
+                            '<a href="#" class="banner-btn secondary" onclick="window.Beacon(\'open\'); return false;">' + mailIcon + copyV2.btnCont + '</a>' +
+                        '</div>' +
+                    '</div>' +
+                '</section>';
+        } else {
+            // --- LEGACY V1 TEMPLATE (Rispettando esattamente i tuoi snippet) ---
+            if (shortLang === 'it') {
+                html = '<section class="sl-prefooter sl-centered"><div><h3>Non hai trovato quello che stavi cercando?</h3><p class="sl-has-community-icon">Chiedi alla nostra <a href="' + communityHref + '" target="_blank">Community</a></p><p>In alternativa <a href="#" class="contactUs" onclick="window.Beacon(\'open\')">Contattaci</a></p></div></section>';
+            } else if (shortLang === 'de') {
+                html = '<section class="sl-prefooter"><h3>Nicht gefunden, wonach du gesucht hast?</h3><a href="#" class="btn contactUs sl-write-btn" onclick="window.Beacon(\'open\')">Kontaktiere uns</a></section>';
+            } else {
+                html = '<section class="sl-prefooter"><h3>Didn\'t find what you were looking for?</h3><a href="#" class="btn contactUs sl-write-btn" onclick="window.Beacon(\'open\')">Contact Us </a></section>';
+            }
+        }
+
+        // 4. Iniezione
+        footerEl.insertAdjacentHTML('afterbegin', html);
+    };
+
+
+
+    if (footer) {
+        // In v2 mode, always render the new pre-footer (renderPreFooter removes existing ones first).
+        // In v1 mode, only render if no pre-footer exists yet.
+        var preFooter = document.querySelectorAll('.sl-prefooter');
+        if (v2Enabled || !preFooter || preFooter.length === 0) {
+            renderPreFooter(userLang);
+        }
+    }
+
+
+    // Add article TOC
+
+    var createArticleTOC = function (list, sections) {
+        var tocContainer = document.querySelectorAll('.sl-toc-container');
+        var title = '<h2>Indice</h2>';
+        if (tocContainer && tocContainer.length > 0) {
+            // prepend title to first toc container
+            tocContainer[0].insertAdjacentHTML('afterbegin', title);
+        }
+        if (list && sections.length > 0) {
+            var idx = 0;
+            sections.forEach((item) => {
+
+                var content = item.textContent;
+                var itemID = 'toc-item-' + (idx + 1);
+                setAttr(item, 'id', itemID);
+
+                var li = document.createElement('li');
+                var link = document.createElement('a');
+                setAttr(link, 'href', '#' + itemID);
+                link.textContent = content;
+                li.appendChild(link);
+                list.append(li);
+                idx++;
+            })
+        } else if (sections.length === 0 && tocContainer && tocContainer.length > 0) {
+            tocContainer[0].remove();
+        }
+    }
+
+    var toc_1 = document.querySelector('#sl-article-toc');
+    var articleSections = document.querySelectorAll('.sl-toc-container ~ h3');
+    createArticleTOC(toc_1, articleSections);
+
+
+
+});
+</script>
+
+<script type="text/javascript">
+    // Help Scout Auto Light Box (https://blog.ryanhalliday.com/2022/07/helpscout-auto-lightbox.html)
+    function helpScoutAutoLightBox () {
+        document.querySelectorAll('img').forEach(function(img){
+            if (img.parentElement.tagName !== 'a' && img.parentElement.tagName !== 'A'){
+                var a = document.createElement('a')
+                a.href = img.src;
+                var hrefString = a.href;
+                var gifString = 'googleusercontent';
+                if (!hrefString.includes(gifString)) {
+                    a.classList.add('lightbox');
+                    img.parentNode.insertBefore(a, img);
+                    a.appendChild(img);
+                }
+            } // If it is wrapped in an <a> tag we do not want to add lightbox, its an outgoing link.
+        })
+    }
+    document.addEventListener("DOMContentLoaded", helpScoutAutoLightBox);
+</script>
+    
+</head>
+    
+    <body>
+        
+<header id="mainNav" class="navbar">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="brand" href="/">
+            
+                
+                    <img src="//d33v4339jhl8k0.cloudfront.net/docs/assets/5fbf8a3f4cedfd00165b4392/images/603672628502d1120e90acb8/streetlib-logo.png" alt="StreetLib Help Center" width="221" height="75">
+                
+
+            
+            </a>
+            
+                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="sr-only">Toggle Navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            
+            <div class="nav-collapse collapse">
+                <nav role="navigation"><!-- added for accessibility -->
+                <ul class="nav">
+                    
+                    
+                        
+                            <li  id="ebook"><a href="/collection/551-ebook">Ebook  <b class="caret"></b></a></li>
+                        
+                            <li  id="audiobook"><a href="/collection/554-audiobook">Audiobook  <b class="caret"></b></a></li>
+                        
+                            <li  id="libri-cartacei"><a href="/collection/557-libri-cartacei">Libri cartacei  <b class="caret"></b></a></li>
+                        
+                            <li  id="crea-i-tuoi-libri-con-write"><a href="/collection/79-crea-i-tuoi-libri-con-write">Crea i tuoi libri con Write  <b class="caret"></b></a></li>
+                        
+                            <li  id="direct-marketing"><a href="/collection/636-direct-marketing">Direct Marketing  <b class="caret"></b></a></li>
+                        
+                            <li  id="gestisci-il-tuo-account-e-i-pagamenti"><a href="/collection/73-gestisci-il-tuo-account-e-i-pagamenti">Gestisci il tuo account e i pagamenti  <b class="caret"></b></a></li>
+                        
+                            <li  id="streetlib-store"><a href="/collection/60-streetlib-store">StreetLib Store  <b class="caret"></b></a></li>
+                        
+                            <li  id="webinar"><a href="/collection/709-webinar">Webinar  <b class="caret"></b></a></li>
+                        
+                            <li  id="ready"><a href="/collection/540-ready">Ready  <b class="caret"></b></a></li>
+                        
+                            <li  id="ebooks"><a href="/collection/5-ebooks">Ebooks  <b class="caret"></b></a></li>
+                        
+                            <li  id="audiobooks"><a href="/collection/583-audiobooks">Audiobooks  <b class="caret"></b></a></li>
+                        
+                            <li  id="paperbooks"><a href="/collection/590-paperbooks">Paperbooks  <b class="caret"></b></a></li>
+                        
+                            <li  id="create-your-books"><a href="/collection/65-create-your-books">Create Your Books  <b class="caret"></b></a></li>
+                        
+                            <li  class="active"  id="manage-your-account-and-royalties"><a href="/collection/69-manage-your-account-and-royalties">Manage Your Account and Royalties  <b class="caret"></b></a></li>
+                        
+                            <li  id="streetlib-direct-marketing"><a href="/collection/641-streetlib-direct-marketing">StreetLib Direct Marketing  <b class="caret"></b></a></li>
+                        
+                            <li  id="sl-store"><a href="/collection/597-sl-store">SL Store  <b class="caret"></b></a></li>
+                        
+                            <li  id="accountverwaltung-und-einnahmen"><a href="/collection/1175-accountverwaltung-und-einnahmen">Accountverwaltung und Einnahmen  <b class="caret"></b></a></li>
+                        
+                            <li  id="ebook-veroffentlichung"><a href="/collection/968-ebook-veroffentlichung">Ebook Veröffentlichung  <b class="caret"></b></a></li>
+                        
+                            <li  id="horbucher"><a href="/collection/1012-horbucher">Hörbücher  <b class="caret"></b></a></li>
+                        
+                            <li  id="bucherstellung"><a href="/collection/1110-bucherstellung">Bucherstellung  <b class="caret"></b></a></li>
+                        
+                            <li  id="faq-zum-umzug-auf-die-neue-plattform"><a href="/collection/1466-faq-zum-umzug-auf-die-neue-plattform">FAQ zum Umzug auf die neue Plattform  <b class="caret"></b></a></li>
+                        
+                            <li  id="faq-on-platform-changeover"><a href="/collection/1492-faq-on-platform-changeover">FAQ on Platform Changeover  <b class="caret"></b></a></li>
+                        
+                    
+                    
+                        <li id="contact"><a href="#" class="contactUs" onclick="window.Beacon('open')">Contact</a></li>
+                        <li id="contactMobile"><a href="#" class="contactUs" onclick="window.Beacon('open')">Contact</a></li>
+                    
+                    
+                </ul>
+                </nav>
+            </div><!--/.nav-collapse -->
+        </div><!--/container-->
+    </div><!--/navbar-inner-->
+</header>
+        <section id="contentArea" class="container-fluid">
+            <div class="row-fluid">
+                <section id="main-content" class="span9">
+                    <div class="contentWrapper">
+                        
+    <hgroup id="categoryHead">
+        <h1>Create and manage your StreetLib account</h1>
+        <p class="descrip"></p>
+        <div class="sort">
+             
+
+<form action="/category/72-create-and-manage-your-streetlib-account" method="GET" >
+    
+                <select name="sort" id="sortBy" title="sort-by" onchange="this.form.submit();" aria-label="Page reloads on selection">
+                    
+                        <option value="" >Sort by Default</option>
+                    
+                        <option value="name" >Sort A-Z</option>
+                    
+                        <option value="popularity" >Sort by Popularity</option>
+                    
+                        <option value="updatedAt" >Sort by Last Updated</option>
+                    
+                </select>
+            
+</form>
+
+        </div>
+    </hgroup><!--/categoryHead-->
+
+    
+        <ul class="articleList">
+            
+                <li><a href="/article/706-what-you-can-do-with-streetlib"><i class="icon-article-doc"></i><span>What you can do with StreetLib</span></a></li>
+            
+                <li><a href="/article/425-create-modify-delete-account"><i class="icon-article-doc"></i><span>Create, Update, or Delete Your Account</span></a></li>
+            
+                <li><a href="/article/700-the-onboarding-process"><i class="icon-article-doc"></i><span>The Onboarding Process</span></a></li>
+            
+                <li><a href="/article/570-the-new-streetlib-dashboard"><i class="icon-article-doc"></i><span>StreetLib Dashboard</span></a></li>
+            
+                <li><a href="/article/427-distribution-agreement"><i class="icon-article-doc"></i><span>Distribution Agreement </span></a></li>
+            
+        </ul><!--/articleList-->
+
+        
+    
+
+                    </div><!--/contentWrapper-->
+                    
+                </section><!--/content-->
+                <aside id="sidebar" class="span3">
+                 
+
+<form action="/search" method="GET" id="searchBar" class="sm" autocomplete="off">
+    
+                    <input type="hidden" name="collectionId" value="6012c69db9a8501b295d504a"/>
+                    <input type="text" name="query" title="search-query" class="search-query" placeholder="Search" value="" aria-label="Search" />
+                    <button type="submit">
+                        <span class="sr-only">Toggle Search</span>
+                        <i class="icon-search"></i>
+                    </button>
+                    <div id="serp-dd" style="display: none;" class="sb">
+                        <ul class="result">
+                        </ul>
+                    </div>
+                
+</form>
+
+                
+                    <h3>Categories</h3>
+                    <ul class="nav nav-list">
+                    
+                        
+                            <li  class="active" ><a href="/category/72-create-and-manage-your-streetlib-account">Create and manage your StreetLib account  <i class="icon-arrow"></i></a></li>
+                        
+                    
+                        
+                            <li ><a href="/category/97-payments">Billing and Payments  <i class="icon-arrow"></i></a></li>
+                        
+                    
+                        
+                            <li ><a href="/category/111-book-sales">Book sales  <i class="icon-arrow"></i></a></li>
+                        
+                    
+                    </ul>
+                
+                </aside><!--/span-->
+            </div><!--/row-->
+            <div id="noResults" style="display:none;">No results found</div>
+            <footer>
+                
+
+<p>&copy;
+    
+        <a href="https://streetlib.com">StreetLib SRL</a>
+    
+    2026. <span>Powered by <a rel="nofollow noopener noreferrer" href="https://www.helpscout.com/docs-refer/?co=StreetLib+SRL&utm_source=docs&utm_medium=footerlink&utm_campaign=Docs+Branding" target="_blank">Help Scout</a></span>
+    
+        
+    
+    
+</p>
+
+            </footer>
+        </section><!--/.fluid-container-->
+        
+            
+
+<script id="beaconLoader" type="text/javascript">!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});</script>
+<script type="text/javascript">window.Beacon('init', '53df355a-5954-4a24-96b7-6e88c212761a')</script>
+
+<script type="text/javascript">
+    function hashChanged() {
+        var hash = window.location.hash.substring(1); 
+        if (hash === 'contact') {
+            window.Beacon('open')
+        }
+    }
+
+    if (window.location.hash) {
+        hashChanged()
+    }
+
+    window.onhashchange = function () {
+        hashChanged()
+    }
+
+    window.addEventListener('hashchange', hashChanged, false);
+
+</script>
+
+        
+        
+    <script src="//d3eto7onm69fcz.cloudfront.net/assets/javascripts/app4.min.js"></script>
+
+<script>
+// keep iOS links from opening safari
+if(("standalone" in window.navigator) && window.navigator.standalone){
+// If you want to prevent remote links in standalone web apps opening Mobile Safari, change 'remotes' to true
+var noddy, remotes = false;
+document.addEventListener('click', function(event) {
+noddy = event.target;
+while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+noddy = noddy.parentNode;
+}
+
+if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes)){
+event.preventDefault();
+document.location.href = noddy.href;
+}
+
+},false);
+}
+</script>
+        
+    </body>
+</html>

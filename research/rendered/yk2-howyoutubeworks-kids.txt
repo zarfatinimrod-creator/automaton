@@ -1,0 +1,368 @@
+Age-Appropriate Media for Kids and Teens - How YouTube Works
+
+Jump to content
+
+How YouTube Works
+
+AI
+
+Copyright
+
+Creator Economy
+
+Elections
+
+Kids & Teens
+
+Learning
+
+News
+
+Privacy
+
+Recommendations
+
+Our Policies
+
+Impact Reports
+
+Transparency Reports
+
+Kids & Teens
+
+At YouTube we understand that kids want to explore, teens want
+to find independence, and parents want to protect. That’s why
+we’ve been building products for more than a decade that work
+for every member of the family.
+
+jump to a section
+
+Our Track Record
+
+Youth Principles
+
+Age-appropriate experiences
+
+Age estimation
+
+Youth Policies
+
+Wellbeing & mental health
+
+Family resources
+
+Youth Products in Action
+
+jump to a section
+Kids & Teens
+
+Our Track Record
+
+Youth Principles
+
+Age-appropriate experiences
+
+Age estimation
+
+Youth Policies
+
+Wellbeing & mental health
+
+Family resources
+
+Youth Products in Action
+
+Our Track Record
+
+We’ve been building for families since 2015, and we continue
+to deliver & innovate our products, tools, and services
+to meet the unique developmental needs of kids & teens.
+Click here
+to learn more about our track-record.
+
+How YouTube's Youth Principles Work
+
+Everything we do is guided by five youth principles, which
+are core to YouTube's work on creating a safer and more
+enriching environment for young people.
+
+Learn more
+
+The Right Experience for Every Age
+
+Parents trust YouTube to provide appropriate experiences for
+their families, and we take that responsibility seriously with
+a focus on content, controls and providing the right
+experience for every age.
+
+We're introducing an
+updated sign up experience
+that lets parents create a new supervised kid account and
+easily switch between accounts in the mobile app depending on
+who’s watching with just a few taps.
+
+Children
+
+Pre-teens
+
+Teens
+
+YouTube Kids
+is an app built from the ground up to be a simpler
+experience for kids 12 and under to explore, with
+tools for parents and caregivers to guide their
+journey.
+
+It includes four viewing experiences that allow
+parents to decide what content to make available to
+their kids. For complete control, parents can approve
+content themselves — or they can choose from
+categories which feature content that’s appropriate
+for specific age ranges.
+
+In addition to content settings, parents and
+caregivers can also:
+
+Block their kids from searching
+
+Pause or clear their kids’ search history
+
+Set screen time limits
+
+Block a video, or an entire channel, with just a
+couple of clicks
+
+Our supervised experience for
+pre-teens
+(children under 13 or the
+relevant age
+in their country/region) is designed for parents who
+decide their child is ready to explore a broader array
+of content on the main YouTube app, but still want to
+supervise their experience.
+
+It offers three content settings that account for
+different parenting styles and individual differences
+in child development, with each option offering
+greater access to YouTube’s world of content. It also
+offers:
+
+Additional parental controls (e.g. disabling
+autoplay and reviewing, pausing, and clearing
+watch history)
+
+Disabling certain features normally available on
+the main YouTube app (e.g. uploads, writing
+comments, livechat, livestream, etc.)
+
+Our voluntary supervised experience for
+teens
+(ages 13-17 in
+most countries and regions ) allows parents and teens to voluntarily link
+accounts to help give parents insights about videos
+their teens create and comments they leave, spark
+conversations between parents and teens, and provide
+timely learning opportunities about how to safely
+create on YouTube.
+
+We also have added safeguards to ensure mature aged
+content isn’t seen by younger users. So while
+sometimes content on YouTube doesn't violate our
+Community Guidelines, it may not be appropriate for
+viewers under 18. In these cases, we place
+age-restrictions on the video
+or
+prevent search results from appearing . This applies to videos, video descriptions, custom
+thumbnails, live streams, and any other YouTube
+product or feature.
+
+How YouTube Treats Teens as Teens, and Adults as Adults
+
+At YouTube, ensuring age-appropriate experiences for teens
+begins with users providing their age during account
+creation. This information allows us to personalize YouTube
+settings, defaults, and access to content and features, and
+helps support a safer experience for younger users.
+
+For all U.S. accounts, YouTube employs a dual approach by
+using self-declared age as well as the application of an age
+estimation model that uses machine learning to determine
+whether a user is over or under 18. Regardless of the
+birthday in the account, this technology enables us to
+deliver age-appropriate product experiences and protections,
+treating teens as teens and adults as adults.
+
+How it works: We use AI to interpret a variety of existing
+signals that help us to determine whether a user is over or
+under 18. These signals include the types of videos a user
+is searching for, the categories of videos they have
+watched, or the longevity of the account.
+
+When we identify a teen user, we’ll automatically apply our
+safeguards, including:
+
+Disabling personalized advertising and restricting
+age-sensitive ad categories
+
+Turning on digital wellbeing tools
+
+Adding safeguards to recommendations, including limiting
+repetitive views of some kinds of content.
+
+Users have the option to verify that they are 18 or over by
+using a credit card or a government ID. We only allow users
+who have been inferred or verified as over 18 to view
+age-restricted content that may be inappropriate for younger
+users.
+
+Learn more
+
+How YouTube’s Policies Work for Younger Users
+
+We have some of the strongest safeguards when it comes to
+protecting our youngest users from harmful content. These
+are covered by policies found
+here .
+
+Content that targets young minors and families but contains
+sexual themes, violence, obscene, or other mature themes not
+suitable for young audiences, is not allowed on YouTube.
+
+Developed alongside child development experts, YouTube’s
+kids quality principles
+and
+teen quality principles
+outline the type of content that is deemed to be low and
+high quality for young audiences. These principles are based
+on extensive research and inform our recommendation system,
+allowing us to raise high quality videos. We also have a
+guide
+to educate our global creator community on their role in
+supporting teens on YouTube.
+
+We regularly update our family product experiences and
+policies in consultation with experts in children’s media,
+child development, digital learning, & citizenship from
+a range of academic, non-profit and clinical backgrounds.
+This
+Youth and Families Advisory Committee
+is a collection of independent experts that weigh in on
+products, policies and services we offer to young people and
+families.
+
+How YouTube is Prioritizing Tween and Teen Wellbeing & Mental
+Health
+
+In today’s digital-first age, teens face unique challenges
+when it comes to nurturing and preserving their wellbeing and
+mental health. We know teens are digital natives, with the
+internet as a part of their everyday lives - we want to help
+support them through the new experiences and pressures that
+come with navigating the online world.
+
+Our
+Youth and Families Advisory Committee
+consistently helps us to understand the unique and complex
+developmental needs of teens to ensure we’re providing the
+right products & tools to help them navigate and enjoy the
+broad range of content available to them — while putting their
+wellbeing first.
+
+Mindful Viewing
+
+Default settings
+
+Safeguard sequencing
+
+Crisis resources
+
+"Take a Break" and "Bedtime"
+reminders appear as full-screen takeovers and are
+turned on by default for teens. Parents can
+customize
+these reminders for supervised kid and teen accounts.
+Since these default reminders launched, they have
+served as industry-leading digital wellbeing tools
+that have helped users better understand and manage
+their screen time.
+
+Parents can set daily time limits scrolling the Shorts
+feed, including setting it to
+zero minutes
+to turn the feed off entirely.
+
+Teens’ uploads are set to the most private available
+setting by default to help them make informed
+decisions about their online footprint and digital
+privacy.
+
+Working with our
+Youth and Families Advisory Committee , we developed safeguards on video sequencing for
+teens by identifying categories of video that are okay
+in a single or few views, but could become problematic
+for some if viewed in repetition. We then developed
+ways to disperse viewership of those videos for teens
+globally to prevent repetitive viewing. This includes
+topics ranging from body comparison to unrealistic
+financial advice or social aggression.
+
+Crisis resource panels appear when viewers search for
+certain terms related to suicide, self-harm, or eating
+disorders. This full page experience enables viewers
+to prominently see resources for third-party crisis
+hotlines.
+
+How YouTube is Helping Kids & Teens Better Navigate
+Information Online
+
+With the media landscape ever evolving, we aim to educate
+and empower viewers by offering educational parent guides so
+users & parents can think critically about content and
+make their own informed decisions on what they watch and
+interact with.
+
+In addition to regularly updating our family product
+experiences and policies in consultation with our
+Youth and Families Advisory Committee , we’ve developed a
+family guide
+in partnership with National PTA and Parent Zone to cover
+media literacy tips and tools for parents to share with
+kids, and we continue to experiment in our products to
+provide transparency and context on the content being viewed
+including new AI labels and crowd-sourced context.
+
+Youth Products in Action
+
+We are committed to growing alongside the families who choose to
+watch YouTube, ensuring that YouTube remains a safer and
+inspiring space for the next generation to explore.
+
+Age-Appropriate Experiences
+
+YouTube provides the right experiences for the right age
+through age appropriate experiences and the
+prioritization of high quality content.
+
+Built-In Protections
+
+YouTube applies simple defaults for all users under 18
+to ensure a safer viewing experience for kids and teens.
+
+Parental Controls
+
+We’ve been building for families since 2015, empowering
+parents and caregivers to apply additional controls to
+customize the right experience for their child’s age and
+stage in life.
+
+Explore more
+
+YouTube and industry leaders announce the Youth Digital
+Wellbeing Initiative
+
+Safer Internet Day: Empowering teens and parents with tools to
+support wellbeing
+
+A collaborative approach to teen supervision on YouTube
+
+$20 million to support teens' digital wellbeing worldwide
