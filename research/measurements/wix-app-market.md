@@ -603,7 +603,7 @@ The submission step's security evidence is a self-answered Security & Privacy fo
 **(5) The docs are exhausted on agreement:185**
 - The distribution section of the docs navigation (`submit:63-75`) runs: About App Distribution, Add Security and Privacy Information (tick 7), Submit Your First App Version (this page), Common Reasons for App Rejection, App Market Guidelines (tick 6), Test Your App. The agreement (tick 4), the best-practice page (tick 5), the guidelines (tick 6), the Security & Privacy page (tick 7) and this page have all been read, and none of them asks for the third-party test or evidence of it. [RENDERED]
 - One sibling page is unread: "Common Reasons for App Rejection" (`submit:71`; href `/docs/build-apps/launch-your-app/app-distribution/common-reasons-for-app-rejection` at html:1 and html:47). It describes rejections, not what submission asks for, and the review taxonomy that rejections map to (`review:228-311`) has no such item. So it is not queued. [INFERENCE]
-- The page is dated after the agreement version and still does not mention the test. It does not waive the clause either, because "Wix's Terms shall prevail" over guidelines (guidelines:106), and a breach found later lets Wix forfeit unpaid revenue (agreement:537). Only a written answer from Wix can say whether a free route meets it. [INFERENCE]
+- The page is dated after the agreement version and still does not mention the test. It does not waive the clause either, because "Wix’s Terms shall prevail" over guidelines (guidelines:106), and a breach found later lets Wix forfeit unpaid revenue (agreement:537). Only a written answer from Wix can say whether a free route meets it. [INFERENCE]
 
 **Verdict for candidate 11 (Wix App Market): NEEDS_MORE**
 
