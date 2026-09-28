@@ -242,6 +242,8 @@ Rows 8-13 are done (28.9): the 07:12 sitting ruled rows 8-11, the breadth board 
 
 ## 9. Maintenance backlog
 
+- **PAUSED 28.9 (tick 11): no tiktok.com URL in any render list or override** until the Fable sitting rules on FABLE_QUEUE row 16 (d). TikTok's terms ban automated scraping, crawling or extraction "for any purpose" without written approval (`research/tiktok/08-reads/tt2-render-check.md`); the runner fetched about 110 TikTok pages on 28.9 for the owner's research before this was read. Research on TikTok continues only from GitHub mirrors (e.g. Open Terms Archive) and search snippets.
+
 Fixed in tick 3 (28.9, commit `4c73f67`):
 - **"Runs hourly".** colony.yml is scheduled hourly; GitHub fired it 29 times in 122.6 hours (22.9 22:06 to 28.9 00:43 UTC), about every 4.4 h, gaps 2.4-6.7 h. Corrected in `docs/OWNER_STEPS.he.md` (and the PDF), `docs/INCOME_PLAN.he.md` and `src/revenue/owner-steps.ts`.
 - **Stale scope.** `products/README.md` and `MISSION.md` now name `@mehudak/mcp-il-tools`.
