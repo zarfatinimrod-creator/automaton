@@ -101,7 +101,10 @@ describe("the owner's checklist is eight steps and stays eight", () => {
     // The specification Q2 fixes.
     expect(step8.unlocks).toMatch(/Google account under the brand/);
     expect(step8.unlocks).toMatch(/Outlook\.com/);
-    expect(step8.unlocks).toMatch(/Play Books/);
+    // Play Books was killed 28.9 (tick 6, Israel not a supported country): it is recorded, not offered as a use.
+    expect(step8.unlocks).not.toMatch(/serves Google Play Books/);
+    expect(step8.unlocks).toMatch(/Play Books Partner Center was a third use[^:]*killed/);
+    expect(step8.unlocks).toMatch(/Search Console/);
     expect(step8.unlocks).toMatch(/YouTube/);
     expect(step8.unlocks).toMatch(/second Gmail connector/);
     expect(step8.unlocks).toMatch(/repository secret/);
@@ -469,7 +472,9 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(step8).toContain("Google");
     expect(step8).toContain("Outlook.com");
     expect(step8).toContain("mehudak");
-    expect(step8).toContain("Play Books");
+    expect(step8).toContain("Search Console");
+    expect(step8).not.toMatch(/ישמש אחר כך גם ל-Google Play Books/);
+    expect(step8).toMatch(/Play Books[^\n]*נפסלה/);
     expect(step8).toContain("YouTube");
     expect(step8).toContain("נגישות");
     expect(step8).toMatch(/Gmail האישי/);

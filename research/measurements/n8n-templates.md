@@ -1,6 +1,8 @@
 # n8n paid templates (candidate 20) — the catalogue read, the Creator Hub rules not reached
 
-**Status: READ 28.9.2026 (captures of ~13:18 UTC, render-watch commit `815c2e5`).** Half of the ₪0 test is answered
+**Status: READ 28.9.2026 (captures of ~13:18 UTC, render-watch commit `815c2e5`). Tick 6 (28.9.2026): still
+NEEDS_MORE.** The Notion Creator Hub capture is a JavaScript shell. n8n's GitHub docs source is a three-sentence stub
+that points back to it, with no rule on paid templates, AI, payout or identity. See the Tick 6 section. Half of the ₪0 test is answered
 (ordering; whether paid templates appear). The other half (the AI rule, the paid-unlock condition) is not on either page.
 
 ## What was read
@@ -73,3 +75,49 @@ a badge, a Discord and a directory listing, and no money. It is not a fail, beca
 templates. **Next check:** render `https://n8n.notion.site/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f` (the
 `creatorHubDocument` in `n8n-creators.html:36`) and read the AI rule, the paid-unlock condition and any payout terms.
 Notion renders on the client, so if the runner gets a shell, the fallback is the scout's GitHub `submit-templates.md` raw URL.
+
+## Tick 6 (28.9.2026): the Creator Hub, by the GitHub route
+
+**The Notion capture is a shell (confirmed).** [RENDERED] `research/rendered/n8n-creator-hub-notion.txt` (ZERO-TESTS row 60) is
+one line: "Notion". Meta: `https://n8n.notion.site/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f`, status 200, fetchedAt
+2026-09-28T16:12:01.493Z, 20,034 bytes. The `.html` holds `<title>Notion</title>` and Notion's generic meta (`og:url`
+`https://app.notion.com`). Its noscript reads "JavaScript must be enabled in order to use Notion." "Creator", "template",
+"paid" and "submit" get 0 hits. `scripts/render-watch.mjs` is GET-only and runs no browser: no Notion page can render.
+
+**The GitHub source (the scout's `primary_urls_to_render[3]`).** Evidence grade: **github**. The file is
+`https://raw.githubusercontent.com/n8n-io/n8n-docs/main/docs/reusable-content/.gitbook/includes/workflows/templates/submit-templates.md`,
+fetched 28.9 ~16:17 UTC by WebFetch and curl: status 200, 401 bytes, sha256 `f061ea35…`. Apart from its frontmatter it
+holds three sentences:
+- `:4` "You can submit your workflows to n8n's template library."
+- `:6` "n8n is working on a creator program, and developing a marketplace of templates. This is an ongoing project, and
+  details are likely to change."
+- `:8` "Refer to [n8n Creator hub](https://www.notion.so/n8n/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f) for
+  information on how to submit templates and become a creator."
+- Dating. The file's history page (`https://github.com/n8n-io/n8n-docs/commits/main/<same path>`, as WebFetch summarised
+  it) shows "GitBook Docs Release (#4876)" `4f6df31` on 24.6.2026 and two renames on 24.7.2026 (`5c9a7aa`, `f0f70e5`). The
+  hub itself dates from n8n@1.18.0: "**Release date:** 2023-11-22" and "This release introduces the n8n Creator hub"
+  (`docs/changelog/release-notes-1.x.md:5972,5975,5982`). [INFERENCE] The wording "working on a creator program" has been
+  carried since late 2023, and it survived the July 2026 docs migration unchanged.
+- GitHub code search over `n8n-io/n8n-docs` (28.9): "Creator hub" is in these two files only. There are 0 hits for
+  "paid templates", "purchaseUrl", "sell templates", "AI-generated" or "AI generated", and for "paid" under `docs/workflows`.
+
+**The questions, answered from this source** (github grade):
+- Who can submit: "You can submit your workflows" (`:4`). No eligibility condition is stated.
+- AI-generated-content rule: **absent**, from both the file and the docs-wide search.
+- Paid templates, paid unlock, revenue share, payout method and countries: **absent**. The only commercial phrase is
+  "developing a marketplace of templates" (`:6`), and it is stated as work in progress.
+- Fee, identity or camera step: none stated. Portal or API: neither is described. Submission is handed to the hub
+  (`:8`), and n8n-docs holds no submission API, which agrees with the scout.
+- [SNIPPET, no source URL] The tick's one WebSearch returned a summary saying "To set templates as paid, creators need to
+  be verified creators". That conflicts with the scout's snippet "A paid option is only available once you have submitted
+  3 templates". Neither claim is confirmed. The search also surfaced a thread that renders on the server:
+  `https://community.n8n.io/t/requirements-for-becoming-a-verified-creator/134401`.
+
+**Verdict for row 20: NEEDS_MORE**, unchanged. The GitHub route is a dead end for the rules: n8n's own docs defer every
+term to a Notion page this runner cannot render. What they do say leans against a paid channel. As of July 2026 the creator
+program and the marketplace are still "ongoing" and "details are likely to change" (`:6`). This is not a fail, because
+nothing refutes priced templates (the API has `price` and `purchaseUrl`) or AI-made ones.
+**Single next check:** render `https://community.n8n.io/t/requirements-for-becoming-a-verified-creator/134401`. It is a
+Discourse forum page; whether a plain GET returns the posts is itself part of the test. Read the condition that unlocks
+paid templates (verified status, or 3 accepted templates) and any AI rule stated in a staff reply. The scout's thread
+`https://community.n8n.io/t/change-the-price-of-one-of-my-paid-templates/52125` is the fallback, from the same host.
