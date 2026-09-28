@@ -17,6 +17,7 @@ import {
   MAX_BYTES,
   parseUrlList,
   PDFTOTEXT_TIMEOUT_MS,
+  previousTextState,
   readCappedBody,
   redactSecrets,
   resolveListText,
@@ -1010,8 +1011,13 @@ describe("storeCapture — a PDF's text", () => {
     expect(readFileSync(pdfPath()).equals(v2)).toBe(true);
     expect(readFileSync(txtPath(), "utf8")).toBe("a hand extraction, cited by line number\n");
     expect(meta).toMatchObject({ changed: true, sha256: sha256(v2), textPath: null });
-    expect(meta.textError).toMatch(/^not extracted: research\/rendered\/ex-terms-pdf\.txt was not written by render-watch/);
-    expect(meta.textError).toMatch(/does not describe these bytes/);
+    // Only what the script knows: no textPath names the file, and the PDF beside it changed.
+    // Not "it was not written by render-watch" (a failed week can hide that the script wrote
+    // it) and not "it does not describe these bytes" (a PDF that reverts would make that false).
+    expect(meta.textError).toMatch(/^not extracted: research\/rendered\/ex-terms-pdf\.txt is not claimed by this page's meta/);
+    expect(meta.textError).toContain(`the stored copy was sha256 ${sha256(PDF_BYTES)}`);
+    expect(meta.textError).toMatch(/may not describe these bytes/);
+    expect(meta.textError).not.toMatch(/was not written by render-watch|does not describe/);
 
     // Quiet again the week after, and still untouched.
     const after = snapshot(out);
@@ -1053,6 +1059,354 @@ describe("storeCapture — a PDF's text", () => {
     expect(readdirSync(out)).toEqual(["ex-terms-pdf.meta.json"]);
     expect(meta).toMatchObject({ status: 403, bodyPath: null, textPath: null, error: "HTTP 403" });
     expect("textError" in meta).toBe(false);
+  });
+
+  // A URL that answers HTML for a while leaves the script's HTML extraction in <slug>.txt
+  // (claimed by that meta's textPath). When the PDF comes back — even the same bytes as the
+  // .pdf still on disk — that text is the script's own, of a different body: it is replaced.
+  it("PDF → HTML → the same PDF: replaces the script's HTML text with the PDF's", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => "text v1\n" });
+    const html = Buffer.from("<html><body><p>Moved</p></body></html>");
+    await storeCapture(
+      PDF_ENTRY,
+      { status: 200, contentType: "text/html", bytes: html, truncated: false, error: null },
+      { outDir: out, now: () => T1, extractPdfText: neverCalled },
+    );
+    expect(readFileSync(txtPath(), "utf8")).toBe("Moved\n");
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T2, extractPdfText: async () => "text v1\n" });
+
+    expect(readFileSync(txtPath(), "utf8")).toBe("text v1\n");
+    expect(meta).toMatchObject({ sha256: sha256(PDF_BYTES), textPath: "research/rendered/ex-terms-pdf.txt" });
+    expect("textError" in meta).toBe(false);
+  });
+
+  // A text/plain answer is stored AS <slug>.txt (bodyPath), with textPath null. It is the
+  // script's file all the same, and must not be taken for a hand extraction afterwards.
+  it("PDF → text/plain → the same PDF: the plain-text body is the script's file and is replaced", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => "text v1\n" });
+    await storeCapture(
+      PDF_ENTRY,
+      { status: 200, contentType: "text/plain", bytes: Buffer.from("gone\n"), truncated: false, error: null },
+      { outDir: out, now: () => T1, extractPdfText: neverCalled },
+    );
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T2, extractPdfText: async () => "text v1\n" });
+
+    expect(readFileSync(txtPath(), "utf8")).toBe("text v1\n");
+    expect(meta.textPath).toBe("research/rendered/ex-terms-pdf.txt");
+    expect("textError" in meta).toBe(false);
+  });
+
+  it("extracts again when the meta claims its text but the file is gone, rather than claiming a missing file", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => "text v1\n" });
+    rmSync(txtPath());
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), {
+      outDir: out,
+      now: () => T1,
+      extractPdfText: async () => "text v1, again\n",
+    });
+
+    expect(readFileSync(txtPath(), "utf8")).toBe("text v1, again\n");
+    expect(meta.textPath).toBe("research/rendered/ex-terms-pdf.txt");
+  });
+
+  it("does not claim a hand text is stale against bytes it never sat beside, when no PDF was stored", async () => {
+    // A <slug>.txt with no stored PDF and no meta: nothing says which bytes it was made from.
+    writeFileSync(txtPath(), "a hand extraction, cited by line number\n");
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: neverCalled });
+
+    expect(readFileSync(txtPath(), "utf8")).toBe("a hand extraction, cited by line number\n");
+    expect(meta.textPath).toBeNull();
+    expect(meta.textError).toMatch(/^not extracted: research\/rendered\/ex-terms-pdf\.txt is not claimed by this page's meta/);
+    expect(meta.textError).toMatch(/no stored PDF was beside it/i);
+    expect(meta.textError).not.toMatch(/stored copy was sha256|does not describe/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// A failed fetch between two captures of a PDF.
+//
+// A failed fetch (a 403, a timeout, a network error) writes a meta with no sha256 and
+// no bodyPath, and writes no file: the last capture's .pdf and <slug>.txt stay on disk.
+// 16 of the 94 committed metas carry an error today, so this is a normal week, not an
+// edge case. Found in review on 28.9.2026: judging "who wrote the .txt" and "are these
+// the same bytes" against that error meta alone turned the script's own text into a
+// "hand extraction" after one bad week (and then left it beside new bytes), and gave the
+// hand-made PCN874 texts — cited by line number from products/pcn874 — a false and
+// permanent "does not describe these bytes".
+// ---------------------------------------------------------------------------
+
+describe("storeCapture — a failed fetch between two captures of a PDF", () => {
+  let out: string;
+  const file = (name: string) => join(out, name);
+  const pdfPath = () => file("ex-terms-pdf.pdf");
+  const txtPath = () => file("ex-terms-pdf.txt");
+  const metaFile = () => file("ex-terms-pdf.meta.json");
+  const V2 = Buffer.from("%PDF-1.7\n% revised terms\n%%EOF\n");
+  const HAND = "a hand extraction, cited by line number\n";
+
+  const refused = () => ({ status: 403, contentType: "text/html", bytes: null, truncated: false, error: "HTTP 403" });
+  const unreachable = () => ({ status: null, contentType: null, bytes: null, truncated: false, error: "TypeError: fetch failed" });
+
+  /** The four committed hand extractions, as they are today: the PDF, the text, and a meta with textPath null. */
+  function seedHandText() {
+    writeFileSync(pdfPath(), PDF_BYTES);
+    writeFileSync(txtPath(), HAND);
+    const oldMeta = buildMeta({
+      url: PDF_ENTRY.url,
+      slug: PDF_ENTRY.slug,
+      fetchedAt: T0,
+      status: 200,
+      contentType: "application/pdf",
+      byteLength: PDF_BYTES.length,
+      sha256: sha256(PDF_BYTES),
+      bodyPath: "research/rendered/ex-terms-pdf.pdf",
+      textPath: null,
+    });
+    writeFileSync(metaFile(), `${JSON.stringify(oldMeta, null, 2)}\n`);
+  }
+
+  const readMeta = () => JSON.parse(readFileSync(metaFile(), "utf8"));
+
+  beforeEach(() => {
+    out = tmpOut();
+  });
+
+  it("keeps the claim on the script's own text in the meta of a failed fetch, and touches no file", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => "text v1\n" });
+
+    const { meta } = await storeCapture(PDF_ENTRY, refused(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+
+    expect(readFileSync(pdfPath()).equals(PDF_BYTES)).toBe(true);
+    expect(readFileSync(txtPath(), "utf8")).toBe("text v1\n");
+    expect(meta).toMatchObject({
+      changed: true,
+      status: 403,
+      error: "HTTP 403",
+      sha256: null,
+      bodyPath: null,
+      // The files are still on disk, so what the last capture said about them is still true.
+      textPath: "research/rendered/ex-terms-pdf.txt",
+      previousSha256: sha256(PDF_BYTES),
+    });
+    expect("textError" in meta).toBe(false);
+    expect(readMeta()).toEqual(meta);
+  });
+
+  // S1, weeks 1-3: extracted, then a failed fetch, then the same bytes.
+  it("error → same bytes: the script's own text is still its own, not re-extracted and not called a hand extraction", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => "text v1\n" });
+    await storeCapture(PDF_ENTRY, refused(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T2, extractPdfText: neverCalled });
+
+    expect(readFileSync(txtPath(), "utf8")).toBe("text v1\n");
+    expect(meta).toMatchObject({ error: null, sha256: sha256(PDF_BYTES), textPath: "research/rendered/ex-terms-pdf.txt" });
+    expect("textError" in meta).toBe(false);
+    expect(readMeta()).toEqual(meta);
+  });
+
+  // S1, week 4: the PDF really changes after all that. The week-1 text must not stay beside it.
+  it("error → same bytes → new bytes: the new bytes are extracted and replace the script's text", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => "text v1\n" });
+    await storeCapture(PDF_ENTRY, refused(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+
+    const seen: string[] = [];
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(V2), {
+      outDir: out,
+      now: () => T2,
+      extractPdfText: async (path: string) => {
+        seen.push(path);
+        expect(readFileSync(path).equals(V2)).toBe(true);
+        return "text v2\n";
+      },
+    });
+
+    expect(seen).toEqual([pdfPath()]);
+    expect(readFileSync(txtPath(), "utf8")).toBe("text v2\n");
+    expect(meta).toMatchObject({ sha256: sha256(V2), textPath: "research/rendered/ex-terms-pdf.txt" });
+    expect("textError" in meta).toBe(false);
+  });
+
+  it("error → new bytes: re-extracts the script's text, judged against the stored PDF rather than the error meta", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => "text v1\n" });
+    await storeCapture(PDF_ENTRY, refused(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(V2), {
+      outDir: out,
+      now: () => T2,
+      extractPdfText: async () => "text v2\n",
+    });
+
+    expect(readFileSync(pdfPath()).equals(V2)).toBe(true);
+    expect(readFileSync(txtPath(), "utf8")).toBe("text v2\n");
+    expect(meta).toMatchObject({ sha256: sha256(V2), textPath: "research/rendered/ex-terms-pdf.txt" });
+  });
+
+  it("error → new bytes that cannot be read: removes the script's text of the old bytes", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => "text v1\n" });
+    await storeCapture(PDF_ENTRY, refused(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(V2), {
+      outDir: out,
+      now: () => T2,
+      extractPdfText: async () => {
+        throw enoent();
+      },
+    });
+
+    expect(readdirSync(out).sort()).toEqual(["ex-terms-pdf.meta.json", "ex-terms-pdf.pdf"]);
+    expect(meta).toMatchObject({ sha256: sha256(V2), textPath: null });
+    expect(meta.textError).toMatch(/ENOENT/);
+  });
+
+  it("carries the claim through two failed fetches in a row", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => "text v1\n" });
+    await storeCapture(PDF_ENTRY, refused(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+    const second = await storeCapture(PDF_ENTRY, unreachable(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+    expect(second.meta).toMatchObject({ status: null, textPath: "research/rendered/ex-terms-pdf.txt" });
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T2, extractPdfText: neverCalled });
+
+    expect(readFileSync(txtPath(), "utf8")).toBe("text v1\n");
+    expect(meta.textPath).toBe("research/rendered/ex-terms-pdf.txt");
+    expect("textError" in meta).toBe(false);
+  });
+
+  it("carries the count of what was masked in the script's text, so a later rewrite does not drop it", async () => {
+    const key = ["sk", "live", "4eC39HqLyjWDarjtT1zdp7dc"].join("_");
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => `curl -u ${key}:\n` });
+
+    const failed = await storeCapture(PDF_ENTRY, refused(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+    const back = await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T2, extractPdfText: neverCalled });
+
+    expect(failed.meta.redacted).toBe(1);
+    expect(back.meta.redacted).toBe(1);
+    expect(readFileSync(txtPath(), "utf8")).toBe("curl -u [redacted:stripe-secret-key]:\n");
+  });
+
+  // S2: the committed pcn874 hand texts, one bad week, then the identical bytes.
+  it("error → same bytes beside a hand text: no staleness claim, and the text is untouched", async () => {
+    seedHandText();
+
+    const failed = await storeCapture(PDF_ENTRY, refused(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+    expect(failed.meta.textPath).toBeNull();
+    expect("textError" in failed.meta).toBe(false);
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T2, extractPdfText: neverCalled });
+
+    expect(readFileSync(txtPath(), "utf8")).toBe(HAND);
+    expect(meta).toMatchObject({ error: null, sha256: sha256(PDF_BYTES), textPath: null, previousSha256: null });
+    expect("textError" in meta).toBe(false);
+    expect(readMeta()).toEqual(meta);
+  });
+
+  it("error → new bytes beside a hand text: says the PDF changed beside it, naming the stored copy's sha256", async () => {
+    seedHandText();
+    await storeCapture(PDF_ENTRY, refused(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(V2), { outDir: out, now: () => T2, extractPdfText: neverCalled });
+
+    expect(readFileSync(txtPath(), "utf8")).toBe(HAND);
+    expect(readFileSync(pdfPath()).equals(V2)).toBe(true);
+    expect(meta).toMatchObject({ sha256: sha256(V2), textPath: null });
+    expect(meta.textError).toMatch(/^not extracted: research\/rendered\/ex-terms-pdf\.txt is not claimed by this page's meta/);
+    expect(meta.textError).toContain(`the stored copy was sha256 ${sha256(PDF_BYTES)}`);
+    expect(meta.textError).toMatch(/may not describe these bytes/);
+  });
+
+  it("keeps a staleness note on a hand text through a failed fetch, instead of silently dropping it", async () => {
+    seedHandText();
+    const stale = await storeCapture(PDF_ENTRY, pdfResult(V2), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+    expect(stale.meta.textError).toMatch(/may not describe these bytes/);
+
+    const failed = await storeCapture(PDF_ENTRY, refused(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+    expect(failed.meta.textError).toBe(stale.meta.textError);
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(V2), { outDir: out, now: () => T2, extractPdfText: neverCalled });
+
+    expect(readFileSync(txtPath(), "utf8")).toBe(HAND);
+    expect(meta.textPath).toBeNull();
+    expect(meta.textError).toBe(stale.meta.textError);
+  });
+
+  // research/rendered/README.md tells a reader who has re-checked a hand text against the new
+  // PDF to delete textError by hand. That must stick.
+  it("does not bring back a staleness note a person deleted from the meta, while the bytes stay the same", async () => {
+    seedHandText();
+    await storeCapture(PDF_ENTRY, pdfResult(V2), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+    const { textError: _removed, ...reviewed } = readMeta();
+    writeFileSync(metaFile(), `${JSON.stringify(reviewed, null, 2)}\n`);
+    const before = snapshot(out);
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(V2), { outDir: out, now: () => T2, extractPdfText: neverCalled });
+
+    expect(meta.changed).toBe(false);
+    expect("textError" in meta).toBe(false);
+    expect(snapshot(out)).toEqual(before);
+  });
+
+  // HTML must not move: a failed fetch after an HTML capture writes the meta it always wrote.
+  it("carries nothing after an HTML capture: the error meta keeps its old shape", async () => {
+    const htmlEntry = { url: "https://example.test/terms", slug: "ex-terms", lineNumber: 1 };
+    const html = Buffer.from("<html><body><p>Terms</p></body></html>");
+    await storeCapture(
+      htmlEntry,
+      { status: 200, contentType: "text/html", bytes: html, truncated: false, error: null },
+      { outDir: out, now: () => T0, extractPdfText: neverCalled },
+    );
+
+    const { meta } = await storeCapture(htmlEntry, refused(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+
+    expect(meta).toMatchObject({ bodyPath: null, textPath: null, sha256: null, error: "HTTP 403" });
+    expect(Object.keys(meta)).toEqual([
+      "url",
+      "slug",
+      "fetchedAt",
+      "status",
+      "contentType",
+      "byteLength",
+      "sha256",
+      "truncated",
+      "error",
+      "bodyPath",
+      "textPath",
+      "changed",
+      "firstFetch",
+      "previousSha256",
+      "note",
+    ]);
+  });
+});
+
+describe("previousTextState — what a failed fetch carries forward", () => {
+  const none = { textPath: null, textError: null, redacted: 0 };
+  const pdf = { contentType: "application/pdf", error: null, sha256: "aaa", textPath: "research/rendered/x.txt", redacted: 2 };
+
+  it("reads a PDF capture's claim on its text, its text error and its masked count", () => {
+    expect(previousTextState(pdf)).toEqual({ textPath: "research/rendered/x.txt", textError: null, redacted: 2 });
+    expect(previousTextState({ ...pdf, textPath: null, textError: "pdftotext is not installed" })).toEqual({
+      textPath: null,
+      textError: "pdftotext is not installed",
+      redacted: 2,
+    });
+  });
+
+  it("reads a failed fetch's carried state, so a second failed week carries it again", () => {
+    const failed = { contentType: null, error: "TypeError: fetch failed", sha256: null, textPath: "research/rendered/x.txt" };
+    expect(previousTextState(failed)).toEqual({ textPath: "research/rendered/x.txt", textError: null, redacted: 0 });
+  });
+
+  // HTML, JSON and the hand-edited metas must keep the error meta they always had.
+  it("gives nothing for any capture that is not a PDF, and nothing for no meta", () => {
+    expect(previousTextState(null)).toEqual(none);
+    expect(previousTextState({ contentType: "text/html", error: null, textPath: "research/rendered/x.txt", redacted: 1 })).toEqual(none);
+    expect(previousTextState({ contentType: "text/plain", error: null, textPath: "research/rendered/x.txt" })).toEqual(none);
+    expect(previousTextState({ contentType: "text/html", error: "HTTP 403", textPath: null })).toEqual(none);
   });
 });
 

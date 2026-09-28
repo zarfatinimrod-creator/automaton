@@ -52,15 +52,23 @@ the second and third of those. To move one:
    `.txt` comes back nearly empty, the page is client-rendered and the server sent a shell (or, for a
    PDF, the pages are images with no text layer) — record that as what happened, do not conclude the
    page said nothing. **For a PDF, the `.txt` is the fetcher's only if the meta's `textPath` names
-   it:** then it is pdftotext's output for exactly the bytes whose `sha256` the meta records. A null
-   `textPath` means the fetcher extracted no text from those bytes, and `textError` says why. A
-   `.txt` beside such a PDF is a hand extraction — four PDFs here have one, made before 28.9.2026 and
-   cited by line number in `products/pcn874/` and the research files — which the fetcher never
-   overwrites or deletes. If the PDF changes beside one, `textError` says the hand text no longer
-   describes the stored bytes.
+   it:** then it is pdftotext's output for exactly the `.pdf` stored beside it (the fetcher replaces
+   or removes its text whenever those bytes change). A null `textPath` means the fetcher extracted
+   no text from those bytes, and `textError` says why. A `.txt` beside such a PDF is treated as a
+   hand extraction — four PDFs here have one, made before 28.9.2026 and cited by line number in
+   `products/pcn874/` and the research files — which the fetcher does not overwrite or delete while
+   the URL keeps serving a PDF. If the PDF changes beside one, `textError` says so, names the sha256
+   of the stored copy the hand text sat beside (find it in git history), and says the hand text may
+   not describe the stored bytes: check it before citing. Once you have re-checked the hand text
+   against the new PDF, delete `textError` from the meta by hand; the fetcher does not bring it back
+   while the bytes stay the same.
 2. **Check `<slug>.meta.json` first.** A `status` of 403 or a non-null `error` means the page was
    never fetched: the finding is "the site refused a GitHub runner on this date", which stays
    **[BLOCKED]** and is itself worth writing down. A `truncated: true` caps what you may claim.
+   A failed fetch writes no file, so an older capture's `.pdf`/`.html`/`.txt` may still sit beside
+   such a meta: it is from an earlier date, found in git history. For a PDF, the failed fetch's meta
+   keeps the last capture's `textPath`, `textError` and `redacted`, because they still describe those
+   files; `sha256` and `bodyPath` are null because this fetch stored nothing.
 3. **Answer the specific question the research file asked**, not a question the page happens to
    answer. Each entry in `urls.txt` carries the sentence that put it there, quoted from the file
    that wants it.
