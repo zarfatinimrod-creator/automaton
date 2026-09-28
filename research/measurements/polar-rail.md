@@ -1,6 +1,6 @@
 # Measurement: Polar (polar.sh) as a sales rail for an Israeli seller (ZERO-TESTS row 17, BOARD-LOOP candidate 9)
 
-**Status: after tick 4 (28.9.2026): **FAILS_TEST** (selfie required by Polar's own docs, see the last section); the reading below was NEEDS_MORE before that check.** Fees pass the ₪0 rule; the products fit the acceptable-use summary but the
+**Status: after tick 4 (28.9.2026): FAILS_TEST (selfie required by Polar's own docs, see the last section); the reading below was NEEDS_MORE before that check.** Fees pass the ₪0 rule; the products fit the acceptable-use summary but the
 binding list is uncaptured; the Stripe capture has no Israel entry, so the camera gate is still unread. See "Tick 4 reading" at the end.
 Earlier status (tick 3): **MEASURED 28.9.2026** from the stored capture, `fetchedAt` **`2026-09-28T01:55:22.949Z`**. Verdict: NEEDS_MORE (end of file).
 **Ordered by:** `research/channel-loop/ZERO-TESTS.md:26` (row 17: "whether Polar pays a seller in Israel and through which
