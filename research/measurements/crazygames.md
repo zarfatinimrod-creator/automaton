@@ -1,5 +1,10 @@
 # Measurement: CrazyGames Basic Launch → Full Launch (BOARD-LOOP rank 6, ZERO-TESTS row 1)
 
+**Status (28.9.2026, after tick 4): NEEDS_MORE.** Tick 4 read the three docs Requirements pages ("Tick 4 reading" at the
+end). They never call themselves "Publisher Guidelines", and they say nothing about AI content, automated submission or an
+upload API. The Basic Launch bars are file limits, visual QA and PEGI12. SDK and ads are Full Launch work. No playtime or
+retention benchmark appears. Runner-operated submission is still unanswered by every public page read. Tick 3's status follows as written:
+
 **Status (28.9.2026, tick 3): NEEDS_MORE, unchanged.** Tick 3 read the terms PDF ("Tick 3 reading" at the end): non-exclusive by
 default with a +50% opt-in, paid 30 days after invoice (NET 60 is the Payouts page, not the contract), a compensation
 formula with no rate, no country clause, no brand-name payee, no AI or automation clause, an uncapped IP indemnity, and
@@ -407,3 +412,48 @@ stored PDF (the `.meta.json` `textPath` now names it; `sha256` is still `d409a8d
 **Verdict for candidate CrazyGames: NEEDS_MORE**
 
 The terms settle the money mechanics and none of them fails the test [RENDERED]: an individual may contract, no country is excluded, no developer fee is named, exclusivity is opt-in, and Compensation starts only at Full Launch and is due 30 days after CrazyGames' self-bill once €100 has accrued. Still UNKNOWN: the rate (inputs only, no percentage), whether our runner may operate the portal (the terms are silent), AI rules (silent here, but the incorporated Publisher Guidelines, crazygames-developer-terms.txt:63-66, are unread), and Israel payability (a Tipalti question, payouts.txt:375-377, left to proposed step 10 as T2.4 item 2 says). Single next check, ₪0 and owner-free: render the docs Requirements pages the FAQ points to as its rules (faq.txt:497; faq.html `href="../requirements/intro/"`, siblings `quality/`, `gameplay/`, `ads/`) and grep them for AI, automation and upload rules; that they are the public form of the Publisher Guidelines is [INFERENCE].
+
+---
+
+## Tick 4 reading (28.9.2026): the requirements pages
+
+Grades as in tick 3: **[RENDERED]** = quoted from the stored text with its line number; **[INFERENCE]** = my reading.
+"Not found" = a `grep -n -i` of all three texts returns nothing. **What was read, in full:** `crazygames-requirements-intro.txt`
+(310 lines), `-quality.txt` (306), `-ads.txt` (310); URLs `docs.crazygames.com/requirements/{intro,quality,ads}/`, all
+`fetchedAt` 2026-09-28T07:15Z, status 200, not truncated; sha256 `b64e9a7c…753c`, `7a411127…6204`, `5aed158d…1394`. The HTML
+was opened only for link targets and the table's column layout.
+
+### T4.1 Are these the "Publisher Guidelines"?
+- **The name "Publisher Guidelines" is not found** in the three texts or their HTML. [RENDERED] They call themselves requirements, with optional guidelines inside: intro:185 "To be published on CrazyGames, your game must meet our requirements."; intro:262 "Additionally we offer some Quality Guidelines to optimize your game for success on the CrazyGames platform. These are optional"; quality:185 "The guidelines should be used alongside our mandatory requirements ."
+- [INFERENCE] They match the terms' definition in subject ("quality of games, in-game ads and SDK", developer-terms:63-66) but not in place: the terms say "available on the Developer Portal", and these pages are on docs.crazygames.com. Whether this is the binding text, and whether the "optional" Quality page is binding under the terms: UNKNOWN.
+
+### T4.2 AI content, automated submission, upload route
+- **AI-generated content or AI-assisted development: not found.** The only "AI" is the docs widget intro:310, quality:306, ads:310 "Ask AI". Not allowed, not disclosed, not banned.
+- **Automated, scripted or bulk submission; a cap on games; an upload API or CLI: not found.** [RENDERED] The one "API" is the game-side nav item intro:79 "Leaderboards API". The route named is the portal: "Submit a game" (intro:11) links to `https://developer.crazygames.com/games` (intro.html:231); intro:298 "On our Developer Portal you'll be able to preview your game."; intro:258 "As part of the submission process, you will also need to provide qualitative metadata (game description and controls) and Game covers (images and videos)."
+- [INFERENCE] Same as the terms (T3.5): silence. Admission condition (BOARD-LOOP.md:125) not met; kill row "Terms forbid automated submission" not triggered.
+
+### T4.3 Quality bars, Basic vs Full
+- [RENDERED] Technical, Basic column (confirmed in the intro.html table): intro:205 "Initial download size &le; 50MB"; intro:206 "Total file size &le; 250MB ( 50MB without SDK )"; intro:207 "File count &le; 1500". Full adds intro:209 "SDK & GameplayStart event".
+- [RENDERED] Gameplay: Basic intro:213 "Basic visual QA checks", intro:214 "Adhere to PEGI12"; Full intro:216 "Full visual QA check", intro:217 "Land directly in gameplay".
+- [RENDERED] Mobile is optional and appears only as a guideline: quality:236 "The game interface is designed for the user's device (desktop and optionally mobile)."; for banners, ads:283 "(including on mobile)".
+- **Loading-time limit: not found** (only the nav item intro:105 "Game Loading Tips"). **Performance:** guideline wording only (quality:228, 244).
+- **Playtime, retention or conversion benchmarks: not found.** [RENDERED] Metrics are shown without thresholds: intro:274 "you'll be able to monitor key game metrics on your Developer Dashboard", intro:278 "Average playtime", intro:280 "Gameplay conversion", intro:282 "Retention". Progression is sent elsewhere: intro:189 "Review the Basic Launch Guide to understand how progression is evaluated." (href `/resources/basic-launch-metrics/`, unrendered). [INFERENCE] The kill-row benchmarks (10 min, D1 10-15%, 80%, BOARD-LOOP.md:126) remain scout-grade.
+
+### T4.4 SDK and ads
+- [RENDERED] Basic Launch: intro:189 "The CrazyGames SDK is optional and monetization is not available."; ads:180 "Advertisements will be disabled; no revenue will be shared."; ads:182 if the Ads SDK is integrated anyway, "The game will be rejected if it does not" run smoothly with ads disabled. Even in Basic, intro:222 "No external ads".
+- [RENDERED] Full Launch: intro:191 "you are required to comply to all integration requirements listed below, including the CrazyGames SDK."; ads:184 "Only Ads requested through the CrazyGames SDK are allowed."; intro:225 "Works with AdBlock", with ads:299 "It is never allowed to block players with AdBlockers from playing".
+- [RENDERED] Placement: ads:195-201 ads "should not appear before the user has experienced a reasonable amount of gameplay" and must not "Interrupt gameplay", "Trigger deceptively" or "Chain multiple ads"; ads:214 "max 1 every 3 minutes" (set by the SDK); ads:220 "Poorly designed levels that can only be completed by a rewarded ad are not acceptable."; ads:285 "Do not show in-game banners during game-play."
+- **External links rule: not found on these pages.** Nearest [RENDERED]: intro:230 "No external login options" (Basic column, "Only when applicable"). Cross-promotion is already barred by developer-terms:591-592 (T3.5).
+
+### T4.5 Content rules
+- **Clones, asset flips, templates: not found** on these pages (the rejection reason is faq.txt:487 only). [INFERENCE] It may sit on the unread Gameplay page (intro table link `/requirements/gameplay`); not verified.
+- [RENDERED] IP and naming (guideline): quality:261 "The game is not easily confused with another that features a similar name or iconography."; quality:263 "The game does not use a common identifier unless the game developer owns the respective IP."; quality:257 "Major features such as the game's genre should not change after submission."
+- **Still unread** of the category pages: `technical/`, `gameplay/`, `account-integration/`, `multiplayer/`, `game-covers/`; intro:193 says "Each category has a dedicated page with detailed descriptions".
+
+### T4.6 Anything that makes each game an owner click
+- **Not found:** no per-game step on these pages is assigned to a person. [RENDERED] Each game still needs the portal submission with metadata and covers (intro:258). Full Launch is CrazyGames' choice (intro:191 "selected"). SDK help comes only at intro:294 "Once your games reach 50k plays (combined)".
+- [INFERENCE] Single-player games that collect no extra data avoid the account-integration and consent rows (intro:228-234, 290). The per-upload question is unchanged from T3.5: the portal is the only route named, and nothing says who may operate it.
+
+**Verdict for candidate 6 (CrazyGames): NEEDS_MORE**
+
+These pages fail nothing [RENDERED]. They have no AI ban and no automation ban. The Basic Launch bars are file limits (intro:205-207), visual QA and PEGI12 (intro:213-214). The SDK, ad and AdBlock rules are Full Launch work the agent can build. The admission gate is still open: the FAQ, Payouts page, terms and now the three requirements pages all name the portal (intro.html:231) and never say whether a runner may operate it, and no upload API exists in any of them. The single next check is one written question to CrazyGames from the brand mailbox (proposed step 8): "May a developer account submit and update games through an automated browser session run on the developer's behalf, and is there an upload API?" Record the answer verbatim. A yes meets BOARD-LOOP.md:125. A no triggers the KILL-4 row.
