@@ -1,6 +1,6 @@
 # Does owner step 2 cost the owner money? Bituach Leumi, read from the source
 
-**Status: PARTLY MEASURED 27.9.2026; salaried page read 28.9.2026, still not settled (below).** Two of the three pages were rendered from a GitHub runner (render-watch run 22,
+**Status: MOSTLY SETTLED 28.9.2026: the owner is not a salaried employee (their answer, 28.9 ~02:45 UTC). One gap remains, below.** Two of the three pages were rendered from a GitHub runner (render-watch run 22,
 commit `3d5772b`). Kol Zchut answered 403, and the page that settles the salaried-employee case has not been rendered yet.
 
 **Why this was checked.** The owner's ₪0 rule (MISSION.md, 27.9.2026) says not even a shekel until the ledger shows
@@ -67,3 +67,23 @@ plus Bituach Leumi's own calculator, which a person can run in a minute. The col
 needs the person's own figures. Under the ₪0 rule, step 2 stays unasked until a paid product and a stranger's
 interest exist.
 
+
+## The owner's answer (28.9.2026, ~02:45 UTC): "אני לא שכיר"
+
+The owner is not a salaried employee, so the salaried-and-self-employed case above does not apply.
+
+**What follows [INFERENCE from the rendered pages, check before relying on it]:**
+- Someone who does not work and has no income is already liable for the ₪266 monthly minimum
+  (`btl-not-working-rates.txt:347-352`), business or not.
+- A self-employed person with income under ₪3,442 a month pays on that floor: 7.7% × ₪3,442 ≈ ₪265
+  (`btl-self-employed-rates.txt:410`, `:366-380`).
+- So opening the עוסק פטור file replaces one monthly floor with a nearly equal one. **The expected added
+  cost is about ₪0 a month**, which fits the ₪0 rule.
+
+**The one gap.** Bituach Leumi exempts some groups that do not work from the minimum (for example
+people in certain family or age situations). For someone in such a group, opening the file would add
+about ₪265 a month. The rendered pages do not list those groups. The next render names Bituach
+Leumi's own page on who is exempt; until then the claim above is stated as an inference, not a fact.
+
+**Effect on the owner-ask batch.** Step 2 no longer waits on the salaried question. It still waits,
+under the ₪0 rule, for a paid product that is ready to sell (`logs/CHANNEL_LOOP.md` §6 item 4).

@@ -164,8 +164,9 @@ No read is dated yet, because every clock starts with an owner action:
 
 **Only when a paid product is ready, and only after its cost is checked:**
 4. Step 2, the עוסק פטור file and Bituach Leumi. Before it is asked for, the colony renders what registering costs
-   someone in the owner's position (§4 row "Bituach Leumi"). One fact the colony cannot find itself: is the owner
-   currently a salaried employee? The Bituach Leumi rules differ.
+   someone in the owner's position (§4 row "Bituach Leumi"). **Answered 28.9: the owner is not salaried.** Opening the file
+   then replaces the ₪266 non-working minimum with a ~₪265 self-employed floor, so it adds about ₪0 a month [INFERENCE,
+   `step2-cost.md`]; the one gap is Bituach Leumi's list of exempt groups, rendered next.
 5. Step 3, Gumroad. It is free to open, and fees come only out of sales. It needs identity: ID, proof of address and
    an Israeli bank account.
 
