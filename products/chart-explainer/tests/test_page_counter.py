@@ -8,6 +8,8 @@ words. Anything but a PostHog project token for one of the two PostHog cloud hos
 import base64
 import json
 import re
+import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -91,6 +93,92 @@ def test_counter_script_sends_one_anonymous_pageview_and_touches_no_storage(tmp_
     # Sent on the first scroll, once, never on load (PREREG-DECISIONS.md §3.3).
     assert 'addEventListener("scroll"' in js and "once: true" in js and "passive: true" in js
     assert "DOMContentLoaded" not in js and '"load"' not in js and "setTimeout" not in js
+
+
+# --- on: the script's behaviour, run in Node --------------------------------------------------------------------------
+#
+# The string checks above pin what the script says; this runs it. The script is executed in a node:vm context holding
+# only the four globals it may use (addEventListener, fetch, crypto, location), so touching document, navigator, storage
+# or anything else throws and fails the run. Events go through Node's own EventTarget, which implements `once` as the
+# DOM does. Skipped where no `node` is on PATH (GitHub's ubuntu-latest runners have one).
+
+NODE = shutil.which("node")
+HARNESS = r"""
+"use strict";
+const fs = require("node:fs");
+const vm = require("node:vm");
+const { webcrypto } = require("node:crypto");
+const [code, loc, mode] = [fs.readFileSync(process.argv[2], "utf8"), JSON.parse(process.argv[3]), process.argv[4]];
+const target = new EventTarget();
+const registered = [];
+const calls = [];
+const sandbox = {
+  addEventListener(type, fn, opts) {
+    registered.push({ type, opts: { ...opts } });
+    target.addEventListener(type, fn, opts);
+  },
+  fetch(url, init) {
+    calls.push({ url, init: { ...init } });
+    return mode === "reject" ? Promise.reject(new Error("offline")) : Promise.resolve({ ok: true });
+  },
+  crypto: webcrypto,
+  location: loc,
+};
+vm.createContext(sandbox);
+vm.runInContext(code, sandbox);
+const seen = {};
+for (const t of ["DOMContentLoaded", "load", "pageshow", "visibilitychange"]) target.dispatchEvent(new Event(t));
+seen.onLoad = calls.length;
+target.dispatchEvent(new Event("scroll"));
+seen.firstScroll = calls.length;
+target.dispatchEvent(new Event("scroll"));
+target.dispatchEvent(new Event("scroll"));
+seen.laterScrolls = calls.length;
+setTimeout(() => process.stdout.write(JSON.stringify({ seen, registered, calls })), 20);
+"""
+
+
+def _run_in_node(tmp_path, js, loc, mode="resolve"):
+    (tmp_path / "counter.js").write_text(js, encoding="utf-8")
+    (tmp_path / "harness.js").write_text(HARNESS, encoding="utf-8")
+    proc = subprocess.run([NODE, str(tmp_path / "harness.js"), str(tmp_path / "counter.js"), json.dumps(loc), mode],
+                          capture_output=True, text=True, timeout=30)
+    assert proc.returncode == 0, proc.stderr  # an unhandled rejection or a ReferenceError would exit non-zero
+    return json.loads(proc.stdout)
+
+
+def _location(pathname):
+    origin = "https://name.netlify.app"
+    return {"origin": origin, "pathname": pathname, "search": "?utm_source=x&id=7", "hash": "#figures",
+            "href": f"{origin}{pathname}?utm_source=x&id=7#figures"}
+
+
+@pytest.mark.skipif(NODE is None, reason="node is not on PATH")
+@pytest.mark.parametrize("pathname", ["/", "/preview/"])
+def test_counter_script_run_in_node_sends_once_on_the_first_scroll_and_never_on_load(tmp_path, pathname):
+    js = _script(page.build_page(*_inputs(tmp_path), counter={"host": EU, "key": KEY}))
+    out = _run_in_node(tmp_path, js, _location(pathname))
+    assert out["seen"] == {"onLoad": 0, "firstScroll": 1, "laterScrolls": 1}
+    assert out["registered"] == [{"type": "scroll", "opts": {"once": True, "passive": True}}]
+    (call,) = out["calls"]
+    assert call["url"] == EU + "/i/v0/e/"
+    body = json.loads(call["init"].pop("body"))
+    assert call["init"] == {"method": "POST", "headers": {"Content-Type": "application/json"}, "credentials": "omit"}
+    assert re.fullmatch(r"[0-9a-f]{32}", body.pop("distinct_id"))
+    # Exactly our shape (§3.4(c)), and the address is origin + path: no query string, no fragment.
+    assert body == {"api_key": KEY, "event": "$pageview",
+                    "properties": {"$process_person_profile": False,
+                                   "$current_url": "https://name.netlify.app" + pathname}}
+
+
+@pytest.mark.skipif(NODE is None, reason="node is not on PATH")
+def test_counter_script_run_in_node_drops_a_failed_send_and_draws_a_new_id_per_visit(tmp_path):
+    js = _script(page.build_page(*_inputs(tmp_path), counter={"host": US, "key": KEY}))
+    failed = _run_in_node(tmp_path, js, _location("/"), mode="reject")  # exits 0: the rejection is caught, not retried
+    assert failed["seen"] == {"onLoad": 0, "firstScroll": 1, "laterScrolls": 1}
+    ids = {json.loads(_run_in_node(tmp_path, js, _location("/"))["calls"][0]["init"]["body"])["distinct_id"]
+           for _ in range(3)}
+    assert len(ids) == 3
 
 
 def test_counter_on_says_so_in_how_this_page_was_made_and_nowhere_changes_otherwise(tmp_path):
