@@ -355,6 +355,31 @@ payout, and anything bought.
 **What it does not change.** Honest value, the brand as the only public face, money only in the ledger, and no
 account opened by us in the owner's name.
 
+## הרבה מקומות, הרבה מכירות — תוספת הבעלים, 28.9.2026 (verbatim)
+
+> תנסה להרוויח לי כמה שיותר כסף, זה לא אומר בפעם אחת מחירה גדולה זה אומר המון מקומות המון מחירות
+> אתה מבין ואני רוצה שתרוויח לי כמה שיותר
+
+("מחירה" / "מחירות" is read as מכירה / מכירות, sales: the sentence contrasts one big sale with many places and many
+sales.)
+
+### What this addition changes
+
+**Breadth is the strategy, not one big win.** Money is to come from many small sales in many places: many listings,
+many venues, many buyers, each sale small. A plan that bets on one large contract, one launch or one viral hit is
+the wrong shape even when its expected value looks similar, because the owner asked for the shape as well as the
+amount.
+
+**It sharpens constraint 2, it does not repeal it.** "Many places" is many *listings and venues*, reached through as
+few owner accounts as possible. The unit that costs the owner something is an account or a payout rail, so the work
+ranks venues by how many honest listings and how many buyers one owner step unlocks, and it prefers venues that bring
+their own buyers, because our own sites have almost no traffic yet.
+
+**It changes nothing else.** Honest value only (no spam listings, no low-effort flooding that a platform would call
+spam, no fake reviews), the brand as the only public face, the ₪0 rule of 27.9 (platform fees taken out of a sale
+are allowed; nothing is paid up front), no camera step, no subscriptions, money only in the ledger, and no account
+ever opened in the owner's name by us.
+
 ---
 
 ## The rules this mandate implies
