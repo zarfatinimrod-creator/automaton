@@ -193,6 +193,15 @@ describe("revenue/runner report rendering", () => {
     expect(report).toContain("Projections are never counted");
   });
 
+  it("prints each contested upper bound beside the committed target, never inside the sum (RULING-2026-09-28-floors.md §9)", async () => {
+    // "The ₪400 does not vanish: it is recorded where the board already records a larger figure it refused to commit
+    // to, and the report prints it beside the ₪0."
+    const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
+    const report = renderReport(db, result);
+    expect(report).toContain("| Line targets, summed | ₪1,100 against");
+    expect(report).toMatch(/Contested upper bounds, not targets and not in the sum: `apify-actors` ₪1,500 \(target ₪200\), `il-biz-tools` ₪400 \(target ₪0\)\./);
+  });
+
   it("lists each waiting line's open owner steps from the checklist itself, step 2 included", async () => {
     // The bug: every line's list came from portfolio.ts humanSetup alone, which leaves
     // out the steps shared by all lines — so owner step 2 (the tax file) appeared

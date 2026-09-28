@@ -13,7 +13,7 @@
 
 import type { Database } from "better-sqlite3";
 import { describeStall, findStalledLines, type StalledLine } from "./watchdog.js";
-import { summarizeTargetBasis } from "./portfolio.js";
+import { DEFAULT_PORTFOLIO, summarizeTargetBasis, TARGET_BASIS } from "./portfolio.js";
 import { frozenOwnerStepsForLine, heldOwnerStepsForLine, openOwnerStepsForLine } from "./owner-steps.js";
 import { DEFAULT_MEASUREMENTS_DIR, ingestAlgoraSupplyMeasurement, ingestApifyMeasurement, type IngestResult } from "./measurements.js";
 import {
@@ -395,6 +395,13 @@ export function renderReport(db: Database, result: TickResult): string {
     out.push(`| **Resting on nothing yet** | ₪${basis.unevidencedIls.toLocaleString("en")} |`);
     out.push(`| **Contradicted by their own basis** | ₪${basis.contradictedIls.toLocaleString("en")} |`);
     out.push("");
+    // A larger figure the board refused to commit to is printed beside the target, never summed into it
+    // (RULING-2026-09-28-floors.md §9: "the report prints it beside the ₪0").
+    const contested = DEFAULT_PORTFOLIO.filter((seed) => typeof TARGET_BASIS[seed.id]?.contestedUpperBoundIls === "number").map(
+      (seed) =>
+        `\`${seed.id}\` ₪${TARGET_BASIS[seed.id]!.contestedUpperBoundIls!.toLocaleString("en")} (target ₪${Math.round(seed.targetMonthlyAgorot / 100).toLocaleString("en")})`,
+    );
+    if (contested.length) out.push(`Contested upper bounds, not targets and not in the sum: ${contested.join(", ")}.`);
     if (basis.contradictedLines.length) {
       out.push("");
       out.push(

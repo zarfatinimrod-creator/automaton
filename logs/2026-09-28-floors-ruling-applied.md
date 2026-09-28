@@ -42,6 +42,9 @@
 - הנגזרות של K3 ב-`experiments.ts:80-81` ("clears the ₪500 kill floor") הן מספר שנרשם מראש לניסוי YouTube. לא נגעתי
   (שורה 11 ו-`experiments.ts` מחוץ לתחום של המשימה הזו).
 - בקומיט הזה `contradictedLines` הוא `[]` כפי ששורה 9 כותבת. הכרעת הבאונטי (הקומיט הבא) מחזירה את `oss-bounties` לשם.
+- **תוספת אחרי הרצת `report`:** ה"החלטה" של שורה 9 אומרת "the report prints it beside the ₪0", אבל ה"Exact change" לא
+  כלל שינוי בדוח, והדוח לא הדפיס אף גבול עליון שנוי במחלוקת (גם לא ה-₪1,500 של Apify). הוספתי ל-`runner.ts` שורה אחת
+  ("Contested upper bounds, not targets and not in the sum: …") עם בדיקה שנכשלה קודם, בקומיט נפרד.
 
 ## 5. שגיאות וניסיונות שנכשלו
 - העץ התחיל על בסיס ישן (`b968711`) — בדיוק מה ש-CLAUDE.md מזהיר ממנו. תוקן ב-reset.
