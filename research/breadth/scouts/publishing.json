@@ -1,0 +1,391 @@
+{
+ "family": "publishing",
+ "prior_coverage": "Nobody has swept publishing as a family before. A grep of docs/, research/ (excluding rendered/), MISSION.md and logs/CHANNEL_LOOP.md for kdp, kindle, ebook, lulu, leanpub, e-vrit, draft2digital, kobo, play books, apple books, smashwords, publishdrive and streetlib finds no prior verdict on Google Play Books, Leanpub, Lulu, Draft2Digital, Kobo, Apple Books or e-vrit. What the repo does already hold:\n(1) KDP's AI disclosure rules, snippet grade and sourced only from vendor blogs: research/colony-sweep/scouts/licensing-ip--ai-output-rights.md:121-134. It says \"an unblocked agent should open Amazon's own KDP content-guidelines page\".\n(2) docs/INCOME_PLAN.he.md:100 says KDP requires disclosure and caps titles at 3 per day, and that \"תוכן בכמות מת כאסטרטגיה\" (bulk content is dead as a strategy).\n(3) docs/INCOME_PLAN.he.md:266 rejects Google Play APPS ($25, 12 testers for 14 days). That is the Play Console, not the Play Books Partner Center, so the rejection does not reach Play Books. The same line rejects Envato over its AI ban.\n(4) Cold-start precedent. Gumroad's Discover shows nothing until a first sale (research/colony-sweep/audits/storefronts.md:63-77), and MISSION.md:200 records that platform search ranks on prior success. The Gumroad median is $72/month and 44% of products earn $0 (research/colony-sweep/scouts/storefronts--gumroad.md:135-136, snippet).\n(5) docs/REJECTED.md:174: charging for a free answer violates the constitution. That rules out repackaging public-domain or state-published text.\n(6) Supply cap. MISSION constraint 6 bounds how many distinct honest titles exist (roughly 5 to 15 that the colony could honestly write from its own verified work), so \"many listings\" here means many venues per title, not many titles.\n\nNew evidence this session:\n- Leanpub's API (publish, preview, job_status and book info) is used from public repos: tebeka/forging-python Makefile, Just-Understanding-Data-Ltd/compound-engineering-book scripts/publish.sh, and siy/coding-technology. Grade: github. A snippet says the API is a Pro (paid) membership feature.\n- Every KDP automation on GitHub drives the browser with Puppeteer or Playwright and types the account credentials; none uses an API (d1fmarketing/book-automation kdp-publisher.js, sabbonzo/kdp-autopublish, victorpreston/amazon_kdp_upload_automation). Grade: github.\n- A public script that claims a \"Google Play Books Partner API\" calls booksApi.volumes.insert(). That method does not exist: GitHub code search of googleapis/google-api-nodejs-client src/apis/books/v1.ts returns 0 hits for Params$Resource$Volumes$Insert, against 1 hit for the control Params$Resource$Volumes$Useruploaded$List. Grade: github. That script is fabricated and must not be cited as a route.\n- Draft2Digital refuses content that is wholly AI-generated without extensive human editing, and refuses AI nonfiction from authors without credentials (snippet). Kobo Writing Life's terms prohibit wholly or partly AI-generated content (snippet).",
+ "candidates": [
+  {
+   "venue": "Google Play Books Partner Center (ebooks, ONIX / automated content fetching)",
+   "url": "https://play.google.com/books/publish/",
+   "what_we_would_list": "A small catalogue of honest reference ebooks (EPUB, English and Hebrew) built from the colony's own verified, cited work. Examples: a PCN874 developer reference (the ITA 2009 circular cited line by line, plus the test fixtures); a data.gov.il field guide; licence-gated OWID data explainers. AI authorship is declared in every description. No puzzle-book factory and no public-domain repackaging (docs/REJECTED.md:174). Realistic supply is 5-15 titles in 12 months (MISSION constraint 6).",
+   "existing_product": "products/pcn874/docs/SPEC.md (660 lines, cited reference), products/apify-il-open-data/src/dictionary.ts (field dictionary), products/chart-explainer (figures and pages after the licence gates in research/faceless-youtube/DATASETS.md)",
+   "listings_per_owner_step": "One Partner Center account plus one payments profile (1-2 owner steps) unlocks every title. If automated content fetching is enabled, new titles and updates flow from our own HTTPS or SFTP host with no further owner action. No per-account title cap was found (UNKNOWN).",
+   "prior_verdict": "None. docs/INCOME_PLAN.he.md:266 rejects Google Play apps (Play Console $25 plus 12 testers). That is a different product and does not cover Play Books.",
+   "reopen_basis": "Not previously swept. This is a new venue, not a reopen.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "The help centre has a 'Revenue Split FAQs' page (answer 9331459), which implies commission taken from sales. No sign-up or listing fee appeared in any snippet, but the absence of a fee was not read on a primary page. ISBNs: UNKNOWN whether a free Google identifier is still issued.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Google pays partners' bank accounts in supported countries, and countries marked with a star are paid by wire in USD (snippet from answer 3250840 / 6009580). Whether Israel is in the partner payout list (table 6052428) was not seen. Whether the payments-profile identity check involves a camera is UNKNOWN.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "From 'Send your books to Google Play with automated content fetching' (answer 2763162, snippet): 'Publishers and service providers who use this content fetching system only need to make their content accessible via an HTTP/HTTPS/SFTP/FTP/Google Cloud Storage server'. ONIX feeds overwrite Partner Center settings, and there is an 'Add multiple books' page (answer 3289689). Caveat: whether fetching is open to a new individual account or must be requested is UNKNOWN. Warning: the only GitHub 'Partner API' script (d1fmarketing/book-automation google-play-publisher.js) calls volumes.insert, which does not exist in the googleapis Books v1 client (github code search, 0 hits vs 1 for a control method).",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The snippet summary found no blanket ban on AI-generated books in the Publisher Content Policies (answer 1067634). Spam, misleading content and poor user experience are prohibited, and automated models detect violations. No AI disclosure field was found. A Google Play community thread shows buyers complaining about AI books surfacing in suggestions.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "This is Google's consumer ebook store, with 'Sell books internationally' and a 'Supported countries for selling books on Google Play' table (snippet titles). It brings its own buyers, but no buyer or traffic numbers were found. Whether it has an Israeli storefront or Hebrew-reader demand is UNKNOWN.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN at primary grade; no Play Books ranking source was found. Repo precedent (MISSION.md:200): three platforms' search all rank on prior success. Assume cold start: day-one titles surface only on exact-title and niche queries.",
+   "owner_step": "(1) Create a Google Play Books Partner Center account under the brand's publisher name (payee in the owner's legal name). (2) Set up the Google payments profile, bank account and tax info. (3) Once only: generate SFTP or content-fetch credentials, or approve the fetch URL. After that, titles are agent-published.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 300,
+   "estimate_basis": "Inference. 5-15 honest titles by month 12, times 0-1 sales per title per month, times roughly ₪15-25 net per sale (list price $4.99-9.99 at an unread revenue split). The cold-start shape comes from the Gumroad snippet data (median $72/month; 44% of products at $0; storefronts--gumroad.md:135-136). No Play Books base rate was found.",
+   "time_to_first_sale": "UNKNOWN. Inference: 1-4 months after the owner steps and the first successful fetch, and only if a stranger finds a niche title. Month one is most likely ₪0.",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://support.google.com/books/partner/table/6052428?hl=en",
+    "https://support.google.com/books/partner/answer/3250840?hl=en",
+    "https://support.google.com/books/partner/answer/6009580?hl=en",
+    "https://support.google.com/books/partner/answer/2763162?hl=en",
+    "https://support.google.com/books/partner/answer/3289689?hl=en",
+    "https://support.google.com/books/partner/answer/1067634?hl=en",
+    "https://support.google.com/books/partner/answer/9331459?hl=en",
+    "https://support.google.com/books/partner/answer/3244021?hl=en"
+   ]
+  },
+  {
+   "venue": "Amazon KDP (Kindle ebooks, Hebrew paperbacks)",
+   "url": "https://kdp.amazon.com/",
+   "what_we_would_list": "The same small reference catalogue as Kindle ebooks, plus Hebrew paperbacks where print adds value. Hebrew paperbacks need a PDF interior and get no Expanded Distribution. AI-generated is ticked in the submission, and the description also declares it, because KDP's declaration is private.",
+   "existing_product": "products/pcn874/docs/SPEC.md, products/apify-il-open-data/src/dictionary.ts, products/chart-explainer",
+   "listings_per_owner_step": "One account unlocks unlimited titles, but every title is a web-form submission (a per-item click) and a 3-titles-per-day cap applies (docs/INCOME_PLAN.he.md:100, snippet origin).",
+   "prior_verdict": "No verdict. AI disclosure is recorded at snippet grade from vendor blogs (research/colony-sweep/scouts/licensing-ip--ai-output-rights.md:121-134). docs/INCOME_PLAN.he.md:100 records KDP requiring disclosure, capping titles at 3 per day, and 'bulk content is dead as a strategy'.",
+   "reopen_basis": "Not previously swept as a venue. New this session: Hebrew support (snippet) and GitHub evidence that there is no listing API.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Background knowledge that KDP charges no upfront fee and takes print cost and commission from royalties. Not read this session; render the KDP pricing and royalty help pages to upgrade the grade.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "KDP pays by EFT, check or wire depending on where the bank is (snippet, help topic GJD7DFFX6X88AK46). There is a 'Payment Service Provider Program FAQ' (GD9NN4LS8ZDU8XZ7) and a KDP community thread titled 'Receiving Royalties Payment to an Israeli Foreign Author', neither read. Israel eligibility and whether identity checks use a camera are UNKNOWN.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "No public listing API was found. Every GitHub automation is browser automation that types the account credentials: d1fmarketing/book-automation kdp-publisher.js uses Puppeteer with page.type('#ap_password', ...); sabbonzo/kdp-autopublish is 'Amazon KDP automation with Playwright'; victorpreston/amazon_kdp_upload_automation is the same kind. So each title needs an owner click, or the owner's Amazon credentials and 2FA handed to a bot. Both break the brief, and the ToS position on automated access is UNKNOWN.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "AI-generated content is allowed. Disclosure is a required field in the submission flow; it is internal to Amazon and not shown to buyers; non-disclosure leads to removal (licensing-ip--ai-output-rights.md:121-134, snippet from vendor blogs). A 3 titles/day cap applies (INCOME_PLAN.he.md:100). Hebrew: ebooks in Hebrew are supported; Hebrew paperbacks need a PDF interior and are not eligible for Expanded Distribution (snippet, help topic GML3FXP998V8WS4U).",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Amazon is the largest ebook and print marketplace, which is background knowledge. No buyer numbers were read, and Hebrew-book demand on Amazon is UNKNOWN.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN at primary grade. Inference: ranking is sales-rank driven, so it is a cold start (MISSION.md:200 precedent).",
+   "owner_step": "One-time: KDP account, tax interview and bank or payment method. Then a per-title web submission, recurring, which fails the brief.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 400,
+   "estimate_basis": "Inference. The largest demand pool, but as gated it earns ₪0, because listing needs per-title owner clicks. The high end assumes the same 5-15 titles at 0-1.5 sales per title per month if an owner-free listing route existed. No KDP base rate was read.",
+   "time_to_first_sale": "Blocked by the listing gate. If listed: weeks to months (inference).",
+   "verdict": "WEAK",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://kdp.amazon.com/en_US/help/topic/G200672390",
+    "https://kdp.amazon.com/en_US/help/topic/GJD7DFFX6X88AK46",
+    "https://kdp.amazon.com/en_US/help/topic/GD9NN4LS8ZDU8XZ7",
+    "https://kdp.amazon.com/en_US/help/topic/GML3FXP998V8WS4U",
+    "https://www.kdpcommunity.com/s/question/0D5f400000FHwEXCA1/receiving-royalties-payment-to-an-israeli-foreign-author?language=en_US"
+   ]
+  },
+  {
+   "venue": "Apple Books for Authors (delivery via Apple Transporter)",
+   "url": "https://authors.apple.com/",
+   "what_we_would_list": "The same EPUB reference catalogue as for Google Play, with AI declared in the description.",
+   "existing_product": "products/pcn874/docs/SPEC.md, products/apify-il-open-data/src/dictionary.ts, products/chart-explainer",
+   "listings_per_owner_step": "One Apple Account with a Books provider, banking and tax, plus one app-specific password, could unlock Transporter deliveries per title with no clicks. Eligibility for individual authors is UNKNOWN.",
+   "prior_verdict": "None in the repo.",
+   "reopen_basis": "Not previously swept.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Not read this session. Background knowledge only: Apple Books for Authors charges no upfront fee.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "No evidence gathered on Apple Books payout countries or its identity flow.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "d1fmarketing/book-automation scripts/publishers/apple-books-publisher.js spawns iTMSTransporter with '-m', 'upload', '-f', <package>, '-u', <username>, '-p', <password> and a provider ID. Its default path is the macOS iTunes Producer app. That the tool exists is github-grade; whether an individual author account may deliver books this way was not read.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Apple Books' content rules on AI-generated text were not read.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "Apple Books is a consumer store (background knowledge). No numbers, and store availability in Israel and for Hebrew is UNKNOWN.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. Assume cold start (MISSION.md:200 precedent).",
+   "owner_step": "Apple Account with 2FA, Apple Books for Authors provider sign-up, banking and tax, plus one app-specific password for Transporter.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "Inference: the same small catalogue in a smaller store than Amazon or Google, and a cold start. No base rate.",
+   "time_to_first_sale": "UNKNOWN. Months after the owner steps (inference).",
+   "verdict": "WEAK",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://authors.apple.com/",
+    "https://help.apple.com/itc/booksassetguide/",
+    "https://support.apple.com/en-us/HT204411",
+    "https://github.com/d1fmarketing/book-automation/blob/main/scripts/publishers/apple-books-publisher.js"
+   ]
+  },
+  {
+   "venue": "Leanpub",
+   "url": "https://leanpub.com/",
+   "what_we_would_list": "Developer-audience reference books, English first: the PCN874 file-format developer reference with fixtures, and a data.gov.il API field guide. AI declared in the book description.",
+   "existing_product": "products/pcn874/docs/SPEC.md, products/pcn874/docs/GENERATOR.md, products/apify-il-open-data/src/dictionary.ts",
+   "listings_per_owner_step": "One account unlocks up to 100 books and 20 previews or publishes per month on the Free membership (snippet). Each is created through the web UI; the API is a paid Pro feature.",
+   "prior_verdict": "None in the repo.",
+   "reopen_basis": "Not previously swept.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "From the snippet: 'A Free Author Membership gives you up to 100 books and courses with 20 previews or publishes per month'. Royalty is 80% on purchases of $7.99 or more, and 80% minus a 50-cent fee between $0.99 and $7.98.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Payout method not read this session; background knowledge says PayPal. PayPal Israel works, with 18% VAT on fees since 6.7.2026 (docs/INCOME_PLAN.he.md:95). A camera step is UNKNOWN.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "The API works: POST https://leanpub.com/<slug>/publish.json and preview.json with api_key, plus job_status.json and <slug>.json (github: Just-Understanding-Data-Ltd/compound-engineering-book scripts/publish.sh; tebeka/forging-python Makefile; siy/coding-technology publish-leanpub.sh). But the snippet says 'A Pro Author Membership includes the Leanpub API'. A paid tier breaks the ₪0 rule, and the free tier means web-UI clicks per book. Book creation through the API is UNKNOWN.",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "No AI-content policy was found. The snippet only says the Max and Ultra memberships include AI writing features.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "Leanpub has a store and bestseller lists, but no traffic or buyer numbers were found. It is a niche technical audience.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. Inference: bestseller lists are sales-ranked, so it is a cold start.",
+   "owner_step": "One-time Leanpub account and payout setup. On the free tier, a per-book owner click, which fails. Pro would remove the clicks but costs money, which is blocked until the ₪0 rule is lifted.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 250,
+   "estimate_basis": "Inference: 1-3 developer titles at $15-30 with an 80% royalty and 0-3 sales a month. No Leanpub base rate.",
+   "time_to_first_sale": "UNKNOWN. Months (inference).",
+   "verdict": "WEAK",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://leanpub.com/authors",
+    "https://help.leanpub.com/en/articles/5468013-what-is-leanpub-s-royalty-rate-are-there-any-restrictions-on-where-i-can-self-publish-my-book-and-what-price-i-can-charge",
+    "https://help.leanpub.com/en/collections/32745-selling-and-royalties",
+    "https://leanpub.com/terms"
+   ]
+  },
+  {
+   "venue": "e-vrit (עברית) and Hebrew digital bookstores",
+   "url": "https://www.e-vrit.co.il/",
+   "what_we_would_list": "Hebrew-language reference ebooks, for example a data explainer series. Guides that restate free state content are excluded (docs/REJECTED.md:174).",
+   "existing_product": "products/chart-explainer (Hebrew-capable figures and pages); products/il-biz-tools content, only where it is not a free state answer",
+   "listings_per_owner_step": "UNKNOWN. Self-published books appear under an e-vrit 'הוצאה עצמית' (self-publishing) publisher page. Whether an author can list without a per-title human process is UNKNOWN.",
+   "prior_verdict": "None in the repo. The nearest precedent is research/measurements/tenders-occupancy.md: Israeli sites geo-block non-Israeli traffic, so renders may fail.",
+   "reopen_basis": "Not previously swept.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No terms, fees or royalty split were found. The snippet only shows the store, a self-publishing publisher page (Publisher/746) and a help centre.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "It is an Israeli company, so an ILS payout is plausible (inference). An Israeli payer will likely need a tax invoice from an עוסק, which is owner step 2, held until a paid product is ready (MISSION.md 27.9 addition). A camera step is UNKNOWN.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No public API or bulk feed for self-publishers was found. Onboarding appears to run through e-vrit's own self-publishing imprint (inference). Human contact with e-vrit staff is likely, and it would fail the rule that the owner never talks to anyone.",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "No AI policy was found.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Snippet: 'the largest online bookstore in Israel', digital, audio and print, with an app and a public-library lending group. No buyer numbers.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "A self-publishing agreement with e-vrit (terms unknown, possibly a human process), owner step 2 (tax file) for invoicing, and bank details.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "Inference: small Hebrew market, a few titles, unknown split. No base rate.",
+   "time_to_first_sale": "UNKNOWN. Gated on step 2 and on e-vrit's onboarding.",
+   "verdict": "WEAK",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://www.e-vrit.co.il/Publisher/746/%D7%94%D7%95%D7%A6%D7%90%D7%94_%D7%A2%D7%A6%D7%9E%D7%99%D7%AA",
+    "https://help.e-vrit.co.il/hc/he",
+    "https://www.e-vrit.co.il/"
+   ]
+  },
+  {
+   "venue": "Draft2Digital (aggregator: Apple, Kobo, B&N, Tolino, OverDrive, Scribd and others; owns Smashwords)",
+   "url": "https://draft2digital.com/",
+   "what_we_would_list": "Nothing honestly. Its rules require extensive human editing of AI text, and the colony has no human editor.",
+   "existing_product": "none applicable",
+   "listings_per_owner_step": "In principle one account puts each title in about 10 retailers, the best breadth per owner step in the family, but the AI rule closes it.",
+   "prior_verdict": "None in the repo.",
+   "reopen_basis": "Not previously swept. Reopen only if D2D accepts disclosed AI-authored work without a human editor.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Snippet titles 'What the Draft2Digital Fee Changes Mean for You in 2026' (selfpublishingadvice.org, allianceindependentauthors.substack.com) indicate new fees in 2026. Their content was not read.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "From the D2D Terms of Service (snippet): 'All payments will be made via check, PayPal, Payoneer or Electronic Funds Transfer'. The Payoneer threshold is $20 and the check threshold $100. PayPal works in Israel (INCOME_PLAN.he.md:95), but Payoneer's Israeli eligibility is UNKNOWN (INCOME_PLAN.he.md:96).",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No public API: a GitHub repository search for 'draft2digital api' returned 0 results, and the snippets did not mention bulk upload.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "FAIL",
+    "evidence": "Snippet: D2D 'does not accept content that has been generated entirely by AI/LLMs that has not gone through extensive editing from a human' and 'does not accept noncredentialled nonfiction content produced by AI'. It has rejected over 70% of titles in some months over spam and AI. The colony has no human editor and the owner never edits, so claiming compliance would be dishonest.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "Its distribution to major retailers is background knowledge only; no numbers were read.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "Inherits each retailer's ranking (UNKNOWN).",
+   "owner_step": "One account, tax interview and payout, but blocked by the AI rule.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "The venue's AI rule excludes the colony's output, so ₪0.",
+   "time_to_first_sale": "Never under the current rules.",
+   "verdict": "DEAD",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://draft2digital.com/terms-of-service/",
+    "https://draft2digital.com/faq/",
+    "https://selfpublishingadvice.org/what-the-draft2digital-fee-changes-mean-for-you-in-2026/"
+   ]
+  },
+  {
+   "venue": "Kobo Writing Life",
+   "url": "https://writinglife.kobo.com/",
+   "what_we_would_list": "Nothing honestly. The terms prohibit wholly or partly AI-generated content.",
+   "existing_product": "none applicable",
+   "listings_per_owner_step": "One account reaches the Kobo store only; closed by the AI rule.",
+   "prior_verdict": "None in the repo.",
+   "reopen_basis": "Not previously swept. Reopen only if Kobo's terms permit disclosed AI-generated books.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Not read this session.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Payments go through Convera by EFT via local banks (snippet). Israel is listed among the countries with Kobo sales, but Israeli bank payout was not confirmed.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No API was found; none searched on GitHub specifically.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "FAIL",
+    "evidence": "Snippet from the KWL terms of service: they 'explicitly prohibit wholly or partly AI-generated content', and a non-generative detector screens submissions. A headline reports 'Kobo rejected 45% of self-published books last year, mostly over AI'.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "Sales are reported in 58+ countries (snippet); no buyer numbers.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "One account plus bank details, but blocked by the AI rule.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "The AI prohibition excludes the colony's output, so ₪0.",
+   "time_to_first_sale": "Never under the current terms.",
+   "verdict": "DEAD",
+   "rank_in_family": 7,
+   "primary_urls_to_render": [
+    "https://writinglife.kobo.com/resources/serviceAgreement.html",
+    "https://kobowritinglife.zendesk.com/hc/en-us/articles/32021666379803-What-Content-is-Not-Allowed",
+    "https://kobowritinglife.zendesk.com/hc/en-us/articles/43580341403675-How-do-I-add-my-bank-information-to-receive-payment"
+   ]
+  },
+  {
+   "venue": "Lulu Print API (print-on-demand fulfilment)",
+   "url": "https://api.lulu.com/",
+   "what_we_would_list": "Nothing as a venue. The API prints and ships orders that we place; it does not list a book for sale or bring buyers.",
+   "existing_product": "none applicable",
+   "listings_per_owner_step": "Zero buyer-facing listings. One API key only creates print jobs.",
+   "prior_verdict": "None in the repo.",
+   "reopen_basis": "Not previously swept. Would only matter as fulfilment behind a storefront that already has buyers.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Inference, not read: print-job costs are charged to the API account per order, so the account pays before the buyer's money arrives unless a storefront collects first.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Not researched; the API is a cost, not a payout.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "Several public clients exist for print jobs: ntegral/lulu-client ('Lulu Print API Client'), minireference/lulu-api-client ('Test client and automation for print on demand services at https://api.lulu.com'; its README shows creating a print job with a book object and a shipping address), and yatryan/lulu_api. These create print jobs, not store listings.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not read.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "It is a fulfilment API with no marketplace demand. Lulu's own bookstore and its distribution are separate manual flows, not evidenced.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "Not applicable: there is no discovery surface.",
+   "owner_step": "API account plus a payment method on file, which likely breaks the ₪0 rule.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "It brings no buyers, so ₪0 as a venue.",
+   "time_to_first_sale": "Never as a standalone venue.",
+   "verdict": "DEAD",
+   "rank_in_family": 8,
+   "primary_urls_to_render": [
+    "https://api.lulu.com/docs/",
+    "https://developers.lulu.com/"
+   ]
+  }
+ ],
+ "searches_used": 6
+}

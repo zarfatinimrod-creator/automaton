@@ -1,0 +1,386 @@
+{
+ "family": "affiliate-on-our-surfaces",
+ "prior_coverage": "I read the repo first. The family was swept on 6.9 as content-seo/affiliate-networks (research/colony-sweep/scouts/content-seo--affiliate-networks.md, all 8 searches snippet-grade, nothing rendered) and killed with its group. The group report (research/colony-sweep/groups/content-seo.md:24, 130-137, 151-153) rejected CJ, Awin, impact.com, ClickBank, Digistore24, Rakuten and Skimlinks/Sovrn as multipliers on zero traffic, with Payoneer payability to Israel UNKNOWN (docs/INCOME_PLAN.he.md:96). It rejected Amazon Associates on the rail; the audit downgraded that to payability UNKNOWN but kept the outcome (research/colony-sweep/audits/content-seo.md:113-120). Israeli-vendor programmes are a permanent rejection (docs/REJECTED.md:1100-1103; audit confirmed at audits/content-seo.md:153-158). The AdSense/MFA storefront model is rejected permanently (docs/REJECTED.md:277). hebrew-content was killed (REJECTED.md:1263-1268) and reopens only when il-biz-tools shows 100+ weekly search views (REJECTED.md:1282). Affiliate-link template repos are refused as funnels (research/tiktok/07-ai-money-tooling.md:227). The faceless-YouTube scouts treat affiliate links as a day-1 rail that is worth nothing without traffic (research/faceless-youtube/DIGEST.md:30, :330).\n\nTRAFFIC OUR SURFACES CAN HONESTLY EXPECT: today, zero measured. Nothing is public: il-biz-tools is blocked at build by the missing accessibility contact (products/il-biz-tools/README.md), and the T1 web arm, mcp-il-tools and the Apify Actor are all unlaunched (logs/CHANNEL_LOOP.md §2-3). The public GitHub repo still carries the owner's name until step 7 (research/channel-loop/BOARD-LOOP.md:9 item f), so it cannot carry brand links yet. The only audited comparables are free calculators at ₪200-400/month in total value, and a competitor calculator with 0 impressions over 16 months (groups/content-seo.md:123-125). Apify's base rate is 8.7 users per Actor, with P(≥10 stranger users) ≈ 30% (research/channel-loop/FORECAST.md:24). DISCLOSURE: none is built. No page in the repo carries an affiliate notice; any link we add needs a visible Hebrew and English disclosure line, which the colony can template.\n\nNEW today (github grade unless noted):\n(1) Apify's affiliate terms (apify/apify-docs@1fa5620, sources/legal/latest/terms/affiliate-program-terms-and-conditions.md, last updated 15 Sep 2026), §8 'Open Source Fair Share'. Users who sign up for Apify through our open-source Actor's Store page are credited to us automatically. The rate is 20% of their Apify payments for 3 months, then 30%, capped at $2,500 per customer. Payout is PayPal, bank transfer or Wise, in USD, with a $100 monthly minimum; the 3-customer minimum does not apply. FirstPromoter generates the invoices. §6.1 forbids self-referral and promotion inside Apify-owned content. This is the only programme in the family where the venue supplies the visitors, and it pays on a FREE Actor, so it does not wait for the ≥200-user pricing gate.\n(2) publish/index.mdx: an Actor counts as open source when 'Hide source files from Actor detail' is unchecked. That is a Console step. isSourceCodeHidden is not in UpdateActorRequest.yaml, but isPublic is, so Store publishing looks API-able. That contradicts the repo's 'one Console click' (products/README.md:7) and should be runner-tested.\n(3) Gumroad global affiliates (antiwork/gumroad@f6b82fbe, global_affiliate.rb and help articles 249/333/334): a 10% fixed commission and a 7-day cookie. Only recommendable products qualify (a counted sale), and anyone can make links with no approval. Credits post to the same Balance as sales, so the payout is ILS through owner step 3.\n(4) GitHub Sponsors lists Israel as a supported region (github/docs about-github-sponsors.md).\nSnippet grade: iCount runs a fixed-terms partner programme (ILS bank transfer after ₪100, existing customers). Morning's refer-a-friend pays a free month of subscription, not cash. PartnerStack pays Israel by Airwallex direct deposit. Wix pays through impact.com wire with a $300 monthly minimum. Hostinger pays by PayPal at $100 or bank at $500, after 3 approved sales.\n\nBOTTOM LINE: except for Apify §8, every candidate here multiplies traffic we do not have. Apify §8 is the only PROMISING one, and its money is tiny.",
+ "candidates": [
+  {
+   "venue": "Apify Affiliate Program: Open Source Fair Share (automatic credit for sign-ups from our open-source Actor Store pages, plus 'Run on Apify' referral badges in our brand GitHub repos)",
+   "url": "https://apify.com/partners/open-source-fair-share",
+   "what_we_would_list": "Every Mehudak Actor published on Apify Store with its source visible, starting with products/apify-il-open-data (israel-open-data-api). Each brand-org GitHub repo whose code really runs as that Actor gets a 'Run on Apify' badge carrying our referral link, with a one-line affiliate disclosure. No referral links go inside Store READMEs: §6.1(vi) forbids promotion in Apify-owned content, and Store credit is automatic under §8. The colony never signs up through its own link (§6.1(v) bans self-referral).",
+   "existing_product": "products/apify-il-open-data: built, unpublished. apify-publish.yml runs as a no-op without APIFY_TOKEN (FORECAST.md:24; CHANNEL_LOOP.md §3).",
+   "listings_per_owner_step": "One new owner step (signing up on Apify's FirstPromoter affiliate portal) covers every open-source Actor and every GitHub badge, with no limit. Per Actor, isPublic can be set by API (UpdateActorRequest.yaml, github). Open-sourcing is documented as a Console checkbox, and isSourceCodeHidden is not writable in the update schema, so it is one checkbox per Actor unless a runner test shows otherwise. Breadth has a real ceiling: about 2 h/week of maintenance per public Actor (audits/store-promotion.md:99-106), and the board rule allows a second Actor only after the first reads ≥50 users (FORECAST.md:35).",
+   "prior_verdict": "Never swept as an affiliate venue. The apify-actors line is parked-owner and forecast at ₪0 in the ledger through month 12 in every scenario (FORECAST.md:24, 69), because developer payouts need Apify KYC (an eighth step) and pricing waits for ≥200 users. Affiliate networks in general were killed as multipliers on zero traffic (groups/content-seo.md:151-153; REJECTED.md:1042-1045).",
+   "reopen_basis": "NEW github-grade evidence. The affiliate terms (apify-docs@1fa5620, last updated 15 Sep 2026), §8.2: 'We will automatically attribute Users who sign up for Apify through your open-source Actor page in Apify Store to you as Referred Customers.' The Store supplies the visitors, which removes the 'multiplier on our zero traffic' reason for this one programme. It also pays on a free Actor, with no pricing and no ≥200-user gate. publish/index.mdx says unchecking 'Hide source files' makes an Actor 'open source and eligible for payouts through the Apify Open Source Fair Share program'.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Terms §1.1: 'You may join the Affiliate Program by creating an account on Apify's FirstPromoter portal' (18+). The terms mention no fee or deposit. The Actor publish docs name no fee. Apify's free plan is already the basis of step 6.",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Payout side, github: terms §5 pay by 'PayPal, bank transfer or Wise' in USD within 15 business days of month end, with no country restriction. Under §5.4, invoices are 'generated automatically through FirstPromoter', so there is no recurring owner invoicing. §8.1 also allows payment through GitHub Sponsors, whose supported-region list includes Israel (github/docs about-github-sponsors.md). PayPal receiving works in Israel (brief). Camera side: the terms name no identity check, and whether the FirstPromoter portal or the PayPal/Wise setup asks for ID or a selfie is not rendered, so UNKNOWN. It is also UNKNOWN whether this path avoids the Apify developer KYC that FORECAST.md:24 assumes for Store payouts.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "Store credit is automatic (§8.2). Badge links are README text the colony writes. isPublic appears in apify-api/openapi/components/schemas/actors/UpdateActorRequest.yaml. Caveat: making the source visible is documented only as a Console step ('Publishing' tab > 'Hide source files from Actor detail'). isSourceCodeHidden exists on the Actor object but not in UpdateActorRequest, so for now it is one owner checkbox per Actor. A runner PUT test with the token would settle it.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "§6.1 lists everything that is prohibited: illegal or infringing material, PPC ads without authorisation, bidding on 'Apify', unauthorised coupons, self-referral, promotion inside Apify-owned content, and fraud. It says nothing against AI-built Actors. What we list is a working tool, and credit needs no persuasive copy. The terms have no disclosure clause, so we add one next to the GitHub badge.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Apify Store is a marketplace with its own visitors, and Store ranking also feeds Apify's MCP search-actors tool (how_store_works.md, rendered and quoted in audits/store-promotion.md:78-82). No Store traffic number has been rendered. The repo's base rate is 8.7 users per Actor in an occupied niche, P(≥10) ≈ 30% (FORECAST.md:24). Only users who are NEW to Apify, sign up through our page and then pay Apify earn anything.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "No sale is needed, but discovery is gated on usage. Store search correlates with the quality score, whose Popularity input is 'the number of users running your Actor, save counts, and return usage patterns' (audits/store-promotion.md:84-93, rendered). A 'newest' sort exists. The commission needs a referred user to pay Apify, not us.",
+   "owner_step": "NEW, a proposed step 8+: join the Apify Affiliate Program on FirstPromoter (name, payout method PayPal/Wise/bank), about 10 minutes, once. It rides existing step 6 (Apify account plus APIFY_TOKEN) and step 7 (brand GitHub org, needed before any badge because the current public repo shows the owner's name). It adds one Console checkbox per Actor unless the API test succeeds.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE. Low case: an Actor under 10 stranger users (about 70% likely per FORECAST.md:24) with no user who is both new to Apify and paying gives ₪0. High case, a scenario rather than a rate (neither Apify plan prices nor the paid conversion of Store sign-ups are rendered here): 3-4 open-source Actors by month 12 and 2-4 referred customers each spending roughly $30-60/month at 20-30% give about $15-70/month accrued. The $100 monthly minimum turns that into a lump every 2-6 months, so I cap the monthly average at ₪150. The carry-over wording comes from a fetch summary; confirm it on render. Ledger gap: colony.yml has connectors only for Gumroad, Lemon Squeezy and Stripe (FORECAST.md:65), so a PayPal/Wise payout would need a manual record or a new connector.",
+   "time_to_first_sale": "The first attributed paying user comes at the earliest 1-3 months after the first open-source Actor is public (mid-October 2026 at best, FORECAST.md:24) and after the owner signs up. The first payout needs $100 accrued, so month 6-12 or later, and possibly none in year 1.",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://docs.apify.com/legal/affiliate-program-terms-and-conditions",
+    "https://apify.com/partners/open-source-fair-share",
+    "https://docs.apify.com/legal/fair-share-program-terms-and-conditions",
+    "https://apify.com/partners/affiliate",
+    "https://docs.apify.com/platform/actors/publishing/publish",
+    "https://docs.apify.com/api/v2/act-put",
+    "https://github.com/apify/apify-docs/blob/master/sources/legal/latest/terms/affiliate-program-terms-and-conditions.md"
+   ]
+  },
+  {
+   "venue": "Gumroad Affiliates (global 10% links to other creators' Discover products, plus the checkout 'More like this' setting)",
+   "url": "https://gumroad.com/help/article/333-affiliates-on-gumroad",
+   "what_we_would_list": "Curated, disclosed links (product URL plus our affiliate query parameter) to Discover-eligible products by other creators that really fit a page, such as a Hebrew business template on il-biz-tools or a developer resource in a README. Also the 'Recommend all products and earn a commission with Gumroad Affiliates' checkout option on our own Gumroad products. Only products whose content can be judged from their public page. No 'best of' pages written to carry links (research/tiktok/07-ai-money-tooling.md:227).",
+   "existing_product": "None listed yet (step 3 not done). Surfaces: il-biz-tools (unpublished) and repo READMEs (brand org pending).",
+   "listings_per_owner_step": "No new owner step: this rides step 3 (the Gumroad account). Links are unlimited: 'anyone can generate affiliate links for Gumroad Discover, specific products, and creator profile pages' (help 333, github). Our affiliate id has to be read once from the dashboard; reading it by API is UNKNOWN.",
+   "prior_verdict": "Not swept as a publisher programme. Gumroad is the chosen seller rail (products/README.md:8). Its Discover gate was mapped in research/breadth/scouts/storefront-rails.json:36-39: global affiliates need product.recommendable.",
+   "reopen_basis": "New venue, no prior rejection. Evidence is github grade: antiwork/gumroad@f6b82fbe, global_affiliate.rb and help articles 249, 333 and 334.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Help 249: 'You don't have to reach out to these creators to request to be an affiliate.' No fee appears in the affiliate code or the help text.",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "PASS",
+    "evidence": "affiliate_credit.rb has belongs_to :affiliate_credit_success_balance, class_name 'Balance'. Commissions land in the same balance Gumroad pays out, and Gumroad pays ILS to an Israeli bank (products/README.md:8; storefront-rails.json). The storefront-rails scout found no selfie field anywhere in Gumroad's code.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "GlobalAffiliate#final_destination_url returns product.long_url, and affiliated_products_presenter exposes affiliate_query_param: Affiliate::SHORT_QUERY_PARAM. A link is the product URL plus our numeric id, with no per-product approval or click.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The affiliate programme terms page (gumroad.gumroad.com/p/generate-an-income-as-a-gumroad-affiliate) was not rendered. The honesty limit is ours: we cannot vouch for products we have not used, and we must add the disclosure ourselves.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "Gumroad sends no buyers to our links. GlobalAffiliate::AFFILIATE_COOKIE_LIFETIME_DAYS = 7, so it pays only on buyers our own surfaces bring, and their measured traffic is 0 because nothing is deployed (CHANNEL_LOOP.md §3). The checkout 'More like this' path needs our own buyers, and there are none yet.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "YES, twice. A linked product earns credit only if product.recommendable? is true (global_affiliate.rb eligible_for_purchase_credit?), which needs a counted sale (storefront-rails.json:36). Our own surfaces also need traffic that does not exist yet.",
+   "owner_step": "None new (step 3). Optionally one checkout-settings toggle, once.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 30,
+   "estimate_basis": "INFERENCE: 10% of low-priced digital products, and a stranger must reach our page and buy within 7 days. Comparables for our main surface: free Hebrew calculators audited at ₪200-400/month in total value, and a competitor calculator with 0 impressions over 16 months (groups/content-seo.md:123-125). High case: a few sales a month at ₪30-100 each, at 10%.",
+   "time_to_first_sale": "Only after il-biz-tools deploys and ranks. The repo's own trigger of 100 weekly search views (REJECTED.md:1282) is unmet, so months at best.",
+   "verdict": "WEAK",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://gumroad.com/help/article/333-affiliates-on-gumroad",
+    "https://gumroad.com/help/article/249-affiliate-faq",
+    "https://gumroad.com/help/article/334-more-like-this",
+    "https://gumroad.gumroad.com/p/generate-an-income-as-a-gumroad-affiliate",
+    "https://github.com/antiwork/gumroad/blob/main/app/models/global_affiliate.rb"
+   ]
+  },
+  {
+   "venue": "PartnerStack partner marketplace (one partner account, many B2B SaaS and dev-tool programmes)",
+   "url": "https://partnerstack.com/payouts",
+   "what_we_would_list": "Disclosed referral links, in READMEs and on il-biz-tools, only to tools the colony actually uses, if any of them run on PartnerStack. Which ones do is UNKNOWN.",
+   "existing_product": "None. Surfaces as above, all unpublished.",
+   "listings_per_owner_step": "One new account unlocks many programmes, but every programme needs its own application and vendor approval in the partner dashboard. That is an owner click per programme into a human review queue. Links inside an approved programme are unlimited.",
+   "prior_verdict": "Not swept by name. Its class (two-stage, human-approved networks: CJ, Awin, impact.com) was rejected as a multiplier on zero traffic with Payoneer payability UNKNOWN (groups/content-seo.md:152). The impact.com payout search was a dead end (scouts/content-seo--affiliate-networks.md:289-290).",
+   "reopen_basis": "Partly new, snippet grade (28.9): 'Direct deposit is available through AirWallex for bank accounts in Israel', with PayPal and Stripe also listed. That fixes the class's payout doubt for this network only. The approval-queue and traffic reasons stand.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No fee was mentioned in the search results, and no primary page was rendered.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Snippet: Israel is supported for direct deposit through Airwallex, and PayPal is an option. Whether Airwallex or PartnerStack onboarding asks for ID or a selfie is unknown.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Links within a programme are text the colony can write. Joining each programme is a dashboard application reviewed by the vendor, and no partner-side API was found.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Terms were not read. It is only honest for tools we use, and our stack (Netlify, Gumroad, Apify, GitHub) was not found on PartnerStack.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "An affiliate network brings no buyers. Traffic must come from our surfaces, and theirs measures 0 (CHANNEL_LOOP.md §3).",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "Not a sale, but vendor approval, which commonly looks at the applicant's traffic. Unverified.",
+   "owner_step": "NEW account (proposed step 8+) plus one dashboard application per programme. The per-programme clicks are what breaks the 'accounts do not multiply' spirit.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 40,
+   "estimate_basis": "INFERENCE: recurring SaaS commissions are the one vertical where low traffic can matter (scouts/content-seo--affiliate-networks.md:203-215, snippet-grade vendor blogs), but our traffic is 0 measured, and no programme we could honestly recommend has been identified.",
+   "time_to_first_sale": "Unbounded: approval queue plus traffic.",
+   "verdict": "WEAK",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://support.partnerstack.com/hc/en-us/articles/360009501113-How-do-I-get-paid",
+    "https://support.partnerstack.com/hc/en-us/articles/360009377934-Configuring-payout-providers",
+    "https://partnerstack.com/payouts"
+   ]
+  },
+  {
+   "venue": "iCount partner programme ('תכנית הטבת שותפים'), representing Israeli accounting SaaS (EZcount, AccountIT, PayPlus, יש חשבונית)",
+   "url": "https://www.icount.co.il/%D7%AA%D7%9B%D7%A0%D7%99%D7%AA-%D7%94%D7%98%D7%91%D7%AA-%D7%A9%D7%95%D7%AA%D7%A4%D7%99%D7%9D/",
+   "what_we_would_list": "A factual, disclosed 'when you outgrow the free receipt generator' link on il-biz-tools' invoice.html and osek-patur.html pages to iCount's full plan. iCount already ranks #1 on the PCN874 query (REJECTED.md:1051-1053).",
+   "existing_product": "products/il-biz-tools (six tools, unpublished; build blocked on the accessibility contact).",
+   "listings_per_owner_step": "One referral link reused across the six pages. The owner step is becoming an iCount customer plus the partner signup.",
+   "prior_verdict": "PERMANENT REJECTION: 'Israeli-vendor affiliate programmes' (docs/REJECTED.md:1100-1103). It was rejected on three counts (groups/content-seo.md:130-137): a multiplier on zero traffic, a rate nobody rendered, and rates negotiated by volume. The audit confirmed it (audits/content-seo.md:153-158). The israel-bureaucracy scout found no programme (scouts/israel-bureaucracy--business-registration.md:120-122, 152).",
+   "reopen_basis": "Partly new, snippet grade (28.9): iCount publishes fixed terms. Commission is paid on new full-plan customers only, relative to base price, by bank transfer once commissions reach ₪100. That answers the 'negotiated rate' count for iCount only. The traffic count stands, so the rejection stands until REJECTED.md:1282 fires (il-biz-tools at 100+ weekly search views).",
+   "gate_zero_cost": {
+    "status": "FAIL",
+    "evidence": "Snippet: the programme 'invites existing customers'. iCount is a paid product (₪119/yr per scouts/israel-bureaucracy--business-registration.md:122). If being a paying customer is required, that is a subscription, which the ₪0 rule forbids. Confirm on render.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Snippet: ILS by bank transfer after ₪100, domestic, with no camera step expected. A domestic payer likely needs a tax invoice for each payout from a registered עוסק (owner step 2, tax-file). Issuing it by hand every time would be recurring owner work. Not verified.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "A static link the colony places in its own pages, with no per-item owner action.",
+    "grade": "repo"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "A factual pointer to a real incumbent that ranks for the same queries (REJECTED.md:1051-1053) is honest if disclosed. No AI clause is known.",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "iCount sends no buyers to us. The only surface is il-biz-tools, unpublished, with 0 measured views (products/il-biz-tools/README.md; CHANNEL_LOOP.md §3).",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "Not applicable to the vendor. Our page needs search traffic it does not have.",
+   "owner_step": "Become an iCount customer (paid, which fails the ₪0 rule) plus the partner signup. The עוסק registration is already step 2.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 40,
+   "estimate_basis": "INFERENCE: the commission rate was not rendered (snippet: 'relative to the base price'), and conversion from a free receipt-generator page to a paid bookkeeping plan is unknown. The prior arithmetic still holds: ₪X × 0 signups = 0 (groups/content-seo.md:133).",
+   "time_to_first_sale": "Not before il-biz-tools meets the 100-weekly-views trigger. Unknown.",
+   "verdict": "DEAD",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://www.icount.co.il/%D7%AA%D7%9B%D7%A0%D7%99%D7%AA-%D7%94%D7%98%D7%91%D7%AA-%D7%A9%D7%95%D7%AA%D7%A4%D7%99%D7%9D/",
+    "https://www.icount.co.il/plans/",
+    "https://www.account-it.co.il/",
+    "https://www.payplus.co.il/affiliates"
+   ]
+  },
+  {
+   "venue": "Hostinger affiliate programme (representing hosting and dev-tool programmes)",
+   "url": "https://www.hostinger.com/support/1583263-how-are-affiliate-commissions-paid-at-hostinger/",
+   "what_we_would_list": "Nothing honest. We would be recommending hosting the colony does not use: our stack is Netlify free (products/README.md:8).",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One account after approval; links are then unlimited.",
+   "prior_verdict": "Hosting was named as a vertical that could matter at low traffic (scouts/content-seo--affiliate-networks.md:203-215, snippet), but the whole group died on zero traffic (REJECTED.md:1042-1045; groups/content-seo.md:24).",
+   "reopen_basis": "None. Snippet (28.9) adds payout facts (PayPal minimum $100, bank $500, 3 approved sales first, paid on the 20th) but nothing against the traffic or honesty reasons.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No fee was mentioned in the results. No primary page was rendered.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Snippet: PayPal, Payoneer or bank transfer. PayPal receiving works in Israel (brief), but the $100 minimum and 3 approved sales come first. Camera unknown.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "Once approved, links are text the colony writes. Approval is a human review (snippet: 1-3 business days; sources conflict on a 1,000-visitor bar).",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "FAIL",
+    "evidence": "We do not use Hostinger, so recommending it would be an unearned endorsement. AI-written hosting reviews are the 'thin affiliate' pattern the 2026 core updates demote (scouts/content-seo--ai-content-policy.md:39, 66).",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "No buyers come from the programme, and our surfaces have 0 measured traffic.",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "Payout needs 3 approved sales (snippet). Approval may look at traffic.",
+   "owner_step": "NEW account plus a PayPal account (neither is on the seven steps).",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "INFERENCE: no honest listing exists, so ₪0.",
+   "time_to_first_sale": "Never under the honesty rule.",
+   "verdict": "DEAD",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://www.hostinger.com/support/1583263-how-are-affiliate-commissions-paid-at-hostinger/",
+    "https://www.hostinger.com/support/affiliates-and-referrals/"
+   ]
+  },
+  {
+   "venue": "Wix affiliate programme (an Israeli company whose audience fits Israeli small businesses)",
+   "url": "https://www.wix.com/about/affiliates/faq",
+   "what_we_would_list": "Nothing honest today. The colony does not build on Wix. (research/measurements/wix-app-market.md is a different venue, the App Market.)",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One account after approval.",
+   "prior_verdict": "Not swept by name. It runs on impact.com, whose payout search was a dead end (scouts/content-seo--affiliate-networks.md:289-290), and it belongs to the rejected two-stage-network class (groups/content-seo.md:152).",
+   "reopen_basis": "None. Snippet (28.9): a flat $100 per Premium sale, paid through impact.com by wire only (one source says PayPal), with a $300 monthly minimum before any payout.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No fee was mentioned in the results. Not rendered.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Snippet: bank wire through impact.com. impact.com payout to Israel is unresolved in the repo. Camera unknown.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "Links are text once the programme approves us; approval is a human review.",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "FAIL",
+    "evidence": "Recommending a site builder the colony does not use is an unearned endorsement, the same as the Hostinger case (scouts/content-seo--ai-content-policy.md:39, 66).",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "No buyers come from the programme, and our surfaces have 0 measured traffic.",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "Payout requires $300 accrued in a month (snippet), which means 3 Premium sales that month.",
+   "owner_step": "NEW impact.com account plus a W-8BEN-style tax form, not on the seven steps.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "INFERENCE: the $300 monthly threshold against 0 measured traffic, and no honest listing.",
+   "time_to_first_sale": "Never at current traffic.",
+   "verdict": "DEAD",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://www.wix.com/about/affiliates/faq",
+    "https://support.wix.com/en/article/wix-referral-program-request-offering-cash-incentives-or-payouts-through-affiliate-programs"
+   ]
+  },
+  {
+   "venue": "Morning (Green Invoice) refer-a-friend / partners",
+   "url": "https://www.greeninvoice.co.il/terms-partners/",
+   "what_we_would_list": "A disclosed pointer to Morning from the il-biz-tools receipt pages. Green Invoice's magazine is itself an incumbent on these queries (REJECTED.md:1051).",
+   "existing_product": "products/il-biz-tools (unpublished).",
+   "listings_per_owner_step": "One personal link, but it requires a paying Morning subscription.",
+   "prior_verdict": "Covered by the permanent rejection of Israeli-vendor affiliate programmes (docs/REJECTED.md:1100-1103; groups/content-seo.md:130-137).",
+   "reopen_basis": "None. Snippet (28.9): existing customers get a personal link, and each referral who buys a subscription earns them an extra free month. That is subscription credit, not money. A separate 'terms-partners' page exists, possibly for accountants or integrators, and its content is UNKNOWN; render it before closing the file.",
+   "gate_zero_cost": {
+    "status": "FAIL",
+    "evidence": "The reward goes only to existing (paying) customers, per the snippet. A paid plan is a subscription, which the ₪0 rule forbids.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "The reward is a free subscription month, not cash, so no platform transaction can land in the ledger (snippet).",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "A static link on our pages.",
+    "grade": "repo"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "A factual pointer to a real incumbent, disclosed.",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "Morning sends no buyers to us, and il-biz-tools has 0 views.",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "Not applicable.",
+   "owner_step": "A paid Morning subscription, which fails the ₪0 rule.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "The reward is not money, so ₪0 in the ledger by definition.",
+   "time_to_first_sale": "Never as cash.",
+   "verdict": "DEAD",
+   "rank_in_family": 7,
+   "primary_urls_to_render": [
+    "https://www.greeninvoice.co.il/terms-partners/",
+    "https://www.greeninvoice.co.il/pricing/"
+   ]
+  },
+  {
+   "venue": "Amazon Associates (US store)",
+   "url": "https://affiliate-program.amazon.com/",
+   "what_we_would_list": "Nothing fits. Our surfaces serve Israeli small businesses and developers, not US physical-goods shoppers.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One account; links are unlimited in principle.",
+   "prior_verdict": "REJECTED (groups/content-seo.md:151). The audit downgraded the reason to payability UNKNOWN: USD/GBP/EUR-account direct deposit or a Payoneer virtual US account are documented but not verified for Israel. The outcome was unchanged as a multiplier on zero traffic (audits/content-seo.md:113-120). Payoneer/Israel is UNKNOWN (docs/INCOME_PLAN.he.md:96). Amazon Merch and Vine were killed on Israel grounds (REJECTED.md:275-276).",
+   "reopen_basis": "None. No new evidence was sought; the rejection stands.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No fee is recorded in the repo research.",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Direct deposit needs a USD/GBP/EUR account in about 52 countries, and Israel is unverified. The cheque and gift-card fallbacks fail the mission (scouts/content-seo--affiliate-networks.md:47-61; audits/content-seo.md:113-120).",
+    "grade": "repo"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Link formats were not researched, because the model fails on audience and traffic first.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The operating agreement was not rendered. An honest fit is absent anyway (audience mismatch).",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "Amazon sends no buyers to publishers, and our traffic is 0.",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "Not researched.",
+   "owner_step": "NEW account plus a tax interview plus a foreign-currency account or Payoneer, none of them on the seven steps.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Physical-goods commissions need volume (scouts/content-seo--affiliate-networks.md:213-215), and there is neither audience fit nor traffic.",
+   "time_to_first_sale": "Never at current traffic.",
+   "verdict": "DEAD",
+   "rank_in_family": 8,
+   "primary_urls_to_render": [
+    "https://affiliate-program.amazon.com/help/node/topic/G8VUMS6GTBCR9RGV",
+    "https://affiliate-program.amazon.com/resource-center/receive-your-international-affiliate-earnings-in-your-local-bank/"
+   ]
+  }
+ ],
+ "searches_used": 6
+}

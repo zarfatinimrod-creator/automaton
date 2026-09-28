@@ -1,0 +1,384 @@
+{
+ "family": "israeli-local",
+ "prior_coverage": "Most of this family was swept before, and I reopened nothing without new evidence. (1) The israel-bureaucracy group (8 scouts, 3.9) left two standing walls: the Tax Authority is a gate, not a platform, and the state is our free competitor (docs/REJECTED.md:156-211). The group's audited ceiling is ₪500-1,500/month across all lines (audits/israel-bureaucracy.md). (2) The israeli-smb-software scout covered Morning, iCount, Rivhit and Hashavshevet (scouts/israel-bureaucracy--israeli-smb-software.md). Morning's 'חבר מביא חבר' pays account credit, not money (groups/israel-bureaucracy.md:220). The iCount partner programme was confirmed at up to 15% for 3 years, paid by bank transfer once ₪100 accrues, against a receipt per payout; the audit cut it to ₪0-100/month (groups/israel-bureaucracy.md:43,171-185; audits/israel-bureaucracy.md:420-460). Reselling Rivhit's modules needs a human sales relationship (groups:221). A paid Israeli-bureaucracy ebook was killed because skills-il gives the same content away free (groups:218). Municipal SaaS was killed because the buyer is an authority buying through tenders (groups:215). (3) distribution--israeli-channels: Facebook groups, WhatsApp and Israeli forums are closed to an automated poster. (4) tenders-occupancy.md: 17 sellers plus free state sources, so this is not a venue for us. eaa-occupancy.md: closed. (5) The Israeli B2B app stores were covered by the sibling breadth scout research/breadth/scouts/app-plugin-marketplaces.json. There, Wix App Market is PROMISING at rank 1 with Israel payout UNKNOWN, and monday.com is DEAD because Payoneer needs a face scan for Israeli residents. I list Wix below only as a cross-reference for its Hebrew angle, which was never taken (REJECTED.md:966-968); count it once. NEW this sweep, with grades: (a) e-vrit (עברית), which describes itself as Israel's largest Hebrew digital book store, carries independent authors under a 'הוצאה עצמית' publisher page, Publisher/746 (snippet). It also exposes a public JSON product API: third-party code pages through /api/group/286/products and reports about 27,108 titles in its public-library group alone (github: revrevrev/Libraries-search CLAUDE.md). A GitHub runner can therefore count self-published titles and their ratings for free. The only e-vrit APIs in public code are reader, search and download endpoints; no publisher-upload API was seen (github). (b) Indiebook has an 'e-הוצאה עצמית' category and a 'royalty report guide for independent authors' page (snippet), which implies a self-serve author back office. Its only scale figure (350 books, 2013) is stale. (c) Morning's API has a 4-endpoint Partners group: 'Get all connected users', 'Request user approval' and two more (github: danielrosehill/GreenInvoice-MCP API_REFERENCE.md). That is integrator access to a user's own account, not a store. Its add-ons page lists integrations (snippet), and no third-party paid marketplace was found. (d) No paid Israeli teacher-to-teacher marketplace surfaced. The Hebrew results were free lesson-plan sites such as kanlomdim, achiyayeda and hanoch.info (snippet). (e) Google Play Books: a snippet says Israel is not on the 70%-split country list, and that payouts need a local business address and bank account in a supported payment country. (f) Facebook Marketplace bans digital products (snippet). Structural finding for the family: Israeli venues pay by Israeli bank transfer against a tax receipt per payout. That mostly solves the payout rail but ties every line to owner step 2 (osek patur) plus an automated receipt path. None of them offers a documented listing API. The Hebrew moat is real only where a big Hebrew buyer pool exists (e-vrit, Wix's Hebrew SMB base). Not reached for lack of budget: SUMIT, Priority and Hashavshevet partner marketplaces, the Education Ministry's Gefen programme catalogue, TpT's Hebrew section, and Hebrew font marketplaces.",
+ "searches_used": 6,
+ "candidates": [
+  {
+   "venue": "Wix App Market: Hebrew/Israeli-compliance apps (CROSS-REFERENCE: the same venue is rank 1 in the app-plugin-marketplaces breadth scout; count once)",
+   "url": "https://www.wix.com/app-market",
+   "what_we_would_list": "2-4 distinct Hebrew-first apps for Israeli Wix site owners, each on a Wix-billed monthly plan under the Mehudak brand: a VAT-inclusive price and osek-patur turnover-ceiling tracker for Wix stores, an Israeli statutory-declaration renewal clock (REJECTED.md:955-962), and a Hebrew accessibility-statement generator. The last carries an occupancy risk: accessiBe and EqualWeb are Israeli sellers in eaa-occupancy.md:305, and whether they occupy Wix's Hebrew categories is UNKNOWN. AI assistance declared in each listing.",
+   "existing_product": "No Wix app code. Reusable logic sits in products/il-biz-tools (vat.html, osek-patur.html, allocation.html, accessibility.html) and its src/config.",
+   "listings_per_owner_step": "One Wix partner registration plus one Tipalti payee account unlocks every app on the account (wix-payout-account.txt:119,136, rendered, via wix-app-market.md). The buyers are Wix's own site owners. No Hebrew-segment size is rendered.",
+   "prior_verdict": "storefronts closed it. vertical-niches' entry was REFUTED as a channel with no product (REJECTED.md:923,933-940). 'The Israeli angle on Wix was never taken' (REJECTED.md:966-968). Board candidate 11 is NEEDS_MORE after tick 3: the $200 floor rolls over, and Israel payability is UNKNOWN (research/measurements/wix-app-market.md:11; logs/CHANNEL_LOOP.md:124).",
+   "reopen_basis": "None needed: the board already reopened it. This scout adds no primary evidence. The one family-specific addition: the Hebrew-category occupancy scan named at REJECTED.md:966-970 has still not run. Accessibility is the weakest of the niches, because the Israeli incumbents in eaa-occupancy.md sell exactly that.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Every named cost comes out of revenue: a 2.5% transaction fee, then 80/20, with 100% to the developer for the first 12 months (wix-app-payments-faq.txt:130). Whether testing on a premium site requires buying a Premium plan is not captured (wix-app-market.md Q4).",
+    "grade": "rendered"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Payouts go through a Tipalti payee account set up once (html:64 changelog blurb). 'israel' has 0 hits in the captures. What the Tipalti onboarding asks for, including any camera step, is not captured (wix-app-market.md Q1, Q4).",
+    "grade": "rendered"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Submission happens in the app dashboard. Review is an automated AI check with results 'typically available within minutes' (faq.html:64 changelog). No submission API is rendered. Each app is a separate build, so this is a few apps, not a flood.",
+    "grade": "rendered"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Wix runs an AI review of submissions itself. No rendered rule on AI-built apps or disclosure; the App Market guidelines are not captured.",
+    "grade": "rendered"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Wix bills the buyer in-platform, chases failed payments for 45 days, handles sales tax and localises prices per territory (faq.txt:158-174,196). The venue brings paying site owners. Install volumes and the Hebrew-market share are not rendered.",
+    "grade": "rendered"
+   },
+   "discovery_needs_prior_sale": "Partly. The Verified badge needs 60+ days live and 40+ live installs on premium sites (faq.html:64), so that ranking signal is install-gated. Whether search or category listings need prior installs is UNKNOWN.",
+   "owner_step": "One Wix partner account under the brand, plus the Tipalti payee setup, whose contents are UNKNOWN and must be camera-free. Tipalti will likely want the tax identity from owner step 2.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 600,
+   "estimate_basis": "Inference from rendered mechanics (80/20, 100% in year one, minus 2.5%; $200 accumulated threshold; money for month M arrives at the start of M+2). No install or conversion volumes are rendered. The high end assumes 2-4 apps with low tens of paying Hebrew installs at a few dollars a month each. This is the same range as the sibling scout; do not add the two.",
+   "time_to_first_sale": "About 2-4 months after the owner steps: 2-3 weeks to build each app, minutes for review, then UNKNOWN discovery. The first payout comes only once $200 has accumulated, plus two months, so likely 6+ months.",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/set-up-your-payout-account",
+    "https://dev.wix.com/app-market-partner-agreement",
+    "https://dev.wix.com/docs/build-apps/launch-your-app/market-listing/add-your-company-info",
+    "https://he.wix.com/app-market"
+   ]
+  },
+  {
+   "venue": "e-vrit (עברית): the largest Hebrew e-book and audiobook store, independent-author ('הוצאה עצמית') listings",
+   "url": "https://www.e-vrit.co.il/",
+   "what_we_would_list": "Honest Hebrew non-fiction e-books under a Mehudak imprint, with AI assistance declared on the cover page and in the listing. Only titles that are not a free rule summary qualify; the paid bureaucracy ebook died on exactly that (groups/israel-bureaucracy.md:218). Examples: (a) worked-example handbooks built on the colony's own primary-sourced work, e.g. a PCN874 file-format guide for bookkeepers citing the Tax Authority circular (products/pcn874/docs/SPEC.md); (b) chart books of Israeli open statistics, where the licence permits; (c) possibly clearly labelled, AI-assisted Hebrew translations of public-domain non-fiction not yet in Hebrew. A small catalogue, never a flood.",
+   "existing_product": "No book exists. Source material: products/pcn874/docs (spec with line-cited rules) and products/il-biz-tools/src/config.",
+   "listings_per_owner_step": "If e-vrit admits a self-publisher as one publisher account, one owner step unlocks every title. How self-publishers join is UNKNOWN: a per-title contract or an editor conversation would fail the mandate. Buyers: e-vrit's Hebrew readership, plus public libraries lending through its public-library group.",
+   "prior_verdict": "Never swept as a venue: grep of docs/ and research/ finds no e-vrit or Indiebook entry. Adjacent kill: the paid 'Israeli bureaucracy knowledge pack (skill/ebook/GPT)' was killed because skills-il publishes it free (research/colony-sweep/groups/israel-bureaucracy.md:218). That constrains title choice, not the venue.",
+   "reopen_basis": "New venue. Snippet: e-vrit lists 'independent authors alongside the best publishers in Israel' and has a Publisher/746 'הוצאה עצמית' page. Github: its public JSON product API is used by third-party code (/api/search/{q}/products, /api/group/286/products), which reports about 27,108 titles in the public-library group and product fields including ratings (revrevrev/Libraries-search CLAUDE.md, fetched).",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "e-vrit's author terms are unread. A Hebrew self-publishing guide says authors either publish themselves or pay a paid-services company (sites.google.com/site/ktivatproza, snippet). Whether e-vrit charges an upload or setup fee is unknown.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "This would be an Israeli company paying royalties to an Israeli author, presumably by bank transfer against a receipt or with withholding, but nothing is rendered. No evidence of any camera step either way.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Every e-vrit API in public code is reader-side (search, group listing, book download). No publisher-upload API or bulk feed was seen, so listing may be a manual upload or an email to staff.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "No e-vrit content or AI policy was read. The terms page URL is known (snippet), not rendered.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Snippet: 'the largest digital store for reading and audio books in Hebrew'. Github: ≥27,108 titles in its public-library group alone, and libraries (e.g. the Technion) route readers to it. It brings its own Hebrew buyers; there are no sales-volume numbers.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. The store has curated groups (e.g. a digital-books group) and per-product ratings in its API. A runner can measure for free whether Publisher/746 titles carry ratings, a proxy for whether self-published titles sell at all.",
+   "owner_step": "One author or publisher agreement with e-vrit under the imprint, plus Israeli bank details. Owner step 2 (osek patur) is probably needed to issue royalty receipts. FAILS if joining needs a phone call, or a signed contract per title.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 300,
+   "estimate_basis": "Inference only: no Hebrew e-book price, royalty rate or sales volume was rendered. The high end assumes 10-20 honest titles by month 12, each selling 0-2 copies a month at an UNKNOWN price and royalty share, with library lending income UNKNOWN. No base rate was invented; treat the high end as a ceiling guess, pending a runner count of self-published titles and their ratings.",
+   "time_to_first_sale": "3-6 months (writing and review of the first titles, then onboarding); UNKNOWN until the author terms are read.",
+   "verdict": "PROMISING",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://www.e-vrit.co.il/Publisher/746/%D7%94%D7%95%D7%A6%D7%90%D7%94_%D7%A2%D7%A6%D7%9E%D7%99%D7%AA",
+    "https://www.e-vrit.co.il/Content/1/%D7%AA%D7%A7%D7%A0%D7%95%D7%9F_%D7%95%D7%AA%D7%A0%D7%90%D7%99_%D7%A9%D7%99%D7%9E%D7%95%D7%A9",
+    "https://www.e-vrit.co.il/api/group/286/products?skip=0&take=50",
+    "https://www.e-vrit.co.il/api/search/%D7%94%D7%95%D7%A6%D7%90%D7%94%20%D7%A2%D7%A6%D7%9E%D7%99%D7%AA/products?take=15"
+   ]
+  },
+  {
+   "venue": "iCount partner programme (תכנית הטבת שותפים): a disclosed referral tail on our own Hebrew tool pages",
+   "url": "https://www.icount.co.il/partners/",
+   "what_we_would_list": "A disclosed, Hebrew, next-to-the-link partner recommendation of iCount on the il-biz-tools invoice, VAT and osek-patur pages. One partner code, no per-item work.",
+   "existing_product": "products/il-biz-tools (invoice.html, vat.html, osek-patur.html): built, not deployed.",
+   "listings_per_owner_step": "One partner signup gives one code, usable on every page we own. The venue brings no buyers; it only monetises our own traffic.",
+   "prior_verdict": "CONFIRMED terms at up to 15% of the amount actually paid, for 3 years, full plan only, paid by bank transfer at ₪100 accrued, with a tax receipt per payout (groups/israel-bureaucracy.md:43). Ranked last at ₪400 (groups:171-185), then audited DOWN to ₪0-100/month: at ~₪45 per customer per year it needs ~107 referred paying customers a year for ₪400 (audits/israel-bureaucracy.md:420-460). The open kill switch is whether signup is self-serve (audits:447).",
+   "reopen_basis": "Not reopened; no new evidence. Carried here because it is the best-evidenced Israeli payout in the family, not because it is a venue.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "The quoted terms describe commission out of what the customer pays. No partner fee appears in them (audits/israel-bureaucracy.md:423-430, quoting the page's indexed text).",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "PASS",
+    "evidence": "'יועברו לשותף בהעברה בנקאית… כאשר סך העמלות מגיע ל-100 ₪', on condition of a tax invoice or receipt for each payout (audits:428-430). Israeli company to Israeli bank in ILS. No camera step mentioned. A receipt per payout needs owner step 2 plus an automated receipt.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "Once a code exists, placing it on pages we generate needs no owner click. Signup being self-serve rather than a sales call is UNKNOWN (audits:447) and belongs to the owner step.",
+    "grade": "repo"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "Nothing AI-generated is sold. The honesty duty is a prominent Hebrew paid-placement disclosure next to the link (audits:452-456), which is a design constraint that lowers click-through.",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "An affiliate code is a monetisation layer, not a venue: every buyer must arrive through our own pages, and il-biz-tools is not deployed and has no traffic (CHANNEL_LOOP.md §3).",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "Not applicable: iCount does no discovery for us. All discovery is our own SEO.",
+   "owner_step": "One iCount partner signup (self-serve or a call: UNKNOWN; a call kills it), plus owner step 2 (osek patur) and an automated receipt per payout.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 100,
+   "estimate_basis": "Audited figure (audits/israel-bureaucracy.md:420-460): ~₪45 per referred customer per year; nothing moves below the ₪100 accrual floor.",
+   "time_to_first_sale": "After il-biz-tools deploys and ranks; the first ₪100 transfer is likely 6-12 months away.",
+   "verdict": "WEAK",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://www.icount.co.il/%D7%AA%D7%9B%D7%A0%D7%99%D7%AA-%D7%94%D7%98%D7%91%D7%AA-%D7%A9%D7%95%D7%AA%D7%A4%D7%99%D7%9D/",
+    "https://www.icount.co.il/partners/"
+   ]
+  },
+  {
+   "venue": "Indiebook (אינדיבוק): Israeli Hebrew e-book store with a self-publishing category",
+   "url": "https://indiebook.co.il/",
+   "what_we_would_list": "The same honest, AI-declared Hebrew titles as the e-vrit line, if Indiebook allows non-exclusive listing (UNKNOWN).",
+   "existing_product": "None (no book exists).",
+   "listings_per_owner_step": "One author account would presumably carry every title. The snippet's royalty-report guide for independent authors implies a self-serve back office (UNKNOWN). The buyer pool is small or UNKNOWN.",
+   "prior_verdict": "Never swept (no repo mention).",
+   "reopen_basis": "New venue. Snippets: an 'e-הוצאה עצמית' product category; a page titled 'מדריך להפקת דו\"ח תמלוגים - סופרים עצמאיים'; Indiebook 'does not provide publishing services'. The only scale figure is a 2013 TheMarker snippet: 350 books, five added a day, ₪10,000 founding investment. Stale.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "'Does not provide publishing services' (snippet) suggests there are no paid packages. Upload fees and revenue share are unread.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Israeli store paying Israeli authors, via royalty reports (snippet); payment method and receipt requirement unread. No camera evidence.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "The URL structure (product-category) suggests WooCommerce (inference). Whether authors upload themselves or through staff is unread; no author API seen on GitHub.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "No policy read. The founders' stated filter is 'a book that isn't good won't sell' (snippet), which is not a rule.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "The only volume figure is from 2013 (350 books). Current traffic and sales are unknown; it is far smaller than e-vrit on every indicator seen.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "One author account, Israeli bank details, and likely owner step 2 for royalty receipts.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 100,
+   "estimate_basis": "Inference: a second shelf for the same titles, in a store with no current volume evidence. The high end is a small fraction of the e-vrit guess.",
+   "time_to_first_sale": "Same as e-vrit (3-6 months), UNKNOWN.",
+   "verdict": "WEAK",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://indiebook.co.il/97/%D7%9E%D7%93%D7%A8%D7%99%D7%9A-%D7%9C%D7%94%D7%A4%D7%A7%D7%AA-%D7%93%D7%95%D7%97-%D7%AA%D7%9E%D7%9C%D7%95%D7%92%D7%99%D7%9D--%D7%A1%D7%95%D7%A4%D7%A8%D7%99%D7%9D-%D7%A2%D7%A6%D7%9E%D7%90%D7%99%D7%99%D7%9D",
+    "https://indiebook.co.il/product-category/%D7%94%D7%95%D7%A6%D7%90%D7%AA-%D7%A1%D7%A4%D7%A8%D7%99%D7%9D/%D7%94%D7%95%D7%A6%D7%90%D7%94-%D7%A2%D7%A6%D7%9E%D7%99%D7%AA",
+    "https://indiebook.co.il/wp-json/wc/store/v1/products?per_page=1"
+   ]
+  },
+  {
+   "venue": "Google Play Books Partner Center: Hebrew e-books (a global store; included because the seed names Hebrew e-book venues)",
+   "url": "https://play.google.com/books/publish/",
+   "what_we_would_list": "The same small catalogue of honest, AI-declared Hebrew non-fiction titles.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One Partner Center account plus one payments profile would carry many titles, and bulk upload is commonly reported (grade none). But the buyer pool for Hebrew depends on Play Books selling in Israel, which the snippet puts in doubt.",
+   "prior_verdict": "Never swept (grep finds no Play Books entry). INCOME_PLAN.he.md:267 rejects Google Play *apps* ($25 plus identity plus testers), a different programme.",
+   "reopen_basis": "New venue. Snippet: Israel is not among the countries eligible for the 70% split, and payout needs 'a local business address and local bank account in at least one of the countries supported for payment'.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No joining fee appears in the snippets; nothing rendered.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Snippet: payouts need a local bank in a supported payment country, and Israel was not in the 70%-split list the search tool summarised. Leaning FAIL; the country table must be rendered to settle it.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Bulk and feed upload are general knowledge, not evidence read this session.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Snippet: the content policies prohibit spammy or poor-experience content. No AI-specific book rule was found.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "A large global store, but whether it sells to Israeli readers (where Hebrew buyers are) is in doubt per the same snippet.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "A Partner Center account plus a Google payments profile with a bank in a supported payment country. If Israel is not one, it is impossible without a foreign entity, which is out of scope.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "₪0 if Israel is not a payment or sale country, as the snippet suggests. The high end is conditional on both, and on Hebrew titles finding readers outside e-vrit: inference only.",
+   "time_to_first_sale": "UNKNOWN; blocked on the country table.",
+   "verdict": "WEAK",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://support.google.com/books/partner/table/6052428?hl=en",
+    "https://support.google.com/books/partner/answer/3250840?hl=en",
+    "https://support.google.com/books/partner/answer/9331459?hl=en",
+    "https://support.google.com/books/partner/answer/1067634?hl=en"
+   ]
+  },
+  {
+   "venue": "Morning (Green Invoice): partner API, add-ons page and referral programmes",
+   "url": "https://www.greeninvoice.co.il/add-ons/",
+   "what_we_would_list": "At most, a Morning-connected Hebrew tool (e.g. PCN874 export from a user's Morning documents, sold on our own rail) and a hoped-for listing on Morning's add-ons page. Morning does not bill third-party apps as far as anything seen shows.",
+   "existing_product": "products/pcn874 (validator and generator); no Morning connector.",
+   "listings_per_owner_step": "No store. The add-ons page is a vendor-curated integrations list (snippet), and getting on it would be a business-development relationship. The Partners API needs each Morning user to approve our connection ('Request user approval', github).",
+   "prior_verdict": "'Morning \"חבר מביא חבר\" (₪40/referral) | Account credit, not payable money' (groups/israel-bureaucracy.md:220). The partner-terms page was flagged as the highest-value unread URL (scouts/israel-bureaucracy--israeli-smb-software.md, Partner section). Every suite that solves allocation numbers already emits PCN874 (REJECTED.md:193-195), and that includes Morning.",
+   "reopen_basis": "Not reopened. New github evidence only characterises the partner surface: 4 endpoints (/partners/users, /partners/users/connection, by-email lookup, disconnect). That is integrator plumbing, not a marketplace.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "API access reportedly needs the 'Best' plan or higher (snippet in the israeli-smb-software scout). If our connector needs our own paid Morning plan, that is a subscription and fails the ₪0 rule.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "The only programme with known terms pays ₪40 of account credit, not money (groups/israel-bureaucracy.md:220). Cash partner terms at /terms-partners/ are unread.",
+    "grade": "repo"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "No self-serve listing surface exists: the add-ons page is curated by Morning (snippet), and the partner API connects per user with that user's approval (github).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not read.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "Morning has a large Israeli self-employed base (Geektime acquisition coverage, snippet), but no evidence that it routes those users to third-party paid tools.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Not applicable: there is no marketplace.",
+   "owner_step": "A partner agreement with Morning, which is a human business-development relationship and fails the mandate.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "No payable venue. Reopen only if /terms-partners/ shows a cash commission with self-serve signup. It would then be an affiliate tail like iCount (₪0-100), still not a venue.",
+   "time_to_first_sale": "Not reachable.",
+   "verdict": "DEAD",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://www.greeninvoice.co.il/terms-partners/",
+    "https://www.greeninvoice.co.il/add-ons/",
+    "https://www.greeninvoice.co.il/help-center/morning-friends/",
+    "https://developers.morning.co/docs/openapi.bundled.json"
+   ]
+  },
+  {
+   "venue": "Israeli teacher-resource and general Hebrew digital-goods marketplaces (teacher-to-teacher sites, Shopland/myproduct.co.il, Facebook Marketplace)",
+   "url": "https://myproduct.co.il/marketplace_clean.php/",
+   "what_we_would_list": "Hebrew worksheets, lesson plans and printable templates.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "No venue with buyers found to attach listings to.",
+   "prior_verdict": "Never swept as a family. The nearest prior: storefront-rails found that no creator storefront brings buyers before a first sale (breadth/scouts/storefront-rails.json, prior_coverage).",
+   "reopen_basis": "New searches, all snippet. No paid Israeli teacher-to-teacher marketplace surfaced. The Hebrew results were free lesson-plan sites ('מערך שיעור לכל נושא - חינם', kanlomdim; achiyayeda; hanoch.info), so the free floor dominates. Shopland advertises online shops 'without subscription fees', but no buyer or traffic evidence was seen. Meta's commerce policy bans digital products on Facebook Marketplace.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Shopland claims no subscription fee (snippet); its commission and digital-goods support are unread.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Not read for any venue.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No API seen for any of them.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not read.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "No teacher marketplace with buyers exists in the results, and the category's free sites set the price floor at zero. Shopland shows no buyer evidence. Facebook Marketplace forbids digital goods (all snippet).",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Not applicable: no venue.",
+   "owner_step": "None worth taking.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "No venue that brings buyers. Hebrew teacher materials are given away free by NGOs and teacher portals.",
+   "time_to_first_sale": "Not reachable.",
+   "verdict": "DEAD",
+   "rank_in_family": 7,
+   "primary_urls_to_render": [
+    "https://myproduct.co.il/marketplace_clean.php/",
+    "https://www.kanlomdim.co.il/",
+    "https://achiyayeda.org/"
+   ]
+  },
+  {
+   "venue": "Israeli government and municipal developer programmes and procurement (data.gov.il, mr.gov.il tenders, municipal SaaS, ITA software-house route)",
+   "url": "https://www.mr.gov.il/ilgstorefront/he/search-tenders",
+   "what_we_would_list": "Nothing sellable. The state is a free data supplier and a tender-based buyer.",
+   "existing_product": "products/apify-il-open-data wraps data.gov.il; products/pcn874 builds around the ITA, not into it.",
+   "listings_per_owner_step": "Zero: every sale is a tender bid, a registration or a discretionary approval.",
+   "prior_verdict": "Two standing walls: 'The Tax Authority is a gate, not a platform' and 'The state is our free competitor' (REJECTED.md:156-176). Municipal back-office SaaS is killed: 'Buyer is a local authority → tenders, demos, human relationships' (groups/israel-bureaucracy.md:215). Tender alerts are occupied by 17 sellers over free state feeds (research/measurements/tenders-occupancy.md §1-3).",
+   "reopen_basis": "None. No new evidence, and no search was spent on it.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Tender participation costs vary. Not read.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Payment from public bodies follows a contract. Not read.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "Tender bids, supplier registrations and ITA software-house approval are human or discretionary processes (REJECTED.md:161-166; groups/israel-bureaucracy.md:215).",
+    "grade": "repo"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not read.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "The buyer is a public body buying through tenders and demos, which is human conversation (groups:215). data.gov.il supplies free; it does not buy.",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "Not applicable.",
+   "owner_step": "Tender registration and bids, which is recurring human work and fails the mandate.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Killed by the standing walls; no venue.",
+   "time_to_first_sale": "Not reachable.",
+   "verdict": "DEAD",
+   "rank_in_family": 8,
+   "primary_urls_to_render": [
+    "https://www.mr.gov.il/ilgstorefront/he/search-tenders"
+   ]
+  }
+ ]
+}
