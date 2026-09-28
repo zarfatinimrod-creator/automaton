@@ -436,8 +436,9 @@ defect, fixed. §10: the counter fix as tick 4's build item (it needs no owner s
 
 **`logs/FABLE_QUEUE.md`** — row 10 → **DONE 28.9**, pointing here. Row 12's *Reads* gains this file's §6 and §7.
 
-**`research/channel-loop/ZERO-TESTS.md`** — rows 26-29 for T1-T4 with their URLs; `research/rendered/urls.txt` cites
-them. **`docs/REJECTED.md`** — no kill; a dated paragraph under the Algora warning (`:1140-1150`): the honeypot finding,
+**`research/channel-loop/ZERO-TESTS.md`** — the next four free rows for T1-T4 with their URLs (rows 29-32 as of this
+sitting; the file reached row 28 during it, so Opus takes whatever is free when applying); `research/rendered/urls.txt`
+cites them. **`docs/REJECTED.md`** — no kill; a dated paragraph under the Algora warning (`:1140-1150`): the honeypot finding,
 the struck reading, the code-level rail facts of §2.1, and the reopen wording of §4.2 pre-written for the stop rules.
 
 **Per-task log** — Opus writes `logs/2026-09-28-bounty-rail-ruling-applied.md` in Hebrew on applying this.
