@@ -11,7 +11,7 @@
 - **תוצאות:** Google Play Books **נהרג** (הריגה שנרשמה מראש: ישראל לא בטבלה); Firefox — בדיקת הפתיחה-מחדש אישרה G4, **המלצה: KILL** בישיבה; Wix / PayPal / n8n / Spreadshirt — NEEDS_MORE, בדיקות הבאות בשורות 63-67; Bit2C מיותר.
 - **נוסף:** `scripts/queue-zero-test.mjs` (שורה + URL בפקודה אחת, 6 בדיקות); `research/owner-asks/brand-mailbox-questions.md` (4 מיילים לא נשלחו; ב-Gmail כאן אין כלי שליחה — השליחה תהיה דרך SMTP מה-CI); צעד 8 כבר לא מזכיר Play Books (קוד, מסמך, PDF, בדיקות); FABLE_QUEUE שורות 14-15 לישיבת 29.9.
 - **בריצה:** `wf_eb05cd07-2e6` (דף הבדיקה החינמי של pcn874, worktree `.claude/worktrees/wf_eb05cd07-2e6-1`) → למזג ב-`scripts/merge-worktree.sh`; `wf_af8e1ff7-059` (השלמת התור: 5 קבוצות, Shiur Hofshi מת, GameDistribution בתור אחרי CrazyGames) → `research/breadth/REPLENISH-2026-09-28.md`.
-- **הבא:** ההמשך ב-17:16 UTC (`trig_012jH7pYRe6nzsB2G2Ga4fAG`): רינדור אחד לשורות 63-67 + שורות ההשלמה; מיזוג pcn874; הבנייה הבאה = הכנת הפרסום של mcp-il-tools (הסקריפט מוכן ב-scratchpad, `mcp-publish-prep.js`; אם הקונטיינר אבד — לכתוב מחדש לפי §10); PR לסבב 6 ומיזוג כשירוק.
+- **הבא:** ההמשך ב-17:16 UTC (`trig_012jH7pYRe6nzsB2G2Ga4fAG`): רינדור אחד לשורות 63-67 + שורות ההשלמה; מיזוג pcn874; הבנייה הבאה = הכנת הפרסום של mcp-il-tools (`scripts/workflows/mcp-il-tools-publish-prep.js`, מריצים עם `args: {base: <sha>}`); PR לסבב 6 ומיזוג כשירוק.
 - **דף הבעלים:** rev 189, מעודכן עד כאן.
 - היומן: `logs/2026-09-28-channel-loop-tick-6.md`.
 
