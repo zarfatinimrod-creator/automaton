@@ -1,0 +1,137 @@
+StreetLib Content Integrity Guidelines - StreetLib Help Center
+
+Toggle Navigation
+
+Ebook
+
+Audiobook
+
+Libri cartacei
+
+Crea i tuoi libri con Write
+
+Direct Marketing
+
+Gestisci il tuo account e i pagamenti
+
+StreetLib Store
+
+Webinar
+
+Ready
+
+Ebooks
+
+Audiobooks
+
+Paperbooks
+
+Create Your Books
+
+Manage Your Account and Royalties
+
+StreetLib Direct Marketing
+
+SL Store
+
+Accountverwaltung und Einnahmen
+
+Ebook Veröffentlichung
+
+Hörbücher
+
+Bucherstellung
+
+FAQ zum Umzug auf die neue Plattform
+
+FAQ on Platform Changeover
+
+Contact
+
+Contact
+
+StreetLib Content Integrity Guidelines
+
+StreetLib offers a cloud publishing platform for producing, managing and distributing ebooks, audiobooks and POD-books through a network of more than 50 retailers.
+
+We serve both self-publishers (or indie-authors) and small-medium-big/corporate publishers from any country around the world . We work with a wide variety of publishers: from academic and scientific to trade, from digital comics and graphic novels to audiobook and podcasts.
+
+StreetLib is a tech-book company: we are technologists and we are building the best possible technological platforms to support and empower books publishers of any kind and from anywhere.
+
+Furthermore, StreetLib has a revenue-share based business model , with no-upfront nor recurring costs, and this makes StreetLib one of the most indie-friendly cloud publishing platforms and distribution services out there.
+
+Last update: January 2025
+
+As stated in the StreetLib Distribution Agreement , paragraph 11.2, we do not tolerate :
+
+content, data or information that are illegal or contrary to personal data regulation, good morals and/or public order.
+
+ebooks that contain pornography , child pornography and/or in any case contents which are obscene, defamatory or abusive, or contents that are discriminatory or offensive in relation to religions, race, gender or nationalities or offensive to third parties in general.
+
+Even though we make our content policy very clear on our website and in our distribution agreement, over time we've been forced to manage an increasing number of "bad actors" (or spammers) that have been taking advantage of our easy-to-use service to publish and distribute masses of low-quality content (mainly ebooks).
+
+This problem harms ebooks consumers and affects the reputation of our publishers and retail and library partners. It also feeds a growing bias against independently published works, which we rather think is extremely important to support. We definitely want to solve this problem.
+
+We believe that putting the StreetLib Content Integrity Guidelines in place and making them publicly available is the best way to address the issue.
+
+The criteria below describe the types of content that StreetLib may block, either automatically or with the intervention of our Content Management Team:
+
+1 -- Content with invalid ISBN codes. Please note that the ISBN code must be purchased and registered by the national ISBN agency of your country: every ISBN not registered by the national ISBN agency and/or obtained by a no-official ISBN generator will be rejected.
+
+2 -- Books or content you cannot document your rights upon request, like non-original contents or contents available online and replicable without limitation (PRL contents, e.g.).
+
+3 -- Books or content that mimic popular titles, with similar covers, cover design, title, author names, or similar type content.
+
+4 -- Books with misleading content or that are likely to cause confusion to the buyer, i.e. books with inaccurate descriptions or cover art.
+
+5-- Books created using artificial intelligence (AI) or automated processes that are not correctly categorized using the metadata available in the product sheet, and/or containing erroneous or low-quality content.
+
+6-- Low-quality books – text or images that contain errors, are poorly produced, incomplete, or have metadata or content issues that make the book difficult to understand.
+
+7-- Books that are summaries of other works. However, study guides, analyses of other works, and similar content are accepted, provided they are not limited to summaries of third-party works and include original content for which you own the rights. In such cases:a) The title in the metadata and on the cover must clearly state the type of content (e.g., study guide, analysis, etc.);b) The cover must not resemble or evoke the original work;c) The authors of the original work must not be listed as the authors of the guide or analysis;d) The content must be included in the correct target category, e.g., Study Aids (STU000000).
+
+Sensitive Content Warning (Trigger Warning)
+
+If the book mentions or describes sensitive topics (or so-called triggering topics, as they may evoke traumatic experiences), it is mandatory to include a trigger warning in the synopsis that explicitly states the presence of sensitive content. Examples include books addressing topics such as rape, eating disorders, or suicide.
+
+Child Protection
+
+As outlined in Article 11 of the Distribution Agreement and in the sections on Adult Content and Sexually Explicit Content, pornographic or child pornographic content is not permitted. Additionally, a zero-tolerance policy applies to any form of sexual abuse of minors in the text, images, or audio content of books.
+
+For books with sensitive or sexually explicit content that are allowed under the guidelines, it is mandatory to indicate in the synopsis if the content involves underage protagonists (under 18 years of age), where applicable.We reserve the right to remove content that fits the above criteria without prior notice to the publisher.
+
+We're fully committed to improving our system and to supporting our publishing community for the better , and we're determined to fight against bad actors who want to take advantage of our technology and harm consumers and readers.
+
+The StreetLib Content Integrity Guidelines is a work in progress and we believe we need to do our best to keep them up to date and to enforce them to make the publishing world a better place.
+
+Still need help?
+Contact Us
+Contact Us
+
+Last updated on February 19, 2025
+
+Toggle Search
+
+Categories
+
+Before Publication
+
+Publish an eBook
+
+Content Policy
+
+Ebook Price
+
+Update an eBook
+
+Bookstores
+
+Sale Models and Earnings
+
+No results found
+
+&copy;
+
+StreetLib SRL
+
+2026. Powered by Help Scout

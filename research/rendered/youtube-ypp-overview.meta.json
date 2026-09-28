@@ -1,17 +1,17 @@
 {
   "url": "https://support.google.com/youtube/answer/72851?hl=en&co=GENIE.Platform%3DAndroid",
   "slug": "youtube-ypp-overview",
-  "fetchedAt": "2026-09-28T19:14:11.742Z",
+  "fetchedAt": "2026-09-28T20:31:53.206Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1599297,
-  "sha256": "7438521a45703f59b1a288fedb2285149dfc406aeb43bfedb546a7c80dbcac01",
+  "byteLength": 1599702,
+  "sha256": "31616ccaaab67450d47488f16f6c79f7dcd006f08c110c7ef850d74bb4df9985",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/youtube-ypp-overview.html",
   "textPath": "research/rendered/youtube-ypp-overview.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "0ee6bf23339b4f5983d93b4227cd38bda68d92861081e54affe8f57db1cda0b6",
+  "previousSha256": "7438521a45703f59b1a288fedb2285149dfc406aeb43bfedb546a7c80dbcac01",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

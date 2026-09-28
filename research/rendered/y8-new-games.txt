@@ -11,27 +11,27 @@ Popular Games
 
 Driving & Racing
 
-Girls & Lifestyle
-
 Shooting
+
+Girls & Lifestyle
 
 Sports
 
-Puzzle & Thinking
-
 Adventure & RPG
-
-Skill & Precision
-
-Strategy & Defense
 
 Action & Fighting
 
+Strategy & Defense
+
+Puzzle & Thinking
+
+Skill & Precision
+
 Management & Simulation
 
-Arcade & Classic
-
 Fun & Crazy
+
+Arcade & Classic
 
 Kids & Educational
 
@@ -191,21 +191,47 @@ Girls Games
 4
 5
 
+Fortress Merge
+
+8.4
+
 New
 
-Supermarket Tycoon: 3D Idle Game
+Mystic Mix
+
+9.1
+
+Foodie Match
+
+8.5
+
+New
+
+Obblox Gun io
+
+8.2
+
+New
+
+Big Smash
 
 9.2
 
-Climb Up
+New
+
+Diamond Art Sort
 
 8.0
 
 New
 
-Pizza Now
+Snacky Dash: Food Maze Puzzle
 
-8.6
+8.0
+
+Wolfoo Word Wonders
+
+9.1
 
 New
 
@@ -213,15 +239,127 @@ Pirates Story Match
 
 8.0
 
-Detective X: Find Hidden Object
+New
 
-7.7
+Catburglar
+
+8.0
+
+New
+
+Yarn Art Loop
+
+8.2
+
+Climb Up
+
+8.0
+
+Bird Sort
+
+8.3
+
+Alpha Tower Gaurd
+
+5.0
+
+Guess The Fruit
+
+7.1
+
+New
+
+Sortello
+
+9.1
+
+Royal Pool Blitz
+
+7.2
+
+New
+
+9 Ball Pool 3D
+
+8.2
+
+New
+
+Mystery Town
+
+9.1
+
+New
+
+Orbit Loom
+
+8.0
+
+New
+
+Neon Slash
+
+9.0
+
+New
+
+LAST CUSTOMER :Night Shift Horror
+
+8.1
+
+Crystal Maze 3D
+
+5.4
+
+New
+
+Mahjong Onet Deluxe
+
+8.0
+
+New
+
+All Shall Fall
+
+8.0
+
+New
+
+Bubble Rush 2
+
+8.0
+
+New
+
+Miki Oath
+
+8.0
+
+Chess Deluxe
+
+7.9
+
+New
+
+Viviennes Lifestyle Yacht Club
+
+7.1
+
+New
+
+Oddly Sorted: Color Sort
+
+6.7
 
 New
 
 Color Guesser
 
 9.4
+
+Car Parking Driving Simulator
+
+7.5
 
 New
 
@@ -231,7 +369,37 @@ Real Car Bmw M4 Drift
 
 New
 
-Catburglar
+Investor Tycoon
+
+8.6
+
+New
+
+Guess The NBA Player
+
+8.2
+
+New
+
+Supermarket Tycoon: 3D Idle Game
+
+9.2
+
+New
+
+Retakes io
+
+8.3
+
+New
+
+Bounce Ball: Number Breaker
+
+9.1
+
+New
+
+Speed Dunk
 
 8.0
 
@@ -243,19 +411,19 @@ Plug Joy
 
 New
 
-Miki Oath
+Cyber Grid Pro
 
-8.0
+8.9
 
-Wolfoo Word Wonders
+Highway Domination
 
-9.1
+8.4
 
 New
 
-GORILGO FPS : Online Shooter
+Cube Drop 2048 3D
 
-7.4
+8.2
 
 Wolfoo Supermarket Sort
 
@@ -263,15 +431,47 @@ Wolfoo Supermarket Sort
 
 New
 
+MarbleMaze
+
+8.2
+
+Fruit Garden: Merge Fruits
+
+8.6
+
+Mine Blade Online Kit PvP
+
+7.7
+
+Domino 2048
+
+8.1
+
+New
+
+Pizza Now
+
+8.6
+
+Detective X: Find Hidden Object
+
+7.7
+
+New
+
+GORILGO FPS : Online Shooter
+
+7.4
+
+New
+
 Monster Fire
 
 9.2
 
-New
+Real War
 
-Cube Drop 2048 3D
-
-8.2
+7.3
 
 New
 
@@ -281,87 +481,13 @@ Food: Run and Battle
 
 New
 
-Oddly Sorted: Color Sort
-
-6.7
-
-New
-
-MarbleMaze
-
-8.2
-
-Real War
-
-7.3
-
-New
-
-Mystic Mix
-
-9.1
-
-Fruit Garden: Merge Fruits
-
-8.6
-
-Car Parking Driving Simulator
-
-7.5
-
-Mine Blade Online Kit PvP
-
-7.7
-
-New
-
-Diamond Art Sort
-
-8.0
-
-New
-
-Cyber Grid Pro
-
-8.9
-
-Chess Deluxe
-
-7.9
-
-New
-
-Mystery Town
-
-9.1
-
-New
-
 Dino World 3D
 
 9.3
 
-Highway Domination
-
-8.4
-
-Guess The Fruit
-
-7.1
-
-Domino 2048
-
-8.1
-
 New
 
 2048 Kingdom
-
-8.0
-
-New
-
-Obblox Gun io
 
 8.0
 
@@ -393,20 +519,6 @@ Spooky Block Blast
 
 New
 
-Neon Slash
-
-9.0
-
-Royal Pool Blitz
-
-7.2
-
-Alpha Tower Gaurd
-
-5.0
-
-New
-
 Nitro Racing Gear
 
 7.1
@@ -419,7 +531,7 @@ New
 
 Impostor Duck Online
 
-8.1
+8.2
 
 New
 
@@ -433,12 +545,6 @@ Monster Haul
 
 New
 
-All Shall Fall
-
-8.0
-
-New
-
 Candy Match Pop
 
 5.0
@@ -449,21 +555,9 @@ Ironhour
 
 8.6
 
-New
-
-Bounce Ball: Number Breaker
-
-9.1
-
 Race Through Traffic
 
 7.8
-
-New
-
-Retakes io
-
-8.3
 
 New
 
@@ -480,100 +574,6 @@ Make A Face
 Cooking Tasty: Restaurant Game
 
 7.6
-
-Obby Knife Duels
-
-9.4
-
-New
-
-Mahjong Onet Deluxe
-
-8.0
-
-New
-
-Speed Dunk
-
-8.0
-
-New
-
-Big Smash
-
-9.2
-
-Ping Pong 3d
-
-8.6
-
-New
-
-Chubby Duck Jump
-
-8.0
-
-New
-
-Block Flow
-
-8.0
-
-New
-
-PieceAlive
-
-8.3
-
-Fruit Flow Match 3
-
-8.1
-
-New
-
-Sheep Simulator Animal Games
-
-8.3
-
-New
-
-Viviennes Lifestyle Yacht Club
-
-7.5
-
-New
-
-Guess The NBA Player
-
-8.2
-
-New
-
-Obby: Chameleon - Paint & Hide
-
-8.3
-
-New
-
-Barricade Online
-
-8.4
-
-New
-
-Snacky Dash: Food Maze Puzzle
-
-8.0
-
-Clean the Squishes: ASMR Sorting Obby
-
-7.9
-
-New
-
-Tower Block Stacking Arcade Game
-
-8.1
 
 1
 2

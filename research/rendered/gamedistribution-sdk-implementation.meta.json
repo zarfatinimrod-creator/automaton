@@ -1,17 +1,17 @@
 {
   "url": "https://github.com/GameDistribution/GD-HTML5/wiki/SDK-Implementation/",
   "slug": "gamedistribution-sdk-implementation",
-  "fetchedAt": "2026-09-28T19:17:26.773Z",
+  "fetchedAt": "2026-09-28T20:35:18.649Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 244881,
-  "sha256": "be96715d12f7d8f3f5bd9aec88d33fb33865bc9d7f036326c05f7717ab9e7285",
+  "byteLength": 244871,
+  "sha256": "7432d1d14cb5f59dea830842d9434fd8c53b4b36397e26bb74dc5cf673cfac82",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/gamedistribution-sdk-implementation.html",
   "textPath": "research/rendered/gamedistribution-sdk-implementation.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "ca9983b4c2c7943cb5af34ce3bd7228a248e9f4b357692bcec1c6354d48f2395",
+  "previousSha256": "be96715d12f7d8f3f5bd9aec88d33fb33865bc9d7f036326c05f7717ab9e7285",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

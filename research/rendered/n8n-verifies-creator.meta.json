@@ -1,0 +1,17 @@
+{
+  "url": "https://community.n8n.io/t/verifies-creator/129722",
+  "slug": "n8n-verifies-creator",
+  "fetchedAt": "2026-09-28T20:35:26.723Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 277478,
+  "sha256": "7411e5ee6971a1f3fc66f5686fa0339c93a2a9eaf337de7fd2c020bd8cd2cc47",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/n8n-verifies-creator.html",
+  "textPath": "research/rendered/n8n-verifies-creator.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

@@ -1,0 +1,17 @@
+{
+  "url": "https://help.streetlib.com/article/677-earnings",
+  "slug": "help-streetlib-com-article-677-earnings",
+  "fetchedAt": "2026-09-28T20:35:31.339Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 84891,
+  "sha256": "b4cda71353f71056fd73f1b948ba1a1e22841a95a3560ddeb8b6363699d58d29",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/help-streetlib-com-article-677-earnings.html",
+  "textPath": "research/rendered/help-streetlib-com-article-677-earnings.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

@@ -208,14 +208,6 @@ Recently added
 
 More items
 
-Codecov | Code Coverage
-App
-Automatic test report merging for all CI and languages into a single code coverage report directly into your pull request
-
-Qlty Cloud
-App
-Code quality and coverage done right
-
 Imgbot
 App
 A GitHub app that optimizes your images
@@ -232,45 +224,29 @@ Azure Pipelines
 App
 Continuously build, test, and deploy to any platform and cloud
 
+Zenhub
+App
+Project management that's seamlessly integrated with GitHub’s data & interface, builds powerful insights & automates tasks
+
+Codecov | Code Coverage
+App
+Automatic test report merging for all CI and languages into a single code coverage report directly into your pull request
+
 Codacy
 App
 Codacy helps to build effortless code quality and security for developers
+
+Qlty Cloud
+App
+Code quality and coverage done right
 
 CircleCI
 App
 Ship trusted code with confidence. Fast feedback, flexible execution, and enterprise-grade security
 
-Zenhub
-App
-Project management that's seamlessly integrated with GitHub’s data & interface, builds powerful insights & automates tasks
-
 Zube
 App
 An Agile project management tool that seamlessly integrates with GitHub Issues
-
-WakaTime
-App
-Metrics, goals, and time tracking automatically generated from your programming activity
-
-Argos Visual Testing
-App
-Stop visual regressions, not releases
-
-Crowdin
-App
-Agile localization for your projects
-
-TestQuality - Unified Test Management for GitHub
-App
-Test Plan Driven QA Test Management for GitHub
-
-AccessLint
-App
-Find accessibility issues in your pull requests
-
-CodeScene
-App
-A software engineering intelligence tool tool to identify and prioritize technical debt and evaluate your efficiency
 
 PullRequest
 App
@@ -287,6 +263,30 @@ Advanced static analysis for automatically finding runtime errors in JavaScript,
 Slack + GitHub
 App
 Connect your code without leaving Slack
+
+Waydev
+App
+AI-Powered Software Engineering Intelligence Platform
+
+Octobox
+App
+Spend less time managing your GitHub notifications
+
+Review Notebook App
+App
+Code Review & Collaboration for Jupyter Notebooks
+
+Atlassian
+App
+GitHub for Atlassian unifies data, automates workflows, and syncs development across GitHub, Jira, and your Atlassian apps
+
+Mergify
+App
+Pull requests automation service. Merge your pull requests faster with automatic merges and a merge queue
+
+Pull Request Size
+App
+Apply size labels to Pull Requests based on the total lines of code changed
 
 Footer
 

@@ -1,17 +1,17 @@
 {
   "url": "https://support.google.com/books/partner/answer/4490848?hl=en",
   "slug": "play-books-answer-4490848",
-  "fetchedAt": "2026-09-28T19:16:15.675Z",
+  "fetchedAt": "2026-09-28T20:34:12.275Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1588840,
-  "sha256": "fee920db5aee98349cf252a4d2f627d513ba0e970bcbd35c6f24f89a1f477a17",
+  "byteLength": 1588847,
+  "sha256": "01f582f68de41760fbc71fe0b5222a653b98527aebb43b0aef297f863775e84a",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/play-books-answer-4490848.html",
   "textPath": "research/rendered/play-books-answer-4490848.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "92d2932e308be799a2ce9e59864445fed480548ba984dcdf62fd460e13d85070",
+  "previousSha256": "fee920db5aee98349cf252a4d2f627d513ba0e970bcbd35c6f24f89a1f477a17",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -12839,22 +12839,22 @@
         "name": "propwire-leads-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 134,
-          "totalRuns": 35024,
+          "totalBuilds": 135,
+          "totalRuns": 35025,
           "totalUsers": 308,
           "totalUsers7Days": 29,
           "totalUsers30Days": 51,
           "totalUsers90Days": 107,
-          "lastRunStartedAt": "2026-09-28T16:12:56.525Z",
+          "lastRunStartedAt": "2026-09-28T18:44:36.912Z",
           "actorReviewCount": 7,
           "actorReviewRating": 4.999999999999999,
           "bookmarkCount": 6,
           "publicActorRunStats30Days": {
             "ABORTED": 69,
             "FAILED": 0,
-            "SUCCEEDED": 7081,
+            "SUCCEEDED": 7091,
             "TIMED-OUT": 0,
-            "TOTAL": 7150
+            "TOTAL": 7160
           }
         },
         "description": "Get comprehensive property data: estimated equity, foreclosure status (auction dates/lenders), mortgage and transfer history, owner portfolios, and tax assessments. Access detailed building specs like SF and year built, plus motivated seller lead types, including pre-foreclosures and high equity.",
@@ -24098,22 +24098,22 @@
         "name": "instagram-transcript-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 53,
-          "totalRuns": 1466,
+          "totalBuilds": 54,
+          "totalRuns": 1499,
           "totalUsers": 162,
           "totalUsers7Days": 29,
           "totalUsers30Days": 81,
           "totalUsers90Days": 115,
-          "lastRunStartedAt": "2026-09-28T11:01:37.328Z",
+          "lastRunStartedAt": "2026-09-28T16:46:00.466Z",
           "actorReviewCount": 0,
           "actorReviewRating": 0,
           "bookmarkCount": 1,
           "publicActorRunStats30Days": {
-            "ABORTED": 11,
-            "FAILED": 56,
-            "SUCCEEDED": 598,
+            "ABORTED": 13,
+            "FAILED": 61,
+            "SUCCEEDED": 677,
             "TIMED-OUT": 1,
-            "TOTAL": 666
+            "TOTAL": 752
           }
         },
         "description": "Instagram reel transcripts from a handle, reel URL, or chained dataset. On-device Whisper returns the full spoken text, hook3s, SRT/VTT subtitles and creator metadata. No login. Silent and music-only reels are not charged. Flat $0.015 per delivered transcript, any length.",
@@ -27926,22 +27926,22 @@
         "name": "technical-seo-auditor",
         "username": "alizarin_refrigerator-owner",
         "stats": {
-          "totalBuilds": 31,
-          "totalRuns": 414,
-          "totalUsers": 38,
-          "totalUsers7Days": 1,
-          "totalUsers30Days": 2,
+          "totalBuilds": 34,
+          "totalRuns": 419,
+          "totalUsers": 39,
+          "totalUsers7Days": 0,
+          "totalUsers30Days": 1,
           "totalUsers90Days": 2,
-          "lastRunStartedAt": "2026-09-27T12:55:01.599Z",
+          "lastRunStartedAt": "2026-09-28T19:59:12.735Z",
           "actorReviewCount": 0,
           "actorReviewRating": 0,
           "bookmarkCount": 1,
           "publicActorRunStats30Days": {
             "ABORTED": 0,
             "FAILED": 0,
-            "SUCCEEDED": 30,
+            "SUCCEEDED": 31,
             "TIMED-OUT": 0,
-            "TOTAL": 30
+            "TOTAL": 31
           }
         },
         "description": "The Technical SEO Auditor performs comprehensive on-page SEO analysis:\nMeta Tag Analysis\nHeading Structure\nImage Optimization\nLink Analysis\nStructured Data\nCore Web Vitals\nMobile Friendliness\nContent Analysis",

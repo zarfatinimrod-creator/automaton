@@ -1,0 +1,17 @@
+{
+  "url": "https://help.society6.com/en-US/updates-to-society6-artists-account-effective-march-18-2025-1261598",
+  "slug": "help-society6-com-en-us-updates-to-society6-artists-account",
+  "fetchedAt": "2026-09-28T20:35:44.908Z",
+  "status": 404,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 0,
+  "sha256": null,
+  "truncated": false,
+  "error": "HTTP 404 Not Found",
+  "bodyPath": null,
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

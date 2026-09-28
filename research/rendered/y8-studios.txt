@@ -11,13 +11,15 @@ Popular Games
 
 Driving & Racing
 
-Girls & Lifestyle
-
 Shooting
+
+Girls & Lifestyle
 
 Sports
 
 Puzzle & Thinking
+
+Action & Fighting
 
 Adventure & RPG
 
@@ -25,13 +27,11 @@ Skill & Precision
 
 Strategy & Defense
 
-Action & Fighting
-
 Management & Simulation
 
-Arcade & Classic
-
 Fun & Crazy
+
+Arcade & Classic
 
 Kids & Educational
 

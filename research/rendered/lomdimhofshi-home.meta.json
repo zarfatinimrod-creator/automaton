@@ -1,17 +1,17 @@
 {
   "url": "https://lomdimhofshi.co.il",
   "slug": "lomdimhofshi-home",
-  "fetchedAt": "2026-09-28T17:20:10.337Z",
+  "fetchedAt": "2026-09-28T20:35:08.875Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 300991,
-  "sha256": "7820b1afdb2d7429696b02aeaa87741a96275611024548a4d8b6378bdfb5de29",
+  "byteLength": 301018,
+  "sha256": "531572b595ffb80d9df90041f57f3c17c4b82219fd0f5edabedf1fd252f39274",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/lomdimhofshi-home.html",
   "textPath": "research/rendered/lomdimhofshi-home.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "7820b1afdb2d7429696b02aeaa87741a96275611024548a4d8b6378bdfb5de29",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }
