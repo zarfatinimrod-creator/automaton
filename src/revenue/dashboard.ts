@@ -21,7 +21,7 @@
 import type { Database } from "better-sqlite3";
 import { computePortfolioSummary, latestReviewForLine, listLines } from "./ledger.js";
 import { formatIls } from "./money.js";
-import { summarizeTargetBasis, TARGET_BASIS } from "./portfolio.js";
+import { labelledKpis, summarizeTargetBasis, TARGET_BASIS } from "./portfolio.js";
 import { sweepCoverage } from "./criteria.js";
 import { findStalledLines } from "./watchdog.js";
 import { FINAL_GOAL_MONTHLY_ILS, PLANNING_ASSUMPTIONS, storesNeededFor } from "./growth.js";
@@ -104,6 +104,15 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
         <td>${esc(review?.decision ?? "—")}</td>
       </tr>`;
   }).join("\n");
+
+  // A KPI whose reading is biased carries its label wherever it is printed (research/breadth/BOARD.md Q5). The label
+  // is quoted verbatim in English so the report, the dashboard and the code say the same words.
+  const kpiNotes = labelledKpis(db, lines.map((l) => l.id))
+    .map((k) => {
+      const reading = k.value === null ? "אין עדיין קריאה" : `${k.value}${k.unit ? ` ${k.unit}` : ""}`;
+      return `    <p class="note">מדידה עם תווית — <code>${esc(k.lineId)}</code> <code>${esc(k.kpi)}</code>: ${esc(reading)} — <span dir="ltr">${esc(k.label)}</span>. <span dir="ltr">${esc(k.rule)}</span>.</p>`;
+    })
+    .join("\n");
 
   const ownerBlocks = needsOwner.length === 0
     ? '<p class="empty">אין כרגע צעד שממתין לך.</p>'
@@ -192,6 +201,7 @@ ${ownerBlocks}
 ${rows}
       </tbody>
     </table>
+${kpiNotes}
   </div>
 
   <h2>על מה הכסף עובר</h2>

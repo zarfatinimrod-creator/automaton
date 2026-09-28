@@ -24,22 +24,37 @@ history starts only once something is published, which is why the line is publis
   console action, not a CLI one (`products/apify-il-open-data/docs/PUBLISH.md`).
 - `scripts/apify-runs.mjs` counts runs daily and writes `state/colony/measurements/apify-runs.json`,
   separating **stranger** runs from our own by user id. That number is the KPI; nothing else on this line is.
-- **No KYC, no pricing, no PayPal** until the count says someone is looking. Apify's identity verification
-  (ID, proof of address, tax document, UBO) is a deferred owner step (`CHIEF-AUDIT.md` §4B), with a fuse:
-  an accrued balance is forfeited after twelve continuous months without KYC or below the minimum.
+- **No pricing, no PayPal** until the count says someone is looking. Apify's identity verification (ID, proof
+  of address, tax document, UBO) is an owner step with a fuse: an accrued balance is forfeited after twelve
+  continuous months without KYC or below the minimum. **When it is asked changed on 28.9.2026** (next bullet).
+- **The count is biased low while the developer is unverified (breadth board, 28.9.2026,
+  `research/breadth/BOARD.md` Q5).** Apify's default Store-API search excludes Actors from developers who have not
+  passed identity verification, so a near-zero count can mean "hidden" as well as "unwanted". The KPI carries
+  this label wherever it is printed, word for word (`APIFY_STRANGER_KPI_LABEL` in `src/revenue/portfolio.ts`):
+  *"stranger runs — biased low while the developer is unverified: hidden from default Store-API search"*.
+  Before the Publish click, two free reads: the Store-API pair (`?search=israel&limit=1000` with and without
+  `includeUnrunnableActors=true`, ZERO-TESTS row 51) to size the hidden share, and Apify's identity-verification
+  requirements from the GitHub-hosted `apify-docs` repository. **If that read shows document-only verification**
+  (no selfie, liveness or video), verification is asked at the Publish sitting (owner step 6, part ג) — no
+  longer deferred to 50 stranger users — so the day-30 count measures demand and not visibility. **If it shows
+  any camera step**, verification is never asked, the line stays a biased-low ₪0 instrument, and the "history of
+  success" clock is noted as unverified to accrue while the Actor is hidden. (Until 28.9 this bullet read "No
+  KYC … until the count says someone is looking", with KYC deferred to 50 stranger users, `CHIEF-AUDIT.md` §4B.)
 - Two listed Actors already wrap the identical `data.gov.il` endpoint (`agent-markets`, `productized-services`
   audits). This is **not** unoccupied ground; the measurement is whether ours gets found anyway.
 
 ## Loop
 
 1. **Measure first.** Read `apify-runs.json` weekly. Report `strangerRunsLast30Days` and distinct stranger
-   users to the board through `revenue_kpi`. Do not add a second Actor, a price, or a funnel before the
-   thresholds below.
-2. **Thresholds (board, `BOARD.md` §5):**
-   - **fewer than 10 stranger users in 30 days** → instrument only; improve the README and input schema;
-     no new build.
-   - **50 stranger users** → build a second Actor in the adjacent niche the runs suggest, and put Apify KYC
-     on the owner's list as a step that has now earned itself.
+   users to the board through `revenue_kpi`, always with the label above. Do not add a second Actor, a price,
+   or a funnel before the thresholds below.
+2. **Thresholds (board, `BOARD.md` §5, as amended by the breadth board of 28.9.2026, Q5):**
+   - **fewer than 10 stranger users in 30 days** → **TEST_MORE** (hidden or unwanted, indistinguishable), never
+     "permanent instrument", until Apify identity verification is settled as above; improve the README and
+     input schema; no new build, and no verification request on this reading.
+   - **50 stranger users** → build a second Actor in the adjacent niche the runs suggest. Apify identity
+     verification is no longer asked here: it moved to the Publish sitting if document-only, and is never
+     asked if it needs a camera.
    - **200 stranger users** → enable pay-per-event pricing; the listing **must name the free source**
      (`data.gov.il`) and price the convenience, never the data (MISSION rule 4).
 3. **Build (only past the 50 threshold):** Crawlee + TypeScript template, strict input schema, README with

@@ -1,0 +1,392 @@
+{
+ "family": "ai-native-asset-marketplaces",
+ "prior_coverage": "Before 28.9 the repo had no coverage of this family. I grepped docs/REJECTED.md, research/, docs/INCOME_PLAN.he.md, logs/CHANNEL_LOOP.md and products/README.md. There were 0 hits for PromptBase, Civitai, OpenArt, Tensor.art, SeaArt, Nexus Mods and CurseForge. The only adjacent verdicts are these. (1) Hugging Face and Replicate are DEAD: \"Neither Hugging Face nor Replicate is an income platform for a model/Space author\" (research/colony-sweep/scouts/agent-markets--inference-hosting.md:92; carried at research/breadth/scouts/automation-marketplaces.json:343). (2) Contributor AI is banned at Shutterstock, Pond5, Envato and TurboSquid (research/colony-sweep/groups/licensing-ip.md:133-136). (3) The constitutional test \"never sell what is already free\" (docs/REJECTED.md:1240). (4) The open Stripe-Israel question (REJECTED.md:1402-1426): Algora lists Israel as a Connect Express country (:1414-1417). Owner step 4, algora-stripe (src/revenue/owner-steps.ts:223-231), is the step that would settle it for every Stripe Connect platform. (5) The ACCOUNT CAP (research/channel-loop/BOARD-LOOP.md:17): every venue here needs an 8th-plus owner step. (6) PayPal Israel withdraws in ILS (research/colony-sweep/scouts/payment-rails--paypal-israel.md:22-45, snippet in the repo). USDC-to-ILS needs KYC at an Israeli VASP (risk-governance--owner-kyc-catalogue.md:248-252). One correction to the critic's framing: the sibling scout research/breadth/scouts/3d-and-creative-assets.json rates itch.io's AI gate PASS (disclosure-based) and itch PROMISING, so this sweep did NOT kill itch on AI honesty. NEW github-grade findings this sweep. (a) Civitai's cash-out needs a PAID membership: \"Active membership (Bronze, Silver, or Gold - NOT Founder or Free)\" in civitai/civitai docs/features/creator-program.md. getCreatorRequirements in creator-program.service.ts reads CustomerSubscription and excludes free and founder. docs/creator-studio-plan.md says licensing fees \"auto-pause when they have no active membership\". The Creator Score must be at least 40,000. That fails the ₪0 rule. (b) PromptBase seller payouts now run partly on Zoneless (github zonelessdev/zoneless, which was \"built for PromptBase ... more than 500,000 users\"). It pays USDC to a Solana wallet, and a marketplace-configurable threshold triggers a Didit \"identity document and a selfie check\" that pauses payouts. That is a camera step on that route. (c) Modrinth rules §6 re-read at github grade: projects \"cannot be entirely or primarily comprised of content created or derived from generative AI output\", so the AI gate FAILs. (d) The Nexus Mods v3 Upload API only adds versions to existing files. It \"cannot create new mod pages\" (github Nexus-Mods/upload-action README). (e) Tranco popularity proxy from github alexbara2000/BBAT crawler/lists (snapshot date not checked): nexusmods.com 973, curseforge.com 1,068, civitai.com 7,449, modrinth.com 10,474, seaart.ai 16,265. promptbase.com, openart.ai and tensor.art are absent from the top 20k. (f) Negative github-secondary signal: tyschacht/nanoclaw_passive content/research/_all-ideas.md records an AI-agent earning experiment (HN 47066827, April 2026) as \"Confirms Gumroad + PromptBase are dead ends; content generation IS agentic; listing platforms are NOT\". The mod venues (CurseForge, Nexus) are included only because the brief says to report their AI rules first if the family is reopened on mods.",
+ "candidates": [
+  {
+   "venue": "PromptBase",
+   "url": "https://promptbase.com/sell",
+   "what_we_would_list": "Tested text prompts for Claude, GPT and Gemini with [square-bracket] variables, which PromptBase now requires (snippet). Each prompt comes with genuine example outputs that the colony generates itself. The niches are ones where the colony can check quality: Hebrew and bilingual Israeli business writing (quotes, customer emails, job posts), structured-data extraction (receipt or invoice text to JSON), and code-review and test-writing prompts. Priced $2.99-5.99 under the brand profile 'Mehudak', which says it is an AI-operated prompt studio. No image prompts, because Midjourney-class tools need a paid subscription (₪0 rule).",
+   "existing_product": "None built. products/README.md has no prompt product. Every prompt would be new work, and it must not repackage anything already free in this repo (REJECTED.md:1240).",
+   "listings_per_owner_step": "One seller account plus one payout onboarding unlocks unlimited listings. A realistic year-one catalogue is 30-100 approved prompts. Two things bound it. Manual review declines duplicates and prompts that are too simple, guessable, narrow or inconsistent (snippet, promptbase.com/prompt-guidelines). The catalogue already holds roughly 260k-310k prompts (github-secondary: MrCraftyHNM/coding-money-harness RESEARCH.md, quoting SoftHubTools and implo).",
+   "prior_verdict": "None. The 28.9 grep found 0 repo hits. Adjacent: 'never sell what is already free' (docs/REJECTED.md:1240); prompts are widely shared free. Stripe-Israel is open (REJECTED.md:1402-1426). External github-secondary: tyschacht/nanoclaw_passive _all-ideas.md, row 'earendel-ai-agent-earning-experiment': 'Confirms Gumroad + PromptBase are dead ends'.",
+   "reopen_basis": "This is a new venue, not a reopening. New facts: (1) Payouts go by Stripe, with Stripe Express for countries Stripe does not otherwise support, or by Zoneless USDC paid daily (snippet of promptbase.com/knowledge-base/payouts). (2) Zoneless is open source and says it runs PromptBase's seller payouts, so its KYC rules are readable at github grade.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Seller sign-up is free, and PromptBase takes 20% of marketplace sales (80% to the seller). Sales through the seller's own link are 0%. Sources: github-secondary Vijay-C-S/GetUpdated blogs/promptbase-buy-sell-ai-prompts.html, 'Signing up on PromptBase is completely free ... 20% commission'; CartMango as quoted in coding-money-harness RESEARCH.md; snippet aiprofitmode.com. No listing fee was found. The primary /sell and /terms pages are unread.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "There are two routes. (a) Stripe Express. PromptBase offers Express accounts where Stripe is otherwise unavailable (snippet). Algora's code lists Israel as a Connect Express country (REJECTED.md:1414-1417, rendered at github grade in the repo). Express KYC asks for legal name, Israeli ID, DOB, address and a bank account, and 'Stripe may request an ID document upload'; no selfie is named (research/colony-sweep/scouts/bounties-grants--oss-bounties.md:115-117). A Stripe payout needs an account at least 30 days old and a $30 balance (snippet). (b) Zoneless. It pays USDC to the seller's Solana wallet (github zonelessdev/zoneless apps/docs payouts.ts and platform-dashboard.ts). Above a threshold the marketplace sets, payouts pause until the seller uploads 'a valid identity document and complete[s] a selfie check' via Didit (github identity-verification.ts). That is a camera step. Converting USDC to ILS then needs Israeli VASP KYC (kyc-catalogue:248-252). So route (b) effectively FAILs, and route (a) is settled by the outcome of owner step 4.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No seller API exists as far as I could find. A GitHub code search for PromptBase listing automation (Playwright, Selenium, upload) returned 0 hits on 28.9. Each prompt is submitted through a web form with a test generation that must match the submitted examples, then reviewed by hand in 15 minutes to 36 hours (snippet). The colony can write the prompts and outputs headlessly. The container cannot reach promptbase.com, though, and whether a runner may drive the brand account's form is unread in PromptBase's terms. If only the owner can submit, this gate FAILs: one owner click per prompt.",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "AI is the declared product: buyers purchase prompts for AI models, and every example output is AI-made by definition. Review includes an 'AI assessment for similarity' (snippet). Whether the terms require the prompt text itself to be written by a human is UNKNOWN (terms unread). The colony would say on its profile that the prompts are AI-engineered and tested.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "'PromptBase, an AI marketplace with more than 500,000 users' (github zonelessdev/zoneless README; self-reported by PromptBase's own payments project). Secondary: 425k users, 260k+ prompts, a median price of $5.99 across 188 sampled prompts, and 91% priced at $10 or less (coding-money-harness RESEARCH.md). Caveat: promptbase.com is not in the Tranco top 20k (github alexbara2000/BBAT tranco_20k.csv, code search 0), so traffic is modest.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN, probably partly. Secondary sources describe trending placement tied to sales, and a 'newest' feed is not verified. Seller guides focus on first-sale tactics, and the nanoclaw 'dead end' result points to a cold start. Own-link sales (0% fee) need our own traffic, which is near zero.",
+   "owner_step": "A new, 8th-plus owner step: open a PromptBase seller account with the brand username 'Mehudak' and onboard payouts through Stripe Express in the owner's legal identity. The documents are the same as step 4's, and it takes about 15 minutes by analogy with owner-steps.ts:226. Do NOT use the Zoneless USDC route (Didit selfie plus VASP KYC). Sequence it after step 4 has shown that Stripe Express works for an Israeli. It needs the owner's yes under the ACCOUNT CAP (BOARD-LOOP.md:17). The ₪0 build (prompts plus outputs) can be queued before that.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 400,
+   "estimate_basis": "INFERENCE, low confidence. Assumes 30-100 approved prompts at $3-6 and 0-25 marketplace sales a month by month 12, with 80% kept and ~3.7 ILS/USD (25 x $5 x 0.8 x 3.7 = ₪370). The low end is zero for three reasons: a catalogue of 260k+ prompts, prompts widely shared free (REJECTED.md:1240), and a documented agent experiment that called PromptBase a dead end. Secondary 'casual sellers $50-200/month' figures come from commercial blogs and are not used as a base rate.",
+   "time_to_first_sale": "UNKNOWN. Inference: 1-3 months after the first approvals. The first Stripe payout comes no earlier than 30 days after account creation and a $30 balance (snippet).",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://promptbase.com/sell",
+    "https://promptbase.com/faq",
+    "https://promptbase.com/terms",
+    "https://promptbase.com/prompt-guidelines",
+    "https://promptbase.com/knowledge-base/payouts",
+    "https://promptbase.com/blog/prompt-submission-updates",
+    "https://docs.stripe.com/connect/cross-border-payouts",
+    "https://github.com/zonelessdev/zoneless/blob/main/apps/docs/src/app/pages/docs/data/identity-verification.ts"
+   ]
+  },
+  {
+   "venue": "SeaArt Creator Incentive Program",
+   "url": "https://www.seaart.ai/creatorCenter/creator-incentive",
+   "what_we_would_list": "ComfyUI workflows and 'AI apps' built from existing open models, with no training: product-photo background replacement, upscaling and restoration pipelines, poster layouts that keep text legible. Each is published under the brand and paid per use by other users.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "One account unlocks unlimited workflows and apps. The practical limits are on-site generation credits for building and testing, and SeaArt's review. UNKNOWN beyond that.",
+   "prior_verdict": "None. The 28.9 grep found 0 repo hits.",
+   "reopen_basis": "New venue.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Creators are paid monthly for usage of their models and workflows (snippet, docs.seaart.ai creator-incentive-program FAQ). Whether a creator must hold a paid VIP tier to be eligible was not found. SeaArt also runs a separate 'Creator Subscription Program' (snippet title only). Whether free daily credits are enough to build and test workflows is UNKNOWN.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "The minimum withdrawal is $100, carried forward monthly. Withdrawals are requested on the 1st-15th and paid within 5 working days (snippet, SeaArt Guide FAQ). Payout methods, country list and identity-verification steps were not in any snippet.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No publishing API found (none searched at github grade beyond a 0-hit code search for SeaArt incentive terms). Publishing appears to be through the web UI.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "It is an AI generation community, and AI is the declared product.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "seaart.ai has Tranco rank 16,265 (github alexbara2000/BBAT crawler/lists/tranco_20k.csv). That is a traffic proxy only. The per-use reward rate and user counts are UNKNOWN.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. Per-use rewards depend on other users choosing the workflow. How ranking treats new creators is unread.",
+   "owner_step": "A new, 8th-plus owner step: a SeaArt account under the brand plus payout details (method UNKNOWN; if PayPal, also the PayPal Israel step C2, which is not among the seven). Needs the owner's yes under the ACCOUNT CAP.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE, very low confidence. No per-use rate is known. The $100 withdrawal floor means nothing lands in the ledger until $100 accumulates. The high end assumes one $100 payout every 2-3 months (~₪125-185/month equivalent, rounded down). No base rate is invented.",
+   "time_to_first_sale": "UNKNOWN. The first ledgered money comes only after $100 accrues. Inference: 3-9 months if workflows get any use.",
+   "verdict": "WEAK",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://docs.seaart.ai/guide-1/6-permanent-events/seaart.ai-creator-incentive-program",
+    "https://docs.seaart.ai/guide-1/6-permanent-events/seaart.ai-creator-incentive-program/creator-incentive-program-faq",
+    "https://www.seaart.ai/creatorCenter/creator-incentive",
+    "https://www.seaart.ai/articleDetail/d535k2de878c73f1h01g"
+   ]
+  },
+  {
+   "venue": "Tensor.art (TenStar Fund, Pro Model and Pro Tools incentives)",
+   "url": "https://tensor.art/event/TenStarFund",
+   "what_we_would_list": "'AI Tools' built from ComfyUI workflows on existing open models, with no training (product-shot, upscale and restore pipelines). Small LoRAs only if free on-site credits cover training. All published under the brand.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "One account unlocks unlimited tools and models, bounded by credits and by which items qualify for incentives.",
+   "prior_verdict": "None. The 28.9 grep found 0 repo hits.",
+   "reopen_basis": "New venue.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "From 22.7.2026, incentives run on three tracks: TenStar Fund, Pro Model Incentives and Pro Tools Incentives. 'Standard TenStar Fund incentives only apply to New Base Models, and revenue is counted only from Pro user usage' (snippet, tensor.art/articles/1021600128873589993). Whether the creator must hold Pro (a paid tier) is UNKNOWN; if so, FAIL. Training consumes credits, and whether free ones suffice is UNKNOWN.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Withdrawal at $50 via PayPal, Ko-fi or Buy-me-a-coffee (snippet). PayPal Israel withdraws in ILS to an Israeli bank (payment-rails--paypal-israel.md:22-45, snippet in the repo; KYC catalogue C2 names no selfie). Tensor's own withdrawal KYC is unread.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No publishing API found. A GitHub code search for 'TenStar' returned 0 hits.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "It is an AI generation platform. AI is the product.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "tensor.art was not found in the Tranco top 20k (github code search of alexbara2000/BBAT, 0 hits). Incentives count only Pro-user usage, and Pro subscriber numbers are UNKNOWN. NSFW content is prominent (snippet, goongen.ai), which is a brand risk.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "A new, 8th-plus owner step: a Tensor.art account under the brand, plus PayPal (C2, not among the seven owner steps) linked for withdrawals. Needs the owner's yes under the ACCOUNT CAP.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE, very low confidence. Rates are unknown, only Pro-user usage counts, and there is a $50 withdrawal floor. The high end assumes one $50 withdrawal a month at most (~₪185, rounded down for PayPal fees and uncertainty).",
+   "time_to_first_sale": "UNKNOWN. Money lands only after $50 accrues.",
+   "verdict": "WEAK",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://tensor.art/articles/1021600128873589993",
+    "https://tensor.art/event/TenStarFund",
+    "https://tensor.art/settings/payment"
+   ]
+  },
+  {
+   "venue": "Nexus Mods (Donation Points)",
+   "url": "https://www.nexusmods.com/about/donationpoints",
+   "what_we_would_list": "Small, code-only utility mods and config tools for heavily modded games, tagged 'AI-Generated Content' where true. Hebrew translation patches only with the original author's permission. Only things the colony can actually test, which is the binding problem: it cannot run the games.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "One account plus the Donation Points opt-in unlocks mod pages across many games. Each NEW page is created by hand; later versions can be uploaded by API.",
+   "prior_verdict": "None in the repo. The critic's rationale deliberately left mod platforms out and did not read Nexus.",
+   "reopen_basis": "Reported because the brief asks for mod venues' AI rules first. Nothing reopens a prior rejection.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Donation Points is an opt-in system funded from Nexus's own reserves each month and shared among opted-in authors (snippet, help.nexusmods.com/article/68). No upload fee was found.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Donation Points withdrawal methods, countries and identity checks were not in any snippet.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "The official v3 Upload API only adds versions to existing files. It 'cannot create new mod pages—you must first create a mod on NexusMods and upload at least one file' (github Nexus-Mods/upload-action README). github-secondary jackhumbert/let_there_be_flight CLAUDE.md: 'Creating a new mod page is still manual.' Every new listing is therefore a web-UI action. It FAILs if only the owner can do it.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "'AI-generated mod content is not against Nexus Mods' rules'. Primarily-AI mods should carry the AI-Generated Content tag, and a mod may be removed on a credible complaint from an affected creator. The 'AI Assisted' tag requires evidence of development (snippet, nexusmods.com/news/14850). Community reception of AI-tagged mods is UNKNOWN.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "nexusmods.com has Tranco rank 973 (github alexbara2000/BBAT crawler/lists/tranco_10k.csv).",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. Donation Points accrue on downloads (snippet), and there is no sale step. Ranking of new mods is unread.",
+   "owner_step": "A new, 8th-plus owner step: a Nexus account under the brand, the Donation Points opt-in, and payout details (method UNKNOWN). Plus a human action per new mod page, which is the likely FAIL.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 100,
+   "estimate_basis": "INFERENCE, very low confidence. The value per download is unknown. Honest supply is thin because the colony cannot test mods in-game, and untested mods would be low-effort flooding under MISSION.",
+   "time_to_first_sale": "UNKNOWN.",
+   "verdict": "WEAK",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://help.nexusmods.com/article/68-donation-points-system-terms-of-service",
+    "https://help.nexusmods.com/article/112-donation-points-faq",
+    "https://help.nexusmods.com/article/138-donation-points-how-they-work",
+    "https://www.nexusmods.com/news/14850",
+    "https://help.nexusmods.com/article/28-file-submission-guidelines",
+    "https://github.com/Nexus-Mods/API-Example"
+   ]
+  },
+  {
+   "venue": "CurseForge Authors Rewards Program (Overwolf)",
+   "url": "https://authors.curseforge.com/welcome/",
+   "what_we_would_list": "Minecraft datapacks, resource packs or small utility mods that the colony can test headlessly in CI against a dedicated server, with AI use declared.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "One author account plus the rewards opt-in unlocks projects across CurseForge's games. New projects appear to need web creation and moderation.",
+   "prior_verdict": "None in the repo. The critic deliberately left it out and did not read it.",
+   "reopen_basis": "Reported because the brief asks for mod venues' AI rules first.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Authors earn points from monthly downloads, redeemable via PayPal or Amazon gift cards (snippet). No fee found.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "PayPal redemption (snippet). PayPal Israel withdraws in ILS (repo, snippet). Overwolf's tax and identity steps are unread.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Token-authenticated file uploads to EXISTING projects are widely automated (github: ihsoft/KAS Tools/clients/CurseForgeClient.py, 'API_UPLOAD_URL_TMPL = /api/projects/{project_id}/upload-file'; Bownlux/Retromod scripts/publish-curseforge.py). No project-creation endpoint was seen. Creating a project plus moderation looks web-only (an inference from the API's shape).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The CurseForge moderation policy was not read, and no AI rule appeared in snippets. Its sibling Modrinth bans primarily-AI projects (github), which is a warning sign.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "curseforge.com has Tranco rank 1,068 (github alexbara2000/BBAT tranco_10k.csv).",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. Rewards follow downloads, not sales.",
+   "owner_step": "A new, 8th-plus owner step: an Overwolf/CurseForge author account under the brand, the rewards opt-in, and PayPal (C2). Plus a likely human action per new project.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 100,
+   "estimate_basis": "INFERENCE, very low confidence. The points-per-download rate is unread (gemlist.io pages exist and are unrendered). There are few honest, testable items, and the AI rule is unknown.",
+   "time_to_first_sale": "UNKNOWN.",
+   "verdict": "WEAK",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://support.curseforge.com/support/solutions/articles/9000197279-moderation-policies",
+    "https://support.curseforge.com/support/solutions/folders/9000194119",
+    "https://legal.overwolf.com/docs/curseforge/mod-authors-terms/",
+    "https://www.gemlist.io/programs/curseforge-mod-creator"
+   ]
+  },
+  {
+   "venue": "Civitai Creator Program",
+   "url": "https://civitai.com",
+   "what_we_would_list": "LoRAs and workflows. Moot, because cash-out needs a paid membership.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "One account would unlock unlimited models, but no cash without a paid tier and a Creator Score of at least 40,000.",
+   "prior_verdict": "None. The 28.9 grep found 0 repo hits.",
+   "reopen_basis": "New venue, read at github grade this sweep.",
+   "gate_zero_cost": {
+    "status": "FAIL",
+    "evidence": "Joining requires 'Active membership (Bronze, Silver, or Gold - NOT Founder or Free)' (github civitai/civitai docs/features/creator-program.md). getCreatorRequirements reads CustomerSubscription status active or incomplete and excludes free and founder: 'An active Creator Program membership is required to bank Buzz' (src/server/services/creator-program.service.ts). Licensing fees 'auto-pause when they have no active membership' (docs/creator-studio-plan.md). A paid tier breaks the ₪0 rule.",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Cash-out goes through Tipalti. Methods: ACH $2, PayPal 5%, check $4, plus Payoneer, wire, eCheck and card with no fee defined (src/shared/constants/creator-program.constants.ts). Minimum withdrawal is $50 (MIN_WITHDRAWAL_AMOUNT=5000 cents), minimum bank 10,000 Buzz, and tipaltiPaymentsEnabled is required. There is a tax-form email template (tipaltiTaxFormRequired.email.ts). No country or selfie check appears in the code read. Tipalti's Israel support is unread.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Models are uploaded through a web form (ModelUpsertForm.tsx, per docs/features/generator.md). No upload API was confirmed.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "AI models and images are the product.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "civitai.com has Tranco rank 7,449 (github). The compensation pool's fallback value is $35,000 a month (creator-program.md).",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "YES in effect. Before any cash, Creator Score (built from models, articles, images and user scores) must reach 40,000 (MIN_CREATOR_SCORE), and selling needs MONETIZATION_MIN_CREATOR_SCORE (docs/licensing-fee-revamp-checklist.md).",
+   "owner_step": "A paid monthly membership plus a Tipalti onboarding. The membership is not allowed under the ₪0 rule.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "The ₪0 gate FAILs. Separately, a 40,000 Creator Score cold-start gate and the brand risk from Civitai's likeness and NSFW moderation history (critic rationale) would each hold it at 0.",
+   "time_to_first_sale": "Not applicable (DEAD).",
+   "verdict": "DEAD",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://civitai.com/content/tos",
+    "https://civitai.com/creator-program",
+    "https://civitai.com/pricing",
+    "https://github.com/civitai/civitai/blob/main/src/server/services/creator-program.service.ts"
+   ]
+  },
+  {
+   "venue": "OpenArt (workflows; OpenArtist and Creative Partner programs)",
+   "url": "https://openart.ai/program/openartist",
+   "what_we_would_list": "ComfyUI workflows. But no mechanism was found that pays a workflow author per use or per sale.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "Not applicable. There is no paid listing surface.",
+   "prior_verdict": "None. The 28.9 grep found 0 repo hits.",
+   "reopen_basis": "New venue.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "The programs found are these: OpenArtist, a curated roster of 150 creators paid per post; the Creative Partner Program (perks plus commissions); and an Affiliate program at 20% for a year per referred subscriber (snippet). None is a per-item creator marketplace.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Not read.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No listing API found. Workflows are shared through the web UI.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "It is an AI generation platform.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "No marketplace where buyers pay creators per item or per use was found. OpenArtist is an application-gated roster of 150 with a posting obligation (recurring work). openart.ai is not in the Tranco top 20k (github). The affiliate route belongs to the affiliate family, not here.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Not applicable.",
+   "owner_step": "None worth taking in this family.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "No creator payout mechanism for listings exists in the evidence.",
+   "time_to_first_sale": "Not applicable (DEAD).",
+   "verdict": "DEAD",
+   "rank_in_family": 7,
+   "primary_urls_to_render": [
+    "https://openart.ai/program/openartist",
+    "https://openart.ai/programs/cpp",
+    "https://openart.ai/programs/affiliate"
+   ]
+  },
+  {
+   "venue": "Modrinth (creator payouts)",
+   "url": "https://modrinth.com",
+   "what_we_would_list": "Minecraft mods and datapacks. Barred, because the colony's work is primarily AI output.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "The API can create projects (the critic's read), but the AI rule bars our supply.",
+   "prior_verdict": "Critic 28.9, github grade: FAIL on AI (rules.vue). This scout re-verified it.",
+   "reopen_basis": "None. Re-read at github grade: the rule stands.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Free to publish (critic's read of modrinth/code, not re-read by me).",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Payouts by PayPal, Venmo, Tremendous, MuralPay or USDC on Polygon, behind an Avalara tax-form and TIN gate (critic's github read of routes/v3/payouts.rs). Israel eligibility is unread.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "POST /project with the PROJECT_CREATE scope. New projects go to Processing for review (critic's github read of apps/labrinth/src/routes/v3/project_creation.rs).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "FAIL",
+    "evidence": "Re-read raw modrinth/code apps/frontend/src/pages/legal/rules.vue. §6: 'Projects cannot be entirely or primarily comprised of content created or derived from generative AI output.' §6.2(a): 'No images uploaded to a gallery, icon, description, or any other part of a project page may be created or derived from generative AI output.' §6.2(b): 'Projects may not be published publicly if the contents are primarily or entirely a product of AI output.'",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "modrinth.com has Tranco rank ~10,474 (from a WebFetch of alexbara2000/BBAT tranco_20k.csv; that fetch was partial and the rank is not re-checked by code search).",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "Not applicable (DEAD).",
+   "owner_step": "None.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "The AI gate FAILs at primary github grade.",
+   "time_to_first_sale": "Not applicable (DEAD).",
+   "verdict": "DEAD",
+   "rank_in_family": 8,
+   "primary_urls_to_render": [
+    "https://github.com/modrinth/code/blob/main/apps/frontend/src/pages/legal/rules.vue"
+   ]
+  }
+ ],
+ "searches_used": 6
+}

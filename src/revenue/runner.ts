@@ -13,7 +13,7 @@
 
 import type { Database } from "better-sqlite3";
 import { describeStall, findStalledLines, type StalledLine } from "./watchdog.js";
-import { DEFAULT_PORTFOLIO, summarizeTargetBasis, TARGET_BASIS } from "./portfolio.js";
+import { DEFAULT_PORTFOLIO, labelledKpis, summarizeTargetBasis, TARGET_BASIS } from "./portfolio.js";
 import { frozenOwnerStepsForLine, heldOwnerStepsForLine, openOwnerStepsForLine } from "./owner-steps.js";
 import { DEFAULT_MEASUREMENTS_DIR, ingestAlgoraSupplyMeasurement, ingestApifyMeasurement, type IngestResult } from "./measurements.js";
 import {
@@ -435,6 +435,17 @@ export function renderReport(db: Database, result: TickResult): string {
       );
     }
     out.push("");
+    // A KPI whose reading is biased is printed with its label, measured or not (research/breadth/BOARD.md Q5).
+    const labelled = labelledKpis(db, lines.map((l) => l.id));
+    if (labelled.length) {
+      out.push("Labelled measurements — each is printed with its label wherever it is printed:");
+      out.push("");
+      for (const k of labelled) {
+        const reading = k.value === null ? "no reading yet" : `${k.value}${k.unit ? ` ${k.unit}` : ""}`;
+        out.push(`- \`${k.lineId}\` ${k.kpi}: ${reading} — ${k.label}. Rule: ${k.rule}.`);
+      }
+      out.push("");
+    }
   }
 
   const decisions = (result.board?.decisions ?? []).filter((d) => d.decision !== "hold");

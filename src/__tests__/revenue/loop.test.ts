@@ -4,8 +4,8 @@ import { createInMemoryDb } from "../orchestration/test-db.js";
 import { getActiveGoals, getTasksByGoal } from "../../state/database.js";
 import { runAudit, runBoardReview, runLedgerSync, runSupervisorReview, setMonthlyComputeBudgetCents } from "../../revenue/heartbeat.js";
 import { enqueueGoal, feedNextGoal, listQueuedGoals } from "../../revenue/goal-queue.js";
-import { getLine, insertLineFromSeed, listLines, listReviews, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
-import { DEFAULT_PORTFOLIO, seedDefaultPortfolio } from "../../revenue/portfolio.js";
+import { getLine, insertLineFromSeed, listLines, listReviews, recordKpi, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
+import { APIFY_STRANGER_KPI_LABEL, APIFY_STRANGER_KPI_RULE, DEFAULT_PORTFOLIO, seedDefaultPortfolio } from "../../revenue/portfolio.js";
 import { getRevenueStatus } from "../../revenue/status.js";
 import { createRevenueTools } from "../../revenue/tools.js";
 import { REVENUE_KV } from "../../revenue/types.js";
@@ -270,5 +270,59 @@ describe("revenue/loop (board → queue → orchestrator)", () => {
     }, ctx);
     expect(proposed).toContain("Proposed line new-idea");
     expect(getTasksByGoal(db, getActiveGoals(db)[0]?.id ?? "")).toEqual([]);
+  });
+});
+
+// Review of the breadth-board builder diff, finding 2: research/breadth/BOARD.md Q5 labels the Apify stranger count
+// "wherever it is printed", and revenue_line_detail — the agent-facing view a day-30 decision reads — printed it bare.
+describe("revenue_line_detail prints a labelled KPI with its label (research/breadth/BOARD.md Q5)", () => {
+  let db: BetterSqlite3.Database;
+  beforeEach(() => {
+    db = createInMemoryDb();
+    insertLineFromSeed(db, DEFAULT_PORTFOLIO.find((s) => s.id === "apify-actors")!);
+  });
+  afterEach(() => {
+    db.close();
+  });
+  const detail = async (): Promise<string> => {
+    const ctx = { db: { raw: db }, identity: { name: "tester" } } as unknown as ToolContext;
+    const tools = Object.fromEntries(createRevenueTools().map((t) => [t.name, t]));
+    return String(await tools.revenue_line_detail.execute({ line_id: "apify-actors" }, ctx));
+  };
+
+  const labelLines = (text: string): string[] => text.split("\n").filter((l) => l.startsWith("KPI label"));
+
+  it("puts the label beside each labelled reading, and the reading rule once under it", async () => {
+    recordKpi(db, "apify-actors", "strangerUsers30d", 3, "users");
+    recordKpi(db, "apify-actors", "strangerRuns30d", 7, "runs, our token's view (scope unverified)");
+    const text = await detail();
+    const kpiLine = text.split("\n").find((l) => l.startsWith("Latest KPIs:"))!;
+    const users = kpiLine.split(", ").find((e) => e.startsWith("strangerUsers30d="))!;
+    expect(users).toMatch(/^strangerUsers30d=3users \(\d{4}-\d{2}-\d{2}\) \[/);
+    expect(users.endsWith(`[${APIFY_STRANGER_KPI_LABEL}]`)).toBe(true);
+    expect(kpiLine.split(APIFY_STRANGER_KPI_LABEL).length - 1).toBe(2);
+    // One label line for the two KPIs that share a label and a rule, not one per KPI.
+    expect(labelLines(text)).toHaveLength(1);
+    expect(labelLines(text)[0]).toContain("strangerUsers30d");
+    expect(labelLines(text)[0]).toContain("strangerRuns30d");
+    expect(labelLines(text)[0]).toContain(APIFY_STRANGER_KPI_LABEL);
+    expect(labelLines(text)[0]).toContain(APIFY_STRANGER_KPI_RULE);
+  });
+
+  it("prints the label and the rule even before the first reading", async () => {
+    const text = await detail();
+    expect(text).toContain("Latest KPIs: none");
+    expect(labelLines(text)).toHaveLength(1);
+    expect(labelLines(text)[0]).toContain(APIFY_STRANGER_KPI_LABEL);
+    expect(labelLines(text)[0]).toContain(APIFY_STRANGER_KPI_RULE);
+  });
+
+  it("adds nothing to a line without labels", async () => {
+    insertLineFromSeed(db, DEFAULT_PORTFOLIO.find((s) => s.id === "pcn874")!);
+    const ctx = { db: { raw: db }, identity: { name: "tester" } } as unknown as ToolContext;
+    const tools = Object.fromEntries(createRevenueTools().map((t) => [t.name, t]));
+    const text = String(await tools.revenue_line_detail.execute({ line_id: "pcn874" }, ctx));
+    expect(text).not.toContain(APIFY_STRANGER_KPI_LABEL);
+    expect(labelLines(text)).toEqual([]);
   });
 });

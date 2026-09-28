@@ -21,7 +21,8 @@ Publishing free is the one thing possible before KYC. So the sequencing is not a
 
 ## What the owner does
 
-Six steps. Nothing here is KYC, nothing costs money, and nothing here commits you: no identity is verified and no price is set. What can be undone afterwards — the account, the listing, the public username — was not verified from here (Apify is egress-blocked), which is one more reason the username is the brand name from the first click.
+Six steps. Nothing here costs money or sets a price, and nothing here is KYC — with one conditional exception
+added on 28.9.2026 in step 4 (identity verification in the Publish sitting, only if it is documents only). What can be undone afterwards — the account, the listing, the public username — was not verified from here (Apify is egress-blocked), which is one more reason the username is the brand name from the first click.
 
 1. **Create an Apify account** at `apify.com` with **the brand as the username**, not your name: the
    Store URL `apify.com/<username>/…` is public, so the username is a published name (`MISSION.md`,
@@ -38,7 +39,9 @@ Six steps. Nothing here is KYC, nothing costs money, and nothing here commits yo
    and Dockerfile, so there is nothing to fill in by hand.
 4. **Publish it to the Store** from the Apify Console: Actor → Publication → *Publish to Store* 🔍
    (menu names not verified from here; look for the function, not the exact words).
-   Leave the pricing model as **Free**. Do not set a price, and do not start KYC yet.
+   Leave the pricing model as **Free**. Do not set a price. Identity verification: only if you are told, before
+   this click, that Apify's own documentation shows it is documents only (no selfie, liveness or video) — then it
+   is done in this same sitting (breadth board, 28.9.2026, below); if it shows any camera step, never.
 5. **Tell me it is published**, so the loop stops treating it as blocked. I record it with
    `pnpm exec tsx scripts/colony.ts setup-done apify-actors --evidence "<your message, date>"` in the
    committed `state/colony/colony.db` on `main`, which is what the loop reads (it runs in GitHub
@@ -61,11 +64,27 @@ repo has rendered in `research/rendered/apify-store-accessibility.json`), not as
 its stranger count is kept only as a secondary series marked "scope unverified" and must never be read as "nobody
 ran it". Apify's API has never been reached from this container; the first real response is the first check.
 
-- **If strangers run it:** constraint 7 has its first real answer — and the response is staged by the board, not switched on at once (`research/colony-sweep/BOARD.md` §6.3.1; `src/revenue/portfolio.ts` kill and scale criteria): under 10 stranger users at day 30 the line stays an instrument and no KYC is asked for; 10–49, keep counting and fix what the runs show; 50 or more, one more Actor and Apify KYC goes to the owner; 200 or more, pricing is designed, with the free `data.gov.il` source disclosed on the listing.
-- **If nobody runs it:** that is the more valuable result, and it arrives for free. It says the
-  discoverability problem is real and that no amount of building more Actors fixes it — which
-  would close the one ₪-thousand figure still standing in this repo — Apify's contested ₪1,500
-  upper bound (`src/revenue/portfolio.ts`, `TARGET_BASIS`) — and the committed ₪200 with it.
+**The count is biased low while the developer is unverified (breadth board, 28.9.2026, `research/breadth/BOARD.md`
+Q5).** Apify's default Store-API search excludes Actors from developers who have not passed identity verification,
+so a near-zero count can mean "hidden" as well as "unwanted", and the count alone cannot tell them apart. It is
+therefore printed with this label wherever it is printed — the report, the dashboard, the line-detail tool, this
+job's log line, commit subject and run summary — word for word from `APIFY_STRANGER_KPI_LABEL` in
+`src/revenue/portfolio.ts`: *"stranger runs — biased low while the developer is unverified: hidden from default
+Store-API search"*. Before the Publish click the colony makes two free reads: the Store-API pair
+(`?search=israel&limit=1000` with and without `includeUnrunnableActors=true`) to size the hidden share, and Apify's
+identity-verification requirements from the GitHub-hosted `apify-docs` repository. If verification is documents only
+(no selfie, liveness or video), it moves from "after 50 stranger users" to the Publish sitting, so the day-30 count
+measures demand and not visibility; if it needs any camera step, it is never asked, and the line stays a biased-low
+₪0 instrument.
+
+- **If strangers run it:** constraint 7 has its first real answer — and the response is staged by the board, not switched on at once (`research/colony-sweep/BOARD.md` §6.3.1, amended by the breadth board's Q5; `src/revenue/portfolio.ts` kill and scale criteria): under 10 stranger users at day 30 is **TEST_MORE** — hidden or unwanted, indistinguishable — never "permanent instrument" until identity verification is settled, and no second Actor is built on it; 10–49, keep counting and fix what the runs show; 50 or more, one more Actor (identity verification is no longer asked here: it moved to the Publish sitting if documents only, never if it needs a camera); 200 or more, pricing is designed, with the free `data.gov.il` source disclosed on the listing.
+- **If nobody runs it:** that result still arrives for free, but since 28.9.2026 it is not read as "unwanted" on
+  its own. While the developer is unverified, a count under 10 is TEST_MORE: the Actor may simply be hidden from
+  default search. Only a count read after document-only verification can say the discoverability problem is real
+  and that no amount of building more Actors fixes it — and then it would close the one ₪-thousand figure still
+  standing in this repo — Apify's contested ₪1,500 upper bound (`src/revenue/portfolio.ts`, `TARGET_BASIS`) — and
+  the committed ₪200 with it. If verification needs a camera, the count stays a biased-low ₪0 instrument and the
+  developer-level "history of success" clock is noted as unverified to accrue while the Actor is hidden.
 
 Either way we stop guessing. The one thing that is not acceptable is another month of ceilings with
 no measurement under them.

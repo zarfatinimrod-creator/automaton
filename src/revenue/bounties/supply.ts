@@ -438,7 +438,7 @@ export function readBoardVerdict(history: SupplyReading[]): BoardSupplyReading {
       text:
         `Week ${sorted.length} of ${t.weeks}. The board reads the mean of ${t.weeks} weekly readings: ≥ ${t.keepAtOrAbove} keeps ₪${t.keepTargetIls}; ` +
         `${t.killBelow}-${t.keepAtOrAbove - 1} retargets to ₪${t.retargetIls} (grade contradicted); under ${t.killBelow} kills the line. ` +
-        "Until then the owner is not asked for step 4b (the Stripe form) on this line's account; 4a, a two-minute sign-in, rides step 7.",
+        "Until then the owner is not asked for step 4b (the Stripe form, which begins with the Algora sign-in) on this line's account.",
     };
   }
   const mean = readings.reduce((n, r) => n + r.claimable, 0) / readings.length;

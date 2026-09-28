@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as check-deps-freshness.mjs)
-import { summariseRuns, summariseActorStats, classifyStarter, daysBetween, dayKey, toMs, DAY_MS, WINDOW_DAYS } from "../../../scripts/apify-runs.mjs";
+import { summariseRuns, summariseActorStats, classifyStarter, daysBetween, dayKey, toMs, DAY_MS, WINDOW_DAYS, STRANGER_KPI_LABEL, measurementNotice } from "../../../scripts/apify-runs.mjs";
+import { APIFY_STRANGER_KPI_LABEL } from "../../revenue/portfolio.js";
 import { readFileSync } from "node:fs";
 
 /**
@@ -280,5 +281,38 @@ describe("summariseActorStats — stranger users from the Actor object", () => {
     expect(s.strangerUsers30d).toBeNull();
     expect(s.totalUsers30Days).toBeNull();
     expect(s.publicRuns30d).toBeNull();
+  });
+});
+
+// Review of the breadth-board builder diff, finding 2: research/breadth/BOARD.md Q5 labels the stranger count
+// "wherever it is printed". The script's log line and the workflow's commit subject and step summary printed it bare.
+describe("the stranger count carries its biased-low label wherever the job prints it (research/breadth/BOARD.md Q5)", () => {
+  const workflow = readFileSync(".github/workflows/apify-publish.yml", "utf8");
+
+  it("quotes the same label as src/revenue/portfolio.ts, word for word", () => {
+    expect(STRANGER_KPI_LABEL).toBe(APIFY_STRANGER_KPI_LABEL);
+  });
+
+  it("puts the label in the script's log line, with a count and with an unknown count", () => {
+    const base = { actorId: "brand~actor", totalRuns: 9, runsLast30Days: 4, windowDays: 30, outPath: "x.json" };
+    const known = measurementNotice({ ...base, strangerUsers30d: 3 });
+    expect(known).toContain("3 distinct stranger users in the last 30 days");
+    expect(known).toContain(APIFY_STRANGER_KPI_LABEL);
+    const unknown = measurementNotice({ ...base, strangerUsers30d: null });
+    expect(unknown).toContain("unknown (the Actor object carried no stats)");
+    expect(unknown).toContain(APIFY_STRANGER_KPI_LABEL);
+  });
+
+  it("puts the label in the measurement commit's subject", () => {
+    const subject = workflow.split("\n").find((l) => l.trim().startsWith("SUBJECT=$(node -e"));
+    expect(subject, "SUBJECT line not found in apify-publish.yml").toBeDefined();
+    expect(subject).toContain("stranger users in the last 30 days");
+    expect(subject).toContain(APIFY_STRANGER_KPI_LABEL);
+  });
+
+  it("puts the label in the run summary's stranger-users line", () => {
+    const line = workflow.split("\n").find((l) => l.includes("Distinct stranger users, last 30 days"));
+    expect(line, "summary line not found in apify-publish.yml").toBeDefined();
+    expect(line).toContain(APIFY_STRANGER_KPI_LABEL);
   });
 });

@@ -822,6 +822,17 @@ success — that cannot be bought. Route the push through GitHub Actions, since 
 `api.apify.com` and `console.apify.com` are all egress-blocked from this container (re-confirmed
 this session).
 
+**Note, 28.9.2026 (breadth board, `research/breadth/BOARD.md` Q5): "free publishing needs no KYC" is true and partly
+circular.** Apify's default Store-API search excludes Actors from developers who have not passed identity verification
+(code grade, held up on review), so a free, unverified Actor is hidden from the very search whose stranger count this
+paragraph asked for — and a near-zero count can mean "hidden", not "unwanted". The instrument is kept and labelled
+wherever it is printed (*"stranger runs — biased low while the developer is unverified: hidden from default Store-API
+search"*); a reading under 10 is TEST_MORE, never "permanent instrument", until verification is settled. Two free reads
+settle it: the Store-API pair (`?search=israel&limit=1000` with and without `includeUnrunnableActors=true`) and Apify's
+verification requirements from the GitHub-hosted `apify-docs`. If verification is document-only it moves to the Publish
+sitting (owner step 6, part ג); if it needs a camera it is never asked, and the history-of-success clock is noted as
+unverified to accrue while hidden (`src/revenue/portfolio.ts` `KPI_LABELS`).
+
 ## `data-apis` — zero survivors, ranked zero by the supervisor itself, audited 2026-09-04
 
 Full audit: `research/colony-sweep/audits/data-apis.md`. Supervisor report:
@@ -1067,6 +1078,10 @@ machine-cut accounts, which TikTok's originality policy de-distributes (from 15 
 inauthentic-content policy demonetises (from 15 Jul 2025), and Whop's fraud terms claw back across
 "accounts that appear to be related". Payout also needs a one-time ID upload, which is the owner's.
 Rejected; the rail is recorded as reusable by any line selling to a US audience.
+**Corrected 28.9.2026 (breadth board, `research/breadth/BOARD.md` Q9): Whop is CAMERA-GATED, and the rail is not
+reusable.** The "one-time ID upload" above is wrong at code grade: Whop's official SDK requires a face photo with every
+document type (`whopio/whopsdk-typescript`, `src/api/resources/verifications/types/CreateVerificationsRequestBody.ts`).
+A selfie is the camera rule (KILL-4), so no line may plan on Whop's payout.
 
 **Three of the supervisor's reasons were wrong, and the verdict does not need them.** The Mediavine
 and Journey gates are stale by eight months: Journey accepts 1,000 Tier-1 sessions since January 2026
@@ -1152,6 +1167,69 @@ that label: the supply that does exist is dominated by synthetic repositories ra
 (`research/colony-sweep/SWEEP-2.md`). They are recorded here because they are *kills*, and a kill cannot
 overstate income; the eighteen candidates from the same sweep are not recorded as anything at all until
 they are refuted.
+
+**28.9.2026 — the breadth board: nothing admitted; ArrangeMe deferred (not queued); Pebble under a pre-registered
+kill; the sweep's kills confirmed at their stated grades** (`research/breadth/BOARD.md`, Fable board, rows 12-13; the
+sweep is `research/breadth/BREADTH-SWEEP.md`). Nine venues entered the loop's queue for their ₪0 tests only; none was
+admitted, because no test has returned. **Nothing below was killed on a ceiling:** every kill is a gate, a rendered or
+coded fee, or a mandate collision.
+
+- **ArrangeMe (sheet music) — DEFERRED, NOT QUEUED, and not a kill** (KILL-5 needs a refuting test). G2 is grade n; G3
+  leans fail at github grade (every automation seen rides a human cookie, and the SDK has no login); G7 is unknown with
+  the arranger's name shown on retailer pages; its only measured sales rate belongs to the flooding pattern MISSION
+  forbids; honest supply is "UNKNOWN, possibly ~0" (`BREADTH-SWEEP.md` §2.3 item 8). A new account, a payout and a
+  W-8BEN for a supply nobody has shown to exist is the constraint-2 shape. **Reopens if:** a render of ArrangeMe's own
+  terms allows automated access and AI-made arrangements, **and** an occupancy count from the retailers' pages (only if
+  their terms allow it) shows at least 20 honest cells with sales history and no free equivalent. Its terms page may be
+  rendered in Batch C when nothing else is pending.
+- **Pebble + KiezelPay — PRE-REGISTERED KILL.** Queued (loop row 19) only because its test is one free render. If
+  KiezelPay's FAQ (`research/channel-loop/ZERO-TESTS.md` row 38) does not show Pebble apps being onboarded in 2026, or
+  shows any fee, Pebble is dead without another sitting. **Reopens if:** KiezelPay or a successor documents Pebble
+  unlocks with Israel payable and no camera.
+- **Shopify — pre-ruled conditional kill** on a rendered mandatory listing fee (the note under "Earlier rejections").
+- **Whop — re-recorded as camera-gated** (the correction under `content-seo`, "Clipping"): the rail is not reusable.
+- **Apify — the hidden-Actor note** under `distribution` → "What goes to the board".
+- **Scout ratings that contradict standing verdicts are overridden by the verdicts: Odoo, iCount, Code4rena.** Odoo paid
+  modules stay dead on "median 1 lifetime purchase" (the 26.9/27.9 table below); iCount stays under the permanent
+  rejection of Israeli-vendor affiliate programmes (`content-seo`); Code4rena stays dead on its wind-down
+  (`research/colony-sweep/SWEEP-2.md:264`). Recorded so the next sweep does not reopen any of them on a rating.
+
+**Confirmed kills from the sweep's verifiers** (`BREADTH-SWEEP.md` §6.1), at their stated grades:
+
+| Venue | Killed on | Grade |
+|---|---|---|
+| Apify Store: a fleet of 7-11 Actors | Default Store-API search hides non-KYC developers' Actors; third-party fleets of 23 and 4 Actors got 0-1 strangers; `BOARD-LOOP.md:195` already rules a second Actor is not a channel | github |
+| Gumroad as a venue that brings buyers | Discover opens a product only after it has a sale (`recommendations.rb` `sale_made`). **It stays the rail.** | github |
+| itch.io asset packs | The API is read-only and butler cannot create pages; the guidelines call automated or predominantly AI pages spam | github |
+| e-vrit (Hebrew ebooks) | Pay-to-publish, with human review of each title | **snippet** — a render of its help page confirms or reopens it |
+| Apify affiliate §8 as a breadth venue | Open-sourcing is a per-Actor Console checkbox; `isSourceCodeHidden` is not writable by API. *Salvage:* tick the box on Actor #1 during step 6a's visit | github |
+| PromptBase | The Zoneless route pauses payouts for a Didit selfie; prompt packs were already rejected. Its Stripe route is **unknown, not dead** | github |
+
+**Confirmed kills where the scout rated a venue weak and a gate failed** (`BREADTH-SWEEP.md` §6.3): YesWeHack (researcher
+tokens are for managers only, github); 0DIN (portal-only submission, snippet); Playgama (submission stays a human action
+in its own MCP, github — *reopens if the MCP adds submission*); Cults3D (the "No AI" filter is on by default, snippet);
+Microsoft Edge Add-ons (no create API, github); Google Workspace Marketplace (OAuth verification and review per app,
+snippet); Amazon KDP (no listing API, github); Leanpub (its API is a paid feature, snippet); Zepp OS (no publish command,
+github); Garmin Connect IQ + KiezelPay (no publishing API, github); PartnerStack and Gumroad's global affiliates
+(multipliers on zero traffic); Freemius, Creem and Dodo as venues (no buyers of their own — **Freemius stays the recorded
+backup rail**). The standing verdicts of §6.4 hold unchanged: RapidAPI and Zyla, Odoo, Freepik / Dreamstime / Fab /
+CGTrader / Creative Fabrica, Code4rena.
+
+**Dead at scout grade — recorded as such, NOT as kills** (`BREADTH-SWEEP.md` §6.2). Where a venue's reason was read in
+its own code (github grade) it is killed at that grade; where it rests on this repo's own standing rulings, the ruling is
+the reason; everything else is scout grade or ungraded, and a render may reopen it.
+- *Killed at github grade:* IssueHunt, Opire, Expensify, Tenstorrent, tinygrad, Microsoft Store, Hugging Face / Replicate
+  / Pipedream / Postman / Val Town (no creator payout), Whop (above), Lemon Squeezy, JetBrains, Udemy, Redbubble,
+  Civitai, Modrinth.
+- *Dead on this repo's standing rulings or its own cited research:* Google OSS VRP and huntr (the 26.9/27.9 table below), the Web3 contests
+  (`research/colony-sweep/SWEEP-2.md:264-267`), HackerOne (automated delivery banned; a camera ID check), Polar (selfie,
+  28.9), Google Play for Wear OS (the $25 fee), Etsy (listing fee and a Persona selfie), Morning's referral (credit, not
+  cash), government procurement (`Two standing walls`).
+- *Dead at scout grade or ungraded:* Bugcrowd, Intigriti, Garmin native monetisation, Samsung Galaxy Store, Make,
+  Zapier, Payhip, Ko-fi, Stan Store, Podia, Sellix, monday.com, Zendesk, Canva, Draft2Digital and Kobo, Lulu, Israeli
+  teacher-to-teacher sites, Tes, Skillshare, Teachable, Thinkific, Outschool, Hostinger and Wix affiliate, Amazon
+  Associates, Musicnotes / MyMusicSheet / Score Exchange / PaidTabs, SMP Press, OpenArt.
+- *Unsettled, not dead:* Teachers Pay Teachers, MCPize, AgenticMarket (renders in Batch C).
 
 **28.9.2026 — the Algora warning, followed up: the week-1 count was a honeypot and is struck; the rail is
 re-described; nothing is killed** (`research/channel-loop/RULING-2026-09-28-bounty-rail.md`, Fable board, row 10).
@@ -1429,6 +1507,9 @@ testers for 14 days — not worth a first experiment), freelance marketplaces an
 
 Shopify apps are **not** rejected — they are parked as a future candidate, gated on a
 manual review of one to four weeks and a selfie KYC.
+**Pre-ruled 28.9.2026 (breadth board, `research/breadth/BOARD.md` Q9):** a third-party copy cites a $19 listing fee.
+If the render of Shopify's own page (Batch C) shows a **mandatory** listing fee, "parked" becomes **killed** under the
+owner's ₪0 rule of 27.9.2026, without another sitting.
 
 ### A standing claim that has to be re-opened: "Stripe does not serve Israeli accounts"
 
