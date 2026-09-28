@@ -537,3 +537,13 @@ https://help.streetlib.com/category/97-payments	help-streetlib-com-category-97-p
 https://displate.com/about-privacy	displate-com-about-privacy
 # research/channel-loop/ZERO-TESTS.md row 135 — Teach Simple (28), after row 130 (28.9.2026).
 https://teachsimple.com/license-agreement	teachsimple-com-license-agreement
+# research/channel-loop/ZERO-TESTS.md row 136 — StreetLib (24), after row 133 (28.9.2026).
+https://help.streetlib.com/article/670-getting-paid	help-streetlib-com-article-670-getting-paid
+# research/channel-loop/ZERO-TESTS.md row 137 — StreetLib (24), after row 133 (28.9.2026).
+https://help.streetlib.com/article/699-billing-profile-and-payment-method	help-streetlib-com-article-699-billing-profile
+# research/channel-loop/ZERO-TESTS.md row 138 — StreetLib (24), after row 133 (28.9.2026).
+https://help.streetlib.com/article/433-completing-our-tax-information-interview	help-streetlib-com-article-433-tax-interview
+# research/channel-loop/ZERO-TESTS.md row 139 — StreetLib (24), after row 133 (28.9.2026).
+https://help.streetlib.com/category/72-create-and-manage-your-streetlib-account	help-streetlib-com-category-72-account
+# research/channel-loop/ZERO-TESTS.md row 140 — Displate (26), after row 134 (28.9.2026).
+https://assets-static-prod.displate.com/next-assets/_next/static/chunks/pages/about-privacy-8cabb3e3e05788f0.js	displate-about-privacy-chunk

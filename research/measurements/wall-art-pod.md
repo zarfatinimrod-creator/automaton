@@ -284,3 +284,107 @@ Now G1 P(r) · G2 U↗(r+repo) · **G3 U(r)** · **G4 U↗(r)** · G5 P(g) · **
 3. A lower-value render: the sign-up page behind "Sell your art" (tou.txt:969). Its link is `/open-shop` (tou.html:640),
    so the URL is `https://displate.com/open-shop`. It would show the registration fields. [INFERENCE] It is likely a
    JavaScript form, so the privacy policy comes first.
+
+## 5. Tick 10 (row 134 render) — Displate Privacy Policy
+
+**Read 28.9.2026 by an Opus reader.** Capture: `displate-com-about-privacy` (200, fetchedAt 2026-09-28T22:00Z, first
+fetch). Short name `priv`. The txt (295 lines, 211 non-empty) was read in full. The html body is a single line (:115),
+so every html citation is `priv.html:115`. I grepped it, including the `__NEXT_DATA__` JSON. Every quote below was
+checked with `grep -n -F`. Artist handles in the menus (:38-43, :83) and the data-protection officer's name (:153) are
+not reproduced.
+
+**Status: NEEDS_MORE, still promising. No kill fires.**
+- For G7, the policy asks for little and publishes only what the account holder makes public.
+- It says nothing about automation, so (d) is still open, and the written question stays the way to settle it.
+- The policy never names Artists; it speaks of "Users" throughout ("Artist" occurs only in the menu "Shop by Artists",
+  :37, :81).
+- Its per-purpose sections are headings only in the capture (see "The gap" below).
+
+**What personal data a User gives** [RENDERED]
+- "Users provide personal information on a voluntary basis, by filling out the profile or when using our chat feature.
+  This personal information could include:" (:103). The list is "- First name and last name" (:104), "- Email Address"
+  (:105), "- Profile Picture" (:106) and "- Phone Number" (:107).
+- The phone is the artist gate: "In particular, we will use your phone number to verify your identity when you want to
+  upload your works to our Service." (:108). You get "an automatic SMS message to the phone number you provide,
+  containing an authentication code, the entry of which will enable you to upload Products." (:108). This matches the
+  Terms (tou.txt:455).
+- Re-checks: "There is a possibility that future verification may apply to those users who have changed their Pay Pal
+  address or critical information." (:108; the Terms say the same at tou.txt:449).
+- A social login gives "only your name or username, email address, and profile photo" (:111).
+- Minimisation: "Displate processes only those data which are necessary for properly providing offered services."
+  (:100). Registration data is handled "exclusively within the scope of European data protection law" (:102).
+- The controller is "GWD Concept Sp. z o.o. based in Warsaw" (:150), the same company as the Terms' Service Provider
+  (tou.txt:138).
+- Absent words: "tax", "passport", "selfie", "camera", "legal name" and "nickname" have 0 hits in the txt and the html.
+  "photo" occurs once, for a social-login profile photo (:111). [INFERENCE] The tax data taken at payout (tou.txt:279)
+  is not itemised here.
+
+**What is shown to buyers** [RENDERED]
+- "A User Account created on our website is private by default and only you have access to the content posted there."
+  (:123; the section repeats at :144).
+- Going public needs "express consent" (:123): "This means that people visiting our website will be able to see your
+  profile—your name, avatar, your works, wishlists, collections, etc. The scope of data shared within a public Account
+  is up to you." (:123). See also :210.
+- Recipients are service providers only: "entities providing IT, legal, postal and banking services" (:209). Also: "we
+  will never provide your email address to a third party without your explicit permission" (:135).
+- [INFERENCE] The "name" on a public profile is the display name. The Terms make it a nickname (tou.txt:447). The
+  policy nowhere requires a legal name, address or phone to be public; it says the scope "is up to you".
+
+**The gap.** The per-purpose sections are headings only in the capture:
+- "Account registration" (:166);
+- "Making Your Account and Content Public" (:170);
+- "Contract Management" (:188);
+- "Performing of the contract" (:216);
+- "Financial settlement" (:218);
+- "Data processed on your public User Account with your consent" (:240).
+
+Their bodies are collapsed accordions. All 41 `role="region"` blocks in priv.html:115 are empty and marked `hidden`.
+`__NEXT_DATA__` holds only header, feature-flag and A/B data (`pageProps` keys: header, gitInfo, countryCode, uvert,
+featureFlags, tpid, abTests), not the policy text. The html loads no CMS asset host. [INFERENCE] The bodies are compiled
+into the page's own script,
+`https://assets-static-prod.displate.com/next-assets/_next/static/chunks/pages/about-privacy-8cabb3e3e05788f0.js`
+(priv.html:115). "Financial settlement" and "Contract Management" are where the payout tax data would be itemised.
+
+**Kills. (a)-(d) are pre-registered on the board (§4 row 26). (e) is PROPOSED only.**
+- **(a) AI-generated art barred: DOES NOT FIRE.** Unchanged (§4). This page has no AI text.
+- **(b) The review requires a named human artist: DOES NOT FIRE.** Unchanged. First and last name are listed as
+  voluntary profile data (:103-104), not as a publication condition.
+- **(c) The payout excludes Israel or needs a camera step: DOES NOT FIRE.** The one identity step named is the SMS code
+  (:108). No camera, photo-ID or document step appears (0 hits). Israel is not mentioned. [repo] PayPal Israel holds
+  PASS_TEST on the camera gate (`paypal-israel.md`).
+- **(d) Manual upload only, and automation forbidden: UNSETTLED.** Nothing here on bots, agents, software or automated
+  accounts. "automat" occurs only in "an automatic SMS message" (:108), and "bot" only in "Using of a chatbot" (:192).
+  The three Terms clauses (tou.txt:471, :561, :881) still stand alone.
+- **(e) The legal name or address is shown to buyers (G7, Q10): DOES NOT FIRE on this capture.** Accounts are private
+  by default. The public scope is the account holder's choice (:123). Personal data goes only to IT, legal, postal and
+  banking providers (:209). The residue is UNKNOWN: the bodies of "Making Your Account and Content Public" (:170) and
+  "Contract Management" (:188) are not in the capture.
+
+**Gate line (was G1 P(r) · G2 U↗(r+repo) · G3 U(r) · G4 U↗(r) · G5 P(g) · G6 U↗(r) · G7 U↗(r)).**
+Now: G1 P(r) · G2 U↗(r+repo) · G3 U(r) · G4 U↗(r) · G5 P(g) · G6 U↗(r) · **G7 U↗↗(r)**.
+- **G7:** the profile data is voluntary (:103). The account is private until the holder consents, and the holder sets
+  the public scope (:123). No capture puts a legal name, address or tax ID in front of buyers. It stays short of PASS
+  until the "Making Your Account and Content Public" body is read, or the registration fields are seen.
+- **G2:** unchanged. The policy confirms the SMS step (:108) and does not itemise the payout tax data.
+- **G6:** unchanged. One SMS code (:108) unlocks uploads.
+
+**The drafted question (`research/owner-asks/questions.json`, venue `displate`).**
+- Its `preSend` asked for row 134 to be rendered and read first, and for nothing to be sent if (d) was settled. Row
+  134 is now read, and it does not settle (d).
+- **The condition is met, so the question should go as drafted.** Nothing here changes its body.
+  - Its premise, that the owner completes the phone verification once, matches :108.
+  - Neither held question is answered here. The PayPal-in-Israel question gets no country text. The second held
+    question (a photo or video in the tax-data check) is still open, because the policy does not itemise tax data.
+- For the main thread (I did not edit the file): the note could add that the page-script render below, like the
+  sign-up page render, does not hold the send.
+- `dpo@displate.com` (:154, :212, :253) is the data-rights address, "for the execution of your rights" (:253). It is
+  not a better recipient for a question about the rules.
+
+**Next step.**
+1. **Send the drafted `displate` question** to `artists@displate.com`. It settles (d).
+2. **An optional render** (G7 residue and the payout tax data):
+   `https://assets-static-prod.displate.com/next-assets/_next/static/chunks/pages/about-privacy-8cabb3e3e05788f0.js`
+   (priv.html:115). [INFERENCE] It should hold the collapsed bodies of "Account registration", "Financial settlement"
+   and "Making Your Account and Content Public" as string literals. The hash in the name changes with every Displate
+   deploy, so render it soon or re-take it from a fresh privacy capture. It must not hold the send.
+3. Unchanged from §4: `https://displate.com/open-shop` (the sign-up fields; tou.html:640). It is lower value.

@@ -176,3 +176,81 @@ refuse.
 **The recipient for the held step-8 question.** The only StreetLib address in any capture is `support@streetlib.de`
 (chg.html:600, in the German footer; 10 hits across the StreetLib captures). [INFERENCE] It is the German (BookRix)
 service's inbox. The held question (above, §4) goes there only if renders 1 and 2 are both silent on fees.
+
+## Tick 10 (row 132 and row 133 renders)
+
+**Read 28.9.2026 by an Opus reader.** Two captures, both 200, first fetch, fetchedAt 2026-09-28T22:00Z:
+- `streetlib-it-prezzi-servizi` (row 132, short name `it`): 2,322 bytes (`it.meta.json:7`); its txt is empty (1 byte).
+- `help-streetlib-com-category-97-payments` (row 133, short name `pay`): 97 txt lines and 1,789 html lines. The txt
+  was read in full. In the html I read the article list (:1655-1676), the sidebar (:1703-1717), the JSON-LD (:72) and
+  the canonical link (:14), and grepped the whole file.
+
+Every quote was checked with `grep -n -F`.
+
+**Status: NEEDS_MORE. Neither render settles a kill.** Row 132 is the same empty JS shell as the three
+`www.streetlib.com` pages. Row 133 is a list of titles, like the changeover collection. It names the payout articles
+but shows none of their text.
+
+**Row 132 is a JS shell, not a redirect stub.** [RENDERED]
+- Its sha256 is `7a29449c…` (`it.meta.json:8`), byte-identical to `streetlib-com-pricing` (`.meta.json:8`) and to
+  `streetlib-com-legalpolicy`.
+- The body is only `<div id="root"></div>` (it.html:28), loaded by `/assets/js/index-46a3fa32.js` (:20). "Meta tags are
+  managed dynamically by react-helmet-async in PageLayout component" (:7).
+- There is no redirect: no `http-equiv` refresh, no `window.location` and no canonical (0 hits). The only Italian is a
+  code comment, "Ottimizzazione caricamento font" (:33).
+- [INFERENCE] `www.streetlib.it` and `www.streetlib.com` serve one single-page app. No marketing page on either host
+  renders on the runner, and that includes `https://www.streetlib.com/pro-plan-lifetime` (§Tick 9 already advised
+  against it). Plan prices can only come from the help centre, which renders, or from a written answer.
+
+**Row 133 lists the payout articles.** "Billing and Payments" (pay.txt:53) sits in the collection "Manage Your Account
+and Royalties" (:31; JSON-LD, pay.html:72). Its articles, with hrefs made absolute against the canonical
+`https://help.streetlib.com/category/97-payments` (pay.html:14), are:
+
+| Title (pay.txt) | href (pay.html) |
+|---|---|
+| "Billing Profile and Payment Method" (:63) | `/article/699-billing-profile-and-payment-method` (:1658) |
+| "Completing our Tax Information Interview" (:65) | `/article/433-completing-our-tax-information-interview` (:1660) |
+| "Withholding tax" (:67) | `/article/429-withholding-tax` (:1662) |
+| "Earnings" (:69), already read as `677` | `/article/677-earnings` (:1664) |
+| "Getting Paid" (:71) | `/article/670-getting-paid` (:1666) |
+| "Getting Paid (USA and Canada)" (:73) | `/article/432-getting-paid-usa-canada` (:1668) |
+| "Invoices" (:75) | `/article/431-billing` (:1670) |
+| "Invoices and Detailed Reports" (:77) | `/article/422-invoices-and-detailed-reports` (:1672) |
+| "How to Read Billing Reports" (:79) | `/article/704-how-to-read-billing-reports` (:1674) |
+
+- The sidebar holds two sister categories: `/category/72-create-and-manage-your-streetlib-account` (pay.html:1707) and
+  `/category/111-book-sales` (:1715).
+- "paypal", "bank", "payout", "israel" and "payoneer" have 0 hits in both the txt and the html.
+- The footer again links "Lifetime Pro Plan" (`label: 'Lifetime Pro Plan',` pay.html:399; `link:
+  'https://www.streetlib.com/pro-plan-lifetime'`, :400). That is still a name without a price.
+- [INFERENCE] A separate "(USA and Canada)" article implies that "Getting Paid" (670) is the article for the rest of the
+  world, so 670 is the one that answers (b) for Israel. A "Tax Information Interview" suggests a tax form at payout.
+  Whether it has an identity or camera step is UNKNOWN.
+
+**Kills. (a)-(d) are pre-registered on the board (§4 row 24). (e) is PROPOSED only.**
+- **(a) Any distribution plan, subscription or per-title fee: UNSETTLED.** Row 132, the page meant to settle it, is an
+  empty shell (it.html:28). No payments title names a plan, a subscription or a fee (pay.txt:63-79). The lean toward
+  firing is unchanged (677.txt:87; the footer, pay.html:399).
+- **(b) The payout cannot reach an Israeli individual, or needs a camera step: UNSETTLED.** The articles that settle it
+  now have captured URLs (670, 699 and 433 above). No payout text is rendered.
+- **(c) AI books barred even when declared: DOES NOT FIRE.** Unchanged (421.txt:87).
+- **(d) Web forms only, and the terms forbid automation: UNSETTLED; it parks.** Unchanged. The terms are on the shell
+  host (legalpolicy, §1).
+- **(e) The legal name is shown to buyers: UNKNOWN.** PROPOSED only.
+
+**Gate line.** Unchanged: G1 U↘(r) · G2 U(r) · G3 U(r) · G4 P(r) · G5 P in part (r) · G6 U · G7 U(r, "Surname, Name",
+380.txt:71). G2 gains only a map of where the answer is.
+
+**Next step (renders, in order; every URL is from `pay.html`, resolved against its canonical :14).**
+1. **https://help.streetlib.com/article/670-getting-paid** (pay.html:1666). It settles (b): payout methods, minimum and
+   countries, and whether PayPal or a bank reaches an Israeli individual.
+2. **https://help.streetlib.com/article/699-billing-profile-and-payment-method** (:1658). It covers (b): which payment
+   methods a billing profile takes, and whether an individual can hold one. It may touch (a) if a plan is billed there.
+3. **https://help.streetlib.com/article/433-completing-our-tax-information-interview** (:1660). It covers the camera
+   half of (b): any identity-document, photo or video step in the tax form.
+4. **https://help.streetlib.com/category/72-create-and-manage-your-streetlib-account** (:1707). It covers (a): the
+   account category, where an article on the Subscription and Lifetime options would sit if one exists. If it lists
+   one, render that article next.
+
+The held step-8 fee question (§4) stays held until renders 2 and 4 are read. The only captured address is still
+`support@streetlib.de` (§Tick 9).
