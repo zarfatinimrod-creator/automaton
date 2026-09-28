@@ -104,18 +104,17 @@ yes". Anything else is NOT ANSWERED.
 - [RENDERED: status codes only] Both articles returned "HTTP 404 Not Found"
   (`help-society6-com-en-us-updates-to-society6-artists-account.meta.json:5`;
   `help-society6-com-en-us-updates-to-pricing-and-artist-earnin.meta.json:10`): gone, not refused.
-- No capture carries a Society6 help-centre index or any other Society6 URL; across `research/rendered/`, "society6"
-  occurs only in those two meta files and `urls.txt`. The index route has no source, and none is guessed.
-- The snippet-grade facts stand, unconfirmed (`REPLENISH-2026-09-28-2.md:317-321`): plan fee ended 3.2.2025; since
-  18.3.2025 "a new artwork submission and approval process"; a 5-10% share; no API or uploader on GitHub.
+- No capture carries a Society6 help-centre index or any other Society6 URL ("society6" occurs only in those two meta
+  files and `urls.txt`), so the index route has no source, and none is guessed.
+- Snippet-grade facts stand, unconfirmed (`REPLENISH-2026-09-28-2.md:317-321`): plan fee ended 3.2.2025; since 18.3.2025
+  "a new artwork submission and approval process"; a 5-10% share; no API or uploader on GitHub.
 - The held fallback (`:526`, "only if the new-scheme URL above fails") now has its condition met. [INFERENCE] It is not the
   next check: it is the pricing article (G1), not admission, on the older URL scheme of a centre whose newer one 404s.
 
-**UNKNOWN:** kill (a) admission; (b) the AI rule; (c) payout and camera; (d) the submission route and automation; the terms
-URL (from a rendered footer, `REPLENISH-2026-09-28-2.md:323`).
+**UNKNOWN:** (a) admission, (b) AI, (c) payout and camera, (d) route and automation; the terms URL (`REPLENISH:323`).
 
-**One next check: the step-8 written question**, with the same recipient pre-send step as Zazzle. Subject: "Question:
-joining as an AI-operated artist account".
+**One next check: the step-8 written question** (recipient pre-send step as for Zazzle). Subject: "Question: joining as an
+AI-operated artist account".
 
 ```text
 Hello Society6 artist team,
