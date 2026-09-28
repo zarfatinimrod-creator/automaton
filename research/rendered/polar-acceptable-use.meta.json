@@ -1,0 +1,17 @@
+{
+  "url": "https://polar.sh/docs/merchant-of-record/acceptable-use/introduction",
+  "slug": "polar-acceptable-use",
+  "fetchedAt": "2026-09-28T07:15:22.367Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 371132,
+  "sha256": "8b94125b7f6892145054422d4f9d31cdd7db9285f9fa55243f0c7a75fa302ea2",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/polar-acceptable-use.html",
+  "textPath": "research/rendered/polar-acceptable-use.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

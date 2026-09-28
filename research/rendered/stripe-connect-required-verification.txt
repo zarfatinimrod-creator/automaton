@@ -1,0 +1,79 @@
+Required verification information | Stripe Documentation
+
+Skip to content
+
+Required verification information
+
+Create account or Sign in
+
+Search
+
+/ Ask AI
+Create account Sign in
+
+Get started
+
+Payments
+
+Revenue
+
+Data
+
+Platforms and marketplaces
+
+Money management
+
+Developer resources
+
+APIs & SDKs Help
+
+Overview Get started with Connect
+
+Design your integration
+
+Integration fundamentals
+
+Example integrations
+
+Account management
+Onboard connected accounts
+
+Configure account Dashboards
+
+Capabilities and information requirements Account capabilities and configurations
+Required verification information Handle verification updates
+Handle verification with the API
+Handle verification with tokens
+Test account verification
+Identity verification for connected accounts
+Update verified info
+
+Additional verifications
+
+Work with connected account types
+
+Payment processing
+Accept payments
+
+Pay out to accounts
+
+Platform administration
+Manage your Connect platform
+
+Tax forms for your Connect platform
+
+Embedded finance
+Treasury for platforms
+
+Issuing
+
+Capital for platforms
+
+Managed support
+
+United States
+English (United States)
+
+Home /
+Platforms and marketplaces /
+Capabilities and information requirements

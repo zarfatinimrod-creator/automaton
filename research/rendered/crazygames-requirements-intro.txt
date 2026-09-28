@@ -1,0 +1,310 @@
+Introduction - CrazyGames Documentation
+
+Skip to content
+
+CrazyGames Documentation
+
+Introduction
+
+Initializing search
+
+Submit a game
+
+CrazyGames Documentation
+
+Introduction
+
+Requirements
+
+Requirements
+
+Introduction
+
+Introduction
+
+Table of contents
+
+Requirements
+
+Guidelines & resources
+
+Monetization
+
+Insights & Analytics
+
+Technical support for SDK integration
+
+Quality Assurance Tool
+
+Technical
+
+Gameplay
+
+Advertisement
+
+Account integration
+
+Multiplayer
+
+Game covers
+
+Quality guidelines
+
+SDK
+
+SDK
+
+Introduction
+
+Video ads
+
+Banners
+
+Game
+
+User
+
+Data
+
+In-game purchases
+
+Leaderboards
+
+Leaderboards
+
+Introduction
+
+Leaderboards SDK
+
+Leaderboards API
+
+Other engines
+
+Other engines
+
+GDevelop ↗
+
+Defold ↗
+
+Wonderland ↗
+
+Resources
+
+Resources
+
+General
+
+General
+
+Mouse control
+
+CrazyGames App
+
+Basic Launch Guide
+
+Game Loading Tips
+
+Monetization
+
+Monetization
+
+Ad Monetization Guide
+
+Mastering Rewarded Ads
+
+Optimizing Midgame Ads
+
+Banner Ad Best Practices
+
+Hypercasual & IO
+
+Midcore, RPG & Idle
+
+Puzzle
+
+Action
+
+Clicker
+
+Word
+
+Driving
+
+HTML5
+
+HTML5
+
+Sitelock
+
+Common fixes
+
+Unity
+
+Unity
+
+Custom build
+
+Optimization tips
+
+Optimizer package
+
+Common Issues
+
+Addressables guide
+
+References
+
+References
+
+External resources
+
+Partners
+
+FAQ & Contact
+
+Payouts
+
+Table of contents
+
+Requirements
+
+Guidelines & resources
+
+Monetization
+
+Insights & Analytics
+
+Technical support for SDK integration
+
+Quality Assurance Tool
+
+Introduction
+
+Requirements
+
+To be published on CrazyGames, your game must meet our requirements. We designed these standards to ensure all games on our platform are fun, unique, visually appealing, and properly integrated.
+
+Our launch process consists of 2 steps. Read more about the principles on the introduction page .
+
+A game in Basic Launch allows you to go live without needing to customize your game for CrazyGames. The CrazyGames SDK is optional and monetization is not available. Review the Basic Launch Guide to understand how progression is evaluated.
+
+Once your game has been selected for Full Launch , you are required to comply to all integration requirements listed below, including the CrazyGames SDK.
+
+The table below provides a summary of the key requirements. Each category has a dedicated page with detailed descriptions:
+
+Category
+
+Basic Implementation
+Basic Implementation
+
+Full Implementation*
+Full Implementation
+
+Technical
+
+Initial download size &le; 50MB
+Total file size &le; 250MB ( 50MB without SDK )
+File count &le; 1500
+
+SDK & GameplayStart event
+
+Gameplay
+
+Basic visual QA checks
+Adhere to PEGI12
+
+Full visual QA check
+Land directly in gameplay
+
+Advertisement
+
+CrazyGames monetization is disabled
+No external ads
+
+Ads through SDK, following our guidelines
+Works with AdBlock
+
+Account integration
+Only when applicable
+
+No external login options
+
+Progress is linked to CrazyGames Account
+Use CrazyGames username & avatar
+Automatic login for CrazyGames users
+
+Multiplayer
+Only when applicable
+
+Full implementation features might increase engagement and are optional in basic launch
+
+User room info
+Invite link (if applicable)
+Instant multiplayer flow
+Keep rooms across rounds
+DisableChat preference
+
+In-game Purchases
+Invite Only
+
+Not available
+
+Use CrazyGames Xsolla account and userId
+
+* A full implementation should implement the basic implementation requirements as well.
+
+Our HTML5 and Unity SDKs support all the scenarios. Other SDKs might miss certain functionalities.
+
+As part of the submission process, you will also need to provide qualitative metadata (game description and controls) and Game covers (images and videos).
+
+Guidelines & resources
+
+Additionally we offer some Quality Guidelines to optimize your game for success on the CrazyGames platform. These are optional but based on our insights in our audience and web gaming. Guidelines are marked with Guideline throughout the documentation.
+
+Lastly have a look at the Resources provided on this site for additional tips to publish a succesful web game.
+
+Monetization
+
+The primary monetization mechanism we offer is through advertisement revenue share. Only ads served through our SDK are allowed, refer to our Advertisement requirements .
+
+Selected games are eligible for In-game Purchases . A Full Implementation is required, using Xsolla as payments provider. Contact our team if you want to apply for this.
+
+Insights & Analytics
+
+Once your game has been published, you'll be able to monitor key game metrics on your Developer Dashboard . These are some of the metrics we provide by default:
+
+Players
+
+Average playtime
+
+Gameplay conversion
+
+Retention
+
+Revenue
+
+To further optimize your game and access advanced analytics — including level progression, drop-off points, and user journey tracking — we recommend utilizing ByteBrew . This powerful, free analytics tool is simple to integrate, enabling you to enhance player engagement and boost the visibility of your game on the Crazy Games Portal.
+
+Warning
+
+In case your game collects additional personal data beyond the events in our SDK, the game should add a Terms & Conditions and/or Privacy Policy notice to new players. Check the User Consent section for details.
+
+Technical support for SDK integration
+
+Once your games reach 50k plays (combined), we can offer you technical support with SDK integration. This threshold allows us to give each developer individual feedback on ad placements and integration.
+
+Quality Assurance Tool
+
+On our Developer Portal you'll be able to preview your game. It allows you to:
+
+Run your game as it would on CrazyGames
+
+Check if your game meets our requirements
+
+Test all the SDK features that you implemented and get feedback about it
+
+Made with
+
+Material for MkDocs
+
+Ask AI
