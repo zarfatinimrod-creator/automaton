@@ -92,7 +92,8 @@ describe("revenue/loop (board → queue → orchestrator)", () => {
     });
     updateLineStatus(db, "weak", "building");
     updateLineStatus(db, "weak", "live");
-    db.prepare("UPDATE revenue_lines SET launched_at = ? WHERE id = ?").run(new Date(Date.now() - 60 * 86_400_000).toISOString(), "weak");
+    // 100 days live: past the 90-day grace (RULING-2026-09-28-floors.md §8), ₪0 under the 25% floor of a ₪1,000 target.
+    db.prepare("UPDATE revenue_lines SET launched_at = ? WHERE id = ?").run(new Date(Date.now() - 100 * 86_400_000).toISOString(), "weak");
     enqueueGoal(db, { lineId: "weak", phase: "grow" });
     const result = runBoardReview(db, { seed: false });
     expect(getLine(db, "weak")?.status).toBe("killed");
@@ -130,13 +131,13 @@ describe("revenue/loop (board → queue → orchestrator)", () => {
     });
     updateLineStatus(db, "line-l", "building");
     updateLineStatus(db, "line-l", "live");
-    // A filed "hold" whose metrics say kill (60 days live, no revenue)
+    // A filed "hold" whose metrics say kill (100 days live — past the 90-day grace — and no revenue)
     db.prepare(
       `INSERT INTO revenue_reviews (id, line_id, level, reviewer, period_start, period_end, metrics, decision, rationale, created_at)
        VALUES ('r1', 'line-l', 'supervisor', 'supervisor-l', ?, ?, ?, 'hold', 'looks fine', ?)`,
     ).run(
       new Date().toISOString(), new Date().toISOString(),
-      JSON.stringify({ lineId: "line-l", status: "live", revenue30dAgorot: 0, revenue7dAgorot: 0, refunds30dAgorot: 0, cost30dAgorot: 0, net30dAgorot: 0, transactions30d: 0, trend: 1, daysSinceCreated: 90, daysSinceLaunch: 60, daysSinceLastRevenue: null, targetMonthlyAgorot: 100_000, targetAttainment: 0 }),
+      JSON.stringify({ lineId: "line-l", status: "live", revenue30dAgorot: 0, revenue7dAgorot: 0, refunds30dAgorot: 0, cost30dAgorot: 0, net30dAgorot: 0, transactions30d: 0, trend: 1, daysSinceCreated: 130, daysSinceLaunch: 100, daysSinceLastRevenue: null, targetMonthlyAgorot: 100_000, targetAttainment: 0 }),
       new Date().toISOString(),
     );
     const audit = runAudit(db);

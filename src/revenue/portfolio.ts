@@ -29,7 +29,7 @@ import type { Database } from "better-sqlite3";
 import { removeQueuedGoals } from "./goal-queue.js";
 import { getLine, insertLineFromSeed, listLines, updateLineFromSeed, updateLineStatus } from "./ledger.js";
 import { agorotFromIls } from "./money.js";
-import type { RevenueLineSeed } from "./types.js";
+import { DEFAULT_DECISION_POLICY, type DecisionPolicy, type RevenueLineSeed } from "./types.js";
 
 export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
   {
@@ -111,19 +111,21 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     ].join(" "),
     kpis: ["weekly page views (cookieless)", "free tool uses", "paid conversions", "MRR in ILS", "refund rate"],
     killCriteria: [
-      "revenue_ledger under ₪200 in 30 days after 90 days live with the domain deployed",
-      "weekly page views under 100 for 8 consecutive weeks after deployment",
+      "revenue_ledger under 50% of the board-set target in 30 days after 90 days live — live is the first Gumroad sale with its transaction id, and the target is set by the board from the reading that made it live (RULING-2026-09-28-floors.md §9)",
+      "netlify.app measurement (RULING-2026-09-28-floors.md §9): stranger page views under 5 over the 56 days from the public deploy → paused at ₪0 until the domain deploy, with no SEO or build hour and no owner step asked on this line's account; 5 to under 100/week → one extension to day 112 and the same read; 100/week or more over weeks 5-8 → the paid tier's owner steps (2, 3, 6b) join the ask batch",
+      "weekly page views under 100 for 8 consecutive weeks after deployment (clock starts at the domain deploy, BOARD-LOOP PUBLISH-10)",
       "refund rate above 15% for two reviews",
       "Gumroad account rejected or the seller review fails",
     ],
     scaleCriteria: ["30-day revenue at or above target with 50%+ margin", "conversion above 2% on paid pages"],
-    // Board §3: RETARGET ₪1,500 → ₪400, and the grade STAYS `contradicted` until
-    // a page-view or Search Console reading exists. The audited band is ₪200-400
-    // with ₪0 through month 12, and the evidence in this line's own basis argues
-    // against any number above it: a competing Israeli legal site's own Search
-    // Console export shows its severance calculator at 0 impressions over 16
-    // months while sibling pages show 58k-81k.
-    targetMonthlyAgorot: agorotFromIls(400),
+    // Board 28.9.2026 (research/channel-loop/RULING-2026-09-28-floors.md §9):
+    // PLANNED AT ₪0 while the site is measured on *.netlify.app without the
+    // domain. The 7.9 retarget left ₪400 graded `contradicted` — a number its own
+    // basis argued against (₪0 through month 12 as things stand). The ₪400 is now
+    // TARGET_BASIS' contested upper bound, not a target. A number returns only
+    // from a reading: the day-56 netlify.app read, or the first Gumroad sale, after
+    // which the board sets the target from that reading in the same sitting.
+    targetMonthlyAgorot: agorotFromIls(0),
     budgetMonthlyCents: 4000,
     humanSetup: [
       "Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3)",
@@ -286,6 +288,12 @@ export interface TargetBasis {
    * deciding to, and so the owner sees the range rather than only the floor.
    */
   contestedUpperBoundIls?: number;
+  /**
+   * The line's kill floor as a fraction of its own target (0 < f ≤ 1): 30-day revenue below f × target after
+   * DEFAULT_DECISION_POLICY.graceDays → kill. Board ruling 28.9.2026 (RULING-2026-09-28-floors.md §8). Where the line's
+   * killCriteria state a shekel figure, target-basis.test.ts asserts it equals f × target.
+   */
+  killFloorFraction: number;
 }
 
 export const TARGET_BASIS: Record<string, TargetBasis> = {
@@ -296,6 +304,7 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
     // the goal, which is the exact failure TARGET_BASIS exists to prevent.
     ils: 200, grade: "inferred",
     contestedUpperBoundIls: 1500,
+    killFloorFraction: 0.25,
     basis:
       "Five groups' survivors collapse into ONE Apify creator account. The auditors' two corrected 12-month ceilings for that account are ₪1,500 (store-promotion) and ₪200 (agent-markets); the board committed to ₪200 and records ₪1,500 as the CONTESTED UPPER BOUND, not as a target. The ₪1,500 rests on a generic 5-8 Actor scraper set at ~2 h/week/Actor priced off an unverified marketing mean ($470/developer/month across ~3,000 developers, a power-law MEAN and not in Apify's own documentation). The ₪200 rests on the only real base rate anyone rendered: 8.7 users per Actor. Month one is ₪0 and the first ledger entry is ~month 9. The line is kept as the constraint-7 instrument at forecast ₪0: publish free, count strangers for 30 days, start the developer-level history-of-success clock that MISSION constraint 8 names as a non-public input.",
     source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #1; audits/agent-markets.md and audits/store-promotion.md",
@@ -304,16 +313,22 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
       "Apify Store search and Apify MCP-server search — platform search that ranks on accumulated history, which is precisely why the clock starts now and why nothing is priced before it has run.",
   },
   "il-biz-tools": {
-    // Board §3: retarget to ₪400; the grade STAYS `contradicted` until a page-view
-    // or Search Console reading exists. A number nobody has measured against a
-    // channel nobody has tested does not get promoted for being smaller.
-    ils: 400, grade: "contradicted",
+    // Board 28.9.2026 (RULING-2026-09-28-floors.md §9): planned at ₪0, graded
+    // `inferred` — the audit infers ₪0 through month 12 and the evidence argues
+    // FOR the zero, so `contradicted` would be false and `measured` a lie until
+    // the day-56 read exists. The ₪400 the 7.9 board carried as `contradicted`
+    // moves to the contested upper bound. The floor fraction 0.5 is the line's
+    // own stated ratio (₪200 of ₪400) and applies from the board-set target once
+    // the line is live.
+    ils: 0, grade: "inferred",
+    contestedUpperBoundIls: 400,
+    killFloorFraction: 0.5,
     basis:
-      "Audited band ₪200-400 with ₪0 through month 12 as things stand (chief audit §2.1 #3). The evidence in this very field argues against any number here: a competing Israeli legal site's own Google Search Console export, checked into a public repo, shows its severance-calculator page at 0 clicks and 0 impressions over 16 months while sibling pages show 58k-81k; head terms belong to funded incumbents (Morning, iCount, Invoice4u, Kol Zchut) and to btl.gov.il's own free simulators. Three preconditions before any SEO hour: deploy, buy the domain, read one Hebrew SERP. The grade stays `contradicted` until a page-view or Search Console reading exists — a smaller unmeasured number is still unmeasured.",
+      "Planned at ₪0 while the site is measured on *.netlify.app without a domain (owner's ₪0 rule, 27.9.2026): the audited basis says ₪0 through month 12 as things stand (chief audit §2.1 #3), and the ₪200-400 band is recorded as the CONTESTED UPPER BOUND, not as a target. The evidence in this field argues for the zero: a competing Israeli legal site's own Google Search Console export, checked into a public repo, shows its severance-calculator page at 0 clicks and 0 impressions over 16 months while sibling pages show 58k-81k; head terms belong to funded incumbents (Morning, iCount, Invoice4u, Kol Zchut) and to btl.gov.il's own free simulators. The number returns only from a reading — the day-56 netlify.app read (RULING-2026-09-28-floors.md §9) or the first Gumroad sale — never before, and never by being smaller.",
     source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #3; research/colony-sweep/audits/israel-bureaucracy.md §2.3",
     rail: "Gumroad (merchant of record, ILS payout rendered from Gumroad's own source). Paddle retired from this line by board §3.",
     acquisitionChannel:
-      "Hebrew long-tail organic, measured rather than assumed: one SERP pull now, cookieless page views from PostHog written weekly as KPIs, Search Console only later and only if the owner chooses to add the property.",
+      "UNTESTED: Hebrew long-tail organic, measured rather than assumed: one SERP pull now, cookieless page views from PostHog written weekly as KPIs, Search Console only later and only if the owner chooses to add the property.",
   },
   "oss-bounties": {
     // Regraded 2026-09-04 and retargeted by the board 7.9.2026. Payability here
@@ -323,6 +338,7 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
     // through to a Stripe Connect Express account. Every other payability verdict
     // in this repo is a snippet, an inference from absence, or an UNKNOWN.
     ils: 300, grade: "inferred",
+    killFloorFraction: 0.25,
     basis:
       "The bounties-grants group is swept and audited: its five ranked lines fell from ₪7,800 to ₪800 combined, and Algora's own share of that is ₪300 (chief audit §2.1 #6). Month one is ₪0; money arrives 2-5 days after a first rewarded PR, which is weeks away. What IS verified, at code level and re-rendered independently, is Israeli payability — Algora's connect_countries.ex lists Israel and routes it to Stripe Connect Express. This is the only line in the portfolio whose acquisition problem runs backwards: the payer posts the job publicly, funds it in advance and publishes the acceptance criteria, so no stranger has to find us. Under MISSION constraint 7 that property outranks the ceiling, which is why the line keeps its rank at ₪300. SUPPLY IS THE OPEN QUESTION (BOARD-2 §2.2): a third-party census found 5 claimable bounties, $60, among 561 labelled issues, and the repo's own 22.9 label count points the same way; the board kept ₪300 until a reading of ours replaces it and expects it to fall. The measurement is claimableBounties, counted weekly from CI (algora-supply.yml), read at week 4 on the mean of four weekly readings: ≥10 keeps ₪300; 3-9 retargets to ₪100 with grade contradicted; under 3 kills the line.",
     source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #6; research/colony-sweep/audits/bounties-grants.md; research/colony-sweep/CRITIC-synthesis.md §5; research/colony-sweep/BOARD-2.md §2.1-2.2; research/measurements/algora-supply.md",
@@ -336,6 +352,7 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
     // cohort is verified, dated and created by law rather than inferred from a
     // market. That is a reason to believe the band, not a reason to exceed it.
     ils: 600, grade: "inferred",
+    killFloorFraction: 0.25,
     basis:
       "Chief audit §2.1 #2: audited ceiling ₪600, band ₪300-600, month one ₪0, Israel payability YES via Gumroad (rendered `Israel | ILS`). The only line in the sweep with a verified, dated, legally created cohort — VAT-registered עוסקים filing the מע\"מ detailed report, and the bookkeepers who file for them — confirmed across CPA circulars. Graded GREEN with a harm asymmetry the target does not capture: a wrong file is the USER's VAT exposure, so no legal figure ships until the 874 record layout is rendered from two independent open-source implementations. Known headwinds already priced in: the dependency this displaces is stale (Feb 2024, no validatePcn874()), and ITA easements (sub-₪5,000 aggregation, deferral to 2027) shrink the pain.",
     source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #2",
@@ -344,6 +361,19 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
       "Two, both named before the build: Hebrew long-tail organic on the exact statutory terms (measured by the SERP pull that precedes the build), and an open-source `pcn874` core under the brand GitHub org and npm scope so GitHub and npm search carry the free tier.",
   },
 };
+
+/**
+ * The decision policy for one line: the shared policy with the line's own kill-floor fraction. Supervisor, board and
+ * auditor all resolve it here, so an auditor recomputing a decision reads the same floor the supervisor did.
+ */
+export function policyForLine(
+  lineId: string,
+  base: DecisionPolicy = DEFAULT_DECISION_POLICY,
+  basis: Record<string, TargetBasis> = TARGET_BASIS,
+): DecisionPolicy {
+  const f = basis[lineId]?.killFloorFraction;
+  return f === undefined ? base : { ...base, killFloorFraction: f };
+}
 
 /**
  * Targets the board did NOT commit to.

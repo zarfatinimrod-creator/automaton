@@ -206,20 +206,23 @@ export const KILL_ACCEPTANCE_RATE = 0.25;
  *
  * The arithmetic, in four steps, all of them from numbers already in this repo:
  *
- *  1. The board gave this line **₪300/month** out of a **₪1,500** committed
- *     portfolio, so the line owns **20%** of the colony's capacity.
+ *  1. The board gave this line **₪300/month** out of a **₪1,100** committed
+ *     portfolio, so the line owns **27.3%** of the colony's capacity. (It was
+ *     ₪1,500 and 20% until the 28.9.2026 board planned il-biz-tools at ₪0,
+ *     research/channel-loop/RULING-2026-09-28-floors.md §9; the floor was then
+ *     ₪37.50. Nothing was edited here but this comment — the floor re-derived.)
  *  2. MISSION constraint 4 budgets **160 agent-hours a month** for the whole
- *     colony. Twenty per cent of that is **32 hours** for this line.
- *  3. ₪300 out of 32 hours is **₪9.375 per agent-hour realized** — what an hour
- *     must actually earn, after the pull requests nobody merges.
+ *     colony. 27.3% of that is **43.6 hours** for this line.
+ *  3. ₪300 out of 43.6 hours is **₪6.875 per agent-hour realized** — what an
+ *     hour must actually earn, after the pull requests nobody merges.
  *  4. Most attempts earn nothing. At the line's own kill threshold — a 25%
  *     acceptance rate — one rewarded bounty costs four attempts' hours, so a
  *     bounty must advertise **four times** the realized rate to survive:
- *     9.375 / 0.25 = **₪37.50 per estimated hour**, about **$10.42/h** at the
+ *     6.875 / 0.25 = **₪27.50 per estimated hour**, about **$7.64/h** at the
  *     repo's stored USD rate.
  *
  * Sanity check against the only economics figure the audit accepted — a ~$110
- * average bounty: the floor allows up to about **10.5 hours** on an average
+ * average bounty: the floor allows up to about **14.4 hours** on an average
  * bounty, and refuses anything longer. That is the filter doing its job; the
  * competition finding says the winner is usually the first PR to arrive, and a
  * two-week issue is a race the colony loses after paying for it.
@@ -252,7 +255,10 @@ export function deriveBountyFloor(
   const lineShare = portfolioTargetIls > 0 ? lineTargetIls / portfolioTargetIls : 0;
   const lineAgentHoursPerMonth = colonyAgentHoursPerMonth * lineShare;
   const realizedIlsPerHour = lineAgentHoursPerMonth > 0 ? lineTargetIls / lineAgentHoursPerMonth : Infinity;
-  const floorIlsPerHour = killAcceptanceRate > 0 ? realizedIlsPerHour / killAcceptanceRate : Infinity;
+  // Rounded to the agora: money is agorot everywhere else, and the division chain above leaves float dust
+  // (₪1,100 / 160h / 0.25 comes out 27.500000000000004), which refused a bounty paying exactly the floor.
+  const rawFloor = killAcceptanceRate > 0 ? realizedIlsPerHour / killAcceptanceRate : Infinity;
+  const floorIlsPerHour = Number.isFinite(rawFloor) ? Math.round(rawFloor * 100) / 100 : rawFloor;
 
   return {
     lineTargetIls,

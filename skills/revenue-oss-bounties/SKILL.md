@@ -56,11 +56,12 @@ Express account: the only code-level Israeli payability proof the 121-criterion 
   BOARD.md §5 made to this line.
 - **Disclose on every PR.** Unconditionally, including where the policy says nothing and where it
   explicitly permits AI work. `AI_AUTHORSHIP_DISCLOSURE` is the exact sentence; do not paraphrase it.
-- **The pay floor: ₪37.50 per estimated hour.** Derived, not picked: ₪300/month is 20% of the
-  ₪1,500 the board committed, so this line owns 32 of MISSION constraint 4's 160 agent-hours a
-  month → ₪9.375/hour realized → divided by the line's own 25% kill-threshold acceptance rate →
-  ₪37.50/hour gross, about $10.42/h. On the ~$110 average bounty that allows about ten and a half
-  hours. `deriveBountyFloor()` shows the arithmetic and moves when the board's numbers move.
+- **The pay floor: ₪27.50 per estimated hour.** Derived, not picked: ₪300/month is 27.3% of the
+  ₪1,100 the board committed (₪1,500 until 28.9.2026, when il-biz-tools was planned at ₪0), so this
+  line owns 43.6 of MISSION constraint 4's 160 agent-hours a month → ₪6.875/hour realized → divided
+  by the line's own 25% kill-threshold acceptance rate → ₪27.50/hour gross, about $7.64/h. On the
+  ~$110 average bounty that allows about fourteen and a half hours. `deriveBountyFloor()` shows the
+  arithmetic and moves when the board's numbers move (it was ₪37.50 at ₪1,500).
 
 ## The colony must never
 

@@ -37,8 +37,10 @@ describe("payment rails", () => {
   it("reports the portfolio the board knowingly concentrated, rather than passing it", () => {
     // Until 7.9.2026 this expected "ok". The board's ruling changed the answer
     // and not the check: il-biz-tools moved from Paddle to Gumroad and pcn874
-    // was added on Gumroad too, so two of four lines and ₪1,000 of ₪1,500 ride
-    // one merchant account. BOARD.md §2 accepts that knowingly, because exactly
+    // was added on Gumroad too, so two of four lines ride one merchant account —
+    // ₪600 of the ₪1,100 committed since the 28.9.2026 board planned il-biz-tools
+    // at ₪0 (RULING-2026-09-28-floors.md §9; it was ₪1,000 of ₪1,500 before).
+    // BOARD.md §2 accepts that knowingly, because exactly
     // one rendered ILS rail exists — and the mitigation is to render Freemius as
     // a second one, not to silence this check. A green light here would be the
     // dishonest outcome, so the test asserts the warning and names the lines.
@@ -47,7 +49,7 @@ describe("payment rails", () => {
     const gumroad = c.overexposed.find((o) => o.rail === "gumroad" && o.side === "payin");
     expect(gumroad, "gumroad carries two of four lines and the check must say so").toBeDefined();
     expect(gumroad!.lineIds.sort()).toEqual(["il-biz-tools", "pcn874"]);
-    expect(gumroad!.share).toBeCloseTo(1000 / 1500, 6);
+    expect(gumroad!.share).toBeCloseTo(600 / 1100, 6);
     expect(c.reason).toMatch(/MISSION\.md/);
   });
 
@@ -110,7 +112,8 @@ describe("platform concentration — the risk railConcentration was blind to", (
   it("groups lines by the account a ban would land on, not by the rail", () => {
     // il-biz-tools and pcn874 are separate lines with separate buyers and
     // separate targets, behind ONE Gumroad seller account. One suspension email
-    // takes both, and ₪1,000 of the ₪1,500 the board committed to.
+    // takes both, and ₪600 of the ₪1,100 the board committed to (il-biz-tools is
+    // planned at ₪0 since 28.9.2026 and still rides the same account).
     const c = platformConcentration();
     const gumroad = c.platforms.find((p) => p.platformAccount === "gumroad:one-seller-account")!;
     expect(gumroad.lineIds.sort()).toEqual(["il-biz-tools", "pcn874"]);

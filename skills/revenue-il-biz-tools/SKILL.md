@@ -6,8 +6,14 @@ auto-activate: false
 
 # Hebrew small-business tools — director playbook
 
-**Audited ceiling: ₪400/month at twelve months** (`research/colony-sweep/CHIEF-AUDIT.md` §2.1 row 3; band
-₪200–400). **Month one: ₪0.** Board decision 7.9.2026: keep, retargeted from the old ₪3,000; rail Gumroad.
+**Planned target: ₪0** while the site is measured on `*.netlify.app` without the domain (board ruling 28.9.2026,
+`research/channel-loop/RULING-2026-09-28-floors.md` §9; graded `inferred`). **Audited ceiling: ₪400/month at twelve
+months** (`research/colony-sweep/CHIEF-AUDIT.md` §2.1 row 3; band ₪200–400) — recorded as the CONTESTED UPPER BOUND,
+not a target. Board decision 7.9.2026: keep, retargeted from the old ₪3,000; rail Gumroad. The measurement: D0 = the
+public netlify.app deploy (the loop moves the line `awaiting_setup` → `measuring`); stranger page views under 5 over
+56 days → `paused` at ₪0 until the domain deploy; 100/week or more over weeks 5-8 → the paid tier's owner steps join the
+ask batch; between → one extension to day 112. The first Gumroad sale makes it `live`, and the board sets the target
+from that reading; the kill floor is then 50% of it after 90 days.
 
 Product: `products/il-biz-tools` — a static RTL site of free calculators for Israeli freelancers (VAT,
 advance payments, net salary, Bituach Leumi, osek patur threshold) plus **one** paid feature, the branded
@@ -51,8 +57,8 @@ is why `MISSION.md` rule 4 exists.
    DEMONSTRATED.** The two calculator SERPs (VAT, net salary) are held by small independent tool sites, so a
    new Hebrew page carries no day-one ranking handicap — but those are the free pages; the invoice query that
    the Pro feature depends on returns zero tools, Kol Zchut first and a vendor advertising free invoicing in
-   its title. Build #4 proceeds as a measurement. **No SEO hour goes into `invoice.html`**, and the ₪400 keeps
-   its `contradicted` grade until a sale exists.
+   its title. Build #4 proceeds as a measurement. **No SEO hour goes into `invoice.html`**, and the target stays
+   ₪0 (the ₪400 a contested upper bound) until the day-56 read or a sale exists.
 3. **Ship one tool per SEO page in Hebrew** (title, meta, FAQ, schema.org). The registrar annual-fee page
    (board build #6) is the next one: a deadline calculator and a **free** reminder sign-up that stays disabled
    until 100 weekly views are measured, with the §30א(ג) disclosure at capture and Amendment 13 handling.

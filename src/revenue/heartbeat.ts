@@ -34,7 +34,7 @@ import {
 } from "./ledger.js";
 import { enqueueGoal, feedNextGoal, lineGoalStatus, listQueuedGoals, removeQueuedGoals } from "./goal-queue.js";
 import { renderBoardDirective } from "./org.js";
-import { seedDefaultPortfolio } from "./portfolio.js";
+import { policyForLine, seedDefaultPortfolio } from "./portfolio.js";
 import { allocateBudget, auditDecision, decideLine, describeDecision, experimentsToPause } from "./rules.js";
 import {
   DEFAULT_DECISION_POLICY,
@@ -193,7 +193,7 @@ export function runSupervisorReview(
   for (const line of lines) {
     const metrics = computeLineMetrics(db, line, nowIso);
     const previous = latestReviewForLine(db, line.id, "supervisor");
-    const decision = decideLine(line, metrics, policy, {
+    const decision = decideLine(line, metrics, policyForLine(line.id, policy), {
       previousDecision: previous?.decision ?? null,
       daysSincePreviousDecision: previous ? (nowMs - Date.parse(previous.createdAt)) / DAY_MS : null,
     });
@@ -255,7 +255,7 @@ export function runBoardReview(
     const metrics = computeLineMetrics(db, line, nowIso);
     metricsById.set(line.id, metrics);
     const previous = latestReviewForLine(db, line.id, "supervisor");
-    const decision = decideLine(line, metrics, policy, { previousDecision: previous?.decision ?? null });
+    const decision = decideLine(line, metrics, policyForLine(line.id, policy), { previousDecision: previous?.decision ?? null });
     decisionsById.set(line.id, decision);
     decisions.push(decision);
   }
@@ -437,7 +437,7 @@ export function runAudit(
     const snapshot = review.metrics as unknown as LineMetrics;
     if (typeof snapshot.revenue30dAgorot !== "number") continue;
     const lineAtReview: RevenueLine = { ...line, status: snapshot.status ?? line.status };
-    const recomputed = decideLine(lineAtReview, snapshot, policy, { previousDecision: null });
+    const recomputed = decideLine(lineAtReview, snapshot, policyForLine(lineAtReview.id, policy), { previousDecision: null });
     // A pivot→kill sequence depends on history the auditor does not replay; accept kill after pivot.
     const filed = review.decision;
     const verdict = filed === "kill" && recomputed.decision === "pivot"

@@ -68,9 +68,45 @@ describe("revenue/rules decideLine", () => {
   });
 
   it("kills a live line under the floor after the grace period", () => {
-    const d = decideLine(line(), metrics({ revenue30dAgorot: 10_000, daysSinceLaunch: 50 }));
+    // Fixture target 200_000 → default floor 25% = 50_000. Grace is 90 days from the first shekel
+    // (RULING-2026-09-28-floors.md §8), so the same revenue at day 60 is still inside it.
+    const d = decideLine(line(), metrics({ revenue30dAgorot: 10_000, daysSinceLaunch: 100 }));
     expect(d.decision).toBe("kill");
     expect(d.triggered).toContain("below_kill_floor");
+    expect(decideLine(line(), metrics({ revenue30dAgorot: 10_000, daysSinceLaunch: 60 })).decision).toBe("hold");
+  });
+
+  it("the floor is a fraction of the line's own target and never sits above it", () => {
+    // The 7.9 retarget left a fixed ₪500 floor above three of four targets: a line at its own target was killed.
+    const small = line({ targetMonthlyAgorot: 40_000 });
+    const m = metrics({ revenue30dAgorot: 18_000, daysSinceLaunch: 100, daysSinceLastRevenue: 1 });
+    const half = decideLine(small, m, { ...DEFAULT_DECISION_POLICY, killFloorFraction: 0.5 });
+    expect(half.decision).toBe("kill"); // floor 20_000
+    expect(half.triggered).toContain("below_kill_floor");
+    const quarter = decideLine(small, m, { ...DEFAULT_DECISION_POLICY, killFloorFraction: 0.25 });
+    expect(quarter.decision).not.toBe("kill"); // floor 10_000
+    for (const f of [0.25, 0.5, 1]) {
+      for (const target of [20_000, 30_000, 40_000, 60_000, 200_000]) {
+        const atTarget = metrics({
+          revenue30dAgorot: target, net30dAgorot: target, daysSinceLaunch: 100, daysSinceLastRevenue: 1,
+          targetMonthlyAgorot: target, targetAttainment: 1,
+        });
+        const d = decideLine(line({ targetMonthlyAgorot: target }), atTarget, { ...DEFAULT_DECISION_POLICY, killFloorFraction: f });
+        expect(d.decision, `f=${f} target=${target}`).not.toBe("kill");
+      }
+    }
+  });
+
+  it("a live line with no target escalates until the board sets one", () => {
+    const d = decideLine(line({ targetMonthlyAgorot: 0 }), metrics({ daysSinceLaunch: 100 }));
+    expect(d.decision).toBe("escalate");
+    expect(d.triggered).toContain("target_unset");
+  });
+
+  it("pins the grace and the default floor fraction, and the fixed shekel floor is gone", () => {
+    expect(DEFAULT_DECISION_POLICY.graceDays).toBe(90);
+    expect(DEFAULT_DECISION_POLICY.killFloorFraction).toBe(0.25);
+    expect(DEFAULT_DECISION_POLICY).not.toHaveProperty("killFloorAgorot");
   });
 
   it("does not kill before the grace period", () => {
