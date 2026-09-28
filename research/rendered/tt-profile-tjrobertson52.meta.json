@@ -1,0 +1,17 @@
+{
+  "url": "https://www.tiktok.com/@tjrobertson52",
+  "slug": "tt-profile-tjrobertson52",
+  "fetchedAt": "2026-09-28T21:00:43.914Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 388292,
+  "sha256": "cc30a7845205ee0bb017ca11a6adb6f374507cd9284449b5fa4c9a194d13342a",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-profile-tjrobertson52.html",
+  "textPath": "research/rendered/tt-profile-tjrobertson52.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

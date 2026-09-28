@@ -1,0 +1,334 @@
+How to generate leads for your small business on TikTok | TikTok For Business Blog
+
+Start advertising
+How it works
+
+Setting a budget
+
+Solutions
+Full-funnel solutions
+Overview
+
+Branding
+
+Creative
+
+Performance
+
+Measurement
+
+Commerce
+
+Find your solution
+By industry
+
+Create
+Business tools
+Ads Manager
+
+Business Account
+
+Business Center
+
+TikTok Shop
+
+Creative tools
+TikTok One
+
+Symphony Creative Studio
+
+Creative Exchange
+
+Creative Center
+
+Learn
+Get inspired
+TikTok Insights
+
+Case Studies
+
+Blog
+
+Build skills
+TikTok Academy
+
+Certification
+
+Support
+Marketing Partners
+
+For agencies
+
+Brand Safety
+
+Help Center
+
+Contact Us
+
+Refer
+TikTok Affiliate
+
+Log in Get started
+
+Start advertising
+
+Solutions
+
+Create
+
+Learn
+
+Support
+
+Log in Get started
+
+Home
+What's new
+Blog
+
+Lead generation
+How to generate leads for your small business on TikTok
+September 05, 2024
+
+If you're a small business owner, you probably feel the pain of how costly and time-consuming customer acquisition has become. According to ProfitWell, there has been a 60% increase in customer acquisition costs compared to a few years ago.¹ But good news: TikTok can help.
+
+Meet TikTok Lead Generation , a next-gen solution powered by the new way people discover and connect with businesses. TikTok offers a cost-effective, easy solution to help find people who are interested in hearing from your business and the services it provides. With just a few taps, people can safely share their information with you through a lead generation form. By investing in lead gen on TikTok, you can grow your future customer base and increase your chances of converting leads into customers. See how to turn tuned-in audiences into high-value customers by reading on below.
+
+What is lead generation for business?
+First, let's start with some definitions.
+A lead is someone who is interested in what your business offers
+
+Lead generation is the process of identifying and cultivating potential customers for your business' products or services
+
+Collecting information makes it easier for you to reach your leads directly and convert prospects into customers
+
+On TikTok, lead generation is an advertising objective that lets you cultivate prospects and engage leads for your business
+
+How businesses can use TikTok to find customers
+What types of businesses can generate leads on TikTok? All types of businesses can benefit from lead generation, but service-based, commerce, and education-focused companies typically use this type of advertising to get people interested in the services and products they provide. Some examples of types of companies who can reap the benefits of lead gen are: educational institutions like 2 or 4 year universities, online programs, language schools, academic tutoring; commerce companies like beauty brands, direct-to-consumer (D2C) companies, and clothing brands; and services companies financial advisors, insurance providers, salons, hairstylists, barbers, lawn care and landscaping, housekeeping, house cleaners, personal trainers and gyms, waste management, maintenance services, graphic design, consulting services, marketing, auto mechanic shops, pool servicing, child care, house painting, massage therapy, and more. These are all great examples of business types that can benefit from running lead generation campaigns on TikTok.
+
+How do service businesses use TikTok for lead generation?
+There are tons of ways to use lead generation campaigns for your business. Some examples are:
+Recruit new employees, salespeople, suppliers, and more
+
+Find new business-to-business (B2B) leads for your services
+
+Schedule an appointment or consultation
+
+Sign up for your company newsletter
+
+Collect leads for aggregation
+
+Share business quotes
+
+How do education businesses use TikTok for lead generation?
+Promote course subscriptions
+
+Schedule sessions or campus visits
+
+Recruit teachers or staff
+
+Register for course information
+
+Newsletter opt-in to stay in touch
+
+Register for webinars
+
+How do commerce businesses use TikTok for lead generation?
+Send product samples
+
+Sign up for newsletter and/or loyalty program
+
+Send discount codes and giveaways
+
+Waitlist for sold-out products
+
+Interactive product quiz
+
+How can TikTok help achieve your lead generation goals?
+Capture and manage leads with flexibility using our two form options
+
+1. In-App Instant Form (Native Lead Gen)
+
+For when you want to decrease friction for potential leads and maximize volume. Good for:
+Decreasing user form friction
+
+Building customer/email lists
+
+Instant lead capture
+
+Real-time CRM sync
+
+Surveys with <10 questions
+
+When you go native, business see strong results with TikTok's Lead Generation Ads. For example, 24% see a lower cost per lead (CPL) on TikTok.² That means you can convert more customers with lower costs. Businesses are getting more bang for their buck, with lower CPL and higher conversion rates (compared to using their website landing page).
+
+Or:
+
+2. Your Website Form (Web Lead Generation)
+
+For when you already have a lead form on your website with qualifying logic built in. Good for:
+Boosting traffic to your site
+
+Qualifying leads via your site
+
+More detailed qualifying info/questions (i.e., age, credit score)
+
+When you go this route, you can reap the following benefits:
+Drive traffic & action on your website. Send interested users to your website to take action.
+
+Optimize and grow. Our Pixel can measure events on your website to help improve targeting for users who are more likely to become leads. Learn more about Pixel here .
+
+Use your existing web capabilities. If you have existing integrations, such as CRM, SMS, etc., you can sync your lead data in real-time to drive efficiencies.
+
+For a more detailed look at running a lead generation campaign using your website form, click here .
+
+Get Started: How to set up Lead Generation Ads on TikTok
+First, decide which route from the above you'd like to take: using TikTok's Instant Form (native, in-app), or using your own web form.To set up a lead generation campaign with an Instant Form (native), follow these four easy steps.
+Select objective : Choose the "lead generation" objective in TikTok Ads Manager .
+
+Set up your ad : Select your target audience, bid strategy and upload new creative for your ad. (Optimization Location: Instant Form )
+
+Create your form : This is what your prospects will fill out to give you their information. Be sure you have your privacy policy URL ready to include in the form.
+
+Manage leads : Integrate your CRM directly or manage in the TikTok Leads Center.
+
+For a more detailed step-by-step tutorial on lead generation using instant forms, please visit our Help Center . To set up a lead generation campaign with your own website form , follow these four easy steps.
+Set up Pixel & events : Install Pixel and set up events to track lead gen conversions on your website.
+
+Select objective : Create a new campaign and select the "lead generation" objective.
+
+Set up ad : Select your target audience, bid strategy, and upload creative for your ad. (Optimization Location: Website )
+
+Choose destination page : Input the landing page with your lead generation form.
+
+For a more detailed step-by-step tutorial on lead generation using your own website form, please visit our Help Center .
+
+Find success: Tips for optimizing and scaling your lead generation campaign
+
+The Learning Phase
+
+Once your lead generation campaign is running, it'll enter the Learning Phase.
+
+This phase is training the system to find the best audience for your ad. It lasts until you reach 20+ conversions within 5 days after the campaign starts.
+
+During this time, don't be alarmed if your performance and cost per lead (CPL) fluctuate. It's best to avoid making too many changes during the Learning Phase.
+
+Learn more about the Learning Phase here .
+
+Optimizing Your Campaign
+Once the Learning Phase is complete, try these tips to boost your ad performance.
+
+🔮 Creative: 3-5 is the magic number. When building your ad groups, add around 3-5 creatives within the group. Too few ads (1) will limit the ad delivery of the ad group and too many (10) will limit the exploration of the ads. Once creative fatigue begins to occur (which tends to occur after 5-7 days), we recommend uploading new creatives to refresh your ad group. Learn more in our Creative Center .
+
+🎯 Targeting: Make things easier with broad targeting settings. Automatically and dynamically optimize your targeting delivery settings according to your objective, ad delivery, content of your ads, past campaign data, and more.
+
+🙋♀️ Audience: Keep an eye on your data and create audiences based on the top performing segments across age, interests, locations, etc.
+
+📈 Testing: We offer simple A/B testing, so you can see which of your ads perform best among your audience. Learn more .
+
+💰Budget:
+Set your budget @ 10x your expected CPA (or 20x if you're a financial services company). As you’re getting started, use a Lowest Cost bidding strategy with a daily budget set at 10x your expected CPL.
+
+To best scale your spend, increase your budget at a maximum of 50% per day. If you're looking to increase your budget by more than that, increase your budget over the course of a few days.
+
+Optimize your total spend with Campaign Budget Optimization . If you're working with multiple ad groups in your campaign, we recommend using Campaign Budget Optimization to easily and automatically optimize your overall spend. Learn more on budget best practices here .
+
+Spark Ads
+Spark Ads allow you to add a boost to your own content, or a creator's organic or branded content that they've posted. This is an easy way to partner with creators and make ads that feel organic. When combined with Lead Generation, you can drive higher lead submission rates by boosting TikTok creators' original content .
+
+Lookalike Audiences
+Looking for more leads? You can use lookalike audiences to target users that share similar characteristics with your best customers. In order to do this, you will need to build a custom audience as your source audience. This can be built from ad engagement or web traffic (from your pixel). Learn more about lookalike audiences here .
+
+Start finding new leads today
+TikTok gives your small businesses an opportunity to generate leads and grow your customer base. By leveraging our engaged audience and lead generation features, you can drive traffic to your website, capture leads through our native form or your own website form, and optimize your campaigns for better results. Whether you're in the service industry, education sector, retail, or e-commerce, TikTok can help you attract new customers and achieve your lead generation goals.
+
+Get started today!
+Or for a deeper dive into lead generation, take our new TikTok Academy course .
+
+Sources:
+[1] ProfitWell: How is CAC Changing Over Time? 2019
+[2] TikTok Internal Analysis
+
+Start advertising
+
+How it works Setting a budget
+
+Solutions
+
+Full-funnel solutions
+
+Overview Branding Creative Performance Measurement Commerce
+
+Find your solution
+
+By industry
+
+Create
+
+Business tools
+
+Ads Manager Business Account Business Center TikTok Shop
+
+Creative tools
+
+TikTok One Symphony Creative Studio Creative Exchange Creative Center
+
+Learn
+
+Get inspired
+
+TikTok Insights Case Studies Blog
+
+Build skills
+
+TikTok Academy Certification
+
+Support
+
+Marketing Partners For agencies Brand Safety Help Center Contact Us
+
+Refer
+
+TikTok Affiliate
+
+English - United States
+
+简体中文
+English - Global
+English - United States
+English - United Kingdom
+English - Singapore
+English - Malaysia
+English - Australia
+English - Canada
+日本語
+Français
+Deutsch
+Español
+Italiano
+한국어
+Türkçe
+Русский
+ภาษาไทย
+Tiếng Việt
+Bahasa Indonesia
+العربية
+Português - Brasil
+Español - Latinoamérica
+Español - México
+עברית
+Polski
+Română
+yкраїнська
+suomi
+Magyar
+Norsk (bokmål)
+Dansk
+Čeština
+Português - Portugual
+Nederlands
+Nordics
+Afrikaans
+
+© 2026 Terms & policies Privacy TikTok.com

@@ -1,0 +1,17 @@
+{
+  "url": "https://www.youtube.com/watch?v=TXHR-Tf0pkM",
+  "slug": "tt-src-youtube-com-watch-v-txhr-tf0pkm",
+  "fetchedAt": "2026-09-28T21:02:15.237Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 1245971,
+  "sha256": "23c235aa868f1ae3f2941c588cb8aec2dbe634776cbfeabd42c45bd407458539",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-src-youtube-com-watch-v-txhr-tf0pkm.html",
+  "textPath": "research/rendered/tt-src-youtube-com-watch-v-txhr-tf0pkm.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

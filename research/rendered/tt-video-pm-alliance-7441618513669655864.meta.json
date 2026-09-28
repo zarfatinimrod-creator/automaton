@@ -1,0 +1,17 @@
+{
+  "url": "https://www.tiktok.com/@pm_alliance/video/7441618513669655864",
+  "slug": "tt-video-pm-alliance-7441618513669655864",
+  "fetchedAt": "2026-09-28T21:03:01.535Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 391179,
+  "sha256": "3288378708bd2813813f9940eb1e496cc9ceabf43a52f0b16452f3ce756879eb",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-video-pm-alliance-7441618513669655864.html",
+  "textPath": "research/rendered/tt-video-pm-alliance-7441618513669655864.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

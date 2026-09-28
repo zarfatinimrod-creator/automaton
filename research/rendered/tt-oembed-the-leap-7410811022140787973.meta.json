@@ -1,0 +1,17 @@
+{
+  "url": "https://www.tiktok.com/oembed?url=https://www.tiktok.com/@the.leap/video/7410811022140787973",
+  "slug": "tt-oembed-the-leap-7410811022140787973",
+  "fetchedAt": "2026-09-28T21:01:43.127Z",
+  "status": 200,
+  "contentType": "application/json; charset=utf-8",
+  "byteLength": 2324,
+  "sha256": "4e116ff8759212cffec0f59e55b383d26d994ebc654eac3013fb76c8b67c9670",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-oembed-the-leap-7410811022140787973.json",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

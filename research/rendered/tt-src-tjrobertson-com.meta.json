@@ -1,0 +1,17 @@
+{
+  "url": "https://tjrobertson.com/",
+  "slug": "tt-src-tjrobertson-com",
+  "fetchedAt": "2026-09-28T21:00:59.752Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 137572,
+  "sha256": "73b766af76468e624dd877f8cf88f333f00da25cdd13feacfc8d9e774939e7e7",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-src-tjrobertson-com.html",
+  "textPath": "research/rendered/tt-src-tjrobertson-com.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

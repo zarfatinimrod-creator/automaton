@@ -1,0 +1,17 @@
+{
+  "url": "https://www.tiktok.com/@michael_danilovv/video/7311263185841982721",
+  "slug": "tt-video-michael-danilovv-7311263185841982721",
+  "fetchedAt": "2026-09-28T21:01:56.441Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 391356,
+  "sha256": "201f433eaf6dde6dba4f06d6530557c16aa98c84c786851a6db0a913d365830f",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-video-michael-danilovv-7311263185841982721.html",
+  "textPath": "research/rendered/tt-video-michael-danilovv-7311263185841982721.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

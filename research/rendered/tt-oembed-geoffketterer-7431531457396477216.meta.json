@@ -1,0 +1,17 @@
+{
+  "url": "https://www.tiktok.com/oembed?url=https://www.tiktok.com/@geoffketterer/video/7431531457396477216",
+  "slug": "tt-oembed-geoffketterer-7431531457396477216",
+  "fetchedAt": "2026-09-28T21:01:31.533Z",
+  "status": 200,
+  "contentType": "application/json; charset=utf-8",
+  "byteLength": 2088,
+  "sha256": "9e199d8bd9123220791df92babcf8d59fd3537d54a8dd096f6846e2d97b24d66",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-oembed-geoffketterer-7431531457396477216.json",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

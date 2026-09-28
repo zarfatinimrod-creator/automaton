@@ -1,0 +1,17 @@
+{
+  "url": "https://tjrobertson.com/what-ai-knows-about-your-business/",
+  "slug": "tt-src-tjrobertson-com-what-ai-knows-about-your-business",
+  "fetchedAt": "2026-09-28T21:01:38.272Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 107541,
+  "sha256": "8f77d8a87e86b72ad44ecf75e08afeda829b07676f84d0e7e1bb1e6c7baaa36e",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-src-tjrobertson-com-what-ai-knows-about-your-business.html",
+  "textPath": "research/rendered/tt-src-tjrobertson-com-what-ai-knows-about-your-business.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

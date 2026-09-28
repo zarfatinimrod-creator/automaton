@@ -1,0 +1,17 @@
+{
+  "url": "https://www.tiktok.com/discover/%D7%A9%D7%99%D7%95%D7%95%D7%A7%C2%A0%D7%A2%D7%A1%D7%A7%D7%99%D7%9D%C2%A0%D7%95%D7%99%D7%97%D7%A1%D7%99%C2%A0%D7%A6%D7%99%D7%91%D7%95%D7%A8",
+  "slug": "tt-src-tiktok-com-discover",
+  "fetchedAt": "2026-09-28T21:02:07.511Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 366030,
+  "sha256": "135e48b6761af3602c7c9a1785ab62089a1e63c2f9c23f0c699c25cf6167d610",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-src-tiktok-com-discover.html",
+  "textPath": "research/rendered/tt-src-tiktok-com-discover.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
