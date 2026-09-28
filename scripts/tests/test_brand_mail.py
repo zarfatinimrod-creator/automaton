@@ -28,7 +28,7 @@ UTC = dt.timezone.utc
 NOW = dt.datetime(2026, 10, 20, 12, 0, 0, tzinfo=UTC)
 BRAND = "mehudak@gmail.com"
 PASSWORD = "abcd efgh ijkl mnop"
-PERSONAL = "somebody.private@gmail.com"
+PERSONAL = "owner.personal@example.org"  # a stand-in for any non-brand address
 REAL_QUESTIONS = os.path.join(REPO_ROOT, "research", "owner-asks", "questions.json")
 FIRST_ID = "<first-crazygames@gmail.com>"
 
@@ -256,14 +256,14 @@ class ConfigurationTests(Harness):
         code, out, err = self.run_cli("send", "--venue", "crazygames", "--really-send",
                                       env=dict(env, GITHUB_REF="refs/heads/main"))
         self.assertEqual(code, 2)
-        self.assertNotIn("somebody", out + err)
+        self.assertNotIn("owner.personal", out + err)
         self.assertNotIn(PASSWORD, out + err)
         self.assertEqual(FakeSMTP.instances, [])
 
     def test_a_personal_address_is_refused_for_probe(self):
         code, out, err = self.run_cli("probe", env={"BRAND_MAIL_ADDRESS": PERSONAL, "BRAND_MAIL_APP_PASSWORD": PASSWORD})
         self.assertEqual(code, 2)
-        self.assertNotIn("somebody", out + err)
+        self.assertNotIn("owner.personal", out + err)
 
     def test_brand_address_rule(self):
         for ok in ["mehudak@gmail.com", "Mehudak.IL@gmail.com", "mehudak+a11y@gmail.com", "mehudak.app@outlook.com"]:
@@ -404,7 +404,7 @@ class SendTests(Harness):
     def reply_inbox(self, count):
         return {
             "INBOX": [fake_message(NOW - dt.timedelta(days=3), In_Reply_To=FIRST_ID, Subject="Re: q",
-                                   Message_ID="<r%d@crazygames.com>" % i, From="Staff Person <staff@crazygames.com>")
+                                   Message_ID="<r%d@crazygames.com>" % i, From="Venue Desk <desk@venue.example>")
                       for i in range(count)],
             "[Gmail]/Sent Mail": [],
         }
@@ -414,7 +414,7 @@ class SendTests(Harness):
         code, out, err = self.run_cli("send", "--venue", "crazygames", imap=imap_factory_for(self.reply_inbox(1)))
         self.assertEqual(code, 2)
         self.assertIn("reply", err)
-        self.assertNotIn("staff", (out + err).lower())
+        self.assertNotIn("desk", (out + err).lower())
 
     def test_follow_up_allowed_when_every_reply_was_read_and_recorded_not_answered(self):
         self.write_sent([self.first_record(days_ago=10)],
@@ -483,17 +483,17 @@ def gmail_fixture():
     return {
         "INBOX": [
             # 1: a staff reply to the CrazyGames question; unseen.
-            fake_message(NOW - dt.timedelta(days=2), seen=False, From="Jane Staffer <jane.staffer@crazygames.com>",
+            fake_message(NOW - dt.timedelta(days=2), seen=False, From="Sender Alpha <alpha@venue.example>",
                          To=BRAND, Subject="Re: Question: automated submission", Message_ID="<rep1@crazygames.com>",
                          In_Reply_To=FIRST_ID, References=FIRST_ID),
             # 2: accessibility mail to the plus-address, 10 days old, never answered.
-            fake_message(old, From="Private Person <pp@example.org>", To="mehudak+accessibility@gmail.com",
+            fake_message(old, From="Sender Bravo <bravo@example.org>", To="mehudak+accessibility@gmail.com",
                          Subject="שאלה", Message_ID="<a11y-1@example.org>"),
             # 3: accessibility mail recognised by its Hebrew subject, 9 days old, answered from Sent.
-            fake_message(NOW - dt.timedelta(days=9), From="Another Person <ap@example.org>", To=BRAND,
+            fake_message(NOW - dt.timedelta(days=9), From="Sender Charlie <charlie@example.org>", To=BRAND,
                          Subject="בעיית נגישות באתר", Message_ID="<a11y-2@example.org>"),
             # 4: accessibility mail recognised by its English subject, 2 days old, unanswered.
-            fake_message(NOW - dt.timedelta(days=2), From="Third Person <tp@example.org>", To=BRAND,
+            fake_message(NOW - dt.timedelta(days=2), From="Sender Delta <delta@example.org>", To=BRAND,
                          Subject="Accessibility problem on the VAT page", Message_ID="<a11y-3@example.org>"),
             # 5: a newsletter; unseen; nothing to do with anything.
             fake_message(NOW - dt.timedelta(days=1), seen=False, From="News <news@example.org>", To=BRAND,
@@ -502,15 +502,16 @@ def gmail_fixture():
         "[Gmail]/Sent Mail": [
             fake_message(NOW - dt.timedelta(days=12), From=BRAND, To="technical-support@crazygames.com",
                          Subject="Question", Message_ID=FIRST_ID),
-            fake_message(NOW - dt.timedelta(days=8), From=BRAND, To="ap@example.org", Subject="Re: accessibility",
+            fake_message(NOW - dt.timedelta(days=8), From=BRAND, To="charlie@example.org", Subject="Re: accessibility",
                          Message_ID="<ans@gmail.com>", In_Reply_To="<a11y-2@example.org>",
                          References="<a11y-2@example.org>"),
         ],
     }
 
 
-LEAKS = ["Jane", "jane", "Staffer", "Private", "Person", "pp@", "ap@", "tp@", "example.org", "crazygames.com",
-         "BODY-SECRET", "Weekly", "digest", "נגישות", "שאלה", "Accessibility problem", "Re:", "news@", PASSWORD]
+LEAKS = ["Sender", "Alpha", "alpha@", "Bravo", "bravo@", "Charlie", "charlie@", "Delta", "delta@", "example.org", "venue.example",
+         "crazygames.com", "rep1@", "a11y-1@", "BODY-SECRET", "Weekly", "digest", "נגישות", "שאלה", "Accessibility problem", "Re:",
+         "news@", PASSWORD]
 
 
 class ProbeTests(Harness):

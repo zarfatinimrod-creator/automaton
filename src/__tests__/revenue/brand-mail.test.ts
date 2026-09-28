@@ -122,14 +122,14 @@ describe("readBrandMailProbe — state/colony/brand-mail.json → one report lin
   });
 
   it("never prints a string from the file: a leaked sender or subject makes it invalid, and is not echoed", () => {
-    write(reading({ repliesByVenue: { "jane.staffer@crazygames.com": 1 } }));
+    write(reading({ repliesByVenue: { "alpha@venue.example": 1 } }));
     const bad = readBrandMailProbe(file, T0);
     expect(bad.status).toBe("invalid");
-    write(reading({ from: "Jane Staffer <jane.staffer@crazygames.com>", subject: "Re: Question" }));
+    write(reading({ from: "Sender Alpha <alpha@venue.example>", subject: "Re: Question" }));
     const extra = readBrandMailProbe(file, T0);
     for (const r of [bad, extra]) {
       const printed = [r.line ?? "", ...r.blockers].join("\n");
-      expect(printed).not.toMatch(/jane|Staffer|Re: Question/i);
+      expect(printed).not.toMatch(/alpha|Sender|venue\.example|Re: Question/i);
     }
   });
 });
