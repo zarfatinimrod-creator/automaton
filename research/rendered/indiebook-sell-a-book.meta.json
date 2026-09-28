@@ -1,0 +1,17 @@
+{
+  "url": "https://indiebook.co.il/41/%D7%90%D7%99%D7%9A-%D7%9C%D7%9E%D7%9B%D7%95%D7%A8-%D7%A1%D7%A4%D7%A8-%D7%91%D7%90%D7%AA%D7%A8",
+  "slug": "indiebook-sell-a-book",
+  "fetchedAt": "2026-09-28T19:17:17.858Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 540792,
+  "sha256": "15291f93aa10341460c3c2ccfba74835fa44aca027c98fec590e9c75ac6b8164",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/indiebook-sell-a-book.html",
+  "textPath": "research/rendered/indiebook-sell-a-book.txt",
+  "changed": true,
+  "firstFetch": false,
+  "previousSha256": "c5d886d0776efd03918135ba422e9a56236f11db00cfc47707fc550582580b2a",
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

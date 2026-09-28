@@ -1,17 +1,17 @@
 {
   "url": "https://community.n8n.io/t/requirements-for-becoming-a-verified-creator/134401",
   "slug": "n8n-verified-creator-requirements",
-  "fetchedAt": "2026-09-28T17:19:23.769Z",
+  "fetchedAt": "2026-09-28T19:16:33.093Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 284387,
-  "sha256": "ae29fe4089852f24a49025d6d1dadd395a2c96915f6ce3cbbf03a7390e8aeacc",
+  "sha256": "9b593546de9255189bfee94b2e797dcf6ff8dddf25b206134264bb49bfc40dec",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/n8n-verified-creator-requirements.html",
   "textPath": "research/rendered/n8n-verified-creator-requirements.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "f256ab2102663e310b33162945b118ad65611f93c6c45ad538e34e4d72bcf6d7",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

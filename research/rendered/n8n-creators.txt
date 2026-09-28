@@ -59,7 +59,7 @@ Support
 Enterprise
 Pricing
 
-206,205 Sign in Get Started
+206,213 Sign in Get Started
 
 See llms.txt for all machine-readable content.
 
@@ -72,11 +72,11 @@ Rahul Joshi
 
 Oneclick AI Squad
 
-327 workflow templates
+331 workflow templates
 
 WeblineIndia
 
-325 workflow templates
+328 workflow templates
 
 David Ashby
 

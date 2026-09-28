@@ -1,0 +1,17 @@
+{
+  "url": "https://docs.y8.com/studio/studio/",
+  "slug": "y8-docs-studio",
+  "fetchedAt": "2026-09-28T18:36:17.040Z",
+  "status": 200,
+  "contentType": "text/html",
+  "byteLength": 25308,
+  "sha256": "db46f61915e33a609b89021619f40ef4d5911a1d633508f7eab5b66a255e6581",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/y8-docs-studio.html",
+  "textPath": "research/rendered/y8-docs-studio.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

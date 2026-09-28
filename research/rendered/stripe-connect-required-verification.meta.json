@@ -1,11 +1,11 @@
 {
   "url": "https://docs.stripe.com/connect/required-verification-information",
   "slug": "stripe-connect-required-verification",
-  "fetchedAt": "2026-09-28T17:17:55.400Z",
+  "fetchedAt": "2026-09-28T19:15:24.207Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 1067857,
-  "sha256": "fd70a79bb7b84bcd348e22b0af87304a5c5f1582fa2bb4c2ea34859bf01f53a7",
+  "byteLength": 1066857,
+  "sha256": "7dbcbbb9678e4ea5b44e8897296c63060a91f9cef1c6ecd5f9bf4ee2b8b4186a",
   "truncated": false,
   "redacted": 65,
   "error": null,
@@ -13,6 +13,6 @@
   "textPath": "research/rendered/stripe-connect-required-verification.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "e82cb1d84deddd32f4e55e369b535ef02173e8db3fcf44f9f0c67d6a540d9fe3",
+  "previousSha256": "f6608aef7500dbc5e75165794728d3cd99366abf83bb9dfc180c76f7ada16f39",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -1,8 +1,159 @@
 Software to create Watch Faces here on Facer - General - Facer Community
 
-= 40rem)" rel="stylesheet" data-target="chat_desktop" />
-= 40rem)" rel="stylesheet" data-target="discourse-gamification_desktop" />
-= 40rem)" rel="stylesheet" data-target="discourse-reactions_desktop" />
-= 40rem)" rel="stylesheet" data-target="poll_desktop" />
+Facer Community
 
-= 40rem)" rel="stylesheet" data-target="desktop_theme" data-theme-id="-2" data-theme-name="horizon"/>
+Software to create Watch Faces here on Facer
+
+General
+
+thosais
+
+August 6, 2023, 11:42pm
+
+1
+
+Hello everyone.
+
+I’ve been here on Facer for 2 days and I have a question that has probably been asked a number of times, but I couldn’t find it when I searched.
+
+I’ve been using Samsung’s “Watch Face Studio” software for Wear OS 3 for a few years now and I put my watch faces on Google.
+
+Now it’s time, as I think the Facer platform is more beneficial, to get involved here.
+
+Now to my real question:
+
+The Facer Creator Pro is a fine thing. Is it the only way to create my Watch Faces and upload them here to Facer? Or is there other software that can do this?
+
+Thanks in advance for your assistance.
+
+1 Like
+
+icrltd4
+
+August 7, 2023, 12:13am
+
+2
+
+Welcome to the Community, THE best Smartwatch Face Creating Community there is right now, with lots of friendly) helpful people, free resources to download and use as you want, and loads to learn too.
+
+The answer to your question is simple, as yes, the Facer Creator is the only way to make Facer Faces, but it’s also the best.
+
+Hope you have lots of fun here, and please feel free to ask whatever you want…we don’t bite
+
+4 Likes
+
+tom.vannes
+
+August 7, 2023, 4:37am
+
+3
+
+Hi and welcome.
+
+You can either use the Facer software or create watch faces via Browser without the need to download the software. The PRO subscription allows you to do more, such as stop watches and a few things more. To get started, you do not need PRO. Also very valuable is this community and that some folks have opened up their designs for inspection (the little rocket you can see below next to the watch face). This will allow you to see how the designer has created the watch face.
+
+Screenshot 2023-08-07 at 06.32.54 484×620 123 KB
+
+You can check out my inspectable watch faces here .
+
+6 Likes
+
+russellcresser
+
+August 7, 2023, 7:50am
+
+4
+
+Welcome @thosais . I found the Downloadable version of Facer a Bit of Bloatware and your work is still saved to the Cloud .As the other guys have Recommended use the Web Base UI . Interesting you coming to have a Look here . Many are moving the Other way .
+
+1 Like
+
+petruuccios
+
+August 7, 2023, 10:12am
+
+5
+
+Hello and welcome. As Tom already mentioned, you do not need PRO subscription to publish faces in general. It is needed to use some features of faces, which are then reserved for the author and premium users. I think also the promo media area is available only to pro subscribers, no matter whether the face uses the pro features or not. I simply like to play with some of these features like stopwatch so much, that I bought me yearly subscription.
+
+image 1076×695 95.9 KB
+
+These are the extras:
+
+image 686×384 21.1 KB
+
+Another thing is the probability of becoming a partner to be allowed to get some share of the profit. There are some criteria like numbers of syncs which are easier to reach if your faces get featured and among those featured are mostly the premium faces…
+
+6 Likes
+
+christianfernandes38
+
+August 8, 2023, 12:43am
+
+6
+
+Oi amigo,
+
+Pode me explicar como é o uso dessas imagens da lateral esquerda?
+
+Vejo o uso de uma espécie de códigos mas, não compreendo as essas funções e, nem os códigos utilizados…
+
+Eu assinei o Face Creator mas, não sei o preço da renovação do mesmo.
+
+Hey friend,
+
+Can you explain to me how to use these images on the left side?
+
+I see the use of some kind of codes, but I don’t understand those functions, nor the codes used…
+
+I subscribed to Face Creator but I don’t know the price for renewing it.
+
+petruuccios
+
+August 8, 2023, 5:09am
+
+8
+
+christianfernandes38:
+
+I subscribed to Face Creator but I don’t know the price for renewing it.
+
+Depends which option did you pick 6/month or 50/year. I used the yearly option.
+
+image 1045×215 20.3 KB
+
+christianfernandes38:
+
+Can you explain to me how to use these images on the left side?
+
+If you mean the customizable complications , those should work as place holders for data from other apps on watch which can be picked by user. Sorry, cant explain more, I do not use them, they do not work well on my watch (gear S3).
+
+3 Likes
+
+christianfernandes38
+
+August 8, 2023, 2:57pm
+
+9
+
+Obrigado amigo,
+
+Minha intenção era mesmo saber se o uso era obrigatório para alguma função…mas, se não é melhor ainda!!!
+
+Thank you friend,
+
+My intention was really to know if the use was mandatory for some function…but, if not, it’s even better!!!
+
+1 Like
+
+Home
+
+Categories
+
+Guidelines
+
+Terms of Service
+
+Privacy Policy
+
+Powered by Discourse , best viewed with JavaScript enabled

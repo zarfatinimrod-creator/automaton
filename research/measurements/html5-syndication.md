@@ -14,6 +14,15 @@ replenish premise. The owner's own AdSense account is not the only route. It is 
 an invoice for each payout. Whether a runner-issued invoice after step 2 counts as "owner paperwork" is the open
 `research/breadth/BOARD.md:78` ruling, and it belongs to the board, not to this note. **Recommendation:** record Y8 as
 KILL-(a) unless that ruling accepts a runner-issued invoice. In that case, PARK Y8 behind CrazyGames.
+**Tick 8 (`y8-docs-studio`): (a) still fires as worded, and nothing new weakens it.** docs.y8.com has no payments
+page. The revshare wording (:393, :397) reads as an invoice we submit and Y8 accepts, not one the portal issues. That
+is UNKNOWN at rendered grade. G7 leans PASS: the studio form's public field is "Studio Name", and the form has no
+legal-name field. No camera, ID or fee step is named. The 29.9 sitting decides two things: the `BOARD.md:78` invoice
+ruling (KILL or PARK), and the shared portal ruling for (d).
+**Tick 8 (second render) (`y8-docs-overview`): (a) still fires as worded. The public docs are exhausted.** The overview names the
+portal's per-game tabs (SDK Initialization, leaderboards, achievements, QA checks, review status). It names no payments
+or invoice screen. It also says the docs "deliberately" do not mirror the portal. So whatever invoice form exists sits
+behind the login, and (a) is for the 29.9 sitting alone. No new kill fires. No further render is named.
 
 **G2, payout routes (kill a).**
 - [RENDERED] There are two routes, and only two. y8-revshare.txt:385: "Under the Y8 Managed Partnership (YMP) , Y8 manages the ads and pays the developer." Same line: "Y8 Managed Partnership (YMP) is available when a game is approved, while AFP is available only to eligible developers."
@@ -67,6 +76,16 @@ invoice, and whether the brand can be the only public name.
 dashboard ad-watch that would make that request a human act is still sourced only at github grade (REPLENISH:215). The
 money mechanics are better than Y8's: GameDistribution self-bills, so no developer invoice is needed. The share is lower
 (33%), and the payout rail is unread.
+**Tick 8 (`gamedistribution-sdk-implementation`): the lean to KILL is withdrawn. Status is NEEDS_MORE.** The ad-watch
+and the publish request are official steps, now at rendered grade. The page is GameDistribution's own wiki, and today's
+guidelines link to it, but it was last edited 2021-12-09. The activation ad is a demo "fake advertisement", so tick 7's
+invalid-traffic reason for a human watch falls. No upload API is named. `:183` fires only if the 29.9 sitting rules
+that portal-only steps are human steps.
+**Tick 8 (second render) (`gamedistribution-wiki-faq`): NEEDS_MORE, unchanged. The public pages this runner can read are exhausted.**
+The FAQ was last edited 2018-04-16. It lifts two lines to rendered grade: the ad-watch "only possible from the page
+within your Gamedistribution.com control panel", and the "designated button" for the publish request. It names no
+payout rail, country, identity or camera step, and no upload API. The partnership page now returns 200, but like the
+payment FAQ it is an empty client-side shell. `:183` still turns only on the portal ruling. No further render is named.
 
 **G1, fees.** [RENDERED] No developer fee is named. Revenue is counted net of costs. gamedistribution-developer-terms.txt:45:
 "Ads less: (i) In-Game Ads and Hosting costs;" plus invalid-traffic deductions. [INFERENCE] That comes out of revenue, so it
@@ -117,3 +136,100 @@ empty shell.
 Y8's own terms of service (no capture links them; the cookie banner links only the privacy and cookie policies), any logged-in
 portal page, PayPal fees, and GameDistribution's partnership page (502). Nothing was fetched in this pass. Every claim rests on
 the stored captures listed above.
+
+## Tick 8 reading (28.9.2026): the Y8 studio docs and the GameDistribution SDK wiki
+
+**Captures.** `research/rendered/y8-docs-studio.{txt,html}` (200, 132 text lines, `https://docs.y8.com/studio/studio/`,
+fetched 2026-09-28T18:36:17Z). `research/rendered/gamedistribution-sdk-implementation.{txt,html}` (200, 592 text lines,
+`https://github.com/GameDistribution/GD-HTML5/wiki/SDK-Implementation/`, fetched 2026-09-28T18:36:18Z). Both are first
+fetches (`*.meta.json`). Nothing was fetched in this pass. Every quote below was checked with `grep -n -F`.
+
+### Y8: kill (a) still fires as worded. The studio page clears the public name and names no camera step and no fee.
+
+- **The invoice is not documented anywhere on docs.y8.com.** [RENDERED] The studio page never mentions an invoice, PayPal, a bank, tax, a country or a legal name. `grep -n -i` finds only the nav item "Verifying Players" (y8-docs-studio.txt:47), which links to the SDK's check on players (`../../sdk/backend-verification/`, y8-docs-studio.html:703). The site's whole nav is short: Home, Platforms, a four-page Developer Portal section, 13 SDK pages and Best Practices (:990). The four portal pages are Overview, Studio, Create Game and SDK Initialization (html:356, :411, :481, :509). None is about payments. So the only rendered words on the invoice are still y8-revshare.txt:393 and :397.
+- **What those words say, read again.** [RENDERED] y8-revshare.txt:393: "You need a valid invoice to receive payments directly from Y8. You are responsible for checking that your legal, tax, bank, and payment details are correct." :397: "after accepting a complete and valid invoice". :401: "You can check your payment status in the Developer Portal." [INFERENCE] Y8 *accepts* the invoice, and the developer answers for its legal and tax details. That describes a document we submit. It is not a self-billed credit note like GameDistribution's (gamedistribution-developer-terms.txt:187: "Distributor sends a credit invoice to the Developer"). Whether the portal offers a form or a template for it is UNKNOWN. Either way, there is one per payout. **Answer:** UNKNOWN at rendered grade, leaning towards a separate invoice we issue each time.
+- **Public name leans PASS.** [RENDERED] y8-docs-studio.txt:81: "A Studio represents you as a developer on Y8. Every game belongs to one, so this". :85: "You do not need to be a registered company. A solo developer is a studio." The form asks for five fields: Logo, Studio Name, About, Website and Social links (:96-114). The name field is "The name shown for your studio on Y8." (:102). There is no legal-name field on the form. [INFERENCE] The public sees a studio called Mehudak / מהודק. The legal name sits in the payment details (revshare:393), and no capture says those are shown. Whether the account holder's own profile shows a name is still UNKNOWN.
+- **No identity or camera step is named.** [RENDERED] The studio form has no ID, country, tax or photo field (y8-docs-studio.txt:92-114). `grep -c -i -E 'selfie|camera|webcam|liveness|passport|identity document|photo id'` returns 0 in each of the five Y8 texts. [INFERENCE] The "legal, tax, bank" details (revshare:393) imply that the payee is checked at payout, and that form is unread. So no camera step appears in anything read, but none is excluded either.
+- **Per game.** [RENDERED] The studio is set up once ("is the first thing to set up", y8-docs-studio.txt:82). Every game then goes under it: "Create a game under your new studio." (:122). The page names no fee (`grep -i -E 'fee|price|cost'` finds nothing) and has no AI line. The per-game form is on the "Create Game" page, which has not been captured. Nothing here adds a human step beyond the portal question already open (Create Game, SDK requirements and review; see tick 7).
+
+**Kills after tick 8 (Y8).**
+- (a) **FIRES as worded, on rendered facts** (revshare:385, :393, :397). Tick 8 finds nothing that weakens it. **For the 29.9 sitting:** does an invoice the colony issues after step 2, once per payout, count as owner paperwork (`research/breadth/BOARD.md:78`)? If yes, KILL Y8. If no, PARK Y8 behind CrazyGames.
+- (b) NOT MET. None of the five Y8 pages names a fee.
+- (c) NOT MET.
+- (d) does **not** fire on a rendered fact. Y8 needs no messenger: game questions go through the portal's Feedback tab and everything else by email ("Use the game’s Feedback tab for game review questions.", revshare:437). Payout is PayPal or bank, not USDT. Israel is UNKNOWN. The per-game portal steps wait on the same portal ruling as GameDistribution (below).
+
+**Next check (Y8):** render `https://docs.y8.com/studio/overview/`. This is the "Overview" link at y8-docs-studio.html:18
+(`<link rel="prev" href="../overview/">`), resolved against the canonical `https://docs.y8.com/studio/studio/` at :15.
+Suggested slug `y8-docs-overview`. It is the last unrendered page in the portal section that could name a payments or
+invoice screen. Grep it for invoice, payment, payout, revenue, legal, tax, verif, id.net and API. If it is silent, the
+invoice form sits behind a login and (a) is for the sitting alone. The sitting's ruling on (a) does not wait for this render.
+
+### GameDistribution: both per-game steps are official, the ad is a demo ad, and `:183` now turns only on the portal ruling
+
+- **Official and linked as current, but dated 2021.** [RENDERED] The page sits in GameDistribution's own repository ("GameDistribution" / "GD-HTML5", gamedistribution-sdk-implementation.txt:100-104). Today's guidelines send developers to it: gamedistribution-guidelines.txt:152 has "Y ou can find t he implementation guide f or our SDK and our r ules r egar ding ads . her e", and the link target is `https://github.com/GameDistribution/GD-HTML5/wiki/SDK-Implementation/` (gamedistribution-guidelines.html:719). The terms make those instructions binding. gamedistribution-developer-terms.txt:141-142: "implement the SDK in the Games as instructed by the Distributor; failure" / "to do this will result in a denied request for publishing;". The last edit is old: "[name removed] edited this page Dec 9, 2021" (the quoted part, "edited this page Dec 9, 2021", is at gamedistribution-sdk-implementation.txt:154; the html has `datetime="2021-12-09T11:16:54Z"` at :713). [INFERENCE] These are the current official instructions, adopted by reference. Whether today's admin still works this way is UNKNOWN without a login.
+- **The per-game chain, now at rendered grade.** [RENDERED] Upload: "To activate your SDK integration you will need to upload your game first ( https://developer.gamedistribution.com/ )" (:263). The iframe: "the upload view within this admin. Here you'll also find a button to open your game within an iframe. Click this button." (:265). The ad watch: "You must completely view your new in-game pre-roll advertisement once, from within this iframe. Doing this will activate and verify the integration." (:267). Publishing: "Your game will be flagged to have a valid integration of the SDK and your game can be requested for publishing." (:269). The wait: "This can currently take up to two weeks." (:281). The game ID comes from the same admin, "which you can retrieve from your Gamedistribution.com control panel" (:201), and is "unique for each one of your games" (:301). Then comes the review queue of up to a week (tick 7, guidelines:37-38). [INFERENCE] That makes five portal acts per game: upload, open the iframe, watch the ad, copy the game ID and request publishing. Then comes a wait of up to three weeks.
+- **The ad is a demo ad, not a paid one. This corrects tick 7.** [RENDERED] :275: "A demo VAST tag for calling a fake advertisement is already enabled, so you only have to click the "showBanner" button, in order to request an advertisement." :281: "Make sure you completely watch the fake advertisement. Once the CONTENT_RESUME_REQUESTED event is triggered - without cancelling the advertisement - your game its SDK implementation will be approved." [INFERENCE] Tick 7 argued that a runner playing a real ad would create invalid traffic, so only a person could do the watch. The ad is fake, so no billable impression is created, and that argument falls. The other acts are "Click this button" (:265) and "Make sure you disable your ad blocker." (:277). A scripted browser can do both. Support is needed only when something goes wrong ("Please contact support if you're having any trouble concerning this step.", :269). That is not a routine conversation, so the messenger clause is not met.
+- **No upload API is named.** [RENDERED] Uploading happens in a web "admin" (:263, :265). The page's only "api" strings are the SDK script host `html5.api.gamedistribution.com` (:160, :195) and a sidebar page title, "Store API Integration" (:556). The sidebar lists six pages ("Pages 6", :490). Their previews did not load in the capture ("There was an error while loading.", :498-560), so the capture shows titles only. [INFERENCE] The terms define "In-Game Purchase Revenue" (gamedistribution-developer-terms.txt:48). A "Store API" is therefore more likely about in-game purchases than uploads, but what it covers is UNKNOWN. The terms name no rule on scripted use of the admin. Their one access clause is "No monitoring." (:20). Whether there is a captcha is UNKNOWN.
+- **Nothing new on money, identity or the public name.** [RENDERED] `grep -i -E 'paypal|bank|invoice|israel|country|payment|payout|legal|verif'` over the text finds only "verify the integration" (:267), and the camera-term count is 0. The rail and Israeli payability stay UNKNOWN (tick 7).
+
+**Kills after tick 8 (GameDistribution).** `BOARD-LOOP.md:183` does **not** fire on a rendered fact. Every per-game step
+is now rendered, and each one is a portal act. None is written as a person's act. The one reason tick 7 gave for "a
+person has to do it" was a real ad, and :275 and :281 refute it. **The lean to KILL is withdrawn. Status: NEEDS_MORE.**
+
+**For the 29.9 sitting: the portal ruling** (`research/breadth/REPLENISH-2026-09-28.md:224-226`). A per-game step can
+exist only in a web admin, with no API, and be done by a runner. Is that a "per-game human step"? The sitting should
+rule once, for CrazyGames, GameMonetize, GameDistribution and Y8. If yes, `:183` fires for GameDistribution and kill (d)
+fires for Y8. If no, both PARK behind CrazyGames. The other `:183` clauses do not fire. No messenger is named. Nothing
+read says the payout is USDT-only. The sanctions list does not exclude Israel (tick 7), but whether Israel can be paid is
+UNKNOWN. The metrics and RPM clauses wait for a game.
+
+**Next check (GameDistribution):** render `https://github.com/GameDistribution/GD-HTML5/wiki/F.A.Q.`. This is the
+sidebar link at gamedistribution-sdk-implementation.html:1194 (`href="/GameDistribution/GD-HTML5/wiki/F.A.Q."`). It is
+on github.com, which this container can reach. Suggested slug `gamedistribution-wiki-faq`. REPLENISH read this page at
+github grade (REPLENISH-2026-09-28.md:215-217). A render lifts two lines to rendered grade: "clicking the designated
+button", and the "only possible from the page within your Gamedistribution.com control panel" line. It is also the only
+reachable official page that might name the payout rail. The payment FAQ is an empty shell, and the partnership page
+returned 502. Grep it for PayPal, bank, wire, Payoneer, country, Israel, invoice, button, publish and API. The `:183`
+ruling does not wait for this render.
+
+## Tick 8 reading, second render (19:13) (28.9.2026): the Y8 portal overview and the GameDistribution wiki FAQ
+
+**Captures.** `research/rendered/y8-docs-overview.{txt,html}` (200, 115 text lines, `https://docs.y8.com/studio/overview/`,
+fetched 2026-09-28T19:17:31Z). `research/rendered/gamedistribution-wiki-faq.{txt,html}` (200, 296 text lines,
+`https://github.com/GameDistribution/GD-HTML5/wiki/F.A.Q.`, fetched 2026-09-28T19:17:32Z). Both are first fetches
+(`*.meta.json`). Nothing was fetched in this pass. Every quote below was checked with `grep -n -F`.
+
+### Y8: no payments or invoice screen is documented, and the docs say they will not mirror the portal
+
+- **What the portal is for, in the docs' words.** [RENDERED] y8-docs-overview.txt:77-80: "Everything outside your game's own code happens in the" / "Y8 Developer Portal — creating a" / "studio and a game, getting the credentials the SDK needs, uploading builds, and" / "submitting for review." The portal is `https://developer.y8.com/` (y8-docs-overview.html:1103). The list has no payment, payout or invoice step.
+- **The tabs it names are all per game.** [RENDERED] "My Games , which lists your games and is where builds are uploaded." (:84). A game's SDK Initialization tab holds "the App ID and Game ID" and is where development addresses are registered (:86-88). "A game's other tabs cover leaderboard tables, achievements, QA checks and" / "review status." (:90-91). None is about money.
+- **The docs will not describe the portal's screens.** [RENDERED] :91-93: "They are self-explanatory in the portal itself, and it is the" / "authority on what they currently do — this documentation deliberately does not" / "mirror them." `grep -c -i` over the text and the html finds 0 for invoice, payment, payout, revenue, PayPal, bank, legal, tax, fee, price, cost, country and Israel. The one "verif" hit is the nav item "Verifying Players" (:45). [INFERENCE] The docs say nothing about the invoice, on purpose. Y8's revshare lines stay the only public words on it (y8-revshare.txt:393, :397, :401), and the answer sits behind the login. Tick 8 expected exactly this outcome (its next check: "If it is silent, the invoice form sits behind a login and (a) is for the sitting alone"). **Is the invoice generated in the portal, or issued by us each time?** UNKNOWN at rendered grade, and no public page can settle it.
+- **Identity and camera.** [RENDERED] The only prerequisite named is "An account, and a Studio" (:97). There are 0 hits for camera, selfie, passport, identity or photo. [INFERENCE] As at tick 8, no such step is named and none is excluded. The payee check that "legal, tax, bank" (revshare:393) implies is unread.
+- **Public name.** [RENDERED] :98: "belongs to one, and you do not need to be a registered company to have one." This repeats y8-docs-studio.txt:85. G7 still leans PASS.
+- **Upload.** [RENDERED] Builds are uploaded in My Games (:84). The html's only "api" strings are the Google Fonts host (html:53) and a search box's `autocapitalize` attribute (html:168). [INFERENCE] No upload API is named, as on every Y8 page read.
+
+**Kills after tick 9 (Y8).**
+- (a) **FIRES as worded**, on the same rendered facts (revshare:385, :393, :397). The overview adds nothing that weakens it. The ruling stays with the 29.9 sitting (`research/breadth/BOARD.md:78`). If an invoice the colony issues once per payout counts as owner paperwork, KILL. If not, PARK behind CrazyGames.
+- (b) NOT MET. Six Y8 pages read, and none names a fee.
+- (c) NOT MET. The overview has no AI line, and revshare:377 stands.
+- (d) does **not** fire on a rendered fact. [INFERENCE] The overview makes every step outside the game's code a portal act (:77-80). So (d) is entirely the sitting's portal ruling.
+- **Public docs: exhausted.** Two portal-section pages are still unrendered: Create Game and SDK Initialization (y8-docs-overview.html:470, :498). [INFERENCE] By the overview's own account (:86-88, :100), they cover the per-game form and the SDK credentials, not money. The portal ruling covers them whatever they say, and neither can change the invoice ruling. **No further render is named.**
+
+### GameDistribution: both lines reach rendered grade, the page dates from 2018, and it names no rail
+
+- **Date and standing.** [RENDERED] "[name removed] edited this page Apr 16, 2018". The quoted part, "edited this page Apr 16, 2018", is at gamedistribution-wiki-faq.txt:154, the html has `datetime="2018-04-16T09:05:16Z"` at :713, and the page shows "12 revisions" (:156). It is in the same official repository as the SDK page ("GameDistribution" / "GD-HTML5", :100-104). [INFERENCE] It is older than the SDK page (2021-12-09, tick 8) and older than today's terms and guidelines. Where they differ, the newer source governs.
+- **The control-panel line, now rendered.** [RENDERED] :180: "In order for us to verify a correct SDK implementation it is mandatory to completely watch a video advertisement within your uploaded game. This is only possible from the page within your Gamedistribution.com control panel where you've uploaded your game." The same line ends: "A flag will be set for your games once an advertisement is watched or skipped." [INFERENCE] "Or skipped" is looser than the 2021 page, which says "completely watch the fake advertisement" without cancelling it (gamedistribution-sdk-implementation.txt:281). The newer, stricter wording governs. Either way, it is one act in the control panel, and the line does not say a person must do it.
+- **The designated button, now rendered.** [RENDERED] :182: "Now you can request your game to be published by clicking the designated button within your control panel." The same line: "It can take up to 2 days for a game to be reviewed." [INFERENCE] Today's guidelines replace the 2-day figure: "The initial assessment typically tak es up t o one w eek" (gamedistribution-guidelines.txt:38). The step itself is a portal click, the same act tick 8 counted.
+- **Money: a minimum and a term, but no rail.** [RENDERED] :186-187: "After the minimum of 50 euro share is met, payment is sent once data is collected at the end of each month." / "Payments have a maximum payment term of 8 weeks." This brings REPLENISH:218 to rendered grade, and the terms supersede it: EUR 100 and 60 days (gamedistribution-developer-terms.txt:182-183, tick 7). `grep -c -i` over the text finds 0 for PayPal, bank, wire, Payoneer, Tipalti, country, Israel, invoice, legal and tax. **The rail stays UNKNOWN.**
+- **Fees.** [RENDERED] :202: "Gamedistribution.com offers a free service for developers and publishers." Every "fee" hit in the html is GitHub's own "feedback" markup. G1 still passes.
+- **Identity and camera.** [RENDERED] There are 0 hits for camera, selfie, passport, identity and legal. The one "verif" hit is "verify a correct SDK implementation" (:180). Who may sign stays UNKNOWN (tick 7).
+- **No upload API.** [RENDERED] Uploading is a control-panel act ("before you upload your game", :170; :180). The page's one "API" is the sidebar title "Store API Integration" (:260). Its preview failed to load, like those of the other wiki pages ("There was an error while loading. Please reload this page .", :214, :222, :248, :256, :264). The testing call `gdsdk.openConsole();` (:166) runs in the browser console to show a fake ad for testing (:164). It is not an upload route.
+- **No messenger.** [RENDERED] Every "support", "contact" or "mail" hit in the text is GitHub's own navigation or footer (:62-63, :85, :290). The page names no contact channel.
+- **Cross-promotion.** [RENDERED] :191: "This is decided by our content team; based on engagement, session duration, organic game plays and more." [INFERENCE] Placement is editorial and follows engagement. That leaves the recency lane as UNKNOWN as it was.
+- **Correction: the partnership page is a shell, not a 502.** [RENDERED] It was refetched at 2026-09-28T18:35:45Z with status 200 and 3,700 bytes (gamedistribution-partnership.meta.json). Its text file is 1 byte. Its html holds `<div id="__next"></div>`, and its `pageProps` carries only a title and a description (`"meta":{"title":"Partnership"`, gamedistribution-partnership.html:1). The G2 bullet above cites "HTTP 502 Bad Gateway" at meta.json:10. That line is no longer in the stored file. [INFERENCE] Both money pages, payment and partnership, render only in a browser that runs JavaScript. render-watch does not run one.
+
+**Kills after tick 9 (GameDistribution).** `BOARD-LOOP.md:183` does **not** fire on a rendered fact.
+- Messenger: none is named.
+- Per-game human step: :180 says the ad-watch is "only possible from the page within your Gamedistribution.com control panel". That is a portal-only step, not a person's act. It waits on the 29.9 portal ruling, as tick 8 said.
+- USDT-only: no rail is named, and nothing says USDT. Israel: UNKNOWN (the sanctions list does not exclude it, tick 7).
+- **Public pages: exhausted for this runner.** The wiki's four other pages (Home, Display Ads, Rewarded Ads, Store API Integration) are titles only in both wiki captures (:210-264; tick 8). [INFERENCE] Only Home has a title that could cover money. Its date is unknown, and this wiki's one money answer, the FAQ's 50 euro and 8 weeks, is a 2018 figure that the terms have since replaced. It is not worth a render. Both money pages are JavaScript shells. **No further render is named.** [INFERENCE] The rail and whether Israel can be paid are read in one of two ways: a JavaScript-capable fetch of the payment FAQ (a tooling change, not a render), or the payment fields of a developer account once one exists.

@@ -11,9 +11,9 @@ Popular Games
 
 Driving & Racing
 
-Shooting
-
 Girls & Lifestyle
+
+Shooting
 
 Sports
 
@@ -21,15 +21,15 @@ Puzzle & Thinking
 
 Adventure & RPG
 
-Arcade & Classic
-
-Action & Fighting
+Skill & Precision
 
 Strategy & Defense
 
+Action & Fighting
+
 Management & Simulation
 
-Skill & Precision
+Arcade & Classic
 
 Fun & Crazy
 
@@ -193,55 +193,13 @@ Girls Games
 
 New
 
-All Shall Fall
-
-6.7
-
-New
-
-TG Cases
-
-8.0
-
-New
-
 Supermarket Tycoon: 3D Idle Game
 
 9.2
 
-Wolfoo Word Wonders
-
-9.1
-
-New
-
-Block Flow
-
-8.6
-
-New
-
-Snacky Dash: Food Maze Puzzle
+Climb Up
 
 8.0
-
-New
-
-Viviennes Lifestyle Yacht Club
-
-8.3
-
-New
-
-Dino World 3D
-
-9.3
-
-New
-
-Tower Block Stacking Arcade Game
-
-8.1
 
 New
 
@@ -251,15 +209,13 @@ Pizza Now
 
 New
 
-Chicken Nestor
+Pirates Story Match
 
-9.4
+8.0
 
-New
+Detective X: Find Hidden Object
 
-Obby: Chameleon - Paint & Hide
-
-8.3
+7.7
 
 New
 
@@ -269,191 +225,47 @@ Color Guesser
 
 New
 
-Miki Oath
-
-8.0
-
-Mine Blade Online Kit PvP
-
-7.7
-
-New
-
-PieceAlive
-
-8.3
-
-New
-
-Retakes io
-
-8.2
-
-New
-
-Big Smash
-
-9.2
-
-Obby: Parkour with Ragdoll
-
-7.4
-
-New
-
-Sheep Simulator Animal Games
-
-8.3
-
-Foodie Match
-
-8.5
-
-Clean the Squishes: ASMR Sorting Obby
-
-7.9
-
-New
-
-Pirates Story Match
-
-8.0
-
-New
-
-MarbleMaze
-
-8.2
-
-Wolfoo Supermarket Sort
-
-8.1
-
-Cooking Tasty: Restaurant Game
-
-7.6
-
-New
-
-Mystery Town
-
-9.1
-
-Climb Up
-
-8.0
-
-Highway Domination Desert
-
-6.7
-
-New
-
-Emoji Fusion
-
-7.7
-
-New
-
-Barricade Online
-
-8.4
-
-Real War
-
-7.3
-
-New
-
 Real Car Bmw M4 Drift
 
 8.7
 
 New
 
-Investor Tycoon
-
-8.6
-
-Fruit Flow Match 3
-
-8.1
-
-New
-
-Cyber Grid Pro
-
-8.6
-
-Race Through Traffic
-
-7.8
-
-Spot Hidden Cat
-
-8.4
-
-Guess The Fruit
-
-7.1
-
-New
-
-Chubby Duck Jump
+Catburglar
 
 8.0
+
+New
+
+Plug Joy
+
+8.3
+
+New
+
+Miki Oath
+
+8.0
+
+Wolfoo Word Wonders
+
+9.1
+
+New
+
+GORILGO FPS : Online Shooter
+
+7.4
+
+Wolfoo Supermarket Sort
+
+8.1
 
 New
 
 Monster Fire
 
 9.2
-
-New
-
-Laser Snake
-
-8.1
-
-Burger Hop
-
-8.7
-
-New
-
-Guess The NBA Player
-
-8.2
-
-Flag Planet
-
-8.0
-
-New
-
-Sortello
-
-9.1
-
-New
-
-Ironhour
-
-8.6
-
-Detective X: Find Hidden Object
-
-7.7
-
-New
-
-Spooky Block Blast
-
-8.6
-
-Royal Pool Blitz
-
-7.2
 
 New
 
@@ -469,33 +281,101 @@ Food: Run and Battle
 
 New
 
-Plug Joy
+Oddly Sorted: Color Sort
 
-8.3
-
-Pool Shooter
-
-8.2
-
-Ping Pong 3d
-
-8.6
+6.7
 
 New
 
-Catburglar
+MarbleMaze
+
+8.2
+
+Real War
+
+7.3
+
+New
+
+Mystic Mix
+
+9.1
+
+Fruit Garden: Merge Fruits
+
+8.6
+
+Car Parking Driving Simulator
+
+7.5
+
+Mine Blade Online Kit PvP
+
+7.7
+
+New
+
+Diamond Art Sort
 
 8.0
 
 New
 
-Turball io
+Cyber Grid Pro
 
-7.5
+8.9
+
+Chess Deluxe
+
+7.9
 
 New
 
-Yarn Art Loop
+Mystery Town
+
+9.1
+
+New
+
+Dino World 3D
+
+9.3
+
+Highway Domination
+
+8.4
+
+Guess The Fruit
+
+7.1
+
+Domino 2048
+
+8.1
+
+New
+
+2048 Kingdom
+
+8.0
+
+New
+
+Obblox Gun io
+
+8.0
+
+Spot Hidden Cat
+
+8.4
+
+Obby: Parkour with Ragdoll
+
+7.4
+
+New
+
+Voxel Destruct
 
 8.2
 
@@ -507,31 +387,103 @@ Speed Wilds
 
 New
 
+Spooky Block Blast
+
+8.6
+
+New
+
+Neon Slash
+
+9.0
+
+Royal Pool Blitz
+
+7.2
+
+Alpha Tower Gaurd
+
+5.0
+
+New
+
 Nitro Racing Gear
 
 7.1
 
-Last Knight: King's Throne
+Highway Domination Desert
 
-7.1
+6.7
 
-Slime Attack
+New
 
-8.3
+Impostor Duck Online
 
-Shimai
+8.1
+
+New
+
+Bike Games: Stunt Bike Racing
+
+8.8
+
+Monster Haul
+
+8.4
+
+New
+
+All Shall Fall
 
 8.0
 
 New
 
-Turnline: Relaxing Puzzle
+Candy Match Pop
 
-8.2
+5.0
 
-Highway Domination
+New
 
-8.4
+Ironhour
+
+8.6
+
+New
+
+Bounce Ball: Number Breaker
+
+9.1
+
+Race Through Traffic
+
+7.8
+
+New
+
+Retakes io
+
+8.3
+
+New
+
+TG Cases
+
+8.1
+
+New
+
+Make A Face
+
+8.0
+
+Cooking Tasty: Restaurant Game
+
+7.6
+
+Obby Knife Duels
+
+9.4
 
 New
 
@@ -541,35 +493,87 @@ Mahjong Onet Deluxe
 
 New
 
-Snake Block Rush
+Speed Dunk
 
-8.2
+8.0
 
 New
 
-Skibidi Brawl Arena
+Big Smash
+
+9.2
+
+Ping Pong 3d
+
+8.6
+
+New
+
+Chubby Duck Jump
+
+8.0
+
+New
+
+Block Flow
+
+8.0
+
+New
+
+PieceAlive
+
+8.3
+
+Fruit Flow Match 3
 
 8.1
 
 New
 
-9 Ball Pool 3D
+Sheep Simulator Animal Games
 
-8.2
-
-Neon Heist
-
-8.0
-
-Commando Force 2
-
-9.0
+8.3
 
 New
 
-Neon Slash
+Viviennes Lifestyle Yacht Club
 
-9.0
+7.5
+
+New
+
+Guess The NBA Player
+
+8.2
+
+New
+
+Obby: Chameleon - Paint & Hide
+
+8.3
+
+New
+
+Barricade Online
+
+8.4
+
+New
+
+Snacky Dash: Food Maze Puzzle
+
+8.0
+
+Clean the Squishes: ASMR Sorting Obby
+
+7.9
+
+New
+
+Tower Block Stacking Arcade Game
+
+8.1
 
 1
 2

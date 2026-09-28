@@ -1,5 +1,7 @@
 KiezelPay faq
 
+<link rel="manifest" href=""/assets/images/fav/manifest.json">
+
 &times;
 
 Enter Code

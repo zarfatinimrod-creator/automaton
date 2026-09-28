@@ -1,8 +1,51 @@
 Payment options - Facer Creator - Facer Community
 
-= 40rem)" rel="stylesheet" data-target="chat_desktop" />
-= 40rem)" rel="stylesheet" data-target="discourse-gamification_desktop" />
-= 40rem)" rel="stylesheet" data-target="discourse-reactions_desktop" />
-= 40rem)" rel="stylesheet" data-target="poll_desktop" />
+Facer Community
 
-= 40rem)" rel="stylesheet" data-target="desktop_theme" data-theme-id="-2" data-theme-name="horizon"/>
+Payment options
+
+Facer Creator
+
+masslock.steve39
+
+July 23, 2020, 7:43pm
+
+1
+
+Can I only buy the pro option with a credit card? I’m creating watch faces, but without the paid version, my options are really limited. Here in Germany credit cards aren’t really used.
+
+mikeoday
+
+July 25, 2020, 12:07pm
+
+2
+
+That question would probably be best sent directly to the Facer guys.
+
+You can raise a support query using the following form:
+
+https://help.facer.io/hc/en-us/requests/new
+
+Or send an email to: Facer-support@little-labs.com
+
+masslock.steve39
+
+July 25, 2020, 1:17pm
+
+3
+
+Thank you
+
+1 Like
+
+Home
+
+Categories
+
+Guidelines
+
+Terms of Service
+
+Privacy Policy
+
+Powered by Discourse , best viewed with JavaScript enabled

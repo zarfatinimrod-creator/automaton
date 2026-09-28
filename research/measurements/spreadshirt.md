@@ -5,7 +5,7 @@ GitHub org read, container curl egress-blocked, 3 snippets) — still NEEDS_MORE
 render ~17:19 UTC): still NEEDS_MORE. The 2018 Spreadshop upload post (200) shows that "50 a day" was the limit from 1.2.2018
 (today's limit is UNKNOWN), and it adds three 2018 rules: human review, originality with proof of rights, and a ban on
 circumventing accounts. It says nothing on automation, AI, fees or eligibility. The API Design Details page answered 406
-again to a request that already asked for `text/html`, so that route is closed. See "Tick 7 reading".** All six Spreadshirt pages the breadth board
+again to a request that already asked for `text/html`, so that route is closed. See "Tick 7 reading". Tick 8 (runner render ~18:36 UTC): still NEEDS_MORE. The Spreadshop legal-information page (200) is only an imprint. It links no partner terms, seller agreement or content policy, and it says nothing on automation, AI, fees, countries, payout or identity. It adds two things: the counterparty depends on the region chosen (NA/Oceania: Spreadshirt, Inc.; Europe: sprd.net AG), and a contact address, `contact@spreadshop.com`. The docs route has nothing left to render for KILL-4, so the single next check is now the step-8 written question, and it has a recipient. See "Tick 8 reading".** All six Spreadshirt pages the breadth board
 named (ZERO-TESTS rows 40-45) came back without a body: five HTTP 403 and one HTTP 406. Nothing below is a finding about
 Spreadshirt's terms; it is a finding about the route.
 
@@ -191,3 +191,96 @@ it is the only one that has answered the runner, and the partner terms (row 40, 
 uploads, AI and the EU/NA account split would sit. Read it for the terms text or a link to it, any automation or AI clause, and
 who may be a partner (country, individual or company). If it is only an imprint, or it links back to the 403 host, candidate 17
 waits for the step-8 written question.
+
+## Tick 8 reading (28.9.2026)
+
+**What came back (render-watch, 28.9.2026 ~18:36 UTC).** Citations: `txt:<line>` = `research/rendered/spreadshop-legal-information.txt`,
+`html:<line>` = the `.html` beside it.
+- **spreadshop-legal-information (ZERO-TESTS row 99): status 200.** fetchedAt 2026-09-28T18:36:13.850Z, 156,335 bytes,
+  `truncated` false, `firstFetch` true, sha256 `c12729c5…`. Read in full: 131 lines, with the page body at `txt:13-92` and the
+  footer at `txt:94-131`. The page carries no date. It names one person twice (managing director and editorial contact,
+  `txt:71-73`, `:79-81`), written [name removed] here. [RENDERED]
+
+**(1) It is only an imprint. It links no partner terms and no design or content policy.**
+- The footer's "Legal" column holds three links, "Imprint", "Privacy Policy" and "CCPA" (`txt:115-118`), and "Imprint" points to
+  this page itself: `<a href="https://www.spreadshop.com/legal-information/">Imprint</a>` (html:87). [RENDERED]
+- The body lists the operators (`txt:14`), the contracting party by region (`txt:16-20`), two addresses, two e-mails, phones,
+  faxes, a commercial register and VAT number (`txt:24-88`), and one line on consumer arbitration: "We are neither required nor
+  prepared to participate in a dispute settlement procedure before consumer arbitration panel." (`txt:92`). [RENDERED]
+- The meta description promises more than the page holds: "Find important legal information about Spreadshop, including our
+  terms of service, privacy policies, and seller agreements." (html:1). Yet the body contains no terms or seller agreement and
+  links none. In the text, "agreement" and "condition" get 0 hits, and "Terms" appears once, in the page title (`txt:1`). In the
+  whole `.html`, no `href` goes to a terms, GTC, agreement, guideline or content-policy page. The CMS map embedded at html:87
+  (280 slugs) has no such slug either: its only legal slugs are `legal-information` and `privacy-policy`. [RENDERED absent]
+- It links only two items back toward Spreadshirt: the "DMCA Notice" (`txt:40`) at `https://www.spreadshirt.com/dmca-notice-C6804`
+  (html:35), on the host that refused the runner, and the partner "Login" at `https://partner.spreadshirt.com/login` (html:12).
+  [RENDERED] The partner terms (row 40, `…/terms-and-conditions-for-shop-partner-C2376`, a 403) cannot be reached from this page.
+  By tick 7's own rule ("If it is only an imprint, or it links back to the 403 host, candidate 17 waits for the step-8
+  written question", `spreadshirt.md:192-193`), the render route for KILL-4 is closed. [INFERENCE]
+
+**(2) The one new fact: the region chosen decides who the contract is with.**
+- `txt:16` "If you choose North America / Oceania as the region for your Spreadshop, your contractual partner for the opening and
+  operation of the Spreadshop is Spreadshirt, Inc." / `txt:18` "If you choose Europe as the region for your Spreadshop, your
+  contractual partner for the opening and operation of the Spreadshop is sprd.net AG ." / `txt:20` "For the Spreadconnect/SPOD
+  service, your contractual partner is Spreadshirt Print On Demand GmbH." [RENDERED]
+- This is the "EU/NA account split" that row 40 asked about. It exists, and the region picked at registration sets the
+  counterparty. The page names only these two regions. Israel is in neither, and whether a partner resident elsewhere may
+  pick one, and which, is **UNKNOWN**. [RENDERED / INFERENCE]
+
+**(3) KILL-4, AI, fees, eligibility, payout, identity: none of them is on the page.**
+- In the text, "automat", "API", "upload" and "design" get 0 hits each. "AI" appears once, as the footer link "AI Guide"
+  (`txt:125`). "fee", "commission", "payout", "PayPal", "tax", "country", "Israel" and "identity" get 0 hits each.
+  [RENDERED absent]
+- In the `.html`, the one "automat" hit is a CMS blurb, "Spreadshop has unique features to help you automate and sell your
+  merch." (html:87). It is marketing copy, not a rule on automated uploads. [RENDERED] So KILL-4 is still untested, the AI
+  rule is still snippet-only (tick 6, finding 5), and Israel is still UNKNOWN.
+
+**(4) New: a contact route for the step-8 question.** `research/owner-asks/brand-mailbox-questions.md:102` gives the contact
+route as "not in any capture; find it in the venue's own help page before sending". This capture now has one.
+- `contact@spreadshop.com` is the "E-Mail" of Spreadshirt, Inc. (`txt:24`, `:34-36`; `mailto:` at html:31). [RENDERED]
+- The "Spreadshop Contact Form" (`txt:106`) is `https://www.spreadshop.com/contact/` (html:87). [RENDERED] E-mail is the better
+  route: a form may demand a personal name or phone, and then it may not be submitted (`brand-mailbox-questions.md:22-23`).
+  [INFERENCE]
+- `legal@spreadconnect.com` (`txt:61`) belongs to Spreadshirt Print On Demand GmbH (`txt:50-61`), which runs the
+  Spreadconnect/SPOD service (`txt:20`), not Spreadshop. It is not used. [RENDERED / INFERENCE]
+- Caveat: the address belongs to the NA/Oceania counterparty. The question asks for a platform rule, not for account action,
+  so either entity can answer it. [INFERENCE]
+
+**(5) Leads on the host that answers. They are recorded, not queued, and none of them can move the verdict.** The CMS
+map at html:87 carries help-centre slugs on www.spreadshop.com, including
+`helpcenter/earning-money-with-spreadshop/payment-of-your-earnings` and
+`helpcenter/getting-started/how-should-i-choose-the-region-during-registration`. The footer "AI Guide" is
+`https://www.spreadshop.com/ai-print-on-demand/` (html:87). [RENDERED] They could speak to payout and Israel, region
+eligibility and AI. None of them is the partner terms, though, so none can settle KILL-4. This page prints the two help
+pages only as slugs, not as URLs, so any URL built from them would be an inference. [INFERENCE]
+
+**Verdict for candidate 17 (Spreadshirt): NEEDS_MORE.** The legal-information page is an imprint. It links no partner terms,
+seller agreement or design/content policy, and it is silent on automated uploads, AI, fees, countries, payout and identity.
+KILL-4 is untested, and the renders cannot test it: the terms sit on the 403 host, and the API docs answered 406 twice. It
+adds the region-based counterparty and a contact address. No gate is passed or killed.
+
+**Single next check: the step-8 written question.** Its pre-send condition is met: "send unless the queued renders (rows
+63-64, …) have produced a written rule on uploads" (`brand-mailbox-questions.md:103-104`), and rows 63, 64 and 99 produced
+none. It waits for owner step 8 and the brand connector (`brand-mailbox-questions.md:9-11`). It is the only question in this
+message. The payout and EU-display questions stay held until after a yes (`brand-mailbox-questions.md:124-125`).
+
+- **Recipient:** `contact@spreadshop.com` (`spreadshop-legal-information.txt:36`).
+- **Subject:** Question: automated design uploads by a partner
+
+```text
+Hello Spreadshirt partner team,
+
+Mehudak (מהודק) is a small design brand considering the Spreadshirt Marketplace and a Spreadshop. Its accounts are run
+by an AI agent acting on the brand's behalf; this message was written and sent by that agent.
+
+One question, yes or no: may a partner upload and publish designs through an automated process, either an API or an
+automated browser session run on the partner's behalf? If there is an API for this, a link to its documentation would
+answer the question too. We are asking for your current rule only, not for an exception or a commitment.
+
+Thank you,
+Mehudak (מהודק)
+```
+
+The text is the draft at `brand-mailbox-questions.md:107-119`, verbatim. **For the main thread**, since this reader may edit
+only the two measurement files: `brand-mailbox-questions.md:102-104` should name this recipient in place of "not in any
+capture". **Yes** passes the automation gate. **No** is KILL-4 (`brand-mailbox-questions.md:121-123`).

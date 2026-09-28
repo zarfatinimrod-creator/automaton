@@ -1,0 +1,132 @@
+Studio - Y8 SDK Documentation
+
+Skip to content
+
+Y8 SDK Documentation
+
+Studio
+
+Initializing search
+
+Y8 SDK Documentation
+
+Home
+
+Platforms
+
+Developer Portal
+
+Developer Portal
+
+Overview
+
+Studio
+
+Studio
+
+Table of contents
+
+What you will be asked for
+
+Next
+
+Create Game
+
+SDK Initialization
+
+SDK
+
+SDK
+
+Introduction
+
+Local Development
+
+Player & Authentication
+
+Verifying Players
+
+Advertising
+
+Leaderboards
+
+Achievements
+
+Cloud Storage
+
+Images
+
+Player Profile
+
+Localization
+
+Protection
+
+Analytics
+
+Best Practices
+
+Table of contents
+
+What you will be asked for
+
+Next
+
+Home
+
+Developer Portal
+
+Create a Studio
+
+A Studio represents you as a developer on Y8. Every game belongs to one, so this
+is the first thing to set up — if you create a game without a studio, you will
+be asked to make one first.
+
+You do not need to be a registered company. A solo developer is a studio.
+
+Create it in the
+Y8 Developer Portal .
+
+What you will be asked for
+
+Field
+
+Notes
+
+Logo
+
+Recommended size 175 × 175 pixels.
+
+Studio Name
+
+The name shown for your studio on Y8.
+
+About
+
+A short description.
+
+Website
+
+Your studio or game site, if you have one.
+
+Social links
+
+Optional.
+
+Your studio page doubles as a portfolio — games you publish are listed under it
+— so the name and description are worth a moment's thought even if you only
+plan to release one game.
+
+Next
+
+Create a game under your new studio.
+
+Back to top
+
+Previous
+
+Overview
+
+Next
+
+Create Game

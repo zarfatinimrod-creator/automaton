@@ -1,0 +1,154 @@
+Submit Your First App Version
+
+Overview
+Extend Websites
+
+Build Apps
+
+Go Headless
+References
+
+Changelog
+
+Build Apps
+
+Get Started
+
+Overview
+
+Quick Start
+
+Templates
+
+Tutorials
+
+Get an Idea
+
+Develop Your App
+
+About Developing Apps
+
+App Workspace
+
+Development Sites
+
+Extensions
+
+Develop an App with the CLI
+
+Develop a Self-Managed App
+
+Develop an App with Blocks
+
+Build with AI
+
+API Integrations
+
+Auth
+
+Design
+
+Launch Your App
+
+About Launching Apps
+
+Pricing and Billing
+
+Market Listing
+
+Localization
+
+Legal and Security
+
+App Distribution
+
+About App Distribution
+
+Add Security and Privacy Information
+
+Submit Your First App Version
+
+Common Reasons for App Rejection
+
+App Market Guidelines
+
+Test Your App
+
+Install Your App
+
+App Promotion
+
+Manage Your App
+
+User Support
+
+Versioning
+
+Data and Analytics
+
+Contact Us
+
+In This Article Before you submit
+Submit your app for review
+Appeal a review decision
+See also
+
+Submit Your App for Review
+
+When you're ready to list your app in the Wix App Market, you submit it for an automated AI review.
+
+The review checks your app against the App Market requirements. If your app doesn't pass, you'll see blockers to fix before it can go live. You repeat the process until you resolve all blockers.
+
+Before you submit
+
+To help ensure a smooth and timely review, we recommend that you:
+
+Thoroughly test your app before submission, including edge cases.
+
+Make sure your app handles errors gracefully so they don't break core flows.
+
+For paid apps, set up pricing and billing and implement the logic to manage plan access. Make sure payout account setup is complete before you publish a paid app.
+
+Ensure your app complies with the Wix App Market guidelines .
+
+Verify all required fields and assets in your App Market listing .
+
+Use the App Market review skill to audit your app against technical review requirements before submitting.
+
+Submit your app for review
+
+To submit your app for review and publish it:
+
+Fix all blockers shown in your app's dashboard. Blockers are the only prerequisite for submission, so resolve them before moving forward.
+
+Click Submit & Publish .
+The AI review runs automatically when you submit and publish.
+
+Refresh your app's dashboard to check whether your app passed all review checks:
+
+If your app passed, it's now live on the Wix App Market.
+
+If your app didn't pass, new blockers appear in your dashboard. These are the requirements your app needs to meet before Wix can publish it.
+
+Fix the new blockers that appear.
+
+Repeat steps 2 and 3 until you resolve all blockers and your app goes live.
+
+Important:
+New AI-generated blockers behave differently from other blockers in your dashboard. To clear them, you must submit and publish again. Fixing them alone won't remove them from the list.
+
+Appeal a review decision
+
+If you disagree with a blocker or believe it doesn't apply to your app, you can contact Wix support and open a ticket to appeal the decision.
+
+See also
+
+App Market guidelines
+
+About app versioning
+
+Release a new app version
+
+Last updated: 28 July 2026
+Did this help?
+Yes No

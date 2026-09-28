@@ -1,8 +1,370 @@
 Premium Designer program: admission rankings and revenue sharing terms - General - Facer Community
 
-= 40rem)" rel="stylesheet" data-target="chat_desktop" />
-= 40rem)" rel="stylesheet" data-target="discourse-gamification_desktop" />
-= 40rem)" rel="stylesheet" data-target="discourse-reactions_desktop" />
-= 40rem)" rel="stylesheet" data-target="poll_desktop" />
+Facer Community
 
-= 40rem)" rel="stylesheet" data-target="desktop_theme" data-theme-id="-2" data-theme-name="horizon"/>
+Premium Designer program: admission rankings and revenue sharing terms
+
+General
+
+veertualia.team
+
+June 28, 2018, 1:05pm
+
+1
+
+It seems economics is not a secondary aspect in designing for Facer, even if a lot of designers just love to share their passion for creating watch faces designs.
+
+These are @Facer_Official own words ( https://news.facer.io/facer-passes-1-million-smartwatch-users-and-designers-are-starting-to-make-big-selling-watch-8ca6338e00f5 ):
+
+Most of Facer’s 5,000 designers create watch faces just for fun but others are starting to earn some serious revenue by selling their designs on the platform:
+
+“Selling watch faces on Facer easily pays my rent each month!” — G7
+
+“Facer is a great creative outlet & pays better than freelance jobs” — Timeless
+
+“Thanks to Facer, I can pay for my University studies!” — @GRR
+
+So, since @Facer_Official clearly states that earning some money is a strong motivational factor for designers to create watch faces on their platform, I think they should answer a couple of questions, just to help us understand.
+
+After all, when operating your own store - because that’s also what the “Premium designer” program is - transparency is essential.
+
+What are the revenue-sharing terms of the Premium Designer program?
+
+I couldn’t find them. Can someone? Google Play publishes them here: Service fees - Play Console Help
+
+70% goes to the developers, while 30% goes to the distribution partner and operating fees.
+
+Do you Premium Designers care to share that information, please?
+
+In order to understand how a designer watch face portfolio must perform to allow to pay the rent or the university studies, the number of syncs (downloads) of every designer should also be visible - at the very least - to the designer community, in addition to the revenue-sharing terms.
+
+Since Facer uses a ranking-list approach to decide who’s admitted to the store and who isn’t (and when), while expecting the designers to keep contributing free watch faces - just to wait in line -, such ranking list should be periodically published and accessible to everybody.
+
+These are not abstract principles when deciding if designing for Facer. I respect people working just for passion. But, sometimes, for someone, money is involved. And I’m not the one talking about the money you can make by publishing watch faces here. @Facer_Official is.
+
+Some answers are in order.
+
+1 Like
+
+How to become a Premium Designer and sell your watch face designs on Facer
+
+Ways to Become Premium?
+
+Replica Faces (seems) not for all aloud
+
+Cease and desist warning
+
+veertualia.team
+
+June 30, 2018, 2:53pm
+
+2
+
+veertualia.team:
+
+What are the revenue-sharing terms of the Premium Designer program?
+
+I couldn’t find them. Can someone?
+
+veertualia.team:
+
+Do you Premium Designers care to share that information, please?
+
+Nobody’s answering and I’m wondering why. Are revenue sharing terms a secret?
+
+roycaruso
+
+June 30, 2018, 3:56pm
+
+3
+
+Hmm they may not be allowed to share? Not sure what the contracts involve.
+
+Linlay
+
+June 30, 2018, 5:00pm
+
+4
+
+veertualia.team:
+
+Nobody’s answering and I’m wondering why.
+
+That may be because one or more of your earlier posts mentioning that you are already selling faces on Google Play and Galaxy Apps gave everyone the impression that you do not wish to participate here. You stated: “I’m in no way inclined to give away for free not even a pixel more of my work until things change.”
+
+Oops, i did it again... (Applying for Premium Designer) ;-) General discussion
+
+Ok.
+Dear @Facer_Official , @Facer-Staff …
+Today i did my second attempt in applying for Facer’s Premium Designer program. Last time was one month ago with no result and no answer … but i will keep on fighting.
+I really don´t know why nobody reacts on my last application but maybe time will tell …
+I am a little bit frustrated, mostly that i don´t get any feedback at all.
+I now have more than six watches which fullfill the desired 3000 syncs in 30 days, two watch faces over 10k…
+
+As long as you are happy elsewhere there is no need to pursue your questioning of Facer policies.
+
+1 Like
+
+veertualia.team
+
+June 30, 2018, 5:41pm
+
+5
+
+roycaruso:
+
+Hmm they may not be allowed to share? Not sure what the contracts involve.
+
+They could just say it. Unless this hypothetical Non Disclosure Agreement lists its very existence among the topics that cannot be discussed.
+
+Which would be unusual , at the very least, since other stores such as Google Play and Galaxy Apps are completely transparent when it comes to their revenue sharing terms.
+
+Linlay:
+
+That may be because one or more of your earlier posts mentioning that you are already selling faces on Google Play and Galaxy Apps gave everyone the impression that you do not wish to participate here.
+
+I am interested in in publishing paid watch faces here. I applied for Premium in February.
+
+I said - after months of waiting in line - that I will not publish any more free watch faces until I’m accepted in the program.
+
+That’s why I’m asking for the revenue-sharing terms, the possibility to see the number of syncs of other authors and the ranking list that determines who’s accepted in the program.
+
+I’m just a determined, persistent, pacient man.
+
+Linlay
+
+June 30, 2018, 6:03pm
+
+6
+
+[quote=“veertualia.team, post:5, topic:25147”]
+
+I’m just a determined, persistent, pacient man.
+
+[/quote] Persistence in an online community environment is not always perceived as a positive attribute. I suggest that you discuss your questions privately with Facer and accept whatever response or lack thereof that you receive.
+
+veertualia.team
+
+June 30, 2018, 6:09pm
+
+7
+
+I think it’s perfectly normal wanting to know your share, if you plan to earn some money designing watch faces for this platform. Even if you will never reach the amount you need to pay for your rent - as @Facer_Official says (did you read it?).
+
+At least you can decide if it deserves the time and the energy (the number of free watch faces) you are willing to put in the effort. Would you rather prefer to sell something without knowing what will you earn from it?
+
+For Google is 70/30: Transaction fees - Play Console Help
+
+For Samsung is also 70/30: https://seller.samsungapps.com/help/termsAndConditions.as
+
+Of course, if the revenue-sharing terms were 95% Facer - 5% designer, I would just say “so long and thanks for all the fish” and disappear forever.
+
+Why is it so difficult to know?
+
+veertualia.team
+
+June 30, 2018, 6:49pm
+
+8
+
+Linlay, I (too) manage large communities. Quite turbulent ones because they are about football.
+
+I know what rules are, and I respect them.
+
+I’m just asking three legit questions. I opened one (1) topic. I’m not bumping. I’m not trolling.
+
+And I have already had a (6 month) long email exchange with Facer which I’m not revealing.
+
+Answering to a legit question, by inquiring about the form and avoiding the content, is not always perceived as a positive attribute, either. And you know it.
+
+Besides, what I’m asking is absolutely of public interest.
+
+Or would you rather say that each and everyone of the persons reading this topic is not interested in some kind of revenue at all?
+
+I would beg to differ.
+
+1 Like
+
+roycaruso
+
+June 30, 2018, 10:07pm
+
+9
+
+Passion is great guys! Let’s steer away from the perception discussion though. I think that the non-response was likely because money quite often isn’t the driving force for wanting to become a premium Facer Creator - I’d love the feature access and exposure more than anything tbh The only people that could tell you are @Facer_Official and premium designers. I think you have some fair questions, but I can also respect why people wouldn’t want to discuss such things I agree that email is probably your best bet. Good luck!
+
+3 Likes
+
+veertualia.team
+
+July 2, 2018, 11:50pm
+
+10
+
+roycaruso:
+
+The only people that could tell you are @Facer_Official and premium designers.
+
+That’s the reason I’m asking them. But nobody’s answering, as you see. Don’t you wonder why? I do.
+
+In fact, I think any designer waiting to be accepted in the Premium designer program deserves to know.
+
+1 Like
+
+richgrayson92
+
+July 3, 2018, 8:00am
+
+11
+
+There’s some kind of conspiracy
+
+veertualia.team
+
+July 6, 2018, 9:22am
+
+12
+
+richgrayson92:
+
+There’s some kind of conspiracy
+
+A conspiracy of silence?
+
+I don’t want to believe that. It wouldn’t be very edifying to this community.
+
+Yet, this silence is an answer.
+
+Maybe, to quote the Ferengi rules of acquisition number 208
+
+Sometimes the only thing more dangerous than a question is an answer
+
+1 Like
+
+richgrayson92
+
+July 6, 2018, 9:49am
+
+13
+
+Haha! Perhaps premium designer money is being used to fuel secret underground economies…
+
+veertualia.team
+
+July 6, 2018, 10:34am
+
+14
+
+richgrayson92:
+
+Haha! Perhaps premium designer money is being used to fuel secret underground economies…
+
+Are you saying that when @Facer_Official writes about paying “rent” and “university studies” developing watch faces it’s sending some kind of a coded message which actually means taking over the planet? To think about it, the acronym for Premium Designer Program could also be something like Planet Domination Program…
+
+Intriguing theory. If that’s the case, it may well explain all the secrecy and the silence.
+
+However, I find it somehow unlikely.
+
+1 Like
+
+richgrayson92
+
+July 6, 2018, 10:38am
+
+15
+
+Unlikely? Perhaps…Impossible? No. We’re definitely onto something here,Facer…Like ‘Mask’…or ‘Faker’…It all checks out!!! Seriously though, I don’t think what you’re asking is unreasonable haha
+
+1 Like
+
+Linlay
+
+July 7, 2018, 4:13pm
+
+16
+
+You guys are funny. Actually, until someone is invited into the program there is no need to discuss revenue. It’s at that point when you make your decision to take it or leave it.
+
+veertualia.team
+
+July 8, 2018, 4:57pm
+
+17
+
+So, in everyday life, you find perfectly normal to apply for a job without knowing what the economic treatment will be. And you would accept to start working for free indefinitely, just in order to being invited to the job interview. Without even knowing if there will ever be, such an interview.
+
+I would say that this is ridiculous, if I thought that dismissing someone else’s opinion with an easy label - such as funny - was a positive attribute, in a discussion forum. Which I don’t.
+
+1 Like
+
+GAUSS
+
+July 8, 2018, 5:22pm
+
+18
+
+@veertualia.team :
+
+Do you think it´s helpful that your complaints are going on and on?
+
+Linlay already said it: Take it or leave it.
+
+It´s not the question that we agree on some of your points but you should accept the way the facer_offials want the process to be and act like that.
+
+You just waste your time and energy. Build watch faces instead, post them here, earn your spores or go on in publishing them for pay on google.
+
+I think no one of the premum designer will give you further informations. We are simply under an official contract and that means as well that we don´t speak about the terms. If you want to have more informations write to the officials or the staff. If they are willing to answer you, they will do. If not, you have to accept their decision as well. It´s their game field. You are not in the position to demand informations.
+
+Honest question: Why bothering all the people here? Do you just want to troll? Is it your goal to be disliked or banned at the end?
+
+I don´t think your way of behaviour is the right way to get a premium status. What do you think?
+
+Greetings, Phantasico.
+
+3 Likes
+
+veertualia.team
+
+July 8, 2018, 8:11pm
+
+19
+
+@GAUSS
+
+I’m just replying to people who replies to me. Including you.
+
+GAUSS:
+
+@veertualia.team :
+
+I don´t think your way of behaviour is the right way to get a premium status. What do you think?
+
+Are you implying that, in order to obtain something, it is better to stay quiet and silent no matter what you think?
+
+You’re going off topic. Since this is forbidden by forum rules , I will send you my answer in a private message.
+
+GAUSS
+
+July 8, 2018, 9:23pm
+
+20
+
+I don´t think my reply is that much off-topic.
+
+My answer was not rude and what i meant was, that you should overthink your general strategies. it was a tip in good will. Complaining doesn´t get you that much forward on the road…
+
+3 Likes
+
+next page →
+
+Home
+
+Categories
+
+Guidelines
+
+Terms of Service
+
+Privacy Policy
+
+Powered by Discourse , best viewed with JavaScript enabled

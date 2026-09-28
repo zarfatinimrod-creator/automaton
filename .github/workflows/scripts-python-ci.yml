@@ -1,0 +1,36 @@
+name: scripts-python-ci
+
+# The stdlib-only Python scripts under scripts/ (today: brand_mail.py, the brand mailbox's
+# sender and probe) have unittest suites in scripts/tests/. ci.yml runs Node only, and
+# chart-explainer-ci.yml is scoped to its product, so these get their own job in
+# products-ci.yml's pattern: path-filtered, real exit code. No network, no pip install —
+# SMTP and IMAP are fakes. `python -m unittest` from the repository root discovers them
+# (scripts/__init__.py makes the directory a package for discovery).
+
+on:
+  push:
+    paths:
+      - "scripts/*.py"
+      - "scripts/tests/**"
+      - "research/owner-asks/**"
+      - ".github/workflows/scripts-python-ci.yml"
+  pull_request:
+    paths:
+      - "scripts/*.py"
+      - "scripts/tests/**"
+      - "research/owner-asks/**"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m unittest -v

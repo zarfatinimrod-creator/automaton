@@ -107,12 +107,22 @@ describe("the owner's checklist is eight steps and stays eight", () => {
     expect(step8.unlocks).toMatch(/Search Console/);
     expect(step8.unlocks).toMatch(/YouTube/);
     expect(step8.unlocks).toMatch(/second Gmail connector/);
-    expect(step8.unlocks).toMatch(/repository secret/);
+    // CHANGED 28.9.2026 (brand-mail review, exposure finding 1): the CI secret lives in the environment brand-mailbox,
+    // limited to main, because a repository secret reaches every branch and every workflow.
+    expect(step8.unlocks).toMatch(/secret of the GitHub environment brand-mailbox, whose deployment branches are limited to main/);
+    expect(step8.unlocks).toMatch(/not a repository secret/);
     // The probe and the responder are specified, not built (CHANNEL_LOOP §1 still has the probe as an open item), so the
     // text says what WILL happen once the step is done — review of the builder diff, finding 7.
     expect(step8.unlocks).toMatch(/once step 8 is done, the tick's probe will report the unread count/i);
     expect(step8.unlocks).toMatch(/the colony will answer accessibility mail itself/);
-    expect(step8.unlocks).toMatch(/neither exists yet/);
+    // CHANGED 28.9.2026 (brand-mail tooling): the probe is now built but unscheduled, so "neither exists yet" became
+    // false; the text says what is built, what is not, and that neither runs before the step.
+    expect(step8.unlocks).toMatch(/neither runs yet/);
+    expect(step8.unlocks).not.toMatch(/neither exists yet/);
+    expect(step8.unlocks).toMatch(/scripts\/brand_mail\.py/);
+    expect(step8.unlocks).toMatch(/brand-mail\.yml, dispatch only/);
+    expect(step8.unlocks).toMatch(/the responder is not built/);
+    expect(step8.unlocks).toMatch(/research\/owner-asks\/questions\.json/);
     expect(step8.unlocks).not.toMatch(/the tick's probe reports|colony answers accessibility mail itself/);
     expect(step8.unlocks).toMatch(/discloses that it comes from the company's automated operator/);
     expect(step8.unlocks).toMatch(/published only as the brand's accessibility contact/);
@@ -479,11 +489,17 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(step8).toContain("נגישות");
     expect(step8).toMatch(/Gmail האישי/);
     expect(step8).toContain("research/breadth/BOARD.md");
-    // The mailbox probe and the auto-reply are future work, said as future (review of the builder diff, finding 7).
+    // The probe and the sender were built on 28.9 (scripts/brand_mail.py) and wait for the mailbox; the accessibility
+    // auto-reply is still future work. The document says exactly that, and never that anything already runs.
     expect(step8).not.toContain("בכל ריצה הדוח מראה");
     expect(step8).not.toContain("המערכת עונה בעצמה");
     expect(step8).toMatch(/אחרי שצעד 8 יבוצע/);
-    expect(step8).toMatch(/עוד לא קיימ/);
+    expect(step8).toContain("scripts/brand_mail.py");
+    expect(step8).toMatch(/המענה האוטומטי למיילי נגישות עוד לא נבנה/);
+    // Step 8's secrets live in the brand-mailbox environment limited to main, never as plain repository secrets.
+    expect(step8).toContain("brand-mailbox");
+    expect(step8).toContain("BRAND_MAIL_APP_PASSWORD");
+    expect(step8).not.toMatch(/כסוד בריפו/);
     // Gender-neutral: instructions in the infinitive, no second-person masculine imperatives.
     const todo = step8.slice(step8.indexOf("### מה לעשות"), step8.indexOf("### מה זה עושה"));
     expect(todo.length).toBeGreaterThan(100);

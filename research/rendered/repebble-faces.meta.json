@@ -1,17 +1,17 @@
 {
   "url": "https://apps.repebble.com/faces",
   "slug": "repebble-faces",
-  "fetchedAt": "2026-09-28T17:18:24.472Z",
+  "fetchedAt": "2026-09-28T19:15:51.838Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 36430,
-  "sha256": "8371e01daa2caa65a5eb7230818eb7b35d9b0f142a96f76dd6627cb1819a969e",
+  "byteLength": 36375,
+  "sha256": "0f85ba2031cd010a592ec625add2fbcf8e0fd9701b99c0e8b0f3b861bfa11071",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/repebble-faces.html",
   "textPath": "research/rendered/repebble-faces.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "84406e849dff17a73a75e11c810ab6f2a8f5f340382a252a951c097b6931b06a",
+  "previousSha256": "6cacc40dcbd68d87b5ba8fe536cd9e46881fbb2367e789479ca99b4516e40f49",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -79,7 +79,7 @@ History Blame Safe
 
 6.35 kB
 
-*:last-child]:rounded-b-lg min-h-[100px]"> metadata license: apache-2.0
+metadata license: apache-2.0
 language:
 - en
 base_model:

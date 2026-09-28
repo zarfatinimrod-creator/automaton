@@ -1,0 +1,115 @@
+Overview - Y8 SDK Documentation
+
+Skip to content
+
+Y8 SDK Documentation
+
+Overview
+
+Initializing search
+
+Y8 SDK Documentation
+
+Home
+
+Platforms
+
+Developer Portal
+
+Developer Portal
+
+Overview
+
+Overview
+
+Table of contents
+
+What you need before writing code
+
+Studio
+
+Create Game
+
+SDK Initialization
+
+SDK
+
+SDK
+
+Introduction
+
+Local Development
+
+Player & Authentication
+
+Verifying Players
+
+Advertising
+
+Leaderboards
+
+Achievements
+
+Cloud Storage
+
+Images
+
+Player Profile
+
+Localization
+
+Protection
+
+Analytics
+
+Best Practices
+
+Table of contents
+
+What you need before writing code
+
+Home
+
+Developer Portal
+
+Y8 Developer Portal
+
+Everything outside your game's own code happens in the
+Y8 Developer Portal — creating a
+studio and a game, getting the credentials the SDK needs, uploading builds, and
+submitting for review.
+
+You will spend most of your time in two places:
+
+My Games , which lists your games and is where builds are uploaded.
+
+A game's SDK Initialization tab, which holds the App ID and Game ID your
+integration needs, and where you register
+development addresses .
+
+A game's other tabs cover leaderboard tables, achievements, QA checks and
+review status. They are self-explanatory in the portal itself, and it is the
+authority on what they currently do — this documentation deliberately does not
+mirror them.
+
+What you need before writing code
+
+An account, and a Studio — see Create a Studio . Every game
+belongs to one, and you do not need to be a registered company to have one.
+
+A game , created under that studio — see Create a Game .
+
+The App ID and Game ID from the game's SDK Initialization tab — see
+SDK Initialization .
+
+With those in hand, go to Platforms to install the SDK.
+
+Back to top
+
+Previous
+
+Platforms
+
+Next
+
+Studio

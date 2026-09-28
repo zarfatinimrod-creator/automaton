@@ -1,17 +1,17 @@
 {
   "url": "https://lomdiml.co.il",
   "slug": "lomdiml-home",
-  "fetchedAt": "2026-09-28T17:20:07.619Z",
+  "fetchedAt": "2026-09-28T19:17:13.978Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
   "byteLength": 278551,
-  "sha256": "5410847abd2a1771afc139424f3ca49cceb1a08b20f95749723f4f436a57d125",
+  "sha256": "1ccb8bb4aace68af543a73f19aafe132fbc34ed66512bcc190a1b61c35dda024",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/lomdiml-home.html",
   "textPath": "research/rendered/lomdiml-home.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "38e7039c882a4ade97d073ec5d12566cac762009e1b8c43bf90cb31d31bd24ba",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

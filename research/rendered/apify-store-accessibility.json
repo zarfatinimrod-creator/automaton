@@ -1,6 +1,6 @@
 {
   "data": {
-    "total": 1576,
+    "total": 1581,
     "count": 1000,
     "offset": 0,
     "limit": 1000,
@@ -12553,13 +12553,13 @@
         "name": "threads-scraper",
         "username": "thenetaji",
         "stats": {
-          "totalBuilds": 68,
-          "totalRuns": 34474,
-          "totalUsers": 500,
-          "totalUsers7Days": 31,
-          "totalUsers30Days": 79,
-          "totalUsers90Days": 130,
-          "lastRunStartedAt": "2026-09-28T16:23:37.352Z",
+          "totalBuilds": 69,
+          "totalRuns": 34477,
+          "totalUsers": 499,
+          "totalUsers7Days": 30,
+          "totalUsers30Days": 78,
+          "totalUsers90Days": 129,
+          "lastRunStartedAt": "2026-09-28T17:16:09.633Z",
           "publicActorRunStats30Days": {
             "ABORTED": 1,
             "FAILED": 9,
@@ -13985,12 +13985,12 @@
         "username": "sauliusautomatesit",
         "stats": {
           "totalBuilds": 13,
-          "totalRuns": 8928,
-          "totalUsers": 39,
-          "totalUsers7Days": 13,
-          "totalUsers30Days": 29,
-          "totalUsers90Days": 30,
-          "lastRunStartedAt": "2026-09-28T14:25:22.820Z",
+          "totalRuns": 8931,
+          "totalUsers": 40,
+          "totalUsers7Days": 14,
+          "totalUsers30Days": 30,
+          "totalUsers90Days": 31,
+          "lastRunStartedAt": "2026-09-28T18:10:01.493Z",
           "actorReviewCount": 1,
           "actorReviewRating": 4,
           "bookmarkCount": 1,
@@ -49343,6 +49343,72 @@
         "url": "https://apify.com/jindrich.bar/oebb-ticket-scraper"
       },
       {
+        "title": "YouTube Transcript & Subtitle Scraper",
+        "name": "youtube-transcript-scraper",
+        "username": "herus13",
+        "stats": {
+          "totalBuilds": 22,
+          "totalRuns": 199,
+          "totalUsers": 10,
+          "totalUsers7Days": 1,
+          "totalUsers30Days": 2,
+          "totalUsers90Days": 6,
+          "lastRunStartedAt": "2026-09-27T23:31:49.462Z",
+          "actorReviewCount": 0,
+          "actorReviewRating": 0,
+          "bookmarkCount": 0,
+          "publicActorRunStats30Days": {
+            "ABORTED": 0,
+            "FAILED": 6,
+            "SUCCEEDED": 100,
+            "TIMED-OUT": 0,
+            "TOTAL": 106
+          }
+        },
+        "description": "Scrape transcripts and subtitles with timestamps from any public YouTube video, playlist or channel. Every row carries transcript_text, title, channel_name, language, duration_seconds, view_count and published_at. Export JSON, CSV or Excel.",
+        "categories": [
+          "AI",
+          "DEVELOPER_TOOLS"
+        ],
+        "pictureUrl": "https://images.apifyusercontent.com/wlKq3_DMpW8GhbdyYeyZnUvAk2cZbwsF9DbegjCJPxE/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vQU1LY1JwZFhiTFFtUVB6RnctYWN0b3ItbXY0cGM5VmVhSFNCUWVqdzktT3EycU9UWVd3Yy15b3V0dWJlLXRyYW5zY3JpcHQtc2NyYXBlci5wbmc.webp",
+        "notice": "NONE",
+        "bookmarkCount": 0,
+        "actorReviewRating": 0,
+        "actorReviewCount": 0,
+        "badge": null,
+        "isWhiteListedForAgenticPayments": false,
+        "userFullName": "herus13",
+        "userPictureUrl": "https://images.apifyusercontent.com/3I4GzPXp9OhTyhYayl0AXcE2Th6n_qcbpzjymHsk-qw/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vNG55MENhQkJCeVpqMnFqMmItbUxtNmUwS0MzVzVtTWtCaTQtelpsUjJ3by9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZRVTFMWTFKd1pGaGlURkZ0VVZCNlJuY3RjSEp2Wm1sc1pTMUdaM2xMVURBMVozbEpMV2hsY25Wek1UTXRjSEp2Wm1sc1pTNXdibWMucG5n.webp",
+        "currentPricingInfo": {
+          "minimalMaxTotalChargeUsd": null,
+          "isPPEPlatformUsagePaidByUser": true,
+          "pricingModel": "PAY_PER_EVENT",
+          "isPriceChangeNotificationSuppressed": false,
+          "pricingPerEvent": {
+            "actorChargeEvents": {
+              "apify-actor-start": {
+                "eventTitle": "Actor Start",
+                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
+                "isOneTimeEvent": true,
+                "eventPriceUsd": 0.001
+              },
+              "transcript": {
+                "eventTitle": "Transcript",
+                "eventDescription": "Per video transcript scraped",
+                "isOneTimeEvent": false,
+                "eventPriceUsd": 0.008,
+                "isPrimaryEvent": true
+              }
+            }
+          },
+          "startedAt": "2026-07-18T10:46:13.653Z",
+          "createdAt": "2026-07-18T10:46:14.147Z",
+          "apifyMarginPercentage": 0.2
+        },
+        "id": "mv4pc9VeaHSBQejw9",
+        "url": "https://apify.com/herus13/youtube-transcript-scraper"
+      },
+      {
         "title": "LinkedIn Post Reactions Scraper",
         "name": "linkedin-post-reactions-scraper",
         "username": "qaseemiqbal",
@@ -49582,72 +49648,6 @@
         },
         "id": "HDYelXitjVNmiXqEq",
         "url": "https://apify.com/scrapifier/leboncoin-universal-scraper-real-estate"
-      },
-      {
-        "title": "YouTube Transcript & Subtitle Scraper",
-        "name": "youtube-transcript-scraper",
-        "username": "herus13",
-        "stats": {
-          "totalBuilds": 21,
-          "totalRuns": 199,
-          "totalUsers": 10,
-          "totalUsers7Days": 1,
-          "totalUsers30Days": 2,
-          "totalUsers90Days": 6,
-          "lastRunStartedAt": "2026-09-27T23:31:49.462Z",
-          "actorReviewCount": 0,
-          "actorReviewRating": 0,
-          "bookmarkCount": 0,
-          "publicActorRunStats30Days": {
-            "ABORTED": 0,
-            "FAILED": 6,
-            "SUCCEEDED": 100,
-            "TIMED-OUT": 0,
-            "TOTAL": 106
-          }
-        },
-        "description": "Scrape transcripts and subtitles with timestamps from any public YouTube video, playlist or channel. Every row carries transcript_text, title, channel_name, language, duration_seconds, view_count and published_at. Export JSON, CSV or Excel.",
-        "categories": [
-          "AI",
-          "DEVELOPER_TOOLS"
-        ],
-        "pictureUrl": "https://images.apifyusercontent.com/wlKq3_DMpW8GhbdyYeyZnUvAk2cZbwsF9DbegjCJPxE/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vQU1LY1JwZFhiTFFtUVB6RnctYWN0b3ItbXY0cGM5VmVhSFNCUWVqdzktT3EycU9UWVd3Yy15b3V0dWJlLXRyYW5zY3JpcHQtc2NyYXBlci5wbmc.webp",
-        "notice": "NONE",
-        "bookmarkCount": 0,
-        "actorReviewRating": 0,
-        "actorReviewCount": 0,
-        "badge": null,
-        "isWhiteListedForAgenticPayments": false,
-        "userFullName": "herus13",
-        "userPictureUrl": "https://images.apifyusercontent.com/3I4GzPXp9OhTyhYayl0AXcE2Th6n_qcbpzjymHsk-qw/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vNG55MENhQkJCeVpqMnFqMmItbUxtNmUwS0MzVzVtTWtCaTQtelpsUjJ3by9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZRVTFMWTFKd1pGaGlURkZ0VVZCNlJuY3RjSEp2Wm1sc1pTMUdaM2xMVURBMVozbEpMV2hsY25Wek1UTXRjSEp2Wm1sc1pTNXdibWMucG5n.webp",
-        "currentPricingInfo": {
-          "minimalMaxTotalChargeUsd": null,
-          "isPPEPlatformUsagePaidByUser": true,
-          "pricingModel": "PAY_PER_EVENT",
-          "isPriceChangeNotificationSuppressed": false,
-          "pricingPerEvent": {
-            "actorChargeEvents": {
-              "apify-actor-start": {
-                "eventTitle": "Actor Start",
-                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
-                "isOneTimeEvent": true,
-                "eventPriceUsd": 0.001
-              },
-              "transcript": {
-                "eventTitle": "Transcript",
-                "eventDescription": "Per video transcript scraped",
-                "isOneTimeEvent": false,
-                "eventPriceUsd": 0.008,
-                "isPrimaryEvent": true
-              }
-            }
-          },
-          "startedAt": "2026-07-18T10:46:13.653Z",
-          "createdAt": "2026-07-18T10:46:14.147Z",
-          "apifyMarginPercentage": 0.2
-        },
-        "id": "mv4pc9VeaHSBQejw9",
-        "url": "https://apify.com/herus13/youtube-transcript-scraper"
       },
       {
         "title": "Website Image Scraper — Extract All Images from Any Page",
@@ -60465,6 +60465,82 @@
         "url": "https://apify.com/seemuapps/social-video-downloader-transcriber"
       },
       {
+        "title": "X (Twitter) Media Scraper | $0.40/1K | Photos and Videos",
+        "name": "x-media-scraper",
+        "username": "feedminer",
+        "stats": {
+          "totalBuilds": 45,
+          "totalRuns": 70,
+          "totalUsers": 4,
+          "totalUsers7Days": 0,
+          "totalUsers30Days": 1,
+          "totalUsers90Days": 1,
+          "lastRunStartedAt": "2026-09-27T16:12:51.563Z",
+          "actorReviewCount": 0,
+          "actorReviewRating": 0,
+          "bookmarkCount": 0,
+          "publicActorRunStats30Days": {
+            "ABORTED": 0,
+            "FAILED": 0,
+            "SUCCEEDED": 39,
+            "TIMED-OUT": 0,
+            "TOTAL": 39
+          }
+        },
+        "description": "Export photos, videos and gifs from X (Twitter) accounts or posts. One row per attachment with every video encoding, bitrate, dimensions, duration, alt text, preview image, and the parent post with its author and engagement. Direct links, ready to download, as JSON, CSV or Excel. By FeedMiner.",
+        "categories": [
+          "SOCIAL_MEDIA",
+          "VIDEOS",
+          "DEVELOPER_TOOLS"
+        ],
+        "pictureUrl": "https://images.apifyusercontent.com/TsPma2M9KgYbsGWqr6TPdjUMqd0F3sgEarqQMFf-Ilc/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vaG9aMjRnWGluREh6aU1RS20tYWN0b3ItM2hiaVkybmZNR2ZiTmRoMXctRFV1dU1TWVFwRS1JTUdfOTQ3MS5qcGVn.webp",
+        "notice": "NONE",
+        "bookmarkCount": 0,
+        "actorReviewRating": 0,
+        "actorReviewCount": 0,
+        "badge": null,
+        "isWhiteListedForAgenticPayments": true,
+        "userFullName": "FeedMiner",
+        "userPictureUrl": "https://images.apifyusercontent.com/BP8-sMKY16dafhUsskSsbbPRuc_7ARK-pgrJPK9V0OA/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vTDYtZVRZTHo2d1V4V0tPV3k3a093STBxeldkQ3VKT25NLTBHczd5c2t2WS9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZhRzlhTWpSbldHbHVSRWg2YVUxUlMyMHRjSEp2Wm1sc1pTMWhSSE5KU1doV2FIZDFMVWxOUjE4NU5EWTJMbkJ1WncucG5n.webp",
+        "currentPricingInfo": {
+          "pricingModel": "PAY_PER_EVENT",
+          "apifyMarginPercentage": 0.2,
+          "pricingPerEvent": {
+            "actorChargeEvents": {
+              "media": {
+                "eventTitle": "Media returned",
+                "eventDescription": "One row per photo or video file, with every encoding.",
+                "eventTieredPricingUsd": {
+                  "FREE": {
+                    "tieredEventPriceUsd": 0.0004
+                  },
+                  "BRONZE": {
+                    "tieredEventPriceUsd": 0.0004
+                  },
+                  "SILVER": {
+                    "tieredEventPriceUsd": 0.00036
+                  },
+                  "GOLD": {
+                    "tieredEventPriceUsd": 0.00032
+                  },
+                  "PLATINUM": {
+                    "tieredEventPriceUsd": 0.00032
+                  },
+                  "DIAMOND": {
+                    "tieredEventPriceUsd": 0.00032
+                  }
+                },
+                "isPrimaryEvent": true
+              }
+            }
+          },
+          "createdAt": "2026-09-04T12:33:52.049Z",
+          "startedAt": "2026-09-04T12:33:52.049Z"
+        },
+        "id": "CrPZmLxFE32UibRPc",
+        "url": "https://apify.com/feedminer/x-media-scraper"
+      },
+      {
         "title": "Threads Followers & Following Scraper | No Login",
         "name": "threads-followers-following-scraper",
         "username": "scraping_solutions",
@@ -60542,82 +60618,6 @@
         },
         "id": "saj7rFAmdaZyO8FAW",
         "url": "https://apify.com/scraping_solutions/threads-followers-following-scraper"
-      },
-      {
-        "title": "X (Twitter) Media Scraper | $0.40/1K | Photos and Videos",
-        "name": "x-media-scraper",
-        "username": "feedminer",
-        "stats": {
-          "totalBuilds": 44,
-          "totalRuns": 70,
-          "totalUsers": 4,
-          "totalUsers7Days": 0,
-          "totalUsers30Days": 1,
-          "totalUsers90Days": 1,
-          "lastRunStartedAt": "2026-09-27T16:12:51.563Z",
-          "actorReviewCount": 0,
-          "actorReviewRating": 0,
-          "bookmarkCount": 0,
-          "publicActorRunStats30Days": {
-            "ABORTED": 0,
-            "FAILED": 0,
-            "SUCCEEDED": 39,
-            "TIMED-OUT": 0,
-            "TOTAL": 39
-          }
-        },
-        "description": "Export photos, videos and gifs from X (Twitter) accounts or posts. One row per attachment with every video encoding, bitrate, dimensions, duration, alt text, preview image, and the parent post with its author and engagement. Direct links, ready to download, as JSON, CSV or Excel. By FeedMiner.",
-        "categories": [
-          "SOCIAL_MEDIA",
-          "VIDEOS",
-          "DEVELOPER_TOOLS"
-        ],
-        "pictureUrl": "https://images.apifyusercontent.com/TsPma2M9KgYbsGWqr6TPdjUMqd0F3sgEarqQMFf-Ilc/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vaG9aMjRnWGluREh6aU1RS20tYWN0b3ItM2hiaVkybmZNR2ZiTmRoMXctRFV1dU1TWVFwRS1JTUdfOTQ3MS5qcGVn.webp",
-        "notice": "NONE",
-        "bookmarkCount": 0,
-        "actorReviewRating": 0,
-        "actorReviewCount": 0,
-        "badge": null,
-        "isWhiteListedForAgenticPayments": true,
-        "userFullName": "FeedMiner",
-        "userPictureUrl": "https://images.apifyusercontent.com/BP8-sMKY16dafhUsskSsbbPRuc_7ARK-pgrJPK9V0OA/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vTDYtZVRZTHo2d1V4V0tPV3k3a093STBxeldkQ3VKT25NLTBHczd5c2t2WS9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZhRzlhTWpSbldHbHVSRWg2YVUxUlMyMHRjSEp2Wm1sc1pTMWhSSE5KU1doV2FIZDFMVWxOUjE4NU5EWTJMbkJ1WncucG5n.webp",
-        "currentPricingInfo": {
-          "pricingModel": "PAY_PER_EVENT",
-          "apifyMarginPercentage": 0.2,
-          "pricingPerEvent": {
-            "actorChargeEvents": {
-              "media": {
-                "eventTitle": "Media returned",
-                "eventDescription": "One row per photo or video file, with every encoding.",
-                "eventTieredPricingUsd": {
-                  "FREE": {
-                    "tieredEventPriceUsd": 0.0004
-                  },
-                  "BRONZE": {
-                    "tieredEventPriceUsd": 0.0004
-                  },
-                  "SILVER": {
-                    "tieredEventPriceUsd": 0.00036
-                  },
-                  "GOLD": {
-                    "tieredEventPriceUsd": 0.00032
-                  },
-                  "PLATINUM": {
-                    "tieredEventPriceUsd": 0.00032
-                  },
-                  "DIAMOND": {
-                    "tieredEventPriceUsd": 0.00032
-                  }
-                },
-                "isPrimaryEvent": true
-              }
-            }
-          },
-          "createdAt": "2026-09-04T12:33:52.049Z",
-          "startedAt": "2026-09-04T12:33:52.049Z"
-        },
-        "id": "CrPZmLxFE32UibRPc",
-        "url": "https://apify.com/feedminer/x-media-scraper"
       },
       {
         "title": "Instagram Post Comments Scraper – Data Export",
@@ -70087,90 +70087,6 @@
         },
         "id": "kxa3cB2B6ApR5lfvE",
         "url": "https://apify.com/lofomachines/google-maps-places-contact-scraper"
-      },
-      {
-        "title": "Leafly Dispensary Scraper",
-        "name": "leafly-scraper",
-        "username": "solidcode",
-        "stats": {
-          "totalBuilds": 7,
-          "totalRuns": 113,
-          "totalUsers": 2,
-          "totalUsers7Days": 1,
-          "totalUsers30Days": 1,
-          "totalUsers90Days": 1,
-          "lastRunStartedAt": "2026-09-27T14:52:58.684Z",
-          "actorReviewCount": 0,
-          "actorReviewRating": 0,
-          "bookmarkCount": 0,
-          "publicActorRunStats30Days": {
-            "ABORTED": 0,
-            "FAILED": 0,
-            "SUCCEEDED": 28,
-            "TIMED-OUT": 0,
-            "TOTAL": 28
-          }
-        },
-        "description": "[💰 $3.00 / 1K] Extract Leafly dispensary data at scale — names, addresses, phone, hours, ratings, delivery & pickup options, payment methods, licensing, and optional customer reviews. Search by city or state, or paste specific dispensary URLs.",
-        "categories": [
-          "AGENTS",
-          "AUTOMATION",
-          "LEAD_GENERATION"
-        ],
-        "pictureUrl": "https://images.apifyusercontent.com/_3F5rnOzLxg7XCnkDwGb3m2p4k2_EAkKi3W5I4rwB4A/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vc01VSWpTcEpUMXpia1BpTk0tYWN0b3ItWlNJQ0pKY1ExdXRRZ3FQWDktSUN1dXVua3ZMYy1sZWFmbHkucG5n.webp",
-        "notice": "NONE",
-        "bookmarkCount": 0,
-        "actorReviewRating": 0,
-        "actorReviewCount": 0,
-        "badge": null,
-        "isWhiteListedForAgenticPayments": true,
-        "userFullName": "SolidCode",
-        "userPictureUrl": "https://images.apifyusercontent.com/pOybr7SLIDt4uWHCBExLbYFkPZpc5-7gG1nnWMwTEgc/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vVmN6WEh5MHJwY3VXMkZ5OVE0Q1djQjg4dGFBZkhBU1k1VXptMUZSMmtmby9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZjMDFWU1dwVGNFcFVNWHBpYTFCcFRrMHRjSEp2Wm1sc1pTMDNZVW81Y0dKWlZXTkpMVTF2WkdWeWJsOXphR2xsYkdSZmJHOW5iMTkzYVhSb1gzUmxZV3hmY0dGMGFGOGxNamd4SlRJNUxuQnVady5wbmc.webp",
-        "currentPricingInfo": {
-          "pricingModel": "PAY_PER_EVENT",
-          "apifyMarginPercentage": 0.2,
-          "reasonForChange": "Set flat pay-per-result pricing (Gold $3.00 / 1K) with tiered discounts and a $0.005 actor-start fee.",
-          "pricingPerEvent": {
-            "actorChargeEvents": {
-              "apify-default-dataset-item": {
-                "eventTitle": "result",
-                "eventDescription": "Single result in the default dataset.",
-                "isOneTimeEvent": false,
-                "isPrimaryEvent": true,
-                "eventTieredPricingUsd": {
-                  "FREE": {
-                    "tieredEventPriceUsd": 0.0036
-                  },
-                  "BRONZE": {
-                    "tieredEventPriceUsd": 0.0034
-                  },
-                  "SILVER": {
-                    "tieredEventPriceUsd": 0.0032
-                  },
-                  "GOLD": {
-                    "tieredEventPriceUsd": 0.003
-                  },
-                  "PLATINUM": {
-                    "tieredEventPriceUsd": 0.003
-                  },
-                  "DIAMOND": {
-                    "tieredEventPriceUsd": 0.003
-                  }
-                }
-              },
-              "apify-actor-start": {
-                "eventTitle": "Actor Start",
-                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
-                "isOneTimeEvent": true,
-                "eventPriceUsd": 0.005
-              }
-            }
-          },
-          "createdAt": "2026-07-24T22:59:19.321Z",
-          "startedAt": "2026-07-24T22:59:19.321Z"
-        },
-        "id": "ZSICJJcQ1utQgqPX9",
-        "url": "https://apify.com/solidcode/leafly-scraper"
       }
     ]
   }

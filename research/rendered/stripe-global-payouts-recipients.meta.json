@@ -1,11 +1,11 @@
 {
   "url": "https://docs.stripe.com/global-payouts/recipient-requirements",
   "slug": "stripe-global-payouts-recipients",
-  "fetchedAt": "2026-09-28T17:17:48.276Z",
+  "fetchedAt": "2026-09-28T19:15:17.385Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 476284,
-  "sha256": "8da3a03102ab4fc72d554fc230de70875d664c6c05ae915295a2de3311291d29",
+  "byteLength": 476128,
+  "sha256": "ad7fdcd43f35b0a60f23dc786d249a9fa150227ee9eb3fbc53dc1b80a04378ce",
   "truncated": false,
   "redacted": 1,
   "error": null,
@@ -13,6 +13,6 @@
   "textPath": "research/rendered/stripe-global-payouts-recipients.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "9b6b4175f4f6f193e98479ac5c84fbe682886b81b035ca878e8dfa20ac033481",
+  "previousSha256": "8b379209f4625e3b314ea2a15eaf88ddfc0c85c8c9657a41dee4b5787e837333",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }
