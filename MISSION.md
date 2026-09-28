@@ -279,7 +279,8 @@ tool description, not a support address. The company has a name of its own and t
 name on the outside.
 
 Applied, in the places it was already leaking: the MCP server's npm scope is
-`@bediyuk/mcp-il-tools`, and its registry name is `com.bediyuk/il-tools` rather than
+`@bediyuk/mcp-il-tools` (renamed `@mehudak/mcp-il-tools` with the brand decision of 27.9.2026, before either was
+published), and its registry name is `com.bediyuk/il-tools` (now `com.mehudak/il-tools`) rather than
 `io.github.<username>/…`. That second change is not cosmetic — the registry's GitHub
 authentication **derives the namespace from the account**, so the only way to publish without
 the username in the identifier is DNS verification against a company domain. The domain is

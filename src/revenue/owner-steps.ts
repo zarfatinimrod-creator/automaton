@@ -139,13 +139,13 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "למזג את PR #2 ב-GitHub (או להגיד לי \"תמזג\")",
     minutes: [2, 2],
     unlocks:
-      "Consent, not identity: it puts colony.yml and every future workflow on `main`, and GitHub runs scheduled work only there. Nothing CI-executed — the Apify push, the Netlify deploys, the hourly ledger sync — runs before it, so it gates the MEASUREMENTS and not only the hourly report. Since 27.9.2026 the owner's standing consent covers every later merge: the agent merges its own green pull requests and publishes under the brand without asking each time, until the owner says \"עצור\". The same message said \"תמזג\", and PR #3 was merged on it (merge commit 61fae4e, 27.9.2026 22:36 UTC).",
+      "Consent, not identity: it puts colony.yml and every future workflow on `main`, and GitHub runs scheduled work only there. Nothing CI-executed — the Apify push, the Netlify deploys, the scheduled ledger sync — runs before it, so it gates the MEASUREMENTS and not only the hourly report. Since 27.9.2026 the owner's standing consent covers every later merge: the agent merges its own green pull requests and publishes under the brand without asking each time, until the owner says \"עצור\". The same message said \"תמזג\", and PR #3 was merged on it (merge commit 61fae4e, 27.9.2026 22:36 UTC).",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: null,
     doneOn: {
       date: "2026-09-22",
       evidence:
-        "merge commit 31cda66 (PR #2); colony.yml runs hourly on main since. PR #3 merged 27.9.2026 22:36 UTC (merge commit 61fae4e) on the owner's \"תמזג\" of that day, which also gave standing consent to merge and publish under the brand",
+        "merge commit 31cda66 (PR #2); colony.yml runs on main since, scheduled hourly (GitHub fired it 29 times in 122.6 hours to 28.9.2026 00:43 UTC, about every 4.4 h). PR #3 merged 27.9.2026 22:36 UTC (merge commit 61fae4e) on the owner's \"תמזג\" of that day, which also gave standing consent to merge and publish under the brand",
     },
   },
   {
