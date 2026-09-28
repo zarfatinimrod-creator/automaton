@@ -1,17 +1,17 @@
 {
   "url": "https://portal.astro.build/api/themes?price[]=paid",
   "slug": "astro-themes-paid",
-  "fetchedAt": "2026-09-28T13:17:03.845Z",
+  "fetchedAt": "2026-09-28T16:10:39.506Z",
   "status": 200,
   "contentType": "application/json",
   "byteLength": 541741,
-  "sha256": "8e55e08a10da27f9e1cb90d0406bb74d8f9d816a86ad2b09e21a21d407c9a297",
+  "sha256": "566db195968a02c3bbb99fc5f8667b0eff9d08af2c1da79dcb4b17430dd0d223",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/astro-themes-paid.json",
   "textPath": null,
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "9bd8dc2dce8e3f28692a5ba66f97318b69500549e6b34eadb95a402e93a0f768",
+  "previousSha256": "8e55e08a10da27f9e1cb90d0406bb74d8f9d816a86ad2b09e21a21d407c9a297",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

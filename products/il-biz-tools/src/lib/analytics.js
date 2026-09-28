@@ -14,6 +14,11 @@
  *   persistence: 'memory'          https://posthog.com/docs/libraries/js/persistence
  *   autocapture / capture_pageview / disable_session_recording
  *                                  https://posthog.com/docs/libraries/js/config
+ *   capture_dead_clicks, capture_heatmaps, capture_exceptions,
+ *   capture_performance, disable_surveys, mask_all_text,
+ *   mask_all_element_attributes    posthog-js packages/types/src/posthog-config.ts
+ *                                  and the extensions that read them (retrieved
+ *                                  2026-09-28 through Context7, /posthog/posthog-js)
  * `cookieless_mode: 'always'` means PostHog never stores anything in cookies or
  * in local/session storage; `persistence: 'memory'` says the same thing from
  * the other side and is kept as a belt-and-braces default for older SDK builds.
@@ -42,6 +47,18 @@ export function buildPostHogSnippet(cfg) {
     autocapture: false,
     capture_pageview: true,
     disable_session_recording: true,
+    // Every capture below falls back to the PostHog PROJECT's settings when the
+    // page leaves it unset (posthog-js reads a remote config for dead clicks,
+    // heatmaps and exception autocapture), so a toggle in PostHog's UI could
+    // start sending element text - on pcn874.html a table cell holds bytes of
+    // the user's file - without a change here. Each is pinned off in code.
+    capture_dead_clicks: false,
+    capture_heatmaps: false,
+    capture_exceptions: false,
+    capture_performance: false,
+    disable_surveys: true,
+    mask_all_text: true,
+    mask_all_element_attributes: true,
   };
   return {
     provider: 'posthog',

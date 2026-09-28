@@ -1,0 +1,360 @@
+App Market Guidelines
+
+Overview
+Extend Websites
+
+Build Apps
+
+Go Headless
+References
+
+Changelog
+
+Build Apps
+
+Get Started
+
+Overview
+
+Quick Start
+
+Templates
+
+Tutorials
+
+Get an Idea
+
+Develop Your App
+
+About Developing Apps
+
+App Workspace
+
+Development Sites
+
+Extensions
+
+Develop an App with the CLI
+
+Develop a Self-Managed App
+
+Develop an App with Blocks
+
+Build with AI
+
+API Integrations
+
+Auth
+
+Design
+
+Launch Your App
+
+About Launching Apps
+
+Pricing and Billing
+
+Market Listing
+
+Localization
+
+Legal and Security
+
+App Distribution
+
+About App Distribution
+
+Add Security and Privacy Information
+
+Submit Your First App Version
+
+Common Reasons for App Rejection
+
+App Market Guidelines
+
+Test Your App
+
+Install Your App
+
+App Promotion
+
+Manage Your App
+
+User Support
+
+Versioning
+
+Data and Analytics
+
+Contact Us
+
+In This Article General
+Payment and pricing
+App experience
+Technical
+Security
+Legal/Privacy
+Marketing
+See also
+
+Wix App Market Guidelines
+
+Our guidelines are written with Wix users and their site visitors/customers in mind. Following our guidelines won't just improve the chances of your app being accepted into the App Market - it will also improve the likelihood that your app will be successful and popular.
+
+Keep in mind that these guidelines are not exhaustive. They are subject to change and you'll need to comply with new guidelines as they are updated.
+
+These guidelines come in addition to the terms of the App Market Partner Agreement , Wix’s general Terms of Use and Privacy Policy (collectively: “Wix’s Terms”). In the case of an inconsistency between these guidelines and Wix’s Terms, Wix’s Terms shall prevail.
+
+We hope that these guidelines will help you easily create, submit, and manage successful apps in the Wix App Market.
+
+You can contact us at any time about these guidelines, or with any other questions.
+
+General
+
+App Submission
+
+Your app must integrate with Wix websites or with a Wix service.
+
+When submitting multiple apps, make sure they’re clearly different from one another.
+
+Tailor your app to Wix users. (If you have an existing app on other platforms, change it to suit Wix-specific workflows.)
+
+Wix will review your app both before it is added to the App Market, and as we deem relevant once your app is live. When you submit your app for review, provide an active demo account, login information and any resources that may be needed. Keep this demo account active as long as your app is in the Wix App Market.
+
+For more subtle features and in-app purchases, include detailed explanations in the App Review notes, as well as supporting documentation where needed. If a part of your app is inaccessible (e.g., if it’s geo-locked or restricted in another way), provide resources necessary to fully review the functionality.
+
+Address any issues we bring up during the review process as soon as you can, and always within the allocated time-frame. If we request corrections, don't make other, unrelated changes – this will complicate the review process, possibly leading to further delays and even rejection.
+
+The Wix App Market is meant for public apps only. Don't submit private apps designed only for specific clients, friends or family use.
+
+Basic setup features must be free, including color, font and text customization, site SEO, accessibility, security and GDPR settings.
+
+User Reviews
+
+Don’t force users to rate, review, share or follow the app on social media, download other apps, or take other similar actions in order to use the app, access functionality or content.
+
+Don't prompt users to give you a review in exchange for a discount/free trial/gift card/etc.
+
+Don't write or solicit others to write fake reviews. All fake reviews will be removed and we will consider additional steps against those who generate such reviews.
+
+Promotion/Redirection
+
+Don't promote, or redirect users to, other distribution platforms.
+
+Support and Customer Relationship Management
+
+You should support all users – both paying and free – for the lifetime of your app.
+
+Include an active customer support email address (a current email address that is regularly maintained and monitored), so that users can easily get support when they need it.
+
+Include clear documentation and instructions specific to Wix in your app.
+
+Treat Wix users with respect when responding to their comments, keep your responses targeted and don't include personal information, spam, or marketing. Also keep in mind that Wix App Market customer reviews are an important part of the app experience and will influence your app's overall success.
+
+Cause For Immediate Rejection
+
+If we find your app to be defamatory, libelous, obscene, harassing, threatening, incendiary, abusive, racist, offensive, deceptive or fraudulent, encouraging of criminal or harmful conduct, or otherwise violating the rights of Wix or any Third party (including any intellectual property, privacy, or contractual rights), it will be rejected immediately.
+
+Keep all dealings with Wix legal and fair. If we find that you have engaged in any unfair, illegal or unethical behavior, e.g. cheating the review process, stealing user data, copying someone else’s work, manipulating ratings, etc, your app(s) will be removed from the Wix App Market and you’ll be banned from Wix Developers.
+
+You are responsible for ensuring that all aspects of your app are fully compliant with our guidelines. This includes the use of ad networks, analytics services, third-party SDKs, etc.
+
+Payment and pricing
+
+Apps that include any type of pricing model, including a subscription service, must follow these guidelines:
+
+Accepting Payments
+
+All apps that collect money for any purpose (including donations) must implement the Wix Billing System, unless we have notified you that we are willing to make an exception.
+
+Pricing
+
+Your app's pricing must accurately reflect the total cost to the user. If integration is free but a service costs money, the price listing must list the service's price.
+
+If your app includes in-app purchases, make sure the description, screenshots and previews indicate which features require purchase.
+
+Your app's pricing is up to you. However, Wix won’t distribute apps or in-app purchase items that are clearly overpriced, and such behavior may lead to rejection.
+
+Proper mechanisms for unlocking content and functionality are discussed in the Wix Developers documentation . Don't use your own mechanisms to unlock content or functionality, such as license keys, QR codes, etc.
+
+Apps may not include buttons, external links, or other calls to action that direct customers to purchasing mechanisms other than the Wix Billing System. Note: If you're a Wix Partner that offers extra professional services, you can link to your Wix Marketplace profile.
+
+If a user purchases credits via in-app purchase, these should not expire.
+
+If you raise the app's price or change the payment or subscription model, the change can only apply to new users. Every user who paid for the app must retain full access to the functionality they paid for, e.g., customers who have already paid for a premium version of your app must have continued access to the full app if you introduce a subscription model for new customers, even if you added new functionality since they upgraded.
+
+App experience
+
+Use these guidelines to enhance your app experience and build strong relationships with your users:
+
+Design and Customization
+
+Display demo data (fictional example information) when your app is first added to a Wix site - no Lorem ipsum texts.
+
+Use fictional account information in demos and placeholder content.
+
+Open new windows as Wix popup or modal windows within the website component. Don't use browser native popups, except as required for OAuth.
+
+Functionality
+
+If you offer more than one app in the Wix App Market, each one must work as a standalone. It should not be possible to use one app to configure another.
+
+User Experience
+
+Make your app's installation, configuration, and management flows intuitive and easy to follow.
+
+Make your app's functionality clear. Don't include any hidden or undocumented features, and don't market your app as including content or services it doesn't actually have.
+
+All plugin extension content must directly relate to the core functionality of the host app. The content must also be appropriately contextualized within its intended placement. Any deviation from this policy is not permitted.
+
+Advertising, Credits and Third-Party Data
+
+Don't build any distracting or annoying behavior into your app. Don't use JavaScript alert/confirmation boxes.
+
+Don't display ads to Wix site owners, including ads for your product, third party ads, and any info that isn’t relevant to Wix users. However, you may promote other apps you developed within your app in an unobtrusive way. See our guidelines on how to Cross-Promote Your Apps .
+
+Don't display ads to Wix site visitors, including ads for your product and "powered by" watermarks. If displaying ads to site visitors is your app's sole purpose, you must obtain all required permits and licenses for displaying these ads.
+
+Technical
+
+These specifications and recommendations will help you get your app to the technical level our users expect:
+
+Loading Times
+
+Optimize your app so that it has fast start up (400ms or faster) and load times.
+
+Errors and Bugs
+
+QA your app before you submit it for review, and follow our testing guidelines . Submissions with errors and bugs will be rejected.
+
+Multiple App Iterations
+
+Differentiate between each of your website components in the same site, as users can add more than one and you must display the relevant settings panel, enabling users to customize each one separately.
+
+If a user copies their site, the app content and settings should be copied as well. Don't just install a default version containing default data.
+
+Mobility and Accessibility
+
+Make sure your app is responsive and optimized for all screens sizes, and every device.
+
+Website components must be accessible to all site visitors – including those with disabilities.
+
+Your dashboard app must be full screen (width of at least 1200px). If your app is larger than 1200px, the design should be responsive, to accommodate smaller screens.
+
+SEO
+
+If your app has a widget component, don’t use <h1> tags in its HTML document.
+
+If your app will have content that is meaningful for SEO, optimize your app for SEO according to the industry best practices.
+
+Front and Backend
+
+Include all customization options necessary for accessibility in the app settings panel, e.g., if users add images to your app, you must allow them to customize alt-text for each image from the settings panel.
+
+UTF-8-encode your app to allow users and site visitors to enter text in different languages.
+
+Security
+
+App Accessibility and User Security
+
+Never ask for more permissions than the ones required for your app to function as intended. Determine the scope of your app permissions thoroughly before requesting permissions in your app's dashboard.
+
+As per OWASP, your security must include stored salted password hashes, not actual passwords.
+
+Protect your app against cross-site request forgery attacks (CSRF), cross-site scripting attacks (XSS) and other security vulnerabilities.
+
+Your app must be served over HTTPS using a valid SSL certificate.
+
+Don't force users to log in or request a user's personal information unless it is directly relevant to the core functionality of your app or if it’s required by law (pulling basic profile information, sharing to social networks, or inviting friends to use the app are NOT considered core app functionality). Users must also be able to revoke their social media account credentials and disable access to data between the app and social networks from within the app.
+
+Secure and verify each user’s identity (Instance ID).
+
+Keep data secure. Make sure all sensitive data is encrypted - and not stored in cookies.
+
+App dashboards
+
+If your app has an external dashboard, it must also include an interface for users to interact with. Once users authenticate the app through OAuth or approve app changes, direct them to this interface.
+
+Payments & Financial Security
+
+Only allow site owners to see payments and other sensitive information. Site owners may invite contributors to access their website, including installed apps, but these contributors should not have access to sensitive information such as payments.
+
+Your app must keep its app secret key and OAuth refresh tokens secure.
+
+All apps that collect financial data for payments must comply with applicable laws as well as the Payment Card Industry Data Security Standards ("PCI-DSS") and the Payment Application Data Security Standards ("PA-DSS").
+
+Immediate Rejection
+
+Your app will be rejected if it attempts to install malicious software, programs or viruses onto users’ computers or websites, run any background services not required for the purpose of the app or use users' websites or resources without permission (e.g., as part of botnet or crypto-mining).
+
+Legal/Privacy
+
+Adhere to these legal and privacy guidelines, in addition to all relevant laws:
+
+General
+
+Your app must comply with the terms of the Partner Agreement and Wix's terms of use and not expose users to legal problems or risk.
+
+You may not use the app with bad faith, for any malicious or illegal purpose or exploit or try to exploit loopholes in these guidelines or in Wix’s terms of use or privacy policy.
+
+Content
+
+Conform to the Wix Brand Guidelines.
+
+Don't include illegal content or infringe any of Wix's or any third party's rights.
+
+Don’t include unauthorized trademarked names or branded content anywhere in your app. This includes images, names, description text, and content/file names which you don't own or hold the proper licence to. Any such unauthorized content will be rejected.
+
+Don't imply that you're an individual, public figure or company/organization unless you have the (legal) right to do so. {You'll need to provide authorization on request (e.g., a contract or legal agreement).}
+
+If your app uses, accesses, monetizes access to, or displays content from third party services, make sure you're allowed to do so under the service’s terms of use. You'll also need to provide authorization on request.
+
+Don't facilitate illegal file sharing or allow anyone to save, copy, extract, convert, download or transmit media from third party sources (e.g. Apple Music, YouTube, etc.) without explicit authorization and licensing from those sources (you'll need to provide documentation on request), or from Wix. Keep in mind that streaming audio/video content may also violate Wix's Terms of Use.
+
+User Information and Data
+
+If your app requires user data, make sure that the collection, storage, and processing of this data is transparent and in compliance with applicable law.
+
+Your app must include a privacy policy and Terms of Use .
+
+Your app must comply with site visitor's consent policies .
+
+If your app may be used by users in the European Union, your app should comply with GDPR .
+
+Don't send unsolicited messages to Wix users. If your app runs marketing or advertising campaigns, you may only send emails to users who have fully opted-in and expressly consented to receive emails from you. You must allow the users to opt-out from receiving your messages. Don't send any messages to a recipient who has opted-out.
+
+Any messages you send, for any purpose, via email, SMS or other means, must comply with applicable law.
+
+Don’t cause Wix to violate any laws or any third party rights, through any act or omission, including but not limited to privacy rights.
+
+Don't collect user-of-user data for your own use. You may not use information from CRM, Orders, or other APIs that access user-of user-data, to build a contact database for your own use, or to sell/distribute to third parties.
+
+Marketing
+
+Use these guidelines when creating promotional materials for your app:
+
+General
+
+Our review team may edit any of your app's marketing material if it doesn't conform to our rules or to correct spelling/grammar. This includes your app’s title, category, description text and keywords. We'll never edit your app’s price without your knowledge.
+
+Make sure your app is focused on the Wix experience. Don’t include names, icons, or imagery of other platforms in your app, unless there is specific, approved functionality that requires this.
+
+Sales and Special Offers
+
+Submissions promoting special offers (like a free tutorial, free guidebooks, try before you buy, etc.) will be rejected.
+
+Don’t promote your product as being included in a Wix sale or feature unless it is actually included.
+
+Third-Party Affiliation
+
+When adding the logo of a third party that your product is compatible with, don’t violate that party's brand guidelines. You may also not imply that your product is directly affiliated with that party's content.
+
+See also
+
+Wix Developers Terms of Use Policy
+
+Wix App Market Partner Agreement
+
+Last updated: 11 May 2026
+Did this help?
+Yes No

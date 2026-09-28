@@ -9,42 +9,42 @@ Watchfaces Apps Search
 Top Picks (changes daily) SEE ALL
 91 Dub v5
 
-263
+264
 R2D2's FACE
 
 1.4K
 Sellouts
 
-225
+226
 TRIPLE SENSOR
 
-684
+685
 Triangles
 
 305
 Solar & Moon Arc
 
-87
+91
 
 All Watchfaces SEE ALL
+Dymaxion
+
+42
+Happy Weather
+
+66
 Day and Night Time Face
 
-3
-Reel Time
+5
+Carbon Ion
 
-28
-Ghibli Time
+22
+Binary Watch
 
-29
-Photo Face
+44
+Nightscout Supercgm
 
-57
-Eclipz
-
-4
-Hourglass
-
-4
+59
 
 Most Loved SEE ALL
 YWeather
@@ -58,7 +58,7 @@ TimeStyle
 16K
 Weather Land
 
-11.5K
+11.6K
 91 Dub v4.0
 
 10K
@@ -69,10 +69,10 @@ Mario Time Watchface
 Rebble Appstore Feed SEE ALL
 Boykisser Clock
 
-3
+4
 Fuzzy Text Watch Back
 
-1
+2
 CrystalTick
 
 1

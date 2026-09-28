@@ -8,7 +8,9 @@ the two-hour occupancy scan of the Hebrew/Israeli App Market categories and eith
 **Kill list (BOARD-LOOP.md:162):** Israel not payable; the floor forfeits or accrues without moving on any plausible
 ceiling; the niche has free incumbents; developer terms impose a support SLA or human conversations; or no niche can be named.
 
-**Status (after tick 5, 28.9.2026): NEEDS_MORE.** The security best-practice page is advice only. It names no third-party tester, tool or evidence for the pre-submission security test (`wix-partner-agreement-body.txt:185`) or for the documented multi-developer review (`:181`), so the ₪0 question moves on to the App Market guidelines (ZERO-TESTS row 57). Tipalti's payees FAQ returned 403, so Israel-as-payee is still open too. See "Tick 5 reading" at the end.
+**Status (after tick 6, 28.9.2026): NEEDS_MORE.** The App Market guidelines add no kill: support means a monitored email with no response clock, there is no AI rule, and the company-info fields have no personal-name slot. But Wix's own review (AI plus a review team) asks for a demo account and notes, not a security report, and it cannot be the pre-submission third-party test that the agreement requires (`wix-partner-agreement-body.txt:185`), which prevails over the guidelines (`wix-app-market-guidelines.txt:106`). Tipalti's US-ROW coverage page returned 403, so Israel-as-payee is still open. See "Tick 6 reading" at the end.
+
+Earlier: **Status (after tick 5, 28.9.2026): NEEDS_MORE.** The security best-practice page is advice only. It names no third-party tester, tool or evidence for the pre-submission security test (`wix-partner-agreement-body.txt:185`) or for the documented multi-developer review (`:181`), so the ₪0 question moves on to the App Market guidelines (ZERO-TESTS row 57). Tipalti's payees FAQ returned 403, so Israel-as-payee is still open too. See "Tick 5 reading" at the end.
 
 Earlier: **Status (after tick 4, 28.9.2026): NEEDS_MORE.** The agreement body confirms that the $200 floor rolls over and is forfeited only for breach, and it does not exclude Israel, but it names no payee countries and adds an unpriced pre-submission third-party security test (`wix-partner-agreement-body.txt:185`), so the ₪0 check comes next. See "Tick 4 reading" at the end.
 
@@ -488,3 +490,49 @@ So the payout-form Israel question is still gated on a Tipalti reading that no f
 The security page is advice only. It names no third-party tester, tool, questionnaire or artefact, says nothing about the multi-developer review, and does not repeat the six-cloud rule. The ₪0 question for agreement:185 and agreement:181 is therefore still open: this page neither settles it nor makes it worse. The Israel-as-payee half is also still open after Tipalti's 403 (Tick 5 above).
 
 **Single next check:** read Batch B row 57, the App Market guidelines (`https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines`). Of the queued pages, it is the likeliest to describe the review at submission and to say whether that review asks for a security report. If it is also silent, the fallback is a written question to Wix from the brand mailbox (owner step 8): what evidence satisfies agreement:185?
+
+## Tick 6 reading (28.9.2026): App Market guidelines and company info
+
+**Read:** `research/rendered/wix-app-market-guidelines.txt` (360 lines, with navigation at `:1-98` and the article at `:100-358`) and `research/rendered/wix-add-company-info.txt` (127 lines, with the article at `:93-125`), both in full. Meta: fetchedAt 2026-09-28T16:11:57Z and 16:11:58Z, status 200, `truncated` false, `firstFetch` true, sha256 `f9e7e888…` and `10222f0d…` (render commit 5d597e4). Each `.html` embeds the article's Markdown source, which matches the `.txt`. The guidelines source has 13 links, and none of them goes to a security-report form. Citations are shortened to `guidelines:<line>`, `company:<line>` and `agreement:<line>` (`wix-partner-agreement-body.txt`). `guidelines:358` says "Last updated: 11 May 2026", which is older than the agreement version in force (agreement:7, June 30, 2026). [RENDERED]
+
+**Tipalti refused again (ZERO-TESTS row 56).** `tipalti-payment-methods-us-row.meta.json` records status 403, byteLength 0 and fetchedAt 2026-09-28T16:11:56Z. This is the second Tipalti Zendesk 403 after tick 5's payees FAQ, so Israel-as-payee is still UNKNOWN. [RENDERED]
+
+**(1) The review at submission**
+- `guidelines:122` "Wix will review your app both before it is added to the App Market, and as we deem relevant once your app is live. When you submit your app for review, provide an active demo account, login information and any resources that may be needed. Keep this demo account active as long as your app is in the Wix App Market." [RENDERED]
+- Wix does the review itself. `guidelines:338` mentions "Our review team", and a changelog blurb embedded in the page (`wix-app-market-guidelines.html:193`, dated 2026-07-27) says "Wix now runs an automated AI review that checks your app against the App Market requirements." [RENDERED]
+- The review asks for three things: the demo account (`:122`), "detailed explanations in the App Review notes, as well as supporting documentation where needed" (`:124`), and fixes made "always within the allocated time-frame" (`:126`). [RENDERED]
+- The Security section (`:256-284`) sets build rules and asks for no proof. `:262` "As per OWASP, your security must include stored salted password hashes, not actual passwords." `:264` "Protect your app against cross-site request forgery attacks (CSRF), cross-site scripting attacks (XSS) and other security vulnerabilities." `:266` HTTPS. `:284` PCI-DSS and PA-DSS for apps that "collect financial data for payments". [RENDERED]
+- The page never asks for a report, a pentest or a questionnaire. "report", "penetration", "questionnaire", "evidence", "sans", "audit", "attest", "certif" and "scan" each get 0 hits. All 10 "third party" hits (`:156-350`) are about rights, ads, SDKs, content or logos. [RENDERED absent]
+- Wix's review does not satisfy agreement:185 as that clause is worded. The clause requires review "by a third party ... before submitting the App". Wix is a party to the agreement, not a third party, and its review runs at submission, not before it. [INFERENCE]
+- Silence here does not waive the clause: `guidelines:106` "In the case of an inconsistency between these guidelines and Wix's Terms, Wix's Terms shall prevail." Agreement :181, :183, :185 and :189 still bind at submission (tick 3). The review probably will not check for a test report, but a breach found later lets Wix forfeit unpaid revenue (agreement:537). [INFERENCE]
+
+**(2) Support obligations**
+- `:146` "You should support all users – both paying and free – for the lifetime of your app." [RENDERED]
+- `:148` "Include an active customer support email address (a current email address that is regularly maintained and monitored), so that users can easily get support when they need it." [RENDERED]
+- `:150` asks for Wix-specific documentation. `:152` says replies to user comments must not "include personal information, spam, or marketing". [RENDERED]
+- No response clock is set: "hours" and "business day" get 0 hits. The four "within" hits are the review time-frame (`:126`) and layout wording. No phone, chat or human contact is required. [RENDERED]
+- An agent-run brand mailbox checked every day meets `:148`, and `:152` is compatible with the brand-only rule. The support kill criterion is not triggered. [INFERENCE]
+
+**(3) AI or automation rules**
+- There are none. "AI" appears once, as the navigation item `:43` "Build with AI". "automat", "artificial" and "LLM" get 0 hits, and the only "bot" is "botnet" (`:288`). [RENDERED]
+- The rules nearest to agents are the ban on "cheating the review process ... manipulating ratings" (`:158`) and the ban on fake reviews (`:138`). Nothing on this page bars an app that an agent builds and supports. [RENDERED / INFERENCE]
+
+**(4) What the listing publishes about the company**
+- `company:95` "Your app's listing in the Wix App Market includes basic info about your company." [RENDERED]
+- The fields (`company:103-113`) are a logo, "Company name: Max 23 characters, including spaces.", "Company description: Max 1,200 characters, including spaces.", "Company address", "Company website" and "Privacy policy link". [RENDERED]
+- The page does not say which fields are public or required: "public", "display", "required", "optional", "email", "legal" and "individual" each get 0 hits in the article. It has no legal-name, personal-name or contact-email field. [RENDERED absent]
+- Brand-only rule: nothing rendered puts an individual's legal name on the listing, and the brand fits the 23-character name field. [INFERENCE]
+- Risk (a): if "Company address" is shown and the business has no address of its own, the listing would publish a home address. A PO box or virtual address would avoid that, and its price is not known. [INFERENCE]
+- Risk (b): `guidelines:308` "Don't imply that you're an individual, public figure or company/organization unless you have the (legal) right to do so. {You'll need to provide authorization on request (e.g., a contract or legal agreement).}" A brand presented as a company may have to prove its right to the name, but only to Wix and only on request. [RENDERED / INFERENCE]
+- Tick 2's "registering your company" (wix-payout-account.txt:134) is still unexplained.
+
+**(5) Money up front**
+- Nothing on the page has a price. "fee" gets 0 hits, and "cost" (`:172`) and "premium" (`:184`) refer to what the user pays. [RENDERED]
+- `:168` "All apps that collect money for any purpose (including donations) must implement the Wix Billing System". Using it means the app never collects card data, which keeps it clear of PCI-DSS (`:284`). [RENDERED / INFERENCE]
+- The one likely up-front cost is still agreement:185's unpriced third-party test. [INFERENCE]
+
+**Verdict for candidate 11 (Wix App Market): NEEDS_MORE**
+
+The guidelines add no kill criterion. Support is a monitored email with no clock (`:148`), there is no AI rule, and none of the company fields asks for a personal name. They also leave the ₪0 question open. Wix's review (automated AI plus a review team) asks for a demo account and notes, not a security report, and it cannot itself be the third party that agreement:185 requires "before submitting", a clause that prevails over the guidelines (`:106`). Israel-as-payee is still UNKNOWN after a second Tipalti 403.
+
+**Single next check:** render `https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/add-security-and-privacy-information` (docs navigation, `guidelines:67`, the distribution step just before "Submit Your First App Version"). Read whether it asks the partner to attest to or upload agreement:185's test, and what evidence it accepts. If it is silent too, send the fallback written question from the brand mailbox. Suggested `urls.txt` line: `https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/add-security-and-privacy-information	wix-security-privacy-info`.

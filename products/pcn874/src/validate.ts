@@ -497,7 +497,7 @@ function checkFooter(c: Collector, footer: Pcn874Record, header: Pcn874Record | 
  * in accordance with 'Sha'am' guidelines" (line 574), and those guidelines are
  * not in any rendered document, so the circular itself defers on that row.
  */
-const COUNTERPARTY_ROWS: Readonly<
+export const COUNTERPARTY_ROWS: Readonly<
   Record<
     string,
     {
@@ -930,8 +930,11 @@ function checkFileShape(c: Collector, parsed: ParsedPcn874): void {
   // calls the file "of a fixed structure" (line 40) and never states an
   // encoding, so nothing here can say the file is wrong — only that its two
   // possible widths disagree, which the reader should know before sending it.
+  // TextEncoder, not Buffer: this module also runs in the browser (the
+  // il-biz-tools validator page), and both count the same UTF-8 bytes.
+  const utf8 = new TextEncoder();
   const wideRecords = records
-    .map(r => ({ record: r, bytes: Buffer.byteLength(r.raw, 'utf8') }))
+    .map(r => ({ record: r, bytes: utf8.encode(r.raw).length }))
     .filter(r => r.bytes !== r.record.raw.length);
   if (wideRecords.length > 0) {
     c.add({

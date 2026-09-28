@@ -1,7 +1,7 @@
 # il-biz-tools — כלים לעסק
 
-A static, dependency-free, Hebrew (RTL) micro-site with six tools for Israeli freelancers and
-small businesses. No framework, no dependencies at runtime: the build ships only the files the shipped pages
+A static, dependency-free, Hebrew (RTL) micro-site with seven tools for Israeli freelancers and
+small businesses (the seventh, `pcn874.html`, is the free validator page of the separate `pcn874` line). No framework, no dependencies at runtime: the build ships only the files the shipped pages
 load, writes a no-figures notice in place of any withheld page, filters the sitemap, and refuses to build at all
 while a publish blocker stands; the deploy artifact is `_site/`.
 
@@ -20,6 +20,7 @@ while a publish blocker stands; the deploy artifact is `_site/`.
 | Receipt / invoice generator (קבלה / חשבונית עסקה) | `invoice.html` | print / PDF, local save, saved client list, per-type auto numbering | document branding: your logo and accent colour |
 | Allocation-number check (מספר הקצאה) | `allocation.html` | yes | — |
 | Companies-Registrar annual fee (אגרה שנתית לרשם החברות) | `registrar-fee.html` | deadline calculator; **no shekel amounts** — see the gate below | — |
+| PCN874 structure validator (בודק קובץ PCN874) | `pcn874.html` | yes — structure only, individual-merchant file (Appendix A) only, in the browser, no upload; its page views will count for the `pcn874` line once a PostHog key is set and a reader exists (neither does today) | — (no price on the page; the paid builder waits for owner steps 2+3 and a pricing ruling) |
 
 Audience: Israeli self-employed (no headcount is sourced in this repo), especially **עוסקים פטורים** (freelancers under the
 VAT threshold) who need a receipt today and want to know when they will cross the ceiling.
@@ -103,7 +104,7 @@ flagged `"verified": true`:
 
 Nothing in the source tree moves, so `npm run serve`, the tests and local development still see the
 real page; the day the rates are confirmed against the Tax Authority booklet, flipping one JSON flag
-republishes it. `node scripts/check-html.js` prints the same verdict for its fixed list of 8 pages (the 7 tool
+republishes it. `node scripts/check-html.js` prints the same verdict for its fixed list of 9 pages (the 8 tool
 pages and `accessibility.html`) plus `404.html`. What **fails** on an HTML page missing from the map is the build (`scripts/build-site.js`) and
 `tests/publish-gate.test.js` — a page nobody classified is a page nobody decided about.
 
@@ -196,17 +197,93 @@ pieces of copy sit at the point of capture, and both are 🔍 **drafts awaiting 
 
 The page itself carries a plain-Hebrew "נוסח טיוטה, טרם נבדק משפטית" note rather than the 🔍 emoji.
 
+## The PCN874 validator page (`pcn874.html`)
+
+A free, static page that checks the **structure** of a PCN874 file (`דוח מע"מ מפורט`) in the browser. It
+belongs to the `pcn874` revenue line (research/channel-loop/BOARD-LOOP.md, rank 4) and rides this site's
+deploy, because pcn874 has no public surface of its own.
+
+**What it runs.** products/pcn874's own validator - not a port. `src/vendor/pcn874/` holds `sources`,
+`layout`, `parse` and `validate` from `products/pcn874/src`, with the types stripped by Node's
+`module.stripTypeScriptTypes` (mode `strip`) and nothing else changed (`src/lib/pcn874-bundle.js`). Each file
+is headed with its source path and the source's sha256. `scripts/build-site.js` regenerates the bundle on every
+build and **refuses, preview included, if the committed copy differs or `../pcn874/src` is missing**; so after
+any change under `products/pcn874/src`, run `node scripts/bundle-pcn874.js` and commit the result.
+`tests/pcn874-bundle.test.js` proves the committed bundle is that generation and that every pcn874 fixture
+validates identically through the bundle and the TypeScript. The one change pcn874 needed for this was
+`Buffer.byteLength` → `TextEncoder` (its `tests/browser-safe.test.ts` keeps the four modules free of Node-only
+APIs). `netlify.toml` pins an exact `NODE_VERSION` (`22.22.2`, the version the committed bundle was generated
+on) and `package.json` says `>=22.13`: the strip API needs 22.13+, and the build's byte-for-byte check means a
+floating `"22"` could fail a deploy on a Node patch release that changes the stripper's output. Moving the pin
+means regenerating the bundle on the new version in the same commit. CI (`.github/workflows/products-ci.yml`)
+still says `node-version: 22`; it was left alone (outside this page's brief), and if a Node release ever changes
+the output, CI's bundle test is where it shows first.
+
+**What it says.** In Hebrew, above the file input: it checks only an individual merchant's file (Appendix A),
+not a representatives' file (Appendix B); it checks structure only; it **cross-checks no amount** and **does not
+compute `reportedVat`**; a few rules read an amount (zero or not, the 5,000-shekel identified-sale threshold,
+the petty-cash cap as a warning) but none compares header totals to the records; it also does **not** check
+that an invoice date is a real date inside the period, VAT-id check digits, or whether an invoice needs an
+allocation number (zeros are accepted; the page links `allocation.html` for that question); the circular is
+from 2009, no later edition was found, the allocation-number regime came after it, and it says itself that
+figures like 5,000 and 2% may change; a file that passes can still be rejected. The Tax Authority's own check
+is its simulator, linked at `ITA_SIMULATOR_URL` from pcn874's own `sources.ts` - and the page says what the
+cited manual says (`research/rendered/pcn874-h-erp-mirror.txt:1269-1270`): the simulator too checks only in
+part, and the transmission itself decides. The page does **not** call the simulator free: pcn874's sources say
+no rendered source states a price or confirms the address today, and the page says the address comes from a
+vendor manual. A warning is never called harmless: the page says the circular does not settle it, so it is
+not counted as an error here, and the Tax Authority may still reject the file for it. A clean result is shown
+in a neutral box, not a green one. A file that looks like Appendix B (an `A` record or a `Z` closing record)
+gets "this looks like a representatives' file, which the checker does not check" instead of "does not
+conform", and the closing record is named by its real first letter. The Hebrew for `detail.*.signOfZero`
+depends on the severity: the warning (invoice total zero, VAT not - a VAT-only credit) tells the user not to
+change the sign without checking, and never reads like the error (both zero). Findings are listed per line in a table - record, field, severity, the failed rule
+in Hebrew (`src/lib/pcn874-report.js`, one Hebrew line per rule id the validator can emit, enforced by
+`tests/pcn874-report.test.js`), the validator's English in a `<details>` labelled "sources and notes" (its
+`officialText` carries vendor-manual text and the validator's own notes, not only the circular's words) - and
+the summary goes to a `role="status" aria-live="polite"` region.
+
+**Reading the file.** The page and the pcn874 CLI decode a file through the same function
+(`decodePcn874Bytes` in pcn874's `parse.ts`): UTF-8, invalid bytes replaced, a leading BOM kept - and both say
+so when the bytes were not UTF-8 (a Hebrew file saved as Windows-1255: the byte widths reported are of the
+decoded text, and the page replaces the `file.byteWidth` line accordingly) or when the file starts with a
+byte-order mark (the reason its first line is not seen as the header). Files over 25 MB (`MAX_FILE_BYTES`, more
+than 400,000 records) are refused before a byte is read: the validator runs on the page's thread, and a 62 MB
+file measured 6.8 s and about 680 MB. The input is emptied after each pick, so picking the same fixed file
+again re-runs the check; a slower earlier file never overwrites a later one's result; and a failure inside the
+checker is reported as the checker failing, not as an unreadable file or a finding.
+
+**What it does not do.** The file is read with `File.arrayBuffer()` and validated in the tab; it is not
+uploaded, sent or stored. No module the page loads contains `fetch`, `XMLHttpRequest`, `sendBeacon`,
+`WebSocket`, `EventSource` or a storage API, and the page script runs in the tests with all of them trapped.
+The page carries no price, no "buy" and no Gumroad link.
+
+**Page views - the counter runs, the KPI is not wired.** The page calls `initPage()`, so the site's existing
+cookieless PostHog counter (off until `posthog.projectKey` is set) will count its views by URL like every other
+page. Nothing turns those views into a pcn874 KPI reading: there is no PostHog reader in `src/revenue/`, and the
+page-to-line mapping module the first build added (`page-kpis.js`) was removed because nothing read it. Until a
+key is set **and** a reader exists, an unmeasured week is a missing reading, never a zero - the pcn874 line's
+"under 100 views a week" kill rule has no input and must not be run.
+
+**Not verified.** No real browser has run the page: none can be installed in the build container (the
+Playwright download is blocked). The real page and its real module graph ran once under jsdom (28.9.2026):
+three files, correct summaries and rows, no network call, no injected markup. The review fixes (size cap, re-pick,
+stale runs, reading notes, the neutral clean box) ran only against the tests' fake DOM, not under jsdom or a
+browser. A screen reader, keyboard use in a real browser and 200% zoom remain unchecked.
+
 ## Layout
 
 ```
 index.html  vat.html  osek-patur.html  net-salary.html  invoice.html
-allocation.html  registrar-fee.html  accessibility.html  404.html
+allocation.html  registrar-fee.html  pcn874.html  accessibility.html  404.html
 assets/style.css            shared RTL styles incl. @media print for the receipt
 assets/common.js            nav, canonical, optional analytics
 assets/page-*.js            DOM glue per page (no logic)
 src/lib/*.js                pure ES modules: vat, osek-patur, net-salary, invoice, allocation,
-                            registrar-fee, gumroad, license, branding, analytics, money - and three
-                            build-time ones that never ship: publish-gate, site-deps, a11y-check
+                            registrar-fee, gumroad, license, branding, analytics, money, pcn874-report -
+                            and five build-time ones that never ship: publish-gate, site-deps, a11y-check,
+                            pcn874-bundle
+src/vendor/pcn874/*.js      GENERATED: products/pcn874's validator with its types stripped (do not edit)
 src/config/*.json           vat.json, osek-patur.json, tax-2026.json, allocation-number.json,
                             registrar-fee.json, site.json
 tests/*.test.js             vitest (node environment); tests/helpers/ builds in a throwaway copy
@@ -214,6 +291,7 @@ scripts/serve.js            zero-dependency local server
 scripts/build-site.js       ships only what the shipped pages load, applies the unverified-rate and
                             config gates, runs the accessibility checks, refuses on a publish blocker
 scripts/check-html.js       checks title/description/canonical/JSON-LD/links/classes on every page
+scripts/bundle-pcn874.js    regenerates src/vendor/pcn874/ from products/pcn874/src (--check: stale?)
 scripts/gumroad-pro-product.js  creates the Pro product on Gumroad (draft, licence-key block) and later
                             enables it; run only by .github/workflows/gumroad-pro-product.yml
 netlify.toml robots.txt sitemap.xml
@@ -224,7 +302,8 @@ netlify.toml robots.txt sitemap.xml
 ```bash
 cd products/il-biz-tools
 npm install          # vitest only
-npm test             # 364 tests (vitest, 17 files; re-measured 27.9.2026 after the contact gate)
+npm test             # 447 tests (vitest, 20 files; re-measured 28.9.2026 after the pcn874 page review fixes)
+node scripts/bundle-pcn874.js   # after ANY change under products/pcn874/src - the build refuses a stale bundle
 npm run check:html   # static page sanity checks + what the publish gate will withhold
 node scripts/build-site.js   # writes _site/ exactly as it will be deployed - or refuses (exit 1) on a blocker
 node scripts/build-site.js --preview   # the same tree into _preview/, blockers listed, for inspection only
@@ -242,7 +321,7 @@ There are **no server-side env vars** — this is a static site. Public configur
 
 | Key | Meaning | Default |
 |---|---|---|
-| `siteUrl` | Canonical origin; `assets/common.js` rewrites `<link rel=canonical>` from it at runtime. The static canonical in all 8 pages and the JSON-LD `url` in `index.html` are hard-coded, so edit those too, plus `sitemap.xml` and `robots.txt` | `https://il-biz-tools.netlify.app` |
+| `siteUrl` | Canonical origin; `assets/common.js` rewrites `<link rel=canonical>` from it at runtime. The static canonical in all 9 pages and the JSON-LD `url` in `index.html` are hard-coded, so edit those too, plus `sitemap.xml` and `robots.txt` | `https://il-biz-tools.netlify.app` |
 | `gumroad.productUrl` | Full `https://` URL of the Gumroad product page. Empty ⇒ the Pro button is disabled and says the shop is not open. Written by the product-creation job | `""` |
 | `gumroad.productId` | Gumroad's public product id — what the licence check sends with the key. Empty ⇒ the button stays disabled (`no_product_id`) and activation sends nothing. Written by the product-creation job | `""` |
 | `analytics.provider` | `none` or `plausible` | `none` (off) |
@@ -267,12 +346,16 @@ inline snippet that initialises PostHog with:
 | `autocapture` | `false` | no clicks, no form contents — page views only |
 | `capture_pageview` | `true` | the one thing being measured |
 | `disable_session_recording` | `true` | no replay of anyone's screen |
+| `capture_dead_clicks`, `capture_heatmaps`, `capture_exceptions`, `capture_performance` | `false` | unset, posthog-js takes each from the PostHog project's settings, so a toggle there could start sending element text (on `pcn874.html` a table cell holds bytes of the user's file); pinned off in code |
+| `disable_surveys` | `true` | no surveys, whatever the project says |
+| `mask_all_text`, `mask_all_element_attributes` | `true` | if any element capture ever ran, no text or attributes |
 
 What it measures: page views per URL, and nothing that identifies a visitor. What it is **for**:
 the board gated the paid registrar reminder on *100 weekly views* of `registrar-fee.html`, and this
 is how that number gets counted instead of guessed. Option names taken from PostHog's own docs
 (retrieved 2026-09-07): `posthog.com/tutorials/cookieless-tracking`, `/docs/libraries/js/persistence`,
-`/docs/libraries/js/config`.
+`/docs/libraries/js/config`; the pinned-off ones from posthog-js's own `packages/types/src/posthog-config.ts`
+and the extensions that read them (retrieved 2026-09-28 through Context7).
 
 🔍 **Unverified, owner-side:** PostHog's cookieless tutorial states that "Cookieless server hash mode"
 must be enabled in *Project Settings → Web analytics* first. Nobody here has an account to confirm
@@ -367,7 +450,7 @@ The saved client list, the numbering, the PDF export and the stored documents ar
 2. Base directory: `products/il-biz-tools`. Build command: `node scripts/build-site.js`. Publish directory: `_site` (written by `scripts/build-site.js` with only the files the shipped pages load, so `package.json`, `README.md`, `tests/`, `scripts/` and any unverified config are never uploaded). **Today this build refuses** — the accessibility contact is still a placeholder — so a deploy fails until that blocker is cleared.
    (`netlify.toml` declares the build command and the publish directory, not the base directory, which is set here in the UI; headers/CSP/redirects are in the same file).
 3. Deploy. Then set the custom domain and replace `https://il-biz-tools.netlify.app` with the real domain in
-   `siteUrl` (`src/config/site.json`), the static `<link rel="canonical">` of all 8 pages, the JSON-LD `url` in
+   `siteUrl` (`src/config/site.json`), the static `<link rel="canonical">` of all 9 pages, the JSON-LD `url` in
    `index.html`, `sitemap.xml` and `robots.txt`; commit. If the Pro product already exists on Gumroad, its
    description and activation text name the old `invoice.html` URL too (`scripts/gumroad-pro-product.js` writes
    them at creation and does not update a reused product), so they need the same edit on Gumroad's side.
@@ -441,6 +524,10 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
   לבדוק אותם ברשות התאגידים במקום להדפיס מספר. טופס התזכורת מוצג סגור עד שהדף יגיע ל-100 צפיות
   בשבוע, וכולל נוסח גילוי לפי סעיף 30א(ג) ונוסח שמירת מידע לפי תיקון 13 – שניהם טיוטה שטרם נבדקה
   משפטית.
+- **בודק קובץ PCN874** (`pcn874.html`, של קו ההכנסה `pcn874`) – בדיקת מבנה לקובץ הדוח המפורט למע"מ, בדפדפן
+  ובלי העלאה, עם ממצאים לפי שורה והכלל שנכשל בעברית. בודק מבנה בלבד: אינו מצליב סכומים ואינו מחשב את הסכום
+  המדווח, ומפנה לסימולטור של רשות המסים. הקוד הוא הבודק של `products/pcn874` עצמו, וה-build מסרב לפרסם עותק
+  שאינו תואם למקור. אין בדף מחיר ואין קישור קנייה.
 
 **שער הפרסום:** דף שמציג נתון מקובץ שמסומן `"verified": false` לא מתפרסם בכלל. כרגע זה
 `net-salary.html`: במקומו עולה הודעה קצרה בלי אף מספר, והכתובת יורדת מה-sitemap. ברגע שהמדרגות
@@ -459,4 +546,4 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
 חשבון Netlify ודומיין, אימות ב-Google Search Console. יצירת מוצר ה-Pro והדבקת הכתובת והמזהה שלו
 ב-`site.json` הן עבודה שלי, דרך אותו טוקן (`.github/workflows/gumroad-pro-product.yml`).
 
-**בדיקות:** `npm install && npm test` (364 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.
+**בדיקות:** `npm install && npm test` (447 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.

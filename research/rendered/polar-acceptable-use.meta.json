@@ -1,17 +1,17 @@
 {
   "url": "https://polar.sh/docs/merchant-of-record/acceptable-use/introduction",
   "slug": "polar-acceptable-use",
-  "fetchedAt": "2026-09-28T13:17:29.347Z",
+  "fetchedAt": "2026-09-28T16:11:04.234Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 371132,
-  "sha256": "972f2ece5f4086b9f7cf58f1c68f72b0f2eeb8952a305d8c88c22277b7c5208a",
+  "sha256": "e8504fac4f3e29115aac818caaaf9fc15fa69a070173e905bc97608f4d1cc2ab",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/polar-acceptable-use.html",
   "textPath": "research/rendered/polar-acceptable-use.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "8b94125b7f6892145054422d4f9d31cdd7db9285f9fa55243f0c7a75fa302ea2",
+  "previousSha256": "972f2ece5f4086b9f7cf58f1c68f72b0f2eeb8952a305d8c88c22277b7c5208a",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/books/partner/table/6052428?hl=en",
+  "slug": "play-books-payment-countries",
+  "fetchedAt": "2026-09-28T16:11:52.246Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1442634,
+  "sha256": "3473faebe72de6f66ad21f3c19581d38a0dead199c09595f4140493274e63dea",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/play-books-payment-countries.html",
+  "textPath": "research/rendered/play-books-payment-countries.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

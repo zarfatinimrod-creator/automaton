@@ -1,0 +1,127 @@
+Add Your Company Info
+
+Overview
+Extend Websites
+
+Build Apps
+
+Go Headless
+References
+
+Changelog
+
+Build Apps
+
+Get Started
+
+Overview
+
+Quick Start
+
+Templates
+
+Tutorials
+
+Get an Idea
+
+Develop Your App
+
+About Developing Apps
+
+App Workspace
+
+Development Sites
+
+Extensions
+
+Develop an App with the CLI
+
+Develop a Self-Managed App
+
+Develop an App with Blocks
+
+Build with AI
+
+API Integrations
+
+Auth
+
+Design
+
+Launch Your App
+
+About Launching Apps
+
+Pricing and Billing
+
+Market Listing
+
+About Market Listings
+
+Add Your App Info
+
+Add Your Media
+
+Add Your Get Found Info
+
+Add Your App Audience Info
+
+Add Your Company Info
+
+Add App Dependencies
+
+Localization
+
+Legal and Security
+
+App Distribution
+
+App Promotion
+
+Manage Your App
+
+User Support
+
+Versioning
+
+Data and Analytics
+
+Contact Us
+
+In This Article See also
+
+Add Your Company Info
+
+Your app's listing in the Wix App Market includes basic info about your company.
+
+To review or update your company info:
+
+Go to the Company Info page in your app's dashboard.
+
+Complete the following fields:
+
+Company logo: Square, PNG or JPG format.
+
+Company name: Max 23 characters, including spaces.
+
+Company description: Max 1,200 characters, including spaces.
+
+Company address
+
+Company website
+
+Privacy policy link
+
+Click Save .
+
+See also
+
+Add your Get Found info
+
+Add your media
+
+Add your app info
+
+Last updated: 22 August 2024
+Did this help?
+Yes No

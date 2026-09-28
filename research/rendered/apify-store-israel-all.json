@@ -4825,7 +4825,7 @@
         "name": "drushim-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 23,
+          "totalBuilds": 24,
           "totalRuns": 185,
           "totalUsers": 22,
           "totalUsers7Days": 6,
@@ -9734,22 +9734,22 @@
         "name": "tripadvisor-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 58,
-          "totalRuns": 2898,
+          "totalBuilds": 59,
+          "totalRuns": 2900,
           "totalUsers": 76,
           "totalUsers7Days": 6,
           "totalUsers30Days": 13,
           "totalUsers90Days": 42,
-          "lastRunStartedAt": "2026-09-28T09:00:12.194Z",
+          "lastRunStartedAt": "2026-09-28T14:00:10.696Z",
           "actorReviewCount": 2,
           "actorReviewRating": 5,
           "bookmarkCount": 0,
           "publicActorRunStats30Days": {
             "ABORTED": 0,
             "FAILED": 0,
-            "SUCCEEDED": 643,
+            "SUCCEEDED": 645,
             "TIMED-OUT": 0,
-            "TOTAL": 643
+            "TOTAL": 645
           }
         },
         "description": "TripAdvisor Reviews Scraper at $0.45/1k — 4x cheaper than the leader. Pull hotel, restaurant & attraction reviews with place metadata (rating, address, geo, histogram) in every row. Filter by rating, language & date; add reviewer profiles. Search-query or URL input. JSON/CSV out.",
@@ -16734,70 +16734,6 @@
         "url": "https://apify.com/unseenuser/fb-events"
       },
       {
-        "title": "Remotive Scraper — remote job listings",
-        "name": "remotive-scraper",
-        "username": "blackfalcondata",
-        "stats": {
-          "totalBuilds": 14,
-          "totalRuns": 367,
-          "totalUsers": 8,
-          "totalUsers7Days": 0,
-          "totalUsers30Days": 3,
-          "totalUsers90Days": 3,
-          "lastRunStartedAt": "2026-09-28T09:52:31.764Z",
-          "actorReviewCount": 0,
-          "actorReviewRating": 0,
-          "bookmarkCount": 1,
-          "publicActorRunStats30Days": {
-            "ABORTED": 0,
-            "FAILED": 0,
-            "SUCCEEDED": 37,
-            "TIMED-OUT": 0,
-            "TOTAL": 37
-          }
-        },
-        "description": "Scrape remotive.com — curated remote-job board with structured salary data across every role · date-range filtering for fresh postings · a single run that needs no account or login. Incremental mode tracks new and changed jobs across scheduled runs.",
-        "categories": [
-          "JOBS",
-          "LEAD_GENERATION",
-          "AUTOMATION"
-        ],
-        "pictureUrl": "https://images.apifyusercontent.com/OvPIZwEgD1obJOrsGfb66y3BrTi9BRo7T0xnttbMlIA/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vclB1SjNjc1NCUjVsaTVmd1QtYWN0b3ItekNDSXpDREtFTmYzaE5qUHctT1JGZmlnMXc5Qy1SZW1vdGl2ZS5jb21fbG9nby5qcGc.webp",
-        "notice": "NONE",
-        "bookmarkCount": 1,
-        "actorReviewRating": 0,
-        "actorReviewCount": 0,
-        "badge": null,
-        "isWhiteListedForAgenticPayments": true,
-        "userFullName": "Black Falcon Data",
-        "userPictureUrl": "https://images.apifyusercontent.com/8lDnbOg80xCVrjeH5M-RIo2buaJVIq4p3Ki6zOG-8dI/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vU1dsSjJhRUVyakFEdktQeHFKVWh3OXJrUUd5YWRYVmh2SThIX0I2a1pKYy9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZjbEIxU2pOamMxTkNValZzYVRWbWQxUXRjSEp2Wm1sc1pTMUtUM1p3YUZoNFozcEpMVUpzWVdOclptRnNZMjl1WkdGMFlWOXNiMmR2TG5CdVp3LnBuZw.webp",
-        "currentPricingInfo": {
-          "pricingModel": "PAY_PER_EVENT",
-          "pricingPerEvent": {
-            "actorChargeEvents": {
-              "apify-actor-start": {
-                "eventTitle": "Actor Start",
-                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
-                "isOneTimeEvent": true,
-                "eventPriceUsd": 0.001
-              },
-              "apify-default-dataset-item": {
-                "eventTitle": "Result",
-                "eventDescription": "Single result in the default dataset.",
-                "isOneTimeEvent": false,
-                "eventPriceUsd": 0.002,
-                "isPrimaryEvent": true
-              }
-            }
-          },
-          "createdAt": "2026-07-16T20:21:36.220Z",
-          "startedAt": "2026-07-16T20:21:36.220Z",
-          "apifyMarginPercentage": 0.2
-        },
-        "id": "zCCIzCDKENf3hNjPw",
-        "url": "https://apify.com/blackfalcondata/remotive-scraper"
-      },
-      {
         "title": "Ballotpedia.org Scraper",
         "name": "ballotpedia-org-scraper",
         "username": "lexis-solutions",
@@ -16930,6 +16866,70 @@
         },
         "id": "PU3BwT0hB7V5nvXqs",
         "url": "https://apify.com/silentflow/indeed-companies-scraper"
+      },
+      {
+        "title": "Remotive Scraper — remote job listings",
+        "name": "remotive-scraper",
+        "username": "blackfalcondata",
+        "stats": {
+          "totalBuilds": 15,
+          "totalRuns": 369,
+          "totalUsers": 8,
+          "totalUsers7Days": 0,
+          "totalUsers30Days": 3,
+          "totalUsers90Days": 3,
+          "lastRunStartedAt": "2026-09-28T13:31:25.864Z",
+          "actorReviewCount": 0,
+          "actorReviewRating": 0,
+          "bookmarkCount": 1,
+          "publicActorRunStats30Days": {
+            "ABORTED": 0,
+            "FAILED": 0,
+            "SUCCEEDED": 40,
+            "TIMED-OUT": 0,
+            "TOTAL": 40
+          }
+        },
+        "description": "Scrape remotive.com — curated remote-job board with structured salary data across every role · date-range filtering for fresh postings · a single run that needs no account or login. Incremental mode tracks new and changed jobs across scheduled runs.",
+        "categories": [
+          "JOBS",
+          "LEAD_GENERATION",
+          "AUTOMATION"
+        ],
+        "pictureUrl": "https://images.apifyusercontent.com/OvPIZwEgD1obJOrsGfb66y3BrTi9BRo7T0xnttbMlIA/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vclB1SjNjc1NCUjVsaTVmd1QtYWN0b3ItekNDSXpDREtFTmYzaE5qUHctT1JGZmlnMXc5Qy1SZW1vdGl2ZS5jb21fbG9nby5qcGc.webp",
+        "notice": "NONE",
+        "bookmarkCount": 1,
+        "actorReviewRating": 0,
+        "actorReviewCount": 0,
+        "badge": null,
+        "isWhiteListedForAgenticPayments": true,
+        "userFullName": "Black Falcon Data",
+        "userPictureUrl": "https://images.apifyusercontent.com/8lDnbOg80xCVrjeH5M-RIo2buaJVIq4p3Ki6zOG-8dI/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vU1dsSjJhRUVyakFEdktQeHFKVWh3OXJrUUd5YWRYVmh2SThIX0I2a1pKYy9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZjbEIxU2pOamMxTkNValZzYVRWbWQxUXRjSEp2Wm1sc1pTMUtUM1p3YUZoNFozcEpMVUpzWVdOclptRnNZMjl1WkdGMFlWOXNiMmR2TG5CdVp3LnBuZw.webp",
+        "currentPricingInfo": {
+          "pricingModel": "PAY_PER_EVENT",
+          "pricingPerEvent": {
+            "actorChargeEvents": {
+              "apify-actor-start": {
+                "eventTitle": "Actor Start",
+                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
+                "isOneTimeEvent": true,
+                "eventPriceUsd": 0.001
+              },
+              "apify-default-dataset-item": {
+                "eventTitle": "Result",
+                "eventDescription": "Single result in the default dataset.",
+                "isOneTimeEvent": false,
+                "eventPriceUsd": 0.002,
+                "isPrimaryEvent": true
+              }
+            }
+          },
+          "createdAt": "2026-07-16T20:21:36.220Z",
+          "startedAt": "2026-07-16T20:21:36.220Z",
+          "apifyMarginPercentage": 0.2
+        },
+        "id": "zCCIzCDKENf3hNjPw",
+        "url": "https://apify.com/blackfalcondata/remotive-scraper"
       },
       {
         "title": "YouTube Most Popular Shorts (Top by Country & Category)",
@@ -22758,90 +22758,6 @@
         "url": "https://apify.com/seemuapps/sherdog-mma-scraper"
       },
       {
-        "title": "SEC Form D Scraper: Reg D Funding Rounds",
-        "name": "sec-edgar-form-d",
-        "username": "pradio",
-        "stats": {
-          "totalBuilds": 49,
-          "totalRuns": 36,
-          "totalUsers": 2,
-          "totalUsers7Days": 1,
-          "totalUsers30Days": 1,
-          "totalUsers90Days": 1,
-          "lastRunStartedAt": "2026-09-28T09:57:01.506Z",
-          "actorReviewCount": 0,
-          "actorReviewRating": 0,
-          "bookmarkCount": 0,
-          "publicActorRunStats30Days": {
-            "ABORTED": 0,
-            "FAILED": 0,
-            "SUCCEEDED": 8,
-            "TIMED-OUT": 0,
-            "TOTAL": 8
-          }
-        },
-        "description": "Get the full SEC Form D filing as one row of 46 fields for $0.0028: issuer, amounts offered and sold, minimum investment, investor counts, exemptions and related persons. List recent Reg D filings or read pasted EDGAR links. Filter by date, state, industry and size, or keep operating companies only.",
-        "categories": [
-          "BUSINESS",
-          "LEAD_GENERATION"
-        ],
-        "pictureUrl": "https://images.apifyusercontent.com/J0UmNl0M6PUCxbLAl9vWzvxcvIuLD6IMGRS9vpEDfRQ/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vWTZNVDdHd2loZ1g5cVFVTFEtYWN0b3ItWWJhR0xUSUpSYlF2NldXT3gtemxHWVRmZFpzcS1pY29uLnBuZw.webp",
-        "notice": "NONE",
-        "bookmarkCount": 0,
-        "actorReviewRating": 0,
-        "actorReviewCount": 0,
-        "badge": null,
-        "isWhiteListedForAgenticPayments": true,
-        "userFullName": "Pradio Actors",
-        "userPictureUrl": "https://images.apifyusercontent.com/8u4vBerdDOlQWxVKBwJKwfH-aPi_25j4kdsxNSQhQC8/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vSmk1MU9JOUI5S3Z2a3BZbUVTOXc2MmNRTjhzQVVVdi1wdHlEVWhWdUJvTS9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZXVFpOVkRkSGQybG9aMWc1Y1ZGVlRGRXRjSEp2Wm1sc1pTMU5Ta1p1U1hCWGNHTjRMVEkxTURjNU5UY3dMVEV4Tm1RdE5HUTVOeTA0WlRCaUxXVTVZVGcyWm1Zd05qQm1aaTV3Ym1jLnBuZw.webp",
-        "currentPricingInfo": {
-          "pricingModel": "PAY_PER_EVENT",
-          "pricingPerEvent": {
-            "actorChargeEvents": {
-              "filing-returned": {
-                "eventTitle": "Filing returned",
-                "eventDescription": "One Form D filing row written to your dataset, charged after the row lands. Status rows and dropped duplicates are not charged.",
-                "isOneTimeEvent": false,
-                "isPrimaryEvent": true,
-                "eventTieredPricingUsd": {
-                  "FREE": {
-                    "tieredEventPriceUsd": 0.0028
-                  },
-                  "BRONZE": {
-                    "tieredEventPriceUsd": 0.0024
-                  },
-                  "SILVER": {
-                    "tieredEventPriceUsd": 0.002
-                  },
-                  "GOLD": {
-                    "tieredEventPriceUsd": 0.0016
-                  },
-                  "PLATINUM": {
-                    "tieredEventPriceUsd": 0.0016
-                  },
-                  "DIAMOND": {
-                    "tieredEventPriceUsd": 0.0016
-                  }
-                }
-              },
-              "apify-actor-start": {
-                "eventTitle": "Actor Start",
-                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
-                "isOneTimeEvent": true,
-                "eventPriceUsd": 0.00005
-              }
-            }
-          },
-          "startedAt": "2026-09-20T01:25:03.166Z",
-          "minimalMaxTotalChargeUsd": 0.00285,
-          "reasonForChange": "Pricing update: 5 price(s) increase.",
-          "createdAt": "2026-09-20T01:24:05.063Z",
-          "apifyMarginPercentage": 0.2
-        },
-        "id": "YbaGLTIJRbQv6WWOx",
-        "url": "https://apify.com/pradio/sec-edgar-form-d"
-      },
-      {
         "title": "AllSurplus Scraper — Industrial Surplus Auction Lots",
         "name": "allsurplus-industrial-lot-scraper",
         "username": "scrapersdelight",
@@ -23986,6 +23902,90 @@
         },
         "id": "BDDPWOBG224s3MOIh",
         "url": "https://apify.com/lwsdjfls/iban-validator-enricher"
+      },
+      {
+        "title": "SEC Form D Scraper: Funding Rounds and Revenue",
+        "name": "sec-edgar-form-d",
+        "username": "pradio",
+        "stats": {
+          "totalBuilds": 52,
+          "totalRuns": 40,
+          "totalUsers": 2,
+          "totalUsers7Days": 1,
+          "totalUsers30Days": 1,
+          "totalUsers90Days": 1,
+          "lastRunStartedAt": "2026-09-28T14:26:29.686Z",
+          "actorReviewCount": 0,
+          "actorReviewRating": 0,
+          "bookmarkCount": 0,
+          "publicActorRunStats30Days": {
+            "ABORTED": 0,
+            "FAILED": 0,
+            "SUCCEEDED": 8,
+            "TIMED-OUT": 0,
+            "TOTAL": 8
+          }
+        },
+        "description": "Get the minimum check, revenue or asset band and insider proceeds for every SEC Form D raise, in one row of 46 fields for $0.0028: issuer, amounts offered and sold, investors, exemptions, related persons. List recent Reg D filings or read EDGAR links. Filter by date, state and industry.",
+        "categories": [
+          "BUSINESS",
+          "LEAD_GENERATION"
+        ],
+        "pictureUrl": "https://images.apifyusercontent.com/X8_Eqyy_cg8SGOr6Oc7GcC25Y94G8yUTYAywI_2KhDs/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vWTZNVDdHd2loZ1g5cVFVTFEtYWN0b3ItWWJhR0xUSUpSYlF2NldXT3gtZm5ESWcxZW1BNy1pY29uLnBuZw.webp",
+        "notice": "NONE",
+        "bookmarkCount": 0,
+        "actorReviewRating": 0,
+        "actorReviewCount": 0,
+        "badge": null,
+        "isWhiteListedForAgenticPayments": true,
+        "userFullName": "Pradio Actors",
+        "userPictureUrl": "https://images.apifyusercontent.com/8u4vBerdDOlQWxVKBwJKwfH-aPi_25j4kdsxNSQhQC8/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vSmk1MU9JOUI5S3Z2a3BZbUVTOXc2MmNRTjhzQVVVdi1wdHlEVWhWdUJvTS9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZXVFpOVkRkSGQybG9aMWc1Y1ZGVlRGRXRjSEp2Wm1sc1pTMU5Ta1p1U1hCWGNHTjRMVEkxTURjNU5UY3dMVEV4Tm1RdE5HUTVOeTA0WlRCaUxXVTVZVGcyWm1Zd05qQm1aaTV3Ym1jLnBuZw.webp",
+        "currentPricingInfo": {
+          "pricingModel": "PAY_PER_EVENT",
+          "pricingPerEvent": {
+            "actorChargeEvents": {
+              "filing-returned": {
+                "eventTitle": "Filing returned",
+                "eventDescription": "One Form D filing row written to your dataset, charged after the row lands. Status rows and dropped duplicates are not charged.",
+                "isOneTimeEvent": false,
+                "isPrimaryEvent": true,
+                "eventTieredPricingUsd": {
+                  "FREE": {
+                    "tieredEventPriceUsd": 0.0028
+                  },
+                  "BRONZE": {
+                    "tieredEventPriceUsd": 0.0024
+                  },
+                  "SILVER": {
+                    "tieredEventPriceUsd": 0.002
+                  },
+                  "GOLD": {
+                    "tieredEventPriceUsd": 0.0016
+                  },
+                  "PLATINUM": {
+                    "tieredEventPriceUsd": 0.0016
+                  },
+                  "DIAMOND": {
+                    "tieredEventPriceUsd": 0.0016
+                  }
+                }
+              },
+              "apify-actor-start": {
+                "eventTitle": "Actor Start",
+                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
+                "isOneTimeEvent": true,
+                "eventPriceUsd": 0.00005
+              }
+            }
+          },
+          "startedAt": "2026-09-20T01:25:03.166Z",
+          "minimalMaxTotalChargeUsd": 0.00285,
+          "reasonForChange": "Pricing update: 5 price(s) increase.",
+          "createdAt": "2026-09-20T01:24:05.063Z",
+          "apifyMarginPercentage": 0.2
+        },
+        "id": "YbaGLTIJRbQv6WWOx",
+        "url": "https://apify.com/pradio/sec-edgar-form-d"
       },
       {
         "title": "[only $1] Glassdoor Job Scraper",
@@ -26845,6 +26845,73 @@
         "url": "https://apify.com/steadyscrape/app-details-scraper"
       },
       {
+        "title": "Stock Insights",
+        "name": "stock-insights",
+        "username": "pintostudio",
+        "stats": {
+          "totalBuilds": 6,
+          "totalRuns": 390,
+          "totalUsers": 4,
+          "totalUsers7Days": 1,
+          "totalUsers30Days": 1,
+          "totalUsers90Days": 1,
+          "lastRunStartedAt": "2026-09-28T13:43:57.815Z",
+          "publicActorRunStats30Days": {
+            "ABORTED": 0,
+            "FAILED": 2,
+            "SUCCEEDED": 27,
+            "TIMED-OUT": 0,
+            "TOTAL": 29
+          },
+          "actorReviewCount": 0,
+          "actorReviewRating": 0,
+          "bookmarkCount": 1
+        },
+        "description": "Fetch detailed fair value insights and key financial indicators for global stocks from Investing.com using this Apify Actor.",
+        "categories": [
+          "DEVELOPER_TOOLS",
+          "OTHER",
+          "AUTOMATION"
+        ],
+        "pictureUrl": "https://images.apifyusercontent.com/azPw3VL9J00Zv7Rur7hLWFNuxjoWkNOIyf0nH0BXrNA/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vU3g5Ym1ZaTVUS21DMjc5YVQtYWN0b3ItUVh2RWxqeUlZNFIyOXI5TVgtZ1NxYlVpTlZkMi1pbnZlc3RpbmdfY29tLnBuZw.webp",
+        "notice": "NONE",
+        "bookmarkCount": 1,
+        "actorReviewRating": 0,
+        "actorReviewCount": 0,
+        "badge": null,
+        "isWhiteListedForAgenticPayments": true,
+        "userFullName": "Pinto Studio",
+        "userPictureUrl": "https://images.apifyusercontent.com/d5__YfNpSz6BHj-hfF7DZ1awhwEM5wp4cNuF41hBKzA/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vaXNJVzRwWjFERy1mZjVnU2t6NVVBNmVXVnZINzlEWXBhT1VIZnBiOG5JWS9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZVM2c1WW0xWmFUVlVTMjFETWpjNVlWUXZaM3AwWWtaQmNXeFhZM1pOYzJKaWJISXRjR2x1ZEc5ZmMzUjFaR2x2TG5CdVp3LnBuZw.webp",
+        "currentPricingInfo": {
+          "minimalMaxTotalChargeUsd": null,
+          "pricingModel": "PAY_PER_EVENT",
+          "isPriceChangeNotificationSuppressed": false,
+          "pricingPerEvent": {
+            "actorChargeEvents": {
+              "apify-actor-start": {
+                "eventTitle": "Actor Start",
+                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
+                "isOneTimeEvent": true,
+                "eventPriceUsd": 0.00005
+              },
+              "apify-default-dataset-item": {
+                "eventTitle": "result",
+                "eventDescription": "Single result in the default dataset.",
+                "isOneTimeEvent": false,
+                "eventPriceUsd": 0.0074,
+                "isPrimaryEvent": true
+              }
+            }
+          },
+          "startedAt": "2026-09-11T07:37:38.966Z",
+          "createdAt": "2026-09-11T07:37:40.619Z",
+          "apifyMarginPercentage": 0.2,
+          "notifiedAboutChangeAt": "2026-09-11T08:05:46.607Z"
+        },
+        "id": "QXvEljyIY4R29r9MX",
+        "url": "https://apify.com/pintostudio/stock-insights"
+      },
+      {
         "title": "Facebook Profile Scraper (No Login, Bulk) ✅",
         "name": "fb-profile",
         "username": "unseenuser",
@@ -27780,73 +27847,6 @@
         },
         "id": "e3ykQpl53vFGeMcx7",
         "url": "https://apify.com/pintostudio/stock-analyst-price-target-investing-com"
-      },
-      {
-        "title": "Stock Insights",
-        "name": "stock-insights",
-        "username": "pintostudio",
-        "stats": {
-          "totalBuilds": 2,
-          "totalRuns": 387,
-          "totalUsers": 4,
-          "totalUsers7Days": 1,
-          "totalUsers30Days": 1,
-          "totalUsers90Days": 1,
-          "lastRunStartedAt": "2026-09-27T10:38:51.728Z",
-          "publicActorRunStats30Days": {
-            "ABORTED": 0,
-            "FAILED": 2,
-            "SUCCEEDED": 27,
-            "TIMED-OUT": 0,
-            "TOTAL": 29
-          },
-          "actorReviewCount": 0,
-          "actorReviewRating": 0,
-          "bookmarkCount": 1
-        },
-        "description": "Fetch detailed fair value insights and key financial indicators for global stocks from Investing.com using this Apify Actor.",
-        "categories": [
-          "DEVELOPER_TOOLS",
-          "OTHER",
-          "AUTOMATION"
-        ],
-        "pictureUrl": "https://images.apifyusercontent.com/azPw3VL9J00Zv7Rur7hLWFNuxjoWkNOIyf0nH0BXrNA/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vU3g5Ym1ZaTVUS21DMjc5YVQtYWN0b3ItUVh2RWxqeUlZNFIyOXI5TVgtZ1NxYlVpTlZkMi1pbnZlc3RpbmdfY29tLnBuZw.webp",
-        "notice": "UNDER_MAINTENANCE",
-        "bookmarkCount": 1,
-        "actorReviewRating": 0,
-        "actorReviewCount": 0,
-        "badge": null,
-        "isWhiteListedForAgenticPayments": true,
-        "userFullName": "Pinto Studio",
-        "userPictureUrl": "https://images.apifyusercontent.com/d5__YfNpSz6BHj-hfF7DZ1awhwEM5wp4cNuF41hBKzA/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vaXNJVzRwWjFERy1mZjVnU2t6NVVBNmVXVnZINzlEWXBhT1VIZnBiOG5JWS9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZVM2c1WW0xWmFUVlVTMjFETWpjNVlWUXZaM3AwWWtaQmNXeFhZM1pOYzJKaWJISXRjR2x1ZEc5ZmMzUjFaR2x2TG5CdVp3LnBuZw.webp",
-        "currentPricingInfo": {
-          "minimalMaxTotalChargeUsd": null,
-          "pricingModel": "PAY_PER_EVENT",
-          "isPriceChangeNotificationSuppressed": false,
-          "pricingPerEvent": {
-            "actorChargeEvents": {
-              "apify-actor-start": {
-                "eventTitle": "Actor Start",
-                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
-                "isOneTimeEvent": true,
-                "eventPriceUsd": 0.00005
-              },
-              "apify-default-dataset-item": {
-                "eventTitle": "result",
-                "eventDescription": "Single result in the default dataset.",
-                "isOneTimeEvent": false,
-                "eventPriceUsd": 0.0074,
-                "isPrimaryEvent": true
-              }
-            }
-          },
-          "startedAt": "2026-09-11T07:37:38.966Z",
-          "createdAt": "2026-09-11T07:37:40.619Z",
-          "apifyMarginPercentage": 0.2,
-          "notifiedAboutChangeAt": "2026-09-11T08:05:46.607Z"
-        },
-        "id": "QXvEljyIY4R29r9MX",
-        "url": "https://apify.com/pintostudio/stock-insights"
       },
       {
         "title": "Lefties Similar Products Scraper",
@@ -29526,7 +29526,7 @@
         "name": "forrentuniversity-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 88,
+          "totalBuilds": 89,
           "totalRuns": 1210,
           "totalUsers": 26,
           "totalUsers7Days": 1,

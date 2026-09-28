@@ -69,3 +69,10 @@ and names no camera. But a KYC form and a questionnaire sit behind registration,
 was refused (403), so neither PASSES nor FAILS can be written honestly. USDC's deposit chain is also unknown. **Single next check:**
 render `https://bit2c.co.il/home/faq` (present verbatim at `bit2c-home.html:758` as `#q5`). The home page names it as the guide to registration
 and to deposit and withdrawal (`bit2c-home.txt:169`). Read it for a selfie or video step, and for the USDC deposit network.
+
+## Tick 6 (28.9.2026): moot — the only engine that needed this off-ramp was killed
+
+Bit2C's FAQ (ZERO-TESTS row 61, `research/rendered/bit2c-faq.txt`, status 200, fetchedAt 2026-09-28T16:12:03.623Z) was
+captured but **not read**: T4 existed only for Superteam Earn, which was killed in tick 5 on the brand-only name rule (T3,
+`research/measurements/superteam-earn.md`), and the T3 code read also showed the platform pays gas, closing the SOL question.
+The capture stays on disk; a future crypto-paying engine would start from it. No verdict is recorded here.

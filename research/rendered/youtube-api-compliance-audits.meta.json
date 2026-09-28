@@ -1,17 +1,17 @@
 {
   "url": "https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits",
   "slug": "youtube-api-compliance-audits",
-  "fetchedAt": "2026-09-28T13:16:05.632Z",
+  "fetchedAt": "2026-09-28T16:09:48.238Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 74260,
-  "sha256": "35d40f4e1d594eb80243442f55c44c8b0b02191bcc5afe7fa297e7c87514a459",
+  "byteLength": 74264,
+  "sha256": "43fb374908ebfdbb645f2dca49ad1eb781e9bafb2394b0d1111a5551a43bd9ea",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/youtube-api-compliance-audits.html",
   "textPath": "research/rendered/youtube-api-compliance-audits.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "9bc3a686e8920fb1b594f3c07c7c16b90376e52889f1ada3e63603d1b72d67f6",
+  "previousSha256": "35d40f4e1d594eb80243442f55c44c8b0b02191bcc5afe7fa297e7c87514a459",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

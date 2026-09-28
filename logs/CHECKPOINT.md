@@ -1,8 +1,19 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-28 13:55 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-28 16:45 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
+
+## ▶ 28.9, ~16:45 UTC — **סבב 6 (רציף, לפי "תמיד להמשיך"): Play Books נהרג, Firefox מומלץ להריגה, 4 שאלות לצעד 8 מנוסחות.**
+
+- **הבעלים (28.9):** "תמיד תמשיך אתה לא צריך אותי... לא לעצור תמיד להמשיך" — נרשם ב-MISSION.md (`7a67d97`). הלולאה רצה ברציפות; כל סבב נגמר בהתחלת הבא, או בהמשך מתוזמן (~60 דק') כשהכול ממתין לריצות רקע. **הסשן חזר ל-Opus** לפי בקשת הבעלים.
+- **רינדור (`5d597e4`):** אצווה B + שורות 59-62, 9 מתוך 10 נקראו (Tipalti 403 שוב).
+- **תוצאות:** Google Play Books **נהרג** (הריגה שנרשמה מראש: ישראל לא בטבלה); Firefox — בדיקת הפתיחה-מחדש אישרה G4, **המלצה: KILL** בישיבה; Wix / PayPal / n8n / Spreadshirt — NEEDS_MORE, בדיקות הבאות בשורות 63-67; Bit2C מיותר.
+- **נוסף:** `scripts/queue-zero-test.mjs` (שורה + URL בפקודה אחת, 6 בדיקות); `research/owner-asks/brand-mailbox-questions.md` (4 מיילים לא נשלחו; ב-Gmail כאן אין כלי שליחה — השליחה תהיה דרך SMTP מה-CI); צעד 8 כבר לא מזכיר Play Books (קוד, מסמך, PDF, בדיקות); FABLE_QUEUE שורות 14-15 לישיבת 29.9.
+- **בריצה:** `wf_eb05cd07-2e6` (דף הבדיקה החינמי של pcn874, worktree `.claude/worktrees/wf_eb05cd07-2e6-1`) → למזג ב-`scripts/merge-worktree.sh`; `wf_af8e1ff7-059` (השלמת התור: 5 קבוצות, Shiur Hofshi מת, GameDistribution בתור אחרי CrazyGames) → `research/breadth/REPLENISH-2026-09-28.md`.
+- **הבא:** ההמשך ב-17:16 UTC (`trig_012jH7pYRe6nzsB2G2Ga4fAG`): רינדור אחד לשורות 63-67 + שורות ההשלמה; מיזוג pcn874; הבנייה הבאה = הכנת הפרסום של mcp-il-tools (`scripts/workflows/mcp-il-tools-publish-prep.js`, מריצים עם `args: {base: <sha>}`); PR לסבב 6 ומיזוג כשירוק.
+- **דף הבעלים:** rev 189, מעודכן עד כאן.
+- היומן: `logs/2026-09-28-channel-loop-tick-6.md`.
 
 ## ▶ 28.9, ~13:55 UTC — **סבב 5: אצווה A נקראה. Pebble ו-Superteam נהרגו, Firefox נכשל ב-G4, שאר המועמדים NEEDS_MORE.**
 

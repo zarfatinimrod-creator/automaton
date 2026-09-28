@@ -1,0 +1,1379 @@
+Supported countries for selling books on Google Play - Google Play Books Partner Center Help
+Skip to main content
+
+Google Play Books Partner Center Help
+
+Sign in
+
+Google Help
+
+Help Center
+Community
+Books
+
+Privacy Policy
+Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+
+Books
+
+Notification
+We are currently experiencing higher than usual wait times for support. You may find quick answers to common questions in our Help Center/FAQ.
+
+Supported countries for selling books on Google Play
+
+Important: Effective February 1, 2025, the Value Added Tax in Peru (PE) is up 18% from 0%. No action is required on your end.
+
+We're working hard to expand Google Play Books internationally. If a particular country/region isn't listed below as supported, check back later as we may add it in the future.
+
+When your book is available internationally, you can check how your book is displayed in a country/region or language.
+
+Country/region: Add ?gl=[country code] to the end of the URL. For example, https://play.google.com/store/books?gl=us
+
+Language: To preview a language, add ?hl=[language code] to the end of the URL. For example, https://play.google.com/store/books?hl=en
+
+Tip :
+
+If your URL contains "?": To add a country or language code, replace "?" with "&".
+
+If the URL contains "#": Add a country or language code before "#".
+
+Refer to the table below to find out which countries/regions Google Play Books currently supports.
+
+Columns are labeled as follows:
+
+Country code: The ISO country code, used for sales territories and prices .
+
+Currency: Book prices are displayed to customers in this currency. You can either provide a local price in this currency or use our currency conversion tool .
+
+Seller sign-ups: Partners in countries or regions marked with the ✔ symbol can sell books on Google Play Books.
+
+In countries or regions indicated by “e-book only,” partners cannot sell audiobooks.
+
+In countries marked with a ★, only select partners can sell books. At this time, Google doesn’t accept new partners to sell in these countries.
+
+In countries marked with ✘, partners can't create a Play Books seller account.
+
+Auto-narrated audiobook creation: Partners in countries or regions marked with the ✔ symbol can create auto-narrated audiobooks to sell on Google Play Books. Auto-narrated audiobooks can only be sold in countries or regions approved for audiobook purchases.
+
+Purchases: Customers can purchase books on Google Play in these countries. Audiobooks aren’t available for purchase in all approved countries or regions.
+
+In countries or regions indicated by (e-book only), audiobooks aren’t available for purchase.
+
+While a country may be approved for purchases, not all partners are approved to sell in all countries.
+
+Payments: Google can issue payments to partners' bank accounts in these countries.
+
+Payment countries marked with ★ are paid via wire transfer in U.S. dollars.
+
+Newly created Brazilian payment profiles will receive payments in BRL. Some older payment profiles may still pay via USD wire transfers.
+
+Although you can sign up for a seller account in South Africa, you can only receive earnings on a bank account located in one of the supported countries listed in the column "Payments." Unfortunately, the bank account can't be located in South Africa.
+
+Promo Codes: Partners in these countries can offer promo codes to users in Play Books supported countries. Promo codes can be offered in any eligible country where partners' books are for sale.
+
+Country name
+Country code
+Currency
+Seller sign-ups
+Seller promo codes creation
+Auto-narrated audiobook creation
+Purchases
+Payments
+
+Argentina
+
+AR
+
+USD
+
+✔ (e-book only)
+
+✔
+
+✔
+
+✔
+
+★ (USD)
+
+Austria
+
+AT
+
+EUR
+
+✔ (e-book only)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Australia
+
+AU
+
+AUD
+
+✔ (e-book and audiobook)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Belgium
+
+BE
+
+EUR
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔
+
+✔
+
+Bolivia
+
+BO
+
+BOB
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Brazil
+
+BR
+
+BRL
+
+✔ (e-book and audiobook)
+
+✔
+
+✔
+
+✔
+
+✔ ( ★ (USD))
+
+Belarus
+
+BY
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+✘
+
+Canada
+
+CA
+
+CAD
+
+✔ (e-book and audiobook)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Switzerland
+
+CH
+
+CHF
+
+✔ (e-book and audiobook)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Chile
+
+CL
+
+CLP
+
+✘
+
+✘
+
+✘
+
+✔
+
+★ (USD)
+
+Colombia
+
+CO
+
+COP
+
+✘
+
+✘
+
+✘
+
+✔
+
+★ (USD)
+
+Costa Rica
+
+CR
+
+CRC
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Czech Republic
+
+CZ
+
+CZK
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔ (e-book only)
+
+✔
+
+Germany
+
+DE
+
+EUR
+
+✔ (e-book and audiobook)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Denmark
+
+DK
+
+DKK
+
+✔ (e-book only)
+
+✔
+
+✔
+
+✔ (e-book only)
+
+✔
+
+Dominican Republic
+
+DO
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Ecuador
+
+EC
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Estonia
+
+EE
+
+EUR
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+✘
+
+Spain
+
+ES
+
+EUR
+
+✔ (e-book and audiobook)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Finland
+
+FI
+
+EUR
+
+✔ (e-book only)
+
+✔
+
+✔
+
+✔
+
+✔
+
+France
+
+FR
+
+EUR
+
+✔ (e-book and audiobook)
+
+✔
+
+✔
+
+✔
+
+✔
+
+United Kingdom
+
+GB
+
+GBP
+
+✔ (e-book and audiobook)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Greece
+
+GR
+
+EUR
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+✔
+
+Guatemala
+
+GT
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Hong Kong
+
+HK
+
+HKD
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔
+
+✔
+
+Honduras
+
+HN
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Hungary
+
+HU
+
+HUF
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔ (e-book only)
+
+✔
+
+Indonesia
+
+ID
+
+IDR
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔ (e-book only)
+
+★ (USD)
+
+Ireland
+
+IE
+
+EUR
+
+✔
+
+✔
+
+✔
+
+✔
+
+✔
+
+India
+
+IN
+
+INR
+
+✔ (e-book only)
+
+✔
+
+✔
+
+✔
+
+★ (USD)
+
+Italy
+
+IT
+
+EUR
+
+✔ (e-book only)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Jordan
+
+JO
+
+JOD
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+★ (USD)
+
+Japan
+
+JP
+
+JPY
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔
+
+✔
+
+Kyrgyzstan
+
+KG
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+✘
+
+South Korea
+
+KR
+
+KRW
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔
+
+✔
+
+Kazakhstan
+
+KZ
+
+KZT
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+✘
+
+Lithuania
+
+LT
+
+EUR
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+✘
+
+Luxembourg
+
+LU
+
+EUR
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+✔
+
+Latvia
+
+LV
+
+EUR
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+✘
+
+Mexico
+
+MX
+
+MXN
+
+✔ (e-book and audiobook)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Malaysia
+
+MY
+
+MYR
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔
+
+★ (USD)
+
+Nicaragua
+
+NI
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Netherlands
+
+NL
+
+EUR
+
+✔ (e-book only)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Norway
+
+NO
+
+NOK
+
+✔ (e-book only)
+
+✔
+
+✔
+
+✔
+
+✔
+
+New Zealand
+
+NZ
+
+NZD
+
+✔ (e-book and audiobook)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Oman
+
+OM
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+★ (USD)
+
+Panama
+
+PA
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Peru
+
+PE
+
+PEN
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Philippines
+
+PH
+
+PHP
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔
+
+★ (USD)
+
+Poland
+
+PL
+
+PLN
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔
+
+✔
+
+Portugal
+
+PT
+
+EUR
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔ (e-book only)
+
+✔
+
+Paraguay
+
+PY
+
+PYG
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Qatar
+
+QA
+
+QAR
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+★ (USD)
+
+Romania
+
+RO
+
+RON
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔ (e-book only)
+
+★ (EUR)
+
+Russia
+
+RU
+
+RUB
+
+✘
+
+✘
+
+✘
+
+✘
+
+✘
+
+Saudi Arabia
+
+SA
+
+SAR
+
+★
+
+✔
+
+✔
+
+✔ (e-book only)
+
+★ (USD)
+
+Sweden
+
+SE
+
+SEK
+
+✔ (e-book only)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Singapore
+
+SG
+
+SGD
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔
+
+✔
+
+Slovakia
+
+SK
+
+EUR
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+✔
+
+El Salvador
+
+SV
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Thailand
+
+TH
+
+THB
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔ (e-book only)
+
+★ (USD)
+
+Turkey
+
+TR
+
+TRY
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔ (e-book only)
+
+✔
+
+Taiwan
+
+TW
+
+TWD
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔ (e-book only)
+
+★ (USD)
+
+Ukraine
+
+UA
+
+UAH
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+★ (USD)
+
+United States
+
+US
+
+USD
+
+✔ (e-book and audiobook)
+
+✔
+
+✔
+
+✔
+
+✔
+
+Uruguay
+
+UY
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Uzbekistan
+
+UZ
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+✘
+
+Venezuela
+
+VE
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔
+
+✘
+
+Vietnam
+
+VN
+
+VND
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔
+
+★ (USD)
+
+South Africa
+
+ZA
+
+ZAR
+
+✔ (e-book only)
+
+✔
+
+✘
+
+✔
+
+✘
+
+United Arab Emirates
+
+AE
+
+AED
+
+★
+
+✔
+
+✘
+
+✔ (e-book only)
+
+★ (USD)
+
+Kuwait
+
+KW
+
+USD
+
+★
+
+✔
+
+✘
+
+✔ (e-book only)
+
+★ (USD)
+
+Lebanon
+
+LB
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+★ (USD)
+
+Egypt
+
+EG
+
+EGP
+
+★ (e-book only)
+
+✔
+
+✘
+
+✔ (e-book only)
+
+★ (USD)
+
+Bahrain
+
+BH
+
+USD
+
+✘
+
+✘
+
+✘
+
+✔ (e-book only)
+
+✘
+
+Try your keywords on Google Web Search .
+
+false
+
+©2026 Google Privacy Policy
+Terms of Service
+
+Language
+Afrikaans&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+Filipino&lrm;
+français&lrm;
+Gaeilge&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+italiano&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+български&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+&rlm; עברית
+&rlm; العربية
+हिन्दी&lrm;
+ไทย&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback about our Help Center Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+16356333398995465045
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+82437
+false
+false
+
+false

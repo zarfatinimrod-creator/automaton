@@ -17,8 +17,8 @@
  * states that arithmetic (docs/SPEC.md §5.2, §6.7).
  */
 
-export { parsePcn874, isParsed } from './parse.js';
-export type { ParsedPcn874, Pcn874Record, RecordKind, LineEnding } from './parse.js';
+export { parsePcn874, isParsed, decodePcn874Bytes } from './parse.js';
+export type { ParsedPcn874, Pcn874Record, RecordKind, LineEnding, DecodedPcn874 } from './parse.js';
 
 export { generatePcn874, GENERATOR_COLUMNS, GENERATOR_DIRECTIVES } from './generate.js';
 export type {
@@ -28,7 +28,7 @@ export type {
   ProblemSeverity,
 } from './generate.js';
 
-export { validatePcn874, basisOf } from './validate.js';
+export { validatePcn874, basisOf, COUNTERPARTY_ROWS } from './validate.js';
 export type { Finding, Severity, Basis, ValidationResult } from './validate.js';
 
 export {

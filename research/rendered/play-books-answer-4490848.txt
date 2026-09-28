@@ -1,0 +1,179 @@
+Step 2. Set up your payment profile - Google Play Books Partner Center Help
+Skip to main content
+
+Google Play Books Partner Center Help
+
+Sign in
+
+Google Help
+
+Help Center
+Community
+Books
+
+Privacy Policy
+Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+
+Books
+
+How to sell a book on Google Play: a checklist
+Step 2. Set up your payment profile
+
+Notification
+We are currently experiencing higher than usual wait times for support. You may find quick answers to common questions in our Help Center/FAQ.
+
+Step 2. Set up your payment profile
+
+Quick steps
+
+Add a new payment profile.
+
+You must have a payment profile in order to sell books on Google Play. The country listed in this payment profile will determine the currency you're paid in.
+
+Detailed steps
+
+You'll be asked to set up a payment profile in a pop-up box when you sign up for a new account and agree to the terms. If you skipped this step, go to the Payment Center , and under Payment profiles , click Add a Payment Profile .
+
+Enter your business name, contact name, address, and phone number.
+
+Click the Submit button.
+
+If you clicked Add a Payment Profile in the first step: Edit your sales territory (or create a new one ) and select the new payment profile from the Payment profile drop-down, then click Save Changes .
+
+If you see an error message about expired credentials, please sign out of your Google Account and sign in again.
+
+Go to the Payment Center
+
+You can have multiple payment profiles if you want to receive payments in multiple bank accounts, but you only need one to start selling books on Google Play.
+
+Learn more
+
+Payment profiles (bank accounts)
+
+Supported countries for selling books on Google Play
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+Contact us Tell us more and we’ll help you get there
+
+true
+How to sell a book on Google Play: a checklist
+1 of 9
+Step 1. Create an account
+2 of 9
+Step 2. Set up your payment profile
+3 of 9
+Step 3. Add sales territories
+4 of 9
+Step 4. Tell us about your book
+5 of 9
+Step 5. Upload content
+6 of 9
+Step 6. Provide prices
+7 of 9
+Step 7. Configure additional settings
+8 of 9
+Step 8. Publish the book
+9 of 9
+Step 9. Specify a bank account and provide tax information
+
+©2026 Google Privacy Policy
+Terms of Service
+
+Language
+Afrikaans&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+Filipino&lrm;
+français&lrm;
+Gaeilge&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+italiano&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+български&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+&rlm; עברית
+&rlm; العربية
+हिन्दी&lrm;
+ไทย&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+7583042510706521411
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+82437
+false
+
+false
+
+false
+false
+
+false

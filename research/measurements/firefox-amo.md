@@ -1,6 +1,8 @@
 # Measurement: Firefox Add-ons (AMO) + Gumroad Pro licence (CHANNEL_LOOP §4 candidate 16, breadth rank 1)
 
-**Status: MEASURED 28.9.2026. Verdict: FAILS_TEST** (see the end). The captures were fetched on 2026-09-28: the policies at
+**Status: MEASURED 28.9.2026. Verdict: FAILS_TEST** (see the end). **Tick 6 reopen check (28.9.2026, AMO 'invoice'
+search): the G4 failure is CONFIRMED. Logo branding is already free in at least four AMO add-ons. Recommendation: KILL** (see
+the last section). The captures were fetched on 2026-09-28: the policies at
 13:17:49.555Z, newest at 13:17:50.968Z, hebrew at 13:17:52.330Z and the langpack at 13:17:53.428Z. All four returned 200
 and none was truncated (`research/rendered/amo-*.meta.json`).
 
@@ -97,3 +99,53 @@ Hebrew niche is not: it already holds 24 free RTL fixers, and the Hebrew-only ut
 ~500 line. The newest-cohort median of 0 is a day-0 reading and settles nothing. The audience ceiling is the langpack's 144,540.
 **The single next check** (the only one that could reopen it, by showing whether receipt branding is already free on AMO):
 https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=invoice&page_size=50
+
+## Tick 6 (28.9.2026): the reopen check — AMO 'invoice' search
+Capture: `research/rendered/amo-search-invoice.json` (ZERO-TESTS row 62). It was fetched at 2026-09-28T16:12:05.095Z,
+returned 200, was not truncated (451,566 bytes) and was rendered at commit 5d597e4. I parsed it with python3 and recorded no
+author names.
+
+**Counts [RENDERED].** `count` 281, `page_size` 50, `page_count` 6. Only page 1 was read. Of those 50, 23 are about invoices,
+receipts or bills. The other 27 match on the stem "voice" (TTS, recorders, dictation) and are noise.
+
+**What il-biz-tools sells as Pro [RENDERED]:** "your logo and accent colour on the printed document" (`README.md:284`), for
+₪79 one-time (`:33`). In the page code these are the `#brand-logo` and `#brand-accent` controls (`assets/page-invoice.js:182-228`).
+
+**Page-1 results that generate, brand or customise invoices [RENDERED].** None of these results is Hebrew or Israeli. Across
+all 50 results, name, summary, description and tags contain no "Hebrew", "Israel", RTL, Hebrew script, osek, ₪/ILS/NIS
+or a `he` locale. The local ones are India GST, Argentina AFIP and Egypt ETA.
+
+| Add-on (slug) | Free? (`requires_payment`) | Daily users | Branding it states | Market |
+|---|---|---|---|---|
+| `alibill-aliexpress-invoice` | free | 696 | "Add Custom Company Information and Logo" | generic, AliExpress orders |
+| `aliinvoice` | free flag, but freemium | 219 | logo free; "only 4 templates" of 14 free | generic, AliExpress orders |
+| `free-invoice-generator` | free | 20 | "Customizable invoices with logo, tax, and discounts", "100% free" | generic; opens an outside website |
+| `merabill-gst-invoice-generator` | free | 2 | "company logo, Terms and Conditions, Bank Details, Header, Footer" | India GST |
+| `estimate-invoice-maker` | free | 0 | "Custom Branding - Use your company logo" | generic |
+| `snapinvoice-best-invoice-maker` | **paid** | 0 | logo free; PRO = "three additional templates and watermark removal", one-time, sold on an external site | generic, offline |
+| `invoice-generator-pro`, `afip-invoice-helper`, `ha-invoice` | free | 1 each | "multiple templates" / "templates" / business details (no logo named) | generic / Argentina / India |
+
+Non-branding makers: `simply-invoice` (2), `quick-invoice-generator` (1), `ali2invoice-aliexpress-invoice` (18) and `alivat`
+(9), all free. The rest are downloaders or parsers, not makers. The only paid invoice add-on besides SnapInvoice is
+`invoice-pdf-grabber` (142 users), an Egypt ETA downloader.
+
+**The G4 question, answered literally: is "logo and accent colour on the receipt" free elsewhere on AMO? Yes, for the logo
+[RENDERED].** Four general or GST makers state a logo on the invoice at no charge: `free-invoice-generator`, `merabill`,
+`estimate-invoice-maker`, and SnapInvoice's free tier. Two AliExpress generators with 696 and 219 users do the same. The
+accent colour is named by none of the 50 (absence, from 50 of 281 results). Colour and design choice is what AMO sellers
+charge for, as templates (`aliinvoice`, SnapInvoice). A colour picker alone would again rest on absence, and it is not the
+feature we sell. **G4 failure confirmed.**
+[INFERENCE] Two more readings point the same way:
+- **The ~30 line.** The nine general invoice makers have median 1 and max 20 daily users. They were created between 2019 and
+  2026, so this is not a day-0 reading, and all nine sit below ~30.
+- **The closest analogue.** SnapInvoice is offline and localStorage-based, keeps the logo free and sells a one-time PRO. It
+  shows 0 users 29 days after creation.
+
+What is empty on AMO is the free base: a Hebrew/RTL, osek/VAT receipt. That base is already free on our own site, so it
+cannot be the Pro feature. The same finding (logo branding is free in other tools) bears on il-biz-tools' own Pro. That is
+for the owner, not this candidate.
+
+**Recommendation for candidate 16 at the 29.9 sitting: KILL.** G4 is failed on evidence, not on absence: the one Pro feature
+we have (the logo on the document) is free in at least four AMO add-ons. The ruled condition is therefore a venue kill by
+itself (`BREADTH-SWEEP.md:473`). The invoice-maker cohort reinforces it: every general maker sits under ~30 users, and the
+nearest analogue with a paid tier has 0.

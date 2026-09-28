@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { isParsed, parsePcn874 } from '../src/parse.js';
+import { decodePcn874Bytes, isParsed, parsePcn874 } from '../src/parse.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixture = (name: string): string => readFileSync(join(here, 'fixtures', name), 'utf8');
@@ -102,5 +102,44 @@ describe('parsePcn874', () => {
     expect(isParsed(parsePcn874(fixture('valid-minimal.txt')))).toBe(true);
     expect(isParsed('O123')).toBe(false);
     expect(isParsed(null)).toBe(false);
+  });
+});
+
+/** Hebrew letters as Windows-1255 bytes (alef..tav are 0xE0..0xFA); ASCII as itself. */
+const cp1255 = (text: string): Uint8Array =>
+  Uint8Array.from([...text].map(ch => {
+    const code = ch.charCodeAt(0);
+    if (code < 0x80) return code;
+    if (code >= 0x5d0 && code <= 0x5ea) return 0xe0 + (code - 0x5d0);
+    throw new Error(`no cp1255 byte for ${ch}`);
+  }));
+
+describe('decodePcn874Bytes', () => {
+  const utf8 = (s: string): Uint8Array => new TextEncoder().encode(s);
+
+  it('gives the text readFileSync(path, "utf8") gives, a leading BOM and invalid bytes included', () => {
+    const cases = [
+      utf8(fixture('valid-minimal.txt')),
+      utf8(fixture('warnings-refgroup-hebrew.txt')),
+      Uint8Array.from([0xef, 0xbb, 0xbf, ...utf8(fixture('valid-crlf.txt'))]),
+      Uint8Array.from([0x4f, 0xff, 0xfe, 0x31, 0xc3]),
+      cp1255(fixture('warnings-refgroup-hebrew.txt')),
+    ];
+    for (const bytes of cases) expect(decodePcn874Bytes(bytes).text).toBe(Buffer.from(bytes).toString('utf8'));
+  });
+
+  it('says whether the bytes were UTF-8 at all', () => {
+    expect(decodePcn874Bytes(utf8(fixture('warnings-refgroup-hebrew.txt'))).utf8).toBe(true);
+    const windows = decodePcn874Bytes(cp1255(fixture('warnings-refgroup-hebrew.txt')));
+    expect(windows.utf8).toBe(false);
+    expect(windows.text).toContain('\uFFFD');
+  });
+
+  it('says whether the file starts with a byte-order mark, and keeps it in the text', () => {
+    const withBom = decodePcn874Bytes(Uint8Array.from([0xef, 0xbb, 0xbf, ...utf8(fixture('valid-minimal.txt'))]));
+    expect(withBom.bom).toBe(true);
+    expect(withBom.text.charCodeAt(0)).toBe(0xfeff);
+    expect(decodePcn874Bytes(utf8(fixture('valid-minimal.txt'))).bom).toBe(false);
+    expect(decodePcn874Bytes(new Uint8Array()).bom).toBe(false);
   });
 });

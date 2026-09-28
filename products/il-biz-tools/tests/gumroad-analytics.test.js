@@ -133,6 +133,23 @@ describe('analytics', () => {
     expect(s.inline).toContain('"capture_pageview":true');
     expect(s.inline).toContain('"disable_session_recording":true');
   });
+  it('pins off every capture a PostHog project setting could otherwise switch on, so no element text is ever sent', () => {
+    // posthog-js falls back to the project's remote config for dead clicks,
+    // heatmaps and exceptions when the page leaves them unset. On pcn874.html a
+    // clicked table cell can hold bytes of the user's file.
+    const s = buildPostHogSnippet({ posthog: { projectKey: 'phc_1' } });
+    for (const pinned of [
+      '"capture_dead_clicks":false',
+      '"capture_heatmaps":false',
+      '"capture_exceptions":false',
+      '"capture_performance":false',
+      '"disable_surveys":true',
+      '"mask_all_text":true',
+      '"mask_all_element_attributes":true',
+    ]) {
+      expect(s.inline).toContain(pinned);
+    }
+  });
   it('honours a self-hosted api host', () => {
     const s = buildPostHogSnippet({ posthog: { projectKey: 'phc_1', apiHost: 'https://ph.example.com' } });
     expect(s.inline).toContain('ph.example.com');

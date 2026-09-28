@@ -1,17 +1,17 @@
 {
   "url": "https://www.paypal.com/il/webapps/mpp/ua/useragreement-full",
   "slug": "paypal-il-user-agreement-mpp",
-  "fetchedAt": "2026-09-28T13:18:07.605Z",
+  "fetchedAt": "2026-09-28T16:11:41.806Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 2020887,
-  "sha256": "2e09d663ae75c2d13980cff12f1df3c49bc94f8023a318d04e1a0a55ec6848e2",
+  "sha256": "aeab00eda62425baa003b891357ddd9e494aca8dc4032904c613053fc5294d6d",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/paypal-il-user-agreement-mpp.html",
   "textPath": "research/rendered/paypal-il-user-agreement-mpp.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "2e09d663ae75c2d13980cff12f1df3c49bc94f8023a318d04e1a0a55ec6848e2",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

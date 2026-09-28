@@ -19,6 +19,10 @@
 //      if verified (or not a figure file), cut down to named keys where a rule
 //      allows it (registrar-fee.json ships its dates, never its amounts), and a
 //      stopped build otherwise. A JSON file with no rule never ships.
+//   0. The pcn874 bundle. pcn874.html runs products/pcn874's validator,
+//      type-stripped into src/vendor/pcn874/ (src/lib/pcn874-bundle.js). The
+//      build regenerates it from products/pcn874/src and stops, preview too,
+//      if the committed copy differs or that source is missing.
 //   4. Blockers. A placeholder in any shipped page (its data-publish-blocker
 //      marker however written, or its words), a missing accessibility
 //      statement, a statement with no real contact link (data-a11y-contact),
@@ -45,6 +49,7 @@ import {
   publishBlockers,
 } from '../src/lib/publish-gate.js';
 import { collectDependencies } from '../src/lib/site-deps.js';
+import { bundleProblems, fsBundleAccess } from '../src/lib/pcn874-bundle.js';
 import { checkPageA11y, checkStylesheetA11y } from '../src/lib/a11y-check.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -85,6 +90,15 @@ if (unregistered.length) {
     ...unregistered,
     'add each page with the config files whose figures it renders, or an empty list if it renders none',
   ]);
+}
+
+// The validator page runs products/pcn874's own code. Regenerate that bundle
+// from products/pcn874/src and stop - preview included - if the committed copy
+// differs or the source is not there to regenerate it from: a page running a
+// validator nobody tested is worse than no page.
+const bundle = bundleProblems(fsBundleAccess(root));
+if (bundle.length) {
+  refuse('the pcn874 validator bundle does not match products/pcn874/src (run: node scripts/bundle-pcn874.js)', bundle);
 }
 
 const rateConfigs = {};

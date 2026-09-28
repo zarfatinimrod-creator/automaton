@@ -1,7 +1,8 @@
 # Measurement: PayPal Israel as a payout rail (CHANNEL_LOOP row 21, breadth board Q3)
 
 **Date:** 2026-09-28. **Branch:** `claude/new-session-j071dx`, read at `2c57b7d` (the captures arrived in its parent `815c2e5`).
-**Status: NEEDS_MORE.** The mechanics pass: an Israeli individual may open an account, receive payment for goods and
+**Status: NEEDS_MORE** (tick 6, 28.9.2026: unchanged. The help index names no verification article. Its only identity
+step is an upload of "proof of identity" to lift a limitation, in HELP534. See the Tick 6 section.) The mechanics pass: an Israeli individual may open an account, receive payment for goods and
 services on a personal account, and withdraw to an Israeli bank in ILS. The camera question is **UNKNOWN, not excluded**.
 The agreement names ID documents and no camera step, but it does not describe the verification flow and links no
 verification article. Board Q3 condition (i) is therefore not yet met.
@@ -59,3 +60,45 @@ PayPal leg is killed either.
 bank-confirmation article (`https://www.paypal.com/smarthelp/article/HELP185`) and the help index
 (`https://www.paypal.com/il/cshelp/personal`). The next check is to find and render the PayPal IL help article on
 confirming identity from that index.
+
+## Tick 6 (28.9.2026): the help index
+**Capture:** `research/rendered/paypal-il-help-index.txt` (39 lines) and its `.html` (24 lines), ZERO-TESTS row 59.
+URL `https://www.paypal.com/il/cshelp/personal` (no locale parameter), status 200, fetchedAt 2026-09-28T16:12:00.249Z,
+308,414 bytes, not truncated, sha256 `0cc5d271…`. Captured in `5d597e4`, read at `63c318e`.
+
+**What it is: the real help index, not a shell. It is thin, and it is in Hebrew.** [RENDERED]
+- Title "מרכז התמיכה של PayPal - אישי | PayPal IL" (`.txt:1`); heading "מרכז התמיכה - חשבון אישי" (`:3`). The page was served
+  in Hebrew (`"worldReadyLocale":"he-IL"`, `.html:24`). Its English switch is `href="?locale.x=en_IL"` (`.html:23`).
+- Visible body: five "מאמרים מומלצים" (recommended articles, `:7`), all on payments, refunds and disputes (`:9-17`; the
+  `href`s are help106, help160, help142, help130 and help111, `.html:21`), then "להציג עוד" (show more, `:19`). Six help
+  channels follow (`:21-33`): all topics, Resolution Center, Tax Center, Message Center, technical help and business
+  help. The rest is the cookie banner (`:35-39`).
+- The page data (`__NEXT_DATA__`, `.html:24`) holds 13 articles. There are 8 recommended: the five above, plus three
+  behind "show more" (HELP1038, card billing address; HELP534; HELP546, form 1099). There are 5 "searchPopularArticles"
+  (HELP293 send, HELP183 link bank, HELP383 fees, HELP246 Resolution Center, HELP155 link card), with titles and no URL.
+  Its topic tree names six topics and gives no URLs. Two of them are "החשבון שלי" (my account, `help_account_personal`) and
+  "כניסה ואבטחה" (login and security).
+
+**Verification article: none linked, none named.** [RENDERED] No title in the text or the page data is about confirming
+identity or verifying a new account. The HTML has 0 hits each for selfie, liveness, identity, סלפי, אימות and תעודת. All
+19 hits for "זהות" are classified: 16 US taxpayer-ID hold strings, 1 login one-time password ("לזהות אותך"), 1
+support-call passcode ("כדי לאמת את זהותכם, הזינו את קוד האבטחה הבא"), and 1 in the entry below. None is a KYC flow.
+- **HELP534** (rank 7, behind "show more"). It sits only in the page data, with no `href` and nothing in the `.txt`.
+  Title "מדוע חשבון ה- PayPal שלי הוגבל?"; excerpt "PayPal עשויה להגביל את החשבון שלך מסיבות כגון הפרות מדיניות, פעילות
+  בסיכון גבוה, חוסר פעילות. עליך להעלות הוכחת זהות ב'הודעות' כדי לשחזר את הגישה."; url
+  `"/il/cshelp/article/מדוע-חשבון-ה--paypal-שלי-הוגבל-help534"` (`.html:24`). [INFERENCE, my translation] "Why was my
+  PayPal account limited?" / "…for reasons such as policy violations, high-risk activity, inactivity. You must upload
+  proof of identity in 'Messages' to restore access."
+- [INFERENCE] That is a path for recovering a limited account, not the opening flow. "להעלות" (upload) fits a document
+  upload and the excerpt names no camera step. But an excerpt is a summary, not the article body, so the camera question
+  is **still UNKNOWN**. The HELP111 and HELP155 excerpts use "חשבון מאומת" / "חשבונות מאומתים" (verified account/s)
+  without defining the status.
+
+**Verdict for row 21: NEEDS_MORE**, unchanged. Board Q3 condition (i) is still not met, because no render shows the
+verification flow. The only identity step the capture names is an upload of proof of identity via Messages after a
+limitation. It names no selfie, liveness or video step, and it does not exclude one.
+**Single next check:** render HELP534 at the address the capture holds,
+`https://www.paypal.com/il/cshelp/article/מדוע-חשבון-ה--paypal-שלי-הוגבל-help534` (the path from `.html:24`, the host from
+the meta). Read what counts as "proof of identity" and whether any selfie, liveness or video step is named. If the
+article is thin or only links onward, the fallback is `https://www.paypal.com/il/cshelp/browse-topics` (`.html:21`),
+to reach the "החשבון שלי" topic.

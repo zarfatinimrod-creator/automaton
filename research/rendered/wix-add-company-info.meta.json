@@ -1,0 +1,17 @@
+{
+  "url": "https://dev.wix.com/docs/build-apps/launch-your-app/market-listing/add-your-company-info",
+  "slug": "wix-add-company-info",
+  "fetchedAt": "2026-09-28T16:11:58.732Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 603541,
+  "sha256": "10222f0de899da4f9e0a3efc9c68eaa619bfc889a3ff184a05c28a6fd3c3f915",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/wix-add-company-info.html",
+  "textPath": "research/rendered/wix-add-company-info.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
