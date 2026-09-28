@@ -79,9 +79,29 @@ jobs:
         with:
           node-version: 22
 
-      # No install step: scripts/render-watch.mjs is stdlib plus the built-in fetch,
-      # on purpose. A weekly fetch that depends on a package tree is a weekly fetch
-      # somebody else's release can break.
+      # pdftotext, so a fetched PDF is stored with a readable text beside it. The
+      # container the research runs in has no PDF extractor at all: on 28.9.2026 the
+      # CrazyGames developer terms were captured as a PDF and could not be read.
+      # Nothing in this repository documents what the runner image ships, so this
+      # checks at run time and installs only when pdftotext is absent. It is
+      # continue-on-error on purpose: without pdftotext every page is still fetched,
+      # and each PDF's .meta.json records `textError` instead of a text — a failed
+      # apt-get must not cost the week's captures.
+      - name: Install pdftotext (poppler-utils) for PDF text extraction
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          if ! command -v pdftotext >/dev/null 2>&1; then
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends poppler-utils >/dev/null \
+              || { sudo apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends poppler-utils >/dev/null; }
+          fi
+          # The version line goes in the run log; some poppler builds exit non-zero on -v.
+          pdftotext -v 2>&1 | head -n 1 || true
+
+      # No npm install step: scripts/render-watch.mjs is stdlib plus the built-in
+      # fetch, on purpose. A weekly fetch that depends on a package tree is a weekly
+      # fetch somebody else's release can break. (pdftotext above is a system
+      # program the script runs if it is there, not a dependency it needs.)
       #
       # The script never throws on a bad page. A 403, a timeout, a 404 — each is
       # recorded in that page's .meta.json and the run still exits 0, because a site

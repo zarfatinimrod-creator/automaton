@@ -16,7 +16,10 @@
  * already proves the shape works for one document. This is the same idea widened
  * to a list: fetch, store the bytes, store a readable text extraction, store a
  * hash, and let a later session read the page out of the repository and grade a
- * claim [RENDERED] instead of [SNIPPET].
+ * claim [RENDERED] instead of [SNIPPET]. For a PDF the readable text comes from
+ * pdftotext on the runner, because the container the research runs in has no PDF
+ * extractor at all (28.9.2026: the CrazyGames developer terms were captured as a
+ * PDF and could not be read).
  *
  * WHAT IT IS NOT. It does not read the pages, and it does not decide anything.
  * Storing bytes is not evidence of a fact; a human or an agent that reads the
@@ -28,12 +31,50 @@
  *   - the raw body is stored under research/rendered/<slug>.<ext>, the extension
  *     chosen from the response Content-Type (html / json / pdf / xml / txt / bin)
  *   - for HTML, a deterministic text extraction is stored at <slug>.txt
+ *   - for a PDF (Content-Type application/pdf), the stored <slug>.pdf is run
+ *     through `pdftotext -layout <file> -` and the output is stored at <slug>.txt,
+ *     verbatim apart from masking (below); textPath in the meta points at it.
+ *     pdftotext comes from poppler-utils, which the workflow installs on the
+ *     runner — a system program run with execFile and a fixed argv, not an npm
+ *     dependency. The text is never hashed: sha256 stays the hash of the PDF bytes
+ *   - if pdftotext is missing, fails or times out (60 s), the run carries on: the
+ *     PDF and its meta are stored, no .txt is written, textPath is null, the meta
+ *     says why in `textError`, and the log prints it
+ *   - for a PDF, the script only replaces or removes a <slug>.txt its previous
+ *     meta claims as its own (textPath, or bodyPath for a text/plain capture).
+ *     An unclaimed <slug>.txt beside a PDF is treated as a hand extraction (four
+ *     exist, made before 28.9.2026 and cited by line number from products/pcn874
+ *     and research/) and is never touched: if the PDF bytes change beside one,
+ *     nothing is extracted, and textError says the PDF changed beside it, names
+ *     the sha256 of the stored copy it sat beside, and says it may not describe
+ *     the new bytes. (A limit, not a guarantee: if the URL starts answering HTML
+ *     or plain text instead, that capture's text or body is written to <slug>.txt
+ *     as for any page, hand extraction or not. Git history keeps what it replaced.)
+ *   - whether a PDF's bytes are new is judged against the STORED .pdf, not the
+ *     previous meta, because a failed fetch leaves the last capture on disk. The
+ *     same bytes beside a <slug>.txt are not extracted again: a PDF whose text is
+ *     stored does not churn. The same bytes with no <slug>.txt are extracted: that
+ *     reads, once, a PDF captured before this extraction existed (the meta is
+ *     rewritten, keeping the bytes' fetchedAt), and retries one whose extraction
+ *     failed. New bytes are extracted and replace the script's own <slug>.txt; if
+ *     that fails, the script's text of the old bytes is removed rather than left
+ *     beside new bytes it does not describe
+ *   - a failed fetch writes no file, so the last capture's .pdf and <slug>.txt
+ *     stay on disk; the failed fetch's meta therefore keeps the PDF capture's
+ *     textPath, textError and redacted, which still describe them. Without that,
+ *     one bad week would make the script's own text look like a hand extraction.
+ *     Only a PDF's state is carried: the error meta of every other page keeps the
+ *     shape it always had
  *   - secret-shaped strings (vendor docs print sample keys) are masked before the
- *     body is hashed or stored, and the meta file counts them as `redacted`
+ *     body is hashed or stored, and the meta file counts them as `redacted`. A PDF
+ *     body is binary and stored as fetched; its extracted text is masked instead,
+ *     and those are what `redacted` counts for a PDF
  *   - research/rendered/<slug>.meta.json records url, fetchedAt, status,
- *     contentType, byteLength, sha256 and whether the body changed
+ *     contentType, byteLength, sha256, bodyPath, textPath (plus textError, for a
+ *     PDF with no text) and whether anything changed
  *   - a non-2xx response or a network error is RECORDED IN THE META FILE and
- *     never thrown; the run still exits 0
+ *     never thrown; the run still exits 0. Its meta has no sha256 and no bodyPath;
+ *     after a PDF capture it keeps that capture's text state (above)
  *   - the process exits non-zero only when the script itself is broken: a
  *     malformed URL list, a duplicate slug, an unwritable output directory
  *
@@ -44,19 +85,25 @@
  * capture is a sample, not a copy, and must not be cited as the full page.
  *
  * QUIET GIT HISTORY, DELIBERATELY. A meta file is rewritten only when something
- * material changed (body hash, HTTP status, or the error state). A run that finds
- * the same bytes writes nothing at all, so the workflow's `git add` finds an empty
- * diff and skips the commit. The consequence, stated rather than hidden:
- * `fetchedAt` is the time of the fetch that produced the STORED content — the last
- * time the page CHANGED, not the last time it was checked. The workflow run log is
- * the record of every check.
+ * material changed (body hash, HTTP status, or the error state — and, for a PDF
+ * only, whether its text was extracted and why not). A run that finds the same
+ * bytes writes nothing at all, so the workflow's `git add` finds an empty diff and
+ * skips the commit; an unchanged PDF whose text is stored is not even re-extracted,
+ * and one whose extraction fails the same way again writes nothing either. The
+ * consequence, stated rather than hidden: `fetchedAt` is the time of the fetch that
+ * produced the STORED bytes — the last time the page CHANGED, not the last time it
+ * was checked, and not the time its text was extracted. The workflow run log is the
+ * record of every check.
  *
- * Node 22, no dependencies, on purpose: a weekly fetch that depends on a package
- * tree is a weekly fetch somebody else's release can break.
+ * Node 22, no npm dependencies, on purpose: a weekly fetch that depends on a
+ * package tree is a weekly fetch somebody else's release can break. The one
+ * outside program, pdftotext, is optional by construction: without it every page
+ * is still fetched and stored, and a PDF simply has no text until a run that has it.
  */
 
+import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -196,6 +243,10 @@ export function isHtml(contentType) {
   return extensionFor(contentType) === "html";
 }
 
+export function isPdf(contentType) {
+  return extensionFor(contentType) === "pdf";
+}
+
 const NAMED_ENTITIES = {
   amp: "&",
   lt: "<",
@@ -269,6 +320,88 @@ export function extractText(html) {
 }
 
 // ---------------------------------------------------------------------------
+// The PDF text extractor
+// ---------------------------------------------------------------------------
+
+/**
+ * pdftotext gets a minute. A 5 MB PDF (the cap) takes seconds; a minute is room
+ * for a slow runner, not a target.
+ */
+export const PDFTOTEXT_TIMEOUT_MS = 60_000;
+
+/**
+ * Room for the text of a PDF at the 5 MB cap. execFile's default stdout limit is
+ * 1 MB; the largest PDF text in research/rendered/ today is 154 KB (the US-Israel
+ * treaty), but `-layout` pads lines with spaces, and hitting the limit would lose
+ * the whole text rather than trim it.
+ */
+const PDFTOTEXT_MAX_BUFFER = 64 * 1024 * 1024;
+
+/**
+ * Run `pdftotext -layout <file> -` (poppler-utils) and resolve its stdout.
+ *
+ * The one external program this script runs, and it is optional: without it a PDF
+ * is still stored, just with no text (see describePdfTextError). execFile, not a
+ * shell, with a fixed argv — the only variable is the path of a file this script
+ * just wrote, and it is passed as one argument, never parsed. `-layout` keeps the
+ * columns of a terms document or a spec table next to each other; the form feed
+ * pdftotext puts between pages is kept, so a page can still be found.
+ *
+ * `execFileImpl` exists for the tests. Rejects with the child_process error, with
+ * the child's stderr and the timeout attached for describePdfTextError.
+ */
+export function runPdftotext(pdfPath, { timeoutMs = PDFTOTEXT_TIMEOUT_MS, execFileImpl = execFile } = {}) {
+  return new Promise((resolvePromise, rejectPromise) => {
+    execFileImpl(
+      "pdftotext",
+      ["-layout", pdfPath, "-"],
+      { timeout: timeoutMs, maxBuffer: PDFTOTEXT_MAX_BUFFER, encoding: "utf8", windowsHide: true },
+      (error, stdout, stderr) => {
+        if (error) {
+          rejectPromise(Object.assign(error, { stderr: String(stderr ?? ""), timeoutMs }));
+          return;
+        }
+        resolvePromise(String(stdout ?? ""));
+      },
+    );
+  });
+}
+
+/**
+ * Say, in one line fit for a committed meta file, why a PDF has no text.
+ * Deterministic on purpose: the same failure on the same bytes gives the same
+ * sentence, so a runner that fails the same way every week writes nothing. For
+ * the same reason no host path goes in — execFile's own message carries the
+ * runner's checkout path, which differs between runs and hosts.
+ */
+export function describePdfTextError(error) {
+  const code = error?.code;
+  const stderrLine =
+    String(error?.stderr ?? "")
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .find((line) => line !== "") ?? "";
+  const said = stderrLine ? `: ${stderrLine.slice(0, 200)}` : "";
+  const tail = "; no text was extracted from this PDF";
+
+  if (code === "ENOENT") {
+    return (
+      "pdftotext is not installed on this host (ENOENT)" +
+      tail +
+      ". .github/workflows/render-watch.yml installs poppler-utils before the fetch step."
+    );
+  }
+  // `killed` is set only when node itself stopped the child, which here means the timeout.
+  if (error?.killed) {
+    const ms = error?.timeoutMs ?? PDFTOTEXT_TIMEOUT_MS;
+    return `pdftotext did not finish within ${ms} ms and was stopped (${error?.signal ?? "killed"})${tail}`;
+  }
+  if (error?.signal) return `pdftotext was ended by ${error.signal}${said}${tail}`;
+  if (typeof code === "number") return `pdftotext exited with code ${code}${said}${tail}`;
+  return `pdftotext failed (${code ?? error?.name ?? "unknown error"})${said}${tail}`;
+}
+
+// ---------------------------------------------------------------------------
 // Meta files
 // ---------------------------------------------------------------------------
 
@@ -317,15 +450,32 @@ export function redactSecrets(bytes, contentType) {
 }
 
 /**
- * Did anything worth committing change? The body hash is the main answer, but a
- * page that starts answering 403 has changed too, and so has one whose network
- * error appeared or cleared.
+ * Did the fetched body change? The hash is the main answer, but a page that starts
+ * answering 403 has changed too, and so has one whose network error appeared or
+ * cleared.
  */
-export function hasChanged(previousMeta, next) {
+export function bodyChanged(previousMeta, next) {
   if (!previousMeta) return true;
   if ((previousMeta.sha256 ?? null) !== (next.sha256 ?? null)) return true;
   if ((previousMeta.status ?? null) !== (next.status ?? null)) return true;
   return (previousMeta.error ?? null) !== (next.error ?? null);
+}
+
+/**
+ * Did anything worth committing change? The body, as above — or, for a PDF only,
+ * whether its text was extracted: a PDF whose bytes did not move but whose text
+ * was just read (or whose extraction started or stopped failing) is worth a commit.
+ *
+ * The text state is compared for PDFs and nothing else, deliberately. Metas that
+ * were edited by hand exist (an HTML capture whose body was removed on purpose, two
+ * text/plain captures given a textPath by hand), and comparing textPath for every
+ * type would rewrite them on the next run.
+ */
+export function hasChanged(previousMeta, next) {
+  if (bodyChanged(previousMeta, next)) return true;
+  if (!isPdf(next.contentType)) return false;
+  if ((previousMeta.textPath ?? null) !== (next.textPath ?? null)) return true;
+  return (previousMeta.textError ?? null) !== (next.textError ?? null);
 }
 
 /**
@@ -334,6 +484,10 @@ export function hasChanged(previousMeta, next) {
  *
  * `status` is the HTTP status, or null when the request never got one (DNS,
  * timeout, refused connection). `sha256` is null when there is no stored body.
+ * `textError` is present only for a PDF with no text of the script's own, and
+ * says why; `textPath` is then null. A failed fetch after a PDF capture carries
+ * that capture's textPath, textError and redacted (previousTextState): they
+ * describe the files still on disk, not this fetch.
  */
 export function buildMeta({
   url,
@@ -348,6 +502,7 @@ export function buildMeta({
   error = null,
   bodyPath = null,
   textPath = null,
+  textError = null,
   redacted = 0,
 }) {
   const next = {
@@ -364,6 +519,8 @@ export function buildMeta({
     error,
     bodyPath,
     textPath,
+    // Present only for a PDF whose text could not be read, for the same reason as `redacted`.
+    ...(textError ? { textError } : {}),
   };
   return {
     ...next,
@@ -485,6 +642,206 @@ export async function fetchOne(entry, { fetchImpl = fetch, timeoutMs = TIMEOUT_M
 }
 
 // ---------------------------------------------------------------------------
+// Storing one capture
+// ---------------------------------------------------------------------------
+
+/**
+ * What the previous meta says about a PDF's <slug>.txt: which file is the script's
+ * own text (textPath), why there is none (textError), and how many strings in that
+ * text were masked (redacted).
+ *
+ * A failed fetch writes no file — the last capture's .pdf and <slug>.txt stay on
+ * disk — so its meta carries this state forward unchanged (storeCapture). Without
+ * that, one bad week would forget that the script wrote the text beside the stored
+ * PDF: the text would then be taken for a hand extraction, and left beside bytes it
+ * does not describe once the PDF changed.
+ *
+ * Only a PDF capture, or a failed fetch (which carries a PDF capture's state and
+ * otherwise has none), has any. Everything else — an HTML capture, a JSON one, the
+ * hand-edited metas — gives the empty state, so their error metas keep the shape
+ * they always had.
+ */
+export function previousTextState(previousMeta) {
+  const none = { textPath: null, textError: null, redacted: 0 };
+  if (!previousMeta) return none;
+  const pdfCapture = previousMeta.error == null && isPdf(previousMeta.contentType);
+  const failedFetch = previousMeta.error != null;
+  if (!pdfCapture && !failedFetch) return none;
+  return {
+    textPath: previousMeta.textPath ?? null,
+    textError: previousMeta.textError ?? null,
+    redacted: Number.isInteger(previousMeta.redacted) && previousMeta.redacted > 0 ? previousMeta.redacted : 0,
+  };
+}
+
+/**
+ * Why a PDF was not extracted beside a <slug>.txt no meta claims. Only what the
+ * script knows is said: no textPath names the file, and the PDF beside it changed
+ * (with the sha256 of the stored copy it sat beside, so that copy can be found in
+ * git history). Not "render-watch did not write it" — the script cannot know that —
+ * and not "it does not describe these bytes": a PDF that changes back would make
+ * that false, and this sentence is carried forward for as long as the bytes stay.
+ */
+export function unclaimedTextNote(ownTextPath, storedPdf) {
+  const where =
+    storedPdf === null
+      ? "No stored PDF was beside it to compare with, so nothing says it describes these bytes"
+      : `The PDF changed beside it (the stored copy was sha256 ${sha256(storedPdf)}), so it may not describe these bytes`;
+  return (
+    `not extracted: ${ownTextPath} is not claimed by this page's meta (no textPath names it), so render-watch ` +
+    "treats it as a hand extraction — other files cite such texts by line number — and leaves it alone. " +
+    `${where}: check it against the PDF before citing it. Move or re-extract it deliberately; ` +
+    "a run with no such file extracts the text itself."
+  );
+}
+
+/**
+ * Turn one fetch result into files under outDir: the body, its text, its meta —
+ * or nothing at all when nothing material changed. Returns the meta, and whether
+ * the fetched body itself changed (false for a PDF whose only news is its text).
+ *
+ * A PDF's text comes from `extractPdfText(<stored .pdf path>)` (runPdftotext unless
+ * a test injects one) and is masked with redactSecrets before it is written. It is
+ * never hashed: sha256 is the hash of the PDF bytes. When the extractor throws,
+ * nothing is thrown on: the meta gets `textError` and no .txt is written.
+ *
+ * Only a <slug>.txt the meta claims (textPath) is ever replaced or removed; a
+ * failed fetch carries that claim forward (previousTextState). Any other
+ * <slug>.txt beside a PDF is treated as a hand extraction that other files cite by
+ * line number, and is never touched. The script's own text always describes the
+ * stored .pdf: it is replaced or removed whenever those bytes are.
+ *
+ * Whether the fetched bytes are new is judged against the STORED .pdf, not the
+ * previous meta — after a failed fetch the meta has no sha256, but the last
+ * capture's bytes are still on disk. Then:
+ *   - same bytes as the stored .pdf, <slug>.txt on disk: nothing is extracted, and
+ *     what the meta said about the text is kept.
+ *   - same bytes, no <slug>.txt: extracted. That reads, once, a PDF captured
+ *     before this extraction existed, and retries one whose extraction failed.
+ *   - new bytes (or no stored .pdf) beside an unclaimed <slug>.txt: nothing is
+ *     extracted, and textError says the text is not the script's and may be stale.
+ *   - new bytes otherwise: extracted, replacing the script's own text. If that
+ *     fails, the script's text of the old bytes is removed.
+ *   An unchanged PDF whose text is stored is not extracted again, so a newer
+ *   pdftotext on the runner does not churn a text nobody asked to change.
+ */
+export async function storeCapture(
+  entry,
+  result,
+  { outDir, now = () => new Date().toISOString(), extractPdfText = runPdftotext } = {},
+) {
+  const previousMeta = readPreviousMeta(outDir, entry.slug);
+  let fetchedAt = now();
+
+  let bodyPath = null;
+  let textPath = null;
+  let textError = null;
+  let pdfText = null;
+  let hash = null;
+  let byteLength = 0;
+
+  let redacted = 0;
+  if (result.bytes) {
+    const masked = redactSecrets(result.bytes, result.contentType);
+    result.bytes = masked.bytes;
+    redacted = masked.count;
+    byteLength = result.bytes.length;
+    hash = sha256(result.bytes);
+    const extension = extensionFor(result.contentType);
+    bodyPath = `research/rendered/${entry.slug}.${extension}`;
+    if (isHtml(result.contentType)) textPath = `research/rendered/${entry.slug}.txt`;
+  }
+
+  const bytesChanged = bodyChanged(previousMeta, { sha256: hash, status: result.status, error: result.error });
+
+  const ownTextPath = `research/rendered/${entry.slug}.txt`;
+  // What the previous meta said about a PDF's text, carried through failed fetches.
+  const previousText = previousTextState(previousMeta);
+  // Does the previous meta claim <slug>.txt as the script's own file? As a text (textPath: a PDF's,
+  // carried through a failed fetch, or an HTML page's), or as the body of a text/plain capture
+  // (bodyPath). Only a claimed file is ever replaced or removed.
+  const ownsTextFile = previousMeta?.textPath === ownTextPath || previousMeta?.bodyPath === ownTextPath;
+  // ...and is it the text of a PDF, i.e. of the stored .pdf? Not so for an HTML page's text.
+  const ownsPdfText = previousText.textPath === ownTextPath;
+  let removeOwnText = false;
+
+  if (!result.bytes) {
+    // A failed fetch writes no file, so the last capture's .pdf and .txt are still on disk
+    // and what the meta said about them is still true. Empty for anything but a PDF.
+    ({ textPath, textError, redacted } = previousText);
+  }
+
+  if (result.bytes && isPdf(result.contentType)) {
+    const pdfFile = join(outDir, basename(bodyPath));
+    const textFile = join(outDir, basename(ownTextPath));
+    const storedPdf = existsSync(pdfFile) ? readFileSync(pdfFile) : null;
+    const sameAsStored = storedPdf !== null && storedPdf.equals(result.bytes);
+    const textOnDisk = existsSync(textFile);
+    // Same bytes as the previous meta: `fetchedAt` stays the time those bytes were captured.
+    if (!bytesChanged) fetchedAt = previousMeta.fetchedAt ?? fetchedAt;
+
+    if (sameAsStored && textOnDisk && (ownsPdfText || !ownsTextFile)) {
+      // A text of exactly these bytes (the script's, or a hand extraction): keep what was said about it.
+      textPath = previousText.textPath;
+      textError = previousText.textError;
+      redacted = previousText.redacted;
+    } else if (textOnDisk && !ownsTextFile) {
+      // New bytes beside a text no meta claims: leave it, and say it may be stale.
+      textError = unclaimedTextNote(ownTextPath, storedPdf);
+    } else {
+      // pdftotext reads a file, so the PDF is stored first. Bytes already on disk are left untouched.
+      if (!sameAsStored) writeFileSync(pdfFile, result.bytes);
+      try {
+        const text = await extractPdfText(pdfFile);
+        const masked = redactSecrets(Buffer.from(String(text), "utf8"), "text/plain");
+        pdfText = masked.bytes;
+        redacted += masked.count;
+        textPath = ownTextPath;
+      } catch (error) {
+        textError = describePdfTextError(error);
+        // Our text of the previous bytes must not sit beside bytes it does not describe.
+        removeOwnText = ownsTextFile;
+      }
+    }
+  }
+
+  const meta = buildMeta({
+    url: entry.url,
+    slug: entry.slug,
+    fetchedAt,
+    status: result.status,
+    contentType: result.contentType,
+    byteLength,
+    sha256: hash,
+    previousMeta,
+    truncated: result.truncated,
+    error: result.error,
+    bodyPath,
+    textPath,
+    textError,
+    redacted,
+  });
+  // An extraction always has a text to write, even when nothing in the meta moved: the meta
+  // claimed a <slug>.txt that had been deleted, or the stored .pdf had been replaced by hand.
+  if (pdfText !== null) meta.changed = true;
+
+  if (!meta.changed) return { meta, bytesChanged };
+
+  if (result.bytes) {
+    writeFileSync(join(outDir, basename(bodyPath)), result.bytes);
+    if (pdfText !== null) {
+      writeFileSync(join(outDir, basename(textPath)), pdfText);
+    } else if (textPath && isHtml(result.contentType)) {
+      writeFileSync(join(outDir, basename(textPath)), `${extractText(result.bytes.toString("utf8"))}\n`);
+    } else if (removeOwnText) {
+      rmSync(join(outDir, basename(ownTextPath)), { force: true });
+    }
+  }
+  writeFileSync(metaPathFor(outDir, entry.slug), `${JSON.stringify(meta, null, 2)}\n`);
+  return { meta, bytesChanged };
+}
+
+// ---------------------------------------------------------------------------
 // main
 // ---------------------------------------------------------------------------
 
@@ -516,7 +873,11 @@ export function resolveListText(env, readFile = readFileSync, listPath = DEFAULT
   return { text: readFile(listPath, "utf8"), source: listPath };
 }
 
-export async function main(argv = process.argv.slice(2), env = process.env) {
+/**
+ * `deps.extractPdfText` exists for the tests; the workflow runs main() with none,
+ * which means runPdftotext.
+ */
+export async function main(argv = process.argv.slice(2), env = process.env, deps = {}) {
   const options = parseArgs(argv);
   const { text, source } = resolveListText(env, readFileSync, options.list);
   const entries = parseUrlList(text);
@@ -537,65 +898,37 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     if (index > 0) await sleep(DELAY_MS);
 
     const result = await fetchOne(entry);
-    const previousMeta = readPreviousMeta(options.outDir, entry.slug);
-    const fetchedAt = new Date().toISOString();
-
-    let bodyPath = null;
-    let textPath = null;
-    let hash = null;
-    let byteLength = 0;
-
-    let redacted = 0;
-    if (result.bytes) {
-      const masked = redactSecrets(result.bytes, result.contentType);
-      result.bytes = masked.bytes;
-      redacted = masked.count;
-      byteLength = result.bytes.length;
-      hash = sha256(result.bytes);
-      const extension = extensionFor(result.contentType);
-      bodyPath = `research/rendered/${entry.slug}.${extension}`;
-      if (isHtml(result.contentType)) textPath = `research/rendered/${entry.slug}.txt`;
-    }
-
-    const meta = buildMeta({
-      url: entry.url,
-      slug: entry.slug,
-      fetchedAt,
-      status: result.status,
-      contentType: result.contentType,
-      byteLength,
-      sha256: hash,
-      previousMeta,
-      truncated: result.truncated,
-      error: result.error,
-      bodyPath,
-      textPath,
-      redacted,
+    const { meta, bytesChanged } = await storeCapture(entry, result, {
+      outDir: options.outDir,
+      extractPdfText: deps.extractPdfText,
     });
+    const hash = meta.sha256;
+    const byteLength = meta.byteLength;
+    // A PDF with no readable text is still a stored capture: said in the log, never thrown.
+    const textNote = meta.textError ? `            no PDF text: ${meta.textError}\n` : "";
 
     if (result.error) failedCount += 1;
 
     if (!meta.changed) {
-      process.stdout.write(`unchanged   ${entry.slug}  sha256=${hash ? hash.slice(0, 12) : "-"}  ${entry.url}\n`);
+      process.stdout.write(`unchanged   ${entry.slug}  sha256=${hash ? hash.slice(0, 12) : "-"}  ${entry.url}\n${textNote}`);
       continue;
     }
 
     changedCount += 1;
 
-    if (result.bytes) {
-      writeFileSync(join(options.outDir, basename(bodyPath)), result.bytes);
-      if (textPath) {
-        writeFileSync(join(options.outDir, basename(textPath)), `${extractText(result.bytes.toString("utf8"))}\n`);
-      }
-    }
-    writeFileSync(metaPathFor(options.outDir, entry.slug), `${JSON.stringify(meta, null, 2)}\n`);
-
     const state = result.error
       ? `FAILED      ${entry.slug}  ${result.error}`
-      : `${meta.firstFetch ? "new        " : "CHANGED    "} ${entry.slug}  ${byteLength} bytes  ` +
-        `${result.contentType ?? "unknown type"}${result.truncated ? "  [TRUNCATED at 5 MB]" : ""}`;
-    process.stdout.write(`${state}\n            ${entry.url}\n`);
-    summaryLines.push(`- \`${entry.slug}\` — ${result.error ?? `${byteLength} bytes, ${result.contentType}`}`);
+      : !bytesChanged
+        ? `text        ${entry.slug}  PDF bytes unchanged (sha256=${hash.slice(0, 12)}); ` +
+          `${meta.textPath ? `text stored at ${meta.textPath}` : "text extraction failed"}`
+        : `${meta.firstFetch ? "new        " : "CHANGED    "} ${entry.slug}  ${byteLength} bytes  ` +
+          `${result.contentType ?? "unknown type"}${result.truncated ? "  [TRUNCATED at 5 MB]" : ""}`;
+    process.stdout.write(`${state}\n            ${entry.url}\n${textNote}`);
+    summaryLines.push(
+      `- \`${entry.slug}\` — ${result.error ?? `${byteLength} bytes, ${result.contentType}`}` +
+        `${bytesChanged ? "" : " (bytes unchanged; text extraction only)"}` +
+        `${meta.textError ? `; no PDF text: ${meta.textError}` : ""}`,
+    );
   }
 
   process.stdout.write(
