@@ -134,7 +134,7 @@ The full reasoning for each is in `BOARD-LOOP.md`. The ₪0 test runs first and 
 | 16 | Firefox Add-ons (AMO) + Gumroad Pro licence | render the four AMO URLs (Batch A); before admission, name in writing one Pro feature that is free nowhere, il-biz-tools included; read the newest cohort's and the Hebrew langpack's daily users | queued 28.9 (breadth board, rank 1: the next admission candidate if its tests return); ₪0 test in ZERO-TESTS |
 | 17 | Spreadshirt (single account) | render the six Spreadshirt URLs (Batch A) and DSA Arts 30-31; one written question on automated uploads from the step-8 mailbox ("no" = KILL-4); the owner's explicit yes/no before any EU venue shows their name (Q10) | queued 28.9 (breadth board) |
 | 18 | Google Play Books Partner Center | render table 6052428 and answers 3250840, 4490848 (Batch B); Israel absent from the payment-country list → dead | queued 28.9 (breadth board) |
-| 19 | Pebble appstore + KiezelPay | render the KiezelPay FAQ and `apps.repebble.com/faces` (Batch A); **pre-registered kill:** no Pebble onboarding in 2026 or any fee → dead without another sitting | queued 28.9 (breadth board) |
+| 19 | Pebble appstore + KiezelPay | render the KiezelPay FAQ and `apps.repebble.com/faces` (Batch A); pre-registered kill: no Pebble onboarding in 2026 or any fee → dead | **FAILS_TEST — killed 28.9 (tick 5), the pre-registered kill fired on clause 1:** KiezelPay's FAQ has no date after 2016 and no Pebble onboarding (`kiezelpay-faq.txt:221,229-231`); the store is alive (Spring 2026 contest) but has no documented payout route (`research/measurements/pebble-kiezelpay.md`; `docs/REJECTED.md`). |
 | 20 | n8n paid templates (second tier, render only) | render `api.n8n.io/api/templates/search?rows=100&page=1` and `n8n.io/creators/` (with Batch A); read the Creator Hub's AI rule and the paid-unlock condition | queued 28.9 (breadth board) |
 | 21 | PayPal Israel receiving (rail research, not a channel) | render the three recorded PayPal IL URLs (Batch A); a selfie or liveness step kills the PayPal leg of Pebble, Spreadshirt and GameMonetize together | queued 28.9 (breadth board) |
 
@@ -214,6 +214,7 @@ make it private (Actions minutes become metered, possibly a cost) or accept the 
 - **28.9, Polar (candidate 9) killed:** its owner verification needs a selfie (`polar-rail.md`, last section).
 - **28.9, oss-bounties week 1 struck** (not a kill): an instrument fault, per the bounty ruling §3.
 - **28.9, breadth board** (`research/breadth/BOARD.md`): nothing admitted; ArrangeMe deferred, not queued; Pebble carries a pre-registered kill; the sweep's verifier kills confirmed (Apify Store fleet, Gumroad as a buyer source, itch.io, e-vrit, Apify affiliate, PromptBase).
+- **28.9 (tick 5), Pebble + KiezelPay (candidate 19) killed:** the pre-registered kill fired on its first clause; no sitting needed (`pebble-kiezelpay.md`).
 
 ## 8. Open Fable items
 
