@@ -28,6 +28,9 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 19 | Polar rail (9), after row 17 | https://docs.stripe.com/connect/required-verification-information | for a US platform, account country Israel, Express, recipient, transfers: is "individual" a business type, and which identity documents are asked (`polar-rail.md`) |
 | 20 | Polar rail (9), after row 17 | https://polar.sh/docs/merchant-of-record/acceptable-use/introduction | whether the colony's products (digital tools, templates) are allowed (`polar-rail.md`) |
 | 21 | Polar rail (9), after row 17 | https://polar.sh/docs/merchant-of-record/fees | the all-in cost against Gumroad and Freemius (`polar-rail.md`) |
+| 22 | CrazyGames (6), after row 11 | https://docs.crazygames.com/requirements/intro/ | the "Publisher Guidelines" the terms make binding (`crazygames-developer-terms.txt:63-66`): AI content, automated upload, quality bars (`crazygames.md` Tick 3) |
+| 23 | CrazyGames (6), after row 11 | https://docs.crazygames.com/requirements/quality/ | the quality bar a brand-run game must clear (`crazygames.md` Tick 3) |
+| 24 | CrazyGames (6), after row 11 | https://docs.crazygames.com/requirements/ads/ | ad and SDK rules (`crazygames-developer-terms.txt:229-233`) (`crazygames.md` Tick 3) |
 
 Rows 7-9 came from one WebSearch on 27.9.2026, whose snippets said a person with no work and no income pays a
 minimum of about ₪266 a month (₪143 national insurance and ₪123 health) whatever they do. That figure is

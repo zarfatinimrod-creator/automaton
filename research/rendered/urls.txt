@@ -283,3 +283,10 @@ https://docs.stripe.com/connect/required-verification-information	stripe-connect
 https://polar.sh/docs/merchant-of-record/acceptable-use/introduction	polar-acceptable-use
 # ZERO-TESTS.md row 21 — Polar rail (9), after row 17.
 https://polar.sh/docs/merchant-of-record/fees	polar-fees
+# research/channel-loop/ZERO-TESTS.md rows 22-24 — CrazyGames guidelines the terms make binding (tick 3 reading, 28.9.2026).
+# ZERO-TESTS.md row 22 — CrazyGames (6), after row 11.
+https://docs.crazygames.com/requirements/intro/	crazygames-requirements-intro
+# ZERO-TESTS.md row 23 — CrazyGames (6), after row 11.
+https://docs.crazygames.com/requirements/quality/	crazygames-requirements-quality
+# ZERO-TESTS.md row 24 — CrazyGames (6), after row 11.
+https://docs.crazygames.com/requirements/ads/	crazygames-requirements-ads
