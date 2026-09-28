@@ -284,7 +284,12 @@ function safeFromCodePoint(code) {
   }
 }
 
-const DROPPED_ELEMENTS = "script|style|noscript|template|svg|iframe|object|canvas|math";
+// <noscript> is deliberately NOT dropped: the runner is a no-JavaScript client, so a
+// noscript body is what it is served. Discourse forums put every post there.
+const DROPPED_ELEMENTS = "script|style|template|svg|iframe|object|canvas|math";
+// The inside of a tag: anything but '>', or a whole quoted attribute value (which
+// may itself contain '>', as in Discourse's media="(width >= 40rem)").
+const TAG_BODY = `(?:[^>"']|"[^"]*"|'[^']*')*`;
 const BLOCK_ENDS =
   /<\/(?:p|div|section|article|header|footer|main|nav|aside|ul|ol|li|dl|dt|dd|table|thead|tbody|tfoot|tr|td|th|h[1-6]|blockquote|pre|figure|figcaption|form|fieldset|legend|label|option|title)\s*>/gi;
 
@@ -295,7 +300,10 @@ const BLOCK_ENDS =
  * Known limits, stated because a silent limit is worse than a stated one:
  *   - nested same-name dropped elements (an <svg> inside an <svg>) end at the
  *     first closing tag, so a fragment of markup can survive
- *   - a `>` inside an attribute value ends a tag early
+ *   - a tag is only recognised when `<` is followed by a letter, `/` or `!`, so a
+ *     bare `<` in running text stays; a quoted attribute value may contain `>`
+ *   - <noscript> content is kept (the runner never runs JavaScript), so a page's
+ *     "please enable JavaScript" line appears in its text
  *   - text rendered by JavaScript is not here at all: this stores what the server
  *     sent, not what a browser would paint. A page that comes back nearly empty
  *     is a client-rendered page, and that is itself worth recording.
@@ -303,11 +311,11 @@ const BLOCK_ENDS =
 export function extractText(html) {
   let text = String(html ?? "");
   text = text.replace(/<!--[\s\S]*?-->/g, " ");
-  text = text.replace(new RegExp(`<(${DROPPED_ELEMENTS})\\b[^>]*>[\\s\\S]*?<\\/\\1\\s*>`, "gi"), " ");
-  text = text.replace(new RegExp(`<\\/?(?:${DROPPED_ELEMENTS})\\b[^>]*>`, "gi"), " ");
+  text = text.replace(new RegExp(`<(${DROPPED_ELEMENTS})\\b${TAG_BODY}>[\\s\\S]*?<\\/\\1\\s*>`, "gi"), " ");
+  text = text.replace(new RegExp(`<\\/?(?:${DROPPED_ELEMENTS})\\b${TAG_BODY}>`, "gi"), " ");
   text = text.replace(/<br\s*\/?>/gi, "\n");
   text = text.replace(BLOCK_ENDS, "\n");
-  text = text.replace(/<[^>]*>/g, " ");
+  text = text.replace(new RegExp(`<[A-Za-z!/]${TAG_BODY}>`, "g"), " ");
   text = decodeEntities(text);
 
   return text
