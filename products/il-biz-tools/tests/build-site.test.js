@@ -4,7 +4,7 @@
 // amounts never leave the repo, and the site is not built at all while the
 // accessibility contact is a placeholder.
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { CONFIG_PUBLISH_RULES, isVerified } from '../src/lib/publish-gate.js';
 import {
@@ -260,6 +260,48 @@ describe('fail closed', () => {
   });
 });
 
+// The validator page runs products/pcn874's own code, bundled (src/lib/pcn874-bundle.js).
+// The build regenerates that bundle from products/pcn874/src and will not publish
+// - or preview - a copy that differs, so the page cannot drift from the validator
+// pcn874's tests ran.
+describe('the pcn874 validator bundle', () => {
+  const pcn874Src = (dir) => join(dir, '..', 'pcn874', 'src');
+
+  it('a bundle edited by hand stops the build, preview included', () => {
+    const dir = fresh();
+    fillContact(dir);
+    editIn(dir, 'src/vendor/pcn874/validate.js', (s) => `${s}\n// edited by hand\n`);
+    for (const args of [[], ['--preview']]) {
+      const r = runBuild(dir, ...args);
+      expect(r.status, args.join(' ')).toBe(1);
+      expect(r.stderr).toMatch(/pcn874 validator bundle/);
+      expect(r.stderr).toMatch(/src\/vendor\/pcn874\/validate\.js differs/);
+    }
+    expect(existsSync(join(dir, '_site'))).toBe(false);
+  });
+
+  it('a change in products/pcn874/src that was not re-bundled stops the build', () => {
+    const dir = fresh();
+    fillContact(dir);
+    const layout = join(pcn874Src(dir), 'layout.ts');
+    writeFileSync(layout, `${readFileSync(layout, 'utf8')}\n// a new rule\n`);
+    const r = runBuild(dir);
+    expect(r.status).toBe(1);
+    expect(r.stderr).toMatch(/src\/vendor\/pcn874\/layout\.js differs/);
+    expect(r.stderr).toContain('node scripts/bundle-pcn874.js');
+  });
+
+  it('a build with no products/pcn874/src next to it refuses rather than ship an unchecked copy', () => {
+    const dir = fresh();
+    fillContact(dir);
+    rmSync(pcn874Src(dir), { recursive: true, force: true });
+    const r = runBuild(dir);
+    expect(r.status).toBe(1);
+    expect(r.stderr).toMatch(/pcn874\/src\/sources\.ts cannot be read/);
+    expect(existsSync(join(dir, '_site'))).toBe(false);
+  });
+});
+
 describe('the deploy configuration', () => {
   const settings = readFileSync(join(productRoot, 'netlify.toml'), 'utf8')
     .split('\n')
@@ -271,5 +313,9 @@ describe('the deploy configuration', () => {
     expect(settings).toMatch(/^\s*command = "node scripts\/build-site\.js"$/m);
     expect(settings).not.toContain('--preview');
     expect(settings).not.toContain('_preview');
+  });
+
+  it('builds on Node 22, which the pcn874 bundle needs (module.stripTypeScriptTypes, 22.13+)', () => {
+    expect(settings).toMatch(/^\[build\.environment\]\s*\n\s*NODE_VERSION = "22"$/m);
   });
 });
