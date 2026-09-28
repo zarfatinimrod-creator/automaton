@@ -240,7 +240,7 @@ Under the list positions it would not be.
    only once step 2 (business registration) exists. That ties Displate to step 2, as the board already assumes for
    every paid line.
 2. **The SMS gate before the first publication.** "The initial displaying and publication of the Product Model on the
-   Artist's Account requires the Artist's identity to be verified" by an SMS code sent to the phone number in the form
+   Artist’s Account requires the Artist’s identity to be verified" by an SMS code sent to the phone number in the form
    (:455). Without the code, nothing can be published. It is not a camera step. It is a one-time owner step: the
    owner's phone, or a brand number. It recurs only when the PayPal address or critical data changes (:449). Displate
    "reserves the right to exempt selected Artists" (:457).
