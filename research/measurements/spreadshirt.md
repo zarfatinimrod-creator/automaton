@@ -1,7 +1,11 @@
 # Spreadshirt (candidate 17) — the ₪0 test could not be read from a runner
 
 **Status: REFUSED 28.9.2026 (tick 5, render-watch run 26, commit `815c2e5`); tick 6 tried a second route (official
-GitHub org read, container curl egress-blocked, 3 snippets) — still NEEDS_MORE, no gate passed or killed.** All six Spreadshirt pages the breadth board
+GitHub org read, container curl egress-blocked, 3 snippets) — still NEEDS_MORE, no gate passed or killed. Tick 7 (runner
+render ~17:19 UTC): still NEEDS_MORE. The 2018 Spreadshop upload post (200) shows that "50 a day" was the limit from 1.2.2018
+(today's limit is UNKNOWN), and it adds three 2018 rules: human review, originality with proof of rights, and a ban on
+circumventing accounts. It says nothing on automation, AI, fees or eligibility. The API Design Details page answered 406
+again to a request that already asked for `text/html`, so that route is closed. See "Tick 7 reading".** All six Spreadshirt pages the breadth board
 named (ZERO-TESTS rows 40-45) came back without a body: five HTTP 403 and one HTTP 406. Nothing below is a finding about
 Spreadshirt's terms; it is a finding about the route.
 
@@ -97,3 +101,93 @@ CrazyGames precedent nothing short of a written "yes" passes it. Israel stays UN
 country list was seen. **Single next check:** one runner render of the XWiki Design Details URL above with a browser
 `Accept: text/html`. If it answers, it shows whether API v1 still creates designs and for whom. If it returns 406 again,
 this route is closed and candidate 17 waits for the step-8 written question.
+
+## Tick 7 reading (28.9.2026)
+
+**What came back (render-watch, 28.9.2026 ~17:19 UTC).** Citations: `txt:<line>` = `research/rendered/spreadshop-upload-guidelines-2018.txt`,
+`html:<line>` = the `.html` beside it.
+- **spreadshop-upload-guidelines-2018 (row 64): status 200.** fetchedAt 2026-09-28T17:19:18.312Z, 103,153 bytes, `truncated`
+  false, `firstFetch` true, sha256 `52efe9f8…`. Read in full: 200 lines, article `txt:21-85`, reader comments `txt:105-174`,
+  footer `txt:176-200`. The byline and the reader comments carry personal names; they are written [name removed] below.
+  [RENDERED]
+- **spreadshirt-api-design-details (row 63): status 406 again.** fetchedAt 2026-09-28T17:19:16.482Z, byteLength 0, error
+  "HTTP 406 Not Acceptable" [RENDERED: meta]. The runner already sends `accept:
+  "text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8"` and a desktop Chrome
+  user-agent (repo code: `scripts/render-watch.mjs:612`, `:131-132`). So tick 6's hypothesis, that the 406 came from the
+  runner's `Accept` header and a browser `text/html` would get past it, is refuted: this request already put `text/html`
+  first [INFERENCE]. By tick 6's own rule this route is closed.
+
+**Date grade: everything from this page is a 2018 rule.** `article:published_time` is 2018-01-30T10:51:58+00:00 (html:25),
+matching the byline date `txt:25` "January 30, 2018", and `article:modified_time` is 2025-01-17T01:40:03+00:00 (html:26)
+[RENDERED]. The capture does not show what the 2025 edit changed. The body still announces a rule "Beginning 01.02.2018"
+(`txt:43`) and points to an older post ("More info regarding the limit can be found in a blog post from October.",
+`txt:33`, linking `https://www.spreadshirt.com/blog/2017/10/09/new-limit-design-uploads/`, html:259). Each finding below
+is therefore what Spreadshirt announced in January 2018, not proof of today's rule. The share image sits at
+`files/2021/06/MDS-723-BP-Upload-limit-50_…jpg` (html:296). That path shows when the image was uploaded, not that 50 was
+still the limit in 2021. [INFERENCE]
+
+**(1) The daily limit: where the 50 comes from (2018).**
+- `txt:37` "To speed up the design review process, we will implement a limit on the number of daily design uploads:" /
+  `txt:39` "50 designs max. per day" / `txt:41` "Partners reaching the 50 daily design limit will be notified in the upload
+  section and will have to wait until the next day to upload more designs." / `txt:43` "Beginning 01.02.2018". [RENDERED, 2018]
+- Tick 6's "50 daily design limit" snippet is this sentence (`txt:41`) word for word, so it is a 2018 rule. The 200/day
+  figure is the scout's 2020 snippet, which no capture holds. The two are not in conflict, because they come from
+  different years. The limit in force today is **UNKNOWN**. [INFERENCE]
+- Reset time: a reader comment ([name removed]) says "It just reset at midnight GMT" (`txt:136`). That is a user's
+  observation, not a Spreadshirt statement. [RENDERED comment, 2018]
+- Scope: Spreadshirt ties the review to the Marketplace ("designs make it to the Marketplace significantly quicker",
+  `txt:83`). A reader comment claims shop designs publish "immediately" (`txt:122`) yet still count toward the cap
+  (`txt:124` "I bumped up against the limit"). Whether shop-only uploads count against the cap is UNKNOWN from Spreadshirt's
+  own text. [RENDERED comment / UNKNOWN]
+
+**(2) Why the limit exists: people review every Marketplace design (2018).**
+- `txt:27` "The logjam is due to a handful of Partners uploading hundreds of designs every day." `txt:31` "Our design review
+  team is hard at work examining thousands and thousands of designs each day." [RENDERED, 2018]
+- The cap was built against high-volume uploaders. A pipeline that uploads at volume is the pattern the rule targets, and
+  `MISSION.md:378-379` ("no low-effort flooding that a platform would call spam") already forbids it. A brand that uploads a
+  few original designs a day fits both. [INFERENCE]
+
+**(3) Automation or API upload rule: not on this page, so KILL-4 is untested.**
+- "API", "automat", "script" and "bot" each get 0 hits. The page neither allows nor bans automated uploads. [RENDERED absent]
+- The one account rule is `txt:81` "If you’re worried about your fellow users utilizing multiple accounts, we’re on it. We’ll
+  be banning these accounts if they’re found to be violating or circumventing the rules." [RENDERED, 2018] The rule for us is
+  one brand account, and never a second account to get round the cap. [INFERENCE]
+
+**(4) Source and originality rules (2018), the nearest thing to an AI rule.**
+- `txt:47` "Spreadshirt will also be rejecting designs that come from third-party platforms, including", followed by Pixabay,
+  Freepik, PngTree, Openclipart, Wikimedia, AdobeStock, Fotolia, Shutterstock, 123rf and Colourbox (`txt:49-67`). [RENDERED]
+- `txt:69` "These designs will only be allowed if they’ve been reworked prior to uploading, interpreted differently, and if
+  Partner have valid proof that they can use the design. Spreadshirt will also reject any designs that have purely been
+  downloaded from another source." [RENDERED]
+- The page lists as insufficient "An original, unaltered image" (`txt:73`), "A minor color change" (`txt:75`) and "A minor
+  transformation (including mirroring or rotation)" (`txt:77`). [RENDERED]
+- There is no AI rule: "AI" as a word and "artificial" each get 0 hits, and the post predates the 2024 AI blog (row 44, still a
+  403, known only from a snippet). [RENDERED absent] Both years point the same way: the partner must be able to prove the
+  right to use each design. For a pipeline that means no stock or clip-art inputs, AI output only under a provider licence
+  that permits commercial use (tick 6, finding 5), and one record per design of how it was made. [INFERENCE]
+
+**(5) Fees, and who may upload.**
+- The page states no fees. Its two "fee" hits are "feedback" (`txt:27`) and "Inline Feedbacks" (`txt:112`), and "commission",
+  "price", "royalt", "payout", "PayPal" and "tax" each get 0 hits. [RENDERED absent]
+- On who may upload, the page says only "Partners" (`txt:27`, `:31`, `:41`). "country", "Israel" and "identity" each get 0
+  hits. Eligibility, individual versus company, and whether an agent may operate the account are UNKNOWN. [RENDERED absent]
+
+**(6) A host that answers.** www.spreadshop.com answered the runner 200, while www.spreadshirt.com, help.spreadshirt.com and
+developer.spreadshirt.net refused the runner (tick 5; developer.spreadshirt.net again in tick 7). [RENDERED: metas] The page's footer links "Legal Information" at
+`https://www.spreadshop.com/legal-information/` (html:708) on that same host. Its Help link goes to
+`https://help.spreadshop.com/hc/en-us` (html:196), a Zendesk help centre like the two that answered 403 (help.spreadshirt.com
+here, help.tipalti.com for Wix). [RENDERED / INFERENCE]
+
+**Verdict for candidate 17 (Spreadshirt): NEEDS_MORE.** The 2018 post explains the 50-versus-200 conflict: 50 a day was the
+limit from 1.2.2018, and today's limit is UNKNOWN. It adds three real rules, each dated 2018: people review every
+Marketplace design, a design needs originality and proof of rights, and accounts that circumvent the rules are banned. None of
+them kills the channel, and all three fit honest value. The page says nothing on automation, AI, fees or eligibility, so
+KILL-4 is still untested, the AI rule is still snippet-only, and Israel is still UNKNOWN. The API route is closed: row 63
+answered 406 twice, and the second request already asked for `text/html`.
+
+**Single next check:** one runner render of `https://www.spreadshop.com/legal-information/` (footer link,
+`spreadshop-upload-guidelines-2018.html:708`), suggested slug `spreadshop-legal-information`. Of the Spreadshirt group's hosts,
+it is the only one that has answered the runner, and the partner terms (row 40, a 403) are where a written rule on automated
+uploads, AI and the EU/NA account split would sit. Read it for the terms text or a link to it, any automation or AI clause, and
+who may be a partner (country, individual or company). If it is only an imprint, or it links back to the 403 host, candidate 17
+waits for the step-8 written question.

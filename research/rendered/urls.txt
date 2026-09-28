@@ -457,3 +457,21 @@ https://lomdiml.co.il	lomdiml-home
 https://lemidatova.com	lemidatova-home
 # research/channel-loop/ZERO-TESTS.md row 95 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
 https://lomdimhofshi.co.il	lomdimhofshi-home
+# research/channel-loop/ZERO-TESTS.md row 96 — Indiebook (22): the author page, linked from a tick-7 capture (28.9.2026).
+https://indiebook.co.il/41/%D7%90%D7%99%D7%9A-%D7%9C%D7%9E%D7%9B%D7%95%D7%A8-%D7%A1%D7%A4%D7%A8-%D7%91%D7%90%D7%AA%D7%A8	indiebook-sell-a-book
+# research/channel-loop/ZERO-TESTS.md row 97 — Indiebook (22): the site terms, linked from a tick-7 capture (28.9.2026).
+https://indiebook.co.il/16/	indiebook-terms
+# research/channel-loop/ZERO-TESTS.md row 98 — Facer (23): the template cache, linked from a tick-7 capture (28.9.2026).
+https://www.facer.io/js/templates.min.js?t=1790275483051	facer-templates-js
+# research/channel-loop/ZERO-TESTS.md row 99 — Spreadshirt (17): legal information, linked from a tick-7 capture (28.9.2026).
+https://www.spreadshop.com/legal-information/	spreadshop-legal-information
+# research/channel-loop/ZERO-TESTS.md row 100 — Wix App Market (11): the submission step, linked from a tick-7 capture (28.9.2026).
+https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/submit-your-first-app-version	wix-submit-first-app-version
+# research/channel-loop/ZERO-TESTS.md row 101 — Y8 (14): the studio docs, linked from a tick-7 capture (28.9.2026).
+https://docs.y8.com/studio/studio/	y8-docs-studio
+# research/channel-loop/ZERO-TESTS.md row 102 — GameDistribution (14): the SDK wiki, linked from a tick-7 capture (28.9.2026).
+https://github.com/GameDistribution/GD-HTML5/wiki/SDK-Implementation/	gamedistribution-sdk-implementation
+# research/channel-loop/ZERO-TESTS.md row 103 — PayPal Israel (21): the help topics, linked from a tick-7 capture (28.9.2026).
+https://www.paypal.com/il/cshelp/browse-topics	paypal-il-browse-topics
+# research/channel-loop/ZERO-TESTS.md row 104 — n8n paid templates (20): a 2026 verified-creator thread, linked from a tick-7 capture (28.9.2026).
+https://community.n8n.io/t/requesting-feedback-for-verified-creator-status-on-my-published-n8n-workflows/269435	n8n-verified-creator-feedback-2026

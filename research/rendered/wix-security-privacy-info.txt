@@ -1,0 +1,118 @@
+Add Security and Privacy Information
+
+Overview
+Extend Websites
+
+Build Apps
+
+Go Headless
+References
+
+Changelog
+
+Build Apps
+
+Get Started
+
+Overview
+
+Quick Start
+
+Templates
+
+Tutorials
+
+Get an Idea
+
+Develop Your App
+
+About Developing Apps
+
+App Workspace
+
+Development Sites
+
+Extensions
+
+Develop an App with the CLI
+
+Develop a Self-Managed App
+
+Develop an App with Blocks
+
+Build with AI
+
+API Integrations
+
+Auth
+
+Design
+
+Launch Your App
+
+About Launching Apps
+
+Pricing and Billing
+
+Market Listing
+
+Localization
+
+Legal and Security
+
+App Distribution
+
+About App Distribution
+
+Add Security and Privacy Information
+
+Submit Your First App Version
+
+Common Reasons for App Rejection
+
+App Market Guidelines
+
+Test Your App
+
+Install Your App
+
+App Promotion
+
+Manage Your App
+
+User Support
+
+Versioning
+
+Data and Analytics
+
+Contact Us
+
+In This Article See also
+
+Add Security and Privacy Information
+
+Wix takes the security and privacy of user data seriously. Each time you submit an app for review, we ask you to answer a few questions on how you store, process, and secure user data you collect.
+
+You must complete the Security & Privacy form before submitting a new app, each time changes are made and you resubmit the app, or in cases where the app was published without the completion of this form.
+
+To add your security and privacy information:
+
+Go to the Security & Privacy page in your app's dashboard.
+
+Answer all questions in the form. Question example, "Is access to Wix user data through your networks, operating systems and databases
+configured to prevent unauthorised access and changes?"
+
+Check the box at the bottom confirming that your answers are accurate.
+
+Click Save .
+
+See also
+
+Create an App Market listing
+
+GDPR and data protection
+
+Last updated: 23 August 2024
+Did this help?
+Yes No

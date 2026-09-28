@@ -1,0 +1,17 @@
+{
+  "url": "https://community.facer.io/t/premium-designer-program-admission-rankings-and-revenue-sharing-terms/25147",
+  "slug": "facer-premium-admission",
+  "fetchedAt": "2026-09-28T17:19:33.438Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 320675,
+  "sha256": "02825638b5661aceffaf217fd85211a3ad129e054246e3583dcc424469d99b66",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/facer-premium-admission.html",
+  "textPath": "research/rendered/facer-premium-admission.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

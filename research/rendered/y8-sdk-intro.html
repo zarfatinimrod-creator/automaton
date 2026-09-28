@@ -1,0 +1,1976 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for integrating the Y8 SDK into your game.">
+      
+      
+        <meta name="author" content="Y8">
+      
+      
+        <link rel="canonical" href="https://docs.y8.com/sdk/intro/">
+      
+      
+        <link rel="prev" href="../../studio/sdk-initialization/">
+      
+      
+        <link rel="next" href="../local-development/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Introduction - Y8 SDK Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#getting-started" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Y8 SDK Documentation" class="md-header__button md-logo" aria-label="Y8 SDK Documentation" data-md-component="logo">
+      
+  <img src="../../assets/images/y8-logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Y8 SDK Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Introduction
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Y8 SDK Documentation" class="md-nav__button md-logo" aria-label="Y8 SDK Documentation" data-md-component="logo">
+      
+  <img src="../../assets/images/y8-logo.png" alt="logo">
+
+    </a>
+    Y8 SDK Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../platforms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platforms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Developer Portal
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Developer Portal
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../studio/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../studio/studio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Studio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../studio/create-game/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Create Game
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../studio/sdk-initialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK Initialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SDK
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SDK
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#finding-your-app-id-and-game-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding Your App ID and Game ID
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initialization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-the-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing the SDK
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handling errors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Player & Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backend-verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Verifying Players
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../advertising/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advertising
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../leaderboards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leaderboards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../achievements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Achievements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cloud-storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../images/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Images
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../player-profile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Player Profile
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../localization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Localization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../protection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analytics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#finding-your-app-id-and-game-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding Your App ID and Game ID
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initialization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-the-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessing the SDK
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handling-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handling errors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    SDK
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="getting-started">Getting started</h1>
+<p>The Y8 SDK allows you to integrate Y8 platform services into your game, including authentication, advertisements, cloud storage, achievements, leaderboards, and more.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Before installing the SDK, make sure you have created your game in the Y8 Developer Portal and obtained your App ID and Game ID.</p>
+</div>
+<h2 id="installation">Installation</h2>
+<p>Choose your platform to install the Y8 SDK.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">JavaScript</label><label for="__tabbed_1_2">Unity</label><label for="__tabbed_1_3">Construct 3</label><label for="__tabbed_1_4">Haxe</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Include the Y8 SDK in the <code>&lt;head&gt;</code> section of your HTML:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">"https://cdn.y8.com/minimal-sdk/2-0/y8.min.js"</span> <span class="na">async</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>We recommend to download the <a href="https://github.com/Y8Games/y8-afp-ads-sdk-javascript/archive/refs/heads/main.zip" target="_blank">demo project</a> to understand how the Y8 SDK is integrated and used.</p>
+</div>
+</div>
+<div class="tabbed-block">
+<p>Download the latest <a href="https://github.com/Y8Games/unity-sdk-lightweight/releases" target="_blank">Unity SDK package</a>.</p>
+<p>Import the downloaded <code>.unitypackage</code> into your Unity project.</p>
+<p>After importing:</p>
+<ol>
+<li>Open your Unity project.</li>
+<li>Locate <strong>Y8.Root</strong> under <code>Assets &gt; Y8</code>.</li>
+<li>Add the <strong>Y8.Root</strong> prefab to your scene.</li>
+</ol>
+<p><img alt="reloadUser" src="../../assets/images/unity/intro1.png" />
+<img alt="reloadUser" src="../../assets/images/unity/intro2.png" /></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>We recommend reviewing the Unity SDK/demo project to understand how the Y8 SDK is integrated and used.</p>
+</div>
+</div>
+<div class="tabbed-block">
+<p>Download the <a href="https://github.com/Y8Games/y8-construct3-sdk/archive/refs/heads/main.zip" target="_blank">C3 example project</a>.</p>
+<p>The example project contains the JavaScript bridge used by the integration.</p>
+<p>To integrate it:</p>
+<ol>
+<li>Open the C3 example project.</li>
+<li>Copy <code>main.js</code>.</li>
+<li>Add <code>main.js</code> to your Construct 3 project.</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>We recommend reviewing the example project to understand how the Y8 SDK is integrated and used.</p>
+</div>
+</div>
+<div class="tabbed-block">
+<p>Download the latest <a href="https://github.com/Y8Games/Y8-haxe-sdk/archive/refs/heads/master.zip" target="_blank">Haxe SDK package</a>.</p>
+<p>Extract the package and copy the <code>y8</code> folder into your project's <code>Source</code> directory.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>Source/
+├── Main.hx
+└── y8/
+    ├── Y8.hx
+    └── js/
+        └── Y8JS.hx
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>We recommend reviewing the Haxe SDK/demo project to understand how the Y8 SDK is integrated and used.</p>
+</div>
+</div>
+</div>
+</div>
+<h2 id="finding-your-app-id-and-game-id">Finding Your App ID and Game ID</h2>
+<p>After creating your game in the Y8 Developer Portal:</p>
+<ol>
+<li>Open your game.</li>
+<li>Navigate to <strong>SDK Initialization</strong>.</li>
+<li>Copy your <strong>App ID</strong> and <strong>Game ID</strong>.</li>
+</ol>
+<p>Your <strong>App ID</strong> identifies your application. The <strong>Game ID</strong> is required when your game uses advertisements.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These credentials are used when configuring the SDK for your selected platform.</p>
+</div>
+<h2 id="initialization">Initialization</h2>
+<p>Initialize the SDK once during your game's startup.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:4"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">JavaScript</label><label for="__tabbed_2_2">Unity</label><label for="__tabbed_2_3">Construct 3</label><label for="__tabbed_2_4">Haxe</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Initialize the SDK once it has loaded:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="kd">let</span><span class="w"> </span><span class="nx">y8Sdk</span><span class="p">;</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s2">"y8sdk.ready"</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">y8Sdk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">y8</span><span class="p">.</span><span class="nx">sdk</span><span class="p">();</span>
+
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">appConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">appId</span><span class="o">:</span><span class="w"> </span><span class="s2">"&lt;app id&gt;"</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">autoLogin</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="c1">// adConfig is optional — omit it if your game doesn't use ads</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">adConfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">gameId</span><span class="o">:</span><span class="w"> </span><span class="s2">"&lt;game id&gt;"</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">preloadAdBreaks</span><span class="o">:</span><span class="w"> </span><span class="s2">"on"</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">sound</span><span class="o">:</span><span class="w"> </span><span class="s2">"on"</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">onReady</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="nx">y8Sdk</span><span class="p">.</span><span class="nx">init</span><span class="p">(</span><span class="nx">appConfig</span><span class="p">,</span><span class="w"> </span><span class="nx">adConfig</span><span class="p">);</span>
+
+<span class="w">    </span><span class="nx">y8Sdk</span><span class="p">.</span><span class="nx">onAuth</span><span class="p">((</span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+<span class="w">            </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">once</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">});</span>
+
+<span class="c1">// Handle the case where the SDK already loaded</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">y8</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">window</span><span class="p">.</span><span class="nx">y8</span><span class="p">.</span><span class="nx">emitReadyEvent</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">window</span><span class="p">.</span><span class="nx">y8</span><span class="p">.</span><span class="nx">emitReadyEvent</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Keep the last three lines</p>
+<p>The script tag is <code>async</code>, so it may finish loading either before or
+after this code runs. If it got there first, <code>y8sdk.ready</code> has already
+fired and your listener will never run — the SDK would sit there
+initialized by nobody, with no error to tell you so.</p>
+<p>Calling <code>emitReadyEvent()</code> asks the SDK to announce itself again, which
+covers that case. It is safe when the event has not fired yet, so it is
+not a branch you need to reason about — keep both halves and the
+ordering stops mattering.</p>
+<p>This is a race, so a build that works every time locally can still fail
+in production. It is the most common reason for an SDK that "does
+nothing".</p>
+</div>
+<p>Declare <code>y8Sdk</code> with <code>let</code> <em>outside</em> the listener and assign it inside, as
+above, so the rest of your game can reach it.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If your game does not use advertisements, you can omit the <code>adConfig</code> object.</p>
+</div>
+</div>
+<div class="tabbed-block">
+<p>After adding the <strong>Y8.Root</strong> prefab to your scene, configure the <strong>Y8</strong> component in the Inspector.</p>
+<p>Enter your:</p>
+<ul>
+<li><strong>App ID</strong></li>
+<li><strong>Game ID</strong> if your game uses advertisements</li>
+</ul>
+<p><img alt="reloadUser" src="../../assets/images/unity/intro3.png" /></p>
+</div>
+<div class="tabbed-block">
+<p>Add the initialization function to the <strong>On start of layout</strong> event:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">init</span><span class="p">(</span>
+<span class="w">    </span><span class="nx">runtime</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">runtime</span><span class="p">.</span><span class="nx">globalVars</span><span class="p">.</span><span class="nx">AppID</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">runtime</span><span class="p">.</span><span class="nx">globalVars</span><span class="p">.</span><span class="nx">GameID</span>
+<span class="p">);</span>
+</code></pre></div>
+<p>To disable automatic login:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">init</span><span class="p">(</span>
+<span class="w">    </span><span class="nx">runtime</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">runtime</span><span class="p">.</span><span class="nx">globalVars</span><span class="p">.</span><span class="nx">AppID</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">runtime</span><span class="p">.</span><span class="nx">globalVars</span><span class="p">.</span><span class="nx">GameID</span><span class="p">,</span>
+<span class="w">    </span><span class="kc">false</span>
+<span class="p">);</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Initialize the SDK during application startup:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Y8</span><span class="p">.</span><span class="n">init</span><span class="p">(</span><span class="n">appId</span><span class="p">,</span><span class="w"> </span><span class="n">gameId</span><span class="p">,</span><span class="w"> </span><span class="n">updateAuthUI</span><span class="p">);</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="configuration">Configuration</h2>
+<p>Configure the SDK according to your platform.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:4"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">JavaScript</label><label for="__tabbed_3_2">Unity</label><label for="__tabbed_3_3">Construct 3</label><label for="__tabbed_3_4">Haxe</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<h3 id="application-configuration">Application Configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>appId</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>Your Y8 application identifier.</td>
+</tr>
+<tr>
+<td><code>autoLogin</code></td>
+<td><code>boolean</code></td>
+<td>No</td>
+<td>Automatically authenticate returning players. Default: <code>true</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="advertisement-configuration">Advertisement Configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gameId</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>Your Y8 game identifier. Required when using advertisements.</td>
+</tr>
+<tr>
+<td><code>preloadAdBreaks</code></td>
+<td><code>string</code></td>
+<td>No</td>
+<td>Advertisement preloading behavior.</td>
+</tr>
+<tr>
+<td><code>sound</code></td>
+<td><code>string</code></td>
+<td>No</td>
+<td>Advertisement audio behavior.</td>
+</tr>
+<tr>
+<td><code>onReady</code></td>
+<td><code>function</code></td>
+<td>No</td>
+<td>Called when the advertisement system is ready.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<p>Configure the <strong>Y8</strong> component:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>App ID</strong></td>
+<td>Your Y8 application identifier.</td>
+</tr>
+<tr>
+<td><strong>Game ID</strong></td>
+<td>Your Y8 game identifier. Required when using advertisements.</td>
+</tr>
+<tr>
+<td><strong>Auto Login</strong></td>
+<td>Automatically authenticate returning players.</td>
+</tr>
+<tr>
+<td><strong>Preload Ad Breaks</strong></td>
+<td>Advertisement preloading behavior.</td>
+</tr>
+<tr>
+<td><strong>Sound</strong></td>
+<td>Advertisement audio behavior.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<p>Store your credentials in Construct 3 global variables:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AppID</code></td>
+<td>Your Y8 application identifier.</td>
+</tr>
+<tr>
+<td><code>GameID</code></td>
+<td>Your Y8 game identifier.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<p>The <code>Y8.init()</code> method accepts the following parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>appId</code></td>
+<td><code>String</code></td>
+<td>Yes</td>
+<td>Your Y8 application identifier.</td>
+</tr>
+<tr>
+<td><code>gameId</code></td>
+<td><code>String</code></td>
+<td>Yes</td>
+<td>Your Y8 game identifier. Required when using advertisements.</td>
+</tr>
+<tr>
+<td><code>authCallback</code></td>
+<td><code>Bool-&gt;String-&gt;Void</code></td>
+<td>Yes</td>
+<td>Called when the player's authentication state changes.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<h2 id="authentication">Authentication</h2>
+<p>The SDK provides authentication functionality for Y8 players.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:4"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><input id="__tabbed_4_4" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">JavaScript</label><label for="__tabbed_4_2">Unity</label><label for="__tabbed_4_3">Construct 3</label><label for="__tabbed_4_4">Haxe</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Register an authentication callback:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">y8Sdk</span><span class="p">.</span><span class="nx">onAuth</span><span class="p">((</span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>If <code>autoLogin</code> is enabled, returning players are authenticated automatically.</p>
+<p>To authenticate manually:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">y8Sdk</span><span class="p">.</span><span class="nx">login</span><span class="p">();</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>If <strong>Auto Login</strong> is enabled, the SDK automatically attempts to authenticate the player.</p>
+<p>To authenticate manually:</p>
+<div class="highlight"><pre><span></span><code><span class="n">JsResponse</span><span class="o">&lt;</span><span class="n">Y8User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="k">await</span><span class="w"> </span><span class="n">Y8</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">LoginAsync</span><span class="p">();</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">IsSuccess</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Debug</span><span class="p">.</span><span class="n">Log</span><span class="p">(</span><span class="s">$"Logged in as {response.Data.nickname}"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Subscribe to authentication errors:</p>
+<div class="highlight"><pre><span></span><code><span class="k">private</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">OnEnable</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Y8</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">OnAuthError</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">HandleAuthError</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">private</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">OnDisable</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Y8</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">OnAuthError</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="n">HandleAuthError</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">private</span><span class="w"> </span><span class="k">void</span><span class="w"> </span><span class="nf">HandleAuthError</span><span class="p">(</span><span class="n">AuthError</span><span class="w"> </span><span class="n">error</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogError</span><span class="p">(</span><span class="s">$"Authentication failed: {error.message}"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>The C3 integration handles authentication through the initialization process.</p>
+<p>Use the following global variables to determine the authentication state:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>isLogin</code></td>
+<td><code>true</code> when the player is authenticated.</td>
+</tr>
+<tr>
+<td><code>userNameY8</code></td>
+<td>Authenticated player's nickname, or <code>Guest</code>.</td>
+</tr>
+<tr>
+<td><code>y8SdkReady</code></td>
+<td><code>true</code> when SDK initialization has completed.</td>
+</tr>
+</tbody>
+</table>
+<p>To authenticate manually:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">login</span><span class="p">();</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Provide an authentication callback during initialization:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nf">updateAuthUI</span><span class="p">(</span>
+<span class="w">    </span><span class="n">loggedIn</span><span class="p">:</span><span class="n">Bool</span><span class="p">,</span>
+<span class="w">    </span><span class="n">username</span><span class="p">:</span><span class="n">String</span>
+<span class="p">):</span><span class="n">Void</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">loggedIn</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">trace</span><span class="p">(</span><span class="s2">"Welcome "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">username</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">trace</span><span class="p">(</span><span class="s2">"Player is not signed in."</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>To authenticate manually:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Y8</span><span class="p">.</span><span class="n">login</span><span class="p">();</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Authentication is performed without requiring the game page to reload.</p>
+</div>
+<p>If authentication cannot be completed, handle the failure gracefully and allow the player to continue using the game whenever possible.</p>
+<h2 id="accessing-the-sdk">Accessing the SDK</h2>
+<p>After initialization, access Y8 functionality through the SDK instance or class for your platform.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:4"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><input id="__tabbed_5_3" name="__tabbed_5" type="radio" /><input id="__tabbed_5_4" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">JavaScript</label><label for="__tabbed_5_2">Unity</label><label for="__tabbed_5_3">Construct 3</label><label for="__tabbed_5_4">Haxe</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code><span class="nx">y8Sdk</span><span class="p">.</span><span class="nx">login</span><span class="p">();</span>
+<span class="nx">y8Sdk</span><span class="p">.</span><span class="nx">logout</span><span class="p">();</span>
+<span class="nx">y8Sdk</span><span class="p">.</span><span class="nx">getUser</span><span class="p">();</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Import the Y8 namespace:</p>
+<div class="highlight"><pre><span></span><code><span class="k">using</span><span class="w"> </span><span class="nn">Y8API</span><span class="p">;</span>
+</code></pre></div>
+<p>Access SDK functionality through:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Y8</span><span class="p">.</span><span class="n">Instance</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>Use the exposed Y8 functions from your Construct 3 Event Sheet:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">login</span><span class="p">();</span>
+<span class="nx">logout</span><span class="p">();</span>
+<span class="nx">getUser</span><span class="p">();</span>
+</code></pre></div>
+</div>
+<div class="tabbed-block">
+<p>All functionality is available through the static <code>Y8</code> class:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Y8</span><span class="p">.</span><span class="n">login</span><span class="p">();</span>
+<span class="n">Y8</span><span class="p">.</span><span class="n">logout</span><span class="p">();</span>
+<span class="n">Y8</span><span class="p">.</span><span class="n">getUser</span><span class="p">();</span>
+</code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="handling-errors">Handling errors</h2>
+<p>Calls fail for ordinary reasons — the player is offline, a session expired, a
+server had a bad day. Handle them where the player can see the result, and
+prefer retrying quietly over interrupting play.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:4"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><input id="__tabbed_6_3" name="__tabbed_6" type="radio" /><input id="__tabbed_6_4" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">JavaScript</label><label for="__tabbed_6_2">Unity</label><label for="__tabbed_6_3">Construct 3</label><label for="__tabbed_6_4">Haxe</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Asynchronous methods reject on failure, so attach a <code>.catch()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nx">y8Sdk</span><span class="p">.</span><span class="nx">saveData</span><span class="p">({</span><span class="w"> </span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="s2">"save"</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="o">:</span><span class="w"> </span><span class="nx">data</span><span class="w"> </span><span class="p">})</span>
+<span class="w">    </span><span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Two different failure shapes</p>
+<p>Failures that come back <strong>from the server</strong> — network problems, expired
+sessions, rejected data — arrive as an error object with <code>message</code> and
+sometimes <code>code</code>.</p>
+<p>Failures caused by <strong>calling the method wrongly</strong> arrive as a plain
+string instead. These have no <code>message</code> property, so a handler written
+as <code>error.message</code> logs <code>undefined</code> and tells you nothing:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Logs "undefined" when the failure is a plain string.</span>
+<span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">));</span>
+
+<span class="c1">// Logs both kinds.</span>
+<span class="p">.</span><span class="k">catch</span><span class="p">((</span><span class="nx">error</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="nx">error</span><span class="p">));</span>
+</code></pre></div>
+<p>You will meet the string form while wiring your integration up, and the
+object form in the wild. Log the error itself, not just its <code>message</code>,
+and both are readable.</p>
+</div>
+<p>The string form covers a small, fixed set of mistakes:</p>
+<table>
+<thead>
+<tr>
+<th>You will see</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>The token can't be null.</code></td>
+<td>A method needing a signed-in player was called while nobody was signed in.</td>
+</tr>
+<tr>
+<td><code>Ads not initialized. …</code></td>
+<td>An ad was requested without ad configuration at startup.</td>
+</tr>
+<tr>
+<td><code>… target element not found</code></td>
+<td>An embed was pointed at an element that does not exist.</td>
+</tr>
+</tbody>
+</table>
+<p>Two error codes are worth checking for by name, because they mean something
+specific you can act on:</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Y8Sdk.authError</code></td>
+<td>Sign-in failed or was abandoned.</td>
+</tr>
+<tr>
+<td><code>Y8Sdk.saveRejected</code></td>
+<td>A save was refused by the server even after retries.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tabbed-block">
+<p>Calls return a <code>JsResponse&lt;T&gt;</code>. Check <code>IsSuccess</code> before reading <code>Data</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">JsResponse</span><span class="o">&lt;</span><span class="n">SetData</span><span class="o">&gt;</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="k">await</span><span class="w"> </span><span class="n">Y8</span><span class="p">.</span><span class="n">Instance</span><span class="p">.</span><span class="n">SaveDataAsync</span><span class="p">(</span><span class="s">"save"</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">);</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">response</span><span class="p">.</span><span class="n">IsSuccess</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Debug</span><span class="p">.</span><span class="n">LogWarning</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">ErrorMessage</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Failures do not throw, so a missing <code>IsSuccess</code> check shows up as empty data
+rather than an exception.</p>
+</div>
+<div class="tabbed-block">
+<p>Failures surface through the callbacks in the event sheet rather than as
+exceptions. Check that a value arrived before using it, and keep the game
+playable when it did not.</p>
+</div>
+<div class="tabbed-block">
+<p>Calls report through their callbacks rather than throwing. Check that a
+value arrived before using it — the callback runs whether or not the request
+succeeded.</p>
+</div>
+</div>
+</div>
+<hr />
+<h2 id="best-practices">Best Practices</h2>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:4"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><input id="__tabbed_7_3" name="__tabbed_7" type="radio" /><input id="__tabbed_7_4" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">JavaScript</label><label for="__tabbed_7_2">Unity</label><label for="__tabbed_7_3">Construct 3</label><label for="__tabbed_7_4">Haxe</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<ul>
+<li>Initialize the SDK only once.</li>
+<li>Wait for <code>y8sdk.ready</code> before calling <code>y8.sdk()</code>, and keep the
+  <code>emitReadyEvent()</code> fallback for when the SDK loaded first.</li>
+<li>Store the SDK instance in a shared variable.</li>
+<li>Do not call SDK methods before initialization completes.</li>
+<li>Handle authentication errors gracefully.</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>Add <strong>Y8.Root</strong> only once.</li>
+<li>Configure the App ID before running the game.</li>
+<li>Provide a Game ID when using advertisements.</li>
+<li>Enable Auto Login unless manual authentication is required.</li>
+<li>Handle authentication errors.</li>
+<li>Prefer asynchronous SDK methods with <code>await</code>.</li>
+<li>Always check <code>response.IsSuccess</code>.</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>Initialize the SDK only once.</li>
+<li>Wait for <code>y8SdkReady</code> before using SDK functions.</li>
+<li>Use <code>isLogin</code> to determine authentication state.</li>
+<li>Use <code>userNameY8</code> when displaying the player's name.</li>
+<li>Allow the game to remain playable when authentication is unavailable.</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<ul>
+<li>Initialize the SDK only once.</li>
+<li>Call <code>Y8.init()</code> before using SDK functionality.</li>
+<li>Provide an authentication callback.</li>
+<li>Pass an empty Game ID when advertisements are not used.</li>
+<li>Handle authentication failures gracefully.</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../studio/sdk-initialization/" class="md-footer__link md-footer__link--prev" aria-label="Previous: SDK Initialization">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                SDK Initialization
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../local-development/" class="md-footer__link md-footer__link--next" aria-label="Next: Local Development">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Local Development
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.indexes", "navigation.path", "navigation.top", "navigation.footer", "navigation.tracking", "navigation.instant", "navigation.instant.progress", "content.code.copy", "content.code.annotate", "content.tabs.link", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

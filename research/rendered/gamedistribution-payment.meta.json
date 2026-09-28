@@ -1,0 +1,17 @@
+{
+  "url": "https://gamedistribution.com/developers/faq/getting-started/setting-up-and-receiving-your-payment/",
+  "slug": "gamedistribution-payment",
+  "fetchedAt": "2026-09-28T17:19:51.793Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 3639,
+  "sha256": "0753cadfacf3eb7cc63e1e31a55619dff31a6a2be9d79ee4c7d018604a4d21f1",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/gamedistribution-payment.html",
+  "textPath": "research/rendered/gamedistribution-payment.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

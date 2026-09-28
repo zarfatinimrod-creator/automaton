@@ -197,8 +197,33 @@ describe("extractText", () => {
     expect(text).toContain("Israel is supported .");
     expect(text).not.toContain("color:red");
     expect(text).not.toContain("window.x");
-    expect(text).not.toContain("enable javascript");
     expect(text).not.toContain("<");
+  });
+
+  // The runner is a no-JavaScript client, so a <noscript> body is exactly what it
+  // is served. Discourse forums put every post there (a crawler view); dropping
+  // noscript turned a 51,688-character thread into 8 lines (tick 7, 28.9.2026).
+  it("keeps the text of a <noscript> body, which is what a no-JavaScript client is served", () => {
+    const html = [
+      "<html><body><div id='app'></div>",
+      '<noscript data-path="/t/some-thread/123">',
+      '  <div class="crawler-post"><div itemprop="text"><p>Paid templates need a verified creator.</p></div></div>',
+      "</noscript></body></html>",
+    ].join("\n");
+    expect(extractText(html)).toBe("Paid templates need a verified creator.");
+    expect(extractText("<p>a</p><noscript>enable javascript</noscript>")).toBe("a\nenable javascript");
+  });
+
+  // Discourse's <link media="(width >= 40rem)"> leaked '= 40rem)" rel=...' into
+  // every forum capture: a '>' inside a quoted attribute ended the tag early.
+  it("does not end a tag at a '>' inside a quoted attribute value", () => {
+    const html =
+      '<head><link href="/a.css" media="(width >= 40rem)" rel="stylesheet" /><link media=\'(x > 1)\' /></head><p>body</p>';
+    expect(extractText(html)).toBe("body");
+  });
+
+  it("leaves a bare '<' or '>' in running text alone", () => {
+    expect(extractText("<p>5 < 6 and 7 > 3</p>")).toBe("5 < 6 and 7 > 3");
   });
 
   it("keeps block boundaries as line breaks so the text stays readable", () => {

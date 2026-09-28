@@ -1,17 +1,17 @@
 {
   "url": "https://github.com/adam2314/linet3",
   "slug": "sweep2-linet3-licence",
-  "fetchedAt": "2026-09-28T16:09:38.151Z",
+  "fetchedAt": "2026-09-28T17:14:55.278Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 259767,
-  "sha256": "1dfd3df2f1f8013f6170b926a5a46ab9330a9b8df479b27aacee7ff110090510",
+  "byteLength": 259772,
+  "sha256": "09237b7af2923fb549f98d012eb356d834295c555f5fe6526998d80d4db71442",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/sweep2-linet3-licence.html",
   "textPath": "research/rendered/sweep2-linet3-licence.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "c85c7acfef8d5d81667daccd0778050e51de88adf39793594d37b875c9dfc908",
+  "previousSha256": "1dfd3df2f1f8013f6170b926a5a46ab9330a9b8df479b27aacee7ff110090510",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

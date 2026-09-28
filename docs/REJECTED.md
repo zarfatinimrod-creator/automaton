@@ -1207,7 +1207,7 @@ coded fee, or a mandate collision.
   `:76`; not even the USD-wire star Jordan and Lebanon get, `:78`) and selling to buyers there ("Purchases", `:70`). A
   foreign address would be a misrepresentation. **Reopens if:** Google adds Israel; render-watch records a new version of
   the table, and one `grep -n -E '^(Israel|IL)$'` on it settles it.
-- **The replenish pass of 28.9.2026 (tick 6): nine gate refutations by Opus verifiers, for the next sitting to confirm**
+- **The replenish pass of 28.9.2026 (tick 6): nine gate refutations by Opus verifiers, plus Wavedash from tick 7, for the next sitting to confirm**
   (`research/breadth/REPLENISH-2026-09-28.md` §4.1 holds the evidence and every reopen trigger). Recorded the way the
   sweep's §6.1 kills were: a gate refuted at the stated grade, none resting on a ceiling.
 
@@ -1221,6 +1221,7 @@ coded fee, or a mandate collision.
   | SeaArt Creator Incentive Program | G3: no publish command in the official CLI; publishing only through the web App Builder | github (absence) | a publish endpoint ships |
   | Apple Books direct | G7: the legal entity name is the default public seller name; another name needs a trade-name document | snippet, github corroborates | the brand gains a legal entity or accepted trade name, then G2 is rendered |
   | Apple Books via PublishDrive / Draft2Digital | G1 ($9.99/month) / G4 (AI rule, standing `:1251`) | github / snippet | a commission-only aggregator that reaches Apple and takes disclosed AI work |
+  | Wavedash (browser games; added tick 7) | G3: the CLI (`wvdsh/cli@5d8f5a5`, all 19 source files) never writes store-page metadata, and the docs block publishing until it is set in the Developer Portal (`wavedash-llms-full.txt:4731,4738`): a per-game portal step, `BOARD-LOOP.md:183` (`research/measurements/wavedash.md`) | github + rendered | a CLI command or API endpoint that writes description, art, video, tags, input methods or languages |
   | LottieFiles marketplace (IconScout) | G4: loaders, icons and micro-interactions are free everywhere, LottieFiles' own library included (the floor at `:991-997`) | snippet + github | a Lottie product with a named feature that is free nowhere |
 
   **Reconfirmed, unchanged:** the Israeli teacher-to-teacher sites (`:1249-1251`, now with CrUX weight as the free floor),

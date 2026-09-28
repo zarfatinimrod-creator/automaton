@@ -1,0 +1,17 @@
+{
+  "url": "https://docs.wavedash.com/llms-full.txt",
+  "slug": "wavedash-llms-full",
+  "fetchedAt": "2026-09-28T17:19:58.514Z",
+  "status": 200,
+  "contentType": "text/plain; charset=utf-8",
+  "byteLength": 468363,
+  "sha256": "21e1fd68e2cd8c299e5876289a72f33a879bb1edfb736bc9be22a48fd5eb77f1",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/wavedash-llms-full.txt",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

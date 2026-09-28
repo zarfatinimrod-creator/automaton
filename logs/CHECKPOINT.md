@@ -1,8 +1,15 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-28 16:45 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-28 17:25 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
+
+## ▶ 28.9, ~17:25 UTC — **סבב 7 (רציף): PR #11 מוזג (`8679d59`); רינדור שורות 63-95 חזר (`5490706`, 27 מתוך 33); 7 קוראים רצים.**
+
+- **נסגר בסבב 6:** דף pcn874 מוזג (`a91d45e`); השלמת התור קוּפלה (Indiebook 22, Facer 23, Y8 ו-GameDistribution תחת 14; 9 פסילות ב-REJECTED); PR #11 מוזג כשכל 12 הבדיקות ירוקות.
+- **בריצה:** 7 קוראי Opus (Spreadshirt+Wix, PayPal+n8n, Indiebook, Facer, Y8+GameDistribution, Wavedash, אתרי מורים בעברית); `wf_c2217608-016` (הכנת הפרסום של mcp-il-tools) → `scripts/merge-worktree.sh`.
+- **סורבו ברינדור:** Spreadshirt API (406), שני דפי Facer (403), דף השותפות של GameDistribution (502), דף העמלות של TPT (403, הפסילה נשארת בדרגת github), haganenet ו-lemidatova (403).
+- **ההמשך הבא:** `trig_01UXPMBtfogDctXQk8QvsA99` ב-18:18 UTC; הטריגר הקבוע ב-19:11.
 
 ## ▶ 28.9, ~16:45 UTC — **סבב 6 (רציף, לפי "תמיד להמשיך"): Play Books נהרג, Firefox מומלץ להריגה, 4 שאלות לצעד 8 מנוסחות.**
 

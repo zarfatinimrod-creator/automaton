@@ -1,0 +1,8 @@
+Premium Designer program: admission rankings and revenue sharing terms - General - Facer Community
+
+= 40rem)" rel="stylesheet" data-target="chat_desktop" />
+= 40rem)" rel="stylesheet" data-target="discourse-gamification_desktop" />
+= 40rem)" rel="stylesheet" data-target="discourse-reactions_desktop" />
+= 40rem)" rel="stylesheet" data-target="poll_desktop" />
+
+= 40rem)" rel="stylesheet" data-target="desktop_theme" data-theme-id="-2" data-theme-name="horizon"/>

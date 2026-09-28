@@ -2,7 +2,12 @@
 
 **Date:** 2026-09-28. **Branch:** `claude/new-session-j071dx`, read at `2c57b7d` (the captures arrived in its parent `815c2e5`).
 **Status: NEEDS_MORE** (tick 6, 28.9.2026: unchanged. The help index names no verification article. Its only identity
-step is an upload of "proof of identity" to lift a limitation, in HELP534. See the Tick 6 section.) The mechanics pass: an Israeli individual may open an account, receive payment for goods and
+step is an upload of "proof of identity" to lift a limitation, in HELP534. See the Tick 6 section.) **Tick 7
+(28.9.2026): PASS_TEST on the camera gate. Board Q3 condition (i) is met on its letter.** HELP534 names the proof of
+identity as an uploaded copy of a driving licence or ID card, sent via the Message Center (`paypal-il-help534-limited.txt:54`).
+The 328 KB page names no selfie, liveness, video or camera step. Residual risk: this is the path for restoring a
+limited account, not sign-up. No capture holds a sign-up verification article, and the in-account request cannot be
+rendered. Step 13 stays held on conditions (ii) and (iii). See the Tick 7 section. The mechanics pass: an Israeli individual may open an account, receive payment for goods and
 services on a personal account, and withdraw to an Israeli bank in ILS. The camera question is **UNKNOWN, not excluded**.
 The agreement names ID documents and no camera step, but it does not describe the verification flow and links no
 verification article. Board Q3 condition (i) is therefore not yet met.
@@ -102,3 +107,91 @@ limitation. It names no selfie, liveness or video step, and it does not exclude 
 the meta). Read what counts as "proof of identity" and whether any selfie, liveness or video step is named. If the
 article is thin or only links onward, the fallback is `https://www.paypal.com/il/cshelp/browse-topics` (`.html:21`),
 to reach the "החשבון שלי" topic.
+
+## Tick 7 reading (28.9.2026)
+**Capture:** `research/rendered/paypal-il-help534-limited.txt` (80 lines) and its `.html` (48 lines as `grep -n` numbers
+them; the last has no newline). This is ZERO-TESTS row 66: the HELP534 address from the Tick 6 next check (percent-encoded in the
+meta), status 200, fetchedAt 2026-09-28T17:19:21.935Z, 328,727 bytes, not truncated, sha256 `4c6d6204…`, first fetch.
+It was served in Hebrew (`"worldReadyLocale":"he-IL"`, `.html:48`). The article record carries
+`"ecmDocId":"HELP534",…,"machineTranslated":false` (`.html:48`), so the Hebrew is PayPal's own text, not a machine
+translation. Every translation below is mine [INFERENCE].
+
+**What it is: the full article, not a shell.** [RENDERED] Its title is "מדוע חשבון ה- PayPal שלי הוגבל?" (`.txt:1,7`). The body runs
+`.txt:8-60`. The rest is the help-channel footer (`:62-74`) and the cookie banner (`:76-80`). The breadcrumb is
+`help_disputes_and_limitations_personal/help_account_limitations_personal` (`.html:48`).
+
+**1. What counts as proof of identity.** [RENDERED]
+- "כדי לשחזר את הגישה המלאה לחשבון, עליך להיכנס לחשבון ולהעלות את הוכחת הזהות שלך (למשל עותק של רישיון הנהיגה או
+  תעודת הזהות שלך). באפשרותך להעלות מסמך זה ב מרכז ההודעות שלך." (`.txt:54`). [INFERENCE, my translation] "To restore
+  full access to the account, you must log in and upload your proof of identity (for example a copy of your driving
+  licence or your identity card). You can upload this document in your Message Center."
+- Placement. In the HTML this paragraph comes right after the "חשבון לא פעיל" (inactive account) heading and its
+  one-line reason, and it closes that section (`.html:40-42`; `.txt:50-54`). The page's own excerpt applies it to every
+  reason: "…מסיבות כגון הפרות מדיניות, פעילות בסיכון גבוה, חוסר פעילות. עליך להעלות הוכחת זהות ב'הודעות' כדי לשחזר את
+  הגישה." (`.html:48`; the same text is in the meta description, `.html:1`).
+- The other named steps are procedure, not identity checks. An email gives the reason (`.txt:8`). "בדרך כלל יהיה צורך להשלים מספר
+  שלבים כדי להסיר את המגבלה על החשבון שלך." (usually several steps are needed, `.txt:12`), and they are shown in the Resolution
+  Center or under the bell icon (`.txt:14`). "ברוב המקרים, צוות שירות הלקוחות שלנו לא יכול להסיר את המגבלה שלך דרך הטלפון."
+  (support usually cannot lift a limitation by phone, `.txt:56`).
+- [INFERENCE] "עותק" (a copy) of a licence or ID card is a document upload. A scan meets it, and the text requires no
+  live capture. The board allows an ID upload ("an ID upload is allowed", `research/breadth/BOARD.md:117`).
+
+**2. Camera search: none named.** [RENDERED] The whole 328 KB HTML has 0 hits for each of סלפי, תמונה, תמונת, מצלמה,
+וידאו, צילום, לצלם, סרטון, פנים, selfie, photo, camera, liveness and biometric. The 6 "face" hits are all CSS
+`@font-face` (`.html:2`, `:48`). All 30 hits for "זהות" are classified:
+- 16 are US taxpayer-ID hold strings.
+- 1 is a login one-time password ("שתסייע לנו לזהות אותך מהר יותר").
+- 1 is a support-call passcode ("כדי לאמת את זהותכם, הזינו את קוד האבטחה הבא").
+- 12 are copies of the HELP534 excerpt or the upload sentence (`.html:1`, `:42`, `:48`).
+
+`\"verifyLabel\":\"עלינו לוודא שאכן מדובר בך.\"` ("we need to make sure it's you") sits among the phone-support
+callback strings ("אם לא שוחחת עימנו בטלפון", `.html:48`). Both "מאומת" hits are the HELP155 card-linking excerpt
+("לחשבונות מאומתים ו-4 כרטיסים לחשבונות לא מאומתים", `.html:48`). None of these is a KYC flow.
+
+**3. Sign-up verification article: none linked.** [RENDERED] The body links only the Resolution Center and account home
+(`.html:23`, `:43`), the Acceptable Use Policy (`https://www.paypal.com/webapps/mpp/ua/acceptableuse-full`, `.html:27`)
+and `mailto:phishing@paypal.com` (`.html:43`). "מרכז ההודעות" in the upload sentence is bold text, not a link
+(`.html:42`). The five related articles carry no URL (`.html:48`):
+- HELP1175, a disabled account
+- HELP392, a reserve
+- HELP126, a held payment
+- HELP132, a negative balance
+- HELP349, the dispute fee
+
+The footer repeats the six help channels, including `/il/cshelp/browse-topics` (`.html:45`). Neither the help index
+(Tick 6) nor this article names a sign-up identity-verification article.
+
+**4. Other points for the rail.** [RENDERED] Regulation is one reason for a limitation: "בקשה של מוצרים מסוימים, כגון כרטיס
+דביט, יכולה להפעיל חוקים ממשלתיים" (`.txt:22`). Higher-risk seller activity is another. It includes "התחלת למכור מוצרים
+מסוג חדש לחלוטין" (starting to sell an entirely new type of product, `.txt:44`) and "חלה עלייה מהירה בהיקף המכירות שלך"
+(a fast rise in sales volume, `.txt:46`). [INFERENCE] A new line that starts selling fast may be limited while PayPal
+reviews it. That adds to the new-seller holds in §2 (`paypal-il-user-agreement-mpp.txt:863,873`). The article names no
+camera step for that case either.
+
+**Verdict for row 21: PASS_TEST on the camera gate (board Q3 condition (i)).** A PayPal IL render now shows the identity
+step and what it takes: an uploaded copy of a driving licence or ID card, sent via the Message Center (`.txt:54`). No selfie, liveness,
+video or camera step appears anywhere in the 328 KB page, and the board allows an ID upload (`BOARD.md:117`). Three
+PayPal IL sources now agree:
+- The agreement names only data, document and ownership checks (`paypal-il-user-agreement-mpp.txt:1186-1200`).
+- The help index names no other identity article.
+- HELP534 names a document upload.
+
+None of them names a camera step.
+
+**Scope and residual risk.** [INFERENCE]
+- HELP534 is the path for restoring a limited account, not sign-up. No capture holds a PayPal IL sign-up verification
+  article.
+- The agreement's document list stays open-ended ("other identifying documents at any time", `paypal-il-user-agreement-mpp.txt:1198`).
+- The request itself appears inside the logged-in account, which a GET runner cannot render. This shows that PayPal IL's
+  public text names no camera step. It is not a view of the in-account request.
+- The kill stays live. If the in-account request asks for a selfie when the owner reaches step 13, the owner stops there
+  and the PayPal leg dies, as the board decided in advance (`BOARD.md:121-122`).
+
+**What changes:** condition (i) is met. Step 13 stays held on the other two conditions: (ii) a PayPal-paid engine passes
+its ₪0 tests and a sitting admits it; (iii) step 2 is done. The owner is asked for nothing now. This is a reader's
+verdict, and the board confirms it at the next sitting.
+
+**Single next check (confirmatory: it can only kill).** Render `https://www.paypal.com/il/cshelp/browse-topics`. The
+path is the footer link `/il/cshelp/browse-topics` (`.html:45`) on the host in the meta, and it is ZERO-TESTS row 66's
+named fallback. Look under the "החשבון שלי" topic for an identity-confirmation article. If one names a selfie, liveness
+or video step, row 21 becomes FAILS_TEST. Suggested slug: `paypal-il-browse-topics`.

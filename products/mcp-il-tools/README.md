@@ -8,7 +8,7 @@ Free, MIT, no account, no key, no network calls. Everything runs locally.
 
 ## Install
 
-**Not on npm yet.** `@mehudak/mcp-il-tools` is not published (the npm registry returns 404 for it), and no workflow in this repository publishes it. The config below is what it will be:
+Add it to your MCP client's configuration. `npx` fetches the package from npm the first time it runs:
 
 ```json
 {
@@ -18,7 +18,9 @@ Free, MIT, no account, no key, no network calls. Everything runs locally.
 }
 ```
 
-Registry name: `com.mehudak/il-tools` (planned, not listed yet: the listing waits on the domain, owner step 5, and the GitHub organisation, owner step 7).
+It needs Node.js 22 or later and talks MCP over stdio.
+
+MCP Registry name: `io.github.mehudak/il-tools`.
 
 ## Tools
 
@@ -54,23 +56,3 @@ because these prefixes are not internationally diallable.
   is reported invalid.
 - **ID validation is a check digit.** A valid teudat zehut is a well-formed number, not a
   real person. It cannot confirm identity.
-
-## The paid version, and why it is separate
-
-The same logic is exposed per-call over the x402 protocol in
-[`products/x402-il-api`](../x402-il-api) — an API that is not deployed and not a revenue line since 7.9.2026 (`KILLED_LINES` in `src/revenue/portfolio.ts`; it is kept as a rail on standby), so nothing is sold there today. It was built for agents that would rather pay a fraction of a
-cent than run a process. This package is not crippled to sell that one: identical
-validators, no rate limit, no telemetry, nothing withheld. The paid API exists for callers
-who want an HTTP endpoint instead of a dependency.
-
-The validators here are a byte-identical copy of the API's `src/israeli.ts`, because a
-published package has to stand alone. A test asserts the two files match, so the copy cannot
-drift.
-
-## Development
-
-```bash
-npm install     # a committed lockfile is required: plain `npm install` cannot
-npm test        # resolve vitest's peer graph from scratch on npm 10.9.7
-npm run build
-```
