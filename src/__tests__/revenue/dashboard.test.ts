@@ -15,6 +15,13 @@ describe("the manager's screen", () => {
 
   const html = () => renderDashboard(db, { nowIso: NOW });
 
+  it("prints the Apify stranger count beside its biased-low label (research/breadth/BOARD.md Q5)", () => {
+    const h = html();
+    expect(h).toContain("strangerUsers30d");
+    expect(h).toContain("stranger runs — biased low while the developer is unverified: hidden from default Store-API search");
+    expect(h).toContain("TEST_MORE");
+  });
+
   it("says plainly that nothing has been earned, rather than decorating a zero", () => {
     const h = html();
     expect(h).toContain("החברה עדיין לא הרוויחה שקל");

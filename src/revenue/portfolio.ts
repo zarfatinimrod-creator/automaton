@@ -36,9 +36,60 @@
 
 import type { Database } from "better-sqlite3";
 import { removeQueuedGoals } from "./goal-queue.js";
-import { getLine, insertLineFromSeed, listLines, updateLineFromSeed, updateLineStatus } from "./ledger.js";
+import { getLine, insertLineFromSeed, latestKpis, listLines, updateLineFromSeed, updateLineStatus } from "./ledger.js";
 import { agorotFromIls } from "./money.js";
 import { DEFAULT_DECISION_POLICY, type DecisionPolicy, type RevenueLineSeed } from "./types.js";
+
+/**
+ * The label Apify's stranger count carries wherever it is printed (breadth board, research/breadth/BOARD.md Q5,
+ * 28.9.2026). Apify's default Store-API search excludes Actors from developers who have not passed identity
+ * verification (read in Apify's own source by the breadth sweep), so a near-zero 30-day count can mean "hidden" as
+ * well as "unwanted" — and the two cannot be told apart from the count alone.
+ */
+export const APIFY_STRANGER_KPI_LABEL =
+  "stranger runs — biased low while the developer is unverified: hidden from default Store-API search";
+
+/** The reading rule that goes with the label: a low count is not a verdict while the Actor may be hidden. */
+export const APIFY_STRANGER_KPI_RULE =
+  "a reading under 10 is TEST_MORE (hidden or unwanted, indistinguishable), never \"permanent instrument\", until Apify identity verification is settled: pulled to the Publish sitting if the apify-docs read shows document-only verification, never asked if it shows any camera step (research/breadth/BOARD.md Q5)";
+
+export interface KpiLabel {
+  /** Printed beside the KPI, verbatim, wherever the KPI is printed. */
+  label: string;
+  /** How a reading of it may and may not be read. */
+  rule: string;
+}
+
+/** Labels the report and the dashboard print beside a line's KPI, by line and KPI name. */
+export const KPI_LABELS: Record<string, Record<string, KpiLabel>> = {
+  "apify-actors": {
+    strangerUsers30d: { label: APIFY_STRANGER_KPI_LABEL, rule: APIFY_STRANGER_KPI_RULE },
+    strangerRuns30d: { label: APIFY_STRANGER_KPI_LABEL, rule: APIFY_STRANGER_KPI_RULE },
+  },
+};
+
+export interface LabelledKpi extends KpiLabel {
+  lineId: string;
+  kpi: string;
+  /** The latest snapshot, or null when nothing has been measured yet — the label is printed either way. */
+  value: number | null;
+  unit: string | null;
+}
+
+/** Every labelled KPI of the given lines, with its latest reading (or none), in KPI_LABELS order. */
+export function labelledKpis(db: Database, lineIds: string[], labels: Record<string, Record<string, KpiLabel>> = KPI_LABELS): LabelledKpi[] {
+  const out: LabelledKpi[] = [];
+  for (const lineId of lineIds) {
+    const byKpi = labels[lineId];
+    if (!byKpi) continue;
+    const latest = latestKpis(db, lineId);
+    for (const [kpi, l] of Object.entries(byKpi)) {
+      const snap = latest[kpi];
+      out.push({ lineId, kpi, value: snap ? snap.value : null, unit: snap ? snap.unit : null, ...l });
+    }
+  }
+  return out;
+}
 
 export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
   {
@@ -50,7 +101,8 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     operatingLoop: [
       "Publish `products/apify-il-open-data` to Apify Store FREE through CI (`apify push` from a workflow holding APIFY_TOKEN; the container cannot reach apify.com, GitHub Actions runners can), and count runs by strangers for 30 days.",
       "The listing states that the source is free at data.gov.il and that anything ever charged for is the maintained, English-keyed normalisation and uptime — never the data itself.",
-      "Loop: publish free → a daily stats job writes strangerRuns30d and strangerUsers30d through recordKpi → read the count at day 30 → under 10 stranger users, this line stays an instrument and no second Actor is built; 10-49, keep counting and fix what the runs show; 50+, build one Actor on the most-requested dataset and put Apify KYC to the owner; 200+, design pricing.",
+      "Loop: publish free → a daily stats job writes strangerRuns30d and strangerUsers30d through recordKpi → read the count at day 30 → under 10 stranger users, TEST_MORE and no second Actor is built; 10-49, keep counting and fix what the runs show; 50+, build one Actor on the most-requested dataset; 200+, design pricing.",
+      `The count is labelled wherever it is printed: "${APIFY_STRANGER_KPI_LABEL}" — and ${APIFY_STRANGER_KPI_RULE}. Before the Publish click, two free reads: the Store-API pair (?search=israel&limit=1000 with and without includeUnrunnableActors=true) to size the hidden share, and Apify's identity-verification requirements from the GitHub-hosted apify-docs repository.`,
       "Minimum permissions on every Actor: Apify says full-permission Actors 'might even be excluded from search results' in autonomous-agent workflows, and this line's buyers are agents.",
     ].join(" "),
     kpis: ["strangerRuns30d", "strangerUsers30d", "actors published", "quality score", "monthly payout in ILS"],
@@ -79,14 +131,17 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     // swerve/yad2-scraper. The niche is occupied. That is why the first thing
     // built here is a measurement and not a product.
     killCriteria: [
-      "strangerUsers30d under 10 at day 30 → instrument only: no second Actor, no KYC request to the owner, permanently unless the count later crosses 50",
+      // Dated note, breadth board 28.9.2026 (research/breadth/BOARD.md Q5): this criterion used to read "instrument
+      // only … permanently unless the count later crosses 50". A count from a developer hidden from default search
+      // cannot tell "hidden" from "unwanted", so it no longer decides permanence until verification is settled.
+      `strangerUsers30d under 10 at day 30 → TEST_MORE (hidden or unwanted, indistinguishable — "${APIFY_STRANGER_KPI_LABEL}"): no second Actor and no KYC request to the owner on this reading, and never "permanent instrument" until Apify identity verification is settled (breadth board, 28.9.2026, research/breadth/BOARD.md Q5)`,
       "revenue_ledger holds no Apify payout 90 days after the first priced Actor goes live",
       "two Actors deprecated for failing health checks in one month",
       "Store terms violation notice",
       "any Actor priced below its own platform usage cost — Apify zeroes a negative-profit Actor's payout for the whole month",
     ],
     scaleCriteria: [
-      "strangerUsers30d at or above 50 → one more Actor on the most-requested dataset, and Apify KYC goes to the owner",
+      "strangerUsers30d at or above 50 → one more Actor on the most-requested dataset. Apify identity verification is no longer asked here (breadth board, 28.9.2026, research/breadth/BOARD.md Q5): if the apify-docs read shows document-only verification (no selfie, liveness or video), it is asked at the Publish sitting (owner step 6, part ג) so the day-30 count measures demand and not visibility; if it shows any camera step, it is never asked and this rule's KYC half is moot",
       "strangerUsers30d at or above 200 → design pricing, with the free-source disclosure on the listing",
       "30-day payout at or above target",
     ],
@@ -97,11 +152,15 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     budgetMonthlyCents: 4000,
     // Board §3, humanSetup split: publishing free needs only the token. Apify's
     // own Store Publishing Terms (§10.1.2-10.1.3) gate payout, pricing AND x402
-    // eligibility on KYC — so KYC is real, but it is deferred to the moment
-    // stranger runs exist (chief audit §4B.7-8), not asked for today.
+    // eligibility on KYC — so KYC is real. It was deferred to 50 stranger users
+    // (chief audit §4B.7-8) until the breadth board of 28.9.2026 (Q5) found that
+    // an unverified developer's Actors are hidden from default Store-API search:
+    // it now moves to the Publish sitting if it is document-only, and is never
+    // asked if it needs a camera. It is still an identity step asked after the
+    // free batch, never before it.
     // "Register as osek patur" is gone from every line: it is owner step 2, once.
     humanSetup: [
-      "Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify KYC and a PayPal or Wise payout are deferred until 50 stranger users in 30 days (scaleCriteria); under 10 at day 30 they are not asked for.",
+      "Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify identity verification (ID, proof of address, a tax document, ownership information) is asked at that Publish sitting only if the apify-docs read shows it is document-only — no selfie, liveness or video — because an unverified developer's Actors are hidden from default Store-API search; if the read shows any camera step it is never asked (breadth board, 28.9.2026, research/breadth/BOARD.md Q5). A PayPal or Wise payout waits for pricing (scaleCriteria).",
     ],
     skillName: "revenue-apify-actors",
   },
@@ -194,9 +253,11 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     targetMonthlyAgorot: agorotFromIls(300),
     budgetMonthlyCents: 3000,
     humanSetup: [
-      "Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in \"bot\" (BOARD-2 §2.1.3(c)). In the same sitting, create its token for BRAND_GITHUB_TOKEN (pasted in step 6); the intake stays disabled in code until the corrected week-4 read, so the token changes nothing before then (RULING-2026-09-28-bounty-rail.md §4.4)",
-      "Owner step 4a, in step 7's sitting: sign in to Algora once AS THE BRAND MACHINE ACCOUNT — a GitHub sign-in, two minutes, no identity, no money — ruled into step 7's sitting because one sitting is less owner involvement than two (RULING-2026-09-28-bounty-rail.md §4.1)",
-      "Owner step 4b, asked only when the corrected week-4 mean is 3 or more AND a reward for a merged brand-account PR is held by Algora: complete Stripe Connect Express onboarding in your legal identity — individual, Israel, Israeli bank — under three stop rules: a US account country or a US bank/SSN/ITIN/EIN, a selfie or liveness check, or any fee → close the tab and complete nothing (RULING-2026-09-28-bounty-rail.md §4.1-§4.2)",
+      "Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in \"bot\" (BOARD-2 §2.1.3(c)). In the same sitting, create its token for BRAND_GITHUB_TOKEN — made with step 7, pasted in step 6, and the only other thing step 7's sitting does; the intake stays disabled in code until the corrected week-4 read, so the token changes nothing before then (RULING-2026-09-28-bounty-rail.md §4.4)",
+      // Owner step 4a (a separate two-minute Algora sign-in in step 7's sitting) was dropped by the breadth board of
+      // 28.9.2026 (research/breadth/BOARD.md Part B(b)): a /claim creates the solver's Algora user from the GitHub
+      // login (workspace.ex ensure_user), so the sign-in is not required before 4b and becomes 4b's first instruction.
+      "Owner step 4b, asked only when the corrected week-4 mean is 3 or more AND a reward for a merged brand-account PR is held by Algora: the form begins by signing in to Algora with GitHub as the brand machine account, then Stripe Connect Express onboarding in your legal identity — individual, Israel, Israeli bank — under three stop rules: a US account country or a US bank/SSN/ITIN/EIN, a selfie or liveness check, or any fee → close the tab and complete nothing (RULING-2026-09-28-bounty-rail.md §4.1-§4.2; research/breadth/BOARD.md Part B(b))",
     ],
     skillName: "revenue-oss-bounties",
   },
@@ -317,9 +378,13 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
     contestedUpperBoundIls: 1500,
     killFloorFraction: 0.25,
     basis:
-      "Five groups' survivors collapse into ONE Apify creator account. The auditors' two corrected 12-month ceilings for that account are ₪1,500 (store-promotion) and ₪200 (agent-markets); the board committed to ₪200 and records ₪1,500 as the CONTESTED UPPER BOUND, not as a target. The ₪1,500 rests on a generic 5-8 Actor scraper set at ~2 h/week/Actor priced off an unverified marketing mean ($470/developer/month across ~3,000 developers, a power-law MEAN and not in Apify's own documentation). The ₪200 rests on the only real base rate anyone rendered: 8.7 users per Actor. Month one is ₪0 and the first ledger entry is ~month 9. The line is kept as the constraint-7 instrument at forecast ₪0: publish free, count strangers for 30 days, start the developer-level history-of-success clock that MISSION constraint 8 names as a non-public input.",
+      "Five groups' survivors collapse into ONE Apify creator account. The auditors' two corrected 12-month ceilings for that account are ₪1,500 (store-promotion) and ₪200 (agent-markets); the board committed to ₪200 and records ₪1,500 as the CONTESTED UPPER BOUND, not as a target. The ₪1,500 rests on a generic 5-8 Actor scraper set at ~2 h/week/Actor priced off an unverified marketing mean ($470/developer/month across ~3,000 developers, a power-law MEAN and not in Apify's own documentation). The ₪200 rests on the only real base rate anyone rendered: 8.7 users per Actor. Month one is ₪0 and the first ledger entry is ~month 9. The line is kept as the constraint-7 instrument at forecast ₪0: publish free, count strangers for 30 days, start the developer-level history-of-success clock that MISSION constraint 8 names as a non-public input. BIASED LOW (breadth board, 28.9.2026, research/breadth/BOARD.md Q5): Apify's default Store-API search excludes Actors from developers who have not passed identity verification, so the count is labelled \"" +
+      APIFY_STRANGER_KPI_LABEL +
+      "\" and " +
+      APIFY_STRANGER_KPI_RULE +
+      ". If verification needs a camera, the history-of-success clock is noted as unverified to accrue while the Actor is hidden.",
     source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #1; audits/agent-markets.md and audits/store-promotion.md",
-    rail: "Apify Store → PayPal or Wise (payout deferred: KYC only after stranger runs exist)",
+    rail: "Apify Store → PayPal or Wise (payout deferred; identity verification at the Publish sitting only if document-only, never if it needs a camera — research/breadth/BOARD.md Q5)",
     acquisitionChannel:
       "Apify Store search and Apify MCP-server search — platform search that ranks on accumulated history, which is precisely why the clock starts now and why nothing is priced before it has run.",
   },

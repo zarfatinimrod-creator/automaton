@@ -11,12 +11,15 @@
  * bounty comments (BOARD.md build #2: "the only host this container reaches"),
  * `policy.ts` reads each repository's contribution policy, and this module scores
  * what comes back. Nothing here is wired into the heartbeat: the line is blocked
- * on owner step 7 (the brand machine account, with step 4a's Algora sign-in and
- * `BRAND_GITHUB_TOKEN` made in the same sitting) and on the board's week-4 clock
- * (`selectBounties`, rule 10), and a loop that attempted a bounty before those
- * exist would publish a pull request under the owner's handle — the one thing
- * BOARD.md §5 changed about this line. Step 4b (Stripe Connect Express through
- * Algora) is asked only after Algora holds a reward (RULING-2026-09-28-bounty-rail.md §4.1).
+ * on owner step 7 (the brand machine account, with `BRAND_GITHUB_TOKEN` made in
+ * the same sitting) and on the board's week-4 clock (`selectBounties`, rule 10),
+ * and a loop that attempted a bounty before those exist would publish a pull
+ * request under the owner's handle — the one thing BOARD.md §5 changed about this
+ * line. Step 4 is 4b alone — the Stripe Connect Express form through Algora, which
+ * begins with the brand account's Algora sign-in — asked only after Algora holds a
+ * reward (RULING-2026-09-28-bounty-rail.md §4.1). The separate two-minute sign-in
+ * 4a was dropped on 28.9.2026 (research/breadth/BOARD.md Part B(b)): a `/claim`
+ * creates the solver's Algora user itself (`workspace.ex` `ensure_user`).
  *
  * ── The rules, and where each comes from ──
  *
@@ -36,8 +39,9 @@
  *     finding that maintainers flooded with agent PRs "select a single PR, often
  *     the first to arrive, and reject the rest". Losing that race costs the full
  *     cost of the work, so the filter declines the race rather than entering it.
- *  8. Refuse anything paying below a floor derived from this line's own ₪300
- *     target — `deriveBountyFloor()` below, which shows its arithmetic.
+ *  8. Refuse anything paying below a floor derived from the committed
+ *     portfolio's capacity base — `deriveBountyFloor()` below, which shows its
+ *     arithmetic, and `capacityBaseAddends()`, which shows the base's.
  *  9. Refuse a `not-a-payer` repository — RULING-2026-09-28-bounty-rail.md §5.2
  *     item 2: a repository whose own policy says its bounties are symbolic, for
  *     research or unmergeable, or that asks for what the brand account never
@@ -48,7 +52,8 @@
  */
 
 import { DEFAULT_FX_ILS } from "../money.js";
-import { DEFAULT_PORTFOLIO } from "../portfolio.js";
+import { DEFAULT_PORTFOLIO, TARGET_BASIS, type TargetBasis } from "../portfolio.js";
+import type { RevenueLineSeed } from "../types.js";
 import type { PolicyVerdict } from "./policy.js";
 import type { BoardSupplyVerdict } from "./supply.js";
 
@@ -211,16 +216,51 @@ export const COLONY_AGENT_HOURS_PER_MONTH = 160;
  */
 export const KILL_ACCEPTANCE_RATE = 0.25;
 
+/** One committed line's contribution to the capacity base, and which figure it contributed. */
+export interface CapacityBaseAddend {
+  lineId: string;
+  ils: number;
+  /** `target`: its target, above ₪0. `contested-upper-bound`: a ₪0-planned line that keeps a build budget. `none`: 0. */
+  from: "target" | "contested-upper-bound" | "none";
+}
+
 /**
- * The capacity base the floor splits MISSION constraint 4's agent-hours over: **₪1,500**, the committed portfolio
- * the floor was derived from (board of 7.9.2026). HELD since 28.9.2026, not re-derived: that day's board planned
- * il-biz-tools at ₪0 (research/channel-loop/RULING-2026-09-28-floors.md §9) and so cut the committed sum to ₪1,100,
- * but kept il-biz-tools' build budget because "the free tools and the validator page still need build hours". Its
- * share of the colony's agent-hours therefore did not pass to this line, and re-deriving from ₪1,100 would have
- * lowered this floor 27% (₪37.50 → ₪27.50) on a question neither ruling decided. It stays until the board rules on
- * how a ₪0 line that still takes build hours counts in the capacity split.
+ * The capacity base the floor splits MISSION constraint 4's agent-hours over, line by line — DERIVED from the
+ * committed portfolio, not held (breadth board, research/breadth/BOARD.md Part B(a), 28.9.2026). The rule:
+ *
+ *   For each committed line: its target if the target is above ₪0; else, if the board planned it at ₪0 while
+ *   keeping a build budget (`budgetMonthlyCents > 0`), its `contestedUpperBoundIls`; a line with a ₪0 target and no
+ *   budget, or a killed line, contributes 0. Contested bounds are used only in place of a ₪0 target, never to raise
+ *   a positive one.
+ *
+ * Why: the floor is the colony's planned value of an agent-hour divided by the acceptance rate, and a line the board
+ * still spends hours on is valued at the figure the board "records but refused to commit to" — which is what the
+ * contested upper bound exists for (RULING-2026-09-28-floors.md §9). Today that is apify-actors 200 + il-biz-tools 400
+ * (planned at ₪0, build budget kept) + oss-bounties 300 + pcn874 600 = ₪1,500 — the 7.9 number, now re-derivable. A
+ * killed line leaves `DEFAULT_PORTFOLIO` for `KILLED_LINES`, so it is simply absent from `seeds`.
  */
-export const FLOOR_CAPACITY_BASE_ILS = 1500;
+export function capacityBaseAddends(
+  seeds: RevenueLineSeed[] = DEFAULT_PORTFOLIO,
+  basis: Record<string, TargetBasis> = TARGET_BASIS,
+): CapacityBaseAddend[] {
+  return seeds.map((seed) => {
+    const targetIls = seed.targetMonthlyAgorot / 100;
+    if (targetIls > 0) return { lineId: seed.id, ils: targetIls, from: "target" as const };
+    const contested = basis[seed.id]?.contestedUpperBoundIls;
+    if (seed.budgetMonthlyCents > 0 && typeof contested === "number" && contested > 0) {
+      return { lineId: seed.id, ils: contested, from: "contested-upper-bound" as const };
+    }
+    return { lineId: seed.id, ils: 0, from: "none" as const };
+  });
+}
+
+/** The capacity base in ₪/month: the sum of `capacityBaseAddends`. ₪1,500 on today's portfolio. */
+export function capacityBaseIls(
+  seeds: RevenueLineSeed[] = DEFAULT_PORTFOLIO,
+  basis: Record<string, TargetBasis> = TARGET_BASIS,
+): number {
+  return capacityBaseAddends(seeds, basis).reduce((sum, a) => sum + a.ils, 0);
+}
 
 /**
  * Derive the ₪-per-hour floor a bounty must clear.
@@ -228,9 +268,11 @@ export const FLOOR_CAPACITY_BASE_ILS = 1500;
  * The arithmetic, in four steps, all of them from numbers already in this repo:
  *
  *  1. The board gave this line **₪300/month** out of a **₪1,500** capacity
- *     base, so the line owns **20%** of the colony's capacity. (₪1,500 was the
- *     committed portfolio until 28.9.2026; it is held here, not re-derived from
- *     the ₪1,100 committed since — see `FLOOR_CAPACITY_BASE_ILS`.)
+ *     base, so the line owns **20%** of the colony's capacity. The base is
+ *     derived from the committed portfolio by `capacityBaseIls()`, with a
+ *     ₪0-planned line that keeps a build budget counted at its contested upper
+ *     bound (breadth board Part B(a), 28.9.2026) — so it is ₪1,500 and not the
+ *     ₪1,100 committed since il-biz-tools was planned at ₪0.
  *  2. MISSION constraint 4 budgets **160 agent-hours a month** for the whole
  *     colony. Twenty per cent of that is **32 hours** for this line.
  *  3. ₪300 out of 32 hours is **₪9.375 per agent-hour realized** — what an hour
@@ -252,8 +294,17 @@ export const FLOOR_CAPACITY_BASE_ILS = 1500;
  * It is a **floor, not a target**. Clearing it makes a bounty admissible; the
  * ordering in `selectBounties` still prefers the ones that clear it by most.
  *
+ * The algebra, stated so nobody expects the line's own target to matter: the
+ * line's hours are 160 × target ÷ base, so the realized rate is base ÷ 160 and
+ * the floor is **base ÷ 160 ÷ 0.25 = base ÷ 40**. The ₪300 cancels. The whole
+ * floor is therefore the capacity-base rule in `capacityBaseAddends()`: it moves
+ * when the board's numbers move (a week-4 retarget of this line to ₪100 → base
+ * ₪1,300, floor ₪32.50; a kill of this line → ₪1,200, ₪30.00).
+ *
  * Every input is a parameter so the floor moves when the board's numbers move
- * and an auditor can re-derive it rather than take it on trust.
+ * and an auditor can re-derive it rather than take it on trust. `seeds` and
+ * `basis` default to the live portfolio; pass a retargeted copy to see a ruling's
+ * effect before it is applied.
  */
 export function deriveBountyFloor(
   opts: {
@@ -263,12 +314,15 @@ export function deriveBountyFloor(
     colonyAgentHoursPerMonth?: number;
     killAcceptanceRate?: number;
     usdIls?: number;
+    seeds?: RevenueLineSeed[];
+    basis?: Record<string, TargetBasis>;
   } = {},
 ): FloorDerivation {
   const lineId = opts.lineId ?? "oss-bounties";
-  const seed = DEFAULT_PORTFOLIO.find((s) => s.id === lineId);
+  const seeds = opts.seeds ?? DEFAULT_PORTFOLIO;
+  const seed = seeds.find((s) => s.id === lineId);
   const lineTargetIls = opts.lineTargetIls ?? (seed ? seed.targetMonthlyAgorot / 100 : 300);
-  const portfolioTargetIls = opts.portfolioTargetIls ?? FLOOR_CAPACITY_BASE_ILS;
+  const portfolioTargetIls = opts.portfolioTargetIls ?? capacityBaseIls(seeds, opts.basis ?? TARGET_BASIS);
   const colonyAgentHoursPerMonth = opts.colonyAgentHoursPerMonth ?? COLONY_AGENT_HOURS_PER_MONTH;
   const killAcceptanceRate = opts.killAcceptanceRate ?? KILL_ACCEPTANCE_RATE;
   const usdIls = opts.usdIls ?? DEFAULT_FX_ILS.USD ?? 3.6;
@@ -295,7 +349,7 @@ export function deriveBountyFloor(
     reasoning:
       `₪${lineTargetIls}/month is ${(lineShare * 100).toFixed(1)}% of the ₪${portfolioTargetIls} capacity base` +
       (opts.portfolioTargetIls === undefined
-        ? ` (the committed portfolio of 7.9.2026, held until the board rules on how a ₪0 line that still takes build hours counts)`
+        ? ` (derived from the committed portfolio, with a ₪0-planned line that keeps a build budget counted at its contested upper bound)`
         : "") +
       `, ` +
       `so this line owns ${lineAgentHoursPerMonth.toFixed(1)} of MISSION constraint 4's ${colonyAgentHoursPerMonth} agent-hours a month. ` +

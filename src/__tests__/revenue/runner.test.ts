@@ -14,7 +14,7 @@ import {
   TASK_ORDER,
 } from "../../revenue/runner.js";
 import { OWNER_STEPS, isOwnerStepOpen, ownerStepById, ownerStepsForLine } from "../../revenue/owner-steps.js";
-import { getLine, listLines, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
+import { getLine, listLines, recordKpi, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
 import { REVENUE_TASK_INTERVALS_MS } from "../../revenue/heartbeat.js";
 import { getActiveGoals } from "../../state/database.js";
 import { DEFAULT_PORTFOLIO, portfolioTargetAgorot, summarizeTargetBasis } from "../../revenue/portfolio.js";
@@ -202,6 +202,17 @@ describe("revenue/runner report rendering", () => {
     expect(report).toMatch(/Contested upper bounds, not targets and not in the sum: `apify-actors` ₪1,500 \(target ₪200\), `il-biz-tools` ₪400 \(target ₪0\)\./);
   });
 
+  it("prints the Apify stranger count with its biased-low label, read or not (research/breadth/BOARD.md Q5)", async () => {
+    const label = "stranger runs — biased low while the developer is unverified: hidden from default Store-API search";
+    let report = renderReport(db, await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" }));
+    expect(report).toContain(`- \`apify-actors\` strangerUsers30d: no reading yet — ${label}.`);
+    expect(report).toMatch(/under 10 is TEST_MORE \(hidden or unwanted, indistinguishable\)/);
+    // With a reading, the value is printed and the label stays beside it.
+    recordKpi(db, "apify-actors", "strangerUsers30d", 3, "users");
+    report = renderReport(db, await tick(db, { nowIso: "2026-09-03T01:00:00.000Z" }));
+    expect(report).toContain(`- \`apify-actors\` strangerUsers30d: 3 users — ${label}.`);
+  });
+
   it("lists each waiting line's open owner steps from the checklist itself, step 2 included", async () => {
     // The bug: every line's list came from portfolio.ts humanSetup alone, which leaves
     // out the steps shared by all lines — so owner step 2 (the tax file) appeared
@@ -273,10 +284,13 @@ describe("revenue/runner report rendering", () => {
     // The four lines as the reviewer read them on the real database.
     expect(result.blockers.find((b) => b.startsWith("apify-actors is waiting")))
       .toMatch(/^apify-actors is waiting on the owner: steps 6 of docs\/OWNER_STEPS\.he\.md \(not asked now: step 2 only/);
-    expect(report).toMatch(/Owner steps still open for `il-biz-tools`[^\n]*: 3, 6 \(not asked now: step 2 only when a paid product is ready, after the official cost check; step 5 frozen by the owner's ₪0 rule of 27\.9\.2026\)/);
+    // Step 8, the brand mailbox, is asked now and comes first for il-biz-tools (research/breadth/BOARD.md Q2, 28.9.2026).
+    expect(report).toMatch(/Owner steps still open for `il-biz-tools`[^\n]*: 8, 3, 6 \(not asked now: step 2 only when a paid product is ready, after the official cost check; step 5 frozen by the owner's ₪0 rule of 27\.9\.2026\)/);
     expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*: 3, 7, 6 \(not asked now: step 2 [^;]+; step 5 frozen/);
-    // Step 4 is held since 28.9.2026: 4a rides step 7, 4b waits for the corrected week-4 count and a held reward.
-    expect(report).toMatch(/Owner steps still open for `oss-bounties`[^\n]*: 7, 6 \(not asked now: step 2 [^;)]+; step 4 Stripe form, part 4b, asked only after [^;)]+ — the 2-minute sign-in 4a rides step 7\)$/m);
+    // Step 4 is held since 28.9.2026 and is 4b alone: the Stripe form, which begins with the Algora sign-in, waits for
+    // the corrected week-4 count and a held reward; 4a was dropped (research/breadth/BOARD.md Part B(b)).
+    expect(report).toMatch(/Owner steps still open for `oss-bounties`[^\n]*: 7, 6 \(not asked now: step 2 [^;)]+; step 4 Stripe form 4b, asked only after [^;)]+ — the form begins with the Algora sign-in\)$/m);
+    expect(report).not.toMatch(/\b4a\b/);
     expect(report).not.toMatch(/step 4 4b/); // the step number printed twice read as a typo (review of 28.9.2026, finding 9)
   });
 

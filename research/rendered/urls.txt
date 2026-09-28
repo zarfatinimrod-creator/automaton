@@ -309,3 +309,69 @@ https://docs.superteam.fun/the-superteam-handbook/community/faqs/superteam-earn-
 https://www.bitsofgold.co.il/en	bitsofgold-home
 # ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Bit2C, for its onboarding requirements.
 https://bit2c.co.il/	bit2c-home
+
+# --------------------------------------------------------------------------------
+# research/channel-loop/ZERO-TESTS.md rows 30, 32 and 33-58 — the breadth board's ₪0 tests
+# (research/breadth/BOARD.md §"Exact changes", 28.9.2026). Only URLs research/breadth/BREADTH-SWEEP.md §6.5 or the
+# ruling names; algora.io is never listed. Dispatch 1: rows 33-52 plus row 30's terms PDF. Dispatch 2 (the next
+# tick): rows 53-58 (Batch B). Row 32's Privy docs root is the page T4 follows to its fee-sponsorship answer.
+# Batch C is not listed yet (later ticks, in the plan's §6.5 order).
+# --------------------------------------------------------------------------------
+# ZERO-TESTS.md row 30 — Superteam Earn (15), T2: the terms of use (breadth board Q1 rank 2).
+https://superteam.fun/earn/terms-of-use.pdf	superteam-earn-terms-pdf
+# ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Privy's docs root, for whether it sponsors fees on platform-created wallets.
+https://docs.privy.io/	privy-docs-root
+# ZERO-TESTS.md row 33 — CrazyGames (6) and Wix App Market (11): Tipalti's payees FAQ; gates step 10.
+https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs	tipalti-payees-faq
+# ZERO-TESTS.md row 34 — Firefox Add-ons (16): the add-on policies.
+https://extensionworkshop.com/documentation/publish/add-on-policies/	amo-add-on-policies
+# ZERO-TESTS.md row 35 — Firefox Add-ons (16): the newest cohort's daily users.
+https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&sort=created&page_size=50	amo-search-newest
+# ZERO-TESTS.md row 36 — Firefox Add-ons (16): Hebrew utilities and their users.
+https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=hebrew&page_size=50	amo-search-hebrew
+# ZERO-TESTS.md row 37 — Firefox Add-ons (16): the Hebrew language pack's audience.
+https://addons.mozilla.org/api/v5/addons/addon/hebrew-il-language-pack/	amo-hebrew-langpack
+# ZERO-TESTS.md row 38 — Pebble (19): KiezelPay's FAQ; pre-registered kill on a no.
+https://kiezelpay.com/faq/	kiezelpay-faq
+# ZERO-TESTS.md row 39 — Pebble (19): whether the store lists and ranks new faces.
+https://apps.repebble.com/faces	repebble-faces
+# ZERO-TESTS.md row 40 — Spreadshirt (17): shop-partner terms.
+https://www.spreadshirt.com/terms-and-conditions-for-shop-partner-C2376	spreadshirt-partner-terms
+# ZERO-TESTS.md row 41 — Spreadshirt (17): commission payment.
+https://help.spreadshirt.com/hc/en-us/articles/207905515-Payment-of-Your-Commission	spreadshirt-commission-payment
+# ZERO-TESTS.md row 42 — Spreadshirt (17): tax forms for non-US partners.
+https://help.spreadshirt.com/hc/en-us/articles/11874067093404-Tax-Form-Information-for-Non-US-Partners	spreadshirt-tax-forms-non-us
+# ZERO-TESTS.md row 43 — Spreadshirt (17): the 2024 partner taxation and payout process.
+https://www.spreadshirt.com/blog/2024/12/03/simplified-partner-taxation-and-payout-process/	spreadshirt-partner-taxation-2024
+# ZERO-TESTS.md row 44 — Spreadshirt (17): AI designs, dos and don'ts.
+https://www.spreadshirt.com/blog/2024/06/07/ai-and-designs-dos-donts/	spreadshirt-ai-designs-2024
+# ZERO-TESTS.md row 45 — Spreadshirt (17): the developer site (any upload API).
+https://developer.spreadshirt.net/	spreadshirt-developer
+# ZERO-TESTS.md row 46 — PayPal Israel receiving (21): the user agreement.
+https://www.paypal.com/il/legalhub/paypal/useragreement-full?locale.x=en_IL	paypal-il-user-agreement
+# ZERO-TESTS.md row 47 — PayPal Israel receiving (21): the user agreement at its second recorded address.
+https://www.paypal.com/il/webapps/mpp/ua/useragreement-full	paypal-il-user-agreement-mpp
+# ZERO-TESTS.md row 48 — PayPal Israel receiving (21): linking an Israeli bank account.
+https://www.paypal.com/il/cshelp/article/how-do-i-link-a-bank-account-to-my-paypal-account-help183?locale.x=en_IL	paypal-il-link-bank
+# ZERO-TESTS.md row 49 — n8n paid templates (20): the template catalogue's ordering.
+https://api.n8n.io/api/templates/search?rows=100&page=1	n8n-templates-search
+# ZERO-TESTS.md row 50 — n8n paid templates (20): the Creator Hub.
+https://n8n.io/creators/	n8n-creators
+# ZERO-TESTS.md row 51 — Apify visibility (apify-actors, breadth board Q5): the store search with unrunnable Actors included …
+https://api.apify.com/v2/store?search=israel&limit=1000&includeUnrunnableActors=true	apify-store-israel-all
+# ZERO-TESTS.md row 51 — … and the same search as default Store-API search shows it; the difference is the hidden share.
+https://api.apify.com/v2/store?search=israel&limit=1000	apify-store-israel-default
+# ZERO-TESTS.md row 52 — Spreadshirt (17) / any EU marketplace (breadth board Q10): the Digital Services Act, Articles 30-31.
+https://eur-lex.europa.eu/eli/reg/2022/2065/oj	eu-dsa-2022-2065
+# ZERO-TESTS.md row 53 — Google Play Books (18), Batch B: the payment-country table.
+https://support.google.com/books/partner/table/6052428?hl=en	play-books-payment-countries
+# ZERO-TESTS.md row 54 — Google Play Books (18), Batch B.
+https://support.google.com/books/partner/answer/3250840?hl=en	play-books-answer-3250840
+# ZERO-TESTS.md row 55 — Google Play Books (18), Batch B.
+https://support.google.com/books/partner/answer/4490848?hl=en	play-books-answer-4490848
+# ZERO-TESTS.md row 56 — Wix App Market (11), Batch B: Tipalti's payment-method coverage, US-ROW.
+https://help.tipalti.com/hc/en-us/articles/31314361313815-Payment-methods-coverage-US-ROW	tipalti-payment-methods-us-row
+# ZERO-TESTS.md row 57 — Wix App Market (11), Batch B: the App Market guidelines.
+https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines	wix-app-market-guidelines
+# ZERO-TESTS.md row 58 — Wix App Market (11), Batch B: what the listing publishes about the company.
+https://dev.wix.com/docs/build-apps/launch-your-app/market-listing/add-your-company-info	wix-add-company-info

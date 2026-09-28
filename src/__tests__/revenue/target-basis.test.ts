@@ -1,8 +1,10 @@
 import { describe, it, expect } from "vitest";
 import {
+  APIFY_STRANGER_KPI_LABEL,
   CONDITIONAL_TARGETS,
   DEFAULT_PORTFOLIO,
   KILLED_LINES,
+  KPI_LABELS,
   TARGET_BASIS,
   committedTargetIls,
   conditionalTargetIls,
@@ -124,6 +126,34 @@ describe("the board's decision of 7.9.2026, as arithmetic", () => {
       expect(lineIds.has(t.id), `${t.id} is conditional and must not be a portfolio line`).toBe(false);
       expect(t.conditionalOn.length, `${t.id} must name what would make it real`).toBeGreaterThan(40);
     }
+  });
+
+  it("labels Apify's stranger count biased-low and reads under 10 as TEST_MORE until verification is settled (breadth board Q5)", () => {
+    // research/breadth/BOARD.md Q5, 28.9.2026: Apify's default Store-API search hides Actors from developers who have
+    // not passed KYC, so a near-zero count can mean "hidden", not "unwanted". The instrument stays, labelled.
+    expect(APIFY_STRANGER_KPI_LABEL).toBe(
+      "stranger runs — biased low while the developer is unverified: hidden from default Store-API search",
+    );
+    expect(Object.keys(KPI_LABELS["apify-actors"]!).sort()).toEqual(["strangerRuns30d", "strangerUsers30d"]);
+    for (const l of Object.values(KPI_LABELS["apify-actors"]!)) {
+      expect(l.label).toBe(APIFY_STRANGER_KPI_LABEL);
+      expect(l.rule).toMatch(/under 10 is TEST_MORE \(hidden or unwanted, indistinguishable\)/);
+    }
+    const seed = DEFAULT_PORTFOLIO.find((s) => s.id === "apify-actors")!;
+    const under10 = seed.killCriteria.find((k) => k.startsWith("strangerUsers30d under 10"))!;
+    expect(under10).toContain(APIFY_STRANGER_KPI_LABEL);
+    expect(under10).toMatch(/TEST_MORE/);
+    expect(under10).not.toMatch(/instrument only|permanently/);
+    expect(under10).toContain("28.9.2026");
+    // Verification pulled to the Publish sitting only if document-only; with any camera step, never asked.
+    const at50 = seed.scaleCriteria.find((k) => k.includes("at or above 50"))!;
+    expect(at50).toMatch(/Publish sitting/);
+    expect(at50).toMatch(/document-only/);
+    expect(at50).toMatch(/camera/);
+    expect(seed.humanSetup.join(" ")).toMatch(/Publish sitting only if/);
+    expect(seed.humanSetup.join(" ")).not.toMatch(/deferred until 50 stranger users/);
+    expect(seed.operatingLoop).toContain(APIFY_STRANGER_KPI_LABEL);
+    expect(TARGET_BASIS["apify-actors"]!.basis).toContain(APIFY_STRANGER_KPI_LABEL);
   });
 
   it("records Apify's ₪1,500 as the contested upper bound rather than as a target", () => {

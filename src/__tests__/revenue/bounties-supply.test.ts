@@ -586,12 +586,22 @@ describe("the board's thresholds live on the oss-bounties line as data (BOARD-2 
     expect(loop).toMatch(/intake.*pending/s);
   });
 
-  it("splits step 4 into 4a with step 7 and 4b after a held reward, with the token made in step 7's sitting (§4.1, §4.4)", () => {
+  it("asks step 4 as 4b alone after a held reward, with the token made in step 7's sitting (§4.1, §4.4; breadth board Part B(b))", () => {
     const setup = line.humanSetup.join("\n");
-    expect(setup).toMatch(/4a/);
+    // 4a was dropped on 28.9.2026 (research/breadth/BOARD.md Part B(b)): a /claim creates the Algora user itself.
+    expect(setup).not.toMatch(/\b4a\b/);
     expect(setup).toMatch(/4b/);
     expect(setup).toMatch(/held/);
     expect(setup).toMatch(/BRAND_GITHUB_TOKEN.*step 7/s);
+    expect(setup).toMatch(/begins by signing in to Algora with GitHub as the brand machine account/);
+    expect(line.humanSetup).toHaveLength(2);
+  });
+
+  it("no longer tells the report that a sign-in rides step 7 while the week-4 reading is pending", () => {
+    const pending = readBoardVerdict([]);
+    expect(pending.verdict).toBe("pending");
+    expect(pending.text).not.toMatch(/\b4a\b|rides step 7/);
+    expect(pending.text).toMatch(/step 4b/);
   });
 
   it("kills the line the same day on any Algora or maintainer action over automation (§2.1.3(d))", () => {
