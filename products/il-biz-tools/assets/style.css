@@ -129,6 +129,13 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); out
 .verdict.unknown { background: #f2f4f7; border: 1px solid #b0b7c3; }
 .verdict .note { font-weight: 400; margin: .5rem 0 0; }
 
+/* PCN874 validator findings: a wide table scrolls inside its card on a phone */
+.table-scroll { overflow-x: auto; }
+.table-scroll caption { text-align: right; padding: 0 0 8px; color: var(--text); }
+.table-scroll td p { margin: 0 0 4px; }
+.table-scroll code { font-size: .85rem; }
+.table-scroll details { margin-top: 4px; font-size: .9rem; }
+
 /* Threshold timeline and similar read-only tables outside the printable doc */
 .data-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
 .data-table th, .data-table td { border: 1px solid var(--line); padding: 8px; text-align: right; }

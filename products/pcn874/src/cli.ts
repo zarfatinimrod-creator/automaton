@@ -13,6 +13,7 @@
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { generatePcn874, type GenerateResult, type GeneratorProblem } from './generate.js';
+import { decodePcn874Bytes, type DecodedPcn874 } from './parse.js';
 import { ITA_SIMULATOR_URL, describeCitation } from './sources.js';
 import { validatePcn874, type Finding, type ValidationResult } from './validate.js';
 
@@ -51,8 +52,38 @@ const SEVERITY_LABEL: Record<Finding['severity'], string> = {
   info: 'info   ',
 };
 
-export function formatHuman(result: ValidationResult, quiet: boolean): string {
+/**
+ * What the reading itself says about the file, before any finding. Neither is a
+ * rule — the circular declares no encoding — but each changes how the findings
+ * below read, so the CLI and the il-biz-tools page both say them
+ * (`decodePcn874Bytes` in parse.ts).
+ */
+export function readingNotes(reading: Pick<DecodedPcn874, 'utf8' | 'bom'>): string[] {
+  const notes: string[] = [];
+  if (!reading.utf8) {
+    notes.push(
+      'note: this file is not valid UTF-8 (a Hebrew file saved as Windows-1255 is one way that happens). ' +
+        'It was read as UTF-8, so each byte that is not valid UTF-8 shows as U+FFFD below, and a byte width ' +
+        'reported below (file.byteWidth) is that of the decoded text, not of the file on disk.',
+    );
+  }
+  if (reading.bom) {
+    notes.push(
+      'note: this file starts with a UTF-8 byte-order mark (U+FEFF), an invisible character some editors add. ' +
+        'It is read as the first character of the first record, so that record is not recognised as the ' +
+        'header, whatever it looks like in an editor. The circular does not mention a byte-order mark.',
+    );
+  }
+  return notes;
+}
+
+export function formatHuman(
+  result: ValidationResult,
+  quiet: boolean,
+  reading: Pick<DecodedPcn874, 'utf8' | 'bom'> = { utf8: true, bom: false },
+): string {
   const lines: string[] = [];
+  for (const note of readingNotes(reading)) lines.push(note, '');
   const shown = quiet ? result.findings.filter(f => f.severity === 'error') : result.findings;
 
   for (const f of shown) {
@@ -211,15 +242,17 @@ function runValidate(args: readonly string[]): number {
     return 2;
   }
 
-  let text: string;
+  let reading: DecodedPcn874;
   try {
-    text = readFileSync(paths[0]!, 'utf8');
+    // The same text readFileSync(path, 'utf8') gives, plus whether the bytes
+    // were UTF-8 at all and whether they start with a byte-order mark.
+    reading = decodePcn874Bytes(readFileSync(paths[0]!));
   } catch (e) {
     process.stderr.write(`pcn874: cannot read ${paths[0]}: ${(e as Error).message}\n`);
     return 2;
   }
 
-  const result = validatePcn874(text);
+  const result = validatePcn874(reading.text);
 
   if (json) {
     process.stdout.write(
@@ -229,6 +262,9 @@ function runValidate(args: readonly string[]): number {
           counts: result.counts,
           lineEnding: result.parsed.lineEnding,
           recordCount: result.parsed.records.length,
+          utf8: reading.utf8,
+          byteOrderMark: reading.bom,
+          notes: readingNotes(reading),
           findings: quiet ? result.findings.filter(f => f.severity === 'error') : result.findings,
         },
         null,
@@ -236,7 +272,7 @@ function runValidate(args: readonly string[]): number {
       )}\n`,
     );
   } else {
-    process.stdout.write(`${formatHuman(result, quiet)}\n`);
+    process.stdout.write(`${formatHuman(result, quiet, reading)}\n`);
   }
 
   return result.valid ? 0 : 1;

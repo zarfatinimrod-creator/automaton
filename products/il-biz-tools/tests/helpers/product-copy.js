@@ -11,17 +11,35 @@ export const productRoot = fileURLToPath(new URL('../..', import.meta.url));
 
 const SKIP = new Set(['node_modules', '_site', '_preview', '.netlify', 'tests']);
 
-/** A copy of everything the build reads (pages, assets, src, scripts, package.json, ...). */
+/** products/pcn874/src, which the build bundles the validator page's code from. */
+const pcn874Source = join(productRoot, '..', 'pcn874', 'src');
+
+// copy dir -> the temporary folder that holds it and its pcn874/src sibling.
+const bases = new Map();
+
+/**
+ * A copy of everything the build reads (pages, assets, src, scripts, package.json, ...),
+ * laid out as in the repository: <tmp>/il-biz-tools next to <tmp>/pcn874/src, because the
+ * build regenerates the validator bundle from ../pcn874/src and refuses without it.
+ */
 export function copyProduct() {
-  const dir = mkdtempSync(join(tmpdir(), 'il-biz-tools-'));
+  const base = mkdtempSync(join(tmpdir(), 'il-biz-tools-'));
+  const dir = join(base, 'il-biz-tools');
   cpSync(productRoot, dir, {
     recursive: true,
     filter: (src) => !SKIP.has(relative(productRoot, src).split(sep)[0]),
   });
+  cpSync(pcn874Source, join(base, 'pcn874', 'src'), { recursive: true });
+  bases.set(dir, base);
   return dir;
 }
 
-export const removeCopy = (dir) => rmSync(dir, { recursive: true, force: true });
+/** Remove a copy (with its pcn874 sibling), or any other path inside one. */
+export const removeCopy = (path) => {
+  const base = bases.get(path);
+  bases.delete(path);
+  rmSync(base ?? path, { recursive: true, force: true });
+};
 
 /** Run scripts/build-site.js inside a copy. */
 export function runBuild(dir, ...args) {
