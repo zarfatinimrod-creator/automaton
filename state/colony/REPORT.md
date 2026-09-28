@@ -1,6 +1,6 @@
 # Revenue colony — board report
 
-Generated 2026-09-28T10:53:27.278Z
+Generated 2026-09-28T15:25:47.314Z
 
 ## Where we are
 
@@ -42,9 +42,11 @@ Labelled measurements — each is printed with its label wherever it is printed:
 
 ## This tick
 
-Ran: nothing (everything within its interval)
-Skipped as not yet due: revenue_ledger_sync, revenue_supervisor_review, revenue_board_review, revenue_audit
+Ran: revenue_ledger_sync, revenue_supervisor_review
+Skipped as not yet due: revenue_board_review, revenue_audit
 
+- Ledger sync: 0 new entries, 0 already known, sources [none configured]
+- Supervisors reviewed 4 line(s), escalating 4
 
 ## Blocked on
 
