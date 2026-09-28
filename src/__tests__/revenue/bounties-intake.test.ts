@@ -6,6 +6,7 @@ import {
   KILL_ACCEPTANCE_RATE,
   MAX_PARALLEL_ATTEMPTS,
   COLONY_AGENT_HOURS_PER_MONTH,
+  FLOOR_CAPACITY_BASE_ILS,
   defaultIntakeConfig,
   deriveBountyFloor,
   parseAlgoraBotComment,
@@ -13,7 +14,7 @@ import {
   selectBounties,
   type BountyCandidate,
 } from "../../revenue/bounties/intake.js";
-import { DEFAULT_PORTFOLIO } from "../../revenue/portfolio.js";
+import { DEFAULT_PORTFOLIO, committedTargetIls } from "../../revenue/portfolio.js";
 
 const NOW = "2026-09-07T12:00:00.000Z";
 
@@ -130,20 +131,33 @@ describe("the algora-pbc[bot] comment parser", () => {
 });
 
 describe("the pay floor, derived from the board's own numbers", () => {
-  it("derives ₪27.50 per estimated hour from ₪300, ₪1,100, 160 agent-hours and a 25% acceptance rate", () => {
-    // The committed portfolio fell from ₪1,500 to ₪1,100 on 28.9.2026 (il-biz-tools planned at ₪0,
-    // RULING-2026-09-28-floors.md §9), and the floor re-derived with it: ₪37.50 → ₪27.50. The floor is
-    // portfolio ÷ (colony hours × acceptance rate), so it tracks the committed sum, not this line's target.
+  it("derives ₪37.50 per estimated hour from ₪300, ₪1,500, 160 agent-hours and a 25% acceptance rate", () => {
     const f = deriveBountyFloor();
     expect(f.lineTargetIls).toBe(300);
-    expect(f.portfolioTargetIls).toBe(1100);
-    expect(f.lineShare).toBeCloseTo(300 / 1100, 6);
+    expect(f.portfolioTargetIls).toBe(1500);
+    expect(f.lineShare).toBeCloseTo(0.2, 6);
     expect(f.colonyAgentHoursPerMonth).toBe(160);
-    expect(f.lineAgentHoursPerMonth).toBeCloseTo(160 * 300 / 1100, 6);
-    expect(f.realizedIlsPerHour).toBeCloseTo(6.875, 6);
+    expect(f.lineAgentHoursPerMonth).toBeCloseTo(32, 6);
+    expect(f.realizedIlsPerHour).toBeCloseTo(9.375, 6);
     expect(f.killAcceptanceRate).toBe(0.25);
-    expect(f.floorIlsPerHour).toBeCloseTo(27.5, 6);
-    expect(f.floorUsdPerHour).toBeCloseTo(27.5 / 3.6, 6);
+    expect(f.floorIlsPerHour).toBe(37.5);
+    expect(f.floorUsdPerHour).toBeCloseTo(37.5 / 3.6, 6);
+  });
+
+  it("holds the ₪1,500 capacity base the board derived it from, not the ₪1,100 committed since 28.9.2026", () => {
+    // Row 9 of RULING-2026-09-28-floors.md planned il-biz-tools at ₪0 but kept its build budget ("the free tools and
+    // the validator page still need build hours"), so its share of the colony's agent-hours did not pass to this line.
+    // Re-deriving from the committed ₪1,100 would have cut the floor 27% (₪37.50 → ₪27.50) on a question neither
+    // ruling decided. The base is held until the board rules; when it does, this pin changes with the ruling.
+    expect(FLOOR_CAPACITY_BASE_ILS).toBe(1500);
+    expect(committedTargetIls()).toBe(1100);
+    expect(deriveBountyFloor().portfolioTargetIls).toBe(FLOOR_CAPACITY_BASE_ILS);
+    expect(deriveBountyFloor().reasoning).toMatch(/held until the board rules/);
+  });
+
+  it("rounds the floor to the agora, so a bounty paying exactly the floor is not refused on float dust", () => {
+    // ₪1,100 / 160h / 0.25 is 27.500000000000004 in floating point.
+    expect(deriveBountyFloor({ portfolioTargetIls: 1100 }).floorIlsPerHour).toBe(27.5);
   });
 
   it("re-derives itself from the portfolio, so a board retarget moves the floor", () => {
@@ -153,7 +167,7 @@ describe("the pay floor, derived from the board's own numbers", () => {
     expect(f.lineShare).toBeCloseTo(0.1, 6);
     expect(f.floorIlsPerHour).toBeCloseTo(37.5, 6); // share and target move together
     const g = deriveBountyFloor({ colonyAgentHoursPerMonth: 320 });
-    expect(g.floorIlsPerHour).toBeCloseTo(13.75, 6);
+    expect(g.floorIlsPerHour).toBeCloseTo(18.75, 6);
   });
 
   it("keeps its inputs equal to the values they were copied from", () => {
@@ -167,15 +181,15 @@ describe("the pay floor, derived from the board's own numbers", () => {
   it("shows its arithmetic in words", () => {
     const f = deriveBountyFloor();
     expect(f.reasoning).toMatch(/₪300/);
-    expect(f.reasoning).toMatch(/43\.6 of MISSION constraint 4's 160 agent-hours/);
-    expect(f.reasoning).toMatch(/₪27\.50 per estimated hour/);
+    expect(f.reasoning).toMatch(/32\.0 of MISSION constraint 4's 160 agent-hours/);
+    expect(f.reasoning).toMatch(/₪37\.50 per estimated hour/);
   });
 
-  it("allows about fourteen and a half hours on the ~\\$110 average bounty the audit accepted", () => {
+  it("allows about ten and a half hours on the ~\\$110 average bounty the audit accepted", () => {
     const f = deriveBountyFloor();
     const hours = (110 * f.usdIls) / f.floorIlsPerHour;
-    expect(hours).toBeGreaterThan(14);
-    expect(hours).toBeLessThan(15);
+    expect(hours).toBeGreaterThan(10);
+    expect(hours).toBeLessThan(11);
   });
 });
 
@@ -190,7 +204,7 @@ describe("scoreBounty — every rule", () => {
     expect(s.ilsPerHour).toBeCloseTo(225, 2);
     expect(s.stacks).toContain("typescript");
     expect(s.acceptanceCriteria.length).toBeGreaterThan(0);
-    expect(s.reasons.join(" ")).toMatch(/clears the ₪27\.5\/h floor/);
+    expect(s.reasons.join(" ")).toMatch(/clears the ₪37\.5\/h floor/);
   });
 
   it("skips a repository whose policy forbids AI-authored work", () => {
@@ -296,16 +310,16 @@ describe("scoreBounty — every rule", () => {
   });
 
   it("skips a bounty paying below the derived floor", () => {
-    // $10 for 4 hours is ₪36 total, ₪9/h — about a third of the floor.
+    // $10 for 4 hours is ₪36 total, ₪9/h — a quarter of the floor.
     const s = scoreBounty(candidate({ amount: 10, estimatedHours: 4, botComment: { author: ALGORA_BOT_LOGIN, body: botBody(10, 42) } }), state);
     const reason = s.skipped.find((k) => k.rule === "below-pay-floor")!;
-    expect(reason.detail).toMatch(/floor of ₪27\.5\/h/);
+    expect(reason.detail).toMatch(/floor of ₪37\.5\/h/);
     expect(reason.detail).toMatch(/MISSION constraint 4/);
   });
 
   it("accepts a bounty exactly at the floor", () => {
-    // ₪27.5/h × 4h = ₪110 = $30.555… at 3.6.
-    const amount = (27.5 * 4) / 3.6;
+    // ₪37.5/h × 4h = ₪150 = $41.666… at 3.6.
+    const amount = (37.5 * 4) / 3.6;
     const s = scoreBounty(
       candidate({ amount, estimatedHours: 4, botComment: { author: ALGORA_BOT_LOGIN, body: `$${amount} bounty /attempt #42 /claim #42` } }),
       state,
@@ -418,7 +432,7 @@ describe("selectBounties — the two-in-parallel cap", () => {
   it("carries the config it used, so a reader can check the floor it applied", () => {
     const sel = selectBounties([], { supplyVerdict: "keep", attempting: [], now: NOW });
     expect(sel.config.maxParallelAttempts).toBe(2);
-    expect(sel.config.floorIlsPerHour).toBeCloseTo(27.5, 6);
+    expect(sel.config.floorIlsPerHour).toBeCloseTo(37.5, 6);
     expect(sel.config.requiredStacks).toEqual(["typescript", "javascript", "python", "docs", "tests"]);
   });
 });

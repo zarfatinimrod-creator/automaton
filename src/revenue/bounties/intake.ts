@@ -212,27 +212,39 @@ export const COLONY_AGENT_HOURS_PER_MONTH = 160;
 export const KILL_ACCEPTANCE_RATE = 0.25;
 
 /**
+ * The capacity base the floor splits MISSION constraint 4's agent-hours over: **₪1,500**, the committed portfolio
+ * the floor was derived from (board of 7.9.2026). HELD since 28.9.2026, not re-derived: that day's board planned
+ * il-biz-tools at ₪0 (research/channel-loop/RULING-2026-09-28-floors.md §9) and so cut the committed sum to ₪1,100,
+ * but kept il-biz-tools' build budget because "the free tools and the validator page still need build hours". Its
+ * share of the colony's agent-hours therefore did not pass to this line, and re-deriving from ₪1,100 would have
+ * lowered this floor 27% (₪37.50 → ₪27.50) on a question neither ruling decided. It stays until the board rules on
+ * how a ₪0 line that still takes build hours counts in the capacity split.
+ */
+export const FLOOR_CAPACITY_BASE_ILS = 1500;
+
+/**
  * Derive the ₪-per-hour floor a bounty must clear.
  *
  * The arithmetic, in four steps, all of them from numbers already in this repo:
  *
- *  1. The board gave this line **₪300/month** out of a **₪1,100** committed
- *     portfolio, so the line owns **27.3%** of the colony's capacity. (It was
- *     ₪1,500 and 20% until the 28.9.2026 board planned il-biz-tools at ₪0,
- *     research/channel-loop/RULING-2026-09-28-floors.md §9; the floor was then
- *     ₪37.50. Nothing was edited here but this comment — the floor re-derived.)
+ *  1. The board gave this line **₪300/month** out of a **₪1,500** capacity
+ *     base, so the line owns **20%** of the colony's capacity. (₪1,500 was the
+ *     committed portfolio until 28.9.2026; it is held here, not re-derived from
+ *     the ₪1,100 committed since — see `FLOOR_CAPACITY_BASE_ILS`.)
  *  2. MISSION constraint 4 budgets **160 agent-hours a month** for the whole
- *     colony. 27.3% of that is **43.6 hours** for this line.
- *  3. ₪300 out of 43.6 hours is **₪6.875 per agent-hour realized** — what an
- *     hour must actually earn, after the pull requests nobody merges.
+ *     colony. Twenty per cent of that is **32 hours** for this line.
+ *  3. ₪300 out of 32 hours is **₪9.375 per agent-hour realized** — what an hour
+ *     must actually earn, after the pull requests nobody merges.
  *  4. Most attempts earn nothing. At the line's own kill threshold — a 25%
  *     acceptance rate — one rewarded bounty costs four attempts' hours, so a
  *     bounty must advertise **four times** the realized rate to survive:
- *     6.875 / 0.25 = **₪27.50 per estimated hour**, about **$7.64/h** at the
- *     repo's stored USD rate.
+ *     9.375 / 0.25 = **₪37.50 per estimated hour**, about **$10.42/h** at the
+ *     repo's stored USD rate. The result is rounded to the agora (28.9.2026):
+ *     the division chain leaves float dust on other bases, and a bounty paying
+ *     exactly the floor must not be refused on it.
  *
  * Sanity check against the only economics figure the audit accepted — a ~$110
- * average bounty: the floor allows up to about **14.4 hours** on an average
+ * average bounty: the floor allows up to about **10.5 hours** on an average
  * bounty, and refuses anything longer. That is the filter doing its job; the
  * competition finding says the winner is usually the first PR to arrive, and a
  * two-week issue is a race the colony loses after paying for it.
@@ -256,8 +268,7 @@ export function deriveBountyFloor(
   const lineId = opts.lineId ?? "oss-bounties";
   const seed = DEFAULT_PORTFOLIO.find((s) => s.id === lineId);
   const lineTargetIls = opts.lineTargetIls ?? (seed ? seed.targetMonthlyAgorot / 100 : 300);
-  const portfolioTargetIls =
-    opts.portfolioTargetIls ?? DEFAULT_PORTFOLIO.reduce((n, s) => n + s.targetMonthlyAgorot, 0) / 100;
+  const portfolioTargetIls = opts.portfolioTargetIls ?? FLOOR_CAPACITY_BASE_ILS;
   const colonyAgentHoursPerMonth = opts.colonyAgentHoursPerMonth ?? COLONY_AGENT_HOURS_PER_MONTH;
   const killAcceptanceRate = opts.killAcceptanceRate ?? KILL_ACCEPTANCE_RATE;
   const usdIls = opts.usdIls ?? DEFAULT_FX_ILS.USD ?? 3.6;
@@ -282,7 +293,11 @@ export function deriveBountyFloor(
     floorUsdPerHour: floorIlsPerHour / usdIls,
     usdIls,
     reasoning:
-      `₪${lineTargetIls}/month is ${(lineShare * 100).toFixed(1)}% of the ₪${portfolioTargetIls} the board committed, ` +
+      `₪${lineTargetIls}/month is ${(lineShare * 100).toFixed(1)}% of the ₪${portfolioTargetIls} capacity base` +
+      (opts.portfolioTargetIls === undefined
+        ? ` (the committed portfolio of 7.9.2026, held until the board rules on how a ₪0 line that still takes build hours counts)`
+        : "") +
+      `, ` +
       `so this line owns ${lineAgentHoursPerMonth.toFixed(1)} of MISSION constraint 4's ${colonyAgentHoursPerMonth} agent-hours a month. ` +
       `That is ₪${realizedIlsPerHour.toFixed(2)} an hour realized. At the line's own kill threshold of a ` +
       `${(killAcceptanceRate * 100).toFixed(0)}% acceptance rate, one rewarded bounty costs ${(1 / killAcceptanceRate).toFixed(0)} attempts, ` +
