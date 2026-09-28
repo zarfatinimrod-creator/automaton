@@ -46,21 +46,21 @@
       "venue": "spreadshirt",
       "name": "Spreadshirt",
       "order": 3,
-      "to": null,
-      "route": "Not in any capture: all six Spreadshirt captures are 403/406 with no body (spreadshirt.md:9-16). Find the contact route in the venue's own help page before sending; until an address is recorded here, this script refuses to send.",
+      "to": "contact@spreadshop.com",
+      "route": "Email to contact@spreadshop.com, the \"E-Mail\" of Spreadshirt, Inc. on the Spreadshop legal-information page (spreadshop-legal-information.txt:34-36; mailto: at spreadshop-legal-information.html:31), rendered in tick 8 (spreadshirt.md, Tick 8 reading, finding 4). It is the only Spreadshop address in any capture: sprd.net AG, the European counterparty (txt:18), shows none, and legal@spreadconnect.com (txt:61) belongs to Spreadconnect/SPOD, not Spreadshop, and is not used. Not the Spreadshop Contact Form (txt:106), which may demand a personal name or phone. The address is the North America/Oceania counterparty's; the question asks for a platform rule, not for account action, so either entity can answer it.",
       "subject": "Question: automated design uploads by a partner",
       "body": "Hello Spreadshirt partner team,\n\nMehudak (מהודק) is a small design brand considering the Spreadshirt Marketplace and a Spreadshop. Its accounts are run by an AI agent acting on the brand's behalf; this message was written and sent by that agent.\n\nOne question, yes or no: may a partner upload and publish designs through an automated process, either an API or an automated browser session run on the partner's behalf? If there is an API for this, a link to its documentation would answer the question too. We are asking for your current rule only, not for an exception or a commitment.\n\nThank you,\nMehudak (מהודק)\n",
-      "preSend": "Send unless the queued renders (rows 63-64, spreadshirt.md:97) have produced a written rule on uploads.",
+      "preSend": "Met 28.9.2026: the renders of rows 63, 64 and 99 produced no written rule on uploads (spreadshirt.md, Tick 8 verdict). Re-read spreadshirt.md first; if a later render has produced one, send the held question instead, or nothing.",
       "heldQuestions": [
         {
           "text": "Is PayPal payout available to a partner resident in Israel?",
-          "to": null,
-          "when": "only after a written yes, in the same thread, first of two, one at a time"
+          "to": "contact@spreadshop.com",
+          "when": "only after a written yes, in the same thread (so to the same address: no capture holds another Spreadshop address), first of two, one at a time"
         },
         {
           "text": "Must a partner's name and postal address be shown to EU buyers?",
-          "to": null,
-          "when": "only after a written yes, in the same thread, second of two; the answer goes to the owner as BOARD.md Q10's yes/no"
+          "to": "contact@spreadshop.com",
+          "when": "only after a written yes, in the same thread (the same address; sprd.net AG, the EU counterparty, has none in any capture), second of two; the answer goes to the owner as BOARD.md Q10's yes/no"
         }
       ],
       "followUpAfterDays": 7
@@ -73,8 +73,41 @@
       "route": "The general contact form https://n8n.io/contact/ (n8n-creators.html:35), which needs a browser session; this script sends email only. No n8n address is in any capture; the addresses at n8n-creators.html:36 are individual creators' and are never used.",
       "subject": "Question: paid templates from an AI-operated creator account",
       "body": "Hello n8n team,\n\nMehudak (מהודק) is a small brand considering publishing workflow templates in the n8n template library. Its accounts are run by an AI agent acting on the brand's behalf, and each template would say so; this message was written and sent by that agent.\n\nOne question, yes or no: may such a creator account offer paid templates in the library? If yes, the condition that unlocks paid templates (for example verified status or a number of accepted templates) would help. We are asking for your current rule only, not for an exception or a commitment.\n\nThank you,\nMehudak (מהודק)\n",
-      "preSend": "Render the forum thread first (n8n-templates.md:120-123); send only if it is silent.",
+      "preSend": "Render the forum thread https://community.n8n.io/t/verifies-creator/129722 first: its one reply is from a poster in n8n's own team group (n8n-templates.md:323-329; single next check :346-350). Send only if that reply is silent on the AI rule and on what unlocks paid templates.",
       "heldQuestions": [],
+      "followUpAfterDays": 7
+    },
+    {
+      "venue": "indiebook",
+      "name": "Indiebook",
+      "order": 5,
+      "to": "office@indiebook.co.il",
+      "route": "Email to office@indiebook.co.il, the address on the store's author page (\"דברו איתנו\", indiebook-sell-a-book.txt:41, shown there as \"[email protected]\"; decoded from the data-cfemail at indiebook-sell-a-book.html:735). Not the submission form https://wkf.ms/3RauGye (indiebook-sell-a-book.html:730): it is off-site and its fields are unread, and a question is not a submission. Not WhatsApp (indiebook-terms.txt:47), a phone channel.",
+      "subject": "שאלה: ספר שנכתב על ידי בינה מלאכותית / Question: a book written by AI",
+      "body": "Hello Indiebook team,\nשלום לצוות אינדיבוק,\n\nמהודק הוא מותג קטן ששוקל לפרסם באינדיבוק ספרי עיון דיגיטליים בעברית. החשבונות של המותג מופעלים על ידי סוכן בינה מלאכותית (AI) הפועל מטעמו, וההודעה הזאת נכתבה ונשלחה על ידי הסוכן הזה, לא על ידי אדם. הספרים ייכתבו על ידי בינה מלאכותית, וכך ייכתב בתיאור של כל ספר.\n\nשאלה אחת, כן או לא: האם אתם מקבלים לחנות ספר שנכתב על ידי בינה מלאכותית, כשהדבר מוצהר בתיאור הספר? אנחנו שואלים רק מה הכלל הנוכחי שלכם, ולא מבקשים חריגה או התחייבות.\n\nThe same in English: Mehudak (מהודק) is a small brand considering publishing Hebrew non-fiction e-books on Indiebook. Its accounts are run by an AI agent acting on the brand's behalf; this message was written and sent by that agent. The books would be written by AI, and each book's description would say so.\n\nOne question, yes or no: do you accept for sale a book written by AI, when its description says so? We are asking for your current rule only, not for an exception or a commitment.\n\nתודה,\nThank you,\nMehudak (מהודק)\n",
+      "preSend": "Nothing is left to render: the author page and the terms are read, and the unknowns are not on the site (indiebook.md:199-201, \"No more indiebook.co.il renders for row 22\"). Send once step 8 exists. Re-read indiebook.md first; if the store has since answered the AI question in writing, send the first held question instead, or nothing.",
+      "heldQuestions": [
+        {
+          "text": "האם יש עלות כלשהי לסופר (פרסום, המרה או חבילה), ומה אחוז התמלוגים לסופר ממכירה ומקריאה במנוי?",
+          "to": "office@indiebook.co.il",
+          "when": "only after a written yes, in the same thread, first of four, one at a time; any required cost fires kill (a) (indiebook.md:252)"
+        },
+        {
+          "text": "האם שם המחבר ושם ההוצאה המוצגים יכולים להיות \"מהודק\" בלבד?",
+          "to": "office@indiebook.co.il",
+          "when": "only after a written yes, in the same thread, second of four; the legal name required, with no brand or pen-name option, fires the name half of kill (c) (indiebook.md:254)"
+        },
+        {
+          "text": "האם ממלאים את טופס הגשת הספר פעם אחת לכל ספר, והאם כל ההתקשרות, כולל ההסכם, יכולה להתנהל בדוא\"ל בלבד?",
+          "to": "office@indiebook.co.il",
+          "when": "only after a written yes, in the same thread, third of four; a call per title fails MISSION's one-time rule, a one-time call or signature is an owner step for the sitting to weigh (indiebook.md:255-256)"
+        },
+        {
+          "text": "האם ההפצה בלעדית, ומי קובע את מחיר הספר?",
+          "to": "office@indiebook.co.il",
+          "when": "only after a written yes, in the same thread, fourth of four; it gates nothing (indiebook.md:257), so it goes last"
+        }
+      ],
       "followUpAfterDays": 7
     }
   ]

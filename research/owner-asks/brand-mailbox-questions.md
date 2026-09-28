@@ -3,7 +3,7 @@
 **Written 28.9.2026.** What has been sent is recorded in `research/owner-asks/sent.json`. These are the ₪0 tests no
 render can settle. Each venue gets one written yes/no question from the brand mailbox (`docs/OWNER_STEPS.he.md` step
 8; `research/breadth/BOARD.md` Q2). An address appears only where a capture under `research/rendered/` holds it, cited
-`file:line`.
+`file:line`. Tick 8 (28.9.2026) gave Spreadshirt its recipient and added §5, Indiebook.
 
 **The messages' single source is `research/owner-asks/questions.json`** (subject, body, recipient, route, pre-send
 check, held questions, follow-up delay per venue). `scripts/brand_mail.py` sends from that file and nothing else. This
@@ -20,7 +20,7 @@ in §"How it is sent" at the end.
 - **Send route:** [observed 28.9.2026] this environment's Gmail tools have `create_draft` and no send tool. If the brand
   connector is the same, send over SMTP with the brand app password from the CI secret (BOARD.md:102-103). An unsent
   draft is a blocker to record; never ask the owner to press Send.
-- **Order:** 1 CrazyGames, 2 Wix, 3 Spreadshirt, 4 n8n. PayPal gets no message.
+- **Order:** 1 CrazyGames, 2 Wix, 3 Spreadshirt, 4 n8n, 5 Indiebook. PayPal gets no message.
 - **One message per venue**, one decisive question each, no CC or BCC to other venues. A "held" question goes only
   after a yes, because a no makes it moot. **Pre-send:** re-read the venue's note. If a render has since settled the
   decisive question, send the held one instead, or nothing.
@@ -107,9 +107,9 @@ Mehudak (מהודק)
 
 ## 3. Spreadshirt (candidate 17; BOARD.md:75)
 
-- **Contact route:** not in any capture; find it in the venue's own help page before sending. All six captures
-  are 403/406 with no body (`spreadshirt.md:9-16`). **Pre-send:** send unless the queued renders (rows 63-64,
-  `spreadshirt.md:97`) have produced a written rule on uploads.
+- **Recipient:** `contact@spreadshop.com`, Spreadshirt, Inc.'s "E-Mail" (`spreadshop-legal-information.txt:34-36`, `.html:31`),
+  the only Spreadshop address in any capture (sprd.net AG, the EU counterparty, `txt:18`, has none): the held questions go
+  there too, in the thread. **Pre-send:** met, the renders of rows 63, 64 and 99 produced no written rule on uploads (`spreadshirt.md` Tick 8).
 - **Subject:** Question: automated design uploads by a partner
 
 ```text
@@ -137,7 +137,9 @@ Mehudak (מהודק)
 
 - **Route:** the general contact form `https://n8n.io/contact/` (`n8n-creators.html:35`). It needs a browser session.
   No n8n address is in any capture; the addresses at `n8n-creators.html:36` are individual creators' and are never used.
-  **Pre-send:** render the forum thread first (`n8n-templates.md:120-123`); send only if it is silent.
+  **Pre-send:** render the forum thread `https://community.n8n.io/t/verifies-creator/129722` first: its one reply is from
+  a poster in n8n's own team group (`n8n-templates.md:323-329`; next check `:346-350`). Send only if that reply is silent
+  on the AI rule and on what unlocks paid templates.
 - **Subject:** Question: paid templates from an AI-operated creator account
 
 ```text
@@ -155,8 +157,70 @@ Thank you,
 Mehudak (מהודק)
 ```
 
-- **Settles** the AI rule and the paid-unlock condition (`n8n-templates.md:73`, `:116-123`). **Yes** passes both,
-  though the unfavourable catalogue ordering stands (`:70-72`). **No** refutes the ₪0 test (KILL-5, BOARD-LOOP.md:68).
+- **Settles** the AI rule and the paid-unlock condition (`n8n-templates.md:86`, `:129-136`). **Yes** passes both,
+  though the unfavourable catalogue ordering stands (`:83-85`). **No** refutes the ₪0 test (KILL-5, BOARD-LOOP.md:68).
+
+## 5. Indiebook (candidate 22)
+
+- **Recipient:** `office@indiebook.co.il`, the author page's "דברו איתנו" address (`indiebook-sell-a-book.txt:41`, shown
+  as "[email protected]"; decoded from the `data-cfemail` at `indiebook-sell-a-book.html:735`). Not the submission form
+  `https://wkf.ms/3RauGye` (`html:730`): it is off-site, its fields are unread, and a question is not a submission. Not
+  WhatsApp (`indiebook-terms.txt:47`), a phone channel. **Pre-send:** nothing is left to render. The author page and the
+  terms are read, and the unknowns are not on the site (`indiebook.md:199-201`). Send once step 8 exists.
+- **Subject:** שאלה: ספר שנכתב על ידי בינה מלאכותית / Question: a book written by AI
+- **Why this question, of the five in `indiebook.md`'s draft (`:236-241`).** One decisive question per message, so the
+  first is the one most likely to kill the venue: is a declared AI-written book accepted (draft item 2)? [INFERENCE] The
+  rendered facts lean away from a fee. The author page offers publishing to "כל אחד ואחת" and names no price
+  (`indiebook-sell-a-book.txt:35`), the royalty guide pays authors each quarter (`indiebook-royalty-guide.txt:35`), and neither
+  reading found an author fee on any of the five pages (`indiebook.md:30`, `:119`). On AI no capture says anything either way, a person at
+  the store reads each submission ("וניהיה בקשר בהקדם", `indiebook-sell-a-book.txt:39`), and the store may remove any
+  digital content at will (`indiebook-terms.txt:133`). The message discloses the AI operator anyway, so a store against AI
+  books would say so whatever was asked; asking it outright makes that a clean yes/no. Draft item 1 (cost and royalty
+  share) is two questions, and the share decides nothing alone, so it heads the held questions. The draft's "בעזרת בינה
+  מלאכותית" (with the help of AI) became "על ידי בינה מלאכותית" (by AI): the agent writes the books, and a yes to "with
+  help" would not cover them.
+- **Language.** Hebrew for a Hebrew store, with the same text in English under it. The disclosure phrases that
+  `scripts/brand_mail.py` checks, and the yes/no line and "nothing binding" sentence that `owner-asks.test.ts` checks, are
+  English strings, so the English half carries them word for word; the Hebrew half says the same thing.
+
+```text
+Hello Indiebook team,
+שלום לצוות אינדיבוק,
+
+מהודק הוא מותג קטן ששוקל לפרסם באינדיבוק ספרי עיון דיגיטליים בעברית. החשבונות של המותג מופעלים על ידי סוכן
+בינה מלאכותית (AI) הפועל מטעמו, וההודעה הזאת נכתבה ונשלחה על ידי הסוכן הזה, לא על ידי אדם. הספרים ייכתבו על
+ידי בינה מלאכותית, וכך ייכתב בתיאור של כל ספר.
+
+שאלה אחת, כן או לא: האם אתם מקבלים לחנות ספר שנכתב על ידי בינה מלאכותית, כשהדבר מוצהר בתיאור הספר? אנחנו
+שואלים רק מה הכלל הנוכחי שלכם, ולא מבקשים חריגה או התחייבות.
+
+The same in English: Mehudak (מהודק) is a small brand considering publishing Hebrew non-fiction e-books on
+Indiebook. Its accounts are run by an AI agent acting on the brand's behalf; this message was written and sent by
+that agent. The books would be written by AI, and each book's description would say so.
+
+One question, yes or no: do you accept for sale a book written by AI, when its description says so? We are asking
+for your current rule only, not for an exception or a commitment.
+
+תודה,
+Thank you,
+Mehudak (מהודק)
+```
+
+- **Settles** the AI half of kill (c) (`indiebook.md:253`). **No** (declared AI books refused): it fires, and row 22 goes
+  to `docs/REJECTED.md` with a reopen trigger. **Yes:** the AI half passes and the held questions follow, read as
+  `indiebook.md:251-258` pre-registered: any required cost fires (a); a legal name that must be shown, with no brand or
+  pen-name option, fires the name half of (c); a call per title fails MISSION's one-time rule (MISSION.md:412-413); a
+  one-time call or signature is a one-time owner step for the sitting to weigh. No cost, a stated share, and yes to the
+  name and email questions is PASS_TEST on the gates. The supply bar (name one Hebrew title) still stands before
+  admission (`indiebook.md:202-203`).
+- **Held, after a yes, one at a time in the same thread, so to `office@indiebook.co.il` (the only address in any
+  capture):** (1) "האם יש עלות כלשהי לסופר (פרסום, המרה או חבילה), ומה אחוז התמלוגים לסופר ממכירה ומקריאה במנוי?"
+  (kill a); (2) "האם שם המחבר ושם ההוצאה המוצגים יכולים להיות "מהודק" בלבד?" (the name half of c); (3) "האם ממלאים את
+  טופס הגשת הספר פעם אחת לכל ספר, והאם כל ההתקשרות, כולל ההסכם, יכולה להתנהל בדוא"ל בלבד?" (the one-time rule); and
+  last, because it gates nothing, (4) "האם ההפצה בלעדית, ומי קובע את מחיר הספר?" In English: any cost to the author and
+  the royalty share; whether "Mehudak" alone can be the displayed author and publisher; whether the submission form is
+  filled once per book and all contact, the agreement included, can be by email; whether distribution is exclusive and
+  who sets the price.
 
 ## Not sent: PayPal Israel (row 21)
 
@@ -169,7 +233,7 @@ render of HELP534 (`paypal-israel.md:100-104`).
 Built 28.9.2026. `research/owner-asks/sent.json` is the record of what was sent.
 
 - **The route:** `.github/workflows/brand-mail.yml`, dispatched by the agent **from `main`**, with `command` = `send`,
-  `venue` = an id from `questions.json` (`crazygames`, `wix`, `spreadshirt`, `n8n`), `really_send`, and
+  `venue` = an id from `questions.json` (`crazygames`, `wix`, `spreadshirt`, `n8n`, `indiebook`), `really_send`, and
   `message_sha256`. It runs `scripts/brand_mail.py` (Python standard library only), which builds the message from
   `questions.json` and nothing else: From "Mehudak (מהודק)" at the brand address, the venue's recipient, subject and
   body, UTF-8 quoted-printable.
@@ -209,7 +273,7 @@ Built 28.9.2026. `research/owner-asks/sent.json` is the record of what was sent.
      carrying our subject inside its own; looked for in All Mail (archived mail counts) and in Spam. A reply without a
      Message-ID can never be listed, so it blocks the follow-up; recording its reading is then the answer. The
      follow-up is the same subject and body, threaded to the first by In-Reply-To and References.
-  6. A venue with no recorded address (Spreadshirt and n8n today) is refused: a form is not this script's route.
+  6. A venue with no recorded address (n8n today) is refused: a form is not this script's route.
      Held questions are never sent by it.
   7. **The record is written ahead.** It goes into `sent.json` with status `uncertain` before the message is handed to
      the server, becomes `sent` when the server accepts it, and is removed only when the server refuses the message

@@ -9,7 +9,7 @@ name: brand-mail
 #          state/colony/brand-mail.json and committed; the colony tick reads that file into the
 #          report and makes overdue accessibility mail, and a reading 2+ days old, a blocker
 #          (src/revenue/brand-mail.ts).
-#   send   One of the four venue questions in research/owner-asks/questions.json. A DRY RUN
+#   send   One of the venue questions in research/owner-asks/questions.json. A DRY RUN
 #          unless really_send is ticked; the dry run prints the message and its messageSha256,
 #          and a real send needs that digest in message_sha256, so what leaves is what was read.
 #          The record goes into research/owner-asks/sent.json and is committed here; the script
@@ -43,7 +43,7 @@ on:
         options: [probe, send]
         default: probe
       venue:
-        description: "send only: a venue id from research/owner-asks/questions.json (crazygames, wix, spreadshirt, n8n)"
+        description: "send only: a venue id from research/owner-asks/questions.json (crazygames, wix, spreadshirt, n8n, indiebook)"
         type: string
         required: false
       really_send:

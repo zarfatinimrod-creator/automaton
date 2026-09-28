@@ -1,5 +1,5 @@
 /**
- * The four brand-mailbox questions (research/owner-asks/) live in ONE machine-readable file, questions.json, which
+ * The brand-mailbox questions (research/owner-asks/) live in ONE machine-readable file, questions.json, which
  * scripts/brand_mail.py sends from. The research note brand-mailbox-questions.md keeps the rationale and quotes the
  * same messages so a reader sees them in context. These tests pin the two together, and pin what every message must
  * and must not say: the operator disclosure (research/breadth/BOARD.md Q2), the brand signature, and no personal
@@ -70,8 +70,8 @@ function mdSections(): MdSection[] {
 describe("research/owner-asks/questions.json is the single source the sender reads", () => {
   it("exists, and the research note points to it", () => {
     const q = readQuestions();
-    expect(q.venues.map((v) => v.venue)).toEqual(["crazygames", "wix", "spreadshirt", "n8n"]);
-    expect(q.venues.map((v) => v.order)).toEqual([1, 2, 3, 4]);
+    expect(q.venues.map((v) => v.venue)).toEqual(["crazygames", "wix", "spreadshirt", "n8n", "indiebook"]);
+    expect(q.venues.map((v) => v.order)).toEqual([1, 2, 3, 4, 5]);
     expect(md).toMatch(/research\/owner-asks\/questions\.json/);
     expect(md).toMatch(/scripts\/brand_mail\.py/);
   });
@@ -100,6 +100,8 @@ describe("research/owner-asks/questions.json is the single source the sender rea
       }
     }
     expect(q.venues.find((v) => v.venue === "spreadshirt")!.heldQuestions).toHaveLength(2);
+    // Indiebook: the AI question goes first; the other four of indiebook.md's draft wait for its yes.
+    expect(q.venues.find((v) => v.venue === "indiebook")!.heldQuestions).toHaveLength(4);
   });
 
   it("allows one follow-up no sooner than seven days after the first send, as the note's rule says", () => {
@@ -110,7 +112,9 @@ describe("research/owner-asks/questions.json is the single source the sender rea
   it("names a route for every venue, and an address only where a capture holds one", () => {
     const q = readQuestions();
     for (const v of q.venues) expect(v.route.length, v.venue).toBeGreaterThan(20);
-    expect(q.venues.filter((v) => v.to).map((v) => v.venue)).toEqual(["crazygames", "wix"]);
+    // Spreadshirt's and Indiebook's came from tick-8 captures (spreadshop-legal-information.txt:36,
+    // indiebook-sell-a-book.html:735); n8n's route is a form.
+    expect(q.venues.filter((v) => v.to).map((v) => v.venue)).toEqual(["crazygames", "wix", "spreadshirt", "indiebook"]);
   });
 });
 
@@ -152,15 +156,26 @@ describe("what every message says, and what none may say", () => {
   });
 
   it("carries no personal name: every capitalised word and every Hebrew word is on a reviewed list", () => {
-    // A name can only enter by being added here, in a reviewed diff. The list is the vocabulary of the four
-    // messages as written on 28.9.2026: sentence starts, the brand, the venues, and the products they name.
+    // A name can only enter by being added here, in a reviewed diff. The list is the vocabulary of the messages as
+    // written on 28.9.2026: sentence starts, the brand, the venues, and the products they name. The Hebrew list is
+    // Indiebook's message and held questions (tick 8), reviewed word by word: the venue's name and common words only.
     const allowed = new Set([
       "A", "AI", "API", "Agreement", "App", "Before", "CLI", "CrazyGames", "Developer", "Developers", "EU", "Hello",
       "HTML5", "If", "Israel", "Its", "June", "Market", "Marketplace", "Mehudak", "Must", "OWASP", "One", "Partner",
       "PayPal", "Portal", "Question", "Questions", "Spreadshirt", "Spreadshop", "Thank", "Tipalti", "We", "Wix", "ZAP",
-      "Can", "Is", "It",
+      "Can", "Is", "It", "Indiebook", "The", "English", "Hebrew",
     ]);
-    const hebrewAllowed = new Set(["מהודק"]);
+    const hebrewAllowed = new Set([
+      "מהודק", "אינדיבוק", "באינדיבוק",
+      "שאלה", "ספר", "שנכתב", "על", "ידי", "בינה", "מלאכותית", "שלום", "לצוות", "הוא", "מותג", "קטן", "ששוקל", "לפרסם",
+      "ספרי", "עיון", "דיגיטליים", "בעברית", "החשבונות", "של", "המותג", "מופעלים", "סוכן", "הפועל", "מטעמו", "וההודעה",
+      "הזאת", "נכתבה", "ונשלחה", "הסוכן", "הזה", "לא", "אדם", "הספרים", "ייכתבו", "וכך", "ייכתב", "בתיאור", "כל", "אחת",
+      "כן", "או", "האם", "אתם", "מקבלים", "לחנות", "כשהדבר", "מוצהר", "הספר", "אנחנו", "שואלים", "רק", "מה", "הכלל",
+      "הנוכחי", "שלכם", "ולא", "מבקשים", "חריגה", "התחייבות", "תודה", "יש", "עלות", "כלשהי", "לסופר", "פרסום", "המרה",
+      "חבילה", "ומה", "אחוז", "התמלוגים", "ממכירה", "ומקריאה", "במנוי", "שם", "המחבר", "ושם", "ההוצאה", "המוצגים",
+      "יכולים", "להיות", "בלבד", "ממלאים", "את", "טופס", "הגשת", "פעם", "לכל", "והאם", "ההתקשרות", "כולל", "ההסכם",
+      "יכולה", "להתנהל", "בדוא", "ל", "ההפצה", "בלעדית", "ומי", "קובע", "מחיר",
+    ]);
     const texts = q.venues.flatMap((v) => [v.subject, v.body, ...v.heldQuestions.map((h) => h.text)]);
     const unknown = new Set<string>();
     for (const t of texts) {

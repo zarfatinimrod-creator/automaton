@@ -662,10 +662,25 @@ class SendTests(Harness):
     # -- the venue and its text
 
     def test_a_venue_with_no_recorded_address_is_refused(self):
-        for venue in ["spreadshirt", "n8n"]:
+        for venue in ["n8n"]:
             code, _, err = self.run_cli("send", "--venue", venue)
             self.assertEqual(code, 2, venue)
             self.assertIn("no recorded email address", err)
+
+    def test_the_venues_addressed_in_tick_8_dry_run_to_their_recorded_address_with_hebrew_intact(self):
+        # Spreadshirt got contact@spreadshop.com and Indiebook office@indiebook.co.il from captures on 28.9.2026.
+        # Indiebook's subject and most of its body are Hebrew: both must come back exactly, 7-bit on the wire.
+        with open(self.questions, encoding="utf-8") as f:
+            venues = {v["venue"]: v for v in json.load(f)["venues"]}
+        for vid, to in [("spreadshirt", "contact@spreadshop.com"), ("indiebook", "office@indiebook.co.il")]:
+            result = self.dry_run(vid)
+            self.assertEqual(result["record"]["to"], to, vid)
+            msg = email.message_from_string(result["message"], policy=email.policy.default)
+            self.assertEqual(msg["To"], to, vid)
+            self.assertEqual(str(msg["Subject"]), venues[vid]["subject"], vid)
+            self.assertEqual(msg.get_content(), venues[vid]["body"], vid)
+            self.assertTrue(all(ord(c) < 128 for c in result["message"]), vid)
+        self.assertEqual(FakeSMTP.instances, [])
 
     def test_an_unknown_venue_is_refused(self):
         code, _, err = self.run_cli("send", "--venue", "paypal")
