@@ -547,3 +547,9 @@ https://help.streetlib.com/article/433-completing-our-tax-information-interview	
 https://help.streetlib.com/category/72-create-and-manage-your-streetlib-account	help-streetlib-com-category-72-account
 # research/channel-loop/ZERO-TESTS.md row 140 — Displate (26), after row 134 (28.9.2026).
 https://assets-static-prod.displate.com/next-assets/_next/static/chunks/pages/about-privacy-8cabb3e3e05788f0.js	displate-about-privacy-chunk
+# research/channel-loop/ZERO-TESTS.md row 141 — StreetLib (24), after row 139 (28.9.2026).
+https://help.streetlib.com/article/706-what-you-can-do-with-streetlib	help-streetlib-com-article-706-what-you-can-do
+# research/channel-loop/ZERO-TESTS.md row 142 — StreetLib (24), after row 139 (28.9.2026).
+https://help.streetlib.com/article/700-the-onboarding-process	help-streetlib-com-article-700-onboarding
+# research/channel-loop/ZERO-TESTS.md row 143 — StreetLib (24), after row 139 (28.9.2026).
+https://help.streetlib.com/article/427-distribution-agreement	help-streetlib-com-article-427-distribution-agreement
