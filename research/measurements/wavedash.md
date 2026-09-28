@@ -1,5 +1,8 @@
 # Measurement: Wavedash (browser games, CLI) — REPLENISH row 7
 
+**Status (28.9.2026, after tick 7): DEAD. G3 FAILs at github grade: the CLI source at `5d8f5a5` has no call that
+writes store-page metadata, so every game needs a Developer Portal session before it can publish (see "Tick 7 check" at the
+end). Reopens if a metadata command or API ships.** The reading below was UNSETTLED before that check.
 **Status (28.9.2026): UNSETTLED, leaning DEAD.** No gate FAILs on this capture, and neither G3 nor G5 passes. G3 is now
 U↘: the CLI can create a team and a game, push a build and publish it. But publishing is blocked until the store page is
 complete, and the docs place the store page only in the Developer Portal, once per game. G2 is also U↘: payouts go through
@@ -86,3 +89,88 @@ writes store-page metadata: description, cover art, preview video, tags, input m
 
 A render-watch capture of the repository root would show only the README, so the search has to run on the source itself. GitHub is reachable from this container,
 and a source read is graded (g).
+
+## Tick 7 check: the CLI source (github)
+**Checked 28.9.2026 (Opus checker). Verdict: G3 FAIL [GITHUB], so Wavedash is DEAD. It can reopen (trigger below).**
+**Grade.** [GITHUB] means quoted from the source at a pinned commit, with the line number checked by `awk`/`grep -n` on the
+downloaded file. Cites are `path:line` in `wvdsh/cli` at the commit named. Bare `:NNNN` cites still point at the docs capture.
+This grade is stronger than the documentation absence above. It is the code that calls the API, and the docs say the HTTP API is
+"the same API the [CLI](/cli) uses" (`:5695`).
+
+**What was read.**
+- Repo `https://github.com/wvdsh/cli` (cited at `:4887`): Rust, Apache-2.0, default branch `main`, 272 commits.
+- **Commit `5d8f5a5aaf541dc453c0559953fe8ffd720b545a`** ("0.1.97", 15.9.2026), which was the tip of `main` on 28.9.2026.
+  `Cargo.toml:3` reads `version = "0.1.97"`.
+- All 19 source files, 7,236 lines: the 14 in `src/` and the 5 in `src/dev/`. Not read: `.github/`, `test_build/`,
+  `scripts/bump-sdk-js.sh` (the only file in `scripts/`) and `.claude/settings.json` (the only file in `.claude/`). None of
+  them is on the command path.
+- Also read: draft PR #60 "paid content" (head branch `paid-content-cli`, commit `05291e515cd1edcf2c30e74be0a3046012d0ae8e`,
+  4.9.2026), file `src/paid_content.rs`. It is the only open work that touches money.
+- Method: the tree, commit and PR pages came through WebFetch on github.com. The file text came from raw.githubusercontent.com at
+  the pinned SHAs (curl on that same host, so the line numbers are exact). curl to github.com got a 403 from the egress proxy, and
+  the GitHub connector is not configured for this repo. Neither block was routed around.
+
+**The command tree** (`src/main.rs:136-304`): `init`, `auth login|logout|status`, `build push`, `dev`, `publish <BUILD_ID>`,
+`team create|list`, `project create|list`, `stat create|update|delete`, `achievement list|create|update|delete`,
+`clear-playtest-data` and `update`. No other command is registered. The list is the docs' reference (`:5350`) plus `init`,
+`auth`, `clear-playtest-data` and `update`.
+
+**Every API call.** There are 24 request sites outside the test modules (`grep -c '\.send()'`), plus the R2 upload and the
+self-updater:
+
+| Call | Where | What it sends or writes |
+|---|---|---|
+| POST `/cli/auth/redeem`, GET `/api/me` | `src/auth.rs:463`, `:202` | login; key check |
+| GET/POST `/api/organizations` | `src/init.rs:151`, `:167` | team: `{ "name": name }` (`:172`) |
+| GET/POST `/api/organizations/{id}/games` | `src/init.rs:184`, `:200` | game: `{ "title": title }` only (`:205`) |
+| POST `/api/games/{id}/builds/create-temp-r2-creds` | `src/builds.rs:56` | "Build metadata" (`:37`): uploadSource, engine, engineVersion, entrypoint, entrypointParams, buildMessage (`:60-84`) |
+| R2 (S3) file upload | `src/uploader.rs:114-119` | build files |
+| POST `…/builds/{b}/upload-completed` | `src/builds.rs:115` | no body |
+| POST `…/builds/{b}/publish` | `src/publish.rs:147` | release notes only |
+| POST/PATCH/DELETE `…/stats` | `src/stats.rs:19`, `:49`, `:71` | stats |
+| `…/achievements`, `…/achievements/image-media-upload`, media transform | `src/achievements.rs:74`, `:90`, `:119`, `:187`, `:253`, `:316` | achievements and their icons |
+| POST `…/clear-playtest-data` | `src/clear_playtest_data.rs:132` | deletes playtest data |
+| POST `…/builds/create-local`, `/cli/entrypoint-params`, `/api/dev/exchange-playkey`, `/api/dev/refresh-gameplay`; GET `/.well-known/jwks.json` | `src/dev/mod.rs:31`, `:295`; `src/dev/server.rs:211`, `:389`, `:441` | local dev server |
+| GitHub releases of `wvdsh/cli` | `src/updater.rs:6-12` | self-update; nothing on Wavedash |
+
+**Findings [GITHUB].**
+1. **No store-page write exists.** No call writes a description, cover or capsule art, screenshots, a preview video, tags,
+   genres, input methods or languages. A case-insensitive grep of `src/` for `descript|cover|capsule|screenshot|trailer|video|genre|
+   input.?method|language|locale|metadata|store.?page` finds only achievement fields, build and filesystem "metadata" and comments.
+   The only `description` sent belongs to an achievement: `src/achievements.rs:192` `"description": args.description,`. The only
+   image upload is an achievement icon: `src/main.rs:504` "Path to an image file (jpg, jpeg, png, webp, avif) to use as the
+   achievement icon".
+2. **`publish` cannot complete the store page.** Its body is `PublishRequest { notes }` (`src/publish.rs:24-28`), and the notes
+   are `title`, `summary` and `changes` (`src/publish.rs:14-22`). The flags are labelled "Release title" and "Release summary"
+   (`src/main.rs:191`, `:193`). These are patch notes for one build, not store-page fields. If the server blocks a publish, the
+   CLI prints the server's own message (`src/config.rs:173` `_ => anyhow::bail!("{}", msg),`). It has no store-page case of its own.
+3. **`project create` sends only a title** (`src/init.rs:205` `.json(&serde_json::json!({ "title": title }))`), so a game
+   created from the CLI always starts with an empty store page.
+4. **There is no call that submits a game for review.** `src/publish.rs:147` is the only release call, and nothing calls a
+   submit or approve endpoint. Review happens on Wavedash's side after publishing (`:4785`).
+5. **No payout or country handling.** A grep for `stripe|payout|countr|kyc|tax|onboard|bank` finds 0 hits in `src/` and 0 in the
+   PR #60 file. This check teaches nothing about G2, which stays U↘.
+6. **Pricing is coming to the CLI but has not shipped.** Draft PR #60 adds `wavedash paid-content create|update|list|deactivate|
+   resolve`. It calls `{api_host}/api/games/{id}/paid-content` (`src/paid_content.rs:122-128` at `05291e5`) and sends `"priceCents"`,
+   `"title"`, `"message"`, `"features"`, `"buttonLabel"` and `"visibility"` (`src/paid_content.rs:449-458`). The PR description says
+   "Do not merge until the corresponding backend pr is deployed to prod", and it was last updated 11.9.2026. [INFERENCE] It is
+   unmerged, and Paid Content is not on the publish-blocker list (`:4731`), so it moves no gate. It does show the vendor moving
+   portal-only functions into the CLI, which makes the reopen trigger below a realistic one.
+7. **Creator Fund: one UNKNOWN is partly resolved.** The publish body has no fund field (`src/publish.rs:24-28`), so a CLI
+   publish sends no opt-in choice. Whether the server then applies the dialog's "switched on by default" (`:4650`) is still UNKNOWN.
+
+**Verdict.** The rule in "Single most decisive next check" applies. With no metadata write anywhere in the CLI source, **G3 is a
+FAIL [GITHUB]**. Every game needs a Developer Portal session before `wavedash publish` passes the store-page check (`:4731`,
+`:4738`). That is "a per-game human step" (`research/channel-loop/BOARD-LOOP.md:183`), so **Wavedash is DEAD**. G1, G4 and G6 still
+pass. G2 (U↘) and G5 (UNKNOWN) do not affect the verdict.
+[INFERENCE] One residual: the portal must write these fields through some server route, so an endpoint does exist. But the CLI
+does not call it, the documented HTTP API does not list it (`:5753`), and the MCP server cannot do the job (`:12457-12458`). Driving
+an undocumented portal route with a portal login would not be an API-key path, and this file does not propose it.
+
+**Reopen trigger.** Reopen as a QUEUE candidate, then test G2, if either of these appears:
+- (a) a release of `wvdsh/cli`, or a commit on `main`, that adds a command or request writing a description, cover art, a
+  preview video, tags, input methods or languages. To check: `enum Commands` in `src/main.rs`, and any new `/api/games/{id}/…`
+  route missing from the table above.
+- (b) the docs' command reference (`:5350`) or HTTP API page (`:5691-5865`) lists a metadata command or endpoint.
+
+PR #60 merging would not reopen the row on its own, because pricing is not a publish blocker.
