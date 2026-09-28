@@ -467,3 +467,7 @@ https://www.facer.io/js/templates.min.js?t=1790275483051	facer-templates-js
 https://www.spreadshop.com/legal-information/	spreadshop-legal-information
 # research/channel-loop/ZERO-TESTS.md row 100 — Wix App Market (11): the submission step, linked from a tick-7 capture (28.9.2026).
 https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/submit-your-first-app-version	wix-submit-first-app-version
+# research/channel-loop/ZERO-TESTS.md row 101 — Y8 (14): the studio docs, linked from a tick-7 capture (28.9.2026).
+https://docs.y8.com/studio/studio/	y8-docs-studio
+# research/channel-loop/ZERO-TESTS.md row 102 — GameDistribution (14): the SDK wiki, linked from a tick-7 capture (28.9.2026).
+https://github.com/GameDistribution/GD-HTML5/wiki/SDK-Implementation/	gamedistribution-sdk-implementation
