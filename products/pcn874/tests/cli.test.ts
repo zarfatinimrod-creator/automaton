@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -131,6 +131,58 @@ describe('pcn874 validate', () => {
     expect(out).toContain('--reported-vat');
     expect(out).toContain('in SHEKELS');
     expect(out).toContain('docs/GENERATOR.md');
+  });
+});
+
+describe('pcn874 validate: what the reading says about the file', () => {
+  let dir = '';
+  beforeEach(() => {
+    dir = mkdtempSync(join(tmpdir(), 'pcn874-read-'));
+  });
+  afterEach(() => rmSync(dir, { recursive: true, force: true }));
+  const write = (name: string, bytes: Uint8Array): string => {
+    const path = join(dir, name);
+    writeFileSync(path, bytes);
+    return path;
+  };
+  /** Hebrew letters as Windows-1255 bytes (alef..tav are 0xE0..0xFA); ASCII as itself. */
+  const cp1255 = (text: string): Uint8Array =>
+    Uint8Array.from([...text].map(ch => {
+      const code = ch.charCodeAt(0);
+      if (code < 0x80) return code;
+      if (code >= 0x5d0 && code <= 0x5ea) return 0xe0 + (code - 0x5d0);
+      throw new Error(`no cp1255 byte for ${ch}`);
+    }));
+  const hebrew = readFileSync(fixturePath('warnings-refgroup-hebrew.txt'), 'utf8');
+
+  it('says a file is not UTF-8, and that the byte widths below are of the decoded text', () => {
+    const path = write('cp1255.txt', cp1255(hebrew));
+    const { out } = capture(() => run(['validate', path]));
+    expect(out).toContain('not valid UTF-8');
+    expect(out).toContain('Windows-1255');
+    expect(out).toContain('not of the file on disk');
+    const { out: json } = capture(() => run(['validate', path, '--json']));
+    const parsed = JSON.parse(json) as { utf8: boolean; byteOrderMark: boolean; notes: string[] };
+    expect(parsed.utf8).toBe(false);
+    expect(parsed.byteOrderMark).toBe(false);
+    expect(parsed.notes.join(' ')).toContain('not valid UTF-8');
+  });
+
+  it('says nothing about the encoding of a UTF-8 file, Hebrew or not', () => {
+    const path = write('utf8.txt', new TextEncoder().encode(hebrew));
+    const { out } = capture(() => run(['validate', path]));
+    expect(out).not.toContain('note:');
+    const { out: json } = capture(() => run(['validate', path, '--json']));
+    expect(JSON.parse(json)).toMatchObject({ utf8: true, byteOrderMark: false, notes: [] });
+  });
+
+  it('says a file starts with a byte-order mark, which is why its header is not recognised', () => {
+    const minimal = readFileSync(fixturePath('valid-minimal.txt'));
+    const path = write('bom.txt', Uint8Array.from([0xef, 0xbb, 0xbf, ...minimal]));
+    const { code, out } = capture(() => run(['validate', path]));
+    expect(code).toBe(1);
+    expect(out).toContain('byte-order mark');
+    expect(out).toContain('file.header.missing');
   });
 });
 

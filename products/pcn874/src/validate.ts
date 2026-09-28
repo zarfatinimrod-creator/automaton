@@ -497,7 +497,7 @@ function checkFooter(c: Collector, footer: Pcn874Record, header: Pcn874Record | 
  * in accordance with 'Sha'am' guidelines" (line 574), and those guidelines are
  * not in any rendered document, so the circular itself defers on that row.
  */
-const COUNTERPARTY_ROWS: Readonly<
+export const COUNTERPARTY_ROWS: Readonly<
   Record<
     string,
     {
