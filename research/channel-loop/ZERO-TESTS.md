@@ -21,6 +21,9 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 12 | CrazyGames (6), after row 1 | https://docs.crazygames.com/payouts/ | payout methods, countries, threshold, NET terms |
 | 13 | Wix App Market (11), after row 5 | https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/set-up-your-payout-account | whether an Israeli payee can set up a payout account, and how (`research/measurements/wix-app-market.md`) |
 | 14 | Stripe rail (9) and oss-bounties step 4, after rows 3-4 | https://docs.stripe.com/global-payouts/recipient-requirements | whether Global Payouts can reach a recipient in Israel — the one route `research/measurements/stripe-israel.md` leaves open |
+| 15 | Wix App Market (11), after row 13 | https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/wix-app-market-partner-agreement | whether an unpaid balance can be forfeited, payee eligibility by country, support obligations (`research/measurements/wix-app-market.md` Tick 2) |
+| 16 | Wix App Market (11), after row 13 | https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payouts-dashboard | payout schedule and whether Israel is named |
+| 17 | Polar rail (9), after row 14 | https://polar.sh/docs/merchant-of-record/supported-countries | whether Polar pays a seller in Israel and through which Stripe mechanism (`research/measurements/stripe-israel.md` Tick 2) |
 
 Rows 7-9 came from one WebSearch on 27.9.2026, whose snippets said a person with no work and no income pays a
 minimum of about ₪266 a month (₪143 national insurance and ₪123 health) whatever they do. That figure is

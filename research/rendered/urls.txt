@@ -267,3 +267,10 @@ https://docs.crazygames.com/payouts/	crazygames-payouts
 https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/set-up-your-payout-account	wix-payout-account
 # ZERO-TESTS.md row 14 — Stripe rail (9) and oss-bounties step 4, after rows 3-4.
 https://docs.stripe.com/global-payouts/recipient-requirements	stripe-global-payouts-recipients
+# research/channel-loop/ZERO-TESTS.md rows 15-17 — tick 3 follow-ups the tick-2 readings named (28.9.2026).
+# ZERO-TESTS.md row 15 — Wix App Market (11), after row 13.
+https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/wix-app-market-partner-agreement	wix-partner-agreement
+# ZERO-TESTS.md row 16 — Wix App Market (11), after row 13.
+https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payouts-dashboard	wix-payouts-dashboard
+# ZERO-TESTS.md row 17 — Polar rail (9), after row 14.
+https://polar.sh/docs/merchant-of-record/supported-countries	polar-supported-countries
