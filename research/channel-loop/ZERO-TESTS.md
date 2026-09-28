@@ -115,6 +115,26 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 106 | GameDistribution (14), after row 102 | https://github.com/GameDistribution/GD-HTML5/wiki/F.A.Q. | the official wiki FAQ linked from the SDK page (gamedistribution-sdk-implementation.html:1194): the publish button and control-panel lines at rendered grade, and any payout rail or country |
 | 107 | n8n paid templates (20), after row 104 | https://community.n8n.io/t/creator-profile-templates-verification/126583 | the only related verification thread with an accepted answer (n8n-verified-creator-feedback-2026.html:929): who wrote the answer (staff or not) and what it says verification requires |
 | 108 | n8n paid templates (20), after row 107 | https://community.n8n.io/t/verifies-creator/129722 | the verification thread whose latest poster is in the n8n_Team group (n8n-creator-profile-verification.html:885): what an n8n moderator says verification requires, and whether a brand or AI-run account qualifies; if silent, the held step-8 question goes out |
+| 109 | StreetLib (new row 24), second refill | https://www.streetlib.com/legalpolicy | terms: automated access, AI, fees, the public seller name (G1, G3, G7) |
+| 110 | StreetLib (new row 24), second refill | https://help.streetlib.com/article/1523-distribution-plans | any paid "US Distribution Plan" (G1; kill a) |
+| 111 | StreetLib (new row 24), second refill | https://www.streetlib.com/pricing | commission and any fee (G1) |
+| 112 | StreetLib (new row 24), second refill | https://help.streetlib.com/article/677-earnings | payout methods, countries, minimum, identity check (G2) |
+| 113 | StreetLib (new row 24), second refill | https://help.streetlib.com/article/421-streetlib-content-integrity-guidelines | the AI rule as written (G4; kill c) |
+| 114 | StreetLib (new row 24), second refill | https://help.streetlib.com/category/613-content-policy | AI and low-quality rules (G4) |
+| 115 | StreetLib (new row 24), second refill | https://help.streetlib.com/article/380-publish-an-ebook | how a title is submitted: form, upload, feed (G3; kill d) |
+| 116 | StreetLib (new row 24), second refill | https://www.streetlib.com/distribution-partners | which stores, which titles are eligible (G5) |
+| 117 | Zazzle (new row 25), second refill | https://www.zazzle.com/terms/user_agreement | automated access, AI, store name (G3, G7; kills a, d) |
+| 118 | Zazzle (new row 25), second refill | https://www.zazzle.com/terms/updated_creator_license_agreement | creator terms, fees, payout (G1, G2) |
+| 119 | Zazzle (new row 25), second refill | https://www.zazzle.com/assets/graphics/z5/zmisc/ambassador_program/Zazzle_Creator_FAQs.pdf | the 2025 creator FAQ: any fee, payout rail and countries (kills b, c) |
+| 120 | Zazzle (new row 25), second refill | https://www.zazzle.com/sell/developers | any API that creates store products (G3) |
+| 121 | Zazzle (new row 25), second refill | https://help.zazzle.com/hc/en-us/sections/360005063194-Create-A-Product-API | whether CAP products can enter the marketplace (kill a) |
+| 122 | Displate (new row 26), second refill | https://displate.com/about-faq | artist sign-up and review, payout, AI (kills a-c) |
+| 123 | Displate (new row 26), second refill | https://displate.com/about-copyright | AI and originality rules (G4; kill a) |
+| 124 | Society6 (new row 27), second refill | https://help.society6.com/en-US/updates-to-society6-artists-account-effective-march-18-2025-1261598 | artist admission since 18.3.2025 (kill a) |
+| 125 | Society6 (new row 27), second refill | https://help.society6.com/en-US/updates-to-pricing-and-artist-earnings-effective-march-18-2025-1261599 | artist share and fees (G1) |
+| 126 | Teach Simple (unsettled), second refill | https://teachsimple.com/contributor-terms-of-service | automation, upload by third parties, AI, countries, payout |
+| 127 | Teach Simple (unsettled), second refill | https://teachsimple.com/become-a-contributor | the "we will upload all your products" offer (G3) |
+| 128 | Smashwords / Draft2Digital (scout-grade death, confirmation), second refill | https://draft2digital.com/terms-of-service/ | the AI rule, and whether it covers the Smashwords Store |
 
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no
