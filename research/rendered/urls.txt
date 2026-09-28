@@ -258,3 +258,12 @@ https://www.btl.gov.il/Insurance/Rates/Pages/%D7%9E%D7%99%20%D7%A9%D7%90%D7%99%D
 https://www.kolzchut.org.il/he/%D7%93%D7%9E%D7%99_%D7%91%D7%99%D7%98%D7%95%D7%97_%D7%9C%D7%90%D7%95%D7%9E%D7%99_%D7%9C%D7%A9%D7%9B%D7%99%D7%A8_%D7%A2%D7%9D_%D7%9E%D7%A7%D7%95%D7%A8%D7%95%D7%AA_%D7%94%D7%9B%D7%A0%D7%A1%D7%94_%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D	kolzchut-employee-plus-self-employed
 # research/measurements/step2-cost.md ("The page that settles the salaried case") — Bituach Leumi: salaried AND self-employed.
 https://www.btl.gov.il/Insurance/National%20Insurance/type_list/%D7%A2%D7%95%D7%91%D7%93%20%D7%A9%D7%9B%D7%99%D7%A8%20%D7%95%D7%92%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%20%D7%A2%D7%A6%D7%9E%D7%90%D7%99/Pages/default.aspx	btl-employee-and-self-employed
+# research/channel-loop/ZERO-TESTS.md rows 11-14 — tick 2 follow-ups the tick-1 readings named (27.9-28.9.2026).
+# ZERO-TESTS.md row 11 — CrazyGames (6), after row 1.
+https://files.crazygames.com/documents/developer_terms_20250818.pdf	crazygames-developer-terms
+# ZERO-TESTS.md row 12 — CrazyGames (6), after row 1.
+https://docs.crazygames.com/payouts/	crazygames-payouts
+# ZERO-TESTS.md row 13 — Wix App Market (11), after row 5.
+https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/set-up-your-payout-account	wix-payout-account
+# ZERO-TESTS.md row 14 — Stripe rail (9) and oss-bounties step 4, after rows 3-4.
+https://docs.stripe.com/global-payouts/recipient-requirements	stripe-global-payouts-recipients
