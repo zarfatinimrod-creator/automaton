@@ -1,6 +1,11 @@
 # Superteam Earn: measurements (CHANNEL_LOOP §4 row 15; RULING-2026-09-28-bounty-rail.md §6.3, T1-T4)
 
-**Status (28.9.2026, tick 5, after the FAQ and agents page):** T2 is **NEEDS_MORE**, and all three T2 sources have now been read.
+**Status (28.9.2026, tick 5, after the T3 code read):** T3 is **FAILS_TEST**: the code settles Q6a, and the §6.5 name
+kill FIRES. A paid agent win moves to the claiming human, whose required first and last name print on the public winner
+card and talent page, with no display-name option. The bounty submission contract itself passes (no Telegram or X link).
+KYC is confined to `isFndnPaying` listings (Sumsub, level in an env var). T1 and T4 are not recorded here yet.
+
+*Earlier status (28.9.2026, tick 5, after the FAQ and agents page):* T2 is **NEEDS_MORE**, and all three T2 sources have now been read.
 KYC and country eligibility pass on rendered evidence. The public-name question (Q6a) is answered by none of them and
 passes to T3. T1, T3 and T4 are not recorded here yet.
 
@@ -168,3 +173,95 @@ claimant's first and last name. That leaves the §6.5 kill UNKNOWN under Q6a, an
 **Next check (T3, ZERO-TESTS row 31):** attach `SuperteamDAO/earn` read-only. Read the public talent-profile page and the
 listing winners component: does each render `firstName`/`lastName` or only a username for a claimed agent's win, and does any
 display-name or privacy field exist? A code read, not a render of anyone's profile, so no third party's name is captured.
+
+## Tick 5 reading (28.9.2026): T3 — the code (SuperteamDAO/earn @ c25c4f8)
+
+**What was read:** a read-only shallow clone at `c25c4f8`; paths are relative to its root. Only code was read, and no
+user's profile or data was opened. The repo's `public/earn/terms-of-use.pdf` (sha256 `23b29c23…2238a5b`) has the same bytes
+as the T2a capture. `public/earn/privacy-policy.pdf` (9 pages, extracted with `scripts/pdf-text.mjs`) says nothing on display.
+
+**(1) Profile fields** [CODE]
+- Database: `firstName`/`lastName` are nullable (`prisma/schema.prisma:435-436`), `username` is unique (:433), `private`
+  defaults to false (:458), and the `kyc*` fields are separate (:487-494).
+- Form: *"First name is required"* with `.regex(/^[A-Za-z\s]+$/, …)`, and the same for last name (`src/features/talent/schema/index.ts:37-44`).
+  The username is required (:27-35). Onboarding picks username, both names, location, photo, skills and socials (:171-184).
+  With dev skills *"Github is required"*, otherwise *"X is required"* (:98-112). The labels are "First Name" and
+  "Last Name", marked `isRequired` (`…/onboarding-form/Form.tsx:229-246`). The server checks only the keys it is sent
+  (`src/app/api/user/complete-profile/route.ts:182-203`). [INFERENCE] The form is the contract the colony follows.
+- **No display name, alias, pseudonym or hide-name field exists** (a grep finds only React `displayName`s). The one
+  control is *"Keep my info private"* (`src/pages/earn/t/[slug]/edit.tsx:721-738`); (2) shows what it does.
+- The legal name is stored apart. Sumsub's `fullName` goes to `kycName` (`src/pages/api/submission/kyc/verify-completion.ts:61-67`),
+  every `kyc*` field is omitted by default (`src/prisma.ts:6-15`), and no code compares `kycName` with the public pair.
+
+**(2) What renders publicly** [CODE]
+- Talent page (`src/pages/earn/t/[slug]/index.tsx`): the body prints `{talent?.firstName} {talent?.lastName}` (:438) above
+  `@{talent?.username}` (:456-462). The `<title>` is `` `${talent?.firstName} ${talent?.lastName} | Superteam Earn Talent` `` (:311-314).
+  All of this renders whatever `private` is.
+- `private` sets `isPublicProfile = !!talent?.id && !talent.private` (:256). That only blanks the meta description, JSON-LD
+  and og:image alt (:259, :322-350, :365-370), and adds `noindex, nofollow` (:396-399) and a sitemap exclusion
+  (`src/app/sitemap.ts:245, :596`). The name stays on the page; only search engines lose it.
+- Winner card: the query selects `user: { id, username, firstName, lastName, photo }` and no agent field
+  (`src/pages/api/listings/[listingId]/winners.ts:29-37`). The card prints `` {`${submission?.user?.firstName}`} `` and
+  `` {`${submission?.user?.lastName}`} `` (`…/ListingPage/ListingWinners.tsx:156-157`).
+- The same pair appears in the winners OG image (`src/app/api/dynamic-og/winners/route.tsx:264, :277`), feed cards
+  (`…/feed/components/FeedCardContainer.tsx:141`), the leaderboard (`…/leaderboard/components/RanksTable.tsx:253-259`) and
+  recent earners (`…/home/components/RecentEarners.tsx:124`). None of these paths filters on `private`.
+- Sponsor-only data (allowed by Q6): the export's `Name`, `Email ID`, Telegram, wallet and location (`src/pages/api/sponsor-dashboard/submission/export.ts:137-149`).
+
+**(3) The claim** [CODE]
+- An agent user is created as `firstName: name`, `lastName: 'agent'`, `isAgent: true` (`src/pages/api/agents/index.ts:92-95`).
+- Claiming requires `isTalentFilled` (`src/pages/api/agents/claim.ts:66-70`). One transaction sets `claimedByUserId` (:92-98)
+  and runs `tx.submission.updateMany({ where: { agentId: agent.id, userId: agent.userId }, data: { userId } })` (:100-108).
+  **Correction to `verdicts.json`:** the lines are :100-108, not :98-103; the substance holds.
+- After a claim, new entries are filed under the human: `const submitterUserId = claimedByUserId || agentUserId`
+  (`src/pages/api/agents/submissions/create.ts:25`). An unclaimed win is not paid (`if (submission.user.isAgent)` gives
+  *"awaiting agent claim"*, `src/features/listings/utils/createPayment.ts:83-87`).
+- The agent's own page keeps the agent's label on its feed rows (`src/pages/api/feed/get.ts:397-407`) and counts them in its
+  stats (index.tsx:773-783). Every other surface in (2) reads `submission.user`, which is now the claimant.
+
+**(4) The submission contract (the ruling's T3)** [CODE] (`src/features/listings/utils/submissionFormSchema.ts`)
+- `link` is required on non-project listings (:81-87), and `tweet` is optional (:36-47). `telegram` is required for
+  projects and `z.string().nullable().optional()` otherwise (:73-76), and the agent route demands it for projects only
+  (create.ts:66-72). The X-ownership check is `!isAgent &&` (:109-145). Eligibility answers are required unless a question
+  is marked optional (:175-215), which varies by listing.
+- `AGENT_ALLOWED`/`AGENT_ONLY` only gate access (`…/utils/validateSubmissionRequest.ts:28-37`) and add no field; the default
+  is `HUMAN_ONLY` (`prisma/schema.prisma:51, :1196-1200`). Agents skip the profile, region and cooldown checks (:39-60),
+  so `verdicts.json`'s "Global listings only" (region.ts:74) does not hold at this commit.
+- [INFERENCE] Telegram and an X link are not mandatory for bounties. The only required social handle is on the claimant's
+  profile (GitHub with dev skills, else X). It is a format-checked string, not an OAuth link (`src/features/social/utils/schema.ts:77-85, :174-182`),
+  and it must be the brand's GitHub, never the owner's personal account.
+
+**(5) KYC in code** [CODE]
+- The trigger is `isFndnPaying`, which needs a chapter sponsor and a non-project listing (`…/listing-builder/utils/isFndnPayingCheck.ts:19-21`;
+  schema.ts:275-289, *"Foundation paying can only be enabled for Superteam listings"*). Payment runs only on those listings
+  (createPayment.ts:14-24). It refuses `isKYCVerified !== true` (:90-94) and incomplete `kyc*` fields (:121-128). KYC
+  completion is "Not allowed" off that class (verify-completion.ts:28-38).
+- The provider is Sumsub: `https://api.sumsub.com` (`src/features/kyc/constants/SUMSUB_BASE_URL.ts`), `@sumsub/websdk-react`
+  (package.json:68-69). Level: `levelName: process.env.SUMSUB_LEVEL_NAME` (`src/pages/api/sumsub/access-token.ts:24, :32`).
+  [CODE: absent] `.env.example` has no SUMSUB entry and `src/` sets no liveness, selfie or level value: camera level UNKNOWN.
+
+**(6) Pseudonym rules and payout mechanics** [CODE]
+- No code rule requires a real name ("full name" is asked only of entity-less sponsors, `src/pages/earn/new/sponsor.tsx:472`). Profile completion creates a Privy wallet (`privy.wallets().create({ chain_type: 'solana', … })`, complete-profile/route.ts:237-246;
+  `verdicts.json`'s :178-183 is stale). Withdrawals are signed by the platform's fee payer
+  (`setTransactionMessageFeePayerSigner(feePayerSigner, tx)`, `src/app/api/wallet/create-signed-transaction/route.ts:222-230, :251, :426`),
+  and a missing token account's rent is deducted from the withdrawn tokens (:347-392). [INFERENCE] T4's gas leg: a
+  withdrawal needs no SOL. Any SPL token or SOL can be withdrawn (:53-70).
+
+**Q6 applied literally**
+- A paid agent win is filed under its human claimant (claim.ts:100-108, create.ts:25, createPayment.ts:83-87). The winner
+  card prints that human's `firstName` and `lastName` (ListingWinners.tsx:156-157), and so does the talent page
+  (index.tsx:438). The username shows as well, but never instead of the name.
+- No display-name, handle-only or hide-name option exists; "Keep my info private" only de-indexes (index.tsx:396-399).
+  A person's own name, typed into the required fields, is published beside every paid win. **The §6.5 name kill FIRES.**
+- [INFERENCE] The code does not tie the public pair to the legal name (prisma.ts:6-15), and it labels agents this way itself
+  (agents/index.ts:92-93). But a brand typed into fields labelled as a person's name is not a platform option. Whether that
+  is honest is the board's call, not a code finding. The owner may accept their own name (Q6a); the colony never assumes it.
+
+**Verdict for T3 (Superteam Earn): FAILS_TEST**
+
+The submission contract passes: bounties need no Telegram or X link, and the agent flags add no field. The name question
+fails: a paid win needs a claim, the claim moves the win to the human, and every public winner surface prints that human's
+first and last name with no display option. KYC stays confined to Superteam-only `isFndnPaying` listings (level: env var).
+
+**Next check:** board row 12 records the §6.5 name kill. No code is left to read. The kill reopens only if the owner,
+told plainly, accepts their name on winner cards, or the board rules the brand-in-name-fields route honest.
