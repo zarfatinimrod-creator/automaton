@@ -286,6 +286,13 @@ authentication **derives the namespace from the account**, so the only way to pu
 the username in the identifier is DNS verification against a company domain. The domain is
 therefore a prerequisite for listing, not a nice-to-have.
 
+*Superseded 28.9.2026 (channel loop tick 7), recorded, not rewritten:* the domain is frozen by the
+₪0 rule, and the registry name is now `io.github.mehudak/il-tools`. The registry's GitHub OIDC login
+grants `io.github.<repository_owner>/*` (`github_oidc.go`, `buildPermissions`), so a workflow in a
+repository the **organisation** `mehudak` owns (step 7) publishes under the brand, not a username.
+The domain is no longer a prerequisite. `package.json` carries the matching `mcpName`, and the
+publish workflow refuses to run unless the repository owner is exactly `mehudak`.
+
 **What cannot be anonymised, stated plainly so it is not discovered later.** Three things will
 carry his real legal name no matter what we do:
 
