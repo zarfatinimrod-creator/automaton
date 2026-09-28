@@ -73,7 +73,7 @@ verdict on the code:
   code findings are implemented, and each of the audit's 26 inputs is a fixture with a test.
 
 **Products with no line:** the parked `telegram-il-tools-bot` and the standby `x402-il-api` (above), and `mcp-il-tools`, which is a distribution channel test rather than a
-storefront, and whose registry listing is blocked on the domain (step 5) and the organisation (step 7) — and on work that is ours, not the owner's: `@bediyuk/mcp-il-tools` is not published to npm and no `mcp-publish.yml` workflow exists yet (`products/mcp-il-tools/README.md`).
+storefront, and whose registry listing is blocked on the domain (step 5) and the organisation (step 7) — and on work that is ours, not the owner's: `@mehudak/mcp-il-tools` is not published to npm and no `mcp-publish.yml` workflow exists yet (`products/mcp-il-tools/README.md`).
 
 **Lines with no product:** `oss-bounties`, which never gets one — it sells work performed on demand for
 a named payer, so its "product" is a pull request.

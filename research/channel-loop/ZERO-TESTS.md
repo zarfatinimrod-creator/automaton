@@ -24,6 +24,13 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 15 | Wix App Market (11), after row 13 | https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/wix-app-market-partner-agreement | whether an unpaid balance can be forfeited, payee eligibility by country, support obligations (`research/measurements/wix-app-market.md` Tick 2) |
 | 16 | Wix App Market (11), after row 13 | https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payouts-dashboard | payout schedule and whether Israel is named |
 | 17 | Polar rail (9), after row 14 | https://polar.sh/docs/merchant-of-record/supported-countries | whether Polar pays a seller in Israel and through which Stripe mechanism (`research/measurements/stripe-israel.md` Tick 2) |
+| 18 | Wix App Market (11), after row 15 | https://dev.wix.com/app-market-partner-agreement | the agreement body: row 15's capture was only the docs wrapper; Section 9 (payouts, the FAQ's pointer), forfeiture, country, support obligations (`wix-app-market.md` Tick 3) |
+| 19 | Polar rail (9), after row 17 | https://docs.stripe.com/connect/required-verification-information | for a US platform, account country Israel, Express, recipient, transfers: is "individual" a business type, and which identity documents are asked (`polar-rail.md`) |
+| 20 | Polar rail (9), after row 17 | https://polar.sh/docs/merchant-of-record/acceptable-use/introduction | whether the colony's products (digital tools, templates) are allowed (`polar-rail.md`) |
+| 21 | Polar rail (9), after row 17 | https://polar.sh/docs/merchant-of-record/fees | the all-in cost against Gumroad and Freemius (`polar-rail.md`) |
+| 22 | CrazyGames (6), after row 11 | https://docs.crazygames.com/requirements/intro/ | the "Publisher Guidelines" the terms make binding (`crazygames-developer-terms.txt:63-66`): AI content, automated upload, quality bars (`crazygames.md` Tick 3) |
+| 23 | CrazyGames (6), after row 11 | https://docs.crazygames.com/requirements/quality/ | the quality bar a brand-run game must clear (`crazygames.md` Tick 3) |
+| 24 | CrazyGames (6), after row 11 | https://docs.crazygames.com/requirements/ads/ | ad and SDK rules (`crazygames-developer-terms.txt:229-233`) (`crazygames.md` Tick 3) |
 
 Rows 7-9 came from one WebSearch on 27.9.2026, whose snippets said a person with no work and no income pays a
 minimum of about ₪266 a month (₪143 national insurance and ₪123 health) whatever they do. That figure is

@@ -1,0 +1,667 @@
+                          DEVELOPER PORTAL TERMS AND CONDITIONS
+
+Last updated: 18.08.2025
+
+                                              ARTICLE I.
+                                             DEFINITIONS
+
+Definitions. For purposes of these Terms and Conditions, in addition to capitalized terms defined
+elsewhere in these Terms and Conditions, the following defined terms will have the meanings set
+forth below:
+
+“Affiliate” means a legal entity that (a) owns and controls a party, directly or indirectly, or (b) is
+owned and controlled, directly or indirectly, by a party, or (c) is directly or indirectly under common
+ownership and control with a party;
+
+“Basic Launch” means the initial limited public release of a Game on the Portal Site to test its user
+metrics. A Game remains in Basic Launch until it is either upgraded to Full Launch or removed from
+the Portal Site.
+
+“Compensation” means the compensation paid by Publisher to Developer for publication of
+Developer’s Game as set out in Article V;
+
+"Confidential information" of a Party means the information of such Party, whether in written, oral,
+electronic or other form, which (i) is explicitly marked as confidential or proprietary, or (ii) should
+reasonably be considered confidential given its nature or the circumstances surrounding its
+disclosure, regardless of whether or not it is expressly marked as confidential, including (without
+being limitative) information and facts concerning a Party’s and its Affiliates’ business plans, clients,
+prospects, personnel, suppliers, licensors, licensees, partners, investors, Affiliates or others, training
+methods and materials, financial information, marketing plans, sales prospects, client lists, inventions,
+program devices, discoveries, ideas, concepts, know-how, techniques, formulas, blueprints, software
+(in object and source code form), documentation, designs, prototypes, methods, processes,
+flowcharts, procedures, codes, and any technical data or trade secrets, including all copies of any of
+the foregoing and any analyses, studies or reports that contain, are based on, or reflect any of the
+foregoing. ;
+
+“Developer” means any physical person or legal entity making available one or several Games
+through Publisher’s Developer Portal;
+
+“Developer Portal” means the           Publisher’s   developer    portal   reachable   using   the   URL
+https://developer.crazygames.com/;
+
+“Feedback” means, collectively, suggestions, comments, feedback, ideas, or know-how, in any form,
+that Developer provides to Publisher about Publisher’s business, products, or services;
+
+“Full Launch” means the release of a Game that has been approved by Publisher for full public
+availability on the Portal Site, usually following a successful Basic Launch phase. The transition to
+Full Launch is determined solely by CrazyGames based on editorial, quality, and/or performance
+criteria.
+
+“Game” means the gaming software developed by Developer and submitted to the Publisher through
+the Developer Portal;
+“Parties” means the Developer and the Publisher, each referred to individually as a “Party”;
+
+“Portal Site” means the browser game websites owned by Publisher or portals with which Publisher
+has an agreement with to distribute games to;
+
+“Personal Data” means any information collected from an end-user that could be used to identify the
+end-user, directly or indirectly, including, without limitation, name, username, email address, online
+identifiers, identification numbers, date of birth, gender and/or payment information. For the purpose
+of this Agreement Parties will follow the definition of Personal Data used in the General Data
+Protection Regulation (Regulation (EU) 2016/679);
+
+“Publisher Guidelines” means the guidelines of Publisher with respect to the quality of games,
+in-game ads and SDK available on the Developer Portal which may be amended from time to time.
+Developer’s continued use of the Developer Portal or submission of Games constitutes acceptance of
+these guidelines;
+
+
+“Publisher” means Maxflow BV, a Belgian corporation with its registered office at 3001 Leuven,
+Philipssite 5 bus 1, Belgium and with company registration number 0550.758.377 (RLE Leuven)
+which uses inter alia the tradename “CrazyGames”;
+
+“SDK” means the software development kits of Publisher to integrate the Game(s) with the Portal
+Site and to enable advertisements as further described on the Developer Portal and in the Publisher
+Guidelines; and
+
+“You” means “Developer” (either a corporation or a physical person).
+                                           ARTICLE II.
+                                      SCOPE OF APPLICATION
+
+2.1 General. Developer has developed a Game or Games which can be run within a web browser.
+Publisher is interested in either hosting this Game itself (self-hosted) or in having an external party
+hosting said Game in embedded form via an iframe on a games portal site such as “CrazyGames”
+which Publisher exploits. Developer, by using the Developer Portal and clicking “I Accept” upon
+registration, agrees that Publisher offers the Game(s) to end-users within the context of a games
+Portal Site. Subject to the conditions of article V, Publisher will compensate Developer for the right to
+make its Game(s) available in this manner to end-users.
+
+2.2 Scope. These general terms and conditions (the “Terms and Conditions”) are applicable to any
+and all interaction, cooperation, payment, agreement and understanding between Publisher and
+Developer and in general govern all aspects of the relationship between the Parties pursuant to
+Developer’s use of Publisher’s Developer Portal. Developer agrees that its own terms and conditions,
+as the case may be, will not apply, save as explicitly accepted by Publisher in writing.
+
+                                        ARTICLE III.
+                             REMOTE MAKING AVAILABLE OF GAMES
+
+3.1 Appointment. During the Term (including the transition period), Developer grants Publisher a
+limited, worldwide, revocable right to make the Game(s) developed by Developer available for use to
+the public on the Portal Site and to allow end-users to interact with the functionality of the Game(s).
+The right will be non-exclusive, but the Developer may choose to make the Game(s) exclusively
+available to the Publisher, in which case Developer will be entitled to a higher compensation
+pursuant to article V. This right also includes testing of the Game(s) by Publisher before distribution.
+
+3.2 Ownership. All rights granted to a Party are subject to such Party’s full compliance with these
+Terms and Conditions. These Terms and Conditions do not transfer any ownership rights in and to the
+Game(s) and Developer reserves all rights not expressly granted.
+
+3.3 Conditions. Developer will:
+(a) be allowed to promote the Game(s) using its own branding;
+(b) be allowed to include advertisements within the Game(s) in accordance with the Publisher
+Guidelines as published on the Developer Portal in the SDK section;
+(c) subject to the condition that Developer explicitly provides the Game(s) to Publisher in an exclusive
+manner as defined in article V, not be allowed to make the Game(s) available to other persons or
+entities apart from Publisher and its Affiliates.
+
+3.4 Promotion by Publisher. Publisher will be entitled to use the Game in all its aspects for
+promotional and marketing purposes without prior approval of the Developer.
+
+3.5 Acceptance of Game. Publication of the Game by Publisher on the Portal Site will be subject to
+Publisher’s acceptance of the Game, which may be withheld at its full discretion without the need to
+provide any justification for its decision. Publisher reserves the right to remove a Game from the
+Portal Site at any time, at its sole discretion and without prior notice.
+3.6 Feedback. Developer may provide Publisher with Feedback. Publisher is under no obligation to
+post or use any Feedback. By providing Feedback to Publisher, Developer irrevocably and perpetually
+grants to Publisher and its Affiliates, a worldwide, non-exclusive, fully paid-up, royalty-free,
+transferable, sub-licensable right and license to make, use, reproduce, prepare derivative works
+based upon, distribute, publicly perform, publicly display, transmit, and otherwise commercialize the
+Feedback (including by combining or interfacing products, services or technologies that depend on or
+incorporate Feedback with other products, services or technologies of Publisher or others), without
+attribution in any way and for any purpose. Developer will not provide Feedback that is subject to a
+license requiring Publisher to license anything to third parties because Publisher exercises any of the
+above rights in Developer’s Feedback. Developer represents and warrants to Publisher that
+Developer owns or otherwise controls all of the rights to such Feedback and that no such Feedback is
+subject to any third-party rights (including any personality or publicity rights).
+
+3.7 In-game transactions. Only upon approval of Publisher, Developer may include in-game
+transactions.
+
+3.8 Open source. Developer will not distribute via the Portal Site, or combine any Publisher materials
+with, open source or other software that is licensed under terms that purport to bind Publisher to
+contractual obligations (e.g. the GNU General Public License or Lesser General Public License),
+without prior discussion with and separate written agreement from Publisher.
+
+3.9 Publisher Assets. Publisher grants to Developer a royalty-free, fully paid-up license, during the
+Term, to use, publicly display and perform, reproduce, and distribute Publisher's trademarks,
+including logos available on the Developer Portal (“Publisher Assets”) in accordance with any
+applicable Publisher Guidelines for the purpose of incorporating such Publisher Assets into the
+Game(s).
+
+3.10 Game covers. Developer grants to Publisher a worldwide, royalty-free, fully paid up license
+during the Term (including the transition period) to use, publicly display and perform, reproduce, and
+distribute Developer’s trademarks, including logos and game covers, used for the Game(s), on the
+Portal Site for the purpose of making the Game(s) available to end-users.
+
+                                           ARTICLE IV.
+                                   OBLIGATIONS OF DEVELOPER
+
+4.1 Delivery. In the event of Publisher hosting, Developer will provide Publisher with a full copy of
+the Game in a format suitable for self-hosting by Publisher (i.e. collection of files) on the Portal Site
+(i.e. via Publisher’s Developer Portal) or via iframe (external hosting, embedded on the Portal Site).
+
+4.2 Compliance with Laws. Developer warrants that he complies with the requirements of all
+applicable laws, rules, regulations, and orders of any governmental authority, other than laws, rules,
+regulations concerning the submitted Game(s) and every other element in connection to the
+contractual relationship with Publisher.
+
+4.3 Compliance with Requirements. Developer will adhere to and inform Developer’s employees,
+agents, and other relevant individuals that the Game(s):
+(a)​ is/are made available to Publisher;
+(b)​ may not be used contrary to these Terms and Conditions; and
+(c)​ may not be unlawfully copied, transferred or otherwise used or made available to third parties in
+     violation of such terms and conditions. Developer will use all commercially reasonable efforts to
+     prevent any unauthorized distribution, copying, use, or pirating of the Game(s).
+4.4 Compliance with ethical code. Developer will not, through or in connection with the Developer
+Portal or the Portal site:
+    (a)​ Post, transmit or otherwise make available any Game(s) or other materials that are or may
+         be:​
+         (i) threatening, harassing, degrading, hateful or intimidating, or otherwise fail to respect the
+         rights and dignity of others;​
+         (ii) defamatory, libelous, fraudulent or otherwise tortious;​
+         (iii) obscene, indecent, pornographic or otherwise objectionable; or​
+         (iv) protected by copyright, trademark, trade secret, right of publicity or privacy or any other
+         proprietary right, without the express prior written consent of the applicable owner.​
+
+    (b)​ Post, transmit or otherwise make available through or in connection with the Portal Site any
+         virus, backdoor, worm, Trojan horse, Easter egg, time bomb, spyware or other computer code,
+         file or program that is or is potentially harmful or invasive or intended to damage or hijack the
+         operation of, or to monitor the use of, any hardware, software or equipment (each, a “Virus”).
+
+    (c)​ Use the Developer Portal or the Portal Site for any commercial purpose other than the one
+         agreed upon by Publisher, or for any purpose that is fraudulent or otherwise tortious or
+         unlawful.
+
+    (d)​ Harvest or collect Personal Data about end-users of the Portal Site unless this is done in
+         accordance with these Terms and Conditions and applicable data protection laws.​
+
+4.5 Player generated content. Insofar Developer allows player generated content within the Game
+such as, but not limited to chat functionality, personalized usernames, etc. Developer will be liable for
+the compliance of his players with the ethical code and indemnify Publisher for any damages
+resulting from such player generated content. It is advisable to use a wordfilter and to actively
+monitor user generated content.
+
+4.6 Support. Developer will provide Publisher with the following support for the Game(s): (a) deliver
+all Game updates, in object code form, made to the Game(s), when available but in no event later
+than they are provided to any other third party; (b) promptly correct all material errors or defects in
+the Game(s) reported by Publisher and deliver such corrections to Publisher in object code form in a
+timely fashion; (c) provide such other reasonable additional support as Publisher may reasonably
+request in order to maintain compatibility of the Game(s) with the Portal Site; and (d) promptly
+respond to Publisher's questions regarding the Game(s).
+
+                                           ARTICLE V.
+                                    OBLIGATIONS OF PUBLISHER
+
+5.1 Ranking games. Publisher will rank games on the homepage of the Portal Site in such a way that
+end-users of the Portal Site can easily find the games that perform best. Publisher will also take into
+account that the ranking of games should stimulate fair competition amongst different games.
+
+5.2 Available statistics. Publisher will, to the best of his abilities, provide relevant and accurate
+statistics about distributed Games to Developer. Publisher warrants that the provided data is not
+manipulated.
+5.3 Developer Compensation. Unless otherwise agreed in writing Developer will be entitled to a
+Compensation payable by Publisher pursuant to the terms of this Article V, provided that the
+following conditions are met and the Game is released in Full Launch:
+
+
+(a)​ The Game does not contain any form of branding of another browser game platform or portal;
+
+(b)​ The Game integrates the Publisher SDK to enable advertisements and maintains integration with
+     the latest supported version of the Publisher SDK as reasonably required; ​
+
+(c)​ The Game does not include advertisements other than advertisements integrated via the SDK of
+     the Developer Portal; and
+
+(d)​ The Game and its total game assets must maintain a level of originality that make it
+     distinguishable from existing games.
+
+For the avoidance of doubt, if the Game does not meet all of the conditions mentioned above, and if
+the Game is accepted by Publisher, no Compensation will be due by Publisher to Developer unless
+otherwise agreed.
+
+
+5.4 Amount of Compensation. The amount of the Compensation due to Developer will be calculated
+by Publisher on a monthly basis on the basis of the following objectively quantifiable criteria:
+
+
+(a)​ The popularity of the Game(s) in terms of the number of users browsing to the Game(s) on the
+     Portal Site; and
+
+
+(b)​ The performance of in-game ads shown and the interest of advertisers in the Game(s).
+
+
+Developer understands and accepts that the amount of the Compensation is not subject to the
+discretion of Publisher but depends on the web traffic the Game(s) realizes on the Portal Site and
+thus the advertising displays it generates. As Publisher cooperates with advertising partners, the
+actual Compensation can only be calculated by Publisher monthly on the basis of the
+abovementioned objectively quantifiable criteria when Publisher is provided with the necessary
+information and results from its advertising partners.
+
+
+5.5 Time-based exclusivity option. Without prejudice to the conditions underlying Compensation
+listed above, Developer will be entitled to an increase in Compensation of 50% if the following
+conditions are met and Developer opts in for the time-based exclusivity:
+
+
+(a)​ The Game is exclusively available on the Portal Site for two (2) months after the Full Launch
+     release date.
+
+(b)​ The Game is hosted by Publisher.
+
+The increase in Compensation will only be due for the two (2) months the Game is exclusively
+available on the Portal Site. This period may be prolonged with mutual agreement of Publisher and
+Developer. Exclusivity should be understood as the sole right to publish and make the Game
+available on a browser gaming website. Platforms such as Steam, Apple app store and Google play
+store are not considered browser gaming websites.
+For the avoidance of doubt, Publisher reserves the right to monitor compliance with these conditions
+and will, at its sole discretion, decide whether or not these conditions are still met and for how long
+they were met. If Publisher has determined that the conditions were not complied with, the
+Compensation due to Developer may be affected and reduced unless Developer provides evidence
+refuting the decision by Publisher which Publisher will judge on its merits but without waiving its
+right to decide on the matter at its sole discretion.
+
+5.6 Payment Terms. All amounts payable to Developer are due and owing thirty (30) days after the
+date of Publisher’s invoice of such amounts. Pay-out to Publisher by advertisers ranges however
+between thirty (30) and ninety (90) days after the end of the month during which the advertisements
+were shown. In the event that any advertiser fails to pay to Publisher for any advertisements on the
+basis of which Developer has received payment, and Publisher has notified said advertiser of its
+failure to pay, Publisher will have the right to offset the amount it did not receive against any
+payments due to Developer. In the event that advertiser does eventually pay, Publisher will increase
+any payments due to Developer with offset amount.
+
+Payments are inclusive of VAT (unless a VAT exemption applies, or no VAT is due) and exclusive of
+any withholding taxes. Each Party shall be responsible for its own taxes of whatever nature.
+
+Payments of less than 100 EUR will be carried over to the next month until the amount of 100 EUR is
+reached. Publisher may decide, at its sole discretion, to waive these limits at the request of
+Developer.
+
+5.7 Payment Collection
+
+Developer acknowledges and agrees that it is their responsibility to ensure that Publisher is able to
+process and pay out invoices. This includes providing accurate, up-to-date payment details in the
+billing section of the Developer Portal, that enable successful transfer of funds and meet any
+applicable compliance, regulatory, or payment processing requirements.
+
+Payment Forfeiture Process:
+
+(a) If a payment balance remains unclaimed or unpaid for eighteen (18) months or more from the date
+of the earliest unpaid corresponding invoice, Publisher shall inform Developer of the pending
+forfeiture.
+
+(b) Developer shall have an additional six (6) months from the date of such notice to claim the
+payment and provide necessary payment details.
+
+(c) If the payment balance remains unclaimed after a minimum total period of twenty-four (24)
+months, and following the notice period described above, such amount shall be deemed forfeited by
+the Developer, and the Publisher shall have no further obligation to remit such payment.
+
+This forfeiture may be waived at the reasonable discretion of the Publisher in the following
+circumstances:
+
+    ●​ Administrative errors by Publisher that prevented payment processing
+    ●​ Force majeure events that prevented Developer from accessing their account or updating
+       payment details
+    ●​ Technical failures of the Developer Portal that prevented updating of payment information
+    ●​ Legal or regulatory restrictions that prevented the Developer from receiving payments
+    ●​ Other circumstances where forfeiture would be manifestly unreasonable​
+
+Publisher agrees to exercise its discretion under this clause in good faith and shall not unreasonably
+withhold payments where Developer has made reasonable efforts to maintain current payment
+information.
+
+5.8 Support. Publisher makes available a QA tool, FAQ and other technical documentation via the
+Developer Portal to support the Developer with the submission of its Game(s) and the SDK
+integration. Developer may contact Publisher at technical-support@crazygames.com for support.
+
+                                               ARTICLE VI.
+                                               INVOICING
+
+6.1 Scope of application for self-billing. The Parties agree that the system of self-billing will apply
+to the service consisting of the granting of licenses regarding a copyright or other similar rights in the
+sense of applicable tax legislation by the Developer who will be reimbursed by Publisher.
+
+6.2 Procedure of acceptance. The Parties agree that the settlements (hereinafter “self-bills”) as part
+of the self-billing will be the subject of an implicit declaration of acceptance by the Developer.
+
+This means that every self-bill will be considered accepted from a VAT viewpoint unless the
+Developer reacts within two weeks following the month in which the self-bill has been issued.
+
+If the Developer has any remarks concerning the content of the self-bills that have been sent to him,
+Developer will communicate them to Publisher by providing two copies of a non-acceptance notice.
+This document will contain at least the following: date of issue, information on both Parties, date of
+issue and serial number of the self-bill and the reason for non-acceptance.
+
+Developer will sign both copies of the non-acceptance notice – including the name and position of
+the signatory – and send one copy to Publisher. These copies of the non-acceptance notice will be
+kept in the accounting of both Parties for a period of 7 years from the 1 January following the date of
+issue.
+
+6.3 Serial number. Every self-bill will be successively numbered by Publisher. It is the decision of
+Developer to register the self-bill in:
+
+    -​   Either a register of outgoing invoices per self-bill (containing the self-bills by Publisher only)
+         under the number mentioned on the self-bill;
+    -​   Or a (single) book of outgoing invoices which will be successively numbered in a way that is
+         specific to this book.
+
+Concerning the latter option, Developer will keep a chart which displays the relation between the
+serial number on the self-bill and the number registered in the (single) book for outgoing invoices.
+
+6.4 Liability and compensation. The Parties declare that they have read and understood the present
+Article VI on self-billing and its consequences.
+
+In case one of the Parties will not be able to fulfill its obligations arising from the present article, the
+Party that failed to fulfill its obligations will be liable towards the other Party regarding the
+consequences of non-compliance with its obligations.
+                                       ARTICLE VII.
+                        WARRANTIES, INDEMNIFICATIONS AND LIABILITY
+
+7.1 Developer warranties. Developer represents, warrants and covenants that:
+    a.​ it/he/she has the right, power and authority to grant the publishing and other rights granted
+        in these Terms and Conditions and fully perform its obligations hereunder;
+    b.​ the use of the Developer Portal by Developer does not and will not violate any separate
+        agreement, right or obligation existing between Developer and any third party;
+    c.​ all information provided on the Developer Portal will be accurate, true and correct;
+    d.​ there are no outstanding liens, security interests or other encumbrances of any kind
+        whatsoever in or to the Game(s) or to any of the intellectual property rights therein which are
+        of a nature to interfere with the performance of the Developer’s obligations under these
+        Terms and Conditions;
+    e.​ it conducts its business in compliance with all applicable laws, rules and regulations,
+        including without limitation applicable data protection laws;
+    f.​ it is and will be the owner of all intellectual property rights in the Game(s) under copyright,
+        trademark, trade secret, and other applicable law or has acquired the necessary rights to
+        enter into these Terms and Conditions;
+    g.​ the Game(s) delivered or made available to Publisher hereunder is and will be of original
+        development by (employees of) Developer (in the conduct of their duties as employees) or by
+        third parties who prepared such materials for Developer pursuant to a contract between
+        Developer and said third party and who assigned to Developer his or its right, title and
+        interest in the Game(s) to the extent required for the performance of these Terms and
+        Conditions;
+    h.​ to the best of its knowledge, the Game(s) does/do not and will not infringe or otherwise
+        violate any intellectual property right (such as copyright) or trade secret of any third party
+        anywhere in the world;
+    i.​ it has not received, as of the date of submission of the Game(s) to Publisher, actual notice of
+        any claim that the Game(s) or the use thereof infringes any intellectual property right of any
+        third party or that any third party has any proprietary interest in or to the Game(s), or any
+        invention, work of authorship, copyright, trade secret, know-how or a similar right to the
+        Game(s) preventing the performance of these Terms and Conditions;
+    j.​ Publisher nor the end-users will be exposed to any Virus as described in article IV.4 from the
+        Game(s);
+    k.​ the availability of, and support for the Game(s) will be at all times of a high quality, and will
+        meet the specifications and service level criteria under these Terms and Conditions; and
+    l.​ the Game(s) will be up-to-date, true, correct, accurate, and will not: (i) be misleading or
+        deceptive; (ii) be obscene, defamatory or otherwise unlawful; (iii) be violent, sexual or
+        abusive in nature so as to be reasonably likely to cause offense to any material group of
+        people.
+
+7.2 Infringement claim and take down notices. If Developer receives information concerning an
+infringement or misappropriation claim related to a published Game, Developer may, at its expense
+and without obligation to do so, either (1) procure for Publisher the right to continue to publish the
+allegedly infringing Game, or (2) modify the Game or replace it with a functional equivalent, to make
+it non-infringing, in which case Publisher will immediately cease offering and distribution the
+allegedly infringing Game. For the avoidance of doubt, if Publisher receives a “take down” notice
+relating to the Game(s), it will, at its sole discretion, decide whether or not to comply with said take
+down notice. A copy of the take down notice will be forwarded to Developer and Developer will be
+invited to provide evidence or arguments to refute the content of the take-down notice. Failure to
+provide any such evidence within a commercially reasonable timeframe will be considered an
+incurable material breach of this Agreement. Following the receipt of any evidence or arguments by
+Developer, Publisher will forward said evidence or arguments to the author of the take down notice
+but will retain its sole discretion as to whether or not to comply with said take down notice.
+
+7.3 Publisher warranties. Publisher represents, warrants and covenants that:
+    a.​ the making and performance of its obligations under these Terms and Conditions does not
+        and will not violate any separate agreement, right or obligation existing between Publisher
+        and any third party; and
+    b.​ it conducts its business in compliance with all applicable laws, rules and regulations,
+        including without limitation applicable data protection laws.
+
+7.4 Indemnification. Developer will indemnify and hold Publisher harmless from and against all
+claims, suits, demands, actions, judgments, penalties, damages, costs and expenses (including
+attorney's fees and costs), losses or liabilities of any kind arising from a claim that a Game infringes a
+copyright or other intellectual property right of any other person anywhere in the world (except to
+the extent such infringement or violation is due to intentional fault or gross misconduct of the
+Publisher). Publisher will be entitled to withhold any and all sums it was forced to pay to a third
+party due to an infringement of copyright or other intellectual property right by a Game of Developer,
+from the Compensation due to Developer under article V, without prejudice to Developer’s obligation
+to indemnify Publisher in full pursuant to this Article VII. Publisher will: (a) promptly notify Developer
+of any Claim; (b) permit Developer (through mutually agreed counsel) to answer and defend; and (c)
+provide non-confidential information and assistance, at Developer’s expense and request, as needed
+to defend such claim. Publisher may, at its expense and with separate counsel, monitor or participate
+in such defense. Publisher is not responsible for any settlement made by Developer without the
+Publisher’s consent. Developer may not settle or publicize any such claim without Publisher’s
+consent.
+
+7.5 Limitation. IN NO EVENT SHALL PUBLISHER’S LIABILITY EXCEED THE COMPENSATION PAID
+OR PAYABLE TO DEVELOPER UNDER THESE TERMS AND CONDITIONS DURING THE PERIOD OF
+TWELVE (12) MONTHS PRECEDING THE EVENT GIVING RISE TO THE LIABILITY.
+
+7.6 Mutual notification. Publisher and Developer will promptly notify the other Party of any actions
+brought or claims asserted against it whose outcome may affect the rights granted pursuant to this
+Agreement.
+
+7.7 Indirect damages. Except for, and without prejudice to Developer’s full liability and
+indemnification obligations set forth in Article IV.5 and VII.4, neither Party will be liable for any lost
+profits, or any form of special, incidental, indirect, consequential or punitive damages arising out of or
+related to this Agreement.
+
+7.8 Disclaimer Portal Site. Developer acknowledges that the Publisher Portal Site and any
+advertising, information, data, or (game) content thereon are “AS IS”. Except as expressly provided in
+these Terms and Conditions, Publisher disclaims any and all representations and warranties with
+respect to the Portal Site and all advertising, information, data and (game) content thereon including
+without limitation, any implied warranties and any warranty of continuous, uninterrupted, bug-free,
+secure, virus-free access to the Publisher owned sites and/or any of its advertising, information, data
+and (game) content.
+
+
+
+                                            ARTICLE VIII.
+                                          CONFIDENTIALITY
+8.1 Each Party may disclose to the other Party Confidential Information as may be necessary to
+further the performance of its obligations under these Terms and Conditions. Each Party agrees to
+treat the other's Confidential Information in the manner prescribed herein.
+
+8.2 Developer and Publisher will protect the other Party's Confidential Information as follows:
+
+(a) Except as specifically provided herein or otherwise permitted by the other Party in writing, each
+Party may disclose Confidential Information of the other Party only to those employees and agents
+required to have knowledge of the same to perform their duties pursuant to these Terms and
+Conditions. Each Party will require each such employee or agent to enter into a written
+non-disclosure agreement containing provisions substantially consistent with the terms hereof prior
+to the disclosure of Confidential Information to such employee or agent. Each Party will treat the
+Confidential Information of the other Party with the same degree of care as it protects its own
+Confidential Information and in no event less than a reasonable degree of care.
+
+(b) Except as may specifically be permitted herein, upon the termination of these Terms and
+Conditions, each Party will return to the other, or, if so requested, destroy all Confidential Information
+of the other Party in its possession or control, except such Confidential Information as may be
+reasonably necessary to exercise the rights that survive the termination of these Terms and
+Conditions.
+
+8.3 The foregoing obligations of confidentiality will not apply with respect to either Party's
+Confidential Information to the extent that it:
+
+(a) is within or later falls within the public domain through no fault of the Party receiving the
+Confidential Information;
+
+(b) is, or becomes, rightfully available to the receiving Party from third parties, who, in making such
+disclosure, have breached no written confidentiality agreement;
+
+(c) was already in the receiving Party’s lawful possession prior to its receipt from the disclosing Party,
+without any confidentiality restrictions attached to it provided the receiving Party can sufficiently
+evidence this; or
+
+(d) is independently developed by or for the receiving Party without reference to, or use of the
+Confidential Information.
+
+8.4 In the event any Party receives a request to disclose any Confidential Information under the terms
+of a valid and effective subpoena or order issued by a court of competent jurisdiction or a
+governmental body, such Party will (I) immediately notify the Party that furnished such Confidential
+Information of the existence, terms and circumstances surrounding such request, (II) consult with
+such Party on the advisability of taking legally available steps to resist or narrow such request, and
+(III) exercise reasonable best efforts, at the expense of the Party producing such Confidential
+Information, to obtain an order or other reliable assurance that confidential treatment will be
+accorded to such portion of the Confidential Information as may be disclosed.
+
+8.5 Following the termination of the Terms and Conditions, these confidentiality obligations will
+survive for a period of five (5) years after the termination date, without prejudice to applicable trade
+secret laws.
+                                            ARTICLE IX.
+                                         TERM; TERMINATION
+
+9.1 Term. The contractual Initial Term for each Game will begin on the date the Game is released
+(live and playable) on the Portal Site in Basic Launch or Full Launch, whichever comes first, and will
+continue for a period of one (1) year from the date the Game is released (live and playable) on the
+Portal Site in Full Launch.
+
+Publisher reserves the right to determine, at its sole discretion, whether a Game proceeds from Basic
+Launch to Full Launch, and the Developer agrees not to withhold or delay such transition
+unreasonably. If a Basic Launch Game isn’t allowed to upgrade to Full Launch by Publisher, the Term
+will end early upon removal of the Game from the Portal Site by Publisher or written termination by
+Publisher, whichever comes first.
+
+Each newly published Game will constitute a separate and new Initial Term under this clause.
+Thereafter, the Terms and Conditions will automatically renew for successive one (1) year periods
+unless either Party provides written notice of termination at least one (1) month before the end of the
+then-current Term. Such notice must be sent via email to developer-relations@crazygames.com and
+must state the full legal name of the Developer, the title of the Game(s), and the reason for
+termination.
+
+For clarity, even if a Game remains in Basic Launch or is unpublished, these Terms and Conditions will
+continue to apply to the Developer’s use of the Developer Portal and any other Games still available
+on the Portal Site, unless otherwise terminated under the terms above.
+
+In the event Parties have agreed to Developer hosting and the Developer can no longer reasonably
+be required to host the Game(s) at its own expense, Parties may agree for the Publisher to host the
+Game on its own servers. Developer will provide Publisher with a full copy of the Game in a format
+suitable for self-hosting by Publisher (i.e. collection of files) and diligently assist the transition.
+
+9.2 Transition Period. After expiration or termination of these Terms and Conditions, for any Game(s)
+that has integrated the SDK, Publisher is entitled (but not obliged) to maintain the publication of the
+Game on any Portal Site for up to a one (1) year period.
+
+9.3 Termination by Publisher. Publisher, at its discretion, may decide to quit publishing a Game on
+the Portal Site and terminate these Terms and Conditions with Developer at any time. Such decision
+by Publisher will have an immediate effect. Publisher will not be liable for any damages for deciding
+not to make (or from ceasing to make) a Game available or for changing, updating, suspending, or
+deprecating its products or services.
+
+9.4 Material breach. Either Party may suspend performance or terminate these Terms and Conditions
+immediately upon written notice if the other Party materially breaches these Terms and Conditions
+and fails to cure within thirty (30) days after notice (which will be prominently labeled to indicate that
+it is a notice of breach), or immediately on notice if the other materially breaches an obligation that
+cannot be remedied (for example a breach of confidentiality).
+
+9.5 Survival of obligations. The rights and obligations of these Terms and Conditions that were
+intended to survive the termination of these Terms and Conditions, will remain binding upon the
+Parties after termination, including but not necessarily limited to article VII on warranties and
+indemnification and article VIII on confidentiality.
+                                          ARTICLE X.
+                                        PERSONAL DATA
+
+10.1 The Personal Data of end-users will be processed as follows by the Parties:
+    a.​ Developer will only collect and use such Personal Data for the operation and marketing of
+        the Game(s) in accordance with these Terms and Conditions, and only in accordance with
+        applicable data protection law and regulations.
+
+10.2 Without Publisher’s explicit prior written consent Developer will not:
+    a.​ use any Personal Data other than necessary for the proper performance of its obligations
+        under these Terms and Conditions;
+    b.​ advertise or promote its own or third party content, websites, products or services through
+        the Portal Site, the Game(s) or otherwise.
+
+
+10.3 The Parties acknowledge that each Party may separately and independently from each other
+collect and process Personal Data and that the Parties will not, without a separate written
+agreement, disclose or make available to the other party Personal Data. Each Party is a data
+controller of the Personal Data it collects, discloses or makes available to the other Party in the
+context of these Terms and Conditions and will process that Personal Data as separate and
+independent data controllers under applicable data protection law. The Parties do not act jointly as
+joint data controllers nor are they in a controller-processor relationship.
+
+10.4 Each Party will be individually and separately responsible for complying with the obligations
+that apply to it as a data controller under any applicable data protection laws in relation to the
+Personal Data Processed related to these Terms and Conditions, including without limitation:
+    a.​ ensuring that there is a lawful basis on which it processes Personal Data;
+    b.​ ensuring that the transparency disclosure requirements of applicable data protection laws
+        are satisfied by providing the required information to data subjects where applicable or
+        collecting consent where required; and
+   c.​ ensuring that the Party keeps Personal Data secure as required by any applicable data
+       protection laws.
+
+                                          ARTICLE XI.
+                                        MISCELLANEOUS
+
+11.1 Entire Agreement. These Terms and Conditions collectively set forth the entire agreement and
+understanding between the Parties hereto with respect to the subject matter hereof and, except as
+specifically provided herein, supersedes and merges all prior oral and written agreements,
+discussions and understandings between the parties with respect to the subject matter hereof, and
+neither of the Parties will be bound by any conditions, inducements or representations other than as
+expressly provided for herein.
+
+11.2 Independent Contractors. In performing their obligations under these Terms and Conditions,
+Developer and Publisher act and will act at all times as independent contractors and nothing
+contained in these Terms and Conditions will be construed or implied to create an agency,
+partnership or employer and employee relationship between Developer and Publisher.
+
+11.3 Amendments; Modifications. Publisher will have the right to amend or modify these Terms and
+Conditions. If Publisher publishes a new or updated version of these Terms and Conditions, it will
+promptly notify Developer of the fact that the Terms and Conditions have been subject to change,
+providing a copy of the new version. Upon receipt of such notice, Developer will have the right to
+terminate the agreement between Publisher and Developer subject to Article IX above within ten
+(10) days. If Developer refrains from terminating the agreement within this period, the amended
+version of the Terms and Conditions will apply between the Parties in full from the date of expiry of
+said period. Continued use by the Developer of the Developer Portal, will irrefutably be considered as
+acceptance of the amended Terms and Conditions notified by Publisher.
+
+11.4 Assignment. Developer will not assign its rights or obligations under these Terms and
+Conditions to any third without Publisher’s prior written approval which will be not withheld
+unreasonably.
+
+11.5 Severability. The provisions of these Terms and Conditions will be severable, and if any of them
+are held invalid or unenforceable for any reason, such provision will be adjusted to the minimum
+extent necessary to cure such invalidity. The invalidity or unenforceability of one or more of the
+provisions contained herein will not affect any other provisions of these Terms and Conditions.
+
+11.6 Governing Law. These Terms and Conditions will be governed by and interpreted in accordance
+with the internal laws of Belgium without regard to conflicts of laws principles.
+
+11.7 Competent Forum. The exclusive jurisdiction and venue of any lawsuit between the parties
+arising under these Terms and Conditions or out of transactions contemplated hereby will be the
+courts of Antwerp, section Antwerp, Belgium and each of the Parties hereby submits itself to the
+exclusive jurisdiction and venue of said courts for the purposes of such lawsuit. This choice of
+jurisdiction and venue does not prevent either Party from seeking injunctive relief with respect to a
+violation of intellectual property rights, confidentiality obligations or enforcement or recognition of
+any award or order in any appropriate jurisdiction.
+
+11.8 Force Majeure
+Neither Party shall be liable for any failure or delay in the performance of its obligations under these
+Terms and Conditions if such failure or delay is caused by events beyond its reasonable control,
+including but not limited to acts of God, natural disasters, pandemics, war, terrorism, riots,
+government actions or restrictions, failure of suppliers or subcontractors, labor disputes, power
+outages, or failures in telecommunications or internet services. The affected Party shall notify the
+other Party promptly and use reasonable efforts to mitigate the effects of the Force Majeure event. If
+the Force Majeure event continues for more than thirty (30) days, either Party may terminate these
+Terms and Conditions upon written notice.
+

@@ -18,7 +18,7 @@ The forecast is in `research/channel-loop/FORECAST.md`.
 
 | | |
 |---|---|
-| Last tick | tick 2: 28.9.2026 ~01:20 UTC — 5 pages rendered and read (Stripe Global Payouts lists Israel; CrazyGames and Wix pay via Tipalti; BL salaried case still open); T1 page counter built (off by default) |
+| Last tick | tick 3: 28.9.2026 ~02:10 UTC — CrazyGames terms PDF read (no fail clause, no AI clause, non-exclusive by default, paid 30 days after invoice); Polar lists Israel for payouts; the Wix agreement body was not in the capture; 3 maintenance items fixed. 7 pages queued for tick 4 |
 | Branch | `claude/new-session-j071dx`, restarted from `main` after PR #4 merged (`baab472`). The standing consent means the loop merges its own green PRs. |
 | Routine | "Channel loop tick", every 6 h (`11 1,7,13,19 * * *` UTC), fires into this session; see §11 |
 | Fable | available at 27.9 ~21:30 UTC (two agents ran). The daily sitting is the ~07:11 UTC tick. |
@@ -117,11 +117,11 @@ The full reasoning for each is in `BOARD-LOOP.md`. The ₪0 test runs first and 
 
 | # | Candidate | ₪0 test | Status |
 |---|---|---|---|
-| 6 | CrazyGames Basic Launch: original HTML5 games under the brand | render https://docs.crazygames.com/faq/ and the payouts, developer terms and Basic Launch pages → `crazygames.md` | returned 27.9: **NEEDS_MORE**. The Basic Launch is open from any country; payouts are €100, rolling over, by wire or PayPal. The FAQ names no upload API. Next: the developer terms PDF and /payouts/ (`research/measurements/crazygames.md`). |
+| 6 | CrazyGames Basic Launch: original HTML5 games under the brand | render the FAQ, payouts, developer terms and Basic Launch pages → `crazygames.md` | **NEEDS_MORE** after tick 3. The terms PDF (read 28.9) has no clause that fails the test: any physical person or entity may contract, no country clause, non-exclusive by default (+50% for an opt-in 2-month exclusivity), paid 30 days after invoice (NET 60 is the Payouts page, not the contract), no developer fee, and no AI or automation clause. Open: the binding "Publisher Guidelines" (ZERO-TESTS rows 22-24), the revenue rate (a formula with no number), Israel payability (Tipalti onboarding), a brand-name payee (the terms want the legal name in notices), and an uncapped IP indemnity for the board to weigh. |
 | 7 | Paid Astro themes in Astro's Theme Catalogue, sold on Gumroad | render https://portal.astro.build/api/themes?price[]=paid and the unfiltered listing → read the ordering | returned 27.9: **NEEDS_MORE**. 638 paid themes; no stars or installs field; ordered by `updatedAt` within runs. Next: the astro.build source on GitHub for the display order and submission (`astro-themes.md`). |
 | 8 | Mozilla Client Bug Bounty via Bugzilla REST | a 30-day private dry run, nothing filed; render the bounty page and the Bugzilla account policy | not run; stop if a private repo's Actions minutes would cost money |
-| 9 | Polar.sh as a second merchant-of-record rail (rail research, not a channel) | render https://stripe.com/global and https://docs.stripe.com/connect/cross-border-payouts; read Polar's acceptable use on GitHub | returned 27.9: **FAILS_TEST**. Israel is not a Stripe account country, and self-serve Connect cross-border payouts reach only the US, UK, EEA, CA and CH (`stripe-israel.md`). **This also puts the oss-bounties rail (Algora → Stripe Express, step 4) in doubt. Queued for Fable.** Next: https://docs.stripe.com/global-payouts/recipient-requirements |
-| 11 | Wix App Market app for Israeli compliance | render https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payments-and-billing-faqs, then the occupancy scan | returned 27.9: **NEEDS_MORE**. The $200 threshold is on the accumulated balance and rolls over (so BOARD-LOOP's "$200/month" was wrong). Israel is not stated. Next: the payout-account page (`wix-app-market.md`). |
+| 9 | Polar.sh as a second merchant-of-record rail (rail research, not a channel) | render Stripe's country and cross-border pages, then Polar's supported-countries page | tick 1 **FAILS_TEST** (Stripe alone); tick 2 reopened (Global Payouts lists Israel); tick 3 **NEEDS_MORE**: Polar's own Payouts list names Israel (`polar-supported-countries.txt:246`), paid via Stripe Connect Express from a US platform under a recipient agreement; the page never names Global Payouts (`polar-rail.md`). Open: Israeli-individual onboarding (row 19), acceptable use (row 20), fees (row 21). The algora rail question stays with Fable (row 10). |
+| 11 | Wix App Market app for Israeli compliance | render the payments FAQ, payout-account page, partner agreement and payouts dashboard | **NEEDS_MORE** after tick 3. The $200 threshold rolls over (tick 1); Tipalti (tick 2); a paid app cannot publish before payout setup, and a teammate with Manage Earnings can do it (tick 3). The partner-agreement capture was only the docs wrapper: the body is at https://dev.wix.com/app-market-partner-agreement (row 18). Israel still UNKNOWN (`wix-app-market.md`). |
 | 12 | Topcoder auto-scored challenges | fetch https://api.topcoder.com/v6/challenges?status=ACTIVE and the member terms / AI policy | returned 27.9: **NEEDS_MORE, leaning FAILS_TEST**. There was one active challenge; it is human-reviewed Development, and none are auto-scored (`topcoder.md`). |
 | — | **Bituach Leumi cost of step 2** (not a channel: the ₪0 rule's check before the owner is asked) | render https://www.btl.gov.il/Insurance/National%20Insurance/type_list/Self_Employed/Pages/rates.aspx, https://www.btl.gov.il/Insurance/Rates/Pages/%D7%9E%D7%99%20%D7%A9%D7%90%D7%99%D7%A0%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D%20%D7%95%D7%91%D7%A2%D7%9C%D7%99%20%D7%94%D7%9B%D7%A0%D7%A1%D7%94%20%D7%A9%D7%9C%D7%90%20%D7%9E%D7%A2%D7%91%D7%95%D7%93%D7%94.aspx and https://www.kolzchut.org.il/he/%D7%93%D7%9E%D7%99_%D7%91%D7%99%D7%98%D7%95%D7%97_%D7%9C%D7%90%D7%95%D7%9E%D7%99_%D7%9C%D7%A9%D7%9B%D7%99%D7%A8_%D7%A2%D7%9D_%D7%9E%D7%A7%D7%95%D7%A8%D7%95%D7%AA_%D7%94%D7%9B%D7%A0%D7%A1%D7%94_%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D → `research/measurements/step2-cost.md` | tick 1 dispatch |
 | 13 | AI-allowed prize-event intake (instrument only) | weekly read of https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json | not built |
@@ -190,27 +190,31 @@ None yet.
 
 ## 8. Open Fable items
 
-These are in `logs/FABLE_QUEUE.md`, rows 8-9:
-- reconcile the kill floor in code (₪500 in 30 days after 45 days, `types.ts:214-216`) with the lines' own rules (₪200 or ₪150 after 90 days, `portfolio.ts:114,202`);
-- rule on il-biz-tools' contradicted ₪400: waive the kill rule for the measurement, or plan it at ₪0.
+These are in `logs/FABLE_QUEUE.md`, rows 8-11, for the ~07:11 UTC sitting:
+- row 8: reconcile the kill floor in code (₪500 in 30 days after 45 days, `types.ts:214-216`) with the lines' own rules (₪200 or ₪150 after 90 days, `portfolio.ts:114,202`);
+- row 9: rule on il-biz-tools' contradicted ₪400: waive the kill rule for the measurement, or plan it at ₪0;
+- row 10: the Stripe rail and algora week 1's 108 claimable bounties (tick 3 adds: Polar pays Israel through Connect Express under a recipient agreement, `polar-rail.md`);
+- row 11: pre-register the T1 web-arm reach floor before any deploy.
 
 ## 9. Maintenance backlog
 
-- **Wrong "runs hourly" claim.** The owner docs say the colony tick runs hourly. GitHub fired it 28 times in about 120 hours, roughly every 4.3 h. The claim is in:
-  - `docs/OWNER_STEPS.he.md:52,69` (and its PDF);
-  - `src/revenue/owner-steps.ts:99`;
-  - `docs/INCOME_PLAN.he.md:7`.
-- **Stale scope.** `products/README.md:76` still says `@bediyuk`.
-- **Two ceilings at once.** `docs/INCOME_PLAN.he.md` §1ב (₪4,650-5,650, dated 4.9) is not marked as superseded by the board's ₪1,500.
-- **A command that must not be run.** Main's `REPORT.md` still prints `setup-done`. The fix is on the branch.
+Fixed in tick 3 (28.9, commit `4c73f67`):
+- **"Runs hourly".** colony.yml is scheduled hourly; GitHub fired it 29 times in 122.6 hours (22.9 22:06 to 28.9 00:43 UTC), about every 4.4 h, gaps 2.4-6.7 h. Corrected in `docs/OWNER_STEPS.he.md` (and the PDF), `docs/INCOME_PLAN.he.md` and `src/revenue/owner-steps.ts`.
+- **Stale scope.** `products/README.md` and `MISSION.md` now name `@mehudak/mcp-il-tools`.
+- **Two ceilings.** `docs/INCOME_PLAN.he.md` §1ב carries a note that its 4.9 range is superseded by ₪1,500.
+- **`setup-done` on main.** Already fixed: main's `REPORT.md:75` tells the owner to tell Claude, and Claude runs the command.
+
+Open:
+- **Kill-test wording.** `BOARD-LOOP.md:127` says "the €100 threshold plus NET-60" for CrazyGames. The contract says 30 days after invoice; NET 60 is the Payouts page. BOARD-LOOP is the Fable design, so the correction is noted here and left for the next Fable sitting to adopt.
 
 ## 10. Next tick's first action
 
-**Tick 3:**
-- Read the CrazyGames terms PDF: add a PDF-to-text step to render-watch, since runners have poppler.
-- Render the Wix Partner Agreement and the Payouts Dashboard doc, and Polar's supported-countries doc.
-- Pre-register the T1 web-arm reach floor in `research/faceless-youtube/PREREG-DECISIONS.md`.
-- The Fable sitting at 07:11 takes rows 8-10.
+**Tick 4 (~07:11 UTC, the Fable sitting):**
+- The Fable sitting takes `FABLE_QUEUE` rows 8-11 (at most 2 agents).
+- One render-watch dispatch for ZERO-TESTS rows 18-24: the Wix agreement body, Stripe's required verification information, Polar acceptable use and fees, and CrazyGames' requirements (intro, quality, ads).
+- Read them into `wix-app-market.md`, `polar-rail.md` and `crazygames.md`.
+
+**Tick 3 (done 28.9):** the CrazyGames terms PDF, the Wix partner pages and Polar's country list read; 3 maintenance items fixed; rows 18-24 queued.
 
 **Tick 2 (done 28.9):** 5 pages read; T1 counter merged (`87c7459`).
 

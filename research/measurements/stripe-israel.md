@@ -449,3 +449,10 @@ Polar uses.
   the board's supply count, not on this reading.
 - The kill or admit call is still a board decision (Fable tier under CLAUDE.md's routing rule). This file supplies the
   reading only.
+
+## Tick 3 cross-reference (28.9.2026): Polar
+
+Polar verdict: **NEEDS_MORE.** Polar's supported-countries page lists Israel for payouts (`polar-supported-countries.txt:246`) and
+pays from a US platform through Stripe Connect Express accounts under a recipient service agreement (`:392`, `:399-405`), but it
+never names Global Payouts; Israeli-individual onboarding, acceptable use and all-in cost are still unread. Details, quotes and
+the next check: `research/measurements/polar-rail.md`.

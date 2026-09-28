@@ -274,3 +274,19 @@ https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/wix-app-m
 https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payouts-dashboard	wix-payouts-dashboard
 # ZERO-TESTS.md row 17 — Polar rail (9), after row 14.
 https://polar.sh/docs/merchant-of-record/supported-countries	polar-supported-countries
+# research/channel-loop/ZERO-TESTS.md rows 18-21 — tick 4 follow-ups the tick-3 readings named (28.9.2026).
+# ZERO-TESTS.md row 18 — Wix App Market (11), after row 15 (row 15 captured only the docs wrapper).
+https://dev.wix.com/app-market-partner-agreement	wix-partner-agreement-body
+# ZERO-TESTS.md row 19 — Polar rail (9), after row 17.
+https://docs.stripe.com/connect/required-verification-information	stripe-connect-required-verification
+# ZERO-TESTS.md row 20 — Polar rail (9), after row 17.
+https://polar.sh/docs/merchant-of-record/acceptable-use/introduction	polar-acceptable-use
+# ZERO-TESTS.md row 21 — Polar rail (9), after row 17.
+https://polar.sh/docs/merchant-of-record/fees	polar-fees
+# research/channel-loop/ZERO-TESTS.md rows 22-24 — CrazyGames guidelines the terms make binding (tick 3 reading, 28.9.2026).
+# ZERO-TESTS.md row 22 — CrazyGames (6), after row 11.
+https://docs.crazygames.com/requirements/intro/	crazygames-requirements-intro
+# ZERO-TESTS.md row 23 — CrazyGames (6), after row 11.
+https://docs.crazygames.com/requirements/quality/	crazygames-requirements-quality
+# ZERO-TESTS.md row 24 — CrazyGames (6), after row 11.
+https://docs.crazygames.com/requirements/ads/	crazygames-requirements-ads
