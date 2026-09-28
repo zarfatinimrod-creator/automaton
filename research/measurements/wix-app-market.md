@@ -8,7 +8,7 @@ the two-hour occupancy scan of the Hebrew/Israeli App Market categories and eith
 **Kill list (BOARD-LOOP.md:162):** Israel not payable; the floor forfeits or accrues without moving on any plausible
 ceiling; the niche has free incumbents; developer terms impose a support SLA or human conversations; or no niche can be named.
 
-**Status (after tick 2, 28.9.2026): NEEDS_MORE, unchanged.** The floor half of the gate passes (rolls over, tick 1). The
+**Status (after tick 3, 28.9.2026): NEEDS_MORE, unchanged.** Tick 3 found the partner-agreement capture was only the docs wrapper; the body is at https://dev.wix.com/app-market-partner-agreement (ZERO-TESTS row 18). Tick 2's text follows. The floor half of the gate passes (rolls over, tick 1). The
 Israel half is still UNKNOWN: the rendered payout-account page names Tipalti as the payout handler but says nothing about
 countries, methods, documents or fees. A new open question came up: the Partner onboarding flow registers "your company"
 (wix-payout-account.txt:134). See "Tick 2 reading" at the end of this file.
@@ -315,3 +315,65 @@ https://dev.wix.com/docs/build-apps/manage-your-app/user-support/about-user-supp
    this ₪0 test passes. The board then chooses between (a) recording Israel as UNKNOWN-unresolvable from public pages and
    killing or parking candidate 11, or (b) asking the owner for one look at the country list in that form, with no data
    entered. This measurement does not choose; it names the fork.
+
+---
+
+## Tick 3 reading (28.9.2026): partner agreement and payouts dashboard
+
+**Queued at** `research/rendered/urls.txt:271-274` (ZERO-TESTS rows 15 and 16, per those comments). Both captures:
+`fetchedAt` 2026-09-28T01:55Z, status 200, `truncated` false, `firstFetch` true. Both `.txt` files read in full; the raw
+`.html` files were searched for each article's embedded Markdown source (`"content"` field) and link targets.
+
+**The agreement body was NOT captured.** `wix-partner-agreement.txt` is site navigation (lines 1-85) plus a one-paragraph
+wrapper article (87-93). The article's Markdown source in the `.html` is that same one paragraph and nothing else. No
+clause text is present: 0 hits in the `.txt` for israel, countr, forfeit, terminat, tax, tipalti, paypal, payoneer. [RENDERED]
+- wix-partner-agreement.txt:89: "We recommend that you read through our entire Partner Agreement before developing." [RENDERED]
+- The "Partner Agreement" link there points to **`https://dev.wix.com/app-market-partner-agreement`**. This is the `href` in the
+  `.html` and the `fallback::` target in the Markdown source. The agreement text lives at that address. [RENDERED]
+- The article's `source` field names `github.com/wix-private/developer-docs/.../app-market-partner-agreement.md`. That repo is
+  probably not public, so it is no route to the text. [INFERENCE]
+- wix-partner-agreement.txt:91 "Last updated: 23 August 2024" is the date of the wrapper article. The agreement's own version
+  date is not in the capture. [RENDERED]
+
+**The payouts-dashboard capture is a UI how-to.** Lines 1-111 are navigation; the article runs from 113 to 183, and its
+Markdown source matches the `.txt`. It contains 0 hits for israel, countr, tipalti, currency, threshold, "200", fee, tax, bank,
+paypal, payoneer, forfeit. Its 3 "individual" hits mean "individual transactions", and its 1 "company" hit is "credit card
+company". [RENDERED]
+
+### The open questions
+
+"[RENDERED] absent" means the term does not appear in either capture (checked by grep); it is not a claim about Wix.
+
+| Question | This tick's captures | Grade |
+|---|---|---|
+| Revenue share / Wix's cut | Not in the capture. The dashboard shows "total monthly collections less deductions" (wix-payouts-dashboard.txt:137) but does not itemize the deductions. Tick 1's 80/20 after a 2.5% fee (wix-app-payments-faq.txt:130) stays the only rendered split. | [RENDERED] |
+| Payout method | Not in the capture. Tipalti and bank: 0 hits each. | [RENDERED] absent |
+| Threshold / rollover | Not in the capture. No "$200" or "threshold". Tick 1's rollover (faq.txt:134) stands. | [RENDERED] absent |
+| Schedule | "The data is updated daily and should be considered an estimate until it's finalized on the 9th of every month (for the previous month's transactions)." (wix-payouts-dashboard.txt:141). This is when the dashboard data is finalized. It is not a stated payout date. | [RENDERED] |
+| Currency, transfer fees | Not in the capture. | [RENDERED] absent |
+| Country eligibility / Israel | Not in the capture. There is no country list (0 "israel", 0 "countr", 0 "sanction" in either capture). | [RENDERED] absent |
+| Individual vs company; brand or trade name as payee | Not in the capture. The only "company" is "credit card company" (wix-payouts-dashboard.txt:161). Tick 2's "registering your company" (wix-payout-account.txt:134) is still unexplained. | [RENDERED] absent |
+| Forfeiture of unpaid balances | Not in the capture. The agreement body, which would hold it, is absent. | [RENDERED] absent |
+| Support / SLA duties | Not in the capture. "User Support" (wix-partner-agreement.txt:79, wix-payouts-dashboard.txt:105) is a navigation heading only. The dashboard lets the developer "Request refunds ." (wix-payouts-dashboard.txt:129) but states no duty to do so. | [RENDERED] |
+| Chargebacks | "Note that Wix will automatically attempt to reverse the chargeback." (wix-payouts-dashboard.txt:161) | [RENDERED] |
+| Tax forms | Not in the capture. There are 0 "tax" hits in the dashboard `.txt`. The `.html` of the agreement page has 2 "tax" hits, both in unrelated changelog text (a Pricing Plans tax setting and eCommerce cart totals). | [RENDERED] |
+| A teammate can set up and manage payouts | "You can access the app Payouts dashboard if you have the Manage Earnings permission. Account owners have this access by default. To grant access to a teammate, see Grant a teammate access to payouts ." (wix-payouts-dashboard.txt:121). This confirms tick 2 (wix-payout-account.txt:142). Whether an agent-run login counts as a teammate is still UNKNOWN. | [RENDERED] |
+| Paid-app gate | "Before you can publish a paid app, payout account setup must be complete at the account level. Until this is done, you can't publish paid apps." (wix-payouts-dashboard.txt:131) | [RENDERED] |
+
+Two further points bear on the ₪0 and brand rules:
+- The terms bind at submission: "During app submission in your app's dashboard, you'll need to acknowledge your agreement to
+  the Partner Agreement." (wix-partner-agreement.txt:89) [RENDERED] So the unread clauses (forfeiture, support, payee
+  identity) are accepted before any listing goes live, so they have to be read before submission. [INFERENCE]
+- One path needs human contact: "Payments for apps included in Wix Premium plans won't be shown in the payouts dashboard.
+  For info on payments for these upgrades you need to contact us ." (wix-payouts-dashboard.txt:143) [RENDERED] Whether a
+  new app would fall under this is not in the capture.
+
+**Verdict for candidate 11 (Wix App Market): NEEDS_MORE**
+
+Settled [RENDERED]: a paid app cannot publish until the payout account exists (dashboard:131), and a teammate can hold
+Manage Earnings (dashboard:121). Wix attempts chargeback reversal (dashboard:161), and payout data finalizes on the 9th
+(dashboard:141). Still UNKNOWN, because the agreement body was not captured: Israel eligibility, forfeiture of a
+sub-$200 balance, whether the payee is an individual, company or brand, tax forms, fees, payout currency, and any support
+SLA. The single next check is to render **`https://dev.wix.com/app-market-partner-agreement`** and read its Section 9
+(named at wix-app-payments-faq.txt:126). Suggested `urls.txt` line for the main thread:
+`https://dev.wix.com/app-market-partner-agreement	wix-partner-agreement-body`.
