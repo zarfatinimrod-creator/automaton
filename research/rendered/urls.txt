@@ -389,3 +389,5 @@ https://www.paypal.com/il/cshelp/personal	paypal-il-help-index
 https://n8n.notion.site/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f	n8n-creator-hub-notion
 # research/channel-loop/ZERO-TESTS.md row 61 — Superteam T4 / Israeli off-ramp: linked from a tick-5 capture (28.9.2026).
 https://bit2c.co.il/home/faq	bit2c-faq
+# research/channel-loop/ZERO-TESTS.md row 62 — Firefox Add-ons (16): the reopen check on G4, same endpoint as rows 35-36 (tick 5, 28.9.2026).
+https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=invoice&page_size=50	amo-search-invoice
