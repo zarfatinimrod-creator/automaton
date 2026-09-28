@@ -1,6 +1,7 @@
 {
   "name": "@mehudak/mcp-il-tools",
   "version": "0.1.0",
+  "mcpName": "io.github.mehudak/il-tools",
   "description": "MCP server for Israeli data validation: teudat zehut, phone numbers, bank accounts, Hebrew dates, Hebrew-to-Latin transliteration.",
   "type": "module",
   "license": "MIT",
