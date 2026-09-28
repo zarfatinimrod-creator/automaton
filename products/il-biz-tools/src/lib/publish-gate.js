@@ -37,6 +37,8 @@
  *     prints none of them - feeAmountDisclosure() in src/lib/registrar-fee.js
  *     refuses to hand them out while `verified` is false, and a test asserts
  *     the built page contains no shekel amount from that file.
+ *   - pcn874.html validates a file's STRUCTURE with products/pcn874's own
+ *     rules and prints no rate or amount from src/config (see its entry).
  *   - index.html, accessibility.html and 404.html carry copy, not calculators.
  */
 export const PAGE_RATE_SOURCES = {
@@ -47,6 +49,12 @@ export const PAGE_RATE_SOURCES = {
   'invoice.html': ['src/config/vat.json'],
   'allocation.html': ['src/config/allocation-number.json'],
   'registrar-fee.html': [],
+  // pcn874.html renders no figure from any file in src/config. Its rules - and
+  // the two thresholds its findings quote, 5,000 shekels for an identified sale
+  // and the petty-cash cap - are products/pcn874's own, each cited to the Tax
+  // Authority circular by line and tested there; the page runs that code
+  // bundled (src/lib/pcn874-bundle.js), and the build refuses a stale bundle.
+  'pcn874.html': [],
   'accessibility.html': [],
   '404.html': [],
 };
