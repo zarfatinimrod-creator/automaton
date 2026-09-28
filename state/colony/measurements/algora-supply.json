@@ -1,5 +1,5 @@
 {
-  "measuredAt": "2026-09-28T09:25:33.865Z",
+  "measuredAt": "2026-09-28T11:11:08.889Z",
   "claimableBounties": 18,
   "claimableWithoutMergedSolution": 18,
   "claimableFresh365": 1,
@@ -1077,7 +1077,7 @@
   "history": [
     {
       "week": "2026-W40",
-      "measuredAt": "2026-09-28T09:25:33.865Z",
+      "measuredAt": "2026-09-28T11:11:08.889Z",
       "claimable": 18,
       "counter": 2
     }
@@ -1095,7 +1095,7 @@
     "readings": [
       {
         "week": "2026-W40",
-        "measuredAt": "2026-09-28T09:25:33.865Z",
+        "measuredAt": "2026-09-28T11:11:08.889Z",
         "claimable": 18,
         "counter": 2
       }
@@ -1103,7 +1103,7 @@
     "mean": null,
     "consecutive": null,
     "verdict": "pending",
-    "text": "Week 1 of 4. The board reads the mean of 4 weekly readings: ≥ 10 keeps ₪300; 3-9 retargets to ₪100 (grade contradicted); under 3 kills the line. Until then the owner is not asked for step 4b (the Stripe form) on this line's account; 4a, a two-minute sign-in, rides step 7."
+    "text": "Week 1 of 4. The board reads the mean of 4 weekly readings: ≥ 10 keeps ₪300; 3-9 retargets to ₪100 (grade contradicted); under 3 kills the line. Until then the owner is not asked for step 4b (the Stripe form, which begins with the Algora sign-in) on this line's account."
   },
   "method": {
     "query": "is:issue is:open label:\"💎 Bounty\"",

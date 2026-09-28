@@ -1,6 +1,6 @@
 # Algora bounty supply — the weekly claimable count
 
-**Status: MEASURED 2026-09-28T09:25:33.865Z by `.github/workflows/algora-supply.yml` (`scripts/algora-supply.ts`).** Regenerated on every run — do not edit by hand. Ordered by `research/colony-sweep/BOARD-2.md §2.2` as the first build step of `oss-bounties`.
+**Status: MEASURED 2026-09-28T11:11:08.889Z by `.github/workflows/algora-supply.yml` (`scripts/algora-supply.ts`).** Regenerated on every run — do not edit by hand. Ordered by `research/colony-sweep/BOARD-2.md §2.2` as the first build step of `oss-bounties`.
 
 ## The number
 
@@ -18,9 +18,9 @@ A count of jobs a payer has posted, not revenue: money counts only in `revenue_l
 
 | ISO week | Measured at | Claimable |
 |---|---|---:|
-| 2026-W40 | 2026-09-28T09:25:33.865Z | 18 |
+| 2026-W40 | 2026-09-28T11:11:08.889Z | 18 |
 
-Week 1 of 4. The board reads the mean of 4 weekly readings: ≥ 10 keeps ₪300; 3-9 retargets to ₪100 (grade contradicted); under 3 kills the line. Until then the owner is not asked for step 4b (the Stripe form) on this line's account; 4a, a two-minute sign-in, rides step 7.
+Week 1 of 4. The board reads the mean of 4 weekly readings: ≥ 10 keeps ₪300; 3-9 retargets to ₪100 (grade contradicted); under 3 kills the line. Until then the owner is not asked for step 4b (the Stripe form, which begins with the Algora sign-in) on this line's account.
 
 This file reads the rule; it does not apply it. The ₪300 target changes only when the main thread records the ruling in `src/revenue/portfolio.ts`.
 
