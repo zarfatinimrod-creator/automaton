@@ -22,7 +22,9 @@ if [ -z "$BRANCH" ] || [ -z "$SUBJECT" ]; then
 fi
 ROOT="$(git rev-parse --show-toplevel)"; cd "$ROOT"
 CURRENT="$(git branch --show-current)"
-TRAILERS=$'\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_018HcVJk7qcVHupvjvQZ91kR'
+# The trailers name the session doing the merge; override with MERGE_TRAILERS (a $'\n\n...' string) from another session.
+TRAILERS=$'\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01VRCJXMqMdAnbYz2TwWreJn'
+TRAILERS="${MERGE_TRAILERS:-$TRAILERS}"
 
 if git merge-base --is-ancestor "$BRANCH" HEAD; then
   echo "already merged: $BRANCH — continuing with verify/push/cleanup"
