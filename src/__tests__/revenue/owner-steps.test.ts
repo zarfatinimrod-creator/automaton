@@ -112,7 +112,14 @@ describe("the owner's checklist is eight steps and stays eight", () => {
     // text says what WILL happen once the step is done — review of the builder diff, finding 7.
     expect(step8.unlocks).toMatch(/once step 8 is done, the tick's probe will report the unread count/i);
     expect(step8.unlocks).toMatch(/the colony will answer accessibility mail itself/);
-    expect(step8.unlocks).toMatch(/neither exists yet/);
+    // CHANGED 28.9.2026 (brand-mail tooling): the probe is now built but unscheduled, so "neither exists yet" became
+    // false; the text says what is built, what is not, and that neither runs before the step.
+    expect(step8.unlocks).toMatch(/neither runs yet/);
+    expect(step8.unlocks).not.toMatch(/neither exists yet/);
+    expect(step8.unlocks).toMatch(/scripts\/brand_mail\.py/);
+    expect(step8.unlocks).toMatch(/brand-mail\.yml, dispatch only/);
+    expect(step8.unlocks).toMatch(/the responder is not built/);
+    expect(step8.unlocks).toMatch(/research\/owner-asks\/questions\.json/);
     expect(step8.unlocks).not.toMatch(/the tick's probe reports|colony answers accessibility mail itself/);
     expect(step8.unlocks).toMatch(/discloses that it comes from the company's automated operator/);
     expect(step8.unlocks).toMatch(/published only as the brand's accessibility contact/);
