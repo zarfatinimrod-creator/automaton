@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type BetterSqlite3 from "better-sqlite3";
 import { createInMemoryDb } from "../orchestration/test-db.js";
-import { ingestAlgoraSupplyMeasurement, ingestApifyMeasurement } from "../../revenue/measurements.js";
+import { STRUCK_SUPPLY_KPI, ingestAlgoraSupplyMeasurement, ingestApifyMeasurement } from "../../revenue/measurements.js";
 import { latestKpis } from "../../revenue/ledger.js";
 import { seedDefaultPortfolio } from "../../revenue/portfolio.js";
 
@@ -90,6 +90,47 @@ describe("ingestAlgoraSupplyMeasurement — the weekly supply count → claimabl
     const k = latestKpis(db, "oss-bounties");
     expect(k.claimableBounties.value).toBe(4);
     expect(k.claimableBounties.unit).toMatch(/≥ \$50/);
+  });
+
+  it("records nothing from a struck file — an instrument fault is not a reading (RULING-2026-09-28-bounty-rail.md §3.4)", () => {
+    write({ measuredAt: "2026-09-27T23:43:21.244Z", claimableBounties: 108, struck: true, history: [], instrumentFaults: [{ week: "2026-W39", measuredAt: "2026-09-27T23:43:21.244Z", claimable: 108, reason: "fault" }] });
+    const r = ingestAlgoraSupplyMeasurement(db, dir);
+    expect(r.recorded).toEqual([]);
+    expect(r.detail).toMatch(/struck/);
+    expect(latestKpis(db, "oss-bounties").claimableBounties).toBeUndefined();
+  });
+
+  // The real sequence on 28.9.2026: the tick ingested W39's 108 at 00:43 UTC, then the file was struck IN PLACE — same
+  // measuredAt — so the ingest reads it as `unchanged` and the 108 stayed the "latest" claimableBounties the director's
+  // tools served. Review of the builder diff, finding 8: a struck reading must stop being served as the current count.
+  it("moves a reading already ingested out of claimableBounties when the file later strikes it", () => {
+    const measuredAt = "2026-09-27T23:43:21.244Z";
+    write({ measuredAt, claimableBounties: 108 });
+    expect(ingestAlgoraSupplyMeasurement(db, dir).status).toBe("recorded");
+    expect(latestKpis(db, "oss-bounties").claimableBounties.value).toBe(108);
+
+    const fault = { week: "2026-W39", measuredAt, claimable: 108, reason: "fault" };
+    write({ measuredAt, claimableBounties: 108, struck: true, history: [], instrumentFaults: [fault] });
+    const r = ingestAlgoraSupplyMeasurement(db, dir);
+    expect(r.status).toBe("unchanged");
+    expect(r.detail).toMatch(/struck/);
+    const k = latestKpis(db, "oss-bounties");
+    expect(k.claimableBounties).toBeUndefined();
+    // Recorded, never averaged: the 108 stays in the database under its own name.
+    expect(k[STRUCK_SUPPLY_KPI]).toMatchObject({ value: 108 });
+
+    // Idempotent, and a corrected reading after it is served normally.
+    expect(ingestAlgoraSupplyMeasurement(db, dir).detail).toBeUndefined();
+    write({ measuredAt: "2026-10-05T06:30:00.000Z", claimableBounties: 4, history: [{ week: "2026-W41", measuredAt: "2026-10-05T06:30:00.000Z", claimable: 4, counter: 2 }], instrumentFaults: [fault] });
+    expect(ingestAlgoraSupplyMeasurement(db, dir)).toMatchObject({ status: "recorded", recorded: ["claimableBounties"] });
+    expect(latestKpis(db, "oss-bounties").claimableBounties.value).toBe(4);
+  });
+
+  it("never strikes a corrected reading that happens to equal a struck count", () => {
+    const fault = { week: "2026-W39", measuredAt: "2026-09-27T23:43:21.244Z", claimable: 7, reason: "fault" };
+    write({ measuredAt: "2026-10-05T06:30:00.000Z", claimableBounties: 7, history: [{ week: "2026-W41", measuredAt: "2026-10-05T06:30:00.000Z", claimable: 7, counter: 2 }], instrumentFaults: [fault] });
+    expect(ingestAlgoraSupplyMeasurement(db, dir).status).toBe("recorded");
+    expect(latestKpis(db, "oss-bounties").claimableBounties.value).toBe(7);
   });
 
   it("records the count as usual when the file carries a stale-index gap (method.searchUnserved) beside it", () => {

@@ -11,10 +11,12 @@
  * bounty comments (BOARD.md build #2: "the only host this container reaches"),
  * `policy.ts` reads each repository's contribution policy, and this module scores
  * what comes back. Nothing here is wired into the heartbeat: the line is blocked
- * on owner steps 7 (brand machine account) and 4 (Stripe Connect Express through
- * Algora) and on `BRAND_GITHUB_TOKEN`, and a loop that attempted a bounty before
- * those exist would publish a pull request under the owner's handle — the one
- * thing BOARD.md §5 changed about this line.
+ * on owner step 7 (the brand machine account, with step 4a's Algora sign-in and
+ * `BRAND_GITHUB_TOKEN` made in the same sitting) and on the board's week-4 clock
+ * (`selectBounties`, rule 10), and a loop that attempted a bounty before those
+ * exist would publish a pull request under the owner's handle — the one thing
+ * BOARD.md §5 changed about this line. Step 4b (Stripe Connect Express through
+ * Algora) is asked only after Algora holds a reward (RULING-2026-09-28-bounty-rail.md §4.1).
  *
  * ── The rules, and where each comes from ──
  *
@@ -36,11 +38,19 @@
  *     cost of the work, so the filter declines the race rather than entering it.
  *  8. Refuse anything paying below a floor derived from this line's own ₪300
  *     target — `deriveBountyFloor()` below, which shows its arithmetic.
+ *  9. Refuse a `not-a-payer` repository — RULING-2026-09-28-bounty-rail.md §5.2
+ *     item 2: a repository whose own policy says its bounties are symbolic, for
+ *     research or unmergeable, or that asks for what the brand account never
+ *     gives (a star, its system prompt), gets no PR, no comment and no /attempt.
+ * 10. Emit nothing while the board's clock says so — §5.2 item 8: `selectBounties`
+ *     shortlists nothing while the week-4 reading of the corrected supply series is
+ *     `pending` (or unknown to the caller), and nothing ever after `kill`.
  */
 
 import { DEFAULT_FX_ILS } from "../money.js";
 import { DEFAULT_PORTFOLIO } from "../portfolio.js";
 import type { PolicyVerdict } from "./policy.js";
+import type { BoardSupplyVerdict } from "./supply.js";
 
 // ── The Algora bot comment ───────────────────────────────────────────────────
 
@@ -202,12 +212,25 @@ export const COLONY_AGENT_HOURS_PER_MONTH = 160;
 export const KILL_ACCEPTANCE_RATE = 0.25;
 
 /**
+ * The capacity base the floor splits MISSION constraint 4's agent-hours over: **₪1,500**, the committed portfolio
+ * the floor was derived from (board of 7.9.2026). HELD since 28.9.2026, not re-derived: that day's board planned
+ * il-biz-tools at ₪0 (research/channel-loop/RULING-2026-09-28-floors.md §9) and so cut the committed sum to ₪1,100,
+ * but kept il-biz-tools' build budget because "the free tools and the validator page still need build hours". Its
+ * share of the colony's agent-hours therefore did not pass to this line, and re-deriving from ₪1,100 would have
+ * lowered this floor 27% (₪37.50 → ₪27.50) on a question neither ruling decided. It stays until the board rules on
+ * how a ₪0 line that still takes build hours counts in the capacity split.
+ */
+export const FLOOR_CAPACITY_BASE_ILS = 1500;
+
+/**
  * Derive the ₪-per-hour floor a bounty must clear.
  *
  * The arithmetic, in four steps, all of them from numbers already in this repo:
  *
- *  1. The board gave this line **₪300/month** out of a **₪1,500** committed
- *     portfolio, so the line owns **20%** of the colony's capacity.
+ *  1. The board gave this line **₪300/month** out of a **₪1,500** capacity
+ *     base, so the line owns **20%** of the colony's capacity. (₪1,500 was the
+ *     committed portfolio until 28.9.2026; it is held here, not re-derived from
+ *     the ₪1,100 committed since — see `FLOOR_CAPACITY_BASE_ILS`.)
  *  2. MISSION constraint 4 budgets **160 agent-hours a month** for the whole
  *     colony. Twenty per cent of that is **32 hours** for this line.
  *  3. ₪300 out of 32 hours is **₪9.375 per agent-hour realized** — what an hour
@@ -216,7 +239,9 @@ export const KILL_ACCEPTANCE_RATE = 0.25;
  *     acceptance rate — one rewarded bounty costs four attempts' hours, so a
  *     bounty must advertise **four times** the realized rate to survive:
  *     9.375 / 0.25 = **₪37.50 per estimated hour**, about **$10.42/h** at the
- *     repo's stored USD rate.
+ *     repo's stored USD rate. The result is rounded to the agora (28.9.2026):
+ *     the division chain leaves float dust on other bases, and a bounty paying
+ *     exactly the floor must not be refused on it.
  *
  * Sanity check against the only economics figure the audit accepted — a ~$110
  * average bounty: the floor allows up to about **10.5 hours** on an average
@@ -243,8 +268,7 @@ export function deriveBountyFloor(
   const lineId = opts.lineId ?? "oss-bounties";
   const seed = DEFAULT_PORTFOLIO.find((s) => s.id === lineId);
   const lineTargetIls = opts.lineTargetIls ?? (seed ? seed.targetMonthlyAgorot / 100 : 300);
-  const portfolioTargetIls =
-    opts.portfolioTargetIls ?? DEFAULT_PORTFOLIO.reduce((n, s) => n + s.targetMonthlyAgorot, 0) / 100;
+  const portfolioTargetIls = opts.portfolioTargetIls ?? FLOOR_CAPACITY_BASE_ILS;
   const colonyAgentHoursPerMonth = opts.colonyAgentHoursPerMonth ?? COLONY_AGENT_HOURS_PER_MONTH;
   const killAcceptanceRate = opts.killAcceptanceRate ?? KILL_ACCEPTANCE_RATE;
   const usdIls = opts.usdIls ?? DEFAULT_FX_ILS.USD ?? 3.6;
@@ -252,7 +276,10 @@ export function deriveBountyFloor(
   const lineShare = portfolioTargetIls > 0 ? lineTargetIls / portfolioTargetIls : 0;
   const lineAgentHoursPerMonth = colonyAgentHoursPerMonth * lineShare;
   const realizedIlsPerHour = lineAgentHoursPerMonth > 0 ? lineTargetIls / lineAgentHoursPerMonth : Infinity;
-  const floorIlsPerHour = killAcceptanceRate > 0 ? realizedIlsPerHour / killAcceptanceRate : Infinity;
+  // Rounded to the agora: money is agorot everywhere else, and the division chain above leaves float dust
+  // (₪1,100 / 160h / 0.25 comes out 27.500000000000004), which refused a bounty paying exactly the floor.
+  const rawFloor = killAcceptanceRate > 0 ? realizedIlsPerHour / killAcceptanceRate : Infinity;
+  const floorIlsPerHour = Number.isFinite(rawFloor) ? Math.round(rawFloor * 100) / 100 : rawFloor;
 
   return {
     lineTargetIls,
@@ -266,7 +293,11 @@ export function deriveBountyFloor(
     floorUsdPerHour: floorIlsPerHour / usdIls,
     usdIls,
     reasoning:
-      `₪${lineTargetIls}/month is ${(lineShare * 100).toFixed(1)}% of the ₪${portfolioTargetIls} the board committed, ` +
+      `₪${lineTargetIls}/month is ${(lineShare * 100).toFixed(1)}% of the ₪${portfolioTargetIls} capacity base` +
+      (opts.portfolioTargetIls === undefined
+        ? ` (the committed portfolio of 7.9.2026, held until the board rules on how a ₪0 line that still takes build hours counts)`
+        : "") +
+      `, ` +
       `so this line owns ${lineAgentHoursPerMonth.toFixed(1)} of MISSION constraint 4's ${colonyAgentHoursPerMonth} agent-hours a month. ` +
       `That is ₪${realizedIlsPerHour.toFixed(2)} an hour realized. At the line's own kill threshold of a ` +
       `${(killAcceptanceRate * 100).toFixed(0)}% acceptance rate, one rewarded bounty costs ${(1 / killAcceptanceRate).toFixed(0)} attempts, ` +
@@ -318,6 +349,12 @@ export interface ColonyBountyState {
   stoppedRepos?: string[];
   /** ISO 8601. Defaults to now. Injected so the tests are not clock-dependent. */
   now?: string;
+  /**
+   * The board's week-4 verdict on the corrected supply series: `readBoardVerdict(history).verdict` (supply.ts). Absent
+   * is read as `pending`, so a caller that never asked the clock gets nothing shortlisted (RULING-2026-09-28-bounty-rail.md
+   * §5.2 item 8).
+   */
+  supplyVerdict?: BoardSupplyVerdict;
 }
 
 export interface IntakeConfig {
@@ -455,6 +492,11 @@ export function scoreBounty(
     skipped.push({
       rule: "repo-policy-forbids-ai",
       detail: `assessRepoPolicy graded ${b.repo} \`forbidden\`. CHIEF-AUDIT §2.1 row 6 makes per-repo maintainer policy the AMBER on this line; a PR here would violate the constitution whatever Algora's terms allow.`,
+    });
+  } else if (b.policy === "not-a-payer") {
+    skipped.push({
+      rule: "repo-not-a-payer",
+      detail: `assessRepoPolicy graded ${b.repo} \`not-a-payer\`: its own policy says the bounties are not money, or asks for what the brand account never gives. A refusal, not a filter tweak — no PR, no comment, no /attempt (RULING-2026-09-28-bounty-rail.md §5.2 item 2).`,
     });
   } else if (b.policy === "unknown") {
     reasons.push("Repository policy is silent on AI contributions. Treated as `disclose`, never as `allowed` — the pull request discloses authorship regardless.");
@@ -653,6 +695,29 @@ export function selectBounties(
     .filter((s) => s.eligible)
     .sort((a, b) => b.score - a.score || b.ilsPerHour - a.ilsPerHour || a.id.localeCompare(b.id));
   const refused = scored.filter((s) => !s.eligible);
+
+  // The board's clock (§5.2 item 8): nothing is emitted while the corrected week-4 reading is pending, nothing ever
+  // after a kill. Every eligible candidate is still scored and shown, with the gate as its reason.
+  const verdict = state.supplyVerdict ?? "pending";
+  if (verdict === "pending" || verdict === "kill") {
+    const gate =
+      verdict === "kill"
+        ? {
+            rule: "line-killed",
+            detail: "The board's week-4 reading killed oss-bounties. The intake emits nothing, ever, on a killed line (RULING-2026-09-28-bounty-rail.md §5.2 item 8).",
+          }
+        : {
+            rule: "board-clock-pending",
+            detail: "The board's week-4 reading of the corrected supply series is pending. Until it keeps or retargets the line, the intake emits nothing (RULING-2026-09-28-bounty-rail.md §5.2 item 8).",
+          };
+    notes.push(
+      verdict === "kill"
+        ? "Nothing was shortlisted: the line was killed at its week-4 supply reading."
+        : "Nothing was shortlisted: the week-4 supply reading of the corrected counter is still pending (or was not supplied), and the intake is gated on it.",
+    );
+    const gated = eligible.map((s) => ({ ...s, eligible: false, skipped: [...s.skipped, gate] }));
+    return { shortlist: [], skipped: [...refused, ...gated], slots, config, notes };
+  }
 
   const shortlist = eligible.slice(0, slots);
   const overflow = eligible.slice(slots).map((s) => ({

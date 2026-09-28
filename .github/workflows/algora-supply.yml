@@ -3,7 +3,7 @@ name: algora-supply
 # Count CLAIMABLE Algora bounties on GitHub, once a week, and commit the reading.
 #
 # WHY. research/colony-sweep/BOARD-2.md §2.2 made this the first build step of the
-# `oss-bounties` line (₪300 of the committed ₪1,500): "the cheapest test that the
+# `oss-bounties` line (₪300 of the committed ₪1,100): "the cheapest test that the
 # payer is actually posting jobs". A third-party census found 5 claimable bounties
 # ($60) among 561 labelled issues; the board would not move the target on a number
 # this repo had not reproduced, so this job reproduces it weekly. At week 4 the
@@ -12,7 +12,8 @@ name: algora-supply
 #
 # WHAT IT COUNTS: open issues labelled "💎 Bounty", in unarchived repositories,
 # without "💰 Rewarded" or an Algora payout comment, with a bot-posted amount of
-# at least $50, whose repository policy does not forbid AI-authored work. The
+# at least $50, whose repository policy does not forbid AI-authored work and does
+# not say its bounties are not money (`not-a-payer`, 28.9.2026). The
 # per-filter drop counts and the per-repository table are in
 # research/measurements/algora-supply.md; the JSON the hourly tick reads into the
 # KPI `claimableBounties` is state/colony/measurements/algora-supply.json.
@@ -49,6 +50,9 @@ on:
       - "scripts/algora-supply.ts"
       - "src/revenue/bounties/supply.ts"
       - "src/revenue/bounties/supply-github.ts"
+      # policy.ts decides what counts (visible-text permission, not-a-payer;
+      # RULING-2026-09-28-bounty-rail.md §3.3), so a change there is a run too.
+      - "src/revenue/bounties/policy.ts"
 
 permissions:
   contents: write

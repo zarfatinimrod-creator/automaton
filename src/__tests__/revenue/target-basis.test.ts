@@ -6,9 +6,11 @@ import {
   TARGET_BASIS,
   committedTargetIls,
   conditionalTargetIls,
+  policyForLine,
   portfolioTargetAgorot,
   summarizeTargetBasis,
 } from "../../revenue/portfolio.js";
+import { DEFAULT_DECISION_POLICY } from "../../revenue/types.js";
 
 describe("every target states where its number came from", () => {
   it("has a basis entry for every line in the portfolio", () => {
@@ -51,7 +53,17 @@ describe("every target states where its number came from", () => {
     // evidence in their own basis field argued against the number — one of them
     // by about 200x. Leaving it out of this sum is how that stayed invisible.
     expect(s.measuredIls + s.inferredIls + s.unevidencedIls + s.contradictedIls).toBe(s.totalIls);
-    expect(s.contradictedLines.length).toBeGreaterThan(0);
+    // Two board rulings of 28.9.2026 moved this band in opposite directions, and both hold:
+    //  - RULING-2026-09-28-floors.md §9: il-biz-tools' ₪400 left the contradicted band for the contested upper bound,
+    //    and the line is planned at ₪0 graded `inferred`;
+    //  - RULING-2026-09-28-bounty-rail.md §3.5: oss-bounties' ₪300 is now `contradicted` — two readings argue against
+    //    the supply premise and the rail's mechanism is contradicted at code level.
+    // Pinned so that any line entering or leaving the band has to be named here.
+    expect(s.contradictedLines).toEqual(["oss-bounties"]);
+    expect(s.contradictedIls).toBe(300);
+    expect(s.inferredIls).toBe(800);
+    expect(TARGET_BASIS["il-biz-tools"].contestedUpperBoundIls).toBe(400);
+    expect(TARGET_BASIS["il-biz-tools"].grade).toBe("inferred");
     // And the figure the board should be reading: nothing in this portfolio is
     // measured. No buyer has been measured on any line.
     expect(s.measuredIls).toBe(0);
@@ -80,18 +92,20 @@ describe("every target states where its number came from", () => {
 });
 
 describe("the board's decision of 7.9.2026, as arithmetic", () => {
-  it("commits to ₪1,500 across four lines and to nothing else", () => {
-    // BOARD.md §3: four lines — apify-actors 200, oss-bounties 300,
-    // il-biz-tools 400, pcn874 600. The number is asserted rather than derived
-    // so that changing a target is a decision somebody has to make in this file
-    // too, with the board's reasoning in front of them.
+  it("commits to ₪1,100 across four lines and to nothing else", () => {
+    // BOARD.md §3 committed ₪1,500: apify-actors 200, oss-bounties 300,
+    // il-biz-tools 400, pcn874 600. The board of 28.9.2026 planned il-biz-tools
+    // at ₪0 while it is measured on *.netlify.app (RULING-2026-09-28-floors.md
+    // §9), so the committed sum is ₪1,100. The number is asserted rather than
+    // derived so that changing a target is a decision somebody has to make in
+    // this file too, with the board's reasoning in front of them.
     expect(DEFAULT_PORTFOLIO.map((l) => l.id).sort())
       .toEqual(["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"]);
-    expect(committedTargetIls()).toBe(1500);
-    expect(portfolioTargetAgorot()).toBe(150_000);
+    expect(committedTargetIls()).toBe(1100);
+    expect(portfolioTargetAgorot()).toBe(110_000);
 
     const byId = Object.fromEntries(DEFAULT_PORTFOLIO.map((l) => [l.id, l.targetMonthlyAgorot / 100]));
-    expect(byId).toEqual({ "apify-actors": 200, "oss-bounties": 300, "il-biz-tools": 400, pcn874: 600 });
+    expect(byId).toEqual({ "apify-actors": 200, "oss-bounties": 300, "il-biz-tools": 0, pcn874: 600 });
   });
 
   it("keeps the ₪700 the board did not commit to visible, and out of the total", () => {
@@ -100,7 +114,10 @@ describe("the board's decision of 7.9.2026, as arithmetic", () => {
     // one thing BOARD.md §6.2 amended the recommendation to prevent.
     expect(conditionalTargetIls()).toBe(700);
     expect(CONDITIONAL_TARGETS.map((t) => t.id).sort()).toEqual(["devpost-hackathons", "registrar-reminder"]);
-    expect(committedTargetIls() + conditionalTargetIls()).toBe(2200);
+    // The chief audit's ₪2,200 is now 1,100 committed + 700 conditional + 400
+    // contested (il-biz-tools, RULING-2026-09-28-floors.md §9).
+    expect(committedTargetIls() + conditionalTargetIls()).toBe(1800);
+    expect(committedTargetIls() + conditionalTargetIls() + TARGET_BASIS["il-biz-tools"].contestedUpperBoundIls!).toBe(2200);
     // And the conditionals are NOT lines: they carry no target in the portfolio.
     const lineIds = new Set(DEFAULT_PORTFOLIO.map((l) => l.id));
     for (const t of CONDITIONAL_TARGETS) {
@@ -163,5 +180,50 @@ describe("the board's decision of 7.9.2026, as arithmetic", () => {
     expect(paidApis.standby).toMatch(/x402-il-api/);
     expect(paidApis.standby).toMatch(/₪0\/month/);
     expect(DEFAULT_PORTFOLIO.some((l) => l.id === "paid-apis")).toBe(false);
+  });
+});
+
+describe("the kill floor is a fraction of each line's own target (RULING-2026-09-28-floors.md §8)", () => {
+  it("gives every line a floor fraction in (0, 1]", () => {
+    for (const [id, basis] of Object.entries(TARGET_BASIS)) {
+      expect(typeof basis.killFloorFraction, `${id} has no killFloorFraction`).toBe("number");
+      expect(basis.killFloorFraction, id).toBeGreaterThan(0);
+      expect(basis.killFloorFraction, id).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it("resolves each line's own policy, and the shared default for a line it does not know", () => {
+    expect(policyForLine("il-biz-tools").killFloorFraction).toBe(0.5);
+    expect(policyForLine("pcn874").killFloorFraction).toBe(0.25);
+    expect(policyForLine("apify-actors").killFloorFraction).toBe(0.25);
+    expect(policyForLine("oss-bounties").killFloorFraction).toBe(0.25);
+    expect(policyForLine("no-such-line")).toEqual(DEFAULT_DECISION_POLICY);
+    // The rest of the policy is the base the caller passed, untouched.
+    const base = { ...DEFAULT_DECISION_POLICY, staleDays: 7 };
+    expect(policyForLine("il-biz-tools", base)).toEqual({ ...base, killFloorFraction: 0.5 });
+  });
+
+  it("keeps a shekel floor stated in words equal to fraction × target, and its days equal to the grace", () => {
+    let matched = 0;
+    for (const seed of DEFAULT_PORTFOLIO) {
+      const fraction = TARGET_BASIS[seed.id].killFloorFraction;
+      for (const criterion of seed.killCriteria) {
+        const m = /under ₪([\d,]+) in 30 days after (\d+) days/.exec(criterion);
+        if (!m) continue;
+        matched += 1;
+        expect(Number(m[1].replace(/,/g, "")) * 100, `${seed.id}: "${criterion}"`)
+          .toBe(Math.floor(seed.targetMonthlyAgorot * fraction));
+        expect(Number(m[2]), `${seed.id}: "${criterion}"`).toBe(DEFAULT_DECISION_POLICY.graceDays);
+      }
+    }
+    expect(matched, "pcn874 states its floor in shekels; the check must have read it").toBeGreaterThan(0);
+  });
+
+  it("never puts a floor above its line's target", () => {
+    for (const seed of DEFAULT_PORTFOLIO) {
+      if (seed.targetMonthlyAgorot <= 0) continue;
+      const floor = Math.floor(seed.targetMonthlyAgorot * TARGET_BASIS[seed.id].killFloorFraction);
+      expect(floor, seed.id).toBeLessThanOrEqual(seed.targetMonthlyAgorot);
+    }
   });
 });

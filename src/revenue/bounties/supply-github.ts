@@ -35,8 +35,10 @@ import {
   evaluateIssue,
   renderSupplyMarkdown,
   searchUnservedAllowance,
+  strikePreFixReadings,
   unservedCaveat,
   type CollectedRepo,
+  type InstrumentFault,
   type EvaluatedIssue,
   type IssueVerdict,
   type SupplyComment,
@@ -534,19 +536,60 @@ export interface RunAlgoraSupplyResult {
   measurement?: SupplyMeasurement;
 }
 
-function readPreviousHistory(path: string): SupplyReading[] {
-  if (!existsSync(path)) return [];
-  let data: { history?: unknown };
+const isReading = (r: unknown): r is SupplyReading =>
+  typeof r === "object" && r !== null && typeof (r as SupplyReading).week === "string" && typeof (r as SupplyReading).measuredAt === "string" && Number.isFinite((r as SupplyReading).claimable);
+
+const isFault = (f: unknown): f is InstrumentFault => isReading(f) && typeof (f as InstrumentFault).reason === "string";
+
+/** The weekly series and the struck readings from last week's file. A file that is not JSON stops the run. */
+function readPrevious(path: string): { history: SupplyReading[]; instrumentFaults: InstrumentFault[] } {
+  if (!existsSync(path)) return { history: [], instrumentFaults: [] };
+  let data: { history?: unknown; instrumentFaults?: unknown };
   try {
     data = JSON.parse(readFileSync(path, "utf8"));
   } catch (error) {
     throw new Error(`${path} exists but is not JSON (${error instanceof Error ? error.message : String(error)}); refusing to overwrite it and lose the weekly series.`);
   }
-  if (!Array.isArray(data.history)) return [];
-  return data.history.filter(
-    (r): r is SupplyReading =>
-      typeof r === "object" && r !== null && typeof (r as SupplyReading).week === "string" && typeof (r as SupplyReading).measuredAt === "string" && Number.isFinite((r as SupplyReading).claimable),
-  );
+  return {
+    history: Array.isArray(data.history) ? data.history.filter(isReading) : [],
+    instrumentFaults: Array.isArray(data.instrumentFaults) ? data.instrumentFaults.filter(isFault) : [],
+  };
+}
+
+export interface StrikeSupplyFilesResult {
+  code: number;
+  message: string;
+}
+
+/**
+ * Strike the pre-fix readings in the files already on disk, without measuring (RULING-2026-09-28-bounty-rail.md §3.4):
+ * `strikePreFixReadings` over the JSON, then `renderSupplyMarkdown` over the result — the same two functions a
+ * measuring run uses, so the struck file is what the generator would have written. Writes nothing on a file it cannot
+ * read. Never throws. `scripts/algora-supply.ts --strike-pre-fix` is the command.
+ */
+export function strikeSupplyFiles(opts: { outJson?: string; outMd?: string } = {}): StrikeSupplyFilesResult {
+  const outJson = opts.outJson ?? DEFAULT_SUPPLY_JSON;
+  const outMd = opts.outMd ?? DEFAULT_SUPPLY_MD;
+  try {
+    if (!existsSync(outJson)) return { code: 1, message: `${outJson} does not exist; there is no reading to strike. Nothing was written.` };
+    const m = JSON.parse(readFileSync(outJson, "utf8")) as SupplyMeasurement;
+    if (!Array.isArray(m.history)) throw new Error(`${outJson} carries no weekly series`);
+    const before = (m.instrumentFaults ?? []).length;
+    const struck = strikePreFixReadings(m);
+    const added = struck.instrumentFaults.length - before;
+    mkdirSync(dirname(outJson), { recursive: true });
+    mkdirSync(dirname(outMd), { recursive: true });
+    writeFileSync(outJson, `${JSON.stringify(struck, null, 2)}\n`);
+    writeFileSync(outMd, renderSupplyMarkdown(struck));
+    return {
+      code: 0,
+      message:
+        `Algora supply: struck ${added} ${added === 1 ? "reading" : "readings"} as instrument faults (${struck.instrumentFaults.length} recorded in all); ` +
+        `${struck.history.length} left in the series. ${struck.boardReading.text} Written to ${outJson} and ${outMd}.`,
+    };
+  } catch (error) {
+    return { code: 1, message: `Algora supply NOT struck: ${error instanceof Error ? error.message : String(error)}. Nothing was written.` };
+  }
 }
 
 /**
@@ -560,7 +603,7 @@ export async function runAlgoraSupply(opts: RunAlgoraSupplyOptions = {}): Promis
   const token = (opts.env?.GITHUB_TOKEN ?? "").trim() || null;
   const client = createGithubClient({ token, fetchImpl: opts.fetchImpl, sleep: opts.sleep, now, maxWaitMs: opts.maxWaitMs, log: opts.log });
   try {
-    const previousHistory = readPreviousHistory(outJson);
+    const previous = readPrevious(outJson);
     const today = new Date(now()).toISOString().slice(0, 10);
     const collected = await collectSupply(client, { today, log: opts.log });
     const stats = client.stats();
@@ -568,7 +611,8 @@ export async function runAlgoraSupply(opts: RunAlgoraSupplyOptions = {}): Promis
       measuredAt: new Date(now()).toISOString(),
       evaluated: collected.evaluated,
       repos: collected.repos,
-      previousHistory,
+      previousHistory: previous.history,
+      previousInstrumentFaults: previous.instrumentFaults,
       method: {
         query: collected.query,
         searchTotalCount: collected.searchTotalCount,

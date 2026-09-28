@@ -195,8 +195,14 @@ describe("the measuring status", () => {
     const d = decideLine(line("measuring"), quiet);
     expect(d.decision).toBe("hold");
     expect(d.rationale).toMatch(/pre-registered gates/);
-    // The same numbers on a live line are a kill: the status is what protects the experiment, nothing else.
-    expect(decideLine(line("live"), { ...quiet, status: "live" }).decision).toBe("kill");
+    // The same numbers on a live line with a target are a kill: the status is what protects the experiment, nothing
+    // else. On a live line whose target is still ₪0 they are an escalation instead — the board sets a target from the
+    // reading that made the line live before any floor applies (RULING-2026-09-28-floors.md §8).
+    const targeted = { ...line("live"), targetMonthlyAgorot: 20_000 };
+    expect(decideLine(targeted, { ...quiet, status: "live", targetMonthlyAgorot: 20_000 }).decision).toBe("kill");
+    const unset = decideLine(line("live"), { ...quiet, status: "live" });
+    expect(unset.decision).toBe("escalate");
+    expect(unset.triggered).toContain("target_unset");
   });
 
   it("counts against the experiment cap", () => {

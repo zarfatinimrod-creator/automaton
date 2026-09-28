@@ -5,6 +5,11 @@
  *
  *   pnpm exec tsx scripts/algora-supply.ts
  *   pnpm exec tsx scripts/algora-supply.ts --out-json /tmp/s.json --out-md /tmp/s.md --max-wait-minutes 5
+ *   pnpm exec tsx scripts/algora-supply.ts --strike-pre-fix
+ *
+ * `--strike-pre-fix` measures nothing: it moves every reading the pre-28.9.2026 counter produced out of the weekly
+ * series into `instrumentFaults` in the files already on disk, and re-renders the Markdown — the struck readings of
+ * research/channel-loop/RULING-2026-09-28-bounty-rail.md §3.4. A measuring run does the same on its own.
  *
  * Writes `state/colony/measurements/algora-supply.json` (the hourly tick reads it into the KPI `claimableBounties`)
  * and `research/measurements/algora-supply.md` (the human-readable table), both regenerated each run, the weekly
@@ -25,7 +30,7 @@ import { writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
-import { DEFAULT_SUPPLY_JSON, DEFAULT_SUPPLY_MD, runAlgoraSupply } from "../src/revenue/bounties/supply-github.js";
+import { DEFAULT_SUPPLY_JSON, DEFAULT_SUPPLY_MD, runAlgoraSupply, strikeSupplyFiles } from "../src/revenue/bounties/supply-github.js";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -48,17 +53,25 @@ async function main(argv: string[]): Promise<number> {
       "out-json": { type: "string" },
       "out-md": { type: "string" },
       "max-wait-minutes": { type: "string" },
+      "strike-pre-fix": { type: "boolean" },
     },
     allowPositionals: false,
   });
+  const outJson = resolve(values["out-json"] ?? resolve(REPO_ROOT, DEFAULT_SUPPLY_JSON));
+  const outMd = resolve(values["out-md"] ?? resolve(REPO_ROOT, DEFAULT_SUPPLY_MD));
+  if (values["strike-pre-fix"]) {
+    const struck = strikeSupplyFiles({ outJson, outMd });
+    notice(struck.message);
+    return struck.code;
+  }
   const maxWaitMinutes = values["max-wait-minutes"] === undefined ? undefined : Number(values["max-wait-minutes"]);
   if (maxWaitMinutes !== undefined && !(Number.isFinite(maxWaitMinutes) && maxWaitMinutes >= 0)) {
     throw new Error("--max-wait-minutes must be a non-negative number");
   }
   const result = await runAlgoraSupply({
     env: process.env,
-    outJson: resolve(values["out-json"] ?? resolve(REPO_ROOT, DEFAULT_SUPPLY_JSON)),
-    outMd: resolve(values["out-md"] ?? resolve(REPO_ROOT, DEFAULT_SUPPLY_MD)),
+    outJson,
+    outMd,
     maxWaitMs: maxWaitMinutes === undefined ? undefined : maxWaitMinutes * 60_000,
     log: (m) => console.error(m),
   });

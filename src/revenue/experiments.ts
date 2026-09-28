@@ -4,7 +4,8 @@
  * Some lines cannot be judged by the revenue floor while they are still finding out whether strangers can reach
  * them at all. The faceless-YouTube experiment (research/faceless-youtube/VERDICT.md, REOPEN_AS_EXPERIMENT,
  * 27.9.2026) is the first: nothing it does can reach the ledger before YouTube's own thresholds, a review and a
- * payment cycle, so `decideLine`'s ₪500 floor would kill it on day 45 for a reason that says nothing. Such a line
+ * payment cycle, so `decideLine`'s revenue floor (a fixed ₪500 after 45 days when this was written; since 28.9.2026 a
+ * fraction of the line's own target after 90 days) would kill it for a reason that says nothing. Such a line
  * sits in status `measuring`. `decideLine` holds it, and this module judges it by gates written down before the
  * first upload.
  *

@@ -190,12 +190,21 @@ export interface ReviewInput {
 }
 
 export interface DecisionPolicy {
-  /** Days after launch before a line can be killed for low revenue. */
+  /**
+   * Days after launch before a line can be killed for low revenue. `launchedAt` is set when a line becomes `live`, and
+   * `live` means the first ledger entry with a platform id (MISSION rule 2) — so this is 90 days from the first shekel.
+   * Every line in the portfolio states 90 (board ruling 28.9.2026, research/channel-loop/RULING-2026-09-28-floors.md §8).
+   */
   graceDays: number;
   /** Days a line may sit in `building` before the supervisor escalates. */
   buildGraceDays: number;
-  /** 30-day revenue floor (agorot) after the grace period; below this → kill. */
-  killFloorAgorot: number;
+  /**
+   * 30-day revenue floor after the grace period, as a fraction (0 < f ≤ 1) of the LINE'S OWN target; below it → kill.
+   * Replaced a fixed ₪500 on 28.9.2026: after the 7.9 retarget the fixed floor exceeded three of the four targets, so a
+   * line at its own target would have been killed. A fraction moves with every retarget and can never sit above the
+   * target. Lines override it through TARGET_BASIS.killFloorFraction (portfolio.ts → policyForLine).
+   */
+  killFloorFraction: number;
   /** cost30d > revenue30d × ratio (after 21 days) → pivot, then kill. */
   killCostRatio: number;
   /** Minimum net margin (net/revenue) to be eligible for scale. */
@@ -211,9 +220,9 @@ export interface DecisionPolicy {
 }
 
 export const DEFAULT_DECISION_POLICY: DecisionPolicy = {
-  graceDays: 45,
+  graceDays: 90,
   buildGraceDays: 30,
-  killFloorAgorot: 50_000, // 500 ILS / 30d
+  killFloorFraction: 0.25, // the softer of the two ratios the lines state (pcn874 ₪150/₪600); il-biz-tools overrides to 0.5
   killCostRatio: 2,
   minMarginForScale: 0.5,
   scaleAttainment: 1.0,

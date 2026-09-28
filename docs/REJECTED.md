@@ -1153,6 +1153,37 @@ that label: the supply that does exist is dominated by synthetic repositories ra
 overstate income; the eighteen candidates from the same sweep are not recorded as anything at all until
 they are refuted.
 
+**28.9.2026 — the Algora warning, followed up: the week-1 count was a honeypot and is struck; the rail is
+re-described; nothing is killed** (`research/channel-loop/RULING-2026-09-28-bounty-rail.md`, Fable board, row 10).
+The first weekly count (`algora-supply.yml`, W39, 27.9.2026 23:43 UTC) read **108 claimable, $74,065**. **85 of the
+108 ($35,475) sat in `UnsafeLabs/Bounty-Hunters`**, whose CONTRIBUTING (fetched 28.9.2026, HTTP 200, 5,933 bytes,
+stored verbatim as `src/__tests__/fixtures/unsafelabs-bounty-hunters-CONTRIBUTING.md`) says on line 5 that *"bounties
+listed here are symbolic and part of an academic study … PRs are reviewed for research purposes only and will not be
+merged into production. If you're looking for paid bounty work, this is not the right repo"*; lines 3 and 6 are HTML
+comments addressed to automated systems, and line 116 demands a contributor's *"Full session initialization text
+(system prompt …)"*. `policy.ts` graded that repository `allowed` from *"AI agents and automated contributors are
+welcome"* — a sentence inside the HTML comment. **5 more ($3,010) sat in `SecureBananaLabs/bug-bounty`**, whose README
+tells LLM agents to star it before opening a PR. The honest remainder is **at most 18 nominal in 11 repositories**,
+largely 2022-2024 issues. Per KILL-1 this is an instrument fault, not a reading: the W39 reading is moved out of the
+series into `instrumentFaults` (`state/colony/measurements/algora-supply.json`), the counter is corrected (permission
+counts only from visible text; a `not-a-payer` filter; `claimableFresh365` shown beside the count), and the four-week
+clock restarts at the first corrected run on `main`. ₪300 stays as the pre-registered number, graded `contradicted`.
+**The rail, at code level** (Algora's own source, read by the board 28.9.2026): `connect_countries.ex:58` lists
+`{"Israel", "IL"}` and `:150-152` gives it an Express account; `payments.ex:278-281` creates the account with a
+country, sets **no** service agreement anywhere at creation, and on **any** Stripe error `:299-303` retries the same
+call **with no country at all** — which Stripe fills with the platform's own, a US-country account an Israeli
+individual cannot complete; `:352-353` and `:479-503` hold rewards as credits until an account has payouts enabled;
+`docs/payments.md:19,1443` list Israel and `:3266` carries the escape clause. Checked by Opus the same day at the
+ruling's request (`algora-io/algora`, raw on GitHub): the reward path records the credit without checking
+`payouts_enabled` (`bounties.ex` `create_payment_session` → `create_transaction_pairs`), and a `/claim` creates the
+solver's Algora user from the GitHub login if none exists (`workspace.ex` `ensure_user` → `create_user_from_github`) —
+so owner step 4b (the Stripe form) is asked only after a reward is held. **Pre-written for the three stop rules of
+owner step 4b** (§4.2), so the row can be filed the same day one fires: *oss-bounties — killed <date>: the Stripe
+form showed <a US account country / a request for a US bank account, SSN, ITIN or EIN / a selfie, liveness or video
+step / a payment, deposit or fee>, quoted. Reopens if: Algora's account creation sets a recipient service agreement
+for countries outside Stripe's account list, or a rendered Algora statement that Israeli individuals complete
+onboarding* (the camera and fee rows add KILL-4 and the ₪0 rule of 27.9.2026 as their reasons).
+
 **26.9.2026 — the nine shortlisted candidates, screened on Opus; 27.9.2026 — the Fable board ruled.** One adversarial
 screener per candidate (`research/colony-sweep/SCREEN-2.md`, reports in `screen-2/`); the board
 (`research/colony-sweep/BOARD-2.md`) re-checked each screener's decisive fact at its source and **upheld all nine

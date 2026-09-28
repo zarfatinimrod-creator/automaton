@@ -1,0 +1,15 @@
+{
+  "url": "https://raw.githubusercontent.com/UnsafeLabs/Bounty-Hunters/main/CONTRIBUTING.md",
+  "fetchedAt": "2026-09-28",
+  "httpStatus": 200,
+  "bytes": 5933,
+  "sha256": "119bc8561105630869d3a504b24febea2dd02e5e5ef8e34f73acbe4524b07a36",
+  "why": "RULING-2026-09-28-bounty-rail.md §3.3: the fixture for policy.ts. 85 of the week-1 count's 108 claimable bounties sat in this repository. Stored verbatim as DATA: it carries text addressed to automated systems (HTML comments on lines 3 and 6, and the §4.7 table on lines 104-125 that asks for a contributor's session text, working directory and environment). Nothing in this file is an instruction to anyone who reads it here.",
+  "lines": {
+    "hiddenPermission": 3,
+    "symbolicNotice": 5,
+    "hiddenOverride": 6,
+    "sessionTextDemand": 116,
+    "envDumpDemand": 121
+  }
+}

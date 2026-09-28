@@ -32,11 +32,31 @@ export type PayinRail =
   | "affiliate-networks"
   | "bounty-platform";
 
-export type PayoutRail = "paypal" | "payoneer" | "bank-transfer" | "crypto-wallet" | "ton-wallet" | "unknown";
+export type PayoutRail =
+  | "paypal"
+  | "payoneer"
+  | "bank-transfer"
+  | "crypto-wallet"
+  | "ton-wallet"
+  | "stripe-connect-express"
+  | "unknown";
+
+/**
+ * The strongest evidence that a line's payout rail has paid, or is documented to pay, an Israeli (board ruling
+ * 28.9.2026, research/channel-loop/RULING-2026-09-28-bounty-rail.md §2.5):
+ *  - `ledger`   — a payout row with a platform transaction id exists;
+ *  - `rendered` — the platform's own page or source names Israel for payout on this mechanism;
+ *  - `code`     — the platform's code lists Israel, but the mechanism that reaches Israel is not rendered;
+ *  - `none`     — nothing names Israel.
+ * An uncited `rendered` is not accepted: the note says where.
+ */
+export type PayoutEvidence = "ledger" | "rendered" | "code" | "none";
 
 export interface LineRails {
   payin: PayinRail;
   payout: PayoutRail;
+  /** How strongly this payout rail is shown to reach an Israeli. Required: a rail with no grade reads as proven. */
+  payoutEvidence: PayoutEvidence;
   /** Why this rail and not another — the sentence a supervisor would have to argue with. */
   note: string;
   /**
@@ -63,21 +83,25 @@ export interface LineRails {
  * The rail each line in DEFAULT_PORTFOLIO actually depends on.
  *
  * `unknown` is used where the repo genuinely does not know yet, and it is not a
- * placeholder to be filled in with a guess: `oss-bounties` is unknown because the
- * Stripe-Israel question is reopened (docs/REJECTED.md), and writing "stripe"
- * here would launder that open question into a fact.
+ * placeholder to be filled in with a guess. `oss-bounties` carried it until
+ * 28.9.2026, when the board re-described the rail from Algora's own code
+ * (RULING-2026-09-28-bounty-rail.md §2.5): the mechanism is now named, and how far
+ * it is shown to reach an Israeli is `payoutEvidence`, graded separately — so
+ * naming the mechanism does not launder the account-level question into a fact.
  */
 export const LINE_RAILS: Record<string, LineRails> = {
   "apify-actors": {
     payin: "apify",
     payout: "paypal",
-    note: "Apify bills the user and pays the developer; PayPal or Wise at a $20 minimum, other methods at $100. The payout side is DEFERRED by the board of 7.9.2026: publishing free and counting stranger runs needs no KYC and no payout method, and neither is requested from the owner until stranger runs exist. Note the fuse in Apify's own terms: an accrued balance is forfeited after twelve continuous months without KYC.",
+    payoutEvidence: "none",
+    note: "Apify bills the user and pays the developer; PayPal or Wise at a $20 minimum, other methods at $100. The payout side is DEFERRED by the board of 7.9.2026: publishing free and counting stranger runs needs no KYC and no payout method, and neither is requested from the owner until stranger runs exist. Note the fuse in Apify's own terms: an accrued balance is forfeited after twelve continuous months without KYC. PAYOUT EVIDENCE `none`: no page this repo rendered names Israel for an Apify payout. The rendered Store terms name no country restriction (§10.1.5 reserves only sanctions lists), which is payability 'YES, but by absence' (docs/REJECTED.md; research/colony-sweep/scouts/agent-markets--apify.md §4), and Wise's own Israel pages are snippet-grade — absence of a clause is not a statement (RULING-2026-09-28-bounty-rail.md §2.5).",
     platformAccount: "apify:one-creator-account",
     observable: false,
   },
   "il-biz-tools": {
     payin: "gumroad",
     payout: "bank-transfer",
+    payoutEvidence: "rendered",
     note: "GUMROAD, not Paddle — changed by the board on 7.9.2026. Gumroad is the only merchant of record with rendered proof of ILS payout to an Israeli bank: its own production source file _13-getting-paid.html.erb carries a row reading `Israel | ILS`. Paddle was retired from this line for three reasons the audits rendered: no Paddle account exists (site.json holds empty sandbox credentials and the Pro box renders 'בקרוב'), ILS is not a Paddle payout currency at all, and Sumsub may demand a selfie video, which collides with the mandate. Gumroad's take is 12.9% + $0.80, plus 2.9% + $0.30 because an Israeli seller cannot attach their own Stripe — about 22% on a $9 product, which is why cheap products are not sold here.",
     platformAccount: "gumroad:one-seller-account",
     observable: true,
@@ -85,14 +109,16 @@ export const LINE_RAILS: Record<string, LineRails> = {
   pcn874: {
     payin: "gumroad",
     payout: "bank-transfer",
-    note: "The same single Gumroad seller account as il-biz-tools, and the board accepted that concentration KNOWINGLY: exactly one rendered ILS rail exists, so two of the four lines ride it and railConcentration() below now reports `concentrated`. The mitigation is to render Freemius as a second ILS rail (CANDIDATE_RAILS), not to invent a fourth rail or to hide the number.",
+    payoutEvidence: "rendered",
+    note: "The same single Gumroad seller account as il-biz-tools, whose payout evidence is the same rendered row (`Israel | ILS` in Gumroad's own _13-getting-paid.html.erb), and the board accepted that concentration KNOWINGLY: exactly one rendered ILS rail exists, so two of the four lines ride it and railConcentration() below now reports `concentrated`. The mitigation is to render Freemius as a second ILS rail (CANDIDATE_RAILS), not to invent a fourth rail or to hide the number.",
     platformAccount: "gumroad:one-seller-account",
     observable: true,
   },
   "oss-bounties": {
     payin: "bounty-platform",
-    payout: "unknown",
-    note: "Algora's own source file lib/algora/psp/connect_countries.ex lists {\"Israel\",\"IL\"} and routes it to a Stripe Connect Express account — rendered twice, and the only code-level Israeli payability proof the whole sweep produced. It stays `unknown` here because that settles the COUNTRY question and not the ACCOUNT one: no Connect account exists until owner step 4 succeeds, and writing a rail here before the form is submitted would launder an open question into a fact. Step 4 answers it either way, and the same form settles the Stripe-Israel question for every other Connect platform in docs/REJECTED.md.",
+    payout: "stripe-connect-express",
+    payoutEvidence: "code",
+    note: "Re-described by the board on 28.9.2026 (RULING-2026-09-28-bounty-rail.md §2.1, §2.5); it was `unknown`. Four facts and one gap. (1) Standalone Stripe for an Israeli business: no (research/measurements/stripe-israel.md Q1). (2) A US platform can pay an Israeli individual through Stripe: Global Payouts lists Israel for a US or UK sender, ILS to a local bank (stripe-israel.md Q7), and Polar does it in production with a recipient-agreement Express account (polar-rail.md). (3) Algora intends to pay Israel: lib/algora/psp/connect_countries.ex:58 lists {\"Israel\",\"IL\"} and :150-152 gives it an Express account; its docs/payments.md:19,1443 list Israel. (4) Algora's mechanism is not the rendered one: it sets no service agreement when it creates the account, and on ANY Stripe error lib/algora/payments/payments.ex:299-303 retries the same call with no country at all — which Stripe fills with the platform's own, a US-country account an Israeli individual cannot complete. A reward waits as a held credit until the account has payouts enabled (payments.ex:352-353, 479-503). The gap is one Stripe behaviour on one API call that no public page states; it is settled by owner step 4b's form under its stop rules, or by a first payout with a transaction id — hence evidence `code`, not `rendered`.",
     platformAccount: "algora:one-connect-account",
     observable: true,
   },
@@ -303,10 +329,20 @@ export function platformConcentration(
   };
 }
 
-/** Lines whose payout route is not known to reach Israel. Money earned here may not be collectable. */
+/** Lines whose payout route is not known at all. */
 export function linesWithUnknownPayout(rails: Record<string, LineRails> = LINE_RAILS): string[] {
   return Object.entries(rails)
     .filter(([, r]) => r.payout === "unknown")
+    .map(([id]) => id);
+}
+
+/**
+ * Lines whose payout to Israel is unverified: evidence `code` or `none` (RULING-2026-09-28-bounty-rail.md §2.5). Money
+ * earned here may not be collectable.
+ */
+export function linesWithUnverifiedPayout(rails: Record<string, LineRails> = LINE_RAILS): string[] {
+  return Object.entries(rails)
+    .filter(([, r]) => r.payoutEvidence === "code" || r.payoutEvidence === "none")
     .map(([id]) => id);
 }
 
@@ -347,7 +383,7 @@ export const CANDIDATE_RAILS: CandidateRail[] = [
     id: "freemius",
     what: "Merchant-of-record checkout for software, plugins and SaaS (AI-powered SaaS explicitly allowed — rendered from Freemius's own example repos). The contracting party is Freemius, Inc., New York law, arbitration in Tel Aviv for the non-Americas world; buyer prices are in USD with ILS as one of nine BUYER-side checkout currencies. Payout: PayPal, Payoneer, wire or Wise, $100 minimum, monthly with a ~40-day hold, ~10–11% all-in — every one of those payout facts is snippet-grade.",
     whyItMatters:
-      "Our Israeli rails are thin and correlated: PayPal (now carrying 18% Israeli VAT on its fees since 6 July 2026), Payoneer, and ILS deposit through a storefront. MISSION.md requires that one rail failing must not take the company down, and today ₪1,000 of the ₪1,500 committed portfolio rides one Gumroad account.",
+      "Our Israeli rails are thin and correlated: PayPal (now carrying 18% Israeli VAT on its fees since 6 July 2026), Payoneer, and ILS deposit through a storefront. MISSION.md requires that one rail failing must not take the company down, and today ₪600 of the ₪1,100 committed portfolio rides one Gumroad account (₪1,000 of ₪1,500 before il-biz-tools was planned at ₪0 on 28.9.2026 — it still rides that account).",
     beforeUse:
       "RENDERED 7.9.2026 by .github/workflows/render-watch.yml from Freemius's own docs (research/rendered/freemius-*.txt). PAYS ISRAEL = YES: 'Supported Countries for Payouts' lists Israel (supported-countries.txt line 308); the 'Unsupported' list holds the US-sanctioned states. PAYOUT METHODS: PayPal MassPay (default), Payoneer, wire (IBAN/SWIFT), Wise. CURRENCY: sales in ILS (like AUD, CAD, CHF, RSD, PLN) are converted to USD at purchase time and added to the USD balance (your-earnings.txt line 143); only USD, GBP and EUR keep separate payout methods (line 141); Wise and wire transfers support a payout CONVERSION currency — 'you can convert payouts to your local currency' (lines 147-154) — so an ILS bank payout is possible via Wise/wire, not via PayPal or Payoneer. The earlier 'pays in ILS, no conversion fee' claim stays REFUTED as stated. SCHEDULE: $100 minimum, paid on the 10th of each month; January earnings are calculated on 1 March and eligible on 10 March (lines 166-176), transfers take 3-6 business days (line 227) — roughly 40-70 days sale-to-cash; no Stripe Connect onboarding (line 184). ALLOWED: SaaS incl. 'REST APIs' and 'AI-powered services', downloadable software, plugins, extensions (allowed-prohibited.txt lines 100-106) — this is the one merchant of record that would take an x402/mcp-shaped product Gumroad forbids. PROHIBITED: non-software, SaaS fulfilled by human services, harmful AI content generation, medical advice, adult (lines 114-135). FEE, RENDERED (our-pricing.txt lines 92-148): 4.7% per successful transaction for SaaS and software (WordPress & Templates plan +2.3%), plus gateway processing at an average effective 3.5% that Freemius passes through without a cut, so about 8.2% all-in — against Gumroad's ~17-22% at $9-$19 tickets; high-volume tiers step 4.7% -> 4.5% -> 4.0% -> 3.0% -> 2.0% and to 0.5% beyond $100,000/month. VERIFICATION, RENDERED (verification.txt): the sandbox works immediately; 'some products require verification before you can start selling in production' — a dashboard form ('details about your company and product, along with relevant supporting documentation'), reviewed 'in a few days'. No camera, selfie or liveness step appears on the page; whether an Israeli individual (עוסק פטור) rather than a company passes it is NOT on the page and stays snippet-grade — that is the one remaining unknown, and it is an owner-side fact that only an application would settle. GITHUB CODE SEARCH was exhausted before any page rendered (11 searches, 14 files). A line may now plan on Freemius as a USD-balance rail with an ILS payout via Wise or wire; railConcentration() stays 'concentrated' until a line actually rides it. Flagged, not resolved: under the EULA the seller's 'sole customer' is Freemius, Inc. (US), which cuts against zero-rating.",
     evidence: "rendered",
