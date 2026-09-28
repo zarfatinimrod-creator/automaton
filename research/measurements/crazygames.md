@@ -457,3 +457,11 @@ was opened only for link targets and the table's column layout.
 **Verdict for candidate 6 (CrazyGames): NEEDS_MORE**
 
 These pages fail nothing [RENDERED]. They have no AI ban and no automation ban. The Basic Launch bars are file limits (intro:205-207), visual QA and PEGI12 (intro:213-214). The SDK, ad and AdBlock rules are Full Launch work the agent can build. The admission gate is still open: the FAQ, Payouts page, terms and now the three requirements pages all name the portal (intro.html:231) and never say whether a runner may operate it, and no upload API exists in any of them. The single next check is one written question to CrazyGames from the brand mailbox (proposed step 8): "May a developer account submit and update games through an automated browser session run on the developer's behalf, and is there an upload API?" Record the answer verbatim. A yes meets BOARD-LOOP.md:125. A no triggers the KILL-4 row.
+
+## Tick 5 (28.9.2026): Tipalti's payees FAQ refused
+
+The page the breadth board named to settle Israel-as-payee and any camera step at Tipalti (ZERO-TESTS row 33,
+https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs) answered HTTP 403 to the runner (fetchedAt 2026-09-28T13:17:48.345Z).
+So step 10 is still gated on a Tipalti reading that no free render has produced. Options recorded in
+`research/measurements/spreadshirt.md` (same Zendesk refusal): a GitHub mirror, or a written question once the brand mailbox
+(owner step 8) exists.

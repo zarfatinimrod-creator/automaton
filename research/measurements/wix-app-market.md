@@ -443,3 +443,11 @@ SLA. The single next check is to render **`https://dev.wix.com/app-market-partne
 The floor half of the gate now passes on the binding text: a balance under $200 carries over (`:375`) and is lost only for breach (`:537`, `:43`). The Israel half has narrowed but is still open: the agreement excludes only comprehensively sanctioned territories (`:277`, `:279`, which do not include Israel) and pays USD by wire (`:385`), but it names no payee countries. For that half, tick 2's Tipalti-form fork still applies. Nothing in the text triggers the support kill criterion, since there is no user-support SLA and no AI clause, but the agreement raises two ₪0 risks the board has not priced: a third-party security test before submission (`:185`) and the six-cloud hosting rule (`:165`).
 
 **Single next check:** render `https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice` (linked in the docs navigation of the tick 1-3 captures). Read what evidence Wix accepts for `:185` and `:181`, and whether a free route satisfies them. Suggested `urls.txt` line for the main thread: `https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice	wix-security-best-practice`.
+
+## Tick 5 (28.9.2026): Tipalti's payees FAQ refused
+
+The page the breadth board named to settle Israel-as-payee and any camera step at Tipalti (ZERO-TESTS row 33,
+https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs) answered HTTP 403 to the runner (fetchedAt 2026-09-28T13:17:48.345Z).
+So the payout-form Israel question is still gated on a Tipalti reading that no free render has produced. Options recorded in
+`research/measurements/spreadshirt.md` (same Zendesk refusal): a GitHub mirror, or a written question once the brand mailbox
+(owner step 8) exists.
