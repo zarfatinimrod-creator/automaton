@@ -33,11 +33,12 @@ describe("brand-mail.yml — what it is allowed to do", () => {
     expect(text()).toMatch(/Once step 8 is done, add the probe to colony\.yml/);
   });
 
-  it("takes a command, a venue and a really_send switch that is off by default", () => {
+  it("takes a command, a venue, a really_send switch that is off by default, and the dry run's digest", () => {
     const inputs = wf().on.workflow_dispatch.inputs;
     expect(inputs.command).toMatchObject({ type: "choice", options: ["probe", "send"], default: "probe" });
     expect(inputs.venue.type).toBe("string");
     expect(inputs.really_send).toMatchObject({ type: "boolean", default: false });
+    expect(inputs.message_sha256).toMatchObject({ type: "string", required: false });
     expect(wf().jobs.send.if).toBe("inputs.command == 'send'");
     expect(wf().jobs.probe.if).toBe("inputs.command == 'probe'");
   });
@@ -56,9 +57,19 @@ describe("brand-mail.yml — what it is allowed to do", () => {
     expect(text().match(/secrets\.[A-Z_]+/g)!.every((m) => /BRAND_MAIL_(ADDRESS|APP_PASSWORD)$/.test(m))).toBe(true);
   });
 
-  it("serialises sends repository-wide and serialises the probe with the colony tick", () => {
+  it("gets the secrets only through the brand-mailbox environment, which the owner limits to main", () => {
+    // Repository secrets reach every branch and every workflow; an environment's reach only the jobs that name it,
+    // and only on the branches its deployment rule admits (exposure review, finding 1).
+    expect(wf().jobs.send.environment).toBe("brand-mailbox");
+    expect(wf().jobs.probe.environment).toBe("brand-mailbox");
+    expect(text()).toMatch(/THE SECRETS LIVE IN THE ENVIRONMENT brand-mailbox/);
+  });
+
+  it("serialises sends repository-wide, and gives the probe its own group so it never displaces a colony tick", () => {
     expect(wf().jobs.send.concurrency).toEqual({ group: "brand-mail-send", "cancel-in-progress": false });
-    expect(wf().jobs.probe.concurrency).toEqual({ group: "colony-state", "cancel-in-progress": false });
+    expect(wf().jobs.probe.concurrency).toEqual({ group: "brand-mail-probe", "cancel-in-progress": false });
+    const colony = parse(readFileSync(join(ROOT, ".github", "workflows", "colony.yml"), "utf8")) as Record<string, any>;
+    expect(colony.concurrency.group).not.toBe(wf().jobs.probe.concurrency.group);
   });
 
   it("runs the Python unit tests before anything leaves or is read", () => {
@@ -126,13 +137,17 @@ esac
     expect(run(guard, sandbox(), { GITHUB_REF: "refs/heads/main" }).status).toBe(0);
   });
 
-  it("passes --really-send only when the switch is on, and needs a venue", () => {
+  it("passes --really-send and the digest only when the switch is on, and needs a venue", () => {
     const send = stepNamed("send", "Send (a dry run");
-    const dry = run(send, sandbox(), { VENUE: "crazygames", REALLY_SEND: "false" });
+    expect(send.env!.MESSAGE_SHA256).toBe("${{ inputs.message_sha256 }}");
+    const dry = run(send, sandbox(), { VENUE: "crazygames", REALLY_SEND: "false", MESSAGE_SHA256: "ab12" });
     expect(dry.status).toBe(0);
     expect(dry.calls).toEqual(["python [scripts/brand_mail.py] [send] [--venue] [crazygames]"]);
-    const real = run(send, sandbox(), { VENUE: "crazygames", REALLY_SEND: "true" });
-    expect(real.calls).toEqual(["python [scripts/brand_mail.py] [send] [--venue] [crazygames] [--really-send]"]);
+    const real = run(send, sandbox(), { VENUE: "crazygames", REALLY_SEND: "true", MESSAGE_SHA256: "ab12" });
+    expect(real.calls).toEqual(["python [scripts/brand_mail.py] [send] [--venue] [crazygames] [--really-send] [--message-sha256] [ab12]"]);
+    // No digest: still one empty argument, which the script refuses (brand_mail.py's own test).
+    const bare = run(send, sandbox(), { VENUE: "crazygames", REALLY_SEND: "true", MESSAGE_SHA256: "" });
+    expect(bare.calls).toEqual(["python [scripts/brand_mail.py] [send] [--venue] [crazygames] [--really-send] [--message-sha256] []"]);
     const none = run(send, sandbox(), { VENUE: "", REALLY_SEND: "true" });
     expect(none.status).toBe(2);
     expect(none.calls).toEqual([]);
@@ -146,10 +161,17 @@ esac
     expect(spawnSync("ls", [box.dir]).stdout.toString()).not.toMatch(/pwned/);
   });
 
-  it("commits only sent.json after a real send, even a failed one, with [skip ci]", () => {
+  it("commits only sent.json after a real send, even a failed one, with [skip ci], and puts it on the run page first", () => {
     const commit = stepNamed("send", "Commit the send record");
     expect(commit.if).toBe("always() && inputs.really_send && steps.send.outcome != 'skipped'");
-    const r = run(commit, sandbox(), { VENUE: "wix", GITHUB_REF_NAME: "main" });
+    const withRecord = () => {
+      const box = sandbox();
+      mkdirSync(join(box.dir, "research", "owner-asks"), { recursive: true });
+      writeFileSync(join(box.dir, "research", "owner-asks", "sent.json"), '{"sent": [{"messageId": "<1.wix@brand.example>"}]}\n');
+      return box;
+    };
+    const box = withRecord();
+    const r = run(commit, box, { VENUE: "wix", GITHUB_REF_NAME: "main" });
     expect(r.status).toBe(0);
     expect(r.calls).toEqual([
       "git add research/owner-asks/sent.json",
@@ -157,8 +179,22 @@ esac
       "git commit -m brand-mail: wix message recorded in sent.json [skip ci]",
       "git push origin HEAD:main",
     ]);
+    expect(readFileSync(join(box.dir, "summary"), "utf8")).toContain('"messageId": "<1.wix@brand.example>"');
     const nothing = run(commit, sandbox(false), { VENUE: "wix", GITHUB_REF_NAME: "main" });
     expect(nothing.calls).toEqual(["git add research/owner-asks/sent.json", "git diff --cached --quiet"]);
+  });
+
+  it("when every push fails, points to the run summary and says the Sent-folder check holds the venue", () => {
+    const commit = stepNamed("send", "Commit the send record");
+    const box = sandbox();
+    mkdirSync(join(box.dir, "research", "owner-asks"), { recursive: true });
+    writeFileSync(join(box.dir, "research", "owner-asks", "sent.json"), "{}\n");
+    writeFileSync(join(box.bin, "git"), `#!/usr/bin/env bash\necho "git $*" >> "$STUB_LOG"\ncase "$1 $2" in\n  "diff --cached") exit 1 ;;\n  "push origin") exit 1 ;;\n  *) exit 0 ;;\nesac\n`);
+    const r = run(commit, box, { VENUE: "crazygames", GITHUB_REF_NAME: "main" });
+    expect(r.status).toBe(1);
+    expect(r.calls.filter((c) => c.startsWith("git push")).length).toBe(3);
+    expect(r.out).toMatch(/in this run's summary/);
+    expect(r.out).toMatch(/every send to crazygames is refused by the Sent-folder check/);
   });
 
   it("commits the probe's numbers with a one-line summary and [skip ci]", () => {

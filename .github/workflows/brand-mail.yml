@@ -4,23 +4,32 @@ name: brand-mail
 # owner never answers anyone. Two commands, both scripts/brand_mail.py (Python standard
 # library only, so there is nothing to install):
 #
-#   probe  IMAP, read-only (EXAMINE and BODY.PEEK only), NUMBERS ONLY: unread, replies per
-#          venue question, accessibility mail unanswered 7+ days. Written to
+#   probe  IMAP, read-only (EXAMINE and BODY.PEEK only), NUMBERS ONLY: unread, possible
+#          replies per venue question, accessibility mail unanswered 7+ days. Written to
 #          state/colony/brand-mail.json and committed; the colony tick reads that file into the
-#          report and makes overdue accessibility mail a blocker (src/revenue/brand-mail.ts).
+#          report and makes overdue accessibility mail, and a reading 2+ days old, a blocker
+#          (src/revenue/brand-mail.ts).
 #   send   One of the four venue questions in research/owner-asks/questions.json. A DRY RUN
-#          unless really_send is ticked, and a real send happens only on main. After a real
-#          send the record goes into research/owner-asks/sent.json and is committed here; the
-#          script refuses a second message to the same venue except the one follow-up the note
-#          allows (research/owner-asks/brand-mailbox-questions.md, "How it is sent").
+#          unless really_send is ticked; the dry run prints the message and its messageSha256,
+#          and a real send needs that digest in message_sha256, so what leaves is what was read.
+#          The record goes into research/owner-asks/sent.json and is committed here; the script
+#          refuses a second message to the same venue (checking the Sent folder too) except the
+#          one follow-up the note allows (research/owner-asks/brand-mailbox-questions.md,
+#          "How it is sent").
+#
+# THE SECRETS LIVE IN THE ENVIRONMENT brand-mailbox, whose deployment branches the owner limits
+# to main (step 8), NOT in repository secrets: every branch and every workflow could read those.
+# Both jobs name the environment, so GitHub hands the secrets only to a run on main; the guard
+# step and the script check the ref again. Dispatch from main, dry runs included.
 #
 # Before step 8 the two secrets do not exist and both commands print {"configured": false}
 # and exit 0: nothing is read, nothing is sent, the run is green.
 #
 # NO SCHEDULE YET, on purpose. Once step 8 is done, add the probe to colony.yml as a step
 # before the tick (`python3 scripts/brand_mail.py probe --out state/colony/brand-mail.json`,
-# with BRAND_MAIL_ADDRESS and BRAND_MAIL_APP_PASSWORD in that step's env), so every hourly
-# report carries the numbers. Until then this workflow is dispatch-only.
+# with BRAND_MAIL_ADDRESS and BRAND_MAIL_APP_PASSWORD in that step's env, in a job that names
+# `environment: brand-mailbox`), so every hourly report carries the numbers. Until then this
+# workflow is dispatch-only.
 #
 # Secrets are read only through `env:` on the one step that needs them, never interpolated
 # into a script, and never printed: the script prints error class names, not server text.
@@ -38,9 +47,13 @@ on:
         type: string
         required: false
       really_send:
-        description: "send only: really send. Off = dry run that prints the message. Honoured only on main."
+        description: "send only: really send. Off = dry run that prints the message and its messageSha256. Honoured only on main."
         type: boolean
         default: false
+      message_sha256:
+        description: "send with really_send only: the messageSha256 the dry run of this message printed"
+        type: string
+        required: false
 
 permissions:
   contents: write
@@ -49,8 +62,12 @@ jobs:
   send:
     if: inputs.command == 'send'
     runs-on: ubuntu-latest
+    environment: brand-mailbox
     # One send at a time, repository-wide: two runs reading the same sent.json could both pass
-    # the one-message-per-venue check. A queued send waits; it is never cancelled half-way.
+    # the one-message-per-venue check. A running send is never cancelled by a newer one. GitHub
+    # keeps at most ONE pending run per group, so a third dispatch replaces a second that is
+    # still waiting: that one is cancelled before it starts, nothing of it is sent, and it
+    # must be dispatched again. Dispatch sends one at a time and wait for each.
     concurrency:
       group: brand-mail-send
       cancel-in-progress: false
@@ -89,6 +106,7 @@ jobs:
           BRAND_MAIL_APP_PASSWORD: ${{ secrets.BRAND_MAIL_APP_PASSWORD }}
           VENUE: ${{ inputs.venue }}
           REALLY_SEND: ${{ inputs.really_send }}
+          MESSAGE_SHA256: ${{ inputs.message_sha256 }}
         run: |
           set -euo pipefail
           if [ -z "${VENUE}" ]; then
@@ -96,11 +114,13 @@ jobs:
             exit 2
           fi
           ARGS=(send --venue "$VENUE")
-          if [ "$REALLY_SEND" = "true" ]; then ARGS+=(--really-send); fi
+          # The script refuses a real send whose digest is missing or is not the dry run's.
+          if [ "$REALLY_SEND" = "true" ]; then ARGS+=(--really-send --message-sha256 "${MESSAGE_SHA256:-}"); fi
           python scripts/brand_mail.py "${ARGS[@]}"
 
-      # Runs after a failed send too: a connection lost mid-send is recorded "uncertain" so the
-      # venue cannot be mailed twice, and that record must reach the repository.
+      # Runs after a failed or cancelled send too: the record is written "uncertain" before the
+      # message is handed to the server, so a venue cannot be mailed twice, and that record must
+      # reach the repository. If it never does, the next send's Sent-folder check refuses anyway.
       - name: Commit the send record
         if: always() && inputs.really_send && steps.send.outcome != 'skipped'
         env:
@@ -112,6 +132,8 @@ jobs:
             echo "No record to commit."
             exit 0
           fi
+          # On the run page first, so the record survives even if every push below fails.
+          { echo '### research/owner-asks/sent.json after this send'; echo '```json'; cat research/owner-asks/sent.json; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           # [skip ci]: a record is data, not code.
           git commit -m "brand-mail: ${VENUE} message recorded in sent.json [skip ci]"
           for attempt in 1 2 3; do
@@ -121,15 +143,19 @@ jobs:
             echo "Push rejected; rebasing and retrying (attempt ${attempt})."
             git pull --rebase origin "${GITHUB_REF_NAME}"
           done
-          echo "::error::Could not push research/owner-asks/sent.json. The record is printed above; add it by hand before any further send to ${VENUE}."
+          echo "::error::Could not push research/owner-asks/sent.json. The record is in this run's summary; add it by hand. Until then every send to ${VENUE} is refused by the Sent-folder check."
           exit 1
 
   probe:
     if: inputs.command == 'probe'
     runs-on: ubuntu-latest
-    # Serialised with the colony tick (colony.yml's group): both commit under state/colony.
+    environment: brand-mailbox
+    # Its own group, not colony.yml's colony-state: GitHub keeps one pending run per group, so a
+    # dispatched probe there could replace a waiting hourly tick. The probe commits only
+    # state/colony/brand-mail.json, which the tick never writes, and both jobs rebase and retry
+    # on a rejected push, so they need no shared lock.
     concurrency:
-      group: colony-state
+      group: brand-mail-probe
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
