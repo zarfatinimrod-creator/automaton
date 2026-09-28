@@ -18,8 +18,8 @@ Per URL, three files:
 | File | What it is |
 |---|---|
 | `<slug>.html` / `.json` / `.pdf` / `.xml` / `.txt` / `.bin` | the raw response body, extension chosen from the `Content-Type` |
-| `<slug>.txt` | for HTML only: a plain-text extraction — scripts, styles and tags stripped, whitespace collapsed. This is the file to read and grep |
-| `<slug>.meta.json` | `url`, `fetchedAt`, `status`, `contentType`, `byteLength`, `sha256`, `changed`, `firstFetch`, `previousSha256`, `truncated`, `error` |
+| `<slug>.txt` | for HTML: a plain-text extraction — scripts, styles and tags stripped, whitespace collapsed. For a PDF: the output of `pdftotext -layout` on the stored `.pdf`, made on the runner (page breaks kept as form feeds). This is the file to read and grep |
+| `<slug>.meta.json` | `url`, `fetchedAt`, `status`, `contentType`, `byteLength`, `sha256`, `bodyPath`, `textPath`, `changed`, `firstFetch`, `previousSha256`, `truncated`, `error` — and, for a PDF whose text could not be extracted, `textError` saying why |
 
 ## Three things about these files that are easy to get wrong
 
@@ -48,9 +48,16 @@ document's own bytes), **[SNIPPET]** (a search summary quoting a page I could no
 (the primary source exists and the proxy refused it). Most of what this directory exists to fix is
 the second and third of those. To move one:
 
-1. **Read the text.** `research/rendered/<slug>.txt` for HTML, the raw file otherwise. If the `.txt`
-   comes back nearly empty, the page is client-rendered and the server sent a shell — record that as
-   what happened, do not conclude the page said nothing.
+1. **Read the text.** `research/rendered/<slug>.txt` for HTML and PDF, the raw file otherwise. If the
+   `.txt` comes back nearly empty, the page is client-rendered and the server sent a shell (or, for a
+   PDF, the pages are images with no text layer) — record that as what happened, do not conclude the
+   page said nothing. **For a PDF, the `.txt` is the fetcher's only if the meta's `textPath` names
+   it:** then it is pdftotext's output for exactly the bytes whose `sha256` the meta records. A null
+   `textPath` means the fetcher extracted no text from those bytes, and `textError` says why. A
+   `.txt` beside such a PDF is a hand extraction — four PDFs here have one, made before 28.9.2026 and
+   cited by line number in `products/pcn874/` and the research files — which the fetcher never
+   overwrites or deletes. If the PDF changes beside one, `textError` says the hand text no longer
+   describes the stored bytes.
 2. **Check `<slug>.meta.json` first.** A `status` of 403 or a non-null `error` means the page was
    never fetched: the finding is "the site refused a GitHub runner on this date", which stays
    **[BLOCKED]** and is itself worth writing down. A `truncated: true` caps what you may claim.

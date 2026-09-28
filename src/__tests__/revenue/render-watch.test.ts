@@ -1,3 +1,4 @@
+import { execFile } from "node:child_process";
 import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -6,18 +7,23 @@ import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vites
 import {
   buildMeta,
   decodeEntities,
+  describePdfTextError,
   extensionFor,
   extractText,
   hasChanged,
   isHtml,
+  isPdf,
   main,
   MAX_BYTES,
   parseUrlList,
+  PDFTOTEXT_TIMEOUT_MS,
   readCappedBody,
   redactSecrets,
   resolveListText,
+  runPdftotext,
   sha256,
   slugFromUrl,
+  storeCapture,
   TIMEOUT_MS,
 } from "../../../scripts/render-watch.mjs";
 
@@ -648,5 +654,564 @@ describe("main — HTML, JSON and refused pages (pinned before the PDF branch ex
       error: "HTTP 403", // a bare Response carries no statusText
     });
     expect("textError" in meta).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// PDF text extraction.
+//
+// On 28.9.2026 the CrazyGames developer terms were captured as a PDF and could not
+// be read: the script stored the bytes and no text, and this container has neither
+// pdftotext nor pypdf. The runner now runs `pdftotext -layout` on the stored PDF.
+// The extractor is injected here, so a success, a missing binary and a failure can
+// each be faked; the real execFile wrapper is exercised separately below with real
+// child processes whose command is swapped for one that exists on every host.
+// ---------------------------------------------------------------------------
+
+const PDF_BYTES = Buffer.from("%PDF-1.7\n1 0 obj << /Title (Developer Terms) >> endobj\n%%EOF\n");
+const PDF_ENTRY = { url: "https://files.example.test/terms.pdf", slug: "ex-terms-pdf", lineNumber: 1 };
+const T0 = "2026-09-28T00:51:57.602Z";
+const T1 = "2026-10-06T05:23:00.000Z";
+const T2 = "2026-10-13T05:23:00.000Z";
+
+function pdfResult(bytes: Buffer = PDF_BYTES) {
+  return { status: 200, contentType: "application/pdf", bytes: Buffer.from(bytes), truncated: false, error: null };
+}
+
+/** The error shape node:child_process gives a spawn of a command that does not exist. */
+function enoent() {
+  return Object.assign(new Error("spawn pdftotext ENOENT"), {
+    code: "ENOENT",
+    errno: -2,
+    syscall: "spawn pdftotext",
+    path: "pdftotext",
+  });
+}
+
+const neverCalled = async (): Promise<string> => {
+  throw new Error("pdftotext must not run here");
+};
+
+describe("isPdf", () => {
+  it("recognises a PDF by its content type, and nothing else as one", () => {
+    expect(isPdf("application/pdf")).toBe(true);
+    expect(isPdf("Application/PDF; qs=0.001")).toBe(true);
+    expect(isPdf("text/html")).toBe(false);
+    expect(isPdf(null)).toBe(false);
+  });
+});
+
+describe("storeCapture — a PDF's text", () => {
+  let out: string;
+  const file = (name: string) => join(out, name);
+  const pdfPath = () => file("ex-terms-pdf.pdf");
+  const txtPath = () => file("ex-terms-pdf.txt");
+  const metaFile = () => file("ex-terms-pdf.meta.json");
+
+  beforeEach(() => {
+    out = tmpOut();
+  });
+
+  it("stores the PDF first, runs the extractor on the stored file, and writes the text beside it", async () => {
+    const seen: string[] = [];
+    const extract = async (path: string) => {
+      seen.push(path);
+      // pdftotext reads a file, so the bytes must already be on disk when it runs.
+      expect(readFileSync(path).equals(PDF_BYTES)).toBe(true);
+      return "DEVELOPER TERMS\n\n1. Uploads\f";
+    };
+
+    const { meta, bytesChanged } = await storeCapture(PDF_ENTRY, pdfResult(), {
+      outDir: out,
+      now: () => T0,
+      extractPdfText: extract,
+    });
+
+    expect(seen).toEqual([pdfPath()]);
+    expect(readdirSync(out).sort()).toEqual(["ex-terms-pdf.meta.json", "ex-terms-pdf.pdf", "ex-terms-pdf.txt"]);
+    expect(readFileSync(pdfPath()).equals(PDF_BYTES)).toBe(true);
+    expect(readFileSync(txtPath(), "utf8")).toBe("DEVELOPER TERMS\n\n1. Uploads\f");
+    expect(JSON.parse(readFileSync(metaFile(), "utf8"))).toEqual(meta);
+    expect(bytesChanged).toBe(true);
+    expect(meta).toMatchObject({
+      fetchedAt: T0,
+      status: 200,
+      contentType: "application/pdf",
+      byteLength: PDF_BYTES.length,
+      sha256: sha256(PDF_BYTES),
+      bodyPath: "research/rendered/ex-terms-pdf.pdf",
+      textPath: "research/rendered/ex-terms-pdf.txt",
+      changed: true,
+      firstFetch: true,
+    });
+    expect("textError" in meta).toBe(false);
+    expect("redacted" in meta).toBe(false);
+  });
+
+  it("hashes the PDF bytes, never the text: two different extractions of one PDF give one sha256", async () => {
+    const a = await storeCapture(PDF_ENTRY, pdfResult(), { outDir: tmpOut(), now: () => T0, extractPdfText: async () => "A\n" });
+    const b = await storeCapture(PDF_ENTRY, pdfResult(), { outDir: tmpOut(), now: () => T0, extractPdfText: async () => "B\n" });
+    expect(a.meta.sha256).toBe(sha256(PDF_BYTES));
+    expect(b.meta.sha256).toBe(a.meta.sha256);
+  });
+
+  it("masks a sample key in the extracted text and counts it, leaving the PDF bytes and hash alone", async () => {
+    const key = ["sk", "live", "4eC39HqLyjWDarjtT1zdp7dc"].join("_");
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), {
+      outDir: out,
+      now: () => T0,
+      extractPdfText: async () => `curl -u ${key}:\n`,
+    });
+
+    const text = readFileSync(txtPath(), "utf8");
+    expect(text).not.toContain(key);
+    expect(text).toBe("curl -u [redacted:stripe-secret-key]:\n");
+    expect(meta.redacted).toBe(1);
+    expect(meta.sha256).toBe(sha256(PDF_BYTES));
+    expect(readFileSync(pdfPath()).equals(PDF_BYTES)).toBe(true);
+  });
+
+  it("records a missing pdftotext (ENOENT) in the meta and carries on, writing no text", async () => {
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), {
+      outDir: out,
+      now: () => T0,
+      extractPdfText: async () => {
+        throw enoent();
+      },
+    });
+
+    expect(readdirSync(out).sort()).toEqual(["ex-terms-pdf.meta.json", "ex-terms-pdf.pdf"]);
+    expect(meta.error).toBeNull(); // the fetch itself worked; only the reading did not
+    expect(meta.sha256).toBe(sha256(PDF_BYTES));
+    expect(meta.textPath).toBeNull();
+    expect(meta.textError).toMatch(/^pdftotext is not installed on this host \(ENOENT\)/);
+    expect(meta.textError).toMatch(/poppler-utils/);
+    expect(JSON.parse(readFileSync(metaFile(), "utf8")).textError).toBe(meta.textError);
+    expect(Object.keys(meta)).toEqual([
+      "url",
+      "slug",
+      "fetchedAt",
+      "status",
+      "contentType",
+      "byteLength",
+      "sha256",
+      "truncated",
+      "error",
+      "bodyPath",
+      "textPath",
+      "textError",
+      "changed",
+      "firstFetch",
+      "previousSha256",
+      "note",
+    ]);
+  });
+
+  it("records a pdftotext failure by exit code and first stderr line, with no host path in it", async () => {
+    const failure = Object.assign(new Error("Command failed: pdftotext -layout /home/runner/work/x/ex-terms-pdf.pdf -"), {
+      code: 1,
+      stderr: "Syntax Error: Couldn't read xref table\nSyntax Warning: something else\n",
+    });
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), {
+      outDir: out,
+      now: () => T0,
+      extractPdfText: async () => {
+        throw failure;
+      },
+    });
+
+    expect(readdirSync(out).sort()).toEqual(["ex-terms-pdf.meta.json", "ex-terms-pdf.pdf"]);
+    expect(meta.textPath).toBeNull();
+    expect(meta.textError).toMatch(/^pdftotext exited with code 1: Syntax Error: Couldn't read xref table;/);
+    expect(meta.textError).not.toMatch(/home\/runner|Syntax Warning/);
+  });
+
+  it("an unchanged PDF whose text is stored writes nothing and does not run pdftotext again", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => "v1\n" });
+    const before = snapshot(out);
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+
+    expect(meta.changed).toBe(false);
+    expect(snapshot(out)).toEqual(before);
+  });
+
+  it("retries after a recorded failure, and writes nothing when it fails the same way again", async () => {
+    const missing = async (): Promise<string> => {
+      throw enoent();
+    };
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: missing });
+    const before = snapshot(out);
+
+    let calls = 0;
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), {
+      outDir: out,
+      now: () => T1,
+      extractPdfText: async () => {
+        calls += 1;
+        throw enoent();
+      },
+    });
+
+    expect(calls).toBe(1);
+    expect(meta.changed).toBe(false);
+    expect(snapshot(out)).toEqual(before);
+  });
+
+  it("stores the text once a later run can read it, keeping the fetchedAt of the unchanged bytes", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), {
+      outDir: out,
+      now: () => T0,
+      extractPdfText: async () => {
+        throw enoent();
+      },
+    });
+
+    const { meta, bytesChanged } = await storeCapture(PDF_ENTRY, pdfResult(), {
+      outDir: out,
+      now: () => T1,
+      extractPdfText: async () => "now readable\n",
+    });
+
+    expect(bytesChanged).toBe(false);
+    expect(readFileSync(txtPath(), "utf8")).toBe("now readable\n");
+    expect(meta).toMatchObject({
+      changed: true,
+      firstFetch: false,
+      fetchedAt: T0,
+      sha256: sha256(PDF_BYTES),
+      previousSha256: sha256(PDF_BYTES),
+      textPath: "research/rendered/ex-terms-pdf.txt",
+    });
+    expect("textError" in meta).toBe(false);
+  });
+
+  // The CrazyGames case. The old script stored the PDF and a meta with textPath null,
+  // and the document is a dated file that may never change again — so "extract only
+  // when the bytes change" would never read it. It is read once, from the stored file.
+  it("extracts once for a PDF captured before extraction existed, then goes quiet", async () => {
+    writeFileSync(pdfPath(), PDF_BYTES);
+    const oldMeta = buildMeta({
+      url: PDF_ENTRY.url,
+      slug: PDF_ENTRY.slug,
+      fetchedAt: T0,
+      status: 200,
+      contentType: "application/pdf",
+      byteLength: PDF_BYTES.length,
+      sha256: sha256(PDF_BYTES),
+      bodyPath: "research/rendered/ex-terms-pdf.pdf",
+      textPath: null,
+    });
+    writeFileSync(metaFile(), `${JSON.stringify(oldMeta, null, 2)}\n`);
+
+    const seen: string[] = [];
+    const { meta, bytesChanged } = await storeCapture(PDF_ENTRY, pdfResult(), {
+      outDir: out,
+      now: () => T1,
+      extractPdfText: async (path: string) => {
+        seen.push(path);
+        return "terms text\n";
+      },
+    });
+
+    expect(seen).toEqual([pdfPath()]);
+    expect(bytesChanged).toBe(false);
+    expect(readFileSync(txtPath(), "utf8")).toBe("terms text\n");
+    expect(readFileSync(pdfPath()).equals(PDF_BYTES)).toBe(true);
+    expect(meta).toMatchObject({
+      changed: true,
+      firstFetch: false,
+      fetchedAt: T0,
+      previousSha256: sha256(PDF_BYTES),
+      textPath: "research/rendered/ex-terms-pdf.txt",
+    });
+
+    const after = snapshot(out);
+    const next = await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T2, extractPdfText: neverCalled });
+    expect(next.meta.changed).toBe(false);
+    expect(snapshot(out)).toEqual(after);
+  });
+
+  // Four PDFs in research/rendered/ (the PCN874 specs and the US-Israel treaty) carry a
+  // hand extraction as <slug>.txt, cited elsewhere by LINE NUMBER, with textPath null in
+  // their meta. Overwriting those with pdftotext's layout would break every citation.
+  it("leaves a hand-made <slug>.txt alone while the PDF bytes are unchanged", async () => {
+    writeFileSync(pdfPath(), PDF_BYTES);
+    writeFileSync(txtPath(), "a hand extraction, cited by line number\n");
+    const oldMeta = buildMeta({
+      url: PDF_ENTRY.url,
+      slug: PDF_ENTRY.slug,
+      fetchedAt: T0,
+      status: 200,
+      contentType: "application/pdf",
+      byteLength: PDF_BYTES.length,
+      sha256: sha256(PDF_BYTES),
+      bodyPath: "research/rendered/ex-terms-pdf.pdf",
+      textPath: null,
+    });
+    writeFileSync(metaFile(), `${JSON.stringify(oldMeta, null, 2)}\n`);
+    const before = snapshot(out);
+
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T1, extractPdfText: neverCalled });
+
+    expect(meta.changed).toBe(false);
+    expect(snapshot(out)).toEqual(before);
+  });
+
+  it("re-extracts when the PDF bytes change, because the old text describes the old bytes", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => "text v1\n" });
+    const v2 = Buffer.from("%PDF-1.7\n% revised terms\n%%EOF\n");
+
+    const { meta, bytesChanged } = await storeCapture(PDF_ENTRY, pdfResult(v2), {
+      outDir: out,
+      now: () => T1,
+      extractPdfText: async () => "text v2\n",
+    });
+
+    expect(bytesChanged).toBe(true);
+    expect(readFileSync(pdfPath()).equals(v2)).toBe(true);
+    expect(readFileSync(txtPath(), "utf8")).toBe("text v2\n");
+    expect(meta).toMatchObject({
+      changed: true,
+      fetchedAt: T1,
+      sha256: sha256(v2),
+      previousSha256: sha256(PDF_BYTES),
+      textPath: "research/rendered/ex-terms-pdf.txt",
+    });
+  });
+
+  // products/pcn874/src/*.ts cites pcn874-*.txt by line number. A new edition of those
+  // PDFs must not silently re-lay-out the text under every citation: the hand extraction
+  // stays, and the meta says plainly that it no longer describes the stored bytes.
+  it("never overwrites a hand extraction, even when the PDF changes, and says it is stale", async () => {
+    writeFileSync(pdfPath(), PDF_BYTES);
+    writeFileSync(txtPath(), "a hand extraction, cited by line number\n");
+    const oldMeta = buildMeta({
+      url: PDF_ENTRY.url,
+      slug: PDF_ENTRY.slug,
+      fetchedAt: T0,
+      status: 200,
+      contentType: "application/pdf",
+      byteLength: PDF_BYTES.length,
+      sha256: sha256(PDF_BYTES),
+      bodyPath: "research/rendered/ex-terms-pdf.pdf",
+      textPath: null,
+    });
+    writeFileSync(metaFile(), `${JSON.stringify(oldMeta, null, 2)}\n`);
+    const v2 = Buffer.from("%PDF-1.7\n% a new edition\n%%EOF\n");
+
+    const { meta, bytesChanged } = await storeCapture(PDF_ENTRY, pdfResult(v2), {
+      outDir: out,
+      now: () => T1,
+      extractPdfText: neverCalled,
+    });
+
+    expect(bytesChanged).toBe(true);
+    expect(readFileSync(pdfPath()).equals(v2)).toBe(true);
+    expect(readFileSync(txtPath(), "utf8")).toBe("a hand extraction, cited by line number\n");
+    expect(meta).toMatchObject({ changed: true, sha256: sha256(v2), textPath: null });
+    expect(meta.textError).toMatch(/^not extracted: research\/rendered\/ex-terms-pdf\.txt was not written by render-watch/);
+    expect(meta.textError).toMatch(/does not describe these bytes/);
+
+    // Quiet again the week after, and still untouched.
+    const after = snapshot(out);
+    const next = await storeCapture(PDF_ENTRY, pdfResult(v2), { outDir: out, now: () => T2, extractPdfText: neverCalled });
+    expect(next.meta.changed).toBe(false);
+    expect(snapshot(out)).toEqual(after);
+  });
+
+  it("removes its own text of the old bytes when the new bytes cannot be read, then reads them later", async () => {
+    await storeCapture(PDF_ENTRY, pdfResult(), { outDir: out, now: () => T0, extractPdfText: async () => "text v1\n" });
+    const v2 = Buffer.from("%PDF-1.7\n% revised terms\n%%EOF\n");
+
+    const failed = await storeCapture(PDF_ENTRY, pdfResult(v2), {
+      outDir: out,
+      now: () => T1,
+      extractPdfText: async () => {
+        throw enoent();
+      },
+    });
+
+    // No text of v1 left beside v2: an unclaimed <slug>.txt is only ever a hand extraction.
+    expect(readdirSync(out).sort()).toEqual(["ex-terms-pdf.meta.json", "ex-terms-pdf.pdf"]);
+    expect(failed.meta).toMatchObject({ changed: true, sha256: sha256(v2), textPath: null });
+    expect(failed.meta.textError).toMatch(/ENOENT/);
+
+    const read = await storeCapture(PDF_ENTRY, pdfResult(v2), {
+      outDir: out,
+      now: () => T2,
+      extractPdfText: async () => "text v2\n",
+    });
+    expect(read.meta).toMatchObject({ changed: true, fetchedAt: T1, textPath: "research/rendered/ex-terms-pdf.txt" });
+    expect(readFileSync(txtPath(), "utf8")).toBe("text v2\n");
+  });
+
+  it("does not try to extract anything from a PDF that was never fetched", async () => {
+    const refused = { status: 403, contentType: "application/pdf", bytes: null, truncated: false, error: "HTTP 403" };
+    const { meta } = await storeCapture(PDF_ENTRY, refused, { outDir: out, now: () => T0, extractPdfText: neverCalled });
+
+    expect(readdirSync(out)).toEqual(["ex-terms-pdf.meta.json"]);
+    expect(meta).toMatchObject({ status: 403, bodyPath: null, textPath: null, error: "HTTP 403" });
+    expect("textError" in meta).toBe(false);
+  });
+});
+
+describe("hasChanged — a PDF's text state", () => {
+  const pdf = { sha256: "aaa", status: 200, error: null, contentType: "application/pdf", textPath: null };
+
+  it("is true when an unchanged PDF gains its text, or its text error appears or moves", () => {
+    expect(hasChanged(pdf, { ...pdf, textPath: "research/rendered/x.txt" })).toBe(true);
+    expect(hasChanged(pdf, { ...pdf, textError: "pdftotext is not installed" })).toBe(true);
+    expect(hasChanged({ ...pdf, textError: "one" }, { ...pdf, textError: "two" })).toBe(true);
+  });
+
+  it("is false when the bytes and the text state both match", () => {
+    expect(hasChanged({ ...pdf, textError: "same" }, { ...pdf, textError: "same" })).toBe(false);
+    const done = { ...pdf, textPath: "research/rendered/x.txt" };
+    expect(hasChanged(done, { ...done })).toBe(false);
+  });
+
+  // Hand-edited metas exist: youtube-handle-bediyuk (HTML, textPath null because the body
+  // was removed on purpose) and the two github-innovationgraph captures (text/plain, textPath
+  // set by hand). Comparing textPath for every type would rewrite them on the next run.
+  it("ignores the text state of anything that is not a PDF, so hand-edited metas never churn", () => {
+    const html = { sha256: "aaa", status: 200, error: null, contentType: "text/html", textPath: null };
+    expect(hasChanged(html, { ...html, textPath: "research/rendered/x.txt" })).toBe(false);
+    const plain = { ...html, contentType: "text/plain", textPath: "research/rendered/x.txt" };
+    expect(hasChanged(plain, { ...plain, textPath: null })).toBe(false);
+  });
+});
+
+describe("runPdftotext — the execFile wrapper", () => {
+  type Callback = (error: Error | null, stdout: string, stderr: string) => void;
+
+  it("runs pdftotext with a fixed argv, no shell and a timeout, and resolves its stdout", async () => {
+    const calls: Array<[string, string[], Record<string, unknown>]> = [];
+    const fake = (cmd: string, args: string[], options: Record<string, unknown>, callback: Callback) => {
+      calls.push([cmd, args, options]);
+      callback(null, "page one\f", "");
+    };
+
+    await expect(runPdftotext("/out/x.pdf", { execFileImpl: fake })).resolves.toBe("page one\f");
+    expect(calls).toHaveLength(1);
+    const [cmd, args, options] = calls[0];
+    expect(cmd).toBe("pdftotext");
+    expect(args).toEqual(["-layout", "/out/x.pdf", "-"]);
+    expect(options).toMatchObject({ timeout: PDFTOTEXT_TIMEOUT_MS, encoding: "utf8" });
+    expect(options.shell).toBeFalsy();
+    expect(PDFTOTEXT_TIMEOUT_MS).toBeGreaterThan(0);
+  });
+
+  // Real child processes from here on. Only the program is swapped — for node running a
+  // tiny script, or for a name that exists nowhere — so the wrapper's own argv, options
+  // and error handling run for real. None of this depends on pdftotext being installed.
+  let scripts: string;
+  beforeEach(() => {
+    scripts = tmpOut();
+    writeFileSync(join(scripts, "echo-argv.mjs"), "process.stdout.write(JSON.stringify(process.argv.slice(2)));\n");
+    writeFileSync(
+      join(scripts, "fail.mjs"),
+      "process.stderr.write(\"Syntax Error: Couldn't read xref table\\nSyntax Warning: more\\n\"); process.exit(1);\n",
+    );
+    writeFileSync(join(scripts, "hang.mjs"), "setTimeout(() => {}, 30000);\n");
+  });
+
+  const viaNode =
+    (script: string) => (_cmd: string, args: string[], options: Record<string, unknown>, callback: Callback) =>
+      execFile(process.execPath, [join(scripts, script), ...args], options, callback);
+
+  it("hands back a real child's stdout, and the child sees exactly -layout <file> -", async () => {
+    const stdoutText = await runPdftotext("/out/x.pdf", { execFileImpl: viaNode("echo-argv.mjs") });
+    expect(JSON.parse(stdoutText)).toEqual(["-layout", "/out/x.pdf", "-"]);
+  });
+
+  it("maps a real missing program to the ENOENT note", async () => {
+    const missing = (_cmd: string, args: string[], options: Record<string, unknown>, callback: Callback) =>
+      execFile("render-watch-no-such-program", args, options, callback);
+    const error = await runPdftotext("/out/x.pdf", { execFileImpl: missing }).catch((e: unknown) => e);
+    expect((error as { code?: unknown }).code).toBe("ENOENT");
+    expect(describePdfTextError(error)).toMatch(/^pdftotext is not installed on this host \(ENOENT\)/);
+  });
+
+  it("maps a real non-zero exit to its code and first stderr line", async () => {
+    const error = await runPdftotext("/out/x.pdf", { execFileImpl: viaNode("fail.mjs") }).catch((e: unknown) => e);
+    expect(describePdfTextError(error)).toMatch(/^pdftotext exited with code 1: Syntax Error: Couldn't read xref table;/);
+  });
+
+  it("stops a real child that outlives the timeout, and says so", async () => {
+    const error = await runPdftotext("/out/x.pdf", { timeoutMs: 300, execFileImpl: viaNode("hang.mjs") }).catch(
+      (e: unknown) => e,
+    );
+    expect(describePdfTextError(error)).toMatch(/^pdftotext did not finish within 300 ms/);
+  });
+
+  // Shapes measured from node:child_process on Node 22: a crash has killed=false and a
+  // signal; an overflowing stdout has a string code and neither.
+  it("calls a crash a crash, not a timeout", () => {
+    const crash = { code: null, killed: false, signal: "SIGSEGV", stderr: "" };
+    expect(describePdfTextError(crash)).toMatch(/^pdftotext was ended by SIGSEGV;/);
+    expect(describePdfTextError(crash)).not.toMatch(/did not finish/);
+  });
+
+  it("names any other failure by its code", () => {
+    const overflow = Object.assign(new RangeError("stdout maxBuffer length exceeded"), {
+      code: "ERR_CHILD_PROCESS_STDIO_MAXBUFFER",
+    });
+    expect(describePdfTextError(overflow)).toMatch(/^pdftotext failed \(ERR_CHILD_PROCESS_STDIO_MAXBUFFER\);/);
+  });
+});
+
+describe("main — a PDF", () => {
+  let out: string;
+  let stdout: ReturnType<typeof captureStdout>;
+
+  beforeEach(() => {
+    out = tmpOut();
+    stdout = captureStdout();
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(T0));
+  });
+
+  afterEach(() => {
+    stdout.restore();
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it("stores the text through the injected extractor", async () => {
+    stubFetch(PDF_BYTES, { contentType: "application/pdf" });
+    const list = writeList(out, `${PDF_ENTRY.url}\t${PDF_ENTRY.slug}`);
+
+    expect(await main(["--list", list, "--out", out], {}, { extractPdfText: async () => "terms\n" })).toBe(0);
+    expect(readdirSync(out).sort()).toEqual(["ex-terms-pdf.meta.json", "ex-terms-pdf.pdf", "ex-terms-pdf.txt", "urls.txt"]);
+    expect(readFileSync(join(out, "ex-terms-pdf.txt"), "utf8")).toBe("terms\n");
+  });
+
+  it("logs a missing pdftotext, records it in the meta, and still exits 0", async () => {
+    stubFetch(PDF_BYTES, { contentType: "application/pdf" });
+    const list = writeList(out, `${PDF_ENTRY.url}\t${PDF_ENTRY.slug}`);
+    const missing = async (): Promise<string> => {
+      throw enoent();
+    };
+
+    expect(await main(["--list", list, "--out", out], {}, { extractPdfText: missing })).toBe(0);
+    expect(readdirSync(out).sort()).toEqual(["ex-terms-pdf.meta.json", "ex-terms-pdf.pdf", "urls.txt"]);
+    expect(JSON.parse(readFileSync(join(out, "ex-terms-pdf.meta.json"), "utf8")).textError).toMatch(/ENOENT/);
+    expect(stdout.text()).toMatch(/no PDF text: pdftotext is not installed on this host \(ENOENT\)/);
+  });
+
+  it("says in the log when only the text moved and the PDF bytes did not", async () => {
+    stubFetch(PDF_BYTES, { contentType: "application/pdf" });
+    const list = writeList(out, `${PDF_ENTRY.url}\t${PDF_ENTRY.slug}`);
+    const missing = async (): Promise<string> => {
+      throw enoent();
+    };
+    await main(["--list", list, "--out", out], {}, { extractPdfText: missing });
+
+    vi.setSystemTime(new Date(T1));
+    await main(["--list", list, "--out", out], {}, { extractPdfText: async () => "terms\n" });
+
+    expect(stdout.text()).toMatch(/text\s+ex-terms-pdf\s+PDF bytes unchanged/);
+    expect(JSON.parse(readFileSync(join(out, "ex-terms-pdf.meta.json"), "utf8")).fetchedAt).toBe(T0);
   });
 });
