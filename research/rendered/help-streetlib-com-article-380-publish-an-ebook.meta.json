@@ -1,0 +1,17 @@
+{
+  "url": "https://help.streetlib.com/article/380-publish-an-ebook",
+  "slug": "help-streetlib-com-article-380-publish-an-ebook",
+  "fetchedAt": "2026-09-28T20:35:34.540Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 86986,
+  "sha256": "75c856066ae52f0ca661d3603061bb4febd517ed9297f7fe482df6e06d6b4943",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/help-streetlib-com-article-380-publish-an-ebook.html",
+  "textPath": "research/rendered/help-streetlib-com-article-380-publish-an-ebook.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

@@ -483,3 +483,57 @@ https://github.com/GameDistribution/GD-HTML5/wiki/F.A.Q.	gamedistribution-wiki-f
 https://community.n8n.io/t/creator-profile-templates-verification/126583	n8n-creator-profile-verification
 # research/channel-loop/ZERO-TESTS.md row 108 — n8n paid templates (20): a thread with an n8n team reply, linked from a tick-8 capture (28.9.2026).
 https://community.n8n.io/t/verifies-creator/129722	n8n-verifies-creator
+# research/channel-loop/ZERO-TESTS.md row 109 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://www.streetlib.com/legalpolicy	streetlib-com-legalpolicy
+# research/channel-loop/ZERO-TESTS.md row 110 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://help.streetlib.com/article/1523-distribution-plans	help-streetlib-com-article-1523-distribution-plans
+# research/channel-loop/ZERO-TESTS.md row 111 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://www.streetlib.com/pricing	streetlib-com-pricing
+# research/channel-loop/ZERO-TESTS.md row 112 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://help.streetlib.com/article/677-earnings	help-streetlib-com-article-677-earnings
+# research/channel-loop/ZERO-TESTS.md row 113 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://help.streetlib.com/article/421-streetlib-content-integrity-guidelines	help-streetlib-com-article-421-streetlib-content-integrity-g
+# research/channel-loop/ZERO-TESTS.md row 114 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://help.streetlib.com/category/613-content-policy	help-streetlib-com-category-613-content-policy
+# research/channel-loop/ZERO-TESTS.md row 115 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://help.streetlib.com/article/380-publish-an-ebook	help-streetlib-com-article-380-publish-an-ebook
+# research/channel-loop/ZERO-TESTS.md row 116 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://www.streetlib.com/distribution-partners	streetlib-com-distribution-partners
+# research/channel-loop/ZERO-TESTS.md row 117 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://www.zazzle.com/terms/user_agreement	zazzle-com-terms-user-agreement
+# research/channel-loop/ZERO-TESTS.md row 118 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://www.zazzle.com/terms/updated_creator_license_agreement	zazzle-com-terms-updated-creator-license-agreement
+# research/channel-loop/ZERO-TESTS.md row 119 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://www.zazzle.com/assets/graphics/z5/zmisc/ambassador_program/Zazzle_Creator_FAQs.pdf	zazzle-com-assets-graphics-z5-zmisc-ambassador-program-zazzl
+# research/channel-loop/ZERO-TESTS.md row 120 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://www.zazzle.com/sell/developers	zazzle-com-sell-developers
+# research/channel-loop/ZERO-TESTS.md row 121 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://help.zazzle.com/hc/en-us/sections/360005063194-Create-A-Product-API	help-zazzle-com-hc-en-us-sections-360005063194-create-a-prod
+# research/channel-loop/ZERO-TESTS.md row 122 — Displate (new row 26), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://displate.com/about-faq	displate-com-about-faq
+# research/channel-loop/ZERO-TESTS.md row 123 — Displate (new row 26), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://displate.com/about-copyright	displate-com-about-copyright
+# research/channel-loop/ZERO-TESTS.md row 124 — Society6 (new row 27), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://help.society6.com/en-US/updates-to-society6-artists-account-effective-march-18-2025-1261598	help-society6-com-en-us-updates-to-society6-artists-account
+# research/channel-loop/ZERO-TESTS.md row 125 — Society6 (new row 27), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://help.society6.com/en-US/updates-to-pricing-and-artist-earnings-effective-march-18-2025-1261599	help-society6-com-en-us-updates-to-pricing-and-artist-earnin
+# research/channel-loop/ZERO-TESTS.md row 126 — Teach Simple (unsettled), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://teachsimple.com/contributor-terms-of-service	teachsimple-com-contributor-terms-of-service
+# research/channel-loop/ZERO-TESTS.md row 127 — Teach Simple (unsettled), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://teachsimple.com/become-a-contributor	teachsimple-com-become-a-contributor
+# research/channel-loop/ZERO-TESTS.md row 128 — Smashwords / Draft2Digital (scout-grade death, confirmation), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
+https://draft2digital.com/terms-of-service/	draft2digital-com-terms-of-service
+# research/channel-loop/ZERO-TESTS.md row 129 — StreetLib (24): the platform-changeover FAQ, linked from a tick-9 capture (28.9.2026).
+https://help.streetlib.com/collection/1492-faq-on-platform-changeover	streetlib-faq-platform-changeover
+# research/channel-loop/ZERO-TESTS.md row 130 — Teach Simple (28): the terms of use, linked from a tick-9 capture (28.9.2026).
+https://teachsimple.com/terms-of-service	teachsimple-terms-of-service
+# research/channel-loop/ZERO-TESTS.md row 131 — Displate (26): the terms, linked from a tick-9 capture (28.9.2026).
+https://displate.com/about-regulations	displate-about-regulations
+# research/channel-loop/ZERO-TESTS.md row 132 — StreetLib (24), after row 129 (28.9.2026).
+https://www.streetlib.it/prezzi-servizi	streetlib-it-prezzi-servizi
+# research/channel-loop/ZERO-TESTS.md row 133 — StreetLib (24), after row 129 (28.9.2026).
+https://help.streetlib.com/category/97-payments	help-streetlib-com-category-97-payments
+# research/channel-loop/ZERO-TESTS.md row 134 — Displate (26), after row 131 (28.9.2026).
+https://displate.com/about-privacy	displate-com-about-privacy
+# research/channel-loop/ZERO-TESTS.md row 135 — Teach Simple (28), after row 130 (28.9.2026).
+https://teachsimple.com/license-agreement	teachsimple-com-license-agreement

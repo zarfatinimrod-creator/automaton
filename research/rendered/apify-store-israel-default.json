@@ -1,7 +1,7 @@
 {
   "data": {
-    "total": 463,
-    "count": 463,
+    "total": 464,
+    "count": 464,
     "offset": 0,
     "limit": 1000,
     "desc": false,
@@ -3759,13 +3759,13 @@
         "name": "israel-real-estate",
         "username": "leadproof",
         "stats": {
-          "totalBuilds": 4,
-          "totalRuns": 8,
+          "totalBuilds": 10,
+          "totalRuns": 17,
           "totalUsers": 2,
           "totalUsers7Days": 1,
           "totalUsers30Days": 1,
           "totalUsers90Days": 1,
-          "lastRunStartedAt": "2026-09-28T18:46:09.483Z",
+          "lastRunStartedAt": "2026-09-28T19:40:27.850Z",
           "actorReviewCount": 0,
           "actorReviewRating": 0,
           "bookmarkCount": 0
@@ -10649,13 +10649,13 @@
         "name": "linkedin-person-enrichment",
         "username": "pvalyou",
         "stats": {
-          "totalBuilds": 35,
-          "totalRuns": 706,
+          "totalBuilds": 36,
+          "totalRuns": 708,
           "totalUsers": 4,
-          "totalUsers7Days": 1,
+          "totalUsers7Days": 0,
           "totalUsers30Days": 1,
           "totalUsers90Days": 1,
-          "lastRunStartedAt": "2026-09-28T06:00:58.792Z",
+          "lastRunStartedAt": "2026-09-28T20:02:52.557Z",
           "actorReviewCount": 0,
           "actorReviewRating": 0,
           "bookmarkCount": 0,
@@ -20988,13 +20988,13 @@
         "name": "sec-edgar-form-d",
         "username": "pradio",
         "stats": {
-          "totalBuilds": 52,
-          "totalRuns": 40,
+          "totalBuilds": 53,
+          "totalRuns": 42,
           "totalUsers": 2,
           "totalUsers7Days": 1,
           "totalUsers30Days": 1,
           "totalUsers90Days": 1,
-          "lastRunStartedAt": "2026-09-28T14:26:29.686Z",
+          "lastRunStartedAt": "2026-09-28T15:54:35.314Z",
           "actorReviewCount": 0,
           "actorReviewRating": 0,
           "bookmarkCount": 0,
@@ -31541,6 +31541,69 @@
         },
         "id": "IHzyK5D7wtZ1fAnfi",
         "url": "https://apify.com/ahmed_jasarevic/realtor-agent-scraper"
+      },
+      {
+        "title": "Trending Keywords for Your Niche: AI Google Trends Alerts",
+        "name": "trending-keywords-ai",
+        "username": "rich_minds",
+        "stats": {
+          "totalBuilds": 1,
+          "totalRuns": 11,
+          "totalUsers": 2,
+          "totalUsers7Days": 1,
+          "totalUsers30Days": 1,
+          "totalUsers90Days": 1,
+          "lastRunStartedAt": "2026-09-28T19:37:31.725Z",
+          "actorReviewCount": 0,
+          "actorReviewRating": 0,
+          "bookmarkCount": 0,
+          "publicActorRunStats30Days": {
+            "ABORTED": 0,
+            "FAILED": 0,
+            "SUCCEEDED": 1,
+            "TIMED-OUT": 0,
+            "TOTAL": 1
+          }
+        },
+        "description": "First 25 trends free. Trending keywords for your niche, pay per qualified trend: Google Trends trending searches filtered by AI, rising keywords and breakout keywords with a content angle. Free demo on any plan; live search runs on your Apify account, any plan that runs Store Actors.",
+        "categories": [
+          "SEO_TOOLS",
+          "AUTOMATION",
+          "AI"
+        ],
+        "pictureUrl": "https://images.apifyusercontent.com/kTqv9P1Wd5OvdQv2ZAr2ENGGKmrV7GkJZYOSdjzovFQ/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vdGlreW10TUlhTTdaYzV5eWEtYWN0b3ItSDJJaDVFRHV1aDBpUFJmNkktSHFZZVlHeFRmMi1sb2dvLnBuZw.webp",
+        "notice": "NONE",
+        "bookmarkCount": 0,
+        "actorReviewRating": 0,
+        "actorReviewCount": 0,
+        "badge": null,
+        "isWhiteListedForAgenticPayments": true,
+        "userFullName": "Rich Minds",
+        "userPictureUrl": "https://images.apifyusercontent.com/a2Gznj5CcV9AvJdyS6fUutIY87rtYIj2eXlQKeBn4-I/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vV1pZbkJ3NlJCNkdzMFJhS2U4cXY4T1ZTQ3lwbXhCdk1WN2ZIWU9CTzQ3OC9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTlzYURNdVoyOXZaMnhsZFhObGNtTnZiblJsYm5RdVkyOXRMMkV2UVVObk9HOWpTbWxoYkdGS2MyRTNaVU16ZFRWSFFVUmFNMjFVY1Zkb01rMWpkbEpYV1d4V1lqTkRZa2N6U3poRWRUTldXVWh1T0Qxek9UWXRZdw.webp",
+        "currentPricingInfo": {
+          "pricingModel": "PAY_PER_EVENT",
+          "pricingPerEvent": {
+            "actorChargeEvents": {
+              "qualified-trend-basic": {
+                "eventTitle": "Qualified trend (rules only)",
+                "eventDescription": "One Google Trends trend that passed your niche filters: rule relevance with its evidence, urgency, momentum verdict for seed keywords, a template content angle and target keywords. No AI. Off-niche, duplicate and no-data trends are never charged by us.",
+                "eventPriceUsd": 0.003,
+                "isPrimaryEvent": true
+              },
+              "qualified-trend-ai": {
+                "eventTitle": "Qualified trend (AI-assessed)",
+                "eventDescription": "Everything in the basic trend plus the AI verdict: relevance to your niche with reasons (fitScore, isRelevant), why it matters to your audience (whyItMatters), audience intent, a sensitivity check, and a content angle with format and target keywords taken verbatim from the trend's own searches. AI tokens are billed separately — through Apify's model access on your account, or to your own key.",
+                "eventPriceUsd": 0.009
+              }
+            }
+          },
+          "startedAt": "2026-09-28T19:30:08.000Z",
+          "reasonForChange": "Pricing from .actor/pay_per_event.json (/actor-pricing)",
+          "createdAt": "2026-09-28T19:30:11.053Z",
+          "apifyMarginPercentage": 0.2
+        },
+        "id": "H2Ih5EDuuh0iPRf6I",
+        "url": "https://apify.com/rich_minds/trending-keywords-ai"
       },
       {
         "title": "IP Address Risk Scoring (IP Intelligence)",

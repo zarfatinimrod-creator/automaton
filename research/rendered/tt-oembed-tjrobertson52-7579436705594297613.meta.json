@@ -1,0 +1,17 @@
+{
+  "url": "https://www.tiktok.com/oembed?url=https://www.tiktok.com/@tjrobertson52/video/7579436705594297613",
+  "slug": "tt-oembed-tjrobertson52-7579436705594297613",
+  "fetchedAt": "2026-09-28T21:00:58.390Z",
+  "status": 200,
+  "contentType": "application/json; charset=utf-8",
+  "byteLength": 2344,
+  "sha256": "910f0b66b1bf9d66e51b33cf1cf7c16e868a678dbb57a105650cbdd590f6536a",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-oembed-tjrobertson52-7579436705594297613.json",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

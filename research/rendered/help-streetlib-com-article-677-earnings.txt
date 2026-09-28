@@ -1,0 +1,125 @@
+Earnings - StreetLib Help Center
+
+Toggle Navigation
+
+Ebook
+
+Audiobook
+
+Libri cartacei
+
+Crea i tuoi libri con Write
+
+Direct Marketing
+
+Gestisci il tuo account e i pagamenti
+
+StreetLib Store
+
+Webinar
+
+Ready
+
+Ebooks
+
+Audiobooks
+
+Paperbooks
+
+Create Your Books
+
+Manage Your Account and Royalties
+
+StreetLib Direct Marketing
+
+SL Store
+
+Accountverwaltung und Einnahmen
+
+Ebook Veröffentlichung
+
+Hörbücher
+
+Bucherstellung
+
+FAQ zum Umzug auf die neue Plattform
+
+FAQ on Platform Changeover
+
+Contact
+
+Contact
+
+Earnings
+
+Sales models and earnings
+
+Online bookstores primarily utilize three different sales models: À la carte, Lending and Subscription.
+
+Selling à la carte or downloading
+
+Under the à la carte model, users can purchase ebooks or audiobooks at the list price from the bookstore and download them onto their devices.
+
+If the list price corresponds to the cover price set by the publisher, it is considered an Agency sale. Conversely, if the list price is set by the bookstore but does not match the publisher's price, it is categorized as Wholesale (or Resale).
+
+In both cases, whether the list price is set by the publisher (Agency) or the bookstore (Wholesale), the author or publisher typically earns a variable percentage based on the cover price, minus any fixed VAT.
+
+The wholesale or resale model enables libraries to establish a competitive and uniform list price across all marketplaces, even in regions where the local currency has a significantly different exchange rate compared to the main currency set by the publisher.
+
+Most active libraries operate under the agency model, with a few exceptions listed below.
+
+Google Play applies the wholesale model worldwide, withholding a commission of 30% of the cover price set by the publisher across all countries. However, there are exceptions. In South Korea, The Philippines, Japan, Hong Kong, India, Indonesia, Singapore, Taiwan, Thailand, and Vietnam, the commission applied by Google is 48%.
+
+Kobo applies the wholesale model to countries outside the European Economic Area . In these regions, it retains a 50% commission off the cover price
+
+Digital Lending
+
+Digital Lending is usually managed with time licensing, so the ebook is available for download after the loan and is accessible only for the duration of the license (usually 14 days). Typically, the author or publisher's earnings are not calculated based on the cover price; instead, the platform recognizes a fixed fee for each download (loan).
+
+Subscription
+
+The reader buys a subscription providing unlimited access to the active catalog for that sales model. Access to the catalog is restricted to the duration of the subscription, and typically, downloading the file is not available since it can be accessed via an app.
+
+For content consumed through subscription, the publisher receives a percentage of the subscription revenues based on either the number of read pages ( Revenue Share ) or a percentage of the cover price chosen by the publisher for each book read by subscribers ( List Price ).
+
+Earnings from the sales of ebooks and audiobooks
+
+Regardless of the sales model chosen by the bookstore, StreetLib ensures authors or publishers receive maximum earnings . Royalties are calculated based on net revenue. Our Subscription and Lifetime Access options both offer an 85% royalty rate on net revenue.
+
+Gains from the sales of print editions
+
+When selling a paper book through print-on-demand, the purchase is made at the cover price set by the author or publisher.
+
+For each copy sold, the author or publisher's earnings are calculated net of these costs:
+
+Sales commission: This ranges from 45% to 51% of the cover price, excluding VAT, depending on the distribution channel (online store, wholesaler, physical library)
+
+StreetLib distribution commission: This starts from 10% of the cover price, excluding VAT.
+
+Printing cost: This varies and depends on the characteristics of the book.
+
+We provide an online calculator that allows you to simulate the profit from the sale of a book. Simply enter the graphic information (such as paper type and format) and the cover price to generate your results.
+
+Still need help?
+Contact Us
+Contact Us
+
+Last updated on March 18, 2026
+
+Toggle Search
+
+Categories
+
+Create and manage your StreetLib account
+
+Billing and Payments
+
+Book sales
+
+No results found
+
+&copy;
+
+StreetLib SRL
+
+2026. Powered by Help Scout

@@ -115,6 +115,33 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 106 | GameDistribution (14), after row 102 | https://github.com/GameDistribution/GD-HTML5/wiki/F.A.Q. | the official wiki FAQ linked from the SDK page (gamedistribution-sdk-implementation.html:1194): the publish button and control-panel lines at rendered grade, and any payout rail or country |
 | 107 | n8n paid templates (20), after row 104 | https://community.n8n.io/t/creator-profile-templates-verification/126583 | the only related verification thread with an accepted answer (n8n-verified-creator-feedback-2026.html:929): who wrote the answer (staff or not) and what it says verification requires |
 | 108 | n8n paid templates (20), after row 107 | https://community.n8n.io/t/verifies-creator/129722 | the verification thread whose latest poster is in the n8n_Team group (n8n-creator-profile-verification.html:885): what an n8n moderator says verification requires, and whether a brand or AI-run account qualifies; if silent, the held step-8 question goes out |
+| 109 | StreetLib (new row 24), second refill | https://www.streetlib.com/legalpolicy | terms: automated access, AI, fees, the public seller name (G1, G3, G7) |
+| 110 | StreetLib (new row 24), second refill | https://help.streetlib.com/article/1523-distribution-plans | any paid "US Distribution Plan" (G1; kill a) |
+| 111 | StreetLib (new row 24), second refill | https://www.streetlib.com/pricing | commission and any fee (G1) |
+| 112 | StreetLib (new row 24), second refill | https://help.streetlib.com/article/677-earnings | payout methods, countries, minimum, identity check (G2) |
+| 113 | StreetLib (new row 24), second refill | https://help.streetlib.com/article/421-streetlib-content-integrity-guidelines | the AI rule as written (G4; kill c) |
+| 114 | StreetLib (new row 24), second refill | https://help.streetlib.com/category/613-content-policy | AI and low-quality rules (G4) |
+| 115 | StreetLib (new row 24), second refill | https://help.streetlib.com/article/380-publish-an-ebook | how a title is submitted: form, upload, feed (G3; kill d) |
+| 116 | StreetLib (new row 24), second refill | https://www.streetlib.com/distribution-partners | which stores, which titles are eligible (G5) |
+| 117 | Zazzle (new row 25), second refill | https://www.zazzle.com/terms/user_agreement | automated access, AI, store name (G3, G7; kills a, d) |
+| 118 | Zazzle (new row 25), second refill | https://www.zazzle.com/terms/updated_creator_license_agreement | creator terms, fees, payout (G1, G2) |
+| 119 | Zazzle (new row 25), second refill | https://www.zazzle.com/assets/graphics/z5/zmisc/ambassador_program/Zazzle_Creator_FAQs.pdf | the 2025 creator FAQ: any fee, payout rail and countries (kills b, c) |
+| 120 | Zazzle (new row 25), second refill | https://www.zazzle.com/sell/developers | any API that creates store products (G3) |
+| 121 | Zazzle (new row 25), second refill | https://help.zazzle.com/hc/en-us/sections/360005063194-Create-A-Product-API | whether CAP products can enter the marketplace (kill a) |
+| 122 | Displate (new row 26), second refill | https://displate.com/about-faq | artist sign-up and review, payout, AI (kills a-c) |
+| 123 | Displate (new row 26), second refill | https://displate.com/about-copyright | AI and originality rules (G4; kill a) |
+| 124 | Society6 (new row 27), second refill | https://help.society6.com/en-US/updates-to-society6-artists-account-effective-march-18-2025-1261598 | artist admission since 18.3.2025 (kill a) |
+| 125 | Society6 (new row 27), second refill | https://help.society6.com/en-US/updates-to-pricing-and-artist-earnings-effective-march-18-2025-1261599 | artist share and fees (G1) |
+| 126 | Teach Simple (unsettled), second refill | https://teachsimple.com/contributor-terms-of-service | automation, upload by third parties, AI, countries, payout |
+| 127 | Teach Simple (unsettled), second refill | https://teachsimple.com/become-a-contributor | the "we will upload all your products" offer (G3) |
+| 128 | Smashwords / Draft2Digital (scout-grade death, confirmation), second refill | https://draft2digital.com/terms-of-service/ | the AI rule, and whether it covers the Smashwords Store |
+| 129 | StreetLib (24), after rows 109-116 | https://help.streetlib.com/collection/1492-faq-on-platform-changeover | the new-platform FAQ linked from the earnings page (help-streetlib-com-article-677-earnings.html:1619): whether the 2026 Subscription or Lifetime Access options are required and what they cost (proposed kill (a)); payout methods and countries if named |
+| 130 | Teach Simple (28), after rows 126-127 | https://teachsimple.com/terms-of-service | the Terms of Use the contributor terms incorporate (teachsimple-com-contributor-terms-of-service.txt:506; footer link at .html:495): any bot or automated-access ban, a US-only clause, or an AI rule — each would kill the venue cheaply |
+| 131 | Displate (26), after rows 122-123 | https://displate.com/about-regulations | the Terms of Use every FAQ link points to (displate-com-about-faq.html, 11 links): points 3.2-3.3 (what artwork is refused, AI), any automation or bot rule (proposed kill (d)), and whether the artist is a trader shown to buyers |
+| 132 | StreetLib (24), after row 129 | https://www.streetlib.it/prezzi-servizi | the plans and prices page linked from every help page (streetlib-faq-platform-changeover.html:471): whether a paid plan (the footer's "Lifetime Pro Plan", .html:395-396) is required to distribute, and what it costs — proposed kill (a) |
+| 133 | StreetLib (24), after row 129 | https://help.streetlib.com/category/97-payments | the payments category (help-streetlib-com-article-677-earnings.html:1717): payout methods and countries, whether PayPal or a bank reaches an Israeli individual, any identity step — proposed kill (b) |
+| 134 | Displate (26), after row 131 | https://displate.com/about-privacy | the privacy policy the terms cite (displate-about-regulations.txt:116): what personal data an artist gives and whether any of it is shown to buyers (G7; proposed kill (e), the trader question) |
+| 135 | Teach Simple (28), after row 130 | https://teachsimple.com/license-agreement | the licence agreement linked in the footer (teachsimple-terms-of-service.html:457): an AI or automation clause, and whether it is the "Membership Agreement" the contributor terms incorporate — can only kill |
 
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no

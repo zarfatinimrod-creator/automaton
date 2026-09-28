@@ -1,0 +1,748 @@
+How to write website content with AI prompts | TJ Robertson posted on the topic | LinkedIn
+
+Agree & Join LinkedIn
+
+By clicking Continue to join or sign in, you agree to LinkedIn’s User Agreement , Privacy Policy , and Cookie Policy .
+
+Skip to main content
+
+LinkedIn
+
+Top Content
+
+People
+
+Learning
+
+Jobs
+
+Games
+
+Sign in
+
+Join now
+
+TJ Robertson
+
+1y
+
+Report this post
+
+Writing website content is the worst part of building a website.
+
+You're juggling brand voice, visitor questions, conversions, AND Google rankings all at once. Most small businesses never finish because it's overwhelming.
+
+Here's the thing—you don't have to struggle with this anymore.
+
+I've spent years developing AI prompts and workflows that generate high-quality website drafts in one click. We're talking homepage, service pages, location pages—all of it.
+
+The process: → Use AI to research your company and industry → Feed that into a Claude project with specific templates
+→ Generate beautiful first drafts instantly
+
+I'm sharing my exact prompts and workflow. These aren't generic AI requests—they're refined systems that actually understand what makes website content work.
+
+No more staring at blank pages. No more keyword-stuffed nonsense. Just solid drafts you can build from.
+
+Ready to stop struggling with website content?
+
+See my entire process here: https://lnkd.in/gxSJ6JVH
+
+#SmallBusiness #AI #WebsiteContent
+
+…more
+
+3
+
+1 Comment
+
+Like
+
+Comment
+
+Share
+
+Copy
+
+LinkedIn
+
+Facebook
+
+X
+
+Transcript
+
+Transcript
+
+Transcript
+
+Writing content for your website is the worst. You have to figure out how to represent your brand while answering all your visitors questions and converting them into paying customers. But you also have to worry about ranking in Google. Trying to figure out all these pieces can be a nightmare and it's the number one reason small businesses don't finish their website. So let's forget about that and make it super easy. By the end of this video, you're going to have a one click solution to generate a beautiful first draft of any page of your website. A few days ago, the owner of Apex Doors, Caleb. Sent me an e-mail saying I have watched nearly all of your YouTube videos and implemented all the best practices I would like to see what you would further optimize so using Caleb site as an example I'm going to show you my exact process for creating content for websites you're going to see why creating pages for search engines does not work anymore what does work now and is likely to keep working for the foreseeable future and of course my exact process for easily creating high quality page content so let's get started so like Caleb said he's been implementing a lot of. SEO best practices On his website, he has his main terms in the H1 of his home page. He's listing the areas he serves. He has calls to action sprinkled throughout the pages. He lists all his main services on his home page. He's also created a page for each of his main services, including commercial door installation, bathroom partitions. And the kicker? He's created pages for each area he serves. These are all best practices in SEO and every small business should be doing all of these things. In fact, Apex Stores. Website has only been around for a few months and they're already getting some traffic from some of their main terms like Commercial Doors Tulsa and Custom doors. However, if we use this Google location changer to simulate a search from Tulsa, OK for one of the terms he's ranking for Commercial Doors Tulsa, we can see he's not yet in the map pack and he's ranked three in the blue links. Now the number one site ranking organically is called Commercial Door LLC. Well played commercial door. It's going to be very hard to outrank someone whose business name. Is the term you're trying to rank for. But let's look at the number 2 ranked website pro door. Here we have pro doors homepage. It's not the best homepage I've ever seen, but let's go ahead and compare it to Apex stores. And you tell me if this was your first impression of each website, what company would you want to contact first? Now when Caleb's defense, sure, there's a bunch of words on the page. However, that's just more information from Google, right? We need to put all these words on the page so we can rank for the terms we want to rank for and actually think that's where Caleb went wrong. The truth is, nowadays you don't have to sacrifice user experience for search rankings. In fact, every year user experience is a bigger factor in search rankings, meaning that Google's algorithm is getting better and better at understanding whether or not users are having a good experience on your website, and if they are, you can rank higher as a result. Not only that, but all this content, these big blocks of text that hurt user experience aren't necessary for ranking well in Google. So why is page content important for ranking in Google first and foremost? It's to help Google understand what the page is about. You want to have a clear idea of what search terms would lead people to this page, and then make it very clear to Google that this page is relevant for those terms. However, this doesn't require a lot of text. Often the H1 or the title of the page can do 90% of the work here. There are plenty of examples of pages with less than 200 words that are ranking for very competitive search terms. The second is just to provide a positive user experience. And this goes back to what I was saying before, but you want to make it really easy. For the visitor to find the information they're looking for. And finally, you want to fully address the user's query. So sometimes it does make sense to have a lot of text on the page. The question to ask yourself is what information would a searcher hope to find when searching for the query we're targeting with this page? Make sure all of that information is covered on the page, but nothing else. We don't want any fluff. So with that in mind, how should we go about designing a home page or a service page? So first and foremost, we have to have a query in mind for your home page. This is typically. Going to be your company's main search term. What are people most likely to type into Google when they're searching for a company like yours? So for Apex, this is going to be something like commercial doors or custom doors. Now you might say, wait, Apex also makes bathroom partitions, so we should also be trying to rank the home page for that, right? No, almost always if you have two competing search terms you're trying to rank for, you want two different pages. And that's what Caleb has done really well by making a separate page for each service they offer. Now at this point you might be asking, wait, does he need a separate? Age for commercial doors. If he's already optimizing his home page for commercial doors, this is where it gets a little tricky. My rule of thumb is that if 80% or more of your business comes from a single service, your homepage can just be the official page for that service and you don't need a separate page. Otherwise, each service should have its own page. But then what should you optimize your homepage for? Your home page should always be optimized for your biggest keyword, the one you most want to rank for. Now, in some cases, this is going to mean that your home page is optimized. Or the same term as one of your service pages. And that feels weird, but I do think it's the best option in those cases. So for Apex Doors, his biggest keyword might be commercial doors, in which case his home page and his commercial doors page would optimize for that term. On the other hand, maybe his big main term is custom doors, and then his home page would be optimized for custom doors. It would require doing some actual keyword research to say for sure. And then finally, common modifiers also deserve their own page. This is one of the easiest ways to rank as a local. Small business. This is exactly what Caleb has done with the Areas We serve page. So in this case, Bartlesville would be a modifier because someone might type commercial doors Bartlesville into Google. If Apex competitor does not have a page targeting that search term and Apex does. They can outrank them just by default even if they're a smaller company or have less brand authority. The beauty of service area pages is you can actually rank for terms without the modifier when the user just happens to be in Bartlesville. And this is. Exactly what we see when we look at Caleb's data. So it looks like they just added these areas. We serve pages about a month ago and they're already starting to get traffic. It's not much, but these pages are super easy to make and if each one just gives you a little bit of traffic, they're well worth it. But if you look at the queries that are bringing traffic to the page, most of them don't have that area's term in them. A lot of them do include Tulsa, but you can see he's getting traffic to Bartlesville and Owasso, even though the queries don't contain that city. And this is very common. Google knows where you live, so generally service area pages are going to be the first. Modifiers you go after, but for most small businesses, there's going to be a lot of modifiers that people commonly add to your main search terms. Identifying each of these and making a separate page for them is perhaps the most effective strategy for SEO right now. All right, so we know what terms we're trying to rank for. We know what pages we need to build. How do we figure out what content to put on the page? Well, like I said before, we need to consider what information a searcher hopes to find when they're searching for this query. So then we could go through this whole process of identifying all the information we need to include on the page. Or we could just let AI do it. So I'm going to show you the exact workflow I use, and I'll give you all of my prompts so you can do this yourself. And then I'll give you some tips for making this actually look good on your website. Because again, we want a good user experience. So the first step is just to create a master document with all the information you can find about your company and industry. And if you plan to keep using AI workflows like this, this document is going to become invaluable. It is so important that the AI has all the context around your business. To accurately represent it, and that's what this document is going to do. Now I'll have another video on how I create these for each of my clients so you can do it for yourself. For this video, we're going to do the lazy method, which is again, having a I do it. So in the description, there's a link where you can get this document. And the first tab on this document is a prompt that you can give to Gemini deep research or clawed deep research or chat Shipt deep research. They all have a deep research function. I just like Gemini and all you're going to do is fill in each of these tabs with your brand. Apex Doors Area Tulsa, OK and we'll paste in their URL and all you have to do is copy this, paste it into Google Gemini and hit deep research Go. Now this is gonna take 5 or 10 minutes, but don't worry, I already did this earlier. Google gave me this beautiful brand document talking all about Apex stores and their industry. We're just going to export this and then we could share the Google doc, but I find it easier to just download. Now the next step is to provide this information to a cloud project or a Gemini gem. Or a chatbot project with clear guidance on how to write the page. And don't worry, I'm going to show you exactly what you need to give it. The next tab on the document is the SEO writing guide. You can read this if you want. It just explains how to write good content for SEO. And the tab after that are the project instructions. So this is like a prompt that comes before the prompt. You're going to give it to the project once. And then every time you use the project, it'll just already have this context. Let me show you how. I have it set up in cloud. So this is my cloud project. I've called home page generator. To create a project, you just click the projects button in the left sidebar. It's pretty much the same thing in chant GBT or Gemini. I just like clawed for this particular task. So the cool thing about projects is their project knowledge, which has two parts to it. The first is the instructions. So you're going to take the prompt instructions from the document and paste them in here. This tells it how it's supposed to work. And 2nd, you can provide documents for the project. So here's where you're going to drag in that home page template. And then we're also going to drag in our SEO writing guide now that the project is set up. You never have to do that part again. Every time you want to create a homepage, you just drag in that company information doc we made with deep research. So I'll go ahead and drag in the one for Apex Stores. Make sure extended thinkings on clothes on it 4 will be good for this and go. And now Claude's going to look through all the documents we provided, review the project instructions, think for a while, and then write a beautiful draft for a home page. And here you can see it's drafting each section provided in the template now most likely. You're not going to be able to just copy and paste the content from here onto your website. You're going to want to review it, make some changes. It might recommend some sections that don't make sense, but for the most part, this should give you a great starting point and take out most of the headache of coming up with content for your website. Now, as you can see here, this is still a good amount of text and for most local businesses, I actually do recommend putting a lot of text on the page. With Apex Doors isn't so much the amount of text, but the density. There's also just a lot of information that visitors probably don't care to know. While they're reviewing the home page, so starting from the top here, surface areas are generally not something you need to show above the fold. The area above the fold is incredibly valuable. I do like that Apex Doors has a form here that makes sense for some businesses and not for others. Typically, the higher the ticket price, the less it makes sense to put a form right at the front. But this is a great place to put a video or photo or testimonial, something that really showcases your brand. Service areas are mostly for search engines and they're good to have on the page, but I would put them further down. Improving user experience is mostly about just giving more space and splitting up text sections with graphic elements. So this next row here should have an image on one side with the text on the other side, and there should be more space above and below the row. This service grid is great, but we need more space between the elements and we don't need to put this much text about each service on the home page. Put enough text that they understand what the service is and then give them the option to visit that services page to learn more. If you just continue to add a lot of space and make sure you don't have two text. Actions touching each other. You'll end up building a much prettier page that provides a much better user experience. Not only will users appreciate these pages more, but they will rank better and they'll convert better too. Once you finish the home page, move on to service pages and then pages targeting queries with modifiers. I call these keyword targeted sub pages and again the most valuable version of this are service area pages. So in the document shared and description I have shared both instructions and templates for the home page and service page. So naturally. You might be asking, wait, J, what do I use for the service area pages? Well, that depends. What query is the service area page modifying? If this is a service area for one of your services, then you should use the service template. But if this is a service area for your company, then you should use the home page template. In Apex's case here, his service area pages are essentially just home pages for that service area, and so that's how he should treat them. He should use the home page template when he's generating the content and then just duplicate his home page for that. Are you? One of the biggest mistakes people make with service area pages is they think they need to talk about that area bunch to rank for it. But you don't do this on your homepage, right? You want your home page to rank for the main area that you're in, but you don't feel like you need to talk about landmarks and points of interest throughout the page. It's the same thing with your service area pages. Going back to why page content is important for ranking, we just need to help Google understand what the page is about. We don't need to shove the service area in there over and over again. Just get it in the title of the page. Talk about it when it makes sense to talk about it. Inserting it more into the copy is not going to improve your rankings. A lot of people make the mistake of just duplicating their service page over and over again and trying to change some of the content here and there. If you look at Caleb service area pages, this content down here is identical on everyone. However, if you're using this process to generate content, just run the process again for each page. This will give you completely unique pages with the same core information and messaging. You satisfy Google because it's unique content and you satisfy the visitor. They're all getting the same high quality home page. It's optimized for their area, and because you can generate it in one click. Now that your system is built, it doesn't take any extra time to make these unique pages. If you would like me to do a free audit of your website, visit tjrobertson.com and fill out the form at the bottom of the page. Overall, Caleb, I think you're doing a great job with Apex Doors. Keep implementing SEO best practices and consider rebuilding each of these pages with the searcher in mind.
+
+Chuck McKay, MBA
+
+1y
+
+Report this comment
+
+TJ, I'm loving your commentary. And you probably already know that your website is down, but just in case, I thought it may be a kindness to mention it.
+
+Like
+
+Reply
+
+1 Reaction
+
+To view or add a comment, sign in
+
+More Relevant Posts
+
+Map Ranking
+
+424 followers
+
+11mo
+
+Report this post
+
+To stay ahead, building a robust website with detailed service and city pages is essential. AI favors well-structured content, including descriptions, FAQs, and high-quality images. The key is to prioritize clarity and relevance over mere keywords. AI systems crawl and cite this information when recommending businesses, making comprehensive content a critical asset. #GoogleMaps #AI #SEO #Visibility #WebDevelopment
+
+…more
+
+2
+
+Like
+
+Comment
+
+Share
+
+Copy
+
+LinkedIn
+
+Facebook
+
+X
+
+To view or add a comment, sign in
+
+Nate Dame
+
+12mo
+
+Report this post
+
+The "prompt, paste, and pray" method for SEO content is broken. There's a better way to write.
+
+We treat AI like a vending machine:
+→ Feed it a prompt.
+→ Get a generic article back.
+→ Paste it into a doc.
+→ Then... the real work begins.
+
+You're left trying to force strategy onto a bland, unstructured draft. It's like we try to shape AI slop into something good -- and we wonder WHY OUR RANKINGS AND TRAFFIC SUCK?!
+
+It’s backwards.
+
+Great content isn't about getting a faster first draft. It's about MAKING BETTER CONTENT DECISIONS throughout the creation process.
+
+What if your editor was an active, strategic partner?
+What if the insights came to you, right next to your cursor?
+
+That's the workflow we've built with Syllabus. It’s a writing environment first.
+
+Dozens of AI agents work alongside you, providing live guidance based on:
+✅ An exhaustive analysis of the 100+ top-ranking pages for your topic.
+✅ Your own custom brand voice and style guides.
+✅ Modern SEO and E-E-A-T best practices.
+
+It’s about EMPOWERING CREATORS, not just prompting a machine. You should stay in control of your content, drive creativity and strategy, while the AI provides heavy lifting help in real-time.
+
+Beta invites for Syllabus are coming soon -- follow for more.
+
+(And if you need an SEO growth agency, let me know!)
+
+#Syllabus #SEO #ContentMarketing #AI #Writing #AEO #SEOAgency
+
+30
+
+4 Comments
+
+Like
+
+Comment
+
+Share
+
+Copy
+
+LinkedIn
+
+Facebook
+
+X
+
+To view or add a comment, sign in
+
+Nate Dame
+
+11mo
+
+Report this post
+
+AI for content creation has failed most marketers... right?
+
+It promised to be EASY and IMPACTFUL... and it's not either!
+
+---
+
+THE "EASY WORKFLOW" LIE
+Today's news: "Just use THIS trick for awesome AI content!"
+The reality?
+A chaotic mess of isolated prompts and spreadsheets.
+That's not a workflow. It's dozens of siloed things.
+
+---
+
+THE "QUALITY CONTENT" LIE
+We all scream: "Quality is king!"
+Reality?
+Today's AI content tools produce... average.
+At their very, very best.
+But average doesn't win. You need the BEST.
+
+---
+
+THE "HUMAN EMPOWERMENT" LIE
+We're told: "AI empowers you to create!"
+The reality?
+Most AI content tools just make busywork: More reviews. More copying and pasting.
+They've became roadblocks to human expertise, not partners.
+
+---
+
+We don't need more AI slop.
+We need AI to ACTUALLY HELP us as CREATORS.
+To scale our unique insights, not replace us.
+
+This is what we're building at Syllabus.
+A platform that isn't just another flashy toy.
+
+It's as easy to use as a Google Doc.
+Powerful agents are right there, ready to work magic when you need them.
+You (and your clients / subject matter experts / bosses) can add your human-only insights with ease. To one doc or at scale.
+
+It does all this while EMPOWERING every user (not distracting them).
+
+I'm working furiously towards a big release. I'd love to show you if you want to give some feedback.
+
+It's time to stop fighting with AI and finally partner with it.
+
+#Syllabus #AI #ContentMarketing #SEO #AIContent #MarketingTools #ContentWorkflow
+
+46
+
+7 Comments
+
+Like
+
+Comment
+
+Share
+
+Copy
+
+LinkedIn
+
+Facebook
+
+X
+
+To view or add a comment, sign in
+
+Studio1 Design
+
+205 followers
+
+11mo
+
+Report this post
+
+Using AI to crank out blogs? That’s fine.
+
+Using it to fuel a conversion-focused content strategy? That’s better.
+
+In our latest article, we explore:
+🗸 Common AI misconceptions (and how they hurt your results)
+🗸 How to guide AI with better prompts
+🗸 The secret power of “deep research”
+🗸 Simple ways to boost SEO and repurpose smarter
+
+If content is part of your growth plan, don’t miss this.
+
+Read it the full article here:
+𝐡𝐭𝐭𝐩𝐬://𝐬𝐭𝐮𝐝𝐢𝐨𝟏𝐝𝐞𝐬𝐢𝐠𝐧.𝐜𝐨𝐦/𝐡𝐨𝐰-𝐭𝐨-𝐥𝐞𝐯𝐞𝐫𝐚𝐠𝐞-𝐚𝐢-𝐭𝐨-𝐠𝐞𝐧𝐞𝐫𝐚𝐭𝐞-𝐡𝐢𝐠𝐡-𝐢𝐦𝐩𝐚𝐜𝐭-𝐛𝐥𝐨𝐠-𝐜𝐨𝐧𝐭𝐞𝐧𝐭/
+
+Like
+
+Comment
+
+Share
+
+Copy
+
+LinkedIn
+
+Facebook
+
+X
+
+To view or add a comment, sign in
+
+Executive & Strategic Solutions
+
+37 followers
+
+11mo
+
+Report this post
+
+Structured content isn’t optional in an AI world — it’s mandatory. Explore the eight layers you need to layer on or risk being invisible.
+
+Comprehensive Requirements for AI-Ready Structured Content
+
+digitolservices.com
+
+2
+
+Like
+
+Comment
+
+Share
+
+Copy
+
+LinkedIn
+
+Facebook
+
+X
+
+To view or add a comment, sign in
+
+Rudhrah Keshav
+
+11mo
+
+Report this post
+
+AI is rewriting search snippets—is your content ready?
+
+Google tests AI-generated descriptions for search snippets. If these scale, what once lived in meta descriptions may shift. Brands must rethink how they summarize pages.
+
+- Stay precise. The AI will pull from page content; accuracy matters.
+- Keep human review. AI can draft, humans should polish.
+- Test impact. Measure CTR changes, watch for confusion.
+- Protect brand voice. Provide approved language tweaks.
+- Align with on-page copy. Headings, bullets, and tone should echo the snippet.
+
+This shift is an invitation: use AI to draft, then refine with human eyes. Update templates, train teams, and keep your core promises visible.
+
+It won’t replace good SEO. It will change how you tell your story in search. Be ready to adapt faster.
+
+What do you see as the biggest risk or the brightest opportunity from AI-generated snippets in your industry?
+
+1
+
+Like
+
+Comment
+
+Share
+
+Copy
+
+LinkedIn
+
+Facebook
+
+X
+
+To view or add a comment, sign in
+
+Will Schweinheim
+
+11mo
+
+Edited
+
+Report this post
+
+I tested AI-written copy vs human copy on my landing page.
+
+Here's what happened...
+
+I took one of my landing pages and rewrote it three ways:
+
+→ Pure AI (Claude)
+→ Pure human (me writing for 2 hours)
+→ And hybrid (AI draft + my edits)
+
+Ran each version for 7 days.
+
+Same traffic.
+Same offer.
+Same everything.
+
+What I tested:
+
+→ Headline variations (3 per version)
+→ Body copy flow
+→ CTA button text
+→ Overall persuasiveness
+
+The results:
+
+✅ Pure AI: Clear, benefit focussed, but felt generic
+✅ Pure Human: More personality, but took forever to write
+✅ Hybrid: Best of both worlds
+
+Here's what surprised me:
+
+The AI version had the highest initial engagement (people read more), but the hybrid version converted better.
+
+Why?
+
+The AI got attention, but my edits added the emotional hooks that drive action.
+
+Engagement rates:
+• AI: 68% scrolled past fold
+• Human: 52% scrolled past fold
+• Hybrid: 71% scrolled past fold
+
+Time investment:
+• AI: 15 minutes total
+• Human: 2+ hours of writing + breaks
+• Hybrid: 30 minutes (AI draft + edits)
+
+The biggest lesson👇
+
+AI is incredible at structure and clarity.
+Humans are still better at emotional nuance.
+
+Combine them and you get copy that's both fast AND persuasive.
+
+My new workflow:
+
+1️⃣ Let AI write the first draft
+2️⃣ I add personality and emotional triggers
+3️⃣ Use AI again to punch up specific sections
+4️⃣ Final human polish
+
+Comment "HYBRID" and I'll send you my exact prompting workflow for this approach 👇
+
+#copywritingtest #AiMarketing #LandingPageCopy #ContentStrategy #MarketingExperiment
+
+15
+
+4 Comments
+
+Like
+
+Comment
+
+Share
+
+Copy
+
+LinkedIn
+
+Facebook
+
+X
+
+To view or add a comment, sign in
+
+Angie Wolfe, CP APMP
+
+12mo
+
+Report this post
+
+Are you seeking a practical and effective way to take your proposals to new heights? Here's a powerful tip from our 6-step Framework to drive your proposal quality sky-high!
+
+Master your content development - it's not just about crafting compelling content but also ensuring it addresses client needs and stands out from the competition. How can you do this in less time? The answer: AI tools!
+
+Leverage game-changing tools like Grammarly, Perplexity, Claude, CopyAI, or Jasper to create well-structured & engaging content in record time. From proofreading to SEO-friendly content, these AI-powered allies will save you hours, streamline your content development process, and elevate proposal quality without compromising your vision of a successful partnership!
+
+Embrace AI in your proposal process and win more contracts without adding to your payroll. Curious about how to make this work and which tools to use? Check out the recordings of our recent lunch and learns: "Proposal Tools and AI" and "AI in Proposal Development," packed with in-depth content, expert insights & practical applications to propel your proposal prowess like never before!
+
+Get the recordings now!
+https://lnkd.in/eYa3EYXs
+https://lnkd.in/e2gAXWZ4
+
+3
+
+Like
+
+Comment
+
+Share
+
+Copy
+
+LinkedIn
+
+Facebook
+
+X
+
+To view or add a comment, sign in
+
+Angie Wolfe, CP APMP
+
+11mo
+
+Report this post
+
+Are you seeking a practical and effective way to take your proposals to new heights? Here's a powerful tip from our 6-step Framework to drive your proposal quality sky-high!
+
+Master your content development - it's not just about crafting compelling content but also ensuring it addresses client needs and stands out from the competition. How can you do this in less time? The answer: AI tools!
+
+Leverage game-changing tools like Grammarly, Perplexity, Claude, CopyAI, or Jasper to create well-structured & engaging content in record time. From proofreading to SEO-friendly content, these AI-powered allies will save you hours, streamline your content development process, and elevate proposal quality without compromising your vision of a successful partnership!
+
+Embrace AI in your proposal process and win more contracts without adding to your payroll. Curious about how to make this work and which tools to use? Check out the recordings of our recent lunch and learns: "Proposal Tools and AI" and "AI in Proposal Development," packed with in-depth content, expert insights & practical applications to propel your proposal prowess like never before!
+
+Get the recordings now!
+https://lnkd.in/eYa3EYXs
+https://lnkd.in/e2gAXWZ4
+
+Like
+
+Comment
+
+Share
+
+Copy
+
+LinkedIn
+
+Facebook
+
+X
+
+To view or add a comment, sign in
+
+Ideas at Dawn AEC Marketing Consultants
+
+2,876 followers
+
+11mo
+
+Report this post
+
+Are you seeking a practical and effective way to take your proposals to new heights? Here's a powerful tip from our 6-step Framework to drive your proposal quality sky-high!
+
+Master your content development - it's not just about crafting compelling content but also ensuring it addresses client needs and stands out from the competition. How can you do this in less time? The answer: AI tools!
+
+Leverage game-changing tools like Grammarly, Perplexity, Claude, CopyAI, or Jasper to create well-structured & engaging content in record time. From proofreading to SEO-friendly content, these AI-powered allies will save you hours, streamline your content development process, and elevate proposal quality without compromising your vision of a successful partnership!
+
+Embrace AI in your proposal process and win more contracts without adding to your payroll. Curious about how to make this work and which tools to use? Check out the recordings of our recent lunch and learns: "Proposal Tools and AI" and "AI in Proposal Development," packed with in-depth content, expert insights & practical applications to propel your proposal prowess like never before!
+
+Get the recordings now!
+https://lnkd.in/eTCGWJ4P
+https://lnkd.in/eWkGKdRv
+
+Like
+
+Comment
+
+Share
+
+Copy
+
+LinkedIn
+
+Facebook
+
+X
+
+To view or add a comment, sign in
+
+595 followers
+
+396 Posts
+
+View Profile
+
+Follow
+
+Explore related topics
+
+How to Use AI in Content Marketing and Copywriting
+
+How to Streamline Content Creation Using AI Prompts
+
+How to Guide AI Content With Writing Style Prompts
+
+Integrating AI Tools Into Your Content Workflow
+
+How to Use AI for Automated Deliverable Creation
+
+AI Writing Strategies for Better Content Creation
+
+How to Improve AI-Generated Content
+
+Generate on-brand email copy with AI
+
+How to Redefine Writing for AI
+
+Show more
+
+Show less
+
+Explore content categories
+
+Career
+
+Productivity
+
+Finance
+
+Soft Skills & Emotional Intelligence
+
+Project Management
+
+Education
+
+Technology
+
+Leadership
+
+Ecommerce
+
+User Experience
+
+Show more
+
+Show less
+
+LinkedIn
+
+&copy; 2026
+
+About
+
+Accessibility
+
+User Agreement
+
+Privacy Policy
+
+Your California Privacy Choices
+
+Cookie Policy
+
+Copyright Policy
+
+Brand Policy
+
+Guest Controls
+
+Community Guidelines
+
+العربية (Arabic)
+
+বাংলা (Bangla)
+
+Čeština (Czech)
+
+Dansk (Danish)
+
+Deutsch (German)
+
+Ελληνικά (Greek)
+
+English (English)
+
+Español (Spanish)
+
+فارسی (Persian)
+
+Suomi (Finnish)
+
+Français (French)
+
+हिंदी (Hindi)
+
+Magyar (Hungarian)
+
+Bahasa Indonesia (Indonesian)
+
+Italiano (Italian)
+
+עברית (Hebrew)
+
+日本語 (Japanese)
+
+한국어 (Korean)
+
+मराठी (Marathi)
+
+Bahasa Malaysia (Malay)
+
+Nederlands (Dutch)
+
+Norsk (Norwegian)
+
+ਪੰਜਾਬੀ (Punjabi)
+
+Polski (Polish)
+
+Português (Portuguese)
+
+Română (Romanian)
+
+Русский (Russian)
+
+Svenska (Swedish)
+
+తెలుగు (Telugu)
+
+ภาษาไทย (Thai)
+
+Tagalog (Tagalog)
+
+Türkçe (Turkish)
+
+Українська (Ukrainian)
+
+Tiếng Việt (Vietnamese)
+
+简体中文 (Chinese (Simplified))
+
+正體中文 (Chinese (Traditional))
+
+Language
+
+Sign in to view more content
+
+Create your free account or sign in to continue your search
+
+Email or phone
+
+Password
+
+Show
+
+Forgot password?
+
+Sign in
+
+Sign in with Email
+
+or
+
+New to LinkedIn? Join now
+
+By clicking Continue to join or sign in, you agree to LinkedIn’s User Agreement , Privacy Policy , and Cookie Policy .

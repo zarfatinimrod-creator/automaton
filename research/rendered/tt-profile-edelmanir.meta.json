@@ -1,0 +1,17 @@
+{
+  "url": "https://www.tiktok.com/@edelmanir",
+  "slug": "tt-profile-edelmanir",
+  "fetchedAt": "2026-09-28T21:02:47.763Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 372511,
+  "sha256": "582060a87f48bb08af160a9da51d6e72a89538c6fa4064c5090aaf05be8b1e5b",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-profile-edelmanir.html",
+  "textPath": "research/rendered/tt-profile-edelmanir.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

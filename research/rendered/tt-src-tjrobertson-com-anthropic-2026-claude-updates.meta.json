@@ -1,0 +1,17 @@
+{
+  "url": "https://tjrobertson.com/anthropic-2026-claude-updates/",
+  "slug": "tt-src-tjrobertson-com-anthropic-2026-claude-updates",
+  "fetchedAt": "2026-09-28T21:01:01.748Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 106740,
+  "sha256": "936b83d0455666e8b6152d9ec3918be112c04e63d063c5fd08e416eac7e00b38",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-src-tjrobertson-com-anthropic-2026-claude-updates.html",
+  "textPath": "research/rendered/tt-src-tjrobertson-com-anthropic-2026-claude-updates.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

@@ -1,0 +1,17 @@
+{
+  "url": "https://www.tiktok.com/tag/saas?lang=en",
+  "slug": "tt-src-tiktok-com-tag-saas-lang-en",
+  "fetchedAt": "2026-09-28T21:03:08.354Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 360766,
+  "sha256": "756e8ca0cc40b2adf53b0069395d7ed61357209b4156e461a33e4b34c5145eb8",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-src-tiktok-com-tag-saas-lang-en.html",
+  "textPath": "research/rendered/tt-src-tiktok-com-tag-saas-lang-en.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

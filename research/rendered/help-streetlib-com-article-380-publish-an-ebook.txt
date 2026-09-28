@@ -1,0 +1,119 @@
+Publish an Ebook - StreetLib Help Center
+
+Toggle Navigation
+
+Ebook
+
+Audiobook
+
+Libri cartacei
+
+Crea i tuoi libri con Write
+
+Direct Marketing
+
+Gestisci il tuo account e i pagamenti
+
+StreetLib Store
+
+Webinar
+
+Ready
+
+Ebooks
+
+Audiobooks
+
+Paperbooks
+
+Create Your Books
+
+Manage Your Account and Royalties
+
+StreetLib Direct Marketing
+
+SL Store
+
+Accountverwaltung und Einnahmen
+
+Ebook Veröffentlichung
+
+Hörbücher
+
+Bucherstellung
+
+FAQ zum Umzug auf die neue Plattform
+
+FAQ on Platform Changeover
+
+Contact
+
+Contact
+
+Publish an Ebook
+
+Introduction
+
+To proceed with the publication of a new eBook, log into your Dashboard and click on " Add content " at the top right. You will be able to select one of the options listed below:
+
+If you already have the file ready for distribution, as well as the cover, you can proceed with the publication, replicating the procedure shown below:
+
+Read this article to find out what formats are accepted .
+
+How to fill in the article form?
+
+As you saw in the video, during the publication phase you will be asked to fill in fields containing the information about the ebook, which will then be transmitted to the bookstores. Here are instructions for the correct compilation of the metadata .
+
+ISBN . It is allowed to publish a new eBook even if you do not have an ISBN : StreetLib will assign you one for free. If you have not entered an ISBN, have chosen to receive it from StreetLib, and have uploaded the file in ePub format, the code will be assigned to you within 12 hours. Publishing to all online bookstores takes between 24 and 72 hours. You can check the publication of your ebook by searching through the assigned ISBN on each of the main online stores. ISBNs will continue to be provided for free; however, to prevent abuse, we have introduced a maximum limit of 5 per day and 100 in total. If you need more, no problem—just contact us.
+
+TITLE, SUBTITLE, and SERIES . In case your ebook includes a subtitle, remember to insert it in the dedicated field to separate it from the title. The same applies if the title is part of a series: information on the series must be indicated in the appropriate field, never in the title field. Here is more information on series .
+
+AUTHOR . It is necessary to insert the author’s name using the *Surname, Name* format and to avoid the use of symbols, numbers, nicknames, codes, or series of characters that could lead to the refusal of the book by the bookstores. Any COLLABORATORS (Illustrator, Narrator, Translator, etc.) must be indicated by filling in the appropriate field.
+
+SYNOPSIS . We suggest you enter an accurate and complete description of your ebook, enriched with all the details that may be important to your reader, encouraging them to buy your ebook instead of others. The synopsis must not contain the book’s title or any unnecessary information, such as references to discounts and offers. Some stores (such as Kobo) do not accept synopses longer than 4,000 characters.
+
+KEYWORD . This is where you can include keywords related to the content of your book, which are essential to making it visible online. Keywords are used to make it easier to find your book on Amazon, so they must accurately describe the content of your book and reflect the words customers will use when searching. Along with factors like Amazon's sales history and best seller rankings, relevant keywords can significantly boost your ranking in Amazon search results. The maximum number of keywords accepted by Amazon Kindle is seven (7) .
+
+USER RIGHTS . We need to know if you are the author or publisher of the book you are publishing.
+
+PUBLIC DOMAIN . You will indicate whether or not it is a book that does not have copyright, in which the copyright has expired, or which is in public domain ( read more here )
+
+ADULT CONTENT . Refers to books with explicit pornographic content, read more here .
+
+CATEGORIES . The correct selection of categories is essential for positioning with online bookstores. StreetLib allows you to categorize ebooks according to the BISAC and THEMA systems. To learn more click here .
+
+RELATED ARTICLES . You can indicate the ISBNs of other editions of the same book already available in stores. By linking with previous work, personal data can be associated more quickly.
+
+We remind you that StreetLib also allows you to publish an ebook in advance. Learn more by reading this article .
+
+Still need help?
+Contact Us
+Contact Us
+
+Last updated on September 4, 2026
+
+Toggle Search
+
+Categories
+
+Before Publication
+
+Publish an eBook
+
+Content Policy
+
+Ebook Price
+
+Update an eBook
+
+Bookstores
+
+Sale Models and Earnings
+
+No results found
+
+&copy;
+
+StreetLib SRL
+
+2026. Powered by Help Scout

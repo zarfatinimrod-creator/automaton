@@ -1,0 +1,17 @@
+{
+  "url": "https://www.greeninvoice.co.il/magazine/%D7%9E%D7%94-%D7%94%D7%94%D7%91%D7%93%D7%9C-%D7%A2%D7%95%D7%A1%D7%A7-%D7%96%D7%A2%D7%99%D7%A8-%D7%A4%D7%98%D7%95%D7%A8/",
+  "slug": "tt-src-greeninvoice-co-il-magazine",
+  "fetchedAt": "2026-09-28T21:02:32.949Z",
+  "status": 403,
+  "contentType": "text/html",
+  "byteLength": 0,
+  "sha256": null,
+  "truncated": false,
+  "error": "HTTP 403 Forbidden",
+  "bodyPath": null,
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

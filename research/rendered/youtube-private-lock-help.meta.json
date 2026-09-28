@@ -1,17 +1,17 @@
 {
   "url": "https://support.google.com/youtube/answer/7300965?hl=en",
   "slug": "youtube-private-lock-help",
-  "fetchedAt": "2026-09-28T19:14:26.716Z",
+  "fetchedAt": "2026-09-28T20:32:08.013Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1586902,
-  "sha256": "138b541d13c069358aa7dcae81da01edc347698c028998cee42758e2db1c5c97",
+  "byteLength": 1587306,
+  "sha256": "5ff877646b0239971780d7f9c11085bf169cca3e220ef3995e19c23ab1c1decb",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/youtube-private-lock-help.html",
   "textPath": "research/rendered/youtube-private-lock-help.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "0e4e9ec06ff601a7fd577d9135bad2f000f600f477829e9f601c2d64e0a6a9c0",
+  "previousSha256": "138b541d13c069358aa7dcae81da01edc347698c028998cee42758e2db1c5c97",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

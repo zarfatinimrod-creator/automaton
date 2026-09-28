@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Meta tags are managed dynamically by react-helmet-async in PageLayout component -->
+    
+    <!-- Google Fonts - Inter (Optimized) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
+    <!-- Preload Geist stylesheet — used only on the Anniversary landing.
+         The stylesheet is actually applied by AnniversaryPage at mount time;
+         this preload primes the cache so the apply is instant. Font files
+         (.woff2) are fetched lazily by the browser only when matching text
+         is rendered (scoped to #sl-anniversary-page). -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap" crossorigin>
+    <script type="module" crossorigin src="/assets/js/index-46a3fa32.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/js/vendor-3cfc0b2a.js">
+    <link rel="modulepreload" crossorigin href="/assets/js/mui-42021d29.js">
+    <link rel="modulepreload" crossorigin href="/assets/js/router-cdbf7627.js">
+    <link rel="modulepreload" crossorigin href="/assets/js/i18n-aae4b78d.js">
+    <link rel="stylesheet" href="/assets/css/index-7471c086.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    
+    
+    <!-- Font loading optimization script -->
+    <script>
+      // Ottimizzazione caricamento font
+      if ('fonts' in document) {
+        document.fonts.ready.then(function() {
+          document.documentElement.classList.add('fonts-loaded');
+        });
+      } else {
+        // Fallback per browser più vecchi
+        setTimeout(function() {
+          document.documentElement.classList.add('fonts-loaded');
+        }, 100);
+      }
+    </script>
+  </body>
+</html>

@@ -1229,6 +1229,22 @@ coded fee, or a mandate collision.
   Garmin Connect IQ (`:1233-1234`), Zepp OS (`:1233`), Samsung Galaxy Store (`:1249`), Google Play for Wear OS
   (`:1247`, `:1525`), Modrinth (`:1244`). The pass also notes line drift in citations to this file; the table above
   uses the lines as they stand on 28.9.
+- **The second refill of 28.9.2026 (tick 9): seven gate refutations by Opus verifiers, for the next sitting to confirm**
+  (`research/breadth/REPLENISH-2026-09-28-2.md` §4 holds the evidence and every reopen trigger).
+
+  | Venue | Killed on | Grade | Reopens if |
+  |---|---|---|---|
+  | TeePublic (Articore) | G3: no upload API; the only public automation drives a logged-in browser with randomised delays "to avoid detection" (the Redbubble shape; detection evasion is the RED class at `:274`) | github | an upload API or a written rule permitting automated uploads |
+  | WordPress.org plugin directory (+ a Freemius add-on) | G3, G6: a new plugin enters only through a logged-in form with two-factor and nine attestations | github | a submission API, or a sitting accepting one owner upload per plugin |
+  | WordPress.org theme directory | G3: login, two-factor, nonce-checked form | github | a theme submission API |
+  | WooCommerce.com Marketplace | G3, G6: a dashboard submission and a business review per product, with a support duty | github | a submission API and no vendor support duty |
+  | MCPize | G5: absent from all 40 CrUX monthly lists (Israel and global, Jan 2025-Aug 2026). **Settles the "unsettled" item at `:1275`** | github | the origin enters a CrUX list AND a render shows a payout to Israel with no camera step |
+  | AgenticMarket | G2 (its commit `93ec039` made calls free, so no creator is paid) and G5 | github | paid calls and payouts return, with a route to Israel, and the origin enters a CrUX list |
+  | MCP Marketplace (mcp-marketplace.io) | G5: absent from all 40 CrUX lists | github | the origin enters a CrUX list AND a payout route to Israel is rendered |
+
+  **Also:** Tes Resources is upgraded from scout to github grade (its Author Code bars AI resources with limited human input);
+  the Smashwords Store is **dead at rendered grade on G1 (tick 9)**: Draft2Digital's terms, which cover Smashwords.com as one of its channels, require "a one-time Account Activation Fee" before distribution (`draft2digital-com-terms-of-service.txt:490-491`), plus $12 a year from the second year; the AI rule is not in the terms (it sits in separate Content Guidelines, still scout grade); Freemius, CodeCanyon, Agensi and Smithery
+  stand as recorded.
 - **Shopify — pre-ruled conditional kill** on a rendered mandatory listing fee (the note under "Earlier rejections").
 - **Whop — re-recorded as camera-gated** (the correction under `content-seo`, "Clipping"): the rail is not reusable.
 - **Apify — the hidden-Actor note** under `distribution` → "What goes to the board".

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The brand mailbox (owner step 8): send the drafted venue questions (five on 28.9.2026), and probe the mailbox for numbers.
+"""The brand mailbox (owner step 8): send the drafted venue questions (seven on 28.9.2026), and probe the mailbox for numbers.
 
 WHY. research/breadth/BOARD.md Q2 admitted step 8 so the colony can ask the written yes/no questions that decide
 CrazyGames, Wix, Spreadshirt and n8n (research/owner-asks/brand-mailbox-questions.md), and read the brand's

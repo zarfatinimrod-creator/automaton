@@ -27,6 +27,15 @@ Solar & Moon Arc
 92
 
 All Watchfaces SEE ALL
+Metro WP8
+
+122
+Kurz vor
+
+0
+WarnWeather — weather, health tracking, calender & rain radar
+
+277
 mobiGlas
 
 1
@@ -36,15 +45,6 @@ Netline
 Playtime
 
 2
-Submariner
-
-0
-Headway
-
-1
-From Here
-
-3
 
 Most Loved SEE ALL
 YWeather

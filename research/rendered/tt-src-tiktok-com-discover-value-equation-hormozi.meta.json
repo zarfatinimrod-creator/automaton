@@ -1,0 +1,17 @@
+{
+  "url": "https://www.tiktok.com/discover/value-equation-hormozi",
+  "slug": "tt-src-tiktok-com-discover-value-equation-hormozi",
+  "fetchedAt": "2026-09-28T21:03:07.006Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 365705,
+  "sha256": "4e05130eab7afb0a29eb152dc0bcd9fb646d572b07ce589a9c048e3c79bd84f7",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-src-tiktok-com-discover-value-equation-hormozi.html",
+  "textPath": "research/rendered/tt-src-tiktok-com-discover-value-equation-hormozi.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

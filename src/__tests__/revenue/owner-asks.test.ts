@@ -70,8 +70,10 @@ function mdSections(): MdSection[] {
 describe("research/owner-asks/questions.json is the single source the sender reads", () => {
   it("exists, and the research note points to it", () => {
     const q = readQuestions();
-    expect(q.venues.map((v) => v.venue)).toEqual(["crazygames", "wix", "spreadshirt", "n8n", "indiebook"]);
-    expect(q.venues.map((v) => v.order)).toEqual([1, 2, 3, 4, 5]);
+    expect(q.venues.map((v) => v.venue)).toEqual([
+      "crazygames", "wix", "spreadshirt", "n8n", "indiebook", "displate", "teachsimple",
+    ]);
+    expect(q.venues.map((v) => v.order)).toEqual([1, 2, 3, 4, 5, 6, 7]);
     expect(md).toMatch(/research\/owner-asks\/questions\.json/);
     expect(md).toMatch(/scripts\/brand_mail\.py/);
   });
@@ -102,6 +104,9 @@ describe("research/owner-asks/questions.json is the single source the sender rea
     expect(q.venues.find((v) => v.venue === "spreadshirt")!.heldQuestions).toHaveLength(2);
     // Indiebook: the AI question goes first; the other four of indiebook.md's draft wait for its yes.
     expect(q.venues.find((v) => v.venue === "indiebook")!.heldQuestions).toHaveLength(4);
+    // Tick 9: Displate holds PayPal-to-Israel then the camera check (kill c); Teach Simple the file intake then the tax form.
+    expect(q.venues.find((v) => v.venue === "displate")!.heldQuestions).toHaveLength(2);
+    expect(q.venues.find((v) => v.venue === "teachsimple")!.heldQuestions).toHaveLength(2);
   });
 
   it("allows one follow-up no sooner than seven days after the first send, as the note's rule says", () => {
@@ -113,8 +118,11 @@ describe("research/owner-asks/questions.json is the single source the sender rea
     const q = readQuestions();
     for (const v of q.venues) expect(v.route.length, v.venue).toBeGreaterThan(20);
     // Spreadshirt's and Indiebook's came from tick-8 captures (spreadshop-legal-information.txt:36,
-    // indiebook-sell-a-book.html:735); n8n's route is a form.
-    expect(q.venues.filter((v) => v.to).map((v) => v.venue)).toEqual(["crazygames", "wix", "spreadshirt", "indiebook"]);
+    // indiebook-sell-a-book.html:735), Displate's and Teach Simple's from tick-9 captures
+    // (displate-about-regulations.txt:447, teachsimple-terms-of-service.txt:420); n8n's route is a form.
+    expect(q.venues.filter((v) => v.to).map((v) => v.venue)).toEqual([
+      "crazygames", "wix", "spreadshirt", "indiebook", "displate", "teachsimple",
+    ]);
   });
 });
 
@@ -164,6 +172,8 @@ describe("what every message says, and what none may say", () => {
       "HTML5", "If", "Israel", "Its", "June", "Market", "Marketplace", "Mehudak", "Must", "OWASP", "One", "Partner",
       "PayPal", "Portal", "Question", "Questions", "Spreadshirt", "Spreadshop", "Thank", "Tipalti", "We", "Wix", "ZAP",
       "Can", "Is", "It", "Indiebook", "The", "English", "Hebrew",
+      // Tick 9 (28.9.2026): the two venues' names and the title of the document Displate's question cites.
+      "Displate", "Teach", "Simple", "Terms", "Use",
     ]);
     const hebrewAllowed = new Set([
       "מהודק", "אינדיבוק", "באינדיבוק",

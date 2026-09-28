@@ -1,0 +1,184 @@
+What AI Knows About Your Business in 2026 (and How to Change It)
+
+Skip to content
+
+Home
+
+Blog
+
+About Us
+
+Contact
+
+Home
+
+Blog
+
+About Us
+
+Contact
+
+Tiktok
+
+Youtube
+
+Instagram
+
+Linkedin
+
+Twitter
+
+Facebook
+
+Join Our Waiting List
+
+What AI Knows About Your Business in 2026 (and How to Change It)
+
+Riva
+
+July 27, 2026
+
+6:16 am
+
+For most small to medium-sized businesses, AI knows almost nothing about you. At TJ Digital we simulate about 4,000 prompts every day across ChatGPT, Gemini, and Perplexity. When someone asks any of them about a smaller brand, the model runs a search first and then summarizes whatever it finds.
+
+So the confident opinion you get back is a summary of a handful of web pages. Those pages are usually listed right there in the citations. That is good news for your business, because a handful of web pages is something you can actually change.
+
+Table of Contents
+
+Toggle
+
+Does ChatGPT Actually Have an Opinion About Your Business?
+How Much AI Knows About Your Business Depends on Company Size
+How Do You See Which Pages AI Is Citing About Your Brand?
+How Do You Change What AI Says About Your Brand?
+Why Small Businesses Have an Advantage in AI Search
+What Else Should You Know About AI and Your Brand? How often does ChatGPT search the web instead of using training data?
+How long does it take to change what AI says about your brand?
+Is your own website enough to control what AI says about you?
+Does this apply to Google’s AI Mode and Perplexity too?
+
+How to Get Your AI Citations Audited
+
+Does ChatGPT Actually Have an Opinion About Your Business?
+
+Unless you are a large, well-known brand, no. Ask ChatGPT or Google’s AI what it thinks of your company and the answer will read like a real opinion, complete with comparisons to your competitors. Look at the citations underneath and you will usually see it ran a search before it said any of that.
+
+Those citations tell you exactly what happened. The model turned your question into search queries, pulled text from the pages it found, and assembled an answer out of them. OpenAI’s documentation describes this directly, including the part where ChatGPT rewrites your question into targeted queries and sends them to search providers.
+
+The answer also changes from one week to the next, because the pages it reads change.
+
+@tjrobertson52 How does ChatGPT know about my business? For most SMBs, it searches first and repeats what it finds. #AISearch #SmallBusiness #ChatGPT
+♬ original sound – TJ Robertson – TJ Robertson
+
+How Much AI Knows About Your Business Depends on Company Size
+
+Company size decides how much of your brand lives inside the model itself. Large brands have been written about enough that the model carries real knowledge about them. Everyone else sits somewhere on the slope below that.
+
+Brand size
+What the model has stored about you
+What happens when someone asks
+What it takes to change the answer
+
+Large, well-known brand
+Substantial knowledge from training data
+Often answers with no search at all
+Years of coverage and a matching budget
+
+Medium-sized business
+Some information, thinly represented
+Usually searches anyway, and the search wins
+A few weeks of work on the cited pages
+
+Small business or newer brand
+Little to nothing
+Searches every time and repeats what it finds
+One well-placed mention can move it in a day
+
+Here’s the thing about that middle tier. A medium-sized business often does have some presence in the training data, and that presence forms an opinion, but the opinion is fragile. The model still tends to search when someone asks about you, and what it finds in that search carries more weight than what it already had.
+
+Stored knowledge does still shape which sources the model trusts enough to retrieve in the first place, which we cover in our post on primary bias .
+
+How Do You See Which Pages AI Is Citing About Your Brand?
+
+Ask the model a question your customer would ask, then read the citations. We run about 50 prompts per client audit, and 10 to 20 is enough to see the pattern yourself. Here is the process:
+
+Write the prompts the way a real customer would phrase them, describing who they are, what problem they have, and what kind of company they want.
+
+Run every prompt several times in ChatGPT, Google’s AI Mode, and Perplexity. Answers vary run to run, so a single pass tells you very little.
+
+Log every cited URL in a spreadsheet, along with the prompt that produced it.
+
+Sort by how often each URL appears.
+
+In most industries, one to five directories account for the citations worth caring about, and each of those turns up somewhere between 1% and 50% of the time. Others appear once in a thousand prompts and are a waste of your money. Listicles usually matter more than directories in the final recommendation.
+
+The sources are also completely different from one industry to the next. Advice like “AI loves Reddit” is worthless until you have run your own prompts and seen what your industry actually returns.
+
+How Do You Change What AI Says About Your Brand?
+
+Change the pages it cites. There are three ways to do that, and most businesses end up needing all three:
+
+Fix the pages you already control. Your website, your Google Business Profile, and your directory profiles are usually somewhere in that citation list. The block of text the model pulls has to recommend you by name, and that is where most sites fail.
+
+Get onto the pages you don’t control. Listicles, review sites, and forum threads dominate citations in most industries, and brand mention building is how you earn a spot on them.
+
+Publish pages that take the citation slot. When a cited page will not add you and you cannot edit it, create your own page covering the same question, then work to get it cited in that page’s place.
+
+We audited a company last year whose website was the second most cited source in their entire industry, behind Wikipedia. Five competitors were still being recommended more often than they were. The pages ChatGPT kept pulling from were purely informational and never recommended the company by name, so the citations did nothing for them.
+
+The third option is the one most advice skips over, and it is usually the easiest of the three. The queries these models run are far more specific than anything a human would type into Google, so there is very little competition for those pages. You need a system for producing content you are proud of quickly, and you can take those slots.
+
+When a cited page states something factually wrong about your company, that is a separate repair job with its own steps, and we walk through it in our guide to fix wrong AI information .
+
+Why Small Businesses Have an Advantage in AI Search
+
+A brand with no fixed reputation inside the model is the cheapest kind to influence. Your reputation lives in a few pages, and pages can be edited, added to, or replaced.
+
+Speed is the part that surprises people. Traditional SEO usually takes three to six months before you see a ranking move. A new mention on a source the models already cite often shows up in AI answers within a day.
+
+Most of your competitors have not run these prompts even once, which is why placements on the pages that matter are still cheap. That changes as more businesses catch on.
+
+What Else Should You Know About AI and Your Brand?
+
+How often does ChatGPT search the web instead of using training data?
+
+For questions about small to medium-sized businesses, almost every time. Large brands and general knowledge questions often get answered straight from training data with no citations at all.
+
+How long does it take to change what AI says about your brand?
+
+A new mention on a frequently cited source can show up in AI answers within a day. Edits to pages that get cited rarely take longer to register.
+
+Is your own website enough to control what AI says about you?
+
+No. These models weight independent sources heavily, so a review site, a directory listing, or a “best in [city]” listicle usually carries more weight in an answer than your own About page.
+
+Does this apply to Google’s AI Mode and Perplexity too?
+
+Yes, all of them search before answering questions about lesser-known companies. The sources they favor vary a lot by industry, which is why the audit has to run on your own prompts.
+
+How to Get Your AI Citations Audited
+
+Run 10 prompts this week and log what comes back. That alone tells you more about your AI visibility than most business owners in your industry know about theirs. To have the full version run for you, contact TJ Digital and we will simulate the prompts, rank the sources shaping AI answers in your industry, and build the plan to get your brand into them.
+
+Let's Connect
+
+I’m TJ Robertson, founder of TJ Digital. We’re not taking new clients just yet, but we’re growing the team as fast as we can. Drop your info in the form and I’ll personally reach out when we’re ready.
+
+Tiktok
+
+Youtube
+
+Instagram
+
+Linkedin
+
+Twitter
+
+Facebook
+
+tj@tjrobertson.com
+
+Henderson, Nevada, USA
+
+© 2026 TJ Digital. All rights reserved.

@@ -1,0 +1,17 @@
+{
+  "url": "https://www.youtube.com/@TJRobertsonDigital/videos",
+  "slug": "tt-src-youtube-com-tjrobertsondigital-videos",
+  "fetchedAt": "2026-09-28T21:01:09.945Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 1206057,
+  "sha256": "daac940e16d25949e60ec5312b0722a7f1bd3a295a96a5a3400004f6ab518a83",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-src-youtube-com-tjrobertsondigital-videos.html",
+  "textPath": "research/rendered/tt-src-youtube-com-tjrobertsondigital-videos.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

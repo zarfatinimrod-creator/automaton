@@ -1,0 +1,17 @@
+{
+  "url": "https://www.tiktok.com/oembed?url=https://www.tiktok.com/@zoharmamancpa/video/7158445994391129346",
+  "slug": "tt-oembed-zoharmamancpa-7158445994391129346",
+  "fetchedAt": "2026-09-28T21:01:54.864Z",
+  "status": 200,
+  "contentType": "application/json; charset=utf-8",
+  "byteLength": 3725,
+  "sha256": "db30b5f380552191f0317c579626d137a24c83aaef6b235f5cf612951e51255c",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt-oembed-zoharmamancpa-7158445994391129346.json",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
