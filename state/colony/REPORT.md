@@ -1,6 +1,6 @@
 # Revenue colony — board report
 
-Generated 2026-09-28T08:53:40.813Z
+Generated 2026-09-28T09:08:59.010Z
 
 ## Where we are
 
@@ -37,9 +37,25 @@ Contradicted targets: `oss-bounties`. These are not merely unproven — the evid
 
 ## This tick
 
-Ran: nothing (everything within its interval)
-Skipped as not yet due: revenue_ledger_sync, revenue_supervisor_review, revenue_board_review, revenue_audit
+Ran: revenue_ledger_sync, revenue_board_review
+Skipped as not yet due: revenue_supervisor_review, revenue_audit
 
+- Ledger sync: 0 new entries, 0 already known, sources [none configured]
+
+### Board decisions
+
+- **apify-actors → ESCALATE** — blocked on one-time human setup: Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify KYC and a PayPal or Wise payout are deferred until 50 stranger users in 30 days (scaleCriteria); under 10 at day 30 they are not asked for.
+- **il-biz-tools → ESCALATE** — blocked on one-time human setup: Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3); Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6)
+- **oss-bounties → ESCALATE** — blocked on one-time human setup: Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in "bot" (BOARD-2 §2.1.3(c)). In the same sitting, create its token for BRAND_GITHUB_TOKEN (pasted in step 6); the intake stays disabled in code until the corrected week-4 read, so the token changes nothing before then (RULING-2026-09-28-bounty-rail.md §4.4); Owner step 4a, in step 7's sitting: sign in to Algora once AS THE BRAND MACHINE ACCOUNT — a GitHub sign-in, two minutes, no identity, no money — ruled into step 7's sitting because one sitting is less owner involvement than two (RULING-2026-09-28-bounty-rail.md §4.1); Owner step 4b, asked only when the corrected week-4 mean is 3 or more AND a reward for a merged brand-account PR is held by Algora: complete Stripe Connect Express onboarding in your legal identity — individual, Israel, Israeli bank — under three stop rules: a US account country or a US bank/SSN/ITIN/EIN, a selfie or liveness check, or any fee → close the tab and complete nothing (RULING-2026-09-28-bounty-rail.md §4.1-§4.2)
+- **pcn874 → ESCALATE** — blocked on one-time human setup: Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses; Create the GitHub organisation under the brand name so the open-source core's repository URL carries it and not your username (owner step 7). The npm scope `@mehudak` (the brand the board chose on 27.9.2026) is a separate namespace on npm, not created by the GitHub organisation; publishing to it is our work and no workflow does it yet.; Paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — shared with il-biz-tools; without the token the loop cannot see a sale. (The company domain, owner step 5, is frozen by the owner's ₪0 rule of 27.9.2026 and is not asked for.)
+
+### Actions taken
+
+- waiting on creator for apify-actors: Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify KYC and a PayPal or Wise payout are deferred until 50 stranger users in 30 days (scaleCriteria); under 10 at day 30 they are not asked for.
+- waiting on creator for il-biz-tools: Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3); Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6)
+- waiting on creator for oss-bounties: Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in "bot" (BOARD-2 §2.1.3(c)). In the same sitting, create its token for BRAND_GITHUB_TOKEN (pasted in step 6); the intake stays disabled in code until the corrected week-4 read, so the token changes nothing before then (RULING-2026-09-28-bounty-rail.md §4.4); Owner step 4a, in step 7's sitting: sign in to Algora once AS THE BRAND MACHINE ACCOUNT — a GitHub sign-in, two minutes, no identity, no money — ruled into step 7's sitting because one sitting is less owner involvement than two (RULING-2026-09-28-bounty-rail.md §4.1); Owner step 4b, asked only when the corrected week-4 mean is 3 or more AND a reward for a merged brand-account PR is held by Algora: complete Stripe Connect Express onboarding in your legal identity — individual, Israel, Israeli bank — under three stop rules: a US account country or a US bank/SSN/ITIN/EIN, a selfie or liveness check, or any fee → close the tab and complete nothing (RULING-2026-09-28-bounty-rail.md §4.1-§4.2)
+- waiting on creator for pcn874: Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses; Create the GitHub organisation under the brand name so the open-source core's repository URL carries it and not your username (owner step 7). The npm scope `@mehudak` (the brand the board chose on 27.9.2026) is a separate namespace on npm, not created by the GitHub organisation; publishing to it is our work and no workflow does it yet.; Paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — shared with il-biz-tools; without the token the loop cannot see a sale. (The company domain, owner step 5, is frozen by the owner's ₪0 rule of 27.9.2026 and is not asked for.)
+- goal filing disabled for this review (no executor attached)
 
 ## Blocked on
 
