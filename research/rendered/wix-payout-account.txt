@@ -1,0 +1,182 @@
+Set Up Your Payout Account
+
+Overview
+Extend Websites
+
+Build Apps
+
+Go Headless
+References
+
+Changelog
+
+Build Apps
+
+Get Started
+
+Overview
+
+Quick Start
+
+Templates
+
+Tutorials
+
+Get an Idea
+
+Develop Your App
+
+About Developing Apps
+
+App Workspace
+
+Development Sites
+
+Extensions
+
+Develop an App with the CLI
+
+Develop a Self-Managed App
+
+Develop an App with Blocks
+
+Build with AI
+
+API Integrations
+
+Auth
+
+Design
+
+Launch Your App
+
+About Launching Apps
+
+Pricing and Billing
+
+About Monetizing Your App
+
+About Pricing Plans and Business Models
+
+The App Purchase Lifecycle in Wix
+
+Pricing Page Best Practices
+
+Set Up a Freemium Business Model
+
+Set Up a Premium Business Model
+
+Set Up a Usage-Based Business Model
+
+Set Up a Pay As You Go Business Model
+
+Set Up One-Time Payments
+
+Set Up a Wix Pricing Page
+
+Set Up an External Pricing Page
+
+Set Up and Manage Free Trials
+
+Identify and Manage App Users
+
+Change App Pricing
+
+Report Revenue for Partner Billed Apps
+
+Payouts Dashboard
+
+Set Up Your Payout Account
+
+Payments and Billing FAQs
+
+Market Listing
+
+Localization
+
+Legal and Security
+
+App Distribution
+
+App Promotion
+
+Manage Your App
+
+User Support
+
+Versioning
+
+Data and Analytics
+
+Contact Us
+
+In This Article Set up your payout account
+Grant a teammate access to payouts
+See also
+
+Set Up Your Payout Account
+
+Before you can publish a paid app, you must become a Wix partner and then set up a Tipalti account to receive payouts. This is a one-time setup at the account level, not the app level.
+
+If your app's business model isn't free, a blocker appears during the app review process requiring you to complete this setup. Until payout account setup is complete, you can't publish the app.
+
+Note: If you don't see the blocker, there's a chance you already have a payout account set up.
+
+Important:
+You need the Manage Earnings permission to complete this flow. Account owners have this access by default. To give a teammate access, see Grant a teammate access to payouts .
+
+Set up your payout account
+
+To set up your payout account:
+
+In your account dashboard, navigate to Earnings > Payouts .
+
+Click Join the Partner Program . The Wix Partners onboarding flow guides you through registering your company as a Wix partner.
+
+Set up your Tipalti account to configure how you receive payouts.
+
+Return to your app and continue the publish flow.
+
+Grant a teammate access to payouts
+
+If you want a teammate to set up, view, or manage payouts, create a custom role with the Manage Earnings permission and assign it to them.
+
+Step 1 | Create a custom role
+
+Go to Team Management and create a custom role .
+
+Enter a Role Title and optional Description .
+
+Expand Studio Workspace , then select Manage Earnings .
+
+This permission allows teammates to set up a payout account, view payouts from templates, apps, and revenue share, and manage payout settings.
+
+Click Save .
+
+Step 2 | Invite the teammate and assign the role
+
+Go to Team Management > Invite Teammates .
+
+Enter the teammate's email address.
+
+Under Site access , select All sites and folders .
+
+If you grant access to specific sites only, Earnings won't appear for the teammate.
+
+Under Select roles , select the custom role you created.
+
+Click Send Invite .
+
+The teammate receives an email invitation. Once they accept, they can set up and manage payouts in Earnings > Payouts .
+
+See also
+
+Payments and Billing FAQs
+
+About the Payouts Dashboard
+
+Submit your app for review
+
+Last updated: 9 September 2026
+Did this help?
+Yes No
