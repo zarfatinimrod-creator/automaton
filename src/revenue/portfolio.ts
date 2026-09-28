@@ -186,8 +186,8 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     budgetMonthlyCents: 3000,
     humanSetup: [
       "Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in \"bot\" (BOARD-2 §2.1.3(c)). In the same sitting, create its token for BRAND_GITHUB_TOKEN (pasted in step 6); the intake stays disabled in code until the corrected week-4 read, so the token changes nothing before then (RULING-2026-09-28-bounty-rail.md §4.4)",
-      "Owner step 4a, in step 7's sitting: sign in to Algora once AS THE BRAND MACHINE ACCOUNT — a GitHub sign-in, two minutes, no identity, no money — so a reward has an Algora user to be held for (RULING-2026-09-28-bounty-rail.md §4.1)",
-      "Owner step 4b, asked only when the corrected week-4 mean is 3 or more AND Algora holds a reward for a merged brand-account PR: complete Stripe Connect Express onboarding in your legal identity — individual, Israel, Israeli bank — under three stop rules: a US account country or a US bank/SSN/ITIN/EIN, a selfie or liveness check, or any fee → close the tab and complete nothing (RULING-2026-09-28-bounty-rail.md §4.1-§4.2)",
+      "Owner step 4a, in step 7's sitting: sign in to Algora once AS THE BRAND MACHINE ACCOUNT — a GitHub sign-in, two minutes, no identity, no money — ruled into step 7's sitting because one sitting is less owner involvement than two (RULING-2026-09-28-bounty-rail.md §4.1)",
+      "Owner step 4b, asked only when the corrected week-4 mean is 3 or more AND a reward for a merged brand-account PR is held by Algora: complete Stripe Connect Express onboarding in your legal identity — individual, Israel, Israeli bank — under three stop rules: a US account country or a US bank/SSN/ITIN/EIN, a selfie or liveness check, or any fee → close the tab and complete nothing (RULING-2026-09-28-bounty-rail.md §4.1-§4.2)",
     ],
     skillName: "revenue-oss-bounties",
   },
