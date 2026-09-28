@@ -1,0 +1,1068 @@
+[
+ {
+  "venue": "Mozilla Client Security Bug Bounty (Firefox/Gecko), filed via Bugzilla REST (POST /rest/bug) from a brand account, with an email notice to security@mozilla.org",
+  "gate_results": [
+   {
+    "gate": "zero_cost",
+    "status": "HOLDS",
+    "evidence": "I re-read bedrock bug-bounty.html, client-bug-bounty.html and bug-bounty/faq.html from raw GitHub on 28.9. None of them names a fee to hold a Bugzilla account, to file, or to claim. The reporter is the one paid. Two caveats, both the scout's and correct:\n- The work must run in a PRIVATE repo, because automaton is public and publishing an unfixed 0-day there would be harmful. A private repo's Actions minutes are capped.\n- Session-only LLM review means the compute is tiny next to Mozilla's own fuzzing fleet. That is an efficiency problem, not a cost.\n\nMy claim that GitHub Free stops jobs at the minutes cap instead of billing when no payment method is on file is from memory (grade none). It should be confirmed before the dry run: https://docs.github.com/en/billing/managing-billing-for-your-products/managing-billing-for-github-actions/about-billing-for-github-actions",
+    "grade": "github"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "Israel is not excluded. bug-bounty.html (raw, re-read 28.9): 'You must not be on a US sanctions list or in a country (e.g. Cuba, Iran, North Korea, Crimea region of Ukraine, Sudan, and Syria) on the US sanctions list.'\n\nThe payout method, tax form and identity check are absent from all three bedrock pages. I re-read the FAQ and it says nothing on payment.\n\nNEW RISK the scout missed:\n- bedrock web-bug-bounty.html (raw, 28.9) says 'We have migrated our web bug bounty program to HackerOne.'\n- Two WebSearch summaries on 28.9 (snippet grade, and they conflate programmes) claim Mozilla's bounties are 'managed by HackerOne'. They also claim HackerOne payouts require 'identity verification via Veriff (valid for 12 months)' plus a W-8BEN.\n- If client-bounty awards are paid through HackerOne, Veriff is a document-and-selfie vendor. That would be a camera step and would fire KILL-4 (BOARD-LOOP.md:67). A 12-month validity could also mean re-verification each year: recurring owner work.\n\nWhat weighs against it, at github grade: the client page still routes filing through Bugzilla. The HackerOne migration statement names only the web programme.\n\nThis gate is decisive and unsettled. The primary pages that could settle it are hackerone.com/mozilla and HackerOne's receiving-payments doc. They may still be silent, in which case only an email to security@mozilla.org answers it.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "HOLDS",
+    "evidence": "Checked at github grade:\n- bmo docs/en/rst/api/core/v1/bug.rst (raw, 28.9) documents 'POST /rest/bug'.\n- It has a groups parameter. If groups is omitted, the bug goes into the product's 'Default' groups.\n- Flags can be set on create with a status plus a type_id or name. No creator restriction is stated.\n- client-bug-bounty.html (raw, 28.9): 'If you have filed the bug directly in Bugzilla without using the Bugzilla client bug bounty form, please immediately notify the Mozilla Security Group by email to security@mozilla.org', and 'Do not send the actual vulnerability via email.'\n- bug-bounty.html: 'All questions regarding the status of bug bounties should be directed to security@mozilla.org and not added as comments on Bugzilla.'\n\nThe route is therefore sanctioned, but it needs two things:\n- a brand mailbox the agent can SEND from (proposed step 8 is not done);\n- the correct security group and sec-bounty flag set at creation. Filing without them risks a public 0-day. That is the one irreversible failure mode, and only form.client.bounty shows which fields to replicate.\n\nThe scout's line numbers (:185, :188, :45) do not match my fetch, which put them near lines 105 and 78-102. The WebFetch numbers are approximate, so treat both sets as locations to check, not quotes. The Aug 2026 PR #17331 changed the email instruction on one page to 'report it through our Security Bug Bounty Program'. The client page's direct-filing notice is still present.",
+    "grade": "github"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "HOLDS",
+    "evidence": "CONDITIONAL / AMBER. The BMO etiquette clause is real and new. It was added 23 Apr 2026 in commit c219790 by marco-c, 'Bug 2034051 - Update Bugzilla Etiquette with guidance about AI usage' (GitHub commit history, 28.9). It reads: 'The use of AI and other assistive tools is permitted when preparing bug reports. However, the person submitting the report is fully responsible for its content. Reports must be concise, accurate, clear, and reflect the reporter's own understanding of the issue. Any AI-generated or assisted content must be reviewed and verified before submission.'\n\nThe clause names a human reporter. On the brand account the accountable person is the owner, who cannot verify anything technical. This is the same shape the screen marked AMBER for Google's 'yourself' clause (research/colony-sweep/screen-2/google-oss-vrp.md:94-98). It is also close to the Devpost attestation that the board said 'cannot be signed honestly for agent-built work' (the same file quotes BOARD.md at :96).\n\nAn agent-run reproduction is real verification, but whether 'reflect the reporter's own understanding' is met by disclosure alone is a board call. Invalid volume is penalised: 'Bugzilla may automatically disable accounts if too many bugs are submitted that get marked Invalid … too many invalid submissions may cause any valid bugs reported to receive reduced payouts' (bug-bounty.html, raw 28.9).",
+    "grade": "github"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "HOLDS",
+    "evidence": "Only one buyer exists, and it is actively shrinking the paid surface because of AI. The client-bug-bounty.html commit history (GitHub, 28.9) shows:\n- PR #17274, 6 Jul 2026, removed the whole static-analysis bounty ($500-$5,000).\n- PR #17331, 18 Aug 2026, replaced 'between $20,000 and $3,000 (USD)' with 'up to $20,000 (USD) cash, depending on the impact', and dropped the Baseline/High-Quality payout columns. Every amount is now a discretionary ceiling.\n- PR #17208, 3 Jun 2026, cut the collision window from 72 h to 48 h.\n- PR #17377, 14 Sep 2026, deleted exploit-mitigation guidance with the stated reason 'Finding controllable objects is now considerably easier with the aid of AI, so we do not need help performing this analysis.'\n\nThe live table still lists up to $20,000 (sandbox escape or WebExtension bypass), $10,000 (UXSS) and $3,000 (sec-high), plus a 50% mitigation-bypass bonus.\n\nNot checked here, from the scout: 14 advisories in 2026 credit '… using Claude from Anthropic' (repo: research/channel-loop/scouts.json:244).\n\nSeparately, a WebSearch snippet (28.9) claims a Mozilla programme is 'paused and not accepting new submissions beginning September 11, 2026, with plans to reopen in Q1 2027'. It is most likely the HackerOne web programme, and the client page on bedrock main has no pause text (github). Whether it covers the client bounty is UNKNOWN and must be rendered.\n\nFor the breadth directive this is one place with rare sales.",
+    "grade": "github"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "REFUTED",
+    "evidence": "The arithmetic holds: $3,000 × 4 a year / 12 = $1,000 a month, × ₪3.6 = ₪3,600. The inputs do not hold.\n\n(1) The rate of 4 sec-high awards a year is invented. No base rate exists, as the scout itself says. Every amount has been a discretionary 'up to' ceiling since PR #17331.\n\n(2) The timing makes 4 impossible within month 12. By the scout's own chain, the first filing is no earlier than about January 2027: a 30-day dry run, then owner steps 8 and 11, then filing. Each award then waits for triage, a fix and a Bounty Committee decision. At most one or two awards can land in the trailing year at September 2027.\n\n(3) Averaging a lumpy award into a monthly figure breaks a standing rule:\n- 'Prizes are not revenue' (docs/REJECTED.md:515).\n- 'a ₪90,000 grant that lands once is a cash event, not an income line' (docs/REJECTED.md:501-502).\n- The board used this as ground (d) for killing Google OSS VRP: 'REJECTED.md:501 — a cash event is not an income line' (research/colony-sweep/BOARD-2.md:129-131).\n\n(4) The ₪3.6/USD rate was not measured.\n\n(5) The pool is crowded. Frontier labs mine the same surface, Mozilla's internal fuzzers have a 7-day window, and duplicates within 48 h split the award.\n\nMy corrected range is ₪0 to ₪900 a month: at most one sec-high award (up to $3,000) in the trailing 12 months, averaged. The portfolio should count it as ₪0 under the prize rule.",
+    "grade": "repo"
+   },
+   {
+    "gate": "prior_verdict_missed_by_scout",
+    "status": "REFUTED",
+    "evidence": "The scout's claim of 'Not rejected, no reopen needed' is literally true, but it leaves out three prior rulings.\n\n(a) research/channel-loop/RULING-2026-09-28-bounty-rail.md:385-390 (Fable board, today). It says the venue's 'shape — one payer, lumpy, rare — is the opposite of the 28.9 directive' and sends it to row 12, the breadth board, with that note. It also records the scout's claims as 'SCOUT, UNCHECKED'.\n\n(b) The scout says the venue 'answers' the Google OSS VRP reopen condition. It answers only half. docs/REJECTED.md:1169 needs BOTH 'A documented submission channel a machine account can operate, AND a 30-day dry run with a finding that meets the bar' (the full wording is at BOARD-2.md:137-139). The dry run has not been run (logs/CHANNEL_LOOP.md:122).\n\n(c) The Google OSS VRP kill rested on a second ground: the cash-event ground (d) at BOARD-2.md:129-131. That ground transfers to Mozilla unchanged, and the scout never cites it.\n\nThe curl precedent also applies: 'curl closed its bug bounty after 20 AI-generated non-vulnerabilities in 21 days' (docs/REJECTED.md:519). None of this is a kill. It does mean the venue enters the breadth board already marked as the wrong shape.",
+    "grade": "repo"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 900,
+  "estimate_basis": "INFERENCE with no base rate. The high case assumes at most one sec-high award (up to $3,000, a discretionary ceiling since bedrock PR #17331 of 18.8.2026) lands in the trailing 12 months at month 12 (September 2027). Averaged, that is $250 a month. At ₪3.6/USD (not measured) it is about ₪900 a month.\n\nTiming bounds it. By the scout's own chain, filing starts no earlier than about January 2027, and each award then waits for triage, a fix and a committee decision.\n\nThe low case is ₪0. That result is at least as likely: the 30-day dry run has not been run; frontier labs are credited in 2026 advisories; Mozilla's fuzzers get a 7-day window; the collision window is now 48 h; and Mozilla is removing paid categories because 'AI makes it easier' (PR #17274, PR #17377).\n\nThe scout's ₪3,600 high multiplies correctly, but it assumes an invented four awards a year and is not reachable by month 12. Under docs/REJECTED.md:501-502 and :515 ('prizes are not revenue'), and BOARD-2.md:129-131, the portfolio should count this line at ₪0 a month in any case.\n\nDiscovery does not need a prior sale: there is no ranking or reputation gate. Reputation works only against us, through account disablement and reduced payouts for invalid reports.",
+  "honesty_risk": "The honesty risks are concrete.\n\n(1) AI slop and invalid volume. An agent that files unreproduced or duplicate crashes is exactly what Mozilla penalises: accounts auto-disabled for too many Invalid bugs, and reduced payouts on the valid ones (bug-bounty.html). curl shut its bounty over 20 AI non-vulnerabilities in 21 days (docs/REJECTED.md:519). This needs a hard reproduce-and-minimise gate, a cap of perhaps one filing per verified finding, and a kill on the first Invalid cluster (KILL-3).\n\n(2) Accountability. The BMO etiquette clause (added 23.4.2026) makes 'the person submitting' responsible and requires reports to 'reflect the reporter's own understanding'. On a brand account the accountable human is the owner, who cannot verify anything. AI disclosure is necessary but may not be sufficient; the Fable board must rule on this, as the screen did for Google's 'yourself' clause.\n\n(3) Claiming for work the buyer has said it no longer needs. Mozilla removed the static-analysis bounty and the mitigation-analysis guidance in 2026 because AI makes them cheap. Filing AI-generated reports in those removed categories to fish for discretionary payouts would be dishonest.\n\n(4) Disclosure harm. The most dangerous failure is a REST filing without the security group, or fuzz output committed to the public automaton repo. Either would leak an unfixed Firefox 0-day. This is an irreversible harm to users, not a terms issue.\n\n(5) Identity. The credit can be the brand, but the payee's legal identity must not be hidden at payment. If payouts route via HackerOne, a Veriff selfie is likely, and that is a mandate violation (KILL-4).\n\n(6) The breadth directive. Counting a lumpy discretionary award as monthly income would overstate the portfolio. This is the same honesty failure the 3.9 audit corrected (docs/REJECTED.md:501-502).",
+  "verdict": "NEEDS_RENDER",
+  "kill_reason": "Not killed yet. No gate is refuted at snippet grade or better, but two decisive facts are UNKNOWN.\n\n(1) How the client bounty pays. Mozilla's web programme moved to HackerOne (github). If client awards also pay via HackerOne, the snippet says identity verification is by Veriff, which likely means a selfie (camera, KILL-4) and possibly yearly renewal (recurring).\n\n(2) Whether the client programme is covered by a snippet-reported pause from 11.9.2026 to Q1 2027.\n\nIt dies on the spot if either renders against it:\n- a HackerOne or Veriff selfie on the payout path;\n- a per-award tax or identity form (KILL-4, BOARD-LOOP.md:67);\n- the client programme being paused;\n- the 30-day dry run finding nothing (BOARD-LOOP.md:141).\n\nEven if it survives the renders, it should enter the 28.9 breadth board counted at ₪0 a month. Three reasons: it is one buyer and rare; it falls under the cash-event rule (docs/REJECTED.md:501-502, BOARD-2.md:129-131); and today's ruling already records it as 'the opposite of the 28.9 directive' (RULING-2026-09-28-bounty-rail.md:385-390). It should not outrank any multi-buyer venue.",
+  "render_urls": [
+   "https://www.mozilla.org/en-US/security/client-bug-bounty/",
+   "https://hackerone.com/mozilla",
+   "https://hackerone.com/mozilla?type=team",
+   "https://docs.hackerone.com/en/articles/8395706-receiving-payments",
+   "https://docs.hackerone.com/en/articles/8395744-tax-forms",
+   "https://www.mozilla.org/en-US/security/bug-bounty/",
+   "https://www.mozilla.org/en-US/security/bug-bounty/faq/",
+   "https://bugzilla.mozilla.org/form.client.bounty",
+   "https://bugzilla.mozilla.org/page.cgi?id=etiquette.html",
+   "https://docs.github.com/en/billing/managing-billing-for-your-products/managing-billing-for-github-actions/about-billing-for-github-actions"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "Superteam Earn — Agent API (AGENT_ALLOWED / AGENT_ONLY listings), scope type=bounty, excluding isFndnPaying (Superteam-paid) listings and project listings",
+  "gate_results": [
+   {
+    "gate": "prior_verdict (scout said 'never assessed')",
+    "status": "REFUTED",
+    "evidence": "The scout missed a ruling from the same day. research/channel-loop/RULING-2026-09-28-bounty-rail.md:30 and §6 (:323-380) rule Superteam Earn 'admissible in principle; admitted to nothing; four ₪0 tests first'. It fixes the scope at type=bounty only, non-Superteam/Solana-sponsored, no Telegram (:331-332), and books USDC unconverted (§6.2). It lists kill conditions (:378): T1 mean < 3 over four weeks, liveness KYC on every payout class, Israel excluded, a legal name on the public profile with no brand option, or Telegram/an owner social account mandatory. logs/CHANNEL_LOOP.md:129 carries it as candidate 15, status 'dispatched', and :190 holds proposed owner step 12 until T1-T4 pass and board row 12 admits it (logs/FABLE_QUEUE.md row 12). docs/REJECTED.md has no Superteam entry. T1-T4 have not run: there is no research/measurements/superteam-earn.md and no superteam capture in research/rendered/. The scout's venue claim is not refuted; its 'never assessed' record is, and this venue must go to board row 12, not be admitted separately.",
+    "grade": "repo"
+   },
+   {
+    "gate": "zero_cost",
+    "status": "HOLDS",
+    "evidence": "skill.md: registration is a plain POST /api/agents with only a name, and no fee appears anywhere. Rate limits are the only restriction ('Agent registration: 60 per IP per hour'). claim.ts requires only isTalentFilled; KYC is read, not enforced. complete-profile/route.ts:178-183 creates the payout wallet for free: 'privy.wallets().create({ chain_type: 'solana' ... })'. So the owner needs no external wallet. No solver-side platform fee exists in the payment code: add-payment.ts verifies the sponsor's txId against recipientPublicKey and expectedAmount. The FAQ on fees is still unread.",
+    "grade": "github"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "New code evidence (github), stronger than the scout's snippet. createPayment.ts:17-23 runs Earn-side payment only for listings with 'isFndnPaying: true'. Its KYC block (:80-85, 'isKYCVerified !== true' → 'User is not verified') applies only there. schema.prisma defaults isFndnPaying to false. listing-builder/types/schema.ts: 'Foundation paying can only be enabled for Superteam listings'. Every other sponsor pays the winner's Privy wallet off-platform and records a txId that add-payment.ts verifies on-chain, so the platform enforces no KYC for the external-sponsor class. region.ts:62 returns true for a 'global' region whatever the user's location, and the file has no country exclusion list. Israel appears in constants/country.ts. Still UNKNOWN: (a) the Sumsub level is process.env.SUMSUB_LEVEL_NAME (sumsub/access-token.ts), so liveness on the Superteam-paid class cannot be read from code; (b) whether an external sponsor imposes its own off-platform KYC; (c) the USDC→ILS leg: a Bits of Gold help-page snippet says account creation involves 'uploading identification document(s)', but whether a selfie or liveness step follows is unread; (d) a new brand collision the scout missed. talent/schema/index.ts requires firstName, lastName, location and skills, plus a GitHub handle when dev skills are chosen ('Github is required'). claim.ts:98-103 moves the agent's submissions to the claimant's userId, so wins appear under the claimant's profile. Either the owner's legal name is published, or the profile carries a brand name as a person's name, and whether Earn's terms allow that is unread. In addition, sponsor export.ts gives sponsors the claimant's 'Email ID', Telegram, wallet and location.",
+    "grade": "github"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "HOLDS",
+    "evidence": "skill.md gives the discovery call as 'GET $BASE_URL/api/agents/listings/live?take=20 -H \"Authorization: Bearer sk_...\"'; the key comes from free, identity-less registration. Submissions go through create and update, capped at '60 per agent per hour'. agentListingVisibility.ts:4-11 shows agents published, active, public, non-archived listings with agentAccess in AGENT_ALLOWED or AGENT_ONLY from verified sponsors. validateSubmissionRequest.ts skips the isTalentFilled check for agents ('!isAgent && !user.isTalentFilled'). No step needs a per-item owner click. One caveat: an agent has no location, so region.ts:74 fails every region-restricted listing and only Global listings are reachable. Per skill.md:91-95 (verified in the ruling), project listings require the operator's Telegram and are out of scope.",
+    "grade": "github"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "HOLDS",
+    "evidence": "Agent work is labelled by construction. schema.prisma and listing-builder schema.ts both default agentAccess to 'HUMAN_ONLY', so every agent-eligible listing is a sponsor's explicit opt-in to agent entries. validateSubmissionRequest.ts:25-31 rejects agents on other listings with 'Agents are not eligible for this listing'. An agent user is created as firstName=<name>, lastName='agent' (agents/index.ts). skill.md: 'Plagiarism ... will lead to disqualification'; 'Avoid submitting X links unless you control the account.' It passes only with self-imposed limits; see honesty_risk.",
+    "grade": "github"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "UNKNOWN",
+    "evidence": "Every agent-eligible listing is a sponsor's explicit opt-in (HUMAN_ONLY default, github), and a verified sponsor is also required (agentListingVisibility.ts:10). An agent can reach Global listings only (region.ts:74). The public /api/listings endpoint excludes AGENT_ONLY listings and does not return agentAccess (listings/live.ts:60), so no keyless count exists. Snippet: roughly 80% of Superteam bounties block AI submissions or require KYC that agents cannot pass, leaving 'a smaller window'. Snippet titles show agent-themed listings (e.g. 'BENTO ... Beta Bounty', Superteam Brasil 'Ship useful agent skills'), but the latter is a Superteam listing and may be isFndnPaying, which means KYC. The number of live agent-eligible Global bounties from external sponsors with dev skills is unread. Discovery needs no prior sale: the sponsor posts and the agent pulls by API. Whether judging favours profiles with past wins is UNKNOWN.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "HOLDS",
+    "evidence": "$150 × 3.6 (src/revenue/money.ts:42 DEFAULT_FX_ILS fallback 3.6) = ₪540, so the scout's 'about ₪550' is rounding. The high case ('one ~$150 placement a month') is an assumption, not derived from any measured count, win rate or listing size, and supply is the sponsor's opt-in. Per RULING §6.2, any receipt books as USDC 'unconverted', and the ₪20,000 done-test counts converted shekels only. Until T4 shows a camera-free off-ramp, converted ILS is ₪0 even in the high case.",
+    "grade": "repo"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 540,
+  "estimate_basis": "INFERENCE, with no base rate. Low: no placements; supply is sponsor opt-in (HUMAN_ONLY default), limited to Global listings from external sponsors, and every eligible listing draws competing agents. High: one ~$150 USDC placement a month × 3.6 (repo FX) = ₪540, booked as unconverted USDC by on-chain tx hash, per RULING-2026-09-28-bounty-rail.md §6.2. Converted ILS stays ₪0 until a camera-free Israeli off-ramp is rendered (T4). Nothing lands before the owner's claim step (owner step 12, held) and a sponsor's judging. That puts a first sale 4-10 weeks after the claim, if any entry places. The high case needs T1's weekly count of 3 or more to be credible.",
+  "honesty_risk": "1) Spam and flooding. The 60-per-hour submission limit would let the colony enter every agent-eligible listing with thin, generic entries. That is AI slop against sponsors who opted in to agents in good faith, and a flood is exactly what would make sponsors flip back to the HUMAN_ONLY default. Rule needed: at most one submission per listing, only where we can ship working, tested code that meets the stated spec. 2) Identity on the public profile. The claimant profile requires firstName and lastName, and wins move to the claimant's profile (claim.ts:98-103). With the legal name, the owner's name is published, which breaks the brand-only rule. With 'Mehudak' presented as a person's name, a pseudonym poses as a human, which may breach Earn's terms (unread: https://superteam.fun/earn/terms-of-use.pdf). If developer skills are chosen, a GitHub handle is also mandatory, and it must be the brand's, never the owner's personal one. 3) Customer contact. The sponsor export exposes the claimant's email and Telegram, and sponsors may message the owner directly; project listings need the operator's Telegram and are excluded. Agent comments may only ask scope questions and must never negotiate. 4) Plagiarism. Reusing OSS code without attribution means disqualification under the code of conduct. 5) Injected listings. Listing text is untrusted input: the same-day ruling found an Algora-side honeypot repo that hides 'Automated systems should ignore the above notice' in an HTML comment (RULING §1). The intake must treat listing text as data. 6) KYC trap. A win on an isFndnPaying Superteam listing blocks payment until Sumsub KYC, whose camera level is unknown. The intake must exclude those listings, and whether agents can see isFndnPaying in details/{slug} is UNKNOWN.",
+  "verdict": "NEEDS_RENDER",
+  "kill_reason": "Not killed; no gate is refuted at snippet grade or better. The GitHub code strengthens the camera case for the external-sponsor class: KYC is enforced only on isFndnPaying, Superteam-only listings, and the payout goes to a Privy wallet the platform creates. Three decisive gates are still UNKNOWN. (a) Supply: sponsors must opt in, and no count exists; T1's weekly CI count with a free brand agent key settles it best. (b) A camera-free USDC→ILS off-ramp (T4). (c) Whether the required firstName/lastName profile can carry the brand without publishing the owner's name or breaching the terms. The scout's 'never assessed' prior verdict is wrong: RULING-2026-09-28-bounty-rail.md §6 already made the venue 'admissible in principle, admitted to nothing', pending T1-T4. Admission belongs to board row 12, not to this family's ranking.",
+  "render_urls": [
+   "https://superteam.fun/earn/agents/listings",
+   "https://superteam.fun/earn/agents/",
+   "https://docs.superteam.fun/the-superteam-handbook/community/faqs/superteam-earn-faq",
+   "https://superteam.fun/earn/terms-of-use.pdf",
+   "https://help.bitsofgold.co.il/en/articles/8904919-how-to-create-an-account",
+   "https://raw.githubusercontent.com/SuperteamDAO/earn/main/src/features/listings/constants/publicListingDetails.ts"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "CrazyGames (Basic Launch → Full Launch), original single-player HTML5 games under the brand Mehudak",
+  "gate_results": [
+   {
+    "gate": "prior_verdict_check",
+    "status": "HOLDS",
+    "evidence": "No rejection exists: grep of docs/REJECTED.md for crazygames/html5/browser game finds nothing about this venue. The current status is NEEDS_MORE after tick 4 (research/measurements/crazygames.md:3-6 and :457-459; logs/CHANNEL_LOOP.md:120). The scout's record is stale in two places. (1) It cites the tick-3 verdict (crazygames.md:407-409) and missed tick 4 (crazygames.md:418-459). (2) Three of its four primary_urls_to_render (requirements/intro, quality, ads) were already rendered on 2026-09-28T07:15Z (research/rendered/crazygames-requirements-*.txt) and read: no AI rule, no automation rule, no upload API. Precedent the scout did not cite: the repo has killed venues on the same fact pattern. Google OSS VRP was killed because it runs through a 'signed-in web form … the owner at a browser, per report' (docs/REJECTED.md:1168). huntr was killed on the same ground (REJECTED.md:1171). Adobe Stock was killed for a portal-only upload with 'user-controlled' CAPTCHA and no contributor API (REJECTED.md:984, 1006-1010). WordPress bounty venues were killed on that ground too (BOARD-LOOP.md:194).",
+    "grade": "repo"
+   },
+   {
+    "gate": "zero_cost",
+    "status": "HOLDS",
+    "evidence": "The terms name no developer fee; the only 'fees' are attorney's fees inside the indemnity (crazygames.md:400; developer-terms.txt:442). CrazyGames hosts the game files on its CDN (faq.txt:646). Multiplayer servers are the developer's own cost (faq.txt:664), so single-player games avoid them. Payout-side processing, FX and bank fees are deducted from what arrives, not paid up front (payouts.txt:293, 361, 389), which the ₪0 rule allows. Step 2 (tax file) is a cost shared by every line, measured at about ₪0 added per month for a non-salaried owner (research/measurements/step2-cost.md:3, 80-81). No refutation found.",
+    "grade": "rendered"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "Rendered: the terms have no country clause (crazygames.md T3.3). Tipalti availability 'depends on your country' (payouts.txt:293), with a 'Hold Payments' fallback if Tipalti does not serve a country (payouts.txt:375-377). No camera, selfie or passport step is named, but 'Some fields may require additional verification' (payouts.txt:279) is left undefined. The payee is a physical person or legal entity (terms:36-37), so the owner's legal name is needed (terms:547-549). Github correction to the scout: I read ohadf2015/boggle-new (branch master, not main; the scout's path 404s on main) fe-next/docs/2026-07-18-game-portals-web-ads-application-status.md. It confirms a dev account and a 22.04.2026 submission. But it does NOT mention billing, Tipalti, payouts or Israel. 'Israeli developer' is inference from the name. The billing-before-submit rule (payouts.txt:337) comes from a page captured 28.9.2026, and it is UNKNOWN whether it was in force in April. So the github support for Israel onboarding is weaker than the scout states. Snippet (help.tipalti.com): payee 2FA is mandatory and cannot be disabled; nothing says whether there is an ID or selfie step. The repo holds no Tipalti-to-Israel evidence anywhere (the Wix measurement has the same gap, wix-app-market.md:59, 99).",
+    "grade": "rendered"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "UNKNOWN",
+    "evidence": "Rendered: the only upload route is the signed-in Developer Portal, by drag and drop (faq.txt:650, 806; requirements-intro.txt:11, 258, 298). No API or CLI is named in the FAQ, Payouts page, terms or three requirements pages (crazygames.md:430-437). The terms say nothing about automation (T3.5). The account is the owner's legal identity, with a warranty that portal information is accurate (terms:36-37, 386). The portal is 403 from this container (BOARD-LOOP.md:124). Every update also needs an upload plus approval (faq.txt:590). Github correction to the scout: d954mas/game-67-idle (branch master) .codex/skills/nt-portal-publish/SKILL.md does not only keep 'submit' for a human. It says: 'Two things this does not lift: a directory input (CrazyGames uploads a build as a folder) and a widget that needs the browser to decode the file. Both stay the lead's.' Video slots are also 'filled by hand' and 'Never press submit'. So the one public automation of this portal leaves the build upload itself to a human. No page forbids runner operation, so the gate is not refuted. But the admission condition in BOARD-LOOP.md:125 (the terms allow runner-operated submission, or an API/CLI exists) is unmet, and no render can settle it: the portal needs a login. Only the written question at crazygames.md:459 settles it. By the repo's own precedent (REJECTED.md:1168, 1171, 1006-1010), a 'no' or no answer is a kill (KILL-4).",
+    "grade": "github"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "UNKNOWN",
+    "evidence": "Rendered: there is no AI clause in the terms, FAQ or the three requirements pages (crazygames.md T3.5, T4.2). The FAQ's AI text is permissive advice, not policy (faq.txt:786-796). Because the venue never asks about AI, there is no declaration field. But the owner warrants the game 'is and will be of original development by (employees of) Developer' and owns all IP in it (terms:393-397), under an uncapped IP indemnity (terms:440-443). The rejection reasons include 'Unoriginal content (e.g. clones or asset flips)' (faq.txt:487), and the quality guideline says 'Graphics should be of high quality' (requirements-quality.txt:272). Snippet (docs.crazygames.com/requirements/gameplay/, unrendered, ZERO-TESTS row 27): 'Developers who repeatedly submit non-compliant games may face restrictions on future submissions.' That is a flooding guard that bites a ~10-games-a-year agent pipeline. It must be read at primary grade.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "HOLDS",
+    "evidence": "Rendered: 'over 50 million monthly active users' (faq.txt:679). In Basic Launch the game 'will be shown to a small segment of players' (faq.txt:503), by rule and without a prior sale, so there is no cold start of the Gumroad kind. Correction (github): the allocation is impressions, not players. BOARD-LOOP.md:124 says the portal puts every accepted game in front of '≥500 real players', but the one comparable ended its 19-day trial (22.04 to 11.05.2026) with 190 players and 209 plays from 157K impressions at 0.2% CTR, and was rejected for 'did not reach the performance benchmarks' (ohadf2015/boggle-new, master). The pass bar, from a secondary source cited in SimNyborg/ageborn docs/research/market-portals.md: ≥500 plays, 10+ minutes average playtime, D1 retention 10-15%, 80% past the first minute. That same file gives genre averages BELOW the D1 bar (strategy 7.5%, action 8.1%, platform 6.7%) and about 4,000 games on the portal. So the supply exists, but only an above-average game converts it to money.",
+    "grade": "rendered"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "UNKNOWN",
+    "evidence": "The arithmetic is internally consistent: 2-3 games × €50-60 a month = €100-180, about ₪370-700 at an assumed ₪3.7-3.9 per euro (no rate is held in the repo). The ₪600 ceiling sits inside that. Both inputs are unsupported. (a) The '2-3 of about 10 pass' rate is an invented base rate: the only comparable is 0 of 1, and genre-average D1 is below the pass bar (ageborn, secondary). (b) The €50-60 a month per game does not appear in the cited SimNyborg/ageborn file. That file says it has no eCPM, revenue-per-play or earnings figures, and its 60% ad share comes from a secondary source (Cinevva), not CrazyGames. The contract gives only a formula with no rate (terms:243-256). Timing drag: no revenue in Basic Launch (terms:238-240); a €100 threshold (terms:296-298); payment 30 days after the self-bill (terms:284-285); advertiser offset (terms:289-290). There is also no Tipalti or PayPal ledger connector (BOARD-LOOP.md:124), and the self-bills sit behind the portal login. Only ₪0 is supported by evidence.",
+    "grade": "github"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 600,
+  "estimate_basis": "INFERENCE. Only ₪0 at month 12 is supported. Basic Launch pays nothing by contract (terms:238-240). Full Launch pays by a formula with no rate (terms:243-256). The one comparable failed Basic Launch in the bottom 20% (ohadf2015/boggle-new, github). Admission is also blocked until the runner-upload question (crazygames.md:459), step 8 and step 10 are settled. ₪600 is the scout's ceiling. Its arithmetic checks (2-3 games × €50-60 = €100-180, about ₪370-700), but both inputs are unsupported: the pass rate is invented, and the per-game euro figure is not in the cited ageborn file, which disclaims having earnings figures. Treat the high end as a placeholder until basic-launch-metrics and a real Full Launch earnings figure are read.",
+  "honesty_risk": "1. Low-effort flooding. The plan is about 10 agent-built games a year on one portal whose only comparable scored bottom 20%. The unrendered Gameplay page reportedly says that 'Developers who repeatedly submit non-compliant games may face restrictions on future submissions' (snippet). Clone and asset-flip rejection is rendered (faq.txt:487). Code-drawn or common CC0 art packs risk reading as asset flips, and the quality guideline asks for high-quality graphics (requirements-quality.txt:272). Two failed games is already the board's kill row (BOARD-LOOP.md:127).\n2. AI slop and false authorship. CrazyGames never asks about AI, so nowhere prompts a declaration. The owner personally warrants 'original development by (employees of) Developer' and full IP ownership (terms:393-397), under an uncapped IP indemnity (terms:440-443) with withholding from compensation (terms:445-447). Presenting agent output under 'Mehudak' as a studio without a voluntary AI line in the description is the slop risk.\n3. ToS and identity. Runner operation of an account in the owner's legal name is unaddressed by any page, and CrazyGames can terminate at will (terms:121-123, 564-566). The one public automation of the portal stops short of the build upload and the submit (d954mas SKILL.md).\n4. Brand-only rule. Whether the public developer name can be 'Mehudak' rather than the owner's legal name is UNKNOWN (crazygames.md T3.3). The portal greets the account holder by first name ('Welcome, Ohad' in the comparable).",
+  "verdict": "NEEDS_RENDER",
+  "kill_reason": "Not killed, because no gate is refuted at snippet grade or better. But the scout's PROMISING overstates the evidence.\n(a) The decisive gate, programmatic_listing, is UNKNOWN and no render can settle it (the portal needs a login). Only the written question at crazygames.md:459 can. The one github example of automating this portal leaves the build-folder upload and the submit to a human. The repo's precedent kills this exact pattern: a signed-in form per item with no documented machine channel (REJECTED.md:1168, 1171, 1006-1010). A 'no' or no answer should kill it (KILL-4).\n(b) Israel payability and any camera step in Tipalti are UNKNOWN. The scout's github support for Israel is inference: the cited file never mentions billing, Tipalti or Israel.\n(c) The BOARD-LOOP '≥500 real players' premise is contradicted at github grade (190 players from 157K impressions).\n(d) The ₪600 high rests on an invented pass rate and an unsourced per-game figure.\n(e) Three of the scout's four render URLs were already read at tick 4.\nRenders that would move it: the Gameplay page (flooding and clone rules), basic-launch-metrics (the pass bar), and Tipalti's payee FAQ (ID or camera step).",
+  "render_urls": [
+   "https://docs.crazygames.com/requirements/gameplay/",
+   "https://docs.crazygames.com/resources/basic-launch-metrics/",
+   "https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs",
+   "https://help.tipalti.com/hc/en-us/articles/30607242086167-Supplier-Hub"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "GameMonetize (HTML5 syndication network and public game feed), html5-games family, scout rank 2, rated PROMISING",
+  "gate_results": [
+   {
+    "gate": "zero_cost",
+    "status": "HOLDS",
+    "evidence": "The developer terms say nothing against it that I could find. RUDY4K/plixfy docs/research/html5-partners-2026-05/research_report.md (read on raw.githubusercontent, dated 2026-05-24) quotes the FAQ: a 45% share, 'Net 30 ... within 25 days', and a $30 minimum. When I asked that file directly about fees, it says 'no explicit platform fees are documented'. Games are served from GameMonetize's own CDN: every feed URL is html5.gamemonetize.co(m)/<id>/ (plixfy, and embed pages on GitHub such as Unb-games/unb-games.github.io), so hosting costs us nothing. The 'no fee' finding rests on silence, not on a stated policy, and the terms are unread. No prior rejection: docs/REJECTED.md has zero hits for gamemonetize, html5 or syndication.",
+    "grade": "github"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "'PayPal and USDT ERC20 to all countries', $30 minimum (the FAQ as quoted by plixfy research_report.md, github). USDT is dead because the crypto off-ramp was killed (research/channel-loop/scouts.json:204). PayPal Israel's KYC lists an ID, phone, tax ID and a bank account named in Latin letters, and no selfie is named (research/colony-sweep/scouts/risk-governance--owner-kyc-catalogue.md:65-75, snippet only; paypal.com is EGRESS_BLOCKED). C2 describes a Business account that needs a tax ID, so it may depend on owner step 2. GameMonetize's own payee verification appears nowhere I read: plixfy has no KYC section, and the dannyking13 dashboard-map.md has no payout section. The scout also missed that no ledger connector exists: scouts.json:201 says a PayPal Transaction Search connector is needed before any GameMonetize payout can count.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "UNKNOWN",
+    "evidence": "New github evidence the scout did not have. Cuvara/web-game-template issue #15 (24.9.2026) says GameMonetize 'has no API for any step'. The flow is: upload a zip, pass 'Verify Game', then request activation from GameMonetize's content manager, a human, for each game. dannyking13/gamemonetize-publish drives the dashboard with Playwright. Its steps are: log in, Add Game, inject the GameId, upload the zip, upload 3 thumbnails, add metadata, then play the game inside the verify modal until the checker sees sdk.showBanner() and SDK_IMPLEMENTED, and finally Request activation. An agent can only list if the board allows a runner to log in with the brand's credentials, and the ToS on automated access is unread. Without that, every game needs an owner click, which fails the rule and matches the kill test at BOARD-LOOP.md:183. Whether a rejection starts a back-and-forth with the content manager is UNKNOWN.",
+    "grade": "github"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "UNKNOWN",
+    "evidence": "New, and it counts against the venue. Two WebSearch snippets say GameMonetize's own blog states it 'no longer accepts simple AI-made games', and that games need levels and progress saved in the browser. The primary post was not read; gamemonetize.com is EGRESS_BLOCKED. The dashboard's 21 fixed categories include an 'AI' category (dannyking13/gamemonetize-publish references/dashboard-map.md, github). No rule on declaring AI use was found. This is a quality bar that falls squarely on agent-built games. It is not a proven ban on a substantial game, so the gate is not refuted, but a breadth-style run of many small games would hit it.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "HOLDS",
+    "evidence": "This holds, but weakly. plixfy (2026-05-24) confirms the public feed rss.gamemonetize.com/rssfeed.php is live. It has undocumented sort flags, including 'Newest', and returns at most 5,001 games against 36,976 marketed, about 7x inflation. The mobile filter returns only 11. The iframe returns HTTP 403 from any origin not on the allowlist (Cloudflare WAF), so every embedding partner is a registered publisher. Live partner sites on GitHub Pages embed img.gamemonetize.com games (Unb-games, liamdeathboy 'unblocked' mirrors). The number of publishers that auto-import 'Newest', and how long a new game stays there, are both UNKNOWN. There is no evidence of per-game yield.",
+    "grade": "github"
+   },
+   {
+    "gate": "estimate_arithmetic (checks the scout's ₪0-150; not a venue gate)",
+    "status": "REFUTED",
+    "evidence": "The scout's own basis refutes its high end. GamePix paid $0.12/day for 30 games, which is $0.004 per game per day, and $0.10/day for 20, which is $0.005 (plixfy evidence.md, Jan 2025, from Trustpilot and forums). At 15-20 games that is $0.06-0.10/day, or $1.8-3.0 a month, about ₪7-11 at roughly 3.6-3.7 ILS/USD. The scout's ₪150 is about $41 a month, which needs 14-23x the only comparable. At $1.8-3.0 a month, the $30 threshold takes 10-17 months to accrue, and then comes NET30. No game exists yet (products/ has no game), and the board runs this venue only after CrazyGames Basic Launch (BOARD-LOOP.md:178). So month 12 most likely shows ₪0 in the ledger, which is BOARD-LOOP.md:183's own kill condition ('implies no ledger row within 12 months'). One number is also misframed: the scout gives 'default probability 0.709' with no unit, while plixfy's report reads the same martini.ai data as 'recovering to a B rating by late 2024'.",
+    "grade": "github"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 15,
+  "estimate_basis": "INFERENCE. The basis is the only per-game yield in reach: GamePix at $0.004-0.005 per game per day (plixfy evidence.md, github, Jan 2025, from Trustpilot and forums). For 15-20 games live, that gives $1.8-3.0 a month, about ₪7-11 at roughly 3.6-3.7 ILS/USD. The high of ₪15 leaves a small margin. Anything higher needs a GameMonetize per-game yield no source shows; its $1.5-3 RPM figure is SEO copy (evidence.md). The low is ₪0 for three reasons. First, no game exists, and the board puts this venue after CrazyGames Basic Launch (BOARD-LOOP.md:178). Second, the $30 threshold takes 10-17 months to reach at those yields, plus NET30. Third, no PayPal ledger connector exists (scouts.json:201), so no transaction lands in the ledger by month 12. Discovery does not need a prior sale if partners import 'Newest' (github), but placement under the other sorts is UNKNOWN.",
+  "honesty_risk": "1) Slop and flooding: the tooling around this venue is the mass-upload pattern itself. dannyking13/gamemonetize-publish publishes end to end with Playwright and generates AI thumbnails with FLUX, and the dashboard has an 'AI' category. GameMonetize reportedly 'no longer accepts simple AI-made games' (snippet). The breadth directive invites N reskins of one template on one account. MISSION's honest-value rule forbids that, and the network would reject it anyway. The honest version is a few substantial games, each with levels and saved progress, with AI use stated in the description. 2) ToS: running the dashboard login through a runner is unread against GameMonetize's terms. If automation is banned, the account can be closed and balances under $30 lost. 3) Audience and brand: known embedders include 'unblocked games' mirrors built to get schoolchildren past filters. Mehudak cannot control where its game appears, and the games carry ads that sdk.showBanner() is required to show. 4) Identity: the feed's metadata (id, title, description, url, category, tags, thumb) has no developer-name field (plixfy, github), so the brand holds publicly. The PayPal payee is in the owner's legal name, and it is UNKNOWN whether GameMonetize displays it. 5) Payer risk: one 2025 Trustpilot 1-star review says 'I haven't withdrawal yet', and martini.ai rates the company B. The scout's unitless 'default probability 0.709' should not be read as 70.9%.",
+  "verdict": "NEEDS_RENDER",
+  "kill_reason": "Not killed: none of the five venue gates is refuted. The scout's PROMISING should still come down. Its ₪150 high is refuted by its own basis: GamePix yields give about ₪7-11 a month for 15-20 games, with ₪0 likely at month 12 because of the $30 threshold, the missing game, the sequencing after CrazyGames, and the missing PayPal ledger connector. Three gates that decide the venue are UNKNOWN and would be settled by rendering primary pages: (a) the payout method and any GameMonetize payee verification or camera step, plus PayPal Israel's own verification; (b) whether the ToS allows automated dashboard use, since there is no API and a human content manager activates each game (github); (c) the AI policy post, where the snippet says 'no longer accepts simple AI-made games'. The board's existing rule stands (BOARD-LOOP.md:178-183, CHANNEL_LOOP.md:128 'waiting'): nothing happens until a game passes CrazyGames Basic Launch, and at GamePix-like yields its kill test ('no ledger row within 12 months') would probably fire. The GameMonetize Terms of Use URL is not known here; take it from the footer of the FAQ render.",
+  "render_urls": [
+   "https://gamemonetize.com/faq",
+   "https://gamemonetize.com/blog",
+   "https://gamemonetize.com/developers",
+   "https://gamemonetize.com/joinus",
+   "https://www.paypal.com/il/cshelp/article/how-do-i-link-a-bank-account-to-my-paypal-account-help183?locale.x=en_IL",
+   "https://www.trustpilot.com/review/gamemonetize.com",
+   "https://rss.gamemonetize.com/rssfeed.php?format=json&type=html5&amount=All"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "Wix App Market (paid apps billed by Wix), app-plugin-marketplaces family, scout rank 1",
+  "gate_results": [
+   {
+    "gate": "prior_verdict_check (did the scout miss a repo verdict?)",
+    "status": "UNKNOWN",
+    "evidence": "The scout's record is out of date. It cites the status 'after tick 3', but research/measurements/wix-app-market.md:11 and :385-445 (Tick 4 reading) and logs/CHANNEL_LOOP.md:124 record NEEDS_MORE after tick 4, from the rendered agreement BODY (research/rendered/wix-partner-agreement-body.txt, fetched 2026-09-28T07:15:19Z, status 200, not truncated). The scout asks for the agreement to be rendered again as a .md URL, but it is already rendered in full, so that render would be wasted. The scout says 'israel' has 0 hits in all four captures. That is true of those four, but the fifth capture (the body) is full of Israel material: Israeli governing law (:563) and an Israeli-users addendum under which Wix is the reseller (:593, :599). The scout also says 'No charge to the developer appears in any capture', which misses the unpriced third-party security test before submission (:185). Other prior verdicts stand as cited: storefronts closed the venue with a two-part reopen condition, a named niche AND a rendered page (research/colony-sweep/groups/storefronts.md:182); vertical-niches' entry was REFUTED (docs/REJECTED.md:923,933-940); board candidate 11's kill list includes 'the named niche has free incumbents' (research/channel-loop/BOARD-LOOP.md:162). No prior verdict KILLS the venue. The 2-hour occupancy scan of the Hebrew categories has still never been run (REJECTED.md:969-970).",
+    "grade": "repo"
+   },
+   {
+    "gate": "zero_cost",
+    "status": "UNKNOWN",
+    "evidence": "The agreement names no listing, registration or account fee, and every fee comes out of revenue: 2.5% transaction fee (:355), 80/20, and 100% for each app's first 12 months (:347, :353). A development site for testing is 'a free Wix site' (changelog JSON in wix-app-payments-faq.html:64). That weakens, but does not settle, the scout's worry about buying Premium to test. Scout's gap: section 6.3.5(v) says 'An App shall be reviewed and tested by a third party for any security vulnerabilities before submitting the App to the App Market' (wix-partner-agreement-body.txt:185). Section 6.3 applies whenever the app processes any personal data of Users or of their site visitors (:130-ish, section 6.3 preamble). Any backend app does that, and an Amendment-13 consent helper certainly does. A third-party security test is usually a paid service (INFERENCE), and no price and no free route is rendered. Hosting is restricted to GCP/IBM/AWS/Microsoft/Salesforce/Oracle unless Wix consents in writing (:165). Whether a Wix-hosted CLI app avoids this, and whether a free tier needs a card, is UNKNOWN. My search found no refutation at snippet grade: 'Wix partners also undergo mandatory assessments' is from the Wix Trust Center snippet and names no price. The gate is decisive and unsettled.",
+    "grade": "rendered"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "This gate improved over the scout's record, from the rendered body. The Partner may be 'a developer (whether entity or person)' (:13), aged 18+ (:447). Only comprehensively sanctioned territories are barred, and Israel is not among them (:277, :279). Payment is in USD by wire 'or any other method chosen by Wix' (:385). The contracting party is Wix.com Ltd. under Israeli law (:9, :563), and an addendum covers Israeli users (:593-613). Still not rendered: any payee-country list, what the Tipalti form asks for, and whether any camera or selfie step exists. Onboarding 'registering your company' (wix-payout-account.txt:134) is unexplained. New ties the scout missed: every payment is made 'against a lawful tax invoice to be issued by the Party receiving' it (:385), and payments are 'subject to any applicable withholding tax' (:391). For an Israeli individual paid by an Israeli company, that almost certainly requires owner step 2 (an עוסק file) plus an invoice per payout, which is recurring unless an agent can issue it by API (INFERENCE, grade none). Payout setup can be delegated to a teammate holding the Manage Earnings permission (wix-payout-account.txt:142, rendered). The real answer to the country and camera question sits behind the owner's login in the Tipalti form.",
+    "grade": "rendered"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "UNKNOWN",
+    "evidence": "Submission is followed by 'an automated AI review ... Results are typically available within minutes ... If your app passes, it's published to the Wix App Market' (wix-app-payments-faq.html:64 changelog, rendered). The Wix CLI 'dev-site command' works 'from a CI pipeline, a script, or an AI agent session' (same changelog, rendered). The listing form and the submit action are in the dashboard, and no submission API is rendered. The agreement says 'Your account is only for your own use, and you are responsible for all activities through your account' (:43). Whether a teammate role may submit, or whether an agent operating the account is 'own use', is UNKNOWN. Nothing rendered shows a per-app owner click, and nothing rules one out. Recurring duties the scout missed: a monthly report to Wix within 15 days of each month's end (:399), a 24-hour response to claims Wix refers (:309), and a 24-hour breach notice (:195). An agent can probably handle the report. The claim clock needs a daily-watched inbox, and a claim response is legal work (INFERENCE).",
+    "grade": "rendered"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "UNKNOWN",
+    "evidence": "The agreement contains no AI or automation clause; its only 'AI' hits are in the footer (wix-app-market.md Tick 4, rendered-absent). The App Market guidelines page is not captured. Honesty-relevant warranties the scout missed: (iii) 'Partner's code shall be reviewed by more than one developer, and the code review process shall be documented' (:181); (v) the third-party security test (:185); (iv) testing against the SANS top 25. Whether agent-only review counts as 'more than one developer' is UNKNOWN. Submitting without them is a breach, and a breach lets Wix terminate and forfeit unpaid revenue share (:537) and remove apps without notice (:253).",
+    "grade": "rendered"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "HOLDS",
+    "evidence": "At venue level this holds: Wix bills the buyer, retries failed payments, handles sales tax and reverses chargebacks (wix-app-payments-faq.txt:158-174, :208), and localises prices (:196), all rendered. No install or traffic volumes are rendered, and there is no Hebrew-segment size. At niche level the scout's lead example is weak. Free accessibility-statement generators already exist, including userway.org/accessibility-statement-generator (research/measurements/eaa-occupancy.md:120-122, repo grade), and Wix publishes its own help article 'Accessibility: Adding an Accessibility Statement to Your Site' plus a free Accessibility Wizard (snippet grade). accessiBe and EqualWeb are Israeli sellers in that space (eaa-occupancy.md:60,63). That meets the board's kill shape 'the named niche has free incumbents' (BOARD-LOOP.md:162) for niche 1. Niches 2 and 3 (Amendment 13 helper, statutory-declaration clock) remain unscanned.",
+    "grade": "rendered"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "HOLDS",
+    "evidence": "The scout's low end of ₪0 is right, and so is its warning that month-12 cash can be ₪0: the $200 floor rolls over (:375) and money earned in month M arrives in M+2 (faq.txt:134,138). The high end is slightly overstated. $150 gross × 0.975 = $146 ≈ ₪540 at an assumed ₪3.7/$. The FAQ also computes revenue 'after a 2.5% transaction fee and applicable sales tax' (faq.txt:130), and under the addendum Wix resells to Israeli users (:599), so on VAT-inclusive Israeli prices (18%, INFERENCE) the figure is about $124 ≈ ₪460. Wix also sets off exchange-rate costs on non-USD prices (:391). The corrected range is about ₪0-500/month at month 12. The 100% year-one share runs per app launch (:353), not per developer as the FAQ says; that does not change month 12 for apps launched after the owner step. The base-rate anchors (Obsidian median 27 users, Odoo IL median 1 purchase) are cited from the repo and are reasonable.",
+    "grade": "rendered"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 500,
+  "estimate_basis": "INFERENCE; no Wix install or sales data is rendered. I keep the scout's premise of 0-10 paying sites at $5-15/site/month across 2-5 apps by month 12, anchored on repo base rates (Obsidian newest-cohort median 27 users; paid Odoo IL modules median 1 lifetime purchase). That is $0-150 gross. Net is ×0.975 for the transaction fee (agreement :355), less Israeli VAT where Wix resells to Israeli users (addendum :599; FAQ says revenue is computed after 'applicable sales tax', faq.txt:130), less Wix's FX set-off (:391): about $0-135, or ₪0-500 at ~₪3.7/$. Cash can still be ₪0 at month 12 because of the rolling $200 floor (:375) and the M+2 lag (faq.txt:138). The number excludes any Israeli withholding tax (:391) and the unpriced third-party security test (:185), which would be an up-front cost and so a ₪0-rule breach if paid. Discovery: the Verified badge needs 60+ days live and 40+ installs on premium sites (faq.html:64), so install-ranked discovery is at least partly gated on prior installs. Whether search ranking needs installs is UNKNOWN.",
+  "honesty_risk": "1) False contractual warranties: the agreement requires a documented review by more than one developer (:181), SANS-top-25 testing, and a THIRD-PARTY security test before submission (:185). An agent-only build submitted without these is a misrepresentation, and a breach lets Wix terminate, forfeit unpaid revenue (:537) and pull every app (:253). 2) Selling 'compliance' to Israeli SMBs: an AI-generated accessibility statement or Amendment-13 notice that misdescribes the buyer's real site becomes the buyer's false public declaration, and Israeli accessibility claims can bring statutory damages (INFERENCE). The Partner's indemnity to Wix is uncapped (:515), with full indemnity for Israeli users (:607), and it lands on the owner as an individual. Listings must promise a template or tool, never 'makes you compliant'. 3) Flooding: splitting one compliance tool into 2-5 near-identical apps to multiply listings is the low-effort pattern the mission forbids; each app must do a distinct job. 4) Anonymity: the partner is the controller for user personal data (6.3.2) and must publish a law-compliant privacy policy (6.3.3). For an individual controller, GDPR-style identity disclosure may force the owner's name into public view (INFERENCE), and the per-payment tax invoice (:385) names the עוסק (MISSION.md:295). 5) AI disclosure: no rendered rule, so declare AI assistance in each listing anyway. 6) The agent operating the owner's account may conflict with 'only for your own use' (:43) unless a teammate role covers it.",
+  "verdict": "NEEDS_RENDER",
+  "kill_reason": "Not killed: no gate is REFUTED at snippet grade or better. Two decisive gates are still UNKNOWN. (a) zero_cost: section 6.3.5(v) requires an unpriced third-party security test before submission (wix-partner-agreement-body.txt:185), and the scout missed it. If the only acceptable route is paid, the venue dies on the ₪0 rule. (b) israel_payout_no_camera: there is no payee-country list and the Tipalti form is unrendered. A per-payment 'lawful tax invoice' (:385) ties the venue to owner step 2 and adds recurring invoicing. Separately, the scout's lead niche (accessibility statement) already meets the board's 'free incumbents' kill shape (eaa-occupancy.md:120-122; Wix's own help article, snippet grade). So even if the venue survives, the product must come from the other two niches, after the Hebrew-category occupancy scan that has never been run. The scout's PROMISING rests on stale status: it cites tick 3, while the tick-4 body reading already exists.",
+  "render_urls": [
+   "https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice",
+   "https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/test-your-app/app-checks-and-testing-guide",
+   "https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines",
+   "https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/submit-your-first-app-version",
+   "https://dev.wix.com/docs/build-apps/launch-your-app/market-listing/add-your-company-info",
+   "https://dev.wix.com/docs/build-apps/develop-your-app/development-sites/about-development-sites",
+   "https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/test-your-app/test-your-app-on-a-premium-site",
+   "https://support.wix.com/en/article/accessibility-adding-an-accessibility-statement-to-your-site",
+   "https://he.wix.com/app-market"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "Apify Store: a fleet of 7-11 distinct-source Israeli-data Actors on one brand account (automation-marketplaces, scout rank 1)",
+  "gate_results": [
+   {
+    "gate": "zero_cost",
+    "status": "HOLDS",
+    "evidence": "The Store Publishing Terms (raw apify-docs, fetched this session) charge the publisher no fee. Payout is '80% of the fees paid by Users for your Actor, minus Platform usage costs'. Per monthly-payouts.mdx, an Actor priced below its usage cost has its profit 'set to $0 for the month', so the developer is not debited. One cost is open: Apify runs every public Actor once a day with its default input (testing.mdx). The rendered capture shows this: Actors with 0 users in 30 days still log about 29-30 runs (53 of 120 show exactly 29). testing.mdx does not say who pays for those runs (UNKNOWN). At 8-11 Actors that is about 240-330 runs a month. I infer, without a grade, that this fits inside the free plan's credit.",
+    "grade": "github"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "HOLDS",
+    "evidence": "On the documented text this holds. monthly-payouts.mdx asks an individual for the legal full name and 'a clear, high-resolution photo of your ID card or driver's license'. It names no selfie, liveness check or video. A GitHub code search of apify/apify-docs for 'selfie OR liveness' returns 0 hits. Terms §10.1.2 adds that KYC 'may include providing government-issued identification, proof of address, tax documentation, and ultimate beneficial ownership information'. Payout is PayPal or Wise at $20, other methods at $100, invoiced on the 11th, with no country excluded. Two things are UNKNOWN: the verification provider is not named, and the flow is Console-only, so no render can settle it. NEW: KYC now also gates default discovery (see buyer_supply), so this gate moves to the front of any viable plan and becomes decisive. On anonymity, the default-filtered rendered sample shows brand display names in userFullName ('TheGuide', 'NexGenData', 'Automation Lab', 'Mamba Labs'). That weakly suggests a verified developer can keep a brand display name (inference). It partly answers the open question at audits/agent-markets.md:408-413.",
+    "grade": "github"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "HOLDS",
+    "evidence": "Publishing needs no click. apify-api/openapi/paths/actors/acts@{actorId}.yaml says verbatim: 'To make your Actor public: Set `isPublic` to `true`. Provide `title` and `categories`.' So PUBLISH.md:39 and README.md step 3 do overstate the owner's work. Support is a different matter. Store Terms §8.1 require each user Issue to be addressed 'no later than within 14 days'. §8.2 requires an answer to Apify's direct requests within three business days. Under §7.1, an Actor that stays faulty for 30 days may be deprecated or removed. The public API has no Issues endpoint: the openapi/paths tree has 14 directories and actors/ has 40 files, none for issues. So support work grows with the fleet, and it looks Console-only, which means either the owner logs in and talks to customers (a mandate breach) or issues lapse. Whether an agent can handle issues without the owner's login is UNKNOWN.",
+    "grade": "github"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "HOLDS",
+    "evidence": "The Store Publishing Terms have no clause on AI-generated or automated content. They forbid copying another creator's code or README (§2.2.3), off-platform promotion (§2.2.4.2(i)) and review manipulation, and Apify may unpublish at its discretion. The terms themselves pass. The fleet shape carries risks, listed under honesty_risk.",
+    "grade": "github"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "REFUTED",
+    "evidence": "(1) Apify's own OpenAPI spec, apify-api/openapi/paths/store/store.yaml, parameter includeUnrunnableActors, default false: 'By default, search results exclude Actors that are not safe to run automatically (e.g. Actors from developers who haven't passed KYC, or full-permission Actors without a large user base).' The scout keeps KYC gated at 50 stranger users (BOARD.md:328), so every Actor in the fleet would be dropped from default Store-API search. Discovery cannot start without KYC, and KYC waits for users that discovery would bring. (2) The rendered sample the scout relied on is itself filtered. research/rendered/apify-store-accessibility.json reports total 1499, count 1000, limit 1000, but holds only 815 items: 185 of the first 1,000 were removed by that default filter. The median of 2 and '85% have ≥1 user' therefore describe Actors that passed it. A '1 user' Actor also typically logs about 29 runs (the daily test plus one account), consistent with that one user being the developer. (3) Two independent creator reports on GitHub, both third-party self-reports. williamcachamwri/wica, 17.8.2026: '23 of them live' from a new account, hidden from anonymous Store search with Console showing 'Identity verification required', and 'Real numbers after 89 days: 1 active user across all 23 tools. $0 revenue.' eltociear.github.io, 1.9.2026: 4 Actors, KYC 'approved', LIMITED_PERMISSIONS, still filtered from REST Store search yet ranked #2 on mcp.apify.com search-actors: 'Distinct users in 90 days: still 1, and that 1 is me', and 'Being findable turned out to be necessary and nowhere near sufficient.' The scout's '(2) fleet creators get users' figures (unseenuser, memo23) come from established survivors in a filtered sample. Demand in the Israeli niche itself is unrendered (UNKNOWN).",
+    "grade": "github"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "REFUTED",
+    "evidence": "The product 8 × 2-8 users × $1-4 × 0.8 = $12.8-205 is computed correctly, but its premises contradict the plan. (a) The high case needs 8 priced Actors. The scout keeps pricing 'as ruled', which means 200 stranger users per Actor in 30 days (BOARD.md:328; portfolio.ts scaleCriteria). At 2-8 users no Actor is ever priced, so the stated plan earns ₪0 by construction. (b) '2-8 users' rests on the filtered, developer-inclusive median (see buyer_supply). Two new-fleet reports measured 0-1 stranger users. (c) '$1-4 per user per month' has no named basis. (d) It drops the paying-user share that the prior audit applied (20%, audits/agent-markets.md:186-190). (e) The prior-sale gate is not addressed: non-KYC Actors are filtered out of default search. (f) Payout needs $20 and a balance below it is forfeited after 12 months (§10.3.2); first ledger entry around month 9 (audits/agent-markets.md:198-200). FORECAST.md:24,69 already puts Apify at ₪0 through month 12 in every scenario.",
+    "grade": "repo"
+   },
+   {
+    "gate": "reopen_basis_vs_prior_rulings",
+    "status": "REFUTED",
+    "evidence": "The scout missed a prior ruling. BOARD-LOOP.md:195, ruling on the 27.9 'open channels without stopping' order, which has the same breadth shape as the 28.9 directive: 'A second Apify Actor … as separate channels — Constraint 6 … and the board's rule not before the first one's 30-day count is read (BOARD.md:86; portfolio.ts:73).' The scout's new facts (the API can publish, fleet creators' user counts, the $1M snippet) do not show that rule's stated reason, the unread 30-day count, to be false. portfolio.ts:56-58 also records that 'a portfolio of dead listings actively harms the next one' through the developer-level History-of-success category (quality_score.mdx confirms that category exists; whether dead Actors subtract from it is UNKNOWN). The per-dataset substitution ruling (audits/agent-markets.md:232-247) still applies to the data.gov.il-based items in the list.",
+    "grade": "repo"
+   },
+   {
+    "gate": "no_recurring_owner_work (support)",
+    "status": "UNKNOWN",
+    "evidence": "Store Terms §8.1 (issues within 14 days) and §8.2 (direct requests within 3 business days) apply per Actor. The Apify public API has no Issues endpoint (openapi paths listing), and the container cannot reach apify.com. Whether issues can be answered without the owner logging into the Console is unverified.",
+    "grade": "github"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 150,
+  "estimate_basis": "INFERENCE, in ILS per month at month 12, for the whole account and not per Actor. Low ₪0: the plan keeps KYC at 50 users and pricing at 200 stranger users per Actor (BOARD.md:328), and Apify's default Store search leaves out non-KYC developers' Actors (store.yaml includeUnrunnableActors). So under the stated plan no Actor is priced and there is no payout. High ₪150: this assumes the owner does KYC early without a camera step and one Actor out of the fleet crosses the pricing gate. Two creator reports on GitHub cut against that: a 23-Actor new fleet had 1 active user and $0 after 89 days, and a 4-Actor fleet that had passed KYC had 0 strangers in 90 days. The figure sits below the board's ₪200 ceiling for the single line (REJECTED.md:1293) and inside FORECAST.md:24's '₪0-100 only if KYC'. On a small, uncertain base it is net of 20% Apify commission, platform usage, 18% VAT on PayPal fees, 5-9% FX drag and the $20 minimum. Discovery needs no prior sale, but on Store-API and agent surfaces it does need KYC first. On the web Store UI it is UNKNOWN, because it was not rendered.",
+  "honesty_risk": "1) Spam shape. Pushing 8-11 thin wrappers over free, keyless government APIs from a brand-new account in one CI run, with READMEs largely written by an agent from one template, is the pattern that the $1M Challenge terms disqualify ('too many low-quality or spammy Actors', audits/agent-markets.md:238-240) and that MISSION constraint 3 describes (templated formats on shared infrastructure). Apify may unpublish at its discretion. 2) Substitution (constraint 6). The 'vehicle-by-plate join across data.gov.il MOT resources' runs on the same CKAN endpoint the existing Actor already serves by resourceId, and the same may hold for ILA tenders and the MoH drug registry. That is the per-dataset split already ruled substitution (audits/agent-markets.md:232-247; BOARD-LOOP.md:195). 3) A public algorithm sold as a product. The ID, phone and bank-branch checksum validator implements a free public algorithm; MISSION constraint 8 names 'an Israeli identifier detector that already exists free inside this repo'. 4) Licences not read. The Bank of Israel terms are unread (research/colony-sweep/scouts/data-apis--israeli-open-data.md:95-108: 'Do not build a BOI-derived paid product until terms read'). The CBS series licence is snippet-grade only, and CBS PUF microdata may not be redistributed (:84-91). Charging for the data itself is a violation (BOARD.md:316). 5) Dead listings. Many gov.il web properties geo-fence traffic from outside Israel (:123). An Actor on Apify's foreign infrastructure can fail the daily automated test, be marked under maintenance after 3 days and deprecated after roughly 31 more (testing.mdx), and a dead listing may drag the developer-level history (portfolio.ts:56-58). 6) Customer contact. §8.1 and §8.2 support duties appear to be Console-only, so the choice is either the owner answering customers or issues lapsing. 7) A side-finding the board must hear. The standing single-Actor plan (publish free, count strangers for 30 days, KYC only at 50 users) meets the same KYC filter. Its 30-day count would read near zero partly because the listing is hidden from default Store-API search, not only because nobody wants it. Reading that count as a demand signal would be a measurement error.",
+  "verdict": "KILLED",
+  "kill_reason": "The buyer_supply gate is refuted at github grade. Apify's own OpenAPI spec (apify-api/openapi/paths/store/store.yaml, includeUnrunnableActors defaulting to false) says default Store search excludes 'Actors from developers who haven't passed KYC'. The scout's fleet keeps KYC deferred until 50 stranger users, so its Actors would be hidden from default Store-API search: discovery waits on KYC, and KYC waits on users. The rendered sample behind the PASS was itself filtered (1,000 requested, 815 returned). Two independent new-fleet reports on GitHub show the fleet does not bring strangers: 23 Actors gave 1 active user and $0 in 89 days, and 4 Actors that had passed KYC and ranked #2 in MCP search gave 0 strangers in 90 days. The ₪900 high estimate is also inconsistent with its own premises. It needs 8 priced Actors, but the scout keeps the rule that an Actor is priced only at 200 stranger users. The scout also missed a prior ruling, BOARD-LOOP.md:195 (27.9, a channel-count directive of the same breadth shape): a second Actor is not a new channel, and none is built before the first Actor's 30-day count is read. Reopen only if both hold: the owner completes Apify KYC at step 6a with no selfie or liveness step, and the single published Actor then shows at least 50 stranger users in 30 days.",
+  "render_urls": [
+   "https://api.apify.com/v2/store?search=accessibility&limit=1000&includeUnrunnableActors=true",
+   "https://api.apify.com/v2/store?search=israel&limit=1000",
+   "https://api.apify.com/v2/store?search=israel&limit=1000&includeUnrunnableActors=true",
+   "https://api.apify.com/v2/store?search=knesset&includeUnrunnableActors=true",
+   "https://api.apify.com/v2/store?search=bank%20of%20israel&includeUnrunnableActors=true",
+   "https://api.apify.com/v2/store?search=data.gov.il&limit=1000&includeUnrunnableActors=true",
+   "https://raw.githubusercontent.com/apify/apify-docs/master/apify-api/openapi/paths/store/store.yaml",
+   "https://raw.githubusercontent.com/apify/apify-docs/master/sources/platform/actors/publishing/testing.mdx",
+   "https://raw.githubusercontent.com/williamcachamwri/wica/main/src/posts/imported-i-spent-11-days-optimizing-a-search-ranking-that-only-i-could-see.mdx",
+   "https://raw.githubusercontent.com/eltociear/eltociear.github.io/main/posts/test-the-path-the-buyer-takes/index.html",
+   "https://www.boi.org.il/en/terms-of-use/"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "Firefox Add-ons (addons.mozilla.org) with a disclosed Pro licence sold on Gumroad",
+  "gate_results": [
+   {
+    "gate": "prior_verdict_check",
+    "status": "HOLDS",
+    "evidence": "No verdict on AMO exists. grep for firefox/mozilla/addons.mozilla over docs/REJECTED.md returns 0 lines. The research/ hits are the Mozilla bug bounty (channel-loop/scouts.json:236) and 0DIN (SWEEP-2.md:227), which are different venues. The scout did miss two relevant lines. The dev-extensions reopen table (REJECTED.md:1281) asks for 'a rendered ... ranking mechanism that does not gate discovery on existing installs', and the board kill is at BOARD.md:107. AMO does not meet that condition in spirit: its ranking still multiplies by installs (see discovery row). So AMO counts as an unaudited new venue, not as the reopening of dev-extensions.",
+    "grade": "repo"
+   },
+   {
+    "gate": "zero_cost",
+    "status": "HOLDS",
+    "evidence": "The Add-on Policies (raw mozilla/extension-workshop add-on-policies.md, 'Last Updated: 2026-04-30') have a Monetization section covering only ads, crypto miners and affiliate tags, with no fee. The Firefox Add-on Distribution Agreement ('Effective December 1, 2021') has no fee or payment clause owed to Mozilla. Gumroad's cut comes out of each sale (rails.ts:129), which the ₪0 rule allows.",
+    "grade": "github"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "HOLDS",
+    "evidence": "Mozilla pays nothing; payout rides Gumroad, whose source has 'Israel | ILS' (rails.ts:81,129). Gumroad KYC is a colour ID scan plus proof of residence with no selfie (breadth/scouts/storefront-rails.json:21, citing scouts/storefronts--gumroad.md:159-160; repo grade). AMO submission restrictions (addons-server src/olympia/users/models.py) are DeveloperAgreement, DisposableEmailDomain, EmailUser, IPNetworkUser, EmailReputation, IPReputation, Fingerprint and AsnUser. None is a phone, ID or camera check (github). Caveat: owner step 3 (Gumroad) is not done yet (products/README.md:8), so the payout has not been proven in practice.",
+    "grade": "repo"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "HOLDS",
+    "evidence": "The endpoint exists: addons-server docs/topics/api/addons.rst has '.. http:post:: /api/v5/addons/addon/' and 'This API requires authentication'. RestrictionChecker.is_submission_allowed(check_dev_agreement=True) enforces DeveloperAgreementRestriction (users/utils.py). The agreement must therefore be accepted once in the web UI, which fits inside the owner's one-time step. CI submission works in practice: GitHub code search finds 169 workflows running `web-ext sign --channel=listed` from Actions (better-lyrics, responsively-app, standardnotes/app, Feedly-Notifier…). UNKNOWN: whether creating a brand-new add-on from a runner trips IPReputation/AsnUserRestriction, and whether a new developer's first listed version is held for human review (addons.rst is silent). Neither would be a per-item owner click.",
+    "grade": "github"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "HOLDS",
+    "evidence": "The policies contain no AI clause, so this passes by absence. What the policies do require: 'Listings must disclose when payment is required to enable any add-on functionality'; 'Add-ons must function only as described. During review, the add-on undergoes basic functional testing'; 'Add-ons must limit data transmission to what is necessary'; and the listing must say 'what information it transmits'. So the Gumroad licence check (key sent to api.gumroad.com) must be disclosed. Themes are the only type with an explicit duplicate ban. For extensions, the enforcement clause is 'Mozilla reserves the right to block or delete any developer's account', which puts every listing on the single account at risk from one strike.",
+    "grade": "github"
+   },
+   {
+    "gate": "discovery_cold_start",
+    "status": "HOLDS",
+    "evidence": "filters.py function_score functions: field_value_factor(average_daily_users, modifier='log2p') × weight 4.0 for approved non-experimental × ranking_bump (missing=1). score_mode and boost_mode are not set, so Elasticsearch's multiply defaults apply. log2p = log10(ADU+2): a new add-on gets 0.30 against 4.0 at 10k ADU, a 13.3× handicap. That is milder than WordPress's 100-200× (REJECTED.md:716-726) but still install-locked. An exact name match gets 'boost': 100.0, which gives a lane on narrow queries. With no query the default sort is ['recommended','users'], which buries new add-ons on browse pages. No sale gate exists, since payment is off-platform. The scout's description is accurate.",
+    "grade": "github"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "UNKNOWN",
+    "evidence": "AMO has no checkout, so every buyer must leave for Gumroad. Audience size, snippet grade only: the Hebrew language pack shows 132,251 users. That is an order-of-magnitude cap on Hebrew-UI Firefox users who took the langpack; Hebrew-build users are not counted. Free competition exists (snippet): a 'Hebrew Calendar' Firefox add-on showing the Hebrew date and parsha, and four or more free Chrome Hebrew-date extensions (Hebrew Date Bubble, Real Jewish Calendar, Smart Hebrew Date Converter, Hebrew Calendar). The VAT calculator is already free on our own il-biz-tools site (products/il-biz-tools/README.md:17). No ADU figure was read for any Israeli-utility add-on, and neither the newest-cohort ADU distribution nor any paid-disclosed AMO add-on's conversion was measured. This is the decisive gate, and one render of the AMO search API settles it.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "estimate_arithmetic (scout's ₪400 high end; not a venue gate)",
+    "status": "REFUTED",
+    "evidence": "(1) Fee is wrong. rails.ts:129 gives 12.9%+$0.80 plus 2.9%+$0.30, which is $2.52 on $9 (28%, not 22%) and $1.89 on $5 (38%). rails.ts:81's '≈22%' drops the second term, and the scout copied it. The same note says 'cheap products are not sold here'. (2) Stock is confused with flow. 10×300 users×3%×$9 is a one-time cumulative $810 gross (~$583 net, ~₪2,150), not a monthly figure. If 3,000 users accrue over 12 months, month-12 inflow is about 250 users, giving ~7.5 sales and ~$49 net, about ₪180/month at the high end (inference, ₪3.7/$). (3) External anchor: '$31.03 MRR across 38 live extensions' on Chrome (chrome-extensions scout:154, snippet-derived) is about $0.8 per extension per month on a store roughly 5-10× larger than AMO. Venue gates are unaffected; only the high end is overstated.",
+    "grade": "repo"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 150,
+  "estimate_basis": "INFERENCE, ILS/month at month 12. I re-ran the scout's own inputs (5-10 add-ons, 50-300 users each, 1-3% one-time conversion, $5-9) with two corrections. First, the Gumroad take, which is 28% at $9 and 38% at $5 per rails.ts:129. Second, users are a stock, not a monthly flow. That gives a ceiling of about ₪180 even at the top of every range. The Chrome datapoint, $31 MRR across 38 extensions (chrome-extensions scout:154), scaled to 10 extensions and AMO's smaller store, gives about ₪5-30. Three things pull the range down: AMO has no checkout, the Hebrew-UI Firefox audience is on the order of 10^5 (langpack 132,251, snippet), and free Hebrew-date tools already exist. Cold start: there is no sale gate, but a 13.3× user-weight handicap applies; exact-name matches on narrow Hebrew queries are the only lane. First sale is plausibly 3-9 months after listing; any single add-on may never sell.",
+  "honesty_risk": "1. Low-effort flooding and crippleware. Four thin single-function add-ons, each with a paywall, put money on trivial functions. A VAT calculator is one multiplication, and our own il-biz-tools gives it away free, so charging for 'Pro VAT' is not honest value. RTL fixing and Hebrew dates are already served free, so Pro tiers there risk being padding. AMO reviewers functionally test that add-ons 'function only as described'. 2. A gov.il form helper risks implying government affiliation through its name or icon. It would also touch Israeli ID numbers and form contents, so it must transmit nothing, and a content script that breaks a government form harms users. 3. The Gumroad licence check sends the key off-device. It must be disclosed in the listing ('what information it transmits') and probably in Firefox's built-in data-collection consent (manifest data_collection_permissions; not seen in the policy file, so UNKNOWN). Hiding it would breach 'No Surprises'. 4. Concentration: 'Mozilla reserves the right to block or delete any developer's account'. One strike on one brand account removes every listing. 5. AI-written code and listings: AMO has no disclosure rule, so declaring AI use would be voluntary and must actually happen. Minified or bundled code needs source submission ('Code must be provided in a way that is reviewable'). 6. The Distribution Agreement makes us 'solely responsible for providing reasonable technical support'. Licence and refund questions must go to an agent-run brand channel and never to the owner.",
+  "verdict": "NEEDS_RENDER",
+  "kill_reason": "Not killed: no venue gate is REFUTED. Zero-cost, programmatic listing and the no-AI-rule pass are confirmed at github grade, and the Israel/no-camera payout at repo grade. The scout's ₪0-400 high end is arithmetically wrong (Gumroad fee 28-38%, not 22%; one-time user stock counted as monthly flow). Corrected, it is about ₪0-150. The decisive gate, buyer supply, is UNKNOWN. AMO has no checkout, the Hebrew audience is roughly 10^5 at snippet grade, free Hebrew-date competitors exist, and ranking is install-weighted at log10(ADU+2), a 13.3× day-one handicap. Rendering the AMO search API for the newest cohort and for Hebrew/Israel queries, plus the langpack ADU, would settle it. If the new cohort mirrors Obsidian's (median ~27 users; groups/plugin-ecosystems.md:61-67) and Hebrew-utility add-ons sit under ~500 ADU, the venue should be KILLED as ₪0-tier. That is the same outcome as the dev-extensions kill: its reopen condition (REJECTED.md:1281) wants ranking that does not gate on installs, and AMO's does.",
+  "render_urls": [
+   "https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&sort=created&page_size=50",
+   "https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=hebrew&page_size=50",
+   "https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=israel&page_size=50",
+   "https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=%D7%A2%D7%91%D7%A8%D7%99%D7%AA&page_size=50",
+   "https://addons.mozilla.org/api/v5/addons/addon/hebrew-il-language-pack/",
+   "https://addons.mozilla.org/api/v5/addons/addon/hebrew-tooltip-translation/",
+   "https://addons.mozilla.org/api/v5/addons/addon/search-in-morfix/",
+   "https://gs.statcounter.com/browser-market-share/desktop/israel",
+   "https://extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/",
+   "https://extensionworkshop.com/documentation/publish/add-on-policies/"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "Google Play Books Partner Center (ebooks, ONIX / automated content fetching), https://play.google.com/books/publish/",
+  "gate_results": [
+   {
+    "gate": "zero_cost",
+    "status": "UNKNOWN",
+    "evidence": "No sign-up, listing or per-title fee appeared in either of my two WebSearch result sets (28.9), in the publishing scout's snippets, or in the sibling scout's (research/breadth/scouts/israeli-local.json:203-207). A 'Revenue Split FAQs' page (answer 9331459) points to a commission model. That is absence of evidence, and no fee page was read at primary grade. The claim that a free Google identifier replaces an ISBN comes from memory only (grade none). Not refuted, not confirmed.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "The payout rule is now confirmed by three independent snippets: my searches 1 and 2 (28.9) and the israeli-local scout (israeli-local.json:202, :210). It reads: 'You must have a local business address and local bank account in at least one of the countries supported for payment, specified in an active payment profile.' So the gate turns entirely on whether Israel is on the payment-country list, and no snippet showed that list. One snippet gave a 60+ country list for the 70% split, and it omits Israel. It also omits Japan, India and Hong Kong, so it is a partial split list, not the payment list: a weak negative only. The sibling scout on the same venue called this gate 'Leaning FAIL' and rated the venue WEAK, rank 5 (israeli-local.json:210, :234-235). The publishing scout missed that record. Some countries are 'paid via wire transfer in U.S. dollars' (snippet); whether Israel is one of them is UNKNOWN. Camera: a Google payments profile with an Israeli billing address must pass Israeli PSP-Law identity verification. That snippet comes from the Play Console context (research/colony-sweep/scouts/payment-rails--app-store-payouts.md:42-47). Whether that check uses a camera or selfie, and whether it applies to a Play Books profile, are both UNKNOWN. Whether an individual's home address satisfies 'local business address' is UNKNOWN. This is the decisive gate.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "UNKNOWN",
+    "evidence": "The scout's PASS rests on one snippet sentence (answer 2763162). It says a fetch system exists for 'publishers and service providers who use' it, but not whether a new, small individual partner can enable it or must apply. If fetching or SFTP is not self-serve, every new title needs a signed-in Partner Center session in the owner's Google account. That is a per-item owner click, which fails the constraint. The container cannot reach Google hosts, so any upload would have to run from a GitHub runner (plausible, unverified). The only public 'Play Books Partner API' script calls a non-existent volumes.insert, and its code is fabricated (publishing.json:3, github grade). It must not be cited. Unknown: whether Google's per-book review emails questions to the owner, which would be recurring owner work. Downgraded from PASS to UNKNOWN because the decision-relevant half has not been read.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "UNKNOWN",
+    "evidence": "Venue side: a snippet shows no blanket ban on AI books and no AI-disclosure field. Spam, misleading content and poor user experience are banned, with automated detection (answer 1067634, unread at primary). Catalogue side, repo grade and missed by the scout: the flagship title fails standing verdicts. The PCN874 developer reference restates a free ITA circular that comes with free regulator support (docs/REJECTED.md:170-175, :1174). skills-il/tax-and-finance and skills-il/accounting already publish free MIT Hebrew skills covering PCN874 (research/colony-sweep/SWEEP-2.md:280). The colony ruled Israeli tax reference content 'Never as paid' (research/colony-sweep/groups/data-apis.md:124) and killed a paid Israeli-bureaucracy ebook (research/colony-sweep/groups/israel-bureaucracy.md:218). The data.gov.il and OWID explainers are built only from public inputs, which puts their price floor at zero (MISSION.md:204-209). The venue's AI policy is UNKNOWN. The scout's example catalogue largely fails honest-value.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "HOLDS",
+    "evidence": "The store brings its own buyers: a snippet lists 60+ countries where ebooks sell at the 70% split (US, UK, EU, Latin America and others; search 1, 28.9). No traffic or buyer numbers were found. Caveats: Israel is absent from that list, and the sales-territories page (answer 3157463) is unread. So the Israeli- and Hebrew-targeted titles (PCN874, the data.gov.il guide) may have no storefront where their buyers are. Discovery for a zero-sale title is UNKNOWN. The repo precedent is that platform search ranks on prior success (MISSION.md:200-202), so assume a cold start.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "estimate_arithmetic (a check on the scout's numbers, not a venue gate)",
+    "status": "REFUTED",
+    "evidence": "The scout's own inputs do not reproduce its range. 15 titles x 1 sale x ₪25 = ₪375, not ₪300. Its ₪15 floor per sale is above what a $4.99 book pays at 70%: $3.49, about ₪12-13 at an assumed 3.5-3.8 ILS/USD (rate not measured). Outside the 70% countries the split is unread and lower. USD wire fees at an Israeli bank on small payouts are unaccounted for. The title count is also overstated, because the flagship PCN874 title is blocked by standing verdicts (see ai_allowed_honest). Corrected: ₪0-100 per month at month 12, and ₪0 outright if Israel is not a payment country. This corrects the estimate. It does not kill the venue.",
+    "grade": "repo"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 100,
+  "estimate_basis": "This is inference, and it is conditional on Israel being on the Play Books payment-country list (UNKNOWN); if Israel is absent, the figure is ₪0. Honest supply is smaller than the scout's 5-15 titles. The PCN874 reference is blocked by REJECTED.md:170-175, data-apis.md:124 and SWEEP-2.md:280, and the public-input explainers carry a zero price floor (MISSION.md:204). That leaves an assumed 2-4 English titles by month 12. Assumed sales are 0-1 per title per month, given a cold start and no Play Books base rate. The Gumroad precedent is 44% of products at $0 (storefronts--gumroad.md:135-136, snippet). Net per sale is about ₪12-25: $4.99-9.99 at the 70% split, at an assumed 3.5-3.8 ILS/USD, before USD wire fees. High end: 4 titles x 1 sale x ₪25 = ₪100.",
+  "honesty_risk": "(1) Charging for a free answer. The lead title, a PCN874 developer reference, restates a free 2009 ITA circular that has free regulator support. Free MIT Hebrew agent skills already cover PCN874 (skills-il/tax-and-finance, SWEEP-2.md:280). Our own products/pcn874 is MIT licensed. The colony has ruled Israeli tax reference content 'Never as paid' (groups/data-apis.md:124), and REJECTED.md:174 calls charging for a free answer a constitution violation. (2) The data.gov.il and OWID 'explainers' are built only from public inputs, which puts their price floor at zero (MISSION.md:204-209). Selling them as paid ebooks borders on AI slop sold as value. (3) Play's content policy bans spam, misleading content and poor user experience, and enforces it with automated models (snippet). There is no AI-disclosure field, so disclosure would live only in the description. A feed-driven pipeline pushing AI-written reference books is exactly the pattern those models flag. Buyers already complain about AI books on Play (community snippet). A strike on one account takes every title down at once. (4) The only public 'Partner API' script is fabricated (volumes.insert does not exist), and citing it as a route would repeat the repo's fabricated-symbol defect. (5) UNKNOWN whether the payee's legal name (the owner's) surfaces anywhere public. The brand-only rule needs checking at render time.",
+  "verdict": "NEEDS_RENDER",
+  "kill_reason": "Not killed: no venue gate is refuted at snippet grade or better. The decisive gate (Israeli payout) rests on a rule now confirmed by three snippets: the partner needs a local business address and local bank in a supported payment country. Israel's place on that list is unread, and the sibling scout leaned FAIL (research/breadth/scouts/israeli-local.json:210, :234). Render table 6052428 and answers 3250840 and 4490848. If Israel is absent, KILL at rendered grade. If Israel is present, the venue survives only with a different catalogue, because the scout's flagship PCN874 title is blocked by standing repo verdicts. The estimate is corrected down to ₪0-100 per month.",
+  "render_urls": [
+   "https://support.google.com/books/partner/table/6052428?hl=en",
+   "https://support.google.com/books/partner/answer/3250840?hl=en",
+   "https://support.google.com/books/partner/answer/4490848?hl=en",
+   "https://support.google.com/books/partner/answer/6009580?hl=en",
+   "https://support.google.com/books/partner/answer/3157463?hl=en",
+   "https://support.google.com/books/partner/answer/3324395?hl=en",
+   "https://support.google.com/books/partner/answer/2763162?hl=en",
+   "https://support.google.com/books/partner/answer/3289689?hl=en",
+   "https://support.google.com/books/partner/answer/1067634?hl=en",
+   "https://support.google.com/books/partner/answer/9331459?hl=en",
+   "https://support.google.com/books/partner/answer/3244021?hl=en"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "Gumroad as a breadth venue: a catalogue of many products under one seller account, created through the API, with buyers expected from Discover and gumroad.com's sitemap",
+  "gate_results": [
+   {
+    "gate": "zero_cost",
+    "status": "HOLDS",
+    "evidence": "I read app/views/home/pricing.html.erb on main (raw.githubusercontent, 28.9). Fees are \"10% + $0.50\" on direct sales and \"30%\" on Discover sales, and the page says: \"Gumroad doesn't charge you a monthly fee. Instead, our fees are deducted as a small percentage of every sale.\" The page lists no paid tier, listing fee or setup fee. This agrees with audits/storefronts.md:43. One residual is UNKNOWN: I did not read the chargeback/dispute fees or how a negative balance gets recovered. Both would come out of the balance, not be paid up front.",
+    "grade": "github"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "HOLDS",
+    "evidence": "_13-getting-paid.html.erb on main says \"We can only pay out to a local bank account and in your local currency\" and has the row Israel | ILS. The minimum is $100 and there is a 7-day hold. app/models/country.rb puts ISR in CROSS_BORDER_PAYOUTS_COUNTRIES and maps its payout_currency to ILS, so the money goes through Stripe cross-border payouts under Gumroad's own platform. The identity step is a document upload: \"upload images of both the front and back of the ID. Use a JPEG or PNG file.\" RULING-2026-09-28-bounty-rail.md:244 already records an ID image as allowed under the mandate. A code search of antiwork/gumroad at ref e39f26e found 0 hits for selfie OR liveness OR verification_session OR \"identity.verification\", and 0 hits for AccountLink OR account_link OR account_onboarding. So there is no Stripe-hosted onboarding path where Stripe could add its own selfie step. Residual, UNKNOWN: whether Stripe adds requirements of its own for an Israeli cross-border recipient. The account is in the owner's legal identity (CHIEF-AUDIT.md:245), which is existing step 3.",
+    "grade": "github"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "HOLDS",
+    "evidence": "Code grade only. It has not been run live, so AT-15 is still the proof. api/v2/links_controller.rb: create runs doorkeeper_authorize! :edit_products, and publish_created_product returns \"Saved as a draft: <reason>\" when publishing fails. New evidence: config/initializers/rack_attack.rb has a dedicated throttle, v2_products_post, of 10 per 60s on POST /(api/)?v2/products. A production rate limit on that route supports the endpoint being live. Products.tsx says \"Requires the edit_products or account scope\". Against it: _76-license-keys.html.erb at HEAD still says \"Can I create products or upload content with the API? Sorry, that's not yet possible.\" Link#publish! also blocks a new seller behind: enforce_user_email_confirmation!; enforce_merchant_account_exits_for_new_users! (\"You must connect at least one payment method\" / \"Your payout setup hasn't gone through yet\"); and content_moderation_check (ContentModeration::ModerateRecordService). Nothing publishes until step 3's payout setup clears, and nothing goes on sale before step 2 (PUBLISH-6, BOARD-LOOP.md:59).",
+    "grade": "github"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "HOLDS",
+    "evidence": "prohibited.html.erb (\"Last revised: September 16, 2026\") bans only \"AI services which includes selling access to AI tools, chatbots, image or content generation services, or subscriptions to AI services that are fulfilled outside of Gumroad\". It also bans \"reselling private label rights products\". _160-suspension.html.erb names \"PLR ebooks... services... unlicensed software you didn't create\" as grounds for suspension. The moderation prompt (content_moderation/strategies/prompt_strategy.rb) says \"Repetition alone is NOT spam\" and flags only \"clearly machine-generated nonsense or word salad\", keyword stuffing, and repeated-CTA spam. Code search for \"AI-generated\" OR \"AI generated\" in app/views returned 0 hits, and there is no AI-disclosure field. AI-assisted real files are allowed. The platform will not stop low-effort flooding, so our cap is the only brake.",
+    "grade": "github"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "REFUTED",
+    "evidence": "The claim tested is that the venue brings its own buyers to a new listing. Every product we would list is a new listing. recommendations.rb at ref e39f26e still requires sale_made: sales.counts_towards_volume.exists?. User::Recommendations adds name_filled, not_deleted, payout_filled and compliant. Discover search, browse and recommendations therefore stay closed to each product until that product has a sale from outside. That re-confirms the prior verdict: REJECTED.md:1112 (\"Discover cannot source a first sale, ever\"), audits/storefronts.md:63-89 and :198-202 (\"supplies no buyers to a new listing\"), and CHIEF-AUDIT.md:134 (\"Not a storefront — the colony's best-verified rail\"). The reopen (b) does not make that stated reason false. sitemap_service.rb does add every alive product (Link.alive.where(created_at: period)). robots_service.rb disallows only /purchases/, and links_controller.rb sets noindex only when !alive or ?code is present. But ping_search_engines does nothing: Google retired the sitemap ping endpoint at the end of 2023, and pings now return 404 (snippet: developers.google.com/search/blog/2023/06/sitemaps-lastmod-ping). Being in a sitemap makes a page crawlable. That is web-search supply that mehudak.com gets equally from its own sitemap, not a Gumroad buyer pool. How many sales it brings to an unsold page on a seller subdomain is unmeasured, and there is no base rate. I could not re-verify the scout's global-affiliate claim: a code search for 'recommendable' in app/models/global_affiliate.rb returned 0 hits, so that sub-claim is UNKNOWN. Once a product has its first sale, Discover is a real amplifier, but it cannot produce that first sale.",
+    "grade": "github"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "REFUTED",
+    "evidence": "4-5 × ₪250 ≈ ₪1,200 multiplies correctly, but the inputs are wrong in three ways. (1) The audited ₪250 (REJECTED.md:657; CHIEF-AUDIT.md:134) was the figure for the whole Gumroad storefront line, not a band for each product. (2) The catalogue includes il-biz-tools (₪400 committed; FORECAST.md:25 has ₪0-50 likely and ₪300 high at month 12) and pcn874 (₪600 committed; ₪0-150 likely). Both are already in the portfolio on this same account (REJECTED.md:1294-1299), so about ₪900-1,000 of the ₪1,200 high is counted twice. (3) Each extra product needs its own first sale from traffic this venue does not bring. What the catalogue adds beyond the committed lines is closer to ₪0-300.",
+    "grade": "repo"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 300,
+  "estimate_basis": "INFERENCE, gross ILS per month at month 12, counting only what the catalogue adds on top of lines already committed. il-biz-tools and pcn874 are already counted at ₪400 + ₪600 (REJECTED.md:1294-1296), so they are excluded here. Low ₪0: no new catalogue product ever gets a first sale from outside. Discover is closed to each product until it has one (recommendations.rb sale_made). The sitemap only makes pages crawlable, the ping does nothing, and search yield has no base rate. The colony's only owned traffic, mehudak.com, is not deployed (FORECAST.md:14). High ₪300: two or three extra templates or kits sold from mehudak.com traffic, each reaching the lower edge of the audited ₪150-250 band after its own first sale, with Discover adding a little afterwards at a 30% fee. Figures are before the ~22% small-ticket take (rails.ts:81). Payout needs a $100 balance first, and there is a 1-3 week seller review (CHIEF-AUDIT.md:249). No invented base rates: the median-creator $72 and '44% earn $0' figures are unverifiable (audits/storefronts.md:187-194) and are not used.",
+  "honesty_risk": "(1) Flooding and AI slop. Gumroad's moderation explicitly allows repetition ('Repetition alone is NOT spam') and blocks only word salad or keyword stuffing. Nothing on the platform would stop a catalogue of AI-assembled invoice, receipt and quote spreadsheets and 'printable reference packs' in a saturated template market. That is exactly the low-effort shape MISSION forbids, and declaring AI in the description does not make it honest value. The cap has to be our own rule, enforced in code. (2) Seeding Discover. Discover opens for a product after one counted sale, so a self-purchase, a friend's purchase, or a 100%-off code used to unlock it would be a fake sale. I did not read whether counts_towards_volume excludes $0 or fully discounted purchases, so this must be barred explicitly. (3) Customer conversations. _190-how-do-i-get-a-refund.html.erb tells buyers to 'contact the creator by replying directly to your receipt email', and Gumroad steps in only after 30 days of seller silence. The token the owner mints lacks refund_sales (gumroad-license-decision.md:27, and open risk 5 at :184). Every refund is therefore either an owner click, which is recurring work MISSION forbids, or a buyer ignored for 30 days, which is dishonest. Breadth multiplies this per product. (4) ToS and licences. Gumroad bans 'reselling private label rights products'. Reference packs 'built from open data' need a licence that allows commercial resale, and CC BY-SA / ODbL share-alike terms may forbid a paid closed file. (5) Legal accuracy. Hebrew tax templates and the pcn874 generator are sold as working tools, so an error harms the buyer. REJECTED.md:1296 already holds any legal figure until the 874 layout is rendered from two sources. (6) Legal order. Nothing may be put on sale before step 2, the tax file (PUBLISH-6, BOARD-LOOP.md:59).",
+  "verdict": "KILLED",
+  "kill_reason": "This kills Gumroad as a new breadth venue that brings its own buyers. It does not kill Gumroad as the colony's rail. At current HEAD, Gumroad's buyer pool (Discover search, browse and recommendations) opens to a product only after that product has a sale from outside (recommendations.rb sale_made, github grade). So the prior verdicts stand: REJECTED.md:1112, audits/storefronts.md:198-202, and CHIEF-AUDIT.md:134 ('Not a storefront — the colony's best-verified rail'). The reopen's sitemap evidence is true at code grade but shows only that pages can be crawled. The search-engine ping it cites has done nothing since 2023, and the sale yield from search is unmeasured. The zero-cost, Israel-payout-without-camera, API-listing and AI-terms gates all hold at github grade. That is why the rail stays, and listing more products on it adds no owner step. But each catalogue product earns only from traffic the colony brings itself, which is already how il-biz-tools and pcn874 are modelled. The scout's ₪0-1,200 counts those two committed lines a second time. Adding catalogue products is therefore a product decision on the existing rail, with its own cap, a ban on seeded sales, and a plan for refund and support emails. It is not a new venue, and its incremental value is about ₪0-300 a month.",
+  "render_urls": [
+   "https://gumroad.com/api",
+   "https://gumroad.com/robots.txt",
+   "https://gumroad.com/help/article/190-how-do-i-get-a-refund",
+   "https://gumroad.com/help/article/76-license-keys",
+   "https://gumroad.com/help/article/13-getting-paid",
+   "https://gumroad.com/prohibited",
+   "https://gumroad.com/pricing",
+   "https://docs.stripe.com/acceptable-verification-documents?country=IL"
+  ],
+  "searches_used": 1
+ },
+ {
+  "venue": "Wix App Market: Hebrew/Israeli-compliance apps (israeli-local; the same venue as app-plugin-marketplaces rank 1, counted once)",
+  "gate_results": [
+   {
+    "gate": "zero_cost",
+    "status": "UNKNOWN",
+    "evidence": "The scout missed tick 4 (research/measurements/wix-app-market.md:381-445; logs/CHANNEL_LOOP.md:124). Its record still says 'after tick 3' and asks to render two pages that are already captured (the payout account in tick 2 and the agreement body in tick 4). The binding agreement adds unpriced pre-submission duties. research/rendered/wix-partner-agreement-body.txt:185: '(v) An App shall be reviewed and tested by a third party for any security vulnerabilities before submitting the App'. :181 requires documented code review 'by more than one developer'. :183 requires testing against the SANS top 25. :165 allows Wix-derived data only on GCP, IBM, AWS, Microsoft, Salesforce or Oracle, and any other host (for example the repo's Netlify default) needs Wix's written consent. Submission binds the partner to all of this (wix-partner-agreement.txt:89). No listing or account fee exists: every 'fee' in the body comes out of revenue (2.5%, :355). A free development site exists for testing (FAQ html:64 changelog blurb, 'A development site is a free Wix site you create for testing your app'); testing on a premium site is still UNKNOWN. This session's WebSearch did not price the third-party test (snippet: nothing on developer pre-submission testing). If that test has no free route, the ₪0 rule fails. The page that settles it is already queued at ZERO-TESTS.md:37 and urls.txt:300-301.",
+    "grade": "rendered"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "Rendered: an individual may be the Partner (agreement-body.txt:13). Only comprehensively sanctioned territories are barred (Crimea, Cuba, Iran, North Korea, Syria), and Israel is not among them (:277, :279). Payment is in USD by wire or another method Wix chooses (:385), through a one-time Tipalti setup (wix-payout-account.txt:119). No payee-country list and no Tipalti form is rendered. Snippet (this session's WebSearch, help.tipalti.com Onboard-payees): Tipalti payee onboarding captures 'contact information, preferred payment method, and any applicable tax form'. No camera or selfie step is named, but that is absence at snippet grade only. The repo's own Tipalti-Israel snippets conflict: storefronts--game-3d-assets.md:153-156 says 'not available for Israeli-based entities in certain regions', while vertical-niches--real-estate.md:130-134 says Israel is inside global ACH and the only restriction is that Israeli entities cannot pay Pakistan. A risk the scout missed: 'All payments hereunder shall be made against a lawful tax invoice to be issued by the Party receiving the respective payment' (:385), plus withholding (:391). Wix.com Ltd is an Israeli payer, so the owner must be a registered osek before the first payout and must issue an invoice for every payout. That is recurring paperwork unless an agent can issue it at ₪0. The repo never measured it: grep for tax invoice or per-payout in OWNER_STEPS.he.md, INCOME_PLAN.he.md and step2-cost.md returns 0.",
+    "grade": "rendered"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "UNKNOWN",
+    "evidence": "Submission is a dashboard flow followed by an automated AI review with results 'typically available within minutes' (FAQ html:64 changelog blurb, 2026-07-27). No submission API is rendered. There are 2-4 separately built apps, so this is no flood, but also not the breadth shape the directive favours. A teammate invited by email can hold Manage Earnings (wix-payout-account.txt:142-170). Whether a teammate role covers app submission, and whether an agent-run brand login counts, is UNKNOWN, set against 'Your account is only for your own use' (:43). Recurring duties the scout did not list: a monthly report to Wix within 15 days of month end (:399), not limited to partner-billed apps; a 24-hour response to third-party claims (:309); and 90 days' notice plus continued support to withdraw an app (:259). For Wix-billed apps, refunds and cancellations are Wix's (:335), so the per-refund owner click is designed out.",
+    "grade": "rendered"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "UNKNOWN",
+    "evidence": "The agreement body has no AI clause: its only 'AI' hits are in the site footer (wix-app-market.md tick 4). The App Market guidelines are not captured (https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines, confirmed to exist by this session's snippet). Wix running its own AI review is not permission for AI-built apps. The honesty problem is concrete. Submitting acknowledges clause 6.3.5, so an app one agent built and shipped without a real third-party security test and a documented review by more than one developer would warrant something untrue. A breach lets Wix forfeit unpaid revenue share (:537) and remove apps without notice (:253). For Israeli users, Wix is the reseller and 'assumes primary responsibility' (:599, :605), while the partner must 'fully support and indemnify Wix' (:607), and the partner's indemnity is uncapped (:515). A compliance app with a wrong VAT or osek-patur figure, or a Hebrew accessibility statement implying conformance, lands on us.",
+    "grade": "rendered"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "UNKNOWN",
+    "evidence": "The scout's PASS proves only the billing mechanism: Wix bills users, chases failed payments for 45 days and handles sales tax (faq.txt:158-174). It does not prove buyers for these niches. storefronts.md:182 recorded 'zero demand data of any kind' and 'Reopen only with a named niche AND that page rendered'. The niche is still unnamed, because the Hebrew-category occupancy scan never ran (REJECTED.md:966-970; BOARD-LOOP.md:160). The board's kill criterion 'the named niche has free incumbents' (BOARD-LOOP.md:162) already fires on 2 of the scout's 3 apps at repo grade. (1) Statutory-declaration clock: 'the Wix wellness intake app is shipped first-party by Wix' (REJECTED.md:914), and easydo 'gives the gym declaration away free with no signup' (REJECTED.md:928-929). (2) Accessibility statement: eaa-occupancy.md:311 is CLOSED, with a free W3C generator (:166) and at least 20 free generators and scanners (:304). Israeli sellers include accessible.org.il at ₪450 one-time including the statement wording (:146). Only the VAT/osek-patur tracker is unoccupied as far as the repo knows, and its occupancy is UNKNOWN. Discovery is partly install-gated: the Verified badge needs 60+ days and 40+ premium installs (FAQ html:64).",
+    "grade": "repo"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 400,
+  "estimate_basis": "INFERENCE, with no install or conversion data anywhere (storefronts.md:182). The scout's ₪600 high end, at an assumed ~3.7 ILS/USD (grade none), needs about $166 a month gross, or roughly 42 paying installs at $4. Its 'low tens at a few dollars' actually yields ₪110-550, so the arithmetic is loose but not wrong. It omits three things. (a) Israeli VAT on sales where Wix is the reseller: revenue is 'after ... applicable sales tax' (faq.txt:130), and the 18% rate is grade none, cutting about 15%. (b) Withholding on payments from an Israeli payer (agreement :391), rate UNKNOWN. (c) Cash timing: every figure in range is under the $200 floor (:375), so payouts come in lumps every 2+ months, and money for month M arrives at M+2 (faq.txt:138). The ledger can therefore show ₪0 in month 12 itself even when revenue accrues. The 100% share runs 12 months from each app's own launch (:353), so it still holds at month 12. With the accessibility and declaration apps removed as occupied, about 2 apps remain. The high end assumes about 30 paying installs in total at about $4: net of 2.5% and VAT that is about $99, or about ₪370, rounded to ₪400. The low end is ₪0, because discovery for a zero-install app is UNKNOWN and the payout floor may not be crossed.",
+  "honesty_risk": "(1) False warranty at submission. Acknowledging the Partner Agreement (wix-partner-agreement.txt:89) warrants a third-party security test, a documented review by more than one developer, SANS top 25 testing and regular security assessments (agreement-body.txt:177-189). A solo agent build that has not really done these breaches the agreement, and relabelling a second AI agent as 'a developer' to satisfy :181 is exactly the stretch the honesty rule forbids unless Wix's best-practice page accepts it. A breach allows forfeiture of unpaid revenue (:537). (2) False assurance in compliance products. An auto-generated Hebrew accessibility statement implies a conformance that automated checks cannot establish (eaa-occupancy.md:157, :190: automated checks find 57%). Under the Israeli addendum, Wix as reseller carries primary responsibility and we carry an uncapped indemnity (:515, :605-607), so an error in a VAT or osek-patur ceiling is ours too. (3) AI disclosure is not governed by the agreement, and the App Market guidelines (AI, duplicate-app and listing rules) are unread. (4) Brand: whether 'Mehudak' can be the displayed company, versus 'registering your company' (wix-payout-account.txt:134), is UNKNOWN. The Tipalti payee and each tax invoice will carry the owner's legal name, visible to Wix but not the public, if add-your-company-info allows a trade name. (5) Spam risk is low: 2-4 distinct apps is not flooding.",
+  "verdict": "NEEDS_RENDER",
+  "kill_reason": "Not killed: no gate is REFUTED at snippet grade or better. It comes close on two counts. (a) The board's own kill criterion 'named niche has free incumbents' (BOARD-LOOP.md:162) already fires at repo grade on 2 of the 3 proposed apps: the statutory-declaration clock (Wix first-party, REJECTED.md:914; easydo free, REJECTED.md:928-929) and the accessibility statement (eaa-occupancy.md:311, CLOSED). Only the VAT/osek-patur tracker survives, unscanned. (b) The ₪0 gate turns on an unpriced mandatory third-party security test before submission (agreement-body.txt:185). If the security best-practice page shows no free route, kill on ₪0. If Tipalti's Israel coverage or the per-payout tax invoice (:385) proves to need owner work every month, kill on recurring owner work. The scout's PROMISING rating rests on a stale reading: it missed tick 4 and asked to render two pages already captured.",
+  "render_urls": [
+   "https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice",
+   "https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines",
+   "https://help.tipalti.com/hc/en-us/articles/31314361313815-Payment-methods-coverage-US-ROW",
+   "https://help.tipalti.com/hc/en-us/articles/30607275040407-Onboard-payees",
+   "https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/test-your-app/test-your-app-on-a-premium-site",
+   "https://dev.wix.com/docs/build-apps/launch-your-app/market-listing/add-your-company-info",
+   "https://dev.wix.com/docs/build-apps/manage-your-app/user-support/about-user-support",
+   "https://he.wix.com/app-market"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "itch.io (game-asset packs and dev tools), https://itch.io/game-assets",
+  "gate_results": [
+   {
+    "gate": "zero_cost",
+    "status": "HOLDS",
+    "evidence": "Publishing is free, and itch's share is set by the seller (0-100%, default 10%) per research/colony-sweep/scouts/storefronts--game-3d-assets.md:38-40 (snippet in repo). elite-3d-design-studio docs/business/sales/platforms/itch-io.md (github-secondary, 24.9.2026) says the same. itch's own docs source, itchio/itch.io docs/creators/payments.md, adds three things. In 'Collected by itch.io' mode, 'itch.io is the Merchant of record'. Payout transfers 'may include additional processing fees'. Without a valid TIN, 'your account will be subject to the default 30% withholding rate'. All of these come out of earnings. None is paid up front, so the ₪0 rule is not broken.",
+    "grade": "github"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "itchio/itch.io docs/creators/payments.md (github) says 'Payouts are paid to you via either PayPal or Payoneer'. The tax interview requires a Tax Identification Number, and 'a transaction must be at least 7 days old' before it can be paid out. Israel is not named anywhere. A snippet on 28.9 said payout requests are cancelled when PayPal receiver-country rules block them (itch.io/t/3793840); the countries named were Turkey and Azerbaijan, not Israel. The scout missed a prior repo line: 'payouts have been cancelled over PayPal receiver-country rules; Israel unverified' (research/colony-sweep/groups/licensing-ip.md:163). PayPal Israel KYC names no selfie (risk-governance--owner-kyc-catalogue.md:65-79, snippet). Whether Payoneer KYC has a camera step is UNKNOWN. Anonymity risk the scout did not name: in 'Direct to you' mode, 'your payment provider account will be the Merchant of Record' (payments.md), so buyers would see the owner's PayPal name. Only Collected mode keeps the brand as the only public face.",
+    "grade": "github"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "REFUTED",
+    "evidence": "There is no API path to create a page. itch's server-side API has exactly five GET endpoints (credentials/info, me, my-games, download_keys, purchases), and none creates or edits a page, sets a price or sets tags (itchio/itch.io docs/api/serverside.md). butler 'requires an existing project page on itch.io — it doesn't create one for you... create a new project at https://itch.io/game/new' (itchio/butler docs/troubleshooting.md). So page creation, price and the AI disclosure are a web form. Automating that form from a runner is the case itch names as spam. The heading 'Avoid uploading excessive amounts of automatically generated or AI-generated content' says: 'do not use automated systems to mass produce product pages. We will consider this spam and may remove your pages from our browse and search pages' (itchio/itch.io docs/creators/quality-guidelines.md, commit 29c5b89, 24.5.2024; still the file's head on 28.9.2026 per a WebSearch result). The only non-automated path is the owner clicking once per pack. BOARD-LOOP.md:9 rule (g) excludes that: 'a channel needing per-item owner action... is not a channel'. The ToS itself (docs/legal/terms.md, updated 15.4.2023) has no bot clause, so the refutation rests on the quality guidelines, not on the ToS.",
+    "grade": "github"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "REFUTED",
+    "evidence": "Disclosed AI is permitted (snippets: itch.io/t/4309690, Engadget; GamingOnLinux Nov 2024 'now requires AI generated content disclosures for assets'). The product the scout proposes is not. The same guidelines section lists as spam, 'including but not limited to': 'Games or projects that are predominantly created by algorithms or AI with minimal human intervention'; 'Content that is randomly generated with no or minimal curated design'; 'Multiple iterations of essentially the same content that are generated by AI or algorithms'. The penalty is removal from browse and search (quality-guidelines.md, github). The colony's production model has zero human intervention by mandate (MISSION.md:211, 'The owner does nothing'). 30-100 code-drawn tileset, kit and SFX variants are the listed pattern. Calling the packs 'procedural' does not escape it: the clause says 'algorithms or AI', even though itch's disclosure tag treats procedural generation as distinct from GenAI (Koodattu/kuopio-pelaa-2026 docs/source-bank.md, verified 9.8.2026, github-secondary). A 2026 secondary confirms the section is still live: lyndonxn/myAgents docs/research/mini-game-market-2026.md says reskins and 'excessive automatic/AI-generated content' may be removed from discovery. The repo copy lacks the newer #ai-disclosure section, so the live page is newer than github.",
+    "grade": "github"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "UNKNOWN",
+    "evidence": "The venue has traffic (Tranco rank 2,252, per the scout, github), and asset packs are a live category. Reaching those buyers with this product is not shown. (1) 'If you've just created an account and you're selling your first project, then your published page is placed in a queue for review... New sellers are reviewed before their projects are eligible for indexing' (itchio/itch.io docs/creators/getting-indexed.md, github). So a human moderator screens exactly this AI-tagged algorithmic pack from a brand-new account. (2) A page with no AI and 548 views stayed noindex, then 'flagged for moderator review', from 18.5 to at least 31.5.2026 (Jirnyak/gigahrush PRCampaign/*.md, github-secondary). (3) itch's own visibility advice is devlogs, followers and external promotion (getting-indexed.md). That matches the prior verdict the scout omitted: 'discovery runs on jams, devlogs and community participation, which MISSION forbids. Strip that and the ceiling is ₪0' (research/colony-sweep/groups/storefronts.md:180). The same-day html5-games scout cited that line and rated itch WEAK (research/breadth/scouts/html5-games.json:295,318-321). No buyer counts exist for AI-tagged packs.",
+    "grade": "github"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "REFUTED",
+    "evidence": "The scout's inputs (40 sales × $2-5 × 0.80-0.85 × 3.7) give a high of ₪237-629, so ₪400 implies an unstated ~$3.3 average. The fee loss is understated. At $2, itch's 10% plus 2.9% + $0.30 is 27.9%. At $5 it is 18.9%. Then add PayPal-side receiving and cross-border fees (~3.49% + NIS 1.60, 1.5-2% cross-border), 18% VAT on PayPal fees and NIS 8 per withdrawal under NIS 1,000 (payment-rails--paypal-israel.md:49,80-82,189-191, snippet). Realistic loss is ~25-35%, not 15-20%. The '0-40 sales/month' range is itself an invented base rate, which contradicts 'no base rate is invented'. The only empirical anchor in the repo is ~$500 over 4 months across four stores (itch among them) for a human-made audio catalogue in 2021 (licensing-ip--music-sfx.md:59-61), about $31 per store per month. The scout's ₪400 high is ~3-4× that anchor, for a product the platform's guidelines class as spam.",
+    "grade": "repo"
+   },
+   {
+    "gate": "prior_verdicts_complete",
+    "status": "REFUTED",
+    "evidence": "The scout cited game-3d-assets.md F2, REJECTED.md:1002, licensing-ip.md:38 and audits/licensing-ip.md:186. It missed three lines. (a) groups/storefronts.md:180, which puts the ceiling at ₪0 because discovery needs community work. Its reason is about discovery, not AI policy, so the new AI-disclosure snippets do not answer it. (b) groups/licensing-ip.md:163, on payout cancellations. (c) licensing-ip--music-sfx.md:79, which calls at most 'a single disclosed AI SFX pack on itch.io as a cheap occupancy test, not an income line'. The same 28.9 sweep also contradicts itself: html5-games.json:290-335 rates itch WEAK and ranks it 7th in its family.",
+    "grade": "repo"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 100,
+  "estimate_basis": "INFERENCE, low confidence, ILS per month at month 12. The only empirical anchor is ~$500 over 4 months across four asset stores for a human-made audio catalogue (2021, licensing-ip--music-sfx.md:59-61): about $31 per store per month, or ~₪80-115 after 25-35% fees at 3.7 ILS/USD. The high end is capped near that anchor because this product is worse placed than a human catalogue. It is AI or algorithm-made and disclosed. A new seller's first page goes through human review before indexing (getting-indexed.md). itch's quality guidelines class 'predominantly created by algorithms or AI with minimal human intervention' and 'automated systems to mass produce product pages' as spam, and remove such pages from browse and search. The low end is ₪0: de-indexing, or a first-page review that never clears, leaves no discovery (storefronts.md:180, ceiling ₪0). Discovery does not need a prior sale, but a first paid page does need a moderator's pass before indexing.",
+  "honesty_risk": "This is concretely spam by the venue's own definition, not a matter of taste. itch's quality guidelines (itchio/itch.io docs/creators/quality-guidelines.md, heading 'Avoid uploading excessive amounts of automatically generated or AI-generated content') name four things. (1) 'Automated systems to mass produce product pages', which is what a runner driving itch.io/game/new for 30-100 packs is. (2) Projects 'predominantly created by algorithms or AI with minimal human intervention', which is the colony's model by mandate. (3) 'Randomly generated' content with minimal curation. (4) 'Multiple iterations of essentially the same content' generated by algorithms, which describes tileset and kit variants. The penalty is removal from browse and search. Shipping it would break MISSION rule 4 (no ToS violations, no spam, MISSION.md:411-416) and the 28.9 addendum's 'no low-effort flooding that a platform would call spam'. Here the platform literally calls it spam. There are three smaller risks. The AI-slop perception of code-drawn 16x16 tiles in a market of hand-drawn pixel art: listings must never imply hand work. Brand anonymity: 'Direct to you' mode makes the owner's PayPal the Merchant of Record, so the owner's name appears on buyer receipts; only Collected mode is safe. Tagging: calling procedural output 'No AI' because the pixels came from an algorithm rather than a diffusion model would be dishonest, since the generating code was AI-written.",
+  "verdict": "KILLED",
+  "kill_reason": "programmatic_listing is REFUTED at github grade. itch's API is read-only (docs/api/serverside.md), and butler cannot create pages (itchio/butler docs/troubleshooting.md), so every pack needs the web form at itch.io/game/new. Automating that form is what itch's own quality guidelines call spam, with removal from browse and search as the penalty. The only non-automated route is a per-pack owner click, which BOARD-LOOP.md:9 rule (g) rules out as a channel. ai_allowed_honest is also REFUTED for this product: the guidelines list 'predominantly created by algorithms or AI with minimal human intervention' and 'multiple iterations of essentially the same content' as spam, and that is the colony's production model by mandate. The scout also omitted the standing prior verdict that itch discovery runs on community work and its ceiling is ₪0 (groups/storefronts.md:180), which the AI-disclosure snippets do not answer. Caveat: the rules come from itch's GitHub docs copy (quality-guidelines.md last committed 24.5.2024); the live page has a newer #ai-disclosure section. A 2026 secondary (lyndonxn/myAgents) and a 28.9 WebSearch result both show the spam section still in force. Reopen only if itch publishes a page-creation API and a human-curated, differentiated product exists. That would be a single-listing lane, not a breadth channel.",
+  "render_urls": [
+   "https://itch.io/docs/creators/quality-guidelines",
+   "https://itch.io/docs/creators/getting-indexed",
+   "https://itch.io/docs/creators/payments",
+   "https://itch.io/t/4309690/generative-ai-disclosure-tagging",
+   "https://itch.io/t/3793840/why-is-my-payout-request-canceled-due-to-paypal-receiver-country-regulations"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "e-vrit (עברית), independent-author ('הוצאה עצמית') listings: https://www.e-vrit.co.il/",
+  "gate_results": [
+   {
+    "gate": "zero_cost",
+    "status": "REFUTED",
+    "evidence": "e-vrit's own help centre says the self-publishing route is pay-to-publish. Its article 'איך מתחילים?' (help.e-vrit.co.il/hc/he/articles/360004125240) says, per the snippet, to email the book for review to sofrim@e-vrit.co.il. The author then gets forms asking for personal and book details, plus a payment link, and work starts only after the forms AND the payment arrive. A second article on the same domain is titled, verbatim, 'יש לי ספר הכולל תמונות, האם מחיר הפקת הספר דיגיטלי יהיה גבוה יותר?' ('I have a book with images; will the price of producing the digital book be higher?'). The title itself assumes the author pays a production price for the digital book. The separate manuscript route (discover.e-vrit.co.il/manuscript) charges ₪300 for proofreading if the manuscript advances to editing (snippet). That is an owner up-front payment per title, which the ₪0 rule forbids (MISSION.md 27.9 addition, lines ~345-355). The only possible escape is a distribution deal as a publishing house (www.e-vrit.co.il/Content/254 'הוצאות לאור'). Its terms are UNKNOWN, it is not the route the scout proposed, and it would be a negotiated business contract. Both help.e-vrit.co.il and discover.e-vrit.co.il returned EGRESS_BLOCKED to WebFetch, so this rests on the search engine's reading of e-vrit's own pages: snippet grade, not rendered.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "e-vrit is an Israeli company, so paying royalties by Israeli bank transfer is plausible (inference). The per-title forms ask for the author's personal details (snippet), which means the owner's identity per title. No evidence either way on a camera step. The question is moot while zero_cost is refuted.",
+    "grade": "none"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "REFUTED",
+    "evidence": "Listing is a per-title human process, not a self-serve upload. Per the snippet of e-vrit's own help centre, each book is emailed to sofrim@e-vrit.co.il for review, then comes a per-title form with personal and book details and a per-title payment, and e-vrit staff produce the book. On the manuscript route, an accepted title needs 'signing a contract', then editing, cover design and upload by e-vrit (snippet). That meets the scout's own fail condition ('FAILS if ... a signed contract per title') and the mandate's ban on a per-item owner step. GitHub (verified this session): all public e-vrit code is reader-side, with no publisher or ingest API: revrevrev/Libraries-search (search and group endpoints), yoavp13/calibre-evrit-plugin (POST /api/search, /api/product/extra/{id}), Dviros/evrit-to-kindle and MusiCode1/baryonic-flare (api.e-vrit.co.il/api/book/BookDownloadRequest). The self-publishing pages Publisher/746 and publisher/1197 are both titled 'הוצאה עצמית' (snippet), which suggests self-published books sit under e-vrit's generic self-publishing labels rather than an author-controlled 'Mehudak' imprint (inference).",
+    "grade": "snippet"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "UNKNOWN",
+    "evidence": "No AI policy was found. The terms page (Content/1) and the manuscript page were not read, and discover.e-vrit.co.il is egress-blocked. Every title passes an editor's review, so whether AI-assisted Hebrew non-fiction is accepted is at the editor's discretion. That is itself a human gate.",
+    "grade": "none"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "HOLDS",
+    "evidence": "I verified by GitHub fetch of revrevrev/Libraries-search CLAUDE.md that e-vrit's public-library group 286 holds about 27,108 books, and that the product API carries AvgReviews and CountReviews. A snippet calls it the largest Hebrew digital bookstore, and e-vrit's help centre recommends pricing digital books at ₪25-44 (snippet, 'איך נקבע מחיר הספר באתר?'). A large catalogue is not buyer volume: there are no sales numbers, and no evidence that self-published non-fiction sells there. discovery_needs_prior_sale is UNKNOWN.",
+    "grade": "github"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "REFUTED",
+    "evidence": "The scout's ceiling of ₪300/month (10-20 titles × 0-2 copies/month × unknown price and royalty) does not hold. (1) It leaves out the per-title up-front production fee, which under the ₪0 rule stops the line before the first title, so the honest month-12 figure is ₪0. (2) Take e-vrit's recommended ₪25-44 price: 20 titles × 2 copies = 40 copies, about ₪1,000-1,760 gross. ₪300 net then implies a 17-30% royalty, which is unread. And '0-2 copies per title per month' is itself an unstated base rate. (3) 10-20 titles exceeds the colony's honest supply of about 5-15 titles in 12 months (research/breadth/scouts/publishing.json:8; MISSION.md constraint 6, lines 155-170). (4) The flagship example, a PCN874 file-format guide, hits two walls. It restates the ITA's free 2009 circular next to the ITA's free PCN874 simulator (docs/REJECTED.md:169-175; products/pcn874/docs/SPEC.md:14). And the audit found that buyer eroding: the obligation can be deferred to 1.1.2027 and suites already emit PCN874 (docs/REJECTED.md:190-195).",
+    "grade": "repo"
+   },
+   {
+    "gate": "prior_verdict_missed",
+    "status": "REFUTED",
+    "evidence": "The scout says e-vrit was 'never swept as a venue'. That is true of docs/ and the 3.9/7.9 sweeps, but it misses a sibling verdict from this same breadth sweep: research/breadth/scouts/publishing.json:203-247 rates 'e-vrit (עברית) and Hebrew digital bookstores' WEAK, rank 5 in its family, ₪0-150. It warns that onboarding runs through e-vrit's own self-publishing imprint and that 'human contact with e-vrit staff is likely, and it would fail the rule that the owner never talks to anyone' (publishing.json:222). The snippets I found confirm that warning. The adjacent kill the scout did cite, the free bureaucracy ebook (research/colony-sweep/groups/israel-bureaucracy.md:218), stands.",
+    "grade": "repo"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 0,
+  "estimate_basis": "Under the ₪0 rule, the self-publishing route cannot start: per e-vrit's own help centre (snippet), each title needs an author payment (a 'payment link', a digital-book production price, and ₪300 proofreading on the manuscript route) before e-vrit works on it. The month-12 figure is therefore ₪0. As a ceiling if the owner later lifts the ₪0 rule after other income lands: 5-15 honest titles × 0-2 copies/month × ₪25-44 (e-vrit's recommended range, snippet) × an unread royalty share gives gross sales of ₪0 to about ₪1,300/month. Net to the owner is unknown and starts below zero by the sum of the per-title production fees. This is inference; no sales base rate was measured.",
+  "honesty_risk": "(1) Pay-to-publish: the owner's money goes out per title before any sale, which breaks the ₪0 rule and makes the 'money only in the ledger' framing misleading. (2) Charging for a free answer: the scout's flagship title, a PCN874 file-format guide, repackages the ITA's free 2009 circular next to the ITA's free simulator, which docs/REJECTED.md:174 calls a constitution violation. Clearly labelled AI translations of public-domain non-fiction are only honest if a qualified human checks them, and the colony has no such editor. (3) AI slop in a curated channel: each title passes an e-vrit editor. Submitting AI-drafted Hebrew non-fiction without declaring AI at the manuscript-and-forms stage would misrepresent it, and e-vrit's AI and content terms (Content/1) are unread. (4) Brand-only face: the per-title forms take the author's personal details and the product API exposes an 'Authors' field, so the owner's name may be published as author unless a pen name is allowed (UNKNOWN). (5) Every title needs email back-and-forth with e-vrit staff, which is a human relationship the mandate excludes. The kill itself rests on the search engine's reading of e-vrit's own help-centre pages (primary domain, snippet grade). The most solid single piece is the verbatim article title about 'מחיר הפקת הספר דיגיטלי', the price of producing the digital book. A free runner render of the URLs below would move it to rendered grade.",
+  "verdict": "KILLED",
+  "kill_reason": "Two gates are refuted at snippet grade from e-vrit's own help centre. zero_cost: self-publishing is pay-to-publish (per title: email for review to sofrim@e-vrit.co.il, forms, a payment link, work starting only after payment; an article titled on the 'digital book production price'; ₪300 proofreading on the manuscript route). programmatic_listing: every title passes a human review, forms, payment and, on the manuscript route, a signed contract. That is the scout's own stated fail condition and a per-item owner step. The same sweep's publishing scout had already rated e-vrit WEAK for this reason (research/breadth/scouts/publishing.json:203-247). The one conceivable escape, a publishing-house distribution deal (Content/254), is UNKNOWN, is not what the scout proposed, and would be a negotiated contract.",
+  "render_urls": [
+   "https://help.e-vrit.co.il/hc/he/articles/360004125240-%D7%90%D7%99%D7%9A-%D7%9E%D7%AA%D7%97%D7%99%D7%9C%D7%99%D7%9D",
+   "https://help.e-vrit.co.il/hc/he/articles/360004142699-%D7%99%D7%A9-%D7%9C%D7%99-%D7%A1%D7%A4%D7%A8-%D7%94%D7%9B%D7%95%D7%9C%D7%9C-%D7%AA%D7%9E%D7%95%D7%A0%D7%95%D7%AA-%D7%94%D7%90%D7%9D-%D7%9E%D7%97%D7%99%D7%A8-%D7%94%D7%A4%D7%A7%D7%AA-%D7%94%D7%A1%D7%A4%D7%A8-%D7%93%D7%99%D7%92%D7%99%D7%98%D7%9C%D7%99-%D7%99%D7%94%D7%99%D7%94-%D7%92%D7%91%D7%95%D7%94-%D7%99%D7%95%D7%AA%D7%A8",
+   "https://help.e-vrit.co.il/hc/he/categories/360000950099-%D7%A4%D7%A8%D7%A1%D7%95%D7%9D-%D7%A1%D7%A4%D7%A8",
+   "https://help.e-vrit.co.il/hc/he/articles/360004125380-%D7%90%D7%99%D7%9A-%D7%A0%D7%A7%D7%91%D7%A2-%D7%9E%D7%97%D7%99%D7%A8-%D7%94%D7%A1%D7%A4%D7%A8-%D7%91%D7%90%D7%AA%D7%A8",
+   "https://discover.e-vrit.co.il/manuscript",
+   "https://www.e-vrit.co.il/Content/254/%D7%94%D7%95%D7%A6%D7%90%D7%95%D7%AA_%D7%9C%D7%90%D7%95%D7%A8_%D7%A2%D7%91%D7%A8%D7%99%D7%AA_%D7%A1%D7%A4%D7%A8%D7%99%D7%9D",
+   "https://www.e-vrit.co.il/Content/1/%D7%AA%D7%A7%D7%A0%D7%95%D7%9F_%D7%95%D7%AA%D7%A0%D7%90%D7%99_%D7%A9%D7%99%D7%9E%D7%95%D7%A9"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "Apify Affiliate Program §8 \"Open Source Fair Share\": automatic credit for Apify sign-ups made through our open-source Actor Store pages, plus \"Run on Apify\" referral badges in brand GitHub repos",
+  "gate_results": [
+   {
+    "gate": "zero_cost",
+    "status": "HOLDS",
+    "evidence": "The affiliate terms at apify-docs@1fa5620, sources/legal/latest/terms/affiliate-program-terms-and-conditions.md §1.1, say to join by 'creating an account on Apify's FirstPromoter portal (https://apify.firstpromoter.com/)' with an 18+ box. They name no fee, deposit or paid plan. publish/index.mdx names no fee to publish. It rides the free Apify account from owner step 6 (products/README.md:7). Commission is taken from Apify's revenue, never charged to us.",
+    "grade": "github"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "The payout half holds by absence, at github grade. §5.1 pays monthly within 15 business days 'based on an invoice generated and verified by Apify through FirstPromoter'. The methods are 'PayPal, bank transfer or Wise' in USD, with no country restriction. §5.4 makes invoices 'generated automatically through FirstPromoter', but the owner must 'provide and maintain up-to-date information' in the portal, and Apify may ask for an invoice by another method if that information is missing. §8.3(c) waives the 3-customer minimum for Fair Share customers but keeps the $100 monthly minimum, and accruals roll over. A bank transfer to the owner's existing Israeli account needs no camera. The camera half is UNKNOWN: the terms name no KYC or ID check. A snippet shows FirstPromoter's own onboarding as configurable signup fields plus optional US W-9/W-8BEN collection, with no identity or selfie step, but that is snippet grade only. 'Managed auto payouts' may use a payout provider whose KYC is unrendered. The Apify developer KYC (ID, proof of address, tax document; OWNER_STEPS.he.md:379) belongs to Store monetisation, not the affiliate terms. Israeli tax note: §5.4 invoices are issued in the owner's own legal name, so receiving this income presumes an עוסק registration.",
+    "grade": "github"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "REFUTED",
+    "evidence": "§8.2 credits only sign-ups through an 'open-source Actor page'. publish/index.mdx (apify-docs@1fa5620): 'By default, the source code of your Actor is hidden from the public.' The only documented way to open it is a Console step: 'In Display information, uncheck Hide source files from Actor detail.' UpdateActorRequest.yaml documents isPublic as writable but not isSourceCodeHidden. That field appears only in Actor.yaml ('default: true') and a response example in acts.yaml. An org-wide GitHub code search found no Apify client or CLI that writes it; the only hits are read-side (apify-mcp-server types.ts, n8n test fixtures). So every Actor needs its own owner Console click, which is a per-item owner click, and the brief fails that. The scout's claim that one owner step 'covers every open-source Actor ... with no limit' is false on the documented path; its own record concedes 'one owner checkbox per Actor'. The only mitigation is Actor #1, whose checkbox can ride the Console visit step 6 already requires (products/README.md:7). That is one listing, not breadth. Reopen if a runner PUT /v2/acts/{id} with {isSourceCodeHidden:false} reads back false.",
+    "grade": "github"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "HOLDS",
+    "evidence": "§6.1 is an exhaustive list: illegal or infringing content, unauthorised paid ads, bidding on the 'Apify' keyword, unissued coupons, self-referral including friends and related persons (v), promotion inside Apify-owned content (vi), and fraud. None of it bars AI-built Actors. The terms have no disclosure clause, so we add our own. A working free tool with its source visible is honest value. Constraints to honour: Store Publishing Terms §2.2.4.2(i) forbids promoting anything outside the platform from the Actor page (docs/REJECTED.md:479-486), so the Store README must not steer visitors to the GitHub badge. Also, §1.2 allows one affiliate account and §9 forfeits all commissions on breach.",
+    "grade": "github"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "HOLDS",
+    "evidence": "The venue brings its own visitors. Store search and MCP search rank on a quality score that includes Popularity (users, saves, return usage): how_store_works.md, rendered and quoted in research/colony-sweep/audits/store-promotion.md:79-93. The share that pays is tiny. Only users who are NEW to Apify, sign up from our page within the 45-day cookie, and then PAY Apify earn anything; a free-plan user earns ₪0. The repo's only base rate is 8.7 users per Actor, occupied niche, P(≥10) ≈ 30% (FORECAST.md:24; audits/agent-markets.md:186). The same audit calls a 20% paid-plan share 'generous' (agent-markets.md:186-190). No Store traffic figure, new-user share or free-to-paid conversion is rendered. Discovery needs usage, not a prior sale.",
+    "grade": "repo"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "REFUTED",
+    "evidence": "The scout's high case assumes 3-4 open-source Actors by month 12. The binding rule allows a second Actor only at ≥50 stranger users (portfolio.ts:73,80; FORECAST.md:35), with P ≈ 5-8%. Taking the scenario as given, 2-4 customers × $30-60 × 20-30% is $12-72 a month, about ₪44-266 at roughly ₪3.7 per dollar. Capping it at ₪150 'because of the $100 lump' is not arithmetic, since lumping delays the average but does not lower it. Under the one-Actor rule the likely count of paying new-to-Apify referrals in year 1 is 0-1. One customer on a plan of roughly $39 a month accrues $7.8 a month for 3 months, then $11.7 (plan price unrendered, so this is inference). That reaches the $100 minimum about 10 months after they start paying. The month-12 ledger is therefore ₪0 with high probability. Ledger gap: no connector exists for a PayPal, Wise or bank payout (colony.yml:61-63; rails.ts:74-77 observable:false), so it would need a manual record.",
+    "grade": "repo"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 50,
+  "estimate_basis": "INFERENCE. The rule in portfolio.ts:73,80 binds, so there is one Actor in year 1 (Actor #1 goes public about mid-October at best, FORECAST.md:24). Low, and likely: no user who is both new to Apify and paying, so ₪0. That fits a free Israeli open-data Actor with 8.7 users per Actor and a 'generous' 20% paid share (agent-markets.md:186-190). High, about the 90th percentile: one referred customer on a plan of roughly $39 a month (Apify pricing unrendered) accrues $7.8-11.7 a month, about ₪30-45. That is the month-12 accrual, not ledger money. The $100 minimum under §5.2(b)/§8.3(c) takes about 10 months of that customer to reach, so the month-12 ledger is ₪0 in nearly all outcomes. The scout's ₪0-150 rested on 3-4 Actors, which the board rule forbids unless Actor #1 reaches ≥50 users. Even taken as given, its arithmetic gives ₪44-266, not a principled ₪150 cap.",
+  "honesty_risk": "Concrete risks. (1) Self-referral, §6.1(v): a colony test sign-up, or the owner's friends or family signing up through our Store page or badge, breaches the terms, and §9 forfeits ALL commissions. CI must never create Apify accounts. (2) Promotion in Apify-owned content, §6.1(vi) plus Store Publishing Terms §2.2.4.2(i) (REJECTED.md:479-486): the Store README must not steer visitors to the GitHub repo or its referral badge. Credit there is automatic, so no link is needed. (3) Spam or low-effort flooding: publishing several thin open-data wrapper Actors to harvest attribution credit is exactly the variant flooding that constraint 6 forbids. It also breaks the ≥50-user rule for a second Actor (portfolio.ts:73,80), and §1.2 bans multiple affiliate accounts. (4) Undisclosed affiliate links: every 'Run on Apify' badge carrying our referral link needs a visible affiliate disclosure, and the README should say the Actor was built with AI, because the terms ask for neither. (5) Brand exposure: open-sourcing publishes the source files and non-secret environment variables. I checked products/apify-il-open-data and it carries no owner name, but there is no LICENSE file, so 'open source' there means source-visible only. The badges must wait for the brand GitHub org (step 7), because the current public repo shows the owner's name. (6) The §5.4 invoices are issued in the owner's legal name, and the portal must hold their personal details. That is private, but receiving the income presumes an Israeli עוסק registration. (7) Stale-source risk: the snippet-grade 'Fair Share Program Terms' page, with its Passive and Maintainer tiers and a GitHub-link requirement, was removed on 15 Sep 2026 by apify-docs commit #2981. §8 of the affiliate terms is the current rule, and any render of that old URL should not be trusted over §8.",
+  "verdict": "KILLED",
+  "kill_reason": "The venue fails as a breadth venue: programmatic_listing is REFUTED at github grade. Credit under §8.2 comes only from an 'open-source Actor page'. Apify's source code is hidden by default, and the only documented way to show it is a per-Actor Console checkbox ('uncheck Hide source files from Actor detail'). UpdateActorRequest.yaml does not document isSourceCodeHidden as writable, and no Apify client in the org writes it. Every listing therefore needs its own owner click, which the brief fails. The scout's 'one owner step covers every Actor with no limit' is false on the documented path. The estimate also fails: its ₪150 high case needs 3-4 Actors, which portfolio.ts:73,80 forbids unless the first reaches ≥50 users (P ≈ 5-8%). Under the one-Actor rule the month-12 ledger is ₪0 in nearly every outcome, because $100 accrues only after about 10 months of one referred paying customer. That does not justify a new owner account (FirstPromoter) under constraint 2. It can still be salvaged as a free add-on, not a listing. When the owner makes the Console visit step 6 already requires for Actor #1, they can also untick 'Hide source files' at no extra cost. Put the FirstPromoter sign-up to the owner only if strangerUsers30d reaches ≥10 and the camera gate renders clean. Whether §8.2 credits sign-ups made before joining is UNKNOWN. Reopen as a breadth venue only if a runner test, PUT /v2/acts/{id} with {\"isSourceCodeHidden\": false}, reads back false.",
+  "render_urls": [
+   "https://apify.firstpromoter.com/",
+   "https://help.firstpromoter.com/en/articles/9998853-how-managed-auto-payouts-work",
+   "https://docs.apify.com/api/v2/act-put",
+   "https://apify.com/pricing",
+   "https://apify.com/partners/open-source-fair-share",
+   "https://docs.apify.com/legal/affiliate-program-terms-and-conditions",
+   "https://docs.apify.com/platform/actors/publishing/publish"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "Spreadshirt (Marketplace Designer + free Spreadshop, one partner account)",
+  "gate_results": [
+   {
+    "gate": "prior_verdict_missed",
+    "status": "HOLDS",
+    "evidence": "A grep for spreadshirt/spreadshop finds only research/breadth/scouts/print-on-demand-single-account.json. docs/REJECTED.md:274 rejects multi-shop POD only and says 'A single shop is a different question and is not rejected here'. :275 is Amazon Merch. The scout did miss the governing precedent for portal-only venues. research/channel-loop/BOARD-LOOP.md:125 (CrazyGames) admits such a venue only when 'terms allow runner-operated submission or an API/CLI exists'. BOARD-LOOP.md:127 kills it if the terms forbid automated submission, because every upload then becomes an owner click (KILL-4, :67). research/measurements/crazygames.md:459 says rendered terms that are silent do not pass this test; a written yes from the platform is needed. Two related cases: docs/REJECTED.md:984 closed Adobe because its AI declaration is portal-only with 'no contributor upload API', and research/colony-sweep/scouts/distribution--israeli-channels.md:39 treats browser automation of a logged-in account against a platform's terms as do-not-build.",
+    "grade": "repo"
+   },
+   {
+    "gate": "zero_cost",
+    "status": "UNKNOWN",
+    "evidence": "Leaning HOLDS, but nothing read at primary grade. My payout search surfaced help.spreadshirt.com 'Payment of Your Earnings' and the tax-form articles, and no snippet names a joining, listing or subscription fee. The model is a commission taken from each sale ('$3.00 per standard tee', the scout's snippet). Not finding a fee in snippets does not show there is none. The partner T&C is unrendered.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "Leaning HOLDS on the rail; the camera question is open. Snippet (help.spreadshirt.com/hc/en-us/articles/207905515): there are 'two payment options: direct deposit to a US Bank account or a PayPal transfer', and bank transfer 'is only accepted by U.S. banks'. PayPal pays 'in the currency of your shop'. Non-US partners file a W-8 with a TIN, with reduced rates for treaty countries (help article 11874067093404). So the only Israeli rail is PayPal Israel: a ₪8 withdrawal fee under ₪1,000 (research/colony-sweep/scouts/payment-rails--paypal-israel.md:26) and KYC by teudat zehut or passport (:160). That PayPal account is a conditional owner step not yet asked (docs/OWNER_STEPS.he.md:385). Unread: whether Israel is an allowed partner country; whether the 'Simplified Partner Taxation and Payout Process' of Nov/Dec 2024 added a third-party tax or KYC provider with a liveness step; whether PayPal Israel has a selfie step; and the US withholding rate under W-8BEN. No camera step was seen anywhere.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "UNKNOWN",
+    "evidence": "The scout's API premise is refuted at github grade; the fallback is unresolved. (a) api-evangelist/spreadshirt apis.yml (2026) lists the api.spreadshirt.net Public Shop API only as a 'REST API for building custom e-commerce storefronts'. The only documented design upload, POST /designs/upload, is on Spreadconnect (api.spreadconnect.app), a fulfilment service 'to connect any shop system'. That is your own store with no marketplace buyers, the same shape the scout dropped for Printful. (b) AccidentalJedi/GrumpiFied-Designs 'Spreadhop information.txt' is a secondary, AI-compiled file. It says the Public Shop API 'does not offer endpoints for uploading designs' and that 'the official tutorial … states that design uploads and assortment management must be done via the Partner Area'. (c) spacecowboyian/oio-site sync-catalog.mjs (2026) uses the API read-only; its designs are managed in the Partner Area. (d) The only code that uploads is runjak/sprd-design-upload, archived 2026-01-23. It logs into partner.spreadshirt.de/api/v1/sessions with the partner's username and password plus an API key and secret, then POSTs image-uploader/users/{id}/ideas and PUTs the idea with ?updatePublishing=true. That is the Partner Area's undocumented internal API. (e) The T&C, per a snippet, bars 'any automated technology to scrape, mine, or gather … or otherwise access the Websites for any unauthorized purpose' and 'a robot or other automated means to monitor … or copy information'. It does not name uploads. The only 'Spreadshirt doesn't mind' claim comes from flyingupload.com, a vendor that sells upload automation. Result: no sanctioned API path exists. Running uploads from a runner means the owner's password on CI plus an undocumented API or puppeteer, and that is ambiguous under the T&C. Under the CrazyGames precedent it needs a written yes from Spreadshirt, which needs the brand mailbox (proposed step 8). Otherwise every design is an owner click, which is KILL-4.",
+    "grade": "github"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "HOLDS",
+    "evidence": "Snippet grade only. The blog post 'AI and designs: dos & don'ts' (spreadshirt.com/blog/2024/06/07) exists; it appeared in my search results. Its content comes from the scout's snippet: AI designs are allowed if the AI provider's terms permit commercial use. There is no AI disclosure field, so a declaration in the description may never show on product pages. A risk I could not source (grade none, from memory): Spreadshirt's marketplace review may refuse simple text-only designs because customers can make those in its own designer. That would hit the plan's category 1, bilingual typography. Sell only as a non-exclusive licence (research/colony-sweep/scouts/licensing-ip--ai-output-rights.md:88).",
+    "grade": "snippet"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "HOLDS",
+    "evidence": "Snippet grade. A Marketplace Designer programme pays a commission on sales the designer did not bring (help article 210769049, per the scout's snippet). No traffic, GMV or ranking data exists. Whether discovery needs a prior sale is UNKNOWN. The Spreadshop brings no buyers of its own, so all the buyer supply comes from the Marketplace half.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "REFUTED",
+    "evidence": "The high case is overstated against the scout's own basis. 35 sales × $3 × ₪3.7 = ₪388.5 gross. Less ~3.5% PayPal conversion (paypal-israel.md F2) and the ₪8 withdrawal fee (:26), that is about ₪367 net, not ₪400. Two unmodelled drags would lower it further: US withholding under W-8BEN (rate UNKNOWN) and any cut in commission on Spreadshirt's frequent sitewide discounts (UNKNOWN). The 35 sales a month has no base rate. Timing also slips: the built-but-unlaunched cap is 6/6 and binding (logs/CHANNEL_LOOP.md:83), so a new owner step cannot be asked until something else launches, and the month-12 clock starts later than the scout implies. Corrected range: ₪0 to ~₪370 a month.",
+    "grade": "repo"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 370,
+  "estimate_basis": "INFERENCE, with no base rate. The scout's assumed ceiling is 35 Marketplace sales a month at month 12, at ~$3 commission per standard tee (snippet) and ~₪3.7/$. That is ₪388 gross and about ₪367 after PayPal's ~3.5% conversion and ₪8 withdrawal. US W-8BEN withholding, discounted-sale commissions and the EU/NA account split (possibly two owner steps) are UNKNOWN and could only push it lower. The low case is ₪0, and it is the likely one on current evidence. Three reasons: a cold account with no known lane in search for unsold designs; uploads that may need an owner click for every design if runner automation is not permitted; and the new owner step being blocked by the 6/6 cap (CHANNEL_LOOP.md:83).",
+  "honesty_risk": "1. ToS: the only working upload path is automating the Partner Area. That means the undocumented internal API (partner.spreadshirt.de/api/v1/image-uploader, the archived runjak client) or a puppeteer session, logging in with the owner's password stored as a CI secret. The partner T&C (snippet) bars robots and automated means for 'unauthorized purpose'. A ban would fall on an account in the owner's legal name and could forfeit unpaid commission. Borrowing the stealth plugins other POD uploaders use (for example puppeteer-extra-plugin-stealth in the Redbubble tools) would be evasion, which is RED. 2. Flooding and near-duplicates: 'city names in Hebrew letterforms' and 'idioms with translations' are one template family. At 10 a week they are near-duplicates by construction, the low-effort pattern the mission bans, and possibly the text-only designs the marketplace review refuses (grade none). The 200-a-day cap invites volume that must not be used. 3. Hidden AI disclosure: there is no AI field, so a declaration in the description may never reach buyers on product pages. It has to go in visible design text or the title to count as honest. 4. IP: Hebrew slogans can collide with registered marks, and AI-made art can only be licensed non-exclusively. 5. Brand-only rule: whether an EU Spreadshop must show an imprint with the owner's name and address is UNKNOWN (grade none) and must be checked before opening a Spreadshop.",
+  "verdict": "NEEDS_RENDER",
+  "kill_reason": "Not killed: no admission gate is refuted at snippet grade or better. Only the scout's estimate arithmetic is refuted (₪400 against about ₪367 on its own basis). The PROMISING rating rested on a partner API that could take uploads, and at github grade no documented design-upload API exists for the Marketplace or Spreadshop. The only documented upload API is Spreadconnect, which is own-store fulfilment with no buyers. The decisive gate, whether a runner may operate the Partner Area, is UNKNOWN: the T&C snippet bans robots for 'unauthorized purpose' without naming uploads. Rendering the partner T&C can REFUTE the gate (an explicit ban on automated access or uploads makes it KILL-4) but probably cannot PASS it. Under the CrazyGames precedent (BOARD-LOOP.md:125,127; crazygames.md:459), passing needs a written yes from Spreadshirt, and that needs the brand mailbox (proposed step 8). Payout to Israel via PayPal looks possible (snippet), but the partner-country list, the 2024 payout-process change and any camera step are unread. Even if it survives, the 6/6 built-but-unlaunched cap blocks asking the new owner steps (partner account, PayPal Israel) until something else launches.",
+  "render_urls": [
+   "https://www.spreadshirt.com/terms-and-conditions-for-shop-partner-C2376",
+   "https://www.spreadshirt.ie/terms",
+   "https://developer.spreadshirt.net/",
+   "https://help.spreadshirt.com/hc/en-us/articles/207905515-Payment-of-Your-Commission",
+   "https://help.spreadshirt.com/hc/en-us/articles/11874067093404-Tax-Form-Information-for-Non-US-Partners",
+   "https://www.spreadshirt.com/blog/2024/12/03/simplified-partner-taxation-and-payout-process/",
+   "https://www.spreadshirt.com/blog/2024/06/07/ai-and-designs-dos-donts/",
+   "https://help.spreadshirt.com/hc/en-us/articles/210769049-Earn-money-as-a-Marketplace-Designer",
+   "https://help.spreadshirt.com/hc/en-us/categories/200829585-Partner-Help"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "ArrangeMe (Hal Leonard): self-published sheet music distributed to Sheet Music Direct, Sheet Music Plus and partners",
+  "gate_results": [
+   {
+    "gate": "prior_verdict",
+    "status": "HOLDS",
+    "evidence": "No prior verdict. Grep on 28.9 for arrangeme, sheet music, SMP Press, Hal Leonard, MuseScore, IMSLP and Musicnotes across docs/, research/, logs/ and products/ found 0 venue hits, so the scout is right. Three standing rules do apply, and the scout cited only one of them:\n- MISSION.md:201 and docs/REJECTED.md:1117: 'platform search ranks on prior success, so it cannot deliver the first customer.'\n- MISSION.md:204-213 (constraint 8): a line whose every input is public has a price floor of zero. Lane (b) is public-domain melodies from public corpora, which is exactly that shape.\n- MISSION.md:415: 'charging for something already free is a violation.' The scout's 'REJECTED.md:1240' is correct: line 1240 reads 'never sell what is already free.'",
+    "grade": "repo"
+   },
+   {
+    "gate": "zero_cost",
+    "status": "HOLDS",
+    "evidence": "Nothing contradicts the scout's snippets:\n- 'free to join'.\n- 50% of Net Sale Price for original and public-domain titles, 10% for copyrighted.\n- PRO (<$7/month) is optional.\nThe SDK uploads a plain PDF to S3 through an unauthenticated Cognito identity (API_REFERENCE.md Notes, github), so the paid Noteflight Premium editor that one snippet mentions is not required.\nThe terms page is still unrendered, so this stays at snippet grade.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "My search ('ArrangeMe how are sellers paid PayPal international payout') returned zero ArrangeMe results. web.archive.org is egress-blocked, so the archived terms (web.archive.org/web/20250809141132/https://www.arrangeme.com/terms, cited in yellowcanstop/professional-ethics-cw2-f-main README ref [13]) could not be read.\n- Payout method, country list, payout threshold and any identity or camera step are all UNKNOWN.\n- A W-8BEN from a US payer is inference only.\n- Brand-only face, github support: the arranger name is a free-text field (batch_upload.py default arranger 'MPS'), so a 'Mehudak' byline looks feasible.\n- Whether a pen-name account can be paid to the owner's legal name is UNKNOWN.\nThis gate is decisive and must be rendered.",
+    "grade": "none"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "UNKNOWN",
+    "evidence": "Read directly from the repo (github grade), this is weaker than the scout's record.\n(1) Every piece of Birdywen automation borrows a human's logged-in browser session:\n- arrangeme.py reads the cookie from an argument or a '.cookie' file and has no login method and no CAPTCHA handling.\n- fetch_all_sales.js runs inside the browser session.\n- The parent project is a Chrome extension ('Genspark Agent Bridge') whose manifest host_permissions include https://www.arrangeme.com/* and https://*.arrangeme.com/*.\nSo the demonstrated channel is a human logs in and a script rides the cookie. That is the recurring-owner-work shape of REJECTED.md:1169/1172, unless an unattended credential login works, which nobody has shown.\n(2) The scout's claimed endpoint 'POST /sell/copyrighted/sheet/upload' does not exist in the SDK:\n- arrangeme.py has no 'copyrighted' endpoint.\n- API_REFERENCE.md lists only '/sell/copyrighted/search'.\n- Upload endpoints exist for original and publicdomain sheet and audio only.\nSo lane (a) is not scripted at all.\n(3) Three things are unread: session lifetime (only 'Closing browser does NOT invalidate session'), the login CAPTCHA, and a terms clause on automated access.\nThe verdict turns on rendering the login page and the terms.",
+    "grade": "github"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "UNKNOWN",
+    "evidence": "My search ('ArrangeMe policy AI-generated arrangements not accepted') found no ArrangeMe AI policy either way.\n- The upload form's 'howModified' select and 'howModifiedDesc' text are in API_REFERENCE.md step 1. They are not in batch_upload.py, which never sets them.\n- The honesty risk is concrete (github): the only proven bulk account defaults to public-domain, Classical, Piano Solo at the $5.99 floor, arranger 'MPS', 8,522 titles. Its own notes say 'Most unsold titles are Piano Solo, already at the $5.99 floor — no further discount possible.' That is the low-effort-flooding pattern MISSION.md:378 forbids. A colony copying it (thousands of machine-arranged public-domain PDFs) is exactly what a platform would call spam.\n- Lane (b) also collides with MISSION.md:415 and constraint 8: public-domain melodies from public MusicXML corpora mostly have free equivalents on IMSLP and MuseScore.\n- Whether a reverse-engineered private endpoint breaches the terms (MISSION.md:413 'no ToS violations') is UNKNOWN until the terms are rendered.\n- Hard warning: the Birdywen repo commits a '.cookie' file, another person's session credential. The colony must never read or use it.",
+    "grade": "github"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "HOLDS",
+    "evidence": "Buyers exist for a non-famous bulk catalogue (github): '/account/dashboardSales.action' records carry the fields date, sellerTitleId, title, format, assetType, saleChannels, countryName, quantity, salesAmount and commissionAmount, with 'Stats: 6362 records, 2022-02-27 to present' against 'Stats: 8522 titles'.\nThe scout left out a caveat from the same file: 'Most unsold titles are Piano Solo...'. So sales concentrate on a minority of titles, and the average per-title rate overstates what a new, cold title earns (this bears on MISSION.md:201).\nThe same account is also a direct incumbent that already occupies thousands of public-domain Classical Piano Solo cells on the same storefronts. That shrinks lane (b)'s supply of free cells.\nSMD/SMP traffic and ranking were not seen; whether discovery needs a prior sale is UNKNOWN.",
+    "grade": "github"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "UNKNOWN",
+    "evidence": "The arithmetic checks:\n- 6,362 / 48 months = 132.5 records a month; / 8,522 titles = 0.01555 records per title per month.\n- 1,000 × 0.0155 × $0.55 × 3.6 = ₪30.7.\n- 2,000 × 0.0155 × $3.00 × 3.6 = ₪335.\nThe basis is biased upward in four ways:\n(a) It applies a bulk account's average rate to a new account's marginal titles, while that account says most titles are unsold.\n(b) $3.00 is 50% of the $5.99 list price, but commission is on Net Sale Price. Retailer discounts make $3 a ceiling.\n(c) 2,000 honest public-domain titles by month 12 means 2,000 cells measured free of any free equivalent, with a notation pipeline that has 0 lines today. That is unsupported.\n(d) Records may include small subscription lines (the scout's own caveat). In the other direction, the quantity field can exceed 1.\nMy revised inference: ₪0-170 a month at month 12 (1,000 honest public-domain titles × 0.0155 × ≤$3 × 3.6 ≈ ₪167, as a ceiling).",
+    "grade": "github"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 170,
+  "estimate_basis": "INFERENCE.\\nBase rate (github, Birdywen API_REFERENCE.md): 6,362 sales records from 2022-02-27 to about Feb 2026 on an account ending at 8,522 titles, which is about 0.0155 records per title per month.\\nThe same file says most of that account's titles are unsold, so a new account's cold titles probably earn below that average.\\nCommission is 50% of Net Sale Price (snippet), and $5.99 is the Piano Solo minimum (github), so ≤$3 per public-domain sale. Copyrighted titles earn about $0.55 per sale at 10%.\\nThe high end assumes at most 1,000 honest public-domain or original titles by month 12, each in a cell measured to have no free equivalent (the notation pipeline does not exist today): 1,000 × 0.0155 × $3 × ₪3.6 ≈ ₪167, rounded to ₪170. A copyrighted lane adds about ₪30 at best and has no scripted upload endpoint.\\nThe low end is ₪0: any of three unknown gates zeroes it (unattended login, terms on automation and AI, Israeli payout rail), and so does the honest-value filter.\\nDiscovery gating on prior sales is UNKNOWN (MISSION.md:201 is the standing rule).",
+  "honesty_risk": "1. Spam or flooding: the only proven way to reach volume on ArrangeMe is the 'MPS' pattern: 8,522 public-domain Classical Piano Solo PDFs at the $5.99 floor, most of them unsold. Copying it with machine-made arrangements is the 'low-effort flooding that a platform would call spam' that MISSION.md:378 forbids.\\n2. Selling what is free: public-domain melodies from public MusicXML corpora mostly already exist free on IMSLP and MuseScore (MISSION.md:415, constraint 8 at MISSION.md:204-213). Only cells measured to have no free equivalent are honest.\\n3. AI slop: a copyrighted-song lead sheet needs a verified melody source, which the colony cannot machine-check. An unverified transcription sold under ArrangeMe's licence is AI slop sold as an arrangement. ArrangeMe's AI policy is UNKNOWN, and the howModified field is not an AI-disclosure field.\\n4. Terms: the automation uses reverse-engineered private endpoints and a borrowed browser cookie. Whether the terms forbid automated access is unread (MISSION.md:413).\\n5. Unauthorized access: the public Birdywen repo commits a '.cookie' file holding a third party's session. Using it would be unauthorized access, so it must never be read or used.",
+  "verdict": "NEEDS_RENDER",
+  "kill_reason": "Not killed: no gate is REFUTED at snippet grade or better. Three decisive gates are UNKNOWN, and rendered primary pages would settle them:\\n(1) Can a machine log in and renew its session unattended? All github evidence shows automation riding a human's browser cookie: no login method, a cookie read from a file, a Chrome extension with arrangeme host permissions. If a human browser login is needed per session, it FAILs as recurring owner work (REJECTED.md:1169/1172).\\n(2) Do the terms allow automated access and AI-assisted arrangements?\\n(3) Is there a payout rail to an Israeli individual with no camera step?\\nThe scout's record also has one error: there is no '/sell/copyrighted/sheet/upload' endpoint in the SDK, only '/sell/copyrighted/search', so the copyrighted lane is unscripted.\\nIf the render shows a CAPTCHA login or short sessions, a terms ban on bots or AI, or no Israel payout, KILL.",
+  "render_urls": [
+   "https://www.arrangeme.com/terms (grep: automated/bot/script/crawl, artificial intelligence/AI/generated, payment/PayPal/threshold/country, W-8, identity/verification, pseudonym/arranger name, section 4.2)",
+   "https://www.arrangeme.com/login (runner: grep HTML for recaptcha/hcaptcha/turnstile/cf-challenge; record the Set-Cookie JSESSIONID Max-Age/Expires and any remember-me option)",
+   "https://www.arrangeme.com/ (runner: follow the footer FAQ/Help/Support link and grep for payment method, payout frequency, minimum payout, supported countries, tax form, ID verification)",
+   "https://www.arrangeme.com/pro",
+   "https://blog.arrangeme.com/blog/expanded-distribution-for-all-accounts",
+   "https://blog.arrangeme.com/blog/common-questions-about-copyrighted-arrangements",
+   "https://blog.arrangeme.com/blog/introducing-arrangeme-pro",
+   "https://www.sheetmusicplus.com/ (runner: search one public-domain tune, e.g. 'Canon in D piano solo', and count ArrangeMe listings per instrument and level, including the 'MPS' arranger, as the occupancy test)",
+   "https://www.sheetmusicdirect.com/ (runner: the same one-song search results page, counting arrangements per instrument and level)"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "PromptBase (https://promptbase.com/sell), family ai-native-asset-marketplaces, scout verdict PROMISING, rank 1",
+  "gate_results": [
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "REFUTED",
+    "evidence": "Route (a), Stripe Express for an Israeli seller, is contradicted by Stripe's own docs, captured by render-watch (research/rendered/stripe-cross-border-payouts.txt:92,96,140). Self-serve cross-border payouts go only to connected accounts in the US, UK, EEA, Canada or Switzerland. The page says 'Stripe doesn't support self-serve cross-border payouts to countries outside the listed regions', and accounts under a recipient service agreement cannot receive cross-border payouts at all. Israel is also absent from the 51 Stripe account countries (stripe-global.txt:609-725). All of this is already read and recorded in research/measurements/stripe-israel.md sections 2-3. PromptBase says the same about itself (snippet, promptbase.com/support): it 'uses Stripe and Zoneless ... for sending payments to Prompt Sellers. For certain countries, Stripe is not yet supported.' A Zoneless blog snippet says PromptBase built Zoneless because 'some sellers [were] unable to use [Stripe] because their country was unsupported'. The scout's 'Stripe Express where Stripe is otherwise unavailable' is a snippet, and the rendered Stripe page beats it. Its plan to sequence this after owner step 4 (Algora) proves nothing either: which countries PromptBase pays through Stripe is PromptBase's own configuration. Route (b) is the only route with evidence of reaching Israel, and it contains a camera step (github: zonelessdev/zoneless apps/docs/.../identity-verification.ts). When a seller reaches a payout limit the marketplace sets, 'Zoneless pauses their payouts', and the seller must 'upload a valid identity document and complete a selfie check' through Didit. Zoneless's README says it runs PromptBase's seller payouts in production (github). PromptBase's actual threshold is UNKNOWN (a second search did not find it), so a small amount might pay out before the selfie. Any income stream of the size the breadth directive wants would cross it, though. Converting USDC to ILS then needs KYC at an Israeli VASP (repo: research/colony-sweep/scouts/crypto-native--agent-payment-networks.md:117-120; audits/israel-bureaucracy.md:482-486), and whether that step needs a camera is UNKNOWN. This matches the repo's precedent for rails whose payout KYC includes a selfie: Telegram Stars was killed for Fragment's ID plus selfie (docs/REJECTED.md:1244-1249).",
+    "grade": "github"
+   },
+   {
+    "gate": "zero_cost",
+    "status": "HOLDS",
+    "evidence": "Seller sign-up is free, and PromptBase takes a 20% commission out of marketplace sales (secondary blogs and snippets only). I found no listing fee or subscription. Zoneless payouts cost about $0.002 each, which the platform pays (snippet, Product Hunt / zoneless.com). A VASP conversion spread would come out of proceeds, which the rule allows. Primary /sell and /terms are unread. A caveat that is not a refutation: moving USDC off a self-custodied Solana wallet may need a little SOL for fees, which is a tiny up-front purchase; this is UNKNOWN.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "UNKNOWN",
+    "evidence": "I found no seller API. Each prompt goes through a web form with a test generation that must match the submitted examples, then a human review lasting 15 minutes to 36 hours (snippet). The container cannot reach promptbase.com. A GitHub runner driving the form with stored credentials for the owner-identity account is unverified against the ToS (terms unread) and would probably meet bot protection. If only the owner can submit, the venue needs one owner click per prompt, which is a FAIL under the mandate.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "UNKNOWN",
+    "evidence": "The repo has a PRIOR REJECTION the scout missed. The scout's 'no prior verdict' holds only for the string 'PromptBase'. research/tiktok/07-ai-money-tooling.md:220 (PART C, REJECTED, WITH REASONS), line 236: 'Prompt packs / \"500 ChatGPT prompts\" | Saturated, near-zero marginal value, and adjacent to selling what is already free.' Also docs/INCOME_PLAN.he.md:100 records that Etsy bans prompt packs under its 2026 AI policy. The scout gives no new evidence that the stated reason is false. Its own figures (a catalogue of 260k-310k prompts, prompts widely shared free) confirm 'saturated'. MISSION.md:415 makes 'charging for something already free' a violation. Whether PromptBase allows prompts that are themselves AI-written is UNKNOWN (terms unread). Review includes an 'AI assessment for similarity' and declines prompts that are 'too simple/guessable' (snippet).",
+    "grade": "repo"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "HOLDS",
+    "evidence": "At venue level: 'PromptBase, an AI marketplace with more than 500,000 users' (github, zonelessdev/zoneless README; self-reported). Snippet: Zoneless processed 1,400+ PromptBase payouts in a 3-month trial, and 74% of creators chose Zoneless over Stripe. For the proposed niche, demand is UNKNOWN and probably tiny. Hebrew and Israeli business-writing prompts on an English-language marketplace have no evidenced buyers. promptbase.com is absent from the Tranco top 20k (per the scout, github code search).",
+    "grade": "github"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "HOLDS",
+    "evidence": "The arithmetic is correct for its inputs: 25 sales x $5 x 0.8 kept = $100, x 3.7 = ₪370 (the scout rounded to ₪400). With the scout's own price band of $2.99-5.99, 25 sales a month gives ₪221-443. The input of 25 sales a month has no base rate. The scout omits two things: the USDC-to-ILS spread, and the fact that the ledger counts nothing while payouts are held behind the Zoneless selfie threshold. Realizable ledger value under the mandate is ₪0 while the payout gate stands.",
+    "grade": "none"
+   },
+   {
+    "gate": "prior_verdict_check",
+    "status": "REFUTED",
+    "evidence": "The scout's 'None. The 28.9 grep found 0 repo hits' is wrong at the category level: research/tiktok/07-ai-money-tooling.md:236 rejects prompt packs, and docs/INCOME_PLAN.he.md:100 records Etsy's prompt-pack ban. The payout question for Israel via Stripe was also already settled at rendered grade in research/measurements/stripe-israel.md (Q2, verdict in section 3), and the scout did not cite it. It cited only the superseded open question at REJECTED.md:1402-1426.",
+    "grade": "repo"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 370,
+  "estimate_basis": "INFERENCE, low confidence. The scout's inputs are 30-100 approved prompts and 0-25 sales a month at about $5, with 80% kept at 3.7 ILS/USD, giving ₪0-370 gross. I checked the arithmetic and it is correct; at the scout's $2.99 floor the same 25 sales give ₪221. No base rate supports 25 sales a month. The low end is ₪0 for five reasons: a catalogue of 260k+ prompts, a cold start (discovery tied to sales, UNKNOWN), niche Hebrew demand with no evidenced buyers, a prior repo rejection of prompt packs as saturated (tiktok/07:236), and above all a payout rail that holds money behind a Didit selfie at a marketplace-set threshold. Under 'money only in the ledger' the realizable figure is ₪0 while the payout gate stands.",
+  "honesty_risk": "Five concrete risks. (1) Charging for what is already free (MISSION.md:415, repo rejection tiktok/07:236). The niches the scout names are tasks frontier models do well from a one-line instruction, and free prompt libraries on GitHub already cover them: a Hebrew customer email, a job post, receipt text to JSON, code review, test writing. PromptBase's own guidelines decline prompts that are 'too simple/guessable', so either reviewers decline them or buyers pay for something free. (2) Low-effort flooding. Pushing 30-100 AI-authored prompts from one account into a 260k+ catalogue is the listing-volume shape that MISSION.md:378-379 forbids ('no low-effort flooding that a platform would call spam'). The review's AI similarity check exists to catch near-duplicates. (3) AI slop presented as human craft. The prompts would be machine-authored and sold as 'engineered'. A profile disclosure helps, but whether PromptBase's terms allow AI-authored prompts is unread. (4) ToS. Scripting the seller form from a GitHub runner with the owner-identity account's credentials may breach an automation or bot clause (terms unread), which risks a ban of an account in the owner's legal identity. (5) Mandate. The only rail with evidence of reaching Israel ends in a selfie (Didit), which the owner's brief forbids.",
+  "verdict": "KILLED",
+  "kill_reason": "The israel_payout_no_camera gate is REFUTED at better than snippet grade. The Stripe route the scout recommends cannot reach Israel self-serve: Stripe's own rendered docs limit cross-border payouts to the US, UK, EEA, CA and CH and exclude recipient-service-agreement accounts (research/rendered/stripe-cross-border-payouts.txt:92,96,140, already read in research/measurements/stripe-israel.md). PromptBase itself says Stripe is not supported for some countries and that Zoneless handles those (snippet). The Zoneless route pauses payouts at a limit PromptBase sets until the seller uploads an ID and completes a Didit selfie check (github, zonelessdev/zoneless identity-verification.ts), and turning USDC into ILS then needs Israeli VASP KYC (repo). Separately, the scout missed a standing repo rejection of prompt packs as 'saturated, near-zero marginal value, adjacent to selling what is already free' (research/tiktok/07-ai-money-tooling.md:236) and offered no new evidence against it. Two conditions would reopen it, both needed. (1) A render of promptbase.com/knowledge-base/payouts or /support shows Israeli sellers paid through Stripe (Express or Global Payouts) without a selfie, or shows a Zoneless KYC threshold above any realistic earnings. (2) An Israeli USDC off-ramp with no camera step is shown. Even then the prompt-pack rejection still needs new evidence that the prompts carry value not already free.",
+  "render_urls": [
+   "https://promptbase.com/knowledge-base/payouts",
+   "https://promptbase.com/support",
+   "https://promptbase.com/terms",
+   "https://promptbase.com/prompt-guidelines",
+   "https://promptbase.com/sell",
+   "https://zoneless.com/blog/onboard-sellers-stripe-connect-doesnt-support",
+   "https://zoneless.com/blog/protect-your-marketplace-with-kyc-checks",
+   "https://zoneless.com/blog/run-stripe-and-zoneless-side-by-side",
+   "https://docs.stripe.com/connect/required-verification-information"
+  ],
+  "searches_used": 2
+ },
+ {
+  "venue": "Pebble appstore (Core Devices apps.repebble.com; Rebble apps.rebble.io), monetised by a KiezelPay trial and then an unlock",
+  "gate_results": [
+   {
+    "gate": "prior_verdict",
+    "status": "HOLDS",
+    "evidence": "There is no prior verdict. A grep for pebble|rebble|kiezelpay|repebble|core devices across docs/, research/, logs/, products/ and MISSION.md returns 0 hits, and watch-face, Garmin and Zepp grep lines hit nothing relevant. Adjacent standing law applies: platform search ranks on prior success (MISSION.md:196-202; docs/REJECTED.md:647,1112). A line built from public inputs has a price floor of zero (MISSION.md:204). Charging for something already free is a violation (MISSION.md:415).",
+    "grade": "repo"
+   },
+   {
+    "gate": "zero_cost",
+    "status": "UNKNOWN",
+    "evidence": "Store side HOLDS at github grade. coredevices/pebble-tool pebble_tool/commands/publish.py creates the developer account itself: it warns 'No linked developer account found. Creating one now...' and POSTs /api/v1/developer/create with json_body={}. There is no payment, fee or terms step anywhere in the publish code. KiezelPay side is snippet only: the scout's '27% per purchase, minimum $0.27' is a commission, which the ₪0 rule allows, but no page states there is no signup fee. kiezelpay.com is EGRESS_BLOCKED from here, so it was not rendered. Nothing refutes the gate.",
+    "grade": "github"
+   },
+   {
+    "gate": "israel_payout_no_camera",
+    "status": "UNKNOWN",
+    "evidence": "DECISIVE AND OPEN. The store has no native paid path (the scout's search of rebble-appstore-api found 0 hits for paid or price, and org:coredevices kiezelpay also returns 0), so all money depends on KiezelPay paying out through PayPal. Three points are unestablished. (1) Does KiezelPay still onboard Pebble apps in 2026? This search's snippet describes KiezelPay as monetising 'Fitbit, Garmin, and Amazfit devices' and does not name Pebble; the source is a promo-code aggregator, so the evidence is weak. GitHub code search for kiezelpay_init returns only two app integrations: Mobilpadde/HOME (created 2016, last updated 2020) and Rebble's own pebble-dev/snowy. No 2025-26 revival app appears. KiezelPay itself is alive: Garmin KiezelPay listings are dated Mar and Aug 2026 (verden11/garmin-labs research notes, github). (2) KiezelPay's merchant countries, identity check and any camera step: never read. (3) Whether PayPal Israel verification has a selfie step: unknown. PayPal Israel is only a conditional owner step in the repo (docs/OWNER_STEPS.he.md:424). Technically, PebbleKit JS on the new Core app has unrestricted network access; only plugins are permission-gated (coredevices/mobileapp libpebble3/.../plugin/PluginNetworkPolicy.kt, github). So the unlock call itself is not blocked by the app.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "programmatic_listing",
+    "status": "HOLDS",
+    "evidence": "coredevices/pebble-tool publish.py (read at github grade) has these flags: --non-interactive; --name, --description, --category and --source for new apps; --screenshots; --is-published ('Create/publish release as visible immediately'); and --firebase-id-token ('Firebase ID token to use directly (CI/non-interactive auth path)'). The token can also come from the PEBBLE_FIREBASE_ID_TOKEN env var. account.py login accepts --id-token, --refresh-token and --expires-in to skip browser auth. This settles the scout's open CI caveat: a stored token can drive publishing from a runner. The endpoints are appstore-api.repebble.com/api/dashboard/apps and /releases. The client sets visible and isPublished to true; any server-side review is UNKNOWN.",
+    "grade": "github"
+   },
+   {
+    "gate": "ai_allowed_honest",
+    "status": "HOLDS",
+    "evidence": "The vendor itself pushes AI building. A WebSearch summary of repebble pages cites an official 'pebble new-project --ai' command (snippet). The new-app payload in publish.py carries an 'iconPrompt' field built from the name and description (github), which implies the store generates icons from prompts. No content policy and no AI-declaration rule was found or rendered, so declaring AI in the description is on us, not required by the store. This holds at snippet grade only; no rule was read.",
+    "grade": "snippet"
+   },
+   {
+    "gate": "buyer_supply",
+    "status": "UNKNOWN",
+    "evidence": "The store brings installers, not buyers. Every install is free, and a buyer exists only if a trial converts at a KiezelPay prompt. No revival-era conversion is measured anywhere, and no public 2025-26 Pebble app integrates KiezelPay (the code search above). The niche is already served free: 'Analog Zmanim' by Beezy Works, a free face with Hebrew and Gregorian dates and zmanim 'calculated on the watch itself', published 4.10.2016, with **10 hearts** lifetime from Pebble's peak years (aveao/PebbleArchive JSON 57f3f1953c754a887a0000a9, github). Other free Hebrew faces exist: russlevy/TBK_Jewish_Clock, wcerfgba/HebrewTime, amitkot/glyph-dial (2026) and BeezyWorks/pebble_zman. The store holds about 2,000 apps and 10,000 faces, legacy apps included (snippet). No user, install or revenue count for the revived platform was read. Discovery is not sale-gated: rebble-appstore-api appstore/api.py defaults to sort='updated', with hearts, recent_hearts and random_weekly as options (github). The Core backend is closed source, so its ranking is UNKNOWN.",
+    "grade": "github"
+   },
+   {
+    "gate": "estimate_arithmetic",
+    "status": "REFUTED",
+    "evidence": "The scout's ₪100/month high end is an uncomputed placeholder, and the arithmetic does not support it. Per sale: $2.49 × (1 − 0.27 KiezelPay) = $1.82, about ₪6.5 at an assumed ₪3.6/$ before PayPal FX and fees, so about ₪6 net. ₪100/month needs about 16 unlocks a month (about 190 a year). The best direct comparable, a free zmanim face at the platform's peak, drew 10 hearts in its whole life. The only base rate on record is historical and second-hand: 'don't expect more than a beer or so a month' for monetised watch faces on Garmin, a much larger platform (Garmin forum thread 6907, quoted in verden11/garmin-labs research_notes, github). A defensible high is about 4 sales a month, about ₪25.",
+    "grade": "github"
+   }
+  ],
+  "estimate_low": 0,
+  "estimate_high": 25,
+  "estimate_basis": "Inference; no revenue base rate exists for revived Pebble. Net per unlock is about ₪6: $2.49 less KiezelPay's 27% is $1.82, at an assumed ₪3.6/$, before PayPal FX. The high end assumes about 4 unlocks a month across 2-4 faces at month 12. The low end of ₪0 is the modal outcome. Four facts bound the demand: (a) the direct free comparable (Analog Zmanim, 2016) drew 10 hearts in its lifetime; (b) free Hebrew and zmanim faces already exist, so the price floor is ₪0 (MISSION.md:204); (c) no 2025-26 open-source Pebble app monetises through KiezelPay, so no conversion is measured; (d) the only watch-face monetisation base rate on record is 'a beer or so a month' on the larger Garmin store (historical, second-hand). The scout's ₪100 is not derivable from any of these. Breadth is weak: 2-4 listings for 2 owner steps (a pebble login with a brand identity, then KiezelPay plus PayPal). The KiezelPay step is shared with the Garmin, Zepp and Fitbit candidates only if KiezelPay still onboards all of them.",
+  "honesty_risk": "1) Charging for something already free (MISSION.md:415). A free Hebrew-date and zmanim face computed on the watch is already in the catalogue (Analog Zmanim; others on GitHub). A paid unlock is honest only if it adds real, distinct function, such as candle-lighting with a choice of custom offset per community, a Yom Tov countdown or a choice of halachic opinion, and the listing must say that free alternatives exist in effect, not pretend they don't. 2) Religious-accuracy harm. Wrong candle-lighting times or zmanim mislead observant users who rely on them. Port-or-reimplement bugs are a real deception risk, so the output needs tests against hebcal for many locations and dates before any paid unlock. 3) GPL. Porting @hebcal/core (GPL-2.0, products/mcp-il-tools/src/israeli.ts:5) forces GPL source release, and anyone can then rebuild without the paywall. That is legal but makes the price floor ₪0. 4) AI slop. The vendor ships '--ai' generation and an iconPrompt field, and the store holds 10,000+ faces. Colour variants or near-duplicates would be flooding (BUILD-3), so each listing must differ in function and declare AI assistance in its description. 5) Owner-name leak. /api/v1/developer/create sends an empty body, so the public author name comes from the Firebase identity (UNKNOWN). Logging in with a personal Google account could publish the owner's name. 6) Support duty. KiezelPay unlock failures typically generate buyer emails to the developer. Who handles buyer support is UNKNOWN; if it falls to a human, the venue fails the 'never talks to customers' rule. 7) The Core appstore ToS and the KiezelPay merchant terms were never read.",
+  "verdict": "NEEDS_RENDER",
+  "kill_reason": "No money gate is REFUTED at snippet grade or better, so the venue is not killed. It hangs on one decisive UNKNOWN, the KiezelPay payout: does KiezelPay still onboard Pebble apps in 2026, and what do its merchant countries, identity check and camera step look like? A 2026 snippet lists KiezelPay's platforms as Fitbit, Garmin and Amazfit, not Pebble, and no 2025-26 Pebble app on GitHub integrates it. The estimate is refuted: ₪0-25, not ₪0-100. Even if every render clears, this is a 2-4-listing, ₪0-25/month line in a niche the store already serves free. Rank it low for the breadth board.",
+  "render_urls": [
+   "https://kiezelpay.com/faq/",
+   "https://kiezelpay.com/",
+   "https://apps.repebble.com/faces",
+   "https://apps.rebble.io/en_US/application/57f3f1953c754a887a0000a9",
+   "https://ericmigi.com/blog/re-introducing-the-pebble-appstore/",
+   "https://repebble.com/blog/spring-2026-pebble-app-contest",
+   "https://developer.repebble.com/sdk",
+   "https://appstore-api.repebble.com/dashboard"
+  ],
+  "searches_used": 2
+ }
+]

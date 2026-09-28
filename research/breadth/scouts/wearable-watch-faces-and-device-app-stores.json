@@ -1,0 +1,389 @@
+{
+ "family": "wearable-watch-faces-and-device-app-stores",
+ "prior_coverage": "The repo has not swept this family before. A grep on 28.9 for garmin, connect iq, wear os, watch face, facer, zepp, amazfit, fitbit, galaxy store, samsung, pebble and rebble found no venue verdicts. Samsung appears only as a Playgama partner (research/breadth/scouts/html5-games.json:104). Four related findings stand. (1) Google Play is rejected at $25 plus identity plus 12 testers for 14 days (docs/REJECTED.md:1395-1396; docs/INCOME_PLAN.he.md:267). Samsung now routes Wear OS faces to Play, so this rejection applies to them. (2) Microsoft Store is DEAD on its selfie step (html5-games.json, Microsoft entry). (3) PayPal receiving works in Israel, with 18% VAT on fees (docs/INCOME_PLAN.he.md:95). This matters because KiezelPay, the only cross-watch payment rail found, pays out only through PayPal. (4) Constraint 8 (MISSION.md) hits the critic's home-turf asset directly. hebrew_date (products/mcp-il-tools/src/server.ts:86) is a thin wrapper over @hebcal/core (products/mcp-il-tools/src/israeli.ts:5,120-121), which is GPL-2.0 (node_modules/@hebcal/core/package.json 'license'). It is a public input, not a private one. At least four free MIT Garmin Hebrew-date, zmanim or Shabbat projects already exist on GitHub (Ariel-Gal/KodeshMode, Biswaspr1022/KodeshMode, Yossizz/garmin-hebrew-date, aldomanpi/garmin-hebrew-library). Whether they are listed in the store is unknown. So the Hebrew angle gives us an audience, not an edge. A paid face competes with free ones on design and polish. If hebcal code is shipped it must go out under GPL; the other route is a clean reimplementation of the calendar arithmetic. Family-level finding: no watch store here pays an Israeli seller natively. Garmin Pay needs $100 a year and a US, CA, AU, SG or EU entity. Zepp pays only certified mainland-China corporate developers. Samsung sends faces to Google Play. Every live path runs through KiezelPay (27%, minimum $0.27, PayPal-only payout, all snippet grade). KiezelPay's onboarding, country list and any camera step are still unread.",
+ "searches_used": 6,
+ "candidates": [
+  {
+   "venue": "Pebble appstore (Core Devices apps.repebble.com; Rebble apps.rebble.io also exists), monetised by a KiezelPay trial then unlock",
+   "url": "https://apps.repebble.com",
+   "what_we_would_list": "2-4 Pebble watchfaces or apps that each do something different, under Mehudak: a Hebrew-date face, a zmanim and candle-lighting face, and a Shabbat/Yom Tov countdown app. Each installs free, runs a KiezelPay trial, then asks for a one-time unlock of about $1.99-2.99. Written in C with an embedded bitmap Hebrew font. The calendar arithmetic is either reimplemented or shipped under GPL with its source. Colour variants do not count as separate listings (BUILD-3).",
+   "existing_product": "None for watches. The colony's hebrew_date is TypeScript wrapping GPL-2.0 @hebcal/core (products/mcp-il-tools/src/israeli.ts:5,120-121), and none of it ports to C as-is. Zmanim is not built.",
+   "listings_per_owner_step": "One `pebble login` ('opens browser for Firebase OAuth', done once) unlocks unlimited `pebble publish --non-interactive` listings. Counted by function, that is 2-4 honest listings. The KiezelPay merchant account plus PayPal is one more step, shared with the Garmin, Zepp and Fitbit candidates.",
+   "prior_verdict": "None. The repo grep of 28.9 has 0 hits for pebble or rebble.",
+   "reopen_basis": "New venue, not swept before.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "The 2026 hobby release docs read (dottorblaster/pebtrader-zero docs/releasing.md; Skarian/pebble tools/pebble-watchface/SKILL.md) contain no fee step, only `pebble login` and `pebble publish`. KiezelPay is commission-only per a snippet ('27% per purchase, minimum $0.27'). No store terms or fee page was rendered, so this rests on absence of evidence.",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "The store has no native paid path. A code search of pebble-dev/rebble-appstore-api for paid, price, kiezelpay or monetiz returns 0 hits. Money could come only through KiezelPay, which 'only offers payouts via PayPal ... every last Thursday of the month' to a verified PayPal account (snippet, kiezelpay.com/faq). PayPal works in Israel (docs/INCOME_PLAN.he.md:95, repo). Not established: KiezelPay's merchant onboarding, its countries, any ID or camera step, and whether it still supports Pebble in 2026. Its Pebble launch post dates from 2016 (pebble-dev/developer.rebble.io source/_posts/2016-04-06-KiezelPay.md).",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "`pebble publish` creates and releases a new listing from the CLI. Flags: `--non-interactive` ('No prompts, use flags/defaults'), `--name` ('new apps only'), `--description` ('required for new non-interactive'), `--category`, `--is-published` ('Make release immediately visible'). Sources: Skarian/pebble tools/pebble-watchface/SKILL.md, and ThemeParks/pebble scripts/publish_dest.py, which uses `--non-interactive` 'for first-time app creation'. Caveat: login is a browser OAuth. Whether its token can move to a CI runner is UNKNOWN; if it cannot, every publish session needs a person at a browser.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "No store content policy was read. Several 2026 repos that publish to this store carry agent skills for Pebble faces (e.g. .claude/skills/pebble-watchface/SKILL.md in ehjacobs/pebble-sky and asebrech/fdf-time). That shows AI-assisted faces are being published. It does not show the store's rules allow them or require a declaration.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "The store is live and takes 2026 submissions (bastooky/kaleido, created 2026-07: 'On the Pebble appstore!'). saltedlolly/all-things-pebble says Core Devices runs apps.repebble.com with a dashboard at appstore-api.repebble.com/dashboard. No user, install or revenue numbers were read. With no native paid tier, a buyer exists only if a free install converts at the KiezelPay prompt.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "Not gated on sales, because the store has no sales to rank on; installs are free. How the store ranks (hearts, installs, recency) is UNKNOWN.",
+   "owner_step": "(1) Run `pebble login` once, with a brand-owned Google/Firebase identity, in a browser. (2) Open a KiezelPay merchant account paid out to a verified PayPal. This step is shared with the Garmin, Zepp and Fitbit candidates.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 100,
+   "estimate_basis": "Inference only. No repo source or source read gives a revenue base rate for revived Pebble. The store has no paid tier and its user base is unmeasured. The platform's culture is free apps, and KiezelPay keeps 27% of a $2-3 unlock. The ₪100 high end is an order-of-magnitude placeholder, not a computed figure.",
+   "time_to_first_sale": "About 1-2 months after the two owner steps, if any trial converts; plausibly never.",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://apps.repebble.com",
+    "https://appstore-api.repebble.com/dashboard",
+    "https://kiezelpay.com/faq/",
+    "https://kiezelpay.com/",
+    "https://github.com/pebble-dev/rebble-appstore-api",
+    "https://apps.rebble.io"
+   ]
+  },
+  {
+   "venue": "Garmin Connect IQ Store with a free listing plus KiezelPay trial and unlock (third-party monetisation)",
+   "url": "https://apps.garmin.com",
+   "what_we_would_list": "Up to 4 Monkey C products that each do something different: a Hebrew-date watch face, a zmanim and candle-lighting face, a Shabbat/Yom Tov countdown widget, and a Hebrew-date data field. Each is free with a KiezelPay trial, then a one-time unlock.",
+   "existing_product": "None. Free MIT competitors already exist on GitHub. Ariel-Gal/KodeshMode is a 'Hebrew-first open source Garmin Connect IQ watch app for Shabbat-aware display, Hebrew date, parasha, zmanim'. Yossizz/garmin-hebrew-date offers Hebrew date, Jerusalem compass and candle-lighting times, on Descent devices only. Also Biswaspr1022/KodeshMode and aldomanpi/garmin-hebrew-library. Their READMEs do not say whether they are in the store.",
+   "listings_per_owner_step": "A Garmin developer account plus KiezelPay/PayPal unlocks unlimited listings. But every new listing needs a human dashboard session, because there is no publishing API. So each of the 2-4 functional items costs its own manual submission.",
+   "prior_verdict": "None. The repo grep of 28.9 has 0 hits for garmin or connect iq.",
+   "reopen_basis": "New venue, not swept before.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "The '$100/yr' fee applies only to native Garmin monetisation, which this path does not use (verden11/garmin-labs research notes; snippet). Free listing looks free: hobby repos upload free apps from CI (tommyvdz/RunPowerWorkout cicd/upload_to_garmin.py). But a Garmin support FAQ titled 'Connect IQ Store Third-Party Payment Fees' (support.garmin.com/en-US/?faq=i0SOSmHg2mAAyCoKiV0f2A) was seen only as a search-result title. It may charge exactly this path. Unread.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "KiezelPay 'only offers payouts via PayPal ... every last Thursday of the month' (snippet, kiezelpay.com/faq). PayPal works in Israel (docs/INCOME_PLAN.he.md:95, repo). A 2024 snippet says Garmin 'will continue to allow developers to use third-party monetization systems' (Android Central / Garmin Rumors). KiezelPay's onboarding, countries and any camera step are unread.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "'Garmin has no publishing API (asked-for since 2020, never shipped), so this drives the dashboard in Chrome'. Cloudflare Turnstile 'refuses browsers that Playwright *launches*' (yeled/analog-simple-garmin scripts/store-upload/upload.mjs). The only scripted uploader found reverse-engineers the web form with username/password SSO and posts to /developer/{DEV_ID}/apps/{STORE_ID}/update. That updates an existing app only (tommyvdz/RunPowerWorkout cicd/upload_to_garmin.py). Creating a listing takes a human in the dashboard, once per item. Updates are scriptable, unofficially.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "verden11/garmin-labs market_gap.md: review guidelines (2021-10-13) cite 'performance, crashes, and battery' and 'No mention of AI-generated face policies appears'. The developer agreement is unread.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "From verden11/garmin-labs research notes, a third party's measurement of apps.garmin.com/api/appsLibraryExternalServices/api/asw/apps. The top-120 mostPopular faces include '34 paid titles', priced at €2.49–€5.99. 'Free watch faces median 100,000 downloads; paid watch faces median 10,000'. Free-to-paid conversion falls in bucketed ranges of 0.2–5% up to 10–100%. This is secondary measurement, not rendered by us.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "Not gated on sales, but gated on install velocity: 'Rank responds to recent movement'. A new listing is 'visible in the store for maybe a week or two'. 'Browse depth is capped at four pages per category', and search is the fallback (verden11). Free trial installs build rank before any sale, so the cold start is possible but the window is short.",
+   "owner_step": "(1) A Garmin developer account on a brand email. (2) A KiezelPay merchant account with a verified PayPal (shared). (3) One dashboard submission per new face or data field. Step 3 is the per-item owner click that fails the gate.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 250,
+   "estimate_basis": "Prices of €2.49–5.99 and the conversion ranges come from verden11 (github, secondary). KiezelPay keeps 27%. The only income datum for indie developers is an ~8-year-old forum line quoted there: 'don't expect more than a beer or so a month'. The niche is Hebrew/Jewish Garmin owners, with free MIT competitors. The ₪250 high end assumes a few hundred installs a month converting at a few percent. That install volume is an assumption, not a base rate.",
+   "time_to_first_sale": "About 1-2 months after the owner steps. Review takes 24h to 10+ days with no SLA (verden11), plus the trial period.",
+   "verdict": "WEAK",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://support.garmin.com/en-US/?faq=i0SOSmHg2mAAyCoKiV0f2A",
+    "https://developer.garmin.com/connect-iq/connect-iq-faq/",
+    "https://developer.garmin.com/connect-iq/sdk/",
+    "https://kiezelpay.com/faq/",
+    "https://apps.garmin.com/api/appsLibraryExternalServices/api/asw/apps?startPageIndex=0&pageSize=30&sortType=mostPopular&countryCode=US&appType=WATCHFACE",
+    "https://forums.garmin.com/developer/connect-iq/f/discussion/436946/earning-money-on-connect-iq-is-easy-actually-getting-paid-is-not"
+   ]
+  },
+  {
+   "venue": "Facer creator marketplace (Premium Designer programme)",
+   "url": "https://www.facer.io/creator/partner",
+   "what_we_would_list": "Original vector-drawn analog and digital faces under Mehudak, sold across the watches Facer supports. A Hebrew-date function is possible only if Facer's tag or expression engine can compute it (UNKNOWN). Otherwise the listings are design skins, which BUILD-3 counts as substitution, so functionally distinct listings would be few.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One creator account allows unlimited faces. Distinct function is bounded by Facer's tag set, and selling starts only after 5,000 syncs.",
+   "prior_verdict": "None. The repo grep of 28.9 has 0 hits for facer.",
+   "reopen_basis": "New venue, not swept before.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "The creator-programme snippets mention no fee. The page was not rendered.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "'Earnings are calculated monthly and distributed through supported payout options' (snippet, facer.io/creator/partner). Methods and countries are not listed. The community thread 'Payment options' (community.facer.io/t/payment-options/53518) is unread.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Faces are built in the Facer Creator web editor. A GitHub code search for '\"facer.io\" api upload watchface creator' found no upload client. The only Facer repo found, littlelabs/Facer-Docs, is a Jekyll docs site with nothing on publishing.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "'any style is welcome, as long as it's original and high-quality' (snippet). No AI clause was read.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "'You earn revenue when users sync your paid watch faces through Facer Premium, or when they purchase them individually' (snippet, facer.io/creator/partner). That is a paying subscriber pool the venue brings itself. No numbers were read.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Yes, and harder than a sale gate: 'Creators can apply to sell their faces to the Facer community after publishing a collection and getting 5,000 downloads (syncs)' (snippet). Paid selling is locked until free faces pass 5,000 syncs.",
+   "owner_step": "(1) A Facer creator account on a brand email. (2) Later, the Premium Designer application plus payout setup; the method is unknown.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "No Facer revenue data was read. Month-12 revenue is ₪0 unless free faces first pass 5,000 syncs and the application is approved. The ₪150 high end is a placeholder, not computed.",
+   "time_to_first_sale": "Unknown. It needs 5,000 syncs plus approval: months, or never.",
+   "verdict": "WEAK",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://www.facer.io/creator/partner",
+    "https://community.facer.io/t/how-to-become-a-premium-designer-and-sell-your-watch-face-designs-on-facer/3540",
+    "https://community.facer.io/t/payment-options/53518",
+    "https://www.facer.io/terms"
+   ]
+  },
+  {
+   "venue": "Zepp OS / Amazfit Zepp Store: a free Mini Program with KiezelPay unlock (native paid path closed to non-Chinese developers)",
+   "url": "https://docs.zepp.com/docs/guides/faq/paid-app/",
+   "what_we_would_list": "A Hebrew-date and zmanim Mini Program in JS with a KiezelPay unlock, plus free faces. The docs give paid faces no route for developers outside mainland China.",
+   "existing_product": "None. JS is the closest port of the colony's TypeScript logic, but that logic wraps GPL-2.0 hebcal.",
+   "listings_per_owner_step": "One developer-console account, with manual submission per item. KiezelPay is shared.",
+   "prior_verdict": "None. The repo grep of 28.9 has 0 hits for zepp or amazfit.",
+   "reopen_basis": "New venue, not swept before.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No fee statement was read.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "The native paid path fails for us. 'Only certified corporate developers from Mainland China can submit paid content', and 'Developers outside Mainland China cannot officially submit paid Watchfaces'. But 'Mini Programs can use in-app purchase solutions like Kiezelpay or QR code reward schemes' (zepp-health/zeppos-docs docs/guides/faq/paid-app.md). The KiezelPay-to-PayPal leg is unverified, as for Garmin.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "The zeus CLI docs list create, dev, preview, build, login, config, bridge and status, with no publish or upload command (zepp-health/zeppos-docs docs/guides/tools/cli/index.md). Store submission goes through the developer console by hand.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "No review rules were read.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "International users do buy paid faces from certified Chinese developers, at $1.99/$2.99/$3.99 through Apple/Google IAP (paid-app.md). No numbers, and none of this applies to a KiezelPay Mini Program.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. No store ranking data was read.",
+   "owner_step": "(1) A Zepp developer account. (2) KiezelPay plus PayPal (shared). (3) A console submission per item.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 50,
+   "estimate_basis": "No base rate exists. Paid faces are closed to us and only a Mini Program with an in-app nag remains. The high end is a placeholder.",
+   "time_to_first_sale": "Unknown; plausibly never.",
+   "verdict": "WEAK",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://docs.zepp.com/docs/guides/faq/paid-app/",
+    "https://developer.zepp.com/os/home",
+    "https://amazfitwatchfaces.com/forum/viewtopic.php?t=3833",
+    "https://kiezelpay.com/faq/"
+   ]
+  },
+  {
+   "venue": "Fitbit Gallery (Fitbit OS clock faces and apps) with KiezelPay",
+   "url": "https://gallery.fitbit.com",
+   "what_we_would_list": "A Hebrew-date and zmanim clock face in Fitbit's JS SDK with a KiezelPay unlock.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One Fitbit developer account. Per-item submission is UNKNOWN.",
+   "prior_verdict": "None. The repo grep of 28.9 has 0 hits for fitbit.",
+   "reopen_basis": "New venue, not swept before.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Not read.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "No native paid path is known; that statement is from memory, grade none. KiezelPay maintains a Fitbit library (KiezelPay/fitbit_kpay_merchant_api, updated 2026-02-15, github). The PayPal leg is unverified, as above.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No upload API or CLI publish was found or read.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not read.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "Whether the Gallery still accepts new submissions, and how many Fitbit OS devices are active, is unread. That Google moved new watches to Wear OS is memory only.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "A Fitbit/Google developer account, plus KiezelPay/PayPal (shared).",
+   "ils_month12_low": 0,
+   "ils_month12_high": 30,
+   "estimate_basis": "No data. The platform is probably shrinking, which is unverified. The high end is a placeholder.",
+   "time_to_first_sale": "Unknown.",
+   "verdict": "WEAK",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://dev.fitbit.com",
+    "https://gallery.fitbit.com",
+    "https://github.com/KiezelPay/fitbit_kpay_merchant_api"
+   ]
+  },
+  {
+   "venue": "Garmin Connect IQ native monetisation (Garmin Pay, merchant account through Adyen)",
+   "url": "https://developer.garmin.com/connect-iq/monetization/",
+   "what_we_would_list": "The same Garmin faces and data fields, sold natively at €2-6.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "A merchant account unlocks unlimited paid listings, but it is out of reach.",
+   "prior_verdict": "None. The repo grep of 28.9 has 0 hits.",
+   "reopen_basis": "New venue, not swept before.",
+   "gate_zero_cost": {
+    "status": "FAIL",
+    "evidence": "Merchants must pay 'an annual, non-refundable program fee of $100' (snippet, developer.garmin.com/connect-iq/monetization). verden11/garmin-labs also records a '$100/yr' merchant fee (github). This breaks the ₪0 rule.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "'available to developers with legal entities in the United States, Canada, Australia, Singapore, and most of the European Union'. Payouts go by bank transfer through Adyen (snippet). Israel is not listed. A forum thread title records payout trouble: 'Earning money on Connect IQ is easy. Actually getting paid is not.'",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "Same as the KiezelPay path: 'Garmin has no publishing API (asked-for since 2020, never shipped)' (yeled/analog-simple-garmin upload.mjs).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The review guidelines verden11 cites contain no AI clause.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "34 of the top-120 faces are paid, at €2.49–5.99 (verden11 measurement).",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "Install velocity drives rank (verden11); moot here.",
+   "owner_step": "A merchant account with a non-Israeli legal entity plus $100 a year. The mandate forbids it.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Blocked by the fee and by merchant country eligibility.",
+   "time_to_first_sale": "Never under the ₪0 rule.",
+   "verdict": "DEAD",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://developer.garmin.com/connect-iq/monetization/",
+    "https://forums.garmin.com/developer/connect-iq/f/connect-iq-web-store/428218/questions-about-becoming-a-connect-iq-merchant-as-an-individual-no-registered-business"
+   ]
+  },
+  {
+   "venue": "Samsung Galaxy Store (Seller Portal plus Galaxy Store Developer API) for Galaxy Watch faces",
+   "url": "https://seller.samsungapps.com",
+   "what_we_would_list": "Galaxy Watch faces made with Watch Face Studio.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "None outside China. Galaxy Store no longer takes watch faces for Wear OS watches outside China.",
+   "prior_verdict": "Not rejected before. Samsung appears only as a Playgama partner (research/breadth/scouts/html5-games.json:104).",
+   "reopen_basis": "New venue, not swept before.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "The seller registration cost was not read.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "The commercial-seller countries were not read.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "The API exists at devapi.samsungapps.com, with service-account JWT auth. It is used by mozilla-releng/mozapkpublisher (sgs_api), TheOriginalAyaka/galaxy-store-submit and RimiX2/fastlane-plugin-galaxy_store_developer. But 'contentUpdate only works when the application is already in FOR SALE (published) status' and 'new app registration requires the Seller Portal' (KevinGong2013/apkgo notes/app-info-update-research.md, a third-party note).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not read.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "'As of February 8, 2023, you will no longer be able to register new Tizen-based watch apps in Seller Portal'. Galaxy Watch4-and-later faces 'are being distributed through Google Play Store (with the exception of China)' (snippet: developer.samsung.com/galaxy-watch-tizen/notice.html; Samsung developer blog, 2024-04-02, 'Publishing Watch Faces to the Play Store').",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Moot.",
+   "owner_step": "None worth taking.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Outside China, the venue no longer carries the product.",
+   "time_to_first_sale": "Never.",
+   "verdict": "DEAD",
+   "rank_in_family": 7,
+   "primary_urls_to_render": [
+    "https://developer.samsung.com/galaxy-watch-tizen/notice.html",
+    "https://developer.samsung.com/sdp/blog/en/2024/04/02/publishing-watch-faces-to-the-play-store",
+    "https://developer.samsung.com/galaxy-store/galaxy-store-developer-api.html",
+    "https://github.com/KevinGong2013/apkgo/blob/main/notes/app-info-update-research.md"
+   ]
+  },
+  {
+   "venue": "Google Play (Wear OS watch faces in Watch Face Format), the channel Samsung now routes faces to",
+   "url": "https://support.google.com/googleplay/android-developer/answer/13560201",
+   "what_we_would_list": "Watch Face Format XML faces for Wear OS and Galaxy Watch.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One developer account, blocked up front.",
+   "prior_verdict": "Rejected: 'Google Play (£/$25 plus identity plus 12 testers for 14 days — not worth a first experiment)' (docs/REJECTED.md:1395-1396; docs/INCOME_PLAN.he.md:267).",
+   "reopen_basis": "The prior verdict stands. Nothing new contradicts the $25 fee, and the ₪0 rule of 27.9 makes it stricter.",
+   "gate_zero_cost": {
+    "status": "FAIL",
+    "evidence": "$25 registration fee (docs/REJECTED.md:1395).",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Not re-researched.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Not re-researched.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not re-researched.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "Not re-researched. The Samsung snippet above confirms this is where Galaxy Watch faces are distributed.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Not researched.",
+   "owner_step": "A $25 fee plus identity; forbidden under the ₪0 rule.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Blocked by the up-front fee.",
+   "time_to_first_sale": "Never under the ₪0 rule.",
+   "verdict": "DEAD",
+   "rank_in_family": 8,
+   "primary_urls_to_render": [
+    "https://support.google.com/googleplay/android-developer/answer/13560201"
+   ]
+  }
+ ]
+}

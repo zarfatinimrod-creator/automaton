@@ -1,0 +1,294 @@
+{
+ "family": "sheet-music-self-publishing",
+ "prior_coverage": "No prior sweep of this family. A grep on 28.9 of docs/, research/ (all of it), logs/, MISSION.md and products/ for arrangeme, sheet music, musicnotes, mymusicsheet, score exchange, smp press, musescore, notation, lilypond, musicxml and IMSLP found 0 venue hits; the only matches were unrelated uses of 'arrangement'. The repo has no notation tooling either: a grep for music21, lilypond, musicxml and verovio in products/, src/ and scripts/ finds only node_modules MIME tables.\n\nNearest precedents that apply:\n- Adobe was killed for having no contributor upload API, with login and CAPTCHA left to the user (docs/REJECTED.md:1006-1010).\n- Signed-in web form per item: docs/REJECTED.md:1169 and 1172.\n- CGTrader: no publishing API in any public code, so web-UI only (research/colony-sweep/groups/licensing-ip.md:166).\n- 'Platform search ranks on prior success' (docs/REJECTED.md:1105-1121, law stated at :1117).\n- 'Never sell what is already free' (docs/REJECTED.md:1240).\n- The AI-music rejection (groups/licensing-ip.md:176) covers streamed audio, not notation.\n- PayPal receiving works in Israel, with 18% VAT on fees since 6.7.2026 (docs/INCOME_PLAN.he.md:95).\n\nNew evidence this session (github grade), which changes the Adobe comparison for ArrangeMe only. Birdywen/genspark-agent, skills/reverse-engineering/arrangeme/, committed 22.2.2026, is a third-party Python SDK and batch uploader that drives ArrangeMe's private web endpoints over HTTP:\n- A 4-step upload wizard, with PDFs pushed to S3 through unauthenticated Cognito.\n- Publish and unpublish calls, plus the site's own /title/bulk/*.action endpoints.\n- A CSV manifest for batch upload.\n- Its stats lines read 'Stats: 8522 titles' and 'Stats: 6362 records, 2022-02-27 to present' on one account.\n- Authentication is only a JSESSIONID cookie 'set by browser login'. The SDK has no login routine, so CAPTCHA, session lifetime and the terms of use on automated access are all unread.\n- The repo also commits a third party's live session cookie. It must never be used.\n\nEvery other seed venue shows no bulk or API channel in public code, so each is killed on the Adobe precedent as the brief instructs. SMP Press is not a separate channel: the snippet says it is 'now part of Hal Leonard's ArrangeMe program'. MyMusicSheet has rebranded to mymusic5 (snippet). One venue was added: PaidTabs.\n\nEgress: arrangeme.com and blog.arrangeme.com both returned EGRESS_BLOCKED to WebFetch.",
+ "candidates": [
+  {
+   "venue": "ArrangeMe (Hal Leonard; distributes to Sheet Music Direct, Sheet Music Plus and partners; SMP Press merged in)",
+   "url": "https://www.arrangeme.com",
+   "what_we_would_list": "Notation only, under the Mehudak arranger name, with machine assistance declared in every description (the upload form's howModifiedDesc free-text field and the title description):\n(a) Copyrighted-song lead sheets and level-graded instrumental parts: C, Bb, Eb and F transpositions, with range, key and difficulty machine-checked, sold under ArrangeMe's own licence at 10%. Only for songs where a verified melody source exists, because the colony cannot machine-check a transcribed copyrighted melody against the original.\n(b) Public-domain melodies from verified MusicXML corpora, arranged for specific instrument × level cells. Only for cells where a runner has measured that no free equivalent exists on MuseScore or IMSLP (REJECTED.md:1240).\nNo audio, and no un-checked 'AI arrangements' of pop songs.",
+   "existing_product": "None. The repo has no notation pipeline (0 hits for music21, lilypond, musicxml or verovio outside node_modules).",
+   "listings_per_owner_step": "One account unlocks an unbounded catalogue: one third-party account holds 8,522 titles (github: Birdywen SDK stats). Each title goes to Sheet Music Direct and Sheet Music Plus and other Hal Leonard retail partners (snippet), so one owner step opens at least 2 storefronts.",
+   "prior_verdict": "None. 0 repo hits for ArrangeMe (grep 28.9). The nearest kill shape is Adobe, docs/REJECTED.md:1006-1010: no upload API, and portal login plus CAPTCHA controlled by the user.",
+   "reopen_basis": "Not a reopen. What is new against the Adobe precedent (github grade): Birdywen/genspark-agent skills/reverse-engineering/arrangeme (commit f185446, 22.2.2026) scripts the whole listing flow over HTTP. POST /sell/{publicdomain|original|copyrighted}/sheet/upload, then /details, /arrangement and /genres; GET /title/publish/{sellerTitleId}; PDF to S3 bucket 'arrangeme-uploads' via unauthenticated Cognito. batch_upload.py reads a CSV manifest with a 2 s delay between titles. A machine channel therefore exists; what is unknown is whether a machine can obtain and renew the session cookie.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Snippets:\n- SMP Press (now ArrangeMe) 'is free to join'.\n- The standard seller earns 50% of the Net Sale Price for original and public-domain titles and 10% for copyrighted arrangements, with no fee named.\n- ArrangeMe PRO is optional, at 'less than $7 a month' (~$80/yr), for 52%/12%, and is not needed.\n- 'Expanded Distribution for All Accounts' (blog title) suggests distribution is not gated on PRO.\nThe terms page itself has not been rendered.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "No evidence found on ArrangeMe's payout method, country list or identity check. Two searches returned nothing on it, and arrangeme.com is egress-blocked. One snippet says subscription commissions are paid quarterly, about 30 days after the quarter ends, 'to your selected payment option' (unnamed). Hal Leonard is a US payer, so a W-8BEN is a likely one-time owner step (inference). Whether a camera step exists is unknown.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No documented API. The Birdywen SDK (github) demonstrates CSV-driven batch upload, publish, and the site's own bulk-edit endpoints (/title/bulk/selectAll.action, saveArrangementGroups, saveDifficultyLevels, with publish=true) on an 8,522-title account.\nAPI_REFERENCE.md says: 'HttpOnly session cookie (set by browser login)', 'Closing browser does NOT invalidate session', 'Sign Out DOES invalidate session', and a session has expired when the API returns HTML. The SDK has no login method.\nThree things are unread: whether login carries a CAPTCHA, how long a session lives, and whether the terms forbid automated access. If a human browser login is needed per session, this becomes the recurring-owner-work shape of REJECTED.md:1169/1172 and FAILs. If the colony can log in with the brand credentials, it PASSes. Also, 'Processing may take hours (backend review, PDF validation, distribution to sales channels)'.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "No ArrangeMe AI policy was found (snippet search returned none; terms unrendered).\nThe upload form has 'howModified (select: Change in arrangement/difficulty/style/Other)' and a free-text 'howModifiedDesc' (github). That is a place to state machine assistance, but it is not an AI field.\nHonest-value risk (inference): ArrangeMe licenses the right to arrange a copyrighted song, not a reference melody (grade none). A melody the colony transcribed cannot be machine-verified, so lane (a) needs a verified source per song or it becomes the slop the mission forbids. Lane (b) passes REJECTED.md:1240 only in cells measured to have no free equivalent.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Buyers reach a non-famous bulk catalogue here:\n- github: the SDK's stats lines read 'Stats: 6362 records, 2022-02-27 to present' and 'Stats: 8522 titles' for one account. That is about 132 sales records a month over roughly 48 months, with SDK defaults of Piano Solo, $5.99 and type 'publicdomain'.\n- snippet: titles are published 'to trusted online sellers including Sheet Music Plus and Sheet Music Direct'.\nNo retailer traffic numbers were seen.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. The search ranking of Sheet Music Direct and Sheet Music Plus has not been seen. Soft counter-evidence (github): the 8,522-title bulk account above logged 6,362 sales records in about 48 months, so buyers do find a mass catalogue with no known audience. Whether sales concentrate on titles that have already sold is unmeasured. The long-tail-cell hypothesis (song × instrument × level with few competitors) is unmeasured: a runner should render one Sheet Music Direct search results page for one song and count arrangements per instrument and level.",
+   "owner_step": "One-time only:\n1. Open an ArrangeMe (Hal Leonard) seller account under the Mehudak brand.\n2. Set the payout method (method UNKNOWN).\n3. Submit the US tax form (W-8BEN, inference).\n4. Hand the colony the login credentials, so it can log itself in.\nWhether a pen-name arranger can be paid under the owner's legal name is UNKNOWN. If login is CAPTCHA-gated, step 4 becomes recurring and the venue fails.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 350,
+   "estimate_basis": "INFERENCE.\nBase rate (github): one bulk account logged 6,362 sales records from 2022-02-27 to 22.2.2026 (~48 months), ending with 8,522 titles. That is at least 0.0155 sales per title per month. It is a floor, because the catalogue grew during the window, and 'records' may include low-value subscription lines.\nCommission (snippet): 50% of net sale price for public-domain or original titles, 10% for copyrighted. SDK default price is $5.99, and the minimum for Easy Piano is $4.99 (github).\nAssumptions: 1,000-2,000 honest titles live at month 12, at ₪3.6 per dollar.\n- Copyrighted only: 1,000 × 0.0155 × ~$0.55 ≈ ₪30 a month.\n- Public domain or original: 2,000 × 0.0155 × ~$3 ≈ ₪335 a month.\nHigh end rounded to ₪350. Low end ₪0: any of three unknown gates (login and session, terms on automation, AI policy) or the honest-value filter can zero it.\nPopular copyrighted songs probably sell more per title, but there is no base rate for that, so it is excluded.",
+   "time_to_first_sale": "Inference: at the github base rate of about 1 sale per 65 titles per month, 100 live titles would give about 1.5 sales a month. That puts a first sale about 1-2 months after the first 100 titles clear processing ('may take hours'), and the clock starts only after the owner step and the three renderable tests. Payout timing is UNKNOWN; subscription commissions are paid quarterly (snippet).",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://www.arrangeme.com/terms",
+    "https://www.arrangeme.com/pro",
+    "https://www.arrangeme.com/search",
+    "https://blog.arrangeme.com/blog/common-questions-about-copyrighted-arrangements",
+    "https://blog.arrangeme.com/blog/expanded-distribution-for-all-accounts",
+    "https://blog.arrangeme.com/blog/introducing-arrangeme-pro",
+    "https://www.arrangeme.com/ (runner: follow the sign-in link and grep the login page HTML for recaptcha/hcaptcha/turnstile)",
+    "https://github.com/Birdywen/genspark-agent/tree/main/skills/reverse-engineering/arrangeme",
+    "https://www.sheetmusicdirect.com/ (runner: one song's search results page, to count arrangements per instrument and level for the occupancy test)"
+   ]
+  },
+  {
+   "venue": "Musicnotes Marketplace",
+   "url": "https://www.musicnotes.com/marketplace/",
+   "what_we_would_list": "The same catalogue as ArrangeMe: copyrighted-song arrangements licensed by Musicnotes, and public-domain or original titles, with machine assistance declared.",
+   "existing_product": "None (no notation pipeline in the repo).",
+   "listings_per_owner_step": "One account would give unbounded titles on one storefront (musicnotes.com) that claims 8 million customers (snippet). There is no multi-retailer distribution, and it is moot without a listing channel.",
+   "prior_verdict": "None. 0 repo hits for Musicnotes (grep 28.9).",
+   "reopen_basis": "Reopen only if a bulk upload, API or feed channel for Marketplace Creators is rendered, or public code is found that operates one.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No listing fee appears in the snippets, and the model is commission-based. The commission percentage was not found: 'royalties based on the classification of the song at the time of upload'.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Snippets from the Marketplace Creator help centre: commissions are calculated quarterly and paid on an 'approximately net 90 day basis'. They accrue until a '$100 USD for international (Non-US based) payments' threshold. Musicnotes provides 'multiple payment method options', none named. Israel and any camera step are unknown.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "GitHub code search for 'marketplacecreator.musicnotes.com' or 'musicnotes marketplace' upload returned 0 results. No API or bulk channel appears in the creator help-centre snippets. Copyrighted uploads begin with a song search in the web UI (help article: 'I want to upload an arrangement of a copyright song, but when I search for the song, there are no results'). This is the CGTrader shape (groups/licensing-ip.md:166) and the Adobe shape (REJECTED.md:1006-1010), so it is killed per the brief.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "No Marketplace AI policy was found in the snippets. The Creator Terms and Conditions were not rendered.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Snippet: creators are 'available to over 8 million Musicnotes customers world-wide'. Blog title: 'Musicnotes Surpasses $100 Million in Payments to Artists and Songwriters'.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN; not investigated, because the listing gate fails.",
+   "owner_step": "One-time: create a Marketplace Creator account under the brand, set payout, and submit a US tax form (inference). Moot while listing needs a per-title web form.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Not estimable while the listing gate FAILs. With a bulk channel it would be the same order as ArrangeMe (inference), but the $100 international threshold and net-90 quarterly payment would delay the first money into the ledger.",
+   "time_to_first_sale": "n/a (DEAD)",
+   "verdict": "DEAD",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://marketplacecreator.musicnotes.com/hc/en-us/articles/16105667008269-New-to-Musicnotes-Marketplace-Start-here",
+    "https://marketplacecreator.musicnotes.com/hc/en-us/articles/4423173882893-How-will-I-receive-my-payments",
+    "https://marketplacecreator.musicnotes.com/hc/en-us/articles/4423173869709-When-will-I-receive-my-payment",
+    "https://help.musicnotes.com/hc/en-us/articles/5865974048653-Marketplace-FAQ",
+    "https://www.musicnotes.com/secure/",
+    "https://marketplacecreator.musicnotes.com/hc/en-us"
+   ]
+  },
+  {
+   "venue": "MyMusicSheet (rebranded mymusic5)",
+   "url": "https://www.mymusicsheet.com",
+   "what_we_would_list": "Original and public-domain arrangements only. Copyrighted-song licensing on this platform is UNKNOWN.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One account would give unbounded titles on one storefront. Moot without a listing channel.",
+   "prior_verdict": "None. 0 repo hits (grep 28.9).",
+   "reopen_basis": "Reopen only if an Artist Center bulk upload or API is rendered.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No fee appears in the snippets. Artists get '75% of net profits and up to 90% from rewards' (snippet, from the platform's own blog).",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Snippet: sellers can take proceeds 'through PayPal, Payoneer, or bank transfer', selected in the Artist Center. PayPal receiving works in Israel (repo: docs/INCOME_PLAN.he.md:95, with 18% VAT on fees). Payoneer's Israeli eligibility was downgraded to UNKNOWN in the repo (docs/INCOME_PLAN.he.md, Payoneer line). A camera or identity step is unknown. This is the best-evidenced Israeli rail in the family, but it is still snippet grade.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "GitHub code search for mymusicsheet.com and mymusic5 with upload or API terms returns only CDN thumbnails scraped into spam blogs and domain lists, and no seller automation. No bulk channel appears in the snippets. Killed per the brief on the Adobe precedent (REJECTED.md:1006-1010).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The snippets say nothing on an AI policy.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "No buyer count was found. The only traffic signal is mymusicsheet.com at 136,736 in a third-party domain rank shard (ziguinchor/reviewnav-handlers-pipeline data/rank/shards/my.txt, source list unnamed). That is weak.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN; not investigated, because the listing gate fails.",
+   "owner_step": "One-time: Artist Center account under the brand, plus a PayPal payout. Moot while listing is manual.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Not estimable while the listing gate FAILs. There is no base rate.",
+   "time_to_first_sale": "n/a (DEAD)",
+   "verdict": "DEAD",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://www.mymusic5.com/artist-onboarding",
+    "https://blog.mymusicfive.com/post/why-mymusicsheet-is-the-best-platform-for-selling-your-sheet-music-online",
+    "https://www.mymusicsheet.com"
+   ]
+  },
+  {
+   "venue": "Score Exchange",
+   "url": "https://www.scoreexchange.com",
+   "what_we_would_list": "Original and public-domain scores. The site mostly takes Sibelius files, per its FAQ as cited by digipres.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One account would give unbounded titles on one storefront. Moot without a listing channel.",
+   "prior_verdict": "None. 0 repo hits (grep 28.9).",
+   "reopen_basis": "Reopen only if a bulk upload or API is rendered.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Snippet, from Score Exchange Help 'Are there any fees for selling my music?': 'There are no fees to pay unless you choose to upgrade your account to become a Platinum Publisher'.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "The payout method and country list were not seen. The company is UK-based (grade none).",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "No automation in public code. The only GitHub mention is the digipres format registry (digipres/digipres.github.io fdd000609.xml), which cites the Score Exchange FAQ saying most uploads are Sibelius files. That points to a manual, per-file web upload (inference). Killed on the Adobe precedent.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not found.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "No buyer or traffic number was found.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN; not investigated.",
+   "owner_step": "One-time: seller account under the brand, plus payout. Moot.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Not estimable; the listing gate FAILs and there is no base rate.",
+   "time_to_first_sale": "n/a (DEAD)",
+   "verdict": "DEAD",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://www.scoreexchange.com/help/faqs-for-sellers/how-the-score-exchange-selling-process-works/are-there-any-fees-for-selling-my-music/",
+    "https://www.scoreexchange.com/help/faqs-for-sellers/"
+   ]
+  },
+  {
+   "venue": "PaidTabs (added: a guitar tab and sheet marketplace)",
+   "url": "https://paidtabs.com/sell_sheet_music_online",
+   "what_we_would_list": "Nothing yet. Its listings appear to hang on a creator's YouTube performance video, which the colony does not have.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "UNKNOWN.",
+   "prior_verdict": "None. 0 repo hits.",
+   "reopen_basis": "Reopen only if a seller API or bulk channel is rendered, and a listing does not require an owned performance video.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Not researched (search budget spent). The page title 'Sell Your Sheet Music & Guitar Tabs Hassle-free' comes from a snippet.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Not researched.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "No seller API or automation in public code. The only GitHub hits are Reddit scrapes (shahp7575/reddit_coffee_scraper) of automated r/RareTabs posts, with listings addressed as paidtabs.com/search/<11-character YouTube-style ID>. The inference is that each listing is keyed to a creator's YouTube video. Killed on the Adobe precedent.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not researched.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "The venue auto-posts listings to the subreddit r/RareTabs (github: scraped CSVs), which is outbound promotion. No buyer count.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "UNKNOWN.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Not estimable.",
+   "time_to_first_sale": "n/a (DEAD)",
+   "verdict": "DEAD",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://paidtabs.com/sell_sheet_music_online"
+   ]
+  },
+  {
+   "venue": "Sheet Music Plus: SMP Press",
+   "url": "https://www.sheetmusicplus.com",
+   "what_we_would_list": "Nothing separately. Titles published through ArrangeMe already reach Sheet Music Plus.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "0 extra. It is the same account and channel as ArrangeMe.",
+   "prior_verdict": "None. 0 repo hits (grep 28.9).",
+   "reopen_basis": "Reopen only if Sheet Music Plus reopens a self-publishing channel independent of ArrangeMe.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Snippet: 'SMP Press is free to join'.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Same as ArrangeMe (not found).",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Not a separate channel. Snippet: 'SMP Press is now part of Hal Leonard's ArrangeMe program'. The page smppress.sheetmusicplus.com/contest carries the title 'ArrangeMe - Self-Publish and Sell Your Sheet Music' (snippet). The listing channel is ArrangeMe's; see the ArrangeMe candidate.",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Same as ArrangeMe.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Sheet Music Plus is one of the retailers ArrangeMe titles reach (snippet).",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN (same as ArrangeMe).",
+   "owner_step": "None beyond the ArrangeMe step.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Counted inside the ArrangeMe estimate. It is not an additional venue.",
+   "time_to_first_sale": "n/a (merged)",
+   "verdict": "DEAD",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://smppress.sheetmusicplus.com/contest",
+    "https://www.sheetmusicplus.com"
+   ]
+  }
+ ],
+ "searches_used": 6
+}
