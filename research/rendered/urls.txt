@@ -529,3 +529,11 @@ https://help.streetlib.com/collection/1492-faq-on-platform-changeover	streetlib-
 https://teachsimple.com/terms-of-service	teachsimple-terms-of-service
 # research/channel-loop/ZERO-TESTS.md row 131 — Displate (26): the terms, linked from a tick-9 capture (28.9.2026).
 https://displate.com/about-regulations	displate-about-regulations
+# research/channel-loop/ZERO-TESTS.md row 132 — StreetLib (24), after row 129 (28.9.2026).
+https://www.streetlib.it/prezzi-servizi	streetlib-it-prezzi-servizi
+# research/channel-loop/ZERO-TESTS.md row 133 — StreetLib (24), after row 129 (28.9.2026).
+https://help.streetlib.com/category/97-payments	help-streetlib-com-category-97-payments
+# research/channel-loop/ZERO-TESTS.md row 134 — Displate (26), after row 131 (28.9.2026).
+https://displate.com/about-privacy	displate-com-about-privacy
+# research/channel-loop/ZERO-TESTS.md row 135 — Teach Simple (28), after row 130 (28.9.2026).
+https://teachsimple.com/license-agreement	teachsimple-com-license-agreement
