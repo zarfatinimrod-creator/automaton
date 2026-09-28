@@ -1207,6 +1207,26 @@ coded fee, or a mandate collision.
   `:76`; not even the USD-wire star Jordan and Lebanon get, `:78`) and selling to buyers there ("Purchases", `:70`). A
   foreign address would be a misrepresentation. **Reopens if:** Google adds Israel; render-watch records a new version of
   the table, and one `grep -n -E '^(Israel|IL)$'` on it settles it.
+- **The replenish pass of 28.9.2026 (tick 6): nine gate refutations by Opus verifiers, for the next sitting to confirm**
+  (`research/breadth/REPLENISH-2026-09-28.md` §4.1 holds the evidence and every reopen trigger). Recorded the way the
+  sweep's §6.1 kills were: a gate refuted at the stated grade, none resting on a ceiling.
+
+  | Venue | Killed on | Grade | Reopens if |
+  |---|---|---|---|
+  | שיעור חופשי (Shiur Hofshi) | G5: absent from all 20 monthly Israel CrUX lists; the domain does not resolve | github | a render returns 200 and the origin enters a CrUX IL list |
+  | Teachers Pay Teachers | G1: Basic is a one-time $29, Premium $59.95 a year, quoted from TPT's fees page. **Settles the "unsettled" item at `:1253`** | github | the rendered fees page (ZERO-TESTS row 88) shows a free seller tier |
+  | Fitbit Gallery (+ KiezelPay) | G3, G6: the official CLI has no publish command; each face is uploaded by hand | github | a submission API or CLI publish command ships |
+  | Nexus Mods (Donation Points) | G3, G6: automation needs a hand-made mod page first (`Using.md:91`) | github | the v3 API adds mod creation |
+  | CurseForge Authors Rewards | G3, G6: the token API only adds files to existing projects; creation only via the owner's browser cookies (the RED precedent, `:274`) | github | a project-creation API appears |
+  | SeaArt Creator Incentive Program | G3: no publish command in the official CLI; publishing only through the web App Builder | github (absence) | a publish endpoint ships |
+  | Apple Books direct | G7: the legal entity name is the default public seller name; another name needs a trade-name document | snippet, github corroborates | the brand gains a legal entity or accepted trade name, then G2 is rendered |
+  | Apple Books via PublishDrive / Draft2Digital | G1 ($9.99/month) / G4 (AI rule, standing `:1251`) | github / snippet | a commission-only aggregator that reaches Apple and takes disclosed AI work |
+  | LottieFiles marketplace (IconScout) | G4: loaders, icons and micro-interactions are free everywhere, LottieFiles' own library included (the floor at `:991-997`) | snippet + github | a Lottie product with a named feature that is free nowhere |
+
+  **Reconfirmed, unchanged:** the Israeli teacher-to-teacher sites (`:1249-1251`, now with CrUX weight as the free floor),
+  Garmin Connect IQ (`:1233-1234`), Zepp OS (`:1233`), Samsung Galaxy Store (`:1249`), Google Play for Wear OS
+  (`:1247`, `:1525`), Modrinth (`:1244`). The pass also notes line drift in citations to this file; the table above
+  uses the lines as they stand on 28.9.
 - **Shopify — pre-ruled conditional kill** on a rendered mandatory listing fee (the note under "Earlier rejections").
 - **Whop — re-recorded as camera-gated** (the correction under `content-seo`, "Clipping"): the rail is not reusable.
 - **Apify — the hidden-Actor note** under `distribution` → "What goes to the board".

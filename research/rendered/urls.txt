@@ -401,3 +401,59 @@ https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/add-securit
 https://www.paypal.com/il/cshelp/article/%D7%9E%D7%93%D7%95%D7%A2-%D7%97%D7%A9%D7%91%D7%95%D7%9F-%D7%94--paypal-%D7%A9%D7%9C%D7%99-%D7%94%D7%95%D7%92%D7%91%D7%9C-help534	paypal-il-help534-limited
 # research/channel-loop/ZERO-TESTS.md row 67 — n8n paid templates (20): the verified-creator requirements thread, from one tick-6 search (28.9.2026).
 https://community.n8n.io/t/requirements-for-becoming-a-verified-creator/134401	n8n-verified-creator-requirements
+# research/channel-loop/ZERO-TESTS.md row 68 — Indiebook (22), replenish pass (28.9.2026).
+https://indiebook.co.il/	indiebook-home
+# research/channel-loop/ZERO-TESTS.md row 69 — Indiebook (22), replenish pass (28.9.2026).
+https://indiebook.co.il/97/%D7%9E%D7%93%D7%A8%D7%99%D7%9A-%D7%9C%D7%94%D7%A4%D7%A7%D7%AA-%D7%93%D7%95%D7%97-%D7%AA%D7%9E%D7%9C%D7%95%D7%92%D7%99%D7%9D--%D7%A1%D7%95%D7%A4%D7%A8%D7%99%D7%9D-%D7%A2%D7%A6%D7%9E%D7%90%D7%99%D7%99%D7%9D	indiebook-royalty-guide
+# research/channel-loop/ZERO-TESTS.md row 70 — Indiebook (22), replenish pass (28.9.2026).
+https://indiebook.co.il/product-category/%D7%94%D7%95%D7%A6%D7%90%D7%AA-%D7%A1%D7%A4%D7%A8%D7%99%D7%9D/%D7%94%D7%95%D7%A6%D7%90%D7%94-%D7%A2%D7%A6%D7%9E%D7%99%D7%AA	indiebook-self-publishing
+# research/channel-loop/ZERO-TESTS.md row 71 — Facer (23), replenish pass (28.9.2026).
+https://www.facer.io/terms	facer-terms
+# research/channel-loop/ZERO-TESTS.md row 72 — Facer (23), replenish pass (28.9.2026).
+https://www.facer.io/creator/partner	facer-creator-partner
+# research/channel-loop/ZERO-TESTS.md row 73 — Facer (23), replenish pass (28.9.2026).
+https://community.facer.io/t/premium-designer-program-admission-rankings-and-revenue-sharing-terms/25147	facer-premium-admission
+# research/channel-loop/ZERO-TESTS.md row 74 — Facer (23), replenish pass (28.9.2026).
+https://community.facer.io/t/how-to-become-a-premium-designer-and-sell-your-watch-face-designs-on-facer/3540	facer-premium-route
+# research/channel-loop/ZERO-TESTS.md row 75 — Facer (23), replenish pass (28.9.2026).
+https://community.facer.io/t/payment-options/53518	facer-payment-options
+# research/channel-loop/ZERO-TESTS.md row 76 — Facer (23), replenish pass (28.9.2026).
+https://help.facer.io/hc/en-us/articles/16559872033819-Facer-Community-Guidelines	facer-community-guidelines
+# research/channel-loop/ZERO-TESTS.md row 77 — Facer (23), replenish pass (28.9.2026).
+https://help.facercreator.io/hc/en-us/articles/4412573509403-Getting-Started-with-Facer-Creator	facer-creator-getting-started
+# research/channel-loop/ZERO-TESTS.md row 78 — Facer (23), replenish pass (28.9.2026).
+https://community.facer.io/t/software-to-create-watch-faces-here-on-facer/86976	facer-third-party-tools
+# research/channel-loop/ZERO-TESTS.md row 79 — Facer (23), replenish pass (28.9.2026).
+https://news.facer.io/celebrating-1-million-in-designer-payouts-and-launching-our-first-facer-creator-partner-program-85bd2e11baff?gi=5c49d09ba159	facer-payouts-news
+# research/channel-loop/ZERO-TESTS.md row 80 — Y8 (14), replenish pass (28.9.2026).
+https://www.y8.com/revshare	y8-revshare
+# research/channel-loop/ZERO-TESTS.md row 81 — Y8 (14), replenish pass (28.9.2026).
+https://www.y8.com/studios	y8-studios
+# research/channel-loop/ZERO-TESTS.md row 82 — Y8 (14), replenish pass (28.9.2026).
+https://docs.y8.com/sdk/intro/	y8-sdk-intro
+# research/channel-loop/ZERO-TESTS.md row 83 — Y8 (14), replenish pass (28.9.2026).
+https://www.y8.com/new/games	y8-new-games
+# research/channel-loop/ZERO-TESTS.md row 84 — GameDistribution (14), replenish pass (28.9.2026).
+https://static.gamedistribution.com/terms/developer.html	gamedistribution-developer-terms
+# research/channel-loop/ZERO-TESTS.md row 85 — GameDistribution (14), replenish pass (28.9.2026).
+https://static.gamedistribution.com/developer/developers-guidelines.html	gamedistribution-guidelines
+# research/channel-loop/ZERO-TESTS.md row 86 — GameDistribution (14), replenish pass (28.9.2026).
+https://gamedistribution.com/developers/faq/getting-started/setting-up-and-receiving-your-payment/	gamedistribution-payment
+# research/channel-loop/ZERO-TESTS.md row 87 — GameDistribution (14), replenish pass (28.9.2026).
+https://gamedistribution.com/developers/partnership/	gamedistribution-partnership
+# research/channel-loop/ZERO-TESTS.md row 88 — Teachers Pay Teachers (kill confirmation), replenish pass (28.9.2026).
+https://help.teacherspayteachers.com/hc/en-us/articles/360044219891-Seller-Fees-and-Payout-Rates	tpt-seller-fees
+# research/channel-loop/ZERO-TESTS.md row 89 — Wavedash (unsettled), replenish pass (28.9.2026).
+https://docs.wavedash.com/llms-full.txt	wavedash-llms-full
+# research/channel-loop/ZERO-TESTS.md row 90 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
+https://ganim-mall.co.il	ganim-mall-home
+# research/channel-loop/ZERO-TESTS.md row 91 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
+https://www.haganenet.co.il	haganenet-home
+# research/channel-loop/ZERO-TESTS.md row 92 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
+https://worksheets4kids.co.il	worksheets4kids-home
+# research/channel-loop/ZERO-TESTS.md row 93 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
+https://lomdiml.co.il	lomdiml-home
+# research/channel-loop/ZERO-TESTS.md row 94 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
+https://lemidatova.com	lemidatova-home
+# research/channel-loop/ZERO-TESTS.md row 95 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
+https://lomdimhofshi.co.il	lomdimhofshi-home
