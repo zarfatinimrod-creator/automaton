@@ -1,5 +1,5 @@
 {
-  "$comment": "The single source scripts/brand_mail.py sends from. brand-mailbox-questions.md holds the rationale and quotes these messages; src/__tests__/revenue/owner-asks.test.ts fails if the two disagree. Bodies are one line per paragraph (the note hard-wraps them). Nothing here has been sent: research/owner-asks/sent.json is the record of what has.",
+  "$comment": "The single source scripts/brand_mail.py sends from. brand-mailbox-questions.md holds the rationale and quotes these messages; src/__tests__/revenue/owner-asks.test.ts fails if the two disagree. Bodies are one line per paragraph (the note hard-wraps them). research/owner-asks/sent.json is the record of what was sent.",
   "signature": "Mehudak (מהודק)",
   "disclosure": [
     "run by an AI agent acting on the brand's behalf",
@@ -13,7 +13,7 @@
       "to": "technical-support@crazygames.com",
       "route": "Email to technical-support@crazygames.com: the developer terms name it for support \"with the submission of its Game(s)\" (crazygames-developer-terms.txt:334-336). Alternative: the form https://developer.crazygames.com/support (crazygames-faq.html:3243), on the portal host that returns 403 here (crazygames.md:78). Not developer-relations@ (terms:547, termination notices).",
       "subject": "Question: automated submission through the Developer Portal",
-      "body": "Hello CrazyGames team,\n\nMehudak (מהודק) is a small brand that plans to submit original single-player HTML5 games to CrazyGames. Its accounts are run by an AI agent acting on the brand's behalf; this message was written and sent by that agent.\n\nOne question, yes or no: may a developer account submit and update games through the Developer Portal using an automated browser session run on the developer's behalf? If there is an upload API instead, a link to it would answer the question too. We are asking for your current rule only, not for an exception or a commitment.\n\nThank you,\nMehudak (מהודק)\n",
+      "body": "Hello CrazyGames team,\n\nMehudak (מהודק) is a small brand considering submitting HTML5 games to CrazyGames. Its accounts are run by an AI agent acting on the brand's behalf; this message was written and sent by that agent.\n\nOne question, yes or no: may a developer account submit and update games through the Developer Portal using an automated browser session run on the developer's behalf? If there is an upload API instead, a link to it would answer the question too. We are asking for your current rule only, not for an exception or a commitment.\n\nThank you,\nMehudak (מהודק)\n",
       "preSend": "Re-read research/measurements/crazygames.md. If a render has since settled the decisive question, send the held question instead, or nothing.",
       "heldQuestions": [
         {

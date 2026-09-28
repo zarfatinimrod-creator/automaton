@@ -1,8 +1,9 @@
 # Brand-mailbox questions: ready to send the hour owner step 8 exists
 
-**Written 28.9.2026. Nothing here has been sent.** These are the ₪0 tests no render can settle. Each venue gets one
-written yes/no question from the brand mailbox (`docs/OWNER_STEPS.he.md` step 8; `research/breadth/BOARD.md` Q2).
-An address appears only where a capture under `research/rendered/` holds it, cited `file:line`.
+**Written 28.9.2026.** What has been sent is recorded in `research/owner-asks/sent.json`. These are the ₪0 tests no
+render can settle. Each venue gets one written yes/no question from the brand mailbox (`docs/OWNER_STEPS.he.md` step
+8; `research/breadth/BOARD.md` Q2). An address appears only where a capture under `research/rendered/` holds it, cited
+`file:line`.
 
 **The messages' single source is `research/owner-asks/questions.json`** (subject, body, recipient, route, pre-send
 check, held questions, follow-up delay per venue). `scripts/brand_mail.py` sends from that file and nothing else. This
@@ -24,7 +25,7 @@ in §"How it is sent" at the end.
   after a yes, because a no makes it moot. **Pre-send:** re-read the venue's note. If a render has since settled the
   decisive question, send the held one instead, or nothing.
 - **Follow-up:** only if there is no reply, never sooner than 7 days after the first send, at most once (same text, same
-  thread). If there is still no reply 7 days later, record UNANSWERED.
+  thread). If there is still no reply 7 days later, record NOT ANSWERED.
 - **Every message** discloses the AI agent (BOARD.md:106) and asks one yes/no question. It asks for nothing binding (no
   account, exception, agreement or call), gives no personal name, postal address or phone number, and is signed
   "Mehudak (מהודק)". If a form demands a personal name, phone or address, do not submit it; record the route closed.
@@ -52,8 +53,8 @@ In the venue's note under `research/measurements/`, add `## Written reply (DD.MM
 ```text
 Hello CrazyGames team,
 
-Mehudak (מהודק) is a small brand that plans to submit original single-player HTML5 games to CrazyGames. Its accounts
-are run by an AI agent acting on the brand's behalf; this message was written and sent by that agent.
+Mehudak (מהודק) is a small brand considering submitting HTML5 games to CrazyGames. Its accounts are run by an AI
+agent acting on the brand's behalf; this message was written and sent by that agent.
 
 One question, yes or no: may a developer account submit and update games through the Developer Portal using an
 automated browser session run on the developer's behalf? If there is an upload API instead, a link to it would answer
@@ -165,48 +166,78 @@ render of HELP534 (`paypal-israel.md:100-104`).
 
 ## How it is sent
 
-Built 28.9.2026; nothing has been sent (`research/owner-asks/sent.json` is empty).
+Built 28.9.2026. `research/owner-asks/sent.json` is the record of what was sent.
 
-- **The route:** `.github/workflows/brand-mail.yml`, dispatched by the agent, with `command` = `send`, `venue` = an id
-  from `questions.json` (`crazygames`, `wix`, `spreadshirt`, `n8n`) and `really_send`. It runs
-  `scripts/brand_mail.py` (Python standard library only), which builds the message from `questions.json` and nothing
-  else: From "Mehudak (מהודק)" at the brand address, the venue's recipient, subject and body, UTF-8 quoted-printable.
-- **Dry run first, every time.** Dispatch with `really_send` off, from any branch: the log shows the full message as it
-  would leave and the record it would write, with the venue's pre-send check beside it. Read both against the venue's
-  note. Then dispatch again **from `main`** with `really_send` on.
-- **The secrets step 8 creates** (repository secrets, read only through the one step's `env`):
-  `BRAND_MAIL_ADDRESS`, the brand Gmail address, and `BRAND_MAIL_APP_PASSWORD`, an app password for that account.
-  Until both exist every run prints `{"configured": false}` and exits 0: nothing is read or sent. [INFERENCE, not
-  rendered here: Google issues app passwords only with 2-Step Verification on. If that is not available, step 8's OAuth
-  alternative needs an XOAUTH2 login, which this script does not have yet.] SMTP goes to `smtp.gmail.com:465` and IMAP
-  to `imap.gmail.com:993`, both over TLS; `BRAND_MAIL_SMTP_HOST`/`_PORT` and `BRAND_MAIL_IMAP_HOST`/`_PORT` override
-  them for the Outlook.com fallback.
-- **The rules above, as the code enforces them.** Each has a unit test in `scripts/tests/test_brand_mail.py`, and on
-  28.9.2026 each was broken in a scratch copy to check that a test fails:
+- **The route:** `.github/workflows/brand-mail.yml`, dispatched by the agent **from `main`**, with `command` = `send`,
+  `venue` = an id from `questions.json` (`crazygames`, `wix`, `spreadshirt`, `n8n`), `really_send`, and
+  `message_sha256`. It runs `scripts/brand_mail.py` (Python standard library only), which builds the message from
+  `questions.json` and nothing else: From "Mehudak (מהודק)" at the brand address, the venue's recipient, subject and
+  body, UTF-8 quoted-printable.
+- **Dry run first, every time, and the send is tied to it.** Dispatch with `really_send` off: the log shows the full
+  message as it would leave, the record it would write, the venue's pre-send check beside it, and the message's
+  `messageSha256` (kind, recipient, subject, body and thread). Read them against the venue's note. Then dispatch again
+  with `really_send` on and that digest in `message_sha256`. A real send without the digest, or with one that no longer
+  matches (the text changed after the dry run), is refused and nothing leaves.
+- **The secrets step 8 creates** live in a GitHub **environment** named `brand-mailbox` whose deployment branches are
+  limited to `main`, not in repository secrets: both jobs of the workflow name that environment, so only a run on
+  `main` can read them, and no other workflow or branch can. [INFERENCE from GitHub's documentation, not observed here:
+  a run before step 8 creates the environment empty and with no branch rule; step 8 adds the rule "Selected branches:
+  main" and the two secrets. Secrets saved as repository secrets instead would still reach the job, without the branch
+  rule, so the step says environment.] They are `BRAND_MAIL_ADDRESS`, the brand Gmail address,
+  and `BRAND_MAIL_APP_PASSWORD`, an app password for that account, read only through the one step's `env`. Until both
+  exist every run prints `{"configured": false}` and exits 0: nothing is read or sent. [INFERENCE, not rendered here:
+  Google issues app passwords only with 2-Step Verification on. If that is not available, step 8's OAuth alternative
+  needs an XOAUTH2 login, which this script does not have yet.] SMTP goes to `smtp.gmail.com:465` and IMAP to
+  `imap.gmail.com:993`, both over TLS with the certificate and host name verified; `BRAND_MAIL_SMTP_HOST`/`_PORT` and
+  `BRAND_MAIL_IMAP_HOST`/`_PORT` override them for the Outlook.com fallback.
+- **The rules above, as the code enforces them.** Each has a unit test in `scripts/tests/test_brand_mail.py`:
   1. The address must be a bare address whose local part contains `mehudak`, or nothing is sent **or read**, and the
      refused address is never printed. The owner's personal address cannot pass.
-  2. A real send happens only when `GITHUB_REF` is `refs/heads/main`; the workflow refuses a branch first, and the
-     script refuses again.
-  3. **One message per venue:** any record for the venue in `sent.json` refuses a new first message.
-  4. **One follow-up**, sent only when all hold: at least `followUpAfterDays` (7) days since the first; no follow-up
-     yet; no `YES` or `NO` reading recorded; and no message in the inbox replying to the first that a `NOT ANSWERED`
-     reading has not already counted. The inbox is checked live over IMAP, read-only. The follow-up is the same
-     subject and body, threaded to the first by In-Reply-To and References.
-  5. A venue with no recorded address (Spreadshirt and n8n today) is refused: a form is not this script's route.
+  2. A real send happens only on `main`: the environment admits no other branch, the workflow refuses a branch, and
+     the script refuses again. It also needs the dry run's `message_sha256`.
+  3. **Every message keeps the rules of §"When and how to send"**, checked on the text about to leave (not only by the
+     build): every disclosure phrase in `questions.json` and the brand signature are in the body; no `@`, link, phone
+     number or street address is in the subject or body; `followUpAfterDays` is at least 7.
+  4. **One message per venue:** any record for the venue in `sent.json` refuses a new first message. And before any
+     send, dry or real, the Sent folder is read (read-only): a message there to the venue's address or with its
+     subject that `sent.json` does not record refuses the send. That covers a send whose record never reached the
+     repository (every push failed): it cannot go twice. No Sent folder found means no send.
+  5. **One follow-up**, sent only when all hold: at least `followUpAfterDays` (7) days since the first; no follow-up
+     yet; no `YES` or `NO` reading recorded; and no message received since the first send that may be the venue's
+     reply and that no recorded reading lists by Message-ID. "May be a reply" is wide on purpose: threaded to our
+     message, or from the venue's domain or a subdomain of it (a helpdesk that opens its own ticket thread), or
+     carrying our subject inside its own; looked for in All Mail (archived mail counts) and in Spam. A reply without a
+     Message-ID can never be listed, so it blocks the follow-up; recording its reading is then the answer. The
+     follow-up is the same subject and body, threaded to the first by In-Reply-To and References.
+  6. A venue with no recorded address (Spreadshirt and n8n today) is refused: a form is not this script's route.
      Held questions are never sent by it.
-  6. If the connection drops mid-send, the record is written with status `uncertain` and committed, and the venue is
-     blocked until the agent checks the Sent folder and corrects the record. A message cannot go twice.
-  7. After a real send, the workflow commits the record (venue, kind, status, UTC time, Message-ID, subject,
-     recipient) to `sent.json` with `[skip ci]`.
+  7. **The record is written ahead.** It goes into `sent.json` with status `uncertain` before the message is handed to
+     the server, becomes `sent` when the server accepts it, and is removed only when the server refuses the message
+     outright. A dropped connection, a timeout or a cancelled run leaves it `uncertain`, the workflow commits it (the
+     commit step runs after a failure or a cancellation too), and the venue is blocked until the agent looks for its
+     Message-ID in the Sent folder and sets the status. The Message-ID carries the venue id, never the brand address.
+  8. After a real send, the workflow commits the record (venue, kind, status, UTC time, Message-ID, subject,
+     recipient) to `sent.json` with `[skip ci]`, and writes `sent.json` into the run's summary first, so the record
+     survives on the run page even if every push fails.
 - **Recording a reply** also adds a row to `sent.json`'s `repliesRecorded`, beside the venue note:
-  `{"venue", "recordedAt", "reading": "YES" | "NO" | "NOT ANSWERED", "inReplyCount"}`. `inReplyCount` is how many
-  in-reply messages the reading covers (the probe's count for that venue when it was read).
-- **The probe** (`command` = `probe`) examines the inbox read-only and writes numbers only to
-  `state/colony/brand-mail.json`: unread, messages in reply to each venue's Message-IDs, and accessibility mail
-  received, unanswered, and unanswered for 7+ days. The colony report prints them as one line, and accessibility mail
-  unanswered for 7+ days is a blocker (`src/revenue/brand-mail.ts`). Accessibility mail is anything sent to the
-  `+accessibility` or `+a11y` plus-address, or with "accessibility", "a11y" or "נגישות" in the subject. So publish
-  `<brand address with +accessibility>` as il-biz-tools' contact [INFERENCE: Gmail delivers plus-addressed mail to the
-  same inbox and keeps the tag in the headers; check with one test mail after step 8]. It counts as answered when the
-  brand's Sent folder holds a reply in its thread. The probe is not scheduled yet. Once step 8 is done, it becomes a
-  step of `colony.yml`.
+  `{"venue", "recordedAt", "reading": "YES" | "NO" | "NOT ANSWERED", "coveredMessageIds"}`. `coveredMessageIds` lists
+  the Message-ID of every message the reading covers (the reply, an auto-acknowledgement, a ticket notice), read from
+  the message's headers in the brand mailbox. A follow-up is refused while any possible reply is not in that list.
+- **The probe** (`command` = `probe`) reads the mailbox read-only and writes numbers only to
+  `state/colony/brand-mail.json`: messages and unread in the inbox, possible replies per venue (as in rule 5), and
+  accessibility mail received, unanswered, and unanswered for 7+ days. It reads All Mail, so archiving a message
+  answers nothing; Spam and Trash are not read for accessibility mail, so moving one there is a deliberate dismissal.
+  Mail the brand sent itself is left out. Headers are parsed leniently, and a message that still cannot be read counts
+  as unanswered accessibility mail rather than stopping the probe. The colony report prints the numbers as one line;
+  accessibility mail unanswered for 7+ days is a blocker, and so is a reading older than 2 days, because mail since
+  then is unseen (`src/revenue/brand-mail.ts`). Accessibility mail is anything sent to the `+accessibility` or `+a11y`
+  plus-address, or with "accessibility", "a11y" or "נגישות" in the subject. So publish `<brand address with
+  +accessibility>` as il-biz-tools' contact [INFERENCE: Gmail delivers plus-addressed mail to the same mailbox and
+  keeps the tag in the headers; check with one test mail after step 8]. It counts as answered when the brand's Sent
+  folder holds a reply in its thread. The probe is not scheduled yet. Once step 8 is done, it becomes a step of
+  `colony.yml`, in a job that names the `brand-mailbox` environment.
+- **What was checked, and how** (28.9.2026). The unit tests run against fake SMTP and IMAP servers; no real mailbox
+  exists yet. A first mutation pass broke each guard in a scratch copy of the script and found that several were not
+  pinned by any test (TLS verification, a refused EXAMINE, FETCH or SEARCH, a missing INTERNALDATE, `SMTPDataError`,
+  the `Date` header); tests for each were added, and the mutation pass was re-run over the reworked script
+  (`logs/2026-09-28-brand-mail-review-fixes.md` lists what it covered and what survived).

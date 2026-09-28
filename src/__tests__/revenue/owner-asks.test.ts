@@ -189,6 +189,25 @@ describe("research/owner-asks/sent.json — the record of what was sent", () => 
     for (const r of sent.repliesRecorded) {
       expect(venues.has(r.venue)).toBe(true);
       expect(["YES", "NO", "NOT ANSWERED"]).toContain(r.reading);
+      // The follow-up guard compares messages, not counts: a reading lists the Message-ID of every message it covers.
+      expect(Array.isArray(r.coveredMessageIds)).toBe(true);
+      for (const id of r.coveredMessageIds) expect(id).toMatch(/^<[^<>\s]+>$/);
+      expect(r).not.toHaveProperty("inReplyCount");
     }
+  });
+
+  it("is described as the record, not as empty — it stops being empty at the first send", () => {
+    expect(md).not.toMatch(/Nothing here has been sent|sent\.json` is empty/);
+    expect(md).toMatch(/`research\/owner-asks\/sent\.json` is the record of what was sent/);
+  });
+});
+
+describe("the reading words the note, the sender and sent.json use are the same three", () => {
+  it("never tells anyone to record UNANSWERED, a reading sent.json does not accept", () => {
+    const script = fs.readFileSync(path.join(repoRoot, "scripts", "brand_mail.py"), "utf-8");
+    for (const [name, text] of [["note", md], ["brand_mail.py", script]] as const) {
+      expect(text.replace(/NOT ANSWERED/g, ""), name).not.toMatch(/UNANSWERED/);
+    }
+    expect(md).toMatch(/record NOT ANSWERED/);
   });
 });
