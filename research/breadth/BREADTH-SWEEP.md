@@ -1,5 +1,7 @@
 # Breadth sweep: "many places, many sales" (28.9.2026)
 
+> **28.9, main thread:** the scout JSONs of all 15 families (`scouts/`), the verifier verdicts (`verify/verdicts.json`), the critic (`critic.json`) and the review (`REVIEW.md`) are saved beside this file (Review item 19). The board's ruling is `BOARD.md`.
+
 This file is the input for the Fable breadth board, `logs/FABLE_QUEUE.md` row 12. It is an Opus synthesis of
 **15 venue families**: 15 scouts, 16 verifiers (one per family's top candidate, two for app stores and two for
 games), and one critic. The critic's three missing families (watch faces, sheet music, AI-native asset markets) were
