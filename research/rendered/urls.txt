@@ -383,3 +383,5 @@ https://eur-lex.europa.eu/eli/reg/2022/2065/oj	eu-dsa-2022-2065
 # ---- NOT FETCHED YET: row 32's Privy docs root, activated by the main thread when T4 is dispatched. ----
 # ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Privy's docs root, for whether it sponsors fees on platform-created wallets.
 # https://docs.privy.io/	privy-docs-root
+# research/channel-loop/ZERO-TESTS.md row 59 — PayPal Israel (21): the help index, to find the verification article (tick 5, 28.9.2026).
+https://www.paypal.com/il/cshelp/personal	paypal-il-help-index
