@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/youtubekids/answer/6172308?hl=iw&co=GENIE.Platform%3DAndroid",
+  "slug": "yk-parental-controls-iw",
+  "fetchedAt": "2026-09-28T22:03:02.923Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1556303,
+  "sha256": "4a1367883a7ec31c6c802f6aff7ddf677a36022b6f0437ab130e471b51dfb6ce",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk-parental-controls-iw.html",
+  "textPath": "research/rendered/yk-parental-controls-iw.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

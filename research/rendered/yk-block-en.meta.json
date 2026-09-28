@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/youtubekids/answer/7178746?hl=en",
+  "slug": "yk-block-en",
+  "fetchedAt": "2026-09-28T22:03:06.881Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1510260,
+  "sha256": "196a2711e5b35315e490412d140b36cbe95e756a85748a7d1b56247262588236",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk-block-en.html",
+  "textPath": "research/rendered/yk-block-en.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
