@@ -5,18 +5,77 @@ the same figures.json, so the two arms cannot drift apart. It is not deployed: t
 step 5). The page carries the brand from the spec (`page.brand`, decided in
 research/measurements/brand-name-decision.md); the video carries none.
 
-Self-contained: the charts are inlined as data URIs, the CSS is inline, and there is no script, font, pixel, iframe or
-any other request to a third party — so there is nothing to track anyone with. The only links are to the sources.
+Self-contained: the charts are inlined as data URIs and the CSS is inline; the only links are to the sources. The page
+has two modes, chosen by build_page's keyword argument `counter`:
+
+- Off (`counter=None`, the default). The page has no script, font, pixel, iframe or any other request to a third party,
+  so there is nothing to track anyone with. The output is byte-identical to the page as it was before the counter
+  existed (tests/fixtures/t1-page-no-counter.golden.html pins it), and releases/t1/page.html is this mode.
+- On (`counter={"host": "https://eu.i.posthog.com" or "https://us.i.posthog.com", "key": "phc_..."}`). One small inline
+  script is added, and nothing else is loaded: PostHog's JavaScript library is not used. When the page opens, the
+  script sends ONE anonymous `$pageview` event to PostHog's public single-event capture endpoint, `<host>/i/v0/e/`,
+  carrying a random id drawn for that load and never kept, `"$process_person_profile": false`, and the page's address
+  without its query string or fragment. It sets no cookie, writes nothing to browser storage, and reads nothing a
+  fingerprint is made of (user agent, screen, fonts, canvas, language). The "How this page was made" section then says
+  plainly that the page counts visits anonymously, without cookies, through PostHog, and stores nothing about the
+  visitor. This is the cookieless page-view instrument RED-TEAM §2.1(c) allows as the web arm's K0-equivalent
+  (research/faceless-youtube/RED-TEAM.md; research/channel-loop/BOARD-LOOP.md rank 5).
+
+The key is PostHog's project token. It is public by design: it appears in the page source, and PostHog's own docs say
+it is "ok" for it to be public — it captures events but "doesn't have access to your private data". The flip side,
+also in PostHog's docs: anyone who copies it can post events to the project, so the count is what arrived, not proof of
+who sent it. A personal API key (`phx_`) is the opposite — private, able to read and write the project's data — and is
+refused by name. A key that is not `^phc_[A-Za-z0-9]{20,}$`, a host other than the two PostHog cloud ingestion hosts,
+or a `counter` that is not exactly those two fields raises ValueError before any page is built (fail closed); the
+error never repeats the key.
+
+What the page cannot guarantee by itself: the browser's request reaches PostHog with the visitor's IP address, as any
+request to any server does, and PostHog uses that address (and a GeoIP transformation) unless the project is set
+otherwise. So before a page with the counter on is deployed, the PostHog project behind the key must have "Discard
+client IP data" on and GeoIP enrichment off. The disclosure on the page says the project is set that way; this module
+cannot check a project's settings, so whoever deploys it must.
 """
 
 from __future__ import annotations
 
 import base64
 import html
+import json
+import re
 from pathlib import Path
 from typing import Any
 
 from figures import FilledSpec, placeholders
+
+# The counter follows PostHog's own documentation, read on 2026-09-28 through Context7 (library /posthog/posthog.com):
+#
+#   contents/docs/api/capture.mdx, "Single event": "[POST] <ph_client_api_host>/i/v0/e/" and "Every event request must
+#     contain an `api_key`, `distinct_id`, and `event` field with the name. Both the `properties` and `timestamp` fields
+#     are optional." Its curl example sends `--header "Content-Type: application/json"`.
+#   contents/docs/api/capture.mdx, pageview: "event": "$pageview" with "properties": {"$current_url": ...}.
+#   contents/docs/api/capture.mdx, anonymous events: "Capture anonymous events by setting the `$process_person_profile`
+#     property to `false` in the event payload. If the provided `distinct_id` has ever been used with an identified
+#     event, the event will still be treated as identified." (The id here is new on every load, so it never has been.)
+#   contents/docs/api/index.mdx: "On US Cloud, these are `https://us.i.posthog.com` for public endpoints ... On EU
+#     Cloud, these are `https://eu.i.posthog.com` for public endpoints".
+#   contents/docs/_snippets/exposed-api-keys.mdx: "It is **ok** for your **project token** (starts with `phc_`) to be
+#     public. ... Your **personal API key** (starts with `phx_`), however, should **NOT** be public as it enables
+#     reading and writing potentially private data."
+#   contents/tutorials/web-redact-properties.md: "PostHog will use the client IP address found during an event capture
+#     request if an `$ip` isn't passed through `event.properties`. ... enable the **Discard client IP data** toggle.
+#     When this is enabled, PostHog will drop any IP information related to an event."
+#   contents/docs/privacy/data-storage.mdx: with that toggle on, "Transformations like GeoIP enrichment and bot
+#     detection can **still use the IP** before it is discarded" — hence GeoIP must be off as well.
+COUNTER_HOSTS = ("https://eu.i.posthog.com", "https://us.i.posthog.com")
+CAPTURE_PATH = "/i/v0/e/"
+_PROJECT_TOKEN = re.compile(r"phc_[A-Za-z0-9]{20,}")  # always fullmatch: `$` would accept a trailing newline
+
+COUNTER_DISCLOSURE = """
+<p>This page counts visits anonymously, without cookies, through PostHog, and stores nothing about the visitor.
+Each time it is opened, one small script on it sends PostHog a single page-view event holding the page's address and a
+random number drawn for that visit alone, with person profiles switched off; it sets no cookie and writes nothing to
+your browser. Your IP address reaches PostHog with that request, as it reaches any server a page talks to; the PostHog
+project is set to discard it and to derive no location from it.</p>"""
 
 _CSS = """
 :root { color-scheme: light; --surface: #fcfcfb; --text: #0b0b0b; --text-2: #52514e; --rule: #e4e3df; }
@@ -77,8 +136,61 @@ def _rows(entries: list[dict[str, Any]], with_chart: bool = False) -> str:
     return "\n".join(out)
 
 
-def build_page(spec: dict[str, Any], filled: FilledSpec, fj: dict[str, Any], charts: dict[str, Path]) -> str:
-    """`fj` is figures.json as written by the render: the page shows exactly the numbers the video uses."""
+def counter_config(counter: Any) -> tuple[str, str] | None:
+    """Validate `counter` and return (host, key), or None when the counter is off. Fails closed: anything else raises,
+    and no message repeats the key (a mistaken private key must not reach a log)."""
+    if counter is None:
+        return None
+    if not isinstance(counter, dict) or set(counter) != {"host", "key"}:
+        raise ValueError("counter must be None or exactly {'host': ..., 'key': ...}")
+    host, key = counter["host"], counter["key"]
+    if not isinstance(key, str):
+        raise ValueError("counter key must be a PostHog project token (a string starting phc_)")
+    if "phx_" in key.lower():
+        raise ValueError("counter key looks like a PostHog personal API key (phx_): it is private and must never be put "
+                         "in a page; use the project token (phc_)")
+    if not _PROJECT_TOKEN.fullmatch(key):
+        raise ValueError("counter key must match ^phc_[A-Za-z0-9]{20,}$ (a PostHog project token)")
+    if not isinstance(host, str) or host not in COUNTER_HOSTS:
+        raise ValueError(f"counter host must be one of {', '.join(COUNTER_HOSTS)}")
+    return host, key
+
+
+def counter_script(host: str, key: str) -> str:
+    """The one inline script: a single anonymous $pageview to PostHog's capture endpoint, nothing else. The id is 16
+    random bytes drawn on every load and never stored; `credentials: "omit"` keeps the browser from attaching any cookie
+    or stored credential to the request; a failed send is dropped rather than retried. Call it only with
+    counter_config's output."""
+    return f"""<script>
+(function () {{
+  var b = new Uint8Array(16), id = "";
+  crypto.getRandomValues(b);
+  for (var i = 0; i < b.length; i++) id += (b[i] + 256).toString(16).slice(1);
+  fetch({json.dumps(host + CAPTURE_PATH)}, {{
+    method: "POST",
+    headers: {{"Content-Type": "application/json"}},
+    credentials: "omit",
+    body: JSON.stringify({{
+      "api_key": {json.dumps(key)},
+      "event": "$pageview",
+      "distinct_id": id,
+      "properties": {{"$process_person_profile": false, "$current_url": location.origin + location.pathname}}
+    }})
+  }}).catch(function () {{}});
+}})();
+</script>
+"""
+
+
+def build_page(spec: dict[str, Any], filled: FilledSpec, fj: dict[str, Any], charts: dict[str, Path], *,
+               counter: dict[str, str] | None = None) -> str:
+    """`fj` is figures.json as written by the render: the page shows exactly the numbers the video uses.
+
+    `counter` is None (no script at all, the default) or {"host": ..., "key": ...} for the anonymous PostHog page-view
+    counter described in the module docstring; it is validated before anything is built."""
+    on = counter_config(counter)
+    script = counter_script(*on) if on else ""
+    disclosure = COUNTER_DISCLOSURE if on else ""
     d = spec["dataset"]
     brand = spec["page"]["brand"]
     used = sorted({n for s in spec["scenes"] for n in placeholders(s["narration"])})
@@ -164,11 +276,11 @@ only. GitHub did not produce, endorse or approve this page.</p>
 <h2>How this page was made</h2>
 <p>The text was written by an AI system; every number in it is filled in from the computed figures above. The charts
 are drawn by code (matplotlib) from the data. The same analysis is also made as a video narrated by a synthetic voice
-(Kokoro text-to-speech), not a recording of any person.</p>
+(Kokoro text-to-speech), not a recording of any person.</p>{disclosure}
 </section>
 </article>
 </main>
 <footer>{_e(brand)}</footer>
-</body>
+{script}</body>
 </html>
 """

@@ -49,7 +49,7 @@ are checked against their rendered lines the same way. G5's timing promise (`pro
 | `charts.py` | one 1920x1080 PNG per scene, DejaVu Sans, source and licence footer; numbers only from `figures.json` |
 | `tts.py` | Kokoro narration per scene, sentence by sentence, with the fork's pinned model URLs and verified hashes |
 | `assemble.py` | frame-exact scenes (image length = narration length), one H.264/AAC encode, SRT sidecar, probe |
-| `page.py` | the web comparison arm: one self-contained HTML page with the brand from the spec (`page.brand`), no scripts; the video carries no brand |
+| `page.py` | the web comparison arm: one self-contained HTML page with the brand from the spec (`page.brand`); the video carries no brand. By default no scripts (byte-identical to before, pinned by `tests/fixtures/t1-page-no-counter.golden.html`). `build_page(..., counter={"host", "key"})` adds one inline script that sends one anonymous `$pageview` to PostHog (no cookie, no storage, random per-load id, person profiles off) and says so on the page; only a `phc_` project token and the EU/US cloud hosts are accepted. `render.py` does not switch it on. Before a counter page is deployed, the PostHog project must discard client IP data and have GeoIP off (the page says it does) |
 | `manifest.py` | `manifest.json` in the exact `VideoManifest` shape; auditor fields left null for the auditors |
 | `render.py` | runs all of it and writes `render-report.json` (timings, probe, runner minutes) |
 
