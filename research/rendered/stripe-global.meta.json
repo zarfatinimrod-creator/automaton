@@ -1,17 +1,17 @@
 {
   "url": "https://stripe.com/global",
   "slug": "stripe-global",
-  "fetchedAt": "2026-09-27T22:46:01.871Z",
+  "fetchedAt": "2026-09-28T13:17:04.965Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 501118,
-  "sha256": "6434ff9d0c50657151bacff7c2083c8c5b2140b113f9d10eaa6cf6f64b399cb5",
+  "sha256": "05a11fbf7bc3ac9436abeee365d4c2e9009ab622b63987a18d7fe73ccacd70aa",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/stripe-global.html",
   "textPath": "research/rendered/stripe-global.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "6434ff9d0c50657151bacff7c2083c8c5b2140b113f9d10eaa6cf6f64b399cb5",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -1,0 +1,239 @@
+KiezelPay faq
+
+&times;
+
+Enter Code
+
+Faq
+
+Purchase History
+
+Login
+
+Dashboard
+
+Sign Up
+
+Enter Code
+Faq
+Purchase History
+Login
+Dashboard
+Sign Up
+
+How can we help you?
+
+Already Paid?
+
+Is it asking you to pay when you already did?
+
+Not Getting Code?
+
+Is your smart watch not showing a code?
+
+Need Refund?
+
+Not satisfied? Let's start your refund right now.
+
+Purchase History?
+
+Let us help you find your past purchases.
+
+Other Common Questions
+
+I do not want to purchase this app/clockface. How do I stop these messages?
+
+These messages are shown because you are using a paid app or clockface of which the trial has expired.
+
+If you do not want to pay for the app or clockface, remove the app, or install another clockface from the appstore, and the messages will automatically stop.
+
+How to remove an app on a Fitbit smartwatch: https://help.fitbit.com/articles/en_US/Help_article/2224#remove
+
+How to change clockface on a Fitbit smartwatch: https://help.fitbit.com/articles/en_US/Help_article/2311
+
+All clockfaces and apps clearly mention in their description if they are paid or not, so it should not be hard to find a free one instead.
+
+How to recognize a paid app or clockface on Fitbit: https://help.fitbit.com/articles/en_US/Help_article/2224#free
+
+Is this a one-time or recurring payment?
+
+Most apps and clockfaces sold with KiezelPay are one-time payments for a lifetime license. However, some may be limited licenses that expire after a certain period.
+
+When a license has a time limit, this is clearly indicated in the shop, on the lookup page, and in the purchase confirmation email you receive.
+
+There are no subscriptions. Even if your license expires, you will never be automatically charged. To renew an expired license, you must manually purchase it again.
+
+Additionally, because we cannot always recognize you again after you remove and reinstall an app or clockface, it might ask for payment again if you ever remove and reinstall it.
+
+When that happens you can unlock it again for free by going to https://kzl.io/unlock
+
+It shows the message "This app requires the 'Internet' permission to be granted" . How do I fix this?
+
+When you install an app or clockface you can choose certain permissions; one of those is the "internet" permission. It cannot work without that permission.
+
+For an app or clockface that doesn't have it, the easiest way to fix this is to install another clockface first, then install the one you want again. As soon as you install it, a small screen will pop up which lets you choose all permissions you grant to this clockface, it's best to allow them all (but at least allow the internet permission).
+
+After you re-installed, and the trial (if any) ends, it will ask you to pay again. You can then unlock it for free here .
+
+I entered the purchase code on the purchase page and it tells me that code is unknown or already used
+
+Each code is valid for one hour. This probably means your code is expired.
+
+For now, the solution is to make the clockface restart, which will force a new code to be loaded and displayed.
+On a Fitbit smartwatch, you can do this by swiping up to the today screen, then backing out of it again until you are in the clockface again.
+
+On a Garmin smartwatch, shutdown and restart your watch.
+
+I'm trying to unlock an app I already bought and it tells me I haven't purchased it yet!
+
+This can have a few causes. It is possible you made a typo in your e-mail address when you purchased the app, so now our system cannot find your license.
+
+Another possibility is that you are trying to unlock another clockface/app than the one you actually purchased.
+
+Please double check that the name of the clockface/app you are trying to unlock is exactly the same as the name in the purchase success mail you got after purchasing (some names are confusingly similar unfortunately).
+
+If you are very sure you have the correct app, please contact us at the bottom of the page with the following information:
+
+send the PayPal InvoiceID, which you can find on the PayPal receipt you got after purchasing (it starts with REF).
+
+If you paid with creditcard instead, send the first 6 and last 4 digits of your creditcard number (do not send the complete number!).
+
+This will allow us to find your purchase and check why the unlock is not working.
+
+Please also send along the purchase purchase code your watch tells you to enter. This allows us to check which app is asking for payment.
+
+I bought a bundle. How can I install the other clockfaces/apps in the bundle?
+
+After your purchase, we sent you an e-mail containing more information about what you purchased.
+
+If you purchased a bundle, the e-mail will show all clockfaces/apps in the bundle with a download button next to each one of them.
+
+Use that download button to go to the appstore and install the clockface/app on your watch.
+
+If you cannot find the e-mail any more, you can perform a lookup of all your purchases at https://kiezelpay.com/lookup
+
+Note: These download links only work if you use them on the phone or tablet on which you have installed the Fitbit, Connect IQ (Garmin) or Pebble app!
+
+If the download button does not take you to the appstore, this probably means the developer has not correctly configured the appstore link in his/her account. You can contact the developer and ask him/her to fix this, or you can use the search functionality in the appstore to find the app/clockface instead.
+
+Does KiezelPay accept credit/debit card payments for app/clockface purchases?
+
+Yes.
+
+Why do you charge an extra $0.30 fee for customer credit/debit card payments?
+
+The exact extra cost depends on the price of the app being sold, but on average, it costs us an extra $0.30 to process credit card payments compared to PayPal.
+Our profit margins are not large enough to absorb this extra cost; on cheap apps we would even lose money for each purchase if we did that. Merchants can choose to charge the $0.30 extra fee to the customer, or absorb this fee themselves.
+
+If you do not want to pay the $0.30 extra fee, use PayPal instead. It is possible to link your credit/debit card in the PayPal account as payment source.
+
+Do you issue refunds?
+
+Yes, but developers are not able to perform the refund themselves, so please contact the KiezelPay helpdesk at the bottom of the page if you want a refund.
+
+We issue refunds for digital products within 30 days of the original purchase of the product. We recommend contacting us for assistance if you experience any issues. If you have any questions about our Returns and Refunds Policy, please contact us at the bottom of the page.
+
+I cannot find this code I need to purchase or unlock the clockface/app!
+
+You first install the clockface or app you want from the gallery as usual.
+
+The clockface/app will automatically show you the code when the trial ends (if it has any, otherwise it will show it immediately after installing). At that time you can use the code to purchase it at https://kzl.io/code or unlock it at https://kzl.io/unlock if you already paid for it before.
+
+Until that happens you don't have to do anything.
+
+How can I find what I have already purchased in the past?
+
+We have made a special page where you can look up your complete purchase history here .
+
+I already paid! Why am I charged a second time?
+
+Unfortunately we are not always able to recognize you again after (re)installing an app or clockface, so our system may think you are a new customer when that happens, and may ask you to pay again.
+
+Luckily you can unlock your clockface again for free here .
+
+Just enter the code it is showing you and the e-mail address you used for the original purchase and you will be up and running again in no time.
+
+I don't have a purchase code! Where can I find it? You did not send me a code!
+
+We do not send you a purchase code in your email, and you do not need a code to switch to another clockface.
+
+Instead, you first install the new clockface or app you want and then wait for it to ask you to pay again.
+
+As soon as that happens you can unlock it again for free by going to https://kzl.io/unlock using the code it shows you on the watch at that moment.
+
+If for some reason it does not ask you to pay again, that isn't a problem and you can just use the clockface as is. The functionality is exactly the same before and after unlocking.
+
+Developers
+
+Why should I use KiezelPay?
+
+Developers work hard and we understand that, so why shouldn't you get paid for your hard work? We made KiezelPay easy to add, and easy to get the money that you deserve. It takes minutes to set up and to start collecting money.
+
+How does KiezelPay work exactly?
+
+Once the user downloads the app/face with KiezelPay integrated, the user's watch will then vibrate and present a purchase code. The code is entered at kzl.io/code where they can purchase access to the app/clockface. Once purchased, the code screen disappears on the watch and they can continue to use the app/face as normal.
+
+How do I add KiezelPay to my app/face?
+
+The best way to get started is to sign up for an account and visit our developer documentation page. Then just follow our easy step by step guide.
+
+How long does it take to add KiezelPay to my app/face?
+
+The first time for an average developer it takes about 30-60 minutes; after a few times you can do it in a matter of minutes.
+
+I released my app with KiezelPay but keep getting mails that say "Thank you for purchasing...". What is going on?
+
+This probably means you forgot to disable test mode in the app and other people are "purchasing" your app in test mode. To fix this, release an update of your app as soon as possible with test mode disabled. Everyone that "purchased" your app when test mode was enabled will see a new payment notification within 24 hours (as soon as the periodic recheck happens) and will have to pay for real this time to unlock the app again.
+
+How do I sell all my faces/apps as a package?
+
+We support this with our "bundles" feature. You can simply create a new bundle on the products page in your account. When the customer installs one of your apps which is part of a bundle, he/she will get the choice to purchase the complete bundle, or only the single app.
+
+Can I integrate my device with KiezelPay to support paid apps?
+
+Yes! We are always looking for new partnerships. Our server architecture and API are very generic and usable for any type of (IoT) device. As long as your device has internet access and is able to communicate a 5 or 6 digit number to your customers, it can support paid apps with KiezelPay. Contact us for more info.
+
+What does it cost to start using KiezelPay?
+
+There is no cost to start using KiezelPay. KiezelPay does, however, take a 27% fee for each purchase with a minimum of $0.27 USD.
+
+What does KiezelPay offer for this 27% fee?
+
+KiezelPay saves you the trouble of creating and maintaining an Android or iOS companion app just to charge money for your watchfaces or apps (and pay a 30% fee in that case).
+
+The KiezelPay purchase rate and income is significantly higher than standalone donation rates for smartwatch apps and watchfaces.
+
+KiezelPay handles sales tax requirements. Feel free to review VATMOSS, a complex tax structure implemented across the EU. KiezelPay handles these taxes for you *
+
+A secure and easy to integrate library.
+
+A stable and fast online environment hosted in the cloud which allows you to manage your products, bundles and discounts with ease, and also offers a great sales dashboard and sales history.
+
+Support for you and your customers; we strive to answer all support requests within 24 hours.
+You can contact us for support at the bottom of the page or in our discord chat .
+
+A user friendly and good looking purchase process for your customers.
+
+The choice to pay with either PayPal or credit/debit card for your customers.
+
+The possibility to run your app in test mode so you can test the KiezelPay integration and licensing process as often as you want without having to spend money.
+
+KiezelPay is a system built upon years of experience with selling watchfaces and apps for Fitbit, Garmin and Pebble, first with Kiezel Watchfaces (started with this Kickstarter in 2015), then with KiezelPay in 2016 (with the Pebble app Snowy being the first app to be sold with our system in December 2016).
+
+* KiezelPay handles sales tax requirements. However handling the revenue you as developer will gain from KiezelPay as "income" and all tax requirements following from that in your country of residence is your own responsibility.
+
+As a developer, how do I get paid and receive my money?
+
+Currently we only do payouts via PayPal. Developers are paid out every last thursday of the month through a verified PayPal account. We will not send your income via any other source.
+
+Can I use KiezelPay to sell watchfaces or apps on Garmin watches?
+
+Yes! We also have a Garmin library. Sign up and check out our documentation or join our discord chat for more information and start selling on the Garmin platform!
+
+Cannot find any results matching your search :-(
+
+Still Need Help?
+
+Our customer support is here to help.
+
+Contact support

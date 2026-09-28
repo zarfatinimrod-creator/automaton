@@ -1,0 +1,17 @@
+{
+  "url": "https://addons.mozilla.org/api/v5/addons/addon/hebrew-il-language-pack/",
+  "slug": "amo-hebrew-langpack",
+  "fetchedAt": "2026-09-28T13:17:53.428Z",
+  "status": 200,
+  "contentType": "application/json",
+  "byteLength": 2808,
+  "sha256": "a14acd47daedeb42c1657a235cf3cb3694b6ec58cc7edd1c8f3ad4194923d254",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/amo-hebrew-langpack.json",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

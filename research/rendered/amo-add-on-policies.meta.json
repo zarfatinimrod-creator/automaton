@@ -1,0 +1,17 @@
+{
+  "url": "https://extensionworkshop.com/documentation/publish/add-on-policies/",
+  "slug": "amo-add-on-policies",
+  "fetchedAt": "2026-09-28T13:17:49.555Z",
+  "status": 200,
+  "contentType": "text/html",
+  "byteLength": 254555,
+  "sha256": "bbc0d0de3f8898eb021a9adaf4f546629b51506dbb12040dc5c3bd629b04d0b6",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/amo-add-on-policies.html",
+  "textPath": "research/rendered/amo-add-on-policies.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

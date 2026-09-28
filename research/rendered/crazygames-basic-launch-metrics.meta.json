@@ -1,0 +1,17 @@
+{
+  "url": "https://docs.crazygames.com/resources/basic-launch-metrics/",
+  "slug": "crazygames-basic-launch-metrics",
+  "fetchedAt": "2026-09-28T13:17:36.893Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 45727,
+  "sha256": "f5448453b5b556ecbfbcfa6710ea5cc42429b600dc563fe2e5d5c78c7d6b83f6",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/crazygames-basic-launch-metrics.html",
+  "textPath": "research/rendered/crazygames-basic-launch-metrics.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

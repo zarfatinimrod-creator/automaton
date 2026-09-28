@@ -43,7 +43,7 @@ In this video, you'll learn how to ensure you're set up correctly to receive a w
 
 How to ensure you are set up to receive a Wire Transfer AdSense Payment
 
-To view subtitles in your language, turn on YouTube captions . Select the Settings icon at the top right corner of the video player, select "Captions," and then specify your language.
+To view subtitles in your language, turn on YouTube captions . Select the Settings icon at the top right corner of the video player, select Captions , and then specify your language.
 
 How you'll be paid through wire transfer
 
@@ -865,7 +865,7 @@ Close search
 Google apps
 Main menu
 
-8860370199081320141
+12814507390619349073
 true
 
 Search Help Center

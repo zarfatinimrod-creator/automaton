@@ -1,17 +1,17 @@
 {
   "url": "https://api.topcoder.com/v6/challenges?status=ACTIVE",
   "slug": "topcoder-active-challenges",
-  "fetchedAt": "2026-09-27T22:46:05.493Z",
+  "fetchedAt": "2026-09-28T13:17:09.182Z",
   "status": 200,
   "contentType": "application/json; charset=utf-8",
   "byteLength": 7384,
-  "sha256": "a1011af24cf1edab75c5844a3b0c9872e58a72ca408ce6e56cd3d0a5f9bfa8af",
+  "sha256": "e14abec200b1538466d1e667c569f1289025bb1401f4f4020e5ad9f182b6d6ec",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/topcoder-active-challenges.json",
   "textPath": null,
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "a1011af24cf1edab75c5844a3b0c9872e58a72ca408ce6e56cd3d0a5f9bfa8af",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -1,0 +1,202 @@
+Security and Privacy Best Practice
+
+Overview
+Extend Websites
+
+Build Apps
+
+Go Headless
+References
+
+Changelog
+
+Build Apps
+
+Get Started
+
+Overview
+
+Quick Start
+
+Templates
+
+Tutorials
+
+Get an Idea
+
+Develop Your App
+
+About Developing Apps
+
+App Workspace
+
+Development Sites
+
+Extensions
+
+Develop an App with the CLI
+
+Develop a Self-Managed App
+
+Develop an App with Blocks
+
+Build with AI
+
+API Integrations
+
+Auth
+
+Design
+
+Launch Your App
+
+About Launching Apps
+
+Pricing and Billing
+
+Market Listing
+
+Localization
+
+Legal and Security
+
+GDPR Compliance
+
+Wix Terms of Use Policy
+
+Wix App Market Partner Agreement
+
+Security and Privacy Best Practice
+
+About Consent Apps
+
+App Distribution
+
+App Promotion
+
+Manage Your App
+
+User Support
+
+Versioning
+
+Data and Analytics
+
+Contact Us
+
+In This Article Verify the user’s identity
+Support HTTPS
+Prevent XSS attacks
+Keep data secure
+Make payment settings private
+Protect user data
+Secure passwords
+See also
+
+Security and Privacy Best Practice
+
+It's really important that you make sure that your app is secure and protects the user’s privacy. In this article we will go over some basic best practices.
+
+Verify the user’s identity
+
+On the server side, check that the signature was signed by Wix.
+
+To do this:
+
+Take the data part of the instance parameter and sign it using your secret key.
+
+Use base64url to decode the signature sent by Wix.
+
+Make sure value of the signed instance parameter (from step a) equals the value of the decoded signature (from step b). If these values don’t match, then don’t display your app – show an error instead.
+
+When Wix calls your app settings or internal dashboard component, check (on the server side) that the value of the permission property in the signed instance is ‘OWNER’. If it isn’t, display a ‘permission denied’ message instead of the app settings or dashboard content.
+
+For each save action performed in the app settings or internal dashboard component:
+
+Make sure you include the signed-instance parameter in the request.
+
+Before you save the changes, validate that this instance exists and that its value is the same as in the original request (when the user first opened the app settings or dashboard component).
+
+Check the signDate – if the date of the signature is older than a day, you should display a message saying ‘Please refresh to continue editing your App’.
+
+Support HTTPS
+
+We support HTTPS in the Wix Dashboard, Wix Editor, and live sites, so make sure your app supports HTTPS in all endpoints.
+
+Here are a few pointers to get you started:
+
+Install an SSL certificate on your servers. Check out Let’s Encrypt , a free and easy to use SSL certificate authority.
+
+Verify that all links in your app use HTTPS – links to pages, images, JavaScript, CSS, etc.
+
+Make sure all content in your app supports HTTPS, including third-party content like statistics and CDNs.
+
+Prevent XSS attacks
+
+Make sure that no one can enter malicious code anywhere in your app. Check your app’s internal dashboard, settings panel, and website component for all input fields where users/site visitors can enter text. For example: comment fields, forms, search fields, title/descriptions fields, etc.
+
+Keep data secure
+
+Encrypt all sensitive data, and don’t store sensitive data in cookies.
+
+Make payment settings private
+
+Do users enter sensitive data, such payment info, in your app? Show it to site owners only – and hide it from contributors.
+
+Site owners create and own the site.
+
+Contributors are invited by the site owners to edit and manage an existing website. Contributors have access to all apps on the site.
+
+What this means for you:
+
+Check who’s logged in: When Wix calls your endpoint, check the app instance to see if the user ID (uid) is the same as the owner ID (siteOwnerId).
+
+If it’s the site owner, show your endpoint as is: You’ll know it’s the site owner, if the uid is the same as the siteOwnerId.
+
+If it’s a contributor, block payment settings: You’ll know it’s a contributor, if the uid is different from the siteOwnerId. Here’s what to show in the App Settings panel and internal Dashboard component.
+
+Tip:
+
+Ready to test your app? Make sure to check your app as a site owner and as a contributor.
+
+Protect user data
+
+Since the EU rolled out their data protection regulation known as GDPR , users may contact you about accessing, changing, or deleting any personal data your app stores about users or site visitors.
+
+You can handle each request manually as it comes in, or you can develop a faster way to handle these requests automatically. We suggest learning more about GDPR so that you can understand how it affects your app.
+
+If a Wix user (who is both the site owner and an EU citizen) contacts you about their personal data, here’s what we suggest:
+
+Ask them to provide details as proof of identity: this is needed to protect their security.
+
+Let users know you’re processing their request: send an email to let users know you’re handling their request.
+
+Complete their request as soon as possible: Once you’ve proven the user’s identity, we suggesting handling their request as follows:
+
+If users request to edit or delete their personal data, comply without undue delay. We suggest completing this request within a week (but no more than 30 days).
+
+If users request to access their personal data, send it within 30 days. Always send data to the same email/channel that the user reached out to you in.
+
+Secure passwords
+
+Does your app ask users to register/connect an account? Keep users’ passwords secure and confidential, as follows:
+
+Use a trusted password hashing function : Passwords must be hashed with a secure hashing function such as SHA-256 or bcrypt. Storing raw passwords is a violation of the GDPR.
+
+Add a long, unique random salt or nonce to each password you store : By making each password unique and long enough, you limit the chances of brute-force attacks (when an attacker tries to guess the password or password key).
+
+Handle forgotten passwords securely :
+
+Send an email with a reset link so the user can change their password. Don’t send the raw password in an email.
+
+Set reset links to expire within 1-2 hours.
+
+Make sure the endpoint used for reset links is protected from brute-force attacks.
+
+See also
+
+GDPR and data protection compliance
+
+Last updated: 3 June 2024
+Did this help?
+Yes No

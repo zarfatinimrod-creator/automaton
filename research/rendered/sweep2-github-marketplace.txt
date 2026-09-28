@@ -208,21 +208,25 @@ Recently added
 
 More items
 
-CircleCI
+Qlty Cloud
 App
-Ship trusted code with confidence. Fast feedback, flexible execution, and enterprise-grade security
+Code quality and coverage done right
+
+Azure Pipelines
+App
+Continuously build, test, and deploy to any platform and cloud
 
 Codecov | Code Coverage
 App
 Automatic test report merging for all CI and languages into a single code coverage report directly into your pull request
 
-Zenhub
+Codacy
 App
-Project management that's seamlessly integrated with GitHub’s data & interface, builds powerful insights & automates tasks
+Codacy helps to build effortless code quality and security for developers
 
-Qlty Cloud
+CircleCI
 App
-Code quality and coverage done right
+Ship trusted code with confidence. Fast feedback, flexible execution, and enterprise-grade security
 
 Imgbot
 App
@@ -232,61 +236,57 @@ CodeFactor
 App
 Automated code review for humans and AI
 
-Azure Pipelines
-App
-Continuously build, test, and deploy to any platform and cloud
-
 Rewind Backups for GitHub
 App
 Automated GitHub backups so you can recover fast, stay compliant, and never lose a line of code
 
-Codacy
+Zenhub
 App
-Codacy helps to build effortless code quality and security for developers
+Project management that's seamlessly integrated with GitHub’s data & interface, builds powerful insights & automates tasks
 
 Zube
 App
 An Agile project management tool that seamlessly integrates with GitHub Issues
 
-Honeybadger.io
+DeepScan
 App
-The web developer's secret weapon
+Advanced static analysis for automatically finding runtime errors in JavaScript, TypeScript, React, and Vue code
 
-CommitCheck
+Waydev
 App
-CommitCheck ensures your commit messages are consistent and contain all required information
+AI-Powered Software Engineering Intelligence Platform
 
-Create Issue Branch
+Octobox
 App
-Bot that creates an issue branch after assigning an issue
+Spend less time managing your GitHub notifications
 
-PR Scheduler
+Slack + GitHub
 App
-Lets developers schedule PRs to be merged at a specific date/time. Useful for scheduling posts on static blog frameworks
+Connect your code without leaving Slack
 
-BuildPulse
+Datree
 App
-Faster, cheaper GitHub Actions runners, with flaky tests detected and quarantined on every run
+YAML configs and K8s manifests validation tool
 
-abaplint
+Atlassian
 App
-ABAP quality assurance and static analysis
+GitHub for Atlassian unifies data, automates workflows, and syncs development across GitHub, Jira, and your Atlassian apps
 
-GitLive
+Mergify
 App
-Accelerate your development team with preemptive merge conflict detection
+Pull requests automation service. Merge your pull requests faster with automatic merges and a merge queue
+
+Review Notebook App
+App
+Code Review & Collaboration for Jupyter Notebooks
+
+Pull Request Size
+App
+Apply size labels to Pull Requests based on the total lines of code changed
 
 Ranger
 App
 A sidekick for repository maintainers
-
-gitpod.io
-App
-Always ready to code - Spin up fresh cloud development environments for each task, fully automated, in seconds
-
-PullApprove v3
-App
-Code review assignment and custom workflows for teams
 
 Footer
 

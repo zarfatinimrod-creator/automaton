@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>KiezelPay faq</title>
+    <meta charset="utf-8"><script type="text/javascript">(window.NREUM||(NREUM={})).init={ajax:{deny_list:["bam.nr-data.net"]}};(window.NREUM||(NREUM={})).loader_config={licenseKey:"9f0da5ee7b",applicationID:"22295966",browserID:"22295977"};;/*! For license information please see nr-loader-rum-1.322.0.min.js.LICENSE.txt */
+(()=>{var e={8122(e,t,r){"use strict";r.d(t,{a:()=>i});var n=r(944);function i(e,t){try{if(!e||"object"!=typeof e)return(0,n.R)(3);if(!t||"object"!=typeof t)return(0,n.R)(4);const r=Object.create(Object.getPrototypeOf(t),Object.getOwnPropertyDescriptors(t)),a=0===Object.keys(r).length?e:r;for(let s in a)if(void 0!==e[s])try{if(null===e[s]){r[s]=null;continue}Array.isArray(e[s])&&Array.isArray(t[s])?r[s]=Array.from(new Set([...e[s],...t[s]])):e[s]instanceof Map||e[s]instanceof Set||e[s]instanceof Date||e[s]instanceof RegExp?r[s]=e[s]:"object"==typeof e[s]&&null!==t[s]&&"object"==typeof t[s]?r[s]=i(e[s],t[s]):r[s]=e[s]}catch(e){r[s]||(0,n.R)(1,e)}return r}catch(e){(0,n.R)(2,e)}}},2555(e,t,r){"use strict";r.d(t,{f:()=>s});var n=r(384),i=r(8122);const a={beacon:n.NT.beacon,errorBeacon:n.NT.errorBeacon,licenseKey:void 0,applicationID:void 0,sa:void 0,queueTime:void 0,applicationTime:void 0,ttGuid:void 0,user:void 0,account:void 0,product:void 0,extra:void 0,jsAttributes:{},userAttributes:void 0,atts:void 0,transactionName:void 0,tNamePlain:void 0};function s(e){try{return!!e.licenseKey&&!!e.errorBeacon&&!!e.applicationID}catch(e){return!1}}r.d(t,["D",0,e=>(0,i.a)(e,a)])},7699(e,t,r){"use strict";var n=r(860);const i={[n.K7.logging]:!0,[n.K7.genericEvents]:!0,[n.K7.jserrors]:!0,[n.K7.ajax]:!0};r.d(t,["It",0,1e6,"KC",0,i,"qh",0,"SESSION_ERROR"])},9324(e,t,r){"use strict";r.d(t,["xv",0,"1.322.0"])},981(e,t,r){"use strict";r.d(t,["R",0,{AJAX:"AjaxRequest",PA:"PageAction",UA:"UserAction",BP:"BrowserPerformance",WS:"WebSocket",SPV:"SecurityPolicyViolation",JSE:"JavaScriptError",LOG:"Log",PVE:"PageView",PVT:"PageViewTiming",SR:"SessionReplay",ST:"SessionTrace",BI:"BrowserInteraction"}])},6154(e,t,r){"use strict";var n=r(1863);const i="undefined"!=typeof window&&!!window.document,a="undefined"!=typeof WorkerGlobalScope&&("undefined"!=typeof self&&self instanceof WorkerGlobalScope&&self.navigator instanceof WorkerNavigator||"undefined"!=typeof globalThis&&globalThis instanceof WorkerGlobalScope&&globalThis.navigator instanceof WorkerNavigator),s=i?window:"undefined"!=typeof WorkerGlobalScope&&("undefined"!=typeof self&&self instanceof WorkerGlobalScope&&self||"undefined"!=typeof globalThis&&globalThis instanceof WorkerGlobalScope&&globalThis),o=Boolean("hidden"===s?.document?.visibilityState),c=""+s?.location,u=/iPad|iPhone|iPod/.test(s.navigator?.userAgent),d=u&&"undefined"==typeof SharedWorker,l=((()=>{const e=s.navigator?.userAgent?.match(/Firefox[/\s](\d+\.\d+)/);Array.isArray(e)&&e.length>=2&&e[1]})(),Date.now()-(0,n.t)());r.d(t,["OF",0,u,"RI",0,i,"WN",0,l,"bv",0,a,"gm",0,s,"m",0,c,"mw",0,o,"sb",0,d,"zk",0,()=>{const e=s?.performance?.getEntriesByType?.("navigation")?.[0];if(e&&e.responseStart>0&&e.responseStart<s.performance.now())return e}])},3241(e,t,r){"use strict";r.d(t,{W:()=>i});var n=r(6154);function i(e={}){try{n.gm.dispatchEvent(new CustomEvent("newrelic",{detail:e}))}catch(e){}}},1687(e,t,r){"use strict";r.d(t,{Ak:()=>o,Ze:()=>u,x3:()=>c});var n=r(3241),i=r(3606),a=r(860),s=r(2646);function o(e,t){if(!e)return;const r={staged:!1,priority:a.P3[t]||0};e.runtime.drainRegistry.get(t)||e.runtime.drainRegistry.set(t,r)}function c(e,t){if(!e)return;const r=e.runtime.drainRegistry;r&&(r.get(t)&&r.delete(t),l(e,t,!1),r.size&&d(e))}function u(e,t="feature",r=!1){if(e){if(!e.runtime.drainRegistry.get(t)||r)return l(e,t);e.runtime.drainRegistry.get(t).staged=!0,d(e)}}function d(e){if(!e)return;const t=Array.from(e.runtime.drainRegistry);t.every(([e,t])=>t.staged)&&(t.sort((e,t)=>e[1].priority-t[1].priority),t.forEach(([t])=>{e.runtime.drainRegistry.delete(t),l(e,t)}))}function l(e,t,r=!0){if(!e)return;const a=e.ee,o=i.i.handlers;if(a&&!a.aborted&&a.backlog&&o){if((0,n.W)({type:"lifecycle",name:"drain",feature:t}),r){const e=a.backlog[t],r=o[t];if(r){for(let t=0;e&&t<e.length;++t)f(e[t],r);Object.entries(r).forEach(([e,t])=>{Object.values(t||{}).forEach(t=>{t[0]?.on&&t[0].context()instanceof s.y&&!t[0].listeners(e).includes(t[1])&&t[0].on(e,t[1])})})}}a.isolatedBacklog||delete o[t],a.backlog[t]=null,a.emit("drain-"+t,[])}}function f(e,t){var r=e[1];Object.values(t[r]||{}).forEach(t=>{var r=e[0];if(t[0]===r){var n=t[1],i=e[3],a=e[2];n.apply(i,a)}})}},7836(e,t,r){"use strict";var n=r(384),i=r(8990),a=r(2646),s=r(5607);const o="nr@context:".concat(s.W),c=function e(t,r){var n={},s={},d={},l=!1;try{l=16===r.length&&u.initializedAgents?.[r]?.runtime.isolatedBacklog}catch(e){}var f={on:p,addEventListener:p,removeEventListener:function(e,t){var r=n[e];if(!r)return;for(var i=0;i<r.length;i++)r[i]===t&&r.splice(i,1)},emit:function(e,r,n,i,a){!1!==a&&(a=!0);if(c.aborted&&!i)return;t&&a&&t.emit(e,r,n);var o=g(n);m(e).forEach(e=>{e.apply(o,r)});var u=v()[s[e]];u&&u.push([f,e,r,o]);return o},get:h,listeners:m,context:g,buffer:function(e,t){const r=v();if(t=t||"feature",f.aborted)return;Object.entries(e||{}).forEach(([e,n])=>{s[n]=t,t in r||(r[t]=[])})},abort:function(){f._aborted=!0,Object.keys(f.backlog).forEach(e=>{delete f.backlog[e]})},isBuffering:function(e){return!!v()[s[e]]},debugId:r,backlog:l?{}:t&&"object"==typeof t.backlog?t.backlog:{},isolatedBacklog:l};return Object.defineProperty(f,"aborted",{get:()=>{let e=f._aborted||!1;return e||(t&&(e=t.aborted),e)}}),f;function g(e){return e&&e instanceof a.y?e:e?(0,i.I)(e,o,()=>new a.y(o)):new a.y(o)}function p(e,t){n[e]=m(e).concat(t)}function m(e){return n[e]||[]}function h(t){return d[t]=d[t]||e(f,t)}function v(){return f.backlog}}(void 0,"globalEE"),u=(0,n.Zm)();u.ee||(u.ee=c),r.d(t,["P",0,o,"ee",0,c])},2646(e,t,r){"use strict";r.d(t,{y:()=>n});class n{constructor(e){this.contextId=e}}},9908(e,t,r){"use strict";r.d(t,{d:()=>n,p:()=>i});var n=r(7836).ee.get("handle");function i(e,t,r,i,a){a?(a.buffer([e],i),a.emit(e,t,r)):(n.buffer([e],i),n.emit(e,t,r))}},3606(e,t,r){"use strict";r.d(t,{i:()=>a});var n=r(9908);a.on=s;var i=a.handlers={};function a(e,t,r,a){s(a||n.d,i,e,t,r)}function s(e,t,r,i,a){a||(a="feature"),e||(e=n.d);var s=t[a]=t[a]||{};(s[r]=s[r]||[]).push([e,i])}},3878(e,t,r){"use strict";function n(e,t){return{capture:e,passive:!1,signal:t}}function i(e,t,r=!1,i){window.addEventListener(e,t,n(r,i))}function a(e,t,r=!1,i){document.addEventListener(e,t,n(r,i))}r.d(t,{DD:()=>a,jT:()=>n,sp:()=>i})},5607(e,t,r){"use strict";const n=(0,r(9566).bz)();r.d(t,["W",0,n])},9566(e,t,r){"use strict";r.d(t,{LA:()=>s,bz:()=>a});var n=r(6154);function i(e,t){return e?15&e[t]:16*Math.random()|0}function a(){const e=n.gm?.crypto||n.gm?.msCrypto;let t,r=0;return e&&e.getRandomValues&&(t=e.getRandomValues(new Uint8Array(30))),"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".split("").map(e=>"x"===e?i(t,r++).toString(16):"y"===e?(3&i()|8).toString(16):e).join("")}function s(e){const t=n.gm?.crypto||n.gm?.msCrypto;let r,a=0;t&&t.getRandomValues&&(r=t.getRandomValues(new Uint8Array(e)));const s=[];for(var o=0;o<e;o++)s.push(i(r,a++).toString(16));return s.join("")}},2614(e,t,r){"use strict";r.d(t,["BB",0,18e5,"Wt",0,"NRBA_SESSION::","iL",0,{SAME_TAB:"same-tab",CROSS_TAB:"cross-tab"},"tS",0,{STARTED:"session-started",PAUSE:"session-pause",RESET:"session-reset",RESUME:"session-resume",UPDATE:"session-update"},"wk",0,144e5])},1863(e,t,r){"use strict";function n(){return Math.floor(performance.now())}r.d(t,{t:()=>n})},944(e,t,r){"use strict";r.d(t,{R:()=>i});var n=r(3241);function i(e,t){"function"==typeof console.debug&&(console.debug("New Relic Warning: https://github.com/newrelic/newrelic-browser-agent/blob/main/docs/warning-codes.md#".concat(e),t),(0,n.W)({drained:null,type:"data",name:"warn",feature:"warn",data:{code:e,secondary:t}}))}},8990(e,t,r){"use strict";r.d(t,{I:()=>i});var n=Object.prototype.hasOwnProperty;function i(e,t,r){if(n.call(e,t))return e[t];var i=r();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(e,t,{value:i,writable:!0,enumerable:!1}),i}catch(e){}return e[t]=i,i}},6389(e,t,r){"use strict";function n(e,t=500,r={}){const n=r?.leading||!1;let i;return(...r)=>{n&&void 0===i&&(e.apply(this,r),i=setTimeout(()=>{i=clearTimeout(i)},t)),n||(clearTimeout(i),i=setTimeout(()=>{e.apply(this,r)},t))}}function i(e){let t=!1;return(...r)=>{t||(t=!0,e.apply(this,r))}}r.d(t,{J:()=>i,s:()=>n})},1910(e,t,r){"use strict";r.d(t,{i:()=>a});var n=r(944);const i=new Map;function a(...e){return e.every(e=>{if(i.has(e))return i.get(e);const t="function"==typeof e?e.toString():"",r=t.includes("[native code]"),a=t.includes("nrWrapper");return r||a||(0,n.R)(64,e?.name||t),i.set(e,r),r})}},5289(e,t,r){"use strict";r.d(t,{GG:()=>s,Qr:()=>c,sB:()=>o});var n=r(3878),i=r(6389);function a(){return"undefined"==typeof document||"complete"===document.readyState}function s(e,t){if(a())return e();const r=(0,i.J)(e),s=setInterval(()=>{a()&&(clearInterval(s),r())},500);(0,n.sp)("load",r,t)}function o(e){if(a())return e();(0,n.DD)("DOMContentLoaded",e)}function c(e){if(a())return e();(0,n.sp)("popstate",e)}},384(e,t,r){"use strict";r.d(t,{Zm:()=>c,bQ:()=>d,dV:()=>u,pV:()=>l});var n=r(6154),i=r(1863),a=r(944),s=r(1910);const o={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net"};function c(){return n.gm.NREUM||(n.gm.NREUM={}),void 0===n.gm.newrelic&&(n.gm.newrelic=n.gm.NREUM),n.gm.NREUM}function u(){let e=c();return e.o||(e.o={ST:n.gm.setTimeout,SI:n.gm.setImmediate||n.gm.setInterval,CT:n.gm.clearTimeout,XHR:n.gm.XMLHttpRequest,REQ:n.gm.Request,EV:n.gm.Event,PR:n.gm.Promise,MO:n.gm.MutationObserver,FETCH:n.gm.fetch,WS:n.gm.WebSocket},(0,s.i)(...Object.values(e.o))),e}function d(e,t){let r=c();r.initializedAgents??={},t.initializedAt={ms:(0,i.t)(),date:new Date},r.initializedAgents[e]=t,2===Object.keys(r.initializedAgents).length&&(0,a.R)(69)}function l(){return function(){let e=c();const t=e.info||{};e.info={beacon:o.beacon,errorBeacon:o.errorBeacon,...t}}(),function(){let e=c();const t=e.init||{};e.init={...t}}(),u(),function(){let e=c();const t=e.loader_config||{};e.loader_config={...t}}(),c()}r.d(t,["NT",0,o])},2843(e,t,r){"use strict";r.d(t,{G:()=>a,u:()=>i});var n=r(3878);function i(e,t=!1,r,i){(0,n.DD)("visibilitychange",function(){if(t)return void("hidden"===document.visibilityState&&e());e(document.visibilityState)},r,i)}function a(e,t,r){(0,n.sp)("pagehide",e,t,r)}},9300(e,t,r){"use strict";r(860).K7.ajax;r.d(t,["mo",0,{NONE:"none",FAILURES:"failures",ALL:"all"}])},3969(e,t,r){"use strict";const n=r(860).K7.metrics;r.d(t,["TZ",0,n,"XG",0,"storeEventMetrics","xV",0,"storeSupportabilityMetrics"])},6630(e,t,r){"use strict";const n=r(860).K7.pageViewEvent;r.d(t,["T",0,n])},782(e,t,r){"use strict";const n=r(860).K7.pageViewTiming;r.d(t,["T",0,n])},4234(e,t,r){"use strict";r.d(t,{W:()=>i});var n=r(1687);class i{constructor(e,t){this.agentRef=e,this.ee=e?.ee,this.featureName=t,this.blocked=!1}deregisterDrain(){(0,n.x3)(this.agentRef,this.featureName)}}},7767(e,t,r){"use strict";var n=r(6154);r.d(t,["V",0,e=>n.RI&&!0===e?.privacy.cookies_enabled])},8362(e,t,r){"use strict";r.d(t,{d:()=>a});var n=r(9566),i=r(1741);class a extends i.W{agentIdentifier=(0,n.LA)(16)}},1741(e,t,r){"use strict";r.d(t,{W:()=>a});var n=r(944),i=r(4261);class a{#e(e,...t){if(this[e]!==a.prototype[e])return this[e](...t);(0,n.R)(35,e)}addPageAction(e,t){return this.#e(i.hG,e,t)}register(e){return this.#e(i.eY,e)}recordCustomEvent(e,t){return this.#e(i.fF,e,t)}setPageViewName(e,t){return this.#e(i.Fw,e,t)}setCustomAttribute(e,t,r){return this.#e(i.cD,e,t,r)}noticeError(e,t){return this.#e(i.o5,e,t)}setUserId(e,t=!1){return this.#e(i.Dl,e,t)}setApplicationVersion(e){return this.#e(i.nb,e)}setErrorHandler(e){return this.#e(i.bt,e)}addRelease(e,t){return this.#e(i.k6,e,t)}log(e,t){return this.#e("log",e,t)}start(){return this.#e("start")}finished(e){return this.#e(i.BL,e)}recordReplay(){return this.#e(i.CH)}pauseReplay(){return this.#e(i.Tb)}addToTrace(e){return this.#e(i.U2,e)}setCurrentRouteName(e){return this.#e(i.PA,e)}interaction(e){return this.#e(i.dT,e)}wrapLogger(e,t,r){return this.#e(i.Wb,e,t,r)}measure(e,t){return this.#e(i.V1,e,t)}consent(e){return this.#e(i.Pv,e)}}},4261(e,t,r){"use strict";r.d(t,["BL",0,"finished","CH",0,"recordReplay","Dl",0,"setUserId","Fw",0,"setPageViewName","PA",0,"setCurrentRouteName","Pv",0,"consent","Tb",0,"pauseReplay","U2",0,"addToTrace","V1",0,"measure","Wb",0,"wrapLogger","bt",0,"setErrorHandler","cD",0,"setCustomAttribute","dT",0,"interaction","eY",0,"register","fF",0,"recordCustomEvent","hG",0,"addPageAction","k6",0,"addRelease","nb",0,"setApplicationVersion","o5",0,"noticeError"])},1738(e,t,r){"use strict";r.d(t,{U:()=>l,Y:()=>d});var n=r(3241),i=r(9908),a=r(1863),s=r(944),o=r(3969),c=r(8362),u=r(860);function d(e,t,r,a){const d=a||r;!d||d[e]&&d[e]!==c.d.prototype[e]||(d[e]=function(){(0,i.p)(o.xV,["API/"+e+"/called"],void 0,u.K7.metrics,r.ee),(0,n.W)({drained:!!r.runtime?.activatedFeatures,type:"data",name:"api",feature:"api-"+e,data:{}});try{return t.apply(this,arguments)}catch(e){(0,s.R)(23,e)}})}function l(e,t,r,n,s){const o=e.info;null===r?delete o.jsAttributes[t]:o.jsAttributes[t]=r,(s||null===r)&&(0,i.p)("api-"+n,[(0,a.t)(),t,r],void 0,"session",e.ee)}},8374(e,t,r){r.nc=(()=>{try{return document?.currentScript?.nonce}catch(e){}return""})()},860(e,t,r){"use strict";const n="events",i="jserrors",a="browser/blobs",s="browser/logs",o={ajax:"ajax",genericEvents:"generic_events",jserrors:i,logging:"logging",metrics:"metrics",pageAction:"page_action",pageViewEvent:"page_view_event",pageViewTiming:"page_view_timing",sessionReplay:"session_replay",sessionTrace:"session_trace",softNav:"soft_navigations"},c={[o.pageViewEvent]:1,[o.pageViewTiming]:2,[o.metrics]:3,[o.jserrors]:4,[o.softNav]:5,[o.ajax]:6,[o.sessionTrace]:7,[o.sessionReplay]:8,[o.logging]:9,[o.genericEvents]:10},u={[o.pageViewEvent]:"rum",[o.pageViewTiming]:n,[o.ajax]:n,[o.softNav]:n,[o.metrics]:i,[o.jserrors]:i,[o.sessionTrace]:a,[o.sessionReplay]:a,[o.logging]:s,[o.genericEvents]:"ins"};r.d(t,["$J",0,u,"K7",0,o,"P3",0,c,"XX",0,i,"Yy",0,s,"df",0,a,"hg",0,"connect"])}};const t={};function r(n){const i=t[n];if(void 0!==i)return i.exports;const a=t[n]={exports:{}};return e[n](a,a.exports,r),a.exports}r.m=e,r.d=(e,t)=>{if(Array.isArray(t))for(var n=0;n<t.length;){var i=t[n++],a=t[n++];r.o(e,i)?0===a&&n++:0===a?Object.defineProperty(e,i,{enumerable:!0,value:t[n++]}):Object.defineProperty(e,i,{enumerable:!0,get:a})}else for(var i in t)r.o(t,i)&&!r.o(e,i)&&Object.defineProperty(e,i,{enumerable:!0,get:t[i]})},r.f={},r.e=e=>Promise.all(Object.keys(r.f).reduce((t,n)=>(r.f[n](e,t),t),[])),r.u=e=>"nr-rum-1.322.0.min.js",r.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t),(()=>{const e={},t="NRBA-1.322.0.PROD:";r.l=(n,i,a,s)=>{if(e[n])return void e[n].push(i);let o,c;if(void 0!==a){const e=document.getElementsByTagName("script");for(var u=0;u<e.length;u++){const r=e[u];if(r.getAttribute("src")==n||r.getAttribute("data-webpack")==t+a){o=r;break}}}if(!o){c=!0;var d={296:"sha512-/59P7qAoMYQDJAZerTRPChdYcdrlcoEAw2TwA1wz6Y0/XLmt3sblLI5JCXAuxG0YxsW7iqJzgrcO7NJWO58EfQ=="};o=document.createElement("script"),o.charset="utf-8",r.nc&&o.setAttribute("nonce",r.nc),o.setAttribute("data-webpack",t+a),o.src=n,0!==o.src.indexOf(window.location.origin+"/")&&(o.crossOrigin="anonymous"),d[s]&&(o.integrity=d[s])}e[n]=[i];const l=(t,r)=>{o.onerror=o.onload=null,clearTimeout(f);const i=e[n];if(delete e[n],o.parentNode?.removeChild(o),i?.forEach(e=>e(r)),t)return t(r)},f=setTimeout(l.bind(null,void 0,{type:"timeout",target:o}),12e4);o.onerror=l.bind(null,o.onerror),o.onload=l.bind(null,o.onload),c&&document.head.appendChild(o)}})(),r.r=e=>{Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},r.p="https://js-agent.newrelic.com/",(()=>{const e={374:0,840:0};r.f.j=(t,n)=>{let i=r.o(e,t)?e[t]:void 0;if(0!==i)if(i)n.push(i[2]);else{const a=new Promise((r,n)=>i=e[t]=[r,n]);n.push(i[2]=a);const s=r.p+r.u(t),o=new Error,c=n=>{if(r.o(e,t)&&(i=e[t],0!==i&&(e[t]=void 0),i)){const e=n&&("load"===n.type?"missing":n.type),r=n&&n.target&&n.target.src;o.message="Loading chunk "+t+" failed: ("+e+": "+r+")",o.name="ChunkLoadError",o.type=e,o.request=r,i[1](o)}};r.l(s,c,"chunk-"+t,t)}};const t=(t,n)=>{let[i,a,s]=n;var o,c,u=0;if(i.some(t=>0!==e[t])){for(o in a)r.o(a,o)&&(r.m[o]=a[o]);if(s)s(r)}for(t&&t(n);u<i.length;u++)c=i[u],r.o(e,c)&&e[c]&&e[c][0](),e[c]=0},n=self["webpackChunk:NRBA-1.322.0.PROD"]=self["webpackChunk:NRBA-1.322.0.PROD"]||[];n.forEach(t.bind(null,0)),n.push=t.bind(null,n.push.bind(n))})(),(()=>{"use strict";r(8374);var e=r(8362),t=r(860);const n=Object.values(t.K7);var i=r(384),a=r(1741);var s=r(2555),o=r(981);t.K7.genericEvents,o.R.PA,o.R.UA,o.R.BP;const c={RESOURCES:"experimental.resources",REGISTER:"register"};var u=r(9300);const d=e=>{if(!e||"string"!=typeof e)return!1;try{document.createDocumentFragment().querySelector(e)}catch{return!1}return!0};var l=r(2614),f=r(944),g=r(8122);const p="[data-nr-mask]",m=e=>(0,g.a)(e,(()=>{const e={feature_flags:[],experimental:{register:!1,resources:!1,iframe_bridge:!1,iframe_domains:[]},mask_selector:"*",block_selector:"[data-nr-block]",mask_input_options:{color:!1,date:!1,"datetime-local":!1,email:!1,month:!1,number:!1,range:!1,search:!1,tel:!1,text:!1,time:!1,url:!1,week:!1,textarea:!1,select:!1,password:!0}};return{ajax:{deny_list:void 0,block_internal:!0,enabled:!0,autoStart:!0,capture_payloads:u.mo.NONE},api:{register:{get enabled(){return e.feature_flags.includes(c.REGISTER)||e.experimental.register},set enabled(t){e.experimental.register=t},duplicate_data_to_container:!1,get allow_iframe_bridge(){return e.feature_flags.includes(c.IFRAME_BRIDGE)||e.experimental.iframe_bridge},set allow_iframe_bridge(t){e.experimental.iframe_bridge=t},get iframe_domains(){return e.experimental.iframe_domains},set iframe_domains(t){Array.isArray(t)?e.experimental.iframe_domains=t:(0,f.R)(1,t)}}},browser_consent_mode:{enabled:!1},distributed_tracing:{enabled:void 0,exclude_newrelic_header:void 0,cors_use_newrelic_header:void 0,cors_use_tracecontext_headers:void 0,allowed_origins:void 0},get feature_flags(){return e.feature_flags},set feature_flags(t){e.feature_flags=t},generic_events:{enabled:!0,autoStart:!0},harvest:{interval:30},jserrors:{enabled:!0,autoStart:!0},logging:{enabled:!0,autoStart:!0},metrics:{enabled:!0,autoStart:!0},obfuscate:void 0,page_action:{enabled:!0},page_view_event:{enabled:!0,autoStart:!0},page_view_timing:{enabled:!0,autoStart:!0},performance:{capture_marks:!1,capture_measures:!1,capture_detail:!0,resources:{get enabled(){return e.feature_flags.includes(c.RESOURCES)||e.experimental.resources},set enabled(t){e.experimental.resources=t},asset_types:[],first_party_domains:[],ignore_newrelic:!0}},privacy:{cookies_enabled:!0},proxy:{assets:void 0,beacon:void 0},session:{expiresMs:l.wk,inactiveMs:l.BB},session_replay:{autoStart:!0,enabled:!1,preload:!1,sampling_rate:10,error_sampling_rate:100,collect_fonts:!1,inline_images:!1,fix_stylesheets:!0,mask_all_inputs:!0,get mask_text_selector(){return e.mask_selector},set mask_text_selector(t){d(t)?e.mask_selector="".concat(t,",").concat(p):""===t||null===t?e.mask_selector=p:(0,f.R)(5,t)},get block_class(){return"nr-block"},get ignore_class(){return"nr-ignore"},get mask_text_class(){return"nr-mask"},get block_selector(){return e.block_selector},set block_selector(t){d(t)?e.block_selector+=",".concat(t):""!==t&&(0,f.R)(6,t)},get mask_input_options(){return e.mask_input_options},set mask_input_options(t){t&&"object"==typeof t?e.mask_input_options={...t,password:!0}:(0,f.R)(7,t)}},session_trace:{enabled:!0,autoStart:!0},soft_navigations:{enabled:!0,autoStart:!0},ssl:void 0,user_actions:{enabled:!0,elementAttributes:["id","className","tagName","type"]},web_sockets:{enabled:!1}}})());var h=r(6154),v=r(9324);let b=0;const y={buildEnv:"PROD",distMethod:"CDN",version:v.xv,originTime:h.WN},_={consented:!1},w={activatedFeatures:void 0,appMetadata:{},configured:!1,get consented(){return this.session?.state?.consent||_.consented},set consented(e){_.consented=e},customTransaction:void 0,denyList:[],disabled:!1,drainRegistry:new Map,connector:void 0,harvester:void 0,v2Target:void 0,isolatedBacklog:!1,isRecording:!1,loaderType:void 0,maxBytes:3e4,obfuscator:void 0,onerror:void 0,ptid:void 0,releaseIds:{},session:void 0,timeKeeper:void 0,registeredEntities:[],jsAttributesMetadata:{bytes:0},get harvestCount(){return++b},listeningForIframeMessages:!1},R="BA";var A=r(7836),x=r(3241);const E={accountID:void 0,trustKey:void 0,agentID:void 0,licenseKey:void 0,applicationID:void 0,xpid:void 0};var S=r(9908);const k="newrelic-iframe-";function T(e,t={},n,o){let{init:c,info:u,loader_config:d,runtime:l={},exposed:f=!0}=t;if(!u){const e=(0,i.pV)();c=e.init,u=e.info,d=e.loader_config}var p;e.init=m(c||{}),e.loader_config=(p=d||{},(0,g.a)(p,E)),u.jsAttributes??={},h.bv&&(u.jsAttributes.isWorker=!0),e.info=(0,s.D)(u);const v=e.init;e.runtime??=(e=>{const t=(0,g.a)(e,w),r=Object.keys(y).reduce((e,t)=>(e[t]={value:y[t],writable:!1,configurable:!0,enumerable:!0},e),{});return Object.defineProperties(t,r)})(l),e.runtime.v2Target??={type:R,instance:e.agentIdentifier,get id(){return e.runtime.appMetadata?.agents?.[0]?.entityGuid},get attributes(){return{"entity.guid":this.id,appId:e.info.applicationID}}},v.proxy.assets&&(e=>{const t=e.startsWith("http");e+="/",r.p=t?e:"https://"+e})(v.proxy.assets),e.runtime.configured||(Object.defineProperty(e,"beacons",{get:()=>[e.info.beacon,e.info.errorBeacon,e.init.proxy.assets,e.init.proxy.beacon].filter(Boolean)}),Object.defineProperty(e.runtime,"denyList",{get:()=>[...e.init.ajax.deny_list||[],...e.init.ajax.block_internal?e.beacons:[]]}),e.runtime.ptid=e.agentIdentifier,function(e){const t=(0,i.pV)();Object.getOwnPropertyNames(a.W.prototype).forEach(r=>{const n=a.W.prototype[r];if("function"!=typeof n||"constructor"===n)return;let i=t[r];e[r]&&!1!==e.exposed&&"micro-agent"!==e.runtime?.loaderType&&(t[r]=(...t)=>{const n=e[r](...t);return i?i(...t):n})})}(e),e.runtime.loaderType=n,e.ee=A.ee.get(e.agentIdentifier),e.exposed=f,(0,x.W)({drained:!!e.runtime.activatedFeatures,type:"lifecycle",name:"initialize",feature:void 0,data:e.config}),e.init.api.register.allow_iframe_bridge&&h.gm.addEventListener("message",t=>{"string"==typeof t.data?.type&&t.data.type.startsWith(k)&&(0,S.p)("iframe-message",[t],void 0,"IFRAME",e.ee)}),e.runtime.configured=!0)}var j=r(1863),P=r(4261),N=r(1738);var O=r(1687),M=r(4234),I=r(5289),D=r(7767);function V(e){return!!(0,i.dV)().o.MO&&(0,D.V)(e)&&!0===e?.session_trace.enabled}var W=r(6389),B=r(7699);const C=new WeakSet,K=new WeakMap;class U extends M.W{constructor(e,t){super(e,t),this.abortHandler=void 0,this.featAggregate=void 0,this.loadedSuccessfully=void 0,this.onAggregateImported=new Promise(e=>{this.loadedSuccessfully=e}),this.deferred=Promise.resolve(),!1===e.init[this.featureName].autoStart?this.deferred=new Promise((t,r)=>{this.ee.on("manual-start-all",(0,W.J)(()=>{(0,O.Ak)(e,this.featureName),t()}))}):(0,O.Ak)(e,t)}importAggregator(e,t,n={}){if(this.featAggregate)return;const i=async()=>{if(await this.deferred,this.#t(e),!(0,s.f)(e.info))return(0,f.R)(43),e.ee.abort(),void this.loadedSuccessfully(!1);try{await async function(e,t,n){if(K.has(e))return K.get(e);const i=(async()=>{if((0,D.V)(e.init))try{const{setupAgentSession:t}=await r.e(296).then(r.bind(r,1768));t(e)}catch(e){(0,f.R)(20,e),t.emit("internal-error",[e]),(0,S.p)(B.qh,[e],void 0,n,t)}if(e.init.api.register.allow_iframe_bridge)try{const{setupIframeMFEMessageListener:t}=await Promise.resolve().then(function(){const e=new Error("Cannot find module '../../loaders/configure/iframe-message-handler'");throw e.code="MODULE_NOT_FOUND",e});t(e)}catch(e){(0,f.R)(23,e)}const[{Connector:i},{Harvester:a}]=await Promise.all([r.e(296).then(r.bind(r,6589)),r.e(296).then(r.bind(r,5237))]);e.runtime.connector=new i(e),e.runtime.harvester=new a(e);const s=Object.values(e.features).filter(t=>e.runtime.drainRegistry.has(t.featureName));Promise.all(s.map(e=>e.onAggregateImported)).then(()=>e.runtime.harvester.startTimer())})();K.set(e,i),await i}(e,this.ee,this.featureName)}catch(e){return(0,f.R)(79,e),this.ee.abort(),void this.loadedSuccessfully(!1)}try{if(!this.#r(this.featureName,e.runtime.session,e.init))return this.abortHandler?.(),(0,O.Ze)(this.agentRef,this.featureName),void this.loadedSuccessfully(!1);const{Aggregate:r}=await t();this.featAggregate=new r(e,n),e.runtime.harvester.initializedAggregates.push(this.featAggregate),this.loadedSuccessfully(!0)}catch(e){(0,f.R)(34,e),this.abortHandler?.(),(0,O.Ze)(this.agentRef,this.featureName,!0),this.loadedSuccessfully(!1)}};h.RI?(0,I.GG)(()=>i(),!0):i()}#r(e,r,n){if(this.blocked)return!1;switch(e){case t.K7.sessionReplay:return V(n)&&!!r;case t.K7.sessionTrace:return!!r;default:return!0}}#t(e){if(!C.has(e)&&(C.add(e),!(0,s.f)(e.info))){const t=(0,i.pV)();let r={...t.info?.jsAttributes};try{r={...r,...e.info?.jsAttributes}}catch(e){}T(e,{...t,info:{...t.info,jsAttributes:r},runtime:e.runtime},e.runtime.loaderType)}}}var L=r(6630);class F extends U{static featureName=L.T;constructor(e){var t;super(e,L.T),this.setupInspectionEvents(),t=e,(0,N.Y)(P.Fw,function(e,r){"string"==typeof e&&("/"!==e.charAt(0)&&(e="/"+e),t.runtime.customTransaction=(r||"http://custom.transaction")+e,(0,S.p)("api-"+P.Fw,[(0,j.t)()],void 0,void 0,t.ee))},t),this.importAggregator(e,()=>e.init.feature_flags.includes("rum_v2")?r.e(296).then(r.bind(r,908)):r.e(296).then(r.bind(r,7927)))}setupInspectionEvents(){const e=(e,t)=>{e&&(0,x.W)({timeStamp:e.timeStamp,loaded:"complete"===e.target.readyState,type:"window",name:t,data:e.target.location+""})};(0,I.sB)(t=>{e(t,"DOMContentLoaded")}),(0,I.GG)(t=>{e(t,"load")}),(0,I.Qr)(t=>{e(t,"navigate")}),this.ee.on(l.tS.UPDATE,(e,t)=>{(0,x.W)({type:"lifecycle",name:"session",data:t})})}}class G extends e.d{constructor(e){var t;(super(),h.gm)?(this.features={},(0,i.bQ)(this.agentIdentifier,this),this.desiredFeatures=new Set(e.features||[]),this.desiredFeatures.add(F),T(this,e,e.loaderType||"agent"),t=this,(0,N.Y)(P.cD,function(e,r,n=!1){if("string"==typeof e){if(["string","number","boolean"].includes(typeof r)||null===r)return(0,N.U)(t,e,r,P.cD,n);(0,f.R)(40,typeof r)}else(0,f.R)(39,typeof e)},t),function(e){(0,N.Y)(P.Dl,function(t,r=!1){if("string"!=typeof t&&null!==t)return void(0,f.R)(41,typeof t);const n=e.info.jsAttributes["enduser.id"];r&&null!=n&&n!==t?(0,S.p)("api-setUserIdAndResetSession",[t],void 0,"session",e.ee):(0,N.U)(e,"enduser.id",t,P.Dl,!0)},e)}(this),function(e){(0,N.Y)(P.nb,function(t){if("string"==typeof t||null===t)return(0,N.U)(e,"application.version",t,P.nb,!1);(0,f.R)(42,typeof t)},e)}(this),function(e){(0,N.Y)("start",function(){e.ee.emit("manual-start-all")},e)}(this),function(e){(0,N.Y)(P.Pv,function(t=!0){if("boolean"==typeof t){if((0,S.p)("api-"+P.Pv,[t],void 0,"session",e.ee),e.runtime.consented=t,t){const t=e.features.page_view_event;t.onAggregateImported.then(e=>{const r=t.featAggregate;e&&!r.sentRum&&r.sendRum?.()})}}else(0,f.R)(65,typeof t)},e)}(this),this.run()):(0,f.R)(21)}get config(){return{info:this.info,init:this.init,loader_config:this.loader_config,runtime:this.runtime}}get api(){return this}run(){try{const e=function(e){const t={};return n.forEach(r=>{t[r]=!!e[r]?.enabled}),t}(this.init),r=[...this.desiredFeatures],i=this.init.feature_flags.includes("rum_v2");r.sort((e,r)=>t.P3[e.featureName]-t.P3[r.featureName]),r.forEach(r=>{if(!e[r.featureName]&&(i||r.featureName!==t.K7.pageViewEvent))return;const n=function(e){switch(e){case t.K7.ajax:return[t.K7.jserrors];case t.K7.sessionTrace:return[t.K7.ajax,t.K7.pageViewEvent];case t.K7.sessionReplay:return[t.K7.sessionTrace];case t.K7.pageViewTiming:return[t.K7.pageViewEvent];default:return[]}}(r.featureName).filter(e=>!(e in this.features));n.length>0&&(0,f.R)(36,{targetFeature:r.featureName,missingDependencies:n}),this.features[r.featureName]=new r(this)})}catch(e){(0,f.R)(22,e);for(const e in this.features)this.features[e].abortHandler?.();const t=(0,i.Zm)();delete t.initializedAgents[this.agentIdentifier]?.features,delete this.sharedAggregator;return t.ee.get(this.agentIdentifier).abort(),!1}}}var H=r(2843),z=r(782);class Y extends U{static featureName=z.T;constructor(e){super(e,z.T),h.RI&&((0,H.u)(()=>(0,S.p)("docHidden",[(0,j.t)()],void 0,z.T,this.ee),!0),(0,H.G)(()=>(0,S.p)("winPagehide",[(0,j.t)()],void 0,z.T,this.ee)),this.importAggregator(e,()=>r.e(296).then(r.bind(r,9981))))}}var Z=r(3969);class q extends U{static featureName=Z.TZ;constructor(e){super(e,Z.TZ),this.importAggregator(e,()=>r.e(296).then(r.bind(r,9623)))}}new G({features:[F,Y,q],loaderType:"lite"})})()})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<link rel="shortcut icon" href="https://www.kiezelpay.com/favicon.ico?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="apple-touch-icon" sizes="57x57" href="https://www.kiezelpay.com/assets/images/fav/apple-icon-57x57.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="apple-touch-icon" sizes="60x60" href="https://www.kiezelpay.com/assets/images/fav/apple-icon-60x60.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="apple-touch-icon" sizes="72x72" href="https://www.kiezelpay.com/assets/images/fav/apple-icon-72x72.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="apple-touch-icon" sizes="76x76" href="https://www.kiezelpay.com/assets/images/fav/apple-icon-76x76.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="apple-touch-icon" sizes="114x114" href="https://www.kiezelpay.com/assets/images/fav/apple-icon-114x114.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="apple-touch-icon" sizes="120x120" href="https://www.kiezelpay.com/assets/images/fav/apple-icon-120x120.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="apple-touch-icon" sizes="144x144" href="https://www.kiezelpay.com/assets/images/fav/apple-icon-144x144.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="apple-touch-icon" sizes="152x152" href="https://www.kiezelpay.com/assets/images/fav/apple-icon-152x152.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="apple-touch-icon" sizes="180x180" href="https://www.kiezelpay.com/assets/images/fav/apple-icon-180x180.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="icon" type="image/png" sizes="192x192"  href="https://www.kiezelpay.com/assets/images/fav/android-icon-192x192.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="icon" type="image/png" sizes="32x32" href="https://www.kiezelpay.com/assets/images/fav/favicon-32x32.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="icon" type="image/png" sizes="96x96" href="https://www.kiezelpay.com/assets/images/fav/favicon-96x96.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="icon" type="image/png" sizes="16x16" href="https://www.kiezelpay.com/assets/images/fav/favicon-16x16.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="manifest" href=""/assets/images/fav/manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="https://www.kiezelpay.com/assets/images/fav/ms-icon-144x144.png?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<meta name="theme-color" content="#ffffff">
+
+<link rel="stylesheet" href="https://www.kiezelpay.com/css/plugins/animate.css?cache_buster=33d3d5139af3d5e7d8f1956b0032965b" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+<link rel="stylesheet" href="https://www.kiezelpay.com/css/plugins/owl.carousel.min.css?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="stylesheet" href="https://www.kiezelpay.com/css/plugins/owl.theme.default.min.css?cache_buster=33d3d5139af3d5e7d8f1956b0032965b">
+<link rel="stylesheet" href="https://www.kiezelpay.com/css/main.css?cache_buster=33d3d5139af3d5e7d8f1956b0032965b" />
+
+<!-- if you need font awesome -->
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+<script src="https://www.kiezelpay.com/bower_components/jquery/dist/jquery.min.js?cache_buster=33d3d5139af3d5e7d8f1956b0032965b"></script>
+<script src="https://www.kiezelpay.com/bower_components/jquery-validation/dist/jquery.validate.min.js?cache_buster=33d3d5139af3d5e7d8f1956b0032965b"></script>
+<script type="text/javascript" src="https://www.kiezelpay.com/js/utils.js?cache_buster=33d3d5139af3d5e7d8f1956b0032965b"></script>
+<script type="text/javascript" src="https://www.kiezelpay.com/js/functions.js?cache_buster=33d3d5139af3d5e7d8f1956b0032965b"></script>
+
+<script>
+	// Copyright 2014-2017 The Bootstrap Authors
+	// Copyright 2014-2017 Twitter, Inc.
+	// Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+	if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+		var msViewportStyle = document.createElement('style');
+		msViewportStyle.appendChild(
+			document.createTextNode(
+				'@-ms-viewport{width:auto!important}'
+			)
+		);
+		document.head.appendChild(msViewportStyle);
+	}
+
+	//make email validation more strict then the standard validation included in jquery.validate
+	$.validator.methods.email = function( value, element ) {
+		return this.optional( element ) || /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/.test( value );
+	}
+</script>
+    <style>
+        #faqAccordion .highlight {
+            background-color: #04A764;
+            color: white;
+        }
+        .is-hidden {
+            display: none !important;
+        }
+        .no-bottom-padding {
+            padding-bottom: 0px !important;
+        }
+    </style>
+</head>
+<body style="background-color: white;">
+<div id="loading-indicator" class="spinner-container" style="display: none;">
+    <div class="spinner-overlay"></div>
+    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" id="spinner">
+        <defs>
+            <linearGradient id="spinner-a" x1="50%" x2="20.391%" y1="100%" y2="33.866%">
+                <stop offset="0%" stop-color="#0BA360"/>
+                <stop offset="100%" stop-color="#0BA360" stop-opacity="0"/>
+            </linearGradient>
+        </defs>
+        <path fill="url(#spinner-a)" d="M50,95.6284153 C75.1998779,95.6284153 95.6284153,75.1998779 95.6284153,50 C95.6284153,24.8001221 75.1998779,4.3715847 50,4.3715847 C24.8001221,4.3715847 4.3715847,24.8001221 4.3715847,50 C4.3715847,75.1998779 24.8001221,95.6284153 50,95.6284153 Z M50,100 C22.3857625,100 0,77.6142375 0,50 C0,22.3857625 22.3857625,0 50,0 C77.6142375,0 100,22.3857625 100,50 C100,77.6142375 77.6142375,100 50,100 Z"/>
+    </svg>
+</div>
+
+
+<!-- notification & alerts -->
+<div id="notification_control" class="full-width-alert" style="display: none">
+    <div class="max-width">
+        <h5 id="notification_msg"></h5>
+    </div>
+    <button type="button" class="close" aria-label="Close" id="notification_control_close_btn"><span aria-hidden="true">&times;</span></button>
+</div>
+
+<script>
+    var notification_control = $('#notification_control');
+    var modal_on_close_callback = null;
+    $(document).ready(function() {
+        $('#notification_control_close_btn').click(function() {
+            if (modal_on_close_callback) {
+                modal_on_close_callback();
+            }
+            notification_control.hide();
+            notification_control.removeClass('animated fadeInUp error-alert success-alert info-alert');
+            return false;
+        });
+    });
+
+    function showGenericNotification(message, onCloseCallback) {
+        showNotificationWithCorrectContent(message, "info-alert", onCloseCallback);
+    }
+
+    function showSuccessNotification(message, onCloseCallback) {
+        showNotificationWithCorrectContent(message, "success-alert", onCloseCallback);
+    }
+
+    function showErrorNotification(message, onCloseCallback) {
+        showNotificationWithCorrectContent(message, "error-alert", onCloseCallback);
+    }
+
+    function showNotificationWithCorrectContent(message, titleCss, onCloseCallback) {
+        modal_on_close_callback = onCloseCallback;
+        notification_control.hide();
+        notification_control.removeClass('animated fadeInUp error-alert success-alert info-alert');
+        $('#notification_msg').html(message);
+        notification_control.show();
+        notification_control.addClass('animated fadeInUp ' + titleCss);
+    }
+
+    function hideAllNotifications() {
+        notification_control.hide();
+        notification_control.removeClass('animated fadeInUp error-alert success-alert info-alert');
+    }
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-68139309-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-68139309-1');
+</script><!-- start of nav -->
+<nav class="home-nav d-flex justify-content-between align-items-center">
+    <a href="/"><img src="/assets/images/kpay-logo.svg" alt="KiezelPay logo"></a>
+    <ul class="d-flex desktop-nav-links">
+        <a href="/code/"><li>Enter Code</li></a>
+        <a href="/faq"><li>Faq</li></a>
+        <a href="/lookup"><li>Purchase History</li></a>
+        <a href="/login" id="login_btn"><li>Login</li></a>
+        <a href="/account/dashboard" id="dash_btn"><li>Dashboard</li></a>
+        <a href="/sign-up"><li class="text-green">Sign Up</li></a>
+    </ul>
+    <div id="home-menu-icon-container" class="mobile-nav-icon-container">
+        <div class="d-flex align-items-center justify-content-center">
+            <img src="/assets/images/menu.svg" alt="" class="first-icon">
+            <img src="/assets/images/x.svg" alt="" class="second-icon">
+        </div>
+    </div>
+    <nav class="mobile-nav-container" id="home-mobile-nav-container">
+        <div class="mobile-nav-links-container">
+            <a href="/code/">Enter Code</a>
+            <a href="/faq">Faq</a>
+            <a href="/lookup">Purchase History</a>
+            <a href="/login" id="mobile_login_btn">Login</a>
+            <a href="/account/dashboard" id="mobile_dash_btn">Dashboard</a>
+            <a href="/sign-up" class="text-green">Sign Up</a>
+        </div>
+    </nav>
+</nav>
+
+<!-- end of nav -->
+<div class="nav-spacer"></div>
+<script>
+    $().ready(function () {
+                    $('#login_btn').show();
+            $('#dash_btn').hide();
+            $('#mobile_login_btn').show();
+            $('#mobile_dash_btn').hide();
+            })
+</script><div class="faq-header-container">
+    <div class="max-width">
+        <h3>How can we help you?</h3>
+        <div class="input-group" id="faq-search-input">
+            <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                        d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+                        stroke="black"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                />
+                <path
+                        d="M21 21L16.65 16.65"
+                        stroke="black"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                />
+            </svg>
+            <input id="faq-search-input-control"
+                   class="form-control"
+                   type="search"
+                   placeholder="Search for questions, keywords, topics... "
+            />
+        </div>
+    </div>
+    <div class="max-width">
+        <div class="frequent-faqs-container hide-when-searching">
+            <a href="faq-already-paid" class="frequent-faq-container">
+                <svg
+                        width="44"
+                        height="44"
+                        viewBox="0 0 44 44"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                            d="M22 1.83289V42.1662"
+                            stroke="#04A764"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                    />
+                    <path
+                            d="M31.1667 9.16711H17.4167C15.7149 9.16711 14.0828 9.84315 12.8794 11.0465C11.676 12.2499 11 13.882 11 15.5838C11 17.2856 11.676 18.9177 12.8794 20.121C14.0828 21.3244 15.7149 22.0004 17.4167 22.0004H26.5833C28.2851 22.0004 29.9172 22.6765 31.1206 23.8798C32.324 25.0832 33 26.7153 33 28.4171C33 30.1189 32.324 31.751 31.1206 32.9544C29.9172 34.1577 28.2851 34.8338 26.5833 34.8338H11"
+                            stroke="#04A764"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                    />
+                </svg>
+                <h5>Already Paid?</h5>
+                <p>Is it asking you to pay when you already did?</p>
+            </a>
+            <div class="gutter"></div>
+            <a href="faq-no-code" class="frequent-faq-container">
+                <svg
+                        width="44"
+                        height="44"
+                        viewBox="0 0 44 44"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                            d="M22 34.8338C29.0877 34.8338 34.8334 29.0881 34.8334 22.0004C34.8334 14.9128 29.0877 9.16711 22 9.16711C14.9124 9.16711 9.16669 14.9128 9.16669 22.0004C9.16669 29.0881 14.9124 34.8338 22 34.8338Z"
+                            stroke="#04A764"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                    />
+                    <path
+                            d="M22 16.5V22L24.75 24.75"
+                            stroke="#04A764"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                    />
+                    <path
+                            d="M30.2683 31.8079L29.6267 38.8296C29.5441 39.7438 29.1216 40.5937 28.4427 41.2115C27.7638 41.8293 26.8779 42.17 25.96 42.1663H18.0217C17.1038 42.17 16.2179 41.8293 15.539 41.2115C14.8601 40.5937 14.4376 39.7438 14.355 38.8296L13.7133 31.8079M13.7317 12.1912L14.3733 5.16958C14.4557 4.25856 14.8755 3.4112 15.5505 2.79386C16.2255 2.17652 17.1069 1.83378 18.0217 1.83292H25.9967C26.9146 1.82919 27.8005 2.16988 28.4794 2.78767C29.1582 3.40545 29.5807 4.2554 29.6633 5.16958L30.305 12.1912"
+                            stroke="#04A764"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                    />
+                </svg>
+                <h5>Not Getting Code?</h5>
+                <p>Is your smart watch not showing a code?</p>
+            </a>
+            <div class="gutter"></div>
+            <a href="faq-refund" class="frequent-faq-container">
+                <svg
+                        width="44"
+                        height="44"
+                        viewBox="0 0 44 44"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                            d="M1.83333 7.33289V18.3329H12.8333"
+                            stroke="#04A764"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                    />
+                    <path
+                            d="M6.435 27.5004C7.62372 30.8744 9.87678 33.7707 12.8547 35.7529C15.8326 37.7351 19.3741 38.6958 22.9455 38.4902C26.5169 38.2847 29.9247 36.924 32.6556 34.6132C35.3864 32.3025 37.2923 29.1668 38.0861 25.6787C38.8798 22.1906 38.5185 18.5389 37.0565 15.274C35.5945 12.0091 33.111 9.30781 29.9802 7.57709C26.8494 5.84637 23.241 5.18 19.6986 5.6784C16.1562 6.1768 12.8717 7.81296 10.34 10.3404L1.83333 18.3337"
+                            stroke="#04A764"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                    />
+                </svg>
+                <h5>Need Refund?</h5>
+                <p>Not satisfied? Let's start your refund right now.</p>
+            </a>
+            <div class="gutter"></div>
+            <a href="/lookup" class="frequent-faq-container">
+                <svg
+                        width="44"
+                        height="44"
+                        viewBox="0 0 44 44"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                            d="M36.6664 3.66846H7.33311C5.30806 3.66846 3.66644 5.31008 3.66644 7.33512V14.6685C3.66644 16.6935 5.30806 18.3351 7.33311 18.3351H36.6664C38.6915 18.3351 40.3331 16.6935 40.3331 14.6685V7.33512C40.3331 5.31008 38.6915 3.66846 36.6664 3.66846Z"
+                            stroke="#04A764"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                    />
+                    <path
+                            d="M36.6664 25.6685H7.33311C5.30806 25.6685 3.66644 27.3101 3.66644 29.3351V36.6685C3.66644 38.6935 5.30806 40.3351 7.33311 40.3351H36.6664C38.6915 40.3351 40.3331 38.6935 40.3331 36.6685V29.3351C40.3331 27.3101 38.6915 25.6685 36.6664 25.6685Z"
+                            stroke="#04A764"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                    />
+                    <path
+                            d="M11 11H11.0128"
+                            stroke="#04A764"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                    />
+                    <path
+                            d="M11 33H11.0128"
+                            stroke="#04A764"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                    />
+                </svg>
+                <h5>Purchase History?</h5>
+                <p>Let us help you find your past purchases.</p>
+            </a>
+        </div>
+    </div>
+</div>
+<div class="max-width common-questions-container">
+    <h4 class="hide-when-searching">Other Common Questions</h4>
+    <!-- panels start -->
+    <div class="accordion" id="faqAccordion">
+        <div class="faq-entry">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseOne"
+                            aria-expanded="false"
+                            aria-controls="collapseOne"
+                            data-tags="stop messages not purchase remove delete uninstall abort unsubscribe cancel"
+                    >
+                        I do not want to purchase this app/clockface. How do I stop these messages?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseOne"
+                    class="collapse"
+                    aria-labelledby="headingOne"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    These messages are shown because you are using a paid app or clockface of which the trial has expired.<br/>
+                    If you do not want to pay for the app or clockface, remove the app, or install another clockface from the appstore, and the messages will automatically stop.<br/>
+                    <br/>
+                    How to remove an app on a Fitbit smartwatch: <a href="https://help.fitbit.com/articles/en_US/Help_article/2224#remove" target="_blank">https://help.fitbit.com/articles/en_US/Help_article/2224#remove</a><br/>
+                    How to change clockface on a Fitbit smartwatch: <a href="https://help.fitbit.com/articles/en_US/Help_article/2311" target="_blank">https://help.fitbit.com/articles/en_US/Help_article/2311</a><br/>
+                    <br/>
+                    All clockfaces and apps clearly mention in their description if they are paid or not, so it should not be hard to find a free one instead.<br/>
+                    <br/>
+                    How to recognize a paid app or clockface on Fitbit: <a href="https://help.fitbit.com/articles/en_US/Help_article/2224#free" target="_blank">https://help.fitbit.com/articles/en_US/Help_article/2224#free</a>
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingTwo">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseTwo"
+                            aria-expanded="false"
+                            aria-controls="collapseTwo"
+                            data-tags="repeat monthly subscription lifetime expire limited time-limited renewal renew automatic"
+                    >
+                        Is this a one-time or recurring payment?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseTwo"
+                    class="collapse"
+                    aria-labelledby="headingTwo"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    Most apps and clockfaces sold with KiezelPay are one-time payments for a lifetime license. However, some may be limited licenses that expire after a certain period.<br/>
+                    <br/>
+                    When a license has a time limit, this is clearly indicated in the shop, on the lookup page, and in the purchase confirmation email you receive.<br/>
+                    <br/>
+                    <strong>There are no subscriptions.</strong> Even if your license expires, you will never be automatically charged. To renew an expired license, you must manually purchase it again.<br/>
+                    <br/>
+                    Additionally, because we cannot always recognize you again after you remove and reinstall an app or clockface, it might ask for payment again if you ever remove and reinstall it.<br/>
+                    <br/>
+                    When that happens you can unlock it again for free by going to <a href="https://kzl.io/unlock" target="_blank">https://kzl.io/unlock</a>
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingThree">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseThree"
+                            aria-expanded="false"
+                            aria-controls="collapseThree"
+                            data-tags=""
+                    >
+                        It shows the message <i>"This app requires the 'Internet' permission to be granted"</i>. How do I fix this?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseThree"
+                    class="collapse"
+                    aria-labelledby="headingThree"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    When you install an app or clockface you can choose certain permissions; one of those is the "internet" permission. It cannot work without that permission.
+                    <br/><br/>
+                    For an app or clockface that doesn't have it, the easiest way to fix this is to install another clockface first, then install the one you want again. As soon as you install it, a small screen will pop up which lets you choose all permissions you grant to this clockface, it's best to allow them all (but at least allow the internet permission).
+                    <br/><br/>
+                    After you re-installed, and the trial (if any) ends, it will ask you to pay again. You can then unlock it <b>for free</b> <a href="https://kzl.io/unlock" target="_blank">here</a>.<br/>
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingFour">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseFour"
+                            aria-expanded="false"
+                            aria-controls="collapseFour"
+                            data-tags="invalid cannot find"
+                    >
+                        I entered the purchase code on the purchase page and it tells me that code is unknown or already used
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseFour"
+                    class="collapse"
+                    aria-labelledby="headingFour"
+                    data-parent="#faqAccordion"
+                    data-tags="invalid cannot find"
+            >
+                <div class="card-body">
+                    Each code is valid for one hour. This probably means your code is expired.
+                    <br/><br/>
+                    For now, the solution is to make the clockface restart, which will force a new code to be loaded and displayed.
+                    On a Fitbit smartwatch, you can do this by swiping up to the today screen, then backing out of it again until you are in the clockface again.
+                    <br/>
+                    On a Garmin smartwatch, shutdown and restart your watch.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingFive">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseFive"
+                            aria-expanded="false"
+                            aria-controls="collapseFive"
+                            data-tags="unknown email error pay again"
+                    >
+                        I'm trying to unlock an app I already bought and it tells me I haven't purchased it yet!
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseFive"
+                    class="collapse"
+                    aria-labelledby="headingFive"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    This can have a few causes. It is possible you made a typo in your e-mail address when you purchased the app, so now our system cannot find your license.<br/>
+                    <br/>
+                    Another possibility is that you are trying to unlock another clockface/app than the one you actually purchased.<br/>
+                    <br/>
+                    Please double check that the name of the clockface/app you are trying to unlock is exactly the same as the name in the purchase success mail you got after purchasing (some names are confusingly similar unfortunately).<br/>
+                    <br/>
+                    If you are very sure you have the correct app, please <a href="#contact-us">contact us</a> at the bottom of the page with the following information:<br/>
+                    <ul style='font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; font-size: 1rem; font-weight: 400;'>
+                        <li>send the PayPal InvoiceID, which you can find on the PayPal receipt you got after purchasing (it starts with REF).</li>
+                        <li>If you paid with creditcard instead, send the first 6 and last 4 digits of your creditcard number (do not send the complete number!).</li>
+                    </ul>
+                    This will allow us to find your purchase and check why the unlock is not working.<br/>
+                    <br/>
+                    Please also send along the purchase purchase code your watch tells you to enter. This allows us to check which app is asking for payment.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-entry">
+            <div class="card-header" id="headingSix">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseSix"
+                            aria-expanded="false"
+                            aria-controls="collapseSix"
+                            data-tags="switch package"
+                    >
+                        I bought a bundle. How can I install the other clockfaces/apps in the bundle?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseSix"
+                    class="collapse"
+                    aria-labelledby="headingSix"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    After your purchase, we sent you an e-mail containing more information about what you purchased.<br/><br/>  If you purchased a bundle, the e-mail will show all clockfaces/apps in the bundle with a download button next to each one of them.<br/>
+                    Use that download button to go to the appstore and install the clockface/app on your watch.<br/><br/>
+                    If you cannot find the e-mail any more, you can perform a lookup of all your purchases at <a href="https://kiezelpay.com/lookup" target="_blank">https://kiezelpay.com/lookup</a><br/><br/>
+                    <b>Note:</b> These download links only work if you use them on the phone or tablet on which you have installed the Fitbit, Connect IQ (Garmin) or Pebble app!<br/><br/> If the download button does not take you to the appstore, this probably means the developer has not correctly configured the appstore link in his/her account. You can contact the developer and ask him/her to fix this, or you can use the search functionality in the appstore to find the app/clockface instead.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingSeven">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseSeven"
+                            aria-expanded="false"
+                            aria-controls="collapseSeven"
+                            data-tags=""
+                    >
+                        Does KiezelPay accept credit/debit card payments for app/clockface purchases?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseSeven"
+                    class="collapse"
+                    aria-labelledby="headingSeven"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    Yes.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingEight">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseEight"
+                            aria-expanded="false"
+                            aria-controls="collapseEight"
+                            data-tags=""
+                    >
+                        Why do you charge an extra $0.30 fee for customer credit/debit card payments?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseEight"
+                    class="collapse"
+                    aria-labelledby="headingEight"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    The exact extra cost depends on the price of the app being sold, but on average, it costs us an extra $0.30 to process credit card payments compared to PayPal.
+                    Our profit margins are not large enough to absorb this extra cost; on cheap apps we would even lose money for each purchase if we did that. Merchants can choose to charge the $0.30 extra fee to the customer, or absorb this fee themselves.<br><br> If you do not want to pay the $0.30 extra fee, use PayPal instead. It is possible to link your credit/debit card in the PayPal account as payment source.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingNine">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseNine"
+                            aria-expanded="false"
+                            aria-controls="collapseNine"
+                            data-tags="money back"
+                    >
+                        Do you issue refunds?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseNine"
+                    class="collapse"
+                    aria-labelledby="headingNine"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    Yes, but developers are not able to perform the refund themselves, so please <a href="#contact-us">contact</a> the KiezelPay helpdesk at the bottom of the page if you want a refund.<br/><br/>
+                    We issue refunds for digital products within 30 days of the original purchase of the product. We recommend contacting us for assistance if you experience any issues. If you have any questions about our Returns and Refunds Policy, please <a href="#contact-us">contact</a> us at the bottom of the page.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingTen">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseTen"
+                            aria-expanded="false"
+                            aria-controls="collapseTen"
+                            data-tags=""
+                    >
+                        I cannot find this code I need to purchase or unlock the clockface/app!
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseTen"
+                    class="collapse"
+                    aria-labelledby="headingTen"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    You first install the clockface or app you want from the gallery as usual.<br/><br/>
+                    The clockface/app will automatically show you the code when the trial ends (if it has any, otherwise it will show it immediately after installing). At that time you can use the code to purchase it at <a href="https://kzl.io/code" target="_blank">https://kzl.io/code</a> or unlock it at <a href="https://kzl.io/unlock" target="_blank">https://kzl.io/unlock</a> if you already paid for it before.<br/>
+                    <br/>
+                    Until that happens you don't have to do anything.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingEleven">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseEleven"
+                            aria-expanded="false"
+                            aria-controls="collapseEleven"
+                            data-tags=""
+                    >
+                        How can I find what I have already purchased in the past?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseEleven"
+                    class="collapse"
+                    aria-labelledby="headingEleven"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    We have made a special page where you can look up your complete purchase history <a href="/lookup" target="_blank">here</a>.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingTwelve">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseTwelve"
+                            aria-expanded="false"
+                            aria-controls="collapseTwelve"
+                            data-tags="pay again double payment charge"
+                    >
+                        I already paid! Why am I charged a second time?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseTwelve"
+                    class="collapse"
+                    aria-labelledby="headingTwelve"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    Unfortunately we are not always able to recognize you again after (re)installing an app or clockface, so our system may think you are a new customer when that happens, and may ask you to pay again.<br/>
+                    <br/>
+                    Luckily you can unlock your clockface again <b>for free</b> <a href="https://kzl.io/unlock" target="_blank">here</a>.<br/><br/>
+                    Just enter the code it is showing you and the e-mail address you used for the original purchase and you will be up and running again in no time.<br/>
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingThirteen">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseThirteen"
+                            aria-expanded="false"
+                            aria-controls="collapseThirteen"
+                            data-tags=""
+                    >
+                        I don't have a purchase code! Where can I find it? You did not send me a code!
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseThirteen"
+                    class="collapse"
+                    aria-labelledby="headingThirteen"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    We do not send you a purchase code in your email, and you do not need a code to switch to another clockface.<br/>
+                    <br/>
+                    Instead, you <b>first install the new clockface or app you want</b> and then wait for it to ask you to pay again.<br/>
+                    <br/>
+                    As soon as that happens you can unlock it again for free by going to <a href="https://kzl.io/unlock" target="_blank">https://kzl.io/unlock</a> using the code it shows you on the watch at that moment.<br/>
+                    <br/>
+                    If for some reason it does not ask you to pay again, that isn't a problem and you can just use the clockface as is. The functionality is exactly the same before and after unlocking.
+                </div>
+            </div>
+        </div>
+        <div class="hide-when-searching">
+            <div class="card-header" id="headingFourteen">
+                <h4 class="mb-0" style="color:#04A764; padding-top: 40px">
+                    Developers
+                </h4>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingFifteen">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseFifteen"
+                            aria-expanded="false"
+                            aria-controls="collapseFifteen"
+                            data-tags=""
+                    >
+                        Why should I use KiezelPay?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseFifteen"
+                    class="collapse"
+                    aria-labelledby="headingFifteen"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    Developers work hard and we understand that, so why shouldn't you get paid for your hard work? We made KiezelPay easy to add, and easy to get the money that you deserve. It takes minutes to set up and to start collecting money.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingSixteen">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseSixteen"
+                            aria-expanded="false"
+                            aria-controls="collapseSixteen"
+                            data-tags=""
+                    >
+                        How does KiezelPay work exactly?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseSixteen"
+                    class="collapse"
+                    aria-labelledby="headingSixteen"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    Once the user downloads the app/face with KiezelPay integrated, the user's watch will then vibrate and present a purchase code. The code is entered at <a href="https://kzl.io/code" target="_blank">kzl.io/code</a> where they can purchase access to the app/clockface. Once purchased, the code screen disappears on the watch and they can continue to use the app/face as normal.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingSeventeen">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseSeventeen"
+                            aria-expanded="false"
+                            aria-controls="collapseSeventeen"
+                            data-tags=""
+                    >
+                        How do I add KiezelPay to my app/face?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseSeventeen"
+                    class="collapse"
+                    aria-labelledby="headingSeventeen"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    The best way to get started is to sign up for an account and visit our developer documentation page. Then just follow our easy step by step guide.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingEighteen">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseEighteen"
+                            aria-expanded="false"
+                            aria-controls="collapseEighteen"
+                            data-tags=""
+                    >
+                        How long does it take to add KiezelPay to my app/face?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseEighteen"
+                    class="collapse"
+                    aria-labelledby="headingEighteen"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    The first time for an average developer it takes about 30-60 minutes; after a few times you can do it in a matter of minutes.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingNineteen">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseNineteen"
+                            aria-expanded="false"
+                            aria-controls="collapseNineteen"
+                            data-tags=""
+                    >
+                        I released my app with KiezelPay but keep getting mails that say "Thank you for purchasing...". What is going on?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseNineteen"
+                    class="collapse"
+                    aria-labelledby="headingNineteen"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    This probably means you forgot to disable test mode in the app and other people are "purchasing" your app in test mode. To fix this, release an update of your app as soon as possible with test mode disabled. Everyone that "purchased" your app when test mode was enabled will see a new payment notification within 24 hours (as soon as the periodic recheck happens) and will have to pay for real this time to unlock the app again.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingTwenty">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseTwenty"
+                            aria-expanded="false"
+                            aria-controls="collapseTwenty"
+                            data-tags=""
+                    >
+                        How do I sell all my faces/apps as a package?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseTwenty"
+                    class="collapse"
+                    aria-labelledby="headingTwenty"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    We support this with our "bundles" feature. You can simply create a new bundle on the products page in your account. When the customer installs one of your apps which is part of a bundle, he/she will get the choice to purchase the complete bundle, or only the single app.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingTwentyone">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseTwentyone"
+                            aria-expanded="false"
+                            aria-controls="collapseTwentyone"
+                            data-tags=""
+                    >
+                        Can I integrate my device with KiezelPay to support paid apps?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseTwentyone"
+                    class="collapse"
+                    aria-labelledby="headingTwentyone"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    Yes! We are always looking for new partnerships. Our server architecture and API are very generic and usable for any type of (IoT) device. As long as your device has internet access and is able to communicate a 5 or 6 digit number to your customers, it can support paid apps with KiezelPay. <a href="#contact-us">Contact us</a> for more info.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingTwentytwo">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseTwentytwo"
+                            aria-expanded="false"
+                            aria-controls="collapseTwentytwo"
+                            data-tags=""
+                    >
+                        What does it cost to start using KiezelPay?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseTwentytwo"
+                    class="collapse"
+                    aria-labelledby="headingTwentytwo"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    There is no cost to start using KiezelPay. KiezelPay does, however, take a 27% fee for each purchase with a minimum of $0.27 USD.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-entry">
+            <div class="card-header" id="headingTwentythree">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseTwentythree"
+                            aria-expanded="false"
+                            aria-controls="collapseTwentythree"
+                            data-tags=""
+                    >
+                        What does KiezelPay offer for this 27% fee?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseTwentythree"
+                    class="collapse"
+                    aria-labelledby="headingTwentythree"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    <ul style="padding-bottom: 0 !important">
+                        <li>KiezelPay saves you the trouble of creating and maintaining an Android or iOS companion app just to charge money for your watchfaces or apps (and pay a 30% fee in that case).</li>
+                        <li>The KiezelPay purchase rate and income is significantly higher than standalone donation rates for smartwatch apps and watchfaces.</li>
+                        <li>KiezelPay handles sales tax requirements. Feel free to review VATMOSS, a complex tax structure implemented across the EU. KiezelPay handles these taxes for you <b>*</b></li>
+                        <li>A secure and easy to integrate library.</li>
+                        <li>A stable and fast online environment hosted in the cloud which allows you to manage your products, bundles and discounts with ease, and also offers a great sales dashboard and sales history.</li>
+                        <li>Support for you and your customers; we strive to answer all support requests within 24 hours.<br/>You can <a href="#contact-us">contact</a> us for support at the bottom of the page or in our <a href="https://discord.gg/zbqrxh8" target="_blank">discord chat</a>.</li>
+                        <li>A user friendly and good looking purchase process for your customers.</li>
+                        <li>The choice to pay with either PayPal or credit/debit card for your customers.</li>
+                        <li>The possibility to run your app in test mode so you can test the KiezelPay integration and licensing process as often as you want without having to spend money.</li>
+                        <li>KiezelPay is a system built upon years of experience with selling watchfaces and apps for Fitbit, Garmin and Pebble, first with Kiezel Watchfaces (started with this <a href="https://www.kickstarter.com/projects/kiezel/kiezel-watchfaces-collection-1/" target="_new">Kickstarter</a> in 2015), then with KiezelPay in 2016 (with the Pebble app <a href="https://www.reddit.com/r/pebble/comments/3xu8zj/meet_snowy_the_worlds_first_personal_assistant/" target="_new">Snowy</a> being the first app to be sold with our system in December 2016).</li>
+                    </ul>
+                    <p style="font-size: 10px !important">* KiezelPay handles sales tax requirements. However handling the revenue you as developer will gain from KiezelPay as "income" and all tax requirements following from that in your country of residence is your own responsibility.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-entry">
+            <div class="card-header" id="headingTwentyfour">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseTwentyfour"
+                            aria-expanded="false"
+                            aria-controls="collapseTwentyfour"
+                            data-tags=""
+                    >
+                        As a developer, how do I get paid and receive my money?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseTwentyfour"
+                    class="collapse"
+                    aria-labelledby="headingTwentyfour"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    Currently we only do payouts via PayPal. Developers are paid out every last thursday of the month through a verified PayPal account. We will not send your income via any other source.
+                </div>
+            </div>
+        </div>
+        <div class="faq-entry">
+            <div class="card-header" id="headingTwentyfive">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                            data-toggle="collapse"
+                            data-target="#collapseTwentyfive"
+                            aria-expanded="false"
+                            aria-controls="collapseTwentyfive"
+                            data-tags=""
+                    >
+                        Can I use KiezelPay to sell watchfaces or apps on Garmin watches?
+                    </button>
+                </h5>
+            </div>
+            <div
+                    id="collapseTwentyfive"
+                    class="collapse"
+                    aria-labelledby="headingTwentyfive"
+                    data-parent="#faqAccordion"
+            >
+                <div class="card-body">
+                    Yes! We also have a Garmin library. Sign up and check out our documentation or <a href="https://discord.gg/zbqrxh8" target="_blank">join our discord chat</a> for more information and start selling on the Garmin platform!
+                </div>
+            </div>
+        </div>
+        <div class="faq__notfound is-hidden">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <button
+                            class=""
+                            type="button"
+                    >
+                        Cannot find any results matching your search :-(
+                    </button>
+                </h5>
+            </div>
+        </div>
+
+
+    </div>
+    <!-- panels end -->
+</div>
+<div class="max-width">
+    <div class="contact-support-container">
+        <h4>Still Need Help?</h4>
+        <p>Our customer support is here to help.</p>
+        <a name="contact-us">
+            <a href="/cdn-cgi/l/email-protection#19717c75695972707c637c75697860377a7674" class="no-border-btn">Contact support</a>
+    </div>
+</div>
+<!-- end of faq-container -->
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+<script>
+
+    // search & highlight
+    ;( function( $, window, document, undefined )
+    {
+        var $container = $( '#faqAccordion' );
+        if( !$container.length ) return true;
+        var $input        = $( '#faq-search-input-control' ),
+            $notfound      = $container.find( '.faq__notfound' ),
+            $items        = $container.find( '.faq-entry' ),
+            $frequentFaqs   = $( '.hide-when-searching'),
+            $item         = $(),
+            itemsIndexed    = [];
+        $items.each( function()
+        {
+            itemsIndexed.push( $( this ).text().replace( /\s{2,}/g, ' ' ).toLowerCase() );
+        });
+        $input.on( 'keyup', function( e )
+        {
+            if( e.keyCode == 13 ) // enter
+            {
+                $input.trigger( 'blur' );
+                return true;
+            }
+            $items.each( function()
+            {
+                $item = $( this );
+                $item.html( $item.html().replace( /<span class="highlight">([^<]+)<\/span>/gi, '$1' ) );
+            });
+            var searchVal = $.trim( $input.val() ).toLowerCase();
+            if( searchVal.length )
+            {
+                hideStufWhenSearching($frequentFaqs);
+                $items.collapse()
+                for( var i in itemsIndexed )
+                {
+                    $item = $items.eq( i );
+                    if( itemsIndexed[ i ].indexOf( searchVal ) != -1 )
+                        $item.removeClass( 'is-hidden' ).html( $item.html().replace( new RegExp( searchVal+'(?!([^<]+)?>)', 'gi' ), '<span class="highlight">$&</span>' ) );
+                    else {
+                        var $tags = $item.find( "button").attr('data-tags');
+                        if ($tags && $tags.indexOf( searchVal ) != -1) {
+                            $item.removeClass( 'is-hidden' );
+                        }
+                        else {
+                            $item.addClass('is-hidden');
+                        }
+                    }
+                }
+            }
+            else {
+                showStuffAfterSearching($frequentFaqs);
+                $items.removeClass( 'is-hidden' );
+            }
+            $notfound.toggleClass( 'is-hidden', $items.not( '.is-hidden' ).length > 0 );
+        });
+    })( jQuery, window, document );
+    function hideStufWhenSearching($frequentFaqs) {
+        $frequentFaqs.addClass( 'is-hidden' );
+        $('#faq-search-input').addClass( 'no-bottom-padding' );
+    }
+    function showStuffAfterSearching($frequentFaqs) {
+        $frequentFaqs.removeClass( 'is-hidden' );
+        $('#faq-search-input').removeClass( 'no-bottom-padding' );
+    }
+
+    // auto-show item content when show results reduces to single
+    ;( function( $, window, document, undefined )
+    {
+        var $container = $( '#faqAccordion' );
+        if( !$container.length ) return true;
+        var $input     = $( '#faq-search-input-control' ),
+            $items     = $container.find( '.faq-entry' ),
+            $item      = $();
+        $input.on( 'keyup', function()
+        {
+            $item = $items.not( '.is-hidden' );
+            if( $item.length == 1 )
+                $item.addClass( 'js--autoshown is-active' );
+            else
+                $items.filter( '.js--autoshown' ).removeClass( 'js--autoshown is-active' );
+        });
+    })( jQuery, window, document );
+</script>
+<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","licenseKey":"9f0da5ee7b","applicationID":"22295966","transactionName":"NgYEMUNUXUVSUEVQDA9MMxdYGlVXQhxYVwcEG0gVWUU=","queueTime":1,"applicationTime":3,"atts":"GkEHRwtOTks=","errorBeacon":"bam.nr-data.net","agent":""}</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"b4b2e51fcfff4f0b850587ab374fa5bc","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

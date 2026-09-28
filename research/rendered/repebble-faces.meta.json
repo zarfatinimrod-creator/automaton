@@ -1,0 +1,17 @@
+{
+  "url": "https://apps.repebble.com/faces",
+  "slug": "repebble-faces",
+  "fetchedAt": "2026-09-28T13:17:57.316Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 36457,
+  "sha256": "135c10fe415927ab910039873024d97e20c10b3d730066a43d7afbc72fd1cfe8",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/repebble-faces.html",
+  "textPath": "research/rendered/repebble-faces.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

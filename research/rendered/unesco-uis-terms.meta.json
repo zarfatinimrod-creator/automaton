@@ -1,17 +1,17 @@
 {
   "url": "https://uis.unesco.org/en/terms-and-conditions",
   "slug": "unesco-uis-terms",
-  "fetchedAt": "2026-09-27T10:03:01.480Z",
+  "fetchedAt": "2026-09-28T13:16:59.903Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 6765,
-  "sha256": "4a6ad766bb61b8a0821e1567aa3cdf134d743debb59c63d0cda2e492c8499db4",
+  "byteLength": 5763,
+  "sha256": "95d651fa906d73ccccb3a0ad382c8b0f7c88becdb1ed115fd8966ea5a0055283",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/unesco-uis-terms.html",
   "textPath": "research/rendered/unesco-uis-terms.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "4a6ad766bb61b8a0821e1567aa3cdf134d743debb59c63d0cda2e492c8499db4",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

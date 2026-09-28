@@ -1,0 +1,524 @@
+TERMS OF USE
+
+Effective [June 24, 2026] (“Effective Date”)
+
+The terms of use (“Terms”) contained herein govern access to and use of the website,
+applications, social media platforms and other services (“Services”) provided by Superteam
+Earn (“Superteam Earn”, “we”, “us”, “our”, “Platform Provider”) or any platform affiliated with
+Superteam Earn including but not limited to the Website, X.com, (collectively referred to as the
+“Platforms”). Superteam Earn is operated by The Invisible Fork Pte. Ltd., a private limited
+company incorporated in Singapore.
+
+
+These terms are binding on the Users of Superteam Earn (“you”, “your”, “User(s)”) which
+includes any person or entity who accesses, registers, downloads, browses, or uses in any
+form, general or specific, the Services provided by Superteam Earn, through its Platforms.
+
+These Terms are in addition to, and do not nullify, any other agreement between you and us or
+you and the Partner (as defined below) or any other applicable terms and conditions found on
+the Services.
+
+The User acknowledges and agrees that the User has read the Terms carefully, understands its
+meaning and intent, and is aware and accepting of all the Terms contained herein and the
+Superteam Earn Privacy Policy before using the Platforms.
+
+If the User does not agree to the Terms or perform any/all obligations accepted under the
+Terms, then the User may not access or use the Services or the Platforms of Superteam Earn.
+
+1. DEFINITIONS AND INTERPRETATION
+
+1.1. “Action” means any claim, action, cause of action, demand, lawsuit, arbitration, inquiry,
+audit, examination, notice of violation, proceeding, litigation, citation, summons, subpoena, or
+investigation of any nature, civil, criminal, administrative, regulatory or otherwise, whether at law
+or in equity.
+
+1.2. “Affiliate(s)” means any person or entity directly or indirectly, employed or engaged on a
+contractual basis, or in any other similar way related to Superteam Earn.
+
+1.3. "Applicable Law(s)" means any and all applicable substantive and procedural laws,
+including but not limited to, the State of Singapore and other relevant laws applicable to the
+User(s).
+
+ 1.4. “Bounties” refer to short-term tasks offered by Partners that include an attached reward for
+select submissions;
+1.5. ““DApp(s)” means decentralized applications.
+
+1.6. “Digital Asset” shall include but are not limited to crypto assets, non-fungible tokens
+(“NFT(s)”), and/or other similar digital assets held or received by the User.
+
+1.7. “Gas Fee” is the pricing mechanism employed on a blockchain to compensate for the
+computing energy allocated to process a transaction or transfer of assets.
+
+1.8. “Grants” refer to equity-free grants offered by Partners to support relevant Users and their
+works;
+
+1.9. “Jobs” refer to as salaried tasks offered by Partners to Users to engage them on a
+part-time/full-time basis, for relevant services.
+
+1.10. “Partner” shall refer to organizations involved in offering Projects in the form of Bounties,
+“Grants” and “Jobs”, or any other form of work opportunities, to the Users;
+
+1.11. “Projects” shall refer to “Bounties”, “Grants”, and “Jobs” or any other engagements with the
+Partners.
+
+1.12. “Superteam Earn Account” means the login account of the User created with Superteam
+Earn for the use of its Services.
+
+1.13. “Service Provider” may refer to a User who may provide services upon being engaged in
+any Project by a Partner for the consideration of a Bounty/Job/Grant.
+
+1.14. “User”, may refer to “Service Provider”, “Visitor”, and “Partner” or any other person
+(individual or otherwise) who engages with and participates in Community activities and in
+Superteam Forums;
+
+1.15. “Visitor” shall include lurkers, visitors and/or readers who inter-alia browse, read and/or
+watch content provided by the Superteam Earn and/ or engage with the Superteam Earn
+Projects;
+
+2. SCOPE
+
+2.1. Superteam Earn is an exempt private company limited by shares duly organized and
+existing under the laws of Singapore, with a registered office at The Invisible Fork Pte. Ltd., 3
+FRASER STREET, #4-23A DUO TOWER, Singapore - 189352.
+
+2.2. Superteam Earn aggregates different work opportunities by Partners, for users looking for
+opportunities to provide their services in the form of “Jobs”, “Grants”, or “Bounties”. The Platform
+connects users for short-term/long-term Projects, and the consideration for each Project shall be
+determined by the Partners.
+2.3. Superteam Earn acts as a platform provider, wherein the Partners enlist the scope of work
+for a particular Project. The Service Providers are engaged by the Partners for the execution of
+a Project. Superteam Earn shall have no liability pertaining to any dispute, non-payment/
+non-delivery of service between the Partner and the Service Provider. If any Service Provider is
+engaged in any full-time job by a Partner, the liability of payment of salary/employee rights as
+per Applicable Law lies with the Partner, engaging the Service Provider. Superteam Earn acts
+as a mere platform provider, and thus there exists no liability that shall be imposed upon the
+Superteam Earn for adherence to employment/labour or contract laws.
+
+3. USER ELIGIBILITY
+
+3.1. The User accessing the Superteam Earn’s Platforms’ hereby represents and warrants that
+the User has completed the age of majority in their jurisdiction or eighteen (18) years of age and
+is competent to enter into the terms, conditions, and obligations set forth under these Terms.
+
+3.2. The User further represents and warrants that if the User is between the ages of Fourteen
+(14) and eighteen (18), the User’s parents or legal guardian have provided consent for the User
+to agree to these Terms. All risks related to the usage by the minors aged fourteen (14) to
+eighteen(18) shall be assumed by the parent or legal guardian.
+
+3.3. Any User below the age of fourteen (14) is not permitted to engage with Superteam Earn.
+
+3.4. The User accessing the Superteam Earn’s Platforms’ hereby represents and warrants that
+the User is not currently the subject of or subject to any kind of economic sanctions, including
+but not limited to, the United Nations Security Council Sanctions List, the list of Specially
+Designated National and Blocked Person maintained by the United States Treasury
+Department’s Office of Foreign Assets Control (OFAC), The Denied Persons List maintained by
+United States Department of Commerce's Bureau of Industry and Security (BIS) or any similar
+list maintained by any other relevant sanctions authority.
+
+3.5. The User shall not be eligible for using the Services if the User is located in, or is a citizen
+or resident of any state, country, territory, or other jurisdiction where the use of the Services
+would be illegal or otherwise violate any Applicable Laws.
+
+3.6. The User may be required to create an account to use the Services provided by Superteam
+Earn. The User shall not make any username that breaches the User Code of Conduct under
+these Terms while choosing their username.
+
+4. BASIC USE REQUIREMENTS
+
+4.1. The User shall require a compatible mobile phone, internet, or any other supported devices
+("Devices") and enabling facilities that meet certain system and compatibility requirements,
+which may change from time to time, to use the Services.
+4.2. The User’s ability to use Superteam Earn and the performance of Superteam Earn Services
+may be affected by these factors. The User agrees that the User is solely responsible for such
+requirements, including any applicable charges, updates, fees, and all other terms provided
+under the User’s agreement with their Devices and/or telecommunications provider. Superteam
+Earn shall not be responsible for any lapse of security or failed transactions due to internet
+issues or issues with the Device(s).
+
+5. PAYMENTS AND FEES
+
+5.1. Superteam Earn may charge a fee for the Services made available to the User. Superteam
+Earn reserves the right to change the amount of such fee at any time at their sole and absolute
+discretion.
+
+5.2. While the Projects are listed by the Partner on the Platform, Superteam Earn may provide a
+smart contract tool that may be used as an escrow account by the Partner in order for
+Superteam Earn to verify the ‘proof of funds’.
+
+6. TRANSACTIONS
+
+6.1. Any payments to be made between the Partner and the Service Provider may be made in
+fiat currency, or with cryptocurrency or Digital Tokens as may be agreed upon privately between
+the Partner and Service Provider. The User acknowledges and takes responsibility for the risks
+inherently involved in using cryptocurrency or Digital Tokens.
+
+6.2. Payments and the associate terms thereof shall be governed by a private contract between
+the Partner and Service providers. No third party, including but not limited to Superteam Earn,
+shall be made liable or impleaded in any disputes arising therefrom. The Users shall conduct
+their own research with respect to the terms of their payment from the Partner.
+
+6.3. The Users acknowledge and agree that Partner is solely responsible for the use of any
+smart contract tools that may be provided by Superteam Earn. Superteam Earn is not
+responsible for the functioning and results arising out of the use of such tools by the Partner.
+
+6.4. The funds shall be released from the smart contract for a particular project upon the
+concerned Partner’s authorization in accordance with this Agreement and the applicable
+instructions or as required by law.
+
+6.5. In the absence of specific terms to the contrary, no taxes shall be withheld from any
+Payments, and recipients of such payments shall be individually and fully liable to deposit tax
+based on the local laws applicable to them.
+
+6.6. The User acknowledges that Digital Asset transactions are confirmed and recorded in the
+Digital Asset’s associated blockchain. Such networks may be decentralized, peer-to-peer
+networks supported by independent third parties and the success of such transactions cannot
+be guaranteed by Superteam Earn. After such transactions are initiated by the User, Superteam
+Earn cannot cancel or otherwise modify User transactions.
+
+6.7. Any transfer in relation to Digital Assets occurs on the relevant blockchain network and not
+on a network owned by Superteam Earn. Therefore, a guarantee of transfer of title or right in
+any Digital Asset cannot be provided by Superteam Earn.
+
+7. TRANSACTION FEE
+
+7.1. There may be a requirement of a ‘transaction fee’ or Gas fees associated with Digital Asset
+transactions while engaging with third-party networks. The User must ensure that the User has
+an adequate amount of such fee, to complete transactions.
+
+7.2. The User acknowledges and agrees that Superteam Earn shall not be liable for any losses
+or failed transactions incurred by the User due to inadequate Gas fees or translation fees
+required for the completion of such transactions.
+
+8. USER CODE OF CONDUCT
+
+8.1. Obligations and Prohibited Actions:
+
+8.1.1. The User shall not use any material that is false, offensive, harmful, obscene or
+pornographic, hateful, defamatory, libellous, derogatory, abusive, threatening, or in any other
+way illegal or infringing upon the legal rights of others, in violation of this clause.
+
+8.1.2. The User shall not impersonate any other natural or legal person, use their identification
+or contact details, create accounts in their name, or falsely state or misrepresent any
+association or affiliation with such persons.
+
+8.1.3. Users shall be civil and respectful of other Users and shall not display any deliberately
+unpleasant, repetitive or irrelevant behaviour;
+
+8.1.4. Users shall not reveal identifiable information about other Users of Superteam Earn
+unless explicitly permitted by them to do so;
+
+8.1.5. Users shall not use or solicit another party to use Superteam Forums, directly or indirectly,
+for any purpose which is prohibited by their Applicable Law, rule, regulation or guideline.
+
+8.1.6. The User shall not interfere with security-related features of the Platforms, including but
+not limited to
+
+8.1.6.1. disabling or circumventing features that prevent or limit the use or copying of any
+content; or
+8.1.6.2. reverse engineering or otherwise attempting to discover the source code of any portion
+of the Platforms except to the extent that the activity is expressly permitted by Applicable Law.
+Any attempt at such interference shall attract a ban from the Platforms and other actions.
+
+8.1.7. The User shall not collect, generate, or affect in any way usernames or email addresses
+using bots or any other methods or sell or transfer the User profile to any person or entity.
+
+8.1.8. The User shall not use or solicit another party to use Superteam Earn or its Platforms,
+directly or indirectly, for any purpose which is prohibited by Applicable Laws, rules, regulations,
+or guidelines and/or is in violation of this clause.
+
+9. THIRD-PARTY SERVICES
+
+9.1. The User may interact with third parties in the form of, including but not limited to,
+third-party DApps, blockchain-based accounts, third-party decentralized exchanges, or any
+other similar manner. Superteam Earn may also integrate third-party applications like Telegram,
+Twitter or Discord and/or similar apps with their Platforms for User convenience.
+
+9.2. Superteam Earn shall not responsible for examining or evaluating the content, accuracy,
+completeness, availability, timeliness, validity, copyright compliance, legality, decency, quality, or
+any other aspect of third-party materials or websites.
+
+9.3. The use of third-party services is governed by their respective terms of service and not by
+these Terms. The User bears the sole and exclusive responsibility of accepting and complying
+with their respective terms of service, fees, and charges.
+
+9.4. Superteam Earn does not warrant, endorse, or assume any responsibility for third-party
+materials and shall not have any liability to the User or any other person for any third-party
+services, websites, or other materials or products.
+
+9.5. The User may incur charges or fees from third parties for the use of third-party services.
+Superteam Earn receives no part of such charges and shall under no circumstances incur any
+liability arising out of or relating to such third-party charges.
+
+10. TAXES
+
+10.1. Users shall be responsible, as required under Applicable Law, for identifying and paying all
+taxes and other governmental fees, penalties, interest, and/or any other similar charges that are
+imposed on the User or with respect to the transactions and payments under these Terms.
+Superteam Earn shall not be responsible for any non-payment of taxes by any of the Users,
+including but not limited to the engagement of Service Providers by Partners, or any other
+transaction. The liability of payment of taxes would be incumbent upon the Users, as per the
+relevant laws applicable to them.
+10.2. Superteam Earn undertakes not to withhold any tax deduction at source under these
+terms.
+
+11. ASSUMPTION OF RISK
+
+11.1. The User acknowledges and accepts the following -
+
+11.1.1. The User shall assume the risks associated with transactions that rely on smart
+contracts and other such experimental technologies.
+
+11.1.2. Such transactions rely on technology that includes but is not restricted to blockchains,
+cryptographic tokens generated by smart contracts, and other nascent software, applications,
+and systems that interact with blockchain-based networks. These technologies are
+experimental, speculative, inherently risky, and subject to change. The User is solely liable for
+undertaking such risk.
+
+11.1.3. The regulatory regime governing blockchain technologies, cryptocurrencies, and tokens
+is uncertain, and new regulations or policies may materially and adversely affect the
+development of Superteam Earn. The User shall assume the risks associated with such
+regulatory changes.
+
+11.1.4. Superteam Earn’s Services may be subject to technological interferences due to
+third-party actions, including but not limited to, downtime on any third-party platform accessed
+by the User via Superteam Earn, or its Platforms; network uptime; and network interference.
+
+12. INDEMNIFICATION
+
+12.1. The User agrees to indemnify Superteam Earn and all its Affiliates from any claim or
+demand made by any/all third parties, arising out of -
+
+12.1.1. User’s breach of the Terms;
+
+12.1.2. Misuse of any service provided by Superteam Earn, its smart contracts, and/or
+Platforms;
+
+12.1.3. Violation of any laws, rules, regulations, codes, statutes, ordinances, or orders of any
+governmental or quasi-governmental authorities;
+
+12.1.4. Violation of any rights of third parties, including but not limited to intellectual property,
+confidentiality, privacy, and/or publicity;
+
+12.1.5. Any misrepresentation of fraud on the part of the User.
+12.2. Superteam Earn reserves the right to assume, at the User’s expense, the exclusive
+defence in any matter subject to this clause and indemnification by the User.
+
+12.3. The User agrees to cooperate with Superteam Earn’s defence of any claim under this
+clause, and the User shall not, in any event, settle any claim, without the prior written consent of
+Superteam Earn.
+
+13. TERM AND TERMINATION
+
+13.1. The Terms are effective from the Effective Date and shall remain in force until terminated
+under this clause.
+
+13.2. Superteam Earn reserves the right to terminate the User from using its Platforms without
+prior notice or liability if the User is found to be in breach of the User Code of Conduct and/or
+these Terms.
+
+13.3. In the event of such termination, Superteam Earn shall not liable for any loss of
+information, damage, or any other loss of similar nature.
+
+13.4. The User may request the termination of their account by contacting Superteam Earn.
+Upon completion of such request, the User’s right to use the Platforms ceases.
+
+13.5. Superteam Earn reserves the right to discontinue or terminate Superteam Earn for all
+Users without placing any liability on the User. In the event of such termination, not resulting out
+of a violation by the User, Superteam Earn may notify the Users regarding the same.
+
+14. LIMITATION OF LIABILITY
+
+14.1. Superteam Earn or its Affiliated Parties shall not be liable under any circumstances for any
+lost profits or any special, incidental, indirect, or consequential damages, whether based on
+contract, tort, negligence, strict liability, or otherwise, arising out of or in connection with these
+Terms or otherwise even if an authorized representative of Superteam Earn has been advised
+or should have known of the possibility of such damages.
+
+14.2. Superteam Earn shall not be liable for any non-payment or non-adequacy of service
+amongst the Users. Any transaction or agreement through Superteam Earn shall be treated as
+a separate agreement between the Parties, with no liability attributable to Superteam Earn.
+
+14.3. Superteam Earn only agrees to perform such duties as are expressly set forth in this
+Agreement, the applicable instructions, and the other Terms of Service, and no other duties will
+be implied. Superteam Earn has no liability under, and no duty to inquire as to, the provisions of
+any agreement, other than the Terms of Service. Superteam Earn will be under no duty to
+inquire about or investigate any agreement or communication between Partner and Service
+Provider, even if listed on the Platform.
+14.4. Superteam Earn has the right to rely upon, and will not be liable for relying on, any written
+notice, instruction, or request furnished to us by Partner or Service Provider in accordance with
+this Agreement or the applicable instructions by the Partner if Superteam Earn reasonably
+believes that such notice, instruction, or request is genuine and that it is signed or presented by
+the proper party or parties. Superteam Earn has no duty to inquire about or investigate the
+validity, accuracy, or content of any such notice, instruction, or request.
+
+14.5. Superteam Earn has no duty to solicit any payments or releases that may be due. We may
+execute any of our powers and perform any of our duties under this Agreement and the
+applicable instructions directly or through agents or attorneys (and will be liable only for the
+careful selection of any such agent or attorney) and may consult with counsel, accountants, and
+other skilled persons to be selected and retained by us. If Superteam Earn is uncertain as to its
+duties or rights under this Agreement or instructions, claims, or demands from any party to this
+Agreement that, in its opinion, has a conflict with any of the provisions of this Agreement or the
+Applicable Law, Superteam Earn will be entitled to refrain from taking any action.
+
+14.6. The User understands and agrees that, to the fullest extent permitted by applicable law,
+neither Superteam Earn, its Affiliates, nor any related entities, suppliers, or licensors shall be
+liable to the User for any direct, indirect, incidental, special, punitive, exemplary or other
+damages of any kind, including but without limitation to damages for loss of profits, goodwill, or
+other tangible or intangible losses or any other damages. This includes but is not limited to:
+14.6.1. any damage, resulting from the Platforms;
+
+14.6.2. conduct of any third party on the Platform;
+
+14.6.3. any actions taken by Superteam Earn or failure thereof;
+
+14.6.4. human errors or technical malfunctions;
+
+14.6.5. any loss, damage, or injury, direct or indirect arising out of forgotten passwords,
+incorrectly constructed smart contracts, server failure, malfunction, misuse of service, or
+intangible losses;
+
+14.6.6. inability to fully access the Platforms;
+
+14.6.7. the introduction of viruses, worms, or other destructive programs or any other
+commercial or economic losses;
+
+14.6.8. any decision made or action taken by any party in reliance on Superteam Earn’s data
+that is processed late or incorrectly or is incomplete or lost.
+
+15. DISCLAIMERS -
+15.1. SUPERTEAM EARN DOES NOT MAKE ANY REPRESENTATIONS OR WARRANTIES.
+THE SERVICES ARE PROVIDED ON AN “AS IS” AND “AS AVAILABLE” BASIS. SUPERTEAM
+EARN AND/OR ITS SUBSIDIARIES, AFFILIATES, RELATED ENTITIES, AGENTS,
+REPRESENTATIVES, PARTNERS, LICENSORS, OR ANY SUCH RELATED PARTY TO
+SUPERTEAM EARN (COLLECTIVELY, “INDEMNIFIED PARTIES”) MAKE NO GUARANTEES
+OF ANY KIND IN CONNECTION WITH THE SERVICES PROVIDED BY SUPERTEAM EARN
+OR BY ANY OF ITS USERS.
+
+15.2. SUPERTEAM EARN, AND ALL INDEMNIFIED PARTIES DISCLAIM ALL WARRANTIES,
+EXPRESS OR IMPLIED, RELATED TO ANY/ALL MATERIAL, CONTENT, OR SERVICES
+MADE AVAILABLE BY SUPERTEAM EARN, OR THE PLATFORMS OF SUPERTEAM EARN,
+INCLUDING BUT NOT LIMITED TO (A) ANY IMPLIED WARRANTY OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, QUIET ENJOYMENT, OR
+NON-INFRINGEMENT; AND (B) ANY WARRANTY ARISING OUT OF COURSE OF DEALING,
+USAGE, OR TRADE.
+
+15.3. SUPERTEAM EARN DOES NOT WARRANT THAT THE SERVICE OR ANY PORTION
+OF THE SERVICE, OR ANY MATERIALS OR CONTENT OFFERED THROUGH THE
+SERVICE, WILL BE UNINTERRUPTED, SECURE, OR FREE OF ERRORS, VIRUSES, OR
+OTHER HARMFUL COMPONENTS, AND DO NOT WARRANT THAT THOSE ISSUES WILL
+BE CORRECTED. THE USER SHALL ASSUME ALL RISK FOR ANY AND/ALL DAMAGES
+THAT MAY RESULT FROM THE USE OR ACCESS BY THE USER TO SUPERTEAM
+EARNOR ANY OTHER THIRD PARTY ON SUPERTEAM EARN PLATFORMS.
+
+15.4. THE USER UNDERSTANDS AND AGREES THAT THE USER IS SOLELY
+RESPONSIBLE FOR ANY PROPERTY DAMAGE (INCLUDING BUT NOT RESTRICTED TO
+THE USER’S COMPUTER SYSTEM, MOBILE DEVICE, AND/OR ANY OTHER DEVICE USED
+TO ACCESS SUPERTEAM EARN OR ITS PLATFORMS), OR LOSS OF DATA OR ANY KIND
+OF PECUNIARY LOSS. THESE LIMITATIONS SHALL APPLY TO THE MAXIMUM EXTENT
+PERMITTED BY LAW.
+
+16. FORCE MAJEURE
+
+16.1. Superteam Earn shall not be liable for compensating inadequate performance of any
+obligations set forth in these Terms, caused due to force majeure circumstances.
+
+16.2. Force majeure circumstances include but are not limited to, acts of God, natural or
+industrial disasters, pandemics, acts of terrorism, power supply failures, civil disorders, military
+operations, equipment shutdowns, and/or other similar situations that cannot be reasonably
+foreseen or prevented.
+
+17. INTELLECTUAL PROPERTY
+17.1. Superteam Earn retains the rights, titles, and interests in all of Superteam Earn’s
+intellectual property and all content, including but not limited to, inventions, ideas, concepts,
+domains, logos, trade dress, source code, discoveries, processes, marks, smart contracts,
+applications, methods, software, information and data, and/or any other intellectual property
+rights associated with the Platforms of Superteam Earn, whether or not patentable,
+copyrightable or protectable in trademark.
+
+17.2. Superteam Earn does not claim any right over the marks and/or intellectual properties
+associated with any third parties on the Platforms and shall not attract any liability in any/all
+disputes arising from any use, abuse, or infringement of such marks.
+
+17.3. Superteam Earn welcomes feedback, comments, ideas, and/or suggestions (“Feedback”)
+for improvement of the Platforms, and such Feedback may be communicated to Superteam
+Earn directly. Superteam Earn shall have an exclusive, perpetual, irrevocable, royalty-free,
+sub-licensable, and transferable license to use, copy, modify, create derivative works based
+upon or improvements with respect to such Feedback and otherwise exploit and commercialize
+the Feedback and any such derivative works and improvements in any manner and for any
+purpose. Superteam Earn shall not owe compensation of any nature to the User for such
+Feedback.
+
+18. GOVERNING LAW
+
+18.1. Use of Superteam Earn and these Terms shall be governed by and construed in
+accordance with the substantive laws of the State of Singapore without regard to conflict of law
+principles.
+
+18.2. If a lawsuit, court proceeding, or any similar Action is permitted under these Terms, the
+Users and Superteam Earn agree to submit to the personal and exclusive jurisdiction of the
+state courts of Singapore for the purpose of litigating any dispute.
+
+18.3. However, Superteam Earn retains the right to bring any appropriate Action or proceeding
+against the User, in the User’s country of residence or any other relevant country. The User
+acknowledges and agrees to waive any and all objections to the exercise of jurisdiction over the
+User by such courts and to the venue in such courts.
+
+19. DISPUTE RESOLUTION AND CLASS ACTION WAIVER
+
+19.1. We encourage our Partners and Service Providers to try and settle conflicts amongst
+themselves. No Disputes amongst the Users shall be attributable to Superteam. The Contract
+between the Partner and the Service Provider operates as a separate agreement. Any Dispute
+between parties with respect to the non-payment of consideration/inadequacy of service is to be
+resolved among Parties themselves.
+19.2. The User may raise their dissatisfaction or complaints with the services provided by
+Superteam Earn and its Platforms or seek dispute resolution, via correspondence with
+Superteam Earn. Disputes raised shall be resolved by means of correspondence and
+negotiation between affected parties. This clause is only applicable to the Services provided by
+Superteam Earn, and not its Users.
+
+19.3. The User waives off any/all right of class action lawsuit, class-wide arbitration, and/or in
+any other proceeding in which either party acts or proposes to act in a representative capacity
+shall only bring claims in an individual capacity.
+
+19.4. No arbitration or proceeding can be combined with another without the prior written
+consent of all parties to the arbitration and/or proceeding.
+
+19.5. Waiver of any/or all parts of the Terms shall be deemed a continuing or further waiver of
+any such part or any other part of the Terms, and the User’s failure to assert any rights or part of
+these Terms shall be deemed or otherwise constitute a waiver of such right or part.
+
+19.6. Any cause arising out of these Terms shall commence within one (1) year after the cause
+of action accrues. Otherwise, such cause of action is permanently barred.
+
+20. WAIVER OF LIABILITY
+
+20.1. To the fullest extent permitted by applicable law, the User releases Superteam Earn and
+its affiliates from responsibility, liability, claims, demands and/or damages (actual and
+consequential) of every kind and nature, known and unknown (including, but not limited to,
+claims of negligence), arising out of or related to disputes between Users and the acts or
+omissions of third parties.
+
+20.2. The User expressly waives any rights that the User may have under any other statute or
+common law principles that would otherwise limit the coverage of this waiver to include only
+those claims that the User may know or suspect to exist in their favour at the time of agreeing to
+this waiver.
+
+21. MISCELLANEOUS
+
+21.1. Entire agreement - These terms contain all the terms applicable to the User, and
+supersede all other previous undocumented communication and representation and
+agreements.
+
+21.2. Severability - If any clause here is declared unenforceable or invalid by law, then only such
+clause or part thereof shall be struck, and all the remaining provisions shall remain in full force
+and effect.
+21.3. Assignment - Superteam Earn may assign these Terms at any time to any entity without
+notice or consent to the Users.
+
+21.4. Rights Reserved - Superteam Earn reserves the right to modify, update and/or change the
+Terms contained herein from time to time. Such changes shall be reflected in the Terms and
+Conditions of Superteam Earn, and continuing usage shall imply acceptance of the new Terms.
+
+22. CONTACT INFORMATION If you have any questions about these Terms, feel free to write
+or contact us at aditya@superteam.fun
+
