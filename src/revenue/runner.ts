@@ -16,6 +16,7 @@ import { describeStall, findStalledLines, type StalledLine } from "./watchdog.js
 import { DEFAULT_PORTFOLIO, labelledKpis, summarizeTargetBasis, TARGET_BASIS } from "./portfolio.js";
 import { frozenOwnerStepsForLine, heldOwnerStepsForLine, openOwnerStepsForLine } from "./owner-steps.js";
 import { DEFAULT_MEASUREMENTS_DIR, ingestAlgoraSupplyMeasurement, ingestApifyMeasurement, type IngestResult } from "./measurements.js";
+import { BRAND_MAIL_PROBE_FILE, readBrandMailProbe, type BrandMailReading } from "./brand-mail.js";
 import {
   computePortfolioSummary,
   getLine,
@@ -210,6 +211,8 @@ export interface TickOptions {
   seed?: boolean;
   /** Where measurement jobs commit their JSON (default state/colony/measurements, relative to the cwd). */
   measurementsDir?: string;
+  /** Where the brand-mail probe commits its numbers (default state/colony/brand-mail.json, relative to the cwd). */
+  brandMailFile?: string;
 }
 
 export interface TickResult {
@@ -226,6 +229,8 @@ export interface TickResult {
   stuckGoals: StuckGoal[];
   liveness: LivenessFinding[];
   stalledLines: StalledLine[];
+  /** The brand-mailbox probe's numbers (owner step 8), read every tick; absent until a probe has run. */
+  brandMail: BrandMailReading;
   blockers: string[];
   summary: PortfolioSummary | null;
 }
@@ -253,6 +258,7 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
     stuckGoals: [],
     liveness: [],
     stalledLines: [],
+    brandMail: { file: options.brandMailFile ?? BRAND_MAIL_PROBE_FILE, status: "absent", line: null, blockers: [] },
     blockers: [],
     summary: null,
   };
@@ -335,6 +341,11 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
       "Directors need an inference-capable runtime; provision the automaton or run it with an API key.",
     );
   }
+
+  // Read every tick, not only when the ledger sync is due: an unanswered accessibility mail stays a blocker in every
+  // report until it is answered, and its age is counted to this tick, not to the probe (brand-mail.ts).
+  result.brandMail = readBrandMailProbe(options.brandMailFile ?? BRAND_MAIL_PROBE_FILE, nowMs);
+  result.blockers.push(...result.brandMail.blockers);
 
   for (const line of listLines(db)) {
     if (line.status === "awaiting_setup" && !line.humanSetupDone) {
@@ -465,6 +476,7 @@ export function renderReport(db: Database, result: TickResult): string {
   if (result.audit && (result.audit.sampled || result.audit.chiefAuditRan)) {
     out.push(`- Audit sampled ${result.audit.sampled} review(s), flagged ${result.audit.flagged}${result.audit.chiefAuditRan ? "; chief audit ran" : ""}`);
   }
+  if (result.brandMail?.line) out.push(`- ${result.brandMail.line}`);
   if (decisions.length) {
     out.push("");
     out.push("### Board decisions");
