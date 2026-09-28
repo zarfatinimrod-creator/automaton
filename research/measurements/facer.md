@@ -1,6 +1,14 @@
 # Facer creator marketplace (loop row 23): the render read
 
-**Status: READ 28.9.2026 (captures of 17:19 UTC, ZERO-TESTS rows 71-79). Verdict: NEEDS_MORE.** No proposed kill fires on
+**Status (28.9.2026, after tick 8): DEAD. Verdict: kill (a) fires, so G3 FAILS [RENDERED terms; INFERENCE on scope]. It
+can reopen (trigger at the end).** The template cache (`facer-templates-js.bin`, fetched 18:36 UTC) holds Facer's full Terms
+of Service. They forbid reaching the Services through any "engine, software, tool, / agent" other than Facer's own software
+or an ordinary browser (bytes 475268-475582). Among 464 templates, the only way to publish is a web form, filled once per
+face. It has no API or bulk route, and `.face` import is "Admin Only". G1 PASSES: basic use is free (461897). G2, G4 and G7
+stay UNKNOWN, and kills (b), (c) and (d) do not fire. Correction to tick 7: the "5,000 syncs" figure *is* in a capture,
+but inside an HTML comment that the page does not show (1072779-1073541).
+
+**Tick 7 status, kept: READ 28.9.2026 (captures of 17:19 UTC, ZERO-TESTS rows 71-79). Verdict: NEEDS_MORE.** No proposed kill fires on
 a rendered fact. Kill (a) (G3) comes closest: a forum member, not Facer, says the Creator editor is the only way to make
 faces. Facer's own terms are an unreadable JavaScript shell, so whether the agent may operate that editor is UNKNOWN,
 the same position as CrazyGames (`crazygames.md:75`). G2 is wholly UNKNOWN. The "5,000 syncs" in `REPLENISH-2026-09-28.md:181`
