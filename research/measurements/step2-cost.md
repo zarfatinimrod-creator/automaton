@@ -1,7 +1,7 @@
 # Does owner step 2 cost the owner money? Bituach Leumi, read from the source
 
-**Status: MOSTLY SETTLED 28.9.2026: the owner is not a salaried employee (their answer, 28.9 ~02:45 UTC). One gap remains, below.** Two of the three pages were rendered from a GitHub runner (render-watch run 22,
-commit `3d5772b`). Kol Zchut answered 403, and the page that settles the salaried-employee case has not been rendered yet.
+**Status: MOSTLY SETTLED 28.9.2026 (tick 4): the owner is not a salaried employee (their answer, 28.9 ~02:45 UTC), and Bituach Leumi's list of who is exempt from the minimum is now read. Step 2 adds about ₪0 a month unless the owner is in an exempt group; one optional, private yes/no question settles that (last section).** The first two pages were rendered from a GitHub runner (render-watch run 22,
+commit `3d5772b`); Kol Zchut answered 403. The salaried page (tick 2) and the exemption page (tick 4) were rendered later.
 
 **Why this was checked.** The owner's ₪0 rule (MISSION.md, 27.9.2026) says not even a shekel until the ledger shows
 income. Step 2 (the עוסק פטור file and Bituach Leumi registration) is the only one of the seven steps that could create
@@ -87,3 +87,52 @@ Leumi's own page on who is exempt; until then the claim above is stated as an in
 
 **Effect on the owner-ask batch.** Step 2 no longer waits on the salaried question. It still waits,
 under the ₪0 rule, for a paid product that is ready to sell (`logs/CHANNEL_LOOP.md` §6 item 4).
+
+## Tick 4 reading (28.9.2026): who is exempt from the minimum
+
+`research/rendered/btl-who-is-exempt.txt`, fetched 2026-09-28T07:15:29Z, status 200 (meta alongside). The page's own
+footer: "אתר זה כולל מידע כללי, אין להתייחס למידע זה כנוסח מחייב של החוק." (`:543`). In the HTML, items 1-5 below stand
+alone; items 6-12 sit under one heading that conditions all of them (`:363`): "מי שהוא אחד מאלה, ואין לו הכנסות מעבודה
+וממקורות אחרים, או שיש לו הכנסות ממקורות אחרים שאינן עולות על 5% מהשכר הממוצע - 688 ש"ח".
+
+**The groups [RENDERED].** NI = national insurance, health = health insurance, silent = the page does not say.
+
+| # | Group, quoted | Covers | Survives self-employment income? |
+|---|---|---|---|
+| 1 | `:353` "עקרת בית - אישה הנשואה למבוטח, או ידועה בציבור שבן זוגה מבוטח, שאינה עובדת מחוץ למשק ביתה." | silent | No [INFERENCE]: the condition is not working outside the household |
+| 2 | `:355` "מקבל קצבת נכות מעבודה בשיעור של 100% לצמיתות, או מקבל קצבת נכות כללית בשיעור של 75% ומעלה" | NI only: "פטור מתשלום דמי ביטוח לאומי מהקצבה ומהכנסה שלא מעבודה" | Partly: `:356` "אם הוא עובד כעצמאי - עליו לשלם דמי ביטוח לאומי לענף נפגעי עבודה, וכן לשלם דמי ביטוח בריאות." |
+| 3 | `:358` "חייל בשירות סדיר , שאינו עובד לא כשכיר ולא כעצמאי" | silent | No (in the condition) |
+| 4 | `:359` "תושב ישראל השוהה במדינת אמנה, ששילם דמי ביטוח לאומי במדינת האמנה" | NI only: "ואולם, חלה עליו חובת תשלום דמי ביטוח בריאות בתקופה הזאת." | silent (tied to paying in the treaty state, not to not working) |
+| 5 | `:361` "אסיר המרצה עונש מאסר בחו"ל, שאינו עובד ואין לו הכנסות." | silent | No (in the condition) |
+| 6 | `:365` "מי שמקבל קצבה מהביטוח הלאומי או מהגופים המנויים בסעיף 350 לחוק הביטוח הלאומי (חוץ ממי שמקבל דמי אבטלה עבור חודש מלא)." | silent | No (`:363`) |
+| 7 | `:366` "חייל משוחרר, מסיים שירות לאומי או שירות אזרחי - יהיו זכאים לפטור מתשלום דמי ביטוח למשך חודשיים מתום השירות" | silent | No (`:363`); two months only |
+| 8 | `:367` "עולה חדש (כולל קטין חוזר …) - יהיה זכאי לפטור לתקופה של עד 12 חודשים מיום עלייתו לארץ." | silent | No (`:363`); up to 12 months |
+| 9 | `:368-369` "מי שמלאו לו 18 שנים ויתגייס לצה"ל או ישרת בשירות לאומי או אזרחי לפני גיל 21"; `:371`, enlisting at 21-22: "יהיה זכאי בתנאים מסוימים לפטור מתשלום דמי ביטוח לתקופה מגיל 18 עד לגיל 21" | silent | No (`:363`); until service starts |
+| 10 | `:374` "מי שמלאו לו 18 שנים ולא יתגייס לצה"ל או יתנדב לשירות לאומי, והוא לומד עדיין במוסד חינוכי על-יסודי עד כיתה י"ב" | silent | No (`:363`); not after age 19 |
+| 11 | `:377` "מי שרשום בשירות התעסוקה כמחוסר עבודה ולא מקבל דמי אבטלה - פטור מתשלום דמי ביטוח לאומי (לא כולל דמי ביטוח בריאות)" | NI only | No (`:363`); up to 12 months in two tax years |
+| 12 | `:381` "עובד שכיר שלא יכול לעבוד עקב מחלה, תאונה, שביתה מאורגנת או אבל במשפחתו" | NI only: "יהיה פטור מתשלום דמי ביטוח לאומי בלבד" | Not relevant: the owner is not salaried |
+
+"Silent" rows say "דמי ביטוח" without splitting NI from health. Where an exemption is NI-only, the person already pays
+health, ₪123 a month at the minimum (`btl-not-working-rates.txt:347-352`).
+
+**What this means for step 2 [INFERENCE, check before relying on it]:**
+- Items 1, 3, 5 and the `:363` heading end the exemption once there is income from work. Sales from a business are
+  income from work, so these people move onto the self-employed floor: 7.7% × ₪3,442 ≈ ₪265 a month.
+- **Step 2 would add about ₪265 a month, which conflicts with the ₪0 rule,** for items 1, 3, 5 and 6. For items 7-10 it
+  adds that only for the exempt months that remain. If a "silent" exemption turns out to cover NI only, the added cost is lower.
+- **Adds less, but not ₪0:** item 11 already pays health, so about ₪265 − ₪123 ≈ ₪142 a month (arithmetic) for the
+  exempt months left. Item 2 adds the work-injury branch plus health (`:356`); no rendered page gives the amount.
+  Item 4: unknown, the page does not say.
+- **Everyone else, meaning anyone liable for the ₪266 minimum today, would pay about ₪0 extra.** This is the earlier
+  section's rule.
+- The `:363` condition is about income, not registration. The page does not say whether an open file with ₪0 of sales
+  already ends these exemptions. Step 2 is asked only when a sale is near, so assume that it does.
+
+**The one question (optional, private, yes/no):**
+"Are you exempt from paying Bituach Leumi contributions today?" (Hebrew: "האם כיום יש לך פטור מתשלום דמי ביטוח לאומי?")
+- **No**, meaning paying or liable to pay: step 2 adds about ₪0 a month.
+- **Yes:** step 2 may add up to about ₪265 a month while the exemption would otherwise have lasted. Bituach Leumi's own
+  calculator gives the exact figure privately.
+
+The owner does not need to say which group. The question can wait: under the ₪0 rule, step 2 is not asked for until a paid
+product is ready to sell.
