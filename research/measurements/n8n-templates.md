@@ -382,3 +382,101 @@ Mehudak (מהודק)
   - **A correction that paid templates do not need verified status:** record it, and ask §4's original question on the
     same thread only if the reply leaves the AI stance open.
   - In every case the reply is recorded verbatim, per "Recording a reply".
+
+## Tick 9 reading (28.9.2026): the n8n-team reply
+
+**Capture.** `research/rendered/n8n-verifies-creator.txt` (97 lines) and its `.html` (939 lines), ZERO-TESTS row 108.
+URL `https://community.n8n.io/t/verifies-creator/129722`, status 200, fetchedAt 2026-09-28T20:35:26.723Z, 277,478 bytes,
+not truncated, sha256 `7411e5ee…`, first fetch (`n8n-verifies-creator.meta.json`). The `.txt` holds both posts (`:15`,
+`:23`), and the `data-preloaded` JSON is on `.html:599`. Nothing was fetched in this pass. Every quote was checked with
+`grep -n -F`, and the JSON was parsed with python3. This tick's Status entry stays on line 19, so that the line
+citations into this file from `research/owner-asks/brand-mailbox-questions.md:141,160` and `questions.json:76` still land.
+
+**The thread.** [RENDERED] It was opened 2025-06-09 in Questions (`.txt:7`, `:11`; `.html:644`). It has two posts and a
+system close. The record holds `\"views\":70`, `\"posts_count\":2` and `\"has_accepted_answer\":false`. The close reads
+"This topic was automatically closed 90 days after the last reply. New replies are no longer allowed." It is dated
+`\"created_at\":\"2025-09-08T00:26:27.317Z\"` (all `.html:599`).
+- Post 1, by a creator ([name removed]), trust level 1, `\"staff\":false`: "I want to know how to become a verified
+  template creator." (`.txt:15`; `.html:670`).
+- Post 2, by [name removed], 2025-06-10 00:25 UTC, 2 hours 23 minutes later (`datetime='2025-06-10T00:25:54Z'`,
+  `.html:690`): "You submit the template → template gets verified → profit." (`.txt:23`; `.html:698`). Its one link,
+  labelled "src", is the Notion Creator Hub, `https://n8n.notion.site/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f`
+  (`.html:699`). That is the whole reply. The crawler view marks it `itemprop="suggestedAnswer"` (`.html:679`), not an
+  accepted answer.
+
+**Is the poster n8n staff? Yes, by every flag the page carries.** [RENDERED] Post 2's record holds `\"staff\":true`,
+`\"moderator\":true`, `\"admin\":false`, `\"trust_level\":4`, `\"primary_group_name\":\"n8n_Team\"`,
+`\"flair_name\":\"n8n_Team\"` and `\"user_title\":\"Top Supporter\"` (`.html:599`, parsed). The site's group list
+defines group 46 as `\"name\":\"n8n_Team\",\"full_name\":\"n8n Team\"`, with `\"automatic\":false` (`.html:599`). The
+only other `\"staff\":true` post is the system close (`\"action_code\":\"autoclosed.enabled\"`, `.html:599`).
+- [INFERENCE] In Discourse, `staff` means a moderator or an admin, and a group that is not automatic is assigned by hand.
+  So this is the first reply in the chain (Ticks 7 to 9) from someone n8n marks as its own. "Top Supporter" is a title,
+  not a staff mark: the non-staff replier of Tick 7 carries it too (`n8n-verified-creator-requirements.html:603`).
+- Three "AI" string hits in the JSON are this poster's display-name field (`\"name\":` in post 2, in `participants` and
+  in `last_poster`, `.html:599`). [INFERENCE] A display name is not a statement about AI, and this note does not read it
+  as one.
+
+**The questions.**
+- **What verification requires: a three-step quip, with no criteria.** [RENDERED] "You submit the template → template
+  gets verified → profit." (`.txt:23`). The Creator Hub is given as the source (`.html:699`). The reply names no number of
+  templates, no quality bar, no profile review and no application step.
+  - [INFERENCE] The question was about a "verified template creator", and the reply answers with the template's review,
+    as if the two were one step. Read literally, a creator is verified once one template passes review. The February
+    2026 thread refutes that reading for 2026. That creator had five published templates, so five passed reviews, and
+    was still not verified (`n8n-verified-creator-feedback-2026.txt:19`, `:21`).
+  - [INFERENCE] The reply is dated 10.6.2025. That is eight days before the Tick 7 creator reported the policy change
+    (`n8n-verified-creator-requirements.html:674`, a thread opened 2025-06-18). That creator had priced a first template
+    without being a verified creator. So the reply fits the flow before the change, in which a reviewed template could
+    be sold. It cannot be read as the rule after 18.6.2025.
+  - "profit" is the only money word in the thread (1 hit in the `.txt`, 3 in the `.html`, all this reply).
+    [INFERENCE] It is the punchline of a joke. It is not a statement about paid templates, payout or revenue share.
+  - The source it cites is the Notion hub. Tick 6 found that page to be a JavaScript shell
+    (`n8n-creator-hub-notion.txt:1`). n8n's docs (Tick 6) and now a member of n8n's team both defer every term to it.
+- **Brand or company account: not addressed. UNKNOWN.** [RENDERED] "brand" has 0 hits. The 3 "company" hits are site
+  navigation: a template title and n8n's LinkedIn URL. The 16 "business" hits are Discourse plan strings and an
+  integration link (all `.html:599`). The Tick 8 catalogue example, a verified creator organisation, remains the only
+  evidence.
+- **AI-operated account or AI-made templates: not addressed. UNKNOWN.** [RENDERED] Neither post contains "AI". The
+  other hits are all on `.html:599`. One is the forum's `\"name\":\"AI Generated\"` flag, with `\"applies_to\":[\"Post\"]`;
+  it governs forum posts, as in Ticks 7 and 8. Two are the crawled title of the Notion link, "The AI workspace that
+  works for you. | Notion", which is Notion's own page title. The rest are the display-name field above and template
+  titles in the site navigation.
+- **Identity, payout, fee: none stated.** [RENDERED] The `.html` has 0 hits each for identity, KYC, passport, selfie,
+  payout, Stripe, Gumroad, paid, price, commission, revenue and "monetiz". The one "camera" hit is a Discourse voice
+  setting (`\"voice_max_camera_quality\"`, `.html:599`). The one "fee" hit in the `.txt` is the related-topic title
+  "Requesting feedback for Verified Creator status on my published n8n workflows" (`.txt:57`). The 23 in the `.html` are
+  inside "feedback", "feed" or a file hash.
+- **Time to verification: UNKNOWN.** [RENDERED] The reply names no duration. The "days" and "week" hits are the 90-day
+  close and Discourse settings (`.html:599`). The only figure in the chain is still one non-staff member's "it could
+  take up to a week" per template (`n8n-creator-profile-verification.txt:31`).
+
+**Is the forum exhausted? Yes, for the decisive question.** [RENDERED] This page's `related_topics` (`.html:599`,
+parsed) list five topics. Ticks 7 and 8 read three of them (ids 134401, 269435 and 126583). "Creator Program - Template
+for Recruiters" (id 182528, 2025-09-05, 221 views) has no poster in `n8n_Team`. Its only staff poster is the system
+user (user id -1). "N8n Creator Dashboard / Template Submission" (id 56836, 2024-10-06, 704 views) has two posters in
+`n8n_Team`.
+- [INFERENCE] Topic 56836 predates the June 2025 change, so at best it describes the old flow, as this reply seems to.
+- [INFERENCE] No thread in the chain raises a brand account or an AI-operated one, and the one reply from n8n's team
+  defers to a page this runner cannot render. Another forum render would not settle whether an AI-operated brand account
+  can be verified. Only n8n can answer that.
+
+**Verdict for row 20: NEEDS_MORE**, unchanged.
+- It is not FAILS_TEST. No staff text rules out an AI-operated brand account or AI-made templates.
+- It is not a pass. The staff reply gives no criteria for verified status and says nothing on brand or AI accounts. It
+  also dates from before the rule change that put pricing behind verified status (Tick 7).
+- The path still costs ₪0, and nothing refutes it.
+
+**Single next check: the held step-8 question.** Its pre-send condition is "Send only if that reply is silent on the AI
+rule and on what unlocks paid templates." (`research/owner-asks/questions.json:76`). The condition is met. The reply is
+silent on AI, and it names no unlock condition beyond "template gets verified".
+- **Route.** n8n's contact form (`href="/contact/"`, `n8n-creators.html:35`). It needs a browser session, and the
+  email script cannot send it (`questions.json:73`). The form's fields are unread. If it demands a personal name, phone
+  or address, the rule is "do not submit it; record the route closed." (`brand-mailbox-questions.md:31`). So read the
+  fields before anything is typed. [INFERENCE] The site also loads a "Contact sales" booking script
+  (`n8n-creators.html:36`), so the contact route may lead to a sales form. What it asks for is UNKNOWN.
+- **Which text.** Two texts exist. The first is §4's (`questions.json:75`; `brand-mailbox-questions.md:152`). It asks
+  for the unlock condition without presuming it. The second is the narrowed draft in this file (`:359-374`). It presumes
+  that Verified Creator status is the gate, and it pre-registers a reading for a correction (`:382-383`).
+  [INFERENCE] This reply blurs the template review and the creator status, which favours a wording that does not presume
+  which one unlocks pricing. The main thread chooses. This note edits neither file.
+- "Every message" (`brand-mailbox-questions.md:29`) and "Recording a reply" (`:34`) apply unchanged.
