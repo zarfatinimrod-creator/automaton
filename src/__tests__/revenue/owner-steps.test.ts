@@ -489,11 +489,17 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(step8).toContain("נגישות");
     expect(step8).toMatch(/Gmail האישי/);
     expect(step8).toContain("research/breadth/BOARD.md");
-    // The mailbox probe and the auto-reply are future work, said as future (review of the builder diff, finding 7).
+    // The probe and the sender were built on 28.9 (scripts/brand_mail.py) and wait for the mailbox; the accessibility
+    // auto-reply is still future work. The document says exactly that, and never that anything already runs.
     expect(step8).not.toContain("בכל ריצה הדוח מראה");
     expect(step8).not.toContain("המערכת עונה בעצמה");
     expect(step8).toMatch(/אחרי שצעד 8 יבוצע/);
-    expect(step8).toMatch(/עוד לא קיימ/);
+    expect(step8).toContain("scripts/brand_mail.py");
+    expect(step8).toMatch(/המענה האוטומטי למיילי נגישות עוד לא נבנה/);
+    // Step 8's secrets live in the brand-mailbox environment limited to main, never as plain repository secrets.
+    expect(step8).toContain("brand-mailbox");
+    expect(step8).toContain("BRAND_MAIL_APP_PASSWORD");
+    expect(step8).not.toMatch(/כסוד בריפו/);
     // Gender-neutral: instructions in the infinitive, no second-person masculine imperatives.
     const todo = step8.slice(step8.indexOf("### מה לעשות"), step8.indexOf("### מה זה עושה"));
     expect(todo.length).toBeGreaterThan(100);
