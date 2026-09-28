@@ -391,3 +391,7 @@ https://n8n.notion.site/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f	n8n-cre
 https://bit2c.co.il/home/faq	bit2c-faq
 # research/channel-loop/ZERO-TESTS.md row 62 — Firefox Add-ons (16): the reopen check on G4, same endpoint as rows 35-36 (tick 5, 28.9.2026).
 https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=invoice&page_size=50	amo-search-invoice
+# research/channel-loop/ZERO-TESTS.md row 63 — Spreadshirt (17): a second route, seen in tick-6 search results (28.9.2026).
+https://developer.spreadshirt.net/bin/view/API/Spreadshirt%20Public%20Shop%20API%20Documentation/API%20REST%20Resources/Design%20Details/	spreadshirt-api-design-details
+# research/channel-loop/ZERO-TESTS.md row 64 — Spreadshirt (17): a second route, seen in tick-6 search results (28.9.2026).
+https://www.spreadshop.com/blog/2018/01/30/new-upload-guidelines/	spreadshop-upload-guidelines-2018
