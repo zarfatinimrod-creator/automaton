@@ -1186,6 +1186,12 @@ coded fee, or a mandate collision.
   KiezelPay's FAQ (`research/channel-loop/ZERO-TESTS.md` row 38) does not show Pebble apps being onboarded in 2026, or
   shows any fee, Pebble is dead without another sitting. **Reopens if:** KiezelPay or a successor documents Pebble
   unlocks with Israel payable and no camera.
+  **Fired 28.9.2026, tick 5, on clause 1 (render-watch run 26, `research/measurements/pebble-kiezelpay.md`):** KiezelPay's FAQ
+  carries no date after 2016 and never names rePebble, Rebble or Core Devices; its only "can I sell on X" answer is Garmin's
+  (`kiezelpay-faq.txt:229-231`), and Pebble appears only as a buyer's install note (`:115`) and the 2016 first sale (`:221`).
+  The fee clause would have passed (27% of each sale, nothing up front, `:198`); payouts are PayPal only (`:227`). The
+  rePebble store itself is alive in 2026 (a Spring 2026 contest, new faces dated 23-27.9.2026 in its Rebble feed), but
+  has no documented way to be paid. **Killed without another sitting, as pre-registered.** The reopen trigger above stands.
 - **Shopify — pre-ruled conditional kill** on a rendered mandatory listing fee (the note under "Earlier rejections").
 - **Whop — re-recorded as camera-gated** (the correction under `content-seo`, "Clipping"): the rail is not reusable.
 - **Apify — the hidden-Actor note** under `distribution` → "What goes to the board".
