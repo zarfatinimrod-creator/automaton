@@ -461,3 +461,5 @@ https://lomdimhofshi.co.il	lomdimhofshi-home
 https://indiebook.co.il/41/%D7%90%D7%99%D7%9A-%D7%9C%D7%9E%D7%9B%D7%95%D7%A8-%D7%A1%D7%A4%D7%A8-%D7%91%D7%90%D7%AA%D7%A8	indiebook-sell-a-book
 # research/channel-loop/ZERO-TESTS.md row 97 — Indiebook (22): the site terms, linked from a tick-7 capture (28.9.2026).
 https://indiebook.co.il/16/	indiebook-terms
+# research/channel-loop/ZERO-TESTS.md row 98 — Facer (23): the template cache, linked from a tick-7 capture (28.9.2026).
+https://www.facer.io/js/templates.min.js?t=1790275483051	facer-templates-js
