@@ -367,22 +367,22 @@ https://api.apify.com/v2/store?search=israel&limit=1000&includeUnrunnableActors=
 https://api.apify.com/v2/store?search=israel&limit=1000	apify-store-israel-default
 # ZERO-TESTS.md row 52 — Spreadshirt (17) / any EU marketplace (breadth board Q10): the Digital Services Act, Articles 30-31.
 https://eur-lex.europa.eu/eli/reg/2022/2065/oj	eu-dsa-2022-2065
-# ---- NOT FETCHED YET: Dispatch 2 (the next tick), Batch B. Delete the leading "# " from the six URL lines. ----
+# ---- Dispatch 2 (Batch B, rows 53-58): switched on 28.9.2026 16:10 UTC (tick 6, started early at the owner's "תמשיך"). ----
 # ZERO-TESTS.md row 53 — Google Play Books (18), Batch B: the payment-country table.
-# https://support.google.com/books/partner/table/6052428?hl=en	play-books-payment-countries
+https://support.google.com/books/partner/table/6052428?hl=en	play-books-payment-countries
 # ZERO-TESTS.md row 54 — Google Play Books (18), Batch B.
-# https://support.google.com/books/partner/answer/3250840?hl=en	play-books-answer-3250840
+https://support.google.com/books/partner/answer/3250840?hl=en	play-books-answer-3250840
 # ZERO-TESTS.md row 55 — Google Play Books (18), Batch B.
-# https://support.google.com/books/partner/answer/4490848?hl=en	play-books-answer-4490848
+https://support.google.com/books/partner/answer/4490848?hl=en	play-books-answer-4490848
 # ZERO-TESTS.md row 56 — Wix App Market (11), Batch B: Tipalti's payment-method coverage, US-ROW.
-# https://help.tipalti.com/hc/en-us/articles/31314361313815-Payment-methods-coverage-US-ROW	tipalti-payment-methods-us-row
+https://help.tipalti.com/hc/en-us/articles/31314361313815-Payment-methods-coverage-US-ROW	tipalti-payment-methods-us-row
 # ZERO-TESTS.md row 57 — Wix App Market (11), Batch B: the App Market guidelines.
-# https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines	wix-app-market-guidelines
+https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines	wix-app-market-guidelines
 # ZERO-TESTS.md row 58 — Wix App Market (11), Batch B: what the listing publishes about the company.
-# https://dev.wix.com/docs/build-apps/launch-your-app/market-listing/add-your-company-info	wix-add-company-info
+https://dev.wix.com/docs/build-apps/launch-your-app/market-listing/add-your-company-info	wix-add-company-info
 # ---- NOT FETCHED YET: row 32's Privy docs root, activated by the main thread when T4 is dispatched. ----
 # ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Privy's docs root, for whether it sponsors fees on platform-created wallets.
-# https://docs.privy.io/	privy-docs-root
+https://docs.privy.io/	privy-docs-root
 # research/channel-loop/ZERO-TESTS.md row 59 — PayPal Israel (21): the help index, to find the verification article (tick 5, 28.9.2026).
 https://www.paypal.com/il/cshelp/personal	paypal-il-help-index
 # research/channel-loop/ZERO-TESTS.md row 60 — n8n paid templates (20): linked from a tick-5 capture (28.9.2026).
