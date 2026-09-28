@@ -7,7 +7,11 @@ step is an upload of "proof of identity" to lift a limitation, in HELP534. See t
 identity as an uploaded copy of a driving licence or ID card, sent via the Message Center (`paypal-il-help534-limited.txt:54`).
 The 328 KB page names no selfie, liveness, video or camera step. Residual risk: this is the path for restoring a
 limited account, not sign-up. No capture holds a sign-up verification article, and the in-account request cannot be
-rendered. Step 13 stays held on conditions (ii) and (iii). See the Tick 7 section. The mechanics pass: an Israeli individual may open an account, receive payment for goods and
+rendered. Step 13 stays held on conditions (ii) and (iii). See the Tick 7 section. **Tick 8 (28.9.2026): the PASS
+stands.** The confirmatory browse-topics render (ZERO-TESTS row 103) is a menu of six topics with no article list. It
+names no identity article and no selfie, liveness, video or camera step. No further check is named. HELP534 was
+refetched in the same run: its upload sentence is now at `paypal-il-help534-limited.txt:56`, and it still names no camera
+step. See the Tick 8 section. The mechanics pass: an Israeli individual may open an account, receive payment for goods and
 services on a personal account, and withdraw to an Israeli bank in ILS. The camera question is **UNKNOWN, not excluded**.
 The agreement names ID documents and no camera step, but it does not describe the verification flow and links no
 verification article. Board Q3 condition (i) is therefore not yet met.
@@ -195,3 +199,54 @@ verdict, and the board confirms it at the next sitting.
 path is the footer link `/il/cshelp/browse-topics` (`.html:45`) on the host in the meta, and it is ZERO-TESTS row 66's
 named fallback. Look under the "החשבון שלי" topic for an identity-confirmation article. If one names a selfie, liveness
 or video step, row 21 becomes FAILS_TEST. Suggested slug: `paypal-il-browse-topics`.
+
+## Tick 8 reading (28.9.2026): the browse-topics page
+**Capture:** `research/rendered/paypal-il-browse-topics.txt` (37 lines) and its `.html` (23 lines by `wc -l`, 24 as
+`grep -n` numbers them; the last has no newline). This is ZERO-TESTS row 103, the confirmatory check named in Tick 7.
+URL `https://www.paypal.com/il/cshelp/browse-topics`, status 200, fetchedAt 2026-09-28T18:36:19.929Z, 300,295 bytes, not
+truncated, sha256 `7265d848…`, first fetch. It was served in Hebrew (`"worldReadyLocale":"he-IL"`, `.html:24`). Its
+canonical is the same URL (`"canonicalUrl":"https://www.paypal.com/il/cshelp/browse-topics"`, `.html:24`).
+
+**What it is: a menu of six topics, with no article list.** [RENDERED]
+- Title "מרכז התמיכה של PayPal - עיון בנושאים | PayPal IL" (`.txt:1`); heading "כל הנושאים" (all topics, `:5`). The body
+  names six topics (`:7-17`), among them "מחלוקות ומגבלות" (disputes and limitations, `:9`), "החשבון שלי" (my account,
+  `:11`) and "כניסה ואבטחה" (login and security, `:15`). The six help channels follow (`:19-31`), then the cookie banner
+  (`:33-37`).
+- Each topic is one card with one link and nothing under it. "החשבון שלי" is
+  `<a href="/il/cshelp/topic/help_account_personal"` (`.html:21`). All six cards link to `/il/cshelp/topic/<topicId>`
+  (6 hits, all `.html:21`).
+- The page data (`__NEXT_DATA__`, `.html:24`) holds `"pageName":"browse-topics"`, a `topicTree` of the same six
+  `topicId`/`topicName` pairs (for this topic, `{"topicId":"help_account_personal","topicName":"החשבון שלי"}`) and the
+  `helpChannels` block. It holds no article. There are 0 hits for `cshelp/article` and 0 for a `HELP` id with digits.
+  The four "HELP" hits are channel ids (`HELP_CENTER`, `TECHNICAL_HELP`, `BUSINESS_HELP`) and a search-experiment name,
+  "HELPCENTER GLOBAL EN". HELP534 is not surfaced on this page.
+- [INFERENCE] A topic's articles are listed on the topic page, which this capture does not hold. HELP534, the one
+  identity step a PayPal IL render has shown, is filed under limitations, not under "החשבון שלי" (the Tick 7 breadcrumb
+  `help_disputes_and_limitations_personal/help_account_limitations_personal`, `paypal-il-help534-limited.html:48`).
+
+**Camera search: none named.** [RENDERED] The 300 KB HTML has 0 hits for each of סלפי, תמונה, תמונת, מצלמה, וידאו,
+צילום, לצלם, סרטון, פנים, selfie, photo, camera, liveness, biometric, video, identity, אימות, מאומת and תעודת. The hits it
+does have are classified:
+- 18 "זהות", all `.html:24`. 16 are US taxpayer-ID hold strings ("מספר זהות" 4 times, "מספר הזהות" 12 times). 1 is a
+  login one-time password ("לזהות אותך"). 1 is a support-call passcode ("כדי לאמת את זהותכם, הזינו את קוד האבטחה הבא"),
+  which is also the only "לאמת" hit.
+- 2 "verify": `\"verifyLabel\":\"עלינו לוודא שאכן מדובר בך.\"` and `\"verifySubLabel\":\"עליך לאשר שאכן מדובר בך.\"`,
+  among the phone-support strings (`.html:24`), as in Tick 7.
+- 6 "face": CSS `@font-face` (`.html:2`, `:24`).
+- 2 "סרטונ": the Help Center blurb "צפו בסרטונים" (watch videos, `.html:24`). These are help videos, not an identity step.
+
+**Verdict for row 21: PASS_TEST stands (board Q3 condition (i)).** The check could only kill, and it did not. The
+browse-topics page names no identity-confirmation article, and no selfie, liveness, video or camera step. The Tick 7
+reading is unchanged. The only identity step a PayPal IL render shows is an uploaded copy of a driving licence or ID card.
+The residual risk is unchanged too. No capture shows sign-up verification or the in-account request, and the kill at
+step 13 stays live as Tick 7 set it out.
+- **HELP534 was refetched in the same run** (fetchedAt 2026-09-28T18:35:15.033Z, 328,729 bytes, sha256 `26e43d86…`,
+  previous `4c6d6204…`). The `.txt` is now 82 lines, not 80, and Tick 7's `.txt` citations sit two lines lower: the
+  upload sentence is at `paypal-il-help534-limited.txt:56` (it was `:54`). [INFERENCE] The two new lines look like the
+  extractor now keeps the topic breadcrumb and the personal/business tabs ("מחלוקות ומגבלות", `:5`; "אישי עסקי", `:7`). The `.html` is still 48 lines, with the sentence at `:42` and the page data at `:48`. I re-ran the camera
+  search on the new HTML: still 0 hits each for סלפי, תמונה, תמונת, מצלמה, וידאו, צילום, לצלם, סרטון, פנים, selfie,
+  photo, camera, liveness and biometric, and still 30 for "זהות". [RENDERED]
+
+**Next check: none.** The capture names no identity article, so there is no article URL to follow. Its only onward
+link for the topic is the topic page itself (`.html:21`), which is a listing, not a named article. Row 21 now waits on
+the board's confirmation and on Q3 conditions (ii) and (iii).

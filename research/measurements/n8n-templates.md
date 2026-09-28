@@ -8,6 +8,10 @@ that points back to it, with no rule on paid templates, AI, payout or identity. 
 `.txt` lost them. A creator reports the product saying a paid template needs verified-creator status (June 2025). A
 reply that is not from n8n staff says verification needs two more free templates, about three in all. The thread states
 no fee, payout, identity or template AI rule. See the Tick 7 section.
+**Tick 8 (28.9.2026): still NEEDS_MORE.** The 2026 thread has no staff reply, and it answers none of the five questions
+from n8n. It adds one cost. A creator with five published templates was still asking how to reach verified status
+(February 2026). [INFERENCE] Verification is a quality review, not a count of three. A creator account run as an
+organisation is verified in the catalogue. See the Tick 8 section.
 
 ## What was read
 
@@ -192,3 +196,69 @@ the related topic at `.html:768`, created 2026-02-24 (`.html:603`), and the newe
 Look for any staff reply on what verification requires, whether AI-generated templates are accepted, and whether
 identity or payout details are asked. Read the `.html` crawler view, not the `.txt`. Suggested slug:
 `n8n-verified-creator-feedback-2026`.
+
+## Tick 8 reading (28.9.2026)
+
+**Captures.**
+- `research/rendered/n8n-verified-creator-feedback-2026.txt` (145 lines) and its `.html` (1,080 lines), ZERO-TESTS row
+  104. URL `https://community.n8n.io/t/requesting-feedback-for-verified-creator-status-on-my-published-n8n-workflows/269435`,
+  status 200, fetchedAt 2026-09-28T18:36:21.677Z, 291,681 bytes, not truncated, sha256 `8713cab8…`, first fetch. The
+  `.txt` now holds every post (`:11-69`), so the extractor fix that Tick 7 asked for is in.
+- `research/rendered/n8n-verified-creator-requirements.txt`, re-extracted: now 111 lines, with both posts in the text
+  (`:15`, `:17`, `:27`, `:29`). Refetched 2026-09-28T18:35:17.044Z, sha256 `f256ab21…` (was `ae29fe40…`). The `.html`
+  is still 973 lines, and Tick 7's `.html` citations still land on the same lines (checked: `:603`, `:615`, `:674`,
+  `:705`, `:706`, `:768`). The text adds nothing that Tick 7 had not read from the HTML. Only the related-topics list
+  differs (`.txt:51-99`).
+
+**The thread.** [RENDERED] It was opened 2026-02-24 (`.txt:13`; `<meta itemprop='datePublished'
+content='2026-02-24T11:29:38Z'>`, `.html:661`) and is filed under Feedback > General (`.txt:7-9`). It has 4 posts and a
+system close on 2026-05-25 (`.txt:61-69`). The record holds `\"views\":76,` and `\"has_accepted_answer\":false`
+(`.html:607`).
+- Post 1, by a template creator ([name removed]): "I currently have 5 workflows published in the templates gallery, and
+  1 workflow under review after making changes to the title and stickies based on feedback." (`.txt:19`). "I’m aiming
+  for Verified Creator status and would appreciate guidance on whether my current templates meet the quality bar, and
+  what I should improve to get there." (`.txt:21`). The post guesses at what blocks verification: "(documentation depth,
+  edge-case handling, naming conventions, setup clarity, etc.)" (`.txt:23`).
+- Post 2, by a community member ([name removed]), only redirects: "please post it in the feedback category" (`.txt:39`).
+  Post 3 is thanks (`:49`). Post 4 is "You’re welcome, and good luck on your journey." (`:57`). Post 5 is the automatic
+  close (`:69`).
+- **No staff reply.** Posts 1-4 each carry `\"staff\":false` (4 hits, `.html:607`). Posts 2 and 4 carry
+  `\"trust_level\":2` and `\"user_title\":\"Top Supporter\"`. The one `\"staff\":true` is post 5, the system close
+  (`\"action_code\":\"autoclosed.enabled\"`, `.html:607`).
+
+**The five questions.**
+- **What verification requires: no staff answer.** [RENDERED] Nobody answers the question. The thread shows two facts.
+  Five published templates had not made this creator verified by 24.2.2026 (`.txt:19`, `:21`). A submitted template is
+  reviewed, and feedback on its title and stickies comes back before it is published (`.txt:19`). The list of possible
+  gaps is the creator's guess, not n8n's rule (`.txt:23`).
+  - [INFERENCE] This weakens Tick 7's reading. There, two more free templates, about three in all, made a creator
+    "eligable" (`n8n-verified-creator-requirements.txt:29`). Three is at most the point where a creator can be
+    considered. The grant is a quality review whose criteria are unpublished, and five was not enough here.
+- **AI-generated templates: nothing stated.** [RENDERED] "AI-generated" occurs once, in the forum's own
+  `\"name\":\"AI Generated\"` flag with `\"applies_to\":[\"Post\"]` (`.html:607`), as in Tick 7. It governs forum posts,
+  not the template library.
+- **Identity, payout, fees: nothing stated.** [RENDERED] There are 0 hits each for Stripe, Gumroad, payout, KYC,
+  identity, passport, selfie, commission, revenue, paid and price. Every "fee" hit is inside "feedback" or "feed",
+  except one inside a file hash.
+- **How long verification takes: UNKNOWN.** [RENDERED] No duration is given. The "days" hits are the 90-day auto-close
+  (`.txt:69`) and forum settings. [INFERENCE] The creator had five templates published and one in review when asking,
+  so the status is not automatic at the third template. No time is stated.
+- **Can a brand (company) account be a verified creator: UNKNOWN from the thread; yes, by one example in the
+  catalogue.** [RENDERED] In the thread, the 3 "company" hits are a template title and n8n's LinkedIn URL, the 6
+  "business" hits are Discourse plan strings and an integration link, and "brand" has 0 hits (`.html:607`). In the
+  catalogue capture, the creator organisation from §Findings (positions 67 and 73, ids 5626 and 5690) carries
+  `"verified":true`. Its bio opens with its brand name and then "A growing marketplace of AI agents, workflows, and
+  toolkits" (`n8n-templates-search.json:1`, `workflows[66].user` and `workflows[72].user`, parsed with python3).
+  [INFERENCE] A verified creator's public name can be a brand. Whether n8n checks the person behind the account is UNKNOWN.
+
+**Verdict for row 20: NEEDS_MORE**, unchanged. No staff member answers any of the five questions. The thread adds one
+cost. Five published templates were not enough for verified status in February 2026, so each paid listing sits behind
+a review with unpublished criteria, not behind a count of three. The brand question leans favourable, on one catalogue
+example. It is not a kill: nothing refutes the path, and it still costs ₪0.
+
+**Single next check:** render `https://community.n8n.io/t/creator-profile-templates-verification/126583`
+(`n8n-verified-creator-feedback-2026.html:929`; also `n8n-verified-creator-requirements.html:849`). It is the only
+related topic with an accepted answer (`\"has_accepted_answer\":true`, `.html:607`). It was created 2025-06-04, has 5
+posts and 374 views, and is closed (`.html:607`; `.txt:105-113`). Read who wrote the accepted answer (the `staff` flag
+in `data-preloaded`) and what it says verification requires. Look too for AI, identity, payout and company-account
+rules. Suggested slug: `n8n-creator-profile-verification`.
