@@ -98,7 +98,8 @@ export function ingestApifyMeasurement(db: Database, dir: string = DEFAULT_MEASU
 export function ingestAlgoraSupplyMeasurement(db: Database, dir: string = DEFAULT_MEASUREMENTS_DIR, lineId = "oss-bounties"): IngestResult {
   type Supply = { measuredAt?: unknown; claimableBounties?: unknown; struck?: unknown };
   let struck = false;
-  const result = ingestFile<Supply>(db, join(dir, "algora-supply.json"), lineId, "revenue.measurement.algora_supply.measured_at", (data) => {
+  const file = join(dir, "algora-supply.json");
+  const result = ingestFile<Supply>(db, file, lineId, SUPPLY_MEASURED_AT_KEY, (data) => {
     // A file whose own reading was struck as an instrument fault (RULING-2026-09-28-bounty-rail.md §3.4) carries a count
     // that is not a reading: it is recorded in the file's instrumentFaults and never becomes a KPI.
     if (data.struck === true) {
@@ -109,5 +110,51 @@ export function ingestAlgoraSupplyMeasurement(db: Database, dir: string = DEFAUL
     recordKpi(db, lineId, "claimableBounties", data.claimableBounties, "claimable bounties (open, labelled, unarchived, unrewarded, ≥ $50, policy not forbidden, not not-a-payer)");
     return ["claimableBounties"];
   });
-  return struck ? { ...result, detail: "this file's reading is struck as an instrument fault; nothing recorded" } : result;
+  if (struck) return { ...result, detail: "this file's reading is struck as an instrument fault; nothing recorded" };
+  const moved = strikeIngestedFaults(db, file, lineId);
+  return moved.length
+    ? { ...result, detail: `moved the struck reading${moved.length === 1 ? "" : "s"} ${moved.join(", ")} out of claimableBounties into ${STRUCK_SUPPLY_KPI}` }
+    : result;
+}
+
+const SUPPLY_MEASURED_AT_KEY = "revenue.measurement.algora_supply.measured_at";
+
+/**
+ * Where a supply reading goes when the file strikes it AFTER the tick already recorded it: kept in the database under
+ * its own name — recorded, never averaged (BOARD-LOOP KILL-1) — and no longer served by `latestKpis` as the current
+ * `claimableBounties`. RULING-2026-09-28-bounty-rail.md §3.4; review of 28.9.2026, finding 8.
+ */
+export const STRUCK_SUPPLY_KPI = "claimableBountiesStruck";
+
+/**
+ * The file was struck in place (same `measuredAt`), so the ingest above reads it as `unchanged` and never looks at it
+ * again. When the last reading this database ingested is one the file now lists under `instrumentFaults`, every
+ * `claimableBounties` snapshot recorded since that reading came from it (a snapshot is written only when `measuredAt`
+ * advances); those are renamed to `STRUCK_SUPPLY_KPI`. If a corrected reading was ingested first, `latestKpis` already
+ * serves it and nothing is renamed. Idempotent: a renamed snapshot no longer matches. Returns "week (count)" per fault
+ * that moved at least one snapshot.
+ */
+function strikeIngestedFaults(db: Database, file: string, lineId: string): string[] {
+  const last = kvGet(db, SUPPLY_MEASURED_AT_KEY);
+  if (!last || !existsSync(file)) return [];
+  let faults: unknown;
+  try {
+    faults = (JSON.parse(readFileSync(file, "utf8")) as { instrumentFaults?: unknown })?.instrumentFaults;
+  } catch {
+    return []; // an unreadable file is reported by the ingest itself
+  }
+  if (!Array.isArray(faults)) return [];
+  const moved: string[] = [];
+  for (const f of faults as Array<{ week?: unknown; measuredAt?: unknown; claimable?: unknown }>) {
+    if (f?.measuredAt !== last || !isCount(f.claimable)) continue;
+    const week = typeof f.week === "string" ? f.week : f.measuredAt;
+    const changes = db
+      .prepare(
+        `UPDATE revenue_kpi_snapshots SET kpi = ?, unit = ?
+         WHERE line_id = ? AND kpi = 'claimableBounties' AND captured_at >= ? AND value = ?`,
+      )
+      .run(STRUCK_SUPPLY_KPI, `struck as an instrument fault (${week}): not a reading, never averaged`, lineId, last, f.claimable).changes;
+    if (changes > 0) moved.push(`${week} (${f.claimable})`);
+  }
+  return moved;
 }
