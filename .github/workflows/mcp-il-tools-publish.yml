@@ -1,0 +1,333 @@
+name: mcp-il-tools-publish
+
+# Publish the free MCP server in products/mcp-il-tools: first the npm package @mehudak/mcp-il-tools,
+# then its listing in the official MCP Registry as io.github.mehudak/il-tools.
+#
+# ONE DISPATCH, AFTER TWO OWNER STEPS. Nothing here runs by itself: the only trigger is a person pressing
+# "Run workflow". A real run needs
+#   - owner step 7: the GitHub organisation "mehudak" owns this repository. The registry's GitHub OIDC login
+#     grants publish rights on io.github.<repository_owner>/* and on nothing else
+#     (modelcontextprotocol/registry@bf4e88c, internal/api/handlers/v0/auth/github_oidc.go, buildPermissions).
+#     From any other owner the login would not cover io.github.mehudak/il-tools, and the only name it would
+#     cover carries that owner's account name.
+#   - owner step 9: an npm account "mehudak" (it owns the @mehudak scope) and an npm access token that can
+#     publish to it, pasted here as the repository secret NPM_TOKEN.
+# Both guards below fail a real run with the step's number when it is missing.
+#
+# DRY RUN FIRST. dry_run defaults to true. A dry run runs every check, tests, builds and packs the package,
+# downloads and verifies the pinned mcp-publisher, and validates server.json against the live registry's
+# schema (the /v0/validate endpoint, which stores nothing). It skips exactly three things: npm publish, the
+# registry login and the registry publish. On a repository the organisation does not own yet, and with no
+# token, a dry run still goes green and says which step is missing.
+#
+# NO PROVENANCE, ON PURPOSE. `npm publish --provenance` would attach a signed statement naming this
+# repository, its workflow and its commit, and the npm page would link to them. Until the history is under
+# the brand, that link leads to a personal account. So the flag is never passed, NPM_CONFIG_PROVENANCE is set
+# to "false", and the npm publish runs in a job with no id-token permission: without an OIDC token npm could
+# not produce provenance even if something asked for it. Only the registry job holds id-token: write, and it
+# never runs npm publish.
+#
+# ACTIONS ARE PINNED BY MAJOR TAG (@v4), not by commit SHA, because every other workflow in this repository
+# pins them that way; this file matches them rather than starting a second convention. The one third-party
+# binary, mcp-publisher, is pinned harder: an exact release and its sha256, below.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run: check, test, build and pack; publish nothing. Untick only after owner steps 7 and 9."
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+# Two publishes of the same version racing each other would both try npm and the registry. Serialise them;
+# a half-finished publish is worse than one that waits.
+concurrency:
+  group: mcp-il-tools-publish
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------------------------------------------------
+  # Guards, checks, and the npm package. No id-token here (see NO PROVENANCE above).
+  # ---------------------------------------------------------------------------------------------------------
+  npm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: products/mcp-il-tools
+    steps:
+      # The two guards run before anything else, so a real run stops before it has built or downloaded
+      # anything. They run in the (still empty) workspace because the product directory does not exist
+      # before checkout.
+      #
+      # The message deliberately does not print the current owner: a public run log is one more place a
+      # personal account name would appear.
+      - name: Guard - the mehudak organisation owns this repository (owner step 7)
+        working-directory: .
+        env:
+          REPO_OWNER: ${{ github.repository_owner }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          if [ "$REPO_OWNER" = "mehudak" ]; then
+            echo "The GitHub organisation mehudak owns this repository: io.github.mehudak/il-tools is ours to publish."
+            exit 0
+          fi
+          MSG="Owner step 7 is not done yet: this repository is not owned by the GitHub organisation mehudak. The MCP Registry's GitHub login grants only io.github.<repository owner>/*, so io.github.mehudak/il-tools can be published only from a repository that organisation owns. Transfer the repository (docs/OWNER_STEPS.he.md, step 7), then dispatch again."
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "::notice::Dry run, continuing. A real run stops here. ${MSG}"
+            echo "- Dry run: a real run would stop here. ${MSG}" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "::error::${MSG}"
+          exit 1
+
+      - name: Guard - the NPM_TOKEN secret is set (owner step 9)
+        working-directory: .
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          if [ -n "${NPM_TOKEN:-}" ]; then
+            echo "NPM_TOKEN is set."
+            exit 0
+          fi
+          MSG="Owner step 9 is not done yet: the repository secret NPM_TOKEN is empty. Open the npm account mehudak (it owns the @mehudak scope), create an access token that can publish @mehudak packages, and paste it into this repository as a secret named exactly NPM_TOKEN; then dispatch again."
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "::notice::Dry run, continuing. A real run stops here. ${MSG}"
+            echo "- Dry run: a real run would stop here. ${MSG}" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "::error::${MSG}"
+          exit 1
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # registry-url writes an .npmrc that reads the token from NODE_AUTH_TOKEN, which only the publish step sets.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: npm
+          cache-dependency-path: products/mcp-il-tools/package-lock.json
+
+      # The committed lockfile is required: plain `npm install` cannot resolve vitest's peers from scratch on
+      # npm 10.9.7 (products/mcp-il-tools/README.md, Development).
+      - run: npm ci --no-audit --no-fund
+      - run: npm test
+      - run: npm run build
+
+      # The registry refuses a server whose npm package does not carry "mcpName" equal to the server name
+      # (modelcontextprotocol/registry, internal/validators/registries/npm.go, validateNPMPackage), and a
+      # version triple out of step would list one version and install another. Checked here, before
+      # anything is published, not discovered by the registry afterwards.
+      - name: Check - versions, mcpName and the npm identifier agree
+        id: meta
+        run: |
+          set -euo pipefail
+          node --input-type=module -e '
+            import { appendFileSync, readFileSync } from "node:fs";
+            const pkg = JSON.parse(readFileSync("package.json", "utf8"));
+            const server = JSON.parse(readFileSync("server.json", "utf8"));
+            const first = (server.packages ?? [])[0] ?? {};
+            const problems = [];
+            const check = (ok, msg) => { if (!ok) problems.push(msg); };
+            check(pkg.version === server.version, `package.json version ${pkg.version} != server.json version ${server.version}`);
+            check(pkg.version === first.version, `package.json version ${pkg.version} != server.json packages[0].version ${first.version}`);
+            check(pkg.mcpName === server.name, `package.json mcpName ${pkg.mcpName} != server.json name ${server.name}`);
+            check(first.identifier === pkg.name, `server.json packages[0].identifier ${first.identifier} != package.json name ${pkg.name}`);
+            check(String(server.name).startsWith("io.github.mehudak/"), `server.json name ${server.name} is outside io.github.mehudak/, the only namespace this repository can log in to`);
+            for (const field of ["repository", "homepage", "author", "bugs", "contributors"]) {
+              check(!(field in pkg), `package.json has "${field}", which npm would print on the package page`);
+            }
+            if (problems.length) {
+              for (const p of problems) console.log(`::error file=products/mcp-il-tools/package.json::${p}`);
+              process.exit(1);
+            }
+            appendFileSync(process.env.GITHUB_OUTPUT, `name=${pkg.name}\nversion=${pkg.version}\nserver=${server.name}\n`);
+            console.log(`${pkg.name}@${pkg.version} and ${server.name} ${server.version} agree.`);
+          '
+
+      # What npm would upload, listed without uploading it. Anything outside the five allowed paths fails the
+      # run, and tests/, node_modules/ and .env files are named explicitly so the failure says why.
+      - name: Check - the tarball holds only dist/, src/, README.md, package.json and LICENSE
+        run: |
+          set -euo pipefail
+          npm pack --dry-run --json > "$RUNNER_TEMP/pack.json"
+          node --input-type=module -e '
+            import { appendFileSync, readFileSync } from "node:fs";
+            const [pack] = JSON.parse(readFileSync(`${process.env.RUNNER_TEMP}/pack.json`, "utf8"));
+            const files = pack.files.map((f) => f.path).sort();
+            const FORBIDDEN = ["tests/", "node_modules/", ".env"];
+            const ALLOWED_FILES = ["README.md", "package.json", "LICENSE"];
+            const ALLOWED_DIRS = ["dist/", "src/"];
+            const segments = (p) => p.split("/");
+            const forbidden = files.filter((p) => FORBIDDEN.some((bad) =>
+              bad.endsWith("/") ? segments(p).slice(0, -1).includes(bad.slice(0, -1)) : segments(p).some((s) => s.startsWith(bad))));
+            const outside = files.filter((p) => !ALLOWED_FILES.includes(p) && !ALLOWED_DIRS.some((d) => p.startsWith(d)));
+            console.log(`${pack.name}@${pack.version}: ${files.length} files, ${pack.size} bytes packed`);
+            for (const f of files) console.log(`  ${f}`);
+            appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Tarball ${pack.filename}\n\n${files.map((f) => `- ${f}`).join("\n")}\n\n`);
+            if (forbidden.length) console.log(`::error::the tarball contains ${forbidden.join(", ")} (tests/, node_modules/ and .env files never ship)`);
+            if (outside.length) console.log(`::error::the tarball contains ${outside.join(", ")}, outside dist/, src/, README.md, package.json and LICENSE`);
+            if (forbidden.length || outside.length) process.exit(1);
+          '
+
+      # npm refuses to publish over an existing version, so a second dispatch of the same version would fail
+      # here. Skip instead, and let the registry job run: that makes a failed registry step retryable.
+      - name: Is this version already on npm?
+        id: npmview
+        env:
+          NAME: ${{ steps.meta.outputs.name }}
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          set -euo pipefail
+          PUBLISHED=$(npm view "${NAME}@${VERSION}" version 2>/dev/null || true)
+          if [ "$PUBLISHED" = "$VERSION" ]; then
+            echo "${NAME}@${VERSION} is already on npm: the npm publish is skipped."
+            echo "already=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "${NAME}@${VERSION} is not on npm yet."
+            echo "already=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish to npm (public, without provenance)
+        if: ${{ !inputs.dry_run && steps.npmview.outputs.already != 'true' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: "false"
+          NAME: ${{ steps.meta.outputs.name }}
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          set -euo pipefail
+          npm publish --access public
+          echo "- npm: published ${NAME}@${VERSION}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Dry run - what a real run would publish to npm
+        if: ${{ inputs.dry_run }}
+        env:
+          NAME: ${{ steps.meta.outputs.name }}
+          VERSION: ${{ steps.meta.outputs.version }}
+          ALREADY: ${{ steps.npmview.outputs.already }}
+        run: |
+          set -euo pipefail
+          {
+            echo "### Dry run: nothing was published"
+            echo ""
+            if [ "$ALREADY" = "true" ]; then
+              echo "- npm: ${NAME}@${VERSION} is already there; a real run would skip the npm publish."
+            else
+              echo "- npm: a real run would upload ${NAME}@${VERSION} (the tarball above) as public, without provenance."
+            fi
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------------------------------------
+  # The MCP Registry listing. Runs only after the npm job, so only after its guards.
+  # ---------------------------------------------------------------------------------------------------------
+  registry:
+    needs: npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      # For `mcp-publisher login github-oidc` and nothing else. Any step in this job could mint a GitHub OIDC
+      # token, which the registry exchanges for publish rights on io.github.<repository_owner>/*; that is why
+      # this job runs no npm publish and executes one third-party binary, pinned by release and sha256.
+      id-token: write
+    defaults:
+      run:
+        working-directory: products/mcp-il-tools
+    env:
+      # https://github.com/modelcontextprotocol/registry/releases/tag/v1.8.1 (the release marked Latest when
+      # this was written, 28.9.2026; the tag is commit f52dc85). The digest is the one GitHub lists for the
+      # asset mcp-publisher_linux_amd64.tar.gz on that release page. The release's own checksums file
+      # (registry_1.8.1_checksums.txt) must agree as well. To move the pin: change both lines together, from
+      # the new release page, and run a dry run.
+      MCP_PUBLISHER_VERSION: v1.8.1
+      MCP_PUBLISHER_SHA256: a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install mcp-publisher (pinned release, sha256-checked)
+        working-directory: ${{ runner.temp }}
+        run: |
+          set -euo pipefail
+          test "$(uname -s)-$(uname -m)" = "Linux-x86_64" || { echo "::error::this step downloads the linux amd64 build"; exit 1; }
+          BASE="https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}"
+          ASSET="mcp-publisher_linux_amd64.tar.gz"
+          SUMS="registry_${MCP_PUBLISHER_VERSION#v}_checksums.txt"
+          curl -fsSL --retry 3 -o "$ASSET" "${BASE}/${ASSET}"
+          curl -fsSL --retry 3 -o "$SUMS" "${BASE}/${SUMS}"
+          echo "${MCP_PUBLISHER_SHA256}  ${ASSET}" | sha256sum -c -
+          if ! grep -qx "${MCP_PUBLISHER_SHA256}  ${ASSET}" "$SUMS"; then
+            echo "::error::${SUMS} from the release does not list ${MCP_PUBLISHER_SHA256} for ${ASSET}."
+            exit 1
+          fi
+          tar -xzf "$ASSET" mcp-publisher
+          ./mcp-publisher --version
+
+      # POSTs server.json to the registry's /v0/validate endpoint: schema and semantic checks, nothing stored,
+      # no login. It does not check npm ownership; the publish does that, against the mcpName checked above.
+      - name: Validate server.json against the live registry (publishes nothing)
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/mcp-publisher" validate
+
+      # The registry's ownership check fetches registry.npmjs.org/<package>/<version> and reads mcpName. A
+      # version published seconds ago may not be served yet, so wait for it rather than fail the listing.
+      - name: Wait until npm serves this version with its mcpName
+        if: ${{ !inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          NAME=$(node -p 'require("./package.json").name')
+          VERSION=$(node -p 'require("./package.json").version')
+          WANT=$(node -p 'require("./package.json").mcpName')
+          for attempt in $(seq 1 30); do
+            GOT=$(npm view "${NAME}@${VERSION}" mcpName 2>/dev/null || true)
+            if [ "$GOT" = "$WANT" ]; then
+              echo "npm serves ${NAME}@${VERSION} with mcpName ${GOT}."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::npm does not serve ${NAME}@${VERSION} with mcpName ${WANT} after 5 minutes. Dispatch again later: the npm publish is skipped for a version already there."
+          exit 1
+
+      - name: Log in to the MCP Registry with this workflow's GitHub OIDC token
+        if: ${{ !inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/mcp-publisher" login github-oidc
+
+      - name: Publish io.github.mehudak/il-tools to the MCP Registry
+        if: ${{ !inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/mcp-publisher" publish
+          echo "- MCP Registry: published $(node -p 'require("./server.json").name') $(node -p 'require("./server.json").version')" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Dry run - what a real run would publish to the registry
+        if: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          {
+            echo "- MCP Registry: a real run would log in with this workflow's GitHub OIDC token and publish this server.json:"
+            echo ""
+            echo '```json'
+            cat server.json
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"

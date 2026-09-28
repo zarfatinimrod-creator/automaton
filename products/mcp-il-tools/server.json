@@ -1,9 +1,8 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "com.mehudak/il-tools",
-  "description": "Israeli data validation: teudat zehut check digit, phone number classification, bank and branch codes, Hebrew calendar conversion, and Hebrew-to-Latin transliteration.",
+  "name": "io.github.mehudak/il-tools",
+  "description": "Israeli data validation: teudat zehut, phone, bank and branch codes, Hebrew dates, transliteration.",
   "version": "0.1.0",
-  "websiteUrl": "https://mehudak.com",
   "packages": [
     {
       "registryType": "npm",

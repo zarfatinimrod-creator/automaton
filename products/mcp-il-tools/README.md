@@ -8,7 +8,7 @@ Free, MIT, no account, no key, no network calls. Everything runs locally.
 
 ## Install
 
-**Not on npm yet.** `@mehudak/mcp-il-tools` is not published (the npm registry returns 404 for it), and no workflow in this repository publishes it. The config below is what it will be:
+**Status on 28.9.2026: not on npm yet.** The npm registry answered 404 for `@mehudak/mcp-il-tools` that day. One manual run of a workflow publishes it (see [Publishing](#publishing)), and that run has not happened. The config below is what it will be:
 
 ```json
 {
@@ -18,7 +18,7 @@ Free, MIT, no account, no key, no network calls. Everything runs locally.
 }
 ```
 
-Registry name: `com.mehudak/il-tools` (planned, not listed yet: the listing waits on the domain, owner step 5, and the GitHub organisation, owner step 7).
+Registry name: `io.github.mehudak/il-tools` (planned, not listed in any registry yet; see [Publishing](#publishing)).
 
 ## Tools
 
@@ -74,3 +74,26 @@ npm install     # a committed lockfile is required: plain `npm install` cannot
 npm test        # resolve vitest's peer graph from scratch on npm 10.9.7
 npm run build
 ```
+
+## Publishing
+
+One workflow publishes both the npm package and the MCP Registry listing:
+`.github/workflows/mcp-il-tools-publish.yml`, started by hand (Actions → mcp-il-tools-publish →
+Run workflow). It has no other trigger.
+
+1. **Dry run first.** `dry_run` is ticked by default. The run installs, tests, builds and packs the
+   package; checks that `package.json`, `server.json` and the tarball agree; downloads the pinned
+   `mcp-publisher` and checks its sha256; and validates `server.json` against the registry. It
+   publishes nothing, and its summary lists what a real run would publish.
+2. **Then untick `dry_run`.** A real run publishes `@mehudak/mcp-il-tools` to npm (public, without
+   provenance) and then lists `io.github.mehudak/il-tools` in the MCP Registry. It stops at its first
+   step until two owner steps are done:
+   - **Step 7:** the GitHub organisation `mehudak` owns this repository. The registry's GitHub
+     login grants names under `io.github.<repository owner>/` only, so this is what makes
+     `io.github.mehudak/il-tools` publishable.
+   - **Step 9:** an npm account `mehudak`, which owns the `@mehudak` scope, and a token that can
+     publish to it, saved as the repository secret `NPM_TOKEN`.
+
+A version already on npm is not published again. To release a new one, change `version` in
+`package.json`, both `version` fields in `server.json`, and the server's own version in
+`src/server.ts` together; a test fails if they differ.
