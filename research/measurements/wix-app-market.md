@@ -8,6 +8,11 @@ the two-hour occupancy scan of the Hebrew/Israeli App Market categories and eith
 **Kill list (BOARD-LOOP.md:162):** Israel not payable; the floor forfeits or accrues without moving on any plausible
 ceiling; the niche has free incumbents; developer terms impose a support SLA or human conversations; or no niche can be named.
 
+**Status (after tick 2, 28.9.2026): NEEDS_MORE, unchanged.** The floor half of the gate passes (rolls over, tick 1). The
+Israel half is still UNKNOWN: the rendered payout-account page names Tipalti as the payout handler but says nothing about
+countries, methods, documents or fees. A new open question came up: the Partner onboarding flow registers "your company"
+(wix-payout-account.txt:134). See "Tick 2 reading" at the end of this file.
+
 ## Grades
 - **RENDERED**: the sentence is quoted from the stored capture, with its line number (`grep -n`).
 - **UNKNOWN**: the capture does not answer it. Nothing below is filled in from general knowledge.
@@ -189,3 +194,124 @@ https://dev.wix.com/docs/build-apps/manage-your-app/user-support/about-user-supp
   `/docs/build-apps/launch-your-app/app-distribution/test-your-app/test-your-app-on-a-premium-site`, content not captured).
   Under the ₪0 rule of 27.9.2026 the last one must be checked before any build, because a premium-site purchase would be
   an owner cost before the ledger shows income.
+
+---
+
+## Tick 2 reading (28.9.2026)
+
+**Ordered by:** `research/channel-loop/ZERO-TESTS.md:22` (row 13: "whether an Israeli payee can set up a payout account, and
+how"), queued at `research/rendered/urls.txt:266-267`. It is the first of the three pages that §3 above asked for.
+
+### What was read
+
+| File | What it is |
+|---|---|
+| `research/rendered/wix-payout-account.txt` (182 lines) | extracted text, read in full. Lines 1-111 are site navigation; the article is lines 113-182 |
+| `research/rendered/wix-payout-account.html` (71 lines, 649,560 bytes) | raw HTML, searched for link targets and for the article's Markdown source (line 72), which matches the `.txt` word for word |
+| `research/rendered/wix-payout-account.meta.json` | capture metadata |
+
+From the `.meta.json`: `url` = `https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/set-up-your-payout-account`,
+`fetchedAt` = **`2026-09-28T00:52:00.430Z`**, `status` = 200, `truncated` = false, `firstFetch` = true,
+`sha256` = `1ee3f65a3a854efed04aac475633070634d4293ad0f33288fcb35284aa83f289`. The page says (txt:180) "Last updated: 9 September 2026".
+
+**Term counts** (`grep -c -i` on the `.txt`; `grep -o -i | wc -l` on the `.html`):
+
+| Term | `.txt` | `.html` | Note |
+|---|---|---|---|
+| israel | 0 | 0 | |
+| countr (country/countries) | 0 | 0 | |
+| paypal / payoneer | 0 / 0 | 0 / 0 | |
+| bank | 0 | 0 ("bank account", "wire") | |
+| tipalti | 2 | 6 | all six are the article text, its meta description and its Markdown copy, plus one changelog blurb already quoted in tick 1 |
+| fee | 0 | 7 | all seven are in the page's embedded changelog (Wix Capital, restaurant cancellation fees, cart totals, social media), none about payouts |
+| tax / W-8 / W-9 | 0 / 0 / 0 | 0 "tax form", 0 W-8, 0 W-9 | |
+| identity / passport / government / selfie | 0 / 0 / 0 / 0 | 13 / 0 / 0 / 0 | the 13 "identity" hits are all in the embedded changelog (html:72: comment reactions, member sign-in with an identity provider, and an "Identity" product tag), none about payees |
+
+The article body contains no link to Tipalti, to a country list, or to any fee schedule (`grep -o 'href="[^"]*"'` for
+tipalti/partner/payout/earnings returns only the article's own anchors, the Payouts dashboard doc, the Wix dashboard
+`https://manage.wix.com/studio/revenues/payouts`, and a navigation link to the Partner Agreement).
+
+### The questions
+
+**Q1. Can a developer located in Israel set up a payout account? — UNKNOWN.**
+- Neither "Israel" nor any word for country appears in the `.txt` or the `.html` (0 each, table above).
+- What the page does render is that the payout account is a Tipalti account, set up once, and that it is required only
+  for paid apps:
+  - txt:119 (RENDERED): "Before you can publish a paid app, you must become a Wix partner and then set up a Tipalti account to receive payouts. This is a one-time setup at the account level, not the app level."
+  - txt:121 (RENDERED): "If your app's business model isn't free, a blocker appears during the app review process requiring you to complete this setup. Until payout account setup is complete, you can't publish the app."
+
+**Q2. Which payout methods and providers? — provider RENDERED (Tipalti); methods UNKNOWN.**
+- txt:136 (RENDERED): "Set up your Tipalti account to configure how you receive payouts."
+  This places the choice of method inside Tipalti; the page does not name any method. Bank, PayPal, Payoneer, wire, check:
+  0 occurrences each. The only method in any Wix capture remains the FAQ's "Payment arrives in your bank account at the
+  beginning of the next month" (wix-app-payments-faq.txt:138, tick 1).
+
+**Q3. Which countries are supported or excluded? — UNKNOWN.** Not on this page (0 occurrences), and the page links to no
+country list.
+
+**Q4. What identity or tax documents are required? — UNKNOWN.** Not on this page. What it renders is the order of steps
+and one wording that matters for Israel:
+- txt:132 (RENDERED): "In your account dashboard, navigate to Earnings > Payouts ."
+- txt:134 (RENDERED): "Click Join the Partner Program . The Wix Partners onboarding flow guides you through registering your company as a Wix partner."
+- txt:138 (RENDERED): "Return to your app and continue the publish flow."
+- **"registering your company" (txt:134): whether this requires a legal entity, or accepts an individual or an Israeli
+  sole trader (osek patur / osek murshe), is NOT ON THIS PAGE. Grade UNKNOWN.** It is recorded as an open question, not as
+  a blocker: the wording may be generic. If it does require an incorporated company, that is an owner cost and per-year
+  paperwork, which the ₪0 rule and the "no per-item paperwork" rule would not allow.
+- Whether the Tipalti payee is the owner in their legal name, and whether the listing can show "Mehudak": still UNKNOWN (as in tick 1, Q4).
+
+**Q5. Is there any fee? — UNKNOWN.** No payout, Tipalti, transfer, currency or partner-program fee appears on this page
+(0 "fee" in the `.txt`; the 7 in the `.html` are unrelated changelog text). Tick 1's finding stands: every cost Wix names is
+taken out of revenue before payout (wix-app-payments-faq.txt:130), and no charge to the developer is rendered anywhere.
+
+### New finding: the payout setup need not be done by the owner in person
+
+This partly answers tick 1's open line (Q4 above: "Whether an agent can hold a collaborator role with the Manage Earnings
+permission ... NOT ON THIS PAGE"). It is now rendered that a teammate can hold it:
+- txt:126 (RENDERED): "You need the Manage Earnings permission to complete this flow. Account owners have this access by default. To give a teammate access, see Grant a teammate access to payouts ."
+- txt:142 (RENDERED): "If you want a teammate to set up, view, or manage payouts, create a custom role with the Manage Earnings permission and assign it to them."
+- txt:152 (RENDERED): "This permission allows teammates to set up a payout account, view payouts from templates, apps, and revenue share, and manage payout settings."
+- txt:160 and txt:170 (RENDERED): "Enter the teammate's email address." ... "The teammate receives an email invitation. Once they accept, they can set up and manage payouts in Earnings > Payouts ."
+- txt:164 (RENDERED): "If you grant access to specific sites only, Earnings won't appear for the teammate."
+
+Limits of this finding, stated so it is not over-read:
+- The page says a *teammate* invited by email can hold the permission. It does not say whether that teammate can be an
+  agent-operated login (for example the brand mailbox). That is UNKNOWN.
+- It supersedes the wording of tick 1's changelog blurb ("the account owner must set up a Tipalti account",
+  wix-app-payments-faq.html:64) only for *who clicks through Wix*. Whose identity and bank details go into Tipalti is not
+  on this page, and is most likely the owner's (UNKNOWN; not inferred).
+- Refunds still need an 'Owners' collaborator (wix-app-payments-faq.txt:150, tick 1). This page does not change that.
+
+### Verdict for the board: **NEEDS_MORE**
+
+The payout-account page is a how-to for clicking through Wix (Earnings > Payouts > Join the Partner Program > Tipalti). It
+hands everything the gate asks about (country, method, documents, fees) to the Tipalti step, which this page does not
+describe. The gate at BOARD-LOOP.md:160 stays half-passed: the floor rolls over (RENDERED, tick 1); Israel payable is UNKNOWN.
+The occupancy scan must still not start.
+
+**What would settle the rest, cheapest first:**
+
+1. **Render the Partner Agreement at its docs address**, found in this capture's navigation (html:64,
+   `href="/docs/build-apps/launch-your-app/legal-and-security/wix-app-market-partner-agreement"`):
+   `https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/wix-app-market-partner-agreement`.
+   It is the text the FAQ says governs payouts (wix-app-payments-faq.txt:126, 134). Look for: eligible payee territories or
+   sanctions exclusions, individual vs company partner, payout method and fees, forfeiture of a sub-$200 balance.
+   (Tick 1 proposed `https://dev.wix.com/app-market-partner-agreement`; the docs path above is the one this capture actually links.)
+2. **Render the Payouts Dashboard doc**, linked from this capture (txt:176 "About the Payouts Dashboard", html:62):
+   `https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payouts-dashboard`. Look for: payout method,
+   currency, transfer fees, and what Tipalti asks for.
+3. Still queued from tick 1: `https://dev.wix.com/docs/build-apps/manage-your-app/user-support/about-user-support` (support SLA).
+
+Suggested `urls.txt` lines (for the main thread, which owns that file):
+
+```
+https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/wix-app-market-partner-agreement	wix-partner-agreement
+https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payouts-dashboard	wix-payouts-dashboard
+https://dev.wix.com/docs/build-apps/manage-your-app/user-support/about-user-support	wix-user-support
+```
+
+4. **If both render and are still silent on Israel**, the only remaining source is the Tipalti form inside the logged-in flow
+   (`https://manage.wix.com/studio/revenues/payouts`, txt:132). That needs a Wix account, which BOARD-LOOP.md:210 holds until
+   this ₪0 test passes. The board then chooses between (a) recording Israel as UNKNOWN-unresolvable from public pages and
+   killing or parking candidate 11, or (b) asking the owner for one look at the country list in that form, with no data
+   entered. This measurement does not choose; it names the fork.

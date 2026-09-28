@@ -1,0 +1,618 @@
+Recipient requirements | Stripe Documentation
+
+Skip to content
+
+Recipient requirements
+
+Create account or Sign in
+
+Search
+
+/ Ask AI
+Create account Sign in
+
+Get started
+
+Payments
+
+Revenue
+
+Data
+
+Platforms and marketplaces
+
+Money management
+
+Developer resources
+
+APIs & SDKs Help
+
+Overview Stripe Treasury Stablecoins in Treasury Agentic Treasury Add funds
+Fund your financial account Store and convert
+Store funds Convert funds
+
+Earn rewards
+Fee credits Cashback on card spend Savings financial account Transfer and send
+Overview Send money with Global Payouts Overview
+
+Create recipients Recipient requirements
+Reuse payment credentials for payouts
+
+Send money
+
+Manage payouts
+
+Instant transfers Spend
+Overview Create and manage cards Direct debits Finance
+Overview How Capital works
+
+United States
+English (United States)
+
+Home /
+Money management /
+Send money with Global Payouts /
+Create recipients
+
+Public preview Recipient requirements Public preview
+Learn the information required to onboard recipients, by country, business type, and payout method.
+
+Ask about this page
+Copy for LLM
+View as Markdown Install tools
+
+Requirements vary by your country, and by your recipient’s country, business type, and payout method.
+Supported countries and requirements
+
+Sender country :
+
+United States
+United Kingdom
+
+Business type :
+
+Company
+Individual
+
+Recipient country
+Currency
+Payout method
+Required information
+
+Albania
+ALL
+Wire
+Email, company name, address
+
+Algeria
+DZD
+Wire
+Email, company name
+
+Antigua and Barbuda
+XCD
+Wire
+Email, company name
+
+Armenia
+AMD
+Wire
+Email, company name, address
+
+Australia
+AUD
+Local bank method
+Email, company name, address
+
+Austria
+EUR
+Local bank method
+Email, company name
+
+Bahamas
+BSD
+Wire
+Email, company name, address
+
+Bahrain
+BHD
+Wire
+Email, company name, address
+
+Belgium
+EUR
+Local bank method
+Email, company name
+
+Benin
+XOF
+Local bank method
+Email, company name, address
+
+Bhutan
+BTN
+Wire
+Email, company name, address, phone number
+
+Bosnia and Herzegovina
+BAM
+Wire
+Email, company name, address (not a PO box)
+
+Botswana
+BWP
+Wire
+Email, company name
+
+Brunei
+BND
+Wire
+Email, company name
+
+Bulgaria
+EUR
+Local bank method
+Email, company name
+
+Canada
+CAD
+Local bank method
+Email, company name, address
+
+China
+CNY
+Wire
+Email, company name, address (not a PO box)
+
+Costa Rica
+CRC
+Local bank method
+Email, ID, company name
+
+Côte d’Ivoire
+XOF
+Local bank method
+Email, company name
+
+Croatia
+EUR
+Local bank method
+Email, company name
+
+Cyprus
+EUR
+Local bank method
+Email, company name
+
+Czech Republic
+EUR
+Local bank method
+Email, company name
+
+Denmark
+DKK
+Local bank method
+Email, company name
+
+Dominican Republic
+DOP
+Local bank method
+Email, company name, address (not a PO box), tax ID
+
+Ecuador
+USD
+Wire
+Email, company name, address
+
+Egypt
+EGP
+Wire
+Email, company name, address
+
+El Salvador
+USD
+Wire
+Email, company name, address
+
+Estonia
+EUR
+Local bank method
+Email, company name
+
+Ethiopia
+ETB
+Wire
+Email, company name, address (not a PO box)
+
+Finland
+EUR
+Local bank method
+Email, company name
+
+France
+EUR
+Local bank method
+Email, company name, address
+
+Gambia
+GMD
+Wire
+Email, company name, address (not a PO box)
+
+Germany
+EUR
+Local bank method
+Email, company name
+
+Greece
+EUR
+Local bank method
+Email, company name
+
+Guatemala
+GTQ
+Wire
+Email, company name, address (not a PO box), tax ID (NIT)
+
+Guyana
+GYD
+Wire
+Email, company name, address
+
+Hong Kong
+HKD
+Wire
+Email, company name
+
+Hungary
+HUF
+Local bank method
+Email, company name
+
+Iceland
+EUR
+Local bank method
+Email, company name
+
+India
+INR
+Local bank method
+Email, company name
+
+Indonesia
+IDR
+Local bank method
+Email, company name
+
+Ireland
+EUR
+Local bank method
+Email, company name
+
+Israel
+ILS
+Local bank method
+Email, company name
+
+Italy
+EUR
+Local bank method
+Email, company name
+
+Jamaica
+JMD
+Local bank method
+Email, company name
+
+Japan
+JPY
+Wire
+Email, company name, address (not a PO box)
+
+Jordan
+JOD
+Wire
+Email, company name
+
+Kenya
+KES
+Wire
+Email, company name, address (not a PO box)
+
+Kuwait
+KWD
+Wire
+Email, company name
+
+Latvia
+EUR
+Local bank method
+Email, company name
+
+Liechtenstein
+EUR
+Local bank method
+Email, company name
+
+Lithuania
+EUR
+Local bank method
+Email, company name
+
+Luxembourg
+EUR
+Local bank method
+Email, company name
+
+Madagascar
+MGA
+Wire
+Email, company name, address (not a PO box)
+
+Malaysia
+MYR
+Wire
+Email, company name, address (not a PO box)
+
+Malta
+EUR
+Local bank method
+Email, company name
+
+Mauritius
+MUR
+Wire
+Email, company name, address (not a PO box)
+
+Mexico
+MXN
+Local bank method
+Email, company name
+
+Moldova
+MDL
+Wire
+Email, company name, address (not a PO box), phone number
+
+Monaco
+EUR
+Local bank method
+Email, company name
+
+Mongolia
+MNT
+Wire
+Email, company name, address (not a PO box)
+
+Morocco
+MAD
+Local bank method
+Email, company name
+
+Mozambique
+MZN
+Wire
+Email, company name, tax ID (NUIT)
+
+Peru
+PEN
+Local bank method
+Email, company name, address (not a PO box), tax ID (RUC)
+
+Namibia
+NAD
+Wire
+Email, company name, address (not a PO box)
+
+Netherlands
+EUR
+Local bank method
+Email, company name
+
+New Zealand
+NZD
+Local bank method
+Email, company name
+
+North Macedonia
+MKD
+Wire
+Email, company name, address (not a PO box), phone number
+
+Norway
+NOK
+Local bank method
+Email, company name
+
+Oman
+OMR
+Wire
+Email, company name
+
+Pakistan
+PKR
+Wire
+Email, ID, company name, address (not a PO box)
+
+Panama
+USD
+Wire
+Email, company name, address
+
+Philippines
+PHP
+Wire
+Email, company name
+
+Poland
+PLN
+Local bank method
+Email, company name
+
+Portugal
+EUR
+Local bank method
+Email, company name
+
+Qatar
+QAR
+Wire
+Email, company name
+
+Romania
+RON
+Local bank method
+Email, company name
+
+Rwanda
+RWF
+Wire
+Email, company name, address (not a PO box)
+
+Saint Lucia
+XCD
+Wire
+Email, company name
+
+San Marino
+EUR
+Local bank method
+Email, company name
+
+Senegal
+XOF
+Local bank method
+Email, company name
+
+Serbia
+RSD
+Wire
+Email, company name, address (not a PO box)
+
+Singapore
+SGD
+Local bank method
+Email, company name, address
+
+Slovakia
+EUR
+Local bank method
+Email, company name
+
+Slovenia
+EUR
+Local bank method
+Email, company name
+
+Sri Lanka
+LKR
+Wire
+Email, company name, address (not a PO box)
+
+South Africa
+ZAR
+Wire
+Email, company name
+
+Spain
+EUR
+Local bank method
+Email, company name
+
+Sweden
+SEK
+Local bank method
+Email, company name
+
+Switzerland
+EUR
+Local bank method
+Email, company name
+
+Taiwan
+TWD
+Wire
+Email, company name, address (not a PO box), phone number
+
+Tanzania
+TZS
+Wire
+Email, company name, address (not a PO box)
+
+Thailand
+THB
+Wire
+Email, company name
+
+Trinidad and Tobago
+TTD
+Local bank method
+Email, company name
+
+Tunisia
+TND
+Local bank method
+Email, company name, address
+
+Turkey
+TRY
+Wire
+Email, company name, address
+
+United Arab Emirates
+AED
+Wire
+Email, company name, address (not a PO box)
+
+United Kingdom
+GBP
+Local bank method
+Email, company name
+
+United States
+USD
+Local bank method
+Email, company name
+
+United States
+USD
+Wire
+Email, company name, address
+
+United States
+USD
+Card
+Email, company name, address
+
+Uzbekistan
+UZS
+Wire
+Email, phone number, company name, address (not a PO box)
+
+Vietnam
+VND
+Wire
+Email, company name, address
+
+Stablecoin payouts
+USDC payouts are available to businesses located in the United States, sending to recipients with a crypto wallet anywhere in the world. If your business is in New York, sign up to get notified about access .
+Recipient country
+Currency
+Payout method
+Required information
+
+Global
+USDC ( stablecoin )
+Crypto Private preview
+Email, name (or company name, for business recipients), address
+
+Was this page helpful? Yes No
+
+Need help? Contact Support .
+Chat with Stripe developers on Discord .
+Check out our changelog .
+Questions? Contact Sales .
+LLM? Read llms.txt .
+Powered by Markdoc
+
+On this page

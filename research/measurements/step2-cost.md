@@ -1,6 +1,6 @@
 # Does owner step 2 cost the owner money? Bituach Leumi, read from the source
 
-**Status: PARTLY MEASURED 27.9.2026.** Two of the three pages were rendered from a GitHub runner (render-watch run 22,
+**Status: PARTLY MEASURED 27.9.2026; salaried page read 28.9.2026, still not settled (below).** Two of the three pages were rendered from a GitHub runner (render-watch run 22,
 commit `3d5772b`). Kol Zchut answered 403, and the page that settles the salaried-employee case has not been rendered yet.
 
 **Why this was checked.** The owner's ₪0 rule (MISSION.md, 27.9.2026) says not even a shekel until the ledger shows
@@ -49,3 +49,21 @@ https://www.btl.gov.il/Insurance/National%20Insurance/type_list/%D7%A2%D7%95%D7%
 
 Are you a salaried employee today? The answer decides which Bituach Leumi rule applies to step 2. Nothing else in the
 plan needs it.
+
+## Tick 2 (28.9.2026): the salaried-and-self-employed page, read
+
+`research/rendered/btl-employee-and-self-employed.txt`, fetched 28.9.2026 00:52 UTC, status 200.
+
+- `:347`: "עובד עצמאי שהוא גם עובד שכיר ישלם דמי ביטוח מכל הכנסותיו עד להכנסה המרבית לתשלום דמי ביטוח בסך 51,910 ש"ח (החל ב- 01.01.2026)."
+- `:348-349`: on the salaried income, the salaried rates; on the self-employed income, the self-employed rates.
+
+**What this settles and what it does not.** Someone salaried who also opens a business pays on each income at its
+own rate [RENDERED]. The page does **not** say whether the ₪3,442 floor income (`btl-self-employed-rates.txt:410`)
+applies to the self-employed part when the person is also salaried. So the salaried case is still **UNKNOWN**: the
+cost could be close to ₪0 while income is ₪0, or about ₪265 a month. Nothing is told to the owner as fact.
+
+**What settles it without another page:** the owner's answer to one question, whether they are salaried today,
+plus Bituach Leumi's own calculator, which a person can run in a minute. The colony does not run the calculator: it
+needs the person's own figures. Under the ₪0 rule, step 2 stays unasked until a paid product and a stranger's
+interest exist.
+

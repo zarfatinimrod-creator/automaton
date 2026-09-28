@@ -18,7 +18,7 @@ The forecast is in `research/channel-loop/FORECAST.md`.
 
 | | |
 |---|---|
-| Last tick | tick 1: 27.9.2026 23:50 UTC — PR #4 merged (`baab472`), three worktree builds merged, 5 ₪0 tests read, algora-supply week 1 measured |
+| Last tick | tick 2: 28.9.2026 ~01:20 UTC — 5 pages rendered and read (Stripe Global Payouts lists Israel; CrazyGames and Wix pay via Tipalti; BL salaried case still open); T1 page counter built (off by default) |
 | Branch | `claude/new-session-j071dx`, restarted from `main` after PR #4 merged (`baab472`). The standing consent means the loop merges its own green PRs. |
 | Routine | "Channel loop tick", every 6 h (`11 1,7,13,19 * * *` UTC), fires into this session; see §11 |
 | Fable | available at 27.9 ~21:30 UTC (two agents ran). The daily sitting is the ~07:11 UTC tick. |
@@ -108,7 +108,7 @@ Stages run in this order:
 | pcn874 (VAT detailed-report file) | admitted: free validator page to build | Gumroad (same account) | none for the free page; 2, 3, 6b, 5 for the paid builder | build a client-side validator page inside il-biz-tools (2-3 days) once that site's preparation is done | rides the il-biz-tools deploy |
 | oss-bounties (Algora) | parked-window (week 1 of 4 read) | Algora via Stripe Express. **Stripe does not pay Israel self-serve** (`research/measurements/stripe-israel.md`), so the rail is in doubt. Fable, `FABLE_QUEUE` row 10. | step 4 held | Week 1 (27.9 23:43): **108 claimable, $74,065**, of 551 labelled (3 unserved), `research/measurements/algora-supply.md`. The board expected under 10. The next reading comes Mondays 06:23 UTC. | the week-4 mean AND a Fable ruling on the payout rail |
 | mcp-il-tools (free MCP server) | building (preparation), then parked-owner | none, a ₪0 channel test | proposed step 9 (npm), 5, 7 | fix the two defects (`README.md:21`, `:32`); `mcp-publish.yml` gated on `NPM_TOKEN` | npm yes plus token |
-| T1 web arm (faceless-YouTube experiment) | building (preparation) | ₪0 experiment | deploy route (ask #2) | optional cookieless PostHog in `page.py`; pre-register the reach floor; sub-brand name | deploy route open; the day-56 clock starts at that deploy |
+| T1 web arm (faceless-YouTube experiment) | launch-ready but for a counter key | ₪0 experiment | deploy route (ask 1) + a PostHog project named after the brand, with 'Discard client IP data' on and GeoIP off | Tick 2: `page.py` has an optional anonymous counter, off by default and byte-identical (132 tests). Next: create the PostHog project through the attached connector, pre-register the reach floor, choose the sub-brand name. | deploy route open; day 56 counts from that deploy |
 | T1 video | held by protocol | ₪0 experiment | Stage A, only after the day-56 web read | none | web arm passes at day 56 |
 
 ## 4. Ranked queue (candidates not yet channels)
@@ -205,6 +205,15 @@ These are in `logs/FABLE_QUEUE.md`, rows 8-9:
 - **A command that must not be run.** Main's `REPORT.md` still prints `setup-done`. The fix is on the branch.
 
 ## 10. Next tick's first action
+
+**Tick 3:**
+- Read the CrazyGames terms PDF: add a PDF-to-text step to render-watch, since runners have poppler.
+- Render the Wix Partner Agreement and the Payouts Dashboard doc, and Polar's supported-countries doc.
+- Pre-register the T1 web-arm reach floor in `research/faceless-youtube/PREREG-DECISIONS.md`.
+- The Fable sitting at 07:11 takes rows 8-10.
+
+**Tick 2 (done 28.9):** 5 pages read; T1 counter merged (`87c7459`).
+
 
 **Tick 2:**
 - Render the Bituach Leumi salaried-plus-self-employed page (`urls.txt` §12, last line) and the next pages for CrazyGames (developer terms PDF, /payouts/), Wix (payout account) and Stripe Global Payouts recipient requirements, all in ONE dispatch.
