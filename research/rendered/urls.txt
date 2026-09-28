@@ -475,3 +475,7 @@ https://github.com/GameDistribution/GD-HTML5/wiki/SDK-Implementation/	gamedistri
 https://www.paypal.com/il/cshelp/browse-topics	paypal-il-browse-topics
 # research/channel-loop/ZERO-TESTS.md row 104 — n8n paid templates (20): a 2026 verified-creator thread, linked from a tick-7 capture (28.9.2026).
 https://community.n8n.io/t/requesting-feedback-for-verified-creator-status-on-my-published-n8n-workflows/269435	n8n-verified-creator-feedback-2026
+# research/channel-loop/ZERO-TESTS.md row 105 — Y8 (14): the studio overview, linked from a tick-8 capture (28.9.2026).
+https://docs.y8.com/studio/overview/	y8-docs-overview
+# research/channel-loop/ZERO-TESTS.md row 106 — GameDistribution (14): the wiki FAQ, linked from a tick-8 capture (28.9.2026).
+https://github.com/GameDistribution/GD-HTML5/wiki/F.A.Q.	gamedistribution-wiki-faq
