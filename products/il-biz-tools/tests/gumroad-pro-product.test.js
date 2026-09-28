@@ -17,7 +17,10 @@ import {
   main,
   NO_TOKEN_NOTICE,
   StopError,
+  readBackPrice,
+  writeSiteJson,
 } from '../scripts/gumroad-pro-product.js';
+import { PRO_PRODUCT_NAME } from '../src/lib/gumroad.js';
 
 const TOKEN = 'secret-token-never-printed-0123456789';
 const SITE = { siteUrl: 'https://il-biz-tools.netlify.app', siteName: 'כלים לעסק', gumroad: { productUrl: '', productId: '' } };
@@ -25,7 +28,22 @@ const NAME = proProductName(SITE);
 const ID = '32-nPAicqbLj8B_WswVlMw==';
 const SHORT = 'https://kelim.gumroad.com/l/pro';
 
-const stored = (overrides = {}) => ({ id: ID, name: NAME, published: false, short_url: SHORT, rich_content: activationContent(SITE).map((p) => ({ id: 'page1', ...p })), ...overrides });
+// The keys Gumroad's API puts on a product (antiwork/gumroad
+// app/models/concerns/product/as_json.rb, as_json_for_api): price in minor
+// units, currency, subscription_duration (null unless it is a membership) and
+// customizable_price (pay-what-you-want).
+const stored = (overrides = {}) => ({
+  id: ID,
+  name: NAME,
+  published: false,
+  short_url: SHORT,
+  price: 7900,
+  currency: 'ils',
+  subscription_duration: null,
+  customizable_price: false,
+  rich_content: activationContent(SITE).map((p) => ({ id: 'page1', ...p })),
+  ...overrides,
+});
 
 /** A fake Gumroad: routes by method + path, records every call. */
 function fakeGumroad(routes) {
@@ -44,6 +62,70 @@ function fakeGumroad(routes) {
 }
 
 const sink = () => { const lines = []; const log = (l) => lines.push(String(l)); log.lines = lines; return log; };
+
+describe('one name, by what Pro delivers (N5)', () => {
+  it('names the Gumroad product exactly as the Pro box does, whatever the site is called', () => {
+    expect(proProductName(SITE)).toBe(PRO_PRODUCT_NAME);
+    expect(proProductName({ ...SITE, siteName: 'something else' })).toBe(PRO_PRODUCT_NAME);
+  });
+
+  it('points the buyer at the box by that same name in activation step 3', () => {
+    const step3 = activationContent(SITE)[0].description.content
+      .filter((n) => n.type === 'paragraph')
+      .map((n) => n.content[0].text)
+      .find((t) => t.startsWith('3.'));
+    expect(step3).toContain(`"${PRO_PRODUCT_NAME}"`);
+    expect(JSON.stringify(activationContent(SITE))).not.toContain('מיתוג המסמך');
+  });
+});
+
+describe('the price comes from Gumroad\'s read-back (N1)', () => {
+  it('reads price and currency from the stored product', () => {
+    expect(readBackPrice(stored())).toEqual({ priceCents: 7900, currency: 'ils' });
+    expect(readBackPrice(stored({ price: 9900, currency: 'ILS' }))).toEqual({ priceCents: 9900, currency: 'ils' });
+  });
+
+  it('stops on a product with no usable price rather than guess one', () => {
+    for (const bad of [{ price: undefined }, { price: '7900' }, { price: 0 }, { currency: undefined }, { currency: 'shekel' }]) {
+      expect(() => readBackPrice(stored(bad)), JSON.stringify(bad)).toThrow(StopError);
+    }
+  });
+
+  it('stops on a membership or a pay-what-you-want product: the page says one fixed price, once', () => {
+    expect(() => readBackPrice(stored({ subscription_duration: 'monthly' }))).toThrow(/subscription/);
+    expect(() => readBackPrice(stored({ customizable_price: true }))).toThrow(/pay-what-you-want/);
+  });
+
+  it('creates the product with no recurrence of any kind', async () => {
+    const fetchImpl = fakeGumroad({
+      'GET /products': [200, { success: true, products: [] }],
+      'POST /products': [200, { success: true, product: stored() }],
+      [`GET /products/${encodeURIComponent(ID)}`]: [200, { success: true, product: stored() }],
+    });
+    await createOrReuse({ fetchImpl, token: TOKEN, site: SITE, log: sink() });
+    const body = fetchImpl.calls.find((c) => c.method === 'POST').body;
+    for (const key of Object.keys(body)) expect(key).not.toMatch(/subscription|recurr|membership/);
+  });
+
+  it('returns the read-back price, not the price it asked for', async () => {
+    const fetchImpl = fakeGumroad({
+      'GET /products': [200, { success: true, products: [stored({ price: 8900 })] }],
+      [`GET /products/${encodeURIComponent(ID)}`]: [200, { success: true, product: stored({ price: 8900 }) }],
+    });
+    const out = await createOrReuse({ fetchImpl, token: TOKEN, site: SITE, priceCents: 7900, log: sink() });
+    expect(out).toMatchObject({ priceCents: 8900, currency: 'ils', reused: true });
+  });
+
+  it('writeSiteJson stores the price beside the id and URL, and refuses one that is not whole minor units', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'ilbiz-'));
+    const path = join(dir, 'site.json');
+    writeFileSync(path, JSON.stringify(SITE, null, 2));
+    await writeSiteJson({ productId: ID, productUrl: SHORT, priceCents: 7900, currency: 'ils' }, path);
+    expect(JSON.parse(readFileSync(path, 'utf8')).gumroad).toEqual({ productUrl: SHORT, productId: ID, priceCents: 7900, currency: 'ils' });
+    await expect(writeSiteJson({ productId: ID, productUrl: SHORT, priceCents: 79.5, currency: 'ils' }, path)).rejects.toBeInstanceOf(StopError);
+    await expect(writeSiteJson({ productId: ID, productUrl: SHORT, priceCents: 7900, currency: '' }, path)).rejects.toBeInstanceOf(StopError);
+  });
+});
 
 describe('the product content Gumroad receives', () => {
   it('carries Gumroad\'s licence-key block inside written Hebrew instructions', () => {
@@ -81,7 +163,7 @@ describe('create (AT-15, offline)', () => {
     const log = sink();
     const out = await createOrReuse({ fetchImpl, token: TOKEN, site: SITE, log });
 
-    expect(out).toEqual({ id: ID, shortUrl: SHORT, published: false, reused: false });
+    expect(out).toEqual({ id: ID, shortUrl: SHORT, published: false, reused: false, priceCents: 7900, currency: 'ils' });
     const post = fetchImpl.calls.filter((c) => c.method === 'POST');
     expect(post).toHaveLength(1);
     expect(post[0].body).toMatchObject({ name: NAME, price: 7900, price_currency_type: 'ils', draft: true });
@@ -199,7 +281,7 @@ describe('the CLI', () => {
     expect(NO_TOKEN_NOTICE).toContain('not a failure');
   });
 
-  it('create --write-site-json writes the id and URL and nothing else', async () => {
+  it('create --write-site-json writes the id, the URL and Gumroad\'s price, and nothing else', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'ilbiz-'));
     const path = join(dir, 'site.json');
     const before = { ...SITE, analytics: { provider: 'none' } };
@@ -213,7 +295,7 @@ describe('the CLI', () => {
     const out = join(dir, 'out');
     expect(await main(['create', '--write-site-json'], { GUMROAD_ACCESS_TOKEN: TOKEN, GITHUB_OUTPUT: out }, { fetchImpl, log, sitePath: path })).toBe(0);
     const after = JSON.parse(readFileSync(path, 'utf8'));
-    expect(after).toEqual({ ...before, gumroad: { productUrl: SHORT, productId: ID } });
+    expect(after).toEqual({ ...before, gumroad: { productUrl: SHORT, productId: ID, priceCents: 7900, currency: 'ils' } });
     expect(readFileSync(out, 'utf8')).toBe(`product_id=${ID}\nshort_url=${SHORT}\n`);
     expect(log.lines.join('\n')).not.toContain(TOKEN);
   });

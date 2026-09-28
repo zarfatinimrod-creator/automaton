@@ -16,9 +16,11 @@
 //       in links_controller.rb at af1ae267) with the price, a description of
 //       exactly what Pro is, and rich_content holding Hebrew activation
 //       instructions plus a `licenseKey` node (RichContent::LICENSE_KEY_NODE_TYPE).
-//       Then GET /v2/products/:id and require that node in what Gumroad stored.
-//       Prints the public id and short_url; --write-site-json puts both into
-//       src/config/site.json so the workflow can open a PR with them.
+//       Then GET /v2/products/:id and require that node in what Gumroad stored,
+//       and a fixed one-time price (no membership, no pay-what-you-want).
+//       Prints the public id and short_url; --write-site-json puts both, and the
+//       price and currency Gumroad read back, into src/config/site.json so the
+//       workflow can open a PR with them. The page shows that price and no other.
 //
 //   node scripts/gumroad-pro-product.js enable
 //       Only when the DEPLOYED site (<siteUrl>/src/config/site.json) carries
@@ -37,6 +39,7 @@
 import { readFile, writeFile, appendFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { PRO_PRODUCT_NAME } from '../src/lib/gumroad.js';
 
 export const API = 'https://api.gumroad.com/v2';
 export const LICENSE_KEY_NODE_TYPE = 'licenseKey';
@@ -53,9 +56,13 @@ export const FALLBACK = 'Fallback, per the decision: add a follow-up entry to re
 
 export class StopError extends Error {}
 
-/** The product's fixed name - reuse is by exact name, so it must not drift between runs. */
-export function proProductName(site) {
-  return `${site?.siteName || 'כלים לעסק'} Pro – מיתוג המסמך`;
+/**
+ * The product's fixed name - reuse is by exact name, so it must not drift between runs. It is the Pro box's
+ * heading on invoice.html, named by what the buyer gets (src/lib/gumroad.js PRO_PRODUCT_NAME), and it does not
+ * depend on the site's name: the store around it is the brand's.
+ */
+export function proProductName() {
+  return PRO_PRODUCT_NAME;
 }
 
 const invoiceUrl = (site) => `${String(site?.siteUrl || '').replace(/\/$/, '')}/invoice.html`;
@@ -86,7 +93,7 @@ export function activationContent(site) {
           paragraph('1. העתיקו את מפתח הרישיון שמופיע כאן למטה. הוא מופיע גם בקבלה שנשלחה אליכם במייל.'),
           { type: LICENSE_KEY_NODE_TYPE },
           paragraph(`2. פתחו את מחולל הקבלות: ${invoiceUrl(site)}`),
-          paragraph('3. בתיבה "Pro – מיתוג המסמך" לחצו על "יש לי מפתח רישיון", הדביקו את המפתח ולחצו על "הפעלה".'),
+          paragraph(`3. בתיבה "${PRO_PRODUCT_NAME}" לחצו על "יש לי מפתח רישיון", הדביקו את המפתח ולחצו על "הפעלה".`),
           paragraph('4. כשמופיע "הרישיון אומת. המיתוג פעיל." נפתחים שדות הלוגו וצבע המותג. הם נשמרים בדפדפן שלכם בלבד, והמסמך המודפס נושא אותם.'),
           heading('מה נשלח לאן'),
           paragraph('בהפעלה הדפדפן שלכם שולח את המפתח ואת מזהה המוצר ישירות ל-Gumroad כדי לוודא שהמפתח שולם, ואחר כך בודק שוב לכל היותר פעם בשבוע. הקבלות, רשימת הלקוחות והלוגו לא נשלחים לשום מקום. הפירוט המלא נמצא בדף עצמו, תחת "מה נשלח לאן".'),
@@ -167,6 +174,26 @@ async function readBack({ fetchImpl, token, id, log }) {
   return product;
 }
 
+/**
+ * The price as Gumroad stored it: `price` in minor units and `currency`, the keys Gumroad's API puts on a
+ * product (antiwork/gumroad app/models/concerns/product/as_json.rb, as_json_for_api; read 28.9.2026). The page
+ * shows this and only this, so a membership or a pay-what-you-want product - whose real charge is not one fixed
+ * number, once - stops here instead of reaching the page as "תשלום חד-פעמי".
+ */
+export function readBackPrice(product) {
+  if (product?.subscription_duration) {
+    throw new StopError(`Gumroad reports this product as a subscription (${product.subscription_duration}); the page sells a one-time price. Not writing a price.`);
+  }
+  if (product?.customizable_price === true) {
+    throw new StopError('Gumroad reports this product as pay-what-you-want; the page states one fixed price. Not writing a price.');
+  }
+  const priceCents = product?.price;
+  const currency = typeof product?.currency === 'string' ? product.currency.trim().toLowerCase() : '';
+  if (!Number.isInteger(priceCents) || priceCents <= 0) throw new StopError('Gumroad\'s read-back carries no whole price in minor units; not guessing one.');
+  if (!/^[a-z]{3}$/.test(currency)) throw new StopError('Gumroad\'s read-back carries no three-letter currency; not guessing one.');
+  return { priceCents, currency };
+}
+
 export function parsePrice(raw = DEFAULT_PRICE_CENTS) {
   const n = Number(raw);
   if (!Number.isInteger(n) || n < 100 || n > 10_000_000) throw new StopError(`price must be a whole number of minor units (e.g. 7900 for ₪79), got "${raw}".`);
@@ -222,7 +249,9 @@ export async function createOrReuse({ fetchImpl, token, site, priceCents = DEFAU
   }
 
   const product = await readBack({ fetchImpl, token, id, log });
-  return { id: product.id, shortUrl: product.short_url, published: product.published === true, reused };
+  const readPrice = readBackPrice(product);
+  log(`read-back price: ${readPrice.priceCents} ${readPrice.currency} (minor units)`);
+  return { id: product.id, shortUrl: product.short_url, published: product.published === true, reused, ...readPrice };
 }
 
 /** Enable the product - only when the deployed site already verifies keys against this very id. */
@@ -252,11 +281,12 @@ export async function enableProduct({ fetchImpl, token, site, log = console.log 
   return { id, published: r.body.product?.published === true, shortUrl: r.body.product?.short_url };
 }
 
-/** Put the id and the public URL into site.json, touching nothing else. */
-export async function writeSiteJson({ productId, productUrl }, path = SITE_JSON) {
+/** Put the id, the public URL and Gumroad's read-back price into site.json, touching nothing else. */
+export async function writeSiteJson({ productId, productUrl, priceCents, currency }, path = SITE_JSON) {
   if (!/^https:\/\//.test(String(productUrl))) throw new StopError(`Gumroad returned a short_url that is not https ("${productUrl}"); not writing it.`);
+  const price = readBackPrice({ price: priceCents, currency });
   const site = JSON.parse(await readFile(path, 'utf8'));
-  site.gumroad = { ...site.gumroad, productUrl, productId };
+  site.gumroad = { ...site.gumroad, productUrl, productId, ...price };
   await writeFile(path, `${JSON.stringify(site, null, 2)}\n`, 'utf8');
 }
 
@@ -285,8 +315,8 @@ export async function main(argv = process.argv.slice(2), env = process.env, { fe
       log(`short_url=${out.shortUrl}`);
       log(`published=${out.published} (a new product stays a draft until \`enable\`)`);
       if (flags.includes('--write-site-json')) {
-        await writeSiteJson({ productId: out.id, productUrl: out.shortUrl }, sitePath);
-        log('wrote gumroad.productId and gumroad.productUrl into src/config/site.json');
+        await writeSiteJson({ productId: out.id, productUrl: out.shortUrl, priceCents: out.priceCents, currency: out.currency }, sitePath);
+        log('wrote gumroad.productId, gumroad.productUrl, gumroad.priceCents and gumroad.currency into src/config/site.json');
       }
       if (env.GITHUB_OUTPUT) await appendFile(env.GITHUB_OUTPUT, `product_id=${out.id}\nshort_url=${out.shortUrl}\n`);
     } else {
