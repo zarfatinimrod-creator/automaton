@@ -25,7 +25,10 @@ route exists, for the cost of one honest short video and one owner sign-in. If i
    work on the free tier, and whether Upload-Post's Google sign-in can select a Brand Account channel.
 4. ⏳ **Next.** The web comparison arm (the page is built: `releases/t1/page.html`) — the same analyses as pages — read at day 56 with its own reach floor. It is a free prior:
    a web null does not prove a YouTube null, but zero stranger reach for the substance is a reason not to spend the
-   owner's minutes. (It needs the brand domain, owner step 5, which two other lines already wait on.)
+   owner's minutes. ~~(It needs the brand domain, owner step 5, which two other lines already wait on.)~~ Superseded
+   28.9.2026 by `research/channel-loop/BOARD-LOOP.md` rank 5 and `PREREG-DECISIONS.md` §3: a `*.netlify.app`
+   sub-brand host; D0 = public deploy **and** a recorded discovery submission; under 5 engaged stranger page views at
+   D0+56 → Stage A is never asked (`evaluateWebArm`, `src/revenue/experiments.ts`).
 5. ✅ **The T1 video itself, built and gate-passed, held unpublished (27.9).** "Is TypeScript catching up with
    JavaScript on GitHub?" (GitHub Innovation Graph, CC0), 116.7 s. First audit: G3 PASS, G4 and G5 FAIL (numbers
    right; framing: GitHub's Octoverse 2025 headline unaddressed, the per-repository language counting unsaid, the "no"

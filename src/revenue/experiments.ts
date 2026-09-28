@@ -108,6 +108,28 @@ export const FACELESS_YOUTUBE_EXPERIMENT: ExperimentSpec = {
 };
 
 /**
+ * The web comparison arm's reach floor (research/faceless-youtube/PREREG-DECISIONS.md §3, board 28.9.2026), read at
+ * day 56 from the arm's own D0 (public deploy + recorded discovery submission). Kept apart from the experiment's gates:
+ * the arm has its own clock, and its verdict is procedural — whether Stage A may be put to the owner (T1-PROTOCOL order
+ * item 6) — not a channel gate. `engagedStrangerViews` is the count of $pageview events at the canonical URL, sent on
+ * first scroll, own paths and preview hosts excluded, payload shape ours; null = the project could not be read.
+ */
+export const WEB_ARM_REACH = { day: 56, minEngagedStrangerViews: 5 } as const;
+
+export interface WebArmReading {
+  day: number;
+  engagedStrangerViews: number | null;
+}
+
+export type WebArmVerdict = "not_due" | "unmeasured" | "stage_a_never_asked" | "stage_a_may_be_asked";
+
+export function evaluateWebArm(r: WebArmReading, g: typeof WEB_ARM_REACH = WEB_ARM_REACH): WebArmVerdict {
+  if (r.day < g.day) return "not_due";
+  if (r.engagedStrangerViews === null) return "unmeasured";
+  return r.engagedStrangerViews < g.minEngagedStrangerViews ? "stage_a_never_asked" : "stage_a_may_be_asked";
+}
+
+/**
  * Judge an experiment on one set of readings. A kill outranks an escalation, which outranks an extension.
  * An unmeasured gate that is due counts as failed: an experiment nobody can read is not an experiment
  * (MISSION rule 5).
