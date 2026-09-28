@@ -268,7 +268,7 @@ posts and 374 views, and is closed (`.html:607`; `.txt:105-113`). Read who wrote
 in `data-preloaded`) and what it says verification requires. Look too for AI, identity, payout and company-account
 rules. Suggested slug: `n8n-creator-profile-verification`.
 
-## Tick 9 reading (28.9.2026)
+## Tick 8 reading, second render (19:13) (28.9.2026)
 
 **Capture.** `research/rendered/n8n-creator-profile-verification.txt` (137 lines) and its `.html` (1,036 lines). URL
 `https://community.n8n.io/t/creator-profile-templates-verification/126583`, status 200, fetchedAt
@@ -344,7 +344,7 @@ staff member speaks, and the one duration (up to a week per template) is a non-s
 kill: nothing refutes the path, which costs ₪0 and can be walked under the brand.
 
 **Single next check:** render `https://community.n8n.io/t/verifies-creator/129722` (`n8n-creator-profile-verification.html:885`).
-Suggested slug: `n8n-verifies-creator`. Read the `n8n_Team` poster's reply for four things: what verification requires,
+Suggested slug: `n8n-verifies-creator`. Read the `n8n_Team` poster's reply for what verification requires,
 whether a brand or company account can be verified, and any AI, identity or payout condition. Confirm the poster's
 `primary_group_name` and `staff` flag in `data-preloaded`. If the reply says nothing on the requirement, the forum is
 exhausted and the step-8 question below is next.

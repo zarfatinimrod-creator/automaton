@@ -114,6 +114,7 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 105 | Y8 (14), after row 101 | https://docs.y8.com/studio/overview/ | the last public docs page that could name a payments or invoice screen (y8-docs-studio.html:18): whether the payout invoice is generated in the portal or issued by us each time (proposed kill (a)) |
 | 106 | GameDistribution (14), after row 102 | https://github.com/GameDistribution/GD-HTML5/wiki/F.A.Q. | the official wiki FAQ linked from the SDK page (gamedistribution-sdk-implementation.html:1194): the publish button and control-panel lines at rendered grade, and any payout rail or country |
 | 107 | n8n paid templates (20), after row 104 | https://community.n8n.io/t/creator-profile-templates-verification/126583 | the only related verification thread with an accepted answer (n8n-verified-creator-feedback-2026.html:929): who wrote the answer (staff or not) and what it says verification requires |
+| 108 | n8n paid templates (20), after row 107 | https://community.n8n.io/t/verifies-creator/129722 | the verification thread whose latest poster is in the n8n_Team group (n8n-creator-profile-verification.html:885): what an n8n moderator says verification requires, and whether a brand or AI-run account qualifies; if silent, the held step-8 question goes out |
 
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no

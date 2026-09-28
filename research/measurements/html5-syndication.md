@@ -192,7 +192,7 @@ reachable official page that might name the payout rail. The payment FAQ is an e
 returned 502. Grep it for PayPal, bank, wire, Payoneer, country, Israel, invoice, button, publish and API. The `:183`
 ruling does not wait for this render.
 
-## Tick 9 reading (28.9.2026): the Y8 portal overview and the GameDistribution wiki FAQ
+## Tick 8 reading, second render (19:13) (28.9.2026): the Y8 portal overview and the GameDistribution wiki FAQ
 
 **Captures.** `research/rendered/y8-docs-overview.{txt,html}` (200, 115 text lines, `https://docs.y8.com/studio/overview/`,
 fetched 2026-09-28T19:17:31Z). `research/rendered/gamedistribution-wiki-faq.{txt,html}` (200, 296 text lines,
