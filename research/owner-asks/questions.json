@@ -109,6 +109,52 @@
         }
       ],
       "followUpAfterDays": 7
+    },
+    {
+      "venue": "displate",
+      "name": "Displate",
+      "order": 6,
+      "to": "artists@displate.com",
+      "route": "Email to artists@displate.com, the Terms of Use's address for an artist's request (displate-about-regulations.txt:447, printed there with the sentence's full stop, \"artists@displate.com.\"; mailto: at displate-about-regulations.html:340), rendered in tick 9 (wall-art-pod.md §4, next step 1). It is the only artist address in any Displate capture. Not support@displate.com (txt:331, :833, :847, :875: buyers' complaints, service faults and appeals against a decision) and not abuse@displate.com (txt:849, copyright complaints): a question about the rules is none of those, and an appeal presumes a decision.",
+      "subject": "Question: an artist shop run by an AI agent",
+      "body": "Hello Displate artist team,\n\nMehudak (מהודק) is a small design brand considering a Displate artist shop. Its accounts are run by an AI agent acting on the brand's behalf; this message was written and sent by that agent.\n\nThe shop would be opened, and its phone verification completed, once by the brand's owner; the agent would then upload artworks and write their titles and descriptions through the normal website, at a human pace, and each description would say that the artwork was made with AI.\n\nOne question, yes or no: is an artist account run this way allowed under your Terms of Use, including the rules on accounts created using automated tools and on software that distorts the website's functioning? We are asking for your current rule only, not for an exception or a commitment.\n\nThank you,\nMehudak (מהודק)\n",
+      "preSend": "Render ZERO-TESTS row 134 first, the privacy policy https://displate.com/about-privacy (displate-about-regulations.txt:116; wall-art-pod.md §4, next step 2), then re-read wall-art-pod.md. If that render or a later one has settled kill (d), whether an agent may operate an artist account through the website (displate-about-regulations.txt:471, :561), send nothing, or the first held question if the answer there is a written yes. The sign-up page render (next step 3) does not hold the send.",
+      "heldQuestions": [
+        {
+          "text": "Can an artist resident in Israel receive Displate payouts to a PayPal account?",
+          "to": "artists@displate.com",
+          "when": "only after a written yes, in the same thread (the only artist address in any Displate capture), first of two, one at a time; a no fires the Israel half of kill (c) (wall-art-pod.md:200)"
+        },
+        {
+          "text": "Is a photo or video of the artist, or of an identity document, part of the tax-data check at payout?",
+          "to": "artists@displate.com",
+          "when": "only after a written yes, in the same thread, second of two; a yes fires the camera half of kill (c) (wall-art-pod.md:200), a no leaves the SMS code (displate-about-regulations.txt:455) as the one identity step"
+        }
+      ],
+      "followUpAfterDays": 7
+    },
+    {
+      "venue": "teachsimple",
+      "name": "Teach Simple",
+      "order": 7,
+      "to": "support@teachsimple.com",
+      "route": "Email to support@teachsimple.com, where the Terms of Service say \"Questions about the Terms of Service should be sent to us at\" (teachsimple-terms-of-service.txt:419-420; mailto: at teachsimple-terms-of-service.html:357), rendered in tick 9 (teacher-and-ebook-stores.md, Tick 9, next step). The same address closes the contributor terms (teachsimple-com-contributor-terms-of-service.txt:549) and the become-a-contributor page (teachsimple-com-become-a-contributor.txt:296); it is the only Teach Simple address in any capture. Not the \"Are you ready to apply?\" modal (teachsimple-com-become-a-contributor.txt:292; contributorModal at .html:358): its fields are unread, and a question is not an application.",
+      "subject": "Question: the free upload service for a contributor in Israel",
+      "body": "Hello Teach Simple team,\n\nMehudak (מהודק) is a small brand that makes teaching resources with AI and would say so in each item's description. Its accounts are run by an AI agent acting on the brand's behalf; this message was written and sent by that agent.\n\nOne question, yes or no: can a contributor based in Israel, paid by PayPal, join and have your free upload service list its new items on an ongoing basis, not only a one-time upload of an existing catalogue? We are asking for your current rule only, not for an exception or a commitment.\n\nThank you,\nMehudak (מהודק)\n",
+      "preSend": "Render ZERO-TESTS row 135 first, the licence agreement https://teachsimple.com/license-agreement (teachsimple-terms-of-service.html:457; teacher-and-ebook-stores.md, Tick 9, next step), then re-read teacher-and-ebook-stores.md. That render can only kill: an AI or automation ban, or a US-only clause, there ends the venue, so send nothing. If it or a later render has answered the question (the ongoing upload service, and PayPal payment to a contributor in Israel), send the first held question instead, or nothing.",
+      "heldQuestions": [
+        {
+          "text": "Can a contributor send the files for each new item to your upload team by email?",
+          "to": "support@teachsimple.com",
+          "when": "only after a written yes, in the same thread, first of two, one at a time; it settles how the upload team takes files (teacher-and-ebook-stores.md:132), and a no is read against G6 by the step the reply names"
+        },
+        {
+          "text": "Before the first payout, must a contributor based in Israel send you a tax form?",
+          "to": "support@teachsimple.com",
+          "when": "only after a written yes, in the same thread, second of two; the W-8BEN doubt (teacher-and-ebook-stores.md:28, :133): a yes is a one-time owner step for the sitting to weigh, not a kill"
+        }
+      ],
+      "followUpAfterDays": 7
     }
   ]
 }

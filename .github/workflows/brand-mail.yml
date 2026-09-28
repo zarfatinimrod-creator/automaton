@@ -43,7 +43,7 @@ on:
         options: [probe, send]
         default: probe
       venue:
-        description: "send only: a venue id from research/owner-asks/questions.json (crazygames, wix, spreadshirt, n8n, indiebook)"
+        description: "send only: a venue id from research/owner-asks/questions.json (crazygames, wix, spreadshirt, n8n, indiebook, displate, teachsimple)"
         type: string
         required: false
       really_send:
