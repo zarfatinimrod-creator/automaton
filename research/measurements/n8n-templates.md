@@ -4,6 +4,10 @@
 NEEDS_MORE.** The Notion Creator Hub capture is a JavaScript shell. n8n's GitHub docs source is a three-sentence stub
 that points back to it, with no rule on paid templates, AI, payout or identity. See the Tick 6 section. Half of the ₪0 test is answered
 (ordering; whether paid templates appear). The other half (the AI rule, the paid-unlock condition) is not on either page.
+**Tick 7 (28.9.2026): still NEEDS_MORE.** The forum thread renders: its posts are in the `.html` crawler view, while the
+`.txt` lost them. A creator reports the product saying a paid template needs verified-creator status (June 2025). A
+reply that is not from n8n staff says verification needs two more free templates, about three in all. The thread states
+no fee, payout, identity or template AI rule. See the Tick 7 section.
 
 ## What was read
 
@@ -121,3 +125,70 @@ nothing refutes priced templates (the API has `price` and `purchaseUrl`) or AI-m
 Discourse forum page; whether a plain GET returns the posts is itself part of the test. Read the condition that unlocks
 paid templates (verified status, or 3 accepted templates) and any AI rule stated in a staff reply. The scout's thread
 `https://community.n8n.io/t/change-the-price-of-one-of-my-paid-templates/52125` is the fallback, from the same host.
+
+## Tick 7 reading (28.9.2026)
+
+**Capture:** `research/rendered/n8n-verified-creator-requirements.txt` (9 lines) and its `.html` (973 lines), ZERO-TESTS
+row 67. URL `https://community.n8n.io/t/requirements-for-becoming-a-verified-creator/134401`, status 200, fetchedAt
+2026-09-28T17:19:23.769Z, 284,387 bytes, not truncated, sha256 `ae29fe40…`, first fetch.
+
+**Does a plain GET return the posts? Yes, but only in the HTML.** [RENDERED] The `.txt` holds the title (`.txt:1`) and
+seven stylesheet-tag fragments (`:3-9`), and no post. The extractor took the `>` in each `media="(width >= 40rem)"`
+(`.html:582`) for the end of a tag. The `.html` holds Discourse's crawler view in
+`<noscript data-path="/t/requirements-for-becoming-a-verified-creator/134401">` (`.html:615`), with both posts as
+`crawler-post` blocks (`:655`, `:684`). It also holds the whole thread as JSON in `data-preloaded` (`:603`). [INFERENCE]
+This runner can read Discourse threads. The render-watch text extractor needs a fix for a `>` inside an attribute.
+
+**The thread.** [RENDERED] It sits in the Questions category and was opened 2025-06-18 (`.html:648`). It has 2 posts and
+a system close, and 801 views. It is closed with no accepted answer: `\"views\":801,`, `\"has_accepted_answer\":false`,
+and "This topic was automatically closed 90 days after the last reply. New replies are no longer allowed." (all
+`.html:603`).
+- Post 1, by a creator ([name removed]), 2025-06-18: "I tried uploading my second template but was unable to set it as
+  paid. That’s strange because the first template n8n allowed me to set as paid. It says I need to be a verified creator
+  for that but I was not a verified creator when I posted my first template." (`.html:674`). "Curious why this is
+  happening and what is the requirement to become a verified creator?" (`:675`).
+- Post 2, by a community member ([name removed]), the same day (`.html:696`): "Looks like the policy has changed for
+  submitting workflows." (`:705`). "You’ll need to create two more free workslows to be eligable for the creator
+  program." (sic, `:706`). It then links the Notion Creator Hub (`:707`).
+- Post 2's author is **not n8n staff**. That post's record holds `\"staff\":false`, `\"moderator\":false`,
+  `\"admin\":false`, `\"trust_level\":2` and `\"user_title\":\"Top Supporter\"` (`.html:603`).
+
+**The questions, answered at forum grade.**
+- **Who may sell paid templates: verified creators only.** [RENDERED, a user reporting the product's own message] "It
+  says I need to be a verified creator for that" (`:674`). The same user had priced a first template before being
+  verified, so the rule was new in June 2025 [INFERENCE from `:674`]. The reply agrees that "the policy has changed"
+  (`:705`).
+- **How to become verified.** [RENDERED, from a non-staff member] "two more free workslows to be eligable for the creator
+  program" (sic, `:706`).
+  - [INFERENCE] The poster already had one template, so that makes three. This fits the scout's snippet "A paid option is
+    only available once you have submitted 3 templates". It also fits the Tick 6 search summary, "creators need to be
+    verified creators". The two claims describe one rule: about three free templates make a creator eligible, and
+    verification unlocks pricing.
+  - [INFERENCE] "Eligable" reads as eligible to apply or be reviewed, not as an automatic unlock. One related topic
+    reads the same way, from its title only: "Requesting feedback for Verified Creator status on my published n8n
+    workflows" (created 2026-02-24; `.html:768`, `:603`).
+- **Fees, payout, identity: none stated.** [RENDERED] There are 0 hits for Stripe, Gumroad, payout, KYC, identity,
+  commission and revenue. Every "fee" hit is inside "feedback", "feed" or a file hash.
+- **AI rule for templates: none stated.** [RENDERED] The only AI rule on the page is the forum's own flag, "AI Generated".
+  Its text reads: "This post looks like it's AI-generated. It reads like pasted AI output: generic, padded, not actually
+  addressing the issue." It carries `\"applies_to\":[\"Post\"]` and links the policy thread
+  `/t/this-forum-is-for-humans-by-humans/305091` (all `.html:603`). [INFERENCE] It governs forum posts, not the template
+  library.
+- [INFERENCE] This matches the catalogue in §Findings. In the first 100 templates, 85 are by verified creators and none
+  is priced.
+
+**Verdict for row 20: NEEDS_MORE**, unchanged. The paid-unlock half now has a forum-grade answer, and it is costly:
+- Pricing needs verified-creator status, per a user quoting the product in June 2025.
+- Verification needs about three free templates first, per a non-staff reply.
+- Every paid n8n listing therefore sits behind at least three free ones and a review whose criteria nobody has read.
+
+That path costs ₪0 and can be walked honestly under the brand, so it is not a kill. Still open: the AI rule for
+templates, fees and payout, and whether verification asks for identity. The source is 15 months old, is not staff,
+and says the policy was changing.
+
+**Single next check:** render
+`https://community.n8n.io/t/requesting-feedback-for-verified-creator-status-on-my-published-n8n-workflows/269435`. It is
+the related topic at `.html:768`, created 2026-02-24 (`.html:603`), and the newest thread on the subject in the capture.
+Look for any staff reply on what verification requires, whether AI-generated templates are accepted, and whether
+identity or payout details are asked. Read the `.html` crawler view, not the `.txt`. Suggested slug:
+`n8n-verified-creator-feedback-2026`.
