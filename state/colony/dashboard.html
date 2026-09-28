@@ -30,7 +30,7 @@
   .s-awaiting_setup { color:var(--warn); border-color:var(--warn); }
   .s-building { color:var(--accent); border-color:var(--accent); }
   .grade { font-size:.72rem; }
-  .g-measured { color:var(--ok); } .g-inferred { color:var(--warn); } .g-unevidenced { color:var(--bad); }
+  .g-measured { color:var(--ok); } .g-inferred { color:var(--warn); } .g-unevidenced, .g-contradicted { color:var(--bad); }
   .basis { display:grid; grid-template-columns:1fr auto; gap:6px 12px; }
   .basis div:nth-child(even) { font-variant-numeric:tabular-nums; text-align:left; }
   .note { color:var(--muted); font-size:.9rem; }
@@ -51,14 +51,14 @@
   <h2>מה התוכנית נשענת עליו</h2>
   <div class="card">
     <div class="basis">
-      <div>סכום היעדים של כל הקווים</div><div>₪1,500 מול מטרה של ₪20,000</div>
+      <div>סכום היעדים של כל הקווים</div><div>₪1,100 מול מטרה של ₪20,000</div>
       <div><span class="g-measured">נמדד</span> — מבוסס על ראיה שאפשר לבדוק</div><div>₪0</div>
-      <div><span class="g-inferred">מוסק</span></div><div>₪1,100</div>
+      <div><span class="g-inferred">מוסק</span></div><div>₪800</div>
       <div><span class="g-unevidenced">ללא ראיה</span> — משימת מחקר, לא תחזית</div><div>₪0</div>
-      <div><span class="g-unevidenced">מוכחש</span> — הראיה שצוטטה טוענת <em>נגד</em> המספר</div><div>₪400</div>
+      <div><span class="g-unevidenced">מוכחש</span> — הראיה שצוטטה טוענת <em>נגד</em> המספר</div><div>₪300</div>
     </div>
-    <p class="note">הסכום הכן כרגע הוא <strong>₪0</strong>, לא ₪1,500. <strong>מוכחשים</strong> — הראיה שצוטטה טוענת נגד היעד: <code>il-biz-tools</code>.</p>
-    <p class="note">ועוד דבר שאף אחד לא סכם: <strong>סכום כל היעדים הוא ₪1,500 מול מטרה של ₪20,000</strong>. גם אם כל קו יפגע ביעד שלו במלואו, המטרה תוחמץ.</p>
+    <p class="note">הסכום הכן כרגע הוא <strong>₪0</strong>, לא ₪1,100. <strong>מוכחשים</strong> — הראיה שצוטטה טוענת נגד היעד: <code>oss-bounties</code>.</p>
+    <p class="note">ועוד דבר שאף אחד לא סכם: <strong>סכום כל היעדים הוא ₪1,100 מול מטרה של ₪20,000</strong>. גם אם כל קו יפגע ביעד שלו במלואו, המטרה תוחמץ.</p>
   </div>
 
   <h2>מה מחכה לך (4)</h2>
@@ -73,7 +73,7 @@
       </details>
       <details>
         <summary>Open-source bounties on Algora, from the brand machine account</summary>
-        <ol><li>Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in &quot;bot&quot; (BOARD-2 §2.1.3(c))</li><li>Sign in to Algora AS THE BRAND MACHINE ACCOUNT and complete Stripe Connect Express onboarding in your legal identity — individual, ID, Israeli address, Israeli bank account (owner step 4, done after step 7)</li><li>Paste the brand machine account&#39;s token as BRAND_GITHUB_TOKEN in GitHub Actions secrets, so bounty PRs leave from the brand account (owner step 6; bounties/intake.ts is blocked on it)</li></ol>
+        <ol><li>Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in &quot;bot&quot; (BOARD-2 §2.1.3(c)). In the same sitting, create its token for BRAND_GITHUB_TOKEN (pasted in step 6); the intake stays disabled in code until the corrected week-4 read, so the token changes nothing before then (RULING-2026-09-28-bounty-rail.md §4.4)</li><li>Owner step 4a, in step 7&#39;s sitting: sign in to Algora once AS THE BRAND MACHINE ACCOUNT — a GitHub sign-in, two minutes, no identity, no money — ruled into step 7&#39;s sitting because one sitting is less owner involvement than two (RULING-2026-09-28-bounty-rail.md §4.1)</li><li>Owner step 4b, asked only when the corrected week-4 mean is 3 or more AND a reward for a merged brand-account PR is held by Algora: complete Stripe Connect Express onboarding in your legal identity — individual, Israel, Israeli bank — under three stop rules: a US account country or a US bank/SSN/ITIN/EIN, a selfie or liveness check, or any fee → close the tab and complete nothing (RULING-2026-09-28-bounty-rail.md §4.1-§4.2)</li></ol>
       </details>
       <details>
         <summary>PCN874 builder — spreadsheet to a validated מע&quot;מ detailed-report file</summary>
@@ -97,14 +97,14 @@
         <td><strong>Hebrew small-business web tools (invoices, receipts, VAT, net salary)</strong><br><code>il-biz-tools</code></td>
         <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
         <td class="num">₪0.00</td>
-        <td class="num">₪400.00<br><span class="grade g-contradicted">undefined</span></td>
+        <td class="num">₪0.00<br><span class="grade g-inferred">מוסק</span></td>
         <td>escalate</td>
       </tr>
       <tr>
         <td><strong>Open-source bounties on Algora, from the brand machine account</strong><br><code>oss-bounties</code></td>
         <td><span class="pill s-awaiting_setup">ממתין לך</span></td>
         <td class="num">₪0.00</td>
-        <td class="num">₪300.00<br><span class="grade g-inferred">מוסק</span></td>
+        <td class="num">₪300.00<br><span class="grade g-contradicted">מוכחש</span></td>
         <td>escalate</td>
       </tr>
       <tr>
@@ -122,11 +122,12 @@
   <div class="card">
     <p class="note">מסילה אחת שנופלת לא אמורה להפיל את החברה. הצד של <strong>הגבייה</strong> נופל ומפסיק מכירות; הצד של <strong>המשיכה</strong> נופל ומשאיר כסף שכבר הרווחנו תקוע — וזה הגרוע מבין השניים, כי הלדג'ר אומר שיש לנו אותו.</p>
     <div class="basis">
-      <div>גבייה</div><div>gumroad 67% · bounty-platform 20% · apify 13%</div>
-      <div>משיכה</div><div>bank-transfer 67% · unknown 20% · paypal 13%</div>
+      <div>גבייה</div><div>gumroad 55% · bounty-platform 27% · apify 18%</div>
+      <div>משיכה</div><div>bank-transfer 55% · stripe-connect-express 27% · paypal 18%</div>
     </div>
-    <p class="note">⚠ gumroad carries 67% of the portfolio target on the payin side (il-biz-tools, pcn874); bank-transfer carries 67% of the portfolio target on the payout side (il-biz-tools, pcn874). MISSION.md requires that one rail failing does not take the company down.</p>
-    <p class="note">מסלול המשיכה לא ידוע ב: <code>oss-bounties</code>. כסף שיירשם שם עלול להיות לא ניתן למשיכה.</p>
+    <p class="note">⚠ gumroad carries 55% of the portfolio target on the payin side (il-biz-tools, pcn874); bank-transfer carries 55% of the portfolio target on the payout side (il-biz-tools, pcn874). MISSION.md requires that one rail failing does not take the company down.</p>
+    
+    <p class="note">משיכה לישראל לא מאומתת ב: <code>apify-actors</code>, <code>oss-bounties</code> — כסף שיורווח שם עלול להיות לא ניתן למשיכה.</p>
   </div>
 
   <h2>מה מייל אחד מפלטפורמה יכול לקחת</h2>
@@ -135,17 +136,17 @@
     <table>
       <thead><tr><th>חשבון</th><th>חלק מהיעד</th><th>קווים</th><th>נראה מכאן?</th></tr></thead>
       <tbody>
-        <tr><td><code>gumroad:one-seller-account</code></td><td>67%</td><td>il-biz-tools, pcn874</td><td>כן</td></tr>
-        <tr><td><code>algora:one-connect-account</code></td><td>20%</td><td>oss-bounties</td><td>כן</td></tr>
-        <tr><td><code>apify:one-creator-account</code></td><td>13%</td><td>apify-actors</td><td><strong>לא</strong></td></tr>
+        <tr><td><code>gumroad:one-seller-account</code></td><td>55%</td><td>il-biz-tools, pcn874</td><td>כן</td></tr>
+        <tr><td><code>algora:one-connect-account</code></td><td>27%</td><td>oss-bounties</td><td>כן</td></tr>
+        <tr><td><code>apify:one-creator-account</code></td><td>18%</td><td>apify-actors</td><td><strong>לא</strong></td></tr>
       </tbody>
     </table>
-    <p class="note">⚠ gumroad:one-seller-account carries 67% of the portfolio target across il-biz-tools, pcn874. MISSION.md requires that one platform banning us does not take the company down. 13% of the target rides on platforms this colony cannot observe: apify:one-creator-account. Their KPIs and kill criteria cannot be checked from here.</p>
+    <p class="note">⚠ gumroad:one-seller-account carries 55% of the portfolio target across il-biz-tools, pcn874. MISSION.md requires that one platform banning us does not take the company down. 18% of the target rides on platforms this colony cannot observe: apify:one-creator-account. Their KPIs and kill criteria cannot be checked from here.</p>
   </div>
 
   <h2>חסימות ותקיעות</h2>
   <div class="card">
-    <p class="empty">אין חסימות פתוחות מלבד ההרשמות שלך.</p>
+    <ul><li>the loop did not run for 8 hours (last ledger sync 2026-09-28T00:43:37.762Z). Check the colony workflow in Actions: a failing schedule is invisible from the numbers alone.</li></ul>
   </div>
 
   <h2>הכסף שלך</h2>
@@ -185,7 +186,7 @@
   </div>
 
   <footer>
-    נוצר מהלדג'ר ב-2026-09-28T00:43:37.790Z.
+    נוצר מהלדג'ר ב-2026-09-28T08:19:43.722Z.
     כל מספר בדף הזה מגיע מ-<code>state/colony/colony.db</code> — אין כאן שדה שאפשר למלא ביד.
   </footer>
 </div>
