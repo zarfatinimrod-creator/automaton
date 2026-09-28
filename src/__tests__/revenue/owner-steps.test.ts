@@ -63,6 +63,7 @@ describe("the owner's checklist is seven steps and stays seven", () => {
     expect(step4.precondition!.what).toMatch(/week-4/);
     expect(step4.precondition!.what).toMatch(/held/);
     expect(step4.precondition!.short).not.toMatch(/[();]/); // it is printed inside the report's parentheses
+    expect(`step ${step4.number} ${step4.precondition!.short}`).not.toMatch(/^step 4 4/); // printed after "step 4 "
     expect(openOwnerStepsForLine("oss-bounties").map((s) => s.number)).toEqual([7, 6]);
     expect(heldOwnerStepsForLine("oss-bounties").map((s) => s.number)).toEqual([2, 4]);
     // The retired justification is gone (§4.3).

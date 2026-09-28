@@ -254,7 +254,8 @@ export const OWNER_STEPS: OwnerStep[] = [
     precondition: {
       what:
         "4b — the Stripe Connect Express form, individual, Israel, Israeli bank — is asked only when BOTH hold: the corrected week-4 mean of the weekly claimable-supply count is 3 or more (the first count, 108, was struck as an instrument fault on 28.9.2026 and the four-week clock restarted at the first corrected run), and at least one bounty PR from the brand account has been rewarded and Algora holds the credit — a held reward (RULING-2026-09-28-bounty-rail.md §4.1). Under 3 the line is killed and 4b is never asked.",
-      short: "4b, the Stripe form, only after a corrected week-4 count of 3 or more and a reward Algora holds — 4a rides step 7",
+      // Printed after "step 4 " in the report, so it must not open with the step number again.
+      short: "Stripe form, part 4b, asked only after a corrected week-4 count of 3 or more and a reward Algora holds — the 2-minute sign-in 4a rides step 7",
       // metOn stays unset until both hold, with the week-4 reading and the held credit as evidence.
     },
     stopIf: [

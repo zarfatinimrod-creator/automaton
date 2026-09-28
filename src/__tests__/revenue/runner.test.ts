@@ -276,7 +276,8 @@ describe("revenue/runner report rendering", () => {
     expect(report).toMatch(/Owner steps still open for `il-biz-tools`[^\n]*: 3, 6 \(not asked now: step 2 only when a paid product is ready, after the official cost check; step 5 frozen by the owner's ₪0 rule of 27\.9\.2026\)/);
     expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*: 3, 7, 6 \(not asked now: step 2 [^;]+; step 5 frozen/);
     // Step 4 is held since 28.9.2026: 4a rides step 7, 4b waits for the corrected week-4 count and a held reward.
-    expect(report).toMatch(/Owner steps still open for `oss-bounties`[^\n]*: 7, 6 \(not asked now: step 2 [^;)]+; step 4 4b[^;)]+\)$/m);
+    expect(report).toMatch(/Owner steps still open for `oss-bounties`[^\n]*: 7, 6 \(not asked now: step 2 [^;)]+; step 4 Stripe form, part 4b, asked only after [^;)]+ — the 2-minute sign-in 4a rides step 7\)$/m);
+    expect(report).not.toMatch(/step 4 4b/); // the step number printed twice read as a typo (review of 28.9.2026, finding 9)
   });
 
   it("asks for step 2 once the colony records its precondition met", async () => {
