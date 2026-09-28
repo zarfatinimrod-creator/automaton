@@ -9,7 +9,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type BetterSqlite3 from "better-sqlite3";
 import { createInMemoryDb } from "../orchestration/test-db.js";
-import { A11Y_ANSWER_DAYS, BRAND_MAIL_PROBE_FILE, readBrandMailProbe } from "../../revenue/brand-mail.js";
+import { A11Y_ANSWER_DAYS, BRAND_MAIL_PROBE_FILE, PROBE_STALE_DAYS, readBrandMailProbe } from "../../revenue/brand-mail.js";
 import { renderReport, tick } from "../../revenue/runner.js";
 
 const DAY = 86_400_000;
@@ -24,6 +24,7 @@ const reading = (over: Record<string, unknown> = {}, a11y: Record<string, unknow
   repliesByVenue: { crazygames: 1 },
   accessibility: { received: 3, unanswered: 2, unansweredOver7Days: 0, oldestUnansweredAgeDays: 2.0, ...a11y },
   sentFolderFound: true,
+  allMailFound: true,
   ...over,
 });
 
@@ -41,6 +42,7 @@ describe("readBrandMailProbe — state/colony/brand-mail.json → one report lin
   it("defaults to the file the workflow commits, and a seven-day answer window", () => {
     expect(BRAND_MAIL_PROBE_FILE).toBe(join("state", "colony", "brand-mail.json"));
     expect(A11Y_ANSWER_DAYS).toBe(7);
+    expect(PROBE_STALE_DAYS).toBe(2);
   });
 
   it("says nothing before any probe has run — the normal state before step 8", () => {
@@ -61,7 +63,7 @@ describe("readBrandMailProbe — state/colony/brand-mail.json → one report lin
     expect(r.status).toBe("read");
     expect(r.line).toBe(
       "Brand mailbox (probed 2026-10-20 12:00 UTC, 0.5 days ago): 5 in the inbox, 2 unread; " +
-        "messages in reply to our questions: crazygames 1; " +
+        "possible replies to our questions: crazygames 1; " +
         "accessibility mail: 3 received, 2 unanswered, 0 unanswered for 7+ days.",
     );
     expect(r.blockers).toEqual([]);
@@ -81,13 +83,28 @@ describe("readBrandMailProbe — state/colony/brand-mail.json → one report lin
     expect(r.blockers[0]).toMatch(/oldest 10\.0 days/);
   });
 
-  it("counts time since the probe: a 5-day-old mail probed 3 days ago is overdue now", () => {
+  it("counts time since the probe: a 5-day-old mail probed 2 days ago is overdue now", () => {
     write(reading({}, { unansweredOver7Days: 0, oldestUnansweredAgeDays: 5.0 }));
     expect(readBrandMailProbe(file, T0 + 1 * DAY).blockers).toEqual([]);
-    const later = readBrandMailProbe(file, T0 + 3 * DAY);
+    const later = readBrandMailProbe(file, T0 + 2 * DAY);
     expect(later.blockers).toHaveLength(1);
     expect(later.blockers[0]).toMatch(/^at least 1 accessibility mail\(s\)/);
-    expect(later.blockers[0]).toMatch(/oldest 8\.0 days/);
+    expect(later.blockers[0]).toMatch(/oldest 7\.0 days/);
+  });
+
+  it("makes a reading older than two days a blocker of its own: mail since then is unseen", () => {
+    write(reading());
+    expect(readBrandMailProbe(file, T0 + 2 * DAY).blockers).toEqual([]);
+    const stale = readBrandMailProbe(file, T0 + 2.5 * DAY);
+    expect(stale.status).toBe("read");
+    expect(stale.blockers).toEqual([
+      `brand-mail probe ${file} is 2.5 days old (probe of 2026-10-20 12:00 UTC): accessibility mail and venue replies ` +
+        "since then are unseen. Re-run the probe (brand-mail.yml, command probe) and read its log; once step 8 is done " +
+        "it belongs in colony.yml's hourly tick.",
+    ]);
+    // A not-configured reading is not stale: before step 8 there is nothing to read.
+    write({ configured: false, measuredAt: MEASURED });
+    expect(readBrandMailProbe(file, T0 + 30 * DAY).blockers).toEqual([]);
   });
 
   it("never states an exact overdue count that time since the probe may have made too small", () => {
@@ -103,6 +120,13 @@ describe("readBrandMailProbe — state/colony/brand-mail.json → one report lin
   it("says so when the probe found no Sent folder, since then nothing can count as answered", () => {
     write(reading({ sentFolderFound: false }));
     expect(readBrandMailProbe(file, T0).line).toMatch(/No Sent folder was found, so no accessibility mail can count as answered\.$/);
+  });
+
+  it("says so when the probe found no All Mail folder, since then archived mail is not counted", () => {
+    write(reading({ allMailFound: false }));
+    expect(readBrandMailProbe(file, T0).line).toMatch(/No All Mail folder was found, so only the inbox was read: archived mail is not counted\.$/);
+    write(reading({ allMailFound: "yes" }));
+    expect(readBrandMailProbe(file, T0).status).toBe("invalid");
   });
 
   it("reports a broken file as a blocker", () => {
