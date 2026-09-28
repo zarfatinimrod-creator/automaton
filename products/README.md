@@ -1,13 +1,13 @@
 # products/
 
-Sellable products built by the revenue colony. Each directory is standalone (own package.json, tests and README; most READMEs carry deploy steps and the owner's one-time setup; `mcp-il-tools`'s has its publish steps under "Publishing"). They are intentionally outside the root pnpm workspace so the automaton runtime build stays independent.
+Sellable products built by the revenue colony. Each directory is standalone (own package.json, tests and README; most READMEs carry deploy steps and the owner's one-time setup; `mcp-il-tools` keeps its publish steps in `MAINTAINING.md`, because its README ships to npm). They are intentionally outside the root pnpm workspace so the automaton runtime build stays independent.
 
 | Product | Revenue line | Rail | Owner one-time step |
 |---|---|---|---|
 | `apify-il-open-data` | apify-actors | Apify Store, **published free** while the 30-day stranger count runs | step 6 — Apify sign-up with the brand username + `APIFY_TOKEN` (allowed straight after step 1; **no KYC**), then one Console click after the first CI push: Actor → **Publication → Publish to Store** (the push creates the Actor private) |
 | `il-biz-tools` | il-biz-tools | **Gumroad** (merchant of record, ILS payout rendered) — Paddle retired 7.9.2026 | step 3 — Gumroad account + token; step 5 — domain; step 6 — Netlify link + `GUMROAD_ACCESS_TOKEN` as a GitHub Actions secret |
 | `pcn874` | pcn874 | **Gumroad** (ILS) — validator and generator built, no price set; its free, no-upload validator page is `il-biz-tools/pcn874.html` (28.9.2026), which ships with that site's deploy | step 3 — Gumroad account + token; step 5 — domain; step 7 — GitHub organisation; step 6 — tokens into GitHub secrets |
-| `mcp-il-tools` | (channel test, not a line) | none — free | step 7 — GitHub organisation (the registry name `io.github.mehudak/il-tools` comes from it, not from a domain, while step 5 is frozen); proposed step 9 — npm account `mehudak` + `NPM_TOKEN` |
+| `mcp-il-tools` | (channel test, not a line) | none — free | step 7 — GitHub organisation (the registry name `io.github.mehudak/il-tools` comes from it, not from a domain, while step 5 is frozen); proposed step 9 — the npm user `mehudak` (brand mailbox, step 8), a granular token of that user, and the GitHub environment `npm-publish` (main only, required reviewer) holding it as `NPM_TOKEN` |
 | `telegram-il-tools-bot` | ~~telegram-bots~~ — **PARKED** | ~~Telegram Stars → TON via Fragment~~ — killed: Fragment's payout KYC needs a selfie | none — do not start it |
 | `x402-il-api` | ~~paid-apis / agent-services~~ — **standby rail, not a line** | x402 (USDC on Base), kept only while it costs ₪0/month | none |
 | `chart-explainer` | the faceless-youtube **experiment** (`src/revenue/experiments.ts`; not a portfolio line) — renders and gate-checks, **holds unpublished**; Python, own CI (`chart-explainer-ci.yml`) | none: no upload code exists | none now; Stage A is not asked before T1 is built and gate-passed (`T1-PROTOCOL.md`) |
@@ -73,7 +73,7 @@ verdict on the code:
   code findings are implemented, and each of the audit's 26 inputs is a fixture with a test.
 
 **Products with no line:** the parked `telegram-il-tools-bot` and the standby `x402-il-api` (above), and `mcp-il-tools`, which is a distribution channel test rather than a
-storefront. `@mehudak/mcp-il-tools` is not published to npm and not listed in any registry. One manual dispatch of `.github/workflows/mcp-il-tools-publish.yml` publishes both, once the organisation owns the repository (step 7) and the npm account and `NPM_TOKEN` exist (proposed step 9); until then only its dry run can succeed (`products/mcp-il-tools/README.md`, Publishing).
+storefront. `@mehudak/mcp-il-tools` is not published to npm and not listed in any registry. One manual dispatch of `.github/workflows/mcp-il-tools-publish.yml` publishes both, from `main`, once the organisation owns the repository (step 7) and the npm user `mehudak`, its token and the `npm-publish` environment exist (proposed step 9); until then only its dry run can succeed (`products/mcp-il-tools/MAINTAINING.md`). npm's documentation says granular tokens lose direct publishing in January 2027, so the real run should happen before then.
 
 **Lines with no product:** `oss-bounties`, which never gets one — it sells work performed on demand for
 a named payer, so its "product" is a pull request.
