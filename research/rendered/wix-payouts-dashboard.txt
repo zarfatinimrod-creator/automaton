@@ -1,0 +1,183 @@
+Payouts Dashboard
+
+Overview
+Extend Websites
+
+Build Apps
+
+Go Headless
+References
+
+Changelog
+
+Build Apps
+
+Get Started
+
+Overview
+
+Quick Start
+
+Templates
+
+Tutorials
+
+Get an Idea
+
+Develop Your App
+
+About Developing Apps
+
+App Workspace
+
+Development Sites
+
+Extensions
+
+Develop an App with the CLI
+
+Develop a Self-Managed App
+
+Develop an App with Blocks
+
+Build with AI
+
+API Integrations
+
+Auth
+
+Design
+
+Launch Your App
+
+About Launching Apps
+
+Pricing and Billing
+
+About Monetizing Your App
+
+About Pricing Plans and Business Models
+
+The App Purchase Lifecycle in Wix
+
+Pricing Page Best Practices
+
+Set Up a Freemium Business Model
+
+Set Up a Premium Business Model
+
+Set Up a Usage-Based Business Model
+
+Set Up a Pay As You Go Business Model
+
+Set Up One-Time Payments
+
+Set Up a Wix Pricing Page
+
+Set Up an External Pricing Page
+
+Set Up and Manage Free Trials
+
+Identify and Manage App Users
+
+Change App Pricing
+
+Report Revenue for Partner Billed Apps
+
+Payouts Dashboard
+
+Set Up Your Payout Account
+
+Payments and Billing FAQs
+
+Market Listing
+
+Localization
+
+Legal and Security
+
+App Distribution
+
+App Promotion
+
+Manage Your App
+
+User Support
+
+Versioning
+
+Data and Analytics
+
+Contact Us
+
+In This Article View your payouts data
+Download your payouts data as a CSV
+See also
+
+About the Payouts Dashboard
+
+The Payouts dashboard is an app-level view in your app's dashboard. It shows per-app revenue, transactions, and refunds. To track account-level payout status, invoices, and payment history, go to Earnings > Payouts in your Wix Studio workspace. Learn more in Payments and Billing FAQs .
+
+You can access the app Payouts dashboard if you have the Manage Earnings permission. Account owners have this access by default. To grant access to a teammate, see Grant a teammate access to payouts . The Payouts dashboard allows you to:
+
+Track your total collections .
+
+Download a CSV file of your payouts data
+
+Search individual transactions .
+
+Request refunds .
+
+Before you can publish a paid app, payout account setup must be complete at the account level. Until this is done, you can't publish paid apps. Learn how to set up your payout account .
+
+View your payouts data
+
+The payouts dashboard has two tabs:
+
+Overview : This tab shows your total monthly collections less deductions.
+
+Transactions : This tab allows you to view and manage individual transactions per user.
+
+The data is updated daily and should be considered an estimate until it's finalized on the 9th of every month (for the previous month's transactions).
+
+Note: Payments for apps included in Wix Premium plans won't be shown in the payouts dashboard. For info on payments for these upgrades you need to contact us .
+
+Overview
+
+The Overview tab is broken down into several metrics, each showing the total amounts accrued in the current month. There's also a graph showing the Collections by Month for the last 12 months – hover over any column to see the exact amount of your collections and payout in that month, as well as the number of plans purchased. At the bottom of the tooltip is a link to the transaction history for that month.
+
+Transactions
+
+The Transactions tab allows you to search, view, and request refunds for individual transactions. This data is displayed for one month at a time. There are five transaction types:
+
+Charge : A user purchased an app plan or made an in-app purchase.
+
+Renewal : Automatic renewal of the plan a user already had - can be either monthly or yearly.
+
+Switch: A user upgraded from one plan to another (more expensive) plan.
+
+Refund : A user requested a refund for a previous transaction. The instance ID and invoice ID will be the same as the original transaction.
+
+Chargeback : A user disputed the charge with their credit card company, and was refunded. The instance ID and Invoice ID will match those of the disputed transaction. Note that Wix will automatically attempt to reverse the chargeback.
+
+Download your payouts data as a CSV
+
+You can download payouts data as far back as 2016. To download a CSV of your payouts data:
+
+Click Download Data .
+
+Choose the date range you want download data for in From and To .
+
+Click Generate CSV .
+
+Wait a few moments for the file to be generated and click Download CSV .
+
+See also
+
+View your app stats
+
+Reporting for Partner Billed Apps
+
+Last updated: 9 September 2026
+Did this help?
+Yes No

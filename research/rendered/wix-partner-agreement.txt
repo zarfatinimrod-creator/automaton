@@ -1,0 +1,93 @@
+Wix App Market Partner Agreement
+
+Overview
+Extend Websites
+
+Build Apps
+
+Go Headless
+References
+
+Changelog
+
+Build Apps
+
+Get Started
+
+Overview
+
+Quick Start
+
+Templates
+
+Tutorials
+
+Get an Idea
+
+Develop Your App
+
+About Developing Apps
+
+App Workspace
+
+Development Sites
+
+Extensions
+
+Develop an App with the CLI
+
+Develop a Self-Managed App
+
+Develop an App with Blocks
+
+Build with AI
+
+API Integrations
+
+Auth
+
+Design
+
+Launch Your App
+
+About Launching Apps
+
+Pricing and Billing
+
+Market Listing
+
+Localization
+
+Legal and Security
+
+GDPR Compliance
+
+Wix Terms of Use Policy
+
+Wix App Market Partner Agreement
+
+Security and Privacy Best Practice
+
+About Consent Apps
+
+App Distribution
+
+App Promotion
+
+Manage Your App
+
+User Support
+
+Versioning
+
+Data and Analytics
+
+Contact Us
+
+Wix App Market Partner Agreement
+
+We recommend that you read through our entire Partner Agreement before developing. This will help you to understand the terms and conditions of launching your app in the App Market. During app submission in your app's dashboard, you'll need to acknowledge your agreement to the Partner Agreement.
+
+Last updated: 23 August 2024
+Did this help?
+Yes No
