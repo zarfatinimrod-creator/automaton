@@ -1,6 +1,6 @@
 # Revenue colony — board report
 
-Generated 2026-09-28T00:43:37.762Z
+Generated 2026-09-28T06:51:11.854Z
 
 ## Where we are
 
@@ -44,6 +44,7 @@ Skipped as not yet due: revenue_board_review, revenue_audit
 
 ## Blocked on
 
+- the loop did not run for 6 hours (last ledger sync 2026-09-28T00:43:37.762Z). Check the colony workflow in Actions: a failing schedule is invisible from the numbers alone.
 - apify-actors is waiting on the owner: steps 6 of docs/OWNER_STEPS.he.md (not asked now: step 2 only when a paid product is ready, after the official cost check); Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify KYC and a PayPal or Wise payout are deferred until 50 stranger users in 30 days (scaleCriteria); under 10 at day 30 they are not asked for.
 - il-biz-tools is waiting on the owner: steps 3, 6 of docs/OWNER_STEPS.he.md (not asked now: step 2 only when a paid product is ready, after the official cost check; step 5 frozen by the owner's ₪0 rule of 27.9.2026); Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3); Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6)
 - oss-bounties is waiting on the owner: steps 7, 4, 6 of docs/OWNER_STEPS.he.md (not asked now: step 2 only when a paid product is ready, after the official cost check); Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in "bot" (BOARD-2 §2.1.3(c)); Sign in to Algora AS THE BRAND MACHINE ACCOUNT and complete Stripe Connect Express onboarding in your legal identity — individual, ID, Israeli address, Israeli bank account (owner step 4, done after step 7); Paste the brand machine account's token as BRAND_GITHUB_TOKEN in GitHub Actions secrets, so bounty PRs leave from the brand account (owner step 6; bounties/intake.ts is blocked on it)
