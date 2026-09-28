@@ -113,7 +113,7 @@ this route is closed and candidate 17 waits for the step-8 written question.
 - **spreadshirt-api-design-details (row 63): status 406 again.** fetchedAt 2026-09-28T17:19:16.482Z, byteLength 0, error
   "HTTP 406 Not Acceptable" [RENDERED: meta]. The runner already sends `accept:
   "text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8"` and a desktop Chrome
-  user-agent (repo code: `scripts/render-watch.mjs:612`, `:130-131`). So tick 6's hypothesis, that the 406 came from the
+  user-agent (repo code: `scripts/render-watch.mjs:612`, `:131-132`). So tick 6's hypothesis, that the 406 came from the
   runner's `Accept` header and a browser `text/html` would get past it, is refuted: this request already put `text/html`
   first [INFERENCE]. By tick 6's own rule this route is closed.
 
@@ -173,7 +173,7 @@ still the limit in 2021. [INFERENCE]
   hits. Eligibility, individual versus company, and whether an agent may operate the account are UNKNOWN. [RENDERED absent]
 
 **(6) A host that answers.** www.spreadshop.com answered the runner 200, while www.spreadshirt.com, help.spreadshirt.com and
-developer.spreadshirt.net refused in ticks 5-7. [RENDERED: metas] The page's footer links "Legal Information" at
+developer.spreadshirt.net refused the runner (tick 5; developer.spreadshirt.net again in tick 7). [RENDERED: metas] The page's footer links "Legal Information" at
 `https://www.spreadshop.com/legal-information/` (html:708) on that same host. Its Help link goes to
 `https://help.spreadshop.com/hc/en-us` (html:196), a Zendesk help centre like the two that answered 403 (help.spreadshirt.com
 here, help.tipalti.com for Wix). [RENDERED / INFERENCE]

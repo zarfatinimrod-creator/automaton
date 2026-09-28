@@ -463,3 +463,7 @@ https://indiebook.co.il/41/%D7%90%D7%99%D7%9A-%D7%9C%D7%9E%D7%9B%D7%95%D7%A8-%D7
 https://indiebook.co.il/16/	indiebook-terms
 # research/channel-loop/ZERO-TESTS.md row 98 — Facer (23): the template cache, linked from a tick-7 capture (28.9.2026).
 https://www.facer.io/js/templates.min.js?t=1790275483051	facer-templates-js
+# research/channel-loop/ZERO-TESTS.md row 99 — Spreadshirt (17): legal information, linked from a tick-7 capture (28.9.2026).
+https://www.spreadshop.com/legal-information/	spreadshop-legal-information
+# research/channel-loop/ZERO-TESTS.md row 100 — Wix App Market (11): the submission step, linked from a tick-7 capture (28.9.2026).
+https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/submit-your-first-app-version	wix-submit-first-app-version
