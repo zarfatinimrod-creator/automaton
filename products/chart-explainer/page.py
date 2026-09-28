@@ -15,12 +15,13 @@ has two modes, chosen by build_page's keyword argument `counter`:
   script is added, and nothing else is loaded: PostHog's JavaScript library is not used. The first time a visit scrolls
   the page, the script sends ONE anonymous `$pageview` event (a visit that never scrolls sends nothing, and so does a
   crawler that renders the page without scrolling — PREREG-DECISIONS.md §3) to PostHog's public single-event capture
-  endpoint, `<host>/i/v0/e/`, carrying a random id drawn for that load and never kept,
-  `"$process_person_profile": false`, and the page's address without its query string or fragment. It sets no cookie, writes nothing to browser storage, and reads nothing a
-  fingerprint is made of (user agent, screen, fonts, canvas, language). The "How this page was made" section then says
-  plainly that the page counts visits anonymously, without cookies, through PostHog, and stores nothing about the
-  visitor. This is the cookieless page-view instrument RED-TEAM §2.1(c) allows as the web arm's K0-equivalent
-  (research/faceless-youtube/RED-TEAM.md; research/channel-loop/BOARD-LOOP.md rank 5).
+  endpoint, `<host>/i/v0/e/`, carrying a random id drawn for that visit and never kept,
+  `"$process_person_profile": false`, and the page's address without its query string or fragment. It sets no
+  cookie, writes nothing to browser storage, and reads nothing a fingerprint is made of (user agent, screen, fonts,
+  canvas, language). The "How this page was made" section then says plainly that the page counts visits anonymously,
+  without cookies, through PostHog, and stores nothing about the visitor. This is the cookieless page-view instrument
+  RED-TEAM §2.1(c) allows as the web arm's K0-equivalent (research/faceless-youtube/RED-TEAM.md;
+  research/channel-loop/BOARD-LOOP.md rank 5).
 
 The key is PostHog's project token. It is public by design: it appears in the page source, and PostHog's own docs say
 it is "ok" for it to be public — it captures events but "doesn't have access to your private data". The flip side,
