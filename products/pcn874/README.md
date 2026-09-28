@@ -132,7 +132,7 @@ Plus **§6.9**, which was never in the log because all three implementations agr
 
 ```bash
 npm install
-npm test          # 311 tests
+npm test          # 321 tests (re-measured 28.9.2026)
 npm run typecheck
 npm run build
 node dist/cli.js validate path/to/PCN874.txt
@@ -227,6 +227,7 @@ The reconciliation renamed a few things. Rule ids are still meant to be depended
 | `src/validate.ts` | `validatePcn874` — the rules, each carrying its citations |
 | `src/generate.ts` | `generatePcn874` — CSV in, file out, self-validated before it is handed back |
 | `src/cli.ts` | `pcn874 validate` and `pcn874 generate` |
+| `tests/browser-safe.test.ts` | keeps `sources`, `layout`, `parse` and `validate` runnable in a browser — no `Buffer`, `process` or `require`, no import outside the four — because `products/il-biz-tools/pcn874.html` runs them there (type-stripped into `products/il-biz-tools/src/vendor/pcn874/`; that site's build refuses a bundle that differs from this source, so after a change here run `node scripts/bundle-pcn874.js` in `products/il-biz-tools`) |
 | `docs/GENERATOR.md` | the CSV's columns and header block, each with the `SPEC.md` field it fills and the circular's line; what is computed and how; the readings taken where the document stops |
 | `scripts/make-fixtures.mjs` | regenerates `tests/fixtures/`. **Not the generator, and must not be used for a filing** — it exists so the validator's fixtures are demonstrably built from the layout table. |
 | `scripts/make-csv-fixtures.mjs` | regenerates `tests/fixtures/csv/` — the generator's sample inputs, built from the same column list the code uses |
