@@ -73,3 +73,18 @@ describe('N2 the try-out notice sits above the upload and says print needs Pro',
     expect(text).toContain('בהדפסה ובשמירה כ-PDF הם יופיעו רק אחרי הפעלת Pro.');
   });
 });
+
+describe('N3 the after-print line is one closable line, hidden until a free print', () => {
+  it('starts hidden, carries a named close button and a link to the Pro box, and prints nowhere', () => {
+    const nudge = elementById(invoice, 'pro-nudge');
+    expect(nudge).toMatch(/^<p\b[^>]*\shidden(\s|>|=)/);
+    expect(nudge).toContain('id="pro-nudge-text"');
+    expect(nudge).toMatch(/<button[^>]*id="pro-nudge-close"[^>]*aria-label="[^"]+"/);
+    expect(nudge).toContain('href="#pro"');
+    // Inside the editor, which the print stylesheet hides.
+    const editorStart = invoice.indexOf('<div class="editor">');
+    const at = invoice.indexOf('id="pro-nudge"');
+    expect(ancestorsAt(invoice, at).some((el) => /class="editor"/.test(el.attrs))).toBe(true);
+    expect(at).toBeGreaterThan(editorStart);
+  });
+});

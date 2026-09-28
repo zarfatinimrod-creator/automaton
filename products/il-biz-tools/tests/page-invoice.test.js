@@ -343,3 +343,49 @@ describe('N2 try before you pay: the preview on screen only', () => {
     expect(page.$('#preview').style.props.has('--brand-accent')).toBe(false);
   });
 });
+
+describe('N3 one line after a free print', () => {
+  const tried = (extra = {}) => memoryStorage({ 'ilbiz.branding': JSON.stringify({ logo: PNG, accent: '#abcdef' }), ...extra });
+
+  it('ready, no licence, the preview tried: afterprint shows the line with the configured price', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD, storage: tried() });
+    expect(page.$('#pro-nudge').hidden).toBe(true);
+    page.window.fire('afterprint');
+    expect(page.$('#pro-nudge').hidden).toBe(false);
+    expect(page.$('#pro-nudge-text').textContent).toContain(proButtonState(page.site).price);
+    expect(page.$('#pro-nudge-text').textContent).toContain('תשלום חד-פעמי');
+  });
+
+  it('shows once per session: a reload in the same session prints without it', async () => {
+    const session = memoryStorage();
+    const first = await loadPage({ gumroad: READY_GUMROAD, storage: tried(), session });
+    first.window.fire('afterprint');
+    expect(first.$('#pro-nudge').hidden).toBe(false);
+    const second = await loadPage({ gumroad: READY_GUMROAD, storage: first.storage, session });
+    second.window.fire('afterprint');
+    expect(second.$('#pro-nudge').hidden).toBe(true);
+  });
+
+  it('the close button hides it and keeps it closed in later sessions', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD, storage: tried() });
+    page.window.fire('afterprint');
+    page.$('#pro-nudge-close').fire('click');
+    expect(page.$('#pro-nudge').hidden).toBe(true);
+    const later = await loadPage({ gumroad: READY_GUMROAD, storage: page.storage, session: memoryStorage() });
+    later.window.fire('afterprint');
+    expect(later.$('#pro-nudge').hidden).toBe(true);
+  });
+
+  const silent = [
+    ['nothing to buy yet', { gumroad: { productUrl: '', productId: 'NEW' }, storage: () => tried() }],
+    ['a licence holder', { gumroad: READY_GUMROAD, storage: () => tried({ [LICENSE_STORAGE_KEY]: JSON.stringify(activeRecord({ lastCheckAt: NOW - DAY })) }) }],
+    ['nothing tried in the preview', { gumroad: READY_GUMROAD, storage: () => memoryStorage() }],
+  ];
+  for (const [name, world] of silent) {
+    it(`stays silent for ${name}`, async () => {
+      const page = await loadPage({ gumroad: world.gumroad, storage: world.storage() });
+      page.window.fire('afterprint');
+      expect(page.$('#pro-nudge').hidden).toBe(true);
+    });
+  }
+});

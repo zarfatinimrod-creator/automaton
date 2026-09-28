@@ -7,6 +7,7 @@ import { formatILS, parseAmount } from '../src/lib/money.js';
 import { proButtonState, openProCheckout, gumroadProductId } from '../src/lib/gumroad.js';
 import { createLicenseController } from '../src/lib/license.js';
 import { applyBranding, DEFAULT_ACCENT, emptyBranding, isValidLogo, MAX_LOGO_BYTES, normalizeBranding } from '../src/lib/branding.js';
+import { brandingTried, createProNudge, proNudgeText } from '../src/lib/pro-nudge.js';
 
 initPage();
 const store = createStore(localStorage);
@@ -258,6 +259,22 @@ $('#brand-clear').addEventListener('click', () => {
   branding.logo = null;
   $('#brand-logo').value = '';
   saveBranding(); refreshBranding();
+});
+
+// One factual line after a free print, once per session, closable for good
+// (src/lib/pro-nudge.js). No modal and no timer: it waits for the print to end.
+const storageOrNull = (name) => { try { return globalThis[name] ?? null; } catch { return null; } };
+const nudge = createProNudge({ session: storageOrNull('sessionStorage'), local: storageOrNull('localStorage') });
+$('#pro-nudge').hidden = true;
+window.addEventListener('afterprint', () => {
+  if (!nudge.shouldShow({ ready: proState.state === 'ready', proActive, tried: brandingTried(branding) })) return;
+  $('#pro-nudge-text').textContent = proNudgeText(proState.price);
+  $('#pro-nudge').hidden = false;
+  nudge.markShown();
+});
+$('#pro-nudge-close').addEventListener('click', () => {
+  $('#pro-nudge').hidden = true;
+  nudge.dismiss();
 });
 
 // Gumroad can be told to send the buyer back here after the purchase.
