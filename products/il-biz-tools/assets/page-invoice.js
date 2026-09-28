@@ -199,11 +199,18 @@ function saveBranding() {
   try { localStorage.setItem(BRANDING_KEY, JSON.stringify(branding)); } catch { /* private mode */ }
 }
 
+// Try before you pay: once the shop is open, a visitor without a licence can put
+// their logo and colour on the on-screen preview. Print and PDF stay the free
+// document (the print stylesheet hides a try-out; src/lib/branding.js).
+const brandingMode = () => (proActive ? 'pro' : proState.state === 'ready' ? 'trial' : 'off');
+
 function refreshBranding() {
-  applyBranding($('#preview'), branding, proActive);
-  $('#branding-fields').hidden = !proActive;
+  const mode = brandingMode();
+  applyBranding($('#preview'), branding, mode);
+  $('#branding-fields').hidden = mode === 'off';
+  $('#brand-trial-note').hidden = mode !== 'trial';
   $('#license-clear').hidden = !licenceStored;
-  if (proActive) $('#brand-accent').value = branding.accent || DEFAULT_ACCENT;
+  if (mode !== 'off') $('#brand-accent').value = branding.accent || DEFAULT_ACCENT;
 }
 
 const licence = createLicenseController({

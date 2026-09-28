@@ -121,6 +121,16 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); out
 .doc[style*="--brand-accent"] .doc-type,
 .doc[style*="--brand-accent"] h2 { color: var(--brand-accent); }
 .doc[style*="--brand-accent"] .totals .grand td { border-top: 2px solid var(--brand-accent); }
+/* Try before you pay: with the shop open and no licence, the logo and colour
+   show on the screen preview only. The accent lives in its own variable that
+   only this screen block reads, and print hides the logo, so a printed or saved
+   document is exactly the free one - no watermark, no mark of any kind. */
+@media screen {
+  .doc[data-brand-trial] .doc-type,
+  .doc[data-brand-trial] h2 { color: var(--brand-trial-accent); }
+  .doc[data-brand-trial] .totals .grand td { border-top: 2px solid var(--brand-trial-accent); }
+}
+@media print { .doc[data-brand-trial] .brand-logo { display: none !important; } }
 .pro-box details { margin-top: .75rem; }
 .pro-box summary { cursor: pointer; }
 @media print { .pro-box, #branding-fields { display: none !important; } }

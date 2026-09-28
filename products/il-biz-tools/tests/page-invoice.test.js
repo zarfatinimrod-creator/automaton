@@ -304,3 +304,42 @@ describe('Hebrew copy on the page addresses users in the plural', () => {
     expect(page.note()).toBe('תודה! מפתח הרישיון נמצא בקבלה שנשלחה אליכם במייל מ-Gumroad. הזינו אותו כאן.');
   });
 });
+
+describe('N2 try before you pay: the preview on screen only', () => {
+  const brandingStore = (extra = {}) => memoryStorage({ 'ilbiz.branding': JSON.stringify({ logo: PNG, accent: '#abcdef' }), ...extra });
+
+  it('ready, no licence: the branding fields open under a notice, and the preview carries the trial marker', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD, storage: brandingStore() });
+    expect(page.$('#branding-fields').hidden).toBe(false);
+    expect(page.$('#brand-trial-note').hidden).toBe(false);
+    expect(page.$('#preview').attrs.has('data-brand-trial')).toBe(true);
+    expect(page.$('#preview').style.props.get('--brand-trial-accent')).toBe('#abcdef');
+    expect(page.proActive()).toBe(false);
+  });
+
+  it('ready, with an active licence: Pro, no trial marker, no notice', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD, storage: brandingStore({ [LICENSE_STORAGE_KEY]: JSON.stringify(activeRecord({ lastCheckAt: NOW - DAY })) }) });
+    expect(page.proActive()).toBe(true);
+    expect(page.$('#preview').attrs.has('data-brand-trial')).toBe(false);
+    expect(page.$('#brand-trial-note').hidden).toBe(true);
+    expect(page.$('#branding-fields').hidden).toBe(false);
+  });
+
+  it('nothing to buy yet: no try-out, the fields stay closed, the free page is unchanged', async () => {
+    for (const gumroad of [{ productUrl: '', productId: 'NEW' }, { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: 'NEW' }]) {
+      const page = await loadPage({ gumroad, storage: brandingStore() });
+      expect(page.$('#branding-fields').hidden).toBe(true);
+      expect(page.$('#brand-trial-note').hidden).toBe(true);
+      expect(page.$('#preview').attrs.has('data-brand-trial')).toBe(false);
+      expect(page.$('#preview').style.props.size).toBe(0);
+    }
+  });
+
+  it('changing the colour during a try-out updates the screen preview only', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD });
+    page.$('#brand-accent').value = '#112233';
+    page.$('#brand-accent').fire('input');
+    expect(page.$('#preview').style.props.get('--brand-trial-accent')).toBe('#112233');
+    expect(page.$('#preview').style.props.has('--brand-accent')).toBe(false);
+  });
+});

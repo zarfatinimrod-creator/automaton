@@ -60,3 +60,16 @@ describe('N1 the price terms and one trust line are visible, not folded away', (
     expect(textOf(read('index.html'))).not.toMatch(/₪\s*79|79\s*₪/);
   });
 });
+
+describe('N2 the try-out notice sits above the upload and says print needs Pro', () => {
+  it('is the first thing in #branding-fields, hidden until the page opens a try-out', () => {
+    const fields = elementById(invoice, 'branding-fields');
+    const note = /<p[^>]*id="brand-trial-note"[^>]*>([\s\S]*?)<\/p>/.exec(fields);
+    expect(note, '#brand-trial-note').not.toBeNull();
+    expect(note[0]).toMatch(/\shidden(\s|>|=)/);
+    expect(fields.indexOf('id="brand-trial-note"')).toBeLessThan(fields.indexOf('id="brand-logo"'));
+    const text = textOf(note[1]);
+    expect(text.startsWith('אפשר לנסות לפני שקונים:')).toBe(true);
+    expect(text).toContain('בהדפסה ובשמירה כ-PDF הם יופיעו רק אחרי הפעלת Pro.');
+  });
+});
