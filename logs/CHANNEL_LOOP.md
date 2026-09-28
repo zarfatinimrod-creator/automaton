@@ -263,6 +263,10 @@ Open:
 
 ## 10. Next tick's first action
 
+**Tick 10 (next):** ONE render-watch dispatch for ZERO-TESTS rows 132-135 (StreetLib plans and payments, Displate privacy, Teach Simple licence), plus any next-render URLs the TikTok stage-2 readers list (`research/tiktok/08-reads/*.md` §5), in the same dispatch. Then one Opus reader per venue. Zazzle (25) and Society6 (27) stay parked: no capture holds an address to write to. Displate and Teach Simple join the step-8 send list (orders 6-7) if the builder's tests pass. Queue with `scripts/queue-zero-test.mjs`, never by hand. The Fable sitting on 29.9 at ~07:11 takes `FABLE_QUEUE.md` rows 14-15, plus the TikTok note's queued questions (parasite SEO on a UGC platform).
+
+**Done in tick 9:** the second refill was folded (rows 24-27; seven gate refutations; no paid MCP marketplace survives). Two renders (31: rows 108-128; 32: the TikTok override and rows 129-131). Readings: n8n exhausted; StreetLib NEEDS_MORE; Displate promising; Teach Simple queued (row 28) and QUEUE-ON; Smashwords/D2D dead on an activation fee. Log: `logs/2026-09-28-channel-loop-tick-9.md`.
+
 **Done in tick 8:** the brand-mail tooling merged (`19f63cf`; `scripts/brand_mail.py`, `.github/workflows/brand-mail.yml`, dispatch only, dry run first). The Spreadshirt recipient and Indiebook's question are being added to `research/owner-asks/questions.json`. **Previously planned:** add to its question list (one message per venue) the Spreadshirt recipient now found (`spreadshop-legal-information.txt:34-36`), and a fifth message, Indiebook's five-item question drafted in `research/measurements/indiebook.md` (Tick 8). Four venues are now parked on step 8 with nothing left to render: Wix, Spreadshirt, Indiebook, and Facer's reopen question.
 
 **Continuation (~17:16 UTC 28.9) and after:**
