@@ -19,7 +19,10 @@ import {
   StopError,
   readBackPrice,
   writeSiteJson,
+  brandMailboxGreen,
+  BRAND_MAIL_PROBE,
 } from '../scripts/gumroad-pro-product.js';
+import { fileURLToPath } from 'node:url';
 import { PRO_PRODUCT_NAME } from '../src/lib/gumroad.js';
 
 const TOKEN = 'secret-token-never-printed-0123456789';
@@ -239,20 +242,118 @@ describe('create (AT-15, offline)', () => {
   });
 });
 
+// N6 of the TikTok sales note: no buyer may reach the owner. A receipt reply, a refund request or a question goes
+// to the address the Gumroad account was opened with, so the product is enabled only once that address is the
+// brand mailbox (owner step 8) and the colony is reading it: state/colony/brand-mail.json, written by
+// scripts/brand_mail.py probe, configured and green by the same rules as src/revenue/brand-mail.ts.
+const NOW = Date.UTC(2026, 9, 20, 12, 0, 0);
+const HOUR = 3_600_000;
+const iso = (ms) => new Date(ms).toISOString().replace(/\.\d{3}Z$/, 'Z');
+const greenProbe = (overrides = {}) => ({
+  configured: true,
+  measuredAt: iso(NOW - 3 * HOUR),
+  inbox: 4,
+  unread: 1,
+  repliesByVenue: {},
+  accessibility: { received: 0, unanswered: 0, unansweredOver7Days: 0, oldestUnansweredAgeDays: null },
+  sentFolderFound: true,
+  allMailFound: true,
+  ...overrides,
+});
+
+describe('the brand mailbox must be probed green before anything is enabled (N6)', () => {
+  it('reads the probe the brand-mail workflow commits, at the repository root', () => {
+    const repoRoot = fileURLToPath(new URL('../../../', import.meta.url));
+    expect(BRAND_MAIL_PROBE).toBe(join(repoRoot, 'state', 'colony', 'brand-mail.json'));
+  });
+
+  it('green: configured, read within two days, well-formed, no accessibility mail unanswered for 7+ days', () => {
+    expect(brandMailboxGreen(greenProbe(), NOW)).toMatchObject({ green: true });
+  });
+
+  const notGreen = [
+    ['no probe file', undefined, /no probe reading/],
+    ['not a JSON object', 'garbage', /not a JSON object/],
+    ['step 8 not done', { configured: false, measuredAt: iso(NOW - HOUR) }, /not configured/],
+    ['no usable time', greenProbe({ measuredAt: 'yesterday' }), /measuredAt/],
+    ['a stale reading', greenProbe({ measuredAt: iso(NOW - 3 * 24 * HOUR) }), /days old/],
+    ['a count that is not a count', greenProbe({ unread: -1 }), /unread/],
+    ['no accessibility block', greenProbe({ accessibility: undefined }), /accessibility/],
+    ['accessibility mail overdue', greenProbe({ accessibility: { received: 2, unanswered: 1, unansweredOver7Days: 1, oldestUnansweredAgeDays: 9 } }), /unanswered for 7\+ days/],
+    ['accessibility mail overdue by now', greenProbe({ measuredAt: iso(NOW - 30 * HOUR), accessibility: { received: 1, unanswered: 1, unansweredOver7Days: 0, oldestUnansweredAgeDays: 6.5 } }), /unanswered for 7\+ days/],
+  ];
+  for (const [name, reading, reason] of notGreen) {
+    it(`not green: ${name}`, () => {
+      const out = brandMailboxGreen(reading, NOW);
+      expect(out.green).toBe(false);
+      expect(out.reason).toMatch(reason);
+    });
+  }
+
+  it('enable refuses before any request - not the deployed site, not Gumroad - while the mailbox is not green', async () => {
+    const siteWithId = { ...SITE, gumroad: { productUrl: SHORT, productId: ID } };
+    for (const brandMail of [undefined, { configured: false, measuredAt: iso(NOW - HOUR) }, greenProbe({ measuredAt: iso(NOW - 5 * 24 * HOUR) })]) {
+      const fetchImpl = fakeGumroad({});
+      const err = await enableProduct({ fetchImpl, token: TOKEN, site: siteWithId, brandMail, nowMs: NOW, log: sink() }).catch((e) => e);
+      expect(err).toBeInstanceOf(StopError);
+      expect(err.message).toContain('brand mailbox (owner step 8)');
+      expect(fetchImpl.calls).toHaveLength(0);
+    }
+  });
+
+  it('create stays ungated: it runs with no probe at all', async () => {
+    const fetchImpl = fakeGumroad({
+      'GET /products': [200, { success: true, products: [] }],
+      'POST /products': [200, { success: true, product: stored() }],
+      [`GET /products/${encodeURIComponent(ID)}`]: [200, { success: true, product: stored() }],
+    });
+    await expect(createOrReuse({ fetchImpl, token: TOKEN, site: SITE, log: sink() })).resolves.toMatchObject({ id: ID });
+  });
+
+  it('the CLI reads the probe file named by BRAND_MAIL_PROBE_FILE, and stops with exit 1 when it is missing', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'ilbiz-'));
+    const sitePath = join(dir, 'site.json');
+    writeFileSync(sitePath, JSON.stringify({ ...SITE, gumroad: { productUrl: SHORT, productId: ID } }));
+    const fetchImpl = fakeGumroad({});
+    const log = sink();
+    const code = await main(['enable'], { GUMROAD_ACCESS_TOKEN: TOKEN, BRAND_MAIL_PROBE_FILE: join(dir, 'absent.json') }, { fetchImpl, log, sitePath });
+    expect(code).toBe(1);
+    expect(log.lines.join('\n')).toContain('STOPPED');
+    expect(log.lines.join('\n')).toContain('brand mailbox (owner step 8)');
+    expect(fetchImpl.calls).toHaveLength(0);
+  });
+
+  it('the CLI enables once the probe file is green', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'ilbiz-'));
+    const sitePath = join(dir, 'site.json');
+    const probe = join(dir, 'brand-mail.json');
+    writeFileSync(sitePath, JSON.stringify({ ...SITE, gumroad: { productUrl: SHORT, productId: ID } }));
+    writeFileSync(probe, JSON.stringify(greenProbe({ measuredAt: iso(Date.now() - HOUR) })));
+    const fetchImpl = fakeGumroad({
+      'GET https://il-biz-tools.netlify.app/src/config/site.json': [200, { gumroad: { productId: ID } }],
+      [`GET /products/${encodeURIComponent(ID)}`]: [200, { success: true, product: stored() }],
+      [`PUT /products/${encodeURIComponent(ID)}/enable`]: [200, { success: true, product: stored({ published: true }) }],
+    });
+    expect(await main(['enable'], { GUMROAD_ACCESS_TOKEN: TOKEN, BRAND_MAIL_PROBE_FILE: probe }, { fetchImpl, log: sink(), sitePath })).toBe(0);
+    expect(fetchImpl.calls.filter((c) => c.method === 'PUT')).toHaveLength(1);
+  });
+});
+
 describe('enable (AT-15, offline)', () => {
   const siteWithId = { ...SITE, gumroad: { productUrl: SHORT, productId: ID } };
+  const green = { brandMail: greenProbe(), nowMs: NOW };
 
   it('refuses while the deployed site.json does not carry the same id', async () => {
     const fetchImpl = fakeGumroad({
       'GET https://il-biz-tools.netlify.app/src/config/site.json': [200, { gumroad: { productId: '' } }],
     });
-    await expect(enableProduct({ fetchImpl, token: TOKEN, site: siteWithId, log: sink() })).rejects.toBeInstanceOf(StopError);
+    await expect(enableProduct({ fetchImpl, token: TOKEN, site: siteWithId, ...green, log: sink() })).rejects.toBeInstanceOf(StopError);
     expect(fetchImpl.calls.some((c) => c.method === 'PUT')).toBe(false);
   });
 
   it('refuses when the repo has no product id', async () => {
     const fetchImpl = fakeGumroad({});
-    await expect(enableProduct({ fetchImpl, token: TOKEN, site: SITE, log: sink() })).rejects.toBeInstanceOf(StopError);
+    await expect(enableProduct({ fetchImpl, token: TOKEN, site: SITE, ...green, log: sink() })).rejects.toBeInstanceOf(StopError);
     expect(fetchImpl.calls).toHaveLength(0);
   });
 
@@ -262,7 +363,7 @@ describe('enable (AT-15, offline)', () => {
       [`GET /products/${encodeURIComponent(ID)}`]: [200, { success: true, product: stored() }],
       [`PUT /products/${encodeURIComponent(ID)}/enable`]: [200, { success: true, product: stored({ published: true }) }],
     });
-    const out = await enableProduct({ fetchImpl, token: TOKEN, site: siteWithId, log: sink() });
+    const out = await enableProduct({ fetchImpl, token: TOKEN, site: siteWithId, ...green, log: sink() });
     expect(out.published).toBe(true);
     expect(fetchImpl.calls.filter((c) => c.method === 'PUT')).toHaveLength(1);
   });

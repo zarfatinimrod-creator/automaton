@@ -23,8 +23,11 @@
 //       workflow can open a PR with them. The page shows that price and no other.
 //
 //   node scripts/gumroad-pro-product.js enable
-//       Only when the DEPLOYED site (<siteUrl>/src/config/site.json) carries
-//       the same product id as the repo: PUT /v2/products/:id/enable.
+//       Only when the brand mailbox (owner step 8) is probed green - the
+//       repository's state/colony/brand-mail.json, or BRAND_MAIL_PROBE_FILE -
+//       and the DEPLOYED site (<siteUrl>/src/config/site.json) carries the same
+//       product id as the repo: PUT /v2/products/:id/enable. `create` is not
+//       gated: a draft reaches no buyer.
 //
 // What is CODE-grade and what this run renders: Gumroad's own help FAQ says
 // products cannot be created through the API; its code (links_controller.rb
@@ -49,6 +52,8 @@ const MAX_PAGES = 50;
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const SITE_JSON = join(root, 'src/config/site.json');
+/** Where .github/workflows/brand-mail.yml commits the brand-mailbox probe (scripts/brand_mail.py probe). */
+export const BRAND_MAIL_PROBE = join(root, '..', '..', 'state', 'colony', 'brand-mail.json');
 
 export const FALLBACK = 'Fallback, per the decision: add a follow-up entry to research/measurements/gumroad-license-decision.md with this log, '
   + 'and raise the one-time dashboard click (product -> Content -> Insert -> License key) with the owner BEFORE anything is sold. '
@@ -254,10 +259,60 @@ export async function createOrReuse({ fetchImpl, token, site, priceCents = DEFAU
   return { id: product.id, shortUrl: product.short_url, published: product.published === true, reused, ...readPrice };
 }
 
-/** Enable the product - only when the deployed site already verifies keys against this very id. */
-export async function enableProduct({ fetchImpl, token, site, log = console.log }) {
+// The brand mailbox, green. A buyer's reply to the Gumroad receipt, a refund
+// request or a question goes to the email the Gumroad account was opened with.
+// MISSION rule 1: the owner answers no one. So nothing is sold until that
+// address is the brand mailbox of owner step 8 and the colony is reading it.
+// The rules are src/revenue/brand-mail.ts's, restated here because the product
+// is standalone: configured, read within PROBE_STALE_DAYS, well-formed, and no
+// accessibility mail unanswered for A11Y_ANSWER_DAYS. If the probe's format ever
+// changes, this check fails closed - enable refuses - rather than open.
+export const PROBE_STALE_DAYS = 2;
+export const A11Y_ANSWER_DAYS = 7;
+const DAY_MS = 86_400_000;
+const isCount = (v) => Number.isInteger(v) && v >= 0;
+
+/** @returns {{green: boolean, reason: string}} */
+export function brandMailboxGreen(reading, nowMs = Date.now()) {
+  const no = (reason) => ({ green: false, reason });
+  if (reading === undefined || reading === null) return no('there is no probe reading (state/colony/brand-mail.json is absent)');
+  if (typeof reading !== 'object' || Array.isArray(reading)) return no('the probe file is not a JSON object');
+  const at = typeof reading.measuredAt === 'string' ? Date.parse(reading.measuredAt) : Number.NaN;
+  if (Number.isNaN(at)) return no('the probe reading has no usable measuredAt');
+  if (reading.configured !== true) return no('the probe reports the mailbox not configured (step 8 is not done)');
+  for (const key of ['inbox', 'unread']) if (!isCount(reading[key])) return no(`${key} is not a count`);
+  const replies = reading.repliesByVenue;
+  if (typeof replies !== 'object' || replies === null || Array.isArray(replies) || !Object.values(replies).every(isCount)) return no('repliesByVenue is not a map of counts');
+  const a = reading.accessibility;
+  if (typeof a !== 'object' || a === null) return no('accessibility is missing');
+  for (const key of ['received', 'unanswered', 'unansweredOver7Days']) if (!isCount(a[key])) return no(`accessibility.${key} is not a count`);
+  const oldest = a.oldestUnansweredAgeDays;
+  if (!(oldest === null || (Number.isFinite(oldest) && oldest >= 0))) return no('accessibility.oldestUnansweredAgeDays is not an age');
+  if (typeof reading.sentFolderFound !== 'boolean' || typeof reading.allMailFound !== 'boolean') return no('the folder flags are not booleans');
+  const since = Math.max(0, (nowMs - at) / DAY_MS);
+  if (since > PROBE_STALE_DAYS) return no(`the probe reading is ${since.toFixed(1)} days old (probe of ${reading.measuredAt}); mail since then is unseen`);
+  if (a.unansweredOver7Days > 0 || (oldest !== null && oldest + since >= A11Y_ANSWER_DAYS)) {
+    return no(`accessibility mail to the brand mailbox is unanswered for ${A11Y_ANSWER_DAYS}+ days`);
+  }
+  return { green: true, reason: `probed ${reading.measuredAt}, ${since.toFixed(1)} days ago` };
+}
+
+/**
+ * Enable the product - only when the brand mailbox is probed green, and the
+ * deployed site already verifies keys against this very id.
+ */
+export async function enableProduct({ fetchImpl, token, site, brandMail, nowMs = Date.now(), log = console.log }) {
   const id = String(site?.gumroad?.productId ?? '').trim();
   if (!id) throw new StopError('src/config/site.json has no gumroad.productId yet. Run `create`, merge its PR, let the site deploy, then run `enable`.');
+  const mailbox = brandMailboxGreen(brandMail, nowMs);
+  log(`brand mailbox (owner step 8): ${mailbox.green ? 'green' : 'NOT green'} - ${mailbox.reason}`);
+  if (!mailbox.green) {
+    throw new StopError(
+      `Not enabling: the brand mailbox (owner step 8) is not green - ${mailbox.reason}. A buyer's receipt reply, refund request `
+      + 'or question goes to the email the Gumroad account was opened with, and until the colony reads the brand mailbox it could '
+      + 'only reach the owner. Once step 8 is done, run brand-mail.yml (command probe), then dispatch `enable` again.',
+    );
+  }
   const deployedUrl = `${String(site.siteUrl).replace(/\/$/, '')}/src/config/site.json`;
 
   let deployed;
@@ -290,6 +345,21 @@ export async function writeSiteJson({ productId, productUrl, priceCents, currenc
   await writeFile(path, `${JSON.stringify(site, null, 2)}\n`, 'utf8');
 }
 
+/** The probe file, parsed; undefined when it does not exist; the raw text when it is not JSON. */
+async function readProbe(path) {
+  let raw;
+  try {
+    raw = await readFile(path, 'utf8');
+  } catch {
+    return undefined;
+  }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return raw;
+  }
+}
+
 export const NO_TOKEN_NOTICE = 'Not calling Gumroad: repository secret GUMROAD_ACCESS_TOKEN is not set yet. This is not a failure. '
   + 'The owner mints it once at docs/OWNER_STEPS.he.md step 3 and pastes it at step 6; that same token is what creates the Pro product here. '
   + 'Until then Pro stays on "בקרוב" and nothing can be bought.';
@@ -320,7 +390,8 @@ export async function main(argv = process.argv.slice(2), env = process.env, { fe
       }
       if (env.GITHUB_OUTPUT) await appendFile(env.GITHUB_OUTPUT, `product_id=${out.id}\nshort_url=${out.shortUrl}\n`);
     } else {
-      const out = await enableProduct({ fetchImpl, token, site, log });
+      const brandMail = await readProbe(env.BRAND_MAIL_PROBE_FILE || BRAND_MAIL_PROBE);
+      const out = await enableProduct({ fetchImpl, token, site, brandMail, log });
       log(`published=${out.published}`);
     }
     return 0;

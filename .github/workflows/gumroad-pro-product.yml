@@ -26,9 +26,15 @@ name: gumroad-pro-product
 #      licenseKey node. The log prints its public id and short_url, and a PR
 #      writes both into products/il-biz-tools/src/config/site.json.
 #   2. Merge that PR and let Netlify deploy.
-#   3. Dispatch with action=enable. It checks that the DEPLOYED
-#      <siteUrl>/src/config/site.json carries the same id - so a buyer could
-#      actually activate the key they would receive - and only then enables.
+#   3. Dispatch with action=enable (from main, where brand-mail.yml commits its
+#      probe). It refuses unless state/colony/brand-mail.json shows the brand
+#      mailbox of owner step 8 configured and green (read within two days, no
+#      accessibility mail unanswered for 7+ days): a buyer's reply, refund
+#      request or question goes to the email the Gumroad account was opened
+#      with, and the owner answers no one (MISSION rule 1). Then it checks that
+#      the DEPLOYED <siteUrl>/src/config/site.json carries the same id - so a
+#      buyer could actually activate the key they would receive - and only then
+#      enables. `create` is not gated: a draft reaches no buyer.
 #   4. Run gumroad-pro-probe.yml (AT-16).
 #   Paste the logs of 1, 3 and 4 into a follow-up section of the decision file.
 #
