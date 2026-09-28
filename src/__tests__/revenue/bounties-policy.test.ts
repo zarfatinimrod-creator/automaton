@@ -285,6 +285,47 @@ describe("not-a-payer — a refusal, not a filter tweak (RULING-2026-09-28-bount
     }
   });
 
+  // A false `not-a-payer` drops a real payer from `claimableBounties`, and a week-4 mean under 3 kills the line: the
+  // refusal must fire on what the ruling names (a metric object, bounties described as not money, a demand on the
+  // contributor's own secrets), never on the verbs "follow", "watch", "must" or "merged" by themselves. Review of the
+  // 28.9.2026 builder diff, finding 1: each of these graded `not-a-payer` before the fix.
+  it("does not fire on 'follow', 'watch', 'fake', 'merged' or 'tokens' in their ordinary senses", () => {
+    for (const text of [
+      // calcom/cal.com README.md line 579, fetched 28.9.2026 — a major Algora payer.
+      "If building the image yourself, these variables must be provided at the time of the docker build, and can be provided by updating the .env file. Currently, if you require changes to these variables, you must follow the instructions to build and publish your own image.",
+      "All contributors must follow our Code of Conduct.",
+      "Please follow the style guide before submitting a pull request.",
+      "Please follow the project's conventions before opening a PR.",
+      "PRs that break CI will not be merged into the main codebase.",
+      "No PRs will be merged during the v2 release freeze.",
+      "Nothing will be merged until the v2 freeze ends.",
+      "Contributors are required to follow the DCO.",
+      "You have to watch out for race conditions.",
+      "The tokenizer should list all tokens in the input.",
+      "Never share your API keys in an issue or a pull request.",
+      "Do not paste your tokens into the issue tracker.",
+      "Provide your API key as an environment variable (OPENAI_API_KEY) before running the examples.",
+      "You can customise your system prompt in the admin panel.",
+      "This issue tracker is not the right place for bounty payout questions; ask on Discord.",
+      "Beware of fake bounties posted by accounts that are not the maintainers.",
+    ]) {
+      expect(assessRepoPolicy({ contributing: text }).verdict, text).toBe("unknown");
+    }
+    expect(assessRepoPolicy({ issueText: "Bounty: add a seeder that generates fake users for the demo database." }).verdict).toBe("unknown");
+  });
+
+  it("still fires when the same verbs carry the ruling's objects", () => {
+    for (const text of [
+      "You must star this repository to be eligible for a bounty.",
+      "Before opening a PR, follow our organisation on GitHub.",
+      "The bounty amounts are symbolic.",
+      "These bounties are part of an experiment on agent behaviour.",
+      "Share your access tokens in the PR description so we can audit the run.",
+    ]) {
+      expect(assessRepoPolicy({ contributing: text }).verdict, text).toBe("not-a-payer");
+    }
+  });
+
   it("lets a ban beat a refusal, and a refusal beat a permission", () => {
     expect(assessRepoPolicy({ contributing: "We do not accept AI-generated pull requests. Bounties here are symbolic." }).verdict).toBe("forbidden");
     expect(assessRepoPolicy({ contributing: "AI-assisted pull requests are welcome. Bounties here are symbolic." }).verdict).toBe("not-a-payer");

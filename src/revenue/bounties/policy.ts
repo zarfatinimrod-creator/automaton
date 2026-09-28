@@ -243,20 +243,42 @@ export function visibleText(text: string): string {
     .replace(/^[ \t]*\[\/\/\]:[ \t]*#.*$/gm, blank);
 }
 
-/** Bounties that are not money: symbolic, for research or study, or "not the right repo" for paid work. */
-const BOUNTY_WORD = String.raw`bount(?:y|ies)`;
+/**
+ * Bounties described as not money. The words must DESCRIBE the bounties ("bounties listed here are symbolic", "the
+ * bounty amounts are part of an experiment", "symbolic bounties"), not merely sit near the word: "Bounty: add a seeder
+ * that generates fake users" and "beware of fake bounties" are ordinary sentences in a paying repository, and a false
+ * `not-a-payer` drops a real payer from the count that decides the line (review of 28.9.2026, finding 1).
+ */
 const NOT_MONEY = String.raw`(?:symbolic|not\s+real|fake|for\s+(?:research|study|academic)\s+purposes|part\s+of\s+an?\s+(?:academic\s+)?(?:study|research\s+(?:project|study)|experiment))`;
+const BOUNTIES_ARE_NOT_MONEY = String.raw`\bbount(?:y|ies)(?:\s+(?:amounts?|rewards?|labels?|prizes?))?(?:\s+(?:listed|posted|offered|shown))?(?:\s+(?:here|below|above|in\s+this\s+(?:repo(?:sitory)?|project)|on\s+this\s+(?:repo(?:sitory)?|page)))?\s+(?:are|is)\s+(?:all\s+|purely\s+|only\s+|just\s+|entirely\s+|merely\s+)?${NOT_MONEY}`;
+
+/**
+ * A platform metric with its object: "star this repository", "follow our organisation", "watch the repo". The object
+ * is required and must end the phrase, so "follow the style guide", "follow our Code of Conduct", "follow the project's
+ * conventions" and "watch out for race conditions" never match.
+ */
+const METRIC_ACT = String.raw`\b(?:star|follow|watch|upvote|react\s+to)\s+(?:this|the|our)\s+(?:github\s+)?(?:repo(?:sitory)?|project|org(?:ani[sz]ation)?|account)(?=[ \t]*(?:[.,;:!?)\n]|$)|\s+(?:on\s+github|first|before|prior|to)\b)`;
+/** "before creating the PR", "prior to opening a pull request". */
+const BEFORE_CONTRIBUTING = String.raw`\b(?:before|prior\s+to)\s+(?:creating|opening|submitting|making|filing|sending)\b`;
+
+/** A demand verb not negated in front of it: "never share your API keys" is a security note, not a demand. */
+const DEMAND = String.raw`(?<!\b(?:never|not|don'?t|do\s+not)\s+)\b(?:paste|include|provide|share|attach|post|submit|dump|disclose|reveal)`;
+/** The contributor's own: "your", "the contributor's", "the agent's". "list all tokens" is a tokenizer, not a demand. */
+const CONTRIBUTORS_OWN = String.raw`(?:your|the\s+contributor'?s|the\s+agent'?s)\s+(?:full\s+|entire\s+|complete\s+)?`;
+/** "Provide your API key as an environment variable": configuring a tool, not handing a secret to the repository. */
+const NOT_A_CONFIG_STEP = String.raw`(?![^.!?\n]{0,90}?(?:\.env\b|\benv(?:ironment)?\s+var|\bconfig|\bsettings\b|\bdashboard\b|\bheaders?\b|--))`;
 
 /**
  * The not-a-payer table (RULING-2026-09-28-bounty-rail.md §3.3, §5.2 items 2-4). Each rule reads a sentence shape; the
- * shapes are attributed to the two repositories the ruling quoted, which is where they were rendered.
+ * shapes are attributed to the two repositories the ruling quoted, which is where they were rendered. Tightened on
+ * 28.9.2026 after review: the first cut graded calcom/cal.com `not-a-payer` on "you must follow the instructions".
  */
 export const NOT_A_PAYER_RULES: PolicyRule[] = [
   {
     id: "not-a-payer-symbolic-bounties",
     signal: "not-a-payer",
-    what: "the bounties are declared symbolic, fake, or part of a study or experiment — a label with no payer behind it",
-    pattern: re(`(?:${BOUNTY_WORD}${GAP}${NOT_MONEY}|${NOT_MONEY}${GAP}${BOUNTY_WORD}|\bsymbolic\s+${BOUNTY_WORD})`),
+    what: "the bounties themselves are described as symbolic, fake, or part of a study or experiment — a label with no payer behind it",
+    pattern: re(`(?:${BOUNTIES_ARE_NOT_MONEY}|\bsymbolic\s+bount(?:y|ies)\b)`),
     provenance: "rendered",
     source:
       'UnsafeLabs/Bounty-Hunters CONTRIBUTING.md line 5, fetched 28.9.2026 (src/__tests__/fixtures): "bounties listed here are symbolic and part of an academic study on open-source contribution patterns."',
@@ -264,9 +286,9 @@ export const NOT_A_PAYER_RULES: PolicyRule[] = [
   {
     id: "not-a-payer-research-only",
     signal: "not-a-payer",
-    what: "pull requests are reviewed or collected for research only, or nothing is ever merged",
+    what: "pull requests are reviewed or collected for research only, will not be merged into production, or nothing is ever merged",
     pattern: re(
-      String.raw`(?:\b(?:reviewed|accepted|collected|read)\s+for\s+research\s+purposes|will\s+not\s+be\s+merged\s+into\s+(?:production|the\s+(?:main\s+)?(?:codebase|project))|\bnothing\s+(?:will\s+(?:ever\s+)?be|is\s+ever|gets?\s+(?:ever\s+)?)\s*merged|\bno\s+(?:pr|pull\s+request|contribution)s?\s+(?:will\s+(?:ever\s+)?be|(?:is|are)\s+ever|gets?)\s+merged)`,
+      String.raw`(?:\b(?:reviewed|accepted|collected|read)\s+for\s+research\s+purposes|\bwill\s+not\s+be\s+merged\s+into\s+production\b|\bnothing\s+(?:will\s+ever\s+be|is\s+ever|ever\s+gets?)\s+merged)`,
     ),
     provenance: "rendered",
     source:
@@ -277,7 +299,7 @@ export const NOT_A_PAYER_RULES: PolicyRule[] = [
     signal: "not-a-payer",
     what: 'the repository says it is "not the right repo" for paid bounty work',
     pattern: re(
-      String.raw`(?:(?:paid|real)\s+(?:bounty\s+)?(?:work|bounties|jobs)${GAP}not\s+the\s+right\s+(?:repo|repository|place)|not\s+the\s+right\s+(?:repo|repository|place)${GAP}(?:paid|bount))`,
+      String.raw`(?:\b(?:paid|real)\s+(?:bounty\s+)?(?:work|bounties|jobs)${GAP}\bnot\s+the\s+right\s+(?:repo|repository|place)\b|\bnot\s+the\s+right\s+(?:repo|repository|place)\s+(?:for|to\s+(?:find|look\s+for))\s+(?:paid|real)\s+(?:bounty\s+)?(?:work|bounties|jobs)\b)`,
     ),
     provenance: "rendered",
     source:
@@ -286,9 +308,9 @@ export const NOT_A_PAYER_RULES: PolicyRule[] = [
   {
     id: "not-a-payer-metric-condition",
     signal: "not-a-payer",
-    what: "starring, following, watching, upvoting or reacting is made a condition of contributing — moving a platform metric is manipulation under MISSION rule 4, whatever the repository asks",
+    what: "starring, following, watching or upvoting this repository, project or organisation is made a condition of contributing — moving a platform metric is manipulation under MISSION rule 4, whatever the repository asks",
     pattern: re(
-      String.raw`(?:\b(?:star|follow|watch|upvote|react\s+to)\b${GAP}\b(?:before|prior\s+to)\s+(?:creating|opening|submitting|making|filing)\b|\b(?:must|required\s+to|need\s+to|have\s+to)\s+(?:first\s+)?(?:star|follow|watch|upvote|react\s+to)\b|\b(?:llms?|ai\s+agents?|agents?|bots?|automated\s+\w+)\b${GAP}\b(?:star|follow|upvote)\s+(?:this|the|our)\s+(?:repo(?:sitory)?|project|org(?:ani[sz]ation)?|account)\b)`,
+      String.raw`(?:${METRIC_ACT}${GAP}${BEFORE_CONTRIBUTING}|${BEFORE_CONTRIBUTING}${GAP}${METRIC_ACT}|\b(?:must|required\s+to|need\s+to|have\s+to)\s+(?:first\s+|also\s+)?${METRIC_ACT}|\b(?:llms?|ai\s+agents?|agents?|bots?)\b${GAP}\b(?:star|upvote)\s+(?:this|the|our)\s+(?:repo(?:sitory)?|project)\b)`,
     ),
     provenance: "rendered",
     source:
@@ -297,9 +319,9 @@ export const NOT_A_PAYER_RULES: PolicyRule[] = [
   {
     id: "not-a-payer-session-demand",
     signal: "not-a-payer",
-    what: "the contributor's system prompt, session text, environment variables, tokens or credentials are demanded — the brand account never pastes them anywhere",
+    what: "the contributor's own system prompt, session text, environment variables, tokens or credentials are demanded — the brand account never pastes them anywhere",
     pattern: re(
-      String.raw`(?:\bsession\s+initiali[sz]ation\s+text\b|\b(?:your|the\s+contributor'?s|the\s+agent'?s|its)\s+(?:full\s+)?system\s+prompt\b|\benv(?:ironment)?[\s_-]?dump\b|\b(?:paste|include|provide|share|attach|dump|list)\s+(?:your|all|the\s+contributor'?s)\s+(?:(?:relevant\s+)?environment\s+variables|env\s+vars?|api\s+keys?|access\s+tokens?|tokens?|credentials|secrets))`,
+      String.raw`(?:\bsession\s+initiali[sz]ation\s+text\b|\benv(?:ironment)?[\s_-]?dump\b|${DEMAND}\s+${CONTRIBUTORS_OWN}(?:system\s+prompt|session\s+(?:text|transcript|log))\b|${DEMAND}\s+${CONTRIBUTORS_OWN}(?:(?:relevant\s+)?environment\s+variables|env\s+vars?|api\s+keys?|access\s+tokens?|tokens?|credentials|secrets)\b${NOT_A_CONFIG_STEP})`,
     ),
     provenance: "rendered",
     source:
