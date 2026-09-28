@@ -102,6 +102,8 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 93 | Hebrew teacher-site lead (unsettled), replenish pass | https://lomdiml.co.il | whether it is a paid multi-seller marketplace |
 | 94 | Hebrew teacher-site lead (unsettled), replenish pass | https://lemidatova.com | whether it is a paid multi-seller marketplace |
 | 95 | Hebrew teacher-site lead (unsettled), replenish pass | https://lomdimhofshi.co.il | whether it is a paid multi-seller marketplace (seen once in CrUX IL, 2026-05) |
+| 96 | Indiebook (22), after rows 68-70 | https://indiebook.co.il/41/%D7%90%D7%99%D7%9A-%D7%9C%D7%9E%D7%9B%D7%95%D7%A8-%D7%A1%D7%A4%D7%A8-%D7%91%D7%90%D7%AA%D7%A8 | the author page linked from the homepage (indiebook-home.html:668): any fee or paid package (kill a), the royalty share, and how a title is submitted (kill d, first half); the tick-7 reading found the payout route (quarterly invoice, Israeli bank transfer, עוסק פטור accepted) but no fee, share or submission rule |
+| 97 | Indiebook (22), after rows 68-70 | https://indiebook.co.il/16/ | the site terms linked from the homepage footer (indiebook-home.html:2369): automated access, AI-written books, the author's public name, fees (kills a, c, d) |
 
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no
