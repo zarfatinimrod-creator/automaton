@@ -412,3 +412,281 @@ DISC:157, :163, :83, :173) → `audits/discovery.md` (§0.2, §4) → rendered: 
 `youtube-altered-synthetic-disclosure.txt` (all 351 lines), `youtube-api-revision-history.txt:245, :401-407`,
 `youtube-monetization-policies.txt:82-86, :112-142, :216, :244-252, :294, :342`, `kokoro-82m-model-card.txt:225-260`,
 `upload-post-ai-content-labeling.txt:55-120`. No WebSearch. No git. No owner identifier appears in this file.
+
+---
+
+# Decision 3 (28.9.2026) — the web arm's reach floor, pre-registered before any deploy
+
+**Board: Fable 5.1, deciding tier, daily sitting of 28.9.2026** (FABLE_QUEUE row 11; the ruling file for the same
+sitting is `research/channel-loop/RULING-2026-09-28-floors.md`). Inputs: RED-TEAM §2.1(c) and §2.5, `T1-PROTOCOL.md`
+(order item 4), §1-§2 above, `products/chart-explainer/page.py` and `tests/test_page_counter.py`, BOARD-LOOP rank 5 and
+PUBLISH-10, `src/revenue/experiments.ts`; PostHog's own documentation on bot traffic, retrieved today; the Public Suffix
+List, rendered today. **Nothing is deployed yet**; this is written so that no line is moved after the data exists. The
+gate numbers in `FACELESS_YOUTUBE_EXPERIMENT` are not touched; `PINNED_GATES_SHA256` stays.
+
+## סיכום לבעלים (שתי שורות)
+
+- **הרצפה:** מתחת ל-**5** צפיות של זרים שגללו את הדף ב-56 הימים מהפרסום — **שלב A לא נשאל** (לא נבקש מהבעלים דקה על
+  YouTube). 5 ומעלה — אפשר לשאול, עם המספר מצורף. קריאה שאי אפשר לקרוא היא תקלת מכשיר, לא תוצאה.
+- **מה לא סופר:** הצפיות שלנו (כתובת נפרדת לכל קישור שלנו), רובוטים (המונה נשלח רק אחרי גלילה, ורובוט שלא מריץ JavaScript
+  לא שולח כלום), ואירועים שמישהו אחר שולח עם המפתח הציבורי (צורת המטען שלנו קבועה). המארח `*.netlify.app` לא משנה את
+  המספר — הוא משנה מה נחשב יום 0 ואיך קוראים אפס.
+
+## 3.1 Ruling
+
+1. **The metric.** `N` = the number of `$pageview` events in the PostHog project whose `$current_url` equals the canonical
+   production URL exactly (origin + pathname, as the script sends it), whose payload has exactly our shape (§3.4(c)),
+   over the 56 days from D0 (§3.5). The script sends the event on the visit's **first scroll**, never on load (§3.4(b)),
+   so an event is a visit that started reading — the web analogue of the `engagedViews` pin in §1: a chosen view, not a
+   first frame.
+2. **The floor.** **N < 5 → Stage A is never asked.** The experiment is recorded as ended on a web-arm null (`K-web` in the
+   readings, `stage_a_never_asked` from `evaluateWebArm`); the T1 video stays unpublished; K-T1 never runs; no video is
+   rendered. **N ≥ 5 → Stage A may be put to the owner**, with N, the daily series and the list of discovery routes that
+   were open (§3.5) attached to the ask, as T1-PROTOCOL order item 6 already requires. A pass carries no information
+   beyond "not zero": it does not raise any ceiling and does not touch K0 or K3.
+3. **Unmeasured.** If at D0+56 the count cannot be read (project unreadable, key lost, counter found broken, events
+   arriving with no `$current_url`), that is an instrument fault: fixed, recorded, and the clock restarted from the fix —
+   never read as a fail and never as a pass (BOARD-LOOP KILL-1; the K0-unmeasured principle of §1). Stage A is not asked
+   on an unmeasured arm.
+4. **The host does not change the number.** A `*.netlify.app` sub-brand host changes what D0 means and how a null is
+   read (§3.5), not the floor.
+
+## 3.2 Why a floor at all, and why five
+
+- RED-TEAM §2.5 wrote the rule in one word: **zero** stranger reach at day 56 → Stage A is never asked, because "a channel
+  whose substance draws zero Search impressions in 56 days is not one to spend owner minutes on". The web arm is a prior,
+  not a substitute ("a web null does not prove a YouTube null"), so the floor must be a **zero test**, not a traction
+  bar: its only job is to withhold 40-60 owner minutes and a standing brand Google account when nobody at all found the
+  substance. The owner's 28.9 directive points the same way — a venue (here YouTube, with its own distribution) is not to
+  be killed on a proxy before it had a fair chance — so the floor is the lowest number that still means "nobody".
+- "Zero" has to be defined against the noise the instrument cannot remove. With the exclusions of §3.4 the residue is
+  JavaScript-rendering crawlers that also fire a scroll event, plus anything that slips the payload-shape filter. That
+  residue is small but not provably zero; a floor of 1 sits inside it. Five sits above any plausible crawl-and-scroll
+  residue over 56 days and below any claim of traction (fewer than one reader a week).
+- Considered and rejected: **1** (inside crawler noise, so a bot could buy the owner's hour); **10** (a traction claim —
+  a reader a week — which is more than §2.5 asked and stricter than the arm it gates); **35** (K0's number, borrowed: it
+  is the median lifetime view count of a random YouTube video under a recommender the web has no equivalent of, so it
+  would make the prior stricter than the experiment, the wrong way round). None of these is a measured base rate for a
+  new web page, and none was invented here: five is stated as what it is, a judgement about noise, recorded before the
+  data exists so that it cannot be moved after.
+
+## 3.3 Why the counter fires on scroll and not on load
+
+- PostHog's client-side bot blocking lives in its JavaScript SDK and nowhere else: "The PostHog JavaScript SDK blocks known
+  bots and crawlers client-side, so they never send events … This only covers events captured by the JavaScript SDK"
+  (web-analytics/troubleshooting, retrieved 28.9.2026). Our page deliberately does not load that SDK (page.py:14-16).
+- PostHog's query-time classification needs a user agent or an IP: "As long as your events carry a user agent —
+  `$raw_user_agent` … or `$user_agent` … the virtual properties work as breakdowns and filters" (web-analytics/bot-detection);
+  "PostHog classifies traffic by user agent and source IP address" (same page). Our script reads no user agent — the
+  no-fingerprint promise, pinned by `test_counter_script_sends_one_anonymous_pageview_and_touches_no_storage` — and the
+  project discards the IP (page.py:32-36). **So PostHog cannot tell our bots from our humans, by construction.**
+- What excludes bots is therefore the structure of the counter, and PostHog's own page states the first half: "Most
+  crawlers and AI agents don't run JavaScript, so they never trigger a client-side `$pageview` in the first place"
+  (troubleshooting). The second half is ours: a renderer that does run JavaScript loads the page and snapshots it; a
+  reader scrolls, because every chart on this page is below the first viewport. Sending on the first scroll costs the
+  reader nothing, reads nothing about them, and turns "the page was loaded by something" into "someone started reading".
+- Not chosen: sending `document.referrer` (would widen what leaves the browser beyond the disclosure's "the page's
+  address and a random number"); sending the user agent (breaks the fingerprint promise the tests pin); loading
+  posthog-js (a third-party library on a page designed to load none). The scroll trigger keeps the payload byte-identical
+  and only changes *when* it is sent.
+
+## 3.4 What is excluded, and how
+
+**(a) Our own views — by address, not by promise.**
+- The read counts `$current_url` equal to the canonical production URL only. Netlify's deploy-preview and branch-deploy
+  hosts are different origins, so anything the loop opens there is excluded automatically.
+- Every colony-facing and owner-facing link to the page — the report, `CHANNEL_LOOP.md`, the checkpoint, the owner page,
+  a chat message — uses the **`/preview/` path**, served as the same file by a Netlify rewrite; the script sends
+  `location.origin + location.pathname`, so those loads carry a different `$current_url` and never count. `/preview/*`
+  gets `X-Robots-Tag: noindex` in `_headers` and a `Disallow: /preview/` line in `robots.txt`, so the copy is never a
+  second indexed page. (Netlify `_redirects`/`_headers` syntax: Opus verifies against Netlify's documentation before
+  deploy; the container cannot reach it, the Netlify connector can.)
+- The colony never opens the canonical URL in a JavaScript-executing browser. Public-ness is probed with non-JS fetches
+  from a runner (PUBLISH-8), which never fire the script; the counter itself is verified once, on a deploy-preview URL.
+  Any exception is recorded in the readings file with its timestamp and subtracted; the expected number of exceptions is
+  zero.
+
+**(b) Bots — by structure (§3.3).** No JavaScript → no event. JavaScript renderers that do not scroll → no event. The
+residue (renderers that scroll) is what the floor of five sits above. N is therefore an **upper bound** on human readers,
+and the floor is set knowing it.
+
+**(c) Anyone with the public token — by payload shape.** The project token is public by design (page.py:24-30), so a
+stranger could post events. Ours have exactly the properties `{"$process_person_profile": false, "$current_url": …}` and
+no `$lib`, `$lib_version`, `$referrer`, `$browser` or other SDK field. The read counts only events with exactly that
+shape; anything else is listed in the readings as foreign and excluded.
+
+## 3.5 The `*.netlify.app` sub-brand host: what it changes and what it does not
+
+- **The number: unchanged.** Five is a statement about noise on an instrument that does not depend on the host
+  (RED-TEAM §2.1(c); BOARD-LOOP PUBLISH-10 already said the web arm's clock does not wait for the domain).
+- **Reputation: none shared, either way.** `netlify.app` is on the Public Suffix List (`public_suffix_list.dat`, line
+  14892, rendered from GitHub on 28.9.2026), so browsers and search engines treat each `*.netlify.app` site as its own
+  site: no inherited standing from other Netlify sites, no inherited penalty. For ranking purposes a sub-brand host is a
+  brand-new site with no history — the same as a freshly bought domain would be.
+- **Discovery: a new host with no inbound link has no crawl path.** That is MISSION constraint 7 in its purest form, and a
+  floor without a route measures nothing. So **D0 is the day both hold**: the deploy is public (runner 200, clean
+  identifier grep), **and** a discovery submission is recorded in the readings file. Routes, in order:
+  1. `sitemap.xml` and `robots.txt` on the host (always).
+  2. An IndexNow submission (Bing, Yandex, Seznam, Naver and others; Google does not participate). From memory it is
+     ₪0 and keyless — generate a key, host `<key>.txt` at the site root, one GET to the IndexNow endpoint — but
+     `indexnow.org` is blocked from this container (CONNECT 403 today), so **Opus renders its documentation from a
+     runner before relying on it**; if it turns out to need an account or money, it is not used and the readings say so.
+  3. **No link from the repository under the owner's personal username.** A backlink from a username-named repository to
+     a brand surface is a public association the anonymity rule forbids (MISSION: the brand is the only public face; the
+     skills index "is not to be advertised anywhere"). Links from **brand** surfaces are allowed and dated in the readings:
+     the brand organisation's README after owner step 7, il-biz-tools once it is public, the Apify Actor README once
+     published.
+  4. Google has no route until a brand link exists or Stage A itself creates the brand Google account. This is recorded,
+     not worked around, and it is the honest limit of the read: **the arm measures reach on the routes that were open,
+     not the substance's ceiling.** A null therefore licenses exactly what §2.5 needs — withholding Stage A — and nothing
+     more; it is not a verdict on the six analyses, and a later brand link starts a new, separately recorded 56-day
+     clock if the board chooses to run one.
+- A later 301 from the sub-brand host to the brand domain does not restart the clock (BOARD-LOOP rank 5, unchanged).
+- Netlify's free tier gives no server logs, so "not crawled" cannot be told from "crawled, nobody clicked". Recorded as a
+  known limitation, same class as RED-TEAM §2.1(c)'s "not seeing shown-and-ignored impressions".
+
+## 3.6 Exact code changes (for Opus)
+
+**`products/chart-explainer/page.py`**
+
+Replace `counter_script` with:
+
+```python
+def counter_script(host: str, key: str) -> str:
+    """The one inline script: a single anonymous $pageview to PostHog's capture endpoint, sent on the visit's FIRST SCROLL
+    and never on load (research/faceless-youtube/PREREG-DECISIONS.md §3: a renderer that never scrolls sends nothing, and
+    a visit that never scrolls is not counted as a reader). The id is 16 random bytes drawn when the event is sent and
+    never stored; `credentials: "omit"` keeps the browser from attaching any cookie or stored credential; a failed send is
+    dropped rather than retried; `once: true` means a second scroll sends nothing. Call it only with counter_config's
+    output."""
+    return f"""<script>
+addEventListener("scroll", function () {{
+  var b = new Uint8Array(16), id = "";
+  crypto.getRandomValues(b);
+  for (var i = 0; i < b.length; i++) id += (b[i] + 256).toString(16).slice(1);
+  fetch({json.dumps(host + CAPTURE_PATH)}, {{
+    method: "POST",
+    headers: {{"Content-Type": "application/json"}},
+    credentials: "omit",
+    body: JSON.stringify({{
+      "api_key": {json.dumps(key)},
+      "event": "$pageview",
+      "distinct_id": id,
+      "properties": {{"$process_person_profile": false, "$current_url": location.origin + location.pathname}}
+    }})
+  }}).catch(function () {{}});
+}}, {{ once: true, passive: true }});
+</script>
+"""
+```
+
+Replace `COUNTER_DISCLOSURE` with (verbatim):
+
+```python
+COUNTER_DISCLOSURE = """
+<p>This page counts visits anonymously, without cookies, through PostHog, and stores nothing about the visitor.
+The first time a visit scrolls the page, one small script on it sends PostHog a single page-view event holding the
+page's address and a random number drawn for that visit alone, with person profiles switched off; a visit that never
+scrolls sends nothing. It sets no cookie and writes nothing to your browser. Your IP address reaches PostHog with that
+request, as it reaches any server a page talks to; the PostHog project is set to discard it and to derive no location
+from it.</p>"""
+```
+
+In the module docstring, the "On" paragraph: "When the page opens, the script sends ONE anonymous `$pageview` event" →
+"The first time a visit scrolls the page, the script sends ONE anonymous `$pageview` event (a visit that never scrolls
+sends nothing, and so does a crawler that renders the page without scrolling — PREREG-DECISIONS.md §3)". The off mode and
+the golden file are untouched.
+
+**`products/chart-explainer/tests/test_page_counter.py`** — in `test_counter_script_sends_one_anonymous_pageview_and_touches_no_storage`
+add:
+
+```python
+    # Sent on the first scroll, once, never on load (PREREG-DECISIONS.md §3.3).
+    assert 'addEventListener("scroll"' in js and "once: true" in js and "passive: true" in js
+    assert "DOMContentLoaded" not in js and '"load"' not in js and "setTimeout" not in js
+```
+
+`test_counter_disclosure_names_what_is_sent_and_what_is_not_kept` gains `assert "never scrolls sends nothing" in text`;
+`test_the_module_docstring_describes_both_modes` gains `assert "scroll" in doc`. The `DISCLOSURE` constant (first
+sentence) and every other assertion stay as they are.
+
+**`src/revenue/experiments.ts`** — add after `FACELESS_YOUTUBE_EXPERIMENT`:
+
+```ts
+/**
+ * The web comparison arm's reach floor (research/faceless-youtube/PREREG-DECISIONS.md §3, board 28.9.2026), read at
+ * day 56 from the arm's own D0 (public deploy + recorded discovery submission). Kept apart from the experiment's gates:
+ * the arm has its own clock, and its verdict is procedural — whether Stage A may be put to the owner (T1-PROTOCOL order
+ * item 6) — not a channel gate. `engagedStrangerViews` is the count of $pageview events at the canonical URL, sent on
+ * first scroll, own paths and preview hosts excluded, payload shape ours; null = the project could not be read.
+ */
+export const WEB_ARM_REACH = { day: 56, minEngagedStrangerViews: 5 } as const;
+
+export interface WebArmReading {
+  day: number;
+  engagedStrangerViews: number | null;
+}
+
+export type WebArmVerdict = "not_due" | "unmeasured" | "stage_a_never_asked" | "stage_a_may_be_asked";
+
+export function evaluateWebArm(r: WebArmReading, g: typeof WEB_ARM_REACH = WEB_ARM_REACH): WebArmVerdict {
+  if (r.day < g.day) return "not_due";
+  if (r.engagedStrangerViews === null) return "unmeasured";
+  return r.engagedStrangerViews < g.minEngagedStrangerViews ? "stage_a_never_asked" : "stage_a_may_be_asked";
+}
+```
+
+**`src/__tests__/revenue/experiments.test.ts`** — add:
+
+```ts
+describe("web arm reach floor (PREREG-DECISIONS.md §3, pre-registered 28.9.2026)", () => {
+  it("has not been edited", () => {
+    expect(WEB_ARM_REACH).toEqual({ day: 56, minEngagedStrangerViews: 5 });
+    const hash = createHash("sha256").update(JSON.stringify(WEB_ARM_REACH)).digest("hex");
+    expect(hash).toBe("aed85a892d9ba49b513f6b1e6b94c6ffe81c225d98eab015a82695e3894bb4d2");
+  });
+  it("decides only at day 56, only from a reading, and five is the floor", () => {
+    expect(evaluateWebArm({ day: 55, engagedStrangerViews: 0 })).toBe("not_due");
+    expect(evaluateWebArm({ day: 56, engagedStrangerViews: null })).toBe("unmeasured");
+    expect(evaluateWebArm({ day: 56, engagedStrangerViews: 4 })).toBe("stage_a_never_asked");
+    expect(evaluateWebArm({ day: 56, engagedStrangerViews: 5 })).toBe("stage_a_may_be_asked");
+    expect(evaluateWebArm({ day: 90, engagedStrangerViews: 0 })).toBe("stage_a_never_asked");
+  });
+});
+```
+
+(The hash is sha256 of the 38-byte string `{"day":56,"minEngagedStrangerViews":5}`, computed by the board today.)
+`PINNED_GATES_SHA256` is untouched.
+
+**Deploy files for the sub-brand site** (checked against Netlify's docs before deploy): `_redirects` with
+`/preview/  /index.html  200`; `_headers` with `/preview/*` → `X-Robots-Tag: noindex`; `robots.txt` with
+`Disallow: /preview/` and the `Sitemap:` line; `sitemap.xml` listing the canonical URL only.
+
+**The readings file** — `research/faceless-youtube/readings/web-arm.json`, written by the loop: D0 with its two
+conditions and timestamps, the routes opened with dates (§3.5), any recorded exception under §3.4(a), the daily series
+of counted events, the count of foreign-shaped events excluded, and at D0+56 the verdict of `evaluateWebArm` — so an
+auditor re-runs it on the same numbers.
+
+**Pointers to update when convenient:** `T1-PROTOCOL.md` order item 4 ("It needs the brand domain, owner step 5") is
+superseded by BOARD-LOOP rank 5 and this section (a `*.netlify.app` sub-brand host, D0 as defined here); BOARD-LOOP
+rank 5's "Kill if … zero stranger reach" now reads "under 5 engaged stranger page views, as pre-registered".
+
+## 3.7 The sentence the board is least sure of
+
+"JavaScript-rendering crawlers do not, as a rule, fire scroll events." It rests on how such renderers are described in
+Google's own rendering documentation as the board remembers it (the page is blocked from this container and was not
+rendered today), on the fact that the renderer has nothing to scroll for, and on PostHog's statement that most crawlers
+run no JavaScript at all. If it is wrong, N over-counts and the floor of five is lenient in the direction already
+recorded — a false pass costs the owner's hour; a false fail is not made more likely — and the fix would be a higher
+floor, decided in writing before the next arm, never a quiet edit to this one.
+
+## 3.8 Path
+
+`MISSION.md` (rule 1, rule 4, constraint 7, the anonymity section, 28.9 addition) → `RED-TEAM.md` §2.1(c), §2.5 →
+`T1-PROTOCOL.md:26-28, :34` → §1 and §2 above → `BOARD-LOOP.md` rank 5, PUBLISH-8, PUBLISH-10, KILL-1 →
+`products/chart-explainer/page.py:1-37, :69-78, :159-182`, `tests/test_page_counter.py` → `src/revenue/experiments.ts`,
+`src/__tests__/revenue/experiments.test.ts:118-129` → PostHog docs retrieved 28.9.2026 (web-analytics/troubleshooting
+"Do stats include bots and crawlers?", web-analytics/bot-detection, web-analytics/managing-bot-traffic) →
+`public_suffix_list.dat:14892` (rendered 28.9.2026). Not rendered (blocked, CONNECT 403): indexnow.org, Google's rendering
+documentation, Netlify's redirects documentation — each is named above as something Opus renders before relying on it.
+No git. No owner identifier appears in this section.
