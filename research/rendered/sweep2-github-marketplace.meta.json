@@ -1,17 +1,17 @@
 {
   "url": "https://github.com/marketplace",
   "slug": "sweep2-github-marketplace",
-  "fetchedAt": "2026-09-28T17:14:49.420Z",
+  "fetchedAt": "2026-09-28T18:32:38.643Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 558901,
-  "sha256": "abedcc2571466507d4c932294f8fad5ee1e231186754287d0755b114f987210c",
+  "byteLength": 558741,
+  "sha256": "e7ceb674cd75df3704fde62b8c0eac213fe4fe8661fb57ddf688a7a261facda2",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/sweep2-github-marketplace.html",
   "textPath": "research/rendered/sweep2-github-marketplace.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "b40751c44fc84424eeab78e11d0df8731f250b91d0604002f49dce6dd048a94a",
+  "previousSha256": "abedcc2571466507d4c932294f8fad5ee1e231186754287d0755b114f987210c",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

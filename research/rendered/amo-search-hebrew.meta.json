@@ -1,17 +1,17 @@
 {
   "url": "https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=hebrew&page_size=50",
   "slug": "amo-search-hebrew",
-  "fetchedAt": "2026-09-28T17:18:19.368Z",
+  "fetchedAt": "2026-09-28T18:34:32.543Z",
   "status": 200,
   "contentType": "application/json",
-  "byteLength": 602046,
-  "sha256": "d8be3d0e1874517e265a32dc9878215858ceada8f77ec0c8148dbe99ca4da05a",
+  "byteLength": 602045,
+  "sha256": "07d63f3281400707816be22ea6623a8e4c25d37b300489ee6c2db227edea671b",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/amo-search-hebrew.json",
   "textPath": null,
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "705ab2bd53ce190a551a3710434974f23b27f46a8dc26f5ffbfbd601e2d32c52",
+  "previousSha256": "d8be3d0e1874517e265a32dc9878215858ceada8f77ec0c8148dbe99ca4da05a",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

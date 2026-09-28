@@ -1,17 +1,17 @@
 {
   "url": "https://www.paypal.com/il/cshelp/article/%D7%9E%D7%93%D7%95%D7%A2-%D7%97%D7%A9%D7%91%D7%95%D7%9F-%D7%94--paypal-%D7%A9%D7%9C%D7%99-%D7%94%D7%95%D7%92%D7%91%D7%9C-help534",
   "slug": "paypal-il-help534-limited",
-  "fetchedAt": "2026-09-28T17:19:21.935Z",
+  "fetchedAt": "2026-09-28T18:35:15.033Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 328727,
-  "sha256": "4c6d62041ef7c563e84dddfb96849b68555e99f0a59ddbf6c5dc32f666b70309",
+  "byteLength": 328729,
+  "sha256": "26e43d86141708b425e17eb5e731c49efb141d65d1223efe003a3b8bdc1229ca",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/paypal-il-help534-limited.html",
   "textPath": "research/rendered/paypal-il-help534-limited.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "4c6d62041ef7c563e84dddfb96849b68555e99f0a59ddbf6c5dc32f666b70309",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

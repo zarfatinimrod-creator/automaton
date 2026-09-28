@@ -1,17 +1,17 @@
 {
   "url": "https://community.facer.io/t/how-to-become-a-premium-designer-and-sell-your-watch-face-designs-on-facer/3540",
   "slug": "facer-premium-route",
-  "fetchedAt": "2026-09-28T17:19:34.692Z",
+  "fetchedAt": "2026-09-28T18:35:26.973Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 326754,
-  "sha256": "7e3f7718942c825e3f43aa6c643f1e69d536a29e76e29def7f6d868902ecab68",
+  "sha256": "53c95314ffa033231ff030111dff5cdc1109a1a8485b6322e25040ba6856a6e3",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/facer-premium-route.html",
   "textPath": "research/rendered/facer-premium-route.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "7e3f7718942c825e3f43aa6c643f1e69d536a29e76e29def7f6d868902ecab68",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

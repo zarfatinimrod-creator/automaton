@@ -1,9 +1,111 @@
 Requirements for becoming a verified creator? - Questions - n8n Community
 
-= 40rem)" rel="stylesheet" data-target="chat_desktop" />
-= 40rem)" rel="stylesheet" data-target="discourse-ai_desktop" />
-= 40rem)" rel="stylesheet" data-target="discourse-gamification_desktop" />
-= 40rem)" rel="stylesheet" data-target="discourse-reactions_desktop" />
-= 40rem)" rel="stylesheet" data-target="poll_desktop" />
+n8n Community
 
-= 40rem)" rel="stylesheet" data-target="desktop_theme" data-theme-id="14" data-theme-name="dropdown header"/>
+Requirements for becoming a verified creator?
+
+Questions
+
+abhijayvuyyuru
+
+June 18, 2025, 4:31am
+
+1
+
+I tried uploading my second template but was unable to set it as paid. That’s strange because the first template n8n allowed me to set as paid. It says I need to be a verified creator for that but I was not a verified creator when I posted my first template.
+
+Curious why this is happening and what is the requirement to become a verified creator?
+
+rbreen
+
+June 18, 2025, 4:16pm
+
+2
+
+Hi @abhijayvuyyuru
+
+Looks like the policy has changed for submitting workflows.
+
+Here’s some more info about becomign a verified creator. You’ll need to create two more free workslows to be eligable for the creator program.
+
+Notion
+
+Notion | Where teams and agents work together
+
+A collaborative AI workspace, built on your company context. Build and orchestrate agents right alongside your team's projects, meetings, and connected apps.
+
+If this response helped you, please click the heart to show that it is useful
+
+If this response solved your issue, mark it as the solution to help the community
+
+Related topics
+
+Topic
+
+Replies
+
+Views
+
+Activity
+
+Requesting feedback for Verified Creator status on my published n8n workflows
+
+General
+
+3
+
+76
+
+February 24, 2026
+
+Creator Program - Template for Recruiters
+
+Questions
+
+3
+
+221
+
+September 5, 2025
+
+Verifies creator
+
+Questions
+
+1
+
+70
+
+June 10, 2025
+
+👀 Creator profile. Templates verification 👀
+
+Questions
+
+4
+
+374
+
+June 4, 2025
+
+N8n Creator?
+
+Questions
+
+1
+
+73
+
+April 22, 2025
+
+Home
+
+Categories
+
+Guidelines
+
+Terms of Service
+
+Privacy Policy
+
+Powered by Discourse , best viewed with JavaScript enabled

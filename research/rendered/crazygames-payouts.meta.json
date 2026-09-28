@@ -1,17 +1,17 @@
 {
   "url": "https://docs.crazygames.com/payouts/",
   "slug": "crazygames-payouts",
-  "fetchedAt": "2026-09-28T17:17:45.115Z",
+  "fetchedAt": "2026-09-28T18:34:00.022Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 59466,
-  "sha256": "7b8931f5ef2e80eee917915b5bcbbbb6c7a6c293b055eb687dd665ae0ca7c566",
+  "sha256": "1cb8c58d41d001de8a3c5d2b9b5ccd79c065fc0c216a7d6da4237fd862a389ac",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/crazygames-payouts.html",
   "textPath": "research/rendered/crazygames-payouts.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "2c819ded9c6ee3caf43013072ed5f3756c320d94183fe2073ba232c1f13b7980",
+  "previousSha256": "7b8931f5ef2e80eee917915b5bcbbbb6c7a6c293b055eb687dd665ae0ca7c566",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

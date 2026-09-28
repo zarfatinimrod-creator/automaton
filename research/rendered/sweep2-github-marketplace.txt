@@ -232,21 +232,33 @@ Azure Pipelines
 App
 Continuously build, test, and deploy to any platform and cloud
 
-Zenhub
+Codacy
 App
-Project management that's seamlessly integrated with GitHub’s data & interface, builds powerful insights & automates tasks
+Codacy helps to build effortless code quality and security for developers
 
 CircleCI
 App
 Ship trusted code with confidence. Fast feedback, flexible execution, and enterprise-grade security
 
-Codacy
+Zenhub
 App
-Codacy helps to build effortless code quality and security for developers
+Project management that's seamlessly integrated with GitHub’s data & interface, builds powerful insights & automates tasks
 
 Zube
 App
 An Agile project management tool that seamlessly integrates with GitHub Issues
+
+WakaTime
+App
+Metrics, goals, and time tracking automatically generated from your programming activity
+
+Argos Visual Testing
+App
+Stop visual regressions, not releases
+
+Crowdin
+App
+Agile localization for your projects
 
 TestQuality - Unified Test Management for GitHub
 App
@@ -268,25 +280,13 @@ Datree
 App
 YAML configs and K8s manifests validation tool
 
-Waydev
+DeepScan
 App
-AI-Powered Software Engineering Intelligence Platform
+Advanced static analysis for automatically finding runtime errors in JavaScript, TypeScript, React, and Vue code
 
-Octobox
+Slack + GitHub
 App
-Spend less time managing your GitHub notifications
-
-Review Notebook App
-App
-Code Review & Collaboration for Jupyter Notebooks
-
-Atlassian
-App
-GitHub for Atlassian unifies data, automates workflows, and syncs development across GitHub, Jira, and your Atlassian apps
-
-Mergify
-App
-Pull requests automation service. Merge your pull requests faster with automatic merges and a merge queue
+Connect your code without leaving Slack
 
 Footer
 

@@ -1,17 +1,17 @@
 {
   "url": "https://www.y8.com/revshare",
   "slug": "y8-revshare",
-  "fetchedAt": "2026-09-28T17:19:43.028Z",
+  "fetchedAt": "2026-09-28T18:35:35.608Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 671055,
-  "sha256": "7b0de0a8de9f2cd94f1824264aebbeb1835f4ea7572996c1e5a6f4290710343b",
+  "sha256": "9c4664a41dac76b99725825577f0041aee733073bdaeedb5eafd8676440451ce",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/y8-revshare.html",
   "textPath": "research/rendered/y8-revshare.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "7b0de0a8de9f2cd94f1824264aebbeb1835f4ea7572996c1e5a6f4290710343b",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

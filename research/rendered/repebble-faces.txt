@@ -27,6 +27,12 @@ Solar & Moon Arc
 92
 
 All Watchfaces SEE ALL
+Netline
+
+2
+Playtime
+
+2
 Submariner
 
 0
@@ -39,12 +45,6 @@ From Here
 Nightscout Supercgm
 
 59
-CasioCGM
-
-2
-Dymaxion
-
-43
 
 Most Loved SEE ALL
 YWeather

@@ -1,17 +1,17 @@
 {
   "url": "https://developers.google.com/identity/protocols/oauth2",
   "slug": "google-oauth2",
-  "fetchedAt": "2026-09-28T17:16:11.602Z",
+  "fetchedAt": "2026-09-28T18:33:14.423Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 140967,
-  "sha256": "268a3fb83018937b7e1a6389d9a7f423ef47c7dd61be945802ac4976ef961c25",
+  "byteLength": 140971,
+  "sha256": "609bdd1badf01e25415bced4f6e932f2a1a1902fc0f98cd14bb794fb134f47f9",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/google-oauth2.html",
   "textPath": "research/rendered/google-oauth2.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "c8eb0bac55b2ee4c48e8215d25696c66119a24e6b241b4bca2dc77c1f4628ac6",
+  "previousSha256": "268a3fb83018937b7e1a6389d9a7f423ef47c7dd61be945802ac4976ef961c25",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

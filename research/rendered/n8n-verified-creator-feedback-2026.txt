@@ -1,0 +1,145 @@
+Requesting feedback for Verified Creator status on my published n8n workflows - General - n8n Community
+
+n8n Community
+
+Requesting feedback for Verified Creator status on my published n8n workflows
+
+Feedback
+
+General
+
+Tony_Adijah
+
+February 24, 2026, 11:29am
+
+1
+
+AHi n8n team and community,
+
+I currently have 5 workflows published in the templates gallery, and 1 workflow under review after making changes to the title and stickies based on feedback.
+
+I’m aiming for Verified Creator status and would appreciate guidance on whether my current templates meet the quality bar, and what I should improve to get there.
+
+I’ve been focusing on clearer titles, better descriptions, adding overview and setup stickies, and grouping nodes for readability. If there are common gaps that usually block verification (documentation depth, edge-case handling, naming conventions, setup clarity, etc.), pointers on what to fix would be really helpful so I can address them properly before resubmitting more workflows.
+
+Happy to share links to the workflows if needed.
+
+Thanks for maintaining a high-quality template ecosystem.
+
+1 Like
+
+tamy.santos
+
+February 24, 2026, 12:45pm
+
+2
+
+Hi @Tony_Adijah !
+
+That’s great to see your initiative. To ensure your request is better directed, please post it in the feedback category. “Questions” is typically for questions about troubleshooting issues, understanding nodes, or reporting bugs.
+
+1 Like
+
+Tony_Adijah
+
+February 24, 2026, 12:50pm
+
+3
+
+Thank you @tamy.santos
+
+tamy.santos
+
+February 24, 2026, 12:52pm
+
+4
+
+You’re welcome, and good luck on your journey.
+
+1 Like
+
+system
+
+Closed
+
+May 25, 2026, 12:52pm
+
+5
+
+This topic was automatically closed 90 days after the last reply. New replies are no longer allowed.
+
+Related topics
+
+Topic
+
+Replies
+
+Views
+
+Activity
+
+Looking for feedback on my n8n workflows (open to constructive criticism)
+
+Feedback
+
+0
+
+48
+
+February 24, 2026
+
+I need deep understanding why my app didnt pased and publish as a node in n8n
+
+Questions
+
+deployment
+,
+workflow-building
+
+1
+
+91
+
+December 3, 2025
+
+👀 Creator profile. Templates verification 👀
+
+Questions
+
+4
+
+374
+
+June 4, 2025
+
+Requirements for becoming a verified creator?
+
+Questions
+
+1
+
+801
+
+June 18, 2025
+
+Creator Program - Template for Recruiters
+
+Questions
+
+3
+
+221
+
+September 5, 2025
+
+Home
+
+Categories
+
+Guidelines
+
+Terms of Service
+
+Privacy Policy
+
+Powered by Discourse , best viewed with JavaScript enabled

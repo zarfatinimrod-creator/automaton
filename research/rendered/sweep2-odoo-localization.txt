@@ -622,7 +622,7 @@ SofteamG
 
 FREE
 
-72
+73
 
 Hijri (Islamic Lunar) & Shamsi (Afghan Solar Hijri)
 
@@ -663,7 +663,7 @@ AIRIV
 
 FREE
 
-16
+17
 
 1
 

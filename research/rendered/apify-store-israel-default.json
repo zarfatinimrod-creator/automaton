@@ -5097,22 +5097,22 @@
         "name": "yad2-all",
         "username": "leadproof",
         "stats": {
-          "totalBuilds": 23,
-          "totalRuns": 90,
+          "totalBuilds": 25,
+          "totalRuns": 95,
           "totalUsers": 2,
           "totalUsers7Days": 1,
           "totalUsers30Days": 1,
           "totalUsers90Days": 1,
-          "lastRunStartedAt": "2026-09-27T11:41:03.489Z",
+          "lastRunStartedAt": "2026-09-28T18:12:45.526Z",
           "actorReviewCount": 0,
           "actorReviewRating": 0,
           "bookmarkCount": 0,
           "publicActorRunStats30Days": {
             "ABORTED": 0,
             "FAILED": 0,
-            "SUCCEEDED": 1,
+            "SUCCEEDED": 2,
             "TIMED-OUT": 0,
-            "TOTAL": 1
+            "TOTAL": 2
           }
         },
         "description": "Scrape Yad2 apartments for rent and sale, cars and second-hand products. Search by category and filters, paginate results, and export prices, locations, images and optional listing details in one consistent dataset.",
@@ -5140,14 +5140,15 @@
                 "eventTitle": "Listing",
                 "eventDescription": "One unique listing delivered to this run’s dataset. Optional detail enrichment is included in the result fee. Apify platform and proxy usage are billed separately.",
                 "isOneTimeEvent": false,
-                "eventPriceUsd": 0.005,
+                "eventPriceUsd": 0.002,
                 "isPrimaryEvent": true
               }
             }
           },
-          "startedAt": "2026-09-27T03:41:40.214Z",
-          "createdAt": "2026-09-27T03:41:40.893Z",
-          "apifyMarginPercentage": 0.2
+          "startedAt": "2026-09-28T17:54:58.000Z",
+          "createdAt": "2026-09-28T17:54:58.770Z",
+          "apifyMarginPercentage": 0.2,
+          "notifiedAboutChangeAt": "2026-09-28T18:05:50.889Z"
         },
         "id": "pcMLfQNyphnt4kcbm",
         "url": "https://apify.com/leadproof/yad2-all"
@@ -14617,13 +14618,13 @@
         "name": "indeed-scraper",
         "username": "herus13",
         "stats": {
-          "totalBuilds": 66,
-          "totalRuns": 247,
+          "totalBuilds": 67,
+          "totalRuns": 267,
           "totalUsers": 9,
           "totalUsers7Days": 2,
           "totalUsers30Days": 3,
           "totalUsers90Days": 3,
-          "lastRunStartedAt": "2026-09-28T04:32:34.032Z",
+          "lastRunStartedAt": "2026-09-28T18:08:32.499Z",
           "actorReviewCount": 0,
           "actorReviewRating": 0,
           "bookmarkCount": 0,

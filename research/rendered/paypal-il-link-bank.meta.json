@@ -1,17 +1,17 @@
 {
   "url": "https://www.paypal.com/il/cshelp/article/how-do-i-link-a-bank-account-to-my-paypal-account-help183?locale.x=en_IL",
   "slug": "paypal-il-link-bank",
-  "fetchedAt": "2026-09-28T17:18:38.308Z",
+  "fetchedAt": "2026-09-28T18:34:49.288Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 302873,
-  "sha256": "b96a898b72664bddb7c10382698ad08d4f7bed4b340e6570469b040310d21250",
+  "sha256": "bd8bc0a0213a55cea54e60c867c1a54d5491d18d2523e38fd29f2863301b4c80",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/paypal-il-link-bank.html",
   "textPath": "research/rendered/paypal-il-link-bank.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "e5c985adc97938b7a1ee01d81ffc32ef049a6f4008a3f757b96f058dc9ca1e79",
+  "previousSha256": "b96a898b72664bddb7c10382698ad08d4f7bed4b340e6570469b040310d21250",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }
