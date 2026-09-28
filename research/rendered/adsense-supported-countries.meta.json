@@ -1,17 +1,17 @@
 {
   "url": "https://support.google.com/adsense/answer/9905",
   "slug": "adsense-supported-countries",
-  "fetchedAt": "2026-09-28T13:16:38.275Z",
+  "fetchedAt": "2026-09-28T16:10:18.329Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1605307,
-  "sha256": "2485813824edb34747f0c4fc5d896e0cb7c653b60aecceebdc3ccb37466226c3",
+  "byteLength": 1605326,
+  "sha256": "a63d28e258d01f5ecb98dbb5ad77f61e4b055dc4184b7ba64a9fbf8437d0b3ec",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/adsense-supported-countries.html",
   "textPath": "research/rendered/adsense-supported-countries.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "bac426e2d2123daf8ca9afca78b10abfe37d2cfd84f1fd5dfa4282b9f2047e23",
+  "previousSha256": "2485813824edb34747f0c4fc5d896e0cb7c653b60aecceebdc3ccb37466226c3",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

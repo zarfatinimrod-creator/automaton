@@ -1,17 +1,17 @@
 {
   "url": "https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation",
   "slug": "openai-sora-discontinuation",
-  "fetchedAt": "2026-09-28T13:16:34.992Z",
+  "fetchedAt": "2026-09-28T16:10:15.617Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 51328,
-  "sha256": "ec38eb829003845da79aa71cf55213a6f35c9da4a9b6494fe247780776d7c6df",
+  "byteLength": 51327,
+  "sha256": "c7a66eb97588bc3c36668cc8126035dcfd9e6c2bbb41618911da0e166aba2885",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/openai-sora-discontinuation.html",
   "textPath": "research/rendered/openai-sora-discontinuation.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "62c07d8fff4b78573e10a7d4a2619c022e5040ad92acb017812c198b56e730e7",
+  "previousSha256": "ec38eb829003845da79aa71cf55213a6f35c9da4a9b6494fe247780776d7c6df",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

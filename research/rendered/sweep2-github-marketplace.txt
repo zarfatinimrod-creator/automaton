@@ -208,25 +208,13 @@ Recently added
 
 More items
 
-Qlty Cloud
-App
-Code quality and coverage done right
-
-Azure Pipelines
-App
-Continuously build, test, and deploy to any platform and cloud
-
 Codecov | Code Coverage
 App
 Automatic test report merging for all CI and languages into a single code coverage report directly into your pull request
 
-Codacy
+Qlty Cloud
 App
-Codacy helps to build effortless code quality and security for developers
-
-CircleCI
-App
-Ship trusted code with confidence. Fast feedback, flexible execution, and enterprise-grade security
+Code quality and coverage done right
 
 Imgbot
 App
@@ -240,6 +228,18 @@ Rewind Backups for GitHub
 App
 Automated GitHub backups so you can recover fast, stay compliant, and never lose a line of code
 
+Azure Pipelines
+App
+Continuously build, test, and deploy to any platform and cloud
+
+Codacy
+App
+Codacy helps to build effortless code quality and security for developers
+
+CircleCI
+App
+Ship trusted code with confidence. Fast feedback, flexible execution, and enterprise-grade security
+
 Zenhub
 App
 Project management that's seamlessly integrated with GitHub’s data & interface, builds powerful insights & automates tasks
@@ -248,45 +248,45 @@ Zube
 App
 An Agile project management tool that seamlessly integrates with GitHub Issues
 
-DeepScan
+WakaTime
 App
-Advanced static analysis for automatically finding runtime errors in JavaScript, TypeScript, React, and Vue code
+Metrics, goals, and time tracking automatically generated from your programming activity
 
-Waydev
+Argos Visual Testing
 App
-AI-Powered Software Engineering Intelligence Platform
+Stop visual regressions, not releases
 
-Octobox
+Crowdin
 App
-Spend less time managing your GitHub notifications
+Agile localization for your projects
 
-Slack + GitHub
+TestQuality - Unified Test Management for GitHub
 App
-Connect your code without leaving Slack
+Test Plan Driven QA Test Management for GitHub
+
+AccessLint
+App
+Find accessibility issues in your pull requests
+
+CodeScene
+App
+A software engineering intelligence tool tool to identify and prioritize technical debt and evaluate your efficiency
+
+PullRequest
+App
+Expert On-Demand Code Review as a Service
 
 Datree
 App
 YAML configs and K8s manifests validation tool
 
-Atlassian
+DeepScan
 App
-GitHub for Atlassian unifies data, automates workflows, and syncs development across GitHub, Jira, and your Atlassian apps
+Advanced static analysis for automatically finding runtime errors in JavaScript, TypeScript, React, and Vue code
 
-Mergify
+Slack + GitHub
 App
-Pull requests automation service. Merge your pull requests faster with automatic merges and a merge queue
-
-Review Notebook App
-App
-Code Review & Collaboration for Jupyter Notebooks
-
-Pull Request Size
-App
-Apply size labels to Pull Requests based on the total lines of code changed
-
-Ranger
-App
-A sidekick for repository maintainers
+Connect your code without leaving Slack
 
 Footer
 

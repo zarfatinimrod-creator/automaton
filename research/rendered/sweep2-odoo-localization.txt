@@ -472,7 +472,7 @@ Ukraine - Full Localization
 
 Many2one
 
-$ 287.25
+$ 284.45
 
 1
 
@@ -482,7 +482,7 @@ EU - Margin VAT (Second-Hand Goods)
 
 Powerstreet
 
-$ 114.79
+$ 113.67
 
 7
 
@@ -490,7 +490,7 @@ EDI Fiscal Legend Complement for the Mexican Localization
 
 Vauxoo
 
-$ 164.15
+$ 162.55
 
 2
 
@@ -500,7 +500,7 @@ MX Check Printing
 
 Vauxoo
 
-$ 164.15
+$ 162.55
 
 2
 
@@ -510,7 +510,7 @@ Honduras SAR CAI
 
 Pokutsoft
 
-$ 89.00
+$ 88.13
 
 2
 
@@ -518,7 +518,7 @@ Saudi Tax Invoice — ZATCA Phase 2 | Bilingual | SAR Symbol | Custom Header & F
 
 CorePulse
 
-$ 85.61
+$ 84.78
 
 1
 
@@ -528,7 +528,7 @@ TDS / TCS Management (CodeTrade)
 
 CodeTrade India Pvt. Ltd.
 
-$ 70.00
+$ 69.31
 
 1
 
@@ -538,7 +538,7 @@ Saudi Arabia - ZATCA E-Invoicing
 
 YNot Technologies
 
-$ 49.26
+$ 48.78
 
 1
 
@@ -548,7 +548,7 @@ Saudi Government Fixed Asset Management (MOF Compliant)
 
 MTO
 
-$ 34.47
+$ 34.13
 
 1
 
@@ -559,7 +559,7 @@ Indian GST Reports - GSTR 1, 2, 3B & 9
 
 Lucidbrainz
 
-$ 32.11
+$ 31.80
 
 12
 
@@ -569,7 +569,7 @@ Ing. Brenda Chacon
 , Ing. Karen Burgos
 , …
 
-$ 14.80
+$ 14.65
 
 2
 
@@ -579,7 +579,7 @@ Integración de consulta RUC/DNI con apiperu.dev
 
 Raul Garcia
 
-$ 19.77
+$ 19.58
 
 2
 
@@ -592,7 +592,7 @@ Mali
 
 FREE
 
-3306
+3314
 
 Official Algerian wilayas and communes — 69 wilayas, 1,541 communes, French and Arabic official names
 

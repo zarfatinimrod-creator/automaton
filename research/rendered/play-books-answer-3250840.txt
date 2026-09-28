@@ -1,0 +1,324 @@
+Payment profiles & bank accounts - Google Play Books Partner Center Help
+Skip to main content
+
+Google Play Books Partner Center Help
+
+Sign in
+
+Google Help
+
+Help Center
+Community
+Books
+
+Privacy Policy
+Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+
+Books
+
+Notification
+We are currently experiencing higher than usual wait times for support. You may find quick answers to common questions in our Help Center/FAQ.
+
+Payment profiles & bank accounts
+Important:
+
+Google Play partners can sell ebooks and audiobooks in certain countries/regions . The features described here aren't available in every country/region.
+
+Due to regulatory requirements, Google can't offer pre-orders in India. Your book will be available in the Google Play Store in India on the day after the release date.
+
+Pre-orders allow customers to order, but not read, your book before its release date. On the release date, customers who pre-ordered your book are charged for the purchase and they gain access to the book.
+
+Before you upload any files, make sure your content meets Google's guidelines. If you plan to sell your books on Google Play, review our publisher content policies for books on Google Play .
+
+Analytics charts and sales transaction reports use the date the customer placed the pre-order, so that you can measure customer anticipation level. Revenue shown in such orders isn't paid to you until the book is released. For a financial report that matches your payment, go to Google Play earnings reports .
+
+To help our partners differentiate among their different reports, the earnings reports list displays the current name of the payment profile.
+
+Payment profiles let you specify how Google should pay you for Google Play sales revenue. To change the payment settings for a sales territory, you can assign a payment profile to a sales territory . You can use the same payment profile for multiple sales territories.
+
+To access your payment profiles, sign in to your account at play.google.com/books/publish . Then, navigate to the Payment Center.
+
+To learn more about requirements for payment, as well as the payment schedule and other details, go to Your earnings (getting paid) .
+
+To help protect your financial information, any changes to your payment profiles must be made within 15 minutes of signing in to your account.
+
+If you see the error message "Your credentials have expired. Please log out and log back in again. Select here to sign out," you should sign out and sign in again, even though you may be able to access other parts of your account.
+
+Create a payment profile
+
+Sign in to the Partner Center at play.google.com/books/publish .
+
+Select Payment Center .
+
+In the "Payment profiles" section, select Add a payment profile .
+
+Enter a profile name.
+
+We suggest that you indicate the country and currency for this payment profile in the profile name.
+
+Enter your business information. Include your business name, contact name, address, and phone number.
+
+Provide one or more Payments contacts to be notified of any errors with the bank account or other payment settings. Payment contacts receive an email to confirm their address.
+
+Select Submit .
+
+Add a new bank account
+
+Sign in to the Partner Center at play.google.com/books/publish .
+
+Select Payment Center .
+
+Next to the payment profile, select Edit .
+
+In the "How you get paid" box, select Add payment method .
+
+Enter your bank account information.
+
+Select Save .
+
+Verify a bank account
+
+We ask you to verify ownership of any bank account you add to your account, unless the bank account is in a country where Google makes deposits through wire transfer .
+
+After you add a new bank account, Google makes a small deposit within 2 business days. Your bank may take up to 3 additional days to register the transaction.
+
+Review your online bank statement or contact your bank to locate the deposit, labeled as GOOGLE DEPOSIT or something similar.
+
+Edit the payment profile with the bank account you want to verify in the Payment Center .
+
+To verify your bank account, go to the "How you get paid" box and enter the deposit amount.
+
+If you locate the test deposit but can't confirm the amount in your account, contact us . If you fail to receive the test deposit, check the list of potential reasons .
+
+If you sell any books before you verify your bank account, your account accrues the amount owed to you until you can receive payments.
+
+Edit bank account information
+
+If you want to change your bank account information, you must edit the payment profile and add a new bank account . Make sure to set it as the primary payment method. Optionally, you can remove the details for the old bank account.
+
+You must verify the new bank account unless it's in a country where Google makes deposits through wire transfer .
+
+Remove a bank account
+
+Important: You can't remove the only verified bank account from your payments profile. To remove a bank account, first add and verify a new account. Set your new account as your primary account and then remove the old one.
+
+To remove a bank account from a payment profile:
+
+Sign in to the Partner Center at play.google.com/books/publish .
+
+Select Payment Center .
+
+Next to the payment profile with the bank account you want to remove, select Edit .
+
+Navigate to the "How you get paid" box and remove the bank account.
+
+Multiple bank accounts
+
+If you want payments to be made to more than one bank account, set up additional payment profiles. Only one bank account can be active for each payment profile. You can associate a different payment profile with each sales territory if you have multiple sales territories .
+
+Check payouts, payment receipts & withheld taxes
+
+In the transactions section of your payment profile, you can find:
+
+Payment dates and amounts
+
+Unpaid earnings
+
+Payment receipts that contain:
+
+Payment date.
+
+Billing ID, which is called the "Payment Profile ID" in your Payment Center.
+
+Payment method.
+
+Payment number.
+
+Payment amount.
+
+The amount of Chapter 3 US tax withholding
+
+Adjustments
+
+To check payment information:
+
+Sign in to the Partner Center .
+
+Navigate to the Payment center .
+
+Next to the payment profile, click Edit View Transactions .
+
+To get a payment receipt, click the automatic payment link.
+
+Tip: If you’re a service provider , you may receive payments from multiple publishers in one bank account. You can match the payment numbers in payment receipts to your bank’s data.
+
+Submit tax information
+
+If you sell books in US dollars, you must provide tax information for each payment profile that receives revenue from transactions made in US dollars. Otherwise, payments for that profile will be held by Google. To submit tax information, edit a payment profile and go to the "Payee Profile."
+
+Learn more about how to submit tax information .
+
+Payment & error notifications
+
+To be notified about any errors with bank account setup or other payments settings, provide at least one Payments contact email address:
+
+Sign in to the Partner Center at play.google.com/books/publish .
+
+Select Payment Center .
+
+Next to the payment profile, select Edit .
+
+Select Manage settings .
+
+Scroll to "Payments contacts."
+
+Contacts must verify their email address through an email from payments-noreply@google.com.
+
+Contacts receive notifications from payments-noreply@google.com whenever an action is needed with a bank account or other payments settings. They also receive a simple notification whenever a payment is issued, usually once a month.
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+Contact us Tell us more and we’ll help you get there
+
+true
+Help
+1 of 17
+Promotions
+2 of 17
+Configure sales and payment settings (an overview)
+3 of 17
+Payment profiles & bank accounts
+4 of 17
+Sales territories (where your books can be sold)
+5 of 17
+Get paid with your earnings
+6 of 17
+Sell books internationally
+7 of 17
+Format a list of countries
+8 of 17
+Currency conversion for books on Google Play
+9 of 17
+Verify your business information
+10 of 17
+Australia Goods and Services Tax (GST) changes in 2017
+11 of 17
+India Goods and Services Tax (GST) law changes in 2017
+12 of 17
+Request a year-end US Tax form (1099-MISC, 1099-K, 1042-S, 1099-NEC)
+13 of 17
+Revenue Split FAQs
+14 of 17
+FAQ: Submit your US tax information to Google
+15 of 17
+Pausing Google Play's billing system for users in Russia
+16 of 17
+Upload & sell audiobooks
+17 of 17
+Kyrgyzstan Value Added Tax (VAT) law changes in 2024
+
+Want a quicker way to get help?
+
+Chat with a member of the Google Books team.
+No thanks Start chat
+
+©2026 Google Privacy Policy
+Terms of Service
+
+Language
+Afrikaans&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+Filipino&lrm;
+français&lrm;
+Gaeilge&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+italiano&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+български&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+&rlm; עברית
+&rlm; العربية
+हिन्दी&lrm;
+ไทย&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+18309390068394986701
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+82437
+false
+
+false
+
+false
+false
+
+false

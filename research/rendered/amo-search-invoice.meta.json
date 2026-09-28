@@ -1,0 +1,17 @@
+{
+  "url": "https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=invoice&page_size=50",
+  "slug": "amo-search-invoice",
+  "fetchedAt": "2026-09-28T16:12:05.095Z",
+  "status": 200,
+  "contentType": "application/json",
+  "byteLength": 451566,
+  "sha256": "cb43cdcd4c33fdbf8d7d9a0a4d238b6ee4fe90577be0d2bbd0701e432ff103e0",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/amo-search-invoice.json",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
