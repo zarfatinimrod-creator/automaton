@@ -525,3 +525,5 @@ https://teachsimple.com/become-a-contributor	teachsimple-com-become-a-contributo
 https://draft2digital.com/terms-of-service/	draft2digital-com-terms-of-service
 # research/channel-loop/ZERO-TESTS.md row 129 — StreetLib (24): the platform-changeover FAQ, linked from a tick-9 capture (28.9.2026).
 https://help.streetlib.com/collection/1492-faq-on-platform-changeover	streetlib-faq-platform-changeover
+# research/channel-loop/ZERO-TESTS.md row 130 — Teach Simple (28): the terms of use, linked from a tick-9 capture (28.9.2026).
+https://teachsimple.com/terms-of-service	teachsimple-terms-of-service

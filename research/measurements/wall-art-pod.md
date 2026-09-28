@@ -111,7 +111,7 @@ yes". Anything else is NOT ANSWERED.
 - The held fallback (`:526`, "only if the new-scheme URL above fails") now has its condition met. [INFERENCE] It is not the
   next check: it is the pricing article (G1), not admission, on the older URL scheme of a centre whose newer one 404s.
 
-**UNKNOWN:** (a) admission, (b) AI, (c) payout and camera, (d) route and automation; the terms URL (`REPLENISH:323`).
+**UNKNOWN:** (a) admission, (b) AI, (c) payout and camera, (d) route and automation; the terms URL (`REPLENISH-2026-09-28-2.md:323`).
 
 **One next check: the step-8 written question** (recipient pre-send step as for Zazzle). Subject: "Question: joining as an
 AI-operated artist account".

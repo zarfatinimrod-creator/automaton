@@ -1243,7 +1243,7 @@ coded fee, or a mandate collision.
   | MCP Marketplace (mcp-marketplace.io) | G5: absent from all 40 CrUX lists | github | the origin enters a CrUX list AND a payout route to Israel is rendered |
 
   **Also:** Tes Resources is upgraded from scout to github grade (its Author Code bars AI resources with limited human input);
-  the Smashwords Store is dead at scout grade (its owner's AI rule), not a kill; Freemius, CodeCanyon, Agensi and Smithery
+  the Smashwords Store is **dead at rendered grade on G1 (tick 9)**: Draft2Digital's terms, which cover Smashwords.com as one of its channels, require "a one-time Account Activation Fee" before distribution (`draft2digital-com-terms-of-service.txt:490-491`), plus $12 a year from the second year; the AI rule is not in the terms (it sits in separate Content Guidelines, still scout grade); Freemius, CodeCanyon, Agensi and Smithery
   stand as recorded.
 - **Shopify — pre-ruled conditional kill** on a rendered mandatory listing fee (the note under "Earlier rejections").
 - **Whop — re-recorded as camera-gated** (the correction under `content-seo`, "Clipping"): the rail is not reusable.

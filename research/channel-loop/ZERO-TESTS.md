@@ -136,6 +136,7 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 127 | Teach Simple (unsettled), second refill | https://teachsimple.com/become-a-contributor | the "we will upload all your products" offer (G3) |
 | 128 | Smashwords / Draft2Digital (scout-grade death, confirmation), second refill | https://draft2digital.com/terms-of-service/ | the AI rule, and whether it covers the Smashwords Store |
 | 129 | StreetLib (24), after rows 109-116 | https://help.streetlib.com/collection/1492-faq-on-platform-changeover | the new-platform FAQ linked from the earnings page (help-streetlib-com-article-677-earnings.html:1619): whether the 2026 Subscription or Lifetime Access options are required and what they cost (proposed kill (a)); payout methods and countries if named |
+| 130 | Teach Simple (28), after rows 126-127 | https://teachsimple.com/terms-of-service | the Terms of Use the contributor terms incorporate (teachsimple-com-contributor-terms-of-service.txt:506; footer link at .html:495): any bot or automated-access ban, a US-only clause, or an AI rule — each would kill the venue cheaply |
 
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no
