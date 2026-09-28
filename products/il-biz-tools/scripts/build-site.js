@@ -51,6 +51,8 @@ import {
 import { collectDependencies } from '../src/lib/site-deps.js';
 import { bundleProblems, fsBundleAccess } from '../src/lib/pcn874-bundle.js';
 import { checkPageA11y, checkStylesheetA11y } from '../src/lib/a11y-check.js';
+import { proButtonState } from '../src/lib/gumroad.js';
+import { withProPrice } from '../src/lib/pro-offer.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -119,6 +121,24 @@ for (const { page, unverified } of withhold) {
   const source = await readFile(join(root, page), 'utf8');
   const title = (/<title>([^<]*)<\/title>/.exec(source)?.[1] ?? page).split('–')[0].trim();
   shipped.push({ path: page, html: withheldPageHtml({ page, title, unverified }) });
+}
+
+// 1b. The price in the pricing FAQ. Only Gumroad's read-back price, and only once
+// the Pro button is `ready` (src/lib/gumroad.js); until then the answers carry no
+// amount. A FAQ answer whose JSON-LD twin drifted from it stops the build, preview
+// too (src/lib/pro-offer.js).
+let proPrice = null;
+try {
+  proPrice = proButtonState(JSON.parse(readFileSync(join(root, 'src/config/site.json'), 'utf8'))).price;
+} catch (e) {
+  console.error(`  ! cannot read src/config/site.json (${e.message}) - no price goes into the FAQ`);
+}
+for (const page of shipped) {
+  try {
+    page.html = withProPrice(page.html, proPrice);
+  } catch (e) {
+    refuse('the pricing FAQ and its JSON-LD disagree', [`${page.path}: ${e.message}`]);
+  }
 }
 
 // 2. Files the shipped pages load.
