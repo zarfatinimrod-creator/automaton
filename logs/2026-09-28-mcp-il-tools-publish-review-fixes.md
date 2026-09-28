@@ -11,7 +11,7 @@ worktree `wf_c2217608-016-1`, ענף `worktree-wf_c2217608-016-1`, מעל `a0b25
 
 ## 2. הפעולות המרכזיות שביצעתי
 1. **אימתתי את העובדות לפני שכתבתי אותן:**
-   - הריפו `zarfatinimrod-creator/automaton` **ציבורי** (`api.github.com`: `"private": false`, ענף ברירת מחדל `main`).
+   - הריפו הזה **ציבורי** (`api.github.com`: `"private": false`, ענף ברירת מחדל `main`).
    - לפי `github/docs@b5f08dd` (`data/reusables/gated-features/environments.md`, `deployments-and-environments.md`),
      בריפו ציבורי זמינים בכל מסלול: סודות סביבה, הגבלת ענפים ו-required reviewers. סוד סביבה נמסר ל-job רק
      אחרי אישור.
