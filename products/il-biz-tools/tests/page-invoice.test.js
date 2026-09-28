@@ -7,6 +7,8 @@
 // format). Nothing here touches the network.
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { LICENSE_STORAGE_KEY, LICENSE_NOTES } from '../src/lib/license.js';
+import { proButtonState } from '../src/lib/gumroad.js';
+import { formatILS } from '../src/lib/money.js';
 import { documentedSuccess, NOT_FOUND_BODIES, NON_DEFINITIVE, response, fetchMock, deferredFetch, memoryStorage } from './fixtures/gumroad-verify.js';
 
 const KEY = 'A1B2C3D4-E5F60718-9ABCDEF0-1234ABCD';
@@ -14,31 +16,48 @@ const LEGACY = ['ILBIZ', '1', '.abc.def'].join('');
 const DAY = 86_400_000;
 const NOW = Date.UTC(2026, 8, 27, 12, 0, 0);
 
+// The Pro product the page can sell: url, id and the price Gumroad read back.
+const READY_GUMROAD = { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: 'NEW', priceCents: 7900, currency: 'ils' };
+const PNG = 'data:image/png;base64,iVBORw0KGgo=';
+
 function makeEl(name) {
   const listeners = {};
+  const attrs = new Map();
   const el = {
     name, hidden: false, disabled: false, textContent: '', value: '', innerHTML: '', open: false,
-    dataset: {}, files: null, children: [],
+    dataset: {}, files: null, children: [], attrs,
     style: { props: new Map(), setProperty(k, v) { this.props.set(k, v); }, removeProperty(k) { this.props.delete(k); } },
     addEventListener(type, fn) { (listeners[type] ??= []).push(fn); },
     fire(type, ev = {}) { for (const fn of listeners[type] ?? []) fn({ target: el, ...ev }); },
     append(...xs) { el.children.push(...xs); },
     appendChild(x) { el.children.push(x); return x; },
     querySelector: () => makeEl('child'),
-    setAttribute() {},
-    removeAttribute() {},
+    setAttribute(k, v) { attrs.set(k, String(v)); },
+    removeAttribute(k) { attrs.delete(k); },
+    hasAttribute(k) { return attrs.has(k); },
   };
   return el;
+}
+
+/** A window that records its event listeners, so a test can fire afterprint. */
+function makeWindow() {
+  const listeners = {};
+  return {
+    print() {}, scrollTo() {}, open() {},
+    addEventListener(type, fn) { (listeners[type] ??= []).push(fn); },
+    fire(type) { for (const fn of listeners[type] ?? []) fn({ type }); },
+  };
 }
 
 const flush = () => new Promise((r) => setImmediate(r));
 
 /** Load assets/page-invoice.js fresh, with the given world. */
-async function loadPage({ storage = memoryStorage(), fetchImpl = fetchMock(response(200, documentedSuccess())), productId = 'NEW', online = true, search = '' } = {}) {
+async function loadPage({ storage = memoryStorage(), session = memoryStorage(), fetchImpl = fetchMock(response(200, documentedSuccess())), productId = 'NEW', gumroad = null, online = true, search = '' } = {}) {
   vi.resetModules();
   const els = new Map();
   const $el = (sel) => { if (!els.has(sel)) els.set(sel, makeEl(sel)); return els.get(sel); };
-  const site = { siteUrl: 'https://il-biz-tools.netlify.app', gumroad: { productUrl: '', productId } };
+  const site = { siteUrl: 'https://il-biz-tools.netlify.app', gumroad: gumroad ?? { productUrl: '', productId } };
+  const win = makeWindow();
   vi.doMock('../assets/common.js', () => ({
     initPage() {},
     $: (sel, root) => (root ? root.querySelector(sel) : $el(sel)),
@@ -46,21 +65,26 @@ async function loadPage({ storage = memoryStorage(), fetchImpl = fetchMock(respo
     site,
   }));
   vi.stubGlobal('localStorage', storage);
+  vi.stubGlobal('sessionStorage', session);
   vi.stubGlobal('location', { search, pathname: '/invoice.html' });
   vi.stubGlobal('navigator', { onLine: online });
   vi.stubGlobal('fetch', fetchImpl);
   vi.stubGlobal('document', { createElement: () => makeEl('created'), querySelector: $el });
   vi.stubGlobal('Option', class { constructor(label, value) { this.label = label; this.value = value; } });
-  vi.stubGlobal('window', { print() {}, scrollTo() {}, open() {} });
+  vi.stubGlobal('window', win);
   vi.useFakeTimers({ toFake: ['Date'], now: NOW });
   await import('../assets/page-invoice.js');
   return {
     $: $el,
     storage,
+    session,
+    site,
+    window: win,
     fetchImpl,
     record: () => JSON.parse(storage.getItem(LICENSE_STORAGE_KEY)),
-    // proActive, as the page shows it: branding fields visible and the logo accent applied.
-    proActive: () => $el('#branding-fields').hidden === false,
+    // proActive, as the page shows it: the branding accent applied to the document for print (a try-out sets
+    // only its screen-only variable, never this one).
+    proActive: () => $el('#preview').style.props.has('--brand-accent'),
     note: () => $el('#license-note').textContent,
   };
 }
@@ -242,5 +266,41 @@ describe('AT-10 the retired signed format', () => {
     expect(page.proActive()).toBe(false);
     expect(page.fetchImpl.calls).toHaveLength(0);
     expect(page.storage.getItem(LICENSE_STORAGE_KEY)).toBeNull();
+  });
+});
+
+describe('N1 the price is shown in the ready state only, and it is the configured one', () => {
+  it('ready: the price Gumroad read back, beside the button that buys it', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD });
+    const expected = proButtonState(page.site).price;
+    expect(expected).toBe(formatILS(79, { decimals: 0 }));
+    expect(page.$('#pro-price').hidden).toBe(false);
+    expect(page.$('#pro-price').textContent).toBe(expected);
+    expect(page.$('#pro-cta').textContent).toBe('לרכישה ב-Gumroad');
+    expect(page.$('#pro-cta').disabled).toBe(false);
+    expect(page.$('#pro-note').textContent).toContain('בחנות Mehudak (מהודק)');
+  });
+
+  const shut = [
+    ['unconfigured', { productUrl: '', productId: 'NEW' }],
+    ['invalid url', { productUrl: 'mehudak.gumroad.com/l/pro', productId: 'NEW', priceCents: 7900, currency: 'ils' }],
+    ['no product id', { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: '', priceCents: 7900, currency: 'ils' }],
+    ['no price read back yet', { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: 'NEW' }],
+  ];
+  for (const [name, gumroad] of shut) {
+    it(`${name}: no price anywhere in the Pro box, and the button stays shut`, async () => {
+      const page = await loadPage({ gumroad });
+      expect(page.$('#pro-price').hidden).toBe(true);
+      expect(page.$('#pro-price').textContent).toBe('');
+      expect(page.$('#pro-cta').disabled).toBe(true);
+      expect(page.$('#pro-cta').textContent).toBe('בקרוב');
+    });
+  }
+});
+
+describe('Hebrew copy on the page addresses users in the plural', () => {
+  it('the thank-you after a purchase says "אליכם" and "הזינו"', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD, search: '?purchased=1' });
+    expect(page.note()).toBe('תודה! מפתח הרישיון נמצא בקבלה שנשלחה אליכם במייל מ-Gumroad. הזינו אותו כאן.');
   });
 });

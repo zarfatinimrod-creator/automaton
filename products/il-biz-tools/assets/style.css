@@ -77,6 +77,9 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); out
 .lines-table .remove { width: 40px; }
 .pro-box { border: 2px dashed var(--brand); background: #f3f7ff; }
 .pro-box h3 { margin-top: 0; }
+.pro-terms { font-weight: 600; }
+.pro-price { font-size: 1.25rem; margin-left: .4em; }
+.pro-trust { flex-basis: 100%; }
 .doc-list li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
 
 /* Printable document */
