@@ -1,4 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as apify-runs.mjs)
 import {
   buildMeta,
@@ -7,6 +10,7 @@ import {
   extractText,
   hasChanged,
   isHtml,
+  main,
   MAX_BYTES,
   parseUrlList,
   readCappedBody,
@@ -483,5 +487,166 @@ describe("buildMeta — the redaction count", () => {
     const base = { url: "https://example.com/", slug: "ex", fetchedAt: "2026-09-27T00:00:00.000Z" };
     expect("redacted" in buildMeta(base)).toBe(false);
     expect(buildMeta({ ...base, redacted: 2 }).redacted).toBe(2);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// main(), end to end against a temp directory, with the network stubbed.
+//
+// Written BEFORE the PDF text extraction was added, and run green against the old
+// code first: it pins what an HTML page, a JSON body and a refused page write, so
+// the PDF branch can be shown not to have changed a byte of any of them.
+// ---------------------------------------------------------------------------
+
+const tmpDirs: string[] = [];
+function tmpOut(): string {
+  const dir = mkdtempSync(join(tmpdir(), "render-watch-test-"));
+  tmpDirs.push(dir);
+  return dir;
+}
+
+afterAll(() => {
+  for (const dir of tmpDirs) rmSync(dir, { recursive: true, force: true });
+});
+
+function writeList(dir: string, line: string): string {
+  const path = join(dir, "urls.txt");
+  writeFileSync(path, `# test list\n${line}\n`);
+  return path;
+}
+
+function stubFetch(body: string | Buffer | null, init: { status?: number; contentType: string }) {
+  vi.stubGlobal("fetch", async () => {
+    const status = init.status ?? 200;
+    return new Response(status >= 400 ? null : body, { status, headers: { "content-type": init.contentType } });
+  });
+}
+
+function captureStdout() {
+  const chunks: string[] = [];
+  const spy = vi.spyOn(process.stdout, "write").mockImplementation((chunk: unknown) => {
+    chunks.push(String(chunk));
+    return true;
+  });
+  return { text: () => chunks.join(""), restore: () => spy.mockRestore() };
+}
+
+/** Every file in a directory with its bytes, so "wrote nothing" is a comparison, not a hope. */
+function snapshot(dir: string): Array<[string, string]> {
+  return readdirSync(dir)
+    .sort()
+    .map((name) => [name, readFileSync(join(dir, name)).toString("base64")]);
+}
+
+describe("main — HTML, JSON and refused pages (pinned before the PDF branch existed)", () => {
+  let out: string;
+  let stdout: ReturnType<typeof captureStdout>;
+
+  beforeEach(() => {
+    out = tmpOut();
+    stdout = captureStdout();
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-09-28T01:00:00.000Z"));
+  });
+
+  afterEach(() => {
+    stdout.restore();
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  const html =
+    "<html><head><title>Terms</title><script>x()</script></head>" +
+    "<body><h1>Terms</h1><p>Israel &amp; more</p></body></html>";
+
+  it("stores the body, the text extraction and the meta, in the exact shape and bytes", async () => {
+    stubFetch(html, { contentType: "text/html; charset=utf-8" });
+    const list = writeList(out, "https://example.test/terms\tex-terms");
+
+    expect(await main(["--list", list, "--out", out], {})).toBe(0);
+
+    expect(readdirSync(out).sort()).toEqual(["ex-terms.html", "ex-terms.meta.json", "ex-terms.txt", "urls.txt"]);
+    expect(readFileSync(join(out, "ex-terms.html"), "utf8")).toBe(html);
+    expect(readFileSync(join(out, "ex-terms.txt"), "utf8")).toBe("Terms\nTerms\nIsrael & more\n");
+
+    const raw = readFileSync(join(out, "ex-terms.meta.json"), "utf8");
+    const meta = JSON.parse(raw);
+    expect(raw).toBe(`${JSON.stringify(meta, null, 2)}\n`);
+    expect(Object.keys(meta)).toEqual([
+      "url",
+      "slug",
+      "fetchedAt",
+      "status",
+      "contentType",
+      "byteLength",
+      "sha256",
+      "truncated",
+      "error",
+      "bodyPath",
+      "textPath",
+      "changed",
+      "firstFetch",
+      "previousSha256",
+      "note",
+    ]);
+    expect(meta).toMatchObject({
+      url: "https://example.test/terms",
+      slug: "ex-terms",
+      fetchedAt: "2026-09-28T01:00:00.000Z",
+      status: 200,
+      contentType: "text/html; charset=utf-8",
+      byteLength: Buffer.byteLength(html),
+      sha256: sha256(Buffer.from(html)),
+      truncated: false,
+      error: null,
+      bodyPath: "research/rendered/ex-terms.html",
+      textPath: "research/rendered/ex-terms.txt",
+      changed: true,
+      firstFetch: true,
+      previousSha256: null,
+    });
+    expect(stdout.text()).toMatch(/new\s+ex-terms\s+\d+ bytes\s+text\/html/);
+  });
+
+  it("writes nothing at all when the same bytes come back", async () => {
+    stubFetch(html, { contentType: "text/html; charset=utf-8" });
+    const list = writeList(out, "https://example.test/terms\tex-terms");
+    await main(["--list", list, "--out", out], {});
+    const before = snapshot(out);
+
+    vi.setSystemTime(new Date("2026-10-05T01:00:00.000Z"));
+    await main(["--list", list, "--out", out], {});
+
+    expect(snapshot(out)).toEqual(before);
+    expect(stdout.text()).toMatch(/unchanged\s+ex-terms\s+sha256=/);
+  });
+
+  it("stores a JSON body with no text extraction", async () => {
+    stubFetch('{"a":1}', { contentType: "application/json" });
+    const list = writeList(out, "https://example.test/api\tex-api");
+    await main(["--list", list, "--out", out], {});
+
+    expect(readdirSync(out).sort()).toEqual(["ex-api.json", "ex-api.meta.json", "urls.txt"]);
+    expect(JSON.parse(readFileSync(join(out, "ex-api.meta.json"), "utf8"))).toMatchObject({
+      bodyPath: "research/rendered/ex-api.json",
+      textPath: null,
+    });
+  });
+
+  it("records a refusal in the meta, writes no body, and still exits 0", async () => {
+    stubFetch(null, { status: 403, contentType: "text/html" });
+    const list = writeList(out, "https://example.test/blocked\tex-blocked");
+
+    expect(await main(["--list", list, "--out", out], {})).toBe(0);
+    expect(readdirSync(out).sort()).toEqual(["ex-blocked.meta.json", "urls.txt"]);
+    const meta = JSON.parse(readFileSync(join(out, "ex-blocked.meta.json"), "utf8"));
+    expect(meta).toMatchObject({
+      status: 403,
+      sha256: null,
+      bodyPath: null,
+      textPath: null,
+      error: "HTTP 403", // a bare Response carries no statusText
+    });
+    expect("textError" in meta).toBe(false);
   });
 });
