@@ -180,7 +180,7 @@ No read is dated yet, because every clock starts with an owner action:
    once per site.
 2. **(~10 min) Step 8, the brand mailbox (asked now, breadth board Q2):** a Google account under the brand (it also
    serves YouTube Stage A and Search Console; Play Books no longer, killed 28.9; Outlook.com if Google asks for more than a phone), which the
-   agent reads through a connector plus a CI secret. The owner never replies to anything in it.
+   agent reads through a connector; CI sends and probes with an app password saved as a secret of the GitHub environment `brand-mailbox` limited to `main` (not a repository secret). The owner never replies to anything in it. **The sender and probe are built (tick 8, `19f63cf`): the hour step 8 is done, five one-question emails can go out (CrazyGames, Wix, Spreadshirt, Indiebook; n8n has a web form only).**
 3. **(5 min)** Step 6a: sign up at Apify with the username `mehudak` (the free plan), add the `APIFY_TOKEN` secret,
    then one Publish click when told.
 4. **(15-20 min)** Step 7: create the GitHub organisation `mehudak` (Free plan), transfer the repo, re-grant the
@@ -257,7 +257,7 @@ Open:
 
 ## 10. Next tick's first action
 
-**After the brand-mail tooling merges (tick 8):** add to its question list (one message per venue) the Spreadshirt recipient now found (`spreadshop-legal-information.txt:34-36`), and a fifth message, Indiebook's five-item question drafted in `research/measurements/indiebook.md` (Tick 8). Four venues are now parked on step 8 with nothing left to render: Wix, Spreadshirt, Indiebook, and Facer's reopen question.
+**Done in tick 8:** the brand-mail tooling merged (`19f63cf`; `scripts/brand_mail.py`, `.github/workflows/brand-mail.yml`, dispatch only, dry run first). The Spreadshirt recipient and Indiebook's question are being added to `research/owner-asks/questions.json`. **Previously planned:** add to its question list (one message per venue) the Spreadshirt recipient now found (`spreadshop-legal-information.txt:34-36`), and a fifth message, Indiebook's five-item question drafted in `research/measurements/indiebook.md` (Tick 8). Four venues are now parked on step 8 with nothing left to render: Wix, Spreadshirt, Indiebook, and Facer's reopen question.
 
 **Continuation (~17:16 UTC 28.9) and after:**
 - One render-watch dispatch for ZERO-TESTS rows 63-95 (Spreadshirt second route, Wix security step, PayPal HELP534,
