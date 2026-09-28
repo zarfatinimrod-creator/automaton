@@ -18,7 +18,7 @@ The forecast is in `research/channel-loop/FORECAST.md`.
 
 | | |
 |---|---|
-| Last tick | tick 5: 28.9.2026 13:13-13:55 UTC — Batch A rendered (22 URLs; 13 readable, 7 refused, 1 shell) and read: Pebble killed (pre-registered), Firefox FAILS on G4 (no Pro feature free nowhere; one reopen check queued), PayPal IL pays ILS with no camera step named, n8n shows 0 priced templates in 100, CrazyGames benchmarks confirmed at rendered grade, Wix's security page is advice only, Superteam terms silent on KYC, Bit2C document-only on its home page, Apify hides 13.5% of Actors by default; Spreadshirt and Tipalti refused the runner; owner page refreshed; MoneyPrinterTurbo#1 unchanged (draft, no CI on the fork) |
+| Last tick | tick 6 (continuous since 28.9 16:07 UTC): Batch B + the tick-5 follow-ups rendered (9 of 10 readable; Tipalti 403 again) and being read; the pcn874 free validator page is being built (the one build slot); Spreadshirt's second route read (still NEEDS_MORE; two runner URLs queued, rows 63-64); the owner's 28.9 order "תמיד תמשיך" recorded — the loop now runs continuously |
 | Branch | `claude/new-session-j071dx`, restarted from `main` after PR #4 merged (`baab472`). The standing consent means the loop merges its own green PRs. |
 | Routine | "Channel loop tick", every 6 h (`11 1,7,13,19 * * *` UTC), fires into this session; see §11 |
 | Fable | the 28.9 07:12 sitting ran two agents (rows 8-11), no 429. Next sitting: the breadth board (row 12) when the sweep lands, else 29.9 ~07:11. |
@@ -77,6 +77,12 @@ The forecast is in `research/channel-loop/FORECAST.md`.
 - a subscription or any spend beyond the one-off ₪200.
 
 **Added 28.9 (breadth board Q7):** never a listing beyond a cap that is not in code (BUILD-11). Once step 8 exists, the probe step also reads the brand mailbox (unread count; an accessibility mail unanswered for more than 7 days is a blocker).
+
+**Continuous mode (owner, 28.9.2026: "תמיד תמשיך... לא לעצור"):** a tick ends by starting the next owner-free item, never by
+waiting for the routine. When every open item waits on a background run, the tick arms a `send_later` continuation (~60
+min) before it ends; the 6-hourly routine is the heartbeat for a lost session. Each continuation counts as a tick for the
+caps in §2 (so one render dispatch per continuation). When the candidate queue thins, the loop's next item is replenishing
+it (verifying second-tier venues from `research/breadth/`), not stopping.
 
 ## 2. Caps and counts
 

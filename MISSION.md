@@ -380,6 +380,21 @@ spam, no fake reviews), the brand as the only public face, the ₪0 rule of 27.9
 are allowed; nothing is paid up front), no camera step, no subscriptions, money only in the ledger, and no account
 ever opened in the owner's name by us.
 
+## תמיד להמשיך — תוספת הבעלים, 28.9.2026 (verbatim)
+
+> תמיד תמשיך אתה לא צריך אותי, יש לך משימה וזה לא לעצור תמיד להמשיך
+
+### What this addition changes
+
+**The loop never idles while owner-free work exists.** A tick no longer ends at "waiting for the next 6-hourly routine":
+it ends by starting the next owner-free item, or, when every item is waiting on a background run, by arming a
+continuation (about 60 minutes, sooner when the run finishes). The 6-hourly routine is only the heartbeat that catches a
+lost session. Nobody has to say "continue".
+
+**It does not mean asking less honestly or spending anything.** The caps in `logs/CHANNEL_LOOP.md` §2, the ₪0 rule, honest
+value, the brand-only rule and the owner's own steps are unchanged. Payout accounts still need the owner's one-time
+identity steps; the loop works around them and says so plainly once per summary, without nagging.
+
 ---
 
 ## The rules this mandate implies
