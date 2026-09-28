@@ -19,6 +19,14 @@ or serving rules specified via robots meta tags or X-Robots-Tag HTTP headers wil
 the noindex on `/preview/`; the Disallow alone keeps the page from being crawled, but a `/preview/` URL linked from
 elsewhere can still be listed without its content. Which of the two lines to keep is the board's call.
 
+To check on the first deploy preview, before any production deploy, because Netlify's docs (as read on 28.9.2026) do not
+settle them:
+- Whether a `_headers` rule matches the requested path or the rewrite target (`/index.html`). `curl -sI
+  <preview-host>/preview/` must show `X-Robots-Tag: noindex`, and `curl -sI <preview-host>/` must not.
+- The form without the trailing slash. The rewrite serves `/preview` too, and robots.txt rules match by path prefix, so
+  `Disallow: /preview/` does not cover `/preview`; only the header keeps it out of an index. `curl -sI
+  <preview-host>/preview` must show `X-Robots-Tag: noindex` as well.
+
 The host is an argument because the sub-brand name is not chosen (RULING-2026-09-28-floors.md, "What was not decided
 here"). It must be a bare lowercase https origin — no port, path, query or trailing slash — or ValueError is raised
 before anything is produced.
