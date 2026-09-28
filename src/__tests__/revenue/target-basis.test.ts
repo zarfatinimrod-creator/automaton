@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { readFileSync } from "node:fs";
 import {
   APIFY_STRANGER_KPI_LABEL,
   CONDITIONAL_TARGETS,
@@ -154,6 +155,23 @@ describe("the board's decision of 7.9.2026, as arithmetic", () => {
     expect(seed.humanSetup.join(" ")).not.toMatch(/deferred until 50 stranger users/);
     expect(seed.operatingLoop).toContain(APIFY_STRANGER_KPI_LABEL);
     expect(TARGET_BASIS["apify-actors"]!.basis).toContain(APIFY_STRANGER_KPI_LABEL);
+  });
+
+  // Review of the breadth-board builder diff, finding 1: the agent running the Apify line reads its playbook and the
+  // publish doc, and both still carried the rules Q5 replaced ("instrument only", KYC at 50 stranger users).
+  it("carries Q5 into the Apify playbook and the publish doc, with the label word for word", () => {
+    for (const path of ["skills/revenue-apify-actors/SKILL.md", "products/apify-il-open-data/docs/PUBLISH.md"]) {
+      const text = readFileSync(path, "utf8").replace(/\s+/g, " ");
+      expect(text, path).toContain(APIFY_STRANGER_KPI_LABEL);
+      expect(text, path).toContain("research/breadth/BOARD.md");
+      expect(text, path).toMatch(/TEST_MORE/);
+      expect(text, path).toMatch(/Publish sitting/);
+      expect(text, path).not.toMatch(/→ instrument only/);
+      expect(text, path).not.toMatch(/stays an instrument and no KYC/);
+      expect(text, path).not.toMatch(/put Apify KYC on the owner's list/);
+      expect(text, path).not.toMatch(/Apify KYC goes to the owner/);
+      expect(text, path).not.toMatch(/do not start KYC yet/);
+    }
   });
 
   it("records Apify's ₪1,500 as the contested upper bound rather than as a target", () => {

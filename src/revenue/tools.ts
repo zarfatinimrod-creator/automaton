@@ -30,7 +30,7 @@ import {
 } from "./ledger.js";
 import { agorotFromIls, formatIls } from "./money.js";
 import { renderOrgChart } from "./org.js";
-import { policyForLine } from "./portfolio.js";
+import { KPI_LABELS, policyForLine } from "./portfolio.js";
 import { runBoardReview, runLedgerSync, requestBoardReview } from "./heartbeat.js";
 import { decideLine, describeDecision } from "./rules.js";
 import { getRevenueStatus } from "./status.js";
@@ -126,6 +126,16 @@ export function createRevenueTools(): AutomatonTool[] {
         const kpis = latestKpis(ctx.db.raw, line.id);
         const ledger = listLedger(ctx.db.raw, { lineId: line.id, limit: 10 });
         const reviews = listReviews(ctx.db.raw, { lineId: line.id, limit: 5 });
+        // A KPI whose reading is biased carries its label wherever it is printed (research/breadth/BOARD.md Q5): beside
+        // each reading, and once per distinct label and rule — printed even before the first reading.
+        const labels = KPI_LABELS[line.id] ?? {};
+        const labelGroups = new Map<string, { kpis: string[]; label: string; rule: string }>();
+        for (const [kpi, l] of Object.entries(labels)) {
+          const key = `${l.label}\u0000${l.rule}`;
+          const group = labelGroups.get(key) ?? { kpis: [], label: l.label, rule: l.rule };
+          group.kpis.push(kpi);
+          labelGroups.set(key, group);
+        }
         return [
           `${line.id} — ${line.name} [${line.category}/${line.tier}/${line.status}] director ${line.directorRole}`,
           `Target ${formatIls(line.targetMonthlyAgorot)}/mo | budget ${line.budgetMonthlyCents}c/mo | launched ${line.launchedAt ?? "not yet"}`,
@@ -140,7 +150,8 @@ export function createRevenueTools(): AutomatonTool[] {
           `Days: created ${metrics.daysSinceCreated.toFixed(0)}, live ${metrics.daysSinceLaunch?.toFixed(0) ?? "-"}, since last revenue ${metrics.daysSinceLastRevenue?.toFixed(0) ?? "-"}`,
           `Rules now: ${describeDecision(decision)}`,
           "",
-          `Latest KPIs: ${Object.keys(kpis).length ? Object.entries(kpis).map(([k, v]) => `${k}=${v.value}${v.unit ?? ""} (${v.capturedAt.slice(0, 10)})`).join(", ") : "none"}`,
+          `Latest KPIs: ${Object.keys(kpis).length ? Object.entries(kpis).map(([k, v]) => `${k}=${v.value}${v.unit ?? ""} (${v.capturedAt.slice(0, 10)})${labels[k] ? ` [${labels[k].label}]` : ""}`).join(", ") : "none"}`,
+          ...[...labelGroups.values()].map((g) => `KPI label (${g.kpis.join(", ")}): ${g.label}. Rule: ${g.rule}.`),
           `Recent ledger: ${ledger.length ? ledger.map((e) => `${e.occurredAt.slice(0, 10)} ${e.kind} ${formatIls(e.amountAgorot)} via ${e.source}${e.note ? ` (${e.note.slice(0, 40)})` : ""}`).join("; ") : "none"}`,
           `Recent reviews: ${reviews.length ? reviews.map((r) => `${r.createdAt.slice(0, 10)} ${r.level}:${r.decision}`).join("; ") : "none"}`,
         ].join("\n");

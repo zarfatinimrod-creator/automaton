@@ -105,7 +105,12 @@ describe("the owner's checklist is eight steps and stays eight", () => {
     expect(step8.unlocks).toMatch(/YouTube/);
     expect(step8.unlocks).toMatch(/second Gmail connector/);
     expect(step8.unlocks).toMatch(/repository secret/);
-    expect(step8.unlocks).toMatch(/colony answers accessibility mail itself/);
+    // The probe and the responder are specified, not built (CHANNEL_LOOP §1 still has the probe as an open item), so the
+    // text says what WILL happen once the step is done — review of the builder diff, finding 7.
+    expect(step8.unlocks).toMatch(/once step 8 is done, the tick's probe will report the unread count/i);
+    expect(step8.unlocks).toMatch(/the colony will answer accessibility mail itself/);
+    expect(step8.unlocks).toMatch(/neither exists yet/);
+    expect(step8.unlocks).not.toMatch(/the tick's probe reports|colony answers accessibility mail itself/);
     expect(step8.unlocks).toMatch(/discloses that it comes from the company's automated operator/);
     expect(step8.unlocks).toMatch(/published only as the brand's accessibility contact/);
     expect(step8.unlocks).toMatch(/never the owner's personal Gmail/);
@@ -189,6 +194,16 @@ describe("every line's human setup maps to a step, and every step unlocks a line
       for (const note of line.humanSetup) {
         expect(note).toMatch(/owner step \d/i);
       }
+    }
+  });
+
+  // Review of the breadth-board builder diff, finding 5: the report said "steps 8, 3, 6" for il-biz-tools while its
+  // checklist (humanSetup) showed only 3 and 6, so humanSetupDone could be set without the mailbox.
+  it("names owner step 8 in the setup notes of every line it gates, first", () => {
+    const step8 = ownerStepById("brand-mailbox")!;
+    for (const id of step8.lines) {
+      const line = DEFAULT_PORTFOLIO.find((l) => l.id === id)!;
+      expect(line.humanSetup[0], `${id}: the mailbox note should come first`).toMatch(/^Open the brand mailbox \(owner step 8\)/);
     }
   });
 
@@ -459,10 +474,33 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(step8).toContain("נגישות");
     expect(step8).toMatch(/Gmail האישי/);
     expect(step8).toContain("research/breadth/BOARD.md");
+    // The mailbox probe and the auto-reply are future work, said as future (review of the builder diff, finding 7).
+    expect(step8).not.toContain("בכל ריצה הדוח מראה");
+    expect(step8).not.toContain("המערכת עונה בעצמה");
+    expect(step8).toMatch(/אחרי שצעד 8 יבוצע/);
+    expect(step8).toMatch(/עוד לא קיימ/);
     // Gender-neutral: instructions in the infinitive, no second-person masculine imperatives.
     const todo = step8.slice(step8.indexOf("### מה לעשות"), step8.indexOf("### מה זה עושה"));
     expect(todo.length).toBeGreaterThan(100);
     expect(todo).not.toMatch(/(^|\s)(פתח|צור|היכנס|הירשם|תכתוב|תפתח|תיצור|שלח|בחר)(\s|$)/m);
+  });
+
+  // Review of the breadth-board builder diff, findings 3 and 4: the H1 says 8 but the first page still said "עד אז —
+  // שבעה", the ledger estimate said "כל 7 הצעדים" undated, the order note said the code order would not change beside
+  // a code order that had just changed, and the free batch named a network setting the document never explains.
+  it("says eight wherever it counts today's steps, and dates every seven", () => {
+    expect(doc).not.toMatch(/עד אז — שבעה/);
+    expect(doc).toMatch(/עד אז — שמונה/);
+    expect(doc).not.toMatch(/שכל 7 הצעדים/);
+    expect(doc).not.toMatch(/"כל 7"/);
+    expect(doc).not.toMatch(/ועד אז אני לא משנה אותו בקוד\./);
+  });
+
+  it("says where the network setting in the free batch is explained", () => {
+    const outcome = doc.slice(doc.indexOf("## צעד 8"), doc.indexOf("## מה מגיע רק אם"));
+    const sentence = outcome.slice(outcome.indexOf("ארבעת הצעדים החינמיים"));
+    expect(sentence).toMatch(/הגדרת הרשת של הסביבה/);
+    expect(sentence).toMatch(/ההוראות המדויקות/);
   });
 
   it("lists step 8 in the summary table and totals the minutes in the 'סך הכול' line", () => {

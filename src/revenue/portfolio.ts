@@ -196,6 +196,9 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     targetMonthlyAgorot: agorotFromIls(0),
     budgetMonthlyCents: 4000,
     humanSetup: [
+      // Breadth board, 28.9.2026 (research/breadth/BOARD.md Q2): step 8 gates this line, so it is on the checklist too —
+      // otherwise humanSetupDone could be set after steps 3 and 6 without the mailbox the site must publish.
+      "Open the brand mailbox (owner step 8): a Google account under the brand (Gmail, mehudak) — or a free Outlook.com mailbox if Google's sign-up asks for more than a phone number — connected here as a second Gmail connector. The site's accessibility page (accessibility.html) will publish it as the brand-owned accessibility contact — the publish gate refuses the site until a real one is there, so it is the line's last publish gate — and it is published in no other role (research/breadth/BOARD.md Q2)",
       "Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3)",
       // Owner step 5 (the domain) is not asked for: it is frozen by the owner's
       // ₪0 rule of 27.9.2026, and the site ships on *.netlify.app until the owner

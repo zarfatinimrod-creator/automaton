@@ -69,7 +69,9 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no
 login or search page is rendered unless the venue's terms allow automated access, and `algora.io` is never rendered.
-Dispatch order: rows 33-52 plus row 30's terms PDF first; rows 53-58 (Batch B) the tick after; Batch C (the second-tier
+Dispatch order: rows 33-52 plus row 30's terms PDF first; rows 53-58 (Batch B) the tick after — a dispatch fetches
+every active line of `research/rendered/urls.txt`, so Batch B and row 32's Privy docs root sit there commented out
+until their tick; Batch C (the second-tier
 URLs of the plan's §6.5, ArrangeMe's terms only, and the e-vrit help page) in later ticks, and GameMonetize's two URLs
 only after a game passes CrazyGames Basic Launch.
 

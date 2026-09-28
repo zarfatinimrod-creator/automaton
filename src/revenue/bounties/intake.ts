@@ -52,7 +52,7 @@
  */
 
 import { DEFAULT_FX_ILS } from "../money.js";
-import { DEFAULT_PORTFOLIO, TARGET_BASIS, type TargetBasis } from "../portfolio.js";
+import { DEFAULT_PORTFOLIO, KILLED_LINES, TARGET_BASIS, type TargetBasis } from "../portfolio.js";
 import type { RevenueLineSeed } from "../types.js";
 import type { PolicyVerdict } from "./policy.js";
 import type { BoardSupplyVerdict } from "./supply.js";
@@ -220,9 +220,15 @@ export const KILL_ACCEPTANCE_RATE = 0.25;
 export interface CapacityBaseAddend {
   lineId: string;
   ils: number;
-  /** `target`: its target, above ₪0. `contested-upper-bound`: a ₪0-planned line that keeps a build budget. `none`: 0. */
-  from: "target" | "contested-upper-bound" | "none";
+  /**
+   * `target`: its target, above ₪0. `contested-upper-bound`: a ₪0-planned line that keeps a build budget. `killed`: a
+   * line whose id is in `KILLED_LINES`, 0 whatever its seed says. `none`: a ₪0 target and no budget, 0.
+   */
+  from: "target" | "contested-upper-bound" | "killed" | "none";
 }
+
+/** The ids of every killed line (`KILLED_LINES`): each contributes 0 to the capacity base, even if a seed still names it. */
+export const KILLED_LINE_IDS: ReadonlySet<string> = new Set(KILLED_LINES.map((k) => k.id));
 
 /**
  * The capacity base the floor splits MISSION constraint 4's agent-hours over, line by line — DERIVED from the
@@ -237,13 +243,16 @@ export interface CapacityBaseAddend {
  * still spends hours on is valued at the figure the board "records but refused to commit to" — which is what the
  * contested upper bound exists for (RULING-2026-09-28-floors.md §9). Today that is apify-actors 200 + il-biz-tools 400
  * (planned at ₪0, build budget kept) + oss-bounties 300 + pcn874 600 = ₪1,500 — the 7.9 number, now re-derivable. A
- * killed line leaves `DEFAULT_PORTFOLIO` for `KILLED_LINES`, so it is simply absent from `seeds`.
+ * killed line normally leaves `DEFAULT_PORTFOLIO` for `KILLED_LINES`, but the rule does not rest on that convention: a
+ * seed whose id is in `killed` (default: every `KILLED_LINES` id) contributes 0 even while it is still in `seeds`.
  */
 export function capacityBaseAddends(
   seeds: RevenueLineSeed[] = DEFAULT_PORTFOLIO,
   basis: Record<string, TargetBasis> = TARGET_BASIS,
+  killed: ReadonlySet<string> = KILLED_LINE_IDS,
 ): CapacityBaseAddend[] {
   return seeds.map((seed) => {
+    if (killed.has(seed.id)) return { lineId: seed.id, ils: 0, from: "killed" as const };
     const targetIls = seed.targetMonthlyAgorot / 100;
     if (targetIls > 0) return { lineId: seed.id, ils: targetIls, from: "target" as const };
     const contested = basis[seed.id]?.contestedUpperBoundIls;
@@ -258,8 +267,9 @@ export function capacityBaseAddends(
 export function capacityBaseIls(
   seeds: RevenueLineSeed[] = DEFAULT_PORTFOLIO,
   basis: Record<string, TargetBasis> = TARGET_BASIS,
+  killed: ReadonlySet<string> = KILLED_LINE_IDS,
 ): number {
-  return capacityBaseAddends(seeds, basis).reduce((sum, a) => sum + a.ils, 0);
+  return capacityBaseAddends(seeds, basis, killed).reduce((sum, a) => sum + a.ils, 0);
 }
 
 /**

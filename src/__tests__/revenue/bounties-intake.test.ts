@@ -15,7 +15,7 @@ import {
   selectBounties,
   type BountyCandidate,
 } from "../../revenue/bounties/intake.js";
-import { DEFAULT_PORTFOLIO, committedTargetIls } from "../../revenue/portfolio.js";
+import { DEFAULT_PORTFOLIO, KILLED_LINES, TARGET_BASIS, committedTargetIls } from "../../revenue/portfolio.js";
 
 const NOW = "2026-09-07T12:00:00.000Z";
 
@@ -187,6 +187,28 @@ describe("the pay floor, derived from the board's own numbers", () => {
     const withoutBounties = DEFAULT_PORTFOLIO.filter((s) => s.id !== "oss-bounties");
     expect(capacityBaseIls(withoutBounties)).toBe(1200);
     expect(deriveBountyFloor({ lineTargetIls: 300, portfolioTargetIls: capacityBaseIls(withoutBounties) }).floorIlsPerHour).toBe(30);
+  });
+
+  // Review of the breadth-board builder diff, finding 8: "a killed line contributes 0" held only by convention (a
+  // killed seed is expected to leave DEFAULT_PORTFOLIO). The rule now holds in code: a seed whose id is in
+  // KILLED_LINES adds 0 even while it is still in `seeds`, target and budget notwithstanding.
+  it("counts a seed whose id is in KILLED_LINES as 0, even while it is still in the seeds", () => {
+    const killedId = KILLED_LINES[0]!.id;
+    const bounties = DEFAULT_PORTFOLIO.find((s) => s.id === "oss-bounties")!;
+    const withKilledSeed = [...DEFAULT_PORTFOLIO, { ...bounties, id: killedId }];
+    expect(capacityBaseAddends(withKilledSeed).find((a) => a.lineId === killedId)).toEqual({
+      lineId: killedId,
+      ils: 0,
+      from: "killed",
+    });
+    expect(capacityBaseIls(withKilledSeed)).toBe(1500);
+    expect(deriveBountyFloor({ seeds: withKilledSeed }).floorIlsPerHour).toBe(37.5);
+  });
+
+  it("drops oss-bounties by killing it, not by filtering it: base ₪1,200, floor ₪30.00", () => {
+    const killed = new Set([...KILLED_LINES.map((k) => k.id), "oss-bounties"]);
+    expect(capacityBaseIls(DEFAULT_PORTFOLIO, TARGET_BASIS, killed)).toBe(1200);
+    expect(deriveBountyFloor({ lineTargetIls: 300, portfolioTargetIls: capacityBaseIls(DEFAULT_PORTFOLIO, TARGET_BASIS, killed) }).floorIlsPerHour).toBe(30);
   });
 
   it("counts a ₪0 line with no build budget as 0, contested bound or not", () => {
