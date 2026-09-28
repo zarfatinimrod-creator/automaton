@@ -18,7 +18,7 @@ The forecast is in `research/channel-loop/FORECAST.md`.
 
 | | |
 |---|---|
-| Last tick | tick 6 (continuous since 28.9 16:07 UTC): Batch B + the tick-5 follow-ups rendered (9 of 10 readable; Tipalti 403 again) and being read; the pcn874 free validator page is being built (the one build slot); Spreadshirt's second route read (still NEEDS_MORE; two runner URLs queued, rows 63-64); the owner's 28.9 order "תמיד תמשיך" recorded — the loop now runs continuously |
+| Last tick | tick 6 (continuous since 28.9 16:07 UTC): Batch B read (Play Books killed, pre-registered; Firefox's reopen check confirms G4, reader recommends KILL; Wix, PayPal, n8n, Spreadshirt NEEDS_MORE); the replenish pass queued Indiebook (22), Facer (23), Y8 and GameDistribution (14) and recorded 9 gate refutations; the pcn874 free validator page merged (`a91d45e`); the step-8 questions drafted; the owner's 28.9 order "תמיד תמשיך" recorded. Next build running: mcp-il-tools publish prep |
 | Branch | `claude/new-session-j071dx`, restarted from `main` after PR #4 merged (`baab472`). The standing consent means the loop merges its own green PRs. |
 | Routine | "Channel loop tick", every 6 h (`11 1,7,13,19 * * *` UTC), fires into this session; see §11 |
 | Fable | the 28.9 07:12 sitting ran two agents (rows 8-11), no 429. Next sitting: the breadth board (row 12) when the sweep lands, else 29.9 ~07:11. |
@@ -115,7 +115,7 @@ Stages run in this order:
 |---|---|---|---|---|---|
 | apify-actors (Actor over data.gov.il, free) | parked-owner | Apify, `observable:false`; declared a ₪0 instrument | 6a (Apify sign-up + `APIFY_TOKEN`) | pre-write the "Publish" message; check on main that the publish job creates the Actor as private. Breadth board Q5: the stranger-runs KPI is labelled biased-low while unverified (Apify's Store API hides non-KYC developers by default); the Store-API pair and the apify-docs KYC read come before the Publish click; identity verification is pulled to the Publish sitting only if document-only. **Tick 5 reading (`research/measurements/apify-visibility.md`):** default Store search hides 64 of 474 Actors (13.5%); all rental and 8 of 9 FREE Actors are hidden, so our FREE unverified Actor would be near-invisible; Apify's own docs describe KYC as document-only (legal name + ID photo), which meets the Q5 condition for asking verification at the Publish sitting | secret present, so the publish job stops being a no-op |
 | il-biz-tools (Hebrew business tools) | launch-ready except one gap | Gumroad connector wired (`colony.yml`) | deploy route: ask 1 (network) or the Netlify click in 6b | Done in tick 1: `_site` ships only files that shipped pages load; the accessibility statement is in; the Facebook/WhatsApp line is gone (364 tests). **The publish gate blocks until a brand-owned accessibility contact exists (proposed step 8, brand mailbox).** | the network allowlist is widened AND a brand contact exists |
-| pcn874 (VAT detailed-report file) | admitted: free validator page to build | Gumroad (same account) | none for the free page; 2, 3, 6b, 5 for the paid builder | build a client-side validator page inside il-biz-tools (2-3 days) once that site's preparation is done | rides the il-biz-tools deploy |
+| pcn874 (VAT detailed-report file) | **free validator page built, merged 28.9 (tick 6, `a91d45e`)**; launches with il-biz-tools | Gumroad (same account) | none for the free page; 2, 3, 6b, 5 for the paid builder | `il-biz-tools/pcn874.html`: reads the file in the browser, uploads nothing, checks structure only (Appendix A; a representatives' file is named as unsupported), refuses files over 25 MB, tells a non-UTF-8 or BOM file apart; the validator is bundled from pcn874's own source and a test proves the copy matches. 447 il-biz-tools + 327 pcn874 tests. Two reviewers found 3 HIGH honesty defects (a warning that would have flipped a credit's sign, an acceptance claim, the representatives' file), all fixed. **The page-view KPI is not wired:** the counter is off and nothing reads it, so the "under 100 views a week" kill must not run until it is. | rides the il-biz-tools deploy (same blocker: the accessibility contact, step 8) |
 | oss-bounties (Algora) | parked-window (instrument fault: week 1 struck, counter being fixed; the 4-week clock restarts at the first corrected run) | Algora → Stripe Connect Express. Algora's code lists Israel for Express (code grade); the gap is its silent US-country fallback, caught by step 4b's stop rule (`RULING-2026-09-28-bounty-rail.md` §2, §3.5) | 4b held (corrected week-4 mean ≥ 3 AND a held reward); step 7 creates `BRAND_GITHUB_TOKEN`; 4a dropped by the breadth board | The counter fix (policy reads visible text only, `not-a-payer`, `claimableFresh365`) is being applied (workflow `apply-rulings-28-9`); corrected week 1 read 28.9 09:25 UTC: **18 claimable, only 1 created in the last 365 days** (`research/measurements/algora-supply.md`) | the corrected week-4 mean AND, for 4b, a reward held as a credit |
 | mcp-il-tools (free MCP server) | building (preparation), then parked-owner | none, a ₪0 channel test | proposed step 9 (npm), 5, 7 | Tick 4: both defects fixed test-first (`aca0900`: npx symlink start guard; `hebrew_date` in every timezone, ICU-checked 1900-2100); 19/19. Next: `mcp-publish.yml` gated on `NPM_TOKEN` | npm yes plus token |
 | T1 web arm (faceless-YouTube experiment) | launch-ready but for a counter key | ₪0 experiment | deploy route (ask 1) + a PostHog project named after the brand, with 'Discard client IP data' on and GeoIP off | Tick 2: `page.py` has an optional anonymous counter, off by default and byte-identical (132 tests). Next: create the PostHog project through the attached connector, pre-register the reach floor, choose the sub-brand name. | deploy route open; day 56 counts from that deploy |
@@ -246,12 +246,23 @@ stale Fable trailer and session link (`4cbb3bd`).
 
 Adopted by the breadth board (Q9): the `BOARD-LOOP.md:127` wording (30 days after invoice), the Tipalti correction to `BOARD-LOOP.md:124,126` (billing onboarding comes before the first submission), and the `REJECTED.md:820` Apify note.
 
+Fixed in tick 6 (28.9): ZERO-TESTS rows and `urls.txt` lines are now queued by `scripts/queue-zero-test.mjs` (numbering, four columns, no duplicate URL or slug; 6 tests), replacing the per-tick Python snippet.
+
 Open:
 - **Kill-test wording.** `BOARD-LOOP.md:127` says "the €100 threshold plus NET-60" for CrazyGames. The contract says 30 days after invoice; NET 60 is the Payouts page. BOARD-LOOP is the Fable design, so the correction is noted here and left for the next Fable sitting to adopt.
 
 ## 10. Next tick's first action
 
-**Tick 6 (19:11 UTC):**
+**Continuation (~17:16 UTC 28.9) and after:**
+- One render-watch dispatch for ZERO-TESTS rows 63-95 (Spreadshirt second route, Wix security step, PayPal HELP534,
+  n8n verified-creator thread, and the replenish pass's 28 URLs: Indiebook, Facer, Y8, GameDistribution, TPT fees,
+  Wavedash, six Hebrew teacher-site homepages). Then one Opus reader per venue family.
+- Merge the mcp-il-tools publish-prep worktree when its review and fix pass return (`scripts/workflows/mcp-il-tools-publish-prep.js`).
+- The Fable sitting 29.9 ~07:11 takes `FABLE_QUEUE.md` rows 14-15.
+- Queue in `scripts/queue-zero-test.mjs`, never by hand.
+
+
+**Tick 6 (done in continuous mode, 16:07-~17:05 UTC; its planned items were):**
 - One render-watch dispatch for the tick-5 follow-ups (ZERO-TESTS rows 59-62: PayPal IL help index, n8n Creator Hub
   document, Bit2C FAQ, the AMO 'invoice' search) together with Batch B (rows 53-58: uncomment the six lines in
   `urls.txt`). Then read them into the notes.
