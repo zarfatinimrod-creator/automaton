@@ -382,7 +382,7 @@ https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-
 https://dev.wix.com/docs/build-apps/launch-your-app/market-listing/add-your-company-info	wix-add-company-info
 # ---- NOT FETCHED YET: row 32's Privy docs root, activated by the main thread when T4 is dispatched. ----
 # ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Privy's docs root, for whether it sponsors fees on platform-created wallets.
-https://docs.privy.io/	privy-docs-root
+# https://docs.privy.io/	privy-docs-root  (moot since 28.9 tick 5: Superteam Earn killed on the name rule; the platform pays gas)
 # research/channel-loop/ZERO-TESTS.md row 59 — PayPal Israel (21): the help index, to find the verification article (tick 5, 28.9.2026).
 https://www.paypal.com/il/cshelp/personal	paypal-il-help-index
 # research/channel-loop/ZERO-TESTS.md row 60 — n8n paid templates (20): linked from a tick-5 capture (28.9.2026).
