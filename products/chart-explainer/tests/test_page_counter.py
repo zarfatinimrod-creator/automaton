@@ -88,6 +88,9 @@ def test_counter_script_sends_one_anonymous_pageview_and_touches_no_storage(tmp_
     assert '"$process_person_profile": false' in js
     assert "getRandomValues" in js  # a random id per load, never kept
     assert 'credentials: "omit"' in js
+    # Sent on the first scroll, once, never on load (PREREG-DECISIONS.md §3.3).
+    assert 'addEventListener("scroll"' in js and "once: true" in js and "passive: true" in js
+    assert "DOMContentLoaded" not in js and '"load"' not in js and "setTimeout" not in js
 
 
 def test_counter_on_says_so_in_how_this_page_was_made_and_nowhere_changes_otherwise(tmp_path):
@@ -109,6 +112,7 @@ def test_counter_disclosure_names_what_is_sent_and_what_is_not_kept(tmp_path):
     assert "sets no cookie" in text and "writes nothing to your browser" in text
     assert "random number" in text and "the page's address" in text
     assert "IP address" in text
+    assert "never scrolls sends nothing" in text
 
 
 # --- fail closed ------------------------------------------------------------------------------------------------------
@@ -151,3 +155,4 @@ def test_the_module_docstring_describes_both_modes():
     assert "counter" in doc and "PostHog" in doc and "/i/v0/e/" in doc
     assert "phx_" in doc and "public" in doc
     assert "there is no script" not in doc  # the old unconditional claim is gone; the off mode is described instead
+    assert "scroll" in doc

@@ -12,10 +12,11 @@ has two modes, chosen by build_page's keyword argument `counter`:
   so there is nothing to track anyone with. The output is byte-identical to the page as it was before the counter
   existed (tests/fixtures/t1-page-no-counter.golden.html pins it), and releases/t1/page.html is this mode.
 - On (`counter={"host": "https://eu.i.posthog.com" or "https://us.i.posthog.com", "key": "phc_..."}`). One small inline
-  script is added, and nothing else is loaded: PostHog's JavaScript library is not used. When the page opens, the
-  script sends ONE anonymous `$pageview` event to PostHog's public single-event capture endpoint, `<host>/i/v0/e/`,
-  carrying a random id drawn for that load and never kept, `"$process_person_profile": false`, and the page's address
-  without its query string or fragment. It sets no cookie, writes nothing to browser storage, and reads nothing a
+  script is added, and nothing else is loaded: PostHog's JavaScript library is not used. The first time a visit scrolls
+  the page, the script sends ONE anonymous `$pageview` event (a visit that never scrolls sends nothing, and so does a
+  crawler that renders the page without scrolling — PREREG-DECISIONS.md §3) to PostHog's public single-event capture
+  endpoint, `<host>/i/v0/e/`, carrying a random id drawn for that load and never kept,
+  `"$process_person_profile": false`, and the page's address without its query string or fragment. It sets no cookie, writes nothing to browser storage, and reads nothing a
   fingerprint is made of (user agent, screen, fonts, canvas, language). The "How this page was made" section then says
   plainly that the page counts visits anonymously, without cookies, through PostHog, and stores nothing about the
   visitor. This is the cookieless page-view instrument RED-TEAM §2.1(c) allows as the web arm's K0-equivalent
@@ -72,10 +73,11 @@ _PROJECT_TOKEN = re.compile(r"phc_[A-Za-z0-9]{20,}")  # always fullmatch: `$` wo
 
 COUNTER_DISCLOSURE = """
 <p>This page counts visits anonymously, without cookies, through PostHog, and stores nothing about the visitor.
-Each time it is opened, one small script on it sends PostHog a single page-view event holding the page's address and a
-random number drawn for that visit alone, with person profiles switched off; it sets no cookie and writes nothing to
-your browser. Your IP address reaches PostHog with that request, as it reaches any server a page talks to; the PostHog
-project is set to discard it and to derive no location from it.</p>"""
+The first time a visit scrolls the page, one small script on it sends PostHog a single page-view event holding the
+page's address and a random number drawn for that visit alone, with person profiles switched off; a visit that never
+scrolls sends nothing. It sets no cookie and writes nothing to your browser. Your IP address reaches PostHog with that
+request, as it reaches any server a page talks to; the PostHog project is set to discard it and to derive no location
+from it.</p>"""
 
 _CSS = """
 :root { color-scheme: light; --surface: #fcfcfb; --text: #0b0b0b; --text-2: #52514e; --rule: #e4e3df; }
@@ -157,12 +159,14 @@ def counter_config(counter: Any) -> tuple[str, str] | None:
 
 
 def counter_script(host: str, key: str) -> str:
-    """The one inline script: a single anonymous $pageview to PostHog's capture endpoint, nothing else. The id is 16
-    random bytes drawn on every load and never stored; `credentials: "omit"` keeps the browser from attaching any cookie
-    or stored credential to the request; a failed send is dropped rather than retried. Call it only with
-    counter_config's output."""
+    """The one inline script: a single anonymous $pageview to PostHog's capture endpoint, sent on the visit's FIRST SCROLL
+    and never on load (research/faceless-youtube/PREREG-DECISIONS.md §3: a renderer that never scrolls sends nothing, and
+    a visit that never scrolls is not counted as a reader). The id is 16 random bytes drawn when the event is sent and
+    never stored; `credentials: "omit"` keeps the browser from attaching any cookie or stored credential; a failed send is
+    dropped rather than retried; `once: true` means a second scroll sends nothing. Call it only with counter_config's
+    output."""
     return f"""<script>
-(function () {{
+addEventListener("scroll", function () {{
   var b = new Uint8Array(16), id = "";
   crypto.getRandomValues(b);
   for (var i = 0; i < b.length; i++) id += (b[i] + 256).toString(16).slice(1);
@@ -177,7 +181,7 @@ def counter_script(host: str, key: str) -> str:
       "properties": {{"$process_person_profile": false, "$current_url": location.origin + location.pathname}}
     }})
   }}).catch(function () {{}});
-}})();
+}}, {{ once: true, passive: true }});
 </script>
 """
 
