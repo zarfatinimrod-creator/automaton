@@ -427,6 +427,24 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(step2).toContain("רק כשמוצר בתשלום מוכן");
   });
 
+  // research/tiktok/08-sales-marketing-lessons.md §8.1 N6: a buyer's receipt reply, refund request or question goes to
+  // the email the Gumroad account was opened with, so that email is the step-8 brand mailbox, never a personal one;
+  // and the product job refuses to enable the Pro product until the brand-mail probe is green.
+  it("opens step 3's Gumroad account with the step-8 brand mailbox, never a personal address", () => {
+    const step3 = doc.slice(doc.indexOf("## צעד 3"), doc.indexOf("## צעד 4"));
+    const todo = step3.slice(step3.indexOf("### מה לעשות"), step3.indexOf("### מה זה עושה"));
+    const firstItem = todo.slice(todo.indexOf("1."), todo.indexOf("\n2."));
+    expect(firstItem).toContain("צעד 8");
+    expect(firstItem).toMatch(/לא כתובת אישית/);
+    expect(firstItem).toContain("Mehudak");
+    const gumroad = ownerStepById("gumroad")!;
+    expect(gumroad.unlocks).toMatch(/brand mailbox \(owner step 8\)/);
+    expect(gumroad.unlocks).toMatch(/never a personal address/);
+    expect(gumroad.unlocks).toMatch(/refuses to enable/);
+    // Step 8 comes first in both orders, so the mailbox exists when the account is opened.
+    expect(ownerStepById("brand-mailbox")!.order).toBeLessThan(gumroad.order);
+  });
+
   it("says in step 5 what the freeze costs and what replaces it free", () => {
     const step5 = doc.slice(doc.indexOf("## צעד 5"), doc.indexOf("## צעד 6"));
     expect(step5).toContain("netlify.app");
