@@ -1,0 +1,17 @@
+{
+  "url": "https://dev.wix.com/app-market-partner-agreement",
+  "slug": "wix-partner-agreement-body",
+  "fetchedAt": "2026-09-28T07:15:19.056Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 683473,
+  "sha256": "f3da3f30874298d61ca9289f8890e935434e039e1be88d2939429d6f7fb75587",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/wix-partner-agreement-body.html",
+  "textPath": "research/rendered/wix-partner-agreement-body.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
