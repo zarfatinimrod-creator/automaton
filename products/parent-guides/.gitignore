@@ -1,0 +1,7 @@
+# Virtualenv and the Kokoro model files (~350 MB): installed/fetched by setup.sh, never committed.
+.venv/
+.cache/
+# Rendered frames, audio, MP4, SRT and manifest: regenerable output, never committed.
+out/
+__pycache__/
+.pytest_cache/

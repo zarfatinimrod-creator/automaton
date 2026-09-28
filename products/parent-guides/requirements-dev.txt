@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest==9.1.1
+# Glyph-coverage test: every on-screen character must exist in the vendored font.
+fonttools==4.66.0

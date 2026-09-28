@@ -1,0 +1,274 @@
+{
+  "format": "parent-guide/1",
+  "status": "SAMPLE - held unpublished; nothing is uploaded anywhere",
+  "script_note": "title_he, every scene's id / on_screen_title / on_screen_body / narration / sources / visual, end_card and dropped_for_lack_of_source are the script as given on 28.9.2026, verbatim. Every other key is added for the renderer: evidence (machine-checked quotes, file:line), derived_numbers, illustration, layout, hold_extra_s, and captions (the narration in standard spelling for the .srt; spec.py checks that each word differs from the unvowelised narration only by added ו or י, with YouTube Kids in Latin letters).",
+  "language": "he",
+  "audience": "Israeli parents; addressed in the plural",
+  "brand": "מהודק",
+  "series": "מדריך להורים: YouTube Kids",
+  "ai_line": "נוצר בעזרת AI · קריינות סינתטית",
+  "ai_line_silent": "נוצר בעזרת AI",
+  "title_he": "YouTube Kids: שישה צעדים להגדרה בטוחה יותר",
+  "scenes": [
+    {
+      "id": "s0-hook",
+      "on_screen_title": "מתקינים לילדים YouTube Kids?",
+      "on_screen_body": "6 דברים שכדאי לעשות קודם\nאפליקציה נפרדת מ-YouTube, עם כלים להורים",
+      "narration": "מַתְקִינִים לַיְּלָדִים יוּ֫טְיוּבּ קִידְס?\nשִׁשָּׁה דְּבָרִים שֶׁכְּדַאי לַעֲשׂוֹת.",
+      "captions": ["מתקינים לילדים YouTube Kids?", "שישה דברים שכדאי לעשות."],
+      "sources": [
+        "research/rendered/yk-landing.txt:15 @ d6fffe6 (\"YouTube Kids is a separate app built to be a safer and simpler space for kids to explore, with tools for parents to guide their journey.\")",
+        "research/rendered/yk-important-info-iw.txt:36 @ e79d81e (\"לפני שהילד או הילדה שלכם מתחילים להשתמש באפליקציה, יש כמה פרטים שחשוב לנו שתבינו\")",
+        "The hook question is a question, not a fact claim"
+      ],
+      "visual": "0:00 to 0:05. The question is on screen from the first frame (the hook lands inside 2 s). Flat, abstract art: a generic rounded-rectangle phone with a blank screen and a large friendly '6' badge next to it. No logo, no red, no play triangle, no screenshot, no people. Palette: deep teal and warm yellow on off-white. 'YouTube Kids' is set as plain text in the video's own Hebrew-friendly font, never in YouTube's typeface. A small persistent tag in the top corner, from here to the end: 'נוצר בעזרת AI · קריינות סינתטית'.",
+      "evidence": [
+        {"file": "research/rendered/yk-landing.txt", "line": 15, "quote": "YouTube Kids is a separate app built to be a safer and simpler space for kids to explore, with tools for parents to guide their journey."},
+        {"file": "research/rendered/yk-important-info-iw.txt", "line": 36, "quote": "לפני שהילד או הילדה שלכם מתחילים להשתמש באפליקציה, יש כמה פרטים שחשוב לנו שתבינו"}
+      ],
+      "derived_numbers": [
+        {"value": "6", "kind": "step_count", "why": "the video's own count of its steps (the six scenes titled 1. to 6.), not a claim about the app"}
+      ],
+      "layout": {"styles": {"0": "lead"}},
+      "illustration": {"kind": "hook", "labels": ["6"]}
+    },
+    {
+      "id": "s1-account-profile",
+      "on_screen_title": "1. חשבון, ופרופיל לכל ילד",
+      "on_screen_body": "נכנסים עם חשבון Google של ההורים: יותר כלים ובקרת הורים\nצריך תאריך לידה מאומת בחשבון (מעל גיל 18)\nפרופיל נפרד לכל ילד וילדה, עד 8 בחשבון",
+      "narration": "קֹ֫דֶם כֹּל, נִכְנָסִים לַחֶשְׁבּוֹן שֶׁלָּכֶם.\nכָּךְ יֵשׁ יוֹתֵר כֵּלִים לַהוֹרִים.\nוְיוֹצְרִים פְּרוֹפִיל לְכׇל יֶ֫לֶד וְיַלְדָּה.",
+      "captions": ["קודם כל, נכנסים לחשבון שלכם.", "כך יש יותר כלים להורים.", "ויוצרים פרופיל לכל ילד וילדה."],
+      "sources": [
+        "research/rendered/yk-profiles-iw.txt:40 @ e79d81e (\"אם תיכנסו לאפליקציית YouTube Kids, תהיה לכם גישה נרחבת יותר לתכונות ולאמצעי בקרת ההורים\")",
+        "research/rendered/yk-profiles-iw.txt:42 @ e79d81e (sign-in uses a Google Account)",
+        "research/rendered/yk-profiles-iw.txt:44 @ e79d81e (\"כדי לאשר שאתם מעל גיל 18, הקפידו לאמת את תאריך הלידה בחשבון Google.\"); EN yk-block-en.txt:149",
+        "research/rendered/yk-important-info-iw.txt:40 @ e79d81e (\"הורים שמחוברים לחשבון ב-YouTube Kids יכולים ליצור פרופיל נפרד לכל ילד או ילדה במשפחה.\"); EN yk-landing.txt:169 @ d6fffe6",
+        "research/rendered/yk-profiles-iw.txt:34 @ e79d81e (\"אפשר להוסיף עד 8 פרופילים לכל חשבון.\"); also yk-important-info-iw.txt:48"
+      ],
+      "visual": "0:05 to 0:13. Beat 1: the generic phone shows an abstract sign-in card (a key icon and a checkmark; no Google logo or colours) and a small calendar with a tick for the verified birthday. Beat 2: a row of simple avatar circles appears one by one, marked with shapes (star, moon, leaf), never faces, and a counter reading 'עד 8'.",
+      "evidence": [
+        {"file": "research/rendered/yk-profiles-iw.txt", "line": 40, "quote": "אם תיכנסו לאפליקציית YouTube Kids, תהיה לכם גישה נרחבת יותר לתכונות ולאמצעי בקרת ההורים"},
+        {"file": "research/rendered/yk-profiles-iw.txt", "line": 42, "quote": "אם המכשיר שלכם כבר מחובר לחשבון Google ואתם רוצים להיכנס באמצעותו לאפליקציה"},
+        {"file": "research/rendered/yk-profiles-iw.txt", "line": 44, "quote": "כדי לאשר שאתם מעל גיל 18, הקפידו לאמת את תאריך הלידה בחשבון Google."},
+        {"file": "research/rendered/yk-block-en.txt", "line": 149, "quote": "Make sure you’ve verified your birthday to confirm you’re over the age of 18."},
+        {"file": "research/rendered/yk-important-info-iw.txt", "line": 40, "quote": "הורים שמחוברים לחשבון ב-YouTube Kids יכולים ליצור פרופיל נפרד לכל ילד או ילדה במשפחה."},
+        {"file": "research/rendered/yk-landing.txt", "line": 169, "quote": "You can create individual profiles for each of your kids"},
+        {"file": "research/rendered/yk-profiles-iw.txt", "line": 34, "quote": "אפשר להוסיף עד 8 פרופילים לכל חשבון."},
+        {"file": "research/rendered/yk-important-info-iw.txt", "line": 48, "quote": "אתם יכולים ליצור עד שמונה פרופילים."}
+      ],
+      "derived_numbers": [],
+      "illustration": {"kind": "account", "labels": ["עד 8"]}
+    },
+    {
+      "id": "s2-content-setting",
+      "on_screen_title": "2. בוחרים הגדרת תוכן",
+      "on_screen_body": "„פעוטות וגן” · גיל 4 ומטה\n„החטיבה הצעירה” · גיל 5 עד 8\n„בי״ס יסודי” · גיל 9 עד 12\nאו „לאישור התוכן בעצמך”: רק מה שאתם בחרתם, בלי חיפוש (דורש כניסה לחשבון)\n* שמות האפשרויות לפי מרכז העזרה בעברית. באפליקציה הנוסח עשוי להיות שונה.",
+      "narration": "בּוֹחֲרִים הַגְדָּרַת תּ֫וֹכֶן לְֽפִי גִּיל.\nאוֹ שֶׁאַתֶּם בּוֹחֲרִים בְּֽעַצְמְֽכֶם סִרְטוֹנִים וַעֲרוּצִים.\nוְהַיְּלָדִים לֹא יְֽכוֹלִים לְחַפֵּשׂ.",
+      "captions": ["בוחרים הגדרת תוכן לפי גיל.", "או שאתם בוחרים בעצמכם סרטונים וערוצים.", "והילדים לא יכולים לחפש."],
+      "sources": [
+        "research/rendered/yk-profiles-iw.txt:52, :54, :56 @ e79d81e (the three labels with their ages); EN yk-landing.txt:145 @ d6fffe6 (\"Preschool (ages 4 and under), Younger (ages 5–8), and Older (ages 9–12).\")",
+        "research/rendered/yk-parental-controls-iw.txt:95 @ e79d81e (the four options, including \"לאישור התוכן בעצמך\"); EN yk-parental-controls-en.txt:99",
+        "research/rendered/yk-parental-controls-iw.txt:127 @ e79d81e (\"כשההגדרה הזו מופעלת, הילדים יכולים לצפות רק בסרטונים, בערוצים ובאוספים שאתם בחרתם בשבילם.\"); EN yk-parental-controls-en.txt:131",
+        "research/rendered/yk-parental-controls-iw.txt:129 @ e79d81e (\"כשההגדרה הזו מופעלת, הילדים לא יכולים לחפש סרטונים ב-YouTube Kids.\"); EN yk-parental-controls-en.txt:133",
+        "research/rendered/yk-profiles-iw.txt:74 @ e79d81e (approving content yourself asks you to sign in)",
+        "Footnote: research/rendered/yk-availability-iw.txt:39 @ e79d81e (\"יכול להיות שהדף הזה מכיל תוכן שתורגם בטכנולוגיית AI. תרגומים כאלו עלולים להכיל שגיאות.\"). The same note is on every Hebrew page, and the pages disagree with each other: שאלת הכפל (parental-controls-iw:45), בעיית הכפל (passcode-iw:37), התרגיל בחשבון (profiles-iw:64)"
+      ],
+      "visual": "0:13 to 0:23. Four generic selectable cards stacked on the abstract phone, each with a plain radio button. Beat 1 (line 1): the three age cards pulse in turn. Beats 2 and 3: the fourth card is selected; a hand-drawn checklist icon appears and a magnifying-glass icon is crossed out. The footnote sits small at the bottom of the frame. Hold about 1 s longer than the narration so the four lines can be read.",
+      "evidence": [
+        {"file": "research/rendered/yk-profiles-iw.txt", "line": 52, "quote": "פעוטות וגן (גיל 4 ומטה)"},
+        {"file": "research/rendered/yk-profiles-iw.txt", "line": 54, "quote": "החטיבה הצעירה (גיל 5 עד 8)"},
+        {"file": "research/rendered/yk-profiles-iw.txt", "line": 56, "quote": "בי\"ס יסודי (גיל 9 עד 12)"},
+        {"file": "research/rendered/yk-landing.txt", "line": 145, "quote": "Preschool (ages 4 and under), Younger (ages 5–8), and Older (ages 9–12)."},
+        {"file": "research/rendered/yk-parental-controls-iw.txt", "line": 95, "quote": "לוחצים על האפשרות הרצויה: פעוטות וגן , החטיבה הצעירה , בי\"ס יסודי או לאישור התוכן בעצמך ."},
+        {"file": "research/rendered/yk-parental-controls-en.txt", "line": 99, "quote": "Select Preschool , Younger , Older , or Approve content yourself ."},
+        {"file": "research/rendered/yk-parental-controls-iw.txt", "line": 127, "quote": "כשההגדרה הזו מופעלת, הילדים יכולים לצפות רק בסרטונים, בערוצים ובאוספים שאתם בחרתם בשבילם."},
+        {"file": "research/rendered/yk-parental-controls-en.txt", "line": 131, "quote": "your child can only watch videos, channels, and collections that you’ve handpicked."},
+        {"file": "research/rendered/yk-parental-controls-iw.txt", "line": 129, "quote": "כשההגדרה הזו מופעלת, הילדים לא יכולים לחפש סרטונים ב-YouTube Kids."},
+        {"file": "research/rendered/yk-parental-controls-en.txt", "line": 133, "quote": "In this setting, your child can’t search for any videos in YouTube Kids."},
+        {"file": "research/rendered/yk-profiles-iw.txt", "line": 74, "quote": "אם תבחרו בהגדרה לאישור התוכן בעצמך , תתבקשו להיכנס לחשבון."},
+        {"file": "research/rendered/yk-availability-iw.txt", "line": 39, "quote": "יכול להיות שהדף הזה מכיל תוכן שתורגם בטכנולוגיית AI. תרגומים כאלו עלולים להכיל שגיאות."},
+        {"file": "research/rendered/yk-parental-controls-iw.txt", "line": 45, "quote": "שאלת הכפל"},
+        {"file": "research/rendered/yk-passcode-iw.txt", "line": 37, "quote": "בעיית הכפל"},
+        {"file": "research/rendered/yk-profiles-iw.txt", "line": 64, "quote": "התרגיל בחשבון"}
+      ],
+      "derived_numbers": [],
+      "hold_extra_s": 1.0,
+      "illustration": {"kind": "content", "labels": []}
+    },
+    {
+      "id": "s3-passcode",
+      "on_screen_title": "3. קוד סיסמה אישי",
+      "on_screen_body": "סמל המנעול › „יצירת קוד סיסמה אישי” › 4 ספרות\nלהגדרות ההורים נכנסים עם שאלת הכפל, או עם הקוד\nשכחתם את הקוד? מסירים את האפליקציה ומתקינים מחדש (ההמלצות הקיימות יימחקו)",
+      "narration": "אַחַר כָּךְ, יוֹצְרִים קוֹד אִישִׁי שֶׁל אַרְבַּע סְפָרוֹת.\nאִתּוֹ נִכְנָסִים לְֽהַגְדָּרוֹת הַהוֹרִים.",
+      "captions": ["אחר כך, יוצרים קוד אישי של ארבע ספרות.", "איתו נכנסים להגדרות ההורים."],
+      "sources": [
+        "research/rendered/yk-passcode-iw.txt:33 @ e79d81e (\"אתם יכולים להגדיר קוד סיסמה אישי כדי לגשת להגדרות ההורים ולאמצעי בקרת ההורים באפליקציית YouTube Kids:\"); EN yk-passcode-en.txt:37",
+        "research/rendered/yk-passcode-iw.txt:35, :39, :41 @ e79d81e (\"לוחצים על סמל המנעול .\", \"בוחרים באפשרות יצירת קוד סיסמה אישי .\", \"בוחרים קוד סיסמה בן 4 ספרות ומזינים אותו.\"); EN yk-passcode-en.txt:45 (\"Enter a 4-digit passcode of your choice.\")",
+        "research/rendered/yk-parental-controls-iw.txt:45 @ e79d81e (\"פותרים את שאלת הכפל או מזינים את קוד הסיסמה האישי .\")",
+        "research/rendered/yk-passcode-iw.txt:55 @ e79d81e (reset means uninstall and reinstall, and existing recommendations are deleted); EN yk-passcode-en.txt:59"
+      ],
+      "visual": "0:23 to 0:29. A generic padlock icon (not the app's icon) opens onto four empty dots that fill one by one. A small generic arithmetic card ('3 × 4 = ?') sits beside the dots with the word 'או' between them, to show that either one opens the settings. The forgot-the-code line is small, in a soft callout.",
+      "evidence": [
+        {"file": "research/rendered/yk-passcode-iw.txt", "line": 33, "quote": "אתם יכולים להגדיר קוד סיסמה אישי כדי לגשת להגדרות ההורים ולאמצעי בקרת ההורים באפליקציית YouTube Kids:"},
+        {"file": "research/rendered/yk-passcode-en.txt", "line": 37, "quote": "You can set a custom passcode for access to parental controls and settings in the YouTube Kids app:"},
+        {"file": "research/rendered/yk-passcode-iw.txt", "line": 35, "quote": "לוחצים על סמל המנעול ."},
+        {"file": "research/rendered/yk-passcode-iw.txt", "line": 39, "quote": "בוחרים באפשרות יצירת קוד סיסמה אישי ."},
+        {"file": "research/rendered/yk-passcode-iw.txt", "line": 41, "quote": "בוחרים קוד סיסמה בן 4 ספרות ומזינים אותו."},
+        {"file": "research/rendered/yk-passcode-en.txt", "line": 45, "quote": "Enter a 4-digit passcode of your choice."},
+        {"file": "research/rendered/yk-parental-controls-iw.txt", "line": 45, "quote": "פותרים את שאלת הכפל או מזינים את קוד הסיסמה האישי ."},
+        {"file": "research/rendered/yk-passcode-iw.txt", "line": 55, "quote": "אם שכחתם את קוד הסיסמה, הדרך לאפס אותו היא להסיר את אפליקציית YouTube Kids ולהתקין אותה מחדש. חשוב לזכור שההמלצות לסרטונים שקיימות באפליקציה יימחקו כשתסירו את האפליקציה."},
+        {"file": "research/rendered/yk-passcode-en.txt", "line": 59, "quote": "If you forget your passcode, you can reset it by uninstalling and reinstalling the YouTube Kids app."}
+      ],
+      "derived_numbers": [
+        {"value": "3", "kind": "illustrative", "why": "the made-up sum on the generic arithmetic card ('3 × 4 = ?'); the app's real question varies and no number of it is claimed"}
+      ],
+      "layout": {"styles": {"2": "callout_soft"}},
+      "illustration": {"kind": "passcode", "labels": ["3 × 4 = ?", "או"]}
+    },
+    {
+      "id": "s4-search",
+      "on_screen_title": "4. החיפוש: להשאיר, או להשבית?",
+      "on_screen_body": "סרטונים בחיפוש לא עוברים בדיקה אנושית\n„השבתת החיפוש”: רק סרטונים וערוצים שאומתו על ידי YouTube Kids\nשימו לב: ההשבתה מוחקת את היסטוריית הצפייה והחיפוש של הפרופיל",
+      "narration": "יֵשׁ סִרְטוֹנִים בַּחִפּוּשׂ שֶׁלֹּא עָבְרוּ בְּדִיקָה אֱנוֹשִׁית.\nאֶפְשָׁר גַּם לְֽהַשְׁבִּית אוֹתוֹ בַּהַגְדָּרוֹת.\nוְהַיְּלָדִים רוֹאִים פָּחוֹת סִרְטוֹנִים.",
+      "captions": ["יש סרטונים בחיפוש שלא עברו בדיקה אנושית.", "אפשר גם להשבית אותו בהגדרות.", "והילדים רואים פחות סרטונים."],
+      "sources": [
+        "research/rendered/yk-important-info-iw.txt:76 @ e79d81e (\"עם זאת, הסרטונים שזמינים באמצעות תכונת ה חיפוש לא עוברים בדיקה אנושית.\"). Hebrew only; the page carries the AI-translation note. Supported by yk-profiles-iw.txt:118 and :120 (\"אין לנו אפשרות לבדוק ידנית את כל הסרטונים\")",
+        "research/rendered/yk-parental-controls-iw.txt:157 @ e79d81e (heading \"השבתת החיפוש\"); EN yk-parental-controls-en.txt:161",
+        "research/rendered/yk-parental-controls-iw.txt:159 @ e79d81e (\"הילדים שלכם ייחשפו למבחר סרטונים מצומצם יותר\"); EN yk-parental-controls-en.txt:163 (\"You can restrict your child to a more limited set of videos\")",
+        "research/rendered/yk-parental-controls-iw.txt:161 @ e79d81e (\"הם יכולים לצפות רק בסרטונים ובערוצים שאומתו על ידי YouTube Kids.\"); EN yk-parental-controls-en.txt:165",
+        "research/rendered/yk-parental-controls-iw.txt:163 @ e79d81e (turning off search deletes the profile's watch and search history and resets the Recommended and Watch it again lists); EN yk-parental-controls-en.txt:167"
+      ],
+      "visual": "0:29 to 0:38. A generic magnifying glass over a loose grid of abstract video tiles (plain coloured rectangles, no thumbnails, no play triangles). Beat 2: a generic toggle slides to off. Beat 3: the grid shrinks to fewer tiles, each with a small tick badge. The history warning appears last, in an amber callout.",
+      "evidence": [
+        {"file": "research/rendered/yk-important-info-iw.txt", "line": 76, "quote": "עם זאת, הסרטונים שזמינים באמצעות תכונת ה חיפוש לא עוברים בדיקה אנושית."},
+        {"file": "research/rendered/yk-profiles-iw.txt", "line": 118, "quote": "אין לנו אפשרות לבדוק ידנית את כל הסרטונים"},
+        {"file": "research/rendered/yk-profiles-iw.txt", "line": 120, "quote": "אין לנו אפשרות לבדוק ידנית את כל הסרטונים"},
+        {"file": "research/rendered/yk-parental-controls-iw.txt", "line": 157, "quote": "השבתת החיפוש"},
+        {"file": "research/rendered/yk-parental-controls-en.txt", "line": 161, "quote": "Turn off search"},
+        {"file": "research/rendered/yk-parental-controls-iw.txt", "line": 159, "quote": "הילדים שלכם ייחשפו למבחר סרטונים מצומצם יותר"},
+        {"file": "research/rendered/yk-parental-controls-en.txt", "line": 163, "quote": "You can restrict your child to a more limited set of videos"},
+        {"file": "research/rendered/yk-parental-controls-iw.txt", "line": 161, "quote": "הם יכולים לצפות רק בסרטונים ובערוצים שאומתו על ידי YouTube Kids."},
+        {"file": "research/rendered/yk-parental-controls-en.txt", "line": 165, "quote": "Your child will also be limited to videos and channels verified by YouTube Kids."},
+        {"file": "research/rendered/yk-parental-controls-iw.txt", "line": 163, "quote": "אם משביתים את תכונת החיפוש, היסטוריית הצפייה והיסטוריית החיפוש נמחקות מהפרופיל של הילד או הילדה ב-YouTube Kids."},
+        {"file": "research/rendered/yk-parental-controls-en.txt", "line": 167, "quote": "If you turn off Search, the watch and search history for your kid’s YouTube Kids profile is cleared."}
+      ],
+      "derived_numbers": [],
+      "layout": {"styles": {"2": "callout_amber"}},
+      "illustration": {"kind": "search", "labels": []}
+    },
+    {
+      "id": "s5-timer",
+      "on_screen_title": "5. טיימר לזמן מסך",
+      "on_screen_body": "„הגדרות” › שאלת הכפל או הקוד › „הגדרת טיימר” › בוחרים זמן › „הפעלת טיימר”\nבסוף הזמן: „הזמן נגמר!”, והאפליקציה ננעלת\nלפתיחה: „הגדרות” › הקוד › „יציאה מהטיימר”",
+      "narration": "אֶפְשָׁר לְֽהַגְבִּיל אֶת זְמַן הַצְּפִיָּה.\nבְּסוֹף הַזְּמַן, הַיְּלָדִים רוֹאִים הוֹדָעָה, וְהַצְּפִיָּה נֶעֱצֶ֫רֶת.",
+      "captions": ["אפשר להגביל את זמן הצפייה.", "בסוף הזמן, הילדים רואים הודעה, והצפייה נעצרת."],
+      "sources": [
+        "research/rendered/yk-timer-iw.txt:31 @ e79d81e (built-in timer; \"ולהודיע לילדים כשהגיע הזמן להפסיק את הצפייה\"; \"יפסיק את פעולת האפליקציה\"); EN yk-timer-en.txt:35",
+        "research/rendered/yk-timer-iw.txt:39, :41, :43, :45, :47 @ e79d81e (Settings, multiplication question or code, \"הגדרת טיימר\", slider, \"הפעלת טיימר\"); EN yk-timer-en.txt:47 to :51",
+        "research/rendered/yk-timer-iw.txt:49 @ e79d81e (\"כשהזמן שהוגדר יסתיים, תוצג לילדים ההתראה 'הזמן נגמר!' והאפליקציה תינעל.\"); EN yk-timer-en.txt:53",
+        "research/rendered/yk-timer-iw.txt:51, :53, :55 @ e79d81e (unlock: Settings, code, \"יציאה מהטיימר\"); EN yk-timer-en.txt:59"
+      ],
+      "visual": "0:38 to 0:45. A generic stopwatch icon and a horizontal slider moving to a set time. At the end the abstract phone screen dims, a padlock appears, and a friendly speech bubble reads 'הזמן נגמר!' in the video's own style, not a copy of the app's alert. The step chain appears as small breadcrumb chips.",
+      "evidence": [
+        {"file": "research/rendered/yk-timer-iw.txt", "line": 31, "quote": "ולהודיע לילדים כשהגיע הזמן להפסיק את הצפייה"},
+        {"file": "research/rendered/yk-timer-iw.txt", "line": 31, "quote": "ויפסיק את פעולת האפליקציה"},
+        {"file": "research/rendered/yk-timer-en.txt", "line": 35, "quote": "The timer will display a friendly alert and stop the app when the session is over"},
+        {"file": "research/rendered/yk-timer-iw.txt", "line": 39, "quote": "מקישים על 'הגדרות' בפינת המסך."},
+        {"file": "research/rendered/yk-timer-iw.txt", "line": 41, "quote": "פותרים את שאלת הכפל או מזינים את קוד הסיסמה האישי ."},
+        {"file": "research/rendered/yk-timer-iw.txt", "line": 43, "quote": "מקישים על הגדרת טיימר ."},
+        {"file": "research/rendered/yk-timer-iw.txt", "line": 45, "quote": "מגדירים מגבלת זמן בעזרת פס ההזזה"},
+        {"file": "research/rendered/yk-timer-iw.txt", "line": 47, "quote": "מקישים על הפעלת טיימר ."},
+        {"file": "research/rendered/yk-timer-en.txt", "line": 47, "quote": "Tap Set Timer ."},
+        {"file": "research/rendered/yk-timer-en.txt", "line": 49, "quote": "Use the slider bar"},
+        {"file": "research/rendered/yk-timer-en.txt", "line": 51, "quote": "Tap START TIMER ."},
+        {"file": "research/rendered/yk-timer-iw.txt", "line": 49, "quote": "כשהזמן שהוגדר יסתיים, תוצג לילדים ההתראה 'הזמן נגמר!' והאפליקציה תינעל."},
+        {"file": "research/rendered/yk-timer-en.txt", "line": 53, "quote": "notification and the app will be locked once the time limit is reached."},
+        {"file": "research/rendered/yk-timer-iw.txt", "line": 51, "quote": "מקישים על 'הגדרות' בפינת המסך."},
+        {"file": "research/rendered/yk-timer-iw.txt", "line": 53, "quote": "פותרים את שאלת הכפל או מזינים את קוד הסיסמה האישי ."},
+        {"file": "research/rendered/yk-timer-iw.txt", "line": 55, "quote": "מקישים על יציאה מהטיימר כדי לצאת"},
+        {"file": "research/rendered/yk-timer-en.txt", "line": 59, "quote": "Tap EXIT TIMER to exit"}
+      ],
+      "derived_numbers": [],
+      "illustration": {"kind": "timer", "labels": ["הזמן נגמר!"]}
+    },
+    {
+      "id": "s6-block-report",
+      "on_screen_title": "6. חוסמים ומדווחים",
+      "on_screen_body": "„אף מערכת אוטומטית לא מושלמת” (מרכז העזרה)\nחסימה: „עוד” › „חסימה” › הסרטון, או „הערוץ כולו”\nדיווח: „עוד” › „דיווח” › בוחרים סיבה\nהחסימה עובדת כשאתם מחוברים. יוצאים מהחשבון? מה שנחסם חוזר.",
+      "narration": "גַּם גּ֫וּגֶל כּוֹתֶ֫בֶת שֶׁהַסִּנּוּן לֹא מֻשְׁלָם.\nיֵשׁ סִרְטוֹן שֶׁלֹּא מַתְאִים לָכֶם?\nלוֹחֲצִים עַל חֲסִימָה, אוֹ עַל דִּוּוּחַ.",
+      "captions": ["גם גוגל כותבת שהסינון לא מושלם.", "יש סרטון שלא מתאים לכם?", "לוחצים על חסימה, או על דיווח."],
+      "sources": [
+        "research/rendered/yk-important-info-iw.txt:62 @ e79d81e (\"אין לנו אפשרות לבדוק ידנית את כל הסרטונים ואף מערכת אוטומטית לא מושלמת. אם נתקלתם בסרטון בלתי הולם, אתם יכולים לחסום אותו או לדווח עליו\"); EN yk-landing.txt:165 @ d6fffe6 (\"no automated system of filters is perfect\")",
+        "research/rendered/yk-block-iw.txt:201, :203, :205 @ e79d81e (watch page: More, \"חסימה\", then \"חסימת הסרטון הזה\" or \"אני רוצה לחסום את הערוץ כולו\"); EN yk-block-en.txt:205 (\"Tap More at the top of the video.\") and :209",
+        "research/rendered/yk-flag-iw.txt:35, :37, :39 @ e79d81e (\"מקישים על הסמל 'עוד'\", \"מקישים על דיווח .\", choose a reason)",
+        "research/rendered/yk-block-iw.txt:131, :135 @ e79d81e (blocking asks you to sign in; after signing out, content blocked while signed in becomes available again); EN yk-block-en.txt:139"
+      ],
+      "visual": "0:45 to 0:54. An abstract video tile with a generic three-dot button. Beat 2: a small menu slides up with two plain rows, 'חסימה' and 'דיווח'. Beat 3: the tile greys out with a stop icon; a second path shows a flag icon and three plain reason chips. The quote line is set as a pull-quote with its attribution. Hold about 1 s longer than the narration for the four lines.",
+      "evidence": [
+        {"file": "research/rendered/yk-important-info-iw.txt", "line": 62, "quote": "אין לנו אפשרות לבדוק ידנית את כל הסרטונים ואף מערכת אוטומטית לא מושלמת. אם נתקלתם בסרטון בלתי הולם, אתם יכולים לחסום אותו או לדווח עליו"},
+        {"file": "research/rendered/yk-landing.txt", "line": 165, "quote": "no automated system of filters is perfect"},
+        {"file": "research/rendered/yk-block-iw.txt", "line": 201, "quote": "מקישים על סמל האפשרויות הנוספות שמוצג בחלק העליון של הסרטון."},
+        {"file": "research/rendered/yk-block-iw.txt", "line": 203, "quote": "מקישים על חסימה ."},
+        {"file": "research/rendered/yk-block-iw.txt", "line": 205, "quote": "לוחצים על חסימת הסרטון הזה , או על אני רוצה לחסום את הערוץ כולו"},
+        {"file": "research/rendered/yk-block-en.txt", "line": 205, "quote": "Tap More at the top of the video."},
+        {"file": "research/rendered/yk-block-en.txt", "line": 209, "quote": "select Block this video only, or select Block entire channel"},
+        {"file": "research/rendered/yk-flag-iw.txt", "line": 35, "quote": "מקישים על הסמל 'עוד'"},
+        {"file": "research/rendered/yk-flag-iw.txt", "line": 37, "quote": "מקישים על דיווח ."},
+        {"file": "research/rendered/yk-flag-iw.txt", "line": 39, "quote": "בוחרים את הסיבה לדיווח על הסרטון"},
+        {"file": "research/rendered/yk-block-iw.txt", "line": 131, "quote": "אם תנסו לחסום סרטון כשאתם לא מחוברים לחשבון, תופיע הודעה שבה תתבקשו להיכנס לחשבון."},
+        {"file": "research/rendered/yk-block-iw.txt", "line": 135, "quote": "אם תצאו מהחשבון ב-YouTube Kids, כל תוכן שחסמתם בזמן שהייתם מחוברים לחשבון יהיה זמין לצפייה אחרי שתצאו."},
+        {"file": "research/rendered/yk-block-en.txt", "line": 139, "quote": "If you sign out of YouTube Kids, any content you’ve blocked while signed in will be available when you sign out."}
+      ],
+      "derived_numbers": [],
+      "hold_extra_s": 1.0,
+      "layout": {"styles": {"0": "quote"}},
+      "illustration": {"kind": "block", "labels": ["חסימה", "דיווח"]}
+    },
+    {
+      "id": "s7-outro",
+      "on_screen_title": "כל הפרטים: מרכז העזרה של YouTube Kids",
+      "on_screen_body": "support.google.com/youtubekids\nנבדק 28.9.2026",
+      "narration": "כׇּל הַפְּרָטִים, בְּֽמֶרְכַּז הָעֶזְרָה שֶׁל יוּ֫טְיוּבּ קִידְס.",
+      "captions": ["כל הפרטים, במרכז העזרה של YouTube Kids."],
+      "sources": [
+        "research/rendered/yk-help-home-iw.meta.json @ d6fffe6 (URL https://support.google.com/youtubekids/?hl=iw, HTTP 200)",
+        "research/rendered/yk-help-home-iw.txt:36 to :43 @ d6fffe6 (Hebrew help topics, e.g. \"הגדרות ואמצעי בקרת הורים\" at :40)"
+      ],
+      "visual": "0:54 to 0:57. A recap strip of the six step icons (key, cards, padlock, magnifier, stopwatch, flag) above the URL in plain text. No logo and no link-button styling that imitates YouTube.",
+      "evidence": [
+        {"file": "research/rendered/yk-help-home-iw.meta.json", "meta": {"url": "https://support.google.com/youtubekids/?hl=iw", "status": 200}},
+        {"file": "research/rendered/yk-help-home-iw.txt", "line": 37, "quote": "הגדרת YouTube Kids"},
+        {"file": "research/rendered/yk-help-home-iw.txt", "line": 40, "quote": "הגדרות ואמצעי בקרת הורים"}
+      ],
+      "derived_numbers": [
+        {"value": "28.9.2026", "kind": "capture_date", "why": "the UTC date on which every capture this spec cites was fetched (each <slug>.meta.json fetchedAt)"}
+      ],
+      "layout": {"styles": {"0": "url", "1": "plain"}},
+      "illustration": {"kind": "recap", "labels": []}
+    }
+  ],
+  "end_card": "מהודק\nנוצר בעזרת AI · קריינות סינתטית\nמקור: מרכז העזרה של YouTube Kids, נבדק 28.9.2026\nסרטון עצמאי, ללא קשר ל-YouTube או ל-Google\nשמות האפשרויות לפי מרכז העזרה בעברית; באפליקציה הנוסח עשוי להיות שונה\n(silent, 4 to 5 s, 0:57 to about 1:02; brand wordmark 'מהודק' only, in the video's own palette)",
+  "end_card_hold_s": 4.5,
+  "end_card_evidence": [
+    {"file": "research/rendered/yk-help-home-iw.meta.json", "meta": {"url": "https://support.google.com/youtubekids/?hl=iw", "status": 200}},
+    {"file": "research/rendered/yk-availability-iw.txt", "line": 39, "quote": "יכול להיות שהדף הזה מכיל תוכן שתורגם בטכנולוגיית AI. תרגומים כאלו עלולים להכיל שגיאות."}
+  ],
+  "end_card_derived_numbers": [
+    {"value": "28.9.2026", "kind": "capture_date", "why": "the UTC date on which every capture this spec cites was fetched (each <slug>.meta.json fetchedAt)"}
+  ],
+  "dropped_for_lack_of_source": [
+    "Availability in Israel: the video makes no claim either way. Israel is on the Android list (yk-availability-iw.txt:35, yk-availability-en.txt:39), but the iPhone/iPad and computer variants were not captured, and setup does not need the claim. The script stays true either way.",
+    "'The passcode replaces the multiplication question' and 'a passcode keeps the kids out of settings': nothing says this. The source only says 'the multiplication question OR your custom passcode' (parental-controls-iw:45), and that the question is there to verify an adult (profiles-iw:64). The screen says 'עם שאלת הכפל, או עם הקוד'.",
+    "Timer minimum and maximum: only a slider is described (timer-iw:45). No time range is given.",
+    "The app's real on-screen Hebrew labels: only the help center's wording is captured. It carries Google's possible-AI-translation note on every page, and the pages disagree (שאלת הכפל / בעיית הכפל / התרגיל בחשבון). The labels are used in quotes with an on-screen footnote in scene 2 and on the end card. The label „לאישור התוכן בעצמך” is quoted as the help center gives it; the video's own words always address parents in the plural.",
+    "Whether ads appear in 'approved content only' mode: not captured. So nothing says 'everything they see is what you chose'. The narration says only that you choose videos and channels, and the screen says 'רק מה שאתם בחרתם' (parental-controls-iw:127).",
+    "Supervised accounts on regular YouTube in Israel, the age that applies in Israel, and YouTube Premium in Israel: none were captured, and none are mentioned.",
+    "Steps to pause search history: the linked article was not captured (parental-controls-iw:243).",
+    "Setup flows for the web version and for TVs were not captured, so the video covers the app flows only. The TV parent code (parental-controls-iw:255) is sourced but was left out for length, not for lack of a source.",
+    "Any advice on how much screen time is right, or at what age to start: no source, so none is given.",
+    "NOTE, not a dropped fact (voice gate): each of the 19 narration lines was rendered in memory exactly as hebrew_tts.py renders a one-line file (ef_dora, speed 0.9, 0.6 s tail, PCM_16 round-trip) and scored with asr_gate.py's Whisper and CER. All 19 pass at CER ≤ 0.05 (worst is 0.043, on L12, where the only error is the homophone ט for ת). No file was written. Narration is 57.3 s including the 0.45 s gaps; with the scene holds and the end card, the cut runs about 62–66 s.",
+    "NOTE (voice gate, residuals): the ASR round-trip accepted some sounds that a listener may still hear as wrong. ח in בחיפוש was heard as ה (L11). The r in ארבע was dropped (L09). The m in במרכז blurred (L19). בעצמכם was heard as בעצמם (L07). L05 (לכל), L08 (לחפש) and L15 (בסוף) are clipped fast-speech forms. A native Hebrew listener must approve before anything is published.",
+    "NOTE (voice gate, rephrased): these wordings failed the gate and were replaced. The lock wording failed at CER 0.11–0.63 (האפליקציה ננעלת, המסך ננעל, נעולה). The narration now says הצפייה נעצרת (timer-iw:31: the app stops), and the lock itself ('והאפליקציה ננעלת', timer-iw:49) stays on screen. The verbs לחסום and לדווח failed at 0.26–0.63; they became the button names חסימה and דיווח (block-iw:203, flag-iw:37). The hook 'רוצים לתת לילדים...' failed after the PCM_16 round-trip, so it became 'מתקינים לילדים...'. Lines starting with ואז lost the z sound and were rewritten.",
+    "NOTE (Phonikud marks used, all hand-placed): meteg U+05BD on לְֽפִי, בְּֽעַצְמְֽכֶם, יְֽכוֹלִים, לְֽהַגְדָּרוֹת, לְֽהַשְׁבִּית, לְֽהַגְבִּיל and בְּֽמֶרְכַּז. Stress U+05AB on יוּ֫טְיוּבּ, קֹ֫דֶם, יֶ֫לֶד, תּ֫וֹכֶן, נֶעֱצֶ֫רֶת, גּ֫וּגֶל and כּוֹתֶ֫בֶת. Kamatz katan U+05C7 in לְכׇל and כׇּל. No '@' respelled lines are needed. Feed each narration line to hebrew_tts.py as one argument, exactly as written."
+  ]
+}

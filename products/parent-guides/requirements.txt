@@ -1,0 +1,12 @@
+# Pinned to the versions the first sample was rendered with (28.9.2026, Python 3.11).
+# Frames: Pillow's wheel ships libraqm (FriBiDi + HarfBuzz), so Hebrew is laid out right-to-left without a system library.
+Pillow==12.3.0
+# Fallback bidi path (engine="basic") for a Pillow without raqm.
+python-bidi==0.6.11
+numpy==2.4.6
+soundfile==0.14.0
+# Narration: Kokoro-82M (weights Apache-2.0) through kokoro-onnx (MIT), driven with Hebrew IPA from
+# Phonikud's rule-based G2P (CC BY 4.0; attribution in LICENSES.md). Only needed with --voice; --voice none renders silent.
+kokoro-onnx==0.6.1
+onnxruntime==1.30.0
+phonikud==0.4.1
