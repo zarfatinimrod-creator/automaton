@@ -5,12 +5,7 @@ GitHub org read, container curl egress-blocked, 3 snippets) — still NEEDS_MORE
 render ~17:19 UTC): still NEEDS_MORE. The 2018 Spreadshop upload post (200) shows that "50 a day" was the limit from 1.2.2018
 (today's limit is UNKNOWN), and it adds three 2018 rules: human review, originality with proof of rights, and a ban on
 circumventing accounts. It says nothing on automation, AI, fees or eligibility. The API Design Details page answered 406
-again to a request that already asked for `text/html`, so that route is closed. See "Tick 7 reading". Tick 8 (runner
-render ~18:36 UTC): still NEEDS_MORE. The Spreadshop legal-information page (200) is only an imprint. It links no partner
-terms, seller agreement or content policy, and it says nothing on automation, AI, fees, countries, payout or identity. It
-adds two things: the counterparty depends on the region chosen (NA/Oceania: Spreadshirt, Inc.; Europe: sprd.net AG), and a
-contact address, `contact@spreadshop.com`. The docs route has nothing left to render for KILL-4, so the single next check is
-now the step-8 written question, and it has a recipient. See "Tick 8 reading".** All six Spreadshirt pages the breadth board
+again to a request that already asked for `text/html`, so that route is closed. See "Tick 7 reading". Tick 8 (runner render ~18:36 UTC): still NEEDS_MORE. The Spreadshop legal-information page (200) is only an imprint. It links no partner terms, seller agreement or content policy, and it says nothing on automation, AI, fees, countries, payout or identity. It adds two things: the counterparty depends on the region chosen (NA/Oceania: Spreadshirt, Inc.; Europe: sprd.net AG), and a contact address, `contact@spreadshop.com`. The docs route has nothing left to render for KILL-4, so the single next check is now the step-8 written question, and it has a recipient. See "Tick 8 reading".** All six Spreadshirt pages the breadth board
 named (ZERO-TESTS rows 40-45) came back without a body: five HTTP 403 and one HTTP 406. Nothing below is a finding about
 Spreadshirt's terms; it is a finding about the route.
 
@@ -240,8 +235,8 @@ waits for the step-8 written question.
   merch." (html:87). It is marketing copy, not a rule on automated uploads. [RENDERED] So KILL-4 is still untested, the AI
   rule is still snippet-only (tick 6, finding 5), and Israel is still UNKNOWN.
 
-**(4) New: a contact route for the step-8 question.** `research/owner-asks/brand-mailbox-questions.md:102` says "Contact
-route: not in any capture". This capture now has one.
+**(4) New: a contact route for the step-8 question.** `research/owner-asks/brand-mailbox-questions.md:102` gives the contact
+route as "not in any capture; find it in the venue's own help page before sending". This capture now has one.
 - `contact@spreadshop.com` is the "E-Mail" of Spreadshirt, Inc. (`txt:24`, `:34-36`; `mailto:` at html:31). [RENDERED]
 - The "Spreadshop Contact Form" (`txt:106`) is `https://www.spreadshop.com/contact/` (html:87). [RENDERED] E-mail is the better
   route: a form may demand a personal name or phone, and then it may not be submitted (`brand-mailbox-questions.md:22-23`).
