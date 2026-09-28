@@ -267,3 +267,118 @@ related topic with an accepted answer (`\"has_accepted_answer\":true`, `.html:60
 posts and 374 views, and is closed (`.html:607`; `.txt:105-113`). Read who wrote the accepted answer (the `staff` flag
 in `data-preloaded`) and what it says verification requires. Look too for AI, identity, payout and company-account
 rules. Suggested slug: `n8n-creator-profile-verification`.
+
+## Tick 9 reading (28.9.2026)
+
+**Capture.** `research/rendered/n8n-creator-profile-verification.txt` (137 lines) and its `.html` (1,036 lines). URL
+`https://community.n8n.io/t/creator-profile-templates-verification/126583`, status 200, fetchedAt
+2026-09-28T19:17:34.189Z, 301,810 bytes, not truncated, sha256 `109c4688…`, first fetch. The `.txt` holds all five
+posts (`:9-65`). The `data-preloaded` JSON is on `.html:604`, not `:607` as in the Tick 8 thread. Nothing was fetched
+in this pass. Every quote was checked with `grep -n -F`, and the JSON was parsed with python3.
+
+**The thread.** [RENDERED] It was opened 2025-06-04 in Questions (`.txt:7`, `:11`). It has five posts, all from that
+day, and a system close. The record holds `\"views\":374` and `\"has_accepted_answer\":true`, and the close reads "This
+topic was automatically closed 7 days after the last reply. New replies are no longer allowed." (all `.html:604`).
+- Posts 1, 3 and 5 are by the asker, a creator ([name removed]). Post 1: "I’ve submitted 2 days ago this awesome
+  template at n8n creator hub", and the "workflow is still pending verification and my creator profile also aint
+  verified yet, so i cant move forward with that." (`.txt:17`). It asks "How long does it take for a template to be
+  reviewed now" and "I’m wondering if it will be same long each time to verify each template?" (`.txt:19`).
+- Posts 2 and 4 are by one community member ([name removed]). Post 2: "My experience with the template approval
+  process/timeline is that it could take up to a week." and "I don’t think reviewing templates is at the top of the
+  priority list for the guys at n8n." (`.txt:31`). It offers a forum post as the unreviewed route, "assuming your goal
+  is not to monetize the use of your “template” or semi-automate the installation of it." (`.txt:33`). Post 4: "Maybe
+  you should reach out to them and suggest a community based review process to speed things up." (`.txt:53`). It
+  also asks "Are you prevented from submitting more until your current submission is approved and published?"
+  (`.txt:57`). Nobody answers that.
+
+**Who wrote the accepted answer: the asker, not staff.** [RENDERED] The crawler view marks post 5 as the accepted
+answer (`<div id='post_5' itemprop="acceptedAnswer"`, `.html:777`). The JSON agrees: `\"accepted_answers\":[{\"id\":287922`,
+and `\"accepted_answer\":true` occurs once in the file (`.html:604`). Post 5 has the same user id as post 1 and as the
+topic's `user_id`. Its record holds `\"staff\":false`, `\"moderator\":false`, `\"admin\":false` and trust level 2
+(`.html:604`, parsed). Its text is the asker's own plan: "each should have good description and step by step
+tutorial, i dont wanna just bulk upload em and copy paste gpt description)" … "but up to 1 week verifications"
+(`.txt:65`). The other poster (posts 2 and 4) carries `\"user_title\":\"Community Support\"`, trust level 3 and
+`\"staff\":false`. The one `\"staff\":true` post is the system close (`\"action_code\":\"autoclosed.enabled\"`), all
+`.html:604`. [INFERENCE] The "only related topic with an accepted answer" that Tick 8 pointed to is an asker closing
+their own question. Nobody from n8n speaks in this thread.
+
+**The questions.**
+- **What verification requires: not stated.** [RENDERED] The thread shows two separate reviews. The template is
+  "pending verification", and the creator profile "aint verified yet" (`.txt:17`). The only duration is one non-staff
+  member's experience, "up to a week" (`.txt:31`). The asker's question whether every template takes as long
+  (`.txt:19`) gets no answer. [INFERENCE] As in Tick 8, each template is reviewed before it is published. The profile's
+  criteria appear nowhere in the thread.
+- **Company or brand account: not addressed.** [RENDERED] "brand" has 0 hits. The 3 "company" hits are in the site's
+  own navigation data: a template title and n8n's LinkedIn URL (`.html:604`). The Tick 8 catalogue example (a verified
+  creator organisation) stays the only evidence.
+- **AI: no rule.** [RENDERED] The only AI words from a poster are the asker's own preference: "i dont wanna just bulk
+  upload em and copy paste gpt description)" (`.txt:65`). That is not n8n's rule. The forum's `\"name\":\"AI Generated\"`
+  flag again carries `\"applies_to\":[\"Post\"]` (`.html:604`), as in Ticks 7 and 8.
+- **Identity, payout, fee: none stated.** [RENDERED] The html has 0 hits for identity, KYC, passport, selfie, payout,
+  Stripe, Gumroad, paid and price. The one "camera" hit is a Discourse voice setting (`\"voice_max_camera_quality\"`,
+  `.html:604`). Both "fee" hits in the text are "feedback" (`.txt:65`, `:117`). The only money word is "monetize", in
+  the non-staff reply (`.txt:33`). [INFERENCE] That line assumes that monetising goes through the reviewed library,
+  not the forum. It fits paid templates, but it says nothing about how they are unlocked.
+
+**What the related-topics data adds: the first reply in this chain from n8n's own team group.** [RENDERED] The page's
+`related_topics` (`.html:604`, parsed) list each topic's posters with their group and flags:
+- "Verifies creator", `https://community.n8n.io/t/verifies-creator/129722` (link at `.html:885`; it is also at
+  `n8n-verified-creator-requirements.html:822`, which Tick 7 did not follow). It was created 2025-06-09 and is closed,
+  with 70 views, `posts_count` 2 and no accepted answer. Its posters are the original poster (trust level 1), the
+  system user, and a "Most Recent Poster" with `\"primary_group_name\":\"n8n_Team\"`, `moderator` true and trust
+  level 4.
+- "N8n Creator Dashboard / Template Submission" (id 56836, 2024-10-06, 704 views) has two posters in `n8n_Team`.
+  [INFERENCE] It predates the June 2025 rule change recorded in Tick 7, so it comes second.
+- "How long does template review as n8n creators usually take?" (id 274692, 2026-03-09, 121 views) has one reply, from
+  `\"primary_group_name\":\"community_moderators\"` (moderator, trust level 3), not `n8n_Team`.
+- [INFERENCE] `n8n_Team` is a group name, not a job title. Still, it is the strongest staff signal this chain has
+  produced. "Verifies creator" was opened five days after this thread and nine days before the Tick 7 thread, so any
+  answer in it dates from when the pricing rule changed. The poster list does not show what the reply says. Only the
+  render does.
+
+**Is the forum exhausted? Not yet.** One ₪0 render with a team-group reply remains. The step-8 question is drafted below
+so that it is ready if that render is silent too.
+
+**Verdict for row 20: NEEDS_MORE**, unchanged. This thread adds no rule. Its accepted answer is the asker's own, no
+staff member speaks, and the one duration (up to a week per template) is a non-staff member's experience. It is not a
+kill: nothing refutes the path, which costs ₪0 and can be walked under the brand.
+
+**Single next check:** render `https://community.n8n.io/t/verifies-creator/129722` (`n8n-creator-profile-verification.html:885`).
+Suggested slug: `n8n-verifies-creator`. Read the `n8n_Team` poster's reply for four things: what verification requires,
+whether a brand or company account can be verified, and any AI, identity or payout condition. Confirm the poster's
+`primary_group_name` and `staff` flag in `data-preloaded`. If the reply says nothing on the requirement, the forum is
+exhausted and the step-8 question below is next.
+
+**The step-8 written question (drafted; held behind the render above).** The route and the sending rules are those of
+`research/owner-asks/brand-mailbox-questions.md`: the n8n contact form (§4, `:138`), "Every message" (`:29`) and
+"Recording a reply" (`:34`). This note does not edit that file, and §4's text there is unchanged. This draft narrows
+§4's question with what Ticks 7-9 found. Pricing needs verified status (forum grade), and verification is a review with
+unpublished criteria. So the one decisive yes/no is whether an AI-operated brand account can be verified at all.
+If the main thread adopts it, it replaces §4's text.
+
+- **Subject:** Question: Verified Creator status for an AI-operated brand account
+
+```text
+Hello n8n team,
+
+This message was written and sent by an automated AI agent, not by a person. The agent operates Mehudak (מהודק),
+a small brand that plans to submit workflow templates to the n8n template library. Each template's description would
+say that an AI agent built it.
+
+One question, yes or no: can a creator account like this one, run by an AI agent under a brand name and with every
+template declared as AI-built, be granted Verified Creator status, which we understand is what allows paid templates?
+We are asking for your current rule only, not for an exception, a review or a commitment.
+
+Thank you,
+Mehudak (מהודק)
+```
+
+- **How the answer is read (pre-registered).**
+  - **Yes:** the AI and brand gates pass. A paid listing still waits on the review, and the unfavourable catalogue
+    ordering (§Findings) stands.
+  - **No:** the ₪0 test is refuted (KILL-5, `research/channel-loop/BOARD-LOOP.md:68`), as §4 already says.
+  - **Yes, but a named person or an ID check is required:** an identity step for the sitting to weigh against
+    MISSION's one-time rule.
+  - **A correction that paid templates do not need verified status:** record it, and ask §4's original question on the
+    same thread only if the reply leaves the AI stance open.
+  - In every case the reply is recorded verbatim, per "Recording a reply".
