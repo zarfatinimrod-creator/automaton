@@ -385,3 +385,7 @@ https://eur-lex.europa.eu/eli/reg/2022/2065/oj	eu-dsa-2022-2065
 # https://docs.privy.io/	privy-docs-root
 # research/channel-loop/ZERO-TESTS.md row 59 — PayPal Israel (21): the help index, to find the verification article (tick 5, 28.9.2026).
 https://www.paypal.com/il/cshelp/personal	paypal-il-help-index
+# research/channel-loop/ZERO-TESTS.md row 60 — n8n paid templates (20): linked from a tick-5 capture (28.9.2026).
+https://n8n.notion.site/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f	n8n-creator-hub-notion
+# research/channel-loop/ZERO-TESTS.md row 61 — Superteam T4 / Israeli off-ramp: linked from a tick-5 capture (28.9.2026).
+https://bit2c.co.il/home/faq	bit2c-faq

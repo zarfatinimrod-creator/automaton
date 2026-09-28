@@ -66,6 +66,8 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 57 | Wix App Market (11), Batch B | https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines | the App Market guidelines |
 | 58 | Wix App Market (11), Batch B | https://dev.wix.com/docs/build-apps/launch-your-app/market-listing/add-your-company-info | what the listing publishes about the company |
 | 59 | PayPal Israel (21), after rows 46-48 | https://www.paypal.com/il/cshelp/personal | the PayPal IL help index, linked from the user agreement (`paypal-il-user-agreement-mpp.txt`): locate the identity-verification article (whether any selfie/liveness step exists — breadth board Q3 condition (i)); the agreement itself names ID documents only and links no verification article (`research/measurements/paypal-israel.md`) |
+| 60 | n8n paid templates (20), after rows 49-50 | https://n8n.notion.site/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f | the Creator Hub document named in the creators page config (`n8n-creators.html:36`): the AI rule, the paid-unlock condition, payout terms (`research/measurements/n8n-templates.md`). Notion may return a shell; then the fallback is the scout's raw GitHub `submit-templates.md` |
+| 61 | Superteam T4 / Israeli off-ramp, after row 32 | https://bit2c.co.il/home/faq | Bit2C's registration and deposit/withdrawal FAQ, linked from its home page (`bit2c-home.html:758`): whether a selfie or video step exists, and which network USDC deposits use (`research/measurements/israel-crypto-offramp.md`) |
 
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no
