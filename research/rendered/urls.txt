@@ -527,3 +527,5 @@ https://draft2digital.com/terms-of-service/	draft2digital-com-terms-of-service
 https://help.streetlib.com/collection/1492-faq-on-platform-changeover	streetlib-faq-platform-changeover
 # research/channel-loop/ZERO-TESTS.md row 130 — Teach Simple (28): the terms of use, linked from a tick-9 capture (28.9.2026).
 https://teachsimple.com/terms-of-service	teachsimple-terms-of-service
+# research/channel-loop/ZERO-TESTS.md row 131 — Displate (26): the terms, linked from a tick-9 capture (28.9.2026).
+https://displate.com/about-regulations	displate-about-regulations
