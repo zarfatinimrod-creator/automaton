@@ -1,7 +1,7 @@
 {
   "data": {
-    "total": 474,
-    "count": 474,
+    "total": 475,
+    "count": 475,
     "offset": 0,
     "limit": 1000,
     "desc": false,
@@ -4066,6 +4066,59 @@
         },
         "id": "jbvJOA5x2qlCXkphQ",
         "url": "https://apify.com/parsebird/drushim-israel-jobs-scraper"
+      },
+      {
+        "title": "Israel Real Estate Scraper - Yad2 & Madlan Listings",
+        "name": "israel-real-estate",
+        "username": "leadproof",
+        "stats": {
+          "totalBuilds": 4,
+          "totalRuns": 8,
+          "totalUsers": 2,
+          "totalUsers7Days": 1,
+          "totalUsers30Days": 1,
+          "totalUsers90Days": 1,
+          "lastRunStartedAt": "2026-09-28T18:46:09.483Z",
+          "actorReviewCount": 0,
+          "actorReviewRating": 0,
+          "bookmarkCount": 0
+        },
+        "description": "Scrape Israeli apartments, houses and commercial property from Yad2 and Madlan in one run. One row per apartment, price history, price drops, neighborhood scores and new-listings-only monitoring.",
+        "categories": [
+          "REAL_ESTATE",
+          "LEAD_GENERATION"
+        ],
+        "pictureUrl": "https://images.apifyusercontent.com/lillqt36ouk6orlGuxm7OtXh9NcpCjDIukHnKm0_-4A/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20veWxkYkhKeUVDMmlkT3hHZnctYWN0b3ItVjFRU05McTBnU1FHcGZwZXotc0dWYk8zYk1uYS1pc3JhZWwtcmVhbC1lc3RhdGUucG5n.webp",
+        "notice": "NONE",
+        "bookmarkCount": 0,
+        "actorReviewRating": 0,
+        "actorReviewCount": 0,
+        "badge": null,
+        "isWhiteListedForAgenticPayments": false,
+        "userFullName": "Lead Proof",
+        "userPictureUrl": "https://images.apifyusercontent.com/wrF8p7RULDXJ-lm3deph0zVaNGl97RTGUNA-KFcFBpo/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vaW1UdUdLaHJMdllLQ01Idkc3M2lQdjN5ZnZRUjBieENOM2NRVzFWTmhJYy9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZlV3hrWWtoS2VVVkRNbWxrVDNoSFpuY3RjSEp2Wm1sc1pTMTBTR00zT0RKRWEwOWxMV3h2WjI4dWMzWm5MbkJ1WncucG5n.webp",
+        "currentPricingInfo": {
+          "minimalMaxTotalChargeUsd": 0.003,
+          "isPPEPlatformUsagePaidByUser": true,
+          "pricingModel": "PAY_PER_EVENT",
+          "isPriceChangeNotificationSuppressed": false,
+          "pricingPerEvent": {
+            "actorChargeEvents": {
+              "apify-default-dataset-item": {
+                "eventTitle": "Listing",
+                "eventDescription": "One unique listing delivered to this run’s dataset, from Yad2 or Madlan. The same apartment on both sites is charged once. Apify platform usage is billed separately.",
+                "isOneTimeEvent": false,
+                "eventPriceUsd": 0.003,
+                "isPrimaryEvent": true
+              }
+            }
+          },
+          "startedAt": "2026-09-28T18:14:37.000Z",
+          "createdAt": "2026-09-28T18:14:37.702Z",
+          "apifyMarginPercentage": 0.2
+        },
+        "id": "V1QSNLq0gSQGpfpez",
+        "url": "https://apify.com/leadproof/israel-real-estate"
       },
       {
         "title": "Israel Property Market Signals — Yad2 & Madlan Analytics",
@@ -12776,13 +12829,13 @@
         "name": "ap-news-scraper",
         "username": "nexgendata",
         "stats": {
-          "totalBuilds": 43,
-          "totalRuns": 435,
+          "totalBuilds": 45,
+          "totalRuns": 436,
           "totalUsers": 14,
           "totalUsers7Days": 1,
           "totalUsers30Days": 1,
           "totalUsers90Days": 5,
-          "lastRunStartedAt": "2026-09-28T02:30:55.326Z",
+          "lastRunStartedAt": "2026-09-28T18:48:43.331Z",
           "actorReviewCount": 0,
           "actorReviewRating": 0,
           "bookmarkCount": 0,

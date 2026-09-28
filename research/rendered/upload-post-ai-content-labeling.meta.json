@@ -1,17 +1,17 @@
 {
   "url": "https://docs.upload-post.com/guides/ai-content-labeling/",
   "slug": "upload-post-ai-content-labeling",
-  "fetchedAt": "2026-09-28T18:33:33.576Z",
+  "fetchedAt": "2026-09-28T19:14:49.445Z",
   "status": 200,
   "contentType": "text/html",
   "byteLength": 33623,
-  "sha256": "9c5b7d4fdadcdf2455528a010c2a92d6e89068441a785437fd2b878bc091b985",
+  "sha256": "66e13d9b6b9008a7c1ef865a66a68f1aa67e308217bf2e918c4df2dee30460cc",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/upload-post-ai-content-labeling.html",
   "textPath": "research/rendered/upload-post-ai-content-labeling.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "45d0d4b98330634245cdfa654da9dfb988c61a956185b22e103cbf31819c98d6",
+  "previousSha256": "9c5b7d4fdadcdf2455528a010c2a92d6e89068441a785437fd2b878bc091b985",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

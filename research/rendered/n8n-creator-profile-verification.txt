@@ -1,0 +1,137 @@
+👀 Creator profile. Templates verification 👀 - Questions - n8n Community
+
+n8n Community
+
+👀 Creator profile. Templates verification 👀
+
+Questions
+
+N8ner
+
+June 4, 2025, 6:32am
+
+1
+
+Hey!
+
+I’ve submitted 2 days ago this awesome template at n8n creator hub, and I would also upload videos to youtube and other socials reviewing it, but workflow is still pending verification and my creator profile also aint verified yet, so i cant move forward with that.
+
+How long does it take for a template to be reviewed now, because i have a lot of them to upload for the community. I’m wondering if it will be same long each time to verify each template?
+
+Have a blessed day!
+
+with N8ner
+
+hubschrauber
+
+June 4, 2025, 12:32pm
+
+2
+
+My experience with the template approval process/timeline is that it could take up to a week. I don’t think reviewing templates is at the top of the priority list for the guys at n8n. However, knowing that there has been a review increases the trust in the template content a bit.
+
+As an alternative, you could post an example workflow and an explanation in the Tips and Tricks category here. That is much quicker to “publish” (no review) assuming your goal is not to monetize the use of your “template” or semi-automate the installation of it.
+
+N8ner
+
+June 4, 2025, 1:10pm
+
+3
+
+Thanks for your reply, sir! 1 week for each template is really long bc i got many workflows for uploading.
+
+I want to grow my n8n creator profile, so i need for promoting with content in socials and landing traffic link not to forum topic but my portfolio link inside n8n ecosystem.
+
+or mb external link if it’s really that long for each piece.
+
+hubschrauber
+
+June 4, 2025, 1:22pm
+
+4
+
+Maybe you should reach out to them and suggest a community based review process to speed things up. You could be the first volunteer, but even if they liked the idea and implemented it, you probably still wouldn’t/shouldn’t be able to review/approve your own submissions.
+
+I think they see posts like this and it enters into what they consider regarding priorities. Unfortunately, I think they are running at 125% already with core product development, so other things like reviewing templates will probably still be on a longer schedule.
+
+Is there something preventing you from submitting everything you have ready now and getting it “in the queue?” I don’t think I ever tried to submit more than one template at a time. Are you prevented from submitting more until your current submission is approved and published?
+
+N8ner
+
+June 4, 2025, 1:42pm
+
+5
+
+each should have good description and step by step tutorial, i dont wanna just bulk upload em and copy paste gpt description) each of them require promotion after upload. also each next template i can improve after feedback, each next iteration getting better for users. in this type of work i prefer linear full cicles one by one not bulk actions though it may be more efficient sometimes. this approach also allows me to start right now, without delays ( but up to 1 week verifications ) and prepare the rest as a background process.
+
+Related topics
+
+Topic
+
+Replies
+
+Views
+
+Activity
+
+N8n Creator Dashboard / Template Submission
+
+Questions
+
+4
+
+704
+
+October 7, 2024
+
+Creator Program - Template for Recruiters
+
+Questions
+
+3
+
+221
+
+September 5, 2025
+
+Verifies creator
+
+Questions
+
+1
+
+70
+
+June 10, 2025
+
+How long does template review as n8n creators usually take?
+
+Questions
+
+1
+
+121
+
+March 9, 2026
+
+Requesting feedback for Verified Creator status on my published n8n workflows
+
+General
+
+3
+
+76
+
+February 24, 2026
+
+Home
+
+Categories
+
+Guidelines
+
+Terms of Service
+
+Privacy Policy
+
+Powered by Discourse , best viewed with JavaScript enabled

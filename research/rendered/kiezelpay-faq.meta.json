@@ -1,17 +1,17 @@
 {
   "url": "https://kiezelpay.com/faq/",
   "slug": "kiezelpay-faq",
-  "fetchedAt": "2026-09-28T18:34:35.205Z",
+  "fetchedAt": "2026-09-28T19:15:49.429Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
   "byteLength": 91819,
-  "sha256": "532c99c4fa93e2adf118d5797d9364c7c279bb23da09e798087700c5908d126f",
+  "sha256": "89be3c72b47898eff522b0813dbba93676bb1179bfeed3310ee4114c5f90c862",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/kiezelpay-faq.html",
   "textPath": "research/rendered/kiezelpay-faq.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "468dd97e8522bb4a8a0e24b5821d3deefc481d77280d7d962c8d18956379ec1a",
+  "previousSha256": "532c99c4fa93e2adf118d5797d9364c7c279bb23da09e798087700c5908d126f",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

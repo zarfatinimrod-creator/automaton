@@ -1,17 +1,17 @@
 {
   "url": "https://api.apify.com/v2/store?search=accessibility",
   "slug": "apify-store-accessibility",
-  "fetchedAt": "2026-09-28T18:32:05.109Z",
+  "fetchedAt": "2026-09-28T19:13:18.724Z",
   "status": 200,
   "contentType": "application/json; charset=utf-8",
   "byteLength": 3277439,
-  "sha256": "0c0199ae31ecd6686eb6ba705fb39a2587861ad64b81005dd2610015d4ef5492",
+  "sha256": "64f32ced407b6bd84935370580384b1e2055372c69658ac348c3ce97ddfb22f9",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/apify-store-accessibility.json",
   "textPath": null,
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "637eeb1754da148da1f3d2b5e46593715d008ee0ae6439487a80ba9c82f369ed",
+  "previousSha256": "0c0199ae31ecd6686eb6ba705fb39a2587861ad64b81005dd2610015d4ef5492",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

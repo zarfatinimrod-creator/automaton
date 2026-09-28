@@ -1,17 +1,17 @@
 {
   "url": "https://apps.odoo.com/apps/modules/category/Localization/browse",
   "slug": "sweep2-odoo-localization",
-  "fetchedAt": "2026-09-28T18:32:41.874Z",
+  "fetchedAt": "2026-09-28T19:13:52.514Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 93780,
-  "sha256": "476a5e95ce98d38f91f85da5aa2f83caa436d30007c0ecceab2d0e0d5c174c49",
+  "sha256": "2872fbe9681208ea2decbc696b3210cf5b5e61b8e5b00cb2e1b6877c48b589a4",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/sweep2-odoo-localization.html",
   "textPath": "research/rendered/sweep2-odoo-localization.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "53cdb6f56e9e0d4bdb1442c3a3e1264954ecc69e43a9535ff56069452f1213ba",
+  "previousSha256": "476a5e95ce98d38f91f85da5aa2f83caa436d30007c0ecceab2d0e0d5c174c49",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

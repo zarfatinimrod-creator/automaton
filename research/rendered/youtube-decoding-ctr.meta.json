@@ -1,17 +1,17 @@
 {
   "url": "https://support.google.com/youtube/answer/16767369?hl=en",
   "slug": "youtube-decoding-ctr",
-  "fetchedAt": "2026-09-28T18:33:27.555Z",
+  "fetchedAt": "2026-09-28T19:14:42.969Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1581521,
-  "sha256": "c336baf328b88780c79db76ab8de5aeb0124578e464a986f22f781b14c9aa1f2",
+  "byteLength": 1581532,
+  "sha256": "b48a914f9430d75401a70e315561a38fb22ec736a3d1cc642b31fdf7e6a97f67",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/youtube-decoding-ctr.html",
   "textPath": "research/rendered/youtube-decoding-ctr.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "42f7d1d068469b45d974b0ef7dfd8231bd3e54d3cf81bb6ff07cf85ef13ef08a",
+  "previousSha256": "c336baf328b88780c79db76ab8de5aeb0124578e464a986f22f781b14c9aa1f2",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

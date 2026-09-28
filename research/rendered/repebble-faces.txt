@@ -9,7 +9,7 @@ Watchfaces Apps Search
 Top Picks (changes daily) SEE ALL
 91 Dub v5
 
-265
+266
 R2D2's FACE
 
 1.4K
@@ -21,12 +21,15 @@ TRIPLE SENSOR
 685
 Triangles
 
-305
+306
 Solar & Moon Arc
 
 92
 
 All Watchfaces SEE ALL
+mobiGlas
+
+1
 Netline
 
 2
@@ -42,9 +45,6 @@ Headway
 From Here
 
 3
-Nightscout Supercgm
-
-59
 
 Most Loved SEE ALL
 YWeather

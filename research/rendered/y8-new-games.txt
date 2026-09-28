@@ -11,25 +11,25 @@ Popular Games
 
 Driving & Racing
 
-Shooting
-
 Girls & Lifestyle
 
-Puzzle & Thinking
+Shooting
 
 Sports
 
+Puzzle & Thinking
+
 Adventure & RPG
+
+Skill & Precision
 
 Strategy & Defense
 
 Action & Fighting
 
-Arcade & Classic
-
 Management & Simulation
 
-Skill & Precision
+Arcade & Classic
 
 Fun & Crazy
 
@@ -197,51 +197,43 @@ Supermarket Tycoon: 3D Idle Game
 
 9.2
 
-New
-
-Catburglar
+Climb Up
 
 8.0
 
 New
 
-Speed Wilds
+Pizza Now
 
 8.6
 
 New
 
-Mystery Town
-
-9.1
-
-Spot Hidden Cat
-
-8.4
-
-Highway Domination
-
-8.4
-
-Royal Pool Blitz
-
-7.2
-
-New
-
-Diamond Art Sort
+Pirates Story Match
 
 8.0
 
-Wolfoo Word Wonders
+Detective X: Find Hidden Object
 
-9.1
+7.7
 
 New
 
 Color Guesser
 
 9.4
+
+New
+
+Real Car Bmw M4 Drift
+
+8.7
+
+New
+
+Catburglar
+
+8.0
 
 New
 
@@ -255,9 +247,19 @@ Miki Oath
 
 8.0
 
-Fruit Garden: Merge Fruits
+Wolfoo Word Wonders
 
-8.6
+9.1
+
+New
+
+GORILGO FPS : Online Shooter
+
+7.4
+
+Wolfoo Supermarket Sort
+
+8.1
 
 New
 
@@ -267,45 +269,13 @@ Monster Fire
 
 New
 
-Mystic Mix
+Cube Drop 2048 3D
 
-9.1
-
-Wolfoo Supermarket Sort
-
-8.1
-
-Detective X: Find Hidden Object
-
-7.7
+8.2
 
 New
 
-Candy Match Pop
-
-5.0
-
-New
-
-Real Car Bmw M4 Drift
-
-8.7
-
-Race Through Traffic
-
-7.8
-
-Alpha Tower Gaurd
-
-5.0
-
-Real War
-
-7.3
-
-New
-
-Spooky Block Blast
+Food: Run and Battle
 
 8.6
 
@@ -317,15 +287,91 @@ Oddly Sorted: Color Sort
 
 New
 
-Nitro Racing Gear
+MarbleMaze
 
-7.1
+8.2
+
+Real War
+
+7.3
 
 New
 
-Bike Games: Stunt Bike Racing
+Mystic Mix
 
-8.8
+9.1
+
+Fruit Garden: Merge Fruits
+
+8.6
+
+Car Parking Driving Simulator
+
+7.5
+
+Mine Blade Online Kit PvP
+
+7.7
+
+New
+
+Diamond Art Sort
+
+8.0
+
+New
+
+Cyber Grid Pro
+
+8.9
+
+Chess Deluxe
+
+7.9
+
+New
+
+Mystery Town
+
+9.1
+
+New
+
+Dino World 3D
+
+9.3
+
+Highway Domination
+
+8.4
+
+Guess The Fruit
+
+7.1
+
+Domino 2048
+
+8.1
+
+New
+
+2048 Kingdom
+
+8.0
+
+New
+
+Obblox Gun io
+
+8.0
+
+Spot Hidden Cat
+
+8.4
+
+Obby: Parkour with Ragdoll
+
+7.4
 
 New
 
@@ -333,25 +379,41 @@ Voxel Destruct
 
 8.2
 
-Highway Domination Desert
-
-6.7
-
-Monster Haul
-
-8.4
-
 New
 
-Ironhour
+Speed Wilds
 
 8.6
 
 New
 
-Retakes io
+Spooky Block Blast
 
-8.3
+8.6
+
+New
+
+Neon Slash
+
+9.0
+
+Royal Pool Blitz
+
+7.2
+
+Alpha Tower Gaurd
+
+5.0
+
+New
+
+Nitro Racing Gear
+
+7.1
+
+Highway Domination Desert
+
+6.7
 
 New
 
@@ -361,9 +423,31 @@ Impostor Duck Online
 
 New
 
+Bike Games: Stunt Bike Racing
+
+8.8
+
+Monster Haul
+
+8.4
+
+New
+
 All Shall Fall
 
-6.7
+8.0
+
+New
+
+Candy Match Pop
+
+5.0
+
+New
+
+Ironhour
+
+8.6
 
 New
 
@@ -371,23 +455,21 @@ Bounce Ball: Number Breaker
 
 9.1
 
-New
+Race Through Traffic
 
-Neon Slash
-
-9.0
+7.8
 
 New
 
-Cyber Grid Pro
+Retakes io
 
-8.6
+8.3
 
 New
 
 TG Cases
 
-8.0
+8.1
 
 New
 
@@ -425,10 +507,6 @@ Ping Pong 3d
 
 8.6
 
-Mine Blade Online Kit PvP
-
-7.7
-
 New
 
 Chubby Duck Jump
@@ -443,21 +521,9 @@ Block Flow
 
 New
 
-Pizza Now
-
-8.6
-
-New
-
 PieceAlive
 
 8.3
-
-New
-
-Pirates Story Match
-
-8.0
 
 Fruit Flow Match 3
 
@@ -473,7 +539,7 @@ New
 
 Viviennes Lifestyle Yacht Club
 
-7.9
+7.5
 
 New
 
@@ -499,16 +565,6 @@ Snacky Dash: Food Maze Puzzle
 
 8.0
 
-Guess The Fruit
-
-7.1
-
-New
-
-Dino World 3D
-
-9.3
-
 Clean the Squishes: ASMR Sorting Obby
 
 7.9
@@ -518,62 +574,6 @@ New
 Tower Block Stacking Arcade Game
 
 8.1
-
-Obby: Parkour with Ragdoll
-
-7.4
-
-Burger Hop
-
-8.7
-
-Climb Up
-
-8.0
-
-New
-
-Laser Snake
-
-8.1
-
-New
-
-Chicken Nestor
-
-9.4
-
-Foodie Match
-
-8.5
-
-New
-
-MarbleMaze
-
-8.2
-
-New
-
-Emoji Fusion
-
-7.7
-
-New
-
-Investor Tycoon
-
-8.6
-
-Flag Planet
-
-8.0
-
-New
-
-Sortello
-
-9.1
 
 1
 2
