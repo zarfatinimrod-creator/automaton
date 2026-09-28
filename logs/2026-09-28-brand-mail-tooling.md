@@ -85,6 +85,9 @@
 - `python3 -m unittest` (מהשורש ומ-`scripts/`): 38 בדיקות, OK.
 - `pnpm typecheck`: נקי (וידאתי ב-`--listFiles` ש-`brand-mail.ts` ו-`runner.ts` נבדקים).
 - `npx vitest run src/__tests__/revenue`, הרצה אחרונה: 38 קבצים, 966 בדיקות, הכל עובר.
+- **תיקון (אותו יום, אחרי סקירת הקוד):** הטענה שבשורה הבאה לא עמדה. סקירת הקוד שברה בעותק כמה שומרים שאף בדיקה
+  לא תפסה: TLS לא מאומת, EXAMINE/FETCH/SEARCH שעונים NO, הודעה בלי INTERNALDATE, `SMTPDataError`, כותרת `Date`.
+  המעבר המתוקן והמלא נמצא ב-`logs/2026-09-28-brand-mail-review-fixes.md` §6.
 - **מוטציות Python** (עותק ב-/tmp, 32 מוטציות): 31 נהרגו. השורדת היחידה היא מוטציית ביקורת זהה למקור, שאמורה לשרוד.
   בין השומרים: כתובת מותג, סודות, main בלבד, ריצה יבשה, הודעה אחת, uncertain, YES/NO, תזכורת אחת, 7 ימים, תשובה
   חיה, NOT ANSWERED, אתר בלי כתובת, שרשור, רישום, סוג שגיאה בלבד, TLS, EXAMINE, BODY.PEEK, EXISTS חסר, תג plus,
