@@ -1,0 +1,16 @@
+{
+  "about": "T1 web comparison arm readings, written by the loop (research/faceless-youtube/PREREG-DECISIONS.md §3.6). Nothing is deployed yet (28.9.2026): every field is empty. N = $pageview events whose $current_url equals canonicalUrl exactly and whose payload is exactly {$process_person_profile: false, $current_url} (§3.1, §3.4(c)); null means not read, never zero. D0 is the day BOTH d0 conditions hold (§3.5). At D0+56 the loop records read = {day, engagedStrangerViews, readAt, verdict} with verdict = evaluateWebArm (src/revenue/experiments.ts); src/__tests__/revenue/web-arm-readings.test.ts re-runs it.",
+  "floor": { "day": 56, "minEngagedStrangerViews": 5 },
+  "canonicalUrl": null,
+  "d0": {
+    "publicDeploy": { "at": null, "evidence": null },
+    "discoverySubmission": { "at": null, "route": null },
+    "date": null
+  },
+  "routesOpened": [],
+  "ownViewExceptions": [],
+  "instrumentFaults": [],
+  "dailyCountedEvents": [],
+  "foreignShapedEventsExcluded": null,
+  "read": null
+}
