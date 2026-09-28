@@ -90,6 +90,16 @@ describe("readBrandMailProbe — state/colony/brand-mail.json → one report lin
     expect(later.blockers[0]).toMatch(/oldest 8\.0 days/);
   });
 
+  it("never states an exact overdue count that time since the probe may have made too small", () => {
+    // 2 unanswered at the probe, 1 of them already overdue. A day later the other may be overdue too: "at least 1".
+    write(reading({}, { unanswered: 2, unansweredOver7Days: 1, oldestUnansweredAgeDays: 10.0 }));
+    expect(readBrandMailProbe(file, T0).blockers[0]).toMatch(/^1 accessibility mail/);
+    expect(readBrandMailProbe(file, T0 + DAY).blockers[0]).toMatch(/^at least 1 accessibility mail/);
+    // Every unanswered mail was already overdue: the count cannot grow, so it stays exact.
+    write(reading({}, { unanswered: 1, unansweredOver7Days: 1, oldestUnansweredAgeDays: 10.0 }));
+    expect(readBrandMailProbe(file, T0 + DAY).blockers[0]).toMatch(/^1 accessibility mail/);
+  });
+
   it("says so when the probe found no Sent folder, since then nothing can count as answered", () => {
     write(reading({ sentFolderFound: false }));
     expect(readBrandMailProbe(file, T0).line).toMatch(/No Sent folder was found, so no accessibility mail can count as answered\.$/);

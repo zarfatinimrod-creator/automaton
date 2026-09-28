@@ -162,3 +162,51 @@ Mehudak (מהודק)
 The open item is a selfie, liveness or video step in verification (`paypal-israel.md:97-99`). A support reply would
 describe one account's flow, not a rule [INFERENCE], and no contact route is in any capture. The next check is a free
 render of HELP534 (`paypal-israel.md:100-104`).
+
+## How it is sent
+
+Built 28.9.2026; nothing has been sent (`research/owner-asks/sent.json` is empty).
+
+- **The route:** `.github/workflows/brand-mail.yml`, dispatched by the agent, with `command` = `send`, `venue` = an id
+  from `questions.json` (`crazygames`, `wix`, `spreadshirt`, `n8n`) and `really_send`. It runs
+  `scripts/brand_mail.py` (Python standard library only), which builds the message from `questions.json` and nothing
+  else: From "Mehudak (מהודק)" at the brand address, the venue's recipient, subject and body, UTF-8 quoted-printable.
+- **Dry run first, every time.** Dispatch with `really_send` off, from any branch: the log shows the full message as it
+  would leave and the record it would write, with the venue's pre-send check beside it. Read both against the venue's
+  note. Then dispatch again **from `main`** with `really_send` on.
+- **The secrets step 8 creates** (repository secrets, read only through the one step's `env`):
+  `BRAND_MAIL_ADDRESS`, the brand Gmail address, and `BRAND_MAIL_APP_PASSWORD`, an app password for that account.
+  Until both exist every run prints `{"configured": false}` and exits 0: nothing is read or sent. [INFERENCE, not
+  rendered here: Google issues app passwords only with 2-Step Verification on. If that is not available, step 8's OAuth
+  alternative needs an XOAUTH2 login, which this script does not have yet.] SMTP goes to `smtp.gmail.com:465` and IMAP
+  to `imap.gmail.com:993`, both over TLS; `BRAND_MAIL_SMTP_HOST`/`_PORT` and `BRAND_MAIL_IMAP_HOST`/`_PORT` override
+  them for the Outlook.com fallback.
+- **The rules above, as the code enforces them.** Each has a unit test in `scripts/tests/test_brand_mail.py`, and on
+  28.9.2026 each was broken in a scratch copy to check that a test fails:
+  1. The address must be a bare address whose local part contains `mehudak`, or nothing is sent **or read**, and the
+     refused address is never printed. The owner's personal address cannot pass.
+  2. A real send happens only when `GITHUB_REF` is `refs/heads/main`; the workflow refuses a branch first, and the
+     script refuses again.
+  3. **One message per venue:** any record for the venue in `sent.json` refuses a new first message.
+  4. **One follow-up**, sent only when all hold: at least `followUpAfterDays` (7) days since the first; no follow-up
+     yet; no `YES` or `NO` reading recorded; and no message in the inbox replying to the first that a `NOT ANSWERED`
+     reading has not already counted. The inbox is checked live over IMAP, read-only. The follow-up is the same
+     subject and body, threaded to the first by In-Reply-To and References.
+  5. A venue with no recorded address (Spreadshirt and n8n today) is refused: a form is not this script's route.
+     Held questions are never sent by it.
+  6. If the connection drops mid-send, the record is written with status `uncertain` and committed, and the venue is
+     blocked until the agent checks the Sent folder and corrects the record. A message cannot go twice.
+  7. After a real send, the workflow commits the record (venue, kind, status, UTC time, Message-ID, subject,
+     recipient) to `sent.json` with `[skip ci]`.
+- **Recording a reply** also adds a row to `sent.json`'s `repliesRecorded`, beside the venue note:
+  `{"venue", "recordedAt", "reading": "YES" | "NO" | "NOT ANSWERED", "inReplyCount"}`. `inReplyCount` is how many
+  in-reply messages the reading covers (the probe's count for that venue when it was read).
+- **The probe** (`command` = `probe`) examines the inbox read-only and writes numbers only to
+  `state/colony/brand-mail.json`: unread, messages in reply to each venue's Message-IDs, and accessibility mail
+  received, unanswered, and unanswered for 7+ days. The colony report prints them as one line, and accessibility mail
+  unanswered for 7+ days is a blocker (`src/revenue/brand-mail.ts`). Accessibility mail is anything sent to the
+  `+accessibility` or `+a11y` plus-address, or with "accessibility", "a11y" or "נגישות" in the subject. So publish
+  `<brand address with +accessibility>` as il-biz-tools' contact [INFERENCE: Gmail delivers plus-addressed mail to the
+  same inbox and keeps the tag in the headers; check with one test mail after step 8]. It counts as answered when the
+  brand's Sent folder holds a reply in its thread. The probe is not scheduled yet. Once step 8 is done, it becomes a
+  step of `colony.yml`.

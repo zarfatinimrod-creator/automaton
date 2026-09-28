@@ -113,7 +113,11 @@ export function readBrandMailProbe(file: string = BRAND_MAIL_PROBE_FILE, nowMs: 
   const oldestNow = a.oldestUnansweredAgeDays === null ? null : a.oldestUnansweredAgeDays + sinceDays;
   const agedSinceProbe = a.unansweredOver7Days === 0 && oldestNow !== null && oldestNow >= A11Y_ANSWER_DAYS;
   if (a.unansweredOver7Days > 0 || agedSinceProbe) {
-    const count = agedSinceProbe ? "at least 1" : String(a.unansweredOver7Days);
+    // The probe's count is exact only at the probe. Since then, a younger unanswered mail may have crossed the line
+    // too, so the count becomes a floor whenever there are unanswered mails it did not include.
+    const mayHaveGrown = sinceDays > 0 && a.unanswered > a.unansweredOver7Days;
+    const floor = Math.max(a.unansweredOver7Days, agedSinceProbe ? 1 : 0);
+    const count = mayHaveGrown ? `at least ${floor}` : String(floor);
     blockers.push(
       `${count} accessibility mail(s) to the brand mailbox unanswered for ${A11Y_ANSWER_DAYS}+ days` +
         (oldestNow === null ? "" : ` (oldest ${oldestNow.toFixed(1)} days now`) +
