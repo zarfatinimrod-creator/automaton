@@ -34,6 +34,7 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 25 | Step 2 cost (not a channel), after rows 7-10 | https://www.btl.gov.il/Insurance/National%20Insurance/Pages/%D7%9E%D7%99%20%D7%A4%D7%98%D7%95%D7%A8%20%D7%9E%D7%AA%D7%A9%D7%9C%D7%95%D7%9D%20%D7%93%D7%9E%D7%99%20%D7%91%D7%99%D7%98%D7%95%D7%97%20%D7%9C%D7%90%D7%95%D7%9E%D7%99.aspx | who is exempt from the Bituach Leumi minimum: for an exempt person the business file would add ~₪265 a month (`research/measurements/step2-cost.md`, owner's answer 28.9) |
 | 26 | CrazyGames (6), after rows 22-24 | https://docs.crazygames.com/resources/basic-launch-metrics/ | the Basic Launch progression benchmarks (playtime, retention), which the kill row cites at scout grade only (`crazygames.md` Tick 4) |
 | 27 | CrazyGames (6), after rows 22-24 | https://docs.crazygames.com/requirements/gameplay/ | whether the clone / asset-flip / template rule sits here (`crazygames.md` Tick 4) |
+| 28 | Wix App Market (11), after row 18 | https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice | what evidence Wix accepts for the third-party security test and the multi-developer review the agreement requires before submission (`wix-partner-agreement-body.txt:181,185`), and whether a free route exists (₪0 rule) (`wix-app-market.md` Tick 4) |
 
 Rows 7-9 came from one WebSearch on 27.9.2026, whose snippets said a person with no work and no income pays a
 minimum of about ₪266 a month (₪143 national insurance and ₪123 health) whatever they do. That figure is

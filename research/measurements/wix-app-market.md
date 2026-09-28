@@ -8,7 +8,9 @@ the two-hour occupancy scan of the Hebrew/Israeli App Market categories and eith
 **Kill list (BOARD-LOOP.md:162):** Israel not payable; the floor forfeits or accrues without moving on any plausible
 ceiling; the niche has free incumbents; developer terms impose a support SLA or human conversations; or no niche can be named.
 
-**Status (after tick 3, 28.9.2026): NEEDS_MORE, unchanged.** Tick 3 found the partner-agreement capture was only the docs wrapper; the body is at https://dev.wix.com/app-market-partner-agreement (ZERO-TESTS row 18). Tick 2's text follows. The floor half of the gate passes (rolls over, tick 1). The
+**Status (after tick 4, 28.9.2026): NEEDS_MORE.** The agreement body confirms that the $200 floor rolls over and is forfeited only for breach, and it does not exclude Israel, but it names no payee countries and adds an unpriced pre-submission third-party security test (`wix-partner-agreement-body.txt:185`), so the ₪0 check comes next. See "Tick 4 reading" at the end.
+
+Earlier: **Status (after tick 3, 28.9.2026): NEEDS_MORE, unchanged.** Tick 3 found the partner-agreement capture was only the docs wrapper; the body is at https://dev.wix.com/app-market-partner-agreement (ZERO-TESTS row 18). Tick 2's text follows. The floor half of the gate passes (rolls over, tick 1). The
 Israel half is still UNKNOWN: the rendered payout-account page names Tipalti as the payout handler but says nothing about
 countries, methods, documents or fees. A new open question came up: the Partner onboarding flow registers "your company"
 (wix-payout-account.txt:134). See "Tick 2 reading" at the end of this file.
@@ -377,3 +379,67 @@ sub-$200 balance, whether the payee is an individual, company or brand, tax form
 SLA. The single next check is to render **`https://dev.wix.com/app-market-partner-agreement`** and read its Section 9
 (named at wix-app-payments-faq.txt:126). Suggested `urls.txt` line for the main thread:
 `https://dev.wix.com/app-market-partner-agreement	wix-partner-agreement-body`.
+
+---
+
+## Tick 4 reading (28.9.2026): the partner agreement body
+
+**Read:** `research/rendered/wix-partner-agreement-body.txt`, all 676 lines. The agreement runs from line 1 to 613, and lines 615-676 are the site footer. Meta: `url` = `https://dev.wix.com/app-market-partner-agreement`, `fetchedAt` = 2026-09-28T07:15:19Z, status 200, `truncated` false, `sha256` = `f3da3f30874298d61ca9289f8890e935434e039e1be88d2939429d6f7fb75587`. Its own version line is `:7` "Version effective as of June 30, 2026". The "#ItsThatEasy" summaries are not binding (`:21` "in no way defines or explains any section or provision hereof, or legally binds any of us"), so only clause text is quoted below. Citations are `wix-partner-agreement-body.txt:<line>`, shortened to `:<line>`. [RENDERED]
+
+**Revenue share (Section 9.3)**
+- `:347` "Partner will be entitled to eighty percent (80%) of the Net App Revenues and Wix will be entitled to twenty percent (20%)". [RENDERED]
+- `:353` "during the first twelve (12) months of the launch of the App at the App Market ... Partner will be entitled to one hundred percent (100%)". [RENDERED] The clock runs from each app's launch. The FAQ puts it per developer instead ("your first year on our platform", wix-app-payments-faq.txt:130), and where the two differ the agreement governs. [INFERENCE]
+- `:355` Net App Revenues are "the aggregate amounts actually paid by Users ... less the Transaction Fee", which is "two and one-half percent (2.5%) of each payment". Unlike the FAQ, the definition says nothing about sales tax. Wix may waive the fee (`:357`). [RENDERED]
+- `:429` "Wix shall have the right to cancel or modify the Partner compensation program and/or the revenue sharing method ... upon a ninety (90) day prior notice." [RENDERED]
+
+**Payment: timing, threshold, method, currency, fees, forfeiture**
+- `:371` "payable to the other Party within thirty (30) days following the end of each month, by the Party that collected the relevant Net App Revenues." [RENDERED]
+- `:375` "Wix will not pay to a Partner hereunder an amount lower than two hundred US Dollars ... such balance shall be carried over and added to the next month's Revenue Share amount until the total amount payable to such Partner reaches the Minimal Payment Amount." The binding text says the balance rolls over. [RENDERED]
+- `:385` "payable in U.S. Dollars only. Payment shall be made through wire transfer or any other method chosen by Wix, at its sole discretion. All payments hereunder shall be made against a lawful tax invoice to be issued by the Party receiving the respective payment." [RENDERED]
+- Transfer or payout-provider fees are not in the agreement: "tipalti", "paypal" and "payoneer" each get 0 hits. The only deductions it names are the 2.5% fee (`:355`) and the exchange-rate set-off on apps priced outside USD (`:391`). [RENDERED]
+- A dormancy or expiry forfeiture is not in the agreement: "dormant" and "inactiv" each get 0 hits. Unpaid money is lost only through breach. `:537` "Wix shall be entitled ... to forfeit any unpaid Partner Revenue Share amounts, which accrued prior to such termination". `:43` says an account not in good standing lets Wix "retain associated account fees payable to you". `:253` leaves out of the pay-out promise any removal "due to breach of this Agreement or as a result of an infringement allegation". [RENDERED]
+- One gap: on a termination without cause Wix pays the revenue share "that is payable to Partner on the date of such termination" (`:527`). The agreement does not say whether a balance under $200 counts as "payable" under `:375`, so such a balance may be lost at exit. [INFERENCE]
+
+**Countries, sanctions, Israel**
+- `:277` The Partner warrants it is not "located, organized or resident in a country or territory that is the subject of comprehensive territorial Sanctions". `:279` lists the comprehensively sanctioned countries (in the clause on user access) as "Crimea - region of Ukraine, Cuba, Iran, North Korea, and Syria". Israel is not on that list. Israel appears only as a source of sanctions: "Israeli sanctions" (`:277`) and "Israeli regulations" (`:279`). [RENDERED]
+- `:563` "governed by the laws of the State of Israel ... instituted in the courts of Tel Aviv, Israel." [RENDERED]
+- `:593` An addendum applies "if you are offering your App(s) to residents of the state of Israel". `:599` "Wix will act as a reseller of the App to Israeli Users." [RENDERED] The Hebrew/Israeli category scan targets exactly those users, so a candidate-11 app would fall under the addendum. [INFERENCE]
+- A list of payee countries, or any statement that a partner resident in Israel gets paid, is not in the agreement. [RENDERED absent] Nothing in the agreement excludes a partner resident in Israel, but whether such a partner is actually payable is still not rendered. [INFERENCE]
+
+**Individual or company; trade name; who operates the account**
+- `:13` "a developer (whether entity or person)". An individual may be the Partner. `:447` sets a minimum age of 18. [RENDERED]
+- The agreement neither allows nor bans a trade name. It refers to "the Partner's and the App's name and trademarks" (`:75`) and bars Wix marks in "Partner's business name, logo, branding" (`:87`). [RENDERED] So a partner brand is expected, but the agreement does not address a payee name that differs from the legal name, and it does not explain tick 2's "registering your company" (wix-payout-account.txt:134). [INFERENCE]
+- `:43` "Your account is only for your own use, and you are responsible for all activities through your account." [RENDERED] The agreement does not say whether an agent operating the owner's account counts as "own use".
+
+**Tax**
+- `:391` "Partner shall be responsible for the payment of any and all taxes ... The payments made by Wix to Partner shall be subject to any applicable withholding tax obligations (if any)." [RENDERED] Tax forms (W-8, W-9 or any other) are not in the agreement.
+- The "lawful tax invoice" required against each payment (`:385`) is recurring paperwork. What it means for the owner's Israeli tax status is a question for `research/measurements/step2-cost.md`, not this file. [INFERENCE]
+
+**Support duties (what the text literally requires)**
+- The agreement sets no response time for user support, no SLA and no duty to talk to users. A grep finds 0 "response time" and 0 "business day", and the two "sla" hits at `:133` are inside "Legislation". [RENDERED]
+- `:301` The Partner has "the sole responsibility for ... the development, proper operation and maintenance of the App and the provision of services to Users." [RENDERED]
+- `:259` Withdrawing an app takes 90 days' notice, during which the Partner must "maintain the App and provide all support services to the Users". After termination the Partner keeps serving existing users "until the end of their applicable subscription period" (`:527`). "Support services" is never defined. [RENDERED]
+- Two 24-hour clocks run toward Wix, not toward users. `:309` "Partner must respond to the claim within 24 hours" covers third-party claims that Wix refers. `:195` requires notice to Wix "within no later than 24 hours" of a data-security compromise. [RENDERED]
+- For Israeli users, `:611` says "Wix may offer support services to Israeli Users. Partner undertakes to assist Wix", and `:613` says the Partner will "provide timely and adequate responses and information to Wix". No clock is set. [RENDERED]
+- Nothing in the text requires the owner, or any human, to talk to users, so an agent-run brand inbox can meet it. The 24-hour claim clock (`:309`) does mean someone must watch that inbox every day, and a claim response is legal work, not routine support. [INFERENCE]
+
+**Termination, clawbacks, liability, indemnity**
+- `:523` Wix may terminate "at any time, with or without cause" on 30 days' notice, while the Partner needs 90. `:253` Wix may remove any app "at any time ... with no obligation to provide any explanation or prior notice". `:557` Wix "may modify any of the terms and conditions of this Agreement at any time". [RENDERED]
+- Clawback, `:335`: after a user refund the Partner must "return such Revenue Share amount to Wix within no later than thirty (30) days", or Wix deducts it from later payouts. [RENDERED]
+- `:509` caps Wix's aggregate liability at "USD 50,000". `:515` says the "Partner will defend, indemnify and hold harmless Wix" against third-party claims, including those about "use of or inability to use of the App". The agreement puts no cap on the Partner's indemnity. [RENDERED] For Israeli users, `:607` says "Partner undertakes to fully support and indemnify Wix". [RENDERED]
+
+**AI or automation**
+- Neither is in the agreement. Its only two "AI" hits (`:617`, `:623`) are in the site footer. [RENDERED]
+
+**Up-front cost (₪0 rule)**
+- The agreement charges no listing, registration or account fee. Every "fee" hit is the 2.5% fee, taxes, usage fees, legal fees or user subscription fees. [RENDERED] Three clauses could still cost money before any income arrives, and none of them names a price:
+- `:185` "(v) An App shall be reviewed and tested by a third party for any security vulnerabilities before submitting the App to the App Market;" [RENDERED] Third-party security testing is usually a paid service. [INFERENCE]
+- `:181` "(iii) Partner's code shall be reviewed by more than one developer, and the code review process shall be documented;" [RENDERED] The agreement does not say whether an agent counts as a developer.
+- `:165` Data from Wix may be handled only on "Google Cloud Platform; IBM Cloud Services; AWS - Amazon Web Services; Microsoft Cloud Services; Salesforce.com or Oracle Cloud Platform", and on any other provider "only after obtaining Wix's express, prior written consent". [RENDERED] Any other host therefore needs a written exchange with Wix first. [INFERENCE]
+- Two duties recur rather than cost money up front. `:399` requires a monthly report to Wix "within no later than fifteen (15) days from the end of each calendar month", and the text does not limit this to apps the Partner bills itself. [RENDERED] `:409` requires a certified accountant's confirmation, on request, only in years a Partner "was obligated to pay any amounts to Wix". Under `:371` a Wix-billed app does not trigger it. [INFERENCE]
+
+**Verdict for candidate 11 (Wix App Market): NEEDS_MORE**
+
+The floor half of the gate now passes on the binding text: a balance under $200 carries over (`:375`) and is lost only for breach (`:537`, `:43`). The Israel half has narrowed but is still open: the agreement excludes only comprehensively sanctioned territories (`:277`, `:279`, which do not include Israel) and pays USD by wire (`:385`), but it names no payee countries. For that half, tick 2's Tipalti-form fork still applies. Nothing in the text triggers the support kill criterion, since there is no user-support SLA and no AI clause, but the agreement raises two ₪0 risks the board has not priced: a third-party security test before submission (`:185`) and the six-cloud hosting rule (`:165`).
+
+**Single next check:** render `https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice` (linked in the docs navigation of the tick 1-3 captures). Read what evidence Wix accepts for `:185` and `:181`, and whether a free route satisfies them. Suggested `urls.txt` line for the main thread: `https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice	wix-security-best-practice`.

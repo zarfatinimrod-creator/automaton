@@ -297,3 +297,5 @@ https://www.btl.gov.il/Insurance/National%20Insurance/Pages/%D7%9E%D7%99%20%D7%A
 https://docs.crazygames.com/resources/basic-launch-metrics/	crazygames-basic-launch-metrics
 # ZERO-TESTS.md row 27 — CrazyGames (6), after rows 22-24.
 https://docs.crazygames.com/requirements/gameplay/	crazygames-requirements-gameplay
+# research/channel-loop/ZERO-TESTS.md row 28 — Wix App Market (11): the security-test evidence the agreement requires (tick 4, 28.9.2026).
+https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice	wix-security-best-practice
