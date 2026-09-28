@@ -1,10 +1,10 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-28 15:00 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-28 13:55 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
 
-## ▶ 28.9, ~15:00 UTC — **סבב 5: אצווה A נקראה. Pebble ו-Superteam נהרגו, Firefox נכשל ב-G4, שאר המועמדים NEEDS_MORE.**
+## ▶ 28.9, ~13:55 UTC — **סבב 5: אצווה A נקראה. Pebble ו-Superteam נהרגו, Firefox נכשל ב-G4, שאר המועמדים NEEDS_MORE.**
 
 - **מודל הסשן הוחלף ל-Fable** (הבעלים, ~12:15). הסוכנים בסבב רצו על Opus במפורש; כדאי להחזיר את הסשן ל-Opus לעבודה השוטפת.
 - **רינדור run 26 (`815c2e5`):** 22 כתובות, 13 נקראו, 7 סורבו (Spreadshirt, Tipalti), 1 מעטפת (EUR-Lex).
