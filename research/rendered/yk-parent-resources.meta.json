@@ -1,0 +1,17 @@
+{
+  "url": "https://www.youtube.com/kids/parent-resources/",
+  "slug": "yk-parent-resources",
+  "fetchedAt": "2026-09-28T22:00:02.675Z",
+  "status": 200,
+  "contentType": "text/html",
+  "byteLength": 168530,
+  "sha256": "e09dadfb5bcedc2d4e998ed31fc50c458c7a3a67b767e005fdd7e33d929f528b",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk-parent-resources.html",
+  "textPath": "research/rendered/yk-parent-resources.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
