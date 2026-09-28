@@ -76,3 +76,73 @@ Program's own channels.
 **Next check (one, optional):** `draft2digital-com-content-guidelines` → https://draft2digital.com/content-guidelines/
 (html:529, text :322). It would raise the G4 reason to rendered grade, which also carries the "Apple Books via D2D" line
 at `docs/REJECTED.md:1223`. The kill no longer depends on it.
+
+## Tick 9 (row 130 render) — Teach Simple Terms of Use
+
+**Read 28.9.2026 by an Opus reader.** Capture: `teachsimple-terms-of-service` (200, fetchedAt 2026-09-28T21:03Z, first
+fetch; 548 txt lines read in full; 463 html lines, grepped, including the script state). Short name `tos`. Every quote was
+checked with `grep -n -F`.
+
+**Status: QUEUE-ON. None of the three cheap kills fires.** The Terms of Use are generic web-shop terms: "Our store is
+hosted on Shopify Inc." (tos.txt:267). They bind contributors, "including without limitation users who are browsers,
+vendors, customers, merchants, and/ or contributors of content" (:262). They have no AI clause and no clause on who may
+be a contributor, and they say nothing about payouts. The date "As of September 28, 2026" (:255) is the fetch day, and
+the page state holds `menuDate:"2026-09-28"` (tos.html:461). [INFERENCE] It is the server's date, not a revision date.
+The terms' real version date is UNKNOWN.
+
+**Kills.** All three are only PROPOSED: they come from ZERO-TESTS row 130. The board's §4 row 28 does not pre-register
+them, so the Fable sitting confirms them. None fires.
+- **Bot or automated-access ban: DOES NOT FIRE.**
+  - [RENDERED] The one clause about automated access bars using the site "(i) to spam, phish, pharm, pretext, spider,
+    crawl, or scrape;" (tos.txt:363). Those are data-collection acts.
+  - There are no hits for "bot", "automat" or "robot" in the txt or the html.
+  - [INFERENCE] Nothing bars an agent from operating the contributor account. In any case the listing route is Teach
+    Simple's own upload team (the reading above).
+  - A constraint for our watchers: do not crawl or scrape teachsimple.com. Read the numbers from the contributor
+    dashboard or its emails, as with GameDistribution's "no monitoring" clause.
+- **US-only clause: DOES NOT FIRE.**
+  - There is no residence or citizenship term ("citizen": 0 hits).
+  - The only geographic rule is a discretionary right to "limit the sales of our products or Services to any person,
+    geographic region or jurisdiction. We may exercise this right on a case-by-case basis." (:313). There is also "We
+    reserve the right to refuse service to anyone for any reason at any time." (:281).
+  - Governing law is Washington State (:409). The age rule is neutral ("the age of majority in your state or province of
+    residence", :271).
+  - The footer lists "United States", "Canada", "United Kingdom" (:545-547). [INFERENCE] That is a storefront locale
+    picker, not an eligibility rule.
+  - Payout country stays UNKNOWN: "PayPal" has 0 hits here.
+- **AI rule: DOES NOT FIRE.**
+  - "AI" as a word, "artificial" and "generated" have 0 hits in the txt. In the html, "AI" appears only as minified
+    identifiers (`slug:AI`).
+  - Two honesty clauses apply, and a declared agent acting for the brand meets both [INFERENCE]: no use "(f) to submit
+    false or misleading information;" (:363), and "You may not use a false e-mail address, pretend to be someone other
+    than yourself, or otherwise mislead us or third-parties as to the origin of any comments." (:349).
+
+**Still unread.** The contributor terms incorporate the "Membership Agreement and Terms of Use"
+(contributor-terms.txt:506). This page is the Terms of Use. "Membership" has 0 hits here, and the page links no such
+document. The only other legal link is `/license-agreement` (tos.html:457; footer "License", tos.txt:541). Whether that
+page is the Membership Agreement is UNKNOWN.
+
+**Gate line.** Unchanged, now with the Terms of Use read:
+G1 P(r) · G2 U↗(r) · G3 P(r) · G4 U(r) · G5 U↘(r+re) · G6 U↗(r) · G7 U↗(r).
+- G4 has no AI rule in either text. The original-creations warranty (contributor-terms.txt:406) is still the honesty
+  gate.
+- G5 still leans FAIL: a points pool, a $50 floor, and royalties arriving up to about 13 months after an annual sale.
+
+**Next step.**
+- **The written question from the brand mailbox.** No document answers what is left: how the upload team takes files,
+  whether it keeps uploading new items, and payment to a contributor outside the US (W-8BEN?).
+  - The recipient `support@teachsimple.com` is captured (tos.txt:420; also contributor-terms.txt:549).
+  - Draft, for the main thread to add to `research/owner-asks/questions.json` and its note together (a test keeps them in
+    step): *"Hello Teach Simple team. Mehudak (מהודק) is a small brand that makes teaching resources with AI and states
+    this in each item; its accounts are run by an AI agent acting for the brand, which wrote this message. One question,
+    yes or no: can a contributor based in Israel, paid by PayPal, join and have your free upload service list new items
+    on an ongoing basis? We are asking for your current rule only. Thank you, Mehudak (מהודק)"*
+  - Pre-registered reading: an explicit YES clears G3's ongoing-service doubt and G2's country doubt. An explicit NO
+    fails G3 or G2, depending on the reason given. Anything else is NOT ANSWERED.
+- **An optional render** that can only kill: **https://teachsimple.com/license-agreement** (tos.html:457). Read it for
+  an AI or automation clause, and for whether it is the Membership Agreement.
+- The refill note's held URL, `https://teachsimple.com/blog/contributors/new-contributor-onboarding/`
+  (REPLENISH-2026-09-28-2.md:530), is not in this capture. Its condition, "only if the terms omit the payout rail", is
+  met by these terms, but the contributor FAQ already names PayPal. [INFERENCE] Its remaining value is the upload-team
+  intake, which the written question also covers.
+- For the sitting: G5 is weak. Is one written question worth spending on a small subscription pool?

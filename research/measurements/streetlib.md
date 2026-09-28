@@ -99,3 +99,80 @@ pages render in full on the runner. If it shows only titles, render the one abou
   every AI-generated title would be declared as such in its metadata. Can a publisher distribute ebooks on your current
   platform with no up-front or recurring payment, that is, without buying a Subscription or Lifetime Access option,
   with StreetLib taking only a share of each sale? Thank you. Mehudak (מהודק)"
+
+## Tick 9 (row 129 render)
+
+**Read 28.9.2026 by an Opus reader.** Capture: `streetlib-faq-platform-changeover` (200, fetchedAt 2026-09-28T21:03Z,
+first fetch; 79 txt lines, 1,746 html lines). Short name `chg`. The txt was read in full. In the html I read the footer
+menu object (:380-600), the JSON-LD (:67-69), the header menu, the article list (:1620-1645) and the sidebar (:1668-1675).
+Every quote below was checked with `grep -n -F`.
+
+**Status: NEEDS_MORE. The render settles nothing. It is a list of titles for the wrong changeover.**
+
+**What the page is.** It is a Help Scout collection page. It shows six article titles and no article bodies:
+- "Access to the old Plattform" (chg.txt:55);
+- "General Information on the Changeover (mail sent on Feb 2nd 2024)" (:57);
+- "StreetLib US" (:59);
+- "Delayed selection of stores (Amazon, Tolino, Kobo)" (:61);
+- "Completing the billing profiles" (:63);
+- "Previous sales data" (:65).
+
+It has one category, "BX Help in English" (:71). [RENDERED] The German footer says the StreetLib service in German-speaking
+countries "angeboten von BookRix, Deutschland" (chg.html:600). This collection is the English twin of "FAQ zum Umzug auf
+die neue Plattform" (chg.html:1605, :1607). [INFERENCE] This is the February 2024 move of BookRix ("BX") users onto
+StreetLib. It is not the 2026 author options.
+
+**A correction to the tick-9 pointer.** §4 said this page was "linked as 'FAQ on Platform Changeover' (677.html:1619,
+677.txt:47)". That link is an item in the help centre's header menu (`<li id="faq-on-platform-changeover">`,
+677.html:1619). The same item is at chg.html:1607 and on every help page. It is not a link from the earnings text, so it
+never tied this collection to the "Subscription and Lifetime Access options" (677.txt:87).
+
+**Absent from both files.** "paypal", "bank", "payout", "subscription" and "85%" each have 0 hits in the txt and in the
+html. "lifetime" appears only in the footer menu.
+
+**New at rendered grade: the footer names a Lifetime Pro Plan.** It sits in the footer menu object. That object is
+script, so the txt does not show it.
+- `label: 'Pricing',` / `link: 'https://www.streetlib.com/pricing'` (chg.html:391-392)
+- `label: 'Lifetime Pro Plan',` / `link: 'https://www.streetlib.com/pro-plan-lifetime'` (chg.html:395-396)
+- The Italian menu: `label: 'Prezzi',` / `link: 'https://www.streetlib.it/prezzi-servizi',` (chg.html:470-471)
+
+The same footer is in the earlier captures too (for example 677.html:407), and the first reading missed it.
+[INFERENCE] A product sold as a "Lifetime Pro Plan" exists. The word "Pro" suggests a lower tier, but whether that tier
+is free, and whether any plan is needed to distribute, is still not shown.
+
+**Kills (all but (e) are pre-registered on the board, §4 row 24):**
+- **(a) Any distribution plan, subscription or per-title fee: UNSETTLED.** It still leans towards firing, a little more
+  than before (a named "Lifetime Pro Plan", chg.html:395). There is no price and no word "required".
+- **(b) The payout cannot reach an Israeli individual, or needs a camera step: UNSETTLED.** Nothing about payouts was
+  rendered. The only payout-shaped item is the title "Completing the billing profiles" (chg.txt:63), which sits in the
+  BookRix collection. Its body is unread.
+- **(c) AI books barred even when declared: DOES NOT FIRE.** This is unchanged from the earlier reading (421.txt:87).
+  This page is not about content.
+- **(d) Web forms only, and the terms forbid automation: UNSETTLED.** It still parks, as before. This page says nothing
+  on it.
+- **(e) The legal name is shown to buyers (Q10): UNKNOWN.** This kill is proposed only; the board row does not
+  pre-register it.
+
+**Gate line.** Unchanged except for the G1 evidence:
+G1 U↘(r) · G2 U(r) · G3 U(r) · G4 P(r) · G5 P in part (r) · G6 U · G7 U(r, the "Surname, Name" risk at 380.txt:71).
+
+**Next step (one render, then a fallback).**
+1. **https://www.streetlib.it/prezzi-servizi** (chg.html:471). It is the one pricing page on a host that is not yet
+   shown to be a shell. The three `www.streetlib.com` pages were one identical JS shell (sha `7a29449c…`, §1). It
+   settles (a): whether distribution needs a paid plan, and what the plans cost. It may be Italian and Italy-specific;
+   read it for the plan names in 677.txt:87.
+2. **https://help.streetlib.com/category/97-payments** ("Billing and Payments", 677.html:1717; not in this capture). It
+   is a Help Scout category page, so it lists every article in the category and renders in full. It settles (b), and
+   perhaps (a) through a billing article.
+3. Second choice for (b): **https://help.streetlib.com/article/1498-completing-the-billing-profiles** (chg.html:1639).
+   Its context is BookRix, so the fields may be German-market only.
+
+Not recommended: `https://www.streetlib.com/pro-plan-lifetime` (chg.html:396). [INFERENCE] It is on the host whose
+pages were the one empty shell. Render it only if the runner gains JavaScript rendering. The page's own JSON-LD also
+holds a search template, `https://help.streetlib.com/search?query={query}` (chg.html:68). A filled-in query such as
+"lifetime" would be a URL built from that template, not one found in the capture. It is left for the board to allow or
+refuse.
+
+**The recipient for the held step-8 question.** The only StreetLib address in any capture is `support@streetlib.de`
+(chg.html:600, in the German footer; 10 hits across the StreetLib captures). [INFERENCE] It is the German (BookRix)
+service's inbox. The held question (above, §4) goes there only if renders 1 and 2 are both silent on fees.
