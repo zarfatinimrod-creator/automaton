@@ -1,6 +1,6 @@
 {
   "data": {
-    "total": 1574,
+    "total": 1576,
     "count": 1000,
     "offset": 0,
     "limit": 1000,
@@ -3087,13 +3087,13 @@
         "name": "google-lighthouse-checker",
         "username": "alizarin_refrigerator-owner",
         "stats": {
-          "totalBuilds": 46,
-          "totalRuns": 624,
+          "totalBuilds": 47,
+          "totalRuns": 626,
           "totalUsers": 88,
           "totalUsers7Days": 1,
           "totalUsers30Days": 2,
           "totalUsers90Days": 9,
-          "lastRunStartedAt": "2026-09-28T07:33:18.068Z",
+          "lastRunStartedAt": "2026-09-28T15:40:48.503Z",
           "actorReviewCount": 0,
           "actorReviewRating": 0,
           "bookmarkCount": 1,
@@ -12554,18 +12554,18 @@
         "username": "thenetaji",
         "stats": {
           "totalBuilds": 68,
-          "totalRuns": 34452,
-          "totalUsers": 499,
-          "totalUsers7Days": 30,
-          "totalUsers30Days": 78,
-          "totalUsers90Days": 129,
-          "lastRunStartedAt": "2026-09-28T08:29:32.440Z",
+          "totalRuns": 34474,
+          "totalUsers": 500,
+          "totalUsers7Days": 31,
+          "totalUsers30Days": 79,
+          "totalUsers90Days": 130,
+          "lastRunStartedAt": "2026-09-28T16:23:37.352Z",
           "publicActorRunStats30Days": {
             "ABORTED": 1,
             "FAILED": 9,
-            "SUCCEEDED": 2780,
+            "SUCCEEDED": 2837,
             "TIMED-OUT": 1,
-            "TOTAL": 2791
+            "TOTAL": 2848
           },
           "actorReviewCount": 5,
           "actorReviewRating": 4.501581174218952,
@@ -12839,13 +12839,13 @@
         "name": "propwire-leads-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 133,
-          "totalRuns": 35021,
+          "totalBuilds": 134,
+          "totalRuns": 35024,
           "totalUsers": 308,
           "totalUsers7Days": 29,
           "totalUsers30Days": 51,
           "totalUsers90Days": 107,
-          "lastRunStartedAt": "2026-09-28T15:52:35.732Z",
+          "lastRunStartedAt": "2026-09-28T16:12:56.525Z",
           "actorReviewCount": 7,
           "actorReviewRating": 4.999999999999999,
           "bookmarkCount": 6,
@@ -13986,10 +13986,10 @@
         "stats": {
           "totalBuilds": 13,
           "totalRuns": 8928,
-          "totalUsers": 38,
-          "totalUsers7Days": 12,
-          "totalUsers30Days": 28,
-          "totalUsers90Days": 29,
+          "totalUsers": 39,
+          "totalUsers7Days": 13,
+          "totalUsers30Days": 29,
+          "totalUsers90Days": 30,
           "lastRunStartedAt": "2026-09-28T14:25:22.820Z",
           "actorReviewCount": 1,
           "actorReviewRating": 4,
@@ -15316,13 +15316,13 @@
         "name": "zillow-scraper-ppe",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 204,
-          "totalRuns": 7011,
-          "totalUsers": 173,
-          "totalUsers7Days": 24,
-          "totalUsers30Days": 62,
-          "totalUsers90Days": 94,
-          "lastRunStartedAt": "2026-09-28T15:41:50.655Z",
+          "totalBuilds": 205,
+          "totalRuns": 7015,
+          "totalUsers": 172,
+          "totalUsers7Days": 23,
+          "totalUsers30Days": 61,
+          "totalUsers90Days": 93,
+          "lastRunStartedAt": "2026-09-28T16:22:43.902Z",
           "actorReviewCount": 8,
           "actorReviewRating": 4.999999999999999,
           "bookmarkCount": 8,
@@ -15873,13 +15873,13 @@
         "name": "immowelt-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 120,
-          "totalRuns": 15615,
+          "totalBuilds": 121,
+          "totalRuns": 15620,
           "totalUsers": 91,
           "totalUsers7Days": 15,
           "totalUsers30Days": 31,
           "totalUsers90Days": 46,
-          "lastRunStartedAt": "2026-09-28T15:02:52.272Z",
+          "lastRunStartedAt": "2026-09-28T16:00:16.597Z",
           "actorReviewCount": 4,
           "actorReviewRating": 5.000000000000001,
           "bookmarkCount": 1,
@@ -16331,7 +16331,7 @@
         "name": "forrentuniversity-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 89,
+          "totalBuilds": 90,
           "totalRuns": 1210,
           "totalUsers": 26,
           "totalUsers7Days": 1,
@@ -17235,13 +17235,13 @@
         "name": "rightmove-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 130,
-          "totalRuns": 16905,
+          "totalBuilds": 131,
+          "totalRuns": 16906,
           "totalUsers": 258,
           "totalUsers7Days": 19,
           "totalUsers30Days": 43,
           "totalUsers90Days": 106,
-          "lastRunStartedAt": "2026-09-28T15:45:21.302Z",
+          "lastRunStartedAt": "2026-09-28T16:01:42.559Z",
           "publicActorRunStats30Days": {
             "ABORTED": 0,
             "FAILED": 85,
@@ -23565,7 +23565,7 @@
         "name": "forrent-com-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 85,
+          "totalBuilds": 86,
           "totalRuns": 936,
           "totalUsers": 31,
           "totalUsers7Days": 0,
@@ -32651,22 +32651,22 @@
         "name": "pinterest-search-scraper",
         "username": "jamhimself",
         "stats": {
-          "totalBuilds": 5,
-          "totalRuns": 232,
+          "totalBuilds": 6,
+          "totalRuns": 236,
           "totalUsers": 10,
           "totalUsers7Days": 1,
-          "totalUsers30Days": 5,
+          "totalUsers30Days": 4,
           "totalUsers90Days": 7,
-          "lastRunStartedAt": "2026-09-28T06:25:15.368Z",
+          "lastRunStartedAt": "2026-09-28T16:00:53.063Z",
           "actorReviewCount": 0,
           "actorReviewRating": 0,
           "bookmarkCount": 0,
           "publicActorRunStats30Days": {
             "ABORTED": 0,
             "FAILED": 0,
-            "SUCCEEDED": 61,
+            "SUCCEEDED": 64,
             "TIMED-OUT": 0,
-            "TOTAL": 61
+            "TOTAL": 64
           }
         },
         "description": "Scrape Pinterest search results in bulk — no API key, no login. Get each pin's title, image, external link, board, pinner, and real saves/repins. Pay per result.",
@@ -37719,6 +37719,54 @@
         "url": "https://apify.com/shelvick/smart-page-fetcher"
       },
       {
+        "title": "YouTube Transcript Scraper - Full Text, Timestamps, Language",
+        "name": "youtube-transcript-api",
+        "username": "om_kh",
+        "stats": {
+          "totalBuilds": 34,
+          "totalRuns": 941,
+          "totalUsers": 48,
+          "totalUsers7Days": 7,
+          "totalUsers30Days": 14,
+          "totalUsers90Days": 23,
+          "lastRunStartedAt": "2026-09-28T10:40:52.698Z",
+          "actorReviewCount": 0,
+          "actorReviewRating": 0,
+          "bookmarkCount": 1,
+          "publicActorRunStats30Days": {
+            "ABORTED": 0,
+            "FAILED": 1,
+            "SUCCEEDED": 792,
+            "TIMED-OUT": 0,
+            "TOTAL": 793
+          }
+        },
+        "description": "Get the transcript of any YouTube video: full text plus timestamped segments, caption language and human vs auto-generated flag. Paste links or IDs, export JSON, CSV or Excel. No API key, no login. Failed videos are never charged. API, n8n, Make and MCP ready.",
+        "categories": [
+          "VIDEOS",
+          "AI",
+          "MCP_SERVERS"
+        ],
+        "pictureUrl": "https://images.apifyusercontent.com/773_l9vRUO-5VgyN8eSXaAI_wGgEJNdj8pf8Je07NpI/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vMGFXZjZTV2tiWXQ0UlpoM1ktYWN0b3ItdVl3U2pWVGFQN1JEb3A4VUgtNnFLaFFISEROTC12aWRlby10cmFuc2NyaXB0LWFwaS5wbmc.webp",
+        "notice": "NONE",
+        "bookmarkCount": 1,
+        "actorReviewRating": 0,
+        "actorReviewCount": 0,
+        "badge": null,
+        "isWhiteListedForAgenticPayments": false,
+        "userFullName": "omar khandji",
+        "userPictureUrl": "https://images.apifyusercontent.com/581THbERm0moDPeM9f4uZ8tiu4gF5vFYoQ7Gm9Ao4SA/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vajctdVJ3VGprd3FkWm50YkF4X0dmdFoxdEhCMlVQX2FzRUNKZDVEZTh2TS9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTlzYURNdVoyOXZaMnhsZFhObGNtTnZiblJsYm5RdVkyOXRMMkV2UVVObk9HOWpTa2d4YkdkWlMwaGFWR2xLWmxadE4ydGxSRFpIVG10ck0yUm9XREpZVlV0d1ltMUJWazAzTjJaMU5XeEpjSFYzUFhNNU5pMWo.webp",
+        "currentPricingInfo": {
+          "pricingModel": "FREE",
+          "createdAt": "2026-08-05T06:20:01.922Z",
+          "startedAt": "2026-08-05T06:20:01.922Z",
+          "apifyMarginPercentage": 0,
+          "notifiedAboutChangeAt": "2026-08-05T15:06:40.141Z"
+        },
+        "id": "uYwSjVTaP7RDop8UH",
+        "url": "https://apify.com/om_kh/youtube-transcript-api"
+      },
+      {
         "title": "MioDottore scraper",
         "name": "miodottore-scraper",
         "username": "giovannibiancia",
@@ -39176,7 +39224,7 @@
         "name": "immonet-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 67,
+          "totalBuilds": 68,
           "totalRuns": 533,
           "totalUsers": 35,
           "totalUsers7Days": 1,
@@ -43373,70 +43421,11 @@
         "url": "https://apify.com/dami_studio/instagram-mentions-scraper"
       },
       {
-        "title": "Tumblr Media Scraper",
-        "name": "tumblr-media-downloader",
-        "username": "maximedupre",
-        "stats": {
-          "totalBuilds": 11,
-          "totalRuns": 251,
-          "totalUsers": 19,
-          "totalUsers7Days": 0,
-          "totalUsers30Days": 0,
-          "totalUsers90Days": 2,
-          "lastRunStartedAt": "2026-09-28T09:03:14.786Z",
-          "actorReviewCount": 0,
-          "actorReviewRating": 0,
-          "bookmarkCount": 0,
-          "publicActorRunStats30Days": {
-            "ABORTED": 0,
-            "FAILED": 2,
-            "SUCCEEDED": 32,
-            "TIMED-OUT": 0,
-            "TOTAL": 34
-          }
-        },
-        "description": "Extract public Tumblr images, GIFs, videos, and audio from post, blog, and archive URLs. Export direct source links with post details, tags, engagement counts, dimensions, and available variants.",
-        "categories": [
-          "SOCIAL_MEDIA",
-          "DEVELOPER_TOOLS",
-          "AUTOMATION"
-        ],
-        "pictureUrl": "https://images.apifyusercontent.com/GMt2-uKeH-ArOVe7lNKFQCD4NNuygW4Q2wa28WM0QX8/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vZ2VMWE9ZV3FqY0FjWng0TDAtYWN0b3ItZm1NQ3VYTzNZaUlSSlM1WTktWERIWmlEZkw0ai1pY29uLXVwbG9hZC0yMGUyOTAyYS01ODA0LTQxZjYtYjVhNy02MmNhNTljZDVjMjQucG5n.webp",
-        "notice": "NONE",
-        "bookmarkCount": 0,
-        "actorReviewRating": 0,
-        "actorReviewCount": 0,
-        "badge": null,
-        "isWhiteListedForAgenticPayments": true,
-        "userFullName": "Maxime Dupré",
-        "userPictureUrl": "https://images.apifyusercontent.com/rphAVS3cnUgZlUxGcpMm57KYTFWYekrE_5yAgDTZm-E/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vdHROY21HdkhUcmFXQ0F3WktNdlFROTAxZHdlZTU0eWVlMmhad0pLVXNGQS9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZaMlZNV0U5WlYzRnFZMEZqV25nMFREQXRjSEp2Wm1sc1pTMHpRbXRRVFVkeVVGWkVMVU5vWVhSSFVGUmZTVzFoWjJWZlFYQnlYekl4WDE4eU1ESTJYMTh4TUY4MU0xODFORjlCVFM1d2JtYy5wbmc.webp",
-        "currentPricingInfo": {
-          "pricingModel": "PAY_PER_EVENT",
-          "pricingPerEvent": {
-            "actorChargeEvents": {
-              "tumblr-media-item": {
-                "eventTitle": "Media link",
-                "eventDescription": "One direct media link is saved to your dataset.",
-                "isOneTimeEvent": false,
-                "isPrimaryEvent": true,
-                "eventPriceUsd": 0.00265
-              }
-            }
-          },
-          "isPriceChangeNotificationSuppressed": true,
-          "createdAt": "2026-09-07T02:28:42.660Z",
-          "startedAt": "2026-09-07T02:28:42.660Z",
-          "apifyMarginPercentage": 0.2
-        },
-        "id": "fmMCuXO3YiIRJS5Y9",
-        "url": "https://apify.com/maximedupre/tumblr-media-downloader"
-      },
-      {
         "title": "Google Maps Leads Scraper — unlimited volume, no 120 cap",
         "name": "google-maps-leads-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 41,
+          "totalBuilds": 42,
           "totalRuns": 81,
           "totalUsers": 19,
           "totalUsers7Days": 0,
@@ -43508,6 +43497,65 @@
         },
         "id": "FjgJpxUMhXaAhchUG",
         "url": "https://apify.com/memo23/google-maps-leads-scraper"
+      },
+      {
+        "title": "Tumblr Media Scraper",
+        "name": "tumblr-media-downloader",
+        "username": "maximedupre",
+        "stats": {
+          "totalBuilds": 11,
+          "totalRuns": 251,
+          "totalUsers": 19,
+          "totalUsers7Days": 0,
+          "totalUsers30Days": 0,
+          "totalUsers90Days": 2,
+          "lastRunStartedAt": "2026-09-28T09:03:14.786Z",
+          "actorReviewCount": 0,
+          "actorReviewRating": 0,
+          "bookmarkCount": 0,
+          "publicActorRunStats30Days": {
+            "ABORTED": 0,
+            "FAILED": 2,
+            "SUCCEEDED": 32,
+            "TIMED-OUT": 0,
+            "TOTAL": 34
+          }
+        },
+        "description": "Extract public Tumblr images, GIFs, videos, and audio from post, blog, and archive URLs. Export direct source links with post details, tags, engagement counts, dimensions, and available variants.",
+        "categories": [
+          "SOCIAL_MEDIA",
+          "DEVELOPER_TOOLS",
+          "AUTOMATION"
+        ],
+        "pictureUrl": "https://images.apifyusercontent.com/GMt2-uKeH-ArOVe7lNKFQCD4NNuygW4Q2wa28WM0QX8/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vZ2VMWE9ZV3FqY0FjWng0TDAtYWN0b3ItZm1NQ3VYTzNZaUlSSlM1WTktWERIWmlEZkw0ai1pY29uLXVwbG9hZC0yMGUyOTAyYS01ODA0LTQxZjYtYjVhNy02MmNhNTljZDVjMjQucG5n.webp",
+        "notice": "NONE",
+        "bookmarkCount": 0,
+        "actorReviewRating": 0,
+        "actorReviewCount": 0,
+        "badge": null,
+        "isWhiteListedForAgenticPayments": true,
+        "userFullName": "Maxime Dupré",
+        "userPictureUrl": "https://images.apifyusercontent.com/rphAVS3cnUgZlUxGcpMm57KYTFWYekrE_5yAgDTZm-E/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vdHROY21HdkhUcmFXQ0F3WktNdlFROTAxZHdlZTU0eWVlMmhad0pLVXNGQS9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZaMlZNV0U5WlYzRnFZMEZqV25nMFREQXRjSEp2Wm1sc1pTMHpRbXRRVFVkeVVGWkVMVU5vWVhSSFVGUmZTVzFoWjJWZlFYQnlYekl4WDE4eU1ESTJYMTh4TUY4MU0xODFORjlCVFM1d2JtYy5wbmc.webp",
+        "currentPricingInfo": {
+          "pricingModel": "PAY_PER_EVENT",
+          "pricingPerEvent": {
+            "actorChargeEvents": {
+              "tumblr-media-item": {
+                "eventTitle": "Media link",
+                "eventDescription": "One direct media link is saved to your dataset.",
+                "isOneTimeEvent": false,
+                "isPrimaryEvent": true,
+                "eventPriceUsd": 0.00265
+              }
+            }
+          },
+          "isPriceChangeNotificationSuppressed": true,
+          "createdAt": "2026-09-07T02:28:42.660Z",
+          "startedAt": "2026-09-07T02:28:42.660Z",
+          "apifyMarginPercentage": 0.2
+        },
+        "id": "fmMCuXO3YiIRJS5Y9",
+        "url": "https://apify.com/maximedupre/tumblr-media-downloader"
       },
       {
         "title": "Pinterest Video Downloader - No Audio",
@@ -65972,6 +66020,90 @@
         "url": "https://apify.com/automation-lab/tiktok-public-video-downloader"
       },
       {
+        "title": "On-Page SEO Audit",
+        "name": "seo-page-audit",
+        "username": "webdatatools",
+        "stats": {
+          "totalBuilds": 12,
+          "totalRuns": 31,
+          "totalUsers": 3,
+          "totalUsers7Days": 2,
+          "totalUsers30Days": 2,
+          "totalUsers90Days": 2,
+          "lastRunStartedAt": "2026-09-28T13:28:52.024Z",
+          "actorReviewCount": 0,
+          "actorReviewRating": 0,
+          "bookmarkCount": 0,
+          "publicActorRunStats30Days": {
+            "ABORTED": 0,
+            "FAILED": 0,
+            "SUCCEEDED": 21,
+            "TIMED-OUT": 0,
+            "TOTAL": 21
+          }
+        },
+        "description": "On-Page SEO Audit checks title, meta description, headings, images, links, Open Graph, Twitter Card and Schema.org data for any list of URLs — one scored row per page.",
+        "categories": [
+          "SEO_TOOLS",
+          "DEVELOPER_TOOLS",
+          "MARKETING"
+        ],
+        "pictureUrl": "https://images.apifyusercontent.com/NhNykA39YB3g7pNLkVsz4y5K_mnXjLuCH_JoJCSITfs/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vMW8xQWo1R2RBREhRbmxMMzUtYWN0b3ItSjNPMGozVVB3Rkc0Z2FjM0ItWVAwTU85SFUzRS1zZW8tcGFnZS1hdWRpdC5wbmc.webp",
+        "notice": "NONE",
+        "bookmarkCount": 0,
+        "actorReviewRating": 0,
+        "actorReviewCount": 0,
+        "badge": null,
+        "isWhiteListedForAgenticPayments": true,
+        "userFullName": "Murat Uzun",
+        "userPictureUrl": "https://images.apifyusercontent.com/1nLTFp4tUNPonKO5Y6qGCmTkryp_RpiIkEdlSbhYsl8/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vNlhWckZ3S3RFdkxnbnN0clJhQnpOc3BtVWJlNDlMN3FGM3puREtxUDJORS9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTlzYURNdVoyOXZaMnhsZFhObGNtTnZiblJsYm5RdVkyOXRMMkV2UVVObk9HOWpTVU41ZUhwR1NsaE1jMDVVZWpkVmVYRTVURFJxVTNGUE1HNUZRVVZ0U2tOQldqaHlia0p6TVU1Vk5GSk5ZemxXTlRROWN6azJMV00.webp",
+        "currentPricingInfo": {
+          "pricingModel": "PAY_PER_EVENT",
+          "createdAt": "2026-09-12T22:45:51.789Z",
+          "startedAt": "2026-09-13T00:00:00.000Z",
+          "reasonForChange": "Initial pay-per-event pricing.",
+          "pricingPerEvent": {
+            "actorChargeEvents": {
+              "apify-actor-start": {
+                "eventTitle": "Actor Start",
+                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
+                "isOneTimeEvent": true,
+                "eventPriceUsd": 0.00005
+              },
+              "apify-default-dataset-item": {
+                "eventTitle": "result",
+                "eventDescription": "Single result in the default dataset.",
+                "isOneTimeEvent": false,
+                "isPrimaryEvent": true,
+                "eventTieredPricingUsd": {
+                  "FREE": {
+                    "tieredEventPriceUsd": 0.002
+                  },
+                  "BRONZE": {
+                    "tieredEventPriceUsd": 0.0016
+                  },
+                  "SILVER": {
+                    "tieredEventPriceUsd": 0.0014
+                  },
+                  "GOLD": {
+                    "tieredEventPriceUsd": 0.0012
+                  },
+                  "PLATINUM": {
+                    "tieredEventPriceUsd": 0.0012
+                  },
+                  "DIAMOND": {
+                    "tieredEventPriceUsd": 0.0012
+                  }
+                }
+              }
+            }
+          },
+          "apifyMarginPercentage": 0.2
+        },
+        "id": "J3O0j3UPwFG4gac3B",
+        "url": "https://apify.com/webdatatools/seo-page-audit"
+      },
+      {
         "title": "Schema.org for LLMs Audit",
         "name": "schema-org-for-llms-audit",
         "username": "zinin",
@@ -66234,90 +66366,6 @@
         },
         "id": "04vv0b4Vp0yhl1dZY",
         "url": "https://apify.com/titan_network/titan-youtube-subtitles"
-      },
-      {
-        "title": "On-Page SEO Audit",
-        "name": "seo-page-audit",
-        "username": "webdatatools",
-        "stats": {
-          "totalBuilds": 11,
-          "totalRuns": 30,
-          "totalUsers": 3,
-          "totalUsers7Days": 2,
-          "totalUsers30Days": 2,
-          "totalUsers90Days": 2,
-          "lastRunStartedAt": "2026-09-27T18:59:18.523Z",
-          "actorReviewCount": 0,
-          "actorReviewRating": 0,
-          "bookmarkCount": 0,
-          "publicActorRunStats30Days": {
-            "ABORTED": 0,
-            "FAILED": 0,
-            "SUCCEEDED": 20,
-            "TIMED-OUT": 0,
-            "TOTAL": 20
-          }
-        },
-        "description": "On-Page SEO Audit checks title, meta description, headings, images, links, Open Graph, Twitter Card and Schema.org data for any list of URLs — one scored row per page.",
-        "categories": [
-          "SEO_TOOLS",
-          "DEVELOPER_TOOLS",
-          "MARKETING"
-        ],
-        "pictureUrl": "https://images.apifyusercontent.com/NhNykA39YB3g7pNLkVsz4y5K_mnXjLuCH_JoJCSITfs/rs:fill:76:76/cb:1/aHR0cHM6Ly9hcGlmeS1pbWFnZS11cGxvYWRzLXByb2QuczMudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vMW8xQWo1R2RBREhRbmxMMzUtYWN0b3ItSjNPMGozVVB3Rkc0Z2FjM0ItWVAwTU85SFUzRS1zZW8tcGFnZS1hdWRpdC5wbmc.webp",
-        "notice": "NONE",
-        "bookmarkCount": 0,
-        "actorReviewRating": 0,
-        "actorReviewCount": 0,
-        "badge": null,
-        "isWhiteListedForAgenticPayments": true,
-        "userFullName": "Murat Uzun",
-        "userPictureUrl": "https://images.apifyusercontent.com/1nLTFp4tUNPonKO5Y6qGCmTkryp_RpiIkEdlSbhYsl8/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20vNlhWckZ3S3RFdkxnbnN0clJhQnpOc3BtVWJlNDlMN3FGM3puREtxUDJORS9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTlzYURNdVoyOXZaMnhsZFhObGNtTnZiblJsYm5RdVkyOXRMMkV2UVVObk9HOWpTVU41ZUhwR1NsaE1jMDVVZWpkVmVYRTVURFJxVTNGUE1HNUZRVVZ0U2tOQldqaHlia0p6TVU1Vk5GSk5ZemxXTlRROWN6azJMV00.webp",
-        "currentPricingInfo": {
-          "pricingModel": "PAY_PER_EVENT",
-          "createdAt": "2026-09-12T22:45:51.789Z",
-          "startedAt": "2026-09-13T00:00:00.000Z",
-          "reasonForChange": "Initial pay-per-event pricing.",
-          "pricingPerEvent": {
-            "actorChargeEvents": {
-              "apify-actor-start": {
-                "eventTitle": "Actor Start",
-                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
-                "isOneTimeEvent": true,
-                "eventPriceUsd": 0.00005
-              },
-              "apify-default-dataset-item": {
-                "eventTitle": "result",
-                "eventDescription": "Single result in the default dataset.",
-                "isOneTimeEvent": false,
-                "isPrimaryEvent": true,
-                "eventTieredPricingUsd": {
-                  "FREE": {
-                    "tieredEventPriceUsd": 0.002
-                  },
-                  "BRONZE": {
-                    "tieredEventPriceUsd": 0.0016
-                  },
-                  "SILVER": {
-                    "tieredEventPriceUsd": 0.0014
-                  },
-                  "GOLD": {
-                    "tieredEventPriceUsd": 0.0012
-                  },
-                  "PLATINUM": {
-                    "tieredEventPriceUsd": 0.0012
-                  },
-                  "DIAMOND": {
-                    "tieredEventPriceUsd": 0.0012
-                  }
-                }
-              }
-            }
-          },
-          "apifyMarginPercentage": 0.2
-        },
-        "id": "J3O0j3UPwFG4gac3B",
-        "url": "https://apify.com/webdatatools/seo-page-audit"
       },
       {
         "title": "SEPE Spain Jobs Scraper (Empleate.gob.es)",

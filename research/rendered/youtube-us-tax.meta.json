@@ -1,17 +1,17 @@
 {
   "url": "https://support.google.com/youtube/answer/10390801?hl=en",
   "slug": "youtube-us-tax",
-  "fetchedAt": "2026-09-28T16:09:59.026Z",
+  "fetchedAt": "2026-09-28T17:16:00.345Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1615144,
-  "sha256": "cced38c5b03bfeb0f3b70a58effac806194be3c9ca95edfef4606ec5aab36e11",
+  "byteLength": 1615143,
+  "sha256": "2007636dae6ac1710affb6418e27434630fc7b204491bccfb53985ff110eaea7",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/youtube-us-tax.html",
   "textPath": "research/rendered/youtube-us-tax.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "66b9e14435790ae8c0d9ce43c6d9fab0649eff6cd95fceb3050cef9ca5ea9a61",
+  "previousSha256": "cced38c5b03bfeb0f3b70a58effac806194be3c9ca95edfef4606ec5aab36e11",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

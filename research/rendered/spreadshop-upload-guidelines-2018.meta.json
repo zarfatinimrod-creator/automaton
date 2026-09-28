@@ -1,0 +1,17 @@
+{
+  "url": "https://www.spreadshop.com/blog/2018/01/30/new-upload-guidelines/",
+  "slug": "spreadshop-upload-guidelines-2018",
+  "fetchedAt": "2026-09-28T17:19:18.312Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 103153,
+  "sha256": "52efe9f8815f8f77443382696a78c7ef3972e71796458881ab83dd6724c95f3e",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/spreadshop-upload-guidelines-2018.html",
+  "textPath": "research/rendered/spreadshop-upload-guidelines-2018.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

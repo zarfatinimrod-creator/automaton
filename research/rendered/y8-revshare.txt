@@ -1,0 +1,447 @@
+Developer Portal - Y8.com
+
+Developer
+portal Beta
+
+Why Y8
+Developer Tools
+SDK
+Testimonials
+FAQ
+
+Log in
+
+Create Developer Account
+
+My Profile
+
+points
+
+Recently played games
+
+Bookmarks
+( )
+
+Achievements
+
+My studio
+
+My Profile
+
+Edit Profile
+
+My Revenue
+
+Log out
+
+Log in
+
+Create Developer Account
+
+Why Y8
+
+Developer Tools
+
+SDK
+
+Testimonials
+
+FAQ
+
+Publish Your Game.
+
+Reach Millions.
+
+Stay in the Browser.
+
+Upload your HTML5 and WebGL game to Y8 and reach a global audience with instant play, long-term hosting, and built-in platform tools.
+
+Upload your game
+
+Upload your game
+
+Explore Developer Docs
+
+100,000+
+games hosted
+
+30M+
+monthly players
+
+750M+
+plays on Y8 Studio games
+
+Google Ad Manager & AFP partner
+
+Why Y8
+Built for Browser Games
+
+Reach millions of players and keep them engaged with achievements, leaderboards, cloud saves, and player profiles built right into the Y8 platform.
+
+Global Browser Audience
+
+Reach players who actively looking for games they can play instantly.
+
+Long-Term Hosting
+
+Your game remains available on Y8 and is not removed based on performance.
+
+Platform Features
+
+Leaderboards, achievements, player profiles, cloud save and picture posting.
+
+Mobile-Optimized Experience
+
+Games open in the correct orientation with minimal friction.
+
+Developer-Friendly Review
+
+Clear feedback and iteration, not silent rejection.
+
+Ongoing Platform Support
+
+Receive updates, feedback, and long-term platform support as your game evolves.
+
+Profiles & Sharing
+
+Players can share game screenshots to their profile
+
+Track achievements and progress
+
+Maintain a persistent profile across games
+
+Sync player progress across sessions using cloud save
+
+How it works
+Build, publish, and grow on Y8
+
+Y8 is designed for developers building games for the open web, where players expect instant access, fast sessions, and no installs.
+
+Create Your Game
+
+Submit for Reviews
+
+Await Approval
+
+Go Live on Y8
+
+Grow Your Audience
+
+Build Your Portfolio and Earn
+
+Monetization & Tech
+Build, publish, and grow on Y8
+
+Y8 is designed for developers building games for the open web, where players expect instant access, fast sessions, and no installs.
+
+Monetization
+Monetize Your Games on Y8
+
+Earn from your games using Y8's ad system designed for browser gameplay.
+
+Ad Integration via Y8 SDK
+
+To enable monetization, developers must integrate ads using the Y8 SDK. This ensures ads are properly configured and optimized within the game experience.
+
+Important Note
+Games without proper SDK integration may not be eligible for monetization.
+
+What you can publish
+Supported Game Technologies
+
+Unity
+
+HTML5
+
+WebGL
+
+Construct
+
+Phaser
+
+Godot Exports
+
+Custom Browser-Based Engines
+
+Developer Tools
+Built for Ongoing Development
+
+Manage and improve your games after publishing with tools designed for real workflows.
+
+Game upload and review status
+
+Build updates and version history
+
+SDK integration status
+
+Leaderboards
+
+Achievements
+
+Cloud Save Support
+
+Revenue tracking
+
+Direct feedback from Y8 team
+
+SDK
+Integrate with Y8 SDK
+
+Enhance your game with platform features:
+
+Ads Integration
+
+Leaderboards
+
+Cloud save
+
+Achievements
+
+Game screenshots
+
+Multiplayer Mode
+
+View SDK Documentation
+
+// Initialize Y8 SDK
+y8Sdk . init (appConfig, adConfig);
+
+// Show a rewarded ad
+y8Sdk . showAd ({ type: 'reward' });
+
+// Unlock an achievement
+y8Sdk . awardAchievement ({ achievement: 'Speed Runner' });
+
+// Open the leaderboard
+y8Sdk . showLeaderboard ({ table: 'level_1' });
+
+// Save player data
+y8Sdk . saveData ({ key: 'save' , value: gameState });
+
+Developer testimonials
+
+Julio R. Lunar R.
+Tanque Games
+
+I've worked with Y8 on multiple occasions now and it has always been a good experience. I would say that the best part of working with them is the communication, whenever I have a question I always receive a response quickly and they always have a friendly attitude.
+
+Reference game
+Tanque 3D: Sports
+
+Maicon R Da Silva
+Virtua Games
+
+Our partnership with Y8 Games has been great since the beginning, SDK is very easy to integrate, the support team is very efficient and always gives good advice to improve the games before release, definitely a good company to work with!
+
+Reference game
+Bike Simulator 3D: SuperMoto II
+
+Sunit George
+Studd Games
+
+Had a great experience working with the Y8 revenue share program. The payments were quick and prompt with 100% transparency. I am really glad that my team and I have opted for revenue share with Y8.
+
+Reference game
+Bike Riders
+
+Konstantin Matrunchik
+MadPuffers
+
+We have been working with Y8 since 2015 and together we have released 15 cool games. These days we move our best games to HTML5 and work with a revenue share system. And we are very happy with the good results. Good communication, well documented and easy SDK, very friendly, good income for good games.
+
+Reference game
+Moto X3M
+
+Toby R.
+Night Steed Games
+
+We are very happy with our collaboration with Y8. The communication has been spot on - from initial API implementation, getting the game live to receiving monthly reports on time. We are looking forward to further developing our partnership with Y8.
+
+Reference game
+EvoWars.io
+
+Hakan Demir
+WebGameapp
+
+We have been offering Unity WebGL games with Y8 for a long time and it is one of the companies with the highest revenue on the market. The Y8 Team are professionals in their field. We are very pleased and motivated to see that our games are displayed on the dashboard and that people are playing them.
+
+Reference game
+Shoot Balls
+
+Frequently Asked Questions
+
+What is the Y8 Developer Portal?
+
+The Y8 Developer Portal lets developers submit, manage, update, publish, and earn money from their games on Y8.
+
+Who can submit games?
+
+Independent developers, teams, studios, and publishers can submit games. You must own the game or have the right to publish and distribute it.
+
+Do I need a studio?
+
+Yes. Every game must be connected to a studio. If you do not have a studio, you will be asked to create one in the first step. If you already have a studio, you can submit the game directly under it. You do not need to be a registered company to create a studio.
+
+Can I create more than one studio?
+
+Yes, but only when the studios represent different teams, companies, publishers, or brands. Do not create extra studios to submit duplicate or reskinned games, avoid restrictions, or change your AFP eligibility. Y8 may suspend all related studios and accounts.
+
+What game formats does Y8 support?
+
+Y8 supports HTML5, WebGL, Unity WebGL, and other supported JavaScript-based web game formats. Your game must work properly in supported browsers and on the devices selected during submission.
+
+Can I submit a game that is already published elsewhere?
+
+Yes. You can submit a game that is already available on another website or platform. You can also continue publishing your game on other platforms after it is published on Y8.
+
+Do I need to use the Y8 SDK?
+
+Yes. You must complete the SDK requirements shown for your game in the Developer Portal. The Y8 SDK supports advertisements, cloud saves, leaderboards, achievements, player accounts, and other Y8 features.
+
+Can I submit a game without ads?
+
+Yes. You can submit and publish a game without adding advertisements.
+
+Will every submitted game be published?
+
+No. Y8 reviews every game before publishing it. Y8 may reject a game because of technical problems, low quality, harmful content, copyright issues, broken gameplay, security problems, or policy violations.
+
+What happens after I submit my game?
+
+The Y8 review team checks the game’s loading, performance, browser and screen compatibility, gameplay quality, controls, instructions, SDK integration, ad integration, content, and policy compliance.
+
+Where will I receive feedback?
+
+You will receive review feedback in the game’s Feedback tab in the Developer Portal. Each game has its own Feedback tab, where you can see the reported problems and ask the Y8 team questions if anything is unclear.
+
+How do I fix a reported issue?
+
+Fix the issue, upload a corrected build or update the required information, and send the game for review again.
+
+Can I resubmit a rejected game?
+
+Yes, when the problem can be fixed. A game may not be accepted again if it was rejected for serious copyright violations, fraud, harmful code, or repeated policy violations.
+
+Can I update a published game?
+
+Yes. Upload the new build through the Developer Portal. Y8 will review the new build before it replaces the current version.
+
+Are there cooldowns when sending builds for review?
+
+Yes. Repeated review submissions may have these waiting periods:
+
+First submission: No waiting period
+
+Second submission: 6 hours
+
+Third submission: 12 hours
+
+Fourth submission: 24 hours
+
+Fifth submission: 2 days
+
+Later submissions: 5 days
+
+You can upload and test a new build during the waiting period, but you cannot send it for review until the cooldown ends. Studios with more than 10 million plays do not have these review-submission cooldowns.
+
+Why can I still see the old build?
+
+The new build must be reviewed before it goes live. After approval, the old build may still appear for some time because of browser or CDN caching.
+
+Can I remove my game from Y8?
+
+Yes. You can ask Y8 to remove your game at any time without providing a reason. You must own the game or have the right to distribute it. The request must come from the verified developer, studio owner, publisher, or rights holder.
+
+Can I add external links inside my game?
+
+No. External links are not allowed inside games on Y8. Your game must not send players to other websites, app stores, social media pages, payment pages, gaming platforms, or promotional pages. You can add supported social profile links to your studio page instead.
+
+Can I use my own ads or third-party ads?
+
+No. You cannot use your own ads or ads from another company inside your game. Unauthorized ads, ad scripts, pop-ups, redirects, or monetization tools may result in game removal and account suspension.
+
+Who must check that the ads are working?
+
+The developer is responsible for testing the ad integration and checking it after the game is published. Check your Revenue Report regularly. Missing revenue or a sudden drop may mean that the ads are not working correctly. Contact Y8 Support by email as soon as you notice a problem and include your studio name, game title, and details about the issue.
+
+What content is not allowed?
+
+Y8 may reject or remove games that contain stolen or unauthorized content, copyright or trademark violations, malware, harmful scripts, hateful or illegal content, false information, broken gameplay, fake traffic, unauthorized ads, external links, or content that breaks Y8 or advertising-partner rules.
+
+Are templates and reskinned games allowed?
+
+You can use legally purchased templates and assets, but you must add meaningful original work. Y8 may reject duplicate games, simple reskins, small visual changes, or many low-quality games made from the same template.
+
+Can I submit games made with AI tools?
+
+Yes. You can use AI tools if you have the required rights and the final game meets Y8’s quality and content rules. Y8 may reject copied, misleading, low-quality, repeatedly reskinned, or mass-generated games.
+
+What revenue share does Y8 offer?
+
+Developers receive 50% of eligible advertising revenue earned from in-game ads.
+
+What monetization options are available?
+
+Y8 offers two options. Under the Y8 Managed Partnership (YMP) , Y8 manages the ads and pays the developer. Under the AdSense for Platforms (AFP) Partnership , eligible developers apply for or connect a Google AdSense account through Y8, and Google pays the developer directly. Y8 Managed Partnership (YMP) is available when a game is approved, while AFP is available only to eligible developers.
+
+How does Y8 Managed Partnership (YMP) work?
+
+Y8 manages the advertisements, tracks the revenue, and pays the developer. The minimum payment is $100 for PayPal and $500 for bank transfer. If your balance is below the minimum amount, it will be carried forward.
+
+Do I need an invoice?
+
+Yes. You need a valid invoice to receive payments directly from Y8. You are responsible for checking that your legal, tax, bank, and payment details are correct.
+
+How long does a payment take?
+
+Y8 normally processes an eligible payment within 10 business days after accepting a complete and valid invoice.
+
+Where can I check my payment status?
+
+You can check your payment status in the Developer Portal. Unpaid means the payment has not been processed. Paid means Y8 has processed the payment, but your bank or payment provider may need more time to add the money to your account.
+
+What is AFP?
+
+AFP means AdSense for Platforms. Eligible developers can apply for or connect a Google AdSense account through Y8, and Google pays the eligible revenue directly to the developer.
+
+Is AFP available to every developer?
+
+No. Y8 allows only eligible developers to apply for AFP. Eligibility may depend on game quality, originality, studio history, publishing activity, traffic quality, performance, technical setup, and policy compliance.
+
+Why does Y8 limit AFP applications?
+
+Google does not approve every AdSense or AFP application. Y8 checks developers first to protect the program from fake accounts, AdSense seekers, copied games, low-quality reskins, and mass-generated games. This helps genuine game developers apply through Y8.
+
+Does Y8 share its AFP eligibility system?
+
+No. Y8 does not share the exact scores, limits, signals, or fraud-checking methods used to decide eligibility.
+
+Do I need an AdSense account before applying?
+
+No. Eligible developers without an AdSense account can apply through Y8. Developers who already have an eligible AdSense account may be able to connect it.
+
+Does Y8 eligibility guarantee Google approval?
+
+No. Y8 eligibility only allows you to apply. Google has the final right to approve or reject every AdSense and AFP application. Y8 cannot approve an account or change Google’s decision. Developers who are not eligible for AFP can continue earning through YMP.
+
+What happens if someone uses fake traffic or ad clicks?
+
+Bots, automated plays, fake traffic, invalid clicks, traffic exchanges, and rewarded or encouraged ad clicks are not allowed. Y8 may adjust revenue, hold payments, remove games, stop monetization, restrict studios, or suspend the account.
+
+Can Y8 close a developer account?
+
+Yes. Y8 may restrict, suspend, or close accounts involved in fraud, stolen content, unauthorized ads, fake traffic, harmful code, false information, or attempts to bypass Y8 systems.
+
+How can I contact Y8?
+
+Use the game’s Feedback tab for game review questions. For account, studio, advertising, payment, partnership, or technical problems, contact Y8 Support by email at developers@y8.com and include your studio name, game title, and a clear explanation of the issue.
+
+Start Publishing on Y8
+
+Join developers building games for the open web.
+
+Upload your game
+
+Upload your game
+
+Create Developer Account

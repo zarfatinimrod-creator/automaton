@@ -1,0 +1,738 @@
+Introduction - Y8 SDK Documentation
+
+Skip to content
+
+Y8 SDK Documentation
+
+Introduction
+
+Initializing search
+
+Y8 SDK Documentation
+
+Home
+
+Platforms
+
+Developer Portal
+
+Developer Portal
+
+Overview
+
+Studio
+
+Create Game
+
+SDK Initialization
+
+SDK
+
+SDK
+
+Introduction
+
+Introduction
+
+Table of contents
+
+Installation
+
+Finding Your App ID and Game ID
+
+Initialization
+
+Configuration
+
+Authentication
+
+Accessing the SDK
+
+Handling errors
+
+Best Practices
+
+Local Development
+
+Player & Authentication
+
+Verifying Players
+
+Advertising
+
+Leaderboards
+
+Achievements
+
+Cloud Storage
+
+Images
+
+Player Profile
+
+Localization
+
+Protection
+
+Analytics
+
+Best Practices
+
+Table of contents
+
+Installation
+
+Finding Your App ID and Game ID
+
+Initialization
+
+Configuration
+
+Authentication
+
+Accessing the SDK
+
+Handling errors
+
+Best Practices
+
+Home
+
+SDK
+
+Getting started
+
+The Y8 SDK allows you to integrate Y8 platform services into your game, including authentication, advertisements, cloud storage, achievements, leaderboards, and more.
+
+Note
+
+Before installing the SDK, make sure you have created your game in the Y8 Developer Portal and obtained your App ID and Game ID.
+
+Installation
+
+Choose your platform to install the Y8 SDK.
+
+JavaScript
+Unity
+Construct 3
+Haxe
+
+Include the Y8 SDK in the <head> section of your HTML:
+
+< head >
+< script src = "https://cdn.y8.com/minimal-sdk/2-0/y8.min.js" async ></ script >
+</ head >
+
+Tip
+
+We recommend to download the demo project to understand how the Y8 SDK is integrated and used.
+
+Download the latest Unity SDK package .
+
+Import the downloaded .unitypackage into your Unity project.
+
+After importing:
+
+Open your Unity project.
+
+Locate Y8.Root under Assets > Y8 .
+
+Add the Y8.Root prefab to your scene.
+
+Tip
+
+We recommend reviewing the Unity SDK/demo project to understand how the Y8 SDK is integrated and used.
+
+Download the C3 example project .
+
+The example project contains the JavaScript bridge used by the integration.
+
+To integrate it:
+
+Open the C3 example project.
+
+Copy main.js .
+
+Add main.js to your Construct 3 project.
+
+Tip
+
+We recommend reviewing the example project to understand how the Y8 SDK is integrated and used.
+
+Download the latest Haxe SDK package .
+
+Extract the package and copy the y8 folder into your project's Source directory.
+
+Example:
+
+Source/
+├── Main.hx
+└── y8/
+├── Y8.hx
+└── js/
+└── Y8JS.hx
+
+Tip
+
+We recommend reviewing the Haxe SDK/demo project to understand how the Y8 SDK is integrated and used.
+
+Finding Your App ID and Game ID
+
+After creating your game in the Y8 Developer Portal:
+
+Open your game.
+
+Navigate to SDK Initialization .
+
+Copy your App ID and Game ID .
+
+Your App ID identifies your application. The Game ID is required when your game uses advertisements.
+
+Note
+
+These credentials are used when configuring the SDK for your selected platform.
+
+Initialization
+
+Initialize the SDK once during your game's startup.
+
+JavaScript
+Unity
+Construct 3
+Haxe
+
+Initialize the SDK once it has loaded:
+
+< script >
+let y8Sdk ;
+
+window . addEventListener ( "y8sdk.ready" , function () {
+y8Sdk = y8 . sdk ();
+
+const appConfig = {
+appId : "<app id>" ,
+autoLogin : true
+};
+
+// adConfig is optional — omit it if your game doesn't use ads
+const adConfig = {
+gameId : "<game id>" ,
+preloadAdBreaks : "on" ,
+sound : "on" ,
+onReady : () => {}
+};
+
+y8Sdk . init ( appConfig , adConfig );
+
+y8Sdk . onAuth (( user , error ) => {
+if ( error ) {
+console . error ( error );
+return ;
+}
+
+console . log ( user );
+});
+}, { once : true });
+
+// Handle the case where the SDK already loaded
+if ( window . y8 && window . y8 . emitReadyEvent ) {
+window . y8 . emitReadyEvent ();
+}
+</ script >
+
+Keep the last three lines
+
+The script tag is async , so it may finish loading either before or
+after this code runs. If it got there first, y8sdk.ready has already
+fired and your listener will never run — the SDK would sit there
+initialized by nobody, with no error to tell you so.
+
+Calling emitReadyEvent() asks the SDK to announce itself again, which
+covers that case. It is safe when the event has not fired yet, so it is
+not a branch you need to reason about — keep both halves and the
+ordering stops mattering.
+
+This is a race, so a build that works every time locally can still fail
+in production. It is the most common reason for an SDK that "does
+nothing".
+
+Declare y8Sdk with let outside the listener and assign it inside, as
+above, so the rest of your game can reach it.
+
+Note
+
+If your game does not use advertisements, you can omit the adConfig object.
+
+After adding the Y8.Root prefab to your scene, configure the Y8 component in the Inspector.
+
+Enter your:
+
+App ID
+
+Game ID if your game uses advertisements
+
+Add the initialization function to the On start of layout event:
+
+init (
+runtime ,
+runtime . globalVars . AppID ,
+runtime . globalVars . GameID
+);
+
+To disable automatic login:
+
+init (
+runtime ,
+runtime . globalVars . AppID ,
+runtime . globalVars . GameID ,
+false
+);
+
+Initialize the SDK during application startup:
+
+Y8 . init ( appId , gameId , updateAuthUI );
+
+Configuration
+
+Configure the SDK according to your platform.
+
+JavaScript
+Unity
+Construct 3
+Haxe
+
+Application Configuration
+
+Property
+
+Type
+
+Required
+
+Description
+
+appId
+
+string
+
+Yes
+
+Your Y8 application identifier.
+
+autoLogin
+
+boolean
+
+No
+
+Automatically authenticate returning players. Default: true .
+
+Advertisement Configuration
+
+Property
+
+Type
+
+Required
+
+Description
+
+gameId
+
+string
+
+Yes
+
+Your Y8 game identifier. Required when using advertisements.
+
+preloadAdBreaks
+
+string
+
+No
+
+Advertisement preloading behavior.
+
+sound
+
+string
+
+No
+
+Advertisement audio behavior.
+
+onReady
+
+function
+
+No
+
+Called when the advertisement system is ready.
+
+Configure the Y8 component:
+
+Setting
+
+Description
+
+App ID
+
+Your Y8 application identifier.
+
+Game ID
+
+Your Y8 game identifier. Required when using advertisements.
+
+Auto Login
+
+Automatically authenticate returning players.
+
+Preload Ad Breaks
+
+Advertisement preloading behavior.
+
+Sound
+
+Advertisement audio behavior.
+
+Store your credentials in Construct 3 global variables:
+
+Variable
+
+Description
+
+AppID
+
+Your Y8 application identifier.
+
+GameID
+
+Your Y8 game identifier.
+
+The Y8.init() method accepts the following parameters:
+
+Parameter
+
+Type
+
+Required
+
+Description
+
+appId
+
+String
+
+Yes
+
+Your Y8 application identifier.
+
+gameId
+
+String
+
+Yes
+
+Your Y8 game identifier. Required when using advertisements.
+
+authCallback
+
+Bool->String->Void
+
+Yes
+
+Called when the player's authentication state changes.
+
+Authentication
+
+The SDK provides authentication functionality for Y8 players.
+
+JavaScript
+Unity
+Construct 3
+Haxe
+
+Register an authentication callback:
+
+y8Sdk . onAuth (( user , error ) => {
+if ( error ) {
+console . error ( error );
+return ;
+}
+
+console . log ( user );
+});
+
+If autoLogin is enabled, returning players are authenticated automatically.
+
+To authenticate manually:
+
+y8Sdk . login ();
+
+If Auto Login is enabled, the SDK automatically attempts to authenticate the player.
+
+To authenticate manually:
+
+JsResponse < Y8User > response =
+await Y8 . Instance . LoginAsync ();
+
+if ( response . IsSuccess )
+{
+Debug . Log ( $"Logged in as {response.Data.nickname}" );
+}
+
+Subscribe to authentication errors:
+
+private void OnEnable ()
+{
+Y8 . Instance . OnAuthError += HandleAuthError ;
+}
+
+private void OnDisable ()
+{
+Y8 . Instance . OnAuthError -= HandleAuthError ;
+}
+
+private void HandleAuthError ( AuthError error )
+{
+Debug . LogError ( $"Authentication failed: {error.message}" );
+}
+
+The C3 integration handles authentication through the initialization process.
+
+Use the following global variables to determine the authentication state:
+
+Variable
+
+Description
+
+isLogin
+
+true when the player is authenticated.
+
+userNameY8
+
+Authenticated player's nickname, or Guest .
+
+y8SdkReady
+
+true when SDK initialization has completed.
+
+To authenticate manually:
+
+login ();
+
+Provide an authentication callback during initialization:
+
+private function updateAuthUI (
+loggedIn : Bool ,
+username : String
+): Void
+{
+if ( loggedIn )
+{
+trace ( "Welcome " + username );
+}
+else
+{
+trace ( "Player is not signed in." );
+}
+}
+
+To authenticate manually:
+
+Y8 . login ();
+
+Note
+
+Authentication is performed without requiring the game page to reload.
+
+If authentication cannot be completed, handle the failure gracefully and allow the player to continue using the game whenever possible.
+
+Accessing the SDK
+
+After initialization, access Y8 functionality through the SDK instance or class for your platform.
+
+JavaScript
+Unity
+Construct 3
+Haxe
+
+y8Sdk . login ();
+y8Sdk . logout ();
+y8Sdk . getUser ();
+
+Import the Y8 namespace:
+
+using Y8API ;
+
+Access SDK functionality through:
+
+Y8 . Instance
+
+Use the exposed Y8 functions from your Construct 3 Event Sheet:
+
+login ();
+logout ();
+getUser ();
+
+All functionality is available through the static Y8 class:
+
+Y8 . login ();
+Y8 . logout ();
+Y8 . getUser ();
+
+Handling errors
+
+Calls fail for ordinary reasons — the player is offline, a session expired, a
+server had a bad day. Handle them where the player can see the result, and
+prefer retrying quietly over interrupting play.
+
+JavaScript
+Unity
+Construct 3
+Haxe
+
+Asynchronous methods reject on failure, so attach a .catch() :
+
+y8Sdk . saveData ({ key : "save" , value : data })
+. catch (( error ) => {
+console . error ( error );
+});
+
+Two different failure shapes
+
+Failures that come back from the server — network problems, expired
+sessions, rejected data — arrive as an error object with message and
+sometimes code .
+
+Failures caused by calling the method wrongly arrive as a plain
+string instead. These have no message property, so a handler written
+as error.message logs undefined and tells you nothing:
+
+// Logs "undefined" when the failure is a plain string.
+. catch (( error ) => console . error ( error . message ));
+
+// Logs both kinds.
+. catch (( error ) => console . error ( error . message ?? error ));
+
+You will meet the string form while wiring your integration up, and the
+object form in the wild. Log the error itself, not just its message ,
+and both are readable.
+
+The string form covers a small, fixed set of mistakes:
+
+You will see
+
+When
+
+The token can't be null.
+
+A method needing a signed-in player was called while nobody was signed in.
+
+Ads not initialized. …
+
+An ad was requested without ad configuration at startup.
+
+… target element not found
+
+An embed was pointed at an element that does not exist.
+
+Two error codes are worth checking for by name, because they mean something
+specific you can act on:
+
+Code
+
+Meaning
+
+Y8Sdk.authError
+
+Sign-in failed or was abandoned.
+
+Y8Sdk.saveRejected
+
+A save was refused by the server even after retries.
+
+Calls return a JsResponse<T> . Check IsSuccess before reading Data :
+
+JsResponse < SetData > response =
+await Y8 . Instance . SaveDataAsync ( "save" , data );
+
+if ( ! response . IsSuccess )
+{
+Debug . LogWarning ( response . ErrorMessage );
+return ;
+}
+
+Failures do not throw, so a missing IsSuccess check shows up as empty data
+rather than an exception.
+
+Failures surface through the callbacks in the event sheet rather than as
+exceptions. Check that a value arrived before using it, and keep the game
+playable when it did not.
+
+Calls report through their callbacks rather than throwing. Check that a
+value arrived before using it — the callback runs whether or not the request
+succeeded.
+
+Best Practices
+
+JavaScript
+Unity
+Construct 3
+Haxe
+
+Initialize the SDK only once.
+
+Wait for y8sdk.ready before calling y8.sdk() , and keep the
+emitReadyEvent() fallback for when the SDK loaded first.
+
+Store the SDK instance in a shared variable.
+
+Do not call SDK methods before initialization completes.
+
+Handle authentication errors gracefully.
+
+Add Y8.Root only once.
+
+Configure the App ID before running the game.
+
+Provide a Game ID when using advertisements.
+
+Enable Auto Login unless manual authentication is required.
+
+Handle authentication errors.
+
+Prefer asynchronous SDK methods with await .
+
+Always check response.IsSuccess .
+
+Initialize the SDK only once.
+
+Wait for y8SdkReady before using SDK functions.
+
+Use isLogin to determine authentication state.
+
+Use userNameY8 when displaying the player's name.
+
+Allow the game to remain playable when authentication is unavailable.
+
+Initialize the SDK only once.
+
+Call Y8.init() before using SDK functionality.
+
+Provide an authentication callback.
+
+Pass an empty Game ID when advertisements are not used.
+
+Handle authentication failures gracefully.
+
+Back to top
+
+Previous
+
+SDK Initialization
+
+Next
+
+Local Development

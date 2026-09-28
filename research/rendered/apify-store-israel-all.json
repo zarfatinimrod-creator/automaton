@@ -4825,7 +4825,7 @@
         "name": "drushim-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 24,
+          "totalBuilds": 25,
           "totalRuns": 185,
           "totalUsers": 22,
           "totalUsers7Days": 6,
@@ -9734,7 +9734,7 @@
         "name": "tripadvisor-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 59,
+          "totalBuilds": 60,
           "totalRuns": 2900,
           "totalUsers": 76,
           "totalUsers7Days": 6,
@@ -15865,13 +15865,13 @@
         "name": "sec-edgar-filings-api",
         "username": "nexgendata",
         "stats": {
-          "totalBuilds": 37,
-          "totalRuns": 244,
+          "totalBuilds": 39,
+          "totalRuns": 246,
           "totalUsers": 13,
           "totalUsers7Days": 0,
           "totalUsers30Days": 0,
           "totalUsers90Days": 2,
-          "lastRunStartedAt": "2026-09-27T14:02:44.217Z",
+          "lastRunStartedAt": "2026-09-28T17:10:21.239Z",
           "actorReviewCount": 0,
           "actorReviewRating": 0,
           "bookmarkCount": 0,
@@ -25620,6 +25620,67 @@
         "url": "https://apify.com/studio-amba/wolt-scraper"
       },
       {
+        "title": "SEC Form D Tracker — New Startup Raise Alerts API",
+        "name": "sec-form-d-tracker",
+        "username": "nexgendata",
+        "stats": {
+          "totalBuilds": 17,
+          "totalRuns": 232,
+          "totalUsers": 1,
+          "totalUsers7Days": 0,
+          "totalUsers30Days": 0,
+          "totalUsers90Days": 0,
+          "lastRunStartedAt": "2026-09-28T16:56:45.570Z",
+          "actorReviewCount": 0,
+          "actorReviewRating": 0,
+          "bookmarkCount": 0,
+          "publicActorRunStats30Days": {
+            "ABORTED": 0,
+            "FAILED": 0,
+            "SUCCEEDED": 28,
+            "TIMED-OUT": 0,
+            "TOTAL": 28
+          }
+        },
+        "description": "Monitor new SEC Form D raises with server-side filters. Clean JSON for VCs, deal scouts and AI agents.",
+        "categories": [
+          "DEVELOPER_TOOLS"
+        ],
+        "notice": "NONE",
+        "bookmarkCount": 0,
+        "actorReviewRating": 0,
+        "actorReviewCount": 0,
+        "badge": null,
+        "isWhiteListedForAgenticPayments": true,
+        "userFullName": "NexGenData",
+        "userPictureUrl": "https://images.apifyusercontent.com/DFoEfAV1iSBokBNjpIZdoeMlxK2y6UEav2Se4BxUDrI/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20veU5Nancta2JUQ2FFN3lQUTNGZnR1SHBQX0FoWkVNVlVFLTdfSVFOTjNzby9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZVRkZaYUV4bU1rdDFObGx4ZVVOWFluZ3RjSEp2Wm1sc1pTMXVSMmRzVGxZeU5VVkRMVzVuWkMxemRHRmphMlZrTFd4dlkydDFjQzFrWVhKckxuQnVady5wbmc.webp",
+        "currentPricingInfo": {
+          "pricingModel": "PAY_PER_EVENT",
+          "reasonForChange": "Initial launch pricing for new actor",
+          "pricingPerEvent": {
+            "actorChargeEvents": {
+              "apify-actor-start": {
+                "eventTitle": "Actor Start",
+                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
+                "eventPriceUsd": 0.005,
+                "isPrimaryEvent": false
+              },
+              "apify-default-dataset-item": {
+                "eventTitle": "Filing",
+                "eventDescription": "Per-filing extracted: issuer, CIK, offering amount, exemption claimed, related persons",
+                "eventPriceUsd": 0.1,
+                "isPrimaryEvent": true
+              }
+            }
+          },
+          "createdAt": "2026-05-29T19:58:44.544Z",
+          "startedAt": "2026-05-29T19:58:44.544Z",
+          "apifyMarginPercentage": 0.2
+        },
+        "id": "j9Jpj543c8AnrodbR",
+        "url": "https://apify.com/nexgendata/sec-form-d-tracker"
+      },
+      {
         "title": "Middle East Jobs API",
         "name": "middle-east-jobs-api",
         "username": "aspen-technology-labs-inc",
@@ -25852,67 +25913,6 @@
         },
         "id": "Xnqbq6TpbAD0R0Jkg",
         "url": "https://apify.com/stealth_mode/yad2-product-search-scraper"
-      },
-      {
-        "title": "SEC Form D Tracker — New Startup Raise Alerts API",
-        "name": "sec-form-d-tracker",
-        "username": "nexgendata",
-        "stats": {
-          "totalBuilds": 15,
-          "totalRuns": 230,
-          "totalUsers": 1,
-          "totalUsers7Days": 0,
-          "totalUsers30Days": 0,
-          "totalUsers90Days": 0,
-          "lastRunStartedAt": "2026-09-28T06:30:13.865Z",
-          "actorReviewCount": 0,
-          "actorReviewRating": 0,
-          "bookmarkCount": 0,
-          "publicActorRunStats30Days": {
-            "ABORTED": 0,
-            "FAILED": 0,
-            "SUCCEEDED": 28,
-            "TIMED-OUT": 0,
-            "TOTAL": 28
-          }
-        },
-        "description": "Monitor new SEC Form D raises with server-side filters. Clean JSON for VCs, deal scouts and AI agents.",
-        "categories": [
-          "DEVELOPER_TOOLS"
-        ],
-        "notice": "NONE",
-        "bookmarkCount": 0,
-        "actorReviewRating": 0,
-        "actorReviewCount": 0,
-        "badge": null,
-        "isWhiteListedForAgenticPayments": true,
-        "userFullName": "NexGenData",
-        "userPictureUrl": "https://images.apifyusercontent.com/DFoEfAV1iSBokBNjpIZdoeMlxK2y6UEav2Se4BxUDrI/rs:fill:32:32/cb:1/aHR0cHM6Ly9pbWFnZXMuYXBpZnl1c2VyY29udGVudC5jb20veU5Nancta2JUQ2FFN3lQUTNGZnR1SHBQX0FoWkVNVlVFLTdfSVFOTjNzby9yczpmaWxsOjMyOjMyL2NiOjEvYUhSMGNITTZMeTloY0dsbWVTMXBiV0ZuWlMxMWNHeHZZV1J6TFhCeWIyUXVjek11ZFhNdFpXRnpkQzB4TG1GdFlYcHZibUYzY3k1amIyMHZVRkZaYUV4bU1rdDFObGx4ZVVOWFluZ3RjSEp2Wm1sc1pTMXVSMmRzVGxZeU5VVkRMVzVuWkMxemRHRmphMlZrTFd4dlkydDFjQzFrWVhKckxuQnVady5wbmc.webp",
-        "currentPricingInfo": {
-          "pricingModel": "PAY_PER_EVENT",
-          "reasonForChange": "Initial launch pricing for new actor",
-          "pricingPerEvent": {
-            "actorChargeEvents": {
-              "apify-actor-start": {
-                "eventTitle": "Actor Start",
-                "eventDescription": "Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event).",
-                "eventPriceUsd": 0.005,
-                "isPrimaryEvent": false
-              },
-              "apify-default-dataset-item": {
-                "eventTitle": "Filing",
-                "eventDescription": "Per-filing extracted: issuer, CIK, offering amount, exemption claimed, related persons",
-                "eventPriceUsd": 0.1,
-                "isPrimaryEvent": true
-              }
-            }
-          },
-          "createdAt": "2026-05-29T19:58:44.544Z",
-          "startedAt": "2026-05-29T19:58:44.544Z",
-          "apifyMarginPercentage": 0.2
-        },
-        "id": "j9Jpj543c8AnrodbR",
-        "url": "https://apify.com/nexgendata/sec-form-d-tracker"
       },
       {
         "title": "Job Scraper for Greenhouse, Lever, Ashby, Workday & 10 More ATS",
@@ -29526,7 +29526,7 @@
         "name": "forrentuniversity-scraper",
         "username": "memo23",
         "stats": {
-          "totalBuilds": 89,
+          "totalBuilds": 90,
           "totalRuns": 1210,
           "totalUsers": 26,
           "totalUsers7Days": 1,

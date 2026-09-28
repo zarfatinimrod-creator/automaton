@@ -1,17 +1,17 @@
 {
   "url": "https://support.google.com/books/partner/table/6052428?hl=en",
   "slug": "play-books-payment-countries",
-  "fetchedAt": "2026-09-28T16:11:52.246Z",
+  "fetchedAt": "2026-09-28T17:18:46.667Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1442634,
-  "sha256": "3473faebe72de6f66ad21f3c19581d38a0dead199c09595f4140493274e63dea",
+  "byteLength": 1443034,
+  "sha256": "08994574d0faae2744f63ef09f230ed1b5230e1091b1a1a1b959e7d9430f361c",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/play-books-payment-countries.html",
   "textPath": "research/rendered/play-books-payment-countries.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "3473faebe72de6f66ad21f3c19581d38a0dead199c09595f4140493274e63dea",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

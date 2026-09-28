@@ -1,0 +1,17 @@
+{
+  "url": "https://static.gamedistribution.com/developer/developers-guidelines.html",
+  "slug": "gamedistribution-guidelines",
+  "fetchedAt": "2026-09-28T17:19:50.199Z",
+  "status": 200,
+  "contentType": "text/html",
+  "byteLength": 5242880,
+  "sha256": "81a5d7c398064abcd36dde62f76ed61517233ad51d9132f9a226979c87fc736b",
+  "truncated": true,
+  "error": null,
+  "bodyPath": "research/rendered/gamedistribution-guidelines.html",
+  "textPath": "research/rendered/gamedistribution-guidelines.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

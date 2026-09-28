@@ -1,0 +1,17 @@
+{
+  "url": "https://www.facer.io/creator/partner",
+  "slug": "facer-creator-partner",
+  "fetchedAt": "2026-09-28T17:19:31.850Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 21687,
+  "sha256": "2c010981e2fb92b1d5001c3b39549b2ba7c0a2397c77f997a93faf7663758676",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/facer-creator-partner.html",
+  "textPath": "research/rendered/facer-creator-partner.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

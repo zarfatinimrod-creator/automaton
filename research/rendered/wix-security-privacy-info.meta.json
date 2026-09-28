@@ -1,0 +1,17 @@
+{
+  "url": "https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/add-security-and-privacy-information",
+  "slug": "wix-security-privacy-info",
+  "fetchedAt": "2026-09-28T17:19:19.832Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 604613,
+  "sha256": "92c8413863a4b03f36b7f6dfdc62493ccb97b5b48a45be8bd842f59246f6cf5c",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/wix-security-privacy-info.html",
+  "textPath": "research/rendered/wix-security-privacy-info.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

@@ -1,17 +1,17 @@
 {
   "url": "https://eur-lex.europa.eu/eli/reg/2022/2065/oj",
   "slug": "eu-dsa-2022-2065",
-  "fetchedAt": "2026-09-28T16:11:50.893Z",
+  "fetchedAt": "2026-09-28T17:18:45.315Z",
   "status": 202,
   "contentType": "text/html; charset=UTF-8",
   "byteLength": 2035,
-  "sha256": "65e48ba0d5060da546064acf26508448bc6ea653cf060eaa388875a59843f36a",
+  "sha256": "240f50d5232705424a542e1a1da4c3ec625db7335f5c17938e7b420c2abc1380",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/eu-dsa-2022-2065.html",
   "textPath": "research/rendered/eu-dsa-2022-2065.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "a65c62bdc089175021b69bfe440771f8be223e8adbf3c3c3a94a201c3ddc5eef",
+  "previousSha256": "65e48ba0d5060da546064acf26508448bc6ea653cf060eaa388875a59843f36a",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

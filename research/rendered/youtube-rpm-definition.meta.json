@@ -1,17 +1,17 @@
 {
   "url": "https://support.google.com/youtube/answer/9314357/understand-ad-revenue-analytics",
   "slug": "youtube-rpm-definition",
-  "fetchedAt": "2026-09-28T16:10:14.108Z",
+  "fetchedAt": "2026-09-28T17:16:15.966Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1593711,
-  "sha256": "b8a2bbd3afeaf2748ba6792f07cccea6ecb24821b7090cd4f4437e92568b8158",
+  "byteLength": 1593689,
+  "sha256": "0cf507fc8db823808342dc5f0db233d466f38c06803842c46fcab401b48cbc7a",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/youtube-rpm-definition.html",
   "textPath": "research/rendered/youtube-rpm-definition.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "1b0210de92755f38caa1da19fdf8f8b3332b97849b03249625955fcce69b29ff",
+  "previousSha256": "b8a2bbd3afeaf2748ba6792f07cccea6ecb24821b7090cd4f4437e92568b8158",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

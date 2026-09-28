@@ -1,0 +1,17 @@
+{
+  "url": "https://news.facer.io/celebrating-1-million-in-designer-payouts-and-launching-our-first-facer-creator-partner-program-85bd2e11baff?gi=5c49d09ba159",
+  "slug": "facer-payouts-news",
+  "fetchedAt": "2026-09-28T17:19:41.088Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 55951,
+  "sha256": "d0b91408b6f9491aec41c190228ad787a819343f11330cac088c65b74daf80ec",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/facer-payouts-news.html",
+  "textPath": "research/rendered/facer-payouts-news.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

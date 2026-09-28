@@ -1,0 +1,17 @@
+{
+  "url": "https://www.y8.com/new/games",
+  "slug": "y8-new-games",
+  "fetchedAt": "2026-09-28T17:19:47.675Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 620934,
+  "sha256": "6308ffa104d28f230972500c7e6f93d6711e9cfbb8dbad0785ae36bdb71d656b",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/y8-new-games.html",
+  "textPath": "research/rendered/y8-new-games.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
