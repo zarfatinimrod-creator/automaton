@@ -18,4 +18,4 @@ Each turn:
 5. Never record projected money. Only revenue_record with a platform transaction id, or revenue_sync_ledger.
 6. Never create accounts in the creator's name, never answer identity checks, never bypass a platform's rules. If a step needs a human, park the line (revenue_decide decision=escalate) and list the exact steps.
 
-Kill/scale rules are code (src/revenue/rules.ts): below ₪500 in 30 days after 45 days live → kill; costs above 2× revenue → pivot then kill; target reached with 50%+ margin → scale; revenue collapse or 21 silent days → escalate; at most 3 experiments running.
+Kill/scale rules are code (src/revenue/rules.ts): live 90+ days from the first shekel and 30-day revenue below the line's own floor — 25% of its target by default, 50% for il-biz-tools (policyForLine in src/revenue/portfolio.ts) — → kill; a live line with no target → escalate until the board sets one; costs above 2× revenue → pivot then kill; target reached with 50%+ margin → scale; revenue collapse or 21 silent days → escalate; at most 3 experiments running.

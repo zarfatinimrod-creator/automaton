@@ -1,0 +1,394 @@
+{
+ "family": "3d-and-creative-assets",
+ "prior_coverage": "Heavily swept before; most of it stands. licensing-ip (5-6.9.2026): scouts research/colony-sweep/scouts/licensing-ip--3d-print-on-demand.md, --stock-media.md, --fonts-icons.md; audit research/colony-sweep/audits/licensing-ip.md; verdict docs/REJECTED.md:984-1023 (group at ₪0; the price floor is zero for what we can make: generic stock, icons, consumer STL, REJECTED.md:997; itch.io, Freepik and Creative Fabrica pay 'fractions of a shekel', :1002; Cults3D createCreation takes a writable madeWithAi, :998-1000). storefronts (3.9): scouts storefronts--game-3d-assets.md (itch.io, Unity, Fab, Roblox) and storefronts--asset-marketplaces.md (Envato, Creative Market, TemplateMonster); groups/storefronts.md:162,185 (Fab gated on Hyperwallet Israel; Unreal Marketplace folded into Fab); Unity refuted to ₪0 at REJECTED.md:663-668. CHIEF-AUDIT.md:47 lists Getty/Alamy/Creative Fabrica/Canva as missed. CHIEF-AUDIT.md:302 drops Fab and Cults3D owner steps because the lines were rejected. Standing DEAD, no new evidence against them: Adobe Stock (REJECTED.md:1006-1012: no contributor upload API, CSV has no AI column, portal login with CAPTCHA). Hebrew fonts (REJECTED.md:995; fonts-icons scout §3: an OFL derivative 'may not be sold by itself'; §7: a saleable Hebrew family cannot be made by software in the time available). MyMiniFactory plus Thingiverse, anti-AI (REJECTED.md:1020-1022; github-secondary tyschacht/nanoclaw_passive content/research/ai-3d-model-cults3d.md, dated 2026-05-02: the 'SoulCrafted' policy demands proof of human origin such as WIP files or sculpting videos). Printables (3d-print-on-demand scout §3: no publishing mutation; nanoclaw doc: no upload API, Prusameters are not cash). MakerWorld (scout §2: a photo of a physically printed object on every upload, which means a camera and physical work). TurboSquid, Shutterstock, Pond5, Getty/iStock, Alamy, Depositphotos all ban GenAI supply (scout §5; github ibank31/stockforge-ai docs/MARKETPLACE_UPLOAD_READINESS_STANDARD.md, 24.8.2026). Envato bans AI as the main component and adds 6 months of item support (asset-marketplaces scout §1). Iconfinder closed 15.11.2025 (REJECTED.md:1013-1015). Etsy fails the camera gate: Persona asks for a selfie (KYC catalogue C5; REJECTED.md:274,1209-1217). Creative Market is not ranked: shop application, Tipalti Israel row unread, no API found (asset-marketplaces §3). NEW this sweep: (a) itch.io now has a mandatory Generative AI Disclosure field (snippet), which resolves the AMBER in game-3d-assets.md F2 that stopped the AI-asset-pack variant. (b) Fab requires a 'Created with AI' flag, Sketchfab has required CreatedWithAI since 11.12.2025, and CGTrader allows AI with a 60% new-seller rate (github-secondary: dscherm/comfyprompts docs/research/selling-ai-assets-followup.md, 29.6.2026). (c) Cults3D confirms its default-on 'No AI' filter plus a daily upload cap (snippet, 28.9). (d) A third-party source says Hyperwallet lists Israel (snippet only). (e) A Tranco popularity proxy (github: alexbara2000/BBAT crawler/lists/tranco_10k.csv and tranco_20k.csv) ranks freepik 621, itch.io 2,252, sketchfab 2,746, dreamstime 3,696, creativefabrica 5,918, cults3d 12,075, fab.com 14,973, cgtrader 16,941. (f) Contradiction: the nanoclaw doc says Cults3D has 'no headless upload API'. Five repos, including a live-schema contract test (fredonia88/destl tests_integration.py), show the createCreation mutation exists. No repo shows a successful live create. Cross-cutting risks not settled by anyone: (1) EU marketplaces (Cults3D FR, Freepik ES, Creative Fabrica NL, CGTrader LT) may have to show a trader's name and address to buyers under the DSA, which could publish the owner's name (analogue: Envato does this, asset-marketplaces scout §1). (2) PayPal is not among the seven encoded owner steps (src/revenue/owner-steps.ts:71-78), so every venue here is an eighth-plus owner step under the ACCOUNT CAP (research/channel-loop/BOARD-LOOP.md:17). Packs built for any venue can also be listed on Gumroad (owner step 3) at no extra owner step, but that adds listings, not buyers: Gumroad Discover needs a prior sale (REJECTED.md:640-647). Not examined: Thangs (if its payout is Stripe Connect, an Israeli cannot onboard), IconScout, Superhive/Blender Market, 123RF, Vecteezy, Canva Creators (the inverse model: pays for human-made content).",
+ "candidates": [
+  {
+   "venue": "itch.io (game-asset packs and dev tools)",
+   "url": "https://itch.io/game-assets",
+   "what_we_would_list": "Genuinely useful, code-generated game assets: 16x16 and 32x32 pixel tilesets and UI kits drawn by code, low-poly 3D kits built procedurally (Blender/CadQuery scripts), procedural SFX packs, Godot/GDScript editor tools and templates. Each pack is tagged through itch's Generative AI Disclosure (graphics or code, as true). Prices $1-5 or pay-what-you-want, under the Mehudak brand.",
+   "existing_product": "None built. No asset pack exists in products/ (products/README.md lists web tools, Apify, MCP and pcn874 only).",
+   "listings_per_owner_step": "One account (plus PayPal) unlocks an unbounded number of project pages. An honest year-one catalogue is realistically 30-100 packs. The binding limit is how each page gets created (see programmatic gate), not the account.",
+   "prior_verdict": "AMBER, not buildable: 'The AI-asset-pack variant on itch.io is NOT cleared' because no AI policy had been read (research/colony-sweep/scouts/storefronts--game-3d-assets.md:65-75, F2). 'Fractions of a shekel', with packs at $0-10 against free competitors (docs/REJECTED.md:1002; research/colony-sweep/groups/licensing-ip.md:38; audits/licensing-ip.md:186).",
+   "reopen_basis": "New snippet evidence resolves F2's stated reason. The policy is disclosure-based, not a ban: a mandatory Generative AI Disclosure field, an 'AI Generated' tag, untagged AI assets become ineligible for indexing, and a bulk tagging dialog exists (Engadget; itch.io/t/4309690; 80.lv; gamedeveloper.com, all snippets). The price-floor objection is NOT refuted and is carried into the estimate. The 28.9 breadth directive (MISSION.md:358-381) makes many small sales the target shape, but it is not new evidence against the floor. New github-secondary demand signal: itch's top-selling asset categories are 16x16 pixel RPG tilesets and low-poly 3D kits (dscherm/comfyprompts selling-ai-assets-followup.md, 29.6.2026).",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Free to publish. The seller sets itch's cut from 0% to 100% (default 10%), and payment processing of about 2.9% + $0.30 comes out of the sale. Source: research/colony-sweep/scouts/storefronts--game-3d-assets.md:47-52, snippet-grade in the repo.",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "International itch-hosted payouts go by PayPal (game-3d-assets.md:40-44, snippet). Israeli PayPal withdraws in ILS to an Israeli bank (payment-rails--paypal-israel.md, snippet). The PayPal Israel KYC steps list ID, phone, tax id and a Latin-name bank link, with no selfie named (risk-governance--owner-kyc-catalogue.md C2, snippet). itch's own payout-country page and tax-interview flow are unread.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "butler (github itchio/butler cmd/push/push.go) uploads files to an existing target 'username/game'. docs/pushing.md says tags can be changed later 'from the Edit game page'. A GitHub code search on 28.9 found no project-creation endpoint. So creating a page, setting its price and its AI disclosure looks like a web form. If only the owner can click it per pack, this gate FAILs. If the colony may drive the brand account's web UI from a runner, it may pass. itch's automation terms are unread.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "Mandatory Generative AI Disclosure for asset creators, covering graphics, sound, text and code. AI output gets the 'AI Generated' tag and non-AI work 'No AI'. Undisclosed AI makes an asset ineligible for indexing. Sources: Engadget, itch.io/t/4309690, 80.lv, all snippets. Whether AI-tagged assets are down-ranked or filtered by default: UNKNOWN (thread itch.io/t/4527500 complains that itch 'decided to hide' which assets are AI, i.e. no default filter, snippet title only).",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "itch.io is Tranco rank 2,252 (github alexbara2000/BBAT crawler/lists/tranco_10k.csv). The asset category has known best-seller shapes (github-secondary comfyprompts doc, 29.6.2026). Earnings anchors are weak: 'most games earn under $100', and 'active creators with several games reach $500-2,000/month' comes from a commercially motivated guide (game-3d-assets.md:53-56). No buyer counts for assets.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN, probably not. Nothing in the repo shows a sale-gated recommender like Gumroad's (REJECTED.md:640-647), and itch's asset browse appears to offer a newest sort (itch.io/game-assets/newest, not rendered). An AI tag may still lower placement (UNKNOWN).",
+   "owner_step": "New (8th-plus) owner steps: (1) a PayPal account in the owner's name, shared with other venues (KYC catalogue C2, no camera named); (2) an itch.io account with a brand-named profile ('Mehudak'), itch's tax interview (W-8BEN-equivalent, unverified), and PayPal linked for payouts. Both are one-time. Needs the owner's yes under the ACCOUNT CAP (BOARD-LOOP.md:17). The ₪0 build and test can be queued before that.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 400,
+   "estimate_basis": "INFERENCE, low confidence. Assumes 30-60 honest packs at $2-5 and 0-40 paid sales a month at month 12, about 15-20% lost to itch's default 10% plus processing, at ~3.7 ILS/USD. The low end is zero because AI-tagged packs compete with free CC0 packs (Kenney-class), and the repo's price-floor verdict stands. The high end is bounded by the only anchors available: a weak secondary guide and the '$0-10 per pack' finding. No base rate is invented.",
+   "time_to_first_sale": "UNKNOWN. Inference: 1-3 months after the first pages go live, and only if page creation needs no per-item owner click.",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://itch.io/docs/creators/payments",
+    "https://itch.io/t/4309690/generative-ai-disclosure-tagging",
+    "https://itch.io/docs/api/serverside",
+    "https://itch.io/game-assets/newest",
+    "https://itch.io/docs/creators/quality-guidelines",
+    "https://itch.io/docs/legal/terms",
+    "https://itch.io/t/4527500/im-dismayed-that-itchio-decided-to-hide-which-gamesassets-are-ai-and-which-arent"
+   ]
+  },
+  {
+   "venue": "Cults3D",
+   "url": "https://cults3d.com",
+   "what_we_would_list": "Parametric, functional 3D-printable designs (OpenSCAD/CadQuery: organisers, brackets, customisable holders, drawer bins) with source plus STL. madeWithAi=true set honestly by API, priced €1-3.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "One account (plus a Hyperwallet or Payoneer payout) unlocks many listings. Limits are the API (~60 requests per 30 s, 500 per day; github CheekyCodexConjurer/cults3d-api-docs faq.md) and a daily file-upload cap aimed at AI mass uploads (snippet, cults3d.com filtering page). Hundreds a year is feasible, but honesty limits it well below that.",
+   "prior_verdict": "₪0: 'DOWNGRADED reasoning, same ₪0 verdict' (research/colony-sweep/audits/licensing-ip.md:273-287). Killed by a default-on 'No AI' filter, an unrendered Hyperwallet/Payoneer Israel list, and no demand evidence against free STLs on Printables/Thingiverse. docs/REJECTED.md:998-1000 records the programmatic AI declaration. groups/licensing-ip.md:165.",
+   "reopen_basis": "Weak new evidence only. Hyperwallet lists Israel as a supported country (snippet, third-party supportedcountries.com, not Hyperwallet's own table). Live-schema introspection of createCreation (github fredonia88/destl tests_integration.py) strengthens the API claim. Against that, the default-on 'No AI' filter was re-confirmed on 28.9 from Cults' own page title and snippet, plus a new daily upload cap. The prior verdict's main reason (a ranking fact) stands, so this is not a reopen, only a re-grade.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Commission model: the designer keeps 80% of each sale ex-VAT, with no listing fee seen (licensing-ip--3d-print-on-demand.md:41-43, snippet from Cults' blog; github-secondary nanoclaw doc says 80%).",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Payouts go by Hyperwallet (onward to PayPal, bank, card) or Payoneer, after a 30-day pending period (3d-print-on-demand scout, snippet). Hyperwallet lists Israel (snippet, third-party). Cults' own eligibility list is unrendered. Whether Hyperwallet or Payoneer KYC includes a selfie: UNKNOWN. Cults is an EU (French) marketplace, and whether DSA trader details would publish the owner's name is UNKNOWN.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "GraphQL createCreation(name, description, imageUrls, fileUrls, downloadPrice, currency, licenseCode, tagNames, metaTags, madeWithAi), with a self-serve key at cults3d.com/en/api/keys. Seen in CheekyCodexConjurer/cults3d-api-docs endpoints.md and workflows/creation_workflow.md, metorial/metorial integrations/cults/src/tools/create-creation.ts ('Returns the newly created design's identifier and URL'), and a live-schema contract test in fredonia88/destl. Caveats: no repo shows a successful live create, and one repo (tyschacht/nanoclaw_passive, 2026-05-02) claims the opposite.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "AI models are allowed if declared, and madeWithAi is a writable API argument (github, as above; audits/licensing-ip.md:119-133). Cults' own page says AI models remain allowed but their visibility is regulated (snippet, cults3d.com/en/pages/filtering-ai-generated-designs, 28.9).",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "The site has traffic (Tranco 12,075, github BBAT tranco_20k.csv), but for OUR listings the 'No AI' filter is 'enabled by default across the entire site'. AI designs do not appear in search results or on other pages by default (snippet, Cults' own page, re-seen 28.9.2026). An agent-written parametric design honestly carries madeWithAi=true, so it lands in the hidden set.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "No sale gate is known, but discovery needs a buyer to switch off the default 'No AI' filter. It is effectively gated on buyer opt-in rather than on a prior sale.",
+   "owner_step": "Cults3D account (brand-named shop), plus a Hyperwallet or Payoneer payout with its own KYC (camera UNKNOWN), plus a tax form. PayPal is shared if the Hyperwallet-to-PayPal route is used. 8th-plus owner step.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE. Default-hidden AI listings, free substitutes on Printables/Thingiverse (audits/licensing-ip.md:74,286), and no independent seller-earnings data (3d-print-on-demand scout, last section). The high end allows a few dozen €1-3 sales a month to filter-off buyers.",
+   "time_to_first_sale": "UNKNOWN; possibly never while the default filter hides AI work.",
+   "verdict": "WEAK",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://cults3d.com/en/pages/filtering-ai-generated-designs",
+    "https://cults3d.com/en/pages/no-ai",
+    "https://cults3d.com/en/pages/payouts-hyperwallet",
+    "https://cults3d.com/en/pages/logbook-updates-new-features-cults",
+    "https://cults3d.com/en/questions",
+    "https://docs.hyperwallet.com/content/transfer-methods/v1/payout-networks/transfer-method-payee-country-availability"
+   ]
+  },
+  {
+   "venue": "Freepik Contributor",
+   "url": "https://contributor.freepik.com",
+   "what_we_would_list": "Coherent, code-generated vector sets: SVG pattern systems, geometric backgrounds, parametric icon-adjacent illustration sets, Hebrew-free. Each tagged ai_generated where AI made it; no people or brands.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "Thousands are technically possible through SFTP batches. The binding limits are Freepik review and the no-flooding rule; honest volume is hundreds.",
+   "prior_verdict": "Dead on price: generic stock/vectors have a zero price floor (docs/REJECTED.md:997). 'Fractions of a shekel' at $0.04-0.07 per download (REJECTED.md:1002; audits/licensing-ip.md:186). Needs ~1,160-2,030 downloads a month to clear ₪300 (audits/licensing-ip.md:239-245).",
+   "reopen_basis": "None on price. New snippet: $25 / €50 minimum, PayPal and Payoneer payouts, AI accepted, and the April 2026 Magnific rebrand 'did not change the rules'. This lowers payout uncertainty only and does not touch the stated rejection reason. Kept as a candidate because of its buyer scale and bulk upload, not as a reopen.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Pay-per-download from a pool of net subscriber revenue, with a minimum earnings threshold before invoicing (stock-media scout §3 snippet; 28.9 snippet: '25 USD / 50 EUR'). No contributor fee appears in any snippet.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "PayPal and Payoneer, plus bank transfer in SEPA countries (snippet, support.freepik.com 'Payment methods accepted by Freepik'). Israel is not named. Contributor identity-verification method (camera?) unknown. Freepik is an EU (Spanish) company, so the DSA trader-display risk is unknown.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "SFTP ingestion at sftp.contributor-ftp.freepik.com, with the password taken from the 'My Devices' tab (github samjan190799-cmyk/StockFlow.ios Sources/StockAgencyGuide.swift and StockSignInHelperView.swift). The AI tag can be set by CSV on bulk upload (stock-media scout §1, snippet), or an upload check adds 'ai_generated' (github ibank31/stockforge-ai, 24.8.2026, citing Freepik's blog as 'historical guidance, verify').",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "AI-generated content is accepted, and a mandatory _ai_generated tag is enforced by penalties (stock-media scout §1, snippet). The 28.9 snippet says AI content is still accepted after the Magnific rebrand. Current policy page unread.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Tranco rank 621 (github BBAT tranco_10k.csv). Freepik brings buyers at scale; the problem is price per download, not supply.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. Probably ranked by downloads and relevance, which is inference. It also competes with Freepik's own AI generator (Magnific), which is inference too.",
+   "owner_step": "Freepik contributor account under the brand name, plus PayPal or Payoneer, plus Freepik's tax and invoice data. 8th-plus owner step.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 250,
+   "estimate_basis": "INFERENCE. $0.04-0.07 per download (snippet, blog sources). 300-1,000 downloads a month from a few hundred honest assets would give roughly ₪45-260. Money lags about 2 months (snippet) behind a $25 threshold.",
+   "time_to_first_sale": "Downloads maybe within weeks. The first cash needs $25 and a ~2-month lag, so 3-6 months.",
+   "verdict": "WEAK",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://support.freepik.com/s/article/Payment-methods-accepted-by-Freepik?language=en_US",
+    "https://support.freepik.com/s/article/AI-generated-resources-General-guidelines",
+    "https://contributor.freepik.com/blog/how-to-upload-ai-generated-content-on-freepik-contributor/",
+    "https://contributor.freepik.com/blog/faqs-freepik-contributor/",
+    "https://www.magnific.com/ai/docs/faqs-for-contributors"
+   ]
+  },
+  {
+   "venue": "Dreamstime",
+   "url": "https://www.dreamstime.com",
+   "what_we_would_list": "Code-generated illustrations and clipart in the 'Illustrations & Clipart/Generative AI' category. Titles and descriptions state 'AI-generated' (embeddable in IPTC). No faces, no editorial.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "Hundreds through FTP batches, if the AI category can be set without the portal (UNKNOWN).",
+   "prior_verdict": "Covered as a stock-media venue that accepts AI with disclosure (research/colony-sweep/scouts/licensing-ip--stock-media.md §1). Payout for Israel was never researched (§4: 'Freepik / Dreamstime / Vecteezy payout methods for Israel: UNKNOWN'). Generic-stock price floor is zero (docs/REJECTED.md:997).",
+   "reopen_basis": "Minor new github evidence: a 24.8.2026 public standard (ibank31/stockforge-ai) names Dreamstime an eligible 'secondary target' for GenAI, with category plus title/description disclosure. That is compatible with an honest FTP pipeline, but it does not address the price floor.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No fee evidence either way.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Not researched in the repo or this sweep.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "FTP ingestion at ftp.upload.dreamstime.com:21 (github samjan190799-cmyk/StockFlow.ios AGENT_INSTRUCTIONS.md, via stock-media scout §2). Whether the GenAI category can be set through FTP/IPTC rather than the portal is UNKNOWN; if it is portal-only, this becomes Adobe's per-batch wall.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "'Eligible under stated conditions... Select Illustrations & Clipart/Generative AI; title or description must clearly say AI-generated' (github ibank31/stockforge-ai docs/MARKETPLACE_UPLOAD_READINESS_STANDARD.md, 24.8.2026).",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Tranco rank 3,696 (github BBAT tranco_10k.csv). No buyer or download data.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "Dreamstime contributor account (brand name), plus payout rail (unknown which), plus a tax form. 8th-plus owner step.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE with no rate evidence. Generic-stock floor is zero (REJECTED.md:997) and free CC0 substitutes exist (stock-media scout §7).",
+   "time_to_first_sale": "UNKNOWN.",
+   "verdict": "WEAK",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://www.dreamstime.com/ai-generated-images"
+   ]
+  },
+  {
+   "venue": "Fab (Epic; absorbs the former Sketchfab store and the Unreal Marketplace)",
+   "url": "https://www.fab.com",
+   "what_we_would_list": "Procedural low-poly 3D kits, material/texture packs and engine-ready tool packs, all with the 'Created with AI' flag where true.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "Many per publisher account, but each appears to be a portal form (see programmatic gate).",
+   "prior_verdict": "AMBER, 'a gate, not a rank': 88% share, but whether Hyperwallet pays Israel was unresolved (research/colony-sweep/groups/storefronts.md:162,284; scouts/storefronts--game-3d-assets.md F4). Listed as rejected in CHIEF-AUDIT.md:302. groups/licensing-ip.md:164: payout country list unread, AI-tagged content is buyer-filterable.",
+   "reopen_basis": "Weak: Hyperwallet lists Israel (snippet, third-party). Fab now mandates a 'Created with AI' flag and Sketchfab a CreatedWithAI label from 11.12.2025 (github-secondary comfyprompts doc). Neither closes the Fab-specific payout page, and the new programmatic-listing check comes back negative.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "88% to the seller, 12% to Fab; free to publish (game-3d-assets.md F4 snippet; github-secondary comfyprompts doc).",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Hyperwallet payout, $100 monthly minimum that rolls over, a tax profile, then Hyperwallet activation (F4 snippet; comfyprompts doc). Epic says only listed countries are eligible (epicgames help a14621632, unread). Hyperwallet-Israel is a third-party snippet. Camera step in Hyperwallet KYC: UNKNOWN.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No publisher or listing API found (GitHub code search 28.9.2026 returned only a research doc). Publishing is described as a portal flow (dev.epicgames.com publisher docs, snippet). Likely a per-listing web form.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "'Fab requires publishers who use AI to generate content for distribution to enable the Created with AI flag' (quoted from support.fab.com in dscherm/comfyprompts selling-ai-assets-followup.md, 29.6.2026). Whether AI items are hidden by default: UNKNOWN ('buyer-filterable', groups/licensing-ip.md:164).",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "sketchfab.com Tranco 2,746 and fab.com 14,973 (github BBAT lists). Epic's engine audience. No sales data.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "Epic publisher account (brand seller name), plus tax profile, plus Hyperwallet activation (KYC, camera unknown). 8th-plus owner step.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 300,
+   "estimate_basis": "INFERENCE. 88% of low-priced kits, but the $100 payout floor means months with sales can still bank ₪0. No sales data for AI-flagged packs.",
+   "time_to_first_sale": "UNKNOWN. First cash only after $100 accrues, plus ~30 days.",
+   "verdict": "WEAK",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://www.epicgames.com/help/c-34406160/c-34044796/a14621632",
+    "https://support.fab.com/s/article/Generative-Artificial-Intelligence-AI",
+    "https://dev.epicgames.com/documentation/fab/publisher-get-started-in-fab",
+    "https://www.fab.com/o/become-a-publisher",
+    "https://docs.hyperwallet.com/content/transfer-methods/v1/payout-networks/transfer-method-payee-country-availability",
+    "https://www.gamedeveloper.com/business/sketchfab-to-require-mandatory-ai-disclosure-epic-games-accounts-for-users"
+   ]
+  },
+  {
+   "venue": "Creative Fabrica",
+   "url": "https://www.creativefabrica.com",
+   "what_we_would_list": "Code-generated SVG cut files and craft patterns (geometric mandalas, parametric boxes, laser-cut templates) for Cricut and laser crafters, disclosed as AI-made where true. No fonts (not producible).",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "Many per designer account; upload path unknown (see programmatic gate).",
+   "prior_verdict": "Named as missed; 'fractions of a shekel' applies. An independent seller says commissions are 'so tiny that it takes several months to earn even small amounts', and 50% goes to the platform on a non-member sale (research/colony-sweep/audits/licensing-ip.md:149-155,186; docs/REJECTED.md:1002,1016). Deferred at research/colony-sweep/BOARD.md:263.",
+   "reopen_basis": "None on economics. New snippet on the payout rail only: PayPal payouts within 7 days, with a $0.50 fee under $10; Payoneer $100 minimum; bank transfer $20 fee and $100 minimum. CF Spark lets users 'earn with designs generated with AI'.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "No joining or listing fee seen. Payout fees ($0.50 under $10 via PayPal, $20 by bank) come out of earnings (help.creativefabrica.com snippet).",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "PayPal, Payoneer and bank are offered (snippet), and Israeli PayPal withdraws in ILS (repo snippet). The country list and the 'verify your PayPal or Payoneer account' step are unread. Creative Fabrica is an EU (Dutch) company, so the DSA trader-display risk is unknown.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No upload API or bulk tool found (GitHub code search 28.9; the only hit is a read-only catalogue CLI in mvanhorn/printing-press-library).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "The platform runs its own AI generator (CF Spark), and users can earn with AI-generated designs (creativefabrica.com snippet; audits/licensing-ip.md:149-152). A mandatory AI label for designer uploads: UNKNOWN.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Tranco 5,918 (github BBAT tranco_10k.csv). Subscription buyers, but at tiny per-download commissions (repo audit, snippet).",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "Designer account (brand name, application approval unknown), plus PayPal (shared). 8th-plus owner step.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE from the only independent seller account in the repo ('several months to earn even small amounts'). Subscription-pool economics.",
+   "time_to_first_sale": "UNKNOWN; months to the first meaningful payout.",
+   "verdict": "WEAK",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://help.creativefabrica.com/hc/en-us/articles/360029930872-How-do-I-make-a-payout-of-my-earnings",
+    "https://help.creativefabrica.com/hc/en-us/articles/4403494747794-How-can-I-verify-my-PayPal-or-Payoneer-account",
+    "https://help.creativefabrica.com/hc/en-us/sections/4552956030108-Earnings",
+    "https://www.creativefabrica.com/terms-of-service/"
+   ]
+  },
+  {
+   "venue": "CGTrader",
+   "url": "https://www.cgtrader.com",
+   "what_we_would_list": "Procedural low-poly 3D models and printable STL sets, with AI use stated in each description even though CGTrader does not force a flag.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "Many per account, but uploads are web-UI only as far as anyone found.",
+   "prior_verdict": "'Best payout story of the group, weakest software-only story': Hyperwallet and Payoneer, no minimum, Israel UNKNOWN, no publishing API found (research/colony-sweep/scouts/licensing-ip--3d-print-on-demand.md §4). No REJECTED.md entry of its own; covered by the group's ₪0 (docs/REJECTED.md:984-1023).",
+   "reopen_basis": "None decisive. New github-secondary facts: AI is permitted without mandatory disclosure, and new sellers get 60% on a 26-level ladder up to 85% (comfyprompts doc citing help.cgtrader.com). A new GitHub search (28.9) again found no upload API.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Revenue share with 60% to new sellers (help.cgtrader.com 'Payout Rate System Explained', via github-secondary comfyprompts doc). No listing fee seen.",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Hyperwallet, plus Payoneer as a free option, with no minimum balance (repo scout §4, snippet). Hyperwallet-Israel is a third-party snippet. KYC camera and DSA trader display (Lithuania, EU) are both unknown.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "GitHub code search for api.cgtrader.com or cgtrader.com/api with upload returned 0 hits (28.9.2026). The prior scout also found none. Likely web-form only, which leans FAIL.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "AI is permitted, and sellers warrant originality (comfyprompts doc, github-secondary). Honest disclosure goes in the description.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Tranco 16,941 (github BBAT tranco_20k.csv), the weakest traffic proxy in the family. No sales data.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "CGTrader seller account (brand name), plus Hyperwallet or Payoneer KYC, plus a tax form. 8th-plus owner step.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE. 60% of low-priced models, with no API and no sales data.",
+   "time_to_first_sale": "UNKNOWN.",
+   "verdict": "WEAK",
+   "rank_in_family": 7,
+   "primary_urls_to_render": [
+    "https://help.cgtrader.com/hc/en-us/articles/35293756906257-Payout-Rate-System-Explained",
+    "https://help.cgtrader.com/hc/en-us/articles/360015145137-Payout-methods",
+    "https://www.cgtrader.com/blog/introduction-of-hyperwallet-implementation-as-a-payout-method-for-our-sellers"
+   ]
+  },
+  {
+   "venue": "LottieFiles Marketplace",
+   "url": "https://lottiefiles.com/marketplace",
+   "what_we_would_list": "Animation packs written directly as Lottie JSON by code (loaders, animated UI icons, micro-interactions). This is a genuinely software-native asset, so honest value is plausible.",
+   "existing_product": "None built.",
+   "listings_per_owner_step": "UNKNOWN (packs per creator account).",
+   "prior_verdict": "None. LottieFiles appears nowhere in docs/REJECTED.md or research/ (grep 28.9.2026).",
+   "reopen_basis": "Not a reopen, a first look. A 'Sell Animation Pack' page exists and premium animations sit behind LottieFiles' paid tiers (snippets: lottiefiles.com/marketplace/sell; help.lottiefiles.com premium-animations).",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No seller-fee or revenue-share evidence found.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "No payout evidence found.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No marketplace upload API found on GitHub (code search 28.9).",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "No AI policy found.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "A snippet says 250,000+ premium animations sit behind paid tiers, so buyers are subscribers. lottiefiles.com was not found in the Tranco 20k list searched (github BBAT, absence only).",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "LottieFiles creator/seller application (terms unknown), plus a payout rail. 8th-plus owner step.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 100,
+   "estimate_basis": "None beyond the existence of a sell page. The range is a placeholder until the seller terms are rendered.",
+   "time_to_first_sale": "UNKNOWN.",
+   "verdict": "WEAK",
+   "rank_in_family": 8,
+   "primary_urls_to_render": [
+    "https://lottiefiles.com/marketplace/sell",
+    "https://help.lottiefiles.com/hc/en-us/articles/24484503354137-premium-animations",
+    "https://help.lottiefiles.com/hc/en-us/articles/29090700075801-can-i-purchase-a-single-animation-from-premium-animations"
+   ]
+  }
+ ],
+ "searches_used": 6
+}

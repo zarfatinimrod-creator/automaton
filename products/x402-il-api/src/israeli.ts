@@ -114,7 +114,10 @@ export function toHebrewDate(iso: string): HebrewDateResult {
   if (date.getUTCFullYear() !== y || date.getUTCMonth() !== mo - 1 || date.getUTCDate() !== d) {
     throw new Error("invalid calendar date");
   }
-  const hd = new HDate(date);
+  // new HDate(date) would read the Date's local-time fields, and UTC midnight is
+  // the previous day west of UTC. Hand HDate a day number instead: whole days
+  // since the Unix epoch plus 719163, the Rata Die number of 1970-01-01.
+  const hd = new HDate(date.getTime() / 86_400_000 + 719_163);
   return {
     gregorian: m[0], hebrew: hd.renderGematriya(), hebrewLatin: hd.render("en"),
     year: hd.getFullYear(), month: hd.getMonthName(), day: hd.getDate(),

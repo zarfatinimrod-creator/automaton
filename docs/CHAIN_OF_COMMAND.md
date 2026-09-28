@@ -39,7 +39,12 @@ The board files **one goal at a time** (`revenue.goal_queue` in KV) because the 
 
 1. `awaiting_setup` and setup not done → **escalate** (creator must act).
 2. `building` for 30+ days with no revenue → **escalate** (director must ship, or the board kills).
-3. Live 45+ days and 30-day revenue < ₪500 → **kill**.
+3. A live line with no target (₪0) → **escalate** (`target_unset`): the board sets one from the reading that made it
+   live before any other rule applies. A ₪0 target is legal only before `live`.
+   Live 90+ days from the first shekel and 30-day revenue below the line's own floor — 25% of its target by default,
+   50% for il-biz-tools (`TARGET_BASIS.killFloorFraction`, resolved by `policyForLine`) — → **kill**. The floor is a
+   fraction of the line's own target, so it moves with every retarget and never sits above the target (board ruling
+   28.9.2026, `research/channel-loop/RULING-2026-09-28-floors.md` §8; it was a fixed ₪500 after 45 days).
 4. Live 21+ days and costs > 2× revenue → **pivot**; a second time → **kill**.
 5. 30-day revenue ≥ target with ≥ 50% margin → **scale** (status `scaling`, grow goal queued, budget boost).
 6. 7-day run-rate < 40% of the 30-day level → **escalate** (fix goal).

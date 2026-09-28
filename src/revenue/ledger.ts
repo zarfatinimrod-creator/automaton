@@ -324,7 +324,8 @@ export function updateLineFromSeed(db: Database, seed: RevenueLineSeed): boolean
 
 export const LINE_TRANSITIONS: Record<RevenueLineStatus, RevenueLineStatus[]> = {
   proposed: ["awaiting_setup", "building", "killed", "paused"],
-  awaiting_setup: ["proposed", "building", "killed", "paused"],
+  // A ₪0 measurement surface (a public page with an instrument) needs no identity step (RULING-2026-09-28-floors.md §9).
+  awaiting_setup: ["proposed", "building", "measuring", "killed", "paused"],
   building: ["live", "measuring", "paused", "killed", "awaiting_setup"],
   // Out of `measuring` only by a gate verdict or a board decision; `live` needs a platform payment id first.
   measuring: ["building", "live", "paused", "killed"],

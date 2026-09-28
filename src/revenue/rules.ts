@@ -81,12 +81,21 @@ export function decideLine(
   // ── Live / scaling ──
   const launchedDays = metrics.daysSinceLaunch ?? metrics.daysSinceCreated;
 
-  // Hard kill: past grace and under the revenue floor.
-  if (launchedDays >= policy.graceDays && rev30 < policy.killFloorAgorot) {
+  // A live line with no target cannot be judged. A ₪0 target is legal only before `live` (a measurement, row 9 of the
+  // 28.9.2026 ruling); once money has landed the board sets the target from that reading, in the same sitting.
+  if (line.targetMonthlyAgorot <= 0) {
+    triggered.push("target_unset");
+    return decide("escalate", "live line with no target: the board sets one from the reading that made it live before any other rule applies");
+  }
+
+  // Hard kill: past grace and under the line's own floor — a fraction of its own target, so a retarget moves the floor
+  // with it and the floor can never sit above the target (RULING-2026-09-28-floors.md §8).
+  const killFloor = Math.floor(line.targetMonthlyAgorot * policy.killFloorFraction);
+  if (launchedDays >= policy.graceDays && rev30 < killFloor) {
     triggered.push("below_kill_floor");
     return decide(
       "kill",
-      `30-day revenue ${rev30} agorot is below the floor ${policy.killFloorAgorot} after ${launchedDays.toFixed(0)} days live (grace ${policy.graceDays}d)`,
+      `30-day revenue ${rev30} agorot is below the floor ${killFloor} (${Math.round(policy.killFloorFraction * 100)}% of target ${line.targetMonthlyAgorot}) after ${launchedDays.toFixed(0)} days live (grace ${policy.graceDays}d)`,
     );
   }
 

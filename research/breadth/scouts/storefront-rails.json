@@ -1,0 +1,389 @@
+{
+ "family": "storefront-rails",
+ "prior_coverage": "Swept before: storefronts group on 3.9 (scouts storefronts--gumroad, --lemonsqueezy-payhip, --creator-storefronts [Ko-fi, BMC, Stan Store, Beacons, Sellfy], --paddle; audit research/colony-sweep/audits/storefronts.md; verdicts in docs/REJECTED.md:620-680, 1112 and groups/storefronts.md:160-192). Freemius was rendered on 7.9 (freemius-rail.md:328-378; REJECTED.md:1344-1385), and Polar was read in channel-loop tick 3 on 28.9 (polar-rail.md:62-69; BOARD-LOOP.md:143-148). Whop's Israel payout comes from the clipping sweep (REJECTED.md:1057-1058). Not swept before: Podia, Sellix, Creem, Dodo Payments. NEW today, all github grade at antiwork/gumroad commit f6b82fbe unless noted: (1) Gumroad's own API docs (ApiDocumentation/Endpoints/Products.tsx) document POST /v2/products. That settles the code-versus-FAQ conflict in favour of product creation by API; a live runner run (AT-15) is still the proof. (2) Every alive Gumroad product goes into gumroad.com's product sitemap (sitemap_service.rb: Link.alive.where(created_at: period), then pings search engines) whether or not it has sold, and product pages are noindexed only when not alive. (3) The Discover gate still holds: recommendations.rb has sale_made, and searchable.rb has must term is_recommendable:true. (4) Polar fails the camera gate. Its own server code sets require_live_capture:true and require_matching_selfie:true (Stripe Identity), and its docs say the owner verifies 'along with a selfie'. (5) Whop fails the camera gate. Its official SDK requires a 'Photo of the person's face… Always required, with every document type' before payout. (6) Lemon Squeezy's official SDK can only list and get products; it has no create call. ANSWER TO THE QUESTION: Gumroad is the only rail that passes both gates at github grade. It creates products by API, pays ILS to an Israeli bank, and has no selfie field anywhere in its code. It also rides owner step 3, which is already on the seven-step list. Freemius passes the payout and no-camera gates (rendered) and has a creation API (github), but it takes software only, and its production verification is per product with UNKNOWN owner work. No venue in this family brings buyers to a new listing before that listing's first sale.",
+ "searches_used": 6,
+ "candidates": [
+  {
+   "venue": "Gumroad (a catalogue of many products under one seller account, created by API; Discover plus gumroad.com's sitemap)",
+   "url": "https://gumroad.com",
+   "what_we_would_list": "A capped catalogue of honest, self-contained Mehudak products, each carrying real files, never near-duplicates or PLR: il-biz-tools Pro licence (₪79, licence-key block); the pcn874 generator once priced; Hebrew/English small-business templates (invoice, receipt and quote spreadsheets with real formulas); starter kits and code libraries the colony already builds; printable reference packs built from open data it may licence. Each description declares AI assistance. Bundles and upsells across the catalogue (the v2 API has upsells and bundle_contents) so one buyer can make several small purchases.",
+   "existing_product": "products/il-biz-tools (Pro, Option C licensing built; gumroad-pro-product.yml designed); products/pcn874 (validator and generator built, no price). The ledger connector src/revenue/connectors/gumroad.ts already books each sale by sale.id.",
+   "listings_per_owner_step": "Unbounded on ONE existing step: every product rides owner step 3 (Gumroad account + token), already one of the seven (owner-steps.ts:174-185) and not yet done. No new owner step and no per-item click, provided POST /v2/products works live.",
+   "prior_verdict": "A rail, not a storefront. The ILS payout is proven and Discover cannot source a first sale: docs/REJECTED.md:626-658 (corrected to ₪250/month gross at month 12, :657), REJECTED.md:1112; research/colony-sweep/audits/storefronts.md:63-89 and :198-202 ('supplies no buyers to a new listing'). Product creation by API was graded CODE vs FAQ: research/measurements/gumroad-license-decision.md:23.",
+   "reopen_basis": "Partial reopen on new github evidence at commit f6b82fbe (28.9). (a) Gumroad's current API docs component app/javascript/components/ApiDocumentation/Endpoints/Products.tsx documents POST /v2/products: 'Requires the edit_products or account scope', published immediately unless draft=true, and saved as a draft with a warning if publishing is blocked. That resolves gumroad-license-decision.md:23 toward creation; the live proof is still AT-15. (b) app/services/sitemap_service.rb adds every alive product to gumroad.com's product sitemap and pings search engines, and links_controller.rb noindexes a product only when !alive. So a new, unsold product does reach search engines through Gumroad's domain, which narrows 'supplies no buyers' to 'Discover supplies none before a sale'. (c) The Discover gate is re-confirmed, not refuted: recommendations.rb sale_made and searchable.rb must term is_recommendable:true.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "pricing.html.erb: 10% + $0.50 on a direct sale, 30% on a Discover sale, no monthly fee (audits/storefronts.md:43; groups/storefronts.md:45). Fees come out of sales only.",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "PASS",
+    "evidence": "_13-getting-paid.html.erb has a bank-payout row 'Israel | ILS' (REJECTED.md:626-632; rails.ts:337-340). Identity is a colour scan of a government ID plus proof of residence (scouts/storefronts--gumroad.md:159-160). The Stripe compliance field map (stripe_user_compliance_info_field_map.rb) maps only document uploads (individual.verification.document -> STRIPE_IDENTITY_DOCUMENT_ID). A code search of antiwork/gumroad for selfie OR stripe_identity OR liveness returned 0 hits on 28.9. Residual: whether Stripe asks for more on its own side is UNKNOWN, but no code path for it exists.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "config/routes.rb v2: resources :links, path 'products' (create/update/destroy), plus covers, thumbnail, upsells, offer_codes, variants, bundle_contents and enable/disable. Products.tsx documents creation with native_type, name, price, category and files. The dashboard-minted token carries edit_products (gumroad-license-decision.md:22). Not yet exercised live: AT-15 from a runner is the proof.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "prohibited.html.erb ('Last revised: September 16, 2026') bans only 'AI services which includes selling access to AI tools, chatbots, image or content generation services, or subscriptions to AI services that are fulfilled outside of Gumroad'. AI-assisted files are not banned. No AI-disclosure field exists in the code (search returned 0 hits), so the declaration goes in each description. A product must carry real content (gumroad-license-decision.md:24).",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "Discover is a real buyer pool (purchase.rb charge_discover_fee?), but it is gated PER PRODUCT on a counted sale: recommendations.rb sale_made, and searchable.rb must is_recommendable:true. Global affiliates also require product.recommendable? (global_affiliate.rb). The only ungated path is gumroad.com's product sitemap (sitemap_service.rb), and its search yield for a new, unsold page is unmeasured. The only volume numbers are snippet-grade third-party figures (median creator $72/month; 44% of products earn $0), which were unverifiable per audits/storefronts.md:187-194.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "YES, per product. Discover, its browse and search, and global affiliates all require a counted sale on that product (recommendations.rb sale_made), and seller payout_filled/compliant (User::Recommendations). Exposure to search engines through gumroad.com's sitemap is NOT gated on a sale.",
+   "owner_step": "Existing step 3 of seven, about 20 minutes: a Gumroad account under the brand, a colour ID scan plus proof of residence, an Israeli bank with the name in Latin letters, and minting the API token. Step 6 then puts GUMROAD_ACCESS_TOKEN into GitHub secrets. Step 2 (tax file) stays held by its precondition. No new step.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 1200,
+   "estimate_basis": "INFERENCE. Anchor: the audited single Gumroad line is ₪250/month gross at month 12 with ₪0 in months 1-3 (REJECTED.md:657). The committed il-biz-tools (₪400) and pcn874 (₪600) lines are ceilings (REJECTED.md:1294-1296), and FORECAST.md treats il-biz-tools as ₪0 likely. Breadth multiplies how many products can catch a first sale, not demand. Low: no product ever gets an outside first sale; no stranger buyer has been measured on any line (FORECAST.md assumptions). High: about 4-5 products each reaching the audited ₪250 band, with Discover adding only after each product's own first sale, at a 30% fee. Figures are gross, before the ~22% small-ticket take (rails.ts:81). Risk: flooding one brand invites spam-cluster action (FORECAST.md), so the inventory stays capped.",
+   "time_to_first_sale": "Not before owner step 3 (FORECAST calendars the steps around 11.10.2026) and a first outside buyer, realistically 1-3 months after that, possibly never. Discover opens per product only after that product's first sale. Gumroad reviews the seller for 1-3 weeks after the first 3-4 sales, and the payout minimum is $100.",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://gumroad.com/api",
+    "https://gumroad.com/help/article/13-getting-paid",
+    "https://gumroad.com/prohibited",
+    "https://gumroad.com/pricing",
+    "https://gumroad.com/discover",
+    "https://gumroad.com/help/article/76-license-keys",
+    "https://gumroad.com/robots.txt"
+   ]
+  },
+  {
+   "venue": "Freemius (merchant-of-record rail for software only)",
+   "url": "https://freemius.com",
+   "what_we_would_list": "Software only: static software (HTML and dashboard templates, starter kits, code libraries), browser extensions, and small SaaS or API tools. No ebooks and no document templates. It is the one rail that would carry the MCP- or x402-shaped products Gumroad's terms exclude (rails.ts:347-354).",
+   "existing_product": "None listed there. Candidate inputs: products/mcp-il-tools and products/x402-il-api (standby), plus any code kit the colony builds.",
+   "listings_per_owner_step": "One NEW owner step (step 8+) would unlock many products by API: Freemius's own code creates products with POST /plugins.json (Freemius/edd-migration class-fs-module-migration-abstract.php: api_call('/plugins.json','post',$module)). But production selling can need verification PER PRODUCT ('navigate to the product and click Account Verification', freemius-verification.txt:86-102), and whether that form needs the owner's documents each time is UNKNOWN.",
+   "prior_verdict": "A usable second merchant-of-record rail: pays Israel (rendered), USD balance with an ILS payout via Wise or wire, about 8.2% all-in, verification by form with no camera. It becomes an owner step only when a line chooses it: freemius-rail.md:374-378; docs/REJECTED.md:1344-1385.",
+   "reopen_basis": "No reopen needed; the prior verdict is positive as a rail. New today (github): Freemius's own migration code creates products by API. Nothing new on buyers.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "freemius-our-pricing.txt:98 'We don't charge any setup or monthly fees.'; 4.7% per successful transaction (:92) plus about 3.5% gateway (:124).",
+    "grade": "rendered"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "PASS",
+    "evidence": "supported-countries.txt:308 lists Israel for payouts. The verification page asks for company and product details plus supporting documents, and shows no camera, selfie or liveness step (freemius-rail.md:371-373). ILS conversion runs only through Wise or wire (your-earnings, lines 141-154). A wire to an Israeli IBAN avoids a separate Wise KYC, whose camera requirements are UNKNOWN.",
+    "grade": "rendered"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Product creation by API is github grade (Freemius/edd-migration POST /plugins.json; freemius-node-sdk examples deploy via POST plugins/{id}/tags.json). Production selling is gated by a per-product verification form reviewed in 'a few days' (freemius-verification.txt:80-102), and whether that form needs owner documents per product is not on the page.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "allowed-prohibited.txt: acceptable SaaS explicitly includes 'AI-powered services'. Prohibited: 'Harmful or Infringing AI Content Generation', non-software, human services. Accounts judged 'low quality with excessive risk of refunds' can be suspended, which rules out flooding.",
+    "grade": "rendered"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "Freemius is checkout, licensing and merchant-of-record infrastructure. No rendered Freemius page and no repo research names a buyer marketplace or discovery surface. The rendered pages describe only selling infrastructure (freemius-rail.md §§4-14).",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "Not applicable: there is no discovery surface at all. Every buyer must come from our own channels.",
+   "owner_step": "A NEW step (8+): a Freemius account in the owner's identity, the verification form with supporting documents, and a payout method (wire to an Israeli bank). Asked only when a software line chooses this rail (REJECTED.md:1385; BOARD-LOOP.md:9 on new accounts).",
+   "ils_month12_low": 0,
+   "ils_month12_high": 300,
+   "estimate_basis": "INFERENCE. It brings no buyers, so revenue depends entirely on outside demand for a software product, and none has been measured (FORECAST.md). High: one software product reaching the audited ₪250/month band of a single Gumroad line (REJECTED.md:657). Its real value is rail diversification against the Gumroad concentration (rails.ts:88), not new buyers.",
+   "time_to_first_sale": "More than 3 months: only after a software line adopts it, the owner completes the new step, and a verification review of 'a few days'. Cash arrives about 40-70 days after a sale (freemius-rail.md:349-358).",
+   "verdict": "WEAK",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://freemius.com/help/documentation/selling-with-freemius/verification/",
+    "https://freemius.com/help/payout-methods/",
+    "https://freemius.com/blog/changelog/new-feature-reverse-invoices-for-your-payouts/",
+    "https://freemius.com/help/documentation/"
+   ]
+  },
+  {
+   "venue": "Creem / Dodo Payments (merchant-of-record checkouts with product APIs)",
+   "url": "https://www.creem.io",
+   "what_we_would_list": "The same software and digital products as a backup merchant-of-record checkout. Neither is a marketplace.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One NEW account each; after that, products are created by API: armitage-labs/creem packages/sdk/src/funcs/productsCreate.ts; dodopayments/dodopayments-typescript src/resources/products/products.ts ('products.create').",
+   "prior_verdict": "Not swept before; both appear only as blog URLs in research/colony-sweep/scouts/storefronts--lemonsqueezy-payhip.md:49-50,84.",
+   "reopen_basis": "New venue, no prior verdict.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Creem: '3.9% + $0.40 | No Monthly Fees'; payout fee 7 EUR/USD or 1%, whichever is higher. Dodo: '4% + 40c', 'no monthly platform fees'. Snippets only.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Creem supports merchants in '86 countries'. No snippet names Israel, and docs.creem.io/merchant-of-record/supported-countries was not read. Dodo's '220+ countries' is buyer-side. Neither identity check's form (document only, or selfie) was read. GitHub code search in both orgs for Israel, selfie or KYC returned 0 hits.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "Official SDKs expose product creation: Creem productsCreate.ts; Dodo products.create (src/resources/products/products.ts and its MCP server methods.ts).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Creem markets itself as 'Build with AI. Sell with Creem.' (snippet title). Neither acceptable-use policy was read.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "Both are checkout and merchant-of-record infrastructure; no marketplace or discovery surface appears in any result.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Not applicable: no discovery surface.",
+   "owner_step": "A NEW account plus KYC of unknown shape (step 8+), only if Gumroad and Freemius both fail.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE. No buyers of its own, and it duplicates Gumroad's rail role. Money only from outside demand that Gumroad could already carry. The high case is a fallback product moved off Gumroad.",
+   "time_to_first_sale": "Not before its Israel and KYC gates are rendered; realistically never within 12 months unless Gumroad is lost.",
+   "verdict": "WEAK",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://docs.creem.io/merchant-of-record/supported-countries",
+    "https://www.creem.io/terms",
+    "https://www.creem.io/pricing",
+    "https://dodopayments.com/payments/merchant-of-record"
+   ]
+  },
+  {
+   "venue": "Whop marketplace",
+   "url": "https://whop.com",
+   "what_we_would_list": "Digital products, templates and courses created by API and submitted to the whop.com marketplace.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One account would unlock many products: whopsdk-ruby products client exposes create, then publish, which 'Submits a product to the whop.com marketplace for review… a Whop reviewer approves it before it goes live. Requires a logo, a headline, and at least one gallery image or video'.",
+   "prior_verdict": "Whop pays Israel (country grid, via a vendored docs mirror): docs/REJECTED.md:1057-1058; scouts/content-seo--clipping-campaigns.md:34-58 (KYC recorded then as 'ID upload'). audits/content-seo.md:170-171 disputed it. It was rejected there as a clipping channel, not as a storefront.",
+   "reopen_basis": "Checked because it is the one seed with API listing AND a buyer marketplace. New github evidence KILLS it under the brief. whopio/whopsdk-typescript src/api/resources/verifications/types/CreateVerificationsRequestBody.ts: ID card, driver's licence and residence permit each need front + back + selfie, and passport needs photo page + selfie; the 'Photo of the person's face' is 'Always required, with every document type'. 'KYC is required to pay out funds.' This corrects the prior 'ID upload' description.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Seller fee schedule not read in this session.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "Payout needs KYC, and every KYC document type requires a photo of the owner's face (the Whop SDK verification request body). Israel is on the payout grid (REJECTED.md:1057-1058), but the face-photo step is forbidden by the owner's brief.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "products.create and products.publish in the official Ruby, TypeScript and Python SDKs (whopio/whopsdk-ruby lib/whop_sdk/products/client.rb). Each marketplace listing passes a Whop reviewer.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Content policy not read.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "The SDK's products.list says 'Omit account_id to search the public marketplace', and publish lists the product on the whop.com marketplace. Volume numbers UNKNOWN.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. Listing needs Whop reviewer approval and assets; ranking signals were not read.",
+   "owner_step": "A Whop account plus KYC with a face photo. Forbidden by the brief, so no step is proposed.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "₪0: the payout gate fails on the face-photo requirement, so no sale could ever reach the ledger under the brief.",
+   "time_to_first_sale": "Never under current constraints.",
+   "verdict": "DEAD",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://docs.whop.com/manage-your-business/manage-payouts/set-up-payouts",
+    "https://raw.githubusercontent.com/whopio/whopsdk-typescript/main/src/api/resources/verifications/types/CreateVerificationsRequestBody.ts",
+    "https://whop.com/discover"
+   ]
+  },
+  {
+   "venue": "Polar (polar.sh)",
+   "url": "https://polar.sh",
+   "what_we_would_list": "Software and digital products with licence keys, as a second merchant-of-record rail.",
+   "existing_product": "None; rail research only (BOARD-LOOP candidate 9).",
+   "listings_per_owner_step": "Moot: onboarding fails the camera gate.",
+   "prior_verdict": "NEEDS_MORE (polar-rail.md:62-69). The kill clause 'an Israeli individual cannot complete onboarding without a camera step' is at research/channel-loop/BOARD-LOOP.md:148; status in logs/CHANNEL_LOOP.md:123.",
+   "reopen_basis": "The kill clause is now MET, on Polar's own sources. polarsource/polar docs/merchant-of-record/account-reviews.mdx: 'The organization owner verifies their identity with a passport, ID card, or driver's license along with a selfie — … through Stripe Identity'. server/polar/integrations/stripe/service.py sets 'require_live_capture': True, 'require_matching_selfie': True. ZERO-TESTS rows 19-21 (research/channel-loop/ZERO-TESTS.md:28-30) can be dropped.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Fees page not rendered (ZERO-TESTS row 21). The scout's 'roughly 12% on a $9 sale' is at BOARD-LOOP.md:145.",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "Israel is on the payout list (polar-supported-countries.txt:246), but the KYC is Stripe Identity with a required live-capture matching selfie (account-reviews.mdx; server/polar/integrations/stripe/service.py).",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Not checked this session; moot after the camera FAIL.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Acceptable-use page not rendered (ZERO-TESTS row 20).",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "A merchant-of-record checkout; the repo research names no marketplace (polar-rail.md treats it purely as a sales rail).",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "Not applicable: no discovery surface.",
+   "owner_step": "None proposed: the selfie step is forbidden.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "₪0: fails the no-camera gate on its own documentation and code.",
+   "time_to_first_sale": "Never under current constraints.",
+   "verdict": "DEAD",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://polar.sh/docs/merchant-of-record/account-reviews",
+    "https://polar.sh/legal/acceptable-use-policy"
+   ]
+  },
+  {
+   "venue": "Lemon Squeezy",
+   "url": "https://www.lemonsqueezy.com",
+   "what_we_would_list": "Software and digital downloads.",
+   "existing_product": "None. The ledger connector src/revenue/connectors/lemonsqueezy.ts exists (FORECAST.md).",
+   "listings_per_owner_step": "No programmatic listing: every product would need an owner or dashboard click.",
+   "prior_verdict": "'Plumbing, not income', Israel UNVERIFIED: research/colony-sweep/groups/storefronts.md:191. Its successor, Stripe Managed Payments, is closed to Israel (groups/storefronts.md:160). The scout's claim of full API product creation is at scouts/storefronts--lemonsqueezy-payhip.md:62-65.",
+   "reopen_basis": "No reopen. New github evidence strengthens the rejection: the official SDK lmsqueezy/lemonsqueezy.js src/products/index.ts exports only getProduct and listProducts, with no create call, which refutes the scout's 'create products' line.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "5% + $0.50 per sale, no monthly fee (scout snippets, lemonsqueezy-payhip.md:54-59).",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Verification means uploading 'a photo of your government-issued ID'; whether a selfie is also required is not stated. Israel is not named in any snippet, and the supported-countries page was never rendered.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "Official SDK products module: getProduct, listProducts only (lmsqueezy/lemonsqueezy.js src/products/index.ts).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Prohibits services of any kind, PLR and crypto; software and ebooks allowed (snippet). No AI clause seen.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "A checkout merchant of record with no marketplace (scout §5: 'payment plumbing').",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Not applicable: no discovery surface.",
+   "owner_step": "None proposed.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "₪0: no buyers, no programmatic listing, and its own scout put revenue from choosing it at 0 ILS (lemonsqueezy-payhip.md §5).",
+   "time_to_first_sale": "Never under current constraints.",
+   "verdict": "DEAD",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://docs.lemonsqueezy.com/help/getting-started/supported-countries",
+    "https://docs.lemonsqueezy.com/help/getting-started/verify-your-identity",
+    "https://docs.lemonsqueezy.com/api/products"
+   ]
+  },
+  {
+   "venue": "Payhip / Ko-fi Shop (PayPal-settled creator storefronts)",
+   "url": "https://payhip.com",
+   "what_we_would_list": "Digital downloads.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "None programmatic: every listing is a manual dashboard action.",
+   "prior_verdict": "Payhip: 'No product-creation API… listing is either manual owner work or ToS-AMBER dashboard automation' (groups/storefronts.md:192; audits/storefronts.md:270-272). Ko-fi: 'it supplies no buyers… Ceiling ₪200' (groups/storefronts.md:177; REJECTED.md:654).",
+   "reopen_basis": "No reopen. It is re-confirmed: api-evangelist/payhip README (third party, github) says the public API covers only Coupons and License Keys, with orders delivered by webhook; the Ko-fi help-page snippet describes its API as webhooks only.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Payhip Free plan takes 5% with no monthly fee; Ko-fi takes 5% on Shop sales on the free plan (scout snippets).",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Settles into the seller's own PayPal. PayPal Israel withdraws ILS to an Israeli bank (snippet, creator-storefronts scout). Payhip's Stripe list excludes Israel. PayPal's own KYC camera requirement was not read.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "Payhip API: coupons and licence keys only (api-evangelist/payhip README). Ko-fi API: webhooks only (help-page snippet).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not read.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "'Ko-fi does not have a marketplace or discovery feature… Like Gumroad and Payhip, Ko-fi is a storefront, not a marketplace' (creatorstackclub snippet quoted in the creator-storefronts scout).",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Not applicable: no discovery surface.",
+   "owner_step": "None proposed.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "₪0: no buyers, and listing would need recurring owner work.",
+   "time_to_first_sale": "Never under current constraints.",
+   "verdict": "DEAD",
+   "rank_in_family": 7,
+   "primary_urls_to_render": [
+    "https://payhip.com/api-reference",
+    "https://help.payhip.com/article/347-public-api",
+    "https://help.ko-fi.com/hc/en-us/articles/360004162298-Does-Ko-fi-have-an-API-or-webhook",
+    "https://ko-fi.com/pricing"
+   ]
+  },
+  {
+   "venue": "Stan Store / Podia / Sellix (subscription-priced or defunct storefronts)",
+   "url": "https://stan.store",
+   "what_we_would_list": "Digital downloads and courses.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "Moot: they fail the ₪0 rule or no longer exist.",
+   "prior_verdict": "Stan Store eliminated: Israel is absent from its 37-country Stripe Custom list, and it charges $29-99/month (scouts/storefronts--creator-storefronts.md:98-104,177). Podia and Sellix were not swept before.",
+   "reopen_basis": "No reopen for Stan Store. New for the other two (snippets): Podia has 'no free plan' in 2026 (Mover $49/month, podia.com/pricing and learningrevolution.net). Sellix.io was reportedly seized and shut down ('the same pattern as sellix.io in 2024'), and its successors are no-KYC crypto shops.",
+   "gate_zero_cost": {
+    "status": "FAIL",
+    "evidence": "Stan Store $29/$99 per month (cartmango snippet in the scout); Podia has no free plan, from $49/month (snippet).",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "Stan Store's Stripe Custom list of 37 countries does not include Israel (help.stan.store snippet). Podia pays through Stripe, or PayPal on higher plans only. Sellix is defunct.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Not checked; moot.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not checked; moot.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "Link-in-bio and course storefronts; the scout found no built-in audience for this class.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Not applicable: no discovery surface.",
+   "owner_step": "None proposed.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "₪0: they fail the ₪0 rule (monthly rent) or no longer operate.",
+   "time_to_first_sale": "Never under current constraints.",
+   "verdict": "DEAD",
+   "rank_in_family": 8,
+   "primary_urls_to_render": [
+    "https://help.stan.store/article/217-countries-available-for-stripe-custom-accounts",
+    "https://www.podia.com/pricing",
+    "https://sellix.io"
+   ]
+  }
+ ]
+}

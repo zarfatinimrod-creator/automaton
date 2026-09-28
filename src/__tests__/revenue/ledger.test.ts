@@ -72,6 +72,15 @@ describe("revenue/ledger", () => {
     expect(getLine(db, "test-line")?.status).toBe("building");
   });
 
+  it("lets a line awaiting setup become a ₪0 measurement, but never live (RULING-2026-09-28-floors.md §9)", () => {
+    // A public page with an instrument needs no identity step; money still needs a platform payment id first.
+    insertLineFromSeed(db, seed({ humanSetup: ["open account"] }));
+    expect(getLine(db, "test-line")?.status).toBe("awaiting_setup");
+    expect(() => updateLineStatus(db, "test-line", "live")).toThrow(/Illegal revenue line transition/);
+    updateLineStatus(db, "test-line", "measuring");
+    expect(getLine(db, "test-line")?.status).toBe("measuring");
+  });
+
   it("records ledger entries idempotently and normalises to agorot", () => {
     insertLineFromSeed(db, seed());
     setFxRate(db, "USD", 3.5);

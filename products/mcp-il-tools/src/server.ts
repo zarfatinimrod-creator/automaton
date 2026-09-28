@@ -15,6 +15,8 @@
  * this package has to be self-contained to be publishable, and a test asserts
  * the two files match so the copy cannot quietly drift.
  */
+import { realpathSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -119,8 +121,21 @@ export function buildServer(): McpServer {
   return server;
 }
 
-/** Only start a transport when run as a program, so tests can import freely. */
-if (process.argv[1] && import.meta.url === `file://${process.argv[1]}`) {
+/**
+ * Only start a transport when run as a program, so tests can import freely.
+ * Compare real paths: npx and node_modules/.bin launch through a symlink, which
+ * Node resolves for import.meta.url but leaves unresolved in process.argv[1].
+ */
+function isMain(): boolean {
+  if (!process.argv[1]) return false;
+  try {
+    return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+
+if (isMain()) {
   const server = buildServer();
   await server.connect(new StdioServerTransport());
 }

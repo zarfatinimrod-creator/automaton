@@ -137,12 +137,21 @@ describe("the dashboard shows what the money travels on", () => {
     expect(html).toMatch(/הלדג'ר אומר שיש לנו אותו/);
   });
 
-  it("flags the line whose payout route is unknown rather than hiding it", () => {
+  it("flags the lines whose payout to Israel is unverified rather than hiding them (RULING-2026-09-28-bounty-rail.md §2.5)", () => {
     const db = createInMemoryDb();
     seedDefaultPortfolio(db);
     const html = renderDashboard(db, { nowIso: "2026-09-03T12:00:00.000Z" });
-    expect(html).toContain("oss-bounties");
+    expect(html).toMatch(/משיכה לישראל לא מאומתת ב: <code>apify-actors<\/code>, <code>oss-bounties<\/code>/);
     expect(html).toContain("לא ניתן למשיכה");
+    // No route is unknown any more, so that sentence is not printed.
+    expect(html).not.toContain("מסלול המשיכה לא ידוע ב:");
+  });
+
+  it("names the contradicted grade in the line table instead of printing nothing (oss-bounties, 28.9.2026)", () => {
+    const db = createInMemoryDb();
+    seedDefaultPortfolio(db);
+    const html = renderDashboard(db, { nowIso: "2026-09-03T12:00:00.000Z" });
+    expect(html).toContain('<span class="grade g-contradicted">מוכחש</span>');
   });
 });
 

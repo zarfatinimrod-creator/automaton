@@ -1,0 +1,16 @@
+{
+  "about": "T1 web comparison arm readings, written by the loop (research/faceless-youtube/PREREG-DECISIONS.md §3.6). Nothing is deployed yet (28.9.2026): every field is empty. N = $pageview events whose $current_url equals canonicalUrl exactly and whose payload is exactly {$process_person_profile: false, $current_url} (§3.1, §3.4(c)); null means not read, never zero. Timestamps are ISO 8601 UTC ending in Z; dates are UTC calendar dates (YYYY-MM-DD). D0 is the UTC date of the later of the two d0 conditions, set only when BOTH hold (§3.5). A fixed instrument fault restarts the clock at the fix's date, and no count is recorded while a fault is open (§3.1(3)). read.day is the whole UTC days from the clock start to readAt; N covers the 56 days from the clock start; each ownViewExceptions entry is one view. At D0+56 the loop records read = {day, engagedStrangerViews, readAt, verdict} with verdict = evaluateWebArm (src/revenue/experiments.ts); src/__tests__/revenue/web-arm-readings.test.ts re-runs it from the file's own dates and daily series.",
+  "floor": { "day": 56, "minEngagedStrangerViews": 5 },
+  "canonicalUrl": null,
+  "d0": {
+    "publicDeploy": { "at": null, "evidence": null },
+    "discoverySubmission": { "at": null, "route": null },
+    "date": null
+  },
+  "routesOpened": [],
+  "ownViewExceptions": [],
+  "instrumentFaults": [],
+  "dailyCountedEvents": [],
+  "foreignShapedEventsExcluded": null,
+  "read": null
+}

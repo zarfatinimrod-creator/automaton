@@ -60,6 +60,16 @@
  * the brand: the agent merges its own green pull requests without asking each
  * time, revocable the moment the owner says "עצור" (stop). PR #3 was merged on
  * that same message (merge commit 61fae4e, 22:36 UTC).
+ *
+ * Board ruling of 28.9.2026 (research/channel-loop/RULING-2026-09-28-bounty-rail.md
+ * §4): step 4 keeps its number and its place and splits in two, the `earlyPart`
+ * shape step 6 already had. 4a — a two-minute sign-in to Algora as the brand
+ * machine account, no identity — rides step 7's sitting. 4b — the Stripe form in
+ * the owner's identity — is HELD by a `precondition` until the corrected week-4
+ * supply count is 3 or more and Algora holds a reward for a merged brand-account
+ * PR, and it carries three `stopIf` rules. BRAND_GITHUB_TOKEN is made in step 7's
+ * sitting and pasted in step 6 with the others; the intake is gated in code until
+ * the board's clock allows it, so the token's presence changes nothing before then.
  */
 
 import { DEFAULT_PORTFOLIO } from "./portfolio.js";
@@ -102,6 +112,11 @@ export interface OwnerStep {
    * rest of the checklist would allow.
    */
   earlyPart?: { what: string; afterStep: OwnerStepId; minutes: number };
+  /**
+   * Conditions under which the owner closes the tab and tells the colony, completing nothing. Printed on the step in the
+   * Hebrew document as "עצור אם". Each one names what it means, so the stop is an observation rather than a judgement.
+   */
+  stopIf?: string[];
   /** A decision the board left to the owner inside this step. Not a step itself. */
   ownerDecision?: string;
   /**
@@ -213,7 +228,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "להעביר את הריפו לארגון ב-GitHub (וחשבון מכונה בשם המותג)",
     minutes: [10, 15],
     unlocks:
-      "Takes the owner's name off every raw.githubusercontent.com URL in the repository, and creates the ONE brand machine account GitHub's terms allow alongside a personal account. That account is what authors bounty pull requests and signs in to Algora — an organisation cannot sign in anywhere, so the org alone does not fix the byline. Its personal access token becomes BRAND_GITHUB_TOKEN in step 6. It is an ordinary User account whose login does not end in \"bot\" — Algora's contributor queries drop %bot logins, and a GitHub App (type Bot) fails its human-author check (BOARD-2 §2.1.3(c); bounties/intake.ts brandAccountProblems).",
+      "Takes the owner's name off every raw.githubusercontent.com URL in the repository, and creates the ONE brand machine account GitHub's terms allow alongside a personal account. That account is what authors bounty pull requests and signs in to Algora — an organisation cannot sign in anywhere, so the org alone does not fix the byline. In the same sitting the owner creates its personal access token, BRAND_GITHUB_TOKEN, pasted in step 6 with the others, and signs in to Algora once as that account (step 4a, two minutes) — one sitting rather than two (RULING-2026-09-28-bounty-rail.md §4.1, §4.4). It is an ordinary User account whose login does not end in \"bot\" — Algora's contributor queries drop %bot logins, and a GitHub App (type Bot) fails its human-author check (BOARD-2 §2.1.3(c); bounties/intake.ts brandAccountProblems).",
     lines: ["oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.6",
     ownerDecision:
@@ -224,11 +239,30 @@ export const OWNER_STEPS: OwnerStep[] = [
     number: 4,
     order: 6,
     title: "Stripe Connect Express דרך Algora",
-    minutes: [15, 15],
+    // 4a (2 minutes, in step 7's sitting) + 4b (15 minutes, held) — RULING-2026-09-28-bounty-rail.md §4.1.
+    minutes: [17, 17],
     unlocks:
-      "The shortest documented path to a platform transaction id — 2-5 days after a rewarded pull request — and the one form that settles the most-contested payability question in the whole sweep for every other Stripe-Connect platform. Done SIGNED IN AS THE BRAND MACHINE ACCOUNT (which is why it now follows step 7); the Stripe form inside it stays in the owner's legal identity, which is exactly what the mandate allows. NOT requested for oss-bounties until the week-4 reading of the weekly claimable-supply count (BOARD-2 §2.2): ≥10 and it proceeds after step 7; 3-9 and it still proceeds, because it settles Stripe-Israel for the kill list; under 3 it is not asked for this line's sake.",
+      "The shortest documented path to a platform transaction id — 2-5 days after a rewarded pull request. Done SIGNED IN AS THE BRAND MACHINE ACCOUNT (which is why it follows step 7); the Stripe form stays in the owner's legal identity, which is exactly what the mandate allows. What it settles is now only Algora's own behaviour: the platform-level question is rendered (standalone Stripe for an Israeli business, no; a US platform paying an Israeli individual through Global Payouts, yes — research/measurements/stripe-israel.md Q1, Q7), and Algora's code shows it creates the account with no service agreement and falls back to a country-less account on any Stripe error (payments.ex:299-303). So 4b is asked when there is money to collect and not before: Algora holds a reward as a credit until the account can be paid (payments.ex:352-353, 479-503). Verified 28.9.2026 as the ruling's §4.1 caveat asked, from algora-io/algora on GitHub: a reward records the credit without checking payouts_enabled (bounties.ex create_payment_session → create_transaction_pairs), and a /claim creates the solver's Algora user from the GitHub login if none exists (workspace.ex ensure_user → create_user_from_github) — so 4b stays after a held reward and never before the first /claim.",
     lines: ["oss-bounties"],
     catalogueRef: "CHIEF-AUDIT §4A.3",
+    earlyPart: {
+      what:
+        "4a — sign in to Algora once with GitHub AS THE BRAND MACHINE ACCOUNT, in step 7's sitting: two minutes, no identity, no KYC, no money. The board ruled it into step 7's sitting because one sitting is less owner involvement than two (RULING-2026-09-28-bounty-rail.md §4.1). Algora's code would create the user at the first /claim anyway, so 4a is not what makes a held reward possible.",
+      afterStep: "github-org",
+      minutes: 2,
+    },
+    precondition: {
+      what:
+        "4b — the Stripe Connect Express form, individual, Israel, Israeli bank — is asked only when BOTH hold: the corrected week-4 mean of the weekly claimable-supply count is 3 or more (the first count, 108, was struck as an instrument fault on 28.9.2026 and the four-week clock restarted at the first corrected run), and at least one bounty PR from the brand account has been rewarded and Algora holds the credit — a held reward (RULING-2026-09-28-bounty-rail.md §4.1). Under 3 the line is killed and 4b is never asked.",
+      // Printed after "step 4 " in the report, so it must not open with the step number again.
+      short: "Stripe form, part 4b, asked only after a corrected week-4 count of 3 or more and a reward Algora holds — the 2-minute sign-in 4a rides step 7",
+      // metOn stays unset until both hold, with the week-4 reading and the held credit as evidence.
+    },
+    stopIf: [
+      "The form shows the account country as United States, or asks for a US bank account, SSN, ITIN or EIN: Algora's country-less fallback fired (payments.ex:302), the rail is closed and the line killed the same day (KILL-5), docs/REJECTED.md gets the row with the reopen trigger of §4.2.",
+      "It asks for a selfie, a liveness check or a video: the camera rule (KILL-4), same-day kill, same file.",
+      "It asks for any payment, deposit or fee: the owner's ₪0 rule of 27.9.2026.",
+    ],
   },
   {
     id: "ci-tokens",
@@ -237,7 +271,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "לחבר את Netlify, להדביק את הטוקנים ב-GitHub, וקליק אחד ב-Apify",
     minutes: [15, 20],
     unlocks:
-      "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; the same token creates the il-biz-tools Pro product once (Option C, Gumroad-native licences); BRAND_GITHUB_TOKEN lets bounty PRs leave the brand account. The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can.",
+      "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; the same token creates the il-biz-tools Pro product once (Option C, Gumroad-native licences); BRAND_GITHUB_TOKEN, made in step 7's sitting and pasted here with the others, lets bounty PRs leave the brand account once the board's week-4 clock allows it — the intake is gated in code until then (RULING-2026-09-28-bounty-rail.md §4.4). The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can.",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.5",
     earlyPart: {

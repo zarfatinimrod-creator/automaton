@@ -1,0 +1,392 @@
+{
+ "family": "print-on-demand-single-account",
+ "prior_coverage": "Nobody has swept these as single-account venues before. The repo's only print-on-demand verdicts are these. docs/REJECTED.md:274 rejects multi-shop Etsy/POD as RED, because operating it means defeating account-linking detection, and says: 'A single shop is a different question and is not rejected here'. docs/REJECTED.md:275 rejects Amazon Merch on Demand: a tier ladder that advances only by sales, Israel on no eligible list, and a human-reviewed application. The same two rows appear in research/colony-sweep/groups/store-promotion.md:264-265 and research/colony-sweep/scouts/store-promotion--promotion-at-scale.md:113-128 and :237-238. research/colony-sweep/scouts/licensing-ip--3d-print-on-demand.md:134-139 closed physical POD merch without reopening it. For Etsy KYC, see research/colony-sweep/scouts/risk-governance--owner-kyc-catalogue.md:130-136 and research/colony-sweep/scouts/storefronts--etsy-digital.md:33, :45-46 and :73. For the AI-output ownership limit, see research/colony-sweep/scouts/licensing-ip--ai-output-rights.md:50-56 and :88. A grep of the repo for Redbubble, TeePublic, Spreadshirt, Society6, Zazzle, Displate, Threadless and Teespring finds nothing else, and research/rendered/ holds no POD page.\n\nNEW today:\n(1) github: nobody on GitHub uses an official Redbubble upload API. More than 15 uploader repos drive a browser: jalbrekt85/Redbubble-Bot says 'Uses the Chrome webdriver'. marschalk/fastShirt, an uploader for Spreadshirt, Shirtee and Redbubble, depends on puppeteer. KillianDoubre/redbubble-automation depends on puppeteer-extra-plugin-stealth, which exists to evade bot detection.\n(2) github: Spreadshirt has a keyed API v1 at api.spreadshirt.net/api/v1 (mrkamel/spreadshirt_client README). No client and no code search result shows a design-upload call. Zazzle's only GitHub API wrappers are for orders and product feeds (2011-2018).\n(3) snippets: Spreadshirt's own blog permits AI designs when the AI provider's terms allow commercial use, and caps uploads at 200 designs a day. Zazzle requires AI work to be tagged #generativecontent. Redbubble's help pages describe a platform fee on monthly earnings of 50% (Standard), 20% (Premium) or 0% (Pro), never charged out of pocket. TeePublic pays by PayPal with no minimum.\n\nANSWER: no venue in this family shows a sanctioned programmatic listing path at any grade. Every venue's AI, fee and payout evidence is snippet grade at best. Every venue costs one new owner account, and most also need a PayPal Israel account, which today is only a conditional step (docs/OWNER_STEPS.he.md:385). Spreadshirt is the only venue worth a render batch, because it has the only API trace and a first-party AI permission.\n\nDropped:\n- Spring (Teespring): its sales come from the creator's own audience, not marketplace discovery. Grade none; no search spent.\n- Amazon Merch: REJECTED.md:275 stands; there is no new evidence.\n- Printful or Printify into our own store: outside this family. It brings no buyers, and the seller pays the fulfilment cost before any payout, which breaks ₪0 (grade none).\n\nIf every surviving venue worked, the family's ceiling is about ₪1,500-2,000/month at month 12, for about six new owner steps.",
+ "searches_used": 6,
+ "candidates": [
+  {
+   "venue": "Spreadshirt (Marketplace Designer + a free Spreadshop from the same partner account)",
+   "url": "https://www.spreadshirt.com",
+   "what_we_would_list": "A deliberately capped stream, at most ~10 designs a week, far below the 200/day platform cap, never near-duplicates. (1) Code-generated bilingual Hebrew/English typographic designs: wordplay, idioms with translations, city names set in Hebrew letterforms. (2) Algorithmic/geometric art rendered from code. (3) Data-viz posters and prints from CC0 or self-computed data. Each design is published once and the platform puts it on its product range. AI assistance is declared in each description, and every design is checked against the AI provider's commercial-use terms, which is Spreadshirt's own condition.",
+   "existing_product": "None. The nearest reusable code is products/chart-explainer (data-to-chart renderer, Python), for data posters. No design pipeline, print-resolution export or design QA exists yet.",
+   "listings_per_owner_step": "One partner account opens both the Marketplace and a free branded Spreadshop (spreadshop under 'mehudak'). Up to 200 designs a day is the platform cap (spreadshirt.com blog 2017-10-09, raised 2020-05-06; snippet). Each design becomes many products. Whether EU (spreadshirt.net/.de) and NA (spreadshirt.com) need two partner accounts is UNKNOWN; Marki396/upload-automata treats 'Spreadshirt DE und COM' as separate targets (github description only).",
+   "prior_verdict": "Never swept. The only adjacent verdict is docs/REJECTED.md:274 (multi-shop POD RED; 'A single shop is a different question and is not rejected here').",
+   "reopen_basis": "Not a reopen. It is the single-account question that REJECTED.md:274 explicitly left open, with new snippet and github evidence from 28.9.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No joining fee or paid tier appears in any snippet. The model is a fixed commission per marketplace sale, e.g. '$3.00 for every standard t-shirt sold' in the US, with a $10 payout minimum paid monthly (snippet of Spreadshirt help and third-party guides). Not read at primary grade: the partner T&Cs.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "The payout method and country list were not found. My search for PayPal returned nothing on Spreadshirt payouts. If it is PayPal: an Israeli PayPal account withdraws ILS to an Israeli bank for ₪8 under ₪1,000 (research/colony-sweep/scouts/payment-rails--paypal-israel.md:24-28, snippet), and PayPal Israel's KYC is teudat zehut or passport (:159-161). Whether it has a selfie step is not read. No camera step was seen for Spreadshirt itself.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "A keyed public API v1 exists: mrkamel/spreadshirt_client README sets api_key, api_secret and base_url https://api.spreadshirt.net/api/v1, but its examples cover only baskets and orders. ubirkemeyer/spreadshirtapps holds v1 samples from 2011-2013. GitHub code search for design-upload calls against api/v1 found nothing. The one current multi-venue uploader (marschalk/fastShirt) depends on puppeteer, which suggests that uploads are done through the portal. developer.spreadshirt.net and api.spreadshirt.net are EGRESS_BLOCKED here. Leaning FAIL unless the developer docs show a design-upload endpoint that partners may use.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "Spreadshirt's own blog, 'AI and designs: dos & don'ts' (2024-06-07), per the snippet: if the AI provider's terms permit unrestricted commercial use, AI-made designs may be uploaded and published on the Marketplace and in a Spreadshop. There is no disclosure field, so the declaration goes in each description. Ownership limit: sell as a non-exclusive licence only (licensing-ip--ai-output-rights.md:88).",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "A consumer marketplace exists where designers earn on sales they did not bring: the help article 'Earn money as a Marketplace Designer' and the fixed marketplace commission (snippets). No traffic, GMV or conversion numbers were found.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. How marketplace search ranks a new design with no sales was not found. The Spreadshop brings no buyers of its own.",
+   "owner_step": "NEW step. Open a Spreadshirt partner account under the brand username; the legal name is for payout and tax only. Complete the tax and payout details, and link a PayPal Israel account, a new or conditional step (docs/OWNER_STEPS.he.md:385), if PayPal is the rail. Hand over an API key and secret, if the API allows uploads. Possibly two accounts (EU and NA). For the ledger, the monthly payout's PayPal transaction id is the booking key, which needs PayPal API access or the partner sales report.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 400,
+   "estimate_basis": "INFERENCE, not a base rate. The margin is about $3 per standard tee (snippet). The high case assumes a ceiling of about 35 marketplace sales a month at month 12, at an assumed ~₪3.7/$. No measured sale rate for a new POD account exists in the repo or the snippets. The low case is a cold account that never surfaces in search. Net of PayPal's ₪8 withdrawal fee below ₪1,000 and a ~3-4% conversion markup (paypal-israel.md:24-28 and F2, snippet).",
+   "time_to_first_sale": "UNKNOWN. The floor is the owner step, then the first batch, then a sale, then the monthly payout at a $10 minimum: about 6-10 weeks after the owner acts. It may never come on a cold account.",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://developer.spreadshirt.net/",
+    "https://www.spreadshirt.com/terms-and-conditions-for-shop-partner-C2376",
+    "https://www.spreadshirt.com/blog/2024/06/07/ai-and-designs-dos-donts/",
+    "https://help.spreadshirt.com/hc/en-us/articles/210769049-Earn-money-as-a-Marketplace-Designer",
+    "https://www.spreadshirt.com/blog/2020/05/06/increased-design-upload-limit/",
+    "https://www.spreadshirt.com/blog/2017/10/09/new-limit-design-uploads/",
+    "https://help.spreadshirt.com/hc/en-us/categories/200829585-Partner-Help"
+   ]
+  },
+  {
+   "venue": "Zazzle (designer store; customizable-template products on the Zazzle marketplace)",
+   "url": "https://www.zazzle.com",
+   "what_we_would_list": "Customizable templates, where Zazzle's personalisation engine adds real value: bilingual Hebrew/English Bar/Bat Mitzvah and holiday invitations, Shabbat/holiday cards, Hebrew-name art, stickers and labels. The typography is code-generated, the buyer edits the names and dates, and the royalty is set per product. Anything with AI-generated content is tagged #generativecontent. Nothing religious-legal (no ketubah texts), nothing political.",
+   "existing_product": "None. There is no template or typography pipeline.",
+   "listings_per_owner_step": "One designer account and store, with each design placed on many product templates. The upload cap is UNKNOWN. Zazzle's 'Quick Create'-style bulk tools are browser-side (grade none).",
+   "prior_verdict": "Never swept (grep of the repo: no hits).",
+   "reopen_basis": "Not a reopen; new venue.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "The designer sets the royalty and Zazzle pays it on sales of products carrying their content (snippet of the Creator License Agreement and the Secondary Content FAQ). No joining fee is seen, but not read at primary grade. The Creator FAQ PDF 'Updated March 31st, 2025, Effective April 1, 2025' signals a programme change whose content is unread.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "The search returned nothing on payout methods or countries. PayPal Israel withdrawal works at snippet grade (paypal-israel.md:24-28); its camera step is unread.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "GitHub search finds only order, product-feed and referral wrappers: troby/zazzle 'REST API Order Integration' (2014), nsanta/zazzle 'product API wrapper' (2011), wp-plugins/zazzle-api-bridge. None creates products. Leaning FAIL: no creation API is known at any grade.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "Per the snippet of Zazzle's content policy, quoted in community.zazzle.com threads: AI content is allowed if it is 'entirely novel' and meets the usual quality and originality standards, and designs containing AI content must be tagged #generativecontent. That tag is an explicit, honest disclosure mechanism.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "A marketplace of its own: the policy text refers to content 'sold on the Zazzle marketplace', and royalties are paid on marketplace sales (snippets). No traffic numbers were found. A third-party snippet says competition forces low royalties.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. Marketplace ranking for a new, unsold product was not found.",
+   "owner_step": "NEW step: a Zazzle designer account under the brand, the tax and payout form, and PayPal Israel if that is the rail (conditional, OWNER_STEPS.he.md:385). With no creation API, every design would need a browser session, which is at best a recurring owner action and fails the mandate unless an automation-permitting term is found.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 500,
+   "estimate_basis": "INFERENCE. The royalty is creator-set, but competition keeps it low (snippet). The high case assumes a ceiling of about 40 orders a month at ~$3.5 average royalty. Multi-unit invitation orders raise the per-order royalty, which is the reason for the niche. ~₪3.7/$. No measured base rate exists. The low case is a cold store.",
+   "time_to_first_sale": "UNKNOWN. The floor is the owner step plus a payout cycle, about 6-10 weeks, and only once a listing path exists.",
+   "verdict": "WEAK",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://www.zazzle.com/terms/updated_creator_license_agreement",
+    "https://www.zazzle.com/assets/graphics/z5/zmisc/ambassador_program/Zazzle_Creator_FAQs.pdf",
+    "https://community.zazzle.com/t5/ask-a-question/question-re-ai-policy/m-p/186570",
+    "https://community.zazzle.com/t5/general-zazzle-discussion/how-to-post-and-tag-ai-generated-products-on-zazzle/m-p/75587",
+    "https://help.zazzle.com/hc/en-us/articles/360039941013-Secondary-Content-FAQ"
+   ]
+  },
+  {
+   "venue": "TeePublic (single artist account on the TeePublic marketplace)",
+   "url": "https://www.teepublic.com",
+   "what_we_would_list": "The same capped set of code-generated bilingual typography and algorithmic designs as on Spreadshirt, cross-posted once each, with AI assistance declared in the description.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One account, with each design across the apparel, sticker and wall products. The upload cap is UNKNOWN.",
+   "prior_verdict": "Never swept (grep: no hits).",
+   "reopen_basis": "Not a reopen; new venue.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Earnings are fixed per item ('$4 per shirt at full price ($2 on sale)', hoodies ~$8, stickers $0.20-$1.00), with a lower 'Apprentice' rate at half those amounts (snippet, autokeyworder, secondary). No joining fee appears, but not read at primary grade.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "TeePublic pays on the 15th of each month, by PayPal with no minimum or Payoneer at $20 (snippets surfacing TeePublic's own help article 'How do I get paid?' and its blog 'The Definitive Guide To: Payoneer'). PayPal Israel withdrawal works (paypal-israel.md:24-28, snippet). The camera step for PayPal or Payoneer is unread, and so is the country list.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No API or uploader repo found on GitHub; a repository search returned nothing TeePublic-specific. TeePublic is reportedly in the Redbubble group (grade none), whose uploads are browser-only (see the Redbubble row). Leaning FAIL.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Snippets say only that TeePublic accepts original work where the artist holds the rights. There is no explicit AI rule or disclosure field, and a Quora anecdote reports an account deleted within 2 days for AI designs naming a politician. Unread at primary grade.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "A marketplace with its own sitewide sales: the '$2 on sale' rate implies platform-run promotions (snippet). No traffic numbers were found.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. A lower 'Apprentice' earnings level exists (snippet); what moves an account up is unread.",
+   "owner_step": "NEW step: a TeePublic account under the brand, a tax form, and PayPal Israel (conditional step). Uploads have no known programmatic path.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 250,
+   "estimate_basis": "INFERENCE. ~$1.5 average margin assumed for a new account (half-rate 'Apprentice' tier plus sale pricing, snippet) × an assumed ceiling of ~40 sales a month × ~₪3.7/$. No measured base rate.",
+   "time_to_first_sale": "UNKNOWN. The floor is the owner step plus one payout cycle on the 15th, about 6-10 weeks.",
+   "verdict": "WEAK",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://teepublic.zendesk.com/hc/en-us/articles/115012518628-How-do-I-get-paid",
+    "https://www.teepublic.com/blog/how-to-get-paid",
+    "https://www.teepublic.com/blog/the-definitive-guide-to-payoneer",
+    "https://autokeyworder.com/blog/sell-on-teepublic/"
+   ]
+  },
+  {
+   "venue": "Society6 (single artist account)",
+   "url": "https://society6.com",
+   "what_we_would_list": "Wall art and home goods: data-viz posters from CC0 or self-computed data (reusing chart-explainer) and algorithmic art, declared AI-assisted.",
+   "existing_product": "None. Nearest reusable code is products/chart-explainer.",
+   "listings_per_owner_step": "One account, each artwork across the wall-art and home product range. The cap is UNKNOWN.",
+   "prior_verdict": "Never swept (grep: no hits).",
+   "reopen_basis": "Not a reopen; new venue.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "The fee and joining terms were not found in any search.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "The payout rail and countries were not found. PayPal Israel works at snippet grade (paypal-israel.md:24-28); its camera step is unread.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No API or uploader repo found on GitHub (a search for 'society6 upload' returned 0 repositories).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Secondary snippets (toolify.ai, aitoolsarena) say Society6 allows AI art where the artist holds the rights. There is no primary text and no disclosure field is known.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "A consumer marketplace (grade none). No numbers were found, and no search was spent on it.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "NEW step: a Society6 account under the brand, tax and payout details, and PayPal Israel (conditional).",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE. The margin is unknown; an assumed ~$1-1.5 per sale × a ceiling of ~30 sales a month × ~₪3.7/$. No base rate.",
+   "time_to_first_sale": "UNKNOWN. The floor is about 6-10 weeks after the owner step.",
+   "verdict": "WEAK",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://society6.com/",
+    "https://www.toolify.ai/ai-news/discover-the-truth-society6s-ai-art-policy-revealed-1269148",
+    "https://aitoolsarena.com/text-to-image/9-websites-to-sell-your-ai-art"
+   ]
+  },
+  {
+   "venue": "Threadless (one free Artist Shop, surfaced on the Threadless marketplace)",
+   "url": "https://www.threadless.com",
+   "what_we_would_list": "The same capped typography and algorithmic set, cross-posted once each, declared AI-assisted.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One Artist Shop account. The per-design product range and the cap are UNKNOWN.",
+   "prior_verdict": "Never swept (grep: no hits).",
+   "reopen_basis": "Not a reopen; new venue.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "The Artist Shop pricing and fees were not read at any grade.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "The payout rail and countries were not found.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No API or uploader repo was found on GitHub.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "A secondary snippet (toolify.ai) says Threadless permits AI art 'with no specific restrictions'. The primary text is unread, and Threadless's design challenges may differ from Artist Shops.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "Whether Artist Shop designs surface in Threadless's own marketplace search, and how much traffic there is, is unread.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "NEW step: a Threadless Artist Shop account under the brand plus payout details (PayPal Israel if that is the rail).",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE. Margins are unread; an assumed ~$1.5 × ~25 sales a month ceiling × ~₪3.7/$. No base rate.",
+   "time_to_first_sale": "UNKNOWN. The floor is about 6-10 weeks after the owner step.",
+   "verdict": "WEAK",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://www.threadless.com/",
+    "https://www.toolify.ai/ai-news/discover-the-legality-of-selling-ai-generated-art-on-online-marketplaces-24376"
+   ]
+  },
+  {
+   "venue": "Displate (metal posters, single artist account)",
+   "url": "https://displate.com",
+   "what_we_would_list": "A small number of high-resolution data-viz and algorithmic-art posters, only if its AI policy allows them and with disclosure.",
+   "existing_product": "None. Nearest reusable code is products/chart-explainer.",
+   "listings_per_owner_step": "One account, but each upload is a single product type (metal poster), so fewer listings per design than the apparel venues. Whether uploads are curated or reviewed is UNKNOWN.",
+   "prior_verdict": "Never swept (grep: no hits).",
+   "reopen_basis": "Not a reopen; new venue.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Not read at any grade.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "The payout rail and countries were not found.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No API or uploader repo was found on GitHub (search returned 0).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Sources conflict. Secondary snippets (aitoolsarena, merchbanao) list Displate among platforms that accept AI art with disclosure; I had understood Displate to reject AI-generated art (grade none). Unresolved until the artist guidelines are rendered.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "A consumer marketplace (grade none). No numbers were found.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "NEW step: a Displate artist account plus payout details.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 200,
+   "estimate_basis": "INFERENCE. Higher ticket but fewer listings; the artist cut is unread. An assumed ~$4 per sale × ~12 sales a month ceiling × ~₪3.7/$. No base rate.",
+   "time_to_first_sale": "UNKNOWN. Any review queue adds to the ~6-10 week floor.",
+   "verdict": "WEAK",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://displate.com/",
+    "https://aitoolsarena.com/text-to-image/9-websites-to-sell-your-ai-art",
+    "https://merchbanao.com/blog/ai-art-for-print-on-demand/"
+   ]
+  },
+  {
+   "venue": "Redbubble (single artist account)",
+   "url": "https://www.redbubble.com",
+   "what_we_would_list": "Would be the same capped typography and algorithmic set, with Redbubble's AI-disclosure field ticked.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One account, each design across the whole product range. New accounts have daily upload caps, reportedly 5-30 a day for AI-tagged work (snippet, low-grade SEO blogs).",
+   "prior_verdict": "Never swept as a single account (grep: only REJECTED.md:274's multi-shop row, which does not name it).",
+   "reopen_basis": "Not a reopen; new venue.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Snippets of Redbubble's own help and blog ('What account fees exist on Redbubble', 'Account Tiers & Fees', 2025-08): platform fee on monthly earnings of 50% for Standard, 20% for Premium and 0% for Pro. 'Neither fee is ever charged out of pocket; they only apply when you make a sale', capped at $150 a period, with a $10 payout threshold. This passes ₪0 but halves a new account's margin.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Pays by PayPal; unverified PayPal accounts must claim payment manually (snippet). PayPal Israel withdrawal works (paypal-israel.md:24-28, snippet); its camera step is unread.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "No official upload API. More than 15 uploader repos all drive a browser: jalbrekt85/Redbubble-Bot says 'Uses the Chrome webdriver to interact with Redbubble', and marschalk/fastShirt depends on puppeteer. KillianDoubre/redbubble-automation (updated 2026-07) depends on puppeteer-extra-plugin-stealth, i.e. the working automation route defeats bot detection. That is the same manipulation-of-platform-processes class that made multi-shop POD RED (REJECTED.md:274). The honest alternative is the owner uploading by hand, which is recurring owner work. This FAIL rests on the absence of an API plus community practice; the User Agreement's automation clause is unread.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "Snippets (SEO blogs, not Redbubble): AI art is allowed if original, and an AI-disclosure field was added in 2025; falsifying it risks takedown. Low-grade; the primary text is unread.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "A marketplace. The Pro tier rewards 'positive engagement and investment in the marketplace' (snippet). No traffic numbers were found.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. The fee tier, and thus the margin, improves only with marketplace performance (snippet). Search ranking for an unsold design is unread.",
+   "owner_step": "NEW step: a Redbubble account, a tax form and PayPal Israel. Every upload would then need either detection-evading automation, which is RED, or the owner by hand, which fails the mandate.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE, for the record only. The artist-set markup less the 50% Standard platform fee leaves ~$1 a sale; × ~40 sales a month ceiling × ~₪3.7/$. No base rate.",
+   "time_to_first_sale": "Not reachable without a sanctioned listing path. Otherwise payout is on the 15th after the $10 threshold (snippet).",
+   "verdict": "DEAD",
+   "rank_in_family": 7,
+   "primary_urls_to_render": [
+    "https://www.redbubble.com/agreement",
+    "https://help.redbubble.com/hc/en-us/articles/50960130992916-What-account-fees-exist-on-Redbubble",
+    "https://help.redbubble.com/hc/en-us/articles/50959863016724-How-does-my-Account-Tier-determine-my-account-fees",
+    "https://blog.redbubble.com/2025/08/artist-account-tiers-and-fees/",
+    "https://help.redbubble.com/hc/en-us/articles/360027407652-What-is-the-Artist-Payment-Threshold",
+    "https://help.redbubble.com/hc/en-us/articles/202270389-When-do-I-get-paid",
+    "https://raw.githubusercontent.com/KillianDoubre/redbubble-automation/master/package.json"
+   ]
+  },
+  {
+   "venue": "Etsy, one shop fed by a POD integration (the single-shop case that REJECTED.md:274 left open)",
+   "url": "https://www.etsy.com",
+   "what_we_would_list": "Would be the same designs as physical POD listings.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One shop, but every listing costs a fee up front.",
+   "prior_verdict": "Multi-shop is RED (docs/REJECTED.md:274). Etsy templates were killed (REJECTED.md:1209-1217), and Etsy Payments for Israel is UNVERIFIED (REJECTED.md:302). KYC is Persona government ID plus a clear selfie (risk-governance--owner-kyc-catalogue.md:130-136; storefronts--etsy-digital.md:45-46). The listing fee is $0.20 per listing, renewing every 4 months or on sale (storefronts--etsy-digital.md:73). Payoneer is not available to Israel (:33).",
+   "reopen_basis": "None. The single-shop question fails on the repo's own evidence, with nothing new today.",
+   "gate_zero_cost": {
+    "status": "FAIL",
+    "evidence": "$0.20 per listing, per 4 months or per sale renewal, charged to the seller (storefronts--etsy-digital.md:73, snippet). The POD fulfilment cost is also charged to the seller before payout (grade none).",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "'Etsy partners with Persona … requiring a photo of your government ID and a clear selfie' (storefronts--etsy-digital.md:45-46; owner-kyc-catalogue.md:131).",
+    "grade": "repo"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Etsy has a listings API (grade none), which is moot given the two FAILs.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "AI images are permitted with a required AI tag at listing creation (licensing-ip--ai-output-rights.md:137-141, snippet).",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "A large marketplace, but its ranking is conversion-history-locked (REJECTED.md:274).",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "YES in effect: ranking is conversion-history-locked (REJECTED.md:274).",
+   "owner_step": "NEW step with a selfie, which is forbidden, and recurring buyer-conversation duty (owner-kyc-catalogue.md:130-136).",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "DEAD on two gates; no estimate.",
+   "time_to_first_sale": "Never under the mandate.",
+   "verdict": "DEAD",
+   "rank_in_family": 8,
+   "primary_urls_to_render": [
+    "https://help.etsy.com/hc/en-us/articles/360001980067-How-to-Verify-Your-Seller-Information-for-Etsy-Payments",
+    "https://www.etsy.com/il-en/legal/etsy-payments/"
+   ]
+  }
+ ]
+}

@@ -92,13 +92,67 @@ describe("revenue/loop (board → queue → orchestrator)", () => {
     });
     updateLineStatus(db, "weak", "building");
     updateLineStatus(db, "weak", "live");
-    db.prepare("UPDATE revenue_lines SET launched_at = ? WHERE id = ?").run(new Date(Date.now() - 60 * 86_400_000).toISOString(), "weak");
+    // 100 days live: past the 90-day grace (RULING-2026-09-28-floors.md §8), ₪0 under the 25% floor of a ₪1,000 target.
+    db.prepare("UPDATE revenue_lines SET launched_at = ? WHERE id = ?").run(new Date(Date.now() - 100 * 86_400_000).toISOString(), "weak");
     enqueueGoal(db, { lineId: "weak", phase: "grow" });
     const result = runBoardReview(db, { seed: false });
     expect(getLine(db, "weak")?.status).toBe("killed");
     expect(listQueuedGoals(db).some((q) => q.lineId === "weak")).toBe(false);
     expect(result.decisions.find((d) => d.lineId === "weak")?.decision).toBe("kill");
     expect(listReviews(db, { lineId: "weak", level: "board" })[0].decision).toBe("kill");
+  });
+
+  // RULING-2026-09-28-floors.md §8: supervisor, board and auditor resolve the SAME per-line floor (policyForLine), so
+  // il-biz-tools' 50% is enforced end to end and the auditor cannot be softer than the supervisor. ₪150 of a ₪400
+  // target sits between the default 25% floor (₪100) and il-biz-tools' own 50% (₪200): the shared policy holds it,
+  // the line's own policy kills it. Review of the 28.9.2026 builder diff, finding 2 — reverting any of the four call
+  // sites to the bare policy left the suite green.
+  describe("il-biz-tools' own 50% floor, resolved the same way at every level", () => {
+    function seedLiveIlBiz(): void {
+      const seed = DEFAULT_PORTFOLIO.find((s) => s.id === "il-biz-tools")!;
+      // Live means a Gumroad sale landed, and the board then sets the target from that reading (§9); ₪400 here.
+      insertLineFromSeed(db, { ...seed, targetMonthlyAgorot: 40_000, humanSetup: [] });
+      updateLineStatus(db, "il-biz-tools", "live", { force: true });
+      db.prepare("UPDATE revenue_lines SET launched_at = ?, created_at = ? WHERE id = ?")
+        .run(new Date(Date.now() - 100 * 86_400_000).toISOString(), new Date(Date.now() - 130 * 86_400_000).toISOString(), "il-biz-tools");
+      recordLedgerEntry(db, { lineId: "il-biz-tools", kind: "sale", amountMinor: 15_000, currency: "ILS", source: "gumroad", externalId: "g-ilbiz-1" });
+    }
+
+    it("the supervisor escalates a kill, the board kills, and the line-detail tool says so", async () => {
+      seedLiveIlBiz();
+      const ctx = { db: { raw: db }, identity: { name: "tester" } } as unknown as ToolContext;
+      const detail = await Object.fromEntries(createRevenueTools().map((t) => [t.name, t])).revenue_line_detail.execute({ line_id: "il-biz-tools" }, ctx);
+      expect(detail).toContain("il-biz-tools: KILL [below_kill_floor]");
+      expect(detail).toContain("floor 20000 (50% of target 40000)");
+
+      const sup = runSupervisorReview(db);
+      const supDecision = sup.decisions.find((d) => d.lineId === "il-biz-tools")!;
+      expect(supDecision.decision).toBe("kill");
+      expect(supDecision.rationale).toContain("50% of target 40000");
+
+      const board = runBoardReview(db, { seed: false });
+      expect(board.decisions.find((d) => d.lineId === "il-biz-tools")?.decision).toBe("kill");
+      expect(getLine(db, "il-biz-tools")?.status).toBe("killed");
+    });
+
+    it("the auditor flags a filed hold that only the shared 25% floor would allow", () => {
+      seedLiveIlBiz();
+      const metrics = {
+        lineId: "il-biz-tools", status: "live", revenue30dAgorot: 15_000, revenue7dAgorot: 15_000, refunds30dAgorot: 0,
+        cost30dAgorot: 0, net30dAgorot: 15_000, transactions30d: 1, trend: 1, daysSinceCreated: 130, daysSinceLaunch: 100,
+        daysSinceLastRevenue: 0, targetMonthlyAgorot: 40_000, targetAttainment: 0.375,
+      };
+      db.prepare(
+        `INSERT INTO revenue_reviews (id, line_id, level, reviewer, period_start, period_end, metrics, decision, rationale, created_at)
+         VALUES ('r-ilbiz', 'il-biz-tools', 'supervisor', 'supervisor-il-biz-tools', ?, ?, ?, 'hold', 'above the shared 25% floor', ?)`,
+      ).run(new Date().toISOString(), new Date().toISOString(), JSON.stringify(metrics), new Date().toISOString());
+      const audit = runAudit(db);
+      expect(audit.sampled).toBe(1);
+      expect(audit.flagged).toBe(1);
+      const review = listReviews(db, { level: "auditor" })[0];
+      expect(review.decision).toBe("flag");
+      expect(review.metrics).toMatchObject({ filed: "hold", recomputed: "kill" });
+    });
   });
 
   it("supervisor reviews request a board review on escalation; auditor approves consistent reviews", () => {
@@ -130,13 +184,13 @@ describe("revenue/loop (board → queue → orchestrator)", () => {
     });
     updateLineStatus(db, "line-l", "building");
     updateLineStatus(db, "line-l", "live");
-    // A filed "hold" whose metrics say kill (60 days live, no revenue)
+    // A filed "hold" whose metrics say kill (100 days live — past the 90-day grace — and no revenue)
     db.prepare(
       `INSERT INTO revenue_reviews (id, line_id, level, reviewer, period_start, period_end, metrics, decision, rationale, created_at)
        VALUES ('r1', 'line-l', 'supervisor', 'supervisor-l', ?, ?, ?, 'hold', 'looks fine', ?)`,
     ).run(
       new Date().toISOString(), new Date().toISOString(),
-      JSON.stringify({ lineId: "line-l", status: "live", revenue30dAgorot: 0, revenue7dAgorot: 0, refunds30dAgorot: 0, cost30dAgorot: 0, net30dAgorot: 0, transactions30d: 0, trend: 1, daysSinceCreated: 90, daysSinceLaunch: 60, daysSinceLastRevenue: null, targetMonthlyAgorot: 100_000, targetAttainment: 0 }),
+      JSON.stringify({ lineId: "line-l", status: "live", revenue30dAgorot: 0, revenue7dAgorot: 0, refunds30dAgorot: 0, cost30dAgorot: 0, net30dAgorot: 0, transactions30d: 0, trend: 1, daysSinceCreated: 130, daysSinceLaunch: 100, daysSinceLastRevenue: null, targetMonthlyAgorot: 100_000, targetAttainment: 0 }),
       new Date().toISOString(),
     );
     const audit = runAudit(db);

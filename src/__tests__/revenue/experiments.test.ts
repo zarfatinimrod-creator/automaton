@@ -2,7 +2,9 @@ import { createHash } from "node:crypto";
 import { describe, it, expect } from "vitest";
 import {
   FACELESS_YOUTUBE_EXPERIMENT,
+  WEB_ARM_REACH,
   evaluateExperiment,
+  evaluateWebArm,
   type ExperimentReadings,
 } from "../../revenue/experiments.js";
 import { decideLine, experimentsToPause } from "../../revenue/rules.js";
@@ -128,6 +130,21 @@ describe("faceless-YouTube experiment gates (VERDICT §10 as amended by RED-TEAM
 
 const PINNED_GATES_SHA256 = "1e1f49d29fdbc54f2518907fdefddec925d7ffdd0e3cca69817d7ca075a4a48b";
 
+describe("web arm reach floor (PREREG-DECISIONS.md §3, pre-registered 28.9.2026)", () => {
+  it("has not been edited", () => {
+    expect(WEB_ARM_REACH).toEqual({ day: 56, minEngagedStrangerViews: 5 });
+    const hash = createHash("sha256").update(JSON.stringify(WEB_ARM_REACH)).digest("hex");
+    expect(hash).toBe("aed85a892d9ba49b513f6b1e6b94c6ffe81c225d98eab015a82695e3894bb4d2");
+  });
+  it("decides only at day 56, only from a reading, and five is the floor", () => {
+    expect(evaluateWebArm({ day: 55, engagedStrangerViews: 0 })).toBe("not_due");
+    expect(evaluateWebArm({ day: 56, engagedStrangerViews: null })).toBe("unmeasured");
+    expect(evaluateWebArm({ day: 56, engagedStrangerViews: 4 })).toBe("stage_a_never_asked");
+    expect(evaluateWebArm({ day: 56, engagedStrangerViews: 5 })).toBe("stage_a_may_be_asked");
+    expect(evaluateWebArm({ day: 90, engagedStrangerViews: 0 })).toBe("stage_a_never_asked");
+  });
+});
+
 describe("the measuring status", () => {
   const line = (status: RevenueLine["status"]): RevenueLine => ({
     id: "yt",
@@ -178,8 +195,14 @@ describe("the measuring status", () => {
     const d = decideLine(line("measuring"), quiet);
     expect(d.decision).toBe("hold");
     expect(d.rationale).toMatch(/pre-registered gates/);
-    // The same numbers on a live line are a kill: the status is what protects the experiment, nothing else.
-    expect(decideLine(line("live"), { ...quiet, status: "live" }).decision).toBe("kill");
+    // The same numbers on a live line with a target are a kill: the status is what protects the experiment, nothing
+    // else. On a live line whose target is still ₪0 they are an escalation instead — the board sets a target from the
+    // reading that made the line live before any floor applies (RULING-2026-09-28-floors.md §8).
+    const targeted = { ...line("live"), targetMonthlyAgorot: 20_000 };
+    expect(decideLine(targeted, { ...quiet, status: "live", targetMonthlyAgorot: 20_000 }).decision).toBe("kill");
+    const unset = decideLine(line("live"), { ...quiet, status: "live" });
+    expect(unset.decision).toBe("escalate");
+    expect(unset.triggered).toContain("target_unset");
   });
 
   it("counts against the experiment cap", () => {

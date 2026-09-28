@@ -1,0 +1,676 @@
+Home | Wix App Market Partner Agreement
+
+top of page
+
+Wix App Market Partner Agreement
+
+Version effective as of June 30, 2026
+
+This Partner Agreement (the “ Agreement ”) sets forth the terms and conditions for offering of applications by Partners on the Wix App Market (the “ App Market ”).
+
+​
+
+This Agreement is made by and between Wix.com Ltd. (together with its affiliated companies, “Wix”) the operator of the platform and services offered through the www.wix.com website (the “ Wix Website ”) and a developer (whether entity or person) joining the App Market or submitting an application to Wix for offering and use through the App Market (the “ Partner ” or “ You ”). Wix and Partner may be referred to herein in each as a “Party” and collectively as the “Parties”. Capitalized terms used herein, unless otherwise defined, shall have the meaning ascribed to them in the Wix Terms (as defined below).
+
+​
+
+BY SUBMITTING AN APP, OR BY REGISTERING AS A PARTNER, YOU ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTAND AND AGREE TO BE BOUND BY ALL THE TERMS OF THIS AGREEMENT, INCLUDING ANY FUTURE MODIFICATIONS THERETO. YOU ARE THEREFORE ENCOURAGED TO REVIEW THIS AGREEMENT FORM TIME-TO-TIME TO MAKE SURE YOU ARE AWARE OF ITS CURRENT TERMS. IF, AT ANY TIME, YOU DO NOT AGREE TO ANY OF THE TERMS OF THIS AGREEMENT AS IN FORCE AT SUCH TIME, YOU SHOULD NOTIFY WIX, AND SUCH NOTIFICATION SHALL BECOME EFFECTIVE NINETY (90) DAYS FOLLOWING SUCH NOTICE. NOTWITHSTANDING THE FORGOING, WIX SHALL HAVE THE RIGHT TO TERMINATE YOUR ACCOUNT AS A PARTNER AND REMOVE YOUR APPS FORM THE APP MARKET AT ANY TIME FOLLOWING SUCH NOTICE.
+
+​
+
+Any heading, caption or section title contained herein, and any explanation or summary under the right “#ItsThatEasy” column, is provided only for convenience, and in no way defines or explains any section or provision hereof, or legally binds any of us in any way
+
+#ItsThatEasy
+
+By submitting an App or registering as a Partner, you are entering into a legal agreement with Wix and consent to the agreement’s terms. You may not use our services if you do not consent to all our terms.
+
+1. Introduction
+
+The App Market enables Partners to offer registered Wix users (hereinafter: “ Users ” or “ Wix Users” ) applications and/or software services (the “ Apps ”). The Apps shall be offered to the Users through the Wix App Market located at: https://www.wix.com/app-market , and/or as part of the various services offered by Wix on the Wix Website.
+
+2. Your Obligations
+2. Incorporation of Wix Terms of Use and Privacy Policy
+
+In addition to the terms of this Agreement, the Wix.com Terms of Use (available at https://www.wix.com/About/Terms-Of-Use ), the terms and conditions of Wix’s Privacy Policy (available at https://www.wix.com/about/privacy ), the Wix App Market Terms of Use (available at https://www.wix.com/about/app-market-terms ) the App Market Guidelines (available at https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines , and Wix Developers Terms of Use ; (each, as may be amended by Wix from time-to-time; collectively, the “ Wix Terms ”), are incorporated herein by reference, and shall govern the relationship between Wix and Partner, in addition to this Agreement. By registering or submitting information or an App to Wix, or by registering as a Partner, you acknowledge that you understand and agree to be bound by all the provisions of the Wix Terms which shall be deemed as an integral part of this Agreement.
+
+#ItsThatEasy
+
+Wix’s general Terms of Use, Wix’s Privacy Policy, App Market Terms of Use, App Market Guidelines and Wix Developers Terms of Use also apply to the Wix App Market. By submitting an App or registering as a Partner, you acknowledge that you understand and agree to comply with these terms and policies.
+
+3. Partner Account
+3. Partner Account
+
+To submit an App to the App Market you must create a Wix Development Center account at dev.wix.com. Your account is only for your own use, and you are responsible for all activities through your account. If you fail to keep your account in good standing (for example, by giving Wix incorrect or outdated information or by violating this Agreement) Wix may revoke your account, remove your App(s) from the App Market, delete any App ratings and reviews, retain associated account fees payable to you, and pursue any other legal remedies available to Wix.
+
+#ItsThatEasy
+
+To use the Wix App Market, you need to create a user account. You are solely responsible for your account. If you don’t keep your account in good standing, we reserve the right to pursue certain remedies to protect ourselves. This may include revoking your account and removing your Apps.
+
+4. No limits on App Offering
+
+Wix may offer any Apps or services to its users, including, but not limited to, Apps and/or services that are similar to those already offered, or that have been submitted for offering on the App Market and that were provided by any Partner or by Wix itself.
+
+#ItsThatEasy
+
+We may offer any Apps to our users, including ones that are similar to other Apps that are already offered, or that have been submitted for offering, on the Wix App Market.
+
+5. The App Market
+
+5.1. General.
+
+The App Market is a web-based platform which is part of the Wix Website, through which Apps are offered to Wix Users as add-ons to their Wix content or as integrated services empowering their websites ( https://www.wix.com/market ). The Apps are offered to the Users by Wix, and unless agreed otherwise in writing, Wix shall process all related purchases, returns and chargeback transactions related to the offered Apps (each, a “ Billing Action ”) on behalf of the Partners providing such Apps and Partner appoints Wix to act on its behalf for these purposes. In relation to certain Apps, Wix may determine in writing, that certain Billing Actions shall be conducted by the Partner directly (such Apps shall be referred to herein as “ Partner Billed Apps ”). Wix shall have the right to convert any Partner Billed App to an App billed by Wix at any time, subject to a thirty (30) days prior written notice to the Partner.
+
+#ItsThatEasy
+
+The Wix App Market is a place where developers can offer Apps or other software services to Wix users. Your Apps are offered to Wix users by us and we will process all billing actions on your behalf, unless agreed otherwise. If we agree that certain billing actions will be conducted by you directly, we reserve the right to decide to conduct all billing actions directly.
+
+5.2. Right to Use.
+
+Partner grants Wix a worldwide right and license, for no consideration, for as long as the App is offered to or used by Users on or through the Wix Website, to host, install, use, reproduce, copy, save, format and make the App available to Users for the purpose of exercising Wix’s rights and responsibilities under this Agreement.
+
+You give us all rights to your App for as long as it is offered to or used by Wix Users, needed for the purpose of offering your App and exercising our responsibilities under this Agreement.
+
+5.3. Right to Use Partner’s Marks.
+
+To facilitate the offering and promotion of an App, Wix shall have the right to use, reproduce and display the Partner’s and the App’s name and trademarks (the “ Partner Marks ”). The use of such Partner Marks shall be limited to use on the Wix Website and in promotional and marketing activities conducted by Wix from time to time.
+
+You give us the right to use your name, your App’s name and trademarks for the purpose of offering and marketing your App.
+
+5.4. Right to Use Wix Marks.
+
+Partner shall have the right to use Wix trademarks, logos and tradenames (the “Wix Marks”) in reference to the fact that the Partner’s App is offered on the App Market and under and according to the App Market Guidelines (available at https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines ), the guidelines regarding use of App Market Badges (available at https://dev.wix.com/docs/build-apps/launch-your-app/app-promotion/about-app-promotion ) and Wix’s Design Assets & Guidelines (available at https://www.wix.com/about/design-assets ). Partner may not use or display Wix Marks other than in compliance with the guidelines detailed in this clause without Wix’s prior written consent.
+
+You can use our trademarks in accordance with our relevant guidelines, solely for the purpose of promoting the fact that your App is offered on the Wix App Market.
+
+5.5. Restrictions on Partner’s Use of the Wix Marks.
+
+Notwithstanding Section 5.4, Partner will not: (i) use the Wix Marks or variations or misspellings thereof in Partner’s business name, logo, branding, advertising, social media or domain name (including without limitation top-level domains, sub-domains and page URLs), products or services (including without limitation, in the name or design of any App), unless granted express written permission by Wix in advance of each use; or (ii) purchase or register search engine or other pay-per-click keywords (such as Google Ads), trademarks, email addresses or domain names that use the Wix Marks or any variations or misspellings thereof that may be deceptively or confusingly similar to the Wix Marks.
+
+You cannot use “Wix”, or any other Wix Marks in the name or design of your business or logo, or any of your product or service without permission. You will not buy search engine advertising, trademarks or domain names that use “Wix” or other Wix Marks.
+
+5.6 User Reviews and Ratings
+
+The Wix App Market allows Wix users to post reviews and ratings about your App. Partners shall comply with the Reviews and Ratings policies set forth in the Wix documentation, which is hereby incorporated by reference. Partners shall not manipulate reviews, including by posting self-reviews, fake or incentivized reviews, forced reviews, or employing misleading or coercive user interactions or workflows.
+
+Partners may request Wix to review certain reviews if they believe these reviews are inappropriate, including those that are meaningless, irrelevant, spam, offensive, manipulative/fake, contain personal information, or relate to platform issues rather than the App.
+
+Wix has sole discretion to determine whether any review will be removed, edited, or retained, and may decline to remove a review in its discretion. Requests must be submitted via Wix Customer Support .
+
+Wix Users can rate and review your App. You must follow our specific guidelines regarding how these reviews are handled. You can ask Wix to review inappropriate content, but Wix decides whether to keep, edit, or remove any review.
+
+6. Submission, Approval and Offering of Apps
+
+6.1. Submission.
+
+You must submit each App that you wish to offer to Users through the App Market, as well as any material updates to such Apps, for Wix’s prior approval. Any such updates shall be subject to the terms and conditions set forth in this Agreement.
+
+#ItsThatEasy
+
+Each App you wish to offer through the Wix App Market and any material updates to such Apps must be approved by us.
+
+6.2. App Requirements.
+
+An App submitted to the App Market must be in compliance with the following requirements:
+
+(i) the App must be configured and adjusted to work with the Wix Website;
+
+(ii) the App must be fully functional and tested for bugs and defects;
+
+(iii) the App must comply with all terms and conditions set forth in this Agreement, including the Wix Terms;
+
+(iv) the App must comply with any other requirements provided to you by Wix;
+
+(v) the App must comply with all applicable laws including, but not limited to: (a) data protection, privacy and other laws and regulations relating to collection, processing, use and sharing of personal information by such App, as detailed in Section 6.3 below; and (b) applicable telecommunications laws;
+
+(vi) the App must not infringe or misappropriate any intellectual property or personal right of any third party.
+
+In order to offer your App on the Wix App Market, there are certain obligations and conditions your App needs to meet.
+
+Among other things, your App must be fully functional, compatible with our website, comply with all terms of this Agreement, relevant data protection and telecom laws and any additional requirements set by us.
+
+6.3. Compliance with Privacy Laws and Regulations.
+
+Without limiting Partners’ other representations, warranties and obligations under this Agreement, to the extent Partner performs any form of Processing activity with respect to or in connection with any Personal Data of Users or of Wix Users’ website visitors (collectively, “ User Data ”), then Partner and Partner’s App(s) offered in the App Market, must comply with all applicable privacy and data protection laws, including (but not limited to) the General Data Protection Legislation ((EU) 2016/679) (GDPR) and any applicable national implementing laws, regulations and secondary legislation relating to the Processing of Personal Data (collectively, “ Data Privacy Laws ”), including, without limitation, any and all consent or notice requirements.
+
+If your App collects or transmits any personally identifiable information of Wix users or their websites’ visitors, you must comply with all applicable data privacy laws.
+
+6.3.1 The terms below shall have the following meanings:
+
+6.3.1.1 “GDPR” means the Regulation (EU) 2016/679 of the European Parliament and of the Council of 27 April 2016 on the protection of natural persons with regard to the processing of personal data and on the free movement of such data, and repealing Directive 95/46/EC (General Data Protection Regulation).
+
+6.3.1.2 “Data Subject”, “Personal Data”, “Processing” or “Process”, “Controller”, as used in this Section 6.3, shall have the meanings given in the GDPR.
+
+6.3.2 Roles of the Parties.
+
+The Parties agree that each will act as a Controller with respect to Personal Data of Users. It is acknowledged that each party is a separate, independent Controller of Personal Data of Users. Personal Data of Users will not be processed by the Parties as joint controllers as referred to in Article 26 of the GDPR. Each Party shall be independently responsible for compliance with its obligations as a Controller under applicable Data Privacy Laws.
+
+You will act as a Controller with respect to personally identifiable information of Wix users.
+
+6.3.3 Privacy Policy.
+
+If an App collects or transmits any personally identifiable information of Users or of Wix Users’ website visitors, Partner must maintain and comply with a comprehensive privacy policy. Partner shall be responsible for informing all Users of such privacy policy, including by providing access to such policy through a provided link and, if requested, (ii) submitting such policy to Wix for display to Users in the App Market and ensuring that Wix is able to display notice of such privacy policy in accordance with this Agreement and all applicable laws or regulations. Such privacy policy must: (i) comply with all applicable laws and regulations; (ii) inform Users regarding the information collected by the App, and the manner in which such information is used, stored, secured and disclosed, including the categories of third parties to which information may be disclosed (including Wix and/or any other Partners offering other Apps serving the same Wix User website, as further detailed in Section 6.10 below); (iii) describe the process by which Partner notifies its Users of material changes to such privacy policy; and (iv) describe the controls that Users have over the use and sharing of their information, and how they may access their information.
+
+If your App collects or transmits any personally identifiable information of Wix users or their websites’ visitors, you must maintain a privacy policy that complies with all applicable laws. You must inform all Wix users of such a policy and always comply with it.
+
+6.3.4 Security.
+
+6.3.4.1 Partner shall implement appropriate technical and organizational measures to ensure an appropriate level of security of User Data, including, but not limited to, as appropriate and applicable, the measures referred to in Article 32(1) of the GDPR.
+
+6.3.4.2 Partner shall protect User Data and will not make any technical or organizational changes to an App that could expose the User Data to potential risks which may impair the integrity, availability or reliability of the User Data. In case Partner wants to make changes to an App, such as changing the data location storage, changing the cloud provider, or any other changes that may compromise the integrity, availability or reliability of User Data, then Partner must obtain Wix's prior approval before making such changes.
+
+6.3.4.3 Partner shall ensure that User Data will be configured to prevent unauthorized access by networks, operating systems and databases. In addition, Partner shall ensure that User Data will be pseudonymised, anonymised, encrypted, or a combination of these methods, both in transit and at rest.
+
+​
+
+6.3.4.4 In order to receive, process, host, or access all types of data deriving from Wix, Partner and/or Partner's subcontractors or anyone on their behalf shall only use the following cloud computing (including cloud hosting) providers: Google Cloud Platform; IBM Cloud Services; AWS - Amazon Web Services; Microsoft Cloud Services; Salesforce.com or Oracle Cloud Platform. Partner may use cloud computing and/or cloud hosting providers other than the ones listed above, only after obtaining Wix's express, prior written consent.
+
+You must implement appropriate technical and organizational measures to ensure appropriate security of User Data.
+
+You must obtain Wix’s approval before making any kind of technical or organizational changes to your app that could expose the User Data to potential risks.
+
+You must prevent unauthorized access to User Data, and you must make sure that the data is stored securely.
+
+If you wish to process data you receive from Wix with a cloud computing or cloud hosting platform that is not mentioned in this section, you must obtain Wix’s prior approval.
+
+6.3.5 Software Development.
+
+(i) Partner shall have and follow Secure Coding Guidelines based on best practice. All software developers working with Partner or on Partner's behalf must comply with Partner's Secure Coding Guidelines;
+
+(ii) Partner shall store it's code in a secure and restricted location;
+
+(iii) Partner's code shall be reviewed by more than one developer, and the code review process shall be documented;
+
+(iv) Partner's code shall be tested against the sans.org top 25 software errors;
+
+(v) An App shall be reviewed and tested by a third party for any security vulnerabilities before submitting the App to the App Market;
+
+(vi) Partner shall be obligated to share with Wix all security vulnerabilities found in an App and shall be obligated to immediately take the required actions to correct such security vulnerabilities;
+
+(vii) Partner shall perform a security assessment for an App on a regular basis.
+
+You must comply with several coding requirements and obligations in order to offer your App on the Wix App Market.
+
+6.3.6 Personal Data Breach.
+
+Partner shall promptly notify Wix within no later than 24 hours (or a shorter period of time if required under the applicable Data Privacy Laws) and the User of any actual or suspected data security compromise involving User Data. Partner shall promptly take steps to contain and control any unauthorized access to or misuse of User Data and continue to promptly provide information relating to the investigation and resolution of the data security compromise until Wix determines that the data security compromise has been resolved.
+
+You must notify no later than 24 hours of any suspected or actual data security compromise.
+
+6.3.7 Third Party Processors.
+
+Each Party may transfer Personal Data to and otherwise interact with third-party data Processors. Each Party agrees that if it transfers Personal Data or otherwise interacts with a third-party data Processor, it will enter into a separate contractual arrangement with each such Processor to ensure compliance with its obligations under applicable Data Privacy Laws and hereunder.
+
+You may transfer personally identifiable information to third party processors under separate contractual arrangement(s) to ensure compliance.
+
+6.3.8 Cross-Border Data Transfers.
+
+Each Party shall not transfer any User Data received from the other Party outside of the EEA, Switzerland and the UK unless the transfer complies with the relevant provision of Data Privacy Laws.
+
+6.3.9 Data Minimization.
+
+Partner shall limit its User Data Processing activities only to the extent required to operate the Partner’s App and to provide the App’s services to the Users. Partner is prohibited from Processing, either directly or through a processor, any User Data provided to Partner by Wix for the purposes of marketing, advertising, sales, personalization, except at the instruction of the User and in compliance with applicable Data Privacy Laws. Partner shall not include User Data provided to Partner by Wix in any product or service offered by Partner to third parties without the applicable User consent or in manner that constitutes a “sale” under the CCPA.
+
+You must limit processing of personally identifiable information of Wix users or their websites’ visitors to the extent required to operate your App.
+
+6.3.10 Data Subject Rights.
+
+Each Party shall assist the other Party, to the extent reasonably requested, to comply with any of such other Party’s statutory obligations concerning requests to exercise Data Subject rights under applicable Data Privacy Laws.
+
+You must assist Wix to comply with obligations concerning Data Subject requests.
+
+6.3.11 Retention; Deletion or Return of Personal Data.
+
+Subject to applicable Data Privacy Laws, each Party will retain Personal Data only for as long as necessary to satisfy the purposes for which it was provided to such Party, or to the extent required by applicable Data Privacy Laws.
+
+You will retain personally identifiable information only for as long as necessary for the purposes for which it was provided.
+
+6.3.12 Cookies.
+
+In case Partner uses cookies and/or other similar tracking technologies (collectively, “ Cookies ”) to track Wix Users or any Wix Users’ website visitors, Partner will place a clear and comprehensive notice explaining which Cookies are used by Partner, the type of information Partner may obtain from Wix Users or any Wix Users’ website visitors by use of such Cookies, and obtain appropriate consents. In addition, Partner will refer, or will make available, Wix Users and any of Wix Users’ website visitors to Partner privacy and Cookies policies. With respect to any Wix Users’ website that uses a Cookies management tool to enable such website’s visitors to select their Cookie preferences and manage their Cookies consents, Partner’s App shall adhere to and comply with the Wix Users’ website visitors cookie preferences.
+
+If you use cookies to track Wix users’ or any of their website visitors, you must explain to them the type of information you may collect and obtain their consent. You must also make your privacy and cookie policies available.
+
+6.3.13 Non-compliance with Data Privacy Laws.
+
+In the event of any non-compliance by Partner with any of the terms of this section or any applicable Data Privacy Laws, Wix shall have the right to immediately remove or suspend the offering of the Partner’s App on the App Market and terminate the Partner Agreement.
+
+Wix may immediately remove or suspend your App in the event you are not compliant with any of the terms of this section.
+
+6.4 Approval of Apps.
+
+Prior to making any App available in the App Market, Wix, or a third party on its behalf, will review, test and evaluate each App (including any updates or changes) submitted by Partner. Wix will make an App available in the App Market after it is approved by Wix at its sole discretion (and with no obligation to provide any reasoning in case of disapproval). Wix, or a third party on its behalf, may review, test and evaluate any Apps available in the App Market periodically, to verify such Apps continue to comply with this Agreement. Wix further reserves the right to conduct technical audits, without notice to Partner, of Partner’s compliance with this Agreement pertaining to the collection, use, or sharing of personal information of Users or their website visitors. Partner agrees to cooperate with Wix in the reviewing, testing and evaluation process and to answer questions and provide information and materials reasonably requested by Wix. Wix may require Partner to make adjustments and/or modifications to its App, as necessary to ensure the App’s compliance with this Agreement. Partner shall make such required adjustments within a reasonable period of time as determined by Wix.
+
+We will only make your App (or any update to it) available in the Wix App Market once it has been reviewed and approved. We may evaluate or conduct technical audits to any offered App periodically.
+
+6.5 Offering of Apps.
+
+After an App is approved by Wix, it shall be made available in the App Market in a location, form of display and form of promotion as determined by Wix at its sole discretion. It is clarified that Wix shall have no obligation to include any App in the App Market even if such App was previously approved by Wix. Wix may promote an App with sales and Partner hereby provides its consent and approval for such promotional activities of Wix.
+
+We will determine the location, form of display and/or promotion (including sales) of any approved App we choose to offer through the Wix App Market.
+
+6.6 Removal of Apps.
+
+Wix may remove or suspend any App from the App Market, at any time, at its sole discretion, with no obligation to provide any explanation or prior notice and with no liability to Partner. Wix may also discontinue the use of any App by Wix Users if Wix believes that the use of such App infringes rights of any third party or may damage Wix or its Users. Unless the App is removed or suspended due to breach of this Agreement or as a result of an infringement allegation, Wix shall pay Partner all amounts owed to Partner, in connection with the use of the App by Users prior to such removal or suspension of the App.
+
+We may remove or suspend any App from the Wix App Market or discontinue the use of any App by Wix users at any time, with or without notice. If we do so for a reason other than a breach of this agreement, we will pay you any outstanding due amounts.
+
+6.7 Withdrawal of Apps.
+
+Partner may remove an App from the App Market by providing a ninety (90) days prior written notice to Wix. During such ninety (90) days period, Partner shall be obligated to maintain the App and provide all support services to the Users. Notwithstanding the foregoing, Wix may, at its sole discretion, remove the App from the App Market prior to the expiration of such ninety (90) days period.
+
+You may remove your App from the Wix App Market at any time, by providing us with a 90-day prior notice. During this notice period you must maintain the App and support Wix users using it.
+
+6.8 Sharing of Information with Wix.
+
+Subject to any applicable Data Privacy Laws, Partner shall be obligated to share with Wix at any time, within no later than thirty (30) days from Wix’s request, any and all Visitor Data. For the purpose hereof, “ Visitor Data ” shall mean statistical, non-personal information regarding the activities of visitors to Wix Users’ websites that is collected by Partner through or in connection with an App provided by Partner. Visitor Data shall not include any information or data of Partner or Wix Users. Such sharing of Visitor Data shall be done via an API tool to be provided by Wix. Without derogating from the foregoing, Partner agrees that Wix, at its sole discretion, may retrieve, save, and make use of the Visitor Data. Wix may also share the Visitor Data with third parties, in order to allow Wix users to share, extract, import and export and use information and data between different apps used by them.
+
+You are obligated to provide us with any “Visitor Data”, i.e. statistical and non-personal information concerning activities of visitors on Wix users’ websites that your App collects within 30 days from Wix’s request. Wix may share this “Visitor Data” with third parties to allow Wix users to use and share such information between the different Apps they use.
+
+6.9 Adjustment of Apps to Maintain Compliance.
+
+Wix may require Partner to make adjustments and/or modifications to its App, as necessary to ensure the App’s proper operation and compatibility with any changes taking place in Wix’s infrastructure (or to certain components or elements thereof), policies or procedures. Partner shall make such required adjustments within a reasonable period of time, but in any case, by no later than ninety (90) days from the date Partner was first requested to do so by Wix. Such adjustments may be required for example, for proper operation of the App with (i) the billing and/or processing systems used for the App; (ii) data collection tools; (iii) data aggregation systems; (iv) any systems used for the storage of Wix Users’ and their website visitors’ information; and (v) login tools. For the avoidance of doubt, such modifications or adjustments shall not affect or change the commercial terms of this Agreement in any manner.
+
+We may require you to modify your App if it is necessary to ensure its proper operation and compatibility with any changes to our infrastructure or policies. If asked, you will have 90 days to make the required changes.
+
+6.10 Economic Sanctions and Export Controls.
+
+Partner represents and warrants that none of the Partner, its subsidiaries, or any director or officer thereof, is, or is owned or controlled by individuals or entities that are: (i) the target of any sanctions administered or enforced by the U.S. Department of the Treasury Office of Foreign Asset Control (“ OFAC ”), the U.S. State Department or any other U.S. government agency or department, the United Nations Security Council, the European Union or Her Majesty Treasury and/or the target of any Israeli sanctions (collectively, " Sanctions "), or (ii) located, organized or resident in a country or territory that is the subject of comprehensive territorial Sanctions.
+
+Partner acknowledges that any use of its App and any related products and services (the " App Usage ") may not be provided to or used by any person in any of the countries that are subject to comprehensive economic sanctions under the EAR, OFAC, or Israeli regulations, which currently include Crimea - region of Ukraine, Cuba, Iran, North Korea, and Syria. Moreover, Partner shall not allow and fully restrict any usage relating to its App(s) from Users (individuals and entities) identified on any Sanctions list, including but not limited to OFAC’s Specially Designated Nationals and Blocked Parties List (the " SDN List "), entities owned 50% or more by any individuals or entities on the SDN List, or individuals or entities that are located in any comprehensively sanctioned country.
+
+Partner acknowledges that the App Usage may be subject to U.S., Israeli, or other export, re-export, and in-country transfer laws, regulations, and rules (the " Export Controls ”). It is agreed that the applicable Export Controls regulations shall govern the App Usage and that no data, information, software program, technology, source code, encryption functionality, and/or materials resulting from the App or its related products or services, shall be made available to any person, directly or indirectly, in violation of Export Controls. Partner shall (i) be solely responsible to check the applicable Export Controls regulations and any updates or modifications thereof; (ii) be solely responsible to strictly comply with Export Controls at all times during which this Agreement is in force; and (iii) be liable for any infractions or imposed sanctions thereunder.
+
+You confirm that neither you nor any of your subsidiaries, directors or officers, is, or is owned or controlled by anyone that the U.S. government or other authorities has sanctioned or is located in a country that is subject to territorial sanctions.
+
+​
+
+You commit that no one located in a country that the U.S. government has sanctioned or embargoed for use of our services will use your App.
+
+​
+
+You confirm that the use of your App is subject to export, re-export, and economic sanctions related laws, regulations and rules of the U.S. government, Israeli government and perhaps other countries’ similar applicable laws and regulations.
+
+​
+
+Therefore, your App and any data, technology and/or materials from it, may not be used or made available to any person or entity located in any of the countries that are sanctioned under such laws and regulations.
+
+7. Responsibility for App
+
+7.1 Content and Services.
+
+Partner has, and shall have, the sole responsibility for (i) all content of such App (including use of any patents, registered designs, design rights, trademarks, trade and business names, copyright and related rights, logos and icons) and (ii) the development, proper operation and maintenance of the App and the provision of services to Users. Partner acknowledges and agrees that Wix has no responsibility or liability of any kind for any content, development, operation and maintenance and provisions of services to Users of or by the App.
+
+#ItsThatEasy
+
+You are solely responsible for any and all content on your App and for its proper operation and maintenance. You confirm that we have no responsibility or liability of any kind for any content, development, operation and maintenance of your App.
+
+7.2 Responding to Claims.
+
+If Wix receives a claim from a third party concerning an App, Wix may refer such claim to Partner. Partner must respond to the claim within 24 hours, and take any and all actions required for the App to comply with the law. If Partner discovers or is notified that an App violates the terms of this Agreement or the Wix Terms, Partner shall be obligated to immediately take the required actions to correct such violation.
+
+If we refer to you a third party claim concerning your App, you are obligated to respond within 24 hours and take all actions required to make your App comply with the law.
+
+7.3 Additional Terms of Use.
+
+Wix may, from time to time, instruct Partner to incorporate certain terms and conditions for the use of an App that shall be approved and accepted by the Users of such App, in order to comply with applicable laws. Furthermore, Wix shall have the right, at its sole discretion, to add notifications and/or terms and conditions for use of an App directly (by including such notifications and/or terms and conditions in the purchase page of such App).
+
+We may instruct you to incorporate legally required terms and conditions into the terms that Wix users must accept prior to using your App. We also reserve the right to include such terms in the purchase page of your App.
+
+8. Specific Commercial Terms
+
+Wix may agree to provide specific commercial terms to a Partner and/or in relation to a specific App. In such event, Wix and Partner shall execute an addendum to this Agreement stipulating any such agreed specific terms . Any addendum executed between Wix and Partner shall be deemed as an integral part of this Agreement and its provisions shall prevail over the terms of this Agreement.
+
+#ItsThatEasy
+
+We and you may agree to specific commercial terms by a written addendum to this agreement.
+
+9. Pricing, Collection and Revenue Sharing
+
+9.1 Pricing.
+
+Upon submission of each App to Wix, Partner shall state to Wix its price offering of such App. Wix reserves the right (at its sole discretion) to remove the App from the App Market, including due to its pricing.
+
+9.2 Collection of Revenues; Refunds.
+
+Other than in relation to Partner Billed Apps (as defined above), Wix shall be responsible for all Billing Actions, including, processing of the billing of its Users for the use of any App, collection of payments and processing cancellations and refunds. Wix shall have the right, at its sole discretion, to approve cancellations of App purchases by Users and to refund such Users for the amounts paid by them to Wix (or any part thereof). If a refund was paid by Wix to a User on account of an App for which Partner received Revenue Share (as defined below), Partner shall be obligated to return such Revenue Share amount to Wix within no later than thirty (30) days following a request by Wix and without derogating from the forgoing, Wix shall have the right to deduct any such amount owed (and not paid back) by Partner to Wix, from any and all amounts payable to Partner by Wix hereunder.
+
+#ItsThatEasy
+
+When submitting your App, you must state its offering price. If you later decide to change the price, you must notify us. We may choose to remove your App from the Wix App Market.
+
+We reserve the right to approve cancellations of purchases of your App and refund related Wix users. You will be obligated to return to us any related revenue share you have received in connection with any refunded App purchases upon our request.
+
+9.3 Revenue Sharing.
+
+Effective February 1, 2022, unless otherwise indicated in this Agreement, in any Wix Terms, or agreed between Parties in writing:
+
+i. The Net App Revenues (as defined below) will be shared between Partner and Wix such that Partner will be entitled to eighty percent (80%) of the Net App Revenues and Wix will be entitled to twenty percent (20%) of the Net App Revenues (the “ Revenue Share ”).
+
+In relation to any Partner Billed App, Wix shall be entitled to receive twenty percent (20%) of:
+
+(a) Any Net App Revenues collected by Partner, and (b) Any other income generated by Partner from the related App, including but not limited to income from advertising.
+
+ii. Notwithstanding the foregoing, during the first twelve (12) months of the launch of the App at the App Market, the Net App Revenues and in relation to any Partner Billed App, also any other income generated by Partner from the related App, including but not limited to income from advertising, will be shared between Partner and Wix such that Partner will be entitled to one hundred percent (100%) of the Net App Revenues and Wix will be entitled to zero percent (0%) of the Net App Revenues.
+
+The term “ Net App Revenues ” shall mean the aggregate amounts actually paid by Users to Wix or to Partner (as applicable) in consideration for the use, installation or upgrade of an App offered on the App Market, less the Transaction Fee. The "Transaction Fee" shall mean an amount equal to two and one-half percent (2.5%) of each payment, which Wix shall deduct and retain prior to calculating the Revenue Share. The Transaction Fee shall apply only to Billing Actions conducted by Wix.
+
+Wix may, at its sole discretion, reduce, waive, or decline to apply the Transaction Fee, in whole or in part, at any time and with respect to all or any Apps, Partners, or transactions, without such action constituting a waiver of Wix's right to apply the Transaction Fee at any later time. Any such reduction or waiver shall not be deemed a modification of the revenue-sharing method.
+
+​
+
+For the avoidance of doubt, in relation to a Partner Billed App, the Net App Revenues shall include any revenues collected by Partner from any third party (such as revenues generated from ads included in an App). Notwithstanding the foregoing, Wix, at its sole discretion, may bundle several Apps together (each such bundle, a “ Bundle Package ”) and offer such Bundle Packages to Wix Users. In such event, Partner will be entitled, in consideration for the inclusion of its App in such Bundle Package, to a compensation as mutually agreed upon by the Parties in good faith, for as long as such App is offered as part of such Bundle Package.
+
+#ItsThatEasy
+
+We will share the “Net App Revenues” between us – you will receive 80% and we will receive the remaining 20%. “Net App Revenues” are the aggregate amounts actually paid by Wix users to either you or us for the use of your App through the Wix App Market, less a 2.5% transaction fee, as detailed in this agreement. If your App is a Partner Billed App the Net App Revenues also include any related revenue you collected from third parties (like ads included in your App). During the first 12 months you will retain 100% of the Net App Revenues. We may offer your App to Wix users bundled together with other Apps.
+
+We may offer your App to Wix users bundled together with other Apps.
+
+9.4 Payment of Revenue Share.
+
+The Revenue Share will be payable to the other Party within thirty (30) days following the end of each month, by the Party that collected the relevant Net App Revenues.
+
+​
+
+Wix will not pay to a Partner hereunder an amount lower than two hundred US Dollars (USD 200; the “ Minimal Payment Amount ”). Accordingly, in the event Partner’s balance at the end of a month is lower than the Minimal Payment Amount, such balance shall be carried over and added to the next month’s Revenue Share amount until the total amount payable to such Partner reaches the Minimal Payment Amount.
+
+Generally, the party receiving the revenue from Wix Users will pay the other party its applicable share of the revenue on a monthly basis.
+
+​
+
+Additionally, we will only pay you amounts of USD 200 or higher. So if your monthly due share is lower, we will carry that balance over until the total amount payable to you reaches USD 200.
+
+9.5 Form of Payment.
+
+All Revenue Share payments shall be due and payable in U.S. Dollars only. Payment shall be made through wire transfer or any other method chosen by Wix, at its sole discretion. All payments hereunder shall be made against a lawful tax invoice to be issued by the Party receiving the respective payment.
+
+Revenue share payments will be made in USD following the issuance of a lawful tax invoice. We will choose the method of payment.
+
+9.6 Taxes; Exchange Rate.
+
+Partner shall be responsible for the payment of any and all taxes assessments, fees and other governmental charges of any kind (collectively “ Taxes ”) applicable to the conduct of Partner’s business. The payments made by Wix to Partner shall be subject to any applicable withholding tax obligations (if any). If an App price is presented in any currency other than U.S. Dollars, Wix will have the sole discretion to determine the exchange rate applicable to the App and to set off any exchange rate costs occurred to Wix as result of payment in any non U.S. Dollar currency.
+
+You are responsible to pay all taxes and any other governmental charges applicable to your business. Our payments to you are subject to any applicable withholding tax obligations (if any).
+
+If your App prices are in a currency other than USD, we will determine the applicable exchange rate.
+
+9.7 Reporting, Records and Inspection.
+
+Partner shall be obligated to provide Wix a monthly report, within no later than fifteen (15) days from the end of each calendar month. Each such reporting will include full and comprehensive information regarding purchases made by Users, billing and collection (if made by Partner), full details regarding income generated from any advertising through the App and any other information which Wix deems, on a reasonable basis, as relevant to the relationship with Wix under this Agreement.
+
+Partner that uses a usage based billing model component shall be obliged to provide Wix, on a monthly basis, within timelines determined by Wix, accurate usage record of the Apps, for the purpose of usage based fee calculations and invoicing, together with the final calculations of the usage based fee, in the form and scope as determined by Wix. Wix, or a third party on its behalf, may review such usage based fee calculations and an App’s code responsible for such calculations. Partner agrees to cooperate with Wix in the reviewing process and to answer questions and provide information and materials reasonably requested by Wix. In addition, Partner shall comply with the monthly billing limit set by either User or Wix.
+
+​
+
+Partner shall be obligated to keep accurate books of accounts and records covering all transactions with Users.
+
+​
+
+Within no later than thirty (30) days following the end of each calendar year in which a Partner was obligated to pay any amounts to Wix hereunder, such Partner shall provide Wix, upon request of Wix, with a confirmation signed by a publicly certified accountant approving the calculation of the amounts paid to Wix during the related calendar year.
+
+​
+
+Wix shall have the right, once every calendar year, to examine said books of account and records and all other documents and materials in the possession or under the control of the Partner, and to verify the accuracy of all amounts paid by such Partner to Wix. Any such inspection shall be at Wix expense unless such inspection reveals a discrepancy of five percent (5%) or more, in which event Partner shall bear Wix examination expenses, including, without limitation, all accounting, auditing and legal fees and costs, in addition to paying Wix all additional amounts owed.
+
+You are required to provide us with monthly reports within 15 days of the month’s end, which include, among other things, full details regarding Wix users’ purchases, billing and collection (if done by you) and income generated from advertising through your App.
+
+If your App's billing model is based on usage, you must provide us, on a monthly basis, accurate records of usage fee calculations for our review and invoicing. We may also inspect your App's code in regards to such calculations. You must comply with the monthly billing limit set on your App by us or by our Users.
+
+​
+
+Each year you must provide us with a calculation of the amounts you paid us during the calendar year.
+
+​
+
+These documents must be approved by a certified accountant. You must also keep accurate books of accounts and records covering all transactions with Wix users. We may inspect your books and other related documents you hold once every calendar year; the cost of which will be incurred by Wix, unless a discrepancy of 5% or more is detected.
+
+9.8 Right to Change.
+
+Wix shall have the right to cancel or modify the Partner compensation program and/or the revenue sharing method set forth above upon a ninety (90) day prior notice. Partner may choose to terminate this Agreement after such period has elapsed without affecting Wix’s rights under this Agreement during such ninety (90) day period.
+
+We reserve the right to cancel or modify your compensation and/or the revenue sharing method with a 90-day prior notice. If we do so, you have the right to terminate this agreement following the notice period.
+
+10. Partner Warranties
+
+By submitting an App or registering as a Partner, Partner represents, warrants that:
+
+10.1.
+
+Partner has the power and authority to enter into this Agreement and to fully perform all obligations hereunder;
+
+10.2.
+
+The App submitted to Wix, together with all advertising or other materials accessible from or that provide access to such App, complies, and will continue to comply, with all the requirements of this Agreement;
+
+10.3.
+
+Partner is at least 18 years of age (or the age of majority in jurisdiction of residence) on the date the App is submitted by Partner to Wix;
+
+10.4.
+
+Inclusion and offering of the App in the App Market does not and will not violate any agreements to which Partner is a party or of which Partner is otherwise aware, and does not and will not misappropriate or infringe the intellectual property or proprietary rights of any third party;
+
+#ItsThatEasy
+
+By submitting an App or registering as a Partner, there are certain obligations and conditions you need to meet.
+
+Among other things, you need to be of a certain legal age and have the power and authority to enter into and perform this agreement.
+
+You must also ensure that your App and all related materials accessible from your App comply with this agreement and are legal. It cannot infringe on any third party intellectual property or proprietary rights or violate any agreements that you are aware of.
+
+10.5.
+
+Wix’s exercise of the rights Partner grants Wix under this Agreement will not obligate Wix or any of its affiliates or subsidiaries to pay any third party any amounts; and
+
+10.6.
+
+The information Partner provided to Wix under or in connection with this Agreement and as part of the registration to the App Market is true, accurate, current, and complete.
+
+11. Confidentiality
+
+11.1. Confidential Information.
+
+Confidential Information (as defined below) of Wix that Wix may disclose to Partner as a result of Partner’s participation in the App Market may be used by Partner solely for the purpose(s) of performing Partner’s obligations or exercising Partner’s rights under this Agreement. Partner will not disclose any Confidential Information to any individual, entity or other person, except to those of partner's employees who require access to such Confidential Information to perform their obligations under this Agreement or the Wix Terms.
+
+For purposes hereof, “ Confidential Information ” shall mean any proprietary and nonpublic business, marketing, or technical information of Wix, including, without limitation, data, technology, know-how, inventions, discoveries, designs, processes, formulations, models, equipment, algorithms, software programs, interfaces, documents, specifications, information concerning research and development work, and/or trade and business secrets. Confidential Information will also include information disclosed by Wix which relates to current, planned or proposed products, marketing and business plans, forecasts, projections and analyses, financial information, and customer information. In all cases, Wix’s Confidential Information shall include the terms of this Agreement, and any other information that is marked “confidential” or “proprietary” or that given its nature should reasonably be considered to be Confidential Information. Confidential Information may also include Wix Users’ and Wix Users’ website visitors information. Confidential Information shall not include, however, information that Partner can show through documentary evidence is (i) already known to Partner, or is publicly available at the time of disclosure to Partner; (ii) becomes known to the general public after disclosure through no act or omission of the Partner in breach of this Agreement; (iii) is disclosed to Partner by a third party who is not, to the knowledge of Partner, in breach of an obligation of confidentiality; or (iv) was, is or will be independently developed by Partner without use of the Confidential Information.
+
+#ItsThatEasy
+
+You may use confidential information disclosed to you, only in order to perform your obligations or exercise your rights under this agreement. You may disclose such confidential information only to your employees that must access this information to perform their obligations under this agreement. You must always keep confidential information in the strictest confidence.
+
+11.2 Protection of Confidential Information.
+
+Partner shall at all times, either during or after the Term, keep and hold such Confidential Information in the strictest confidence, and shall not use such Confidential Information for any purpose other than as may be reasonably necessary for the performance of its duties under this Agreement.
+
+11.3 Unauthorized Use or Disclosure.
+
+Partner acknowledges that any unauthorized use or disclosure of any Confidential Information may cause irreparable damage to Wix or its licensors or users. If an unauthorized use or disclosure occurs, Partner will promptly notify Wix and take, at Partner’s expense, all steps necessary to recover the Confidential Information and to prevent its subsequent unauthorized use or dissemination, including availing itself of actions for seizure and injunctive relief. If Partner fails to take these steps in a timely and adequate manner, Wix may take them in its own or Partner's name and at Partner's expense.
+
+Unauthorized use or disclosure of confidential information may harm us or our users or licensors. If that happens, you must immediately notify us and take, at your expense, all steps necessary to prevent any subsequent unauthorized use. Otherwise, we may take them on your behalf.
+
+11.4 Partner Information.
+
+Wix shall keep the confidentiality of any information of Partner that is provided to Wix by Partner and which is designated in writing by Partner as confidential at the time of its provision to Wix.
+
+We will keep the confidentiality of any information you provide us that you designate as confidential.
+
+12. Disclaimer, Limitation of Liability, and Defense of Claims
+
+12.1 DISCLAIMER OF WARRANTY.
+
+WIX PROVIDES THE APP MARKET “AS-IS,” “WITH ALL FAULTS,” AND “AS AVAILABLE.” PARTNER BEARS THE RISK OF USING THE APP MARKET. TO THE EXTENT PERMITTED BY APPLICABLE LAW, WIX EXCLUDES ANY IMPLIED WARRANTIES OR CONDITIONS, INCLUDING THOSE OF PRODUCT LIABILITY, MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, WORKMANLIKE EFFORT, AND NON-INFRINGEMENT, RELATING TO THE APP MARKET AND PARTNER PORTAL.
+
+#ItsThatEasy
+
+We make no warranties regarding the Wix App Market. We provide it “as-is” and “with all faults” and you use it at your sole risk and responsibility.
+
+12.2 LIMITATION OF LIABILITY.
+
+PARTNER CAN RECOVER FROM WIX AND ITS AFFILIATES ONLY DIRECT DAMAGES, EXCEPT FOR DAMAGES CAUSED BY NEGLIGENCE OF PARTNER OR NON-COMPLIANCE WITH APPLICABLE LAWS AND REGULATIONS. PARTNER AGREES NOT TO SEEK AND IT WAIVES ANY RIGHT TO RECOVER ANY OTHER LOSSES OR DAMAGES, INCLUDING WITHOUT LIMITATION CONSEQUENTIAL, LOST PROFITS, SPECIAL, INDIRECT, PUNITIVE OR INCIDENTAL DAMAGES WHETHER FORESEEABLE OR UNFORESEEABLE, BASED ON CLAIMS OF PARTNER OR USERS OF ITS APPS (INCLUDING, BUT NOT LIMITED TO, CLAIMS FOR LOSS OF DATA, GOODWILL, PROFITS, USE OF MONEY OR USE OF THE APPS, INTERRUPTION IN USE OR AVAILABILITY OF DATA, STOPPAGE OF OTHER WORK OR IMPAIRMENT OF OTHER ASSETS), ARISING OUT OF BREACH OF EXPRESS OR IMPLIED WARRANTY, BREACH OF CONTRACT, MISREPRESENTATION, NEGLIGENCE, STRICT LIABILITY IN TORT OR OTHERWISE. IN NO EVENT WILL THE AGGREGATE LIABILITY WHICH WIX (OR ITS RELATED PERSONS) MAY INCUR IN ANY ACTION OR PROCEEDING RESULTING FROM OR CONNECTED TO THE RELATIONSHIP CONTEMPLATED HEREUNDER EXCEED AN AGGREGATE TOTAL AMOUNT OF USD 50,000. THE RELATIONSHIP BETWEEN A USER AND PARTNER IS STRICTLY BETWEEN THE USER AND PARTNER, AND WIX IS NOT OBLIGED TO INTERVENE IN ANY DISPUTE ARISING BETWEEN THE USER AND PARTNER. UNDER NO CIRCUMSTANCES SHALL WIX BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, PUNITIVE, EXTRAORDINARY, EXEMPLARY OR OTHER DAMAGES WHATSOEVER, THAT RESULT FROM OR RELATE TO PARTNER’S RELATIONSHIP WITH ANY USER.
+
+We may only be liable for direct damages and only if you were not negligent or didn’t comply with relevant laws. You waive any right to recover any other losses or damages, including indirect, consequential or incidental damages. Furthermore, the total liability we may incur in connection with our relationship is limited to USD 50,000.
+
+12.3 Defense of Claims.
+
+Partner will defend, indemnify and hold harmless Wix and its subsidiaries and affiliates upon Wix’s first request from and against (including by paying any associated costs, losses, damages or expenses and attorneys’ fees) any and all third party claims, including any initiated by a government agency or official: (i) that any App infringes, violates, or misappropriates any proprietary or personal right of a third party, including without limitation infringement of third parties privacy rights; (ii) alleging Partner’s breach of any term of this Agreement (including any documents it incorporates by reference) or any term of an agreement entered into between Partner and the User governing User’s use of the App; (iii) Partner’s gross negligence or wilful misconduct; (iv) relating to the use of or inability to use of the App and/or performance, non-performance or improper performance of the App, including any product liability claims. Wix will notify Partner promptly in writing of the claim and, at Partner’s reasonable request, provide reasonable assistance in defending the claim. Partner will reimburse Wix for any reasonable out-of-pocket expenses incurred in providing such assistance. Partner will not make any settlement or compromise of a claim, or admit or stipulate any fault or liability on Wix part with respect to any claim covered by this section without Wix’s express, prior written consent.
+
+If we get sued or are otherwise placed in harm’s way because you violated third parties’ rights; breached this agreement or as a result of the use of (or inability to use) your App, you will bear the associated costs and damages.
+
+13. Term and Termination
+
+13.1 Term and Termination.
+
+Partner’s participation in the App Market shall commence upon Wix’s acceptance of the Partner’s App and shall end upon providing of a termination notice by either Party in accordance with the provisions of this Section 13 (the “ Term ”). Wix may terminate this Agreement at any time, with or without cause, by giving Partner a thirty (30) days prior written termination notice. Partner may terminate this Agreement at any time, with or without cause, by giving Wix a ninety (90) days prior written notice of termination.
+
+13.2 Effect of Termination.
+
+Termination of this Agreement by any Party will result in the deactivation of Partner’s account with Wix and the removal of all Apps submitted by such Partner to the App Market. Upon termination, Wix shall pay Partner any and all Partner Revenue Share that is payable to Partner on the date of such termination of agreement. Partner shall be obligated, unless otherwise instructed by Wix, to continue to provide all services that existed prior to the termination notice to all existing Users who purchased such services prior the termination notice until the end of their applicable subscription period. In the event Wix instructs Partner to immediately cease providing all services to all existing Users, Wix will refund pro-rata such Users for the subscription fees and any other fees paid by them for services of Partner that have not been provided.
+
+#ItsThatEasy
+
+Your participation in the Wix App Market begins once we accept your App and ends once this Agreement is terminated. We may terminate this Agreement at any time for any reason by providing you with a 30-day notice. You may do the same by providing us with a 90-day notice. However, if you breach this Agreement, we may terminate it immediately and avoid paying you any revenue share amounts still due.
+
+Once this Agreement is terminated, your account will be deactivated; all your Apps will be removed from the Wix App Market and we will pay you any due and payable revenue share. You will still need to serve existing Users until the end of their applicable subscription.
+
+13.3 Termination for Breach.
+
+In the event of a breach of any of the terms of this Agreement or any of the Wix Terms by a Partner, Wix may, at its sole discretion, terminate this Agreement immediately, without prior notification (discontinuing the availability of all Apps submitted by such Partner), and Wix shall be entitled, as part of its remedies for such breach, to forfeit any unpaid Partner Revenue Share amounts, which accrued prior to such termination.
+
+13.4 Survival Clause.
+
+This Section 13.4, Section 11 (Confidentiality) and Section 12 (Disclaimer, Limitation of Liability, and Defense of Claims) will survive any termination or expiration of this Agreement. In addition, any provisions of this Agreement that by their nature are intended to survive, will survive termination.
+
+14. Miscellaneous
+
+14.1 Notices.
+
+All notices provided by a Partner to Wix under this Agreement must be sent to Wix to the following email address: support.developers@in.wixanswers.com .
+
+14.2 Assignment.
+
+Wix shall have the right to assign and transfer this Agreement and/or its rights and obligations hereunder with no limitations. Partner may not assign this Agreement or any rights or obligations hereunder without the prior written consent of Wix; provided, that, Partner may assign this Agreement and its respective rights and obligations hereunder, in connection with any merger, consolidation, reorganization or restructuring, or the sale of substantially all of its assets and shares, provided, that the ultimate parent entity and the successor entity in such transaction assumes all of Partner’s obligations under this Agreement, and provided further that Partner gives at least ten (10) days prior written notice of such assignment to Wix. Notwithstanding anything to the contrary herein, in such event Wix shall have the right to terminate this agreement with immediate effect.
+
+We may assign our rights and obligations to other parties. You may only do so with our prior written consent, unless you assign all your obligations to a single entity in connection with a merger, reorganization or similar transaction. You must provide us with a prior notice, enabling us to terminate the agreement immediately, if we want.
+
+14.3 Amendments and Modifications.
+
+Wix may modify any of the terms and conditions of this Agreement at any time, and at its sole discretion. Notice of any change by e-mail, to Partner’s address as provided to Wix, or posting a change notice, or a new agreement on the Wix Website, shall be considered sufficient notice to Partner of a modification to the terms and conditions of this Agreement.
+
+We may modify this agreement at any time and at our sole discretion. We will notify you of changes via email or by posting a change notice or new agreement on our website.
+
+14.4 Governing Law and Jurisdiction.
+
+This Agreement, and all matters arising out of or relating to this Agreement, will be governed by the laws of the State of Israel without reference to choice of law provisions. The parties expressly exclude the United Nations Convention on Contracts for the International Sale of Goods from application to this Agreement. Any legal action or proceeding relating to this Agreement will be instituted in the courts of Tel Aviv, Israel. The parties agree to submit to the exclusive jurisdiction of, and agree that venue is proper in, such courts in any such legal action or proceeding.
+
+This agreement and our relationship shall be governed by the laws of the State of Israel. Any disputes between us may only be brought before the courts of Tel Aviv, Israel.
+
+14.5 Limitation on Claims.
+
+To the maximum extent permitted by local law, any claim related to this Agreement or to the App Market must be filed within one (1) year of the claimant first becoming aware of the claim. If it is not filed within that time, then the claim is permanently barred.
+
+Subject to applicable law, any claim related to this agreement must be filed within one year from its discovery.
+
+14.6 No Waiver.
+
+A party’s failure to enforce any rights under this Agreement will not be deemed a waiver of the same right on another occasion, or of the right to enforce any other right under this Agreement. Wix’s decision to make an App available on the App Market will not be deemed a waiver of any rights Wix may have under this Agreement.
+
+14.7 Independent Contractors.
+
+The Parties to this Agreement are independent contractors. Neither Wix nor Partner will have any right, power or authority to enter into any agreement for, or on behalf of, or incur any obligation or liability of, or otherwise bind, the other Party, except where the Partner expressly authorizes Wix to act on its behalf in this Agreement. This Agreement will not be interpreted or construed to create an association, agency, joint venture or partnership between the Parties or to impose any liability attributable to such a relationship upon either Party.
+
+If one of us fails to enforce its rights under this agreement once, it will not constitute a waiver of the same right later or of any other right. Offering your App on the Wix App Market does not constitute a waiver of any of our rights.
+
+If one of us fails to enforce its rights under this Agreement once, it will not constitute a waiver of the same right later or of any other right. Offering your App on the Wix App Market does not constitute a waiver of any of our rights.
+
+14.8 Acknowledgement.
+
+PARTNER HAS READ THIS AGREEMENT CAREFULLY AND UNDERSTANDS IT, HAS HAD THE OPPORTUNITY TO CONSULT WITH COUNSEL AND ACCEPT THE OBLIGATIONS, WHICH IT IMPOSES UPON PARTNER WITHOUT RESERVATION. PARTNER HAS ALSO TAKEN INTO ACCOUNT THE LIMITATION OF LIABILITY AND WARRANTY DISCLAIMER PROVISIONS OF THIS AGREEMENT PRIOR TO ACCEPTING THIS AGREEMENT. NO PROMISES OR REPRESENTATIONS HAVE BEEN MADE TO PARTNER TO INDUCE HIM/HER/IT TO ACCEPT THIS AGREEMENT. PARTNER AGREES TO THE TERMS OF THIS AGREEMENT VOLUNTARILY AND FREELY.
+
+You have read and understood this agreement. You voluntarily and freely accept all your obligations under this agreement; after having the opportunity to consult with counsel and after considering the limitation of liability and warranty disclaimer provisions.
+
+Addendum - Additional Terms for Apps Offered to Israeli Users
+
+This addendum to the Agreement (the “Addendum”) applies to Partner if you are offering your App(s) to residents of the state of Israel on the App Market (in this Addendum “an Israeli User”). In case of any contradiction between the Agreement and this Addendum, the terms of this Addendum will govern.
+
+1. License
+
+Section 5.2 to the Agreement shall be replaced with the following:
+
+(a) Partner grants Wix a local (exclusively to Israel) right and license, fully paid-for, for as long as the App is offered to or used by Israeli Users on or through the Wix Website, to sublicense, host, install, use, reproduce, copy, save, format and make the App available to Israeli Users for the purpose of offering Israeli Users the option to use the Partner’s App. Wix will act as a reseller of the App to Israeli Users.
+
+2. Liability
+
+Section 7.1 to the Agreement shall be replaced with the following:
+
+(a) Partner acknowledges that Wix, as the reseller of the Apps to Israeli Users, assumes primary responsibility for the provision of the Apps and related services to Israeli Users. Notwithstanding the foregoing, Partner shall have the ultimate responsibility towards Wix (on a back-to-back basis) for (i) all content of such App (including use of any patents, registered designs, design rights, trademarks, trade and business names, copyright and related rights, logos and icons) is properly licensed and (ii) the development, proper operation and maintenance of the App meets the standards required by Wix; (iii) damages caused to Wix users or other third parties derived from the use of the App.
+
+(b) Partner also acknowledges and agrees that Wix assumes the liability and responsibility for the functionality of the Partner’s App offered on the App Market to Israeli Users. As such, Partner undertakes to fully support and indemnify Wix in fulfilling all its obligations to Israeli Users, and to provide Wix with all necessary assistance to enable Wix to service Israeli Users as needed.
+
+3. Support
+
+(a) Partner acknowledges and agrees that Wix may offer support services to Israeli Users. Partner undertakes to assist Wix in providing such support to any Israeli User requiring any assistance in operating the Partner’s App, or in case Israeli Users wish to make a complaint regarding Partner's App.
+
+(b) Partner agrees to provide timely and adequate responses and information to Wix regarding any issues, updates, or changes to the App that may affect Israeli Users, and to resolve any technical or operational issues that may arise, enabling Wix to fulfill its obligations as a reseller to Israeli Users.
+
+bottom of page
+
+Wix is a website builder and domain registrar that gives any business or individual the freedom to build a professional website, register a domain name or do both all in one place. By combining design tools, domain registration and business solutions in one AI-powered platform, Wix makes it easy for anyone to create without limits and scale confidently online.
+About
+Contact Us
+
+Product
+Website Builder
+AI Website Builder
+Website Templates
+Website Design
+Web Hosting
+Landing Page Builder
+Domain Registration
+WHOIS Lookup
+Domain Name Search
+Base44
+Wix Studio
+Mobile App Builder
+
+Solutions
+Business website
+Online Store Builder
+eCommerce Website
+Portfolio Website
+Blog Website
+Business Software
+Business email
+Free Business Tools
+Point of Sale
+Online Booking
+Logo Maker
+Wix University
+
+Resources
+Wix Blog
+Privacy and Security Hub
+SEO Learning Hub
+Wix Website Features
+App Market
+Website Accessibility
+
+Support
+Help Center
+Hire a Professional
+Report Abuse
+System Status
+
+Company
+Channel Partnerships
+Press & Media
+Investor Relations
+Wix Ventures
+Accessibility Statement
+Patent Notice
+Sitemap
+Careers
+
+Terms of Use
+Privacy Policy
+
+© 2006-2026 Wix.com, Inc

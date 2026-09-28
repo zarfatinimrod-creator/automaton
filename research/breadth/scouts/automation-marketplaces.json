@@ -1,0 +1,385 @@
+{
+ "family": "automation-marketplaces",
+ "prior_coverage": "Heavily swept before. Apify: store-promotion, agent-markets, productized-services and distribution audits on 3.9, then the 7.9 board. The line `apify-actors` is committed at ₪200 as a ₪0 instrument (REJECTED.md:1293, BOARD.md:99). A second Actor is gated at 50 stranger users and pricing at 200 (BOARD.md:86, BOARD.md:328). The niche is occupied by parseforge, bovi, lentic_clockss (33 sources) and swerve (REJECTED.md:343-351, 455-474; audits/agent-markets.md:97-109). Splitting the generic CKAN Actor into per-dataset listings was judged substitution (audits/agent-markets.md:232-247). Ranking rests on prior success (REJECTED.md:1113). RapidAPI: scout agent-markets--rapidapi.md (3.9) put it at ₪0-800. The store-promotion audit cut it to ₪500, with ₪0 for 90 days (REJECTED.md:324-326). The paid-apis line died on 7.9 (REJECTED.md:1221-1228). n8n, Zapier, Make and HubSpot were covered in scouts/distribution--partnerships-integrations.md:31-62 (4.9): n8n had no creator payment, Zapier needs 50 users, Make needs a partnership agreement. Hugging Face and Replicate were covered in scouts/agent-markets--inference-hosting.md:84-100 (3.9): no creator payout. MCP registries, Smithery and x402 are rejected (REJECTED.md:281-282; INCOME_PLAN.he.md:267). New this sweep: API-driven Apify publishing (github); statistics computed from the already-rendered Apify Store capture (815 Actors); n8n paid templates with a purchaseUrl (snippet) and in-product template discovery (github); MCPize and AgenticMarket (snippet). Pipedream, Postman and Val Town were never covered, and no evidence of creator payouts was found for them (grade none).",
+ "searches_used": 6,
+ "candidates": [
+  {
+   "venue": "Apify Store: a fleet of distinct-source pay-per-event Actors on one brand account",
+   "url": "https://apify.com/store",
+   "what_we_would_list": "The one Actor already built (data.gov.il CKAN wrapper) plus 6-10 net-new Actors, each on a genuinely distinct Israeli public source or job. Candidates: Knesset OData (bills, votes, committee sessions, MKs); Bank of Israel SDMX series; CBS series and CPI indexation; Israel Land Authority tenders; the Ministry of Health drug registry; gov.il dynamic-collector publications and decisions; election results; a vehicle-by-plate join across the data.gov.il MOT resources; bulk validation of Israeli ID (ת״ז) checksums, phone numbers and bank/branch formats, reusing products/x402-il-api/src/israeli.ts. Left out because they are occupied: supermarket prices (swerve, plus a free daily Kaggle dump), the companies registrar (parseforge, bovi) and real estate (alinz). The honest count is therefore about 7-11 Actors, one per distinct source (growth.ts:279 STORES_PER_DISTINCT_DATASET=1; checkHonestStorePlan growth.ts:301). Each listing states that its source is free (BOARD.md:316) and links nowhere off-platform (Store terms §2.2.4.2(i)).",
+   "existing_product": "products/apify-il-open-data: built and tested, unpublished. It waits on owner step 6a (logs/CHANNEL_LOOP.md:106).",
+   "listings_per_owner_step": "One Apify account (step 6a) covers unlimited Actors. Each extra listing costs zero owner clicks, because publishing is an API call (see the programmatic gate). One more one-time step, KYC with an ID photo plus PayPal or Wise, unlocks pricing and payout for every Actor at once.",
+   "prior_verdict": "ALIVE but capped. `apify-actors` is committed at ₪200, with ₪1,500 as a contested upper bound (REJECTED.md:1293; INCOME_PLAN.he.md:247 'first payment estimated at month 9'). A second Actor, KYC and pricing are gated at 50/50/200 stranger users in 30 days (BOARD.md:328). The niche is occupied (REJECTED.md:343-351, 463-474). Per-dataset splitting was ruled substitution (audits/agent-markets.md:232-247). Maintenance is about 2 h per week per Actor (portfolio.ts:63-65).",
+   "reopen_basis": "There is no evidence that the occupancy finding is false. The 28.9 breadth directive changes which plan shape is preferred, not the evidence. Three new facts bear on the fleet question, and the board (Fable) should rule on them. (1) github: publishing needs no Console click. apify-api/openapi/paths/actors/acts@{actorId}.yaml says: 'To make your Actor public: Set `isPublic` to `true`. Provide `title` and `categories`.' UpdateActorRequest.yaml also carries `pricingInfos`. So PUBLISH.md:39 and README.md:150 overstate the owner's work, and N free listings cost the owner nothing beyond step 6a. (2) rendered: fleet creators in the stored Store capture get users. unseenuser has 37 Actors at a median of 24 users per 30 days; memo23 has 24 at 20.5; automation-lab has 22 at 6; gio21 has 13 at 1. (3) snippet: Apify's own post says '$1M paid to creators in a single month. A year ago: $222K.' The case to put to the board is to publish the 6-10 distinct-source Actors free in parallel as one wider measurement (N=8 instead of N=1). The per-Actor pricing and KYC gates would stay as ruled.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Store Publishing Terms (raw apify-docs, fetched this session). No direct fees. Apify keeps 20% of user fees, and platform usage costs are deducted from fees (§10.2.1), so the cost comes out of sales. The account is free and a free Actor needs no payment (PUBLISH.md). Risks: a negative-profit Actor has its payout zeroed for the month (portfolio.ts:77); our own test runs must stay inside the free plan's monthly credit.",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "PASS",
+    "evidence": "monthly-payouts.mdx (raw apify-docs). An individual's KYC is 'Provide the full name that matches your legal ID card' and 'Upload a clear, high-resolution photo of your ID card or driver's license'. No selfie, liveness check or video is named, and the verification provider is not named. Payout is PayPal or Wise at a $20 minimum, other methods at $100, invoiced on the 11th. The Store terms name no excluded country (audits/agent-markets.md:250-253). Open: whether the provider triggers a liveness check, and whether the legal name shows on the Verified Creator profile (audits/agent-markets.md:408-413). Both are confirmed only at KYC, which is needed only for pricing.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "The Apify API's Update Actor operation publishes to the Store with isPublic=true plus title and categories. The schema also carries pricingInfos. `apify push` from CI creates and builds the Actor (.github/workflows/apify-publish.yml). The whole create-build-publish cycle is API-driven, with no per-item owner click.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "The Store Publishing Terms contain no clause about AI-generated or automated content. They forbid copying another creator's code or README (§2.2.3), off-platform promotion (§2.2.4.2(i)) and fake or incentivised reviews (§2.2.4.2), and Apify may unpublish at its discretion (§2.2.4.3). The $1M Challenge terms disqualify 'too many low-quality or spammy Actors' (audits/agent-markets.md:238-240), so the fleet must stay at one Actor per distinct source.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "research/rendered/apify-store-accessibility.json (api.apify.com/v2/store?search=accessibility, captured 2026-09-22): 815 of 1,499 results. 798 are PAY_PER_EVENT. Median users in 30 days is 2; 695 Actors have at least 1 user, 200 have at least 10, 87 have at least 50. 674 are whitelisted for agentic payments. Snippet: Apify reports $1M paid to creators in one month, up 5x in a year (x.com/apify/status/2054547299485745273). The capture is a search sample, not a random one, and it has no Actor creation date, so cold start cannot be isolated from it.",
+    "grade": "rendered"
+   },
+   "discovery_needs_prior_sale": "No sale is needed, but Store ranking correlates with a quality score whose Popularity and History-of-success categories cannot move on day one (REJECTED.md:308-315, 800-802; audits/agent-markets.md:77-80). A new Actor is disadvantaged, not invisible: in the rendered sample 85% of pay-per-event Actors had at least one user in 30 days. Actors also reach agents through Apify's MCP search-actors tool, but agentic payments require the developer's KYC (_agentic-payments-eligibility.mdx).",
+   "owner_step": "Step 6a, already on the checklist: Apify sign-up with the brand username and APIFY_TOKEN as a GitHub secret. The per-Actor 'Publish to Store' click can be dropped, since CI can call the API. Later, and only when the board's stranger-user gate fires: KYC with an ID photo and PayPal or Wise details, once for all Actors.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 900,
+   "estimate_basis": "INFERENCE. Low: ₪0 if no stranger finds the Israeli niche (constraint 7; the competitors' user counts have not been rendered). High: 8 priced Actors × 2-8 users per month (rendered median 2; the board's base rate is 8.7 users per Actor, audits/agent-markets.md:186) × $1-4 per user per month × 80%, minus platform usage (data.gov.il needs no proxy, so usage is low) ≈ $15-200 per month, plus one breakout Actor, is about ₪900 at most. Net of the PayPal-fee VAT (18%) and 5-9% FX drag. It rests on pricing being allowed, which today requires 200 stranger users (BOARD.md:328).",
+   "time_to_first_sale": "Listed free on day 0 after step 6a; stranger usage is readable within 30 days. Pricing needs KYC plus the board gate, and a price change takes effect after 14 days (§9.4). The first $20 PayPal payout is invoiced on the 11th. A realistic first ledger entry is month 3 at best and month 9 by the prior audit (audits/agent-markets.md:198-200). A balance under $20 is forfeited after 12 months (§10.3.2).",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://api.apify.com/v2/store?search=israel&limit=1000",
+    "https://api.apify.com/v2/store?search=hebrew&limit=1000",
+    "https://api.apify.com/v2/store?search=data.gov.il&limit=1000",
+    "https://api.apify.com/v2/store?sortBy=newest&limit=1000",
+    "https://raw.githubusercontent.com/apify/apify-docs/master/sources/platform/actors/monetizing/monthly-payouts.mdx",
+    "https://raw.githubusercontent.com/apify/apify-docs/master/apify-api/openapi/paths/actors/acts@{actorId}.yaml",
+    "https://raw.githubusercontent.com/apify/apify-docs/master/sources/legal/latest/terms/store-publishing-terms-and-conditions.md"
+   ]
+  },
+  {
+   "venue": "RapidAPI Hub (Nokia): multi-home the colony's Israeli utility and data endpoints",
+   "url": "https://rapidapi.com/hub",
+   "what_we_would_list": "Freemium API listings (a free tier of about 1,000 requests plus Pro at about $20) for the endpoints already written in products/x402-il-api: ת״ז checksum, Israeli phone validation, bank/branch format, Hebrew date, transliteration. A data.gov.il English-keyed wrapper could be added. This is about 2-3 honest APIs, not a fleet. A competitor, appaio/israel-company-data, already exists (audits/agent-markets.md:103).",
+   "existing_product": "products/x402-il-api: 6 endpoints and openapi.yaml, 37 tests. It is not stated to be deployed. It needs a ₪0 origin host and a check of the X-RapidAPI-Proxy-Secret header.",
+   "listings_per_owner_step": "One RapidAPI account plus one PayPal account covers many APIs. The PayPal account could be shared with Apify's payout.",
+   "prior_verdict": "Survived the store-promotion audit at ₪500 with ₪0 for 90 days (REJECTED.md:324-326). The `paid-apis` line was killed on 7.9 because marketplace subscriptions were never measured (REJECTED.md:1221-1228). The constitutional test 'never sell what is already free' killed `agent-services` (REJECTED.md:1236-1240).",
+   "reopen_basis": "Not reopened as a line. The only new fact is programmatic listing: the RapidAPI/create_or_update_rapidapi_listing GitHub Action creates or updates a public-Hub listing from an OpenAPI spec through the Platform API (github, 2023 vintage). That supports it only as a free add-on storefront for the breadth directive, once a ₪0 origin exists.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Listing is free. The 25% marketplace fee plus PayPal's payout fee (2%, capped at $20) come out of sales (snippet, docs.rapidapi.com/docs/payouts-and-finance; agent-markets--rapidapi.md E1/E3). The condition is that the origin runs on a free host.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "'RapidAPI currently only pays out API providers via PayPal' (audits/store-promotion.md:241-242). PayPal Israel withdraws in ILS, verifies identity with a teudat zehut or passport (scouts/payment-rails--paypal-israel.md:159-160), and charges 18% VAT on its fees since 6.7.2026. Not verified: whether PayPal Israel's KYC has a selfie step, RapidAPI's country list, and W-8BEN.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "The README of RapidAPI/create_or_update_rapidapi_listing says it will 'onboard new APIs onto RapidAPI Hub or Enterprise Hub' from an OpenAPI spec, given an owner_id and a Platform API key. Setting pricing plans through the API is UNKNOWN.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "The scout rated the ToS GREEN: listing your own API is the intended use (agent-markets--rapidapi.md F1). No AI clause was found. Honesty caveat: the endpoints are thin wrappers over free logic and data.",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Nokia's press figures: 4M developers, 40k+ APIs (snippet, 2024). A rendered second-hand assessment says spam and clutter reduce a new listing's discoverability (agent-markets--rapidapi.md E1). The only 2026 anecdote is one API with recurring customers by its second month.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. Hub ranking signals (popularity, latency, subscribers) are not documented anywhere we could read; the scout says cold-listing traffic is unquantified (agent-markets--rapidapi.md, dead end 4).",
+   "owner_step": "New: a RapidAPI account under the brand, and a PayPal Business account in the owner's legal name (one-time KYC). PayPal can be shared with Apify's payout.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 300,
+   "estimate_basis": "INFERENCE. One $20 Pro subscription nets about ₪45 after the 25% fee, PayPal and VAT (agent-markets--rapidapi.md F1). A plausible 0-6 subscriptions across 2-3 niche APIs gives ₪0-300. The audited cap is ₪500, and the pre-Nokia per-provider figures are not used.",
+   "time_to_first_sale": "Listing takes days. The first paid subscription is unmeasured. The audit says ₪0 for at least 90 days and adds a documented payout lag of about 60 days: a first ledger entry around month 4-6 at best.",
+   "verdict": "WEAK",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://docs.rapidapi.com/docs/payouts-and-finance",
+    "https://rapidapi.zendesk.com/hc/en-us/articles/11432098898580-What-payment-methods-are-available-for-payouts",
+    "https://rapidapi.zendesk.com/hc/en-us/articles/17777288883988-API-Provider-Payout-Schedule",
+    "https://rapidapi.com/search/israel"
+   ]
+  },
+  {
+   "venue": "n8n template library: paid templates sold through a Gumroad purchaseUrl",
+   "url": "https://n8n.io/workflows/",
+   "what_we_would_list": "n8n workflow templates for Israeli-specific automations: data.gov.il or government-tender alerts; bulk validation of Israeli IDs, phones and bank details; Hebrew-date scheduling; VAT-file preparation steps that call the pcn874 validator. Three free templates come first, because the paid option reportedly unlocks after 3 submissions. The paid templates would then carry a Gumroad purchaseUrl on the existing ILS rail. Realistically 3-8 honest templates.",
+   "existing_product": "None as n8n JSON. The building blocks exist: products/apify-il-open-data, products/x402-il-api/src/israeli.ts, products/pcn874.",
+   "listings_per_owner_step": "One new n8n creator account covers many templates. Payment rides the Gumroad account that is already owner step 3.",
+   "prior_verdict": "Scout 4.9: 'n8n is working on a creator program… No stated payment to creators today' (distribution--partnerships-integrations.md:44-47). The verified community node was noted as a portal submission with no measured ceiling and no buyer (REJECTED.md:796-798). Never evaluated as a paid-template venue.",
+   "reopen_basis": "New. Snippets: some community templates are paid, with 'price and purchaseUrl fields carrying the listed price and checkout link'; 'A paid option is only available once you have submitted 3 templates'; n8n.io/workflows lists 12,572 workflows. Github: the n8n editor and its AI workflow builder query https://api.n8n.io/api/templates/search with a `price` parameter (packages/@n8n/ai-workflow-builder.ee/src/tools/web/templates.ts), so templates are discovered inside the product itself.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Submitting a template is free, and the sale happens on Gumroad, which takes a commission from each sale. No fee to n8n was found.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "PASS",
+    "evidence": "The money never passes through n8n: the purchaseUrl goes to Gumroad, which pays in ILS (products/README.md: Gumroad 'lists Israel | ILS'). That is already owner step 3. The absence of a camera step in Gumroad's own onboarding is assumed by the checklist, not re-verified here.",
+    "grade": "repo"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Submission goes through the Creator Hub portal, and 'actual decisions are made by the n8n review team' for each template (snippet). No submission API was found in n8n-io/n8n-docs or n8n-io/n8n. Whether an agent may operate the portal is unknown. The Gumroad side is API-driven.",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The Creator Hub guidelines were not rendered. The only mention is of an AI tool that checks templates against the February 2026 guidelines.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "n8n.io/workflows shows 12,572 community workflows (snippet). Templates are shown inside the n8n editor and its AI builder (github: templates.config.ts, editor-ui urls.ts). The paid share and the purchase volume are UNKNOWN.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "No sale is needed, but there is a human review per template and the paid option reportedly unlocks only after 3 accepted templates. Gallery ranking is unknown. Gumroad's own Discover requires a prior sale (REJECTED.md:1111), but here the buyer arrives from n8n, not from Discover.",
+   "owner_step": "New: an n8n creator account under the brand, one-time. Nothing new for payment, since Gumroad is step 3.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 300,
+   "estimate_basis": "INFERENCE. No data on paid-template sales exists. Assuming 3-5 paid templates at $9-29 and 0-4 sales a month in total, net of Gumroad's commission, gives ₪0-300.",
+   "time_to_first_sale": "3 free templates must be accepted first. Review time is unknown, then the paid listing is reviewed too. Gumroad pays out on its own cycle. A first ledger entry around month 2-4 if anything sells.",
+   "verdict": "WEAK",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://api.n8n.io/api/templates/search?rows=100&page=1",
+    "https://n8n.io/creators/",
+    "https://community.n8n.io/t/change-the-price-of-one-of-my-paid-templates/52125",
+    "https://raw.githubusercontent.com/n8n-io/n8n-docs/main/docs/reusable-content/.gitbook/includes/workflows/templates/submit-templates.md"
+   ]
+  },
+  {
+   "venue": "Zyla API Hub (and APILayer marketplace) as secondary API storefronts",
+   "url": "https://zylalabs.com/monetize-your-api",
+   "what_we_would_list": "The same 2-3 Israeli utility APIs as on RapidAPI, from one origin.",
+   "existing_product": "products/x402-il-api (not deployed).",
+   "listings_per_owner_step": "One account each; unlimited APIs on Zyla. Each APILayer API is approved individually.",
+   "prior_verdict": "Scout-level only (agent-markets--rapidapi.md F2/F3, 3.9). Zyla: 80/20 split, PayPal only, 60-day hold, and 0% of the month's revenue below 95% uptime. APILayer: 85/15, individuals may apply, human approval per API, Israel payout UNKNOWN. Folded into the `paid-apis` kill (REJECTED.md:1221-1228).",
+   "reopen_basis": "None. Nothing new was found this sweep.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "'Publishing unlimited APIs is free; no upfront cost' (agent-markets--rapidapi.md E6).",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Zyla pays by PayPal only, with a 60-day hold, processed on the 20th-30th. APILayer pays individuals by bank transfer with no country list. The PayPal Israel camera question is open as for RapidAPI.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "No listing API was found for either. APILayer approves each API by hand.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Terms not rendered.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "The scout found no evidence at all of provider earnings, buyer volume or new-listing traffic for Zyla (agent-markets--rapidapi.md F2).",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "New accounts on each hub, plus PayPal (shared).",
+   "ils_month12_low": 0,
+   "ils_month12_high": 100,
+   "estimate_basis": "INFERENCE. A smaller hub than RapidAPI with no buyer data. The 95% uptime rule makes a month's revenue zero on any outage.",
+   "time_to_first_sale": "At least 3 months after a first sale because of the 60-day hold, and no first sale is in sight.",
+   "verdict": "WEAK",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://zylalabs.com/monetize-your-api",
+    "https://zylalabs.com/terms",
+    "https://marketplace.apilayer.com/docs/article/provider-faq"
+   ]
+  },
+  {
+   "venue": "MCPize / AgenticMarket (paid MCP-server marketplaces)",
+   "url": "https://mcpize.com/developers",
+   "what_we_would_list": "products/mcp-il-tools as a paid hosted MCP server.",
+   "existing_product": "products/mcp-il-tools (not on npm yet).",
+   "listings_per_owner_step": "One account covers many servers.",
+   "prior_verdict": "MCP registries were rejected with a ₪300 ceiling and no payment rail (REJECTED.md:282). Smithery was rejected for charging $30 a month and paying nothing (INCOME_PLAN.he.md:267). MCPize and AgenticMarket were never evaluated.",
+   "reopen_basis": "New snippets: MCPize (launched early 2026) pays an 80-85% revenue share 'through Stripe Connect on a monthly cycle'; AgenticMarket pays 80-90%. That does not reopen it: the Stripe rail fails for Israel.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Not rendered.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "MCPize pays via Stripe Connect (snippet). research/measurements/stripe-israel.md, rendered: Israel is not a Stripe account country (Q1), and Connect cross-border payouts exclude Israel. AgenticMarket's payout rail is UNKNOWN.",
+    "grade": "rendered"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Not rendered.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not rendered.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "New marketplaces with no buyer numbers. A vendor blog projects '$500-5,000/month', which is marketing, not data.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "An account plus Stripe Connect onboarding, which an Israeli individual cannot complete.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Payout rail closed for Israel.",
+   "time_to_first_sale": "Never on the current rail.",
+   "verdict": "DEAD",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://mcpize.com/developers",
+    "https://mcp-marketplace.io/blog/state-of-mcp-monetization-2026"
+   ]
+  },
+  {
+   "venue": "Make.com (Apps Marketplace, templates, partner programme)",
+   "url": "https://www.make.com/en/templates",
+   "what_we_would_list": "Nothing sellable. Templates are free, and a custom app for Israeli data would be the only possible listing.",
+   "existing_product": "none",
+   "listings_per_owner_step": "Not applicable: the listing needs a signed partnership.",
+   "prior_verdict": "Scout 4.9: posting apps to the Make Apps Marketplace requires 'an active Make Partnership Agreement'; each submission is accepted or rejected at Make's sole discretion; only services not already covered by a built-in app are accepted (distribution--partnerships-integrations.md:57-62). Classed as partner-agreement listings, AMBER, do not build.",
+   "reopen_basis": "None.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Not rendered.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "No mechanism that pays creators for templates or apps was found.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "A partnership agreement with Make's partner organisation plus discretionary review is a human contract, not self-serve.",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not rendered.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "Make has users, but none of them pay a creator through Make.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "Not applicable.",
+   "owner_step": "A partner contract, which the mission forbids.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "No payment rail to creators.",
+   "time_to_first_sale": "Never.",
+   "verdict": "DEAD",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://developers.make.com/custom-apps-documentation/apps-marketplace/terms-and-conditions",
+    "https://developers.make.com/custom-apps-documentation/app-review/overview"
+   ]
+  },
+  {
+   "venue": "Zapier (public integration directory and templates)",
+   "url": "https://zapier.com/apps",
+   "what_we_would_list": "Nothing sellable. A public integration would only be a funnel.",
+   "existing_product": "none",
+   "listings_per_owner_step": "Not applicable.",
+   "prior_verdict": "Scout 4.9: a public integration needs 10 published Zap templates, 50 active users, a 90-day public beta and staff review. It is a 'directory listing gated on installed-base', worth ₪0 as acquisition for a new entrant (distribution--partnerships-integrations.md:50-56, 98-103).",
+   "reopen_basis": "None.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Not rendered.",
+    "grade": "none"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "Zapier pays integration or template authors nothing, so there is nothing to pay out.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "A 50-active-user gate plus staff review against a checklist.",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not rendered.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "Zapier's users do not pay creators.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "Yes, in effect: 50 active users before the listing.",
+   "owner_step": "Not applicable.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "No creator payment.",
+   "time_to_first_sale": "Never.",
+   "verdict": "DEAD",
+   "rank_in_family": 7,
+   "primary_urls_to_render": [
+    "https://docs.zapier.com/integrations/publish/integration-publishing-requirements"
+   ]
+  },
+  {
+   "venue": "Hugging Face Spaces, Replicate, Pipedream, Postman Public API Network, Val Town",
+   "url": "https://huggingface.co/spaces",
+   "what_we_would_list": "Nothing sellable.",
+   "existing_product": "none",
+   "listings_per_owner_step": "Not applicable.",
+   "prior_verdict": "Scout 3.9: 'Neither Hugging Face nor Replicate is an income platform for a model/Space author. Every documented money flow points from the account holder to the platform' (agent-markets--inference-hosting.md:91-100; HF docs rendered from huggingface/hub-docs; Replicate revenue share: 'six searches found no source either way'). Pipedream, Postman and Val Town were never covered.",
+   "reopen_basis": "None. No evidence of a creator payout programme on any of the five was found, and none was searched for beyond the prior sweep.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Hosting is paid by the account holder: always-on GPU Spaces cost about $576 a month (agent-markets--inference-hosting.md).",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "No payout mechanism exists in HF's docs. For Replicate, Pipedream, Postman and Val Town no payout mechanism was found (grade none for those four).",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Publishing is self-serve (HF, Postman, Val Town), but it lists nothing that is sold.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not relevant without a sale.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "FAIL",
+    "evidence": "Their users pay the platform, not the creator.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "Not applicable.",
+   "owner_step": "Not applicable.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "No creator revenue mechanism.",
+   "time_to_first_sale": "Never.",
+   "verdict": "DEAD",
+   "rank_in_family": 8,
+   "primary_urls_to_render": [
+    "https://replicate.com/docs/topics/billing",
+    "https://pipedream.com/docs/",
+    "https://www.postman.com/legal/terms/"
+   ]
+  }
+ ]
+}

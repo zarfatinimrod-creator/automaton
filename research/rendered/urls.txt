@@ -290,3 +290,22 @@ https://docs.crazygames.com/requirements/intro/	crazygames-requirements-intro
 https://docs.crazygames.com/requirements/quality/	crazygames-requirements-quality
 # ZERO-TESTS.md row 24 — CrazyGames (6), after row 11.
 https://docs.crazygames.com/requirements/ads/	crazygames-requirements-ads
+# research/channel-loop/ZERO-TESTS.md row 25 — step 2 cost: Bituach Leumi's own page on who is exempt (28.9.2026).
+https://www.btl.gov.il/Insurance/National%20Insurance/Pages/%D7%9E%D7%99%20%D7%A4%D7%98%D7%95%D7%A8%20%D7%9E%D7%AA%D7%A9%D7%9C%D7%95%D7%9D%20%D7%93%D7%9E%D7%99%20%D7%91%D7%99%D7%98%D7%95%D7%97%20%D7%9C%D7%90%D7%95%D7%9E%D7%99.aspx	btl-who-is-exempt
+# research/channel-loop/ZERO-TESTS.md rows 26-27 — CrazyGames pages the tick-4 reading named (28.9.2026).
+# ZERO-TESTS.md row 26 — CrazyGames (6), after rows 22-24.
+https://docs.crazygames.com/resources/basic-launch-metrics/	crazygames-basic-launch-metrics
+# ZERO-TESTS.md row 27 — CrazyGames (6), after rows 22-24.
+https://docs.crazygames.com/requirements/gameplay/	crazygames-requirements-gameplay
+# research/channel-loop/ZERO-TESTS.md row 28 — Wix App Market (11): the security-test evidence the agreement requires (tick 4, 28.9.2026).
+https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice	wix-security-best-practice
+# research/channel-loop/ZERO-TESTS.md rows 29-32 — Superteam Earn's four ₪0 tests (RULING-2026-09-28-bounty-rail.md §6.3, 28.9.2026).
+# Rows 29 (T1, a weekly CI count with the brand agent's key) and 31 (T3, a code read via add_repo) are not page renders and are not listed here.
+# ZERO-TESTS.md row 30 — Superteam Earn (15), T2: the agent page.
+https://superteam.fun/earn/agents/	superteam-earn-agents
+# ZERO-TESTS.md row 30 — Superteam Earn (15), T2: the Superteam Earn FAQ.
+https://docs.superteam.fun/the-superteam-handbook/community/faqs/superteam-earn-faq	superteam-earn-faq
+# ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Bits of Gold, for its onboarding requirements (REJECTED.md:615).
+https://www.bitsofgold.co.il/en	bitsofgold-home
+# ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Bit2C, for its onboarding requirements.
+https://bit2c.co.il/	bit2c-home

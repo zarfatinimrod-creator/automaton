@@ -18,8 +18,6 @@ Free, MIT, no account, no key, no network calls. Everything runs locally.
 }
 ```
 
-Known defect, to fix before publishing: launched through `npx` (or any `node_modules/.bin` link), the server exits silently without answering. The start guard at the end of `src/server.ts` compares `import.meta.url` with the unresolved symlink path in `process.argv[1]`. `node dist/server.js` works.
-
 Registry name: `com.mehudak/il-tools` (planned, not listed yet: the listing waits on the domain, owner step 5, and the GitHub organisation, owner step 7).
 
 ## Tools
@@ -29,7 +27,7 @@ Registry name: `com.mehudak/il-tools` (planned, not listed yet: the listing wait
 | `validate_israeli_id` | Is this teudat zehut valid? Pads to nine digits first (IDs with dropped leading zeros are common, and the check digit needs all nine). |
 | `validate_israeli_phone` | Is this number valid, and is it mobile, landline, VoIP, toll-free (1-800), national-rate (1-700) or premium (1-900)? |
 | `validate_israeli_bank` | Is this bank code, branch and account plausible, and which bank is it? |
-| `hebrew_date` | What is this Gregorian date in the Hebrew calendar, and is it a Hebrew leap year? Known defect: on a machine west of UTC it currently returns the previous Hebrew day. |
+| `hebrew_date` | What is this Gregorian date in the Hebrew calendar, and is it a Hebrew leap year? |
 | `transliterate_hebrew` | Latin transcription of Hebrew text, a starting point for slugs and filenames: it keeps spaces and turns א and ע into an apostrophe. Approximate by design. |
 
 Each returns JSON. Invalid input comes back as a result explaining why, not an exception —

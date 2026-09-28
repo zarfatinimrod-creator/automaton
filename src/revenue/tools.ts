@@ -30,6 +30,7 @@ import {
 } from "./ledger.js";
 import { agorotFromIls, formatIls } from "./money.js";
 import { renderOrgChart } from "./org.js";
+import { policyForLine } from "./portfolio.js";
 import { runBoardReview, runLedgerSync, requestBoardReview } from "./heartbeat.js";
 import { decideLine, describeDecision } from "./rules.js";
 import { getRevenueStatus } from "./status.js";
@@ -121,7 +122,7 @@ export function createRevenueTools(): AutomatonTool[] {
         const line = getLine(ctx.db.raw, str(args, "line_id"));
         if (!line) return `Error: no revenue line "${str(args, "line_id")}".`;
         const metrics = computeLineMetrics(ctx.db.raw, line);
-        const decision = decideLine(line, metrics);
+        const decision = decideLine(line, metrics, policyForLine(line.id));
         const kpis = latestKpis(ctx.db.raw, line.id);
         const ledger = listLedger(ctx.db.raw, { lineId: line.id, limit: 10 });
         const reviews = listReviews(ctx.db.raw, { lineId: line.id, limit: 5 });

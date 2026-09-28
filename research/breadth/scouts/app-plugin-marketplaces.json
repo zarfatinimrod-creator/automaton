@@ -1,0 +1,388 @@
+{
+ "family": "app-plugin-marketplaces",
+ "prior_coverage": "Most of this family was already swept, and I have not reopened any of those verdicts without new evidence. (1) The 4.9 plugin-ecosystems group ran 8 scouts: chrome, figma, notion, obsidian-raycast, shopify, wordpress, ide-plugins (JetBrains/VS Code) and chat-app-directories (Slack/Discord/Telegram). Only WordPress.org with a paid Pro tier survived, audited down to ₪0-200/month (docs/REJECTED.md:685-731). Obsidian was rejected on a measured listing cohort: the newest plugins have a median of 27 users (research/colony-sweep/groups/plugin-ecosystems.md:61-80,150). Chrome is dead: the portfolio is banned outright and a single extension is ranked by install count (REJECTED.md:272-273). Figma is dead on discovery (REJECTED.md:287). Raycast, Discord and Figma sellers are rejected (docs/INCOME_PLAN.he.md:267; REJECTED.md:1389-1391). VS Code has no commerce (scouts/plugin-ecosystems--ide-plugins.md §7). The dev-extensions line was killed (REJECTED.md:1254-1261). (2) Shopify is parked: payouts to Israel UNKNOWN, Payoneer reportedly not accepted, selfie KYC (REJECTED.md:295-298,1399; INCOME_PLAN.he.md:267). A third-party copy also cites a $19 registration fee, which fails the ₪0 rule (scouts/plugin-ecosystems--shopify-apps.md:40). (3) Atlassian was killed on a support-response SLA, snippet grade (research/colony-sweep/SWEEP-2.md:303). monday.com ranks apps on ratings, snippet grade (SWEEP-2.md:304). HubSpot requires 3 active installs before it will list an app (groups/distribution.md:163). Slack requires 5 installed workspaces (scouts/plugin-ecosystems--chat-app-directories.md:124). (4) Wix App Market is board candidate 11, NEEDS_MORE after tick 3 (research/measurements/wix-app-market.md; logs/CHANNEL_LOOP.md:124). Freemius has been rendered as a usable Israeli rail (research/measurements/freemius-rail.md §12-14). A paid Odoo PCN874 module was killed (research/colony-sweep/screen-2/odoo-il-vat.md). (5) Never covered before this run: Firefox AMO and Edge Add-ons (the chrome-extensions scout says at line 200 that it did not search them), Google Workspace Marketplace, Microsoft AppSource, Zendesk and Canva apps. New evidence from this run: AMO's API creates listed add-ons, its policies allow paid features if disclosed, its ranking weights users by log2p(average_daily_users), its UI has no Newest sort, and a code search found no trader-identity display (all github). Edge registration is free, but a new product can only be created in Partner Center (github). JetBrains says the first plugin upload must be done by hand (github). Payoneer requires a face scan for Israeli residents (snippet), which kills the monday.com payout rail. Two seeds I dropped from the list, with this run's evidence: Zendesk paid apps require the developer's own connected Stripe account and Stripe Tax registration (snippet, https://developer.zendesk.com/documentation/marketplace/publishing-to-the-marketplace/set-up-paid-app-or-theme/). Under the brief's rail rule (Stripe does not onboard Israeli accounts) that rail fails, so Zendesk is DEAD. Canva's only native monetization is a Premium Apps Program for 'eligible developers' paid under 'individual program agreements' (snippet, https://www.canva.com/developers/premium-apps-program/). That is an invited, negotiated programme, so Canva is DEAD. Its external-billing rules are unread (https://www.canva.dev/docs/apps/monetization/). Microsoft AppSource was not examined for lack of search budget, so its gates are UNKNOWN (no evidence).",
+ "searches_used": 6,
+ "candidates": [
+  {
+   "venue": "Wix App Market (paid apps billed by Wix)",
+   "url": "https://www.wix.com/app-market",
+   "what_we_would_list": "2-5 separate, distinct Hebrew/Israeli-compliance apps for Wix sites, each with a Wix-billed monthly plan and listed under the Mehudak brand. Examples: an Israeli accessibility-statement generator, a Privacy Amendment 13 notice/consent helper, and a statutory-declaration renewal clock. These are the home-turf niches named at REJECTED.md:966-968 and BOARD-LOOP.md:157-159.",
+   "existing_product": "None on Wix. The Hebrew business-tool logic in products/il-biz-tools could be reused; no Wix app code exists.",
+   "listings_per_owner_step": "One Wix partner registration plus one Tipalti payout account unlocks every app on that account. No per-account app limit appears in any capture (UNKNOWN). Payouts can be delegated to a teammate role (wix-payout-account.txt:142, rendered). Buyers: every Wix site owner who opens the App Market.",
+   "prior_verdict": "storefronts closed it. vertical-niches' entry was REFUTED as a channel with no product and payability drawn from the wrong Wix programs (REJECTED.md:923,933-940). Reopened as board candidate 11 (BOARD-LOOP.md:157-162) and still NEEDS_MORE after tick 3: the $200 floor rolls over (wix-app-payments-faq.txt:134), and whether Israel is payable is UNKNOWN (research/measurements/wix-app-market.md, status line; logs/CHANNEL_LOOP.md:124).",
+   "reopen_basis": "The board already reopened it; this scout adds no primary evidence. One snippet, which does not raise the Israel grade: a search summary says Wix revenue-share payments are not issued to banks in Russia or Pakistan. That line most likely comes from the Wix Studio partner revenue-share help page, a different program the repo warns is easily confused with this one (REJECTED.md:933-936). The search also surfaced a Markdown URL for the partner agreement, which a runner may render more fully than the docs wrapper did.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Every cost Wix names comes out of revenue: a 2.5% transaction fee, then 80/20 with 100% to the developer for the first 12 months (wix-app-payments-faq.txt:130). No charge to the developer appears in any capture. Open question: 'Test your app on a premium site' may require buying a Premium plan (wix-app-market.md §4, content not captured).",
+    "grade": "rendered"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Payouts go to a Tipalti payee account, set up once per account (wix-payout-account.txt:119,136). 'israel' and 'countr' get 0 hits in all four captures. Onboarding says 'registering your company' (wix-payout-account.txt:134), and whether an individual or osek patur qualifies is UNKNOWN. No camera step is rendered, and none is ruled out.",
+    "grade": "rendered"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Submission happens 'during app submission in your app's dashboard' (wix-partner-agreement.txt:89). Review is an automated AI check whose results are 'typically available within minutes' (wix-app-payments-faq.html:64 changelog). No submission API is rendered, and whether an agent-run teammate login may submit is UNKNOWN.",
+    "grade": "rendered"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Wix itself runs an AI review of submissions (faq.html:64). No rendered rule on AI-built apps or AI disclosure: the App Market guidelines page is not captured.",
+    "grade": "rendered"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Wix bills the buyer inside Wix, chases failed payments, handles sales tax and reverses chargebacks (faq.txt:158-174,208). It localises prices per territory (faq.txt:196). Its Verified badge counts '40+ live installs on premium Wix sites' (faq.html:64). The venue brings its own paying site owners. No traffic or install volumes are rendered.",
+    "grade": "rendered"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. The ranking inputs are unread. The Verified badge needs 60+ days live and 40+ live installs on premium sites (faq.html:64). That gates the badge, not the listing, but it is a prior-installs signal. vertical-niches found incumbents already in some categories (REJECTED.md:913-914).",
+   "owner_step": "Proposed step 8, only after the partner agreement is rendered and passes: a Wix account, Join the Partner Program ('registering your company'), and a Tipalti payout account in the owner's identity, all once. Step 2 (tax file) applies. Refunds need an 'Owners' collaborator (faq.txt:150), so a no-refund policy avoids a per-item owner action.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 600,
+   "estimate_basis": "INFERENCE; no Wix sales data is rendered. Assume $5-15/site/month and 0-10 paying sites across 2-5 apps by month 12. That is $0-150 gross, 100% to us in year one minus 2.5% (faq.txt:130), about ₪0-550. Base rates for new listings on install-ranked stores: the newest Obsidian cohort has a median of 27 users (groups/plugin-ecosystems.md:61-67), and paid Odoo localization modules have a median of 1 lifetime purchase (screen-2/odoo-il-vat.md:18). Cash lags: nothing pays out until $200 (about ₪740) accumulates, and money earned in month M arrives in M+2 (faq.txt:134,138). Month-12 cash can therefore be ₪0 even when sales exist.",
+   "time_to_first_sale": "3-6 months after the owner step: build takes 2-4 weeks, the AI review takes minutes, then discovery. The first payout comes only after $200 has accumulated.",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://dev.wix.com/app-market-partner-agreement",
+    "https://dev.wix.com/docs/build-apps/manage-your-app/legal-and-security/wix-app-market-partner-agreement.md",
+    "https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines",
+    "https://dev.wix.com/docs/build-apps/manage-your-app/user-support/about-user-support",
+    "https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/test-your-app/test-your-app-on-a-premium-site",
+    "https://support.wix.com/en/article/wix-studio-receiving-revenue-share"
+   ]
+  },
+  {
+   "venue": "Firefox Add-ons (addons.mozilla.org) with a disclosed Pro licence sold on Gumroad",
+   "url": "https://addons.mozilla.org",
+   "what_we_would_list": "Several functionally distinct Firefox extensions for Hebrew/Israeli users, each a different tool rather than a template variant: a Hebrew-date/holiday overlay, a gov.il form helper, a per-site RTL fixer, an Israeli VAT/price calculator. Each has a free core and a Pro licence sold on Gumroad, with the payment requirement disclosed in the listing.",
+   "existing_product": "No extension exists. Gumroad licence-key handling from the il-biz-tools Pro work (research/measurements/gumroad-license-decision.md) could be reused.",
+   "listings_per_owner_step": "One Mozilla account on the brand mailbox, with TOTP 2FA and an AMO API key, unlocks unlimited add-ons created through the API. The payout rides the existing owner step 3 (Gumroad), so it adds no new payout account.",
+   "prior_verdict": "Never scouted: the chrome-extensions scout says 'Firefox AMO and Microsoft Edge Add-ons are outside this criterion and were not searched' (scouts/plugin-ecosystems--chrome-extensions.md:200). The umbrella dev-extensions line was killed for having no named channel (REJECTED.md:1254-1261). Chrome was killed separately (REJECTED.md:272-273).",
+   "reopen_basis": "New github-grade evidence that the dev-extensions kill never had. (a) AMO's own search code weights users by field_value_factor(average_daily_users, log2p) times a ranking_bump (mozilla/addons-server src/olympia/search/filters.py). That is a log-damped install weight, not a zero multiplier. (b) The Add-on Policies ban duplicates only for themes ('Duplicate themes are not permitted') and allow paid features ('Listings must disclose when payment is required to enable any add-on functionality'). (c) POST /api/v5/addons/addon/ creates a listed add-on (addons-server docs/topics/api/addons.rst). Ranking is still install-weighted, so this does not refute the prior-success law at REJECTED.md:1103-1114. It shows the channel was never audited, not that it works.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "No fee clause appears in the Firefox Add-on Distribution Agreement or the Add-on Policies (mozilla/extension-workshop). A Mozilla account is free. Gumroad's fee comes out of each sale.",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "PASS",
+    "evidence": "Mozilla pays nothing. Money goes through Gumroad, whose own production source lists 'Israel | ILS' (src/revenue/rails.ts:81,133). The distribution agreement has no country or eligibility clause, and a Mozilla account needs only an email plus 2FA; no ID or camera step was found.",
+    "grade": "repo"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "'POST /api/v5/addons/addon/' creates an add-on from an upload plus a license, name, summary and categories, and 'This API requires authentication' (addons-server docs/topics/api/addons.rst). Whether the developer agreement must first be accepted once in the web UI is UNKNOWN.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "Neither the Add-on Policies nor the Distribution Agreement contains any AI clause. The disclosure they require concerns payment. We would declare AI use in the listing voluntarily. This is a pass by absence of any rule, stated as such.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "AMO brings users, not buyers: it has no checkout. Default browse sorts by recommended status, then users. The UI offers Relevance, Recently Updated, Most Users, Top Rated and Trending, with no Newest (mozilla/addons-frontend SearchFilters). No user numbers were read: addons.mozilla.org was EGRESS_BLOCKED this session.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "No sale gate, since payment is off-platform. Discovery does need prior users: score = relevance × log2p(average_daily_users), with a 4.0 weight for approved non-experimental add-ons. A new add-on scores about 1 against about 13.3 at 10,000 users, a roughly 13× handicap. That is milder than JetBrains' zero multiplier, and there is no Newest sort.",
+   "owner_step": "Proposed step 8: create a Mozilla account on the brand mailbox with TOTP 2FA and generate AMO API credentials into a GitHub secret. The payout reuses step 3 (Gumroad). The Distribution Agreement requires 'reasonable technical support' with contact information and no stated SLA; an agent-run written channel would handle it (AMBER).",
+   "ils_month12_low": 0,
+   "ils_month12_high": 400,
+   "estimate_basis": "INFERENCE; no AMO cohort was measured. The closest analog is the newest Obsidian cohort: median 27 users, p90 94 (groups/plugin-ecosystems.md:61-67). One VS Code author reported about $99 in donations for 100+ hours of work at about 1,000 new monthly users (ide-plugins scout §7). Assume 5-10 add-ons × 50-300 users each × 1-3% conversion × a $5-9 one-time licence, with Gumroad taking about 22% at $9 (rails.ts:81). That gives ₪0-400/month by month 12.",
+   "time_to_first_sale": "2-6 months after the first listings; for any single add-on, plausibly never.",
+   "verdict": "PROMISING",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&sort=created&page_size=50",
+    "https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=hebrew&page_size=50",
+    "https://extensionworkshop.com/documentation/publish/add-on-policies/",
+    "https://extensionworkshop.com/documentation/publish/firefox-add-on-distribution-agreement/",
+    "https://mozilla.github.io/addons-server/topics/api/addons.html"
+   ]
+  },
+  {
+   "venue": "WordPress.org plugin directory with a Pro tier sold through Freemius",
+   "url": "https://wordpress.org/plugins/",
+   "what_we_would_list": "Free Hebrew/Israeli-compliance WordPress plugins, for example an Israeli accessibility-statement generator. The Pro code is delivered outside the directory by Freemius, as Guideline 5 requires.",
+   "existing_product": "None. The concept was evaluated at REJECTED.md:320-322 and 371.",
+   "listings_per_owner_step": "One WordPress.org account (username and email, no KYC; CHIEF-AUDIT.md:299) covers many plugins, but each goes through a volunteer human review aiming at 14 days. One Freemius vendor account (a new step) is the rail for all of them.",
+   "prior_verdict": "Survived at ₪0-200/month for the first 12 months (REJECTED.md:695). The search code applies a 100-200× day-one handicap (REJECTED.md:711-731). Guideline 5 forbids trialware (REJECTED.md:320-322). The review queue stood at 4,715 (REJECTED.md:323).",
+   "reopen_basis": "The payout half has improved since 4.9: Freemius is now rendered as paying Israel, with verification by form and no camera (freemius-rail.md §12-14; REJECTED.md:1344). That fixes the 'no Paddle account' defect only. There is no new evidence against the ranking reason, so the prior ceiling stands.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "A WordPress.org account is free (CHIEF-AUDIT.md:299). Freemius takes 4.7% plus 2.3% for WordPress, deducted from sales (freemius-our-pricing.txt:92,120, as recorded in freemius-rail.md §14).",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "PASS",
+    "evidence": "Freemius lists Israel under 'Supported Countries for Payouts' (freemius-supported-countries.txt:308). Verification is a form, with no camera or selfie step on the page (freemius-rail.md §14). Payment is a USD balance with ILS via Wise or wire.",
+    "grade": "rendered"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "New plugins are queued and 'manually download[ed] and review[ed]' by volunteers, aiming at 14 days (audits/plugin-ecosystems.md:190-194). Updates go through SVN and can be scripted. No submission API for a new plugin was found; it appears to be a per-item web upload.",
+    "grade": "repo"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The WordPress.org guidelines on AI-built plugins were not read (wordpress.org is egress-blocked, REJECTED.md:371). Freemius allows 'AI-powered services' (freemius-rail.md §13).",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "The directory brings users, not buyers, and 'demand here is entirely unmeasured' because api.wordpress.org is blocked (REJECTED.md:371).",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "It needs prior installs, not sales: function_score weights active_installs, support_threads_resolved and rating, and the Newest tab was removed (REJECTED.md:711-728).",
+   "owner_step": "The WordPress.org account (username and email) plus a new Freemius vendor account with form verification. Freemius becomes an owner step only when a line chooses it (freemius-rail.md §14).",
+   "ils_month12_low": 0,
+   "ils_month12_high": 200,
+   "estimate_basis": "This is the prior audited figure, not a new one: ₪0-200/month in the first 12 months (REJECTED.md:695). It rests on the rendered 100-200× ranking handicap. Freemius takes about 8.2% all-in, which is cheaper than Gumroad, but that does not change demand.",
+   "time_to_first_sale": "4-8 months: the review queue takes weeks, then installs must accumulate before ranking helps.",
+   "verdict": "WEAK",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[browse]=new&request[per_page]=250",
+    "https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/",
+    "https://freemius.com/terms/vendor/"
+   ]
+  },
+  {
+   "venue": "Odoo Apps Store (paid modules)",
+   "url": "https://apps.odoo.com",
+   "what_we_would_list": "Paid Odoo modules for Israeli/Hebrew needs other than PCN874, which was killed. Each module in a registered Git repository would become its own listing.",
+   "existing_product": "None usable. The products/pcn874 engine was killed for this venue (screen-2/odoo-il-vat.md:3).",
+   "listings_per_owner_step": "One Odoo vendor account plus one registered Git repository. The FAQ snippet speaks of registering a Git repository, so every module in it could be listed. This needs owner step 7 (GitHub org).",
+   "prior_verdict": "KILL for the PCN874 module (screen-2/odoo-il-vat.md:3). The recently-selling paid localization modules on page 1 show a median of 1 lifetime purchase and a maximum of 12 (odoo-il-vat.md:18). 'Odoo Online is incompatible with ... modules from the Odoo Apps Store' (:36). A €400 PO floor applies before any payout (:63).",
+   "reopen_basis": "None. No new evidence. The kill was specific to the product, but the rendered store base rate applies to any module.",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No listing fee was found either way. The 70% vendor share is snippet grade (odoo-il-vat.md:62).",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Payment is by PO close and redemption; whether SWIFT or PayPal reaches Israel is unverified (odoo-il-vat.md:62-63,187). KYC is unknown.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "The FAQ snippet mentions registering a Git repository ('If you previously registered a Bzr repository and want to replace it with a new Git one'), so modules would be picked up from the repo (odoo-il-vat.md:65). This is snippet grade; the screen called the mechanism probable, not verified.",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The vendor guidelines are unrendered, and apps.odoo.com is egress-blocked.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "The rendered Localization category holds 1,485 apps, and each card shows a purchase counter. Buyers do pay through the store, though rarely (odoo-il-vat.md:18,59, from research/rendered/sweep2-odoo-localization).",
+    "grade": "rendered"
+   },
+   "discovery_needs_prior_sale": "Effectively yes. Page 1 of the default Relevance sort shows only modules with activity in the last month, and there is no country filter (odoo-il-vat.md:59).",
+   "owner_step": "A new Odoo vendor account with payout details and automatic redemption, plus step 7. Paid apps carry a support duty (snippet, odoo-il-vat.md:66).",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "From the rendered base rate: a median of 1 lifetime purchase, maximum 12, among recently-selling paid localization modules at about $60 with a 70% share. The €400 PO floor (snippet) means probably no payout in year one.",
+   "time_to_first_sale": "6+ months, and possibly never paid out within 12 months because of the €400 floor.",
+   "verdict": "WEAK",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://apps.odoo.com/apps/faq",
+    "https://apps.odoo.com/apps/vendor-guidelines",
+    "https://apps.odoo.com/apps/modules/browse?search=Israel"
+   ]
+  },
+  {
+   "venue": "Microsoft Edge Add-ons with a Pro licence sold on Gumroad",
+   "url": "https://microsoftedge.microsoft.com/addons",
+   "what_we_would_list": "The same distinct Hebrew/Israeli extensions as on AMO (one codebase), free core with a disclosed Pro licence on Gumroad.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One free individual Partner Center account covers many extensions. However, every new extension must be created by hand in the Partner Center UI; only updates can go through the API.",
+   "prior_verdict": "Never scouted (scouts/plugin-ecosystems--chrome-extensions.md:200). It falls under the killed dev-extensions umbrella (REJECTED.md:1254-1261).",
+   "reopen_basis": "New github evidence covers onboarding cost and the API boundary only. Nothing on discovery.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "'There is no registration fee for submitting extensions to the Microsoft Edge program.' (MicrosoftDocs/edge-developer create-dev-account.md)",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Microsoft pays nothing; money would go through Gumroad (Israel | ILS, rails.ts:81). An individual account is verified by 'verifying that the publisher display name is available', with no ID step described. The list of countries in the account dropdown is not rendered.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "'To initially publish a new extension, you use Partner Center' and 'There aren't REST API endpoints for: Creating a new product.' (edge-developer using-addons-api.md). Each new listing therefore needs a web-UI creation step.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The Edge developer policies were not read.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "No store traffic or ranking data were read.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. The ranking is unread. There is no sale gate, since payment is off-platform.",
+   "owner_step": "A new Partner Center individual account (display-name check only, per the docs) plus a manual creation click for each new extension in Partner Center. The per-item click is what fails the breadth test.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 200,
+   "estimate_basis": "INFERENCE, the same shape as AMO with fewer listings, because each new product is created by hand. No Edge store data was read.",
+   "time_to_first_sale": "3-6 months after the first listing; plausibly never.",
+   "verdict": "WEAK",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/create-dev-account",
+    "https://learn.microsoft.com/en-us/microsoft-edge/extensions/update/api/using-addons-api",
+    "https://learn.microsoft.com/en-us/legal/microsoft-edge/extensions/developer-policies"
+   ]
+  },
+  {
+   "venue": "Google Workspace Marketplace (Sheets/Docs add-ons, own billing)",
+   "url": "https://workspace.google.com/marketplace",
+   "what_we_would_list": "Google Sheets add-ons for Israeli business tasks: Hebrew date, VAT, Israeli bank-format import. Free core, with a Pro licence on Gumroad.",
+   "existing_product": "None. The il-biz-tools calculators could be reused.",
+   "listings_per_owner_step": "Low leverage. Each add-on needs its own Cloud project, OAuth consent verification by Trust & Safety and a Marketplace review (snippet), all configured by hand in the console.",
+   "prior_verdict": "Never scouted: the repo holds only an incidental mention (scouts/vertical-niches--ecommerce-sellers.md).",
+   "reopen_basis": "Not previously evaluated. The snippet evidence is from this run.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Snippet: 'Google doesn't charge a listing fee to distribute apps through the Marketplace.' Restricted OAuth scopes would trigger a paid security assessment, so the design must avoid them (cost UNKNOWN).",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "PASS",
+    "evidence": "Snippet: 'There is no built-in payment system' in the Marketplace, so billing is our own. That means Gumroad, which pays Israel | ILS (rails.ts:81). Google account onboarding has no known camera step.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "Snippet: 'Your add-on must be OAuth verified by the Trust & Safety team and approved by the Google Workspace Marketplace team'. That is a per-app project, verification and review, with no bulk or API listing found.",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The Marketplace program policies were not read.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "The Workspace user base is large, but no Marketplace traffic or ranking numbers were read.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN. The ranking is unread, and it is likely weighted by installs and ratings (no evidence).",
+   "owner_step": "A Google Cloud project, OAuth consent-screen verification on the brand domain (step 5) and Marketplace SDK configuration for each add-on. The account step is one-time, but each add-on needs its own configuration.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 300,
+   "estimate_basis": "INFERENCE; no Marketplace data. 1-3 add-ons × 0-300 users × 1-3% conversion × about $9 via Gumroad (about 22% fee).",
+   "time_to_first_sale": "3-6 months, including 2-6 weeks of OAuth verification and review (unrendered).",
+   "verdict": "WEAK",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://developers.google.com/workspace/marketplace/about-app-review",
+    "https://developers.google.com/workspace/marketplace/configure-oauth-consent-screen",
+    "https://developers.google.com/workspace/marketplace/how-to-publish"
+   ]
+  },
+  {
+   "venue": "monday.com apps marketplace (built-in monetization)",
+   "url": "https://monday.com/marketplace",
+   "what_we_would_list": "Hebrew/Israeli business apps for monday boards, sold on monday's native subscription billing.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One monday developer account plus one Payoneer payout account would cover several apps. The Payoneer step fails the camera rule (below).",
+   "prior_verdict": "Ranked on ratings with fixed slots per category, snippet grade (SWEEP-2.md:304). Revenue is 100% to the developer until $200k lifetime, then 85/15, paid through Payoneer, snippet grade (groups/licensing-ip.md:57). The steps attached to it were removed from the checklist with the rejected lines (CHIEF-AUDIT.md:302).",
+   "reopen_basis": "No reopening. New snippet evidence strengthens the kill: Payoneer's help says that when the account's country of residence is Israel, 'the ID photograph must match the face scan you provide', which is a camera step. Payoneer is the only payout rail monday names ('required to create a Payoneer account', snippet).",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "No developer fee is named in the snippets. The revenue share is taken from sales.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "Snippet from Payoneer's Visual Identity Verification FAQ: Israeli residents' 'ID photograph must match the face scan you provide'. Payoneer uses AU10TIX with a selfie. monday pays only through Payoneer (snippet).",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Submission and review happen in the Developer Center (snippet). No bulk or API listing path was read. developer.monday.com is egress-blocked (SWEEP-2.md:313).",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The review requirements snippet names Vibe design alignment, permissions and security, and says nothing on AI.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "The 20-F filing reports 869 marketplace apps, 704 of them with native monetization, as of 31 Dec 2025; monday bills the customers (snippet).",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Effectively yes. Ranking is a weighted formula over rating quality, rating quantity and internal performance metrics (SWEEP-2.md:304, snippet).",
+   "owner_step": "A monday developer account plus a Payoneer account with an ID and face scan. The camera step is forbidden by the brief.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "₪0: the only payout rail requires a face scan. If a rendered Payoneer page showed no camera step for Israel, a conditional ₪0-300 (inference: a small shelf of 869 apps, but ranked on ratings) would apply.",
+   "time_to_first_sale": "Not reachable under the camera rule.",
+   "verdict": "DEAD",
+   "rank_in_family": 7,
+   "primary_urls_to_render": [
+    "https://payoneer.custhelp.com/app/answers/detail/a_id/36202",
+    "https://payoneer.custhelp.com/app/answers/detail/a_id/33783",
+    "https://developer.monday.com/apps/docs/subscriptions-payments-and-billing",
+    "https://developer.monday.com/apps/changelog/announcing-the-revshare-program"
+   ]
+  },
+  {
+   "venue": "JetBrains Marketplace paid plugins",
+   "url": "https://plugins.jetbrains.com",
+   "what_we_would_list": "Narrow paid IDE plugins, sold with JetBrains acting as merchant of record at a 15% commission.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One vendor profile covers many plugins, but the first upload of each must be manual and every release is reviewed by a human.",
+   "prior_verdict": "The dev-extensions line was killed (REJECTED.md:1254-1261). The ranking multiplies by log10(1+5·downloads)×sqrt(rating), which is zero for a new plugin (scouts/plugin-ecosystems--ide-plugins.md:167-172). Payout countries are UNKNOWN (:44-66). JetBrains-attached steps were removed (CHIEF-AUDIT.md:302-303).",
+   "reopen_basis": "No reopening. New github evidence adds a gate: 'The first plugin publication must always be uploaded manually to the JetBrains Marketplace' (JetBrains/intellij-sdk-docs publishing_plugin.md). The brand rule is also broken: trader status is mandatory for a paid plugin, and 'name, email, address, and phone number' are 'displayed to end-users' (ide-plugins.md:146-160). That publishes the owner's identity.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "'We don't charge any additional fees pertaining to developing extensions or listing them' (marketplace-docs revenue-sharing-and-fees.topic, quoted at ide-plugins.md §1).",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Payment is a bank transfer in USD or EUR once $200/€200 accumulates, on a self-billing invoice (ide-plugins.md:56-66). No country list: the developer agreement is on a blocked host.",
+    "grade": "repo"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "'The first plugin publication must always be uploaded manually'. Only later versions can use a Marketplace token, and every release passes a human review of 3-4 working days (ide-plugins.md:128).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "The approval guidelines contain no rule against AI-generated plugins (ide-plugins.md §4).",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "There is an in-IDE JetBrains checkout with JetBrains as merchant of record (ide-plugins.md §2). Ranking still zeroes out new listings.",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "It needs prior downloads and ratings: both factors are multiplicative and equal zero for a new plugin. Only the recency-ordered 'New plugins' category is unweighted (ide-plugins.md:167-177).",
+   "owner_step": "A vendor profile, the Developer Agreement, bank details and a trader declaration that publishes name, address and phone. That breaks the brand-only rule unless a registered company is the vendor, which would cost the owner money.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "₪0 under the brand rule. Even if it were admitted, ranking is zero for new listings and no public revenue figures exist (ide-plugins.md §8).",
+   "time_to_first_sale": "Not reachable under the brand-only rule.",
+   "verdict": "DEAD",
+   "rank_in_family": 8,
+   "primary_urls_to_render": [
+    "https://plugins.jetbrains.com/legal/developer-agreement",
+    "https://plugins.jetbrains.com/docs/marketplace/trader-status.html"
+   ]
+  }
+ ]
+}
