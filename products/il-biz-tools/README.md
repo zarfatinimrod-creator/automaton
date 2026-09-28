@@ -31,7 +31,9 @@ search sends no one, the page-view kill rule is what answers it.
 
 ### Pricing suggestion
 - Free tools: free forever (they are the SEO funnel).
-- **Pro (document branding): one-time ₪79** through **Gumroad**, which replaced Paddle here.
+- **Pro – הלוגו וצבע המותג על המסמך (the logo and brand colour on the document): one-time ₪79** through **Gumroad**,
+  which replaced Paddle here. ₪79 is the price the product job asks Gumroad for; the page shows only what Gumroad
+  reports back (`gumroad.priceCents`), never a number typed into HTML.
   Gumroad is the merchant of record, pays out in ILS to an Israeli bank (the one payment rail this repo
   has rendered evidence of that for), and no source reports a liveness video in its onboarding — the Paddle onboarding step that collides
   with the mandate. Stripe does not take an Israeli individual as a direct merchant (the one Stripe path on the owner
@@ -324,6 +326,7 @@ There are **no server-side env vars** — this is a static site. Public configur
 | `siteUrl` | Canonical origin; `assets/common.js` rewrites `<link rel=canonical>` from it at runtime. The static canonical in all 9 pages and the JSON-LD `url` in `index.html` are hard-coded, so edit those too, plus `sitemap.xml` and `robots.txt` | `https://il-biz-tools.netlify.app` |
 | `gumroad.productUrl` | Full `https://` URL of the Gumroad product page. Empty ⇒ the Pro button is disabled and says the shop is not open. Written by the product-creation job | `""` |
 | `gumroad.productId` | Gumroad's public product id — what the licence check sends with the key. Empty ⇒ the button stays disabled (`no_product_id`) and activation sends nothing. Written by the product-creation job | `""` |
+| `gumroad.priceCents` / `gumroad.currency` | The price Gumroad itself reports when the job reads the product back (`price` in minor units, `currency`; `7900` / `ils` = ₪79). Shown in the Pro box and injected into the pricing FAQ **only** in the `ready` state; empty ⇒ the button stays disabled (`no_price`). Written by the product-creation job, never by hand | `null` / `""` |
 | `analytics.provider` | `none` or `plausible` | `none` (off) |
 | `analytics.plausibleDomain` | Plausible site domain | `""` |
 | `posthog.projectKey` | PostHog project key (`phc_…`). Empty ⇒ **no snippet at all** | `""` |
@@ -400,12 +403,15 @@ to pretend otherwise. Key sharing is not enforced (no seat count); the seller se
 step 6 carries `edit_products` (Gumroad's `doorkeeper.rb:10`, `oauth_application.rb:121-122`).
 `.github/workflows/gumroad-pro-product.yml` (manual dispatch only) uses it to:
 
-1. `create` — reuse the product by exact name, or `POST /v2/products` **as a draft** with the price
-   (₪79 by default), a description of exactly what Pro is, and content holding Hebrew activation instructions
-   plus Gumroad's `licenseKey` block; read it back and require that block; print the public `id` and
-   `short_url`; open a PR writing both into `src/config/site.json`.
-2. `enable` — a second dispatch, only once the **deployed** `src/config/site.json` carries the same id:
-   `PUT /v2/products/:id/enable`.
+1. `create` — reuse the product by exact name (`PRO_PRODUCT_NAME`, "Pro – הלוגו וצבע המותג על המסמך"), or
+   `POST /v2/products` **as a draft** with the price (₪79 by default), a description of exactly what Pro is, and
+   content holding Hebrew activation instructions plus Gumroad's `licenseKey` block; read it back and require that
+   block and a fixed one-time price (no membership, no pay-what-you-want); print the public `id` and `short_url`;
+   open a PR writing both, and the read-back `priceCents` and `currency`, into `src/config/site.json`.
+2. `enable` — a second dispatch, only once `state/colony/brand-mail.json` shows the brand mailbox of owner step 8
+   probed green (within 2 days, no accessibility mail unanswered for 7+ days — a buyer's receipt reply or refund
+   request goes to the Gumroad sign-up email, and the owner answers no one) **and** the **deployed**
+   `src/config/site.json` carries the same id: `PUT /v2/products/:id/enable`. `create` is not gated.
 
 Without the secret both exit 0 with a notice. `.github/workflows/gumroad-pro-probe.yml` then checks the real
 product id from the site's own origin (expects the exact "does not exist" 404 for an impossible key and
@@ -421,15 +427,26 @@ read in Gumroad's code: that a real key returns the documented 200 payload with 
 changes only when a `gumroad:<productId>` sale is in `revenue_ledger` and the buyer-side outcome is noted in
 the decision file. Until then Pro may be described as on sale — once it is — and as nothing more.
 
-**The Pro button has exactly four states**, all decided in `src/lib/gumroad.js` (`proButtonState`)
-and unit-tested rather than trusted:
+**The Pro button has exactly five states**, all decided in `src/lib/gumroad.js` (`proButtonState`)
+and unit-tested rather than trusted. Only `ready` shows a price:
 
-| `gumroad.productUrl` | `gumroad.productId` | state | button |
-|---|---|---|---|
-| empty | anything | `unconfigured` | disabled, "בקרוב", "המיתוג עדיין לא נמכר – החנות טרם נפתחה" |
-| not an `https://` URL | anything | `invalid_url` | disabled, and it says the URL is malformed |
-| set | missing | `no_product_id` | disabled — a licence key nothing can check against its product is nothing |
-| set | set | `ready` | opens the Gumroad product page in a new tab (`noopener`) |
+| `gumroad.productUrl` | `gumroad.productId` | `priceCents` + `currency` | state | button |
+|---|---|---|---|---|
+| empty | anything | anything | `unconfigured` | disabled, "בקרוב", "המיתוג עדיין לא נמכר – החנות טרם נפתחה" |
+| not an `https://` URL | anything | anything | `invalid_url` | disabled, and it says the URL is malformed |
+| set | missing | anything | `no_product_id` | disabled — a licence key nothing can check against its product is nothing |
+| set | set | missing | `no_price` | disabled — no sale without the price Gumroad reported, visible beside the button |
+| set | set | set | `ready` | the price, "לרכישה ב-Gumroad", "המכירה ב-Gumroad, בחנות Mehudak (מהודק)"; opens the product page in a new tab (`noopener`) |
+
+**The offer on the page** (research/tiktok/08-sales-marketing-lessons.md §8.1 N1–N5), each part tested:
+the Pro box heading is the product name; "תשלום חד-פעמי, בלי מנוי" and one trust line sit in plain sight beside the
+button; in the `ready` state a visitor without a licence can **try** the logo and colour on the on-screen preview
+(`applyBranding(…, 'trial')` — only an `@media screen` rule reads the trial colour and print hides the logo, so a
+printed or saved PDF is exactly the free document, with no watermark); after a print in that try-out one factual
+line says the print carried no branding and what Pro costs, once per session and never again once closed
+(`src/lib/pro-nudge.js`; no modal, no timer); and `#pro-faq` answers six pricing questions, each checked against
+the code in `tests/pro-faq.test.js`. The price in those answers is a slot the build fills from `site.json`
+(`src/lib/pro-offer.js`), in the visible answer and its JSON-LD twin alike, and only in the `ready` state.
 
 No Gumroad code runs on this site: no SDK, no overlay, no iframe. The only contact is one `fetch` from the
 buyer's browser to `api.gumroad.com/v2/licenses/verify`, at activation and at most every 7 days after. The
@@ -513,8 +530,9 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
   לוח העזר של רשות המסים.
 - **מחולל קבלות / חשבוניות עסקה** – מסמך נקי להדפסה או ל-PDF (`@media print`), כולל הערת
   "עוסק פטור - לא חייב במע"מ", מספור רץ, שמירה ב-localStorage. שמירת הלקוחות, המספור והייצוא
-  חינמיים. התוספת היחידה בתשלום היא **Pro – מיתוג המסמך** (לוגו וצבע), דרך Gumroad: כשממלאים
-  `gumroad.productUrl` ו-`gumroad.productId`, הכפתור פותח את דף המוצר; אחרת מוצג "בקרוב". מפתח הרישיון
+  חינמיים. התוספת היחידה בתשלום היא **Pro – הלוגו וצבע המותג על המסמך**, דרך Gumroad (החנות Mehudak):
+  רק כשיש `gumroad.productUrl`, `gumroad.productId` והמחיר ש-Gumroad החזירה, מוצג המחיר והכפתור פותח את דף
+  המוצר; אחרת מוצג "בקרוב" ובלי מחיר. מפתח הרישיון
   הוא של Gumroad עצמה: היא מייצרת אותו לכל קונה ושולחת בקבלה, והדפדפן של הקונה בודק אותו מולה פעם אחת
   בהפעלה ואחר כך לכל היותר פעם בשבוע. אין לבעלים שום פעולה אחרי מכירה. מפתח אמיתי ראשון עוד לא אומת –
   המכירה הראשונה היא הבדיקה.
