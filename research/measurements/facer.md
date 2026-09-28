@@ -100,3 +100,114 @@ The form at `:566` is on the Zendesk host that refused rows 76-77. The question:
 - (1) Can a creator in Israel be paid, by which method, and does onboarding need a selfie or video step?
 - (2) May faces made with declared AI tools be published, and may software rather than hand work in Facer Creator create or upload them?
 - (3) Is there any fee to publish or to join the Partner Program?
+
+## Tick 8 reading (28.9.2026): the template cache and the full forum text
+
+### What was read
+
+- **`facer-templates-js.bin`**: 1,141,780 bytes on one line, fetched 2026-09-28T18:36:12Z, HTTP 200, sha256 `0a69bfd2…`
+  (`facer-templates-js.meta.json`). It is a webpack chunk (`webpackChunkFacerWeb`, byte 0) whose module map lists 464
+  template paths. Each template is a JS string put into `$templateCache` as `/html/<name>` or `/components/<path>`.
+  Citations below are **byte offsets into the .bin**, each checked with `grep -F -b -o`. Source lines are joined by a raw
+  `\n` and indentation, so every quote is one source line. A " / " marks a join between two quoted lines.
+- **The cache does hold legal text.** It has the full Terms of Service (`/html/terms.html`, module 21098, string bytes
+  457051-493894, heading `<h1 align="center">Terms of Service</h1>` at 457091), the Privacy Policy (`/html/privacy.html`,
+  408220-423195), and the partner page with its FAQ (`/components/creator/partner-program/partner-program.component.html`,
+  1065101-1074719). [INFERENCE] These are what `/terms` and `/creator/partner` render. The publish form links
+  `ui-sref="facer.terms"` (774039) and prints `https://www.facer.io/terms` (774695), and no other Terms template exists.
+  Facer's official forum account points applicants to that partner URL (`facer-premium-route.txt:15`). The terms carry
+  "Last Updated: 04/17/2015" (457163) but mention "running WearOS" (461500), a name that came after 2015, so the text was
+  edited without the date changing [INFERENCE].
+- **Forum captures, re-extracted in full**: premium-admission 370 lines, third-party-tools 159, premium-route 297,
+  payment-options 51. Both long threads are still **page 1 only** ("next page →", `facer-premium-admission.txt:358`,
+  `facer-premium-route.txt:285`). The full text adds no fact beyond tick 7; the gain is that the .txt files can now be
+  cited. Tick 7's .html line cites were re-checked against the 18:35 re-fetch and still hold (`facer-third-party-tools.html:573`,
+  `facer-premium-admission.html:1254`, `facer-premium-route.html:746`, `facer-payment-options.html:531`, `:567`).
+
+### Gate by gate
+
+- **G3: FAIL. Kill (a) fires.**
+  - [RENDERED, Facer's terms, "General Prohibitions"] The user agrees not to "Attempt to access or search the Services or
+    Content or download / Content from the Services through the use of any engine, software, tool, / agent, device or
+    mechanism (including spiders, robots, crawlers, data / mining tools or the like) other than the software and/or search
+    agents / provided by Little Labs or other generally available third-party web" browsers (475268, 475341, 475423, 475502, 475582).
+  - [RENDERED] The only way for a user to publish, among all 464 templates, is one web form per face. It has a title field,
+    `placeholder="Describe your watchface..."` (770214), a category, an "I accept the Terms of Service" checkbox,
+    "Enable Monetization" (775303) and a publish button. Its one file input takes an Apple Watch export, "Select
+    <b>.watchface</b> File" (766162, `apple-watchface-file-uploader` at 765842). Only admins can import a `.face` file:
+    "Import/Update (Admin Only)" (807374) and "Import/Update Variant (Admin Only)" (809693); the third import link (574784)
+    sits under `ng-if="isAdmin && watchface"`. The legacy upload page takes a `.face` file exported from Facer for Android,
+    "Submit your .face file here" (513909), and after submission "we will notify you / with next steps shortly." (517647,
+    517727). "API" and "bulk"
+    occur 0 times in the file.
+  - [RENDERED] Paid faces are also reviewed by hand: "to pass through our QA process before going live." (646634) and
+    "We’ll review your designs to make sure they meet the quality standards for publishing and" (1069049).
+  - [RENDERED, a member, 2023] To "Is it the only way to create my Watch Faces and upload them here to Facer?"
+    (`facer-third-party-tools.txt:25`) a member answers "the Facer Creator is the only way to make Facer Faces" (`:39`).
+  - [INFERENCE] Tick 7 fixed the rule before this read: "If the terms forbid automated access, or each face needs an owner
+    click, kill (a) fires" (`facer.md:51-52`). Both halves now hold. The colony's agent is "software"
+    and an "agent" in the clause's own words, and the exceptions cover only Facer's software and ordinary browsers. **The
+    weak point:** the clause is standard anti-scraping wording, and a lenient reading lets an agent drive an ordinary
+    browser. Even on that reading there is no API, CLI or bulk route, which is the fact that killed Fitbit ("each face is
+    uploaded by hand", `docs/REJECTED.md:1218`). So G3 fails on the Fitbit standard, and Facer's terms also bar the one
+    workaround in writing.
+- **G1 fee: PASS. Kill (c) does not fire.** [RENDERED] "Creation of an Account and use of basic Services is free."
+  (461897). Pro is optional: "Start free, unlock advanced tools with Pro, or apply to Partner" (251879). A partner gets
+  Creator Pro "Enabled automatically with \'Partner\' status" (449417; the raw bytes escape the quotes). Every whole-word
+  "fee" in the file is legal text (attorneys' and arbitration fees, contest rules) or the optional "Paid Features" (461691).
+  None is a fee to publish or to join.
+- **G2 payout: UNKNOWN. Kill (b) does not fire.** [RENDERED] "Earnings are calculated monthly and / distributed through
+  supported payout options." (1070599, 1070660). No rail is named: "PayPal", "Payoneer", "Tipalti", "W-8", "W-9", "KYC",
+  "passport" and "Israel" each occur 0 times. "Stripe" appears only for buyers' subscriptions (`isStripePurchase()`,
+  449592) and as an admin revenue column (85115). There is no camera or identity step. The three "camera" hits are icons
+  for a comment attachment (204977), a video upload (605200) and an editor screenshot (780443). "Selfie" is the social
+  "Looks" feature ("Moderate wrist selfies", 982906). App users warrant "you are not located in a country that is"
+  (472805) "subject to a U.S. Government embargo" (472855). [INFERENCE] Israel is not under a U.S. embargo, so this clause
+  does not exclude it.
+- **G4 AI: UNKNOWN, leaning PASS. Kill (d) does not fire.** [RENDERED absence] No AI rule appears in the 464 templates:
+  "artificial", "generative", "AI-generated", "Midjourney" and whole-word "AI" each occur 0 times. The rules that apply:
+  the user warrants that "your User Content is original" (466221); content must not be "false, misleading or deceptive;"
+  (473756); and the partner FAQ welcomes "any style is welcome, as long as" it is original and high-quality (1071976).
+  Every face has a free-text description (770214). [INFERENCE] AI use can be declared there. Whether AI output counts as
+  "original" is a legal question that Facer's text does not answer.
+- **G7 brand-only name: UNKNOWN, leaning PASS.** [RENDERED] The profile is public: "and other Account holders will be
+  able to view your profile information / (including your name, photograph, biography and city or country)." (416389,
+  416470). Country is "Optional. Shown on your public profile and watchface details." (528628). Accounts for an
+  organisation are foreseen: "accessing and using the Services on behalf of a company (such as your" (458139), and "we’ll
+  also collect your organization’s corporate name." (411204). The terms require "you provide us with accurate, complete
+  and" up-to-date information (460570). The older designer-program page asks by email for "Your full name" (264321).
+  [INFERENCE] That name goes to Facer, not to the public.
+
+### Also found (outlook, not a gate)
+
+- [RENDERED] Free faces earn nothing, and Facer may sell them: "under this license, Little Labs will have the right to
+  commercialize / your User Content without any compensation to be paid to you." (465969, 466047).
+- [RENDERED] Commercial use is barred unless the terms allow it: "Use the Services or Content, or any portion thereof,
+  for any / commercial purpose or for the benefit of any third party or in any" manner not permitted (476106, 476176).
+  [INFERENCE] Selling runs only through the partner contract, and the share stays private (tick 7, `facer-premium-admission.txt:316`).
+- **Correction to tick 7 ("is in no capture").** "<li>Your watch faces must have received at least 5,000 syncs in the
+  past 30 days.</li>" (1072951) is in the capture, inside an HTML comment. The comment opens at 1072779
+  (`\x3c!-- <li>You must be an independent designer`) and closes at 1073541 (`comment threads, etc.</li> --\x3e`), so
+  the page does not show it. The live bar is computed in code. The apply button is disabled unless
+  `canApplyToPartnerPlan()`, and it shows `{{ getPartnerRequirementLabel() }}` (1066468). Neither function's text is in
+  this file. The older designer-program page says "apply again after you have an original design that hits 2500 syncs."
+  (265765) and "Most designers will not be accepted and there are many reasons why." (265443).
+
+### Kills settled
+
+| Kill | Result | Basis |
+|---|---|---|
+| (a) created or published only by hand | **FIRES** | Terms 475268-475582; one form per face; `.face` import admin-only (807374, 809693); no API or bulk route |
+| (b) payout excludes Israel or needs a camera | does not fire | Rail unnamed (1070660); no camera or identity step in 464 templates |
+| (c) any creator fee | does not fire | 461897; Pro is optional and free for partners (449417) |
+| (d) AI banned or undeclarable | does not fire | No AI rule; a free-text description on every face (770214) |
+
+### Verdict and reopen trigger
+
+**DEAD on G3 (kill (a)).** Deciding this row does not need the step-8 question. **Reopen** if Facer ships a creator
+upload API or bulk import, or confirms in writing that an agent may operate Facer Creator to publish faces for a brand
+account. If the board wants to test that before closing the row, send one written question from the brand mailbox to
+`Facer-support@little-labs.com` (`facer-payment-options.txt:29`, dated 2020, may be stale):
+- (1) Given the "engine, software, tool, agent" clause, may an AI agent operating Facer Creator in an ordinary browser create and publish faces for a brand account?
+- (2) If yes: can a partner in Israel be paid, by which method, and does onboarding need a selfie or video step?
+- (3) If yes: may faces made with AI tools be published if the description says so?
