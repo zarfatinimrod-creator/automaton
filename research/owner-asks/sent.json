@@ -1,0 +1,5 @@
+{
+  "$comment": "What scripts/brand_mail.py has sent, one record per message, appended by the script after a real send and committed by .github/workflows/brand-mail.yml. repliesRecorded is written by hand when a reply is read and recorded in the venue's note: {venue, recordedAt, reading: YES | NO | NOT ANSWERED, inReplyCount}. An empty sent list means nothing has been sent.",
+  "sent": [],
+  "repliesRecorded": []
+}

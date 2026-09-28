@@ -4,6 +4,13 @@
 written yes/no question from the brand mailbox (`docs/OWNER_STEPS.he.md` step 8; `research/breadth/BOARD.md` Q2).
 An address appears only where a capture under `research/rendered/` holds it, cited `file:line`.
 
+**The messages' single source is `research/owner-asks/questions.json`** (subject, body, recipient, route, pre-send
+check, held questions, follow-up delay per venue). `scripts/brand_mail.py` sends from that file and nothing else. This
+note keeps the rationale and quotes the same messages so they can be read in context;
+`src/__tests__/revenue/owner-asks.test.ts` fails the build if a quoted subject, body or recipient here differs from the
+JSON (paragraph by paragraph, ignoring this note's line wrapping). Edit both together. How a message actually leaves is
+in §"How it is sent" at the end.
+
 ## When and how to send
 
 - **When:** in the first tick after both are true: step 8 is done, and the brand-mailbox connector (a *second* Gmail

@@ -1,0 +1,81 @@
+{
+  "$comment": "The single source scripts/brand_mail.py sends from. brand-mailbox-questions.md holds the rationale and quotes these messages; src/__tests__/revenue/owner-asks.test.ts fails if the two disagree. Bodies are one line per paragraph (the note hard-wraps them). Nothing here has been sent: research/owner-asks/sent.json is the record of what has.",
+  "signature": "Mehudak (מהודק)",
+  "disclosure": [
+    "run by an AI agent acting on the brand's behalf",
+    "this message was written and sent by that agent"
+  ],
+  "venues": [
+    {
+      "venue": "crazygames",
+      "name": "CrazyGames",
+      "order": 1,
+      "to": "technical-support@crazygames.com",
+      "route": "Email to technical-support@crazygames.com: the developer terms name it for support \"with the submission of its Game(s)\" (crazygames-developer-terms.txt:334-336). Alternative: the form https://developer.crazygames.com/support (crazygames-faq.html:3243), on the portal host that returns 403 here (crazygames.md:78). Not developer-relations@ (terms:547, termination notices).",
+      "subject": "Question: automated submission through the Developer Portal",
+      "body": "Hello CrazyGames team,\n\nMehudak (מהודק) is a small brand that plans to submit original single-player HTML5 games to CrazyGames. Its accounts are run by an AI agent acting on the brand's behalf; this message was written and sent by that agent.\n\nOne question, yes or no: may a developer account submit and update games through the Developer Portal using an automated browser session run on the developer's behalf? If there is an upload API instead, a link to it would answer the question too. We are asking for your current rule only, not for an exception or a commitment.\n\nThank you,\nMehudak (מהודק)\n",
+      "preSend": "Re-read research/measurements/crazygames.md. If a render has since settled the decisive question, send the held question instead, or nothing.",
+      "heldQuestions": [
+        {
+          "text": "Can Tipalti pay a developer resident in Israel, and by which methods?",
+          "to": "finance@crazygames.com",
+          "when": "only after a written yes to the first question, as its own message"
+        }
+      ],
+      "followUpAfterDays": 7
+    },
+    {
+      "venue": "wix",
+      "name": "Wix App Market",
+      "order": 2,
+      "to": "support.developers@in.wixanswers.com",
+      "route": "Email to support.developers@in.wixanswers.com, the App Market Partner Agreement's notices address (wix-partner-agreement-body.txt:547); the message says it is not a notice. The guidelines' \"contact us\" is a chatbot (wix-app-market-guidelines.html:6), and a chatbot answer is not a written reply.",
+      "subject": "Partner Agreement 6.3.5(iii) and (v): can they be met at no cost?",
+      "body": "Hello Wix Developers team,\n\nMehudak (מהודק) is a small software brand considering a paid app for the Wix App Market. Its accounts are run by an AI agent acting on the brand's behalf; this message was written and sent by that agent. It is a question, not a notice under section 14.1.\n\nBefore each submission we would scan the app with a free, independent open-source security scanner (for example OWASP ZAP) and keep the report, and a second, separate AI agent would review every code change, with the review recorded.\n\nOne question, yes or no: would that meet sections 6.3.5(iii) and 6.3.5(v) of the App Market Partner Agreement (version effective June 30, 2026)? If not, a pointer to the evidence you accept would help. We are asking for your current rule only, not for an exception or a commitment.\n\nThank you,\nMehudak (מהודק)\n",
+      "preSend": "The ZERO-TESTS row 65 render comes first (wix-app-market.md:538); send only if it is silent on agreement :185.",
+      "heldQuestions": [
+        {
+          "text": "Can a partner resident in Israel, as an individual, receive App Market payouts through Tipalti?",
+          "to": null,
+          "when": "only after a written yes, in the same thread"
+        }
+      ],
+      "followUpAfterDays": 7
+    },
+    {
+      "venue": "spreadshirt",
+      "name": "Spreadshirt",
+      "order": 3,
+      "to": null,
+      "route": "Not in any capture: all six Spreadshirt captures are 403/406 with no body (spreadshirt.md:9-16). Find the contact route in the venue's own help page before sending; until an address is recorded here, this script refuses to send.",
+      "subject": "Question: automated design uploads by a partner",
+      "body": "Hello Spreadshirt partner team,\n\nMehudak (מהודק) is a small design brand considering the Spreadshirt Marketplace and a Spreadshop. Its accounts are run by an AI agent acting on the brand's behalf; this message was written and sent by that agent.\n\nOne question, yes or no: may a partner upload and publish designs through an automated process, either an API or an automated browser session run on the partner's behalf? If there is an API for this, a link to its documentation would answer the question too. We are asking for your current rule only, not for an exception or a commitment.\n\nThank you,\nMehudak (מהודק)\n",
+      "preSend": "Send unless the queued renders (rows 63-64, spreadshirt.md:97) have produced a written rule on uploads.",
+      "heldQuestions": [
+        {
+          "text": "Is PayPal payout available to a partner resident in Israel?",
+          "to": null,
+          "when": "only after a written yes, in the same thread, first of two, one at a time"
+        },
+        {
+          "text": "Must a partner's name and postal address be shown to EU buyers?",
+          "to": null,
+          "when": "only after a written yes, in the same thread, second of two; the answer goes to the owner as BOARD.md Q10's yes/no"
+        }
+      ],
+      "followUpAfterDays": 7
+    },
+    {
+      "venue": "n8n",
+      "name": "n8n paid templates",
+      "order": 4,
+      "to": null,
+      "route": "The general contact form https://n8n.io/contact/ (n8n-creators.html:35), which needs a browser session; this script sends email only. No n8n address is in any capture; the addresses at n8n-creators.html:36 are individual creators' and are never used.",
+      "subject": "Question: paid templates from an AI-operated creator account",
+      "body": "Hello n8n team,\n\nMehudak (מהודק) is a small brand considering publishing workflow templates in the n8n template library. Its accounts are run by an AI agent acting on the brand's behalf, and each template would say so; this message was written and sent by that agent.\n\nOne question, yes or no: may such a creator account offer paid templates in the library? If yes, the condition that unlocks paid templates (for example verified status or a number of accepted templates) would help. We are asking for your current rule only, not for an exception or a commitment.\n\nThank you,\nMehudak (מהודק)\n",
+      "preSend": "Render the forum thread first (n8n-templates.md:120-123); send only if it is silent.",
+      "heldQuestions": [],
+      "followUpAfterDays": 7
+    }
+  ]
+}
