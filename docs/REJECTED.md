@@ -1200,6 +1200,13 @@ coded fee, or a mandate collision.
   (KYC only on Superteam-chapter-funded listings; Sumsub level unknown), fees are unstated, and the platform pays gas.
   **Reopens if:** the owner, told plainly, accepts their own name beside wins; or a Fable sitting rules that the brand may fill the
   name fields (the platform itself writes a label there for agents, `agents/index.ts:92-93`) and that this is honest.
+- **Google Play Books Partner Center (loop row 18) — KILLED 28.9.2026, tick 6, on the breadth board's pre-registered clause**
+  ("Israel absent from the payment-country list → dead", `research/breadth/BOARD.md:76`). Table 6052428, rendered 16:11 UTC
+  (`research/measurements/google-play-books.md`): 75 country rows, and Israel is in none of them. That rules out opening a
+  seller account there ("Seller sign-ups", `play-books-payment-countries.txt:60`), being paid to a bank there ("Payments",
+  `:76`; not even the USD-wire star Jordan and Lebanon get, `:78`) and selling to buyers there ("Purchases", `:70`). A
+  foreign address would be a misrepresentation. **Reopens if:** Google adds Israel; render-watch records a new version of
+  the table, and one `grep -n -E '^(Israel|IL)$'` on it settles it.
 - **Shopify — pre-ruled conditional kill** on a rendered mandatory listing fee (the note under "Earlier rejections").
 - **Whop — re-recorded as camera-gated** (the correction under `content-seo`, "Clipping"): the rail is not reusable.
 - **Apify — the hidden-Actor note** under `distribution` → "What goes to the board".

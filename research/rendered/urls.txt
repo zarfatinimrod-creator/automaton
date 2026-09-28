@@ -395,3 +395,5 @@ https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=in
 https://developer.spreadshirt.net/bin/view/API/Spreadshirt%20Public%20Shop%20API%20Documentation/API%20REST%20Resources/Design%20Details/	spreadshirt-api-design-details
 # research/channel-loop/ZERO-TESTS.md row 64 — Spreadshirt (17): a second route, seen in tick-6 search results (28.9.2026).
 https://www.spreadshop.com/blog/2018/01/30/new-upload-guidelines/	spreadshop-upload-guidelines-2018
+# research/channel-loop/ZERO-TESTS.md row 65 — Wix App Market (11): the security-and-privacy submission step, linked from a tick-6 capture (28.9.2026).
+https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/add-security-and-privacy-information	wix-security-privacy-info
