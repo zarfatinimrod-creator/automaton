@@ -18,10 +18,10 @@ The forecast is in `research/channel-loop/FORECAST.md`.
 
 | | |
 |---|---|
-| Last tick | tick 3: 28.9.2026 ~02:10 UTC — CrazyGames terms PDF read (no fail clause, no AI clause, non-exclusive by default, paid 30 days after invoice); Polar lists Israel for payouts; the Wix agreement body was not in the capture; 3 maintenance items fixed. 7 pages queued for tick 4 |
+| Last tick | tick 4: 28.9.2026 07:12 UTC — Fable sitting ruled rows 8-11 (floors = fraction of own target; il-biz-tools at ₪0; bounty week 1 struck as an instrument fault; T1 floor 5 views/56 days); 8 pages read (Polar killed on a selfie; Wix and CrazyGames NEEDS_MORE; Bituach Leumi exempt groups); mcp-il-tools' two defects fixed; owner directive "many places, many sales" recorded, breadth sweep running |
 | Branch | `claude/new-session-j071dx`, restarted from `main` after PR #4 merged (`baab472`). The standing consent means the loop merges its own green PRs. |
 | Routine | "Channel loop tick", every 6 h (`11 1,7,13,19 * * *` UTC), fires into this session; see §11 |
-| Fable | available at 27.9 ~21:30 UTC (two agents ran). The daily sitting is the ~07:11 UTC tick. |
+| Fable | the 28.9 07:12 sitting ran two agents (rows 8-11), no 429. Next sitting: the breadth board (row 12) when the sweep lands, else 29.9 ~07:11. |
 | Running channels / ledger | 0 / ₪0.00 |
 
 ## 1. Protocol (short form; the full text is in `BOARD-LOOP.md` §The tick protocol)
@@ -106,8 +106,8 @@ Stages run in this order:
 | apify-actors (Actor over data.gov.il, free) | parked-owner | Apify, `observable:false`; declared a ₪0 instrument | 6a (Apify sign-up + `APIFY_TOKEN`) | pre-write the "Publish" message; check on main that the publish job creates the Actor as private | secret present, so the publish job stops being a no-op |
 | il-biz-tools (Hebrew business tools) | launch-ready except one gap | Gumroad connector wired (`colony.yml`) | deploy route: ask 1 (network) or the Netlify click in 6b | Done in tick 1: `_site` ships only files that shipped pages load; the accessibility statement is in; the Facebook/WhatsApp line is gone (364 tests). **The publish gate blocks until a brand-owned accessibility contact exists (proposed step 8, brand mailbox).** | the network allowlist is widened AND a brand contact exists |
 | pcn874 (VAT detailed-report file) | admitted: free validator page to build | Gumroad (same account) | none for the free page; 2, 3, 6b, 5 for the paid builder | build a client-side validator page inside il-biz-tools (2-3 days) once that site's preparation is done | rides the il-biz-tools deploy |
-| oss-bounties (Algora) | parked-window (week 1 of 4 read) | Algora via Stripe Express. **Stripe does not pay Israel self-serve** (`research/measurements/stripe-israel.md`), so the rail is in doubt. Fable, `FABLE_QUEUE` row 10. | step 4 held | Week 1 (27.9 23:43): **108 claimable, $74,065**, of 551 labelled (3 unserved), `research/measurements/algora-supply.md`. The board expected under 10. The next reading comes Mondays 06:23 UTC. | the week-4 mean AND a Fable ruling on the payout rail |
-| mcp-il-tools (free MCP server) | building (preparation), then parked-owner | none, a ₪0 channel test | proposed step 9 (npm), 5, 7 | fix the two defects (`README.md:21`, `:32`); `mcp-publish.yml` gated on `NPM_TOKEN` | npm yes plus token |
+| oss-bounties (Algora) | parked-window (instrument fault: week 1 struck, counter being fixed; the 4-week clock restarts at the first corrected run) | Algora → Stripe Connect Express. Algora's code lists Israel for Express (code grade); the gap is its silent US-country fallback, caught by step 4b's stop rule (`RULING-2026-09-28-bounty-rail.md` §2, §3.5) | 4a (sign-in, rides step 7); 4b held | The counter fix (policy reads visible text only, `not-a-payer`, `claimableFresh365`) is being applied (workflow `apply-rulings-28-9`); then one `algora-supply.yml` dispatch on main = corrected week 1 | the corrected week-4 mean AND, for 4b, a reward held as a credit |
+| mcp-il-tools (free MCP server) | building (preparation), then parked-owner | none, a ₪0 channel test | proposed step 9 (npm), 5, 7 | Tick 4: both defects fixed test-first (`aca0900`: npx symlink start guard; `hebrew_date` in every timezone, ICU-checked 1900-2100); 19/19. Next: `mcp-publish.yml` gated on `NPM_TOKEN` | npm yes plus token |
 | T1 web arm (faceless-YouTube experiment) | launch-ready but for a counter key | ₪0 experiment | deploy route (ask 1) + a PostHog project named after the brand, with 'Discard client IP data' on and GeoIP off | Tick 2: `page.py` has an optional anonymous counter, off by default and byte-identical (132 tests). Next: create the PostHog project through the attached connector, pre-register the reach floor, choose the sub-brand name. | deploy route open; day 56 counts from that deploy |
 | T1 video | held by protocol | ₪0 experiment | Stage A, only after the day-56 web read | none | web arm passes at day 56 |
 
@@ -117,15 +117,16 @@ The full reasoning for each is in `BOARD-LOOP.md`. The ₪0 test runs first and 
 
 | # | Candidate | ₪0 test | Status |
 |---|---|---|---|
-| 6 | CrazyGames Basic Launch: original HTML5 games under the brand | render the FAQ, payouts, developer terms and Basic Launch pages → `crazygames.md` | **NEEDS_MORE** after tick 3. The terms PDF (read 28.9) has no clause that fails the test: any physical person or entity may contract, no country clause, non-exclusive by default (+50% for an opt-in 2-month exclusivity), paid 30 days after invoice (NET 60 is the Payouts page, not the contract), no developer fee, and no AI or automation clause. Open: the binding "Publisher Guidelines" (ZERO-TESTS rows 22-24), the revenue rate (a formula with no number), Israel payability (Tipalti onboarding), a brand-name payee (the terms want the legal name in notices), and an uncapped IP indemnity for the board to weigh. |
+| 6 | CrazyGames Basic Launch: original HTML5 games under the brand | render the FAQ, payouts, terms, requirements pages → `crazygames.md` | **NEEDS_MORE** after tick 4. The requirements pages hold no AI or automation rule and name no upload API (portal only); Basic Launch: ≤50MB initial download, PEGI12, no external ads, SDK optional. Open: may a runner operate the portal (one written question from the brand mailbox, step 8), the Basic Launch metrics and gameplay pages (ZERO-TESTS rows 26-27), Israel payability (Tipalti). |
 | 7 | Paid Astro themes in Astro's Theme Catalogue, sold on Gumroad | render https://portal.astro.build/api/themes?price[]=paid and the unfiltered listing → read the ordering | returned 27.9: **NEEDS_MORE**. 638 paid themes; no stars or installs field; ordered by `updatedAt` within runs. Next: the astro.build source on GitHub for the display order and submission (`astro-themes.md`). |
 | 8 | Mozilla Client Bug Bounty via Bugzilla REST | a 30-day private dry run, nothing filed; render the bounty page and the Bugzilla account policy | not run; stop if a private repo's Actions minutes would cost money |
-| 9 | Polar.sh as a second merchant-of-record rail (rail research, not a channel) | render Stripe's country and cross-border pages, then Polar's supported-countries page | tick 1 **FAILS_TEST** (Stripe alone); tick 2 reopened (Global Payouts lists Israel); tick 3 **NEEDS_MORE**: Polar's own Payouts list names Israel (`polar-supported-countries.txt:246`), paid via Stripe Connect Express from a US platform under a recipient agreement; the page never names Global Payouts (`polar-rail.md`). Open: Israeli-individual onboarding (row 19), acceptable use (row 20), fees (row 21). The algora rail question stays with Fable (row 10). |
-| 11 | Wix App Market app for Israeli compliance | render the payments FAQ, payout-account page, partner agreement and payouts dashboard | **NEEDS_MORE** after tick 3. The $200 threshold rolls over (tick 1); Tipalti (tick 2); a paid app cannot publish before payout setup, and a teammate with Manage Earnings can do it (tick 3). The partner-agreement capture was only the docs wrapper: the body is at https://dev.wix.com/app-market-partner-agreement (row 18). Israel still UNKNOWN (`wix-app-market.md`). |
+| 9 | Polar.sh as a second merchant-of-record rail (rail research, not a channel) | render Stripe's and Polar's pages | **FAILS_TEST (killed 28.9)**: Polar's own account-reviews doc requires an ID "along with a selfie" through Stripe Identity (read from its public repo); the owner forbids a camera step. Fees would have passed (5% + 50¢, nothing up front). Reopens only if Polar documents owner verification without a selfie (`polar-rail.md`). |
+| 11 | Wix App Market app for Israeli compliance | render the FAQ, payout-account page, agreement body, payouts dashboard | **NEEDS_MORE** after tick 4. The agreement: the $200 floor rolls over with no expiry; forfeiture only for breach; only comprehensively sanctioned territories barred (Israel not among them); individuals may partner; USD by wire against a tax invoice; no support SLA or AI clause. New ₪0 risks: a third-party security test before submission and a documented multi-developer review (ZERO-TESTS row 28). Israel still turns on the Tipalti form. |
 | 12 | Topcoder auto-scored challenges | fetch https://api.topcoder.com/v6/challenges?status=ACTIVE and the member terms / AI policy | returned 27.9: **NEEDS_MORE, leaning FAILS_TEST**. There was one active challenge; it is human-reviewed Development, and none are auto-scored (`topcoder.md`). |
 | — | **Bituach Leumi cost of step 2** (not a channel: the ₪0 rule's check before the owner is asked) | render https://www.btl.gov.il/Insurance/National%20Insurance/type_list/Self_Employed/Pages/rates.aspx, https://www.btl.gov.il/Insurance/Rates/Pages/%D7%9E%D7%99%20%D7%A9%D7%90%D7%99%D7%A0%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D%20%D7%95%D7%91%D7%A2%D7%9C%D7%99%20%D7%94%D7%9B%D7%A0%D7%A1%D7%94%20%D7%A9%D7%9C%D7%90%20%D7%9E%D7%A2%D7%91%D7%95%D7%93%D7%94.aspx and https://www.kolzchut.org.il/he/%D7%93%D7%9E%D7%99_%D7%91%D7%99%D7%98%D7%95%D7%97_%D7%9C%D7%90%D7%95%D7%9E%D7%99_%D7%9C%D7%A9%D7%9B%D7%99%D7%A8_%D7%A2%D7%9D_%D7%9E%D7%A7%D7%95%D7%A8%D7%95%D7%AA_%D7%94%D7%9B%D7%A0%D7%A1%D7%94_%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D → `research/measurements/step2-cost.md` | tick 1 dispatch |
 | 13 | AI-allowed prize-event intake (instrument only) | weekly read of https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json | not built |
 | 14 | HTML5 syndication (GameMonetize, GameDistribution, Playgama) | none until a game passes CrazyGames Basic Launch | waiting |
+| 15 | Superteam Earn agent bounties (`type=bounty` only) | T1 weekly CI count of agent-eligible dev bounties (one brand agent registration, no submissions); T2 render FAQ/terms/agents page; T3 read the submission schema from SuperteamDAO/earn; T4 render the onboarding of an Israeli crypto off-ramp for the camera question | **admissible in principle, admitted to nothing** (`RULING-2026-09-28-bounty-rail.md` §6); USDC receipts would book at ILS value on receipt with the tx hash, flagged `unconverted`. Tests T1-T4 dispatched as ZERO-TESTS rows by `apply-rulings-28-9`; admission is row 12's call. |
 
 (Ranks 1-5 and 10 are the existing channels in §3.) Rejected from the queue, with reasons, in `BOARD-LOOP.md`:
 - Higgsfield hosting;
@@ -141,10 +142,12 @@ The full reasoning for each is in `BOARD-LOOP.md`. The ₪0 test runs first and 
 ## 5. Measurement calendar
 
 No read is dated yet, because every clock starts with an owner action:
-- **Algora supply:** weeks 1-4 from the first Monday after PR #3 merges (06:23 UTC).
+- **Algora supply:** week 1 (27.9) struck as an instrument fault; weeks 1-4 restart at the first corrected run after the counter fix lands on main (expected read late October 2026).
+- **Superteam Earn T1:** weeks 1-4 from its first CI count.
+- **il-biz-tools:** measuring from its public deploy (D0): 2 weekly KPI writes by D0+21, reach read at D0+56 (<5 stranger page views → paused at ₪0 until the domain), first Gumroad sale → live (floors ruling, Row 9).
 - **Apify stranger users:** day 30 from the Publish click.
 - **il-biz-tools and pcn874 page views:** 8 weeks, and revenue at 90 days, from the domain deploy.
-- **T1 web arm:** day 56 from its deploy.
+- **T1 web arm:** day 56 from its public deploy plus a recorded discovery submission; fewer than 5 engaged stranger page views → Stage A is never asked (PREREG §3).
 - **K3:** day 112.
 
 ## 6. Owner-ask batch (single ordered list, under the ₪0 rule)
@@ -160,13 +163,16 @@ No read is dated yet, because every clock starts with an owner action:
    then one Publish click when told.
 3. **(15-20 min)** Step 7: create the GitHub organisation `mehudak` (Free plan), transfer the repo, re-grant the
    Claude GitHub connector, and create the `mehudak-ci` machine account. This also gives the MCP registry a free
-   namespace (`io.github.mehudak`) in place of the domain.
+   namespace (`io.github.mehudak`) in place of the domain. The same sitting creates `BRAND_GITHUB_TOKEN` and does
+   **step 4a** (2 min, no identity: sign in to algora.io once with the brand machine account), per the bounty ruling §4.
 
 **Only when a paid product is ready, and only after its cost is checked:**
 4. Step 2, the עוסק פטור file and Bituach Leumi. Before it is asked for, the colony renders what registering costs
    someone in the owner's position (§4 row "Bituach Leumi"). **Answered 28.9: the owner is not salaried.** Opening the file
    then replaces the ₪266 non-working minimum with a ~₪265 self-employed floor, so it adds about ₪0 a month [INFERENCE,
-   `step2-cost.md`]; the one gap is Bituach Leumi's list of exempt groups, rendered next.
+   `step2-cost.md`]. Tick 4 read Bituach Leumi's exempt groups: for anyone liable for the minimum today the file adds ~₪0;
+   for some exempt groups up to ~₪265. One optional private yes/no settles it: "Are you exempt from Bituach Leumi
+   contributions today?" Asked only with step 2 itself.
 5. Step 3, Gumroad. It is free to open, and fees come only out of sales. It needs identity: ID, proof of address and
    an Israeli bank account.
 
@@ -179,23 +185,26 @@ make it private (Actions minutes become metered, possibly a cost) or accept the 
 - an npm account `@mehudak` and the `NPM_TOKEN` secret (step 9).
 
 **Held, not asked:**
-- step 4, until the week-4 supply read;
+- step 4b (the Stripe form, identity), until the corrected week-4 mean is at least 3 AND a first reward is held as a
+  credit; three stop rules are printed on it (US country/bank/SSN shown, any camera step, any fee);
+- proposed step 12 (Superteam Earn claim: sign-in, talent profile, claim code, wallet address; free), until its
+  tests T1-T4 pass and row 12 admits it;
 - YouTube Stage A, until the day-56 web read;
 - Apify KYC, until 50 stranger users;
-- the CrazyGames, Polar, Wix, Topcoder and Bugzilla accounts, until their ₪0 tests pass;
-- `BRAND_GITHUB_TOKEN`, until step 4.
+- the CrazyGames, Wix, Topcoder and Bugzilla accounts, until their ₪0 tests pass (Polar was killed 28.9: selfie).
 
 ## 7. Kills and admissions made by the loop
 
-None yet.
+- **28.9, Polar (candidate 9) killed:** its owner verification needs a selfie (`polar-rail.md`, last section).
+- **28.9, oss-bounties week 1 struck** (not a kill): an instrument fault, per the bounty ruling §3.
 
 ## 8. Open Fable items
 
-These are in `logs/FABLE_QUEUE.md`, rows 8-11, for the ~07:11 UTC sitting:
-- row 8: reconcile the kill floor in code (₪500 in 30 days after 45 days, `types.ts:214-216`) with the lines' own rules (₪200 or ₪150 after 90 days, `portfolio.ts:114,202`);
-- row 9: rule on il-biz-tools' contradicted ₪400: waive the kill rule for the measurement, or plan it at ₪0;
-- row 10: the Stripe rail and algora week 1's 108 claimable bounties (tick 3 adds: Polar pays Israel through Connect Express under a recipient agreement, `polar-rail.md`);
-- row 11: pre-register the T1 web-arm reach floor before any deploy.
+Rows 8-11 were decided at the 28.9 07:12 sitting (`logs/FABLE_QUEUE.md`; rulings in `research/channel-loop/RULING-2026-09-28-*.md`
+and `research/faceless-youtube/PREREG-DECISIONS.md` §3). Open:
+- **row 12, the breadth board** for the owner's 28.9 directive, when the Opus sweep lands (`research/breadth/`);
+- queued by the floors ruling, not yet a row: apify-actors' ₪200 `inferred` against its own "forecast ₪0" basis;
+  `staleDays: 21` on monthly-payout lines; Apify's $20 payout minimum against a trailing-30 floor; the T1 sub-brand name.
 
 ## 9. Maintenance backlog
 
@@ -205,15 +214,24 @@ Fixed in tick 3 (28.9, commit `4c73f67`):
 - **Two ceilings.** `docs/INCOME_PLAN.he.md` §1ב carries a note that its 4.9 range is superseded by ₪1,500.
 - **`setup-done` on main.** Already fixed: main's `REPORT.md:75` tells the owner to tell Claude, and Claude runs the command.
 
+Fixed in tick 4 (28.9): the policy check read permission sentences inside HTML comments (`policy.ts`), which let a
+honeypot repo into the bounty count; being fixed by `apply-rulings-28-9`. `scripts/merge-worktree.sh` carried a
+stale Fable trailer and session link (`4cbb3bd`).
+
 Open:
 - **Kill-test wording.** `BOARD-LOOP.md:127` says "the €100 threshold plus NET-60" for CrazyGames. The contract says 30 days after invoice; NET 60 is the Payouts page. BOARD-LOOP is the Fable design, so the correction is noted here and left for the next Fable sitting to adopt.
 
 ## 10. Next tick's first action
 
-**Tick 4 (~07:11 UTC, the Fable sitting):**
-- The Fable sitting takes `FABLE_QUEUE` rows 8-11 (at most 2 agents).
-- One render-watch dispatch for ZERO-TESTS rows 18-24: the Wix agreement body, Stripe's required verification information, Polar acceptable use and fees, and CrazyGames' requirements (intro, quality, ads).
-- Read them into `wix-app-market.md`, `polar-rail.md` and `crazygames.md`.
+**Tick 5 (13:11 UTC, or the ~60-minute continuation):**
+- Merge the `apply-rulings-28-9` worktrees with `scripts/merge-worktree.sh` (floors + bounty rail first, then the T1
+  counter), then on main dispatch `algora-supply.yml` once: that run is the corrected week 1.
+- When the breadth sweep lands: save `research/breadth/`, run the breadth board (row 12, one Fable agent), then fold its
+  admitted engines into §4 and §6.
+- One render-watch dispatch for ZERO-TESTS rows 26-28 and the four Superteam rows.
+
+**Tick 4 (done 28.9):** Fable rows 8-11 ruled; 8 pages read (Polar killed, Wix and CrazyGames NEEDS_MORE, Bituach
+Leumi exempt groups); mcp-il-tools defects fixed; the owner's breadth directive recorded and swept.
 
 **Tick 3 (done 28.9):** the CrazyGames terms PDF, the Wix partner pages and Polar's country list read; 3 maintenance items fixed; rows 18-24 queued.
 
