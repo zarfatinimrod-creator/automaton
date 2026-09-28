@@ -15,8 +15,10 @@
  * So the checklist is code, like `rules.ts`, and `owner-steps.test.ts` holds the
  * two invariants prose could not:
  *
- *   1. There are exactly SEVEN steps. Adding an eighth fails the build, which
- *      is the point — an eighth step needs a decision, not a commit.
+ *   1. There are exactly EIGHT steps. Adding another fails the build, which is
+ *      the point — a new step needs a decision, not a commit. (It was seven until
+ *      the breadth board of 28.9.2026 decided the eighth: the brand mailbox,
+ *      research/breadth/BOARD.md Q2. The test was changed on that ruling.)
  *   2. Every live line in `portfolio.ts` is unlocked by at least one step, and
  *      every line id named here is a live line. A line blocked on nothing is a
  *      line whose blocker was forgotten; a step unlocking nothing is a step that
@@ -70,6 +72,19 @@
  * PR, and it carries three `stopIf` rules. BRAND_GITHUB_TOKEN is made in step 7's
  * sitting and pasted in step 6 with the others; the intake is gated in code until
  * the board's clock allows it, so the token's presence changes nothing before then.
+ *
+ * Breadth board of 28.9.2026 (research/breadth/BOARD.md), two changes:
+ *
+ *   - Q2: step 8, the brand mailbox, is ADDED and asked now — ordered second,
+ *     straight after merge-pr. A Google account under the brand name, so one
+ *     account later serves Play Books, YouTube and Search Console; free, about ten
+ *     minutes, no identity beyond a phone check. Every other step keeps its number
+ *     and moves one place down the order: 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6.
+ *   - Part B(b): 4a is DROPPED. Its only stated reason — creating the Algora user
+ *     a reward's credit needs — was refuted in Algora's own code (a /claim creates
+ *     the solver's user: workspace.ex ensure_user → create_user_from_github), and
+ *     MISSION rule 1 says never invent a step that isn't required. Step 4 is 4b
+ *     alone, held as before, and its form begins with the sign-in.
  */
 
 import { DEFAULT_PORTFOLIO } from "./portfolio.js";
@@ -82,7 +97,8 @@ export type OwnerStepId =
   | "algora-stripe"
   | "domain"
   | "ci-tokens"
-  | "github-org";
+  | "github-org"
+  | "brand-mailbox";
 
 export interface OwnerStep {
   id: OwnerStepId;
@@ -93,7 +109,10 @@ export interface OwnerStep {
    * happened.
    */
   number: number;
-  /** Execution order, 1..7, as ruled by the board: 1, 2, 3, 5, 7, 4, 6. */
+  /**
+   * Execution order, 1..8, as ruled by the boards: 1, 8, 2, 3, 5, 7, 4, 6 (7.9.2026's order with step 8 put second
+   * by the breadth board of 28.9.2026).
+   */
   order: number;
   /** The heading in the Hebrew document. */
   title: string;
@@ -109,7 +128,8 @@ export interface OwnerStep {
    * A half of the step that may be done earlier than its place in the order,
    * and the step it may follow. Only step 6 has one, and it matters: the Apify
    * token is what starts the 30-day stranger count, a month earlier than the
-   * rest of the checklist would allow.
+   * rest of the checklist would allow. (Step 4 had one, 4a, from the bounty-rail
+   * ruling until the breadth board dropped it on 28.9.2026.)
    */
   earlyPart?: { what: string; afterStep: OwnerStepId; minutes: number };
   /**
@@ -164,9 +184,22 @@ export const OWNER_STEPS: OwnerStep[] = [
     },
   },
   {
+    id: "brand-mailbox",
+    number: 8,
+    // Second in the ask-now sequence, straight after merge-pr (research/breadth/BOARD.md Q2 and §"Exact changes").
+    order: 2,
+    title: "תיבת דואר של המותג (חשבון Google בשם המותג)",
+    minutes: [10, 10],
+    unlocks:
+      "A Google account under the brand (Gmail, mehudak) — the inbox every new-account venue needs for verification mail and one-time codes, and the brand-owned accessibility contact that is il-biz-tools' last publish gate. It is a Google account rather than a mailbox elsewhere because the same account later serves Google Play Books Partner Center, YouTube Stage A (the brand Google account T1-PROTOCOL.md already names) and Search Console: one account, several venues (MISSION constraint 2). If Google's sign-up asks for more than a phone number — an ID document, a video or a payment — stop and use a free Outlook.com mailbox instead (IMAP). The owner's own phone number for the sign-up check is allowed (private, no camera); it is never the owner's personal Gmail (PUBLISH-9). The agent reads it and the owner never answers anyone: a second Gmail connector for the brand account in this environment, and for CI an OAuth token or app password in a repository secret. Once step 8 is done, the tick's probe will report the unread count, with accessibility mail unanswered for 7 days as a blocker, and the colony will answer accessibility mail itself — neither exists yet: the probe is an open item of logs/CHANNEL_LOOP.md §1, built when the mailbox exists. Every written question the colony sends a platform from this address discloses that it comes from the company's automated operator (as disclosure.ts does), which is what lets the colony ask the written questions that decide CrazyGames (runner-operated submission) and Spreadshirt (automated uploads). The address is published only as the brand's accessibility contact. Cost ₪0; about ten minutes; no identity step (research/breadth/BOARD.md Q2, 28.9.2026).",
+    lines: ["il-biz-tools"],
+    // Not an identity step and not in the chief audit's catalogue: a brand account asked for by the breadth board.
+    catalogueRef: null,
+  },
+  {
     id: "tax-file",
     number: 2,
-    order: 2,
+    order: 3,
     title: "פתיחת תיק עוסק פטור + רישום בביטוח לאומי",
     minutes: [60, 90],
     unlocks:
@@ -188,7 +221,7 @@ export const OWNER_STEPS: OwnerStep[] = [
   {
     id: "gumroad",
     number: 3,
-    order: 3,
+    order: 4,
     title: "חשבון Gumroad + טוקן",
     minutes: [20, 20],
     unlocks:
@@ -201,7 +234,7 @@ export const OWNER_STEPS: OwnerStep[] = [
   {
     id: "domain",
     number: 5,
-    order: 4,
+    order: 5,
     title: "לקנות דומיין",
     minutes: [10, 10],
     unlocks:
@@ -224,11 +257,11 @@ export const OWNER_STEPS: OwnerStep[] = [
   {
     id: "github-org",
     number: 7,
-    order: 5,
+    order: 6,
     title: "להעביר את הריפו לארגון ב-GitHub (וחשבון מכונה בשם המותג)",
     minutes: [10, 15],
     unlocks:
-      "Takes the owner's name off every raw.githubusercontent.com URL in the repository, and creates the ONE brand machine account GitHub's terms allow alongside a personal account. That account is what authors bounty pull requests and signs in to Algora — an organisation cannot sign in anywhere, so the org alone does not fix the byline. In the same sitting the owner creates its personal access token, BRAND_GITHUB_TOKEN, pasted in step 6 with the others, and signs in to Algora once as that account (step 4a, two minutes) — one sitting rather than two (RULING-2026-09-28-bounty-rail.md §4.1, §4.4). It is an ordinary User account whose login does not end in \"bot\" — Algora's contributor queries drop %bot logins, and a GitHub App (type Bot) fails its human-author check (BOARD-2 §2.1.3(c); bounties/intake.ts brandAccountProblems).",
+      "Takes the owner's name off every raw.githubusercontent.com URL in the repository, and creates the ONE brand machine account GitHub's terms allow alongside a personal account. That account is what authors bounty pull requests and signs in to Algora — an organisation cannot sign in anywhere, so the org alone does not fix the byline. In the same sitting the owner creates its personal access token, BRAND_GITHUB_TOKEN, pasted in step 6 with the others (RULING-2026-09-28-bounty-rail.md §4.4). It is an ordinary User account whose login does not end in \"bot\" — Algora's contributor queries drop %bot logins, and a GitHub App (type Bot) fails its human-author check (BOARD-2 §2.1.3(c); bounties/intake.ts brandAccountProblems).",
     lines: ["oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.6",
     ownerDecision:
@@ -237,25 +270,20 @@ export const OWNER_STEPS: OwnerStep[] = [
   {
     id: "algora-stripe",
     number: 4,
-    order: 6,
+    order: 7,
     title: "Stripe Connect Express דרך Algora",
-    // 4a (2 minutes, in step 7's sitting) + 4b (15 minutes, held) — RULING-2026-09-28-bounty-rail.md §4.1.
-    minutes: [17, 17],
+    // 4b alone, 15 minutes, held (RULING-2026-09-28-bounty-rail.md §4.1). The 2-minute 4a was dropped by the breadth
+    // board of 28.9.2026 (research/breadth/BOARD.md Part B(b)); the sign-in is now the form's first instruction.
+    minutes: [15, 15],
     unlocks:
-      "The shortest documented path to a platform transaction id — 2-5 days after a rewarded pull request. Done SIGNED IN AS THE BRAND MACHINE ACCOUNT (which is why it follows step 7); the Stripe form stays in the owner's legal identity, which is exactly what the mandate allows. What it settles is now only Algora's own behaviour: the platform-level question is rendered (standalone Stripe for an Israeli business, no; a US platform paying an Israeli individual through Global Payouts, yes — research/measurements/stripe-israel.md Q1, Q7), and Algora's code shows it creates the account with no service agreement and falls back to a country-less account on any Stripe error (payments.ex:299-303). So 4b is asked when there is money to collect and not before: Algora holds a reward as a credit until the account can be paid (payments.ex:352-353, 479-503). Verified 28.9.2026 as the ruling's §4.1 caveat asked, from algora-io/algora on GitHub: a reward records the credit without checking payouts_enabled (bounties.ex create_payment_session → create_transaction_pairs), and a /claim creates the solver's Algora user from the GitHub login if none exists (workspace.ex ensure_user → create_user_from_github) — so 4b stays after a held reward and never before the first /claim.",
+      "The shortest documented path to a platform transaction id — 2-5 days after a rewarded pull request. Done SIGNED IN AS THE BRAND MACHINE ACCOUNT (which is why it follows step 7); the Stripe form stays in the owner's legal identity, which is exactly what the mandate allows. What it settles is now only Algora's own behaviour: the platform-level question is rendered (standalone Stripe for an Israeli business, no; a US platform paying an Israeli individual through Global Payouts, yes — research/measurements/stripe-israel.md Q1, Q7), and Algora's code shows it creates the account with no service agreement and falls back to a country-less account on any Stripe error (payments.ex:299-303). So 4b is asked when there is money to collect and not before: Algora holds a reward as a credit until the account can be paid (payments.ex:352-353, 479-503). Verified 28.9.2026 as the ruling's §4.1 caveat asked, from algora-io/algora on GitHub: a reward records the credit without checking payouts_enabled (bounties.ex create_payment_session → create_transaction_pairs), and a /claim creates the solver's Algora user from the GitHub login if none exists (workspace.ex ensure_user → create_user_from_github) — so 4b stays after a held reward and never before the first /claim, and no separate earlier sign-in is required (the breadth board dropped the old early sign-in part on that finding, research/breadth/BOARD.md Part B(b)).",
     lines: ["oss-bounties"],
     catalogueRef: "CHIEF-AUDIT §4A.3",
-    earlyPart: {
-      what:
-        "4a — sign in to Algora once with GitHub AS THE BRAND MACHINE ACCOUNT, in step 7's sitting: two minutes, no identity, no KYC, no money. The board ruled it into step 7's sitting because one sitting is less owner involvement than two (RULING-2026-09-28-bounty-rail.md §4.1). Algora's code would create the user at the first /claim anyway, so 4a is not what makes a held reward possible.",
-      afterStep: "github-org",
-      minutes: 2,
-    },
     precondition: {
       what:
-        "4b — the Stripe Connect Express form, individual, Israel, Israeli bank — is asked only when BOTH hold: the corrected week-4 mean of the weekly claimable-supply count is 3 or more (the first count, 108, was struck as an instrument fault on 28.9.2026 and the four-week clock restarted at the first corrected run), and at least one bounty PR from the brand account has been rewarded and Algora holds the credit — a held reward (RULING-2026-09-28-bounty-rail.md §4.1). Under 3 the line is killed and 4b is never asked.",
+        "4b — the Stripe Connect Express form, individual, Israel, Israeli bank — is asked only when BOTH hold: the corrected week-4 mean of the weekly claimable-supply count is 3 or more (the first count, 108, was struck as an instrument fault on 28.9.2026 and the four-week clock restarted at the first corrected run), and at least one bounty PR from the brand account has been rewarded and Algora holds the credit — a held reward (RULING-2026-09-28-bounty-rail.md §4.1). Under 3 the line is killed and 4b is never asked. The form begins with signing in to Algora with GitHub as the brand machine account, which is its first instruction; there is no earlier part (research/breadth/BOARD.md Part B(b)).",
       // Printed after "step 4 " in the report, so it must not open with the step number again.
-      short: "Stripe form, part 4b, asked only after a corrected week-4 count of 3 or more and a reward Algora holds — the 2-minute sign-in 4a rides step 7",
+      short: "Stripe form 4b, asked only after a corrected week-4 count of 3 or more and a reward Algora holds — the form begins with the Algora sign-in",
       // metOn stays unset until both hold, with the week-4 reading and the held credit as evidence.
     },
     stopIf: [
@@ -267,7 +295,7 @@ export const OWNER_STEPS: OwnerStep[] = [
   {
     id: "ci-tokens",
     number: 6,
-    order: 7,
+    order: 8,
     title: "לחבר את Netlify, להדביק את הטוקנים ב-GitHub, וקליק אחד ב-Apify",
     minutes: [15, 20],
     unlocks:
@@ -283,7 +311,7 @@ export const OWNER_STEPS: OwnerStep[] = [
   },
 ];
 
-/** The checklist in the order the board ruled: 1, 2, 3, 5, 7, 4, 6. */
+/** The checklist in the order the boards ruled: 1, 8, 2, 3, 5, 7, 4, 6. */
 export function ownerStepsInOrder(steps: OwnerStep[] = OWNER_STEPS): OwnerStep[] {
   return [...steps].sort((a, b) => a.order - b.order);
 }

@@ -11,12 +11,15 @@ auto-activate: false
 was struck as an instrument fault on 28.9.2026 and the four-week clock restarts at the first corrected
 run (`research/channel-loop/RULING-2026-09-28-bounty-rail.md` §3). **No bounty work starts now**
 (§5.1). Nothing may be attempted until **owner step 7** (brand machine account, with
-`BRAND_GITHUB_TOKEN` and step **4a** — a two-minute Algora sign-in — in the same sitting) is done
-**and** the board's week-4 reading of the corrected series keeps or retargets the line:
-`selectBounties()` shortlists nothing while that reading is pending, and nothing ever after a kill.
-Step **4b** (the Stripe Connect Express form) is asked only after Algora holds a reward, under three
-stop rules. Step 7 comes first: an organisation cannot sign in anywhere, so the account that signs
-into Algora is the account whose name appears on every PR.
+`BRAND_GITHUB_TOKEN` made in the same sitting) is done **and** the board's week-4 reading of the
+corrected series keeps or retargets the line: `selectBounties()` shortlists nothing while that reading
+is pending, and nothing ever after a kill. Step **4** is **4b** alone (the Stripe Connect Express form,
+which begins with signing in to Algora as the brand machine account), asked only after Algora holds a
+reward, under three stop rules. The separate two-minute sign-in **4a was dropped** on 28.9.2026
+(`research/breadth/BOARD.md` Part B(b)): Algora's own code creates the solver's user at the first
+`/claim` (`workspace.ex` `ensure_user` → `create_user_from_github`), so no earlier sign-in is required.
+Step 7 comes first: an organisation cannot sign in anywhere, so the account that signs into Algora is
+the account whose name appears on every PR.
 
 **Why this line exists at ₪300 rather than at its ceiling.** It is the only line whose
 acquisition runs backwards — the payer posts the job, funds it in advance and publishes the
@@ -72,10 +75,13 @@ Express account: the only code-level Israeli payability proof the 121-criterion 
   ₪9.375/hour realized → divided by the line's own 25% kill-threshold acceptance rate → ₪37.50/hour
   gross, about $10.42/h. On the ~$110 average bounty that allows about ten and a half hours.
   `deriveBountyFloor()` shows the arithmetic and moves when the board's numbers move. The ₪1,500 is
-  **held** (`FLOOR_CAPACITY_BASE_ILS`): the committed sum fell to ₪1,100 on 28.9.2026 when
-  il-biz-tools was planned at ₪0, but il-biz-tools kept its build budget, so its agent-hours did not
-  pass to this line. The base stays until the board rules on how a ₪0 line that still takes build
-  hours counts; re-deriving from ₪1,100 would have lowered the floor to ₪27.50 without a ruling.
+  **derived** (`capacityBaseIls()`, breadth board `research/breadth/BOARD.md` Part B(a), 28.9.2026):
+  each committed line adds its target when it is above ₪0, and a line the board planned at ₪0 while
+  keeping a build budget adds its contested upper bound instead; a ₪0 line with no budget, or a killed
+  line, adds 0, and a contested bound never raises a positive target. Today: apify-actors 200 +
+  il-biz-tools 400 (planned at ₪0, build budget kept) + oss-bounties 300 + pcn874 600. The line's own
+  ₪300 cancels out of the algebra — the floor is base ÷ 40 — so the rule is the whole floor: a week-4
+  retarget of this line to ₪100 gives base ₪1,300 and floor ₪32.50; a kill of it, ₪1,200 and ₪30.00.
 
 ## The colony must never
 

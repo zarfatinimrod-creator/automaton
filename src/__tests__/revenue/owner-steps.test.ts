@@ -19,49 +19,63 @@ import { DEFAULT_PORTFOLIO } from "../../revenue/portfolio.js";
 const repoRoot = path.resolve(__dirname, "../../..");
 const doc = fs.readFileSync(path.join(repoRoot, "docs/OWNER_STEPS.he.md"), "utf-8");
 
-describe("the owner's checklist is seven steps and stays seven", () => {
-  it("has exactly seven steps, with stable numbers 1..7", () => {
+describe("the owner's checklist is eight steps and stays eight", () => {
+  it("has exactly eight steps, with stable numbers 1..8", () => {
     // MISSION rule 1: never invent a step. The failure mode is drift, not a bad
     // decision — the chief audit found six catalogue items written out as
     // eleven, because "register as osek patur" was repeated once per line and an
-    // accountant conversation had been added by someone reasoning about tax. An
-    // eighth step should require a decision, so it fails the build.
-    expect(OWNER_STEPS).toHaveLength(7);
-    expect(OWNER_STEPS.map((s) => s.number).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7]);
-    expect(new Set(OWNER_STEPS.map((s) => s.id)).size).toBe(7);
+    // accountant conversation had been added by someone reasoning about tax. A
+    // new step should require a decision, so it fails the build.
+    //
+    // CHANGED DELIBERATELY on 28.9.2026: the breadth board admitted step 8, the
+    // brand mailbox, and asked for it now (research/breadth/BOARD.md Q2 and
+    // §"Exact changes"). That ruling is the decision; seven became eight here and
+    // nowhere else. A ninth step fails this test until a board rules it in.
+    expect(OWNER_STEPS).toHaveLength(8);
+    expect(OWNER_STEPS.map((s) => s.number).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(new Set(OWNER_STEPS.map((s) => s.id)).size).toBe(8);
   });
 
-  it("runs in the order the board ruled: 1, 2, 3, 5, 7, 4, 6", () => {
-    // BOARD.md §5. The numbers stay fixed so an earlier conversation about
-    // "step 4" still means the same step; only the order moved.
-    expect(ownerStepsInOrder().map((s) => s.number)).toEqual([1, 2, 3, 5, 7, 4, 6]);
+  it("runs in the board's order with step 8 second: 1, 8, 2, 3, 5, 7, 4, 6", () => {
+    // BOARD.md §5 (7.9.2026) ruled 1, 2, 3, 5, 7, 4, 6. The breadth board of 28.9.2026 (research/breadth/BOARD.md
+    // Q2) put the brand mailbox second, straight after merge-pr, in the ask-now sequence. The numbers stay fixed so
+    // an earlier conversation about "step 4" still means the same step; only the order moved.
+    expect(ownerStepsInOrder().map((s) => s.number)).toEqual([1, 8, 2, 3, 5, 7, 4, 6]);
     expect(ownerStepsInOrder().map((s) => s.id)).toEqual([
-      "merge-pr", "tax-file", "gumroad", "domain", "github-org", "algora-stripe", "ci-tokens",
+      "merge-pr", "brand-mailbox", "tax-file", "gumroad", "domain", "github-org", "algora-stripe", "ci-tokens",
     ]);
-    expect(OWNER_STEPS.map((s) => s.order).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(OWNER_STEPS.map((s) => s.order).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
-  it("lets the Apify half of step 6 be done straight after step 1", () => {
-    // The first early part and the reason the list has them at all: the token
-    // starts the 30-day stranger count a month earlier than the rest of the
-    // checklist would allow, and it needs no identity check.
+  it("lets the Apify half of step 6 be done straight after step 1, and step 6 is the only step with an early part", () => {
+    // The early part and the reason the list has them at all: the token starts the
+    // 30-day stranger count a month earlier than the rest of the checklist would
+    // allow, and it needs no identity check. Step 4's early part (4a) was dropped
+    // on 28.9.2026 (research/breadth/BOARD.md Part B(b)).
     const early = OWNER_STEPS.filter((s) => s.earlyPart);
-    expect(early.map((s) => s.id).sort()).toEqual(["algora-stripe", "ci-tokens"]);
+    expect(early.map((s) => s.id)).toEqual(["ci-tokens"]);
     const apify = ownerStepById("ci-tokens")!.earlyPart!;
     expect(apify.afterStep).toBe("merge-pr");
     expect(apify.what).toMatch(/APIFY_TOKEN/);
   });
 
-  it("splits step 4: 4a rides step 7's sitting, 4b waits for a held reward (RULING-2026-09-28-bounty-rail.md §4.1)", () => {
+  it("makes step 4 the Stripe form alone, 4b, held for a held reward — 4a is dropped (research/breadth/BOARD.md Part B(b))", () => {
+    // 4a's only stated reason — creating the Algora user a reward's credit needs — is refuted at code grade: a /claim
+    // creates the solver's user from the GitHub login (workspace.ex ensure_user → create_user_from_github). MISSION
+    // rule 1: never invent a step that isn't required. The form necessarily begins with the sign-in, so nothing is lost.
     const step4 = ownerStepById("algora-stripe")!;
-    expect(step4.earlyPart).toMatchObject({ afterStep: "github-org", minutes: 2 });
-    expect(step4.earlyPart!.what).toMatch(/4a/);
-    expect(step4.earlyPart!.what).toMatch(/no identity/i);
+    expect(step4.earlyPart).toBeUndefined();
+    expect(step4.minutes).toEqual([15, 15]);
     // Held, not asked: the report names it outside the asked-now list until the colony records both conditions met.
     expect(hasPendingPrecondition(step4)).toBe(true);
     expect(isOwnerStepOpen(step4)).toBe(false);
     expect(step4.precondition!.what).toMatch(/week-4/);
     expect(step4.precondition!.what).toMatch(/held/);
+    expect(step4.precondition!.what).toMatch(/begins with signing in to Algora/);
+    expect(step4.precondition!.short).toMatch(/begins with the Algora sign-in/);
+    for (const text of [step4.precondition!.what, step4.precondition!.short, step4.unlocks]) {
+      expect(text).not.toMatch(/\b4a\b|two-minute sign-in|2-minute sign-in/);
+    }
     expect(step4.precondition!.short).not.toMatch(/[();]/); // it is printed inside the report's parentheses
     expect(`step ${step4.number} ${step4.precondition!.short}`).not.toMatch(/^step 4 4/); // printed after "step 4 "
     expect(openOwnerStepsForLine("oss-bounties").map((s) => s.number)).toEqual([7, 6]);
@@ -69,6 +83,41 @@ describe("the owner's checklist is seven steps and stays seven", () => {
     // The retired justification is gone (§4.3).
     expect(step4.unlocks).not.toMatch(/settles? (?:the )?Stripe-Israel|for every other Stripe-Connect platform/);
     expect(step4.unlocks).toMatch(/Algora/);
+    // Step 7's sitting keeps only the token.
+    expect(ownerStepById("github-org")!.unlocks).not.toMatch(/\b4a\b|signs in to Algora once/);
+  });
+
+  it("adds step 8, the brand mailbox, asked now and free (research/breadth/BOARD.md Q2)", () => {
+    const step8 = ownerStepById("brand-mailbox")!;
+    expect(step8.number).toBe(8);
+    expect(step8.order).toBe(2);
+    expect(step8.minutes).toEqual([10, 10]);
+    expect(step8.lines).toEqual(["il-biz-tools"]);
+    // Consent-and-account, not identity: no chief-audit catalogue item, and nothing holds it back.
+    expect(step8.catalogueRef).toBeNull();
+    expect(isOwnerStepOpen(step8)).toBe(true);
+    expect(step8.frozen).toBeUndefined();
+    expect(step8.precondition).toBeUndefined();
+    // The specification Q2 fixes.
+    expect(step8.unlocks).toMatch(/Google account under the brand/);
+    expect(step8.unlocks).toMatch(/Outlook\.com/);
+    expect(step8.unlocks).toMatch(/Play Books/);
+    expect(step8.unlocks).toMatch(/YouTube/);
+    expect(step8.unlocks).toMatch(/second Gmail connector/);
+    expect(step8.unlocks).toMatch(/repository secret/);
+    // The probe and the responder are specified, not built (CHANNEL_LOOP §1 still has the probe as an open item), so the
+    // text says what WILL happen once the step is done — review of the builder diff, finding 7.
+    expect(step8.unlocks).toMatch(/once step 8 is done, the tick's probe will report the unread count/i);
+    expect(step8.unlocks).toMatch(/the colony will answer accessibility mail itself/);
+    expect(step8.unlocks).toMatch(/neither exists yet/);
+    expect(step8.unlocks).not.toMatch(/the tick's probe reports|colony answers accessibility mail itself/);
+    expect(step8.unlocks).toMatch(/discloses that it comes from the company's automated operator/);
+    expect(step8.unlocks).toMatch(/published only as the brand's accessibility contact/);
+    expect(step8.unlocks).toMatch(/never the owner's personal Gmail/);
+    expect(step8.unlocks).toMatch(/CrazyGames/);
+    expect(step8.unlocks).toMatch(/Spreadshirt/);
+    // il-biz-tools now waits on it, first in its asked-now list.
+    expect(openOwnerStepsForLine("il-biz-tools").map((s) => s.number)).toEqual([8, 3, 6]);
   });
 
   it("prints three stop rules on step 4, and on no other step (§4.2)", () => {
@@ -94,12 +143,14 @@ describe("the owner's checklist is seven steps and stays seven", () => {
       expect(step.minutes[0]).toBeGreaterThan(0);
       expect(step.minutes[1]).toBeGreaterThanOrEqual(step.minutes[0]);
     }
-    // Six of the seven map to a chief-audit catalogue item. The seventh is the
-    // PR merge, which is consent rather than identity — and it is correctly
-    // absent from that catalogue, so a null here is the honest value.
+    // Six of the eight map to a chief-audit catalogue item. The other two are
+    // the PR merge, which is consent rather than identity, and the brand mailbox
+    // (28.9.2026), which is a brand account with no identity check — both are
+    // correctly absent from that catalogue, so a null here is the honest value.
     const catalogued = OWNER_STEPS.filter((s) => s.catalogueRef !== null);
     expect(catalogued).toHaveLength(6);
     expect(ownerStepById("merge-pr")!.catalogueRef).toBeNull();
+    expect(ownerStepById("brand-mailbox")!.catalogueRef).toBeNull();
     expect(new Set(catalogued.map((s) => s.catalogueRef)).size).toBe(6);
   });
 
@@ -143,6 +194,16 @@ describe("every line's human setup maps to a step, and every step unlocks a line
       for (const note of line.humanSetup) {
         expect(note).toMatch(/owner step \d/i);
       }
+    }
+  });
+
+  // Review of the breadth-board builder diff, finding 5: the report said "steps 8, 3, 6" for il-biz-tools while its
+  // checklist (humanSetup) showed only 3 and 6, so humanSetupDone could be set without the mailbox.
+  it("names owner step 8 in the setup notes of every line it gates, first", () => {
+    const step8 = ownerStepById("brand-mailbox")!;
+    for (const id of step8.lines) {
+      const line = DEFAULT_PORTFOLIO.find((l) => l.id === id)!;
+      expect(line.humanSetup[0], `${id}: the mailbox note should come first`).toMatch(/^Open the brand mailbox \(owner step 8\)/);
     }
   });
 
@@ -265,21 +326,21 @@ describe("the owner's ₪0 rule and standing consent of 27.9.2026", () => {
   });
 
   it("keeps the board's pinned order: the ₪0 sequence is text until the board re-rules", () => {
-    expect(ownerStepsInOrder().map((s) => s.number)).toEqual([1, 2, 3, 5, 7, 4, 6]);
+    expect(ownerStepsInOrder().map((s) => s.number)).toEqual([1, 8, 2, 3, 5, 7, 4, 6]);
   });
 });
 
 describe("the Hebrew document has not drifted from the code", () => {
-  it("carries the same seven numbered headings", () => {
+  it("carries the same eight numbered headings", () => {
     const numbers = [...doc.matchAll(/^##\s*צעד\s*(\d+)\s*—/gm)].map((m) => Number(m[1]));
     expect(numbers.sort((a, b) => a - b)).toEqual(OWNER_STEPS.map((s) => s.number).sort((a, b) => a - b));
   });
 
   it("states the same execution order the code sorts by", () => {
-    // The document tells the owner "1 → 2 → 3 → 5 → 7 → 4 → 6". If the code is
+    // The document tells the owner "1 → 8 → 2 → 3 → 5 → 7 → 4 → 6". If the code is
     // reordered and the document is not, the owner does the wrong thing first —
     // and the wrong thing first here costs a month of the Apify count.
-    const stated = doc.match(/(\d(?:\s*→\s*\d){6})/);
+    const stated = doc.match(/(\d(?:\s*→\s*\d){7})/);
     expect(stated, "docs/OWNER_STEPS.he.md no longer states an execution order").toBeTruthy();
     const order = stated![1].split("→").map((n) => Number(n.trim()));
     expect(order).toEqual(ownerStepsInOrder().map((s) => s.number));
@@ -318,14 +379,16 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(box.length, "the ₪0 box is missing or comes after the board's order").toBeGreaterThan(200);
     expect(box).toContain("אפילו לא שקל");
     expect(box).toMatch(/ה-₪200 שאישרת ב-3\.9 \*\*מושהים\*\*/);
-    // The free sequence, in order: Apify half of 6, then 7, then Netlify half of
-    // 6, then 3, then 2 only when a paid product is ready.
+    // The free sequence, in order: step 8 (the brand mailbox, asked now since the
+    // breadth board of 28.9.2026), then the Apify half of 6, then 7, then Netlify
+    // half of 6, then 3, then 2 only when a paid product is ready.
     const at = (needle: string) => {
       const i = box.indexOf(needle);
       expect(i, `the ₪0 box does not mention "${needle}"`).toBeGreaterThan(-1);
       return i;
     };
     const order = [
+      at("**צעד 8 — תיבת דואר של המותג**"),
       at("**צעד 6 — רק החלק של Apify**"),
       at("**צעד 7**"),
       at("**צעד 6 — חיבור Netlify.**"),
@@ -360,16 +423,21 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(step5).not.toContain("תשלום אחד מתוך ה-₪200 שאישרת");
   });
 
-  it("writes step 4 as 4א and 4ב, with the paused box, the stop rules and the retired question (RULING-2026-09-28-bounty-rail.md §4.5)", () => {
+  it("writes step 4 as 4ב alone, with the paused box, the stop rules and the retired question (research/breadth/BOARD.md Part B(b))", () => {
     const step4 = doc.slice(doc.indexOf("## צעד 4"), doc.indexOf("## צעד 5"));
     // The paused box: held until the corrected week-4 count; the first count struck.
     expect(step4).toMatch(/⏸/);
     expect(step4).toContain("85 מתוך 108");
     expect(step4).toContain("CHANNEL_LOOP.md");
-    // 4a and 4b.
-    expect(step4).toContain("4א");
+    // 4b only: 4a dropped on 28.9.2026, and the sign-in is 4b's first instruction.
+    expect(step4).not.toContain("4א");
     expect(step4).toContain("4ב");
-    expect(step4).toMatch(/2 דקות/);
+    expect(step4).toMatch(/\*\*זמן: 15 דקות/);
+    expect(step4).not.toMatch(/2 דקות/);
+    const todo = step4.slice(step4.indexOf("### מה לעשות"), step4.indexOf("### עצור אם"));
+    const firstItem = todo.slice(todo.indexOf("1."), todo.indexOf("2."));
+    expect(firstItem).toContain("Sign in with GitHub");
+    expect(firstItem).toContain("חשבון המכונה");
     // The three stop rules, printed as "עצור אם".
     expect(step4).toContain("עצור אם");
     expect(step4).toContain("ארצות הברית");
@@ -385,12 +453,70 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(gain).toMatch(/האם \*\*Algora\*\*/);
   });
 
-  it("makes the token in step 7's sitting and lets step 6 paste it with the rest (§4.4)", () => {
+  it("makes the token in step 7's sitting and lets step 6 paste it with the rest (§4.4); no 4א anywhere", () => {
     const step6 = doc.slice(doc.indexOf("## צעד 6"), doc.indexOf("## צעד 7"));
-    const step7 = doc.slice(doc.indexOf("## צעד 7"), doc.indexOf("## מה מגיע רק אם"));
+    const step7 = doc.slice(doc.indexOf("## צעד 7"), doc.indexOf("## צעד 8"));
     expect(step6).not.toContain("ואל תדביק אותו כרגע");
     expect(step7).toContain("BRAND_GITHUB_TOKEN");
-    expect(step7).toContain("4א");
+    // 4a was dropped on 28.9.2026 (research/breadth/BOARD.md Part B(b)); the document names it nowhere.
+    expect(doc).not.toContain("4א");
+  });
+
+  it("writes step 8, the brand mailbox, per the board's specification (research/breadth/BOARD.md Q2)", () => {
+    const step8 = doc.slice(doc.indexOf("## צעד 8"), doc.indexOf("## מה מגיע רק אם"));
+    expect(step8.length, "step 8 section missing, or not placed before the 'later' section").toBeGreaterThan(400);
+    expect(step8).toMatch(/\*\*זמן: 10 דקות/);
+    expect(step8).toContain("Google");
+    expect(step8).toContain("Outlook.com");
+    expect(step8).toContain("mehudak");
+    expect(step8).toContain("Play Books");
+    expect(step8).toContain("YouTube");
+    expect(step8).toContain("נגישות");
+    expect(step8).toMatch(/Gmail האישי/);
+    expect(step8).toContain("research/breadth/BOARD.md");
+    // The mailbox probe and the auto-reply are future work, said as future (review of the builder diff, finding 7).
+    expect(step8).not.toContain("בכל ריצה הדוח מראה");
+    expect(step8).not.toContain("המערכת עונה בעצמה");
+    expect(step8).toMatch(/אחרי שצעד 8 יבוצע/);
+    expect(step8).toMatch(/עוד לא קיימ/);
+    // Gender-neutral: instructions in the infinitive, no second-person masculine imperatives.
+    const todo = step8.slice(step8.indexOf("### מה לעשות"), step8.indexOf("### מה זה עושה"));
+    expect(todo.length).toBeGreaterThan(100);
+    expect(todo).not.toMatch(/(^|\s)(פתח|צור|היכנס|הירשם|תכתוב|תפתח|תיצור|שלח|בחר)(\s|$)/m);
+  });
+
+  // Review of the breadth-board builder diff, findings 3 and 4: the H1 says 8 but the first page still said "עד אז —
+  // שבעה", the ledger estimate said "כל 7 הצעדים" undated, the order note said the code order would not change beside
+  // a code order that had just changed, and the free batch named a network setting the document never explains.
+  it("says eight wherever it counts today's steps, and dates every seven", () => {
+    expect(doc).not.toMatch(/עד אז — שבעה/);
+    expect(doc).toMatch(/עד אז — שמונה/);
+    expect(doc).not.toMatch(/שכל 7 הצעדים/);
+    expect(doc).not.toMatch(/"כל 7"/);
+    expect(doc).not.toMatch(/ועד אז אני לא משנה אותו בקוד\./);
+  });
+
+  it("says where the network setting in the free batch is explained", () => {
+    const outcome = doc.slice(doc.indexOf("## צעד 8"), doc.indexOf("## מה מגיע רק אם"));
+    const sentence = outcome.slice(outcome.indexOf("ארבעת הצעדים החינמיים"));
+    expect(sentence).toMatch(/הגדרת הרשת של הסביבה/);
+    expect(sentence).toMatch(/ההוראות המדויקות/);
+  });
+
+  it("lists step 8 in the summary table and totals the minutes in the 'סך הכול' line", () => {
+    const table = doc.slice(doc.indexOf("## סיכום בטבלה אחת"));
+    expect(table).toMatch(/^\| 8 \| [^\n]*תיבת דואר[^\n]*\| 10 \|/m);
+    expect(table).toMatch(/^\| 4 \| [^\n]*4ב[^\n]*\| 15 \|/m);
+    expect(table).not.toContain("4א");
+    expect(table).toContain("**סך הכול");
+  });
+
+  it("names PayPal Israel as proposed step 13 and Apify verification at the Publish sitting (Q3, Q5)", () => {
+    const later = doc.slice(doc.indexOf("## מה מגיע רק אם"), doc.indexOf("## מה קורה אחרי שסיימת"));
+    expect(later).toMatch(/PayPal ישראל[^\n]*צעד 13/);
+    expect(later).toContain("סלפי");
+    expect(later).toMatch(/Publish/);
+    expect(later).toMatch(/אף פעם|לעולם לא/);
   });
 
   it("points the USDC line to the booking rule of RULING-2026-09-28-bounty-rail.md §6.2", () => {

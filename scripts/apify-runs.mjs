@@ -304,6 +304,27 @@ export async function fetchAllRuns(actorId, token, fetchImpl = fetch) {
   throw new Error(`Stopped after ${MAX_PAGES} pages of runs; refusing to loop forever.`);
 }
 
+/**
+ * The label the stranger count carries wherever it is printed (breadth board, research/breadth/BOARD.md Q5,
+ * 28.9.2026): Apify's default Store-API search excludes Actors from developers who have not passed identity
+ * verification, so a low count can mean "hidden" as well as "unwanted". Quoted word for word from
+ * `APIFY_STRANGER_KPI_LABEL` in src/revenue/portfolio.ts (this plain-node script cannot import TypeScript);
+ * src/__tests__/revenue/apify-runs.test.ts keeps the two equal, and the workflow's commit subject and run summary.
+ */
+export const STRANGER_KPI_LABEL =
+  "stranger runs — biased low while the developer is unverified: hidden from default Store-API search";
+
+/** The one log line a measurement run prints: the count the board reads, with its label, then the runs list. */
+export function measurementNotice({ actorId, strangerUsers30d, totalRuns, runsLast30Days, windowDays, outPath }) {
+  const strangers = strangerUsers30d === null ? "unknown (the Actor object carried no stats)" : String(strangerUsers30d);
+  return (
+    `Apify ${actorId}: ${strangers} distinct stranger users in the last 30 days (from the Actor object) ` +
+    `[${STRANGER_KPI_LABEL}]. ` +
+    `Runs list (our token's view, scope unverified): ${totalRuns} all time, ${runsLast30Days} in the ` +
+    `last ${windowDays} days. Written to ${outPath}.`
+  );
+}
+
 function notice(message) {
   console.log(message);
   const summaryPath = process.env.GITHUB_STEP_SUMMARY;
@@ -387,11 +408,15 @@ export async function main(argv = process.argv.slice(2)) {
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, `${JSON.stringify(summary, null, 2)}\n`);
 
-  const strangers = users.strangerUsers30d === null ? "unknown (the Actor object carried no stats)" : String(users.strangerUsers30d);
   notice(
-    `Apify ${actorId}: ${strangers} distinct stranger users in the last 30 days (from the Actor object). ` +
-      `Runs list (our token's view, scope unverified): ${summary.totalRuns} all time, ${summary.runsLast30Days} in the ` +
-      `last ${windowDays} days. Written to ${outPath}.`,
+    measurementNotice({
+      actorId,
+      strangerUsers30d: users.strangerUsers30d,
+      totalRuns: summary.totalRuns,
+      runsLast30Days: summary.runsLast30Days,
+      windowDays,
+      outPath,
+    }),
   );
   return 0;
 }

@@ -6,7 +6,8 @@ import {
   KILL_ACCEPTANCE_RATE,
   MAX_PARALLEL_ATTEMPTS,
   COLONY_AGENT_HOURS_PER_MONTH,
-  FLOOR_CAPACITY_BASE_ILS,
+  capacityBaseAddends,
+  capacityBaseIls,
   defaultIntakeConfig,
   deriveBountyFloor,
   parseAlgoraBotComment,
@@ -14,7 +15,7 @@ import {
   selectBounties,
   type BountyCandidate,
 } from "../../revenue/bounties/intake.js";
-import { DEFAULT_PORTFOLIO, committedTargetIls } from "../../revenue/portfolio.js";
+import { DEFAULT_PORTFOLIO, KILLED_LINES, TARGET_BASIS, committedTargetIls } from "../../revenue/portfolio.js";
 
 const NOW = "2026-09-07T12:00:00.000Z";
 
@@ -144,15 +145,80 @@ describe("the pay floor, derived from the board's own numbers", () => {
     expect(f.floorUsdPerHour).toBeCloseTo(37.5 / 3.6, 6);
   });
 
-  it("holds the ₪1,500 capacity base the board derived it from, not the ₪1,100 committed since 28.9.2026", () => {
-    // Row 9 of RULING-2026-09-28-floors.md planned il-biz-tools at ₪0 but kept its build budget ("the free tools and
-    // the validator page still need build hours"), so its share of the colony's agent-hours did not pass to this line.
-    // Re-deriving from the committed ₪1,100 would have cut the floor 27% (₪37.50 → ₪27.50) on a question neither
-    // ruling decided. The base is held until the board rules; when it does, this pin changes with the ruling.
-    expect(FLOOR_CAPACITY_BASE_ILS).toBe(1500);
+  it("derives the ₪1,500 capacity base from the committed portfolio, naming its four addends (breadth board Part B(a))", () => {
+    // research/breadth/BOARD.md Part B(a), 28.9.2026: the base is derived in code, not held. Each committed line adds
+    // its target when the target is above ₪0; a line the board planned at ₪0 while keeping a build budget adds its
+    // contested upper bound instead. Today: apify-actors 200 + il-biz-tools 400 (contested, budget kept) +
+    // oss-bounties 300 + pcn874 600 = ₪1,500 — the same number as before, no longer held as a constant.
+    expect(capacityBaseAddends()).toEqual([
+      { lineId: "apify-actors", ils: 200, from: "target" },
+      { lineId: "il-biz-tools", ils: 400, from: "contested-upper-bound" },
+      { lineId: "oss-bounties", ils: 300, from: "target" },
+      { lineId: "pcn874", ils: 600, from: "target" },
+    ]);
+    expect(capacityBaseIls()).toBe(1500);
+    // The committed sum is still ₪1,100; the base differs from it only by il-biz-tools' contested ₪400.
     expect(committedTargetIls()).toBe(1100);
-    expect(deriveBountyFloor().portfolioTargetIls).toBe(FLOOR_CAPACITY_BASE_ILS);
-    expect(deriveBountyFloor().reasoning).toMatch(/held until the board rules/);
+    expect(deriveBountyFloor().portfolioTargetIls).toBe(capacityBaseIls());
+    expect(deriveBountyFloor().reasoning).toMatch(
+      /derived from the committed portfolio, with a ₪0-planned line that keeps a build budget counted at its contested upper bound/,
+    );
+    expect(deriveBountyFloor().reasoning).not.toMatch(/held until the board rules/);
+  });
+
+  it("never lets a contested bound raise a positive target (apify-actors counts ₪200, not its ₪1,500)", () => {
+    expect(capacityBaseAddends().find((a) => a.lineId === "apify-actors")).toEqual({
+      lineId: "apify-actors",
+      ils: 200,
+      from: "target",
+    });
+  });
+
+  it("moves with a week-4 retarget: oss-bounties at ₪100 → base ₪1,300, floor ₪32.50", () => {
+    const retargeted = DEFAULT_PORTFOLIO.map((s) => (s.id === "oss-bounties" ? { ...s, targetMonthlyAgorot: 10_000 } : s));
+    expect(capacityBaseIls(retargeted)).toBe(1300);
+    const f = deriveBountyFloor({ seeds: retargeted });
+    expect(f.lineTargetIls).toBe(100);
+    expect(f.portfolioTargetIls).toBe(1300);
+    expect(f.floorIlsPerHour).toBe(32.5);
+  });
+
+  it("drops a killed line: without oss-bounties the base is ₪1,200 and the arithmetic gives ₪30.00", () => {
+    const withoutBounties = DEFAULT_PORTFOLIO.filter((s) => s.id !== "oss-bounties");
+    expect(capacityBaseIls(withoutBounties)).toBe(1200);
+    expect(deriveBountyFloor({ lineTargetIls: 300, portfolioTargetIls: capacityBaseIls(withoutBounties) }).floorIlsPerHour).toBe(30);
+  });
+
+  // Review of the breadth-board builder diff, finding 8: "a killed line contributes 0" held only by convention (a
+  // killed seed is expected to leave DEFAULT_PORTFOLIO). The rule now holds in code: a seed whose id is in
+  // KILLED_LINES adds 0 even while it is still in `seeds`, target and budget notwithstanding.
+  it("counts a seed whose id is in KILLED_LINES as 0, even while it is still in the seeds", () => {
+    const killedId = KILLED_LINES[0]!.id;
+    const bounties = DEFAULT_PORTFOLIO.find((s) => s.id === "oss-bounties")!;
+    const withKilledSeed = [...DEFAULT_PORTFOLIO, { ...bounties, id: killedId }];
+    expect(capacityBaseAddends(withKilledSeed).find((a) => a.lineId === killedId)).toEqual({
+      lineId: killedId,
+      ils: 0,
+      from: "killed",
+    });
+    expect(capacityBaseIls(withKilledSeed)).toBe(1500);
+    expect(deriveBountyFloor({ seeds: withKilledSeed }).floorIlsPerHour).toBe(37.5);
+  });
+
+  it("drops oss-bounties by killing it, not by filtering it: base ₪1,200, floor ₪30.00", () => {
+    const killed = new Set([...KILLED_LINES.map((k) => k.id), "oss-bounties"]);
+    expect(capacityBaseIls(DEFAULT_PORTFOLIO, TARGET_BASIS, killed)).toBe(1200);
+    expect(deriveBountyFloor({ lineTargetIls: 300, portfolioTargetIls: capacityBaseIls(DEFAULT_PORTFOLIO, TARGET_BASIS, killed) }).floorIlsPerHour).toBe(30);
+  });
+
+  it("counts a ₪0 line with no build budget as 0, contested bound or not", () => {
+    const noBudget = DEFAULT_PORTFOLIO.map((s) => (s.id === "il-biz-tools" ? { ...s, budgetMonthlyCents: 0 } : s));
+    expect(capacityBaseAddends(noBudget).find((a) => a.lineId === "il-biz-tools")).toEqual({
+      lineId: "il-biz-tools",
+      ils: 0,
+      from: "none",
+    });
+    expect(capacityBaseIls(noBudget)).toBe(1100);
   });
 
   it("rounds the floor to the agora, so a bounty paying exactly the floor is not refused on float dust", () => {
