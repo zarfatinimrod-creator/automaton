@@ -290,3 +290,5 @@ https://docs.crazygames.com/requirements/intro/	crazygames-requirements-intro
 https://docs.crazygames.com/requirements/quality/	crazygames-requirements-quality
 # ZERO-TESTS.md row 24 — CrazyGames (6), after row 11.
 https://docs.crazygames.com/requirements/ads/	crazygames-requirements-ads
+# research/channel-loop/ZERO-TESTS.md row 25 — step 2 cost: Bituach Leumi's own page on who is exempt (28.9.2026).
+https://www.btl.gov.il/Insurance/National%20Insurance/Pages/%D7%9E%D7%99%20%D7%A4%D7%98%D7%95%D7%A8%20%D7%9E%D7%AA%D7%A9%D7%9C%D7%95%D7%9D%20%D7%93%D7%9E%D7%99%20%D7%91%D7%99%D7%98%D7%95%D7%97%20%D7%9C%D7%90%D7%95%D7%9E%D7%99.aspx	btl-who-is-exempt

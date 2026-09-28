@@ -31,6 +31,7 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 22 | CrazyGames (6), after row 11 | https://docs.crazygames.com/requirements/intro/ | the "Publisher Guidelines" the terms make binding (`crazygames-developer-terms.txt:63-66`): AI content, automated upload, quality bars (`crazygames.md` Tick 3) |
 | 23 | CrazyGames (6), after row 11 | https://docs.crazygames.com/requirements/quality/ | the quality bar a brand-run game must clear (`crazygames.md` Tick 3) |
 | 24 | CrazyGames (6), after row 11 | https://docs.crazygames.com/requirements/ads/ | ad and SDK rules (`crazygames-developer-terms.txt:229-233`) (`crazygames.md` Tick 3) |
+| 25 | Step 2 cost (not a channel), after rows 7-10 | https://www.btl.gov.il/Insurance/National%20Insurance/Pages/%D7%9E%D7%99%20%D7%A4%D7%98%D7%95%D7%A8%20%D7%9E%D7%AA%D7%A9%D7%9C%D7%95%D7%9D%20%D7%93%D7%9E%D7%99%20%D7%91%D7%99%D7%98%D7%95%D7%97%20%D7%9C%D7%90%D7%95%D7%9E%D7%99.aspx | who is exempt from the Bituach Leumi minimum: for an exempt person the business file would add ~₪265 a month (`research/measurements/step2-cost.md`, owner's answer 28.9) |
 
 Rows 7-9 came from one WebSearch on 27.9.2026, whose snippets said a person with no work and no income pays a
 minimum of about ₪266 a month (₪143 national insurance and ₪123 health) whatever they do. That figure is

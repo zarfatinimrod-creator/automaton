@@ -1,0 +1,383 @@
+{
+ "family": "html5-games",
+ "prior_coverage": "Read first (free): research/measurements/crazygames.md (ticks 1-3; verdict NEEDS_MORE at :407-409); research/channel-loop/BOARD-LOOP.md candidate 6 (:122-127, CrazyGames), candidate 14 (:178-183, GameMonetize/GameDistribution/Playgama, 'only after a game has passed CrazyGames Basic Launch'), the Poki deferral (:192) and the Coolmath/Poki flat-licence deferral (:193); logs/CHANNEL_LOOP.md:120 (CrazyGames NEEDS_MORE) and :128 (syndication 'waiting'); research/channel-loop/scouts.json:184-231 (CrazyGames, networks, Poki, flat licences) and :301 note (3) (Microsoft Store dropped on its selfie step); research/colony-sweep/groups/storefronts.md:180 and scouts/storefronts--game-3d-assets.md:31-77 (itch.io judged only as an asset storefront, ceiling ₪0, AI policy unread); docs/REJECTED.md:1002 (itch.io in the licensing-ip audit). docs/REJECTED.md has no game-portal kill. Zero repo hits for Wavedash, Y8, Lagged, Newgrounds, Game Jolt, Kongregate, Armor Games or Famobi (grep 28.9). No game exists in products/.\n\nChecked and dropped this sweep, so they are not rediscovered:\n- Poki: the prior deferral stands; a 5-year exclusivity is confirmed first-hand in lucid-winds PUB-LISTINGS.md.\n- Coolmath Games and Armor Games: each deal is a licence or sponsorship signed per game, the per-deal signature precedent at BOARD-LOOP.md:193.\n- Famobi: affiliates need 50,000+ visits a month; developers are paid only after €250 accrues and they send an invoice carrying a tax ID, which is per-payout paperwork (plixfy evidence.md, github).\n- Kongregate: closed to new web games since July 2020 (lucid-winds, github).\n- Newgrounds: sources disagree on whether ad revenue share still exists; income may now come only from Monthly Portal Awards (lucid-winds, github).\n- GamePix: non-payment complaints from Jan 2025; 30 games earned $0.12/day in total (plixfy evidence.md, github).\n- Lagged: pays through the developer's own AdSense account, a new Google identity step. An Israeli developer's AdSense was rejected twice (ohadf2015/boggle-new, github).\n- Yandex Games/Playhop: reachable through Playgama's partner list. Direct payouts are country-dependent from a Russian payer (UNKNOWN).\n- Game Jolt: not researched, for lack of budget.\n\nNew evidence this sweep, all github grade unless stated:\n- Playgama has an official Developer Cabinet MCP (Playgama/developer-cabinet-mcp). Submitting a game to moderation stays human-only.\n- Wavedash has an official CLI for CI and cloud agents (wvdsh/cli, wvdsh/ai), but no store-page command.\n- An Israeli developer's CrazyGames Basic Launch got 157K impressions and 209 plays and was rejected (ohadf2015/boggle-new).\n- GameDistribution's terms, per a third-party reading: 33% share, NET 60, only EU-sanctions countries excluded. Payment-delay complaints run from 2018 to Jan 2025.\n- itch.io requires a Generative AI disclosure (snippet).\n- The butler CLI pushes builds from CI, but the HTML5 flag is set on the web edit page.\n\nCross-cutting: none of these rails (Tipalti, PayPal, Playgama bank/Wise, GameDistribution) has a ledger connector yet (scouts.json:188, :201). A PayPal connector would be needed before any of this money counts.",
+ "candidates": [
+  {
+   "venue": "CrazyGames (Basic Launch → Full Launch)",
+   "url": "https://docs.crazygames.com/",
+   "what_we_would_list": "Original single-player HTML5 games under the brand Mehudak as studio, one distinct game per launch (constraint 6), with CC0/OFL or code-drawn assets and the CrazyGames SDK (ads switch on only at Full Launch). Builds stay non-exclusive (crazygames-developer-terms.txt:101-103), so the same game can go to other networks as long as it carries no other portal's branding (:227).",
+   "existing_product": "None. products/ holds no game. The first game is estimated at 5-10 agent-days and ₪0 (BOARD-LOOP.md:125).",
+   "listings_per_owner_step": "One developer account (proposed step 10, which includes Tipalti billing onboarding before the first submission, payouts.txt:337-339) unlocks unlimited games on one portal that claims 50M+ MAU (faq.txt:679). Each game is one listing on one venue; there is no syndication.",
+   "prior_verdict": "Queue rank 6 (BOARD-LOOP.md:122-127). NEEDS_MORE after tick 3 (research/measurements/crazygames.md:407-409; logs/CHANNEL_LOOP.md:120). In test, not rejected.",
+   "reopen_basis": "Not rejected. New github-grade evidence: an Israeli developer holds a CrazyGames developer account and submitted a word game on 22.04.2026 (ohadf2015/boggle-new fe-next/docs/2026-07-18-game-portals-web-ads-application-status.md §2). Submitting requires billing onboarding with a country (payouts.txt:337), so an Israeli address is at least accepted at onboarding; that is inference, and no payout is shown. Basic Launch gave that game '209 plays, 190 players, 157K impressions, 0.2% CTR, all BOTTOM 20%' and it was REJECTED.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "No developer fee appears in the terms (crazygames.md T3.7, line 395). Hosting and CDN are CrazyGames' (faq.txt:646). The only named cost is multiplayer servers (faq.txt:664), so single-player games stay at ₪0.",
+    "grade": "rendered"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "The terms have no country clause (crazygames.md:363). Tipalti availability depends on country, with a 'Hold Payments' fallback (payouts.txt:293, 375-377). No camera, selfie or passport step is named on any captured page (crazygames.md:264-265). The payee is the owner's legal name (terms:547-549). Github: an Israeli developer got far enough to submit, which needs billing onboarding; that is not proof of payout.",
+    "grade": "rendered"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Upload is only through the portal, by drag and drop (faq.txt:650, 806). There is no API or CLI, and the terms are silent on automated submission (crazygames.md:376). Github: d954mas/game-67-idle .codex/skills/nt-portal-publish/SKILL.md fills CrazyGames drafts by browser automation but keeps the final 'submit' as a human's word. So automation is technically possible; whether it is permitted is unread, and the Publisher Guidelines (terms:63-66) are unread.",
+    "grade": "rendered"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The terms have no AI clause (crazygames.md:375). The FAQ's AI text is permissive advice, not a rule (faq.txt:786-796). The warranty 'original development by (employees of) Developer' (terms:396-397) is where an AI question would land. The binding Publisher Guidelines (terms:63-66) are unread.",
+    "grade": "rendered"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "faq.txt:679: 'over 50 million monthly active users'. faq.txt:503: in Basic Launch a game is 'shown to a small segment of players'. Github: the Israeli developer's game got 157K impressions in Basic Launch but only 209 plays at 0.2% CTR.",
+    "grade": "rendered"
+   },
+   "discovery_needs_prior_sale": "No. Every accepted game gets an allocated player segment by rule (faq.txt:503), and promotion to Full Launch turns on Basic Launch metrics (terms:46-48), not on earlier sales. But impressions are not plays: 157K impressions produced 209 plays at 0.2% CTR (github), so the thumbnail and the first minute decide whether the audience turns into play.",
+   "owner_step": "One-time, all of these:\n- Proposed step 10: a developer account plus Tipalti billing onboarding (personal information, address, country; 'hold payments' allowed), required before the first submission (payouts.txt:337-339).\n- Proposed step 8: a brand mailbox, for acceptance emails (faq.txt:573) and the duty to 'promptly respond' (terms:209-210).\n- Step 2 (the tax file).\n\nPer game: one portal upload. It is owner-free only if the board rules that a runner-driven brand login is acceptable; that ruling is still open.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 600,
+   "estimate_basis": "INFERENCE, not a measured rate.\n- Basic Launch pays ₪0 by contract (terms:238-240; faq.txt:420).\n- The Full Launch rate is a formula with no number (crazygames.md T3.1).\n- The one Israeli comparable failed Basic Launch (github).\n- High case: 2-3 of about 10 agent-built games reach Full Launch and each earns roughly €50-60 a month. Top strategy games average 21 ad impressions per play (SimNyborg/ageborn docs/research/market-portals.md, github).\n- The €100 threshold and payment 30 days after the self-bill (terms:284-298) push the first ledger row late, and no Tipalti or PayPal connector exists (scouts.json:188).",
+   "time_to_first_sale": "At least 3-5 months after step 10, and only if a game passes. That is 5-10 agent-days to build, 7-21 days of Basic Launch, Full Launch QA, a month's accrual toward €100, the invoice early the next month, and payment 30 days after it.",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://docs.crazygames.com/requirements/intro/",
+    "https://docs.crazygames.com/requirements/quality/",
+    "https://docs.crazygames.com/requirements/ads/",
+    "https://docs.crazygames.com/resources/basic-launch-metrics/"
+   ]
+  },
+  {
+   "venue": "GameMonetize (syndication network and public game feed)",
+   "url": "https://gamemonetize.com/developers",
+   "what_we_would_list": "The same original HTML5 games, non-exclusive, uploaded to the GameMonetize developer dashboard with its SDK and syndicated through its public feed to partner sites that embed them. GameMonetize allows developer links and branding in-game.",
+   "existing_product": "None. No game exists yet; it would reuse the CrazyGames build at about 1 agent-day per network (scouts.json:207).",
+   "listings_per_owner_step": "One developer account plus one PayPal account puts every game into a public JSON/RSS feed that partner sites import. A third party pulled 5,001 games from rss.gamemonetize.com/rssfeed.php (RUDY4K/plixfy research_report.md), against a marketed '36,976+'.",
+   "prior_verdict": "Queue rank 14: 'only after a game has passed CrazyGames Basic Launch' (BOARD-LOOP.md:178-183). logs/CHANNEL_LOOP.md:128 says 'waiting'. scouts.json:197-207 notes the USDT leg is dead and the RPM claims are SEO copy. Not rejected.",
+   "reopen_basis": "Not rejected. New: the GameMonetize FAQ snippet gives 'more than 45%' share, NET30 ('within 25 days'), a $30 PayPal minimum, 'PayPal and USDT ERC20 to all countries', and external links and branding allowed. The board's sequencing rule (after CrazyGames Basic Launch) stands.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "The FAQ names a revenue share and a payout minimum and no developer fee (gamemonetize.com/faq snippet); the share is taken out of ad revenue. Absence of a fee is not stated as policy.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "'PayPal and USDT ERC20 to all countries' (FAQ snippet; github plixfy research_report.md). USDT is dead on the crypto off-ramp kill (scouts.json:204). PayPal is a new owner account. An Israeli PayPal account withdraws to an Israeli bank in ILS (snippet, research/colony-sweep/scouts/payment-rails--paypal-israel.md:24). Whether GameMonetize or PayPal onboarding needs a camera step is UNKNOWN.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Submission is by web dashboard or email ('info@gamemonetize.com + gamemonetize.com/joinus', lucid-winds marketing/OUTREACH_CONTACTS.md row 5). GitHub code search found no developer upload API. The public feed serves publishers, not submissions. The terms on automated access are unread.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "No AI rule found: the web search returned none and the terms are unread.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "A third party confirmed the public feed with a 'Newest' sort is live (plixfy research_report.md; scouts.json:205). The 45%+45% developer/publisher split exists because third-party sites embed the games. Numbers are inflated: 5,001 in the feed against 36,976 claimed. Credit-risk signal: default probability 0.709 (Nov 2024, per plixfy evidence.md).",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "Partly no. Partner sites that auto-import the feed's 'Newest' sort surface a new game with no history (scouts.json:205, github). Placement under the other sorts and on partner sites is UNKNOWN.",
+   "owner_step": "One-time: a GameMonetize developer account under the brand (new, proposed), a PayPal account in the owner's legal name (new, not in steps 1-7), the brand mailbox (proposed step 8), and step 2. Per game: a dashboard upload, unless the board admits a runner-driven login.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE. The only per-game yield in reach comes from a comparable network: GamePix paid about $0.12/day for 30 games and about $0.1/day for 20 (plixfy evidence.md, github). GameMonetize's own $1.5-3 RPM is SEO copy (scouts.json:205). Share is 45%, threshold $30. High case: 15-20 games that each keep a small feed placement.",
+   "time_to_first_sale": "3-12 months after the owner steps. Review time is UNKNOWN; at GamePix-like yields, reaching $30 takes months, and payment then follows NET30.",
+   "verdict": "PROMISING",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://gamemonetize.com/faq",
+    "https://gamemonetize.com/developers",
+    "https://gamemonetize.com/joinus",
+    "https://rss.gamemonetize.com/rssfeed.php?format=json&type=html5&amount=All"
+   ]
+  },
+  {
+   "venue": "Playgama (Bridge SDK and partner distribution)",
+   "url": "https://playgama.com/developers",
+   "what_we_would_list": "The same original HTML5 games with the Playgama Bridge SDK (mandatory), distributed to playgama.com and up to 24 partner platforms: MSN, YouTube Playables, Microsoft Store, Yandex, CrazyGames, Poki, GameDistribution, Telegram, TikTok, Reddit, Samsung, Huawei, Xiaomi and others. Exclusions are chosen per game.",
+   "existing_product": "None. No game exists yet.",
+   "listings_per_owner_step": "The highest in the family. One developer account offers each game to playgama.com plus 24 partner platforms (d954mas/game-67-idle features/platform-sdk/references/portals/playgama.md S9, github). The Playgama org has dedicated bridges for Microsoft Store and Reddit, so Microsoft Store is reached without our own selfie KYC.",
+   "prior_verdict": "Queue rank 14 with GameMonetize and GameDistribution (BOARD-LOOP.md:178-183): each network is a new account, and Playgama's moderation 'opens a chat in your preferred messenger' (scouts.json:205). Not rejected.",
+   "reopen_basis": "New github evidence: Playgama/developer-cabinet-mcp (created 11.9.2026, v1.1.0), an official OAuth MCP at developer.playgama.com/api/mcp. It lets an agent create a game draft, upload the build and covers, fill the form, and run a public sandbox with free DSP traffic. But: 'These stay human actions in the cabinet: submitting a game to moderation; ... reading payouts; uploading screenshots, videos and other assets.' Snippet: payouts need account verification by email naming a director or authorised signatory. Developer share is 70/80/90% on partner sites, 50% on playgama.com and 75% on YouTube Playables (wiki.playgama.com payments FAQ).",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "No fee appears in any reading: d954mas playgama.md found no fee passages, and plixfy likewise. Revenue shares only.",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "'payments to a bank account in any country' plus crypto on request (wiki.playgama.com, quoted in plixfy research_report.md, github); PayPal and Wise are listed as well (elite-3d-design-studio 01-portal-buyers.md, github). Payout verification is by email with a director's or signatory's name, and further documents 'may be requested' (snippet). A camera step, and whether an individual rather than a company is accepted, are UNKNOWN.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "The official MCP automates create, upload, covers and form. But submission to moderation is explicitly a human action in the cabinet (developer-cabinet-mcp README), and every new archive must pass moderation again (playgama.md S10). That is one human click per game and per update, the recurring per-item owner action the mandate forbids (BOARD-LOOP.md:9 item (g)). Moderation of the first game also 'opens a chat in your preferred messenger' (playgama.md S1). Reopens if Playgama adds submission to the MCP (it is 2 weeks old), or if the owner says yes to one click per game.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "'AI-generated assets are allowed', but 'Platforms will reject low-quality titles constructed wholly with generative AI that bring nothing fresh'. AI-graphics titles perform 'more than 2x worse on metrics'; story, logic and maths via AI are fine (playgama.md S7). Playgama itself publishes Claude Code plugins (Playgama/bridge-claude-plugins).",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "24 partner platforms (playgama.md S9). Sandbox DSP traffic: 'free traffic is a share bonus and takes 1–3 public post links' (MCP README). Catalogue page title '18078 games' (scouts.json:206). No player counts.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "No at entry. After moderation the game goes out to the partner platforms, and a sandbox build can receive free DSP traffic. Ranking inside each partner platform after that is performance-based (UNKNOWN).",
+   "owner_step": "One-time: a Playgama developer account (new, proposed), OAuth consent for the MCP, the payout-verification email from the registered address, a payout method (bank, PayPal or Wise), the brand mailbox (step 8), and step 2. Recurring, and the reason for the FAIL: one 'submit to moderation' click per game and per update, plus a messenger chat with moderation for the first game.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 400,
+   "estimate_basis": "INFERENCE. Shares of 50-90% (snippet), but per-platform volumes are unknown. AI-graphics titles do 2x worse (github). The GamePix per-game yield serves as the floor analogue. Breadth multiplies a small per-platform number. $100 withdrawal threshold.",
+   "time_to_first_sale": "2-6 months after the owner steps: moderation takes 1-5 business days and partner portals up to 2 weeks (playgama.md S2, S10), then the $100 threshold and payout verification.",
+   "verdict": "WEAK",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://wiki.playgama.com/playgama/faq/payments-and-statistics",
+    "https://playgama.com/developers",
+    "https://wiki.playgama.com/playgama",
+    "https://github.com/Playgama/developer-cabinet-mcp"
+   ]
+  },
+  {
+   "venue": "GameDistribution (Azerion)",
+   "url": "https://gamedistribution.com/developers",
+   "what_we_would_list": "The same original HTML5 games with the GameDistribution SDK, under a non-exclusive licence to GameDistribution and its publisher network.",
+   "existing_product": "None. No game exists yet.",
+   "listings_per_owner_step": "One developer account licenses each game to GameDistribution's publisher network. Claims conflict: 'over 2,000 web publishers, 300 M users/month' versus '5K Azerion-owned and third-party portals' (elite-3d-design-studio 01-portal-buyers.md, github).",
+   "prior_verdict": "Queue rank 14 (BOARD-LOOP.md:178-183); logs/CHANNEL_LOOP.md:128 says 'waiting'; scouts.json:201 notes 33%, NET 60, €50 PayPal / €100 bank. Not rejected.",
+   "reopen_basis": "Not rejected. New github evidence:\n- A third-party reading of the developer terms: 'the Developer is entitled to a revenue share of 33% ... of the Net Revenue', NET 60, and only EU-sanctions countries excluded (plixfy research_report.md).\n- An Israeli developer registered and created a game, still in Draft with about 2 weeks of review (ohadf2015/boggle-new).\n- Payment-delay and non-payment complaints run from 2018 to Jan 2025, including a GameDistribution product owner's apology in 2020 (plixfy evidence.md).",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "No developer fee appears in the third-party reading of the terms, and the Israeli developer registered and created a game without paying (github).",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Only the EU sanctions list is excluded (Cuba, Iran, North Korea, Crimea, Syria), so Israel is not excluded. Payout is by PayPal (€50) or bank (€100) per a 2020 staff statement (plixfy). KYC and any camera step are UNKNOWN.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Upload and review are in the web dashboard, about 2 weeks (ohadf2015). No upload API was found on GitHub. The terms on automation are unread.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "No GameDistribution-specific AI rule was found; the web search returned only Steam and industry pages.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "The network-scope claims above. Embeds at html5.gamedistribution.com/{id}/ return 200 from any origin, so publishers do embed (plixfy, github).",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "Partly. The game enters a catalogue that publishers pick from; how that catalogue is ordered is UNKNOWN.",
+   "owner_step": "One-time: a GameDistribution developer account (new, proposed), payment details (PayPal or bank) in the owner's legal name, the brand mailbox, and step 2. Per game: a dashboard upload and a review of about 2 weeks.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 150,
+   "estimate_basis": "INFERENCE. The 33% share is the lowest in the family, NET 60 is the slowest payment, and the minimum is €100 (bank) or €50 (PayPal). Payment complaints persisting into 2025 mean money earned on the dashboard may never reach the ledger.",
+   "time_to_first_sale": "4-9 months: review, one month of accrual, NET 60, and the minimum.",
+   "verdict": "WEAK",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://static.gamedistribution.com/terms/developer.html",
+    "https://gamedistribution.com/developers"
+   ]
+  },
+  {
+   "venue": "Wavedash (browser game platform with a CLI)",
+   "url": "https://wavedash.com/developers",
+   "what_we_would_list": "The same games (engine-less HTML/JS builds are supported) with optional Paid Content: free play first, then a small in-game purchase. That is literally many small sales.",
+   "existing_product": "None. No game exists yet.",
+   "listings_per_owner_step": "One account plus one CI token unlocks unlimited games on one portal. Each game can be created, uploaded and published from CI: `wavedash project create`, `build push`, `publish --yes` (wvdsh/cli src/main.rs, github). Player numbers are unknown.",
+   "prior_verdict": "None. Zero repo hits (grep 28.9.2026).",
+   "reopen_basis": "Not previously evaluated.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "'Wavedash charges 10% ... developers keep the rest' (wavedash.com/developers, snippet). No fee found.",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "The payout rail, countries and KYC were not found. Wavedash is a US YC startup; that it pays through Stripe is INFERENCE, and Stripe does not onboard Israeli accounts.",
+    "grade": "none"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "The official CLI takes a token for 'CI, cloud agents, or headless environments' (wvdsh/ai skills/wavedash/references/cli.md), and project create, build push and publish --yes are all scriptable. But the required store page (description of at least 80 characters, 16:9 cover, preview video, tags; publishing.md) has no CLI command in main.rs, so it looks Developer-Portal-only: a per-game web step whose permission is UNKNOWN.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The content rules ban crypto/NFT, gambling, hate, impersonation and browser-crashing; there is no AI ban (publishing.md). Wavedash ships official Claude, Codex and Cursor plugins (wvdsh/ai). No disclosure rule found; the content-guidelines page is unread.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "A young platform (a $4.3M raise, per a GamesBeat snippet); no player numbers were found.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "One-time: a Wavedash account and team (new, proposed), WAVEDASH_TOKEN as a repository secret, payout onboarding (rail unknown), the brand mailbox, and step 2.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 100,
+   "estimate_basis": "INFERENCE. A 90% share of paid-content sales (snippet), but the audience is unknown, and every sale needs a player who chooses to pay after playing free.",
+   "time_to_first_sale": "Weeks after publishing, if the platform has players. Payout timing is unknown.",
+   "verdict": "WEAK",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://docs.wavedash.com/llms-full.txt",
+    "https://docs.wavedash.com/publishing/monetization.md",
+    "https://docs.wavedash.com/publishing/metadata.md",
+    "https://docs.wavedash.com/publishing/content-guidelines.md",
+    "https://wavedash.com/developers"
+   ]
+  },
+  {
+   "venue": "Y8 (id.net)",
+   "url": "https://www.y8.com/upload",
+   "what_we_would_list": "The same games with the Y8 SDK, which is mandatory, as a zip upload or iframe embed.",
+   "existing_product": "None. No game exists yet.",
+   "listings_per_owner_step": "One account unlocks one portal (lucid-winds marketing/OUTREACH_CONTACTS.md row 6).",
+   "prior_verdict": "None. Zero repo hits.",
+   "reopen_basis": "Not previously evaluated.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "No fee in any third-party reading. 'Developers receive 50% of eligible advertising revenue earned from in game ads' (lucid-winds PUB-LISTINGS.md).",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Minimum is $100 by PayPal or $500 by bank transfer (lucid-winds PUB-LISTINGS.md). Revenue share must be enabled by contacting support, a one-time conversation (elite-3d 01-portal-buyers.md). Countries and KYC are UNKNOWN.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "A web upload form; no API was found.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "No AI rule was found.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "A long-running portal, but no audience figure was found in any source read.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "UNKNOWN.",
+   "owner_step": "One-time: a Y8/id.net account, one support email to enable revenue share, a PayPal account in the owner's legal name, the brand mailbox, and step 2.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 100,
+   "estimate_basis": "INFERENCE. A 50% ad share and a $100 threshold, with no per-game data.",
+   "time_to_first_sale": "Months: the $100 PayPal threshold at unknown yields.",
+   "verdict": "WEAK",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://www.y8.com/upload"
+   ]
+  },
+  {
+   "venue": "itch.io (browser-playable game pages)",
+   "url": "https://itch.io/",
+   "what_we_would_list": "HTML5 games as free or pay-what-you-want pages. For browser games, itch 'can only take donations' (lucid-winds PUB-LISTINGS.md).",
+   "existing_product": "None. No game exists yet.",
+   "listings_per_owner_step": "One account plus BUTLER_API_KEY unlocks unlimited pages. butler pushes builds from CI (itchio/butler docs/login.md), but 'Tagging a channel as HTML5 / Playable in browser needs to be done from the itch.io Edit game page' (docs/pushing.md).",
+   "prior_verdict": "Ceiling ₪0: discovery runs on jams, devlogs and community participation, which MISSION forbids (research/colony-sweep/groups/storefronts.md:180). AI policy was AMBER (scouts/storefronts--game-3d-assets.md:71-77). Also docs/REJECTED.md:1002.",
+   "reopen_basis": "The prior verdict stands. New: the AI policy is now known (snippet: a Generative AI Disclosure is mandatory, and untagged AI work becomes ineligible for indexing). That clears the AMBER AI gap but not the discovery reason.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Free to publish; the seller sets itch's cut from 0-100%, default 10% (storefronts--game-3d-assets.md:38-40).",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Payout is either direct to PayPal/Stripe or collected by itch.io, which requires a tax interview plus PayPal or Payoneer, with a $5 manual minimum (Michamm79/Velthiros docs/distribution.md, github). PayPal to an Israeli bank works at snippet grade. A camera step is UNKNOWN.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "The butler CLI works from CI for builds, but page creation and the HTML5 flag are web steps per game (butler docs/pushing.md).",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "AI-made work is allowed with a mandatory Generative AI Disclosure field, broken down by content type; untagged AI work loses indexing (itch.io/t/4309690 and Engadget, snippets).",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "itch.io has a large audience, but money from web games is donations only (github), and the repo's verdict is that discovery depends on community work (groups/storefronts.md:180).",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "Largely yes in practice: ranking runs on community and popularity (groups/storefronts.md:180). A 'new' lane exists but is not measured.",
+   "owner_step": "One-time: an itch.io account under the brand, BUTLER_API_KEY as a secret, the tax interview, and PayPal. Per game: page creation and the HTML5 flag on the web.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 30,
+   "estimate_basis": "INFERENCE. Donations only for browser games (github), and the repo's ceiling is ₪0 (groups/storefronts.md:180).",
+   "time_to_first_sale": "A donation is possible from day one but unlikely.",
+   "verdict": "WEAK",
+   "rank_in_family": 7,
+   "primary_urls_to_render": [
+    "https://itch.io/docs/creators/payments",
+    "https://itch.io/docs/creators/quality-guidelines",
+    "https://itch.io/t/4309690/generative-ai-disclosure-tagging"
+   ]
+  },
+  {
+   "venue": "Microsoft Store (free individual developer registration)",
+   "url": "https://partner.microsoft.com/dashboard/registration",
+   "what_we_would_list": "HTML5 games packaged as PWAs.",
+   "existing_product": "None. No game exists yet.",
+   "listings_per_owner_step": "One account would unlock unlimited apps, but it is blocked by the identity step. Microsoft Store is reachable anyway as a Playgama partner platform (playgama.md S9; Playgama/bridge-microsoft-store), with no account of our own.",
+   "prior_verdict": "Dropped on its selfie step (research/channel-loop/scouts.json:301 note (3)).",
+   "reopen_basis": "The prior verdict stands, re-confirmed at github grade on 28.9.2026.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Is there a fee for individuals? 'No — if you're using the new flow via the Store marketing page' (MicrosoftDocs/windows-dev-docs hub/apps/publish/partner-center/open-a-developer-account.md).",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "'Begin identity verification with a government-issued ID and selfie' and 'Capture your ID and selfie on mobile in good lighting with original documents' (same MicrosoftDocs file). That is a camera step the mandate forbids.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "UNKNOWN",
+    "evidence": "Not researched once the camera gate failed.",
+    "grade": "none"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Not researched.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "UNKNOWN",
+    "evidence": "Not researched.",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "Not researched.",
+   "owner_step": "An account with ID plus a selfie, which is forbidden.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Blocked by the camera gate. Any Microsoft Store reach should come through Playgama instead.",
+   "time_to_first_sale": "Never under the mandate.",
+   "verdict": "DEAD",
+   "rank_in_family": 8,
+   "primary_urls_to_render": [
+    "https://github.com/MicrosoftDocs/windows-dev-docs/blob/docs/hub/apps/publish/partner-center/open-a-developer-account.md"
+   ]
+  }
+ ],
+ "searches_used": 6
+}

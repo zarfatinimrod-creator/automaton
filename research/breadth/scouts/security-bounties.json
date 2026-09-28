@@ -1,0 +1,390 @@
+{
+ "family": "security-bounties",
+ "prior_coverage": "This family was mostly swept already, and every prior kill still stands. Nothing I found this run contradicts a stated kill reason.\n\n- **HackerOne and Bugcrowd.** Dead at the submission step (docs/REJECTED.md:515-521; research/colony-sweep/groups/bounties-grants.md:171-172; audits/bounties-grants.md:350-357). HackerOne bans automated report delivery and requires ID verification with a live selfie or a device-camera ID. Bugcrowd requires Jumio ID plus a face photo, and a human-verified browser token.\n- **Intigriti.** Dead: an Onfido liveness check runs before payout (groups/bounties-grants.md:173).\n- **GitHub Security Lab CodeQL bounty.** Sunset in June 2024, rendered by the auditor (audits/bounties-grants.md:347-349).\n- **Internet Bug Bounty.** Paused according to a snippet (scouts/bounties-grants--oss-bounties.md:96). It runs on HackerOne anyway, so the HackerOne kill covers it.\n- **Google OSS VRP.** Killed (REJECTED.md:1169; screen-2/google-oss-vrp.md) because reports go through a signed-in web form.\n- **huntr.** Killed (REJECTED.md:1172; screen-2/huntr.md; BOARD-2.md:176-194) for the same web-form reason, and its guidelines page returned 404.\n- **Web3 audit contests.** Code4rena is winding down, Sherlock has a reputation gate plus KYC, Cantina uses Persona KYC and pays only in USDC, and Immunefi's KYC question was never answered (SWEEP-2.md:264-267).\n- **WordPress bounties (Wordfence, Patchstack).** Rejected: web form per report (research/channel-loop/BOARD-LOOP.md:194).\n- **0DIN.** Listed in sweep 2 but never shortlisted or screened (SWEEP-2.md:227,231).\n- **Mozilla Client Bug Bounty.** Queued as candidate 8 and never run (logs/CHANNEL_LOOP.md:122; BOARD-LOOP.md:136-141; research/channel-loop/scouts.json:236-246).\n- **YesWeHack.** Zero hits anywhere in the repo, so this run is its first screen.\n\n**New this run, all at github grade unless marked:**\n- **Mozilla, from the bedrock page templates.**\n  - Bounty-status questions must go to security@mozilla.org, not to Bugzilla (bug-bounty.html:40). That makes a brand mailbox mandatory.\n  - Filing directly in Bugzilla (not through the form) is allowed if we email security@mozilla.org with the bug number (client-bug-bounty.html:185).\n  - No page states the payment method, tax form or identity check: bug-bounty.html, client-bug-bounty.html and bug-bounty/faq.html were all read in full.\n- **Bugzilla (BMO).**\n  - Its etiquette page permits AI-assisted reports if they are reviewed and verified (etiquette.html.tmpl:121).\n  - Its REST docs confirm POST /rest/bug and API-key authentication (bug.rst:594,614; general.rst:103-110).\n- **YesWeHack.** A third-party CLI's README says researcher Personal Access Tokens are limited to manager-tier accounts. The CLI instead reads a JWT from a logged-in Chrome session.\n- **Hats Finance.** Its newest audit-competition repo was created on 28.1.2025.\n- **Immunefi (snippet).** KYC runs through Onfido, and AI-generated or scanner reports without impact information are banned.\n\n**Breadth caveat.** This family is the opposite shape to the 28.9 directive. Each venue has one payer or a few, and payouts are lumpy, large and rare, not many small sales.",
+ "candidates": [
+  {
+   "venue": "Mozilla Client Security Bug Bounty (Firefox/Gecko), filed through Bugzilla's REST API from a brand account",
+   "url": "https://www.mozilla.org/en-US/security/client-bug-bounty/",
+   "what_we_would_list": "We would file one report per finding. Each would be a validated, reproducible, minimised security bug in Firefox (Nightly/mozilla-central, Beta or Release) or Firefox for Android/iOS, with a simple testcase plus an ASan trace or a root-cause analysis. The report criteria are at client-bug-bounty.html:45 and following. The bug would be filed with POST /rest/bug, and the same day the brand mailbox would email security@mozilla.org with the bug number to claim bounty consideration (client-bug-bounty.html:185). AI assistance would be disclosed in every report.",
+   "existing_product": "None. There is no Firefox pipeline, no fuzzing harness and no private repo. The repo's bounty code is Algora intake only (src/revenue/bounties/intake.ts, per screen-2/google-oss-vrp.md). The ₪0 test for candidate 8 (a 30-day private dry run) has not been run (logs/CHANNEL_LOOP.md:122).",
+   "listings_per_owner_step": "Two proposed one-time owner steps: step 8 (brand mailbox) and step 11 (a Bugzilla account under the brand email, plus an API key saved as a secret). Together they unlock every Firefox/Gecko filing with no per-report owner click. Realistic qualifying filings: 0 to about 4 a year (inference, no base rate). Payment onboarding happens at the first award. Whether it repeats per award is UNKNOWN; if it does, KILL-4 applies (BOARD-LOOP.md:67).",
+   "prior_verdict": "Not rejected. It is queued candidate 8 with status 'not run; stop if a private repo's Actions minutes would cost money' (logs/CHANNEL_LOOP.md:122). The board's first action and kill conditions are at research/channel-loop/BOARD-LOOP.md:136-141; the scout record is research/channel-loop/scouts.json:236-246. It answers the reopen condition written for the Google OSS VRP kill: 'a documented submission channel a machine account can operate' (docs/REJECTED.md:1169).",
+   "reopen_basis": "No reopen is needed; it was never rejected. New facts this run, at github grade:\n- mozilla/bedrock bug-bounty.html:40: 'All questions regarding the status of bug bounties should be directed to security@mozilla.org and not added as comments on Bugzilla.' The brand mailbox is therefore mandatory.\n- client-bug-bounty.html:185 allows filing directly in Bugzilla and notifying security@mozilla.org by email. REST filing is therefore a sanctioned route.\n- BMO etiquette.html.tmpl:121 has an 'AI-Assisted Bug Reporting' clause.\n- The payout method is absent from all three bedrock pages.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "No fee to hold a Bugzilla account or to file; Mozilla pays the reporter. Neither bedrock page (bug-bounty.html, client-bug-bounty.html) nor the FAQ mentions a fee. Caveats:\n- The work must run in a PRIVATE repo, because the automaton repo is public. Private-repo Actions minutes are metered, and the board rule is to stop if they would cost money (BOARD-LOOP.md:139).\n- LLM-guided review running in CI would need a paid API key. Under the ₪0 rule the review must run inside the existing session, not on a metered API. This is inference.",
+    "grade": "github"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Israel is not excluded. The only exclusion is 'You must not be on a US sanctions list or in a country (e.g. Cuba, Iran, North Korea, Crimea region of Ukraine, Sudan, and Syria)' (mozilla/bedrock bug-bounty.html:36). No bedrock page gives the payout method, tax form or identity check; I read bug-bounty.html, client-bug-bounty.html and bug-bounty/faq.html in full. A WebSearch on 28.9 found no primary statement either. No camera step appears anywhere I read. The payout conversation happens by email with security@mozilla.org (bug-bounty.html:40,44). The rail may be wire, PayPal or cheque (UNKNOWN). There is no ledger connector for it.",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "PASS",
+    "evidence": "BMO documents 'Create Bug … POST /rest/bug', with a groups parameter for security-restricted bugs (mozilla-bteam/bmo docs/en/rst/api/core/v1/bug.rst:594,614,675). Authentication is an X-BUGZILLA-API-KEY created in the API Keys tab (general.rst:103-110). Mozilla allows filing outside the bounty form if security@mozilla.org is emailed with the bug number (bedrock client-bug-bounty.html:185). Triage follow-up can go through REST comments. The page asks reporters to 'be available to follow along and provide further information' (client-bug-bounty.html:188), which the agent can do; it is not owner work. Account creation and API-key creation are one-time browser steps for the owner.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "BMO etiquette (extensions/BMO/template/en/default/pages/etiquette.html.tmpl:121 and following): 'The use of AI and other assistive tools is permitted when preparing bug reports. However, the person submitting the report is fully responsible for its content … Any AI-generated or assisted content must be reviewed and verified before submission.' Fourteen 2026 Mozilla advisories credit '… using Claude from Anthropic' (repo: scouts.json:244). The pass is conditional:\n- 'the person submitting' and 'reflect the reporter's own understanding' put accountability on a human. The owner cannot verify anything technically. This is AMBER, the same shape as the Google Code of Conduct clause (screen-2/google-oss-vrp.md L2).\n- Invalid volume is punished: 'Bugzilla may automatically disable accounts if too many bugs are submitted that get marked Invalid … may cause any valid bugs reported to receive reduced payouts' (bug-bounty.html:41). A strict reproduce-before-file gate is therefore mandatory.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "There is one standing payer with a published price list: up to $20,000 for a sandbox escape or a WebExtension install-prompt bypass, $10,000 for UXSS, $3,000 for sec-high, plus a 50% bonus for mitigation bypasses (client-bug-bounty.html:45 and the rewards table). About 96 advisory files in announce/2026 carry reporter fields, and many pseudonymous external credits appear each month (repo: scouts.json:244-245). It is one buyer, not many, so it adds little breadth.",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "No. Nothing ranks reports and no reputation gate applies. Four rules do bite:\n- First reporter wins; external duplicates within 48 hours split the bounty (bug-bounty.html).\n- Bugs Mozilla has already found internally are not eligible, and Mozilla reserves a 7-day window for its internal automation to find the same bug (bug-bounty.html:27).\n- Reputation only works against us: invalid reports lead to account disablement and reduced payouts (:41).\n- Bounties are decided at the committee's discretion after discussion with developers (client-bug-bounty.html).",
+   "owner_step": "Only after the 30-day private dry run finds at least one qualifying bug:\n1. Proposed step 8: a brand mailbox the agent can read. It is required because bounty status and the payment conversation go only through security@mozilla.org (bug-bounty.html:40).\n2. Proposed step 11: a Bugzilla account under that brand email, plus one API key saved as a repo secret.\n3. At the first award: payment details and a tax form in the owner's legal name, exchanged by email with Mozilla. The method is UNKNOWN. If it has to be repeated per award, or involves a camera, KILL-4 applies.\n4. Step 2 (עוסק registration) for foreign service income.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 3600,
+   "estimate_basis": "INFERENCE, with no base rate. The high case is one bounty of at most $3,000 (the sec-high band) per quarter, about $1,000 a month, at an assumed ₪3.6/USD (not measured). The low case is zero. Reasons the rate is more likely zero than high:\n- Nothing measures an agent's hit rate on Firefox.\n- Frontier-lab teams (Anthropic, OpenAI) are credited in the 2026 advisories and mine the same surface (scouts.json:244).\n- Mozilla's own fuzzers get the 7-day window.\n- 'Up to' amounts are discretionary.\n\nFor the breadth directive this is lumpy, single-buyer income, the wrong shape even at the high end.",
+   "time_to_first_sale": "The chain is: a 30-day zero-filing dry run, then owner steps 8 and 11, then filing, triage and a fix, then the Bounty Committee decision, then first-time payment onboarding by email. The earliest possible date is about January 2027, and only if the dry run yields a qualifying bug. The honest answer is unknown, and likely not in 2026.",
+   "verdict": "PROMISING",
+   "rank_in_family": 1,
+   "primary_urls_to_render": [
+    "https://www.mozilla.org/en-US/security/client-bug-bounty/",
+    "https://www.mozilla.org/en-US/security/bug-bounty/",
+    "https://www.mozilla.org/en-US/security/bug-bounty/faq/",
+    "https://bugzilla.mozilla.org/page.cgi?id=etiquette.html",
+    "https://bugzilla.mozilla.org/form.client.bounty",
+    "https://wiki.mozilla.org/Security_Severity_Ratings/Client"
+   ]
+  },
+  {
+   "venue": "YesWeHack (European bug-bounty platform, MangoPay wallet)",
+   "url": "https://yeswehack.com",
+   "what_we_would_list": "Validated, proof-of-concept-backed reports to public YesWeHack programmes, with AI use disclosed.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One hunter account plus one KYC would unlock every public programme, and there are many (snippet only; not counted). Every report, though, needs a logged-in web session: researcher API tokens are manager-only (github, third party). In practice that means per-report owner or browser work.",
+   "prior_verdict": "None. There are zero hits for YesWeHack anywhere in docs/, research/ or logs/, so this is its first screen.",
+   "reopen_basis": "N/A (first screen).",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "Hunter sign-up is free and no fee to hunters was found. The help centre describes only account, KYC and withdrawal flows (WebSearch 28.9, helpcenter.yeswehack.io).",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "KYC is run by the payment provider MangoPay and required before submitting: 'You must verify your account to submit vulnerability reports.' Users 'upload documents according to their nationality'. No selfie or video is mentioned in any snippet. The payout bank account must be in the hunter's name and in a country MangoPay authorises, with a Wise account as the fallback. Whether Israel is on MangoPay's list is UNKNOWN. 'Strong Customer Authentication (SCA)' is required to access the payment account, which may mean an owner action at every withdrawal. That would be recurring, and is UNKNOWN.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "The third-party CLI README (mvanhorn/printing-press-library library/developer-tools/yeswehack/README.md:57) says: 'YesWeHack's Personal Access Tokens are gated to manager-tier accounts; the CLI does not support them for the researcher surface.' Authentication reads the access_token from a logged-in Chrome profile, so researcher-side automation means driving the web app's own session. This is the huntr/Google OSS VRP collision (REJECTED.md:1169,1172). No official researcher submission API was found.",
+    "grade": "github"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The platform Code of Conduct has an anti-spam rule, referenced by the same third-party README (:127). No AI clause was read at primary grade.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "There are many public programmes, including the YesWeHack programme page, and arkadiyt/bounty-targets-data keeps a yeswehack_data.json feed (GitHub code search hit). I did not count them because the download was blocked this run. This is the one venue in the family with many buyers.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Private programme invitations need a prior track record, and KYC is required to submit at all (snippet). Public programmes are open, with first reporter wins.",
+   "owner_step": "1. Create a hunter account under the brand.\n2. MangoPay KYC with an ID document; whether a camera is involved is UNKNOWN.\n3. A bank or Wise account in the owner's name.\n4. SCA at payment-account access, possibly at each withdrawal (UNKNOWN; recurring if so).\n5. Plus per-report web-session work, because there is no researcher API.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 1000,
+   "estimate_basis": "INFERENCE. No channel exists today. If it opened, a newcomer would compete for public-programme bounties with no base rate. The high case is one small bounty (about $250-300) a month; the figure is not sourced.",
+   "time_to_first_sale": "No date can be defended until a researcher-side API or a rule allowing automation is rendered.",
+   "verdict": "WEAK",
+   "rank_in_family": 2,
+   "primary_urls_to_render": [
+    "https://helpcenter.yeswehack.io/en/articles/376519-kyc-verifications-strong-customer-authentication-sca",
+    "https://helpcenter.yeswehack.io/withdrawals",
+    "https://helpcenter.yeswehack.io/en/articles/608026-how-to-become-a-yeswehack-hunter",
+    "https://helpcenter.yeswehack.io/en/articles/376656-sign-up-on-yeswehack",
+    "https://yeswehack.com/programs/yes-we-hack"
+   ]
+  },
+  {
+   "venue": "0DIN (Mozilla's GenAI bug bounty: jailbreaks, prompt injection, guardrail bypass)",
+   "url": "https://0din.ai",
+   "what_we_would_list": "Reproducible GenAI vulnerabilities, such as guardrail bypasses and prompt-injection chains, against models in 0DIN's published scope. SWEEP-2.md:231 notes an open-weight-only path.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One portal account would unlock all scopes. Each finding is a portal submission.",
+   "prior_verdict": "Listed twice among sweep 2's 'nine that were not even shortlisted', unscreened (research/colony-sweep/SWEEP-2.md:227,231).",
+   "reopen_basis": "N/A (first screen).",
+   "gate_zero_cost": {
+    "status": "UNKNOWN",
+    "evidence": "Registration asks only for email, password, country and name (snippet). Probing commercial models may need paid API calls. An open-weight-only path (SWEEP-2.md:231) would be ₪0 on local or free compute (inference).",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Sign-up collects a country; no payout method or KYC text was found. The researcher terms are at 0din.ai/policy, which I did not read (the GitHub README of 0din-ai/0din.ai points there).",
+    "grade": "github"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "'You will need to create an account via the 0din.ai portal to submit your discovery' (snippet). The GitHub README (0din-ai/0din.ai README.md) lists only the web portal and a contact email, 0din<at>mozilla[dot]com. No API was found.",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The policy was not read. An agent searching for jailbreaks of third-party hosted models may break those providers' usage policies, which is an AMBER honesty and legal question. The open-weight path avoids it.",
+    "grade": "none"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "There is one payer with published bands: low up to $500, medium up to $2,500, high up to $5,000, severe up to $15,000 (snippet; SecurityWeek and 0din.ai). A January 2026 X post was recruiting researchers (snippet), so the programme is live in 2026. It is a single buyer.",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "No ranking was found. The first valid submission wins (inference).",
+   "owner_step": "1. A portal account under the brand.\n2. Payout and KYC at the first award (UNKNOWN).\n3. Per-report portal submission, unless an API exists.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 1800,
+   "estimate_basis": "INFERENCE. The high case is one accepted low-severity finding ($500) a month at an assumed ₪3.6/USD. The acceptance rate is unknown.",
+   "time_to_first_sale": "Unknown; it is gated on the portal channel and the payout facts.",
+   "verdict": "WEAK",
+   "rank_in_family": 3,
+   "primary_urls_to_render": [
+    "https://0din.ai/policy",
+    "https://0din.ai/policy/2025-07-14",
+    "https://0din.ai/scope",
+    "https://0din.ai/marketing/bug_bounty"
+   ]
+  },
+  {
+   "venue": "Google Open Source Software VRP",
+   "url": "https://bughunters.google.com/report",
+   "what_we_would_list": "Vulnerabilities in the 70 OT0/OT1 Google open-source repositories that pay rewards.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One Bug Hunters profile, but every report and every triage reply goes through a signed-in web form.",
+   "prior_verdict": "KILL (docs/REJECTED.md:1169; research/colony-sweep/screen-2/google-oss-vrp.md). The only channel is a signed-in web form; bughunters.google.com and issuetracker.google.com return CONNECT 403 from here.",
+   "reopen_basis": "No new evidence. The reopen condition, a machine-operable channel, is met by Mozilla's Bugzilla, not by Google. The kill stands.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "No fee (google-oss-vrp.md L1).",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "Israel is not excluded (rules lines 341-346). The identity step in p2p-vrp enrolment is UNKNOWN (google-oss-vrp.md L1).",
+    "grade": "repo"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "'All bugs should be reported using the vulnerability form' (google/bughunters rules line 312, per google-oss-vrp.md). No API or email intake was found.",
+    "grade": "repo"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "PASS",
+    "evidence": "The Code of Conduct (lines 77-82) allows AI tools if findings are verified and real-world impact is demonstrated 'yourself' (AMBER on 'yourself').",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Google is the single payer. Only 70 repositories pay for product vulnerabilities, and they are heavily fuzzed (google-oss-vrp.md).",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "No ranking. Misses are penalised (suspension for unverified volume).",
+   "owner_step": "The owner would file every report and answer every triage reply at a browser. That is recurring work, a mandate collision.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Dead on channel, so no amount can be planned. The prior screen's own floor arithmetic required at least two $500 rewards a year, and nothing measures that rate.",
+   "time_to_first_sale": "None while killed.",
+   "verdict": "DEAD",
+   "rank_in_family": 4,
+   "primary_urls_to_render": [
+    "https://bughunters.google.com/report",
+    "https://go.dev/security/policy",
+    "https://bughunters.google.com/blog/ossvrp-rule-updates-2026"
+   ]
+  },
+  {
+   "venue": "huntr (AI/ML open-source vulnerability bounties, Protect AI / Palo Alto Networks)",
+   "url": "https://huntr.com",
+   "what_we_would_list": "Proof-of-concept-verified vulnerabilities in in-scope AI/ML open-source libraries and model-file formats.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One account, but every report and every triage exchange happens in a signed-in web app.",
+   "prior_verdict": "KILL (docs/REJECTED.md:1172; research/colony-sweep/screen-2/huntr.md; BOARD-2.md:176-194). Three reasons: a web form per report and per triage exchange, huntr.com is blocked here, and its guidelines returned 404 from the runner (research/rendered/sweep2-huntr-guidelines.meta.json).",
+   "reopen_basis": "No new evidence. The kill stands.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "No fee (huntr.md L2 'Money. ₪0 spend').",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "UNKNOWN",
+    "evidence": "huntr pays via its own Stripe Connect onboarding. It keeps its own country list, and unlisted countries get a charity donation instead (huntr.md L1, snippet).",
+    "grade": "repo"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "Submission is at huntr.com/bounties/disclose, a web form. No API was found (huntr.md L1).",
+    "grade": "repo"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "The AI Challenges ban 'bots, scripts, scanners, and fuzzers' (snippet, SWEEP-2.md:274). The rules for the disclosure programme are unverified (the page returned 404).",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "There were 58 published huntr CVEs from February to August 2026. The historical median bounty is $600, and 61% of findings sit in three projects (huntr.md L1).",
+    "grade": "repo"
+   },
+   "discovery_needs_prior_sale": "No ranking gate was found. Triage and duplicates are the real gate.",
+   "owner_step": "Per-report web filing and triage replies, which is a mandate collision. A second Stripe Connect KYC would also be needed.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Dead on channel. The prior screen found the floor unknown and the burden of proof unmet.",
+   "time_to_first_sale": "None while killed.",
+   "verdict": "DEAD",
+   "rank_in_family": 5,
+   "primary_urls_to_render": [
+    "https://huntr.com/guidelines/",
+    "https://huntr.com/faq",
+    "https://huntr.com/new-huntr-faq"
+   ]
+  },
+  {
+   "venue": "Web3 bounty and audit-contest platforms: Immunefi, plus Code4rena, Sherlock, Cantina and Hats Finance",
+   "url": "https://immunefi.com/rules/",
+   "what_we_would_list": "Smart-contract vulnerability reports and contest findings.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One account per platform (constraint 2 cost). Every submission goes through a web dashboard; the exception is Hats, where submission is an on-chain transaction.",
+   "prior_verdict": "Not ranked (SWEEP-2.md:264-267):\n- Code4rena is winding down, and identity verification applies above $1,000.\n- Sherlock requires 2 valid issues before any payout, plus KYC.\n- Cantina uses Persona KYC and pays only in USDC.\n- Immunefi was not researched past its rail question.\n- The crypto-native scout found Immunefi KYC on 'most' programmes and OFAC/UNSC-only country exclusions (scouts/crypto-native--crypto-tooling-grants.md:219-233).",
+   "reopen_basis": "No reopen. The new evidence this run hardens the kill:\n- Immunefi KYC is verified by Onfido (snippet, immunefisupport KYC-requirements article).\n- Immunefi bans 'AI-generated/automated scanner bug reports that lack the required information'; ChatGPT-report bans were 21% of all bans (snippet).\n- Hats Finance's newest audit-competition repo was created on 28.1.2025, out of 18 repos in the organisation (github, search_repositories), and its TVL is about $176K (snippet). Buyer supply is effectively gone.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "No hunter fees were found on Immunefi, Code4rena, Sherlock or Cantina. Hats' on-chain submissions would need gas from a funded wallet, which is up-front spend (inference).",
+    "grade": "snippet"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "Cantina uses Persona (document-plus-selfie family; SWEEP-2.md:266). Immunefi uses Onfido; this repo's precedent records an Onfido liveness check at Intigriti (groups/bounties-grants.md:173), though Immunefi's own configuration is unread. Sherlock requires KYC for all researchers. Payouts are USDC, so reaching an Israeli bank adds an exchange KYC on top.",
+    "grade": "snippet"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "No researcher submission API was found for Immunefi, Sherlock, Cantina or Code4rena; all are web dashboards. Hats is on-chain and would be programmatic, but it is inactive.",
+    "grade": "snippet"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Immunefi bans AI/scanner reports that lack impact information; permanent bans for ChatGPT reports are 21% of all bans (snippet). Verified, PoC-backed AI-assisted reports are not explicitly addressed.",
+    "grade": "snippet"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Immunefi hosts many live programmes (programme pages in the 28.9 WebSearch results). Code4rena is winding down (SWEEP-2.md:264). Hats has had no new competitions since January 2025 (github).",
+    "grade": "snippet"
+   },
+   "discovery_needs_prior_sale": "Sherlock: yes. 'Until you've submitted 2 valid issues … you will not receive USDC payouts' (SWEEP-2.md:265). The others have no ranking gate.",
+   "owner_step": "An account per platform, KYC through Onfido or Persona (camera likely), a crypto wallet, and an Israeli exchange off-ramp with its own KYC.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Dead on the camera and channel gates, so no amount can be planned.",
+   "time_to_first_sale": "None.",
+   "verdict": "DEAD",
+   "rank_in_family": 6,
+   "primary_urls_to_render": [
+    "https://immunefisupport.zendesk.com/hc/en-us/articles/18327648101649-KYC-requirements",
+    "https://immunefisupport.zendesk.com/hc/en-us/articles/39568715723409-Updated-Submission-Rules",
+    "https://immunefi.com/rules/",
+    "https://docs.hats.finance/welcome-to-hats-finance/bug-bounties"
+   ]
+  },
+  {
+   "venue": "HackerOne (also covers the Internet Bug Bounty, GitHub's own bounty, Mozilla's web bounty and the GitHub Security Lab bounty)",
+   "url": "https://hackerone.com",
+   "what_we_would_list": "Validated reports to public HackerOne programmes.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One account would unlock thousands of programmes, but automated report delivery is banned.",
+   "prior_verdict": "DEAD (docs/REJECTED.md:515-521; groups/bounties-grants.md:171; audits/bounties-grants.md:350-357). The misconduct policy bans 'any sort of automated delivery of reports from scanners, scripts, browser automation frameworks'. ID verification requires 'a live selfie or present their identity document using a device camera'. Two related programmes are gone:\n- The GitHub Security Lab CodeQL bounty was sunset in June 2024 (rendered by the auditor, audits/bounties-grants.md:347-349).\n- The Internet Bug Bounty was paused (snippet, scouts/bounties-grants--oss-bounties.md:96).\nMozilla's web bounty also moved to HackerOne (mozilla/bedrock web-bug-bounty.html, github).",
+   "reopen_basis": "No new evidence. The kill stands.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "No hunter fees.",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "Mandatory ID verification with 'a live selfie or … identity document using a device camera' (audits/bounties-grants.md:354-355). Israel is not on the sanctions list (scout file, snippet).",
+    "grade": "repo"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "The misconduct policy bans automated delivery of reports (groups/bounties-grants.md:171).",
+    "grade": "repo"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "AI tools are widely used by researchers, and 49% of hackbot reports were valid (HackerOne 2025 report, rendered via a GitHub mirror, in scouts/bounties-grants--bug-bounty.md). Individual programmes, such as curl's, instantly ban AI slop.",
+    "grade": "github"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "$81M paid from July 2024 to June 2025, 84.9K valid reports, average payout $1,090, and 1,121 programmes with AI in scope. Payouts are concentrated: the top 100 researchers earned $31.8M (scouts/bounties-grants--bug-bounty.md:8-20, from the PDF via a GitHub mirror).",
+    "grade": "github"
+   },
+   "discovery_needs_prior_sale": "Private invitations depend on reputation and signal; public programmes are open.",
+   "owner_step": "A camera ID check, which the brief forbids, plus a ban on automated delivery.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Dead on the camera and automation clauses.",
+   "time_to_first_sale": "None.",
+   "verdict": "DEAD",
+   "rank_in_family": 7,
+   "primary_urls_to_render": [
+    "https://www.hackerone.com/sanctions-faq",
+    "https://docs.hackerone.com/en/articles/8395706-receiving-payments",
+    "https://xbow.com/blog/top-1-how-xbow-did-it"
+   ]
+  },
+  {
+   "venue": "Bugcrowd (with Intigriti, the other camera-gated managed platform)",
+   "url": "https://bugcrowd.com",
+   "what_we_would_list": "Validated reports to managed bug-bounty programmes.",
+   "existing_product": "None.",
+   "listings_per_owner_step": "One account per platform. Both gate on a face check.",
+   "prior_verdict": "DEAD.\n- Bugcrowd (docs/REJECTED.md:515-521; audits/bounties-grants.md:350-354; SWEEP-2.md:273): ID verification (ID document plus face photo via Jumio) is mandatory before any submission, and all submissions must come from a browser with a human-verified token.\n- Intigriti (groups/bounties-grants.md:173): an Onfido liveness check runs before payout.",
+   "reopen_basis": "No new evidence. The kills stand.",
+   "gate_zero_cost": {
+    "status": "PASS",
+    "evidence": "No hunter fees.",
+    "grade": "repo"
+   },
+   "gate_israel_payout_no_camera": {
+    "status": "FAIL",
+    "evidence": "Bugcrowd uses Jumio ID plus a face photo before submitting (audits/bounties-grants.md:352-353). Intigriti uses Onfido liveness before payout (groups/bounties-grants.md:173).",
+    "grade": "repo"
+   },
+   "gate_programmatic_listing": {
+    "status": "FAIL",
+    "evidence": "'all submissions must be made through a browser with a human-verified token' (audits/bounties-grants.md:353-354).",
+    "grade": "repo"
+   },
+   "gate_ai_allowed_honest": {
+    "status": "UNKNOWN",
+    "evidence": "Bugcrowd has a 2026 campaign against AI-slop submissions (SWEEP-2.md:100, snippet).",
+    "grade": "repo"
+   },
+   "gate_buyer_supply": {
+    "status": "PASS",
+    "evidence": "Many managed programmes (general knowledge; not counted this run).",
+    "grade": "none"
+   },
+   "discovery_needs_prior_sale": "Private programmes are reputation-gated.",
+   "owner_step": "A camera face check, which the brief forbids.",
+   "ils_month12_low": 0,
+   "ils_month12_high": 0,
+   "estimate_basis": "Dead on the camera gate.",
+   "time_to_first_sale": "None.",
+   "verdict": "DEAD",
+   "rank_in_family": 8,
+   "primary_urls_to_render": [
+    "https://docs.bugcrowd.com/changelog/researchers/verifying-your-identity/",
+    "https://www.bugcrowd.com/blog/continuing-our-work-to-reduce-ai-slop-submissions-and-protect-signal-quality/",
+    "https://kb.intigriti.com/en/articles/3379502-payout-methods"
+   ]
+  }
+ ],
+ "searches_used": 6
+}
