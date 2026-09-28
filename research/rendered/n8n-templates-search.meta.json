@@ -1,0 +1,17 @@
+{
+  "url": "https://api.n8n.io/api/templates/search?rows=100&page=1",
+  "slug": "n8n-templates-search",
+  "fetchedAt": "2026-09-28T13:18:11.356Z",
+  "status": 200,
+  "contentType": "application/json; charset=utf-8",
+  "byteLength": 2243312,
+  "sha256": "08553e15cfd970475c3c34cecf6e34dd9f92c32abfc2155947817c41c3693b24",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/n8n-templates-search.json",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

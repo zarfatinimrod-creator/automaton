@@ -8,7 +8,9 @@ the two-hour occupancy scan of the Hebrew/Israeli App Market categories and eith
 **Kill list (BOARD-LOOP.md:162):** Israel not payable; the floor forfeits or accrues without moving on any plausible
 ceiling; the niche has free incumbents; developer terms impose a support SLA or human conversations; or no niche can be named.
 
-**Status (after tick 4, 28.9.2026): NEEDS_MORE.** The agreement body confirms that the $200 floor rolls over and is forfeited only for breach, and it does not exclude Israel, but it names no payee countries and adds an unpriced pre-submission third-party security test (`wix-partner-agreement-body.txt:185`), so the ₪0 check comes next. See "Tick 4 reading" at the end.
+**Status (after tick 5, 28.9.2026): NEEDS_MORE.** The security best-practice page is advice only. It names no third-party tester, tool or evidence for the pre-submission security test (`wix-partner-agreement-body.txt:185`) or for the documented multi-developer review (`:181`), so the ₪0 question moves on to the App Market guidelines (ZERO-TESTS row 57). Tipalti's payees FAQ returned 403, so Israel-as-payee is still open too. See "Tick 5 reading" at the end.
+
+Earlier: **Status (after tick 4, 28.9.2026): NEEDS_MORE.** The agreement body confirms that the $200 floor rolls over and is forfeited only for breach, and it does not exclude Israel, but it names no payee countries and adds an unpriced pre-submission third-party security test (`wix-partner-agreement-body.txt:185`), so the ₪0 check comes next. See "Tick 4 reading" at the end.
 
 Earlier: **Status (after tick 3, 28.9.2026): NEEDS_MORE, unchanged.** Tick 3 found the partner-agreement capture was only the docs wrapper; the body is at https://dev.wix.com/app-market-partner-agreement (ZERO-TESTS row 18). Tick 2's text follows. The floor half of the gate passes (rolls over, tick 1). The
 Israel half is still UNKNOWN: the rendered payout-account page names Tipalti as the payout handler but says nothing about
@@ -443,3 +445,46 @@ SLA. The single next check is to render **`https://dev.wix.com/app-market-partne
 The floor half of the gate now passes on the binding text: a balance under $200 carries over (`:375`) and is lost only for breach (`:537`, `:43`). The Israel half has narrowed but is still open: the agreement excludes only comprehensively sanctioned territories (`:277`, `:279`, which do not include Israel) and pays USD by wire (`:385`), but it names no payee countries. For that half, tick 2's Tipalti-form fork still applies. Nothing in the text triggers the support kill criterion, since there is no user-support SLA and no AI clause, but the agreement raises two ₪0 risks the board has not priced: a third-party security test before submission (`:185`) and the six-cloud hosting rule (`:165`).
 
 **Single next check:** render `https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice` (linked in the docs navigation of the tick 1-3 captures). Read what evidence Wix accepts for `:185` and `:181`, and whether a free route satisfies them. Suggested `urls.txt` line for the main thread: `https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice	wix-security-best-practice`.
+
+## Tick 5 (28.9.2026): Tipalti's payees FAQ refused
+
+The page the breadth board named to settle Israel-as-payee and any camera step at Tipalti (ZERO-TESTS row 33,
+https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs) answered HTTP 403 to the runner (fetchedAt 2026-09-28T13:17:48.345Z).
+So the payout-form Israel question is still gated on a Tipalti reading that no free render has produced. Options recorded in
+`research/measurements/spreadshirt.md` (same Zendesk refusal): a GitHub mirror, or a written question once the brand mailbox
+(owner step 8) exists.
+
+## Tick 5 reading (28.9.2026): the security best-practice page
+
+**Read:** `research/rendered/wix-security-best-practice.txt`, all 202 lines. Lines 1-95 are the docs navigation and the in-page contents list, the article runs from `:96` to `:200`, and `:201-202` are the feedback widget. Meta: `url` = `https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice`, `fetchedAt` = 2026-09-28T13:17:39Z, status 200, `truncated` false, `sha256` = `b68e0a36b6044233b4b08e3cf04132fef64cc5d78120ac010c92b37c71a141d8`. The article's markdown source, which is embedded in the `.html`, has the same sections as the text and only four links (two to the GDPR page, one to Let's Encrypt, one to a Wikipedia article on brute-force attacks), so the text extraction dropped nothing. Citations are `wix-security-best-practice.txt:<line>`, shortened to `:<line>`. The agreement is cited as `agreement:<line>` (`wix-partner-agreement-body.txt`). [RENDERED]
+
+**What kind of page it is**
+- `:98` "It's really important that you make sure that your app is secure and protects the user's privacy. In this article we will go over some basic best practices." [RENDERED] The page gives advice. It sets no submission requirement and asks for no artefact.
+- `:200` "Last updated: 3 June 2024", while the agreement in force is the "Version effective as of June 30, 2026" (agreement:7). The page never mentions the agreement. [RENDERED] The page is two years older than that version, so it cannot be read as the guide to how its clauses are met. [INFERENCE]
+- The "Legal and Security" group in the docs navigation (`:61-71`) lists five pages: GDPR Compliance, Wix Terms of Use Policy, the Partner Agreement, this page, and About Consent Apps. None of them is a security-review or submission-evidence page. [RENDERED]
+
+**Security testing before submission (agreement:185)**
+- In the 202 lines, "third" appears once, in "third-party content like statistics and CDNs" (`:132`), which is about HTTPS. "review", "scan", "penetration", "vulnerab", "audit", "questionnaire", "submit", "submission" and "evidence" appear 0 times each. [RENDERED]
+- The page's only sentence about testing is a tip to test the app yourself: `:160` "Ready to test your app? Make sure to check your app as a site owner and as a contributor." [RENDERED]
+- The page therefore names no third party, no tool or service, no self-assessment or questionnaire, and no place to send a report. It does not say what satisfies agreement:185, or whether Wix's own app review counts toward it. [RENDERED absent]
+- The page establishes no free route. By the clause's own wording, a scanner the partner runs is a tool, not "a third party", so a free scanner on its own probably does not meet agreement:185 unless Wix says it does. [INFERENCE]
+
+**Multi-developer review (agreement:181) and the rest of 6.3.5**
+- "developer" and "review" appear 0 times each. The page does not mention code review, how to document one, or whether an agent counts as a developer. [RENDERED absent]
+- Rereading agreement 6.3.5 around these clauses shows three more duties: "Secure Coding Guidelines" (agreement:177), testing "against the sans.org top 25 software errors" (agreement:183), and "a security assessment for an App on a regular basis" (agreement:189). The page mentions none of them. [RENDERED] The regular security assessment is a recurring duty, not a one-time gate, and it has no stated price. [INFERENCE]
+
+**Hosting and data handling (agreement:165)**
+- The page names none of the six clouds. "Google Cloud", "AWS", "Microsoft", "Azure", "IBM", "Oracle", "Salesforce", "cloud" and "host" appear 0 times each. It does not repeat the six-cloud rule or the route to written consent for another host. [RENDERED absent]
+- Its data rules are general. `:140` "Encrypt all sensitive data, and don't store sensitive data in cookies." Payment settings are shown to "site owners only – and hide it from contributors" (`:144`), which the app checks by comparing `uid` with `siteOwnerId` (`:152`). `:184` "Passwords must be hashed with a secure hashing function such as SHA-256 or bcrypt. Storing raw passwords is a violation of the GDPR." [RENDERED]
+- It also asks for these build items, all of them code: verify the Wix-signed instance on the server (`:102-110`), check that `permission` is 'OWNER' (`:112`), re-validate the instance on every save and ask for a refresh when the signature is more than a day old (`:116-120`), serve every endpoint over HTTPS (`:124`), and guard every input field against XSS (`:136`). [RENDERED] None of these needs a paid service. [INFERENCE]
+
+**Anything that costs money or needs the owner**
+- The only service the page names is free: `:128` "Check out Let's Encrypt, a free and easy to use SSL certificate authority." [RENDERED]
+- Its only clock toward users comes from GDPR requests. For edits or deletions, `:176` says "comply without undue delay. We suggest completing this request within a week (but no more than 30 days)". For access requests, `:178` says to send the data "within 30 days". `:166` allows handling these requests "automatically", and `:170` says to ask for "details as proof of identity" first. [RENDERED] These are suggestions attached to a legal duty, not a Wix support SLA, and an agent-run brand inbox can meet them, so they do not trigger the support kill criterion. [INFERENCE]
+- The page implies no per-app owner action and no paid service. The possible per-app cost is in the agreement: agreement:185 applies to "An App", so if the test is paid, the cost recurs for every app submitted. [INFERENCE]
+
+**Verdict for candidate 11 (Wix App Market): NEEDS_MORE**
+
+The security page is advice only. It names no third-party tester, tool, questionnaire or artefact, says nothing about the multi-developer review, and does not repeat the six-cloud rule. The ₪0 question for agreement:185 and agreement:181 is therefore still open: this page neither settles it nor makes it worse. The Israel-as-payee half is also still open after Tipalti's 403 (Tick 5 above).
+
+**Single next check:** read Batch B row 57, the App Market guidelines (`https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines`). Of the queued pages, it is the likeliest to describe the review at submission and to say whether that review asks for a security report. If it is also silent, the fallback is a written question to Wix from the brand mailbox (owner step 8): what evidence satisfies agreement:185?

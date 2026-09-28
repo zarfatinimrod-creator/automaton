@@ -390,7 +390,7 @@ These are binding. When a decision is unclear, decide by these.
 Payment platforms pay identified humans only. A small number of one-time identity
 and payout steps are legally unavoidable. Everything else is ours.
 
-- Batch every unavoidable step into **one ordered checklist** (`docs/OWNER_STEPS.he.md` — seven steps, encoded as data in `src/revenue/owner-steps.ts`; `docs/INCOME_PLAN.he.md` §6 now only points there).
+- Batch every unavoidable step into **one ordered checklist** (`docs/OWNER_STEPS.he.md` — eight steps since 28.9.2026 (step 8, the brand mailbox, added by the breadth board), encoded as data in `src/revenue/owner-steps.ts`; `docs/INCOME_PLAN.he.md` §6 now only points there).
 - Never invent a step that isn't required.
 - **Never** open an account in the owner's name, answer an identity check, or mark
   setup done on our own initiative. A line blocked on the owner sits in

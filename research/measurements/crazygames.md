@@ -1,5 +1,12 @@
 # Measurement: CrazyGames Basic Launch → Full Launch (BOARD-LOOP rank 6, ZERO-TESTS row 1)
 
+**Status (28.9.2026, after tick 5): NEEDS_MORE.** Tick 5 read the Basic Launch Guide and the Gameplay requirements page
+("Tick 5 reading" at the end). The kill row's three benchmarks match the page exactly (10+ min, 10-15% D1, 80%+ one-minute
+conversion), but the page calls them what success looks like, not cutoffs, and names no Full Launch threshold or decider. The
+window is 7 days plus 500 plays, else 21 days: 500 plays ends the window and is not promised. The gameplay page has an
+originality rule and a repeat-offender restriction, but no "clone"/"asset flip" wording, no AI rule and no automation rule.
+Runner-operated submission is still unanswered. Tick 4's status follows as written:
+
 **Status (28.9.2026, after tick 4): NEEDS_MORE.** Tick 4 read the three docs Requirements pages ("Tick 4 reading" at the
 end). They never call themselves "Publisher Guidelines", and they say nothing about AI content, automated submission or an
 upload API. The Basic Launch bars are file limits, visual QA and PEGI12. SDK and ads are Full Launch work. No playtime or
@@ -457,3 +464,67 @@ was opened only for link targets and the table's column layout.
 **Verdict for candidate 6 (CrazyGames): NEEDS_MORE**
 
 These pages fail nothing [RENDERED]. They have no AI ban and no automation ban. The Basic Launch bars are file limits (intro:205-207), visual QA and PEGI12 (intro:213-214). The SDK, ad and AdBlock rules are Full Launch work the agent can build. The admission gate is still open: the FAQ, Payouts page, terms and now the three requirements pages all name the portal (intro.html:231) and never say whether a runner may operate it, and no upload API exists in any of them. The single next check is one written question to CrazyGames from the brand mailbox (proposed step 8): "May a developer account submit and update games through an automated browser session run on the developer's behalf, and is there an upload API?" Record the answer verbatim. A yes meets BOARD-LOOP.md:125. A no triggers the KILL-4 row.
+
+## Tick 5 (28.9.2026): Tipalti's payees FAQ refused
+
+The page the breadth board named to settle Israel-as-payee and any camera step at Tipalti (ZERO-TESTS row 33,
+https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs) answered HTTP 403 to the runner (fetchedAt 2026-09-28T13:17:48.345Z).
+So step 10 is still gated on a Tipalti reading that no free render has produced. Options recorded in
+`research/measurements/spreadshirt.md` (same Zendesk refusal): a GitHub mirror, or a written question once the brand mailbox
+(owner step 8) exists.
+
+## Tick 5 reading (28.9.2026): Basic Launch metrics and the gameplay requirements
+
+Grades as in ticks 3-4: **[RENDERED]** = quoted from the stored text with its line number; **[INFERENCE]** = my reading;
+"not found" = a `grep -n -i` of the text returns nothing. ZERO-TESTS rows 26-27. **Read in full:**
+`crazygames-basic-launch-metrics.txt` (272 lines, cited `metrics:`), URL `docs.crazygames.com/resources/basic-launch-metrics/`,
+fetchedAt 2026-09-28T13:17:36.893Z, sha256 `f5448453…6b83f6`; `crazygames-requirements-gameplay.txt` (254 lines, cited
+`gameplay:`), URL `docs.crazygames.com/requirements/gameplay/`, fetchedAt 2026-09-28T13:17:37.925Z, sha256 `c1d2bd31…cce846`.
+Both status 200, not truncated. The HTML was opened only for link targets.
+
+### T5.1 The Basic Launch window, and who decides
+- [RENDERED] Window: metrics:193 "a test period that lasts between 7 and 21 days"; metrics:199 "Basic Launch ends once your game has been live for at least 7 days and has reached at least 500 plays . Both thresholds need to be met. If your game hasn't reached 500 plays, the period ends automatically after 21 days ."
+- [RENDERED] Data: metrics:201 "You can track your game's performance on your developer dashboard , which updates daily." (href `https://developer.crazygames.com/`); metrics:202 "Day 1 Retention naturally takes an extra day to appear."
+- [RENDERED] Outcome: metrics:208 "Games with strong KPIs can move on to Full Launch, where you'll integrate our SDK for monetization."; intro:191 "Once your game has been selected for Full Launch". **Who selects, by what rule, and how fast: not found.** metrics:264 "Think of these KPIs as a compass, not a final grade."
+- [RENDERED] No developer action per game is required during the window: metrics:204 "Updates are automatically approved"; metrics:206 "KPI tracking is automatic. No SDK is needed for Basic Launch". CrazyGames' own side reviews each game: gameplay:179 "Our team performs several visual and functional checks on each submitted game."
+- [INFERENCE] 500 plays is an end condition, not a promise: a game below 500 plays simply ends at day 21, and plays are not distinct players. BOARD-LOOP.md:124 ("puts every accepted game in front of ≥500 real players for 7-21 days regardless of prior success") is stronger than this page supports. How traffic is allocated during the window: not found.
+
+### T5.2 Benchmarks: the page vs the kill row (BOARD-LOOP.md:127)
+
+| KPI (definition) | Page [RENDERED] | Kill row | Result |
+|---|---|---|---|
+| Average play time, "in a single session" (metrics:212) | metrics:216 "Successful titles often see 10+ minutes of average play time." | 10 min | same number |
+| Day 1 retention (metrics:230) | metrics:234 "Strong games often achieve 10-15% Day 1 Retention." | 10-15% | same number |
+| Conversion, "players who play for at least one minute after starting the game" (metrics:248) | metrics:252 "Top-performing titles typically convert 80%+ of players, load in under 10 seconds , and have a build size below 20 MB ." | 80% | same number; page adds load < 10 s and build < 20 MB |
+
+**Correction recorded here (BOARD-LOOP itself is not edited):** none of the three numbers is contradicted, and all three are now
+[RENDERED] rather than scout grade. What differs is the framing: the page gives them as what "successful", "strong" and
+"top-performing" titles reach, not as a pass line, and states no Full Launch cutoff (metrics:208, 264). [INFERENCE] "Below
+Basic Launch benchmarks" in the kill row is therefore a bar set at the page's success marks, stricter than any published
+rule; the event the page does imply, "not selected for Full Launch", has no published criterion. For the board to weigh.
+
+### T5.3 Gameplay page: originality, clones, IP, AI
+- **"Clone", "asset flip", "template", "copy": not found.** The explicit words remain faq:487 "Unoriginal content (e.g. clones or asset flips)" only. [RENDERED] The rule on this page: gameplay:213 "Originality: Game names, assets, and overall content should exhibit originality".
+- [RENDERED] Gate and penalty: gameplay:171 "Only games that prioritize quality and gameplay will be allowed on the platform. Developers who repeatedly submit non-compliant games may face restrictions on future submissions." Same line: "we are not looking for the "perfect" game", but players should not meet "inappropriate or subpar content".
+- [RENDERED] gameplay:173 "Our quality guidelines are inspired by the Facebook games ." (href Facebook Instant Games `best-practices-game-submissions`, unread).
+- **IP or trademark rule: not found here**; it stays the quality guideline (quality:261, 263, T4.5). **Minimum content (levels, length, features): not found.** Closest, Full Launch only: gameplay:240 "Games should land new users in gameplay immediately.", gameplay:242 "a maximum of 1 click is allowed."
+- **AI: not found** (only the docs widget, gameplay:254 and metrics:272 "Ask AI"). **Automated or bulk submission, a game cap, an upload API: not found** on either page (the one "API" is the nav item gameplay:73, metrics:63 "Leaderboards API").
+
+### T5.4 Other Basic requirements and external links
+- [RENDERED] gameplay:181 text legible at "devicePixelRatio:1" on ten listed iframe sizes (gameplay:182-200, e.g. "907 x 510 px", "800 x 450 px (mobile)"); gameplay:202 "The game's physics must perform consistently across different monitor refresh rates (e.g. 144 Hz, 165 Hz)"; gameplay:205 "The game must have English localization"; gameplay:215 "Custom in-game fullscreen buttons are prohibited"; gameplay:231 "Your game must be PEGI 12 compliant."
+- [RENDERED] Links: gameplay:217 "The game should not include cross-promotions for external or internal games/platforms." Allowed "as long as these are not a main CTA on the menu" (gameplay:220): community links that do not "lead directly to a playable web version" (221), store links on desktop (223), "Backlinks to CG home or category page are accepted but not promoted" (225), "Links to other game(s) in the same series of games" (227). gameplay:229 "App Store links are never allowed in-game".
+- [INFERENCE] Each item is checkable by the runner (screenshots at the ten sizes, a physics test at 60/144/165 Hz, an English-string check, a link lint). None needs the owner.
+
+### T5.5 What a pipeline of many small original games would run into [INFERENCE]
+- No rule on either page bans AI assets, automated building or volume. The exposure is judgement: "originality" (gameplay:213) and "subpar content" (gameplay:171) are judged by CrazyGames' team (gameplay:179), and repeated failures can restrict the whole account (gameplay:171). One engine reskinned per game would read as the FAQ's "asset flips" (faq:487). So pace is the control: one distinct game at a time (constraint 6), the next only after the previous one passes review.
+- "Small" fights the benchmarks: 10+ minutes per session (metrics:216) and the retention advice (metrics:238 "levels, unlocks, and upgrades", metrics:240 "daily quests", metrics:242 "Save player progress") favour a progression loop over a one-idea micro-game.
+
+**Verdict for candidate 6 (CrazyGames): NEEDS_MORE**
+
+These two pages fail nothing and trigger no kill row. They have no AI or automation rule, and the kill row's numbers are confirmed,
+though as success marks with no published Full Launch cutoff or decider. The clone rule here is an originality requirement plus a
+repeat-offender restriction (gameplay:171, 213), and "500 players" is really a window that ends at 500 plays or day 21 (metrics:199).
+The admission gate (runner-operated submission or an upload API) is untouched, as on every page before. Single next check,
+unchanged from tick 4: the written question to CrazyGames from the brand mailbox (proposed step 8), "May a developer account
+submit and update games through an automated browser session run on the developer's behalf, and is there an upload API?",
+recorded verbatim.

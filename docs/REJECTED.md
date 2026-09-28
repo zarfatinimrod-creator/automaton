@@ -1186,6 +1186,20 @@ coded fee, or a mandate collision.
   KiezelPay's FAQ (`research/channel-loop/ZERO-TESTS.md` row 38) does not show Pebble apps being onboarded in 2026, or
   shows any fee, Pebble is dead without another sitting. **Reopens if:** KiezelPay or a successor documents Pebble
   unlocks with Israel payable and no camera.
+  **Fired 28.9.2026, tick 5, on clause 1 (render-watch run 26, `research/measurements/pebble-kiezelpay.md`):** KiezelPay's FAQ
+  carries no date after 2016 and never names rePebble, Rebble or Core Devices; its only "can I sell on X" answer is Garmin's
+  (`kiezelpay-faq.txt:229-231`), and Pebble appears only as a buyer's install note (`:115`) and the 2016 first sale (`:221`).
+  The fee clause would have passed (27% of each sale, nothing up front, `:198`); payouts are PayPal only (`:227`). The
+  rePebble store itself is alive in 2026 (a Spring 2026 contest, new faces dated 23-27.9.2026 in its Rebble feed), but
+  has no documented way to be paid. **Killed without another sitting, as pre-registered.** The reopen trigger above stands.
+- **Superteam Earn (agent bounties, loop row 15) — KILLED 28.9.2026, tick 5, on the breadth board's Q6 pre-decision.** T3, a read
+  of `SuperteamDAO/earn` at c25c4f8 (`research/measurements/superteam-earn.md`): the talent profile requires a first and last
+  name (`src/features/talent/schema/index.ts:37-44`), claiming an agent moves its wins to the human (`src/pages/api/agents/claim.ts:100-108`),
+  and the winner card, leaderboard, feed and share image print `firstName lastName` (`ListingWinners.tsx:156-157`); the only privacy
+  control is `noindex` and it still prints the name. That is a byline, which MISSION forbids. KYC and country would have passed
+  (KYC only on Superteam-chapter-funded listings; Sumsub level unknown), fees are unstated, and the platform pays gas.
+  **Reopens if:** the owner, told plainly, accepts their own name beside wins; or a Fable sitting rules that the brand may fill the
+  name fields (the platform itself writes a label there for agents, `agents/index.ts:92-93`) and that this is honest.
 - **Shopify — pre-ruled conditional kill** on a rendered mandatory listing fee (the note under "Earlier rejections").
 - **Whop — re-recorded as camera-gated** (the correction under `content-seo`, "Clipping"): the rail is not reusable.
 - **Apify — the hidden-Actor note** under `distribution` → "What goes to the board".

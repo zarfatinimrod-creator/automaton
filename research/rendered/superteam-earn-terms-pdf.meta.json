@@ -1,0 +1,17 @@
+{
+  "url": "https://superteam.fun/earn/terms-of-use.pdf",
+  "slug": "superteam-earn-terms-pdf",
+  "fetchedAt": "2026-09-28T13:17:47.155Z",
+  "status": 200,
+  "contentType": "application/pdf",
+  "byteLength": 201397,
+  "sha256": "23b29c23367c08d651ae490bdc108c2af2cbba7162057f74d6c98cc0b2238a5b",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/superteam-earn-terms-pdf.pdf",
+  "textPath": "research/rendered/superteam-earn-terms-pdf.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

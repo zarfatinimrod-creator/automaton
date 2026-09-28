@@ -1,0 +1,17 @@
+{
+  "url": "https://docs.crazygames.com/requirements/gameplay/",
+  "slug": "crazygames-requirements-gameplay",
+  "fetchedAt": "2026-09-28T13:17:37.925Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 44334,
+  "sha256": "c1d2bd312eab8ddcffa84b4c0796554623f3a2257055d8b274f5b09cdecce846",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/crazygames-requirements-gameplay.html",
+  "textPath": "research/rendered/crazygames-requirements-gameplay.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

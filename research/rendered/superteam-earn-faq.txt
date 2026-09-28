@@ -1,0 +1,172 @@
+Superteam Earn FAQ | The Superteam Handbook
+
+The Superteam Handbook
+
+⌘ Ctrl k
+
+The Superteam Handbook
+
+👋 Welcome to Superteam
+
+Getting started
+🌟 Core Values
+🏗️ Community Structure
+📚 Essential Resources
+
+Getting Involved
+🛠️ How to Contribute
+💸 Community GDP
+
+Community
+💪 The Reputation System
+❓ FAQs 💰 Superteam Earn FAQ
+
+Products
+Superteam Earn
+Superteam Build
+
+Powered by GitBook
+
+On this page
+
+For the complete documentation index, see llms.txt . This page is also available as Markdown .
+Copy
+On this page
+Community
+❓ FAQs
+
+💰 Superteam Earn FAQ
+
+Types of Superteam Earn Listings
+
+Bounties : A bounty is a competitive task, where everyone participating does the work and the best submission(s) get rewarded. Consider it as a contest where multiple people attempt the same scope of work.
+
+Projects : A Project listing is an ad for hiring a freelancer, where people fill out a custom application form (determined by the sponsor) and the best applicant gets selected to do the work. The scope of work is completed by only the selected applicant(s).
+
+Participation Process:
+
+How can I submit to a Bounty or apply to a Project?
+Sign up on earn.superteam.fun (verify email + make a talent profile) -> pick a listing -> apply / submit, if it's a Project or Bounty listing, respectively, by clicking on the "Apply/Submit Now" button.
+
+Do participants receive an email confirming their application?
+Yes. An email is sent out to the verified email address of the participant to confirm their submission.
+
+What is the process for collecting payments for winners?
+Superteam / Solana sponsored listings : A lead from Superteam will reach out to the winners with a payment form. Fill in that form and expect to receive the reward within 7 days of submitting the form. Note that the winner needs to complete KYC to receive money for Superteam / Solana-sponsored listings.
+
+External Sponsors : Generally, rewards for listings sponsored by external companies (i.e. listings not sponsored by Superteam / Solana) will be paid out to the wallet associated with the winner's Superteam Earn account. Occasionally, some sponsors might ask for invoices, KYC, etc. as per their respective payment processes.
+
+When working in teams, who should make the submission/application? All team members or just the lead?
+Ideally, only the team lead should submit/apply to the listing. This means less redundancy for sponsors' review, truer numbers of actual submissions/applications, ease of making payments, etc.
+
+Can I make changes to my submission after submitting it?
+Currently no, that's not possible on Earn.
+
+Do I need to post my submission on Twitter (for listings which are not Twitter thread bounties)?
+While it’s not mandatory, we recommend that participants tweet out their work so that:
+
+We can RT the best entries to give them more exposure, and
+
+It makes it easier for sponsors to discover the participant's submission
+
+Rewards/Payouts on Superteam Earn
+
+What are the perks of winning a bounty or project?
+
+$$$: getting paid in global standards
+
+Some listings can also offer additional perks such as NFTs, merch, etc.
+
+Some listings also offer an invitation to become a Superteam Member/Contributor for the winners. Please refer to the listing description perks for more information.
+
+Listing Rewards
+
+Winners also receive Superteam XP . Please be informed that XP for wins on Superteam Earn will only be awarded when and if the winner has been invited to the community as either a contributor or a member.
+
+How can I get the member/contributor role via participation in Superteam Earn opportunities?
+Yes. Certain listings offer an invitation to the winners to become a Superteam Member/Contributor as per the rewards structure mentioned in the listing description.
+We also offer membership or contributor status to exceptional submissions, even if the same has not been explicitly mentioned in the listing description.
+
+Do all listings provide membership as a perk?
+Not all listings offer community membership as a perk. Some rewards are limited to the prize pool.
+
+How do we manage rewards for teams?
+If a team is participating in an opportunity as opposed to an individual, the payment will be sent to the wallet address of a team member (ideally the team lead) who makes the actual submission on Earn. However, participants are free to divide the reward among the team members as they see fit.
+
+Announcements & Notifications:
+
+How are winners announced?
+All those who submit to a listing on Earn will get notified once the winners are announced. Also, once announced, the winners will be shown on the specific listings too.
+
+How do I stay up to date on the new listings and specific listing updates?
+To get notified whenever a new listing comes in, please click on " Notify Me " on the category page that you're interested in.
+
+Click on Notify Me for the categories that you want to get notifications for
+
+Earn also allows users to get notifications for specific listings. Click on "Notify Me" of any listing you're interested in staying updated on, present on the top right corner of all listings.
+
+Click the bell icon for listing-specific notifications
+
+XP Allocation
+
+How much XP can I receive for winning a bounty or project on Earn?
+XP allocation is as follows:
+
+1st Place: 80 XP
+
+2nd Place: 60 XP
+
+3rd Place: 50 XP
+
+If the winners are in a team, XP will be distributed evenly between the team members as mentioned in the XP claim form. Please be informed that XP for wins will only be awarded when and if the winner(s) have been invited to the community as a member(s) / contributor(s).
+
+Policy
+
+What is our plagiarism policy?
+Some sponsors mandate that submissions with over 15% plagiarism will be immediately disqualified, and repeat offenders will be permanently barred from participating on Earn. In addition, the offender may also lose XP. We strongly recommend that all participants check their submissions for plagiarism before submitting to prevent disqualification.
+
+Can the deadlines be extended?
+Only the sponsor has the authority to extend the deadline. However, in all other cases, the deadlines cannot be changed.
+
+What happens if the participant has already submitted to the listing and the deadline is extended?
+No further action is necessary from the participant's end.
+
+If the prize includes an invitation to become a Superteam Member, who would get the role?
+All teammates will get the role, promised!
+
+Evaluation
+
+How are winners decided?
+Typically, sponsors conduct submission/application reviews and select the winners. However, In situations where their bandwidth is limited, a brain-trust member within Superteam might help evaluate the submissions and recommend the winners. This brain-trust member pool comprises of previous winners, people with high reputation within the community, etc.
+
+Sponsor Referrals
+
+How can I refer a sponsor to Superteam?
+You can reach out to @pratikdholani on Telegram or Twitter and make an introduction.
+
+Sponsors
+
+How are sponsors selected to list on Superteam Earn?
+Any Solana project can choose to sponsor a bounty or project through Superteam Earn, permissionlessly. If any help is needed to set up the sponsor profile, listing, jamming ideas, etc., reach out to @pratikdholani on Telegram or Twitter .
+
+Miscellaneous
+
+If you want to report a bug or share feedback, please reach out to us at hello@superteamearn.com, and we will get back to you ASAP.
+
+Superteam Earn is open source, feel free to contribute to our GitHub repo !
+
+Previous FAQs
+Next Superteam Earn
+
+Last updated 2 years ago
+
+Types of Superteam Earn Listings
+Participation Process:
+Rewards/Payouts on Superteam Earn
+Announcements & Notifications:
+XP Allocation
+Policy
+Evaluation
+Sponsor Referrals
+Sponsors
+Miscellaneous

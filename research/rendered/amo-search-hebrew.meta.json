@@ -1,0 +1,17 @@
+{
+  "url": "https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=hebrew&page_size=50",
+  "slug": "amo-search-hebrew",
+  "fetchedAt": "2026-09-28T13:17:52.330Z",
+  "status": 200,
+  "contentType": "application/json",
+  "byteLength": 602699,
+  "sha256": "5b026510247c3011f010c39e72e5933d2d10ef2c78cbe793be24ba2bcfaa2bef",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/amo-search-hebrew.json",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

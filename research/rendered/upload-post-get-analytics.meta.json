@@ -1,17 +1,17 @@
 {
   "url": "https://docs.upload-post.com/api/get-analytics/",
   "slug": "upload-post-get-analytics",
-  "fetchedAt": "2026-09-27T09:54:54.159Z",
+  "fetchedAt": "2026-09-28T13:16:50.821Z",
   "status": 200,
   "contentType": "text/html",
   "byteLength": 249236,
-  "sha256": "0f5e01dec7465847f190d4ec9a5c7241804d6dd94addece21cf67a72160c4169",
+  "sha256": "ab72df0d6bc262aa78a574f2323d44455f86fe1fa5bd08c4f41eac7fcb3fd73d",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/upload-post-get-analytics.html",
   "textPath": "research/rendered/upload-post-get-analytics.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "0f5e01dec7465847f190d4ec9a5c7241804d6dd94addece21cf67a72160c4169",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

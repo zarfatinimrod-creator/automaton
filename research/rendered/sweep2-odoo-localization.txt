@@ -435,7 +435,7 @@ Localization
 
 Apps
 
-1485
+1536
 Apps found.
 
 category:
@@ -476,16 +476,6 @@ $ 287.25
 
 1
 
-Query NAV Online Szamla inbound supplier invoices and reconcile them against Odoo vendor bills (BYOK)
-
-Hungary NAV Inbound
-
-Pokutsoft
-
-$ 114.27
-
-1
-
 Margin VAT for second-hand goods, works of art, collectibles and antiques (EU Directive 2006/112/EC, Art. 312-325)
 
 EU - Margin VAT (Second-Hand Goods)
@@ -500,7 +490,17 @@ EDI Fiscal Legend Complement for the Mexican Localization
 
 Vauxoo
 
-$ 99.09
+$ 164.15
+
+2
+
+Print MX Checks
+
+MX Check Printing
+
+Vauxoo
+
+$ 164.15
 
 2
 
@@ -510,7 +510,7 @@ Honduras SAR CAI
 
 Pokutsoft
 
-$ 88.53
+$ 89.00
 
 2
 
@@ -529,16 +529,6 @@ TDS / TCS Management (CodeTrade)
 CodeTrade India Pvt. Ltd.
 
 $ 70.00
-
-1
-
-Facturacion electronica Costa Rica v4.4 para Odoo CE y EE. Requiere suscripcion Factico API.
-
-Factura Electronica V4.4
-
-Factico
-
-$ 49.74
 
 1
 
@@ -573,26 +563,6 @@ $ 32.11
 
 12
 
-Consulta RUC y DNI en Perú usando apiperu.dev
-
-Integración de consulta RUC/DNI con apiperu.dev
-
-Raul Garcia
-
-$ 19.77
-
-2
-
-Bank Statement Import Indonesia, BCA, Mandiri, BRI, BNI, Mutasi Rekening, Rekening Koran, CSV Import, Excel Import, XLSX Parser, Bank Reconciliation, L10n Indonesia, Indonesian Localization, Account Bank Statement, Auto Detect Format, Indonesian Number Format, Indonesian Date Format, OWL Preview Widget, Bank Journal Import, BCA Mutasi CSV, Mandiri e-Statement, BRI Mutasi XLSX, BNI CSV Import, Audit Trail, Statement Parser, Multi Bank Format, ID Banking, Indonesia Accounting, Community Compatible
-
-Indonesia Bank Statement Import (BCA/Mandiri/BRI/BNI)
-
-Lema Core Technologies
-
-$ 19.73
-
-1
-
 SV DTE Import (JSON a facturas)
 
 Ing. Brenda Chacon
@@ -600,6 +570,16 @@ Ing. Brenda Chacon
 , …
 
 $ 14.80
+
+2
+
+Consulta RUC y DNI en Perú usando apiperu.dev
+
+Integración de consulta RUC/DNI con apiperu.dev
+
+Raul Garcia
+
+$ 19.77
 
 2
 
@@ -612,7 +592,7 @@ Mali
 
 FREE
 
-3300
+3306
 
 Official Algerian wilayas and communes — 69 wilayas, 1,541 communes, French and Arabic official names
 
@@ -622,7 +602,17 @@ Yacine Bendou
 
 FREE
 
-103
+105
+
+Ukrainian accounting: PKO/VKO, Cash Book, Balance Sheet, P&L, Cash Flow
+
+Ukraine - Accounting Suite
+
+Svyatoslav Nadozirny
+
+FREE
+
+99
 
 Compta Malagasy Comptabilité Madagascar PCG 2005 — Plan comptable, TVA, positions fiscales, Ariary MGA, l10n_mg
 
@@ -632,7 +622,27 @@ SofteamG
 
 FREE
 
-70
+72
+
+Hijri (Islamic Lunar) & Shamsi (Afghan Solar Hijri)
+
+Hijri & Shamsi Calendar
+
+Mohammad Hameed Masjedi
+
+FREE
+
+44
+
+PUMB Open Banking API (NextGenPSD2): consents and bank statements
+
+Ukraine - PUMB Integration
+
+Svyatoslav Nadozirny
+
+FREE
+
+12
 
 VAS - Kế toán Việt Nam | Giải pháp kế toán tích hợp theo chuẩn mực kế toán Việt Nam (VAS).
 
@@ -643,27 +653,17 @@ Hub2S Vietnam Co.
 
 FREE
 
-29
+30
 
-Temporary fix for ZATCA warning BR-KSA-EN16931-09 until Odoo core restores the second TaxTotal node.
+Statutory DJP Coretax, e-Faktur 4.0, PPN 12%, DPP Nilai Lain, and NSFP Allocator for Odoo 18
 
-Digits ZATCA | Tax Total (Fix Issue)
+Indonesia DJP Coretax & e-Faktur Tax Engine (PPN 12%, DPP Nilai Lain, 16-Digit NPWP/NIK)
 
-Digital Integrated Transformation Solutions (DigitsCode)
-
-FREE
-
-15
-
-Hijri (Islamic Lunar) & Shamsi (Afghan Solar Hijri)
-
-Hijri & Shamsi Calendar
-
-Mohammad Hameed Masjedi
+AIRIV
 
 FREE
 
-42
+16
 
 1
 
@@ -675,7 +675,7 @@ FREE
 
 …
 
-75
+77
 
 Community
 
