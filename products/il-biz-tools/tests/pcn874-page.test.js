@@ -10,8 +10,8 @@
 //     the address pcn874 itself cites (ITA_SIMULATOR_URL);
 //   - findings are listed per line with the failed rule in Hebrew, in a status
 //     region a screen reader announces, with labelled controls and RTL;
-//   - it is registered everywhere the site lists pages, and counts its page
-//     views toward the pcn874 line;
+//   - it is registered everywhere the site lists pages, and runs the site's
+//     page-view counter (no reader turns those views into a pcn874 KPI yet);
 //   - it carries no price, no "buy" and no Gumroad link.
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
@@ -22,8 +22,7 @@ import { validatePcn874 } from '../src/vendor/pcn874/validate.js';
 import { PAGE_RATE_SOURCES } from '../src/lib/publish-gate.js';
 import { collectDependencies } from '../src/lib/site-deps.js';
 import { checkPageA11y } from '../src/lib/a11y-check.js';
-import { buildReport, ruleHebrew } from '../src/lib/pcn874-report.js';
-import { PAGE_KPI_LINES, kpiLineOf } from '../src/lib/page-kpis.js';
+import { MAX_FILE_BYTES, buildReport, ruleHebrew } from '../src/lib/pcn874-report.js';
 import { productRoot, copyProduct, removeCopy, runBuild, listFiles, readIn } from './helpers/product-copy.js';
 
 const PAGE = 'pcn874.html';
@@ -94,6 +93,58 @@ describe('the page, as written', () => {
     // pcn874's own sources say no rendered source states a price or confirms the address today.
     expect(scope).toContain('ממדריך של ספק תוכנה');
     expect(html).not.toMatch(/סימולטור (ה)?חינמי/);
+    // The cited manual says the simulator checks only partly and transmission can
+    // still fail (research/rendered/pcn874-h-erp-mirror.txt:1269-1270): it is not
+    // "the check that decides", anywhere on the page, the FAQ data included.
+    expect(scope).toContain('שגם הוא בודק באופן חלקי');
+    expect(scope).toContain('ההכרעה היא בשידור עצמו');
+    expect(html).not.toMatch(/הבדיקה (ה)?קובעת|הבדיקה שקובעת/);
+  });
+
+  it('says it checks only an individual merchant\'s file, not a representatives\' file (Appendix B)', () => {
+    const scope = textById(html, 'pcn-scope');
+    expect(scope).toContain("רק קובץ של עוסק יחיד (נספח א')");
+    expect(scope).toMatch(/קובץ מייצגים \(נספח ב'\)[^.]*אינו נתמך/);
+    // The FAQ must not list Appendix B among what the check rests on.
+    const basis = /<summary>על איזה מסמך מבוססת הבדיקה\?<\/summary><p>([^<]+)<\/p>/.exec(html)?.[1] ?? '';
+    expect(basis).toContain("נספח ב' של אותו חוזר, קובץ המייצגים, אינו נבדק");
+    expect(basis).not.toMatch(/נספח ב' \(קובץ המייצגים\)/);
+  });
+
+  it('names what is not checked beyond amounts: invoice dates, check digits, allocation numbers', () => {
+    const notChecked = textById(html, 'pcn-not-checked');
+    expect(notChecked).toContain('תאריך החשבונית הוא תאריך קיים');
+    expect(notChecked).toContain('תקופת הדיווח');
+    expect(notChecked).toContain('ספרת הביקורת');
+    expect(notChecked).toContain('מספר ההקצאה מתקבל גם כשהוא אפסים');
+    expect(html).toMatch(/<p id="pcn-not-checked">[^]*?<a href="allocation\.html">/);
+  });
+
+  it('says in the visible scope box that the circular is from 2009 and its figures may have moved', () => {
+    const scope = textById(html, 'pcn-scope');
+    expect(scope).toContain('החוזר משנת 2009');
+    expect(scope).toContain('משטר מספרי ההקצאה');
+    expect(scope).toContain('עשויים להשתנות');
+    // ...and the home page's "updated for 2026" no longer covers this tool.
+    const lead = /<p class="lead">([^<]+)<\/p>/.exec(read('index.html'))?.[1] ?? '';
+    expect(lead).toContain('משנת 2009');
+    expect(lead).not.toMatch(/^[^;]*מעודכנים לשנת 2026\.$/);
+  });
+
+  it('never says a warning does not disqualify the file - it may be why the Authority rejects it', () => {
+    const script = readOrNull('src/lib/pcn874-report.js') ?? '';
+    for (const text of [html, script]) expect(text).not.toMatch(/אינה פוסלת/);
+    expect(html).toContain('ייתכן שרשות המסים תדחה את הקובץ בגללה');
+  });
+
+  it('promises only that nothing FROM THE FILE leaves, and says the same in the FAQ data as on the page', () => {
+    expect(html).not.toMatch(/<p class="lead">[^<]*שום דבר לא מועלה/);
+    expect(/<p class="lead">([^<]+)<\/p>/.exec(html)?.[1]).toContain('שום דבר מתוך הקובץ לא מועלה');
+    const ld = JSON.parse(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html)[1]);
+    const answer = ld.mainEntity.find((q) => q.name === 'האם הקובץ נשלח לשרת?').acceptedAnswer.text;
+    const visible = /<summary>האם הקובץ נשלח לשרת\?<\/summary><p>([^<]+)<\/p>/.exec(html)?.[1];
+    expect(answer).toBe(visible);
+    expect(answer).toContain('מדידת הצפיות');
   });
 
   it('says the file is not uploaded, sent or stored', () => {
@@ -187,20 +238,19 @@ describe('where the site lists its pages', () => {
   });
 });
 
-describe('page views count toward the pcn874 line', () => {
+// The pcn874 line lists "weekly page views (cookieless)" as a KPI. The page runs
+// the site's counter, so once posthog.projectKey is set PostHog has its views by
+// URL. Nothing turns them into a KPI reading yet - there is no reader in
+// src/revenue/ - and until one exists an unmeasured week is a missing reading,
+// never a zero, so the "under 100 views a week" kill rule has no input.
+describe('page views: the counter runs, the KPI is not wired yet', () => {
   const portfolio = readFileSync(join(productRoot, '..', '..', 'src', 'revenue', 'portfolio.ts'), 'utf8');
   const lineBlock = (id) => {
     const at = portfolio.indexOf(`id: "${id}"`);
     return at === -1 ? '' : portfolio.slice(at, portfolio.indexOf('skillName', at));
   };
 
-  it('maps this page to the pcn874 line, and every other page to il-biz-tools', () => {
-    expect(kpiLineOf(PAGE)).toBe('pcn874');
-    expect(kpiLineOf('vat.html')).toBe('il-biz-tools');
-    expect(Object.keys(PAGE_KPI_LINES)).toEqual([PAGE]);
-  });
-
-  it('both lines exist in the portfolio and carry the cookieless page-view KPI', () => {
+  it('both lines exist in the portfolio and name the cookieless page-view KPI', () => {
     for (const id of ['pcn874', 'il-biz-tools']) expect(lineBlock(id), id).toContain('weekly page views (cookieless)');
   });
 
@@ -214,6 +264,8 @@ describe('page views count toward the pcn874 line', () => {
 // ---------------------------------------------------------------------------
 // The page script, loaded for real against a minimal fake DOM, with every
 // network and storage API replaced by a trap that records any use.
+
+const statusText = (page) => page.byId('#pcn-status').textContent;
 
 function makeEl(tag) {
   const listeners = {};
@@ -239,7 +291,7 @@ const collect = (el, tag, out = []) => {
   return out;
 };
 
-async function loadPage() {
+async function loadPage({ validatorThrows = false } = {}) {
   vi.resetModules();
   const els = new Map();
   const byId = (sel) => {
@@ -248,6 +300,12 @@ async function loadPage() {
   };
   const initPage = vi.fn();
   vi.doMock('../assets/common.js', () => ({ initPage, $: (sel) => byId(sel), $$: () => [] }));
+  if (validatorThrows) {
+    vi.doMock('../src/vendor/pcn874/validate.js', async (importOriginal) => ({
+      ...(await importOriginal()),
+      validatePcn874: () => { throw new Error('validator bug'); },
+    }));
+  }
   const used = [];
   const trap = (name) => new Proxy(function () {}, {
     get: (_, key) => { used.push(`${name}.${String(key)}`); return undefined; },
@@ -261,17 +319,35 @@ async function loadPage() {
   vi.stubGlobal('document', { createElement: (tag) => makeEl(tag), querySelector: byId, cookie: '' });
   await import('../assets/page-pcn874.js');
   const input = byId('#pcn-file');
-  const choose = async (name, text, { failRead = false } = {}) => {
-    const bytes = new TextEncoder().encode(text);
-    input.files = [{ name, size: bytes.length, arrayBuffer: async () => { if (failRead) throw new Error('unreadable'); return bytes.buffer; } }];
+  const fileOf = (name, content, { failRead = false } = {}) => {
+    const bytes = typeof content === 'string' ? new TextEncoder().encode(content) : content;
+    return { name, size: bytes.length, arrayBuffer: async () => { if (failRead) throw new Error('unreadable'); return bytes.buffer; } };
+  };
+  const pick = async (file) => {
+    input.files = [file];
+    input.value = `C:\\fakepath\\${file.name}`;
     await input.fire('change');
   };
-  return { byId, initPage, used, choose, input };
+  const choose = (name, content, opts) => pick(fileOf(name, content, opts));
+  return { byId, initPage, used, choose, pick, fileOf, input };
 }
+
+/** Hebrew letters as Windows-1255 bytes (alef..tav are 0xE0..0xFA); ASCII as itself. */
+const cp1255 = (text) =>
+  Uint8Array.from([...text].map((ch) => {
+    const code = ch.charCodeAt(0);
+    if (code < 0x80) return code;
+    if (code >= 0x5d0 && code <= 0x5ea) return 0xe0 + (code - 0x5d0);
+    throw new Error(`no cp1255 byte for ${ch}`);
+  }));
 
 describe('the page script, with a file chosen', () => {
   beforeEach(() => vi.unstubAllGlobals());
-  afterEach(() => { vi.unstubAllGlobals(); vi.doUnmock('../assets/common.js'); });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.doUnmock('../assets/common.js');
+    vi.doUnmock('../src/vendor/pcn874/validate.js');
+  });
 
   it('installs the site\'s page setup (and so its counter) once on load', async () => {
     const page = await loadPage();
@@ -308,11 +384,11 @@ describe('the page script, with a file chosen', () => {
     for (const p of english) expect(p.attrs.dir).toBe('ltr');
   });
 
-  it('a clean file: says so, lists nothing, and still says this is not acceptance', async () => {
+  it('a clean file: says so in a neutral box, not a green one, lists nothing, and still says this is not acceptance', async () => {
     const page = await loadPage();
     await page.choose('clean.txt', fixture('valid-minimal.txt'));
     const status = page.byId('#pcn-status');
-    expect(status.className).toBe('status-box ok');
+    expect(status.className).toBe('status-box');
     expect(status.textContent).toContain('לא נמצאו שגיאות');
     expect(status.textContent).toContain('לא אישור שהקובץ יתקבל');
     expect(page.byId('#pcn-results').hidden).toBe(true);
@@ -332,6 +408,82 @@ describe('the page script, with a file chosen', () => {
     expect(page.byId('#pcn-status').textContent).toContain('לא ניתן היה לקרוא את הקובץ');
     expect(page.byId('#pcn-results').hidden).toBe(true);
     expect(collect(page.byId('#pcn-findings'), 'tr')).toEqual([]);
+  });
+
+  it('empties the file input after each pick, so picking the same (fixed) file again runs the check again', async () => {
+    const page = await loadPage();
+    await page.choose('PCN874.TXT', fixture('invalid-counts.txt'));
+    expect(page.input.value).toBe('');
+    expect(statusText(page)).toContain('אינו תואם למבנה');
+    await page.choose('PCN874.TXT', fixture('valid-minimal.txt'));
+    expect(page.input.value).toBe('');
+    expect(statusText(page)).toContain('לא נמצאו שגיאות ולא אזהרות');
+  });
+
+  it('a file too large to check: refused before a byte is read, in Hebrew', async () => {
+    const page = await loadPage();
+    let read = false;
+    await page.pick({ name: 'huge.txt', size: MAX_FILE_BYTES + 1, arrayBuffer: async () => { read = true; throw new Error('must not be read'); } });
+    expect(read).toBe(false);
+    expect(page.byId('#pcn-status').className).toBe('status-box over');
+    expect(statusText(page)).toContain('huge.txt');
+    expect(statusText(page)).toContain('לא נבדק');
+    expect(page.byId('#pcn-results').hidden).toBe(true);
+  });
+
+  it('a validator failure is reported as the checker failing, not as an unreadable file or a finding', async () => {
+    const page = await loadPage({ validatorThrows: true });
+    await page.choose('march.txt', fixture('valid-minimal.txt'));
+    const text = statusText(page);
+    expect(text).toContain('הבודק נכשל');
+    expect(text).toContain('לא נקבע דבר לגבי הקובץ');
+    expect(text).not.toContain('לא ניתן היה לקרוא');
+    expect(page.byId('#pcn-status').className).toBe('status-box over');
+    expect(page.byId('#pcn-results').hidden).toBe(true);
+  });
+
+  it('a slower earlier file never overwrites a later file\'s result', async () => {
+    const page = await loadPage();
+    let release;
+    const slowBytes = new TextEncoder().encode(fixture('invalid-counts.txt'));
+    const slow = { name: 'slow.txt', size: slowBytes.length, arrayBuffer: () => new Promise((resolve) => { release = () => resolve(slowBytes.buffer); }) };
+    page.input.files = [slow];
+    const first = page.input.fire('change');
+    await page.choose('fast.txt', fixture('valid-minimal.txt'));
+    release();
+    await first;
+    expect(statusText(page)).toContain('fast.txt');
+    expect(statusText(page)).not.toContain('slow.txt');
+    expect(collect(page.byId('#pcn-findings'), 'tr')).toEqual([]);
+  });
+
+  it('lists at most 2000 findings and says how many there were', async () => {
+    const page = await loadPage();
+    const lines = [fixture('valid-minimal.txt').split('\n')[0], ...Array.from({ length: 2100 }, () => 'Q'.repeat(60))];
+    await page.choose('many.txt', lines.join('\n'));
+    const report = buildReport(validatePcn874(lines.join('\n')));
+    expect(report.total).toBeGreaterThan(2000);
+    expect(collect(page.byId('#pcn-findings'), 'tr').length).toBe(2000);
+    expect(page.byId('#pcn-more').textContent).toBe(`מוצגים 2000 הממצאים הראשונים מתוך ${report.total}.`);
+  });
+
+  it('a Windows-1255 file: says it is not UTF-8, and does not claim its byte widths', async () => {
+    const page = await loadPage();
+    await page.choose('cp1255.txt', cp1255(fixture('warnings-refgroup-hebrew.txt')));
+    expect(statusText(page)).toContain('אינו בקידוד UTF-8');
+    expect(statusText(page)).toContain('Windows-1255');
+    const rows = collect(page.byId('#pcn-findings'), 'tr');
+    const widthRow = rows.find((r) => r.textContent.includes('file.byteWidth'));
+    expect(widthRow.textContent).toContain('אינו מתאר את רוחב הרשומות בקובץ עצמו');
+    expect(widthRow.textContent).not.toContain('ימצא את השדות שאחרי התו החריג מוזזים');
+  });
+
+  it('a file that starts with a byte-order mark: names the invisible character', async () => {
+    const page = await loadPage();
+    const bytes = Uint8Array.from([0xef, 0xbb, 0xbf, ...new TextEncoder().encode(fixture('valid-minimal.txt'))]);
+    await page.choose('bom.txt', bytes);
+    expect(statusText(page)).toContain('U+FEFF');
+    expect(statusText(page)).toContain('BOM');
   });
 
   it('never touches the network or storage, whatever the file', async () => {
@@ -354,7 +506,6 @@ describe('the build ships it', () => {
       const files = listFiles(out);
       for (const f of [PAGE, 'assets/page-pcn874.js', 'src/lib/pcn874-report.js', 'src/vendor/pcn874/validate.js']) expect(files, f).toContain(f);
       expect(files).not.toContain('src/lib/pcn874-bundle.js');
-      expect(files).not.toContain('src/lib/page-kpis.js');
       expect(readIn(out, 'sitemap.xml')).toContain('pcn874.html');
       expect(readIn(out, PAGE)).toBe(html);
     } finally {

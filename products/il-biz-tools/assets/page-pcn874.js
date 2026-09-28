@@ -9,7 +9,7 @@
 // as HTML: a finding can quote bytes from the file.
 import { initPage } from './common.js';
 import { validatePcn874 } from '../src/vendor/pcn874/validate.js';
-import { buildReport, readPcn874File } from '../src/lib/pcn874-report.js';
+import { MAX_FILE_BYTES, buildReport, readPcn874File } from '../src/lib/pcn874-report.js';
 
 initPage();
 
@@ -20,7 +20,14 @@ const results = $('#pcn-results');
 const tbody = $('#pcn-findings');
 const more = $('#pcn-more');
 
-const STATUS_CLASS = { invalid: 'status-box over', warnings: 'status-box warn', clean: 'status-box ok' };
+// A clean result is neutral, not green: the checker checks structure only, and
+// a file it passes can still be rejected.
+const STATUS_CLASS = {
+  invalid: 'status-box over',
+  warnings: 'status-box warn',
+  unsupported: 'status-box warn',
+  clean: 'status-box',
+};
 const NO_HEBREW = 'לכלל הזה אין עדיין תיאור בעברית; הניסוח של הבודק מופיע למטה.';
 
 function el(tag, text, attrs = {}) {
@@ -30,12 +37,16 @@ function el(tag, text, attrs = {}) {
   return node;
 }
 
-/** The validator's own words, in English, kept beside the Hebrew. */
+/**
+ * The validator's own words, in English, kept beside the Hebrew. `officialText`
+ * is labelled "sources and notes", not "the circular": besides the circular's
+ * words it carries vendor-manual text and the validator's own notes.
+ */
 function englishDetails(row) {
   const details = el('details');
-  details.append(el('summary', 'הניסוח המקורי של הבודק (באנגלית)'));
+  details.append(el('summary', 'הניסוח המקורי של הבודק, מקורות והערות (באנגלית)'));
   details.append(el('p', row.message, { lang: 'en', dir: 'ltr' }));
-  if (row.officialText) details.append(el('p', `Tax Authority circular: ${row.officialText}`, { lang: 'en', dir: 'ltr' }));
+  if (row.officialText) details.append(el('p', `Sources and notes: ${row.officialText}`, { lang: 'en', dir: 'ltr' }));
   if (row.openQuestion) details.append(el('p', `Still open: ${row.openQuestion}`, { lang: 'en', dir: 'ltr' }));
   return details;
 }
@@ -61,9 +72,15 @@ function clearFindings() {
   results.hidden = true;
 }
 
+function setStatus(className, ...paragraphs) {
+  status.className = className;
+  status.textContent = '';
+  if (paragraphs.length === 1) status.textContent = paragraphs[0];
+  else for (const text of paragraphs) status.append(el('p', text));
+}
+
 function show(report, fileName) {
-  status.className = STATUS_CLASS[report.verdict];
-  status.textContent = `«${fileName}»: ${report.summary}`;
+  setStatus(STATUS_CLASS[report.verdict] ?? 'status-box', `«${fileName}»: ${report.summary}`, ...(report.notes ?? []));
   clearFindings();
   for (const row of report.rows) tbody.append(rowElement(row));
   if (report.total > report.rows.length) {
@@ -72,21 +89,54 @@ function show(report, fileName) {
   results.hidden = report.rows.length === 0;
 }
 
+const megabytes = (bytes) => Math.round(bytes / (1024 * 1024));
+
+// Each choice of file is one run. A slower earlier file must not overwrite a
+// later one's result, so a run that is no longer the latest drops its result.
+let latestRun = 0;
+
 input.addEventListener('change', async () => {
   const file = input.files?.[0];
+  const run = ++latestRun;
   clearFindings();
   if (!file) {
-    status.className = 'status-box';
-    status.textContent = 'עדיין לא נבחר קובץ.';
+    setStatus('status-box', 'עדיין לא נבחר קובץ.');
     return;
   }
-  status.className = 'status-box';
-  status.textContent = `הקובץ «${file.name}» נבדק…`;
+  const name = file.name;
+  // Browsers fire no `change` when the same file is picked again, so a user who
+  // fixes the file and picks it again would see the old result. The file is
+  // held in `file`; the input is emptied so the next pick is always a change.
+  input.value = '';
+
+  if (typeof file.size === 'number' && file.size > MAX_FILE_BYTES) {
+    setStatus(
+      'status-box over',
+      `הקובץ «${name}» גדול מ-${megabytes(MAX_FILE_BYTES)} מגה-בייט, ולכן הוא לא נבדק. כל רשומה בקובץ PCN874 היא 60 תווים, כך שקובץ בגודל כזה מכיל יותר מ-400,000 רשומות; ייתכן שנבחר קובץ אחר.`,
+    );
+    return;
+  }
+
+  setStatus('status-box', `הקובץ «${name}» נבדק…`);
+  let reading;
   try {
-    const text = await readPcn874File(file);
-    show(buildReport(validatePcn874(text)), file.name);
+    reading = await readPcn874File(file);
   } catch {
-    status.className = 'status-box over';
-    status.textContent = `לא ניתן היה לקרוא את הקובץ «${file.name}». כדאי לוודא שזה קובץ טקסט ולבחור אותו שוב.`;
+    if (run !== latestRun) return;
+    setStatus('status-box over', `לא ניתן היה לקרוא את הקובץ «${name}». כדאי לוודא שזה קובץ טקסט ולבחור אותו שוב.`);
+    return;
+  }
+  if (run !== latestRun) return;
+
+  try {
+    show(buildReport(validatePcn874(reading.text), { reading }), name);
+  } catch {
+    // The file was read; the checker failed on it. That is a fault in the
+    // checker, not a finding about the file, and it must not read as one.
+    clearFindings();
+    setStatus(
+      'status-box over',
+      `הבודק נכשל בזמן בדיקת הקובץ «${name}», ולכן לא נקבע דבר לגבי הקובץ – לא שהוא תקין ולא שהוא שגוי. זו תקלה בבודק, לא ממצא על הקובץ.`,
+    );
   }
 });
