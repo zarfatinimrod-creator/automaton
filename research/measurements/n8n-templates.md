@@ -16,7 +16,7 @@ organisation is verified in the catalogue. See the Tick 8 section.
 from staff, and it states the asker's plan, not a rule. The thread answers none of the questions (verification
 criteria, brand account, AI, identity, payout, fee). Its related-topics data holds the first reply in this chain from
 a poster in n8n's own team group, in "Verifies creator" (June 2025). So the forum is not yet exhausted: that render is
-next. The step-8 question is drafted for the case where it too is silent. See the Tick 8 (second render) section.
+next. The step-8 question is drafted for the case where it too is silent. See the Tick 8 (second render) section. **Tick 9 (28.9.2026): still NEEDS_MORE, and the forum is exhausted.** The one reply from n8n's team group (`"staff":true`, moderator, group `n8n_Team`, 10.6.2025) is a single line: "You submit the template → template gets verified → profit." It links the Notion hub that this runner cannot render. It gives no criteria and no time. It says nothing on brand or AI-operated accounts, identity, payout or fees. So it neither passes nor fails the test, and it predates the June 2025 rule change. The held step-8 question is next, and its pre-send condition is met. See the Tick 9 section.
 
 ## What was read
 
