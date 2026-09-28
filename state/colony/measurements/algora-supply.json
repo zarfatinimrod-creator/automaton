@@ -1,5 +1,5 @@
 {
-  "measuredAt": "2026-09-28T09:22:46.994Z",
+  "measuredAt": "2026-09-28T09:25:33.865Z",
   "claimableBounties": 18,
   "claimableWithoutMergedSolution": 18,
   "claimableFresh365": 1,
@@ -1077,7 +1077,7 @@
   "history": [
     {
       "week": "2026-W40",
-      "measuredAt": "2026-09-28T09:22:46.994Z",
+      "measuredAt": "2026-09-28T09:25:33.865Z",
       "claimable": 18,
       "counter": 2
     }
@@ -1095,7 +1095,7 @@
     "readings": [
       {
         "week": "2026-W40",
-        "measuredAt": "2026-09-28T09:22:46.994Z",
+        "measuredAt": "2026-09-28T09:25:33.865Z",
         "claimable": 18,
         "counter": 2
       }
