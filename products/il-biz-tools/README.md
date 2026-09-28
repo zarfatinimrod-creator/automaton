@@ -20,7 +20,7 @@ while a publish blocker stands; the deploy artifact is `_site/`.
 | Receipt / invoice generator (קבלה / חשבונית עסקה) | `invoice.html` | print / PDF, local save, saved client list, per-type auto numbering | document branding: your logo and accent colour |
 | Allocation-number check (מספר הקצאה) | `allocation.html` | yes | — |
 | Companies-Registrar annual fee (אגרה שנתית לרשם החברות) | `registrar-fee.html` | deadline calculator; **no shekel amounts** — see the gate below | — |
-| PCN874 structure validator (בודק קובץ PCN874) | `pcn874.html` | yes — structure only, in the browser, no upload; its page views count for the `pcn874` line | — (no price on the page; the paid builder waits for owner steps 2+3 and a pricing ruling) |
+| PCN874 structure validator (בודק קובץ PCN874) | `pcn874.html` | yes — structure only, individual-merchant file (Appendix A) only, in the browser, no upload; its page views will count for the `pcn874` line once a PostHog key is set and a reader exists (neither does today) | — (no price on the page; the paid builder waits for owner steps 2+3 and a pricing ruling) |
 
 Audience: Israeli self-employed (no headcount is sourced in this repo), especially **עוסקים פטורים** (freelancers under the
 VAT threshold) who need a receipt today and want to know when they will cross the ceiling.
@@ -212,32 +212,64 @@ any change under `products/pcn874/src`, run `node scripts/bundle-pcn874.js` and 
 `tests/pcn874-bundle.test.js` proves the committed bundle is that generation and that every pcn874 fixture
 validates identically through the bundle and the TypeScript. The one change pcn874 needed for this was
 `Buffer.byteLength` → `TextEncoder` (its `tests/browser-safe.test.ts` keeps the four modules free of Node-only
-APIs). `netlify.toml` pins `NODE_VERSION = "22"` because the strip API needs Node 22.13+.
+APIs). `netlify.toml` pins an exact `NODE_VERSION` (`22.22.2`, the version the committed bundle was generated
+on) and `package.json` says `>=22.13`: the strip API needs 22.13+, and the build's byte-for-byte check means a
+floating `"22"` could fail a deploy on a Node patch release that changes the stripper's output. Moving the pin
+means regenerating the bundle on the new version in the same commit. CI (`.github/workflows/products-ci.yml`)
+still says `node-version: 22`; it was left alone (outside this page's brief), and if a Node release ever changes
+the output, CI's bundle test is where it shows first.
 
-**What it says.** In Hebrew, above the file input: the validator checks structure only; it **cross-checks no
-amount** and **does not compute `reportedVat`**; a few rules read an amount (zero or not, the 5,000-shekel
-identified-sale threshold, the petty-cash cap as a warning) but none compares header totals to the records; a
-file that passes can still be rejected; the check that decides is the Tax Authority's simulator, linked at
-`ITA_SIMULATOR_URL` from pcn874's own `sources.ts`. The page does **not** call the simulator free: pcn874's
-sources say no rendered source states a price or confirms the address today, and the page says the address
-comes from a vendor manual. Findings are listed per line in a table - record, field, severity, the failed rule
+**What it says.** In Hebrew, above the file input: it checks only an individual merchant's file (Appendix A),
+not a representatives' file (Appendix B); it checks structure only; it **cross-checks no amount** and **does not
+compute `reportedVat`**; a few rules read an amount (zero or not, the 5,000-shekel identified-sale threshold,
+the petty-cash cap as a warning) but none compares header totals to the records; it also does **not** check
+that an invoice date is a real date inside the period, VAT-id check digits, or whether an invoice needs an
+allocation number (zeros are accepted; the page links `allocation.html` for that question); the circular is
+from 2009, no later edition was found, the allocation-number regime came after it, and it says itself that
+figures like 5,000 and 2% may change; a file that passes can still be rejected. The Tax Authority's own check
+is its simulator, linked at `ITA_SIMULATOR_URL` from pcn874's own `sources.ts` - and the page says what the
+cited manual says (`research/rendered/pcn874-h-erp-mirror.txt:1269-1270`): the simulator too checks only in
+part, and the transmission itself decides. The page does **not** call the simulator free: pcn874's sources say
+no rendered source states a price or confirms the address today, and the page says the address comes from a
+vendor manual. A warning is never called harmless: the page says the circular does not settle it, so it is
+not counted as an error here, and the Tax Authority may still reject the file for it. A clean result is shown
+in a neutral box, not a green one. A file that looks like Appendix B (an `A` record or a `Z` closing record)
+gets "this looks like a representatives' file, which the checker does not check" instead of "does not
+conform", and the closing record is named by its real first letter. The Hebrew for `detail.*.signOfZero`
+depends on the severity: the warning (invoice total zero, VAT not - a VAT-only credit) tells the user not to
+change the sign without checking, and never reads like the error (both zero). Findings are listed per line in a table - record, field, severity, the failed rule
 in Hebrew (`src/lib/pcn874-report.js`, one Hebrew line per rule id the validator can emit, enforced by
-`tests/pcn874-report.test.js`), the validator's English in a `<details>` - and the summary goes to a
-`role="status" aria-live="polite"` region.
+`tests/pcn874-report.test.js`), the validator's English in a `<details>` labelled "sources and notes" (its
+`officialText` carries vendor-manual text and the validator's own notes, not only the circular's words) - and
+the summary goes to a `role="status" aria-live="polite"` region.
+
+**Reading the file.** The page and the pcn874 CLI decode a file through the same function
+(`decodePcn874Bytes` in pcn874's `parse.ts`): UTF-8, invalid bytes replaced, a leading BOM kept - and both say
+so when the bytes were not UTF-8 (a Hebrew file saved as Windows-1255: the byte widths reported are of the
+decoded text, and the page replaces the `file.byteWidth` line accordingly) or when the file starts with a
+byte-order mark (the reason its first line is not seen as the header). Files over 25 MB (`MAX_FILE_BYTES`, more
+than 400,000 records) are refused before a byte is read: the validator runs on the page's thread, and a 62 MB
+file measured 6.8 s and about 680 MB. The input is emptied after each pick, so picking the same fixed file
+again re-runs the check; a slower earlier file never overwrites a later one's result; and a failure inside the
+checker is reported as the checker failing, not as an unreadable file or a finding.
 
 **What it does not do.** The file is read with `File.arrayBuffer()` and validated in the tab; it is not
 uploaded, sent or stored. No module the page loads contains `fetch`, `XMLHttpRequest`, `sendBeacon`,
 `WebSocket`, `EventSource` or a storage API, and the page script runs in the tests with all of them trapped.
 The page carries no price, no "buy" and no Gumroad link.
 
-**Page views.** The page calls `initPage()`, so the site's existing cookieless PostHog counter (off until
-`posthog.projectKey` is set) counts it like every other page. `src/lib/page-kpis.js` maps `pcn874.html` to the
-`pcn874` line and every other page to `il-biz-tools`, for whatever reads the weekly counts; no such reader
-exists in `src/revenue/` yet, so until the key is set **and** a reader exists the KPI records nothing.
+**Page views - the counter runs, the KPI is not wired.** The page calls `initPage()`, so the site's existing
+cookieless PostHog counter (off until `posthog.projectKey` is set) will count its views by URL like every other
+page. Nothing turns those views into a pcn874 KPI reading: there is no PostHog reader in `src/revenue/`, and the
+page-to-line mapping module the first build added (`page-kpis.js`) was removed because nothing read it. Until a
+key is set **and** a reader exists, an unmeasured week is a missing reading, never a zero - the pcn874 line's
+"under 100 views a week" kill rule has no input and must not be run.
 
 **Not verified.** No real browser has run the page: none can be installed in the build container (the
 Playwright download is blocked). The real page and its real module graph ran once under jsdom (28.9.2026):
-three files, correct summaries and rows, no network call, no injected markup.
+three files, correct summaries and rows, no network call, no injected markup. The review fixes (size cap, re-pick,
+stale runs, reading notes, the neutral clean box) ran only against the tests' fake DOM, not under jsdom or a
+browser. A screen reader, keyboard use in a real browser and 200% zoom remain unchecked.
 
 ## Layout
 
@@ -250,7 +282,7 @@ assets/page-*.js            DOM glue per page (no logic)
 src/lib/*.js                pure ES modules: vat, osek-patur, net-salary, invoice, allocation,
                             registrar-fee, gumroad, license, branding, analytics, money, pcn874-report -
                             and five build-time ones that never ship: publish-gate, site-deps, a11y-check,
-                            pcn874-bundle, page-kpis
+                            pcn874-bundle
 src/vendor/pcn874/*.js      GENERATED: products/pcn874's validator with its types stripped (do not edit)
 src/config/*.json           vat.json, osek-patur.json, tax-2026.json, allocation-number.json,
                             registrar-fee.json, site.json
@@ -270,7 +302,7 @@ netlify.toml robots.txt sitemap.xml
 ```bash
 cd products/il-biz-tools
 npm install          # vitest only
-npm test             # 428 tests (vitest, 20 files; re-measured 28.9.2026 after the pcn874 page)
+npm test             # 447 tests (vitest, 20 files; re-measured 28.9.2026 after the pcn874 page review fixes)
 node scripts/bundle-pcn874.js   # after ANY change under products/pcn874/src - the build refuses a stale bundle
 npm run check:html   # static page sanity checks + what the publish gate will withhold
 node scripts/build-site.js   # writes _site/ exactly as it will be deployed - or refuses (exit 1) on a blocker
@@ -314,12 +346,16 @@ inline snippet that initialises PostHog with:
 | `autocapture` | `false` | no clicks, no form contents — page views only |
 | `capture_pageview` | `true` | the one thing being measured |
 | `disable_session_recording` | `true` | no replay of anyone's screen |
+| `capture_dead_clicks`, `capture_heatmaps`, `capture_exceptions`, `capture_performance` | `false` | unset, posthog-js takes each from the PostHog project's settings, so a toggle there could start sending element text (on `pcn874.html` a table cell holds bytes of the user's file); pinned off in code |
+| `disable_surveys` | `true` | no surveys, whatever the project says |
+| `mask_all_text`, `mask_all_element_attributes` | `true` | if any element capture ever ran, no text or attributes |
 
 What it measures: page views per URL, and nothing that identifies a visitor. What it is **for**:
 the board gated the paid registrar reminder on *100 weekly views* of `registrar-fee.html`, and this
 is how that number gets counted instead of guessed. Option names taken from PostHog's own docs
 (retrieved 2026-09-07): `posthog.com/tutorials/cookieless-tracking`, `/docs/libraries/js/persistence`,
-`/docs/libraries/js/config`.
+`/docs/libraries/js/config`; the pinned-off ones from posthog-js's own `packages/types/src/posthog-config.ts`
+and the extensions that read them (retrieved 2026-09-28 through Context7).
 
 🔍 **Unverified, owner-side:** PostHog's cookieless tutorial states that "Cookieless server hash mode"
 must be enabled in *Project Settings → Web analytics* first. Nobody here has an account to confirm
@@ -510,4 +546,4 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
 חשבון Netlify ודומיין, אימות ב-Google Search Console. יצירת מוצר ה-Pro והדבקת הכתובת והמזהה שלו
 ב-`site.json` הן עבודה שלי, דרך אותו טוקן (`.github/workflows/gumroad-pro-product.yml`).
 
-**בדיקות:** `npm install && npm test` (428 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.
+**בדיקות:** `npm install && npm test` (447 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.

@@ -132,7 +132,7 @@ Plus **§6.9**, which was never in the log because all three implementations agr
 
 ```bash
 npm install
-npm test          # 321 tests (re-measured 28.9.2026)
+npm test          # 327 tests (re-measured 28.9.2026)
 npm run typecheck
 npm run build
 node dist/cli.js validate path/to/PCN874.txt
@@ -145,6 +145,8 @@ pcn874 generate <input.csv> --out <file> [--reported-vat <shekels>] [--json]
 ```
 
 `validate` exits `0` when there is no error finding, `1` when there is, `2` on a usage or I/O problem. `generate` exits `0` when the file was written, `1` when it refused — either because the input was wrong or because its own validator rejected the file it built — and `2` on a usage or I/O problem. Warnings never change either exit code.
+
+`validate` reads the file's bytes through `decodePcn874Bytes` (`src/parse.ts`) — the same text `readFileSync(path, 'utf8')` gives — and prints a `note:` before the findings when the bytes are **not valid UTF-8** (a Hebrew file saved as Windows-1255, say: each such byte shows as U+FFFD, and a `file.byteWidth` width is that of the decoded text, not of the file on disk) or when the file **starts with a byte-order mark** (read as the first character of the first record, so that record is not seen as the header). Neither is a finding — the circular declares no encoding. `--json` carries the same as `utf8`, `byteOrderMark` and `notes`. The il-biz-tools page reads files through the same function and says the same two things in Hebrew.
 
 **`--reported-vat` is in shekels**, signed: `+` is VAT to pay, `-` VAT to receive. It is the one number the generator will not compute, because no rendered source states how it is computed ([`docs/SPEC.md` §5.2](docs/SPEC.md)); without it, and without a `# reportedVat:` line in the CSV, `generate` refuses; the flag overrides that line. The CSV's columns, the header block, and every total that IS computed are documented in [`docs/GENERATOR.md`](docs/GENERATOR.md).
 

@@ -315,7 +315,16 @@ describe('the deploy configuration', () => {
     expect(settings).not.toContain('_preview');
   });
 
-  it('builds on Node 22, which the pcn874 bundle needs (module.stripTypeScriptTypes, 22.13+)', () => {
-    expect(settings).toMatch(/^\[build\.environment\]\s*\n\s*NODE_VERSION = "22"$/m);
+  it('builds on one exact Node release, at or above the 22.13 the pcn874 bundle needs (module.stripTypeScriptTypes)', () => {
+    // Exact, not "22": the build refuses unless the committed bundle equals this
+    // Node's type-stripper output byte for byte, so a floating version could fail
+    // a deploy on a Node patch release with no change in the repo.
+    const pinned = /^\[build\.environment\]\s*\n\s*NODE_VERSION = "(\d+)\.(\d+)\.(\d+)"$/m.exec(settings);
+    expect(pinned, 'NODE_VERSION must be an exact x.y.z').not.toBeNull();
+    const [major, minor] = [Number(pinned[1]), Number(pinned[2])];
+    expect(major).toBe(22);
+    expect(minor).toBeGreaterThanOrEqual(13);
+    const engines = JSON.parse(readFileSync(join(productRoot, 'package.json'), 'utf8')).engines.node;
+    expect(engines).toBe('>=22.13');
   });
 });

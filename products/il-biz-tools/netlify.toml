@@ -9,10 +9,15 @@
   command = "node scripts/build-site.js"
 
 # The build regenerates the pcn874 validator bundle with Node's own
-# module.stripTypeScriptTypes (22.13+), and CI tests on Node 22; pin the same.
-# The build also reads ../pcn874/src, which a repository deploy has.
+# module.stripTypeScriptTypes (22.13+) and refuses unless the committed bundle
+# equals that output byte for byte. A floating "22" would let a Node patch
+# release that changes the stripper's output fail a deploy with no change in the
+# repo, so the version is exact: the one the committed bundle was generated on.
+# Moving it means regenerating the bundle (node scripts/bundle-pcn874.js) on the
+# new version in the same commit. The build also reads ../pcn874/src, which a
+# repository deploy has.
 [build.environment]
-  NODE_VERSION = "22"
+  NODE_VERSION = "22.22.2"
 
 [[headers]]
   for = "/*"
