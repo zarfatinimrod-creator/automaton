@@ -12,11 +12,11 @@ no fee, payout, identity or template AI rule. See the Tick 7 section.
 from n8n. It adds one cost. A creator with five published templates was still asking how to reach verified status
 (February 2026). [INFERENCE] Verification is a quality review, not a count of three. A creator account run as an
 organisation is verified in the catalogue. See the Tick 8 section.
-**Tick 9 (28.9.2026): still NEEDS_MORE.** The 2025 thread's "accepted answer" is the asker's own last post. It is not
+**Tick 8 (second render) (28.9.2026): still NEEDS_MORE.** The 2025 thread's "accepted answer" is the asker's own last post. It is not
 from staff, and it states the asker's plan, not a rule. The thread answers none of the questions (verification
 criteria, brand account, AI, identity, payout, fee). Its related-topics data holds the first reply in this chain from
 a poster in n8n's own team group, in "Verifies creator" (June 2025). So the forum is not yet exhausted: that render is
-next. The step-8 question is drafted for the case where it too is silent. See the Tick 9 section.
+next. The step-8 question is drafted for the case where it too is silent. See the Tick 8 (second render) section.
 
 ## What was read
 

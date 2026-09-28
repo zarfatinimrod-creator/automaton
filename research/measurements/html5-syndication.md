@@ -19,7 +19,7 @@ page. The revshare wording (:393, :397) reads as an invoice we submit and Y8 acc
 is UNKNOWN at rendered grade. G7 leans PASS: the studio form's public field is "Studio Name", and the form has no
 legal-name field. No camera, ID or fee step is named. The 29.9 sitting decides two things: the `BOARD.md:78` invoice
 ruling (KILL or PARK), and the shared portal ruling for (d).
-**Tick 9 (`y8-docs-overview`): (a) still fires as worded. The public docs are exhausted.** The overview names the
+**Tick 8 (second render) (`y8-docs-overview`): (a) still fires as worded. The public docs are exhausted.** The overview names the
 portal's per-game tabs (SDK Initialization, leaderboards, achievements, QA checks, review status). It names no payments
 or invoice screen. It also says the docs "deliberately" do not mirror the portal. So whatever invoice form exists sits
 behind the login, and (a) is for the 29.9 sitting alone. No new kill fires. No further render is named.
@@ -81,7 +81,7 @@ and the publish request are official steps, now at rendered grade. The page is G
 guidelines link to it, but it was last edited 2021-12-09. The activation ad is a demo "fake advertisement", so tick 7's
 invalid-traffic reason for a human watch falls. No upload API is named. `:183` fires only if the 29.9 sitting rules
 that portal-only steps are human steps.
-**Tick 9 (`gamedistribution-wiki-faq`): NEEDS_MORE, unchanged. The public pages this runner can read are exhausted.**
+**Tick 8 (second render) (`gamedistribution-wiki-faq`): NEEDS_MORE, unchanged. The public pages this runner can read are exhausted.**
 The FAQ was last edited 2018-04-16. It lifts two lines to rendered grade: the ad-watch "only possible from the page
 within your Gamedistribution.com control panel", and the "designated button" for the publish request. It names no
 payout rail, country, identity or camera step, and no upload API. The partnership page now returns 200, but like the
