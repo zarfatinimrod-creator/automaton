@@ -5,7 +5,8 @@ you think, and can you even create videos?" This file is the synthesis of five s
 and money, market, the parent variant, production at ₪0, risk against the mandate), their verifiers, and three judges.
 The synthesizer ran on Opus. It made no WebSearch, re-checked every load-bearing rendered quote with `grep -F` (or by
 printing the lines, where the source wraps a sentence across lines), and re-fetched two GitHub files. The scouts used 7
-WebSearches between them.
+WebSearches between them. A reviser (Opus, 0 WebSearches, one GitHub re-fetch) then checked a critic's 19 items against
+the evidence and applied them; §13 lists what was not applied, or applied in a corrected form, and why.
 
 Grades: **rendered** (runner capture in `research/rendered/`, file:line), **github** (fetched from github.com or
 raw.githubusercontent.com), **snippet** (search-engine snippet), **repo** (an earlier repo finding), **none**. A sixth
@@ -16,18 +17,24 @@ and are not committed. It is evidence of what ran, but it is below repo grade un
 
 ## 0. תקציר לבעלים
 
-1. **אפשר לייצר סרטונים? כן, וכבר יש אחד.** ב-27.9 הופק סרטון של 1:57 דקות ב-1080p (גרפים מנתונים פתוחים, קריינות באנגלית), ב-0 ₪ ובפחות משתי דקות מחשב. הוא עבר את בדיקת הפרסום שלנו ומוחזק, לא פורסם.
+1. **אפשר לייצר סרטונים? כן, וכבר יש אחד.** ב-27.9 הופק סרטון של 1:57 דקות באיכות HD מלאה (גרפים מנתונים פתוחים, קריינות באנגלית), ב-0 ₪ ובפחות משתי דקות מחשב. הוא עבר את בדיקת הפרסום שלנו ומוחזק, לא פורסם.
 2. **מה אפשר ב-0 ₪:** הסברים עם גרפים וקריינות באנגלית ברישיון נקי, אנימציה פשוטה (אימוג'ים וצורות שזזות), וטקסט עברי על המסך (נבדק שהכיוון מימין לשמאל יוצא נכון).
-3. **מה אי אפשר:** קריינות בעברית ברישיון מסחרי חינמי (יש קול עברי ל-Kokoro, אבל רק לשימוש לא מסחרי), שירים או מוזיקה ברישיון, אנימציית דמויות, ווידאו גנרטיבי (עולה קרדיטים בתשלום).
+3. **מה אי אפשר:** קריינות בעברית ברישיון מסחרי חינמי (למנוע הקריינות החינמי שלנו קיים קול עברי של צד שלישי, אבל רק לשימוש לא מסחרי), שירים או מוזיקה ברישיון, אנימציית דמויות, ווידאו גנרטיבי (עולה קרדיטים בתשלום).
 4. **YouTube Kids: ההמלצה היא לא לפתוח ערוץ עכשיו, בשתי הקריאות של השאלה.**
-5. **סרטונים לילדים:** YouTube בודקת אותם בשכבת איכות נוספת שיכולה להשעות ערוץ שלם מהרווחים, וכותבת ש"ייצור המוני או אוטומטי" הוא מקור נפוץ לתוכן החלש. דובר YouTube אמר לעיתונות שבאפליקציה תוכן AI מוגבל ל"קבוצה קטנה של ערוצים איכותיים". בתוכן לילדים אין מודעות מותאמות אישית, תגובות או התראות, ולכן ההכנסה לצפייה נמוכה יותר (הכיוון מתועד, הגודל לא ידוע). ילד שעוד לא קורא לא יראה את הסימון שהסרטון נוצר ב-AI.
-6. **מדריכים להורים על האפליקציה:** Google כבר מפרסמת אותם בחינם, גם בעברית (בקרת הורים, טיימר, פרופילים, חסימה), ואין לנו דרך לגיטימית לצלם את מסכי האפליקציה בלי עבודה ידנית.
-7. **כסף:** כל ערוץ YouTube חדש, מכל סוג, צפוי להכניס 0 ₪ בחודשים 3 ו-6 (ספי תוכנית השותפים), ו-0 ₪ כתרחיש הסביר בחודש 12. גם בתרחיש הטוב ביותר התשלום הראשון לא לפני חודש 7-8. תוכן לילדים מכניס פחות לכל צפייה מתוכן למבוגרים.
-8. 20,000 ₪ בחודש מ-YouTube לבדו ידרשו בערך 0.6-1 מיליון צפיות בחודש לתוכן למבוגרים, ו-2.8-21.6 מיליון לתוכן לילדים, לפי הנחות הכנסה לצפייה שאין להן מקור רשמי.
-9. **מה זה דורש מכם: שום צעד חדש.** ניסוי ה-YouTube היחיד שכבר בנוי (T1, ערוץ הסברים באנגלית) ממשיך בסדר שנקבע: קודם אתר הניסוי, ורק אחרי 56 יום בקשה חד-פעמית של 40-60 דקות.
-10. **מה יעצור את T1:** העלאה שננעלת כפרטית, כל אזהרת מדיניות, פחות מ-5 מבקרים זרים באתר ביום 56, או כל עלות חוזרת.
-11. **מה יחזיר את YouTube Kids לשולחן:** דפי העזרה הרשמיים מראים דרך כניסה לערוצי AI חדשים, T1 עובר בדיקה אנושית של YouTube, ולעברית גם קול ברישיון מסחרי שעובר בדיקת הבנה.
+5. **סרטונים לילדים:** YouTube בודקת אותם בשכבת איכות נוספת שיכולה להשעות ערוץ שלם מהרווחים, וכותבת ש"ייצור המוני או אוטומטי" הוא מקור נפוץ לתוכן החלש. דובר YouTube אמר לעיתונות שבאפליקציה תוכן AI מוגבל ל"קבוצה קטנה של ערוצים איכותיים". לצופים מתחת לגיל 18 אין מודעות מותאמות אישית; בתוכן לילדים התגובות וההתראות כבויות; ייתכן שההכנסה לצפייה נמוכה יותר, אבל אין לכך מקור רשמי. הסימון שהסרטון נוצר ב-AI הוא טקסט, וילד שעוד לא קורא לא יקרא אותו (אפשר להוסיף גילוי מדובר, אבל לא ידוע אם ילד קטן יבין אותו).
+6. **מדריכים להורים על האפליקציה:** Google כבר מפרסמת אותם בחינם, גם בעברית (בקרת הורים, טיימר, פרופילים, חסימה), ואין לנו דרך לגיטימית לצלם את מסכי האפליקציה בלי עבודה ידנית. גם כדפי אינטרנט חינמיים במקום ערוץ הם לא עוברים: אין בהם שום מידע שאינו ציבורי, ואין בהם דרך לגבות כסף.
+7. **כסף:** כל ערוץ YouTube חדש, מכל סוג, צפוי להכניס 0 ₪ בחודשים 3 ו-6 (הסף לרווחי פרסום: 1,000 מנויים ו-4,000 שעות צפייה, ו-8,000 שעות למי שמגיש מפברואר 2027), ו-0 ₪ כתרחיש הסביר בחודש 12. בניסוי הקיים התשלום הראשון רחוק לפחות 8-10 חודשים בתרחיש הטוב ביותר, ו-11-25 חודשים או אף פעם בתרחיש הריאלי. ערוץ חדש לילדים או להורים יכול להתחיל רק אחרי מדידת יום 112 של הניסוי הקיים, ולכן אצלו הכסף מאוחר עוד יותר.
+8. 20,000 ₪ בחודש מ-YouTube לבדו ידרשו בערך 0.56-1 מיליון צפיות בחודש לתוכן למבוגרים, ו-2.8-21.6 מיליון לתוכן לילדים, לפי הנחות הכנסה לצפייה שאין להן מקור רשמי. וב-YouTube הצפיות מתרכזות בלהיטים: במדגם אקראי של סרטונים, 3.67% מהם קיבלו 93.61% מכל הצפיות. ערוץ כזה הוא הימור על להיט, ובתוספת שלכם מ-28.9 ביקשתם הרבה מכירות קטנות בהרבה מקומות, לא להיט אחד.
+9. **מה זה דורש מכם: שום צעד חדש בגלל השאלה הזאת.** הניסוי הקיים (ערוץ הסברים באנגלית, ניסוי ה-YouTube היחיד שכבר בנוי) ממשיך בסדר שנקבע, ויש לו שלושה תנאים:
+   - אתר הניסוי עולה לאוויר רק אחרי שתאשרו את גישת הרשת שכבר ביקשנו (כ-2 דקות), ו-56 הימים נספרים מהיום שהאתר עולה, לא מהיום.
+   - את הבקשה החד-פעמית לפתיחת הערוץ (40-60 דקות) נבקש רק אם ביום 56 יהיו באתר לפחות 5 צפיות של מבקרים זרים שבאמת קראו. בתוך אותה בקשה תהיה גם יצירה של מפתח קריאה אחד (כדקה), כדי שנוכל לוודא ש-YouTube לא סימנה סרטון שלנו כתוכן לילדים.
+   - אם ההחלטה הפתוחה (סעיף 9.5) תהיה חשבון Google נפרד לערוץ, הבקשה הזאת תכלול גם פתיחת חשבון Google נוסף ואימות טלפון.
+10. **מה יעצור את הניסוי הקיים:** העלאה שננעלת כפרטית, כל אזהרת מדיניות, פחות מ-5 מבקרים זרים באתר ביום 56, או כל עלות חוזרת.
+11. **מה יחזיר את YouTube Kids לשולחן, לפי הקריאה:**
+    - **סרטונים לילדים:** סגור לפי הכללים הנוכחיים. אחד התנאים הוא בודק אנושי של איכות התפתחותית שאינו אתם, ואין דרך להשיג כזה בלי לדבר עם אנשים ובלי לשלם. רק שינוי שלכם בכללים יכול לפתוח את זה. גם אז צריך: דפי עזרה רשמיים שמראים דרך כניסה לערוצי AI חדשים, שהניסוי הקיים יעבור את מדידת יום 112 ובדיקה אנושית של YouTube, והחלטה של הדירקטוריון (Fable) שאפשר בכלל לבדוק ערך כן אצל ילדים שעוד לא קוראים. לעברית צריך גם קול ברישיון מסחרי שעובר בדיקת הבנה.
+    - **מדריכים להורים:** רק באנגלית, רק אחרי מדידת יום 112 של הניסוי הקיים, רק כשיתפנה מקום במלאי המוצרים שבנויים ולא הושקו, ורק אם יימצא להם מקור מידע שאינו ציבורי. היום אין כזה: Google מפרסמת את אותו מידע בחינם.
 12. לא צריך להשיב לנו לאיזו קריאה התכוונתם: ההמלצה זהה בשתיהן.
+13. **סרטון לדוגמה להורים על YouTube Kids:** מותר להכין אותו רק כהדגמה של יכולת, והוא לא יפורסם: אין לו ערוץ (פתיחת ערוץ מחכה ליום 56 של הניסוי הקיים), והמלאי של מוצרים שבנויים ולא הושקו מלא (6 מתוך 6). אם ייוצר, כל שלב בו יצוטט מדפי העזרה הרשמיים, והסרטון יאמר בעצמו שנוצר אוטומטית.
 
 ---
 
@@ -54,6 +61,13 @@ in MoneyPrinterTurbo and no commercial free Hebrew TTS. It left open one shape: 
 our own expertise … we are paid by customers rather than by views" (`:117-120`). The reopen trigger is "All three, not
 one": a platform paying Israel, working Hebrew RTL, and a commercial TTS licence (`:131-133`).
 
+**Where Hebrew stands on that trigger today: two legs met, one not, so it has not fired.** Leg 1, a platform paying
+Israel: met for YouTube (Israel on the YPP list and paid by EFT, rendered, table below). Whether the output is content
+"this pipeline can legally and honestly produce" is what §3 and §7 dispute for A. Leg 2, working Hebrew RTL: met in our
+own renderer for on-screen text (Pillow with raqm, §6, measured-scratch). That supersedes the repo-priors verifier's
+"still unmet" for our renderer; MoneyPrinterTurbo's RTL, which the 3.9 entry judged, was not re-checked, and burned-in
+RTL subtitles are not measured. Leg 3, a commercially licensed Hebrew TTS: unmet (§6, A-he).
+
 The verifier's corrections to how that rejection transfers here:
 - **Reason 1** (no TikTok pay to Israel) does not apply to YouTube (VERDICT.md:76).
 - **Reason 3** (spam clusters) applies fully to many channels but only PARTLY to one (VERDICT.md:78).
@@ -68,6 +82,8 @@ is one English long-form data-explainer channel. RED-TEAM upheld the decision ("
 - ₪0 at month 3 and ₪0 at month 6;
 - month 12: "₪0 (modal) to ₪130-260". The arithmetic in the same cell gives ₪130-250, the figure RED-TEAM uses;
 - ₪20,000 would need 569k-1.02M views a month, at a $7-10 RPM that "is used as the reel's own floor, not as a finding" (`:188`).
+  VERDICT's scale rows take keep 0.95 at the top end (`:79`, `:195`); §3.2 uses its formula's 0.97 throughout, which gives
+  557k-1.02M.
 
 **T1 status today** (repo, all quotes checked):
 - "Status: not run. The owner has not been asked for anything." (`T1-PROTOCOL.md:4`). One qualification: step 8, the brand
@@ -87,7 +103,7 @@ is one English long-form data-explainer channel. RED-TEAM upheld the decision ("
 | 1,000 subscribers + 4,000 watch hours now; 8,000 hours for new applicants from 1 Feb 2027 | `youtube-ypp-overview.txt:89`; `youtube-ypp-2027-terms.txt:94` | rendered |
 | "Our automated systems and human reviewers will review your channel as a whole" | `youtube-ypp-overview.txt:121` | rendered |
 | Uploads from unaudited API projects "will be restricted to private viewing mode" | `youtube-api-videos-insert.txt:220` | rendered |
-| AdSense for YouTube pays Israel by **EFT only** (Check No, EFT Yes, Wire No, Hyperwallet No). The synthesizer re-read the table: Ireland's row (No/Yes/Yes/No) confirms the column order, which closes the "one more agent" check. | `youtube-payment-method.txt:733-745` (header), `:1027-1035` (Israel row) | rendered |
+| AdSense for YouTube pays Israel by **EFT only** (Check No, EFT Yes, Wire No, Hyperwallet No). The mapping is proven by the HTML, not the text dump: in `youtube-payment-method.html` the table's header row is `Country/Territory, Check, EFT, Wire, Hyperwallet`, and the Israel `<tr>` holds five cells in that order (`Israel, No, Yes, No, No`). The reviser parsed it with a script; this closes the "one more agent" check. | `youtube-payment-method.txt:733-745` (header), `:1027-1035` (Israel row); `youtube-payment-method.html` (table structure) | rendered |
 | ILS thresholds: verification "$10 equivalent", payment method ₪40, **payment ₪400**, cancelation ₪40 | `youtube-revenue-threshold.txt:282-292` | rendered |
 | "Disclosing AI content won't limit a video's audience or impact its eligibility to earn money" | `youtube-altered-synthetic-disclosure.txt:173` | rendered |
 
@@ -139,9 +155,10 @@ There is **no first-party RPM for MFK content** anywhere. The rendered RPM page 
 figures, and the rpm-evidence audit found none for any niche (`audits/rpm-evidence.md` §0, repo).
 
 What exists:
-- **Direction** (rendered, R7 and R8): no personalized ads for these viewers, no comments, no notifications. A lower rate
-  per view follows, and so does weaker growth, because notifications are one of the levers that turn a view into the next
-  view.
+- **What is rendered** (R7 and R8): no personalized ads for viewers under 18 and supervised accounts; no comments and no
+  notifications on MFK content. That personalized ads are off on every MFK view is claim 9, UNSETTLED. A lower rate per
+  view is therefore plausible but not sourced (inference, no first-party figure). Weaker growth is the firmer inference,
+  because notifications are one of the levers that turn a view into the next view.
 - **Vendor bands** (github, self-disclaimed): "Made-for-kids content ~$0.5–$2" (`itsrodero/itsrodero.github.io`
   `en/youtube-cpm-by-niche.html:86`, which calls itself "not official YouTube data", `:90`). A second file gives "~$1–3 RPM
   vs $5–15 for general" (`kyl3kan3/faceless-shorts-toni` `channel/MONETIZATION.md:12`). The bands disagree with each other,
@@ -149,17 +166,19 @@ What exists:
   point estimate.
 - **One study** ($1.59 CPM, 32% monetized rate, $0.33 RPM): snippet, source unidentified, unverified.
 
-What the arithmetic says, keeping each input's grade. It uses VERDICT §7's formula, ILS = views/1000 × RPM × 3.7 × keep
-(0.76-0.97); the verifier re-derived every figure.
+What the arithmetic says, keeping each input's grade. It uses VERDICT §7's formula, ILS = views/1000 × RPM × 3.7 × keep,
+with keep 0.97-0.76 in every row; the verifier re-derived every figure, and the reviser re-derived the
+₪20,000 adult row at 0.97. VERDICT's own scale rows use 0.95 at the top (`VERDICT.md:79, :195`), which gives 142k-254k
+for ₪5,000 and 569k-1.02M for ₪20,000; the difference is only in the lower bound.
 
 | Case | Adult channel (T1, $7-10 placeholder, grade none) | MFK channel ($0.33-2, snippet/github vendor, disputed) |
 |---|---|---|
 | At the 8,000-hour gate (6,667-10,000 views/month at 4-6 min/view; kids view duration unknown) | ₪130-250 | ₪6-72, and ₪0 if the kids-quality layer limits ads (R2) |
 | ₪5,000 line share | 139k-254k views/month | 0.70-5.39M views/month |
-| ₪20,000 | 569k-1.02M views/month | 2.8-21.6M views/month |
+| ₪20,000 | 557k-1.02M views/month | 2.8-21.6M views/month |
 | Months 3 and 6 | ₪0 (YPP thresholds, rendered) | ₪0 |
 | Month 12 | ₪0 modal | ₪0 modal |
-| First payment, best case | month 7-8 (VERDICT §7, repo) | no better |
+| First payment | ≥8-10 months away (from VERDICT's date, 27.9.2026) in the best case, "11-25 months or never" realistically (`VERDICT.md:166`, repo). The month 7-8 case (`:193`) is the monetization-gates best case, of which VERDICT says "This experiment cannot hit that case". | Later still, for A and for B: a new channel starts only after T1's K3 read (day 112, §9.3), then walks the same path from zero |
 
 **The only reliable MFK RPM would be a channel's own post-YPP analytics.** No render can settle the size. Hebrew MFK ad
 fill is unknown and cannot be observed before YPP admission (grade none), so no kill criterion could be written against it
@@ -222,14 +241,35 @@ almost one to one, including the modal ₪0. It fails for other reasons:
 4. **Staleness.** The settings changed at least twice in early 2026: a Shorts time limit for supervised teens in January and a
    zero-minute option from March (snippet). The colony has no way to notice when a click-path guide has gone wrong, unless a
    re-render loop checks the cited help lines.
-5. **Our own gates would need redesign.** G2's ADVICE regex (`/\byou (should|must|ought to|have to|need to)\b/i`,
-   `src/revenue/publication-gate.ts:202`) fires on ordinary how-to phrasing. G4 needs "a fact-check PASS covering at least
-   one figure" (`:295`), and a guide has no dataset. The open-ended persona rule ("such as health, legal issues, finances, or
-   politics", `youtube-monetization-policies.txt:244`) puts screen-time or child-development advice in scope.
+5. **Our own gates do not fit a guide.** G4 needs "a fact-check PASS covering at least one figure" (`:292-295`), and a
+   click-path guide has no dataset, so G4 would have to be **replaced** for guides by a board ruling (§9.3 B, precondition
+   6). G2's ADVICE regex (`/\byou (should|must|ought to|have to|need to)\b/i`, `src/revenue/publication-gate.ts:202`) fires
+   on ordinary how-to phrasing such as "you need to open Settings". G2 can stay as it is if every step is written as an
+   imperative ("Open Settings"), which it does not match; that is a writing constraint, not a redesign. The open-ended
+   persona rule ("such as health, legal issues, finances, or politics", `youtube-monetization-policies.txt:244`) puts
+   screen-time or child-development advice in scope, and G2 correctly keeps that advice out.
 6. **Not the 3.9 carve-out.** That covered our own tools, paid by customers (`REJECTED.md:117-120`). B is Google's app,
    paid by views.
 7. **Language.** If B is ever reopened, English with Kokoro narration is the stronger form. B-he can only be caption-first
    (adults read), and it would compete head-on with Google's own Hebrew help center.
+8. **B as ₪0 web pages instead of a channel: judged, and NO.** Two scouts (market-competition and parent-variant)
+   proposed testing B's demand as free pages on the existing web-arm pattern: a static page on free hosting, a recorded
+   discovery submission, and a Search Console reach floor, with no new owner step. The 3.9 entry ranks
+   "Google/SEO > Facebook groups > LinkedIn > YouTube > TikTok" by effort to reach (`REJECTED.md:122`), which favours the
+   web over YouTube. The judges did not score this option; the reviser's verdict is NO, for four reasons:
+   - **Constraint 8 still fails.** The format changes, the inputs do not: every input is public, and the app's maker
+     publishes the output free in both languages (§4.2, rendered).
+   - **It competes with Google in Google's own search.** In one Hebrew search, 7 of 9 results were Google or YouTube pages
+     (snippet), and Google's help pages are the primary source a restatement would cite.
+   - **It has no money rail.** The web arm is a measuring instrument for T1, not a revenue product. A guide page sells
+     nothing, and page ads (AdSense for sites) would be a new owner account step. So the best result such a test could
+     produce is a reach count for a line that still has no non-public input and no rail.
+   - **It cannot start now.** A new page is a new built-but-unlaunched product, and the cap is 6/6, binding
+     (`CHANNEL_LOOP.md:91-96`). Its deploy also waits on the pending network-access ask (`CHANNEL_LOOP.md:182-184`), like
+     the T1 web arm, and its Search Console property would sit on the disputed step-8 account (§2, correction 3).
+
+   So B-as-web-page is not queued. It goes to the Fable sitting with the constraint-8 question for B (§9.5 item 5), so
+   that it is ruled once rather than re-proposed.
 
 ---
 
@@ -238,13 +278,17 @@ almost one to one, including the modal ₪0. It fails for other reasons:
 **What already exists** (repo): `products/chart-explainer/`. One question, one openly licensed dataset, matplotlib charts,
 Kokoro-82M narration, ffmpeg, "no music, no stock, no generative imagery" (`README.md:3-5`). There is no upload code, by
 design. The T1 render is 116.73 s at 1920×1080, 30 fps, with a render wall time of 1.815 minutes on a GitHub runner
-(`releases/t1/render-report.json`). The repo is public, so runner minutes cost ₪0 (`CHANNEL_LOOP.md:205-207`).
+(`releases/t1/render-report.json`). **Runner minutes cost ₪0 only while the repo stays public, and that is an open
+decision.** `CHANNEL_LOOP.md:205-207` lists it as "A decision still open": make the repo private ("Actions minutes become
+metered, possibly a cost") or accept that "its history on main carries the owner's real name and personal email". So
+every ₪0 recipe below depends on the owner keeping the repo public, and the name-exposure row in §7 carries the cost of
+that choice.
 
 | Option | Recipe at ₪0 | Hard limits |
 |---|---|---|
-| **A (English)** | Kokoro English narration (Apache-2.0; `research/rendered/kokoro-82m-model-card.txt`, "License: apache-2.0"). Sprite animation from Microsoft Fluent Emoji (MIT, github) or Manim (MIT, github), drawn with Pillow at **4.6 ms/frame**, where 5 s of 1080p including the encode took 5.9 s (measured-scratch, `scratchpad/kids/kid_bench.py`). Reuses chart-explainer's `tts.py` and `assemble.py`. | No singing. No verified ₪0 music source (the YouTube Audio Library terms are not rendered; grade none). No character animation beyond sprites and shapes. No generative video: the Higgsfield tools spend credits and violate the ₪0 rule ("Nothing is bought", `MISSION.md:354`). The output is the one-voice, one-template shape R6 names. |
+| **A (English)** | Kokoro English narration (Apache-2.0; `research/rendered/kokoro-82m-model-card.txt`, "License: apache-2.0"). Sprite animation from Microsoft Fluent Emoji (MIT, github) or Manim (MIT, github), drawn with Pillow at **4.6 ms/frame**, where 5 s of 1080p including the encode took 5.9 s (measured-scratch, `scratchpad/kids/kid_bench.py`). Reuses chart-explainer's `tts.py`. **An animation module has to be built:** `assemble.py` loops one still image per scene (`-loop 1` per input, `-tune stillimage`, `assemble.py:136-141`), so moving sprites need a new frame renderer feeding ffmpeg; the benchmark above is a scratch prototype of it, not repo code. | No singing. No verified ₪0 music source (the YouTube Audio Library terms are not rendered; grade none). No character animation beyond sprites and shapes. No generative video: the Higgsfield tools spend credits and violate the ₪0 rule ("Nothing is bought", `MISSION.md:354`). The output is the one-voice, one-template shape R6 names. |
 | **A-he** | Nothing proven. The one licence-clean chain measured here: Phonikud (CC BY 4.0) turns vowelled Hebrew into IPA, and an English Kokoro voice speaks it, at RTF 0.85-1.07 (measured-scratch, `scratchpad/kids/he_test.py`). | It is **accented, and nobody has measured whether listeners understand it**. Official Kokoro rejects `he` (`pipeline.py:89` `assert lang_code in LANG_CODES`, github, re-fetched). The Hebrew Kokoro `he_shaul` is non-commercial (github). SASPEECH-based models inherit non-commercial terms (github: `avri-schneider/kokoro-hebrew` DATASET.md:22-40). Piper is "personal use and text to speech research only"; XTTS is under CPML; MMS is CC-BY-NC (github). Chatterbox: code MIT, Hebrew listed, weights licence known only from a snippet, rated "Poor" in one third-party test (github). BlueTTS (MIT) and pocket-tts-onnx (CC BY 4.0) have no documented data or speaker-rights chain (github, PARTLY). Edge TTS is banned. Captions do not work for pre-readers. |
-| **B-en** | T1's own shape: each step is a `{src:}` citation that `sources.py` checks against a rendered Google help line, drawn as text, diagram and icon slides, with Kokoro English narration. | No real app footage (§5.2). Weaker than competitors' screen recordings. Needs a G2/G4 redesign (§5.5). |
+| **B-en** | T1's own shape: each step is a `{src:}` citation that `sources.py` checks against a rendered Google help line, drawn as text, diagram and icon slides, with Kokoro English narration. | No real app footage (§5.2). Weaker than competitors' screen recordings. Needs G4 replaced by a board ruling, and every step written as an imperative so G2 passes unchanged (§5.5). |
 | **B-he** | Caption-first: Hebrew on-screen text and an RTL SRT. Pillow with raqm rendered "שלום ילדים! נספור עד 10" in the correct order, with digits and punctuation placed right (measured-scratch, `scratchpad/kids/he_text.png`). | No narration (no commercial Hebrew voice). The bundled ffmpeg has the `subtitles` filter but not `drawtext` (measured-scratch). Competes directly with Google's Hebrew help. |
 | **D** | Nothing new. The held T1 video answers "can you make videos" with an artifact. | T1 itself has no public upload route until Stage A. |
 
@@ -258,15 +302,16 @@ animation, and generative video. Production is not what decides this question; p
 
 | Risk | A | A-he | B | D |
 |---|---|---|---|---|
-| **Rule 4, honest value outranks the target** (`MISSION.md:434`) | **Fails.** The AI disclosure is text a pre-reader cannot read (R15), and nobody in the chain can judge developmental quality, which is exactly what R3 grades. The owner does nothing, and no human reviewer exists. | Fails, and worse: accented or unverified Hebrew taught to children is a harm | Passes if strictly procedural and cited | Passes |
-| **Portfolio rule**: "one platform banning us … must not be able to take the company down" (`MISSION.md:44`) | **Fails.** R2 plus R16: a kids-channel suspension may reach "all or any of your accounts", the AdSense for YouTube balance, and T1's later YPP application | Fails | Medium (second channel, same identity) | Low |
+| **Rule 4, honest value outranks the target** (`MISSION.md:434`) | **Fails.** The disqualification rests on developmental quality that nobody in the chain can measure, which is exactly what R3 grades (the owner does nothing, and no human reviewer exists), together with R2 and R4 (rendered: a low-quality MFK focus may suspend the channel, and "hard to follow" is often the result of autogeneration) and R11 (github: the Kids app limits AI content to "a small set of high-quality channels"). The AI disclosure as built is text a pre-reader cannot read (R15). A spoken in-video disclosure is technically possible with Kokoro; whether a young child understands one is ungraded (claim 17, PARTLY). | Fails, and worse: accented or unverified Hebrew taught to children is a harm | Passes if strictly procedural and cited | Passes |
+| **Portfolio rule**: "one platform banning us … must not be able to take the company down" (`MISSION.md:44`) | **Fails.** R2 plus R16: a kids-channel suspension may reach "all or any of your accounts" and the AdSense for YouTube balance (rendered, "may"). It may also reach T1's later YPP application, but that is inference (claim 16): T1 sits on a separate dedicated brand account (`RED-TEAM.md:111`), and no rendered source says a person holds only one AdSense account (§11 #12 would settle it). | Fails | Medium (second channel, same identity) | Low |
+| **Breadth addition, 28.9** (`MISSION.md:365-388`): "many listings, many venues, many buyers, each sale small"; "A plan that bets on one large contract, one launch or one viral hit is the wrong shape" | **Wrong shape.** YouTube ad revenue is a hits distribution: in a random sample of public videos, 3.67% have over 10,000 views and hold 93.61% of all views (McGrady et al. 2023; github, `s4mt4r3/YouTube-Random-Sample` `paper_reference.json`, re-fetched by the reviser; snippet and repo, `audits/discovery.md:26-29`). A kids channel earns only if a few videos break out, and the MFK incumbents are studio-scale hits (§4.1). One channel is one venue behind one payout rail, capped at two uploads a week (G6), and constraint 3 bars a set of channels. In its favour: YouTube brings its own viewers, which the addition prefers (`:382-383`). | Same | Same shape (one venue, hits-driven) | Acceptable as a bounded test of discovery, not as a revenue bet; as a line it would have the same shape (inference) |
 | **Brand-only public face**: a failure is a public mark against Mehudak | High. AI kids content is the named target of a 200+ signatory campaign (github) | High | Low to medium | Low (T1 runs under a sub-brand, `RED-TEAM.md:111-113`) |
-| **₪0 rule** | Passes for English (no music) | **Fails**: no ₪0 commercial Hebrew voice | Passes | Passes |
+| **₪0 rule** (every recipe assumes the repo stays public, §6) | Passes for English (no music) | **Fails**: no ₪0 commercial Hebrew voice | Passes | Passes |
 | **Constraint 8** (non-public input) | Weak | Weak | **Fails**: Google publishes the output free | Weak but accepted by RED-TEAM |
 | **Constraint 3** (no account farm) | One channel allowed; a set is not | Same | Same | n/a |
 | **COPPA** | Manageable in code (always `true`, tracking off on embedding pages; R13, R14). The exposure attaches to the legal identity behind the channel, and the brief says "בלי שאני צריך אישור של עורך דין" (`MISSION.md:12`). Size of exposure: snippet only | Same | Low if unambiguously adult (R12, Dec 2020) | Low; needs an explicit `false` (G11) |
-| **Name exposure** | Not by design. Residual route: an enforcement action names the legal operator, since the brand is not a legal entity (inference). DMCA counter-notices are already banned by G8. | Same | Lower | Lowest |
-| **Owner steps** | A second Stage A (40-60 min) and a dedicated Google account with phone verification (RED-TEAM §2.2); possibly an advanced-features check to add a channel (`youtube-policy-changelog.txt:332`) | Same | Same | None new |
+| **Name exposure** | Not by design. Two residual routes. (1) An enforcement action names the legal operator, since the brand is not a legal entity (inference). DMCA counter-notices are already banned by G8. (2) **Live today, for every option:** the public repo's history on main carries the owner's real name and personal email (`CHANNEL_LOOP.md:205-207`; `MISSION.md:304-308`), and keeping the repo public is what makes the recipes ₪0 (§6). So no video description, end screen, pinned comment or web page may link the repository. T1's current description and page link only the dataset and GitHub's blog (checked in `releases/t1/manifest.json` and `page.html`); a lint for the repository URL belongs beside G11. | Same | Lower on route 1; route 2 the same | Low on route 1; route 2 the same |
+| **Owner steps** | A second Stage A (40-60 min) and a dedicated Google account with phone verification (RED-TEAM §2.2); possibly an advanced-features check to add a channel (`youtube-policy-changelog.txt:332`) | Same | Same | None new; one more click inside T1's Stage A for the read-back key (§9.2) |
 | **Binding 6/6 cap** (`CHANNEL_LOOP.md:91-96`) | Blocked now | Blocked now | Blocked now | Within it |
 
 ---
@@ -300,20 +345,24 @@ is not mixed into T1: mixing it would break T1's pre-registered data-explainer m
    **Resolved: K3 at minimum, plus a named non-public input.** B's constraint-8 failure is independent of T1, so passing T1
    early buys B nothing. The majority's stricter trigger costs nothing, because nothing about B is urgent.
 4. **Whether to ask the owner which reading they meant.** J1: only to record intent. J2: do not ask. J3: silent. **Resolved:
-   do not ask.** MISSION rule 1 says "Never invent a step that isn't required", and the answer changes nothing. The owner
-   may volunteer it (§0 line 12 says so).
+   do not ask, because the answer changes nothing:** the recommendation is the same under both readings. (MISSION rule 1's
+   "Never invent a step that isn't required", `MISSION.md:416`, is about owner setup steps, not a clarifying question, so
+   it is not the reason.) The owner may volunteer it (§0 line 12 says so).
 5. **The shape of the audience gate.** J1 proposed a required `madeForKids` boolean with a hard refusal of `true`. J2
    proposed an `audience` field with a read-back after upload. J3 proposed an explicit boolean equal to the line's
    pre-registered audience, not relying on Upload-Post's unknown default. **Resolved into one G11** (§9.2), which takes the
    union: a required field, a refusal of `true` while no board ruling allows it, a child-appeal lint on `false`, and a
    read-back after upload.
-6. **The parents' sample video (task #33).** Only J2 addressed it. **Resolved:** allowed only as a held demonstration of
-   capability, under the conditions in §9.4. It is not a line and not a launch candidate. If it were ever proposed for
-   launch it would need a BBU slot, and none is free.
+6. **The parents' sample video about YouTube Kids** (a session task of 28.9; not the repo's closed "משימה #33",
+   `logs/CHECKPOINT.md:533`, which is the PCN874 generator fix). Only J2 addressed it. **Resolved:** allowed only as a held
+   demonstration of capability, under the conditions in §9.4. It is not a line and not a launch candidate. If it were ever
+   proposed for launch it would need a BBU slot, and none is free. §0 line 13 tells the owner so.
 7. **render-watch and ToS clause 120.** J1, J2 and J3 all flagged the same point. The colony cites ToS:120 against automated
    capture of the app, but render-watch already fetches youtube.com pages itself (`yk-landing.meta.json` url
    `https://www.youtube.com/kids/`; `yk-parent-resources`). Help pages at support.google.com are Google Help, not the YouTube
    Service. **Not resolvable at Opus tier:** queued for Fable (§9.5).
+8. **B as ₪0 web pages.** Two scouts proposed it and no judge scored it. The reviser judged it in §5 item 8: NO, not queued
+   (constraint 8, Google's own pages, no money rail, the 6/6 cap and the pending network-access ask). It joins §9.5 item 5.
 
 ---
 
@@ -340,19 +389,48 @@ Kill: any warning, strike, auto-privating, or inauthentic/reused/spam rejection;
 gate-passed videos within six weeks. Never a replacement channel (`youtube-monetization-policies.txt:288`). Sources:
 `src/revenue/experiments.ts`, `VERDICT.md` §10, `RED-TEAM.md` §2.3-2.5, `PREREG-DECISIONS.md` §3.
 
-### 9.2 Kill criteria to write into code now (Opus work, ₪0, no owner step)
+### 9.2 Kill criteria to write into code now (Opus work, ₪0; the code needs no owner step, but item 2's key is one more click inside Stage A)
 
 1. **Gate G11, the audience, in `src/revenue/publication-gate.ts`** (today the gates run G1-G10, `:16`, and `VideoManifest`
    has no audience field, `:44-60`). Add `madeForKids: boolean | null`, mirroring G7's `null` = "never decided" pattern
    (`:315`).
    - Fail on `null`.
    - Fail on `true` while no board ruling has reopened A (a hard refusal, so no child-directed upload happens by accident).
-   - On `false`, fail if the title, description, tags or thumbnail brief match a child-directed pattern (`kids`, `toddler`,
-     `nursery`, `preschool`, `cartoon`, `ילדים`, `לילדים`, `פעוטות`, `גן`), so that no mixed-audience video is left for
-     YouTube to reclassify (R12).
+   - On `false`, run a **child-appeal lint** over the title, description, tags and thumbnail brief, so that no
+     mixed-audience video is left for YouTube to reclassify (R12). It aims at what makes a video appeal to young
+     children, not at the word "kids", because a parent guide is adult-directed and still says "kids":
+     - Triggers, nursery and pre-reader terms: `nursery rhyme(s)`, `toddler(s)`, `preschool(er)`, `baby song(s)`,
+       `ABC song`, `learn colo(u)rs`, `שירי ילדים`, `פעוטות`, `גן ילדים`, `גננת`. Characters and toys: `cartoon`,
+       `mascot`, `puppet(s)`, `surprise egg(s)`, `toy unboxing`, `דמות מצוירת`, `בובות`. In the thumbnail brief, any
+       cartoon character, mascot, toy or child figure fails outright.
+     - Exempt before matching: the product name (`YouTube Kids`, `יוטיוב קידס`, `YouTube קידס`) is masked, and so is any
+       span that quotes a cited rendered `yk-*` help line verbatim. The app's own content levels are "Preschool"
+       (`yk-parental-controls-en.txt:99`) and "פעוטות וגן" (`yk-parental-controls-iw.txt:95`), and a B guide must be
+       able to name them. Bare `kids`, `ילדים` and `לילדים` are not triggers at all ("חסימת הערוץ לילדים",
+       `yk-block-iw.txt:157`).
+     - Whole words only, the lesson G2's topic list already learned ("Whole words, not prefixes",
+       `publication-gate.ts:163-167`). JavaScript's `\b` does not see Hebrew letters as word characters, so each Hebrew
+       term is wrapped as `(?<!\p{L})[ובהלמשכ]{0,2}TERM(?!\p{L})` with the `u` flag. That accepts one- or two-letter
+       prefixes (לפעוטות, והפעוטות) and never matches inside a longer word. There is no bare `גן`: as a substring it hits
+       מגן, ארגון and גנרי, and as a word it also means "garden".
+     - Tests: "How to set up YouTube Kids: parental controls, timer and blocking" and "איך להגדיר את YouTube Kids: בקרת
+       הורים לילדים, טיימר וחסימה" pass; a description step quoting "Select Preschool , Younger , Older" with its `{src:}` passes;
+       "Nursery rhymes for toddlers", "Preschool songs" and "שירי ילדים לפעוטות" fail; a description containing מגן, ארגון
+       or גנרי passes.
    - The publisher payload must send `status.selfDeclaredMadeForKids` equal to the manifest, and must never omit it (R13).
 2. **Read-back after each upload.** The reader fetches `status.madeForKids`. If YouTube's determination differs from ours,
    the video goes private and the line is flagged to the board. Never relabel or re-upload to get around it.
+   - **The auth route, named.** `madeForKids` "enables any user to retrieve the "made for kids" status" of a video
+     (`youtube-api-revision-history.txt:987-990`, rendered), but only through a Data API call (`videos.list`,
+     `part=status`). T1's only planned consent is analytics-only `yt-analytics.readonly` (`RED-TEAM.md:78`;
+     `youtube-analytics.ts:7`), which does not cover the Data API.
+   - **Chosen route:** a Data API key created in the same analytics-only Cloud project on the brand account, listed as one
+     more line of Stage A (about a minute). `RED-TEAM.md:79-80` requires exactly this: list it as an owner step, or first
+     prove the colony can click it. Grade: rendered that any user may read the field; inference that a keyed,
+     unauthenticated `videos.list` returns it for a public video. §11 #9 (the made-for-kids status guide) settles it.
+   - **Fallback:** Upload-Post's response, grade none. The only response quoted in the repo carries no audience field
+     (`T1-PRECHECK.md:50`).
+   - **Not a route:** reading the public watch page, which is automated access to the Service (ToS:120, §5 item 2).
 3. **Embedding rule.** Any page that embeds a video whose `madeForKids` is true is built with `counter=None` (R14).
 4. **Account-separation precondition** before Stage A can be asked. The Google account that owns the channel is not step 8's
    brand-mailbox account (`RED-TEAM.md:111`), unless a written board override exists. Until one of the two is recorded, the
@@ -366,16 +444,24 @@ gate-passed videos within six weeks. Never a replacement channel (`youtube-monet
   3. The spec names its non-public input.
   4. A dedicated brand Google account exists.
   5. No footage comes from automated access to YouTube or YouTube Kids.
+  6. A board ruling replaces G4 for guides with a `sources.py` citation check: every step's `{src:}` must match a rendered
+     help line no older than 30 days. G4 as written (`publication-gate.ts:292-295`) needs a fact-check covering at least one
+     dataset figure, which a click-path guide cannot pass.
 
   If B were ever run: every step cites a rendered help line no older than 30 days; a weekly re-render unlists a video
-  within 7 days when its cited line changes; two stale events in 90 days kill the line; G2 is unchanged; T1's K0 and K3
-  apply.
+  within 7 days when its cited line changes; two stale events in 90 days kill the line; G2 is unchanged, so steps are
+  written as imperatives and screen-time advice stays out (§5 item 5); T1's K0 and K3 apply.
 - **A:** all of the following:
   1. answer/9528076, 10774223 and 10938174 and the YouTube Kids creator topic are rendered, and they show an admission
      path for new AI-made channels;
   2. T1 has passed K3 and human YPP review;
   3. a Fable board rules that honest value toward pre-readers can be evaluated;
   4. a reviewer of developmental quality exists who is not the owner.
+
+  **A is closed under the current mandate unless the owner changes it.** Trigger 4 cannot be met as the mandate stands.
+  It needs a human outside the colony. Reaching one means contact ("אני לא מדבר עם אנשים", `MISSION.md:12`; "no selling,
+  no talking", `:211`; rule 1, `:420`) and very likely payment ("Nothing is bought", `:354`). Triggers 1-3 cannot
+  reopen A on their own. Only the owner can change the mandate, and nothing here asks them to.
 
   If A were ever run: `true` always, and zero `youtubeProduct=KIDS` views by day 56 kills it. That dimension exists:
   `yt-analytics-dimensions.txt:731-751`, rendered. The reader does not use it today.
@@ -387,9 +473,14 @@ gate-passed videos within six weeks. Never a replacement channel (`youtube-monet
 **None new.** The standing order is `CHANNEL_LOOP.md` §6: network access (about 2 min), step 8 (about 10 min), step 6a,
 step 7. YouTube Stage A (40-60 min once, unnumbered) stays held until the day-56 web read. Stage B (AdSense under the legal
 name, a PIN by international mail in about 3 weeks, EFT only, the ₪400 threshold, W-8BEN) comes only after K3. None of these
-steps is public, and none needs a face or a voice.
+steps is public, and none needs a face or a voice. Three conditions on Stage A, stated plainly in §0 line 9: the day-56
+clock starts only when the web arm goes public, which waits on the pending network-access ask; Stage A is asked only if
+the web arm reaches 5 engaged stranger page views; and if Fable keeps RED-TEAM §2.2's dedicated account (§9.5 item 2),
+Stage A also needs one more Google account and a phone verification. The read-back key (§9.2 item 2) is one more click
+inside Stage A, not a separate step.
 
-Task #33, the parents' sample video, may proceed only as a held capability demonstration:
+The parents' sample video about YouTube Kids (a session task of 28.9, see §8 item 6) may proceed only as a held
+capability demonstration:
 - no upload and no Stage A;
 - not counted as a line or a launch candidate;
 - every on-screen step quotes a rendered `yk-*` line;
@@ -411,7 +502,7 @@ Task #33, the parents' sample video, may proceed only as a held capability demon
    capturing the app. Settle one consistent rule.
 5. **Constraint 8 for B.** Could the colony's own dated render history of Google's help pages ("what changed in parental
    controls") count as a non-public input? The judges' expectation is no, but it should be ruled so that B is not reopened
-   by drift.
+   by drift. Rule in the same sitting on B as ₪0 web pages rather than a channel (§5 item 8; the reviser's verdict is NO).
 
 ---
 
@@ -440,7 +531,7 @@ Verdict key:
 | 14 | A YouTube spokesperson said the Kids app limits AI content to "a small set of high-quality channels" | PARTLY (spokesperson to AP and Fortune; not policy; no "schools" signed) | github | AP reprint and Fortune scrape on GitHub, verbatim per verifier |
 | 15 | Fairplay: top AI kids channels earned over $4.25M a year | PARTLY (advocacy estimate, no method) | github | Fortune scrape |
 | 16 | Enforcement may reach "all or any of your accounts" and bars workaround channels during a suspension | PARTLY ("may", reapplication possible; T1 contagion is inference) | rendered | `youtube-monetization-policies.txt:288, :318, :342` |
-| 17 | A pre-reader cannot read the AI disclosure; labels for animated content "may appear" in the description | PARTLY ("only in the description" refuted, `:177`; AI music must be disclosed, `:131`) | rendered | `youtube-altered-synthetic-disclosure.txt:87, :131, :171, :177` |
+| 17 | A pre-reader cannot read the AI disclosure as built (text labels); labels for animated content "may appear" in the description | PARTLY ("only in the description" refuted, `:177`; AI music must be disclosed, `:131`; a spoken disclosure is possible with Kokoro, and a young child's understanding of it is ungraded) | rendered | `youtube-altered-synthetic-disclosure.txt:87, :131, :171, :177` |
 | 18 | Embedding an MFK video obliges tracking off | SYNTH | rendered | `youtube-developer-policies.txt:443-448` |
 | 19 | The upload API and Upload-Post carry `selfDeclaredMadeForKids`; Upload-Post's default is unknown | SYNTH | rendered + repo | `youtube-api-videos-insert.txt:366`; `T1-PRECHECK.md:196, :202` |
 | 20 | COPPA: the $170M 2019 settlement; channel owners designate; the $10M Disney settlement in 2025 | UNSETTLED | snippet | ftc.gov URLs (§11) |
@@ -459,6 +550,8 @@ Verdict key:
 | 33 | English kids incumbents are old and studio-scale (4 of the top 10; 5 of 95 created since 2020) | unverified beyond the scout | github (secondary dataset) | the Global YouTube Statistics CSV |
 | 34 | Israel has about 2.68M children aged 0-14, about 4.5% of the US figure | unverified beyond the scout | github | World Bank mirrors |
 | 35 | The random-video median is 35 lifetime views | CONFIRMED earlier (repo) | github + repo | `audits/discovery.md:26-28` |
+| 36 | YouTube views are a hits distribution: 3.67% of videos have over 10,000 views and hold 93.61% of all views | CONFIRMED earlier (repo); the reviser re-fetched the GitHub copy | github (secondary) + snippet + repo | `s4mt4r3/YouTube-Random-Sample` `paper_reference.json`; `audits/discovery.md:26-29` |
+| 37 | B as ₪0 web pages fails constraint 8, has no money rail and cannot start under the 6/6 cap | SYNTH (reviser; no judge scored it) | repo + rendered | `MISSION.md:216`; §4.2 captures; `CHANNEL_LOOP.md:91-96, :182-184` |
 
 ---
 
@@ -466,7 +559,8 @@ Verdict key:
 
 Every URL below was seen in a capture's HTML (`research/rendered/*.html`), in the repo, or in a scout or verifier result.
 None was guessed. Priority: **P1** could change a decision or a gate; **P2** upgrades a load-bearing grade; **P3** upgrades a
-non-load-bearing grade. Total: **45**, of which 11 are P1. The dispatch cap is one per tick; batch them.
+non-load-bearing grade. Total: **50**, of which 11 are P1 (rows 46-50 were added by the reviser from capture hrefs). The
+dispatch cap is one per tick; batch them.
 
 | # | P | URL | Question it settles | Seen in |
 |---|---|---|---|---|
@@ -515,6 +609,11 @@ non-load-bearing grade. Total: **45**, of which 11 are P1. The dispatch cap is o
 | 43 | P2 | https://huggingface.co/thewh1teagle/pocket-tts-onnx | The Hebrew adapter's data provenance | verifier |
 | 44 | P3 | https://huggingface.co/dicta-il/dictabert-large-char-menaked | The diacritiser model licence | verifier (`dicta-onnx` README:3) |
 | 45 | P3 | https://air.io/en/air-data-findings/which-youtube-niche-makes-the-most-money-in-2026-ranked-by-real-rpm-and-cpm | Identifies the $1.59 / 32% / $0.33 study (vendor-grade even when rendered) | market scout |
+| 46 | P3 | https://support.google.com/youtube/topic/15279060?hl=en | "Supervised accounts for kids": the first-party supervised-experience guides behind B's competition evidence (§4.2) | `youtube-address-pin.html` and `youtube-ypp-overview.html` topic link (anchor "Supervised accounts for kids"); `yk-landing.html` and `yk-parent-resources.html` carry it only as `ref_topic=15279060` on answer/13877231 |
+| 47 | P3 | https://www.youtube.com/yt/family/ | "Creating for Kids", YouTube's creator-side kids page: any admission path for new channels (R9) (a youtube.com fetch: hold until §9.5 item 4 is ruled) | `youtube-blog-ypp-2027.html` href |
+| 48 | P3 | https://blog.youtube/topic-hub/kids-teens/ | YouTube's kids and teens news hub: dated policy changes (R12, B staleness) | `youtube-blog-ypp-2027.html` href (anchor "Kids & Teens") |
+| 49 | P3 | https://support.google.com/youtube/answer/9235730?hl=en | Steps after a YPP rejection. The 30- and 90-day reapplication waits are already rendered (`youtube-ypp-overview.txt:127`), so this only adds detail to R16's "reapplication is possible" | `youtube-ypp-overview.html` href (anchor "steps you can take"); `audits/policy.md:199` |
+| 50 | P3 | https://support.google.com/policies/answer/9664901 | The tool for notifying Google of a "Child-Directed API Client" (relevant only if A were ever reopened; R14) | `youtube-developer-policies.html` href (anchor "here") |
 
 The GitHub runner can reach huggingface.co; this container cannot (`403 CONNECT`). After #36-#43, a runner should also do a
 timed Chatterbox Hebrew render on CPU and a Whisper round-trip of the phonikud-to-Kokoro chain.
@@ -545,3 +644,32 @@ timed Chatterbox Hebrew render on CPU and a Whisper round-trip of the phonikud-t
   searches only.
 - **Nothing here is revenue.** The ledger is ₪0.00 (`CHANNEL_LOOP.md:9`). Every money figure in this file is a projection,
   graded as such.
+
+---
+
+## 13. Critic items not applied
+
+The reviser checked all 19 critic items against the evidence. None was rejected outright. Six were applied in a
+corrected form, and the corrections are recorded here:
+
+- **Item 1, the timing anchor.** `VERDICT.md:166` says first money is "≥8-10 months away", counted from the verdict's own
+  date (27.9.2026), not "after the first public upload". Measured from a public start, the best case is the month 7-8 case
+  that `:193` says "This experiment cannot hit". So §0 and §3.2 keep VERDICT's anchor rather than the critic's wording.
+  The substance of the item (month 7-8 was wrong; "11-25 months or never" was missing; A and B come later still, after
+  K3) is applied.
+- **Item 4, the Hebrew example.** "בקרת הורים לילדים" does not occur verbatim in any `yk-*-iw` capture; the Hebrew help
+  pages do use "לילדים" in parent-directed text (`yk-block-iw.txt:157`, `yk-flag-iw.txt:28`), so the defect holds.
+  The critic's phrase is kept as a test title. The reviser also found that the app's own content levels, "Preschool" and
+  "פעוטות וגן", would trip a nursery-term lint, so G11 also masks verbatim quotes of cited help lines.
+- **Item 8, "G2 is unchanged" or a G4 precondition.** Both halves were reconciled rather than one dropped: G4 gets the
+  replacement precondition (§9.3 B, item 6), and G2 stays unchanged because imperative steps do not match its ADVICE
+  regex. §5 item 5 and §6 no longer call G2 a redesign.
+- **Item 9, "the rendered R2, R4 and R11".** R11 is github grade (a spokesperson statement in GitHub copies of AP and
+  Fortune), not rendered. §7 cites R2 and R4 as rendered and R11 as github.
+- **Item 11, the read-back route.** The critic offered Upload-Post's response as an alternative route. The only response
+  quoted in the repo carries no audience field (`T1-PRECHECK.md:50`), so it is graded none and kept as a fallback, not
+  the chosen route.
+- **Item 19, where topic/15279060 was seen.** It is not linked as a topic in `yk-landing.html` or
+  `yk-parent-resources.html` (0 matches for `topic/15279060`); those pages carry it only as `ref_topic=15279060` on
+  answer/13877231. The topic link itself, anchor "Supervised accounts for kids", is in `youtube-address-pin.html` and
+  `youtube-ypp-overview.html`. §11 row 46 records that. The four other URLs were added (rows 47-50), none cut.
