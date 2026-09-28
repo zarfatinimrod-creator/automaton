@@ -11,10 +11,12 @@
  * bounty comments (BOARD.md build #2: "the only host this container reaches"),
  * `policy.ts` reads each repository's contribution policy, and this module scores
  * what comes back. Nothing here is wired into the heartbeat: the line is blocked
- * on owner steps 7 (brand machine account) and 4 (Stripe Connect Express through
- * Algora) and on `BRAND_GITHUB_TOKEN`, and a loop that attempted a bounty before
- * those exist would publish a pull request under the owner's handle — the one
- * thing BOARD.md §5 changed about this line.
+ * on owner step 7 (the brand machine account, with step 4a's Algora sign-in and
+ * `BRAND_GITHUB_TOKEN` made in the same sitting) and on the board's week-4 clock
+ * (`selectBounties`, rule 10), and a loop that attempted a bounty before those
+ * exist would publish a pull request under the owner's handle — the one thing
+ * BOARD.md §5 changed about this line. Step 4b (Stripe Connect Express through
+ * Algora) is asked only after Algora holds a reward (RULING-2026-09-28-bounty-rail.md §4.1).
  *
  * ── The rules, and where each comes from ──
  *
@@ -36,11 +38,19 @@
  *     cost of the work, so the filter declines the race rather than entering it.
  *  8. Refuse anything paying below a floor derived from this line's own ₪300
  *     target — `deriveBountyFloor()` below, which shows its arithmetic.
+ *  9. Refuse a `not-a-payer` repository — RULING-2026-09-28-bounty-rail.md §5.2
+ *     item 2: a repository whose own policy says its bounties are symbolic, for
+ *     research or unmergeable, or that asks for what the brand account never
+ *     gives (a star, its system prompt), gets no PR, no comment and no /attempt.
+ * 10. Emit nothing while the board's clock says so — §5.2 item 8: `selectBounties`
+ *     shortlists nothing while the week-4 reading of the corrected supply series is
+ *     `pending` (or unknown to the caller), and nothing ever after `kill`.
  */
 
 import { DEFAULT_FX_ILS } from "../money.js";
 import { DEFAULT_PORTFOLIO } from "../portfolio.js";
 import type { PolicyVerdict } from "./policy.js";
+import type { BoardSupplyVerdict } from "./supply.js";
 
 // ── The Algora bot comment ───────────────────────────────────────────────────
 
@@ -324,6 +334,12 @@ export interface ColonyBountyState {
   stoppedRepos?: string[];
   /** ISO 8601. Defaults to now. Injected so the tests are not clock-dependent. */
   now?: string;
+  /**
+   * The board's week-4 verdict on the corrected supply series: `readBoardVerdict(history).verdict` (supply.ts). Absent
+   * is read as `pending`, so a caller that never asked the clock gets nothing shortlisted (RULING-2026-09-28-bounty-rail.md
+   * §5.2 item 8).
+   */
+  supplyVerdict?: BoardSupplyVerdict;
 }
 
 export interface IntakeConfig {
@@ -461,6 +477,11 @@ export function scoreBounty(
     skipped.push({
       rule: "repo-policy-forbids-ai",
       detail: `assessRepoPolicy graded ${b.repo} \`forbidden\`. CHIEF-AUDIT §2.1 row 6 makes per-repo maintainer policy the AMBER on this line; a PR here would violate the constitution whatever Algora's terms allow.`,
+    });
+  } else if (b.policy === "not-a-payer") {
+    skipped.push({
+      rule: "repo-not-a-payer",
+      detail: `assessRepoPolicy graded ${b.repo} \`not-a-payer\`: its own policy says the bounties are not money, or asks for what the brand account never gives. A refusal, not a filter tweak — no PR, no comment, no /attempt (RULING-2026-09-28-bounty-rail.md §5.2 item 2).`,
     });
   } else if (b.policy === "unknown") {
     reasons.push("Repository policy is silent on AI contributions. Treated as `disclose`, never as `allowed` — the pull request discloses authorship regardless.");
@@ -659,6 +680,29 @@ export function selectBounties(
     .filter((s) => s.eligible)
     .sort((a, b) => b.score - a.score || b.ilsPerHour - a.ilsPerHour || a.id.localeCompare(b.id));
   const refused = scored.filter((s) => !s.eligible);
+
+  // The board's clock (§5.2 item 8): nothing is emitted while the corrected week-4 reading is pending, nothing ever
+  // after a kill. Every eligible candidate is still scored and shown, with the gate as its reason.
+  const verdict = state.supplyVerdict ?? "pending";
+  if (verdict === "pending" || verdict === "kill") {
+    const gate =
+      verdict === "kill"
+        ? {
+            rule: "line-killed",
+            detail: "The board's week-4 reading killed oss-bounties. The intake emits nothing, ever, on a killed line (RULING-2026-09-28-bounty-rail.md §5.2 item 8).",
+          }
+        : {
+            rule: "board-clock-pending",
+            detail: "The board's week-4 reading of the corrected supply series is pending. Until it keeps or retargets the line, the intake emits nothing (RULING-2026-09-28-bounty-rail.md §5.2 item 8).",
+          };
+    notes.push(
+      verdict === "kill"
+        ? "Nothing was shortlisted: the line was killed at its week-4 supply reading."
+        : "Nothing was shortlisted: the week-4 supply reading of the corrected counter is still pending (or was not supplied), and the intake is gated on it.",
+    );
+    const gated = eligible.map((s) => ({ ...s, eligible: false, skipped: [...s.skipped, gate] }));
+    return { shortlist: [], skipped: [...refused, ...gated], slots, config, notes };
+  }
 
   const shortlist = eligible.slice(0, slots);
   const overflow = eligible.slice(slots).map((s) => ({

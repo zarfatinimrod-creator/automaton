@@ -6,6 +6,7 @@ import {
   MERCHANT_OF_RECORD_RAILS,
   RAIL_CONCENTRATION_THRESHOLD,
   linesWithUnknownPayout,
+  linesWithUnverifiedPayout,
   railConcentration,
   platformConcentration,
 } from "../../revenue/rails.js";
@@ -89,10 +90,26 @@ describe("payment rails", () => {
     expect(railConcentration(seeds, rails, RAIL_CONCENTRATION_THRESHOLD).verdict).toBe("ok");
   });
 
-  it("names oss-bounties as the line whose payout route is unknown", () => {
-    // Writing "stripe" there would launder an open question into a fact — the
-    // Stripe-Israel claim is reopened in docs/REJECTED.md.
-    expect(linesWithUnknownPayout()).toEqual(["oss-bounties"]);
+  it("knows every line's payout route, and says which ones are unverified for an Israeli (RULING-2026-09-28-bounty-rail.md §2.5)", () => {
+    // Until 28.9.2026 oss-bounties was `unknown`. The board re-described it from Algora's own code: a Stripe Connect
+    // Express account, evidence grade `code` — the country is listed, the mechanism that reaches Israel is not rendered.
+    expect(linesWithUnknownPayout()).toEqual([]);
+    // apify-actors: no page this repo rendered names Israel for an Apify payout (payability is "YES, but by absence").
+    expect(linesWithUnverifiedPayout().sort()).toEqual(["apify-actors", "oss-bounties"]);
+    expect(LINE_RAILS["oss-bounties"]).toMatchObject({ payout: "stripe-connect-express", payoutEvidence: "code" });
+    expect(LINE_RAILS["oss-bounties"]!.note).toMatch(/payments\.ex:299-303/);
+    expect(LINE_RAILS["oss-bounties"]!.note).toMatch(/service agreement/);
+    expect(LINE_RAILS["oss-bounties"]!.note).toMatch(/held|credit/);
+    expect(LINE_RAILS["il-biz-tools"]!.payoutEvidence).toBe("rendered");
+    expect(LINE_RAILS.pcn874!.payoutEvidence).toBe("rendered");
+    expect(LINE_RAILS["apify-actors"]!.payoutEvidence).toBe("none");
+    expect(LINE_RAILS["apify-actors"]!.note).toMatch(/names Israel/);
+  });
+
+  it("gives every line a payout evidence grade", () => {
+    for (const [id, rail] of Object.entries(LINE_RAILS)) {
+      expect(["ledger", "rendered", "code", "none"], id).toContain(rail.payoutEvidence);
+    }
   });
 });
 

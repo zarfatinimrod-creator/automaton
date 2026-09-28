@@ -92,6 +92,14 @@ describe("ingestAlgoraSupplyMeasurement — the weekly supply count → claimabl
     expect(k.claimableBounties.unit).toMatch(/≥ \$50/);
   });
 
+  it("records nothing from a struck file — an instrument fault is not a reading (RULING-2026-09-28-bounty-rail.md §3.4)", () => {
+    write({ measuredAt: "2026-09-27T23:43:21.244Z", claimableBounties: 108, struck: true, history: [], instrumentFaults: [{ week: "2026-W39", measuredAt: "2026-09-27T23:43:21.244Z", claimable: 108, reason: "fault" }] });
+    const r = ingestAlgoraSupplyMeasurement(db, dir);
+    expect(r.recorded).toEqual([]);
+    expect(r.detail).toMatch(/struck/);
+    expect(latestKpis(db, "oss-bounties").claimableBounties).toBeUndefined();
+  });
+
   it("records the count as usual when the file carries a stale-index gap (method.searchUnserved) beside it", () => {
     write({ measuredAt: "2026-09-28T06:30:00.000Z", claimableBounties: 4, labelledOpenIssues: 551, method: { searchTotalCount: 554, searchUnserved: 3 } });
     expect(ingestAlgoraSupplyMeasurement(db, dir)).toMatchObject({ status: "recorded", recorded: ["claimableBounties"] });

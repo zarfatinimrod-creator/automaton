@@ -42,13 +42,49 @@ describe("the owner's checklist is seven steps and stays seven", () => {
   });
 
   it("lets the Apify half of step 6 be done straight after step 1", () => {
-    // It is the only early part in the list and it is the reason the list has
-    // one at all: the token starts the 30-day stranger count a month earlier
-    // than the rest of the checklist would allow, and it needs no identity check.
+    // The first early part and the reason the list has them at all: the token
+    // starts the 30-day stranger count a month earlier than the rest of the
+    // checklist would allow, and it needs no identity check.
     const early = OWNER_STEPS.filter((s) => s.earlyPart);
-    expect(early.map((s) => s.id)).toEqual(["ci-tokens"]);
-    expect(early[0].earlyPart!.afterStep).toBe("merge-pr");
-    expect(early[0].earlyPart!.what).toMatch(/APIFY_TOKEN/);
+    expect(early.map((s) => s.id).sort()).toEqual(["algora-stripe", "ci-tokens"]);
+    const apify = ownerStepById("ci-tokens")!.earlyPart!;
+    expect(apify.afterStep).toBe("merge-pr");
+    expect(apify.what).toMatch(/APIFY_TOKEN/);
+  });
+
+  it("splits step 4: 4a rides step 7's sitting, 4b waits for a held reward (RULING-2026-09-28-bounty-rail.md §4.1)", () => {
+    const step4 = ownerStepById("algora-stripe")!;
+    expect(step4.earlyPart).toMatchObject({ afterStep: "github-org", minutes: 2 });
+    expect(step4.earlyPart!.what).toMatch(/4a/);
+    expect(step4.earlyPart!.what).toMatch(/no identity/i);
+    // Held, not asked: the report names it outside the asked-now list until the colony records both conditions met.
+    expect(hasPendingPrecondition(step4)).toBe(true);
+    expect(isOwnerStepOpen(step4)).toBe(false);
+    expect(step4.precondition!.what).toMatch(/week-4/);
+    expect(step4.precondition!.what).toMatch(/held/);
+    expect(step4.precondition!.short).not.toMatch(/[();]/); // it is printed inside the report's parentheses
+    expect(openOwnerStepsForLine("oss-bounties").map((s) => s.number)).toEqual([7, 6]);
+    expect(heldOwnerStepsForLine("oss-bounties").map((s) => s.number)).toEqual([2, 4]);
+    // The retired justification is gone (§4.3).
+    expect(step4.unlocks).not.toMatch(/settles? (?:the )?Stripe-Israel|for every other Stripe-Connect platform/);
+    expect(step4.unlocks).toMatch(/Algora/);
+  });
+
+  it("prints three stop rules on step 4, and on no other step (§4.2)", () => {
+    const withStops = OWNER_STEPS.filter((s) => s.stopIf);
+    expect(withStops.map((s) => s.id)).toEqual(["algora-stripe"]);
+    const stops = ownerStepById("algora-stripe")!.stopIf!;
+    expect(stops).toHaveLength(3);
+    expect(stops[0]).toMatch(/United States/);
+    expect(stops[0]).toMatch(/SSN/);
+    expect(stops[1]).toMatch(/selfie|liveness/i);
+    expect(stops[2]).toMatch(/fee|payment|deposit/i);
+  });
+
+  it("makes BRAND_GITHUB_TOKEN in step 7's sitting, and step 6 no longer holds it back (§4.4)", () => {
+    expect(ownerStepById("github-org")!.unlocks).toMatch(/same sitting/);
+    expect(ownerStepById("github-org")!.unlocks).toMatch(/BRAND_GITHUB_TOKEN/);
+    expect(ownerStepById("ci-tokens")!.unlocks).not.toMatch(/held until step 4/i);
   });
 
   it("keeps each step to the identity, KYC or payout work a platform actually requires", () => {
@@ -206,10 +242,11 @@ describe("the owner's ₪0 rule and standing consent of 27.9.2026", () => {
     for (const id of tax.lines) {
       expect(ownerStepsForLine(id).map((s) => s.id), id).toContain("tax-file");
       expect(openOwnerStepsForLine(id).map((s) => s.id), id).not.toContain("tax-file");
-      expect(heldOwnerStepsForLine(id).map((s) => s.id), id).toEqual(["tax-file"]);
+      // oss-bounties is also held on step 4b since 28.9.2026 (RULING-2026-09-28-bounty-rail.md §4.1).
+      expect(heldOwnerStepsForLine(id).map((s) => s.id), id).toEqual(id === "oss-bounties" ? ["tax-file", "algora-stripe"] : ["tax-file"]);
     }
-    // Only step 2 is held; a frozen step is reported as frozen, not as held.
-    expect(OWNER_STEPS.filter(hasPendingPrecondition).map((s) => s.id)).toEqual(["tax-file"]);
+    // Steps 2 and 4 are held; a frozen step is reported as frozen, not as held.
+    expect(OWNER_STEPS.filter(hasPendingPrecondition).map((s) => s.id).sort()).toEqual(["algora-stripe", "tax-file"]);
     expect(heldOwnerStepsForLine("il-biz-tools").map((s) => s.id)).not.toContain("domain");
   });
 
@@ -320,6 +357,46 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(step5).toContain("com.mehudak");
     expect(step5).toContain("גוגל");
     expect(step5).not.toContain("תשלום אחד מתוך ה-₪200 שאישרת");
+  });
+
+  it("writes step 4 as 4א and 4ב, with the paused box, the stop rules and the retired question (RULING-2026-09-28-bounty-rail.md §4.5)", () => {
+    const step4 = doc.slice(doc.indexOf("## צעד 4"), doc.indexOf("## צעד 5"));
+    // The paused box: held until the corrected week-4 count; the first count struck.
+    expect(step4).toMatch(/⏸/);
+    expect(step4).toContain("85 מתוך 108");
+    expect(step4).toContain("CHANNEL_LOOP.md");
+    // 4a and 4b.
+    expect(step4).toContain("4א");
+    expect(step4).toContain("4ב");
+    expect(step4).toMatch(/2 דקות/);
+    // The three stop rules, printed as "עצור אם".
+    expect(step4).toContain("עצור אם");
+    expect(step4).toContain("ארצות הברית");
+    expect(step4).toContain("SSN");
+    expect(step4).toContain("סלפי");
+    expect(step4).toMatch(/תשלום|עמלה/);
+    // ILS to an Israeli bank by local bank method, "Email, name" plus bank details, no fee.
+    expect(step4).toContain("Email, name");
+    expect(step4).toMatch(/בלי עמלה|אין עמלה/);
+    // "מה יוצא לך מזה" item 2: the platform-level answer is rendered; this form answers whether Algora does.
+    const gain = step4.slice(step4.indexOf("### מה יוצא לך מזה"));
+    expect(gain).not.toContain("תשובה לשאלה שרדפה את כל המחקר");
+    expect(gain).toMatch(/האם \*\*Algora\*\*/);
+  });
+
+  it("makes the token in step 7's sitting and lets step 6 paste it with the rest (§4.4)", () => {
+    const step6 = doc.slice(doc.indexOf("## צעד 6"), doc.indexOf("## צעד 7"));
+    const step7 = doc.slice(doc.indexOf("## צעד 7"), doc.indexOf("## מה מגיע רק אם"));
+    expect(step6).not.toContain("ואל תדביק אותו כרגע");
+    expect(step7).toContain("BRAND_GITHUB_TOKEN");
+    expect(step7).toContain("4א");
+  });
+
+  it("points the USDC line to the booking rule of RULING-2026-09-28-bounty-rail.md §6.2", () => {
+    const later = doc.slice(doc.indexOf("## מה מגיע רק אם"), doc.indexOf("## מה קורה אחרי שסיימת"));
+    expect(later).toMatch(/USDC/);
+    expect(later).toContain("RULING-2026-09-28-bounty-rail.md");
+    expect(later).toContain("§6.2");
   });
 
   it("still tells the owner the Apify token may go in right after step 1", () => {

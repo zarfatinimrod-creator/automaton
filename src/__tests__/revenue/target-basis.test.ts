@@ -53,11 +53,15 @@ describe("every target states where its number came from", () => {
     // evidence in their own basis field argued against the number — one of them
     // by about 200x. Leaving it out of this sum is how that stayed invisible.
     expect(s.measuredIls + s.inferredIls + s.unevidencedIls + s.contradictedIls).toBe(s.totalIls);
-    // Board ruling 28.9.2026 (RULING-2026-09-28-floors.md §9): il-biz-tools' ₪400 moved from the contradicted band
-    // to the contested upper bound, and the line is planned at ₪0 graded `inferred`. The band is empty — a result,
-    // pinned so that a line landing back in it has to be named here.
-    expect(s.contradictedLines).toEqual([]);
-    expect(s.contradictedIls).toBe(0);
+    // Two board rulings of 28.9.2026 moved this band in opposite directions, and both hold:
+    //  - RULING-2026-09-28-floors.md §9: il-biz-tools' ₪400 left the contradicted band for the contested upper bound,
+    //    and the line is planned at ₪0 graded `inferred`;
+    //  - RULING-2026-09-28-bounty-rail.md §3.5: oss-bounties' ₪300 is now `contradicted` — two readings argue against
+    //    the supply premise and the rail's mechanism is contradicted at code level.
+    // Pinned so that any line entering or leaving the band has to be named here.
+    expect(s.contradictedLines).toEqual(["oss-bounties"]);
+    expect(s.contradictedIls).toBe(300);
+    expect(s.inferredIls).toBe(800);
     expect(TARGET_BASIS["il-biz-tools"].contestedUpperBoundIls).toBe(400);
     expect(TARGET_BASIS["il-biz-tools"].grade).toBe("inferred");
     // And the figure the board should be reading: nothing in this portfolio is

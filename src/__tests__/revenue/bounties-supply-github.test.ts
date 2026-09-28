@@ -13,9 +13,17 @@ import {
   runAlgoraSupply,
   searchAllIssues,
   splitDateRange,
+  strikeSupplyFiles,
   toSupplyIssue,
 } from "../../revenue/bounties/supply-github.js";
-import { BOUNTY_LABEL, REWARDED_LABEL, SUPPLY_SEARCH_QUERY, searchUnservedAllowance } from "../../revenue/bounties/supply.js";
+import {
+  BOUNTY_LABEL,
+  PRE_FIX_FAULT_REASON,
+  REWARDED_LABEL,
+  SUPPLY_COUNTER_VERSION,
+  SUPPLY_SEARCH_QUERY,
+  searchUnservedAllowance,
+} from "../../revenue/bounties/supply.js";
 import { ALGORA_BOT_LOGIN } from "../../revenue/bounties/intake.js";
 
 /**
@@ -633,7 +641,7 @@ describe("runAlgoraSupply — writes both files, or nothing", () => {
       measuredAt: "2026-09-21T06:23:00.000Z",
       claimableBounties: 2,
       labelledOpenIssues: 6,
-      history: [{ week: "2026-W39", measuredAt: "2026-09-21T06:23:00.000Z", claimable: 2 }],
+      history: [{ week: "2026-W39", measuredAt: "2026-09-21T06:23:00.000Z", claimable: 2, counter: SUPPLY_COUNTER_VERSION }],
       method: { query: SUPPLY_SEARCH_QUERY, searchTotalCount: 6, authenticated: true, requests: { search: 1, core: 9 }, rateLimitWaitSeconds: 0, notes: [] },
     };
     writeFileSync(p.outJson, JSON.stringify(older));
@@ -641,6 +649,26 @@ describe("runAlgoraSupply — writes both files, or nothing", () => {
     expect(r.code).toBe(0);
     const m = JSON.parse(readFileSync(p.outJson, "utf8"));
     expect(m.history.map((h: { week: string }) => h.week)).toEqual(["2026-W39", "2026-W40"]);
+  });
+
+  it("strikes last week's reading when the old counter produced it, and keeps it as a fault (RULING-2026-09-28-bounty-rail.md §3.4)", async () => {
+    const p = paths();
+    const clock = fakeClock();
+    mkdirSync(dirname(p.outJson), { recursive: true });
+    const w39 = { week: "2026-W39", measuredAt: "2026-09-27T23:43:21.244Z", claimable: 108 };
+    writeFileSync(p.outJson, JSON.stringify({ measuredAt: w39.measuredAt, claimableBounties: 108, history: [w39] }));
+    const r = await runAlgoraSupply({ ...p, env: { GITHUB_TOKEN: "t" }, fetchImpl: fakeGithub(world()).fetchImpl, now: clock.now, sleep: clock.sleep });
+    expect(r.code).toBe(0);
+    const m = JSON.parse(readFileSync(p.outJson, "utf8"));
+    expect(m.history.map((h: { week: string; counter: number }) => [h.week, h.counter])).toEqual([["2026-W40", SUPPLY_COUNTER_VERSION]]);
+    expect(m.instrumentFaults).toEqual([{ ...w39, reason: PRE_FIX_FAULT_REASON }]);
+    expect(m.boardReading.weeksRead).toBe(1);
+    // And the next run carries the fault forward without adding it twice.
+    await clock.sleep(7 * 86_400_000);
+    await runAlgoraSupply({ ...p, env: { GITHUB_TOKEN: "t" }, fetchImpl: fakeGithub(world()).fetchImpl, now: clock.now, sleep: clock.sleep });
+    const n = JSON.parse(readFileSync(p.outJson, "utf8"));
+    expect(n.instrumentFaults).toHaveLength(1);
+    expect(n.history.map((h: { week: string }) => h.week)).toEqual(["2026-W40", "2026-W41"]);
   });
 
   it("writes nothing and fails on an API error — an unmeasured week is never a zero", async () => {
@@ -665,6 +693,38 @@ describe("runAlgoraSupply — writes both files, or nothing", () => {
     expect(second.code).toBe(0);
     const m = JSON.parse(readFileSync(p.outJson, "utf8"));
     expect(m.history.map((h: { week: string }) => h.week)).toEqual(["2026-W40", "2026-W41"]);
+  });
+
+  it("strikes the file already on disk without measuring: the generator's own path, JSON and Markdown together", async () => {
+    const p = paths();
+    const clock = fakeClock();
+    await runAlgoraSupply({ ...p, env: { GITHUB_TOKEN: "t" }, fetchImpl: fakeGithub(world()).fetchImpl, now: clock.now, sleep: clock.sleep });
+    // Make the file look like the old counter wrote it: no version stamp on its reading.
+    const written = JSON.parse(readFileSync(p.outJson, "utf8"));
+    written.history = written.history.map(({ counter: _c, ...r }: { counter?: number }) => r);
+    delete written.instrumentFaults;
+    writeFileSync(p.outJson, JSON.stringify(written));
+    const r = strikeSupplyFiles({ ...p });
+    expect(r.code).toBe(0);
+    const m = JSON.parse(readFileSync(p.outJson, "utf8"));
+    expect(m.struck).toBe(true);
+    expect(m.history).toEqual([]);
+    expect(m.instrumentFaults).toHaveLength(1);
+    expect(m.claimableBounties).toBe(written.claimableBounties);
+    const md = readFileSync(p.outMd, "utf8");
+    expect(md).toMatch(/STRUCK/);
+    expect(md).toMatch(/## Struck readings/);
+    expect(r.message).toMatch(/struck 1 reading/);
+    // Idempotent.
+    expect(strikeSupplyFiles({ ...p }).message).toMatch(/struck 0 readings/);
+  });
+
+  it("refuses to strike a file it cannot read", () => {
+    const p = paths();
+    mkdirSync(dirname(p.outJson), { recursive: true });
+    writeFileSync(p.outJson, "{broken");
+    expect(strikeSupplyFiles({ ...p }).code).not.toBe(0);
+    expect(readFileSync(p.outJson, "utf8")).toBe("{broken");
   });
 
   it("refuses to overwrite a measurement file it cannot read, rather than lose the series", async () => {
@@ -696,6 +756,9 @@ describe(".github/workflows/algora-supply.yml", () => {
     for (const committed of ["state/colony/measurements/algora-supply.json", "research/measurements/algora-supply.md"]) {
       expect(paths.some((p) => committed.startsWith(p.replace(/\*.*$/, "")))).toBe(false);
     }
+    // policy.ts decides what counts (visible-text permission, not-a-payer): a change there changes the count, so its
+    // landing on main is a run too (RULING-2026-09-28-bounty-rail.md §3.4).
+    expect(paths).toEqual(expect.arrayContaining(["src/revenue/bounties/supply.ts", "src/revenue/bounties/policy.ts"]));
   });
 
   it("needs no owner secret — only the job's own GITHUB_TOKEN", () => {

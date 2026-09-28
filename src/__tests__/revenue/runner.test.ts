@@ -266,7 +266,8 @@ describe("revenue/runner report rendering", () => {
       .toMatch(/^apify-actors is waiting on the owner: steps 6 of docs\/OWNER_STEPS\.he\.md \(not asked now: step 2 only/);
     expect(report).toMatch(/Owner steps still open for `il-biz-tools`[^\n]*: 3, 6 \(not asked now: step 2 only when a paid product is ready, after the official cost check; step 5 frozen by the owner's ₪0 rule of 27\.9\.2026\)/);
     expect(report).toMatch(/Owner steps still open for `pcn874`[^\n]*: 3, 7, 6 \(not asked now: step 2 [^;]+; step 5 frozen/);
-    expect(report).toMatch(/Owner steps still open for `oss-bounties`[^\n]*: 7, 4, 6 \(not asked now: step 2 [^;)]+\)$/m);
+    // Step 4 is held since 28.9.2026: 4a rides step 7, 4b waits for the corrected week-4 count and a held reward.
+    expect(report).toMatch(/Owner steps still open for `oss-bounties`[^\n]*: 7, 6 \(not asked now: step 2 [^;)]+; step 4 4b[^;)]+\)$/m);
   });
 
   it("asks for step 2 once the colony records its precondition met", async () => {

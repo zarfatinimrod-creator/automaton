@@ -1,9 +1,13 @@
 import { describe, it, expect } from "vitest";
 import {
   AI_AUTHORSHIP_DISCLOSURE,
+  ATTEMPT_DISCLOSURE,
+  ATTEMPT_STOP_INVITATION,
   BRAND_PLACEHOLDER,
   DEMO_VIDEO_PLACEHOLDER,
   MAINTAINER_STOP_INVITATION,
+  attemptComment,
+  auditAttemptComment,
   auditPullRequestBody,
   pullRequestBody,
   type PullRequestBodyInput,
@@ -169,5 +173,62 @@ describe("auditPullRequestBody — the gate before posting", () => {
 
   it("refuses a body with no /claim command", () => {
     expect(auditPullRequestBody(good.replace("/claim #42", "")).problems.join(" ")).toMatch(/claim/i);
+  });
+});
+
+// RULING-2026-09-28-bounty-rail.md §5.2 item 5: the /attempt comment carries the same disclosure as the PR, so a
+// maintainer can say stop before any work is done, not after. Same audit.
+describe("the /attempt comment", () => {
+  const plan = ["Reproduce with a failing test for `2026-W12-3`", "Handle the `YYYY-Www-D` form in `parseDate`"];
+  const comment = attemptComment({ issueNumber: 42, plan, brand: "Mehudak" });
+
+  it("says, before any work, that an automated brand account is attempting and the work will be AI-authored", () => {
+    expect(comment).toContain(ATTEMPT_DISCLOSURE);
+    expect(ATTEMPT_DISCLOSURE).toMatch(/automated brand account/);
+    expect(ATTEMPT_DISCLOSURE).toMatch(/AI-authored/);
+    expect(ATTEMPT_DISCLOSURE).toMatch(/agent-operated/);
+    expect(comment).toContain(ATTEMPT_STOP_INVITATION);
+  });
+
+  it("carries the /attempt command and the plan, and names only the brand", () => {
+    expect(comment).toMatch(/^\/attempt #42$/m);
+    for (const step of plan) expect(comment).toContain(step);
+    expect(comment).toMatch(/Mehudak machine account/);
+  });
+
+  it("passes the same audit a pull request body does, and fails it the same ways", () => {
+    expect(auditAttemptComment(comment, { ownerIdentifiers: FAKE_OWNER_IDENTIFIERS })).toEqual({ ok: true, problems: [] });
+    expect(auditAttemptComment(comment.replace(ATTEMPT_DISCLOSURE, "")).problems.join(" ")).toMatch(/disclosure/i);
+    expect(auditAttemptComment(comment.replace(ATTEMPT_STOP_INVITATION, "")).problems.join(" ")).toMatch(/stop/i);
+    expect(auditAttemptComment(comment.replace("/attempt #42", "")).problems.join(" ")).toMatch(/\/attempt/);
+    expect(auditAttemptComment(attemptComment({ issueNumber: 42, plan })).problems.join(" ")).toMatch(/brand placeholder/);
+    expect(auditAttemptComment(`${comment}\nBuilt by realperson-gh`, { ownerIdentifiers: FAKE_OWNER_IDENTIFIERS }).ok).toBe(false);
+    expect(auditAttemptComment(`${comment}\ncc @someone`).ok).toBe(false);
+  });
+});
+
+// §5.2 item 4: the brand account never pastes its system prompt, session text, environment, tokens, working directory
+// or resource budget anywhere, whatever a template demands.
+describe("no session material leaves in a PR body or an /attempt comment", () => {
+  const good = pullRequestBody(input({ brand: "Mehudak", demoVideoUrl: "https://example.invalid/demo.mp4" }));
+  const leaks = [
+    "audit_context: my system prompt follows",
+    "Full session initialization text: You are an agent...",
+    "GITHUB_TOKEN=ghs_abcdefghijklmnopqrstuvwxyz0123",
+    "token ghp_abcdefghijklmnopqrstuvwxyz0123456789",
+    "audit_workdir: /home/user/automaton",
+    "audit_resources: tokens used 12000, tokens remaining 88000",
+  ];
+
+  it("refuses each shape, in both gates", () => {
+    const attempt = attemptComment({ issueNumber: 42, plan: ["x"], brand: "Mehudak" });
+    for (const leak of leaks) {
+      expect(auditPullRequestBody(`${good}\n${leak}`).problems.join(" "), leak).toMatch(/session material/);
+      expect(auditAttemptComment(`${attempt}\n${leak}`).problems.join(" "), leak).toMatch(/session material/);
+    }
+  });
+
+  it("does not fire on an ordinary body", () => {
+    expect(auditPullRequestBody(good).problems.join(" ")).not.toMatch(/session material/);
   });
 });

@@ -96,10 +96,18 @@ export function ingestApifyMeasurement(db: Database, dir: string = DEFAULT_MEASU
  * itself (`history`), so the reading survives a rebuilt database.
  */
 export function ingestAlgoraSupplyMeasurement(db: Database, dir: string = DEFAULT_MEASUREMENTS_DIR, lineId = "oss-bounties"): IngestResult {
-  type Supply = { measuredAt?: unknown; claimableBounties?: unknown };
-  return ingestFile<Supply>(db, join(dir, "algora-supply.json"), lineId, "revenue.measurement.algora_supply.measured_at", (data) => {
+  type Supply = { measuredAt?: unknown; claimableBounties?: unknown; struck?: unknown };
+  let struck = false;
+  const result = ingestFile<Supply>(db, join(dir, "algora-supply.json"), lineId, "revenue.measurement.algora_supply.measured_at", (data) => {
+    // A file whose own reading was struck as an instrument fault (RULING-2026-09-28-bounty-rail.md §3.4) carries a count
+    // that is not a reading: it is recorded in the file's instrumentFaults and never becomes a KPI.
+    if (data.struck === true) {
+      struck = true;
+      return [];
+    }
     if (!isCount(data.claimableBounties)) return [];
-    recordKpi(db, lineId, "claimableBounties", data.claimableBounties, "claimable bounties (open, labelled, unarchived, unrewarded, ≥ $50, policy not forbidden)");
+    recordKpi(db, lineId, "claimableBounties", data.claimableBounties, "claimable bounties (open, labelled, unarchived, unrewarded, ≥ $50, policy not forbidden, not not-a-payer)");
     return ["claimableBounties"];
   });
+  return struck ? { ...result, detail: "this file's reading is struck as an instrument fault; nothing recorded" } : result;
 }

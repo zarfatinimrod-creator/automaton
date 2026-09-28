@@ -299,3 +299,13 @@ https://docs.crazygames.com/resources/basic-launch-metrics/	crazygames-basic-lau
 https://docs.crazygames.com/requirements/gameplay/	crazygames-requirements-gameplay
 # research/channel-loop/ZERO-TESTS.md row 28 — Wix App Market (11): the security-test evidence the agreement requires (tick 4, 28.9.2026).
 https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice	wix-security-best-practice
+# research/channel-loop/ZERO-TESTS.md rows 29-32 — Superteam Earn's four ₪0 tests (RULING-2026-09-28-bounty-rail.md §6.3, 28.9.2026).
+# Rows 29 (T1, a weekly CI count with the brand agent's key) and 31 (T3, a code read via add_repo) are not page renders and are not listed here.
+# ZERO-TESTS.md row 30 — Superteam Earn (15), T2: the agent page.
+https://superteam.fun/earn/agents/	superteam-earn-agents
+# ZERO-TESTS.md row 30 — Superteam Earn (15), T2: the Superteam Earn FAQ.
+https://docs.superteam.fun/the-superteam-handbook/community/faqs/superteam-earn-faq	superteam-earn-faq
+# ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Bits of Gold, for its onboarding requirements (REJECTED.md:615).
+https://www.bitsofgold.co.il/en	bitsofgold-home
+# ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Bit2C, for its onboarding requirements.
+https://bit2c.co.il/	bit2c-home

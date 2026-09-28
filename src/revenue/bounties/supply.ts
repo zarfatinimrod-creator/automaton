@@ -24,6 +24,16 @@
  * after the thresholds exist would be moving the line after the rule was written (review, 27.9). The measurement
  * carries `claimableWithoutMergedSolution` too, so the week-4 reader sees both numbers and the board can choose.
  *
+ * ── The counter was corrected on 28.9.2026 (RULING-2026-09-28-bounty-rail.md §3) ──
+ *
+ * The first reading (W39, 108 claimable) was an instrument fault, not a low or high reading: 85 of the 108 sat in a
+ * repository whose own CONTRIBUTING says its bounties are symbolic and unmergeable, graded `allowed` by `policy.ts` from
+ * a sentence hidden in an HTML comment. Two changes gate the count from `SUPPLY_COUNTER_VERSION` 2 on: permission counts
+ * only from visible text (`policy.ts`), and the `not-a-payer` filter drops a repository that says its bounties are not
+ * money. Every reading carries the counter version that produced it; a reading from an older counter is moved out of
+ * `history` into `instrumentFaults` with its reason (`strikePreFixReadings`), recorded and never averaged (KILL-1), so
+ * week 1 of 4 is the first run of the corrected counter. `claimableFresh365` is shown beside the count, not gated.
+ *
  * Algora's wording is not guessed. The payout, merge and bounty comments were read from `algora-io/algora` on GitHub
  * (27.9.2026): `lib/algora/bounties/jobs/notify_transfer.ex` adds the `💰 Rewarded` label and posts *"🎉🎈 @login has
  * been awarded **$N** by **Name**! 🎈🎊"*; `lib/algora_web/controllers/webhooks/github_controller.ex` posts the merge
@@ -51,6 +61,20 @@ export const SUPPLY_THRESHOLDS = { weeks: 4, keepAtOrAbove: 10, killBelow: 3, ke
 
 /** The re-open trigger the board wrote for the kill branch, verbatim. */
 export const REOPEN_TRIGGER = "≥10 claimable bounties a week for four consecutive weekly runs";
+
+/**
+ * The counter that produced a reading. 1 (implied when a reading carries no stamp) is the counter of 27.9.2026 that read
+ * permissions inside HTML comments and had no `not-a-payer` filter; 2 is the counter corrected on 28.9.2026
+ * (RULING-2026-09-28-bounty-rail.md §3.3). Raise it only when a change alters what the count counts, and say why here.
+ */
+export const SUPPLY_COUNTER_VERSION = 2;
+
+/** Why a pre-fix reading is struck, quoted from RULING-2026-09-28-bounty-rail.md §3.1-§3.2. */
+export const PRE_FIX_FAULT_REASON =
+  "Instrument fault, struck per KILL-1 (research/channel-loop/RULING-2026-09-28-bounty-rail.md §3): 85 of the 108 claimable ($35,475) sat in UnsafeLabs/Bounty-Hunters, " +
+  "whose CONTRIBUTING says its bounties are \"symbolic … will not be merged into production\" and that it \"is not the right repo\" for paid work, and policy.ts graded it " +
+  "`allowed` from a sentence hidden in an HTML comment; 5 ($3,010) sat in SecureBananaLabs/bug-bounty, whose README tells agents to star it before opening a PR. " +
+  "Counted by the counter before visible-text permission and the not-a-payer filter; recorded, never averaged.";
 
 /**
  * The most issues GitHub search may count and not serve before a run is refused: max(5, 1% of the reported total).
@@ -85,7 +109,8 @@ export type SupplyFilterId =
   | "no-algora-bounty-comment"
   | "amount-unparseable"
   | "amount-under-minimum"
-  | "policy-forbidden";
+  | "policy-forbidden"
+  | "not-a-payer";
 
 export interface SupplyFilter {
   id: SupplyFilterId;
@@ -144,6 +169,12 @@ export const SUPPLY_FILTERS: readonly SupplyFilter[] = [
     stage: "policy",
     what: "repository or issue bans AI-authored work",
     why: "assessRepoPolicy (policy.ts) graded it `forbidden` from CONTRIBUTING, CODE_OF_CONDUCT, the pull-request template, the README or the issue itself. `unknown` is counted: silence is not a ban, and the colony discloses on every PR anyway.",
+  },
+  {
+    id: "not-a-payer",
+    stage: "policy",
+    what: "the repository or issue says its bounties are not money",
+    why: "assessRepoPolicy graded it `not-a-payer`: the bounties are symbolic or for research, nothing merges, it is \"not the right repo\" for paid work, starring or following is a condition of contributing, or the contributor's system prompt, session text or environment is demanded (RULING-2026-09-28-bounty-rail.md §3.3). A label with no payer behind it is not a bounty.",
   },
 ];
 
@@ -283,6 +314,10 @@ export function evaluateIssue(issue: SupplyIssue, ctx: SupplyContext = {}, minAm
     const ban = policy.reasons.find((r) => r.signal === "ban")!;
     return dropped("policy-forbidden", `${ban.document}: "${clip(ban.quote)}"`, amount);
   }
+  if (policy.verdict === "not-a-payer") {
+    const refusal = policy.reasons.find((r) => r.signal === "not-a-payer")!;
+    return dropped("not-a-payer", `${refusal.document}: "${clip(refusal.quote)}"`, amount);
+  }
   return { kind: "claimable", amountUsd: amount, policy: policy.verdict, detail: policy.summary, solutionMerged: read.merged };
 }
 
@@ -293,6 +328,48 @@ export interface SupplyReading {
   week: string;
   measuredAt: string;
   claimable: number;
+  /** The counter that produced it (`SUPPLY_COUNTER_VERSION`). Absent on readings of the first counter, read as 1. */
+  counter?: number;
+}
+
+/** A reading struck as an instrument fault: recorded beside the series, never inside it (BOARD-LOOP KILL-1). */
+export interface InstrumentFault {
+  week: string;
+  measuredAt: string;
+  claimable: number;
+  reason: string;
+}
+
+/** True when the reading came from a counter older than the current one. */
+export function isPreFixReading(r: SupplyReading): boolean {
+  return (r.counter ?? 1) < SUPPLY_COUNTER_VERSION;
+}
+
+/**
+ * Split a series into the readings the board may read and the ones struck as faults. Earlier faults are kept, and a
+ * reading is recorded as a fault once (by week and measuredAt), so striking is idempotent.
+ */
+export function splitPreFixReadings(
+  history: SupplyReading[],
+  faults: InstrumentFault[] = [],
+  reason: string = PRE_FIX_FAULT_REASON,
+): { history: SupplyReading[]; instrumentFaults: InstrumentFault[] } {
+  const out: InstrumentFault[] = [...faults];
+  const seen = new Set(out.map((f) => `${f.week}|${f.measuredAt}`));
+  const kept: SupplyReading[] = [];
+  for (const r of history) {
+    if (!isPreFixReading(r)) {
+      kept.push(r);
+      continue;
+    }
+    const key = `${r.week}|${r.measuredAt}`;
+    if (!seen.has(key)) {
+      out.push({ week: r.week, measuredAt: r.measuredAt, claimable: r.claimable, reason });
+      seen.add(key);
+    }
+  }
+  out.sort((a, b) => a.week.localeCompare(b.week) || a.measuredAt.localeCompare(b.measuredAt));
+  return { history: kept, instrumentFaults: out };
 }
 
 /** ISO 8601 week-numbering year and week of an instant, in UTC. */
@@ -311,7 +388,7 @@ export function isoWeek(iso: string): string {
  * Add a reading, one per ISO week. A second run inside the same week (a manual dispatch) replaces that week's reading
  * when it is newer, so four weekly readings stay four — the board's mean is over weeks, not over runs.
  */
-export function appendWeeklyReading(history: SupplyReading[], reading: { measuredAt: string; claimable: number }): SupplyReading[] {
+export function appendWeeklyReading(history: SupplyReading[], reading: { measuredAt: string; claimable: number; counter?: number }): SupplyReading[] {
   const week = isoWeek(reading.measuredAt);
   const next = history.filter((r) => r.week !== week);
   const existing = history.find((r) => r.week === week);
@@ -344,7 +421,8 @@ function weekIndex(week: string): number {
 
 /**
  * BOARD-2 §2.2's week-4 rule. It reads; it does not act — the target moves when the main thread applies the ruling
- * to `portfolio.ts`, not because this function returned a word.
+ * to `portfolio.ts`, not because this function returned a word. It reads `history` only: struck readings live in
+ * `instrumentFaults` and are never passed here.
  */
 export function readBoardVerdict(history: SupplyReading[]): BoardSupplyReading {
   const sorted = [...history].sort((a, b) => a.week.localeCompare(b.week));
@@ -360,7 +438,7 @@ export function readBoardVerdict(history: SupplyReading[]): BoardSupplyReading {
       text:
         `Week ${sorted.length} of ${t.weeks}. The board reads the mean of ${t.weeks} weekly readings: ≥ ${t.keepAtOrAbove} keeps ₪${t.keepTargetIls}; ` +
         `${t.killBelow}-${t.keepAtOrAbove - 1} retargets to ₪${t.retargetIls} (grade contradicted); under ${t.killBelow} kills the line. ` +
-        "Until then the owner is not asked for step 4 on this line's account.",
+        "Until then the owner is not asked for step 4b (the Stripe form) on this line's account; 4a, a two-minute sign-in, rides step 7.",
     };
   }
   const mean = readings.reduce((n, r) => n + r.claimable, 0) / readings.length;
@@ -372,10 +450,10 @@ export function readBoardVerdict(history: SupplyReading[]): BoardSupplyReading {
   let text: string;
   if (mean >= t.keepAtOrAbove) {
     verdict = "keep";
-    text = `Mean ${shown} ≥ ${t.keepAtOrAbove}: ₪${t.keepTargetIls} stands, and owner step 4 proceeds in its ordered place (after step 7).`;
+    text = `Mean ${shown} ≥ ${t.keepAtOrAbove}: ₪${t.keepTargetIls} stands; 4b after the first held reward (RULING-2026-09-28-bounty-rail.md §4.1).`;
   } else if (mean >= t.killBelow) {
     verdict = "retarget";
-    text = `Mean ${shown} is in the ${t.killBelow}-${t.keepAtOrAbove - 1} band: retarget ₪${t.keepTargetIls} → ₪${t.retargetIls}, grade \`contradicted\`, basis carries both readings; step 4 still proceeds (it settles Stripe-Israel for the kill list).`;
+    text = `Mean ${shown} is in the ${t.killBelow}-${t.keepAtOrAbove - 1} band: retarget ₪${t.keepTargetIls} → ₪${t.retargetIls}, grade \`contradicted\`, basis carries both readings; 4b only after a held reward (RULING-2026-09-28-bounty-rail.md §4.3).`;
   } else {
     verdict = "kill";
     text = `Mean ${shown} < ${t.killBelow}: oss-bounties is killed into docs/REJECTED.md with the re-open trigger "${REOPEN_TRIGGER}"; step 4 is not requested for this line's sake.`;
@@ -433,7 +511,12 @@ export interface ClaimableBounty {
   policy: PolicyVerdict;
   /** A claimed pull request already merged; the bounty waits for its solver's payout. */
   solutionMerged: boolean;
+  /** When the issue was created. Absent in files written before 28.9.2026. */
+  createdAt?: string;
 }
+
+/** `claimableFresh365`'s window: an issue created within this many days of the measurement. */
+export const FRESH_WINDOW_DAYS = 365;
 
 export interface SupplyMeasurement {
   measuredAt: string;
@@ -441,6 +524,11 @@ export interface SupplyMeasurement {
   claimableBounties: number;
   /** The stricter reading beside it: claimable minus those whose claimed pull request already merged. Not gated. */
   claimableWithoutMergedSolution: number;
+  /**
+   * Claimable issues created within `FRESH_WINDOW_DAYS` of `measuredAt`, shown beside the count and never gated, so the
+   * week-4 reader sees how much of the remainder is stale (RULING-2026-09-28-bounty-rail.md §3.3). Absent before 28.9.2026.
+   */
+  claimableFresh365?: number;
   claimableUsd: number;
   labelledOpenIssues: number;
   repositories: number;
@@ -452,6 +540,10 @@ export interface SupplyMeasurement {
   byRepo: RepoSupply[];
   claimable: ClaimableBounty[];
   history: SupplyReading[];
+  /** Readings struck as instrument faults, recorded and never averaged (RULING-2026-09-28-bounty-rail.md §3.4). */
+  instrumentFaults: InstrumentFault[];
+  /** True when this file's own reading is one of the struck ones: its count is a fault, not a reading. */
+  struck?: boolean;
   boardReading: BoardSupplyReading;
   /** `searchUnserved` is always written (0 when search served everything); a file from before it existed lacks it. */
   method: SupplyMethod & { notes: string[] };
@@ -462,7 +554,7 @@ export const METHOD_NOTES: readonly string[] = [
   "Scope: labelled supply only. Algora adds the label only through its GitHub App installation (notify_bounty.ex); a bounty on a repository without the App gets a comment and no label, and is not counted here (the SWEEP-2.md github-native confound). The label count is a ceiling on labelled supply; this is the claimable part of it.",
   `Amount: read from the algora-pbc[bot] bounty comment by parseAlgoraBotComment (intake.ts); ≥ $${MIN_CLAIMABLE_USD} counts, inclusive.`,
   "Payout: an algora-pbc[bot] comment saying the bounty \"has been awarded\" (notify_transfer.ex), or the 💰 Rewarded label the same job adds. Merge: the bot's \"has been merged. The bounty can be rewarded\" comment does not drop an issue (it is not on the board's list); it is reported as the stricter number beside the count.",
-  "Policy: assessRepoPolicy over CONTRIBUTING, CODE_OF_CONDUCT, the pull-request template and the README, located in .github/, the root and docs/ in GitHub's own precedence, plus the issue body. Read only for repositories with a bounty that passed every cheaper filter. `unknown` is counted.",
+  "Policy: assessRepoPolicy over CONTRIBUTING, CODE_OF_CONDUCT, the pull-request template and the README, located in .github/, the root and docs/ in GitHub's own precedence, plus the issue body. Read only for repositories with a bounty that passed every cheaper filter. `unknown` is counted. Permission counts only from visible text (HTML comments are blanked); a ban or a `not-a-payer` statement counts anywhere (counter version 2, 28.9.2026).",
   "Failure: any API error, an exhausted rate-limit budget, or a search that returns fewer issues than it reports (past the one exception below) writes nothing and fails the job — an unmeasured week is a missing reading, never a zero.",
   `Search gaps: GitHub's reported total can include index entries it never shows (hidden, deleted or transferred issues, unavailable repositories). A query that falls short is read a second full time. Only if both passes serve the identical issues, and the gap to the larger reported total is at most max(${SEARCH_UNSERVED_FLOOR}, 1% of that total) per query and over the whole search, is the run accepted, with the gap recorded as \`searchUnserved\` beside the count, never in it. Passes that differ fail the run as above, even when the second pass is complete on its own (an issue that left the results between page fetches): the short first pass is not overruled by a pass that disagrees with it. A larger gap fails the run too.`,
 ];
@@ -481,6 +573,7 @@ export function buildSupplyMeasurement(input: {
   repos: Record<string, CollectedRepo>;
   method: SupplyMethod;
   previousHistory?: SupplyReading[];
+  previousInstrumentFaults?: InstrumentFault[];
   minAmountUsd?: number;
 }): SupplyMeasurement {
   const { measuredAt, repos, method } = input;
@@ -541,6 +634,7 @@ export function buildSupplyMeasurement(input: {
         amountUsd: verdict.amountUsd,
         policy: verdict.policy,
         solutionMerged: verdict.solutionMerged !== null,
+        createdAt: issue.createdAt,
       });
     } else if (verdict.kind === "dropped") {
       droppedByFilter[verdict.filter] += 1;
@@ -561,12 +655,21 @@ export function buildSupplyMeasurement(input: {
   );
   claimable.sort((a, b) => b.amountUsd - a.amountUsd || a.repo.localeCompare(b.repo) || a.number - b.number);
   const claimableUsd = claimable.reduce((n, c) => n + c.amountUsd, 0);
-  const history = appendWeeklyReading(input.previousHistory ?? [], { measuredAt, claimable: claimable.length });
+  const measuredMs = Date.parse(measuredAt);
+  const claimableFresh365 = claimable.filter((c) => {
+    const created = c.createdAt ? Date.parse(c.createdAt) : NaN;
+    return Number.isFinite(created) && measuredMs - created <= FRESH_WINDOW_DAYS * 86_400_000;
+  }).length;
+  // Readings from an older counter leave the series before this week's reading joins it (strike, then append), so a
+  // same-week pre-fix reading is recorded as a fault rather than silently replaced.
+  const split = splitPreFixReadings(input.previousHistory ?? [], input.previousInstrumentFaults ?? []);
+  const history = appendWeeklyReading(split.history, { measuredAt, claimable: claimable.length, counter: SUPPLY_COUNTER_VERSION });
 
   return {
     measuredAt,
     claimableBounties: claimable.length,
     claimableWithoutMergedSolution: claimable.filter((c) => !c.solutionMerged).length,
+    claimableFresh365,
     claimableUsd,
     labelledOpenIssues: evaluated.length,
     repositories: repoRows.size,
@@ -577,8 +680,27 @@ export function buildSupplyMeasurement(input: {
     byRepo,
     claimable,
     history,
+    instrumentFaults: split.instrumentFaults,
     boardReading: readBoardVerdict(history),
     method: { ...method, searchUnserved: unserved, notes: [...METHOD_NOTES, ...(method.notes ?? [])] },
+  };
+}
+
+/**
+ * Strike every pre-fix reading in a written measurement — including, when it is one, the file's own — and re-read the
+ * board's verdict from what is left. The generator's own path for RULING-2026-09-28-bounty-rail.md §3.4: used by
+ * `scripts/algora-supply.ts --strike-pre-fix` on the file already on disk; a measuring run does the same through
+ * `buildSupplyMeasurement`. Idempotent.
+ */
+export function strikePreFixReadings(m: SupplyMeasurement, reason: string = PRE_FIX_FAULT_REASON): SupplyMeasurement {
+  const split = splitPreFixReadings(m.history ?? [], m.instrumentFaults ?? [], reason);
+  const own = split.instrumentFaults.some((f) => f.measuredAt === m.measuredAt);
+  return {
+    ...m,
+    history: split.history,
+    instrumentFaults: split.instrumentFaults,
+    struck: own || m.struck === true,
+    boardReading: readBoardVerdict(split.history),
   };
 }
 
@@ -606,6 +728,14 @@ export function renderSupplyMarkdown(m: SupplyMeasurement): string {
       "Regenerated on every run — do not edit by hand. Ordered by `research/colony-sweep/BOARD-2.md §2.2` as the first build step of `oss-bounties`.",
   );
   out.push("");
+  if (m.struck) {
+    out.push(
+      "> **STRUCK — this run's count is an instrument fault, not a reading.** It was produced by the counter before the 28.9.2026 correction " +
+        "(visible-text permission and the `not-a-payer` filter, RULING-2026-09-28-bounty-rail.md §3.3) and is recorded under \"Struck readings\" below, never averaged. " +
+        "Week 1 of 4 is the first run of the corrected counter; this file is regenerated by that run. The numbers under \"The number\" are kept only so the fault can be checked.",
+    );
+    out.push("");
+  }
   out.push("## The number");
   out.push("");
   out.push(
@@ -613,6 +743,13 @@ export function renderSupplyMarkdown(m: SupplyMeasurement): string {
       `${m.labelledOpenIssues} open ${plural(m.labelledOpenIssues, "issue", "issues")} carrying Algora's \`${BOUNTY_LABEL}\` label across ${m.repositories} ${plural(m.repositories, "repository", "repositories")}.`,
   );
   out.push("");
+  if (typeof m.claimableFresh365 === "number") {
+    out.push(
+      `Freshness, not gated: **${m.claimableFresh365}** of them created within the last ${FRESH_WINDOW_DAYS} days. ` +
+        "The rest are older issues; the week-4 reader sees whether a small count is stale supply or no supply.",
+    );
+    out.push("");
+  }
   const merged = m.claimableBounties - m.claimableWithoutMergedSolution;
   out.push(
     `Stricter reading, not gated: **${m.claimableWithoutMergedSolution}** once the ${merged} ${plural(merged, "bounty", "bounties")} whose claimed pull request Algora already saw merged ` +
@@ -634,14 +771,29 @@ export function renderSupplyMarkdown(m: SupplyMeasurement): string {
 
   out.push(`## The board's reading — week ${Math.min(b.weeksRead, SUPPLY_THRESHOLDS.weeks)} of ${SUPPLY_THRESHOLDS.weeks}`);
   out.push("");
-  out.push("| ISO week | Measured at | Claimable |");
-  out.push("|---|---|---:|");
-  for (const r of m.history) out.push(`| ${r.week} | ${r.measuredAt} | ${r.claimable} |`);
+  if (m.history.length === 0) {
+    out.push("No reading in the series yet: week 1 is the first run of the corrected counter.");
+  } else {
+    out.push("| ISO week | Measured at | Claimable |");
+    out.push("|---|---|---:|");
+    for (const r of m.history) out.push(`| ${r.week} | ${r.measuredAt} | ${r.claimable} |`);
+  }
   out.push("");
   out.push(b.mean === null ? b.text : `**${b.verdict.toUpperCase()}.** ${b.text}`);
   out.push("");
   out.push("This file reads the rule; it does not apply it. The ₪300 target changes only when the main thread records the ruling in `src/revenue/portfolio.ts`.");
   out.push("");
+  const faults = m.instrumentFaults ?? [];
+  if (faults.length) {
+    out.push("## Struck readings");
+    out.push("");
+    out.push("Instrument faults: recorded so they are never lost, and never averaged into the board's reading (BOARD-LOOP KILL-1).");
+    out.push("");
+    out.push("| ISO week | Measured at | Claimable | Reason |");
+    out.push("|---|---|---:|---|");
+    for (const f of faults) out.push(`| ${f.week} | ${f.measuredAt} | ${f.claimable} | ${cell(f.reason, 600)} |`);
+    out.push("");
+  }
 
   out.push("## What was excluded, and why");
   out.push("");

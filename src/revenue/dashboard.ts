@@ -26,7 +26,7 @@ import { sweepCoverage } from "./criteria.js";
 import { findStalledLines } from "./watchdog.js";
 import { FINAL_GOAL_MONTHLY_ILS, PLANNING_ASSUMPTIONS, storesNeededFor } from "./growth.js";
 import { ownerFloatState } from "./budget.js";
-import { linesWithUnknownPayout, platformConcentration, railConcentration } from "./rails.js";
+import { linesWithUnknownPayout, linesWithUnverifiedPayout, platformConcentration, railConcentration } from "./rails.js";
 import type { LineMetrics } from "./types.js";
 
 const esc = (v: unknown): string =>
@@ -46,6 +46,7 @@ const GRADE_HE: Record<string, string> = {
   measured: "נמדד",
   inferred: "מוסק",
   unevidenced: "ללא ראיה",
+  contradicted: "מוכחש",
 };
 
 export interface DashboardOptions {
@@ -58,6 +59,7 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
   const rails = railConcentration();
   const platforms = platformConcentration();
   const unknownPayout = linesWithUnknownPayout();
+  const unverifiedPayout = linesWithUnverifiedPayout();
   const nowIso = options.nowIso ?? new Date().toISOString();
   const nowMs = Date.parse(nowIso);
   const summary = computePortfolioSummary(db, nowIso);
@@ -146,7 +148,7 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
   .s-awaiting_setup { color:var(--warn); border-color:var(--warn); }
   .s-building { color:var(--accent); border-color:var(--accent); }
   .grade { font-size:.72rem; }
-  .g-measured { color:var(--ok); } .g-inferred { color:var(--warn); } .g-unevidenced { color:var(--bad); }
+  .g-measured { color:var(--ok); } .g-inferred { color:var(--warn); } .g-unevidenced, .g-contradicted { color:var(--bad); }
   .basis { display:grid; grid-template-columns:1fr auto; gap:6px 12px; }
   .basis div:nth-child(even) { font-variant-numeric:tabular-nums; text-align:left; }
   .note { color:var(--muted); font-size:.9rem; }
@@ -201,6 +203,7 @@ ${rows}
     </div>
     <p class="note">${rails.verdict === "ok" ? "✔ " : "⚠ "}${esc(rails.reason)}</p>
     ${unknownPayout.length ? `<p class="note">מסלול המשיכה לא ידוע ב: ${unknownPayout.map((l) => `<code>${esc(l)}</code>`).join(", ")}. כסף שיירשם שם עלול להיות לא ניתן למשיכה.</p>` : ""}
+    ${unverifiedPayout.length ? `<p class="note">משיכה לישראל לא מאומתת ב: ${unverifiedPayout.map((l) => `<code>${esc(l)}</code>`).join(", ")} — כסף שיורווח שם עלול להיות לא ניתן למשיכה.</p>` : ""}
   </div>
 
   <h2>מה מייל אחד מפלטפורמה יכול לקחת</h2>

@@ -361,14 +361,14 @@ describe("selectBounties — the two-in-parallel cap", () => {
 
   it("never shortlists more than two", () => {
     expect(MAX_PARALLEL_ATTEMPTS).toBe(2);
-    const sel = selectBounties(three, { attempting: [], now: NOW });
+    const sel = selectBounties(three, { supplyVerdict: "keep", attempting: [], now: NOW });
     expect(sel.slots).toBe(2);
     expect(sel.shortlist).toHaveLength(2);
     expect(sel.shortlist.map((s) => s.id)).toEqual(["a#1", "b#2"]);
   });
 
   it("puts the overflow in `skipped` with an explicit reason rather than dropping it", () => {
-    const sel = selectBounties(three, { attempting: [], now: NOW });
+    const sel = selectBounties(three, { supplyVerdict: "keep", attempting: [], now: NOW });
     const overflow = sel.skipped.find((s) => s.id === "c#3")!;
     expect(overflow.eligible).toBe(false);
     expect(overflow.skipped.map((k) => k.rule)).toContain("no-slot-free");
@@ -376,14 +376,14 @@ describe("selectBounties — the two-in-parallel cap", () => {
   });
 
   it("leaves one slot when one attempt is already open", () => {
-    const sel = selectBounties(three, { attempting: ["z#9"], now: NOW });
+    const sel = selectBounties(three, { supplyVerdict: "keep", attempting: ["z#9"], now: NOW });
     expect(sel.slots).toBe(1);
     expect(sel.shortlist).toHaveLength(1);
     expect(sel.notes.join(" ")).toMatch(/1 of 2 parallel attempts are open/);
   });
 
   it("shortlists nothing when both attempts are open, and says the cap is why", () => {
-    const sel = selectBounties(three, { attempting: ["z#9", "y#8"], now: NOW });
+    const sel = selectBounties(three, { supplyVerdict: "keep", attempting: ["z#9", "y#8"], now: NOW });
     expect(sel.slots).toBe(0);
     expect(sel.shortlist).toEqual([]);
     expect(sel.notes.join(" ")).toMatch(/parallel cap is full/);
@@ -394,32 +394,65 @@ describe("selectBounties — the two-in-parallel cap", () => {
     const many = Array.from({ length: 20 }, (_, i) =>
       candidate({ id: `m#${i}`, issueNumber: i + 1, amount: 500, estimatedHours: 3, botComment: { author: ALGORA_BOT_LOGIN, body: botBody(500, i + 1) } }),
     );
-    expect(selectBounties(many, { attempting: [], now: NOW }).shortlist.length).toBeLessThanOrEqual(MAX_PARALLEL_ATTEMPTS);
+    expect(selectBounties(many, { supplyVerdict: "keep", attempting: [], now: NOW }).shortlist.length).toBeLessThanOrEqual(MAX_PARALLEL_ATTEMPTS);
   });
 
   it("does not re-offer something already being attempted", () => {
-    const sel = selectBounties(three, { attempting: ["a#1"], now: NOW });
+    const sel = selectBounties(three, { supplyVerdict: "keep", attempting: ["a#1"], now: NOW });
     expect(sel.shortlist.map((s) => s.id)).not.toContain("a#1");
     expect(sel.skipped.find((s) => s.id === "a#1")!.skipped.map((k) => k.rule)).toContain("already-attempting");
   });
 
   it("orders deterministically: score, then rate, then id", () => {
-    const a = selectBounties(three, { attempting: [], now: NOW }).shortlist.map((s) => s.id);
-    const b = selectBounties([...three].reverse(), { attempting: [], now: NOW }).shortlist.map((s) => s.id);
+    const a = selectBounties(three, { supplyVerdict: "keep", attempting: [], now: NOW }).shortlist.map((s) => s.id);
+    const b = selectBounties([...three].reverse(), { supplyVerdict: "keep", attempting: [], now: NOW }).shortlist.map((s) => s.id);
     expect(a).toEqual(b);
   });
 
   it("reports the permanent stop list at colony level", () => {
-    const sel = selectBounties(three, { attempting: [], stoppedRepos: ["acme/widget"], now: NOW });
+    const sel = selectBounties(three, { supplyVerdict: "keep", attempting: [], stoppedRepos: ["acme/widget"], now: NOW });
     expect(sel.shortlist).toEqual([]);
     expect(sel.notes.join(" ")).toMatch(/permanently off-limits/);
   });
 
   it("carries the config it used, so a reader can check the floor it applied", () => {
-    const sel = selectBounties([], { attempting: [], now: NOW });
+    const sel = selectBounties([], { supplyVerdict: "keep", attempting: [], now: NOW });
     expect(sel.config.maxParallelAttempts).toBe(2);
     expect(sel.config.floorIlsPerHour).toBeCloseTo(27.5, 6);
     expect(sel.config.requiredStacks).toEqual(["typescript", "javascript", "python", "docs", "tests"]);
+  });
+});
+
+describe("the intake is gated on the board's clock (RULING-2026-09-28-bounty-rail.md §5.2 item 8)", () => {
+  const eligible = candidate();
+
+  it("emits nothing while the week-4 reading of the corrected series is pending — and nothing when nobody said", () => {
+    for (const state of [{ attempting: [], now: NOW }, { attempting: [], now: NOW, supplyVerdict: "pending" as const }]) {
+      const sel = selectBounties([eligible], state);
+      expect(sel.shortlist).toEqual([]);
+      expect(sel.skipped[0]!.skipped.map((k) => k.rule)).toContain("board-clock-pending");
+      expect(sel.notes.join(" ")).toMatch(/week-4/);
+    }
+  });
+
+  it("emits nothing, ever, after a kill", () => {
+    const sel = selectBounties([eligible], { attempting: [], now: NOW, supplyVerdict: "kill" });
+    expect(sel.shortlist).toEqual([]);
+    expect(sel.skipped[0]!.skipped.map((k) => k.rule)).toContain("line-killed");
+  });
+
+  it("emits normally once the board kept or retargeted the line", () => {
+    for (const supplyVerdict of ["keep", "retarget"] as const) {
+      expect(selectBounties([eligible], { attempting: [], now: NOW, supplyVerdict }).shortlist.map((s) => s.id)).toEqual([eligible.id]);
+    }
+  });
+});
+
+describe("not-a-payer is a refusal (RULING-2026-09-28-bounty-rail.md §5.2 item 2)", () => {
+  it("never attempts a repository graded not-a-payer", () => {
+    const s = scoreBounty(candidate({ policy: "not-a-payer" }), { attempting: [], now: NOW });
+    expect(s.eligible).toBe(false);
+    expect(s.skipped.map((k) => k.rule)).toContain("repo-not-a-payer");
   });
 });
 

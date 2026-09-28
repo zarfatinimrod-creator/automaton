@@ -32,6 +32,16 @@
  * all** — no handle, no email, no "built by". The only name it will print is the
  * brand, and until the brand machine account exists it prints
  * `BRAND_PLACEHOLDER`, which `auditPullRequestBody({ forClaim: true })` refuses.
+ *
+ * ── The /attempt comment, and what never leaves (28.9.2026) ──
+ *
+ * RULING-2026-09-28-bounty-rail.md §5.2 item 5: the `/attempt` comment carries the
+ * same disclosure as the pull request, so a maintainer can say stop before any work
+ * is done rather than after — `attemptComment()`, checked by `auditAttemptComment()`
+ * against the same identity rules. Item 4: the brand account never pastes its system
+ * prompt, session text, environment, tokens, working directory or resource budget
+ * anywhere, whatever a template demands (UnsafeLabs/Bounty-Hunters' CONTRIBUTING asks
+ * for exactly that). Both gates refuse a body carrying any of those shapes.
  */
 
 /** Printed until the brand machine account exists (owner step 7). Deliberately ugly. */
@@ -46,6 +56,16 @@ export const AI_AUTHORSHIP_DISCLOSURE =
 export const MAINTAINER_STOP_INVITATION =
   "If you would rather not receive AI-authored contributions, say so once on this pull request. " +
   "We will close it, we will open nothing further on this repository, and we will not argue the point.";
+
+/** The disclosure on an `/attempt` comment: the same facts as the PR's, said before any work is done. */
+export const ATTEMPT_DISCLOSURE =
+  "This attempt is made by an automated brand account, not by a person: the work will be AI-authored and agent-operated. " +
+  "You are being told before any work is done, so you can say no first.";
+
+/** The stop invitation on an `/attempt` comment. */
+export const ATTEMPT_STOP_INVITATION =
+  "If you would rather not receive AI-authored contributions, say so once here. " +
+  "We will withdraw this attempt, we will open nothing on this repository, and we will not argue the point.";
 
 /** The unfilled demo-recording marker. Its presence is what makes an unfilled body detectable. */
 export const DEMO_VIDEO_PLACEHOLDER =
@@ -113,6 +133,41 @@ export function pullRequestBody(input: PullRequestBodyInput): string {
   ].join("\n");
 }
 
+export interface AttemptCommentInput {
+  /** The bounty issue number the `/attempt` points at. */
+  issueNumber: number;
+  /** The implementation plan Algora's bot template asks for, one step per line. */
+  plan: string[];
+  /** The brand name. Omit until the brand machine account exists (owner step 7). */
+  brand?: string;
+  /** Overrides `/attempt #<issueNumber>` if Algora's bot spelled it differently. */
+  attemptCommand?: string;
+}
+
+/**
+ * Build the `/attempt` comment. Pure and deterministic, like `pullRequestBody`.
+ * Algora's bot template: "Comment `/attempt #N` with your implementation plan".
+ */
+export function attemptComment(input: AttemptCommentInput): string {
+  const brand = (input.brand ?? "").trim() || BRAND_PLACEHOLDER;
+  const command = input.attemptCommand ?? `/attempt #${input.issueNumber}`;
+  const plan = input.plan.length > 0 ? input.plan.map((l) => `- ${l.trim()}`).join("\n") : "- No plan was supplied — this comment is incomplete and must not be posted.";
+  return [
+    command,
+    ``,
+    `Plan:`,
+    ``,
+    plan,
+    ``,
+    ATTEMPT_DISCLOSURE,
+    ``,
+    ATTEMPT_STOP_INVITATION,
+    ``,
+    `Posted by the ${brand} machine account.`,
+    ``,
+  ].join("\n");
+}
+
 export interface PullRequestAuditOptions {
   /**
    * Personal identifiers that must never appear. Supplied by the caller, never
@@ -135,6 +190,47 @@ export interface PullRequestAudit {
 const MENTION = /(?:^|[\s([{,])@([A-Za-z0-9][A-Za-z0-9-]{0,38})/g;
 const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
 
+/**
+ * Session material that never leaves (RULING-2026-09-28-bounty-rail.md §5.2 item 4): a system prompt or session text,
+ * a token or secret, an environment dump, a working or home directory, a resource budget.
+ */
+export const SESSION_LEAK_PATTERNS: { id: string; pattern: RegExp }[] = [
+  { id: "system-prompt", pattern: /\b(?:(?:my|our|the\s+agent'?s|its)\s+system\s+prompt|session\s+initiali[sz]ation\s+text)\b/i },
+  { id: "token", pattern: /\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-(?:ant-)?[A-Za-z0-9_-]{20,})/ },
+  { id: "secret-assignment", pattern: /\b[A-Z][A-Z0-9_]*(?:TOKEN|KEY|SECRET|PASSWORD)\s*[=:]\s*\S{8,}/ },
+  { id: "home-or-workdir", pattern: /(?:^|[\s:=("'`])(?:\/home\/[\w.-]+|\/root(?:\/|\b)|\/Users\/[\w.-]+)/m },
+  { id: "resource-budget", pattern: /\btokens?\s+(?:used|remaining)\b/i },
+];
+
+function sessionLeakProblems(body: string): string[] {
+  return SESSION_LEAK_PATTERNS.filter(({ pattern }) => pattern.test(body)).map(
+    ({ id }) => `The body carries session material (${id}). The brand account never pastes its system prompt, session text, environment, tokens, working directory or resource budget anywhere (RULING-2026-09-28-bounty-rail.md §5.2 item 4).`,
+  );
+}
+
+/** The identity rules both gates share: no owner identifier, no @mention, no email, no byline. */
+function identityProblems(body: string, options: PullRequestAuditOptions): string[] {
+  const problems: string[] = [];
+  const allow = new Set((options.allowHandles ?? []).map((h) => h.replace(/^@/, "").toLowerCase()));
+  for (const identifier of options.ownerIdentifiers ?? []) {
+    const needle = identifier.trim();
+    if (needle.length > 0 && body.toLowerCase().includes(needle.toLowerCase())) {
+      problems.push(`The body contains an owner identifier. MISSION: nothing we publish carries the owner's name, username or personal identifiers.`);
+    }
+  }
+  for (const m of body.matchAll(MENTION)) {
+    const handle = (m[1] ?? "").toLowerCase();
+    if (!allow.has(handle)) problems.push(`The body mentions @${m[1]}. A pull request is a published byline; the mandate allows the brand and nothing else.`);
+  }
+  for (const m of body.matchAll(EMAIL)) {
+    problems.push(`The body contains an email address (${m[0]}). No support address, no personal contact details.`);
+  }
+  for (const { id, pattern } of FORBIDDEN_BYLINE_PATTERNS) {
+    if (pattern.test(body)) problems.push(`The body carries a byline shape (${id}). MISSION forbids "built by" lines entirely.`);
+  }
+  return problems;
+}
+
 /** "built by", "authored by X", "— Name". The shapes a byline takes. */
 export const FORBIDDEN_BYLINE_PATTERNS: { id: string; pattern: RegExp }[] = [
   { id: "built-by", pattern: /\b(?:built|made|created|developed|authored|written|submitted)\s+by\s+(?!(?:an?\s+)?(?:automated|ai\b|agent))/i },
@@ -152,7 +248,6 @@ export const FORBIDDEN_BYLINE_PATTERNS: { id: string; pattern: RegExp }[] = [
  */
 export function auditPullRequestBody(body: string, options: PullRequestAuditOptions = {}): PullRequestAudit {
   const problems: string[] = [];
-  const allow = new Set((options.allowHandles ?? []).map((h) => h.replace(/^@/, "").toLowerCase()));
 
   if (!body.includes(AI_AUTHORSHIP_DISCLOSURE)) {
     problems.push("The AI-authorship disclosure sentence is missing or altered. CHIEF-AUDIT §2.1 row 6 requires it on every PR, verbatim.");
@@ -178,23 +273,28 @@ export function auditPullRequestBody(body: string, options: PullRequestAuditOpti
     problems.push(`The brand placeholder ${BRAND_PLACEHOLDER} is unfilled. The brand machine account is owner step 7 and no PR leaves before it exists.`);
   }
 
-  for (const identifier of options.ownerIdentifiers ?? []) {
-    const needle = identifier.trim();
-    if (needle.length > 0 && body.toLowerCase().includes(needle.toLowerCase())) {
-      problems.push(`The body contains an owner identifier. MISSION: nothing we publish carries the owner's name, username or personal identifiers.`);
-    }
-  }
+  problems.push(...identityProblems(body, options), ...sessionLeakProblems(body));
+  return { ok: problems.length === 0, problems };
+}
 
-  for (const m of body.matchAll(MENTION)) {
-    const handle = (m[1] ?? "").toLowerCase();
-    if (!allow.has(handle)) problems.push(`The body mentions @${m[1]}. A pull request is a published byline; the mandate allows the brand and nothing else.`);
+/**
+ * The same gate for an `/attempt` comment (§5.2 item 5): its disclosure, its stop invitation, its command, the brand
+ * filled in — an attempt is always about to be posted — and every identity and session rule a PR body obeys.
+ */
+export function auditAttemptComment(body: string, options: Omit<PullRequestAuditOptions, "forClaim"> = {}): PullRequestAudit {
+  const problems: string[] = [];
+  if (!body.includes(ATTEMPT_DISCLOSURE)) {
+    problems.push("The /attempt disclosure is missing or altered. The attempt must say, before any work, that an automated brand account is attempting and the work will be AI-authored (RULING-2026-09-28-bounty-rail.md §5.2 item 5).");
   }
-  for (const m of body.matchAll(EMAIL)) {
-    problems.push(`The body contains an email address (${m[0]}). No support address, no personal contact details.`);
+  if (!body.includes(ATTEMPT_STOP_INVITATION)) {
+    problems.push("The stop invitation is missing or altered. A maintainer must be able to say stop before any work is done.");
   }
-  for (const { id, pattern } of FORBIDDEN_BYLINE_PATTERNS) {
-    if (pattern.test(body)) problems.push(`The body carries a byline shape (${id}). MISSION forbids "built by" lines entirely.`);
+  if (!/\/attempt\s+#\d+/.test(body)) {
+    problems.push("No `/attempt #N` command. Algora's bot template asks for it with the implementation plan.");
   }
-
+  if (body.includes(BRAND_PLACEHOLDER)) {
+    problems.push(`The brand placeholder ${BRAND_PLACEHOLDER} is unfilled. The brand machine account is owner step 7 and nothing is posted before it exists.`);
+  }
+  problems.push(...identityProblems(body, options), ...sessionLeakProblems(body));
   return { ok: problems.length === 0, problems };
 }

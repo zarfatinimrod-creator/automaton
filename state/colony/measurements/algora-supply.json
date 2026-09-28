@@ -1841,26 +1841,14 @@
       "solutionMerged": false
     }
   ],
-  "history": [
-    {
-      "week": "2026-W39",
-      "measuredAt": "2026-09-27T23:43:21.244Z",
-      "claimable": 108
-    }
-  ],
+  "history": [],
   "boardReading": {
-    "weeksRead": 1,
-    "readings": [
-      {
-        "week": "2026-W39",
-        "measuredAt": "2026-09-27T23:43:21.244Z",
-        "claimable": 108
-      }
-    ],
+    "weeksRead": 0,
+    "readings": [],
     "mean": null,
     "consecutive": null,
     "verdict": "pending",
-    "text": "Week 1 of 4. The board reads the mean of 4 weekly readings: ≥ 10 keeps ₪300; 3-9 retargets to ₪100 (grade contradicted); under 3 kills the line. Until then the owner is not asked for step 4 on this line's account."
+    "text": "Week 0 of 4. The board reads the mean of 4 weekly readings: ≥ 10 keeps ₪300; 3-9 retargets to ₪100 (grade contradicted); under 3 kills the line. Until then the owner is not asked for step 4b (the Stripe form) on this line's account; 4a, a two-minute sign-in, rides step 7."
   },
   "method": {
     "query": "is:issue is:open label:\"💎 Bounty\"",
@@ -1881,5 +1869,14 @@
       "Failure: any API error, an exhausted rate-limit budget, or a search that returns fewer issues than it reports (past the one exception below) writes nothing and fails the job — an unmeasured week is a missing reading, never a zero.",
       "Search gaps: GitHub's reported total can include index entries it never shows (hidden, deleted or transferred issues, unavailable repositories). A query that falls short is read a second full time. Only if both passes serve the identical issues, and the gap to the larger reported total is at most max(5, 1% of that total) per query and over the whole search, is the run accepted, with the gap recorded as `searchUnserved` beside the count, never in it. Passes that differ fail the run as above, even when the second pass is complete on its own (an issue that left the results between page fetches): the short first pass is not overruled by a pass that disagrees with it. A larger gap fails the run too."
     ]
-  }
+  },
+  "instrumentFaults": [
+    {
+      "week": "2026-W39",
+      "measuredAt": "2026-09-27T23:43:21.244Z",
+      "claimable": 108,
+      "reason": "Instrument fault, struck per KILL-1 (research/channel-loop/RULING-2026-09-28-bounty-rail.md §3): 85 of the 108 claimable ($35,475) sat in UnsafeLabs/Bounty-Hunters, whose CONTRIBUTING says its bounties are \"symbolic … will not be merged into production\" and that it \"is not the right repo\" for paid work, and policy.ts graded it `allowed` from a sentence hidden in an HTML comment; 5 ($3,010) sat in SecureBananaLabs/bug-bounty, whose README tells agents to star it before opening a PR. Counted by the counter before visible-text permission and the not-a-payer filter; recorded, never averaged."
+    }
+  ],
+  "struck": true
 }
