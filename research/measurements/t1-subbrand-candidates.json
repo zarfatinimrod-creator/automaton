@@ -1,9 +1,12 @@
 {
-  "measuredAt": "2026-09-29T08:54:04.933Z",
+  "measuredAt": "2026-09-29T08:55:52.306Z",
   "candidates": "research/measurements/t1-subbrand-candidates.txt",
   "note": "Status codes only; no page bodies stored. 404 = free, 200 = taken, anything else = unknown. Netlify's 404 reading is grade none until a fold reads it.",
-  "allFree": [],
-  "firstAllFree": null,
+  "allFree": [
+    "chartsplained",
+    "datawalkthrough"
+  ],
+  "firstAllFree": "chartsplained",
   "unknown": [],
   "rows": [
     {
@@ -117,6 +120,121 @@
       },
       "netlify": {
         "url": "https://linesandbars.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "readthechart",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/readthechart.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/readthechart",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@readthechart",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "netlify": {
+        "url": "https://readthechart.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "chartsplained",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/chartsplained.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/chartsplained",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@chartsplained",
+        "status": 404,
+        "verdict": "free"
+      },
+      "netlify": {
+        "url": "https://chartsplained.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "plainchart",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/plainchart.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/plainchart",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@plainchart",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "netlify": {
+        "url": "https://plainchart.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "datawalkthrough",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/datawalkthrough.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/datawalkthrough",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@datawalkthrough",
+        "status": 404,
+        "verdict": "free"
+      },
+      "netlify": {
+        "url": "https://datawalkthrough.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "chartlesson",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/chartlesson.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/chartlesson",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@chartlesson",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "netlify": {
+        "url": "https://chartlesson.netlify.app",
         "status": 404,
         "verdict": "free"
       }
