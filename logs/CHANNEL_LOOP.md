@@ -19,7 +19,7 @@ The forecast is in `research/channel-loop/FORECAST.md`.
 
 | | |
 |---|---|
-| Last tick | tick 22 (29.9 ~16:10-~17:10 UTC, continuous): PR #24 merged (`06add62`); rows 214-223 read: Wavedash barred, YPay not barred (lines stay paused), five terms pages refused; nevo has no terms anywhere, so law texts come from the `lawsofisrael` GitHub mirror (laws have no copyright); GitHub's budget docs make Mozilla's option (i)(b) rendered; rows 224-225 queued (Tipalti's website terms, the Knesset's terms). Log: `logs/2026-09-29-channel-loop-tick-22.md` |
+| Last tick | tick 23 (29.9 ~17:05-~17:50 UTC, continuous): PR #25 merged (`3033803`); terms audit round 4 (Tipalti barred; the Knesset's terms page is a bot challenge); **the 30.9 sitting brief written and checked** (`research/channel-loop/SITTING-2026-09-30-BRIEF.md`, 640 lines, an Opus clerk and an Opus checker, no rulings). Log: `logs/2026-09-29-channel-loop-tick-23.md` |
 | Branch | `claude/new-session-j071dx`; PRs #3-#18 merged into `main` under the standing consent (the loop merges its own green PRs). |
 | Routine | "Channel loop tick", every 6 h (`11 1,7,13,19 * * *` UTC), fires into this session; see §11 |
 | Fable | the 29.9 07:12 sitting ran two agents (rows 14-15), no 429. Next sitting: 30.9 ~07:11, row 16 (video channels and TikTok's terms). |
@@ -270,7 +270,7 @@ make it private (Actions minutes become metered, possibly a cost) or accept the 
 ## 8. Open Fable items
 
 Rows 8-15 are done: rows 14-15 at the 29.9 sitting (`research/channel-loop/RULING-2026-09-29-loop.md`,
-`RULING-2026-09-29-lines.md`). **Rows 16 and 17 go to the 30.9 ~07:11 sitting** (two agents; row 17 is the §18ב e-signature question against ruling (e)3, plus the page-view reader's three calls). **Row 16:** TikTok presence, UGC hosts, YouTube Kids,
+`RULING-2026-09-29-lines.md`). **Rows 16 and 17 go to the 30.9 ~07:11 sitting, with the brief `research/channel-loop/SITTING-2026-09-30-BRIEF.md`** (two agents; row 17 is the §18ב e-signature question against ruling (e)3, plus the page-view reader's three calls). **Row 16:** TikTok presence, UGC hosts, YouTube Kids,
 TikTok's terms against our fetches, and the ban on commercial solicitation; the T1 account conflict (`BOARD.md:96-98` vs
 `RED-TEAM.md:110-112`) rides it. **The next admission sitting** takes the first of Displate, Indiebook, Teach Simple and
 CrazyGames whose written answer returns (loop board (c)); Displate's written no is KILL-4 without a sitting.
@@ -322,7 +322,9 @@ Fixed in tick 19 (29.9): `scripts/queue-zero-test.mjs --override N-M` prints the
 
 ## 10. Next tick's first action
 
-**Tick 23 (next):** read rows 224-225 (Tipalti's website terms; the Knesset's terms, which would make fs.knesset.gov.il's official gazette PDFs a law source) and set their verdicts. Law texts for the sitting come from the `lawsofisrael` GitHub mirror at github grade while nevo stays paused (`osek-patur-documents.md` "29.9 (tick 22)"). The 30.9 ~07:11 sitting takes rows 16 and 17; row 18 (now with option (i)(b) rendered) goes to 1.10.
+**Tick 24 (the 30.9 ~07:11 routine tick, the Fable sitting):** one-word Fable probe; then two Fable agents (`model: 'fable'`), one per row, each reading `research/channel-loop/SITTING-2026-09-30-BRIEF.md` (row 16: Parts A and C; row 17: Parts B and C) and writing `research/channel-loop/RULING-2026-09-30-video.md` and `RULING-2026-09-30-documents.md`. On a 429, record it in `logs/FABLE_QUEUE.md`'s probe log and run the Opus work instead. Then fold the rulings on Opus (builder, reviewer, fixer for anything in code). The 19:11 and 01:11 ticks before it: owner-free maintenance only (the brief's Part C housekeeping), no new render unless a queued row can kill or admit.
+
+**Was planned for tick 23 (done 29.9, log `logs/2026-09-29-channel-loop-tick-23.md`):** read rows 224-225 (Tipalti's website terms; the Knesset's terms, which would make fs.knesset.gov.il's official gazette PDFs a law source) and set their verdicts. Law texts for the sitting come from the `lawsofisrael` GitHub mirror at github grade while nevo stays paused (`osek-patur-documents.md` "29.9 (tick 22)"). The 30.9 ~07:11 sitting takes rows 16 and 17; row 18 (now with option (i)(b) rendered) goes to 1.10.
 
 **Was planned for tick 22 (done 29.9, log `logs/2026-09-29-channel-loop-tick-22.md`):** read rows 214-223 (rendered ~16:05): the eight terms pages (bitsofgold, greeninvoice, mr.gov.il, tipalti, wavedash, gov.il, which also governs data.gov.il, ypay, stripe legal) and set each site's verdict in `research/channel-loop/terms-verdicts.json`, un-pausing its lines only if the terms allow it; GitHub's budget docs into `actions-spending-limit.md` for row 18. Find nevo's terms (the law source the sitting relies on) at github grade or in a nevo page already captured. The 30.9 ~07:11 sitting takes rows 16 (now with the full terms-audit picture in (d)) and 17; row 18 goes to 1.10.
 
