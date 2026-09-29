@@ -1,6 +1,6 @@
 # Revenue colony — board report
 
-Generated 2026-09-29T01:55:44.549Z
+Generated 2026-09-29T08:27:24.213Z
 
 ## Where we are
 
@@ -42,13 +42,16 @@ Labelled measurements — each is printed with its label wherever it is printed:
 
 ## This tick
 
-Ran: revenue_ledger_sync
-Skipped as not yet due: revenue_supervisor_review, revenue_board_review, revenue_audit
+Ran: revenue_ledger_sync, revenue_supervisor_review
+Skipped as not yet due: revenue_board_review, revenue_audit
 
 - Ledger sync: 0 new entries, 0 already known, sources [none configured]
+- Supervisors reviewed 4 line(s), escalating 4
+- Prize-event intake (instrument only; files nothing): 30 open of 397 listed on the mlcontests list, read 2026-09-29 04:14 UTC (0.2 days ago) — 3 with registration already closed, 0 not yet launched, 24 with a stated USD prize ($2,624,825 stated in total, all places combined, not an expected payout), 1 listed with a deadline that does not parse (neither open nor closed). AI or automated solutions allowed: not counted — none of the list's fields states it. Partly built: this is the list-count half of BOARD-LOOP §13; its number (events with deadlines in the quarter whose rules pages explicitly permit AI-built entries) needs a per-event rules-page read that is not built.
 
 ## Blocked on
 
+- the loop did not run for 7 hours (last ledger sync 2026-09-29T01:55:44.549Z). Check the colony workflow in Actions: a failing schedule is invisible from the numbers alone.
 - apify-actors is waiting on the owner: steps 6 of docs/OWNER_STEPS.he.md (not asked now: step 2 only when a paid product is ready, after the official cost check); Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify identity verification (ID, proof of address, a tax document, ownership information) is asked at that Publish sitting only if the apify-docs read shows it is document-only — no selfie, liveness or video — because an unverified developer's Actors are hidden from default Store-API search; if the read shows any camera step it is never asked (breadth board, 28.9.2026, research/breadth/BOARD.md Q5). A PayPal or Wise payout waits for pricing (scaleCriteria).
 - il-biz-tools is waiting on the owner: steps 8, 3, 6 of docs/OWNER_STEPS.he.md (not asked now: step 2 only when a paid product is ready, after the official cost check; step 5 frozen by the owner's ₪0 rule of 27.9.2026); Open the brand mailbox (owner step 8): a Google account under the brand (Gmail, mehudak) — or a free Outlook.com mailbox if Google's sign-up asks for more than a phone number — connected here as a second Gmail connector. The site's accessibility page (accessibility.html) will publish it as the brand-owned accessibility contact — the publish gate refuses the site until a real one is there, so it is the line's last publish gate — and it is published in no other role (research/breadth/BOARD.md Q2); Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3); Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6)
 - oss-bounties is waiting on the owner: steps 7, 6 of docs/OWNER_STEPS.he.md (not asked now: step 2 only when a paid product is ready, after the official cost check; step 4 Stripe form 4b, asked only after a corrected week-4 count of 3 or more and a reward Algora holds — the form begins with the Algora sign-in); Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in "bot" (BOARD-2 §2.1.3(c)). In the same sitting, create its token for BRAND_GITHUB_TOKEN — made with step 7, pasted in step 6, and the only other thing step 7's sitting does; the intake stays disabled in code until the corrected week-4 read, so the token changes nothing before then (RULING-2026-09-28-bounty-rail.md §4.4); Owner step 4b, asked only when the corrected week-4 mean is 3 or more AND a reward for a merged brand-account PR is held by Algora: the form begins by signing in to Algora with GitHub as the brand machine account, then Stripe Connect Express onboarding in your legal identity — individual, Israel, Israeli bank — under three stop rules: a US account country or a US bank/SSN/ITIN/EIN, a selfie or liveness check, or any fee → close the tab and complete nothing (RULING-2026-09-28-bounty-rail.md §4.1-§4.2; research/breadth/BOARD.md Part B(b))
