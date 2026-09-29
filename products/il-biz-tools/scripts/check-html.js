@@ -1,12 +1,12 @@
 // Sanity checks for the static pages: title, description, canonical, FAQ JSON-LD, RTL, referenced files exist.
-import { readFile, access } from 'node:fs/promises';
+import { readFile, readdir, access } from 'node:fs/promises';
 import { join } from 'node:path';
-import { PAGE_RATE_SOURCES, publishPlan, unregisteredPages } from '../src/lib/publish-gate.js';
+import { PAGE_RATE_SOURCES, publishPlan, unregisteredPages, aiDeclarationProblems } from '../src/lib/publish-gate.js';
 
 const root = new URL('..', import.meta.url).pathname;
 // Tool pages answer search questions and carry FAQ JSON-LD; the accessibility
 // statement is a plain page and gets every other check.
-const toolPages = ['index.html', 'vat.html', 'osek-patur.html', 'net-salary.html', 'invoice.html', 'allocation.html', 'registrar-fee.html', 'pcn874.html'];
+const toolPages = ['index.html', 'vat.html', 'osek-patur.html', 'osek-zair.html', 'net-salary.html', 'invoice.html', 'allocation.html', 'registrar-fee.html', 'pcn874.html'];
 const plainPages = ['accessibility.html'];
 const pages = [...toolPages, ...plainPages];
 let failures = 0;
@@ -35,7 +35,7 @@ for (const p of pages) {
 const css = await readFile(join(root, 'assets/style.css'), 'utf8');
 const defined = new Set([...css.matchAll(/\.(-?[_a-zA-Z][\w-]*)/g)].map((m) => m[1]));
 // Classes applied at runtime by page scripts, not present in any HTML source.
-for (const file of ['common.js', 'page-vat.js', 'page-osek-patur.js', 'page-net-salary.js', 'page-invoice.js', 'page-allocation.js', 'page-registrar-fee.js', 'page-pcn874.js']) {
+for (const file of ['common.js', 'page-vat.js', 'page-osek-patur.js', 'page-osek-zair.js', 'page-net-salary.js', 'page-invoice.js', 'page-allocation.js', 'page-registrar-fee.js', 'page-pcn874.js']) {
   try {
     const js = await readFile(join(root, 'assets', file), 'utf8');
     for (const m of js.matchAll(/class(?:Name|List)[^\n]*?['"`]([^'"`]+)['"`]/g)) {
@@ -61,6 +61,17 @@ for (const p of pages.filter((x) => x !== 'index.html')) if (!sitemap.includes(p
 const allPages = [...pages, '404.html'];
 const unregistered = unregisteredPages(allPages, PAGE_RATE_SOURCES);
 for (const p of unregistered) fail(p, 'not listed in PAGE_RATE_SOURCES (src/lib/publish-gate.js)');
+
+// The AI declaration (src/lib/ai-declaration.js): every page, the 404 too, says in its site footer that AI agents
+// build and keep the site, with nothing in the page or its stylesheets that can hide it. The build refuses a page
+// without it; this says so before anyone runs the build.
+const stylesheets = {};
+for (const f of (await readdir(join(root, 'assets'))).filter((x) => x.endsWith('.css'))) {
+  stylesheets[`assets/${f}`] = await readFile(join(root, 'assets', f), 'utf8');
+}
+for (const p of allPages) {
+  for (const problem of aiDeclarationProblems(await readFile(join(root, p), 'utf8'), { stylesheets })) fail(p, problem);
+}
 
 const configs = {};
 for (const path of [...new Set(Object.values(PAGE_RATE_SOURCES).flat())]) {

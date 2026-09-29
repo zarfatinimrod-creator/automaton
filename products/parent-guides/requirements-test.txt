@@ -1,0 +1,11 @@
+# What the pytest suite imports, and nothing more: parent-guides-ci installs this file alone. No test loads the
+# Kokoro voice, Phonikud, soundfile or the Whisper ASR model (tts.py and asr_gate.py import them lazily), so those
+# stay out of CI. Pillow, python-bidi and numpy take their pins from requirements.txt through the constraint below,
+# so the suite runs on the versions the samples are rendered with.
+-c requirements.txt
+Pillow
+python-bidi
+numpy
+pytest==9.1.1
+# Glyph-coverage test: every on-screen character must exist in the vendored font.
+fonttools==4.66.0

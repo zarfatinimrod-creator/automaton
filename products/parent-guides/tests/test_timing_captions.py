@@ -48,18 +48,20 @@ def test_every_scene_of_the_sample_fits_its_measured_narration(sample):
 
 
 def test_assembly_encodes_bt709_and_normalises_loudness(tmp_path):
-    frames = [tmp_path / "a.png", tmp_path / "b.png"]
     measured = {"input_i": "-19.8", "input_tp": "-0.7", "input_lra": "2.5", "input_thresh": "-30.2",
                 "target_offset": "0.1"}
-    cmd = render.ffmpeg_cmd(frames, [1.0, 2.0], tmp_path / "n.wav", measured, 3.0, "מהודק · כותרת", "מהודק",
-                            tmp_path / "o.mp4")
+    cmd = render.ffmpeg_cmd(tmp_path / "n.wav", measured, 3.0, "מהודק · כותרת", "מהודק", tmp_path / "o.mp4")
     graph = cmd[cmd.index("-filter_complex") + 1]
-    assert "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p" in graph
-    assert "pan=stereo|c0=c0|c1=c0,loudnorm=I=-14.0" in graph and "measured_I=-19.8" in graph
+    assert "[0:v]scale=out_color_matrix=bt709:out_range=tv,format=yuv420p" in graph
+    assert "[1:a]pan=stereo|c0=c0|c1=c0,loudnorm=I=-14.0" in graph and "measured_I=-19.8" in graph
     for flag in ("-colorspace", "-color_primaries", "-color_trc"):
         assert cmd[cmd.index(flag) + 1] == "bt709"
     assert "artist=מהודק" in cmd and "title=מהודק · כותרת" in cmd
-    silent = render.ffmpeg_cmd(frames, [1.0, 2.0], None, None, 3.0, "t", "מהודק", tmp_path / "o.mp4")
+    # the motion frames arrive on stdin as raw RGB at the video's frame rate
+    i = cmd.index("rawvideo")
+    assert cmd[i + 1:i + 7] == ["-pix_fmt", "rgb24", "-s", "1080x1920", "-framerate", str(render.FPS)]
+    assert "pipe:0" in cmd and "stillimage" not in cmd
+    silent = render.ffmpeg_cmd(None, None, 3.0, "t", "מהודק", tmp_path / "o.mp4")
     assert "loudnorm" not in " ".join(silent) and "anullsrc=r=48000:cl=stereo" in silent
 
 

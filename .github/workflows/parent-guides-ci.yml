@@ -1,0 +1,60 @@
+name: parent-guides-ci
+
+# products-ci.yml only runs products with a package.json; parent-guides is Python, so it has its own job, in
+# chart-explainer-ci.yml's pattern. No test needs the Kokoro voice, the Whisper ASR model or the network: tts.py and
+# asr_gate.py import their engines lazily and the tests call only the pure parts (IPA mapping, the vowelisation check,
+# CER and the critical-word check). So the job installs requirements-test.txt alone, downloads no model, and runs
+# every test. A skip here can only mean a dependency went missing, so a skip fails the job like a failure does.
+# The spec's evidence is research/rendered/yk-*; a changed capture can break test_sources and test_numbers.
+
+on:
+  push:
+    paths:
+      - "products/parent-guides/**"
+      - "research/rendered/yk-*"
+      - ".github/workflows/parent-guides-ci.yml"
+  pull_request:
+    paths:
+      - "products/parent-guides/**"
+      - "research/rendered/yk-*"
+      - ".github/workflows/parent-guides-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: products/parent-guides
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements-test.txt
+      - name: Pillow lays Hebrew out with raqm, as the renderer does
+        # Pillow's wheel bundles raqm and HarfBuzz but loads FriBiDi from the system. Without it test_frames would
+        # skip its raqm case and the other frame tests would quietly fall back to the basic engine.
+        run: |
+          python -c "from PIL import features; raise SystemExit(not features.check('raqm'))" \
+            || { sudo apt-get update -qq && sudo apt-get install -y -qq libfribidi0; }
+          python -c "from PIL import features as f; assert f.check('raqm'); print('raqm', f.version('raqm'), 'fribidi', f.version('fribidi'))"
+      - name: ffmpeg for the encode tests
+        # test_motion's byte-identical re-render and test_timing_captions build and run the renderer's ffmpeg
+        # command; hosted runner images do not ship ffmpeg.
+        run: |
+          command -v ffmpeg >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; }
+          ffmpeg -hide_banner -version | head -1
+      - name: Tests (a failure or a skip fails the job)
+        run: |
+          set -o pipefail
+          python -m pytest -q -rs | tee "$RUNNER_TEMP/pytest.log"
+          if grep -Eq '[0-9]+ skipped' "$RUNNER_TEMP/pytest.log"; then
+            echo "::error::a parent-guides test was skipped; every test must run in CI (see the reason above)"
+            exit 1
+          fi
