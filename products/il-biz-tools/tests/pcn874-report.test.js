@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { validatePcn874, COUNTERPARTY_ROWS } from '../src/vendor/pcn874/validate.js';
+import { validatePcn874, COUNTERPARTY_ROWS, RULES } from '../src/vendor/pcn874/validate.js';
 import { HEADER, DETAIL, FOOTER, RECORD_TYPES } from '../src/vendor/pcn874/layout.js';
 import { decodePcn874Bytes } from '../src/vendor/pcn874/parse.js';
 import {
@@ -31,58 +31,25 @@ const HEBREW = /[א-ת]/;
 /** validate.js without its comments (a comment may name an old or example id). */
 const validatorCode = validatorSource.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 
-/** A rule id or rule-id template, in any quote style: 'x', "x" or `x`. */
-const RULE_STRING = /(['"`])((?:\$\{rulePrefix\}|file|header|footer|detail|totals)\.[A-Za-z.${}]+)\1/g;
-
-/** Every rule id validate.js can emit, read from its own source. */
-function everyRule() {
-  const strings = [...validatorCode.matchAll(RULE_STRING)].map((m) => m[2]);
-  const literal = strings.filter((t) => !t.includes('${'));
-  const templates = new Set(strings.filter((t) => t.includes('${')));
-  const KINDS = { literal: ['literal'], sign: ['sign', 'signOfZero'], digits: ['digits'], alphanumeric: ['alphanumeric'], alpha: ['known'] };
-  const known = {
-    '${rulePrefix}.${field.id}.literal': [],
-    '${rulePrefix}.${field.id}.sign': [],
-    '${rulePrefix}.${field.id}.signOfZero': [],
-    '${rulePrefix}.${field.id}.digits': [],
-    '${rulePrefix}.${field.id}.alphanumeric': [],
-    '${rulePrefix}.${field.id}.known': [],
-    'header.${id}.reserved': ['header.differentRateSalesAmount.reserved', 'header.differentRateSalesVat.reserved'],
-    'detail.${type}.counterpartyExpected': Object.keys(COUNTERPARTY_ROWS).map((t) => `detail.${t}.counterpartyExpected`),
-  };
-  const fieldRules = [];
-  for (const [prefix, spec] of [['header', HEADER], ['detail', DETAIL], ['footer', FOOTER]]) {
-    for (const field of spec.fields) for (const kind of KINDS[field.class]) fieldRules.push(`${prefix}.${field.id}.${kind}`);
-  }
-  return { literal, templates, known, rules: [...new Set([...literal, ...fieldRules, ...Object.values(known).flat()])] };
-}
+/** Every rule id the validator can report: its own rule table (products/pcn874 RULES). */
+const tableRules = () => [...new Set(RULES.map((r) => r.id))];
 
 describe('every rule the validator can emit has a Hebrew line', () => {
-  const { templates, known, rules } = everyRule();
+  const rules = tableRules();
 
-  it('knows every rule-id template in validate.js - a new one must be added here and given Hebrew', () => {
-    expect([...templates].sort()).toEqual(Object.keys(known).sort());
-  });
-
-  it('can see every place validate.js names a rule: each `rule:`, `at(` and `checkRecordLength(` gets a string it reads', () => {
-    // A rule id built any other way (a variable, a concatenation) would escape
-    // the extractor above, and so escape the Hebrew check.
-    const ruleValues = [...validatorCode.matchAll(/\brule:\s*([^,\n]+)/g)].map((m) => m[1].trim());
-    expect(ruleValues.length).toBeGreaterThan(20);
-    for (const v of ruleValues) expect(v, `rule: ${v}`).toMatch(/^(?:rule|(['"`])(?:\$\{rulePrefix\}|file|header|footer|detail|totals)\.[A-Za-z.${}]+\1)$/);
-    const helperArgs = [
-      ...[...validatorCode.matchAll(/\bat\(\s*([^,]+),/g)].map((m) => m[1].trim()),
-      // every call, not the declaration (`function checkRecordLength(`)
-      ...[...validatorCode.matchAll(/(?<!function )\bcheckRecordLength\([^)]*?,\s*([^,)]+)\)/g)].map((m) => m[1].trim()),
-    ];
+  it('takes every rule from the validator\'s rule table: each finding is built by ruleOf(...), nothing else names a rule', () => {
+    // pcn874's tests/rules.test.ts proves every row of RULES is reported and every
+    // finding equals its row. Here: validate.js has no other way to name a rule, so
+    // a rule this page describes cannot be missing from the table.
+    const ruleKeys = [...validatorCode.matchAll(/\brule:\s*([^,\n}]+)/g)].map((m) => m[1].trim());
+    expect(ruleKeys).toEqual(['row.id']);
+    expect([...validatorCode.matchAll(/\bruleOf\(/g)].length).toBeGreaterThan(20);
+    const helperArgs = [...validatorCode.matchAll(/\bat\(\s*([^\n]+)/g)].map((m) => m[1].trim());
     expect(helperArgs.length).toBeGreaterThan(5);
-    for (const v of helperArgs) {
-      expect(v, v).toMatch(/^(['"`])(?:file|header|footer|detail|totals)\.[A-Za-z.${}]+\1$/);
-    }
+    for (const v of helperArgs) expect(v, v).toMatch(/^ruleOf\(/);
   });
 
   it('draws its counter-party rows from the validator itself, not from a copy', () => {
-    const { rules } = everyRule();
     for (const letter of Object.keys(COUNTERPARTY_ROWS)) expect(rules).toContain(`detail.${letter}.counterpartyExpected`);
     expect(ruleHebrew('detail.H.counterpartyExpected')).toContain('אזהרה בלבד');
     expect(ruleHebrew('detail.T.counterpartyExpected')).not.toContain('אזהרה');
