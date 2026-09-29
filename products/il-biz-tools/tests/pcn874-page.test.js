@@ -11,7 +11,8 @@
 //   - findings are listed per line with the failed rule in Hebrew, in a status
 //     region a screen reader announces, with labelled controls and RTL;
 //   - it is registered everywhere the site lists pages, and runs the site's
-//     page-view counter (no reader turns those views into a pcn874 KPI yet);
+//     page-view counter (the colony's weekly reader counts this page for the
+//     pcn874 line once PostHog, the read key and D0 exist);
 //   - it carries no price, no "buy" and no Gumroad link.
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
@@ -306,10 +307,12 @@ describe('where the site lists its pages', () => {
 
 // The pcn874 line lists "weekly page views (cookieless)" as a KPI. The page runs
 // the site's counter, so once posthog.projectKey is set PostHog has its views by
-// URL. Nothing turns them into a KPI reading yet - there is no reader in
-// src/revenue/ - and until one exists an unmeasured week is a missing reading,
-// never a zero, so the "under 100 views a week" kill rule has no input.
-describe('page views: the counter runs, the KPI is not wired yet', () => {
+// URL. Since 29.9.2026 the colony's tick reads them (src/revenue/page-views.ts and
+// page-views-reader.ts, tested in src/__tests__/revenue/page-views*.test.ts) and
+// counts this page, and only this page, for the pcn874 line. Until the project,
+// the read key and D0 exist it reads nothing, and an unmeasured week is a missing
+// reading, never a zero.
+describe('page views: the counter runs, the colony reader counts this page for pcn874', () => {
   const portfolio = readFileSync(join(productRoot, '..', '..', 'src', 'revenue', 'portfolio.ts'), 'utf8');
   const lineBlock = (id) => {
     const at = portfolio.indexOf(`id: "${id}"`);
@@ -318,6 +321,12 @@ describe('page views: the counter runs, the KPI is not wired yet', () => {
 
   it('both lines exist in the portfolio and name the cookieless page-view KPI', () => {
     for (const id of ['pcn874', 'il-biz-tools']) expect(lineBlock(id), id).toContain('weekly page views (cookieless)');
+  });
+
+  it('the colony reader maps this page, and no other, to the pcn874 line', () => {
+    const reader = readFileSync(join(productRoot, '..', '..', 'src', 'revenue', 'page-views.ts'), 'utf8');
+    expect(reader).toContain(`export const PCN874_PAGE = "${PAGE}";`);
+    expect(reader).toMatch(/return page === PCN874_PAGE \? "pcn874" : "il-biz-tools";/);
   });
 
   it('the page runs the site\'s own counter (initPage installs it) and no other', () => {

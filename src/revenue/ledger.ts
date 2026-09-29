@@ -678,11 +678,16 @@ export function latestReviewForLine(db: Database, lineId: string, level?: Comman
 
 // ─── KPI snapshots ───────────────────────────────────────────────
 
-export function recordKpi(db: Database, lineId: string, kpi: string, value: number, unit?: string): void {
+/**
+ * `capturedAt` defaults to now. A reading that covers a closed period (a week of page views, page-views-reader.ts)
+ * passes the period's end, so the snapshot is dated by what it measures and a later re-read cannot reorder the series.
+ */
+export function recordKpi(db: Database, lineId: string, kpi: string, value: number, unit?: string, capturedAt?: string): void {
   if (!Number.isFinite(value)) throw new Error(`KPI value must be finite: ${kpi}=${value}`);
+  if (capturedAt !== undefined && Number.isNaN(Date.parse(capturedAt))) throw new Error(`KPI capturedAt is not a date: ${capturedAt}`);
   db.prepare(
     "INSERT INTO revenue_kpi_snapshots (id, line_id, kpi, value, unit, captured_at) VALUES (?, ?, ?, ?, ?, ?)",
-  ).run(ulid(), lineId, kpi.trim(), value, unit ?? null, new Date().toISOString());
+  ).run(ulid(), lineId, kpi.trim(), value, unit ?? null, capturedAt ? new Date(capturedAt).toISOString() : new Date().toISOString());
 }
 
 export function latestKpis(db: Database, lineId: string): Record<string, { value: number; unit: string | null; capturedAt: string }> {

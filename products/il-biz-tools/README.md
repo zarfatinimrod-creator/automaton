@@ -21,7 +21,7 @@ while a publish blocker stands; the deploy artifact is `_site/`.
 | Receipt / invoice generator (קבלה / חשבונית עסקה) | `invoice.html` | print / PDF, local save, saved client list, per-type auto numbering | document branding: your logo and accent colour |
 | Allocation-number check (מספר הקצאה) | `allocation.html` | yes | — |
 | Companies-Registrar annual fee (אגרה שנתית לרשם החברות) | `registrar-fee.html` | deadline calculator; **no shekel amounts** — see the gate below | — |
-| PCN874 structure validator (בודק קובץ PCN874) | `pcn874.html` | yes — structure only, individual-merchant file (Appendix A) only, in the browser, no upload; its page views will count for the `pcn874` line once a PostHog key is set and a reader exists (neither does today) | — (no price on the page; the paid builder waits for owner steps 2+3 and a pricing ruling) |
+| PCN874 structure validator (בודק קובץ PCN874) | `pcn874.html` | yes — structure only, individual-merchant file (Appendix A) only, in the browser, no upload; its page views count for the `pcn874` line through the colony's weekly reader (`src/revenue/page-views-reader.ts`) once the PostHog project, its key in `site.json`, the read key and D0 exist (none does today) | — (no price on the page; the paid builder waits for owner steps 2+3 and a pricing ruling) |
 
 Audience: Israeli self-employed (no headcount is sourced in this repo), especially **עוסקים פטורים** (freelancers under the
 VAT threshold) who need a receipt today and want to know when they will cross the ceiling.
@@ -349,12 +349,48 @@ uploaded, sent or stored. No module the page loads contains `fetch`, `XMLHttpReq
 page sends nothing itself: sharing is the user's own `navigator.share`, with counts and rule names only.
 The page carries no price, no "buy" and no Gumroad link.
 
-**Page views - the counter runs, the KPI is not wired.** The page calls `initPage()`, so the site's existing
-cookieless PostHog counter (off until `posthog.projectKey` is set) will count its views by URL like every other
-page. Nothing turns those views into a pcn874 KPI reading: there is no PostHog reader in `src/revenue/`, and the
-page-to-line mapping module the first build added (`page-kpis.js`) was removed because nothing read it. Until a
-key is set **and** a reader exists, an unmeasured week is a missing reading, never a zero - the pcn874 line's
-"under 100 views a week" kill rule has no input and must not be run.
+**Page views - the counter runs, the read path is wired, nothing is configured.** The page calls `initPage()`,
+so the site's cookieless PostHog counter (off until `posthog.projectKey` is set) counts its views by URL like every
+other page. The colony's hourly tick now reads them (29.9.2026, loop board `RULING-2026-09-29-loop.md` (b)):
+`src/revenue/page-views.ts` turns PostHog query results into weekly counts - `pcn874.html` (or `/pcn874`) for the
+`pcn874` line, every other page for `il-biz-tools`; `/preview/…`, the 404 page, any page withheld as a noindex
+notice (asked of `src/lib/publish-gate.js` itself) and any other path excluded, and only the canonical host of
+`siteUrl` counted - and `src/revenue/page-views-reader.ts` calls PostHog's query API
+(`POST https://eu.posthog.com/api/projects/<id>/query/`, one HogQL query per completed week) and writes one
+`weeklyPageViews` KPI row per line per week, dated by the week's end. Weeks run seven days from the clock's anchor
+day in `state/colony/page-view-clock.json` (D0, then the domain deploy day). The same tick evaluates the gates on
+those rows: nothing before two consecutive weekly writes; no two by D0+21 is an instrument fault (fixed, clock
+restarted, never a fail); at D0+56 under 5 page views over weeks 1-8 → pause, 100 a week or more over weeks 5-8 →
+pass, between → one extension to D0+112; and "under 100 a week for 8 consecutive weeks" → kill, on the clock that
+starts at the domain deploy (BOARD-LOOP PUBLISH-10, restated in `RULING-2026-09-28-floors.md` row 9). A verdict is
+printed in the report for the board to apply; nothing moves a line by itself. A week that cannot be read is not
+written, and a missing week is unmeasured, never zero. Tests: `src/__tests__/revenue/page-views*.test.ts`, against
+a fake fetch and fixtures shaped like PostHog's documented response.
+
+What still has to happen before it reads anything - each part is a no-op until it exists, and the report names
+the missing one:
+
+1. **The PostHog project** (cookieless server-hash mode on), its `phc_` key in `posthog.projectKey`
+   and its numeric id in `posthog.projectId` (or the `POSTHOG_PROJECT_ID` Actions variable). **Agent work, through
+   the PostHog connector attached to the session** - the board assigned it there (`research/colony-sweep/BOARD.md`
+   §6.3; `research/channel-loop/BOARD-LOOP.md` rank 2, first action (4)); it is not an owner step. Not done: this
+   change creates nothing.
+2. **`POSTHOG_READ_KEY`**: a PostHog personal API key with the "Performing analytics queries" (query read) scope
+   and nothing else, as a GitHub Actions secret. PostHog mints personal keys in a signed-in user's settings; whether
+   the connector's account can mint one was not checked here (that is a live call). Putting it into the repository's
+   secrets needs a repository admin, which today means the owner's one-time step-6 sitting, beside the tokens pasted
+   there - **but it is not on the owner's list**: adding it is a proposed step for the next Fable sitting, never
+   something a builder adds.
+3. **D0**: the loop writes the public deploy day, with its evidence, into `state/colony/page-view-clock.json` on
+   the day the deploy is public (runner 200, clean identifier grep) - and only with the counter live in the
+   deployed `site.json`, or its first weeks would read as zeros nobody measured. pcn874 rides the same deploy.
+4. **The `/preview/` path**: the reader already excludes it, but no Netlify rewrite serves `/preview/*` yet
+   (`netlify.toml`). Until one does, the colony must not open the canonical host in a JavaScript browser at all.
+
+Until 1-3 exist nothing is read, an unmeasured week is a missing reading, never a zero, and no reach or kill gate
+runs. A D0 written while 1 or 2 is missing is not waved through: at D0+21 the tick reports the M-instrument fault
+as a blocker, because a clock without an instrument is a fault, not a pass. Item 4 keeps our own views out; the
+reader does not wait for it.
 
 **Not verified.** No real browser has run the page: none can be installed in the build container (the
 Playwright download is blocked). The real page and its real module graph ran once under jsdom (28.9.2026):
@@ -476,6 +512,7 @@ There are **no server-side env vars** — this is a static site. Public configur
 | `analytics.plausibleDomain` | Plausible site domain | `""` |
 | `posthog.projectKey` | PostHog project key (`phc_…`). Empty ⇒ **no snippet at all** | `""` |
 | `posthog.apiHost` | PostHog host | `https://eu.i.posthog.com` |
+| `posthog.projectId` | The same PostHog project's numeric id, for the colony's weekly page-view reader only (the page never uses it; not a secret). The `POSTHOG_PROJECT_ID` Actions variable overrides it | `""` |
 
 Optional CI variables (never committed): `NETLIFY_AUTH_TOKEN`, `NETLIFY_SITE_ID` for CLI deploys.
 No server-side secret is needed by this site at all — the checkout is a link and the licence keys are
@@ -692,7 +729,7 @@ GitHub Pages, Vercel) works too — copy the headers from `netlify.toml` if the 
    domain no line that depends on search exists (`src/revenue/owner-steps.ts`).
 3. **Google Search Console** — optional, not a checklist step (`research/colony-sweep/BOARD.md` §6.3, §8): only if
    the owner chooses to add the property in their own Google account, and asked for only after the site shows traffic.
-4. Not an owner step: analytics. The board assigned page views to the PostHog connector attached to the agent's session (`research/colony-sweep/BOARD.md` §6.3), so the project key and the cookieless server-hash toggle are ours to set; `posthog.projectKey` stays empty until then, and Plausible is not planned.
+4. Not an owner step: analytics. The board assigned page views to the PostHog connector attached to the agent's session (`research/colony-sweep/BOARD.md` §6.3), so the project key, the project id and the cookieless server-hash toggle are ours to set; `posthog.projectKey` and `posthog.projectId` stay empty until then, and Plausible is not planned. The one open question is the colony reader's `POSTHOG_READ_KEY` secret: pasting a secret into the repository needs a repository admin, and it is not on the owner's list — see "Page views" under the pcn874 section; whether to add it is for the next Fable sitting.
 5. Tax: income from the site is business income — an Israeli osek patur/murshe registration is
    the owner's responsibility (Gumroad invoices the buyer, the owner reports Gumroad payouts).
 6. Not an owner step (`docs/OWNER_STEPS.he.md` step 3: "זה אצלי, לא אצלך"): `net-salary.html` stays

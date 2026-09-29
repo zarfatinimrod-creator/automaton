@@ -61,6 +61,13 @@ jobs:
           LEMONSQUEEZY_API_KEY: ${{ secrets.LEMONSQUEEZY_API_KEY }}
           GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          # The il-biz-tools / pcn874 page-view read (src/revenue/page-views-reader.ts): a PostHog
+          # personal API key with the query-read scope only, and the project's numeric id (not a
+          # secret; site.json posthog.projectId is the fallback). Without both - and without the
+          # site's counter on and a D0 in state/colony/page-view-clock.json - it reads nothing and
+          # the report says which part is missing. At most one query per completed week.
+          POSTHOG_READ_KEY: ${{ secrets.POSTHOG_READ_KEY }}
+          POSTHOG_PROJECT_ID: ${{ vars.POSTHOG_PROJECT_ID }}
         run: |
           set -euo pipefail
           # No orchestrator runs here, so filing a goal nothing can execute

@@ -318,10 +318,11 @@ describe("revenue_line_detail prints a labelled KPI with its label (research/bre
   });
 
   it("adds nothing to a line without labels", async () => {
-    insertLineFromSeed(db, DEFAULT_PORTFOLIO.find((s) => s.id === "pcn874")!);
+    // oss-bounties: pcn874 carries the page-view label since 29.9.2026 (portfolio.ts PAGE_VIEW_KPI_LABEL).
+    insertLineFromSeed(db, DEFAULT_PORTFOLIO.find((s) => s.id === "oss-bounties")!);
     const ctx = { db: { raw: db }, identity: { name: "tester" } } as unknown as ToolContext;
     const tools = Object.fromEntries(createRevenueTools().map((t) => [t.name, t]));
-    const text = String(await tools.revenue_line_detail.execute({ line_id: "pcn874" }, ctx));
+    const text = String(await tools.revenue_line_detail.execute({ line_id: "oss-bounties" }, ctx));
     expect(text).not.toContain(APIFY_STRANGER_KPI_LABEL);
     expect(labelLines(text)).toEqual([]);
   });
