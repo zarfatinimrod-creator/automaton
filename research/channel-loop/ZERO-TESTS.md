@@ -222,6 +222,14 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 213 | terms audit (tick 20): worksheets4kids | https://worksheets4kids.co.il/privacy-policy/ | whether worksheets4kids's terms bar automated access by the runner (research/channel-loop/TERMS-AUDIT-2026-09-29.md; NO_TERMS_CAPTURE) |
 | 214 | Mozilla (8), ruling (b) precondition | https://docs.github.com/en/billing/how-tos/set-up-budgets | personal-account budgets and the 'Stop usage when budget limit is reached' option at rendered grade (FABLE_QUEUE row 18, option (i)(b)) |
 | 215 | Mozilla (8), ruling (b) precondition | https://docs.github.com/en/billing/concepts/budgets-and-alerts | budgets and alerts, and the first-cycle gap (a $0 budget must exist before the first run), at rendered grade (FABLE_QUEUE row 18) |
+| 216 | terms audit (tick 21): bitsofgold | https://www.bitsofgold.co.il/terms | whether bitsofgold's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
+| 217 | terms audit (tick 21): greeninvoice | https://www.greeninvoice.co.il/terms/ | whether greeninvoice's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
+| 218 | terms audit (tick 21): mr.gov.il | http://www.mr.gov.il/Pages/Terms-of-Use.aspx | whether mr.gov.il's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
+| 219 | terms audit (tick 21): tipalti | https://tipalti.com/legal | whether tipalti's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
+| 220 | terms audit (tick 21): wavedash | https://wavedash.com/terms | whether wavedash's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
+| 221 | terms audit (tick 21): gov.il | https://www.gov.il/he/general/terms_of_use | whether gov.il's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
+| 222 | terms audit (tick 21): ypay | https://ypay.co.il/front/terms | whether ypay's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
+| 223 | terms audit (tick 21): stripe | https://stripe.com/legal | whether stripe's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
 
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no

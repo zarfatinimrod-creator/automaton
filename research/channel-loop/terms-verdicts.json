@@ -1,0 +1,434 @@
+{
+ "_about": "Terms verdict for every site render-watch has a line for (research/channel-loop/TERMS-AUDIT-2026-09-29.md). A line may be active only when its site is NOT_BARRED or CONDITIONAL_MET, or TERMS_PENDING and the line is the site's terms page (slug starting 'terms-'). Enforced by src/__tests__/revenue/render-watch-terms-barred.test.ts.",
+ "sites": {
+  "accessalyze.com": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "capture never rendered"
+  },
+  "accessiguard.app": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "no terms link in the capture"
+  },
+  "amazonaws.com": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "StreetLib's public bucket; follows streetlib.com"
+  },
+  "apify.com": {
+   "verdict": "NOT_BARRED",
+   "source": "Apify General Terms and AUP, github grade (TERMS-AUDIT round 1)",
+   "checked": "2026-09-29"
+  },
+  "astro.build": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "bit2c.co.il": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "bitsofgold.co.il": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://www.bitsofgold.co.il/terms",
+   "checked": "2026-09-29"
+  },
+  "blog.youtube": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "btl.gov.il": {
+   "verdict": "NOT_BARRED",
+   "source": "research/rendered/terms-btl.txt:303 (round 2): copyright only; full-page republication in a public repo is a storage question",
+   "checked": "2026-09-29"
+  },
+  "crazygames.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "data.gov.il": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://www.gov.il/he/general/terms_of_use",
+   "checked": "2026-09-29",
+   "note": "terms-data-gov-il.txt:19: site use is governed by the gov.il terms of use; the dataset licence itself has no access bar"
+  },
+  "digital-invoice.co.il": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29"
+  },
+  "displate.com": {
+   "verdict": "CONDITIONAL_MET",
+   "source": "displate-about-regulations.txt:565, :567: software allowed if it does not distort the site (round 1)",
+   "checked": "2026-09-29"
+  },
+  "draft2digital.com": {
+   "verdict": "NOT_BARRED",
+   "source": "research/rendered/draft2digital-com-terms-of-service.txt (round 1)",
+   "checked": "2026-09-29"
+  },
+  "europa.eu": {
+   "verdict": "NOT_BARRED",
+   "source": "EUR-Lex legal notice, github grade (round 2)",
+   "checked": "2026-09-29"
+  },
+  "extensionworkshop.com": {
+   "verdict": "CONDITIONAL_MET",
+   "source": "mozilla/legal-docs websites_tou and acceptable_use_policy: no access bar; personal-data condition met (round 2)",
+   "checked": "2026-09-29"
+  },
+  "facer.io": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "facercreator.io": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "freemius.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "gamedistribution.com": {
+   "verdict": "CONDITIONAL_MET",
+   "source": "gamedistribution-developer-terms.txt:20-22: barred only for monitoring or benchmarking (round 1)",
+   "checked": "2026-09-29"
+  },
+  "ganim-mall.co.il": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29"
+  },
+  "github.com": {
+   "verdict": "CONDITIONAL_MET",
+   "source": "GitHub Acceptable Use: research use of public, non-personal information, publications open access (round 1)",
+   "checked": "2026-09-29"
+  },
+  "google.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "googlesource.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "govi.co.il": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "403"
+  },
+  "greeninvoice.co.il": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://www.greeninvoice.co.il/terms/",
+   "checked": "2026-09-29"
+  },
+  "gumroad.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "h-erp.co.il": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29"
+  },
+  "hackmd.io": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "haganenet.co.il": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "403"
+  },
+  "huggingface.co": {
+   "verdict": "NOT_BARRED",
+   "source": "research/rendered/terms-huggingface.txt (round 2)",
+   "checked": "2026-09-29"
+  },
+  "huntr.com": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "the page is a 404"
+  },
+  "icount.co.il": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "indiebook.co.il": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "invoice4u.co.il": {
+   "verdict": "NOT_BARRED",
+   "source": "research/rendered/terms-invoice4u.txt:122 (round 2)",
+   "checked": "2026-09-29"
+  },
+  "irs.gov": {
+   "verdict": "NOT_BARRED",
+   "source": "IRS privacy and security policy, ToS;DR snapshot, github grade (round 2)",
+   "checked": "2026-09-29"
+  },
+  "kiezelpay.com": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29"
+  },
+  "kolzchut.org.il": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "its copyright page returned 403"
+  },
+  "lemidatova.com": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "403"
+  },
+  "lomdimhofshi.co.il": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "lomdiml.co.il": {
+   "verdict": "NOT_BARRED",
+   "source": "research/rendered/terms-lomdiml.txt:219 (round 2)",
+   "checked": "2026-09-29"
+  },
+  "metaculus.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "mozilla.org": {
+   "verdict": "BARRED",
+   "source": "addons.mozilla.org is in TERMS_BARRED (personal data); mozilla.org's other pages have no active line",
+   "checked": "2026-09-29"
+  },
+  "mr.gov.il": {
+   "verdict": "TERMS_PENDING",
+   "source": "http://www.mr.gov.il/Pages/Terms-of-Use.aspx",
+   "checked": "2026-09-29"
+  },
+  "mybooks.co.il": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29"
+  },
+  "n8n.io": {
+   "verdict": "CONDITIONAL_UNMET",
+   "source": "the forum (community.n8n.io) bars crawlers (TERMS_BARRED); the main site's Acceptable Use Policy is linked but unread (terms-n8n-legal.txt:96)",
+   "checked": "2026-09-29"
+  },
+  "n8n.notion.site": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "nevo.co.il": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "no terms link in any nevo capture; the law pages already captured stay readable, new nevo lines wait"
+  },
+  "odoo.com": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "only the Enterprise subscription terms were found, not site-use terms"
+  },
+  "openai.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "paypal.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "pexels.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "pixabay.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "polar.sh": {
+   "verdict": "NOT_BARRED",
+   "source": "polarsource master-services-terms, github grade (round 2)",
+   "checked": "2026-09-29"
+  },
+  "quicklyinvoice.com": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "403"
+  },
+  "repebble.com": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29"
+  },
+  "rivhit.co.il": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29"
+  },
+  "society6.com": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "404"
+  },
+  "spreadshirt.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "spreadshirt.net": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "Spreadshirt's terms cover spreadshirt.com; the .net developer site's own terms are unread"
+  },
+  "spreadshop.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "streetlib.com": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "legalpolicy is a JavaScript shell; community terms fetch failed"
+  },
+  "streetlib.it": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "legalpolicy is a JavaScript shell"
+  },
+  "stripe.com": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://stripe.com/legal",
+   "checked": "2026-09-29"
+  },
+  "sumit.co.il": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "the terms article redirect-loops"
+  },
+  "superteam.fun": {
+   "verdict": "CONDITIONAL_MET",
+   "source": "superteam-earn-terms-pdf.txt:222-223: bots barred only for collecting usernames and emails (round 1)",
+   "checked": "2026-09-29"
+  },
+  "swiftness.co.il": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29"
+  },
+  "teacherspayteachers.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "teachsimple.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "tipalti.com": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://tipalti.com/legal",
+   "checked": "2026-09-29"
+  },
+  "trolley.com": {
+   "verdict": "CONDITIONAL_MET",
+   "source": "trolley-terms-of-service.txt:257-258: scraping barred only 'in an unreasonable manner'; no crawling (round 1)",
+   "checked": "2026-09-29"
+  },
+  "un.org": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://www.un.org/en/about-us/terms-of-use",
+   "checked": "2026-09-29",
+   "note": "the terms page returned 504 on 29.9; retried by the weekly run"
+  },
+  "unesco.org": {
+   "verdict": "NOT_BARRED",
+   "source": "research/rendered/unesco-uis-terms.txt (round 1)",
+   "checked": "2026-09-29"
+  },
+  "upload-post.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "wavedash.com": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://wavedash.com/terms",
+   "checked": "2026-09-29"
+  },
+  "wix.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "worksheets4kids.co.il": {
+   "verdict": "NOT_BARRED",
+   "source": "research/rendered/terms-worksheets4kids.txt:195 (round 2): copy/publish bar, no access bar",
+   "checked": "2026-09-29"
+  },
+  "www.gov.il": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://www.gov.il/he/general/terms_of_use",
+   "checked": "2026-09-29"
+  },
+  "y8.com": {
+   "verdict": "CONDITIONAL_UNMET",
+   "source": "ToS;DR snapshot Y8 game/Terms of Service.html:76-78: 'You may not use Our Websites: (i) For Your own commercial gain' (round 2); whether research for a commercial venue decision is 'commercial gain' is unsettled, so paused",
+   "checked": "2026-09-29"
+  },
+  "youtube.com": {
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
+   "checked": "2026-09-29"
+  },
+  "ypay.co.il": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://ypay.co.il/front/terms",
+   "checked": "2026-09-29"
+  },
+  "zazzle.com": {
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
+   "checked": "2026-09-29",
+   "note": "the user agreement returns 403 to the runner"
+  }
+ }
+}

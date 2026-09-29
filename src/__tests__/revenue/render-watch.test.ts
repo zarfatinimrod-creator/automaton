@@ -48,7 +48,7 @@ const FIXTURE_LIST = [
   "# a comment line",
   "",
   "   # an indented comment",
-  "https://freemius.com/help/documentation/selling-with-freemius/supported-countries/\tfreemius-supported-countries",
+  "https://polar.sh/docs/merchant-of-record/supported-countries\tpolar-supported-countries",
   "https://api.apify.com/v2/store?search=accessibility\tapify-store-accessibility",
   "https://govi.co.il/",
   "",
@@ -59,8 +59,8 @@ describe("parseUrlList", () => {
     const entries = parseUrlList(FIXTURE_LIST);
     expect(entries).toEqual([
       {
-        url: "https://freemius.com/help/documentation/selling-with-freemius/supported-countries/",
-        slug: "freemius-supported-countries",
+        url: "https://polar.sh/docs/merchant-of-record/supported-countries",
+        slug: "polar-supported-countries",
         lineNumber: 4,
       },
       {

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { TERMS_BARRED, fetchOne, parseUrlList, termsBarred } from "../../../scripts/render-watch.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
-import { overrideLines } from "../../../scripts/queue-zero-test.mjs";
+import { overrideLines, siteOf } from "../../../scripts/queue-zero-test.mjs";
 
 /**
  * Tick 19 (29.9.2026): Gumroad's rendered terms bar "any manual or automated software ... to
@@ -87,10 +87,10 @@ describe("the terms audit's barred sites (29.9.2026)", () => {
 
   it("lists each audited site once, each with a citation of the clause or condition", () => {
     const domains = TERMS_BARRED.map((b: { domain: string }) => b.domain);
-    expect(domains.slice(1)).toEqual(AUDITED);
+    expect(domains.slice(1, 1 + AUDITED.length)).toEqual(AUDITED);
     expect(new Set(domains).size).toBe(domains.length);
     for (const b of TERMS_BARRED as { domain: string; why: string }[]) {
-      expect(b.why, b.domain).toMatch(/(\.txt:\d+|\.md:\d+|\.tsx:\d+|bytes \d+)/);
+      expect(b.why, b.domain).toMatch(/(\.txt:\d+|\.md:\d+|\.html:\d+|\.tsx:\d+|bytes \d+)/);
     }
   });
 
@@ -120,5 +120,49 @@ describe("the terms audit's barred sites (29.9.2026)", () => {
         expect(Array.isArray(r.authors), slug).toBe(false);
       }
     }
+  });
+});
+
+/**
+ * Tick 21 (29.9.2026): the rule "read a site's terms before its first line" as a check. Every site render-watch has a
+ * line for carries a verdict in research/channel-loop/terms-verdicts.json, and a line may be active only when its site's
+ * terms were read and allow it, or when the line is the site's own terms page and that page is still pending.
+ */
+describe("terms-verdicts.json gates every active line (terms audit round 2)", () => {
+  const verdicts = JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8")).sites as Record<string, { verdict: string; source: string }>;
+  const VERDICTS = ["NOT_BARRED", "CONDITIONAL_MET", "TERMS_PENDING", "CONDITIONAL_UNMET", "BARRED", "NO_TERMS"];
+  const entries = () => parseUrlList(readFileSync("research/rendered/urls.txt", "utf8")) as { url: string; slug: string }[];
+
+  it("gives every site a known verdict and a source", () => {
+    for (const [site, v] of Object.entries(verdicts)) {
+      expect(VERDICTS, site).toContain(v.verdict);
+      expect(v.source.length, site).toBeGreaterThan(5);
+    }
+  });
+
+  it("lets a line be active only on a site whose terms allow it, or as a pending site's own terms page", () => {
+    const bad = entries().filter((e) => {
+      const v = verdicts[siteOf(new URL(e.url).hostname.toLowerCase())]?.verdict;
+      return !(v === "NOT_BARRED" || v === "CONDITIONAL_MET" || (v === "TERMS_PENDING" && e.slug.startsWith("terms-")));
+    });
+    expect(bad.map((e) => e.slug)).toEqual([]);
+  });
+
+  it("records the round-2 barred sites in TERMS_BARRED, each with its citation", () => {
+    const ROUND2 = ["bit2c.co.il", "freemius.com", "hackmd.io", "icount.co.il", "lomdimhofshi.co.il", "community.n8n.io", "notion.site", "upload-post.com", "wix.com", "crazygames.com", "pexels.com", "pixabay.com", "spreadshirt.com", "spreadshop.com", "teacherspayteachers.com"];
+    for (const d of ROUND2) {
+      const b = (TERMS_BARRED as { domain: string; why: string }[]).find((x) => x.domain === d);
+      expect(b, d).toBeDefined();
+      expect(b!.why, d).toMatch(/round 2/);
+    }
+    // The forum is barred; n8n's main site is not caught by the forum's entry.
+    expect(termsBarred("n8n.io")).toBeNull();
+    expect(termsBarred("n8n.notion.site")?.domain).toBe("notion.site");
+  });
+
+  it("keeps nevo's already captured law pages readable while no new nevo line can run", () => {
+    expect(verdicts["nevo.co.il"].verdict).toBe("NO_TERMS");
+    expect(entries().some((e) => /nevo\.co\.il$/.test(new URL(e.url).hostname))).toBe(false);
+    expect(readFileSync("research/rendered/nevo-vat-law.txt", "utf8")).toContain("122,833");
   });
 });
