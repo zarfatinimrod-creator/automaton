@@ -1,0 +1,173 @@
+Sarah Rainsberger - HackMD
+
+Create a note from template
+
+Create a note from template
+
+Oops...
+
+This template is not available.
+
+Use this template
+
+Sign in
+
+Upgrade
+
+All
+
+All
+
+Team
+
+No template found.
+
+Use this template
+
+Create custom template
+
+Upgrade
+
+Template name
+
+Save as option
+
+Save this note as a template
+
+Save to another note as a template
+
+Cancel
+Save
+
+Delete template
+
+Do you really want to delete this template?
+
+Keep the content
+
+Turn this template into a regular note and keep its content, versions, and comments.
+
+Cancel
+Delete
+
+Link with GitHub
+
+Please authorize HackMD on GitHub
+
+Please sign in to GitHub and install the HackMD app on your GitHub repo.
+
+HackMD links with GitHub through a GitHub App. You can choose which repo to install our App.
+
+Learn more
+
+Cancel
+
+Sign in to GitHub
+
+&times;
+
+Create team
+
+Team Name
+
+Team Description
+
+Team URL Path
+
+https://hackmd.io/team/
+
+Allow a-Z, 0-9 and dash not at beginning.
+
+Cancel
+Create team
+
+&times;
+
+OK
+
+&times;
+
+Are you sure?
+
+Do you really want to remove this member?
+
+Cancel
+Yes, do it!
+
+&times;
+
+Leave team
+
+Are you sure to leave this team?
+
+Cancel
+Yes, do it!
+
+&times;
+
+Delete team
+
+Once you delete your team, all team notes will be deleted and cannot be recovered. Please ensure you've exported or transferred these notes.
+
+Enter team name before deleting it:
+
+Cancel
+Yes, do it!
+
+&times;
+
+Change your password
+
+Use a minimum password length of 8-128 characters, including lowercase and uppercase characters and numbers.
+
+Submit
+
+&times;
+
+Setup your password
+
+Use a minimum password length of 8-128 characters, including lowercase and uppercase characters and numbers.
+
+Submit
+
+&times;
+
+Cancel
+Yes, do it!
+
+&times;
+
+Sign in
+
+Email
+
+Password
+
+Forgot password
+
+or
+
+Sign in via Google
+
+Sign in via Facebook
+
+Sign in via X(Twitter)
+
+Sign in via GitHub
+
+Sign in via Dropbox
+
+Sign in with Wallet
+
+Wallet
+(
+
+)
+
+Connect another wallet
+
+Continue with a different method
+
+New to HackMD? Sign up
+
+By signing in, you agree to our terms of service .
