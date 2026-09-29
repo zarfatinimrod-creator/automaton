@@ -1,7 +1,7 @@
 // Sanity checks for the static pages: title, description, canonical, FAQ JSON-LD, RTL, referenced files exist.
 import { readFile, access } from 'node:fs/promises';
 import { join } from 'node:path';
-import { PAGE_RATE_SOURCES, publishPlan, unregisteredPages } from '../src/lib/publish-gate.js';
+import { PAGE_RATE_SOURCES, publishPlan, unregisteredPages, aiDeclarationProblems } from '../src/lib/publish-gate.js';
 
 const root = new URL('..', import.meta.url).pathname;
 // Tool pages answer search questions and carry FAQ JSON-LD; the accessibility
@@ -61,6 +61,12 @@ for (const p of pages.filter((x) => x !== 'index.html')) if (!sitemap.includes(p
 const allPages = [...pages, '404.html'];
 const unregistered = unregisteredPages(allPages, PAGE_RATE_SOURCES);
 for (const p of unregistered) fail(p, 'not listed in PAGE_RATE_SOURCES (src/lib/publish-gate.js)');
+
+// The AI declaration (src/lib/ai-declaration.js): every page, the 404 too, says in its site footer that AI agents
+// build and keep the site. The build refuses a page without it; this says so before anyone runs the build.
+for (const p of allPages) {
+  for (const problem of aiDeclarationProblems(await readFile(join(root, p), 'utf8'))) fail(p, problem);
+}
 
 const configs = {};
 for (const path of [...new Set(Object.values(PAGE_RATE_SOURCES).flat())]) {

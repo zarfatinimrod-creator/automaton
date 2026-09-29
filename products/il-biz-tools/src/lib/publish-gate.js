@@ -26,6 +26,11 @@
 //     missing from the build, or a statement without a real contact link
 //     (data-a11y-contact). The contact is checked for being there, not only
 //     the marker for being gone: deleting the marker must not clear the gate.
+//   - aiDeclarationProblems() and figureSourceProblems() keep the AI declaration
+//     (src/lib/ai-declaration.js) on every shipped page's footer, and keep the
+//     three figure pages its FAQ answer names carrying their source lines.
+
+import { AI_DECLARATION, AI_DECLARATION_ATTR, AI_DECLARATION_HTML, FIGURE_SOURCE_PAGES, FIGURES_SOURCE_SENTENCE } from './ai-declaration.js';
 
 /**
  * Which config files each page renders FIGURES from.
@@ -130,6 +135,7 @@ export function withheldPageHtml({ page, title = 'הדף אינו זמין', unv
 </main>
 <footer class="site-footer"><div class="container">
   © <span data-year>2026</span> כלים לעסק · המידע באתר אינו מהווה ייעוץ מס או ייעוץ משפטי. · <a href="accessibility.html">הצהרת נגישות</a>
+  ${AI_DECLARATION_HTML}
 </div></footer>
 </body>
 </html>
@@ -441,4 +447,75 @@ export function publishBlockers(shipped, required = REQUIRED_PAGES, contactPage 
     if (path === contactPage) for (const blocker of contactProblems(source)) found.push({ path, blocker });
   }
   return found;
+}
+
+// ---------------------------------------------------------------------------
+// The AI declaration (src/lib/ai-declaration.js).
+
+const SITE_FOOTER = /(?:^|\s)site-footer(?:\s|$)/;
+
+/**
+ * What is wrong with a page's AI declaration; empty means the page carries it.
+ *
+ * The page needs at least one element marked `data-ai-declaration` inside its
+ * `<footer class="site-footer">`, and every marked element must be there, read
+ * as AI_DECLARATION word for word, and be visible (no hidden, inert,
+ * aria-hidden or display:none on it or around it). Comments and script, style,
+ * template and noscript content do not count: a visitor cannot see them.
+ */
+export function aiDeclarationProblems(html) {
+  const markup = renderedMarkup(html);
+  const tags = startTags(markup);
+  const inFooter = (t) => t.ancestors.some((a) => a.name === 'footer' && SITE_FOOTER.test(a.attrs.get('class') ?? ''));
+  if (!tags.some((t) => t.name === 'footer' && SITE_FOOTER.test(t.attrs.get('class') ?? ''))) {
+    return ['no site footer: the AI declaration goes in <footer class="site-footer">'];
+  }
+  const marked = tags.filter((t) => t.attrs.has(AI_DECLARATION_ATTR));
+  const problems = [];
+  if (!marked.some(inFooter)) problems.push(`the AI declaration is missing from the site footer (<p ${AI_DECLARATION_ATTR}>${AI_DECLARATION}</p>)`);
+  for (const tag of marked) {
+    const say = (why) => problems.push(`the AI declaration ${why}`);
+    if (!inFooter(tag)) say('is outside the site footer');
+    const close = markup.slice(tag.end).search(new RegExp(`</${tag.name}\\s*>`, 'i'));
+    const text = close === -1 ? '' : normalizeText(stripTags(markup.slice(tag.end, tag.end + close)));
+    if (text !== AI_DECLARATION) say(`is altered: it reads "${text.slice(0, 120)}", not the text in src/lib/ai-declaration.js`);
+    if (hides(tag.attrs) || tag.ancestors.some((a) => hides(a.attrs))) say('is hidden (hidden, inert, aria-hidden or display:none on it or around it)');
+  }
+  return problems;
+}
+
+/**
+ * The FAQ answer says the three pages in FIGURE_SOURCE_PAGES show a source and
+ * what was checked when beside their figure. While any shipped page says so,
+ * each of those pages that ships as itself must carry its source line (the
+ * element with that id, reading "מקור: ..."). A page withheld for an unverified
+ * figure ships a notice with no figure, so the sentence has nothing there to be
+ * about; it is skipped, and the build still publishes.
+ *
+ * @param {{path: string, html: string}[]} shipped  every HTML page that would ship
+ * @param {string[]} withheldPages  pages shipping as a withheld notice
+ * @returns {string[]} problems, each prefixed with the page
+ */
+export function figureSourceProblems(shipped, withheldPages = []) {
+  const claims = shipped.some(({ html }) => normalizeText(stripTags(renderedMarkup(html))).includes(FIGURES_SOURCE_SENTENCE));
+  if (!claims) return [];
+  const problems = [];
+  for (const [page, id] of Object.entries(FIGURE_SOURCE_PAGES)) {
+    if (withheldPages.includes(page)) continue;
+    const found = shipped.find((p) => p.path === page);
+    if (!found) {
+      problems.push(`${page}: the FAQ answer names this page's source line, and the page is not in the build`);
+      continue;
+    }
+    const markup = renderedMarkup(found.html);
+    const tag = startTags(markup).find((t) => t.attrs.get('id') === id);
+    const close = tag ? markup.slice(tag.end).search(new RegExp(`</${tag.name}\\s*>`, 'i')) : -1;
+    const text = close === -1 ? '' : normalizeText(stripTags(markup.slice(tag.end, tag.end + close)));
+    if (!text.startsWith('מקור: ')) {
+      problems.push(`${page}: the FAQ answer says a source line sits beside the figure here, and #${id} is missing or does not read "מקור: ..."`);
+    } else if (hides(tag.attrs) || tag.ancestors.some((a) => hides(a.attrs))) {
+      problems.push(`${page}: #${id} is hidden, and the FAQ answer says it is beside the figure`);
+    }
+  }
+  return problems;
 }

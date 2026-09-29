@@ -29,6 +29,9 @@
 //      marker however written, or its words), a missing accessibility
 //      statement, a statement with no real contact link (data-a11y-contact),
 //      or a failing check in src/lib/a11y-check.js refuses the publish.
+//      So does a page whose site footer lacks the AI declaration, word for word
+//      and visible, and a figure page the home page's "who builds the site?"
+//      answer names that ships without its source line (src/lib/ai-declaration.js).
 //
 // Fail closed: a refused build exits 1 and deletes _site/, so no stale copy is
 // left for anyone to upload by hand. `--preview` builds the same tree into
@@ -49,6 +52,8 @@ import {
   filterSitemap,
   configShipPlan,
   publishBlockers,
+  aiDeclarationProblems,
+  figureSourceProblems,
 } from '../src/lib/publish-gate.js';
 import { collectDependencies } from '../src/lib/site-deps.js';
 import { bundleProblems, fsBundleAccess } from '../src/lib/pcn874-bundle.js';
@@ -174,8 +179,12 @@ if (configs.refuse.length) {
   );
 }
 
-// 4. Blockers: marked placeholders, the required statement, the accessibility checks.
+// 4. Blockers: marked placeholders, the required statement, the AI declaration, the accessibility checks.
 const blockers = publishBlockers(shipped).map(({ path, blocker }) => `${path}: ${blocker}`);
+for (const { path, html } of shipped) {
+  for (const problem of aiDeclarationProblems(html)) blockers.push(`${path}: ${problem}`);
+}
+blockers.push(...figureSourceProblems(shipped, withhold.map((w) => w.page)));
 for (const { path, html } of shipped) {
   for (const p of checkPageA11y(html)) blockers.push(`${path}: accessibility check "${p.check}" failed - ${p.message}`);
 }

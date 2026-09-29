@@ -316,6 +316,31 @@ three files, correct summaries and rows, no network call, no injected markup. Th
 stale runs, reading notes, the neutral clean box) ran only against the tests' fake DOM, not under jsdom or a
 browser. A screen reader, keyboard use in a real browser and 200% zoom remain unchecked.
 
+## The AI declaration (every page, since 29.9.2026)
+
+The constitution ("You must never deny what you are") and MISSION rule 4 say a visitor is told who builds this
+site. Every page the build ships — each tool page, the accessibility statement, a withheld page's notice and the
+404 — carries one line in its site footer (`src/lib/ai-declaration.js`):
+
+> האתר והכלים שבו נבנו ומתוחזקים על ידי סוכני בינה מלאכותית (AI) הפועלים מטעם המותג מהודק.
+
+The home page's FAQ answers "מי בונה ומתחזק את האתר?" with that line, one sentence on figures and the footers'
+existing "not tax advice" wording; its FAQPage JSON-LD carries the same text. `pcn874.html`'s "למה הבודק חינמי?",
+the one answer that says who runs the site, ends with the line too.
+
+What it does **not** say, because nothing in the repository backs it: that a person reviewed the site or its
+results, or that a figure was checked against its source. No page does that. The figures sentence names the three
+pages that print a source line (`src/lib/source-line.js`) and says what those lines say: a source, and what was
+checked when, or that no check date was recorded. No `author`, `creator` or `publisher` went into the JSON-LD:
+those fields take a Person or an Organization, AI agents are neither, and the repository holds no record of the
+brand as a registered body to name as one.
+
+Enforced three ways. `scripts/build-site.js` refuses to publish a page whose site footer lacks the line word for
+word and visible (`aiDeclarationProblems` in `src/lib/publish-gate.js`), and refuses when one of the three pages
+ships as itself without its source line (`figureSourceProblems`); the preview lists both. `node
+scripts/check-html.js` reports a source page without the line. `tests/ai-declaration.test.js` builds the site and
+checks every built page, and holds the allowlist of claims the text may make, with what backs each one.
+
 ## Layout
 
 ```
@@ -328,7 +353,7 @@ src/lib/*.js                pure ES modules: vat, osek-patur, net-salary, invoic
                             registrar-fee, gumroad, license, branding, analytics, money, pro-nudge,
                             pcn874-report, pcn874-share, source-line - and build-time ones that never ship:
                             publish-gate, site-deps, a11y-check, pcn874-bundle, pcn874-rule-reference,
-                            pro-offer
+                            pro-offer, ai-declaration
 src/vendor/pcn874/*.js      GENERATED: products/pcn874's validator with its types stripped (do not edit)
 src/config/*.json           vat.json, osek-patur.json, tax-2026.json, allocation-number.json,
                             registrar-fee.json, site.json
@@ -350,7 +375,7 @@ netlify.toml robots.txt sitemap.xml
 ```bash
 cd products/il-biz-tools
 npm install          # vitest only
-npm test             # 586 tests (vitest, 27 files; re-measured 28.9.2026 after the TikTok note N7-N10)
+npm test             # 670 tests (vitest, 29 files; re-measured 29.9.2026 after the AI declaration)
 node scripts/bundle-pcn874.js   # after ANY change under products/pcn874/src - the build refuses a stale bundle
 node scripts/pcn874-rule-reference.js   # then this: the build refuses a stale rule reference too
 npm run check:html   # static page sanity checks + what the publish gate will withhold
@@ -577,6 +602,8 @@ registrar reminder form ships **disabled** and posts nowhere: no address is coll
 that does not exist, and the §30א(ג) and Amendment 13 copy is written and flagged for legal review
 before it ever does.
 No scraping, no third-party ToS involved beyond Gumroad and the optional analytics opt-ins.
+Never deny what it is: every page says in its footer that AI agents build and keep the site for the brand
+(see [The AI declaration](#the-ai-declaration-every-page-since-2992026)), and the build refuses a page that does not.
 
 ---
 
@@ -623,8 +650,13 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
 לא משחררת את השער: הוא מסרב גם כשמילות ממלא המקום נשארות בדף, וגם כשאין בהצהרה קישור פנייה אמיתי וגלוי
 (`<a data-a11y-contact href="mailto:…">` או `https:` או `tel:`, בדומיין ציבורי ולא בדומיין דוגמה).
 
+**הצהרת AI בכל דף (29.9.2026):** בתחתית כל דף שעולה לאתר – גם בהודעה של דף מושהה וגם בדף 404 – כתוב: "האתר והכלים
+שבו נבנו ומתוחזקים על ידי סוכני בינה מלאכותית (AI) הפועלים מטעם המותג מהודק." בשאלות הנפוצות בדף הבית יש גם תשובה
+מלאה ל"מי בונה ומתחזק את האתר?". ההצהרה לא טוענת שאדם בדק משהו ולא שנתון נבדק מול המקור שלו – אין לכך תיעוד. ה-build
+מסרב לפרסם דף בלי השורה, והבדיקה `tests/ai-declaration.test.js` מחזיקה את רשימת הטענות המותרות.
+
 **צעדים שרק הבעלים יכול לבצע:** פתיחת חנות Gumroad על שם המותג (KYC + פרטי משיכה) והטוקן שלה,
 חשבון Netlify ודומיין, אימות ב-Google Search Console. יצירת מוצר ה-Pro והדבקת הכתובת והמזהה שלו
 ב-`site.json` הן עבודה שלי, דרך אותו טוקן (`.github/workflows/gumroad-pro-product.yml`).
 
-**בדיקות:** `npm install && npm test` (447 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.
+**בדיקות:** `npm install && npm test` (670 בדיקות ב-29 קבצים, vitest, 29.9.2026). **הרצה מקומית:** `npm run serve`.
