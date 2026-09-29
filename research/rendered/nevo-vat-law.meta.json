@@ -1,0 +1,17 @@
+{
+  "url": "https://www.nevo.co.il/law_html/law01/271_001.htm",
+  "slug": "nevo-vat-law",
+  "fetchedAt": "2026-09-29T10:46:51.356Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 253462,
+  "sha256": "ec477ce90ae6d82062ce6502654988ae17b7824a50c8c34b130510874319d93a",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/nevo-vat-law.html",
+  "textPath": "research/rendered/nevo-vat-law.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
