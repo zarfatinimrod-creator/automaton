@@ -264,3 +264,12 @@ The eight terms pages rendered by rows 216-223, and a search for nevo's terms (`
 | `github.com` | CONDITIONAL_MET | Researchers may use public, non-personal information from the Service for research purposes, only if any publications resulting from that research are open access. | research/channel-loop/TERMS-AUDIT-2026-09-29.md:25; research/colony-sweep/scouts/risk-governance--automation-tos.md:57 (URL at :54). Both were confirmed with grep -n -F. |
 | `wikisource.org` | CONDITIONAL_UNMET | Engaging in automated uses of the Project Websites that are abusive or disruptive of the services, violate acceptable usage policies where available, or have not been approved by the Wikimedia community; | tosdr/tosdr-snapshots@b44ae1b6 Wikimedia/Terms of Service.html:981. The effective date is at :1155. §12 'API Terms' binds users to 'the User-Agent Policy, the Robot Policy, and the API:Etiquette' at :1100. |
 | `knesset.gov.il` | NO_TERMS | כל הזכויות שמורות למדינת ישראל - הכנסת או לצדדים שלישיים, כמפורט | theWallProject/mono@07ffcbd1 packages/scrapper/logs/homepage_ai_extractor/1773740627845_The_Israeli_Knesset_(Parliament)/page.html:2367. That line continues with the link 'בתנאי שימוש'. The 'תנאי שימוש' footer link is at |
+
+## Round 4 (tick 23, 29.9.2026)
+
+The two terms pages rendered by rows 224-225, read in the main thread.
+
+| Site | Verdict | Clause or status | Citation |
+|---|---|---|---|
+| `tipalti.com` | BARRED | "You may not download or save a copy of the Site or any portion thereof, including, without limitation, any materials and logos, for any purpose, without Tipalti's prior written consent." | `research/rendered/terms-tipalti-website.txt:245` (scope `:219`: "The terms and conditions below govern your use of this Site") |
+| `knesset.gov.il` | NO_TERMS | The terms page answered with a bot challenge: status 247, a script-only page with an empty body. The site screens out automated clients, and its terms stay unread. | `research/rendered/terms-knesset.html`, `.meta.json` |

@@ -373,6 +373,8 @@ export const TERMS_BARRED = [
   { domain: "teacherspayteachers.com", why: "TpT's terms: \"Don't use any automated means such as bots, spiders, or crawlers to download or otherwise obtain data from our services\" (sernl/listing-sync docs/notes/legal/marketplace-terms-assessment.md:100, github grade; terms audit round 2)" },
   // Round 3 (tick 22): the terms pages rendered by rows 216-223.
   { domain: "wavedash.com", why: "Wavedash's terms bar \"any robot, spider, or other automatic device, process, or means to access the Website for any purpose\" (research/rendered/terms-wavedash.txt:118; terms audit round 3)" },
+  // Round 4 (tick 23): Tipalti's website terms (row 224).
+  { domain: "tipalti.com", why: "Tipalti's website terms: \"You may not download or save a copy of the Site or any portion thereof ... for any purpose, without Tipalti's prior written consent\" (research/rendered/terms-tipalti-website.txt:245; terms audit round 4)" },
 ];
 
 /** The TERMS_BARRED entry a host falls under (the domain or any subdomain; case and trailing dot ignored), or null. */

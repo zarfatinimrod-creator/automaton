@@ -714,6 +714,6 @@ https://ypay.co.il/front/terms	terms-ypay
 # research/channel-loop/ZERO-TESTS.md row 223 — terms audit (tick 21): stripe's terms page, URL from terms-stripe-privacy-and-terms.html:783; fetched once so its terms can be read (29.9.2026).
 # paused (terms unread, 29.9.2026): stripe.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://stripe.com/legal	terms-stripe-legal
 # research/channel-loop/ZERO-TESTS.md row 224 — terms audit (tick 22): tipalti's terms page, URL from terms-tipalti.html:838; fetched once so its terms can be read (29.9.2026).
-https://tipalti.com/legal/website-terms/	terms-tipalti-website
+# paused (terms audit, 29.9.2026): tipalti.com — see TERMS_BARRED in scripts/render-watch.mjs — https://tipalti.com/legal/website-terms/	terms-tipalti-website
 # research/channel-loop/ZERO-TESTS.md row 225 — terms audit (tick 22): knesset's terms page, URL from theWallProject/mono page.html:2299 (github); fetched once so its terms can be read (29.9.2026).
-https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx	terms-knesset
+# paused (terms unread, 29.9.2026): knesset.gov.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx	terms-knesset
