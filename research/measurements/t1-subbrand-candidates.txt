@@ -14,3 +14,12 @@ plotnotes
 axisnotes
 dataplotted
 linesandbars
+# Round 2 (29.9.2026, tick 16, main thread): the first five were checked by the runner at 08:54 UTC
+# (research/measurements/t1-subbrand-check.md, commit c752cfc) and none was free on all four probes, so the loop writes
+# the next five by the same criteria, as ruling (e) APPLY 3 says. The first five stay above so the list order, and the
+# record of why they were passed over, stay in one file.
+readthechart
+chartsplained
+plainchart
+datawalkthrough
+chartlesson
