@@ -21,7 +21,7 @@
 # docs/REJECTED.md, Freemius section: "Re-open trigger: one rendered page, […]
 # fetched from a host with egress (a CI job, as pcn874-spec-watch.yml does)."
 # --------------------------------------------------------------------------------
-https://freemius.com/help/documentation/selling-with-freemius/supported-countries/	freemius-supported-countries
+# paused (terms audit, 29.9.2026): freemius.com — see TERMS_BARRED in scripts/render-watch.mjs — https://freemius.com/help/documentation/selling-with-freemius/supported-countries/	freemius-supported-countries
 
 # --------------------------------------------------------------------------------
 # 2. Apify store search — the cheapest measurement in the EAA report.
@@ -40,8 +40,8 @@ https://api.apify.com/v2/store?search=accessibility	apify-store-accessibility
 # exactly two of them with a /pricing path; those two are taken and no other site's
 # pricing path is guessed at.
 # --------------------------------------------------------------------------------
-https://accessalyze.com/pricing	accessalyze-pricing
-https://www.accessiguard.app/pricing	accessiguard-pricing
+# paused (terms unread, 29.9.2026): accessalyze.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://accessalyze.com/pricing	accessalyze-pricing
+# paused (terms unread, 29.9.2026): accessiguard.app is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.accessiguard.app/pricing	accessiguard-pricing
 
 # --------------------------------------------------------------------------------
 # 5. Govi — the ₪249 anchor of the tenders verdict.
@@ -54,7 +54,7 @@ https://www.accessiguard.app/pricing	accessiguard-pricing
 # so it is not here; whoever reads the stored page finds the real path and adds it
 # with this comment updated.
 # --------------------------------------------------------------------------------
-https://govi.co.il/	govi-home
+# paused (terms unread, 29.9.2026): govi.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://govi.co.il/	govi-home
 
 # --------------------------------------------------------------------------------
 # 6. mr.gov.il — the alerts claim the tenders report refused to rely on.
@@ -71,28 +71,28 @@ https://govi.co.il/	govi-home
 # publishers geo-block non-Israeli traffic. A GitHub runner is not in Israel. A block
 # or an empty page here is a fact about the runner's location, not about the portal.
 # --------------------------------------------------------------------------------
-https://mr.gov.il/ilgstorefront/he/	mr-gov-il-storefront
+# paused (terms unread, 29.9.2026): mr.gov.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://mr.gov.il/ilgstorefront/he/	mr-gov-il-storefront
 
 # Linked from the rendered supported-countries page (research/rendered/freemius-supported-countries.html,
 # href="/help/documentation/selling-with-freemius/your-earnings/" and ".../allowed-prohibited-products/").
 # Settles the payout currency / fee / hold and the prohibited-products list that freemius-rail.md left snippet-grade.
-https://freemius.com/help/documentation/selling-with-freemius/your-earnings/	freemius-your-earnings
-https://freemius.com/help/documentation/selling-with-freemius/allowed-prohibited-products/	freemius-allowed-prohibited
+# paused (terms audit, 29.9.2026): freemius.com — see TERMS_BARRED in scripts/render-watch.mjs — https://freemius.com/help/documentation/selling-with-freemius/your-earnings/	freemius-your-earnings
+# paused (terms audit, 29.9.2026): freemius.com — see TERMS_BARRED in scripts/render-watch.mjs — https://freemius.com/help/documentation/selling-with-freemius/allowed-prohibited-products/	freemius-allowed-prohibited
 
 # Linked from the rendered earnings/prohibited pages (research/rendered/freemius-your-earnings.html,
 # href="/help/documentation/selling-with-freemius/verification/" and "/help/documentation/getting-started/our-pricing/").
 # Settles seller identity verification (KYC) and the platform fee that freemius-rail.md left snippet-grade.
-https://freemius.com/help/documentation/selling-with-freemius/verification/	freemius-verification
-https://freemius.com/help/documentation/getting-started/our-pricing/	freemius-our-pricing
+# paused (terms audit, 29.9.2026): freemius.com — see TERMS_BARRED in scripts/render-watch.mjs — https://freemius.com/help/documentation/selling-with-freemius/verification/	freemius-verification
+# paused (terms audit, 29.9.2026): freemius.com — see TERMS_BARRED in scripts/render-watch.mjs — https://freemius.com/help/documentation/getting-started/our-pricing/	freemius-our-pricing
 
 # The three PCN874 specification sources named verbatim in products/pcn874/scripts/spec-watch.mjs
 # (gov.il English page; the two vendor mirrors of the ITA PDF the israel-bureaucracy audit cited).
 # pcn874-spec-watch.yml run #2 (18:26 UTC) fetched all three from a GitHub runner (49 KB, 782 KB, 3.5 MB)
 # but only hashed them; storing the bytes here is what lets a session read the official layout and
 # reconcile the seven disagreements in products/pcn874/docs/SPEC-FROM-SOURCES.md.
-https://www.gov.il/BlobFolder/generalpage/tax-vat-online-invoice-reporting/he/IncomeTax_IncomeTaxSoftwareHousesInfo_874-eng.pdf	pcn874-gov-il-874-eng
-https://www.rivhit.co.il/uploaded_files/documents/pcn874_manual_U1231.pdf	pcn874-rivhit-mirror
-https://downloads.h-erp.co.il/files/vatr/Guidance874W.pdf	pcn874-h-erp-mirror
+# paused (terms unread, 29.9.2026): www.gov.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://www.gov.il/BlobFolder/generalpage/tax-vat-online-invoice-reporting/he/IncomeTax_IncomeTaxSoftwareHousesInfo_874-eng.pdf	pcn874-gov-il-874-eng
+# paused (terms unread, 29.9.2026): rivhit.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.rivhit.co.il/uploaded_files/documents/pcn874_manual_U1231.pdf	pcn874-rivhit-mirror
+# paused (terms unread, 29.9.2026): h-erp.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://downloads.h-erp.co.il/files/vatr/Guidance874W.pdf	pcn874-h-erp-mirror
 
 # --------------------------------------------------------------------------------
 # Sweep 2 (22.9.2026): the nine "one url that would settle it" pages, one per shortlisted
@@ -106,8 +106,8 @@ https://downloads.h-erp.co.il/files/vatr/Guidance874W.pdf	pcn874-h-erp-mirror
 # Storing bytes is not evidence of a fact — SWEEP-2.md says so and so does this file's header.
 # A page that 403s or returns a login shell is itself the answer for that candidate.
 # --------------------------------------------------------------------------------
-https://www.swiftness.co.il/%D7%9B%D7%9C%D7%9C%D7%99-%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA/	sweep2-pension-memsakim-rules
-https://data.gov.il/dataset/ica-changes	sweep2-ica-changes-dataset
+# paused (terms unread, 29.9.2026): swiftness.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.swiftness.co.il/%D7%9B%D7%9C%D7%9C%D7%99-%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA/	sweep2-pension-memsakim-rules
+# paused (terms unread, 29.9.2026): data.gov.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://data.gov.il/dataset/ica-changes	sweep2-ica-changes-dataset
 # paused (terms audit, 29.9.2026): googlesource.com — see TERMS_BARRED in scripts/render-watch.mjs — https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/vrp-faq.md	sweep2-google-vrp-faq
 https://github.com/marketplace	sweep2-github-marketplace
 # REMOVED 26.9.2026: https://algora.io/PrimeIntellect-ai/bounties (sweep2-algora-primeintellect).
@@ -115,8 +115,8 @@ https://github.com/marketplace	sweep2-github-marketplace
 # Service for any purpose, including monitoring" (research/rendered/algora-terms.txt:258-260), and
 # the candidate is closed (research/colony-sweep/screen-2/primeintellect-bounties.md). The capture
 # stays as the record; the weekly job must not fetch algora.io again.
-https://huntr.com/guidelines	sweep2-huntr-guidelines
-https://apps.odoo.com/apps/modules/category/Localization/browse	sweep2-odoo-localization
+# paused (terms unread, 29.9.2026): huntr.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://huntr.com/guidelines	sweep2-huntr-guidelines
+# paused (terms unread, 29.9.2026): odoo.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://apps.odoo.com/apps/modules/category/Localization/browse	sweep2-odoo-localization
 # paused (terms audit, 29.9.2026): metaculus.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.metaculus.com/tournament-rules/	sweep2-metaculus-rules
 https://github.com/adam2314/linet3	sweep2-linet3-licence
 
@@ -144,9 +144,9 @@ https://github.com/adam2314/linet3	sweep2-linet3-licence
 # paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits	youtube-api-compliance-audits
 # research/tiktok/06-faceless-video-tooling.md §5.1-5.2: the licence and API-guideline texts
 # behind rejection reason 5 ("The licensing trap is structural"), all marked blocked there.
-https://www.pexels.com/license/	pexels-license
-https://www.pexels.com/api/documentation/	pexels-api-docs
-https://pixabay.com/service/license-summary/	pixabay-license-summary
+# paused (terms audit, 29.9.2026): pexels.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.pexels.com/license/	pexels-license
+# paused (terms audit, 29.9.2026): pexels.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.pexels.com/api/documentation/	pexels-api-docs
+# paused (terms audit, 29.9.2026): pixabay.com — see TERMS_BARRED in scripts/render-watch.mjs — https://pixabay.com/service/license-summary/	pixabay-license-summary
 
 # --------------------------------------------------------------------------------
 # 8. Faceless YouTube, round 2: the pages the 25.9 scouts and auditors name as the ones that
@@ -217,8 +217,8 @@ https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md	kokoro-82m-model-c
 # research/faceless-youtube/audits/rpm-evidence.md:153 — advertiser content exclusions (AI content).
 # paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/google-ads/answer/7515513?hl=en	google-ads-content-exclusions
 # research/faceless-youtube/T1-PRECHECK.md:264, :268 — Upload-Post's analytics fields and AI-label guide.
-https://docs.upload-post.com/api/get-analytics/	upload-post-get-analytics
-https://docs.upload-post.com/guides/ai-content-labeling/	upload-post-ai-content-labeling
+# paused (terms audit, 29.9.2026): upload-post.com — see TERMS_BARRED in scripts/render-watch.mjs — https://docs.upload-post.com/api/get-analytics/	upload-post-get-analytics
+# paused (terms audit, 29.9.2026): upload-post.com — see TERMS_BARRED in scripts/render-watch.mjs — https://docs.upload-post.com/guides/ai-content-labeling/	upload-post-ai-content-labeling
 
 # --------------------------------------------------------------------------------
 # 11. Faceless YouTube, G1 for IGO licences (research/faceless-youtube/LICENCE-IGO-DECISION.md, condition C1).
@@ -226,7 +226,7 @@ https://docs.upload-post.com/guides/ai-content-labeling/	upload-post-ai-content-
 # url: https://population.un.org/wpp/downloads/". The rendered page is the only acceptable G1 snapshot for a UN
 # WPP dataset; the auditor confirms it says CC BY 3.0 IGO and records any added condition. Added 27.9.2026.
 # --------------------------------------------------------------------------------
-https://population.un.org/wpp/downloads/	un-wpp-downloads
+# paused (terms unread, 29.9.2026): un.org is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://population.un.org/wpp/downloads/	un-wpp-downloads
 # DATASETS.md B1 quotes `education_sdgs.zip.dvc` l.15-17: "name: CC BY 3.0 IGO / url:
 # https://databrowser.uis.unesco.org/terms-and-conditions". LICENCE-IGO-DECISION.md §3: four records say UIS is
 # ShareAlike; UIS stays FAIL until this page is read. If it says BY-SA, the UIS entry is closed for good.
@@ -239,15 +239,15 @@ https://uis.unesco.org/en/terms-and-conditions	unesco-uis-terms
 # Each URL is listed, with the question it must answer, in research/channel-loop/ZERO-TESTS.md (rows 1-9).
 # --------------------------------------------------------------------------------
 # research/channel-loop/ZERO-TESTS.md row 1 — CrazyGames developer FAQ (submission, payouts, account).
-https://docs.crazygames.com/faq/	crazygames-faq
+# paused (terms audit, 29.9.2026): crazygames.com — see TERMS_BARRED in scripts/render-watch.mjs — https://docs.crazygames.com/faq/	crazygames-faq
 # ZERO-TESTS.md row 2 — Astro Theme Catalogue API, paid lane (ordering fields, count).
 # paused (terms audit, 29.9.2026): astro.build — see TERMS_BARRED in scripts/render-watch.mjs — https://portal.astro.build/api/themes?price[]=paid	astro-themes-paid
 # ZERO-TESTS.md row 3 — Stripe's country list (Israel as an account country).
-https://stripe.com/global	stripe-global
+# paused (terms unread, 29.9.2026): stripe.com is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://stripe.com/global	stripe-global
 # ZERO-TESTS.md row 4 — Stripe Connect cross-border payouts (Express recipients by country).
-https://docs.stripe.com/connect/cross-border-payouts	stripe-cross-border-payouts
+# paused (terms unread, 29.9.2026): stripe.com is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://docs.stripe.com/connect/cross-border-payouts	stripe-cross-border-payouts
 # ZERO-TESTS.md row 5 — Wix App Market payments and billing FAQ (payout countries, $200 floor).
-https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payments-and-billing-faqs	wix-app-payments-faq
+# paused (terms audit, 29.9.2026): wix.com — see TERMS_BARRED in scripts/render-watch.mjs — https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payments-and-billing-faqs	wix-app-payments-faq
 # ZERO-TESTS.md row 6 — Topcoder active challenges (auto-scored, prize-bearing).
 # retired (tick 20): Topcoder was killed in tick 18 (docs/REJECTED.md) — https://api.topcoder.com/v6/challenges?status=ACTIVE	topcoder-active-challenges
 # ZERO-TESTS.md row 7 — Bituach Leumi rates for the self-employed.
@@ -255,50 +255,50 @@ https://www.btl.gov.il/Insurance/National%20Insurance/type_list/Self_Employed/Pa
 # ZERO-TESTS.md row 8 — Bituach Leumi minimum for those not working / income not from work.
 https://www.btl.gov.il/Insurance/Rates/Pages/%D7%9E%D7%99%20%D7%A9%D7%90%D7%99%D7%A0%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D%20%D7%95%D7%91%D7%A2%D7%9C%D7%99%20%D7%94%D7%9B%D7%A0%D7%A1%D7%94%20%D7%A9%D7%9C%D7%90%20%D7%9E%D7%A2%D7%91%D7%95%D7%93%D7%94.aspx	btl-not-working-rates
 # ZERO-TESTS.md row 9 — Kol Zchut: contributions for an employee who also has self-employment income.
-https://www.kolzchut.org.il/he/%D7%93%D7%9E%D7%99_%D7%91%D7%99%D7%98%D7%95%D7%97_%D7%9C%D7%90%D7%95%D7%9E%D7%99_%D7%9C%D7%A9%D7%9B%D7%99%D7%A8_%D7%A2%D7%9D_%D7%9E%D7%A7%D7%95%D7%A8%D7%95%D7%AA_%D7%94%D7%9B%D7%A0%D7%A1%D7%94_%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D	kolzchut-employee-plus-self-employed
+# paused (terms unread, 29.9.2026): kolzchut.org.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.kolzchut.org.il/he/%D7%93%D7%9E%D7%99_%D7%91%D7%99%D7%98%D7%95%D7%97_%D7%9C%D7%90%D7%95%D7%9E%D7%99_%D7%9C%D7%A9%D7%9B%D7%99%D7%A8_%D7%A2%D7%9D_%D7%9E%D7%A7%D7%95%D7%A8%D7%95%D7%AA_%D7%94%D7%9B%D7%A0%D7%A1%D7%94_%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D	kolzchut-employee-plus-self-employed
 # research/measurements/step2-cost.md ("The page that settles the salaried case") — Bituach Leumi: salaried AND self-employed.
 https://www.btl.gov.il/Insurance/National%20Insurance/type_list/%D7%A2%D7%95%D7%91%D7%93%20%D7%A9%D7%9B%D7%99%D7%A8%20%D7%95%D7%92%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%20%D7%A2%D7%A6%D7%9E%D7%90%D7%99/Pages/default.aspx	btl-employee-and-self-employed
 # research/channel-loop/ZERO-TESTS.md rows 11-14 — tick 2 follow-ups the tick-1 readings named (27.9-28.9.2026).
 # ZERO-TESTS.md row 11 — CrazyGames (6), after row 1.
-https://files.crazygames.com/documents/developer_terms_20250818.pdf	crazygames-developer-terms
+# paused (terms audit, 29.9.2026): crazygames.com — see TERMS_BARRED in scripts/render-watch.mjs — https://files.crazygames.com/documents/developer_terms_20250818.pdf	crazygames-developer-terms
 # ZERO-TESTS.md row 12 — CrazyGames (6), after row 1.
-https://docs.crazygames.com/payouts/	crazygames-payouts
+# paused (terms audit, 29.9.2026): crazygames.com — see TERMS_BARRED in scripts/render-watch.mjs — https://docs.crazygames.com/payouts/	crazygames-payouts
 # ZERO-TESTS.md row 13 — Wix App Market (11), after row 5.
-https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/set-up-your-payout-account	wix-payout-account
+# paused (terms audit, 29.9.2026): wix.com — see TERMS_BARRED in scripts/render-watch.mjs — https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/set-up-your-payout-account	wix-payout-account
 # ZERO-TESTS.md row 14 — Stripe rail (9) and oss-bounties step 4, after rows 3-4.
-https://docs.stripe.com/global-payouts/recipient-requirements	stripe-global-payouts-recipients
+# paused (terms unread, 29.9.2026): stripe.com is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://docs.stripe.com/global-payouts/recipient-requirements	stripe-global-payouts-recipients
 # research/channel-loop/ZERO-TESTS.md rows 15-17 — tick 3 follow-ups the tick-2 readings named (28.9.2026).
 # ZERO-TESTS.md row 15 — Wix App Market (11), after row 13.
-https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/wix-app-market-partner-agreement	wix-partner-agreement
+# paused (terms audit, 29.9.2026): wix.com — see TERMS_BARRED in scripts/render-watch.mjs — https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/wix-app-market-partner-agreement	wix-partner-agreement
 # ZERO-TESTS.md row 16 — Wix App Market (11), after row 13.
-https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payouts-dashboard	wix-payouts-dashboard
+# paused (terms audit, 29.9.2026): wix.com — see TERMS_BARRED in scripts/render-watch.mjs — https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payouts-dashboard	wix-payouts-dashboard
 # ZERO-TESTS.md row 17 — Polar rail (9), after row 14.
 https://polar.sh/docs/merchant-of-record/supported-countries	polar-supported-countries
 # research/channel-loop/ZERO-TESTS.md rows 18-21 — tick 4 follow-ups the tick-3 readings named (28.9.2026).
 # ZERO-TESTS.md row 18 — Wix App Market (11), after row 15 (row 15 captured only the docs wrapper).
-https://dev.wix.com/app-market-partner-agreement	wix-partner-agreement-body
+# paused (terms audit, 29.9.2026): wix.com — see TERMS_BARRED in scripts/render-watch.mjs — https://dev.wix.com/app-market-partner-agreement	wix-partner-agreement-body
 # ZERO-TESTS.md row 19 — Polar rail (9), after row 17.
-https://docs.stripe.com/connect/required-verification-information	stripe-connect-required-verification
+# paused (terms unread, 29.9.2026): stripe.com is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://docs.stripe.com/connect/required-verification-information	stripe-connect-required-verification
 # ZERO-TESTS.md row 20 — Polar rail (9), after row 17.
 https://polar.sh/docs/merchant-of-record/acceptable-use/introduction	polar-acceptable-use
 # ZERO-TESTS.md row 21 — Polar rail (9), after row 17.
 https://polar.sh/docs/merchant-of-record/fees	polar-fees
 # research/channel-loop/ZERO-TESTS.md rows 22-24 — CrazyGames guidelines the terms make binding (tick 3 reading, 28.9.2026).
 # ZERO-TESTS.md row 22 — CrazyGames (6), after row 11.
-https://docs.crazygames.com/requirements/intro/	crazygames-requirements-intro
+# paused (terms audit, 29.9.2026): crazygames.com — see TERMS_BARRED in scripts/render-watch.mjs — https://docs.crazygames.com/requirements/intro/	crazygames-requirements-intro
 # ZERO-TESTS.md row 23 — CrazyGames (6), after row 11.
-https://docs.crazygames.com/requirements/quality/	crazygames-requirements-quality
+# paused (terms audit, 29.9.2026): crazygames.com — see TERMS_BARRED in scripts/render-watch.mjs — https://docs.crazygames.com/requirements/quality/	crazygames-requirements-quality
 # ZERO-TESTS.md row 24 — CrazyGames (6), after row 11.
-https://docs.crazygames.com/requirements/ads/	crazygames-requirements-ads
+# paused (terms audit, 29.9.2026): crazygames.com — see TERMS_BARRED in scripts/render-watch.mjs — https://docs.crazygames.com/requirements/ads/	crazygames-requirements-ads
 # research/channel-loop/ZERO-TESTS.md row 25 — step 2 cost: Bituach Leumi's own page on who is exempt (28.9.2026).
 https://www.btl.gov.il/Insurance/National%20Insurance/Pages/%D7%9E%D7%99%20%D7%A4%D7%98%D7%95%D7%A8%20%D7%9E%D7%AA%D7%A9%D7%9C%D7%95%D7%9D%20%D7%93%D7%9E%D7%99%20%D7%91%D7%99%D7%98%D7%95%D7%97%20%D7%9C%D7%90%D7%95%D7%9E%D7%99.aspx	btl-who-is-exempt
 # research/channel-loop/ZERO-TESTS.md rows 26-27 — CrazyGames pages the tick-4 reading named (28.9.2026).
 # ZERO-TESTS.md row 26 — CrazyGames (6), after rows 22-24.
-https://docs.crazygames.com/resources/basic-launch-metrics/	crazygames-basic-launch-metrics
+# paused (terms audit, 29.9.2026): crazygames.com — see TERMS_BARRED in scripts/render-watch.mjs — https://docs.crazygames.com/resources/basic-launch-metrics/	crazygames-basic-launch-metrics
 # ZERO-TESTS.md row 27 — CrazyGames (6), after rows 22-24.
-https://docs.crazygames.com/requirements/gameplay/	crazygames-requirements-gameplay
+# paused (terms audit, 29.9.2026): crazygames.com — see TERMS_BARRED in scripts/render-watch.mjs — https://docs.crazygames.com/requirements/gameplay/	crazygames-requirements-gameplay
 # research/channel-loop/ZERO-TESTS.md row 28 — Wix App Market (11): the security-test evidence the agreement requires (tick 4, 28.9.2026).
-https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice	wix-security-best-practice
+# paused (terms audit, 29.9.2026): wix.com — see TERMS_BARRED in scripts/render-watch.mjs — https://dev.wix.com/docs/build-apps/launch-your-app/legal-and-security/security-and-privacy-best-practice	wix-security-best-practice
 # research/channel-loop/ZERO-TESTS.md rows 29-32 — Superteam Earn's four ₪0 tests (RULING-2026-09-28-bounty-rail.md §6.3, 28.9.2026).
 # Rows 29 (T1, a weekly CI count with the brand agent's key) and 31 (T3, a code read via add_repo) are not page renders and are not listed here.
 # ZERO-TESTS.md row 30 — Superteam Earn (15), T2: the agent page.
@@ -306,9 +306,9 @@ https://superteam.fun/earn/agents/	superteam-earn-agents
 # ZERO-TESTS.md row 30 — Superteam Earn (15), T2: the Superteam Earn FAQ.
 https://docs.superteam.fun/the-superteam-handbook/community/faqs/superteam-earn-faq	superteam-earn-faq
 # ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Bits of Gold, for its onboarding requirements (REJECTED.md:615).
-https://www.bitsofgold.co.il/en	bitsofgold-home
+# paused (terms unread, 29.9.2026): bitsofgold.co.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://www.bitsofgold.co.il/en	bitsofgold-home
 # ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Bit2C, for its onboarding requirements.
-https://bit2c.co.il/	bit2c-home
+# paused (terms audit, 29.9.2026): bit2c.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://bit2c.co.il/	bit2c-home
 
 # --------------------------------------------------------------------------------
 # research/channel-loop/ZERO-TESTS.md rows 30, 32 and 33-58 — the breadth board's ₪0 tests
@@ -326,7 +326,7 @@ https://bit2c.co.il/	bit2c-home
 # ZERO-TESTS.md row 30 — Superteam Earn (15), T2: the terms of use (breadth board Q1 rank 2).
 https://superteam.fun/earn/terms-of-use.pdf	superteam-earn-terms-pdf
 # ZERO-TESTS.md row 33 — CrazyGames (6) and Wix App Market (11): Tipalti's payees FAQ; gates step 10.
-https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs	tipalti-payees-faq
+# paused (terms unread, 29.9.2026): tipalti.com is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs	tipalti-payees-faq
 # ZERO-TESTS.md row 34 — Firefox Add-ons (16): the add-on policies.
 https://extensionworkshop.com/documentation/publish/add-on-policies/	amo-add-on-policies
 # ZERO-TESTS.md row 35 — Firefox Add-ons (16): the newest cohort's daily users.
@@ -336,21 +336,21 @@ https://extensionworkshop.com/documentation/publish/add-on-policies/	amo-add-on-
 # ZERO-TESTS.md row 37 — Firefox Add-ons (16): the Hebrew language pack's audience.
 # paused (terms audit, 29.9.2026): addons.mozilla.org — see TERMS_BARRED in scripts/render-watch.mjs — https://addons.mozilla.org/api/v5/addons/addon/hebrew-il-language-pack/	amo-hebrew-langpack
 # ZERO-TESTS.md row 38 — Pebble (19): KiezelPay's FAQ; pre-registered kill on a no.
-https://kiezelpay.com/faq/	kiezelpay-faq
+# paused (terms unread, 29.9.2026): kiezelpay.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://kiezelpay.com/faq/	kiezelpay-faq
 # ZERO-TESTS.md row 39 — Pebble (19): whether the store lists and ranks new faces.
-https://apps.repebble.com/faces	repebble-faces
+# paused (terms unread, 29.9.2026): repebble.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://apps.repebble.com/faces	repebble-faces
 # ZERO-TESTS.md row 40 — Spreadshirt (17): shop-partner terms.
-https://www.spreadshirt.com/terms-and-conditions-for-shop-partner-C2376	spreadshirt-partner-terms
+# paused (terms audit, 29.9.2026): spreadshirt.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.spreadshirt.com/terms-and-conditions-for-shop-partner-C2376	spreadshirt-partner-terms
 # ZERO-TESTS.md row 41 — Spreadshirt (17): commission payment.
-https://help.spreadshirt.com/hc/en-us/articles/207905515-Payment-of-Your-Commission	spreadshirt-commission-payment
+# paused (terms audit, 29.9.2026): spreadshirt.com — see TERMS_BARRED in scripts/render-watch.mjs — https://help.spreadshirt.com/hc/en-us/articles/207905515-Payment-of-Your-Commission	spreadshirt-commission-payment
 # ZERO-TESTS.md row 42 — Spreadshirt (17): tax forms for non-US partners.
-https://help.spreadshirt.com/hc/en-us/articles/11874067093404-Tax-Form-Information-for-Non-US-Partners	spreadshirt-tax-forms-non-us
+# paused (terms audit, 29.9.2026): spreadshirt.com — see TERMS_BARRED in scripts/render-watch.mjs — https://help.spreadshirt.com/hc/en-us/articles/11874067093404-Tax-Form-Information-for-Non-US-Partners	spreadshirt-tax-forms-non-us
 # ZERO-TESTS.md row 43 — Spreadshirt (17): the 2024 partner taxation and payout process.
-https://www.spreadshirt.com/blog/2024/12/03/simplified-partner-taxation-and-payout-process/	spreadshirt-partner-taxation-2024
+# paused (terms audit, 29.9.2026): spreadshirt.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.spreadshirt.com/blog/2024/12/03/simplified-partner-taxation-and-payout-process/	spreadshirt-partner-taxation-2024
 # ZERO-TESTS.md row 44 — Spreadshirt (17): AI designs, dos and don'ts.
-https://www.spreadshirt.com/blog/2024/06/07/ai-and-designs-dos-donts/	spreadshirt-ai-designs-2024
+# paused (terms audit, 29.9.2026): spreadshirt.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.spreadshirt.com/blog/2024/06/07/ai-and-designs-dos-donts/	spreadshirt-ai-designs-2024
 # ZERO-TESTS.md row 45 — Spreadshirt (17): the developer site (any upload API).
-https://developer.spreadshirt.net/	spreadshirt-developer
+# paused (terms unread, 29.9.2026): spreadshirt.net is NO_TERMS in research/channel-loop/terms-verdicts.json — https://developer.spreadshirt.net/	spreadshirt-developer
 # ZERO-TESTS.md row 46 — PayPal Israel receiving (21): the user agreement.
 # paused (terms audit, 29.9.2026): paypal.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.paypal.com/il/legalhub/paypal/useragreement-full?locale.x=en_IL	paypal-il-user-agreement
 # ZERO-TESTS.md row 47 — PayPal Israel receiving (21): the user agreement at its second recorded address.
@@ -358,9 +358,9 @@ https://developer.spreadshirt.net/	spreadshirt-developer
 # ZERO-TESTS.md row 48 — PayPal Israel receiving (21): linking an Israeli bank account.
 # paused (terms audit, 29.9.2026): paypal.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.paypal.com/il/cshelp/article/how-do-i-link-a-bank-account-to-my-paypal-account-help183?locale.x=en_IL	paypal-il-link-bank
 # ZERO-TESTS.md row 49 — n8n paid templates (20): the template catalogue's ordering.
-https://api.n8n.io/api/templates/search?rows=100&page=1	n8n-templates-search
+# paused (terms unread, 29.9.2026): n8n.io is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://api.n8n.io/api/templates/search?rows=100&page=1	n8n-templates-search
 # ZERO-TESTS.md row 50 — n8n paid templates (20): the Creator Hub.
-https://n8n.io/creators/	n8n-creators
+# paused (terms unread, 29.9.2026): n8n.io is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://n8n.io/creators/	n8n-creators
 # ZERO-TESTS.md row 51 — Apify visibility (apify-actors, breadth board Q5): the store search with unrunnable Actors included …
 https://api.apify.com/v2/store?search=israel&limit=1000&includeUnrunnableActors=true	apify-store-israel-all
 # ZERO-TESTS.md row 51 — … and the same search as default Store-API search shows it; the difference is the hidden share.
@@ -375,32 +375,32 @@ https://eur-lex.europa.eu/eli/reg/2022/2065/oj	eu-dsa-2022-2065
 # ZERO-TESTS.md row 55 — Google Play Books (18), Batch B.
 # paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/books/partner/answer/4490848?hl=en	play-books-answer-4490848
 # ZERO-TESTS.md row 56 — Wix App Market (11), Batch B: Tipalti's payment-method coverage, US-ROW.
-https://help.tipalti.com/hc/en-us/articles/31314361313815-Payment-methods-coverage-US-ROW	tipalti-payment-methods-us-row
+# paused (terms unread, 29.9.2026): tipalti.com is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://help.tipalti.com/hc/en-us/articles/31314361313815-Payment-methods-coverage-US-ROW	tipalti-payment-methods-us-row
 # ZERO-TESTS.md row 57 — Wix App Market (11), Batch B: the App Market guidelines.
-https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines	wix-app-market-guidelines
+# paused (terms audit, 29.9.2026): wix.com — see TERMS_BARRED in scripts/render-watch.mjs — https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines	wix-app-market-guidelines
 # ZERO-TESTS.md row 58 — Wix App Market (11), Batch B: what the listing publishes about the company.
-https://dev.wix.com/docs/build-apps/launch-your-app/market-listing/add-your-company-info	wix-add-company-info
+# paused (terms audit, 29.9.2026): wix.com — see TERMS_BARRED in scripts/render-watch.mjs — https://dev.wix.com/docs/build-apps/launch-your-app/market-listing/add-your-company-info	wix-add-company-info
 # ---- NOT FETCHED YET: row 32's Privy docs root, activated by the main thread when T4 is dispatched. ----
 # ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Privy's docs root, for whether it sponsors fees on platform-created wallets.
 # https://docs.privy.io/	privy-docs-root  (moot since 28.9 tick 5: Superteam Earn killed on the name rule; the platform pays gas)
 # research/channel-loop/ZERO-TESTS.md row 59 — PayPal Israel (21): the help index, to find the verification article (tick 5, 28.9.2026).
 # paused (terms audit, 29.9.2026): paypal.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.paypal.com/il/cshelp/personal	paypal-il-help-index
 # research/channel-loop/ZERO-TESTS.md row 60 — n8n paid templates (20): linked from a tick-5 capture (28.9.2026).
-https://n8n.notion.site/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f	n8n-creator-hub-notion
+# paused (terms audit, 29.9.2026): notion.site — see TERMS_BARRED in scripts/render-watch.mjs — https://n8n.notion.site/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f	n8n-creator-hub-notion
 # research/channel-loop/ZERO-TESTS.md row 61 — Superteam T4 / Israeli off-ramp: linked from a tick-5 capture (28.9.2026).
-https://bit2c.co.il/home/faq	bit2c-faq
+# paused (terms audit, 29.9.2026): bit2c.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://bit2c.co.il/home/faq	bit2c-faq
 # research/channel-loop/ZERO-TESTS.md row 62 — Firefox Add-ons (16): the reopen check on G4, same endpoint as rows 35-36 (tick 5, 28.9.2026).
 # paused (terms audit, 29.9.2026): addons.mozilla.org — see TERMS_BARRED in scripts/render-watch.mjs — https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=invoice&page_size=50	amo-search-invoice
 # research/channel-loop/ZERO-TESTS.md row 63 — Spreadshirt (17): a second route, seen in tick-6 search results (28.9.2026).
-https://developer.spreadshirt.net/bin/view/API/Spreadshirt%20Public%20Shop%20API%20Documentation/API%20REST%20Resources/Design%20Details/	spreadshirt-api-design-details
+# paused (terms unread, 29.9.2026): spreadshirt.net is NO_TERMS in research/channel-loop/terms-verdicts.json — https://developer.spreadshirt.net/bin/view/API/Spreadshirt%20Public%20Shop%20API%20Documentation/API%20REST%20Resources/Design%20Details/	spreadshirt-api-design-details
 # research/channel-loop/ZERO-TESTS.md row 64 — Spreadshirt (17): a second route, seen in tick-6 search results (28.9.2026).
-https://www.spreadshop.com/blog/2018/01/30/new-upload-guidelines/	spreadshop-upload-guidelines-2018
+# paused (terms audit, 29.9.2026): spreadshop.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.spreadshop.com/blog/2018/01/30/new-upload-guidelines/	spreadshop-upload-guidelines-2018
 # research/channel-loop/ZERO-TESTS.md row 65 — Wix App Market (11): the security-and-privacy submission step, linked from a tick-6 capture (28.9.2026).
-https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/add-security-and-privacy-information	wix-security-privacy-info
+# paused (terms audit, 29.9.2026): wix.com — see TERMS_BARRED in scripts/render-watch.mjs — https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/add-security-and-privacy-information	wix-security-privacy-info
 # research/channel-loop/ZERO-TESTS.md row 66 — PayPal Israel (21): HELP534, linked from a tick-6 capture (28.9.2026).
 # paused (terms audit, 29.9.2026): paypal.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.paypal.com/il/cshelp/article/%D7%9E%D7%93%D7%95%D7%A2-%D7%97%D7%A9%D7%91%D7%95%D7%9F-%D7%94--paypal-%D7%A9%D7%9C%D7%99-%D7%94%D7%95%D7%92%D7%91%D7%9C-help534	paypal-il-help534-limited
 # research/channel-loop/ZERO-TESTS.md row 67 — n8n paid templates (20): the verified-creator requirements thread, from one tick-6 search (28.9.2026).
-https://community.n8n.io/t/requirements-for-becoming-a-verified-creator/134401	n8n-verified-creator-requirements
+# paused (terms audit, 29.9.2026): community.n8n.io — see TERMS_BARRED in scripts/render-watch.mjs — https://community.n8n.io/t/requirements-for-becoming-a-verified-creator/134401	n8n-verified-creator-requirements
 # research/channel-loop/ZERO-TESTS.md row 68 — Indiebook (22), replenish pass (28.9.2026).
 # paused (terms audit, 29.9.2026): indiebook.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://indiebook.co.il/	indiebook-home
 # research/channel-loop/ZERO-TESTS.md row 69 — Indiebook (22), replenish pass (28.9.2026).
@@ -426,13 +426,13 @@ https://community.n8n.io/t/requirements-for-becoming-a-verified-creator/134401	n
 # research/channel-loop/ZERO-TESTS.md row 79 — Facer (23), replenish pass (28.9.2026).
 # paused (terms audit, 29.9.2026): facer.io — see TERMS_BARRED in scripts/render-watch.mjs — https://news.facer.io/celebrating-1-million-in-designer-payouts-and-launching-our-first-facer-creator-partner-program-85bd2e11baff?gi=5c49d09ba159	facer-payouts-news
 # research/channel-loop/ZERO-TESTS.md row 80 — Y8 (14), replenish pass (28.9.2026).
-https://www.y8.com/revshare	y8-revshare
+# paused (terms unread, 29.9.2026): y8.com is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://www.y8.com/revshare	y8-revshare
 # research/channel-loop/ZERO-TESTS.md row 81 — Y8 (14), replenish pass (28.9.2026).
-https://www.y8.com/studios	y8-studios
+# paused (terms unread, 29.9.2026): y8.com is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://www.y8.com/studios	y8-studios
 # research/channel-loop/ZERO-TESTS.md row 82 — Y8 (14), replenish pass (28.9.2026).
-https://docs.y8.com/sdk/intro/	y8-sdk-intro
+# paused (terms unread, 29.9.2026): y8.com is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://docs.y8.com/sdk/intro/	y8-sdk-intro
 # research/channel-loop/ZERO-TESTS.md row 83 — Y8 (14), replenish pass (28.9.2026).
-https://www.y8.com/new/games	y8-new-games
+# paused (terms unread, 29.9.2026): y8.com is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://www.y8.com/new/games	y8-new-games
 # research/channel-loop/ZERO-TESTS.md row 84 — GameDistribution (14), replenish pass (28.9.2026).
 https://static.gamedistribution.com/terms/developer.html	gamedistribution-developer-terms
 # research/channel-loop/ZERO-TESTS.md row 85 — GameDistribution (14), replenish pass (28.9.2026).
@@ -442,21 +442,21 @@ https://gamedistribution.com/developers/faq/getting-started/setting-up-and-recei
 # research/channel-loop/ZERO-TESTS.md row 87 — GameDistribution (14), replenish pass (28.9.2026).
 https://gamedistribution.com/developers/partnership/	gamedistribution-partnership
 # research/channel-loop/ZERO-TESTS.md row 88 — Teachers Pay Teachers (kill confirmation), replenish pass (28.9.2026).
-https://help.teacherspayteachers.com/hc/en-us/articles/360044219891-Seller-Fees-and-Payout-Rates	tpt-seller-fees
+# paused (terms audit, 29.9.2026): teacherspayteachers.com — see TERMS_BARRED in scripts/render-watch.mjs — https://help.teacherspayteachers.com/hc/en-us/articles/360044219891-Seller-Fees-and-Payout-Rates	tpt-seller-fees
 # research/channel-loop/ZERO-TESTS.md row 89 — Wavedash (unsettled), replenish pass (28.9.2026).
-https://docs.wavedash.com/llms-full.txt	wavedash-llms-full
+# paused (terms unread, 29.9.2026): wavedash.com is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://docs.wavedash.com/llms-full.txt	wavedash-llms-full
 # research/channel-loop/ZERO-TESTS.md row 90 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
-https://ganim-mall.co.il	ganim-mall-home
+# paused (terms unread, 29.9.2026): ganim-mall.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://ganim-mall.co.il	ganim-mall-home
 # research/channel-loop/ZERO-TESTS.md row 91 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
-https://www.haganenet.co.il	haganenet-home
+# paused (terms unread, 29.9.2026): haganenet.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.haganenet.co.il	haganenet-home
 # research/channel-loop/ZERO-TESTS.md row 92 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
 https://worksheets4kids.co.il	worksheets4kids-home
 # research/channel-loop/ZERO-TESTS.md row 93 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
 https://lomdiml.co.il	lomdiml-home
 # research/channel-loop/ZERO-TESTS.md row 94 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
-https://lemidatova.com	lemidatova-home
+# paused (terms unread, 29.9.2026): lemidatova.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://lemidatova.com	lemidatova-home
 # research/channel-loop/ZERO-TESTS.md row 95 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
-https://lomdimhofshi.co.il	lomdimhofshi-home
+# paused (terms audit, 29.9.2026): lomdimhofshi.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://lomdimhofshi.co.il	lomdimhofshi-home
 # research/channel-loop/ZERO-TESTS.md row 96 — Indiebook (22): the author page, linked from a tick-7 capture (28.9.2026).
 # paused (terms audit, 29.9.2026): indiebook.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://indiebook.co.il/41/%D7%90%D7%99%D7%9A-%D7%9C%D7%9E%D7%9B%D7%95%D7%A8-%D7%A1%D7%A4%D7%A8-%D7%91%D7%90%D7%AA%D7%A8	indiebook-sell-a-book
 # research/channel-loop/ZERO-TESTS.md row 97 — Indiebook (22): the site terms, linked from a tick-7 capture (28.9.2026).
@@ -464,59 +464,59 @@ https://lomdimhofshi.co.il	lomdimhofshi-home
 # research/channel-loop/ZERO-TESTS.md row 98 — Facer (23): the template cache, linked from a tick-7 capture (28.9.2026).
 # paused (terms audit, 29.9.2026): facer.io — see TERMS_BARRED in scripts/render-watch.mjs — https://www.facer.io/js/templates.min.js?t=1790275483051	facer-templates-js
 # research/channel-loop/ZERO-TESTS.md row 99 — Spreadshirt (17): legal information, linked from a tick-7 capture (28.9.2026).
-https://www.spreadshop.com/legal-information/	spreadshop-legal-information
+# paused (terms audit, 29.9.2026): spreadshop.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.spreadshop.com/legal-information/	spreadshop-legal-information
 # research/channel-loop/ZERO-TESTS.md row 100 — Wix App Market (11): the submission step, linked from a tick-7 capture (28.9.2026).
-https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/submit-your-first-app-version	wix-submit-first-app-version
+# paused (terms audit, 29.9.2026): wix.com — see TERMS_BARRED in scripts/render-watch.mjs — https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/submit-your-first-app-version	wix-submit-first-app-version
 # research/channel-loop/ZERO-TESTS.md row 101 — Y8 (14): the studio docs, linked from a tick-7 capture (28.9.2026).
-https://docs.y8.com/studio/studio/	y8-docs-studio
+# paused (terms unread, 29.9.2026): y8.com is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://docs.y8.com/studio/studio/	y8-docs-studio
 # research/channel-loop/ZERO-TESTS.md row 102 — GameDistribution (14): the SDK wiki, linked from a tick-7 capture (28.9.2026).
 https://github.com/GameDistribution/GD-HTML5/wiki/SDK-Implementation/	gamedistribution-sdk-implementation
 # research/channel-loop/ZERO-TESTS.md row 103 — PayPal Israel (21): the help topics, linked from a tick-7 capture (28.9.2026).
 # paused (terms audit, 29.9.2026): paypal.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.paypal.com/il/cshelp/browse-topics	paypal-il-browse-topics
 # research/channel-loop/ZERO-TESTS.md row 104 — n8n paid templates (20): a 2026 verified-creator thread, linked from a tick-7 capture (28.9.2026).
-https://community.n8n.io/t/requesting-feedback-for-verified-creator-status-on-my-published-n8n-workflows/269435	n8n-verified-creator-feedback-2026
+# paused (terms audit, 29.9.2026): community.n8n.io — see TERMS_BARRED in scripts/render-watch.mjs — https://community.n8n.io/t/requesting-feedback-for-verified-creator-status-on-my-published-n8n-workflows/269435	n8n-verified-creator-feedback-2026
 # research/channel-loop/ZERO-TESTS.md row 105 — Y8 (14): the studio overview, linked from a tick-8 capture (28.9.2026).
-https://docs.y8.com/studio/overview/	y8-docs-overview
+# paused (terms unread, 29.9.2026): y8.com is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://docs.y8.com/studio/overview/	y8-docs-overview
 # research/channel-loop/ZERO-TESTS.md row 106 — GameDistribution (14): the wiki FAQ, linked from a tick-8 capture (28.9.2026).
 https://github.com/GameDistribution/GD-HTML5/wiki/F.A.Q.	gamedistribution-wiki-faq
 # research/channel-loop/ZERO-TESTS.md row 107 — n8n paid templates (20): the answered verification thread, linked from a tick-8 capture (28.9.2026).
-https://community.n8n.io/t/creator-profile-templates-verification/126583	n8n-creator-profile-verification
+# paused (terms audit, 29.9.2026): community.n8n.io — see TERMS_BARRED in scripts/render-watch.mjs — https://community.n8n.io/t/creator-profile-templates-verification/126583	n8n-creator-profile-verification
 # research/channel-loop/ZERO-TESTS.md row 108 — n8n paid templates (20): a thread with an n8n team reply, linked from a tick-8 capture (28.9.2026).
-https://community.n8n.io/t/verifies-creator/129722	n8n-verifies-creator
+# paused (terms audit, 29.9.2026): community.n8n.io — see TERMS_BARRED in scripts/render-watch.mjs — https://community.n8n.io/t/verifies-creator/129722	n8n-verifies-creator
 # research/channel-loop/ZERO-TESTS.md row 109 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://www.streetlib.com/legalpolicy	streetlib-com-legalpolicy
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.streetlib.com/legalpolicy	streetlib-com-legalpolicy
 # research/channel-loop/ZERO-TESTS.md row 110 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://help.streetlib.com/article/1523-distribution-plans	help-streetlib-com-article-1523-distribution-plans
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/article/1523-distribution-plans	help-streetlib-com-article-1523-distribution-plans
 # research/channel-loop/ZERO-TESTS.md row 111 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://www.streetlib.com/pricing	streetlib-com-pricing
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.streetlib.com/pricing	streetlib-com-pricing
 # research/channel-loop/ZERO-TESTS.md row 112 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://help.streetlib.com/article/677-earnings	help-streetlib-com-article-677-earnings
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/article/677-earnings	help-streetlib-com-article-677-earnings
 # research/channel-loop/ZERO-TESTS.md row 113 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://help.streetlib.com/article/421-streetlib-content-integrity-guidelines	help-streetlib-com-article-421-streetlib-content-integrity-g
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/article/421-streetlib-content-integrity-guidelines	help-streetlib-com-article-421-streetlib-content-integrity-g
 # research/channel-loop/ZERO-TESTS.md row 114 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://help.streetlib.com/category/613-content-policy	help-streetlib-com-category-613-content-policy
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/category/613-content-policy	help-streetlib-com-category-613-content-policy
 # research/channel-loop/ZERO-TESTS.md row 115 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://help.streetlib.com/article/380-publish-an-ebook	help-streetlib-com-article-380-publish-an-ebook
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/article/380-publish-an-ebook	help-streetlib-com-article-380-publish-an-ebook
 # research/channel-loop/ZERO-TESTS.md row 116 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://www.streetlib.com/distribution-partners	streetlib-com-distribution-partners
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.streetlib.com/distribution-partners	streetlib-com-distribution-partners
 # research/channel-loop/ZERO-TESTS.md row 117 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://www.zazzle.com/terms/user_agreement	zazzle-com-terms-user-agreement
+# paused (terms unread, 29.9.2026): zazzle.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.zazzle.com/terms/user_agreement	zazzle-com-terms-user-agreement
 # research/channel-loop/ZERO-TESTS.md row 118 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://www.zazzle.com/terms/updated_creator_license_agreement	zazzle-com-terms-updated-creator-license-agreement
+# paused (terms unread, 29.9.2026): zazzle.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.zazzle.com/terms/updated_creator_license_agreement	zazzle-com-terms-updated-creator-license-agreement
 # research/channel-loop/ZERO-TESTS.md row 119 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://www.zazzle.com/assets/graphics/z5/zmisc/ambassador_program/Zazzle_Creator_FAQs.pdf	zazzle-com-assets-graphics-z5-zmisc-ambassador-program-zazzl
+# paused (terms unread, 29.9.2026): zazzle.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.zazzle.com/assets/graphics/z5/zmisc/ambassador_program/Zazzle_Creator_FAQs.pdf	zazzle-com-assets-graphics-z5-zmisc-ambassador-program-zazzl
 # research/channel-loop/ZERO-TESTS.md row 120 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://www.zazzle.com/sell/developers	zazzle-com-sell-developers
+# paused (terms unread, 29.9.2026): zazzle.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.zazzle.com/sell/developers	zazzle-com-sell-developers
 # research/channel-loop/ZERO-TESTS.md row 121 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://help.zazzle.com/hc/en-us/sections/360005063194-Create-A-Product-API	help-zazzle-com-hc-en-us-sections-360005063194-create-a-prod
+# paused (terms unread, 29.9.2026): zazzle.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.zazzle.com/hc/en-us/sections/360005063194-Create-A-Product-API	help-zazzle-com-hc-en-us-sections-360005063194-create-a-prod
 # research/channel-loop/ZERO-TESTS.md row 122 — Displate (new row 26), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
 https://displate.com/about-faq	displate-com-about-faq
 # research/channel-loop/ZERO-TESTS.md row 123 — Displate (new row 26), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
 https://displate.com/about-copyright	displate-com-about-copyright
 # research/channel-loop/ZERO-TESTS.md row 124 — Society6 (new row 27), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://help.society6.com/en-US/updates-to-society6-artists-account-effective-march-18-2025-1261598	help-society6-com-en-us-updates-to-society6-artists-account
+# paused (terms unread, 29.9.2026): society6.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.society6.com/en-US/updates-to-society6-artists-account-effective-march-18-2025-1261598	help-society6-com-en-us-updates-to-society6-artists-account
 # research/channel-loop/ZERO-TESTS.md row 125 — Society6 (new row 27), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://help.society6.com/en-US/updates-to-pricing-and-artist-earnings-effective-march-18-2025-1261599	help-society6-com-en-us-updates-to-pricing-and-artist-earnin
+# paused (terms unread, 29.9.2026): society6.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.society6.com/en-US/updates-to-pricing-and-artist-earnings-effective-march-18-2025-1261599	help-society6-com-en-us-updates-to-pricing-and-artist-earnin
 # research/channel-loop/ZERO-TESTS.md row 126 — Teach Simple (unsettled), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
 # paused (terms audit, 29.9.2026): teachsimple.com — see TERMS_BARRED in scripts/render-watch.mjs — https://teachsimple.com/contributor-terms-of-service	teachsimple-com-contributor-terms-of-service
 # research/channel-loop/ZERO-TESTS.md row 127 — Teach Simple (unsettled), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
@@ -524,41 +524,41 @@ https://help.society6.com/en-US/updates-to-pricing-and-artist-earnings-effective
 # research/channel-loop/ZERO-TESTS.md row 128 — Smashwords / Draft2Digital (scout-grade death, confirmation), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
 https://draft2digital.com/terms-of-service/	draft2digital-com-terms-of-service
 # research/channel-loop/ZERO-TESTS.md row 129 — StreetLib (24): the platform-changeover FAQ, linked from a tick-9 capture (28.9.2026).
-https://help.streetlib.com/collection/1492-faq-on-platform-changeover	streetlib-faq-platform-changeover
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/collection/1492-faq-on-platform-changeover	streetlib-faq-platform-changeover
 # research/channel-loop/ZERO-TESTS.md row 130 — Teach Simple (28): the terms of use, linked from a tick-9 capture (28.9.2026).
 # paused (terms audit, 29.9.2026): teachsimple.com — see TERMS_BARRED in scripts/render-watch.mjs — https://teachsimple.com/terms-of-service	teachsimple-terms-of-service
 # research/channel-loop/ZERO-TESTS.md row 131 — Displate (26): the terms, linked from a tick-9 capture (28.9.2026).
 https://displate.com/about-regulations	displate-about-regulations
 # research/channel-loop/ZERO-TESTS.md row 132 — StreetLib (24), after row 129 (28.9.2026).
-https://www.streetlib.it/prezzi-servizi	streetlib-it-prezzi-servizi
+# paused (terms unread, 29.9.2026): streetlib.it is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.streetlib.it/prezzi-servizi	streetlib-it-prezzi-servizi
 # research/channel-loop/ZERO-TESTS.md row 133 — StreetLib (24), after row 129 (28.9.2026).
-https://help.streetlib.com/category/97-payments	help-streetlib-com-category-97-payments
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/category/97-payments	help-streetlib-com-category-97-payments
 # research/channel-loop/ZERO-TESTS.md row 134 — Displate (26), after row 131 (28.9.2026).
 https://displate.com/about-privacy	displate-com-about-privacy
 # research/channel-loop/ZERO-TESTS.md row 135 — Teach Simple (28), after row 130 (28.9.2026).
 # paused (terms audit, 29.9.2026): teachsimple.com — see TERMS_BARRED in scripts/render-watch.mjs — https://teachsimple.com/license-agreement	teachsimple-com-license-agreement
 # research/channel-loop/ZERO-TESTS.md row 136 — StreetLib (24), after row 133 (28.9.2026).
-https://help.streetlib.com/article/670-getting-paid	help-streetlib-com-article-670-getting-paid
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/article/670-getting-paid	help-streetlib-com-article-670-getting-paid
 # research/channel-loop/ZERO-TESTS.md row 137 — StreetLib (24), after row 133 (28.9.2026).
-https://help.streetlib.com/article/699-billing-profile-and-payment-method	help-streetlib-com-article-699-billing-profile
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/article/699-billing-profile-and-payment-method	help-streetlib-com-article-699-billing-profile
 # research/channel-loop/ZERO-TESTS.md row 138 — StreetLib (24), after row 133 (28.9.2026).
-https://help.streetlib.com/article/433-completing-our-tax-information-interview	help-streetlib-com-article-433-tax-interview
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/article/433-completing-our-tax-information-interview	help-streetlib-com-article-433-tax-interview
 # research/channel-loop/ZERO-TESTS.md row 139 — StreetLib (24), after row 133 (28.9.2026).
-https://help.streetlib.com/category/72-create-and-manage-your-streetlib-account	help-streetlib-com-category-72-account
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/category/72-create-and-manage-your-streetlib-account	help-streetlib-com-category-72-account
 # research/channel-loop/ZERO-TESTS.md row 140 — Displate (26), after row 134 (28.9.2026).
 https://assets-static-prod.displate.com/next-assets/_next/static/chunks/pages/about-privacy-8cabb3e3e05788f0.js	displate-about-privacy-chunk
 # research/channel-loop/ZERO-TESTS.md row 141 — StreetLib (24), after row 139 (28.9.2026).
-https://help.streetlib.com/article/706-what-you-can-do-with-streetlib	help-streetlib-com-article-706-what-you-can-do
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/article/706-what-you-can-do-with-streetlib	help-streetlib-com-article-706-what-you-can-do
 # research/channel-loop/ZERO-TESTS.md row 142 — StreetLib (24), after row 139 (28.9.2026).
-https://help.streetlib.com/article/700-the-onboarding-process	help-streetlib-com-article-700-onboarding
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/article/700-the-onboarding-process	help-streetlib-com-article-700-onboarding
 # research/channel-loop/ZERO-TESTS.md row 143 — StreetLib (24), after row 139 (28.9.2026).
-https://help.streetlib.com/article/427-distribution-agreement	help-streetlib-com-article-427-distribution-agreement
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/article/427-distribution-agreement	help-streetlib-com-article-427-distribution-agreement
 # research/channel-loop/ZERO-TESTS.md row 144 — StreetLib (24), after row 143 (29.9.2026).
-https://streetlib-agreements.s3.eu-west-1.amazonaws.com/StreetLib_SL_IT_Hub_20250130_en.pdf	streetlib-hub-agreement-20250130-en
+# paused (terms unread, 29.9.2026): amazonaws.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://streetlib-agreements.s3.eu-west-1.amazonaws.com/StreetLib_SL_IT_Hub_20250130_en.pdf	streetlib-hub-agreement-20250130-en
 # research/channel-loop/ZERO-TESTS.md row 145 — StreetLib (24), after row 143 (29.9.2026).
-https://help.streetlib.com/category/95-publishing-ebooks	help-streetlib-com-category-95-publishing-ebooks
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/category/95-publishing-ebooks	help-streetlib-com-category-95-publishing-ebooks
 # research/channel-loop/ZERO-TESTS.md row 146 — StreetLib (24), after row 143 (29.9.2026).
-https://help.streetlib.com/article/425-create-modify-delete-account	help-streetlib-com-article-425-account
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.streetlib.com/article/425-create-modify-delete-account	help-streetlib-com-article-425-account
 # research/channel-loop/ZERO-TESTS.md row 147 — Topcoder (12), after the 29.9 GitHub read (29.9.2026).
 # retired: a Salesforce JavaScript shell with no article text; the runner cannot render it (tick 15) — https://support.trolley.com/s/article/Identity-Verification	trolley-identity-verification
 # research/channel-loop/ZERO-TESTS.md row 148 — Topcoder (12), after the 29.9 GitHub read (29.9.2026).
@@ -566,55 +566,55 @@ https://help.streetlib.com/article/425-create-modify-delete-account	help-streetl
 # research/channel-loop/ZERO-TESTS.md row 149 — Topcoder (12), after the 29.9 GitHub read (29.9.2026).
 # retired: HTTP 404 on 29.9 (tick 15) — https://www.topcoder.com/community/how-it-works/terms/	topcoder-terms-of-use
 # research/channel-loop/ZERO-TESTS.md row 150 — Astro themes (7), after the 29.9 GitHub read (29.9.2026).
-https://hackmd.io/@sarah11918/BJMjDSMDZl	astro-themes-guidelines-hackmd
+# paused (terms audit, 29.9.2026): hackmd.io — see TERMS_BARRED in scripts/render-watch.mjs — https://hackmd.io/@sarah11918/BJMjDSMDZl	astro-themes-guidelines-hackmd
 # research/channel-loop/ZERO-TESTS.md row 151 — Astro themes (7), after the 29.9 GitHub read (29.9.2026).
 # retired: did not render (tick 15) — https://hackmd.io/@sarah11918/categories/astro-themes	astro-themes-categories-hackmd
 # research/channel-loop/ZERO-TESTS.md row 152 — Astro themes (7), after the 29.9 GitHub read (29.9.2026).
 # paused (terms audit, 29.9.2026): astro.build — see TERMS_BARRED in scripts/render-watch.mjs — https://portal.astro.build/themes/submit	astro-portal-themes-submit
 # research/channel-loop/ZERO-TESTS.md row 153 — loop board 29.9 (e)3: kolzchut's exempt-dealer page (URL from the 7.9 SERP, not guessed; no site search before kolzchut's terms allow it), the documents an exempt dealer issues and whether software may issue them (29.9.2026).
-https://www.kolzchut.org.il/he/%D7%A2%D7%95%D7%A1%D7%A7_%D7%A4%D7%98%D7%95%D7%A8	kolzchut-osek-patur
+# paused (terms unread, 29.9.2026): kolzchut.org.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.kolzchut.org.il/he/%D7%A2%D7%95%D7%A1%D7%A7_%D7%A4%D7%98%D7%95%D7%A8	kolzchut-osek-patur
 # research/channel-loop/ZERO-TESTS.md row 154 — lines ruling 29.9 (h): consumer protection law 14C(d), refunds on digital content (29.9.2026).
 # retired: court-routing regulations, not the consumer-protection law (tick 17; the law is law00/70305.htm) — https://www.nevo.co.il/law_html/law01/055_001.htm	nevo-consumer-protection-law
 # research/channel-loop/ZERO-TESTS.md row 155 — lines ruling 29.9 (h): Gumroad help index, to find the refund-policy article's URL (29.9.2026).
 # paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help	gumroad-help-center-index
 # research/channel-loop/ZERO-TESTS.md row 156 — lines ruling 29.9 (a): Green Invoice pricing, logo on a receipt in a free tier (29.9.2026).
-https://www.greeninvoice.co.il/pricing/	greeninvoice-pricing
+# paused (terms unread, 29.9.2026): greeninvoice.co.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://www.greeninvoice.co.il/pricing/	greeninvoice-pricing
 # research/channel-loop/ZERO-TESTS.md row 157 — lines ruling 29.9 (a): iCount plans, logo on a receipt in a free tier (29.9.2026).
-https://www.icount.co.il/plans/	icount-plans
+# paused (terms audit, 29.9.2026): icount.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://www.icount.co.il/plans/	icount-plans
 # research/channel-loop/ZERO-TESTS.md row 158 — lines ruling 29.9 (a): YPAY FAQ (URL unverified), logo on a free receipt (29.9.2026).
-https://ypay.co.il/front/faq	ypay-faq
+# paused (terms unread, 29.9.2026): ypay.co.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://ypay.co.il/front/faq	ypay-faq
 # research/channel-loop/ZERO-TESTS.md row 159 — lines ruling 29.9 (a): Invoice4u price list (URL unverified), logo on a free receipt (29.9.2026).
 https://www.invoice4u.co.il/pricelist-invoice/	invoice4u-pricelist
 # research/channel-loop/ZERO-TESTS.md row 160 — lines ruling 29.9 (h): the consumer-protection law at nevo, id 70305 (research/measurements/refund-law-il.md) (29.9.2026).
-https://www.nevo.co.il/law_html/law00/70305.htm	nevo-consumer-protection-law-70305
+# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law00/70305.htm	nevo-consumer-protection-law-70305
 # research/channel-loop/ZERO-TESTS.md row 161 — lines ruling 29.9 (h): cancellation regulations, nevo id 84257 (29.9.2026).
-https://www.nevo.co.il/law_html/law00/84257.htm	nevo-cancellation-regulations
+# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law00/84257.htm	nevo-cancellation-regulations
 # research/channel-loop/ZERO-TESTS.md row 162 — lines ruling 29.9 (h): Gumroad help article 51, URL from gumroad-help-center-index.html:51 (29.9.2026).
 # paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/51-what-is-gumroads-refund-policy	gumroad-help-refund-policy
 # research/channel-loop/ZERO-TESTS.md row 163 — lines ruling 29.9 (h): Gumroad help article 335 (29.9.2026).
 # paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/335-custom-refund-policy	gumroad-help-custom-refund-policy
 # research/channel-loop/ZERO-TESTS.md row 164 — loop ruling 29.9 (e)3: הוראות ניהול פנקסי חשבונות (research/measurements/osek-patur-documents.md) (29.9.2026).
-https://www.nevo.co.il/law_html/law01/255_179.htm	nevo-books-instructions
+# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/255_179.htm	nevo-books-instructions
 # research/channel-loop/ZERO-TESTS.md row 165 — loop ruling 29.9 (e)3: חוק חתימה אלקטרונית (29.9.2026).
-https://www.nevo.co.il/law_html/law01/159m1_001.htm	nevo-electronic-signature-law
+# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/159m1_001.htm	nevo-electronic-signature-law
 # research/channel-loop/ZERO-TESTS.md row 166 — Topcoder (12): Trolley's terms, URL snippet grade (research/measurements/topcoder.md, 29.9 tick 17) (29.9.2026).
 https://trolley.com/terms-of-service/	trolley-terms-of-service
 # research/channel-loop/ZERO-TESTS.md row 167 — Topcoder (12): Trolley's IDV blog post, plain (29.9.2026).
 https://trolley.com/blog/trolley-trust-idv-tool/	trolley-trust-idv-tool
 # research/channel-loop/ZERO-TESTS.md row 168 — lines ruling 29.9 (a): YPAY shop (israeli-invoicing-free-tiers.md) (29.9.2026).
-https://ypay.co.il/front/shop/index	ypay-shop
+# paused (terms unread, 29.9.2026): ypay.co.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://ypay.co.il/front/shop/index	ypay-shop
 # research/channel-loop/ZERO-TESTS.md row 169 — lines ruling 29.9 (a): YPAY knowledge centre (29.9.2026).
-https://ypay.co.il/front/articles	ypay-articles
+# paused (terms unread, 29.9.2026): ypay.co.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://ypay.co.il/front/articles	ypay-articles
 # research/channel-loop/ZERO-TESTS.md row 170 — lines ruling 29.9 (a): Quickly Invoice (snippet PASS) (29.9.2026).
-https://quicklyinvoice.com/	quicklyinvoice-home
+# paused (terms unread, 29.9.2026): quicklyinvoice.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://quicklyinvoice.com/	quicklyinvoice-home
 # research/channel-loop/ZERO-TESTS.md row 171 — lines ruling 29.9 (a): SUMIT (29.9.2026).
-https://www.sumit.co.il/invoices	sumit-invoices
+# paused (terms unread, 29.9.2026): sumit.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.sumit.co.il/invoices	sumit-invoices
 # research/channel-loop/ZERO-TESTS.md row 172 — lines ruling 29.9 (a): MyBooks (29.9.2026).
-https://www.mybooks.co.il/free_invoicing_software	mybooks-free-invoicing
+# paused (terms unread, 29.9.2026): mybooks.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.mybooks.co.il/free_invoicing_software	mybooks-free-invoicing
 # research/channel-loop/ZERO-TESTS.md row 173 — lines ruling 29.9 (a): digital-invoice.co.il (29.9.2026).
-https://digital-invoice.co.il/	digital-invoice-home
+# paused (terms unread, 29.9.2026): digital-invoice.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://digital-invoice.co.il/	digital-invoice-home
 # research/channel-loop/ZERO-TESTS.md row 174 — tick 18 read (refund-law-il.md): the Computers Law, nevo id 72393 (29.9.2026).
-https://www.nevo.co.il/law_html/law00/72393.htm	nevo-computers-law
+# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law00/72393.htm	nevo-computers-law
 # research/channel-loop/ZERO-TESTS.md row 175 — tick 18 read: Gumroad's terms (29.9.2026).
 # paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — http://www.gumroad.com/terms	gumroad-terms
 # research/channel-loop/ZERO-TESTS.md row 176 — tick 18 read: Gumroad help article 190 (29.9.2026).
@@ -622,9 +622,9 @@ https://www.nevo.co.il/law_html/law00/72393.htm	nevo-computers-law
 # research/channel-loop/ZERO-TESTS.md row 177 — tick 18 read: Gumroad help article 47 (29.9.2026).
 # paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/47-how-to-refund-a-customer	gumroad-help-issue-refund
 # research/channel-loop/ZERO-TESTS.md row 178 — tick 18 read (osek-patur-documents.md): the VAT law (29.9.2026).
-https://www.nevo.co.il/law_html/law01/271_001.htm	nevo-vat-law
+# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/271_001.htm	nevo-vat-law
 # research/channel-loop/ZERO-TESTS.md row 179 — tick 18 read: the VAT bookkeeping regulations (29.9.2026).
-https://www.nevo.co.il/law_html/law01/271_019.htm	nevo-vat-bookkeeping-regs
+# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/271_019.htm	nevo-vat-bookkeeping-regs
 # research/channel-loop/ZERO-TESTS.md row 180 — lines ruling (h): Gumroad help article 204, URL from gumroad-help-center-index.html:51 (tick 19, refund-law-il.md) (29.9.2026).
 # paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/204-get-to-know-your-gumroad-receipt	gumroad-help-receipt
 # research/channel-loop/ZERO-TESTS.md row 181 — lines ruling (h): Gumroad help article 352 (tick 19) (29.9.2026).
@@ -640,7 +640,7 @@ https://www.nevo.co.il/law_html/law01/271_019.htm	nevo-vat-bookkeeping-regs
 # research/channel-loop/ZERO-TESTS.md row 186 — lines ruling (h): Gumroad's API page (tick 19; research/measurements/gumroad-license-decision.md:25) (29.9.2026).
 # paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/api	gumroad-api-docs
 # research/channel-loop/ZERO-TESTS.md row 187 — loop ruling (e)3: VAT registration regulations, URL from the lawsofisrael nevo listing (tick 19, osek-patur-documents.md) (29.9.2026).
-https://www.nevo.co.il/law_html/law01/271_004.htm	nevo-vat-registration-regs
+# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/271_004.htm	nevo-vat-registration-regs
 # research/channel-loop/ZERO-TESTS.md row 188 — Mozilla (8): GitHub Actions billing docs (tick 19, research/measurements/actions-spending-limit.md) (29.9.2026).
 https://docs.github.com/en/billing/concepts/product-billing/github-actions	gh-docs-actions-billing
 # research/channel-loop/ZERO-TESTS.md row 189 — Mozilla (8): REST billing usage docs (tick 19) (29.9.2026).
@@ -648,52 +648,68 @@ https://docs.github.com/en/rest/billing/usage?apiVersion=2022-11-28	gh-docs-rest
 # research/channel-loop/ZERO-TESTS.md row 190 — Mozilla (8): REST billing budgets docs (tick 19) (29.9.2026).
 https://docs.github.com/en/rest/billing/budgets?apiVersion=2022-11-28	gh-docs-rest-billing-budgets
 # research/channel-loop/ZERO-TESTS.md row 191 — terms audit (tick 20): streetlib's terms page, URL from research/breadth/REPLENISH-2026-09-28-2.md:522; fetched once so its terms can be read (29.9.2026).
-https://community.streetlib.com/terms	terms-streetlib-community
+# paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://community.streetlib.com/terms	terms-streetlib-community
 # research/channel-loop/ZERO-TESTS.md row 192 — terms audit (tick 20): streetlib.it's terms page, URL from help-streetlib-com-article-380-publish-an-ebook.html:563; fetched once so its terms can be read (29.9.2026).
-https://www.streetlib.it/legalpolicy	terms-streetlib-it
+# paused (terms unread, 29.9.2026): streetlib.it is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.streetlib.it/legalpolicy	terms-streetlib-it
 # research/channel-loop/ZERO-TESTS.md row 193 — terms audit (tick 20): bit2c's terms page, URL from bit2c-home.html:1293; fetched once so its terms can be read (29.9.2026).
-https://bit2c.co.il/terms-of-use	terms-bit2c
+# paused (terms audit, 29.9.2026): bit2c.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://bit2c.co.il/terms-of-use	terms-bit2c
 # research/channel-loop/ZERO-TESTS.md row 194 — terms audit (tick 20): btl.gov.il's terms page, URL from btl-self-employed-rates.html:1999; fetched once so its terms can be read (29.9.2026).
 https://www.btl.gov.il/About/Pages/%d7%aa%d7%a0%d7%90%d7%99%20%d7%a9%d7%99%d7%9e%d7%95%d7%a9.aspx	terms-btl
 # research/channel-loop/ZERO-TESTS.md row 195 — terms audit (tick 20): data.gov.il's terms page, URL from research scouts data-apis--israeli-open-data.md:27; fetched once so its terms can be read (29.9.2026).
 https://data.gov.il/he/terms-of-use	terms-data-gov-il
 # research/channel-loop/ZERO-TESTS.md row 196 — terms audit (tick 20): freemius's terms page, URL from freemius-our-pricing.html:63; fetched once so its terms can be read (29.9.2026).
-https://freemius.com/terms/	terms-freemius
+# paused (terms audit, 29.9.2026): freemius.com — see TERMS_BARRED in scripts/render-watch.mjs — https://freemius.com/terms/	terms-freemius
 # research/channel-loop/ZERO-TESTS.md row 197 — terms audit (tick 20): hackmd's terms page, URL from astro-themes-guidelines-hackmd.html:994; fetched once so its terms can be read (29.9.2026).
-https://hackmd.io/s/terms	terms-hackmd
+# paused (terms audit, 29.9.2026): hackmd.io — see TERMS_BARRED in scripts/render-watch.mjs — https://hackmd.io/s/terms	terms-hackmd
 # research/channel-loop/ZERO-TESTS.md row 198 — terms audit (tick 20): huggingface's terms page, URL from yk2-hf-kokoro-hebrew-nc.html:152; fetched once so its terms can be read (29.9.2026).
 https://huggingface.co/terms-of-service	terms-huggingface
 # research/channel-loop/ZERO-TESTS.md row 199 — terms audit (tick 20): icount's terms page, URL from icount-plans.html:4759; fetched once so its terms can be read (29.9.2026).
-https://www.icount.co.il/eula/	terms-icount
+# paused (terms audit, 29.9.2026): icount.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://www.icount.co.il/eula/	terms-icount
 # research/channel-loop/ZERO-TESTS.md row 200 — terms audit (tick 20): invoice4u's terms page, URL from invoice4u-pricelist.html:2206; fetched once so its terms can be read (29.9.2026).
 https://www.invoice4u.co.il/%d7%aa%d7%a7%d7%a0%d7%95%d7%9f/	terms-invoice4u
 # research/channel-loop/ZERO-TESTS.md row 201 — terms audit (tick 20): kolzchut's terms page, URL from israel-bureaucracy--worker-rights.md:86; fetched once so its terms can be read (29.9.2026).
-https://www.kolzchut.org.il/he/%D7%9B%D7%9C-%D7%96%D7%9B%D7%95%D7%AA:%D7%96%D7%9B%D7%95%D7%99%D7%95%D7%AA_%D7%99%D7%95%D7%A6%D7%A8%D7%99%D7%9D	terms-kolzchut
+# paused (terms unread, 29.9.2026): kolzchut.org.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.kolzchut.org.il/he/%D7%9B%D7%9C-%D7%96%D7%9B%D7%95%D7%AA:%D7%96%D7%9B%D7%95%D7%99%D7%95%D7%AA_%D7%99%D7%95%D7%A6%D7%A8%D7%99%D7%9D	terms-kolzchut
 # research/channel-loop/ZERO-TESTS.md row 202 — terms audit (tick 20): lomdimhofshi's terms page, URL from lomdimhofshi-home.html:1837; fetched once so its terms can be read (29.9.2026).
-https://lomdimhofshi.co.il/%d7%aa%d7%a0%d7%90%d7%99-%d7%a9%d7%99%d7%9e%d7%95%d7%a9/	terms-lomdimhofshi
+# paused (terms audit, 29.9.2026): lomdimhofshi.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://lomdimhofshi.co.il/%d7%aa%d7%a0%d7%90%d7%99-%d7%a9%d7%99%d7%9e%d7%95%d7%a9/	terms-lomdimhofshi
 # research/channel-loop/ZERO-TESTS.md row 203 — terms audit (tick 20): lomdiml's terms page, URL from lomdiml-home.html:1691; fetched once so its terms can be read (29.9.2026).
 https://lomdiml.co.il/%d7%aa%d7%a7%d7%a0%d7%95%d7%9f-%d7%90%d7%aa%d7%a8/	terms-lomdiml
 # research/channel-loop/ZERO-TESTS.md row 204 — terms audit (tick 20): n8n's terms page, URL from n8n-verified-creator-requirements.html:931; fetched once so its terms can be read (29.9.2026).
-https://community.n8n.io/tos	terms-n8n-community
+# paused (terms audit, 29.9.2026): community.n8n.io — see TERMS_BARRED in scripts/render-watch.mjs — https://community.n8n.io/tos	terms-n8n-community
 # research/channel-loop/ZERO-TESTS.md row 205 — terms audit (tick 20): n8n.io's terms page, URL from n8n-creators.html:43; fetched once so its terms can be read (29.9.2026).
-https://n8n.io/legal/	terms-n8n-legal
+# paused (terms unread, 29.9.2026): n8n.io is CONDITIONAL_UNMET in research/channel-loop/terms-verdicts.json — https://n8n.io/legal/	terms-n8n-legal
 # research/channel-loop/ZERO-TESTS.md row 206 — terms audit (tick 20): odoo's terms page, URL from sweep2-odoo-localization.html:1411; fetched once so its terms can be read (29.9.2026).
-https://www.odoo.com/legal	terms-odoo
+# paused (terms unread, 29.9.2026): odoo.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.odoo.com/legal	terms-odoo
 # research/channel-loop/ZERO-TESTS.md row 207 — terms audit (tick 20): polar's terms page, URL from polar-acceptable-use.html:401; fetched once so its terms can be read (29.9.2026).
 https://polar.sh/legal/acceptable-use-policy	terms-polar-aup
 # research/channel-loop/ZERO-TESTS.md row 208 — terms audit (tick 20): stripe's terms page, URL from stripe-global.html:17638; fetched once so its terms can be read (29.9.2026).
 https://stripe.com/privacy	terms-stripe-privacy-and-terms
 # research/channel-loop/ZERO-TESTS.md row 209 — terms audit (tick 20): sumit's terms page, URL from sumit-invoices.html:118; fetched once so its terms can be read (29.9.2026).
-https://help.sumit.co.il/he/articles/10340800	terms-sumit
+# paused (terms unread, 29.9.2026): sumit.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.sumit.co.il/he/articles/10340800	terms-sumit
 # research/channel-loop/ZERO-TESTS.md row 210 — terms audit (tick 20): un.org's terms page, URL from research/faceless-youtube/LICENCE-IGO-DECISION.md:30; fetched once so its terms can be read (29.9.2026).
 https://www.un.org/en/about-us/terms-of-use	terms-un
 # research/channel-loop/ZERO-TESTS.md row 211 — terms audit (tick 20): upload-post's terms page, URL from upload-post-ai-content-labeling.html:34; fetched once so its terms can be read (29.9.2026).
-https://www.upload-post.com/terms-of-use/	terms-upload-post
+# paused (terms audit, 29.9.2026): upload-post.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.upload-post.com/terms-of-use/	terms-upload-post
 # research/channel-loop/ZERO-TESTS.md row 212 — terms audit (tick 20): wix's terms page, URL from wix-payout-account docs footer; fetched once so its terms can be read (29.9.2026).
-https://www.wix.com/about/terms-of-use	terms-wix
+# paused (terms audit, 29.9.2026): wix.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.wix.com/about/terms-of-use	terms-wix
 # research/channel-loop/ZERO-TESTS.md row 213 — terms audit (tick 20): worksheets4kids's terms page, URL from worksheets4kids-home.html:711; fetched once so its terms can be read (29.9.2026).
 https://worksheets4kids.co.il/privacy-policy/	terms-worksheets4kids
 # research/channel-loop/ZERO-TESTS.md row 214 — Mozilla (8): GitHub's set-up-budgets docs (tick 20, actions-spending-limit.md; GitHub's terms allow research use, TERMS-AUDIT-2026-09-29.md) (29.9.2026).
 https://docs.github.com/en/billing/how-tos/set-up-budgets	gh-docs-set-up-budgets
 # research/channel-loop/ZERO-TESTS.md row 215 — Mozilla (8): GitHub's budgets-and-alerts docs (tick 20) (29.9.2026).
 https://docs.github.com/en/billing/concepts/budgets-and-alerts	gh-docs-budgets-and-alerts
+# research/channel-loop/ZERO-TESTS.md row 216 — terms audit (tick 21): bitsofgold's terms page, URL from theWallProject/mono links.json:41 (github); fetched once so its terms can be read (29.9.2026).
+https://www.bitsofgold.co.il/terms	terms-bitsofgold
+# research/channel-loop/ZERO-TESTS.md row 217 — terms audit (tick 21): greeninvoice's terms page, URL from theWallProject/mono ai_prompt.txt:35 (github); fetched once so its terms can be read (29.9.2026).
+https://www.greeninvoice.co.il/terms/	terms-greeninvoice
+# research/channel-loop/ZERO-TESTS.md row 218 — terms audit (tick 21): mr.gov.il's terms page, URL from OpenBudget/budgetkey-data-pipelines fixture publication_595431:831 (github); fetched once so its terms can be read (29.9.2026).
+http://www.mr.gov.il/Pages/Terms-of-Use.aspx	terms-mr-gov-il
+# research/channel-loop/ZERO-TESTS.md row 219 — terms audit (tick 21): tipalti's terms page, URL from theWallProject/mono links.json:48 (github); fetched once so its terms can be read (29.9.2026).
+https://tipalti.com/legal	terms-tipalti
+# research/channel-loop/ZERO-TESTS.md row 220 — terms audit (tick 21): wavedash's terms page, URL from wvdsh/wavedash-deck README.md:63 (github); fetched once so its terms can be read (29.9.2026).
+https://wavedash.com/terms	terms-wavedash
+# research/channel-loop/ZERO-TESTS.md row 221 — terms audit (tick 21): gov.il's terms page, URL from CIOIL/knockout-govil-forms Footer.html:9 (github); governs data.gov.il too (terms-data-gov-il.txt:19); fetched once so its terms can be read (29.9.2026).
+https://www.gov.il/he/general/terms_of_use	terms-gov-il
+# research/channel-loop/ZERO-TESTS.md row 222 — terms audit (tick 21): ypay's terms page, URL from ypay-faq.html:955; fetched once so its terms can be read (29.9.2026).
+https://ypay.co.il/front/terms	terms-ypay
+# research/channel-loop/ZERO-TESTS.md row 223 — terms audit (tick 21): stripe's terms page, URL from terms-stripe-privacy-and-terms.html:783; fetched once so its terms can be read (29.9.2026).
+https://stripe.com/legal	terms-stripe-legal

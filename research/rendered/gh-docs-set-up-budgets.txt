@@ -1,0 +1,401 @@
+Setting up budgets to control spending on metered products - GitHub Docs
+Skip to main content
+
+Skip to content
+GitHub Docs
+
+Search or ask Copilot /
+Menu
+
+Collapse sidebar Expand sidebar
+Scroll breadcrumbs left Home
+Billing and payments
+How-tos
+Set up budgets
+
+Scroll breadcrumbs right
+
+Billing and payments
+
+Get started
+How billing works
+
+Introduction to billing
+
+Billing manager onboard
+
+Concepts
+Billing cycles
+
+Budgets and alerts
+
+Cost centers
+
+Azure subscriptions
+
+Impact of plan changes
+
+Discounted plans
+
+Enterprise billing
+Billing for enterprises
+
+Usage-based licenses
+
+Combined enterprise use
+
+GHES license files
+
+Azure DevOps licenses
+
+Product billing
+GitHub Actions
+
+GitHub Advanced Security
+
+GitHub Codespaces
+
+GitHub Code Quality
+
+GitHub Copilot billing
+
+GitHub Copilot licenses
+
+GitHub Packages
+
+Cloud and local sandboxes
+
+Git LFS
+
+Third-party payments
+GitHub Sponsors
+
+GitHub Marketplace apps
+
+How-tos
+Set up payment
+Manage payment info
+
+Connect Azure sub
+
+Redeem coupon
+
+Add sales tax certificate
+
+Manage enterprise invoice
+
+Payments in India
+
+Manage plan and licenses
+Upgrade plan
+
+Downgrade plan
+
+Manage pending changes
+
+View enterprise usage
+
+Manage user licenses
+
+Set up budgets
+
+Products
+View product/license use
+
+Download license use
+
+Buy Advanced Security
+
+View and estimate spending
+
+Use cost centers
+
+Manage GHAS licenses
+
+Disable GHAS for enterprise
+
+Pay third-parties
+Upgrade Marketplace app
+
+Downgrade Marketplace app
+
+Cancel Marketplace app
+
+Upgrade sponsorship
+
+Downgrade sponsorship
+
+Cancel sponsorship
+
+End sponsorship
+
+Manage for client
+Create client org
+
+Create client enterprise
+
+Create as CSP partner
+
+Manage client org
+
+Troubleshooting
+Declined card
+
+Locked account
+
+Azure sub connection
+
+Enterprise license usage
+
+Reference
+Actions runner pricing
+
+Azure billing
+
+Azure subscription
+
+Billing reports
+
+Billing roles
+
+Cost center allocation
+
+GitHub license users
+
+License reports
+
+Product and SKU names
+
+Product usage included
+
+Supported payment methods
+
+Tutorials
+Automate usage reporting
+
+Monitor costs with soft budgets
+
+Control costs at scale
+
+Gather insights
+
+In this article
+
+Setting up budgets to control spending on metered products
+
+Prevent overspending by setting budgets and tracking when metered usage nears or exceeds a budget threshold.
+
+Copy markdown
+
+Who can use this feature?
+
+Organization owners, billing managers, and personal account users
+
+In this article
+Plan your budget type and scope
+
+Managing budgets for your personal account
+
+Managing budgets for your organization or enterprise
+
+Next steps
+
+Budgets help you track and control spending on different products. To learn more, see Budgets and alerts .
+
+Plan your budget type and scope
+
+Before you create a budget, it’s important to understand how budget types and scopes interact. Usage of metered products can count toward multiple applicable budgets at the same time, and if any budget with Stop usage when budget limit is reached enabled is exhausted, additional usage is blocked.
+
+In this example, the organization has set a budget of $50 for the "Actions" product and a budget of $100 for one of the SKUs within the "Actions" product. The organization has used all the included quota of actions minutes and an extra $50 of billed minutes. Some of the extra use was for Linux 96-core runners so it is applied to both budgets. Overall, the organization has used the full budget for the "Actions" product of $50. Members are now blocked from using all GitHub-hosted runners until the next billing cycle or until the "Actions" product budget is increased. The SKU budget for Linux 96-core runners serves no purpose and is confusing, so should be deleted.
+
+We recommend that you avoid creating overlapping budgets for the use of a product and a SKU, or an organization and a repository, so that users are not unexpectedly blocked from using a feature that they rely on. Alternatively, you may prefer to monitor use without blocking users by disabling the "Stop usage when budget limit is reached" option.
+
+For Copilot under usage-based billing, user-level budgets add another layer to consider. A user-level budget can block a user even when the enterprise or cost center budget still has capacity. It is the first check in the evaluation sequence. When planning your budget configuration, account for how user-level budgets, cost center budgets, and the enterprise spending limit interact. See Budgets for usage-based billing .
+
+Managing budgets for your personal account
+
+You can set budgets and receive alerts when your usage of a product reaches 75%, 90%, or 100% of a defined budget. Budgets can be set for a specific repository or for your whole account.
+
+Open your billing overview page: https://github.com/settings/billing .
+
+Click Budgets and alerts .
+
+To create a new budget, click New budget .
+
+Under "Budget Type" select Product-level budget , SKU-level budget , or Bundled AI credits budget .
+
+To limit spending at a Product-level, in "Product-level budget" choose a product from the dropdown, for example: Codespaces.
+
+To limit spending at a SKU-level, in "SKU-level budget" choose a Product and then a SKU, for example: Codespaces and Codespaces storage.
+
+To limit spending on AI credits across all features, enable "Bundled AI credits budget" or to limit spending for a specific feature, set a SKU-level budget for the feature (such as Copilot AI credits, Spark AI credits, or Copilot cloud agent).
+
+Under "Budget scope", set the scope of spending for this budget.
+
+Under "Budget", set a budget amount.
+
+To stop any usage and further spending once the budget limit is reached, select Stop usage when budget limit is reached , if available. This option is not available for user-level budgets, which always enforce a hard stop.
+
+Important
+
+If you do not select Stop usage when budget limit is reached , you will be notified by email if you exceed your budget, but usage will not be stopped.
+
+To receive an alert if your budget has reached 75%, 90% and 100% thresholds, select Receive budget threshold alerts under "Alerts". When the budget has reached the specific threshold, you will be notified via email and a banner on GitHub. You may opt out at any time.
+
+Click Create budget .
+
+To edit or delete a budget, on the "Budget and alerts" page, click Edit or Delete next to the budget you want to edit or delete. Follow the prompts.
+
+Managing included usage alerts for your personal account
+
+GitHub can send you email notifications when the included usage for your plan reaches 90% and 100% during a billing period. To learn more about what these alerts cover, see Budgets and alerts .
+
+Open your billing overview page: https://github.com/settings/billing .
+
+Click Budgets and alerts .
+
+Under "Included usage alerts", select or clear Receive alerts when my included usage reaches 90% and 100% to opt in or out of email notifications.
+
+Managing budgets for your organization or enterprise
+
+Important
+
+Copilot usage is now measured in AI credits under usage-based billing. Existing premium request budgets have been automatically converted to AI credit budgets. See Usage-based billing for organizations and enterprises .
+
+You can set budgets and receive alerts when your usage of a product or license type reaches 75%, 90%, or 100% of a defined budget. For budgets that control metered use of a product, you can also block further use when the budget is exhausted. Each budget has a scope.
+
+Organization budget scopes : the whole organization or a single repository within the organization
+
+Enterprise budget scopes :
+
+Metered products: the whole enterprise, a single organization, a single repository, or a single cost center
+
+Enterprise licenses (metered): the whole enterprise or a single cost center
+
+AI credits (bundled): the whole enterprise, a single organization, a single cost center, or per user
+
+Viewing budgets
+
+If you are an organization owner, enterprise owner, or billing manager, any account-level budget is listed at the top of the "Budgets and alerts" page, followed by budgets for smaller scopes.
+
+Navigate to your organization or enterprise. For example, from the Organizations or Enterprises pages on GitHub.com.
+
+Click Billing & Licensing to display the billing and licensing overview for the account:
+
+Organization accounts: under "Access" in the sidebar for settings.
+
+Enterprise accounts: a separate tab at the top of the page.
+
+Click Budgets and alerts .
+
+Optionally, in the enterprise view only, to filter by scope, select Scope , then choose a scope.
+
+Creating a budget
+
+As the owner of an enterprise or organization account, or as a billing manager, you can set a budget at the account level, or at any level below this.
+
+In the "Budgets and alerts" view, click New budget .
+
+Under "Budget Type" select Product-level budget , SKU-level budget , or Bundled AI credits budget .
+
+Product-level budget : Limits spending on a single product (for example, Codespaces).
+
+SKU-level budget : Limits spending on a specific SKU within a product (for example, GitHub Secret Protection within GitHub Advanced Security).
+
+Bundled AI credits budget : Limits spending across all SKUs that consume AI credits, including Copilot, Copilot cloud agent, and Spark. Available where overage spend is enabled.
+
+Under "Budget scope", set the scope of spending for this budget.
+
+Enterprise : Tracks spending across all organizations, repositories, and cost centers in the enterprise.
+
+Organization : Tracks spending for all repositories in the organization.
+
+Cost center : Tracks spending for a single cost center.
+
+Users : Sets a per-user budget. Available when you select Bundled AI credits budget as the budget type.
+
+Leave the user field empty to create a universal budget that applies to all Copilot-licensed users.
+
+Select a cost center to create a user-level budget that applies to every user in that cost center. This sets one per-user amount for all current and future members, and overrides the universal budget for them.
+
+Select a specific user to create an individual budget that overrides both the universal budget and any cost center user-level budget for that user.
+
+If you selected a specific user, optionally set an expiration date for the individual budget under "Expiration".
+
+No expiration : The budget applies until you edit or delete it. This is the default.
+
+End of current billing cycle : GitHub removes the budget when the current billing cycle ends.
+
+Specific date : GitHub removes the budget on the date you choose.
+
+When an individual budget expires, GitHub removes it and the user falls back to the next budget that applies to them: their cost center user-level budget, if they have one, or otherwise the universal user-level budget. If neither budget is configured, no user-level budget applies. See Budgets for usage-based billing .
+
+Under "Budget", set a budget amount or license count.
+
+To stop any usage and further spending once the budget limit is reached, select Stop usage when budget limit is reached or Limit usage when budget limit is reached , if available. This option is available for metered products and for Advanced Security SKU-level budgets . For Advanced Security, this option prevents new enablement on additional repositories. It doesn't disable Advanced Security on repositories where it is already active. See GitHub Advanced Security license billing .
+
+Important
+
+If you do not select one of these options, you will be notified by email if you exceed your budget, but usage will not be stopped.
+
+To receive an alert if your budget has reached 75%, 90% and 100% thresholds, select Receive budget threshold alerts under "Alerts". When the budget has reached the specific threshold, you will be notified via email and a banner on GitHub. You may opt out at any time.
+
+Under "Alert Recipients", select the people who will receive the alerts.
+
+Click Create budget .
+
+Managing included usage alerts
+
+GitHub can send email notifications when the included usage for your account reaches 90% and 100% during a billing period. To learn more about what these alerts cover, see Budgets and alerts .
+
+Navigate to the "Budgets and alerts" view. See Viewing budgets .
+
+Under "Included usage alerts", select or clear Receive alerts when my included usage reaches 90% and 100% to opt in or out of email notifications.
+
+Editing or deleting a budget
+
+Important
+
+Deleting a budget may remove any limits on spending, depending on your other existing budgets.
+
+You can edit or delete a budget at any time, but you cannot change the scope of a budget after creating it.
+
+For an individual user-level budget, you can also change or clear the expiration date at any time.
+
+Navigate to the "Budgets and alerts" view. See Viewing budgets .
+
+In the list of budgets, click next to the budget you want to edit, and click Edit or Delete .
+
+Follow the prompts.
+
+Managing requests for additional budget
+
+When a member exhausts a Copilot AI credits budget, they can ask you to increase it. See Managing requests for additional Copilot budget .
+
+Controlling included usage for a cost center
+
+Budgets cap metered charges after the shared pool of AI credits is exhausted. To cap how much of the pool a cost center can use before the metered phase, use an included usage control. GitHub sets the cap automatically based on the licenses assigned to the cost center, and you choose whether members are blocked or roll into paid overage when the cap is reached. See Budgets for usage-based billing and Cost centers .
+
+Note
+
+Enabling included usage controls does not retroactively redistribute the shared AI credits enterprise pool. After the setting is enabled, users in the cost center share only the included AI credits funded by licenses attributed to that cost center. When the setting is disabled, users in the cost center can continue drawing from the shared enterprise pool.
+
+Next steps
+
+For Copilot-specific budget guidance under usage-based billing, including user-level budgets and configuration scenarios, see Budgets for usage-based billing and Optimizing your budget configuration .
+
+Back to top
+
+Help and support
+Was this Doc helpful?
+Yes
+No
+
+Help us make GitHub Docs great!
+All Docs are open source. See something that's wrong or unclear? Submit a pull request.
+Make a contribution
+
+Still need help?
+Ask the GitHub community Contact support Expert services Blog
+
+GitHub Inc. © 2026 Terms Privacy Status Pricing

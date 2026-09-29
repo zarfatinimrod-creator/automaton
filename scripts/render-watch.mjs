@@ -354,6 +354,23 @@ export const TERMS_BARRED = [
   { domain: "metaculus.com", why: "Metaculus's terms bar viewing, copying or procuring content \"by automated means (such as scripts, bots, spiders, crawlers, or scrapers)\" outside its API (Metaculus/metaculus front_end terms-of-use page.tsx:187-196; terms audit 29.9)" },
   { domain: "openai.com", why: "OpenAI's terms bar \"Automatically or programmatically extract data or Output\" (OpenTermsArchive/genai-contrib-versions OpenAI/Terms of Service.md:40; terms audit 29.9)" },
   { domain: "addons.mozilla.org", why: "Mozilla's acceptable-use policy bars harvesting personal information such as account names and email addresses, and the AMO search API returns both for every author (mozilla/legal-docs en/acceptable_use_policy.md:14; terms audit 29.9; the stored results were redacted)" },
+  // Round 2 (tick 21, 29.9.2026): the terms pages rendered by rows 191-213, and GitHub-hosted copies (ToS;DR snapshots,
+  // licence mirrors) for sites with no terms URL in the repo. research/channel-loop/terms-verdicts.json holds every site.
+  { domain: "bit2c.co.il", why: "Bit2C's terms bar \"תוכנות מסוג Crawlers, Robots וכדומה, לשם חיפוש, סריקה, העתקה או אחזור אוטומטי\" (research/rendered/terms-bit2c.txt:494; terms audit round 2)" },
+  { domain: "freemius.com", why: "Freemius's terms bar \"any automated use of the system\" and scraping, spidering or crawling (research/rendered/terms-freemius.txt:140-141; terms audit round 2)" },
+  { domain: "hackmd.io", why: "HackMD's terms bar \"any robot, spider, crawler, other automated device, or manual process to monitor or copy any content\" (research/rendered/terms-hackmd.txt:30; terms audit round 2)" },
+  { domain: "icount.co.il", why: "iCount's terms bar \"הפעלת יישום מחשב או כל אמצעי אחר, לשם חיפוש, סריקה, העתקה או אחזור אוטומטי\" (research/rendered/terms-icount.txt:141; terms audit round 2)" },
+  { domain: "lomdimhofshi.co.il", why: "The site's terms: \"אסור להשתמש בבוטים או בסקריפטים כדי להוריד את התוכן באופן שיטתי\" (research/rendered/terms-lomdimhofshi.txt:42; terms audit round 2)" },
+  { domain: "community.n8n.io", why: "n8n's forum terms: \"You may not automate access to the forum, or monitor the forum, such as with a web crawler\" (research/rendered/terms-n8n-community.txt:81; terms audit round 2)" },
+  { domain: "notion.site", why: "Notion's terms bar any robot, spider or crawler that accesses the Service to monitor, extract or copy data (abhishakenp/den docs/research/integrations-auth.md:339, github grade; terms audit round 2)" },
+  { domain: "upload-post.com", why: "Upload-Post's terms bar automated access beyond normal API usage, and scraping (research/rendered/terms-upload-post.txt:94-95; terms audit round 2)" },
+  { domain: "wix.com", why: "Wix's terms bar access \"through any means or technology (e.g. scraping and crawling), other than our publicly supported interfaces\" (research/rendered/terms-wix.html:842; terms audit round 2)" },
+  { domain: "crazygames.com", why: "CrazyGames's terms bar any robot, spider or scraper \"to access, acquire, copy or monitor any portion of the Website/Platform\" without written consent (tosdr/tosdr-snapshots Crazygames/Terms of Service.html:56, github grade; terms audit round 2)" },
+  { domain: "pexels.com", why: "Pexels's terms bar \"the use of programs or robots for automatic data collection\" (KDE/kdenlive-test-suite LICENSES/LicenseRef-Pexels.txt:146, github grade; terms audit round 2). The Pexels API is not fetched by this script" },
+  { domain: "pixabay.com", why: "Pixabay's terms bar \"the use of programs or robots for automatic data collection\" (kando-menu/kando LICENSES/LicenseRef-Pixabay.txt:110, github grade; terms audit round 2)" },
+  { domain: "spreadshirt.com", why: "Spreadshirt's terms bar \"a robot or other automated means to monitor the activity on or copy information or pages from the site\", except search engines (tosdr/tosdr-snapshots Spreadshirt/Terms of Service.html:145, github grade; terms audit round 2)" },
+  { domain: "spreadshop.com", why: "Spreadshirt's terms, which cover Spreadshops, bar robots that copy pages from the site (tosdr/tosdr-snapshots Spreadshirt/Terms of Service.html:145, :129, github grade; terms audit round 2)" },
+  { domain: "teacherspayteachers.com", why: "TpT's terms: \"Don't use any automated means such as bots, spiders, or crawlers to download or otherwise obtain data from our services\" (sernl/listing-sync docs/notes/legal/marketplace-terms-assessment.md:100, github grade; terms audit round 2)" },
 ];
 
 /** The TERMS_BARRED entry a host falls under (the domain or any subdomain; case and trailing dot ignored), or null. */

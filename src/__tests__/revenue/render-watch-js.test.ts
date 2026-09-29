@@ -81,7 +81,8 @@ describe("parseUrlList — the js flag", () => {
 
   it("parses the real urls.txt unchanged: no line there carries a flag today", () => {
     const entries = parseUrlList(readFileSync(join(ROOT, "research", "rendered", "urls.txt"), "utf8"));
-    expect(entries.length).toBeGreaterThan(100);
+    // Tick 21's terms audits paused 141 lines (sites whose terms bar or were not read), leaving about 60 active.
+    expect(entries.length).toBeGreaterThan(40);
     expect(entries.every((e: { js?: boolean }) => !("js" in e))).toBe(true);
   });
 });

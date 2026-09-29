@@ -1,0 +1,17 @@
+{
+  "url": "https://tipalti.com/legal",
+  "slug": "terms-tipalti",
+  "fetchedAt": "2026-09-29T16:22:24.307Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 166682,
+  "sha256": "069955227186922406e5110e9c9dec559b0944710e39548d0a7677380f7a2f15",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-tipalti.html",
+  "textPath": "research/rendered/terms-tipalti.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
