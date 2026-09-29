@@ -209,8 +209,9 @@ exit 0
     const r = run(withReading(sandbox(), body));
     expect(r.status, r.out).toBe(0);
     const commit = r.calls.find((c) => c.startsWith("git [commit]"));
+    // The list-count half counts the copied entry (10 open); the rules table holds one row per event, so 9 rows.
     expect(commit).toBe(
-      "git [commit] [-m] [measure(prize-intake): 10 open of 15 listed; AI rule unknown: 1 new field(s) to read by hand; rules pages: 0 of 10 graded [skip ci]]",
+      "git [commit] [-m] [measure(prize-intake): 10 open of 15 listed; AI rule unknown: 1 new field(s) to read by hand; rules pages: 0 of 9 graded [skip ci]]",
     );
     expect(commit).not.toMatch(/not stated/);
   });

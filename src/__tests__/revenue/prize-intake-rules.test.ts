@@ -146,6 +146,8 @@ describe("the first weekly run — a table for a session to fill, with nothing f
     expect(state.aiAllowed.urlsFile).toBe("research/measurements/ai-allowed-events.urls.txt");
     expect(state.aiAllowed.keptOutsideWindow).toBe(0);
     expect(state.aiAllowed.untabled).toBe(0);
+    expect(state.aiAllowed.relisted).toBe(0);
+    expect(state.aiAllowed.sameEvent).toBe(0);
     // The list-count half is unchanged beside it.
     expect(state).toMatchObject(summarisePrizeIntake(FIXTURE_TEXT, MEASURED));
     expect(r.message).toMatch(/Rules pages: 0 of 9 rows in the window graded; 21 URLs await a render/);
@@ -246,13 +248,39 @@ describe("a session's cells survive every re-run", () => {
     expect(third.markdown).toBe(again.markdown);
   });
 
-  it("keeps a cell holding an escaped pipe, and follows an event whose name or deadline the list changed", () => {
-    const withPipe = { clause: 'Rules §4: "AI tools \\| any" research/rendered/prize-arc-rules.txt', grade: "RENDERED", qualifies: "no" };
+  const withPipe = { clause: 'Rules §4: "AI tools \\| any" research/rendered/prize-arc-rules.txt', grade: "RENDERED", qualifies: "no" };
+  const changed = (patch: Record<string, unknown>) => listedEventsFrom(listOf(FIXTURE_DATA.map((e) => (e.url === ARC ? { ...e, ...patch } : e))));
+
+  it("keeps a cell holding an escaped pipe, and follows an event whose deadline the list moved (same URL and name)", () => {
     const md = fill(buildAiAllowedTable(base()).markdown, ARC, withPipe);
-    const moved = listOf(FIXTURE_DATA.map((e) => (e.url === ARC ? { ...e, name: "ARC Prize 2026 (ARC-AGI-2)", deadline: "9 Dec 2026" } : e)));
-    const again = buildAiAllowedTable({ ...base("2026-09-30"), events: listedEventsFrom(moved), existingMarkdown: md });
+    const again = buildAiAllowedTable({ ...base("2026-09-30"), events: changed({ deadline: "9 Dec 2026" }), existingMarkdown: md });
     const arc = parseAiAllowedTable(again.markdown).find((r) => r.url === ARC)!;
-    expect(arc).toMatchObject({ name: "ARC Prize 2026 (ARC-AGI-2)", deadline: "2026-12-09", clause: withPipe.clause, qualifies: "no" });
+    expect(arc).toMatchObject({ name: "ARC Prize 2026 - ARC-AGI-2", deadline: "2026-12-09", clause: withPipe.clause, qualifies: "no" });
+    expect(again.summary.keptOutsideWindow).toBe(0);
+  });
+
+  it("follows an event the list renamed (same URL and deadline)", () => {
+    const md = fill(buildAiAllowedTable(base()).markdown, ARC, withPipe);
+    const again = buildAiAllowedTable({ ...base("2026-09-30"), events: changed({ name: "ARC Prize 2026 (ARC-AGI-2)" }), existingMarkdown: md });
+    const arc = parseAiAllowedTable(again.markdown).find((r) => r.url === ARC)!;
+    expect(arc).toMatchObject({ name: "ARC Prize 2026 (ARC-AGI-2)", deadline: "2026-11-02", clause: withPipe.clause, qualifies: "no" });
+    expect(again.summary.keptOutsideWindow).toBe(0);
+  });
+
+  it("does not follow when the name and the deadline both changed: a different event on the same URL starts ungraded", () => {
+    const md = fill(buildAiAllowedTable(base()).markdown, ARC, withPipe);
+    const again = buildAiAllowedTable({
+      ...base("2026-09-30"),
+      events: changed({ name: "ARC Prize 2027 - ARC-AGI-3", deadline: "9 Dec 2026" }),
+      existingMarkdown: md,
+    });
+    const rows = parseAiAllowedTable(again.markdown).filter((r) => r.url === ARC);
+    expect(rows.map((r) => [r.name, r.deadline, r.qualifies, r.kept ?? false])).toEqual([
+      ["ARC Prize 2027 - ARC-AGI-3", "2026-12-09", "", false],
+      ["ARC Prize 2026 - ARC-AGI-2", "2026-11-02", "no", true], // the old reading, kept and counted nowhere
+    ]);
+    expect(again.summary.keptOutsideWindow).toBe(1);
+    expect(again.summary.quarters.find((q) => q.quarter === "2026-Q4")).toMatchObject({ eventsInWindow: 8, rowsGraded: 0, qualifying: null });
   });
 
   it("drops an unfilled row whose event left the window, and keeps a filled one outside it", () => {
@@ -282,6 +310,11 @@ describe("a session's cells survive every re-run", () => {
     ]);
     expect(october.summary.quarters.find((q) => q.quarter === "2026-Q3")).toMatchObject({ eventsInWindow: 1, rowsGraded: 1, qualifying: 0 });
     expect(october.urls).toContain(url);
+    // Same URL and name as a closed quarter's row: an extension or a new edition — named, never silently counted twice.
+    expect(october.summary).toMatchObject({ relisted: 1, sameEvent: 0 });
+    expect(october.summary.quarters.find((q) => q.quarter === "2026-Q4")).toMatchObject({ eventsInWindow: 1, awaiting: 1, qualifying: null });
+    expect(october.markdown).toMatch(/^## Listed again after a closed quarter$/m);
+    expect(october.markdown).toContain(`- 2026-11-10 · Yearly cup (<${url}>): in the record of 2026-Q3 (deadline 2026-08-10). Not decided yet.`);
   });
 
   it("keeps a kept row kept, in no quarter's count, after its quarter has passed", () => {
@@ -307,6 +340,262 @@ describe("a session's cells survive every re-run", () => {
     expect(october.summary.quarters[0]).toMatchObject({ eventsInWindow: 1, rowsGraded: 1, qualifying: 0, awaiting: 0 });
     expect(october.markdown).toMatch(/^## 2026-Q3 — deadlines 1 Jul – 30 Sep 2026 \(closed; kept as the record\)$/m);
     expect(parseAiAllowedTable(october.markdown).find((r) => r.url === BIOHUB)!.qualifies).toBe("no");
+  });
+});
+
+/** Replace the session cells of the one row `pick` selects (by its cells: name, deadline, prize, <url>, …). */
+function fillWhere(md: string, pick: (cells: string[]) => boolean, cells: [string, string, string]): string {
+  let hits = 0;
+  const out = md
+    .split("\n")
+    .map((line) => {
+      if (!line.startsWith("| ") || line.startsWith("| Event |") || line.startsWith("| --- |")) return line;
+      const parts = line.split(/(?<!\\)\|/).slice(1, -1).map((c) => c.trim());
+      if (parts.length !== 8 || !pick(parts)) return line;
+      hits += 1;
+      parts.splice(5, 3, ...cells);
+      return `| ${parts.join(" | ")} |`;
+    })
+    .join("\n");
+  expect(hits).toBe(1);
+  return out;
+}
+
+describe("the merge never moves a verdict to another event", () => {
+  const U = "https://example.org/cup";
+  const YES: [string, string, string] = ['"AI-built entries welcome" research/rendered/prize-cup.txt', "RENDERED", "yes"];
+  const NO: [string, string, string] = ['"Human authors only" research/rendered/prize-cup.txt', "RENDERED", "no"];
+  const ev = (name: string, deadline: string, url = U): ListedEvent => ({ name, deadline, prize: null, url, otherUrls: [] });
+  const at = (day: string, events: ListedEvent[], existingMarkdown: string | null) => buildAiAllowedTable({ ...base(day), events, existingMarkdown });
+  const cells = (md: string) => parseAiAllowedTable(md).map((r) => [r.name, r.deadline, r.qualifies, r.kept ?? false]);
+  const byName = (name: string) => (p: string[]) => p[0] === name;
+  const byDay = (deadline: string) => (p: string[]) => p[1] === deadline;
+
+  it("keeps each of two events that share a URL and a name on its own cells, however the list orders them", () => {
+    // Reviewer's case: the list gives them in reverse deadline order; the verdict used to swap on every run.
+    const events = [ev("Cup", "2026-12-01"), ev("Cup", "2026-10-05")];
+    let md = at("2026-09-29", events, null).markdown;
+    md = fillWhere(fillWhere(md, byDay("2026-10-05"), YES), byDay("2026-12-01"), NO);
+    const want = [
+      ["Cup", "2026-10-05", "yes", false],
+      ["Cup", "2026-12-01", "no", false],
+    ];
+    const second = at("2026-09-30", events, md);
+    expect(cells(second.markdown)).toEqual(want);
+    const third = at("2026-09-30", [...events].reverse(), second.markdown);
+    expect(cells(third.markdown)).toEqual(want);
+    expect(third.markdown).toBe(second.markdown);
+  });
+
+  it("writes the same table whatever order the list gives its events in", () => {
+    const events = listedEventsFrom(FIXTURE_TEXT);
+    const md = fill(buildAiAllowedTable(base()).markdown, ARC, { clause: "silent research/rendered/prize-arc.txt", grade: "RENDERED", qualifies: "no" });
+    const forward = buildAiAllowedTable({ ...base("2026-09-30"), events, existingMarkdown: md });
+    const backward = buildAiAllowedTable({ ...base("2026-09-30"), events: [...events].reverse(), existingMarkdown: md });
+    expect(backward.markdown).toBe(forward.markdown);
+    expect(backward.urls).toBe(forward.urls);
+  });
+
+  it("orders rows that share a deadline and a name by URL, whatever order the list gives them in", () => {
+    const pair = [ev("Cup", "2026-11-01", "https://example.org/b"), ev("Cup", "2026-11-01", "https://example.org/a")];
+    const one = at("2026-09-29", pair, null);
+    const other = at("2026-09-29", [...pair].reverse(), null);
+    expect(parseAiAllowedTable(one.markdown).map((r) => r.url)).toEqual(["https://example.org/a", "https://example.org/b"]);
+    expect(other.markdown).toBe(one.markdown);
+    expect(other.urls).toBe(one.urls);
+  });
+
+  it("does not hand a verdict to a new edition that reuses the URL under a new name and deadline", () => {
+    let md = at("2026-11-01", [ev("Yearly 2026", "2026-11-20")], null).markdown;
+    md = fillWhere(md, byName("Yearly 2026"), YES);
+    const built = at("2026-11-25", [ev("Yearly 2027", "2027-02-15")], md);
+    expect(cells(built.markdown)).toEqual([
+      ["Yearly 2027", "2027-02-15", "", false],
+      ["Yearly 2026", "2026-11-20", "yes", true],
+    ]);
+    expect(built.summary.quarters.find((q) => q.quarter === "2027-Q1")).toMatchObject({ eventsInWindow: 1, rowsGraded: 0, qualifying: null });
+    expect(built.summary.keptOutsideWindow).toBe(1);
+  });
+
+  it("does not hand a kept row's verdict to a different event that later arrives on its URL", () => {
+    let md = at("2026-10-07", [ev("Cup A", "2026-12-10")], null).markdown;
+    md = fillWhere(md, byName("Cup A"), YES);
+    const gone = at("2026-10-14", [], md);
+    expect(gone.summary.keptOutsideWindow).toBe(1);
+    const other = at("2026-10-21", [ev("Cup B (different event)", "2027-03-01")], gone.markdown);
+    expect(cells(other.markdown)).toEqual([
+      ["Cup B (different event)", "2027-03-01", "", false],
+      ["Cup A", "2026-12-10", "yes", true],
+    ]);
+    expect(other.summary.quarters.find((q) => q.quarter === "2027-Q1")!.qualifying).toBeNull();
+  });
+
+  it("gives a kept event its cells back when it returns, and empties the kept section", () => {
+    let md = at("2026-10-07", [ev("Cup A", "2026-12-10")], null).markdown;
+    md = fillWhere(md, byName("Cup A"), YES);
+    const gone = at("2026-10-14", [], md);
+    expect(gone.markdown).toMatch(/^## Kept outside the window/m);
+    for (const back of [ev("Cup A", "2026-12-10"), ev("Cup A", "2026-12-20"), ev("Cup A (renamed)", "2026-12-10")]) {
+      const built = at("2026-10-21", [back], gone.markdown);
+      expect(cells(built.markdown), back.name + back.deadline).toEqual([[back.name, back.deadline, "yes", false]]);
+      expect(built.summary.keptOutsideWindow).toBe(0);
+      expect(built.markdown).not.toMatch(/^## Kept outside the window/m);
+      expect(built.summary.quarters.find((q) => q.quarter === "2026-Q4")).toMatchObject({ rowsGraded: 1, qualifying: 1 });
+    }
+  });
+
+  it("tables an event the list gives twice once, so one session's verdict is one verdict", () => {
+    const twice = [ev("Cup", "2026-10-05"), { ...ev("Cup", "2026-10-05"), otherUrls: ["https://example.org/cup/rules"] }];
+    let md = at("2026-09-29", twice, null).markdown;
+    expect(parseAiAllowedTable(md)).toHaveLength(1);
+    expect(parseAiAllowedTable(md)[0].otherUrls).toEqual(["https://example.org/cup/rules"]);
+    md = fillWhere(md, byName("Cup"), YES);
+    const built = at("2026-09-30", twice, md);
+    expect(cells(built.markdown)).toEqual([["Cup", "2026-10-05", "yes", false]]);
+    expect(built.summary.quarters.find((q) => q.quarter === "2026-Q4")).toMatchObject({ eventsInWindow: 1, rowsGraded: 1, qualifying: 1 });
+  });
+
+  it("never copies one row's verdict onto a second event with the same URL and name", () => {
+    let md = at("2026-09-29", [ev("Cup", "2026-10-05")], null).markdown;
+    md = fillWhere(md, byName("Cup"), YES);
+    // The graded event is still listed, and a second one with the same URL and name arrives: it starts ungraded.
+    const built = at("2026-09-30", [ev("Cup", "2026-10-05"), ev("Cup", "2026-11-20")], md);
+    expect(cells(built.markdown)).toEqual([
+      ["Cup", "2026-10-05", "yes", false],
+      ["Cup", "2026-11-20", "", false],
+    ]);
+    expect(built.summary.quarters.find((q) => q.quarter === "2026-Q4")).toMatchObject({ eventsInWindow: 2, rowsGraded: 1, qualifying: 1, awaiting: 1 });
+  });
+
+  it("keeps two tracks on one URL and one deadline on their own grades when one leaves and another arrives", () => {
+    let md = at("2026-09-29", [ev("Track X", "2026-11-01"), ev("Track Y", "2026-11-01")], null).markdown;
+    md = fillWhere(fillWhere(md, byName("Track X"), YES), byName("Track Y"), NO);
+    const both = at("2026-09-30", [ev("Track Y", "2026-11-01"), ev("Track X", "2026-11-01")], md);
+    expect(cells(both.markdown)).toEqual([
+      ["Track X", "2026-11-01", "yes", false],
+      ["Track Y", "2026-11-01", "no", false],
+    ]);
+    // X leaves, Z arrives: Y keeps its own "no". (Z, alone with X's URL and deadline, is read as X renamed.)
+    const swapped = at("2026-09-30", [ev("Track Y", "2026-11-01"), ev("Track Z", "2026-11-01")], md);
+    expect(parseAiAllowedTable(swapped.markdown).find((r) => r.name === "Track Y")!.qualifies).toBe("no");
+  });
+
+  it("keeps an event on its own cells when a same-name event with another deadline leaves and a third arrives", () => {
+    let md = at("2026-09-29", [ev("Cup", "2026-10-05"), ev("Cup", "2026-12-01")], null).markdown;
+    md = fillWhere(fillWhere(md, byDay("2026-10-05"), YES), byDay("2026-12-01"), NO);
+    const built = at("2026-09-30", [ev("Cup", "2026-12-01"), ev("Cup", "2026-12-15")], md);
+    expect(parseAiAllowedTable(built.markdown).find((r) => r.deadline === "2026-12-01")!.qualifies).toBe("no");
+  });
+
+  it("matches on one changed field only where exactly one row and one event share the rest", () => {
+    // Two graded rows, one listed event with the same URL and name but a new deadline: which one moved? Neither inherits.
+    let md = at("2026-09-29", [ev("Cup", "2026-10-05"), ev("Cup", "2026-12-01")], null).markdown;
+    md = fillWhere(fillWhere(md, byDay("2026-10-05"), YES), byDay("2026-12-01"), NO);
+    const oneEvent = at("2026-09-30", [ev("Cup", "2026-11-11")], md);
+    expect(cells(oneEvent.markdown)).toEqual([
+      ["Cup", "2026-11-11", "", false],
+      ["Cup", "2026-10-05", "yes", true],
+      ["Cup", "2026-12-01", "no", true],
+    ]);
+    // One graded row, two listed events with its URL and name, neither on its deadline: neither inherits.
+    let one = at("2026-09-29", [ev("Cup", "2026-10-05")], null).markdown;
+    one = fillWhere(one, byName("Cup"), YES);
+    const twoEvents = at("2026-09-30", [ev("Cup", "2026-10-20"), ev("Cup", "2026-11-11")], one);
+    expect(cells(twoEvents.markdown)).toEqual([
+      ["Cup", "2026-10-20", "", false],
+      ["Cup", "2026-11-11", "", false],
+      ["Cup", "2026-10-05", "yes", true],
+    ]);
+    // The same on the URL and the deadline: two renamed events on one URL inherit nothing, nor does one of two.
+    let tracks = at("2026-09-29", [ev("Track X", "2026-11-01"), ev("Track Y", "2026-11-01")], null).markdown;
+    tracks = fillWhere(fillWhere(tracks, byName("Track X"), YES), byName("Track Y"), NO);
+    const renamedOne = at("2026-09-30", [ev("Track Q", "2026-11-01")], tracks);
+    expect(parseAiAllowedTable(renamedOne.markdown).find((r) => r.name === "Track Q")!.qualifies).toBe("");
+    const renamedBoth = at("2026-09-30", [ev("Track P", "2026-11-01"), ev("Track Q", "2026-11-01")], tracks);
+    expect(parseAiAllowedTable(renamedBoth.markdown).filter((r) => !r.kept).map((r) => r.qualifies)).toEqual(["", ""]);
+    let single = at("2026-09-29", [ev("Track X", "2026-11-01")], null).markdown;
+    single = fillWhere(single, byName("Track X"), YES);
+    const twoRenamed = at("2026-09-30", [ev("Track P", "2026-11-01"), ev("Track Q", "2026-11-01")], single);
+    expect(parseAiAllowedTable(twoRenamed.markdown).filter((r) => !r.kept).map((r) => r.qualifies)).toEqual(["", ""]);
+    expect(twoRenamed.summary.keptOutsideWindow).toBe(1);
+  });
+});
+
+describe("listed again after a closed quarter — an extension is never counted twice", () => {
+  const U = "https://example.org/extended";
+  const NO_CELLS = { clause: "silent research/rendered/prize-ext.txt", grade: "RENDERED", qualifies: "no" };
+  const september = () => {
+    const md = buildAiAllowedTable({ ...base("2026-09-01"), events: [{ name: "Ext cup", deadline: "2026-09-30", prize: null, url: U, otherUrls: [] }] }).markdown;
+    return fill(md, U, NO_CELLS);
+  };
+  const extended: ListedEvent[] = [{ name: "Ext cup", deadline: "2026-10-14", prize: null, url: U, otherUrls: [] }];
+  const october = (md: string) => buildAiAllowedTable({ ...base("2026-10-07"), events: extended, existingMarkdown: md });
+  const setGrade = (md: string, grade: string, qualifies = "") =>
+    md
+      .split("\n")
+      .map((l) => (l.startsWith("| Ext cup | 2026-10-14 |") ? l.replace(/\| [^|]* \| [^|]* \| [^|]* \|$/, `| ${grade === "RENDERED" ? NO_CELLS.clause : ""} | ${grade} | ${qualifies} |`) : l))
+      .join("\n");
+
+  it("names the row, keeps the closed record, and counts the new row as awaiting until a session decides", () => {
+    const built = october(september());
+    expect(built.summary).toMatchObject({ relisted: 1, sameEvent: 0 });
+    expect(built.summary.quarters.map((q) => [q.quarter, q.eventsInWindow, q.rowsGraded, q.awaiting])).toEqual([
+      ["2026-Q3", 1, 1, 0],
+      ["2026-Q4", 1, 0, 1],
+      ["2027-Q1", 0, 0, 0],
+    ]);
+    expect(built.markdown).toContain("1 row in the window has the URL and name of a row in a closed quarter's record (0 graded SAME EVENT)");
+  });
+
+  it("counts a row graded SAME EVENT only in the closed quarter, and stops asking for its render — also once its own quarter closes", () => {
+    const md = setGrade(october(september()).markdown, "SAME EVENT");
+    const built = october(md);
+    expect(built.summary).toMatchObject({ relisted: 1, sameEvent: 1 });
+    expect(built.summary.quarters.find((q) => q.quarter === "2026-Q4")).toMatchObject({ eventsInWindow: 0, rowsGraded: 0, awaiting: 0, unsettled: 0, qualifying: null });
+    expect(built.summary.quarters.find((q) => q.quarter === "2026-Q3")).toMatchObject({ eventsInWindow: 1, rowsGraded: 1, qualifying: 0 });
+    expect(built.urls).not.toContain(U);
+    expect(built.markdown).toContain("Graded SAME EVENT: counted in the closed quarter only.");
+    expect(parseAiAllowedTable(built.markdown).find((r) => r.deadline === "2026-10-14")!.grade).toBe("SAME EVENT");
+    // In January 2026-Q4 is closed too: the SAME EVENT row stays out of its count, so the quarter is not held open by it.
+    const january = buildAiAllowedTable({ ...base("2027-01-12"), events: [], existingMarkdown: built.markdown });
+    expect(january.summary.quarters.find((q) => q.quarter === "2026-Q4")).toMatchObject({ position: "closed", eventsInWindow: 0, unsettled: 0 });
+    expect(january.summary.quarters.find((q) => q.quarter === "2026-Q3")).toMatchObject({ eventsInWindow: 1, rowsGraded: 1 });
+  });
+
+  it("counts a row graded as usual as a new edition, in its own quarter", () => {
+    const built = october(setGrade(october(september()).markdown, "RENDERED", "no"));
+    expect(built.summary).toMatchObject({ relisted: 1, sameEvent: 0 });
+    expect(built.summary.quarters.find((q) => q.quarter === "2026-Q4")).toMatchObject({ eventsInWindow: 1, rowsGraded: 1, qualifying: 0 });
+    expect(built.markdown).toContain("Graded as a new edition: counted in its own quarter.");
+  });
+
+  it("lists a row again only for a closed row with its URL and its name, and only an earlier one", () => {
+    // Another name on the closed row's URL is another event (a track, a new title): not listed again.
+    const renamed: ListedEvent[] = [{ name: "Ext cup 2", deadline: "2026-10-14", prize: null, url: U, otherUrls: [] }];
+    const other = buildAiAllowedTable({ ...base("2026-10-07"), events: renamed, existingMarkdown: september() });
+    expect(other.summary.relisted).toBe(0);
+    expect(other.markdown).not.toMatch(/^## Listed again after a closed quarter$/m);
+    // In January both quarters are closed. The Q4 row's twin is the earlier Q3 row; the Q3 row has no earlier twin,
+    // so a SAME EVENT written on it (it can only be the same as an earlier event) is not settled.
+    const q4 = setGrade(october(september()).markdown, "RENDERED", "no");
+    const q3same = q4
+      .split("\n")
+      .map((l) => (l.startsWith("| Ext cup | 2026-09-30 |") ? l.replace("| silent research/rendered/prize-ext.txt | RENDERED | no |", "|  | SAME EVENT |  |") : l))
+      .join("\n");
+    expect(q3same).not.toBe(q4);
+    const january = buildAiAllowedTable({ ...base("2027-01-12"), events: [], existingMarkdown: q3same });
+    expect(january.summary.quarters.find((q) => q.quarter === "2026-Q3")).toMatchObject({ position: "closed", eventsInWindow: 1, unsettled: 1 });
+    expect(january.summary.quarters.find((q) => q.quarter === "2026-Q4")).toMatchObject({ position: "closed", eventsInWindow: 1, rowsGraded: 1 });
+  });
+
+  it("does not settle SAME EVENT on a row with no closed twin, nor with a verdict beside it", () => {
+    const lone = fill(buildAiAllowedTable(base()).markdown, ARC, { clause: "", grade: "SAME EVENT", qualifies: "" });
+    const a = buildAiAllowedTable({ ...base(), existingMarkdown: lone });
+    expect(a.summary.quarters.find((q) => q.quarter === "2026-Q4")).toMatchObject({ eventsInWindow: 8, unsettled: 1 });
+    expect(a.markdown).toContain("the grade says SAME EVENT, but no row of an earlier, closed quarter has this URL and name");
+    const withVerdict = october(setGrade(october(september()).markdown, "SAME EVENT", "yes"));
+    expect(withVerdict.summary.quarters.find((q) => q.quarter === "2026-Q4")).toMatchObject({ eventsInWindow: 1, unsettled: 1 });
+    expect(withVerdict.markdown).toContain("a SAME EVENT row leaves the qualifies cell empty");
   });
 });
 
@@ -368,6 +657,65 @@ describe("qualifying stays null until a row is graded — never inferred", () =>
     expect(rowState({ ...row, qualifies: "yes" }, all).state).toBe("unsettled");
     expect(rowState({ ...row, clause: "q research/rendered/../../etc/passwd", grade: "RENDERED", qualifies: "no" }, all).state).toBe("unsettled");
   });
+
+  it("accepts only a render-watch capture as the pointer: a capture file with its .meta.json, never urls.txt, README.md or a meta", () => {
+    const row = { name: "x", deadline: "2026-11-02", prize: "—", url: ARC, otherUrls: [], clause: "", grade: "RENDERED", qualifies: "yes" };
+    // What research/rendered/ really holds: captures with their metas, the render list, the README, a capture's meta.
+    const onDisk = new Set(
+      ["urls.txt", "README.md", "prize-arc.txt", "prize-arc.html", "prize-arc.meta.json", "prize-api.json", "prize-api.meta.json", "hand-notes.txt"].map(
+        (f) => `research/rendered/${f}`,
+      ),
+    );
+    const exists = (rel: string) => onDisk.has(rel);
+    const at = (clause: string) => rowState({ ...row, clause }, exists);
+    expect(at('"AI welcome" research/rendered/prize-arc.txt:12')).toEqual({ state: "graded", qualifies: true });
+    expect(at('"AI welcome" research/rendered/prize-arc.html')).toEqual({ state: "graded", qualifies: true });
+    expect(at('"AI welcome" research/rendered/prize-api.json')).toEqual({ state: "graded", qualifies: true });
+    for (const clause of [
+      "silent, see research/rendered/urls.txt",
+      "see research/rendered/README.md",
+      "research/rendered/prize-arc.meta.json",
+      "research/rendered/prize-arc.txt and research/rendered/urls.txt",
+    ]) {
+      const s = at(clause);
+      expect(s.state, clause).toBe("unsettled");
+      expect(s.state === "unsettled" && s.reasons.join("; "), clause).toContain("is not a render-watch capture");
+    }
+    // A file there that render-watch did not write: no <slug>.meta.json beside it.
+    const handNotes = at("research/rendered/hand-notes.txt");
+    expect(handNotes.state === "unsettled" && handNotes.reasons).toEqual([
+      "a capture pointer names a file with no <slug>.meta.json beside it, so render-watch did not capture it",
+    ]);
+    const missing = at("research/rendered/prize-gone.txt");
+    expect(missing.state === "unsettled" && missing.reasons).toEqual(["a capture pointer names no file in research/rendered/"]);
+  });
+
+  it("does not count a row that cites research/rendered/urls.txt, end to end through the run", async () => {
+    const root = mkdtempSync(join(tmpdir(), "prize-rules-pointer-"));
+    try {
+      const rendered = join(root, "research", "rendered");
+      mkdirSync(rendered, { recursive: true });
+      writeFileSync(join(rendered, "urls.txt"), "# the standing list\n");
+      writeFileSync(join(rendered, "prize-biohub.txt"), "rules text\n");
+      writeFileSync(join(rendered, "prize-biohub.meta.json"), "{}\n");
+      const first = await runPrizeIntake({ root, nowIso: MEASURED, fetchImpl: fakeFetch(FIXTURE_TEXT) });
+      expect(first.code, first.message).toBe(0);
+      const table = join(root, AI_ALLOWED_TABLE_FILE);
+      let md = readFileSync(table, "utf8");
+      md = fill(md, ARC, { clause: '"AI welcome" research/rendered/urls.txt', grade: "RENDERED", qualifies: "yes" });
+      md = fill(md, BIOHUB, { clause: '"AI welcome" research/rendered/prize-biohub.txt', grade: "RENDERED", qualifies: "yes" });
+      writeFileSync(table, md);
+      const second = await runPrizeIntake({ root, nowIso: MEASURED, fetchImpl: fakeFetch(FIXTURE_TEXT) });
+      expect(second.code, second.message).toBe(0);
+      const state = JSON.parse(readFileSync(join(root, PRIZE_INTAKE_FILE), "utf8"));
+      expect(state.aiAllowed.quarters).toEqual([
+        { quarter: "2026-Q3", position: "current", eventsInWindow: 1, rowsGraded: 1, qualifying: 1, awaiting: 0, unsettled: 0 },
+        { quarter: "2026-Q4", position: "next", eventsInWindow: 8, rowsGraded: 0, qualifying: null, awaiting: 7, unsettled: 1 },
+      ]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
 });
 
 describe("a table the job cannot read back is never overwritten", () => {
@@ -379,12 +727,19 @@ describe("a table the job cannot read back is never overwritten", () => {
 
   it("writes nothing and exits 1 when a row lost a cell, the header moved, or a key is not a URL", async () => {
     const good = buildAiAllowedTable(base()).markdown;
+    const graded = fill(good, ARC, { clause: "silent research/rendered/prize-arc.txt", grade: "RENDERED", qualifies: "no" });
+    const arcRow = `| <${ARC}> | — | silent research/rendered/prize-arc.txt | RENDERED | no |`;
+    expect(graded).toContain(arcRow);
     const broken = [
       good.replace(`| <${ARC}> |`, `| ${ARC} |`), // key not in <...>
-      good.replace(/\| ARC Prize 2026 - ARC-AGI-2 \| /, "| "), // a cell short
+      good.replace(/\| ARC Prize 2026 - ARC-AGI-2 \| /, "| "), // a cell short (the name)
+      graded.replace(arcRow, `| <${ARC}> | — | silent research/rendered/prize-arc.txt | RENDERED |`), // only the Qualifies cell lost
+      graded.replace(arcRow, `${arcRow} extra |`), // a cell too many
       good.replace("| Grade |", "| Verdict |"), // header moved
       good.replace("| 2026-11-02 |", "| 2 Nov 2026 |"), // deadline not ISO
     ];
+    expect(new Set(broken).size).toBe(broken.length);
+    for (const md of broken) expect(md).not.toBe(good);
     for (const md of broken) {
       const table = join(root, AI_ALLOWED_TABLE_FILE);
       mkdirSync(dirname(table), { recursive: true });
@@ -499,6 +854,9 @@ describe("readPrizeIntake — the report line carries the quarters", () => {
       (x) => (x.aiAllowed.quarters[0].position = "closed"),
       (x) => (x.aiAllowed.window = ["2026-Q4", "2027-Q1"]),
       (x) => (x.aiAllowed.urlsAwaiting = -1),
+      (x) => (x.aiAllowed.relisted = -1),
+      (x) => delete x.aiAllowed.sameEvent,
+      (x) => Object.assign(x.aiAllowed, { relisted: 1, sameEvent: 2 }), // more SAME EVENT rows than rows listed again
       (x) => (x.aiAllowed = "yes"),
     ];
     for (const mutate of bad) {

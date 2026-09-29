@@ -11,23 +11,33 @@
  *   - THE JOB (the weekly prize-intake run) lists every event whose deadline, as the list states it, falls in the
  *     current or the next calendar quarter, in research/measurements/ai-allowed-events.md: name, deadline, prize as
  *     stated and the URLs the list gives — plus three columns it NEVER fills: "AI clause (verbatim, with capture
- *     pointer)", "Grade", "Qualifies (yes/no)". It carries a session's cells forward by the event URL (the row's key)
- *     and never writes a verdict: no row is graded by a machine, and no "yes" is ever the job's.
+ *     pointer)", "Grade", "Qualifies (yes/no)". It carries a session's cells forward to the same event (THE MERGE: the
+ *     row's URL with its name and deadline) and never writes a verdict: no row is graded by a machine, and no "yes"
+ *     is ever the job's.
  *   - A READING SESSION renders the pages (the URLs still awaiting a reading are written, in render-watch's urls
  *     syntax, to research/measurements/ai-allowed-events.urls.txt — a file to paste into render-watch.yml's `urls`
  *     input, never appended to research/rendered/urls.txt; tiktok.com URLs are refused, CHANNEL_LOOP.md §9), reads the
  *     captures and fills the three cells.
  *
  * WHAT COUNTS AS GRADED. A row counts only when its qualifies cell is yes or no, its grade is RENDERED, and its clause
- * cell names a capture that exists under research/rendered/. Anything else a session wrote is "unsettled": counted
- * neither graded nor awaiting, and named in the table with the reason. A quarter's qualifying count is null until at
- * least one of its rows is graded — never inferred, never 0 by default — and while some rows are ungraded it is a
- * floor, not the count.
+ * cell names a render-watch capture: research/rendered/<slug>.txt, .html, .pdf, .json or .xml that exists with its
+ * <slug>.meta.json beside it (never urls.txt, README.md or a .meta.json). Anything else a session wrote is
+ * "unsettled": counted neither graded nor awaiting, and named in the table with the reason. A quarter's qualifying
+ * count is null until at least one of its rows is graded — never inferred, never 0 by default — and while some rows
+ * are ungraded it is a floor, not the count.
  *
- * THE MERGE. A listed event takes the cells of the row with its URL and name, else of the one row with its URL, among
- * rows whose deadline is still in the current quarter or later. A closed quarter's rows are its record and are never
- * re-matched: an event that reuses a URL a year later (the list does reuse URLs) is a new event with new rules. A
- * filled row whose event left the window is kept in its own section, counted in no quarter; an untouched one goes.
+ * THE MERGE. The list sometimes gives one event twice (same URL, name and deadline); it is tabled once. A listed event
+ * takes the cells of the row with its URL, name and deadline; else, where exactly one row and one listed event share
+ * it on each side, of the row with its URL and name (a moved deadline) or with its URL and deadline (a renamed event).
+ * A URL alone never carries a verdict: the list reuses URLs across tracks and years. Only rows whose deadline is still
+ * in the current quarter or later can match; a closed quarter's rows are its record and are never re-matched. A filled
+ * row no listed event claimed is kept in its own section, counted in no quarter; an untouched one goes. The table's
+ * order depends on the rows alone, never on the list's order.
+ *
+ * LISTED AGAIN. A row in the window with the URL and name of a row in a closed quarter's record may be that event with
+ * a later deadline (counted there already) or a new edition. The job cannot tell, so it names the row and a session
+ * decides: grade SAME EVENT (qualifies empty) and it is counted only in the closed quarter; grade it as usual and it is
+ * a new edition, counted in its own. Until then it is awaiting, so its quarter is not fully graded.
  *
  * THE KILL (§13: two consecutive quarters under 3 qualifying) is computed only from CLOSED quarters whose every row
  * is graded. Until two such quarters sit side by side it is null — not computable — and never "not met".
@@ -258,21 +268,41 @@ export function parseAiAllowedTable(markdown: string): TableRow[] {
 // A row's state: read from the session's three cells, and from nothing else
 // ---------------------------------------------------------------------------------------------------------------------
 
-export type RowState = { state: "awaiting" } | { state: "graded"; qualifies: boolean } | { state: "unsettled"; reasons: string[] };
+export type RowState =
+  | { state: "awaiting" }
+  | { state: "graded"; qualifies: boolean }
+  | { state: "same-event" }
+  | { state: "unsettled"; reasons: string[] };
 
 /** A capture pointer: a file directly under research/rendered/ (no path segments, so no way out of it). */
 const POINTER_RE = /research\/rendered\/([A-Za-z0-9][A-Za-z0-9._-]*)/g;
+/**
+ * A file render-watch writes as a capture: <slug>.<extension> for the extensions its extensionFor gives a readable
+ * body (bin is not readable), or the <slug>.txt it extracts from HTML and PDF. Always with <slug>.meta.json beside it.
+ */
+const CAPTURE_FILE_RE = /^([A-Za-z0-9][A-Za-z0-9._-]*)\.(txt|html|pdf|json|xml)$/;
+/** The grade a session writes on a row listed again after a closed quarter, when it is that quarter's event. */
+const SAME_EVENT_RE = /^\[?same event\]?$/i;
+
+const many = (n: number, one: string, more: string) => (n === 1 ? one : `${n} ${more}`);
 
 /**
- * Awaiting: the session wrote nothing. Graded: yes or no, grade RENDERED, and a clause naming captures that all exist.
- * Unsettled: anything else a session wrote, with the reasons.
+ * Awaiting: the session wrote nothing. Graded: yes or no, grade RENDERED, and a clause whose every capture pointer
+ * names a render-watch capture that exists with its meta. Same-event: grade SAME EVENT, qualifies empty, on a row
+ * `relisted` (it has the URL and name of a row in an earlier, closed quarter's record). Unsettled: anything else a
+ * session wrote, with the reasons.
  */
-export function rowState(row: TableRow, captureExists: (relPath: string) => boolean): RowState {
+export function rowState(row: TableRow, captureExists: (relPath: string) => boolean, relisted = false): RowState {
   const clause = row.clause.trim();
   const grade = row.grade.trim();
   const verdict = row.qualifies.trim().toLowerCase();
   if (clause === "" && grade === "" && verdict === "") return { state: "awaiting" };
   const reasons: string[] = [];
+  if (SAME_EVENT_RE.test(grade)) {
+    if (!relisted) reasons.push("the grade says SAME EVENT, but no row of an earlier, closed quarter has this URL and name");
+    if (verdict !== "") reasons.push("a SAME EVENT row leaves the qualifies cell empty: its verdict is the closed quarter's row");
+    return reasons.length ? { state: "unsettled", reasons } : { state: "same-event" };
+  }
   if (verdict !== "yes" && verdict !== "no") {
     reasons.push(verdict === "" ? "no yes/no in the qualifies cell" : "the qualifies cell is neither yes nor no");
   }
@@ -283,8 +313,23 @@ export function rowState(row: TableRow, captureExists: (relPath: string) => bool
   if (pointers.length === 0) {
     reasons.push(`the clause cell names no capture under ${RENDERED_DIR}/`);
   } else {
-    const missing = pointers.filter((p) => !captureExists(`${RENDERED_DIR}/${p}`)).length;
-    if (missing) reasons.push(`${missing === 1 ? "a capture pointer names" : `${missing} capture pointers name`} no file in ${RENDERED_DIR}/`);
+    // urls.txt, README.md, a .meta.json or any other file there is not a capture: it shows no rules page was rendered.
+    const slugs = pointers.map((p) => (p === "urls.txt" || p.endsWith(".meta.json") ? null : (CAPTURE_FILE_RE.exec(p)?.[1] ?? null)));
+    const notCapture = slugs.filter((slug) => slug === null).length;
+    const missing = pointers.filter((p, k) => slugs[k] !== null && !captureExists(`${RENDERED_DIR}/${p}`)).length;
+    const noMeta = pointers.filter(
+      (p, k) => slugs[k] !== null && captureExists(`${RENDERED_DIR}/${p}`) && !captureExists(`${RENDERED_DIR}/${slugs[k]}.meta.json`),
+    ).length;
+    if (notCapture) {
+      reasons.push(
+        `${many(notCapture, "a capture pointer names", "capture pointers name")} a file that is not a render-watch capture ` +
+          "(<slug>.txt, .html, .pdf, .json or .xml; never urls.txt, README.md or a .meta.json)",
+      );
+    }
+    if (missing) reasons.push(`${many(missing, "a capture pointer names", "capture pointers name")} no file in ${RENDERED_DIR}/`);
+    if (noMeta) {
+      reasons.push(`${many(noMeta, "a capture pointer names", "capture pointers name")} a file with no <slug>.meta.json beside it, so render-watch did not capture it`);
+    }
   }
   return reasons.length ? { state: "unsettled", reasons } : { state: "graded", qualifies: verdict === "yes" };
 }
@@ -298,7 +343,10 @@ export interface AiAllowedQuarter {
   quarter: string;
   /** current / next: the reading's window, refreshed from the list; closed: kept as the record of its last reading. */
   position: "current" | "next" | "closed";
-  /** Rows in the table for the quarter: events the list placed there (for a closed quarter, at its last reading). */
+  /**
+   * Rows in the table for the quarter: events the list placed there (for a closed quarter, at its last reading), less
+   * any a session graded SAME EVENT (counted in the closed quarter that holds it already).
+   */
   eventsInWindow: number;
   /** Rows a session graded (yes or no, RENDERED, an existing capture pointer). */
   rowsGraded: number;
@@ -328,6 +376,10 @@ export interface AiAllowedSummary {
   keptOutsideWindow: number;
   /** Events in the window with no usable URL in the list: not tabled, since a row needs a key. */
   untabled: number;
+  /** Rows in the window with the URL and name of a row in a closed quarter's record (see LISTED AGAIN). */
+  relisted: number;
+  /** Of those, the rows a session graded SAME EVENT: counted in the closed quarter only. */
+  sameEvent: number;
   /** URL lines in the urls file. */
   urlsAwaiting: number;
   /** URLs of ungraded rows refused for render (tiktok.com). */
@@ -377,7 +429,15 @@ export interface BuiltAiAllowed {
 }
 
 const hasSessionCells = (r: TableRow) => r.clause !== "" || r.grade !== "" || r.qualifies !== "";
-const byDeadline = (a: TableRow, b: TableRow) => (a.deadline === b.deadline ? (a.name < b.name ? -1 : a.name > b.name ? 1 : 0) : a.deadline < b.deadline ? -1 : 1);
+const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
+/** Deadline, then name, then URL: a total order on the rows, so the table never depends on the list's order. */
+const byDeadline = (a: TableRow, b: TableRow) => compare(a.deadline, b.deadline) || compare(a.name, b.name) || compare(a.url, b.url);
+
+/** A row's twins in a closed quarter's record: same URL and name, deadline in an earlier quarter (LISTED AGAIN). */
+function earlierTwins(row: TableRow, record: readonly TableRow[]): TableRow[] {
+  const quarter = quarterOf(row.deadline);
+  return record.filter((c) => c !== row && c.url === row.url && c.name === row.name && quarterOf(c.deadline) < quarter);
+}
 
 export function buildAiAllowedTable(input: BuildAiAllowedInput): BuiltAiAllowed {
   const [current, next] = windowQuarters(input.measuredOn);
@@ -388,9 +448,12 @@ export function buildAiAllowedTable(input: BuildAiAllowedInput): BuiltAiAllowed 
     return q === current || q === next;
   });
   const untabled = inWindow.filter((e) => !isUsableUrl(e.url)).length;
-  const fresh: TableRow[] = inWindow
-    .filter((e): e is ListedEvent & { url: string } => isUsableUrl(e.url))
-    .map((e) => ({
+  // One row per event: the list sometimes gives an event twice (same URL, name and deadline), and one event is one
+  // row, so a session's verdict on it is one verdict and it is counted once. The first entry's prize is kept.
+  const byKey = new Map<string, TableRow>();
+  for (const e of inWindow) {
+    if (!isUsableUrl(e.url)) continue;
+    const row: TableRow = {
       name: cellText(e.name) || "(no name in the list)",
       deadline: e.deadline,
       prize: e.prize === null ? NONE : cellText(e.prize) || NONE,
@@ -399,31 +462,40 @@ export function buildAiAllowedTable(input: BuildAiAllowedInput): BuiltAiAllowed 
       clause: "",
       grade: "",
       qualifies: "",
-    }));
+    };
+    const key = JSON.stringify([row.url, row.name, row.deadline]);
+    const twin = byKey.get(key);
+    if (twin) twin.otherUrls = [...new Set([...twin.otherUrls, ...row.otherUrls])];
+    else byKey.set(key, row);
+  }
+  const fresh = [...byKey.values()];
 
-  // Match each listed event to the row a session may have filled: the same URL and name first, then the URL alone
-  // where it is unique on both sides (so a renamed event or a moved deadline keeps its cells). Only rows whose deadline
-  // is still in the current quarter or later can match: a closed quarter's row is its record, and an event that
-  // reuses a URL a year later (the list does this) is a new event with new rules, never last year's grade.
+  // Match each listed event to the row a session may have filled. First the same event: URL, name and deadline all
+  // unchanged. Then one field changed, only where exactly one row and one listed event share the rest: the same URL and
+  // name (a moved deadline), then the same URL and deadline (a renamed event). A URL alone never carries a verdict:
+  // the list reuses URLs across tracks and across years. Only rows whose deadline is still in the current quarter or
+  // later can match: a closed quarter's row is its record, never last year's grade for this year's event.
   const open = existing.map((x) => quarterOf(x.deadline) >= current);
   const used = new Set<number>();
   const match = fresh.map(() => -1);
+  const claim = (i: number, j: number) => {
+    used.add(j);
+    match[i] = j;
+  };
   fresh.forEach((row, i) => {
-    const k = existing.findIndex((x, j) => open[j] && !used.has(j) && x.url === row.url && x.name === row.name);
-    if (k >= 0) {
-      used.add(k);
-      match[i] = k;
-    }
+    const j = existing.findIndex((x, k) => open[k] && !used.has(k) && x.url === row.url && x.name === row.name && x.deadline === row.deadline);
+    if (j >= 0) claim(i, j);
   });
-  fresh.forEach((row, i) => {
-    if (match[i] >= 0) return;
-    const candidates = existing.map((_, j) => j).filter((j) => open[j] && !used.has(j) && existing[j].url === row.url);
-    const rivals = fresh.filter((y, k) => match[k] < 0 && y.url === row.url).length;
-    if (candidates.length === 1 && rivals === 1) {
-      used.add(candidates[0]);
-      match[i] = candidates[0];
-    }
-  });
+  const sameName = (a: TableRow, b: TableRow) => a.name === b.name;
+  const sameDeadline = (a: TableRow, b: TableRow) => a.deadline === b.deadline;
+  for (const same of [sameName, sameDeadline]) {
+    fresh.forEach((row, i) => {
+      if (match[i] >= 0) return;
+      const candidates = existing.flatMap((x, j) => (open[j] && !used.has(j) && x.url === row.url && same(x, row) ? [j] : []));
+      const rivals = fresh.filter((y, k) => match[k] < 0 && y.url === row.url && same(y, row)).length;
+      if (candidates.length === 1 && rivals === 1) claim(i, candidates[0]);
+    });
+  }
   const windowRows = fresh.map((row, i) => {
     const old = existing[match[i]];
     return old ? { ...row, clause: old.clause, grade: old.grade, qualifies: old.qualifies } : row;
@@ -440,8 +512,13 @@ export function buildAiAllowedTable(input: BuildAiAllowedInput): BuiltAiAllowed 
     else if (hasSessionCells(row)) kept.push({ ...row, kept: true });
   });
 
+  const twins = new Map<TableRow, TableRow[]>();
+  for (const row of [...windowRows, ...closedRows]) {
+    const t = earlierTwins(row, closedRows);
+    if (t.length) twins.set(row, t);
+  }
   const states = new Map<TableRow, RowState>();
-  for (const row of [...windowRows, ...closedRows, ...kept]) states.set(row, rowState(row, input.captureExists));
+  for (const row of [...windowRows, ...closedRows, ...kept]) states.set(row, rowState(row, input.captureExists, twins.has(row)));
 
   const rowsByQuarter = new Map<string, TableRow[]>([
     [current, []],
@@ -456,13 +533,16 @@ export function buildAiAllowedTable(input: BuildAiAllowedInput): BuiltAiAllowed 
   kept.sort(byDeadline);
 
   const quarters: AiAllowedQuarter[] = [...rowsByQuarter.keys()].sort().map((quarter) => {
-    const rows = rowsByQuarter.get(quarter)!;
-    const s = rows.map((r) => states.get(r)!);
+    // A SAME EVENT row stays in its quarter's table and is counted only in the closed quarter that holds it.
+    const s = rowsByQuarter
+      .get(quarter)!
+      .map((r) => states.get(r)!)
+      .filter((x) => x.state !== "same-event");
     const graded = s.filter((x): x is { state: "graded"; qualifies: boolean } => x.state === "graded");
     return {
       quarter,
       position: quarter === current ? "current" : quarter === next ? "next" : "closed",
-      eventsInWindow: rows.length,
+      eventsInWindow: s.length,
       rowsGraded: graded.length,
       qualifying: graded.length ? graded.filter((x) => x.qualifies).length : null,
       awaiting: s.filter((x) => x.state === "awaiting").length,
@@ -471,14 +551,16 @@ export function buildAiAllowedTable(input: BuildAiAllowedInput): BuiltAiAllowed 
   });
   const kill = computeKill(quarters);
 
-  // The URLs still awaiting a reading: every tabled row no session has graded, window quarters first.
+  // The URLs still awaiting a reading: every tabled row no session has graded or settled as SAME EVENT, window
+  // quarters first.
   const order = [current, next, ...[...rowsByQuarter.keys()].filter((q) => q !== current && q !== next).sort().reverse()];
   const renderGroups: { quarter: string; row: TableRow; urls: string[] }[] = [];
   const seen = new Set<string>();
   const refused = new Set<string>();
   for (const quarter of order) {
     for (const row of rowsByQuarter.get(quarter)!) {
-      if (states.get(row)!.state === "graded") continue;
+      const state = states.get(row)!.state;
+      if (state === "graded" || state === "same-event") continue;
       const urls: string[] = [];
       for (const url of [row.url, ...row.otherUrls]) {
         if (isRefusedForRender(url)) refused.add(url);
@@ -491,6 +573,7 @@ export function buildAiAllowedTable(input: BuildAiAllowedInput): BuiltAiAllowed 
     }
   }
 
+  const relisted = windowRows.filter((r) => twins.has(r)).sort(byDeadline);
   const summary: AiAllowedSummary = {
     table: AI_ALLOWED_TABLE_FILE,
     urlsFile: AI_ALLOWED_URLS_FILE,
@@ -498,12 +581,14 @@ export function buildAiAllowedTable(input: BuildAiAllowedInput): BuiltAiAllowed 
     quarters,
     keptOutsideWindow: kept.length,
     untabled,
+    relisted: relisted.length,
+    sameEvent: relisted.filter((r) => states.get(r)!.state === "same-event").length,
     urlsAwaiting: seen.size,
     urlsRefused: refused.size,
     kill,
   };
   return {
-    markdown: renderMarkdown(input, summary, order, rowsByQuarter, kept, states),
+    markdown: renderMarkdown(input, summary, order, rowsByQuarter, kept, states, relisted.map((row) => ({ row, twins: twins.get(row)! }))),
     urls: renderUrls(input, summary, renderGroups),
     summary,
   };
@@ -553,6 +638,7 @@ function renderMarkdown(
   rowsByQuarter: ReadonlyMap<string, readonly TableRow[]>,
   kept: readonly TableRow[],
   states: ReadonlyMap<TableRow, RowState>,
+  relisted: readonly { row: TableRow; twins: readonly TableRow[] }[],
 ): string {
   const out: string[] = [];
   out.push("# AI-allowed prize events — the rules-page half of BOARD-LOOP §13");
@@ -568,7 +654,9 @@ function renderMarkdown(
       "The mlcontests list has no field that says so, and a machine must not guess it from prose, so the work is split. " +
       "The weekly job lists every event whose deadline, as the list states it, falls in the current or the next quarter, " +
       "with the URLs the list gives; a reading session grades each row from a rendered rules page. The job copies a " +
-      "session's cells forward by the event URL (the row's key) and never writes a verdict itself.",
+      "session's cells forward to the same event — the row's URL with the same name and deadline, or with one of the two " +
+      "changed where no other row or event shares the rest (a URL alone never carries a verdict) — and never writes a " +
+      "verdict itself.",
   );
   out.push("");
   out.push("**How a reading session fills a row.**");
@@ -587,7 +675,9 @@ function renderMarkdown(
       "(`research/rendered/<file>`, a line number if you like); for rules that say nothing about AI, say so and still " +
       "give the pointer. **Grade**: `RENDERED` when the clause was read from a capture; otherwise `SNIPPET` or " +
       "`BLOCKED`, with Qualifies left empty. **Qualifies**: `yes` only when the rules explicitly permit AI-built or " +
-      "automated entries and require no human-authorship attestation; `no` otherwise, silent rules included.",
+      "automated entries and require no human-authorship attestation; `no` otherwise, silent rules included. A row " +
+      "under *Listed again after a closed quarter* is decided first: `SAME EVENT` in Grade, Qualifies empty, if it is " +
+      "that quarter's event with a later deadline; graded as above if it is a new edition.",
   );
   out.push(
     "4. Commit to main. `state/colony/prize-intake.json` and the colony report pick the grades up at the next weekly " +
@@ -595,8 +685,9 @@ function renderMarkdown(
   );
   out.push("");
   out.push(
-    "**What counts as graded.** A row counts only with `yes` or `no`, grade `RENDERED`, and a clause cell naming a " +
-      "file that exists under `research/rendered/`. Anything else a session wrote is *unsettled*: counted neither graded " +
+    "**What counts as graded.** A row counts only with `yes` or `no`, grade `RENDERED`, and a clause cell whose every " +
+      "pointer names a render-watch capture: `research/rendered/<slug>.txt`, `.html`, `.pdf`, `.json` or `.xml` that " +
+      "exists with its `<slug>.meta.json` beside it (never `urls.txt`, `README.md` or a `.meta.json`). Anything else a session wrote is *unsettled*: counted neither graded " +
       "nor awaiting, and listed at the end with the reason. A quarter's qualifying count stays empty (null) until at " +
       "least one of its rows is graded, and while some rows are ungraded it is a floor, not the count.",
   );
@@ -634,6 +725,13 @@ function renderMarkdown(
     out.push("");
     out.push(`${plural(summary.keptOutsideWindow, "row a session filled is", "rows a session filled are")} kept outside the window, in no quarter's count.`);
   }
+  if (summary.relisted) {
+    out.push("");
+    out.push(
+      `${plural(summary.relisted, "row in the window has", "rows in the window have")} the URL and name of a row in a closed ` +
+        `quarter's record (${summary.sameEvent} graded SAME EVENT); see *Listed again after a closed quarter*.`,
+    );
+  }
 
   for (const quarter of order) {
     const rows = rowsByQuarter.get(quarter)!;
@@ -650,12 +748,39 @@ function renderMarkdown(
     out.push("## Kept outside the window — rows a session filled whose event is no longer in it");
     out.push("");
     out.push(
-      "The list no longer places these events in the current or the next quarter (a URL changed, the event was removed, " +
-        "or its deadline moved out). They are kept so no reading is lost, and counted in no quarter. If the event comes " +
-        "back under the same URL while its deadline has not passed into a closed quarter, its cells go with it.",
+      "No listed event in the current or the next quarter is these rows' event any more (a URL changed, the event was " +
+        "removed, its deadline moved out, or its name and deadline both changed, which makes it a different event). They " +
+        "are kept so no reading is lost, and counted in no quarter. If the event comes back under the same URL with the " +
+        "same name or the same deadline, while its deadline has not passed into a closed quarter, its cells go with it.",
     );
     out.push("");
     out.push(...tableLines(kept));
+  }
+
+  if (relisted.length) {
+    out.push("");
+    out.push("## Listed again after a closed quarter");
+    out.push("");
+    out.push(
+      "Each row below has the URL and the name of a row in a closed quarter's record. The list cannot say whether it is " +
+        "that event with a later deadline (an extension, counted in the closed quarter already) or a new edition with " +
+        "its own rules, so the job does not decide. A reading session does: `SAME EVENT` in its Grade cell, Qualifies " +
+        "empty, if it is the closed quarter's event — the row stays in its quarter's table and is counted only in the " +
+        "closed quarter; graded as usual if it is a new edition — then it is counted in its own quarter. Until then it " +
+        "is awaiting, so its quarter is not fully graded.",
+    );
+    out.push("");
+    for (const { row, twins } of relisted) {
+      const state = states.get(row)!.state;
+      const decided =
+        state === "same-event"
+          ? "graded SAME EVENT: counted in the closed quarter only"
+          : state === "graded"
+            ? "graded as a new edition: counted in its own quarter"
+            : "not decided yet";
+      const record = twins.map((t) => `${quarterOf(t.deadline)} (deadline ${t.deadline})`).join(", ");
+      out.push(`- ${row.deadline} · ${row.name} (<${row.url}>): in the record of ${record}. ${decided[0].toUpperCase()}${decided.slice(1)}.`);
+    }
   }
 
   const unsettled = [...order.flatMap((q) => rowsByQuarter.get(q)!), ...kept]
@@ -706,9 +831,10 @@ export function problemWithAiAllowed(value: unknown, measuredOn: unknown): strin
   if (typeof value !== "object" || value === null || Array.isArray(value)) return "aiAllowed is not an object";
   const s = value as Record<string, unknown>;
   if (s.table !== AI_ALLOWED_TABLE_FILE || s.urlsFile !== AI_ALLOWED_URLS_FILE) return "aiAllowed names other files";
-  for (const key of ["keptOutsideWindow", "untabled", "urlsAwaiting", "urlsRefused"]) {
+  for (const key of ["keptOutsideWindow", "untabled", "relisted", "sameEvent", "urlsAwaiting", "urlsRefused"]) {
     if (!isCount(s[key])) return `aiAllowed.${key} is not a count`;
   }
+  if ((s.sameEvent as number) > (s.relisted as number)) return "aiAllowed.sameEvent is more than the rows listed again";
   if (typeof measuredOn !== "string" || !isIsoDate(measuredOn)) return "no usable measuredOn for the quarters";
   const window = windowQuarters(measuredOn);
   if (!Array.isArray(s.window) || s.window.length !== 2 || s.window[0] !== window[0] || s.window[1] !== window[1]) {
@@ -775,6 +901,10 @@ export function describeAiAllowed(s: AiAllowedSummary): string {
     ". " +
     (s.keptOutsideWindow ? `${plural(s.keptOutsideWindow, "filled row is", "filled rows are")} kept outside the window. ` : "") +
     (s.untabled ? `${plural(s.untabled, "event in the window has", "events in the window have")} no usable URL and ${s.untabled === 1 ? "is" : "are"} not tabled. ` : "") +
+    (s.relisted
+      ? `${plural(s.relisted, "row in the window is", "rows in the window are")} listed again after a closed quarter (same URL and name), ` +
+        `${s.sameEvent} graded SAME EVENT and counted there only. `
+      : "") +
     `Kill (two consecutive closed, fully graded quarters under ${QUALIFYING_FLOOR} qualifying): ${kill}`
   );
 }
