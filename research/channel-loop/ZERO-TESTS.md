@@ -230,6 +230,8 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 221 | terms audit (tick 21): gov.il | https://www.gov.il/he/general/terms_of_use | whether gov.il's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
 | 222 | terms audit (tick 21): ypay | https://ypay.co.il/front/terms | whether ypay's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
 | 223 | terms audit (tick 21): stripe | https://stripe.com/legal | whether stripe's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
+| 224 | terms audit (tick 22): tipalti | https://tipalti.com/legal/website-terms/ | whether tipalti's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
+| 225 | terms audit (tick 22): knesset | https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx | whether knesset's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
 
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no

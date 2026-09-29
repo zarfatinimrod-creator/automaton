@@ -656,7 +656,7 @@ https://docs.github.com/en/rest/billing/budgets?apiVersion=2022-11-28	gh-docs-re
 # research/channel-loop/ZERO-TESTS.md row 194 — terms audit (tick 20): btl.gov.il's terms page, URL from btl-self-employed-rates.html:1999; fetched once so its terms can be read (29.9.2026).
 https://www.btl.gov.il/About/Pages/%d7%aa%d7%a0%d7%90%d7%99%20%d7%a9%d7%99%d7%9e%d7%95%d7%a9.aspx	terms-btl
 # research/channel-loop/ZERO-TESTS.md row 195 — terms audit (tick 20): data.gov.il's terms page, URL from research scouts data-apis--israeli-open-data.md:27; fetched once so its terms can be read (29.9.2026).
-https://data.gov.il/he/terms-of-use	terms-data-gov-il
+# paused (terms unread, 29.9.2026): data.gov.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://data.gov.il/he/terms-of-use	terms-data-gov-il
 # research/channel-loop/ZERO-TESTS.md row 196 — terms audit (tick 20): freemius's terms page, URL from freemius-our-pricing.html:63; fetched once so its terms can be read (29.9.2026).
 # paused (terms audit, 29.9.2026): freemius.com — see TERMS_BARRED in scripts/render-watch.mjs — https://freemius.com/terms/	terms-freemius
 # research/channel-loop/ZERO-TESTS.md row 197 — terms audit (tick 20): hackmd's terms page, URL from astro-themes-guidelines-hackmd.html:994; fetched once so its terms can be read (29.9.2026).
@@ -682,7 +682,7 @@ https://lomdiml.co.il/%d7%aa%d7%a7%d7%a0%d7%95%d7%9f-%d7%90%d7%aa%d7%a8/	terms-l
 # research/channel-loop/ZERO-TESTS.md row 207 — terms audit (tick 20): polar's terms page, URL from polar-acceptable-use.html:401; fetched once so its terms can be read (29.9.2026).
 https://polar.sh/legal/acceptable-use-policy	terms-polar-aup
 # research/channel-loop/ZERO-TESTS.md row 208 — terms audit (tick 20): stripe's terms page, URL from stripe-global.html:17638; fetched once so its terms can be read (29.9.2026).
-https://stripe.com/privacy	terms-stripe-privacy-and-terms
+# paused (terms unread, 29.9.2026): stripe.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://stripe.com/privacy	terms-stripe-privacy-and-terms
 # research/channel-loop/ZERO-TESTS.md row 209 — terms audit (tick 20): sumit's terms page, URL from sumit-invoices.html:118; fetched once so its terms can be read (29.9.2026).
 # paused (terms unread, 29.9.2026): sumit.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.sumit.co.il/he/articles/10340800	terms-sumit
 # research/channel-loop/ZERO-TESTS.md row 210 — terms audit (tick 20): un.org's terms page, URL from research/faceless-youtube/LICENCE-IGO-DECISION.md:30; fetched once so its terms can be read (29.9.2026).
@@ -698,18 +698,22 @@ https://docs.github.com/en/billing/how-tos/set-up-budgets	gh-docs-set-up-budgets
 # research/channel-loop/ZERO-TESTS.md row 215 — Mozilla (8): GitHub's budgets-and-alerts docs (tick 20) (29.9.2026).
 https://docs.github.com/en/billing/concepts/budgets-and-alerts	gh-docs-budgets-and-alerts
 # research/channel-loop/ZERO-TESTS.md row 216 — terms audit (tick 21): bitsofgold's terms page, URL from theWallProject/mono links.json:41 (github); fetched once so its terms can be read (29.9.2026).
-https://www.bitsofgold.co.il/terms	terms-bitsofgold
+# paused (terms unread, 29.9.2026): bitsofgold.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.bitsofgold.co.il/terms	terms-bitsofgold
 # research/channel-loop/ZERO-TESTS.md row 217 — terms audit (tick 21): greeninvoice's terms page, URL from theWallProject/mono ai_prompt.txt:35 (github); fetched once so its terms can be read (29.9.2026).
-https://www.greeninvoice.co.il/terms/	terms-greeninvoice
+# paused (terms unread, 29.9.2026): greeninvoice.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.greeninvoice.co.il/terms/	terms-greeninvoice
 # research/channel-loop/ZERO-TESTS.md row 218 — terms audit (tick 21): mr.gov.il's terms page, URL from OpenBudget/budgetkey-data-pipelines fixture publication_595431:831 (github); fetched once so its terms can be read (29.9.2026).
-http://www.mr.gov.il/Pages/Terms-of-Use.aspx	terms-mr-gov-il
+# paused (terms unread, 29.9.2026): mr.gov.il is NO_TERMS in research/channel-loop/terms-verdicts.json — http://www.mr.gov.il/Pages/Terms-of-Use.aspx	terms-mr-gov-il
 # research/channel-loop/ZERO-TESTS.md row 219 — terms audit (tick 21): tipalti's terms page, URL from theWallProject/mono links.json:48 (github); fetched once so its terms can be read (29.9.2026).
-https://tipalti.com/legal	terms-tipalti
+# paused (terms audit round 3, 29.9.2026): the legal index, not the website terms (terms-tipalti.txt:255) — https://tipalti.com/legal	terms-tipalti
 # research/channel-loop/ZERO-TESTS.md row 220 — terms audit (tick 21): wavedash's terms page, URL from wvdsh/wavedash-deck README.md:63 (github); fetched once so its terms can be read (29.9.2026).
-https://wavedash.com/terms	terms-wavedash
+# paused (terms audit, 29.9.2026): wavedash.com — see TERMS_BARRED in scripts/render-watch.mjs — https://wavedash.com/terms	terms-wavedash
 # research/channel-loop/ZERO-TESTS.md row 221 — terms audit (tick 21): gov.il's terms page, URL from CIOIL/knockout-govil-forms Footer.html:9 (github); governs data.gov.il too (terms-data-gov-il.txt:19); fetched once so its terms can be read (29.9.2026).
-https://www.gov.il/he/general/terms_of_use	terms-gov-il
+# paused (terms unread, 29.9.2026): www.gov.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.gov.il/he/general/terms_of_use	terms-gov-il
 # research/channel-loop/ZERO-TESTS.md row 222 — terms audit (tick 21): ypay's terms page, URL from ypay-faq.html:955; fetched once so its terms can be read (29.9.2026).
 https://ypay.co.il/front/terms	terms-ypay
 # research/channel-loop/ZERO-TESTS.md row 223 — terms audit (tick 21): stripe's terms page, URL from terms-stripe-privacy-and-terms.html:783; fetched once so its terms can be read (29.9.2026).
-https://stripe.com/legal	terms-stripe-legal
+# paused (terms unread, 29.9.2026): stripe.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://stripe.com/legal	terms-stripe-legal
+# research/channel-loop/ZERO-TESTS.md row 224 — terms audit (tick 22): tipalti's terms page, URL from terms-tipalti.html:838; fetched once so its terms can be read (29.9.2026).
+https://tipalti.com/legal/website-terms/	terms-tipalti-website
+# research/channel-loop/ZERO-TESTS.md row 225 — terms audit (tick 22): knesset's terms page, URL from theWallProject/mono page.html:2299 (github); fetched once so its terms can be read (29.9.2026).
+https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx	terms-knesset
