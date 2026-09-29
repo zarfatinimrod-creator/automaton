@@ -18,6 +18,7 @@
   "posthog": {
     "projectKey": "",
     "apiHost": "https://eu.i.posthog.com",
-    "_comment": "Optional page-view measurement, cookieless. Empty by default: with no projectKey no snippet is emitted and nothing third-party loads. Filling it also needs 'Cookieless server hash mode' enabled in the PostHog project settings - see README."
+    "projectId": "",
+    "_comment": "Optional page-view measurement, cookieless. Empty by default: with no projectKey no snippet is emitted and nothing third-party loads. Filling it also needs 'Cookieless server hash mode' enabled in the PostHog project settings - see README. projectId is the numeric id of the same PostHog project; it is not a secret and the page never uses it - the colony's weekly page-view reader (src/revenue/page-views-reader.ts) reads it, unless the POSTHOG_PROJECT_ID variable is set, and reads nothing without the POSTHOG_READ_KEY secret."
   }
 }

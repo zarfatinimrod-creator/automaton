@@ -1,0 +1,677 @@
+Verify and Validate User Identities With Trolley’s IDV Tool
+
+Skip to content
+
+Talk to Sales
+
+Log in
+
+Platform
+
+Global payouts & compliance
+
+Send payouts worldwide and comply with local regulations
+
+Platform
+Automate payouts and compliance workflows
+
+Pay
+Pay your recipients globally with flexible payout options
+
+Tax
+Stay compliant with IRS taxes and OECD global reporting
+
+Sync
+Connect Trolley with your ERP and automate the flow of data
+
+Trust
+Verify identity, maintain KYC, and build trust with your recipients
+
+Developer tools
+
+Embed payouts and compliance directly in your platform
+
+API, SDK, Widget
+Build customized workflows or use pre-packaged libraries
+
+Docs
+Explore Trolley’s API architecture and access code snippets
+
+App integrations
+Connect your favorite tools and keep all systems up-to date
+
+Status
+Check our platform’s current status
+
+Support
+
+Access resources to help you use Trolley to its full potential
+
+Help center
+Understand how to get started with and use the Trolley platform
+
+Payout coverage
+Explore the 210+ countries and regions Trolley sends payments to
+
+Platform security
+Learn how Trolley keeps your data secure
+
+Migration
+Add global payouts and local compliance to your platform
+
+Product updates
+See what’s new across payouts, compliance, and recipient experience
+
+Solutions
+
+For finance & AP teams Consolidate and automate all payouts workflows and tax processes
+
+For risk & compliance teams De-risk your platform and automate local compliance
+
+For product & engineering teams Get to market faster by embedding payouts and compliance into your platform
+
+For operations & support teams Streamline recipient workflows and reduce support queries
+
+IRS tax compliance
+Comply with the IRS for US-sourced payouts
+
+DAC7 tax compliance
+Automate tax compliance for EU-based sellers
+
+Digital platform reporting
+Meet OECD information reporting requirements globally
+
+Recipient onboarding & management
+Offer a best-in-class recipient experience
+
+Payout automation
+Scale payout operations with less work
+
+See how Trolley is raising the bar for payouts and recipient experience.
+
+Get notified →
+
+Recipient onboarding & management
+Offer a best-in-class recipient experience
+
+DSA compliance
+Verify sellers, collect data, and comply with the EU’s Digital Services Act
+
+Know Your Artist (KYA)
+Protect artists and stop fraudulent payouts before they happen
+
+INFORM compliance
+Onboard and verify sellers in compliance with the USA’s INFORM Consumers Act
+
+Risk & fraud management
+Build trust and safety on your marketplace or platform
+
+The wait is over—discover how Trolley is transforming payout and recipient operations.
+
+See what’s new →
+
+Recipient onboarding & management
+Offer a best-in-class recipient experience
+
+Payout automation
+Scale payout operations with less work
+
+DSA compliance
+Verify sellers, collect data, and comply with the EU’s Digital Services Act
+
+INFORM compliance
+Onboard and verify sellers in compliance with the USA’s INFORM Consumers Act
+
+IRS tax compliance
+Comply with the IRS for US-sourced payouts
+
+DAC7 tax compliance
+Automate tax compliance for EU-based sellers
+
+Digital platform reporting
+Meet OECD information reporting requirements globally
+
+Risk & fraud management
+Build trust and safety on your marketplace or platform
+
+The wait is over—discover how Trolley is transforming payout and recipient operations.
+
+See what’s new →
+
+Recipient onboarding & management
+Offer a best-in-class recipient experience
+
+DAC7 tax compliance
+Automate tax compliance for EU-based sellers
+
+IRS tax compliance
+Comply with the IRS for US-sourced payouts
+
+Digital platform reporting
+Meet OECD information reporting requirements globally
+
+The wait is over—discover how Trolley is transforming payout and recipient operations.
+
+See what’s new →
+
+Industries
+
+Music & streaming royalties
+Recording artists, singers, musicians, songwriters, producers, & rights holders
+
+Freelancer platforms & expert networks
+Freelancers, gig workers, consultants, experts, and contractors
+
+Ad networks & publishers
+Webmasters, content distribution networks & publishers, digital media companies
+
+P2P marketplace sellers
+Online retailers, artisans, crafters, makers, curators, consignors, & resellers
+
+Creator & influencer platforms
+Social influencers, social media mavens, thought leaders, & community builders
+
+Marketplaces
+Sellers, freelancers, creators, influencers, and gig workers
+
+Video games & eSports
+Esports tournament winners, video game streamers, & game content creators
+
+Affiliate platform partners
+Offer partner brands a streamlined & efficient affiliate payout system.
+
+Customer stories
+
+Discover how our customers pay contractors, stay compliant, and fight fraud using Trolley.
+
+Dig into real-world wins →
+
+Pricing
+
+Resources
+
+Blog
+The latest news, product updates, and ideas from the Trolley team
+
+Customer stories & testimonials
+Interviews and case studies demonstrating the ROI of adding Trolley
+
+About Trolley
+We're building the payouts platform for the internet economy
+
+Careers at Trolley
+Come work with Trolley. We're hiring!
+
+Learning center
+Educational articles and how-to guides on payouts, tax, and compliance topics
+
+Press
+Press releases and media coverage
+
+Contact Us
+Contact Trolley to learn more about our solutions
+
+Our Latest Blog
+
+Scaling Artist-First Royalty Operations: New Tomorrow Music Group Partners with Trolley
+
+Read the full article →
+
+Get a demo
+
+Start free trial
+
+Verify and Validate User Identities With Trolley’s New IDV Tool
+
+Published:
+October 23, 2023
+
+Last updated: February 25, 2026
+
+4 minutes
+
+Learn about Trolley’s new ID verification tool, why we built it, how to turn it on, and why you’ll want it as part of your onboarding processes in no time.
+
+The internet economy is growing quickly, and platforms of all types are adding new users (vendors, sellers, freelancers, artists… you name it) every day.
+
+Having the tools and processes in place to onboard and pay new users in a seamless way is essential to keeping up with that pace. Your responsibility to Know Your Customer (KYC) also needs to stay on pace, or you can end up in a place where you are either:
+
+bogged down by manual identity verification processes, or
+
+missing KYC checks, and opening yourself up to risk.
+
+The team at Trolley doesn’t like “manual” or “risk,” so we’re stepping up with an alternative solution.
+
+Introducing Trolley IDV, our latest tool that uses live, multi-step ID verification technology to validate the identity of your users, letting you better trust new signups and move forward with your growth.
+
+Keep reading to learn more.
+
+What we cover
+Why trust tools are essential for modern platforms
+Our latest feature: Identity Verification (IDV)
+Trust in Trolley to manage your recipient onboarding and IDV
+
+Why trust tools are essential for modern platforms
+
+Simply put, there’s a lot of money moving around on the internet. In 2023, 17.3 billion dollars of online retail sales transactions occur every day.
+
+More and more, these transactions are happening through marketplaces/platforms where a buyer transacts with a seller of a good or service. This means that sellers from around the world are seeing new opportunities to earn and take part of that pie.
+
+However, not all sellers are equally as entitled to participate. There are regulations in place to combat financial fraud, money laundering, and funding terrorism.
+
+These rules require marketplaces to Know Your Customer (KYC). This requires the platform to learn about a user’s identity, banking info, type of business activities and other identifying info, and compare it to global screening lists before moving funds.
+
+This doesn’t stop bad actors from acting badly, so actions that use a legitimate ID to carry out illegitimate activities—like identity fraud and account takeovers—are becoming more and more common.
+
+Global governments have also taken notice of this trend and are putting laws in place that mandate online platforms take an active role in knowing their customers.
+
+As of writing this article, there are two laws in particular that we’re watching:
+
+In the USA, the INFORM Consumers Act (INFORM) went into effect on June 27, 2023,
+
+In the EU, the Digital Services Act (DSA) went into force on November 16, 2022.
+
+INFORM requires online marketplaces to collect bank account information, contact information, and a Tax ID number from high-volume third party sellers. Additionally, online marketplaces must verify the information they get from high-volume third party sellers and certify it as accurate at least once a year.
+
+The DSA asks marketplaces based in the EU to conduct similar credential vetting of third party suppliers plus some additional obligations that include compliance by design and random checks.
+
+Our latest feature: Identity Verification (IDV)
+
+Until now, marketplaces and their teams needed to maintain a tech stack alongside manual processes to collect, verify, validate, screen, and communicate the KYC processes.
+
+To make life as easy as possible, Trolley has taken all of the processes above, and integrated them directly into our existing platform as our IDV tool.
+
+Now in a single product that already consolidates onboarding workflows, payouts, ERP syncing, and EoY tax filing, Trolley now also offers product & compliance teams a robust and secure onboarding process, the tools needed to collect and verify identity documents, and a dashboard to manage fraud risk.
+
+Verifying identity and maintaining audit logs ultimately helps in establishing trust between your platform, your recipients, and your users. Our objective is to let you step back from manual compliance checks with the peace of mind of knowing your platform is fighting fraud on auto-pilot.
+
+Trolley IDV has built in:
+
+Identity & document verification: Collect and validate IDs versus 11,000 official government ID templates from over 200 countries.
+
+Live photo validation: Use the power of image recognition to ensure the uploaded ID is from the actual person submitting it.
+
+Proof of address and age comparisons: Verify details provided during onboarding, such as address and DOB, with the ID document.
+
+Monitoring dashboards: Manage the KYC and IDV process from a single screen where you are alerted to actions you may need to take.
+
+Wondering how to enable IDV in Trolley? Our Help Center takes you through the steps. And if you’re looking for more info, check out our IDV FAQs .
+
+Trust in Trolley to manage your recipient onboarding and IDV
+
+The KYC process is important to keep the internet economy safe for everyone involved, and removing the friction that might be stopping you from implementing an ideal IDV process is critical for us. We want you to rely on us to help you build trust in your recipients.
+
+As you evaluate the solutions in the market, make sure to spend time looking at how well the option fits with your existing workflows, your existing tech stack, and how much overhead it adds to your processes. We’re pretty confident that our all-in-one onboarding, payouts, sync, tax, and now, IDV solution will provide you the most seamless experience available today.
+
+If you’d like to learn more about adding Trolley Trust or our IDV tool, see our Trust page . If you have questions about functionality or pricing, please reach out to us .
+
+Share this article:
+
+Join The Payouts Pulse newsletter
+
+Sign up to have vital insights, industry news, and all things payouts delivered to your inbox monthly.
+
+Email
+
+Subscribe now
+
+More to explore
+
+Scaling Artist-First Royalty Operations: New Tomorrow Music Group Partners with Trolley
+
+With Trolley, New Tomorrow Music Group is modernizing its royalty operations while giving artists a faster, more seamless payment experience.
+
+How to Pay Freelancers at Scale (and the Hidden Costs Most Platforms Miss)
+
+Learn how to pay freelancers at scale while reducing manual work, hidden fees, compliance risks, and payout delays.
+
+Payment Automation Explained: What to Automate, When, Why, and How
+
+Learn how payment automation helps reduce manual payout work, improve compliance, support global payouts, and scale recipient operations.
+
+Instant Payouts to Debit Cards: What Platforms Need to Evaluate
+
+Compare instant payouts to debit cards with ACH and RTP to improve payout speed, recipient experience, and operational scalability.
+
+Creator Platforms: What Creators Look for Before Choosing Where to Work
+
+Learn what creators look for in creator platforms, from payout reliability and onboarding to transparency, trust, and payment experience.
+
+Freelance Payment Methods: How Platforms Can Choose the Right Approach to Paying Freelancers
+
+Compare freelance payment methods like ACH, RTP, wires, and digital wallets to improve payout speed, scalability, and recipient experience.
+
+Ready to get started?
+
+To learn more about Trolley, schedule a demo with one of our team members or start a chat with a product expert by selecting the box on the bottom of your screen.
+
+Get a demo
+
+Stay in the loop on payouts, creators, & compliance
+
+Get the Payouts Pulse in your inbox every month.
+
+Email
+
+Subscribe now
+
+Platform
+
+Platform
+
+Pay
+
+Instant Payout Methods
+
+Tax
+
+Trust
+
+Sync
+
+Pricing
+
+Developer Tools
+
+API, SDK, widget
+
+API docs
+
+App integrations
+
+Trolley status
+
+Support
+
+Help center
+
+Payout network
+
+Security
+
+Migration
+
+Product updates
+
+Solutions
+
+Referral Partners
+
+Embedded Partners & Integrated Resellers
+
+Product & Engineering Teams
+
+Recipient onboarding & management
+
+Payouts automation
+
+Risk management & fraud monitoring
+
+IRS tax compliance
+
+DAC7 tax compliance
+
+Digital Platform Reporting
+
+DSA compliance
+
+INFORM compliance
+
+Know Your Artist (KYA)
+
+Why choose us
+
+Trolley vs. Stripe Connect
+
+Trolley vs. Tipalti
+
+Trolley vs. Hyperwallet
+
+Trolley vs. Payoneer
+
+Trolley vs. Wise
+
+Trolley vs. Airwallex
+
+Trolley vs. Dwolla
+
+Trolley vs. MangoPay
+
+Trolley vs. Veem
+
+Trolley vs. Bill.com
+
+Industries
+
+Music & streaming royalties
+
+Know Your Artist (KYA)
+
+Freelance platforms & expert networks
+
+Creator & influencer platforms
+
+Ad networks & publishers
+
+Affiliate platform partners
+
+B2B accounts payable
+
+Healthcare, pharma, & clinical trial orgs
+
+Logistics & last-mile delivery platforms
+
+Marketplace
+
+P2P marketplace sellers
+
+Photo royalties
+
+Professional service platforms
+
+Travel and experience platforms
+
+Video games & esports
+
+Resources
+
+About Trolley
+
+Blog
+
+Learning center
+
+Customer stories & testimonials
+
+Press
+
+Contact Trolley
+
+Careers
+
+FAQ
+
+Legal
+
+Security policies
+
+Privacy policy
+
+Legal agreements
+
+English
+
+Français
+
+Platform
+
+Platform
+
+Pay
+
+Instant Payout Methods
+
+Tax
+
+Trust
+
+Sync
+
+Pricing
+
+Developer Tools
+
+API, SDK, widget
+
+API docs
+
+App integrations
+
+Trolley status
+
+Support
+
+Help center
+
+Payout network
+
+Security
+
+Migration
+
+Product updates
+
+Solutions
+
+Referral Partners
+
+Embedded Partners & Integrated Resellers
+
+Product & Engineering Teams
+
+Recipient onboarding & management
+
+Payouts automation
+
+Risk management & fraud monitoring
+
+IRS tax compliance
+
+DAC7 tax compliance
+
+Digital Platform Reporting
+
+DSA compliance
+
+INFORM compliance
+
+Know Your Artist (KYA)
+
+Why Choose Us
+
+Trolley vs. Stripe Connect
+
+Trolley vs. Tipalti
+
+Trolley vs. Hyperwallet
+
+Trolley vs. Payoneer
+
+Trolley vs. Wise
+
+Trolley vs. Airwallex
+
+Trolley vs. Dwolla
+
+Trolley vs. MangoPay
+
+Trolley vs. Veem
+
+Trolley vs. Bill.com
+
+Industries
+
+Music & streaming royalties
+
+Know Your Artist (KYA)
+
+Freelance platforms & expert networks
+
+Creator & influencer platforms
+
+Ad networks & publishers
+
+Affiliate platform partners
+
+B2B accounts payable
+
+Healthcare, pharma, & clinical trial orgs
+
+Logistics & last-mile delivery platforms
+
+Marketplace
+
+P2P marketplace sellers
+
+Photo royalties
+
+Professional service platforms
+
+Travel and experience platforms
+
+Video games & esports
+
+Resources
+
+About Trolley
+
+Blog
+
+Learning center
+
+Customer stories & testimonials
+
+Press
+
+Contact Trolley
+
+Careers
+
+FAQ
+
+Legal
+
+Security policies
+
+Privacy policy
+
+Legal agreements
+
+English
+
+Français
+
+© 2026 Trolley Technologies Inc. All rights reserved.
+
+LOG IN
+
+Sign up
+
+For Trolley US Inc. customers, deposits held at Cross River Bank, Member FDIC, are insured up to $250,000.
+
+Certain payment services are provided by Trolley US Inc., a licensed money transmitter (NMLS ID: 2309944). Trolley operates through multiple regulated entities depending on customer location. Full regulatory information is available here .
+
+All testimonials, reviews, opinions or case studies presented on our website may not be indicative of all customers. Results may vary and customers agree to proceed at their own risk.
+
+See Trolley in Action!
+
+Jump into our 5 minute product tour to see how we can simplify your payout workflows.
+
+Sign up to get started
+
+Business email
+
+Consent
+
+.elementor-widget-wrap" tabindex="0" aria-expanded="false" aria-label="Language selected: English" data-wg-target=".elementor-element-e69e4dd > .elementor-widget-wrap" data-wg-sibling=""> EN
+FR
