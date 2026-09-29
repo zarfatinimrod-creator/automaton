@@ -12,8 +12,8 @@ It is the cheapest test in the project of the constraint that decides everything
 `MISSION.md` constraint 7 says nobody knows how a stranger finds any of this, and until they do
 every ceiling in the repo is ₪0. **This Actor is already built and already tested.** Publishing it
 costs no build hours, no money, and no owner time beyond account creation, one token pasted as a GitHub secret and one click in the Apify Console — and the number it
-returns collapses or confirms every Apify estimate in the repo at once: ₪200 (`apify-actors`
-target, cut from ₪3,000 by the board), ₪1,500 (`store-promotion` audit), ₪0 net-new and ₪200 (the two audits above; the first refutes its group's ₪500 headline).
+returns collapses or confirms every Apify estimate in the repo at once: ₪0 planned (`apify-actors`,
+cut from ₪3,000 by the board; ₪200 contested upper bound, RULING-2026-09-29-lines (b)), ₪1,500 (`store-promotion` audit), ₪0 net-new and ₪200 (the two audits above; the first refutes its group's ₪500 headline).
 
 There is also a fact that makes free the only option rather than merely the wise one: **Apify
 requires the developer to complete identity verification before an Actor can carry any price.**
@@ -82,8 +82,8 @@ measures demand and not visibility; if it needs any camera step, it is never ask
   its own. While the developer is unverified, a count under 10 is TEST_MORE: the Actor may simply be hidden from
   default search. Only a count read after document-only verification can say the discoverability problem is real
   and that no amount of building more Actors fixes it — and then it would close the one ₪-thousand figure still
-  standing in this repo — Apify's contested ₪1,500 upper bound (`src/revenue/portfolio.ts`, `TARGET_BASIS`) — and
-  the committed ₪200 with it. If verification needs a camera, the count stays a biased-low ₪0 instrument and the
+  standing in this repo — the ₪1,500 the board refused (recorded in the `TARGET_BASIS` basis text,
+  `src/revenue/portfolio.ts`) — and the contested ₪200 with it. If verification needs a camera, the count stays a biased-low ₪0 instrument and the
   developer-level "history of success" clock is noted as unverified to accrue while the Actor is hidden.
 
 Either way we stop guessing. The one thing that is not acceptable is another month of ceilings with

@@ -6,8 +6,11 @@ auto-activate: false
 
 # Apify Actors — director playbook
 
-**Audited ceiling: ₪200/month at twelve months** (`research/colony-sweep/CHIEF-AUDIT.md` §2.1 row 1; ₪1,500
-is recorded as the contested upper bound and is not planned against). **Month one: ₪0. First ledger entry
+**Planned target: ₪0** as the constraint-7 instrument until the day-30 stranger count exists (board ruling 29.9.2026,
+`research/channel-loop/RULING-2026-09-29-lines.md` (b); graded `inferred`). **Audited ceiling: ₪200/month at twelve
+months** (`research/colony-sweep/CHIEF-AUDIT.md` §2.1 row 1; the 8.7 users/Actor base rate) — now recorded as the
+CONTESTED UPPER BOUND, not a target, and it returns only from that reading. ₪1,500 is the figure the board refused (an
+unverified marketing mean), kept in the `TARGET_BASIS` basis text only. **Month one: ₪0. First ledger entry
 expected around month nine.** Board decision 7.9.2026 (`research/colony-sweep/BOARD.md`): this line is the
 colony's **first measurement**, not its first sale.
 

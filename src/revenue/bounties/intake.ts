@@ -242,7 +242,8 @@ export const KILLED_LINE_IDS: ReadonlySet<string> = new Set(KILLED_LINES.map((k)
  * Why: the floor is the colony's planned value of an agent-hour divided by the acceptance rate, and a line the board
  * still spends hours on is valued at the figure the board "records but refused to commit to" — which is what the
  * contested upper bound exists for (RULING-2026-09-28-floors.md §9). Today that is apify-actors 200 + il-biz-tools 400
- * (planned at ₪0, build budget kept) + oss-bounties 300 + pcn874 600 = ₪1,500 — the 7.9 number, now re-derivable. A
+ * (both planned at ₪0 with a build budget kept, so each at its contested upper bound; apify since RULING-2026-09-29-lines
+ * (b)) + oss-bounties 300 + pcn874 600 = ₪1,500 — the 7.9 number, now re-derivable. A
  * killed line normally leaves `DEFAULT_PORTFOLIO` for `KILLED_LINES`, but the rule does not rest on that convention: a
  * seed whose id is in `killed` (default: every `KILLED_LINES` id) contributes 0 even while it is still in `seeds`.
  */
@@ -282,7 +283,8 @@ export function capacityBaseIls(
  *     derived from the committed portfolio by `capacityBaseIls()`, with a
  *     ₪0-planned line that keeps a build budget counted at its contested upper
  *     bound (breadth board Part B(a), 28.9.2026) — so it is ₪1,500 and not the
- *     ₪1,100 committed since il-biz-tools was planned at ₪0.
+ *     ₪900 committed since il-biz-tools (28.9) and apify-actors (29.9) were
+ *     planned at ₪0.
  *  2. MISSION constraint 4 budgets **160 agent-hours a month** for the whole
  *     colony. Twenty per cent of that is **32 hours** for this line.
  *  3. ₪300 out of 32 hours is **₪9.375 per agent-hour realized** — what an hour

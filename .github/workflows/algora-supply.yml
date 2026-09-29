@@ -3,7 +3,7 @@ name: algora-supply
 # Count CLAIMABLE Algora bounties on GitHub, once a week, and commit the reading.
 #
 # WHY. research/colony-sweep/BOARD-2.md §2.2 made this the first build step of the
-# `oss-bounties` line (₪300 of the committed ₪1,100): "the cheapest test that the
+# `oss-bounties` line (₪300 of the committed ₪900): "the cheapest test that the
 # payer is actually posting jobs". A third-party census found 5 claimable bounties
 # ($60) among 561 labelled issues; the board would not move the target on a number
 # this repo had not reproduced, so this job reproduces it weekly. At week 4 the

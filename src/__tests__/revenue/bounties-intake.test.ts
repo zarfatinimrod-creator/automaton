@@ -148,17 +148,18 @@ describe("the pay floor, derived from the board's own numbers", () => {
   it("derives the ₪1,500 capacity base from the committed portfolio, naming its four addends (breadth board Part B(a))", () => {
     // research/breadth/BOARD.md Part B(a), 28.9.2026: the base is derived in code, not held. Each committed line adds
     // its target when the target is above ₪0; a line the board planned at ₪0 while keeping a build budget adds its
-    // contested upper bound instead. Today: apify-actors 200 + il-biz-tools 400 (contested, budget kept) +
-    // oss-bounties 300 + pcn874 600 = ₪1,500 — the same number as before, no longer held as a constant.
+    // contested upper bound instead. Today: apify-actors 200 (contested, budget kept; planned at ₪0 since
+    // RULING-2026-09-29-lines.md (b)) + il-biz-tools 400 (contested, budget kept) + oss-bounties 300 + pcn874 600
+    // = ₪1,500 — the same number as before, no longer held as a constant.
     expect(capacityBaseAddends()).toEqual([
-      { lineId: "apify-actors", ils: 200, from: "target" },
+      { lineId: "apify-actors", ils: 200, from: "contested-upper-bound" },
       { lineId: "il-biz-tools", ils: 400, from: "contested-upper-bound" },
       { lineId: "oss-bounties", ils: 300, from: "target" },
       { lineId: "pcn874", ils: 600, from: "target" },
     ]);
     expect(capacityBaseIls()).toBe(1500);
-    // The committed sum is still ₪1,100; the base differs from it only by il-biz-tools' contested ₪400.
-    expect(committedTargetIls()).toBe(1100);
+    // The committed sum is ₪900 since 29.9.2026; the base differs from it by the two contested bounds, ₪400 + ₪200.
+    expect(committedTargetIls()).toBe(900);
     expect(deriveBountyFloor().portfolioTargetIls).toBe(capacityBaseIls());
     expect(deriveBountyFloor().reasoning).toMatch(
       /derived from the committed portfolio, with a ₪0-planned line that keeps a build budget counted at its contested upper bound/,
@@ -166,10 +167,18 @@ describe("the pay floor, derived from the board's own numbers", () => {
     expect(deriveBountyFloor().reasoning).not.toMatch(/held until the board rules/);
   });
 
-  it("never lets a contested bound raise a positive target (apify-actors counts ₪200, not its ₪1,500)", () => {
+  it("never lets a contested bound raise a positive target", () => {
+    // Until 29.9.2026 apify-actors was the live example (target ₪200, contested ₪1,500). Planned at ₪0 now, it adds its
+    // contested ₪200 — the refused ₪1,500 lives only in the basis text and can reach no sum. The rule is kept on a copy.
     expect(capacityBaseAddends().find((a) => a.lineId === "apify-actors")).toEqual({
       lineId: "apify-actors",
       ils: 200,
+      from: "contested-upper-bound",
+    });
+    const widened = { ...TARGET_BASIS, pcn874: { ...TARGET_BASIS.pcn874, contestedUpperBoundIls: 1500 } };
+    expect(capacityBaseAddends(DEFAULT_PORTFOLIO, widened).find((a) => a.lineId === "pcn874")).toEqual({
+      lineId: "pcn874",
+      ils: 600,
       from: "target",
     });
   });

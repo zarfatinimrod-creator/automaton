@@ -79,7 +79,8 @@ Express account: the only code-level Israeli payability proof the 121-criterion 
   each committed line adds its target when it is above ₪0, and a line the board planned at ₪0 while
   keeping a build budget adds its contested upper bound instead; a ₪0 line with no budget, or a killed
   line, adds 0, and a contested bound never raises a positive target. Today: apify-actors 200 +
-  il-biz-tools 400 (planned at ₪0, build budget kept) + oss-bounties 300 + pcn874 600. The line's own
+  il-biz-tools 400 (both planned at ₪0 with a build budget kept, so each at its contested upper bound;
+  apify since RULING-2026-09-29-lines (b)) + oss-bounties 300 + pcn874 600. The line's own
   ₪300 cancels out of the algebra — the floor is base ÷ 40 — so the rule is the whole floor: a week-4
   retarget of this line to ₪100 gives base ₪1,300 and floor ₪32.50; a kill of it, ₪1,200 and ₪30.00.
 
