@@ -571,3 +571,17 @@ https://hackmd.io/@sarah11918/BJMjDSMDZl	astro-themes-guidelines-hackmd
 # retired: did not render (tick 15) — https://hackmd.io/@sarah11918/categories/astro-themes	astro-themes-categories-hackmd
 # research/channel-loop/ZERO-TESTS.md row 152 — Astro themes (7), after the 29.9 GitHub read (29.9.2026).
 https://portal.astro.build/themes/submit	astro-portal-themes-submit
+# research/channel-loop/ZERO-TESTS.md row 153 — loop board 29.9 (e)3: kolzchut's exempt-dealer page (URL from the 7.9 SERP, not guessed; no site search before kolzchut's terms allow it), the documents an exempt dealer issues and whether software may issue them (29.9.2026).
+https://www.kolzchut.org.il/he/%D7%A2%D7%95%D7%A1%D7%A7_%D7%A4%D7%98%D7%95%D7%A8	kolzchut-osek-patur
+# research/channel-loop/ZERO-TESTS.md row 154 — lines ruling 29.9 (h): consumer protection law 14C(d), refunds on digital content (29.9.2026).
+https://www.nevo.co.il/law_html/law01/055_001.htm	nevo-consumer-protection-law
+# research/channel-loop/ZERO-TESTS.md row 155 — lines ruling 29.9 (h): Gumroad help index, to find the refund-policy article's URL (29.9.2026).
+https://gumroad.com/help	gumroad-help-center-index
+# research/channel-loop/ZERO-TESTS.md row 156 — lines ruling 29.9 (a): Green Invoice pricing, logo on a receipt in a free tier (29.9.2026).
+https://www.greeninvoice.co.il/pricing/	greeninvoice-pricing
+# research/channel-loop/ZERO-TESTS.md row 157 — lines ruling 29.9 (a): iCount plans, logo on a receipt in a free tier (29.9.2026).
+https://www.icount.co.il/plans/	icount-plans
+# research/channel-loop/ZERO-TESTS.md row 158 — lines ruling 29.9 (a): YPAY FAQ (URL unverified), logo on a free receipt (29.9.2026).
+https://ypay.co.il/front/faq	ypay-faq
+# research/channel-loop/ZERO-TESTS.md row 159 — lines ruling 29.9 (a): Invoice4u price list (URL unverified), logo on a free receipt (29.9.2026).
+https://www.invoice4u.co.il/pricelist-invoice/	invoice4u-pricelist
