@@ -381,3 +381,171 @@ route.
    billing profile" (:1660)), for whether a private
    user outside Italy must supply its own invoice number; and `https://help.streetlib.com/article/570-the-new-streetlib-dashboard`
    (72.html:1664), for any bulk or API route (G3).
+
+## Tick 12 (rows 141-143 render)
+
+**Read 29.9.2026 by an Opus reader.** The render commit is `7d1b5ef`. It holds three captures, all 200 (`*.meta.json:5`), all
+first fetch, fetchedAt 2026-09-29T00:20Z (`:4`). Short names: `706` = `help-streetlib-com-article-706-what-you-can-do` (row 141),
+`700` = `…-article-700-onboarding` (row 142), `427` = `…-article-427-distribution-agreement` (row 143). All three txt files
+were read in full. In the html I read each article body (706.html:1639-1731, 700.html:1639-1662, 427.html:1639-1644), the
+JSON-LD (:76, :80), the footer menu (:395-415) and the footer legal text (:605-613), and grepped each file. Every quote
+below was checked with `grep -n -F`. Five screenshots (700.html:1648, :1651, :1654, :1657, :1660) and an embedded YouTube
+video (:1647) were not captured. What they show is UNKNOWN.
+
+**Status: NEEDS_MORE.**
+- **Kill (a) is still UNSETTLED.** None of the three pages names the Subscription or Lifetime options, a price or a
+  requirement. The August 2026 overview offers a free account and shows no plan step before sale.
+- **Kill (b) now does not fire on either half.** Onboarding has no identity, photo or video step.
+- **Kill (d) parks** on the agreement PDF, which is still unrendered.
+- **The held fee question should go now.**
+
+**Registration of the kills (a correction to §Tick 9-11).** §Tick 10 and §Tick 11 say "(a)-(d) are pre-registered on
+the board" (this file :230, :334), and §Tick 9 says "all but (e) are pre-registered on the board" (:143). The refill
+note says otherwise: "The kill clauses are **proposals for the sitting to adopt**, in the
+pre-registered form used for Pebble. Opus does not" / "decide kills." (REPLENISH-2026-09-28-2.md:217-218). Row 24 calls
+them "Proposed kills" (CHANNEL_LOOP.md:148). No file under `research/`, `logs/` or `docs/` records a sitting adopting
+them. So (a)-(e) are all **PROPOSED** for the sitting.
+
+**Row 141 (706): the offer, updated August 2026** [RENDERED]
+- The overview gives four steps. The first is "1. Create your account for free" (706.txt:61): "Activate your StreetLib
+  account , create a publisher or author profile and choose the payment method to receive your earnings." (:63).
+- Step 3 goes straight to sale: "Upload your catalog. Your books will be immediately available for sale in the stores you
+  selected." (706.txt:73). No step between the free account and the sale buys a plan.
+- One subscription is named, and it is an optional marketing app. Promotion is one of "two tools that you can use:"
+  (706.txt:163). Of Direct it says "It's an annual subscription tool." (:173), with "Click here to request the activation
+  of the free trial." (:173). Of Deals it says "This feature is totally free" (:169). Ready's editorial services are paid
+  extras, sold by quote or package (:175-189).
+- "lifetime access", "per title" and "per-title" have 0 hits in the txt and the html. "Lifetime Pro Plan" appears only in
+  the footer menu (`label: 'Lifetime Pro Plan',` 706.html:407), next to `label: 'Pricing',` (:403).
+- The page is dated "Last updated on August 11, 2026" (706.txt:203). That is almost five months after the earnings article, "Last
+  updated on March 18, 2026" (677.txt:107).
+- [INFERENCE] Parts of the text are older than that date, so its silence on the 2026 options is weak evidence:
+  - It names "Apple iBooks" (:129), the store's name before it became Apple Books in 2018.
+  - It says "we send you a notification at the end of each quarter to remind you to download sales reports and issue
+    your invoice; the payments of your royalties are automated ." (:157). The getting-paid article says instead
+    "Remember to approve each month's pending invoice on the first days of the following month" (670.txt:63).
+- **G5, new: Apple is named for the first time in any capture.** "including Amazon Kindle Store, Kobo Books, Apple iBooks,
+  Google Play, Scribd, YouScribe, Stary, Bookbeat, and many more. In total, our system allows you to reach over 250
+  outlets worldwide." (706.txt:129). Which titles each store accepts is still UNKNOWN.
+- **G3: every title goes in through Hub.**
+  - The page says "Through our HUB (accessible from your account), you can upload ebooks , audiobooks , and paper books ,
+    in just a few simple clicks!" (706.txt:73), and "Upload your files and data to the HUB platform by following this
+    written guide and video we created for you." (:127).
+  - "onix", "ftp" and "bulk" have 0 hits. "api" occurs only in a Google Fonts URL (706.html:85).
+  - The one route for several items at once covers promotions, not titles: "If you want to set up a promo for multiple
+    items, just fill in this template ." (706.txt:169). The single-item version is done by email: "you just write us
+    indicating: the ISBN code, promo price, promo start date, and promo end date." (:169).
+
+**Row 142 (700): onboarding** [RENDERED]
+- Onboarding has four steps:
+  - Profile: "tell us if you are an author or a publisher:" (700.txt:59).
+  - Payment method: "Go back to the onboarding homepage and in the Mandatory Steps section, click to edit "Your Payment
+    method"." (:63). For PayPal, "to receive your earnings directly to your Paypal account, you just need to add the email
+    address of your Paypal account" (:63).
+  - Billing profile: "Complete the steps by adding all necessary information." (:67).
+  - Distribution agreement: "Please carefully read and accept our distribution agreement. This is the last step." (:71).
+- It ends with "You have completed the onboarding process and you can now access the Hub service to start uploading your
+  content!" (700.txt:73), which links `https://hub.streetlib.com/` (700.html:1661).
+- The page has no identity, photo or video step. "passport", "selfie", "camera", "identity" and "verif" have 0 hits in
+  the txt and the html.
+- It has no plan, payment or fee step either. "subscription" and "lifetime access" have 0 hits, and "Lifetime Pro Plan"
+  appears only in the footer (700.html:407).
+- Limits:
+  - The page is dated "Last updated on April 17, 2025" (700.txt:79), before the 2026 options.
+  - The screenshots and the video were not captured.
+  - [INFERENCE] The text names every step and ends at Hub access. A hidden identity step could only sit inside a
+    screenshot of the billing form (:1657). The billing article, read at tick 11, has no such step.
+
+**Row 143 (427): the agreement page** [RENDERED]
+- The page is one sentence and a link: "By clicking on this link , you can download a copy of the standard Distribution
+  Agreement that you will receive (or have already received) by email upon confirming the activation of your account."
+  (427.txt:55). The link is the §4 PDF (427.html:1643; 421.html:1648). The page is dated "Last updated on February 19,
+  2025" (427.txt:61).
+- It has no text on fees, automation, AI or the author name. The agreement body is still unrendered.
+
+**The AI and author-name rules: nothing new.**
+- "artificial" has 0 hits in all six files. The only " ai " hits are in the Italian footer ("ai marchi", line 609 of
+  each html).
+- The book data are "(title, author, synopsis, price, etc.)" (706.txt:125), with no new rule.
+- One small G7 point: an account can be a publisher. "create a publisher or author profile" (706.txt:63). [INFERENCE]
+  The brand can hold the publisher profile. The author field's "Surname, Name" rule (380.txt:71) still stands.
+
+**Kills. All are PROPOSED (see the correction above).**
+- **(a) Any distribution plan, subscription or per-title fee: UNSETTLED. It does not fire.**
+  - For not firing:
+    - a free account (706.txt:61, August 2026);
+    - a route to sale with no plan step (706.txt:61-77; 700.txt:57-73);
+    - the one subscription named is for Direct marketing (706.txt:173);
+    - earlier, "no-upfront nor recurring costs" (421.txt:61).
+  - For firing:
+    - "Our Subscription and Lifetime Access options both offer an 85% royalty rate on net revenue." (677.txt:87). It names
+      only those two options and no free one.
+    - The footer's "Lifetime Pro Plan" (706.html:407).
+  - [INFERENCE] "Create your account for free" frees the account, not distribution, and 706 is partly stale. The lean
+    toward firing is weaker than at tick 11. No page says a plan is "required", and none says a title can be distributed
+    without either option.
+- **(b) Payout not reaching an Israeli individual, or a camera step: DOES NOT FIRE, on both halves.**
+  - The rails half, as at tick 11: "if you live outside USA or Canada , you can choose bank transfer or Paypal payments ."
+    (699.txt:87).
+  - The camera half: the onboarding steps have no identity, photo or video step (700.txt:57-73).
+  - Residuals: the uncaptured screenshots (700.html:1648-1660), and the page's April 2025 date.
+- **(c) AI books barred even when declared: DOES NOT FIRE.** Unchanged (421.txt:87). These pages say nothing on AI.
+- **(d) Web forms only, and the terms forbid automation: UNSETTLED. It parks.**
+  - The form half is firmer. Hub upload is the only title route named in any capture (706.txt:73, :127; 700.txt:73), and
+    no API, feed or bulk title route appears.
+  - The terms half is unread. It is in the agreement PDF (427.html:1643). The terms are not yet shown to be silent, so
+    the kill's own fallback (park on a step-8 question) is not reached.
+- **(e) The legal name shown to buyers: UNKNOWN.** Nothing in these pages says what buyers see.
+
+**Gate line.** It was G1 U↘(r) · G2 U↗(r) · G3 U(r) · G4 P(r) · G5 P in part (r) · G6 U · G7 U(r).
+Now: **G1 U(r)** · **G2 P(r)** · **G3 U↘(r)** · G4 P(r) · **G5 P(r)** · G6 U · G7 U(r, "Surname, Name", 380.txt:71).
+- **G1:** the lean toward FAIL is withdrawn, not reversed. A free account and a route with no plan (706, August 2026)
+  stand against two named options at 85% (677, March 2026).
+- **G2:** PayPal or a bank reaches an Israeli private user (699.txt:77, :87), and onboarding has no camera step
+  (700.txt:57-73). Residuals: the uncaptured screenshots, and the US tax form with its 30% default (433.txt:67).
+- **G3:** every title goes in through Hub (706.txt:73, :127). Whether an agent may operate Hub depends on the unrendered
+  agreement. The board's "runner operates a portal" ruling is still open (REPLENISH-2026-09-28-2.md:368).
+- **G5:** Amazon, Apple, Google Play and Kobo are all named (706.txt:129). Title eligibility per store is UNKNOWN.
+- **G6:** the pages disagree on how often an invoice is due: monthly approval (670.txt:63) against a quarterly
+  notification (706.txt:157). Either way it is one periodic step, not one per title.
+- **G7:** a publisher profile exists (706.txt:63; 700.txt:59). Otherwise unchanged.
+
+**Verdict: NEEDS_MORE.** Kill (a) decides the row, and no capture settles it. The account and payments categories list no
+plans article (72.txt:63-71; pay.txt:63-79). The pricing and Lifetime Pro pages are on the JS-shell host (§Tick 10).
+[INFERENCE] The help centre is close to exhausted for (a). A written answer is now the cheapest way to settle it.
+
+**The held step-8 question: send it now, as drafted in §4, unchanged.**
+- The condition in §Tick 11 was "If 706 is silent on fees too, send the question as drafted". It is met: 706 frees only
+  the account (706.txt:61) and names no Subscription or Lifetime option and no price.
+- The draft asks exactly the open question.
+- **Recipient: `support@streetlib.de`**, the only email address in any StreetLib capture (706.html:612; 700.html:612;
+  427.html:612; 72.html:604).
+  - [INFERENCE] It is the inbox of the German service that BookRix runs (the German footer text at :612). An Israeli
+    publisher would contract with StreetLib IT (670.txt:55), so the reply may come from, or be forwarded to, another
+    desk.
+  - The other contact routes are not email: a Help Scout Beacon form (706.html:1738), and the footer's
+    `https://www.streetlib.com/company/contact` (:412), which is on the shell host.
+- **Before it can be sent:** StreetLib has 0 hits in `research/owner-asks/questions.json` and
+  `brand-mailbox-questions.md`. The main thread must add it as venue 8, with its recipient cited as above. This reader
+  did not edit those files.
+- **Pre-send check:** drop the question if a later render shows the current plan terms. The agreement PDF (next step 1)
+  cannot do that alone, because it predates the 2026 options (§4).
+
+**Next step. Every URL below appears in a capture. Relative hrefs are made absolute against each page's canonical
+(706.html:14).**
+1. **https://streetlib-agreements.s3.eu-west-1.amazonaws.com/StreetLib_SL_IT_Hub_20250130_en.pdf** (427.html:1643;
+   421.html:1648). It settles the terms half of (d) and covers (e) and the fees as of January 2025. The runner stores PDFs
+   as text.
+2. **https://help.streetlib.com/category/95-publishing-ebooks** (706.html:1693, linked as "this section"). It lists every
+   ebook article: any plans, bulk or feed article ((a), (d), G3), store eligibility (G5), and any AI metadata field (G4).
+3. **https://help.streetlib.com/article/425-create-modify-delete-account** (706.html:1650; 72.html:1660). The sign-up
+   article: whether creating an account asks for a plan (a).
+4. Lower value:
+   - `https://help.streetlib.com/article/704-how-to-read-billing-reports` (706.html:1710; pay.html:1674) for the invoice
+     cadence (G6);
+   - `https://help.streetlib.com/article/570-the-new-streetlib-dashboard` (72.html:1664) for G3.
+
+Not recommended:
+- `https://hub.streetlib.com/` (700.html:1661) and `https://dashboard.streetlib.com/onboarding` (700.html:1653) sit behind
+  a login.
+- The YouTube embed (700.html:1647) is a video.

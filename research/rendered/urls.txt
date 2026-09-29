@@ -553,3 +553,9 @@ https://help.streetlib.com/article/706-what-you-can-do-with-streetlib	help-stree
 https://help.streetlib.com/article/700-the-onboarding-process	help-streetlib-com-article-700-onboarding
 # research/channel-loop/ZERO-TESTS.md row 143 — StreetLib (24), after row 139 (28.9.2026).
 https://help.streetlib.com/article/427-distribution-agreement	help-streetlib-com-article-427-distribution-agreement
+# research/channel-loop/ZERO-TESTS.md row 144 — StreetLib (24), after row 143 (29.9.2026).
+https://streetlib-agreements.s3.eu-west-1.amazonaws.com/StreetLib_SL_IT_Hub_20250130_en.pdf	streetlib-hub-agreement-20250130-en
+# research/channel-loop/ZERO-TESTS.md row 145 — StreetLib (24), after row 143 (29.9.2026).
+https://help.streetlib.com/category/95-publishing-ebooks	help-streetlib-com-category-95-publishing-ebooks
+# research/channel-loop/ZERO-TESTS.md row 146 — StreetLib (24), after row 143 (29.9.2026).
+https://help.streetlib.com/article/425-create-modify-delete-account	help-streetlib-com-article-425-account
