@@ -1,11 +1,13 @@
 // osek-zair.html: every number traces to a primary text, 2026 stays refused, and the page says what it is not.
 //
 // Three chains are proved here, all from files in the repository:
-//   1. page -> config: every number the page shows (title, description, main, FAQ JSON-LD) is a number in a
-//      config string the page renders (a fact, a condition, a cite, the source line, a year);
+//   1. page -> config: every run of text with a digit in it (main, FAQ JSON-LD) is a config string the page renders
+//      (a fact, a condition, a cite, the source line) or one of a few fixed strings that may restate only the rate,
+//      the caps and the years; the title and descriptions restate only those too;
 //   2. config -> capture: every number in a fact is in the quotes it cites, every quote from a text capture is at
-//      the cited lines of that capture, every gazette quote (an image-only PDF) is in the dated read record, and
-//      each capture is the bytes the render stored (sha256 against its .meta.json);
+//      the cited lines of that capture, every gazette quote (an image-only PDF) is in the dated read record, on the
+//      pages it cites (page bounds from the record) and inside the section it names, and each capture is the bytes
+//      the render stored (sha256 against its .meta.json);
 //   3. build: the page ships as itself while osek-zair.json is verified, is withheld by the existing gate the day it
 //      is not, and the unverified 2026 cap (osek-zair-unverified.json) never ships and is never loaded.
 import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from 'vitest';
@@ -26,7 +28,7 @@ import { PAGE_RATE_SOURCES, CONFIG_PUBLISH_RULES, aiDeclarationProblems } from '
 import { AI_DECLARATION, FIGURES_CLAIM } from '../src/lib/ai-declaration.js';
 import { textOf, elementById, faqDetails, faqJsonLd, jsonLdBlocks } from './helpers/html.js';
 import { copyProduct, removeCopy, runBuild, listFiles, readIn, editIn, fillContact, productRoot } from './helpers/product-copy.js';
-import { MASCULINE_SINGULAR } from './helpers/hebrew.js';
+import { MASCULINE_SINGULAR, TAX_CLAIM } from './helpers/hebrew.js';
 
 const PAGE = 'osek-zair.html';
 const repoRoot = join(productRoot, '..', '..');
@@ -57,6 +59,37 @@ const ALL_CITED = [
   ...Object.entries(config.pendingYears).map(([y, p]) => [`pendingYears.${y}`, p]),
 ];
 const pagesOf = (cite) => cite.pages ?? [cite.page];
+const GAZETTE_CITES = ALL_CITED.flatMap(([where, item]) => item.cite.filter((c) => c.doc === 'gazette').map((c) => [where, c]));
+
+/** Every index of `needle` in `hay`. */
+const occurrences = (hay, needle) => {
+  const out = [];
+  for (let i = hay.indexOf(needle); i >= 0; i = hay.indexOf(needle, i + 1)) out.push(i);
+  return out;
+};
+
+/**
+ * The gazette as the dated read record transcribes it, flattened, with where each printed page begins and ends.
+ * The bounds are the config's (documents.gazette.recordPages, read off the page images); each bound must occur
+ * exactly once in the transcription, in page order, or the spans below would not mean anything.
+ */
+const RECORD = norm(readRepo(config.check.record));
+const GAZETTE_PAGES = config.documents.gazette.recordPages;
+const PAGE_SPANS = (() => {
+  const spans = {};
+  let cursor = 0;
+  for (const [page, { from, to }] of Object.entries(GAZETTE_PAGES).sort(([a], [b]) => Number(a) - Number(b))) {
+    const start = RECORD.indexOf(from, cursor);
+    const endAt = start < 0 ? -1 : RECORD.indexOf(to, start);
+    spans[page] = { start, end: endAt < 0 ? -1 : endAt + to.length, from, to };
+    cursor = Math.max(cursor, spans[page].end);
+  }
+  return spans;
+})();
+const TRANSCRIPT = (() => {
+  const pages = Object.values(PAGE_SPANS);
+  return { start: Math.min(...pages.map((p) => p.start)), end: Math.max(...pages.map((p) => p.end)) };
+})();
 
 describe('the documents: each is the capture the render stored', () => {
   for (const [id, doc] of Object.entries(config.documents)) {
@@ -72,11 +105,20 @@ describe('the documents: each is the capture the render stored', () => {
   }
 
   it('the numbers in each document\'s name are in the capture\'s own identifying lines', () => {
-    const gz = config.documents.gazette;
-    expect(missing(atoms(gz.he), atoms(linesOf(gz.idText, gz.idLines))), 'gazette').toEqual([]);
-    const regs = config.documents.regulations;
-    expect(missing(atoms(regs.he), atoms(linesOf(regs.capture, regs.idLines))), 'regulations').toEqual([]);
-    for (const id of ['report', 'letter']) expect([...atoms(config.documents[id].he)], id).toEqual([]);
+    for (const [id, doc] of Object.entries(config.documents)) {
+      const own = doc.idLines ? atoms(linesOf(doc.idText ?? doc.capture, doc.idLines)) : new Set();
+      expect(missing(atoms(doc.he), own), id).toEqual([]);
+    }
+    expect(config.documents.gazette.idLines).toBeDefined();
+    expect(config.documents.regulations.idLines).toBeDefined();
+    expect(config.documents.draft.idLines).toBeDefined();
+  });
+
+  it('the draft regulations are named a draft, and the capture says so', () => {
+    const draft = config.documents.draft;
+    expect(draft.he.startsWith('טיוטת תקנות')).toBe(true);
+    expect(linesOf(draft.capture, [60, 60])).toContain('טיוטת תקנות מטעם משרד האוצר');
+    expect(draft.grade).toMatch(/draft/);
   });
 
   it('the gazette has no text layer: its .txt holds only the page headers, so its quotes come from the read record', () => {
@@ -97,9 +139,10 @@ describe('the check: a dated read, with a record that shows it', () => {
     );
   });
 
-  it('the record carries the date, every document address and the figures', () => {
+  it('the records carry the date, every document address and the figures', () => {
     expect(record).toContain(config.check.on);
-    for (const doc of Object.values(config.documents)) expect(record, doc.url).toContain(doc.url);
+    const both = `${record}\n${readRepo(config.check.review.record)}`;
+    for (const doc of Object.values(config.documents)) expect(both, doc.url).toContain(doc.url);
     for (const figure of ['120,000', '30%', '25%']) expect(record).toContain(figure);
   });
 
@@ -114,6 +157,25 @@ describe('the check: a dated read, with a record that shows it', () => {
 
   it('the earlier read of 28.9.2026 is on record too', () => {
     expect(readRepo(config.check.earlier.record)).toContain(dateHe(config.check.earlier.on));
+  });
+
+  it('the review read of the same day is on record, with the pages it re-read', () => {
+    const review = readRepo(config.check.review.record);
+    expect(review).toContain(config.check.review.on);
+    for (const page of Object.keys(GAZETTE_PAGES)) expect(review).toContain(page);
+  });
+
+  it('the record marks where each gazette page begins and ends, once each, in page order', () => {
+    expect(Object.keys(GAZETTE_PAGES)).toEqual(['171', '172', '173']);
+    for (const [page, span] of Object.entries(PAGE_SPANS)) {
+      expect(span.start, `p.${page} from "${span.from}"`).toBeGreaterThanOrEqual(0);
+      expect(span.end, `p.${page} to "${span.to}"`).toBeGreaterThan(span.start);
+      for (const bound of [span.from, span.to]) {
+        expect(occurrences(RECORD, bound).filter((i) => i >= TRANSCRIPT.start).length, `p.${page}: "${bound}"`).toBe(1);
+      }
+    }
+    expect(PAGE_SPANS['171'].end).toBeLessThan(PAGE_SPANS['172'].start);
+    expect(PAGE_SPANS['172'].end).toBeLessThanOrEqual(PAGE_SPANS['173'].start);
   });
 });
 
@@ -131,12 +193,54 @@ describe('config -> capture: every figure in a fact is in the text it cites', ()
 
   it('every gazette cite names a page the capture has', () => {
     const pages = atoms(readRepo(config.documents.gazette.idText));
-    for (const [where, item] of ALL_CITED) {
-      for (const cite of item.cite.filter((c) => c.doc === 'gazette')) {
-        for (const p of pagesOf(cite)) expect(pages.has(String(p)), `${where}: page ${p}`).toBe(true);
-        expect(cite.label, where).toMatch(/\S/);
+    for (const [where, cite] of GAZETTE_CITES) {
+      for (const p of pagesOf(cite)) expect(pages.has(String(p)), `${where}: page ${p}`).toBe(true);
+      expect(cite.label, where).toMatch(/\S/);
+    }
+  });
+
+  it('every gazette quote is on the pages it cites, and every page it cites holds part of it', () => {
+    for (const [where, cite] of GAZETTE_CITES) {
+      const pages = pagesOf(cite).map(String);
+      pages.forEach((p, i) => i && expect(Number(p), `${where}: pages ${pages} are not consecutive`).toBe(Number(pages[i - 1]) + 1));
+      const lo = PAGE_SPANS[pages[0]].start;
+      const hi = PAGE_SPANS[pages[pages.length - 1]].end;
+      const hits = fragments(cite.quote).map((f) => occurrences(RECORD, f).filter((i) => i >= lo && i + f.length <= hi).map((i) => [i, i + f.length]));
+      hits.forEach((h, k) => expect(h.length, `${where} (${cite.label}): "${fragments(cite.quote)[k]}" is not on p.${pages.join('–')}`).toBeGreaterThan(0));
+      for (const p of pages) {
+        const { start, end } = PAGE_SPANS[p];
+        expect(hits.some((h) => h.some(([a, b]) => a < end && b > start)), `${where} (${cite.label}): nothing quoted is on p.${p}`).toBe(true);
       }
     }
+  });
+
+  it('a gazette quote given with its section lies inside that section, and the label names it', () => {
+    const header = /87[א-ת]\. /g;
+    const withSection = GAZETTE_CITES.filter(([, c]) => c.section);
+    expect(withSection.length).toBeGreaterThan(3);
+    for (const [where, cite] of withSection) {
+      expect(cite.label, where).toContain(cite.section);
+      const starts = occurrences(RECORD, `${cite.section}. `).filter((i) => i >= TRANSCRIPT.start && i < TRANSCRIPT.end);
+      expect(starts.length, `${where}: section ${cite.section} heads the record once`).toBe(1);
+      header.lastIndex = starts[0] + 1;
+      const next = header.exec(RECORD);
+      const end = next && next.index < TRANSCRIPT.end ? next.index : TRANSCRIPT.end;
+      for (const f of fragments(cite.quote)) {
+        expect(occurrences(RECORD, f).some((i) => i > starts[0] && i + f.length <= end), `${where}: "${f}" outside ${cite.section}`).toBe(true);
+      }
+    }
+  });
+
+  it('a cite that names the Economic Efficiency Law comes with a text capture that names it (the gazette pages do not)', () => {
+    const LAW = 'חוק ההתייעלות הכלכלית';
+    expect(RECORD.slice(TRANSCRIPT.start, TRANSCRIPT.end)).not.toContain(LAW);
+    let named = 0;
+    for (const [where, item] of ALL_CITED) {
+      if (!item.cite.some((c) => c.label?.includes(LAW))) continue;
+      named += 1;
+      expect(item.cite.some((c) => c.doc !== 'gazette' && c.quote.includes(LAW)), where).toBe(true);
+    }
+    expect(named).toBeGreaterThan(2);
   });
 
   it('every number in a fact is in its quotes, and every number in a cite\'s label is in that cite\'s quote or pages', () => {
@@ -145,7 +249,7 @@ describe('config -> capture: every figure in a fact is in the text it cites', ()
       const quoted = atomsOf(item.cite.map((c) => c.quote));
       expect(missing(atoms(item.he), quoted), `${where}: ${item.he}`).toEqual([]);
       for (const cite of item.cite) {
-        const own = atomsOf([cite.quote, ...(cite.doc === 'gazette' ? pagesOf(cite).map(String) : [])]);
+        const own = atomsOf([cite.quote, cite.section ?? '', ...(cite.doc === 'gazette' ? pagesOf(cite).map(String) : [])]);
         expect(missing(atoms(cite.label ?? ''), own), `${where}: ${cite.label}`).toEqual([]);
       }
     }
@@ -153,6 +257,7 @@ describe('config -> capture: every figure in a fact is in the text it cites', ()
 
   it('the rate and the caps the calculation uses are the numbers the facts state', () => {
     expect(config.facts.rate.he).toContain(`${config.rate * 100}%`);
+    expect(config.facts.yearOfExit.he).toContain(`${config.yearOfExitRate * 100}% מהסכום שבהגדרת "עוסק פטור"`);
     for (const [year, { cap }] of Object.entries(config.years)) {
       expect(config.facts.cap.he).toContain(cap.toLocaleString('en-US'));
       expect(config.facts.cap.he).toContain(year);
@@ -220,22 +325,54 @@ describe('page -> config: every number on the page is one the config renders', (
   const title = /<title>([^<]*)<\/title>/.exec(head)[1];
   const ld = jsonLdBlocks(html).flatMap((b) => (b.mainEntity ?? []).flatMap((q) => [q.name, q.acceptedAnswer.text]));
 
-  const rendered = [
-    ...FACTS.map(([, f]) => f.he),
-    ...config.conditions.map((c) => c.he),
-    ...ALL_CITED.flatMap(([, item]) => item.cite.map((c) => citeHe(c))),
-    ...Object.values(config.pendingYears).map((p) => p.he),
-    ...Object.values(config.documents).map((d) => d.he),
-    trackSourceLineHe(),
-    ...offeredYears().map((y) => y.year),
-    config.secondary.vatSense.he,
+  /** The only numbers a page-authored string may carry: the rates, the caps and the years, as the config has them. */
+  const CORE = new Set(
+    [config.rate * 100, config.yearOfExitRate * 100, ...Object.values(config.years).map((y) => y.cap), ...Object.keys(config.years), ...Object.keys(config.pendingYears)].map(String),
+  );
+  /** Page-authored strings with a digit in them: the lead, the h1, a table label, a question, one list item. */
+  const FIXED = [
+    'בדקו אם ניכוי של 30% מהמחזור משאיר לכם הכנסה חייבת נמוכה יותר מדיווח רגיל עם ההוצאות בפועל.',
+    'תקרת המחזור של בעל עסק זעיר: 120,000 ₪ בשנות המס 2024 ו-2025.',
+    'בעל עסק זעיר: ניכוי 30% מהמחזור או הוצאות בפועל?',
+    'ניכוי במסלול בעל עסק זעיר (30% מהמחזור)',
+    'מתי מסלול ה-30% מפסיד?',
+    'הוא לא בודק את התנאים שלמעלה, לא מחשב מס ולא מחשב לשנת המס 2026.',
   ];
+  /** Every config string the page renders, as it renders it. */
+  const RENDERED = [
+    ...FACTS.flatMap(([, f]) => [f.he, `מקור: ${citesHe(f.cite)}`]),
+    ...config.conditions.map((c) => `${c.he} (${citesHe(c.cite)})`),
+    ...Object.values(config.pendingYears).flatMap((p) => [p.he, `מקור: ${citesHe(p.cite)}`]),
+    config.secondary.vatSense.he,
+    trackSourceLineHe(),
+  ];
+  /** A text with every allowed string taken out, longest first: what is left was written on the page alone. */
+  const leftover = (text) => [...RENDERED, ...FIXED].sort((a, b) => b.length - a.length).reduce((t, a) => t.split(a).join(' '), text);
+  // The year <select> is checked option by option below (the year list test); its labels are bare years.
+  const mainText = textOf(main.replace(elementById(main, 'year'), ''));
 
-  it('the title, the description, the main content and the FAQ JSON-LD hold no number the config does not render', () => {
-    const have = atomsOf(rendered);
-    for (const [where, text] of [['title', title], ...metas.map((m) => ['meta', m]), ['main', textOf(main)], ...ld.map((t) => ['JSON-LD', t])]) {
-      expect(missing(atoms(text), have), `${where}: ${text.slice(0, 120)}`).toEqual([]);
+  it('every run of text with a digit in main and in the FAQ JSON-LD is a config string or a fixed string', () => {
+    for (const [where, text] of [['main', mainText], ...ld.map((t) => ['JSON-LD', t])]) {
+      const rest = leftover(text);
+      expect(rest.match(/[^.?!:;()]*\d[^.?!:;()]*/g) ?? [], `${where}: ${text.slice(0, 80)}`).toEqual([]);
     }
+  });
+
+  it('the fixed strings are on the page, and restate only the rates, the caps and the years', () => {
+    const everything = [mainText, ...ld].join(' ');
+    for (const f of FIXED) {
+      expect(everything, f).toContain(f);
+      expect(missing(atoms(f), CORE), f).toEqual([]);
+    }
+  });
+
+  it('the title and the descriptions restate only the rates, the caps and the years', () => {
+    for (const text of [title, ...metas]) expect(missing(atoms(text), CORE), text).toEqual([]);
+  });
+
+  it('an invented figure anywhere in main fails the check (the check is not a pool of every number in the config)', () => {
+    const invented = `${mainText} ברוב המקרים המסלול חוסך לכם 25% מהמס, ו-80% מהעסקים משלמים פחות מ-120,000 ₪.`;
+    expect(leftover(invented)).toMatch(/\d/);
   });
 
   it('the page has numbers at all, so the check above is not vacuous', () => {
@@ -246,6 +383,8 @@ describe('page -> config: every number on the page is one the config renders', (
     const lead = /<p class="lead">[\s\S]*?<\/p>/.exec(html)[0];
     expect(textOf(lead)).toContain(`${config.rate * 100}%`);
     expect(textOf(lead)).toContain('120,000 ₪');
+    // Section 87ד(ג) lets someone registered on 1 January deduct in the year they cross the cap: no "only".
+    expect(textOf(lead)).not.toMatch(/רק למחזור|פתוח רק/);
     for (const y of Object.keys(config.years)) expect(textOf(lead)).toContain(y);
     const line = elementById(html, 'track-source');
     expect(html.indexOf(line)).toBe(html.indexOf(lead) + lead.length + 3);
@@ -273,10 +412,82 @@ describe('page -> config: every number on the page is one the config renders', (
     expect(config.conditions.find((c) => c.id === 'books').he).toContain('פנקסים קבילים');
     expect(config.conditions.find((c) => c.id === 'related').he).toMatch(/25%.*קרוב.*מעסיק.*בשלוש שנות המס הקודמות/);
   });
+
+  it('the 25% condition keeps the statute\'s "from one of these" (87ה(א)(6)), not one pooled limit', () => {
+    const related = config.conditions.find((c) => c.id === 'related').he;
+    expect(related).toContain('התקבלו מאחד מאלה:');
+    expect(related).not.toMatch(/קרוב שלכם \([^)]*\) או ממי/);
+  });
+
+  it('registration: the law\'s instruction to the officer is not told as a fact; the Authority\'s account and the deadline are', () => {
+    const registered = config.conditions.find((c) => c.id === 'registered');
+    expect(registered.he).not.toContain('עוסק פטור נרשם כך גם בלי להגיש בקשה');
+    expect(registered.he).toContain('החוק מורה לפקיד השומה');
+    expect(registered.he).toContain('לפי רשות המסים');
+    expect(registered.he).toContain('סעיף 131');
+    expect(registered.cite.some((c) => c.doc === 'report' && c.lines[0] === 548 && c.lines[1] === 553)).toBe(true);
+  });
+
+  it('the conditions intro names the 87ד(ג) exception instead of saying no condition may fail', () => {
+    const conditions = /<h2>התנאים שהחוק קובע<\/h2>\s*<p>([\s\S]*?)<\/p>/.exec(html)[1];
+    expect(textOf(conditions)).toContain('חוץ מהחריג לשנה שבה חדלתם להיות בעלי עסק זעיר');
+  });
 });
 
 describe('what the page says it is not', () => {
   const text = textOf(html);
+
+  it('never states a tax amount or a saving in tax, anywhere on the page (JSON-LD and head included)', () => {
+    expect(textOf(html)).not.toMatch(TAX_CLAIM);
+    expect(html).not.toMatch(TAX_CLAIM);
+  });
+
+  it('the turnover field says what turnover is (87ב), what the tool does not know about it, and the 87ז(א) power', () => {
+    expect(textOf(/<label for="turnover">([\s\S]*?)<\/label>/.exec(html)[1])).toContain('כהגדרתו בחוק מע״מ');
+    const hint = textOf(elementById(html, 'turnover-hint'));
+    expect(hint).toContain(config.facts.turnover.he);
+    expect(config.facts.turnover.he).toContain('לא קראנו');
+    expect(hint).toContain(config.facts.turnoverDraft.he);
+    expect(config.facts.turnoverDraft.he).toMatch(/טיוטה.*לא קראנו אם התקנות הותקנו/);
+  });
+
+  it('the table says it takes income from the business to equal the turnover entered, and why the gap does not move', () => {
+    const note = textOf(elementById(html, 'table-assumption'));
+    expect(note).toContain(config.facts.assumption.he);
+    expect(note).toContain(`מקור: ${citesHe(config.facts.assumption.cite)}`);
+  });
+
+  it('the expenses hint keeps "ומס מקביל" and says plainly what the tool cannot tell (section 47א)', () => {
+    const hint = textOf(elementById(html, 'expenses-hint'));
+    expect(hint).toContain(config.facts.expensesHint.he);
+    expect(config.facts.expensesHint.he).toContain('תשלומי ביטוח לאומי ומס מקביל');
+    expect(config.facts.expensesHint.he).toMatch(/לא קראנו.*הכלי לא/);
+  });
+
+  it('"when does the 30% track lose?" also names 87ד(ב), on the page and in the JSON-LD, and the not-done list says so', () => {
+    const q = 'מתי מסלול ה-30% מפסיד?';
+    const visible = faqDetails(elementById(html, 'faq')).find((d) => d.question === q);
+    for (const f of ['whenLoses', 'assetSale']) {
+      expect(textOf(visible.answerHtml), f).toContain(config.facts[f].he);
+      expect(faqJsonLd(html).get(q), f).toContain(config.facts[f].he);
+    }
+    const notDone = textOf(elementById(html, 'not-done'));
+    expect(notDone).toContain('במכירת נכס ששימש בעסק');
+    expect(notDone).toContain('כשהמחזור עולה על התקרה');
+  });
+
+  it('leaving the track: the rule and its 87ד(ג) clause, both with their sources', () => {
+    const leaving = textOf(elementById(html, 'leaving'));
+    for (const f of ['coolingOff', 'coolingOffYearOfExit']) {
+      expect(leaving, f).toContain(`${config.facts[f].he} (מקור: ${citesHe(config.facts[f].cite)})`);
+    }
+  });
+
+  it('the description claims nothing about what people search for', () => {
+    const description = /<meta name="description" content="([^"]*)"/.exec(html)[1];
+    expect(description).not.toMatch(/מחפשים/);
+    expect(description).toContain("נקרא לפעמים 'עוסק זעיר'");
+  });
 
   it('taxable income, not tax - and why, on the page', () => {
     const why = textOf(elementById(html, 'why-not-tax'));
@@ -360,6 +571,17 @@ describe('the site around it', () => {
     expect(PAGE_RATE_SOURCES[PAGE]).toEqual(['src/config/osek-zair.json']);
     expect(CONFIG_PUBLISH_RULES['src/config/osek-zair.json']).toBe('verified');
     expect(CONFIG_PUBLISH_RULES['src/config/osek-zair-unverified.json']).toBe('verified');
+  });
+
+  it('the home page names the tool without its figures: index.html renders no config, so the gate could not withhold them', () => {
+    const index = read('index.html');
+    expect(PAGE_RATE_SOURCES['index.html']).toEqual([]);
+    const card = /<a class="card tool-card" href="osek-zair\.html">([\s\S]*?)<\/a>/.exec(index)[1];
+    expect(textOf(card)).not.toMatch(/\d/);
+    expect(textOf(card)).not.toContain('מקור');
+    const lead = textOf(/<p class="lead">([\s\S]*?)<\/p>/.exec(index)[1]);
+    expect(lead).toContain('בעל עסק זעיר');
+    expect(lead).not.toMatch(/2024|2025|30%|120,000/);
   });
 
   it('the home page lists it, the sitemap lists it, and every page with the main navigation links to it', () => {
@@ -497,8 +719,13 @@ describe('the build', () => {
     const r = runBuild(dir);
     expect(r.status, r.stderr).toBe(0);
     const out = join(dir, '_site');
-    expect(readIn(out, PAGE)).toContain('לא מאומת');
-    expect(readIn(out, PAGE)).not.toContain('120,000');
+    const withheld = readIn(out, PAGE);
+    expect(withheld).toContain('לא מאומת');
+    expect(withheld).not.toContain('120,000');
+    expect(withheld).not.toContain('30%');
+    // The notice takes the page title up to its first "–": nothing before it may carry a figure or a year.
+    expect(/<title>([^<]*)<\/title>/.exec(withheld)[1]).not.toMatch(/\d/);
+    expect(textOf(/<h1>([\s\S]*?)<\/h1>/.exec(withheld)[1])).not.toMatch(/\d/);
     expect(readIn(out, 'sitemap.xml')).not.toContain('osek-zair.html');
     expect(listFiles(out)).not.toContain('src/config/osek-zair.json');
     expect(r.stdout).toContain('withheld osek-zair.html');

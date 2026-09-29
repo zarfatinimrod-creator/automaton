@@ -6,7 +6,10 @@
 //   - the cap: turnover "אינו עולה על" the עוסק פטור amount (87ב(1)), so turnover equal to the cap is under it;
 //   - taxable income only, never tax: no text read gives the brackets or credit points, and the Tax Authority's own
 //     report says almost 80% of the businesses it segmented by marginal rate do not reach the tax threshold;
-//   - tax year 2026 is refused: its cap is CPI-linked and no text read states it.
+//   - tax year 2026 is refused: its cap is CPI-linked and no text read states it;
+//   - over the cap there is no comparison, but the result names section 87ד(ג): someone registered at the start of
+//     the year who stops qualifying during it may still deduct, up to 30% of the cap (gazette p.172);
+//   - when regular reporting wins, the verdict carries the two-year cooling-off of 87ה(ב) (gazette p.173).
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -18,7 +21,7 @@ import {
 } from '../src/lib/osek-zair.js';
 import { formatILS } from '../src/lib/money.js';
 import { productRoot } from './helpers/product-copy.js';
-import { MASCULINE_SINGULAR } from './helpers/hebrew.js';
+import { MASCULINE_SINGULAR, TAX_CLAIM } from './helpers/hebrew.js';
 
 const config = JSON.parse(readFileSync(join(productRoot, 'src/config/osek-zair.json'), 'utf8'));
 const CAP = config.years['2025'].cap;
@@ -27,6 +30,7 @@ describe('the config the module computes with', () => {
   it('is the same object as the file, with the 30% rate and the 2024 and 2025 caps', () => {
     expect(OSEK_ZAIR_CONFIG).toEqual(config);
     expect(config.rate).toBe(0.3);
+    expect(config.yearOfExitRate).toBe(0.3);
     expect(config.years['2024'].cap).toBe(120000);
     expect(config.years['2025'].cap).toBe(120000);
     expect(Object.keys(config.pendingYears)).toEqual(['2026']);
@@ -36,10 +40,10 @@ describe('the config the module computes with', () => {
   it('hard-codes no figure: the module reads the rate and the caps only from the config', () => {
     const src = readFileSync(join(productRoot, 'src/lib/osek-zair.js'), 'utf8');
     expect(src).not.toMatch(/120[,_]?000|0\.3\b|\b30\b|2024|2025|2026|122[,_]?833/);
-    const custom = { ...config, rate: 0.25, years: { 2030: { cap: 50000 } }, pendingYears: {} };
+    const custom = { ...config, rate: 0.25, yearOfExitRate: 0.2, years: { 2030: { cap: 50000 } }, pendingYears: {} };
     const r = compareTracks({ year: 2030, turnover: 40000, expenses: 0 }, custom);
     expect(r).toMatchObject({ status: 'compared', cap: 50000, rate: 0.25, deduction: 10000, trackTaxable: 30000 });
-    expect(compareTracks({ year: 2030, turnover: 50001, expenses: 0 }, custom).status).toBe('over-cap');
+    expect(compareTracks({ year: 2030, turnover: 50001, expenses: 0 }, custom)).toMatchObject({ status: 'over-cap', exitCeiling: 10000 });
   });
 });
 
@@ -50,9 +54,9 @@ describe('the cap: "אינו עולה על" (87ב(1))', () => {
     expect(r.cap).toBe(CAP);
   });
 
-  it('one agora above the cap is over it: no comparison, and by how much', () => {
+  it('one agora above the cap is over it: no comparison, by how much, and the 87ד(ג) ceiling (30% of the cap)', () => {
     const r = compareTracks({ year: '2025', turnover: CAP + 0.01, expenses: 10000 });
-    expect(r).toEqual({ status: 'over-cap', year: '2025', cap: CAP, rate: 0.3, turnover: CAP + 0.01, overBy: 0.01 });
+    expect(r).toEqual({ status: 'over-cap', year: '2025', cap: CAP, rate: 0.3, turnover: CAP + 0.01, overBy: 0.01, exitCeiling: 36000 });
     expect(r.trackTaxable).toBeUndefined();
   });
 
@@ -169,6 +173,16 @@ describe('what the result says (resultHe)', () => {
     expect(r.verdict).toContain(ils(15000));
   });
 
+  it('regular lower: the verdict also carries the two-year cooling-off (87ה(ב)), with its section, before anyone leaves', () => {
+    const { coolingOff } = config.facts;
+    const r = say({ turnover: 100000, expenses: 45000 });
+    expect(r.verdict).toContain(coolingOff.he);
+    expect(r.verdict).toContain(coolingOff.cite[0].label);
+    expect(r.verdict).toContain('יציאה מהמסלול');
+    // Only when leaving is on the table.
+    expect(say({ turnover: 100000, expenses: 10000 }).verdict).not.toContain(coolingOff.he);
+  });
+
   it('equal: says they are the same', () => {
     expect(say({ turnover: 100000, expenses: 30000 }).verdict).toContain('זהה בשני המסלולים');
   });
@@ -185,7 +199,19 @@ describe('what the result says (resultHe)', () => {
     expect(over.tone).toBe('neutral');
     expect(over.cap).toContain(ils(500));
     expect(over.cap).toContain(config.facts.cap.cite[0].label);
-    expect(over.verdict).toContain('אין כאן השוואה');
+    expect(over.cap).toContain('אינו בעל עסק זעיר באותה שנה');
+    expect(over.verdict).toContain('לא משווה כאן בין המסלולים');
+  });
+
+  it('over the cap: never says the deduction is gone; names the 87ד(ג) exception and its ceiling, 30% of the cap', () => {
+    const { yearOfExit } = config.facts;
+    const over = say({ turnover: 130000, expenses: 20000 });
+    const text = `${over.cap} ${over.verdict}`;
+    expect(text).not.toMatch(/אינו מאפשר את המסלול|אין ניכוי|לא ניתן לנכות/);
+    expect(over.verdict).toContain('אם הייתם רשומים כבעלי עסק זעיר בתחילת שנת המס');
+    expect(over.verdict).toContain(yearOfExit.cite[0].label);
+    expect(over.verdict).toContain(`${config.yearOfExitRate * 100}% מהתקרה (${ils(CAP * config.yearOfExitRate)})`);
+    expect(over.verdict).toContain('המסלול לפי החוק');
   });
 
   it('2026: the refusal is the config\'s own text, word for word', () => {
@@ -206,7 +232,7 @@ describe('what the result says (resultHe)', () => {
     expect(texts.length).toBeGreaterThan(10);
     for (const t of texts) {
       expect(t).not.toMatch(MASCULINE_SINGULAR);
-      expect(t).not.toMatch(/מס לתשלום|תשלמו|החיסכון במס|חיסכון של|תחסכו/);
+      expect(t).not.toMatch(TAX_CLAIM);
     }
   });
 });

@@ -192,7 +192,16 @@ not code — it is on the owner-ask list, not solved here.
 What it answers, for tax years 2024 and 2025: is the year's turnover within the cap (₪120,000; "אינו עולה על", so
 equal is within), and is taxable income from the business lower under the track (turnover minus 30% of turnover)
 or under regular reporting (turnover minus the expenses entered) - and by how much. It says, in the result, when the
-30% track loses (expenses above 30% of turnover). Pure arithmetic in `src/lib/osek-zair.js`; nothing stored or sent.
+30% track loses (expenses above 30% of turnover), and then carries the two-year cooling-off of 87ה(ב) into that
+verdict. It says it takes income from the business to equal the turnover entered (87ד(א) deducts a share of turnover
+from income; if they differ, both taxable-income rows move by the same amount and the gap does not). Pure arithmetic
+in `src/lib/osek-zair.js`; nothing stored or sent.
+
+Over the cap it compares nothing but does not say the deduction is gone: section 87ד(ג) lets someone registered on
+the first day of the tax year who stops qualifying during it still deduct, up to 30% of the cap (`yearOfExitRate`;
+₪36,000 for 2024 and 2025). The tool cannot know whether that was so; the result names the section and the ceiling.
+The FAQ adds 87ד(ב), a cost the comparison leaves out (depreciation added back on selling a business asset), and the
+turnover hint cites 87ז(א) and a 2025 draft under it, as a draft whose enactment has not been read.
 
 What it refuses: **tax** (no text read gives brackets or credit points; the page says why and quotes the Tax
 Authority's own "almost 80% under the tax threshold"), **tax year 2026** (the cap is CPI-linked from 1.1.2026 and no
@@ -203,9 +212,13 @@ the meaning is unread).
 Where every number comes from: `src/config/osek-zair.json`. Each fact and condition cites a text capture by file and
 line (the quote must be at those lines after bidi marks become spaces) or the gazette - ספר החוקים 3045, an
 image-only PDF - by page, with the quote in the dated read record `logs/2026-09-29-osek-zair-check.md` (the three
-pages were rendered to images and read on 29.9.2026). `tests/osek-zair-page.test.js` walks the chain both ways: every
-number on the page is in a config string the page renders; every number in a fact is in its quotes; every quote is
-at its lines or in the record; every capture's sha256 matches its `.meta.json`. The source line after the lead says
+pages were rendered to images and read on 29.9.2026; after review they were read again, `check.review`).
+`tests/osek-zair-page.test.js` walks the chain both ways: every run of text with a digit on the page is a config
+string the page renders or one of a few fixed strings that may restate only the rate, caps and years; every number in
+a fact is in its quotes; every quote is at its lines or in the record, on the page it cites (page bounds in
+`documents.gazette.recordPages`) and inside the section it names; every capture's sha256 matches its `.meta.json`.
+The home page card names the tool without its figures, since `index.html` renders no config and the gate cannot
+withhold what it shows. The source line after the lead says
 "עותקים באתר capitax.co.il · נבדק: 29.9.2026": the documents are primary texts, the copies are a tax firm's.
 
 The name: the track is "בעל עסק זעיר" (amendment 265); "עוסק זעיר" appears only as the search phrase and in the

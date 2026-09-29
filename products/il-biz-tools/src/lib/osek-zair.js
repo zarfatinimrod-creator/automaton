@@ -9,8 +9,11 @@
 //
 // What it will not do:
 //   - compute tax. No text read gives the brackets or credit points, and the Tax Authority's own report says
-//     almost all of the businesses it segmented by marginal rate are under the tax threshold anyway; so the
-//     result is taxable income, and says so;
+//     almost 80% of the businesses it segmented by marginal rate do not reach the tax threshold; so the result is
+//     taxable income, and says so;
+//   - compare over the cap. Section 87ד(ג) lets someone registered at the start of the year who stops qualifying
+//     during it still deduct, up to `yearOfExitRate` of the cap; the tool cannot know whether that was so, so it
+//     names the exception and its ceiling and compares nothing;
 //   - compute a year in `pendingYears` (the CPI-linked year: no text read states its cap). The unverified
 //     amount lives in a separate config (named in the pending entry itself), which nothing here imports and the
 //     build never ships;
@@ -55,7 +58,8 @@ export function offeredYears(cfg = config) {
  *   {status: 'refused', year, reason: 'pending'|'unknown'|'unverified'}
  *   {status: 'incomplete', year, cap}                                  - no turnover yet
  *   {status: 'invalid', year, field: 'turnover'|'expenses'}
- *   {status: 'over-cap', year, cap, rate, turnover, overBy}             - the track is closed; no comparison
+ *   {status: 'over-cap', year, cap, rate, turnover, overBy, exitCeiling} - not a בעל עסק זעיר this year; no
+ *                                                                        comparison (exitCeiling: the 87ד(ג) ceiling)
  *   {status: 'needs-expenses', year, cap, rate, turnover, headroom}     - under the cap, expenses not entered
  *   {status: 'compared', year, cap, rate, turnover, expenses, deduction, trackTaxable, regularTaxable,
  *    lower: 'track'|'regular'|'equal', by, expensesAboveTurnover}
@@ -72,7 +76,9 @@ export function compareTracks({ year, turnover, expenses } = {}, cfg = config) {
   if (t === null) return { status: 'incomplete', year: y, cap };
   if (Number.isNaN(t)) return { status: 'invalid', year: y, field: 'turnover' };
   // The cap is "אינו עולה על": equal to it is within it.
-  if (t > cap) return { status: 'over-cap', year: y, cap, rate, turnover: t, overBy: round2(t - cap) };
+  if (t > cap) {
+    return { status: 'over-cap', year: y, cap, rate, turnover: t, overBy: round2(t - cap), exitCeiling: round2(cap * cfg.yearOfExitRate) };
+  }
 
   const e = amountOf(expenses);
   if (e === null) return { status: 'needs-expenses', year: y, cap, rate, turnover: t, headroom: round2(cap - t) };
@@ -125,9 +131,12 @@ export function resultHe(r, cfg = config) {
       return out(
         'over',
         `המחזור (${ils(r.turnover)}) גבוה מהתקרה לשנת המס ${r.year} (${ils(r.cap)}) ב-${ils(r.overBy)}. ` +
-          `מחזור שעולה על התקרה אינו מאפשר את המסלול (${cfg.facts.cap.cite[0].label}).`,
+          `מי שהמחזור שלו עולה על התקרה אינו בעל עסק זעיר באותה שנה (${cfg.facts.cap.cite[0].label}).`,
         'neutral',
-        'לכן אין כאן השוואה בין המסלולים.',
+        'אם הייתם רשומים כבעלי עסק זעיר בתחילת שנת המס, החוק מתיר בכל זאת לנכות לשנה הזו סכום ניכוי של עד ' +
+          `${pct(cfg.yearOfExitRate)} מהתקרה (${ils(r.exitCeiling)}), בתנאים שבחוק ` +
+          `(${cfg.facts.yearOfExit.cite[0].label}; ראו "המסלול לפי החוק" למטה). ` +
+          'הכלי לא יודע אם הייתם רשומים בתחילת השנה, ולכן לא משווה כאן בין המסלולים.',
       );
     default:
       break;
@@ -151,10 +160,15 @@ export function resultHe(r, cfg = config) {
   } else {
     verdict = `ההכנסה החייבת מהעסק זהה בשני המסלולים: ההוצאות שהזנתם שוות ל-${share}.`;
   }
+  // Leaving the track can shut it for two more tax years (87ה(ב)): said where leaving is the verdict.
+  const leaving =
+    r.lower === 'regular'
+      ? ` לפני שעוזבים את המסלול, ראו "יציאה מהמסלול" למטה (${cfg.facts.coolingOff.cite[0].label}): ${cfg.facts.coolingOff.he}`
+      : '';
   const note = r.expensesAboveTurnover
     ? 'ההוצאות שהזנתם גבוהות מהמחזור, ולכן בדיווח רגיל יוצא מספר שלילי. הכלי לא בודק מה קורה במקרה כזה.'
     : null;
-  return out('ok', underCap, tone, `${verdict} ${NOT_TAX}`, note);
+  return out('ok', underCap, tone, `${verdict} ${NOT_TAX}${leaving}`, note);
 }
 
 /** Pages of a gazette cite, as the page prints them: "עמ' 172" or "עמ' 172–173". */
