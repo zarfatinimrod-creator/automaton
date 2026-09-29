@@ -476,3 +476,122 @@ brand GitHub user account is allowed. Even then, build only after the owner has 
 7. https://portal.astro.build/api/themes/featured — the sponsor set.
 8. https://astro.build/themes/1/?price%5B%5D=paid — a rendered page 1, to confirm on the page itself that display
    order equals API order minus featured.
+
+---
+
+## Tick 15 (rows 150-152 render)
+
+**Read 29.9.2026 by an Opus reader.** Render commit `033f044`, fetchedAt 2026-09-29T03:53Z. All three captures returned
+200. Short names: `GL` = `research/rendered/astro-themes-guidelines-hackmd` (row 150), `CAT` =
+`…/astro-themes-categories-hackmd` (row 151), `SUB` = `…/astro-portal-themes-submit` (row 152). All three txt files were
+read in full (GL 290 lines, CAT 173, SUB 35). The html files were grepped. Every quote below was checked with
+`grep -n -F`.
+
+**Status: KILL-PROPOSED on G3/G6.** Of the two pre-registered kill clauses (§I), clause 1 fires and clause 2 does not.
+
+### What was captured
+- **GL is the reviewers' guide, read in full.** Its title is `Astro Theme Catalogue Review Guidelines - HackMD`
+  (GL.txt:1). It holds the numbered rejection reasons that the 18.9 issues cite (GL.txt:109-229). The author-facing guide
+  is a separate note, not read: `Please also see the [Guide for Submissions](/J8pD89rBRsKckhxUZYQrGQ)` (GL.txt:113).
+- **CAT did not render.** The note list is built in the browser. The text is HackMD modal chrome, for example
+  `This template is not available.` (CAT.txt:9), and `Astro` occurs 0 times in CAT.html. Nothing is lost, because GL
+  holds the checklist.
+- **SUB served the portal's login page, not the form:** `<link rel="canonical" href="https://localhost:4321/login/">`
+  (SUB.html:1).
+
+### What the guidelines require
+**Of every theme:**
+- **A demo.** `We require that all themes contain a demo.` (GL.txt:48)
+  - `The demo is a live, working deployment of the theme's repo (exactly as a new user will get when they start with the
+    theme)` (GL.txt:13).
+  - `The demo must be deployed at a domain that indicates that this site is clearly a generic theme, and must not be a
+    person or organization's own site.` (GL.txt:213).
+- **The current Astro major.** `we can only accept new themes using the current major version of Astro.` (GL.txt:115)
+- **A listing in English, with images in any language.**
+  - `Only static screenshots can be included in your listing.` (GL.txt:140).
+  - `Your description must be in English` (GL.txt:169).
+  - `Your images do not need to show English text.` (GL.txt:175).
+  - `Your GitHub repo README does not need to be in English.` (GL.txt:176).
+  - For the Hebrew RTL candidate (§H): the listing text is written in English, and the demo can stay in Hebrew.
+- **Generic content only.**
+  - `**Only use `example.com` for placeholder URLs and email addresses**.` (GL.txt:191).
+  - `you must explicitly offer a generic template and guidance on how to use it` (GL.txt:215).
+- **A low editorial bar.**
+  - `The quality of the description text or images is not a consideration.` (GL.txt:33).
+  - Reviewers are `not responsible for using additional tools to check accessibility` (GL.txt:57).
+
+**Of paid themes:**
+- **The buy link can be a payment page, and Gumroad is named.**
+  - `The "Get Started" link points to the theme's open source repository or to a payment page for that theme`
+    (GL.txt:15).
+  - `If you are submitting a Gumroad payment link, please do not include paramaters such as `?wanted=true`.`
+    (GL.txt:224). The reviewers name the Gumroad path themselves.
+- **No access to the paid code is asked for.** The Astro version is checked from outside: `This may be possible to
+  determine for paid themes using https://isAstro.pages.dev or looking for the generator meta tag in the page source.`
+  (GL.txt:21).
+- **A rejection is written into the paid listing itself.**
+  - `## Template for Editing a paid theme's description` (GL.txt:247) and `YOUR THEME WAS NOT ACCEPTED. (REASON #10)`
+    (GL.txt:249).
+  - Otherwise the reviewer will `use the contact information on a paid theme if it exists` (GL.txt:63).
+  - So the seller learns of a rejection only by logging in, or through the contact line on the listing.
+
+**Of the author:** nothing about identity, legal name, payment, a call or a signature. These terms have 0 hits in GL.txt:
+`token`, `API`, `CLI`, `pull request`, `identity`, `Stripe`, `price`.
+
+### AI rule
+There is one AI mention in GL, and it permits: `Machine/AI translations are OK!` (GL.txt:173). There is no rule on
+AI-built themes or on agent-run accounts. The site terms have none either (§29.9 B).
+
+### Is the submit page only a GitHub-OAuth form? **Yes, in every capture.**
+- **The login wall offers GitHub and nothing else.**
+  - `To submit themes, you have to be logged in.` (SUB.txt:9).
+  - One button, `Sign in with GitHub` (SUB.txt:11), which is `<a href="/login/github/" class="button">` (SUB.html:7).
+    SUB.html has one `class="button"` in total.
+  - SUB.html has 0 hits for `api`, `token`, `oauth`, `password` and `email`.
+- **The portal is where themes are created and edited:** `The Astro Dev Portal, the place to submit, create and update
+  your themes for Astro.` (SUB.html:1).
+- **Every fix in GL goes through that login.**
+  - `Please log into https://portal.astro.build/` (GL.txt:123, 131, 142, 151, 171, 221).
+  - `When you update and save your listing in the developer portal, your theme will automatically be re-submitted for
+    review.` (GL.txt:101, 241).
+- **Residual:** neither the logged-in form nor the portal root was seen. A token API there is not ruled out. It is
+  only absent from three captures and from the site source (§29.9 B).
+
+### Anything only a person can give? **Not per theme.**
+- **No ID check, call, signature, fee or code access.**
+- **Everything asked is agent work:** a demo deployment, static screenshots, English text, example.com content, a README,
+  and the current Astro major.
+- **The one human-bound item is the GitHub user session above.** It is needed once per theme and once per rejection fix
+  (GL.txt:101).
+
+### Kill verdict: **FIRES** (clause 1), **DOES NOT FIRE** (clause 2)
+- **Clause 1 fires:** "submission is only the GitHub-OAuth form (no author token or API)". The sign-in wall is rendered
+  grade. The missing token API is absence only.
+- **Clause 2 does not fire:** "a paid theme needs something per theme that only a person can give". Nothing like that
+  is in GL or SUB.
+
+### Gates (changes from §G)
+| Gate | Status | Grade | Evidence |
+|---|---|---|---|
+| G1 ₪0 up front | **PASS** (unchanged) | github + rendered | No fee or price appears in GL or SUB. |
+| G2 Israeli individual, no camera | **PASS** (via Gumroad link), link half now **rendered** | rendered + repo | GL.txt:15 and :224. Gumroad's side is unchanged (repo). |
+| G3 list without per-item owner click | **FAIL** (listing half); terms half PASS | rendered | The only route is a portal session behind `Sign in with GitHub` (SUB.txt:9, :11). |
+| G4 honest value, AI declared | venue half **PASS, rendered**; value half UNKNOWN | rendered | GL.txt:173 and :33. |
+| G5 venue brings buyers | **UNKNOWN** (unchanged) | none | Nothing in the captures. |
+| G6 one owner step unlocks many | **FAIL** | rendered | Each theme needs a GitHub-login session, and so does each rejection fix (GL.txt:101). |
+| G7 brand the only public name | **UNKNOWN, leaning PASS** (unchanged) | rendered | GL asks nothing about the author's identity. The demo domain must be generic (GL.txt:213). |
+
+### Verdict: **KILL-PROPOSED** (G3, G6, KILL-4; pre-registered in §I)
+Only one escape is left, and it is a board ruling (§I): may a runner drive a GitHub login on a brand GitHub *user*
+account?
+- **If the board says yes:** every theme would take zero owner minutes. G1, G2 and G4's venue half already pass.
+  The row would go to QUEUE-ON, and the build would still wait until the owner has opened Gumroad (BBU rule).
+- **If the board says no:** the kill stands.
+
+Row 151 should come off `urls.txt`: the page is built in the browser and will always return chrome.
+
+### Next URLs (seen in a capture)
+1. **https://hackmd.io/J8pD89rBRsKckhxUZYQrGQ**, the author-facing "Guide for Submissions" (GL.txt:113; the relative
+   href is resolved against hackmd.io). Needed only if the board opens the escape.
+2. **https://portal.astro.build/**, the portal root (GL.txt:123 and five more). It is the last public page where an
+   author token or API could be named.

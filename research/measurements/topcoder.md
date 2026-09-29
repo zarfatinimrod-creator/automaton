@@ -414,3 +414,96 @@ api.topcoder.com`, `basePath: /v6`; parameter names from the swagger; the web pa
 12. https://www.topcoder.com/challenges/terms/detail/0a507fb7-3fe0-402b-b121-1a24af4a9cf1 (id from `DEFAULT_STANDARD_TERMS_UUID`, path pattern from item 6)
 
 No URL for Trolley's supported-country list was seen anywhere; the Israel question has no render target yet.
+
+---
+
+## Tick 15 (rows 147-149 render)
+
+**Read 29.9.2026 by an Opus reader.** Render commit `033f044`, fetchedAt 2026-09-29T03:53Z. Short names: `TIV` =
+`research/rendered/trolley-identity-verification` (row 147), `FAQ` = `…/trolley-identity-verification-faq` (row 148),
+`TOU` = `…/topcoder-terms-of-use` (row 149). Both txt files were read in full (6 lines each). Both html files were grepped
+whole, script tags included. Every quote below was checked with `grep -n -F`.
+
+**Status: KILL-PROPOSED, unchanged and still at snippet grade. The kill is UNSETTLED because row 147 did not render.**
+
+### What the three captures hold
+- **Rows 147 and 148 are not rendered.** Both returned 200 with 444,107 bytes. Both are the same Salesforce Aura
+  help-centre shell with no article in it. The whole text is `Trolley Help Center` (TIV.txt:1, FAQ.txt:1) and
+  `× Sorry to interrupt CSS Error` (TIV.txt:4, FAQ.txt:4). In the html this is the boot-error box:
+  `<span id="auraErrorTitle">Sorry to interrupt</span>` and `<div id="auraErrorMessage">CSS Error</div>` (TIV.html:520,
+  FAQ.html:520).
+- **The two html files are the same page.** I masked the per-request nonces and the order of four keys in one
+  `lwcRuntimeFlags` object; after that the diff is 0 lines. Neither file even names which article was asked for.
+- **No article text is hidden in the scripts.** These terms have 0 hits in TIV.html: `selfie`, `liveness`, `camera`,
+  `photo`, `passport`, `government`, `Identity-Verification`, `urlName`, `articleBody`, `Knowledge__kav`. The one
+  `identity` hit is the Salesforce namespace `"identityLogin"` in a config list (TIV.html:586). The file has no JSON-LD
+  and no `application/json` script. The only Trolley hosts in it are platform hosts in the CSP (TIV.html:2), such as
+  `https://trolley.my.salesforce.com` and `https://trolley.file.force.com`.
+- **Why render-watch cannot fix this.** The article body is fetched by the browser after boot. The runner stores what the
+  server sends: `<noscript> content is kept (the runner never runs JavaScript)` (`scripts/render-watch.mjs:305`) and
+  `text rendered by JavaScript is not here at all: this stores what the server` (`:307`). Re-queuing rows 147 and 148
+  will return this same shell every time.
+- **Row 149 has no body.** It returned `"error": "HTTP 404 Not Found",` (TOU.meta.json:10) for
+  `https://www.topcoder.com/community/how-it-works/terms/` (:2). The `TERMS_OF_USE` URL in platform-ui's
+  `default.env.ts` is dead. Nothing from it was read, so no clause on automated access, AI, identity or payment is on
+  record.
+
+### GitHub alternatives (github.com through WebFetch; files from raw.githubusercontent.com)
+- **Trolley's own org holds SDKs, not help pages.** github.com/trolley describes itself as "building the payouts platform
+  for the internet economy" (webfetch). It lists six SDKs (JavaScript, .NET, Ruby, Python, Java, PHP) and one fork. There
+  is no docs or help-centre repo.
+- **The SDK verification record is opaque.**
+  - `verifiedData: any;` (javascript-sdk `lib/types.ts:101`, sha256 `751cd2bb6248`).
+  - `"verifiedData": "",` (python-sdk `trolley/types/verification.py:16`, sha256 `766f4087cb04`).
+  - The verification type is only a path segment: `const endPoint = buildURL("verifications", verificationType,
+    "trigger");` (javascript-sdk `lib/VerificationGateway.ts:36`, sha256 `4631ad59917c`).
+  - Those three files and python-sdk `trolley/verification_gateway.py` have 0 whole-word hits for selfie, liveness, face,
+    biometric, camera or photo. Grade: github/raw.
+- **No mirror found.** A GitHub repository search for `trolley identity verification` returned "0 results" (webfetch).
+  No GitHub-hosted copy of the help centre was found.
+- **Net: two absences against one positive snippet.** GitHub shows no selfie in two data schemas: §E's webhook
+  `matchSignals` has no face-match field, and the SDKs leave `verifiedData` untyped. The one positive is the snippet
+  that describes a live selfie. A data schema that lacks a selfie field does not show that the widget UI lacks a selfie
+  step, so neither side is settled.
+
+### Kill verdict: **UNSETTLED**
+The camera clause ("or a camera step in payee onboarding", BOARD-LOOP.md:169) stands exactly where §29.9 left it:
+- **github grade:** every withdrawal is gated on identity verification.
+- **snippet grade:** that verification includes a live selfie.
+
+### What a rendered selfie would change
+- **If the selfie is mandatory for an individual payee:**
+  - G2 FAIL moves from snippet grade to rendered grade.
+  - The camera clause fires, and KILL-PROPOSED becomes a kill for the sitting.
+  - §G items 5-12 are dropped unread.
+- **If the selfie is optional or set by the payer:**
+  - G2 goes back to UNKNOWN. The ID document in a legal name (§E) is still required.
+  - The row returns to NEEDS_MORE.
+  - The MM count (§G items 9-10) decides the ≥3-a-month condition next.
+- **The FAQ's country list** (Israel) stays unanswered either way. No capture or GitHub file names Trolley's countries.
+
+### Gates (changes from §29.9 only)
+| Gate | Verdict | Grade | Basis |
+|---|---|---|---|
+| G2 paid in Israel, no camera | **FAIL** (unchanged) | github (gate) + snippet (camera) | Render attempted 29.9 03:53Z: rows 147-148 came back as an Aura shell with no text. The Trolley SDKs have no selfie field (absence, github/raw). Israel is still UNKNOWN. |
+| G3 terms half | **UNKNOWN** (unchanged) | none | Row 149 returned 404, so nothing was read. |
+
+G1 and G4-G7 are unchanged.
+
+### Verdict: **KILL-PROPOSED** (unchanged; weakest link is still the snippet)
+Render-watch can never render this page, so the pre-registered "confirm" step cannot be done by the runner. The
+board has three ways to close it:
+- **(a)** Accept snippet grade and kill.
+- **(b)** Queue a Trolley page that might be served as HTML (see below). Whether it is is UNKNOWN.
+- **(c)** Leave it proposed until a JavaScript-capable reader exists.
+
+Rows 147-149 should come off `urls.txt`: two will always return the shell, and the third is a 404.
+
+### Next URLs
+- **Seen in a capture: none.** The two shells name only Salesforce platform hosts (TIV.html:2), and the 404 has no body.
+- **Carried from §G, seen verbatim in the 29.9 GitHub read or its WebSearch result list (not a capture):**
+  - https://trolley.com/trust/ (§G item 3). It is one of four trolley.com pages outside the Salesforce help centre in
+    that result list (§A); https://trolley.com/blog/trolley-trust-idv-tool/ is another. Whether either is served as
+    HTML is UNKNOWN.
+  - https://www.topcoder.com/challenges/terms/detail/564a981e-6840-4a5c-894e-d5ad22e9cd6f (§G item 5, `prod.env.ts`
+    `TERMS_URL`). It is the live candidate to replace row 149's dead URL.
