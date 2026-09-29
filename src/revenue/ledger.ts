@@ -679,8 +679,9 @@ export function latestReviewForLine(db: Database, lineId: string, level?: Comman
 // ─── KPI snapshots ───────────────────────────────────────────────
 
 /**
- * `capturedAt` defaults to now. A reading that covers a closed period (a week of page views, page-views-reader.ts)
- * passes the period's end, so the snapshot is dated by what it measures and a later re-read cannot reorder the series.
+ * `capturedAt` is when the reading was taken, and defaults to the wall clock. A caller that runs on its own clock (the
+ * tick's `nowIso`, page-views-reader.ts) passes that. It is never back-dated to the period a reading covers: the
+ * period goes in `unit`, and the write time stays true so a late reading shows as late (M-instrument, page-views.ts).
  */
 export function recordKpi(db: Database, lineId: string, kpi: string, value: number, unit?: string, capturedAt?: string): void {
   if (!Number.isFinite(value)) throw new Error(`KPI value must be finite: ${kpi}=${value}`);

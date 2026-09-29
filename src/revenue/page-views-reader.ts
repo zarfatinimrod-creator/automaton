@@ -22,7 +22,11 @@
  * most a few a week.
  *
  * A week that cannot be read is not written: the next tick tries again, and the gates read a missing week as
- * unmeasured, never as zero.
+ * unmeasured, never as zero — and as an instrument fault once it is a day overdue (page-views.ts READ_GRACE_MS).
+ *
+ * A row is dated by when it was WRITTEN (the tick's time), and says which week it covers in its unit. M-instrument
+ * ("two consecutive weekly writes by D0+21") is judged on the write time, so a late backfill cannot pass for an
+ * instrument that worked on time.
  */
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -41,6 +45,7 @@ import {
   weekWindow,
   type HogQLQueryResponse,
   type PageViewClock,
+  type ExclusionReason,
   type PageViewGateReading,
   type PageViewLine,
   type SitePage,
@@ -187,30 +192,56 @@ export function parsePageViewUnit(unit: unknown): { host: string; anchorDay: str
   return m ? { host: m[1]!, anchorDay: m[3]!, week: Number(m[2]) } : null;
 }
 
-/** The weekly readings of one line on one host under one anchor, ascending. A later row for a week wins. */
+/**
+ * The weekly readings of one line on one host under one anchor, ascending. A later row for a week wins its value;
+ * `writtenAt` is the week's FIRST write, when it was first measured.
+ */
 export function pageViewSeries(db: Database, lineId: string, host: string, anchorDay: string): WeeklyReading[] {
   const rows = db
     .prepare(
-      `SELECT value, unit FROM revenue_kpi_snapshots
+      `SELECT value, unit, captured_at AS capturedAt FROM revenue_kpi_snapshots
         WHERE line_id = ? AND kpi = ? ORDER BY captured_at, rowid`,
     )
-    .all(lineId, PAGE_VIEW_KPI) as { value: number; unit: string | null }[];
-  const byWeek = new Map<number, number>();
+    .all(lineId, PAGE_VIEW_KPI) as { value: number; unit: string | null; capturedAt: string }[];
+  const byWeek = new Map<number, WeeklyReading>();
   for (const row of rows) {
     const u = parsePageViewUnit(row.unit);
-    if (u && u.host === host && u.anchorDay === anchorDay) byWeek.set(u.week, row.value);
+    if (!u || u.host !== host || u.anchorDay !== anchorDay) continue;
+    const first = byWeek.get(u.week);
+    byWeek.set(u.week, { week: u.week, views: row.value, writtenAt: first?.writtenAt ?? row.capturedAt });
   }
-  return [...byWeek.entries()].sort((a, b) => a[0] - b[0]).map(([week, views]) => ({ week, views }));
+  return [...byWeek.values()].sort((a, b) => a.week - b.week);
 }
 
 // ── The read ─────────────────────────────────────────────────────────────────
 
 export type PageViewReadStatus = "not_configured" | "counter_off" | "no_clock" | "up_to_date" | "recorded" | "error";
 
+/** One week's answer as read: what was counted for each line recorded, per page, and what was not counted and why. */
+export interface PageViewWeekRead {
+  anchorDay: string;
+  week: number;
+  lines: PageViewLine[];
+  views: Partial<Record<PageViewLine, number>>;
+  byPage: Record<string, number>;
+  excluded: Record<ExclusionReason, number>;
+}
+
 export interface PageViewReadResult {
   status: PageViewReadStatus;
   detail: string;
   recorded: { lineId: PageViewLine; week: number; views: number; anchorDay: string }[];
+  /** Every week read in this call, with its exclusions, so the /preview/, noindex and other volumes are visible. */
+  weeks: PageViewWeekRead[];
+}
+
+const EXCLUSION_WORDS: Record<ExclusionReason, string> = { preview: "preview", noindex: "noindex", "not-a-site-page": "other paths" };
+
+/** `w1 from 2026-10-05: il-biz-tools 10, pcn874 5 (not counted: preview 12, noindex 3, other paths 1)` */
+export function describeWeekRead(w: PageViewWeekRead): string {
+  const counted = w.lines.map((l) => `${l} ${w.views[l] ?? 0}`).join(", ");
+  const excluded = (Object.keys(EXCLUSION_WORDS) as ExclusionReason[]).map((r) => `${EXCLUSION_WORDS[r]} ${w.excluded[r]}`).join(", ");
+  return `w${w.week} from ${w.anchorDay}: ${counted} (not counted: ${excluded})`;
 }
 
 export interface PageViewReaderOptions {
@@ -258,7 +289,8 @@ export async function readPageViews(db: Database, options: PageViewReaderOptions
   const siteDir = options.siteDir ?? DEFAULT_PAGE_VIEW_SITE_DIR;
   const nowIso = options.nowIso ?? new Date().toISOString();
   const recorded: PageViewReadResult["recorded"] = [];
-  const done = (status: PageViewReadStatus, detail: string): PageViewReadResult => ({ status, detail, recorded });
+  const weeksRead: PageViewWeekRead[] = [];
+  const done = (status: PageViewReadStatus, detail: string): PageViewReadResult => ({ status, detail, recorded, weeks: weeksRead });
 
   const key = str(env[POSTHOG_READ_KEY_ENV]);
   let site: PageViewSite | null = null;
@@ -314,20 +346,30 @@ export async function readPageViews(db: Database, options: PageViewReaderOptions
   for (const p of pending.slice(0, MAX_WEEKS_PER_READ)) {
     const w = weekWindow(p.anchor, p.week);
     try {
-      const counts = countWeek(await postQuery(fetchImpl, queryHost, projectId, key, pageViewQuery(host, w)), w, pages);
+      const counts = countWeek(await postQuery(fetchImpl, queryHost, projectId, key, pageViewQuery(host, w, pages)), w, pages);
       db.transaction(() => {
         for (const line of p.lines) {
-          recordKpi(db, line, PAGE_VIEW_KPI, counts.views[line], pageViewUnit(host, p.anchor, p.week), w.end);
+          // Dated by the write (the tick's time), never by the week's end: M-instrument is judged on when it was written.
+          recordKpi(db, line, PAGE_VIEW_KPI, counts.views[line], pageViewUnit(host, p.anchor, p.week), nowIso);
           recorded.push({ lineId: line, week: p.week, views: counts.views[line], anchorDay: p.anchor });
         }
       })();
+      weeksRead.push({
+        anchorDay: p.anchor,
+        week: p.week,
+        lines: p.lines,
+        views: Object.fromEntries(p.lines.map((l) => [l, counts.views[l]])),
+        byPage: counts.byPage,
+        excluded: counts.excluded,
+      });
     } catch (error) {
       const why = (error instanceof Error ? error.message : String(error)).split(key).join("[key]");
-      return done("error", `week ${p.week} from ${p.anchor} not read: ${why}${recorded.length ? `; ${recorded.length} row(s) written before it stay` : ""}`);
+      const before = weeksRead.length ? `; read before it, and kept: ${weeksRead.map(describeWeekRead).join("; ")}` : "";
+      return done("error", `week ${p.week} from ${p.anchor} not read: ${why}${before}`);
     }
   }
   const more = pending.length > MAX_WEEKS_PER_READ ? `; ${pending.length - MAX_WEEKS_PER_READ} week(s) left for the next tick` : "";
-  return done("recorded", `${recorded.length} row(s): ${recorded.map((r) => `${r.lineId} w${r.week} ${r.views}`).join(", ")}${more}`);
+  return done("recorded", `${recorded.length} row(s) — ${weeksRead.map(describeWeekRead).join("; ")}${more}`);
 }
 
 // ── The gates, on the rows ───────────────────────────────────────────────────

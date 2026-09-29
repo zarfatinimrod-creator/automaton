@@ -11,7 +11,10 @@
  *     (RULING-2026-09-28-floors.md row 9 item 3, applying PREREG-DECISIONS.md §3.4(a));
  *   - a page marked noindex — the 404 page, and a page the build withholds and replaces with a noindex notice
  *     (`products/il-biz-tools/src/lib/publish-gate.js`, `withheldPageHtml`);
- *   - any other path — a mistyped URL served by the 404 page still reports the path it was asked for.
+ *   - any other path — a page the site no longer serves (renamed or removed after the view), or an event posted with
+ *     an invented path: the counter's project token is public, so anyone can send one. (A mistyped URL sends nothing:
+ *     the 404 page loads no script.) The query folds all of them into one `(other)` row, so no number of invented
+ *     paths can make a week's answer too long to read.
  * Other hosts (Netlify deploy previews, branch deploys, localhost) are excluded in the query itself.
  *
  * THE QUERY. PostHog's query API (`POST /api/projects/:project_id/query/`, body `{ "query": { "kind": "HogQLQuery",
@@ -32,12 +35,20 @@
  * THE GATES (evaluatePageViewGates), each the ruling's own words turned into a comparison:
  *   - Instrumented (logs/CHANNEL_LOOP.md §2): nothing is read as a verdict until two consecutive weekly writes exist.
  *   - M-instrument (floors row 9, item 3): no two consecutive weekly writes by D0+21 → an instrument fault — fixed, the
- *     clock restarted, recorded. Never a fail.
+ *     clock restarted, recorded. Never a fail. Judged on when each row was WRITTEN (`writtenAt`), not on which weeks
+ *     it covers: a week read late (a key added at day 30 backfills weeks 1-4 in one tick) was not written by D0+21,
+ *     so the fault stands until the clock is restarted.
  *   - M-reach at D0+56 (same item): total page views over the 56 days below 5 → `pause`; at or above 100 a week
  *     averaged over weeks 5-8 → `pass`; between → `extend` to D0+112, the same read, no second extension. pcn874 rides
- *     the same deploy and takes the same read (RULING-2026-09-29-lines (f)).
+ *     the same deploy and takes the same read (RULING-2026-09-29-lines (f)). The read is made once its last week
+ *     (week 8, then week 16) has been read — its end plus READ_LAG_MS — not at the stroke of day 56.
  *   - The domain-period kill (portfolio.ts killCriteria, PUBLISH-10): weekly page views under 100 for 8 consecutive
  *     weeks after the domain deploy → `kill`.
+ *   - A reader that stops (in either period, once instrumented): a completed week still without a reading
+ *     READ_GRACE_MS after it became readable is an instrument fault, a blocker — so a deleted or expired key cannot
+ *     hide the kill or the reach read by leaving weeks unmeasured. It clears when the reader reads the week (PostHog
+ *     keeps the events, so a late read is the same measurement). After a final netlify-period verdict no gate waits
+ *     on later weeks, and a gap there is a note, not a fault.
  * A verdict is a reading for the board, which applies it; nothing here moves a line.
  */
 
@@ -88,6 +99,11 @@ export const DAY_MS = 86_400_000;
 export const WEEK_MS = 7 * DAY_MS;
 /** A week is read this long after it ends, so events still in PostHog's ingestion pipeline are not missed. Our choice. */
 export const READ_LAG_MS = 6 * 60 * 60 * 1000;
+/**
+ * A readable week with no reading this long after it became readable is overdue: the reader is down. One day of the
+ * hourly tick is about 24 attempts, so one PostHog outage or one failed run is not a fault. Our choice.
+ */
+export const READ_GRACE_MS = DAY_MS;
 
 const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -144,13 +160,45 @@ export interface HogQLQuery {
   query: string;
 }
 
-/** One week's `$pageview` count per path on one host. The host is checked, never interpolated unchecked. */
-export function pageViewQuery(host: string, w: WeekWindow, limit: number = QUERY_ROW_LIMIT): HogQLQuery {
+/** The bucket every `/preview/…` view is folded into, and the bucket for every path that is not a site page. */
+export const PREVIEW_BUCKET = "/preview/";
+export const OTHER_BUCKET = "(other)";
+
+/**
+ * Every path that serves one of `pages`, as `$pathname` reports it: `/x` and `/x.html`, and `/`, `/index`,
+ * `/index.html` for the home page. A page whose name is not a plain lowercase name is left out — it could never be
+ * counted (classifyPath) and is never interpolated into a query.
+ */
+export function sitePaths(pages: SitePage[]): string[] {
+  const out: string[] = [];
+  for (const { page } of pages) {
+    if (typeof page !== "string" || !page.endsWith(".html")) continue;
+    const name = page.slice(0, -".html".length);
+    if (!PAGE_NAME.test(name)) continue;
+    if (name === "index") out.push("/", "/index", "/index.html");
+    else out.push(`/${name}`, `/${name}.html`);
+  }
+  return [...new Set(out)];
+}
+
+/**
+ * One week's `$pageview` count on one host, bucketed inside the query: every `/preview/…` path into one row, each site
+ * page's paths as themselves, and everything else into one `(other)` row. The answer therefore has at most
+ * `sitePaths(pages).length + 2` rows however many distinct paths were sent, so invented paths (the project token is
+ * public) cannot push a week past the LIMIT and stall the read. The host and the paths are checked, never
+ * interpolated unchecked; `multiIf`, `IN` and `LIKE` are HogQL comparisons (contents/docs/sql/expressions.mdx).
+ */
+export function pageViewQuery(host: string, w: WeekWindow, pages: SitePage[], limit: number = QUERY_ROW_LIMIT): HogQLQuery {
   if (!HOST_RE.test(host)) throw new TypeError(`not a hostname: ${host}`);
+  const paths = sitePaths(pages);
+  if (paths.length + 2 >= limit) throw new RangeError(`${paths.length} site paths do not fit a LIMIT of ${limit}`);
+  const p = "properties.$pathname";
+  const branches = [`${p} = '/preview' OR ${p} LIKE '/preview/%', '${PREVIEW_BUCKET}'`];
+  if (paths.length) branches.push(`${p} IN (${paths.map((x) => `'${x}'`).join(", ")}), ${p}`);
   return {
     kind: "HogQLQuery",
     query: [
-      "SELECT properties.$pathname AS pathname, count() AS views",
+      `SELECT multiIf(${branches.join(", ")}, '${OTHER_BUCKET}') AS pathname, count() AS views`,
       "FROM events",
       "WHERE event = '$pageview'",
       `  AND properties.$host = '${host}'`,
@@ -231,9 +279,9 @@ export function countWeek(response: HogQLQueryResponse, w: WeekWindow, pages: Si
 export const PAGE_VIEW_GATES = {
   /** logs/CHANNEL_LOOP.md §2 "Instrumented": at least 2 consecutive scheduled KPI writes. */
   instrumentedWrites: 2,
-  /** M-instrument: the two writes must exist by D0+21. */
+  /** M-instrument: the two writes must have been WRITTEN by D0+21 (00:00 UTC of day 21), whichever weeks they cover. */
   instrumentByDay: 21,
-  /** M-reach is read at D0+56 over weeks 1-8 … */
+  /** M-reach is read over the weeks ending on D0+56 (weeks 1-8), once week 8 is read … */
   reachDay: 56,
   /** … below 5 in total → pause. */
   reachMinTotal: 5,
@@ -270,6 +318,8 @@ export type PageViewVerdict =
 export interface WeeklyReading {
   week: number;
   views: number;
+  /** When the week's reading was first written (ISO). M-instrument is judged on this, not on the week it covers. */
+  writtenAt: string;
 }
 
 export interface PageViewGateReading {
@@ -280,6 +330,7 @@ export interface PageViewGateReading {
   day: number | null;
   /** The weekly readings under this anchor, by week, ascending. */
   weeks: WeeklyReading[];
+  /** Two consecutive weekly writes made by the M-instrument deadline (or, before it, so far). */
   instrumented: boolean;
   verdict: PageViewVerdict;
   notes: string[];
@@ -293,15 +344,23 @@ export function hasConsecutiveWrites(weeks: number[], n: number = PAGE_VIEW_GATE
 
 const range = (from: number, to: number): number[] => Array.from({ length: to - from + 1 }, (_, i) => from + i);
 
-/** The M-reach read over weeks `from..from+7`: pause, pass, or neither (null); throws the missing weeks. */
-function reachRead(byWeek: Map<number, number>, from: number, g: typeof PAGE_VIEW_GATES): { verdict: "pause" | "pass" | null; note: string } | { missing: number[] } {
-  const span = range(from, from + 7);
-  const missing = span.filter((w) => !byWeek.has(w));
-  if (missing.length) return { missing };
+/** The last week of a read that ends on day `day` from the anchor (56 → 8). Throws unless `day` is a whole number of weeks. */
+export function endWeekOfDay(day: number): number {
+  const w = day / 7;
+  if (!Number.isInteger(w) || w < 1) throw new RangeError(`a read must end on a whole week from the anchor: day ${day}`);
+  return w;
+}
+
+const hours = (ms: number): number => Math.round(ms / 3_600_000);
+
+/** The M-reach read over weeks `from..to`, all present: pause, pass, or neither (null). */
+function reachRead(byWeek: Map<number, number>, from: number, to: number, g: typeof PAGE_VIEW_GATES): { verdict: "pause" | "pass" | null; note: string } {
+  const span = range(from, to);
+  const lastFourWeeks = span.slice(-4);
   const total = span.reduce((s, w) => s + byWeek.get(w)!, 0);
-  const lastFour = span.slice(4).reduce((s, w) => s + byWeek.get(w)!, 0) / 4;
-  const label = `weeks ${from}-${from + 7}: ${total} page views in total, ${lastFour} a week over weeks ${from + 4}-${from + 7}`;
-  if (total < g.reachMinTotal) return { verdict: "pause", note: `${label} — under ${g.reachMinTotal} in 56 days` };
+  const lastFour = lastFourWeeks.reduce((s, w) => s + byWeek.get(w)!, 0) / lastFourWeeks.length;
+  const label = `weeks ${from}-${to}: ${total} page views in total, ${lastFour} a week over weeks ${lastFourWeeks[0]}-${to}`;
+  if (total < g.reachMinTotal) return { verdict: "pause", note: `${label} — under ${g.reachMinTotal} in ${span.length * 7} days` };
   if (lastFour >= g.passMinWeeklyAverage) return { verdict: "pass", note: `${label} — at or above ${g.passMinWeeklyAverage} a week` };
   return { verdict: null, note: `${label} — between ${g.reachMinTotal} in total and ${g.passMinWeeklyAverage} a week` };
 }
@@ -327,39 +386,73 @@ export function evaluatePageViewGates(
   const day = daysSince(anchorDay, nowIso);
   if (day < 0) return { ...base, day, instrumented: false, verdict: "not_started", notes: [`the clock starts on ${anchorDay}`] };
 
+  const nowMs = Date.parse(nowIso);
   const byWeek = new Map(sorted.map((w) => [w.week, w.views]));
-  const instrumented = hasConsecutiveWrites([...byWeek.keys()], g.instrumentedWrites);
+  // Weeks that are readable now (ended, plus the lag), and those still unread a grace period after that.
+  const readable = new Set(completedWeeks(anchorDay, nowIso).map((w) => w.week));
+  const overdue = completedWeeks(anchorDay, nowIso, READ_LAG_MS + READ_GRACE_MS)
+    .map((w) => w.week)
+    .filter((w) => !byWeek.has(w));
+  const deadlineMs = anchorMs(anchorDay) + g.instrumentByDay * DAY_MS;
+  const writtenByDeadline = sorted.filter((w) => Date.parse(w.writtenAt) <= deadlineMs).map((w) => w.week);
+  const instrumented = hasConsecutiveWrites(writtenByDeadline, g.instrumentedWrites);
   const reading = (verdict: PageViewVerdict, ...notes: string[]): PageViewGateReading => ({ ...base, day, instrumented, verdict, notes });
+  const gapNote = (late: number[]): string =>
+    `week(s) ${late.join(", ")} still have no reading ${hours(READ_GRACE_MS)}h after they became readable: the reader is down — ` +
+    "unmeasured, never zero. Fix the reader: it reads every missing week it can and this clears when they are in; " +
+    "a week that cannot be read at all is an instrument fault — restart the clock and record it";
 
   if (!instrumented) {
-    return day >= g.instrumentByDay
-      ? reading("instrument_fault", `fewer than ${g.instrumentedWrites} consecutive weekly writes by day ${g.instrumentByDay} (M-instrument): fix the instrument, restart the clock and record it — never a fail`)
-      : reading("uninstrumented", `fewer than ${g.instrumentedWrites} consecutive weekly writes yet: no gate is read`);
+    if (nowMs < deadlineMs) {
+      return reading("uninstrumented", `fewer than ${g.instrumentedWrites} consecutive weekly writes yet (M-instrument deadline: day ${g.instrumentByDay}): no gate is read`);
+    }
+    return reading(
+      "instrument_fault",
+      `fewer than ${g.instrumentedWrites} consecutive weekly writes were made by day ${g.instrumentByDay} (M-instrument; weeks written by then: ${writtenByDeadline.join(", ") || "none"}): ` +
+        "fix the instrument, restart the clock (a new d0 with its evidence) and record it — a week written later does not undo it; never a fail",
+    );
   }
 
   if (period === "domain") {
-    const weeksWritten = [...byWeek.keys()];
-    for (const end of weeksWritten) {
+    for (const end of byWeek.keys()) {
       const span = range(end - g.killConsecutiveWeeks + 1, end);
       if (span[0]! < 1 || !span.every((w) => byWeek.has(w))) continue;
       if (span.every((w) => byWeek.get(w)! < g.killWeeklyBelow)) {
         return reading("kill", `weeks ${span[0]}-${end} after the domain deploy each under ${g.killWeeklyBelow} page views (${span.map((w) => byWeek.get(w)).join(", ")})`);
       }
     }
+    if (overdue.length) return reading("instrument_fault", gapNote(overdue));
     return reading("continue", `no ${g.killConsecutiveWeeks} consecutive measured weeks under ${g.killWeeklyBelow} since the domain deploy`);
   }
 
-  if (day < g.reachDay) return reading("measuring", `the reach read is due on day ${g.reachDay}`);
-  const first = reachRead(byWeek, 1, g);
-  if ("missing" in first) {
-    return reading("instrument_fault", `the day-${g.reachDay} read cannot be made: week(s) ${first.missing.join(", ")} of 1-8 have no reading — unmeasured, never zero; fix, restart the clock, record`);
+  // The netlify.app period: the reach read over weeks from..to is made once week `to` has a reading. Until then a
+  // missing week is a fault only once it is overdue.
+  const pendingRead = (from: number, to: number, dueDay: number): { verdict: "pause" | "pass" | null; note: string } | { waiting: string } | { fault: string } => {
+    const missing = range(from, to).filter((w) => !byWeek.has(w));
+    if (!missing.length) return reachRead(byWeek, from, to, g);
+    const late = missing.filter((w) => overdue.includes(w));
+    if (late.length) return { fault: `the day-${dueDay} read over weeks ${from}-${to} cannot be made: ${gapNote(late)}` };
+    return readable.has(to)
+      ? { waiting: `the day-${dueDay} read waits for week(s) ${missing.join(", ")}: readable, not yet read (overdue ${hours(READ_GRACE_MS)}h after the lag)` }
+      : { waiting: `the reach read over weeks ${from}-${to} is due on day ${dueDay}, once week ${to} is read (${hours(READ_LAG_MS)}h after it ends)` };
+  };
+  const afterFinal = (lastWeek: number): string[] => {
+    const late = overdue.filter((w) => w > lastWeek);
+    return late.length ? [`after the final read no gate of this period waits on later weeks, but ${gapNote(late)}`] : [];
+  };
+
+  const firstEnd = endWeekOfDay(g.reachDay);
+  const first = pendingRead(1, firstEnd, g.reachDay);
+  if ("fault" in first) return reading("instrument_fault", first.fault);
+  if ("waiting" in first) return reading("measuring", first.waiting);
+  if (first.verdict) return reading(first.verdict, first.note, ...afterFinal(firstEnd));
+
+  const secondEnd = endWeekOfDay(g.extensionDay);
+  const second = pendingRead(firstEnd + 1, secondEnd, g.extensionDay);
+  if ("fault" in second) return reading("instrument_fault", first.note, second.fault);
+  if ("waiting" in second) {
+    return reading("extend", first.note, `one extension: the same read over weeks ${firstEnd + 1}-${secondEnd} on day ${g.extensionDay}`, second.waiting);
   }
-  if (first.verdict) return reading(first.verdict, first.note);
-  if (day < g.extensionDay) return reading("extend", first.note, `one extension: the same read over weeks 9-16 on day ${g.extensionDay}`);
-  const second = reachRead(byWeek, 9, g);
-  if ("missing" in second) {
-    return reading("instrument_fault", `the day-${g.extensionDay} read cannot be made: week(s) ${second.missing.join(", ")} of 9-16 have no reading — unmeasured, never zero`);
-  }
-  if (second.verdict) return reading(second.verdict, first.note, second.note);
-  return reading("extension_exhausted", first.note, second.note, "there is no second extension: the board rules");
+  if (second.verdict) return reading(second.verdict, first.note, second.note, ...afterFinal(secondEnd));
+  return reading("extension_exhausted", first.note, second.note, "there is no second extension: the board rules", ...afterFinal(secondEnd));
 }

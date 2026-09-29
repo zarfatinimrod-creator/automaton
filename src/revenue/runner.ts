@@ -346,6 +346,12 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
   });
   result.pageViewGates = pageViewGates.readings;
   for (const problem of pageViewGates.problems) result.blockers.push(`page-view clock: ${problem}`);
+  // A recorded D0 means a clock is running: a reader that cannot read is then a blocker at once, not only when the
+  // missing weeks turn overdue. Before D0 "not configured" is today's expected state and stays a report line.
+  const running = result.pageViewGates.filter((g) => g.anchorDay).map((g) => `${g.lineId} from ${g.anchorDay}`);
+  if (running.length && result.pageViews && (result.pageViews.status === "not_configured" || result.pageViews.status === "counter_off")) {
+    result.blockers.push(`page views: ${PAGE_VIEW_STATUS_WORDS[result.pageViews.status]} while a clock runs (${running.join(", ")}) — ${result.pageViews.detail}`);
+  }
   for (const g of result.pageViewGates) {
     if (g.verdict === "instrument_fault") result.blockers.push(`page views ${g.lineId}: instrument fault — ${g.notes.join("; ")}`);
   }

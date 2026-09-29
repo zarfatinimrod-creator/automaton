@@ -6,7 +6,9 @@ import type BetterSqlite3 from "better-sqlite3";
 import { createInMemoryDb } from "../orchestration/test-db.js";
 import { seedDefaultPortfolio } from "../../revenue/portfolio.js";
 import { PAGE_VIEW_KPI } from "../../revenue/page-views.js";
+import { recordKpi } from "../../revenue/ledger.js";
 import {
+  MAX_WEEKS_PER_READ,
   evaluatePageViewLines,
   pageViewSeries,
   pageViewUnit,
@@ -128,6 +130,23 @@ describe("readPageViews — PostHog's query API → one KPI row per line per wee
     expect(calls).toHaveLength(0);
   });
 
+  it("is 'not configured' with a project id but no key — from the variable or from site.json — and sends nothing", async () => {
+    const env = fakeFetch(() => ok());
+    const a = await read({ POSTHOG_PROJECT_ID: "12345" }, env.fetchImpl);
+    expect(a.status).toBe("not_configured");
+    expect(a.detail).toMatch(/POSTHOG_READ_KEY is not set/);
+    expect(a.detail).not.toMatch(/project id/);
+    expect(env.calls).toHaveLength(0);
+
+    makeSite(siteDir, { projectId: "777" });
+    const site = fakeFetch(() => ok());
+    const b = await read({ POSTHOG_READ_KEY: "  " }, site.fetchImpl);
+    expect(b.status).toBe("not_configured");
+    expect(b.detail).toMatch(/POSTHOG_READ_KEY is not set/);
+    expect(site.calls).toHaveLength(0);
+    expect(kpiRows(db, "il-biz-tools")).toEqual([]);
+  });
+
   it("reads nothing while the site's counter is off: a week of zeros nobody measured is not a reading", async () => {
     makeSite(siteDir, { projectKey: "" });
     const { fetchImpl, calls } = fakeFetch(() => ok());
@@ -144,7 +163,7 @@ describe("readPageViews — PostHog's query API → one KPI row per line per wee
     expect(calls).toHaveLength(0);
   });
 
-  it("queries each completed week once and writes one row per line per week, dated by the week's end", async () => {
+  it("queries each completed week once and writes one row per line per week, dated by the write", async () => {
     const { fetchImpl, calls } = fakeFetch(() => ok());
     const r = await read(ENV, fetchImpl);
     expect(r.status).toBe("recorded");
@@ -158,14 +177,23 @@ describe("readPageViews — PostHog's query API → one KPI row per line per wee
     expect(body.query.kind).toBe("HogQLQuery");
     expect(body.query.query).toContain("properties.$host = 'il-biz-tools.netlify.app'");
     expect(body.query.query).toContain("toDateTime('2026-10-05 00:00:00', 'UTC')");
+    // The paths are bucketed inside the query, from the site's own page list.
+    expect(body.query.query).toContain("'/pcn874', '/pcn874.html'");
+    expect(body.query.query).toContain("LIKE '/preview/%', '/preview/'");
+    expect(body.query.query).toContain("'(other)') AS pathname");
 
     const site = kpiRows(db, "il-biz-tools");
     const pcn = kpiRows(db, "pcn874");
     expect(site.map((k) => k.value)).toEqual([10, 10]);
     expect(pcn.map((k) => k.value)).toEqual([5, 5]);
-    expect(site.map((k) => k.capturedAt)).toEqual(["2026-10-12T00:00:00.000Z", "2026-10-19T00:00:00.000Z"]);
+    // Both weeks were read by this tick, and the rows say so: the week is in the unit, the write time in captured_at.
+    expect(site.map((k) => k.capturedAt)).toEqual(["2026-10-19T12:00:00.000Z", "2026-10-19T12:00:00.000Z"]);
     expect(parsePageViewUnit(pcn[1]!.unit)).toEqual({ host: "il-biz-tools.netlify.app", anchorDay: D0, week: 2 });
     expect(r.recorded).toContainEqual({ lineId: "pcn874", week: 2, views: 5, anchorDay: D0 });
+    // What was not counted is reported, per week: the fixture's /preview/ 12, noindex 3 (404 + net-salary), other 1.
+    expect(r.weeks[0]).toMatchObject({ anchorDay: D0, week: 1, excluded: { preview: 12, noindex: 3, "not-a-site-page": 1 } });
+    expect(r.weeks[0]!.byPage).toEqual({ "index.html": 3, "accessibility.html": 1, "vat.html": 6, "pcn874.html": 5 });
+    expect(r.detail).toContain("w1 from 2026-10-05: il-biz-tools 10, pcn874 5 (not counted: preview 12, noindex 3, other paths 1)");
   });
 
   it("records each week once: a second run in the same week calls nothing, the next week calls once", async () => {
@@ -181,10 +209,18 @@ describe("readPageViews — PostHog's query API → one KPI row per line per wee
     expect(next.calls).toHaveLength(1);
     // The empty answer is a real zero for week 3: the query ran and nothing matched.
     expect(pageViewSeries(db, "il-biz-tools", "il-biz-tools.netlify.app", D0)).toEqual([
-      { week: 1, views: 10 },
-      { week: 2, views: 10 },
-      { week: 3, views: 0 },
+      { week: 1, views: 10, writtenAt: "2026-10-19T12:00:00.000Z" },
+      { week: 2, views: 10, writtenAt: "2026-10-19T12:00:00.000Z" },
+      { week: 3, views: 0, writtenAt: "2026-10-26T12:00:00.000Z" },
     ]);
+  });
+
+  it("the series reads only its own host, and a week written twice keeps its first write time and its latest value", () => {
+    const host = "il-biz-tools.netlify.app";
+    recordKpi(db, "il-biz-tools", PAGE_VIEW_KPI, 7, pageViewUnit(host, D0, 1), "2026-10-12T06:17:00.000Z");
+    recordKpi(db, "il-biz-tools", PAGE_VIEW_KPI, 999, pageViewUnit("il-biz-tools--branch.netlify.app", D0, 2), "2026-10-19T06:17:00.000Z");
+    recordKpi(db, "il-biz-tools", PAGE_VIEW_KPI, 8, pageViewUnit(host, D0, 1), "2026-10-13T06:17:00.000Z");
+    expect(pageViewSeries(db, "il-biz-tools", host, D0)).toEqual([{ week: 1, views: 8, writtenAt: "2026-10-12T06:17:00.000Z" }]);
   });
 
   it("an HTTP failure records nothing and says why, without the key", async () => {
@@ -204,7 +240,38 @@ describe("readPageViews — PostHog's query API → one KPI row per line per wee
     const r = await read(ENV, fetchImpl);
     expect(r.status).toBe("error");
     expect(r.detail).toMatch(/cut short/);
+    expect(r.detail).toMatch(/read before it, and kept: w1 from 2026-10-05/);
     expect(kpiRows(db, "il-biz-tools").map((k) => k.value)).toEqual([10]);
+  });
+
+  it("a network error that quotes the key is reported with the key scrubbed", async () => {
+    const fetchImpl = (async () => {
+      throw new Error(`connect ECONNREFUSED while sending Authorization: Bearer ${KEY}`);
+    }) as unknown as typeof fetch;
+    const r = await read(ENV, fetchImpl);
+    expect(r.status).toBe("error");
+    expect(r.detail).toContain("Bearer [key]");
+    expect(r.detail).not.toContain(KEY);
+  });
+
+  it("reads no line that is not seeded, even with a clock for it", async () => {
+    db.prepare("DELETE FROM revenue_lines WHERE id = ?").run("pcn874");
+    writeClock(clockFile, { pcn874: { d0: D0, d0Evidence: "test" } });
+    const { fetchImpl, calls } = fakeFetch(() => ok());
+    const r = await read(ENV, fetchImpl);
+    expect(r.status).toBe("no_clock");
+    expect(calls).toHaveLength(0);
+    expect(kpiRows(db, "pcn874")).toEqual([]);
+  });
+
+  it(`reads at most ${MAX_WEEKS_PER_READ} weeks in one call and leaves the rest for the next tick`, async () => {
+    const { fetchImpl, calls } = fakeFetch(() => ok("posthog-hogql-empty.json"));
+    // D0 + 25 weeks + a day: 25 completed weeks under one anchor.
+    const r = await read(ENV, fetchImpl, "2027-03-30T12:00:00.000Z");
+    expect(calls).toHaveLength(MAX_WEEKS_PER_READ);
+    expect(r.status).toBe("recorded");
+    expect(r.detail).toMatch(/5 week\(s\) left for the next tick/);
+    expect(kpiRows(db, "il-biz-tools")).toHaveLength(MAX_WEEKS_PER_READ);
   });
 
   it("takes the project id from site.json when the environment has none, and refuses one that is not numeric", async () => {
@@ -245,7 +312,9 @@ describe("readPageViews — PostHog's query API → one KPI row per line per wee
     await read(ENV, fetchImpl, "2026-10-26T12:00:00.000Z");
     // One query per anchor: week 1 of the restarted il-biz-tools clock, week 3 of pcn874's.
     expect(calls).toHaveLength(2);
-    expect(pageViewSeries(db, "il-biz-tools", "il-biz-tools.netlify.app", "2026-10-19")).toEqual([{ week: 1, views: 0 }]);
+    expect(pageViewSeries(db, "il-biz-tools", "il-biz-tools.netlify.app", "2026-10-19")).toEqual([
+      { week: 1, views: 0, writtenAt: "2026-10-26T12:00:00.000Z" },
+    ]);
     expect(pageViewSeries(db, "pcn874", "il-biz-tools.netlify.app", D0).map((w) => w.week)).toEqual([1, 2, 3]);
   });
 });
@@ -378,9 +447,12 @@ describe("the colony tick — the KPI step reads, the gates read the rows", () =
     expect(result.pageViews?.status).toBe("recorded");
     const gates = new Map(result.pageViewGates.map((g) => [g.lineId, g]));
     expect(gates.get("il-biz-tools")).toMatchObject({ verdict: "measuring", instrumented: true, period: "netlify" });
-    expect(gates.get("pcn874")?.weeks).toEqual([{ week: 1, views: 5 }, { week: 2, views: 5 }]);
+    expect(gates.get("pcn874")?.weeks.map(({ week, views }) => ({ week, views }))).toEqual([{ week: 1, views: 5 }, { week: 2, views: 5 }]);
+    expect(result.blockers.join("\n")).not.toMatch(/page views/i);
     const report = renderReport(db, result);
     expect(report).toMatch(/Page views `il-biz-tools`: measuring .*w1 10, w2 10/);
+    // The report shows what each week's read left out, and why.
+    expect(report).toContain("- Page views: recorded — 4 row(s) — w1 from 2026-10-05: il-biz-tools 10, pcn874 5 (not counted: preview 12, noindex 3, other paths 1); w2 from 2026-10-05:");
     // The KPI is printed with its label, like every biased reading (research/breadth/BOARD.md Q5).
     expect(report).toContain("- `pcn874` weeklyPageViews: 5 page views · il-biz-tools.netlify.app · week 2 from 2026-10-05 — cookieless page views");
   });
@@ -399,12 +471,35 @@ describe("the colony tick — the KPI step reads, the gates read the rows", () =
     expect(result.blockers.join("\n")).toMatch(/page views il-biz-tools: instrument fault/);
   });
 
+  it("a reader that cannot read while a clock runs is a blocker at once, not only when weeks turn overdue", async () => {
+    writeClock(clockFile, { pcn874: { d0: D0, d0Evidence: "test" } });
+    // Day 3: no gate is due yet, but the key is missing and the clock is running.
+    const a = await runTick("2026-10-08T12:00:00.000Z", { POSTHOG_PROJECT_ID: "12345" }, fakeFetch(() => ok()).fetchImpl);
+    expect(a.pageViewGates.find((g) => g.lineId === "pcn874")?.verdict).toBe("uninstrumented");
+    expect(a.blockers.join("\n")).toMatch(/page views: not configured while a clock runs \(pcn874 from 2026-10-05\) — POSTHOG_READ_KEY is not set/);
+
+    makeSite(siteDir, { projectKey: "" });
+    const b = await runTick("2026-10-08T13:00:00.000Z", ENV, fakeFetch(() => ok()).fetchImpl);
+    expect(b.blockers.join("\n")).toMatch(/page views: counter off while a clock runs/);
+  });
+
+  it("a read error is a blocker", async () => {
+    writeClock(clockFile, { pcn874: { d0: D0, d0Evidence: "test" } });
+    const failing = fakeFetch(() => new Response(JSON.stringify({ detail: "Invalid personal API key." }), { status: 401 }));
+    const result = await runTick("2026-10-19T12:00:00.000Z", ENV, failing.fetchImpl);
+    expect(result.pageViews?.status).toBe("error");
+    expect(result.blockers.join("\n")).toMatch(/page views: week 1 from 2026-10-05 not read: PostHog query failed: HTTP 401/);
+  });
+
   it("evaluatePageViewLines reads the same rows the reader wrote", async () => {
     writeClock(clockFile, { pcn874: { d0: D0, d0Evidence: "test" } });
     await readPageViews(db, { env: ENV, fetchImpl: fakeFetch(() => ok()).fetchImpl, nowIso: "2026-10-19T12:00:00.000Z", siteDir, clockFile });
     const { readings, problems } = evaluatePageViewLines(db, { nowIso: "2026-10-19T12:00:00.000Z", siteDir, clockFile });
     expect(problems).toEqual([]);
-    expect(readings.find((g) => g.lineId === "pcn874")?.weeks).toEqual([{ week: 1, views: 5 }, { week: 2, views: 5 }]);
+    expect(readings.find((g) => g.lineId === "pcn874")?.weeks).toEqual([
+      { week: 1, views: 5, writtenAt: "2026-10-19T12:00:00.000Z" },
+      { week: 2, views: 5, writtenAt: "2026-10-19T12:00:00.000Z" },
+    ]);
     expect(readings.find((g) => g.lineId === "il-biz-tools")?.verdict).toBe("no_clock");
   });
 });

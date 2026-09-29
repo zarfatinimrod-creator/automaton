@@ -356,16 +356,23 @@ other page. The colony's hourly tick now reads them (29.9.2026, loop board `RULI
 `pcn874` line, every other page for `il-biz-tools`; `/preview/…`, the 404 page, any page withheld as a noindex
 notice (asked of `src/lib/publish-gate.js` itself) and any other path excluded, and only the canonical host of
 `siteUrl` counted - and `src/revenue/page-views-reader.ts` calls PostHog's query API
-(`POST https://eu.posthog.com/api/projects/<id>/query/`, one HogQL query per completed week) and writes one
-`weeklyPageViews` KPI row per line per week, dated by the week's end. Weeks run seven days from the clock's anchor
-day in `state/colony/page-view-clock.json` (D0, then the domain deploy day). The same tick evaluates the gates on
-those rows: nothing before two consecutive weekly writes; no two by D0+21 is an instrument fault (fixed, clock
-restarted, never a fail); at D0+56 under 5 page views over weeks 1-8 → pause, 100 a week or more over weeks 5-8 →
-pass, between → one extension to D0+112; and "under 100 a week for 8 consecutive weeks" → kill, on the clock that
-starts at the domain deploy (BOARD-LOOP PUBLISH-10, restated in `RULING-2026-09-28-floors.md` row 9). A verdict is
-printed in the report for the board to apply; nothing moves a line by itself. A week that cannot be read is not
-written, and a missing week is unmeasured, never zero. Tests: `src/__tests__/revenue/page-views*.test.ts`, against
-a fake fetch and fixtures shaped like PostHog's documented response.
+(`POST https://eu.posthog.com/api/projects/<id>/query/`, one HogQL query per completed week, with the paths
+bucketed inside the query - `/preview/…` in one row, each site page as itself, everything else in one `(other)`
+row - so invented paths sent with the public project token cannot make a week too long to read) and writes one
+`weeklyPageViews` KPI row per line per week: the week in its unit, the time it was written in `captured_at`. The
+report prints, per week read, what was counted for each line and what was not counted and why (preview, noindex,
+other paths). Weeks run seven days from the clock's anchor day in `state/colony/page-view-clock.json` (D0, then the
+domain deploy day), and a week is read 6 hours after it ends. The same tick evaluates the gates on those rows:
+nothing before two consecutive weekly writes; no two *written* by D0+21 is an instrument fault (fixed, clock
+restarted, never a fail - a week read late does not undo it); the D0+56 read is made once week 8 is read: under 5
+page views over weeks 1-8 → pause, 100 a week or more over weeks 5-8 → pass, between → one extension to D0+112,
+read the same way over weeks 9-16; and "under 100 a week for 8 consecutive weeks" → kill, on the clock that starts
+at the domain deploy (BOARD-LOOP PUBLISH-10, restated in `RULING-2026-09-28-floors.md` row 9). A week still unread a
+day after it became readable is an instrument fault in either period (a blocker until the reader reads it), and a
+reader that is not configured while a D0 is recorded is a blocker at once. A verdict is printed in the report for
+the board to apply; nothing moves a line by itself. A week that cannot be read is not written, and a missing week
+is unmeasured, never zero. Tests: `src/__tests__/revenue/page-views*.test.ts`, against a fake fetch and fixtures
+shaped like PostHog's documented response.
 
 What still has to happen before it reads anything - each part is a no-op until it exists, and the report names
 the missing one:
@@ -388,8 +395,9 @@ the missing one:
    (`netlify.toml`). Until one does, the colony must not open the canonical host in a JavaScript browser at all.
 
 Until 1-3 exist nothing is read, an unmeasured week is a missing reading, never a zero, and no reach or kill gate
-runs. A D0 written while 1 or 2 is missing is not waved through: at D0+21 the tick reports the M-instrument fault
-as a blocker, because a clock without an instrument is a fault, not a pass. Item 4 keeps our own views out; the
+runs. A D0 written while 1 or 2 is missing is not waved through: the tick reports the missing part as a blocker
+from that day, and at D0+21 the M-instrument fault, which stays until the clock is restarted - adding the key later
+backfills the weeks but does not undo it, because a clock without an instrument is a fault, not a pass. Item 4 keeps our own views out; the
 reader does not wait for it.
 
 **Not verified.** No real browser has run the page: none can be installed in the build container (the
