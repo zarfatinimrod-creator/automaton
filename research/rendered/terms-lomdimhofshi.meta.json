@@ -1,0 +1,17 @@
+{
+  "url": "https://lomdimhofshi.co.il/%d7%aa%d7%a0%d7%90%d7%99-%d7%a9%d7%99%d7%9e%d7%95%d7%a9/",
+  "slug": "terms-lomdimhofshi",
+  "fetchedAt": "2026-09-29T14:02:51.002Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 122702,
+  "sha256": "0723a17d76eed3622081c4e0d54c8284d4d3b4a7441966dab15d26bc6cdbdcaf",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-lomdimhofshi.html",
+  "textPath": "research/rendered/terms-lomdimhofshi.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

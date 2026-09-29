@@ -13,8 +13,8 @@ import { overrideLines } from "../../../scripts/queue-zero-test.mjs";
  * render-watch never fetches a site whose terms forbid it, from urls.txt, an override or a redirect.
  */
 describe("render-watch refuses sites whose terms bar automated access", () => {
-  it("names Gumroad, citing the terms line that bars it, and the line says so", () => {
-    expect(TERMS_BARRED.map((b: { domain: string }) => b.domain)).toEqual(["gumroad.com"]);
+  it("names Gumroad first, citing the terms line that bars it, and the line says so", () => {
+    expect(TERMS_BARRED[0].domain).toBe("gumroad.com");
     expect(TERMS_BARRED[0].why).toContain("gumroad-terms.txt:326");
     const terms = readFileSync("research/rendered/gumroad-terms.txt", "utf8").split("\n");
     expect(terms[325]).toMatch(/automated software.*"scrape" or download data from any web pages/);
@@ -60,5 +60,65 @@ describe("render-watch refuses sites whose terms bar automated access", () => {
     for (const l of paused) expect(l).toMatch(/gumroad-terms\.txt:326.*— https?:\/\/(www\.)?gumroad\.com\S*\t[a-z0-9-]+$/);
     // A dispatch override for the Gumroad rows now finds only paused rows.
     expect(() => overrideLines(text, 180, 186)).toThrow(/every row is retired/);
+  });
+});
+
+/**
+ * Tick 20's terms audit of all 81 sites active in urls.txt (research/channel-loop/TERMS-AUDIT-2026-09-29.md):
+ * ten barred automated access outright, and three more had a condition the runner does not meet (robots.txt,
+ * which render-watch does not read, and Mozilla's ban on harvesting personal information).
+ */
+describe("the terms audit's barred sites (29.9.2026)", () => {
+  const AUDITED = [
+    "paypal.com",
+    "teachsimple.com",
+    "indiebook.co.il",
+    "astro.build",
+    "facer.io",
+    "facercreator.io",
+    "youtube.com",
+    "blog.youtube",
+    "google.com",
+    "googlesource.com",
+    "metaculus.com",
+    "openai.com",
+    "addons.mozilla.org",
+  ];
+
+  it("lists each audited site once, each with a citation of the clause or condition", () => {
+    const domains = TERMS_BARRED.map((b: { domain: string }) => b.domain);
+    expect(domains.slice(1)).toEqual(AUDITED);
+    expect(new Set(domains).size).toBe(domains.length);
+    for (const b of TERMS_BARRED as { domain: string; why: string }[]) {
+      expect(b.why, b.domain).toMatch(/(\.txt:\d+|\.md:\d+|\.tsx:\d+|bytes \d+)/);
+    }
+  });
+
+  it("bars exactly those sites: Mozilla's other sites and GitHub are not caught by a neighbour's entry", () => {
+    for (const h of ["support.google.com", "developers.google.com", "www.youtube.com", "blog.youtube", "chromium.googlesource.com", "addons.mozilla.org", "www.paypal.com", "community.facer.io"]) {
+      expect(termsBarred(h), h).not.toBeNull();
+    }
+    for (const h of ["www.mozilla.org", "extensionworkshop.com", "github.com", "raw.githubusercontent.com", "googleapis.com", "notyoutube.com", "displate.com", "www.nevo.co.il"]) {
+      expect(termsBarred(h), h).toBeNull();
+    }
+  });
+
+  it("leaves no active line in urls.txt on any barred site", () => {
+    const entries = parseUrlList(readFileSync("research/rendered/urls.txt", "utf8"));
+    const hits = entries.filter((e: { url: string }) => termsBarred(new URL(e.url).hostname));
+    expect(hits).toEqual([]);
+  });
+
+  it("keeps no author record or email address in the stored AMO search results (Mozilla's acceptable-use policy)", () => {
+    const email = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
+    for (const slug of ["amo-search-newest", "amo-search-hebrew", "amo-search-invoice", "amo-hebrew-langpack"]) {
+      const text = readFileSync(`research/rendered/${slug}.json`, "utf8");
+      const leaks = text.split("\n").filter((l) => email.test(l) && !/"guid":/.test(l));
+      expect(leaks, slug).toEqual([]);
+      const body = JSON.parse(text);
+      for (const r of body.results ?? [body]) {
+        expect(Array.isArray(r.authors), slug).toBe(false);
+      }
+    }
   });
 });

@@ -1,0 +1,17 @@
+{
+  "url": "https://n8n.io/legal/",
+  "slug": "terms-n8n-legal",
+  "fetchedAt": "2026-09-29T14:02:56.001Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 165605,
+  "sha256": "241aac672db325642b1f08aaf348bcd4fb7b4b5b5fedcbf52ebfd639192f6c15",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-n8n-legal.html",
+  "textPath": "research/rendered/terms-n8n-legal.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

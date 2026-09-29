@@ -1,0 +1,3816 @@
+Legal — Odoo 19.0 documentation
+
+User Docs
+Odoo essentials
+Stages
+
+Activities
+
+Reporting
+
+Search, filter, and group records
+
+Odoo rich-text editor
+
+Contacts
+Merge contacts
+
+Export and import data
+
+In-app purchases (IAP)
+
+Keyboard shortcuts
+
+Property fields
+
+Product catalog
+
+Finance
+Accounting and Invoicing
+Get started
+Accounting cheat sheet
+
+Chart of accounts
+
+Consolidation
+
+Journals
+
+Multi-currency system
+
+Average price on returned goods
+
+Tax units
+
+Inventory valuation
+
+Taxes
+Cash basis taxes
+
+Tax computation
+
+Withholding taxes
+
+VAT numbers verification (VIES)
+
+Fiscal positions (tax and account mapping)
+
+AvaTax integration
+AvaTax use
+
+Avalara (Avatax) portal
+
+EU intra-community distance selling
+
+B2B (tax excluded) and B2C (tax included) pricing
+
+Customer invoices
+Invoicing processes
+
+Delivery and invoice addresses
+
+Payment terms and installment plans
+
+Default terms and conditions (T&C)
+
+Cash discounts and tax reduction
+
+Credit notes and refunds
+
+Cash rounding
+
+Deferred revenues
+
+Electronic invoicing ( EDI )
+
+Invoice sequence
+
+Snailmail
+
+EPC QR codes
+
+Incoterms
+
+Vendor bills
+Document digitization
+
+Non-current assets and fixed assets
+
+Deferred expenses
+
+Vendor bill sequence
+
+Payments
+Batch payments
+
+SEPA payments
+
+Follow-up on invoices
+
+Pay by checks
+
+Bank and cash accounts
+Bank synchronization
+Ponto
+
+Basiq
+
+Transactions
+
+Bank reconciliation
+
+Reconciliation models
+
+Internal transfers
+
+Manage a bank account in a foreign currency
+
+Loans management
+
+Reporting
+Tax return (VAT report)
+
+Tax carryover
+
+Analytic accounting
+
+Budgets
+
+Annual/Audit report
+
+Intrastat
+
+Data inalterability check report
+
+Silverfin integration
+
+Custom reports
+
+Year-end closing
+
+Expenses
+Expense categories
+
+Expense cards
+
+Log expenses
+
+Submit expenses
+
+Process expenses
+
+Post expenses
+
+Reimburse employees
+
+Reinvoice expenses
+
+Expenses analysis
+
+Online payments
+Adyen
+
+Amazon Payment Services
+
+AsiaPay
+
+Authorize.Net
+
+Buckaroo
+
+Demo
+
+DPO Pay
+
+ECPay
+
+Flutterwave
+
+Iyzico
+
+Mercado Pago
+
+Mollie
+
+Nuvei
+
+Paymob
+
+PayPal
+
+PayU
+
+Razorpay
+
+Redsys
+
+Stripe
+
+Toss Payments
+
+Worldline
+
+Xendit
+
+Bank payments
+
+In-person payments
+
+Fiscal localizations
+Argentina
+
+Australia
+
+Austria
+
+Belgium
+
+Brazil
+
+Canada
+
+Chile
+
+Colombia
+
+Croatia
+
+Denmark
+
+Ecuador
+
+Egypt
+
+France
+
+Germany
+
+Guatemala
+
+Hong Kong
+
+Hungary
+
+India
+
+Indonesia
+
+Italy
+
+Jordan
+
+Kenya
+
+Luxembourg
+
+Malaysia
+
+Mexico
+
+Netherlands
+
+New Zealand
+
+Oman
+
+Peru
+
+Philippines
+
+Poland
+
+Romania
+
+Saudi Arabia
+
+Singapore
+
+Spain
+
+Switzerland
+
+Taiwan
+
+Thailand
+
+Türkiye
+
+United Arab Emirates
+
+United Kingdom
+
+United States
+
+Uruguay
+
+Uzbekistan
+
+Vietnam
+
+ESG
+
+Sales
+CRM
+Organize the pipeline
+Lost opportunities
+
+Merge similar leads and opportunities
+
+Manage sales teams
+
+Acquire leads
+Convert leads into opportunities
+
+Create opportunities from web contact forms
+
+Create leads (from email or manually)
+
+Create and send quotations
+
+Lead mining
+
+Assign and track leads
+Assign leads with predictive lead scoring
+
+Unattended leads report
+
+Quality leads report
+
+Resellers
+
+Marketing attribution reports
+
+Lead distribution report
+
+Analyze performance
+Pipeline Analysis
+
+Expected revenue report
+
+Forecast report
+
+Optimize your Day-to-Day work
+Partner autocomplete
+
+CRM Gamification
+
+CRM activities and activity plans
+
+Lead enrichment
+
+Membership / Partnership module
+
+Sales
+Sales quotations
+Create quotations
+
+Quotation templates
+
+Margins
+
+Optional products
+
+Online signatures for order confirmations
+
+Online payment order confirmation
+
+Quotation deadlines
+
+Deliveries and invoices to different addresses
+
+Product variants on quotations and sales orders
+
+PDF quote builder
+Configure dynamic form fields in PDFs
+
+Add PDFs to a quote
+
+Add a PDF or a URL to a product
+
+Custom email signatures
+
+Invoicing Method
+Invoicing policies
+
+Down payments
+
+Pro-forma invoices
+
+Invoicing based on time and materials
+
+Invoice project milestones
+
+Products & Prices
+Manage your products
+Import products
+
+Product variants
+
+Manage your pricing
+Pricelists
+
+Foreign currencies
+
+Discounts
+
+Returns and refunds
+
+Use eWallets and gift cards
+
+Discount and loyalty programs
+
+Commissions
+
+Amazon Connector
+Amazon Connector features
+
+Amazon Connector configuration
+
+Amazon order management
+
+Tracking lot or serial number products with FBA orders
+
+Shopee Connector
+Shopee Connector features
+
+Shopee Connector configuration
+
+Shopee order management
+
+Lazada Connector
+Lazada Connector features
+
+Lazada Connector configuration
+
+Lazada order management
+
+TikTok Connector
+TikTok Shop connector features
+
+TikTok Shop connector configuration
+
+TikTok Shop order management
+
+Gelato
+
+Point of Sale
+Workflow
+Receipts
+
+Invoices
+
+Products
+
+Hardware and network
+Local Network Access
+
+IoT system connection
+
+Receipt printers
+
+Electronic shelf labels
+
+Customer display
+
+Scale
+
+Self-signed certificate for ePOS printers
+
+Shop features
+
+Restaurant features
+UrbanPiper
+
+Extra features
+Multi-employee management
+
+Preparation display
+
+Self-ordering
+
+Presets
+
+Pricing features
+
+Payment methods
+Cash machines
+Cashdro
+
+Cashmatic
+
+Glory
+
+Customer account
+
+QR code payments
+
+Payment terminals
+Adyen
+
+DPO Pay
+
+Ingenico
+
+Mercado Pago
+
+Mollie
+
+Pine Labs
+
+QFPay
+
+Razorpay
+
+SIX
+
+Stripe
+
+Tyro
+
+Viva.com
+
+Worldline
+
+Reporting
+
+Subscriptions
+Subscriptions in the eCommerce shop
+
+Upsell subscriptions
+
+Renew subscriptions
+
+Close subscriptions
+
+Subscription reports
+
+Subscriptions and automatic payments
+
+Subscriptions with deliveries
+
+Rental
+Configure rental products
+Rental product type
+
+Physical rental products
+
+Physical service rental products
+
+Labor service rental products
+
+Rental orders
+Create a rental order
+
+Pick up and return rental products
+
+Manage deposits
+
+Websites
+Website
+Website creation
+
+Web design
+Building blocks
+Forms
+
+General theme
+
+Elements
+
+Visibility
+
+Structure
+Pages
+
+Headers and footers
+
+Search Engine Optimization (SEO)
+
+Configuration
+Domain names
+
+Google Search Console
+
+Cookies bar
+
+Translations
+
+Multiple websites
+
+Forms spam protection
+
+Set up a content delivery network (CDN)
+
+Reporting
+Website analytics
+
+Link tracker
+
+Mail groups
+
+eCommerce
+Configuration
+Products
+
+Categories and variants
+
+Prices
+
+Customer accounts
+
+B2B and B2C
+
+eCommerce design
+Product page
+
+Product catalog
+
+Additional features
+
+Ordering and checkout
+
+Delivery methods
+
+Order handling
+
+Performance management
+
+Google Merchant Center
+
+eLearning
+
+Forum
+
+Blog
+
+Live Chat
+Ratings
+
+Commands and canned responses
+
+Chatbots
+
+Reports
+
+Participate in live chat
+
+Information panel
+
+Expertise
+
+Supply Chain
+Inventory
+Product management
+Configure product
+Product type
+
+Units of measure
+
+Packages
+
+Pack-in-pack
+
+Packaging
+
+Product tracking
+Serial numbers
+
+Lot numbers
+
+Reassign lot/serial numbers
+
+Expiration dates
+
+Warehouses and storage
+Inventory management
+Warehouses
+
+Locations
+
+Operation types
+
+Inventory adjustments
+
+Cycle counts
+
+Scrap inventory
+
+Reception report
+
+Replenishment
+Replenish on order (MTO)
+
+Reordering rules
+
+Just in time logic
+
+Replenishment report
+
+Lead times
+
+Inter-warehouse replenishment
+
+Reporting
+Forecasted report
+
+Stock report
+
+Locations report
+
+Moves history report
+
+Inventory dashboards
+
+Shipping and receiving
+Inbound and outbound flows
+Routes and push/pull rules
+
+One-step receipt and delivery
+
+Two-step receipt and delivery
+
+Three-step receipt
+
+Three-step delivery
+
+Putaway rules
+
+Storage categories
+
+Consignment: buy and sell stock without owning it
+
+Dropshipping
+
+Delivery methods
+Add a new delivery method
+
+Third-party shipping carriers
+
+Print shipping labels
+
+Bpost integration
+
+DHL integration
+
+EasyPost integration
+
+Envia.com integration
+
+FedEx integration
+
+Sendcloud integration
+
+Shiprocket integration
+
+Starshipit shipping
+
+UPS integration
+
+USPS integration
+
+Zebra label configuration
+
+How to cancel a shipping request to a shipper?
+
+Shipping cost invoicing
+
+Change shipping label size
+
+Multi-package shipments
+
+Printable delivery PDFs
+
+Dispatch management system
+
+Reservation methods
+At confirmation reservation
+
+Manual reservation
+
+Before scheduled date reservation
+
+Picking methods
+Batch picking
+
+Cluster picking
+
+Wave transfers
+
+Removal strategies
+FIFO removal
+
+LIFO removal
+
+FEFO removal
+
+Closest location removal
+
+Least packages removal
+
+Inventory valuation
+Valuation cheat sheet
+
+Valuation of stock movements and inventory operations
+
+Landed costs
+
+Valuation by lots/serial numbers
+
+Account for scrapped goods
+
+Manufacturing
+Basic setup
+Manufacturing product configuration
+
+Bill of materials
+
+One-step manufacturing
+
+Two-step manufacturing
+
+Three-step manufacturing
+
+Manufacturing order costs
+
+Work-in-progress costs
+
+Advanced configuration
+Managing BoMs for product variants
+
+Kits
+
+Multilevel BoMs
+
+Work centers
+
+Work order dependencies
+
+Workflows
+Master production schedule
+
+Work center time off
+
+Scrap during manufacturing
+
+Manufacturing backorders
+
+Split and merge manufacturing orders
+
+Unbuild orders
+
+By-Products
+
+Dismantle products into components
+
+Continuous product improvement
+
+Manufacture with lots and serial numbers
+
+Shop Floor
+Shop Floor overview
+
+Shop Floor time tracking
+
+Subcontracting
+Basic subcontracting
+
+Resupply subcontracting
+
+Dropship to subcontractor
+
+Reporting
+Delays
+
+Allocation reports
+
+Overall equipment effectiveness
+
+Production analysis
+
+Purchase
+Products
+Import vendor pricelist
+
+Configure reordering rules
+
+Temporary reordering rules
+
+Manage deals
+Requests for quotation
+
+Blanket orders
+
+Call for tenders
+
+Purchase templates
+
+Control policies
+
+Manage vendor bills
+
+Advanced
+Suggest quantities based on historical demand
+
+Purchase Analysis report
+
+Vendor costs report
+
+Procurement expenses report
+
+EDI purchase-to-sales order import
+
+Purchase & Vendor analysis dashboard
+
+Barcode
+Setup
+Barcode device troubleshooting
+
+Barcode scanner setup
+
+Product and location barcodes
+
+Barcode Lookup
+
+Barcodes for lot and serial numbers
+
+Operation types and commands
+
+RFID
+
+Daily operations
+Adjust inventory with barcodes
+
+Process receipts and deliveries with barcodes
+
+Process batch transfers
+
+Create and process transfers with barcodes
+
+Default barcode nomenclature
+
+GS1 barcode nomenclature
+
+GS1 barcode usage
+
+Manage inventory with RFID
+
+Retrieve EPC codes
+
+Quality
+Quality control basics
+Quality control points
+
+Quality alerts
+
+Quality checks
+
+Failure locations
+
+Quality check types
+Instructions quality check
+
+Pass - Fail quality check
+
+Measure quality check
+
+Take a Picture quality check
+
+Maintenance
+Add new equipment
+
+Maintenance calendar
+
+Maintenance requests
+
+Maintenance setup
+
+Product lifecycle management
+Change management
+Engineering change orders
+
+ECO types and stages
+
+Version control
+
+Project management
+Approvals
+
+Repairs
+Process repair orders
+
+Human resources
+Attendances
+Check in and out
+
+Kiosks
+
+Onboarding
+
+Work approvals and overtime
+
+Attendance logs
+
+Overtime rulesets
+
+Hardware
+
+Attendance reporting
+
+Time off ledger
+
+Employees
+New employees
+
+Onboarding
+
+Departments
+
+Learning
+
+Certifications
+
+Badges
+
+Equipment
+
+Skills inventory
+
+Offboarding
+
+Training attendances
+
+Appraisals
+Schedule appraisals
+
+Conduct appraisals
+
+Appraisal templates
+
+360 Feedback
+
+Goals
+
+Appraisal analysis
+
+Skills evolution
+
+Frontdesk
+Visitors
+
+Fleet
+Models & manufacturers
+
+Adding vehicles
+
+Services
+
+Accidents
+
+Cost analysis report
+
+Odometer analysis report
+
+Payroll
+Contracts
+
+Salaries
+
+Work entries
+
+Working schedules
+
+Time off to report
+
+Salary adjustments
+
+Payslips
+
+Pay runs
+
+Commissions
+
+Payroll analysis
+
+Headcount report
+
+Work entry analysis
+
+Payroll localizations
+Australia
+
+Belgium
+
+Egypt
+
+Hong Kong
+
+India
+
+Jordan
+
+Kenya
+
+Mexico
+
+Saudi Arabia
+
+Türkiye
+
+United Arab Emirates
+
+United States
+
+Employment Hero Payroll
+
+Time off
+Time off types
+
+Accrual plans
+
+Public holidays
+
+Mandatory days
+
+Allocations
+
+Request time off
+
+My time
+
+Management
+
+Reporting
+
+Recruitment
+Job positions
+
+Post job positions
+
+Recruitment flow
+
+Add applicants
+
+Schedule interviews
+
+Offer job positions
+
+Refuse applicants
+
+Application analysis
+
+Source analysis
+
+Hiring velocity
+
+Team performance
+
+Referrals
+Share job positions
+
+Referral points
+
+Rewards
+
+Alerts
+
+Employees referral analysis
+
+Rewards report
+
+Points report
+
+Lunch
+Vendors
+
+Products
+
+Orders
+
+Manage user accounts
+
+Lunch management
+
+Marketing
+Email Marketing
+Mailing lists
+
+Manage unsubscriptions (blacklist)
+
+Lost leads reactivation email
+
+Analyze metrics
+
+SMS Marketing
+Basic SMS setup
+
+Create SMS messages
+
+SMS analysis
+
+SMS campaign settings
+
+Mailing lists and blacklists
+
+SMS Pricing and FAQ
+
+SMS via Twilio
+
+Social Marketing
+Social posts
+
+Social marketing campaigns
+
+Marketing Automation
+Audience targeting
+
+Campaign workflow activities
+
+Testing/running campaigns
+
+Campaign metrics
+
+Campaign templates
+Double Opt-in
+
+Events
+Setup
+Create events
+
+Event templates
+
+Promote and monetize
+Sell event tickets
+
+Generate leads from events
+
+Event sponsors
+
+Event booths
+
+Attendee experience
+Multiple slots
+
+Event tracks
+
+Talks, proposals, and agenda
+
+Registration Desk
+
+Reporting
+Revenues report
+
+Attendees report
+
+Marketing Card
+
+Surveys
+Create surveys
+
+Scoring surveys
+
+Create questions
+
+Live Session surveys
+
+Survey analysis
+
+Services
+Project
+Project management
+Project dashboard
+
+Project profitability
+
+Project milestones
+
+Project templates
+
+Task management
+Task stages and statuses
+
+Task creation
+
+Recurring tasks
+
+Sub-tasks
+
+Task dependencies
+
+Timesheets
+Timesheet billing rates and leaderboard
+
+Time off entries
+
+Planning
+
+Field Service
+Creating field service tasks
+
+Product management
+
+Planning an itinerary
+
+Worksheets
+
+Helpdesk
+Overview
+Receiving tickets
+
+Help Center
+
+Service level agreements (SLA)
+
+Reporting
+
+Customer ratings
+
+Advanced
+After-Sales services
+
+Close tickets
+
+Track and bill time
+
+Productivity
+Documents
+
+Sign
+Request a signature
+
+Sign a document
+
+Security and authentication
+
+Configuration
+
+Validity of electronic signatures
+
+Spreadsheet
+Get started
+
+Insert and link to Odoo data
+Insert a list
+
+Insert a pivot table
+
+Insert a chart
+
+Insert clickable links
+
+Insert financial data
+
+Work with data
+Pivot tables
+
+Formulas and functions
+
+Global filters
+
+Present and visualize data
+Charts
+
+Conditional formatting
+
+Share and collaborate
+
+Dashboards
+Build and customize dashboards
+
+My Dashboard
+
+Knowledge
+
+Calendar
+Outlook Calendar synchronization
+
+Google Calendar synchronization
+
+Appointments
+Create opportunities from appointments
+
+Google reserve integration
+
+Discuss
+Use channels for team communication
+
+Configure ICE servers with Twilio
+
+Chatter
+
+Canned responses
+
+Data Cleaning
+
+WhatsApp
+
+Phone
+Axivox
+Odoo Phone with Axivox
+
+Manage users in Axivox
+
+Voicemails and audio messages
+
+Dynamic caller ID
+
+Conference calls
+
+Dial plan basics
+
+Advanced dial plans
+
+Call queues
+
+Odoo Phone with DIDWW
+
+Odoo Phone with OnSIP
+
+Phone widget
+
+Devices and integrations
+
+Sales calls with Odoo Phone
+
+Support calls with Odoo Phone
+
+To-do
+
+AI
+AI API keys
+
+AI agents
+
+AI default prompts
+
+AI document sort
+
+AI fields
+
+AI live chat
+
+AI server actions
+
+AI in email templates
+
+AI voice transcription
+
+Write and improve text with AI
+
+AI in support workflows
+
+Studio
+Fields and widgets
+
+Views
+
+Models, modules, and apps
+
+Automation rules
+Webhooks
+
+PDF reports
+
+Approval rules
+
+General settings
+Apps and modules
+
+Users
+Change languages
+
+Two-factor authentication
+
+Access rights
+
+User portals
+Granting portal access
+
+Updating portal info
+
+Facebook sign-in authentication
+
+Google Sign-In Authentication
+
+Microsoft Azure sign-in authentication
+
+LDAP authentication
+
+Companies
+Multi-company
+
+Digest emails
+
+Email templates
+
+Internet of Things (IoT)
+IoT box
+
+Windows virtual IoT
+
+IoT system connection to Odoo
+
+Advanced
+Troubleshooting
+
+IoT system updates
+
+IoT box SSH connection
+
+Devices
+Connect a printer
+
+Connect a scale
+
+Connect a screen
+
+Connect a measurement tool
+
+Connect a camera
+
+Connect a footswitch
+
+Communication in Odoo by email
+Manage inbound messages
+
+Manage outbound messages
+
+Configure DNS records to send emails in Odoo
+
+Connect Microsoft Outlook 365 to Odoo using Azure OAuth
+
+Connect Gmail to Odoo using Google OAuth
+
+Mailjet API
+
+Common emailing issues and solutions
+
+Integrations
+Mail Plugins
+Outlook Plugin
+
+Gmail Plugin
+
+Unsplash
+
+Address autocomplete
+
+Geolocation
+
+Google Translate
+
+Cloud Storage
+
+Developer mode (debug mode)
+
+Offline mode
+
+Database management
+Hosting
+
+Odoo Online
+
+Odoo.sh
+Getting started
+Create a project
+
+Branches
+
+Builds
+
+Settings
+
+Online editor
+
+Create a module
+
+Advanced topics
+
+On-premise
+Packaged installers
+
+Source install
+
+Bugfix updates
+
+System configuration
+
+Email gateway
+
+Geo IP
+
+Switch from Community to Enterprise
+
+Upgrade
+
+Neutralized database
+
+Standard and extended support
+
+Odoo mobile apps
+
+Odoo.com account
+
+Developer
+Tutorials
+Setup guide
+
+Server framework 101
+Chapter 1: Architecture Overview
+
+Chapter 2: A New Application
+
+Chapter 3: Models And Basic Fields
+
+Chapter 4: Security - A Brief Introduction
+
+Chapter 5: Finally, Some UI To Play With
+
+Chapter 6: Basic Views
+
+Chapter 7: Relations Between Models
+
+Chapter 8: Computed Fields And Onchanges
+
+Chapter 9: Ready For Some Action?
+
+Chapter 10: Constraints
+
+Chapter 11: Add The Sprinkles
+
+Chapter 12: Inheritance
+
+Chapter 13: Interact With Other Modules
+
+Chapter 14: A Brief History Of QWeb
+
+Chapter 15: The final word
+
+Discover the web framework
+Chapter 1: Owl components
+
+Chapter 2: Build a dashboard
+
+Define module data
+
+Restrict access to data
+
+Safeguard your code with unit tests
+
+Write importable modules
+
+Reuse code with mixins
+
+Build PDF Reports
+
+Build a website theme
+Chapter 1 - Theming
+
+Chapter 2 - Build your website
+
+Chapter 3 - Customisation, Part I
+
+Chapter 4 - Customisation, Part II
+
+Chapter 5 - Dynamic templates
+
+Chapter 6 - Going live
+
+How-to guides
+Write lean easy-to-maintain CSS
+
+Customize a field
+
+Customize a view type
+
+Create a client action
+
+Create a standalone Owl application
+
+Use Owl components on the portal and website
+
+Website themes
+Setup
+
+Theming
+
+Layout
+
+Navigation
+
+Pages
+
+Media
+
+Building blocks
+
+Shapes
+
+Gradients
+
+Animations
+
+Forms
+
+Translations
+
+Going live
+
+Multi-company Guidelines
+
+Create customized reports
+
+Accounting localization
+
+Translating Modules
+
+Connect with a device
+
+Upgrade a customized database
+
+Reference
+Server framework
+ORM API
+Changelog
+
+Data Files
+
+Actions
+
+QWeb Reports
+
+Module Manifests
+
+Security in Odoo
+
+Performance
+
+Testing Odoo
+
+Web Controllers
+
+Mixins and Useful Classes
+
+Web framework
+Framework Overview
+
+Assets
+
+Javascript Modules
+
+Owl components
+
+Registries
+
+Services
+
+Hooks
+
+Patching code
+
+Error handling
+
+Javascript Reference
+
+Mobile JavaScript
+
+QWeb Templates
+
+Odoo Editor
+
+JavaScript Unit Testing
+HOOT
+
+Web test helpers
+
+Mock server
+
+User interface
+View records
+
+View architectures
+
+SCSS inheritance
+
+UI icons
+
+Standard modules
+Accounting
+Account Tag
+
+Account
+
+Fiscal Position
+
+Account Group
+
+Report
+
+Report Line
+
+Taxes
+
+Tax Repartitions
+
+Payment
+Payment Method
+
+Payment Provider
+
+Payment Token
+
+Payment Transaction
+
+Command-line interface (CLI)
+
+Upgrades
+Upgrade scripts
+
+Upgrade utils
+
+External JSON-2 API
+
+External RPC API
+
+Extract API
+
+Contributing
+Development
+Coding guidelines
+
+Git guidelines
+
+Documentation
+Content guidelines
+
+RST guidelines and cheat sheet
+
+User Docs
+Odoo essentials
+Stages
+
+Activities
+
+Reporting
+
+Search, filter, and group records
+
+Odoo rich-text editor
+
+Contacts
+Merge contacts
+
+Export and import data
+
+In-app purchases (IAP)
+
+Keyboard shortcuts
+
+Property fields
+
+Product catalog
+
+Finance
+Accounting and Invoicing
+Get started
+Accounting cheat sheet
+
+Chart of accounts
+
+Consolidation
+
+Journals
+
+Multi-currency system
+
+Average price on returned goods
+
+Tax units
+
+Inventory valuation
+
+Taxes
+Cash basis taxes
+
+Tax computation
+
+Withholding taxes
+
+VAT numbers verification (VIES)
+
+Fiscal positions (tax and account mapping)
+
+AvaTax integration
+AvaTax use
+
+Avalara (Avatax) portal
+
+EU intra-community distance selling
+
+B2B (tax excluded) and B2C (tax included) pricing
+
+Customer invoices
+Invoicing processes
+
+Delivery and invoice addresses
+
+Payment terms and installment plans
+
+Default terms and conditions (T&C)
+
+Cash discounts and tax reduction
+
+Credit notes and refunds
+
+Cash rounding
+
+Deferred revenues
+
+Electronic invoicing ( EDI )
+
+Invoice sequence
+
+Snailmail
+
+EPC QR codes
+
+Incoterms
+
+Vendor bills
+Document digitization
+
+Non-current assets and fixed assets
+
+Deferred expenses
+
+Vendor bill sequence
+
+Payments
+Batch payments
+
+SEPA payments
+
+Follow-up on invoices
+
+Pay by checks
+
+Bank and cash accounts
+Bank synchronization
+Ponto
+
+Basiq
+
+Transactions
+
+Bank reconciliation
+
+Reconciliation models
+
+Internal transfers
+
+Manage a bank account in a foreign currency
+
+Loans management
+
+Reporting
+Tax return (VAT report)
+
+Tax carryover
+
+Analytic accounting
+
+Budgets
+
+Annual/Audit report
+
+Intrastat
+
+Data inalterability check report
+
+Silverfin integration
+
+Custom reports
+
+Year-end closing
+
+Expenses
+Expense categories
+
+Expense cards
+
+Log expenses
+
+Submit expenses
+
+Process expenses
+
+Post expenses
+
+Reimburse employees
+
+Reinvoice expenses
+
+Expenses analysis
+
+Online payments
+Adyen
+
+Amazon Payment Services
+
+AsiaPay
+
+Authorize.Net
+
+Buckaroo
+
+Demo
+
+DPO Pay
+
+ECPay
+
+Flutterwave
+
+Iyzico
+
+Mercado Pago
+
+Mollie
+
+Nuvei
+
+Paymob
+
+PayPal
+
+PayU
+
+Razorpay
+
+Redsys
+
+Stripe
+
+Toss Payments
+
+Worldline
+
+Xendit
+
+Bank payments
+
+In-person payments
+
+Fiscal localizations
+Argentina
+
+Australia
+
+Austria
+
+Belgium
+
+Brazil
+
+Canada
+
+Chile
+
+Colombia
+
+Croatia
+
+Denmark
+
+Ecuador
+
+Egypt
+
+France
+
+Germany
+
+Guatemala
+
+Hong Kong
+
+Hungary
+
+India
+
+Indonesia
+
+Italy
+
+Jordan
+
+Kenya
+
+Luxembourg
+
+Malaysia
+
+Mexico
+
+Netherlands
+
+New Zealand
+
+Oman
+
+Peru
+
+Philippines
+
+Poland
+
+Romania
+
+Saudi Arabia
+
+Singapore
+
+Spain
+
+Switzerland
+
+Taiwan
+
+Thailand
+
+Türkiye
+
+United Arab Emirates
+
+United Kingdom
+
+United States
+
+Uruguay
+
+Uzbekistan
+
+Vietnam
+
+ESG
+
+Sales
+CRM
+Organize the pipeline
+Lost opportunities
+
+Merge similar leads and opportunities
+
+Manage sales teams
+
+Acquire leads
+Convert leads into opportunities
+
+Create opportunities from web contact forms
+
+Create leads (from email or manually)
+
+Create and send quotations
+
+Lead mining
+
+Assign and track leads
+Assign leads with predictive lead scoring
+
+Unattended leads report
+
+Quality leads report
+
+Resellers
+
+Marketing attribution reports
+
+Lead distribution report
+
+Analyze performance
+Pipeline Analysis
+
+Expected revenue report
+
+Forecast report
+
+Optimize your Day-to-Day work
+Partner autocomplete
+
+CRM Gamification
+
+CRM activities and activity plans
+
+Lead enrichment
+
+Membership / Partnership module
+
+Sales
+Sales quotations
+Create quotations
+
+Quotation templates
+
+Margins
+
+Optional products
+
+Online signatures for order confirmations
+
+Online payment order confirmation
+
+Quotation deadlines
+
+Deliveries and invoices to different addresses
+
+Product variants on quotations and sales orders
+
+PDF quote builder
+Configure dynamic form fields in PDFs
+
+Add PDFs to a quote
+
+Add a PDF or a URL to a product
+
+Custom email signatures
+
+Invoicing Method
+Invoicing policies
+
+Down payments
+
+Pro-forma invoices
+
+Invoicing based on time and materials
+
+Invoice project milestones
+
+Products & Prices
+Manage your products
+Import products
+
+Product variants
+
+Manage your pricing
+Pricelists
+
+Foreign currencies
+
+Discounts
+
+Returns and refunds
+
+Use eWallets and gift cards
+
+Discount and loyalty programs
+
+Commissions
+
+Amazon Connector
+Amazon Connector features
+
+Amazon Connector configuration
+
+Amazon order management
+
+Tracking lot or serial number products with FBA orders
+
+Shopee Connector
+Shopee Connector features
+
+Shopee Connector configuration
+
+Shopee order management
+
+Lazada Connector
+Lazada Connector features
+
+Lazada Connector configuration
+
+Lazada order management
+
+TikTok Connector
+TikTok Shop connector features
+
+TikTok Shop connector configuration
+
+TikTok Shop order management
+
+Gelato
+
+Point of Sale
+Workflow
+Receipts
+
+Invoices
+
+Products
+
+Hardware and network
+Local Network Access
+
+IoT system connection
+
+Receipt printers
+
+Electronic shelf labels
+
+Customer display
+
+Scale
+
+Self-signed certificate for ePOS printers
+
+Shop features
+
+Restaurant features
+UrbanPiper
+
+Extra features
+Multi-employee management
+
+Preparation display
+
+Self-ordering
+
+Presets
+
+Pricing features
+
+Payment methods
+Cash machines
+Cashdro
+
+Cashmatic
+
+Glory
+
+Customer account
+
+QR code payments
+
+Payment terminals
+Adyen
+
+DPO Pay
+
+Ingenico
+
+Mercado Pago
+
+Mollie
+
+Pine Labs
+
+QFPay
+
+Razorpay
+
+SIX
+
+Stripe
+
+Tyro
+
+Viva.com
+
+Worldline
+
+Reporting
+
+Subscriptions
+Subscriptions in the eCommerce shop
+
+Upsell subscriptions
+
+Renew subscriptions
+
+Close subscriptions
+
+Subscription reports
+
+Subscriptions and automatic payments
+
+Subscriptions with deliveries
+
+Rental
+Configure rental products
+Rental product type
+
+Physical rental products
+
+Physical service rental products
+
+Labor service rental products
+
+Rental orders
+Create a rental order
+
+Pick up and return rental products
+
+Manage deposits
+
+Websites
+Website
+Website creation
+
+Web design
+Building blocks
+Forms
+
+General theme
+
+Elements
+
+Visibility
+
+Structure
+Pages
+
+Headers and footers
+
+Search Engine Optimization (SEO)
+
+Configuration
+Domain names
+
+Google Search Console
+
+Cookies bar
+
+Translations
+
+Multiple websites
+
+Forms spam protection
+
+Set up a content delivery network (CDN)
+
+Reporting
+Website analytics
+
+Link tracker
+
+Mail groups
+
+eCommerce
+Configuration
+Products
+
+Categories and variants
+
+Prices
+
+Customer accounts
+
+B2B and B2C
+
+eCommerce design
+Product page
+
+Product catalog
+
+Additional features
+
+Ordering and checkout
+
+Delivery methods
+
+Order handling
+
+Performance management
+
+Google Merchant Center
+
+eLearning
+
+Forum
+
+Blog
+
+Live Chat
+Ratings
+
+Commands and canned responses
+
+Chatbots
+
+Reports
+
+Participate in live chat
+
+Information panel
+
+Expertise
+
+Supply Chain
+Inventory
+Product management
+Configure product
+Product type
+
+Units of measure
+
+Packages
+
+Pack-in-pack
+
+Packaging
+
+Product tracking
+Serial numbers
+
+Lot numbers
+
+Reassign lot/serial numbers
+
+Expiration dates
+
+Warehouses and storage
+Inventory management
+Warehouses
+
+Locations
+
+Operation types
+
+Inventory adjustments
+
+Cycle counts
+
+Scrap inventory
+
+Reception report
+
+Replenishment
+Replenish on order (MTO)
+
+Reordering rules
+
+Just in time logic
+
+Replenishment report
+
+Lead times
+
+Inter-warehouse replenishment
+
+Reporting
+Forecasted report
+
+Stock report
+
+Locations report
+
+Moves history report
+
+Inventory dashboards
+
+Shipping and receiving
+Inbound and outbound flows
+Routes and push/pull rules
+
+One-step receipt and delivery
+
+Two-step receipt and delivery
+
+Three-step receipt
+
+Three-step delivery
+
+Putaway rules
+
+Storage categories
+
+Consignment: buy and sell stock without owning it
+
+Dropshipping
+
+Delivery methods
+Add a new delivery method
+
+Third-party shipping carriers
+
+Print shipping labels
+
+Bpost integration
+
+DHL integration
+
+EasyPost integration
+
+Envia.com integration
+
+FedEx integration
+
+Sendcloud integration
+
+Shiprocket integration
+
+Starshipit shipping
+
+UPS integration
+
+USPS integration
+
+Zebra label configuration
+
+How to cancel a shipping request to a shipper?
+
+Shipping cost invoicing
+
+Change shipping label size
+
+Multi-package shipments
+
+Printable delivery PDFs
+
+Dispatch management system
+
+Reservation methods
+At confirmation reservation
+
+Manual reservation
+
+Before scheduled date reservation
+
+Picking methods
+Batch picking
+
+Cluster picking
+
+Wave transfers
+
+Removal strategies
+FIFO removal
+
+LIFO removal
+
+FEFO removal
+
+Closest location removal
+
+Least packages removal
+
+Inventory valuation
+Valuation cheat sheet
+
+Valuation of stock movements and inventory operations
+
+Landed costs
+
+Valuation by lots/serial numbers
+
+Account for scrapped goods
+
+Manufacturing
+Basic setup
+Manufacturing product configuration
+
+Bill of materials
+
+One-step manufacturing
+
+Two-step manufacturing
+
+Three-step manufacturing
+
+Manufacturing order costs
+
+Work-in-progress costs
+
+Advanced configuration
+Managing BoMs for product variants
+
+Kits
+
+Multilevel BoMs
+
+Work centers
+
+Work order dependencies
+
+Workflows
+Master production schedule
+
+Work center time off
+
+Scrap during manufacturing
+
+Manufacturing backorders
+
+Split and merge manufacturing orders
+
+Unbuild orders
+
+By-Products
+
+Dismantle products into components
+
+Continuous product improvement
+
+Manufacture with lots and serial numbers
+
+Shop Floor
+Shop Floor overview
+
+Shop Floor time tracking
+
+Subcontracting
+Basic subcontracting
+
+Resupply subcontracting
+
+Dropship to subcontractor
+
+Reporting
+Delays
+
+Allocation reports
+
+Overall equipment effectiveness
+
+Production analysis
+
+Purchase
+Products
+Import vendor pricelist
+
+Configure reordering rules
+
+Temporary reordering rules
+
+Manage deals
+Requests for quotation
+
+Blanket orders
+
+Call for tenders
+
+Purchase templates
+
+Control policies
+
+Manage vendor bills
+
+Advanced
+Suggest quantities based on historical demand
+
+Purchase Analysis report
+
+Vendor costs report
+
+Procurement expenses report
+
+EDI purchase-to-sales order import
+
+Purchase & Vendor analysis dashboard
+
+Barcode
+Setup
+Barcode device troubleshooting
+
+Barcode scanner setup
+
+Product and location barcodes
+
+Barcode Lookup
+
+Barcodes for lot and serial numbers
+
+Operation types and commands
+
+RFID
+
+Daily operations
+Adjust inventory with barcodes
+
+Process receipts and deliveries with barcodes
+
+Process batch transfers
+
+Create and process transfers with barcodes
+
+Default barcode nomenclature
+
+GS1 barcode nomenclature
+
+GS1 barcode usage
+
+Manage inventory with RFID
+
+Retrieve EPC codes
+
+Quality
+Quality control basics
+Quality control points
+
+Quality alerts
+
+Quality checks
+
+Failure locations
+
+Quality check types
+Instructions quality check
+
+Pass - Fail quality check
+
+Measure quality check
+
+Take a Picture quality check
+
+Maintenance
+Add new equipment
+
+Maintenance calendar
+
+Maintenance requests
+
+Maintenance setup
+
+Product lifecycle management
+Change management
+Engineering change orders
+
+ECO types and stages
+
+Version control
+
+Project management
+Approvals
+
+Repairs
+Process repair orders
+
+Human resources
+Attendances
+Check in and out
+
+Kiosks
+
+Onboarding
+
+Work approvals and overtime
+
+Attendance logs
+
+Overtime rulesets
+
+Hardware
+
+Attendance reporting
+
+Time off ledger
+
+Employees
+New employees
+
+Onboarding
+
+Departments
+
+Learning
+
+Certifications
+
+Badges
+
+Equipment
+
+Skills inventory
+
+Offboarding
+
+Training attendances
+
+Appraisals
+Schedule appraisals
+
+Conduct appraisals
+
+Appraisal templates
+
+360 Feedback
+
+Goals
+
+Appraisal analysis
+
+Skills evolution
+
+Frontdesk
+Visitors
+
+Fleet
+Models & manufacturers
+
+Adding vehicles
+
+Services
+
+Accidents
+
+Cost analysis report
+
+Odometer analysis report
+
+Payroll
+Contracts
+
+Salaries
+
+Work entries
+
+Working schedules
+
+Time off to report
+
+Salary adjustments
+
+Payslips
+
+Pay runs
+
+Commissions
+
+Payroll analysis
+
+Headcount report
+
+Work entry analysis
+
+Payroll localizations
+Australia
+
+Belgium
+
+Egypt
+
+Hong Kong
+
+India
+
+Jordan
+
+Kenya
+
+Mexico
+
+Saudi Arabia
+
+Türkiye
+
+United Arab Emirates
+
+United States
+
+Employment Hero Payroll
+
+Time off
+Time off types
+
+Accrual plans
+
+Public holidays
+
+Mandatory days
+
+Allocations
+
+Request time off
+
+My time
+
+Management
+
+Reporting
+
+Recruitment
+Job positions
+
+Post job positions
+
+Recruitment flow
+
+Add applicants
+
+Schedule interviews
+
+Offer job positions
+
+Refuse applicants
+
+Application analysis
+
+Source analysis
+
+Hiring velocity
+
+Team performance
+
+Referrals
+Share job positions
+
+Referral points
+
+Rewards
+
+Alerts
+
+Employees referral analysis
+
+Rewards report
+
+Points report
+
+Lunch
+Vendors
+
+Products
+
+Orders
+
+Manage user accounts
+
+Lunch management
+
+Marketing
+Email Marketing
+Mailing lists
+
+Manage unsubscriptions (blacklist)
+
+Lost leads reactivation email
+
+Analyze metrics
+
+SMS Marketing
+Basic SMS setup
+
+Create SMS messages
+
+SMS analysis
+
+SMS campaign settings
+
+Mailing lists and blacklists
+
+SMS Pricing and FAQ
+
+SMS via Twilio
+
+Social Marketing
+Social posts
+
+Social marketing campaigns
+
+Marketing Automation
+Audience targeting
+
+Campaign workflow activities
+
+Testing/running campaigns
+
+Campaign metrics
+
+Campaign templates
+Double Opt-in
+
+Events
+Setup
+Create events
+
+Event templates
+
+Promote and monetize
+Sell event tickets
+
+Generate leads from events
+
+Event sponsors
+
+Event booths
+
+Attendee experience
+Multiple slots
+
+Event tracks
+
+Talks, proposals, and agenda
+
+Registration Desk
+
+Reporting
+Revenues report
+
+Attendees report
+
+Marketing Card
+
+Surveys
+Create surveys
+
+Scoring surveys
+
+Create questions
+
+Live Session surveys
+
+Survey analysis
+
+Services
+Project
+Project management
+Project dashboard
+
+Project profitability
+
+Project milestones
+
+Project templates
+
+Task management
+Task stages and statuses
+
+Task creation
+
+Recurring tasks
+
+Sub-tasks
+
+Task dependencies
+
+Timesheets
+Timesheet billing rates and leaderboard
+
+Time off entries
+
+Planning
+
+Field Service
+Creating field service tasks
+
+Product management
+
+Planning an itinerary
+
+Worksheets
+
+Helpdesk
+Overview
+Receiving tickets
+
+Help Center
+
+Service level agreements (SLA)
+
+Reporting
+
+Customer ratings
+
+Advanced
+After-Sales services
+
+Close tickets
+
+Track and bill time
+
+Productivity
+Documents
+
+Sign
+Request a signature
+
+Sign a document
+
+Security and authentication
+
+Configuration
+
+Validity of electronic signatures
+
+Spreadsheet
+Get started
+
+Insert and link to Odoo data
+Insert a list
+
+Insert a pivot table
+
+Insert a chart
+
+Insert clickable links
+
+Insert financial data
+
+Work with data
+Pivot tables
+
+Formulas and functions
+
+Global filters
+
+Present and visualize data
+Charts
+
+Conditional formatting
+
+Share and collaborate
+
+Dashboards
+Build and customize dashboards
+
+My Dashboard
+
+Knowledge
+
+Calendar
+Outlook Calendar synchronization
+
+Google Calendar synchronization
+
+Appointments
+Create opportunities from appointments
+
+Google reserve integration
+
+Discuss
+Use channels for team communication
+
+Configure ICE servers with Twilio
+
+Chatter
+
+Canned responses
+
+Data Cleaning
+
+WhatsApp
+
+Phone
+Axivox
+Odoo Phone with Axivox
+
+Manage users in Axivox
+
+Voicemails and audio messages
+
+Dynamic caller ID
+
+Conference calls
+
+Dial plan basics
+
+Advanced dial plans
+
+Call queues
+
+Odoo Phone with DIDWW
+
+Odoo Phone with OnSIP
+
+Phone widget
+
+Devices and integrations
+
+Sales calls with Odoo Phone
+
+Support calls with Odoo Phone
+
+To-do
+
+AI
+AI API keys
+
+AI agents
+
+AI default prompts
+
+AI document sort
+
+AI fields
+
+AI live chat
+
+AI server actions
+
+AI in email templates
+
+AI voice transcription
+
+Write and improve text with AI
+
+AI in support workflows
+
+Studio
+Fields and widgets
+
+Views
+
+Models, modules, and apps
+
+Automation rules
+Webhooks
+
+PDF reports
+
+Approval rules
+
+General settings
+Apps and modules
+
+Users
+Change languages
+
+Two-factor authentication
+
+Access rights
+
+User portals
+Granting portal access
+
+Updating portal info
+
+Facebook sign-in authentication
+
+Google Sign-In Authentication
+
+Microsoft Azure sign-in authentication
+
+LDAP authentication
+
+Companies
+Multi-company
+
+Digest emails
+
+Email templates
+
+Internet of Things (IoT)
+IoT box
+
+Windows virtual IoT
+
+IoT system connection to Odoo
+
+Advanced
+Troubleshooting
+
+IoT system updates
+
+IoT box SSH connection
+
+Devices
+Connect a printer
+
+Connect a scale
+
+Connect a screen
+
+Connect a measurement tool
+
+Connect a camera
+
+Connect a footswitch
+
+Communication in Odoo by email
+Manage inbound messages
+
+Manage outbound messages
+
+Configure DNS records to send emails in Odoo
+
+Connect Microsoft Outlook 365 to Odoo using Azure OAuth
+
+Connect Gmail to Odoo using Google OAuth
+
+Mailjet API
+
+Common emailing issues and solutions
+
+Integrations
+Mail Plugins
+Outlook Plugin
+
+Gmail Plugin
+
+Unsplash
+
+Address autocomplete
+
+Geolocation
+
+Google Translate
+
+Cloud Storage
+
+Developer mode (debug mode)
+
+Offline mode
+
+Database management
+Hosting
+
+Odoo Online
+
+Odoo.sh
+Getting started
+Create a project
+
+Branches
+
+Builds
+
+Settings
+
+Online editor
+
+Create a module
+
+Advanced topics
+
+On-premise
+Packaged installers
+
+Source install
+
+Bugfix updates
+
+System configuration
+
+Email gateway
+
+Geo IP
+
+Switch from Community to Enterprise
+
+Upgrade
+
+Neutralized database
+
+Standard and extended support
+
+Odoo mobile apps
+
+Odoo.com account
+
+Developer
+Tutorials
+Setup guide
+
+Server framework 101
+Chapter 1: Architecture Overview
+
+Chapter 2: A New Application
+
+Chapter 3: Models And Basic Fields
+
+Chapter 4: Security - A Brief Introduction
+
+Chapter 5: Finally, Some UI To Play With
+
+Chapter 6: Basic Views
+
+Chapter 7: Relations Between Models
+
+Chapter 8: Computed Fields And Onchanges
+
+Chapter 9: Ready For Some Action?
+
+Chapter 10: Constraints
+
+Chapter 11: Add The Sprinkles
+
+Chapter 12: Inheritance
+
+Chapter 13: Interact With Other Modules
+
+Chapter 14: A Brief History Of QWeb
+
+Chapter 15: The final word
+
+Discover the web framework
+Chapter 1: Owl components
+
+Chapter 2: Build a dashboard
+
+Define module data
+
+Restrict access to data
+
+Safeguard your code with unit tests
+
+Write importable modules
+
+Reuse code with mixins
+
+Build PDF Reports
+
+Build a website theme
+Chapter 1 - Theming
+
+Chapter 2 - Build your website
+
+Chapter 3 - Customisation, Part I
+
+Chapter 4 - Customisation, Part II
+
+Chapter 5 - Dynamic templates
+
+Chapter 6 - Going live
+
+How-to guides
+Write lean easy-to-maintain CSS
+
+Customize a field
+
+Customize a view type
+
+Create a client action
+
+Create a standalone Owl application
+
+Use Owl components on the portal and website
+
+Website themes
+Setup
+
+Theming
+
+Layout
+
+Navigation
+
+Pages
+
+Media
+
+Building blocks
+
+Shapes
+
+Gradients
+
+Animations
+
+Forms
+
+Translations
+
+Going live
+
+Multi-company Guidelines
+
+Create customized reports
+
+Accounting localization
+
+Translating Modules
+
+Connect with a device
+
+Upgrade a customized database
+
+Reference
+Server framework
+ORM API
+Changelog
+
+Data Files
+
+Actions
+
+QWeb Reports
+
+Module Manifests
+
+Security in Odoo
+
+Performance
+
+Testing Odoo
+
+Web Controllers
+
+Mixins and Useful Classes
+
+Web framework
+Framework Overview
+
+Assets
+
+Javascript Modules
+
+Owl components
+
+Registries
+
+Services
+
+Hooks
+
+Patching code
+
+Error handling
+
+Javascript Reference
+
+Mobile JavaScript
+
+QWeb Templates
+
+Odoo Editor
+
+JavaScript Unit Testing
+HOOT
+
+Web test helpers
+
+Mock server
+
+User interface
+View records
+
+View architectures
+
+SCSS inheritance
+
+UI icons
+
+Standard modules
+Accounting
+Account Tag
+
+Account
+
+Fiscal Position
+
+Account Group
+
+Report
+
+Report Line
+
+Taxes
+
+Tax Repartitions
+
+Payment
+Payment Method
+
+Payment Provider
+
+Payment Token
+
+Payment Transaction
+
+Command-line interface (CLI)
+
+Upgrades
+Upgrade scripts
+
+Upgrade utils
+
+External JSON-2 API
+
+External RPC API
+
+Extract API
+
+Contributing
+Development
+Coding guidelines
+
+Git guidelines
+
+Documentation
+Content guidelines
+
+RST guidelines and cheat sheet
+
+docs
+
+Try Odoo for FREE
+
+EN
+
+AR
+
+DE
+
+ES
+
+ES (LATAM)
+
+FR
+
+ID
+
+IT
+
+JA
+
+KR
+
+NL
+
+PT
+
+RO
+
+SV
+
+TH
+
+VI
+
+ZH (CN)
+
+ZH (TW)
+
+Odoo 19
+
+Master
+
+20.0
+
+Odoo 19.4
+
+Odoo 18
+
+Odoo 17
+
+Odoo 16
+
+Odoo 15
+
+Odoo 14
+
+Navigation
+
+index
+
+modules |
+
+Odoo 19.0 documentation »
+
+Legal
+
+Legal
+¶
+
+Licenses
+¶
+
+Licenses
+
+Terms and Conditions
+¶
+
+Odoo Enterprise Agreement
+
+Applies to self-hosting, Odoo.SH and Odoo Cloud.
+
+Read
+
+Odoo Partnership Agreement
+
+Read
+
+Terms Of Sale
+
+Read
+
+See also
+
+Archive of older agreements
+
+Other legal references
+¶
+
+Odoo Cloud Service Level Agreement (SLA)
+
+Odoo Cloud Acceptable Use Policy
+
+Odoo SA’s Privacy Policy
+
+Odoo SA’s GDPR Compliance Guide
+
+Contributor License Agreement
+
+German Tax Accounting Standards: Odoo’s guide to GoBD Compliance
+
+Get Help
+
+Contact Support
+Ask the Odoo Community
+
+Navigation
+
+index
+
+modules |
+
+Odoo 19.0 documentation »
+
+Legal

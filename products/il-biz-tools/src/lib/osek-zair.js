@@ -1,6 +1,6 @@
 // The בעל עסק זעיר self-check (osek-zair.html): taxable income from the business under the deemed-deduction
-// track against regular reporting, and whether turnover is within the cap - for the tax years a primary text
-// gives the cap for, and no other.
+// track against regular reporting, and whether turnover is within the cap - for the tax years a text read in this
+// repository gives the cap for (the gazette, or nevo's consolidated text of the VAT law), and no other.
 //
 // Every figure comes from src/config/osek-zair.json, where each one carries the capture it was read in (a text
 // capture by line, or the gazette by printed page with the quote transcribed in a dated read). This module holds
@@ -14,9 +14,9 @@
 //   - compare over the cap. Section 87ד(ג) lets someone registered at the start of the year who stops qualifying
 //     during it still deduct, up to `yearOfExitRate` of the cap; the tool cannot know whether that was so, so it
 //     names the exception and its ceiling and compares nothing;
-//   - compute a year in `pendingYears` (the CPI-linked year: no text read states its cap). The unverified
-//     amount lives in a separate config (named in the pending entry itself), which nothing here imports and the
-//     build never ships;
+//   - compute a year that is not in `years`, or that is in `pendingYears` (a CPI-linked year whose cap no text
+//     read states). An unverified amount lives in a separate config, which nothing here imports and the build
+//     never ships;
 //   - check the statutory conditions (books, the 25% related-party test, ...). The page lists them with their
 //     sources for the reader to check.
 // Pure: no DOM, no storage, no network. The page script (assets/page-osek-zair.js) only wires it to the form.
@@ -178,12 +178,15 @@ const pagesOf = (cite) => {
   return `עמ' ${pages.length === 1 ? pages[0] : `${pages[0]}–${pages[pages.length - 1]}`}`;
 };
 
-/** One cite as the page prints it: the section and the document for the gazette, the document for the rest. */
+/**
+ * One cite as the page prints it: the section and the document for the gazette; the section and the document for
+ * a text capture that names its section (the consolidated VAT law); the document alone for the rest.
+ */
 export function citeHe(cite, cfg = config) {
   const doc = cfg.documents[cite.doc];
   if (!doc) throw new Error(`unknown document ${cite.doc}`);
   if (cite.doc === 'gazette') return `${cite.label} – ${doc.he}, ${pagesOf(cite)}`;
-  return doc.he;
+  return cite.label ? `${cite.label} – ${doc.he}` : doc.he;
 }
 
 /** Every cite of a fact, deduplicated, joined as the page prints them after "מקור:". */
@@ -193,7 +196,8 @@ export function citesHe(cites, cfg = config) {
 
 /**
  * The line right after the lead: the documents the figures are read in, and when they were read. Only for a
- * verified config with a dated read; the copies are third-party, and the line says so.
+ * verified config with a dated read. A document with `copyOn` is a third-party copy, and the line names the site
+ * after the run of documents copied there; a document without it names itself (its name says whose text it is).
  */
 export function trackSourceLineHe(cfg = config) {
   if (cfg?.verified !== true) throw new Error('only a verified config gets a source line');
@@ -201,7 +205,17 @@ export function trackSourceLineHe(cfg = config) {
   if (check?.how !== 'read' || typeof check.record !== 'string' || !check.record.trim()) {
     throw new Error('the osek-zair source line needs a dated read with a record');
   }
-  const names = cfg.sourceLine.map((id) => cfg.documents[id].he);
-  const list = names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} ו${names[names.length - 1]}`;
-  return `מקור: ${list} (עותקים באתר capitax.co.il) · נבדק: ${dateHe(check.on)}`;
+  const groups = [];
+  for (const id of cfg.sourceLine) {
+    const doc = cfg.documents[id];
+    const last = groups[groups.length - 1];
+    if (doc.copyOn && last?.copyOn === doc.copyOn) last.names.push(doc.he);
+    else groups.push({ copyOn: doc.copyOn, names: [doc.he] });
+  }
+  const parts = groups.map(({ copyOn, names }) => {
+    const list = names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} ו${names[names.length - 1]}`;
+    if (!copyOn) return list;
+    return `${list} (${names.length === 1 ? 'עותק' : 'עותקים'} באתר ${copyOn})`;
+  });
+  return `מקור: ${parts.join('; ')} · נבדק: ${dateHe(check.on)}`;
 }

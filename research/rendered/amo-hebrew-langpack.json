@@ -1,1 +1,93 @@
-{"id":417186,"authors":[{"id":4757633,"name":"Firefox","url":"https://addons.mozilla.org/en-US/firefox/user/4757633/","username":"mozilla","picture_url":"https://addons.mozilla.org/user-media/userpics/33/7633/4757633/4757633.png?modified=1739451062"}],"average_daily_users":143437,"categories":["general"],"contributions_url":"","created":"2013-01-17T13:48:15Z","current_version":{"id":6521987,"compatibility":{"firefox":{"min":"158.0","max":"158.*"}},"edit_url":"https://addons.mozilla.org/en-US/developers/addon/hebrew-il-language-pack/versions/6521987","file":{"id":5066132,"created":"2026-09-28T15:43:16Z","hash":"sha256:a9941b819fe2781bdc35efef47b422a9d1b0765ec99ec314117a4da1629ee76c","is_mozilla_signed_extension":false,"size":543537,"status":"public","url":"https://addons.mozilla.org/firefox/downloads/file/5066132/hebrew_il_language_pack-158.0.20260928.120211.xpi","permissions":[],"optional_permissions":[],"host_permissions":[],"data_collection_permissions":[],"optional_data_collection_permissions":[]},"is_strict_compatibility_enabled":true,"license":{"id":3338,"is_custom":false,"name":{"en-US":"Mozilla Public License 2.0"},"slug":"MPL-2.0","url":"https://www.mozilla.org/MPL/2.0/"},"release_notes":null,"reviewed":"2026-09-28T15:46:34Z","version":"158.0.20260928.120211"},"default_locale":"he","description":null,"developer_comments":null,"edit_url":"https://addons.mozilla.org/en-US/developers/addon/hebrew-il-language-pack/edit","guid":"langpack-he@firefox.mozilla.org","has_eula":false,"has_privacy_policy":false,"homepage":null,"icon_url":"https://addons.mozilla.org/static-server/img/addon-icons/default-64.png","icons":{"32":"https://addons.mozilla.org/static-server/img/addon-icons/default-32.png","64":"https://addons.mozilla.org/static-server/img/addon-icons/default-64.png","128":"https://addons.mozilla.org/static-server/img/addon-icons/default-128.png"},"is_disabled":false,"is_experimental":false,"is_noindexed":false,"last_updated":"2026-09-28T15:46:34Z","name":{"en-US":"Language: עברית (Hebrew)","he":"Hebrew (IL) Language Pack"},"previews":[],"promoted":[],"ratings":{"average":4.3333,"bayesian_average":4.136559111917868,"count":30,"text_count":2},"ratings_url":"https://addons.mozilla.org/en-US/firefox/addon/hebrew-il-language-pack/reviews/","requires_payment":false,"review_url":"https://addons.mozilla.org/en-US/reviewers/review/417186","slug":"hebrew-il-language-pack","status":"public","summary":{"en-US":"Firefox Language Pack for עברית (he) – Hebrew","he":"Hebrew (IL) Language Pack"},"support_email":null,"support_url":null,"tags":[],"type":"language","url":"https://addons.mozilla.org/en-US/firefox/addon/hebrew-il-language-pack/","versions_url":"https://addons.mozilla.org/en-US/firefox/addon/hebrew-il-language-pack/versions/","weekly_downloads":17}
+{
+  "id": 417186,
+  "authors": "[redacted 29.9.2026: personal data, Mozilla acceptable-use policy]",
+  "average_daily_users": 143437,
+  "categories": [
+    "general"
+  ],
+  "contributions_url": "",
+  "created": "2013-01-17T13:48:15Z",
+  "current_version": {
+    "id": 6521987,
+    "compatibility": {
+      "firefox": {
+        "min": "158.0",
+        "max": "158.*"
+      }
+    },
+    "edit_url": "https://addons.mozilla.org/en-US/developers/addon/hebrew-il-language-pack/versions/6521987",
+    "file": {
+      "id": 5066132,
+      "created": "2026-09-28T15:43:16Z",
+      "hash": "sha256:a9941b819fe2781bdc35efef47b422a9d1b0765ec99ec314117a4da1629ee76c",
+      "is_mozilla_signed_extension": false,
+      "size": 543537,
+      "status": "public",
+      "url": "https://addons.mozilla.org/firefox/downloads/file/5066132/hebrew_il_language_pack-158.0.20260928.120211.xpi",
+      "permissions": [],
+      "optional_permissions": [],
+      "host_permissions": [],
+      "data_collection_permissions": [],
+      "optional_data_collection_permissions": []
+    },
+    "is_strict_compatibility_enabled": true,
+    "license": {
+      "id": 3338,
+      "is_custom": false,
+      "name": {
+        "en-US": "Mozilla Public License 2.0"
+      },
+      "slug": "MPL-2.0",
+      "url": "https://www.mozilla.org/MPL/2.0/"
+    },
+    "release_notes": null,
+    "reviewed": "2026-09-28T15:46:34Z",
+    "version": "158.0.20260928.120211"
+  },
+  "default_locale": "he",
+  "description": null,
+  "developer_comments": null,
+  "edit_url": "https://addons.mozilla.org/en-US/developers/addon/hebrew-il-language-pack/edit",
+  "guid": "langpack-he@firefox.mozilla.org",
+  "has_eula": false,
+  "has_privacy_policy": false,
+  "homepage": null,
+  "icon_url": "https://addons.mozilla.org/static-server/img/addon-icons/default-64.png",
+  "icons": {
+    "32": "https://addons.mozilla.org/static-server/img/addon-icons/default-32.png",
+    "64": "https://addons.mozilla.org/static-server/img/addon-icons/default-64.png",
+    "128": "https://addons.mozilla.org/static-server/img/addon-icons/default-128.png"
+  },
+  "is_disabled": false,
+  "is_experimental": false,
+  "is_noindexed": false,
+  "last_updated": "2026-09-28T15:46:34Z",
+  "name": {
+    "en-US": "Language: עברית (Hebrew)",
+    "he": "Hebrew (IL) Language Pack"
+  },
+  "previews": [],
+  "promoted": [],
+  "ratings": {
+    "average": 4.3333,
+    "bayesian_average": 4.136559111917868,
+    "count": 30,
+    "text_count": 2
+  },
+  "ratings_url": "https://addons.mozilla.org/en-US/firefox/addon/hebrew-il-language-pack/reviews/",
+  "requires_payment": false,
+  "review_url": "https://addons.mozilla.org/en-US/reviewers/review/417186",
+  "slug": "hebrew-il-language-pack",
+  "status": "public",
+  "summary": {
+    "en-US": "Firefox Language Pack for עברית (he) – Hebrew",
+    "he": "Hebrew (IL) Language Pack"
+  },
+  "support_email": "[redacted 29.9.2026: personal data, Mozilla acceptable-use policy]",
+  "support_url": null,
+  "tags": [],
+  "type": "language",
+  "url": "https://addons.mozilla.org/en-US/firefox/addon/hebrew-il-language-pack/",
+  "versions_url": "https://addons.mozilla.org/en-US/firefox/addon/hebrew-il-language-pack/versions/",
+  "weekly_downloads": 17
+}

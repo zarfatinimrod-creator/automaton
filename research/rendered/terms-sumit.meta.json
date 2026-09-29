@@ -1,0 +1,17 @@
+{
+  "url": "https://help.sumit.co.il/he/articles/10340800",
+  "slug": "terms-sumit",
+  "fetchedAt": "2026-09-29T14:03:03.702Z",
+  "status": 301,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 0,
+  "sha256": null,
+  "truncated": false,
+  "error": "more than 20 redirects; not followed",
+  "bodyPath": null,
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

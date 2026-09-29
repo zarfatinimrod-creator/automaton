@@ -1,0 +1,392 @@
+Terms of Use - upload-post.com | Upload-Post
+
+Upload-Post Add to your SaaS Platforms TikTok Instagram YouTube LinkedIn Facebook X Threads Pinterest Reddit Bluesky Google Business Discord Telegram Slack Mastodon Nostr Lemmy Dev.to Hashnode WordPress Whop Listmonk
+All supported platforms
+
+Integrations n8n Workflows Agency Automation Upload Guides
+TikTok Instagram YouTube LinkedIn Threads X Facebook Pinterest Reddit Bluesky Google Business Discord Telegram Slack Mastodon WordPress Dev.to Hashnode Nostr Lemmy Whop Listmonk
+
+More Integrations
+Make Blueprints Zapier WordPress Airtable viaSocket MCP ChatGPT · Claude AI Assistants
+
+ChatGPT
+
+Claude
+
+Gemini
+AI Agents
+Resources
+FFmpeg API
+API
+ChatGPT Ads
+Add to your SaaS Tutorials Tools
+
+Affiliates Resources API Docs
+How-To Guides Social Media Scheduler
+AI Social Media
+Leaderboard Status
+
+Pricing
+🇺🇸 EN 🇺🇸 English 🇪🇸 Español 🇧🇷 Português 🇫🇷 Français 🇩🇪 Deutsch 🇮🇹 Italiano 🇯🇵 日本語 🇰🇷 한국어 🇮🇳 हिन्दी 🇻🇳 Tiếng Việt 🇮🇩 Bahasa Indonesia 🇹🇷 Türkçe 🇳🇱 Nederlands 🇸🇦 العربية 🇹🇭 ไทย
+
+Try for free
+
+Upload-Post
+Language 🇺🇸 English
+🇺🇸 English 🇪🇸 Español 🇧🇷 Português 🇫🇷 Français 🇩🇪 Deutsch 🇮🇹 Italiano 🇯🇵 日本語 🇰🇷 한국어 🇮🇳 हिन्दी 🇻🇳 Tiếng Việt 🇮🇩 Bahasa Indonesia 🇹🇷 Türkçe 🇳🇱 Nederlands 🇸🇦 العربية 🇹🇭 ไทย
+
+Add to your SaaS Platforms TikTok Instagram YouTube LinkedIn Facebook X Threads Pinterest Reddit Bluesky Google Business Discord Telegram Slack Mastodon Nostr Lemmy Dev.to Hashnode WordPress Whop Listmonk All supported platforms
+
+Integrations n8n
+Workflows Make
+Blueprints Zapier
+WordPress
+Airtable
+viaSocket
+ChatGPT
+Claude
+Gemini
+AI Agents MCP ChatGPT · Claude FFmpeg API
+ChatGPT Ads
+Add to your SaaS Tools
+
+Affiliates Docs API Docs
+How-To Guides Social Media Scheduler
+AI Social Media
+Status
+
+Leaderboard Pricing
+
+Try for free
+
+Terms of Use
+Effective Date: April 27, 2024
+Last Updated: August 29, 2026
+
+Welcome to upload-post.com ("we", "our", "us", "Upload-Post", "the Platform"). These Terms of Use ("Terms") constitute a legally binding agreement between you ("User", "you", "your") and TONVI TECH SL governing your access to and use of our website, API, software, and all related services (collectively, the "Services").
+
+BY ACCESSING OR USING OUR SERVICES, YOU ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTOOD, AND AGREE TO BE BOUND BY THESE TERMS. IF YOU DO NOT AGREE TO THESE TERMS, YOU MUST NOT ACCESS OR USE OUR SERVICES.
+Important Notice - Third-Party Platforms: Upload-Post is an intermediary service that facilitates posting content to third-party social media platforms. We are NOT affiliated with, endorsed by, or officially connected to TikTok, Instagram, Facebook, YouTube, LinkedIn, X (Twitter), Threads, Pinterest, Reddit, Bluesky, or any other social media platform. Your use of these platforms through our Services is subject to their respective terms of service and policies.
+
+YouTube API Services: Our service uses YouTube API Services. By connecting your account to YouTube, you agree to be bound by the YouTube Terms of Service and the Google Privacy Policy . You can revoke our application's access to your Google account at any time through the Google security settings page .
+
+1. Eligibility and Account Registration
+1.1 Intended Use: The Services are primarily intended for business, professional, and commercial use, including by content creators, agencies, software developers, and businesses integrating our API. If you are using the Services as a consumer, your statutory consumer rights remain unaffected (see Section 13.3).
+
+1.2 Age and Capacity: You must be at least 18 years old and have the legal capacity to enter into a binding agreement to use our Services.
+
+1.3 Account Responsibility: You are solely responsible for maintaining the confidentiality of your account credentials. You agree to immediately notify us of any unauthorized access or use of your account. We are not liable for any loss or damage arising from your failure to protect your account information.
+
+1.4 Accurate Information: You agree to provide accurate, current, and complete information during registration and to update such information to keep it accurate, current, and complete.
+
+1.5 One Account Per User: Unless explicitly authorized, each user may maintain only one account. Creating multiple accounts to circumvent restrictions or abuse the Services is prohibited.
+
+2. License and Restrictions
+2.1 Limited License: Subject to your compliance with these Terms, we grant you a limited, non-exclusive, non-transferable, revocable license to access and use our Services for your lawful business or personal purposes.
+
+2.2 API and Software Restrictions: Access to our API and software is strictly governed by the following restrictions. You are expressly prohibited from:
+
+Using our API or software in a mass or bulk manner beyond the limits of your subscription plan
+Establishing or operating a business that directly competes with Upload-Post using our API or services
+Reselling, sublicensing, redistributing, or providing access to our API or software to third parties without written authorization
+Reverse engineering, decompiling, disassembling, or attempting to derive the source code of our software
+Circumventing, disabling, or interfering with security-related features of the Services
+Using automated scripts, bots, or other means to access the Services beyond normal API usage
+Scraping, data mining, or extracting data from the Services except as explicitly permitted
+
+2.3 Consequences: Violation of these restrictions will result in immediate termination of your account without refund and may result in legal action to recover damages.
+
+3. Acceptable Use Policy
+You agree NOT to use the Services to:
+Violate any applicable local, state, national, or international law or regulation
+Infringe upon intellectual property rights, including copyrights, trademarks, patents, or trade secrets
+Upload, post, or transmit content that is illegal, harmful, threatening, abusive, harassing, defamatory, vulgar, obscene, or otherwise objectionable
+Distribute spam, chain letters, pyramid schemes, or unsolicited commercial communications
+Upload or transmit viruses, malware, ransomware, or other malicious code
+Attempt to gain unauthorized access to any systems, networks, or accounts
+Impersonate any person or entity, or falsely state or misrepresent your affiliation
+Engage in any activity that could damage, disable, overburden, or impair the Services
+Collect or harvest personal information of other users without consent
+Post content that violates the terms of service of any connected social media platform
+Use the Services for any fraudulent or deceptive purpose
+Engage in activities related to cryptocurrency scams, fake giveaways, or financial fraud
+Post content promoting violence, terrorism, or illegal activities
+Distribute child sexual abuse material (CSAM) or any content exploiting minors
+
+3.1 Compliance Responsibility: You are solely responsible for ensuring that your use of the Services, including automated posting, scheduling, bulk uploads, AI-generated content, and API integrations, complies with all applicable laws, advertising rules, platform terms, anti-spam laws, intellectual property laws, and consumer protection regulations.
+
+3.2 Risk-Based Suspension: We may suspend, throttle, rate-limit, or terminate accounts that, in our reasonable opinion, create legal, security, platform-compliance, deliverability, or reputational risk to Upload-Post or to any third-party platform.
+
+3.3 AI-Generated and Synthetic Content: If you use the Services to publish AI-generated, AI-edited, synthetic, deepfake, voice-cloned, or materially manipulated content, you are solely responsible for ensuring that such content is lawful, non-deceptive, properly labelled where required, and compliant with all applicable platform rules, advertising standards, election integrity rules, consumer protection rules, and transparency obligations. In particular, where Regulation (EU) 2024/1689 (the EU AI Act) applies to you as a deployer, you are responsible for complying with the transparency obligations of Article 50(4) when publishing deep fakes or AI-generated or manipulated text published with the purpose of informing the public on matters of public interest, and with the AI-content disclosure and labelling policies of each connected platform (for example TikTok's AI-generated content label, YouTube's synthetic-media disclosure, and Meta's AI labels). Where the Services provide a means to mark a post as AI-generated, you are responsible for using it accurately; Upload-Post does not verify whether your content is AI-generated.
+
+3.4 AI Features: Upload-Post may provide optional AI-powered features to help generate, improve, translate, summarize, classify, or optimize captions, titles, descriptions, hashtags, posting times, or related metadata. AI-generated suggestions are identified as such in the interface or API response where they are offered. AI outputs may be inaccurate, incomplete, or unsuitable for your intended use, and are provided as suggestions only. You remain responsible for reviewing, editing, and approving any content before publication, and you retain full editorial responsibility for everything you publish. Upload-Post does not control and is not responsible for AI outputs, and disclaims all liability arising from your use or publication of them.
+
+We reserve the right to investigate and take appropriate legal action against anyone who violates this section, including reporting to law enforcement authorities.
+
+4. User Content and Responsibility
+4.1 Your Content: You retain all ownership rights to content you upload, post, or transmit through the Services ("User Content"). You grant Upload-Post a limited, worldwide, non-exclusive, royalty-free license to host, store, process, format, transcode, schedule, transmit, publish, display, and otherwise handle your User Content solely as reasonably necessary to provide, secure, support, and improve the Services, including publishing the content to the third-party platforms you designate. We do not claim ownership of your User Content. Upload-Post may use your User Content together with associated performance and analytics data only in aggregated and/or de-identified form — that is, in a form that no longer identifies you, your end users, or any other natural person — to develop, train, evaluate, and improve machine-learning and AI models and features, including shared models offered to all users of the Services (for example, automatic title, description, caption, and hashtag generation). We do not use User Content in identifiable form to train shared AI models. This processing is based on our legitimate interest in developing and improving the Services (Article 6(1)(f) GDPR). You may object to the use of your data for model training at any time, as described in our Privacy Policy ; opt-outs are honoured for all future training.
+
+4.2 Content Responsibility: YOU ARE SOLELY AND EXCLUSIVELY RESPONSIBLE for all User Content you upload, post, or transmit through our Services. We do not pre-screen, monitor, or endorse User Content and are not liable for any User Content posted by you or any third party. You are the final responsible party for any content published through your account on any connected social media platform.
+
+4.3 Content Delivery: Upload-Post is an automated intermediary service. While we strive to deliver your content accurately and to the correct accounts, technical errors, software bugs, API failures, or other unforeseen issues may occur. These errors may include, but are not limited to: content being published to the wrong social media account, content being cross-posted between different users' accounts, content being duplicated, content being published with incorrect captions or metadata, content failing to publish entirely, or content being published at incorrect times. YOU ACKNOWLEDGE AND ACCEPT THAT SUCH ERRORS MAY OCCUR AND THAT YOU ARE SOLELY RESPONSIBLE FOR MONITORING AND VERIFYING THAT YOUR CONTENT HAS BEEN PUBLISHED CORRECTLY. Upload-Post shall not be held liable for any damages, losses, claims, or consequences arising from content delivery errors of any kind.
+
+4.4 Duty to Monitor: You have the obligation to review and verify that all content published through the Services has been delivered correctly to the intended social media accounts. If you detect any error in content delivery, you must take immediate corrective action on the affected social media platform(s). We are not responsible for any harm, damage, or consequence resulting from your failure to monitor your published content.
+
+4.5 Rights and Representations: You represent and warrant that:
+
+You own or have the necessary licenses, rights, consents, and permissions to use and authorize us to use all intellectual property rights in your User Content
+Your User Content does not violate the privacy, publicity, intellectual property, or other rights of any third party
+Your User Content complies with all applicable laws and regulations
+Your User Content does not contain false or misleading information
+You will monitor and verify the correct delivery of your content after it is published
+You accept the inherent risks of using automated content distribution services, including the possibility of technical errors
+
+4.6 Content Moderation and Statement of Reasons: We reserve the right to remove or disable access to any User Content, or to refuse to publish a scheduled post, where we believe it violates these Terms or applicable law. Content moderation on Upload-Post is primarily reactive: we do not pre-screen User Content, and we act on the basis of notices submitted under Section 4.7, automated abuse, malware, and spam detection, and platform-compliance signals. Where we remove or disable your content, restrict your account, or refuse to publish a post on those grounds, we will — except where prohibited by law or where immediate action is required for security or legal reasons — provide you with a clear and specific statement of reasons in accordance with Article 17 of Regulation (EU) 2022/2065 (DSA), including the facts and circumstances relied on, the legal or contractual ground, and information on your redress options. You may contest any moderation decision by emailing [email protected] ; complaints are reviewed by a human, and judicial redress before the competent courts remains available to you.
+
+4.7 Reporting Illegal Content (Notice and Action): If you believe that content published or transmitted through the Services is illegal or infringes your rights (including intellectual property rights), you may notify us by sending an email to [email protected] with the subject line "Illegal Content Report". Your notice should include: (a) a sufficiently precise identification or URL of the content concerned; (b) an explanation of why you consider the content to be illegal or infringing; (c) your name and email address (except for reports concerning child sexual abuse material, which may be submitted anonymously); and (d) a statement confirming your good-faith belief that the information in the notice is accurate and complete. We will process notices diligently and without undue delay, remove or disable access to content where appropriate, and inform the notifying party of our decision. Submitting knowingly false or abusive reports is prohibited and may result in the suspension of processing of your future notices.
+
+4.8 Intermediary Status: Upload-Post is a technical intermediary (hosting and transmission) service within the meaning of Regulation (EU) 2022/2065 (the Digital Services Act). We do not select, edit, or have actual knowledge of the User Content transmitted through the Services, and we act expeditiously to remove or disable access to illegal content upon obtaining actual knowledge or awareness of it. Nothing in these Terms imposes on Upload-Post a general obligation to monitor User Content.
+
+4.9 DMCA Designated Agent (United States): For rightsholders in the United States, TONVI TECH SL has designated the following agent to receive notifications of claimed copyright infringement under 17 U.S.C. &sect; 512(c)(2): Copyright Agent, TONVI TECH SL, Calle Puerta del Mar 18, 5th Floor, 29005 M&aacute;laga, Spain , email [email protected] . That is the address on file with the U.S. Copyright Office for this company, which also operates openshorts.app. Section 4.7 remains available to rightsholders anywhere in the world.
+
+4.10 Content of a DMCA Notification: A notification must be in writing and include: a physical or electronic signature of the owner of the exclusive right allegedly infringed, or of a person authorised to act on their behalf; identification of the copyrighted work claimed to have been infringed; identification of the material claimed to be infringing and information reasonably sufficient to let us locate it; your address, telephone number and email address; a statement that you have a good-faith belief that the use is not authorised by the copyright owner, its agent, or the law; and a statement, made under penalty of perjury, that the information in the notification is accurate and that you are the owner or are authorised to act on the owner's behalf. Notifications that omit these elements may not be effective to give us actual knowledge of the material.
+
+4.11 Counter-Notification and Restoration: If we remove or disable access to your material and you believe this was the result of a mistake or a misidentification, you may send a counter-notification to the designated agent under 17 U.S.C. &sect; 512(g), including your signature, identification of the material and the location at which it appeared before removal, a statement under penalty of perjury that you have a good-faith belief that the material was removed or disabled as a result of mistake or misidentification, and your consent to the jurisdiction of the United States federal district court for the judicial district in which you reside or, if your address is outside the United States, of any judicial district in which we may be found. We will forward the counter-notification to the complaining party and may restore the material in 10 to 14 business days unless that party notifies us that it has filed an action seeking a court order to restrain the allegedly infringing activity.
+
+4.12 Repeat Infringers and Misrepresentation: In accordance with 17 U.S.C. &sect; 512(i), we have adopted and reasonably implement a policy of terminating, in appropriate circumstances, the accounts of users who are repeat infringers. Under 17 U.S.C. &sect; 512(f), any person who knowingly materially misrepresents that material is infringing, or that material was removed or disabled by mistake or misidentification, may be liable for the damages that misrepresentation causes.
+
+5. Third-Party Platforms and Services
+5.1 Platform Terms: When you connect third-party social media accounts to our Services, you are also bound by the terms of service and policies of those platforms. It is your responsibility to review and comply with those terms.
+
+5.2 No Guarantee: We do not guarantee that our Services will always be compatible with all features of third-party platforms. Changes to third-party APIs, policies, or terms may affect the functionality of our Services without notice.
+
+5.3 Account Suspension: If a third-party platform suspends, restricts, or terminates your account on their platform due to content posted through our Services, we are not liable and will not provide refunds.
+
+5.4 No Affiliation: Upload-Post is an independent service and is not affiliated with, endorsed by, sponsored by, or officially connected to any social media platform including but not limited to TikTok, Instagram, Facebook, Meta, YouTube, Google, LinkedIn, Microsoft, X Corp, Pinterest, Reddit, or Bluesky.
+
+6. API and Developer Access
+6.1 Confidentiality of API Keys: API keys, access tokens, and other credentials issued to you are confidential. You must store them securely and must not share, publish, or distribute them to any third party except as expressly permitted under a separate written agreement with us (such as a whitelabel or reseller arrangement).
+
+6.2 Responsibility for Activity: You are solely responsible for all activity that occurs under your API keys, including activity by your employees, contractors, end users, and any product or service that integrates the Services using your credentials. Usage, fees, rate-limit consumption, and compliance obligations attach to the account whose key was used.
+
+6.3 No Client-Side Exposure: You must not embed or expose API keys in client-side code, mobile apps, browser extensions, public repositories, or any other context where they may be retrieved by end users or third parties. All calls to the Services must originate from a server or environment you control. You are responsible for any abuse resulting from leaked or exposed credentials.
+
+6.4 Rotation, Revocation, and Throttling: We may rotate, revoke, throttle, rate-limit, or suspend API keys at any time, with or without notice, for reasons including but not limited to suspected compromise, abuse, violation of these Terms, non-payment, security risk, or third-party platform compliance. Where reasonably practicable, we will provide notice and an opportunity to migrate to a new key.
+
+6.5 No Guarantee of Third-Party APIs: The Services rely on APIs operated by third-party platforms (such as TikTok, Instagram, Facebook, YouTube, LinkedIn, X, Pinterest, Reddit, Threads, and Bluesky). We do not control and do not guarantee the availability, uptime, quotas, rate limits, application approval, app-review outcomes, feature parity, or continued access of any third-party API. Changes, deprecations, suspensions, or denials by any third-party platform may degrade or interrupt the Services, including for your integrations, and are not a breach of these Terms.
+
+6.6 Data Processing Agreement: Where you are a business customer that processes Personal Data of identifiable individuals through the Services and you are subject to the GDPR, UK GDPR, or Swiss FADP, the Upload-Post Data Processing Agreement (DPA) published at upload-post.com/data-processing-agreement is hereby incorporated by reference into these Terms and applies automatically, taking effect upon your acceptance of these Terms or your first use of the Services, whichever is earlier. No separate signature is required for the DPA to be binding; a pre-signed copy is available on that page for customers who wish to countersign it for their records. The current list of authorised Sub-processors is published at upload-post.com/subprocessors . For DPAs on custom templates, contact [email protected] .
+
+7. Payments, Subscriptions, and Refunds
+7.1 Billing: Paid subscriptions are billed in advance on a monthly or annual basis. You authorize us to charge your payment method for the subscription fees.
+
+7.2 Automatic Renewal: Subscriptions automatically renew unless cancelled before the renewal date. You may cancel at any time through your account settings.
+
+7.3 Refund Policy: Due to the digital nature of our Services, all payments are generally non-refundable. However, we may consider refund requests on a case-by-case basis at our sole discretion. No refunds will be provided for:
+
+Partial months or unused portions of a subscription
+Account termination due to violation of these Terms
+Service disruptions caused by third-party platforms
+Features that are modified or discontinued
+
+7.4 Consumer Withdrawal Rights: If you are acting as a consumer in the European Union or another jurisdiction with mandatory withdrawal rights, nothing in these Terms limits those statutory rights. Where permitted by law, you may be asked to expressly consent to immediate performance of the digital service and acknowledge that you may lose your withdrawal right once the service has begun.
+
+7.5 Price Changes: We reserve the right to modify pricing at any time. Price changes will be communicated in advance and will apply to the next billing cycle.
+
+8. Intellectual Property
+8.1 Our Property: The Services, including all content, features, functionality, software, code, designs, text, graphics, logos, and trademarks, are the exclusive property of TONVI TECH SL and are protected by copyright, trademark, patent, trade secret, and other intellectual property laws.
+
+8.2 Restrictions: You may not copy, modify, distribute, sell, lease, or create derivative works based on our intellectual property without our prior written consent.
+
+9. Disclaimer of Warranties
+THE SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE. WE SPECIFICALLY DISCLAIM ALL IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+We do not warrant that:
+The Services will meet your specific requirements or expectations
+The Services will be uninterrupted, timely, secure, or error-free
+The results obtained from the Services will be accurate or reliable
+Any errors in the Services will be corrected
+The Services will be compatible with all devices or platforms
+Third-party platforms will maintain compatibility with our Services
+Content will be delivered to the correct social media account without errors
+Content will be published with the exact formatting, captions, or metadata as submitted
+Scheduled content will be published at the exact time requested
+Content will not be cross-posted, duplicated, or misdirected between accounts due to technical issues
+
+You acknowledge that you use the Services at your own risk and that we are not responsible for any damage to your devices, data, reputation, social media accounts, or business arising from the use of the Services, including but not limited to errors in content delivery, misdirected content, or any other technical malfunction.
+
+10. Limitation of Liability
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL TONVI TECH SL, ITS DIRECTORS, EMPLOYEES, PARTNERS, AGENTS, SUPPLIERS, OR AFFILIATES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, PUNITIVE, OR EXEMPLARY DAMAGES, INCLUDING BUT NOT LIMITED TO:
+Loss of profits, revenue, or business opportunities
+Loss of data or data breaches
+Loss of goodwill or reputation
+Cost of procurement of substitute services
+Any indirect, incidental, or consequential damages
+Damages arising from content being published to incorrect accounts or platforms
+Damages arising from content being cross-posted, duplicated, or misdirected between users or accounts
+Reputational harm, social media account suspension, or loss of followers resulting from content delivery errors
+Any claim by third parties related to content published through the Services, whether correctly or incorrectly delivered
+
+OUR TOTAL LIABILITY FOR ANY CLAIMS ARISING FROM OR RELATED TO THESE TERMS OR THE SERVICES SHALL NOT EXCEED THE GREATER OF: (A) THE AMOUNT YOU PAID US IN THE TWELVE (12) MONTHS PRECEDING THE CLAIM, OR (B) ONE HUNDRED EUROS (€100).
+
+Some jurisdictions do not allow the exclusion or limitation of certain damages, so some of the above limitations may not apply to you.
+
+Nothing in these Terms excludes or limits liability where such exclusion or limitation is not permitted by applicable law, including liability for fraud, wilful misconduct, gross negligence, or mandatory consumer rights.
+
+11. Indemnification
+
+You agree to indemnify, defend, and hold harmless TONVI TECH SL and its officers, directors, employees, agents, licensors, and suppliers from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees (including reasonable attorneys' fees) arising out of or relating to: (a) your use of the Services; (b) your User Content; (c) your violation of these Terms; (d) your violation of any rights of a third party; or (e) your violation of any applicable law or regulation.
+
+12. Termination
+12.1 By You: You may terminate your account at any time by contacting us or through your account settings.
+
+12.2 By Us: We may suspend or terminate your access to the Services immediately, without prior notice or liability, for any reason, including but not limited to breach of these Terms. Where we suspend or terminate your account on the ground that your content or conduct is illegal or incompatible with these Terms, we will provide a statement of reasons as described in Section 4.6, except where prohibited by law or where immediate action is required for security, legal, or platform-compliance reasons.
+
+12.3 Effect of Termination: Upon termination, your right to use the Services will immediately cease. All provisions of these Terms that by their nature should survive termination shall survive, including ownership provisions, warranty disclaimers, indemnification, and limitations of liability.
+
+12.4 Switching, Data Export, and Exit (EU Data Act): Where Regulation (EU) 2023/2854 (the Data Act) applies to your use of the Services as a data processing service: (a) you may switch to another provider or to on-premises infrastructure, or terminate the Services, subject to a maximum notice period of two months; (b) upon your request we will support a transition period of up to 30 days, extendable once where completing the switch within that period is technically unfeasible, during which we will provide reasonable assistance and continue performing the Services as contracted; (c) you may at any time export your exportable data — including your User Content, scheduling data, and upload history and metadata — in a structured, commonly used, and machine-readable format via the API or by request to [email protected] ; (d) following completion of the switching or exit process and expiry of any legally required retention periods, we will erase your data as described in our Privacy Policy and DPA; (e) any switching charges will not exceed the costs we directly incur, and from 12 January 2027 no switching charges will be imposed; and (f) information on the jurisdictions in which the ICT infrastructure used for the Services is located is published on our Sub-processors page .
+
+13. Dispute Resolution and Governing Law
+13.1 Governing Law: These Terms shall be governed by and construed in accordance with the laws of Spain, without regard to its conflict of law provisions.
+
+13.2 Jurisdiction: Any disputes arising from or relating to these Terms or the Services shall be subject to the exclusive jurisdiction of the courts located in Málaga, Spain.
+
+13.3 Consumer Rights: If you are acting as a consumer, nothing in these Terms limits any mandatory rights you may have under applicable consumer protection laws, including any right to bring claims in the courts of your habitual residence where required by law.
+
+13.4 Informal Resolution: Before filing a formal legal claim, you agree to first contact us at [email protected] to attempt to resolve the dispute informally within 30 days.
+
+14. General Provisions
+14.1 Entire Agreement: These Terms, together with the Privacy Policy and any other legal notices published on the Services, constitute the entire agreement between you and us regarding the Services.
+
+14.2 Severability: If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions will remain in full force and effect.
+
+14.3 Waiver: Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights.
+
+14.4 Assignment: You may not assign or transfer these Terms without our prior written consent. We may assign or transfer these Terms without restriction.
+
+14.5 Force Majeure: We shall not be liable for any failure or delay in performing our obligations due to circumstances beyond our reasonable control, including but not limited to acts of God, natural disasters, war, terrorism, pandemics, government actions, or failure of third-party services.
+
+15. Changes to Terms
+
+We reserve the right to modify these Terms at any time at our sole discretion. If we make material changes, we will notify you by email or by posting a notice on our website at least 30 days before the changes take effect.
+
+Your continued use of the Services after the effective date of the revised Terms constitutes your acceptance of the changes. If you do not agree to the new terms, you must stop using the Services.
+
+16. Contact Information
+
+If you have any questions about these Terms, please contact us:
+
+Company: TONVI TECH SL
+C.I.F.: B-19780394
+Address: Calle Puerta del Mar, 18 5th Floor, 29005 Málaga, Spain
+Email: [email protected]
+
+Document Version: 2.5
+Last Updated: August 29, 2026
+Effective Date: April 27, 2024
+
+Upload-Post.com
+Seamlessly share your videos across multiple platforms
+
+Quick Links
+Home
+Pricing
+Features
+Use Cases
+FAQ
+Supported Platforms
+Make Integration
+n8n Integration
+n8n Templates
+WordPress Plugin
+Social Media Scheduler
+AI Social Media
+Customer Stories
+YouTube Tutorials
+Documentation
+
+Guides
+Post to All Platforms at Once
+Schedule Posts via API
+Bulk Upload Videos
+Repurpose YouTube Videos
+Automate with Python
+Post from Google Sheets
+Schedule TikTok Posts
+Automate Instagram Posts
+Post to LinkedIn API
+Automate with n8n
+Auto-Post YouTube Shorts
+Airtable to Social Media
+Podcast Clips to Social
+How-To Guides
+
+Compare
+
+Social Media API
+
+Best Social Media APIs 2026
+
+vs Buffer
+vs Hootsuite
+vs Later
+vs Sprout Social
+vs SocialBee
+vs Loomly
+vs Sendible
+vs Ayrshare
+vs Blotato
+vs Postiz
+vs Publer
+vs SocialPilot
+vs Metricool
+vs Agorapulse
+vs Vista Social
+vs Zoho Social
+vs Mixpost
+vs Post Bridge
+vs Typefully
+vs Zernio (Late)
+vs Outstand
+vs Post for Me
+vs bundle.social
+vs Unipile
+Pricing vs Ayrshare & Blotato
+
+AI Skills
+Claude Code
+Claude + TikTok
+Claude + Instagram
+Claude + YouTube
+Claude + LinkedIn
+All AI Skills
+OpenClaw
+
+Legal
+Terms of Use
+Privacy Policy
+Sub-processors
+DPA
+Legal Notice
+Cookie Policy
+Cookie settings
+
+© 2026 Upload-Post.com. All rights reserved.
+
+Status
+
+We ask before we track
+We use strictly necessary cookies to run this site. With your permission we would also like to measure how the site is used (analytics) and how our ads perform (marketing). Nothing optional is loaded until you choose. Cookie Policy · Privacy Policy
+Accept all Reject all Customise
+
+Cookie preferences
+Choose which categories you allow. You can change this at any time from "Cookie settings" in the footer. Cookie Policy
+Strictly necessary Always active
+Needed for the site to work: your consent record (up_consent) and your light/dark theme preference. Exempt from consent under art. 22.2 LSSI.
+
+Analytics Always active
+OpenPanel, self-hosted on our own servers (api.openpanel.fotoexamen.com). Aggregated page and feature usage so we can see what to improve. No data goes to an advertising network.
+
+Marketing and attribution
+Google Ads conversion measurement, the Reddit advertising pixel, and our own affiliate/attribution cookies (aff_ref, up_attribution). These tell us which campaign or affiliate brought you here.
+
+Accept all Reject all Save my choices

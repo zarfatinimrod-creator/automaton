@@ -13,5 +13,6 @@
   "changed": true,
   "firstFetch": false,
   "previousSha256": "9629cdcd003784f6d7346dba916a1923ce88aed3dbff09208af93d2117b10571",
-  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "redacted": "authors and support_email removed from every result, and email addresses inside text fields, on 29.9.2026 (terms audit: Mozilla acceptable-use policy bars harvesting account names and email addresses); sha256 is of the original body"
 }

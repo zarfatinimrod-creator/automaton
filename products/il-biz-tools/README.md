@@ -16,7 +16,7 @@ while a publish blocker stands; the deploy artifact is `_site/`.
 |---|---|---|---|
 | VAT calculator (מחשבון מע"מ) | `vat.html` | yes | — |
 | Osek patur ceiling tracker (מעקב תקרת עוסק פטור) | `osek-patur.html` | yes | — |
-| בעל עסק זעיר self-check (30% of turnover or actual expenses?) | `osek-zair.html` | yes — tax years 2024 and 2025 only, taxable income only, every figure cited to a primary text | — |
+| בעל עסק זעיר self-check (30% of turnover or actual expenses?) | `osek-zair.html` | yes — tax years 2024 to 2026 only (2026 from nevo's consolidated VAT law, said so on the page), taxable income only, every figure cited to the text it was read in | — |
 | Net salary estimator (אומדן שכר נטו) | `net-salary.html` | yes | — |
 | Receipt / invoice generator (קבלה / חשבונית עסקה) | `invoice.html` | print / PDF, local save, saved client list, per-type auto numbering | document branding: your logo and accent colour |
 | Allocation-number check (מספר הקצאה) | `allocation.html` | yes | — |
@@ -65,7 +65,7 @@ search sends no one, the page-view kill rule is what answers it.
 | Registrar reduced-rate window (through 31 March; full rate from 1 April) | `deadline` in `src/config/registrar-fee.json` | unverified against a primary source, **rendered anyway, labelled** | same six circulars |
 | בעל עסק זעיר deduction rate | 30% of turnover (`src/config/osek-zair.json`) | **read in a primary text** (third-party copy), 29.9.2026 | ספר החוקים 3045 p.172, Income Tax Ordinance 87ד(א) (image; transcribed in `logs/2026-09-29-osek-zair-check.md`); Tax Authority data report, `research/rendered/tt2-capitax-21072025-1.txt:27-28` |
 | בעל עסק זעיר cap, tax years 2024 and 2025 | ₪120,000 (`src/config/osek-zair.json`) | **read in a primary text** (third-party copy), 29.9.2026 | gazette p.171 (87ב(1): the VAT עוסק פטור amount) and p.173 (section 35: 120,000; 37(ב): first CPI step 1.1.2026); report `:27-28`, `:34-35` |
-| בעל עסק זעיר cap, tax year 2026 | `122833` held in `src/config/osek-zair-unverified.json` and **never rendered or shipped** | **unverified** — CPI-linked from 1.1.2026; no text read states it | the osek patur ceiling of `osek-patur.json` (secondary). The page refuses 2026 |
+| בעל עסק זעיר cap, tax year 2026 | ₪122,833 (`src/config/osek-zair.json`) | **read in nevo's consolidated text** (נוסח משולב, current to 13-07-2026; not the gazette and not a primary text - accepted in place of one as a recorded exception; `years.2026.toVerify` names the primary check still owed), 29.9.2026 | the VAT law's עוסק פטור definition, `research/rendered/nevo-vat-law-2026-09-29.txt:93` (stamp `:3`; 126(א), indexed every 1 January, `:1637`) - a dated copy of the render that the weekly render-watch never rewrites; gazette p.173 (37(ב): first CPI step 1.1.2026). Same amount as `osek-patur.json`. Later years are refused |
 
 Not modelled in net salary: surtax, pension tax credit, special credit points (children, degree,
 army), benefits in kind, study fund.
@@ -103,7 +103,7 @@ Each JSON file reached then goes through `CONFIG_PUBLISH_RULES` (`src/lib/publis
 | Config | Rule | What ships today |
 |---|---|---|
 | `vat.json`, `osek-patur.json`, `allocation-number.json`, `osek-zair.json` | `verified` — ships only while `"verified": true` | the whole file |
-| `osek-zair-unverified.json` | `verified` | **nothing**: no page loads it (the 2026 cap waits there), and a shipped page that did would stop the build |
+| `osek-zair-unverified.json` | `verified` | **nothing**: no page loads it (it holds the VAT section reference 31(3) from an unrendered regulation, which nevo's text of the law contradicts), and a shipped page that did would stop the build |
 | `tax-2026.json` | `verified` | **nothing**: no shipped page loads it (its page is withheld), and if one did the build would stop |
 | `registrar-fee.json` | whole once verified; until then only `verified`, `renderAmounts`, `updated`, `deadline` | the dates and the two flags, rewritten into a fresh file — **no amount, no notes, no internal sources** |
 | `site.json` | `no-figures` (site metadata) | the whole file |
@@ -189,8 +189,8 @@ not code — it is on the owner-ask list, not solved here.
 
 ## The בעל עסק זעיר self-check (`osek-zair.html`, TikTok note A11)
 
-What it answers, for tax years 2024 and 2025: is the year's turnover within the cap (₪120,000; "אינו עולה על", so
-equal is within), and is taxable income from the business lower under the track (turnover minus 30% of turnover)
+What it answers, for tax years 2024 to 2026: is the year's turnover within the cap (₪120,000 for 2024 and 2025,
+₪122,833 for 2026; "אינו עולה על", so equal is within), and is taxable income from the business lower under the track (turnover minus 30% of turnover)
 or under regular reporting (turnover minus the expenses entered) - and by how much. It says, in the result, when the
 30% track loses (expenses above 30% of turnover), and then carries the two-year cooling-off of 87ה(ב) into that
 verdict. It says it takes income from the business to equal the turnover entered (87ד(א) deducts a share of turnover
@@ -199,13 +199,13 @@ in `src/lib/osek-zair.js`; nothing stored or sent.
 
 Over the cap it compares nothing but does not say the deduction is gone: section 87ד(ג) lets someone registered on
 the first day of the tax year who stops qualifying during it still deduct, up to 30% of the cap (`yearOfExitRate`;
-₪36,000 for 2024 and 2025). The tool cannot know whether that was so; the result names the section and the ceiling.
+₪36,000 for 2024 and 2025, ₪36,849.90 for 2026). The tool cannot know whether that was so; the result names the section and the ceiling.
 The FAQ adds 87ד(ב), a cost the comparison leaves out (depreciation added back on selling a business asset), and the
 turnover hint cites 87ז(א) and a 2025 draft under it, as a draft whose enactment has not been read.
 
 What it refuses: **tax** (no text read gives brackets or credit points; the page says why and quotes the Tax
-Authority's own "almost 80% under the tax threshold"), **tax year 2026** (the cap is CPI-linked from 1.1.2026 and no
-text read states it; its amount waits in `osek-zair-unverified.json`, which no page loads and the build never ships),
+Authority's own "almost 80% under the tax threshold"), **tax years after 2026** (the cap is CPI-linked every
+1 January and no text read states a later one; `compareTracks` refuses a year not in `years`),
 **the conditions** (listed with section and page, not checked), and **National Insurance** (the same law amended it;
 the meaning is unread).
 
@@ -219,11 +219,18 @@ a fact is in its quotes; every quote is at its lines or in the record, on the pa
 `documents.gazette.recordPages`) and inside the section it names; every capture's sha256 matches its `.meta.json`.
 The home page card names the tool without its figures, since `index.html` renders no config and the gate cannot
 withhold what it shows. The source line after the lead says
-"עותקים באתר capitax.co.il · נבדק: 29.9.2026": the documents are primary texts, the copies are a tax firm's.
+"עותקים באתר capitax.co.il; חוק מס ערך מוסף, נוסח משולב של אתר נבו, נכון ליום 13-07-2026 · נבדק: 29.9.2026": the
+gazette and the report are primary texts in a tax firm's copies; the 2026 cap is from nevo's consolidation of the VAT
+law, and the page says in words (`facts.cap2026`) that it is that and not the official publication in Reshumot.
 
 The name: the track is "בעל עסק זעיר" (amendment 265); "עוסק זעיר" appears only as the search phrase and in the
-answer that sets it apart. The VAT-law sense is stated in words and marked secondary; its section number (31(3)) is
-not on the page, because no capture of the VAT law has been read - it waits in `osek-zair-unverified.json`.
+answer that sets it apart. That answer states what nevo's text of the VAT law shows, cited to its lines
+(`facts.vatSense`): the phrase is in that text only three times - the definition in section 1, marked "(נמחקה)"
+(line 89), and the headings over sections 42 and 57, both "(בוטל)" (lines 610-611, 782-783). The earlier secondary
+sentence ("עוסק זעיר" is also a VAT-law term) is gone: the capture the page links contradicts it. The section
+reference 31(3), which a statute mirror of the VAT registration regulations ties to the phrase, is not on the page;
+nevo's line 484 shows 31(3) is about עוסק פטור, and the regulations are unrendered, so it stays in
+`osek-zair-unverified.json` until they are read.
 
 ## The registrar annual-fee page (`registrar-fee.html`)
 

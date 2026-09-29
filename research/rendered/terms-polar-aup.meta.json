@@ -1,0 +1,17 @@
+{
+  "url": "https://polar.sh/legal/acceptable-use-policy",
+  "slug": "terms-polar-aup",
+  "fetchedAt": "2026-09-29T14:02:59.443Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 128603,
+  "sha256": "cbb2316491531edb6b3df0d558fa3e70a4e53142c93a5c6c539b0bfaed5a97b4",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-polar-aup.html",
+  "textPath": "research/rendered/terms-polar-aup.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

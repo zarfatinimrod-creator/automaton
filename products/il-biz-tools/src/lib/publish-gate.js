@@ -67,10 +67,11 @@ export const PAGE_RATE_SOURCES = {
   'index.html': [],
   'vat.html': ['src/config/vat.json'],
   'osek-patur.html': ['src/config/osek-patur.json'],
-  // The בעל עסק זעיר check renders the rate, the 2024-2025 caps and the conditions from osek-zair.json, each cited
-  // to a capture line. The 2026 cap is not in any text read: it waits, unverified, in osek-zair-unverified.json,
-  // which this page does not render or load, so it is not listed here (listing it would withhold the whole page
-  // for a year the page already refuses).
+  // The בעל עסק זעיר check renders the rate, the 2024-2026 caps and the conditions from osek-zair.json, each cited
+  // to a capture line (the 2026 cap to nevo's consolidated VAT law, and the page says it is that and not the
+  // gazette). osek-zair-unverified.json holds what no primary text read states (a VAT section reference from an
+  // unrendered regulation); this page does not render or load it, so it is not listed here (listing it would
+  // withhold the whole page for a figure the page does not show).
   'osek-zair.html': ['src/config/osek-zair.json'],
   'net-salary.html': ['src/config/tax-2026.json'],
   'invoice.html': ['src/config/vat.json'],
@@ -205,7 +206,7 @@ export const CONFIG_PUBLISH_RULES = {
   'src/config/vat.json': 'verified',
   'src/config/osek-patur.json': 'verified',
   'src/config/osek-zair.json': 'verified',
-  // Never ships while unverified: it holds the 2026 cap no primary text read states. No page loads it.
+  // Never ships while unverified: it holds a VAT section reference no primary text read states. No page loads it.
   'src/config/osek-zair-unverified.json': 'verified',
   'src/config/tax-2026.json': 'verified',
   'src/config/allocation-number.json': 'verified',

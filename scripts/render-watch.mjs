@@ -339,6 +339,21 @@ export const TERMS_BARRED = [
       "Gumroad's terms bar automated software that scrapes or downloads data from any web page of the Services " +
       "(research/rendered/gumroad-terms.txt:326, :343; paused in tick 19, logs/CHANNEL_LOOP.md §9; pending logs/FABLE_QUEUE.md row 16(d))",
   },
+  // The tick-20 terms audit of every active site (research/channel-loop/TERMS-AUDIT-2026-09-29.md): each entry
+  // below cites the clause that bars a runner, or a condition the runner does not meet.
+  { domain: "paypal.com", why: "PayPal's user agreement bars \"any robot, spider, other automatic device, or manual process to monitor or copy our websites without our prior written permission\" (research/rendered/paypal-il-user-agreement.txt:787; terms audit 29.9)" },
+  { domain: "teachsimple.com", why: "Teach Simple's terms bar using the site \"to spam, phish, pharm, pretext, spider, crawl, or scrape\" (research/rendered/teachsimple-terms-of-service.txt:363; terms audit 29.9)" },
+  { domain: "indiebook.co.il", why: "Indiebook's terms: \"אין לאסוף נתונים מן האתר באמצעות תוכנות מסוג Crawlers Robots\" (research/rendered/indiebook-terms.txt:169; terms audit 29.9)" },
+  { domain: "astro.build", why: "Astro's terms exclude \"using any data mining, robots or similar data gathering or extraction methods\" and downloading other than page caching (withastro/astro.build src/content/pages/terms.md:65, research/measurements/astro-themes.md:338; terms audit 29.9)" },
+  { domain: "facer.io", why: "Facer's terms bar access or download \"through the use of any engine, software, tool, agent ... (including spiders, robots, crawlers, data mining tools or the like)\" other than Little Labs' software or ordinary browsers (research/rendered/facer-templates-js.bin bytes 475268-475660; terms audit 29.9)" },
+  { domain: "facercreator.io", why: "Facer's terms (Little Labs) bar spiders, robots and crawlers on the Services, which the creator site is part of (research/rendered/facer-templates-js.bin bytes 475268-475660; terms audit 29.9)" },
+  { domain: "youtube.com", why: "YouTube's terms bar accessing the Service \"using any automated means (such as robots, botnets or scrapers)\" except search engines or with written permission (research/faceless-youtube/scouts/discovery.md:209-211; terms audit 29.9)" },
+  { domain: "blog.youtube", why: "YouTube's blog links YouTube's terms, which bar automated access except search engines or with written permission (research/rendered/youtube-blog-ypp-2027.html:3341; research/faceless-youtube/scouts/discovery.md:209-211; terms audit 29.9)" },
+  { domain: "google.com", why: "Google's terms allow automated access only while respecting robots.txt, which render-watch does not read, and YouTube's terms bar the YouTube Help pages outright (research/colony-sweep/scouts/risk-governance--automation-tos.md:106; research/faceless-youtube/scouts/discovery.md:209-211; terms audit 29.9)" },
+  { domain: "googlesource.com", why: "Google's terms allow automated access only while respecting robots.txt, which render-watch does not read (research/colony-sweep/scouts/risk-governance--automation-tos.md:106; terms audit 29.9)" },
+  { domain: "metaculus.com", why: "Metaculus's terms bar viewing, copying or procuring content \"by automated means (such as scripts, bots, spiders, crawlers, or scrapers)\" outside its API (Metaculus/metaculus front_end terms-of-use page.tsx:187-196; terms audit 29.9)" },
+  { domain: "openai.com", why: "OpenAI's terms bar \"Automatically or programmatically extract data or Output\" (OpenTermsArchive/genai-contrib-versions OpenAI/Terms of Service.md:40; terms audit 29.9)" },
+  { domain: "addons.mozilla.org", why: "Mozilla's acceptable-use policy bars harvesting personal information such as account names and email addresses, and the AMO search API returns both for every author (mozilla/legal-docs en/acceptable_use_policy.md:14; terms audit 29.9; the stored results were redacted)" },
 ];
 
 /** The TERMS_BARRED entry a host falls under (the domain or any subdomain; case and trailing dot ignored), or null. */

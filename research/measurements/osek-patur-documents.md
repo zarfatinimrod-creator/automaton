@@ -872,3 +872,246 @@ Line numbers without a file name are this file's (`research/measurements/osek-pa
 - [inference] Wix: an exempt dealer cannot lawfully issue a חשבונית מס. Whether Wix's 'lawful tax invoice' requires one is not settled by text: 'חשבונית מס שהוצאה לו כדין' (vat-law.txt:565) tilts one way, and §1's 'חשבונית' plus §47א (:722, :724) the other. The held question at research/owner-asks/questions.json:43 remains the instrument, and the board may reword it around a §45 transaction invoice.
 - [inference] The written-no branch (VAT registration as a cost decision) has two textual unknowns. The law read does not show plainly how a dealer under the ceiling becomes authorised: §57 is repealed, §58 is reclassification by nature, and the definitions at :91 and :93 exclude an עוסק פטור (vat-law.txt:782-785). And each tax invoice above ₪5,000 needs an online allocation number on Wix's demand (:567, :668, :670), a per-invoice act a runner may or may not be able to file.
 - Still open: what reg 15א of the VAT registration regs covers (it excludes some dealers from reg 1) and how a small dealer registers as authorised; what the 1991 gazette did with §26ד and §26ג; the general VAT regs (no URL found). The first two are queued as next-render URLs.
+
+---
+
+## 29.9 (tick 20, rendered)
+
+ZERO-TESTS row 187 (captured 29.9 ~13:02 UTC by render-watch). Read by an Opus reader, checked by an adversarial verifier.
+
+### 29.9 (tick 20, rendered): תקנות מס ערך מוסף (רישום) (ZERO-TESTS row 187)
+
+**Read by:** a tick-20 reader, from the render-watch capture of ZERO-TESTS row 187, checked by an adversarial verifier. Where cited, it also uses the tick-19 captures `R-VAT` (`nevo-vat-law.txt`), `R-VATR` (`nevo-vat-bookkeeping-regs.txt`) and `R-VATRH`, and the tick-18 capture `R-BK` (`nevo-books-instructions.txt`). Every quote was checked by exact substring match (`grep -n -F`) against the capture at the cited line before it was written here. A bare "`:NNN`" continues the file named last in the same bullet or table cell. In section 12, a bare "`:NNN`" is this file.
+
+| Short name | Capture (under `research/rendered/`) | fetchedAt (UTC) | sha256 (first 12) | Currency |
+|---|---|---|---|---|
+| `R-REG` | `nevo-vat-registration-regs.txt` (236 lines) | 2026-09-29 13:02:22 | `415d519ef5b6` | "נוסח עדכני נכון ליום: 10-12-2024" (`R-REG:3`) |
+| `R-REGH` | `nevo-vat-registration-regs.html` (the same page, 27,946 bytes, 70 lines) | same | same | Current text only: 0 matches each for `display:none`, `FFFF99`, `<s>`, `<u>` and `href`. |
+
+The meta file reads `status` 200, `error` null, `truncated` false and `firstFetch` true.
+
+**How the current text was told apart from history.** It did not need to be. The page uses `R-VAT`'s layout (`id_` blocks under `<h6>` headings, no `href`, no `display:none`), which prints only the current text: no amendment notes and no list of instruments. "ק"ת", "תחילתן", "תיקון" and "בוטל" each occur 0 times in `R-REG`. Nothing on the page dates a provision.
+
+### 11. תקנות מס ערך מוסף (רישום) (consolidated 10-12-2024), at rendered grade
+
+**11.1 Reg 15א registers a one-off seller. It does not reach the owner, so VAT bookkeeping reg 1 does, and §18ב with it.**
+- The heading is "רישום עוסק בעסקת אקראי" (`R-REG:175`). The rule itself: "15א. (א) רישומו של מי שעשה עסקת אקראי ואינו חייב להירשם על פי סעיף 52 לחוק לענין עסקאותיו במהלך עסקו, יהא בהודעה למנהל בטופס שקבע המנהל, שבה יפרט את טיב עסקת האקראי, מועד עשייתה, מחירה" (`R-REG:176`, which continues with the expected price).
+- The notice is due "(ב) הודעה לפי תקנת משנה (א) יש להגיש עד ה-15 לחודש שלאחר החודש שבו היתה תחילת עסקת האקראי." (`R-REG:178`).
+- Below a threshold, registration is needed only once the year's occasional deals together reach it (`R-REG:180`). The threshold is "" הסכום הקובע " – סכום מחזור העסקאות של עוסק זעיר לענין סעיף 31(3) לחוק." (`R-REG:180`).
+- One notice with an undertaking to report covers later occasional deals in the same tax year (`R-REG:182`). Services in the professions of reg 6א(א)(2) of the general regulations get neither relief (`R-REG:184`).
+- The law's terms behind the rule:
+  - "עוסק" includes "וכן מי שעושה עסקת אקראי;" (`R-VAT:87`).
+  - "עסקת אקראי" is first "(1) מכירת טובין או מתן שירות באקראי, כשהמכירה או השירות הם בעלי אופי מסחרי;" (`R-VAT:105`).
+  - A running business registers under §52: "52. (א) עוסק, מלכ"ר ומוסד כספי חייבים ברישום, במועד ובדרך שנקבעו." (`R-VAT:756`).
+- **The owner is not a 15א registrant.** [inference]
+  - The colony sells repeatedly and by design: storefronts, app listings and platform payouts. That is "עסקאותיו במהלך עסקו", not a sale "באקראי".
+  - Step 2 opens an ordinary file and chooses עוסק פטור (`docs/OWNER_STEPS.he.md:146`). That is registration under reg 2, not a 15א notice.
+- **Foreign payers do not change this on the text.**
+  - The regulations' "חייב במס" includes a dealer "אף אם הוא פטור מתשלום המס או אם כל עסקאותיו פטורות ממס" (`R-REG:8`). It excludes only four cases:
+    - all transactions exempt under §31(1) or §31(2) (`R-REG:10`);
+    - a seller whose tax on all transactions the service recipient pays under reg 6א of the general regulations (`R-REG:12`);
+    - certain land sellers (`R-REG:14`);
+    - a household solar or wind producer (`R-REG:16`).
+  - §31(3) is not among them. [inference] No text read makes a foreign platform that pays an Israeli seller a reg 6א recipient. Reg 6א itself is not captured. The general regulations now have a URL at github grade (section 13, URL 5).
+  - Reg 6's "עוסק זר" is a foreign business active in Israel: "חייב במס שעיקר עסקיו או פעילותו מחוץ לישראל ויש לו פעילות או עסקים גם בישראל (להלן – עוסק זר)" (`R-REG:72`). It is not an Israeli seller paid from abroad.
+- **So reg 1 reaches the owner.** Reg 1 excepts only "עוסק שרישומו לפי תקנה 15א לתקנות מס ערך מוסף (רישום), תשל"ו-1976" (`R-VATR:106`).
+  - [inference] An owner registered under reg 2 must keep for VAT the books the income-tax instructions require, "כתקפם מעת לעת". §18ב's computerised route and its conditions come with them, read through reg 2(א)(3) (tick 19, 8.1-8.2).
+  - [inference] The exception fits its purpose: a one-off seller registered by notice is not expected to keep a full set of books.
+- **Two provisions share the label "15א".** Reg 15א of these regulations is the occasional-deal rule above. §15א of the instructions, which bookkeeping reg 8 inserts, excuses the §31(3) dealer from VAT accounts (`R-VATR:376`, tick 19 7.2). Reg 1 names only the first.
+
+**11.2 Registration: who files, how, and when**
+- "2. (א) חייב במס יירשם על ידי מילוי כל הפרטים בטופס רישום שקבע המנהל וימציאו –" (`R-REG:41`).
+- How a dealer delivers the form: "(1) אם הוא עוסק – ביד אישית, או באמצעות רואה חשבון, עורך דין, יועץ מס, פקיד ברית הפיקוח כאמור בסעיף 72 לחוק, או מנהל חשבונות שלו ואם הוא מלכ"ר או מוסד כספי – ביד או בדואר רשום לאותו משרד מס ערך מוסף מהמפורטים בתוספת, שהוא הקרוב ביותר למקום עסקו;" (`R-REG:43`). Registered post is given to a non-profit or a financial institution only.
+- When: "(2) חייב במס ימציא למנהל טופס כאמור בתקנה זו לא יאוחר מהיום שבו החל בעסקיו או בפעולותיו." (`R-REG:45`).
+- Registering before trading starts:
+  - The law allows it for a person who proves he is setting up a business: "(ב) אדם שהוכיח, להנחת דעתו של המנהל, שהוא מקים עסק, רשאי להירשם כעוסק ומשנרשם דינו לכל דבר וענין כדין עוסק." (`R-VAT:758`).
+  - Reg 3 asks for a form that states the bookkeeping type and the expected start date: "3. המבקש להירשם כעוסק לפי סעיף 52(ב) לחוק, בטרם החל למכור נכסים או לתת שירותים במהלך עסקיו, יגיש בקשה לפי טופס שקבע המנהל" (`R-REG:52`, which continues).
+- What the form asks a dealer: "ולענין רישום עוסק – גם פרטים אלה: סוג העסק, מחזור העסקאות השנתי של העסק, מספר המועסקים בעסק ומספר תיק הניכויים באגף מס הכנסה." (`R-REG:47`).
+- How turnover is counted when the past year's figure is unknown:
+  - Reg 14(א), a business that operated for only part of the past year: the monthly average over its period of activity times twelve (`R-REG:168`).
+  - Reg 14(ב), unknown "מסיבה שונה": the month before registration times twelve, "ואם טרם החל בעסקיו או פעל פחות מחודש קודם הרישום – על פי הסכום המשוער בשנת המס הבאה כאילו יפעל בכל אותה שנה." (`R-REG:170`).
+  - [inference] A new dealer's class follows the annual turnover stated or estimated on the form, subject to reg 13 (11.3). The text gives the dealer no box to choose a class; step 2's "בחר **עוסק פטור**" (`docs/OWNER_STEPS.he.md:146`) describes a form field, not a legal election.
+- After filing:
+  - "7. (א) אדם שבידיו תעודת רישום או מסמך אחר מאת המנהל המאשר דבר רישומו, יראוהו כמי שלכאורה רשום כדין." (`R-REG:87`).
+  - If no certificate arrives within thirty days, the dealer writes to the Director by registered letter (reg 7(ב), `R-REG:89`).
+  - The law gives a dealer who is not authorised "אישור על רישומו ועל סיווגו" (§53(ב), `R-VAT:771`).
+- **Provisional registration by the Director.** Missed by the reader: "(ג) מי שרשם אותו המנהל לפי סעיף 54 לחוק, לא ינכה מס תשומות ולא יוציא חשבוניות מס כל עוד לא נרשם מיזמתו." (`R-REG:91`). §54 lets the Director register provisionally one who "חייב ברישום ולא נרשם" (`R-VAT:774`). [inference] This does not bear on an owner who registers at step 2. It confirms that the "never חשבונית מס" guard (tick 19) also holds while any registration is not the dealer's own.
+- **The text has no electronic channel.** "מקוון", "אלקטרוני" and "אינטרנט" each occur 0 times in `R-REG`.
+  - [inference] The 10-12-2024 text provides only delivery by hand or through a listed professional. Step 2 says "אונליין" (`docs/OWNER_STEPS.he.md:130`).
+  - The page does not contradict that word. "ביד אישית" says who delivers, and an online service could exist outside these regulations. But no rendered page shows one, so "אונליין" stays unverified.
+- **One registration for every line.**
+  - The law: "55. אדם שיש לו כמה עסקים או שבעסקו כמה יחידות עסק, יירשם כעוסק אחד לגבי כולם" (`R-VAT:777`, which continues).
+  - A business unit may register separately only if "(2) ברישומו בנפרד כאמור לא יהפוך לגביהם לעוסק הפטור ממס." (reg 9(א)(2), `R-REG:107`).
+  - [inference] Every colony income line counts toward one ceiling. The definition already says so with "בכל עסקיו" (`R-VAT:93`).
+
+**11.3 Becoming an עוסק מורשה below the ceiling: the text gives no election, and §58 is a weak route**
+- **Reg 11, the old voluntary route, names the exempt dealer as excluded.** Under the heading "רישום עוסק זעיר כעוסק מורשה" (`R-REG:122`): "11. (א) עוסק זעיר, למעט עוסק הפטור ממס על פי סעיף 31(3) לחוק, רשאי להירשם כעוסק מורשה אם הוכיח להנחת דעתו של המנהל שהוא מנהל מערכת חשבונות שחייב בה עוסק מורשה בהתאם לתקנות מס ערך מוסף (ניהול פנקסי חשבונות), התשל"ו-1976." (`R-REG:123`). The request goes on the Director's form (`R-REG:125`).
+  - [inference] Three things stand against it for the owner:
+    - Its words exclude the dealer §31(3) exempts, which is the owner.
+    - Its class, "עוסק זעיר", has been deleted from the law (`R-VAT:89`), so the category it opens has no counterpart today.
+    - It sits under the heading of the repealed §57 ("רישום עוסק זעיר כעוסק מורשה", `R-VAT:782`; "57. (בוטל)", `R-VAT:783`), and the preamble lists §57 among its powers ("בתוקף סמכותי לפי סעיפים 1, 52, 55, 56, 57, 65, 118 ו-145 לחוק מס ערך מוסף", `R-REG:5`). Whether a regulation survives the repeal of its enabling section is a question for the Interpretation Law, which is not captured.
+  - Either way, reg 11 gives the owner no route.
+- **Reg 12 is the only procedure by request: a reasoned request under §58.** Under the heading "רישום בסוג שונה" (`R-REG:127`):
+  - "12. (א) חייב במס המבקש להירשם על פי סעיף 58 לחוק בסוג חייבי מס שונה, יגיש למנהל בקשה בכתב תוך ציון נימוקים." (`R-REG:128`)
+  - "(ב) עד להחלטת המנהל יירשם המבקש כאמור בתקנת משנה (א) לפי סוג חייבי מס שנקבע לו לפי החוק." (`R-REG:130`)
+  - §58 lets the Director reclassify "אם ראה שמהותם קרובה יותר לסוג האחר" (`R-VAT:785`).
+  - A §58 classification takes effect "כעבור שלושים יום לאחר החודש שבו ניתנה ההודעה לפי סעיף 64, או במועד אחר שקבע המנהל" (§63, `R-VAT:831`).
+  - Anyone who considers himself harmed may appeal "תוך שלושים יום לאחר שהומצאה לו ההודעה, לערער לפני בית המשפט המחוזי" (§64, `R-VAT:834`).
+- **On the text, even a granted §58 request may not make a dealer under the ceiling authorised.** [inference] throughout:
+  - The definition names §58 registrants only with a qualifier: "עוסק שנרשם לפי סעיף 52 או לפי סעיף 58 ואינו עוסק פטור" (`R-VAT:91`). "עוסק פטור" turns on turnover alone (`R-VAT:93`), and a §58 grant does not change turnover. Tick 19 read `:91` the same way ("the עוסק מורשה definition excludes an עוסק פטור", `osek-patur-documents.md:543-544`).
+  - The authorised dealer's certificate goes to "53. (א) עוסק, שאינו עוסק פטור" (`R-VAT:769`).
+  - §58 moves "מי שנמנה עם סוג פלוני של חייבי מס" to "סוג אחר" (`R-VAT:785`), and reg 12 speaks of "סוג חייבי מס שונה" (`R-REG:128`). The law defines "" חייב במס " – עוסק, מלכ"ר, או מוסד כספי;" (`R-VAT:29`). Read against that definition, the classes §58 moves between may be these three kinds, not exempt and authorised dealers. The law does speak of "סוגי עוסקים" elsewhere (§66, `R-VAT:845`), so the text does not settle it.
+  - Tick 19 already read §58 "as reclassification by the nature of the business, not as an election" (`osek-patur-documents.md:545`). The registration regulations add the procedure, not a right.
+  - Whether VAT offices in practice register a dealer under the ceiling as authorised on request is not shown by any rendered page.
+- **Reg 13 is a mandatory class, not a choice.** Under the heading "רישום כעוסק מורשה" (`R-REG:132`): "13. עוסק הנמנה על אחת מהקבוצות המנויות להלן ירשום אותו המנהל כעוסק מורשה גם אם על פי סכום מחזור עסקותיו או מספר המועסקים בעסק הוא היה נחשב כעוסק זעיר:" (`R-REG:133`).
+  - Item (1): "(1) בעל מקצוע חפשי שהוא: אגרונום, אדריכל, הנדסאי, חוקר פרטי, טוען רבני, טכנאי, טכנאי שיניים, יועץ לארגון, יועץ לניהול, יועץ מדעי, יועץ מס, כלכלן, מהנדס, מודד, מנהל חשבונות, מתורגמן, סוכן ביטוח, עורך דין, רואה חשבון או שמאי, בעל מעבדה כימית או רפואית וכן עוסקים שעיסוקם מתן שירותים מהסוגים המפורטים בתקנה 6א לתקנות מס ערך מוסף, תשל"ו- 1976, ולגבי אותם שירותים בלבד;" (`R-REG:135`).
+  - Items (2)-(6) and (8) cover doctors and other health professions, driving schools, schools (including vocational or practical instruction to groups of at least five, `R-REG:141`), real-estate and vehicle dealers and brokers, and cooperative societies (`R-REG:137-165`).
+  - Item (7) is "(7) חברה הרשומה כדין לפי פקודת החברות;" (`R-REG:163`).
+  - [inference] Reg 13 is the definition's third limb: "וכן מי שנמנה עם סוג עוסקים שלגביהם קבע שר האוצר שיירשמו כעוסקים מורשים;" (`R-VAT:91`). The preamble lists §1 among the regulations' powers (`R-REG:5`). Joined by "וכן", this limb stands outside the "ואינו עוסק פטור" qualifier.
+  - §59(א)'s proviso keeps such a dealer authorised at low turnover: "הוראה זו לא תחול על מי שנקבע לגביו שיהיה עוסק מורשה אף אם מחזור העסקאות שלו נמוך מהסכום האמור." (`R-VAT:788`).
+  - [inference] Tick 19 7.3 said "The עוסק פטור definition turns on turnover alone" (`osek-patur-documents.md:543`). That holds for the definition. What reg 13 shows is that authorised status does not turn on turnover alone: for its classes, occupation or legal form decides. A reg-13 dealer under the ceiling also meets the עוסק פטור definition's words; the pages read do not say how §31(3) then applies, though §59(א)'s proviso shows the law expects such a dealer to be authorised.
+- **The ways out of authorised status are not ways in.**
+  - An authorised dealer below the amount for two years in a row is re-registered as exempt (§59(א), `R-VAT:788`).
+  - In the first year: "(ב) עוסק מורשה שמחזור העסקאות שלו בשנה הראשונה לפעילותו נמוך מהסכום המחייב רישום כעוסק מורשה, רשאי המנהל, מיזמתו, לרשום אותו כעוסק פטור." (`R-VAT:790`).
+- **Summary.** [inference] On the texts read:
+  - The only route that plainly makes a dealer under the ceiling authorised is reg 13, the third limb. Of its classes, only item (7), incorporating, is one a person can choose to join.
+  - A reasoned §58 request (reg 12) is discretionary, and its footing is doubtful twice over: §58 may concern the three kinds of taxpayer, and the definition qualifies a §58 registrant with "ואינו עוסק פטור".
+  - Reg 11, the old voluntary route, excludes the §31(3) dealer by name.
+
+**11.4 What an exempt dealer must file or notify under these regulations**
+- **The annual turnover declaration.** Under the heading "הצהרה על מחזור עסקאות" (`R-REG:172`): "15. עוסק הפטור מתשלום המס לפי סעיף 31(3) לחוק למעט עוסק כאמור בתקנה 1(4) יצהיר עד 31 בינואר בכל שנה על מחזור עסקאותיו בשנה שחלפה לפי טופס שקבע המנהל." (`R-REG:173`). It is the only filing these regulations place on the exempt dealer as such.
+- **Where it goes.** "16. בקשות או הודעות על פי תקנות 3, 6, 7, 8, 9, 10, 11, 12, 15 ו-15א, יוגשו למשרד מס ערך מוסף כמפורט בתוספת אשר באזור פעולותיו מנהל החייב במס את עסקיו" (`R-REG:194`). The schedule lists seventeen offices by address (`R-REG:204-236`).
+- **Changes: written notice within fifteen days.**
+  - "8. (א) הופסקו כליל העסקים או הפעילות של החייב במס או הופסקו לתקופה העולה על תקופת דו"ח אחת, או חלו אירועים המצריכים שינוי ברישום או ביטולו, כגון שינוי מען העסק" (`R-REG:96`).
+  - The same sentence goes on through partners and legal status to "שינוי בענף הכלכלי שאליו משתייך העסק, יודיע על כך החייב במס בכתב למנהל תוך חמישה-עשר יום מהיום שבו חל האירוע." (`R-REG:96`).
+  - [inference] A change of address qualifies. So might a new colony line that moves the business into another economic branch. The text does not say whether one does, for example video ad revenue beside software licences.
+- **The certificate.**
+  - If none arrives within thirty days, a registered letter to the Director (reg 7(ב), `R-REG:89`).
+  - If it is lost: "(ד) אבדה תעודת הרישום או המסמך האחר, יודיע על כך החייב במס מיד בכתב למנהל." (`R-REG:93`).
+- **Offences.**
+  - "17. הפרת הוראה מהוראות תקנות 2, 4, 6, 7, 8, 15 ו-15א שלא נקבעה בחוק כעבירה, נקבעת כעבירה." (`R-REG:197`). Reg 17 reaches only a breach the law does not already make an offence.
+  - The law already makes some of these offences. §117(א), "דינו – מאסר שנה" (`R-VAT:1531`), covers "(4) לא עשה את המוטל עליו לענין רישומו;" (`R-VAT:1539`) and "(6) לא הגיש במועד דו"ח שיש להגישו לפי חוק זה או תקנות לפיו" (`R-VAT:1543`).
+  - §118 is the residual penalty for breaching a regulation that says so: "דינו – מאסר שלושה חדשים או קנס 5,000 לירות." (`R-VAT:1609`).
+  - [inference] Late registration, and probably a reg 8 change "המצריכ[ה] שינוי ברישום", fall under §117(א)(4), up to a year, not under reg 17 and §118. A missed 31 January declaration falls under §117(א)(6) if the declaration is a "דו"ח", which the text does not say. Otherwise reg 17 makes it an offence and §118 applies, with a fine printed in pre-1980 lirot whose current value is not on the page (section 13, URL 4).
+- **Periodic reports are not in these regulations.**
+  - §67(א): "חייב במס יגיש למנהל בדרך שקבע שר האוצר דו"ח לכל תקופה שקבע שר האוצר כתקופת דו"ח לחייבי מס דרך כלל או לסוגים" (`R-VAT:848`).
+  - §67(א2)(1) sets two months for a dealer up to 1,775,000 שקלים, "אלא אם כן קבע שר האוצר לפי סעיף קטן (א) תקופת דיווח ארוכה יותר" (`R-VAT:852`).
+  - §67(ב) makes the report due "תוך חמישה עשר יום לאחר תקופת הדו"ח שבו, אף אם לא היו באותה תקופה עסקים או פעילות המחייבים בתשלום מס" (`R-VAT:856`).
+  - §67(ד) lets the Minister exempt "סוגי עוסקים שכל עסקם בעסקאות פטורות ממס או בעסקאות החייבות במס בשיעור אפס" (`R-VAT:862`).
+  - [inference] On the law alone, an exempt dealer, who is a "חייב במס" in these regulations too (`R-REG:8`), would report every two months unless the Minister set a longer period or exempted the class. The §31(3) dealer's transactions are exempt, so the class fits §67(ד). Whatever does it sits in an instrument that is not captured, probably the general regulations.
+  - The general regulations do have a URL, at github grade. In the lawsofisrael nevo listing at `aeca0b25`, `2023-03-06/israel/listing/page_028.html:921` links `https://www.nevo.co.il/law_html/law01/271_005.htm`, and the entry's title is "תקנות מס ערך מוסף, תשל"ו-1976" (`:934`). The reader searched only pages 072-076, whose eleven "מס ערך מוסף" titles are all on page 074 (section 13, URL 5).
+  - So step 2's "דיווח **פעם בשנה**" (`docs/OWNER_STEPS.he.md:156`) is rendered only for the annual declaration (`R-REG:173`). That the exempt dealer files no periodic reports is not rendered anywhere.
+- **The wording is stale.**
+  - "עוסק פטור" occurs 0 times in `R-REG`. The exempt dealer appears as "עוסק הפטור ממס" with no section cited at `R-REG:107`, as "עוסק הפטור ממס על פי סעיף 31(3) לחוק" at `:123`, as "עוסק הפטור מתשלום המס לפי סעיף 31(3) לחוק" at `:173`, and through "עוסק זעיר לענין סעיף 31(3)" at `:180`.
+  - "עוסק זעיר" appears at `R-REG:122`, `:123`, `:133` and `:180`.
+  - [inference] Like bookkeeping reg 13 (`R-VATR:629`), these regulations were not reworded when the law deleted the term.
+
+**11.5 Currency**
+- The stamp reads "נוסח עדכני נכון ליום: 10-12-2024" (`R-REG:3`, `R-REGH:1`). That is about nineteen months older than `R-VAT`'s 13-07-2026.
+  - [inference] An amendment after 10.12.2024 would not appear on this page, and nothing on the page says whether there was one.
+- The page has no instrument list and no marked history, so no provision on it can be dated.
+- Its only threshold amount is reg 1(4)'s "20,100 שקלים חדשים" (`R-REG:16`), for household solar or wind producers.
+  - The amount is indexed every 1 January against 2009 (reg 15ב, `R-REG:187`): "(ג) המנהל יפרסם ברשומות את הסכום שהתעדכן לפי תקנה זאת." (`R-REG:191`).
+  - It does not bear on the owner.
+- [inference; weak] The page's 71 block ids are 24-hex strings.
+  - Read as ObjectId timestamps, they run from 2.1.2024 to 10.12.2024; 40 of the 71 date 2.1.2024. The latest is reg 1(4)'s indexed item, on the stamp's own date.
+  - Late-2024 ids also sit on provisions the page gives no reason to date to 2024, such as reg 5א (2.12.2024) and the schedule's first address (3.12.2024).
+  - So the ids more likely record the publisher's editing than amendment dates. They agree with the stamp and date nothing.
+
+### 12. Earlier claims this section answers, narrows or leaves open
+Line numbers without a file name are this file's (`research/measurements/osek-patur-documents.md`).
+- **Tick 19 8.1** (`:635-636`) said "What reg 15א covers is not on this page". This section answers it: reg 15א is registration for an occasional deal (11.1), and it does not reach the owner.
+- **Tick 19 7.3** (`:543-548`) said "The third limb of the definition (classes the Minister of Finance designates) and the registration regulations" (`:546`) "may supply the route" (`:547`). Answered:
+  - The third limb is, on inference, reg 13, a mandatory class.
+  - Reg 12 is §58's procedure, not a right, and §58's reach to a dealer under the ceiling is doubtful on the text (11.3).
+  - Reg 11 excludes the §31(3) dealer (11.3).
+  - The same bullet's "turns on turnover alone" (`:543`) holds for the עוסק פטור definition. Reg 13 shows that authorised status does not turn on turnover alone. The bullet's reading of `R-VAT:91` (`:543-544`) stands and now bears on §58 too.
+- **Tick 19's row-17 bullets** (`:841`, `:873-874`) are answered here: "how a dealer under the ceiling registers as authorised (URL 1)" and "Still open: what reg 15א ... covers". The 1991 gazette (`:782`) stays open. The general regulations stay uncaptured but now have a URL (section 13, URL 5), against `:874`'s "(no URL found)".
+- **Tick 19 §10 row 1** (`:781`) is now captured and read here.
+- **Ruling (e)3** says "A written no makes Wix's payout depend on VAT registration, which is a cost decision for the owner" (`RULING-2026-09-29-loop.md:275`). The held question's `when` says "a written no makes Wix's payout depend on VAT registration, a cost decision for the owner" (`research/owner-asks/questions.json:45`).
+  - [inference] On the text, the owner cannot simply choose to register as authorised below the ceiling.
+  - A written no leads to incorporating (reg 13(7), not ₪0), a §58 request that is a long shot on the text, or Wix out.
+  - The wording is the board's call.
+- **Step 2:**
+  - "אונליין" (`docs/OWNER_STEPS.he.md:130`) is not in the 10-12-2024 text of reg 2 and stays unverified (11.2).
+  - "דיווח **פעם בשנה**" (`docs/OWNER_STEPS.he.md:156`) is rendered only for the annual declaration (11.4).
+
+### 13. Next-render URLs
+
+| # | URL | Slug (proposed) | Where it appears | What it settles |
+|---|---|---|---|---|
+| 1 | `https://www.gov.il/he/service/opening-a-file-vat` | `gov-il-opening-a-file-vat` | `research/colony-sweep/scouts/payment-rails--israeli-tax-registration.md:13`, `:74`; `research/colony-sweep/scouts/risk-governance--owner-kyc-catalogue.md:57` | Whether reg 2's "טופס רישום שקבע המנהל" is filed online today (step 2's "אונליין"). Whether the service lets a dealer under the ceiling ask for authorised status. **Likely [BLOCKED]:** three gov.il `/he/service/` and `/he/pages/` paths returned 403 to the runner (`tt-src-gov-il-he-service-report-and-payment-for-micro-business-owner.meta.json`, `tt2-gov-sa190125-1.meta.json`, `tt2-gov-sa210725-1.meta.json`). The only gov.il capture that rendered is a `BlobFolder` PDF (`pcn874-gov-il-874-eng.meta.json`, status 200). |
+| 2 | `https://www.gov.il/he/pages/vat_exempt_dealer` | `gov-il-vat-exempt-dealer` | `research/colony-sweep/scouts/risk-governance--selling-as-individual.md:12` | The Tax Authority's own account of the exempt dealer: the reg 15 declaration's form and channel, the periodic-report exemption, and the occupations that cannot be exempt (reg 13). Same 403 risk as URL 1. |
+| 3 | `http://www.nevo.co.il/Law_word/law06/TAK-5321.pdf` | `nevo-kt-5321-1991` | tick 19 §10 row 2 (`osek-patur-documents.md:782`); the link itself is in `R-VATRH:1` | Carried over: what the 1991 package did with §26ד and §26ג. It is not yet a ZERO-TESTS row: "TAK-5321" occurs 0 times in `ZERO-TESTS.md` and in `urls.txt`. |
+| 4 | `https://www.nevo.co.il/law_html/law01/271_035.htm` | `nevo-vat-fines-increase-regs` | the lawsofisrael nevo listing, `2023-03-06/israel/listing/page_074.html:1140` at `aeca0b25` (github), entry "תקנות מס ערך מוסף (הגדלת סכומי קנסות), תשמ"ד-1984" (`:1153`) | The current value of §118's "קנס 5,000 לירות" (`R-VAT:1609`), if a missed reg 15 declaration falls under §118 rather than §117(א)(6) (11.4). Low priority. |
+| 5 | `https://www.nevo.co.il/law_html/law01/271_005.htm` | `nevo-vat-general-regs` | the lawsofisrael nevo listing, `2023-03-06/israel/listing/page_028.html:921` at `aeca0b25` (github), entry "תקנות מס ערך מוסף, תשל"ו-1976" (`:934`) | **Highest priority of the five.** Reg 6א (which reg 1(2), reg 13(1) and reg 15א(ה) cite): whether any of the owner's services is a reg 6א service, and whether a foreign payer can be a reg 6א recipient. And the exempt dealer's report period or exemption under §67(א) or §67(ד), the instrument behind step 2's "דיווח **פעם בשנה**". "271_005" occurs 0 times in `ZERO-TESTS.md` and in `urls.txt`. |
+
+### What this adds to FABLE_QUEUE row 17 (a)
+- **Reg 1 reaches the owner, so the VAT side has no side door.** [inference]
+  - Reg 1's one exception is the reg 15א occasional-deal registrant (`R-VATR:106`; the rule at `R-REG:176`), and the owner is not one (11.1).
+  - So for VAT, as for income tax, the owner's documents fall under the instructions "כתקפם מעת לעת" and under §18ב with its conditions: the one-time notice, the payer's consent, automatic production, and the approved or secured signature "של עורך התיעוד" (`R-BK:1207`).
+  - (a)'s signature question is therefore one question for both taxes, and no rendered text exempts the VAT side from it. The ₪0 question stays where tick 19 left it.
+- **On the text, the Wix written-no branch is not a simple cost decision.** [inference]
+  - Reg 11 excludes the §31(3) dealer by name (`R-REG:123`).
+  - Reg 12 and §58 are a reasoned written request, granted only "אם ראה שמהותם קרובה יותר לסוג האחר" (`R-REG:128`, `R-VAT:785`). The applicant stays in his legal class until the decision (`R-REG:130`), and a grant takes effect thirty days after the month of notice or on a date the Director sets (`R-VAT:831`).
+  - Worse for this route: the definition names §58 registrants only if "ואינו עוסק פטור" (`R-VAT:91`), and §58's "סוג ... של חייבי מס" may mean עוסק, מלכ"ר or מוסד כספי (`R-VAT:29`). Even a granted request may leave a dealer under the ceiling exempt on the text (11.3).
+  - Reg 13(7) makes any company authorised whatever its turnover (`R-REG:163`). Incorporating is not ₪0, and its cost is not measured here.
+  - So Wix's written no leads to one of three:
+    - incorporating (a real cost decision, and a different taxpayer);
+    - a §58 request, a long shot on the text (owner time: one reasoned letter);
+    - Wix out.
+  - (e)3's sentence (`RULING-2026-09-29-loop.md:275`) and the held question's `when` (`questions.json:45`) could say so.
+  - If authorised status is reached, the branch is recurring work, not a one-time decision: §67 periodic reports, two-monthly by default under §67(א2)(1) (`R-VAT:852`), due "אף אם לא היו באותה תקופה עסקים" (`R-VAT:856`), plus tick 19's online allocation number for each tax invoice above ₪5,000 before VAT, on Wix's demand. Whether that recurring filing is KILL-4's "per-item owner paperwork" or "a recurring cost" (`research/channel-loop/BOARD-LOOP.md:67`) turns on whether the runner can file it.
+- **Step 2 carries a risk to the exempt-dealer premise: reg 13(1).** [inference]
+  - The owner's step-2 occupation line is "פיתוח תוכנה ומכירת כלים דיגיטליים" (`docs/OWNER_STEPS.he.md:146`). If the VAT office reads it as a listed free profession ("הנדסאי", "טכנאי", "מהנדס", "יועץ לארגון", "יועץ לניהול", `R-REG:135`) or as a reg 6א service (not captured; URL 5), the Director "ירשום" the owner as authorised whatever the turnover (`R-REG:133`).
+  - Then the exempt-dealer document set is the wrong one: tick 19's §45 transaction invoice plus receipt, and the "never חשבונית מס" guard. A חשבונית מס becomes lawful, Wix's clause becomes meetable, and periodic VAT reports begin.
+  - The list names titles, not tasks. Nothing read says whether a software developer is a "מהנדס" or a "טכנאי" for reg 13. A future colony line that runs group instruction could also fall in reg 13(4) (`R-REG:141`).
+  - A ₪0 guard:
+    - the document generator does not run until the class on the registration approval is recorded in state ("אישור על רישומו ועל סיווגו", §53(ב), `R-VAT:771`; the certificate, reg 7(א), `R-REG:87`);
+    - its dealer-type switch keys on that recorded class;
+    - the owner gives the class in one word with "צעד 2 בוצע" (`docs/OWNER_STEPS.he.md:149`).
+- **One fixed yearly filing for the owner, not one per payout.** [inference]
+  - Reg 15 asks for the declaration by 31 January (`R-REG:173`), on the Director's form at the regional office (`R-REG:194`). Missing it is an offence: under §117(א)(6), up to a year, if the declaration is a "דו"ח" (`R-VAT:1543`, `:1531`); otherwise under reg 17 and §118 (`R-REG:197`, `R-VAT:1609`).
+  - The runner can compute the figure from its own ledger.
+  - For registration, the text makes delivery the owner's or a listed professional's (`R-REG:43`). For the declaration, it does not say who may deliver.
+  - Once a year does not trip KILL-4. It belongs in the owner's steps and in a January reminder in the tick.
+- **Fifteen-day change notices** (reg 8, `R-REG:96`) follow events, not payouts: a change of address, the business stopping, or a change of economic branch. [inference] A new colony line might trigger one. That is a watch item for the tick, not owner work per document.
+
+### Side finding (outside row 187): il-biz-tools' osek-patur page
+- The page's FAQ says what happens above the ceiling (`products/il-biz-tools/osek-patur.html:84`). It says the ceiling is measured by turnover, "סך התקבולים בשנה הקלנדרית" (`:85`).
+- [inference] Three rendered points could be added without new sources:
+  - Reg 13's classes are registered as authorised at any turnover (`R-REG:133-165`), so for a lawyer, an engineer or a company using the tracker the ceiling does not decide their status.
+  - Reg 15's declaration is due by 31 January (`R-REG:173`).
+  - For a dealer who worked only part of the previous year, reg 14(א) counts turnover as "ממוצע המחזור לחודש במשך תקופת פעילותו בשנת המס שחלפה כשהוא מוכפל בשנים עשר" (`R-REG:168`).
+- The tracker's `projectedAnnual` does something close but not the same.
+  - It is the average over months with a positive entry, times 12 (`products/il-biz-tools/src/lib/osek-patur.js:32-34`). That drops zero months inside the period of activity, which reg 14(א) would count.
+  - The page's status test uses the calendar-year sum (`osek-patur.js:28-30`, `:38-40`).
+  - The text does not say whether reg 14 governs the ceiling test or only classification at registration.
+- This is a product accuracy item, not a row-17 one.
+
+### What this settles for FABLE_QUEUE row 17
+- **Reg 15א is the occasional-deal registration** ("רישום עוסק בעסקת אקראי", nevo-vat-registration-regs.txt:175-184). An owner registered under reg 2 as an ongoing עוסק פטור is outside it [inference]. So VAT bookkeeping reg 1 (nevo-vat-bookkeeping-regs.txt:106) applies to the owner, and §18ב's conditions govern the VAT side as well.
+- **No election below the ceiling on the text.**
+  - Reg 11 excludes "עוסק הפטור ממס על פי סעיף 31(3) לחוק" (registration-regs.txt:123) and sits on the repealed §57 (nevo-vat-law.txt:783).
+  - Reg 12 is a reasoned §58 request, decided on the nature of the business (registration-regs.txt:128; vat-law.txt:785). [inference] Its reach is doubtful: the definition names §58 registrants only if "ואינו עוסק פטור" (vat-law.txt:91), and §58's "סוג ... של חייבי מס" may mean עוסק, מלכ"ר or מוסד כספי (vat-law.txt:29).
+  - Reg 13 makes its listed classes authorised whatever the turnover, a company included (registration-regs.txt:133, :163).
+  - [inference] Wix's written no therefore leads to incorporating, a long-shot §58 request, or Wix out, not a plain cost decision. Rewording (e)3 (RULING-2026-09-29-loop.md:275) and questions.json:45 is the board's call.
+- **[inference] Reg 13(1) is a step-2 premise risk.** Its list includes "הנדסאי", "טכנאי", "מהנדס", "יועץ לארגון", "יועץ לניהול" and reg 6א services (registration-regs.txt:135), and the step-2 occupation line reads "פיתוח תוכנה" (OWNER_STEPS.he.md:146). ₪0 guard: key the document generator on the class recorded from the registration approval (vat-law.txt:771).
+- **Reg 15:** the exempt dealer's prior-year turnover declaration is due by 31 January every year (registration-regs.txt:173). Missing it is an offence: §117(א)(6), up to a year, if it counts as a "דו"ח" (vat-law.txt:1543), otherwise reg 17 with §118 (registration-regs.txt:197; vat-law.txt:1609) [inference on which applies]. It is once a year, not per payout.
+- **Registration offences are the law's own:** §117(א)(4), "לא עשה את המוטל עליו לענין רישומו" (vat-law.txt:1539), up to a year (:1531).
+- **Reg 2(א)(1):** a dealer registers "ביד אישית" or through a CPA, lawyer, tax adviser, a §72 supervision-union official or a bookkeeper (registration-regs.txt:43). No online channel is in the 10-12-2024 text, so step 2's "אונליין" stays unverified.
+- **Still open:**
+  - reg 6א of the general regulations and the exempt dealer's §67 report period or exemption (vat-law.txt:848, :852, :862). Both sit in תקנות מס ערך מוסף, תשל"ו-1976, which now has a URL (nevo 271_005, lawsofisrael listing page_028.html:921 at aeca0b25, github) and is not yet a ZERO-TESTS row;
+  - how offices treat §58 requests from dealers under the ceiling (gov.il pages, likely 403);
+  - the 1991 gazette (TAK-5321, still not a ZERO-TESTS row).
+
+### What this adds for the sitting
+
+- (a) Reg 1 reaches the owner. Its only exception is the reg 15א occasional-deal registrant (nevo-vat-bookkeeping-regs.txt:106; the rule at nevo-vat-registration-regs.txt:176), and the owner is not one [inference]. So the §18ב signature question is one question for income tax and VAT alike. No rendered text gives the VAT side its own way out. The ₪0 route question stands where tick 19 left it.
+- (a), Wix written-no branch: on the text, the owner cannot simply choose to register as authorised below the ceiling. Reg 11 excludes the §31(3) dealer (registration-regs.txt:123). Reg 12/§58 is a discretionary, reasoned request (:128; nevo-vat-law.txt:785, :831). Its footing is doubtful twice over [inference]: the definition names §58 registrants only if "ואינו עוסק פטור" (vat-law.txt:91), and §58's "סוג ... של חייבי מס" may mean עוסק/מלכ"ר/מוסד כספי (:29). Reg 13(7) makes any company authorised (registration-regs.txt:163). So a written no leads to incorporating (not ₪0), a long-shot §58 letter, or Wix out. Rule whether (e)3's 'which is a cost decision for the owner' (RULING-2026-09-29-loop.md:275) and the held question's `when` (research/owner-asks/questions.json:45) should say so.
+- (a), recurring-work check: if authorised status is reached, §67 reports become due two-monthly by default (vat-law.txt:852), even with no activity (:856). On top of that come tick 19's per-invoice allocation numbers above ₪5,000 before VAT. Rule whether that trips KILL-4 ('per-item owner paperwork' / 'a recurring cost', research/channel-loop/BOARD-LOOP.md:67) unless the runner can file them.
+- (a), premise risk: reg 13(1) makes listed free professions (הנדסאי, טכנאי, מהנדס, יועץ לארגון, יועץ לניהול) and reg-6א services authorised whatever the turnover (registration-regs.txt:133, :135). Step 2's occupation line reads 'פיתוח תוכנה ומכירת כלים דיגיטליים' (docs/OWNER_STEPS.he.md:146). Rule whether to adopt a ₪0 guard. Under it, the document generator does not run until the class on the registration approval (§53(ב) 'אישור על רישומו ועל סיווגו', vat-law.txt:771) is recorded in state, and its dealer-type switch keys on that class.
+- (a), owner minutes: reg 15's turnover declaration by 31 January (registration-regs.txt:173) is a fixed yearly owner filing, not per payout, so it does not trip KILL-4. The runner can compute the figure. Correct the penalty premise: a late 'דו"ח' under the regulations is §117(א)(6), up to a year (vat-law.txt:1543, :1531), if the declaration counts as one [inference]. Otherwise it is reg 17 with §118 (registration-regs.txt:197; vat-law.txt:1609), and late registration is §117(א)(4) (:1539). Rule whether it joins the owner's steps and a January tick reminder.
+- (a), watch item: reg 8 requires written notice within 15 days of a change of address, the business stopping, or a change of economic branch (registration-regs.txt:96). A new colony income line might count [inference]. It is event-driven owner paperwork, not per document.
+- Step 2 wording (outside (a) but bears on it): 'אונליין' (OWNER_STEPS.he.md:130) is not in reg 2's 10-12-2024 text, which provides delivery by hand or through a listed professional (registration-regs.txt:43). 'דיווח **פעם בשנה**' (:156) is rendered only for the annual declaration. On the law alone, §67(א2)(1) would make an exempt dealer report two-monthly unless the Minister set longer or exempted the class (vat-law.txt:852, :862).
+- Queue before the next sitting: the general VAT regulations have a URL the reader missed. nevo 271_005 is at lawsofisrael listing page_028.html:921/:934 at aeca0b25 (github). It holds reg 6א (bearing on reg 1(2), 13(1) and 15א(ה)) and probably the exempt dealer's report exemption. Still open: how offices treat §58 requests (gov.il, likely 403), and the 1991 gazette TAK-5321, still not a ZERO-TESTS row.

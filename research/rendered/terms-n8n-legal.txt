@@ -1,0 +1,132 @@
+n8n Legal
+
+n8n.io Product Product overview Automate business processes without limits on your logic
+
+Integrations Seamlessly move and transform data between different apps with n8n.
+
+Templates Explore +10k workflow automation templates
+
+AI Get to prod faster — and with more flexibility than coding alone
+
+MCP Build and update n8n workflows from inside your AI app
+
+Use cases Building AI agents
+
+RAG
+
+IT operations
+
+Security operations
+
+Lead automation
+
+Supercharge your CRM
+
+Limitless integrations
+
+Backend prototyping
+
+Embedding n8n
+
+Case studies
+
+Docs Self-host n8n
+
+Documentation
+
+Our license
+
+Changelog
+
+Community Forum
+
+Learn
+
+Careers
+
+Blog
+
+Creators
+
+Partners
+
+Hire an expert
+
+Events
+
+Support
+
+Enterprise
+Pricing
+
+206,245 Sign in Get Started
+
+See llms.txt for all machine-readable content.
+
+n8n Legal
+
+There are a few key legal documents that are central to life at n8n — for us, our customers, our community, our partners, and anyone using our platform. To make it easy for you to find the information you need, we’ve gathered them all in one place and included a short overview of what you can expect in each.
+
+n8n Self-Serve Terms
+This page contains our terms and conditions applicable to all paid self-serve plans.
+
+Read more
+
+n8n Master Enterprise Terms
+This page contains our unified master Terms applicable to n8n Enterprise customers, either on a Cloud or Self-Hosted plan.
+
+Read more
+
+End User License Agreement
+This End User License Agreement (“EULA”) shall govern and apply to all end customers procured through, or otherwise acquired by, resellers that have entered into a valid and binding agreement with n8n GmbH.
+
+Read more
+
+n8n AI Terms
+These Terms govern the use of AI-powered features within n8n Software and Services.
+
+Read more
+
+n8n Credit Terms
+These Credit Terms govern the purchase and use of prepaid credits for n8n usage-based Services like AI Connect or AI Assistant.
+
+Read more
+
+n8n Customer Acceptable Use Policy
+This Acceptable Use Policy sets out the permitted and prohibited uses of n8n's Software and services.
+
+Read more
+
+Privacy Policy
+This page explains our data processing activities on our website: what we collect, how we use it, how long we retain it, what your rights are, etc.
+
+Read more
+
+Privacy Policy for Recruiting
+This page explains our data processing activities within our recruiting process: what we collect, how we use it, how long we retain it, what your rights are, etc.
+
+Read more
+
+Data Processing Agreement
+This page contains our pre-signed data processing agreement as processor for customers to download, countersign and return.
+
+Read more
+
+Security
+This page gathers n8n’s key security docs: compliance info, SOC reports and general technical and organizational measures (TOM) such as secure development practices, access controls, data encryption etc.
+
+Read more
+
+n8n Trust Center
+To give customers full visibility into how we protect their data, n8n provides a dedicated Trust Center that brings together everything related to security, compliance, privacy and reliability. It highlights our policies, certifications, data handling practices and our commitment to operating a secure and dependable platform for teams of any size.
+
+Read more
+
+n8n.io Automate without limits
+
+Careers Hiring Contact Merch Press Legal In The Loop Oct 2026
+Case Studies AI agent report AI benchmark n8n alternatives Events n8n on SAP
+Partners Affiliate program Hire an expert Join user tests, get a gift Brand guidelines Education
+
+Imprint Security Privacy Report a vulnerability
+© 2026 n8n | All rights reserved.

@@ -1,0 +1,17 @@
+{
+  "url": "https://lomdiml.co.il/%d7%aa%d7%a7%d7%a0%d7%95%d7%9f-%d7%90%d7%aa%d7%a8/",
+  "slug": "terms-lomdiml",
+  "fetchedAt": "2026-09-29T14:02:53.067Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 123678,
+  "sha256": "daa1ff035df066e9652525e7f4fad166c32a883d593336effe8fa751f7a91fa2",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-lomdiml.html",
+  "textPath": "research/rendered/terms-lomdiml.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
