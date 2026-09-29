@@ -8,18 +8,28 @@ A spec is the script (verbatim) plus machine-checked evidence. The renderer refu
     a meta entry must match the stored <slug>.meta.json; every cited capture must have returned HTTP 200;
   * any number in a scene's on-screen text, narration or illustration labels is not in that scene's quotes,
     unless it is a declared derived number that checks out (the step prefix "N. ", the video's own step count,
-    the capture date, or an illustrative label number);
+    the capture date in Israel time, or an illustrative label number);
+  * a quote comes from a capture of the help center's Computer tab (its title reads " - מחשב - " or
+    " - Computer - ") and the entry does not say why a desktop page may back it (`desktop_ok`): the app's steps
+    differ by device, and a desktop step chain drawn beside a phone is wrong;
+  * steps are out of order: step titles "N. ..." must run 1..N; consecutive scenes may share a number (pages of
+    one step), a number may not come back later;
   * a narration line is not vowelised (the voice needs nikud; unvowelised Hebrew phonemises to consonants), or a
     caption says anything other than its narration line in standard spelling;
-  * the end card lacks the AI line or the non-affiliation line.
+  * the end card lacks the AI line or the non-affiliation line, or the spec has no independence tag (drawn on
+    every frame beside the AI line, so a viewer who swipes away early still sees it).
+
+Captures are dated in Israel time (Asia/Jerusalem): the audience is Israeli, and the captures of 28.9.2026 at
+22:00-22:03 UTC were made at 01:00-01:03 on 29.9 in Israel.
 """
 
 from __future__ import annotations
 
 import json
 import re
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 PRODUCT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PRODUCT_DIR.parents[1]
@@ -34,6 +44,8 @@ NUMBER = re.compile(r"\d+(?:[.:,]\d+)*")
 STEP_PREFIX = re.compile(r"^(\d+)\.\s+(.*)$", re.S)
 NON_AFFILIATION = re.compile(r"ללא קשר|אינו קשור|לא קשור")
 DERIVED_KINDS = {"step_count", "capture_date", "illustrative"}
+CAPTURE_TZ = ZoneInfo("Asia/Jerusalem")
+DESKTOP_TITLE = re.compile(r" - (מחשב|Computer) - ")
 
 
 class SpecError(Exception):
@@ -75,6 +87,17 @@ def end_card_lines(spec: dict) -> list[str]:
         if s and not (s.startswith("(") and s.endswith(")")):
             out.append(s)
     return out
+
+
+def reading_chars(scene: dict, title_seen: bool = False) -> int:
+    """Characters a viewer has to read in a scene: the title as drawn (without its "N. " step prefix, which the
+    badge shows), every body item including footnotes, and the illustration's labels, one space between each.
+    title_seen: the scene is a later page of a step and repeats the title the viewer has just read."""
+    title = "" if title_seen else split_title(scene.get("on_screen_title", ""))[1]
+    parts = [title] + body_items(scene)
+    parts += list(scene.get("illustration", {}).get("labels", []))
+    parts = [p for p in parts if p]
+    return sum(len(p) for p in parts) + max(0, len(parts) - 1)
 
 
 def scene_text(scene: dict) -> str:
@@ -129,6 +152,10 @@ def check_evidence(entry: dict, root: Path = REPO_ROOT) -> str | None:
         return f"{meta.name}: not JSON"
     if m.get("status") != 200:
         return f"{rel}: capture status {m.get('status')}, not 200"
+    title = _lines(p)[0] if p.suffix == ".txt" else ""
+    if DESKTOP_TITLE.search(title) and not entry.get("desktop_ok"):
+        return (f"{rel}: this capture is the help center's Computer tab ({title[:60]!r}); the app's steps differ by "
+                "device. Capture the Android/iPhone tab, or say in desktop_ok why this quote holds on every device")
     if "meta" in entry:
         for k, want in entry["meta"].items():
             if m.get(k) != want:
@@ -145,8 +172,14 @@ def check_evidence(entry: dict, root: Path = REPO_ROOT) -> str | None:
     return None
 
 
+def capture_date(fetched_at: str) -> str:
+    """'2026-09-28T22:03:10.809Z' -> '29.9.2026': the date in Israel when the capture was made."""
+    d = datetime.fromisoformat(fetched_at.replace("Z", "+00:00")).astimezone(CAPTURE_TZ)
+    return f"{d.day}.{d.month}.{d.year}"
+
+
 def capture_dates(spec: dict, root: Path = REPO_ROOT) -> set[str]:
-    """UTC dates (D.M.YYYY) on which the captures this spec cites were fetched."""
+    """Israel-time dates (D.M.YYYY) on which the captures this spec cites were fetched."""
     dates = set()
     for ev in all_evidence(spec):
         p = _rel_ok(root, ev.get("file", ""))
@@ -156,8 +189,7 @@ def capture_dates(spec: dict, root: Path = REPO_ROOT) -> set[str]:
         if meta.is_file():
             ts = json.loads(meta.read_text(encoding="utf-8")).get("fetchedAt")
             if ts:
-                d = datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(timezone.utc)
-                dates.add(f"{d.day}.{d.month}.{d.year}")
+                dates.add(capture_date(ts))
     return dates
 
 
@@ -166,8 +198,24 @@ def all_evidence(spec: dict) -> list[dict]:
     return out + list(spec.get("end_card_evidence", []))
 
 
+def titles_seen(spec: dict) -> list[bool]:
+    """Per scene: True when it repeats the title of the scene before it (a later page of the same step)."""
+    scenes = spec.get("scenes", [])
+    return [i > 0 and sc.get("on_screen_title") == scenes[i - 1].get("on_screen_title") for i, sc in enumerate(scenes)]
+
+
 def step_scenes(spec: dict) -> list[dict]:
     return [sc for sc in spec.get("scenes", []) if split_title(sc.get("on_screen_title", ""))[0] is not None]
+
+
+def step_numbers(spec: dict) -> list[int]:
+    """The steps in order, one entry per step: consecutive scenes with the same number are pages of one step."""
+    out: list[int] = []
+    for sc in step_scenes(spec):
+        n = split_title(sc["on_screen_title"])[0]
+        if not out or out[-1] != n:
+            out.append(n)
+    return out
 
 
 def _numbers(text: str) -> list[str]:
@@ -185,13 +233,14 @@ def _check_derived(entries: list[dict], spec: dict, root: Path, where: str) -> t
         if not d.get("why"):
             problems.append(f"{where}: derived number {v!r} gives no reason")
             continue
-        if kind == "step_count" and v != str(len(step_scenes(spec))):
-            problems.append(f"{where}: step_count {v} but the spec has {len(step_scenes(spec))} step scenes")
+        if kind == "step_count" and v != str(len(step_numbers(spec))):
+            problems.append(f"{where}: step_count {v} but the spec has {len(step_numbers(spec))} steps")
             continue
         if kind == "capture_date":
             dates = capture_dates(spec, root)
             if dates != {v}:
-                problems.append(f"{where}: capture_date {v} but the cited captures were fetched on {sorted(dates)} (UTC)")
+                problems.append(f"{where}: capture_date {v} but the cited captures were fetched on {sorted(dates)} "
+                                "(Israel time)")
                 continue
         ok[v] = kind
     return ok, problems
@@ -205,9 +254,10 @@ def check_numbers(scene: dict, spec: dict, root: Path = REPO_ROOT) -> list[str]:
 
     step, rest = split_title(scene.get("on_screen_title", ""))
     if step is not None:
-        order = [split_title(s["on_screen_title"])[0] for s in step_scenes(spec)]
+        order = step_numbers(spec)
         if order != list(range(1, len(order) + 1)):
-            problems.append(f"{sid}: step prefixes are {order}, not 1..{len(order)} in order")
+            problems.append(f"{sid}: step prefixes run {order}, not 1..{len(order)} in order (pages of one step "
+                            "must be consecutive)")
     text = "\n".join([rest, scene.get("on_screen_body", ""), strip_nikud(scene.get("narration", ""))])
     for n in _numbers(text):
         if n in sourced:
@@ -256,9 +306,11 @@ def validate(spec: dict, root: Path = REPO_ROOT) -> list[str]:
     scenes = spec.get("scenes") or []
     if not scenes:
         return ["spec has no scenes"]
-    for key in ("brand", "ai_line", "series"):
+    for key in ("brand", "ai_line", "series", "independent_tag"):
         if not spec.get(key):
             problems.append(f"spec lacks {key!r}")
+    if spec.get("brand") and not spec.get("series", "").startswith(spec["brand"]):
+        problems.append("the series line must open with the brand, so no frame reads as an official guide")
     ids = [sc.get("id") for sc in scenes]
     if len(set(ids)) != len(ids) or None in ids:
         problems.append(f"scene ids must be present and unique: {ids}")

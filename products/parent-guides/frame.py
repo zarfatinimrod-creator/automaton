@@ -1,36 +1,54 @@
 """Scene and end-card frames, 1080x1920, laid out top to bottom:
 
-  progress bar (one segment per step, filling from the right) -> step badge ("שלב" over the number) and the
-  series line -> title (up to two balanced lines) -> body items (bullets; styles: lead, quote, callout_soft,
-  callout_amber, url, plain; a "* " item is a footnote set small above the brand) -> the scene's illustration,
-  scaled into whatever space is left -> brand "מהודק" and the AI line, on every frame.
+  progress bar (one segment per step, filling from the right) -> the tag "סרטון עצמאי · נוצר בעזרת AI · ..." ->
+  step badge ("שלב" over the number) and the series line, which opens with the brand ("מהודק · מדריך להורים") ->
+  title (up to two balanced lines) -> body items (bullets; styles: lead, quote, callout_soft, callout_amber, url,
+  plain; a "* " item is a footnote set small at the bottom) -> the scene's illustration, scaled into whatever space
+  is left.
 
-Every text box and the illustration are recorded; a frame reports a problem when a box leaves the 96 px side
-margin or the vertical safe area, or when two boxes come within 12 px of each other. render.py refuses to
-assemble a video from frames with problems.
+Safe zones. Shorts, Reels and TikTok draw their own interface over the video: tabs and icons across the top, and the
+caption, channel name, sound ticker and a column of buttons across the bottom and down the right. So nothing is drawn
+above SAFE_TOP (180 px) or below SAFE_BOTTOM (H - 420 = 1500 px), and the side margin is 120 px, which keeps text
+clear of the right-hand button column. The AI and independence tag sits at the top, under the progress bar, where
+no app covers it.
+
+Every text box and the illustration are recorded; a frame reports a problem when a box leaves the side margins or the
+vertical safe area, or when two boxes come within 12 px of each other. render.py refuses to assemble a video from
+frames with problems.
 """
 
 from __future__ import annotations
+
+import re
 
 import art
 from canvas import (AMBER, AMBER_BG, INK, MUTED, TEAL, TEAL_SOFT, TRACK, W, H, Frame, display, measure,
                     metrics, wrap_balanced)
 from spec import body_items, end_card_lines, split_title
 
-MARGIN = 96
+MARGIN = 120
 RIGHT = W - MARGIN
 TEXT_W = W - 2 * MARGIN
-SAFE_TOP = 120
-SAFE_BOTTOM = H - 220
+SAFE_TOP = 180
+SAFE_BOTTOM = H - 420
 GAP = 12
 
-BADGE_R = 72
-HEADER_CY = 262
+PROGRESS_Y = 194
+TAG_BASE = 258
+TAG_SIZE = 28
+BADGE_R = 58
+HEADER_CY = 350
 BODY_SIZES = (52, 48, 44, 40)
-MIN_ART_H = 300
+MIN_ART_H = 260
 FOOT_SIZE = 30
 BULLET_INDENT = 38
 STYLES = {"bullet", "lead", "quote", "callout_soft", "callout_amber", "url", "plain", "footnote"}
+URL = re.compile(r"^[a-z0-9.\-/]+$")
+
+
+def frame_tag(spec: dict, ai_line: str) -> str:
+    """The line on every frame: independence first, then the AI declaration."""
+    return f"{spec['independent_tag']} · {ai_line}"
 
 
 def fit_size(text: str, size: int, min_size: int, weight: int, width: float, engine: str) -> int:
@@ -51,8 +69,19 @@ def draw_progress(fr: Frame, filled: int, total: int, y: float):
 def draw_badge(fr: Frame, step: int, cx: float, cy: float, r: float):
     fr.circle(cx, cy, r, fill=TEAL)
     fr.note("badge", (cx - r, cy - r, cx + r, cy + r))
-    fr.text((cx, cy - 22), "שלב", 30, 500, (255, 255, 255), anchor="ms")
-    fr.text((cx, cy + 46), str(step), 76, 700, (255, 255, 255), anchor="ms", rtl=False)
+    fr.text((cx, cy - 18), "שלב", 27, 500, (255, 255, 255), anchor="ms")
+    fr.text((cx, cy + 40), str(step), 66, 700, (255, 255, 255), anchor="ms", rtl=False)
+
+
+def draw_series(fr: Frame, spec: dict, x_right: float, cy: float, engine: str):
+    """The brand in ink, then the rest of the series line in teal, right to left: "מהודק · מדריך להורים"."""
+    brand, series = spec["brand"], spec["series"]
+    rest = series[len(brand):].strip()
+    size = fit_size(series, 44, 30, 700, x_right - MARGIN, engine)
+    bb = fr.text((x_right, cy), brand, size, 800, INK, "brand", anchor="rm", group="header")
+    if rest:
+        fr.text((bb[0] - measure(" ", size, 600, engine), cy), rest, size, 600, TEAL, "series", anchor="rm",
+                group="header")
 
 
 def item_style(i: int, item: str, styles: dict) -> str:
@@ -81,7 +110,16 @@ def plan_block(item: str, style: str, size: int, engine: str) -> dict:
     elif style == "footnote":
         size, color, width = FOOT_SIZE, MUTED, TEXT_W
     text = display(item)
-    lines = [text] if not rtl else wrap_balanced(text, size, weight, width, engine)
+    if rtl:
+        # an unbreakable run (a quoted label, a name) wider than the column shrinks the item instead of overflowing
+        while True:
+            lines = wrap_balanced(text, size, weight, width, engine)
+            if size <= 30 or max(measure(ln, size, weight, engine) for ln in lines) <= width:
+                break
+            size -= 2
+    else:
+        lines = [text]
+        size = fit_size(text, size, 30, weight, width, engine)
     cap, desc = metrics(size, weight, engine)
     pitch = round(size * (1.3 if style == "footnote" else 1.36))
     height = (len(lines) - 1) * pitch + cap + desc + 2 * pad
@@ -114,18 +152,12 @@ def draw_block(fr: Frame, b: dict, top: float, name: str):
     return top + b["height"]
 
 
-def draw_brand(fr: Frame, spec: dict, ai_line: str):
-    bb = fr.text((W / 2, SAFE_BOTTOM - 44), spec["brand"], 46, 700, INK, "brand", anchor="ms")
-    fr.text((W / 2, SAFE_BOTTOM + 2), ai_line, 30, 400, MUTED, "ai_line", anchor="ms")
-    return bb
-
-
 def check(fr: Frame) -> list[str]:
     problems = []
     for name, (x0, y0, x1, y1), _ in fr.boxes:
         if x0 < MARGIN - 1 or x1 > W - MARGIN + 1:
             problems.append(f"{name} outside side margin: x {x0}..{x1}")
-        if y0 < SAFE_TOP - 40 or y1 > H - 160:
+        if y0 < SAFE_TOP - 1 or y1 > SAFE_BOTTOM + 1:
             problems.append(f"{name} outside vertical safe area: y {y0}..{y1}")
     for i, (na, a, ga) in enumerate(fr.boxes):
         for nb, b, gb in fr.boxes[i + 1:]:
@@ -139,17 +171,17 @@ def check(fr: Frame) -> list[str]:
 def render_scene(scene: dict, spec: dict, engine: str, ai_line: str, filled: int, total: int):
     fr = Frame(engine)
     step, title = split_title(scene["on_screen_title"])
-    draw_progress(fr, filled, total, SAFE_TOP + 20)
+    draw_progress(fr, filled, total, PROGRESS_Y)
+    tag = frame_tag(spec, ai_line)
+    fr.text((RIGHT, TAG_BASE), tag, fit_size(tag, TAG_SIZE, 22, 500, TEXT_W, engine), 500, MUTED, "tag")
 
     if step is not None:
         bcx = RIGHT - BADGE_R
         draw_badge(fr, step, bcx, HEADER_CY, BADGE_R)
-        sx = RIGHT - 2 * BADGE_R - 30
+        sx = RIGHT - 2 * BADGE_R - 28
     else:
         sx = RIGHT
-    series = display(spec["series"])
-    fr.text((sx, HEADER_CY), series, fit_size(series, 42, 30, 600, sx - MARGIN, engine), 600, TEAL, "series",
-            anchor="rm")
+    draw_series(fr, spec, sx, HEADER_CY, engine)
 
     tsize = 92
     while True:
@@ -159,44 +191,41 @@ def render_scene(scene: dict, spec: dict, engine: str, ai_line: str, filled: int
         tsize -= 2
     cap, desc = metrics(tsize, 800, engine)
     tpitch = round(tsize * 1.16)
-    base = HEADER_CY + BADGE_R + 44 + cap
+    base = HEADER_CY + BADGE_R + 40 + cap
     for j, ln in enumerate(tlines):
         fr.text((RIGHT, base + j * tpitch), ln, tsize, 800, INK, f"title[{j}]")
     title_bottom = base + (len(tlines) - 1) * tpitch + desc
 
-    brand_bb = draw_brand(fr, spec, ai_line)
     styles = scene.get("layout", {}).get("styles", {})
     items = body_items(scene)
     kinds = [item_style(i, it, styles) for i, it in enumerate(items)]
 
-    body_top = title_bottom + 52
+    body_top = title_bottom + 48
     chosen = None
     for size in BODY_SIZES:
         blocks = [plan_block(it, k, size, engine) for it, k in zip(items, kinds) if k != "footnote"]
         feet = [plan_block(it, k, size, engine) for it, k in zip(items, kinds) if k == "footnote"]
         body_h = sum(b["height"] for b in blocks) + 30 * max(0, len(blocks) - 1)
         foot_h = sum(b["height"] for b in feet) + 16 * max(0, len(feet) - 1)
-        floor = brand_bb[1] - 44 - (foot_h + 40 if feet else 0)
-        slot = floor - (body_top + body_h) - 2 * 52
+        floor = SAFE_BOTTOM - (foot_h + 40 if feet else 0)
+        slot = floor - (body_top + body_h) - 2 * 44
         chosen = (size, blocks, feet, body_h, foot_h, floor, slot)
         if slot >= MIN_ART_H:
             break
     size, blocks, feet, body_h, foot_h, floor, slot = chosen
 
     y = body_top
-    bi = 0
-    for b in blocks:
+    for bi, b in enumerate(blocks):
         y = draw_block(fr, b, y, f"body{bi}") + 30
-        bi += 1
     body_bottom = y - 30
-    fy = brand_bb[1] - 44 - foot_h
+    fy = SAFE_BOTTOM - foot_h
     for k, b in enumerate(feet):
         fy = draw_block(fr, b, fy, f"footnote{k}") + 16
 
     ill = scene.get("illustration")
     art_box = None
     if ill:
-        top, bottom = body_bottom + 52, floor - 52
+        top, bottom = body_bottom + 44, floor - 44
         layer = art.illustration(ill["kind"], engine, ill.get("labels", []))
         lw, lh = layer.w, layer.h
         scale = min(TEXT_W / lw, (bottom - top) / lh, 1.1)
@@ -214,27 +243,35 @@ def render_scene(scene: dict, spec: dict, engine: str, ai_line: str, filled: int
     report = {"engine": engine, "body_size": size, "title_size": tsize, "title_lines": tlines,
               "body_lines": [b["lines"] for b in blocks], "footnotes": [b["lines"] for b in feet],
               "illustration_box": [round(v) for v in art_box] if art_box else None,
+              "boxes": [(n, list(b)) for n, b, _ in fr.boxes],
               "texts": dict(fr.texts), "problems": problems}
     return fr.final(), report
 
 
 def render_end_card(spec: dict, engine: str, ai_line: str):
-    """The brand wordmark and the end-card lines, centred. The AI line is swapped for the silent wording when
-    the video has no narration, so the card never claims a synthetic voice that is not there."""
+    """The brand wordmark and the end-card lines, centred inside the safe area. The AI line is swapped for the silent
+    wording when the video has no narration, so the card never claims a synthetic voice that is not there. A line
+    that is a bare address (support.google.com/youtubekids) is set left to right in the accent colour."""
     fr = Frame(engine)
     lines = end_card_lines(spec)
     brand, rest = lines[0], lines[1:]
     rest = [ai_line if ln == spec["ai_line"] else ln for ln in rest]
-    fr.text((W / 2, 700), brand, 168, 800, INK, "wordmark", anchor="ms")
-    fr.rrect((W / 2 - 60, 770, W / 2 + 60, 778), 4, fill=TEAL)
-    y = 880
+    fr.text((W / 2, 520), brand, 168, 800, INK, "wordmark", anchor="ms")
+    fr.rrect((W / 2 - 60, 590, W / 2 + 60, 598), 4, fill=TEAL)
+    y = 680
     for i, ln in enumerate(rest):
-        size, weight, color = (42, 700, TEAL) if ln == ai_line else (36, 400, INK)
-        wrapped = wrap_balanced(display(ln), size, weight, TEXT_W, engine)
+        url = bool(URL.match(ln))
+        size, weight, color = (40, 700, TEAL) if ln == ai_line else ((38, 600, TEAL) if url else (34, 400, INK))
+        if url:
+            wrapped = [ln]
+            size = fit_size(ln, size, 26, weight, TEXT_W, engine)
+        else:
+            wrapped = wrap_balanced(display(ln), size, weight, TEXT_W, engine)
         cap, desc = metrics(size, weight, engine)
         pitch = round(size * 1.4)
         for j, wl in enumerate(wrapped):
-            fr.text((W / 2, y + cap + j * pitch), wl, size, weight, color, f"card{i}[{j}]", anchor="ms")
-        y += cap + desc + (len(wrapped) - 1) * pitch + 44
-    report = {"engine": engine, "texts": dict(fr.texts), "problems": check(fr)}
+            fr.text((W / 2, y + cap + j * pitch), wl, size, weight, color, f"card{i}[{j}]", anchor="ms", rtl=not url)
+        y += cap + desc + (len(wrapped) - 1) * pitch + (24 if url else 40)
+    report = {"engine": engine, "texts": dict(fr.texts), "boxes": [(n, list(b)) for n, b, _ in fr.boxes],
+              "problems": check(fr)}
     return fr.final(), report

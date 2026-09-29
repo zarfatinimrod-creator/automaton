@@ -13,8 +13,8 @@ from __future__ import annotations
 
 import math
 
-from canvas import (BAR, DIM, INK, LINE, MUTED, SKY_SOFT, TEAL, TEAL_MID, TEAL_SOFT, WHITE, YELLOW,
-                    YELLOW_SOFT, Frame, s, star_points)
+from canvas import (AMBER, AMBER_BG, BAR, DIM, INK, LINE, MUTED, SKY_SOFT, TEAL, TEAL_MID, TEAL_SOFT, WHITE,
+                    YELLOW, YELLOW_SOFT, Frame, s, star_points)
 
 # ---------------------------------------------------------------- primitives
 
@@ -289,15 +289,21 @@ def content(engine, labels):
     return fr
 
 
+def keypad(fr: Frame, cx, cy, pitch, r):
+    """A generic 3x4 keypad of plain dots: says "a code", not how many digits it has."""
+    for row in range(4):
+        for col in range(3):
+            if row == 3 and col != 1:
+                continue
+            x, y = cx + (col - 1) * pitch, cy + (row - 1.5) * pitch
+            fr.circle(x, y, r, fill=WHITE, outline=TEAL, width=5)
+
+
 def passcode(engine, labels):
+    """A padlock over a generic keypad (the code), "או", and a made-up sum card (the multiplication question)."""
     fr = _layer(engine, 900, 560)
-    padlock(fr, 700, 230, 190, open_=True)
-    for i in range(4):
-        cx = 700 + (1.5 - i) * 58
-        if i < 3:
-            fr.circle(cx, 450, 20, fill=TEAL)
-        else:
-            fr.circle(cx, 450, 20, outline=TEAL, width=5)
+    padlock(fr, 720, 200, 150, open_=True)
+    keypad(fr, 720, 400, 62, 22)
     sum_label = next((l for l in labels if any(ch.isdigit() for ch in l)), "")
     word = next((l for l in labels if l != sum_label), "")
     fr.text((450, 330), word, 72, 700, MUTED, anchor="mm")
@@ -319,13 +325,41 @@ def search(engine, labels):
     toggle(fr, 400, 250, 120, 62, on=False)
     fr.line([(505, 350), (415, 350)], MUTED, 10, caps=True)
     fr.poly([(395, 350), (430, 322), (430, 378)], fill=MUTED)
-    # after: fewer tiles, each verified
+    # after: fewer tiles, and nothing on them - a tick would read as "checked", which the help center does not say
     for i, f in enumerate((TEAL_SOFT, YELLOW_SOFT, SKY_SOFT, TEAL_SOFT)):
         c, r = i % 2, i // 2
         x1 = 350 - c * 170
         y0 = 150 + r * 190
         tile(fr, (x1 - 150, y0, x1, y0 + 150), f)
-        check_badge(fr, x1 - 22, y0 + 20, 26)
+    return fr
+
+
+def history_icon(fr: Frame, cx, cy, r):
+    """A clock face with a counter-clockwise arrow: "history"."""
+    fr.arc((cx - r, cy - r, cx + r, cy + r), 200, 520, INK, r * 0.14)
+    fr.poly([(cx - r * 1.12, cy - r * 0.42), (cx - r * 0.62, cy - r * 0.2), (cx - r * 1.02, cy + r * 0.12)], fill=INK)
+    fr.line([(cx, cy), (cx, cy - r * 0.55)], INK, r * 0.12, caps=True)
+    fr.line([(cx, cy), (cx + r * 0.4, cy + r * 0.2)], INK, r * 0.12, caps=True)
+
+
+def history(engine, labels):
+    """Left: a few tiles, one of them with an amber "!" (unwanted content can still turn up). Right: the history
+    list, its rows struck through (turning search off deletes the profile's watch and search history)."""
+    fr = _layer(engine, 900, 600)
+    history_icon(fr, 790, 110, 70)
+    for i, wdt in enumerate((300, 250, 280, 220)):
+        y = 230 + i * 90
+        fr.rrect((860 - wdt, y, 860, y + 30), 15, fill=BAR)
+        fr.line([(860 - wdt - 14, y + 15), (874, y + 15)], MUTED, 7, caps=True)
+    for i, f in enumerate((TEAL_SOFT, SKY_SOFT, YELLOW_SOFT, TEAL_SOFT)):
+        c, r = i % 2, i // 2
+        x1 = 420 - c * 190
+        y0 = 90 + r * 230
+        tile(fr, (x1 - 170, y0, x1, y0 + 180), f)
+        if i == 1:
+            fr.circle(x1 - 30, y0 + 30, 34, fill=AMBER_BG, outline=AMBER, width=6)
+            fr.rrect((x1 - 35, y0 + 10, x1 - 25, y0 + 36), 5, fill=AMBER)
+            fr.circle(x1 - 30, y0 + 47, 6, fill=AMBER)
     return fr
 
 
@@ -341,7 +375,8 @@ def timer(engine, labels):
 
 
 def block(engine, labels):
-    fr = _layer(engine, 900, 760)
+    """Blocking: a video tile with a generic three-dot button, a plain two-row menu, and the tile greyed out."""
+    fr = _layer(engine, 900, 600)
     # the video tile and its generic three-dot button (top corner, left in RTL)
     fr.rrect((470, 30, 870, 270), 24, fill=SKY_SOFT)
     fr.rrect((520, 290, 870, 306), 8, fill=BAR)
@@ -360,15 +395,28 @@ def block(engine, labels):
         if i == 0:
             fr.line([(530, cy + 55), (840, cy + 55)], LINE, 3)
     # outcome of blocking: the tile greys out
-    fr.rrect((40, 30, 400, 250), 24, fill=BAR)
-    fr.circle(220, 140, 68, fill=WHITE)
-    ban_icon(fr, 220, 140, 52)
-    # outcome of reporting: a flag and three plain reason chips
-    flag_icon(fr, 330, 360, 90)
-    for i, wdt in enumerate((300, 240, 170)):
-        y = 440 + i * 90
-        fr.rrect((400 - wdt, y, 400, y + 64), 32, fill=WHITE, outline=TEAL, width=4)
-        fr.rrect((400 - wdt + 40, y + 24, 360, y + 40), 8, fill=BAR)
+    fr.rrect((40, 130, 400, 370), 24, fill=BAR)
+    fr.circle(220, 250, 68, fill=WHITE)
+    ban_icon(fr, 220, 250, 52)
+    fr.line([(462, 250), (438, 250)], MUTED, 8, caps=True)  # an arrow from the video to the result, leftwards
+    fr.poly([(418, 250), (442, 234), (442, 266)], fill=MUTED)
+    return fr
+
+
+def report(engine, labels):
+    """Reporting: a flag and three plain reason chips; signed in, the reported video is also blocked (a key, then a
+    greyed tile with the ban sign)."""
+    fr = _layer(engine, 900, 560)
+    flag_icon(fr, 760, 90, 110)
+    for i, wdt in enumerate((330, 270, 200)):
+        y = 190 + i * 100
+        fr.rrect((880 - wdt, y, 880, y + 70), 35, fill=WHITE, outline=TEAL, width=4)
+        fr.rrect((880 - wdt + 44, y + 27, 836, y + 43), 8, fill=BAR)
+    fr.circle(360, 110, 80, fill=TEAL_SOFT)
+    key_icon(fr, 360, 110, 110)
+    fr.rrect((170, 250, 460, 450), 24, fill=BAR)
+    fr.circle(315, 350, 60, fill=WHITE)
+    ban_icon(fr, 315, 350, 46)
     return fr
 
 
@@ -380,8 +428,8 @@ def recap(engine, labels):
              lambda cx, cy: magnifier(fr, cx - 10, cy - 10, 26, color=TEAL),
              lambda cx, cy: stopwatch(fr, cx, cy + 8, 34),
              lambda cx, cy: flag_icon(fr, cx, cy, 70))
-    for i, draw in enumerate(draws):  # first step on the right
-        cx = 820 - (i % 3) * 270
+    for i, draw in enumerate(draws):  # first step on the right; the grid is centred on the 900 px layer
+        cx = 720 - (i % 3) * 270
         cy = 80 + (i // 3) * 170
         fr.circle(cx, cy, 72, fill=TEAL_SOFT)
         draw(cx, cy)
@@ -389,7 +437,7 @@ def recap(engine, labels):
 
 
 KINDS = {"hook": hook, "account": account, "content": content, "passcode": passcode, "search": search,
-         "timer": timer, "block": block, "recap": recap}
+         "history": history, "timer": timer, "block": block, "report": report, "recap": recap}
 
 
 def illustration(kind: str, engine: str, labels: list[str]) -> Frame:

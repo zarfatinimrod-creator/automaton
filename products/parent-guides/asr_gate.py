@@ -7,6 +7,13 @@ transcribes it with Whisper large-v3-turbo (int8 ONNX via sherpa-onnx), and scor
 letters against the line's caption (the narration in standard spelling). "YouTube Kids" is scored as יוטיוב קידס
 whichever script Whisper writes it in. Writes <out>/asr_gate.json and exits 1 if any line fails.
 
+A line fails on either of two counts:
+  * CER above --max-cer (default 0.05);
+  * a word that carries the meaning was not heard exactly. A low CER can hide a flipped meaning ("בעצמכם" heard as
+    "בעצמם" is one letter, CER 0.03, and turns "you choose" into "they choose"), so every caption word that is a
+    negation, a number word, or a second- or third-person pronoun form (after up to two prefix letters
+    ו/ש/ה/ב/ל/מ/כ) must appear, spelled the same, among the words Whisper wrote.
+
 Model: GitHub release k2-fsa/sherpa-onnx `asr-models`, sherpa-onnx-whisper-turbo.tar.bz2 (Whisper: MIT; sherpa-onnx:
 Apache-2.0). Optional dependency, not in requirements.txt: pip install sherpa-onnx==1.13.8 soundfile.
 Adapted from the voice prototype's asr_gate.py (28.9.2026).
@@ -44,6 +51,37 @@ def cer(ref: str, hyp: str) -> float:
     return lev(r, heb(hyp)) / max(1, len(r))
 
 
+NEGATIONS = {"לא", "אין", "בלי", "אל", "אינו", "אינה"}
+NUMBER_WORDS = {"אחד", "אחת", "שניים", "שתיים", "שני", "שתי", "שלוש", "שלושה", "ארבע", "ארבעה", "חמש", "חמישה", "שש",
+                "שישה", "שבע", "שבעה", "שמונה", "תשע", "תשעה", "עשר", "עשרה", "עשרים", "מאה"}
+PERSON_WORDS = {"אתם", "אתן", "אתכם", "לכם", "שלכם", "בעצמכם", "בשבילכם", "אליכם", "עליכם", "מכם",
+                "הם", "הן", "להם", "שלהם", "בעצמם", "בשבילם", "אותם", "אליהם", "עליהם"}
+CRITICAL = NEGATIONS | NUMBER_WORDS | PERSON_WORDS
+PREFIXES = set("ושהבלמכ")
+
+
+def words(s: str) -> list[str]:
+    for pat, rep in BRAND:
+        s = re.sub(pat, rep, s)
+    return [w for w in re.sub(r"[^א-ת ]", " ", s).split() if w]
+
+
+def is_critical(word: str) -> bool:
+    """A negation, number word or person form, possibly behind up to two prefix letters (שלא, כשאתם, ולכם)."""
+    for k in range(3):
+        if word[k:] in CRITICAL:
+            return True
+        if k < len(word) and word[k] not in PREFIXES:
+            return False
+    return False
+
+
+def missing_critical(ref: str, hyp: str) -> list[str]:
+    """Meaning-carrying words of the reference that the transcript does not contain exactly."""
+    heard = set(words(hyp))
+    return [w for w in words(ref) if is_critical(w) and w not in heard]
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("manifest")
@@ -71,13 +109,17 @@ def main(argv=None) -> int:
             rec.decode_stream(st)
             hyp = st.result.text.strip()
             c = cer(cue["caption"], hyp)
-            ok = c <= a.max_cer
+            miss = missing_critical(cue["caption"], hyp)
+            ok = c <= a.max_cer and not miss
             failed += not ok
             rows.append({"line": f"{sc['id']}-{j}", "reference": cue["caption"], "asr": hyp, "cer": round(c, 3),
-                         "pass": ok})
-            print(f"{'PASS' if ok else 'FAIL'} CER={c:.3f} {sc['id']}-{j}  ASR: {hyp}")
+                         "critical_missing": miss, "pass": ok})
+            print(f"{'PASS' if ok else 'FAIL'} CER={c:.3f} {sc['id']}-{j}  ASR: {hyp}"
+                  + (f"  MISSING: {' '.join(miss)}" if miss else ""))
     worst = max(rows, key=lambda r: r["cer"])
-    summary = {"max_cer": a.max_cer, "lines": len(rows), "failed": failed, "worst": worst, "rows": rows,
+    summary = {"max_cer": a.max_cer, "critical_words": "negations, number words and person forms must be heard "
+                                                         "exactly (see is_critical)",
+               "lines": len(rows), "failed": failed, "worst": worst, "rows": rows,
                "note": "Whisper round-trip, an intelligibility proxy. A native Hebrew listener must still approve."}
     (out / "asr_gate.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"{len(rows) - failed}/{len(rows)} lines pass at CER <= {a.max_cer}; worst {worst['line']} {worst['cer']}")

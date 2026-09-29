@@ -51,7 +51,21 @@ def test_renderer_refuses_an_unvowelised_narration_line(sample, tmp_path):
     assert r.returncode == 2 and "not vowelised" in r.stderr
 
 
+def _scene(spec, sid):
+    return next(sc for sc in spec["scenes"] if sc["id"] == sid)
+
+
 def test_renderer_refuses_a_caption_that_changes_the_words(sample, tmp_path):
-    sample["scenes"][6]["captions"][0] = "גם גוגל כותבת שהסינון מושלם."
+    _scene(sample, "s6-block")["captions"][0] = "גם גוגל כותבת שהסינון מושלם."
     r, _ = _run(sample, tmp_path)
     assert r.returncode == 2 and "caption does not match" in r.stderr
+
+
+def test_renderer_refuses_computer_tab_steps_without_a_reason(sample, tmp_path):
+    """The passcode page was captured on its Computer tab; its steps are desktop steps. Citing it needs a stated
+    reason (desktop_ok), and a step from it (the lock icon, passcode-iw:35) is refused."""
+    sc = _scene(sample, "s3-passcode")
+    sc["evidence"].append({"file": "research/rendered/yk-passcode-iw.txt", "line": 35, "quote": "לוחצים על סמל המנעול ."})
+    r, out = _run(sample, tmp_path)
+    assert r.returncode == 2 and "Computer tab" in r.stderr
+    assert not out.exists()

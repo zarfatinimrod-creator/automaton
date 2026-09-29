@@ -1,12 +1,14 @@
 """No scene says a number its sources do not say.
 
 Allowed without a quote, and each one checked here: the step prefix "N. " of a step title (the steps must run
-1..N in order), the video's own step count, the capture date (the UTC date of every cited capture's fetchedAt),
+1..N in order; consecutive pages may share a number), the video's own step count, the capture date (the
+Israel-time date of every cited capture's fetchedAt),
 and an illustrative number on an illustration label (never in the text or the narration)."""
 
 import json
 import re
-from datetime import datetime, timezone
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from conftest import REPO
 
@@ -16,7 +18,13 @@ STEP = re.compile(r"^(\d+)\.\s+")
 
 
 def _steps(spec):
-    return [int(m.group(1)) for sc in spec["scenes"] if (m := STEP.match(sc["on_screen_title"]))]
+    """Step numbers in order, consecutive pages of one step counted once."""
+    out = []
+    for sc in spec["scenes"]:
+        m = STEP.match(sc["on_screen_title"])
+        if m and (not out or out[-1] != int(m.group(1))):
+            out.append(int(m.group(1)))
+    return out
 
 
 def _capture_dates(spec):
@@ -25,7 +33,7 @@ def _capture_dates(spec):
         p = REPO / ev["file"]
         stem = p.name[: -len(".meta.json")] if p.name.endswith(".meta.json") else p.name.rsplit(".", 1)[0]
         ts = json.loads((p.parent / f"{stem}.meta.json").read_text(encoding="utf-8"))["fetchedAt"]
-        d = datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(timezone.utc)
+        d = datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(ZoneInfo("Asia/Jerusalem"))
         dates.add(f"{d.day}.{d.month}.{d.year}")
     return dates
 
@@ -99,7 +107,27 @@ def test_validator_refuses_a_wrong_step_count(sample):
 def test_validator_refuses_a_wrong_capture_date(sample):
     import spec as S
 
-    out = next(s for s in sample["scenes"] if s["id"] == "s7-outro")
-    out["on_screen_body"] = out["on_screen_body"].replace("28.9.2026", "27.9.2026")
-    out["derived_numbers"][0]["value"] = "27.9.2026"
+    sample["end_card"] = sample["end_card"].replace("29.9.2026", "27.9.2026")
+    sample["end_card_derived_numbers"][0]["value"] = "27.9.2026"
     assert any("capture_date" in p for p in S.validate(sample))
+
+
+def test_capture_date_is_the_israeli_date_not_the_utc_one(sample):
+    """The captures ran at 22:00-22:03 UTC on 28.9, which is 01:00-01:03 on 29.9 in Israel."""
+    import spec as S
+
+    assert S.capture_date("2026-09-28T22:03:10.809Z") == "29.9.2026"
+    assert S.capture_dates(sample) == {"29.9.2026"}
+    sample["end_card"] = sample["end_card"].replace("29.9.2026", "28.9.2026")
+    sample["end_card_derived_numbers"][0]["value"] = "28.9.2026"
+    assert any("capture_date 28.9.2026" in p for p in S.validate(sample))
+
+
+def test_pages_of_a_step_must_be_consecutive(sample):
+    import spec as S
+
+    ids = [sc["id"] for sc in sample["scenes"]]
+    page = sample["scenes"].pop(ids.index("s4b-search-caveat"))
+    sample["scenes"].insert(ids.index("s5-timer"), page)  # now after step 5
+    problems = S.validate(sample)
+    assert any("step prefixes run [1, 2, 3, 4, 5, 4, 6]" in p for p in problems), problems

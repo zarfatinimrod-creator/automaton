@@ -12,10 +12,55 @@ def test_silent_timing_is_14_chars_per_second_with_a_floor(sample):
     short = {"on_screen_title": "קצר", "on_screen_body": "גם"}
     assert render.silent_duration(short) == 3.5
     sc = sample["scenes"][2]
-    want = len(sc["on_screen_title"]) + len(sc["on_screen_body"].replace("\n", " "))
     d = render.silent_duration(sc)
-    assert abs(d - (want / 14 + sc["hold_extra_s"])) < 1 / render.FPS + 1e-9
+    assert abs(d - S.reading_chars(sc) / 14) < 1 / render.FPS + 1e-9
     assert abs(d * render.FPS - round(d * render.FPS)) < 1e-6  # whole frames
+
+
+def test_reading_chars_counts_title_body_and_labels_but_not_the_step_prefix():
+    sc = {"on_screen_title": "3. קוד", "on_screen_body": "אחת\n* הערה", "illustration": {"labels": ["או"]}}
+    assert S.reading_chars(sc) == len("קוד אחת * הערה או")
+    assert S.reading_chars(sc, title_seen=True) == len("אחת * הערה או")
+
+
+def test_a_narrated_scene_holds_until_its_text_can_be_read():
+    sc = {"on_screen_title": "קצר", "on_screen_body": "א" * 136}  # 140 characters: 10 s at 14 cps
+    t = render.scene_timing(9.5, sc)
+    assert abs(t["duration"] - 10.0) < 1 / render.FPS and not t["too_dense"] and abs(t["hold_s"] - 0.5) < 0.04
+
+
+def test_a_scene_that_needs_more_than_the_hold_cap_is_too_dense():
+    """The reviews found every scene of the first cut unreadable in time (95 s of text in 60 s); a long silent
+    still is no cure either, so needing more than MAX_HOLD_S of silence is refused (render.py exits 4)."""
+    sc = {"on_screen_title": "קצר", "on_screen_body": "א" * 136}
+    assert render.scene_timing(8.9, sc)["too_dense"]
+    assert not render.scene_timing(9.1, sc)["too_dense"]
+
+
+def test_every_scene_of_the_sample_fits_its_measured_narration(sample):
+    """Narration lengths as measured on 29.9.2026 (manifest timing.narrated_s, ef_dora at speed 0.9): each scene's
+    text is readable within its narration plus at most MAX_HOLD_S."""
+    measured = {"s0-hook": 5.317, "s1-account-profile": 8.711, "s2-content-setting": 9.116, "s3-passcode": 5.274,
+                "s4-search": 9.479, "s4b-search-caveat": 6.191, "s5-timer": 13.193, "s6-block": 11.934,
+                "s6b-report": 7.279, "s7-outro": 3.096}
+    for sc, seen in zip(sample["scenes"], S.titles_seen(sample)):
+        assert not render.scene_timing(measured[sc["id"]], sc, seen)["too_dense"], sc["id"]
+
+
+def test_assembly_encodes_bt709_and_normalises_loudness(tmp_path):
+    frames = [tmp_path / "a.png", tmp_path / "b.png"]
+    measured = {"input_i": "-19.8", "input_tp": "-0.7", "input_lra": "2.5", "input_thresh": "-30.2",
+                "target_offset": "0.1"}
+    cmd = render.ffmpeg_cmd(frames, [1.0, 2.0], tmp_path / "n.wav", measured, 3.0, "מהודק · כותרת", "מהודק",
+                            tmp_path / "o.mp4")
+    graph = cmd[cmd.index("-filter_complex") + 1]
+    assert "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p" in graph
+    assert "pan=stereo|c0=c0|c1=c0,loudnorm=I=-14.0" in graph and "measured_I=-19.8" in graph
+    for flag in ("-colorspace", "-color_primaries", "-color_trc"):
+        assert cmd[cmd.index(flag) + 1] == "bt709"
+    assert "artist=מהודק" in cmd and "title=מהודק · כותרת" in cmd
+    silent = render.ffmpeg_cmd(frames, [1.0, 2.0], None, None, 3.0, "t", "מהודק", tmp_path / "o.mp4")
+    assert "loudnorm" not in " ".join(silent) and "anullsrc=r=48000:cl=stereo" in silent
 
 
 def test_silent_cues_cover_the_narration_in_order(sample):
@@ -50,9 +95,10 @@ def test_caption_matching_rules(cap, line, ok):
 
 
 def test_default_caption_without_a_captions_field(sample):
-    sc = dict(sample["scenes"][7])
+    sc = dict(next(s for s in sample["scenes"] if s["id"] == "s7-outro"))
     sc.pop("captions")
-    assert render.caption_for(sc, 0) == "כל הפרטים, במרכז העזרה של YouTube Kids."
+    assert render.caption_for(sc, 0) == "כל הפרטים, במרכז העזרה הרשמי."
+    assert render.caption_for({"narration": "מַתְקִינִים יוּ֫טְיוּבּ קִידְס?"}, 0) == "מתקינים YouTube Kids?"
 
 
 def test_ipa_mapping_and_vowelisation_contract():

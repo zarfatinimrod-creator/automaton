@@ -8,8 +8,10 @@ Recipe (carried over from the frame prototype of 28.9.2026):
                       goes through bidi.algorithm.get_display(base_dir="R") (the pure-Python UBA, which mirrors
                       brackets; the top-level Rust get_display in python-bidi 0.6.11 does not) and is drawn
                       with the BASIC layout.
-  * Wrapping breaks only at U+0020, balanced so the last line is not a lone word. "YouTube Kids" is joined with a
-    no-break space for display, and a maqaf or hyphen never breaks, so the name never splits across lines.
+  * Wrapping breaks only at U+0020, balanced so the last line is not a lone word. display() joins with no-break
+    spaces what must not split: the product names ("YouTube Kids", "YouTube For Families"), a quoted label
+    („הגדרת טיימר”), a short parenthesis ("(גרסת Android)"), a step arrow and the item after it (so "›" starts a line and never ends one), and a " · "
+    separator and the item before it. A maqaf or hyphen never breaks.
   * Everything is drawn at 2x and downsampled with LANCZOS.
 Palette: warm paper, deep navy ink, calm teal, warm yellow. No red anywhere (tests/test_frames.py checks pixels).
 """
@@ -17,6 +19,7 @@ Palette: warm paper, deep navy ink, calm teal, warm yellow. No red anywhere (tes
 from __future__ import annotations
 
 import math
+import re
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont, features
@@ -52,9 +55,18 @@ def engine_auto() -> str:
     return "raqm" if features.check("raqm") else "basic"
 
 
+QUOTED = re.compile("„[^”]*”")
+PAREN = re.compile(r"\([^()]{1,24}\)")  # a short parenthesis, "(גרסת Android)", stays on one line
+
+
 def display(text: str) -> str:
-    """Display-only joins: the product name never splits across lines."""
-    return text.replace("YouTube Kids", f"YouTube{NBSP}Kids")
+    """Display-only joins (see the module docstring); the words are unchanged."""
+    t = text.replace("YouTube Kids", f"YouTube{NBSP}Kids").replace("YouTube For Families",
+                                                                    f"YouTube{NBSP}For{NBSP}Families")
+    t = QUOTED.sub(lambda m: m.group(0).replace(" ", NBSP), t)
+    t = PAREN.sub(lambda m: m.group(0).replace(" ", NBSP), t)
+    t = t.replace(" › ", f" ›{NBSP}")
+    return t.replace(" · ", f"{NBSP}· ")
 
 
 def s(v: float) -> int:
