@@ -28,6 +28,9 @@
  * BEHAVIOUR.
  *   - every URL in research/rendered/urls.txt is fetched with a browser-like
  *     User-Agent and a 30 s timeout
+ *   - redirects are followed by hand (fetchOne), up to MAX_REDIRECTS (20, the Fetch
+ *     standard's own limit), inside the same 30 s. A hop to tiktok.com is refused
+ *     before it is requested, and the meta records the redirect instead
  *   - the raw body is stored under research/rendered/<slug>.<ext>, the extension
  *     chosen from the response Content-Type (html / json / pdf / xml / txt / bin)
  *   - for HTML, a deterministic text extraction is stored at <slug>.txt
@@ -113,8 +116,10 @@
  * and that URL is then loaded in headless Chromium (playwright-core, pinned exactly
  * in package.json) instead of fetched. What the browser is allowed to do is narrow,
  * and each limit is a test in src/__tests__/revenue/render-watch-js.test.ts:
- *   - one navigation per URL, then a wait for the network to go quiet, all inside
- *     the same TIMEOUT_MS as a plain GET; the DOM as it stands then is serialised
+ *   - one navigation per URL, then a wait for the network to go quiet, then reading
+ *     the DOM, all inside the same TIMEOUT_MS as a plain GET (a page whose DOM cannot
+ *     be read in the time left — a script spinning forever — is closed and recorded as
+ *     a timeout); the DOM as it stands then is serialised
  *     and goes through exactly the plain path: redactSecrets, sha256, MAX_BYTES,
  *     extractText, the meta and the quiet-history rule. The meta says
  *     `renderedWith: "chromium"` and whether the network went quiet (`networkIdle`)
@@ -124,18 +129,32 @@
  *     accept-language as a plain GET, and the page can see it is automated
  *   - HTML only: a js line that answers a PDF or JSON stores nothing and says to
  *     drop the flag
- *   - a browser that cannot be started is a host failure, not a site's answer: the
- *     js lines are skipped and nothing is written for them (their earlier captures
- *     stay as they were), the plain lines are stored as usual, and the count goes
- *     to the workflow as `js_skipped`, which fails the run after the commit
+ *   - a browser that is unavailable is a host failure, not a site's answer: when it
+ *     cannot be started, or disconnects during the run (including in the middle of a
+ *     line), the js lines from then on are skipped and nothing is written for them
+ *     (their earlier captures stay as they were), the plain lines are stored as
+ *     usual, and the count goes to the workflow as `js_skipped`, which fails the run
+ *     after the commit
  * Known limits, stated: only the top frame's DOM is stored (not iframes), open or
  * closed shadow roots are not serialised, and a rendered DOM may differ run to run
  * (a nonce, a timestamp), which the quiet-history rule then commits as a change.
  *
  * NEVER tiktok.com, in either mode. parseUrlList refuses tiktok.com and every
- * subdomain at parse time, for the file and the dispatch override alike; the js
- * mode also blocks any request to those hosts from inside a page (an embed, a
- * redirect). logs/CHANNEL_LOOP.md §9 paused every TikTok fetch on 28.9, and whether
+ * subdomain at parse time, for the file and the dispatch override alike. A listed
+ * page that redirects there is not followed:
+ *   - plain mode follows redirects by hand and refuses a tiktok.com hop before
+ *     requesting it (fetchOne)
+ *   - js mode launches Chromium with a host-resolver rule that makes every tiktok.com
+ *     name fail to resolve (chromiumLaunchOptions), so no navigation, redirect,
+ *     subresource, preconnect or WebSocket from inside a page reaches it. route() and
+ *     routeWebSocket() block such requests as a second layer — alone they are not
+ *     enough, because Playwright calls a route handler only for the first URL of a
+ *     redirect chain. And a page whose main frame went to tiktok.com (a server
+ *     redirect or its own script) is never stored, even where the resolver rule does
+ *     not apply (a proxy that resolves names itself)
+ * Stated limits: a TikTok server addressed by a bare IP address is not recognised by
+ * any of these, and behind such a proxy a subresource redirected to TikTok would still
+ * be requested (the runner has no proxy). logs/CHANNEL_LOOP.md §9 paused every TikTok fetch on 28.9, and whether
  * any fetch of TikTok is allowed at all is pending logs/FABLE_QUEUE.md row 16(d).
  */
 
@@ -708,23 +727,87 @@ export async function readCappedBody(response, maxBytes = MAX_BYTES) {
 }
 
 /**
+ * 20, the Fetch standard's own limit ("if request's redirect count is 20, return a
+ * network error"), so a page that `redirect: "follow"` reached is reached here too.
+ */
+export const MAX_REDIRECTS = 20;
+
+/** The statuses `redirect: "follow"` follows when they carry a Location. */
+const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
+
+/**
+ * The one line a meta file says when a listed page sent us towards tiktok.com. Only
+ * the host goes in — a TikTok URL's path and query vary, and the meta must not.
+ */
+export function tiktokRedirectError(host) {
+  return (
+    `redirected to tiktok.com (${host}); not followed — render-watch never fetches tiktok.com ` +
+    "(logs/CHANNEL_LOOP.md §9; pending logs/FABLE_QUEUE.md row 16(d))"
+  );
+}
+
+/** Let go of a redirect's body: nothing reads it, and an unread body holds its connection. */
+async function discardBody(response) {
+  try {
+    await response.body?.cancel?.();
+  } catch {
+    /* the connection is going away anyway */
+  }
+}
+
+/**
  * Fetch one entry. Never throws: a non-2xx answer and a network failure both come
  * back as a result object, because a page that refuses us is a finding, not a
  * broken build.
+ *
+ * Redirects are followed here, by hand (`redirect: "manual"`), rather than by fetch:
+ * `redirect: "follow"` would request a tiktok.com hop before anything could look at
+ * it. Each Location is resolved against the URL that sent it, the same headers go
+ * with every hop, the one TIMEOUT_MS covers the whole chain, and at most
+ * MAX_REDIRECTS hops are followed — what "follow" did for a GET, apart from the hop
+ * that is refused: a tiktok.com one (isTikTokHost), recorded with the redirect's
+ * status and tiktokRedirectError, before it is requested.
  */
 export async function fetchOne(entry, { fetchImpl = fetch, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES } = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetchImpl(entry.url, {
-      signal: controller.signal,
-      redirect: "follow",
-      headers: {
-        "user-agent": USER_AGENT,
-        accept: "text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8",
-        "accept-language": ACCEPT_LANGUAGE,
-      },
-    });
+    let url = entry.url;
+    let response;
+    for (let redirects = 0; ; redirects += 1) {
+      response = await fetchImpl(url, {
+        signal: controller.signal,
+        redirect: "manual",
+        headers: {
+          "user-agent": USER_AGENT,
+          accept: "text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8",
+          "accept-language": ACCEPT_LANGUAGE,
+        },
+      });
+      const location = REDIRECT_STATUSES.has(response.status) ? (response.headers?.get?.("location") ?? null) : null;
+      if (location === null) break; // not a redirect: this is the answer (a 3xx with no Location included, as before)
+
+      const refused = (error) => ({
+        status: response.status,
+        contentType: response.headers?.get?.("content-type") ?? null,
+        bytes: null,
+        truncated: false,
+        error,
+      });
+      await discardBody(response);
+      let next;
+      try {
+        next = new URL(location, url);
+      } catch {
+        return refused(`HTTP ${response.status} redirect to a Location that is not a URL; not followed`);
+      }
+      if (next.protocol !== "http:" && next.protocol !== "https:") {
+        return refused(`HTTP ${response.status} redirect to a ${next.protocol} URL; not followed`);
+      }
+      if (isTikTokHost(next.hostname)) return refused(tiktokRedirectError(next.hostname));
+      if (redirects >= MAX_REDIRECTS) return refused(`more than ${MAX_REDIRECTS} redirects; not followed`);
+      url = next.href;
+    }
 
     const contentType = response.headers?.get?.("content-type") ?? null;
     if (!response.ok) {
@@ -783,6 +866,51 @@ function describeBrowserError(error) {
   return `${error.name}: ${firstLine}`;
 }
 
+/** The host of a URL string, or null when it does not parse. */
+function hostOf(url) {
+  try {
+    return new URL(String(url)).hostname;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The tiktok.com host a navigation response came from or passed through, or null.
+ * Walks the response's own URL and its request's redirect chain (redirectedFrom):
+ * where the host-resolver rule does not apply (a proxy that resolves names itself),
+ * a redirect to TikTok is followed, and this is what keeps its page out of the
+ * repository.
+ */
+export function tiktokHostInChain(response) {
+  const hosts = [hostOf(response.url?.())];
+  for (let request = response.request?.() ?? null; request; request = request.redirectedFrom?.() ?? null) {
+    hosts.push(hostOf(request.url()));
+  }
+  return hosts.find((host) => host !== null && isTikTokHost(host)) ?? null;
+}
+
+/** What withinBudget resolves to when the time ran out first. */
+const TIMED_OUT = Symbol("timed out");
+
+/**
+ * Wait for `promise` for at most `ms`: its value, or TIMED_OUT. A rejection is passed
+ * on. The promise itself is left running — the caller closes whatever it runs in —
+ * with a catch attached, so its later rejection is not an unhandled one.
+ */
+async function withinBudget(promise, ms) {
+  promise.catch(() => {});
+  let timer;
+  const deadline = new Promise((resolveDeadline) => {
+    timer = setTimeout(() => resolveDeadline(TIMED_OUT), ms);
+  });
+  try {
+    return await Promise.race([promise, deadline]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /**
  * Render one js entry in `browser` (a Playwright Browser, or a fake with the same
  * few methods). Never throws, like fetchOne: a refusal, a timeout or a crash comes
@@ -790,8 +918,17 @@ function describeBrowserError(error) {
  *
  * One navigation (`domcontentloaded`, TIMEOUT_MS), then a wait for the network to go
  * quiet with whatever time the navigation left, then page.content() — the DOM as it
- * stands. A non-2xx answer or a non-HTML page stores nothing. The DOM is capped at
- * maxBytes as a plain body is. The context is closed whatever happened.
+ * stands — with whatever time is left after that. page.content() has no timeout of
+ * its own and waits for the page's main thread: a script spinning forever would hold
+ * it (and the whole run) indefinitely, so it is raced against the time left, and a
+ * page that loses is closed with its context and recorded as a timeout. A non-2xx
+ * answer or a non-HTML page stores nothing. The DOM is capped at maxBytes as a plain
+ * body is. The context is closed whatever happened.
+ *
+ * A page whose main frame went to tiktok.com — a server redirect, or the page's own
+ * script moving it — stores nothing either; the meta says tiktokRedirectError. The
+ * browser's host-resolver rule (chromiumLaunchOptions) is what stops the request
+ * itself; this is what keeps the page out when that rule did not apply.
  */
 export async function renderWithBrowser(
   entry,
@@ -807,17 +944,38 @@ export async function renderWithBrowser(
     networkIdle: null,
   });
   const started = now();
+  // Playwright reads a timeout of 0 as "no timeout", so the floor is 1 ms.
+  const timeLeft = () => Math.max(1, timeoutMs - (now() - started));
   let context = null;
+  // The first tiktok.com host the page's main frame tried to navigate to, if any.
+  let tiktokNavigation = null;
   try {
     context = await browser.newContext(browserContextOptions());
-    // No request to tiktok.com from inside a page either — an embed, a script, a redirect, a frame,
-    // and (route() does not see these) a WebSocket, which is closed before it reaches the server.
-    // The TikTok pause (logs/CHANNEL_LOOP.md §9) and logs/FABLE_QUEUE.md row 16(d); see parseUrlList.
+    // No request to tiktok.com from inside a page either — an embed, a script, a frame, and (route() does
+    // not see these) a WebSocket, which is closed before it reaches the server. A second layer: route() is
+    // called only for the first URL of a redirect chain, so the resolver rule in chromiumLaunchOptions is
+    // what stops a redirect. The TikTok pause (logs/CHANNEL_LOOP.md §9) and logs/FABLE_QUEUE.md row 16(d).
     const onTikTok = (url) => isTikTokHost(url.hostname);
     await context.route(onTikTok, (route) => route.abort("blockedbyclient"));
     await context.routeWebSocket(onTikTok, (ws) => ws.close({ code: 1008, reason: "render-watch never contacts tiktok.com" }));
     const page = await context.newPage();
+    // Every hop of a main-frame navigation is a request here, redirect targets included.
+    page.on("request", (request) => {
+      if (tiktokNavigation !== null || !request.isNavigationRequest()) return;
+      let mainFrame = false;
+      try {
+        mainFrame = request.frame() === page.mainFrame();
+      } catch {
+        return; // a service worker's request has no frame (and service workers are blocked)
+      }
+      const host = hostOf(request.url());
+      if (mainFrame && host !== null && isTikTokHost(host)) tiktokNavigation = host;
+    });
+    const refusedTikTok = () => failed({ error: tiktokRedirectError(tiktokNavigation) });
+
     const response = await page.goto(entry.url, { waitUntil: "domcontentloaded", timeout: timeoutMs });
+    if (tiktokNavigation === null && response) tiktokNavigation = tiktokHostInChain(response);
+    if (tiktokNavigation !== null) return refusedTikTok();
     if (!response) return failed({ error: "the navigation produced no response" });
 
     const status = response.status();
@@ -838,13 +996,24 @@ export async function renderWithBrowser(
 
     let networkIdle = true;
     try {
-      // Playwright reads a timeout of 0 as "no timeout", so the floor is 1 ms.
-      await page.waitForLoadState("networkidle", { timeout: Math.max(1, timeoutMs - (now() - started)) });
+      await page.waitForLoadState("networkidle", { timeout: timeLeft() });
     } catch {
       networkIdle = false; // the time ran out first: take the DOM as it stands, and say so
     }
 
-    const all = Buffer.from(await page.content(), "utf8");
+    const html = await withinBudget(page.content(), timeLeft());
+    if (html === TIMED_OUT) {
+      // The finally below closes the context, which is what releases the hung page.content().
+      return failed({
+        status,
+        contentType,
+        error: `timeout after ${timeoutMs}ms (the rendered page could not be read within the time left)`,
+      });
+    }
+    // The page's own script may have moved it to tiktok.com while the network settled.
+    if (tiktokNavigation !== null) return refusedTikTok();
+
+    const all = Buffer.from(html, "utf8");
     const truncated = all.length > maxBytes;
     return {
       status,
@@ -856,6 +1025,8 @@ export async function renderWithBrowser(
       networkIdle,
     };
   } catch (error) {
+    // A navigation to tiktok.com fails to resolve (the resolver rule); say why, not "name not resolved".
+    if (tiktokNavigation !== null) return failed({ error: tiktokRedirectError(tiktokNavigation) });
     const message = describeBrowserError(error);
     return failed({ error: error?.name === "TimeoutError" ? `timeout after ${timeoutMs}ms (${message})` : message });
   } finally {
@@ -874,10 +1045,34 @@ export async function loadPlaywright() {
   return mod.default ?? mod;
 }
 
-/** Launch headless Chromium with Playwright's defaults: no extra arguments, nothing to hide automation. */
-export async function launchChromium() {
-  const { chromium } = await loadPlaywright();
-  return chromium.launch({ headless: true });
+/**
+ * Every tiktok.com name fails to resolve inside the browser — tiktok.com, any
+ * subdomain, and both with the trailing dot DNS accepts (`www.tiktok.com.` resolves
+ * like `www.tiktok.com`, and a pattern without the dot does not match it; tested
+ * against Chromium 141 on 29.9). This is the layer that stops a redirect: Playwright
+ * calls a route() handler only for the first URL of a redirect chain, so a listed
+ * page answering `302 → www.tiktok.com` was fetched through route() alone.
+ */
+export const TIKTOK_HOST_RESOLVER_RULES = [
+  "MAP tiktok.com ~NOTFOUND",
+  "MAP *.tiktok.com ~NOTFOUND",
+  "MAP tiktok.com. ~NOTFOUND",
+  "MAP *.tiktok.com. ~NOTFOUND",
+].join(", ");
+
+/**
+ * Exactly what Chromium is launched with, pinned by a test: headless, and one
+ * argument, the tiktok.com resolver rule. Nothing else — no flag that weakens the
+ * browser (web security, site isolation) and nothing that hides automation.
+ */
+export function chromiumLaunchOptions() {
+  return { headless: true, args: [`--host-resolver-rules=${TIKTOK_HOST_RESOLVER_RULES}`] };
+}
+
+/** Launch headless Chromium with chromiumLaunchOptions(). `load` exists for the tests. */
+export async function launchChromium({ load = loadPlaywright } = {}) {
+  const { chromium } = await load();
+  return chromium.launch(chromiumLaunchOptions());
 }
 
 function describeLaunchError(error) {
@@ -890,15 +1085,21 @@ function describeLaunchError(error) {
   return `no browser could be started (${describeBrowserError(error)})`;
 }
 
+/** Why the js lines after a browser died are skipped. */
+const BROWSER_DISCONNECTED = "the browser disconnected during the run";
+
 /**
  * One browser per run, launched on the first js line and only then; one attempt.
  * If it cannot be started, or disconnects during the run, render() answers
  * { skipped: <why> } for every js line from then on and the caller writes nothing
- * for them.
+ * for them — including the line that was rendering when it died: its error
+ * ("page.goto: net::ERR_ABORTED", "browser has been closed") is the host's failure,
+ * not the site's answer, so it is not stored either.
  */
 export function jsRenderer({ launchBrowser = launchChromium, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES } = {}) {
   let browser = null;
   let launchError = null;
+  const disconnected = () => typeof browser?.isConnected === "function" && !browser.isConnected();
   return {
     async render(entry) {
       if (!browser && !launchError) {
@@ -910,13 +1111,15 @@ export function jsRenderer({ launchBrowser = launchChromium, timeoutMs = TIMEOUT
           launchError = describeLaunchError(error);
         }
       }
-      // A browser that died mid-run is a host failure too: the lines after it are skipped,
-      // not recorded as their sites' error ("browser has been closed" is not a site's answer).
-      if (!launchError && typeof browser.isConnected === "function" && !browser.isConnected()) {
-        launchError = "the browser disconnected during the run";
-      }
+      if (!launchError && disconnected()) launchError = BROWSER_DISCONNECTED;
       if (launchError) return { skipped: launchError };
-      return renderWithBrowser(entry, { browser, timeoutMs, maxBytes });
+      const result = await renderWithBrowser(entry, { browser, timeoutMs, maxBytes });
+      // Died during this line: skip it too rather than record the crash as the site's error.
+      if (result.error && disconnected()) {
+        launchError = BROWSER_DISCONNECTED;
+        return { skipped: launchError };
+      }
+      return result;
     },
     async close() {
       if (browser) await browser.close().catch(() => {});
@@ -1170,9 +1373,9 @@ export function resolveListText(env, readFile = readFileSync, listPath = DEFAULT
 
 /**
  * Fetch (or, for a js line, render) one entry, store it, and log it. Returns what it
- * adds to the run's counts. A js line whose browser could not be started is skipped:
- * a host failure, not the site's answer, so nothing is written and the last capture
- * stays exactly as it was.
+ * adds to the run's counts. A js line whose browser is unavailable (never started, or
+ * stopped before or during the line) is skipped: a host failure, not the site's answer,
+ * so nothing is written and the last capture stays exactly as it was.
  */
 async function captureEntry(entry, { js, outDir, deps, summaryLines }) {
   let result;
@@ -1266,8 +1469,10 @@ export async function main(argv = process.argv.slice(2), env = process.env, deps
     await js.close();
   }
 
-  // Said only when it happened, so a plain run's log reads exactly as it always did.
-  const skippedNote = skippedJs > 0 ? ` ${skippedJs} js line(s) skipped: no browser could be started.` : "";
+  // Said only when it happened, so a plain run's log reads exactly as it always did. The cause (not
+  // installed, not started, or stopped mid-run) is on each SKIPPED line above; this names none of them.
+  const skippedNote =
+    skippedJs > 0 ? ` ${skippedJs} js line(s) skipped: the browser was unavailable (the SKIPPED lines say why).` : "";
   process.stdout.write(
     `\nrender-watch: ${entries.length} URL(s), ${changedCount} changed, ${failedCount} could not be fetched.${skippedNote}\n`,
   );

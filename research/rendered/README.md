@@ -112,8 +112,11 @@ parse, and any URL on `tiktok.com` or a subdomain of it are refused the same way
 **Never `tiktok.com`.** The fetcher refuses it at parse time in both modes, in this file and in the
 dispatch override alike: `logs/CHANNEL_LOOP.md` §9 paused every TikTok fetch on 28.9 (TikTok's terms
 bar automated access, and the runner had already fetched about 110 of its pages), and whether any
-fetch of TikTok is allowed at all waits on `logs/FABLE_QUEUE.md` row 16(d). Research on TikTok reads
-GitHub mirrors (Open Terms Archive) instead.
+fetch of TikTok is allowed at all waits on `logs/FABLE_QUEUE.md` row 16(d). A listed page that
+redirects to TikTok is not followed either: a plain fetch follows redirects by hand and refuses a
+`tiktok.com` hop before requesting it, and the meta records `redirected to tiktok.com (<host>); not
+followed` with the redirect's status. Research on TikTok reads GitHub mirrors (Open Terms Archive)
+instead.
 
 ## The js flag: a JavaScript-capable render
 
@@ -129,8 +132,10 @@ https://support.example.com/s/article/Identity	example-identity	js
 is loaded in headless Chromium (`playwright-core`, pinned to an exact version in `package.json`)
 instead of fetched. What that does and does not do:
 
-- **One plain page load.** One navigation, then a wait until the page's network goes quiet, all inside
-  the same 30 s as a plain GET; the DOM as it stands then is stored as `<slug>.html` and goes through
+- **One plain page load.** One navigation, then a wait until the page's network goes quiet, then
+  reading the DOM, all inside the same 30 s as a plain GET (a page whose DOM cannot be read in the time
+  left, such as a script that never yields, is closed and recorded as a timeout); the DOM as it stands
+  then is stored as `<slug>.html` and goes through
   the same text extraction, secret masking, 5 MB cap, hash and quiet-history rule as any page. No
   clicks, no typing, no form fills, no logins; a fresh browser context per URL, so no cookie or
   storage survives from one URL to the next; the same User-Agent as a plain GET, no stealth plugin,
@@ -146,17 +151,33 @@ instead of fetched. What that does and does not do:
   Salesforce page still comes back empty, shadow DOM is the first suspect — write that down rather than
   concluding the page is blank.
 - **The same terms gate as a plain GET.** A `js` line is queued with
-  `scripts/queue-zero-test.mjs --js --terms <slug>`, which refuses unless `research/rendered/<slug>.txt`
-  — a capture of the target site's own terms — already exists, and writes that slug into the line's
-  comment. The script only checks the capture exists; whoever queues the line has read it and found no
-  bar on automated access. `--js` is also what lets a Salesforce `/s/article/` page be queued at all
-  (without it, the script refuses such a page as a shell the runner cannot read).
+  `scripts/queue-zero-test.mjs --js --terms <slug>`, and writes that slug into the line's comment. The
+  script refuses unless `<slug>` is a successful capture (its meta has no error and a 2xx status) with
+  at least 1,000 characters of text — an empty JavaScript shell does not count — captured from the
+  target's own site (same registrable domain, or a site `TERMS_ELSEWHERE` in the script records for
+  it), and is neither the target page itself nor `urls.txt`. What no script can check, whoever queues
+  the line does: that the capture is the terms, read, with no bar on automated access. **A `js` line
+  written here by hand, or typed into the dispatch box, is checked by no code** — the reviewed commit
+  is the gate. `--js` is also what lets a Salesforce `/s/article/` page be queued at all (without it,
+  the script refuses such a page as a shell the runner cannot read). A URL already active in this file
+  is flagged by editing its line (add `js` after the slug, with the terms cited in its comment), not
+  queued again.
 - **No browser, no silent week.** The workflow installs the browser only when the list has a `js`
-  line. If it still cannot start one, the `js` lines are skipped — nothing is written for them and
-  their earlier captures stay as they were, because a missing browser is not the site's answer — the
-  plain lines are stored and committed as usual, and the run then fails in its last step.
-- **Never `tiktok.com`** — refused at parse time as above, and blocked inside the browser too, so a
-  page that embeds or redirects to TikTok does not fetch it.
+  line. If it still cannot start one, or the browser stops during the run, the `js` lines from then on
+  are skipped — including the one that was rendering when it stopped — and nothing is written for them:
+  their earlier captures stay as they were, because a missing or crashed browser is not the site's
+  answer. The plain lines are stored and committed as usual, and the run then fails in its last step.
+- **Never `tiktok.com`** — refused at parse time as above, and unreachable from inside the browser:
+  Chromium is launched with a host-resolver rule under which no `tiktok.com` name resolves (with or
+  without a trailing dot), so a page that redirects to TikTok, embeds it, preconnects to it or opens a
+  WebSocket to it contacts nothing there; requests to it are also aborted as a second layer; and a page
+  whose main frame went to TikTok (a redirect, or its own script) is never stored — its meta says
+  `redirected to tiktok.com (<host>); not followed`. Limits, stated: a TikTok server addressed by a bare
+  IP address is not recognised, and behind a proxy that resolves names itself the resolver rule does not
+  apply, so a subresource redirected there would be requested (the page itself is still not stored).
+- **The write token.** The workflow's checkout keeps no token (`persist-credentials: false`); only the
+  pull before the fetch and the push after it are given one. The step in which Chromium runs a page's
+  JavaScript (without its OS sandbox, Playwright's default) holds no write credential.
 
 ## Running it
 

@@ -21,13 +21,20 @@ import * as rw from "../../../scripts/render-watch.mjs";
 const {
   bodyChanged,
   browserContextOptions,
+  chromiumLaunchOptions,
+  fetchOne,
   isTikTokHost,
+  launchChromium,
   loadPlaywright,
   main,
   MAX_BYTES,
+  MAX_REDIRECTS,
   parseUrlList,
   renderWithBrowser,
   sha256,
+  TIKTOK_HOST_RESOLVER_RULES,
+  tiktokHostInChain,
+  tiktokRedirectError,
   TIMEOUT_MS,
   USER_AGENT,
 } = rw;
@@ -139,11 +146,25 @@ interface PageSpec {
   idle?: "ok" | "timeout";
   gotoError?: Error;
   noResponse?: boolean;
+  /** Main-frame navigation requests the page makes during goto (a server redirect chain, in order). */
+  mainFrameNavigations?: string[];
+  /** Navigation requests of a child frame (an embed) during goto. */
+  childFrameNavigations?: string[];
+  /** A main-frame navigation the page's own script starts while the network settles. */
+  navigatesDuringIdle?: string;
+  /** The final response's URL and the URLs that redirected to it, first to last (a resolver rule that did not apply). */
+  responseUrl?: string;
+  redirectedFrom?: string[];
+  /** page.content() never settles: a script spinning on the main thread. */
+  contentHangs?: boolean;
+  /** Chromium dies during this navigation. */
+  crashesDuringGoto?: boolean;
 }
 
 interface FakeContext {
   options: Record<string, unknown>;
   closed: boolean;
+  onClose: Array<() => void>;
   routes: Array<{ matcher: unknown; handler: (route: unknown) => unknown }>;
   wsRoutes: Array<{ matcher: unknown; handler: (ws: unknown) => unknown }>;
   pages: number;
@@ -168,7 +189,7 @@ function fakeBrowser(pages: Record<string, PageSpec>) {
       state.closed = true;
     },
     async newContext(options: Record<string, unknown>) {
-      const ctx: FakeContext = { options, closed: false, routes: [], wsRoutes: [], pages: 0 };
+      const ctx: FakeContext = { options, closed: false, onClose: [], routes: [], wsRoutes: [], pages: 0 };
       contexts.push(ctx);
       return {
         async route(matcher: unknown, handler: (route: unknown) => unknown) {
@@ -180,14 +201,37 @@ function fakeBrowser(pages: Record<string, PageSpec>) {
         async newPage() {
           ctx.pages += 1;
           let spec: PageSpec = {};
+          const mainFrame = { name: "main" };
+          const childFrame = { name: "child" };
+          const listeners: Array<(request: unknown) => void> = [];
+          const emit = (url: string, frame: object) => {
+            const request = { url: () => url, isNavigationRequest: () => true, frame: () => frame };
+            for (const listener of listeners) listener(request);
+          };
           return {
+            on(event: string, listener: (request: unknown) => void) {
+              if (event === "request") listeners.push(listener);
+            },
+            mainFrame: () => mainFrame,
             async goto(url: string, options: unknown) {
               gotos.push({ url, options });
               spec = pages[url] ?? {};
+              for (const hop of spec.mainFrameNavigations ?? []) emit(hop, mainFrame);
+              for (const hop of spec.childFrameNavigations ?? []) emit(hop, childFrame);
+              if (spec.crashesDuringGoto) {
+                state.closed = true;
+                throw new Error("page.goto: Target page, context or browser has been closed\nCall log:\n  - ...");
+              }
               if (spec.gotoError) throw spec.gotoError;
               if (spec.noResponse) return null;
               const status = spec.status ?? 200;
+              // request().redirectedFrom() walks back from the final request, as Playwright's does.
+              const chain = [...(spec.redirectedFrom ?? []), spec.responseUrl ?? url];
+              const requestAt = (i: number): unknown =>
+                i < 0 ? null : { url: () => chain[i], redirectedFrom: () => requestAt(i - 1) };
               return {
+                url: () => spec.responseUrl ?? url,
+                request: () => requestAt(chain.length - 1),
                 status: () => status,
                 statusText: () => spec.statusText ?? "",
                 ok: () => status >= 200 && status < 300,
@@ -197,15 +241,23 @@ function fakeBrowser(pages: Record<string, PageSpec>) {
             },
             async waitForLoadState(loadState: string, options: { timeout: number }) {
               waits.push({ state: loadState, options });
+              if (spec.navigatesDuringIdle) emit(spec.navigatesDuringIdle, mainFrame);
               if (spec.idle === "timeout") throw playwrightTimeout("page.waitForLoadState: Timeout exceeded.");
             },
-            async content() {
-              return spec.html ?? "";
+            content() {
+              if (spec.contentHangs) {
+                // Settles only when its context is closed, as Playwright's does ("Target closed").
+                return new Promise<string>((_resolve, reject) => {
+                  ctx.onClose.push(() => reject(new Error("page.content: Target page, context or browser has been closed")));
+                });
+              }
+              return Promise.resolve(spec.html ?? "");
             },
           };
         },
         async close() {
           ctx.closed = true;
+          for (const fn of ctx.onClose) fn();
         },
       };
     },
@@ -260,7 +312,7 @@ describe("renderWithBrowser — plain navigation only", () => {
     });
   });
 
-  it("blocks every request to tiktok.com from inside the page — a subresource, an embed or a redirect", async () => {
+  it("aborts every request to tiktok.com a page starts itself — a subresource, an embed, a WebSocket", async () => {
     const fake = fakeBrowser({ [ENTRY.url]: { html: RENDERED } });
     await renderWithBrowser(ENTRY, { browser: fake.browser });
 
@@ -371,6 +423,76 @@ describe("renderWithBrowser — plain navigation only", () => {
     expect(result).toMatchObject({ status: null, bytes: null, error: "the navigation produced no response" });
   });
 
+  it("stores nothing when the listed page redirects to tiktok.com, and says so instead of 'name not resolved'", async () => {
+    // The resolver rule makes the redirect target fail to resolve; the request event names the host.
+    const fake = fakeBrowser({
+      [ENTRY.url]: {
+        mainFrameNavigations: [ENTRY.url, "https://www.tiktok.com/@someone?lang=en"],
+        gotoError: new Error(`page.goto: net::ERR_NAME_NOT_RESOLVED at ${ENTRY.url}\nCall log:\n  - ...`),
+      },
+    });
+    const result = await renderWithBrowser(ENTRY, { browser: fake.browser });
+    expect(result).toEqual({
+      status: null,
+      contentType: null,
+      bytes: null,
+      truncated: false,
+      error: tiktokRedirectError("www.tiktok.com"),
+      renderedWith: "chromium",
+      networkIdle: null,
+    });
+    expect(result.error).toMatch(/redirected to tiktok\.com \(www\.tiktok\.com\); not followed.*CHANNEL_LOOP\.md §9/);
+    expect(fake.contexts[0].closed).toBe(true);
+  });
+
+  it("stores nothing when a redirect chain did reach tiktok.com (a resolver rule that did not apply)", async () => {
+    const fake = fakeBrowser({
+      [ENTRY.url]: { html: "<p>TIKTOK PAGE</p>", responseUrl: "https://www.tiktok.com./landing", redirectedFrom: [ENTRY.url] },
+    });
+    const result = await renderWithBrowser(ENTRY, { browser: fake.browser });
+    expect(result).toMatchObject({ bytes: null, error: tiktokRedirectError("www.tiktok.com.") });
+    expect(fake.waits).toHaveLength(0); // refused before the page was waited on or read
+  });
+
+  it("finds tiktok.com anywhere in a response's redirect chain, and nowhere else", () => {
+    const response = (urls: string[]) => {
+      const at = (i: number): unknown => (i < 0 ? null : { url: () => urls[i], redirectedFrom: () => at(i - 1) });
+      return { url: () => urls[urls.length - 1], request: () => at(urls.length - 1) };
+    };
+    expect(tiktokHostInChain(response(["https://a.example/", "https://vm.tiktok.com/x", "https://b.example/"]))).toBe("vm.tiktok.com");
+    expect(tiktokHostInChain(response(["https://a.example/", "https://b.example/"]))).toBeNull();
+    expect(tiktokHostInChain(response(["https://nottiktok.com/"]))).toBeNull();
+  });
+
+  it("stores nothing when the page's own script moves it to tiktok.com while the network settles", async () => {
+    const fake = fakeBrowser({ [ENTRY.url]: { html: RENDERED, navigatesDuringIdle: "https://m.tiktok.com/v/1" } });
+    const result = await renderWithBrowser(ENTRY, { browser: fake.browser });
+    expect(result).toMatchObject({ bytes: null, error: tiktokRedirectError("m.tiktok.com") });
+  });
+
+  it("still stores a page that merely embeds tiktok.com: a child frame's navigation is blocked, not the page", async () => {
+    const fake = fakeBrowser({ [ENTRY.url]: { html: RENDERED, childFrameNavigations: ["https://www.tiktok.com/embed/v2/1"] } });
+    const result = await renderWithBrowser(ENTRY, { browser: fake.browser });
+    expect(result).toMatchObject({ error: null, bytes: Buffer.from(RENDERED) });
+  });
+
+  it("reads the DOM inside the time left: a page whose content() never returns is closed and recorded as a timeout", async () => {
+    const fake = fakeBrowser({ [ENTRY.url]: { html: RENDERED, contentHangs: true } });
+    const started = Date.now();
+    const result = await renderWithBrowser(ENTRY, { browser: fake.browser, timeoutMs: 60 });
+    expect(Date.now() - started).toBeLessThan(2_000);
+    expect(result).toEqual({
+      status: 200,
+      contentType: "text/html; charset=utf-8",
+      bytes: null,
+      truncated: false,
+      error: "timeout after 60ms (the rendered page could not be read within the time left)",
+      renderedWith: "chromium",
+      networkIdle: null,
+    });
+    expect(fake.contexts[0].closed).toBe(true); // closing the context is what releases the hung call
+  });
+
   it("caps the stored DOM at MAX_BYTES and flags it as a sample", async () => {
     const big = `<html><body>${"x".repeat(200)}</body></html>`;
     const fake = fakeBrowser({ [ENTRY.url]: { html: big } });
@@ -378,6 +500,125 @@ describe("renderWithBrowser — plain navigation only", () => {
     expect(result.truncated).toBe(true);
     expect(result.bytes).toEqual(Buffer.from(big).subarray(0, 64));
     expect(MAX_BYTES).toBe(5 * 1024 * 1024);
+  });
+});
+
+describe("chromiumLaunchOptions — exactly what Chromium is started with", () => {
+  it("is headless with one argument: every tiktok.com name, with or without a trailing dot, fails to resolve", () => {
+    expect(TIKTOK_HOST_RESOLVER_RULES).toBe(
+      "MAP tiktok.com ~NOTFOUND, MAP *.tiktok.com ~NOTFOUND, MAP tiktok.com. ~NOTFOUND, MAP *.tiktok.com. ~NOTFOUND",
+    );
+    expect(chromiumLaunchOptions()).toEqual({ headless: true, args: [`--host-resolver-rules=${TIKTOK_HOST_RESOLVER_RULES}`] });
+  });
+
+  it("is what launchChromium passes to chromium.launch, and nothing else", async () => {
+    const launches: unknown[] = [];
+    const browser = { marker: "browser" };
+    const load = async () => ({
+      chromium: {
+        launch: async (options: unknown) => {
+          launches.push(options);
+          return browser;
+        },
+      },
+    });
+    expect(await launchChromium({ load })).toBe(browser);
+    expect(launches).toEqual([chromiumLaunchOptions()]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// fetchOne — the plain mode follows redirects by hand, never to tiktok.com
+// ---------------------------------------------------------------------------
+
+describe("fetchOne — redirects followed by hand, a tiktok.com hop refused before it is requested", () => {
+  const LISTED = { url: "https://short.example/go", slug: "short-go", lineNumber: 1 };
+  type Hop = { status: number; location?: string; body?: string; contentType?: string };
+
+  function stubChain(hops: Record<string, Hop>) {
+    const calls: Array<{ url: string; init: Record<string, unknown> }> = [];
+    const fetchImpl = async (url: string, init: Record<string, unknown>) => {
+      calls.push({ url, init });
+      const hop = hops[url];
+      if (!hop) throw new TypeError(`fetch failed (the stub has no ${url})`);
+      const headers: Record<string, string> = { "content-type": hop.contentType ?? "text/html; charset=utf-8" };
+      if (hop.location) headers.location = hop.location;
+      return new Response(hop.body ?? null, { status: hop.status, headers });
+    };
+    return { calls, fetchImpl };
+  }
+
+  it("follows a relative redirect with the same headers, asks fetch not to follow, and returns the final page", async () => {
+    const { calls, fetchImpl } = stubChain({
+      [LISTED.url]: { status: 301, location: "/landing?x=1" },
+      "https://short.example/landing?x=1": { status: 200, body: "<p>final</p>" },
+    });
+    const result = await fetchOne(LISTED, { fetchImpl });
+    expect(result).toEqual({
+      status: 200,
+      contentType: "text/html; charset=utf-8",
+      bytes: Buffer.from("<p>final</p>"),
+      truncated: false,
+      error: null,
+    });
+    expect(calls.map((c) => c.url)).toEqual([LISTED.url, "https://short.example/landing?x=1"]);
+    for (const call of calls) {
+      expect(call.init.redirect).toBe("manual");
+      expect(call.init.headers).toEqual(calls[0].init.headers);
+      expect((call.init.headers as Record<string, string>)["user-agent"]).toBe(USER_AGENT);
+    }
+  });
+
+  it("refuses a hop to tiktok.com in any spelling, before requesting it, and records the redirect's status", async () => {
+    for (const [location, host] of [
+      ["https://www.tiktok.com/@someone", "www.tiktok.com"],
+      ["https://WWW.TikTok.com./legal", "www.tiktok.com."],
+      ["//vm.tiktok.com/ZMabc/", "vm.tiktok.com"],
+      ["http://tiktok.com:443/", "tiktok.com"],
+    ]) {
+      const { calls, fetchImpl } = stubChain({ [LISTED.url]: { status: 302, location } });
+      const result = await fetchOne(LISTED, { fetchImpl });
+      expect(result, location).toEqual({
+        status: 302,
+        contentType: "text/html; charset=utf-8",
+        bytes: null,
+        truncated: false,
+        error: tiktokRedirectError(host),
+      });
+      expect(calls.map((c) => c.url), location).toEqual([LISTED.url]); // TikTok itself was never asked
+    }
+  });
+
+  it("refuses a tiktok.com hop further down a chain (a shortener behind a shortener)", async () => {
+    const { calls, fetchImpl } = stubChain({
+      [LISTED.url]: { status: 307, location: "https://second.example/r" },
+      "https://second.example/r": { status: 308, location: "https://m.tiktok.com/v/1" },
+    });
+    const result = await fetchOne(LISTED, { fetchImpl });
+    expect(result).toMatchObject({ status: 308, bytes: null, error: tiktokRedirectError("m.tiktok.com") });
+    expect(calls.map((c) => c.url)).toEqual([LISTED.url, "https://second.example/r"]);
+  });
+
+  it(`follows at most MAX_REDIRECTS (${20}) hops, the Fetch standard's own limit`, async () => {
+    const hops: Record<string, Hop> = {};
+    for (let i = 0; i <= MAX_REDIRECTS + 1; i += 1) {
+      hops[i === 0 ? LISTED.url : `https://short.example/${i}`] = { status: 302, location: `https://short.example/${i + 1}` };
+    }
+    const { calls, fetchImpl } = stubChain(hops);
+    const result = await fetchOne(LISTED, { fetchImpl });
+    expect(MAX_REDIRECTS).toBe(20);
+    expect(result).toMatchObject({ status: 302, bytes: null, error: "more than 20 redirects; not followed" });
+    expect(calls).toHaveLength(MAX_REDIRECTS + 1);
+  });
+
+  it("records a 3xx with no Location as the answer, as before, and refuses a non-http(s) Location", async () => {
+    const plain = stubChain({ [LISTED.url]: { status: 301 } });
+    expect(await fetchOne(LISTED, { fetchImpl: plain.fetchImpl })).toMatchObject({ status: 301, error: "HTTP 301", bytes: null });
+    const ftp = stubChain({ [LISTED.url]: { status: 302, location: "ftp://files.example/x" } });
+    expect(await fetchOne(LISTED, { fetchImpl: ftp.fetchImpl })).toMatchObject({
+      status: 302,
+      error: "HTTP 302 redirect to a ftp: URL; not followed",
+    });
   });
 });
 
@@ -603,7 +844,7 @@ describe("main — js lines", () => {
     expect(readdirSync(out)).toContain("ex-terms.meta.json");
     expect(readFileSync(outputFile, "utf8")).toBe("js_skipped=2\n");
     expect(stdout.text()).toMatch(/SKIPPED\s+ex-identity\s+js mode: playwright-core is not installed on this host \(MODULE_NOT_FOUND\)/);
-    expect(stdout.text()).toMatch(/2 js line\(s\) skipped: no browser could be started/);
+    expect(stdout.text()).toMatch(/2 js line\(s\) skipped: the browser was unavailable/);
   });
 
   it("skips the remaining js lines when the browser dies mid-run, rather than blaming their sites", async () => {
@@ -629,6 +870,37 @@ describe("main — js lines", () => {
     expect(readdirSync(out).filter((n) => n.startsWith("ex-hub"))).toEqual([]);
     expect(readFileSync(outputFile, "utf8")).toBe("js_skipped=1\n");
     expect(stdout.text()).toMatch(/SKIPPED\s+ex-hub\s+js mode: the browser disconnected during the run/);
+  });
+
+  it("writes nothing for the line that was rendering when the browser died, nor for the ones after it", async () => {
+    const second = "https://hub.example.test/creators";
+    const fake = fakeBrowser({ [ENTRY.url]: { crashesDuringGoto: true }, [second]: { html: "<p>hub</p>" } });
+    const list = writeList(out, [`${ENTRY.url}\t${ENTRY.slug}\tjs`, `${second}\tex-hub\tjs`]);
+    const outputFile = join(out, "github-output");
+    writeFileSync(outputFile, "");
+    await main(["--list", list, "--out", out], { GITHUB_OUTPUT: outputFile }, { launchBrowser: fake.launchBrowser, delayMs: 0 });
+
+    expect(readdirSync(out).sort()).toEqual(["github-output", "urls.txt"]); // no meta blaming either site
+    expect(readFileSync(outputFile, "utf8")).toBe("js_skipped=2\n");
+    expect(stdout.text()).toMatch(/SKIPPED\s+ex-identity\s+js mode: the browser disconnected during the run/);
+    expect(stdout.text()).toMatch(/SKIPPED\s+ex-hub\s+js mode: the browser disconnected during the run/);
+    expect(stdout.text()).not.toMatch(/could not be fetched\.\s*$|1 could not be fetched/);
+    expect(fake.launchBrowser).toHaveBeenCalledTimes(1);
+  });
+
+  it("records a plain line that redirects to tiktok.com as a refusal: the redirect's status, no body, exit 0", async () => {
+    const calls: string[] = [];
+    vi.stubGlobal("fetch", async (url: string) => {
+      calls.push(String(url));
+      return new Response(null, { status: 302, headers: { location: "https://www.tiktok.com/@someone" } });
+    });
+    const list = writeList(out, ["https://link.example.test/bio\tex-bio"]);
+    expect(await main(["--list", list, "--out", out], {}, { delayMs: 0 })).toBe(0);
+    expect(calls).toEqual(["https://link.example.test/bio"]);
+    expect(readdirSync(out).sort()).toEqual(["ex-bio.meta.json", "urls.txt"]);
+    const meta = JSON.parse(readFileSync(join(out, "ex-bio.meta.json"), "utf8"));
+    expect(meta).toMatchObject({ status: 302, bodyPath: null, sha256: null, error: tiktokRedirectError("www.tiktok.com") });
+    expect("renderedWith" in meta).toBe(false);
   });
 
   it("reports js_skipped=0 to the workflow when every js line rendered", async () => {
@@ -696,7 +968,16 @@ describe("the js mode's code — no interaction, no stored state, no disguise", 
   });
 
   it("uses no stealth plugin or anti-detection setting", () => {
-    for (const forbidden of [/stealth/i, /AutomationControlled/, /webdriver/i, /ignoreHTTPSErrors/, /bypassCSP/, /--disable-blink/]) {
+    for (const forbidden of [
+      /stealth/i,
+      /AutomationControlled/,
+      /webdriver/i,
+      /ignoreHTTPSErrors/,
+      /bypassCSP/,
+      /--disable-blink/,
+      /disable-web-security/,
+      /disable-site-isolation/,
+    ]) {
       expect(code, String(forbidden)).not.toMatch(forbidden);
     }
   });
@@ -724,7 +1005,16 @@ describe(".github/workflows/render-watch.yml — the browser only when a js line
   const WORKFLOW = join(ROOT, ".github", "workflows", "render-watch.yml");
   const text = readFileSync(WORKFLOW, "utf8");
   const wf = parse(text) as Record<string, any>;
-  type Step = { name?: string; id?: string; if?: string; run?: string; env?: Record<string, string>; "continue-on-error"?: boolean };
+  type Step = {
+    name?: string;
+    id?: string;
+    if?: string;
+    uses?: string;
+    with?: Record<string, unknown>;
+    run?: string;
+    env?: Record<string, string>;
+    "continue-on-error"?: boolean;
+  };
   const steps: Step[] = wf.jobs.render.steps;
   const named = (prefix: string): Step => {
     const s = steps.find((x) => x.name?.startsWith(prefix));
@@ -736,6 +1026,48 @@ describe(".github/workflows/render-watch.yml — the browser only when a js line
   it("keeps the one permission it had: write contents, for the commit back", () => {
     expect(wf.permissions).toEqual({ contents: "write" });
     expect(wf.jobs.render.permissions).toBeUndefined();
+  });
+
+  it("bounds the job at 30 minutes, so a hang costs half an hour and not six", () => {
+    expect(wf.jobs.render["timeout-minutes"]).toBe(30);
+  });
+
+  it("leaves no write token in the checkout, and gives it only to the pull and the push", () => {
+    const checkout = steps.find((x) => x.uses?.startsWith("actions/checkout@"));
+    expect(checkout?.with?.["persist-credentials"]).toBe(false);
+    const withToken = steps.filter((x) => JSON.stringify(x).includes("github.token") || JSON.stringify(x).includes("secrets."));
+    expect(withToken.map((x) => x.name)).toEqual([
+      "Move to the branch tip before fetching",
+      "Commit the fetched pages back to this branch",
+    ]);
+    expect(wf.jobs.render.env).toBeUndefined();
+    expect(wf.env).toBeUndefined();
+    // The step that runs third-party JavaScript comes after the pull and before the push.
+    const fetchStep = named("Fetch the pages");
+    expect(index(fetchStep)).toBeGreaterThan(index(withToken[0]));
+    expect(index(fetchStep)).toBeLessThan(index(withToken[1]));
+  });
+
+  it("hands git the same header actions/checkout would have written, through the environment", () => {
+    const snippets = [named("Move to the branch tip"), named("Commit the fetched pages")].map((step) => {
+      const run = step.run!;
+      const from = run.indexOf("AUTH=$(");
+      const to = run.indexOf("\n", run.indexOf("export GIT_CONFIG_COUNT=1"));
+      expect(from, step.name).toBeGreaterThan(-1);
+      expect(run.search(/^\s*git /m), step.name).toBeGreaterThan(to); // before any git command runs
+      expect(step.env?.GH_TOKEN).toBe("${{ github.token }}");
+      return run.slice(from, to);
+    });
+    expect(snippets[0]).toBe(snippets[1]);
+    const ran = spawnSync("bash", ["-c", `set -euo pipefail\n${snippets[0]}\ngit config --get http.https://github.com/.extraheader`], {
+      env: { ...process.env, GH_TOKEN: "test-token" },
+      encoding: "utf8",
+    });
+    expect(ran.status).toBe(0);
+    const lines = ran.stdout.trim().split("\n");
+    const expected = Buffer.from("x-access-token:test-token").toString("base64");
+    expect(lines[0]).toBe(`::add-mask::${expected}`);
+    expect(lines.at(-1)).toBe(`AUTHORIZATION: basic ${expected}`);
   });
 
   it("asks the script whether the list has a js line, with the same override a run uses", () => {

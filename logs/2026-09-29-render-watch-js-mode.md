@@ -81,10 +81,11 @@
   ברשימה מעורבת מול ריצה של אותה שורה לבד.
 - **שינוי התנהגות קטן אחד בשורות רגילות:** כתובת שעוברת את ה-regex אבל לא את `new URL` נדחית עכשיו בזמן
   הפענוח. קודם היא הייתה נכשלת בזמן ה-fetch. אין שורה כזו ברשימה האמיתית.
-- **tiktok.com נחסם בשלוש שכבות:** בפענוח (בשני המצבים, בקובץ וב-override), ב-`route` בתוך הדפדפן
-  (הטמעה, סקריפט, הפניה, frame) וב-`routeWebSocket`. חסימת Service Workers נועדה לכך שדף לא יעקוף את
-  ה-route. במצב הרגיל, הפניה (redirect) ל-tiktok.com לא נחסמת. זו מגבלה מתועדת: ההחלטה הייתה לא לשנות את
-  `redirect: "follow"` של המצב הרגיל.
+- **tiktok.com (כפי שנבנה בסבב הראשון):** נחסם בפענוח (בשני המצבים, בקובץ וב-override), ב-`route` בתוך
+  הדפדפן וב-`routeWebSocket`, וחסימת Service Workers נועדה לכך שדף לא יעקוף את ה-route. **הטענה שה-route
+  חוסם גם הפניה הייתה שגויה:** Playwright קורא ל-handler של `route` רק עבור הכתובת הראשונה בשרשרת הפניות,
+  ולכן דף שענה `302 → www.tiktok.com` נלכד ונשמר. גם במצב הרגיל `redirect: "follow"` עקב אחרי הפניה
+  ל-tiktok.com. שני אלה תוקנו בסבב התיקונים (למטה).
 - **כשל host הוא לא התשובה של האתר.** אם אין `playwright-core` או Chromium, או שהדפדפן התנתק, שורות ה-JS
   מדולגות ולא נכתב עליהן כלום (הלכידה הקודמת נשארת). הסקריפט עדיין יוצא עם 0, כדי שהשורות הרגילות
   יישמרו ויעברו commit, ושלב אחרון ב-workflow מכשיל את הריצה. בחרתי בזה במקום exit לא-אפס כדי לא לשנות
@@ -96,11 +97,10 @@
   Chromium 141), אבל היא מ-17.10.2025. ב-runner הגרסה קובעת באיזה Chromium ירוץ JavaScript של צד שלישי,
   ולכן העדפתי את 1.63.0 (4.9.2026, Chrome Headless Shell 153). בדקתי ש-1.63.0 מפעילה את ה-Chromium 141
   המקומי דרך `executablePath`.
-- **סיכון שנשאר, ומתועד בכותרת ה-workflow:** ה-checkout מחזיק את ה-token עם הרשאת הכתיבה
-  (`persist-credentials`, בשביל ה-commit), ו-Playwright מריץ את Chromium בלי ה-sandbox של מערכת ההפעלה
-  כברירת מחדל. ההגנה היום היא הרשימה עצמה: כל שורת JS היא commit שנבדק ומפנה לתנאי השימוש. פיצול לשני
-  jobs (רינדור לקריאה בלבד, ו-commit נפרד) היה מסיר את החשיפה, אבל זה שינוי במנגנון ה-commit שעובד ולא
-  יכולתי לבדוק אותו כאן. זו החלטת אבטחה שמתאימה לבדיקה של Fable, לפי כלל הניתוב.
+- **סיכון ה-token (כפי שנבנה בסבב הראשון):** ה-checkout החזיק את ה-token עם הרשאת הכתיבה
+  (`persist-credentials` כברירת מחדל), ו-Playwright מריץ את Chromium בלי ה-sandbox של מערכת ההפעלה כברירת
+  מחדל. בסבב התיקונים ה-checkout כבר לא שומר את ה-token, והוא ניתן רק לשלבי ה-pull וה-push (למטה). פיצול
+  לשני jobs (רינדור לקריאה בלבד ו-commit נפרד) היה הולך רחוק יותר, ולא נבנה.
 - **Shadow DOM:** `page.content()` לא כולל shadow roots. זה רלוונטי לדפי Salesforce מסוג LWR. תיעדתי
   ב-README שאם לכידת JS של Trolley חוזרת ריקה, זה החשוד הראשון.
 
@@ -155,3 +155,130 @@
   בדיעבד, פעם אחת הייתה מספיקה כדי לזהות שהבעיה ב-CA של ה-proxy.
 - קריאה חלקית של קובץ הבדיקות הקיים (1,596 שורות), רק החלקים שהיו נחוצים (העזרים ו-main). זה היה
   חיסכון, לא בזבוז.
+
+---
+
+# סבב התיקונים אחרי הביקורת (29.9.2026, Opus fixer)
+
+## 1. מה המשתמש ביקש
+
+סקריפט ה-workflow העביר ל-Opus fixer את דוח הבונה ואת שבעת הממצאים של הסוקר על `b1fcb06`: לאמת כל ממצא,
+לתקן כל ממצא שמחזיק, לרשום כאן ממצאים שנדחו ולמה, להריץ שוב את הבדיקות, `pnpm typecheck` ו-
+`npx vitest run src/__tests__/revenue`, ולעשות commit. בלי `git stash`, בלי push, ובלי לגעת ב-CHECKPOINT,
+CHANNEL_LOOP, FABLE_QUEUE, MISSION ו-CLAUDE.md.
+
+## 2. הפעולות המרכזיות שביצעתי
+
+קודם אימתתי כל ממצא מול Chromium 141 אמיתי (`/opt/pw-browsers`) ו-playwright-core 1.63.0, עם סקריפטי הניסוי
+של הסוקר ועם סקריפטים משלי. כל שבעת הממצאים החזיקו. אחר כך תיקנתי:
+
+1. **הפניה ל-tiktok.com במצב JS (חוסם).** Chromium מופעל עכשיו עם `--host-resolver-rules`, כך ששום שם של
+   tiktok.com לא נפתר (`chromiumLaunchOptions`, `TIKTOK_HOST_RESOLVER_RULES`). **הכלל שהסוקר הציע לא הספיק:**
+   בדקתי ומצאתי ש-`www.tiktok.com.` (עם נקודה בסוף, ש-DNS פותר רגיל) עוקף את `MAP *.tiktok.com`. לכן נוספו
+   גם `MAP tiktok.com.` ו-`MAP *.tiktok.com.`. `route` ו-`routeWebSocket` נשארו כשכבה שנייה. בנוסף, מאזין
+   `request` על הדף מזהה ניווט של ה-main frame ל-tiktok.com (הפניית שרת או סקריפט של הדף), ו-
+   `tiktokHostInChain` בודק את `response.url()` ואת שרשרת `redirectedFrom()`. דף כזה לא נשמר, וה-meta אומר
+   `redirected to tiktok.com (<host>); not followed` במקום `ERR_NAME_NOT_RESOLVED` שמאשים את האתר.
+2. **הפניה ל-tiktok.com במצב הרגיל.** `fetchOne` עוקב עכשיו אחרי הפניות בעצמו (`redirect: "manual"`),
+   עד `MAX_REDIRECTS` = 20, ובודק כל קפיצה לפני שהוא מבקש אותה. קפיצה ל-tiktok.com נרשמת עם הסטטוס של ההפניה
+   ובלי גוף.
+3. **תקציב 30 השניות לא כלל את `page.content()`.** `page.content()` רץ עכשיו מול הזמן שנשאר
+   (`withinBudget`). אם הזמן נגמר, ה-context נסגר (וזה משחרר את הקריאה התקועה) ונרשם timeout. ל-job נוסף
+   `timeout-minutes: 30`.
+4. **שער ה-`--terms` קיבל כל קובץ `.txt`.** `checkTermsCapture` ב-`queue-zero-test.mjs` דורש עכשיו:
+   - meta בלי שגיאה ועם סטטוס 2xx;
+   - לפחות `MIN_TERMS_TEXT` (1,000) תווי טקסט, כך שמעטפת JS ריקה לא עוברת;
+   - שהלכידה לא תהיה הדף עצמו, ולא `urls` או ה-slug של השורה;
+   - שהלכידה באה מאותו אתר (`siteOf`: הדומיין הרשום, בקירוב) או מאתר ש-`TERMS_ELSEWHERE` רושם עבורו.
+5. **דפדפן שמת באמצע שורה.** אחרי שגיאה, `jsRenderer` בודק `browser.isConnected()`. אם הדפדפן מנותק, גם
+   השורה שהייתה באמצע מדולגת ולא נכתב עליה כלום. ההודעות אומרות עכשיו "the browser was unavailable" במקום
+   "no browser could be started".
+6. **ה-token לכתיבה.** ב-checkout יש `persist-credentials: false`. ה-token מועבר רק לשלב ה-pull ולשלב ה-push,
+   כ-`http.https://github.com/.extraheader` דרך `GIT_CONFIG_COUNT`/`KEY_0`/`VALUE_0` (אותה כותרת ש-
+   actions/checkout כותב, אבל בסביבה של השלב ולא ב-`.git/config`). בשלב ה-fetch, שבו Chromium מריץ JavaScript
+   של צד שלישי, אין credential לכתיבה.
+7. **אפשרויות ההפעלה לא נבדקו.** `launchChromium({ load })` מקבל loader מוזרק, ובדיקה מצמידה את האפשרויות
+   המדויקות (`headless: true` וארגומנט אחד, כלל ה-resolver).
+
+תיעדתי מחדש את כותרת `render-watch.mjs`, את כותרת ה-workflow ואת `research/rendered/README.md`.
+
+## 3. קבצים/מערכות ששונו
+
+- `scripts/render-watch.mjs`: `fetchOne`, `renderWithBrowser`, `tiktokHostInChain`, `chromiumLaunchOptions`,
+  `launchChromium`, `jsRenderer`, הודעות הדילוג, הכותרת
+- `scripts/queue-zero-test.mjs`: `checkTermsCapture`, `readTermsCapture`, `siteOf`, `MIN_TERMS_TEXT`,
+  `TERMS_ELSEWHERE`; הפרמטר `termsCaptured` הוחלף ב-`termsCapture` ו-`termsElsewhere`
+- `.github/workflows/render-watch.yml`: `timeout-minutes`, `persist-credentials: false`, token לשלבי ה-pull
+  וה-push בלבד, כותרת, הודעת הכישלון
+- `research/rendered/README.md`
+- `src/__tests__/revenue/render-watch-js.test.ts` (18 בדיקות חדשות, 62 בסך הכול)
+- `src/__tests__/revenue/queue-zero-test.test.ts` (21 בדיקות)
+- הקובץ הזה
+
+`render-watch.test.ts` (108 הבדיקות הישנות) לא השתנה. גם `urls.txt` ו-`ZERO-TESTS.md` לא השתנו.
+
+## 4. החלטות והנחות משמעותיות
+
+- **ממצאים שנדחו: אף אחד.** כל שבעת הממצאים שוחזרו ותוקנו. שלוש סטיות מההצעה של הסוקר, בכוונה:
+  - **20 הפניות ולא "בערך 10":** 20 הוא הגבול של תקן Fetch, ולכן כל דף ש-`redirect: "follow"` הגיע אליו
+    מגיע גם עכשיו. כך שורה רגילה לא משנה התנהגות.
+  - **ציטוט תנאי השימוש לא נאכף ב-`parseUrlList`:** הסוקר הציע לאכוף או לנסח מחדש, ובחרתי לנסח מחדש. שדה
+    ה-dispatch ב-GitHub הוא שורה אחת, ואכיפה של שורת הערה הייתה חוסמת שורות JS שם. כותרת ה-workflow וה-README
+    אומרים עכשיו במפורש שעריכה ידנית או dispatch לא נבדקים בקוד, ושה-commit הנבדק הוא השער.
+  - **כלל ה-resolver הורחב לשמות עם נקודה בסוף** (ראו סעיף 2).
+- **`siteOf` בלי Public Suffix List:** קירוב (שתי תוויות אחרונות; שלוש תחת ccTLD עם `co`/`gov` וכדומה; תווית
+  אחת עמוקה יותר על מארח משותף כמו `notion.site` או `github.io`). מארח משותף שחסר ברשימה ייחשב אתר אחד, וזה
+  הכיוון המתירני. המגבלה מתועדת.
+- **`TERMS_ELSEWHERE` ריק.** מרכז ה-Creator Hub של n8n יושב על `n8n.notion.site`. אם התנאים שחלים עליו הם של
+  n8n, של Notion או של שניהם, זו החלטה שה-thread הראשי צריך לרשום שם עם הפניה, ולא החלטה שלי.
+- **`timeout-minutes: 30`:** שלב ה-fetch לקח 6 דקות ל-158 כתובות (ריצה 28, 28.9, לפי ה-API של GitHub),
+  כלומר בערך 8 דקות ל-211 היום. כל כתובת חסומה ב-30 שניות, כולל קריאת ה-DOM.
+- **סטטוס בהפניה ל-TikTok:** במצב הרגיל נרשם הסטטוס של ההפניה (302 וכו'). במצב JS נרשם `null`, כי הניווט
+  נכשל לפני שהייתה תשובה שאפשר לייחס לאתר.
+
+## 5. שגיאות וניסיונות שנכשלו
+
+- בניסוי ה-SIGKILL, `pgrep -f`/`pkill -f` עם תבנית שהופיעה גם בשורת הפקודה של מעטפת ה-Bash הרג את המעטפת
+  עצמה פעמיים. זה נפתר כשהרצתי את הניסוי בפקודה נפרדת שהטקסט שלה לא מכיל את התבנית.
+- `b.process()` לא קיים על Browser של Playwright (רק על BrowserServer), ולכן עברתי ל-`pgrep`.
+- בדיקת ה-workflow חיפשה `"git "` וגם מצאה את המילה בתוך הערה. תוקן ל-regex של שורת פקודה.
+
+## 6. בדיקות ופעולות ולידציה
+
+- **Chromium אמיתי עם הכלל** (`realcheck.mjs`, שרת TikTok מדומה על 127.0.0.1):
+  - הפניית 302 ל-`www.tiktok.com` ול-`www.tiktok.com.`, תמונה ו-iframe דרך הפניה, `fetch` דרך הפניה,
+    preconnect, ניווט ב-JS ו-meta refresh: **אפס בקשות הגיעו לשרת TikTok**. הדפים שהופנו לא נשמרו.
+  - דף עם `for(;;){}` הסתיים אחרי 5.3 שניות עם תקציב של 5 שניות, והדפדפן נשאר מחובר.
+  - בלי הכלל (הדמיה של proxy): דף שהופנה ל-TikTok עדיין לא נשמר. תת-משאב שהופנה כן הגיע, וזו המגבלה
+    המתועדת.
+- **הפעלה עם `chromiumLaunchOptions()` בדיוק:** עמוד רגיל נשמר, והפניה ל-TikTok נרשמה כסירוב.
+- **קריסה:** `browser.close()` אחרי שנייה, וגם SIGKILL ל-Chromium, באמצע טעינה של 3 שניות. בשני המקרים
+  `js_skipped=2`, ולא נכתב קובץ לאף שורה.
+- **`fetchOne` אמיתי מול שרת מקומי:** הפניה יחסית נעקבה, קפיצה ל-TikTok נעצרה עם 302, ולולאת הפניות נעצרה
+  אחרי 21 בקשות.
+- **git:** header שהוגדר דרך `GIT_CONFIG_*` הגיע כ-`Authorization` לשרת HTTP מקומי (git 2.43).
+- **השוואה בין הבסיס לתיקון:** `compare.mjs` של הסוקר, בין `f378977` לקוד המתוקן, על רשימה רגילה בשלושה
+  סבבים. הקבצים, ה-stdout וה-summary זהים בית-לבית.
+- **בדיקת red:** 28 מהבדיקות החדשות נכשלות מול הקוד של `b1fcb06` ועוברות מול הקוד המתוקן. הקבצים הוחלפו
+  זמנית ושוחזרו מגיבוי, והשחזור אומת ב-`cmp`.
+- **CLI של `queue-zero-test --dry-run`**, שלושת המקרים של הסוקר: `urls` נדחה (הרשימה עצמה).
+  `gamedistribution-developer-terms` נדחה ליעד של Trolley (אתר אחר). `trolley-identity-verification` נדחה
+  (68 תווים, מעטפת).
+- **ארבעה קבצי הבדיקות של האזור:** 197 עוברות. `pnpm typecheck`: יציאה 0.
+  `npx vitest run src/__tests__/revenue`: 42 קבצים, 1127 בדיקות עוברות.
+
+## 7. עבודה ידנית שחזרה על עצמה וכדאי להפוך לאוטומטית
+
+- רתמת Chromium מקומית (שרת origin ושרת "TikTok" מדומים, `MAP * 127.0.0.1`) נכתבה פעמיים, פעם אצל הסוקר
+  ופעם כאן. סקריפט קבוע ב-`scripts/` שמריץ את `renderWithBrowser` מול תרחישים כאלה ומדפיס כמה בקשות הגיעו
+  ל-TikTok היה חוסך את זה בכל שינוי עתידי.
+- הערה ל-thread הראשי: שני יעדי ה-JS של GameDistribution ו-n8n כבר נמצאים ב-`urls.txt` כשורות רגילות
+  פעילות, ולכן `queue-zero-test` יסרב להם (URL already in urls.txt). הדרך היא לערוך את השורה הקיימת ולהוסיף
+  את `js` ואת הציטוט. שורת Trolley מסומנת `# retired:`, ולכן לא נחשבת רשומה.
+
+## 8. על מה בוזבזו אסימונים, לפי פעולה
+
+- שני ניסיונות SIGKILL שהרגו את מעטפת ה-Bash (סעיף 5).
+- בדיקה אחת של ה-workflow שנכשלה על `"git "` בתוך הערה.
+- קריאה מלאה של `render-watch.mjs` (1,316 שורות) בהתחלה. זה היה נחוץ, כי ארבעה מהממצאים נוגעים בו.
+

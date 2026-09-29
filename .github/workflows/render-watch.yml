@@ -37,19 +37,26 @@ name: render-watch
 # week installs nothing, exactly as before. Plain navigation only: one page load per
 # URL, a fresh browser context each time, no clicks, no logins, no stored cookies, no
 # stealth settings, the same User-Agent and 30 s / 5 MB caps as a plain GET. A js line
-# must cite a rendered capture of the target's terms that does not bar automated
-# access (scripts/queue-zero-test.mjs --js --terms <slug> refuses without one).
-# render-watch never fetches tiktok.com in either mode: the parser refuses it and the
-# browser blocks it (logs/CHANNEL_LOOP.md §9; logs/FABLE_QUEUE.md row 16(d)).
-# A js line whose browser could not be started is skipped, not recorded as the site's
-# answer; the run then fails in its last step, after the plain captures are committed.
+# is queued with scripts/queue-zero-test.mjs --js --terms <slug>, which refuses unless
+# <slug> is a successful capture of the target site's own terms (and the person queueing
+# it has read them and found no bar on automated access). A js line added to urls.txt by
+# hand, or typed into the dispatch box below, is checked by no code: the reviewed commit,
+# or whoever dispatches, is the only gate there.
+# render-watch never fetches tiktok.com in either mode: the parser refuses it, a plain
+# fetch refuses a redirect to it before following, and the browser cannot resolve its
+# names at all (logs/CHANNEL_LOOP.md §9; logs/FABLE_QUEUE.md row 16(d)).
+# A js line whose browser is unavailable (not installed, not started, or stopped during
+# the run) is skipped, not recorded as the site's answer; the run then fails in its last
+# step, after the plain captures are committed.
 #
-# Stated, not hidden: the browser runs the target page's own JavaScript on a runner
-# whose checkout holds this job's write token (actions/checkout persists it for the
-# commit-back), and Playwright starts Chromium without its OS sandbox by default. The
-# guard is the list itself — every js line is a reviewed commit citing the site's terms.
-# A read-only render job with a separate commit job would remove the exposure; it is
-# not built here.
+# The write token. actions/checkout does NOT persist it (persist-credentials: false), and
+# it is handed to git only in the two steps that need it — the pull before the fetch and
+# the push after it — as an environment-scoped http.extraheader, the same header checkout
+# itself would have written. So the fetch step, where Chromium runs the target page's own
+# JavaScript (without its OS sandbox, Playwright's default), has no write credential in
+# .git/config or its environment. Stated, not hidden: that narrows the exposure, it does
+# not remove it — a page that escaped Chromium would still be on the runner the job runs
+# on. A read-only render job with a separate commit job would go further; not built here.
 
 on:
   workflow_dispatch:
@@ -90,6 +97,12 @@ concurrency:
 jobs:
   render:
     runs-on: ubuntu-latest
+    # The whole list took 6 minutes in the fetch step at 158 URLs (run 28, 28.9.2026), so about 8
+    # at today's 211. Every URL is bounded (30 s, the rendered DOM included), so 30 minutes is
+    # room, not a target: it is here so a hang nothing foresaw costs half an hour and not
+    # GitHub's default six hours. A cancelled run commits nothing, so keep it above the list's
+    # real duration as the list grows.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -97,6 +110,9 @@ jobs:
           # the one the workflow ran on, which is where the commit belongs: a
           # dispatch from a feature branch stores its pages on that branch.
           fetch-depth: 0
+          # No write token left in .git/config for the steps that follow: the fetch step runs
+          # third-party JavaScript. The pull and push steps get it for themselves (header comment).
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
@@ -138,7 +154,15 @@ jobs:
       # a stale tree — that stale comparison is what produced two commits fighting
       # over the same meta files on 7.9.2026.
       - name: Move to the branch tip before fetching
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
+          # The write token, for this step's git only (checkout persisted none). The same header
+          # actions/checkout writes, set through git's environment rather than .git/config.
+          AUTH=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          echo "::add-mask::${AUTH}"
+          export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0="http.https://github.com/.extraheader" GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH}"
           git config user.name "colony-bot"
           git config user.email "colony-bot@users.noreply.github.com"
           git pull --rebase origin "${GITHUB_REF_NAME}"
@@ -185,8 +209,15 @@ jobs:
         run: node scripts/render-watch.mjs
 
       - name: Commit the fetched pages back to this branch
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          # The write token, for this step's git only (checkout persisted none). The same header
+          # actions/checkout writes, set through git's environment rather than .git/config.
+          AUTH=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          echo "::add-mask::${AUTH}"
+          export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0="http.https://github.com/.extraheader" GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH}"
 
           git config user.name "colony-bot"
           git config user.email "colony-bot@users.noreply.github.com"
@@ -223,11 +254,11 @@ jobs:
           exit 1
 
       # Last, after the commit, so the plain captures are already on the branch: a js line
-      # that could not be rendered because no browser started must not pass as a quiet week.
+      # that could not be rendered because the browser was unavailable must not pass as a quiet week.
       - name: Fail the run if js lines could not be rendered
         if: steps.fetch.outputs.js_skipped != '' && steps.fetch.outputs.js_skipped != '0'
         env:
           JS_SKIPPED: ${{ steps.fetch.outputs.js_skipped }}
         run: |
-          echo "::error title=render-watch js mode::${JS_SKIPPED} js line(s) could not be rendered: no browser could be started. Their earlier captures are unchanged; see the fetch step's log." >&2
+          echo "::error title=render-watch js mode::${JS_SKIPPED} js line(s) could not be rendered: the browser was unavailable (not installed, not started, or stopped during the run). Their earlier captures are unchanged; the fetch step's SKIPPED lines say why." >&2
           exit 1
