@@ -1,0 +1,17 @@
+{
+  "url": "https://ypay.co.il/front/terms",
+  "slug": "terms-ypay",
+  "fetchedAt": "2026-09-29T16:22:28.093Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 78012,
+  "sha256": "f37d3bbdd0c65cdc3368cc9d74385e8c19d5472f0c15ac316a82a192a216cf79",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-ypay.html",
+  "textPath": "research/rendered/terms-ypay.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
