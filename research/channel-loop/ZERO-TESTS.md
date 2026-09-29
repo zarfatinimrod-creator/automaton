@@ -180,6 +180,12 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 171 | lines ruling (a), Israeli free tiers | https://www.sumit.co.il/invoices | free tier or trial, and whether it includes a logo |
 | 172 | lines ruling (a), Israeli free tiers | https://www.mybooks.co.il/free_invoicing_software | what the free tier includes, its document cap, and whether it has a logo |
 | 173 | lines ruling (a), Israeli free tiers | https://digital-invoice.co.il/ | the same three questions for a fifth free product |
+| 174 | lines ruling (h), refunds | https://www.nevo.co.il/law_html/law00/72393.htm | the Computers Law definition of 'מידע' and whether it excludes software, which decides whether a ₪79 licence key is excluded from cancellation under 14ג(ד)(3) |
+| 175 | lines ruling (h), refunds | http://www.gumroad.com/terms | Gumroad's own terms: merchant of record, refunds within 90 days, who the Israeli 'עוסק' is for a sale |
+| 176 | lines ruling (h), refunds | https://gumroad.com/help/article/190-how-do-i-get-a-refund | what a buyer is told about getting a refund |
+| 177 | lines ruling (h), refunds | https://gumroad.com/help/article/47-how-to-refund-a-customer | how a seller issues a refund (the refund responder's path) |
+| 178 | loop ruling (e)3, runner-issued documents | https://www.nevo.co.il/law_html/law01/271_001.htm | §31(3), §45 and §47(א): what an exempt dealer issues, and whether it can meet Wix's 'lawful tax invoice' |
+| 179 | loop ruling (e)3, runner-issued documents | https://www.nevo.co.il/law_html/law01/271_019.htm | reg 1 (adopting the bookkeeping instructions) and reg 26ד (exemption from the transaction invoice; a receipt on request) |
 
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no

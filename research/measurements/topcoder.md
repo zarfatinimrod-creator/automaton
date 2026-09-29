@@ -350,7 +350,8 @@ submissions, bots or agent-operated accounts was found. **UNKNOWN (none).**
   support.trolley.com/s/article/Identity-Verification and trolley.com/trust: "Recipients are prompted to upload a clear
   photo of their government-issued ID" and "**Live Selfie Verification**: Recipients take a live selfie to verify they
   are the same person shown in the ID document"; "live photo validation uses the power of live image recognition to
-  ensure the uploaded ID matches the actual person submitting it." snippet.
+  ensure the uploaded ID matches the actual person submitting it." snippet. **Superseded (tick 18):** the rendered
+  wording of the "live photo validation" line differs (`trolley-trust-idv-tool.txt:292`); see §29.9 (tick 18, rendered).
   **Counter-signal (github):** the webhook's `matchSignals` carry no face-match or liveness field, so the source cannot
   confirm the selfie; it only confirms a document check. The render in §G settles which is true.
 - **Israel on Trolley's country list:** no GitHub file names countries; no Trolley country-list URL was seen.
@@ -469,7 +470,8 @@ whole, script tags included. Every quote below was checked with `grep -n -F`.
 ### Kill verdict: **UNSETTLED**
 The camera clause ("or a camera step in payee onboarding", BOARD-LOOP.md:169) stands exactly where §29.9 left it:
 - **github grade:** every withdrawal is gated on identity verification.
-- **snippet grade:** that verification includes a live selfie.
+- **snippet grade:** that verification includes a live selfie. **Superseded (tick 18):** a live-photo step is now
+  named at rendered grade (`trolley-trust-idv-tool.txt:292`); the word "selfie" itself is still snippet only.
 
 ### What a rendered selfie would change
 - **If the selfie is mandatory for an individual payee:**
@@ -504,7 +506,7 @@ Rows 147-149 should come off `urls.txt`: two will always return the shell, and t
 - **Carried from §G, seen verbatim in the 29.9 GitHub read or its WebSearch result list (not a capture):**
   - https://trolley.com/trust/ (§G item 3). It is one of four trolley.com pages outside the Salesforce help centre in
     that result list (§A); https://trolley.com/blog/trolley-trust-idv-tool/ is another. Whether either is served as
-    HTML is UNKNOWN.
+    HTML is UNKNOWN. **Superseded (tick 18):** the blog post is served as HTML with its text (200, 677 lines).
   - https://www.topcoder.com/challenges/terms/detail/564a981e-6840-4a5c-894e-d5ad22e9cd6f (§G item 5, `prod.env.ts`
     `TERMS_URL`). It is the live candidate to replace row 149's dead URL.
 
@@ -555,10 +557,12 @@ read), **snippet** (a search result I could not open), **none** (my inference, m
   Verification) and 148 (FAQ) can be re-queued as `js` lines. That is the pre-registered confirm step for the camera
   clause in BOARD-LOOP.md:169, which §29.9 and tick 15 could not run.
 - Whether trolley.com's marketing and legal pages are served as HTML or as a JavaScript shell is UNKNOWN. No trolley.com
-  page outside the help centre has been captured.
+  page outside the help centre has been captured. **Superseded (tick 18):** both captured plainly with their text
+  (`trolley-terms-of-service`, `trolley-trust-idv-tool`, 200).
 
 ### Verdict: **KILL-PROPOSED** (unchanged)
-Nothing here is rendered, so G2 keeps its grades: github for the gate, snippet for the camera. The change is the route:
+Nothing here is rendered, so G2 keeps its grades: github for the gate, snippet for the camera. **Superseded (tick 18):**
+camera now rendered grade (§29.9 (tick 18, rendered)). The change is the route:
 three plain renders on trolley.com, then possibly two `js` re-renders on support.trolley.com.
 
 ### Next render URLs (in order; each URL is written above with its source)
@@ -571,3 +575,134 @@ three plain renders on trolley.com, then possibly two `js` re-renders on support
 Not queued: https://trolley.com/api-terms (the developer and payer API contract, not the payee side), the EU, Canada and
 UK variants (only if item 2 names one of them for Israel), and https://trolley.com/privacy-policy/ (a third party's link;
 item 3 is the URL under Trolley's own title).
+
+## 29.9 (tick 18, rendered)
+
+**Read 29.9.2026 by an Opus reader (tick 18, reader B).** Two plain captures from trolley.com. Both came back 200,
+not truncated, with their text in the HTML (neither is a JavaScript shell):
+
+| Capture (short name) | URL | fetchedAt | Text |
+|---|---|---|---|
+| `trolley-trust-idv-tool` (IDV) | https://trolley.com/blog/trolley-trust-idv-tool/ | 2026-09-29T09:56:52Z | 677 lines, 16,964 bytes |
+| `trolley-terms-of-service` (TOS) | https://trolley.com/terms-of-service/ | 2026-09-29T09:56:51Z | 712 lines, 56,761 bytes |
+
+Grades: **rendered** = these captures, cited `IDV:n` / `TOS:n` (`research/rendered/<slug>.txt`); **github** = §E above;
+**[inference]** is marked. Every quote was checked with `grep -n -F` against the capture.
+
+### What Trolley's IDV post names (rendered)
+- **The post is addressed to platforms. The people it verifies are the platform's recipients:**
+  - "Trust in Trolley to manage your recipient onboarding and IDV" (IDV:300; the same heading at :252).
+  - "We want you to rely on us to help you build trust in your recipients." (IDV:302)
+  - The platform's users are the people it pays: "adding new users (vendors, sellers, freelancers, artists… you name it) every
+    day." (IDV:235)
+- **The tool describes itself as live:** "Introducing Trolley IDV, our latest tool that uses live, multi-step ID
+  verification technology to validate the identity of your users" (IDV:245).
+- **The built-in steps**, under "Trolley IDV has built in:" (IDV:288):
+  - "Identity & document verification: Collect and validate IDs versus 11,000 official government ID templates from over
+    200 countries." (IDV:290)
+  - **"Live photo validation: Use the power of image recognition to ensure the uploaded ID is from the actual person
+    submitting it."** (IDV:292)
+  - "Proof of address and age comparisons: Verify details provided during onboarding, such as address and DOB, with the ID
+    document." (IDV:294)
+- **A platform switches IDV on.** The post covers "how to turn it on, and why you’ll want it as part of your onboarding
+  processes" (IDV:233), and asks "Wondering how to enable IDV in Trolley? Our Help Center takes you through the steps."
+  (IDV:298).
+- **Dates:** published "October 23, 2023" (IDV:227); "Last updated: February 25, 2026" (IDV:229).
+- **Word counts.**
+  - In IDV: "selfie" 0, "liveness" 0, "biometric" 0, "camera" 0, "webcam" 0, "face" 0, "live photo" 1 (:292). "video"
+    has 4 hits, all navigation ("Video games & eSports", :177).
+  - In TOS: 0 for every one of these words, with two exceptions that are not about verification. "video": navigation, plus
+    "videos" in the IP clause (:342). "face": 2 hits, both "Interface" (:238, :345).
+  - "Israel": 0 hits in either capture.
+
+### What the terms say about identity (rendered)
+- **The terms are the payer's contract, so tick 17's [inference] is confirmed:**
+  - "For companies registered in the United States" (TOS:230).
+  - "The Services may only be used by legally-constituted entities" (TOS:235).
+  - Recipients are the third parties who get paid: "to facilitate the making of payments to third party individuals or
+    companies around the world (“Recipients”)" (TOS:233).
+  - [inference] If Topcoder is on the standard terms, these are Topcoder's terms with Trolley, not a member's terms (TOS:324 defers to an "applicable service agreement"; no capture shows which Topcoder signed).
+- **The only identity text is about the customer opening its own account:** "We may also ask to see your driver’s license
+  or other identifying documents for you, the Legal Entity, and its beneficial owners." (TOS:285). The terms describe no
+  identity-verification step a recipient performs; the only check that touches recipients is the payer-run IRS TIN Matching, which "verifies the TIN … provided by your Recipients against their name" (TOS:303).
+- **IDV is billed to the payer as a separate service.** The fees clause lists "fraud prevention services, bank account
+  validation services, identity verification services, and background screening services" (TOS:324).
+- [inference] Put this next to "how to turn it on" (IDV:233): IDV is a service the platform turns on. Topcoder turned it
+  on. Its widget requests `products: 'pay,tax,trust'`, and withdrawal is gated on it (§E, github).
+
+### Kill verdict (pre-registered): **KILL — fires**
+- **The ruling:** "if Trolley's rendered text names a selfie, liveness or video" / "step, Topcoder is killed on the camera
+  rule without a sitting" (`RULING-2026-09-29-loop.md:113-114`).
+- **What the rendered text names:**
+  - A "Live photo validation" step that uses image recognition to make sure the ID is from "the actual person submitting
+    it" (IDV:292).
+  - It sits inside a tool built on "live, multi-step ID verification technology" (IDV:245), sold for "recipient onboarding"
+    (IDV:300).
+  - [inference] IDV:292 says only "Live photo validation … ensure the uploaded ID is from the actual person submitting it". A live photo is a camera capture whether it shows a face or an ID, so "a camera step in payee onboarding" (`BOARD-LOOP.md:169`) is met either way; the kill does not rest on reading it as a selfie.
+    It is also a camera step, whatever the photo shows.
+  - Document verification is a separate bullet, listed first (IDV:290). So the text is **not** document-only.
+- **The chain to a Topcoder member:**
+  1. Topcoder releases no withdrawal without an ACTIVE Trolley identity verification, and its widget loads `trust`
+     (github, §E).
+  2. Trolley IDV has live photo validation "built in" (rendered, IDV:288, :292).
+  - The kill rule is met: "or a camera step in payee onboarding" (`BOARD-LOOP.md:169`).
+- **What the text does not settle:** whether a platform can switch off the live-photo step and keep the document check.
+  - The post describes the product as sold to platforms, not the screens a payee sees.
+  - No rendered text says the step is optional or set by the payer. That was §29.9's reopen condition (`:392-394`).
+  - The only counter-signal is still an absence on GitHub: the webhook's `matchSignals` has no face-match field (§E).
+  - §29.9's own confirm test ("a selfie or liveness step that an individual recipient must complete", `:390-391`) asked
+    for more than this post shows. The board's pre-registered wording (above) says "names", and that test is met.
+- **Reading note for the board:** "selfie" and "liveness" have 0 hits, and "video" has 0 hits outside navigation (4 navigation hits in IDV: 177, 178, 474, 622).
+  - If "names" means one of those three words has to appear, this is **UNSETTLED**. The js render under "Next render URLs"
+    would then decide it.
+  - This reader reads the three words as examples of a camera step. "Live photo … the actual person submitting it" is one.
+
+### Gates (changes from Tick 15 only)
+| Gate | Verdict | Grade | Basis |
+|---|---|---|---|
+| G2 paid in Israel, no camera | **FAIL** | github (gate) + **rendered** (camera) | Withdrawal is gated on Trolley IDV (github, §E). IDV has "Live photo validation" built in (IDV:292). Israel: 0 hits in both captures, still UNKNOWN. |
+
+G1 and G3-G7 are unchanged.
+
+### Verdict: **KILLED on the camera clause** (the pre-registered rule; no sitting)
+- The `status=COMPLETED` render (§G items 9-10) is **not** queued. The ruling queues it only on a document-only reading.
+- §G items 4-8 and 11-12 are dropped unread.
+- §E's two snippet quotes stay at snippet grade: "Live Selfie Verification" appears in neither capture, and the rendered
+  "live photo" wording differs (IDV:292).
+
+### The `--js` gate for the help-centre article (asked for; not needed if the kill stands)
+- **What the terms bar (rendered).** Visiting the site counts as using the Services: "using our Services includes visiting
+  the Website, even if you have not created or logged into your Trolley account." (TOS:234). Section 2(vi) then bars:
+  - "(3) bypass any measures Trolley may use to prevent or restrict access to the Services or any element thereof;"
+    (TOS:256)
+  - "(4) use manual or automated software, devices, or other processes to “crawl” or “spider” any page of the Website; or"
+    (TOS:257)
+  - "(5) harvest or scrape any content from the Website in an unreasonable manner; and;" (TOS:258)
+- **Which site that covers:** "https://www.trolley.com (the “Website”) or such other channel we designate from time to
+  time." (TOS:233). Whether support.trolley.com is such a channel is not stated.
+- **No general bar on automated access.** The terms bar crawling or spidering (by hand or by software), scraping "in an
+  unreasonable manner", and getting around access controls.
+- [inference, for the board] One scheduled render of one named article follows no links, so it is not a crawl. It is not
+  unreasonable scraping either.
+  - Rows 166-167's plain GETs of trolley.com already ran under this same clause. A `js` line that rests on it is the same
+    kind of access.
+  - Facer is different (`RULING-2026-09-29-loop.md:396`). Its clause named "agent" and "software" as barred means of any
+    access. Trolley's clause names only the crawl, spider and scrape activities.
+- **Script check (dry run; nothing written).**
+  - `checkTermsCapture` passed with no throw for `terms: trolley-terms-of-service`, target
+    `https://support.trolley.com/s/article/Identity-Verification`. The capture has 56,457 characters of trimmed text, and
+    `siteOf` gives `trolley.com` for both hosts.
+  - `node scripts/queue-zero-test.mjs --dry-run --js --terms trolley-terms-of-service --url
+    https://support.trolley.com/s/article/Identity-Verification --slug trolley-identity-verification …` printed `would
+    queue row 174: trolley-identity-verification (js)`, exit 0. A new slug, `trolley-identity-verification-js`, gave the
+    same result.
+  - Control: the same call without `--js` was refused as "a Salesforce Experience Cloud page (/s/article/...)", exit 1.
+  - The sha256 of `ZERO-TESTS.md` and `urls.txt` was identical before and after, and `git status` shows neither file changed.
+
+### Next render URLs
+- **None required.** The kill fires without a sitting.
+- **Only if the board reads "names" literally (UNSETTLED):**
+  - URL: https://support.trolley.com/s/article/Identity-Verification, as a `js` line, queued with
+    `--js --terms trolley-terms-of-service`.
+  - Seen in: §G item 1. The dry run above passes.
+  - It decides one thing: whether the live-photo step is mandatory for an individual recipient.

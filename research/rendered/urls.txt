@@ -613,3 +613,15 @@ https://www.sumit.co.il/invoices	sumit-invoices
 https://www.mybooks.co.il/free_invoicing_software	mybooks-free-invoicing
 # research/channel-loop/ZERO-TESTS.md row 173 — lines ruling 29.9 (a): digital-invoice.co.il (29.9.2026).
 https://digital-invoice.co.il/	digital-invoice-home
+# research/channel-loop/ZERO-TESTS.md row 174 — tick 18 read (refund-law-il.md): the Computers Law, nevo id 72393 (29.9.2026).
+https://www.nevo.co.il/law_html/law00/72393.htm	nevo-computers-law
+# research/channel-loop/ZERO-TESTS.md row 175 — tick 18 read: Gumroad's terms (29.9.2026).
+http://www.gumroad.com/terms	gumroad-terms
+# research/channel-loop/ZERO-TESTS.md row 176 — tick 18 read: Gumroad help article 190 (29.9.2026).
+https://gumroad.com/help/article/190-how-do-i-get-a-refund	gumroad-help-get-a-refund
+# research/channel-loop/ZERO-TESTS.md row 177 — tick 18 read: Gumroad help article 47 (29.9.2026).
+https://gumroad.com/help/article/47-how-to-refund-a-customer	gumroad-help-issue-refund
+# research/channel-loop/ZERO-TESTS.md row 178 — tick 18 read (osek-patur-documents.md): the VAT law (29.9.2026).
+https://www.nevo.co.il/law_html/law01/271_001.htm	nevo-vat-law
+# research/channel-loop/ZERO-TESTS.md row 179 — tick 18 read: the VAT bookkeeping regulations (29.9.2026).
+https://www.nevo.co.il/law_html/law01/271_019.htm	nevo-vat-bookkeeping-regs
