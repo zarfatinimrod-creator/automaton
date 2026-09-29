@@ -1,17 +1,17 @@
 {
   "url": "https://help.streetlib.com/article/699-billing-profile-and-payment-method",
   "slug": "help-streetlib-com-article-699-billing-profile",
-  "fetchedAt": "2026-09-28T23:21:12.734Z",
+  "fetchedAt": "2026-09-29T11:30:44.927Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 86482,
-  "sha256": "8fd6992a55a9bc4dcb039a816db134da6e21a86afbd76ff622e9c5d81f658ccf",
+  "sha256": "c6e3a21b76693c35d3678d51c1a68fdb968b578fdad349c4a7e31480c45e5158",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/help-streetlib-com-article-699-billing-profile.html",
   "textPath": "research/rendered/help-streetlib-com-article-699-billing-profile.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "8fd6992a55a9bc4dcb039a816db134da6e21a86afbd76ff622e9c5d81f658ccf",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -1,17 +1,17 @@
 {
   "url": "https://www.paypal.com/il/legalhub/paypal/useragreement-full?locale.x=en_IL",
   "slug": "paypal-il-user-agreement",
-  "fetchedAt": "2026-09-28T20:33:37.909Z",
+  "fetchedAt": "2026-09-29T11:28:36.104Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 2012865,
-  "sha256": "0ace06b937ff891a91df6757956241a3c2e8c576030e853d2fd820485196e8a3",
+  "sha256": "285e3c3294272eb5012f850510a518514f36c0543950a4dc10108658e0783ced",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/paypal-il-user-agreement.html",
   "textPath": "research/rendered/paypal-il-user-agreement.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "ef71f6b2fc415fde7ceedf49fc926121eb50ff40160a6bbf2295066a1356f43e",
+  "previousSha256": "0ace06b937ff891a91df6757956241a3c2e8c576030e853d2fd820485196e8a3",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

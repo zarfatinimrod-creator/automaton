@@ -1,17 +1,17 @@
 {
   "url": "https://api.apify.com/v2/store?search=israel&limit=1000",
   "slug": "apify-store-israel-default",
-  "fetchedAt": "2026-09-28T20:33:46.103Z",
+  "fetchedAt": "2026-09-29T11:28:44.723Z",
   "status": 200,
   "contentType": "application/json; charset=utf-8",
-  "byteLength": 1512332,
-  "sha256": "c103ba1ee1c02dc15008475dbedb0b15b57c1b3aad5e6e5356852b55d5cb6227",
+  "byteLength": 1516415,
+  "sha256": "5854b20698a0b6c179b1cb9deded441ad3868206cd7e9a00e01ea39283ca3e6b",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/apify-store-israel-default.json",
   "textPath": null,
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "e340bb31ba9c8a2d139de08eea2767d7f8ccbac6c98fc295c4f308ce166043c4",
+  "previousSha256": "c103ba1ee1c02dc15008475dbedb0b15b57c1b3aad5e6e5356852b55d5cb6227",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

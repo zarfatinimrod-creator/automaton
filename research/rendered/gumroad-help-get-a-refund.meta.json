@@ -1,17 +1,17 @@
 {
   "url": "https://gumroad.com/help/article/190-how-do-i-get-a-refund",
   "slug": "gumroad-help-get-a-refund",
-  "fetchedAt": "2026-09-29T10:46:47.908Z",
+  "fetchedAt": "2026-09-29T11:31:33.058Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 20724,
-  "sha256": "d814da7eb8e76724f0dbf99fa2a4d150cfbabb45d494aef5bfb79de8b23fe53e",
+  "sha256": "0d8d420f5925f5cb53959ed80d14aa320aeca44f3e0cb52cc5067e43845bb5cc",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/gumroad-help-get-a-refund.html",
   "textPath": "research/rendered/gumroad-help-get-a-refund.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "d814da7eb8e76724f0dbf99fa2a4d150cfbabb45d494aef5bfb79de8b23fe53e",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -59,7 +59,7 @@ Support
 Enterprise
 Pricing
 
-206,216 Sign in Get Started
+206,245 Sign in Get Started
 
 See llms.txt for all machine-readable content.
 
@@ -68,7 +68,7 @@ Explore contributions from our talented n8n creators
 
 Rahul Joshi
 
-350 workflow templates
+352 workflow templates
 
 Oneclick AI Squad
 

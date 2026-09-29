@@ -1,17 +1,17 @@
 {
   "url": "https://community.facer.io/t/software-to-create-watch-faces-here-on-facer/86976",
   "slug": "facer-third-party-tools",
-  "fetchedAt": "2026-09-28T20:34:44.315Z",
+  "fetchedAt": "2026-09-29T11:29:23.115Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 269916,
-  "sha256": "3f97b074142bb275d6b465e1ab54766e634d2cb19d1b364a9f99f698a1c984e0",
+  "byteLength": 270229,
+  "sha256": "45da791916a7273b8e8c6f90e71224086e9be865af53f98067409e37f8481d8d",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/facer-third-party-tools.html",
   "textPath": "research/rendered/facer-third-party-tools.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "7cfe77ecf1328f9999f8e1c8c3efe530fe0222fd692d2caf4916b6c2ca63147f",
+  "previousSha256": "3f97b074142bb275d6b465e1ab54766e634d2cb19d1b364a9f99f698a1c984e0",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -1,17 +1,17 @@
 {
   "url": "https://www.btl.gov.il/Insurance/National%20Insurance/type_list/%D7%A2%D7%95%D7%91%D7%93%20%D7%A9%D7%9B%D7%99%D7%A8%20%D7%95%D7%92%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%20%D7%A2%D7%A6%D7%9E%D7%90%D7%99/Pages/default.aspx",
   "slug": "btl-employee-and-self-employed",
-  "fetchedAt": "2026-09-28T20:32:51.566Z",
+  "fetchedAt": "2026-09-29T11:27:46.583Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 131937,
-  "sha256": "6651bf61e4305ea6672fda77f1471064e69f5b20c32f0bd1edbc362a5028fd90",
+  "sha256": "300f9c5d54d145e54101df64e682f9c06621e1d528dcab0b52ae75cc1736b48b",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/btl-employee-and-self-employed.html",
   "textPath": "research/rendered/btl-employee-and-self-employed.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "5b59137d0c360ce46020cf7c92c00acd422d4aa05c7b76dcb36bc6e3db58ffb3",
+  "previousSha256": "6651bf61e4305ea6672fda77f1471064e69f5b20c32f0bd1edbc362a5028fd90",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -1,17 +1,17 @@
 {
   "url": "https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md",
   "slug": "kokoro-82m-model-card",
-  "fetchedAt": "2026-09-28T20:32:16.298Z",
+  "fetchedAt": "2026-09-29T11:27:12.497Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 118604,
-  "sha256": "c9bf5bbffe3b2164d47866f36a4973bd09a42f1f9b511aeec52ab7be29b35a42",
+  "byteLength": 122720,
+  "sha256": "5b8e9927197c7e1820a55ab6aea3c9b09b571204f8f17fa964ac49c9c1db2e70",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/kokoro-82m-model-card.html",
   "textPath": "research/rendered/kokoro-82m-model-card.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "f819ea3db9f3d79b5e4da9334025ba49068a664eacef2c2acab73314562caee0",
+  "previousSha256": "c9bf5bbffe3b2164d47866f36a4973bd09a42f1f9b511aeec52ab7be29b35a42",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

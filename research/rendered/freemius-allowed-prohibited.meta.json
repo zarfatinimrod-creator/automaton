@@ -1,17 +1,17 @@
 {
   "url": "https://freemius.com/help/documentation/selling-with-freemius/allowed-prohibited-products/",
   "slug": "freemius-allowed-prohibited",
-  "fetchedAt": "2026-09-28T13:15:25.925Z",
+  "fetchedAt": "2026-09-29T11:26:05.660Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 70136,
-  "sha256": "5eb12db1829ba0e927d091838076a83839089e887ef497d49dc9fb124ea5ab90",
+  "byteLength": 70762,
+  "sha256": "7d6faf2f1a03dbd9ecdd0f7717f58a051edd84f123e355b616ba700686e90b26",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/freemius-allowed-prohibited.html",
   "textPath": "research/rendered/freemius-allowed-prohibited.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "cc35625ef04adc12e12881fb4928dd9b7e8383f911032c7424dc211b03334500",
+  "previousSha256": "5eb12db1829ba0e927d091838076a83839089e887ef497d49dc9fb124ea5ab90",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

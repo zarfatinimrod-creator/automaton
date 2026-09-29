@@ -1,17 +1,17 @@
 {
   "url": "https://help.streetlib.com/article/670-getting-paid",
   "slug": "help-streetlib-com-article-670-getting-paid",
-  "fetchedAt": "2026-09-28T23:21:11.531Z",
+  "fetchedAt": "2026-09-29T11:30:43.831Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 83548,
-  "sha256": "11fcc881426fb00fb9273a570e5986676ae10edf70a8e2221c558bb67851919f",
+  "byteLength": 83186,
+  "sha256": "d9772ee1c0031ee7258d6ed958b8562bfbfe06db9c0baf6972a64f2ccae4c6aa",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/help-streetlib-com-article-670-getting-paid.html",
   "textPath": "research/rendered/help-streetlib-com-article-670-getting-paid.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "11fcc881426fb00fb9273a570e5986676ae10edf70a8e2221c558bb67851919f",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

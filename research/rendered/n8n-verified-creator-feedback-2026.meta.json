@@ -1,17 +1,17 @@
 {
   "url": "https://community.n8n.io/t/requesting-feedback-for-verified-creator-status-on-my-published-n8n-workflows/269435",
   "slug": "n8n-verified-creator-feedback-2026",
-  "fetchedAt": "2026-09-28T20:35:21.565Z",
+  "fetchedAt": "2026-09-29T11:30:03.433Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 291681,
-  "sha256": "e9339bcba255c409cf91eb38fbbde8e1297894c0df88539ec46b70ce79236b1a",
+  "sha256": "250fc610625dfca0435432c0fcb12596372b901f4f2613414875463ec736ec3f",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/n8n-verified-creator-feedback-2026.html",
   "textPath": "research/rendered/n8n-verified-creator-feedback-2026.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "13a81d74d68ad4691f644cfa748ca3b723f5e32a262680973cac5d2dcf925870",
+  "previousSha256": "e9339bcba255c409cf91eb38fbbde8e1297894c0df88539ec46b70ce79236b1a",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

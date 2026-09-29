@@ -1,17 +1,17 @@
 {
   "url": "https://trolley.com/terms-of-service/",
   "slug": "trolley-terms-of-service",
-  "fetchedAt": "2026-09-29T09:56:51.259Z",
+  "fetchedAt": "2026-09-29T11:31:19.636Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
   "byteLength": 808276,
-  "sha256": "d4097a4b47c39e109789f9af4cb3bfbc08ab0d60d01b99a7b1f002329fb9b31c",
+  "sha256": "ab7e090cc2af32d7c8981c54343b39a1ccde389e37042d4cd991cddd7f5ce1b0",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/trolley-terms-of-service.html",
   "textPath": "research/rendered/trolley-terms-of-service.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "d4097a4b47c39e109789f9af4cb3bfbc08ab0d60d01b99a7b1f002329fb9b31c",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

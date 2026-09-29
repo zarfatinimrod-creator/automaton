@@ -6,7 +6,7 @@ What to know about the Sora discontinuation
 
 What to know about the Sora discontinuation
 Understand the Sora discontinuation, including content exports, data deletion, refunds, credits, and the upcoming API shutdown.
-Updated: 28 days ago
+Updated: 29 days ago
 When will Sora be discontinued?
 The Sora web and app experiences were discontinued on April 26, 2026.
 

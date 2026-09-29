@@ -40,7 +40,7 @@ Sign Up
 hexgrad /
 
 Kokoro-82M
-Like 7.04k
+Like 7.05k
 
 Text-to-Speech
 English
@@ -73,9 +73,17 @@ f3ff357 verified over 1 year ago
 
 preview code
 |
-Raw Download with hf CLI
-Copy download link
-History Blame Safe
+Download Download README.md from hexgrad/Kokoro-82M: direct link, hf CLI and curl.
+Browser
+Download file 6.35 kB
+Copy download link https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/README.md
+
+Command line
+Copy hf CLI command hf download hf://hexgrad/Kokoro-82M/README.md
+
+Copy curl command curl -L -o README.md https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/README.md
+
+Raw History Blame Safe
 
 6.35 kB
 

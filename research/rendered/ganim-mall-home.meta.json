@@ -1,17 +1,17 @@
 {
   "url": "https://ganim-mall.co.il",
   "slug": "ganim-mall-home",
-  "fetchedAt": "2026-09-28T20:35:01.099Z",
+  "fetchedAt": "2026-09-29T11:29:42.562Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
   "byteLength": 74194,
-  "sha256": "909af51f63a179bd4e31872a12792f11611c0e557cdbb4a506a97c9918405a57",
+  "sha256": "99221b778299c6ce0c5e0bf131d3a876c773cc702e8ad3fef33739eea51001db",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/ganim-mall-home.html",
   "textPath": "research/rendered/ganim-mall-home.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "e99ed3a1abb7c52e56944e3d690ec73de312479dbf95a185675f3d5ca200b8e9",
+  "previousSha256": "909af51f63a179bd4e31872a12792f11611c0e557cdbb4a506a97c9918405a57",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

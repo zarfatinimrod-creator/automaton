@@ -1,17 +1,17 @@
 {
   "url": "https://digital-invoice.co.il/",
   "slug": "digital-invoice-home",
-  "fetchedAt": "2026-09-29T09:57:00.438Z",
+  "fetchedAt": "2026-09-29T11:31:28.941Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 46740,
-  "sha256": "bcdeb3686fd59688a5f0db66da437687d4aae342008748af139b2a20ddb78902",
+  "sha256": "adc4053e098a8d779c8e529347c83cb45ae7d953a85c480aa8e03ff5b3355cad",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/digital-invoice-home.html",
   "textPath": "research/rendered/digital-invoice-home.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "bcdeb3686fd59688a5f0db66da437687d4aae342008748af139b2a20ddb78902",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

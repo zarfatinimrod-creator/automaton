@@ -1,17 +1,17 @@
 {
   "url": "https://teachsimple.com/license-agreement",
   "slug": "teachsimple-com-license-agreement",
-  "fetchedAt": "2026-09-28T22:00:08.835Z",
+  "fetchedAt": "2026-09-29T11:30:42.737Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 350948,
-  "sha256": "8feaad1f03974517fa73f362cc54fedcb172b7d262cbed66820ae7a75079bd90",
+  "sha256": "03e6f3fb48dacf1a7a1d7ccb6f88d1eda322806e79d8a43678042a33da921668",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/teachsimple-com-license-agreement.html",
   "textPath": "research/rendered/teachsimple-com-license-agreement.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "8feaad1f03974517fa73f362cc54fedcb172b7d262cbed66820ae7a75079bd90",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

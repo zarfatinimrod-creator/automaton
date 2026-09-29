@@ -1,17 +1,17 @@
 {
   "url": "https://community.facer.io/t/payment-options/53518",
   "slug": "facer-payment-options",
-  "fetchedAt": "2026-09-28T20:34:40.610Z",
+  "fetchedAt": "2026-09-29T11:29:19.393Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 229655,
-  "sha256": "84751b96678458c27eb4534475c8fe3c1f3ed29f8743e5c6dd7281fa8b9410ec",
+  "byteLength": 228912,
+  "sha256": "68efd5ae841dd9837f5db10e8c9d80288f8a52670fb3e33c5b8457bf46e61f63",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/facer-payment-options.html",
   "textPath": "research/rendered/facer-payment-options.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "376e17ff87f2b0d5ebd91933f15f2c71d12d3ad98063c52ff410f4218473f530",
+  "previousSha256": "84751b96678458c27eb4534475c8fe3c1f3ed29f8743e5c6dd7281fa8b9410ec",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

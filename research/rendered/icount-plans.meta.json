@@ -1,17 +1,17 @@
 {
   "url": "https://www.icount.co.il/plans/",
   "slug": "icount-plans",
-  "fetchedAt": "2026-09-29T08:59:32.308Z",
+  "fetchedAt": "2026-09-29T11:31:05.189Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
   "byteLength": 797070,
-  "sha256": "517342a444c04ed63067a3230816fd5725b6c5be551f0c40a2e73203e30a0190",
+  "sha256": "efaaafee9f0a1f336deaa5c590bad3a5fe780f81b361ea3e46cca9b1842be457",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/icount-plans.html",
   "textPath": "research/rendered/icount-plans.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "517342a444c04ed63067a3230816fd5725b6c5be551f0c40a2e73203e30a0190",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

@@ -7,44 +7,44 @@ Pebble Time 2
 Watchfaces Apps Search
 
 Top Picks (changes daily) SEE ALL
-91 Dub v5
+Locus
 
-266
-R2D2's FACE
+146
+Professor Layton - Mini London
 
-1.4K
-Sellouts
+158
+Maple Leaf
 
-226
-TRIPLE SENSOR
+194
+Taller
 
-685
-Triangles
+2.8K
+Sector
 
-306
-Solar & Moon Arc
+94
+ChronoCode Color
 
-92
+61
 
 All Watchfaces SEE ALL
-Metro WP8
+Ruler Watch Reloaded
 
-122
-Kurz vor
-
-0
-WarnWeather — weather, health tracking, calender & rain radar
-
-277
-mobiGlas
+955
+Schoolwatch-Schooltimer-Schultimer-Schuluhr
 
 1
-Netline
+Earth Transit
 
-2
-Playtime
+74
+Bender v2.0
 
-2
+16
+Boykisser
+
+0
+GPS Trail usepocket
+
+3
 
 Most Loved SEE ALL
 YWeather
@@ -69,10 +69,13 @@ Mario Time Watchface
 Rebble Appstore Feed SEE ALL
 Boykisser Clock
 
-4
+5
 Fuzzy Text Watch Back
 
 2
+Pixel Hourglass
+
+0
 CrystalTick
 
 1
@@ -80,8 +83,5 @@ Kinetic Sand
 
 1
 Wortuhr
-
-2
-PokeDragon
 
 3

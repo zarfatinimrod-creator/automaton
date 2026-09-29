@@ -1,17 +1,17 @@
 {
   "url": "https://community.n8n.io/t/requirements-for-becoming-a-verified-creator/134401",
   "slug": "n8n-verified-creator-requirements",
-  "fetchedAt": "2026-09-28T20:34:28.540Z",
+  "fetchedAt": "2026-09-29T11:29:07.462Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 284387,
-  "sha256": "da52fc403a681c67e77eaa72f309e20d677f21a7f7f584b7f89f47668e82eab7",
+  "byteLength": 284379,
+  "sha256": "c2f9edb67957d8af21b21f8b0ea2aea8e540a1e81ad177e10635914fc4da08b3",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/n8n-verified-creator-requirements.html",
   "textPath": "research/rendered/n8n-verified-creator-requirements.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "9b593546de9255189bfee94b2e797dcf6ff8dddf25b206134264bb49bfc40dec",
+  "previousSha256": "da52fc403a681c67e77eaa72f309e20d677f21a7f7f584b7f89f47668e82eab7",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

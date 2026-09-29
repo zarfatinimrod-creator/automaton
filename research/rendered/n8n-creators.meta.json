@@ -1,17 +1,17 @@
 {
   "url": "https://n8n.io/creators/",
   "slug": "n8n-creators",
-  "fetchedAt": "2026-09-28T20:33:43.553Z",
+  "fetchedAt": "2026-09-29T11:28:41.851Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 803548,
-  "sha256": "0df844661353ed13d319d6d739a508aff24687ae590e81d8fa9ac5825d9d8abe",
+  "byteLength": 816484,
+  "sha256": "aa644910aefd1427f113887fe8d94138c5f63b317284b4b01056aaa0e5033630",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/n8n-creators.html",
   "textPath": "research/rendered/n8n-creators.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "e5e54c545604cf1acc8a3c63735bc7b63b5079af4c58793387f8cb04b5948672",
+  "previousSha256": "0df844661353ed13d319d6d739a508aff24687ae590e81d8fa9ac5825d9d8abe",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

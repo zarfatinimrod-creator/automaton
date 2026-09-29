@@ -1,17 +1,17 @@
 {
   "url": "https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payments-and-billing-faqs",
   "slug": "wix-app-payments-faq",
-  "fetchedAt": "2026-09-27T22:46:04.311Z",
+  "fetchedAt": "2026-09-29T11:27:38.401Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 670360,
-  "sha256": "db55f47ed9da75f65fc7db4028b3708995b4b36124b6f209a5db07dca9696924",
+  "byteLength": 581974,
+  "sha256": "1f0d8ebc8994f1e1b8a84f3f8a0e2961d2cbbce36e2cd160d70243ab7463b049",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/wix-app-payments-faq.html",
   "textPath": "research/rendered/wix-app-payments-faq.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "db55f47ed9da75f65fc7db4028b3708995b4b36124b6f209a5db07dca9696924",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

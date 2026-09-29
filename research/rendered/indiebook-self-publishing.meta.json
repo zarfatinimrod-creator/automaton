@@ -1,17 +1,17 @@
 {
   "url": "https://indiebook.co.il/product-category/%D7%94%D7%95%D7%A6%D7%90%D7%AA-%D7%A1%D7%A4%D7%A8%D7%99%D7%9D/%D7%94%D7%95%D7%A6%D7%90%D7%94-%D7%A2%D7%A6%D7%9E%D7%99%D7%AA",
   "slug": "indiebook-self-publishing",
-  "fetchedAt": "2026-09-28T20:34:34.074Z",
+  "fetchedAt": "2026-09-29T11:29:12.800Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 557531,
-  "sha256": "7dfc8e7893c0079ee48648f3e2109bf7463dcb8cfb54a29e77381750ed0f9592",
+  "sha256": "654f943bc20a720a43adae127f63f7d40f567a8927e5bd0d56c353c55b9fba88",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/indiebook-self-publishing.html",
   "textPath": "research/rendered/indiebook-self-publishing.txt",
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "bc89cf43677f3bb992725333cf0011dbf36d238e362bb48ab57c319a854bc56d",
+  "previousSha256": "7dfc8e7893c0079ee48648f3e2109bf7463dcb8cfb54a29e77381750ed0f9592",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

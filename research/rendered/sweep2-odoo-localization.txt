@@ -435,7 +435,7 @@ Localization
 
 Apps
 
-1536
+1539
 Apps found.
 
 category:
@@ -653,7 +653,7 @@ Hub2S Vietnam Co.
 
 FREE
 
-30
+31
 
 Statutory DJP Coretax, e-Faktur 4.0, PPN 12%, DPP Nilai Lain, and NSFP Allocator for Odoo 18
 

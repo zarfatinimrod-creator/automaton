@@ -52,8 +52,6 @@ Contact
 
 Getting Paid
 
-Please note that the payment conditions below only apply to publishers affiliated with StreetLib IT; click here if you live in US or Canada.
-
 The approval of the invoice
 
 To receive payment of the earnings from the sales of your books, the first operation to be carried out is the approval of the invoice.
@@ -68,9 +66,7 @@ Furthermore, in order to receive the payment, it is necessary that the accrued a
 
 €30 if the payment method chosen is PayPal (**)
 
-€200 if the payment method chosen is SEPA bank transfer
-
-€200 if the payment method chosen is International Bank Transfer (neither SEPA nor ABA)
+€200 if the payment method chosen is bank transfer
 
 For this reason, we will only issue the invoice once the payment method threshold you set has been reached. If you want to know how to manage your payment methods, click here .
 
@@ -90,7 +86,7 @@ Still need help?
 Contact Us
 Contact Us
 
-Last updated on February 24, 2025
+Last updated on September 29, 2026
 
 Toggle Search
 

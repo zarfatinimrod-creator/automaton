@@ -1,17 +1,17 @@
 {
   "url": "https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=invoice&page_size=50",
   "slug": "amo-search-invoice",
-  "fetchedAt": "2026-09-28T20:34:21.399Z",
+  "fetchedAt": "2026-09-29T11:28:59.256Z",
   "status": 200,
   "contentType": "application/json",
-  "byteLength": 451561,
-  "sha256": "2789d990eb46103b623a739f7bf4cfea4b295644653ccdec3fe40b2640c6bd8c",
+  "byteLength": 451562,
+  "sha256": "7845c96e3040ff60f9887a23a952586d6ec253067db990b5035135a442642ce1",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/amo-search-invoice.json",
   "textPath": null,
   "changed": true,
   "firstFetch": false,
-  "previousSha256": "e2b1ece10c6f7bde2fa768843eaac844a981f19fc898f8d05afab31975866240",
+  "previousSha256": "2789d990eb46103b623a739f7bf4cfea4b295644653ccdec3fe40b2640c6bd8c",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }

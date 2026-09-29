@@ -485,6 +485,8 @@ Slovenia
 
 Solomon Islands
 
+South Africa
+
 South Georgia and the South Sandwich Islands
 
 South Korea
@@ -639,6 +641,10 @@ Where Freemius Checkout Works (Payment Processing)
 Where We Can Pay You (Payouts for Makers) Supported Countries for Payouts
 
 Unsupported Countries
+
+Get started with Freemius ​
+Built for the success of software sellers and their products
+Get started
 
 Subscribe to our newsletter
 Subscribe

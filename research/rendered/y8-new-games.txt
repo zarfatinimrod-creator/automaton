@@ -17,19 +17,19 @@ Girls & Lifestyle
 
 Sports
 
-Adventure & RPG
-
-Action & Fighting
-
-Strategy & Defense
-
 Puzzle & Thinking
 
 Skill & Precision
 
-Management & Simulation
+Adventure & RPG
 
 Fun & Crazy
+
+Action & Fighting
+
+Management & Simulation
+
+Strategy & Defense
 
 Arcade & Classic
 
@@ -191,177 +191,43 @@ Girls Games
 4
 5
 
-Fortress Merge
+Jewel Blocks Quest
 
-8.4
-
-New
-
-Mystic Mix
-
-9.1
-
-Foodie Match
-
-8.5
+8.6
 
 New
 
-Obblox Gun io
+Super Dev Quest
+
+8.2
+
+Arrow Puzzle
+
+7.7
+
+New
+
+Block Craft Puzzle
+
+7.8
+
+New
+
+Farm Cause Auto
 
 8.2
 
 New
 
-Big Smash
-
-9.2
-
-New
-
-Diamond Art Sort
+Build Your Dream Car
 
 8.0
 
 New
 
-Snacky Dash: Food Maze Puzzle
+Block Flow
 
-8.0
-
-Wolfoo Word Wonders
-
-9.1
-
-New
-
-Pirates Story Match
-
-8.0
-
-New
-
-Catburglar
-
-8.0
-
-New
-
-Yarn Art Loop
-
-8.2
-
-Climb Up
-
-8.0
-
-Bird Sort
-
-8.3
-
-Alpha Tower Gaurd
-
-5.0
-
-Guess The Fruit
-
-7.1
-
-New
-
-Sortello
-
-9.1
-
-Royal Pool Blitz
-
-7.2
-
-New
-
-9 Ball Pool 3D
-
-8.2
-
-New
-
-Mystery Town
-
-9.1
-
-New
-
-Orbit Loom
-
-8.0
-
-New
-
-Neon Slash
-
-9.0
-
-New
-
-LAST CUSTOMER :Night Shift Horror
-
-8.1
-
-Crystal Maze 3D
-
-5.4
-
-New
-
-Mahjong Onet Deluxe
-
-8.0
-
-New
-
-All Shall Fall
-
-8.0
-
-New
-
-Bubble Rush 2
-
-8.0
-
-New
-
-Miki Oath
-
-8.0
-
-Chess Deluxe
-
-7.9
-
-New
-
-Viviennes Lifestyle Yacht Club
-
-7.1
-
-New
-
-Oddly Sorted: Color Sort
-
-6.7
-
-New
-
-Color Guesser
-
-9.4
-
-Car Parking Driving Simulator
-
-7.5
-
-New
+7.0
 
 Real Car Bmw M4 Drift
 
@@ -369,179 +235,95 @@ Real Car Bmw M4 Drift
 
 New
 
-Investor Tycoon
-
-8.6
-
-New
-
-Guess The NBA Player
+MarbleMaze
 
 8.2
 
-New
-
-Supermarket Tycoon: 3D Idle Game
-
-9.2
-
-New
-
-Retakes io
-
-8.3
-
-New
-
-Bounce Ball: Number Breaker
+Obby: +1 Laser to Break Walls
 
 9.1
 
 New
 
-Speed Dunk
+Fish Match
 
 8.0
 
-New
+Royal Pool Blitz
 
-Plug Joy
-
-8.3
+7.0
 
 New
 
-Cyber Grid Pro
+FrontWars io
 
 8.9
 
-Highway Domination
+Fortress Merge
 
 8.4
 
 New
 
-Cube Drop 2048 3D
+Star Cube
 
-8.2
-
-Wolfoo Supermarket Sort
-
-8.1
-
-New
-
-MarbleMaze
-
-8.2
-
-Fruit Garden: Merge Fruits
-
-8.6
-
-Mine Blade Online Kit PvP
-
-7.7
-
-Domino 2048
-
-8.1
-
-New
-
-Pizza Now
-
-8.6
-
-Detective X: Find Hidden Object
-
-7.7
-
-New
-
-GORILGO FPS : Online Shooter
-
-7.4
-
-New
-
-Monster Fire
-
-9.2
-
-Real War
-
-7.3
+9.1
 
 New
 
 Food: Run and Battle
 
-8.6
+7.5
+
+Commando Force 2
+
+9.0
 
 New
 
-Dino World 3D
-
-9.3
-
-New
-
-2048 Kingdom
-
-8.0
-
-Spot Hidden Cat
-
-8.4
-
-Obby: Parkour with Ragdoll
-
-7.4
-
-New
-
-Voxel Destruct
-
-8.2
-
-New
-
-Speed Wilds
-
-8.6
-
-New
-
-Spooky Block Blast
-
-8.6
-
-New
-
-Nitro Racing Gear
-
-7.1
-
-Highway Domination Desert
+Scrapline Rush
 
 6.7
 
 New
 
-Impostor Duck Online
+Obblox Gun io
 
-8.2
+9.1
 
-New
+Turbo Horizon Racing
 
-Bike Games: Stunt Bike Racing
+6.9
+
+Crazy Flying Car
 
 8.8
 
-Monster Haul
+New
 
-8.4
+Color Snap
+
+8.1
+
+New
+
+Word Odyssey
+
+8.3
+
+Fruit Blast Kingdom
+
+9.1
+
+Real War
+
+7.2
+
+New
+
+Big Smash
+
+9.3
 
 New
 
@@ -551,29 +333,247 @@ Candy Match Pop
 
 New
 
-Ironhour
+Turball io
 
-8.6
-
-Race Through Traffic
-
-7.8
+8.8
 
 New
 
-TG Cases
+Neon Slash
+
+9.0
+
+New
+
+Viviennes Lifestyle Yacht Club
+
+8.2
+
+New
+
+Maze Snake
+
+7.9
+
+New
+
+Pressure Pop
+
+8.0
+
+New
+
+TrackMaster United
+
+8.6
+
+Highway Domination
+
+8.6
+
+New
+
+Snacky Dash: Food Maze Puzzle
+
+8.0
+
+Trap Adventure
 
 8.1
 
 New
 
-Make A Face
+Sheep Simulator Animal Games
+
+8.3
+
+New
+
+Pirates Story Match
+
+8.1
+
+Alpha Ice Surfers 3D
+
+8.8
+
+Foodie Match
+
+7.9
+
+New
+
+Cube Drop 2048 3D
+
+8.2
+
+New
+
+Diamond Art Sort
 
 8.0
 
-Cooking Tasty: Restaurant Game
+New
 
-7.6
+Cyber Grid Pro
+
+8.9
+
+Wolfoo Tangram
+
+8.5
+
+New
+
+9 Ball Pool 3D
+
+8.2
+
+New
+
+Miki Oath
+
+8.0
+
+New
+
+Minecraft Obby
+
+8.0
+
+Alpha Disc Wars
+
+8.6
+
+Happy Food Link
+
+9.0
+
+Noob vs Pro : Drift Tag
+
+9.0
+
+New
+
+City Bus Simulator Driving Games
+
+8.1
+
+New
+
+Investor Tycoon
+
+8.6
+
+New
+
+Slime Chef Magnet Merge Kitchen
+
+8.9
+
+New
+
+Coinvalanche
+
+8.0
+
+Detective X: Find Hidden Object
+
+7.7
+
+New
+
+Barricade Online
+
+8.5
+
+New
+
+Prism Blocks
+
+5.0
+
+New
+
++1 Speed Keyboard Lucky Escape
+
+9.5
+
+Find the Cats
+
+8.1
+
+New
+
+Warden's Writ
+
+8.0
+
+New
+
+Nested Shift
+
+9.2
+
+New
+
+Mystery Town
+
+9.1
+
+New
+
+Mahjong Onet Deluxe
+
+8.0
+
+New
+
+Monster Fire
+
+9.2
+
+New
+
+Orbit Loom
+
+8.0
+
+New
+
+Cat Snack Shop
+
+8.0
+
+Alpha Tower Gaurd
+
+5.0
+
+New
+
+All Shall Fall
+
+7.5
+
+New
+
+Quiet Garden
+
+8.1
+
+New
+
+4 in a Blow
+
+6.7
+
+Race Through Traffic
+
+7.8
+
+Hex Mine 3D
+
+8.2
 
 1
 2

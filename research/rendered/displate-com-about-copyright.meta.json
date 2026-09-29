@@ -1,17 +1,17 @@
 {
   "url": "https://displate.com/about-copyright",
   "slug": "displate-com-about-copyright",
-  "fetchedAt": "2026-09-28T20:35:43.800Z",
+  "fetchedAt": "2026-09-29T11:30:26.863Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 87286,
-  "sha256": "30371f7c0e42df398731c8d68e725959d98a85ed97ecf2a0a9ebaee440d1d63e",
+  "byteLength": 86138,
+  "sha256": "62081232226a1f750b1563b9f16258c1f948c76c43e5d2a5561de2b14b8a4c26",
   "truncated": false,
   "error": null,
   "bodyPath": "research/rendered/displate-com-about-copyright.html",
   "textPath": "research/rendered/displate-com-about-copyright.txt",
   "changed": true,
-  "firstFetch": true,
-  "previousSha256": null,
+  "firstFetch": false,
+  "previousSha256": "30371f7c0e42df398731c8d68e725959d98a85ed97ecf2a0a9ebaee440d1d63e",
   "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
 }
