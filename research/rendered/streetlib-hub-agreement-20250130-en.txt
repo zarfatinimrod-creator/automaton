@@ -1,0 +1,756 @@
+                 TERMS AND CONDITIONS FOR SERVICE PROVISION (STANDARD)
+   (EBOOK AND AUDIOBOOK; PRINT ON DEMAND; ON CONSIGNMENT – FOR AUTHORS AND PUBLISHERS)
+                                   Milan, version “January 2025”
+
+StreetLib S.r.l., with registered office in Corso Venezia 10, 20123 Milan (MI), Italy, tax code and VAT
+number 05338720963, email (certified): simplicissimus@pec-mail.it, REA MI-2094063, is a
+company providing services related to digital publishing and production of latest-generation
+audiobooks and ebooks (i.e. works in different digital formats, such as PDF, ePub and Kindle).
+StreetLib S.r.l. is the owner of “StreetLib”, an online computer platform , which allows authors and
+publishers to acquire several publishing digital services, including in particular the uploading and
+storing of their works in digital format to market them to end users as ebook or audiobook,
+through retailers as digital bookstores, web applications and mobile devices connected to StreetLib
+(hereinafter collectively "digital bookstores"), or even, upon request, in print format via the "print
+on demand" service or the distribution “on consignment” (sale or return), for their marketing
+through online or physical bookstores.
+The use of StreetLib is granted for commercial purposes of authors and publishers.
+Authors and publishers who intend to purchase services from StreetLib S.r.l. for the marketing of
+works in their digital catalog must register in advance on StreetLib by creating their personal
+account for platform usage; this includes accepting the corresponding General Conditions, which
+are an essential prerequisite for accessing the services.
+In this document, the following terms have the meanings indicated next:
+    -​ "SL": StreetLib S.r.l.;
+    -​ "Publisher": authors and publishers interested in purchasing services from StreetLib S.r.l. for
+        commercial purposes via StreetLib;
+    -​ "Contract": the acceptance of these Terms and Conditions, including Annex 1 "Economic
+        terms and invoicing", for the offer of services by SL;
+    -​ "audiobook": any digital file containing one or more works, including recorded readings of
+        the work and may also include, among other things, sounds, text, art, images, photographs,
+        videos, metadata, and other digital content related to the work;
+    -​ "ebook": digital files of various formats, including PDF, ePub, and Kindle, containing one or
+        more works primarily composed of text and may also include, among other things, images,
+        photographs, sounds, metadata, and other digital content related to the work;
+    -​ "print-ready" file: any digital file suitable for print of the paper copy of the work;
+
+
+                                                                                       Pagina 1 di 21
+   -​ “print on demand”: marketing of works in paper format through the Amazon circuit or SL
+      proprietary channels;
+   -​   “on consignment”: distribution to national bookshops (based in Italy), electronically
+      connected to StreetLib or served by wholesalers, of works in paper format made available
+      for sale by the mentioned subjects to the final customer or to be returned to the Publisher
+      in case of unsold books (sale or return);
+   -​ "work/s": referring to both audiobooks, ebooks, and print-ready files.
+ These Terms and Conditions for the provision of services govern the relations between the
+ Publisher and SL, together with the General Conditions for the activation of the StreetLib
+ account, the Content Policy and the Privacy Policy. All the mentioned documents are available in
+ the Legal Policy section of SL, which can be consulted at the following address
+ https://www.streetlib.com/it/legalpolicy .
+ Additional (optional) services may be integrated into the platform environment, in which case
+ you will be asked to accept their terms and conditions through the PREMIUM SERVICES section of
+ www.streetlib.com, where you will also find their relevant technical description.
+
+1. SUBJECT.
+ 1.1.​ Through StreetLib, SL provides the services described below, which can be activated upon
+ the Publisher's request regarding the works in its digital catalogue.
+   1.1.1. Ebook and audiobook. The use of StreetLib allows the Publisher, upon request, to market
+   ebooks and audiobooks through the online Store of SL and/or other digitally connected
+   bookstores through StreetLib.
+   1.1.2. Print on demand. The use of StreetLib allows the Publisher, upon request, to market
+   works in print-on-demand format through Amazon and/or SL proprietary channels (SL's online
+   Store and/or “Totem”, the e-commerce space for purchase by bookshops, accessible at
+   https://totembooks.io/).
+   1.1.3. On consignment. The use of StreetLib allows the Publisher, on request and within the
+   limits defined further on in the Contract, to put works on the market in paper format through
+   national bookshops (based in Italy) electronically connected to StreetLib or served by
+   wholesalers, accepting, however, the risk of unsold copies, with unconditional return of unsold
+   copies and bearing the relative costs.
+ 1.2. The activation of the above services implies, in any case, the activation of connected
+ services, in particular:
+
+
+                                                                                   Pagina 2 di 21
+   1.2.1. Storage;
+   1.2.2. Technical support;
+   1.2.3. Reporting and invoicing.
+  1.3. The features of StreetLib and the technical and operational specifications for uploading files
+  and using the services are available at our Help Center at this address:
+  https://help.streetlib.com/.
+
+2. PERMISSIONS GRANTED BY THE PUBLISHER.
+  2.1. For the marketing of the titles of its digital catalogue through StreetLib, the Publisher:
+    (i) may enter into specific retail agreements directly with the owners of digital bookstores
+    connected to the platform and for the effect authorize SL to activate, in accordance with these
+    agreements, the marketing of the titles through StreetLib,
+    or
+    (ii) if the Publisher has not entered into direct agreements with digital bookstores, hereby
+    authorizes SL, without exclusivity, to agree with the digital bookstores for the marketing of the
+    titles uploaded to the platform, without territorial limitations, and therefore in Italy as well as
+    abroad. SL may conclude all contract and agreements with the owners of the digital bookstores
+    and carry out all the useful or necessary operations for the marketing of the works by the
+    Publisher through StreetLib, without however being able to attribute any exclusivity in favour of
+    the owners of the digital bookstores.
+  2.2. Unless – in the case referred in point 2.2. (i) – otherwise stated by the agreements between
+  the Publisher and the digital bookstores, the Publisher:
+  2.2.a) authorizes SL to accept the terms and conditions offered by third parties for the retail
+  marketing of works through digital bookstores, even if they involve limitations regarding sales
+  territories and/or other restrictions related to sales or end-user licensing. SL is granted broad
+  discretion in this regard, except for the granting of exclusives. The terms and conditions applied
+  by the digital bookstores connected to SL can be viewed at the following address:
+  https://www.streetlib.com/book-stores, and it is the Publisher's responsibility to have direct
+  knowledge by accessing the respective web pages of various digital bookstores. Specifically, for
+  the provision of services, the Publisher hereby authorizes SL to store, archive, reproduce,
+  communicate, distribute, stream, convert into other digital formats, and electronically transmit
+  the Publisher's ebooks and audiobooks in Italy and abroad without any territorial limitations. SL
+  may also authorize its own and any other digital bookstore connected to StreetLib for the storage,
+
+
+                                                                                       Pagina 3 di 21
+archiving, reproduction, communication, distribution, streaming, conversion into other digital
+formats, and the application of DRM systems, sale, rental, digital lending (libraries), promotion,
+indexing, and any other method of marketing the Publisher's ebooks and audiobooks without
+territorial limitations. This includes allowing innovative ways of enjoying the work, such as adding
+a personalized introduction and brief summaries, highlighting, providing captions, text-to-speech,
+speech-to-text, and features like family sharing or periodic subscription for the use of digital
+content comprising the work. The Publisher authorizes the release of information, including, if
+provided, editorial material, information about the works or the author of the work, links,
+graphics, metadata, photos, advertisements, trademarks, sounds, and videos related to the
+works, free previews for promotional purposes within reasonable limits customary in the
+industry, as required by digital bookstores;
+2.2.b) authorizes SL to carry out any action or operation connected to the supply of the services,
+provided that it does not increase the costs for the Publisher in any way beyond what is agreed
+upon in this Contract. The rights granted to SL hereunder include the right to make adjustments
+to the ebooks and audiobooks that may be necessary for the distribution and marketing of these
+ebooks and audiobooks under this Contract;
+2.2.c) authorizes SL also to enter into agreements with those digital bookstores that adopt
+periodic subscription systems for access and fruition of digital content by end users and/or which
+pay out the revenue and royalties due to the Publisher in accordance with revenue sharing
+models for the distribution of net revenues, and/or on the basis of cash pooling systems between
+the rights holders. In the event the terms and conditions established by certain digital stores to
+enter into an agreement require the respect of best-price conditions, and/or maximum
+thresholds for the retail price, the Publisher authorizes SL to reach said agreement even by
+reducing the retail price. In any case, the Publisher will have the possibility to choose, through
+StreetLib, the exclusion of one or more digital bookstores for the marketing of its works;
+2.2.d) authorizes SL, in the event that certain digital bookstores require a mandatory minimum
+duration for the agreement for the sale of works, to accept such a condition. In this case, SL will
+promptly take steps to ensure that, in the event of the Publisher's withdrawal from this Contract,
+the duration of the relationship with the digital bookstore is limited to the minimum contractually
+specified, without renewal;
+2.2.e) authorizes SL to provide its services even if certain digital bookstores require particular
+modifications, or methods, concerning the technological protection (Digital Rights Management)
+of the works, as long as this does not entail additional costs for the Publisher. It is understood
+
+
+                                                                                     Pagina 4 di 21
+that if the Publisher has decided to use technological protection for its works, SL may not provide
+its services related to the distribution through the digital bookstores that do not allow any form
+of technological protection of the files;
+2.2.f) Terms and conditions for distribution through the Google Play’s digital bookstore:
+Shall the Publisher decide to market its works through StreetLib and Google Play’s store, the
+Publisher shall enter into a direct agreement with Google Ireland Ltd (Address: Gordon House,
+Barrow Street, Dublin 4, Ireland) to open a Google Play’s account. In this case, SL should be
+meant to be the sole appointed manager of the Publisher’s Google Play account to the purpose
+of managing the content uploaded on StreetLib. SL is therefore hereby granted by the Publisher
+the sole authorization to upload the Publisher’s works on the Google Play platform, schedule and
+manage promotions, send sales reports and other content management services on behalf of the
+Publisher and according to the terms and conditions set forth by this Contract. The Publisher shall
+provide Google Play with all the data, included the SL’s bank account coordinates, which are due
+to allow SL to manage the marketing of the Publisher’s works and to collect the revenues from
+works marketing net of the Google Play store’s fees. No change of any of such data by the
+Publisher should occur without the prior written consent by SL. Should the Publisher change any
+of such data without the SL’s prior consent, SL has the faculty to immediately terminate this
+Contract and require to the Publisher the double of any incurred loss.
+2.3. For the marketing of works in "print on demand" or the distribution “on consignment”, in
+addition to the authorizations all indicated above - which, where applicable, are also extended to
+SL's relationships with physical and online bookstores and wholesalers - the Publisher also
+authorizes SL to conclude with printing house partners all agreements and to carry out all useful
+or necessary operations, without however being able to attribute any exclusivity.
+2.4. The Publisher acknowledges that any malfunctions, delays or non-fulfilments related to the
+partners of SL in charge of printing and / or to the digital or brick-and-mortar bookstores
+connected with StreetLib are not attributable to SL, which will not bear the risk of such
+malfunctions, delays or non-fulfilments of third parties.
+
+
+3. EBOOK E AUDIOBOOK.
+3.1. The Publisher, through StreetLib, will be able to offer its ebooks and audiobooks for their
+marketing through the digital bookstores with which the platform will be connected from time to
+time, listed at the following address: https://www.streetlib.com/book-stores, subject to the
+consent of the same, as provided for in point 8 below. The Publisher will also be able to select
+
+
+                                                                                    Pagina 5 di 21
+only some of the digital bookstores through which to distribute its ebooks and audiobooks. SL will
+notify the Publisher of the additional bookstores with which it has established a new connection,
+while the Publisher remains entitled, via the platform, to enable or not the sale on additional
+bookstores. SL does not guarantee in any way the permanent connection of StreetLib with one or
+more bookstores.
+3.2. For each ebook to be uploaded on StreetLib, the Publisher shall assign a unique ISBN code,
+independently or via StreetLib, within the limits and under the conditions set forth in Annex 1
+“Economic terms and invoicing”; the code shall be different from that of the corresponding
+printed edition, if any.
+In the event that the unique ISBN code to be attributed to the ebook for the marketing of the
+ebook itself is requested via StreetLib, the Publisher authorizes SL to communicate to third
+parties the code, with the heading of the same code to SL, and related data and metadata, also
+remodulated through digital formats (eg. onix 3.0), providing for them the guarantees referred to
+in point 11 below, which applies in full. In particular, the Publisher authorizes SL to communicate
+the ISBN code, data and metadata also to third parties, who may possibly modify them (for
+integration, addition, cancellation or variation), in order to insert them in databases owned by
+third parties for publication and distribution to licensee customers and/or users of the
+aforementioned databases. The Publisher remains responsible for the data and metadata thus
+published and distributed. Specifically, the Publisher guarantees that the data and metadata
+communicated for the aforementioned purposes do not harm or affect the rights of third parties
+and can be lawfully made public. The Publisher therefore undertakes to indemnify SL from any
+liability for claims made by third parties due to or in connection with abuses of third party rights
+or laws deriving from the publication and distribution of the code and data involved.
+
+
+4. PRINT FORMAT.
+4.1. PRINT ON DEMAND. With reference to the works in its digital catalogue uploaded on StreetLib,
+the Publisher can:
+    i) purchase in “print on demand” a desired print run of print copies (a print run also means a
+    single copy), as described in point 10 below;
+    ii) activate “print-on-demand” marketing within the Amazon circuit, as described in point 9.1.
+    below.
+    iii) activate “print-on-demand” marketing within the proprietary SL Store channels
+    https://store.streetlib.com/ and Totem https://totembooks.io/, i.e. SL's e-commerce space
+
+
+                                                                                     Pagina 6 di 21
+    for direct purchase by bookshops), as described in point 9.2. below.
+4.2. “ON CONSIGNMENT”. With reference to the works in its digital catalogue uploaded on
+StreetLib, the Publisher can activate nationwide (Italy) distribution in print format “on
+consignment” (sale or return). This method envisages the right of return by the bookstores,
+wholesalers and distributors integrated in the national distribution network offered by SL, as
+detailed in point 9.3 below.
+By activating the national distribution (“on consignment”), the Publisher authorises SL to accept
+orders of printed copies to be put up for distribution “on consignment” mode up to a maximum
+of 1000 (one thousand) copies per year. Any orders for copies exceeding the indicated limit may
+be agreed upon between the Parties, on a case by case basis, at the sole discretion of SL. The
+Publisher acknowledges and accepts SL's right of unconditional return of unsold copies of printed
+copies, which may be returned to SL by bookshops, wholesalers or connected distributors.
+Upon return, the Publisher agrees to pay SL the printing and shipping costs relating to the return
+of unsold copies.
+4.3. ACTIVATION DISTRIBUTION IN PRINT FORMAT – PRINT-READY. In order to activate the distribution in
+print format, whether “print on demand” or “on consignment”, the Publisher must upload the file
+in “print-ready” format in the relevant section of StreetLib. The Publisher must also assign a
+unique ISBN code to the “print-ready” file, independently or via StreetLib, within the limits and
+subject to the conditions set out in Annex 1 “Economic terms and invoicing”; the code must be
+different from that of the corresponding ebook format.
+With reference to the codes requested via StreetLib, the rules set out in point 3.2. above on
+ebooks shall apply, with the necessary adjustments and insofar as compatible in relation to the
+print format of the work.
+For the activation of the distribution service in print format, whether “print on demand” or “on
+consignment”, the Publisher shall pay SL a one-off sum for each work, as specified in Annex 1
+“Economic terms and invoicing”.
+To create the “print-ready” file, the Publisher may proceed independently, using the SL software
+at the following address: https://writeapp.io/home or other layout software, or it may ask SL to
+provide its professional layout service for a fee, by connecting to the following address:
+https://readybooks.io/.
+Uploaded the “print-ready” file, the Publisher will display the unit cost of the printing service,
+which represents the minimum price of the print copy.
+Once the “print-ready” file has been uploaded, the Publisher will have to enter the data,
+
+
+                                                                                     Pagina 7 di 21
+metadata and all the information of the work into StreetLib, thus making it available for the
+distribution in print format.
+
+
+5. STORAGE.
+5.1. SL, through cloud services offered by third parties, allows the Publisher to upload its
+catalogue in digital format, with regard to the works it uploads for marketing through StreetLib.
+The Publisher acknowledges that the storage space is instrumental and connected to the use of
+marketing services. Therefore, the Publisher acknowledges that, in the absence of activity on
+StreetLib for a continuous period exceeding three years from the last action performed, SL will
+have the right to request the return of the space in use, SL itself being able to provide for the
+total or partial cancellation of the Publisher's catalogue after fifteen days from the request. With
+particular regard to the storage of the digital catalogue, SL reserves the right to communicate to
+the Publisher the maximum limits of free storage space available.
+5.2. Storage of works offered free of charge. The Publisher may upload free works on StreetLib,
+i.e. with a price assigned by the Publisher in the product file and transmitted to the retailers
+equal to zero. In this case, the Publisher acknowledges and accepts the right of SL to request a
+fee for each transaction carried out with reference to such works, as indicated in Annex 1
+“Economic terms and invoicing”.
+
+
+6. TECHNICAL ASSISTANCE.
+SL offers to the Publisher a technical assistance service for uploading the data relating to the titles
+of its digital catalogue on StreetLib. The assistance is provided by SL staff by email and is
+instrumental and connected to provide the marketing services.
+The technical assistance service also includes all the technical activities that SL carries out so that
+the services are effectively provided, such as in particular the electronic file transmission activity.
+
+
+7. REPORTING AND INVOICING.
+SL makes available to the Publisher, through the platform, the reporting service that allows it to
+view the revenues deriving from the sale of the works through each of the marketing channels
+that can be activated on the platform. The service also allows the management of the invoicing of
+marketing revenues. The reports and the consequent invoicing services are instrumental and
+connected to the marketing and remain available to the Publisher for a period of five years
+
+
+                                                                                       Pagina 8 di 21
+ starting from the availability of each of the mentioned reports within StreetLib.
+
+8. PUBLISHER’S REVENUES ON DIGITAL RETAILER BOOKSTORES CHANNEL.
+ 8.1. DIGITAL BOOKSTORES. For works marketed through digital bookstores connected to StreetLib, the
+ Publisher will receive revenues from sales according to the revenue-sharing model applied by
+ each individual digital bookstore, net of amounts due to SL for marketing activities, as specified in
+ the following point 8.2. The commissions and costs to be recognized by the Publisher to digital
+ bookstores will be those established by the digital bookstores themselves, according to the
+ business and revenue-sharing model each has adopted. The terms and conditions applied by the
+ digital bookstores to which SL is connected are available at the following address:
+ https://www.streetlib.com/book-stores, and it is the Publisher's responsibility to become aware
+ of them by accessing the respective web pages of various digital bookstores directly. The
+ Publisher acknowledges being aware that digital bookstores may change their business and
+ revenue-sharing models over time, depending on their commercial policies. Nevertheless, the
+ Publisher retains the option, through the platform, to exclude the marketing of their works by
+ one or more digital bookstores.
+ 8.2. The amounts due to SL are calculated in such a way as to ensure that the Publisher receives
+ revenue equal to 70% of the turnover generated by SL, net of VAT, towards the digital bookstore,
+ as indicated in Annex 1 "Economic terms and invoicing".
+ 8.3. Returns. In the event that the end user returns a digital work purchased through one of the
+ online bookstores connected to SL, SL shall deduct the amount relating to the return from the
+ sum due to the Publisher, retaining its commission.
+ 8.4. Reporting free of charge works. The remuneration due to SL for any works offered by the
+ Publisher free of charge will be subtracted from the Publisher's revenues generated from sales, as
+ defined in Annex 1 “Economic terms and invoicing”.
+
+9. PUBLISHER’S REVENUES FOR DISTRIBUTION IN PRINT FORMAT.
+ 9.1 AMAZON. For the marketing in “print on demand” of the works in its digital catalogue through
+ the Amazon circuit, the Publisher shall receive, for each copy sold, the revenues to be calculated
+ on the cover price of the work established by the Publisher itself (cover price), as set forth in
+ Annex 1 “Economic terms and invoicing”.
+ 9.2. SL PROPRIETARY CHANNEL. For the marketing in “print on demand” of the works in its digital
+
+
+
+                                                                                      Pagina 9 di 21
+ catalogue to the SL Store and Totem (SL's e-commerce space for the purchase by bookshops), the
+ Publisher shall receive, for each copy sold, the revenues to be calculated on the cover price of the
+ work established by the Publisher itself (cover price), as set forth in Annex 1 “Economic terms
+ and invoicing”.
+ 9.3. NATIONAL DISTRIBUTION (PHYSICAL AND ONLINE BOOKSTORES, WHOLESALERS). If the printing and distribution
+ of the works in the Publisher's digital catalogue takes place “on consignment” to national
+ (Italian-based) physical or online bookstores, including wholesalers, and therefore outside the
+ cases referred to in points 9.1 and 9.2 above, the Publisher authorises SL to accept orders for
+ printed copies to be distributed “on consignment” in accordance with the provisions set out in
+ point 4.2 above. For each copy sold, the Publisher shall receive the revenues due to the Publisher
+ itself on the cover price, as indicated in Annex 1 “Economic terms and invoicing”.
+ 9.3.1. Right of return. The Publisher accepts the unconditional right of SL to return to the
+ Publisher any unsold printed copies that the aforementioned bookstores and/or wholesalers
+ decide to return to SL.
+ The printing and shipping costs for the return of the copies returned as unsold shall be charged to
+ the Publisher.
+ For each copy returned, SL shall charge the Publisher the printing and shipping costs incurred, by
+ means of a dedicated statement, as described in Annex 1 “Economic terms and invoicing”.
+ 9.4. ACTIVATION COST AND OFFSETTING. For each work enabled for distribution in print format, whether
+ in “print on demand” or “on consignment”, SL shall charge a service activation fee as indicated in
+ Annex 1 “Economic terms and invoicing” and may offset all the amounts due to it by the
+ Publisher against the Publisher's overall revenues generated by this Contract and resulting from
+ the reports available on StreetLib and from the register of the invoices issued by SL to the
+ different channels provided for in the Contract and enabled by the Publisher.
+
+10. “PRINT RUN ON DEMAND”– COSTS.
+ 10.1. “PRINT RUN ON DEMAND”. For the purchase by the Publisher of a desired print run of print copies
+ of the work uploaded on StreetLib in “print-ready” format, and subsequent shipment of the
+ copies to the address indicated by the Publisher, SL shall be entitled, for each printed copy, to a
+ fee determined in accordance with Annex 1 “Economic terms and invoicing”, to be paid at the
+ time of purchase.
+
+
+
+
+                                                                                         Pagina 10 di 21
+11. PUBLISHER’S REPRESENTATIONS AND WARRANTIES ON CONTENTS - OBLIGATIONS TO INDEMNIFY AND HOLD
+HARMLESS.
+ 11.1. The Publisher has exclusive liability with regard to intellectual property rights, ownership
+ rights in and to the copyrights and all other exploitation rights regarding the works and any
+ content uploaded and marketed by the Publisher through StreetLib. The Publisher represents,
+ declares and guarantees SL that the publication, distribution, communication, marketing of the
+ works, in compliance with this Contract, do not violate the intellectual property rights of any third
+ party. In relation to the mentioned works, their cover and all their content, including graphics,
+ photographs, videos or sounds, the Publisher represents SL and warrants that it has, and will
+ maintain throughout the term of this Contract, the ownership rights in and to the copyright, and
+ all other intellectual property rights, rights, faculties and interests into the content, including, for
+ example, the publication, reproduction, distribution, communication, streaming, transmission
+ and rental rights for the work and its contents, in Italy and abroad, as well as all the secondary
+ and related rights, for which the Publisher remains responsible for providing, within the work
+ itself, every indication and warning with regard to the licenses it will release in order to protect its
+ own interests and rights. The Publisher shall, at first demand, indemnify and hold SL, its directors,
+ employees, affiliates, collaborators, harmless from and against any claim of third parties for any
+ reason advanced, arises from any breach of the Publisher’s representations or warranties set
+ forth herein. The indemnity due shall cover any economic, reputational damage and any damage
+ to the image, including damage or other payments to third parties, internal costs and legal costs,
+ fines or penalties, whether resulting from the breach or not of the guarantees and declarations
+ given hereby.
+ 11.2. The Publisher declares and guarantees SL that the works in its digital catalogue, the covers
+ and all their contents shall not be illegal, shall not be spam, and shall not contain material, data
+ and/or information that is unlawful or contrary to the contractual terms and conditions required
+ by the digital libraries, or content that is contrary to public decency and/or public order, or
+ content that is contrary to the laws on the protection of personal data, or content that is contrary
+ to the laws on pornography, content on child pornography and/or in any case content that is
+ obscene, defamatory, abusive, or content of a discriminatory or offensive type in relation to
+ religions, races, gender, nationality or ethnicity and, more generally, offensive content for third
+ parties. The Publisher shall, at first demand, indemnify and hold SL, its directors, employees,
+ affiliates, collaborators, harmless from and against any claim of third parties for any reason
+ advanced, arises from any breach of the Publisher’s representations or warranties set forth
+
+
+                                                                                        Pagina 11 di 21
+herein. The indemnity due shall cover any economic, reputational damage and any damage to the
+image, including damage or other payments to third parties, internal costs and legal costs, fines
+or penalties.
+11.3. The Publisher declares and guarantees SL that the works in its digital catalogue, the covers
+and all their contents shall not be contrary to the SL Content Policy mentioned in the Preamble to
+the Contract and available at https://www.streetlib.com/it/legalpolicy.
+11.4. SL shall inform the Publisher if it becomes aware, as a result of a report by a public
+authority or following objections or claims by third parties, of the possible illegality of the works
+uploaded by the Publisher and/or of their marketing, or in any case of the breach of the
+declarations and warranties issued by the Publisher pursuant to points 11.1, 11.2 and 11.3. In this
+case, the Publisher undertakes to immediately suspend the use of StreetLib for the marketing of
+its works, as a precautionary measure and until the final clarification of the disputes, without
+prejudice to the provisions in terms of guarantee, liability and indemnity on the part of the
+Publisher; failing this, the Publisher hereby authorises SL to suspend any form of marketing on its
+own initiative. The Publisher is obliged to provide SL with all cooperation aimed at the promptest
+clarification, also with regard to third party complainants and/or public authorities, with regard to
+the disputes that have arisen, it being understood that SL shall be entitled, at its own discretion,
+to provide the aforementioned parties with all the information and data relating to the marketing
+of the disputed works. In the event that SL has received the mentioned disputes or claims from
+third parties and/or a public authority, SL shall also be entitled to suspend all payments relating
+to the disputed works and may withhold, as security for the fulfilment of the Publisher's
+indemnity commitments pursuant to points 11.1., 11.2 and 11.3, until the final settlement of the
+disputes, any other amount that may be due to the Publisher for any reason or in any case held
+by SL on behalf of the Publisher, within the limits of an overall amount equal to the overall value
+of the revenues earned through StreetLib through the marketing of all the Publisher's digital
+contents.
+11.5. The Parties reciprocally acknowledge that this Contract, except for that expressly provided
+for by it and needed for its execution, does not provide for nor imply any transfer or license of
+the intellectual property rights regarding the Publisher’s works and the copyrights or industrial
+property of the Publisher and SL respectively. If, in the supply of the services, the Publisher’s
+works or other digital content uploaded by the Publisher on the platform should bear the SL’s
+logo or brand or trademarks or other brands or distinctive marks owned by or at the disposal of
+SL itself, these references must not be understood as implicit license to use them. Commercial
+
+
+                                                                                    Pagina 12 di 21
+  data, data and metadata, generated by the marketing and any processing of the same arising out
+  the marketing through StreetLib, are a property of, and in the disposal of, SL. The Publisher
+  acknowledge that the technology, software, digital contents, logos, trademarks, brands
+  copyrights and generally all the intellectual and industrial property rights held by SL are not
+  transferred through this Contract.
+  11.6. The Publisher will take care and remains solely responsible for the fulfilment of any legal
+  requirements regarding the publication and sale of ebooks, audiobooks and print copies, for
+  which the Publisher is fully and exclusively liable, therein including the obligations of legal deposit
+  and any connected tax obligations.
+
+12. TERM AND WITHDRAWAL. CHANGES TO THE CONTRACT.
+  12.1. The Contract is open-ended, with the option for either Party to terminate it by giving
+  communication via email, with a thirty-day notice period from the effective date of termination.
+  In any case, if either Party is involved in a business crisis procedure, the other Party has the right
+  to immediately terminate the Contract by notifying the other Party via email. For
+  communications between the Parties, the provisions of the following point 17.2 apply.
+  12.2. It is understood between the Parties that in any case of termination of the Contract,
+  including instances of termination or resolution, the Parties themselves will remain obligated to
+  do everything possible for the subsequent termination or cancellation of relationships with digital
+  bookstores for the marketing of the Publisher's ebooks and audiobooks. This is subject to the
+  constraints and termination provisions established by SL in its relationships with the
+  aforementioned entities. Following termination, SL has the right to deactivate the Publisher's
+  registration account.
+  12.3. During the Contract, the Publisher may deactivate, through the platform, the marketing of
+  one or more works previously uploaded to StreetLib. In such a case, SL will act to withdraw those
+  works from the market, respecting the conditions and terms established by the digital bookstores
+  where they are in circulation. The withdrawal of one or more works by the Publisher does not
+  exempt them from payment for services already rendered, just as SL's termination does not
+  exempt it from performing services for which it has already received payment.
+  12.4. SL has the right to modify the Contract at any time, including Annex 1 "Economic terms and
+  invoicing". The amendments will be communicated by SL to the Publisher at the email address
+  registered in the StreetLib account, and they will take effect on the specified effective date, not
+  less than thirty days from the sending of the relevant informative communication. SL will make
+
+
+                                                                                        Pagina 13 di 21
+  the modified Contract, with the effective date of the respective change clearly indicated,
+  available through the platform accessible from the Publisher's account. The Publisher who wishes
+  to continue using the services offered by SL, need not take any action. However, a Publisher who
+  does not wish to continue the relationship with SL under the new conditions and terms, may
+  terminate the Contract by removing the content uploaded to StreetLib and deactivating its
+  account before the modification becomes effective. Any additional time required for the
+  disconnection of the service by digital and/or physical and/or online bookstores and
+  intermediaries connected with StreetLib is expressly reserved.
+
+13. TERMINATION. SUSPENSION OF SERVICES.
+ 13.1. In the event of a breach of obligations arising from the Contract, the Party alleging such
+ breach may declare the termination of the Contract if the defaulting Party has not remedied the
+ violation within thirty days of receiving the notice of the breach from the other Party. SL has the
+ right to immediately suspend the execution of some or all of its services, in cases where the
+ Publisher violates the law and/or the commitments, statements, or warranties specified in the
+ above point 11, as well as in the event that SL receives reports from third party or public
+ authorities of the Publisher's improper use of services provided by SL through the platform, as well
+ as in case of the Publisher's breach of obligations as outlined in the above point 2.2.f).
+
+14. PERMANENCE OF THE END-USERS ACQUIRED RIGHTS.
+  It is understood between the Parties that in the event of channel deactivation, withdrawal from
+  the marketing of one or more works, as well as after the expiration of the Contract or in any case
+  of termination or early termination thereof, even beyond the terms of its duration, the rights of
+  end-users who have lawfully acquired rights or licenses related to the aforementioned works
+  during the period in which the Contract was executed are preserved.
+  Therefore, the Publisher authorizes SL to retain and transmit over the internet a copy of the work
+  even after termination and beyond the duration of the Contract, ensuring the exercise of related
+  rights, such as downloading and streaming by end-users who have acquired such rights before
+  the termination of the Contract or to provide them post-sales services. The Publisher grants
+  similar rights to digital, online or physical bookstores and intermediaries through which, during
+  the validity of the Contract, the marketing of the aforementioned works has taken place.
+
+15. MAINTENANCE AND UPDATE OF THE PLATFORM AND IT SYSTEMS.
+
+                                                                                     Pagina 14 di 21
+  15.1. The Publisher acknowledges that, during the supply of services, there can be temporary
+  disabling of StreetLib due to major force, technical causes, maintenance, software updates,
+  replacement of hardware, instability or disconnection of the internet connections with the
+  Publisher’s devices and/or with the digital bookstores, including those which are owned by the
+  same SL. It remains understood that there can be temporary inefficiencies, disabling, delays or
+  malfunctioning regarding the connection of StreetLib with one or more digital bookstores,
+  including those of SL itself, due to delays in internet services or malfunctioning of third parties,
+  such as, for example, cloud services which SL buys from third parties for the storage of the
+  ebooks and audiobooks.
+  15.2. SL shall not be responsible for any delays or breaches in this Contract caused by any fact or
+  circumstances beyond its control.
+  15.3. StreetLib will undergo evolutions during this Contract, including adapting to changes in
+  technical security measures, technological conditions, and market conditions. The Publisher,
+  therefore, undertakes to stay informed about innovations, integrations, technical modifications,
+  and technological developments by periodically accessing the platform, even independently of
+  the actual use of the services.
+
+16. OBLIGATIONS OF GOOD FAITH IN THE INTERPRETATION AND EXECUTION OF THE CONTRACT - INTEGRATION
+OF THE CONTRACT.
+  According to the innovative nature of the services covered by this Contract, the Parties
+  reciprocally acknowledge that during the term of the Contract itself the Parties shall endeavour,
+  in good faith and with the obligation to safeguard mutual interests related to its execution, to
+  produce any reasonable interpretation and integration of it which may be requested by technical
+  reasons, legislative innovations, novelties in the application procedures of tax obligations, etc.
+
+17. CONCLUSION OF THE CONTRACT, COSTS E COMMUNICATIONS BETWEEN THE PARTIES.
+  17.1. For acceptance of the Contract, the Publisher, after having created his own account for the
+  use of the platform, shall flag the relevant items within StreetLib which allow to view and accept
+  these Conditions and Terms for the offer of services by SL. The acceptance extends to Annex 1
+  "Economic terms and Invoicing".
+  17.2. Throughout the duration of the Contract, the Publisher undertakes to provide SL with its
+  data, accurately and completely, as well as any changes to the same, necessary for invoicing or
+  any other tax or contractual obligation. In particular, the Publisher commits to communicating to
+
+
+                                                                                     Pagina 15 di 21
+  SL, already during the registration for the activation of the StreetLib account, and for the
+  purposes of this Contract, an email address that is kept active, valid, and functional under the
+  responsibility of the Publisher. This is to receive and regularly review SL's communications related
+  to the Contract, including those containing changes to the Contract as indicated in the above
+  point 12.4, as well as communications related to technical measures for service usage and
+  security. In the absence of communication of the change of the registration email, as well as SL's
+  email indicated in the Contract header, communications between the Parties to the respective
+  original registration email and the one indicated for SL in the header of the Contract are
+  considered effectively occurred between the Parties.
+
+18. GOVERNING LAW AND JURISDICTION.
+  The Contract is governed by Italian law, and is subject to the exclusive jurisdiction of the Italian
+  Judicial Authority. Any dispute that may arise between the Parties under the Contract will be
+  subject to the exclusive territorial jurisdiction of the Court of Milan, Italy.
+
+                                                ***
+  SL declares that all data exchanged and related to the execution of the Contract will be processed
+  in compliance with the current regulations and in accordance with the provisions of the GDPR
+  (EU Regulation 2016/679) and Legislative Decree no. 196/2003, as amended by Legislative Decree
+  no. 101/2018.
+  By entering into this Contract, the Publisher declares to process the exchanged data related to
+  the execution of the Contract in compliance with the provisions of the GDPR (EU Regulation
+  2016/679) and Legislative Decree no. 196/2003, as amended by Legislative Decree no. 101/2018.
+  In particular, as the author and/or data controller of the personal data of the authors, the
+  Publisher also undertakes to respect, in that capacity, every applicable legal obligation under the
+  aforementioned regulations.
+                                                 ***
+
+  A copy of this document will be stored in your account on StreetLib.
+
+
+
+
+                                                                                     Pagina 16 di 21
+                                      ANNEX 1
+                            ECONOMIC TERMS AND INVOICING
+
+DIGITAL BOOKSTORES CHANNEL
+
+In connection with point 8 of the Contract “PUBLISHER’S REVENUES ON DIGITAL RETAILER
+BOOKSTORES CHANNEL”, the economic terms (excluding VAT) are indicated in the
+following table.
+
+                                 Table A. DIGITAL BOOKSTORES
+                                          Retailer
+                      ebook                                    audiobook
+      1) No activation price                     1) No activation price
+      2) Publisher’s revenues: 70% of the        2) Publisher’s revenues: 70% of the
+      turnover, net of VAT, made by SL towards   turnover, net of VAT, made by SL towards
+      the digital bookshop (according to the     the digital bookshop (according to the
+      business and revenue-sharing model         business and revenue-sharing model
+      applied by each bookstore)                 applied by each bookstore)
+
+
+
+
+In case of opting for DRM protection of the file through third-party technology (Adobe), SL
+will apply a cost of € 0,25 per sales transaction to the Publisher.
+
+FREE OF CHARGE WORKS (EBOOK and AUDIOBOOK)
+
+For each ebook or audiobook uploaded on the platform and distributed to the retailers free
+of charge (zero price) a commission in favour of SL of 0.10 € for each ebook download and
+0.20 € for each audiobook, made by the end users on each retailer, will be applied.
+The number of downloads generated will be made available within the reporting service
+referred to in point 7 of the Contract, and the total costs thus calculated will be deducted
+from the amounts due to the Publisher on the basis of the quarterly report and relative
+invoice, as described in the following paragraph.
+
+
+
+                                                                                        Pagina 17 di 21
+INVOICING
+
+The Publisher may invoice to SL at quarterly intervals; in particular, it will issue an invoice to
+StreetLib Srl, based on the information provided from time to time in the user area of the
+StreetLib billing service, for an amount equal to the amount of the revenues due to the
+Publisher itself, less the fees due to SL, as indicated above in Table A and for DRM
+protection if applicable.
+
+RETURNS OF DIGITAL WORKS
+
+SL will add negative lines within the analytical billing report if digital returns have been
+reported by the end user of one of the SL-integrated bookstores.
+
+PAYMENTS
+
+SL will make the payment within 60 days from the end of the month in which the invoice
+issued by the Publisher is received. Payment to the Publisher by SL will be made by bank
+transfer if the amount of the invoices exceeds € 200,00, or with the other payment
+methods highlighted on the platform on the following page: https://streetlib.co/payment-it .
+
+
+
+
+                                                                                  Pagina 18 di 21
+DISTRIBUTION IN PRINT FORMAT
+
+In connection with points 9.1 (“Amazon”), 9.2 (“Proprietary Channels SL”) and 9.3 (“National
+Distribution”) of the Contract, the economic conditions (excluding VAT) are set out in the
+table below.
+                         Table B. DISTRIBUTION IN PRINT FORMAT
+        1) Activation price equal to 49€ per work (one-off, only in the event of activation of the
+        service by the Publisher, upon upload of the work)
+                                         2) Publisher’s revenues
+ Amazon (Print on demand)               SL Proprietary Channels     National Distribution (on
+                                        (Print on demand)                consignment)
+
+ 35% on cover price minus             50% on cover price minus     a) printed copies sold to
+ variable printing costs              variable printing costs      the end user: the
+ depending on the features            depending on the features    Publisher's revenue is
+ of the work (*)                      of the work (*)              40% of the cover price,
+                                                                   minus the variable printing
+                                                                   cost based on the features
+                                                                   of the work (*);
+
+                                                                   b) printed copies returned:
+                                                                   the Publisher pays the
+                                                                   printing costs (*) and
+                                                                   shipping costs (**) relating
+                                                                   to the return of unsold
+                                                                   printed copies.
+                                                                   SL may offset the amount
+                                                                   due against other
+                                                                   revenues of the Publisher
+                                                                   for any reason made
+                                                                   through StreetLib.
+
+
+
+(*) The fee due for the printing service is variable in relation to the features of the
+"print-ready" file and is displayed to the Publisher when the file is uploaded to the platform.
+To get the printing done, SL turns to printing house partners selected by SL itself. Once the
+
+
+
+                                                                                  Pagina 19 di 21
+distribution in print format is activated, printing costs remain subject to possible
+fluctuations over time. SL undertakes to promptly notify the Publisher of any increase that
+is equal to or greater than 15% of the cost displayed to the Publisher at the time of setting
+the file as "print-ready".
+
+(**) The cost of shipping is variable depending on the weight, size and destination of the
+printed copies being returned.
+
+PAYMENT AND INVOICING
+
+The Publisher may invoice to SL at quarterly intervals; in particular, it will issue an invoice to
+StreetLib Srl, based on the information provided from time to time in the user area of the
+StreetLib billing service, for an amount equal to the amount of the revenues due to the
+Publisher itself, less the amount due to SL according to as indicated above in Table B.
+SL will make the payment within 60 days from the end of the month in which the invoice
+issued by the Publisher is received. Payment to the Publisher by SL will be made by bank
+transfer if the amount of the invoices exceeds € 200,00, or with the other payment
+methods highlighted on the platform on the following page: https://streetlib.co/payment-it .
+The one-off price for the distribution in print format will be immediately due by the
+Publisher to SL, only in case of activation of the service, upon uploading the “print-ready”
+file, and for it SL will issue the corresponding invoice.
+In the case of distribution “on consignment”, the cost of printing and transporting unsold
+and returned copies will be deducted from the next payment.
+
+“PRINT RUN ON DEMAND” SERVICE
+
+In connection with point 10 of the Contract “PRINT RUN ON DEMAND - COSTS”, the
+economic conditions (excluding VAT) are set out in the table below.
+
+                                    Table C. “PRINT RUN ON DEMAND”
+ ​                  ​                SL’s unitary compensation
+ 1) activation price: € 49 (one-off price, only in case of activation of the service by the Publisher, when
+ uploading the work)
+ 2) variable price for printing service (*)
+ 3) shipping costs (**)
+
+
+(*) The fee due for the printing service is variable in relation to the features of the
+
+
+
+                                                                                          Pagina 20 di 21
+"print-ready" file and is displayed to the Publisher when the file is uploaded to the platform.
+To get the printing done, SL turns to printing house partners selected by SL itself. Once the
+distribution in print format is activated, printing costs remain subject to possible
+fluctuations over time. SL undertakes to promptly notify the Publisher of any increase that
+is equal to or greater than 15% of the cost displayed to the Publisher at the time of setting
+the file as "print-ready".
+
+(**) The shipping cost is variable depending on the weight, size and destination of the print
+run and is shown to the Publisher at the time of ordering.
+
+PAYMENTS AND INVOICING
+
+The one-off price for the service activation will be immediately due by the Publisher to SL
+upon uploading the “print-ready” file. The payment of the runs will be due at the time of
+their purchase. SL will invoice the Publisher at the time payments are due.
+
+
+
+ISBN VIA STREETLIB
+
+  ●​ The Publisher can use up to 5 ISBNs per day and 100 in total: free of charge within
+     the platform, when creating the work's product sheet (one ISBN code per work);
+  ●​ beyond these limits: only possible upon written request to SL support@streetlib.com,
+     which will discretionally assess, on a case-by-case basis, the possibility and manner
+     of fulfilling the request.
+
+Works in breach of the Content Policy set out in the Preamble and point 11.3 of the Contract
+shall always be excluded from the above.
+
+
+
+
+                                                                               Pagina 21 di 21
+
