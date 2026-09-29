@@ -119,11 +119,14 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); out
    line print above the scope box and the findings; on screen they are not shown. */
 .print-only { display: none; }
 @media print { .print-only { display: block; } }
+/* A print-only block the page has not filled (hidden) stays out of the printout too. */
+.print-only[hidden] { display: none !important; }
 
 /* Pro branding: the accent variable is only set when a valid licence is active,
    so the free tier renders the document exactly as it always did. */
 .doc { --brand-accent: inherit; }
 .doc .brand-logo { max-height: 64px; max-width: 220px; margin-bottom: .5rem; display: block; }
+.doc .brand-logo[hidden] { display: none; }
 .doc[style*="--brand-accent"] .doc-type,
 .doc[style*="--brand-accent"] h2 { color: var(--brand-accent); }
 .doc[style*="--brand-accent"] .totals .grand td { border-top: 2px solid var(--brand-accent); }

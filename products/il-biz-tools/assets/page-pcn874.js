@@ -28,6 +28,7 @@ const results = $('#pcn-results');
 const tbody = $('#pcn-findings');
 const more = $('#pcn-more');
 const after = $('#pcn-after');
+const printHeader = $('#pcn-print-header');
 const printFile = $('#pcn-print-file');
 const printDate = $('#pcn-print-date');
 const shareButton = $('#pcn-share');
@@ -96,13 +97,19 @@ let shareable = null;
 let whatsappLink = null;
 
 after.hidden = true;
+printHeader.hidden = true;
 shareButton.hidden = !canShare;
 shareNote.hidden = !canShare && !WHATSAPP_FALLBACK_ENABLED;
 
 const dateHe = (d) => `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
 
+// The print header names a file and a date, so it exists only beside that
+// file's result: a failed later pick must not print under the earlier name.
 function hideAfter() {
   after.hidden = true;
+  printHeader.hidden = true;
+  printFile.textContent = '';
+  printDate.textContent = '';
   shareable = null;
   shareStatus.textContent = '';
   if (whatsappLink) whatsappLink.hidden = true;
@@ -121,6 +128,7 @@ function showAfter(result, fileName) {
     whatsappLink.hidden = false;
   }
   after.hidden = false;
+  printHeader.hidden = false;
 }
 
 $('#pcn-print').addEventListener('click', () => window.print());

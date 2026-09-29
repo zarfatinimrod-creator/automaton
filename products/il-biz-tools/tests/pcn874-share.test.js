@@ -13,7 +13,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { validatePcn874 } from '../src/vendor/pcn874/validate.js';
+import { validatePcn874, RULES } from '../src/vendor/pcn874/validate.js';
 import { parsePcn874 } from '../src/vendor/pcn874/parse.js';
 import {
   PCN874_PAGE_URL,
@@ -121,6 +121,24 @@ describe('the share text', () => {
     expect(text).toContain('detail.rule9.digits');
     expect(text).not.toContain('detail.rule10.digits');
     expect(text).toContain('ועוד 4');
+  });
+
+  // The last line of defence if a finding ever carried something other than a rule id in `rule` (review 29.9,
+  // code 8: removing the filter passed every test, because every real finding's rule is an id).
+  it('drops a finding whose rule is not a rule id, so file content in that field never reaches the text', () => {
+    const result = validatePcn874(fixture('invalid-counts.txt'));
+    const planted = ['ACME Ltd 514123456', 'header.count 12345', 'דוח מרץ', '../../x', 'detail.rule1 <b>'];
+    const tampered = { ...result, findings: [...result.findings, ...planted.map((rule) => ({ rule, severity: 'error' }))] };
+    const summary = shareSummary(tampered);
+    for (const p of planted) expect(summary.rules).not.toContain(p);
+    const text = shareText(summary);
+    for (const p of ['ACME', '514123456', '12345', 'דוח מרץ', '../', '<b>']) expect(text).not.toContain(p);
+    expect(summary.rules).toEqual(shareSummary(result).rules);
+  });
+
+  it('and never drops a real rule: every id in the validator\'s rule table passes the filter', () => {
+    const result = validatePcn874(fixture('invalid-counts.txt'));
+    for (const { id } of RULES) expect(shareSummary({ ...result, findings: [{ rule: id }] }).rules, id).toEqual([id]);
   });
 
   it('builds the summary from the result\'s counts and rule ids only', () => {

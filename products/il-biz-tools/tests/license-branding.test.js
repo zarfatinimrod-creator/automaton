@@ -165,6 +165,15 @@ describe('the print stylesheet keeps a try-out off paper (N2)', () => {
     expect(print).toMatch(/\.doc\[data-brand-trial\]\s+\.brand-logo\s*\{[^}]*display:\s*none\s*!important/);
   });
 
+  // `.doc .brand-logo { display: block }` beats the browser's own [hidden] rule, so without this the free document's
+  // empty, hidden logo still took its bottom margin while a try-out's (display:none in print) did not - the two
+  // printouts differed by that margin (review 29.9, code 9; read from the CSS, not measured).
+  it('a hidden logo takes no space, so a free print and a try-out print are the same document', () => {
+    expect(css).toMatch(/\.doc \.brand-logo\[hidden\]\s*\{\s*display:\s*none;?\s*\}/);
+    const rule = css.indexOf('.doc .brand-logo[hidden]');
+    expect(rule).toBeGreaterThan(css.indexOf('.doc .brand-logo {'));
+  });
+
   it('uses the trial accent only on screen, so the printed document is exactly the free one', () => {
     const screen = mediaBlocks('screen').join('\n');
     expect(screen).toContain('var(--brand-trial-accent)');

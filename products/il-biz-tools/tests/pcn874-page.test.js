@@ -197,6 +197,15 @@ describe('the page, as written', () => {
     expect(css).toMatch(/@media print\s*\{[^}]*\.print-only\s*\{\s*display:\s*block/);
   });
 
+  // Review 29.9 (honesty 10, code 5): the header names a file and a date, so it prints only beside that file's
+  // result. It starts hidden, and print CSS must not override `hidden` (a class rule's display:block beats the
+  // browser's [hidden] rule).
+  it('the print header starts hidden, and the print stylesheet keeps a hidden one hidden', () => {
+    expect(elementById(html, 'pcn-print-header')).toMatch(/^<div\b[^>]*\shidden[\s>]/);
+    const css = read('assets/style.css');
+    expect(css).toMatch(/\.print-only\[hidden\]\s*\{\s*display:\s*none\s*!important;?\s*\}/);
+  });
+
   it('answers "why is the checker free?" honestly, with no link to anything paid and no promise it stays free', () => {
     const answer = /<summary>למה הבודק חינמי\?<\/summary><p>([\s\S]*?)<\/p>/.exec(html)?.[1] ?? '';
     expect(answer).not.toBe('');
@@ -587,6 +596,41 @@ describe('the post-result slot, with a file checked', () => {
     const failing = await loadPage({ validatorThrows: true });
     await failing.choose('march.txt', fixture('valid-minimal.txt'));
     expect(failing.byId('#pcn-after').hidden).toBe(true);
+  });
+
+  it('the print header is shown only with a result: check A, then a file B that fails, and A\'s name is gone', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 8, 28, 12, 0, 0));
+    const page = await loadPage();
+    const header = () => page.byId('#pcn-print-header');
+    expect(header().hidden).toBe(true);
+    await page.choose('A-march.txt', fixture('invalid-counts.txt'));
+    expect(header().hidden).toBe(false);
+    expect(page.byId('#pcn-print-file').textContent).toBe('A-march.txt');
+
+    for (const [name, content, opts] of [
+      ['B-unreadable.txt', '', { failRead: true }],
+      ['B-huge.txt', new Uint8Array(1)],
+    ]) {
+      await page.choose('A-march.txt', fixture('invalid-counts.txt'));
+      if (name === 'B-huge.txt') {
+        const huge = page.fileOf(name, content);
+        huge.size = 1024 * 1024 * 1024;
+        await page.pick(huge);
+      } else {
+        await page.choose(name, content, opts);
+      }
+      expect(header().hidden, name).toBe(true);
+      expect(page.byId('#pcn-print-file').textContent, name).toBe('');
+      expect(page.byId('#pcn-print-date').textContent, name).toBe('');
+    }
+  });
+
+  it('a checker failure after a good check hides the header too', async () => {
+    const page = await loadPage({ validatorThrows: true });
+    await page.choose('A-march.txt', fixture('valid-minimal.txt'));
+    expect(page.byId('#pcn-print-header').hidden).toBe(true);
+    expect(page.byId('#pcn-print-file').textContent).toBe('');
   });
 
   it('the print button prints the page, and only when pressed', async () => {
