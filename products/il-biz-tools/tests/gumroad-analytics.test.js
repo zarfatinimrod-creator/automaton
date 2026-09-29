@@ -7,6 +7,7 @@ import {
   proButtonState,
   openProCheckout,
   gumroadPrice,
+  gumroadRefundPeriodDays,
   formatProPrice,
   PRO_PRODUCT_NAME,
   GUMROAD_STORE_NAME,
@@ -24,7 +25,8 @@ import site from '../src/config/site.json' with { type: 'json' };
 // Gumroad's read-back carries the price as `price` (minor units) and `currency`
 // (antiwork/gumroad app/models/concerns/product/as_json.rb, as_json_for_api);
 // the product job copies both into site.json as priceCents and currency.
-const READY = { gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro', productId: '32-nPAicqbLj8B_WswVlMw==', priceCents: 7900, currency: 'ils' } };
+// refundPeriodDays is the window Gumroad applies, read back the same way (RULING-2026-09-29-lines (h)).
+const READY = { gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro', productId: '32-nPAicqbLj8B_WswVlMw==', priceCents: 7900, currency: 'ils', refundPeriodDays: 30 } };
 
 describe('gumroad product url', () => {
   it('accepts an https product page and nothing else', () => {
@@ -118,6 +120,26 @@ describe('pro button states', () => {
     expect(site.gumroad.productId).toBe('');
     expect(site.gumroad.priceCents).toBeNull();
     expect(site.gumroad.currency).toBe('');
+    expect(site.gumroad.refundPeriodDays).toBeNull();
+  });
+});
+
+describe('the refund period, as Gumroad reported it (RULING-2026-09-29-lines (h))', () => {
+  it('reads a whole positive number of days, nothing else', () => {
+    expect(gumroadRefundPeriodDays(READY)).toBe(30);
+    for (const days of [14, 183]) expect(gumroadRefundPeriodDays({ gumroad: { refundPeriodDays: days } })).toBe(days);
+    for (const bad of [null, undefined, 0, -30, 30.5, '30', 'none', 100000]) {
+      expect(gumroadRefundPeriodDays({ gumroad: { refundPeriodDays: bad } }), String(bad)).toBeNull();
+    }
+    expect(gumroadRefundPeriodDays({})).toBeNull();
+    expect(gumroadRefundPeriodDays(null)).toBeNull();
+  });
+
+  it('does not change the button: five states, decided by URL, id and price alone', () => {
+    const { refundPeriodDays, ...noDays } = READY.gumroad;
+    expect(refundPeriodDays).toBe(30);
+    expect(proButtonState({ gumroad: noDays }).state).toBe('ready');
+    expect(proButtonState(READY).state).toBe('ready');
   });
 });
 

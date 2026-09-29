@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""The brand mailbox (owner step 8): send the drafted venue questions (seven on 28.9.2026), and probe the mailbox for numbers.
+"""The brand mailbox (owner step 8): send the drafted venue questions (seven on 28.9.2026), probe the mailbox for numbers,
+and answer Pro refund requests (RULING-2026-09-29-lines (h)).
 
 WHY. research/breadth/BOARD.md Q2 admitted step 8 so the colony can ask the written yes/no questions that decide
 CrazyGames, Wix, Spreadshirt and n8n (research/owner-asks/brand-mailbox-questions.md), and read the brand's
@@ -34,10 +35,36 @@ COMMANDS
       INTERNALDATE, so no flag ever changes. Prints (and with --out writes) numbers only: messages and unread in the
       inbox, possible replies per venue (as above, since that venue's first send), and accessibility-contact mail
       received, unanswered, unanswered for 7+ days, and the oldest unanswered one's age. No body, sender, address or
-      subject is printed or written, ever.
+      subject is printed or written, ever. It also writes "responders": ["gumroad-refund"] - and [] otherwise - only
+      when this script has the respond-refunds command AND .github/workflows/brand-mail.yml runs it on a schedule
+      (a cron under `on: schedule:` and a `respond-refunds` job whose `if:` admits the schedule). il-biz-tools'
+      `enable` refuses without it: a refund window on the page is honest only while something answers the requests.
+  respond-refunds [--apply]
+      The Pro refund responder. A DRY RUN unless --apply (the schedule passes it; a manual dispatch does only when
+      really_refund is ticked), and --apply runs only from refs/heads/main. Reads unanswered INBOX mail of the last
+      REFUND_LOOKBACK_DAYS days (UID SEARCH NOT ANSWERED SINCE, FETCH BODY.PEEK[]: reading never sets \\Seen; a dry run
+      opens the inbox with EXAMINE) and acts on a message only when all of these hold:
+        - it is not the brand's own mail, not accessibility mail, not automated or list mail (Auto-Submitted,
+          Precedence bulk/list/junk, List-Id or List-Unsubscribe) and not from a no-reply, mailer-daemon or
+          gumroad.com address: an automatic answer to an automatic message is how mail loops start;
+        - the sender's own words - the subject, or the body above the quoted message ("> " lines and everything from
+          a reply header down; <blockquote> and Gmail's quote block in HTML-only mail) - name a refund or a
+          cancellation (REFUND_WORDS). A receipt reply that asks something else is not a refund request;
+        - the topmost Authentication-Results header - the one the receiving server prepends; anything below it came
+          with the message and proves nothing - is the receiving server's own (authserv-id BRAND_MAIL_AUTHSERV_ID,
+          default mx.google.com) and shows dkim=pass or spf=pass for a domain aligned with the one From address (the
+          From domain or a parent of it). A spoofed From never gets a refund, and never gets an answer either.
+      For such a message it runs products/il-biz-tools/scripts/gumroad-pro-product.js refund --email <From>
+      --requested-at <the server's INTERNALDATE> [--apply] - that command alone decides which sale, if any: this
+      product, this buyer, inside the window in force, once - and then, only if the command did not stop, replies to
+      the From address (never Reply-To) with REFUND_REPLY, one fixed sentence that is the same whatever the command
+      found, so it never says whether the address bought anything; and marks the request \\Answered, so the next run
+      leaves it alone. One answer per sender per run, at most MAX_REFUND_REQUESTS_PER_RUN per run. A command that stops
+      or a reply that cannot be sent leaves the request unanswered for the next run and exits 1. Prints counts, IMAP
+      UIDs and the command's own lines (sale ids and counts; any address redacted) - never an address, subject or body.
 
-  Both exit 0 with {"configured": false, ...} while BRAND_MAIL_ADDRESS or BRAND_MAIL_APP_PASSWORD is unset, so CI stays
-  green before step 8 exists.
+  All three exit 0 with {"configured": false, ...} while BRAND_MAIL_ADDRESS or BRAND_MAIL_APP_PASSWORD is unset (and
+  respond-refunds while GUMROAD_ACCESS_TOKEN is), so CI stays green before step 8 exists.
 
 WHICH MAIL IS READ
   Headers are parsed with the lenient compat32 parser: email.policy.default raises on some malformed address and
@@ -63,7 +90,9 @@ ENVIRONMENT
   BRAND_MAIL_ADDRESS, BRAND_MAIL_APP_PASSWORD   the secrets step 8 creates (read only from the environment)
   BRAND_MAIL_SMTP_HOST / _PORT                  default smtp.gmail.com:465
   BRAND_MAIL_IMAP_HOST / _PORT                  default imap.gmail.com:993
-  GITHUB_REF                                    must be refs/heads/main for --really-send
+  GUMROAD_ACCESS_TOKEN                          respond-refunds only: handed to the refund command, nothing else
+  BRAND_MAIL_AUTHSERV_ID                        respond-refunds: the receiving server's authserv-id (mx.google.com)
+  GITHUB_REF                                    must be refs/heads/main for --really-send and for respond-refunds --apply
 
 EXIT CODES  0 done (or not configured) · 1 the mail server failed, or an unexpected error · 2 refused by a guard
 """
@@ -75,12 +104,14 @@ import email.header
 import email.policy
 import email.utils
 import hashlib
+import html as html_lib
 import imaplib
 import json
 import os
 import re
 import smtplib
 import ssl
+import subprocess
 import sys
 import tempfile
 from email.headerregistry import Address
@@ -122,6 +153,26 @@ FORBIDDEN_IN_MESSAGE = (
 )
 
 SPECIAL_USE = ("\\sent", "\\all", "\\junk")
+
+# ---- the refund responder (RULING-2026-09-29-lines (h))
+COMMANDS = ("send", "probe", "respond-refunds")
+WORKFLOW = os.path.join(REPO_ROOT, ".github", "workflows", "brand-mail.yml")
+PRODUCT_SCRIPT = os.path.join(REPO_ROOT, "products", "il-biz-tools", "scripts", "gumroad-pro-product.js")
+REFUND_RESPONDER = "gumroad-refund"
+DEFAULT_AUTHSERV_ID = "mx.google.com"
+REFUND_LOOKBACK_DAYS = 60
+MAX_REFUND_REQUESTS_PER_RUN = 20
+REFUND_COMMAND_TIMEOUT_SECONDS = 180
+# The sender's own words that make a message a refund request: a refund, the money back, or a cancellation ("ביטול
+# עסקה" is the consumer-law term). Matched in lower case.
+REFUND_WORDS = ("refund", "money back", "cancel", "החזר", "להחזיר", "תחזירו", "החזירו", "ביטול", "לבטל", "בטלו")
+# The whole answer. The same whatever the refund command found, so it never says whether this address bought
+# anything; it states the rule the responder applies, and that it is automatic.
+REFUND_REPLY = ("תשובה אוטומטית מ-Mehudak (מהודק): לפי מדיניות ההחזרים של Gumroad, רכישת Pro מהכתובת הזו בתוך "
+                "תקופת ההחזר מוחזרת במלואה דרך Gumroad.")
+NO_REPLY_LOCAL = re.compile(r"^(no-?reply|do-?not-?reply|mailer-daemon|postmaster|bounces?)([+.-]|$)", re.IGNORECASE)
+NEVER_ANSWERED_DOMAINS = ("gumroad.com",)
+MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 
 
 class Refused(Exception):
@@ -757,10 +808,350 @@ def cmd_probe(args, env, out, now, imap_factory):
         "accessibility": accessibility_counts(theirs, sent_folder, now),
         "sentFolderFound": bool(boxes.get("\\sent")),
         "allMailFound": bool(boxes.get("\\all")),
+        "responders": responders_in_force(),
     }
     if args.out:
         write_json_atomic(args.out, reading)
     return done(out, reading, 0)
+
+
+# ---------------------------------------------------------------- the refund responder (RULING-2026-09-29-lines (h))
+
+
+def workflow_runs_on_schedule(text, job, script="scripts/brand_mail.py"):
+    """True when the workflow text has a cron under `on: schedule:` and a job named `job` that runs `script` and whose
+    job-level `if:` (if any) admits the schedule. Line-based on purpose: standard library only, and this workflow's
+    shape is pinned by src/__tests__/revenue/brand-mail-workflow.test.ts."""
+    lines = text.splitlines()
+    if "on:" not in lines or "jobs:" not in lines:
+        return False
+    on_block = []
+    for line in lines[lines.index("on:") + 1:]:
+        if line and not line.startswith(" "):
+            break
+        on_block.append(line)
+    try:
+        at = [line.strip() for line in on_block].index("schedule:")
+    except ValueError:
+        return False
+    indent = len(on_block[at]) - len(on_block[at].lstrip())
+    cron = False
+    for line in on_block[at + 1:]:
+        if line.strip() and len(line) - len(line.lstrip()) <= indent:
+            break
+        cron = cron or bool(re.match(r"^\s+- cron:\s*[\"']?[0-9*]", line))
+    if not cron:
+        return False
+    body, inside = [], False
+    for line in lines[lines.index("jobs:") + 1:]:
+        if re.match(r"^  [A-Za-z0-9_-]+:\s*$", line):
+            inside = line.strip() == "%s:" % job
+            continue
+        if line and not line.startswith(" "):
+            break
+        if inside:
+            body.append(line)
+    if not any(script in line for line in body):
+        return False
+    guards = [line.split("if:", 1)[1] for line in body if re.match(r"^    if:", line)]
+    return not guards or "github.event_name == 'schedule'" in guards[0]
+
+
+def refund_responder_scheduled(workflow_path=None):
+    """The probe's evidence that refund requests are answered: this script has the command, and the workflow runs it."""
+    if "respond-refunds" not in COMMANDS:
+        return False
+    try:
+        with open(workflow_path or WORKFLOW, encoding="utf-8") as f:
+            text = f.read()
+    except OSError:
+        return False
+    return workflow_runs_on_schedule(text, "respond-refunds")
+
+
+def responders_in_force():
+    return [REFUND_RESPONDER] if refund_responder_scheduled() else []
+
+
+def imap_since(when):
+    """An IMAP date (01-Sep-2026) without the locale: strftime's %b is not English everywhere."""
+    return "%02d-%s-%04d" % (when.day, MONTHS[when.month - 1], when.year)
+
+
+def strip_comments(text):
+    """RFC 5322 comments out of a header value, innermost first: "spf=pass (google.com: ...) smtp.mailfrom=a@b"."""
+    previous = None
+    while previous != text:
+        previous, text = text, re.sub(r"\([^()]*\)", " ", text)
+    return text
+
+
+def aligned(domain, from_domain):
+    """DMARC-style relaxed alignment, conservatively: the From domain is the authenticated domain or a subdomain of it."""
+    domain = (domain or "").strip().strip(".").lower()
+    return "." in domain and (from_domain == domain or from_domain.endswith("." + domain))
+
+
+def authenticated_sender(msg, authserv_id):
+    """The one From address, in lower case, when the receiving server's own Authentication-Results - the topmost one -
+    show dkim=pass or spf=pass for a domain aligned with it; None otherwise. Never raises."""
+    try:
+        froms = addresses(msg, "From")
+        if len(froms) != 1 or not ADDR_SPEC.match(froms[0]):
+            return None
+        sender = froms[0]
+        from_domain = domain_of(sender)
+        results = raw_values(msg, "Authentication-Results")
+        if not results:
+            return None
+        parts = [part.strip() for part in strip_comments(" ".join(results[0].split())).split(";")]
+        if not parts[0] or parts[0].split()[0].lower() != authserv_id.lower():
+            return None
+        for part in parts[1:]:
+            m = re.match(r"(dkim|spf)\s*=\s*([a-z]+)\b(.*)$", part, re.IGNORECASE)
+            if not m or m.group(2).lower() != "pass":
+                continue
+            props = {k.lower(): v for k, v in re.findall(r"([a-z]+\.[a-z-]+)\s*=\s*(\S+)", m.group(3), re.IGNORECASE)}
+            if m.group(1).lower() == "dkim":
+                domain = props.get("header.d") or props.get("header.i", "").rpartition("@")[2]
+            else:
+                domain = props.get("smtp.mailfrom", "").rpartition("@")[2]
+            if aligned(domain, from_domain):
+                return sender
+        return None
+    except Exception:  # noqa: BLE001 - unreadable authentication is no authentication
+        return None
+
+
+def automated(msg, sender):
+    """Mail no automatic answer may go to: automated, list or bulk mail, a no-reply address, or Gumroad itself."""
+    auto = " ".join(raw_values(msg, "Auto-Submitted")).strip().lower()
+    if auto and auto != "no":
+        return True
+    if " ".join(raw_values(msg, "Precedence")).strip().lower() in ("bulk", "list", "junk"):
+        return True
+    if raw_values(msg, "List-Id") or raw_values(msg, "List-Unsubscribe"):
+        return True
+    local, _, domain = sender.rpartition("@")
+    if NO_REPLY_LOCAL.match(local):
+        return True
+    return any(domain == d or domain.endswith("." + d) for d in NEVER_ANSWERED_DOMAINS)
+
+
+QUOTE_HEADER = re.compile(
+    r"^\s*(‫)?(on\b.*\bwrote:\s*$|בתאריך\b|-{2,}\s*(original message|forwarded message)|from:\s|מאת:\s)",
+    re.IGNORECASE,
+)
+
+
+def text_parts(msg):
+    """The message's text: its text/plain parts, or its text/html parts when it has no plain text, decoded."""
+    plain, rich = [], []
+    for part in msg.walk():
+        if part.is_multipart() or part.get_filename():
+            continue
+        kind = part.get_content_type()
+        if kind not in ("text/plain", "text/html"):
+            continue
+        payload = part.get_payload(decode=True) or b""
+        try:
+            text = payload.decode(part.get_content_charset() or "utf-8", "replace")
+        except LookupError:
+            text = payload.decode("utf-8", "replace")
+        (plain if kind == "text/plain" else rich).append(text)
+    if plain:
+        return plain
+    out = []
+    for text in rich:
+        text = re.sub(r"(?is)<blockquote\b.*?</blockquote>", " ", text)
+        text = re.sub(r"(?is)<div\b[^>]*class=\"[^\"]*gmail_quote[^\"]*\".*", " ", text)
+        text = re.sub(r"(?i)<br\s*/?>|</p>|</div>", "\n", text)
+        out.append(html_lib.unescape(re.sub(r"<[^>]+>", " ", text)))
+    return out
+
+
+def own_words(msg):
+    """The subject and the body above the quoted message: what the sender wrote, not the receipt they reply to."""
+    kept = []
+    for text in text_parts(msg):
+        for line in text.splitlines():
+            if QUOTE_HEADER.match(line):
+                break
+            if not line.lstrip().startswith(">"):
+                kept.append(line)
+    return (decoded(msg, "Subject") + "\n" + "\n".join(kept)).lower()
+
+
+def names_refund(msg):
+    try:
+        words = own_words(msg)
+    except Exception:  # noqa: BLE001 - a body that cannot be read asks for nothing
+        return False
+    return any(word in words for word in REFUND_WORDS)
+
+
+def node_refund_runner(sender, requested_at, apply, env):
+    """Run the product's refund command: arguments, never a shell; only PATH and the token in its environment. Returns
+    (exit code, stdout lines). stderr is dropped: a stack trace could quote anything."""
+    argv = ["node", PRODUCT_SCRIPT, "refund", "--email", sender, "--requested-at", iso_z(requested_at)]
+    if apply:
+        argv.append("--apply")
+    child_env = {"PATH": env.get("PATH") or os.defpath, "GUMROAD_ACCESS_TOKEN": env["GUMROAD_ACCESS_TOKEN"]}
+    try:
+        proc = subprocess.run(argv, env=child_env, cwd=os.path.dirname(os.path.dirname(PRODUCT_SCRIPT)),
+                              capture_output=True, text=True, timeout=REFUND_COMMAND_TIMEOUT_SECONDS, check=False)
+    except subprocess.TimeoutExpired:
+        return 124, ["the refund command did not finish in %d seconds" % REFUND_COMMAND_TIMEOUT_SECONDS]
+    return proc.returncode, (proc.stdout or "").splitlines()
+
+
+def redacted(lines, address):
+    pattern = re.compile(re.escape(address), re.IGNORECASE)
+    return [pattern.sub("[address]", line) for line in lines]
+
+
+def reply_subject(msg):
+    subject = " ".join(decoded(msg, "Subject").split())[:150]
+    return subject if subject.lower().startswith("re:") else ("Re: " + subject).strip()
+
+
+def build_refund_reply(msg, sender, brand, now):
+    reply = EmailMessage()
+    reply["From"] = Address(display_name=BRAND_DISPLAY_NAME, addr_spec=brand)
+    reply["To"] = sender
+    reply["Subject"] = reply_subject(msg)
+    reply["Date"] = email.utils.format_datetime(now.astimezone(dt.timezone.utc))
+    reply["Message-ID"] = email.utils.make_msgid(idstring="refund", domain=domain_of(brand))
+    reply["Auto-Submitted"] = "auto-replied"  # RFC 3834: other responders must not answer this one
+    request_id = own_id(msg)
+    if request_id:
+        reply["In-Reply-To"] = request_id
+        reply["References"] = " ".join(message_ids(" ".join(raw_values(msg, "References"))) + [request_id])
+    reply.set_content(REFUND_REPLY, cte="quoted-printable")
+    return reply
+
+
+def close_smtp(smtp):
+    try:
+        smtp.quit()
+    except Exception:  # noqa: BLE001 - a failed QUIT changes nothing already sent
+        pass
+
+
+FETCH_HEAD = re.compile(rb'INTERNALDATE "([^"]+)"')
+
+
+def fetch_whole(imap, uid):
+    """(received_or_None, message) for one UID. BODY.PEEK[]: reading never sets \\Seen."""
+    typ, data = imap.uid("FETCH", uid, "(INTERNALDATE BODY.PEEK[])")
+    if typ != "OK":
+        raise ProbeError("FETCH failed")
+    for item in data or []:
+        if isinstance(item, tuple) and len(item) >= 2:
+            when = None
+            m = FETCH_HEAD.search(item[0])
+            if m:
+                try:
+                    when = dt.datetime.strptime(m.group(1).decode("ascii"), "%d-%b-%Y %H:%M:%S %z")
+                except ValueError:
+                    when = None
+            return when, email.message_from_bytes(item[1], policy=email.policy.compat32)
+    return None, None
+
+
+def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_runner):
+    cfg, missing = brand_config(env)
+    if cfg is None:
+        return done(out, {"configured": False, "missing": missing}, 0)
+    if not env.get("GUMROAD_ACCESS_TOKEN"):
+        return done(out, {"configured": False, "missing": ["GUMROAD_ACCESS_TOKEN"]}, 0)
+    if args.apply and env.get("GITHUB_REF") != MAIN_REF:
+        raise Refused("a real refund run goes only from %s (the brand-mail workflow on main); run without --apply for a dry run." % MAIN_REF)
+    authserv = env.get("BRAND_MAIL_AUTHSERV_ID") or DEFAULT_AUTHSERV_ID
+    report = {"configured": True, "dryRun": not args.apply, "requests": 0, "unauthenticated": 0, "left": 0, "handled": []}
+    failed = False
+    smtp = None
+    try:
+        imap = connect_imap(cfg, imap_factory)
+    except (OSError, imaplib.IMAP4.error) as exc:
+        return done(out, {"configured": True, "error": type(exc).__name__}, 1)
+    try:
+        typ, _data = imap.select(quote_mailbox("INBOX"), readonly=not args.apply)
+        if typ != "OK":
+            raise ProbeError("SELECT failed")
+        since = imap_since(now - dt.timedelta(days=REFUND_LOOKBACK_DAYS))
+        # NOT ANSWERED is IMAP4rev1's spelling of the unanswered search key (RFC 3501 6.4.4).
+        typ, data = imap.uid("SEARCH", "NOT", "ANSWERED", "SINCE", since)
+        if typ != "OK":
+            raise ProbeError("SEARCH failed")
+        answered_senders = set()
+        attempts = 0
+        for uid in (data[0] or b"").split() if data else []:
+            uid = uid.decode("ascii")
+            received, msg = fetch_whole(imap, uid)
+            if msg is None or is_own(msg, cfg["address"], set()) or is_accessibility_mail(msg) or not names_refund(msg):
+                continue
+            report["requests"] += 1
+            sender = authenticated_sender(msg, authserv)
+            if sender is None:
+                report["unauthenticated"] += 1
+                continue
+            if automated(msg, sender):
+                continue
+            entry = {"uid": uid}
+            if sender in answered_senders:
+                # Already answered in this run: one answer per sender per run; this one is covered by it.
+                if args.apply:
+                    imap.uid("STORE", uid, "+FLAGS", "(\\Answered)")
+                entry["outcome"] = "covered by this run's answer to the same sender" if args.apply else "dry run: covered by this run's answer"
+                report["handled"].append(entry)
+                continue
+            if attempts >= MAX_REFUND_REQUESTS_PER_RUN:  # bounded even when every attempt fails
+                report["left"] += 1
+                continue
+            attempts += 1
+            requested = min(received or now, now)
+            code, lines = refund_runner(sender, requested, args.apply, env)
+            entry["refundExit"] = code
+            entry["refundLog"] = redacted(lines, sender)
+            if code != 0:
+                failed = True
+                entry["outcome"] = "the refund command stopped: not answered, left for the next run"
+                report["handled"].append(entry)
+                continue
+            answered_senders.add(sender)
+            if not args.apply:
+                entry["outcome"] = "dry run: would answer"
+                report["handled"].append(entry)
+                continue
+            try:
+                if smtp is None:
+                    host, port = cfg["smtp"]
+                    conn = smtp_factory(host, port, timeout=TIMEOUT_SECONDS, context=tls_context())
+                    try:
+                        conn.login(cfg["address"], cfg["password"])
+                    except (OSError, smtplib.SMTPException):
+                        close_smtp(conn)
+                        raise
+                    smtp = conn  # kept only once logged in, so a failed login is retried for the next answer
+                smtp.send_message(build_refund_reply(msg, sender, cfg["address"], now))
+            except (OSError, smtplib.SMTPException) as exc:
+                failed = True
+                entry["outcome"] = "the answer could not be sent (%s): not marked answered, left for the next run" % type(exc).__name__
+                report["handled"].append(entry)
+                answered_senders.discard(sender)
+                continue
+            imap.uid("STORE", uid, "+FLAGS", "(\\Answered)")
+            entry["outcome"] = "answered"
+            report["handled"].append(entry)
+    except (OSError, imaplib.IMAP4.error, ProbeError) as exc:
+        report["error"] = type(exc).__name__
+        failed = True
+    finally:
+        close_imap(imap)
+        if smtp is not None:
+            close_smtp(smtp)
+    return done(out, report, 1 if failed else 0)
 
 
 # ---------------------------------------------------------------- CLI
@@ -775,6 +1166,8 @@ def done(out, data, code):
 def parse_args(argv):
     parser = argparse.ArgumentParser(prog="brand_mail.py", description=__doc__.split("\n\n")[0])
     sub = parser.add_subparsers(dest="command", required=True)
+    refunds = sub.add_parser("respond-refunds")
+    refunds.add_argument("--apply", action="store_true", help="refund and answer for real (default: dry run); main only")
     for name in ("send", "probe"):
         p = sub.add_parser(name)
         p.add_argument("--questions", default=QUESTIONS)
@@ -788,17 +1181,20 @@ def parse_args(argv):
     return parser.parse_args(argv)
 
 
-def main(argv=None, env=None, stdout=None, stderr=None, now=None, smtp_factory=None, imap_factory=None):
+def main(argv=None, env=None, stdout=None, stderr=None, now=None, smtp_factory=None, imap_factory=None, refund_runner=None):
     env = os.environ if env is None else env
     out = stdout or sys.stdout
     err = stderr or sys.stderr
     now = now or dt.datetime.now(dt.timezone.utc)
     smtp_factory = smtp_factory or smtplib.SMTP_SSL
     imap_factory = imap_factory or imaplib.IMAP4_SSL
+    refund_runner = refund_runner or node_refund_runner
     args = parse_args(argv)
     try:
         if args.command == "send":
             return cmd_send(args, env, out, now, smtp_factory, imap_factory)
+        if args.command == "respond-refunds":
+            return cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_runner)
         return cmd_probe(args, env, out, now, imap_factory)
     except Refused as exc:
         err.write("refused: %s\n" % exc)

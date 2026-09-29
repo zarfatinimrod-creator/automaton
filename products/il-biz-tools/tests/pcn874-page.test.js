@@ -206,12 +206,17 @@ describe('the page, as written', () => {
     expect(css).toMatch(/\.print-only\[hidden\]\s*\{\s*display:\s*none\s*!important;?\s*\}/);
   });
 
-  it('answers "why is the checker free?" honestly, with no link to anything paid and no promise it stays free', () => {
+  // RULING-2026-09-29-lines (f): the validator may be promised to stay free in the words invoice.html already uses
+  // ("חינמי ונשאר חינמי") - "stays free", not "stays up" - never "לתמיד" or "לכל החיים", and with no price anywhere.
+  it('answers "why is the checker free?" honestly: it stays free in invoice.html\'s words, links nothing paid, names no price', () => {
     const answer = /<summary>למה הבודק חינמי\?<\/summary><p>([\s\S]*?)<\/p>/.exec(html)?.[1] ?? '';
     expect(answer).not.toBe('');
     expect(answer).not.toMatch(/<a\b/);
     expect(answer).toContain('רץ כולו בדפדפן');
-    expect(html).not.toMatch(/ונשאר חינמי|יישאר חינמי|חינם לתמיד|לתמיד/);
+    expect(answer).toContain('הבודק חינמי ונשאר חינמי');
+    expect(read('invoice.html')).toContain('חינמיים ונשארים חינמיים');
+    expect(html).not.toMatch(/לתמיד|לכל החיים|יישאר חינמי|חינם לתמיד/);
+    expect(answer).not.toMatch(/₪|\d|מחיר|רישיון/);
     const ld = JSON.parse(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html)[1]);
     const twin = ld.mainEntity.find((q) => q.name === 'למה הבודק חינמי?')?.acceptedAnswer.text;
     expect(twin).toBe(answer);
