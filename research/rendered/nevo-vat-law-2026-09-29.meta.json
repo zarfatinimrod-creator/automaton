@@ -1,0 +1,23 @@
+{
+  "url": "https://www.nevo.co.il/law_html/law01/271_001.htm",
+  "slug": "nevo-vat-law-2026-09-29",
+  "fetchedAt": "2026-09-29T10:46:51.356Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 253462,
+  "sha256": "ec477ce90ae6d82062ce6502654988ae17b7824a50c8c34b130510874319d93a",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/nevo-vat-law-2026-09-29.html",
+  "textPath": "research/rendered/nevo-vat-law-2026-09-29.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-09-29",
+    "from": "research/rendered/nevo-vat-law.meta.json",
+    "commit": "e50f2a0",
+    "why": "A dated copy of the render-watch capture of nevo-vat-law as commit e50f2a0 stored it (fetchedAt above), byte for byte, so that products/il-biz-tools/src/config/osek-zair.json (documents.vatLaw) and the records that cite it keep pointing at the text that was read. The slug is not in urls.txt, so render-watch never rewrites these three files; the live slug nevo-vat-law stays on the weekly watch and will change when nevo changes the page (at the latest with the 1.1.2027 CPI step)."
+  }
+}

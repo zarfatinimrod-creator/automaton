@@ -65,7 +65,7 @@ search sends no one, the page-view kill rule is what answers it.
 | Registrar reduced-rate window (through 31 March; full rate from 1 April) | `deadline` in `src/config/registrar-fee.json` | unverified against a primary source, **rendered anyway, labelled** | same six circulars |
 | בעל עסק זעיר deduction rate | 30% of turnover (`src/config/osek-zair.json`) | **read in a primary text** (third-party copy), 29.9.2026 | ספר החוקים 3045 p.172, Income Tax Ordinance 87ד(א) (image; transcribed in `logs/2026-09-29-osek-zair-check.md`); Tax Authority data report, `research/rendered/tt2-capitax-21072025-1.txt:27-28` |
 | בעל עסק זעיר cap, tax years 2024 and 2025 | ₪120,000 (`src/config/osek-zair.json`) | **read in a primary text** (third-party copy), 29.9.2026 | gazette p.171 (87ב(1): the VAT עוסק פטור amount) and p.173 (section 35: 120,000; 37(ב): first CPI step 1.1.2026); report `:27-28`, `:34-35` |
-| בעל עסק זעיר cap, tax year 2026 | ₪122,833 (`src/config/osek-zair.json`) | **read in nevo's consolidated text** (נוסח משולב, current to 13-07-2026; not the gazette), 29.9.2026 | the VAT law's עוסק פטור definition, `research/rendered/nevo-vat-law.txt:93` (stamp `:3`; 126(א), indexed every 1 January, `:1637`); gazette p.173 (37(ב): first CPI step 1.1.2026). Same amount as `osek-patur.json`. Later years are refused |
+| בעל עסק זעיר cap, tax year 2026 | ₪122,833 (`src/config/osek-zair.json`) | **read in nevo's consolidated text** (נוסח משולב, current to 13-07-2026; not the gazette and not a primary text - accepted in place of one as a recorded exception; `years.2026.toVerify` names the primary check still owed), 29.9.2026 | the VAT law's עוסק פטור definition, `research/rendered/nevo-vat-law-2026-09-29.txt:93` (stamp `:3`; 126(א), indexed every 1 January, `:1637`) - a dated copy of the render that the weekly render-watch never rewrites; gazette p.173 (37(ב): first CPI step 1.1.2026). Same amount as `osek-patur.json`. Later years are refused |
 
 Not modelled in net salary: surtax, pension tax credit, special credit points (children, degree,
 army), benefits in kind, study fund.
@@ -103,7 +103,7 @@ Each JSON file reached then goes through `CONFIG_PUBLISH_RULES` (`src/lib/publis
 | Config | Rule | What ships today |
 |---|---|---|
 | `vat.json`, `osek-patur.json`, `allocation-number.json`, `osek-zair.json` | `verified` — ships only while `"verified": true` | the whole file |
-| `osek-zair-unverified.json` | `verified` | **nothing**: no page loads it (the VAT-law section number waits there), and a shipped page that did would stop the build |
+| `osek-zair-unverified.json` | `verified` | **nothing**: no page loads it (it holds the VAT section reference 31(3) from an unrendered regulation, which nevo's text of the law contradicts), and a shipped page that did would stop the build |
 | `tax-2026.json` | `verified` | **nothing**: no shipped page loads it (its page is withheld), and if one did the build would stop |
 | `registrar-fee.json` | whole once verified; until then only `verified`, `renderAmounts`, `updated`, `deadline` | the dates and the two flags, rewritten into a fresh file — **no amount, no notes, no internal sources** |
 | `site.json` | `no-figures` (site metadata) | the whole file |
@@ -224,10 +224,13 @@ gazette and the report are primary texts in a tax firm's copies; the 2026 cap is
 law, and the page says in words (`facts.cap2026`) that it is that and not the official publication in Reshumot.
 
 The name: the track is "בעל עסק זעיר" (amendment 265); "עוסק זעיר" appears only as the search phrase and in the
-answer that sets it apart. The VAT-law sense is stated in words and marked secondary; its section number (31(3)) is
-not on the page - it waits in `osek-zair-unverified.json`. Nevo's VAT-law capture (29.9.2026) shows the VAT
-definition of "עוסק זעיר" as deleted ("(נמחקה)", line 89); that sentence needs a read against it
-(`vatLawSense.seenSince`).
+answer that sets it apart. That answer states what nevo's text of the VAT law shows, cited to its lines
+(`facts.vatSense`): the phrase is in that text only three times - the definition in section 1, marked "(נמחקה)"
+(line 89), and the headings over sections 42 and 57, both "(בוטל)" (lines 610-611, 782-783). The earlier secondary
+sentence ("עוסק זעיר" is also a VAT-law term) is gone: the capture the page links contradicts it. The section
+reference 31(3), which a statute mirror of the VAT registration regulations ties to the phrase, is not on the page;
+nevo's line 484 shows 31(3) is about עוסק פטור, and the regulations are unrendered, so it stays in
+`osek-zair-unverified.json` until they are read.
 
 ## The registrar annual-fee page (`registrar-fee.html`)
 

@@ -15,7 +15,7 @@ import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from 'vitest
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import {
   OSEK_ZAIR_CONFIG as config,
   compareTracks,
@@ -165,7 +165,9 @@ describe('the check: a dated read, with a record that shows it', () => {
     const r = readRepo(config.check.vatLaw.record);
     expect(r).toContain(config.check.vatLaw.on);
     const doc = config.documents.vatLaw;
-    for (const s of [doc.url, doc.capture, '13-07-2026', '122,833', 'nevo-vat-law.txt:93', 'nevo-vat-law.txt:1637']) expect(r, s).toContain(s);
+    const file = basename(doc.capture);
+    for (const s of [doc.url, doc.capture, '13-07-2026', '122,833']) expect(r, s).toContain(s);
+    for (const line of [3, 89, 93, 484, 610, 782, 1637]) expect(r, `${file}:${line}`).toContain(`${file}:${line}`);
   });
 
   it('the earlier read of 28.9.2026 is on record too', () => {
@@ -277,9 +279,13 @@ describe('config -> capture: every figure in a fact is in the text it cites', ()
     }
   });
 
-  it('"עוסק זעיר" is in none of the Tax Authority captures, as the name fact says', () => {
+  it('"עוסק זעיר" is in none of the Tax Authority captures, as the name fact says; only the VAT-law fact quotes it', () => {
     for (const id of ['report', 'letter', 'regulations']) expect(readRepo(config.documents[id].capture), id).not.toContain('עוסק זעיר');
-    for (const [, item] of ALL_CITED) for (const c of item.cite) expect(c.quote).not.toContain('עוסק זעיר');
+    for (const [where, item] of ALL_CITED) {
+      for (const c of item.cite) {
+        if (c.quote.includes('עוסק זעיר')) expect([where, c.doc], c.quote).toEqual(['facts.vatSense', 'vatLaw']);
+      }
+    }
   });
 });
 
@@ -314,11 +320,44 @@ describe('2026: computed with the cap nevo\'s consolidated VAT law states, and t
     expect(linesOf(vat.capture, c126.lines)).toContain('בהגדרה "עוסק פטור" ובסעיף 35 או לפיהם יותאמו ב-1 בינואר של כל שנה');
   });
 
-  it('the 2026 cap is the osek patur ceiling of 2026, the amount the בעל עסק זעיר cap is tied to by 87ב(1)', () => {
+  it('the 2026 cap is the osek patur ceiling while osek-patur.json is on 2026, the amount the cap is tied to by 87ב(1)', () => {
     const osek = JSON.parse(read('src/config/osek-patur.json'));
-    expect(osek.year).toBe(2026);
-    expect(cap2026).toBe(osek.ceiling);
+    // osek-patur.json moves to the next year's ceiling each January; from then on this comparison does not apply,
+    // and the 2026 cap stays proved by the capture line (the test above), not by the tracker.
+    if (osek.year === 2026) expect(cap2026).toBe(osek.ceiling);
     expect(config.facts.cap.cite[0].quote).toContain('הסכום הקבוע בהגדרה "עוסק פטור" שבסעיף 1 לחוק מס ערך מוסף');
+  });
+
+  it('the capture cited is a dated copy the weekly render never rewrites, byte for byte the render of 29.9.2026', () => {
+    const meta = JSON.parse(readRepo(vat.meta));
+    expect(basename(vat.capture)).toBe('nevo-vat-law-2026-09-29.txt');
+    expect(meta.textPath).toBe(vat.capture);
+    expect(meta.slug).toBe('nevo-vat-law-2026-09-29');
+    expect(meta.frozen.on).toBe('2026-09-29');
+    expect(meta.frozen.from).toBe('research/rendered/nevo-vat-law.meta.json');
+    const watched = readRepo('research/rendered/urls.txt')
+      .split('\n')
+      .filter((l) => l.trim() && !l.trim().startsWith('#'))
+      .map((l) => l.trim().split(/\s+/)[1]);
+    expect(watched).not.toContain(meta.slug);
+    expect(watched).toContain('nevo-vat-law');
+    // No cite, record or note of this page points at the live capture, which the weekly render rewrites.
+    for (const f of ['src/config/osek-zair.json', 'src/config/osek-zair-unverified.json', 'src/config/osek-patur.json']) {
+      expect(read(f), f).not.toMatch(/nevo-vat-law\.(?:txt|html|meta\.json)/);
+    }
+  });
+
+  it('2026 is the one figure accepted from a text that is not primary: it says so, names the primary check still owed, and the rule stays', () => {
+    const y = config.years['2026'];
+    expect(y.grade).toMatch(/not a primary text/);
+    expect(y.grade).toContain('logs/2026-09-29-osek-zair-2026.md');
+    expect(y.toVerify).toMatch(/Reshumot/);
+    expect(y.toVerify).toMatch(/Tax Authority/);
+    for (const year of ['2024', '2025']) expect(Object.keys(config.years[year]), year).toEqual(['cap']);
+    expect(unverified.about).toContain('only when a rendered primary text states it');
+    expect(unverified.about).toContain('years.2026.toVerify');
+    expect(config.about).toContain('years.2026.toVerify');
+    expect(readRepo(config.check.vatLaw.record)).toContain('years.2026.toVerify');
   });
 
   it('the page states the 2026 cap with the nevo source, says the text is nevo\'s consolidation and not the official publication, and links it', () => {
@@ -328,6 +367,11 @@ describe('2026: computed with the cap nevo\'s consolidated VAT law states, and t
     expect(config.facts.cap2026.he).toContain('נוסח עדכני נכון ליום 13-07-2026');
     expect(config.facts.cap2026.he).toContain('זה לא הפרסום הרשמי ברשומות');
     expect(elementById(html, 'track-source')).toContain(`<a href="${vat.url}">${vat.he}</a>`);
+  });
+
+  it('the minister\'s power to set a higher amount comes with what was not read, as the rate order does', () => {
+    expect(config.facts.cap2026.he).toContain('ושר האוצר רשאי לקבוע סכום גבוה יותר; קביעה כזו לא קראנו.');
+    expect(config.facts.cap2026.he).toContain('צו כזה לא קראנו.');
   });
 
   it('no line on the page or the home page says the tool does not compute 2026', () => {
@@ -354,10 +398,19 @@ describe('2026: computed with the cap nevo\'s consolidated VAT law states, and t
     expect(faqJsonLd(html).get('מהי תקרת המחזור לבעל עסק זעיר?')).toMatch(/לשנות המס שאחרי 2026 הכלי לא מחשב\.$/);
   });
 
-  it('the unverified file keeps only what no capture states (the VAT section), says it is not verified, and nothing loads it', () => {
+  it('the unverified file keeps the VAT section reference the capture contradicts for the law (31(3) is about עוסק פטור), says it is not verified, and nothing loads it', () => {
     expect(unverified.verified).toBe(false);
     expect(unverified.years).toBeUndefined();
     expect(unverified.vatLawSense.section).toBe('31(3)');
+    // What the capture shows, and what the entry now says about it.
+    expect(linesOf(vat.capture, [484, 484])).toContain('(3) עסקאות של עוסק פטור');
+    expect(linesOf(vat.capture, [89, 89])).toBe('"עוסק זעיר" – (נמחקה)');
+    for (const field of ['grade', 'why']) expect(unverified.vatLawSense[field], field).not.toContain('no capture of the VAT law');
+    expect(unverified.vatLawSense.grade).toContain('contradicted by a rendered text');
+    expect(unverified.vatLawSense.why).toContain('line 484');
+    expect(unverified.vatLawSense.why).toContain('line 89');
+    expect(unverified.vatLawSense.toVerify).not.toMatch(/Render a primary copy of the VAT law/);
+    expect(unverified.vatLawSense.toVerify).toContain('nevo-vat-registration-regs');
     for (const f of [PAGE, 'assets/page-osek-zair.js', 'src/lib/osek-zair.js', 'src/config/osek-zair.json']) expect(read(f), f).not.toContain('31(3)');
     for (const f of ['assets/page-osek-zair.js', 'src/lib/osek-zair.js', PAGE]) expect(read(f), f).not.toContain('osek-zair-unverified');
   });
@@ -390,7 +443,6 @@ describe('page -> config: every number on the page is one the config renders', (
     ...FACTS.flatMap(([, f]) => [f.he, `מקור: ${citesHe(f.cite)}`]),
     ...config.conditions.map((c) => `${c.he} (${citesHe(c.cite)})`),
     ...Object.values(config.pendingYears).flatMap((p) => [p.he, `מקור: ${citesHe(p.cite)}`]),
-    config.secondary.vatSense.he,
     trackSourceLineHe(),
   ];
   /** A text with every allowed string taken out, longest first: what is left was written on the page alone. */
@@ -550,15 +602,41 @@ describe('what the page says it is not', () => {
     expect(textOf(footer)).toContain('המידע באתר אינו מהווה ייעוץ מס');
   });
 
-  it('"עוסק זעיר" in VAT law is a different thing, said without a section number nobody read', () => {
+  it('"עוסק זעיר" in the VAT law: what nevo\'s text shows, cited to its lines, and nothing the capture contradicts', () => {
+    const vat = config.documents.vatLaw;
+    const capture = readRepo(vat.capture).split('\n');
+    // The phrase is at exactly three lines of the capture: the deleted definition and two headings over repealed
+    // sections. The fact says "only in three places", so a fourth would make it false.
+    const at = capture.flatMap((l, i) => (norm(l).includes('עוסק זעיר') ? [i + 1] : []));
+    expect(at).toEqual([89, 610, 782]);
+    expect(norm(capture[88])).toBe('"עוסק זעיר" – (נמחקה)');
+    expect(norm(capture[610])).toBe('42. (בוטל)');
+    expect(norm(capture[782])).toBe('57. (בוטל)');
+    const fact = config.facts.vatSense;
+    expect(fact.cite.map((c) => [c.doc, ...c.lines])).toEqual([['vatLaw', 7, 89], ['vatLaw', 610, 611], ['vatLaw', 782, 783]]);
+    expect(fact.he).toContain('מופיע רק בשלושה מקומות');
+    expect(fact.he).toContain('"(נמחקה)"');
+    expect(fact.he).toContain('"(בוטל)"');
+    expect(fact.he).not.toContain('31');
     expect(text).toContain(config.facts.name.he);
-    expect(text).toContain(config.secondary.vatSense.he);
-    expect([...atoms(config.secondary.vatSense.he)]).toEqual([]);
+    expect(text).toContain(`${fact.he} (מקור: ${citesHe(fact.cite)})`);
+    expect(config.secondary).toBeUndefined();
+  });
+
+  it('the page never says the VAT law was not read while it cites and links it', () => {
+    for (const t of [text, ...faqJsonLd(html).values()]) {
+      expect(t).not.toContain('את נוסח חקיקת המע״מ עצמו לא קראנו');
+      expect(t).not.toContain('את ההגדרה בחוק מס ערך מוסף עצמו לא קראנו');
+      expect(t).not.toContain('הוא גם מונח בחקיקת המע״מ');
+    }
+    // The turnover note says which of nevo's lines were read, and that the turnover definition is not one of them.
+    expect(config.facts.turnover.he).toContain('קראנו רק את השורות שהדף הזה מצטט');
+    expect(config.facts.turnover.he).toContain('ואת ההגדרה של מחזור עסקאות לא קראנו');
   });
 
   it('"עוסק זעיר" appears only as the search phrase: in the description, the question about it and the two answers', () => {
     const q = 'האם "עוסק זעיר" הוא אותו דבר?';
-    const allowed = [config.facts.name.he, config.secondary.vatSense.he, q];
+    const allowed = [config.facts.name.he, config.facts.vatSense.he, q];
     let rest = textOf(elementById(html, 'main'));
     for (const a of allowed) rest = rest.split(a).join('');
     expect(rest).not.toContain('עוסק זעיר');
@@ -630,6 +708,10 @@ describe('the site around it', () => {
     const lead = textOf(/<p class="lead">([\s\S]*?)<\/p>/.exec(index)[1]);
     expect(lead).toContain('בעל עסק זעיר');
     expect(lead).not.toMatch(/2024|2025|30%|120,000|122,833/);
+    // Nor which years the tool covers: the gate can withhold the page but not this sentence, so the lead leaves the
+    // tool out of its "updated for 2026" and sends the reader to the page.
+    expect(lead).not.toMatch(/כולל הבדיקה של בעל עסק זעיר/);
+    expect(lead).toContain('חוץ מהבדיקה של בעל עסק זעיר, שאומרת בדף שלה לאילו שנות מס היא מחשבת');
   });
 
   it('the home page lists it, the sitemap lists it, and every page with the main navigation links to it', () => {
