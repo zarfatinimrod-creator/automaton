@@ -140,7 +140,7 @@ Stages run in this order:
 
 The full reasoning for each is in `BOARD-LOOP.md`. The ₪0 test runs first and writes to `research/measurements/`.
 
-**Tick 21 (29.9), what the runner may still read** (`research/channel-loop/terms-verdicts.json`; a CI test enforces it): the terms of **CrazyGames (6), Astro (7), Wix (11), Y8 (14, conditional), Spreadshirt (17), PayPal (21), Indiebook (22), Facer (23), Teach Simple (28), Teachers Pay Teachers, Freemius, Pexels, Pixabay and Gumroad** bar automated access, so no ₪0 render test of those venues can run any more; their captures already made stay. **StreetLib (24), Zazzle (25), Society6 (27), KiezelPay and Pebble (19), n8n (20), nevo, kolzchut** have no terms on file and are paused until their terms are read. Still readable: **Displate (26), GameDistribution (14), Superteam (15), Polar (9), Apify, Draft2Digital, GitHub, Trolley**, and the government pages whose terms allow it (Bituach Leumi, EUR-Lex, IRS). Which venues stay candidates when only a person could read their pages is FABLE_QUEUE row 16(d).
+**Ticks 21-23 (29.9), what the runner may still read** (`research/channel-loop/terms-verdicts.json`; a CI test enforces it): the terms of **CrazyGames (6), Astro (7), Wix (11), Y8 (14, conditional), Spreadshirt (17), PayPal (21), Indiebook (22), Facer (23), Teach Simple (28), Teachers Pay Teachers, Freemius, Pexels, Pixabay and Gumroad** bar automated access, so no ₪0 render test of those venues can run any more; their captures already made stay. **StreetLib (24), Zazzle (25), Society6 (27), KiezelPay and Pebble (19), n8n (20), nevo, kolzchut** have no terms on file and are paused until their terms are read. Still readable: **Displate (26), GameDistribution (14), Superteam (15), Polar (9), Apify, Draft2Digital, GitHub, Trolley**, and the government pages whose terms allow it (Bituach Leumi, EUR-Lex, IRS). Rounds 3-4 (ticks 22-23) added Wavedash and Tipalti to the barred list, left YPay's lines paused on a borderline reading, and found nevo, gov.il and the Knesset without readable terms (the law texts come from the `lawsofisrael` GitHub mirror). Which venues stay candidates when only a person could read their pages is FABLE_QUEUE row 16(d).
 
 | # | Candidate | ₪0 test | Status |
 |---|---|---|---|
@@ -275,7 +275,7 @@ TikTok's terms against our fetches, and the ban on commercial solicitation; the 
 `RED-TEAM.md:110-112`) rides it. **The next admission sitting** takes the first of Displate, Indiebook, Teach Simple and
 CrazyGames whose written answer returns (loop board (c)); Displate's written no is KILL-4 without a sitting.
 **Row 18 (queued tick 19)** goes to the 1.10 ~07:11 sitting: amend ruling (b)'s Mozilla precondition, which a runner cannot meet.
-**Row 17 grew in tick 19:** VAT reg 26ד revoked (drop the receipt-on-request premise), the "never looks like a tax invoice" guard, the ₪79 key's character, and (d) Gumroad's refund-rate reserve and the dashboard-only refund route.
+**Row 17 grew in tick 19:** VAT reg 26ד revoked (drop the receipt-on-request premise), the "never looks like a tax invoice" guard, the ₪79 key's character, and (d) Gumroad's refund-rate reserve and the dashboard-only refund route. **And in tick 20:** VAT registration reg 13 (a listed free profession is authorised at any turnover; step 2's occupation line), reg 11 (no election to authorised status), reg 15 (the yearly turnover declaration), the refund responder's mailbox (Gumroad's Support field) and the first-refund balance refusal.
 
 ## 9. Maintenance backlog
 

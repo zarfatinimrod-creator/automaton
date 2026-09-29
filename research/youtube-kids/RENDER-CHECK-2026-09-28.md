@@ -149,7 +149,7 @@ Every piece of evidence that moved made the case against A and B stronger:
 4. **§9.3's A trigger 1 is half-fed.** 9528076 and 10774223 are rendered and show no admission path for new AI-made
    channels. 10938174 and the YouTube Kids creator topic are still missing. The trigger cannot reopen A on its own anyway
    (trigger 4).
-5. **Row 16's `products/parent-guides/` input** exists only in a worktree so far. It pins a licence-clean chain, and it uses
+5. **Row 16's `products/parent-guides/` input** existed only in a worktree when this was written; it has been on main since tick 14 (29.9). It pins a licence-clean chain, and it uses
    no non-commercial voice. Voiced Hebrew is outside §9.4's two allowed modes (see the top of this file). [checker 28.9]
    By 23:42 its default render was voiced (`--voice` defaults to `ef_dora`), so this is a live scope question for the
    board, not a future one.

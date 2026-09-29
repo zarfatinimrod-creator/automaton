@@ -373,6 +373,11 @@
    "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
    "checked": "2026-09-29"
   },
+  "tiktok.com": {
+   "verdict": "BARRED",
+   "source": "refused by its own code path in scripts/render-watch.mjs (isTikTokHost), in both render modes and as a redirect; the TikTok pause, logs/CHANNEL_LOOP.md §9",
+   "checked": "2026-09-29"
+  },
   "tipalti.com": {
    "verdict": "BARRED",
    "source": "TERMS_BARRED in scripts/render-watch.mjs (research/rendered/terms-tipalti-website.txt:245; round 4)",
