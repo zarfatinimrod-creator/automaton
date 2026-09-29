@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as render-watch.mjs)
-import { MIN_TERMS_TEXT, overrideLines, queueZeroTest, siteOf, URLS, ZERO_TESTS } from "../../../scripts/queue-zero-test.mjs";
+import { MIN_TERMS_TEXT, applyVerdicts, loadVerdicts, overrideLines, queueZeroTest, siteOf, termsGate, URLS, ZERO_TESTS } from "../../../scripts/queue-zero-test.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { parseUrlList } from "../../../scripts/render-watch.mjs";
 
@@ -31,6 +31,8 @@ const base = {
   settle: "whether it pays",
   note: "C (3): a new page",
   date: "28.9.2026",
+  // The row mechanics are tested on example hosts with no terms verdict; the terms gate has its own tests below.
+  verdicts: null,
 };
 
 describe("queue-zero-test", () => {
@@ -272,5 +274,54 @@ describe("queue-zero-test --override (the render-watch dispatch lines for a row 
     expect(parseUrlList(lines.join("\n"))).toHaveLength(3);
     // Rows 174-179: three Gumroad rows (paused in tick 19) and three nevo rows (nevo's terms are unread, tick 21).
     expect(() => overrideLines(urls, 174, 179)).toThrow(/every row is retired/);
+  });
+});
+
+describe("queue-zero-test's terms gate (research/channel-loop/terms-verdicts.json)", () => {
+  const V = {
+    "ok.example": { verdict: "NOT_BARRED" },
+    "cond.example": { verdict: "CONDITIONAL_MET" },
+    "pending.example": { verdict: "TERMS_PENDING" },
+    "none.example": { verdict: "NO_TERMS" },
+    "unmet.example": { verdict: "CONDITIONAL_UNMET" },
+  };
+
+  it("passes read-and-allowed sites and a pending site's own terms page, and nothing else", () => {
+    expect(termsGate("https://www.ok.example/a", "ok-a", V).ok).toBe(true);
+    expect(termsGate("https://cond.example/a", "cond-a", V).ok).toBe(true);
+    expect(termsGate("https://pending.example/terms", "terms-pending", V).ok).toBe(true);
+    expect(termsGate("https://pending.example/pricing", "pending-pricing", V)).toMatchObject({ ok: false, verdict: "TERMS_PENDING" });
+    expect(termsGate("https://none.example/terms", "terms-none", V)).toMatchObject({ ok: false, verdict: "NO_TERMS" });
+    expect(termsGate("https://unmet.example/a", "unmet-a", V)).toMatchObject({ ok: false, verdict: "CONDITIONAL_UNMET" });
+    const unknown = termsGate("https://new-site.example/a", "new-a", V);
+    expect(unknown).toMatchObject({ ok: false, verdict: null });
+    expect(unknown.why).toMatch(/read its terms first/);
+  });
+
+  it("fails a TERMS_BARRED host whatever the verdict file says", () => {
+    const gate = termsGate("https://www.paypal.com/il/x", "paypal-x", { "paypal.com": { verdict: "NOT_BARRED" } });
+    expect(gate).toMatchObject({ ok: false, verdict: "BARRED", site: "paypal.com" });
+  });
+
+  it("makes queueZeroTest refuse a line the gate fails, with the reason, and accept one it passes", () => {
+    expect(() => queueZeroTest({ ...base, url: "https://new-site.example/a", slug: "new-a", verdicts: V })).toThrow(/terms gate refuses .*read its terms first/);
+    expect(queueZeroTest({ ...base, url: "https://ok.example/a", slug: "ok-a", verdicts: V }).row).toBe(3);
+  });
+
+  it("applies the verdicts to a list: comments out failing lines, keeps passing ones and comments", () => {
+    const list = ["# a comment", "https://ok.example/a\tok-a", "https://none.example/b\tnone-b", "https://www.paypal.com/c\tpp-c", "https://pending.example/terms\tterms-pending", ""].join("\n");
+    const out = applyVerdicts(list, V);
+    expect(out.paused).toEqual(["none-b", "pp-c"]);
+    const lines = out.urls.split("\n");
+    expect(lines[1]).toBe("https://ok.example/a\tok-a");
+    expect(lines[2]).toMatch(/^# paused \(terms unread\): none\.example is NO_TERMS/);
+    expect(lines[3]).toMatch(/^# paused \(terms audit\): paypal\.com — see TERMS_BARRED/);
+    expect(lines[4]).toBe("https://pending.example/terms\tterms-pending");
+    // Applying twice changes nothing.
+    expect(applyVerdicts(out.urls, V).paused).toEqual([]);
+  });
+
+  it("finds nothing to pause in the committed list: the committed verdicts and urls.txt agree", () => {
+    expect(applyVerdicts(readFileSync(URLS, "utf8"), loadVerdicts()).paused).toEqual([]);
   });
 });

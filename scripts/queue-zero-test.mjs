@@ -46,17 +46,78 @@
  * copied these by hand (logs/2026-09-29-channel-loop-tick-17.md §7). A retired row
  * (its URL line commented out) is skipped and named on stderr; a row with no line is
  * an error; the output is re-parsed with render-watch's own parser.
+ *
+ * The terms gate (research/channel-loop/terms-verdicts.json; RULING of the tick-21 audit). A line may
+ * be queued, and stay active, only when its site's terms were read and allow a runner (NOT_BARRED or
+ * CONDITIONAL_MET), or when it is a TERMS_PENDING site's own terms page (slug `terms-...`). queueZeroTest
+ * refuses anything else and says what to do. `--apply-verdicts` comments out every active line that fails
+ * the gate, the step ticks 21-23 ran by hand (logs/2026-09-29-channel-loop-tick-22.md §7).
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
-import { parseUrlList } from "./render-watch.mjs";
+import { parseUrlList, termsBarred } from "./render-watch.mjs";
 
 const REPO_ROOT = join(fileURLToPath(new URL(".", import.meta.url)), "..");
 export const ZERO_TESTS = join(REPO_ROOT, "research", "channel-loop", "ZERO-TESTS.md");
 export const URLS = join(REPO_ROOT, "research", "rendered", "urls.txt");
 export const RENDERED = join(REPO_ROOT, "research", "rendered");
+export const VERDICTS = join(REPO_ROOT, "research", "channel-loop", "terms-verdicts.json");
+
+/** The committed per-site terms verdicts: { site: { verdict, source, ... } }. */
+export function loadVerdicts(path = VERDICTS) {
+  return JSON.parse(readFileSync(path, "utf8")).sites;
+}
+
+/**
+ * Whether a line for this URL and slug passes the terms gate, and if not, why. Barred hosts (TERMS_BARRED in
+ * render-watch) always fail; otherwise the site's verdict decides. Never throws.
+ */
+export function termsGate(url, slug, verdicts) {
+  let host;
+  try {
+    host = new URL(url).hostname.toLowerCase();
+  } catch {
+    return { ok: false, why: `not a URL: ${url}` };
+  }
+  const barred = termsBarred(host);
+  if (barred) return { ok: false, site: barred.domain, verdict: "BARRED", why: `${barred.domain} is in TERMS_BARRED: ${barred.why}` };
+  const site = siteOf(host);
+  const verdict = verdicts?.[site]?.verdict ?? null;
+  if (verdict === "NOT_BARRED" || verdict === "CONDITIONAL_MET") return { ok: true, site, verdict };
+  if (verdict === "TERMS_PENDING" && String(slug).startsWith("terms-")) return { ok: true, site, verdict };
+  const why =
+    verdict === null
+      ? `${site} has no verdict in research/channel-loop/terms-verdicts.json: read its terms first (queue its terms page as a terms-... slug after adding a TERMS_PENDING verdict with the terms URL)`
+      : verdict === "TERMS_PENDING"
+        ? `${site} is TERMS_PENDING: only its terms page (a terms-... slug) may be queued until its terms are read`
+        : `${site} is ${verdict} in research/channel-loop/terms-verdicts.json`;
+  return { ok: false, site, verdict, why };
+}
+
+/**
+ * Comment out every active urls.txt line that fails the terms gate. Returns the new text and counts; the caller
+ * writes it. A barred host's line says so; any other failing line names its site and verdict.
+ */
+export function applyVerdicts(urls, verdicts) {
+  const lines = urls.split("\n");
+  const paused = [];
+  for (let i = 0; i < lines.length; i += 1) {
+    const t = lines[i].trim();
+    if (t === "" || t.startsWith("#")) continue;
+    const [url, slug] = t.split(/\s+/);
+    const gate = termsGate(url, slug ?? "", verdicts);
+    if (gate.ok) continue;
+    const head =
+      gate.verdict === "BARRED" && termsBarred(new URL(url).hostname)
+        ? `# paused (terms audit): ${gate.site} — see TERMS_BARRED in scripts/render-watch.mjs — `
+        : `# paused (terms unread): ${gate.site} is ${gate.verdict} in research/channel-loop/terms-verdicts.json — `;
+    lines[i] = head + lines[i];
+    paused.push(slug ?? url);
+  }
+  return { urls: lines.join("\n"), paused };
+}
 
 /**
  * A terms capture: at least this many characters of text. Real terms run to thousands
@@ -237,6 +298,7 @@ export function queueZeroTest({
   terms,
   termsCapture = readTermsCapture,
   termsElsewhere = TERMS_ELSEWHERE,
+  verdicts = loadVerdicts(),
 }) {
   if (!/^https?:\/\/\S+$/i.test(url ?? "")) throw new Error(`not an http(s) URL: ${url}`);
   if (!/^[a-z0-9][a-z0-9-]*$/.test(slug ?? "")) throw new Error(`slug must be lowercase letters, digits and dashes: ${slug}`);
@@ -256,6 +318,11 @@ export function queueZeroTest({
   // A plain GET gets an empty shell from these; the js render is what reads them.
   const shell = js ? null : JS_SHELLS.find((s) => s.test(new URL(url)));
   if (shell) throw new Error(`the runner cannot render ${url}: ${shell.why}. Queue it with --js --terms <slug> instead`);
+  // verdicts: null skips the gate (unit tests of the row mechanics only); the CLI always loads the file.
+  if (verdicts !== null) {
+    const gate = termsGate(url, slug, verdicts);
+    if (!gate.ok) throw new Error(`the terms gate refuses ${url}: ${gate.why}`);
+  }
   const listed = urls.split(/\r?\n/).some((l) => l.replace(/^#\s*/, "").split(/\s+/)[0] === url);
   if (listed) throw new Error(`URL already in urls.txt (active or commented): ${url}`);
 
@@ -338,8 +405,20 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
       date: { type: "string", default: today() },
       "dry-run": { type: "boolean", default: false },
       override: { type: "string" },
+      "apply-verdicts": { type: "boolean", default: false },
     },
   });
+  if (values["apply-verdicts"]) {
+    try {
+      const out = applyVerdicts(readFileSync(URLS, "utf8"), loadVerdicts());
+      if (!values["dry-run"]) writeFileSync(URLS, out.urls);
+      console.log(`${values["dry-run"] ? "would pause" : "paused"} ${out.paused.length} line(s)${out.paused.length ? `: ${out.paused.join(", ")}` : ""}`);
+    } catch (err) {
+      console.error(`queue-zero-test: ${err.message}`);
+      process.exit(1);
+    }
+    process.exit(0);
+  }
   if (values.override !== undefined) {
     try {
       const m = values.override.match(/^(\d+)(?:-(\d+))?$/);
