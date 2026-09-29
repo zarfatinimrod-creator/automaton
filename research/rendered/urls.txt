@@ -693,3 +693,7 @@ https://www.upload-post.com/terms-of-use/	terms-upload-post
 https://www.wix.com/about/terms-of-use	terms-wix
 # research/channel-loop/ZERO-TESTS.md row 213 — terms audit (tick 20): worksheets4kids's terms page, URL from worksheets4kids-home.html:711; fetched once so its terms can be read (29.9.2026).
 https://worksheets4kids.co.il/privacy-policy/	terms-worksheets4kids
+# research/channel-loop/ZERO-TESTS.md row 214 — Mozilla (8): GitHub's set-up-budgets docs (tick 20, actions-spending-limit.md; GitHub's terms allow research use, TERMS-AUDIT-2026-09-29.md) (29.9.2026).
+https://docs.github.com/en/billing/how-tos/set-up-budgets	gh-docs-set-up-budgets
+# research/channel-loop/ZERO-TESTS.md row 215 — Mozilla (8): GitHub's budgets-and-alerts docs (tick 20) (29.9.2026).
+https://docs.github.com/en/billing/concepts/budgets-and-alerts	gh-docs-budgets-and-alerts

@@ -1139,3 +1139,403 @@ Every Gumroad capture cited in this file was fetched against that clause. Gumroa
 (`TERMS_BARRED` in `scripts/render-watch.mjs`) and in `urls.txt`, and FABLE_QUEUE row 16(d) rules whether any
 Gumroad page may be fetched again and whether these captures stay in use.
 
+---
+
+## 29.9 (tick 20, rendered)
+
+ZERO-TESTS rows 180-186 (captured 29.9 ~13:02 UTC by render-watch). Read by an Opus reader, checked by an adversarial verifier.
+
+### 29.9 tick 20: Gumroad articles 204, 352, 46, 121, 194 and 66, and the /api page (rendered, ZERO-TESTS rows 180-186)
+
+**Provenance:** these seven captures (ZERO-TESTS rows 180-186, dispatched 13:01 UTC and captured 13:02:13-13:02:19 UTC on 29.9) were fetched against Gumroad's terms, which bar software used `to "scrape" or download data from any web pages contained in the Services` (`research/rendered/gumroad-terms.txt:326`; also `:343`), so every rendered finding below rests on pages fetched against that clause, and FABLE_QUEUE row 16(d) (`logs/FABLE_QUEUE.md:40`) decides whether they stay in use.
+
+**Read by:** the tick-20 reader, from the render-watch captures of rows 180-186. An adversarial verifier then decoded every `data-page` again, re-grepped every quote and read seven more github files. No Gumroad page was fetched this tick. Besides the seven captures, this section reads:
+- the tick-19 captures `R-TERMS`, `R-G190`, `R-G47` and `R-CPL`, each quote re-grepped in its file;
+- repo files, named where they are cited;
+- 30 files of Gumroad's public source at `antiwork/gumroad` `0656875c5fbfbf1a7f339f4716a0b9059539d790` (main on 29.9.2026, from `git ls-remote`). They were read with `git show` from a blobless clone of github.com. These are github grade and are marked where they are used. Three have the same bytes as earlier ticks:
+  - `sales_controller.rb` and `refundable.rb`, the same bytes as tick 19;
+  - `receipt_presenter/item_info.rb`, the same bytes as tick 17.
+
+Every quote was checked with `grep -n -F` against its file before it was written here.
+
+| Short name | Capture (under `research/rendered/`), row | fetchedAt (UTC) | sha256 (first 12) | Currency printed on the page |
+|---|---|---|---|---|
+| `R-G204` | `gumroad-help-receipt.html`, row 180 | 2026-09-29 13:02:13 | `79d7561bc129` | none |
+| `R-G352` | `gumroad-help-supporting-customers.html`, row 181 | 2026-09-29 13:02:14 | `b28fe09758ed` | none |
+| `R-G46` | `gumroad-help-currency.html`, row 182 | 2026-09-29 13:02:15 | `d1c64b7a9db2` | none |
+| `R-G121` | `gumroad-help-sales-tax.html`, row 183 | 2026-09-29 13:02:16 | `231113c245ac` | none |
+| `R-G194` | `gumroad-help-invoice.html`, row 184 | 2026-09-29 13:02:17 | `fb28513f274d` | none |
+| `R-G66` | `gumroad-help-fees.html`, row 185 | 2026-09-29 13:02:18 | `aac759aa0129` | none |
+| `R-API` | `gumroad-api-docs.html`, row 186 | 2026-09-29 13:02:19 | `c6ac3b3231e4` | none |
+
+| Gumroad source file (github, `0656875c`) | sha256 (first 12) |
+|---|---|
+| `app/javascript/pages/Public/Api.tsx` | `23d1d0d520c2` |
+| `app/javascript/components/ApiDocumentation/Endpoints/Sales.tsx` | `b94361f1a228` |
+| `app/javascript/components/ApiDocumentation/Endpoints/User.tsx` | `76c9fe6cf37a` |
+| `app/javascript/components/ApiDocumentation/Endpoints/Products.tsx` | `fcbfceaaefc7` |
+| `app/controllers/public_controller.rb` | `2497eb531785` |
+| `app/controllers/api/v2/sales_controller.rb` | `d1da9d8dd09a` (tick 19's bytes) |
+| `app/controllers/api/v2/links_controller.rb` | `0bd67b806a6a` |
+| `app/mailers/customer_mailer.rb` | `d3b1ebe13b41` |
+| `app/models/concerns/charge/chargeable.rb` | `c9db6b35ef9e` |
+| `app/models/user.rb` | `ad24461f0054` |
+| `app/models/concerns/user/as_json.rb` | `4358b5d559cf` |
+| `app/models/link.rb` | `71b37a6ef4c9` |
+| `app/modules/product/validations.rb` | `6ba78f22430a` |
+| `db/schema.rb` | `325623cff38f` |
+| `app/presenters/receipt_presenter/item_info.rb` | `2cc2f51b50c3` (tick 17's bytes) |
+| `app/presenters/invoice_presenter.rb` | `709419418031` |
+| `app/presenters/invoice_presenter/supplier_info.rb` | `2e47291bb8e8` |
+| `app/presenters/invoice_presenter/seller_info.rb` | `9c471930aa74` |
+| `app/services/checkout/buyer_currency_eligibility.rb` | `5887fe7527d1` |
+| `app/business/sales_tax/sales_tax_calculator.rb` | `c53fb83eba5c` |
+| `lib/utilities/compliance/countries.rb` | `f4657bf9a359` |
+| `app/modules/purchase/refundable.rb` | `e398af3161ca` (tick 19's bytes) |
+| `app/modules/user/money_balance.rb` | `995203571eb7` |
+| `app/services/onetime/backfill_custom_receipt_text.rb` (verifier) | `0e55a0ba11b6` |
+| `app/controllers/api/v2/refund_policies_controller.rb` (verifier) | `a5ebb8a7db6c` |
+| `app/controllers/api/v2/users_controller.rb` (verifier) | `9f3166ce808d` |
+| `app/modules/user/payout_schedule.rb` (verifier) | `5c32234f19d7` |
+| `app/business/payments/payouts/payouts.rb` (verifier) | `1732205f7af9` |
+| `app/views/customer_mailer/refund.html.erb` (verifier) | `e40a6707b338` |
+| `app/views/customer_mailer/_product_questions_footer.html.erb` (verifier) | `e7adcc06f0da` |
+
+- **Status:** all seven returned 200, with `firstFetch: true` and `truncated: false` (their `.meta.json` files).
+- **Where the text sits:**
+  - Each `.txt` is one line, the page title, for example "Get to know your Gumroad receipt - Gumroad Help Center". `R-API`'s is "API".
+  - Each article's text is on line 51 of its `.html`, inside the Inertia `data-page` attribute. `R-API`'s `data-page` is on line 43.
+  - It was decoded as ticks 18 and 19 did: `html.unescape`, then `json.loads`.
+- **How the citations read:** every `R-G…:51` citation below is `data-page`, JSON path `props.article.content`, unless another path is named.
+- **How the quotes were grepped:** in the raw attribute, the article body is JSON-escaped:
+  - `<`, `>` and `&` are stored as `<`, `>` and `&`;
+  - `"` is stored as `\&quot;` and `'` as `&#39;`;
+  - `“`, `”` and `—` are stored as they are.
+
+  Each quote was grepped in that form. It was also found in the decoded `props.article.content`.
+- **Live titles and categories** (`props.article.title`, `props.article.category.title`):
+  - 204 is "Get to know your Gumroad receipt", under "Receipts and refunds".
+  - 352 is "Supporting your customers", under "Start selling".
+  - 46 is "What currency does Gumroad use?", under "Get paid".
+  - 121 is "Sales tax on Gumroad", under "Get paid".
+  - 194 is "I need an invoice", under "Receipts and refunds".
+  - 66 is "Gumroad's fees", under "Get paid".
+- **Dates:** no page prints one. "2026" has 0 matches in each `.html`.
+- **Israel, and the API:**
+  - A case-insensitive grep for "israel" returns 1 match in `R-G46` ("Israeli Shekel") and 0 in the other six.
+  - "api" as a word has 0 matches in each article body, and "/v2" has 0 matches in all seven `.html` files.
+- **Three meta descriptions are stale.** Tick 19 found the same for articles 47 and 190. The descriptions sit on lines 39, 40 and 43 and in `props._inertia_meta`.
+  - `R-G46` says "Gumroad processes all transactions in United States Dollars. That means that you have the flexibility to display your products in the currency of your choosing". The body instead says "...or in the customer's local currency where supported" (G3).
+  - `R-G66` says "we charge a 10% + $0.50 fee per transaction". The body adds "+ sales tax" (G6).
+  - `R-G194` lists "How to generate your invoice from the receipt VAT ID Don&#39;t have your receipt? Older purchases No W9?". The body also has "Generate your invoice from the download page" and "Refunded purchases".
+  - [inference] Local-currency checkout, the fee's "sales tax" link and the refunded-invoice section are newer than the descriptions. This section cites the bodies only.
+
+### G1. Article 204: what the buyer's receipt shows (row 180; question 1)
+
+**What the article names on the receipt** (all `R-G204:51`):
+- A content link: "After checkout, you will receive your receipt with a link that takes you to your purchased content."
+- An invoice link: "You can" print your own invoice (a link to article 194) " by clicking the Generate link at the bottom of your receipt. If you need to customize your invoice, you can use the 'Additional Notes' field to add any relevant information. We are not able to customize invoices beyond that for you."
+- An unsubscribe link: "If you no longer would like to receive email updates from a seller, you can unsubscribe from future emails by clicking “Unsubscribe” at the bottom of your receipt."
+- Membership controls, "Subscription settings" or "Manage membership". These are for subscriptions only. Pro is one-time (`gumroad-pro-product.js:86`).
+- The seller's contact: "If you have problems with your purchase, you can find the seller's contact information on your receipt for issues such as refunds or general questions about the product."
+
+**What the article does not say:**
+- **A refund-policy line: not mentioned.** "refund policy" has 0 matches in `R-G204`.
+  - Article 352 places the custom policy on the product page: "..., which is shown on its product page." (`R-G352:51`).
+  - The receipt line stays at github grade: `value: refund_policy.fine_print,` (`item_info.rb:266`, the same bytes as tick 17 1.2).
+- **A reply-to: not mentioned.** "reply" has 0 matches in the `.html`. The article says "the seller's contact information" without saying which address that is.
+  - Article 352 names the address (G2).
+  - Article 190 names the route: "You can contact the creator by replying directly to your receipt email:" (`R-G190:51`).
+- **What the receipt looks like: not captured.** Each section's screenshot is hosted elsewhere (two on googleusercontent, three on cloudfront). The capture holds only the image URLs, so the receipt itself is not rendered.
+
+**The receipt at github grade:**
+- **Reply-to.** The receipt mail is sent with `reply_to: @chargeable.support_email,` (`customer_mailer.rb:81`).
+  - That address is the order's shared product support email if there is one. Otherwise it is `seller.support_or_form_email` (`charge/chargeable.rb:128-136`).
+  - That method returns `support_email.presence || form_email` (`user.rb:619`).
+  - And `form_email` is `unconfirmed_email.presence || email.presence` (`user.rb:918`): the sign-in address, or a new address still awaiting confirmation.
+  - This chain is article 352's rule (G2).
+- **The "From" name.** The receipt goes `from: from_email_address_with_name(@chargeable.seller.name, "noreply@#{CUSTOMERS_MAIL_DOMAIN}"),` (`customer_mailer.rb:80`). The account's name field is the display name on every receipt.
+- **A second seller-set text.** The receipt item carries `product.custom_receipt_text.presence` (`item_info.rb:71`), capped at `MAX_CUSTOM_RECEIPT_TEXT_LENGTH = 500` (`product/validations.rb:7`).
+  - One rendered page hints at it. Article 46 tells a seller who lists in a currency other than USD: "you may want to inform your customers of this in your receipt's text." (`R-G46:51`).
+
+**[inference] What the 14ט(ה)(1) disclosure could ride on.** 14ט(ה)(1) wants the information "(1) בחשבונית, בקבלה או בהודעת תשלום" (`R-CPL:879`). 14ט(ד) defines that information: "את הדרכים למסירת הודעת ביטול", their contact details, "ואת הפרטים שיש לכלול בהודעת ביטול" (`R-CPL:875`).
+- **The owner issues no receipt of their own.** The terms say "you shall not issue any invoice or make any demand for payment to any Buyer in relation to any completed resale of your Products through the Services." (`R-TERMS:131`). So any disclosure on a receipt rides on Gumroad's receipt.
+- **Rendered:** the receipt carries the seller's contact information (`R-G204:51`), which is the support address (`R-G352:51`). That is the contact detail for way (3), email, and nothing more.
+- **Github:** two texts that the seller sets reach the receipt: the refund policy's fine print (`item_info.rb:266`) and the product's custom receipt text (`:71`, at most 500 characters). Either could carry a Hebrew 14ט(ד) statement.
+- **A runner can set the fine print (github).** The refund-policy API that ruling (h) already relies on (tick 17) takes it: `permitted_params[:fine_print] = params[:fine_print] if params.key?(:fine_print)` (`refund_policies_controller.rb:36`).
+- **A runner cannot set the custom receipt text through the documented API (github; settled by the verifier).**
+  - The API's product update (`put` `/products/:id`, `Products.tsx:538-539`) documents a `custom_receipt` parameter: `<ApiParameter name="custom_receipt" description="(optional)" />` (`:573`). The controller passes it on as `attrs[:custom_receipt]` (`links_controller.rb:474`).
+  - The receipt reads `custom_receipt_text` instead, which is `attr_json_data_accessor :custom_receipt_text` (`link.rb:321`). `custom_receipt` is a separate column of `links`: `t.text "custom_receipt", size: :medium` (`schema.rb:1306`).
+  - Gumroad's own maintenance script at the same commit says: "The public API v2 still accepts writes to the legacy" / "`custom_receipt` param (which nothing reads anymore)" (`backfill_custom_receipt_text.rb:36-37`). The route it names is the product editor's "new Receipt tab" (`:10`), which is the dashboard.
+  - [inference] So until Gumroad points that parameter at the new field, the custom receipt text needs a dashboard step. The fine print is the only receipt text a runner can reach.
+- **The invoice is not a route.** Its "Additional Notes" field is filled in by the buyer (G5).
+
+**Do replies to the receipt reach the account address the responder checks? Only while no support email is set.**
+- **Rendered:** the support email "is listed on the receipt of every sale, and it is where replies to the emails you send through Gumroad go", and "If you leave it blank, your customers' replies go to the email address on your account instead, the one you use to sign in." (`R-G352:51`). The rendered text speaks of replies in general. That the receipt's own reply-to is that address is github grade (`customer_mailer.rb:81`, above), and article 190 sends buyers to reply to the receipt (`R-G190:51`). If a product-specific address is set, the receipt uses it (G2).
+- **The repo assumes the account address:**
+  - Owner step 3 says "לכתובת הזאת מגיעות" / "תשובות של קונים לקבלה, בקשות להחזר ושאלות" (`docs/OWNER_STEPS.he.md:187-188`).
+  - The code says "request or a question goes to the email the Gumroad account was opened with." (`products/il-biz-tools/scripts/gumroad-pro-product.js:352`).
+  - Both are true only while the Support field is blank.
+  - Neither the owner's steps nor il-biz-tools mention that field. A case-insensitive grep for "support" in `docs/OWNER_STEPS.he.md` returns 0 matches, and "תמיכה" returns 0 too. "support email" and "support_email" return 0 matches under `products/il-biz-tools`.
+- **[github] The code checks the sign-in address, not the Support field.**
+  - The check compares `const got = addressOf(r.body.user.email);` (`gumroad-pro-product.js:461`).
+  - `GET /v2/user` builds that value with `email: form_email` (`user/as_json.rb:11`), which is the sign-in address (or a pending unconfirmed one, above).
+  - The documented user object has no support-email field, only `"email"` (`User.tsx:32`).
+  - The same response carries the account's `name`: `super(only: %i[name bio twitter_handle currency_type]` (`user/as_json.rb:9`). [inference] So a runner can also read the name field that prints on receipts and invoices (G5), at ₪0.
+- **[inference] What that means:**
+  - `requireBrandAccount` checks the fallback, not the address that wins.
+  - A Support address set to anything other than the brand mailbox would pass the check and send buyer mail away from the brand mailbox.
+  - The reverse case fails closed, which is harmless: brand mailbox in the Support field, another sign-in address.
+
+### G2. Article 352: where buyer mail goes, and whether a separate support address exists (row 181; question 2)
+
+All quotes in this section are `R-G352:51`.
+
+- **The seller's side of support:**
+  - "You answer questions about your own products: how to use a file, what a version includes, whether a refund is possible."
+  - "Gumroad gives your customers a way to reach you and gives you the tools to act on what they ask for."
+- **The support email.** Your **support email** "is the address your customers reach you at. It is listed on the receipt of every sale, and it is where replies to the emails you send through Gumroad go."
+  - It is set in Settings: "find the <b>Support</b> section, enter the address in the <b>Email</b> field, and click <b>Update settings</b>."
+- **The fallback:** "If you leave it blank, your customers' replies go to the email address on your account instead, the one you use to sign in."
+- **A separate address per product: yes.**
+  - "If different products should be handled by different inboxes, you can set an address per product."
+  - "In the same <b>Support</b> section, click <b>Add a product specific email</b>, enter the address, and pick the products it should cover."
+  - "Products you don't assign keep using your account-level support email."
+- **Which address a receipt uses:**
+  - " The receipt for an order shows the product's support email, as long as every product in that order shares the same one. If a customer buys several products with different addresses in one order, the receipt shows your account-level support email instead."
+  - "In every case, if the product has no address of its own, Gumroad falls back to your account-level support email, and then to the email address on your account."
+- **Refunds:**
+  - "Refunds are yours to decide and yours to issue."
+  - The sales-dashboard list includes "Issue a full or partial refund." The article names no other route, and it does not mention the API.
+  - Gumroad also acts on the policy itself: "Clear terms up front are the cheapest support you will ever provide, and Gumroad uses your stated policy when handling refunds or disputes on your behalf."
+  - "Fully refunding a purchase removes its rating automatically", which agrees with article 47.
+- **What Gumroad keeps for itself:**
+  - "Some questions belong to us rather than to you: failed payments, download problems, fraudulent purchases, and anything about a customer's Gumroad account."
+  - "<a href=\"20-how-do-i-contact-gumroad\">Contact Gumroad</a> has the full split of what we handle and what creators handle". The link is to article 20, not to the article 196 that tick 19 T8 queued for article 190's "write to us".
+  - "Our <a href=\"348-support-response-times\">response times</a> are usually well under a day."
+- **[github] The refund confirmation replies to the account-level address.** Its subject is `subject: "You have been refunded.",` (`customer_mailer.rb:165`), and its reply-to is `reply_to: @product.user.support_or_form_email,` (`:164`). It skips a product-specific address.
+- **Answer.** Buyer mail goes to the support email: the product's own address if one is set and every product in the order shares it, otherwise the account-level address. It reaches the sign-in address only when the account-level Support email is blank and the receipt does not use a product address. A separate support address can be set, both for the account and for each product.
+- **[inference] For the responder:**
+  - The ₪0 guard is an instruction, not a check: owner step 3 would tell the owner to leave Settings → Support → Email blank (or set it to the brand mailbox) and to add no address for a single product.
+  - The documented API does not expose the Support field (G1), so no runner can read it back.
+- **[inference] Gumroad may refund without the responder.** "Gumroad uses your stated policy when handling refunds or disputes on your behalf" means that Gumroad support may grant refunds inside the stated window without the responder. Such refunds would count toward the §11.3(b) refund rate too, since the terms measure the rate a supplier "(or Gumroad, when selling a specific Supplier's Products)" experiences (`R-TERMS:264`, tick 19 T2).
+
+### G3. Article 46: which currencies Gumroad charges in (row 182; question 3)
+
+**What the article says** (all `R-G46:51`):
+- "Gumroad processes transactions in United States Dollars, or in the customer's local currency where supported"
+- "During checkout, eligible one-time card purchases are charged in the local currency shown at checkout, so the amount on the customer's statement matches the amount they confirmed. All other transactions are processed in USD, with real-time exchange rates used when conversion is needed."
+- The list of 32 checkout currencies includes "Swiss Franc, Israeli Shekel, Philippine Peso". **ILS is a checkout currency** for eligible one-time card purchases.
+- "Not every currency is offered on every product, and a customer whose currency is not listed is charged in USD."
+- Other currencies' rules:
+  - Settings let the seller "choose the default display currency for new products".
+  - Card payouts: "All currency conversions happen based on the exchange rates at the time of sale, not at the time of the payout."
+  - "If you live in any other country, we pay you out via PayPal and you will be paid in USD."
+
+**The article describes a USD-priced product:**
+- " You set your price the same way, your earnings are the same, and your payouts arrive the same way. Only the amount the customer sees and is charged is converted."
+- "When a customer is charged in their own currency, the total they see keeps the price ending you chose in USD instead of showing the raw converted amount."
+- "Your earnings, taxes, and payouts are unchanged — the small difference is absorbed by Gumroad."
+- It never says whether a product listed in another currency is charged in that currency. Pro is such a product: `export const DEFAULT_CURRENCY = 'ils';` (`gumroad-pro-product.js:87`).
+- The article also says: "Customers outside of the US may be subject to an additional fee for international purchases, depending on the policies of their credit card company. If you do set your currency in anything other than USD, you may want to inform your customers of this in your receipt's text."
+  - [inference] The advice ties the card company's fee to listing in a currency other than USD. That fits a USD charge of a non-USD listing, but the article does not say so. The fee is the card issuer's, not the dealer's, and it falls outside the ₪79. Nothing read says whether a refund returns it.
+
+**How the charge settles and how it is refunded:**
+- The terms' currency paragraph opens: "If the retail price of a Product is listed in a currency other than United States Dollars (USD), Gumroad will calculate a USD price based upon an exchange rate determined by Gumroad." It ends: "Regardless of listed currency, all transactions through the Services will settle in USD." (both `R-TERMS:208`). [inference] For an ILS listing, the terms speak of a USD price that Gumroad computes, which fits a USD charge. But a USD price can still be presented and charged in shekels under article 46, and "settle" is the seller's side. Neither text settles Pro.
+- Article 47: "Customers are refunded in the currency they were charged." (`R-G47:51`).
+
+**[github] Whether an ILS-listed product is charged in ILS depends on flags Gumroad sets per seller:**
+- A "listed-amount lane" charges the listed price directly when the listing is in the buyer's currency: "# Per-seller ramp for charging a product's listed currency directly when it is already" (`buyer_currency_eligibility.rb:21`).
+  - Its flag is `LISTED_CURRENCY_DIRECT_CHARGE_FEATURE_NAME = :checkout_listed_currency_direct_charge` (`:25`).
+  - The lane requires that flag (`:472`) before it returns eligible (`:480`).
+- Without that flag, a cart listed wholly in the buyer's currency falls back to the USD charge: `return fallback(:listed_currency_is_buyer_currency) if listed_in_buyer_currency.all?` (`:485`).
+- Every local-currency lane first needs two seller flags, `Feature.active?(FEATURE_NAME, seller)` (`buyer_currency_charging`) and `Feature.active?(:buyer_local_currency, seller)` (`:226-227`), checked at the top of the decision (`:400`).
+- The refund endpoint's comment, which tick 19 relied on, still says "buyer presentment (the card path) only applies to USD-priced products" (`sales_controller.rb:185`). [inference] Beside `:21-25` and `:472-480`, it describes the default, not the flagged lane.
+- [inference] So no listing currency guarantees a shekel charge. An ILS listing needs the listed-lane flag, and a USD listing needs the local-currency lane. The flags are Gumroad's runtime state, which no page or file read shows.
+- **The sale record shows what was charged.** The documented `"buyer_presentment": {` block (`Sales.tsx:198`) holds the charged `currency`, `total_cents`, `fx_rate` and `refunded_cents` (`:199-207`). [inference] After the first real sale, a runner reading `GET /v2/sales` can see at ₪0 whether the buyer paid in ILS.
+
+**[inference] Answer for 14ה(ב)(1).** The section asks the dealer to return "את אותו חלק ממחיר העסקה ששולם על ידי הצרכן" (`R-CPL:797`).
+- If the Israeli buyer was charged in ILS, a full refund returns ₪79.
+- If the buyer was charged in USD, the refund returns the same USD, and the shekel amount depends on the card's conversion (`R-G47:51`).
+- The rendered texts do not say which case applies to Pro, so row 182's question stays open at rendered grade.
+
+### G4. Article 121: does Gumroad collect Israeli VAT, and is it added on top? (row 183; question 4)
+
+**What the article says** (all `R-G121:51`):
+- "Gumroad now acts as the Merchant of Record for all sales. This means we automatically handle all sales tax collection and remittance worldwide. You don't need to manage any tax settings or applications - we take care of everything."
+- "Digital products are unaffected and still have VAT collected at checkout everywhere it applies."
+- It opens with the disclaimer " This article is neither legal advice nor tax advice."
+- It names no country for VAT on digital products, and "israel" has 0 matches. Its one exception covers physical goods shipped into the EU: "When a physical product ships to a buyer in an EU country, we do not charge VAT at checkout."
+- Its "Reseller Certificate" paragraph says creators who already file indirect-tax returns "will need to report their sales on Gumroad as "sales to other retailers for purposes of resale", which are not taxable". [inference] This frames the owner's sale as a sale to Gumroad, the reseller of §6.1 (`R-TERMS:131`). It bears on row 17 (b)'s open "עוסק" question, but it is US sales-tax wording, not Israeli law.
+
+**Where tax is collected, it is added on top.** Article 121 does not say so, but two other rendered texts do:
+- Article 46: "If tax is added, the ending mirrored is the one on the taxed total" (`R-G46:51`).
+- The terms: prices "are exclusive of any applicable Indirect Tax" (`R-TERMS:231`).
+
+**[github] Gumroad does not collect it for Israel:**
+- "ISR" and "israel" have 0 matches in `lib/utilities/compliance/countries.rb`, the file that holds Gumroad's tax-collecting country lists. (The "IL" in that file is Illinois, in `TAXABLE_US_STATE_CODES`.)
+- The lookup path covers US states, the EU, Australia, Singapore, Norway and Canada, and some listed countries behind a flag, `feature_flag = "collect_tax_#{country_code.downcase}"` (`sales_tax_calculator.rb:146-196`, flag at `:194`).
+- For any other country no rate is found, so `return SalesTaxCalculation.zero_tax(price_cents) if tax_rate.nil?` applies (`:46`).
+- The invoice's table of Gumroad tax numbers (`supplier_info.rb:84-96`) has no Israeli entry.
+- [inference] Gumroad's code therefore adds no Israeli VAT. An Israeli buyer pays the listed ₪79 (or its USD conversion) with no tax line.
+
+This is what Gumroad's code does. It is not a ruling on whether Israeli VAT is due on such a sale. The rendered article does not address Israel.
+
+### G5. Article 194: who issues the buyer's invoice, and what it carries (row 184; question 5)
+
+**What the article says** (all `R-G194:51`):
+- The buyer makes the invoice:
+  - "You can print your own invoice by clicking the Generate link at the bottom of your receipt."
+  - "You'll be sent to Gumroad's Invoice generator where you can enter your full name and business or personal address. Next, click “Download”, and the invoice will download as a PDF."
+  - There is a second route, "Generate your invoice from the download page", and "The link only appears when there is something to invoice".
+- Notes are the buyer's to add:
+  - "If you need to add optional notes such as your business' specific information or invoice numbers, you can do that in the additional notes field."
+  - "Gumroad Support doesn't have the capability to change or adjust invoices, so be sure to add anything your tax office might need."
+- EU businesses: "If you paid VAT and you're a business in the EU, you can also enter your VAT registration number and automatically process a refund for the VAT you paid." Then: "The VAT refund will take 2-3 days to arrive at your credit card or PayPal account. The invoice will display without VAT."
+- Refunded purchases:
+  - "If your purchase has been refunded, the invoice you generate reflects that. The payment total shows the amount you actually paid after refunds (so a fully refunded purchase shows a zero total), and a "Refund status" line appears under the payment total reading "Fully refunded" or "Partially refunded", along with the date of the most recent refund."
+  - "This lets you use the regenerated invoice as documentation of the refund for your books."
+- "Because Gumroad is a C Corporation, we do not issue W9s to customers."
+- **The article does not name the invoice's issuer.**
+
+**[github] What the PDF carries.** The presenter builds two blocks (`invoice_presenter.rb:42`, `:46`):
+- **"Supplier"** (`supplier_info.rb:12`):
+  - `value: "Gumroad, Inc.",` (`:47`);
+  - an "Office address" (`:35`);
+  - Gumroad's no-reply email (`:66`);
+  - `value: "Products supplied by Gumroad.",` (`:80`);
+  - a Gumroad tax number where it has one for the buyer's country (`:84-96`; none for Israel).
+- **"Creator"** (`seller_info.rb:12`): `value: seller.display_name,` (`:32`) and `value: seller.support_or_form_email` (`:40`), the account-level address.
+  - `display_name` begins `return name if name.present?` (`user.rb:609`).
+
+**[github] What the refund confirmation says.** Gumroad's refund email has the header "You have been refunded." and the text "Your purchase of <%= @purchase.link_name %> for <%= @purchase.formatted_total_transaction_amount %> on Gumroad has been fully refunded. It may take up to 3-7 days to show up in your account." (`refund.html.erb:1`, `:9`). For a local-currency charge it shows that currency with the USD total beside it (`:7`). It is in English and goes out under the account's name from Gumroad's no-reply address (`customer_mailer.rb:163`).
+- [inference] For a sale not charged in the buyer's currency, that amount is the listed one. The mailer notes that "formatted_total_transaction_amount is in the product's display currency" (`customer_mailer.rb:157`). So a USD-charged ILS listing's refund email would state ₪79 while the card is credited in USD.
+
+**[inference] What this means:**
+- **Who issues it.** Gumroad issues the invoice as supplier. The owner appears only as "Creator", by display name and support address. This agrees with §6.1's bar: "you shall not issue any invoice or make any demand for payment to any Buyer" (`R-TERMS:131`).
+- **The owner's name.** The account's name field prints on the invoice (Creator), as the From name of every receipt (G1) and of the refund email. For the identity rule, that field should be the brand; owner step 3 names the store "**שם החנות: Mehudak**" (`docs/OWNER_STEPS.he.md:189`). The support address should be the brand mailbox. A runner can read the name field back through `GET /v2/user` (G1).
+- **No place for the 14ג(ב) document.** The seller cannot write on the invoice, since the notes are the buyer's. It is no place for an owner-written 14ג(ב) document. The receipt texts in G1 are, and of those a runner can reach only the fine print.
+- **A copy of the refund may already exist.** 14ה(ב)(1) also has the dealer hand over "וימסור לו עותק מהודעת ביטול החיוב" (`R-CPL:797`). Without the owner:
+  - Gumroad sends the buyer an email ("Customers receive an email confirmation after a refund is issued.", `R-G47:51`; its English text above, github);
+  - the buyer can generate an invoice reading "Fully refunded" (`R-G194:51`). This one is not sent; the buyer must generate it.
+
+  Whether either counts as that copy is a board question.
+
+### G6. Article 66: Gumroad's fees, and the cost of one ₪79 refund (row 185; question 6)
+
+**What the article says** (all `R-G66:51`):
+- "For sales made on Gumroad's website, we charge a 10% + $0.50 fee + " sales tax (a link to `https://gumroad.com/pricing`) " per transaction. This does not include: " "Credit card processing (2.9% + $0.30)" and PayPal fees.
+- "Sales made through Gumroad's marketplace (discovery sales via Gumroad.com) are subject to a flat 30% fee, which includes all processing fees."
+- "Once your paid sales in a calendar month reach $20,000, new direct sales that month are 5% + $0.50 instead of 10% + $0.50." and "A refund can bring you back under $20,000". "There are no monthly payments or other hidden charges."
+- Refunds: "When a sale is refunded, Gumroad's own fee on the refunded portion is returned to you; only the underlying payment-processing portion of the fee is retained, because payment processors do not return it on a refund." This matches article 47 (tick 19 T4). "Sales through your own connected payment account (Stripe Connect or PayPal Connect) work differently."
+- It does not say what "+ sales tax" adds to a fee, or what portion is kept when a 30% Discover sale is refunded.
+
+**[inference] The cost of one full refund of a ₪79 card sale made directly, not through Discover.** It is computed at 3.6 ILS per USD, the ledger's fallback rate (`USD: 3.6,`, `src/revenue/money.ts:13`), not a market rate:
+- The price is about $21.94.
+- Gumroad's fee, 10% + $0.50, is about $2.69 (about ₪9.70). On a full refund it is returned, the $0.50 included on this reading of "Gumroad's own fee on the refunded portion".
+- Card processing, 2.9% + $0.30, is about $0.94 (about ₪3.37). It is kept.
+- A kept sale nets about $18.31 (about ₪65.93). A refunded sale nets about −$0.94: the owner loses the sale and pays **about ₪3.37**.
+- At 3.4 or 3.8 ILS per USD the kept part is about ₪3.31 or ₪3.43. The fixed $0.30 is about a third of it.
+- Nothing is charged to the buyer, who gets the full amount back (`R-G47:51`). So the cost sits outside 14ה(ב)(1)'s cap, "זולת דמי ביטול בשיעור שלא יעלה על 5% ממחיר הנכס נושא החוזה או העסקה, או 100 שקלים חדשים, לפי הנמוך מביניהם" (`R-CPL:797`; ₪3.95 on ₪79).
+- The assumptions: card, not PayPal; a direct sale; no tax added (G4); the fee taken on ₪79's USD value; a month under $20,000.
+- [github] The documented sale object carries `"processor_fee_cents": 59,` and `"processor_fee_currency": "usd",` (`Sales.tsx:189-190`, example values). [inference] After the first sale a runner reading `GET /v2/sales` can read the fee actually charged instead of this estimate.
+
+**[inference, from rendered text] A lone sale cannot pay for its own refund.**
+- Article 47 allows a refund only if "your balance is able to cover the transaction amount", and otherwise "If your balance is too low you will need to make additional sales until the refund can be issued." (`R-G47:51`).
+- After fees, one ₪79 sale credits about ₪65.93, which is less than ₪79.
+- So on a new account the first refund request cannot be issued by the seller, from the dashboard or by the API, until more sales arrive.
+- **[github] The code agrees.** The check is `amount_cents_to_refund = amount_cents.presence || amount_refundable_cents` and `if amount_cents_to_refund > seller.unpaid_balance_cents && charged_using_gumroad_merchant_account?` (`refundable.rb:98-99`). The balance is `balances.unpaid.sum(:amount_cents)` (`user/money_balance.rb:14`). [inference] At about ₪65.93 net per sale, two unpaid sales cover one refund.
+- **[github] Payouts never take the last week.** `MIN_AMOUNT_CENTS = 100_00` (`payouts.rb:8`; "the normal $100 minimum", `:10`) and `PAYOUT_DELAY_DAYS = 7` (`payout_schedule.rb:4`). A payout covers balances only up to `payout_cycle_for_payout_date(payout_date) - PAYOUT_DELAY_DAYS` (`:164`). This matches the owner steps' "מינימום $100, 7 ימים" (`docs/OWNER_STEPS.he.md:500`).
+  - [inference] About six ₪79 sales ($18.31 each, at 3.6) come before the first payout, and a payout leaves the last seven days' sales unpaid. So the balance falls short in two cases: the first sale on a new account, and later a request about a sale that was already paid out when fewer than two sales came in during the last week.
+- **The responder does not answer while it waits.** A refused refund makes the refund command exit 1 ("a refund refused", `gumroad-pro-product.js:62-63`; "the request is left for the next run", `:673`). The responder then records "the refund command stopped: not answered, left for the next run" (`scripts/brand_mail.py:1286`) and sends no reply.
+- **The 14-day deadline can pass.** 14ה(ב)(1) has the dealer return the money "בתוך 14 ימים מיום קבלת ההודעה על הביטול" (`R-CPL:797`). [inference] At launch volume that deadline can pass while the balance is short. Staff refunds skip the balance check (`refundable.rb:92`, tick 19 T2). But article 190 brings Gumroad in only after 30 days: "Please write to us if you haven’t heard back from the creator for 30 days since first contacting them" (`R-G190:51`).
+
+### G7. The /api capture (row 186; question 7)
+
+**What the capture holds:**
+- `R-API:43`'s `data-page` decodes to `"component":"Public/Api"`, with url "/api".
+- Its props are `errors`, `design_settings`, `domain_settings`, `user_agent_info`, `logged_in_user` (null), `current_seller` (null), `csp_nonce`, `locale`, `feature_flags`, `authenticity_token`, `flash`, `title` ("API") and `_inertia_meta`.
+- None of them holds documentation. The only value about the API is `domain_settings.api_domain`, "api.gumroad.com".
+- The `.txt` is one line, "API".
+- In the `.html`, "refund", "/v2", "sales", "endpoint", "access_token" and "ApiDocumentation" each have 0 matches. There is no `<noscript>`.
+- Its script and style links are shared Vite bundles (`vendor`, `currency`, `request`, `base_page`, `DomainSettings`, `third_party_tracking`, `preventFileDropNavigation`, and the `base.ts`, `inertia.js` and `design` entry points) plus Cloudflare's `rocket-loader.min.js` and its insights beacon. None is named for the API page. The runner fetched no script.
+
+**Plainly: the /api capture contains no API documentation.** It is a client-rendered shell. At rendered grade, `PUT /v2/sales/:id/refund` stays undocumented, as tick 19 T5 found for the terms and for articles 190 and 47.
+
+**[github] What the page's own source shows:**
+- The shell is by design. The route renders `render inertia: "Public/Api"` with only a title (`public_controller.rb:86-88`).
+- The page component renders `<RefundSale />` (`Api.tsx:269`) under `<ApiResource name="Sales" id="sales">` (`:265`).
+- That component documents the endpoint: `method="put"`, `path="/sales/:id/refund"`, `description="Refunds a sale. Available with the 'edit_sales' scope."` (`Sales.tsx:373-375`).
+- Its one parameter is `amount_cents`: "(optional) - Amount to refund, in minor units of the sale's listed currency". It also says: "If set, issue partial refund by this amount. If not set, issue full refund." (`:380`). This is the full refund the responder sends (`gumroad-pro-product.js:58`).
+- The docs name only `edit_sales`. The controller accepts `:refund_sales` or `:edit_sales` (`sales_controller.rb:7`, tick 19).
+
+**[inference] What that means:**
+- On the evidence of its source, Gumroad publishes the endpoint on gumroad.com/api. This is github grade: main at `0656875c`, and the deployed bundle may differ.
+- It bears on tick 19 T5's two readings of article 47's "Please only issue refunds from your Gumroad dashboard." Gumroad's own public docs offer an API refund. That supports reading the callout by its stated reason, refunds issued in Stripe or PayPal accounts.
+- It meets T5's "not expressly permitted" point (§14) only in part, because the API docs are not the Agreement.
+- A rendered copy of the docs would need the runner's JS flag (tick 19 T8), and Gumroad fetches are paused (`TERMS_BARRED`).
+
+### G8. Earlier claims this confirms or corrects
+
+- **Tick 19 T5 on the reply-to** (`refund-law-il.md:1010`: "No rendered page says which address it is; article 204 (T8) would."): article 204 does not say; article 352 does, for replies in general, and the receipt's reply-to is that address at github grade. It is the support email, and the account address only when that field is blank.
+  - The code's assumption (`gumroad-pro-product.js:352`) and owner step 3 (`OWNER_STEPS.he.md:187-188`) hold only on that condition.
+  - The `GET /v2/user` check reads the sign-in address, not the support address (github; G1).
+- **Tick 19 T4's currency gap** (`refund-law-il.md:947`, "Article 46 (T8) would."):
+  - ILS is a checkout currency (`R-G46:51`).
+  - Whether the ILS-listed Pro is charged in ILS is still not rendered. The terms speak of a USD price for a non-USD listing (`R-TERMS:208`). At github grade it turns on Gumroad's flags for each seller.
+  - The `sales_controller.rb:185` comment that T4 cited describes the default only.
+- **Tick 19 T1's VAT question** (`refund-law-il.md:823`): where Gumroad collects tax, it is added on top (`R-G46:51`, `R-TERMS:231`). At github grade Israel is not collected (G4). As far as Gumroad's tax goes, the ₪79 shown is the ₪79 charged.
+- **Tick 19 T4's fee note** (`refund-law-il.md:940`, "whose size article 66 (T8) would give"): the processing part kept is 2.9% + $0.30 on a card sale. That is about ₪3.37 per ₪79 refund [inference, at 3.6].
+- **Tick 19 T6's claim** (`refund-law-il.md:1044`, "The one text on that receipt the seller controls is the refund policy's fine print."): at github grade there is a second one, the product's custom receipt text (≤500 characters), which `R-G46:51` hints at. It can be set only in the dashboard: the API's `custom_receipt` parameter is one "which nothing reads anymore" (`backfill_custom_receipt_text.rb:37`). For a runner, T6's claim stands.
+- **Tick 19 T8's queued article 196** (`refund-law-il.md:1091`): article 352 links "Contact Gumroad" to article 20, not 196.
+- **FABLE_QUEUE row 17 (d)** says "no rendered page documents the `PUT /v2/sales/:id/refund`" (`logs/FABLE_QUEUE.md:41`). That still stands after row 186. The capture cannot show the docs, and at github grade the page's source does document the endpoint.
+- **The owner steps' payout line** ("מינימום $100, 7 ימים", `OWNER_STEPS.he.md:500`) now has a github source (`payouts.rb:8`, `payout_schedule.rb:4`).
+- **New since tick 19:**
+  - the support-email chain and addresses per product;
+  - ILS on the checkout list, and the terms' USD price for a non-USD listing;
+  - VAT being "added" where collected, and the resale framing of article 121;
+  - Gumroad as the invoice's supplier, and the refunded-invoice line;
+  - the fee rates;
+  - the lone-sale balance limit.
+  - At github grade: the page's source documenting the endpoint, Israel's absence from the tax lists, the dead `custom_receipt` parameter, the refund email's text, and the $100 / 7-day payout rule.
+
+### G9. Follow-up URLs
+
+**The Gumroad URLs are not fetchable: paused** (`TERMS_BARRED`; FABLE_QUEUE row 16(d)). Each one has a written source. The github rows are allowed. The reader's two github follow-ups (`backfill_custom_receipt_text.rb`, `payout_schedule.rb`) were read by the verifier and are cited above.
+
+| URL | Slug | Source of the URL | What it settles |
+|---|---|---|---|
+| `https://gumroad.com/help/article/20-how-do-i-contact-gumroad` | `gumroad-help-contact` | `R-G352:51` (link "Contact Gumroad") | Not fetchable: paused. Gumroad's split of creator and Gumroad support, and the address behind article 190's "write to us". |
+| `https://gumroad.com/help/article/13-getting-paid` | `gumroad-help-getting-paid` | `R-G46:51` (the "direct-deposit countries" link); related articles in `R-G46`, `R-G66` | Not fetchable: paused. Whether Israel is a direct-deposit country, and the payout minimum and delay at rendered grade (github: $100, 7 days). |
+| `https://gumroad.com/pricing` | `gumroad-pricing` | `R-G66:51` (the "sales tax" link) | Not fetchable: paused. What "+ sales tax" adds to the fee. |
+| `https://raw.githubusercontent.com/antiwork/gumroad/0656875c5fbfbf1a7f339f4716a0b9059539d790/app/models/purchase.rb` | (github) | named in `sales_controller.rb:179` ("Purchase#refunding_amount_cents (app/models/purchase.rb)") | The units of `amount_refundable_cents` in the balance check (`refundable.rb:98-99`), so the lone-sale arithmetic holds for an ILS-listed sale. |
+| `https://raw.githubusercontent.com/antiwork/gumroad/0656875c5fbfbf1a7f339f4716a0b9059539d790/app/views/customer_mailer/receipt/sections/_items.html.erb` | (github) | the tree listing at `0656875c` | Where the receipt prints the custom receipt note, the refund-policy line and the seller-contact footer (`_product_questions_footer.html.erb:2-3`, "Contact <%= seller_name %> by replying to this email.", whose use was not traced). |
+
+### What this settles for FABLE_QUEUE row 17 (b) and (d)
+
+**(b) 14ט, the receipt and the invoice:**
+- **The receipt (rendered).** It carries the seller's contact information (`R-G204:51`), which is the support address (`R-G352:51`). Article 204 shows no refund-policy line and no cancellation text. The owner may issue no receipt of their own (`R-TERMS:131`).
+- **The receipt (github).** Two texts that the seller sets reach it: the refund policy's fine print and the product's custom receipt text (≤500 characters). A runner can set the fine print (`PUT /v2/refund_policy`, `refund_policies_controller.rb:36`). The custom receipt text needs the dashboard, because the API's `custom_receipt` parameter is read by nothing (`backfill_custom_receipt_text.rb:36-37`). [inference] A Hebrew 14ט(ד) statement in the fine print would sit on Gumroad's receipt. Whether that meets "(1) בחשבונית, בקבלה או בהודעת תשלום" (`R-CPL:879`) is for the board.
+- **The invoice.** The buyer makes it in Gumroad's generator (`R-G194:51`). At github grade it names "Gumroad, Inc." as supplier and the owner as "Creator", and the notes are the buyer's. It is no place for an owner-written 14ג(ב) document.
+- **VAT.** Where Gumroad collects tax it is added on top (rendered). At github grade Gumroad adds no Israeli VAT, so the ₪79 shown is what an Israeli buyer pays. Article 121 frames creators' sales as "sales to other retailers for purposes of resale" (rendered, US wording).
+- **Currency.** ILS is a checkout currency (rendered); the terms speak of a USD price for a non-USD listing (rendered). Whether the ILS-listed Pro is charged in shekels turns on Gumroad's flags for each seller (github). The same-shekel refund of 14ה(ב)(1) holds only for an ILS charge. A runner can read `buyer_presentment` after the first sale.
+
+**(d) The responder:**
+- **Documentation.** The /api capture is a shell, so the endpoint stays undocumented at rendered grade. At github grade Gumroad's /api source documents `PUT /sales/:id/refund` ("Refunds a sale. Available with the 'edit_sales' scope."), and a call with no amount is a full refund. That supports reading article 47's dashboard-only callout as being about Stripe and PayPal accounts.
+- **The mailbox.** Buyer replies go to the support email when one is set (`R-G352:51`; receipt reply-to at github). The code checks only the sign-in address, and the documented API does not expose the support email. So the guard has to be an owner-step instruction: leave Support blank or set it to the brand mailbox, and add no address for a single product. The account's name field, which prints on receipts, invoices and the refund email, can be checked by a runner.
+- **The balance.** A lone sale cannot cover its own refund (`R-G47:51` with `R-G66:51`; github `refundable.rb:98-99`). A new account's first refund waits for more sales, from the API and the dashboard alike; later, payouts ($100 minimum, last 7 days kept, github) leave a short balance only when fewer than two sales are unpaid. Meanwhile the responder sends nothing, and 14ה(ב)(1)'s 14 days (`R-CPL:797`) can run out.
+- **Cost.** One refund costs the owner about ₪3.37 [inference, at 3.6 ILS per USD], and the buyer is charged nothing.
+- **Gumroad's own refunds.** Gumroad may refund by the stated policy itself (`R-G352:51`), and such refunds would count toward the §11.3(b) rate [inference].
+
+### What this adds for the sitting
+
+- (b) 14ט(ה)(1) receipt disclosure. The owner may issue no receipt or invoice of their own ('you shall not issue any invoice or make any demand for payment to any Buyer', R-TERMS:131), so any disclosure has to ride on Gumroad's receipt. At rendered grade that receipt carries only the seller's contact information, the support address (R-G204:51, R-G352:51). At github grade the refund policy's fine print (item_info.rb:266) is on it and a runner can set it by PUT /v2/refund_policy (refund_policies_controller.rb:36). The custom receipt text (item_info.rb:71) needs a dashboard step, because the API's custom_receipt parameter is read by nothing (backfill_custom_receipt_text.rb:36-37). Rule whether a Hebrew 14ט(ד) statement (ways to cancel, contact details, what the notice must contain; R-CPL:875) in the policy fine print meets '(1) בחשבונית, בקבלה או בהודעת תשלום' (R-CPL:879).
+- (b) The invoice is not the owner's. The buyer generates it (R-G194:51). At github grade it names 'Gumroad, Inc.' as Supplier ('Products supplied by Gumroad.') and the owner only as 'Creator', and the notes field is the buyer's. It cannot carry an owner-written 14ג(ב) document. The Creator block, every receipt's From name and the refund email's From name print the account's name field if set (user.rb:609, customer_mailer.rb:80, :163). The identity rule needs that field to be the brand, and a runner can read it via GET /v2/user (as_json.rb:9).
+- (b) 14ה(ב)(1)'s copy of the notice cancelling the charge ('וימסור לו עותק מהודעת ביטול החיוב', R-CPL:797). Gumroad's refund email is sent to the buyer without the owner (R-G47:51); at github grade it is English: 'Your purchase of <product> for <amount> on Gumroad has been fully refunded. It may take up to 3-7 days to show up in your account.' (refund.html.erb:9). The buyer can also generate an invoice reading 'Fully refunded' (R-G194:51), but it is not sent. Rule whether either counts. [inference] On a USD charge of the ILS listing, the email would state ₪79 while the card is credited in USD (customer_mailer.rb:157).
+- (b) Who is the 'עוסק'. Article 121 tells creators who file indirect-tax returns to report their Gumroad sales as 'sales to other retailers for purposes of resale' (R-G121:51, US wording). With §6.1's reseller appointment (R-TERMS:131), this frames the owner's sale as a sale to Gumroad. It adds to tick 19's open question of whether both Gumroad and the owner are 'עוסק'.
+- (b) VAT and price. Where Gumroad collects tax it is added on top (R-G46:51, R-TERMS:231). At github grade Israel is in none of Gumroad's tax lists and gets zero tax, so the ₪79 shown is the ₪79 charged as far as Gumroad's tax goes. No rendered text addresses whether Israeli VAT is nonetheless due on such a sale.
+- (b)/(h) Currency. ILS is a checkout currency (R-G46:51), but the terms say a non-USD listing gets 'a USD price based upon an exchange rate determined by Gumroad' (R-TERMS:208). At github grade, whether the ILS-listed Pro is charged in shekels depends on per-seller Gumroad flags. A full refund returns the same shekels only on an ILS charge ('Customers are refunded in the currency they were charged', R-G47:51). The first sale's buyer_presentment shows which case holds, at ₪0. The board may want a rule for a USD charge, where the shekels returned can differ from 'את אותו חלק ממחיר העסקה ששולם על ידי הצרכן' (R-CPL:797).
+- (d) Documentation. The /api capture is a client-rendered shell with no docs, so PUT /v2/sales/:id/refund stays undocumented at rendered grade. At github grade Gumroad's own /api page source documents it ('Refunds a sale. Available with the 'edit_sales' scope.'; no amount_cents means a full refund; Sales.tsx:373-380). That supports reading article 47's 'only from your Gumroad dashboard' by its stated reason (Stripe/PayPal accounts). The API docs are not the Agreement, so §14's 'not expressly permitted' is met only in part.
+- (d) Balance. [inference from rendered article 47 plus article 66; github refundable.rb:98-99] One ₪79 sale nets about ₪65.93, so a lone sale cannot fund its own full refund, and the first refund on a new account is refused by the dashboard and the API alike. At github grade payouts need $100 and never take the last 7 days of sales (payouts.rb:8, payout_schedule.rb:4, :164), so later refusals need fewer than two unpaid sales. When refused, the responder leaves the buyer unanswered ('left for the next run', brand_mail.py:1286), and 14ה(ב)(1)'s 'בתוך 14 ימים מיום קבלת ההודעה על הביטול' can pass. Staff refunds bypass the balance check, but buyers are sent to Gumroad only after 30 days (R-G190:51). Rule whether the responder stays as is, sends a holding reply, or whether sales wait for a covering balance.
+- (d) Mailbox. Receipt replies go to the support email when one is set, at account level or per product, and reach the sign-in address only when the account-level field is blank and no product address applies (R-G352:51; reply-to at github, customer_mailer.rb:81). The code's requireBrandAccount checks only GET /v2/user email (form_email, the sign-in address or a pending one), and the documented API does not expose the support field. Rendered text supports only an owner-step instruction (leave Settings → Support → Email blank or set it to the brand mailbox; add no product-specific address), not a runner check. This is mechanical, but ruling (h)'s 'with a responder' depends on it.
+- (d) Cost and rate. [inference] One refund costs the owner about ₪3.37 (card processing 2.9% + $0.30 kept, Gumroad's fee returned; at 3.6 ILS per USD), below the ₪3.95 cap and charged to no buyer; processor_fee_cents in the sale object (Sales.tsx:189) gives the real figure after the first sale. Article 352 adds that 'Gumroad uses your stated policy when handling refunds or disputes on your behalf', so Gumroad may itself refund inside the window; such refunds would likely count toward the §11.3(b) 15%/25% lines (R-TERMS:264).

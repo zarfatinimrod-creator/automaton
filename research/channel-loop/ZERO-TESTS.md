@@ -220,6 +220,8 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 211 | terms audit (tick 20): upload-post | https://www.upload-post.com/terms-of-use/ | whether upload-post's terms bar automated access by the runner (research/channel-loop/TERMS-AUDIT-2026-09-29.md; NO_TERMS_CAPTURE) |
 | 212 | terms audit (tick 20): wix | https://www.wix.com/about/terms-of-use | whether wix's terms bar automated access by the runner (research/channel-loop/TERMS-AUDIT-2026-09-29.md; NO_TERMS_CAPTURE) |
 | 213 | terms audit (tick 20): worksheets4kids | https://worksheets4kids.co.il/privacy-policy/ | whether worksheets4kids's terms bar automated access by the runner (research/channel-loop/TERMS-AUDIT-2026-09-29.md; NO_TERMS_CAPTURE) |
+| 214 | Mozilla (8), ruling (b) precondition | https://docs.github.com/en/billing/how-tos/set-up-budgets | personal-account budgets and the 'Stop usage when budget limit is reached' option at rendered grade (FABLE_QUEUE row 18, option (i)(b)) |
+| 215 | Mozilla (8), ruling (b) precondition | https://docs.github.com/en/billing/concepts/budgets-and-alerts | budgets and alerts, and the first-cycle gap (a $0 budget must exist before the first run), at rendered grade (FABLE_QUEUE row 18) |
 
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no
