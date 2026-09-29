@@ -493,11 +493,15 @@ and unit-tested rather than trusted. Only `ready` shows a price:
 the Pro box heading is the product name; "תשלום חד-פעמי, בלי מנוי" and one trust line sit in plain sight beside the
 button; in the `ready` state a visitor without a licence can **try** the logo and colour on the on-screen preview
 (`applyBranding(…, 'trial')` — only an `@media screen` rule reads the trial colour and print hides the logo, so a
-printed or saved PDF is exactly the free document, with no watermark); after a print in that try-out one factual
-line says the print carried no branding and what Pro costs, once per session and never again once closed
+printed or saved PDF is exactly the free document, with no watermark); after a print dialog in that try-out one
+factual line says a print or PDF comes out without the branding and what Pro costs - never that anything was
+printed, since `afterprint` also fires on a cancelled dialog - once per session and never again once closed
 (`src/lib/pro-nudge.js`; no modal, no timer); and `#pro-faq` answers six pricing questions, each checked against
 the code in `tests/pro-faq.test.js`. The price in those answers is a slot the build fills from `site.json`
-(`src/lib/pro-offer.js`), in the visible answer and its JSON-LD twin alike, and only in the `ready` state.
+(`src/lib/pro-offer.js`), in the visible answer and its JSON-LD twin alike, and only in the `ready` state. The
+answers that describe a live sale (`<details data-pro-sale>`: what happens after paying, who sells it, and the
+home page's "how much") are dropped from the built page, with their JSON-LD twins, until the button is `ready`:
+before that the Pro box says nothing is sold yet.
 
 No Gumroad code runs on this site: no SDK, no overlay, no iframe. The only contact is one `fetch` from the
 buyer's browser to `api.gumroad.com/v2/licenses/verify`, at activation and at most every 7 days after. The

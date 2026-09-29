@@ -2,15 +2,15 @@
 // sales calls answer, answered in writing on the page instead - and each answer checked against the code that makes
 // it true. The price in them is never typed: the build injects the one Gumroad read back (src/lib/pro-offer.js).
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { withProPrice, PRO_PRICE_SLOT } from '../src/lib/pro-offer.js';
+import { withProPrice, PRO_PRICE_SLOT, PRO_SALE_ATTR } from '../src/lib/pro-offer.js';
 import { GUMROAD_STORE_NAME, proButtonState } from '../src/lib/gumroad.js';
 import { DOC_TYPES } from '../src/lib/invoice.js';
 import { verifyWithGumroad } from '../src/lib/license.js';
 import { activationContent, readBackPrice, StopError } from '../scripts/gumroad-pro-product.js';
-import { textOf, elementById, faqDetails, faqJsonLd } from './helpers/html.js';
+import { textOf, elementById, faqDetails, faqJsonLd, jsonLdBlocks } from './helpers/html.js';
 import { copyProduct, removeCopy, runBuild, editIn, readIn } from './helpers/product-copy.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -78,6 +78,10 @@ describe('each answer is true of the code', () => {
     const c = answer(Q.c);
     expect(c).toContain('"יש לי מפתח רישיון"');
     expect(c).toContain('"הפעלה"');
+    // Under N2 the logo and colour fields are open before paying (the try-out); what activation adds is print.
+    expect(c).not.toContain('נפתחים');
+    expect(c).toContain('בהדפסה ובשמירה כ-PDF');
+    expect(pageJs).toMatch(/proActive \? 'pro' : proState\.state === 'ready' \? 'trial' : 'off'/);
     expect(/<details id="pro-activate">\s*<summary>([^<]*)<\/summary>/.exec(invoice)[1]).toBe('יש לי מפתח רישיון');
     expect(/<button[^>]*id="license-apply"[^>]*>([^<]*)<\/button>/.exec(invoice)[1]).toBe('הפעלה');
     expect(JSON.stringify(activationContent({ siteUrl: 'https://x' }))).toContain('בקבלה שנשלחה אליכם במייל');
@@ -130,6 +134,59 @@ describe('index.html carries the short version', () => {
   });
 });
 
+describe('every FAQ answer a search engine reads is whole sentences', () => {
+  it('no JSON-LD answer on any page ends in a loose link label', () => {
+    const pages = readdirSync(root).filter((n) => n.endsWith('.html'));
+    for (const p of pages) {
+      for (const [q, text] of faqJsonLd(read(p))) expect(text, `${p}: ${q}`).toMatch(/[.?!]$/);
+    }
+  });
+});
+
+// Review of 29.9 (honesty 5, code 6): an answer that describes a live sale - what it costs, who sells it, what
+// happens after paying - is true only once the shop is open. Such an entry carries data-pro-sale, and the build
+// keeps it (and its JSON-LD twin) only while the Pro button is `ready`.
+describe('answers about a live sale appear only once the shop is ready', () => {
+  const marked = (html, fragment) => [...fragment.matchAll(/<details\b([^>]*)>\s*<summary>([\s\S]*?)<\/summary>/g)]
+    .filter((m) => new RegExp(`\\s${PRO_SALE_ATTR}(\\s|=|$)`).test(m[1])).map((m) => textOf(m[2]));
+
+  it('marks exactly "after paying" and "who sells it" on invoice.html, and "how much" on index.html', () => {
+    expect(marked(invoice, elementById(invoice, 'pro-faq'))).toEqual([Q.c, Q.f]);
+    expect(marked(invoice, invoice)).toEqual([Q.c, Q.f]);
+    expect(marked(index, index)).toEqual([INDEX_Q]);
+  });
+
+  const SALE = `<html><head><script type="application/ld+json">${JSON.stringify({ '@type': 'FAQPage', mainEntity: [
+    { '@type': 'Question', name: 'מי מוכר?', acceptedAnswer: { '@type': 'Answer', text: 'Gumroad.' } },
+    { '@type': 'Question', name: 'זה מנוי?', acceptedAnswer: { '@type': 'Answer', text: 'לא.' } },
+  ] })}</script></head><body>
+  <details ${PRO_SALE_ATTR}><summary>מי מוכר?</summary><p>Gumroad.</p></details>
+  <details><summary>זה מנוי?</summary><p>לא${PRO_PRICE_SLOT}.</p></details>
+</body></html>`;
+
+  it('with no price, drops the entry and its JSON-LD twin, and keeps the rest', () => {
+    const out = withProPrice(SALE, null);
+    expect(faqDetails(out).map((d) => d.question)).toEqual(['זה מנוי?']);
+    expect([...faqJsonLd(out).keys()]).toEqual(['זה מנוי?']);
+    expect(out).not.toContain('Gumroad.');
+  });
+
+  it('with a price, keeps both', () => {
+    const out = withProPrice(SALE, '‏79 ‏₪');
+    expect(faqDetails(out).map((d) => d.question)).toEqual(['מי מוכר?', 'זה מנוי?']);
+    expect([...faqJsonLd(out).keys()]).toEqual(['מי מוכר?', 'זה מנוי?']);
+  });
+
+  it('refuses a sale entry whose JSON-LD twin is missing or differs, with or without a price', () => {
+    const drifted = SALE.replace('"text":"Gumroad."', '"text":"אנחנו."');
+    const orphan = SALE.replace('"name":"מי מוכר?"', '"name":"מי מוכר את זה?"');
+    for (const price of [null, '‏79 ‏₪']) {
+      expect(() => withProPrice(drifted, price)).toThrow(/מי מוכר\?/);
+      expect(() => withProPrice(orphan, price)).toThrow(/מי מוכר\?/);
+    }
+  });
+});
+
 describe('nothing the note rejects (§4.4, §8.4)', () => {
   const REJECTED = ['לכל החיים', 'לתמיד', 'מיידי', 'מובטח', 'בלי שאלות', 'כולל חשבונית מס', 'מאושר ע', 'הנחה', 'מחיר השקה', 'לזמן מוגבל', 'אחרונים', 'היה ₪', 'במקום ₪'];
   it('in the pages, the button notes and the product copy', () => {
@@ -170,13 +227,22 @@ describe('withProPrice: the build puts the price into the FAQ and its JSON-LD, o
     expect(() => withProPrice(orphan, null)).toThrow(/outside/);
   });
 
+  it('refuses an answer with a slot that has no JSON-LD twin at all, or whose visible question was renamed', () => {
+    const noTwin = SOURCE.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, '');
+    const renamed = SOURCE.replace('<summary>זה מנוי?</summary>', '<summary>האם זה מנוי?</summary>');
+    for (const price of [null, '‏79 ‏₪']) {
+      expect(() => withProPrice(noTwin, price)).toThrow(/no JSON-LD answer for "זה מנוי\?"/);
+      expect(() => withProPrice(renamed, price)).toThrow(/no JSON-LD answer for "האם זה מנוי\?"/);
+    }
+  });
+
   it('escapes the price as text', () => {
     expect(withProPrice(SOURCE, '<b>1</b>')).toContain('&lt;b&gt;1&lt;/b&gt;');
   });
 
   it('accepts the real pages as they are in the repository', () => {
-    expect(withProPrice(invoice, null)).toBe(invoice);
-    expect(withProPrice(index, null)).toBe(index);
+    expect(() => withProPrice(invoice, null)).not.toThrow();
+    expect(() => withProPrice(index, null)).not.toThrow();
     expect(() => withProPrice(invoice, '‏79 ‏₪')).not.toThrow();
     expect(() => withProPrice(index, '‏79 ‏₪')).not.toThrow();
   });
@@ -208,6 +274,24 @@ describe('the built pages (preview build in a throwaway copy)', () => {
     }
   });
 
+  it("today's shop is not open: no answer says what it costs, who sells it or what happens after paying", () => {
+    const inv = readIn(join(today, '_preview'), 'invoice.html');
+    const idx = readIn(join(today, '_preview'), 'index.html');
+    expect(faqDetails(elementById(inv, 'pro-faq')).map((d) => d.question)).toEqual([Q.a, Q.b, Q.d, Q.e]);
+    for (const q of [Q.c, Q.f]) expect(faqJsonLd(inv).has(q), q).toBe(false);
+    expect(faqDetails(elementById(idx, 'faq')).map((d) => d.question)).not.toContain(INDEX_Q);
+    expect(faqJsonLd(idx).has(INDEX_Q)).toBe(false);
+    for (const html of [inv, idx]) expect(html).not.toContain('המכירה נעשית');
+  });
+
+  it('once ready, all six questions are back, each with its JSON-LD twin', () => {
+    const inv = readIn(join(ready, '_preview'), 'invoice.html');
+    expect(faqDetails(elementById(inv, 'pro-faq')).map((d) => d.question)).toEqual(Object.values(Q));
+    for (const { question, answerHtml } of faqDetails(elementById(inv, 'pro-faq'))) expect(faqJsonLd(inv).get(question), question).toBe(textOf(answerHtml));
+    const idx = readIn(join(ready, '_preview'), 'index.html');
+    expect(faqJsonLd(idx).has(INDEX_Q)).toBe(true);
+  });
+
   it('once Gumroad reported ₪79, both pages say it in the answer and in its JSON-LD twin', () => {
     // formatILS separates number and sign with a no-break space; textOf collapses it like any other space.
     const price = textOf(proButtonState({ gumroad: { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: 'P', priceCents: 7900, currency: 'ils' } }).price);
@@ -219,5 +303,49 @@ describe('the built pages (preview build in a throwaway copy)', () => {
     const i = faqDetails(elementById(idx, 'faq')).find((x) => x.question === INDEX_Q);
     expect(textOf(i.answerHtml)).toContain(price);
     expect(faqJsonLd(idx).get(INDEX_Q)).toBe(textOf(i.answerHtml));
+  });
+});
+
+describe('the build, half configured or drifted (review 29.9, code 3)', () => {
+  const halfReady = (gumroad) => {
+    const dir = copyProduct();
+    editIn(dir, 'src/config/site.json', (json) => {
+      const site = JSON.parse(json);
+      site.gumroad = { ...site.gumroad, ...gumroad };
+      return JSON.stringify(site, null, 2);
+    });
+    return dir;
+  };
+  const dirs = [];
+  afterAll(() => { for (const d of dirs) removeCopy(d); });
+
+  for (const [name, gumroad] of [
+    ['a price but no product id', { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: '', priceCents: 7900, currency: 'ils' }],
+    ['a price but a product URL that is not https', { productUrl: 'http://mehudak.gumroad.com/l/pro', productId: 'P', priceCents: 7900, currency: 'ils' }],
+  ]) {
+    it(`${name}: no price and no sale answer, on screen or in JSON-LD`, () => {
+      const dir = halfReady(gumroad);
+      dirs.push(dir);
+      const r = runBuild(dir, '--preview');
+      expect(r.status, r.stderr).toBe(0);
+      for (const p of ['invoice.html', 'index.html']) {
+        const html = readIn(join(dir, '_preview'), p);
+        expect(html).not.toMatch(/<span data-pro-price> של/);
+        const ld = [...faqJsonLd(html).values()].join(' ');
+        expect(ld).not.toMatch(/79|₪/);
+        expect(html).not.toContain('המכירה נעשית');
+      }
+    });
+  }
+
+  it('a JSON-LD answer edited away from its visible twin stops the build, preview included', () => {
+    const dir = copyProduct();
+    dirs.push(dir);
+    editIn(dir, 'invoice.html', (html) => html.replace('"text": "לא. Pro הוא תשלום חד-פעמי, בלי מנוי', '"text": "לא. Pro הוא מנוי חודשי, בלי מנוי'));
+    expect(readIn(dir, 'invoice.html')).toContain('Pro הוא מנוי חודשי');
+    const r = runBuild(dir, '--preview');
+    expect(r.status).toBe(1);
+    expect(r.stderr).toContain('the pricing FAQ and its JSON-LD disagree');
+    expect(r.stderr).toContain('זה מנוי?');
   });
 });

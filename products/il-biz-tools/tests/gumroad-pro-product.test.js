@@ -74,6 +74,16 @@ describe('one name, by what Pro delivers (N5)', () => {
     expect(proProductName({ ...SITE, siteName: 'something else' })).toBe(PRO_PRODUCT_NAME);
   });
 
+  it('activation step 4 says what activation adds under N2 - branding in print - not that the fields open', () => {
+    const step4 = activationContent(SITE)[0].description.content
+      .filter((n) => n.type === 'paragraph')
+      .map((n) => n.content[0].text)
+      .find((t) => t.startsWith('4.'));
+    expect(step4).not.toContain('נפתחים');
+    expect(step4).toContain('בהדפסה ובשמירה כ-PDF');
+    expect(step4).toContain('"הרישיון אומת. המיתוג פעיל."');
+  });
+
   it('points the buyer at the box by that same name in activation step 3', () => {
     const step3 = activationContent(SITE)[0].description.content
       .filter((n) => n.type === 'paragraph')

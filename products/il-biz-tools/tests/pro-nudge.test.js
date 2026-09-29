@@ -24,8 +24,12 @@ const throwing = () => ({
 });
 
 describe('the line itself', () => {
-  it('states what happened and what Pro adds, with the configured price and "one-time"', () => {
-    expect(proNudgeText('‏79 ‏₪')).toBe('המסמך הודפס או נשמר כ-PDF בלי המיתוג שניסיתם. Pro מוסיף את הלוגו וצבע המותג למסמך המודפס – ‏79 ‏₪, תשלום חד-פעמי.');
+  // `afterprint` also fires when the print dialog is cancelled, so the line states how printing works, never that
+  // a print happened (review 29.9, honesty 7 / code 7).
+  it('states how a print comes out and what Pro adds, with the configured price and "one-time" - not that anything was printed', () => {
+    const text = proNudgeText('‏79 ‏₪');
+    expect(text).toBe('בהדפסה ובשמירה כ-PDF המסמך יוצא בלי המיתוג שניסיתם. Pro מוסיף את הלוגו וצבע המותג למסמך המודפס – ‏79 ‏₪, תשלום חד-פעמי.');
+    expect(text).not.toMatch(/הודפס|נשמר/);
   });
 
   it('uses none of the words the note rejects', () => {

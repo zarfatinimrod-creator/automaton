@@ -1,4 +1,5 @@
 // One factual line after a free print (research/tiktok/08-sales-marketing-lessons.md §8.1 N3).
+// It says how a print comes out, never that one happened: `afterprint` fires on a cancelled print dialog too.
 //
 // Someone who tried their logo in the on-screen preview and then printed gets a
 // document without it - that is the free tier, and the print stylesheet makes
@@ -17,7 +18,7 @@ export const NUDGE_SHOWN_KEY = 'ilbiz.proNudge.shown';
 export const NUDGE_DISMISSED_KEY = 'ilbiz.proNudge.dismissed';
 
 export function proNudgeText(price) {
-  return `המסמך הודפס או נשמר כ-PDF בלי המיתוג שניסיתם. Pro מוסיף את הלוגו וצבע המותג למסמך המודפס – ${price}, תשלום חד-פעמי.`;
+  return `בהדפסה ובשמירה כ-PDF המסמך יוצא בלי המיתוג שניסיתם. Pro מוסיף את הלוגו וצבע המותג למסמך המודפס – ${price}, תשלום חד-פעמי.`;
 }
 
 /** The preview was tried: a logo, or a colour other than the default. */
