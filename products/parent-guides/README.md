@@ -19,6 +19,9 @@ art, narrates it with a synthetic voice, and assembles the video, an `.srt` and 
 
 `--models DIR` points at an existing copy of the two Kokoro files instead of `.cache/models`.
 
+The tests need no voice, no model and no network: `pip install -r requirements-test.txt` is enough, and it is all
+`.github/workflows/parent-guides-ci.yml` installs. That job fails on a skipped test as well as a failed one.
+
 ## What it refuses (exit 2, before writing anything)
 
 `spec.py` is standard-library only, so the refusal works on a bare machine:
