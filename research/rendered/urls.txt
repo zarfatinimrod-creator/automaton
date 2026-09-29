@@ -574,7 +574,7 @@ https://portal.astro.build/themes/submit	astro-portal-themes-submit
 # research/channel-loop/ZERO-TESTS.md row 153 — loop board 29.9 (e)3: kolzchut's exempt-dealer page (URL from the 7.9 SERP, not guessed; no site search before kolzchut's terms allow it), the documents an exempt dealer issues and whether software may issue them (29.9.2026).
 https://www.kolzchut.org.il/he/%D7%A2%D7%95%D7%A1%D7%A7_%D7%A4%D7%98%D7%95%D7%A8	kolzchut-osek-patur
 # research/channel-loop/ZERO-TESTS.md row 154 — lines ruling 29.9 (h): consumer protection law 14C(d), refunds on digital content (29.9.2026).
-https://www.nevo.co.il/law_html/law01/055_001.htm	nevo-consumer-protection-law
+# retired: court-routing regulations, not the consumer-protection law (tick 17; the law is law00/70305.htm) — https://www.nevo.co.il/law_html/law01/055_001.htm	nevo-consumer-protection-law
 # research/channel-loop/ZERO-TESTS.md row 155 — lines ruling 29.9 (h): Gumroad help index, to find the refund-policy article's URL (29.9.2026).
 https://gumroad.com/help	gumroad-help-center-index
 # research/channel-loop/ZERO-TESTS.md row 156 — lines ruling 29.9 (a): Green Invoice pricing, logo on a receipt in a free tier (29.9.2026).
@@ -585,3 +585,31 @@ https://www.icount.co.il/plans/	icount-plans
 https://ypay.co.il/front/faq	ypay-faq
 # research/channel-loop/ZERO-TESTS.md row 159 — lines ruling 29.9 (a): Invoice4u price list (URL unverified), logo on a free receipt (29.9.2026).
 https://www.invoice4u.co.il/pricelist-invoice/	invoice4u-pricelist
+# research/channel-loop/ZERO-TESTS.md row 160 — lines ruling 29.9 (h): the consumer-protection law at nevo, id 70305 (research/measurements/refund-law-il.md) (29.9.2026).
+https://www.nevo.co.il/law_html/law00/70305.htm	nevo-consumer-protection-law-70305
+# research/channel-loop/ZERO-TESTS.md row 161 — lines ruling 29.9 (h): cancellation regulations, nevo id 84257 (29.9.2026).
+https://www.nevo.co.il/law_html/law00/84257.htm	nevo-cancellation-regulations
+# research/channel-loop/ZERO-TESTS.md row 162 — lines ruling 29.9 (h): Gumroad help article 51, URL from gumroad-help-center-index.html:51 (29.9.2026).
+https://gumroad.com/help/article/51-what-is-gumroads-refund-policy	gumroad-help-refund-policy
+# research/channel-loop/ZERO-TESTS.md row 163 — lines ruling 29.9 (h): Gumroad help article 335 (29.9.2026).
+https://gumroad.com/help/article/335-custom-refund-policy	gumroad-help-custom-refund-policy
+# research/channel-loop/ZERO-TESTS.md row 164 — loop ruling 29.9 (e)3: הוראות ניהול פנקסי חשבונות (research/measurements/osek-patur-documents.md) (29.9.2026).
+https://www.nevo.co.il/law_html/law01/255_179.htm	nevo-books-instructions
+# research/channel-loop/ZERO-TESTS.md row 165 — loop ruling 29.9 (e)3: חוק חתימה אלקטרונית (29.9.2026).
+https://www.nevo.co.il/law_html/law01/159m1_001.htm	nevo-electronic-signature-law
+# research/channel-loop/ZERO-TESTS.md row 166 — Topcoder (12): Trolley's terms, URL snippet grade (research/measurements/topcoder.md, 29.9 tick 17) (29.9.2026).
+https://trolley.com/terms-of-service/	trolley-terms-of-service
+# research/channel-loop/ZERO-TESTS.md row 167 — Topcoder (12): Trolley's IDV blog post, plain (29.9.2026).
+https://trolley.com/blog/trolley-trust-idv-tool/	trolley-trust-idv-tool
+# research/channel-loop/ZERO-TESTS.md row 168 — lines ruling 29.9 (a): YPAY shop (israeli-invoicing-free-tiers.md) (29.9.2026).
+https://ypay.co.il/front/shop/index	ypay-shop
+# research/channel-loop/ZERO-TESTS.md row 169 — lines ruling 29.9 (a): YPAY knowledge centre (29.9.2026).
+https://ypay.co.il/front/articles	ypay-articles
+# research/channel-loop/ZERO-TESTS.md row 170 — lines ruling 29.9 (a): Quickly Invoice (snippet PASS) (29.9.2026).
+https://quicklyinvoice.com/	quicklyinvoice-home
+# research/channel-loop/ZERO-TESTS.md row 171 — lines ruling 29.9 (a): SUMIT (29.9.2026).
+https://www.sumit.co.il/invoices	sumit-invoices
+# research/channel-loop/ZERO-TESTS.md row 172 — lines ruling 29.9 (a): MyBooks (29.9.2026).
+https://www.mybooks.co.il/free_invoicing_software	mybooks-free-invoicing
+# research/channel-loop/ZERO-TESTS.md row 173 — lines ruling 29.9 (a): digital-invoice.co.il (29.9.2026).
+https://digital-invoice.co.il/	digital-invoice-home
