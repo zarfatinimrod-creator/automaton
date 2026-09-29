@@ -265,7 +265,11 @@ Open:
 
 ## 10. Next tick's first action
 
-**Tick 15 (next):** the Fable sitting at ~07:11: FABLE_QUEUE rows 14-15 (two agents; row 16 the sitting after), then fold its rulings: confirm or reject the nineteen refutations in `docs/REJECTED.md`, the loop's NEEDS_MORE policy (row 14 (b)) which decides whether a third queue refill runs, the il-biz-tools Pro price and refund policy (row 15 (a), (h)), pcn874's offer (15 (f)). Until then, owner-free polish only; no new product (the built-but-unlaunched cap is 6/6). No tiktok.com URL in any render (§9).
+**Tick 16 (next):** the Fable sitting at the ~07:12 6-hourly tick with `research/channel-loop/SITTING-2026-09-29-BRIEF.md`; rule row 14 (e2) before (f) — Astro (row 7) now rides on (e2) too; fold the rulings. Also: take rows 147, 148 and 151 off `urls.txt` (JavaScript shells the runner can never render). No tiktok.com URL in any render.
+
+**Tick 15 (done 04:25 29.9):** sitting brief written; loop rows 7 (Astro, KILL-PROPOSED on G3/G6 pending (e2)), 12 (Topcoder, selfie unsettled), 13 (prize intake list-count half built) read or built. Log: `logs/2026-09-29-channel-loop-tick-15.md`.
+
+**Was planned for tick 15:** the Fable sitting at ~07:11: FABLE_QUEUE rows 14-15 (two agents; row 16 the sitting after), then fold its rulings: confirm or reject the nineteen refutations in `docs/REJECTED.md`, the loop's NEEDS_MORE policy (row 14 (b)) which decides whether a third queue refill runs, the il-biz-tools Pro price and refund policy (row 15 (a), (h)), pcn874's offer (15 (f)). Until then, owner-free polish only; no new product (the built-but-unlaunched cap is 6/6). No tiktok.com URL in any render (§9).
 
 **Tick 14 (done 03:00 29.9):** merged the il-biz-tools AI declaration, the parent-guides CI and v2 with motion (sent to the owner, unpublished), and the בעל עסק זעיר self-check (`osek-zair.html`, 2024-2025 from primary text, 2026 refused). Log: `logs/2026-09-29-channel-loop-tick-14.md`.
 
