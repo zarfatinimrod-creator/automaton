@@ -74,4 +74,18 @@ describe("queue-zero-test", () => {
     });
     expect(out.row).toBeGreaterThan(60);
   });
+
+  it("refuses a Salesforce help-centre page, which reaches the runner as an empty JavaScript shell", () => {
+    for (const url of [
+      "https://support.trolley.com/s/article/Identity-Verification",
+      "https://help.example.com/s/topic/0TO000/payments",
+      "https://acme.my.site.com/help",
+      "https://acme.force.com/articles/x",
+    ]) {
+      expect(() => queueZeroTest({ ...base, url })).toThrow(/cannot render/);
+    }
+    // A plain page on the same host, or an /s/ path that is not a help-centre route, still queues.
+    expect(queueZeroTest({ ...base, url: "https://support.trolley.com/terms" }).row).toBe(3);
+    expect(queueZeroTest({ ...base, url: "https://c.example/s/shop" }).row).toBe(3);
+  });
 });

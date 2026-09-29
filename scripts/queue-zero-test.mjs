@@ -31,6 +31,20 @@ export const URLS = join(REPO_ROOT, "research", "rendered", "urls.txt");
 
 const ROW = /^\| *(\d+) *\|/;
 
+/**
+ * Pages the runner can never render: it fetches without running JavaScript, and these
+ * serve an empty shell that JavaScript fills. Tick 15 spent two render rows on
+ * support.trolley.com/s/article/... and got no article text. Only shells a capture has
+ * shown go here; a guessed entry would refuse a page that renders.
+ */
+const JS_SHELLS = [
+  {
+    // Salesforce Experience Cloud help centres (research/rendered/trolley-identity-verification*, tick 15)
+    test: (u) => /^\/s\/(article|topic|global-search)\//.test(u.pathname) || /\.(force\.com|my\.site\.com)$/.test(u.hostname),
+    why: "a Salesforce Experience Cloud page (/s/article/...), an empty JavaScript shell to the runner (tick 15, support.trolley.com)",
+  },
+];
+
 function cell(text) {
   const t = String(text ?? "").replace(/\s+/g, " ").trim();
   if (!t) throw new Error("empty cell");
@@ -41,6 +55,8 @@ function cell(text) {
 export function queueZeroTest({ zeroTests, urls, candidate, url, slug, settle, note, date }) {
   if (!/^https?:\/\/\S+$/i.test(url ?? "")) throw new Error(`not an http(s) URL: ${url}`);
   if (!/^[a-z0-9][a-z0-9-]*$/.test(slug ?? "")) throw new Error(`slug must be lowercase letters, digits and dashes: ${slug}`);
+  const shell = JS_SHELLS.find((s) => s.test(new URL(url)));
+  if (shell) throw new Error(`the runner cannot render ${url}: ${shell.why}`);
   const listed = urls.split(/\r?\n/).some((l) => l.replace(/^#\s*/, "").split(/\s+/)[0] === url);
   if (listed) throw new Error(`URL already in urls.txt (active or commented): ${url}`);
 
