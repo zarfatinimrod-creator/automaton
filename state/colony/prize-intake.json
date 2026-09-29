@@ -1,5 +1,5 @@
 {
-  "measuredAt": "2026-09-29T04:14:50.691Z",
+  "measuredAt": "2026-09-29T09:21:18.529Z",
   "measuredOn": "2026-09-29",
   "source": "https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json",
   "sourceSha256": "49e374691c73417e00c7a7cb18b7d30375b87bab0368b227db8f975667bec389",
@@ -18,5 +18,43 @@
   "unknownFields": 0,
   "aiRuleFieldInSource": false,
   "openAiAllowedStated": null,
-  "openAiNotForbiddenStated": null
+  "openAiNotForbiddenStated": null,
+  "aiAllowed": {
+    "table": "research/measurements/ai-allowed-events.md",
+    "urlsFile": "research/measurements/ai-allowed-events.urls.txt",
+    "window": [
+      "2026-Q3",
+      "2026-Q4"
+    ],
+    "quarters": [
+      {
+        "quarter": "2026-Q3",
+        "position": "current",
+        "eventsInWindow": 39,
+        "rowsGraded": 0,
+        "qualifying": null,
+        "awaiting": 39,
+        "unsettled": 0
+      },
+      {
+        "quarter": "2026-Q4",
+        "position": "next",
+        "eventsInWindow": 27,
+        "rowsGraded": 0,
+        "qualifying": null,
+        "awaiting": 27,
+        "unsettled": 0
+      }
+    ],
+    "keptOutsideWindow": 0,
+    "untabled": 0,
+    "relisted": 0,
+    "sameEvent": 0,
+    "urlsAwaiting": 101,
+    "urlsRefused": 0,
+    "kill": {
+      "fired": null,
+      "quarters": []
+    }
+  }
 }

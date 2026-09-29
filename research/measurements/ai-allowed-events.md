@@ -15,7 +15,7 @@
 
 **The kill.** §13 stops this instrument after two consecutive quarters under 3 qualifying events. It is computed only from closed quarters whose every row is graded; a quarter with an ungraded row never counts toward it. A closed quarter's rows are kept below as the record of its last reading.
 
-Reading: 2026-09-29T08:14:03.886Z (UTC day 2026-09-29) of <https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json>, sha256 `49e374691c73417e00c7a7cb18b7d30375b87bab0368b227db8f975667bec389`.
+Reading: 2026-09-29T09:21:18.529Z (UTC day 2026-09-29) of <https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json>, sha256 `49e374691c73417e00c7a7cb18b7d30375b87bab0368b227db8f975667bec389`.
 
 ## Summary
 
