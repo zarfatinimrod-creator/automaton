@@ -17,7 +17,7 @@ const leadOf = (html) => /<p class="lead">([\s\S]*?)<\/p>/.exec(html)?.[1] ?? ''
 const NO_DETAILS = 'התוצאה מוצגת מיד, בלי להשאיר פרטים ובלי שיחה.';
 
 /** The tool pages whose result is a number or a verdict shown on the spot. */
-const TOOLS = ['vat.html', 'osek-patur.html', 'net-salary.html', 'allocation.html', 'registrar-fee.html', 'pcn874.html'];
+const TOOLS = ['vat.html', 'osek-patur.html', 'osek-zair.html', 'net-salary.html', 'allocation.html', 'registrar-fee.html', 'pcn874.html'];
 
 describe('the leads', () => {
   it('pcn874.html opens with the moment it is for: before sending the detailed report', () => {
@@ -28,6 +28,10 @@ describe('the leads', () => {
     expect(textOf(leadOf(read('osek-patur.html')))).toMatch(/^כמה נשאר לכם עד התקרה השנה, ומתי כדאי להיערך\./);
   });
 
+  it('osek-zair.html opens with the question the reader has: does the 30% track leave less taxable income', () => {
+    expect(textOf(leadOf(read('osek-zair.html')))).toMatch(/^בדקו אם ניכוי של 30% מהמחזור משאיר לכם הכנסה חייבת נמוכה יותר מדיווח רגיל/);
+  });
+
   it('every tool page says once, right after its lead, that the result is immediate with no details and no call', () => {
     for (const page of TOOLS) {
       const html = read(page);
@@ -36,7 +40,7 @@ describe('the leads', () => {
       const lead = /<p class="lead">[\s\S]*?<\/p>/.exec(html)[0];
       const afterLead = html.slice(html.indexOf(lead) + lead.length, html.indexOf(NO_DETAILS));
       // Only the source line (N8) may stand between the lead and this line.
-      expect(afterLead.replace(/<p class="note[^"]*" id="(?:ceiling|rate|threshold)-(?:source|stale)"[^>]*>[\s\S]*?<\/p>/g, '').trim(), page).toBe('<p class="note">');
+      expect(afterLead.replace(/<p class="note[^"]*" id="(?:ceiling|rate|threshold|track)-(?:source|stale)"[^>]*>[\s\S]*?<\/p>/g, '').trim(), page).toBe('<p class="note">');
     }
   });
 
