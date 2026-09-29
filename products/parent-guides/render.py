@@ -18,10 +18,13 @@ Order of work, and where it stops:
                         for that; a scene that would need more -> exit 4, and the fix is less text, an earlier reveal
                         or more narration, not a longer silent still.
   4. motion           - compose.Video draws every video frame from the scenes' layers and the spec's `motion` keys
-                        (motion.py): texts ease in at the narration line that speaks them, the illustration plays
-                        its beats, scenes slide in (<= 300 ms), the progress bar fills continuously, and the hook's
-                        question moves from 0.0 s. Nothing is drawn outside y 180-1500. Frames go to ffmpeg as raw
-                        RGB, so a re-render is byte-identical.
+                        (motion.py): texts ease in at the narration line that speaks them, a highlight can run
+                        along a step chain while it is spoken, the illustration plays its beats (none hidden under
+                        a slide), scenes slide a short way and cross-fade (<= 300 ms), the progress bar fills
+                        continuously, the hook's question is on screen whole from the first frame while its promise,
+                        phone and "6" move from 0.0 s, and the end card fades in and then stays fully opaque for
+                        end_card_hold_s. Nothing is drawn outside y 180-1500. Frames go to ffmpeg as raw RGB, so a
+                        re-render is byte-identical.
      ffmpeg           - H.264 yuv420p, BT.709 matrix and colour tags (phones and browsers assume BT.709 for HD;
                         an untagged BT.601 encode shifts the palette), 30 fps; AAC 48 kHz stereo, the mono
                         narration copied to both channels and loudness-normalised in two passes to -14 LUFS
@@ -89,21 +92,22 @@ def silent_duration(scene: dict, title_seen: bool = False) -> float:
     return quantize(max(MIN_SCENE_S, reading_time(scene, title_seen)) + float(scene.get("hold_extra_s", 0)))
 
 
-def revealed_reading_time(scene: dict, title_seen: bool, cues: list[dict]) -> float:
+def revealed_reading_time(scene: dict, title_seen: bool, cues: list[dict], slide_in: bool = False) -> float:
     """Seconds until everything is read when each text can only be read once it has appeared (motion.py): the
     reading rule applied in reveal order. Equals reading_time() when everything is on screen from the start."""
-    return M.reading_need(M.reading_elements(scene, title_seen, cues), CPS)
+    return M.reading_need(M.reading_elements(scene, title_seen, cues, slide_in), CPS)
 
 
-def scene_timing(narrated_s: float, scene: dict, title_seen: bool = False, cues: list[dict] | None = None) -> dict:
+def scene_timing(narrated_s: float, scene: dict, title_seen: bool = False, cues: list[dict] | None = None,
+                 slide_in: bool = False) -> dict:
     """A narrated scene's length. narrated_s is lead + lines + gaps + tail. The scene lasts until its text can be
     read at CPS - counted from when each text appears, given the cues - and until its motion has come to rest; the
     silence that adds after the narration is the hold, and a hold over MAX_HOLD_S marks the scene too dense
     (render.py refuses it)."""
     base = narrated_s + float(scene.get("hold_extra_s", 0))
     need = reading_time(scene, title_seen)
-    revealed = revealed_reading_time(scene, title_seen, cues) if cues else need
-    rest = M.motion_end(scene, cues) if cues else 0.0
+    revealed = revealed_reading_time(scene, title_seen, cues, slide_in) if cues else need
+    rest = M.motion_end(scene, cues, slide_in) if cues else 0.0
     dur = quantize(max(base, need, revealed, rest))
     return {"duration": dur, "narrated_s": round(narrated_s, 3), "reading_s": round(need, 2),
             "reading_revealed_s": round(revealed, 2), "motion_rest_s": round(rest, 2),
@@ -122,19 +126,25 @@ def silent_cues(scene: dict, dur: float) -> list[dict]:
     return cues
 
 
-def silent_scene(scene: dict, title_seen: bool = False) -> tuple[float, list[dict], dict]:
+def silent_scene(scene: dict, title_seen: bool = False, slide_in: bool = False) -> tuple[float, list[dict], dict]:
     """A silent scene: silent_duration(), stretched (whole frames) until its text can be read in reveal order and
     its motion has come to rest, with the captions spread over the final length."""
     dur = silent_duration(scene, title_seen)
     for _ in range(60):
         cues = silent_cues(scene, dur)
-        revealed = revealed_reading_time(scene, title_seen, cues)
-        need = max(revealed, M.motion_end(scene, cues))
+        revealed = revealed_reading_time(scene, title_seen, cues, slide_in)
+        need = max(revealed, M.motion_end(scene, cues, slide_in))
         if need <= dur + 1e-9:
             break
         dur = quantize(need)
     return dur, cues, {"duration": dur, "reading_s": round(reading_time(scene, title_seen), 2),
                        "reading_revealed_s": round(revealed, 2)}
+
+
+def end_card_duration(spec: dict) -> float:
+    """The end card's length: its cross-fade in (motion.TRANSITION_S) and then end_card_hold_s fully opaque, so the
+    AI and non-affiliation lines are readable for the whole hold the script gives them."""
+    return quantize(float(spec.get("end_card_hold_s", 4.5)) + M.TRANSITION_S)
 
 
 def srt_time(t: float) -> str:
@@ -368,7 +378,7 @@ def main(argv=None) -> int:
                 if j < len(lines) - 1:
                     parts.append(np.zeros(int(GAP_S * sr), np.float32))
                     t += GAP_S
-            timing = scene_timing(t + TAIL_S, sc, seen[i], cues)
+            timing = scene_timing(t + TAIL_S, sc, seen[i], cues, slide_in=i > 0)
             dur = timing["duration"]
             if timing["too_dense"]:
                 dense.append(f"{sc['id']}: its text needs {timing['reading_revealed_s']:.1f} s to read at {CPS:.0f} "
@@ -381,7 +391,7 @@ def main(argv=None) -> int:
             audio = np.concatenate([audio, np.zeros(int(round(dur * sr)) - len(audio), np.float32)])
             track.append(audio)
         else:
-            dur, cues, timing = silent_scene(sc, seen[i])
+            dur, cues, timing = silent_scene(sc, seen[i], slide_in=i > 0)
         timeline.append({"id": sc["id"], "start": round(t0, 3), "duration": dur, "cues": cues, "timing": timing,
                          "title_seen": seen[i]})
         all_cues += [{**c, "start": round(t0 + c["start"], 3), "end": round(t0 + c["end"], 3)} for c in cues]
@@ -391,7 +401,7 @@ def main(argv=None) -> int:
         for p in dense:
             print("  - " + p, file=sys.stderr)
         return 4
-    end_dur = quantize(float(spec.get("end_card_hold_s", 4.5)))
+    end_dur = end_card_duration(spec)
     timeline.append({"id": "end-card", "start": round(t0, 3), "duration": end_dur, "cues": []})
     if voiced:
         track.append(np.zeros(int(round(end_dur * sr)), np.float32))
@@ -444,18 +454,23 @@ def main(argv=None) -> int:
                    else {"chars_per_second": CPS, "min_scene_s": MIN_SCENE_S}),
         "motion": {"reveal_s": M.REVEAL_S, "reveal_lead_s": M.REVEAL_LEAD_S, "stagger_s": M.STAGGER_S,
                    "rise_px": M.RISE_PX, "transition_s": M.TRANSITION_S,
-                   "transition": "slide in from the left, previous scene out to the right (right-to-left "
-                                 "forward); later pages of one step keep header and title still; the end card "
-                                 "cross-fades",
+                   "slide_frac": M.SLIDE_FRAC, "beat_after_slide_s": M.BEAT_AFTER_SLIDE_S,
+                   "highlight_s": list(M.HIGHLIGHT_S),
+                   "transition": "slide in from the left by 30% of the width while cross-fading, previous scene "
+                                 "out to the right (right-to-left forward); later pages of one step keep header "
+                                 "and title still; no beat starts before the slide rests; the end card "
+                                 "cross-fades in and then holds fully opaque for end_card_hold_s",
                    "progress_bar": "the current step's segment fills continuously across its pages",
-                   "hook": "the first scene's question, its 'start' items and beats move from 0.0 s",
+                   "hook": "the question is on screen, whole, from the first frame; the promise, the phone and "
+                           "the '6' move from 0.0 s",
                    "drawn_band_y": [compose.BAND[1], compose.BAND[3]],
                    "frames": video.n_frames, "schedule": video.schedule()},
         "font": {**FONT, "sha256": sha256(HERE / FONT["file"])},
         "tools": tool_versions(),
         "scenes": [],
         "end_card": {"lines": [ai_line if ln == spec["ai_line"] else ln for ln in S.end_card_lines(spec)],
-                     "duration_s": end_dur, "start_s": timeline[-1]["start"],
+                     "duration_s": end_dur, "start_s": timeline[-1]["start"], "fade_in_s": M.TRANSITION_S,
+                     "fully_opaque_s": round(end_dur - M.TRANSITION_S, 3),
                      "frame": f"frames/{frames[-1].name}",
                      "evidence": [evidence_record(ev, root) for ev in spec.get("end_card_evidence", [])]},
         "dropped_for_lack_of_source": spec.get("dropped_for_lack_of_source", []),

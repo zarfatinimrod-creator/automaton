@@ -281,15 +281,18 @@ def scene_layers(scene: dict, spec: dict, engine: str, ai_line: str, filled: flo
         return [min(b[0] for b in bs), min(b[1] for b in bs), max(b[2] for b in bs), max(b[3] for b in bs)]
 
     item_boxes: dict[int, list] = {}
+    item_lines: dict[int, list] = {}  # each body item's text lines, top first (for the highlight marker)
     for prefix, group in (("body", blocks), ("footnote", feet)):
         for k, b in enumerate(group):
             item_boxes[b["item"]] = union([bx for n, bx, _ in fr.boxes
                                            if n == f"{prefix}{k}" or n.startswith(f"{prefix}{k}[")])
+            item_lines[b["item"]] = [list(bx) for n, bx, _ in fr.boxes if n.startswith(f"{prefix}{k}[")]
     report = {"engine": engine, "body_size": size, "title_size": tsize, "title_lines": tlines,
               "body_lines": [b["lines"] for b in blocks], "footnotes": [b["lines"] for b in feet],
               "illustration_box": list(art_box) if art_box else None,
               "boxes": [(n, list(b)) for n, b, _ in fr.boxes],
               "item_boxes": dict(sorted(item_boxes.items())),
+              "item_lines": dict(sorted(item_lines.items())),
               "title_box": union([bx for n, bx, _ in fr.boxes if n.startswith("title[")]),
               "art": art_spec, "texts": dict(fr.texts), "problems": problems}
     return fr, report

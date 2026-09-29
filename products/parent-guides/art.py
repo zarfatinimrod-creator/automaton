@@ -10,9 +10,17 @@ space left between the body text and the bottom of the safe area.
 
 Motion. Every illustration takes `beats`: {beat name: linear progress 0..1} for the beats motion.ART_BEATS lists
 for its kind (a toggle sliding off, a list item highlighting, a lock closing, parts popping in). A missing beat,
-or beats=None, is 1.0: the settled picture, which is the still picture of the first cut. Motion only moves, grows
-or recolours what the still picture shows; it adds nothing the still does not (no digit count on the keypad, no
-tick on a card the source does not tick). Everything stays on the layer, so it can never leave its box.
+or beats=None, is 1.0: the settled picture, which is the scene's layout-checked still. Motion only moves, grows or
+recolours what the still picture shows, or swells a soft halo behind the part that acts while it acts (gone before
+and after); it adds nothing the still does not (no digit count on the keypad, no tick on a card the source does not
+tick). Every part stays inside its layer at every beat (tests/test_motion.py checks the layer's edges), so nothing
+is cut off by the box.
+
+The drawings at rest are v1's, with five changes made on review (29.9.2026): the s4 switch is larger and search off
+is also shown as the struck-out magnifier s2 taught, the smaller grid's tiles are the size of the loose grid's (so it
+reads "fewer", not "bigger"), the timer's slider knob is larger, the blocking picture gains a stack behind the
+greyed tile for "or a whole channel", and the recap's two rows of icons sit 12 px closer, so their pop stays inside
+the layer.
 """
 
 from __future__ import annotations
@@ -26,6 +34,7 @@ from canvas import (AMBER, AMBER_BG, BAR, DIM, INK, LINE, MUTED, SKY_SOFT, TEAL,
 from motion import ease_back, ease_in_out, ease_out, lerp, lerp_rgb, window
 
 TINY = 0.05  # a part scaled below this is not drawn (it is still invisible, and tiny shapes can invert)
+HALO = TEAL_MID
 
 # ---------------------------------------------------------------- primitives
 
@@ -65,8 +74,9 @@ def key_icon(fr: Frame, cx, cy, size, color=TEAL):
     fr.rect((x_end + t * 2, cy, x_end + t * 3, cy + size * 0.14), fill=color)
 
 
-def calendar_icon(fr: Frame, x0, y0, w, h, check=1.0):
-    """check: scale of the tick on one day (0 = a plain dot like the others, 1 = the tick badge)."""
+def calendar_icon(fr: Frame, x0, y0, w, h, check=1.0, glow=1.0):
+    """check: scale of the tick on one day (0 = a plain dot like the others, 1 = the tick badge); glow: a halo swells
+    behind that day while 0 < glow < 1."""
     fr.rrect((x0, y0, x0 + w, y0 + h), w * 0.1, fill=WHITE, outline=INK, width=5)
     fr.rrect((x0, y0, x0 + w, y0 + h * 0.26), w * 0.1, fill=TEAL)
     fr.rect((x0, y0 + h * 0.16, x0 + w, y0 + h * 0.26), fill=TEAL)
@@ -79,6 +89,7 @@ def calendar_icon(fr: Frame, x0, y0, w, h, check=1.0):
         for c in range(cols):
             x, y = gx0 + c * dx, gy0 + r * dy
             if (r, c) == (1, 2):
+                halo(fr, x, y, w * 0.26, glow)
                 if check < 1:
                     fr.circle(x, y, w * 0.035, fill=BAR)
                 if check > TINY:
@@ -209,13 +220,14 @@ def stopwatch(fr: Frame, cx, cy, r, sweep=1.0):
     fr.circle(cx, cy, r * 0.09, fill=INK)
 
 
-def slider(fr: Frame, x0, x1, cy, frac):
-    """RTL slider: fills from the right."""
+def slider(fr: Frame, x0, x1, cy, frac, glow=1.0):
+    """RTL slider: fills from the right. glow: a halo swells behind the knob while 0 < glow < 1 (it is moving)."""
     h = 16
     fr.rrect((x0, cy - h / 2, x1, cy + h / 2), h / 2, fill=BAR)
     kx = x1 - (x1 - x0) * frac
+    halo(fr, kx, cy, 64, glow)
     fr.rrect((kx, cy - h / 2, x1, cy + h / 2), h / 2, fill=TEAL)
-    fr.circle(kx, cy, 26, fill=WHITE, outline=TEAL, width=6)
+    fr.circle(kx, cy, 34, fill=WHITE, outline=TEAL, width=7)
 
 
 def bubble(fr: Frame, box, text, size=46, scale=1.0):
@@ -264,6 +276,29 @@ def arrow_left(fr: Frame, x_from, x_to, y, width, tip, back, half, drawn=1.0):
     fr.poly([(x - tip, y), (x + back, y - half), (x + back, y + half)], fill=MUTED)
 
 
+def halo(fr: Frame, cx, cy, r, p: float, fill=HALO):
+    """A soft disc behind a part while it acts: it swells from nothing to radius r and back as p runs 0..1, and is not
+    drawn before or after, so the settled picture has no trace of it."""
+    if 0 < p < 1:
+        rr = r * math.sin(math.pi * p)
+        if rr > 1:
+            fr.circle(cx, cy, rr, fill=fill)
+
+
+def with_alpha(fr: Frame, a: float, draw):
+    """Draw on a transparent layer of fr's size, then composite it onto fr at opacity a (a fade-in for a group of
+    parts). At a >= 1 it draws straight onto fr, so the settled picture takes the same path as the still."""
+    if a >= 1:
+        return draw(fr)
+    tmp = Frame(fr.engine, size=(fr.w, fr.h), bg=(0, 0, 0, 0), mode="RGBA")
+    out = draw(tmp)
+    if a > 0:
+        q = round(a * 255)
+        tmp.img.putalpha(tmp.img.getchannel("A").point([(v * q + 127) // 255 for v in range(256)]))
+        fr.img.alpha_composite(tmp.img)
+    return out
+
+
 # ---------------------------------------------------------------- illustrations (one per scene kind)
 
 
@@ -276,11 +311,17 @@ def _beat(beats, name) -> float:
 
 
 def hook(engine, labels, beats=None):
-    """A phone rising into place with a blank screen, and the video's own count ("6") popping in on a yellow disc."""
+    """A phone fading in as it rises into place with a blank screen, and the video's own count ("6") popping in on a
+    yellow disc, which swells once more when the narration says "שישה". The phone rises only 16 px, inside the
+    layer's 20 px of headroom below it, so no frame shows it cut off at the bottom."""
     fr = _layer(engine, 760, 760)
-    dy = (1 - ease_out(_beat(beats, "phone"))) * 160
-    sb = phone(fr, 200, 20 + dy, 380, 720)
-    fr.rrect((sb[0] + 40, sb[1] + 110, sb[2] - 40, sb[1] + 330), 26, fill=SKY_SOFT)
+    ph = ease_out(_beat(beats, "phone"))
+
+    def draw_phone(f):
+        sb = phone(f, 200, 20 + (1 - ph) * 16, 380, 720)  # 16 of the 20 px below the phone
+        f.rrect((sb[0] + 40, sb[1] + 110, sb[2] - 40, sb[1] + 330), 26, fill=SKY_SOFT)
+        return sb
+    sb = with_alpha(fr, ph, draw_phone)
     rows = _beat(beats, "rows")
     for i, wdt in enumerate((230, 170, 200)):  # plain lines of text filling in from the right
         e = ease_out(window(rows, i * 0.2, i * 0.2 + 0.6))
@@ -289,7 +330,8 @@ def hook(engine, labels, beats=None):
         y = sb[1] + 380 + i * 60
         fr.rrect((sb[2] - 40 - max(22, wdt * e), y, sb[2] - 40, y + 22), 11, fill=BAR)
     label = labels[0] if labels else ""
-    k = ease_back(_beat(beats, "pop"))
+    # the pop's overshoot (~1.1) and the pulse (1.12) never meet in the video; capped so they cannot leave the layer
+    k = min(1.13, ease_back(_beat(beats, "pop")) * (1 + 0.12 * math.sin(math.pi * _beat(beats, "pulse"))))
     if k > TINY:
         fr.circle(580, 190, 150 * k, fill=YELLOW)
         fr.circle(580, 190, 150 * k, outline=WHITE, width=10)
@@ -298,7 +340,8 @@ def hook(engine, labels, beats=None):
 
 
 def account(engine, labels, beats=None):
-    """Sign-in card (a key, then a tick), the calendar's date tick, and the profile avatars popping in one by one."""
+    """Sign-in card (a key, then a tick), the calendar's date tick, the profile avatars popping in 0.4 s apart, and
+    then the "עד 8" pill."""
     fr = _layer(engine, 900, 780)
     sb = phone(fr, 500, 20, 380, 740)
     # sign-in card: key and a check, no brand marks
@@ -310,7 +353,8 @@ def account(engine, labels, beats=None):
     k = ease_back(window(si, 0.4, 1.0))
     if k > TINY:
         check_badge(fr, sb[0] + 88, sb[1] + 185, 38 * k)
-    calendar_icon(fr, sb[0] + 80, sb[1] + 340, 200, 200, check=ease_back(_beat(beats, "calendar")))
+    cal = _beat(beats, "calendar")
+    calendar_icon(fr, sb[0] + 80, sb[1] + 340, 200, 200, check=ease_back(window(cal, 0, 0.8)), glow=cal)
     for i, wdt in enumerate((220, 160)):
         y = sb[1] + 600 + i * 50
         fr.rrect((sb[2] - 36 - wdt, y, sb[2] - 36, y + 20), 10, fill=BAR)
@@ -319,10 +363,10 @@ def account(engine, labels, beats=None):
     for i, ((cx, cy), shape, fill) in enumerate(zip(((350, 150), (150, 150), (350, 360), (150, 360)),
                                                     ("star", "moon", "leaf", "plus"),
                                                     (TEAL_SOFT, YELLOW_SOFT, SKY_SOFT, WHITE))):
-        k = ease_back(window(pr, i * 0.14, i * 0.14 + 0.45))
+        k = ease_back(window(pr, i * 0.4 / 1.65, (i * 0.4 + 0.45) / 1.65))  # 0.4 s apart over the 1.65 s beat
         if k > TINY:
             avatar(fr, cx, cy, 82 * k, shape, fill)
-    k = ease_back(window(pr, 0.55, 1.0))
+    k = ease_back(_beat(beats, "limit"))
     if labels and k > TINY:
         fr.rrect((250 - 140 * k, 560 - 50 * k, 250 + 140 * k, 560 + 50 * k), 50 * k, fill=TEAL)
         fr.text((250, 560 + 2 * k), labels[0], max(1, round(58 * k)), 700, WHITE, anchor="mm")
@@ -358,8 +402,10 @@ def content(engine, labels, beats=None):
     k = ease_back(window(sel, 0, 0.5))
     if k > TINY:
         checklist_icon(fr, 230, 200, 200 * k)
+    nosearch = _beat(beats, "nosearch")
+    halo(fr, 215, 565, 130, nosearch)
     magnifier(fr, 205, 555, 70, color=MUTED)
-    ns = ease_out(_beat(beats, "nosearch"))
+    ns = ease_out(window(nosearch, 0, 0.75))
     if ns > 0:
         slash(fr, 230, 580, 120, color=INK, width=18, drawn=ns)
     return fr
@@ -384,7 +430,9 @@ def passcode(engine, labels, beats=None):
     A light runs over the keypad, the sum card pops in beside "או", and the padlock opens: either one opens the
     settings."""
     fr = _layer(engine, 900, 560)
-    padlock(fr, 720, 200, 150, open_=ease_out(_beat(beats, "open")))
+    op = _beat(beats, "open")
+    halo(fr, 720, 175, 150, op)
+    padlock(fr, 720, 200, 150, open_=ease_out(window(op, 0, 0.75)))
     keypad(fr, 720, 400, 62, 22, sweep=_beat(beats, "keys"))
     sum_label = next((l for l in labels if any(ch.isdigit() for ch in l)), "")
     word = next((l for l in labels if l != sum_label), "")
@@ -398,8 +446,9 @@ def passcode(engine, labels, beats=None):
 
 
 def search(engine, labels, beats=None):
-    """A loose grid of plain tiles under a magnifier; a generic switch slides off; an arrow draws out leftwards to a
-    smaller grid. The smaller grid carries nothing: fewer, not "checked"."""
+    """A loose grid of plain tiles under a magnifier; a generic switch slides off and the magnifier is struck out, as
+    in step 2 (no search); an arrow draws out leftwards to a smaller grid of the same tiles: fewer, not bigger, and
+    carrying nothing: fewer, not "checked"."""
     fr = _layer(engine, 900, 640)
     grid = _beat(beats, "grid")
     fills = (TEAL_SOFT, YELLOW_SOFT, SKY_SOFT, SKY_SOFT, TEAL_SOFT, YELLOW_SOFT, YELLOW_SOFT, SKY_SOFT, TEAL_SOFT)
@@ -413,19 +462,25 @@ def search(engine, labels, beats=None):
     k = ease_back(window(grid, 0.4, 1.0))
     if k > TINY:
         magnifier(fr, 690, 230, 95 * k, color=INK)
-    # the switch that turns search off, then an arrow leftwards (RTL reading order)
-    toggle(fr, 400, 250, 120, 62, on=1 - ease_in_out(_beat(beats, "switch")))
+    # the switch that turns search off (a halo behind it while it slides), and the magnifier struck out
+    sw = _beat(beats, "switch")
+    halo(fr, 406, 170, 100, sw)
+    toggle(fr, 316, 170, 180, 93, on=1 - ease_in_out(window(sw, 0, 0.55)))
+    st = ease_out(window(sw, 0.35, 1.0))
+    if st > 0:
+        slash(fr, 724, 264, 163, color=INK, width=24, drawn=st)
+    # then an arrow leftwards (RTL reading order) to four tiles the size of the grid's nine
     fewer = _beat(beats, "fewer")
     a = ease_out(window(fewer, 0, 0.4))
     if a > TINY:
-        arrow_left(fr, 505, 415, 350, 10, tip=20, back=15, half=28, drawn=a)
+        arrow_left(fr, 500, 330, 330, 10, tip=20, back=15, half=28, drawn=a)
     for i, f in enumerate((TEAL_SOFT, YELLOW_SOFT, SKY_SOFT, TEAL_SOFT)):
         c, r = i % 2, i // 2
-        x1 = 350 - c * 170
-        y0 = 150 + r * 190
+        x1 = 300 - c * 128
+        y0 = 190 + r * 150
         k = ease_back(window(fewer, 0.3 + i * 0.1, 0.7 + i * 0.1))
         if k > TINY:
-            tile(fr, (x1 - 150, y0, x1, y0 + 150), f, scale=k)
+            tile(fr, (x1 - 112, y0, x1, y0 + 120), f, scale=k)
     return fr
 
 
@@ -464,18 +519,21 @@ def history(engine, labels, beats=None):
 
 
 def timer(engine, labels, beats=None):
-    """The stopwatch sweeps to the time set and the slider moves to it; at the end the phone screen dims, its
-    padlock closes and the speech bubble pops up."""
+    """The stopwatch starts to sweep; when the slider moves (choosing the time) the stopwatch's sector follows it to
+    the time set; at the end the speech bubble pops up (the message), then the phone screen dims and its padlock
+    closes (viewing stops)."""
     fr = _layer(engine, 900, 760)
-    stopwatch(fr, 230, 250, 150, sweep=ease_out(_beat(beats, "sweep")))
-    slider(fr, 70, 400, 520, lerp(0.12, 0.62, ease_in_out(_beat(beats, "slide"))))
+    slide = _beat(beats, "slide")
+    se = ease_in_out(window(slide, 0, 0.8))
+    stopwatch(fr, 230, 250, 150, sweep=lerp(0.35 * ease_out(_beat(beats, "sweep")), 1.0, se))
+    slider(fr, 70, 400, 520, lerp(0.12, 0.62, se), glow=slide)
     lock = _beat(beats, "lock")
-    dim = ease_in_out(window(lock, 0, 0.5))
+    dim = ease_in_out(window(lock, 0, 0.6))
     sb = phone(fr, 500, 20, 380, 720, screen=lerp_rgb(WHITE, DIM, dim))
     lock_colour = lerp_rgb(TEAL, WHITE, dim)
     padlock(fr, (sb[0] + sb[2]) / 2, sb[1] + 250, 130, color=lock_colour, body=lock_colour,
-            open_=1 - ease_out(window(lock, 0.2, 0.7)))
-    k = ease_back(window(lock, 0.45, 1.0))
+            open_=1 - ease_out(window(lock, 0.2, 1.0)))
+    k = ease_back(_beat(beats, "message"))
     if labels and k > TINY:
         bubble(fr, (sb[0] + 20, sb[1] + 420, sb[2] - 20, sb[1] + 530), labels[0], 46, scale=k)
     return fr
@@ -483,7 +541,8 @@ def timer(engine, labels, beats=None):
 
 def block(engine, labels, beats=None):
     """Blocking: a video tile whose generic three-dot button is tapped, a plain two-row menu that opens, and an
-    arrow to the same tile greyed out with a ban sign."""
+    arrow to the same tile greyed out with a ban sign; then two more greyed tiles rise from behind it and the ban
+    sign swells (the video, or a whole channel)."""
     fr = _layer(engine, 900, 600)
     # the video tile and its generic three-dot button (top corner, left in RTL)
     fr.rrect((470, 30, 870, 270), 24, fill=SKY_SOFT)
@@ -509,12 +568,18 @@ def block(engine, labels, beats=None):
             fr.text((770, cy + 16), lab, 46, 600, INK)
             if i == 0:
                 fr.line([(530, cy + 55), (840, cy + 55)], LINE, 3)
-    # outcome of blocking: the tile greys out
-    bl = _beat(beats, "blocked")
+    # outcome of blocking: the tile greys out; for a channel, a stack of greyed tiles rises from behind it
+    bl, ch = _beat(beats, "blocked"), _beat(beats, "channel")
+    rise = ease_out(window(ch, 0, 0.7))
+    if rise > 0:
+        for depth, half_w in ((2, 144), (1, 162)):  # the back card first
+            dy = 22 * depth * rise
+            fr.rrect((220 - half_w, 130 - dy, 220 + half_w, 370 - dy), 24, fill=BAR, outline=WHITE, width=5)
     k = ease_back(window(bl, 0.3, 0.8))
     if k > TINY:
-        fr.rrect((220 - 180 * k, 250 - 120 * k, 220 + 180 * k, 250 + 120 * k), 24 * k, fill=BAR)
-    k = ease_back(window(bl, 0.5, 1.0))
+        fr.rrect((220 - 180 * k, 250 - 120 * k, 220 + 180 * k, 250 + 120 * k), 24 * k, fill=BAR,
+                 outline=WHITE if rise > 0 else None, width=5 if rise > 0 else 0)
+    k = ease_back(window(bl, 0.5, 1.0)) * (1 + 0.15 * math.sin(math.pi * window(ch, 0.3, 1.0)))
     if k > TINY:
         fr.circle(220, 250, 68 * k, fill=WHITE)
         ban_icon(fr, 220, 250, 52 * k)
@@ -525,8 +590,8 @@ def block(engine, labels, beats=None):
 
 
 def report(engine, labels, beats=None):
-    """Reporting: a flag and three plain reason chips growing in; signed in, the reported video is also blocked (a
-    key, then a greyed tile with the ban sign)."""
+    """Reporting: a flag and three plain reason chips growing in; signed in (a key pops in), the reported video is
+    also blocked (then a greyed tile with the ban sign)."""
     fr = _layer(engine, 900, 560)
     chips = _beat(beats, "chips")
     k = ease_back(window(chips, 0, 0.45))
@@ -541,15 +606,15 @@ def report(engine, labels, beats=None):
         fr.rrect((880 - w, y, 880, y + 70), 35, fill=WHITE, outline=TEAL, width=4)
         if w - 88 > 16:
             fr.rrect((880 - w + 44, y + 27, 836, y + 43), 8, fill=BAR)
-    signed = _beat(beats, "signed")
-    k = ease_back(window(signed, 0, 0.5))
+    k = ease_back(_beat(beats, "signed"))
     if k > TINY:
         fr.circle(360, 110, 80 * k, fill=TEAL_SOFT)
         key_icon(fr, 360, 110, 110 * k)
-    k = ease_back(window(signed, 0.35, 0.85))
+    blocked = _beat(beats, "blocked")
+    k = ease_back(window(blocked, 0, 0.6))
     if k > TINY:
         fr.rrect((315 - 145 * k, 350 - 100 * k, 315 + 145 * k, 350 + 100 * k), 24 * k, fill=BAR)
-    k = ease_back(window(signed, 0.5, 1.0))
+    k = ease_back(window(blocked, 0.25, 1.0))
     if k > TINY:
         fr.circle(315, 350, 60 * k, fill=WHITE)
         ban_icon(fr, 315, 350, 46 * k)
@@ -571,7 +636,7 @@ def recap(engine, labels, beats=None):
         if k <= TINY:
             continue
         cx = 720 - (i % 3) * 270
-        cy = 80 + (i // 3) * 170
+        cy = 86 + (i // 3) * 158  # rows 14 px inside the layer at rest, so the pop's overshoot stays inside too
         fr.circle(cx, cy, 72 * k, fill=TEAL_SOFT)
         draw(cx, cy, k)
     return fr

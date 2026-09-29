@@ -1,7 +1,7 @@
 {
   "format": "parent-guide/1",
   "status": "SAMPLE - held unpublished; nothing is uploaded anywhere",
-  "script_note": "The script as given on 28.9.2026, revised on 29.9.2026 after three reviews (facts; mandate; picture and sound): logs/2026-09-29-yt-kids-sample-review-fixes.md lists every change and every rejected point. Scene fields id / on_screen_title / on_screen_body / narration / sources / visual, end_card and dropped_for_lack_of_source are the script; evidence (machine-checked quotes, file:line), derived_numbers, illustration, layout, motion (added 29.9.2026 for v2: which narration line reveals each body item and starts each illustration beat; see motion.py) and captions (the narration in standard spelling for the .srt; spec.py checks that each word differs from the unvowelised narration only by added ו or י, with YouTube Kids in Latin letters) are for the renderer. Scenes that share a step number are pages of one step.",
+  "script_note": "The script as given on 28.9.2026, revised on 29.9.2026 after three reviews (facts; mandate; picture and sound): logs/2026-09-29-yt-kids-sample-review-fixes.md lists every change and every rejected point. Scene fields id / on_screen_title / on_screen_body / narration / sources / visual, end_card and dropped_for_lack_of_source are the script; evidence (machine-checked quotes, file:line), derived_numbers, illustration, layout, motion (added 29.9.2026 for v2: which narration line, or which point in a line, reveals each body item, runs a highlight and starts each illustration beat; see motion.py) and captions (the narration in standard spelling for the .srt; spec.py checks that each word differs from the unvowelised narration only by added ו or י, with YouTube Kids in Latin letters) are for the renderer. Scenes that share a step number are pages of one step. One change of order after the v2 reviews (29.9.2026, logs/2026-09-29-parent-guides-v2-review-fixes.md): in s6b-report the second and third body items were swapped so each is on screen with the narration line that says it; no word changed.",
   "language": "he",
   "audience": "Israeli parents; addressed in the plural",
   "brand": "מהודק",
@@ -32,7 +32,7 @@
       ],
       "layout": {"styles": {"0": "lead"}},
       "illustration": {"kind": "hook", "labels": ["6"]},
-      "motion": {"reveal": ["start", 1], "art": {"phone": "start", "pop": "start", "rows": 1}}
+      "motion": {"reveal": ["start", [0, 1.2]], "art": {"phone": "start", "pop": "start", "rows": [0, 1.0], "pulse": 1}}
     },
     {
       "id": "s1-account-profile",
@@ -57,7 +57,7 @@
       ],
       "derived_numbers": [],
       "illustration": {"kind": "account", "labels": ["עד 8"]},
-      "motion": {"reveal": [0, 1, 2], "art": {"signin": 0, "calendar": 1, "profiles": 2}}
+      "motion": {"reveal": [0, [0, "end"], 2], "art": {"signin": 0, "calendar": [0, "end"], "profiles": 2, "limit": [2, 1.8]}}
     },
     {
       "id": "s2-content-setting",
@@ -209,7 +209,7 @@
       ],
       "derived_numbers": [],
       "illustration": {"kind": "timer", "labels": ["הזמן נגמר!"]},
-      "motion": {"reveal": [0, 2, 3], "art": {"sweep": 0, "slide": 1, "lock": 2}}
+      "motion": {"reveal": [0, 2, 3], "highlight": {"2": [3, 0.6]}, "art": {"sweep": 0, "slide": 1, "message": [2, 1.5], "lock": [2, 2.7]}}
     },
     {
       "id": "s6-block",
@@ -244,12 +244,12 @@
       "derived_numbers": [],
       "layout": {"styles": {"0": "quote"}},
       "illustration": {"kind": "block", "labels": ["חסימה", "דיווח"]},
-      "motion": {"reveal": [0, 2], "art": {"tap": 1, "menu": 2, "blocked": 3}}
+      "motion": {"reveal": [0, 1], "art": {"tap": 1, "menu": 2, "blocked": 3, "channel": [3, 1.0]}}
     },
     {
       "id": "s6b-report",
       "on_screen_title": "6. חוסמים ומדווחים",
-      "on_screen_body": "דיווח: „עוד” › „דיווח” › בוחרים סיבה\nמחוברים לחשבון? הדיווח גם חוסם את הסרטון\nיוצאים מהחשבון? מה שנחסם חוזר",
+      "on_screen_body": "דיווח: „עוד” › „דיווח” › בוחרים סיבה\nיוצאים מהחשבון? מה שנחסם חוזר\nמחוברים לחשבון? הדיווח גם חוסם את הסרטון",
       "narration": "הַחֲסִימָה עוֹבֶ֫דֶת רַק כְּשֶׁאַתֶּם מְחֻבָּרִים לַחֶשְׁבּוֹן.\nדִּוּוּחַ כְּשֶׁאַתֶּם מְחֻבָּרִים, חוֹסֵם גַּם אֶת הַסִּרְטוֹן.",
       "captions": ["החסימה עובדת רק כשאתם מחוברים לחשבון.", "דיווח כשאתם מחוברים, חוסם גם את הסרטון."],
       "sources": [
@@ -269,7 +269,7 @@
       ],
       "derived_numbers": [],
       "illustration": {"kind": "report", "labels": []},
-      "motion": {"reveal": [0, 1, 0], "art": {"chips": 0, "signed": 1}}
+      "motion": {"reveal": [0, 0, 1], "art": {"chips": 0, "signed": 1, "blocked": [1, 1.2]}}
     },
     {
       "id": "s7-outro",

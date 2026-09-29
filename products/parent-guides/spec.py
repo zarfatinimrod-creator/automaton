@@ -16,8 +16,9 @@ A spec is the script (verbatim) plus machine-checked evidence. The renderer refu
     one step), a number may not come back later;
   * a narration line is not vowelised (the voice needs nikud; unvowelised Hebrew phonemises to consonants), or a
     caption says anything other than its narration line in standard spelling;
-  * a scene's `motion` keys do not fit it: `reveal` needs one anchor per body item and `art` may only name its
-    illustration's beats (motion.ART_BEATS), each anchored to "start" or an existing narration line;
+  * a scene's `motion` keys do not fit it: `reveal` needs one anchor per body item, `art` may only name its
+    illustration's beats (motion.ART_BEATS) and `highlight` only its body items, each anchored to "start", an
+    existing narration line n, [n, seconds] or [n, "end"];
   * the end card lacks the AI line or the non-affiliation line, or the spec has no independence tag (drawn on
     every frame beside the AI line, so a viewer who swipes away early still sees it).
 

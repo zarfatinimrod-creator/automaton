@@ -62,17 +62,27 @@ more. `research/tiktok/08-sales-marketing-lessons.md` backs the principles, not 
 keeps out of the For You feed (§5.1). So every frame
 is drawn from layers, driven by each scene's `motion` keys in the spec and the narration's measured timings:
 
-- **text reveals** — each body item eases in (fade and a 28 px rise, 250 ms) from 100 ms before the narration line
-  that speaks it (`motion.reveal[i]`: a line index or `"start"`); items on one line follow each other by 120 ms;
+- **text reveals** — each body item eases in (fade and a 28 px rise, 250 ms) at its anchor in `motion.reveal[i]`:
+  `"start"`, a narration line n (from 100 ms before it is heard), `[n, seconds]` (a point inside the line), or
+  `[n, "end"]` (when the line stops: for on-screen text no line says, shown in the pause rather than over an
+  unrelated line); items on one anchor follow each other by 120 ms, and every page fills top to bottom;
+- **highlights** — `motion.highlight` runs a soft marker behind a step chain, right to left, while it is spoken,
+  and fades it away (s5's unlock chain);
 - **the picture** — each illustration kind has named beats (`motion.ART_BEATS`: a switch sliding off, a highlight
-  running down a list, a padlock closing, a menu opening, icons popping in), each anchored to a line by
-  `motion.art`. Beats only move, grow or recolour what the still shows; at rest the picture is the still, pixel for
-  pixel, and it adds no claim (the keypad's light runs over all ten keys, never a digit count);
-- **transitions** — the next scene slides in from the left in 280 ms while the last leaves to the right (forward in
-  a right-to-left interface); a later page of one step keeps its header and title still; the end card cross-fades;
+  running down a list, a padlock closing, a menu opening, icons popping in), each anchored by `motion.art`; the part
+  that acts gets a soft halo while it acts. In a scene that slides in, no beat starts before the slide rests. Beats
+  only move, grow or recolour what the still shows; at rest the picture is the scene's layout-checked still, and it
+  adds no claim (the keypad's light runs over all ten keys, never a digit count). At supersampled size the drawings
+  at rest are v1's except five changes made on review (see `art.py`); on screen v2 places each layer within 1 px of
+  v1 and anti-aliases its edges on its own, so no still is v1's byte for byte;
+- **transitions** — the next scene slides in from the left by 30% of the width in 280 ms (sine ease, at most ~60 px
+  a frame) while it cross-fades with the last, which leaves to the right (forward in a right-to-left interface); a
+  later page of one step keeps its header and title still;
 - **progress bar** — the current step's segment fills continuously across its pages;
-- **the first 2 seconds** — the question and the promise ("6 דברים שכדאי לעשות") ease in, the phone rises and the
-  "6" pops, all from 0.0 s, before the narration's first word ends.
+- **the first seconds** — the question is on screen, whole, from the first frame, as the hook's script says; the
+  promise ("6 דברים שכדאי לעשות") eases in, the phone fades in as it rises and the "6" pops from 0.0 s; the rows on
+  the phone fill while "YouTube Kids" is said, and the "6" swells again on "שישה";
+- **the end card** — fades in over 280 ms and then stays fully opaque for the script's 5 s.
 
 The reading rule is applied in reveal order (a line that appears late is read from when it appears; exit 4 as
 before), a scene lasts until its motion has come to rest, and nothing is drawn above y 180 or below y 1500
