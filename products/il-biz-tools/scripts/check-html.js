@@ -1,5 +1,5 @@
 // Sanity checks for the static pages: title, description, canonical, FAQ JSON-LD, RTL, referenced files exist.
-import { readFile, access } from 'node:fs/promises';
+import { readFile, readdir, access } from 'node:fs/promises';
 import { join } from 'node:path';
 import { PAGE_RATE_SOURCES, publishPlan, unregisteredPages, aiDeclarationProblems } from '../src/lib/publish-gate.js';
 
@@ -63,9 +63,14 @@ const unregistered = unregisteredPages(allPages, PAGE_RATE_SOURCES);
 for (const p of unregistered) fail(p, 'not listed in PAGE_RATE_SOURCES (src/lib/publish-gate.js)');
 
 // The AI declaration (src/lib/ai-declaration.js): every page, the 404 too, says in its site footer that AI agents
-// build and keep the site. The build refuses a page without it; this says so before anyone runs the build.
+// build and keep the site, with nothing in the page or its stylesheets that can hide it. The build refuses a page
+// without it; this says so before anyone runs the build.
+const stylesheets = {};
+for (const f of (await readdir(join(root, 'assets'))).filter((x) => x.endsWith('.css'))) {
+  stylesheets[`assets/${f}`] = await readFile(join(root, 'assets', f), 'utf8');
+}
 for (const p of allPages) {
-  for (const problem of aiDeclarationProblems(await readFile(join(root, p), 'utf8'))) fail(p, problem);
+  for (const problem of aiDeclarationProblems(await readFile(join(root, p), 'utf8'), { stylesheets })) fail(p, problem);
 }
 
 const configs = {};

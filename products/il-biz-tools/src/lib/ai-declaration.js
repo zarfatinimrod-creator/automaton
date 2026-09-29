@@ -10,15 +10,17 @@
 // allowlist each one must be on and re-checks the ones code can check against the
 // built site. What it deliberately does not say: that a person reviewed anything
 // (no record in the repository shows one), that a figure was checked against its
-// source (no page does that: the source lines say a figure was compared with
-// search results, or that no check date was recorded - src/lib/source-line.js),
+// source (no record shows that either: the source lines say a figure was compared
+// with search results, or that no check date was recorded - src/lib/source-line.js),
 // or any name but the brand's.
 //
 // The build refuses a page whose site footer lacks the line, word for word and
-// visible (aiDeclarationProblems in src/lib/publish-gate.js), and refuses a named
-// figure page that ships without its source line (figureSourceProblems), so the
-// FAQ answer cannot outlive what backs it. Pure data; build-time only - no
-// shipped page loads this file.
+// visible (aiDeclarationProblems in src/lib/publish-gate.js). The FAQ answer's
+// figures sentence is written per build from the figure pages that ship as
+// themselves (withShippedFiguresSentence), and the build refuses a sentence that
+// names any other set, or a named page whose source line is not exactly what its
+// config gives (figureSourceProblems), so the answer cannot outlive what backs it.
+// Pure data and text; build-time only - no shipped page loads this file.
 
 /** The only public name (MISSION: the brand is the only public face). */
 export const BRAND_HE = 'מהודק';
@@ -33,22 +35,45 @@ export const AI_DECLARATION_ATTR = 'data-ai-declaration';
 export const AI_DECLARATION_HTML = `<p class="ai-declaration" ${AI_DECLARATION_ATTR}>${AI_DECLARATION}</p>`;
 
 /**
- * The pages whose statutory figure prints a source line, and the id of that line. The FAQ sentence below names
- * exactly these three, so it is true only while each of them, when it ships as itself, carries its line.
+ * The pages whose statutory figure prints a source line: the id of that line, and the page's name as the FAQ
+ * sentence lists it. The config each line is written from is the page's one entry in PAGE_RATE_SOURCES
+ * (src/lib/publish-gate.js).
  */
 export const FIGURE_SOURCE_PAGES = {
-  'vat.html': 'rate-source',
-  'osek-patur.html': 'ceiling-source',
-  'allocation.html': 'threshold-source',
+  'vat.html': { id: 'rate-source', name: 'המע״מ' },
+  'osek-patur.html': { id: 'ceiling-source', name: 'תקרת עוסק פטור' },
+  'allocation.html': { id: 'threshold-source', name: 'מספר ההקצאה' },
 };
 
-/** What is true about figures: a source and what was checked when beside them - not that they were checked against it. */
-export const FIGURES_SOURCE_SENTENCE =
-  'בדפי המע״מ, תקרת עוסק פטור ומספר ההקצאה, ליד הנתון מופיעים המקור שלו ומה נבדק בו ומתי – או שתאריך הבדיקה לא תועד.';
+/** What is true beside each named page's figure: a source and what was checked when - not that it was checked against it. */
+export const FIGURES_CLAIM = 'ליד הנתון מופיעים המקור שלו ומה נבדק בו ומתי – או שתאריך הבדיקה לא תועד.';
+
+/**
+ * The figures sentence for the figure pages that ship as themselves, in FIGURE_SOURCE_PAGES order; null when none
+ * does. A page withheld for an unverified figure ships a notice with no figure and no source line, so the sentence
+ * must not name it.
+ */
+export function figuresSourceSentence(pages) {
+  const names = Object.keys(FIGURE_SOURCE_PAGES)
+    .filter((page) => pages.includes(page))
+    .map((page) => FIGURE_SOURCE_PAGES[page].name);
+  if (!names.length) return null;
+  const list = names.length === 1 ? `בדף ${names[0]}` : `בדפי ${names.slice(0, -1).join(', ')} ו${names[names.length - 1]}`;
+  return `${list}, ${FIGURES_CLAIM}`;
+}
+
+/** The sentence as the source tree writes it: all three pages. The build rewrites it when fewer ship. */
+export const FIGURES_SOURCE_SENTENCE = figuresSourceSentence(Object.keys(FIGURE_SOURCE_PAGES));
 
 /** The footers' wording, kept as it was. */
 export const NOT_TAX_ADVICE = 'המידע באתר אינו מהווה ייעוץ מס.';
 
-/** The FAQ entry on the home page that says who builds and keeps the site. */
+/** The FAQ entry on the home page that says who builds and keeps the site: `<details id="who-builds">`. */
+export const WHO_BUILDS_ID = 'who-builds';
 export const WHO_BUILDS_QUESTION = 'מי בונה ומתחזק את האתר?';
-export const WHO_BUILDS_ANSWER = `${AI_DECLARATION} ${FIGURES_SOURCE_SENTENCE} ${NOT_TAX_ADVICE}`;
+
+/** Its answer when `pages` are the figure pages that ship as themselves. */
+export const whoBuildsAnswer = (pages) => [AI_DECLARATION, figuresSourceSentence(pages), NOT_TAX_ADVICE].filter(Boolean).join(' ');
+
+/** The answer as the source tree writes it. */
+export const WHO_BUILDS_ANSWER = whoBuildsAnswer(Object.keys(FIGURE_SOURCE_PAGES));

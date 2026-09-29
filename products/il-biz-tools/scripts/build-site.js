@@ -29,9 +29,13 @@
 //      marker however written, or its words), a missing accessibility
 //      statement, a statement with no real contact link (data-a11y-contact),
 //      or a failing check in src/lib/a11y-check.js refuses the publish.
-//      So does a page whose site footer lacks the AI declaration, word for word
-//      and visible, and a figure page the home page's "who builds the site?"
-//      answer names that ships without its source line (src/lib/ai-declaration.js).
+//      So does a page whose site footer lacks the AI declaration, written exactly
+//      and with nothing - attribute, wrapper, stylesheet rule - that can hide it,
+//      a shipped script that names it or the footer, and a figures sentence in
+//      the home page's "who builds the site?" answer that names a page shipping
+//      without exactly the source line its config gives (src/lib/ai-declaration.js).
+//      The build writes that sentence per build: a figure page withheld as a
+//      notice drops out of it (withShippedFiguresSentence).
 //
 // Fail closed: a refused build exits 1 and deletes _site/, so no stale copy is
 // left for anyone to upload by hand. `--preview` builds the same tree into
@@ -53,7 +57,9 @@ import {
   configShipPlan,
   publishBlockers,
   aiDeclarationProblems,
+  declarationScriptProblems,
   figureSourceProblems,
+  withShippedFiguresSentence,
 } from '../src/lib/publish-gate.js';
 import { collectDependencies } from '../src/lib/site-deps.js';
 import { bundleProblems, fsBundleAccess } from '../src/lib/pcn874-bundle.js';
@@ -139,6 +145,11 @@ for (const { page, unverified } of withhold) {
   shipped.push({ path: page, html: withheldPageHtml({ page, title, unverified }) });
 }
 
+// 1a. The figures sentence in the "who builds the site?" answer names only the
+// figure pages that ship as themselves: a withheld page's notice shows no figure
+// and no source line (src/lib/ai-declaration.js). The gate below re-checks it.
+for (const page of shipped) page.html = withShippedFiguresSentence(page.html, publish);
+
 // 1b. The price in the pricing FAQ. Only Gumroad's read-back price, and only once
 // the Pro button is `ready` (src/lib/gumroad.js); until then the answers carry no
 // amount. A FAQ answer whose JSON-LD twin drifted from it stops the build, preview
@@ -181,10 +192,18 @@ if (configs.refuse.length) {
 
 // 4. Blockers: marked placeholders, the required statement, the AI declaration, the accessibility checks.
 const blockers = publishBlockers(shipped).map(({ path, blocker }) => `${path}: ${blocker}`);
+const stylesheets = Object.fromEntries(deps.files.filter((f) => f.endsWith('.css')).map((f) => [f, readText(f) ?? '']));
 for (const { path, html } of shipped) {
-  for (const problem of aiDeclarationProblems(html)) blockers.push(`${path}: ${problem}`);
+  for (const problem of aiDeclarationProblems(html, { stylesheets })) blockers.push(`${path}: ${problem}`);
 }
-blockers.push(...figureSourceProblems(shipped, withhold.map((w) => w.page)));
+const scripts = deps.files.filter((f) => /\.m?js$/.test(f)).map((path) => ({ path, js: readText(path) ?? '' }));
+for (const { path, html } of shipped) {
+  for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)) {
+    if (!/application\/ld\+json/i.test(m[1])) scripts.push({ path: `${path} (inline script)`, js: m[2] });
+  }
+}
+blockers.push(...declarationScriptProblems(scripts));
+blockers.push(...figureSourceProblems(shipped, { asThemselves: publish, configs: rateConfigs }));
 for (const { path, html } of shipped) {
   for (const p of checkPageA11y(html)) blockers.push(`${path}: accessibility check "${p.check}" failed - ${p.message}`);
 }
