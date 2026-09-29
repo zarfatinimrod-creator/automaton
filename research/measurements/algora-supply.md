@@ -1,6 +1,6 @@
 # Algora bounty supply — the weekly claimable count
 
-**Status: MEASURED 2026-09-28T14:16:03.168Z by `.github/workflows/algora-supply.yml` (`scripts/algora-supply.ts`).** Regenerated on every run — do not edit by hand. Ordered by `research/colony-sweep/BOARD-2.md §2.2` as the first build step of `oss-bounties`.
+**Status: MEASURED 2026-09-29T09:24:19.235Z by `.github/workflows/algora-supply.yml` (`scripts/algora-supply.ts`).** Regenerated on every run — do not edit by hand. Ordered by `research/colony-sweep/BOARD-2.md §2.2` as the first build step of `oss-bounties`.
 
 ## The number
 
@@ -18,7 +18,7 @@ A count of jobs a payer has posted, not revenue: money counts only in `revenue_l
 
 | ISO week | Measured at | Claimable |
 |---|---|---:|
-| 2026-W40 | 2026-09-28T14:16:03.168Z | 18 |
+| 2026-W40 | 2026-09-29T09:24:19.235Z | 18 |
 
 Week 1 of 4. The board reads the mean of 4 weekly readings: ≥ 10 keeps ₪300; 3-9 retargets to ₪100 (grade contradicted); under 3 kills the line. Until then the owner is not asked for step 4b (the Stripe form, which begins with the Algora sign-in) on this line's account.
 
