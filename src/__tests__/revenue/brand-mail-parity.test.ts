@@ -64,6 +64,16 @@ const FIXTURES: Record<string, unknown> = {
   "overdue by count, no age": good({}, { unansweredOver7Days: 1, oldestUnansweredAgeDays: null }),
   "overdue since the probe": good({ measuredAt: iso(NOW - 30 * HOUR) }, { oldestUnansweredAgeDays: A11Y_ANSWER_DAYS - 0.5 }),
   "not yet overdue since the probe": good({ measuredAt: iso(NOW - 3 * HOUR) }, { oldestUnansweredAgeDays: A11Y_ANSWER_DAYS - 0.5 }),
+  // RULING-2026-09-29-lines (h): the probe's `responders`. Optional (absent in a probe written before it); when present
+  // a list of responder ids, and anything else makes the file unusable on both sides.
+  "green, with the refund responder": good({ responders: ["gumroad-refund"] }),
+  "green, responders empty": good({ responders: [] }),
+  "green, another responder only": good({ responders: ["something-else"] }),
+  "responders not a list": good({ responders: "gumroad-refund" }),
+  "responders null": good({ responders: null }),
+  "responders holding an address": good({ responders: ["gumroad-refund", "Someone <a@b.c>"] }),
+  "responders holding a number": good({ responders: [1] }),
+  "responders, but stale": good({ responders: ["gumroad-refund"], measuredAt: iso(NOW - (PROBE_STALE_DAYS * 24 + 1) * HOUR) }),
 };
 
 describe("brandMailboxGreen (il-biz-tools) agrees with readBrandMailProbe (the colony) on every fixture", () => {
@@ -96,6 +106,24 @@ describe("brandMailboxGreen (il-biz-tools) agrees with readBrandMailProbe (the c
     const verdicts = Object.values(FIXTURES).map((c) => brandMailboxGreen(typeof c === "string" ? c : c, NOW).green);
     expect(verdicts).toContain(true);
     expect(verdicts).toContain(false);
+  });
+
+  it("the colony's line names the refund responder exactly when il-biz-tools' enable would count it", () => {
+    const responderId = product.REFUND_RESPONDER as string;
+    expect(responderId).toBe("gumroad-refund");
+    let named = 0;
+    for (const [name, content] of Object.entries(FIXTURES)) {
+      if (typeof content !== "object" || content === null) continue;
+      const file = join(dir, `responders-${name.replace(/[^a-z0-9]+/gi, "-")}.json`);
+      writeFileSync(file, JSON.stringify(content));
+      const colony = readBrandMailProbe(file, NOW);
+      const responders = (content as { responders?: unknown }).responders;
+      const enableCounts = brandMailboxGreen(content, NOW).green && Array.isArray(responders) && responders.includes(responderId);
+      const colonyNames = colony.status === "read" && colony.blockers.length === 0 && (colony.line ?? "").includes(`responders: ${responderId}`);
+      expect(colonyNames, name).toBe(enableCounts);
+      if (enableCounts) named += 1;
+    }
+    expect(named).toBeGreaterThan(0);
   });
 
   it("the two sides use the same two thresholds", () => {

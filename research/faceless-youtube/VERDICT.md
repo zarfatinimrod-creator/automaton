@@ -383,6 +383,10 @@ listener quality UNKNOWN (retention is the only test).
    `state/colony` and the manager's screen — designed to run under the brand manager account's consent; the
    server-to-server credential clause [RENDERED google-oauth2.txt:581-582] must be checked before relying on it.
 6. **Channel identity kit:** brand channel name, About text [:294], a privacy/contact page on the brand domain.
+   *(29.9.2026, `research/channel-loop/RULING-2026-09-29-lines.md` (e): the channel name is the T1 sub-brand, shared with
+   the `*.netlify.app` host — **`chartsplained`**, the first name free on all four probes
+   (`research/measurements/t1-subbrand-check.md`, second round, `a7efa2b`; the owner may veto, next `datawalkthrough`). The
+   account behind the channel is deferred to `logs/FABLE_QUEUE.md` row 16.)*
 7. **render-watch URLs** to close the open questions (§15): AdSense answer/9905 (supported countries), YouTube
    answer/14728152, /14727140, /157667 (Israel rail, threshold, PIN), /7628154, /16767369, /16559651 (reach reports),
    google-ads answer/7515513 (advertiser AI exclusion), the Brand Account → channel permissions article, Upload-Post docs.

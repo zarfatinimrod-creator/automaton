@@ -78,6 +78,19 @@ export function gumroadPrice(cfg) {
   return { priceCents: cents, currency: currency.trim().toLowerCase() };
 }
 
+/**
+ * The refund period Gumroad applies to the product, in whole days, or null. Written into site.json by the product
+ * job (`create --write-site-json`) from what Gumroad reports as in force - the product's own policy or the account's
+ * (scripts/gumroad-pro-product.js, refundPolicyGate) - never by hand; null while it is unread, or when Gumroad
+ * reports no bounded period. The pricing FAQ states it only while the Pro button is `ready`
+ * (src/lib/pro-offer.js withRefundDays), and `enable` and `check` compare the deployed value with Gumroad's live
+ * one as they compare the price (RULING-2026-09-29-lines (h)).
+ */
+export function gumroadRefundPeriodDays(cfg) {
+  const days = cfg?.gumroad?.refundPeriodDays;
+  return Number.isInteger(days) && days > 0 && days <= 3650 ? days : null;
+}
+
 /** "‏79 ‏₪", as the site formats every shekel amount; agorot only when there are some. Null if unformattable. */
 export function formatProPrice(price) {
   if (!price || !Number.isInteger(price.priceCents) || typeof price.currency !== 'string') return null;

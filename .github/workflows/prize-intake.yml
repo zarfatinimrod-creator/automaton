@@ -5,33 +5,45 @@ name: prize-intake
 # WHAT IT DOES. Once a week, one unauthenticated GET of the mlcontests list
 # (competitions.json in mlcontests/mlcontests.github.io, served by
 # raw.githubusercontent.com) through scripts/prize-intake.ts, and a commit of
-# NUMBERS ONLY to state/colony/prize-intake.json: how many competitions are open
-# by deadline, how many of those already closed registration, are not yet
-# launched, state a dollar prize or carry a free-text note. The hourly colony
-# tick prints the file as one line of the report (src/revenue/prize-intake.ts).
+# three files:
+#   - state/colony/prize-intake.json — NUMBERS ONLY: how many competitions are
+#     open by deadline, how many of those already closed registration, are not
+#     yet launched, state a dollar prize or carry a free-text note; and, per
+#     quarter, the rules-page counts below. The hourly colony tick prints the
+#     file as one line of the report (src/revenue/prize-intake.ts).
+#   - research/measurements/ai-allowed-events.md — the rules-page half of
+#     research/channel-loop/BOARD-LOOP.md §13: every event whose deadline, as the
+#     list states it, falls in the current or next calendar quarter, in a table
+#     whose last three cells (AI clause with its capture pointer, grade,
+#     qualifies yes/no) a reading session fills from rendered rules pages. The
+#     job carries those cells forward by event URL and never fills one
+#     (src/revenue/ai-allowed-events.ts).
+#   - research/measurements/ai-allowed-events.urls.txt — the URLs of rows not yet
+#     graded, in render-watch's urls syntax, for a session to paste into
+#     render-watch.yml's `urls` input. Never appended to research/rendered/urls.txt;
+#     tiktok.com URLs are refused.
 #
-# WHAT IT DOES NOT. It files nothing, enters nothing, opens no account and spends
-# nothing. It needs no owner secret. The list has no field stating whether AI or
-# automated solutions are allowed, so that count is written as null —
-# unmeasured, never zero, never inferred from tags such as `llm` or `agents`,
-# which name a task's subject, not a permission. aiRuleFieldInSource is false
-# while every key is known and null (unknown) once the list grows a key this
-# reader does not read; the commit subject says which.
+# WHAT IT DOES NOT. It files nothing, enters nothing, opens no account, spends
+# nothing, publishes nothing and fetches no rules page. It needs no owner secret.
+# The list has no field stating whether AI or automated solutions are allowed, so
+# the list's own AI count is written as null — never inferred from tags such as
+# `llm` or `agents`, which name a task's subject, not a permission.
+# aiRuleFieldInSource is false while every key is known and null (unknown) once
+# the list grows a key this reader does not read; the commit subject says which.
+# A quarter's qualifying count is null until a session grades one of its rows,
+# and the §13 kill (two consecutive quarters under 3) is computed only from
+# closed, fully graded quarters. The subject names how many rows are graded,
+# never a verdict.
 #
-# PARTLY BUILT. This is the list-count half of research/channel-loop/BOARD-LOOP.md
-# §13. The number §13 is for — events with deadlines in the quarter whose rules
-# pages explicitly permit AI-built entries — needs a per-event rules-page read,
-# research/measurements/ai-allowed-events.md and a quarterly calendar entry, none
-# of which is built.
-#
-# NEVER A FAKE ZERO. On an HTTP error, a redirect, a body that is not the list, or
-# a list whose deadlines, prizes, launch dates or registration deadlines mostly do
-# not parse, the script writes nothing and exits 1, so this job goes red and last
-# week's file stays in place.
+# NEVER A FAKE ZERO. On an HTTP error, a redirect, a body that is not the list, a
+# list whose deadlines, prizes, launch dates or registration deadlines mostly do
+# not parse, or a table the job cannot read back (it holds a session's cells), the
+# script writes nothing and exits 1, so this job goes red and last week's files
+# stay in place.
 #
 # Scheduled workflows run only from the default branch; like algora-supply.yml,
 # this one checks out main and commits the reading there, one series over time
-# (the file's git history is the series).
+# (the files' git history is the series).
 
 on:
   schedule:
@@ -51,6 +63,7 @@ on:
     paths:
       - ".github/workflows/prize-intake.yml"
       - "scripts/prize-intake.ts"
+      - "src/revenue/ai-allowed-events.ts"
       - "src/revenue/prize-intake.ts"
 
 permissions:
@@ -85,7 +98,7 @@ jobs:
       # under tsx like scripts/algora-supply.ts.
       - run: pnpm install --frozen-lockfile
 
-      - name: Read the mlcontests list (one GET, numbers only)
+      - name: Read the mlcontests list (one GET; numbers, the rules-page table and its URLs)
         id: read
         run: pnpm exec tsx scripts/prize-intake.ts
 
@@ -93,17 +106,21 @@ jobs:
         run: |
           set -euo pipefail
           JSON=state/colony/prize-intake.json
-          if [ ! -f "$JSON" ]; then
-            echo "::error::The read reported success but $JSON is missing; refusing to commit half a reading."
-            exit 1
-          fi
+          TABLE=research/measurements/ai-allowed-events.md
+          URLS=research/measurements/ai-allowed-events.urls.txt
+          for f in "$JSON" "$TABLE" "$URLS"; do
+            if [ ! -f "$f" ]; then
+              echo "::error::The read reported success but $f is missing; refusing to commit half a reading."
+              exit 1
+            fi
+          done
 
           git config user.name "colony-bot"
           git config user.email "colony-bot@users.noreply.github.com"
 
-          # Stage first, then compare the index: on the first run the file is
+          # Stage first, then compare the index: on the first run the files are
           # untracked and `git diff` alone would report no change forever.
-          git add "$JSON"
+          git add "$JSON" "$TABLE" "$URLS"
           if git diff --cached --quiet; then
             echo "Reading unchanged since the last run."
             exit 0
@@ -111,12 +128,17 @@ jobs:
 
           # "not stated" only while every key of the list is known; a new key may
           # state an AI rule, so the subject then says unknown, never "not stated".
-          SUBJECT=$(node -e 'const j=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));const ai=j.aiRuleFieldInSource===false?"AI rule not stated by the list":"AI rule unknown: "+j.unknownFields+" new field(s) to read by hand";process.stdout.write("measure(prize-intake): "+j.open+" open of "+j.listed+" listed; "+ai);' "$JSON")
+          # The rules-page part counts graded rows in the window quarters, never a
+          # verdict: qualifying counts live in the file and the report, not here.
+          SUBJECT=$(node -e 'const j=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));const ai=j.aiRuleFieldInSource===false?"AI rule not stated by the list":"AI rule unknown: "+j.unknownFields+" new field(s) to read by hand";const w=j.aiAllowed?j.aiAllowed.quarters.filter(q=>q.position!=="closed"):null;const rp=w?"; rules pages: "+w.reduce((a,q)=>a+q.rowsGraded,0)+" of "+w.reduce((a,q)=>a+q.eventsInWindow,0)+" graded":"";process.stdout.write("measure(prize-intake): "+j.open+" open of "+j.listed+" listed; "+ai+rp);' "$JSON")
           # [skip ci] keeps a measurement commit from retriggering the test workflows.
           git commit -m "${SUBJECT} [skip ci]"
 
           # The hourly colony tick and the other measurement jobs commit to main
           # too, so a push can lose a race. Rebase and retry rather than lose a week.
+          # If a session's grades reached the table on main meanwhile, the rebase
+          # stops on the conflict and this job goes red with their cells intact on
+          # main; the next run reads them. It never forces its table over theirs.
           for attempt in 1 2 3; do
             if git push; then
               exit 0

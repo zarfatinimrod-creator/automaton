@@ -263,29 +263,35 @@ describe("runPrizeIntake — one GET, then the file or nothing", () => {
 
   it("requests the one source URL, refuses redirects, and writes the summary", async () => {
     const calls: { url: string; init?: RequestInit }[] = [];
-    const r = await runPrizeIntake({ outFile: out, nowIso: MEASURED, fetchImpl: fakeFetch(200, FIXTURE_TEXT, calls) });
+    const r = await runPrizeIntake({ root: dir, nowIso: MEASURED, fetchImpl: fakeFetch(200, FIXTURE_TEXT, calls) });
     expect(r.code).toBe(0);
     expect(calls.map((c) => c.url)).toEqual([PRIZE_INTAKE_SOURCE]);
     expect(calls[0].init?.redirect).toBe("error");
     expect(calls[0].init?.method ?? "GET").toBe("GET");
     const written = JSON.parse(readFileSync(out, "utf8"));
-    expect(written).toEqual(summarisePrizeIntake(FIXTURE_TEXT, MEASURED));
+    // The list-count half exactly, plus the rules-page half's per-quarter counts (prize-intake-rules.test.ts).
+    const { aiAllowed, ...listCount } = written;
+    expect(listCount).toEqual(summarisePrizeIntake(FIXTURE_TEXT, MEASURED));
+    expect(aiAllowed.window).toEqual(["2026-Q3", "2026-Q4"]);
+    expect(existsSync(join(dir, "research", "measurements", "ai-allowed-events.md"))).toBe(true);
+    expect(existsSync(join(dir, "research", "measurements", "ai-allowed-events.urls.txt"))).toBe(true);
     expect(r.message).toMatch(/9 open of 14 listed/);
     expect(r.message).toMatch(/AI rule: not stated by the list/);
   });
 
   it("writes nothing and exits 1 on any status but 200, even when the body is the list", async () => {
     for (const status of [201, 203, 301, 403, 404, 429, 500]) {
-      const r = await runPrizeIntake({ outFile: out, nowIso: MEASURED, fetchImpl: fakeFetch(status, FIXTURE_TEXT) });
+      const r = await runPrizeIntake({ root: dir, nowIso: MEASURED, fetchImpl: fakeFetch(status, FIXTURE_TEXT) });
       expect(r.code, String(status)).toBe(1);
       expect(r.message).toMatch(new RegExp(`HTTP ${status}.*Nothing was written`, "s"));
       expect(existsSync(out)).toBe(false);
+      expect(existsSync(join(dir, "research"))).toBe(false);
     }
   });
 
   it("says the AI rule is unknown, not absent, when the list grows a field it does not know", async () => {
     const body = listOf(entry({ ai_generated_submissions: "forbidden" }), entry());
-    const r = await runPrizeIntake({ outFile: out, nowIso: MEASURED, fetchImpl: fakeFetch(200, body) });
+    const r = await runPrizeIntake({ root: dir, nowIso: MEASURED, fetchImpl: fakeFetch(200, body) });
     expect(r.code).toBe(0);
     expect(r.message).toMatch(/AI rule: unknown \(1 new field to read by hand\)/);
     expect(r.message).not.toMatch(/not stated/);
@@ -302,19 +308,21 @@ describe("runPrizeIntake — one GET, then the file or nothing", () => {
       }) as typeof fetch,
     ];
     for (const fetchImpl of failing) {
-      const r = await runPrizeIntake({ outFile: out, nowIso: MEASURED, fetchImpl });
+      const r = await runPrizeIntake({ root: dir, nowIso: MEASURED, fetchImpl });
       expect(r.code).toBe(1);
       expect(r.message).toMatch(/NOT measured.*Nothing was written/s);
       expect(existsSync(out)).toBe(false);
+      expect(existsSync(join(dir, "research"))).toBe(false);
     }
   });
 
-  it("leaves last week's file untouched when this week's read fails", async () => {
-    await runPrizeIntake({ outFile: out, nowIso: MEASURED, fetchImpl: fakeFetch(200, FIXTURE_TEXT) });
-    const before = readFileSync(out, "utf8");
-    const r = await runPrizeIntake({ outFile: out, nowIso: "2026-10-06T05:41:00Z", fetchImpl: fakeFetch(503, "") });
+  it("leaves last week's three files untouched when this week's read fails", async () => {
+    await runPrizeIntake({ root: dir, nowIso: MEASURED, fetchImpl: fakeFetch(200, FIXTURE_TEXT) });
+    const files = [out, join(dir, "research", "measurements", "ai-allowed-events.md"), join(dir, "research", "measurements", "ai-allowed-events.urls.txt")];
+    const before = files.map((f) => readFileSync(f, "utf8"));
+    const r = await runPrizeIntake({ root: dir, nowIso: "2026-10-06T05:41:00Z", fetchImpl: fakeFetch(503, "") });
     expect(r.code).toBe(1);
-    expect(readFileSync(out, "utf8")).toBe(before);
+    expect(files.map((f) => readFileSync(f, "utf8"))).toEqual(before);
   });
 });
 
@@ -340,11 +348,12 @@ describe("readPrizeIntake — state/colony/prize-intake.json → one report line
     expect(r.line).toBe("Prize-event intake (instrument only): no reading yet — the weekly job .github/workflows/prize-intake.yml has not committed one.");
   });
 
+  // good() is the list-count half alone, as summarisePrizeIntake returns it and as readings before the rules-page table
+  // were written; the rules-page sentence is pinned in prize-intake-rules.test.ts.
   const PARTLY_BUILT =
-    " Partly built: this is the list-count half of BOARD-LOOP §13; its number (events with deadlines in the quarter whose rules pages" +
-    " explicitly permit AI-built entries) needs a per-event rules-page read that is not built.";
+    " Rules pages (BOARD-LOOP §13): not in this reading — the weekly job writes research/measurements/ai-allowed-events.md from its next run.";
 
-  it("prints the counts, says the AI rule is not stated, and says it is an instrument and only half of §13", () => {
+  it("prints the counts, says the AI rule is not stated, and says it is an instrument and that the rules pages are not in this reading", () => {
     write(good());
     const r = readPrizeIntake(file, T0 + DAY / 2);
     expect(r.status).toBe("read");

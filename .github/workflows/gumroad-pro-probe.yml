@@ -24,8 +24,10 @@ name: gumroad-pro-probe
 #
 # Last, it re-runs the offer checks `enable` ran (scripts/gumroad-pro-product.js
 # check, reads only): the deployed page and Gumroad show the same one-time
-# price, the account's address is the brand mailbox, and no refund is promised.
-# A price edited in the Gumroad dashboard after enable fails here. That step
+# price, the account's address is the brand mailbox, the refund policy buyers
+# see is a bounded window of at least 14 days (RULING-2026-09-29-lines (h)),
+# and the deployed page's refundPeriodDays is exactly that window. A price or a
+# refund period edited in the Gumroad dashboard after enable fails here. That step
 # needs GUMROAD_ACCESS_TOKEN and BRAND_MAIL_ADDRESS; without the token it prints
 # a notice and exits 0.
 

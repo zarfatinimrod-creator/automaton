@@ -109,6 +109,39 @@ describe("research/owner-asks/questions.json is the single source the sender rea
     expect(q.venues.find((v) => v.venue === "teachsimple")!.heldQuestions).toHaveLength(2);
   });
 
+  // Loop board 29.9.2026 (research/channel-loop/RULING-2026-09-29-loop.md (e)3): a runner-issued payout document after
+  // step 2 is not owner paperwork, but Wix asks for "a lawful tax invoice" and an exempt dealer issues a receipt. The
+  // question is a condition, not a kill, and it waits for Wix's first written yes.
+  it("holds Wix's exempt-dealer receipt question second, after Tipalti, one at a time (ruling (e)3)", () => {
+    const wix = readQuestions().venues.find((v) => v.venue === "wix")!;
+    expect(wix.heldQuestions).toHaveLength(2);
+    expect(wix.heldQuestions[0].text).toMatch(/Tipalti/);
+    expect(wix.heldQuestions[0].when).toMatch(/first of two, one at a time/);
+    const receipt = wix.heldQuestions[1];
+    expect(receipt.text).toBe(
+      "Does Wix accept a receipt from an Israeli exempt dealer (עוסק פטור) in place of a tax invoice?",
+    );
+    expect(receipt.to).toBeNull(); // in the same thread, like the Tipalti question
+    expect(receipt.when).toMatch(/second of two/);
+    expect(receipt.when).toMatch(/Wix's first written yes/);
+    expect(receipt.when).toMatch(/RULING-2026-09-29-loop\.md \(e\)3/);
+    expect(receipt.when).toMatch(/VAT registration/);
+    // The note quotes it in the Wix section.
+    const wixSection = md.slice(md.indexOf("## 2. Wix App Market"), md.indexOf("## 3. Spreadshirt"));
+    expect(wixSection.replace(/\s+/g, " ")).toContain(receipt.text);
+  });
+
+  // Loop board 29.9.2026 (RULING-2026-09-29-loop.md (c)): Displate is first in the pre-registered admission order, and
+  // a written no to its drafted question is KILL-4 without a sitting (the Spreadshirt pattern, research/breadth/BOARD.md:75).
+  it("pre-registers Displate's KILL-4 on a written no, in the pre-send check and in the note (ruling (c))", () => {
+    const displate = readQuestions().venues.find((v) => v.venue === "displate")!;
+    expect(displate.preSend).toMatch(/written no to this question is KILL-4 without a sitting/);
+    expect(displate.preSend).toMatch(/RULING-2026-09-29-loop\.md \(c\)/);
+    const section = md.slice(md.indexOf("## 6. Displate"), md.indexOf("## 7. Teach Simple")).replace(/\s+/g, " ");
+    expect(section).toMatch(/\*\*No\*\* is KILL-4 without a sitting/);
+    expect(section).not.toMatch(/\*\*No\*\* fires \(d\) for the sitting/);
+  });
+
   it("allows one follow-up no sooner than seven days after the first send, as the note's rule says", () => {
     expect(md).toMatch(/never sooner than 7 days after the first send, at most once/);
     for (const v of readQuestions().venues) expect(v.followUpAfterDays, v.venue).toBe(7);
@@ -174,6 +207,8 @@ describe("what every message says, and what none may say", () => {
       "Can", "Is", "It", "Indiebook", "The", "English", "Hebrew",
       // Tick 9 (28.9.2026): the two venues' names and the title of the document Displate's question cites.
       "Displate", "Teach", "Simple", "Terms", "Use",
+      // Loop board 29.9.2026 (RULING-2026-09-29-loop.md (e)3): Wix's held exempt-dealer question.
+      "Does", "Israeli",
     ]);
     const hebrewAllowed = new Set([
       "מהודק", "אינדיבוק", "באינדיבוק",
@@ -185,6 +220,8 @@ describe("what every message says, and what none may say", () => {
       "חבילה", "ומה", "אחוז", "התמלוגים", "ממכירה", "ומקריאה", "במנוי", "שם", "המחבר", "ושם", "ההוצאה", "המוצגים",
       "יכולים", "להיות", "בלבד", "ממלאים", "את", "טופס", "הגשת", "פעם", "לכל", "והאם", "ההתקשרות", "כולל", "ההסכם",
       "יכולה", "להתנהל", "בדוא", "ל", "ההפצה", "בלעדית", "ומי", "קובע", "מחיר",
+      // Loop board 29.9.2026: the legal term in Wix's held question, "exempt dealer".
+      "עוסק", "פטור",
     ]);
     const texts = q.venues.flatMap((v) => [v.subject, v.body, ...v.heldQuestions.map((h) => h.text)]);
     const unknown = new Set<string>();

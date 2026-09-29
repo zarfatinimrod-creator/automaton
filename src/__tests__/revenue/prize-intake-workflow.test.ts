@@ -1,9 +1,10 @@
 /**
  * .github/workflows/prize-intake.yml — the weekly ₪0 read of the mlcontests list (CHANNEL_LOOP.md §4 row 13).
- * An instrument: it reads one public file and commits numbers, nothing else. These tests pin what would go wrong
- * silently — a secret or a second network call creeping in, the reading committed to a feature branch, a commit that
- * retriggers CI, half a reading committed — and then run the commit step in bash against a stub `git`
- * (the pattern of brand-mail-workflow.test.ts), so a guard that lost a condition fails even while its words remain.
+ * An instrument: it reads one public file and commits three files — the numbers, the rules-page table a reading session
+ * grades, and the URLs awaiting a render — nothing else. These tests pin what would go wrong silently — a secret or a
+ * second network call creeping in, the reading committed to a feature branch, a commit that retriggers CI, half a
+ * reading committed — and then run the commit step in bash against a stub `git` (the pattern of
+ * brand-mail-workflow.test.ts), so a guard that lost a condition fails even while its words remain.
  */
 import { afterAll, describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
@@ -12,7 +13,8 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
-import { summarisePrizeIntake } from "../../revenue/prize-intake.js";
+import { AI_ALLOWED_TABLE_FILE, AI_ALLOWED_URLS_FILE, buildAiAllowedTable } from "../../revenue/ai-allowed-events.js";
+import { PRIZE_INTAKE_FILE, listedEventsFrom, summarisePrizeIntake } from "../../revenue/prize-intake.js";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const WORKFLOW = join(ROOT, ".github", "workflows", "prize-intake.yml");
@@ -40,7 +42,12 @@ describe("prize-intake.yml — what it is allowed to do", () => {
     expect(Number(minute)).toBeGreaterThan(0);
     expect(Number(hour)).toBeGreaterThanOrEqual(0);
     expect(on.push.branches).toEqual(["main"]);
-    expect([...on.push.paths].sort()).toEqual([".github/workflows/prize-intake.yml", "scripts/prize-intake.ts", "src/revenue/prize-intake.ts"]);
+    expect([...on.push.paths].sort()).toEqual([
+      ".github/workflows/prize-intake.yml",
+      "scripts/prize-intake.ts",
+      "src/revenue/ai-allowed-events.ts",
+      "src/revenue/prize-intake.ts",
+    ]);
   });
 
   it("fires at a minute no other scheduled workflow uses, so it starts no push race with another committer to main", () => {
@@ -94,13 +101,17 @@ describe("prize-intake.yml — what it is allowed to do", () => {
     expect(steps().some((s) => "continue-on-error" in s)).toBe(false);
   });
 
-  it("commits only the state file, marked [skip ci], and only after a successful read", () => {
+  it("commits only the state file and the two rules-page files, marked [skip ci], and only after a successful read", () => {
     const commit = stepNamed("Commit the reading");
     expect(commit.if).toBeUndefined(); // default success(): a failed read never reaches the commit
-    expect(commit.run).toMatch(/git add "\$JSON"/);
+    expect(commit.run).toMatch(/git add "\$JSON" "\$TABLE" "\$URLS"/);
     expect(commit.run).toMatch(/JSON=state\/colony\/prize-intake\.json/);
+    expect(commit.run).toMatch(/TABLE=research\/measurements\/ai-allowed-events\.md/);
+    expect(commit.run).toMatch(/URLS=research\/measurements\/ai-allowed-events\.urls\.txt/);
     expect(commit.run).toMatch(/\[skip ci\]/);
     expect(commit.run).not.toMatch(/git add (-A|\.|-f)|git stash|--autostash|--force|git push -f/);
+    // The URLs go to their own file; the standing render list and the captures are never touched from here.
+    expect(commit.run).not.toMatch(/research\/rendered/);
   });
 });
 
@@ -145,38 +156,76 @@ exit 0
     return { status: r.status, out: `${r.stdout}${r.stderr}`, calls: readFileSync(box.log, "utf8").split("\n").filter(Boolean) };
   }
 
-  const withReading = (box: ReturnType<typeof sandbox>) => {
-    mkdirSync(join(box.dir, "state", "colony"), { recursive: true });
-    writeFileSync(join(box.dir, "state", "colony", "prize-intake.json"), JSON.stringify(summarisePrizeIntake(FIXTURE_TEXT, "2026-09-29T05:41:00Z")));
+  /** The three files a successful run leaves, as runPrizeIntake writes them (without the fetch). */
+  const withReading = (box: ReturnType<typeof sandbox>, body = FIXTURE_TEXT, skip: string[] = []) => {
+    const at = "2026-09-29T05:41:00Z";
+    const m = summarisePrizeIntake(body, at);
+    const built = buildAiAllowedTable({
+      events: listedEventsFrom(body),
+      measuredAt: m.measuredAt,
+      measuredOn: m.measuredOn,
+      source: m.source,
+      sourceSha256: m.sourceSha256,
+      existingMarkdown: null,
+      captureExists: () => false,
+    });
+    const files: [string, string][] = [
+      [PRIZE_INTAKE_FILE, JSON.stringify({ ...m, aiAllowed: built.summary })],
+      [AI_ALLOWED_TABLE_FILE, built.markdown],
+      [AI_ALLOWED_URLS_FILE, built.urls],
+    ];
+    for (const [rel, content] of files) {
+      if (skip.includes(rel)) continue;
+      mkdirSync(dirname(join(box.dir, rel)), { recursive: true });
+      writeFileSync(join(box.dir, rel), content);
+    }
     return box;
   };
 
-  it("refuses to commit when the script reported success but the file is missing", () => {
-    const r = run(sandbox());
-    expect(r.status).toBe(1);
-    expect(r.out).toMatch(/refusing to commit/);
-    expect(r.calls.some((c) => c.startsWith("git [commit]"))).toBe(false);
+  it("refuses to commit when the script reported success but a file is missing", () => {
+    for (const box of [sandbox(), withReading(sandbox(), FIXTURE_TEXT, [AI_ALLOWED_TABLE_FILE]), withReading(sandbox(), FIXTURE_TEXT, [AI_ALLOWED_URLS_FILE])]) {
+      const r = run(box);
+      expect(r.status).toBe(1);
+      expect(r.out).toMatch(/refusing to commit half a reading/);
+      expect(r.calls.some((c) => c.startsWith("git [add]") || c.startsWith("git [commit]"))).toBe(false);
+    }
   });
 
   it("commits the reading with its numbers in the subject and [skip ci], then pushes", () => {
     const r = run(withReading(sandbox()));
     expect(r.status, r.out).toBe(0);
-    expect(r.calls).toContain("git [add] [state/colony/prize-intake.json]");
+    expect(r.calls).toContain(
+      "git [add] [state/colony/prize-intake.json] [research/measurements/ai-allowed-events.md] [research/measurements/ai-allowed-events.urls.txt]",
+    );
     const commit = r.calls.find((c) => c.startsWith("git [commit]"));
-    expect(commit).toBe("git [commit] [-m] [measure(prize-intake): 9 open of 14 listed; AI rule not stated by the list [skip ci]]");
+    expect(commit).toBe(
+      "git [commit] [-m] [measure(prize-intake): 9 open of 14 listed; AI rule not stated by the list; rules pages: 0 of 9 graded [skip ci]]",
+    );
     expect(r.calls.filter((c) => c === "git [push]")).toHaveLength(1);
   });
 
   it("says the AI rule is unknown in the subject when the list grew a field the reader does not know", () => {
-    const box = sandbox();
-    mkdirSync(join(box.dir, "state", "colony"), { recursive: true });
     const body = JSON.stringify({ data: [...JSON.parse(FIXTURE_TEXT).data, { ...JSON.parse(FIXTURE_TEXT).data[0], ai_generated_submissions: "forbidden" }] });
-    writeFileSync(join(box.dir, "state", "colony", "prize-intake.json"), JSON.stringify(summarisePrizeIntake(body, "2026-09-29T05:41:00Z")));
-    const r = run(box);
+    const r = run(withReading(sandbox(), body));
     expect(r.status, r.out).toBe(0);
     const commit = r.calls.find((c) => c.startsWith("git [commit]"));
-    expect(commit).toBe("git [commit] [-m] [measure(prize-intake): 10 open of 15 listed; AI rule unknown: 1 new field(s) to read by hand [skip ci]]");
+    // The list-count half counts the copied entry (10 open); the rules table holds one row per event, so 9 rows.
+    expect(commit).toBe(
+      "git [commit] [-m] [measure(prize-intake): 10 open of 15 listed; AI rule unknown: 1 new field(s) to read by hand; rules pages: 0 of 9 graded [skip ci]]",
+    );
     expect(commit).not.toMatch(/not stated/);
+  });
+
+  it("counts graded rows in the subject from the window quarters, never a verdict", () => {
+    const box = withReading(sandbox());
+    const file = join(box.dir, PRIZE_INTAKE_FILE);
+    const j = JSON.parse(readFileSync(file, "utf8"));
+    j.aiAllowed.quarters[1] = { ...j.aiAllowed.quarters[1], rowsGraded: 3, qualifying: 1, awaiting: 5 };
+    j.aiAllowed.quarters.unshift({ quarter: "2026-Q2", position: "closed", eventsInWindow: 4, rowsGraded: 4, qualifying: 0, awaiting: 0, unsettled: 0 });
+    writeFileSync(file, JSON.stringify(j));
+    const commit = run(box).calls.find((c) => c.startsWith("git [commit]"));
+    expect(commit).toContain("; rules pages: 3 of 9 graded [skip ci]");
+    expect(commit).not.toMatch(/qualif|yes/i);
   });
 
   it("does not commit an unchanged reading", () => {

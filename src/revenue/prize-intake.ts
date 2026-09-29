@@ -25,18 +25,31 @@
  * a real zero. "Open" is judged by calendar date: a deadline on or after the reading's UTC day is open (the list gives
  * dates without a time or zone, so the deadline day itself counts as open).
  *
- * PARTLY BUILT against research/channel-loop/BOARD-LOOP.md §13. The number §13 exists for is the count of events with
+ * BOTH HALVES OF research/channel-loop/BOARD-LOOP.md §13. The number §13 exists for is the count of events with
  * deadlines IN THE QUARTER whose rendered RULES PAGES explicitly permit AI-built entries (no human-authorship
- * attestation), written to research/measurements/ai-allowed-events.md, read quarterly from the measurement calendar,
- * and killed after two consecutive quarters under 3. This module is only the list-count half: it counts open entries
- * from the reading day on (not the quarter) and reads no rules page. The rules-page read, the quarterly window, that
- * measurement file and the calendar entry are NOT built; the report line says so every tick, and CHANNEL_LOOP.md row
- * 13 should read "partly built", never "built".
+ * attestation), killed after two consecutive quarters under 3. This module is the list-count half (the counts above,
+ * open entries from the reading day on). The same weekly run also writes the rules-page half through
+ * src/revenue/ai-allowed-events.ts: research/measurements/ai-allowed-events.md, a table of the events whose deadline
+ * falls in the current or next calendar quarter for a reading session to grade from rendered rules pages; the URLs
+ * still awaiting a reading, in render-watch's urls syntax; and per-quarter counts (`aiAllowed`) in the state file. The
+ * job grades nothing: a quarter's qualifying count stays null until a session grades a row, and the kill is computed
+ * only from closed, fully graded quarters. The number therefore exists only as far as sessions read rules pages. The
+ * quarterly read in CHANNEL_LOOP.md's measurement calendar is the main thread's to add; nothing here writes that file.
  */
 
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import {
+  AI_ALLOWED_TABLE_FILE,
+  AI_ALLOWED_URLS_FILE,
+  AiAllowedTableError,
+  buildAiAllowedTable,
+  describeAiAllowed,
+  problemWithAiAllowed,
+  type AiAllowedSummary,
+  type ListedEvent,
+} from "./ai-allowed-events.js";
 
 export const PRIZE_INTAKE_SOURCE = "https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json";
 export const PRIZE_INTAKE_FILE = join("state", "colony", "prize-intake.json");
@@ -106,9 +119,14 @@ export interface PrizeIntakeMeasurement {
    * states an AI rule is unknown until read by hand. Never true: this reader reads no AI rule.
    */
   aiRuleFieldInSource: false | null;
-  /** Always null — unmeasured, not zero. */
+  /** Always null — unmeasured, not zero. The list states no AI rule; the rules-page count is in aiAllowed. */
   openAiAllowedStated: null;
   openAiNotForbiddenStated: null;
+  /**
+   * The rules-page half (src/revenue/ai-allowed-events.ts): per-quarter counts of the table a reading session grades.
+   * Written by runPrizeIntake; absent from summarisePrizeIntake and from readings made before the table existed.
+   */
+  aiAllowed?: AiAllowedSummary;
 }
 
 const MONTHS: Record<string, number> = {
@@ -224,6 +242,27 @@ export function summarisePrizeIntake(bodyText: string, measuredAtIso: string): P
   };
 }
 
+/**
+ * The list's text → every entry whose deadline reads, with its name, prize and URLs exactly as the list gives them:
+ * the input of the rules-page table. Call it on a body summarisePrizeIntake accepted.
+ */
+export function listedEventsFrom(bodyText: string): ListedEvent[] {
+  const data = (JSON.parse(bodyText) as { data: Record<string, unknown>[] }).data;
+  const events: ListedEvent[] = [];
+  for (const e of data) {
+    const deadline = parseListDate(e.deadline);
+    if (deadline === null) continue;
+    events.push({
+      name: typeof e.name === "string" ? e.name : stated(e.name) ? String(e.name) : "",
+      deadline,
+      prize: stated(e.prize) ? String(e.prize) : null,
+      url: typeof e.url === "string" ? e.url : null,
+      otherUrls: Array.isArray(e.additional_urls) ? e.additional_urls.filter((u): u is string => typeof u === "string") : [],
+    });
+  }
+  return events;
+}
+
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 /** 861225 → "861,225", without depending on the runtime's locale data. */
 const thousands = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -234,15 +273,28 @@ const aiRuleShort = (m: PrizeIntakeMeasurement) =>
     : `unknown (${plural(m.unknownFields, "new field", "new fields")} to read by hand)`;
 
 export interface RunPrizeIntakeOptions {
-  outFile?: string;
+  /**
+   * The directory the three files are read from and written under (default: the cwd): PRIZE_INTAKE_FILE,
+   * AI_ALLOWED_TABLE_FILE and AI_ALLOWED_URLS_FILE, plus research/rendered/ for the capture pointers a session cites.
+   */
+  root?: string;
   nowIso?: string;
   fetchImpl?: typeof fetch;
   timeoutMs?: number;
 }
 
-/** One GET of the source, then the file or nothing. Never throws. */
+/** Is this root-relative path a file? */
+const isFileUnder = (root: string, rel: string): boolean => {
+  try {
+    return statSync(join(root, rel)).isFile();
+  } catch {
+    return false;
+  }
+};
+
+/** One GET of the source, then all three files or nothing. Never throws. */
 export async function runPrizeIntake(options: RunPrizeIntakeOptions = {}): Promise<{ code: 0 | 1; message: string }> {
-  const outFile = options.outFile ?? PRIZE_INTAKE_FILE;
+  const root = options.root ?? ".";
   const fetchImpl = options.fetchImpl ?? fetch;
   try {
     const response = await fetchImpl(PRIZE_INTAKE_SOURCE, {
@@ -255,15 +307,50 @@ export async function runPrizeIntake(options: RunPrizeIntakeOptions = {}): Promi
     if (response.status !== 200) throw new PrizeIntakeError(`HTTP ${response.status}`);
     const text = await response.text();
     const m = summarisePrizeIntake(text, options.nowIso ?? new Date().toISOString());
-    mkdirSync(dirname(outFile), { recursive: true });
-    const tmp = `${outFile}.tmp`;
-    writeFileSync(tmp, `${JSON.stringify(m, null, 2)}\n`);
-    renameSync(tmp, outFile);
+
+    // The rules-page half. The table holds a reading session's cells, so one the job cannot read back is never
+    // overwritten: the run fails, writes nothing, and the red job names the line to fix.
+    const tablePath = join(root, AI_ALLOWED_TABLE_FILE);
+    let built: ReturnType<typeof buildAiAllowedTable>;
+    try {
+      built = buildAiAllowedTable({
+        events: listedEventsFrom(text),
+        measuredAt: m.measuredAt,
+        measuredOn: m.measuredOn,
+        source: m.source,
+        sourceSha256: m.sourceSha256,
+        existingMarkdown: existsSync(tablePath) ? readFileSync(tablePath, "utf8") : null,
+        captureExists: (rel) => isFileUnder(root, rel),
+      });
+    } catch (error) {
+      if (!(error instanceof AiAllowedTableError)) throw error;
+      throw new PrizeIntakeError(
+        `the rules-page table ${AI_ALLOWED_TABLE_FILE} cannot be read back (${error.message}); it holds a reading session's cells, so it is not overwritten`,
+      );
+    }
+    const reading: PrizeIntakeMeasurement = { ...m, aiAllowed: built.summary };
+    const outputs: [string, string][] = [
+      [join(root, PRIZE_INTAKE_FILE), `${JSON.stringify(reading, null, 2)}\n`],
+      [tablePath, built.markdown],
+      [join(root, AI_ALLOWED_URLS_FILE), built.urls],
+    ];
+    // Every file is written beside its target first and only then renamed into place, so a write that fails part-way
+    // leaves last week's three files as they were.
+    for (const [file, body] of outputs) {
+      mkdirSync(dirname(file), { recursive: true });
+      writeFileSync(`${file}.tmp`, body);
+    }
+    for (const [file] of outputs) renameSync(`${file}.tmp`, file);
+
+    const window = built.summary.quarters.filter((q) => q.position !== "closed");
+    const rows = window.reduce((a, q) => a + q.eventsInWindow, 0);
+    const graded = window.reduce((a, q) => a + q.rowsGraded, 0);
     return {
       code: 0,
       message:
         `Prize intake: ${headline(m)} (${m.openRegistrationClosed} registration closed, ${m.openWithStatedUsdPrize} with a stated USD prize); ` +
-        `AI rule: ${aiRuleShort(m)}. Wrote ${outFile}.`,
+        `AI rule: ${aiRuleShort(m)}. Rules pages: ${graded} of ${rows} rows in the window graded; ${built.summary.urlsAwaiting} URLs await a render. ` +
+        `Wrote ${PRIZE_INTAKE_FILE}, ${AI_ALLOWED_TABLE_FILE} and ${AI_ALLOWED_URLS_FILE} under ${root}.`,
     };
   } catch (error) {
     const why = error instanceof Error ? error.message : String(error);
@@ -315,6 +402,9 @@ function problemWith(d: Record<string, unknown>): string | null {
   // false exactly when every key was known, null exactly when one was not; never true — this reader reads no AI rule.
   if (d.aiRuleFieldInSource !== (n.unknownFields === 0 ? false : null)) return "aiRuleFieldInSource does not match unknownFields";
   if (d.openAiAllowedStated !== null || d.openAiNotForbiddenStated !== null) return "it carries an AI-rule count this reader never produces";
+  // The rules-page counts: absent from a reading made before the table existed; when present, they must be what the
+  // table could have produced — a qualifying count only beside a graded row, a kill only where the quarters support it.
+  if (d.aiAllowed !== undefined) return problemWithAiAllowed(d.aiAllowed, d.measuredOn);
   return null;
 }
 
@@ -363,8 +453,9 @@ export function readPrizeIntake(file: string = PRIZE_INTAKE_FILE, nowMs: number 
       ? " AI or automated solutions allowed: not counted — none of the list's fields states it."
       : ` AI or automated solutions allowed: unknown — the list carries ${plural(m.unknownFields, "field", "fields")} this reader does not know, ` +
         `${m.unknownFields === 1 ? "which may state it; read it" : "any of which may state it; read them"} by hand.`) +
-    " Partly built: this is the list-count half of BOARD-LOOP §13; its number (events with deadlines in the quarter whose rules pages" +
-    " explicitly permit AI-built entries) needs a per-event rules-page read that is not built.";
+    (m.aiAllowed === undefined
+      ? ` Rules pages (BOARD-LOOP §13): not in this reading — the weekly job writes ${AI_ALLOWED_TABLE_FILE} from its next run.`
+      : describeAiAllowed(m.aiAllowed));
   if (ageDays > PRIZE_INTAKE_STALE_DAYS) {
     line += ` STALE: read ${ageDays.toFixed(1)} days ago, so the weekly job has missed a run; these are not this week's numbers.`;
   }

@@ -4,7 +4,7 @@ A validator **and generator** for the Israeli VAT detailed report file — **PCN
 
 Revenue line: `pcn874` in the automaton's revenue colony. Rail: Gumroad. Owner one-time steps: **2, 3, 5, 6 and 7** of [`docs/OWNER_STEPS.he.md`](../../docs/OWNER_STEPS.he.md) (step 1 is done, 22.9.2026); the list is `src/revenue/owner-steps.ts`.
 
-Nothing in this package is for sale yet and no price is set. The board's build order was **validator first**, and a validator that nobody can check is worth less than none. The generator was added on 2026-09-07, on top of it: it turns a documented CSV of documents into the file, and it **refuses to write a file the validator rejects** — see [`docs/GENERATOR.md`](docs/GENERATOR.md).
+Nothing in this package is for sale yet and no price is set. A paid offer, if any, is a one-time licence to a browser generator page and is priced only after the free validator page's D0+56 read passes (RULING-2026-09-29-lines (f)); per-period pricing is rejected; the published free core is the validator. The board's build order was **validator first**, and a validator that nobody can check is worth less than none. The generator was added on 2026-09-07, on top of it: it turns a documented CSV of documents into the file, and it **refuses to write a file the validator rejects** — see [`docs/GENERATOR.md`](docs/GENERATOR.md).
 
 ---
 

@@ -29,6 +29,15 @@ route exists, for the cost of one honest short video and one owner sign-in. If i
    28.9.2026 by `research/channel-loop/BOARD-LOOP.md` rank 5 and `PREREG-DECISIONS.md` §3: a `*.netlify.app`
    sub-brand host; D0 = public deploy **and** a recorded discovery submission; under 5 engaged stranger page views at
    D0+56 → Stage A is never asked (`evaluateWebArm`, `src/revenue/experiments.ts`).
+   **Sub-brand name (29.9.2026, `research/channel-loop/RULING-2026-09-29-lines.md` (e)): `chartsplained`, host
+   `https://chartsplained.netlify.app`.** Round 1 (`chartexplained`, `plotnotes`, `axisnotes`, `dataplotted`,
+   `linesandbars`) had no name free everywhere (runner, 08:54 UTC, `c752cfc`); round 2 found `chartsplained` and
+   `datawalkthrough` free on all four, and `chartsplained` comes first in list order (`a7efa2b`). The owner may veto it; the
+   next in line is `datawalkthrough`. The rule: the first name in `research/measurements/t1-subbrand-candidates.txt`
+   that `scripts/brand-check.mjs` finds free on all four probes
+   (.com, GitHub, YouTube handle, `<name>.netlify.app`), via `.github/workflows/brand-check.yml`; the result lands in
+   `research/measurements/t1-subbrand-check.md`, and the same name serves the host and, later, the channel. The brand
+   Google-account question (shared step-8 account or a dedicated one) is deferred to `logs/FABLE_QUEUE.md` row 16.
 5. ✅ **The T1 video itself, built and gate-passed, held unpublished (27.9).** "Is TypeScript catching up with
    JavaScript on GitHub?" (GitHub Innovation Graph, CC0), 116.7 s. First audit: G3 PASS, G4 and G5 FAIL (numbers
    right; framing: GitHub's Octoverse 2025 headline unaddressed, the per-repository language counting unsaid, the "no"

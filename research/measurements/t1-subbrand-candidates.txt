@@ -1,0 +1,25 @@
+# T1 sub-brand candidates, in the order the loop takes them. Source: research/channel-loop/RULING-2026-09-29-lines.md (e),
+# the lines decider of the 29.9.2026 Fable sitting (FABLE_QUEUE row 15). Written 29.9.2026 by an Opus fold agent.
+# Checked by scripts/brand-check.mjs from a runner on four probes, status codes only: .com RDAP, GitHub, YouTube handle,
+# and <name>.netlify.app (404 = free; the "Site not found" reading is grade none until the fold reads the first result).
+# The FIRST name free on all four is the name for both the *.netlify.app host of the T1 web arm and, later, the YouTube
+# channel. If none of the five is free, the loop writes the next five by the same criteria and re-runs; no owner action
+# at any point. The owner may veto by saying so; nothing is asked.
+# Criteria (brand-candidates.txt:1-4): sayable, spelled one obvious way, no owner name, no claim the colony cannot back;
+# for an English data-explainer the name says what the page is. `tikufi` is excluded: it is the brand's own fallback.
+# The brand Google-account question (one account for several venues vs a dedicated one) is deferred to
+# FABLE_QUEUE row 16; the name is the same under either answer.
+chartexplained
+plotnotes
+axisnotes
+dataplotted
+linesandbars
+# Round 2 (29.9.2026, tick 16, main thread): the first five were checked by the runner at 08:54 UTC
+# (research/measurements/t1-subbrand-check.md, commit c752cfc) and none was free on all four probes, so the loop writes
+# the next five by the same criteria, as ruling (e) APPLY 3 says. The first five stay above so the list order, and the
+# record of why they were passed over, stay in one file.
+readthechart
+chartsplained
+plainchart
+datawalkthrough
+chartlesson

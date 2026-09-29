@@ -65,8 +65,8 @@ import { collectDependencies } from '../src/lib/site-deps.js';
 import { bundleProblems, fsBundleAccess } from '../src/lib/pcn874-bundle.js';
 import { ruleReferenceProblems } from '../src/lib/pcn874-rule-reference.js';
 import { checkPageA11y, checkStylesheetA11y } from '../src/lib/a11y-check.js';
-import { proButtonState } from '../src/lib/gumroad.js';
-import { withProPrice } from '../src/lib/pro-offer.js';
+import { proButtonState, gumroadRefundPeriodDays } from '../src/lib/gumroad.js';
+import { withProPrice, withRefundDays } from '../src/lib/pro-offer.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -150,19 +150,25 @@ for (const { page, unverified } of withhold) {
 // and no source line (src/lib/ai-declaration.js). The gate below re-checks it.
 for (const page of shipped) page.html = withShippedFiguresSentence(page.html, publish);
 
-// 1b. The price in the pricing FAQ. Only Gumroad's read-back price, and only once
-// the Pro button is `ready` (src/lib/gumroad.js); until then the answers carry no
-// amount. A FAQ answer whose JSON-LD twin drifted from it stops the build, preview
-// too (src/lib/pro-offer.js).
+// 1b. The price and the refund period in the pricing FAQ. Only Gumroad's read-back
+// price and period, and only once the Pro button is `ready` (src/lib/gumroad.js);
+// until then the answers carry no amount and the refund answer is dropped, and it
+// is dropped too while no period was read back (RULING-2026-09-29-lines (h)). A
+// FAQ answer whose JSON-LD twin drifted from it stops the build, preview too
+// (src/lib/pro-offer.js).
 let proPrice = null;
+let refundDays = null;
 try {
-  proPrice = proButtonState(JSON.parse(readFileSync(join(root, 'src/config/site.json'), 'utf8'))).price;
+  const site = JSON.parse(readFileSync(join(root, 'src/config/site.json'), 'utf8'));
+  const button = proButtonState(site);
+  proPrice = button.price;
+  refundDays = button.state === 'ready' ? gumroadRefundPeriodDays(site) : null;
 } catch (e) {
-  console.error(`  ! cannot read src/config/site.json (${e.message}) - no price goes into the FAQ`);
+  console.error(`  ! cannot read src/config/site.json (${e.message}) - no price and no refund period go into the FAQ`);
 }
 for (const page of shipped) {
   try {
-    page.html = withProPrice(page.html, proPrice);
+    page.html = withRefundDays(withProPrice(page.html, proPrice), refundDays);
   } catch (e) {
     refuse('the pricing FAQ and its JSON-LD disagree', [`${page.path}: ${e.message}`]);
   }

@@ -198,8 +198,11 @@ describe("revenue/runner report rendering", () => {
     // to, and the report prints it beside the ₪0."
     const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
     const report = renderReport(db, result);
-    expect(report).toContain("| Line targets, summed | ₪1,100 against");
-    expect(report).toMatch(/Contested upper bounds, not targets and not in the sum: `apify-actors` ₪1,500 \(target ₪200\), `il-biz-tools` ₪400 \(target ₪0\)\./);
+    // Since RULING-2026-09-29-lines.md (b) Apify is planned at ₪0 too, with ₪200 contested; the refused ₪1,500 is kept in
+    // the basis text and must not be printed as the line's upper bound.
+    expect(report).toContain("| Line targets, summed | ₪900 against");
+    expect(report).toMatch(/Contested upper bounds, not targets and not in the sum: `apify-actors` ₪200 \(target ₪0\), `il-biz-tools` ₪400 \(target ₪0\)\./);
+    expect(report).not.toMatch(/`apify-actors` ₪1,500/);
   });
 
   it("prints the Apify stranger count with its biased-low label, read or not (research/breadth/BOARD.md Q5)", async () => {
