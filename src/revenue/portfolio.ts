@@ -156,9 +156,8 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
       "strangerUsers30d at or above 200 → design pricing, with the free-source disclosure on the listing",
       "30-day payout at or above target",
     ],
-    // Board §3: RETARGET ₪3,000 → ₪200. The ₪1,500 that five groups' survivors
-    // collapsed into is recorded in TARGET_BASIS as the contested upper bound, not
-    // as the target. See CONTESTED_UPPER_BOUNDS.
+    // 7.9 record (board §3): retargeted ₪3,000 → ₪200, with the ₪1,500 that five
+    // groups' survivors collapsed into as the contested upper bound. Superseded:
     // Board 29.9.2026 (RULING-2026-09-29-lines (b)): planned at ₪0 as the
     // constraint-7 instrument; ₪200 is the contested upper bound (the 8.7
     // users/Actor base rate); ₪1,500 is the refused marketing-mean figure,

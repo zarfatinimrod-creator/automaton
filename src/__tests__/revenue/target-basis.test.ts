@@ -203,6 +203,17 @@ describe("the board's decision of 7.9.2026, as arithmetic", () => {
     );
     const seed = DEFAULT_PORTFOLIO.find((s) => s.id === "apify-actors")!;
     expect(seed.targetMonthlyAgorot).toBe(0);
+    // Review of the (b) fold, findings 1-2: the playbook and the publish doc are what the line's agent reads, and both
+    // still called ₪1,500 the contested upper bound and ₪200 the committed target after the field moved.
+    for (const path of ["skills/revenue-apify-actors/SKILL.md", "products/apify-il-open-data/docs/PUBLISH.md"]) {
+      const text = readFileSync(path, "utf8").replace(/\s+/g, " ");
+      expect(text, path).toContain("RULING-2026-09-29-lines");
+      expect(text, path).not.toMatch(/₪1,500 is recorded as the contested upper bound/);
+      expect(text, path).not.toMatch(/contested ₪1,500 upper bound/);
+      expect(text, path).not.toMatch(/committed ₪200/);
+      expect(text, path).not.toMatch(/₪200 \(`apify-actors` target/);
+    }
+    expect(readFileSync("skills/revenue-apify-actors/SKILL.md", "utf8")).toContain("**Planned target: ₪0**");
   });
 
   it("carries the 29.9.2026 sentences into il-biz-tools' and pcn874's basis (RULING-2026-09-29-lines.md (a), (f), (h) item 4)", () => {

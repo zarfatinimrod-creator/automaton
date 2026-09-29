@@ -63,22 +63,37 @@ describe("brand-check probes, against a fake fetch (nothing leaves the container
   /** A fetch that answers from a table by host, records every call, and never touches the network. */
   function fakeFetch(byUrl: Record<string, number | Error>) {
     const calls: { url: string; redirect: unknown }[] = [];
-    const impl = async (url: string, init: { redirect?: unknown } = {}) => {
+    const signals: unknown[] = [];
+    const impl = async (url: string, init: { redirect?: unknown; signal?: unknown } = {}) => {
       calls.push({ url, redirect: init.redirect });
+      signals.push(init.signal);
       const answer = byUrl[url];
       if (answer instanceof Error) throw answer;
       if (answer === undefined) throw new Error(`unexpected fetch ${url}`);
       let cancelled = false;
       return { status: answer, body: { cancel: async () => void (cancelled = true) }, get cancelled() { return cancelled; } };
     };
-    return { impl, calls };
+    return { impl, calls, signals };
   }
 
   it("reads a Netlify 404 as free, and keeps only the status", async () => {
-    const { impl, calls } = fakeFetch({ "https://plotnotes.netlify.app": 404 });
+    const { impl, calls, signals } = fakeFetch({ "https://plotnotes.netlify.app": 404 });
     expect(await probeStatus("https://plotnotes.netlify.app", impl)).toBe(404);
     // redirect: "manual" — a Netlify site that 301s to a custom domain is a site, and must not be followed to a 404.
     expect(calls).toEqual([{ url: "https://plotnotes.netlify.app", redirect: "manual" }]);
+    // Every probe carries a deadline: a host that never answers must end as unknown, not hang the runner's job.
+    expect(signals).toHaveLength(1);
+    expect(signals[0]).toBeInstanceOf(AbortSignal);
+    expect((signals[0] as AbortSignal).aborted).toBe(false);
+  });
+
+  it("reads a probe that hit its deadline as unknown, never free", async () => {
+    const timedOut = new DOMException("The operation was aborted due to timeout", "TimeoutError");
+    const { impl, signals } = fakeFetch({ "https://slow.netlify.app": timedOut });
+    const status = await probeStatus("https://slow.netlify.app", impl);
+    expect(status).toBe("error: The operation was aborted due to timeout");
+    expect(verdictOf(status)).toBe("unknown");
+    expect(signals[0]).toBeInstanceOf(AbortSignal);
   });
 
   it("reads anything but a 404 from Netlify as taken or unknown, never free", async () => {
@@ -176,6 +191,15 @@ describe("brand-check.yml takes the candidate list as an input", () => {
     expect(yml).toMatch(/workflow_dispatch:\s*\n\s*inputs:\s*\n\s*candidates:/);
     expect(yml).toContain('"research/measurements/*-candidates.txt"');
     expect(yml).toContain("--candidates");
+  });
+
+  it("gives the dispatch input no default, so accepting the form never re-dates the 27.9 brand list", () => {
+    // Review of the (e) fold, finding 4: a default of brand-candidates.txt turned a dispatch meant for the T1 list into
+    // a re-run of the brand list, overwriting its committed answers with a new date and a fourth (Netlify) column.
+    const dispatch = yml.slice(yml.indexOf("workflow_dispatch:"), yml.indexOf("\n  push:"));
+    expect(dispatch).toMatch(/candidates:/);
+    expect(dispatch).toMatch(/required: true/);
+    expect(dispatch).not.toMatch(/^\s*default:/m);
   });
 
   it("passes the input through the environment, never into the shell script's text", () => {

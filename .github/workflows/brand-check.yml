@@ -10,9 +10,10 @@ on:
   workflow_dispatch:
     inputs:
       candidates:
-        description: "A candidate list under research/measurements/, named <stem>-candidates.txt"
+        # No default, on purpose: accepting a default would re-measure a list whose answers already decided something
+        # (the 27.9 brand list) and re-date them. A dispatch names its list.
+        description: "A candidate list under research/measurements/, named <stem>-candidates.txt (no default: name it)"
         required: true
-        default: research/measurements/brand-candidates.txt
   # Once when a candidate list changes on a working branch; never on main. A push runs each list the push changed, and
   # only those: a checker-only change re-measures nothing, so a list whose answers already decided a name (the brand,
   # 27.9) is not silently re-dated by an edit to the script.

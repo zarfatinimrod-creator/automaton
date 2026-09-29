@@ -10,6 +10,8 @@ worktree מבודד של `claude/new-session-j071dx` (בסיס `f378977`) · מ�
 ב-`scripts/brand-check.mjs`, קלט לרשימה ב-`.github/workflows/brand-check.yml`, ורישום "ממתין לבדיקת ה-runner" ב-T1-PROTOCOL,
 ב-PREREG §3.5 ובערכת הזהות. לא לשגר שום workflow, לא לדחוף, ₪0.
 
+סבב שני (אותו יום, סוכן תיקון על Opus): לתקן כל ממצא של סוקר הקוד שמחזיק אחרי אימות, ולרשום כאן ממצאים שנדחו ולמה.
+
 ## 2. הפעולות המרכזיות שביצעתי
 - **בסיס:** ה-worktree נפתח על `215b19b` שאינו צאצא של `f378977` → `git reset --hard origin/claude/new-session-j071dx`.
 - **בדיקות קודם:** כתבתי/עדכנתי את הבדיקות לפני הקוד והרצתי אותן אדומות (21 כישלונות צפויים), ורק אז מימשתי.
@@ -33,6 +35,30 @@ worktree מבודד של `claude/new-session-j071dx` (בסיס `f378977`) · מ�
 - **מצב המושבה:** `sync-portfolio` (apify-actors עכשיו ₪0.00) ואז `report`; הדוח מדפיס ₪900, Inferred ₪600,
   ו-"`apify-actors` ₪200 (target ₪0)".
 
+**סבב תיקוני הביקורת — שבעה ממצאים, כולם אומתו ותוקנו, אף אחד לא נדחה:**
+1. `skills/revenue-apify-actors/SKILL.md:9-10` — המשפט "₪1,500 is recorded as the contested upper bound" היה שקרי. הפסקה
+   נפתחת עכשיו ב-"**Planned target: ₪0**" (כמו ב-il-biz-tools), ₪200 כגבול עליון שנוי במחלוקת שחוזר רק מקריאת יום 30,
+   ו-₪1,500 כנתון שנדחה ונשאר רק בטקסט הבסיס. `skills/revenue-oss-bounties/SKILL.md:81-82` — הסיבה "planned at ₪0, build
+   budget kept" חלה עכשיו על שני הקווים, בדיוק כמו ב-`intake.ts:245-246`.
+2. `products/apify-il-open-data/docs/PUBLISH.md:15` — "₪200 (`apify-actors` target …)" הפך ל-"₪0 planned … ₪200 contested
+   upper bound"; `:85-86` — "Apify's contested ₪1,500 upper bound … the committed ₪200" הפך ל-"the ₪1,500 the board refused
+   (recorded in the `TARGET_BASIS` basis text) … the contested ₪200".
+3. `.github/workflows/algora-supply.yml:6` — "₪300 of the committed ₪1,100" → "₪900".
+4. `.github/workflows/brand-check.yml` — אומת: `workflow_dispatch` עם ברירת המחדל `brand-candidates.txt` היה מריץ מחדש את
+   רשימת המותג של 27.9, דורס את `brand-candidates.json` ומוסיף עמודת Netlify. בחרתי **בלי ברירת מחדל** (הקלט עדיין
+   `required: true`), ולא ברירת מחדל של רשימת T1: הפסיקה (שורה 272) אומרת לשגר "עם קובץ המועמדים כקלט", וכך אף רשימה
+   שכבר הכריעה משהו — גם T1 אחרי שתימדד — לא תתוארך מחדש מלחיצה על "Run" בלי שם.
+5. `src/revenue/portfolio.ts:159-161` — ההערה הישנה בזמן הווה ("is recorded … See CONTESTED_UPPER_BOUNDS") הועברה לזמן
+   עבר כרשומת 7.9 שסומנה "Superseded", והסימול `CONTESTED_UPPER_BOUNDS` (שלא קיים בשום מקום בקוד) הוסר. טקסט הפסיקה נשאר
+   מתחתיה.
+6. `brand-check.test.ts` — אומת: הסרת `signal` מ-`probeStatus` השאירה את כל 12 הבדיקות ירוקות. ה-fetch המזויף רושם עכשיו
+   את `init.signal`; בדיקת ה-404 דורשת `AbortSignal` שעוד לא בוטל, ונוספה בדיקה שבה ה-fetch נדחה ב-`DOMException`
+   מסוג `TimeoutError` והפסק הוא `unknown`.
+7. `docs/INCOME_PLAN.he.md:60` — משפט ה-28.9 שוחזר מילה במילה (כמו ב-`f378977`), ונוספה פסקה נפרדת "**עודכן 29.9.2026:**"
+   עם ₪900 (Apify 0, גבול שנוי במחלוקת ₪200) מיד אחריה; ההפניה ב-`:16` מונה עכשיו גם אותה, וכותרת ההערה ב-`:14`
+   אומרת "עודכנה 29.9". זה סוטה מהלשון המילולית של הפסיקה ("`:60` … → ₪900") אבל לא מכוונתה: המספר של היום מופיע
+   באותו מקום בסעיף, והרשומה המתוארכת לא נמחקת — כמו כל שאר הרשומות המתוארכות בקובץ.
+
 ## 3. קבצים/מערכות ששונו
 - קוד: `src/revenue/portfolio.ts`, `src/revenue/rails.ts`, `src/revenue/bounties/intake.ts` (הערות בלבד),
   `scripts/brand-check.mjs`, `.github/workflows/brand-check.yml`.
@@ -40,6 +66,11 @@ worktree מבודד של `claude/new-session-j071dx` (בסיס `f378977`) · מ�
 - נתונים/מחקר: `research/measurements/t1-subbrand-candidates.txt` (חדש), `research/faceless-youtube/{T1-PROTOCOL,PREREG-DECISIONS,VERDICT}.md`.
 - מסמכים: `docs/INCOME_PLAN.he.md`, `docs/OWNER_STEPS.he.md`, `docs/OWNER_STEPS.he.pdf`.
 - מצב: `state/colony/{colony.db,REPORT.md,dashboard.html}`. היומן הזה.
+- סבב התיקונים: `skills/revenue-apify-actors/SKILL.md`, `skills/revenue-oss-bounties/SKILL.md`,
+  `products/apify-il-open-data/docs/PUBLISH.md`, `.github/workflows/{algora-supply,brand-check}.yml`,
+  `src/revenue/portfolio.ts` (הערה בלבד), `docs/INCOME_PLAN.he.md`,
+  `src/__tests__/revenue/{brand-check,target-basis}.test.ts`, היומן הזה. שום נתון של התיק לא השתנה, ולכן
+  `colony.db`/`REPORT.md`/`dashboard.html` לא חודשו.
 
 ## 4. החלטות והנחות משמעותיות
 - **"לשמור את משפטי ה-₪1,500 מילה במילה" מול משפט שהפך לשקרי.** המשפט "the board committed to ₪200 and records
@@ -61,11 +92,13 @@ worktree מבודד של `claude/new-session-j071dx` (בסיס `f378977`) · מ�
   `research/measurements/<stem>-candidates.txt`; `set -f` מונע glob על הרשימה.
 - **שמות הפלט:** רשימה `X-candidates.txt` כותבת `X-candidates.json` (הנתיב שבו נשמרו תשובות המותג ב-27.9) ו-`X-check.md`,
   כך שהפסיקה מקבלת בדיוק `t1-subbrand-check.md`.
-- **INCOME_PLAN:60** נמצא בתוך פסקה מתוארכת "עודכן 28.9.2026". לא מחקתי את מספר ה-28.9: השורה אומרת עכשיו "אחרי אותה
-  ישיבה: ₪1,100; מ-29.9.2026: ₪900 (Apify 0 עם גבול ₪200 …)". אזכורי ₪3,500 נשארו (900+400+1,500+700 = 3,500 עדיין
+- **INCOME_PLAN:60** נמצא בתוך פסקה מתוארכת "עודכן 28.9.2026". בסבב הראשון כתבתי בתוכה "אחרי אותה ישיבה: ₪1,100;
+  מ-29.9.2026: ₪900"; הסוקר צדק שזה משכתב רשומה מתוארכת, ובסבב התיקונים היא שוחזרה והמספר עבר לפסקת 29.9 משלו (ממצא 7). אזכורי ₪3,500 נשארו (900+400+1,500+700 = 3,500 עדיין
   נכון), אבל התווית שונתה מ"הגבול השנוי במחלוקת של Apify" ל"נתון ה-₪1,500 שהדירקטוריון דחה", כי הגבול הוא עכשיו ₪200.
-- **לא נגעתי** ב-`skills/revenue-apify-actors/SKILL.md:9` ("Audited ceiling: ₪200") — התקרה המבוקרת עדיין ₪200, וזה
-  לא אזכור של הסכום המחויב. גם לא ברשומות מתוארכות (REJECTED.md, טבלת 4.9 ב-INCOME_PLAN).
+- **בסבב הראשון לא נגעתי** ב-`skills/revenue-apify-actors/SKILL.md:9` ("Audited ceiling: ₪200") — וזו הייתה טעות:
+  התקרה אכן ₪200, אבל הסוגריים אחריה ("₪1,500 is recorded as the contested upper bound") הפכו לשקר, והיעד המתוכנן ₪0
+  לא הופיע בספר ההפעלה בכלל. תוקן בסבב התיקונים (ממצא 1). ברשומות מתוארכות (REJECTED.md, טבלת 4.9 ב-INCOME_PLAN,
+  `portfolio.ts:31`) לא נגעתי.
 
 ## 5. שגיאות וניסיונות שנכשלו
 - הסקריפט הראשון שלי לעריכת הבדיקות (Python heredoc) נחסם על ידי שומר ה-worktree כ"מורכב מדי לאימות"; עברתי לכלי
@@ -75,6 +108,10 @@ worktree מבודד של `claude/new-session-j071dx` (בסיס `f378977`) · מ�
   הקובץ, לא את הבדיקה; (2) `summarizeTargetBasis` — ה-Inferred ירד מ-₪800 ל-₪600, השלכה אמיתית של (b); עדכנתי את
   המספר עם הערה.
 - אין כאן `pdftotext` או `pypdf`, אז לא חילצתי טקסט מה-PDF החדש כדי לאמת את ₪900 בתוכו; הוא נוצר מה-md הערוך.
+  (הסוקר חילץ אותו אחר כך עם pymupdf ומצא אותו תואם.)
+- **מה הסבב הראשון פספס, לפי הסוקר:** grep על "1,100" בלבד לא תופס משפטים שקובעים את *מבנה* היעד ("committed ₪200",
+  "contested ₪1,500 upper bound") — ולכן שני מסמכים שהסוכן של הקו קורא (ספר ההפעלה ו-PUBLISH.md) נשארו עם המספרים
+  הישנים; וה-default של קלט ה-workflow נשאר מהגרסה הקודמת בלי שנשאלה השאלה מה הוא מריץ.
 
 ## 6. בדיקות ופעולות ולידציה
 - לפני המימוש: 6 קבצי בדיקה, 21 כישלונות צפויים. אחרי: `npx vitest run src/__tests__/revenue` — 41/41 קבצים,
@@ -83,6 +120,12 @@ worktree מבודד של `claude/new-session-j071dx` (בסיס `f378977`) · מ�
   לא הורץ כאן (כלל ₪0: שום API חי מכאן).
 - `outputsFor` ו-`parseCandidates` נבדקו גם ידנית על שני הקבצים; ה-YAML של ה-workflow נותח בהצלחה ב-`yaml.safe_load`.
 - `sync-portfolio` ו-`report` הורצו; ההבדל ב-REPORT.md נקרא (₪900, Inferred ₪600, apify ₪200 (target ₪0)).
+- **סבב התיקונים:** נוספו שלוש קבוצות בדיקה — ב-`target-basis.test.ts` ספר ההפעלה ו-PUBLISH.md לא מכילים "₪1,500 is
+  recorded as the contested upper bound" / "contested ₪1,500 upper bound" / "committed ₪200" / "₪200 (`apify-actors` target",
+  וספר ההפעלה מכיל "**Planned target: ₪0**"; ב-`brand-check.test.ts` בדיקת ה-signal ובדיקת ה-`TimeoutError`, ובדיקה
+  שלקלט `candidates` של ה-dispatch אין `default:`. כל אחת אומתה שהיא נכשלת על הגרסה הישנה: טקסט ה-HEAD של שני המסמכים
+  תואם את הביטויים האסורים (grep); הסרת `signal` מ-`probeStatus` בעותק זמני — 2 כישלונות; החזרת ה-`default:` ל-YAML
+  בעותק זמני — כישלון אחד; שני הקבצים שוחזרו מגיבוי ב-scratchpad.
 
 ## 7. עבודה ידנית שחזרה על עצמה וכדאי להפוך לאוטומטית
 - **שינוי יעד של קו אחד נוגע בשבע בדיקות ובשלושה מסמכים.** המספרים ₪1,100/₪900 מופיעים מילולית ב-`target-basis`,
@@ -96,3 +139,5 @@ worktree מבודד של `claude/new-session-j071dx` (בסיס `f378977`) · מ�
 - ניסיון העריכה ב-Python שנחסם — סבב אחד מבוזבז.
 - גילוי השלכות הסכום דרך grep רחב על `1,100` בקוד ובבדיקות — משתלם; בלעדיו ארבע בדיקות היו נופלות רק בריצה המלאה.
 - סבב חילוץ טקסט מה-PDF (שני ניסיונות בלי כלי) — מבוזבז; היה עדיף לבדוק זמינות כלים לפני.
+- סבב התיקונים כולו (שבעה ממצאים) הוא מחיר של grep צר מדי בסבב הראשון; grep על "₪200"/"₪1,500"/"contested" בקבצים
+  שמזכירים את `apify-actors` היה תופס את ממצאים 1, 2 ו-5 מראש.
