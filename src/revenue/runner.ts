@@ -19,6 +19,14 @@ import { DEFAULT_MEASUREMENTS_DIR, ingestAlgoraSupplyMeasurement, ingestApifyMea
 import { BRAND_MAIL_PROBE_FILE, readBrandMailProbe, type BrandMailReading } from "./brand-mail.js";
 import { PRIZE_INTAKE_FILE, readPrizeIntake, type PrizeIntakeReading } from "./prize-intake.js";
 import {
+  DEFAULT_PAGE_VIEW_CLOCK_FILE,
+  DEFAULT_PAGE_VIEW_SITE_DIR,
+  evaluatePageViewLines,
+  readPageViews,
+  type PageViewReadResult,
+} from "./page-views-reader.js";
+import type { PageViewGateReading } from "./page-views.js";
+import {
   computePortfolioSummary,
   getLine,
   hasRevenueTables,
@@ -216,6 +224,10 @@ export interface TickOptions {
   brandMailFile?: string;
   /** Where the weekly prize-intake read commits its numbers (default state/colony/prize-intake.json, relative to the cwd). */
   prizeIntakeFile?: string;
+  /** The site whose page views are read (default products/il-biz-tools, relative to the cwd). */
+  pageViewSiteDir?: string;
+  /** The page-view clocks: D0 and the domain deploy day per line (default state/colony/page-view-clock.json). */
+  pageViewClockFile?: string;
 }
 
 export interface TickResult {
@@ -236,6 +248,10 @@ export interface TickResult {
   brandMail: BrandMailReading;
   /** The weekly mlcontests read (CHANNEL_LOOP.md §4 row 13): an instrument, one report line, never a blocker. */
   prizeIntake: PrizeIntakeReading;
+  /** The PostHog page-view read (with the ledger sync); null when the sync was not due. */
+  pageViews: PageViewReadResult | null;
+  /** The il-biz-tools / pcn874 page-view gates on the recorded weeks, every tick. A verdict is for the board to apply. */
+  pageViewGates: PageViewGateReading[];
   blockers: string[];
   summary: PortfolioSummary | null;
 }
@@ -265,6 +281,8 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
     stalledLines: [],
     brandMail: { file: options.brandMailFile ?? BRAND_MAIL_PROBE_FILE, status: "absent", line: null, blockers: [] },
     prizeIntake: readPrizeIntake(options.prizeIntakeFile ?? PRIZE_INTAKE_FILE, nowMs),
+    pageViews: null,
+    pageViewGates: [],
     blockers: [],
     summary: null,
   };
@@ -306,6 +324,36 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
       result.measurements.push(m);
       if (m.status === "invalid") result.blockers.push(`measurement ${m.file}: ${m.detail}`);
     }
+
+    // The page-view KPI (RULING-2026-09-29-loop.md (b)): one row per line per completed week, read from PostHog by the
+    // tick itself. A no-op that says what is missing until the read key, the project id, the counter and D0 all exist.
+    result.pageViews = await readPageViews(db, {
+      env: options.env ?? process.env,
+      fetchImpl: options.fetchImpl,
+      nowIso,
+      siteDir: options.pageViewSiteDir ?? DEFAULT_PAGE_VIEW_SITE_DIR,
+      clockFile: options.pageViewClockFile ?? DEFAULT_PAGE_VIEW_CLOCK_FILE,
+    });
+    if (result.pageViews.status === "error") result.blockers.push(`page views: ${result.pageViews.detail}`);
+  }
+
+  // The gates read the rows every tick, like the brand-mail probe: an instrument fault stays a blocker until it is
+  // fixed and the clock restarted, and a due verdict stays in the report until the board applies it.
+  const pageViewGates = evaluatePageViewLines(db, {
+    nowIso,
+    siteDir: options.pageViewSiteDir ?? DEFAULT_PAGE_VIEW_SITE_DIR,
+    clockFile: options.pageViewClockFile ?? DEFAULT_PAGE_VIEW_CLOCK_FILE,
+  });
+  result.pageViewGates = pageViewGates.readings;
+  for (const problem of pageViewGates.problems) result.blockers.push(`page-view clock: ${problem}`);
+  // A recorded D0 means a clock is running: a reader that cannot read is then a blocker at once, not only when the
+  // missing weeks turn overdue. Before D0 "not configured" is today's expected state and stays a report line.
+  const running = result.pageViewGates.filter((g) => g.anchorDay).map((g) => `${g.lineId} from ${g.anchorDay}`);
+  if (running.length && result.pageViews && (result.pageViews.status === "not_configured" || result.pageViews.status === "counter_off")) {
+    result.blockers.push(`page views: ${PAGE_VIEW_STATUS_WORDS[result.pageViews.status]} while a clock runs (${running.join(", ")}) — ${result.pageViews.detail}`);
+  }
+  for (const g of result.pageViewGates) {
+    if (g.verdict === "instrument_fault") result.blockers.push(`page views ${g.lineId}: instrument fault — ${g.notes.join("; ")}`);
   }
 
   if (shouldRun("revenue_supervisor_review")) {
@@ -484,6 +532,8 @@ export function renderReport(db: Database, result: TickResult): string {
   }
   if (result.brandMail?.line) out.push(`- ${result.brandMail.line}`);
   if (result.prizeIntake?.line) out.push(`- ${result.prizeIntake.line}`);
+  if (result.pageViews) out.push(`- Page views: ${PAGE_VIEW_STATUS_WORDS[result.pageViews.status]} — ${result.pageViews.detail}`);
+  for (const g of result.pageViewGates ?? []) out.push(`- ${describePageViewGate(g)}`);
   if (decisions.length) {
     out.push("");
     out.push("### Board decisions");
@@ -539,6 +589,23 @@ export function renderReport(db: Database, result: TickResult): string {
       "without one. Projections are never counted.",
   );
   return out.join("\n") + "\n";
+}
+
+const PAGE_VIEW_STATUS_WORDS: Record<PageViewReadResult["status"], string> = {
+  not_configured: "not configured",
+  counter_off: "counter off",
+  no_clock: "no D0",
+  up_to_date: "up to date",
+  recorded: "recorded",
+  error: "error",
+};
+
+/** One report line per page-view line: the verdict, its clock, why, and the weekly readings. */
+export function describePageViewGate(g: PageViewGateReading): string {
+  const clock = g.period ? ` (${g.period} period from ${g.anchorDay}, day ${g.day})` : "";
+  const weeks = g.weeks.length ? `; weeks: ${g.weeks.map((w) => `w${w.week} ${w.views}`).join(", ")}` : "";
+  const board = ["pause", "pass", "extend", "extension_exhausted", "kill"].includes(g.verdict) ? " — a reading for the board to apply" : "";
+  return `Page views \`${g.lineId}\`: ${g.verdict}${clock} — ${g.notes.join("; ")}${weeks}${board}`;
 }
 
 /** One-line summary suitable for a commit message. */

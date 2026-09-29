@@ -1,0 +1,8 @@
+{
+  "query": "SELECT properties.$pathname AS pathname, count() AS views FROM events WHERE event = '$pageview' GROUP BY pathname ORDER BY pathname LIMIT 1000",
+  "results": [],
+  "types": ["String", "UInt64"],
+  "columns": ["pathname", "views"],
+  "hogql": "SELECT properties.$pathname AS pathname, count() AS views FROM events WHERE equals(event, '$pageview') GROUP BY pathname ORDER BY pathname ASC LIMIT 1000",
+  "clickhouse": "SELECT ... (not read by the colony)"
+}

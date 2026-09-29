@@ -49,6 +49,7 @@ import type { Database } from "better-sqlite3";
 import { removeQueuedGoals } from "./goal-queue.js";
 import { getLine, insertLineFromSeed, latestKpis, listLines, updateLineFromSeed, updateLineStatus } from "./ledger.js";
 import { agorotFromIls } from "./money.js";
+import { PAGE_VIEW_KPI } from "./page-views.js";
 import { DEFAULT_DECISION_POLICY, type DecisionPolicy, type RevenueLineSeed } from "./types.js";
 
 /**
@@ -64,6 +65,19 @@ export const APIFY_STRANGER_KPI_LABEL =
 export const APIFY_STRANGER_KPI_RULE =
   "a reading under 10 is TEST_MORE (hidden or unwanted, indistinguishable), never \"permanent instrument\", until Apify identity verification is settled: pulled to the Publish sitting if the apify-docs read shows document-only verification, never asked if it shows any camera step (research/breadth/BOARD.md Q5)";
 
+/**
+ * The label the il-biz-tools and pcn874 page-view KPI carries wherever it is printed. The count is what PostHog
+ * received on the canonical host, so it is an upper bound on human readers: posthog-js blocks known bots only
+ * ("blocks known bots and crawlers client-side", PostHog web-analytics troubleshooting, as quoted in
+ * research/faceless-youtube/PREREG-DECISIONS.md §3.3).
+ */
+export const PAGE_VIEW_KPI_LABEL =
+  "cookieless page views on the canonical host, one row per week from the clock's anchor day; /preview/, noindex and withheld pages excluded; an upper bound on human readers (posthog-js blocks known bots only)";
+
+/** The reading rule that goes with it (logs/CHANNEL_LOOP.md §2; RULING-2026-09-28-floors.md row 9; BOARD-LOOP PUBLISH-10). */
+export const PAGE_VIEW_KPI_RULE =
+  "no gate reads it before two consecutive weekly writes; a week without a row is unmeasured, never zero; the gates (M-instrument by D0+21, M-reach at D0+56, the 8-week kill from the domain deploy) are src/revenue/page-views.ts and their verdicts are the board's to apply";
+
 export interface KpiLabel {
   /** Printed beside the KPI, verbatim, wherever the KPI is printed. */
   label: string;
@@ -77,6 +91,8 @@ export const KPI_LABELS: Record<string, Record<string, KpiLabel>> = {
     strangerUsers30d: { label: APIFY_STRANGER_KPI_LABEL, rule: APIFY_STRANGER_KPI_RULE },
     strangerRuns30d: { label: APIFY_STRANGER_KPI_LABEL, rule: APIFY_STRANGER_KPI_RULE },
   },
+  "il-biz-tools": { [PAGE_VIEW_KPI]: { label: PAGE_VIEW_KPI_LABEL, rule: PAGE_VIEW_KPI_RULE } },
+  pcn874: { [PAGE_VIEW_KPI]: { label: PAGE_VIEW_KPI_LABEL, rule: PAGE_VIEW_KPI_RULE } },
 };
 
 export interface LabelledKpi extends KpiLabel {
