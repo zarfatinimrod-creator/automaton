@@ -67,6 +67,11 @@ is why `MISSION.md` rule 4 exists.
 5. **Record money only as money:** every Gumroad sale enters the ledger through the Gumroad connector with
    its sale id (`GUMROAD_ACCESS_TOKEN`, hourly); refunds too. A checkout start is a KPI, never revenue.
 
+## Video
+
+Any clip of a tool page, on our own pages or anywhere else, goes through `docs/VIDEO_PUBLISHING_CHECKLIST.md`
+first: which items are platform rules and which are ours, and which only the account holder can check.
+
 ## Compliance
 
 State on every export that the user is responsible for their own filings; never present the site as an
