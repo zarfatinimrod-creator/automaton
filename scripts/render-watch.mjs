@@ -238,7 +238,8 @@ export function slugFromUrl(url) {
  *
  * Throws on an authoring mistake — a non-http(s) line, a URL that does not parse,
  * an unusable slug, an unknown flag, two lines claiming the same slug (which would
- * have one page silently overwrite another), or a tiktok.com URL (isTikTokHost).
+ * have one page silently overwrite another), a tiktok.com URL (isTikTokHost), or a
+ * URL on a site whose terms bar automated access (termsBarred).
  * Those are the "the script itself is broken" cases; everything that can go wrong
  * at fetch time is recorded instead.
  */
@@ -278,6 +279,12 @@ export function parseUrlList(text) {
           "(the TikTok pause, logs/CHANNEL_LOOP.md §9; pending logs/FABLE_QUEUE.md row 16(d)).",
       );
     }
+    // A site whose rendered terms bar automated access is refused the same way, in both modes
+    // (TERMS_BARRED says which, and where the terms say it).
+    const barred = termsBarred(hostname);
+    if (barred) {
+      throw new Error(`urls.txt line ${lineNumber}: ${url} is on ${barred.domain}: ${barred.why}.`);
+    }
     if (parts.length > 3) {
       throw new Error(
         `urls.txt line ${lineNumber}: at most three fields (URL, slug, flag), got ${parts.length}: "${raw}".`,
@@ -313,6 +320,33 @@ export function parseUrlList(text) {
   }
 
   return entries;
+}
+
+/**
+ * Sites whose rendered terms bar automated access, so render-watch never fetches them.
+ * The rule is the one the TikTok pause set (logs/CHANNEL_LOOP.md §9): a runner does not
+ * fetch a site whose terms forbid it. Gumroad: its terms (captured 29.9.2026) forbid
+ * "any manual or automated software ... to 'scrape' or download data from any web pages
+ * contained in the Services" (research/rendered/gumroad-terms.txt:326, also :343). Found
+ * in tick 19, after rows 155-186 had been fetched; whether any fetch is allowed again
+ * waits on logs/FABLE_QUEUE.md row 16(d). The Gumroad API is not a web page and is not
+ * fetched by this script.
+ */
+export const TERMS_BARRED = [
+  {
+    domain: "gumroad.com",
+    why:
+      "Gumroad's terms bar automated software that scrapes or downloads data from any web page of the Services " +
+      "(research/rendered/gumroad-terms.txt:326, :343; paused in tick 19, logs/CHANNEL_LOOP.md §9; pending logs/FABLE_QUEUE.md row 16(d))",
+  },
+];
+
+/** The TERMS_BARRED entry a host falls under (the domain or any subdomain; case and trailing dot ignored), or null. */
+export function termsBarred(hostname) {
+  const host = String(hostname ?? "")
+    .toLowerCase()
+    .replace(/\.+$/, "");
+  return TERMS_BARRED.find((b) => host === b.domain || host.endsWith(`.${b.domain}`)) ?? null;
 }
 
 /**
@@ -805,6 +839,10 @@ export async function fetchOne(entry, { fetchImpl = fetch, timeoutMs = TIMEOUT_M
         return refused(`HTTP ${response.status} redirect to a ${next.protocol} URL; not followed`);
       }
       if (isTikTokHost(next.hostname)) return refused(tiktokRedirectError(next.hostname));
+      const barredNext = termsBarred(next.hostname);
+      if (barredNext) {
+        return refused(`redirected to ${barredNext.domain} (${next.hostname.toLowerCase()}), whose terms bar automated access; not followed`);
+      }
       if (redirects >= MAX_REDIRECTS) return refused(`more than ${MAX_REDIRECTS} redirects; not followed`);
       url = next.href;
     }

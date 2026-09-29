@@ -118,6 +118,15 @@ redirects to TikTok is not followed either: a plain fetch follows redirects by h
 followed` with the redirect's status. Research on TikTok reads GitHub mirrors (Open Terms Archive)
 instead.
 
+**Never a site whose terms bar automated access.** `TERMS_BARRED` in `scripts/render-watch.mjs` lists
+them, each with the terms line that bars it, and the fetcher refuses them exactly as it refuses TikTok:
+at parse time in both modes, and as a redirect hop. The first is Gumroad (tick 19, 29.9.2026): its terms
+forbid "any manual or automated software ... to 'scrape' or download data from any web pages contained
+in the Services" (`gumroad-terms.txt:326`, also `:343`). Thirteen Gumroad pages had been fetched by
+then; their lines in `urls.txt` are commented out as `# paused (tick 19 ...)`, so the weekly run does
+not fetch them again. Whether any Gumroad page may be fetched again waits on `logs/FABLE_QUEUE.md`
+row 16(d). A new site's terms are read **before** its first line is queued, not after.
+
 ## The js flag: a JavaScript-capable render
 
 Some pages reach the runner as an empty JavaScript shell: Salesforce help centres
@@ -150,6 +159,10 @@ instead of fetched. What that does and does not do:
   run (a nonce, a timestamp), which the weekly run then commits as a change. If a `js` capture of a
   Salesforce page still comes back empty, shadow DOM is the first suspect — write that down rather than
   concluding the page is blank.
+- **Dispatching queued rows.** `node scripts/queue-zero-test.mjs --override 174-179` prints the lines for
+  the workflow's `urls` input that render exactly ZERO-TESTS rows 174-179, each row's own line with its
+  `js` flag. It writes nothing, skips a retired row (its URL commented out) and names it on stderr, fails
+  on a row with no line, and re-parses the output with render-watch's parser.
 - **The same terms gate as a plain GET.** A `js` line is queued with
   `scripts/queue-zero-test.mjs --js --terms <slug>`, and writes that slug into the line's comment. The
   script refuses unless `<slug>` is a successful capture (its meta has no error and a 2xx status) with
