@@ -11,6 +11,7 @@ Sellable products built by the revenue colony. Each directory is standalone (own
 | `telegram-il-tools-bot` | ~~telegram-bots~~ — **PARKED** | ~~Telegram Stars → TON via Fragment~~ — killed: Fragment's payout KYC needs a selfie | none — do not start it |
 | `x402-il-api` | ~~paid-apis / agent-services~~ — **standby rail, not a line** | x402 (USDC on Base), kept only while it costs ₪0/month | none |
 | `chart-explainer` | the faceless-youtube **experiment** (`src/revenue/experiments.ts`; not a portfolio line) — renders and gate-checks, **holds unpublished**; Python, own CI (`chart-explainer-ci.yml`) | none: no upload code exists | none now; Stage A is not asked before T1 is built and gate-passed (`T1-PROTOCOL.md`) |
+| `parent-guides` | none — a **sample** the owner asked for (28.9.2026): faceless Hebrew parent-guide videos (first: YouTube Kids setup), every fact quoted from `research/rendered/`, **held unpublished**; Python, tests local (no CI job yet) | none: no upload code exists | none |
 
 Line ids come from `src/revenue/portfolio.ts` and do not all match their directory name; this table is the mapping. Owner steps are numbered as in `docs/OWNER_STEPS.he.md` and defined as data in `src/revenue/owner-steps.ts`.
 
