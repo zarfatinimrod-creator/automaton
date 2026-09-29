@@ -1,0 +1,17 @@
+{
+  "url": "https://help.streetlib.com/article/427-distribution-agreement",
+  "slug": "help-streetlib-com-article-427-distribution-agreement",
+  "fetchedAt": "2026-09-29T00:20:51.583Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 81168,
+  "sha256": "2742a409320034658cd1d2b855398e607b03b1b7ac5dd778f302c16b1acda1fb",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/help-streetlib-com-article-427-distribution-agreement.html",
+  "textPath": "research/rendered/help-streetlib-com-article-427-distribution-agreement.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

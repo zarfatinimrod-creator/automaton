@@ -35,25 +35,46 @@ export function normalizeBranding(input) {
 }
 
 /**
- * Apply branding to the document preview. With `enabled` false - no licence -
- * the preview renders unbranded, which is exactly what the free tier is.
+ * Apply branding to the document preview, in one of three modes:
+ *
+ *   'off'   - no licence and nothing to try: the preview renders unbranded,
+ *             which is exactly what the free tier is.
+ *   'trial' - the shop is open and there is no licence: the logo and colour
+ *             show on the ON-SCREEN preview so the buyer sees what Pro does
+ *             before paying. The accent goes into --brand-trial-accent, which
+ *             only an `@media screen` rule reads, and the root carries
+ *             data-brand-trial, under which the print stylesheet hides the
+ *             logo. Printing or saving a PDF gives the free document, unchanged
+ *             and unmarked (research/tiktok/08-sales-marketing-lessons.md N2).
+ *   'pro'   - an active licence: logo and --brand-accent, on screen and paper.
+ *
+ * `true` and `false` still mean 'pro' and 'off'.
  */
-export function applyBranding(root, branding, enabled) {
-  if (!root) return { applied: false };
+export function applyBranding(root, branding, mode) {
+  const m = mode === true ? 'pro' : mode === 'trial' || mode === 'pro' ? mode : 'off';
+  if (!root) return { applied: false, mode: m };
   const normalized = normalizeBranding(branding);
   const logoEl = root.querySelector('[data-brand-logo]');
-  const accentTarget = root.style ? root : null;
+  const style = root.style ?? null;
 
-  if (!enabled) {
+  style?.removeProperty('--brand-accent');
+  style?.removeProperty('--brand-trial-accent');
+  root.removeAttribute?.('data-brand-trial');
+
+  if (m === 'off') {
     if (logoEl) { logoEl.removeAttribute('src'); logoEl.hidden = true; }
-    accentTarget?.style.removeProperty('--brand-accent');
-    return { applied: false };
+    return { applied: false, mode: m };
   }
 
   if (logoEl) {
     if (normalized.logo) { logoEl.src = normalized.logo; logoEl.hidden = false; }
     else { logoEl.removeAttribute('src'); logoEl.hidden = true; }
   }
-  accentTarget?.style.setProperty('--brand-accent', normalized.accent);
-  return { applied: true, accent: normalized.accent, hasLogo: Boolean(normalized.logo) };
+  if (m === 'trial') {
+    root.setAttribute?.('data-brand-trial', '');
+    style?.setProperty('--brand-trial-accent', normalized.accent);
+  } else {
+    style?.setProperty('--brand-accent', normalized.accent);
+  }
+  return { applied: true, mode: m, accent: normalized.accent, hasLogo: Boolean(normalized.logo) };
 }

@@ -31,7 +31,9 @@ search sends no one, the page-view kill rule is what answers it.
 
 ### Pricing suggestion
 - Free tools: free forever (they are the SEO funnel).
-- **Pro (document branding): one-time ₪79** through **Gumroad**, which replaced Paddle here.
+- **Pro – הלוגו וצבע המותג על המסמך (the logo and brand colour on the document): one-time ₪79** through **Gumroad**,
+  which replaced Paddle here. ₪79 is the price the product job asks Gumroad for; the page shows only what Gumroad
+  reports back (`gumroad.priceCents`), never a number typed into HTML.
   Gumroad is the merchant of record, pays out in ILS to an Israeli bank (the one payment rail this repo
   has rendered evidence of that for), and no source reports a liveness video in its onboarding — the Paddle onboarding step that collides
   with the mandate. Stripe does not take an Israeli individual as a direct merchant (the one Stripe path on the owner
@@ -63,6 +65,22 @@ search sends no one, the page-view kill rule is what answers it.
 
 Not modelled in net salary: surtax, pension tax credit, special credit points (children, degree,
 army), benefits in kind, study fund.
+
+**Source, and what was checked when, on the page (TikTok note N8; corrected 29.9.2026).** `osek-patur.html`,
+`vat.html` and `allocation.html` state a statutory figure, so each shows "מקור: <name> (מקור משני) · <check>" right
+after its lead, and in the answer that states the figure (the JSON-LD answer too), from `source` and `check` in the
+config (`src/lib/source-line.js`). The check says only what a record in the repository backs: "נבדק: <date>" for a
+dated read of the cited page (`check.how: "read"`, none yet), "הושווה לתוצאות חיפוש: <date>" for a comparison with
+search results (`"search"`), and "תאריך הבדיקה לא תועד" when no dated record exists. The ceiling and the VAT rate
+rest on the search read of 7.9.2026 (`research/measurements/serp/2026-09-07-hebrew-calculators.md`), which opened no
+page - so they say "compared with search results", not "checked" (review of 29.9: the earlier "נבדק: 7.9.2026"
+claimed a read nobody made). The allocation threshold has no dated record at all. `tests/statutory-sources.test.js`
+opens each `check.record` and requires the date and the figure in it (and, for "read", the cited address). A dated
+read of a primary page (note §8.1 N13) is what turns a line into "נבדק". The home page says each figure's source is
+on its tool's page. The osek patur ceiling is set per calendar year, so once the year in the config is over the
+page script shows "הנתון לא עודכן עדיין לשנת <year>" beside the source line until someone checks the new figure.
+Only verified configs get a line: `net-salary.html` renders `tax-2026.json` (`verified: false`) and claims no
+check date anywhere.
 
 ## The unverified-rate gate (why `net-salary.html` is not on the public site)
 
@@ -253,9 +271,36 @@ file measured 6.8 s and about 680 MB. The input is emptied after each pick, so p
 again re-runs the check; a slower earlier file never overwrites a later one's result; and a failure inside the
 checker is reported as the checker failing, not as an unreadable file or a finding.
 
+**After a result (TikTok note N7).** Once a check finishes - clean or not - a slot below the findings offers
+"הדפסה / PDF של הממצאים" (`window.print()`). The printout carries a header the screen never shows (`.print-only`):
+the file name, the date checked, "not acceptance" and "מסמך זה אינו ייעוץ מס", then the scope box verbatim, the
+summary and the findings; the file picker, the slot, the FAQ and the rule reference do not print. A share button
+exists only where the browser has `navigator.share`, and shares only when pressed: the text
+(`src/lib/pcn874-share.js`) holds the error and warning counts and the ids of the rules that fired - never a
+value from the file and never its name - and the page's address alone on the last line with `?via=share`; no
+emoji and nothing above U+FFFF. The `api.whatsapp.com` fallback is built and tested but ships **off**
+(`WHATSAPP_FALLBACK_ENABLED = false`): the note's release gate wants an Android and an iOS device test recorded
+at `docs/whatsapp-share-device-test.md` first, and the tests fail if the flag is turned on without that file.
+The FAQ answers "למה הבודק חינמי?" with a funding line and no link to anything paid, and promises nothing about
+staying free (the pcn874 paid offer waits for Fable F3).
+
+**One dealer's file, yours or a client's (N15).** The scope box says "כאן אפשר לבדוק קובץ של עוסק אחד – שלכם או
+של לקוח – קובץ אחד בכל פעם". No page and no share text pitches the validator for accountants' or
+representatives' multi-client filing (Appendix B is not supported; extending it is Fable F4).
+
+**The rule reference (N10).** Below the FAQ, "כל הכללים שהבודק בודק" lists every check - error or warning, the
+lines of the circular it cites (of the text extracted from the PDF, which the section says), a plain Hebrew
+explanation, then what is not checked. It is generated from the validator's own rule table, `RULES` in
+`products/pcn874/src/validate.ts`, which every finding takes its severity and citations from
+(`tests/rules.test.ts` there proves every finding equals its row and every row is reported by some input). The
+section sits in `pcn874.html` between two markers; `node scripts/pcn874-rule-reference.js` rewrites it, `--check`
+reports a stale one, and the build refuses, preview included, when it differs from the table - so after a rules
+change run `node scripts/bundle-pcn874.js` and then `node scripts/pcn874-rule-reference.js`.
+
 **What it does not do.** The file is read with `File.arrayBuffer()` and validated in the tab; it is not
 uploaded, sent or stored. No module the page loads contains `fetch`, `XMLHttpRequest`, `sendBeacon`,
-`WebSocket`, `EventSource` or a storage API, and the page script runs in the tests with all of them trapped.
+`WebSocket`, `EventSource` or a storage API, and the page script runs in the tests with all of them trapped. The
+page sends nothing itself: sharing is the user's own `navigator.share`, with counts and rule names only.
 The page carries no price, no "buy" and no Gumroad link.
 
 **Page views - the counter runs, the KPI is not wired.** The page calls `initPage()`, so the site's existing
@@ -280,9 +325,10 @@ assets/style.css            shared RTL styles incl. @media print for the receipt
 assets/common.js            nav, canonical, optional analytics
 assets/page-*.js            DOM glue per page (no logic)
 src/lib/*.js                pure ES modules: vat, osek-patur, net-salary, invoice, allocation,
-                            registrar-fee, gumroad, license, branding, analytics, money, pcn874-report -
-                            and five build-time ones that never ship: publish-gate, site-deps, a11y-check,
-                            pcn874-bundle
+                            registrar-fee, gumroad, license, branding, analytics, money, pro-nudge,
+                            pcn874-report, pcn874-share, source-line - and build-time ones that never ship:
+                            publish-gate, site-deps, a11y-check, pcn874-bundle, pcn874-rule-reference,
+                            pro-offer
 src/vendor/pcn874/*.js      GENERATED: products/pcn874's validator with its types stripped (do not edit)
 src/config/*.json           vat.json, osek-patur.json, tax-2026.json, allocation-number.json,
                             registrar-fee.json, site.json
@@ -292,8 +338,10 @@ scripts/build-site.js       ships only what the shipped pages load, applies the 
                             config gates, runs the accessibility checks, refuses on a publish blocker
 scripts/check-html.js       checks title/description/canonical/JSON-LD/links/classes on every page
 scripts/bundle-pcn874.js    regenerates src/vendor/pcn874/ from products/pcn874/src (--check: stale?)
-scripts/gumroad-pro-product.js  creates the Pro product on Gumroad (draft, licence-key block) and later
-                            enables it; run only by .github/workflows/gumroad-pro-product.yml
+scripts/pcn874-rule-reference.js  regenerates the rule reference inside pcn874.html (--check: stale?)
+scripts/gumroad-pro-product.js  creates the Pro product on Gumroad (draft, licence-key block), later
+                            enables it, and checks the live offer against the page; run only by
+                            .github/workflows/gumroad-pro-product.yml and gumroad-pro-probe.yml
 netlify.toml robots.txt sitemap.xml
 ```
 
@@ -302,8 +350,9 @@ netlify.toml robots.txt sitemap.xml
 ```bash
 cd products/il-biz-tools
 npm install          # vitest only
-npm test             # 447 tests (vitest, 20 files; re-measured 28.9.2026 after the pcn874 page review fixes)
+npm test             # 586 tests (vitest, 27 files; re-measured 28.9.2026 after the TikTok note N7-N10)
 node scripts/bundle-pcn874.js   # after ANY change under products/pcn874/src - the build refuses a stale bundle
+node scripts/pcn874-rule-reference.js   # then this: the build refuses a stale rule reference too
 npm run check:html   # static page sanity checks + what the publish gate will withhold
 node scripts/build-site.js   # writes _site/ exactly as it will be deployed - or refuses (exit 1) on a blocker
 node scripts/build-site.js --preview   # the same tree into _preview/, blockers listed, for inspection only
@@ -324,6 +373,7 @@ There are **no server-side env vars** — this is a static site. Public configur
 | `siteUrl` | Canonical origin; `assets/common.js` rewrites `<link rel=canonical>` from it at runtime. The static canonical in all 9 pages and the JSON-LD `url` in `index.html` are hard-coded, so edit those too, plus `sitemap.xml` and `robots.txt` | `https://il-biz-tools.netlify.app` |
 | `gumroad.productUrl` | Full `https://` URL of the Gumroad product page. Empty ⇒ the Pro button is disabled and says the shop is not open. Written by the product-creation job | `""` |
 | `gumroad.productId` | Gumroad's public product id — what the licence check sends with the key. Empty ⇒ the button stays disabled (`no_product_id`) and activation sends nothing. Written by the product-creation job | `""` |
+| `gumroad.priceCents` / `gumroad.currency` | The price Gumroad itself reports when the job reads the product back (`price` in minor units, `currency`; `7900` / `ils` = ₪79). Shown in the Pro box and injected into the pricing FAQ **only** in the `ready` state; empty ⇒ the button stays disabled (`no_price`). Written by the product-creation job, never by hand | `null` / `""` |
 | `analytics.provider` | `none` or `plausible` | `none` (off) |
 | `analytics.plausibleDomain` | Plausible site domain | `""` |
 | `posthog.projectKey` | PostHog project key (`phc_…`). Empty ⇒ **no snippet at all** | `""` |
@@ -400,16 +450,29 @@ to pretend otherwise. Key sharing is not enforced (no seat count); the seller se
 step 6 carries `edit_products` (Gumroad's `doorkeeper.rb:10`, `oauth_application.rb:121-122`).
 `.github/workflows/gumroad-pro-product.yml` (manual dispatch only) uses it to:
 
-1. `create` — reuse the product by exact name, or `POST /v2/products` **as a draft** with the price
-   (₪79 by default), a description of exactly what Pro is, and content holding Hebrew activation instructions
-   plus Gumroad's `licenseKey` block; read it back and require that block; print the public `id` and
-   `short_url`; open a PR writing both into `src/config/site.json`.
-2. `enable` — a second dispatch, only once the **deployed** `src/config/site.json` carries the same id:
-   `PUT /v2/products/:id/enable`.
+1. `create` — reuse the product by exact name (`PRO_PRODUCT_NAME`, "Pro – הלוגו וצבע המותג על המסמך"), or
+   `POST /v2/products` **as a draft** with the price (₪79 by default), a description of exactly what Pro is, and
+   content holding Hebrew activation instructions plus Gumroad's `licenseKey` block; read it back and require that
+   block and one fixed one-time price (no membership or tiers, no pay-what-you-want, no purchasing-power-parity
+   prices, no option that changes the charge); print the public `id` and `short_url`; open a PR writing both,
+   and the read-back `priceCents` and `currency`, into `src/config/site.json`.
+2. `enable` — a second dispatch, only once `state/colony/brand-mail.json` shows the brand mailbox of owner step 8
+   probed green (within 2 days, no accessibility mail unanswered for 7+ days — a buyer's receipt reply or refund
+   request goes to the Gumroad sign-up email, and the owner answers no one) **and** the offer checks out
+   (`check`, next): `PUT /v2/products/:id/enable`. `create` is not gated.
+3. `check` — reads only; run by `enable` first and by `gumroad-pro-probe.yml` afterwards. The **deployed**
+   `src/config/site.json` carries the repo's id and price; Gumroad charges exactly that price, once; the account's
+   own address (`GET /v2/user`) is the `BRAND_MAIL_ADDRESS` secret of step 8 (compared, never printed); and the
+   refund policy buyers will see is "No refunds allowed". Gumroad opens every account with a 30-day money-back
+   guarantee (`RefundPolicy::DEFAULT_REFUND_PERIOD_IN_DAYS`), and a refund promise waits on A1 of
+   `research/tiktok/08-sales-marketing-lessons.md` §8.2, so until that policy is changed (`PUT /v2/refund_policy`,
+   agent work with the same token) nothing is enabled.
 
-Without the secret both exit 0 with a notice. `.github/workflows/gumroad-pro-probe.yml` then checks the real
+Without the secret all three exit 0 with a notice. `.github/workflows/gumroad-pro-probe.yml` then checks the real
 product id from the site's own origin (expects the exact "does not exist" 404 for an impossible key and
-`access-control-allow-origin: *`). 🔍 **Not yet rendered:** Gumroad's help FAQ says products cannot be created
+`access-control-allow-origin: *`) and runs `check`, so a price edited in the Gumroad dashboard after `enable`
+fails the probe. Tax: Gumroad collects none for a buyer in Israel (`lib/utilities/compliance/countries.rb`, read
+29.9.2026), so an Israeli buyer pays the price the page shows; a buyer abroad may see VAT/GST added at checkout. 🔍 **Not yet rendered:** Gumroad's help FAQ says products cannot be created
 through the API while its code says they can; the first `create` run settles it. If Gumroad refuses, the job
 stops and the fallback — one dashboard click, *Insert → License key* — is raised with the owner **before**
 anything is sold, never added to his checklist silently.
@@ -421,15 +484,30 @@ read in Gumroad's code: that a real key returns the documented 200 payload with 
 changes only when a `gumroad:<productId>` sale is in `revenue_ledger` and the buyer-side outcome is noted in
 the decision file. Until then Pro may be described as on sale — once it is — and as nothing more.
 
-**The Pro button has exactly four states**, all decided in `src/lib/gumroad.js` (`proButtonState`)
-and unit-tested rather than trusted:
+**The Pro button has exactly five states**, all decided in `src/lib/gumroad.js` (`proButtonState`)
+and unit-tested rather than trusted. Only `ready` shows a price:
 
-| `gumroad.productUrl` | `gumroad.productId` | state | button |
-|---|---|---|---|
-| empty | anything | `unconfigured` | disabled, "בקרוב", "המיתוג עדיין לא נמכר – החנות טרם נפתחה" |
-| not an `https://` URL | anything | `invalid_url` | disabled, and it says the URL is malformed |
-| set | missing | `no_product_id` | disabled — a licence key nothing can check against its product is nothing |
-| set | set | `ready` | opens the Gumroad product page in a new tab (`noopener`) |
+| `gumroad.productUrl` | `gumroad.productId` | `priceCents` + `currency` | state | button |
+|---|---|---|---|---|
+| empty | anything | anything | `unconfigured` | disabled, "בקרוב", "המיתוג עדיין לא נמכר – החנות טרם נפתחה" |
+| not an `https://` URL | anything | anything | `invalid_url` | disabled, and it says the URL is malformed |
+| set | missing | anything | `no_product_id` | disabled — a licence key nothing can check against its product is nothing |
+| set | set | missing | `no_price` | disabled — no sale without the price Gumroad reported, visible beside the button |
+| set | set | set | `ready` | the price, "לרכישה ב-Gumroad", "המכירה ב-Gumroad, בחנות Mehudak (מהודק)"; opens the product page in a new tab (`noopener`) |
+
+**The offer on the page** (research/tiktok/08-sales-marketing-lessons.md §8.1 N1–N5), each part tested:
+the Pro box heading is the product name; "תשלום חד-פעמי, בלי מנוי" and one trust line sit in plain sight beside the
+button; in the `ready` state a visitor without a licence can **try** the logo and colour on the on-screen preview
+(`applyBranding(…, 'trial')` — only an `@media screen` rule reads the trial colour and print hides the logo, so a
+printed or saved PDF is exactly the free document, with no watermark); after a print dialog in that try-out one
+factual line says a print or PDF comes out without the branding and what Pro costs - never that anything was
+printed, since `afterprint` also fires on a cancelled dialog - once per session and never again once closed
+(`src/lib/pro-nudge.js`; no modal, no timer); and `#pro-faq` answers six pricing questions, each checked against
+the code in `tests/pro-faq.test.js`. The price in those answers is a slot the build fills from `site.json`
+(`src/lib/pro-offer.js`), in the visible answer and its JSON-LD twin alike, and only in the `ready` state. The
+answers that describe a live sale (`<details data-pro-sale>`: what happens after paying, who sells it, and the
+home page's "how much") are dropped from the built page, with their JSON-LD twins, until the button is `ready`:
+before that the Pro box says nothing is sold yet.
 
 No Gumroad code runs on this site: no SDK, no overlay, no iframe. The only contact is one `fetch` from the
 buyer's browser to `api.gumroad.com/v2/licenses/verify`, at activation and at most every 7 days after. The
@@ -513,8 +591,9 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
   לוח העזר של רשות המסים.
 - **מחולל קבלות / חשבוניות עסקה** – מסמך נקי להדפסה או ל-PDF (`@media print`), כולל הערת
   "עוסק פטור - לא חייב במע"מ", מספור רץ, שמירה ב-localStorage. שמירת הלקוחות, המספור והייצוא
-  חינמיים. התוספת היחידה בתשלום היא **Pro – מיתוג המסמך** (לוגו וצבע), דרך Gumroad: כשממלאים
-  `gumroad.productUrl` ו-`gumroad.productId`, הכפתור פותח את דף המוצר; אחרת מוצג "בקרוב". מפתח הרישיון
+  חינמיים. התוספת היחידה בתשלום היא **Pro – הלוגו וצבע המותג על המסמך**, דרך Gumroad (החנות Mehudak):
+  רק כשיש `gumroad.productUrl`, `gumroad.productId` והמחיר ש-Gumroad החזירה, מוצג המחיר והכפתור פותח את דף
+  המוצר; אחרת מוצג "בקרוב" ובלי מחיר. מפתח הרישיון
   הוא של Gumroad עצמה: היא מייצרת אותו לכל קונה ושולחת בקבלה, והדפדפן של הקונה בודק אותו מולה פעם אחת
   בהפעלה ואחר כך לכל היותר פעם בשבוע. אין לבעלים שום פעולה אחרי מכירה. מפתח אמיתי ראשון עוד לא אומת –
   המכירה הראשונה היא הבדיקה.
@@ -527,7 +606,9 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
 - **בודק קובץ PCN874** (`pcn874.html`, של קו ההכנסה `pcn874`) – בדיקת מבנה לקובץ הדוח המפורט למע"מ, בדפדפן
   ובלי העלאה, עם ממצאים לפי שורה והכלל שנכשל בעברית. בודק מבנה בלבד: אינו מצליב סכומים ואינו מחשב את הסכום
   המדווח, ומפנה לסימולטור של רשות המסים. הקוד הוא הבודק של `products/pcn874` עצמו, וה-build מסרב לפרסם עותק
-  שאינו תואם למקור. אין בדף מחיר ואין קישור קנייה.
+  שאינו תואם למקור. אין בדף מחיר ואין קישור קנייה. אחרי בדיקה אפשר להדפיס או לשמור כ-PDF את הממצאים (עם שם
+  הקובץ, תאריך הבדיקה ו"אינו ייעוץ מס"), ובדפדפן שתומך בכך – לשתף סיכום שמכיל רק את מספר השגיאות והאזהרות ואת
+  שמות הכללים, בלי שום ערך מתוך הקובץ. בתחתית הדף רשימת כל הכללים, שנוצרת מטבלת הכללים של הבודק עצמו.
 
 **שער הפרסום:** דף שמציג נתון מקובץ שמסומן `"verified": false` לא מתפרסם בכלל. כרגע זה
 `net-salary.html`: במקומו עולה הודעה קצרה בלי אף מספר, והכתובת יורדת מה-sitemap. ברגע שהמדרגות

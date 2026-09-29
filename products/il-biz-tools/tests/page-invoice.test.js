@@ -7,6 +7,8 @@
 // format). Nothing here touches the network.
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { LICENSE_STORAGE_KEY, LICENSE_NOTES } from '../src/lib/license.js';
+import { proButtonState } from '../src/lib/gumroad.js';
+import { formatILS } from '../src/lib/money.js';
 import { documentedSuccess, NOT_FOUND_BODIES, NON_DEFINITIVE, response, fetchMock, deferredFetch, memoryStorage } from './fixtures/gumroad-verify.js';
 
 const KEY = 'A1B2C3D4-E5F60718-9ABCDEF0-1234ABCD';
@@ -14,31 +16,48 @@ const LEGACY = ['ILBIZ', '1', '.abc.def'].join('');
 const DAY = 86_400_000;
 const NOW = Date.UTC(2026, 8, 27, 12, 0, 0);
 
+// The Pro product the page can sell: url, id and the price Gumroad read back.
+const READY_GUMROAD = { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: 'NEW', priceCents: 7900, currency: 'ils' };
+const PNG = 'data:image/png;base64,iVBORw0KGgo=';
+
 function makeEl(name) {
   const listeners = {};
+  const attrs = new Map();
   const el = {
     name, hidden: false, disabled: false, textContent: '', value: '', innerHTML: '', open: false,
-    dataset: {}, files: null, children: [],
+    dataset: {}, files: null, children: [], attrs,
     style: { props: new Map(), setProperty(k, v) { this.props.set(k, v); }, removeProperty(k) { this.props.delete(k); } },
     addEventListener(type, fn) { (listeners[type] ??= []).push(fn); },
     fire(type, ev = {}) { for (const fn of listeners[type] ?? []) fn({ target: el, ...ev }); },
     append(...xs) { el.children.push(...xs); },
     appendChild(x) { el.children.push(x); return x; },
     querySelector: () => makeEl('child'),
-    setAttribute() {},
-    removeAttribute() {},
+    setAttribute(k, v) { attrs.set(k, String(v)); },
+    removeAttribute(k) { attrs.delete(k); },
+    hasAttribute(k) { return attrs.has(k); },
   };
   return el;
+}
+
+/** A window that records its event listeners, so a test can fire afterprint. */
+function makeWindow() {
+  const listeners = {};
+  return {
+    print() {}, scrollTo() {}, open() {},
+    addEventListener(type, fn) { (listeners[type] ??= []).push(fn); },
+    fire(type) { for (const fn of listeners[type] ?? []) fn({ type }); },
+  };
 }
 
 const flush = () => new Promise((r) => setImmediate(r));
 
 /** Load assets/page-invoice.js fresh, with the given world. */
-async function loadPage({ storage = memoryStorage(), fetchImpl = fetchMock(response(200, documentedSuccess())), productId = 'NEW', online = true, search = '' } = {}) {
+async function loadPage({ storage = memoryStorage(), session = memoryStorage(), fetchImpl = fetchMock(response(200, documentedSuccess())), productId = 'NEW', gumroad = null, online = true, search = '' } = {}) {
   vi.resetModules();
   const els = new Map();
   const $el = (sel) => { if (!els.has(sel)) els.set(sel, makeEl(sel)); return els.get(sel); };
-  const site = { siteUrl: 'https://il-biz-tools.netlify.app', gumroad: { productUrl: '', productId } };
+  const site = { siteUrl: 'https://il-biz-tools.netlify.app', gumroad: gumroad ?? { productUrl: '', productId } };
+  const win = makeWindow();
   vi.doMock('../assets/common.js', () => ({
     initPage() {},
     $: (sel, root) => (root ? root.querySelector(sel) : $el(sel)),
@@ -46,21 +65,26 @@ async function loadPage({ storage = memoryStorage(), fetchImpl = fetchMock(respo
     site,
   }));
   vi.stubGlobal('localStorage', storage);
+  vi.stubGlobal('sessionStorage', session);
   vi.stubGlobal('location', { search, pathname: '/invoice.html' });
   vi.stubGlobal('navigator', { onLine: online });
   vi.stubGlobal('fetch', fetchImpl);
   vi.stubGlobal('document', { createElement: () => makeEl('created'), querySelector: $el });
   vi.stubGlobal('Option', class { constructor(label, value) { this.label = label; this.value = value; } });
-  vi.stubGlobal('window', { print() {}, scrollTo() {}, open() {} });
+  vi.stubGlobal('window', win);
   vi.useFakeTimers({ toFake: ['Date'], now: NOW });
   await import('../assets/page-invoice.js');
   return {
     $: $el,
     storage,
+    session,
+    site,
+    window: win,
     fetchImpl,
     record: () => JSON.parse(storage.getItem(LICENSE_STORAGE_KEY)),
-    // proActive, as the page shows it: branding fields visible and the logo accent applied.
-    proActive: () => $el('#branding-fields').hidden === false,
+    // proActive, as the page shows it: the branding accent applied to the document for print (a try-out sets
+    // only its screen-only variable, never this one).
+    proActive: () => $el('#preview').style.props.has('--brand-accent'),
     note: () => $el('#license-note').textContent,
   };
 }
@@ -243,4 +267,125 @@ describe('AT-10 the retired signed format', () => {
     expect(page.fetchImpl.calls).toHaveLength(0);
     expect(page.storage.getItem(LICENSE_STORAGE_KEY)).toBeNull();
   });
+});
+
+describe('N1 the price is shown in the ready state only, and it is the configured one', () => {
+  it('ready: the price Gumroad read back, beside the button that buys it', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD });
+    const expected = proButtonState(page.site).price;
+    expect(expected).toBe(formatILS(79, { decimals: 0 }));
+    expect(page.$('#pro-price').hidden).toBe(false);
+    expect(page.$('#pro-price').textContent).toBe(expected);
+    expect(page.$('#pro-cta').textContent).toBe('לרכישה ב-Gumroad');
+    expect(page.$('#pro-cta').disabled).toBe(false);
+    expect(page.$('#pro-note').textContent).toContain('בחנות Mehudak (מהודק)');
+  });
+
+  const shut = [
+    ['unconfigured', { productUrl: '', productId: 'NEW' }],
+    ['invalid url', { productUrl: 'mehudak.gumroad.com/l/pro', productId: 'NEW', priceCents: 7900, currency: 'ils' }],
+    ['no product id', { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: '', priceCents: 7900, currency: 'ils' }],
+    ['no price read back yet', { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: 'NEW' }],
+  ];
+  for (const [name, gumroad] of shut) {
+    it(`${name}: no price anywhere in the Pro box, and the button stays shut`, async () => {
+      const page = await loadPage({ gumroad });
+      expect(page.$('#pro-price').hidden).toBe(true);
+      expect(page.$('#pro-price').textContent).toBe('');
+      expect(page.$('#pro-cta').disabled).toBe(true);
+      expect(page.$('#pro-cta').textContent).toBe('בקרוב');
+    });
+  }
+});
+
+describe('Hebrew copy on the page addresses users in the plural', () => {
+  it('the thank-you after a purchase says "אליכם" and "הזינו"', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD, search: '?purchased=1' });
+    expect(page.note()).toBe('תודה! מפתח הרישיון נמצא בקבלה שנשלחה אליכם במייל מ-Gumroad. הזינו אותו כאן.');
+  });
+});
+
+describe('N2 try before you pay: the preview on screen only', () => {
+  const brandingStore = (extra = {}) => memoryStorage({ 'ilbiz.branding': JSON.stringify({ logo: PNG, accent: '#abcdef' }), ...extra });
+
+  it('ready, no licence: the branding fields open under a notice, and the preview carries the trial marker', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD, storage: brandingStore() });
+    expect(page.$('#branding-fields').hidden).toBe(false);
+    expect(page.$('#brand-trial-note').hidden).toBe(false);
+    expect(page.$('#preview').attrs.has('data-brand-trial')).toBe(true);
+    expect(page.$('#preview').style.props.get('--brand-trial-accent')).toBe('#abcdef');
+    expect(page.proActive()).toBe(false);
+  });
+
+  it('ready, with an active licence: Pro, no trial marker, no notice', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD, storage: brandingStore({ [LICENSE_STORAGE_KEY]: JSON.stringify(activeRecord({ lastCheckAt: NOW - DAY })) }) });
+    expect(page.proActive()).toBe(true);
+    expect(page.$('#preview').attrs.has('data-brand-trial')).toBe(false);
+    expect(page.$('#brand-trial-note').hidden).toBe(true);
+    expect(page.$('#branding-fields').hidden).toBe(false);
+  });
+
+  it('nothing to buy yet: no try-out, the fields stay closed, the free page is unchanged', async () => {
+    for (const gumroad of [{ productUrl: '', productId: 'NEW' }, { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: 'NEW' }]) {
+      const page = await loadPage({ gumroad, storage: brandingStore() });
+      expect(page.$('#branding-fields').hidden).toBe(true);
+      expect(page.$('#brand-trial-note').hidden).toBe(true);
+      expect(page.$('#preview').attrs.has('data-brand-trial')).toBe(false);
+      expect(page.$('#preview').style.props.size).toBe(0);
+    }
+  });
+
+  it('changing the colour during a try-out updates the screen preview only', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD });
+    page.$('#brand-accent').value = '#112233';
+    page.$('#brand-accent').fire('input');
+    expect(page.$('#preview').style.props.get('--brand-trial-accent')).toBe('#112233');
+    expect(page.$('#preview').style.props.has('--brand-accent')).toBe(false);
+  });
+});
+
+describe('N3 one line after a free print', () => {
+  const tried = (extra = {}) => memoryStorage({ 'ilbiz.branding': JSON.stringify({ logo: PNG, accent: '#abcdef' }), ...extra });
+
+  it('ready, no licence, the preview tried: afterprint shows the line with the configured price', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD, storage: tried() });
+    expect(page.$('#pro-nudge').hidden).toBe(true);
+    page.window.fire('afterprint');
+    expect(page.$('#pro-nudge').hidden).toBe(false);
+    expect(page.$('#pro-nudge-text').textContent).toContain(proButtonState(page.site).price);
+    expect(page.$('#pro-nudge-text').textContent).toContain('תשלום חד-פעמי');
+  });
+
+  it('shows once per session: a reload in the same session prints without it', async () => {
+    const session = memoryStorage();
+    const first = await loadPage({ gumroad: READY_GUMROAD, storage: tried(), session });
+    first.window.fire('afterprint');
+    expect(first.$('#pro-nudge').hidden).toBe(false);
+    const second = await loadPage({ gumroad: READY_GUMROAD, storage: first.storage, session });
+    second.window.fire('afterprint');
+    expect(second.$('#pro-nudge').hidden).toBe(true);
+  });
+
+  it('the close button hides it and keeps it closed in later sessions', async () => {
+    const page = await loadPage({ gumroad: READY_GUMROAD, storage: tried() });
+    page.window.fire('afterprint');
+    page.$('#pro-nudge-close').fire('click');
+    expect(page.$('#pro-nudge').hidden).toBe(true);
+    const later = await loadPage({ gumroad: READY_GUMROAD, storage: page.storage, session: memoryStorage() });
+    later.window.fire('afterprint');
+    expect(later.$('#pro-nudge').hidden).toBe(true);
+  });
+
+  const silent = [
+    ['nothing to buy yet', { gumroad: { productUrl: '', productId: 'NEW' }, storage: () => tried() }],
+    ['a licence holder', { gumroad: READY_GUMROAD, storage: () => tried({ [LICENSE_STORAGE_KEY]: JSON.stringify(activeRecord({ lastCheckAt: NOW - DAY })) }) }],
+    ['nothing tried in the preview', { gumroad: READY_GUMROAD, storage: () => memoryStorage() }],
+  ];
+  for (const [name, world] of silent) {
+    it(`stays silent for ${name}`, async () => {
+      const page = await loadPage({ gumroad: world.gumroad, storage: world.storage() });
+      page.window.fire('afterprint');
+      expect(page.$('#pro-nudge').hidden).toBe(true);
+    });
+  }
 });

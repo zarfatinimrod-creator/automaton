@@ -33,6 +33,11 @@
       "@type": "Question",
       "name": "מה ההבדל בין שגיאה לאזהרה?",
       "acceptedAnswer": { "@type": "Answer", "text": "שגיאה היא הפרה של כלל שהחוזר קובע במפורש. אזהרה מסמנת מקום שהחוזר נותן בו משמעות לשדה אבל אינו אוסר את הערך, או אינו מכריע. אזהרה אינה נספרת כאן כשגיאה כי החוזר אינו מכריע – ייתכן שרשות המסים תדחה את הקובץ בגללה; כדאי לבדוק כל אזהרה." }
+    },
+    {
+      "@type": "Question",
+      "name": "למה הבודק חינמי?",
+      "acceptedAnswer": { "@type": "Answer", "text": "כי הבודק רץ כולו בדפדפן שלכם: אין שרת שמקבל את הקובץ, ולכן הפעלתו כמעט אינה עולה דבר. את האתר מפעילה מהודק (Mehudak). ההכנסה שלה מתוכננת להגיע מתוסף לכלי אחר באתר – לא מהבודק הזה, לא מפרסומות ולא מהמידע שבקבצים שלכם, שאותו הבודק אינו שולח לשום מקום." }
     }
   ]
 }
@@ -54,12 +59,17 @@
 
 <main class="container">
   <h1>בודק מבנה לקובץ PCN874 – דוח מע״מ מפורט</h1>
-  <p class="lead">הקובץ נבדק בדפדפן מול מבנה הרשומות שבחוזר של רשות המסים לבתי התוכנה (נספחים א' ו-ג'). שום דבר מתוך הקובץ לא מועלה, לא נשלח ולא נשמר.</p>
+  <div class="print-only" id="pcn-print-header" hidden>
+    <p><strong>ממצאי בדיקת מבנה לקובץ PCN874</strong> · קובץ: <span id="pcn-print-file"></span> · נבדק: <span id="pcn-print-date"></span></p>
+    <p>הממצאים הם בדיקת מבנה בלבד, ולא אישור שהקובץ יתקבל ברשות המסים. מסמך זה אינו ייעוץ מס.</p>
+  </div>
+  <p class="lead">לפני ששולחים את הדוח המפורט: בדיקת מבנה שורה-שורה, בדפדפן, בלי העלאה. הקובץ נבדק מול מבנה הרשומות שבחוזר של רשות המסים לבתי התוכנה (נספחים א' ו-ג'), ושום דבר מתוך הקובץ לא מועלה, לא נשלח ולא נשמר.</p>
+  <p class="note">התוצאה מוצגת מיד, בלי להשאיר פרטים ובלי שיחה.</p>
 
   <section class="card" aria-labelledby="pcn-scope-title">
     <h2 id="pcn-scope-title">מה נבדק ומה לא</h2>
     <div id="pcn-scope" class="status-box warn">
-      <p><strong>הבודק בודק רק קובץ של עוסק יחיד (נספח א').</strong> קובץ מייצגים (נספח ב'), שמייצג מגיש בשם כמה עוסקים, אינו נתמך.</p>
+      <p><strong>הבודק בודק רק קובץ של עוסק יחיד (נספח א').</strong> קובץ מייצגים (נספח ב'), שמייצג מגיש בשם כמה עוסקים, אינו נתמך. כאן אפשר לבדוק קובץ של עוסק אחד – שלכם או של לקוח – קובץ אחד בכל פעם.</p>
       <p><strong>הבודק בודק את מבנה הקובץ בלבד.</strong> הוא בודק שכל רשומה באורך שהחוזר קובע, שכל שדה מכיל את סוג התווים שנקבע לו, שהרשומות מופיעות בסדר הנכון, ושמספר רשומות העסקאות ומספר רשומות התשומות שבכותרת תואמים לרשומות שבקובץ.</p>
       <p><strong>הבודק אינו מצליב סכומים</strong>: הוא אינו בודק שהסכומים שבכותרת שווים לסכום הרשומות. <strong>הוא גם אינו מחשב את הסכום המדווח</strong> (השדה <span dir="ltr">reportedVat</span>, "סכום מדווח"), כי החוזר אינו קובע לו נוסחה. כמה כללים כן קוראים סכומים – אם שדה סכום הוא אפס, אם עסקה מזוהה עוברת את סף 5,000 השקלים שבחוזר, ואם המע״מ ברשומות הקופה הקטנה עובר את התקרה שבחוזר (אזהרה בלבד) – אבל אף כלל אינו משווה את סכומי הכותרת לרשומות.</p>
       <p id="pcn-not-checked"><strong>הבודק גם אינו בודק</strong>: שתאריך החשבונית הוא תאריך קיים ושהוא בתוך תקופת הדיווח (נבדק רק שיש בו 8 ספרות); את ספרת הביקורת של מספרי העוסק; ואם חשבונית חייבת מספר הקצאה – שדה מספר ההקצאה מתקבל גם כשהוא אפסים. לבדיקה אם חשבונית חייבת מספר הקצאה יש כלי נפרד: <a href="allocation.html">מספר הקצאה לחשבונית</a>.</p>
@@ -70,11 +80,11 @@
 
   <section class="card" aria-labelledby="pcn-check-title">
     <h2 id="pcn-check-title">בדיקת קובץ</h2>
-    <div class="field">
+    <div class="field no-print" id="pcn-file-field">
       <label for="pcn-file">קובץ PCN874 לבדיקה (קובץ טקסט)</label>
       <input type="file" id="pcn-file" accept=".txt,.TXT,text/plain" aria-describedby="pcn-file-note">
     </div>
-    <p class="note" id="pcn-file-note">הקובץ נקרא בדפדפן בעזרת File API ונבדק במקום. הוא לא מועלה לשום שרת, לא נשלח לשום מקום ולא נשמר – סגירת הדף מוחקת אותו מהזיכרון.</p>
+    <p class="note no-print" id="pcn-file-note">הקובץ נקרא בדפדפן בעזרת File API ונבדק במקום. הוא לא מועלה לשום שרת, לא נשלח לשום מקום ולא נשמר – סגירת הדף מוחקת אותו מהזיכרון.</p>
     <noscript><p class="note">הבדיקה רצה ב-JavaScript בתוך הדפדפן, ולכן היא אינה פועלת כש-JavaScript כבוי.</p></noscript>
     <div id="pcn-status" class="status-box" role="status" aria-live="polite">עדיין לא נבחר קובץ.</div>
   </section>
@@ -91,14 +101,175 @@
     </div>
   </section>
 
+  <section class="card no-print" id="pcn-after" aria-labelledby="pcn-after-title" hidden>
+    <h2 id="pcn-after-title">מה עושים עם התוצאה</h2>
+    <div class="actions">
+      <button type="button" class="btn" id="pcn-print">הדפסה / PDF של הממצאים</button>
+      <button type="button" class="btn secondary" id="pcn-share" hidden>שיתוף סיכום הממצאים</button>
+    </div>
+    <p class="note">בהדפסה או בשמירה כ-PDF מופיעים שם הקובץ, תאריך הבדיקה, התיבה «מה נבדק ומה לא» והממצאים – למשל כדי להעביר אותם למי שמגיש בשבילכם את הדוח.</p>
+    <p class="note" id="pcn-share-note" hidden>השיתוף שולח רק את מספר השגיאות והאזהרות ואת שמות הכללים, עם הכתובת של הדף – בלי שום ערך מתוך הקובץ ובלי שם הקובץ. אתם בוחרים אם ולמי לשלוח.</p>
+    <p class="note" id="pcn-share-status" role="status" aria-live="polite"></p>
+  </section>
+
   <section class="faq card">
     <h2>שאלות נפוצות</h2>
     <details open><summary>מה זה קובץ PCN874?</summary><p>קובץ טקסט במבנה קבוע שמוגש לרשות המסים עם הדוח המפורט למע״מ: רשומת כותרת עם סיכומי התקופה, רשומות פירוט של העסקאות והתשומות, ורשומת סגירה.</p></details>
     <details><summary>האם הקובץ נשלח לשרת?</summary><p>לא. הקובץ נקרא ונבדק בדפדפן בלבד, ותוכנו אינו נשלח לשום מקום ואינו נשמר. אם מדידת הצפיות של האתר מופעלת, היא סופרת צפייה בדף בלבד – בלי עוגיות, ובלי שום דבר מתוך הקובץ.</p></details>
     <details><summary>האם תוצאה נקייה אומרת שהקובץ יתקבל ברשות המסים?</summary><p>לא. הבודק בודק את מבנה הקובץ בלבד, אינו מצליב סכומים ואינו מחשב את הסכום המדווח, וחלק מהשדות אינו נבדק כלל (הרשימה למעלה, ב«מה נבדק ומה לא»). הבדיקה של רשות המסים עצמה היא הסימולטור שלה, שהקישור אליו מופיע למעלה – וגם הוא בודק באופן חלקי בלבד; ההכרעה היא בשידור עצמו.</p></details>
     <details><summary>מה ההבדל בין שגיאה לאזהרה?</summary><p>שגיאה היא הפרה של כלל שהחוזר קובע במפורש. אזהרה מסמנת מקום שהחוזר נותן בו משמעות לשדה אבל אינו אוסר את הערך, או אינו מכריע. אזהרה אינה נספרת כאן כשגיאה כי החוזר אינו מכריע – ייתכן שרשות המסים תדחה את הקובץ בגללה; כדאי לבדוק כל אזהרה.</p></details>
+    <details><summary>למה הבודק חינמי?</summary><p>כי הבודק רץ כולו בדפדפן שלכם: אין שרת שמקבל את הקובץ, ולכן הפעלתו כמעט אינה עולה דבר. את האתר מפעילה מהודק (Mehudak). ההכנסה שלה מתוכננת להגיע מתוסף לכלי אחר באתר – לא מהבודק הזה, לא מפרסומות ולא מהמידע שבקבצים שלכם, שאותו הבודק אינו שולח לשום מקום.</p></details>
     <details><summary>על איזה מסמך מבוססת הבדיקה?</summary><p>על החוזר של רשות המסים לבתי התוכנה – נספח א' (מבנה הרשומות) ונספח ג' (הערכים המותרים). נספח ב' של אותו חוזר, קובץ המייצגים, אינו נבדק. החוזר משנת 2009 ואין עליו מספר מהדורה; מהדורה מאוחרת יותר לא נמצאה, ולכן ייתכן שהרשות שינתה מאז כללים שהבודק אינו מכיר.</p></details>
   </section>
+
+<!-- pcn874-rule-reference:start - generated by scripts/pcn874-rule-reference.js from the validator's rule table; do not edit here -->
+<section class="card no-print" id="pcn-rules" aria-labelledby="pcn-rules-title">
+  <h2 id="pcn-rules-title">כל הכללים שהבודק בודק</h2>
+  <p>הרשימה נוצרת מטבלת הכללים של הבודק עצמו, והאתר אינו נבנה כשהיא אינה תואמת לה – כך שהיא מתארת בדיוק את מה שהבודק מריץ. בסך הכול 82 כללים: 67 שגיאות ו-15 אזהרות. כלל שמדווח בשני אופנים מופיע בשתי שורות ונספר פעמיים, והשורה אומרת באיזה מקרה.</p>
+  <p class="note">מספרי השורות הם של הטקסט שחולץ מקובץ ה-PDF של החוזר (הנוסח האנגלי שבאתר רשות המסים), ולא של עמודי ה-PDF. שגיאה היא הפרה של כלל שהחוזר קובע במפורש; אזהרה היא מקום שהחוזר אינו מכריע בו, או שאין לו בחוזר מקור כלל.</p>
+  <details><summary>מבנה הקובץ (13)</summary>
+    <div class="table-scroll">
+      <table class="data-table">
+        <caption>מבנה הקובץ: כל כלל, חומרתו, השורות בחוזר שהוא נשען עליהן, והסבר.</caption>
+        <thead><tr><th scope="col">הכלל</th><th scope="col">חומרה</th><th scope="col">בחוזר</th><th scope="col">הסבר</th></tr></thead>
+        <tbody>
+          <tr id="rule-file.encoding.ascii"><td><code dir="ltr">file.encoding.ascii</code></td><td>אזהרה</td><td>שורות 96–161, 139, 580–581</td><td>יש בקובץ תווים שאינם ASCII (למשל אותיות עבריות). החוזר אינו מגדיר קידוד לקובץ, ולכן זו אזהרה.</td></tr>
+          <tr id="rule-file.byteWidth"><td><code dir="ltr">file.byteWidth</code></td><td>אזהרה</td><td>שורות 40–42, 96–161, 139</td><td>יש רשומות שרוחבן בבתים (UTF-8) גדול מרוחבן בתווים, כך שקורא שסופר בתים ימצא את השדות שאחרי התו החריג מוזזים. החוזר אינו אומר אם הקורא של רשות המסים סופר בתים או תווים, ולכן זו אזהרה.</td></tr>
+          <tr id="rule-file.lineEnding.mixed"><td><code dir="ltr">file.lineEnding.mixed</code></td><td>אזהרה</td><td>אין שורה בחוזר; הכלל נשען על מימושים בקוד פתוח בלבד</td><td>הקובץ מערבב סוגים שונים של סוף שורה (LF, CRLF, CR). אזהרה.</td></tr>
+          <tr id="rule-file.empty"><td><code dir="ltr">file.empty</code></td><td>שגיאה</td><td>שורות 39–40</td><td>הקובץ ריק: אין בו אף רשומה. נדרשות לפחות רשומת כותרת ורשומת סגירה.</td></tr>
+          <tr id="rule-file.record.unknown"><td><code dir="ltr">file.record.unknown</code><br><span class="note">כל תו ראשון אחר</span></td><td>שגיאה</td><td>שורות 100, 158, 176–192</td><td>התו הראשון בשורה אינו סוג רשומה מוכר (O לכותרת, X לסגירה, או אחד מסוגי רשומות הפירוט בטבלת הערכים).</td></tr>
+          <tr><td><code dir="ltr">file.record.unknown</code><br><span class="note">רשומה שמתחילה ב-A: רשומת הפתיחה של קובץ מייצגים (נספח ב')</span></td><td>שגיאה</td><td>שורות 100, 158, 176–192, 194–215</td><td>רשומה שמתחילה ב-A היא רשומת הפתיחה של קובץ מייצגים (נספח ב' בחוזר), שמייצג מגיש בשם כמה עוסקים. הבודק בודק רק קובץ של עוסק יחיד (נספח א'), ובו אין רשומה כזו.</td></tr>
+          <tr id="rule-file.header.missing"><td><code dir="ltr">file.header.missing</code></td><td>שגיאה</td><td>שורות 39–40, 100</td><td>אין בקובץ רשומת כותרת (שורה שמתחילה ב-O).</td></tr>
+          <tr id="rule-file.header.duplicate"><td><code dir="ltr">file.header.duplicate</code></td><td>שגיאה</td><td>שורות 39–40, 94–126</td><td>יש בקובץ יותר מרשומת כותרת אחת.</td></tr>
+          <tr id="rule-file.header.position"><td><code dir="ltr">file.header.position</code></td><td>שגיאה</td><td>שורות 39–40</td><td>רשומת הכותרת אינה השורה הראשונה בקובץ.</td></tr>
+          <tr id="rule-file.footer.missing"><td><code dir="ltr">file.footer.missing</code></td><td>שגיאה</td><td>שורות 39–40, 158</td><td>אין בקובץ רשומת סגירה (שורה שמתחילה ב-X).</td></tr>
+          <tr id="rule-file.footer.duplicate"><td><code dir="ltr">file.footer.duplicate</code></td><td>שגיאה</td><td>שורות 39–40, 154–161</td><td>יש בקובץ יותר מרשומת סגירה אחת.</td></tr>
+          <tr id="rule-file.footer.position"><td><code dir="ltr">file.footer.position</code></td><td>שגיאה</td><td>שורות 39–40, 154–161</td><td>רשומת הסגירה אינה השורה האחרונה בקובץ.</td></tr>
+          <tr id="rule-file.detail.none"><td><code dir="ltr">file.detail.none</code></td><td>אזהרה</td><td>שורות 39–40</td><td>אין בקובץ רשומות פירוט. תקופה בלי עסקאות אפשרית, ולכן זו אזהרה בלבד.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <details><summary>רשומת הכותרת (O) (36)</summary>
+    <div class="table-scroll">
+      <table class="data-table">
+        <caption>רשומת הכותרת (O): כל כלל, חומרתו, השורות בחוזר שהוא נשען עליהן, והסבר.</caption>
+        <thead><tr><th scope="col">הכלל</th><th scope="col">חומרה</th><th scope="col">בחוזר</th><th scope="col">הסבר</th></tr></thead>
+        <tbody>
+          <tr id="rule-header.length"><td><code dir="ltr">header.length</code></td><td>שגיאה</td><td>שורות 94–126</td><td>אורך רשומת הכותרת אינו 131 תווים בדיוק, כפי שקובע נספח א' בחוזר.</td></tr>
+          <tr id="rule-header.recordType.literal"><td><code dir="ltr">header.recordType.literal</code></td><td>שגיאה</td><td>שורה 100</td><td>ערך שגוי ב«סוג רשומה»: נספח א' בחוזר קובע לשדה הזה ערך קבוע אחד.</td></tr>
+          <tr id="rule-header.licensedDealerId.digits"><td><code dir="ltr">header.licensedDealerId.digits</code></td><td>שגיאה</td><td>שורה 101</td><td>ב«מספר עוסק» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.reportMonth.digits"><td><code dir="ltr">header.reportMonth.digits</code></td><td>שגיאה</td><td>שורה 102</td><td>ב«תקופת הדיווח» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.reportType.literal"><td><code dir="ltr">header.reportType.literal</code></td><td>שגיאה</td><td>שורות 103–104</td><td>ערך שגוי ב«סוג הדוח»: נספח א' בחוזר קובע לשדה הזה ערך קבוע אחד.</td></tr>
+          <tr id="rule-header.generationDate.digits"><td><code dir="ltr">header.generationDate.digits</code></td><td>שגיאה</td><td>שורה 105</td><td>ב«תאריך הגשה» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.taxableSalesAmountSign.sign"><td><code dir="ltr">header.taxableSalesAmountSign.sign</code></td><td>שגיאה</td><td>שורה 106</td><td>בשדה הסימן של «עסקאות חייבות» מותר רק + או -.</td></tr>
+          <tr id="rule-header.taxableSalesAmountSign.signOfZero"><td><code dir="ltr">header.taxableSalesAmountSign.signOfZero</code></td><td>שגיאה</td><td>שורה 174</td><td>סימן מינוס לסכום אפס ב«עסקאות חייבות». לפי החוזר, כשהסכום אפס הסימן הוא +.</td></tr>
+          <tr id="rule-header.taxableSalesAmount.digits"><td><code dir="ltr">header.taxableSalesAmount.digits</code></td><td>שגיאה</td><td>שורה 107</td><td>ב«עסקאות חייבות» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.taxableSalesVatSign.sign"><td><code dir="ltr">header.taxableSalesVatSign.sign</code></td><td>שגיאה</td><td>שורה 108</td><td>בשדה הסימן של «מע"מ עסקאות חייבות» מותר רק + או -.</td></tr>
+          <tr id="rule-header.taxableSalesVatSign.signOfZero"><td><code dir="ltr">header.taxableSalesVatSign.signOfZero</code></td><td>שגיאה</td><td>שורה 174</td><td>סימן מינוס לסכום אפס ב«מע"מ עסקאות חייבות». לפי החוזר, כשהסכום אפס הסימן הוא +.</td></tr>
+          <tr id="rule-header.taxableSalesVat.digits"><td><code dir="ltr">header.taxableSalesVat.digits</code></td><td>שגיאה</td><td>שורה 109</td><td>ב«מע"מ עסקאות חייבות» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.differentRateSalesAmountSign.sign"><td><code dir="ltr">header.differentRateSalesAmountSign.sign</code></td><td>שגיאה</td><td>שורה 110</td><td>בשדה הסימן של «עסקאות בשיעור מס אחר» מותר רק + או -.</td></tr>
+          <tr id="rule-header.differentRateSalesAmountSign.signOfZero"><td><code dir="ltr">header.differentRateSalesAmountSign.signOfZero</code></td><td>שגיאה</td><td>שורה 174</td><td>סימן מינוס לסכום אפס ב«עסקאות בשיעור מס אחר». לפי החוזר, כשהסכום אפס הסימן הוא +.</td></tr>
+          <tr id="rule-header.differentRateSalesAmount.digits"><td><code dir="ltr">header.differentRateSalesAmount.digits</code></td><td>שגיאה</td><td>שורה 111</td><td>ב«עסקאות בשיעור מס אחר» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.differentRateSalesVatSign.sign"><td><code dir="ltr">header.differentRateSalesVatSign.sign</code></td><td>שגיאה</td><td>שורה 112</td><td>בשדה הסימן של «מע"מ בשיעור מס אחר» מותר רק + או -.</td></tr>
+          <tr id="rule-header.differentRateSalesVatSign.signOfZero"><td><code dir="ltr">header.differentRateSalesVatSign.signOfZero</code></td><td>שגיאה</td><td>שורה 174</td><td>סימן מינוס לסכום אפס ב«מע"מ בשיעור מס אחר». לפי החוזר, כשהסכום אפס הסימן הוא +.</td></tr>
+          <tr id="rule-header.differentRateSalesVat.digits"><td><code dir="ltr">header.differentRateSalesVat.digits</code></td><td>שגיאה</td><td>שורה 113</td><td>ב«מע"מ בשיעור מס אחר» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.salesRecordCount.digits"><td><code dir="ltr">header.salesRecordCount.digits</code></td><td>שגיאה</td><td>שורות 114–115, 181–185</td><td>ב«מס' עסקאות» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.zeroOrExemptSalesAmountSign.sign"><td><code dir="ltr">header.zeroOrExemptSalesAmountSign.sign</code></td><td>שגיאה</td><td>שורה 116</td><td>בשדה הסימן של «עסקאות פטורות / אפס» מותר רק + או -.</td></tr>
+          <tr id="rule-header.zeroOrExemptSalesAmountSign.signOfZero"><td><code dir="ltr">header.zeroOrExemptSalesAmountSign.signOfZero</code></td><td>שגיאה</td><td>שורה 174</td><td>סימן מינוס לסכום אפס ב«עסקאות פטורות / אפס». לפי החוזר, כשהסכום אפס הסימן הוא +.</td></tr>
+          <tr id="rule-header.zeroOrExemptSalesAmount.digits"><td><code dir="ltr">header.zeroOrExemptSalesAmount.digits</code></td><td>שגיאה</td><td>שורה 117</td><td>ב«עסקאות פטורות / אפס» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.otherInputsVatSign.sign"><td><code dir="ltr">header.otherInputsVatSign.sign</code></td><td>שגיאה</td><td>שורה 118</td><td>בשדה הסימן של «תשומות אחרות» מותר רק + או -.</td></tr>
+          <tr id="rule-header.otherInputsVatSign.signOfZero"><td><code dir="ltr">header.otherInputsVatSign.signOfZero</code></td><td>שגיאה</td><td>שורה 174</td><td>סימן מינוס לסכום אפס ב«תשומות אחרות». לפי החוזר, כשהסכום אפס הסימן הוא +.</td></tr>
+          <tr id="rule-header.otherInputsVat.digits"><td><code dir="ltr">header.otherInputsVat.digits</code></td><td>שגיאה</td><td>שורה 119</td><td>ב«תשומות אחרות» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.equipmentInputsVatSign.sign"><td><code dir="ltr">header.equipmentInputsVatSign.sign</code></td><td>שגיאה</td><td>שורות 120–122</td><td>בשדה הסימן של «תשומות ציוד» מותר רק + או -.</td></tr>
+          <tr id="rule-header.equipmentInputsVatSign.signOfZero"><td><code dir="ltr">header.equipmentInputsVatSign.signOfZero</code></td><td>שגיאה</td><td>שורה 174</td><td>סימן מינוס לסכום אפס ב«תשומות ציוד». לפי החוזר, כשהסכום אפס הסימן הוא +.</td></tr>
+          <tr id="rule-header.equipmentInputsVat.digits"><td><code dir="ltr">header.equipmentInputsVat.digits</code></td><td>שגיאה</td><td>שורה 123</td><td>ב«תשומות ציוד» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.inputsCount.digits"><td><code dir="ltr">header.inputsCount.digits</code></td><td>שגיאה</td><td>שורות 124, 186–191</td><td>ב«מס' תשומות» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.reportedVatSign.sign"><td><code dir="ltr">header.reportedVatSign.sign</code></td><td>שגיאה</td><td>שורה 125</td><td>בשדה הסימן של «סכום מדווח» מותר רק + או -.</td></tr>
+          <tr id="rule-header.reportedVatSign.signOfZero"><td><code dir="ltr">header.reportedVatSign.signOfZero</code></td><td>שגיאה</td><td>שורה 174</td><td>סימן מינוס לסכום אפס ב«סכום מדווח». לפי החוזר, כשהסכום אפס הסימן הוא +.</td></tr>
+          <tr id="rule-header.reportedVat.digits"><td><code dir="ltr">header.reportedVat.digits</code></td><td>שגיאה</td><td>שורה 126</td><td>ב«סכום מדווח» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-header.reportMonth.calendar"><td><code dir="ltr">header.reportMonth.calendar</code></td><td>שגיאה</td><td>שורה 102</td><td>תקופת הדיווח אינה חודש קיים בפורמט YYYYMM (שנה ואחריה חודש).</td></tr>
+          <tr id="rule-header.generationDate.calendar"><td><code dir="ltr">header.generationDate.calendar</code></td><td>אזהרה</td><td>שורה 105</td><td>תאריך יצירת הקובץ אינו תאריך קיים בפורמט YYYYMMDD. החוזר סותר את עצמו לגבי הפורמט של שדה זה, ולכן זו אזהרה בלבד.</td></tr>
+          <tr id="rule-header.differentRateSalesAmount.reserved"><td><code dir="ltr">header.differentRateSalesAmount.reserved</code></td><td>אזהרה</td><td>שורות 110–113</td><td>שדה שמור לשימוש עתידי («עסקאות בשיעור מס אחר») אינו אפסים. החוזר קובע בו אפסים "לשימוש עתידי", ולכן זו אזהרה בלבד.</td></tr>
+          <tr id="rule-header.differentRateSalesVat.reserved"><td><code dir="ltr">header.differentRateSalesVat.reserved</code></td><td>אזהרה</td><td>שורות 110–113</td><td>שדה שמור לשימוש עתידי («מע"מ בשיעור מס אחר») אינו אפסים. החוזר קובע בו אפסים "לשימוש עתידי", ולכן זו אזהרה בלבד.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <details><summary>רשומות הפירוט: עסקאות ותשומות (25)</summary>
+    <div class="table-scroll">
+      <table class="data-table">
+        <caption>רשומות הפירוט: עסקאות ותשומות: כל כלל, חומרתו, השורות בחוזר שהוא נשען עליהן, והסבר.</caption>
+        <thead><tr><th scope="col">הכלל</th><th scope="col">חומרה</th><th scope="col">בחוזר</th><th scope="col">הסבר</th></tr></thead>
+        <tbody>
+          <tr id="rule-detail.length"><td><code dir="ltr">detail.length</code></td><td>שגיאה</td><td>שורות 127–152</td><td>אורך רשומת הפירוט אינו 60 תווים בדיוק, כפי שקובע נספח א' בחוזר.</td></tr>
+          <tr id="rule-detail.recordType.known"><td><code dir="ltr">detail.recordType.known</code></td><td>שגיאה</td><td>שורות 133, 176–192</td><td>סוג הרשומה אינו אחד מ-11 הערכים שבטבלת הערכים של החוזר.</td></tr>
+          <tr id="rule-detail.counterpartyVatId.digits"><td><code dir="ltr">detail.counterpartyVatId.digits</code></td><td>שגיאה</td><td>שורות 134–137, 250–515</td><td>ב«ספק / לקוח / רשימון» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-detail.invoiceDate.digits"><td><code dir="ltr">detail.invoiceDate.digits</code></td><td>שגיאה</td><td>שורה 138</td><td>ב«תאריך החשבונית» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-detail.refGroup.alphanumeric"><td><code dir="ltr">detail.refGroup.alphanumeric</code></td><td>אזהרה</td><td>שורות 139, 580–581</td><td>ב«קבוצת אסמכתא» יש תו שאינו אות לטינית או ספרה. החוזר אינו מגדיר אילו תווים מותרים בשדה כזה, ולכן זו אזהרה בלבד.</td></tr>
+          <tr id="rule-detail.refNumber.digits"><td><code dir="ltr">detail.refNumber.digits</code></td><td>שגיאה</td><td>שורה 141</td><td>ב«מספר אסמכתא» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-detail.totalVat.digits"><td><code dir="ltr">detail.totalVat.digits</code></td><td>שגיאה</td><td>שורות 142–144</td><td>ב«סכום המע"מ» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-detail.invoiceSumSign.sign"><td><code dir="ltr">detail.invoiceSumSign.sign</code></td><td>שגיאה</td><td>שורות 145–146, 523–535</td><td>בשדה הסימן של «סכום» מותר רק + או -.</td></tr>
+          <tr id="rule-detail.invoiceSumSign.signOfZero"><td><code dir="ltr">detail.invoiceSumSign.signOfZero</code><br><span class="note">כששני הסכומים ברשומה הם אפס</span></td><td>שגיאה</td><td>שורה 174</td><td>סימן מינוס ברשומה שבה גם «סכום» וגם «סכום המע"מ» הם אפס. לפי החוזר, כשהסכום אפס הסימן הוא +.</td></tr>
+          <tr><td><code dir="ltr">detail.invoiceSumSign.signOfZero</code><br><span class="note">כשרק סכום החשבונית הוא אפס וסכום המע״מ אינו אפס</span></td><td>אזהרה</td><td>שורות 174, 523–524, 142–144, 148–149</td><td>«סכום» הוא אפס אבל «סכום המע"מ» אינו אפס – כמו בזיכוי של מע״מ בלבד – והסימן הוא מינוס. החוזר קובע שכשהסכום אפס הסימן הוא +, אבל ברשומת פירוט יש סימן אחד לשני סכומים, והחוזר אינו אומר לאיזה מהם הכלל מתכוון. זיכוי נרשם במינוס: אין לשנות את הסימן בלי לבדוק את המסמך.</td></tr>
+          <tr id="rule-detail.invoiceSum.digits"><td><code dir="ltr">detail.invoiceSum.digits</code></td><td>שגיאה</td><td>שורות 148–149</td><td>ב«סכום» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-detail.allocationNumber.digits"><td><code dir="ltr">detail.allocationNumber.digits</code></td><td>שגיאה</td><td>שורות 150–152, 583–584, 59–61</td><td>ב«מספר הקצאה קצר» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr id="rule-detail.S.counterpartyExpected"><td><code dir="ltr">detail.S.counterpartyExpected</code><br><span class="note">מעל 5,000 ש״ח לפני מע״מ</span></td><td>שגיאה</td><td>שורות 250–268, 537–542, 586–588</td><td>עסקה מזוהה (S) שבה מספר העוסק של הלקוח הוא אפסים. נספח ג' מסמן את השדה כחובה: מעל 5,000 שקלים לפני מע״מ זו שגיאה, ובסכום נמוך יותר אזהרה. סף 5,000 השקלים הוא של החוזר משנת 2009, שאומר בעצמו שהנתון עשוי להשתנות.</td></tr>
+          <tr><td><code dir="ltr">detail.S.counterpartyExpected</code><br><span class="note">עד 5,000 ש״ח לפני מע״מ, או כשהסכום אינו קריא</span></td><td>אזהרה</td><td>שורות 250–268, 537–542, 586–588</td><td>עסקה מזוהה (S) שבה מספר העוסק של הלקוח הוא אפסים. נספח ג' מסמן את השדה כחובה: מעל 5,000 שקלים לפני מע״מ זו שגיאה, ובסכום נמוך יותר אזהרה. סף 5,000 השקלים הוא של החוזר משנת 2009, שאומר בעצמו שהנתון עשוי להשתנות.</td></tr>
+          <tr id="rule-detail.M.counterpartyExpected"><td><code dir="ltr">detail.M.counterpartyExpected</code></td><td>שגיאה</td><td>שורות 335–355, 224–225, 556–557</td><td>ברשומה מסוג M (חשבונית עצמית (עסקה)) נספח ג' מחייב את מספר העוסק של הצד שכנגד, והשדה הוא אפסים.</td></tr>
+          <tr id="rule-detail.I.counterpartyExpected"><td><code dir="ltr">detail.I.counterpartyExpected</code></td><td>שגיאה</td><td>שורות 377–395, 224–225</td><td>ברשומה מסוג I (לקוח רש"פ) נספח ג' מחייב את מספר העוסק של הצד שכנגד, והשדה הוא אפסים.</td></tr>
+          <tr id="rule-detail.T.counterpartyExpected"><td><code dir="ltr">detail.T.counterpartyExpected</code></td><td>שגיאה</td><td>שורות 396–414, 224–225</td><td>ברשומה מסוג T (תשומה רגילה) נספח ג' מחייב את מספר העוסק של הצד שכנגד, והשדה הוא אפסים.</td></tr>
+          <tr id="rule-detail.C.counterpartyExpected"><td><code dir="ltr">detail.C.counterpartyExpected</code></td><td>שגיאה</td><td>שורות 415–435, 224–225, 556–557</td><td>ברשומה מסוג C (חשבונית עצמית (תשומה)) נספח ג' מחייב את מספר העוסק של הצד שכנגד, והשדה הוא אפסים.</td></tr>
+          <tr id="rule-detail.P.counterpartyExpected"><td><code dir="ltr">detail.P.counterpartyExpected</code></td><td>שגיאה</td><td>שורות 478–496, 224–225</td><td>ברשומה מסוג P (ספק רש"פ) נספח ג' מחייב את מספר העוסק של הצד שכנגד, והשדה הוא אפסים.</td></tr>
+          <tr id="rule-detail.H.counterpartyExpected"><td><code dir="ltr">detail.H.counterpartyExpected</code></td><td>אזהרה</td><td>שורות 497–517, 224–225, 573–574</td><td>ברשומה מסוג H (מסמך אחר) נספח ג' מחייב את מספר העוסק של הצד שכנגד, והשדה הוא אפסים. ברשומה מסוג H זו אזהרה בלבד: ההערה בחוזר מפנה להנחיות שע״ם, שאינן בידינו.</td></tr>
+          <tr id="rule-detail.L.vatIdZeros"><td><code dir="ltr">detail.L.vatIdZeros</code></td><td>שגיאה</td><td>שורות 292–334, 543–549</td><td>עסקה לא מזוהה (L): מספר הצד שכנגד חייב להיות אפסים. עסקה עם לקוח מזוהה נרשמת כסוג S.</td></tr>
+          <tr id="rule-detail.K.vatIdZeros"><td><code dir="ltr">detail.K.vatIdZeros</code></td><td>שגיאה</td><td>שורות 436–456</td><td>קופה קטנה (K) מאגדת כמה ספקים, ולכן מספר הצד שכנגד חייב להיות אפסים.</td></tr>
+          <tr id="rule-detail.K.refNumberInvoiceCount"><td><code dir="ltr">detail.K.refNumberInvoiceCount</code></td><td>אזהרה</td><td>שורות 446, 566–572</td><td>בקופה קטנה (K) שדה האסמכתא מציין את מספר החשבוניות ברשומה, ונמצאו בו אפסים. אזהרה.</td></tr>
+          <tr id="rule-detail.R.refNumberZeros"><td><code dir="ltr">detail.R.refNumberZeros</code></td><td>אזהרה</td><td>שורות 457–477, 560–565</td><td>ברשימון יבוא (R) נספח ג' קובע אפסים במספר האסמכתא, ונמצא בו מספר. החוזר אינו חד-משמעי בנקודה זו, ולכן זו אזהרה בלבד.</td></tr>
+          <tr id="rule-detail.Y.vatZeros"><td><code dir="ltr">detail.Y.vatZeros</code></td><td>שגיאה</td><td>שורות 356–376, 560–565</td><td>ייצוא (Y) אינו נושא מע״מ, ולכן שדה סכום המע״מ חייב להיות אפסים.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <details><summary>רשומת הסגירה (X) (5)</summary>
+    <div class="table-scroll">
+      <table class="data-table">
+        <caption>רשומת הסגירה (X): כל כלל, חומרתו, השורות בחוזר שהוא נשען עליהן, והסבר.</caption>
+        <thead><tr><th scope="col">הכלל</th><th scope="col">חומרה</th><th scope="col">בחוזר</th><th scope="col">הסבר</th></tr></thead>
+        <tbody>
+          <tr id="rule-footer.length"><td><code dir="ltr">footer.length</code></td><td>שגיאה</td><td>שורות 154–161</td><td>אורך רשומת הסגירה אינו 10 תווים בדיוק, כפי שקובע נספח א' בחוזר.</td></tr>
+          <tr id="rule-footer.recordType.literal"><td><code dir="ltr">footer.recordType.literal</code><br><span class="note">כל ערך אחר</span></td><td>שגיאה</td><td>שורות 158, 209</td><td>ערך שגוי ב«סוג רשומה»: נספח א' בחוזר קובע לשדה הזה ערך קבוע אחד.</td></tr>
+          <tr id="rule-footer.licensedDealerId.digits"><td><code dir="ltr">footer.licensedDealerId.digits</code></td><td>שגיאה</td><td>שורות 159–161</td><td>ב«מספר עוסק» מותרות ספרות בלבד, לכל רוחב השדה (שדה קצר יותר מתמלא באפסים מובילים).</td></tr>
+          <tr><td><code dir="ltr">footer.recordType.literal</code><br><span class="note">רשומת סגירה שמתחילה ב-Z: רשומת הסיכום של קובץ מייצגים (נספח ב')</span></td><td>שגיאה</td><td>שורות 158, 194–215</td><td>רשומת הסגירה מתחילה ב-Z, רשומת הסיכום של קובץ מייצגים (נספח ב'). קובץ של עוסק יחיד נסגר ב-X, והבודק בודק רק קובץ כזה.</td></tr>
+          <tr id="rule-footer.licensedDealerId.matchesHeader"><td><code dir="ltr">footer.licensedDealerId.matchesHeader</code></td><td>אזהרה</td><td>שורות 101, 159–161, 91, 194–215</td><td>מספר העוסק ברשומת הסגירה שונה מזה שבכותרת. החוזר אינו קובע במפורש ששני המספרים זהים, ולכן זו אזהרה בלבד.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <details><summary>הכותרת מול הרשומות (3)</summary>
+    <div class="table-scroll">
+      <table class="data-table">
+        <caption>הכותרת מול הרשומות: כל כלל, חומרתו, השורות בחוזר שהוא נשען עליהן, והסבר.</caption>
+        <thead><tr><th scope="col">הכלל</th><th scope="col">חומרה</th><th scope="col">בחוזר</th><th scope="col">הסבר</th></tr></thead>
+        <tbody>
+          <tr id="rule-totals.salesRecordCount"><td><code dir="ltr">totals.salesRecordCount</code></td><td>שגיאה</td><td>שורות 114–115, 181–185</td><td>מספר רשומות העסקאות שבכותרת שונה ממספר רשומות העסקאות (S, L, M, Y, I) שבקובץ.</td></tr>
+          <tr id="rule-totals.inputsCount"><td><code dir="ltr">totals.inputsCount</code></td><td>שגיאה</td><td>שורות 124, 186–191</td><td>מספר רשומות התשומות שבכותרת שונה ממספר רשומות התשומות (T, K, R, P, H, C) שבקובץ.</td></tr>
+          <tr id="rule-totals.pettyCashCap"><td><code dir="ltr">totals.pettyCashCap</code></td><td>אזהרה</td><td>שורות 566–570, 436–456, 586–588</td><td>סך המע״מ ברשומות קופה קטנה (K) עולה על התקרה שבהערה ה' לנספח ג' (2% מסך המע״מ בקובץ או 2,000 שקלים, הגבוה מביניהם) – גם לפי הקריאה המקלה ביותר של החוזר, שבה ה-2% מחושבים על המע״מ של כל הרשומות. זו אזהרה רק כי 2% ו-2,000 השקלים הם נתוני החוזר משנת 2009, והחוזר עצמו אומר שהם עשויים להשתנות.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+  <h3>מה הבודק אינו בודק</h3>
+  <ul>
+    <li>סכומים: הבודק אינו מצליב את הסכומים שבכותרת מול סכום הרשומות, ואינו מחשב את הסכום המדווח (<span dir="ltr">reportedVat</span>), כי החוזר אינו קובע לו נוסחה.</li>
+    <li>תאריך החשבונית: נבדק רק שיש בו 8 ספרות – לא שהוא תאריך קיים ולא שהוא בתוך תקופת הדיווח.</li>
+    <li>ספרת הביקורת של מספרי העוסק.</li>
+    <li>מספר הקצאה: שדה מספר ההקצאה מתקבל גם כשהוא אפסים, ואין כלל על הסכום שממנו חשבונית חייבת מספר הקצאה.</li>
+    <li>שם הקובץ.</li>
+    <li>קובץ מייצגים (נספח ב'), שמייצג מגיש בשם כמה עוסקים: אינו נבדק כלל.</li>
+  </ul>
+</section>
+<!-- pcn874-rule-reference:end -->
 
   <p class="note">הבודק מספק מידע כללי על מבנה הקובץ ואינו מהווה ייעוץ מס. האחריות לדיווח היא של המדווח.</p>
 </main>

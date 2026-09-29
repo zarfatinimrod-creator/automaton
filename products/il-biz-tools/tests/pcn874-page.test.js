@@ -24,6 +24,8 @@ import { collectDependencies } from '../src/lib/site-deps.js';
 import { checkPageA11y } from '../src/lib/a11y-check.js';
 import { MAX_FILE_BYTES, buildReport, ruleHebrew } from '../src/lib/pcn874-report.js';
 import { productRoot, copyProduct, removeCopy, runBuild, listFiles, readIn } from './helpers/product-copy.js';
+import { elementById, ancestorsAt } from './helpers/html.js';
+import { shareSummary, shareText, whatsappHref } from '../src/lib/pcn874-share.js';
 
 const PAGE = 'pcn874.html';
 const read = (p) => readFileSync(join(productRoot, p), 'utf8');
@@ -70,8 +72,9 @@ describe('the page, as written', () => {
   });
 
   it('lists findings in a table with a caption and column headers: line, record, field, severity, rule', () => {
-    expect(html).toMatch(/<table\b[\s\S]*<caption>[^<]+<\/caption>/);
-    const headers = [...html.matchAll(/<th scope="col">([^<]+)<\/th>/g)].map((m) => m[1]);
+    const results = elementById(html, 'pcn-results');
+    expect(results).toMatch(/<table\b[\s\S]*<caption>[^<]+<\/caption>/);
+    const headers = [...results.matchAll(/<th scope="col">([^<]+)<\/th>/g)].map((m) => m[1]);
     expect(headers).toEqual(['שורה', 'רשומה', 'שדה', 'חומרה', 'הכלל שנכשל']);
     expect(html).toMatch(/<tbody id="pcn-findings">/);
   });
@@ -161,6 +164,64 @@ describe('the page, as written', () => {
       expect(text).not.toContain('₪');
       expect(text).not.toMatch(/\b(?:buy|price|checkout|purchase)\b/i);
       expect(text).not.toMatch(/לקנות|קנייה|רכישה|לרכוש|מחיר|בתשלום|\bPro\b/);
+    }
+  });
+
+  it('after a result: a slot to print or save the findings as PDF, and a share button hidden until the browser can share', () => {
+    const after = elementById(html, 'pcn-after');
+    expect(html.indexOf('id="pcn-after"')).toBeGreaterThan(html.indexOf('id="pcn-results"'));
+    expect(after).toMatch(/^<section\b[^>]*\shidden/);
+    expect(after).toMatch(/<button type="button"[^>]*id="pcn-print"[^>]*>הדפסה \/ PDF של הממצאים<\/button>/);
+    expect(after).toMatch(/<button type="button"[^>]*id="pcn-share"[^>]*\shidden[^>]*>/);
+    // Only counts and rule names leave, and only when the user presses the button.
+    expect(textById(html, 'pcn-share-note')).toContain('רק את מספר השגיאות והאזהרות ואת שמות הכללים');
+    expect(textById(html, 'pcn-share-note')).toContain('בלי שום ערך מתוך הקובץ');
+    expect(after).not.toMatch(/whatsapp|wa\.me/i);
+  });
+
+  it('prints the file name, the date checked, the scope box as it stands and "not tax advice", and none of the controls', () => {
+    const header = elementById(html, 'pcn-print-header');
+    expect(header).toMatch(/class="[^"]*\bprint-only\b/);
+    expect(header).toContain('id="pcn-print-file"');
+    expect(header).toContain('id="pcn-print-date"');
+    expect(textById(html, 'pcn-print-header')).toContain('אינו ייעוץ מס');
+    expect(html.indexOf('id="pcn-print-header"')).toBeLessThan(html.indexOf('id="pcn-scope"'));
+    // The scope box prints verbatim: nothing around it is hidden in print.
+    const around = ancestorsAt(html, html.indexOf('id="pcn-scope"'));
+    for (const el of around) expect(el.attrs).not.toMatch(/no-print|\bfaq\b/);
+    for (const id of ['pcn-file-field', 'pcn-file-note', 'pcn-after', 'pcn-rules']) {
+      expect(elementById(html, id).slice(0, 200), id).toMatch(/class="[^"]*\bno-print\b/);
+    }
+    const css = read('assets/style.css');
+    expect(css).toMatch(/\.print-only\s*\{\s*display:\s*none;?\s*\}/);
+    expect(css).toMatch(/@media print\s*\{[^}]*\.print-only\s*\{\s*display:\s*block/);
+  });
+
+  // Review 29.9 (honesty 10, code 5): the header names a file and a date, so it prints only beside that file's
+  // result. It starts hidden, and print CSS must not override `hidden` (a class rule's display:block beats the
+  // browser's [hidden] rule).
+  it('the print header starts hidden, and the print stylesheet keeps a hidden one hidden', () => {
+    expect(elementById(html, 'pcn-print-header')).toMatch(/^<div\b[^>]*\shidden[\s>]/);
+    const css = read('assets/style.css');
+    expect(css).toMatch(/\.print-only\[hidden\]\s*\{\s*display:\s*none\s*!important;?\s*\}/);
+  });
+
+  it('answers "why is the checker free?" honestly, with no link to anything paid and no promise it stays free', () => {
+    const answer = /<summary>למה הבודק חינמי\?<\/summary><p>([\s\S]*?)<\/p>/.exec(html)?.[1] ?? '';
+    expect(answer).not.toBe('');
+    expect(answer).not.toMatch(/<a\b/);
+    expect(answer).toContain('רץ כולו בדפדפן');
+    expect(html).not.toMatch(/ונשאר חינמי|יישאר חינמי|חינם לתמיד|לתמיד/);
+    const ld = JSON.parse(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html)[1]);
+    const twin = ld.mainEntity.find((q) => q.name === 'למה הבודק חינמי?')?.acceptedAnswer.text;
+    expect(twin).toBe(answer);
+  });
+
+  it('keeps accountants in scope: one dealer\'s file, yours or a client\'s - never a multi-client pitch', () => {
+    expect(textById(html, 'pcn-scope')).toContain('לבדוק קובץ של עוסק אחד – שלכם או של לקוח');
+    const pages = readdirSync(productRoot).filter((f) => f.endsWith('.html'));
+    for (const p of pages) {
+      expect(read(p), p).not.toMatch(/רואי חשבון ומייצגים|למשרדי רואי חשבון|קבצים של כמה לקוחות|כל הלקוחות שלכם בבת אחת/);
     }
   });
 
@@ -291,7 +352,7 @@ const collect = (el, tag, out = []) => {
   return out;
 };
 
-async function loadPage({ validatorThrows = false } = {}) {
+async function loadPage({ validatorThrows = false, share = undefined, fallbackOn = false } = {}) {
   vi.resetModules();
   const els = new Map();
   const byId = (sel) => {
@@ -300,6 +361,9 @@ async function loadPage({ validatorThrows = false } = {}) {
   };
   const initPage = vi.fn();
   vi.doMock('../assets/common.js', () => ({ initPage, $: (sel) => byId(sel), $$: () => [] }));
+  if (fallbackOn) {
+    vi.doMock('../src/lib/pcn874-share.js', async (importOriginal) => ({ ...(await importOriginal()), WHATSAPP_FALLBACK_ENABLED: true }));
+  }
   if (validatorThrows) {
     vi.doMock('../src/vendor/pcn874/validate.js', async (importOriginal) => ({
       ...(await importOriginal()),
@@ -315,8 +379,14 @@ async function loadPage({ validatorThrows = false } = {}) {
   for (const name of ['fetch', 'XMLHttpRequest', 'WebSocket', 'EventSource', 'localStorage', 'sessionStorage', 'indexedDB']) {
     vi.stubGlobal(name, trap(name));
   }
-  vi.stubGlobal('navigator', { sendBeacon: trap('sendBeacon') });
-  vi.stubGlobal('document', { createElement: (tag) => makeEl(tag), querySelector: byId, cookie: '' });
+  const shared = [];
+  const nav = { sendBeacon: trap('sendBeacon') };
+  if (share) nav.share = async (data) => { shared.push(data); if (share === 'cancel') { const e = new Error('cancelled'); e.name = 'AbortError'; throw e; } };
+  vi.stubGlobal('navigator', nav);
+  const printed = [];
+  vi.stubGlobal('window', { print: () => printed.push(true) });
+  const created = [];
+  vi.stubGlobal('document', { createElement: (tag) => { const el = makeEl(tag); created.push(el); return el; }, querySelector: byId, cookie: '' });
   await import('../assets/page-pcn874.js');
   const input = byId('#pcn-file');
   const fileOf = (name, content, { failRead = false } = {}) => {
@@ -329,7 +399,7 @@ async function loadPage({ validatorThrows = false } = {}) {
     await input.fire('change');
   };
   const choose = (name, content, opts) => pick(fileOf(name, content, opts));
-  return { byId, initPage, used, choose, pick, fileOf, input };
+  return { byId, initPage, used, choose, pick, fileOf, input, shared, printed, created };
 }
 
 /** Hebrew letters as Windows-1255 bytes (alef..tav are 0xE0..0xFA); ASCII as itself. */
@@ -493,6 +563,134 @@ describe('the page script, with a file chosen', () => {
     }
     await page.choose('x.txt', '<img src=x onerror=alert(1)>');
     expect(page.used).toEqual([]);
+  });
+});
+
+describe('the post-result slot, with a file checked', () => {
+  beforeEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+    vi.doUnmock('../assets/common.js');
+    vi.doUnmock('../src/vendor/pcn874/validate.js');
+    vi.doUnmock('../src/lib/pcn874-share.js');
+  });
+
+  it('stays hidden until a check finishes, then shows with the file name and the date for the printout', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 8, 28, 12, 0, 0));
+    const page = await loadPage();
+    expect(page.byId('#pcn-after').hidden).toBe(true);
+    await page.choose('march.txt', fixture('invalid-counts.txt'));
+    expect(page.byId('#pcn-after').hidden).toBe(false);
+    expect(page.byId('#pcn-print-file').textContent).toBe('march.txt');
+    expect(page.byId('#pcn-print-date').textContent).toBe('28.9.2026');
+  });
+
+  it('a clean file gets the slot too; a read failure or a checker failure hides it again', async () => {
+    const page = await loadPage();
+    await page.choose('clean.txt', fixture('valid-minimal.txt'));
+    expect(page.byId('#pcn-after').hidden).toBe(false);
+    await page.choose('broken.txt', '', { failRead: true });
+    expect(page.byId('#pcn-after').hidden).toBe(true);
+    const failing = await loadPage({ validatorThrows: true });
+    await failing.choose('march.txt', fixture('valid-minimal.txt'));
+    expect(failing.byId('#pcn-after').hidden).toBe(true);
+  });
+
+  it('the print header is shown only with a result: check A, then a file B that fails, and A\'s name is gone', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 8, 28, 12, 0, 0));
+    const page = await loadPage();
+    const header = () => page.byId('#pcn-print-header');
+    expect(header().hidden).toBe(true);
+    await page.choose('A-march.txt', fixture('invalid-counts.txt'));
+    expect(header().hidden).toBe(false);
+    expect(page.byId('#pcn-print-file').textContent).toBe('A-march.txt');
+
+    for (const [name, content, opts] of [
+      ['B-unreadable.txt', '', { failRead: true }],
+      ['B-huge.txt', new Uint8Array(1)],
+    ]) {
+      await page.choose('A-march.txt', fixture('invalid-counts.txt'));
+      if (name === 'B-huge.txt') {
+        const huge = page.fileOf(name, content);
+        huge.size = 1024 * 1024 * 1024;
+        await page.pick(huge);
+      } else {
+        await page.choose(name, content, opts);
+      }
+      expect(header().hidden, name).toBe(true);
+      expect(page.byId('#pcn-print-file').textContent, name).toBe('');
+      expect(page.byId('#pcn-print-date').textContent, name).toBe('');
+    }
+  });
+
+  it('a checker failure after a good check hides the header too', async () => {
+    const page = await loadPage({ validatorThrows: true });
+    await page.choose('A-march.txt', fixture('valid-minimal.txt'));
+    expect(page.byId('#pcn-print-header').hidden).toBe(true);
+    expect(page.byId('#pcn-print-file').textContent).toBe('');
+  });
+
+  it('the print button prints the page, and only when pressed', async () => {
+    const page = await loadPage();
+    await page.choose('march.txt', fixture('invalid-counts.txt'));
+    expect(page.printed).toEqual([]);
+    await page.byId('#pcn-print').fire('click');
+    expect(page.printed).toEqual([true]);
+  });
+
+  it('no navigator.share: the share button stays hidden, and no WhatsApp link is made (the fallback is off)', async () => {
+    const page = await loadPage();
+    await page.choose('march.txt', fixture('invalid-counts.txt'));
+    expect(page.byId('#pcn-share').hidden).toBe(true);
+    const links = page.created.filter((el) => el.tag === 'a');
+    expect(links).toEqual([]);
+    for (const el of page.created) expect(JSON.stringify(el.attrs)).not.toMatch(/whatsapp|wa\.me/i);
+  });
+
+  it('with navigator.share: the button shows, shares nothing until pressed, then shares only counts, rule names and the address', async () => {
+    const page = await loadPage({ share: 'ok' });
+    expect(page.byId('#pcn-share').hidden).toBe(false);
+    const text = fixture('invalid-detail-semantics.txt');
+    await page.choose('client-ACME-march.txt', text);
+    expect(page.shared).toEqual([]);
+    await page.byId('#pcn-share').fire('click');
+    expect(page.shared.length).toBe(1);
+    const sent = page.shared[0];
+    expect(sent.text).toBe(shareText(shareSummary(validatePcn874(text))));
+    expect(sent.text).not.toContain('client-ACME-march');
+    expect(sent.url).toBeUndefined();
+    expect(page.used).toEqual([]);
+  });
+
+  it('a share the user cancels says nothing; the page stays as it was', async () => {
+    const page = await loadPage({ share: 'cancel' });
+    await page.choose('march.txt', fixture('invalid-counts.txt'));
+    const before = statusText(page);
+    await page.byId('#pcn-share').fire('click');
+    expect(statusText(page)).toBe(before);
+    expect(page.byId('#pcn-share-status').textContent).toBe('');
+  });
+
+  it('once the fallback is turned on (after a recorded device test), a browser without navigator.share gets a WhatsApp link to exactly the share text', async () => {
+    const page = await loadPage({ fallbackOn: true });
+    const text = fixture('invalid-counts.txt');
+    await page.choose('march.txt', text);
+    const links = page.created.filter((el) => el.tag === 'a');
+    expect(links.length).toBe(1);
+    expect(links[0].attrs.href).toBe(whatsappHref(shareText(shareSummary(validatePcn874(text)))));
+    expect(links[0].hidden).toBe(false);
+    expect(page.byId('#pcn-share').hidden).toBe(true);
+    await page.choose('broken.txt', '', { failRead: true });
+    expect(links[0].hidden).toBe(true);
+  });
+
+  it('the share button before any check shares nothing', async () => {
+    const page = await loadPage({ share: 'ok' });
+    await page.byId('#pcn-share').fire('click');
+    expect(page.shared).toEqual([]);
   });
 });
 

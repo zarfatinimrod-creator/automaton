@@ -226,7 +226,7 @@ The reconciliation renamed a few things. Rule ids are still meant to be depended
 | `src/sources.ts` | every source with its kind (`official`, `vendor-manual`, `implementation`), licence and provenance |
 | `src/layout.ts` | the layout as data — every field with offset, width, class, the document's own words, and any open question |
 | `src/parse.ts` | `parsePcn874` — forgiving; a malformed file must still parse |
-| `src/validate.ts` | `validatePcn874` — the rules, each carrying its citations |
+| `src/validate.ts` | `validatePcn874` — the rules, each carrying its citations; `RULES`, the rule table every finding takes its severity and citations from (`tests/rules.test.ts` holds it to the validator both ways) |
 | `src/generate.ts` | `generatePcn874` — CSV in, file out, self-validated before it is handed back |
 | `src/cli.ts` | `pcn874 validate` and `pcn874 generate` |
 | `tests/browser-safe.test.ts` | keeps `sources`, `layout`, `parse` and `validate` runnable in a browser — no `Buffer`, `process` or `require`, no import outside the four — because `products/il-biz-tools/pcn874.html` runs them there (type-stripped into `products/il-biz-tools/src/vendor/pcn874/`; that site's build refuses a bundle that differs from this source, so after a change here run `node scripts/bundle-pcn874.js` in `products/il-biz-tools`) |

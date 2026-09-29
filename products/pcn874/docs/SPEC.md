@@ -627,6 +627,12 @@ confirmed every one of them on its primary quote (§6.11); what it overturned we
 
 ### 7.1 Every rule, by severity, as it stands
 
+The same list, as data, is `RULES` in `src/validate.ts`: one row per rule id (two where one id is
+reported two ways), with its severity and the sources it cites. The checks take severity and sources
+from that table and nowhere else, and `tests/rules.test.ts` holds it to the validator both ways — every
+finding equals its row, and every row is reported by some input. The il-biz-tools validator page
+generates its rule reference from it.
+
 **Errors** (the circular states the rule outright): `header.length`, `detail.length`, `footer.length`;
 `header.recordType.literal`, `header.reportType.literal`, `footer.recordType.literal`;
 `<record>.<field>.digits` on every `N(n)` field; `<record>.<field>.sign` on every `+/-` field;

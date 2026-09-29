@@ -1,0 +1,17 @@
+{
+  "url": "https://streetlib-agreements.s3.eu-west-1.amazonaws.com/StreetLib_SL_IT_Hub_20250130_en.pdf",
+  "slug": "streetlib-hub-agreement-20250130-en",
+  "fetchedAt": "2026-09-29T00:53:34.110Z",
+  "status": 200,
+  "contentType": "application/pdf",
+  "byteLength": 453489,
+  "sha256": "c2eea38553395b6f9aceb33718ec92bfc3b62a375664216c80d0759105592fc4",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/streetlib-hub-agreement-20250130-en.pdf",
+  "textPath": "research/rendered/streetlib-hub-agreement-20250130-en.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

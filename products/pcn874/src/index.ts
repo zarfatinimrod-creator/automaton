@@ -28,8 +28,8 @@ export type {
   ProblemSeverity,
 } from './generate.js';
 
-export { validatePcn874, basisOf, COUNTERPARTY_ROWS } from './validate.js';
-export type { Finding, Severity, Basis, ValidationResult } from './validate.js';
+export { validatePcn874, basisOf, COUNTERPARTY_ROWS, RULES } from './validate.js';
+export type { Finding, Severity, Basis, ValidationResult, RuleEntry } from './validate.js';
 
 export {
   HEADER,

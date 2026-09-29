@@ -39,6 +39,14 @@ Full report with per-claim confidence: `research/tiktok/01-monetization-israel.m
 | Creator Marketplace | Possibly open to Israel — unverified, sources copy each other. Dead anyway: brand deals mean briefs, negotiation, contracts and invoices, which is a person talking to people. |
 | Content Posting API | TikTok "is currently unable to onboard personal accounts or individual developers". Unaudited clients can only post privately (`SELF_ONLY`). |
 
+> **Correction to the Content Posting API row, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14d; §5.5 and §7 row 12 there). The quote "is
+> currently unable to onboard personal accounts or individual developers" is from TikTok's API for Business portal,
+> not from the Content Posting API (snippet grade: the page it came from was not re-found). The real gate is the
+> Developer Terms' intended-use rule, which lists as "Not acceptable" "A utility tool to help upload contents to the
+> account(s) you or your team manages" (`OpenTermsArchive/vlopses-us-versions` `TikTok/Developer Terms.md:533`,
+> "Last modified: Dec 26, 2025"; github), plus the audit without which a client posts only `SELF_ONLY`. The
+> conclusion stands; the stated reason was the wrong one. The row above is left as it was written.
+
 **The arithmetic, for the record.** Even in the counterfactual where Creator Rewards were
 open to Israel: ₪20,000/month ≈ $5,400, and at a creator-reported $0.20-$1.20 RPM that is
 roughly **6.75 million qualified views every month**, forever, from content the programme's
@@ -1245,6 +1253,14 @@ coded fee, or a mandate collision.
   **Also:** Tes Resources is upgraded from scout to github grade (its Author Code bars AI resources with limited human input);
   the Smashwords Store is **dead at rendered grade on G1 (tick 9)**: Draft2Digital's terms, which cover Smashwords.com as one of its channels, require "a one-time Account Activation Fee" before distribution (`draft2digital-com-terms-of-service.txt:490-491`), plus $12 a year from the second year; the AI rule is not in the terms (it sits in separate Content Guidelines, still scout grade); Freemius, CodeCanyon, Agensi and Smithery
   stand as recorded.
+- **StreetLib (queue row 24) — gate refutation on G1 at rendered grade, 29.9.2026 (tick 13), for the sitting to confirm.**
+  Authors outside Italy and the DACH countries "are subject to our membership plans" (`research/rendered/help-streetlib-com-article-425-account.txt:69`):
+  "$99 per year" or "$299 one-time payment" (`:73`, `:85`), for accounts created on or after 17.3.2026 (`:99`), and onboarding
+  comes before any distribution (`:59`). The January-2025 Hub agreement's "No activation price" (`streetlib-hub-agreement-20250130-en.txt:590`)
+  was replaced under its change clause (`:466`, `:469`). Proposed kill (a) of the second refill fires; it was a proposal, not a
+  board-registered kill (`research/breadth/REPLENISH-2026-09-28-2.md:217-218`). Its partial reopen of the Apple aggregator kill falls
+  with it. Evidence: `research/measurements/streetlib.md` Tick 13. **Reopens if** a rendered page shows a free distribution path for
+  a new international account, or the ₪0 rule is lifted.
 - **Shopify — pre-ruled conditional kill** on a rendered mandatory listing fee (the note under "Earlier rejections").
 - **Whop — re-recorded as camera-gated** (the correction under `content-seo`, "Clipping"): the rail is not reusable.
 - **Apify — the hidden-Actor note** under `distribution` → "What goes to the board".

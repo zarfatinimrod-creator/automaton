@@ -26,10 +26,22 @@ name: gumroad-pro-product
 #      licenseKey node. The log prints its public id and short_url, and a PR
 #      writes both into products/il-biz-tools/src/config/site.json.
 #   2. Merge that PR and let Netlify deploy.
-#   3. Dispatch with action=enable. It checks that the DEPLOYED
-#      <siteUrl>/src/config/site.json carries the same id - so a buyer could
-#      actually activate the key they would receive - and only then enables.
-#   4. Run gumroad-pro-probe.yml (AT-16).
+#   3. Dispatch with action=enable (from main, where brand-mail.yml commits its
+#      probe). It refuses unless state/colony/brand-mail.json shows the brand
+#      mailbox of owner step 8 configured and green (read within two days, no
+#      accessibility mail unanswered for 7+ days): a buyer's reply, refund
+#      request or question goes to the email the Gumroad account was opened
+#      with, and the owner answers no one (MISSION rule 1). Then it checks the
+#      offer (the script's checkOffer): the DEPLOYED <siteUrl>/src/config/site.json
+#      carries the same id - so a buyer could actually activate the key they
+#      would receive - and the same price as the repo; Gumroad charges exactly
+#      that price, once; the account's own address (GET /v2/user) is the
+#      BRAND_MAIL_ADDRESS secret; and the refund policy buyers will see is "No
+#      refunds allowed" - Gumroad opens accounts with a 30-day guarantee, and a
+#      refund promise waits on A1 (research/tiktok/08-sales-marketing-lessons.md
+#      §8.2). Only then it enables. `create` is not gated: a draft reaches no buyer.
+#   4. Run gumroad-pro-probe.yml (AT-16). It also re-runs the offer checks
+#      (`check`), so a price edited in the Gumroad dashboard after enable shows up.
 #   Paste the logs of 1, 3 and 4 into a follow-up section of the decision file.
 #
 # WHAT THE OWNER HAS TO DO: nothing new. GUMROAD_ACCESS_TOKEN is already step 6
@@ -146,8 +158,11 @@ jobs:
             echo "${MSG}" >> "$GITHUB_STEP_SUMMARY"
           fi
 
+      # BRAND_MAIL_ADDRESS is the step-8 secret: enable compares it with the address
+      # Gumroad reports for the account (GET /v2/user) and prints neither.
       - name: Enable the product (second dispatch, only once the deployed site carries the id)
         if: steps.token.outputs.present == 'true' && inputs.action == 'enable'
         env:
           GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+          BRAND_MAIL_ADDRESS: ${{ secrets.BRAND_MAIL_ADDRESS }}
         run: node scripts/gumroad-pro-product.js enable

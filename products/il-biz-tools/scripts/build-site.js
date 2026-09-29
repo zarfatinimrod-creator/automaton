@@ -19,10 +19,12 @@
 //      if verified (or not a figure file), cut down to named keys where a rule
 //      allows it (registrar-fee.json ships its dates, never its amounts), and a
 //      stopped build otherwise. A JSON file with no rule never ships.
-//   0. The pcn874 bundle. pcn874.html runs products/pcn874's validator,
+//   0. The pcn874 bundle and rule reference. pcn874.html runs products/pcn874's validator,
 //      type-stripped into src/vendor/pcn874/ (src/lib/pcn874-bundle.js). The
 //      build regenerates it from products/pcn874/src and stops, preview too,
-//      if the committed copy differs or that source is missing.
+//      if the committed copy differs or that source is missing. The page's rule
+//      reference is generated from the validator's rule table and stops the
+//      build the same way when it is stale (src/lib/pcn874-rule-reference.js).
 //   4. Blockers. A placeholder in any shipped page (its data-publish-blocker
 //      marker however written, or its words), a missing accessibility
 //      statement, a statement with no real contact link (data-a11y-contact),
@@ -50,7 +52,10 @@ import {
 } from '../src/lib/publish-gate.js';
 import { collectDependencies } from '../src/lib/site-deps.js';
 import { bundleProblems, fsBundleAccess } from '../src/lib/pcn874-bundle.js';
+import { ruleReferenceProblems } from '../src/lib/pcn874-rule-reference.js';
 import { checkPageA11y, checkStylesheetA11y } from '../src/lib/a11y-check.js';
+import { proButtonState } from '../src/lib/gumroad.js';
+import { withProPrice } from '../src/lib/pro-offer.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -101,6 +106,14 @@ if (bundle.length) {
   refuse('the pcn874 validator bundle does not match products/pcn874/src (run: node scripts/bundle-pcn874.js)', bundle);
 }
 
+// The page's rule reference is generated from that validator's rule table
+// (src/lib/pcn874-rule-reference.js). A page listing rules the tool does not
+// run, or missing one it does, stops the build, preview included.
+const ruleReference = ruleReferenceProblems(readText('pcn874.html') ?? '');
+if (ruleReference.length) {
+  refuse('the PCN874 rule reference on pcn874.html does not match the validator (run: node scripts/pcn874-rule-reference.js)', ruleReference);
+}
+
 const rateConfigs = {};
 for (const path of [...new Set(Object.values(PAGE_RATE_SOURCES).flat())]) {
   try {
@@ -119,6 +132,24 @@ for (const { page, unverified } of withhold) {
   const source = await readFile(join(root, page), 'utf8');
   const title = (/<title>([^<]*)<\/title>/.exec(source)?.[1] ?? page).split('–')[0].trim();
   shipped.push({ path: page, html: withheldPageHtml({ page, title, unverified }) });
+}
+
+// 1b. The price in the pricing FAQ. Only Gumroad's read-back price, and only once
+// the Pro button is `ready` (src/lib/gumroad.js); until then the answers carry no
+// amount. A FAQ answer whose JSON-LD twin drifted from it stops the build, preview
+// too (src/lib/pro-offer.js).
+let proPrice = null;
+try {
+  proPrice = proButtonState(JSON.parse(readFileSync(join(root, 'src/config/site.json'), 'utf8'))).price;
+} catch (e) {
+  console.error(`  ! cannot read src/config/site.json (${e.message}) - no price goes into the FAQ`);
+}
+for (const page of shipped) {
+  try {
+    page.html = withProPrice(page.html, proPrice);
+  } catch (e) {
+    refuse('the pricing FAQ and its JSON-LD disagree', [`${page.path}: ${e.message}`]);
+  }
 }
 
 // 2. Files the shipped pages load.

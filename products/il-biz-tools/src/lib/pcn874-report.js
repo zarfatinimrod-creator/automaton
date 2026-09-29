@@ -129,15 +129,8 @@ export function ruleHebrew(rule, finding = {}) {
   const id = String(rule ?? '');
   if (Object.prototype.hasOwnProperty.call(RULES, id)) return RULES[id];
 
-  const field = /^(header|detail|footer)\.([A-Za-z]+)\.(literal|sign|signOfZero|digits|alphanumeric|known)$/.exec(id);
-  if (field) {
-    const spec = SPECS[field[1]].fields.find((f) => f.id === field[2]);
-    const named = field[3] === 'sign' || field[3] === 'signOfZero' ? spec?.signs : field[2];
-    const name = spec && named ? fieldHebrew(field[1], named) : null;
-    if (!name) return null;
-    if (field[1] === 'detail' && field[3] === 'signOfZero') return detailSignOfZero(name, finding?.severity);
-    return FIELD_RULES[field[3]](name);
-  }
+  const field = fieldRuleHebrew(id, finding);
+  if (field !== undefined) return field;
 
   const counterparty = /^detail\.([A-Z])\.counterpartyExpected$/.exec(id);
   const row = counterparty && Object.prototype.hasOwnProperty.call(COUNTERPARTY_ROWS, counterparty[1]) ? COUNTERPARTY_ROWS[counterparty[1]] : null;
@@ -155,6 +148,23 @@ export function ruleHebrew(rule, finding = {}) {
     return `שדה שמור לשימוש עתידי («${fieldHebrew('header', reserved[1])}») אינו אפסים. החוזר קובע בו אפסים "לשימוש עתידי", ולכן זו אזהרה בלבד.`;
   }
   return null;
+}
+
+/**
+ * The Hebrew of a field rule (`<record>.<field>.<kind>`) from the layout alone,
+ * without the rule-by-rule texts above: `footer.recordType.literal` has one of
+ * those (its "Z" case), and the rule reference also needs the plain field rule.
+ * undefined when the id is not a field rule; null when it names no known field.
+ */
+export function fieldRuleHebrew(rule, finding = {}) {
+  const field = /^(header|detail|footer)\.([A-Za-z]+)\.(literal|sign|signOfZero|digits|alphanumeric|known)$/.exec(String(rule ?? ''));
+  if (!field) return undefined;
+  const spec = SPECS[field[1]].fields.find((f) => f.id === field[2]);
+  const named = field[3] === 'sign' || field[3] === 'signOfZero' ? spec?.signs : field[2];
+  const name = spec && named ? fieldHebrew(field[1], named) : null;
+  if (!name) return null;
+  if (field[1] === 'detail' && field[3] === 'signOfZero') return detailSignOfZero(name, finding?.severity);
+  return FIELD_RULES[field[3]](name);
 }
 
 /** The record a finding is about, when it names one (`detail[i]`, `unknown[i]`, or header/footer by line). */
@@ -196,7 +206,8 @@ function fieldLabel(finding) {
   return name ? `${name} (${finding.field})` : finding.field;
 }
 
-const REPRESENTATIVE_INITIAL_HE =
+/** An "A" record: the initial entry of a representatives' file, which this page does not check. */
+export const REPRESENTATIVE_INITIAL_HE =
   "רשומה שמתחילה ב-A היא רשומת הפתיחה של קובץ מייצגים (נספח ב' בחוזר), שמייצג מגיש בשם כמה עוסקים. הבודק בודק רק קובץ של עוסק יחיד (נספח א'), ובו אין רשומה כזו.";
 
 const NOT_UTF8_BYTE_WIDTH_HE =

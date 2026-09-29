@@ -7,6 +7,7 @@ import { formatILS, parseAmount } from '../src/lib/money.js';
 import { proButtonState, openProCheckout, gumroadProductId } from '../src/lib/gumroad.js';
 import { createLicenseController } from '../src/lib/license.js';
 import { applyBranding, DEFAULT_ACCENT, emptyBranding, isValidLogo, MAX_LOGO_BYTES, normalizeBranding } from '../src/lib/branding.js';
+import { brandingTried, createProNudge, proNudgeText } from '../src/lib/pro-nudge.js';
 
 initPage();
 const store = createStore(localStorage);
@@ -162,6 +163,30 @@ $('#client-name').addEventListener('change', () => {
 // seven days, switch off only on a definitive answer - live in
 // src/lib/license.js (createLicenseController) and are unit-tested there. This
 // block only connects them to the page.
+// Every state of the Pro button is decided in src/lib/gumroad.js, not here, so
+// the honest states are unit-tested rather than trusted. Checkout opens only
+// when a Gumroad product URL exists AND the product id exists to verify the
+// licence key that purchase produces AND Gumroad has reported the price -
+// selling a key nothing can verify, or at a price the buyer was not shown,
+// would be taking money for nothing.
+const proState = proButtonState(site);
+const proCta = $('#pro-cta');
+proCta.textContent = proState.label;
+proCta.disabled = !proState.enabled;
+$('#pro-note').textContent = proState.note;
+// The price Gumroad read back, in the ready state only; every other state shows none.
+$('#pro-price').textContent = proState.price ?? '';
+$('#pro-price').hidden = !proState.price;
+if (proState.enabled) {
+  proCta.addEventListener('click', () => {
+    try {
+      openProCheckout(site);
+    } catch (e) {
+      $('#pro-note').textContent = `שגיאה בפתיחת הרכישה: ${e.message}`;
+    }
+  });
+}
+
 const BRANDING_KEY = 'ilbiz.branding';
 let branding = emptyBranding();
 let proActive = false;
@@ -175,11 +200,18 @@ function saveBranding() {
   try { localStorage.setItem(BRANDING_KEY, JSON.stringify(branding)); } catch { /* private mode */ }
 }
 
+// Try before you pay: once the shop is open, a visitor without a licence can put
+// their logo and colour on the on-screen preview. Print and PDF stay the free
+// document (the print stylesheet hides a try-out; src/lib/branding.js).
+const brandingMode = () => (proActive ? 'pro' : proState.state === 'ready' ? 'trial' : 'off');
+
 function refreshBranding() {
-  applyBranding($('#preview'), branding, proActive);
-  $('#branding-fields').hidden = !proActive;
+  const mode = brandingMode();
+  applyBranding($('#preview'), branding, mode);
+  $('#branding-fields').hidden = mode === 'off';
+  $('#brand-trial-note').hidden = mode !== 'trial';
   $('#license-clear').hidden = !licenceStored;
-  if (proActive) $('#brand-accent').value = branding.accent || DEFAULT_ACCENT;
+  if (mode !== 'off') $('#brand-accent').value = branding.accent || DEFAULT_ACCENT;
 }
 
 const licence = createLicenseController({
@@ -218,7 +250,7 @@ $('#brand-logo').addEventListener('change', () => {
     if (!isValidLogo(reader.result)) { $('#brand-note').textContent = 'סוג הקובץ אינו נתמך.'; return; }
     branding.logo = reader.result;
     saveBranding(); refreshBranding();
-    $('#brand-note').textContent = 'הלוגו נשמר בדפדפן שלך בלבד.';
+    $('#brand-note').textContent = 'הלוגו נשמר בדפדפן שלכם בלבד.';
   };
   reader.readAsDataURL(file);
 });
@@ -229,30 +261,26 @@ $('#brand-clear').addEventListener('click', () => {
   saveBranding(); refreshBranding();
 });
 
-// Every state of the Pro button is decided in src/lib/gumroad.js, not here, so
-// the honest states are unit-tested rather than trusted. Checkout opens only
-// when a Gumroad product URL exists AND the product id exists to verify the
-// licence key that purchase produces - selling a key nothing can verify would
-// be taking money for nothing.
-const proState = proButtonState(site);
-const proCta = $('#pro-cta');
-proCta.textContent = proState.label;
-proCta.disabled = !proState.enabled;
-$('#pro-note').textContent = proState.note;
-if (proState.enabled) {
-  proCta.addEventListener('click', () => {
-    try {
-      openProCheckout(site);
-    } catch (e) {
-      $('#pro-note').textContent = `שגיאה בפתיחת הרכישה: ${e.message}`;
-    }
-  });
-}
+// One factual line after a free print, once per session, closable for good
+// (src/lib/pro-nudge.js). No modal and no timer: it waits for the print to end.
+const storageOrNull = (name) => { try { return globalThis[name] ?? null; } catch { return null; } };
+const nudge = createProNudge({ session: storageOrNull('sessionStorage'), local: storageOrNull('localStorage') });
+$('#pro-nudge').hidden = true;
+window.addEventListener('afterprint', () => {
+  if (!nudge.shouldShow({ ready: proState.state === 'ready', proActive, tried: brandingTried(branding) })) return;
+  $('#pro-nudge-text').textContent = proNudgeText(proState.price);
+  $('#pro-nudge').hidden = false;
+  nudge.markShown();
+});
+$('#pro-nudge-close').addEventListener('click', () => {
+  $('#pro-nudge').hidden = true;
+  nudge.dismiss();
+});
 
 // Gumroad can be told to send the buyer back here after the purchase.
 if (new URLSearchParams(location.search).get('purchased') === '1') {
   $('#pro-activate').open = true;
-  $('#license-note').textContent = 'תודה! מפתח הרישיון נמצא בקבלה שנשלחה אליך במייל מ-Gumroad. הזן אותו כאן.';
+  $('#license-note').textContent = 'תודה! מפתח הרישיון נמצא בקבלה שנשלחה אליכם במייל מ-Gumroad. הזינו אותו כאן.';
 }
 
 // An active licence turns Pro on right here, before any request; a re-check,

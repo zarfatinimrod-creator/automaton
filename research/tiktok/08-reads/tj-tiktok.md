@@ -215,6 +215,12 @@ YouTube Shorts and email. They are not a TikTok plan.
 - **Source:** 2.4.
 - **Grade:** rendered formats. Whether a faceless version performs is **none**.
 - **Fits:** faceless yes if screen-only; no contact yes; ₪0 yes (Kokoro is local); honest yes if labelled. Posting stays manual owner work or the official YouTube API, per `distribution--short-video.md`.
+- **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14c; `08-reads/tiktok-policy.md` §4.2). "It **must** carry the
+  platform's AI label" is wrong for TikTok's guidelines in force from 24.9.2026: disclosure is required for
+  realistic-looking AI scenes or people and for AI audio that mimics a real person, and "generic text-to-speech
+  (TTS) narration, when the TTS isn't a recognizable voice of a known individual" is exempt. `docs/REJECTED.md`
+  forbids AI content without the *required* label, and none is required here. A label on our own stock-voice demo
+  is our choice, from our constitution, not TikTok's rule. L7 above is left as it was written.
 
 **L8. One bio line, brand-only: identity plus one soft pointer.**
 - **What he does:** his bio has two emoji-led clauses, who he is and where to look. It has no hashtags, no list, no urgency.

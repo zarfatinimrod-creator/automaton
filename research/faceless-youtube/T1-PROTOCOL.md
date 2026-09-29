@@ -51,6 +51,9 @@ route exists, for the cost of one honest short video and one owner sign-in. If i
   gated. **No `youtube_publish_at`:** a scheduled video stays private until its time, which is indistinguishable from a
   lock. Nothing cross-posted: the free tier counts each platform as an upload (T1 + six videos = 7 of 10).
 - It is a real video, not a throwaway: if T1 passes it stays up and counts toward nothing but itself.
+- The cross-surface checklist every brand video follows (YouTube, our own pages and, only if Fable's F1 says yes,
+  TikTok) is `docs/VIDEO_PUBLISHING_CHECKLIST.md` (added 28.9.2026); its YouTube rows point back to this protocol
+  and to `checkPublication()`.
 
 ## Pass and fail — observable facts only (RED-TEAM §2.7)
 
