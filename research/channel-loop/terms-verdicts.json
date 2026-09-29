@@ -196,10 +196,10 @@
    "checked": "2026-09-29"
   },
   "knesset.gov.il": {
-   "verdict": "TERMS_PENDING",
-   "source": "https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx",
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-4)",
    "checked": "2026-09-29",
-   "note": "found at github grade (theWallProject/mono page.html:2299, tick 22); fs.knesset.gov.il carries the official gazette PDFs, an alternative law source while nevo is paused"
+   "note": "the terms page answered with a bot challenge (status 247, a script-only page with an empty body; research/rendered/terms-knesset.html), so the site screens out automated clients; the gazette PDFs on fs.knesset.gov.il stay unread"
   },
   "kolzchut.org.il": {
    "verdict": "NO_TERMS",
@@ -373,11 +373,15 @@
    "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
    "checked": "2026-09-29"
   },
+  "tiktok.com": {
+   "verdict": "BARRED",
+   "source": "refused by its own code path in scripts/render-watch.mjs (isTikTokHost), in both render modes and as a redirect; the TikTok pause, logs/CHANNEL_LOOP.md §9",
+   "checked": "2026-09-29"
+  },
   "tipalti.com": {
-   "verdict": "TERMS_PENDING",
-   "source": "https://tipalti.com/legal/website-terms/",
-   "checked": "2026-09-29",
-   "note": "terms-tipalti.txt:255 is the legal index, which links the Website Terms of Use (terms-tipalti.html:838); the index line is paused"
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (research/rendered/terms-tipalti-website.txt:245; round 4)",
+   "checked": "2026-09-29"
   },
   "trolley.com": {
    "verdict": "CONDITIONAL_MET",

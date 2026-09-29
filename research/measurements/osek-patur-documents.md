@@ -1126,7 +1126,7 @@ Written after the terms audit paused every nevo line (nevo.co.il has no terms on
 
 Written 29.9 as a follow-up to the terms audit, and checked by an adversarial verifier. Grades are as in "Grades" above. Each GitHub file was fetched raw at the pinned commit, and each quote was checked with `grep -n -F`. One exception: the Copyright Act line has an inline `<ref>` tag around "סעיף 4", so only the part after the tag matches `grep -F`.
 
-**nevo's own terms: none found (NO_TERMS stands, `terms-verdicts.json:248-253`).**
+**nevo's own terms: none found (NO_TERMS stands, `terms-verdicts.json` key `nevo.co.il`).**
 - **No capture names any terms.** A `grep -i -F` over all ten captures (`research/rendered/nevo-*.html` and `.txt`) found 0 hits for each of these strings: תקנון, תנאי שימוש, terms, copyright, זכויות יוצרים, זכות יוצרים, כל הזכויות, ©, privacy, policy and robots (rendered).
   - The one hit for "תנאי השימוש" is statute text, in the timeshare list of חוק הגנת הצרכן (`nevo-consumer-protection-law-70305.txt:640`).
 - **No capture has a site footer.** Every page ends with its last provision followed by an AdSense block (e.g. `nevo-vat-law.txt:1818`, §151).
@@ -1151,7 +1151,7 @@ Written 29.9 as a follow-up to the terms audit, and checked by an adversarial ve
 - **What it does not answer:** whether nevo's unread site terms bar a weekly GET. That is a contract question, not a copyright one. `legislator` frames it the same way: "הסיכון הוא חוזי, לא זכויות יוצרים" (`docs/data-sources.md:5`).
 
 **Alternative 1, with terms already read: the GitHub mirror (`github.com`, CONDITIONAL_MET).**
-- **The verdict** is `terms-verdicts.json:113-116`. The condition is research use of public, non-personal information, with any publications open access (`TERMS-AUDIT-2026-09-29.md:25`).
+- **The verdict** is `terms-verdicts.json` key `github.com` (CONDITIONAL_MET). The condition is research use of public, non-personal information, with any publications open access (`TERMS-AUDIT-2026-09-29.md:25`).
 - **The mirror** is `https://github.com/lawsofisrael/lawsofisrael` at `aeca0b25`, which is HEAD. This file's first reading used it (`:30`), and so did `refund-law-il.md:57`.
   - README: "the files are from different source" (`README.md:12`) and "public domain" (`:15`).
   - `2023-03-06/israel/` holds the VAT law, the VAT bookkeeping regulations, the income-tax bookkeeping instructions and the Electronic Signature Law, in `docs/`, `convert/` and `converted_docx/` (file names, blobless clone, github).
@@ -1185,10 +1185,10 @@ Written 29.9 as a follow-up to the terms audit, and checked by an adversarial ve
   - The homepage footer links "תנאי שימוש" to `/About/Pages/TermsOfUse.aspx` on `main.knesset.gov.il`. The footer also reads "כל הזכויות שמורות למדינת ישראל - הכנסת או לצדדים שלישיים, כמפורט בתנאי שימוש" (`theWallProject/mono` `packages/scrapper/logs/homepage_ai_extractor/1773740627845_The_Israeli_Knesset_(Parliament)/page.html:2299`, `:2367` at `07ffcbd1`, captured 17.3.2026, github).
   - No copy of the terms text was found on GitHub. Queue: `https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx`.
   - What it would open: the official gazette PDFs on `fs.knesset.gov.il`, "the authentic text of each amending act" (`rulespec-il` `README.md:85-87`). These are official texts but not consolidated.
-- **gov.il.** `www.gov.il` is TERMS_PENDING (`terms-verdicts.json:407-411`). Its terms page answered the runner with 403 on 29.9 at 16:22Z (`research/rendered/terms-gov-il.meta.json`). This search found no gov.il page with consolidated legislation.
+- **gov.il.** `www.gov.il` was TERMS_PENDING when this was written and is now NO_TERMS (`terms-verdicts.json` key `www.gov.il`; round 3). Its terms page answered the runner with 403 on 29.9 at 16:22Z (`research/rendered/terms-gov-il.meta.json`). This search found no gov.il page with consolidated legislation.
 
 **What this leaves [inference].**
-- The nevo pages already captured stay readable (`terms-verdicts.json:252`).
+- The nevo pages already captured stay readable (`terms-verdicts.json` key `nevo.co.il`, its note).
 - For text as of early 2023, the lawsofisrael mirror on GitHub can be read under terms already read, with the provenance caveat above.
 - For newer consolidated text, Wikisource is the only candidate found. Before any runner line: read the Robot Policy and the User-Agent policy, and give that host an identifying User-Agent with contact details.
 - The dumps that `legislator` mentions (`:11`) would make a one-time read possible without weekly page fetches. That route is also unread.
