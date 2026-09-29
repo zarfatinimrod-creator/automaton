@@ -11,15 +11,34 @@
  *     --slug wix-security-privacy-info \
  *     --settle "whether the submission step asks for the third-party test" \
  *     --note "Wix App Market (11): the submission step, linked from a tick-6 capture" \
- *     [--date 28.9.2026] [--dry-run]
+ *     [--js --terms <slug>] [--date 28.9.2026] [--dry-run]
  *
  * The row number is one past the highest numbered row. The row goes directly
  * after that row. The four-column shape is enforced (a `|` inside a cell is
  * escaped). The URL list is re-parsed with render-watch's own parser, so a
  * duplicate slug or a malformed URL fails here, before anything is written. A URL
- * already in the list (active or commented out) is refused.
+ * already in the list (active or commented out) is refused, and so is any tiktok.com
+ * URL (render-watch's parser refuses it; logs/CHANNEL_LOOP.md §9).
+ *
+ * --js queues the line for render-watch's JavaScript-capable render (the `js` flag;
+ * research/rendered/README.md). The loop board allowed it on one condition: "the
+ * target's terms must already be rendered and must not bar automated access, exactly
+ * as for a plain GET" (research/channel-loop/RULING-2026-09-29-loop.md (b)). So --js
+ * REQUIRES --terms <slug>, naming a render-watch capture of the target site's terms,
+ * and that slug goes into the line's comment. What the script checks (checkTermsCapture):
+ * the capture is a real one — research/rendered/<slug>.meta.json says it was fetched
+ * without error with a 2xx status, and research/rendered/<slug>.txt holds at least
+ * MIN_TERMS_TEXT characters, so an empty JavaScript shell does not count; it is not
+ * the target page itself, nor urls.txt; and it was captured from the target's own
+ * site (siteOf), or from a site TERMS_ELSEWHERE records for it. What it cannot check,
+ * and the person queueing the line does: that the capture IS the terms, and that they
+ * do not bar automated access. A Salesforce help-centre page, refused below as a shell
+ * for a plain line, is allowed with --js: rendering such a shell is what the mode is for.
+ *
+ * Only this script checks. A js line written into urls.txt by hand, or typed into the
+ * workflow's dispatch box, is checked by no code: the reviewed commit is the gate there.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
@@ -28,6 +47,147 @@ import { parseUrlList } from "./render-watch.mjs";
 const REPO_ROOT = join(fileURLToPath(new URL(".", import.meta.url)), "..");
 export const ZERO_TESTS = join(REPO_ROOT, "research", "channel-loop", "ZERO-TESTS.md");
 export const URLS = join(REPO_ROOT, "research", "rendered", "urls.txt");
+export const RENDERED = join(REPO_ROOT, "research", "rendered");
+
+/**
+ * A terms capture: at least this many characters of text. Real terms run to thousands
+ * (GameDistribution's developer terms, 35,889 bytes of text; Algora's, 20,262); the
+ * JavaScript shells tick 15 captured came back with 70 (Trolley's help centre) and 96
+ * (n8n's Notion hub).
+ */
+export const MIN_TERMS_TEXT = 1000;
+
+/**
+ * Sites that keep their terms on another site: the target's site (siteOf) -> the sites
+ * whose terms capture counts for it. Empty until a capture shows one; an entry names
+ * the file that shows it. (n8n's Creator Hub, for one, is on n8n.notion.site: whose
+ * terms govern it — n8n's, Notion's, or both — is a decision to write down here, not
+ * one this script makes.)
+ */
+export const TERMS_ELSEWHERE = {};
+
+/**
+ * Hosts where every subdomain is a different owner's site (a hand-kept part of the
+ * Public Suffix List's private section): on these the site is one label deeper, so a
+ * capture of another tenant's terms does not count for the target.
+ */
+const SHARED_HOSTS = new Set([
+  "notion.site",
+  "github.io",
+  "gitbook.io",
+  "readthedocs.io",
+  "vercel.app",
+  "netlify.app",
+  "pages.dev",
+  "herokuapp.com",
+  "blogspot.com",
+  "wordpress.com",
+  "substack.com",
+  "my.site.com",
+  "force.com",
+]);
+
+/** Second-level labels under a two-letter country code: example.co.il is a site, co.il is not. */
+const COUNTRY_SECOND_LEVEL = new Set(["co", "com", "org", "net", "ac", "gov", "edu", "ltd", "plc", "muni", "idf", "k12"]);
+
+/**
+ * The site a host belongs to — its registrable domain, approximately, without a Public
+ * Suffix List: the last two labels (support.trolley.com -> trolley.com), the last
+ * three under a country code's second level (example.co.il; each gov.il host is its
+ * own site), and one label deeper than a SHARED_HOSTS suffix
+ * (n8n.notion.site). A shared host missing from that list is read as one site, which
+ * is the permissive direction — a stated limit.
+ */
+export function siteOf(hostname) {
+  const labels = String(hostname ?? "")
+    .toLowerCase()
+    .replace(/\.+$/, "")
+    .split(".");
+  for (const shared of SHARED_HOSTS) {
+    const depth = shared.split(".").length;
+    if (labels.length > depth && labels.slice(-depth).join(".") === shared) return labels.slice(-depth - 1).join(".");
+  }
+  const last = labels.at(-1) ?? "";
+  const second = labels.at(-2) ?? "";
+  const keep = labels.length >= 3 && last.length === 2 && COUNTRY_SECOND_LEVEL.has(second) ? 3 : 2;
+  return labels.slice(-keep).join(".");
+}
+
+/**
+ * Read a capture's meta and text from research/rendered/, or null when either is
+ * missing or the meta does not parse. The default for queueZeroTest's termsCapture.
+ */
+export function readTermsCapture(slug) {
+  const metaPath = join(RENDERED, `${slug}.meta.json`);
+  const textPath = join(RENDERED, `${slug}.txt`);
+  if (!existsSync(metaPath) || !existsSync(textPath)) return null;
+  try {
+    return { meta: JSON.parse(readFileSync(metaPath, "utf8")), text: readFileSync(textPath, "utf8") };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Throw unless `terms` names a capture a js line may rest on (the module comment says
+ * what that means). `capture` is what readTermsCapture returned for it.
+ */
+export function checkTermsCapture({ terms, slug, url, capture, elsewhere = TERMS_ELSEWHERE }) {
+  if (!/^[a-z0-9][a-z0-9._-]*$/.test(terms)) {
+    throw new Error(`--terms must be a capture slug (research/rendered/<slug>.txt), got "${terms}"`);
+  }
+  if (terms === "urls") {
+    throw new Error("--terms urls names research/rendered/urls.txt, the URL list itself, not a capture of any terms");
+  }
+  if (terms === slug) {
+    throw new Error(`--terms ${terms} is the slug of the line being queued: the terms must be a different, earlier capture`);
+  }
+  if (!capture) {
+    throw new Error(
+      `no capture at research/rendered/${terms}.txt with its ${terms}.meta.json: render the target's terms first, ` +
+        "read them, then queue the js line",
+    );
+  }
+  const { meta, text } = capture;
+  const status = meta?.status;
+  if (meta?.error != null || !Number.isInteger(status) || status < 200 || status > 299) {
+    throw new Error(
+      `research/rendered/${terms}.meta.json is not a successful capture (status ${status ?? "none"}, ` +
+        `error ${JSON.stringify(meta?.error ?? null)}): a terms page that was never read cannot clear a js line`,
+    );
+  }
+  const length = String(text ?? "").trim().length;
+  if (length < MIN_TERMS_TEXT) {
+    throw new Error(
+      `research/rendered/${terms}.txt has ${length} characters of text, fewer than ${MIN_TERMS_TEXT}: ` +
+        "that is an empty JavaScript shell or a stub, not a read terms page",
+    );
+  }
+  let target;
+  try {
+    target = new URL(url);
+  } catch {
+    throw new Error(`not a valid URL (it does not parse): ${url}`);
+  }
+  let captured;
+  try {
+    captured = new URL(meta.url);
+  } catch {
+    throw new Error(`research/rendered/${terms}.meta.json has no usable url: ${JSON.stringify(meta?.url ?? null)}`);
+  }
+  if (captured.href === target.href) {
+    throw new Error(`--terms ${terms} is a capture of ${url} itself, not of its site's terms`);
+  }
+  const targetSite = siteOf(target.hostname);
+  const capturedSite = siteOf(captured.hostname);
+  if (capturedSite !== targetSite && !(elsewhere[targetSite] ?? []).includes(capturedSite)) {
+    throw new Error(
+      `--terms ${terms} was captured from ${captured.hostname} (site ${capturedSite}), not from the target's site ` +
+        `${targetSite}: a js line rests on the target site's own terms. If this site keeps its terms elsewhere, ` +
+        "record that in TERMS_ELSEWHERE (scripts/queue-zero-test.mjs) with the file that shows it",
+    );
+  }
+}
 
 const ROW = /^\| *(\d+) *\|/;
 
@@ -51,12 +211,42 @@ function cell(text) {
   return t.replace(/(?<!\\)\|/g, "\\|");
 }
 
-/** Pure: returns the two new file texts and the row number used. */
-export function queueZeroTest({ zeroTests, urls, candidate, url, slug, settle, note, date }) {
+/**
+ * Returns the two new file texts and the row number used. Pure apart from
+ * `termsCapture`, which reads the disk by default and is injected by the tests.
+ */
+export function queueZeroTest({
+  zeroTests,
+  urls,
+  candidate,
+  url,
+  slug,
+  settle,
+  note,
+  date,
+  js = false,
+  terms,
+  termsCapture = readTermsCapture,
+  termsElsewhere = TERMS_ELSEWHERE,
+}) {
   if (!/^https?:\/\/\S+$/i.test(url ?? "")) throw new Error(`not an http(s) URL: ${url}`);
   if (!/^[a-z0-9][a-z0-9-]*$/.test(slug ?? "")) throw new Error(`slug must be lowercase letters, digits and dashes: ${slug}`);
-  const shell = JS_SHELLS.find((s) => s.test(new URL(url)));
-  if (shell) throw new Error(`the runner cannot render ${url}: ${shell.why}`);
+  const hasTerms = terms !== undefined && terms !== null;
+  if (js) {
+    if (!hasTerms) {
+      throw new Error(
+        "--js needs --terms <slug>: the target's terms must already be rendered at research/rendered/<slug>.txt " +
+          "and must not bar automated access, exactly as for a plain GET (RULING-2026-09-29-loop.md (b))",
+      );
+    }
+    const plausible = /^[a-z0-9][a-z0-9._-]*$/.test(terms);
+    checkTermsCapture({ terms, slug, url, capture: plausible ? termsCapture(terms) : null, elsewhere: termsElsewhere });
+  } else if (hasTerms) {
+    throw new Error("--terms is only for a --js line: it names the terms capture the JavaScript render rests on");
+  }
+  // A plain GET gets an empty shell from these; the js render is what reads them.
+  const shell = js ? null : JS_SHELLS.find((s) => s.test(new URL(url)));
+  if (shell) throw new Error(`the runner cannot render ${url}: ${shell.why}. Queue it with --js --terms <slug> instead`);
   const listed = urls.split(/\r?\n/).some((l) => l.replace(/^#\s*/, "").split(/\s+/)[0] === url);
   if (listed) throw new Error(`URL already in urls.txt (active or commented): ${url}`);
 
@@ -81,7 +271,9 @@ export function queueZeroTest({ zeroTests, urls, candidate, url, slug, settle, n
   lines.splice(last + 1, 0, row);
 
   const comment = `# research/channel-loop/ZERO-TESTS.md row ${n} — ${cell(note).replace(/\\\|/g, "|")} (${date}).`;
-  const newUrls = `${urls.endsWith("\n") || urls === "" ? urls : `${urls}\n`}${comment}\n${url}\t${slug}\n`;
+  const jsNote = js ? ` JS render; terms read at research/rendered/${terms}.txt.` : "";
+  const line = js ? `${url}\t${slug}\tjs` : `${url}\t${slug}`;
+  const newUrls = `${urls.endsWith("\n") || urls === "" ? urls : `${urls}\n`}${comment}${jsNote}\n${line}\n`;
   parseUrlList(newUrls); // throws on a duplicate slug or a malformed line
   return { zeroTests: lines.join("\n"), urls: newUrls, row: n };
 }
@@ -99,6 +291,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
       slug: { type: "string" },
       settle: { type: "string" },
       note: { type: "string" },
+      js: { type: "boolean", default: false },
+      terms: { type: "string" },
       date: { type: "string", default: today() },
       "dry-run": { type: "boolean", default: false },
     },
@@ -114,7 +308,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
       writeFileSync(ZERO_TESTS, out.zeroTests);
       writeFileSync(URLS, out.urls);
     }
-    console.log(`${values["dry-run"] ? "would queue" : "queued"} row ${out.row}: ${values.slug}`);
+    console.log(`${values["dry-run"] ? "would queue" : "queued"} row ${out.row}: ${values.slug}${values.js ? " (js)" : ""}`);
   } catch (err) {
     console.error(`queue-zero-test: ${err.message}`);
     process.exit(1);
