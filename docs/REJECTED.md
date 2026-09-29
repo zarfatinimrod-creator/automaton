@@ -1253,6 +1253,14 @@ coded fee, or a mandate collision.
   **Also:** Tes Resources is upgraded from scout to github grade (its Author Code bars AI resources with limited human input);
   the Smashwords Store is **dead at rendered grade on G1 (tick 9)**: Draft2Digital's terms, which cover Smashwords.com as one of its channels, require "a one-time Account Activation Fee" before distribution (`draft2digital-com-terms-of-service.txt:490-491`), plus $12 a year from the second year; the AI rule is not in the terms (it sits in separate Content Guidelines, still scout grade); Freemius, CodeCanyon, Agensi and Smithery
   stand as recorded.
+- **StreetLib (queue row 24) — gate refutation on G1 at rendered grade, 29.9.2026 (tick 13), for the sitting to confirm.**
+  Authors outside Italy and the DACH countries "are subject to our membership plans" (`research/rendered/help-streetlib-com-article-425-account.txt:69`):
+  "$99 per year" or "$299 one-time payment" (`:73`, `:85`), for accounts created on or after 17.3.2026 (`:99`), and onboarding
+  comes before any distribution (`:59`). The January-2025 Hub agreement's "No activation price" (`streetlib-hub-agreement-20250130-en.txt:590`)
+  was replaced under its change clause (`:466`, `:469`). Proposed kill (a) of the second refill fires; it was a proposal, not a
+  board-registered kill (`research/breadth/REPLENISH-2026-09-28-2.md:217-218`). Its partial reopen of the Apple aggregator kill falls
+  with it. Evidence: `research/measurements/streetlib.md` Tick 13. **Reopens if** a rendered page shows a free distribution path for
+  a new international account, or the ₪0 rule is lifted.
 - **Shopify — pre-ruled conditional kill** on a rendered mandatory listing fee (the note under "Earlier rejections").
 - **Whop — re-recorded as camera-gated** (the correction under `content-seo`, "Clipping"): the rail is not reusable.
 - **Apify — the hidden-Actor note** under `distribution` → "What goes to the board".

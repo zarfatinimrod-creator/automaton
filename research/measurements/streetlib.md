@@ -549,3 +549,177 @@ Not recommended:
 - `https://hub.streetlib.com/` (700.html:1661) and `https://dashboard.streetlib.com/onboarding` (700.html:1653) sit behind
   a login.
 - The YouTube embed (700.html:1647) is a video.
+
+## Tick 13 (rows 144-146 render)
+
+**Read 29.9.2026 by an Opus reader.** The render commit is `376117e`. Three captures, all 200 (`*.meta.json:5`), all first
+fetch, fetchedAt 2026-09-29T00:53Z (`:4`). Short names: `agr` = `streetlib-hub-agreement-20250130-en` (row 144; the PDF is
+453,489 bytes, `agr.meta.json:7`, and its text is 755 lines), `95` = `help-streetlib-com-category-95-publishing-ebooks`
+(row 145), `425` = `help-streetlib-com-article-425-account` (row 146). The agreement text was read in full, all 21 pages
+including Annex 1. Both help txt files were read in full. In the html I read the 425 article body (425.html:1639-1691), the
+95 article list (95.html:1658-1672) and its sidebar (:1705-1729), and grepped all files. Every quote below was checked
+with `grep -n -F`. Two screenshots in 425 (425.html:1648, :1689) were not captured.
+
+**Status: KILL-PROPOSED. Kill (a) fires on a rendered fact.** An account outside Italy and the German-speaking countries
+must buy a plan: $99 a year or $299 once. The agreement settles the rest. (b), (c) and (e) do not fire. (d) stays
+unsettled: the agreement says nothing on automated access.
+
+**Row 146 (425): the plans, priced** [RENDERED]
+- "In StreetLib, authors and publishers located internationally (outside of Italy and Germany, Austria, and Switzerland)
+  are subject to our membership plans." (425.txt:69).
+- "Here's how the new paid membership tiers are set up:" (425.txt:71):
+  - "1. Subscription – $99 per year" (:73), with "Annual payment, cancel anytime" (:83);
+  - "2. Lifetime Access – $299 one-time payment" (:85), with "No renewals — save over time" (:95);
+  - both "Earn 85% of net revenue" (:75, :87) and "Up to 100 titles" (:79, :91).
+- "These plans apply only to accounts created on or after March 17, 2026." (425.txt:99). The page is dated "Last updated
+  on March 17, 2026" (:111), one day before the earnings article's update (677.txt:107).
+- No free tier and no exemption for a publisher in Israel is named. "free" has 0 hits in 425.txt.
+- The plan sits under onboarding, which is required to distribute: "Warning: this is a very important step, without which
+  you will not be able to start distributing your books." (425.txt:59). [INFERENCE] The fee is paid before the first sale.
+- **Correction to §Tick 11 and §Tick 12.** Both said the account category lists no plans article (this file :329,
+  :513). It does. The prices are in "Create, Update, or Delete Your Account" (72.txt:65), under a title that does not
+  name them. Tick 12's inference was right: "Create your account for free" (706.txt:61) frees the account, not
+  distribution.
+
+**Row 146 (425): identity and the public name** [RENDERED]
+- "You must enter your real personal data, even if you will publish your books under a pseudonym (pen-name). Your real
+  name will not be made public in any way" (425.txt:63). This is one line in the txt.
+- "The payment of the earnings from the sales of the works will be paid to the registered person" (425.txt:65).
+- "passport", "selfie", "camera", "identity" and "verif" have 0 hits in the txt and the html.
+
+**Row 145 (95): the ebook category** [RENDERED]
+- It lists eight titles and no text (95.txt:63-77). One is new and bears on G7: "Managing different publishers (and
+  pen-names)" (95.txt:71), href `/article/337-managing-different-publishers-and-pen-names` (95.html:1666).
+- No title names a plan, a fee, a feed or an API. "subscription", "lifetime", "automat" and "artificial" have 0 hits in
+  the txt; "Lifetime Pro Plan" appears only in the footer menu (95.html:399).
+
+**Row 144 (agr): the Distribution Agreement, January 2025** [RENDERED]
+
+*Contracting entity and law.*
+- "StreetLib S.r.l., with registered office in Corso Venezia 10, 20123 Milan (MI), Italy, tax code and VAT" (agr.txt:5).
+  Its certified email: "number 05338720963, email (certified): simplicissimus@pec-mail.it, REA MI-2094063, is a" (:6).
+- "The Contract is governed by Italian law, and is subject to the exclusive jurisdiction of the Italian" (agr.txt:555);
+  "subject to the exclusive territorial jurisdiction of the Court of Milan, Italy." (:557).
+- The version is dated on its first page: "Milan, version “January 2025”" (agr.txt:3).
+- The agreement is not the whole contract: "Publisher and SL, together with the General Conditions for the activation of
+  the StreetLib" / "account, the Content Policy and the Privacy Policy." (agr.txt:45-46). Those sit at
+  "https://www.streetlib.com/it/legalpolicy" (:48), the JS-shell host (§1). The General Conditions are unread.
+
+*(a) Fees and the split (as of January 2025).*
+- Ebooks: "1) No activation price" (agr.txt:590). Publisher's revenue: "revenue equal to 70% of the turnover generated
+  by SL, net of VAT, towards the digital bookstore," (:310), repeated in Annex 1 Table A (:591).
+- Per-sale charges, both optional or avoidable: DRM, "will apply a cost of € 0,25 per sales transaction to the
+  Publisher." (agr.txt:601); free (zero-price) ebooks, "of charge (zero price) a commission in favour of SL of 0.10 € for
+  each ebook download and" (:606).
+- Print only: "1) Activation price equal to 49€ per work (one-off, only in the event of activation of the" (agr.txt:646).
+- ISBNs: "The Publisher can use up to 5 ISBNs per day and 100 in total: free of charge within" (agr.txt:743).
+- The terms can change by email: "SL has the right to modify the Contract at any time, including Annex 1" (agr.txt:466),
+  effective "less than thirty days from the sending of the relevant informative communication." (:469), i.e. not less
+  than 30 days.
+- [INFERENCE] The 70% and "No activation price" are the pre-plan terms. The March 2026 plans (85%, $99 or $299) replace
+  them for international accounts, under the change clause (:466). A post-March-2026 version of the agreement is
+  UNKNOWN; the help page (427.txt:55) links only this one.
+
+*(b) Payout and identity.*
+- "The Publisher may invoice to SL at quarterly intervals; in particular, it will issue an invoice to" (agr.txt:618).
+- "SL will make the payment within 60 days from the end of the month in which the invoice" (agr.txt:631); "transfer if
+  the amount of the invoices exceeds € 200,00, or with the other payment" (:633); "methods highlighted on the platform on
+  the following page: https://streetlib.co/payment-it ." (:634).
+- No identity-document, photo or video step. The Publisher must keep its data accurate (agr.txt:538-540) and give "an
+  email address that is kept active, valid, and functional under the" (:545) "responsibility of the Publisher." (:546).
+- [INFERENCE] The agreement says quarterly; the 2025 help article says monthly approval (670.txt:63). The help article is
+  newer.
+- Payments can be frozen during a dispute: "third parties and/or a public authority, SL shall also be entitled to suspend
+  all payments relating" (agr.txt:420).
+
+*(c) AI content.* The agreement is silent. "artificial" and " AI " have 0 hits. The content warranty is general: "and
+all their contents shall not be illegal, shall not be spam, and shall not contain material, data" (agr.txt:388), plus the
+Content Policy (:404-406), whose AI rule was read at tick 9 (421.txt:87).
+
+*(d) Automated access and delivery.*
+- "automat", "robot", "crawl", "scrap" and "api" have 0 hits in agr.txt. No clause names bots, scripts or an API.
+- Delivery is upload by the Publisher: "5.1. SL, through cloud services offered by third parties, allows the Publisher to
+  upload its" (agr.txt:260). Help comes by email: "of its digital catalogue on StreetLib. The assistance is provided by
+  SL staff by email and is" (:278).
+- ONIX appears only as SL's onward format for ISBN metadata: "remodulated through digital formats (eg. onix 3.0)"
+  (agr.txt:194). No inbound feed is offered.
+- Acceptance is by ticking boxes after sign-up: "use of the platform, shall flag the relevant items within StreetLib which
+  allow to view and accept" (agr.txt:535).
+- Clauses an agent-run account would have to meet (none forbids one):
+  - "therefore, undertakes to stay informed about innovations, integrations, technical modifications," / "and
+    technological developments by periodically accessing the platform, even independently of" (agr.txt:521-522);
+  - suspension on reports of "authorities of the Publisher's improper use of services provided by SL through the
+    platform, as well" (agr.txt:489);
+  - Google Play needs the Publisher's own direct contract: "Publisher shall enter into a direct agreement with Google
+    Ireland Ltd (Address: Gordon House," (agr.txt:150), and changing its data without SL's consent lets SL end the
+    contract "and require to the Publisher the double of any incurred loss." (:162). Any store can be excluded
+    (:132-133).
+- [INFERENCE] No clause in this document makes an agent-operated account a breach. The General Conditions (agr.txt:45) are
+  where such a clause would sit, and they are unread.
+
+*(e) The name shown to buyers.*
+- The agreement lets SL release "provided, editorial material, information about the works or the author of the work,
+  links," (agr.txt:116). It does not say which name.
+- The help page settles it: the real name "will not be made public in any way" (425.txt:63), and pen names are supported
+  (95.txt:71).
+- ISBNs obtained through StreetLib are registered to SL: "parties the code, with the heading of the same code to SL"
+  (agr.txt:193). [INFERENCE] ISBN databases would then show SL, not the brand, as the ISBN holder.
+
+*What an Israeli individual (or a future עוסק) could not meet.*
+- **The plan.** $99 a year or $299 once (425.txt:73, :85). An Israeli account is "international" (:69).
+- [INFERENCE] **The invoice.** The Publisher "will issue an invoice to" StreetLib (agr.txt:618). Whether an Israeli
+  private person with no עוסק file may issue one is UNKNOWN in this repo. The platform drafts it (699.txt:75), and a
+  "private user" profile type exists (699.txt:77). A future עוסק would meet it.
+- The rest can be met: no territorial limit ("titles uploaded to the platform, without territorial limitations, and
+  therefore in Italy as well as", agr.txt:88), Italian law and Milan courts, a GDPR declaration as data controller
+  (:564-568), and legal-deposit and tax duties on the Publisher (:442-445).
+
+**Kills (all PROPOSED for the sitting, REPLENISH-2026-09-28-2.md:217-218).**
+- **(a) Any distribution plan, subscription or per-title fee: FIRES.** Accounts outside Italy and the DACH countries "are
+  subject to our membership plans" (425.txt:69): $99 a year (:73) or $299 once (:85), for accounts created on or after
+  17 March 2026 (:99). An Israeli account would be one. The January 2025 agreement's "No activation price"
+  (agr.txt:590) predates the plans and may be changed on 30 days' notice (:466, :469). This follows the Smashwords/D2D
+  precedent (CHANNEL_LOOP.md:270, dead on an activation fee).
+- **(b) Payout cannot reach an Israeli individual, or a camera step: DOES NOT FIRE.** Bank transfer over €200 or the
+  platform's other methods (agr.txt:633-634); PayPal and bank outside the USA and Canada (699.txt:87). No identity step
+  in the agreement or 425: only "real personal data" (425.txt:63).
+- **(c) AI books barred even when declared: DOES NOT FIRE.** The agreement is silent on AI. 421.txt:87 still governs.
+- **(d) Web forms only, and the terms forbid automation: UNSETTLED; it parks.** The form half holds: upload by the
+  Publisher (agr.txt:260), no inbound feed or API. The terms half: this agreement is silent. The General Conditions
+  (agr.txt:45, :48) are unread, on the shell host.
+- **(e) The legal name shown to buyers: DOES NOT FIRE.** "Your real name will not be made public in any way"
+  (425.txt:63).
+
+**Gate line.** It was G1 U(r) · G2 P(r) · G3 U↘(r) · G4 P(r) · G5 P(r) · G6 U · G7 U(r).
+Now: **G1 F(r)** · G2 P(r) · G3 U↘(r) · G4 P(r) · G5 P(r) · G6 U · **G7 U↗(r)**.
+- **G1 FAIL:** a paid plan before distribution (425.txt:69, :73, :85, :99).
+- **G2:** unchanged. The invoice capacity of an Israeli private person is a residual (agr.txt:618).
+- **G3:** unchanged. The agreement is silent on agents; the General Conditions are unread.
+- **G6:** the agreement says quarterly invoicing (agr.txt:618), the help article monthly (670.txt:63). Either way one
+  periodic step.
+- **G7:** the real name stays private (425.txt:63), and pen names are supported (95.txt:71). The "Surname, Name" format
+  rule (380.txt:71) and the ISBN registered to SL (agr.txt:193) remain.
+
+**Verdict: KILL-PROPOSED** on kill (a). Opus does not decide kills. The sitting adopts or rejects it. [INFERENCE] Row
+24's note that StreetLib "meets part of the reopen trigger of the Apple aggregator kill" (CHANNEL_LOOP.md:148) falls
+with it: StreetLib offers no ₪0 route to Apple for a new account.
+
+**The held step-8 question: no longer needed. Drop it; do not add StreetLib as venue 8.** It asked whether a publisher
+can distribute "without buying a Subscription or Lifetime Access option" (§4). 425.txt:69 answers no for an
+international account. If the sitting rejects the kill and wants a written answer anyway (for example, on the General
+Conditions and agents), the captures now hold a better address than `support@streetlib.de`: `support@streetlib.com`,
+in the contract of the entity an Israeli publisher signs with ("beyond these limits: only possible upon written request
+to SL support@streetlib.com,", agr.txt:745). The contract's formal address is the certified PEC `simplicissimus@pec-mail.it`
+(agr.txt:6).
+
+**Next URLs seen in these captures (only if the sitting rejects the kill).**
+1. `https://help.streetlib.com/article/337-managing-different-publishers-and-pen-names` (95.html:1666), for G7: can the
+   brand stand as the publisher, or as the author, alone?
+2. `https://help.streetlib.com/category/121-bookstores` (95.html:1725), for G5 store eligibility.
+3. `https://streetlib.co/payment-it` (agr.txt:634), for the payment methods. Its host is not yet shown to render.
+4. Lower value: `/category/654-ebook-price` (95.html:1717) and `/category/108-publishs-extra-features` (:1729), made
+   absolute against `https://help.streetlib.com/category/95-publishing-ebooks` (95.html:14).
+
+Not recommended: `https://www.streetlib.com/book-stores` (agr.txt:100) and `https://www.streetlib.com/it/legalpolicy`
+(:48) are on the JS-shell host (§1, §Tick 10). `https://dashboard.streetlib.com/onboarding` (425.html:1648) sits behind a
+login.
