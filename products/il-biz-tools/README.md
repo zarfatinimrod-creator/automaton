@@ -66,6 +66,16 @@ search sends no one, the page-view kill rule is what answers it.
 Not modelled in net salary: surtax, pension tax credit, special credit points (children, degree,
 army), benefits in kind, study fund.
 
+**Source and check date on the page (TikTok note N8, 28.9.2026).** `osek-patur.html` and `vat.html` state a
+statutory figure, so each shows "מקור: <name> (מקור משני) · נבדק: <date>" right after its lead and in the FAQ
+answer that states the figure (the JSON-LD answer too), from `source`, `checkedOn` and `checkedNote` in the
+config (`src/lib/source-line.js`). Both are marked secondary because no gov.il page was read; `checkedOn` is
+2026-09-07, the dated search read that found the same figures on page one (`checkedNote` says so). The osek
+patur ceiling is set per calendar year, so once the year in the config is over the page script shows "הנתון לא
+עודכן עדיין לשנת <year>" beside the source line until someone checks the new figure. Only verified configs get a
+line: `net-salary.html` renders `tax-2026.json` (`verified: false`) and claims no check date anywhere
+(`tests/statutory-sources.test.js`).
+
 ## The unverified-rate gate (why `net-salary.html` is not on the public site)
 
 MISSION rule 4 (honest value only), read here as "never publish an unverified legal figure", used to be kept by hand: `tax-2026.json`
@@ -255,9 +265,36 @@ file measured 6.8 s and about 680 MB. The input is emptied after each pick, so p
 again re-runs the check; a slower earlier file never overwrites a later one's result; and a failure inside the
 checker is reported as the checker failing, not as an unreadable file or a finding.
 
+**After a result (TikTok note N7).** Once a check finishes - clean or not - a slot below the findings offers
+"הדפסה / PDF של הממצאים" (`window.print()`). The printout carries a header the screen never shows (`.print-only`):
+the file name, the date checked, "not acceptance" and "מסמך זה אינו ייעוץ מס", then the scope box verbatim, the
+summary and the findings; the file picker, the slot, the FAQ and the rule reference do not print. A share button
+exists only where the browser has `navigator.share`, and shares only when pressed: the text
+(`src/lib/pcn874-share.js`) holds the error and warning counts and the ids of the rules that fired - never a
+value from the file and never its name - and the page's address alone on the last line with `?via=share`; no
+emoji and nothing above U+FFFF. The `api.whatsapp.com` fallback is built and tested but ships **off**
+(`WHATSAPP_FALLBACK_ENABLED = false`): the note's release gate wants an Android and an iOS device test recorded
+at `docs/whatsapp-share-device-test.md` first, and the tests fail if the flag is turned on without that file.
+The FAQ answers "למה הבודק חינמי?" with a funding line and no link to anything paid, and promises nothing about
+staying free (the pcn874 paid offer waits for Fable F3).
+
+**One dealer's file, yours or a client's (N15).** The scope box says "כאן אפשר לבדוק קובץ של עוסק אחד – שלכם או
+של לקוח – קובץ אחד בכל פעם". No page and no share text pitches the validator for accountants' or
+representatives' multi-client filing (Appendix B is not supported; extending it is Fable F4).
+
+**The rule reference (N10).** Below the FAQ, "כל הכללים שהבודק בודק" lists every check - error or warning, the
+lines of the circular it cites (of the text extracted from the PDF, which the section says), a plain Hebrew
+explanation, then what is not checked. It is generated from the validator's own rule table, `RULES` in
+`products/pcn874/src/validate.ts`, which every finding takes its severity and citations from
+(`tests/rules.test.ts` there proves every finding equals its row and every row is reported by some input). The
+section sits in `pcn874.html` between two markers; `node scripts/pcn874-rule-reference.js` rewrites it, `--check`
+reports a stale one, and the build refuses, preview included, when it differs from the table - so after a rules
+change run `node scripts/bundle-pcn874.js` and then `node scripts/pcn874-rule-reference.js`.
+
 **What it does not do.** The file is read with `File.arrayBuffer()` and validated in the tab; it is not
 uploaded, sent or stored. No module the page loads contains `fetch`, `XMLHttpRequest`, `sendBeacon`,
-`WebSocket`, `EventSource` or a storage API, and the page script runs in the tests with all of them trapped.
+`WebSocket`, `EventSource` or a storage API, and the page script runs in the tests with all of them trapped. The
+page sends nothing itself: sharing is the user's own `navigator.share`, with counts and rule names only.
 The page carries no price, no "buy" and no Gumroad link.
 
 **Page views - the counter runs, the KPI is not wired.** The page calls `initPage()`, so the site's existing
@@ -282,9 +319,10 @@ assets/style.css            shared RTL styles incl. @media print for the receipt
 assets/common.js            nav, canonical, optional analytics
 assets/page-*.js            DOM glue per page (no logic)
 src/lib/*.js                pure ES modules: vat, osek-patur, net-salary, invoice, allocation,
-                            registrar-fee, gumroad, license, branding, analytics, money, pcn874-report -
-                            and five build-time ones that never ship: publish-gate, site-deps, a11y-check,
-                            pcn874-bundle
+                            registrar-fee, gumroad, license, branding, analytics, money, pro-nudge,
+                            pcn874-report, pcn874-share, source-line - and build-time ones that never ship:
+                            publish-gate, site-deps, a11y-check, pcn874-bundle, pcn874-rule-reference,
+                            pro-offer
 src/vendor/pcn874/*.js      GENERATED: products/pcn874's validator with its types stripped (do not edit)
 src/config/*.json           vat.json, osek-patur.json, tax-2026.json, allocation-number.json,
                             registrar-fee.json, site.json
@@ -294,6 +332,7 @@ scripts/build-site.js       ships only what the shipped pages load, applies the 
                             config gates, runs the accessibility checks, refuses on a publish blocker
 scripts/check-html.js       checks title/description/canonical/JSON-LD/links/classes on every page
 scripts/bundle-pcn874.js    regenerates src/vendor/pcn874/ from products/pcn874/src (--check: stale?)
+scripts/pcn874-rule-reference.js  regenerates the rule reference inside pcn874.html (--check: stale?)
 scripts/gumroad-pro-product.js  creates the Pro product on Gumroad (draft, licence-key block) and later
                             enables it; run only by .github/workflows/gumroad-pro-product.yml
 netlify.toml robots.txt sitemap.xml
@@ -304,8 +343,9 @@ netlify.toml robots.txt sitemap.xml
 ```bash
 cd products/il-biz-tools
 npm install          # vitest only
-npm test             # 447 tests (vitest, 20 files; re-measured 28.9.2026 after the pcn874 page review fixes)
+npm test             # 586 tests (vitest, 27 files; re-measured 28.9.2026 after the TikTok note N7-N10)
 node scripts/bundle-pcn874.js   # after ANY change under products/pcn874/src - the build refuses a stale bundle
+node scripts/pcn874-rule-reference.js   # then this: the build refuses a stale rule reference too
 npm run check:html   # static page sanity checks + what the publish gate will withhold
 node scripts/build-site.js   # writes _site/ exactly as it will be deployed - or refuses (exit 1) on a blocker
 node scripts/build-site.js --preview   # the same tree into _preview/, blockers listed, for inspection only
@@ -545,7 +585,9 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
 - **בודק קובץ PCN874** (`pcn874.html`, של קו ההכנסה `pcn874`) – בדיקת מבנה לקובץ הדוח המפורט למע"מ, בדפדפן
   ובלי העלאה, עם ממצאים לפי שורה והכלל שנכשל בעברית. בודק מבנה בלבד: אינו מצליב סכומים ואינו מחשב את הסכום
   המדווח, ומפנה לסימולטור של רשות המסים. הקוד הוא הבודק של `products/pcn874` עצמו, וה-build מסרב לפרסם עותק
-  שאינו תואם למקור. אין בדף מחיר ואין קישור קנייה.
+  שאינו תואם למקור. אין בדף מחיר ואין קישור קנייה. אחרי בדיקה אפשר להדפיס או לשמור כ-PDF את הממצאים (עם שם
+  הקובץ, תאריך הבדיקה ו"אינו ייעוץ מס"), ובדפדפן שתומך בכך – לשתף סיכום שמכיל רק את מספר השגיאות והאזהרות ואת
+  שמות הכללים, בלי שום ערך מתוך הקובץ. בתחתית הדף רשימת כל הכללים, שנוצרת מטבלת הכללים של הבודק עצמו.
 
 **שער הפרסום:** דף שמציג נתון מקובץ שמסומן `"verified": false` לא מתפרסם בכלל. כרגע זה
 `net-salary.html`: במקומו עולה הודעה קצרה בלי אף מספר, והכתובת יורדת מה-sitemap. ברגע שהמדרגות
