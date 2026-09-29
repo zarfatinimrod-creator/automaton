@@ -99,13 +99,52 @@
  * package tree is a weekly fetch somebody else's release can break. The one
  * outside program, pdftotext, is optional by construction: without it every page
  * is still fetched and stored, and a PDF simply has no text until a run that has it.
+ * The one exception is opt-in and per line, below: a line flagged `js` needs
+ * playwright-core and a Chromium, loaded only when such a line exists. A list with
+ * no `js` line never imports it, so the plain run above still needs no package.
+ *
+ * THE JS FLAG (ordered by the loop board, research/channel-loop/RULING-2026-09-29-loop.md
+ * (b), "Tick 17-18, tooling"). Some pages reach a plain GET as an empty JavaScript
+ * shell: Trolley's identity-verification article, GameDistribution's payment FAQ,
+ * n8n's Creator Hub. A line in urls.txt may carry a third field, `js`:
+ *
+ *     https://example.com/s/article/X<TAB>example-x<TAB>js
+ *
+ * and that URL is then loaded in headless Chromium (playwright-core, pinned exactly
+ * in package.json) instead of fetched. What the browser is allowed to do is narrow,
+ * and each limit is a test in src/__tests__/revenue/render-watch-js.test.ts:
+ *   - one navigation per URL, then a wait for the network to go quiet, all inside
+ *     the same TIMEOUT_MS as a plain GET; the DOM as it stands then is serialised
+ *     and goes through exactly the plain path: redactSecrets, sha256, MAX_BYTES,
+ *     extractText, the meta and the quiet-history rule. The meta says
+ *     `renderedWith: "chromium"` and whether the network went quiet (`networkIdle`)
+ *   - no clicks, no typing, no form fills, no logins, no cookies or storage carried
+ *     between URLs: every URL gets a fresh browser context, closed after it
+ *   - no stealth plugin and no anti-detection setting: the same USER_AGENT and
+ *     accept-language as a plain GET, and the page can see it is automated
+ *   - HTML only: a js line that answers a PDF or JSON stores nothing and says to
+ *     drop the flag
+ *   - a browser that cannot be started is a host failure, not a site's answer: the
+ *     js lines are skipped and nothing is written for them (their earlier captures
+ *     stay as they were), the plain lines are stored as usual, and the count goes
+ *     to the workflow as `js_skipped`, which fails the run after the commit
+ * Known limits, stated: only the top frame's DOM is stored (not iframes), open or
+ * closed shadow roots are not serialised, and a rendered DOM may differ run to run
+ * (a nonce, a timestamp), which the quiet-history rule then commits as a change.
+ *
+ * NEVER tiktok.com, in either mode. parseUrlList refuses tiktok.com and every
+ * subdomain at parse time, for the file and the dispatch override alike; the js
+ * mode also blocks any request to those hosts from inside a page (an embed, a
+ * redirect). logs/CHANNEL_LOOP.md §9 paused every TikTok fetch on 28.9, and whether
+ * any fetch of TikTok is allowed at all is pending logs/FABLE_QUEUE.md row 16(d).
  */
 
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { basename, dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = join(HERE, "..");
@@ -131,11 +170,17 @@ export const DELAY_MS = 1_000;
 export const USER_AGENT =
   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36";
 
+/** Sent by both modes, so a js line asks for the same languages a plain GET does. */
+export const ACCEPT_LANGUAGE = "en-US,en;q=0.9,he;q=0.8";
+
 // ---------------------------------------------------------------------------
 // The URL list
 // ---------------------------------------------------------------------------
 
 const SLUG_RE = /^[a-z0-9][a-z0-9._-]*$/;
+
+/** The flags a urls.txt line may carry after its slug. One, today: `js` (header comment). */
+const FLAGS = new Set(["js"]);
 
 /**
  * Derive a filesystem-safe slug from a URL, for a list line that does not name one.
@@ -166,11 +211,17 @@ export function slugFromUrl(url) {
  *   - a line whose first non-blank character is `#` is a comment. Only whole-line
  *     comments: a `#` later in a line is a URL fragment, not a comment marker
  *   - blank lines are ignored
+ *   - an optional flag after the slug: `js` (the only one) marks the URL for the
+ *     JavaScript-capable render (header comment). A flag needs a slug before it, and
+ *     `js` is not a usable slug, so `URL js` cannot silently become a plain line
+ *     named "js". The entry then carries `js: true`; a line without the flag comes
+ *     back in exactly the shape it always had, with no `js` key at all
  *
- * Throws on an authoring mistake — a non-http(s) line, an unusable slug, or two
- * lines claiming the same slug (which would have one page silently overwrite
- * another). Those are the "the script itself is broken" cases; everything that
- * can go wrong at fetch time is recorded instead.
+ * Throws on an authoring mistake — a non-http(s) line, a URL that does not parse,
+ * an unusable slug, an unknown flag, two lines claiming the same slug (which would
+ * have one page silently overwrite another), or a tiktok.com URL (isTikTokHost).
+ * Those are the "the script itself is broken" cases; everything that can go wrong
+ * at fetch time is recorded instead.
  */
 export function parseUrlList(text) {
   const entries = [];
@@ -186,14 +237,43 @@ export function parseUrlList(text) {
 
     const parts = raw.split(/\s+/);
     const url = parts[0];
-    const explicitSlug = parts.length > 1 ? parts.slice(1).join(" ").trim() : "";
+    const explicitSlug = parts.length > 1 ? parts[1] : "";
+    const flag = parts.length > 2 ? parts[2] : null;
 
     if (!/^https?:\/\/\S+$/i.test(url)) {
       throw new Error(`urls.txt line ${lineNumber}: not an http(s) URL: ${url}`);
     }
-    if (parts.length > 2) {
+    let hostname;
+    try {
+      hostname = new URL(url).hostname;
+    } catch {
+      throw new Error(`urls.txt line ${lineNumber}: not a valid URL (it does not parse): ${url}`);
+    }
+    // Never tiktok.com, plain or js. logs/CHANNEL_LOOP.md §9 paused every TikTok fetch on 28.9
+    // (their terms bar automated access; the runner had fetched ~110 pages before that was read),
+    // and whether any fetch of TikTok is allowed at all is pending logs/FABLE_QUEUE.md row 16(d).
+    // Refused here, at parse time, so neither urls.txt nor a dispatch override can reach it.
+    if (isTikTokHost(hostname)) {
       throw new Error(
-        `urls.txt line ${lineNumber}: a slug is one word, got "${explicitSlug}". Use a tab and a single slug.`,
+        `urls.txt line ${lineNumber}: ${url} is on tiktok.com, which render-watch never fetches in either mode ` +
+          "(the TikTok pause, logs/CHANNEL_LOOP.md §9; pending logs/FABLE_QUEUE.md row 16(d)).",
+      );
+    }
+    if (parts.length > 3) {
+      throw new Error(
+        `urls.txt line ${lineNumber}: at most three fields (URL, slug, flag), got ${parts.length}: "${raw}".`,
+      );
+    }
+    if (flag !== null && !FLAGS.has(flag)) {
+      throw new Error(
+        `urls.txt line ${lineNumber}: unknown flag "${flag}" after slug "${explicitSlug}" — a slug is one word, ` +
+          `and the only flag after it is ${[...FLAGS].map((f) => `"${f}"`).join(", ")}.`,
+      );
+    }
+    if (FLAGS.has(explicitSlug)) {
+      throw new Error(
+        `urls.txt line ${lineNumber}: "${explicitSlug}" is a flag, not a slug. To flag a URL, name the slug first: ` +
+          `URL<TAB>slug<TAB>${explicitSlug}.`,
       );
     }
 
@@ -210,10 +290,23 @@ export function parseUrlList(text) {
       );
     }
     seen.set(slug, lineNumber);
-    entries.push({ url, slug, lineNumber });
+    entries.push(flag === "js" ? { url, slug, lineNumber, js: true } : { url, slug, lineNumber });
   }
 
   return entries;
+}
+
+/**
+ * tiktok.com or any subdomain of it (www., vm., m., ads., …), trailing dot and case
+ * ignored. A host that merely contains the name (nottiktok.com, tiktok.com.example.org)
+ * is a different site. Used by parseUrlList for both modes, and by the js mode to block
+ * requests a page itself makes — see the refusal's comment for why.
+ */
+export function isTikTokHost(hostname) {
+  const host = String(hostname ?? "")
+    .toLowerCase()
+    .replace(/\.+$/, "");
+  return host === "tiktok.com" || host.endsWith(".tiktok.com");
 }
 
 // ---------------------------------------------------------------------------
@@ -460,12 +553,15 @@ export function redactSecrets(bytes, contentType) {
 /**
  * Did the fetched body change? The hash is the main answer, but a page that starts
  * answering 403 has changed too, and so has one whose network error appeared or
- * cleared.
+ * cleared — and so has one whose line moved between a plain GET and the js mode
+ * (renderedWith), because the meta must say how the stored bytes were made. A plain
+ * line's meta has no renderedWith on either side, so nothing about it moves.
  */
 export function bodyChanged(previousMeta, next) {
   if (!previousMeta) return true;
   if ((previousMeta.sha256 ?? null) !== (next.sha256 ?? null)) return true;
   if ((previousMeta.status ?? null) !== (next.status ?? null)) return true;
+  if ((previousMeta.renderedWith ?? null) !== (next.renderedWith ?? null)) return true;
   return (previousMeta.error ?? null) !== (next.error ?? null);
 }
 
@@ -496,6 +592,10 @@ export function hasChanged(previousMeta, next) {
  * says why; `textPath` is then null. A failed fetch after a PDF capture carries
  * that capture's textPath, textError and redacted (previousTextState): they
  * describe the files still on disk, not this fetch.
+ * `renderedWith` ("chromium") and `networkIdle` are present only for a js line:
+ * networkIdle is true when the page's network went quiet before the DOM was taken,
+ * false when the time ran out first (the DOM may then be partial), and null when no
+ * DOM was taken at all.
  */
 export function buildMeta({
   url,
@@ -512,6 +612,8 @@ export function buildMeta({
   textPath = null,
   textError = null,
   redacted = 0,
+  renderedWith = null,
+  networkIdle = null,
 }) {
   const next = {
     url,
@@ -529,6 +631,8 @@ export function buildMeta({
     textPath,
     // Present only for a PDF whose text could not be read, for the same reason as `redacted`.
     ...(textError ? { textError } : {}),
+    // Present only for a js line, so a plain line's meta is byte-identical to what it always was.
+    ...(renderedWith ? { renderedWith, networkIdle } : {}),
   };
   return {
     ...next,
@@ -618,7 +722,7 @@ export async function fetchOne(entry, { fetchImpl = fetch, timeoutMs = TIMEOUT_M
       headers: {
         "user-agent": USER_AGENT,
         accept: "text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8",
-        "accept-language": "en-US,en;q=0.9,he;q=0.8",
+        "accept-language": ACCEPT_LANGUAGE,
       },
     });
 
@@ -647,6 +751,178 @@ export async function fetchOne(entry, { fetchImpl = fetch, timeoutMs = TIMEOUT_M
   } finally {
     clearTimeout(timer);
   }
+}
+
+// ---------------------------------------------------------------------------
+// The js mode: one URL in headless Chromium
+// ---------------------------------------------------------------------------
+
+/** What a js line's meta says it was rendered with. */
+export const RENDERED_WITH = "chromium";
+
+/**
+ * The browser context every js URL gets, fresh, and closes after it. Nothing is
+ * carried in or out: no storageState, no cookies, no permissions. The same
+ * User-Agent and accept-language as a plain GET; everything else is Chromium's
+ * default. Service workers are blocked so a page cannot answer its own requests
+ * around the tiktok.com block (route() does not see what a service worker serves).
+ */
+export function browserContextOptions() {
+  return {
+    userAgent: USER_AGENT,
+    extraHTTPHeaders: { "accept-language": ACCEPT_LANGUAGE },
+    acceptDownloads: false,
+    serviceWorkers: "block",
+  };
+}
+
+/** A Playwright error's name and first line: its call log varies, and the meta must not. */
+function describeBrowserError(error) {
+  if (!(error instanceof Error)) return String(error);
+  const firstLine = String(error.message).split(/\r?\n/)[0].trim();
+  return `${error.name}: ${firstLine}`;
+}
+
+/**
+ * Render one js entry in `browser` (a Playwright Browser, or a fake with the same
+ * few methods). Never throws, like fetchOne: a refusal, a timeout or a crash comes
+ * back as a result with `error`, and the caller stores it exactly as a plain one.
+ *
+ * One navigation (`domcontentloaded`, TIMEOUT_MS), then a wait for the network to go
+ * quiet with whatever time the navigation left, then page.content() — the DOM as it
+ * stands. A non-2xx answer or a non-HTML page stores nothing. The DOM is capped at
+ * maxBytes as a plain body is. The context is closed whatever happened.
+ */
+export async function renderWithBrowser(
+  entry,
+  { browser, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES, now = Date.now } = {},
+) {
+  const failed = (fields) => ({
+    status: null,
+    contentType: null,
+    bytes: null,
+    truncated: false,
+    ...fields,
+    renderedWith: RENDERED_WITH,
+    networkIdle: null,
+  });
+  const started = now();
+  let context = null;
+  try {
+    context = await browser.newContext(browserContextOptions());
+    // No request to tiktok.com from inside a page either — an embed, a script, a redirect, a frame,
+    // and (route() does not see these) a WebSocket, which is closed before it reaches the server.
+    // The TikTok pause (logs/CHANNEL_LOOP.md §9) and logs/FABLE_QUEUE.md row 16(d); see parseUrlList.
+    const onTikTok = (url) => isTikTokHost(url.hostname);
+    await context.route(onTikTok, (route) => route.abort("blockedbyclient"));
+    await context.routeWebSocket(onTikTok, (ws) => ws.close({ code: 1008, reason: "render-watch never contacts tiktok.com" }));
+    const page = await context.newPage();
+    const response = await page.goto(entry.url, { waitUntil: "domcontentloaded", timeout: timeoutMs });
+    if (!response) return failed({ error: "the navigation produced no response" });
+
+    const status = response.status();
+    const contentType = response.headers()["content-type"] ?? null;
+    if (!response.ok()) {
+      const statusText = response.statusText();
+      return failed({ status, contentType, error: `HTTP ${status}${statusText ? ` ${statusText}` : ""}` });
+    }
+    if (!isHtml(contentType)) {
+      return failed({
+        status,
+        contentType,
+        error:
+          `js mode stores HTML pages only, and this page answered ${contentType ?? "with no Content-Type"}; ` +
+          "list it without the js flag to store it as fetched",
+      });
+    }
+
+    let networkIdle = true;
+    try {
+      // Playwright reads a timeout of 0 as "no timeout", so the floor is 1 ms.
+      await page.waitForLoadState("networkidle", { timeout: Math.max(1, timeoutMs - (now() - started)) });
+    } catch {
+      networkIdle = false; // the time ran out first: take the DOM as it stands, and say so
+    }
+
+    const all = Buffer.from(await page.content(), "utf8");
+    const truncated = all.length > maxBytes;
+    return {
+      status,
+      contentType,
+      bytes: truncated ? all.subarray(0, maxBytes) : all,
+      truncated,
+      error: null,
+      renderedWith: RENDERED_WITH,
+      networkIdle,
+    };
+  } catch (error) {
+    const message = describeBrowserError(error);
+    return failed({ error: error?.name === "TimeoutError" ? `timeout after ${timeoutMs}ms (${message})` : message });
+  } finally {
+    if (context) await context.close().catch(() => {});
+  }
+}
+
+/**
+ * Import the pinned playwright-core, from this repository's node_modules (the
+ * devDependency) or, on the runner, from NODE_PATH, where the workflow installs it
+ * outside the checkout. createRequire honours NODE_PATH; a bare import() would not.
+ */
+export async function loadPlaywright() {
+  const path = createRequire(import.meta.url).resolve("playwright-core");
+  const mod = await import(pathToFileURL(path).href);
+  return mod.default ?? mod;
+}
+
+/** Launch headless Chromium with Playwright's defaults: no extra arguments, nothing to hide automation. */
+export async function launchChromium() {
+  const { chromium } = await loadPlaywright();
+  return chromium.launch({ headless: true });
+}
+
+function describeLaunchError(error) {
+  if (error?.code === "MODULE_NOT_FOUND" || error?.code === "ERR_MODULE_NOT_FOUND") {
+    return (
+      "playwright-core is not installed on this host (MODULE_NOT_FOUND); .github/workflows/render-watch.yml " +
+      "installs it, and Chromium, only when the list has a js line"
+    );
+  }
+  return `no browser could be started (${describeBrowserError(error)})`;
+}
+
+/**
+ * One browser per run, launched on the first js line and only then; one attempt.
+ * If it cannot be started, or disconnects during the run, render() answers
+ * { skipped: <why> } for every js line from then on and the caller writes nothing
+ * for them.
+ */
+export function jsRenderer({ launchBrowser = launchChromium, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES } = {}) {
+  let browser = null;
+  let launchError = null;
+  return {
+    async render(entry) {
+      if (!browser && !launchError) {
+        try {
+          browser = await launchBrowser();
+          const version = typeof browser.version === "function" ? browser.version() : "unknown version";
+          process.stdout.write(`render-watch: js mode, headless Chromium ${version}\n`);
+        } catch (error) {
+          launchError = describeLaunchError(error);
+        }
+      }
+      // A browser that died mid-run is a host failure too: the lines after it are skipped,
+      // not recorded as their sites' error ("browser has been closed" is not a site's answer).
+      if (!launchError && typeof browser.isConnected === "function" && !browser.isConnected()) {
+        launchError = "the browser disconnected during the run";
+      }
+      if (launchError) return { skipped: launchError };
+      return renderWithBrowser(entry, { browser, timeoutMs, maxBytes });
+    },
+    async close() {
+      if (browser) await browser.close().catch(() => {});
+      browser = null;
+    },
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -760,7 +1036,15 @@ export async function storeCapture(
     if (isHtml(result.contentType)) textPath = `research/rendered/${entry.slug}.txt`;
   }
 
-  const bytesChanged = bodyChanged(previousMeta, { sha256: hash, status: result.status, error: result.error });
+  // A js line's result carries how it was rendered; a plain fetch's carries nothing, and its meta stays as it was.
+  const renderedWith = result.renderedWith ?? null;
+  const networkIdle = renderedWith ? (result.networkIdle ?? null) : null;
+  const bytesChanged = bodyChanged(previousMeta, {
+    sha256: hash,
+    status: result.status,
+    error: result.error,
+    renderedWith,
+  });
 
   const ownTextPath = `research/rendered/${entry.slug}.txt`;
   // What the previous meta said about a PDF's text, carried through failed fetches.
@@ -828,6 +1112,8 @@ export async function storeCapture(
     textPath,
     textError,
     redacted,
+    renderedWith,
+    networkIdle,
   });
   // An extraction always has a text to write, even when nothing in the meta moved: the meta
   // claimed a <slug>.txt that had been deleted, or the stored .pdf had been replaced by hand.
@@ -854,10 +1140,11 @@ export async function storeCapture(
 // ---------------------------------------------------------------------------
 
 function parseArgs(argv) {
-  const options = { list: DEFAULT_LIST, outDir: DEFAULT_OUT_DIR };
+  const options = { list: DEFAULT_LIST, outDir: DEFAULT_OUT_DIR, needsBrowser: false };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
-    if (arg === "--list") options.list = resolve(argv[++i]);
+    if (arg === "--needs-browser") options.needsBrowser = true;
+    else if (arg === "--list") options.list = resolve(argv[++i]);
     else if (arg === "--out") options.outDir = resolve(argv[++i]);
     else if (arg.startsWith("--list=")) options.list = resolve(arg.slice("--list=".length));
     else if (arg.startsWith("--out=")) options.outDir = resolve(arg.slice("--out=".length));
@@ -882,13 +1169,74 @@ export function resolveListText(env, readFile = readFileSync, listPath = DEFAULT
 }
 
 /**
- * `deps.extractPdfText` exists for the tests; the workflow runs main() with none,
- * which means runPdftotext.
+ * Fetch (or, for a js line, render) one entry, store it, and log it. Returns what it
+ * adds to the run's counts. A js line whose browser could not be started is skipped:
+ * a host failure, not the site's answer, so nothing is written and the last capture
+ * stays exactly as it was.
+ */
+async function captureEntry(entry, { js, outDir, deps, summaryLines }) {
+  let result;
+  if (entry.js) {
+    result = await js.render(entry);
+    if (result.skipped) {
+      process.stdout.write(`SKIPPED     ${entry.slug}  js mode: ${result.skipped}\n            ${entry.url}\n`);
+      summaryLines.push(`- \`${entry.slug}\` — SKIPPED (js mode): ${result.skipped}`);
+      return { changed: 0, failed: 0, skippedJs: 1 };
+    }
+  } else {
+    result = await fetchOne(entry);
+  }
+
+  const { meta, bytesChanged } = await storeCapture(entry, result, {
+    outDir,
+    extractPdfText: deps.extractPdfText,
+  });
+  const hash = meta.sha256;
+  const byteLength = meta.byteLength;
+  // A PDF with no readable text is still a stored capture: said in the log, never thrown.
+  const textNote = meta.textError ? `            no PDF text: ${meta.textError}\n` : "";
+  const failed = result.error ? 1 : 0;
+
+  if (!meta.changed) {
+    process.stdout.write(`unchanged   ${entry.slug}  sha256=${hash ? hash.slice(0, 12) : "-"}  ${entry.url}\n${textNote}`);
+    return { changed: 0, failed, skippedJs: 0 };
+  }
+
+  const state = result.error
+    ? `FAILED      ${entry.slug}  ${result.error}`
+    : !bytesChanged
+      ? `text        ${entry.slug}  PDF bytes unchanged (sha256=${hash.slice(0, 12)}); ` +
+        `${meta.textPath ? `text stored at ${meta.textPath}` : "text extraction failed"}`
+      : `${meta.firstFetch ? "new        " : "CHANGED    "} ${entry.slug}  ${byteLength} bytes  ` +
+        `${result.contentType ?? "unknown type"}${result.truncated ? "  [TRUNCATED at 5 MB]" : ""}` +
+        `${meta.renderedWith ? `  [${meta.renderedWith}${meta.networkIdle ? "" : ", network not idle"}]` : ""}`;
+  process.stdout.write(`${state}\n            ${entry.url}\n${textNote}`);
+  summaryLines.push(
+    `- \`${entry.slug}\` — ${result.error ?? `${byteLength} bytes, ${result.contentType}`}` +
+      `${meta.renderedWith ? ` (rendered with ${meta.renderedWith})` : ""}` +
+      `${bytesChanged ? "" : " (bytes unchanged; text extraction only)"}` +
+      `${meta.textError ? `; no PDF text: ${meta.textError}` : ""}`,
+  );
+  return { changed: 1, failed, skippedJs: 0 };
+}
+
+/**
+ * `deps` exists for the tests; the workflow runs main() with none, which means
+ * runPdftotext, launchChromium and the DELAY_MS courtesy pause.
+ *
+ * `--needs-browser` parses the list (the file, or the dispatch override) and prints
+ * `js=true` or `js=false` for $GITHUB_OUTPUT, writing nothing: the workflow asks it
+ * before installing a browser, so a list with no js line never installs one.
  */
 export async function main(argv = process.argv.slice(2), env = process.env, deps = {}) {
   const options = parseArgs(argv);
   const { text, source } = resolveListText(env, readFileSync, options.list);
   const entries = parseUrlList(text);
+
+  if (options.needsBrowser) {
+    process.stdout.write(`js=${entries.some((entry) => entry.js === true)}\n`);
+    return 0;
+  }
 
   process.stdout.write(`render-watch: ${entries.length} URL(s) from ${source}\n`);
   if (entries.length === 0) {
@@ -900,54 +1248,44 @@ export async function main(argv = process.argv.slice(2), env = process.env, deps
 
   let changedCount = 0;
   let failedCount = 0;
+  let skippedJs = 0;
   const summaryLines = [];
+  const delayMs = deps.delayMs ?? DELAY_MS;
+  // Launched on the first js line, if there is one; a plain list never loads playwright-core.
+  const js = jsRenderer({ launchBrowser: deps.launchBrowser ?? launchChromium });
 
-  for (const [index, entry] of entries.entries()) {
-    if (index > 0) await sleep(DELAY_MS);
-
-    const result = await fetchOne(entry);
-    const { meta, bytesChanged } = await storeCapture(entry, result, {
-      outDir: options.outDir,
-      extractPdfText: deps.extractPdfText,
-    });
-    const hash = meta.sha256;
-    const byteLength = meta.byteLength;
-    // A PDF with no readable text is still a stored capture: said in the log, never thrown.
-    const textNote = meta.textError ? `            no PDF text: ${meta.textError}\n` : "";
-
-    if (result.error) failedCount += 1;
-
-    if (!meta.changed) {
-      process.stdout.write(`unchanged   ${entry.slug}  sha256=${hash ? hash.slice(0, 12) : "-"}  ${entry.url}\n${textNote}`);
-      continue;
+  try {
+    for (const [index, entry] of entries.entries()) {
+      if (index > 0) await sleep(delayMs);
+      const counts = await captureEntry(entry, { js, outDir: options.outDir, deps, summaryLines });
+      changedCount += counts.changed;
+      failedCount += counts.failed;
+      skippedJs += counts.skippedJs;
     }
-
-    changedCount += 1;
-
-    const state = result.error
-      ? `FAILED      ${entry.slug}  ${result.error}`
-      : !bytesChanged
-        ? `text        ${entry.slug}  PDF bytes unchanged (sha256=${hash.slice(0, 12)}); ` +
-          `${meta.textPath ? `text stored at ${meta.textPath}` : "text extraction failed"}`
-        : `${meta.firstFetch ? "new        " : "CHANGED    "} ${entry.slug}  ${byteLength} bytes  ` +
-          `${result.contentType ?? "unknown type"}${result.truncated ? "  [TRUNCATED at 5 MB]" : ""}`;
-    process.stdout.write(`${state}\n            ${entry.url}\n${textNote}`);
-    summaryLines.push(
-      `- \`${entry.slug}\` — ${result.error ?? `${byteLength} bytes, ${result.contentType}`}` +
-        `${bytesChanged ? "" : " (bytes unchanged; text extraction only)"}` +
-        `${meta.textError ? `; no PDF text: ${meta.textError}` : ""}`,
-    );
+  } finally {
+    await js.close();
   }
 
+  // Said only when it happened, so a plain run's log reads exactly as it always did.
+  const skippedNote = skippedJs > 0 ? ` ${skippedJs} js line(s) skipped: no browser could be started.` : "";
   process.stdout.write(
-    `\nrender-watch: ${entries.length} URL(s), ${changedCount} changed, ${failedCount} could not be fetched.\n`,
+    `\nrender-watch: ${entries.length} URL(s), ${changedCount} changed, ${failedCount} could not be fetched.${skippedNote}\n`,
   );
+
+  // The workflow fails the run on this, after its commit step, so the plain captures still land.
+  if (env.GITHUB_OUTPUT) {
+    try {
+      appendFileSync(env.GITHUB_OUTPUT, `js_skipped=${skippedJs}\n`);
+    } catch {
+      /* the log line above still says it */
+    }
+  }
 
   if (env.GITHUB_STEP_SUMMARY) {
     const body = [
       "### render-watch",
       "",
-      `${entries.length} URL(s) from ${source}; ${changedCount} changed, ${failedCount} could not be fetched.`,
+      `${entries.length} URL(s) from ${source}; ${changedCount} changed, ${failedCount} could not be fetched.${skippedNote}`,
       "",
       ...summaryLines,
       "",

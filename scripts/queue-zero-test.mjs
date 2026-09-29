@@ -11,15 +11,26 @@
  *     --slug wix-security-privacy-info \
  *     --settle "whether the submission step asks for the third-party test" \
  *     --note "Wix App Market (11): the submission step, linked from a tick-6 capture" \
- *     [--date 28.9.2026] [--dry-run]
+ *     [--js --terms <slug>] [--date 28.9.2026] [--dry-run]
  *
  * The row number is one past the highest numbered row. The row goes directly
  * after that row. The four-column shape is enforced (a `|` inside a cell is
  * escaped). The URL list is re-parsed with render-watch's own parser, so a
  * duplicate slug or a malformed URL fails here, before anything is written. A URL
- * already in the list (active or commented out) is refused.
+ * already in the list (active or commented out) is refused, and so is any tiktok.com
+ * URL (render-watch's parser refuses it; logs/CHANNEL_LOOP.md §9).
+ *
+ * --js queues the line for render-watch's JavaScript-capable render (the `js` flag;
+ * research/rendered/README.md). The loop board allowed it on one condition: "the
+ * target's terms must already be rendered and must not bar automated access, exactly
+ * as for a plain GET" (research/channel-loop/RULING-2026-09-29-loop.md (b)). So --js
+ * REQUIRES --terms <slug>, naming an existing research/rendered/<slug>.txt capture of
+ * the target site's terms, and that slug goes into the line's comment. The script
+ * checks the capture exists; the person queueing the line has read it. A Salesforce
+ * help-centre page, refused below as a shell for a plain line, is allowed with --js:
+ * rendering such a shell is what the mode is for.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
@@ -28,6 +39,12 @@ import { parseUrlList } from "./render-watch.mjs";
 const REPO_ROOT = join(fileURLToPath(new URL(".", import.meta.url)), "..");
 export const ZERO_TESTS = join(REPO_ROOT, "research", "channel-loop", "ZERO-TESTS.md");
 export const URLS = join(REPO_ROOT, "research", "rendered", "urls.txt");
+export const RENDERED = join(REPO_ROOT, "research", "rendered");
+
+/** Does research/rendered/<slug>.txt exist? The default for queueZeroTest's termsCaptured. */
+export function hasRenderedText(slug) {
+  return existsSync(join(RENDERED, `${slug}.txt`));
+}
 
 const ROW = /^\| *(\d+) *\|/;
 
@@ -51,12 +68,47 @@ function cell(text) {
   return t.replace(/(?<!\\)\|/g, "\\|");
 }
 
-/** Pure: returns the two new file texts and the row number used. */
-export function queueZeroTest({ zeroTests, urls, candidate, url, slug, settle, note, date }) {
+/**
+ * Returns the two new file texts and the row number used. Pure apart from
+ * `termsCaptured`, which reads the disk by default and is injected by the tests.
+ */
+export function queueZeroTest({
+  zeroTests,
+  urls,
+  candidate,
+  url,
+  slug,
+  settle,
+  note,
+  date,
+  js = false,
+  terms,
+  termsCaptured = hasRenderedText,
+}) {
   if (!/^https?:\/\/\S+$/i.test(url ?? "")) throw new Error(`not an http(s) URL: ${url}`);
   if (!/^[a-z0-9][a-z0-9-]*$/.test(slug ?? "")) throw new Error(`slug must be lowercase letters, digits and dashes: ${slug}`);
-  const shell = JS_SHELLS.find((s) => s.test(new URL(url)));
-  if (shell) throw new Error(`the runner cannot render ${url}: ${shell.why}`);
+  const hasTerms = terms !== undefined && terms !== null;
+  if (js) {
+    if (!hasTerms) {
+      throw new Error(
+        "--js needs --terms <slug>: the target's terms must already be rendered at research/rendered/<slug>.txt " +
+          "and must not bar automated access, exactly as for a plain GET (RULING-2026-09-29-loop.md (b))",
+      );
+    }
+    if (!/^[a-z0-9][a-z0-9._-]*$/.test(terms)) {
+      throw new Error(`--terms must be a capture slug (research/rendered/<slug>.txt), got "${terms}"`);
+    }
+    if (!termsCaptured(terms)) {
+      throw new Error(
+        `no capture at research/rendered/${terms}.txt: render the target's terms first, read them, then queue the js line`,
+      );
+    }
+  } else if (hasTerms) {
+    throw new Error("--terms is only for a --js line: it names the terms capture the JavaScript render rests on");
+  }
+  // A plain GET gets an empty shell from these; the js render is what reads them.
+  const shell = js ? null : JS_SHELLS.find((s) => s.test(new URL(url)));
+  if (shell) throw new Error(`the runner cannot render ${url}: ${shell.why}. Queue it with --js --terms <slug> instead`);
   const listed = urls.split(/\r?\n/).some((l) => l.replace(/^#\s*/, "").split(/\s+/)[0] === url);
   if (listed) throw new Error(`URL already in urls.txt (active or commented): ${url}`);
 
@@ -81,7 +133,9 @@ export function queueZeroTest({ zeroTests, urls, candidate, url, slug, settle, n
   lines.splice(last + 1, 0, row);
 
   const comment = `# research/channel-loop/ZERO-TESTS.md row ${n} — ${cell(note).replace(/\\\|/g, "|")} (${date}).`;
-  const newUrls = `${urls.endsWith("\n") || urls === "" ? urls : `${urls}\n`}${comment}\n${url}\t${slug}\n`;
+  const jsNote = js ? ` JS render; terms read at research/rendered/${terms}.txt.` : "";
+  const line = js ? `${url}\t${slug}\tjs` : `${url}\t${slug}`;
+  const newUrls = `${urls.endsWith("\n") || urls === "" ? urls : `${urls}\n`}${comment}${jsNote}\n${line}\n`;
   parseUrlList(newUrls); // throws on a duplicate slug or a malformed line
   return { zeroTests: lines.join("\n"), urls: newUrls, row: n };
 }
@@ -99,6 +153,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
       slug: { type: "string" },
       settle: { type: "string" },
       note: { type: "string" },
+      js: { type: "boolean", default: false },
+      terms: { type: "string" },
       date: { type: "string", default: today() },
       "dry-run": { type: "boolean", default: false },
     },
@@ -114,7 +170,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
       writeFileSync(ZERO_TESTS, out.zeroTests);
       writeFileSync(URLS, out.urls);
     }
-    console.log(`${values["dry-run"] ? "would queue" : "queued"} row ${out.row}: ${values.slug}`);
+    console.log(`${values["dry-run"] ? "would queue" : "queued"} row ${out.row}: ${values.slug}${values.js ? " (js)" : ""}`);
   } catch (err) {
     console.error(`queue-zero-test: ${err.message}`);
     process.exit(1);

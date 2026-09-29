@@ -19,7 +19,7 @@ Per URL, three files:
 |---|---|
 | `<slug>.html` / `.json` / `.pdf` / `.xml` / `.txt` / `.bin` | the raw response body, extension chosen from the `Content-Type` |
 | `<slug>.txt` | for HTML: a plain-text extraction — scripts, styles and tags stripped, whitespace collapsed. For a PDF: the output of `pdftotext -layout` on the stored `.pdf`, made on the runner (page breaks kept as form feeds). This is the file to read and grep |
-| `<slug>.meta.json` | `url`, `fetchedAt`, `status`, `contentType`, `byteLength`, `sha256`, `bodyPath`, `textPath`, `changed`, `firstFetch`, `previousSha256`, `truncated`, `error` — and, for a PDF whose text could not be extracted, `textError` saying why |
+| `<slug>.meta.json` | `url`, `fetchedAt`, `status`, `contentType`, `byteLength`, `sha256`, `bodyPath`, `textPath`, `changed`, `firstFetch`, `previousSha256`, `truncated`, `error` — and, for a PDF whose text could not be extracted, `textError` saying why; for a line flagged `js`, `renderedWith` (`"chromium"`) and `networkIdle` (below) |
 
 ## Three things about these files that are easy to get wrong
 
@@ -51,7 +51,9 @@ the second and third of those. To move one:
 1. **Read the text.** `research/rendered/<slug>.txt` for HTML and PDF, the raw file otherwise. If the
    `.txt` comes back nearly empty, the page is client-rendered and the server sent a shell (or, for a
    PDF, the pages are images with no text layer) — record that as what happened, do not conclude the
-   page said nothing. **For a PDF, the `.txt` is the fetcher's only if the meta's `textPath` names
+   page said nothing. A shell is what the `js` flag (below) exists for; a meta with `renderedWith`
+   was already rendered in a browser, and `networkIdle: false` there means the DOM was taken before
+   the page finished loading. **For a PDF, the `.txt` is the fetcher's only if the meta's `textPath` names
    it:** then it is pdftotext's output for exactly the `.pdf` stored beside it (the fetcher replaces
    or removes its text whenever those bytes change). A null `textPath` means the fetcher extracted
    no text from those bytes, and `textError` says why. A `.txt` beside such a PDF is treated as a
@@ -102,8 +104,59 @@ invented, guessed, or extrapolated from a pattern — "the same site probably ha
 exactly the kind of guess that produces a 404 nobody can cite. If a research file names a site but
 no path, fetch the path it names and let whoever reads the capture find the real one.
 
-Format: one URL per line, an optional slug after a tab, `#` for a whole-line comment. Two lines may
-not share a slug — the script refuses the run rather than let one capture overwrite another.
+Format: one URL per line, an optional slug after a tab, an optional `js` flag after the slug (next
+section), `#` for a whole-line comment. Two lines may not share a slug — the script refuses the run
+rather than let one capture overwrite another. An unknown flag, a fourth field, a URL that does not
+parse, and any URL on `tiktok.com` or a subdomain of it are refused the same way.
+
+**Never `tiktok.com`.** The fetcher refuses it at parse time in both modes, in this file and in the
+dispatch override alike: `logs/CHANNEL_LOOP.md` §9 paused every TikTok fetch on 28.9 (TikTok's terms
+bar automated access, and the runner had already fetched about 110 of its pages), and whether any
+fetch of TikTok is allowed at all waits on `logs/FABLE_QUEUE.md` row 16(d). Research on TikTok reads
+GitHub mirrors (Open Terms Archive) instead.
+
+## The js flag: a JavaScript-capable render
+
+Some pages reach the runner as an empty JavaScript shell: Salesforce help centres
+(`support.trolley.com/s/article/…`), GameDistribution's payment FAQ, n8n's Creator Hub. The loop board
+ordered an opt-in browser mode for them (`research/channel-loop/RULING-2026-09-29-loop.md` (b), "Tick
+17-18, tooling"). A line that ends in `js`:
+
+```
+https://support.example.com/s/article/Identity	example-identity	js
+```
+
+is loaded in headless Chromium (`playwright-core`, pinned to an exact version in `package.json`)
+instead of fetched. What that does and does not do:
+
+- **One plain page load.** One navigation, then a wait until the page's network goes quiet, all inside
+  the same 30 s as a plain GET; the DOM as it stands then is stored as `<slug>.html` and goes through
+  the same text extraction, secret masking, 5 MB cap, hash and quiet-history rule as any page. No
+  clicks, no typing, no form fills, no logins; a fresh browser context per URL, so no cookie or
+  storage survives from one URL to the next; the same User-Agent as a plain GET, no stealth plugin,
+  no anti-detection setting — the site can see a browser under automation.
+- **The meta says so.** `renderedWith: "chromium"`, and `networkIdle`: `true` if the page went quiet
+  before the DOM was taken, `false` if the 30 s ran out first (the DOM may be partial), `null` when no
+  DOM was taken (a refusal or an error, recorded exactly as for a plain GET).
+- **HTML only.** A `js` line that answers a PDF or JSON stores nothing; the meta's `error` says to list
+  it without the flag.
+- **Limits.** Only the top frame is stored (not iframes); text inside shadow roots is not serialised;
+  a `<noscript>` "enable JavaScript" line can still appear in the text. A rendered DOM can differ run to
+  run (a nonce, a timestamp), which the weekly run then commits as a change. If a `js` capture of a
+  Salesforce page still comes back empty, shadow DOM is the first suspect — write that down rather than
+  concluding the page is blank.
+- **The same terms gate as a plain GET.** A `js` line is queued with
+  `scripts/queue-zero-test.mjs --js --terms <slug>`, which refuses unless `research/rendered/<slug>.txt`
+  — a capture of the target site's own terms — already exists, and writes that slug into the line's
+  comment. The script only checks the capture exists; whoever queues the line has read it and found no
+  bar on automated access. `--js` is also what lets a Salesforce `/s/article/` page be queued at all
+  (without it, the script refuses such a page as a shell the runner cannot read).
+- **No browser, no silent week.** The workflow installs the browser only when the list has a `js`
+  line. If it still cannot start one, the `js` lines are skipped — nothing is written for them and
+  their earlier captures stay as they were, because a missing browser is not the site's answer — the
+  plain lines are stored and committed as usual, and the run then fails in its last step.
+- **Never `tiktok.com`** — refused at parse time as above, and blocked inside the browser too, so a
+  page that embeds or redirects to TikTok does not fetch it.
 
 ## Running it
 
