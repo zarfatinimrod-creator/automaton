@@ -333,8 +333,9 @@ scripts/build-site.js       ships only what the shipped pages load, applies the 
 scripts/check-html.js       checks title/description/canonical/JSON-LD/links/classes on every page
 scripts/bundle-pcn874.js    regenerates src/vendor/pcn874/ from products/pcn874/src (--check: stale?)
 scripts/pcn874-rule-reference.js  regenerates the rule reference inside pcn874.html (--check: stale?)
-scripts/gumroad-pro-product.js  creates the Pro product on Gumroad (draft, licence-key block) and later
-                            enables it; run only by .github/workflows/gumroad-pro-product.yml
+scripts/gumroad-pro-product.js  creates the Pro product on Gumroad (draft, licence-key block), later
+                            enables it, and checks the live offer against the page; run only by
+                            .github/workflows/gumroad-pro-product.yml and gumroad-pro-probe.yml
 netlify.toml robots.txt sitemap.xml
 ```
 
@@ -446,16 +447,26 @@ step 6 carries `edit_products` (Gumroad's `doorkeeper.rb:10`, `oauth_application
 1. `create` — reuse the product by exact name (`PRO_PRODUCT_NAME`, "Pro – הלוגו וצבע המותג על המסמך"), or
    `POST /v2/products` **as a draft** with the price (₪79 by default), a description of exactly what Pro is, and
    content holding Hebrew activation instructions plus Gumroad's `licenseKey` block; read it back and require that
-   block and a fixed one-time price (no membership, no pay-what-you-want); print the public `id` and `short_url`;
-   open a PR writing both, and the read-back `priceCents` and `currency`, into `src/config/site.json`.
+   block and one fixed one-time price (no membership or tiers, no pay-what-you-want, no purchasing-power-parity
+   prices, no option that changes the charge); print the public `id` and `short_url`; open a PR writing both,
+   and the read-back `priceCents` and `currency`, into `src/config/site.json`.
 2. `enable` — a second dispatch, only once `state/colony/brand-mail.json` shows the brand mailbox of owner step 8
    probed green (within 2 days, no accessibility mail unanswered for 7+ days — a buyer's receipt reply or refund
-   request goes to the Gumroad sign-up email, and the owner answers no one) **and** the **deployed**
-   `src/config/site.json` carries the same id: `PUT /v2/products/:id/enable`. `create` is not gated.
+   request goes to the Gumroad sign-up email, and the owner answers no one) **and** the offer checks out
+   (`check`, next): `PUT /v2/products/:id/enable`. `create` is not gated.
+3. `check` — reads only; run by `enable` first and by `gumroad-pro-probe.yml` afterwards. The **deployed**
+   `src/config/site.json` carries the repo's id and price; Gumroad charges exactly that price, once; the account's
+   own address (`GET /v2/user`) is the `BRAND_MAIL_ADDRESS` secret of step 8 (compared, never printed); and the
+   refund policy buyers will see is "No refunds allowed". Gumroad opens every account with a 30-day money-back
+   guarantee (`RefundPolicy::DEFAULT_REFUND_PERIOD_IN_DAYS`), and a refund promise waits on A1 of
+   `research/tiktok/08-sales-marketing-lessons.md` §8.2, so until that policy is changed (`PUT /v2/refund_policy`,
+   agent work with the same token) nothing is enabled.
 
-Without the secret both exit 0 with a notice. `.github/workflows/gumroad-pro-probe.yml` then checks the real
+Without the secret all three exit 0 with a notice. `.github/workflows/gumroad-pro-probe.yml` then checks the real
 product id from the site's own origin (expects the exact "does not exist" 404 for an impossible key and
-`access-control-allow-origin: *`). 🔍 **Not yet rendered:** Gumroad's help FAQ says products cannot be created
+`access-control-allow-origin: *`) and runs `check`, so a price edited in the Gumroad dashboard after `enable`
+fails the probe. Tax: Gumroad collects none for a buyer in Israel (`lib/utilities/compliance/countries.rb`, read
+29.9.2026), so an Israeli buyer pays the price the page shows; a buyer abroad may see VAT/GST added at checkout. 🔍 **Not yet rendered:** Gumroad's help FAQ says products cannot be created
 through the API while its code says they can; the first `create` run settles it. If Gumroad refuses, the job
 stops and the fallback — one dashboard click, *Insert → License key* — is raised with the owner **before**
 anything is sold, never added to his checklist silently.

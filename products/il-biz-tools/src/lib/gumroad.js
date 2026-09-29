@@ -16,8 +16,15 @@
 //
 // The price is Gumroad's, never ours: the product job reads the product back
 // from Gumroad and copies its `price` (minor units) and `currency` into
-// site.json (scripts/gumroad-pro-product.js, writeSiteJson). Nothing on the page
-// types a number, so the page cannot show a price the checkout will not charge.
+// site.json (scripts/gumroad-pro-product.js, writeSiteJson), refusing a product
+// whose charge is not that one number, once (membership, pay-what-you-want,
+// purchasing-power-parity prices, priced options). Nothing on the page types a
+// number, and `enable` and the AT-16 probe (`check`) compare Gumroad's live
+// price with the deployed page's. What it cannot cover: tax Gumroad adds at
+// checkout for buyers in countries where it collects VAT/GST. Israel is in
+// none of its lists (antiwork/gumroad lib/utilities/compliance/countries.rb,
+// read 29.9.2026), so an Israeli buyer pays the price shown; a buyer abroad may
+// see tax added at checkout, before paying.
 import { formatILS } from './money.js';
 
 /**

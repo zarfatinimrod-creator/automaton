@@ -19,8 +19,15 @@ name: gumroad-pro-probe
 # Run it after gumroad-pro-product (create, merge, deploy, enable). Until
 # site.json carries a product id there is nothing to probe: it prints a notice
 # and exits 0. That id only exists once the owner's GUMROAD_ACCESS_TOKEN
-# (docs/OWNER_STEPS.he.md step 6) has let gumroad-pro-product run; this job
-# itself needs no secret - the verify endpoint is public.
+# (docs/OWNER_STEPS.he.md step 6) has let gumroad-pro-product run. The two
+# verify requests need no secret - the endpoint is public.
+#
+# Last, it re-runs the offer checks `enable` ran (scripts/gumroad-pro-product.js
+# check, reads only): the deployed page and Gumroad show the same one-time
+# price, the account's address is the brand mailbox, and no refund is promised.
+# A price edited in the Gumroad dashboard after enable fails here. That step
+# needs GUMROAD_ACCESS_TOKEN and BRAND_MAIL_ADDRESS; without the token it prints
+# a notice and exits 0.
 
 on:
   workflow_dispatch:
@@ -33,6 +40,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
       - name: Which product, from which origin?
         id: cfg
@@ -97,3 +108,12 @@ jobs:
             echo "verify: HTTP 404, the exact 'does not exist' body, access-control-allow-origin: * (product ${PRODUCT_ID}, origin ${ORIGIN})" >> "$GITHUB_STEP_SUMMARY"
           fi
           exit "$FAIL"
+
+      # Reads only (GET /v2/products/:id, /v2/user, /v2/refund_policy and the deployed site.json).
+      - name: The offer still matches the page (price, refunds, account)
+        if: steps.cfg.outputs.present == 'true'
+        working-directory: products/il-biz-tools
+        env:
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+          BRAND_MAIL_ADDRESS: ${{ secrets.BRAND_MAIL_ADDRESS }}
+        run: node scripts/gumroad-pro-product.js check
