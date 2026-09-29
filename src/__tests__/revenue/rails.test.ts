@@ -39,8 +39,10 @@ describe("payment rails", () => {
     // Until 7.9.2026 this expected "ok". The board's ruling changed the answer
     // and not the check: il-biz-tools moved from Paddle to Gumroad and pcn874
     // was added on Gumroad too, so two of four lines ride one merchant account —
-    // ₪600 of the ₪1,100 committed since the 28.9.2026 board planned il-biz-tools
-    // at ₪0 (RULING-2026-09-28-floors.md §9; it was ₪1,000 of ₪1,500 before).
+    // ₪600 of the ₪900 committed since the 29.9.2026 board planned apify-actors
+    // at ₪0 (RULING-2026-09-29-lines.md (b)); it was ₪600 of ₪1,100 after the
+    // 28.9.2026 board planned il-biz-tools at ₪0 (RULING-2026-09-28-floors.md §9),
+    // and ₪1,000 of ₪1,500 before that.
     // BOARD.md §2 accepts that knowingly, because exactly
     // one rendered ILS rail exists — and the mitigation is to render Freemius as
     // a second one, not to silence this check. A green light here would be the
@@ -50,7 +52,7 @@ describe("payment rails", () => {
     const gumroad = c.overexposed.find((o) => o.rail === "gumroad" && o.side === "payin");
     expect(gumroad, "gumroad carries two of four lines and the check must say so").toBeDefined();
     expect(gumroad!.lineIds.sort()).toEqual(["il-biz-tools", "pcn874"]);
-    expect(gumroad!.share).toBeCloseTo(600 / 1100, 6);
+    expect(gumroad!.share).toBeCloseTo(600 / 900, 6);
     expect(c.reason).toMatch(/MISSION\.md/);
   });
 
@@ -106,6 +108,17 @@ describe("payment rails", () => {
     expect(LINE_RAILS["apify-actors"]!.note).toMatch(/names Israel/);
   });
 
+  it("names the Apify ledger event: the approved monthly statement is revenue, the transfer is reconciliation (RULING-2026-09-29-lines.md (d))", () => {
+    // Gumroad's precedent (FORECAST.md:65): the platform's own dated record of the earning, with its id, is the event.
+    // Booking the PayPal/Wise transfer as revenue too would count one month twice, and would let the $20 minimum empty
+    // a trailing-30 window.
+    const note = LINE_RAILS["apify-actors"]!.note;
+    expect(note).toContain("LEDGER EVENT (RULING-2026-09-29-lines (d))");
+    expect(note).toMatch(/approved monthly statement \(invoice id, the 14th\) as revenue/);
+    expect(note).toMatch(/transfer as payout reconciliation, never both as revenue/);
+    expect(note).toMatch(/reads the statement, not the \$20 minimum/);
+  });
+
   it("gives every line a payout evidence grade", () => {
     for (const [id, rail] of Object.entries(LINE_RAILS)) {
       expect(["ledger", "rendered", "code", "none"], id).toContain(rail.payoutEvidence);
@@ -114,22 +127,28 @@ describe("payment rails", () => {
 });
 
 describe("platform concentration — the risk railConcentration was blind to", () => {
-  it("sees that the largest single platform account is one we cannot observe", () => {
+  it("sees a platform account we cannot observe, and weighs it by the target it carries", () => {
     // The synthesis critic's finding: Apify carries the top-or-only survivor of
     // four of seven audited groups, and railConcentration reported one line
     // because it keys by line id and all four collapse into `apify-actors`.
+    // Since 29.9.2026 apify-actors is planned at ₪0 (RULING-2026-09-29-lines.md
+    // (b)), so the account is still listed as blind but carries 0% of the target.
     const c = platformConcentration();
     const blind = c.platforms.filter((p) => !p.observable);
-    expect(blind.length).toBeGreaterThan(0);
-    expect(blind.map((p) => p.platformAccount)).toContain("apify:one-creator-account");
-    expect(c.unobservableShare).toBeGreaterThan(0);
-    expect(c.reason).toMatch(/cannot observe/);
+    expect(blind.map((p) => p.platformAccount)).toEqual(["apify:one-creator-account"]);
+    expect(blind[0]!.share).toBe(0);
+    expect(c.unobservableShare).toBe(0);
+    // The check itself is unchanged: the day the board sets Apify a target from the reading, the share is counted.
+    const retargeted = DEFAULT_PORTFOLIO.map((s) => (s.id === "apify-actors" ? { ...s, targetMonthlyAgorot: agorotFromIls(200) } : s));
+    const r = platformConcentration(retargeted);
+    expect(r.unobservableShare).toBeCloseTo(200 / 1100, 6);
+    expect(r.reason).toMatch(/cannot observe/);
   });
 
   it("groups lines by the account a ban would land on, not by the rail", () => {
     // il-biz-tools and pcn874 are separate lines with separate buyers and
     // separate targets, behind ONE Gumroad seller account. One suspension email
-    // takes both, and ₪600 of the ₪1,100 the board committed to (il-biz-tools is
+    // takes both, and ₪600 of the ₪900 the board committed to (il-biz-tools is
     // planned at ₪0 since 28.9.2026 and still rides the same account).
     const c = platformConcentration();
     const gumroad = c.platforms.find((p) => p.platformAccount === "gumroad:one-seller-account")!;

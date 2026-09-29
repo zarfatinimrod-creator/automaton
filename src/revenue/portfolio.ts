@@ -32,6 +32,17 @@
  * committed** (`committedTargetIls()`) + ₪700 conditional (`CONDITIONAL_TARGETS`)
  * + ₪400 contested (il-biz-tools). Against ₪20,000 that is 5.5% committed, 9%
  * with the conditionals. The paragraphs above are the 7.9 record and stay as it.
+ *
+ * ─── Board ruling, 29.9.2026 (research/channel-loop/RULING-2026-09-29-lines.md (b), (c))
+ *
+ * apify-actors is planned at ₪0 as the constraint-7 instrument — its own basis
+ * already said "forecast ₪0" beside a ₪200 target — with ₪200 as its contested
+ * upper bound; the ₪1,500 stays in its basis text only, as the figure the board
+ * refused. The chief audit's ₪2,200 now reads **₪900 committed** + ₪700
+ * conditional + ₪400 contested (il-biz-tools) + ₪200 contested (apify-actors).
+ * Against ₪20,000 that is 4.5% committed, 8% with the conditionals. The same
+ * sitting gave TARGET_BASIS a per-line `staleDays` for the one monthly-payout rail.
+ * The 28.9 paragraph above is that day's record and stays as it.
  */
 
 import type { Database } from "better-sqlite3";
@@ -148,7 +159,11 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     // Board §3: RETARGET ₪3,000 → ₪200. The ₪1,500 that five groups' survivors
     // collapsed into is recorded in TARGET_BASIS as the contested upper bound, not
     // as the target. See CONTESTED_UPPER_BOUNDS.
-    targetMonthlyAgorot: agorotFromIls(200),
+    // Board 29.9.2026 (RULING-2026-09-29-lines (b)): planned at ₪0 as the
+    // constraint-7 instrument; ₪200 is the contested upper bound (the 8.7
+    // users/Actor base rate); ₪1,500 is the refused marketing-mean figure,
+    // recorded in the basis text only.
+    targetMonthlyAgorot: agorotFromIls(0),
     budgetMonthlyCents: 4000,
     // Board §3, humanSetup split: publishing free needs only the token. Apify's
     // own Store Publishing Terms (§10.1.2-10.1.3) gate payout, pricing AND x402
@@ -369,6 +384,12 @@ export interface TargetBasis {
    * killCriteria state a shekel figure, target-basis.test.ts asserts it equals f × target.
    */
   killFloorFraction: number;
+  /**
+   * Days without revenue on a live line before `stale_revenue` escalates; set only for rails that pay monthly (apify:
+   * 45 = one cycle ≤ 31 days + 14, RULING-2026-09-29-lines (c)). Absent → DEFAULT_DECISION_POLICY.staleDays (21), which
+   * is right for every rail that books per sale.
+   */
+  staleDays?: number;
 }
 
 export const TARGET_BASIS: Record<string, TargetBasis> = {
@@ -377,15 +398,21 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
     // contested upper bound. There is no argument for ₪3,000 the board was
     // willing to sign — "what the board measures against" was a target fitted to
     // the goal, which is the exact failure TARGET_BASIS exists to prevent.
-    ils: 200, grade: "inferred",
-    contestedUpperBoundIls: 1500,
+    // Board 29.9.2026 (RULING-2026-09-29-lines (b)): ₪0 `inferred`, ₪200
+    // contested — the report prints this field beside the target, and printing
+    // ₪1,500 beside a ₪0 line would print the figure the basis itself discredits.
+    // (c): staleDays 45, because Apify pays monthly (statement on the 11th,
+    // approved on the 14th) and 21 would escalate a healthy live line every month.
+    ils: 0, grade: "inferred",
+    contestedUpperBoundIls: 200,
     killFloorFraction: 0.25,
+    staleDays: 45,
     basis:
-      "Five groups' survivors collapse into ONE Apify creator account. The auditors' two corrected 12-month ceilings for that account are ₪1,500 (store-promotion) and ₪200 (agent-markets); the board committed to ₪200 and records ₪1,500 as the CONTESTED UPPER BOUND, not as a target. The ₪1,500 rests on a generic 5-8 Actor scraper set at ~2 h/week/Actor priced off an unverified marketing mean ($470/developer/month across ~3,000 developers, a power-law MEAN and not in Apify's own documentation). The ₪200 rests on the only real base rate anyone rendered: 8.7 users per Actor. Month one is ₪0 and the first ledger entry is ~month 9. The line is kept as the constraint-7 instrument at forecast ₪0: publish free, count strangers for 30 days, start the developer-level history-of-success clock that MISSION constraint 8 names as a non-public input. BIASED LOW (breadth board, 28.9.2026, research/breadth/BOARD.md Q5): Apify's default Store-API search excludes Actors from developers who have not passed identity verification, so the count is labelled \"" +
+      "Five groups' survivors collapse into ONE Apify creator account. The auditors' two corrected 12-month ceilings for that account are ₪1,500 (store-promotion) and ₪200 (agent-markets); the 7.9 board committed to ₪200 and recorded ₪1,500 as the CONTESTED UPPER BOUND, not as a target. On 29.9.2026 (RULING-2026-09-29-lines (b)) the board planned the line at ₪0, moved the contested upper bound to ₪200, and keeps ₪1,500 in this text only, as the figure it refused. The ₪1,500 rests on a generic 5-8 Actor scraper set at ~2 h/week/Actor priced off an unverified marketing mean ($470/developer/month across ~3,000 developers, a power-law MEAN and not in Apify's own documentation). The ₪200 rests on the only real base rate anyone rendered: 8.7 users per Actor. Month one is ₪0 and the first ledger entry is ~month 9. The line is kept as the constraint-7 instrument at forecast ₪0: publish free, count strangers for 30 days, start the developer-level history-of-success clock that MISSION constraint 8 names as a non-public input. BIASED LOW (breadth board, 28.9.2026, research/breadth/BOARD.md Q5): Apify's default Store-API search excludes Actors from developers who have not passed identity verification, so the count is labelled \"" +
       APIFY_STRANGER_KPI_LABEL +
       "\" and " +
       APIFY_STRANGER_KPI_RULE +
-      ". If verification needs a camera, the history-of-success clock is noted as unverified to accrue while the Actor is hidden.",
+      ". If verification needs a camera, the history-of-success clock is noted as unverified to accrue while the Actor is hidden. The target is ₪0 until the day-30 stranger count exists; ₪200 is the contested upper bound and returns only from that reading, never by being smaller.",
     source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #1; audits/agent-markets.md and audits/store-promotion.md",
     rail: "Apify Store → PayPal or Wise (payout deferred; identity verification at the Publish sitting only if document-only, never if it needs a camera — research/breadth/BOARD.md Q5)",
     acquisitionChannel:
@@ -403,7 +430,7 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
     contestedUpperBoundIls: 400,
     killFloorFraction: 0.5,
     basis:
-      "Planned at ₪0 while the site is measured on *.netlify.app without a domain (owner's ₪0 rule, 27.9.2026): the audited basis says ₪0 through month 12 as things stand (chief audit §2.1 #3), and the ₪200-400 band is recorded as the CONTESTED UPPER BOUND, not as a target. The evidence in this field argues for the zero: a competing Israeli legal site's own Google Search Console export, checked into a public repo, shows its severance-calculator page at 0 clicks and 0 impressions over 16 months while sibling pages show 58k-81k; head terms belong to funded incumbents (Morning, iCount, Invoice4u, Kol Zchut) and to btl.gov.il's own free simulators. The number returns only from a reading — the day-56 netlify.app read (RULING-2026-09-28-floors.md §9) or the first Gumroad sale — never before, and never by being smaller.",
+      "Planned at ₪0 while the site is measured on *.netlify.app without a domain (owner's ₪0 rule, 27.9.2026): the audited basis says ₪0 through month 12 as things stand (chief audit §2.1 #3), and the ₪200-400 band is recorded as the CONTESTED UPPER BOUND, not as a target. The evidence in this field argues for the zero: a competing Israeli legal site's own Google Search Console export, checked into a public repo, shows its severance-calculator page at 0 clicks and 0 impressions over 16 months while sibling pages show 58k-81k; head terms belong to funded incumbents (Morning, iCount, Invoice4u, Kol Zchut) and to btl.gov.il's own free simulators. The number returns only from a reading — the day-56 netlify.app read (RULING-2026-09-28-floors.md §9) or the first Gumroad sale — never before, and never by being smaller. Pro (₪79 one-time, RULING 2026-09-29 (a)) is kept as the line's stranger-pays measurement, not as income; its price moves only from a reading. Kill rule (RULING-2026-09-29-lines (h) item 4): if Pro is disabled or the line killed, the refund responder keeps running for refundPeriodDays + 7 days after the last sale.",
     source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #3; research/colony-sweep/audits/israel-bureaucracy.md §2.3",
     rail: "Gumroad (merchant of record, ILS payout rendered from Gumroad's own source). Paddle retired from this line by board §3.",
     acquisitionChannel:
@@ -435,7 +462,7 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
     ils: 600, grade: "inferred",
     killFloorFraction: 0.25,
     basis:
-      "Chief audit §2.1 #2: audited ceiling ₪600, band ₪300-600, month one ₪0, Israel payability YES via Gumroad (rendered `Israel | ILS`). The only line in the sweep with a verified, dated, legally created cohort — VAT-registered עוסקים filing the מע\"מ detailed report, and the bookkeepers who file for them — confirmed across CPA circulars. Graded GREEN with a harm asymmetry the target does not capture: a wrong file is the USER's VAT exposure, so no legal figure ships until the 874 record layout is rendered from two independent open-source implementations. Known headwinds already priced in: the dependency this displaces is stale (Feb 2024, no validatePcn874()), and ITA easements (sub-₪5,000 aggregation, deferral to 2027) shrink the pain.",
+      "Chief audit §2.1 #2: audited ceiling ₪600, band ₪300-600, month one ₪0, Israel payability YES via Gumroad (rendered `Israel | ILS`). The only line in the sweep with a verified, dated, legally created cohort — VAT-registered עוסקים filing the מע\"מ detailed report, and the bookkeepers who file for them — confirmed across CPA circulars. Graded GREEN with a harm asymmetry the target does not capture: a wrong file is the USER's VAT exposure, so no legal figure ships until the 874 record layout is rendered from two independent open-source implementations. Known headwinds already priced in: the dependency this displaces is stale (Feb 2024, no validatePcn874()), and ITA easements (sub-₪5,000 aggregation, deferral to 2027) shrink the pain. Pricing gate (RULING-2026-09-29-lines (f)): one-time licence only, boundary printed at the point of sale, no price before the D0+56 PASS of the validator page.",
     source: "research/colony-sweep/CHIEF-AUDIT.md §2.1 #2",
     rail: "Gumroad (merchant of record, ILS payout rendered). Shared with il-biz-tools — see railConcentration(), which now reports this as concentrated.",
     acquisitionChannel:
@@ -444,25 +471,31 @@ export const TARGET_BASIS: Record<string, TargetBasis> = {
 };
 
 /**
- * The decision policy for one line: the shared policy with the line's own kill-floor fraction. Supervisor, board and
- * auditor all resolve it here, so an auditor recomputing a decision reads the same floor the supervisor did.
+ * The decision policy for one line: the shared policy with the line's own kill-floor fraction and, for a monthly-payout
+ * rail, its own `staleDays` (RULING-2026-09-29-lines (c)). Supervisor, board and auditor all resolve it here, so an
+ * auditor recomputing a decision reads the same floor and the same silence window the supervisor did.
  */
 export function policyForLine(
   lineId: string,
   base: DecisionPolicy = DEFAULT_DECISION_POLICY,
   basis: Record<string, TargetBasis> = TARGET_BASIS,
 ): DecisionPolicy {
-  const f = basis[lineId]?.killFloorFraction;
-  return f === undefined ? base : { ...base, killFloorFraction: f };
+  const entry = basis[lineId];
+  if (!entry) return base;
+  const policy = { ...base };
+  if (entry.killFloorFraction !== undefined) policy.killFloorFraction = entry.killFloorFraction;
+  if (entry.staleDays !== undefined) policy.staleDays = entry.staleDays;
+  return policy;
 }
 
 /**
  * Targets the board did NOT commit to.
  *
  * The chief audit's portfolio figure is ₪2,200/month at twelve months. Since
- * 28.9.2026 ₪1,100 of it is committed above and ₪400 is il-biz-tools' contested
- * upper bound (RULING-2026-09-28-floors.md §9; ₪1,500 was committed from 7.9 to
- * 28.9); the remaining ₪700 depends on something that has not happened, and the board's rule is that the owner is never told a conditional
+ * 29.9.2026 ₪900 of it is committed above, ₪400 is il-biz-tools' contested upper
+ * bound and ₪200 apify-actors' (RULING-2026-09-28-floors.md §9,
+ * RULING-2026-09-29-lines.md (b); ₪1,500 was committed from 7.9 to 28.9, ₪1,100
+ * from 28.9 to 29.9); the remaining ₪700 depends on something that has not happened, and the board's rule is that the owner is never told a conditional
  * number as a plan (BOARD.md §6.2, ruling on chief audit §5.1). These are
  * therefore not lines, carry no budget, and are excluded from
  * `portfolioTargetAgorot()` — they exist so the ₪700 is visible rather than

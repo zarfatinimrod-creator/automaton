@@ -1,6 +1,6 @@
 # Revenue colony — board report
 
-Generated 2026-09-29T01:55:44.549Z
+Generated 2026-09-29T07:47:44.563Z
 
 ## Where we are
 
@@ -17,20 +17,20 @@ Generated 2026-09-29T01:55:44.549Z
 
 | | |
 |---|---|
-| Line targets, summed | ₪1,100 against a ₪20,000 goal |
+| Line targets, summed | ₪900 against a ₪20,000 goal |
 | Of that, **measured** | ₪0 |
-| Inferred | ₪800 |
+| Inferred | ₪600 |
 | **Resting on nothing yet** | ₪0 |
 | **Contradicted by their own basis** | ₪300 |
 
-Contested upper bounds, not targets and not in the sum: `apify-actors` ₪1,500 (target ₪200), `il-biz-tools` ₪400 (target ₪0).
+Contested upper bounds, not targets and not in the sum: `apify-actors` ₪200 (target ₪0), `il-biz-tools` ₪400 (target ₪0).
 
 Contradicted targets: `oss-bounties`. These are not merely unproven — the evidence cited in each line's own basis field argues against its number. They are worse than the unevidenced ones and must not be summed with them.
 ## Revenue lines
 
 | Line | Tier | Status | 30d | Target | Last supervisor call |
 |---|---|---|---|---|---|
-| `apify-actors` | core | awaiting_setup | ₪0.00 | ₪200.00 | escalate |
+| `apify-actors` | core | awaiting_setup | ₪0.00 | ₪0.00 | escalate |
 | `il-biz-tools` | core | awaiting_setup | ₪0.00 | ₪0.00 | escalate |
 | `oss-bounties` | growth | awaiting_setup | ₪0.00 | ₪300.00 | escalate |
 | `pcn874` | core | awaiting_setup | ₪0.00 | ₪600.00 | escalate |
@@ -42,10 +42,12 @@ Labelled measurements — each is printed with its label wherever it is printed:
 
 ## This tick
 
-Ran: revenue_ledger_sync
-Skipped as not yet due: revenue_supervisor_review, revenue_board_review, revenue_audit
+Ran: revenue_ledger_sync, revenue_supervisor_review
+Skipped as not yet due: revenue_board_review, revenue_audit
 
 - Ledger sync: 0 new entries, 0 already known, sources [none configured]
+- Supervisors reviewed 4 line(s), escalating 4
+- Prize-event intake (instrument only): no reading yet — the weekly job .github/workflows/prize-intake.yml has not committed one.
 
 ## Blocked on
 

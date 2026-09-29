@@ -64,7 +64,9 @@ describe("every target states where its number came from", () => {
     // Pinned so that any line entering or leaving the band has to be named here.
     expect(s.contradictedLines).toEqual(["oss-bounties"]);
     expect(s.contradictedIls).toBe(300);
-    expect(s.inferredIls).toBe(800);
+    // ₪600 inferred: pcn874 alone, since RULING-2026-09-29-lines.md (b) planned apify-actors at ₪0 (it was ₪800 with
+    // Apify's ₪200). Both ₪0 lines stay graded `inferred`; a ₪0 line adds nothing to any band.
+    expect(s.inferredIls).toBe(600);
     expect(TARGET_BASIS["il-biz-tools"].contestedUpperBoundIls).toBe(400);
     expect(TARGET_BASIS["il-biz-tools"].grade).toBe("inferred");
     // And the figure the board should be reading: nothing in this portfolio is
@@ -95,20 +97,22 @@ describe("every target states where its number came from", () => {
 });
 
 describe("the board's decision of 7.9.2026, as arithmetic", () => {
-  it("commits to ₪1,100 across four lines and to nothing else", () => {
+  it("commits to ₪900 across four lines and to nothing else", () => {
     // BOARD.md §3 committed ₪1,500: apify-actors 200, oss-bounties 300,
     // il-biz-tools 400, pcn874 600. The board of 28.9.2026 planned il-biz-tools
     // at ₪0 while it is measured on *.netlify.app (RULING-2026-09-28-floors.md
-    // §9), so the committed sum is ₪1,100. The number is asserted rather than
-    // derived so that changing a target is a decision somebody has to make in
-    // this file too, with the board's reasoning in front of them.
+    // §9), and the board of 29.9.2026 planned apify-actors at ₪0 as the
+    // constraint-7 instrument (RULING-2026-09-29-lines.md (b)), so the committed
+    // sum is ₪900. The number is asserted rather than derived so that changing a
+    // target is a decision somebody has to make in this file too, with the
+    // board's reasoning in front of them.
     expect(DEFAULT_PORTFOLIO.map((l) => l.id).sort())
       .toEqual(["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"]);
-    expect(committedTargetIls()).toBe(1100);
-    expect(portfolioTargetAgorot()).toBe(110_000);
+    expect(committedTargetIls()).toBe(900);
+    expect(portfolioTargetAgorot()).toBe(90_000);
 
     const byId = Object.fromEntries(DEFAULT_PORTFOLIO.map((l) => [l.id, l.targetMonthlyAgorot / 100]));
-    expect(byId).toEqual({ "apify-actors": 200, "oss-bounties": 300, "il-biz-tools": 0, pcn874: 600 });
+    expect(byId).toEqual({ "apify-actors": 0, "oss-bounties": 300, "il-biz-tools": 0, pcn874: 600 });
   });
 
   it("keeps the ₪700 the board did not commit to visible, and out of the total", () => {
@@ -117,10 +121,16 @@ describe("the board's decision of 7.9.2026, as arithmetic", () => {
     // one thing BOARD.md §6.2 amended the recommendation to prevent.
     expect(conditionalTargetIls()).toBe(700);
     expect(CONDITIONAL_TARGETS.map((t) => t.id).sort()).toEqual(["devpost-hackathons", "registrar-reminder"]);
-    // The chief audit's ₪2,200 is now 1,100 committed + 700 conditional + 400
-    // contested (il-biz-tools, RULING-2026-09-28-floors.md §9).
-    expect(committedTargetIls() + conditionalTargetIls()).toBe(1800);
-    expect(committedTargetIls() + conditionalTargetIls() + TARGET_BASIS["il-biz-tools"].contestedUpperBoundIls!).toBe(2200);
+    // The chief audit's ₪2,200 is now 900 committed + 700 conditional + 400
+    // contested (il-biz-tools, RULING-2026-09-28-floors.md §9) + 200 contested
+    // (apify-actors, RULING-2026-09-29-lines.md (b)).
+    expect(committedTargetIls() + conditionalTargetIls()).toBe(1600);
+    expect(
+      committedTargetIls()
+        + conditionalTargetIls()
+        + TARGET_BASIS["il-biz-tools"].contestedUpperBoundIls!
+        + TARGET_BASIS["apify-actors"].contestedUpperBoundIls!,
+    ).toBe(2200);
     // And the conditionals are NOT lines: they carry no target in the portfolio.
     const lineIds = new Set(DEFAULT_PORTFOLIO.map((l) => l.id));
     for (const t of CONDITIONAL_TARGETS) {
@@ -174,14 +184,40 @@ describe("the board's decision of 7.9.2026, as arithmetic", () => {
     }
   });
 
-  it("records Apify's ₪1,500 as the contested upper bound rather than as a target", () => {
+  it("plans Apify at ₪0 with ₪200 contested, and keeps the refused ₪1,500 readable in the basis (RULING-2026-09-29-lines.md (b))", () => {
     // Chief audit §5.3 and BOARD.md §3. The failure this prevents is specific:
     // ₪3,000 used to sit here as "what the board measures against", which is a
-    // target fitted to the goal.
+    // target fitted to the goal. On 29.9.2026 the board removed the next one:
+    // ₪200 `inferred` beside a basis that says "forecast ₪0". The ₪1,500 leaves
+    // the field — the report prints the field beside the target — and stays in
+    // words, where its grade (an unverified marketing mean) can be read.
     const apify = TARGET_BASIS["apify-actors"];
-    expect(apify.ils).toBe(200);
-    expect(apify.contestedUpperBoundIls).toBe(1500);
+    expect(apify.ils).toBe(0);
+    expect(apify.grade).toBe("inferred");
+    expect(apify.contestedUpperBoundIls).toBe(200);
     expect(apify.basis).toMatch(/contested/i);
+    expect(apify.basis).toMatch(/1,500/);
+    expect(apify.basis).toMatch(/marketing mean/);
+    expect(apify.basis).toContain(
+      "The target is ₪0 until the day-30 stranger count exists; ₪200 is the contested upper bound and returns only from that reading, never by being smaller.",
+    );
+    const seed = DEFAULT_PORTFOLIO.find((s) => s.id === "apify-actors")!;
+    expect(seed.targetMonthlyAgorot).toBe(0);
+  });
+
+  it("carries the 29.9.2026 sentences into il-biz-tools' and pcn874's basis (RULING-2026-09-29-lines.md (a), (f), (h) item 4)", () => {
+    const il = TARGET_BASIS["il-biz-tools"].basis;
+    expect(il).toContain(
+      "Pro (₪79 one-time, RULING 2026-09-29 (a)) is kept as the line's stranger-pays measurement, not as income; its price moves only from a reading.",
+    );
+    // (h) item 4: a disabled Pro or a killed line still answers refunds for the window it sold under, plus a week.
+    expect(il).toMatch(/refundPeriodDays \+ 7 days after the last sale/);
+    expect(il).toMatch(/RULING-2026-09-29-lines \(h\)/);
+    expect(TARGET_BASIS.pcn874.basis).toContain(
+      "Pricing gate (RULING-2026-09-29-lines (f)): one-time licence only, boundary printed at the point of sale, no price before the D0+56 PASS of the validator page.",
+    );
+    // (f): the ₪600 is not moved.
+    expect(TARGET_BASIS.pcn874.ils).toBe(600);
   });
 
   it("gives no killed line a positive target", () => {
@@ -249,6 +285,26 @@ describe("the kill floor is a fraction of each line's own target (RULING-2026-09
     // The rest of the policy is the base the caller passed, untouched.
     const base = { ...DEFAULT_DECISION_POLICY, staleDays: 7 };
     expect(policyForLine("il-biz-tools", base)).toEqual({ ...base, killFloorFraction: 0.5 });
+  });
+
+  it("gives the monthly-payout line its own staleDays and leaves per-sale lines on the default (RULING-2026-09-29-lines.md (c))", () => {
+    // Apify invoices on the 11th and approves on the 14th: one cycle of at most 31 days, plus 14 so one late statement
+    // does not escalate. Every other rail books per sale, so 21 stays right for them.
+    expect(DEFAULT_DECISION_POLICY.staleDays).toBe(21);
+    expect(TARGET_BASIS["apify-actors"].staleDays).toBe(45);
+    expect(policyForLine("apify-actors").staleDays).toBe(45);
+    expect(policyForLine("apify-actors").killFloorFraction).toBe(0.25);
+    expect(policyForLine("il-biz-tools").staleDays).toBe(21);
+    expect(policyForLine("pcn874").staleDays).toBe(21);
+    expect(policyForLine("oss-bounties").staleDays).toBe(21);
+    // The override replaces the base's staleDays and nothing else.
+    const base = { ...DEFAULT_DECISION_POLICY, staleDays: 7, graceDays: 60 };
+    expect(policyForLine("apify-actors", base)).toEqual({ ...base, killFloorFraction: 0.25, staleDays: 45 });
+    // Only a rail that pays monthly carries one: an override on a per-sale line would hide a silent line for no reason.
+    for (const [id, b] of Object.entries(TARGET_BASIS)) {
+      if (id === "apify-actors") continue;
+      expect(b.staleDays, `${id} books per sale and must stay on the default staleDays`).toBeUndefined();
+    }
   });
 
   it("keeps a shekel floor stated in words equal to fraction × target, and its days equal to the grace", () => {

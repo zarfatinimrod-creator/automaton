@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { policyForLine } from "../../revenue/portfolio.js";
 import { allocateBudget, auditDecision, decideLine, experimentsToPause } from "../../revenue/rules.js";
 import { DEFAULT_DECISION_POLICY, type LineDecision, type LineMetrics, type RevenueLine } from "../../revenue/types.js";
 
@@ -134,6 +135,24 @@ describe("revenue/rules decideLine", () => {
     expect(decideLine(line(), collapse).triggered).toContain("revenue_collapse");
     const stale = metrics({ revenue30dAgorot: 100_000, net30dAgorot: 100_000, trend: 1, daysSinceLastRevenue: 25 });
     expect(decideLine(line(), stale).triggered).toContain("stale_revenue");
+  });
+
+  it("gives a monthly-payout rail one statement cycle before stale_revenue (RULING-2026-09-29-lines.md (c))", () => {
+    // Apify invoices on the 11th and approves on the 14th, so a live Apify line is silent for most of every month. Its
+    // policy (TARGET_BASIS staleDays 45 = one cycle ≤ 31 days + 14) holds at 40 days and escalates at 46.
+    const apifyPolicy = policyForLine("apify-actors");
+    const apify = line({ id: "apify-actors" });
+    const quiet = (days: number) =>
+      metrics({ lineId: "apify-actors", revenue30dAgorot: 100_000, net30dAgorot: 100_000, trend: 1, daysSinceLastRevenue: days });
+    const at40 = decideLine(apify, quiet(40), apifyPolicy);
+    expect(at40.decision).toBe("hold");
+    expect(at40.triggered).not.toContain("stale_revenue");
+    const at46 = decideLine(apify, quiet(46), apifyPolicy);
+    expect(at46.decision).toBe("escalate");
+    expect(at46.triggered).toContain("stale_revenue");
+    // The same 40 days on a per-sale line under the default policy is stale: the override is the monthly rail's alone.
+    expect(decideLine(line(), quiet(40)).triggered).toContain("stale_revenue");
+    expect(decideLine(line({ id: "il-biz-tools" }), quiet(25), policyForLine("il-biz-tools")).triggered).toContain("stale_revenue");
   });
 });
 

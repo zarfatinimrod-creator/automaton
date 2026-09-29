@@ -1,19 +1,27 @@
 name: brand-check
 
-# Is a brand-name candidate free? `.com` (RDAP at Verisign), GitHub, YouTube handle — status codes only,
-# from a runner, because this container's proxy blocks all three (research/measurements/brand-name-check.md).
-# Writes research/measurements/brand-candidates.json and commits it to the branch it ran on. No secret, no
-# page body stored, nothing registered: a lookup is not a purchase.
+# Is a name free? `.com` (RDAP at Verisign), GitHub, YouTube handle and `<name>.netlify.app` — status codes only, from
+# a runner, because this container's proxy blocks all four (research/measurements/brand-name-check.md). Takes a
+# candidate list `research/measurements/<stem>-candidates.txt` and writes `<stem>-candidates.json` and `<stem>-check.md`
+# beside it, committed to the branch it ran on. No secret, no page body stored, nothing registered: a lookup is not a
+# purchase. The Netlify probe was added for the T1 sub-brand (research/channel-loop/RULING-2026-09-29-lines.md (e)).
 
 on:
   workflow_dispatch:
-  # Once when the candidate list or the checker changes on a working branch; never on main.
+    inputs:
+      candidates:
+        description: "A candidate list under research/measurements/, named <stem>-candidates.txt"
+        required: true
+        default: research/measurements/brand-candidates.txt
+  # Once when a candidate list changes on a working branch; never on main. A push runs each list the push changed, and
+  # only those: a checker-only change re-measures nothing, so a list whose answers already decided a name (the brand,
+  # 27.9) is not silently re-dated by an edit to the script.
   push:
     branches-ignore: [main]
     paths:
       - ".github/workflows/brand-check.yml"
       - "scripts/brand-check.mjs"
-      - "research/measurements/brand-candidates.txt"
+      - "research/measurements/*-candidates.txt"
 
 permissions:
   contents: write
@@ -25,7 +33,7 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,15 +41,53 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node scripts/brand-check.mjs
-      - name: Commit the answers back to this branch
+      - name: Which candidate lists
+        id: lists
+        env:
+          EVENT: ${{ github.event_name }}
+          INPUT_CANDIDATES: ${{ inputs.candidates }}
+          BEFORE: ${{ github.event.before }}
         run: |
           set -euo pipefail
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            lists="$(printf '%s' "$INPUT_CANDIDATES" | tr '\r\n' '  ')"
+          else
+            if [ -n "${BEFORE:-}" ] && git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+              base="$BEFORE"
+            else
+              # A new branch: compare with where it left main.
+              base="$(git merge-base origin/main HEAD 2>/dev/null || git rev-list --max-parents=0 HEAD | tail -1)"
+            fi
+            lists="$(git diff --name-only --diff-filter=d "$base" HEAD -- 'research/measurements/*-candidates.txt' | tr '\n' ' ')"
+          fi
+          echo "lists=${lists}" >> "$GITHUB_OUTPUT"
+          echo "candidate lists: ${lists:-none}"
+      - name: Check each list
+        if: steps.lists.outputs.lists != ''
+        env:
+          LISTS: ${{ steps.lists.outputs.lists }}
+        run: |
+          set -euo pipefail
+          set -f # word-split the list, never glob it
+          # brand-check.mjs refuses any path that is not research/measurements/<stem>-candidates.txt.
+          for f in $LISTS; do node scripts/brand-check.mjs --candidates "$f"; done
+      - name: Commit the answers back to this branch
+        if: steps.lists.outputs.lists != ''
+        env:
+          LISTS: ${{ steps.lists.outputs.lists }}
+        run: |
+          set -euo pipefail
+          set -f
           git config user.name "colony-bot"
           git config user.email "colony-bot@users.noreply.github.com"
-          git add research/measurements/brand-candidates.json
+          summary=""
+          for f in $LISTS; do
+            stem="${f%-candidates.txt}"
+            git add "${stem}-candidates.json" "${stem}-check.md"
+            summary="${summary}$(STEM="$stem" node -e 'const j=require("./"+process.env.STEM+"-candidates.json"); process.stdout.write(process.env.STEM.split("/").pop()+": "+j.allFree.length+" of "+j.rows.length+" free on all four; ")')"
+          done
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "brand-check: $(node -e 'const j=require("./research/measurements/brand-candidates.json"); console.log(j.allFree.length + " of " + j.rows.length + " free on all three")') [skip ci]"
+          git commit -m "brand-check: ${summary%; } [skip ci]"
           for attempt in 1 2 3; do
             git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
             git pull --rebase -X theirs origin "${GITHUB_REF_NAME}"

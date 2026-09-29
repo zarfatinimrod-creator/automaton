@@ -544,6 +544,9 @@ shape; anything else is listed in the readings as foreign and excluded.
 - A later 301 from the sub-brand host to the brand domain does not restart the clock (BOARD-LOOP rank 5, unchanged).
 - Netlify's free tier gives no server logs, so "not crawled" cannot be told from "crawled, nobody clicked". Recorded as a
   known limitation, same class as RED-TEAM §2.1(c)'s "not seeing shown-and-ignored impressions".
+- 29.9.2026 — sub-brand host: **pending the runner check** (`research/channel-loop/RULING-2026-09-29-lines.md` (e): the
+  first all-free name of `research/measurements/t1-subbrand-candidates.txt`, read from `t1-subbrand-check.md`). The
+  brand Google-account question is deferred to `logs/FABLE_QUEUE.md` row 16; the host name does not depend on it.
 
 ## 3.6 Exact code changes (for Opus)
 
