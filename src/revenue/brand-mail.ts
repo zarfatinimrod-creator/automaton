@@ -14,8 +14,13 @@
  * stopped (a failed login, a server error, never scheduled) leaves the last good numbers in place, and the mail that
  * arrived since is unseen.
  *
- * Nothing but numbers, a timestamp and our own venue ids is ever printed from this file. A file carrying anything
- * else where a number or an id belongs is invalid, and its content is not echoed.
+ * The probe also lists the responders brand-mail.yml runs on its schedule (`responders`, RULING-2026-09-29-lines (h)):
+ * ["gumroad-refund"] once the Pro refund responder is scheduled. A probe written before that has no key, which reads
+ * as "responders: none", not as invalid; il-biz-tools' `enable` refuses to open the sale without the responder, and
+ * src/__tests__/revenue/brand-mail-parity.test.ts holds the two readers to the same verdict.
+ *
+ * Nothing but numbers, a timestamp, our own venue ids and our own responder ids is ever printed from this file. A file
+ * carrying anything else where a number or an id belongs is invalid, and its content is not echoed.
  */
 
 import { existsSync, readFileSync } from "node:fs";
@@ -53,6 +58,7 @@ interface Probe {
   accessibility: { received: number; unanswered: number; unansweredOver7Days: number; oldestUnansweredAgeDays: number | null };
   sentFolderFound: boolean;
   allMailFound: boolean;
+  responders?: string[];
 }
 
 /** The reason a configured reading is unusable, or null. Never quotes the offending value. */
@@ -70,6 +76,10 @@ function problemWith(data: Record<string, unknown>): string | null {
   if (!isAge(a.oldestUnansweredAgeDays)) return "accessibility.oldestUnansweredAgeDays is not an age";
   if (typeof data.sentFolderFound !== "boolean") return "sentFolderFound is not a boolean";
   if (typeof data.allMailFound !== "boolean") return "allMailFound is not a boolean";
+  const responders = data.responders;
+  if (responders !== undefined && !(Array.isArray(responders) && responders.every((r) => typeof r === "string" && VENUE_ID.test(r)))) {
+    return "responders is not a list of responder ids";
+  }
   return null;
 }
 
@@ -111,8 +121,10 @@ export function readBrandMailProbe(file: string = BRAND_MAIL_PROBE_FILE, nowMs: 
   const sinceDays = Math.max(0, (nowMs - Date.parse(measuredAt)) / DAY_MS);
   const replies = Object.entries(p.repliesByVenue);
   const a = p.accessibility;
+  const responders = p.responders ?? [];
   const line =
     `Brand mailbox (probed ${utcMinute(measuredAt)}, ${sinceDays.toFixed(1)} days ago): ${p.inbox} in the inbox, ${p.unread} unread; ` +
+    `responders: ${responders.length ? responders.join(", ") : "none"}; ` +
     `possible replies to our questions: ${replies.length ? replies.map(([v, n]) => `${v} ${n}`).join(", ") : "none (no question sent yet)"}; ` +
     `accessibility mail: ${a.received} received, ${a.unanswered} unanswered, ${a.unansweredOver7Days} unanswered for ${A11Y_ANSWER_DAYS}+ days.` +
     (p.sentFolderFound ? "" : " No Sent folder was found, so no accessibility mail can count as answered.") +
@@ -123,7 +135,7 @@ export function readBrandMailProbe(file: string = BRAND_MAIL_PROBE_FILE, nowMs: 
     blockers.push(
       `brand-mail probe ${file} is ${sinceDays.toFixed(1)} days old (probe of ${utcMinute(measuredAt)}): accessibility mail ` +
         "and venue replies since then are unseen. Re-run the probe (brand-mail.yml, command probe) and read its log; " +
-        "once step 8 is done it belongs in colony.yml's hourly tick.",
+        "once step 8 is done that workflow's schedule runs it twice a day, so a stale reading means those runs are failing.",
     );
   }
   const oldestNow = a.oldestUnansweredAgeDays === null ? null : a.oldestUnansweredAgeDays + sinceDays;

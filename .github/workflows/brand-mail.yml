@@ -1,7 +1,7 @@
 name: brand-mail
 
 # Owner step 8, the brand mailbox (research/breadth/BOARD.md Q2): the agent reads it and the
-# owner never answers anyone. Two commands, both scripts/brand_mail.py (Python standard
+# owner never answers anyone. Three commands, all scripts/brand_mail.py (Python standard
 # library only, so there is nothing to install):
 #
 #   probe  IMAP, read-only (EXAMINE and BODY.PEEK only), NUMBERS ONLY: unread, possible
@@ -16,31 +16,51 @@ name: brand-mail
 #          refuses a second message to the same venue (checking the Sent folder too) except the
 #          one follow-up the note allows (research/owner-asks/brand-mailbox-questions.md,
 #          "How it is sent").
+#   respond-refunds  The il-biz-tools Pro refund responder (research/channel-loop/
+#          RULING-2026-09-29-lines.md (h)). Reads unanswered inbox mail; for a refund request
+#          whose sender the receiving server authenticated (DKIM or SPF pass for the From
+#          domain) it runs products/il-biz-tools/scripts/gumroad-pro-product.js refund, which
+#          refunds only that buyer's sale of that product inside the window Gumroad applies,
+#          once; then it answers with one fixed sentence and marks the mail answered. A DRY
+#          RUN unless scheduled or really_refund is ticked; a real run only from main. It
+#          commits nothing. The probe reports it in state/colony/brand-mail.json
+#          ("responders": ["gumroad-refund"]) only because this file schedules it, and
+#          il-biz-tools' enable refuses to open the sale without that.
 #
 # THE SECRETS LIVE IN THE ENVIRONMENT brand-mailbox, whose deployment branches the owner limits
 # to main (step 8), NOT in repository secrets: every branch and every workflow could read those.
 # Both jobs name the environment, so GitHub hands the secrets only to a run on main; the guard
 # step and the script check the ref again. Dispatch from main, dry runs included.
 #
-# Before step 8 the two secrets do not exist and both commands print {"configured": false}
-# and exit 0: nothing is read, nothing is sent, the run is green.
+# Before step 8 the two secrets do not exist and every command prints {"configured": false}
+# and exits 0: nothing is read, nothing is sent or refunded, the run is green. respond-refunds
+# does the same while products/il-biz-tools/src/config/site.json has no gumroad.productId:
+# before the Pro product exists nothing can have been sold, so no mail is read.
 #
-# NO SCHEDULE YET, on purpose. Once step 8 is done, add the probe to colony.yml as a step
-# before the tick (`python3 scripts/brand_mail.py probe --out state/colony/brand-mail.json`,
-# with BRAND_MAIL_ADDRESS and BRAND_MAIL_APP_PASSWORD in that step's env, in a job that names
-# `environment: brand-mailbox`), so every hourly report carries the numbers. Until then this
-# workflow is dispatch-only.
+# The probe reports the responder only while the respond-refunds job below is word for word
+# what scripts/brand_mail.py pins (REFUND_JOB_IF, REFUND_STEP_ENV, REFUND_STEP_RUN): change
+# that job and the same change goes there, or enable refuses to open the sale.
+#
+# THE SCHEDULE (twice a day) runs the probe and the refund responder, and stays
+# inert until step 8 exists: before it, a scheduled probe commits nothing (a dispatched one still records
+# "not configured") and the responder prints {"configured": false}. Twice a day keeps the
+# probe well inside the two days il-biz-tools' enable and the colony report accept, and
+# answers a refund request within the day; the send job never runs on the schedule. A
+# refund request that arrives just before the window closes is still honoured: the window
+# is measured at the mail's arrival, not at the run.
 #
 # Secrets are read only through `env:` on the one step that needs them, never interpolated
 # into a script, and never printed: the script prints error class names, not server text.
 
 on:
+  schedule:
+    - cron: "17 5,17 * * *"
   workflow_dispatch:
     inputs:
       command:
-        description: "probe (read-only counts) or send (one venue question)"
+        description: "probe (read-only counts), send (one venue question) or respond-refunds (the Pro refund responder)"
         type: choice
-        options: [probe, send]
+        options: [probe, send, respond-refunds]
         default: probe
       venue:
         description: "send only: a venue id from research/owner-asks/questions.json (crazygames, wix, spreadshirt, n8n, indiebook, displate, teachsimple)"
@@ -54,6 +74,10 @@ on:
         description: "send with really_send only: the messageSha256 the dry run of this message printed"
         type: string
         required: false
+      really_refund:
+        description: "respond-refunds only: refund and answer for real. Off = dry run (reads, says what it would do, changes nothing). Honoured only on main."
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -147,7 +171,7 @@ jobs:
           exit 1
 
   probe:
-    if: inputs.command == 'probe'
+    if: github.event_name == 'schedule' || inputs.command == 'probe'
     runs-on: ubuntu-latest
     environment: brand-mailbox
     # Its own group, not colony.yml's colony-state: GitHub keeps one pending run per group, so a
@@ -184,8 +208,15 @@ jobs:
         run: python scripts/brand_mail.py probe --out state/colony/brand-mail.json
 
       - name: Commit the numbers
+        env:
+          EVENT: ${{ github.event_name }}
         run: |
           set -euo pipefail
+          # Before step 8 the schedule stays silent: no "not configured" commit twice a day.
+          if [ "${EVENT:-}" = "schedule" ] && ! python -c 'import json, sys; sys.exit(0 if json.load(open("state/colony/brand-mail.json")).get("configured") else 1)'; then
+            echo "Step 8 is not done: a scheduled probe commits nothing."
+            exit 0
+          fi
           git add state/colony/brand-mail.json
           if git diff --cached --quiet; then
             echo "No change since the last probe."
@@ -218,3 +249,56 @@ jobs:
           if [ -f state/colony/brand-mail.json ]; then
             { echo '```json'; cat state/colony/brand-mail.json; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           fi
+
+  respond-refunds:
+    if: github.event_name == 'schedule' || inputs.command == 'respond-refunds'
+    runs-on: ubuntu-latest
+    environment: brand-mailbox
+    # It changes mail flags and Gumroad sales, never the repository.
+    permissions:
+      contents: read
+    # One responder at a time: two runs reading the same unanswered mail could answer twice
+    # (a second refund of the same sale is refused by the refund command and by Gumroad).
+    concurrency:
+      group: brand-mail-respond-refunds
+      cancel-in-progress: false
+    steps:
+      - name: Refuse a real refund run from any ref but main
+        if: github.event_name == 'workflow_dispatch' && inputs.really_refund
+        run: |
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::A real refund run goes only from refs/heads/main. Dispatch without really_refund for a dry run."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # The refund itself is products/il-biz-tools/scripts/gumroad-pro-product.js refund:
+      # Node's built-in fetch, no install step.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Unit tests (fake IMAP, SMTP and refund command, no network) before any refund
+        run: python -m unittest -v
+
+      # The script checks the ref again for --apply, prints counts, UIDs and sale ids only,
+      # and hands the Gumroad token to the refund command alone.
+      - name: Respond to refund requests (a dry run unless scheduled or really_refund)
+        env:
+          BRAND_MAIL_ADDRESS: ${{ secrets.BRAND_MAIL_ADDRESS }}
+          BRAND_MAIL_APP_PASSWORD: ${{ secrets.BRAND_MAIL_APP_PASSWORD }}
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+          EVENT: ${{ github.event_name }}
+          REALLY_REFUND: ${{ inputs.really_refund }}
+        run: |
+          set -euo pipefail
+          ARGS=(respond-refunds)
+          if [ "${EVENT:-}" = "schedule" ] || [ "${REALLY_REFUND:-}" = "true" ]; then ARGS+=(--apply); fi
+          python scripts/brand_mail.py "${ARGS[@]}"

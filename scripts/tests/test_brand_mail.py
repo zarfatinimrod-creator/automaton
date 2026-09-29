@@ -845,6 +845,8 @@ class ProbeTests(Harness):
             "accessibility": {"received": 4, "unanswered": 3, "unansweredOver7Days": 2, "oldestUnansweredAgeDays": 10.0},
             "sentFolderFound": True,
             "allMailFound": True,
+            # brand-mail.yml schedules respond-refunds (test_brand_mail_refunds.ProbeRespondersTests pins the rule).
+            "responders": ["gumroad-refund"],
         })
 
     def test_prints_numbers_only_never_a_sender_subject_or_body(self):

@@ -62,8 +62,9 @@ is why `MISSION.md` rule 4 exists.
 3. **Ship one tool per SEO page in Hebrew** (title, meta, FAQ, schema.org). The registrar annual-fee page
    (board build #6) is the next one: a deadline calculator and a **free** reminder sign-up that stays disabled
    until 100 weekly views are measured, with the §30א(ג) disclosure at capture and Amendment 13 handling.
-4. **Pricing:** Pro as a one-time licence; test two prices and keep the better revenue per visitor. Annual
-   before monthly, because of the fee floor.
+4. **Pricing:** Pro as a one-time licence; one fixed one-time price, read back from Gumroad and shown as read
+   back; a price change is a board decision recorded in `TARGET_BASIS`, never a page experiment
+   (RULING-2026-09-29-lines (a)).
 5. **Record money only as money:** every Gumroad sale enters the ledger through the Gumroad connector with
    its sale id (`GUMROAD_ACCESS_TOKEN`, hourly); refunds too. A checkout start is a KPI, never revenue.
 

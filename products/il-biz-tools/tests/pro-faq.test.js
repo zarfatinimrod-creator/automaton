@@ -5,11 +5,11 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { withProPrice, PRO_PRICE_SLOT, PRO_SALE_ATTR } from '../src/lib/pro-offer.js';
+import { withProPrice, withRefundDays, PRO_PRICE_SLOT, PRO_SALE_ATTR, REFUND_DAYS_SLOT } from '../src/lib/pro-offer.js';
 import { GUMROAD_STORE_NAME, proButtonState } from '../src/lib/gumroad.js';
 import { DOC_TYPES } from '../src/lib/invoice.js';
 import { verifyWithGumroad } from '../src/lib/license.js';
-import { activationContent, readBackPrice, StopError } from '../scripts/gumroad-pro-product.js';
+import { activationContent, readBackPrice, StopError, MIN_REFUND_DAYS } from '../scripts/gumroad-pro-product.js';
 import { textOf, elementById, faqDetails, faqJsonLd, jsonLdBlocks } from './helpers/html.js';
 import { copyProduct, removeCopy, runBuild, editIn, readIn } from './helpers/product-copy.js';
 
@@ -26,7 +26,10 @@ const Q = {
   d: 'זה מנוי?',
   e: 'הלוגו שלי עולה לשרת כלשהו?',
   f: 'מי מוכר את Pro, ואיזו קבלה מקבלים?',
+  g: 'אפשר לקבל החזר?',
 };
+// RULING-2026-09-29-lines (h) APPLY 2, word for word; {n} is the slot the build fills from site.json.
+const REFUND_ANSWER = 'החזר כספי בתוך {n} ימים מהרכישה, לפי מדיניות ההחזרים של Gumroad: משיבים למייל הקבלה מ-Gumroad. מדיניות מלאה בדף המוצר ב-Gumroad.';
 const INDEX_Q = 'כמה עולה Pro, ומה הוא נותן?';
 
 const proFaq = () => faqDetails(elementById(invoice, 'pro-faq'));
@@ -36,8 +39,8 @@ const answer = (q, html = invoice, fragment = elementById(invoice, 'pro-faq')) =
   return textOf(entry.answerHtml);
 };
 
-describe('the pricing FAQ on invoice.html has the six questions, each with its JSON-LD twin', () => {
-  it('asks (a)-(f) in its own section, in order', () => {
+describe('the pricing FAQ on invoice.html has the seven questions, each with its JSON-LD twin', () => {
+  it('asks (a)-(g) in its own section, in order', () => {
     expect(proFaq().map((d) => d.question)).toEqual(Object.values(Q));
     expect(elementById(invoice, 'pro-faq')).toMatch(/<h2>[^<]+<\/h2>/);
   });
@@ -121,6 +124,15 @@ describe('each answer is true of the code', () => {
     const ready = proButtonState({ gumroad: { productUrl: 'https://x.gumroad.com/l/p', productId: 'P', priceCents: 7900, currency: 'ils' } });
     expect(ready.note).toContain(`בחנות ${GUMROAD_STORE_NAME}`);
   });
+
+  it('(g) is the ruling\'s sentence with the period as a slot: Gumroad\'s policy, the receipt reply, no law and no promise beyond it', () => {
+    expect(answer(Q.g)).toBe(REFUND_ANSWER);
+    const g = elementById(invoice, 'pro-faq').slice(elementById(invoice, 'pro-faq').indexOf(`<summary>${Q.g}</summary>`));
+    expect(g.slice(0, g.indexOf('</details>'))).toContain(REFUND_DAYS_SLOT);
+    expect(REFUND_ANSWER).not.toMatch(/חוק|בלי שאלות|מובטח/);
+    // The product job never sells under a window shorter than the one the page may state.
+    expect(MIN_REFUND_DAYS).toBe(14);
+  });
 });
 
 describe('index.html carries the short version', () => {
@@ -150,9 +162,9 @@ describe('answers about a live sale appear only once the shop is ready', () => {
   const marked = (html, fragment) => [...fragment.matchAll(/<details\b([^>]*)>\s*<summary>([\s\S]*?)<\/summary>/g)]
     .filter((m) => new RegExp(`\\s${PRO_SALE_ATTR}(\\s|=|$)`).test(m[1])).map((m) => textOf(m[2]));
 
-  it('marks exactly "after paying" and "who sells it" on invoice.html, and "how much" on index.html', () => {
-    expect(marked(invoice, elementById(invoice, 'pro-faq'))).toEqual([Q.c, Q.f]);
-    expect(marked(invoice, invoice)).toEqual([Q.c, Q.f]);
+  it('marks exactly "after paying", "who sells it" and "a refund?" on invoice.html, and "how much" on index.html', () => {
+    expect(marked(invoice, elementById(invoice, 'pro-faq'))).toEqual([Q.c, Q.f, Q.g]);
+    expect(marked(invoice, invoice)).toEqual([Q.c, Q.f, Q.g]);
     expect(marked(index, index)).toEqual([INDEX_Q]);
   });
 
@@ -200,6 +212,54 @@ describe('nothing the note rejects (§4.4, §8.4)', () => {
     for (const [path, text] of Object.entries(texts)) {
       for (const word of REJECTED) expect(text.includes(word), `${path} says "${word}"`).toBe(false);
     }
+  });
+});
+
+describe('withRefundDays: the build states Gumroad\'s refund period in the FAQ and its JSON-LD, or drops the answer', () => {
+  const page = (visible, ld, attrs = ' data-pro-sale') => `<html><head><script type="application/ld+json">${JSON.stringify({ '@type': 'FAQPage', mainEntity: [
+    { '@type': 'Question', name: 'אפשר לקבל החזר?', acceptedAnswer: { '@type': 'Answer', text: ld } },
+    { '@type': 'Question', name: 'זה מנוי?', acceptedAnswer: { '@type': 'Answer', text: 'לא.' } },
+  ] })}</script></head><body>
+  <details${attrs}><summary>אפשר לקבל החזר?</summary><p>${visible}</p></details>
+  <details><summary>זה מנוי?</summary><p>לא.</p></details>
+</body></html>`;
+  const SOURCE = page(`החזר בתוך ${REFUND_DAYS_SLOT} ימים.`, 'החזר בתוך {n} ימים.');
+
+  it('with a number of days, fills the slot and the JSON-LD answer alike', () => {
+    const out = withRefundDays(SOURCE, 30);
+    expect(out).not.toContain('{n}');
+    expect(textOf(faqDetails(out)[0].answerHtml)).toBe('החזר בתוך 30 ימים.');
+    expect(faqJsonLd(out).get('אפשר לקבל החזר?')).toBe('החזר בתוך 30 ימים.');
+  });
+
+  it('with no number, drops the entry and its JSON-LD twin, and keeps the rest', () => {
+    for (const days of [null, undefined, 0, 30.5, '30']) {
+      const out = withRefundDays(SOURCE, days);
+      expect(faqDetails(out).map((d) => d.question), String(days)).toEqual(['זה מנוי?']);
+      expect([...faqJsonLd(out).keys()]).toEqual(['זה מנוי?']);
+      expect(out).not.toContain('{n}');
+    }
+  });
+
+  it('refuses a twin that drifted or is missing, and a slot outside a FAQ entry', () => {
+    const drifted = page(`החזר בתוך ${REFUND_DAYS_SLOT} ימים.`, 'החזר בתוך {n} ימים, בלי שאלות.');
+    const noTwin = SOURCE.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, '');
+    for (const days of [null, 30]) {
+      expect(() => withRefundDays(drifted, days)).toThrow(/אפשר לקבל החזר\?/);
+      expect(() => withRefundDays(noTwin, days)).toThrow(/no JSON-LD answer/);
+      expect(() => withRefundDays(`<p>${REFUND_DAYS_SLOT}</p>`, days)).toThrow(/outside/);
+    }
+  });
+
+  it('leaves a page with no slot untouched', () => {
+    const plain = page('לא.', 'לא.');
+    expect(withRefundDays(plain, 30)).toBe(plain);
+    expect(withRefundDays(plain, null)).toBe(plain);
+  });
+
+  it('accepts the real page as it is in the repository', () => {
+    expect(() => withRefundDays(invoice, null)).not.toThrow();
+    expect(() => withRefundDays(invoice, 30)).not.toThrow();
   });
 });
 
@@ -251,20 +311,27 @@ describe('withProPrice: the build puts the price into the FAQ and its JSON-LD, o
 describe('the built pages (preview build in a throwaway copy)', () => {
   let today;
   let ready;
+  let readyNoDays;
+  const configured = (gumroad) => {
+    const dir = copyProduct();
+    editIn(dir, 'src/config/site.json', (json) => {
+      const site = JSON.parse(json);
+      site.gumroad = { ...site.gumroad, ...gumroad };
+      return JSON.stringify(site, null, 2);
+    });
+    const r = runBuild(dir, '--preview');
+    if (r.status !== 0) throw new Error(`preview build failed: ${r.stderr}`);
+    return dir;
+  };
   beforeAll(() => {
     today = copyProduct();
     const r1 = runBuild(today, '--preview');
     if (r1.status !== 0) throw new Error(`preview build failed: ${r1.stderr}`);
-    ready = copyProduct();
-    editIn(ready, 'src/config/site.json', (json) => {
-      const site = JSON.parse(json);
-      site.gumroad = { ...site.gumroad, productUrl: 'https://mehudak.gumroad.com/l/pro', productId: 'P', priceCents: 7900, currency: 'ils' };
-      return JSON.stringify(site, null, 2);
-    });
-    const r2 = runBuild(ready, '--preview');
-    if (r2.status !== 0) throw new Error(`preview build failed: ${r2.stderr}`);
+    const shop = { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: 'P', priceCents: 7900, currency: 'ils' };
+    ready = configured({ ...shop, refundPeriodDays: 30 });
+    readyNoDays = configured({ ...shop, refundPeriodDays: null });
   });
-  afterAll(() => { removeCopy(today); removeCopy(ready); });
+  afterAll(() => { removeCopy(today); removeCopy(ready); removeCopy(readyNoDays); });
 
   it("today's shop is not open: no price in either page, on screen or in JSON-LD", () => {
     for (const p of ['invoice.html', 'index.html']) {
@@ -278,18 +345,34 @@ describe('the built pages (preview build in a throwaway copy)', () => {
     const inv = readIn(join(today, '_preview'), 'invoice.html');
     const idx = readIn(join(today, '_preview'), 'index.html');
     expect(faqDetails(elementById(inv, 'pro-faq')).map((d) => d.question)).toEqual([Q.a, Q.b, Q.d, Q.e]);
-    for (const q of [Q.c, Q.f]) expect(faqJsonLd(inv).has(q), q).toBe(false);
+    for (const q of [Q.c, Q.f, Q.g]) expect(faqJsonLd(inv).has(q), q).toBe(false);
     expect(faqDetails(elementById(idx, 'faq')).map((d) => d.question)).not.toContain(INDEX_Q);
     expect(faqJsonLd(idx).has(INDEX_Q)).toBe(false);
     for (const html of [inv, idx]) expect(html).not.toContain('המכירה נעשית');
   });
 
-  it('once ready, all six questions are back, each with its JSON-LD twin', () => {
+  it('once ready with Gumroad\'s refund period read back, all seven questions are back, each with its JSON-LD twin', () => {
     const inv = readIn(join(ready, '_preview'), 'invoice.html');
     expect(faqDetails(elementById(inv, 'pro-faq')).map((d) => d.question)).toEqual(Object.values(Q));
     for (const { question, answerHtml } of faqDetails(elementById(inv, 'pro-faq'))) expect(faqJsonLd(inv).get(question), question).toBe(textOf(answerHtml));
     const idx = readIn(join(ready, '_preview'), 'index.html');
     expect(faqJsonLd(idx).has(INDEX_Q)).toBe(true);
+  });
+
+  it('the refund answer states the period Gumroad applies, on screen and in JSON-LD, and never the slot', () => {
+    const inv = readIn(join(ready, '_preview'), 'invoice.html');
+    const g = faqDetails(elementById(inv, 'pro-faq')).find((x) => x.question === Q.g);
+    expect(textOf(g.answerHtml)).toBe(REFUND_ANSWER.replace('{n}', '30'));
+    expect(faqJsonLd(inv).get(Q.g)).toBe(REFUND_ANSWER.replace('{n}', '30'));
+    expect(inv).not.toContain('{n}');
+  });
+
+  it('ready but with no refund period read back: six questions, the refund answer dropped with its twin', () => {
+    const inv = readIn(join(readyNoDays, '_preview'), 'invoice.html');
+    expect(faqDetails(elementById(inv, 'pro-faq')).map((d) => d.question)).toEqual([Q.a, Q.b, Q.c, Q.d, Q.e, Q.f]);
+    expect(faqJsonLd(inv).has(Q.g)).toBe(false);
+    expect(inv).not.toContain('{n}');
+    expect(inv).not.toContain('החזר כספי בתוך');
   });
 
   it('once Gumroad reported ₪79, both pages say it in the answer and in its JSON-LD twin', () => {
@@ -320,8 +403,9 @@ describe('the build, half configured or drifted (review 29.9, code 3)', () => {
   afterAll(() => { for (const d of dirs) removeCopy(d); });
 
   for (const [name, gumroad] of [
-    ['a price but no product id', { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: '', priceCents: 7900, currency: 'ils' }],
-    ['a price but a product URL that is not https', { productUrl: 'http://mehudak.gumroad.com/l/pro', productId: 'P', priceCents: 7900, currency: 'ils' }],
+    ['a price but no product id', { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: '', priceCents: 7900, currency: 'ils', refundPeriodDays: 30 }],
+    ['a price but a product URL that is not https', { productUrl: 'http://mehudak.gumroad.com/l/pro', productId: 'P', priceCents: 7900, currency: 'ils', refundPeriodDays: 30 }],
+    ['a refund period but no price', { productUrl: 'https://mehudak.gumroad.com/l/pro', productId: 'P', priceCents: null, currency: '', refundPeriodDays: 30 }],
   ]) {
     it(`${name}: no price and no sale answer, on screen or in JSON-LD`, () => {
       const dir = halfReady(gumroad);
@@ -334,6 +418,8 @@ describe('the build, half configured or drifted (review 29.9, code 3)', () => {
         const ld = [...faqJsonLd(html).values()].join(' ');
         expect(ld).not.toMatch(/79|₪/);
         expect(html).not.toContain('המכירה נעשית');
+        expect(html).not.toContain('החזר כספי בתוך');
+        expect(html).not.toContain('{n}');
       }
     });
   }

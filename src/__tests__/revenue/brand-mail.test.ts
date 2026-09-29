@@ -62,11 +62,33 @@ describe("readBrandMailProbe — state/colony/brand-mail.json → one report lin
     const r = readBrandMailProbe(file, T0 + DAY / 2);
     expect(r.status).toBe("read");
     expect(r.line).toBe(
-      "Brand mailbox (probed 2026-10-20 12:00 UTC, 0.5 days ago): 5 in the inbox, 2 unread; " +
+      "Brand mailbox (probed 2026-10-20 12:00 UTC, 0.5 days ago): 5 in the inbox, 2 unread; responders: none; " +
         "possible replies to our questions: crazygames 1; " +
         "accessibility mail: 3 received, 2 unanswered, 0 unanswered for 7+ days.",
     );
     expect(r.blockers).toEqual([]);
+  });
+
+  // RULING-2026-09-29-lines (h): the probe lists the scheduled responders; a probe written before that has no key.
+  it("names the responders the probe lists, and says none when the key is absent or the list empty", () => {
+    write(reading({ responders: ["gumroad-refund"] }));
+    expect(readBrandMailProbe(file, T0).line).toContain("2 unread; responders: gumroad-refund; possible replies");
+    write(reading({ responders: [] }));
+    expect(readBrandMailProbe(file, T0).line).toContain("responders: none;");
+    write(reading());
+    const absent = readBrandMailProbe(file, T0);
+    expect(absent.status).toBe("read");
+    expect(absent.line).toContain("responders: none;");
+  });
+
+  it("makes a responders value that is not a list of ids invalid, without echoing it", () => {
+    for (const responders of ["gumroad-refund", null, [1], ["Someone <someone@example.org>"]]) {
+      write(reading({ responders }));
+      const r = readBrandMailProbe(file, T0);
+      expect(r.status, JSON.stringify(responders)).toBe("invalid");
+      expect(r.blockers.join(" ")).toMatch(/responders is not a list of responder ids/);
+      expect([r.line, ...r.blockers].join(" ")).not.toContain("someone@example.org");
+    }
   });
 
   it("says plainly when no question has been sent yet", () => {
@@ -100,7 +122,7 @@ describe("readBrandMailProbe — state/colony/brand-mail.json → one report lin
     expect(stale.blockers).toEqual([
       `brand-mail probe ${file} is 2.5 days old (probe of 2026-10-20 12:00 UTC): accessibility mail and venue replies ` +
         "since then are unseen. Re-run the probe (brand-mail.yml, command probe) and read its log; once step 8 is done " +
-        "it belongs in colony.yml's hourly tick.",
+        "that workflow's schedule runs it twice a day, so a stale reading means those runs are failing.",
     ]);
     // A not-configured reading is not stale: before step 8 there is nothing to read.
     write({ configured: false, measuredAt: MEASURED });

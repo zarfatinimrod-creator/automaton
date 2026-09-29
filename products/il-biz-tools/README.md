@@ -324,8 +324,11 @@ value from the file and never its name - and the page's address alone on the las
 emoji and nothing above U+FFFF. The `api.whatsapp.com` fallback is built and tested but ships **off**
 (`WHATSAPP_FALLBACK_ENABLED = false`): the note's release gate wants an Android and an iOS device test recorded
 at `docs/whatsapp-share-device-test.md` first, and the tests fail if the flag is turned on without that file.
-The FAQ answers "למה הבודק חינמי?" with a funding line and no link to anything paid, and promises nothing about
-staying free (the pcn874 paid offer waits for Fable F3).
+The FAQ answers "למה הבודק חינמי?" with a funding line and no link to anything paid, and says the validator "חינמי
+ונשאר חינמי" - `invoice.html`'s own words - and never "לתמיד" or "לכל החיים" (RULING-2026-09-29-lines (f): "stays
+free" is structural, the free core is MIT; it is not "stays up"). The funding sentence stays as it is until a
+generator is priced, when it must change; a paid pcn874 offer, if any, is a one-time licence priced only after the
+validator page's D0+56 read passes.
 
 **One dealer's file, yours or a client's (N15).** The scope box says "כאן אפשר לבדוק קובץ של עוסק אחד – שלכם או
 של לקוח – קובץ אחד בכל פעם". No page and no share text pitches the validator for accountants' or
@@ -546,24 +549,28 @@ step 6 carries `edit_products` (Gumroad's `doorkeeper.rb:10`, `oauth_application
 `.github/workflows/gumroad-pro-product.yml` (manual dispatch only) uses it to:
 
 1. `create` — reuse the product by exact name (`PRO_PRODUCT_NAME`, "Pro – הלוגו וצבע המותג על המסמך"), or
-   `POST /v2/products` **as a draft** with the price (₪79 by default), a description of exactly what Pro is, and
-   content holding Hebrew activation instructions plus Gumroad's `licenseKey` block; read it back and require that
-   block and one fixed one-time price (no membership or tiers, no pay-what-you-want, no purchasing-power-parity
-   prices, no option that changes the charge); print the public `id` and `short_url`; open a PR writing both,
-   and the read-back `priceCents` and `currency`, into `src/config/site.json`.
+   `POST /v2/products` **as a draft** with the price (₪79 by default), a description of exactly what Pro is (its
+   last paragraph is the site's AI declaration, the `AI_DECLARATION` constant itself), and content holding Hebrew
+   activation instructions plus Gumroad's `licenseKey` block; read it back and require that block and one fixed
+   one-time price (no membership or tiers, no pay-what-you-want, no purchasing-power-parity prices, no option that
+   changes the charge); read the refund period in force (`GET /v2/refund_policy` and the product's own block);
+   print the public `id` and `short_url`; open a PR writing both, the read-back `priceCents` and `currency`, and
+   `refundPeriodDays` (the days Gumroad applies, or `null` when unreadable or not a bounded period) into
+   `src/config/site.json`.
 2. `enable` — a second dispatch, only once `state/colony/brand-mail.json` shows the brand mailbox of owner step 8
    probed green (within 2 days, no accessibility mail unanswered for 7+ days — a buyer's receipt reply or refund
-   request goes to the Gumroad sign-up email, and the owner answers no one) **and** the offer checks out
+   request goes to the Gumroad sign-up email, and the owner answers no one), that same probe lists the refund
+   responder (`"responders": ["gumroad-refund"]`; a probe without the key is a no), **and** the offer checks out
    (`check`, next): `PUT /v2/products/:id/enable`. `create` is not gated.
 3. `check` — reads only; run by `enable` first and by `gumroad-pro-probe.yml` afterwards. The **deployed**
    `src/config/site.json` carries the repo's id and price; Gumroad charges exactly that price, once; the account's
-   own address (`GET /v2/user`) is the `BRAND_MAIL_ADDRESS` secret of step 8 (compared, never printed); and the
-   refund policy buyers will see is "No refunds allowed". Gumroad opens every account with a 30-day money-back
-   guarantee (`RefundPolicy::DEFAULT_REFUND_PERIOD_IN_DAYS`), and a refund promise waits on A1 of
-   `research/tiktok/08-sales-marketing-lessons.md` §8.2, so until that policy is changed (`PUT /v2/refund_policy`,
-   agent work with the same token) nothing is enabled.
+   own address (`GET /v2/user`) is the `BRAND_MAIL_ADDRESS` secret of step 8 (compared, never printed); the refund
+   policy buyers will see is a bounded window of at least 14 days (`MIN_REFUND_DAYS`); and the deployed
+   `refundPeriodDays` is exactly that window, compared as the price is. See "Refunds", below.
+4. `refund --email <addr> [--requested-at <iso>] [--apply]` — what the brand-mail responder calls; see "Refunds".
 
-Without the secret all three exit 0 with a notice. `.github/workflows/gumroad-pro-probe.yml` then checks the real
+Without the secret `create`, `enable` and `check` exit 0 with a notice; `refund` exits 1, because nothing was
+refunded and the responder must not answer as if it had been. `.github/workflows/gumroad-pro-probe.yml` then checks the real
 product id from the site's own origin (expects the exact "does not exist" 404 for an impossible key and
 `access-control-allow-origin: *`) and runs `check`, so a price edited in the Gumroad dashboard after `enable`
 fails the probe. Tax: Gumroad collects none for a buyer in Israel (`lib/utilities/compliance/countries.rb`, read
@@ -597,12 +604,46 @@ button; in the `ready` state a visitor without a licence can **try** the logo an
 printed or saved PDF is exactly the free document, with no watermark); after a print dialog in that try-out one
 factual line says a print or PDF comes out without the branding and what Pro costs - never that anything was
 printed, since `afterprint` also fires on a cancelled dialog - once per session and never again once closed
-(`src/lib/pro-nudge.js`; no modal, no timer); and `#pro-faq` answers six pricing questions, each checked against
+(`src/lib/pro-nudge.js`; no modal, no timer); and `#pro-faq` answers seven pricing questions, each checked against
 the code in `tests/pro-faq.test.js`. The price in those answers is a slot the build fills from `site.json`
 (`src/lib/pro-offer.js`), in the visible answer and its JSON-LD twin alike, and only in the `ready` state. The
-answers that describe a live sale (`<details data-pro-sale>`: what happens after paying, who sells it, and the
-home page's "how much") are dropped from the built page, with their JSON-LD twins, until the button is `ready`:
-before that the Pro box says nothing is sold yet.
+answers that describe a live sale (`<details data-pro-sale>`: what happens after paying, who sells it, whether a
+refund is possible, and the home page's "how much") are dropped from the built page, with their JSON-LD twins,
+until the button is `ready`: before that the Pro box says nothing is sold yet. The refund answer is dropped too
+while `refundPeriodDays` is not a number.
+
+**Refunds** (`research/channel-loop/RULING-2026-09-29-lines.md` (h)). There is no "no refunds" policy. Gumroad
+opens every account with a 30-day money-back guarantee (`RefundPolicy::DEFAULT_REFUND_PERIOD_IN_DAYS`) and that
+default is kept as it stands, so no policy call is needed. `enable` and `check` refuse unless the period in force
+— the product's own policy, or the account's when the product inherits it and Gumroad reports it in effect — is a
+bounded window of **at least 14 days** (`MIN_REFUND_DAYS`): "none" and 7 days are refused, and so is a policy that
+cannot be read. 14 is the floor because it is the option lawful under both readings of the consumer-protection law
+the repository holds (secondary sources only; the primary text of חוק הגנת הצרכן 14ג(ד) is the one check still to
+render); no cancellation fee is charged. The page names Gumroad's policy and no law: the seventh `#pro-faq` entry,
+"אפשר לקבל החזר?", answers "החזר כספי בתוך {n} ימים מהרכישה, לפי מדיניות ההחזרים של Gumroad: משיבים למייל הקבלה
+מ-Gumroad. מדיניות מלאה בדף המוצר ב-Gumroad." — `{n}` is `refundPeriodDays`, filled by the build
+(`withRefundDays`) in the answer and its JSON-LD twin, and the entry ships only while the button is `ready` and the
+period is a number.
+
+Requests are answered by the brand-mail responder, never by the owner: `python3 scripts/brand_mail.py
+respond-refunds` (run by `.github/workflows/brand-mail.yml`, scheduled with the probe; inert until step 8's secrets
+exist, and reads no mail while `site.json` has no `productId`, since nothing can have been sold) reads the brand
+mailbox, acts only on mail whose own receiving server's `Authentication-Results` show DKIM or SPF passing for the
+sender's From domain, never on mail in a venue question's thread, and only when the sender's own words (subject, or
+body above the quoted receipt) ask for a refund, the money back or the cancellation of the purchase — whole words
+and phrases, never a bare verb such as "לבטל" or "להחזיר", and not a tax, expense or customer refund the buyer's
+own bookkeeping names; it calls `refund --email <sender> --requested-at <received>` and
+answers with one fixed sentence that does not say whether the address bought anything. `refund` reads
+`GET /v2/sales?email=&product_id=`, keeps only sales of this product whose buyer address is exactly the sender,
+not already refunded, charged back or disputed, and inside the window in force measured at the request, and
+refunds the most recent one in full (`PUT /v2/sales/:id/refund`, no amount) — one sale per request, never the
+same sale twice. It is a dry run unless `--apply`; the scheduled run applies, a manual dispatch is a dry run
+unless ticked. It logs sale ids and counts, never an address; Gumroad's refund endpoint answers with the sale and
+no separate refund id (`api/v2/sales_controller.rb#refund`, read 29.9.2026; not yet run). A refunded key switches
+Pro off at its next weekly re-check (above). **Kill rule:** if Pro is disabled or the line is killed, the responder
+keeps running for `refundPeriodDays + 7` days after the last sale, so every buyer inside the window is still
+answered. What is not known yet: whether Gumroad refunds from a zero balance by clawing back payouts, and whether
+the balance covers the first refund — recorded on the first real refund, not a gate before it.
 
 No Gumroad code runs on this site: no SDK, no overlay, no iframe. The only contact is one `fetch` from the
 buyer's browser to `api.gumroad.com/v2/licenses/verify`, at activation and at most every 7 days after. The

@@ -1,8 +1,9 @@
 /**
- * .github/workflows/brand-mail.yml — the only way a venue question leaves the brand mailbox, and the probe that feeds
- * the report. These tests pin what would go wrong silently: a schedule that starts reading before step 8, a secret or
- * an input interpolated into a script, a real send from a branch, a send record or probe reading that never reaches
- * the repository. The second half runs the workflow's own step scripts in bash against stubs (the pattern of
+ * .github/workflows/brand-mail.yml — the only way a venue question leaves the brand mailbox, the probe that feeds
+ * the report, and the Pro refund responder (RULING-2026-09-29-lines (h)). These tests pin what would go wrong
+ * silently: a scheduled run that reads or commits before step 8, a secret or an input interpolated into a script, a
+ * real send or a real refund from a branch, a manual refund run that is not a dry run by default, a send record or
+ * probe reading that never reaches the repository. The second half runs the workflow's own step scripts in bash against stubs (the pattern of
  * mcp-il-tools-publish.test.ts), so a guard that lost a condition fails here even while its words are in the file.
  */
 import { afterAll, describe, expect, it } from "vitest";
@@ -27,34 +28,44 @@ const stepNamed = (job: string, prefix: string): Step => {
 };
 
 describe("brand-mail.yml — what it is allowed to do", () => {
-  it("runs only when dispatched: no schedule and no push until step 8 is done", () => {
-    expect(Object.keys(wf().on)).toEqual(["workflow_dispatch"]);
-    expect(text()).toMatch(/NO SCHEDULE YET/);
-    expect(text()).toMatch(/Once step 8 is done, add the probe to colony\.yml/);
+  it("runs when dispatched, and on a schedule that runs the probe and the refund responder - never a send, never on push", () => {
+    expect(Object.keys(wf().on)).toEqual(["schedule", "workflow_dispatch"]);
+    const crons = wf().on.schedule.map((c: { cron: string }) => c.cron);
+    expect(crons).toHaveLength(1);
+    expect(crons[0]).toMatch(/^\d+ [\d,*/]+ \* \* \*$/);
+    expect(wf().jobs.send.if).toBe("inputs.command == 'send'");
+    expect(wf().jobs.probe.if).toBe("github.event_name == 'schedule' || inputs.command == 'probe'");
+    expect(wf().jobs["respond-refunds"].if).toBe("github.event_name == 'schedule' || inputs.command == 'respond-refunds'");
+    expect(text()).toMatch(/inert until step 8/i);
   });
 
-  it("takes a command, a venue, a really_send switch that is off by default, and the dry run's digest", () => {
+  it("takes a command, a venue, a really_send switch and a really_refund switch that are off by default, and the dry run's digest", () => {
     const inputs = wf().on.workflow_dispatch.inputs;
-    expect(inputs.command).toMatchObject({ type: "choice", options: ["probe", "send"], default: "probe" });
+    expect(inputs.command).toMatchObject({ type: "choice", options: ["probe", "send", "respond-refunds"], default: "probe" });
     expect(inputs.venue.type).toBe("string");
     expect(inputs.really_send).toMatchObject({ type: "boolean", default: false });
+    expect(inputs.really_refund).toMatchObject({ type: "boolean", default: false });
     expect(inputs.message_sha256).toMatchObject({ type: "string", required: false });
-    expect(wf().jobs.send.if).toBe("inputs.command == 'send'");
-    expect(wf().jobs.probe.if).toBe("inputs.command == 'probe'");
   });
 
-  it("reads the two brand secrets only through env, on the one step of each job that needs them", () => {
-    const all = [...steps("send"), ...steps("probe")];
+  it("reads the secrets only through env, on the one step of each job that needs them; the Gumroad token only where it refunds", () => {
+    const all = [...steps("send"), ...steps("probe"), ...steps("respond-refunds")];
     for (const s of all) {
       expect(s.run ?? "", s.name).not.toMatch(/\$\{\{\s*(secrets|inputs)\./);
     }
     const withSecrets = all.filter((s) => JSON.stringify(s.env ?? {}).includes("secrets."));
-    expect(withSecrets.map((s) => s.name)).toEqual(["Send (a dry run unless really_send)", "Probe the brand mailbox (read-only, numbers only)"]);
+    expect(withSecrets.map((s) => s.name)).toEqual([
+      "Send (a dry run unless really_send)",
+      "Probe the brand mailbox (read-only, numbers only)",
+      "Respond to refund requests (a dry run unless scheduled or really_refund)",
+    ]);
     for (const s of withSecrets) {
       expect(s.env!.BRAND_MAIL_ADDRESS).toBe("${{ secrets.BRAND_MAIL_ADDRESS }}");
       expect(s.env!.BRAND_MAIL_APP_PASSWORD).toBe("${{ secrets.BRAND_MAIL_APP_PASSWORD }}");
     }
-    expect(text().match(/secrets\.[A-Z_]+/g)!.every((m) => /BRAND_MAIL_(ADDRESS|APP_PASSWORD)$/.test(m))).toBe(true);
+    expect(withSecrets.filter((s) => s.env!.GUMROAD_ACCESS_TOKEN).map((s) => s.name)).toEqual([withSecrets[2].name]);
+    expect(withSecrets[2].env!.GUMROAD_ACCESS_TOKEN).toBe("${{ secrets.GUMROAD_ACCESS_TOKEN }}");
+    expect(text().match(/secrets\.[A-Z_]+/g)!.every((m) => /(BRAND_MAIL_(ADDRESS|APP_PASSWORD)|GUMROAD_ACCESS_TOKEN)$/.test(m))).toBe(true);
   });
 
   it("gets the secrets only through the brand-mailbox environment, which the owner limits to main", () => {
@@ -62,21 +73,25 @@ describe("brand-mail.yml — what it is allowed to do", () => {
     // and only on the branches its deployment rule admits (exposure review, finding 1).
     expect(wf().jobs.send.environment).toBe("brand-mailbox");
     expect(wf().jobs.probe.environment).toBe("brand-mailbox");
+    expect(wf().jobs["respond-refunds"].environment).toBe("brand-mailbox");
     expect(text()).toMatch(/THE SECRETS LIVE IN THE ENVIRONMENT brand-mailbox/);
   });
 
   it("serialises sends repository-wide, and gives the probe its own group so it never displaces a colony tick", () => {
     expect(wf().jobs.send.concurrency).toEqual({ group: "brand-mail-send", "cancel-in-progress": false });
     expect(wf().jobs.probe.concurrency).toEqual({ group: "brand-mail-probe", "cancel-in-progress": false });
+    // Two responders reading the same unanswered mail could refund and answer twice; one at a time.
+    expect(wf().jobs["respond-refunds"].concurrency).toEqual({ group: "brand-mail-respond-refunds", "cancel-in-progress": false });
     const colony = parse(readFileSync(join(ROOT, ".github", "workflows", "colony.yml"), "utf8")) as Record<string, any>;
     expect(colony.concurrency.group).not.toBe(wf().jobs.probe.concurrency.group);
   });
 
-  it("runs the Python unit tests before anything leaves or is read", () => {
-    for (const job of ["send", "probe"]) {
+  it("runs the Python unit tests before anything leaves, is read or is refunded", () => {
+    const acts: Record<string, string> = { send: "Send", probe: "Probe the brand mailbox", "respond-refunds": "Respond to refund requests" };
+    for (const job of ["send", "probe", "respond-refunds"]) {
       const names = steps(job).map((s) => s.name ?? s.uses);
       const tests = names.findIndex((n) => n?.startsWith("Unit tests"));
-      const act = names.findIndex((n) => n?.startsWith(job === "send" ? "Send" : "Probe the brand mailbox"));
+      const act = names.findIndex((n) => n?.startsWith(acts[job]));
       expect(tests).toBeGreaterThan(-1);
       expect(tests).toBeLessThan(act);
     }
@@ -84,6 +99,30 @@ describe("brand-mail.yml — what it is allowed to do", () => {
 
   it("writes the probe's numbers to the file the report reads", () => {
     expect(stepNamed("probe", "Probe the brand mailbox").run).toBe("python scripts/brand_mail.py probe --out state/colony/brand-mail.json");
+  });
+
+  it("the responder commits nothing: read-only repository permissions and no stored git credentials", () => {
+    const job = wf().jobs["respond-refunds"];
+    expect(job.permissions).toEqual({ contents: "read" });
+    const checkout = steps("respond-refunds").find((s) => s.uses?.startsWith("actions/checkout"));
+    expect((checkout as { with?: Record<string, unknown> }).with?.["persist-credentials"]).toBe(false);
+    expect(JSON.stringify(steps("respond-refunds"))).not.toMatch(/git (commit|push)/);
+  });
+
+  it("nothing skips the respond step on the schedule: no job dependency, and no step condition but the main-ref guard's", () => {
+    // The probe vouches for the responder by these same lines (scripts/brand_mail.py refund_job_runs_on_schedule);
+    // a condition here would leave every scheduled run green with nobody answered (fixer review of 29.9, finding 2).
+    const job = wf().jobs["respond-refunds"];
+    expect(job.needs).toBeUndefined();
+    expect(job.environment).toBe("brand-mailbox");
+    expect(stepNamed("respond-refunds", "Respond to refund requests").if).toBeUndefined();
+    const conditions = steps("respond-refunds").filter((s) => s.if !== undefined).map((s) => [s.name, s.if]);
+    expect(conditions).toEqual([["Refuse a real refund run from any ref but main", "github.event_name == 'workflow_dispatch' && inputs.really_refund"]]);
+  });
+
+  it("the responder has Node for the product's refund command", () => {
+    const node = steps("respond-refunds").find((s) => s.uses?.startsWith("actions/setup-node"));
+    expect((node as { with?: Record<string, unknown> }).with?.["node-version"]).toBe(22);
   });
 });
 
@@ -195,6 +234,48 @@ esac
     expect(r.calls.filter((c) => c.startsWith("git push")).length).toBe(3);
     expect(r.out).toMatch(/in this run's summary/);
     expect(r.out).toMatch(/every send to crazygames is refused by the Sent-folder check/);
+  });
+
+  it("refuses a real refund run from any ref but main, and a scheduled run passes through (GitHub runs it on the default branch)", () => {
+    const guard = stepNamed("respond-refunds", "Refuse a real refund run");
+    expect(guard.if).toBe("github.event_name == 'workflow_dispatch' && inputs.really_refund");
+    for (const ref of ["refs/heads/claude/new-session-j071dx", "refs/pull/9/merge", ""]) {
+      const r = run(guard, sandbox(), { GITHUB_REF: ref });
+      expect(r.status, ref).toBe(1);
+      expect(r.out).toMatch(/only from refs\/heads\/main/);
+    }
+    expect(run(guard, sandbox(), { GITHUB_REF: "refs/heads/main" }).status).toBe(0);
+  });
+
+  it("applies refunds on the schedule, and on a dispatch only when really_refund is ticked: otherwise a dry run", () => {
+    const respond = stepNamed("respond-refunds", "Respond to refund requests");
+    expect(respond.env!.EVENT).toBe("${{ github.event_name }}");
+    expect(respond.env!.REALLY_REFUND).toBe("${{ inputs.really_refund }}");
+    const cases: Array<[Record<string, string>, string]> = [
+      [{ EVENT: "schedule", REALLY_REFUND: "" }, "python [scripts/brand_mail.py] [respond-refunds] [--apply]"],
+      [{ EVENT: "workflow_dispatch", REALLY_REFUND: "false" }, "python [scripts/brand_mail.py] [respond-refunds]"],
+      [{ EVENT: "workflow_dispatch", REALLY_REFUND: "" }, "python [scripts/brand_mail.py] [respond-refunds]"],
+      [{ EVENT: "workflow_dispatch", REALLY_REFUND: "true" }, "python [scripts/brand_mail.py] [respond-refunds] [--apply]"],
+    ];
+    for (const [env, call] of cases) {
+      const r = run(respond, sandbox(), env);
+      expect(r.status, JSON.stringify(env)).toBe(0);
+      expect(r.calls, JSON.stringify(env)).toEqual([call]);
+    }
+  });
+
+  it("a scheduled probe before step 8 commits nothing; a dispatched one records that it is not configured", () => {
+    const commit = stepNamed("probe", "Commit the numbers");
+    expect(commit.env!.EVENT).toBe("${{ github.event_name }}");
+    const box = sandbox();
+    mkdirSync(join(box.dir, "state", "colony"), { recursive: true });
+    writeFileSync(join(box.dir, "state", "colony", "brand-mail.json"), JSON.stringify({ configured: false, measuredAt: "2026-10-20T12:00:00Z" }));
+    const scheduled = run(commit, box, { GITHUB_REF_NAME: "main", REAL_PYTHON: "1", EVENT: "schedule" });
+    expect(scheduled.status, scheduled.out).toBe(0);
+    expect(scheduled.calls).toEqual([]);
+    expect(scheduled.out).toMatch(/step 8/i);
+    const dispatched = run(commit, box, { GITHUB_REF_NAME: "main", REAL_PYTHON: "1", EVENT: "workflow_dispatch" });
+    expect(dispatched.calls).toContain("git commit -m brand-mail probe: not configured [skip ci]");
   });
 
   it("commits the probe's numbers with a one-line summary and [skip ci]", () => {
