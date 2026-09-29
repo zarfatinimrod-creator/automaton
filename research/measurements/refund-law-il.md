@@ -227,7 +227,8 @@ shorter spans without it. The extraction is not stored in the repo; rerun it on 
 - The written document the dealer supplies includes "(3) האופן שבו יכול הצרכן לממש את זכותו לבטל את העסקה בהתאם
   להוראות סעיף קטן (ג) או סעיף 14ג1(ג);" (`CPL:834`).
 - The right: "(ג) בעסקת מכר מרחוק רשאי הצרכן לבטל את העסקה –" (`CPL:838`). For an asset, "(1) בנכס – מיום עשיית
-  העסקה ועד ארבעה עשר ימים מיום קבלת הנכס" (`CPL:839`). For a service, "(2) בשירות – בתוך ארבעה עשר ימים מיום עשיית
+  העסקה ועד ארבעה עשר ימים מיום קבלת הנכס" (`CPL:839`) **[superseded (tick 18): the full clause adds "or from
+  receipt of the (ב) document, whichever is later"; see "29.9 (tick 18, rendered)" 1.2]**. For a service, "(2) בשירות – בתוך ארבעה עשר ימים מיום עשיית
   העסקה או מיום קבלת המסמך המכיל את הפרטים האמורים בסעיף קטן (ב), לפי המאוחר" (`CPL:840`).
 - **The exclusions, 14ג(ד), in full:** "(ד) הוראות סעיף קטן (ג) וסעיף 14ג1(ג) לא יחולו על עסקת מכר מרחוק של –"
   (`CPL:841`):
@@ -278,7 +279,8 @@ shorter spans without it. The extraction is not stored in the repo; rerun it on 
 **Currency caveat.** The consumer-law text is nevo's consolidation of 3.10.2022, as mirrored on 6.3.2023. A 2026
 third-party read of the live page quotes 14ה(ד) identically and cites 14ג(ג)(2) and 14ג(ד)(2) as they stand here
 (`legal-catalog-israel.md:398, :468`). It does not quote 14ג(ד)(3). Whether (ד)(3) changed after October 2022 is
-**unknown until the live page is rendered**.
+**unknown until the live page is rendered**. **[superseded (tick 18): the live page, consolidated 02-08-2026, reads the
+same; see "29.9 (tick 18, rendered)" 1.1]**
 
 ### 2.6 What this settles for ruling (h), and what it does not
 - **Settled, at github grade (2022 text):** the two secondary readings disagreed
@@ -315,3 +317,245 @@ rendered the court-routing regulations, and the capture stays in git history as 
 | 6 | `https://gumroad.com/help/article/335-custom-refund-policy` | `gumroad-help-custom-refund-policy` | What the buyer sees on the product page (title and fine-print modal) and the per-product setting. Lower priority. |
 | 7 | `https://www.nevo.co.il/law_html/law00/84257.htm` | `nevo-cancellation-regs-84257` | The live 2010 regulations (reg 6(א)(7)). Confirmatory only, since 2.5 shows they do not govern distance sales. |
 | 8 | `https://he.wikisource.org/wiki/%D7%97%D7%95%D7%A7_%D7%94%D7%92%D7%A0%D7%AA_%D7%94%D7%A6%D7%A8%D7%9B%D7%9F` | `wikisource-consumer-protection-law` | Fallback for 1, only if nevo refuses the runner. |
+
+---
+
+## 29.9 (tick 18, rendered)
+
+**Read by:** reader A, tick 18, from the render-watch captures of ZERO-TESTS rows 160-163. Only the four captures
+below were read. Every quote was checked with `grep -n -F` against the capture before it was written here.
+
+| Short name | Capture (under `research/rendered/`) | fetchedAt (UTC) | sha256 (first 12) | Currency printed on the page |
+|---|---|---|---|---|
+| `R-CPL` | `nevo-consumer-protection-law-70305.txt` (2,459 lines) | 2026-09-29 09:56:41 | `6c974fa8962d` | "נוסח עדכני נכון ליום: 02-08-2026" (`R-CPL:3`) |
+| `R-REG` | `nevo-cancellation-regulations.txt` (152 lines) | 2026-09-29 09:56:42 | `600f0cad4e67` | "נוסח עדכני נכון ליום: 18-09-2023" (`R-REG:3`) |
+| `R-G51` | `gumroad-help-refund-policy.html` | 2026-09-29 09:56:44 | `0383ddba9a26` | none |
+| `R-G335` | `gumroad-help-custom-refund-policy.html` | 2026-09-29 09:56:45 | `b6af26f38416` | none |
+
+All four have status 200. The two Gumroad `.txt` files hold only the page title. Each article's text sits on line 51
+of its `.html`, inside the Inertia `data-page` attribute. I decoded it with Python (`html.unescape`, then
+`json.loads`), and the text is in `props.article.content`. The attribute stores `'` as `&#39;` and `"` as
+`\&quot;`, so each English quote was grepped in that encoded form. Every Gumroad citation below is therefore line 51.
+**This confirms the tick-17 inference in 1.6: a plain GET stores the whole article in `data-page`, and no `js` flag
+is needed.**
+
+### 1. Section 14ג, section 14ה and the regulations, at rendered grade
+
+**1.1 The exclusions, 14ג(ד), are unchanged in the 2026 consolidation. The tick-17 list in 2.2 is confirmed
+verbatim.**
+- Chapeau: "(ד) הוראות סעיף קטן (ג) וסעיף 14ג1(ג) לא יחולו על עסקת מכר מרחוק של –" (`R-CPL:712`). The five items:
+  - "(1) טובין פסידים;" (`R-CPL:714`)
+  - "(2) שירותי הארחה, נסיעה, חופש או בילוי, אם מועד ביטול העסקה חל בתוך שבעה ימים שאינם ימי מנוחה, קודם למועד שבו אמור השירות להינתן;" (`R-CPL:716`)
+  - "(3) מידע כהגדרתו בחוק המחשבים, התשנ"ה-1995;" (`R-CPL:718`)
+  - "(4) טובין שיוצרו במיוחד בעבור הצרכן בעקבות העסקה;" (`R-CPL:720`)
+  - "(5) טובין הניתנים להקלטה, לשעתוק או לשכפול, שהצרכן פתח את אריזתם המקורית." (`R-CPL:722`)
+- One addition the tick-17 section did not quote: the Minister may exclude other distance sales. "(ה) השר, באישור
+  ועדת הכלכלה של הכנסת, רשאי לקבוע עסקאות של מכר מרחוק, שאינן מנויות בסעיף קטן (ד), שהוראות סעיף זה, כולן או
+  חלקן, לא יחולו עליהן." (`R-CPL:724`). No capture read here shows whether any such order exists.
+
+**1.2 The cancellation window, 14ג(ג). This corrects a tick-17 quote.**
+- "(ג) בעסקת מכר מרחוק רשאי הצרכן לבטל את העסקה –" (`R-CPL:706`).
+- For an asset, the whole paragraph reads: "(1) בנכס – מיום עשיית העסקה ועד ארבעה עשר ימים מיום קבלת הנכס או מיום
+  קבלת המסמך המכיל את הפרטים האמורים בסעיף קטן (ב), לפי המאוחר מביניהם;" (`R-CPL:708`).
+  - **Tick 17 (2.2, `CPL:839`) quoted this only up to "מיום קבלת הנכס".** The rendered text adds "or from receipt of
+    the (ב) document, whichever is later". [inference] Until the buyer receives the written 14ג(ב) document, the 14
+    days do not start to run.
+- For a service: "(2) בשירות – בתוך ארבעה עשר ימים מיום עשיית העסקה או מיום קבלת המסמך המכיל את הפרטים האמורים
+  בסעיף קטן (ב), לפי המאוחר, כמפורט להלן:" (`R-CPL:710`). The rest of that line sets the rules for continuing and
+  one-off services.
+- Definitions that bear on a licence key:
+  - `" נכס " – טובין, מקרקעין, זכויות, ניירות ערך כמשמעותם בחוק ניירות ערך, התשכ"ח-1968, ואיגרות חוב ממשלתיות;` (`R-CPL:39`)
+  - `" עוסק " – מי שמוכר נכס או נותן שירות דרך עיסוק, כולל יצרן;` (`R-CPL:41`)
+  - `" צרכן " – מי שקונה נכס או מקבל שירות מעוסק במהלך עיסוקו לשימוש שעיקרו אישי, ביתי או משפחתי;` (`R-CPL:49`)
+  - `" עסקת מכר מרחוק " – התקשרות בעסקה של מכר נכס או של מתן שירות, כאשר ההתקשרות נעשית בעקבות שיווק מרחוק, ללא נוכחות משותפת של הצדדים לעסקה;` (`R-CPL:730`)
+- The four-month period for a disabled person, a senior citizen or a new immigrant still requires a conversation:
+  "ובלבד שההתקשרות בעסקה כללה שיחה בין העוסק לצרכן, ובכלל זה שיחה באמצעות תקשורת אלקטרונית." (`R-CPL:749`).
+  Tick 17 (2.2) is confirmed.
+
+**1.3 The fee cap, 14ה. The tick-17 quotes in 2.3 are confirmed.**
+- A cancellation for a defect, non-conformity, late or missing supply, or any other breach is covered by "14ה. (א)
+  ביטל צרכן חוזה לפי סעיפים 14א(ג), 14ג(ג) או 14ג1(ג) עקב פגם בנכס נושא החוזה או העסקה" (`R-CPL:789`). The dealer
+  refunds within 14 days "ולא יגבה מהצרכן דמי ביטול כלשהם;" (`R-CPL:791`).
+- Any other cancellation falls under "(ב) ביטל צרכן חוזה לפי סעיפים 14א(ג), 14ג(ג) או 14ג1(ג) שלא מהטעמים המנויים
+  בסעיף קטן (א) –" (`R-CPL:795`). Its paragraph (1) reads "(1) יחזיר העוסק לצרכן, בתוך 14 ימים מיום קבלת ההודעה על
+  הביטול, את אותו חלק ממחיר העסקה ששולם על ידי הצרכן" and ends "זולת דמי ביטול בשיעור שלא יעלה על 5% ממחיר הנכס
+  נושא החוזה או העסקה, או 100 שקלים חדשים, לפי הנמוך מביניהם;" (both `R-CPL:797`).
+- A continuing service that has begun: "(ב1) בלי לגרוע מהוראות סעיפים קטנים (א) ו-(ב), בוטלה עסקה מתמשכת כאמור
+  בסעיף 14ג(ג) או 14ג1(ג), שהוחל במתן השירות לפיה, ישלם הצרכן את התמורה היחסית בעד השירות שניתן לו." (`R-CPL:801`).
+- The cap includes expenses: "(ד) בסעיף זה, " דמי ביטול " – לרבות הוצאות או התחייבות בשל משלוח, אריזה או כל הוצאה או
+  התחייבות אחרת שלטענת העוסק הוצאו על ידו או שהוא התחייב בהן בשל ההתקשרות בעסקה או בחוזה, או בשל ביטולה."
+  (`R-CPL:807`).
+- **The cap on a ₪79 sale** (arithmetic): 5% of ₪79 is ₪3.95, which is below ₪100, so at most ₪3.95 may be kept, and
+  nothing when the cancellation is for a defect or breach.
+  - [inference] Section 14ה, read in full (`R-CPL:789-807`), has no clause that passes card-clearing costs to the
+    consumer. That clause exists only in the regulations (1.4), which govern 14ו cancellations. Under 14ה(ד) such a
+    cost is part of the capped "דמי ביטול".
+
+**1.4 The 2010 regulations (consolidated 18-09-2023). The tick-17 section 2.5 is confirmed.**
+- They are made under 14ו: "בתוקף סמכותי לפי סעיף 14ו ו-37 לחוק הגנת הצרכן, התשמ"א-1981" (`R-REG:5`).
+- Their right to cancel: "2. צרכן רשאי לבטל הסכם בהתאם לפסקאות (1) עד (7)" (`R-REG:17`), which applies to the
+  Schedule's goods and services. Their "goods" means goods over ₪50: `" טובין " – טובין שהמחיר ששולם בעדם עולה על 50 שקלים חדשים.` (`R-REG:14`).
+- The fee: "5. (א) ביטל הצרכן את הסכם הרכישה, כאמור בתקנה 2, רשאי העוסק לגבות מהצרכן דמי ביטול בשיעור של 5% ממחיר
+  הטובין או מערך השירות או 100 שקלים חדשים לפי הנמוך מביניהם." (`R-REG:50`).
+- New here, a clearing-fee pass-through that tick 17 did not quote: "(ב) נעשתה העסקה בכרטיס אשראי והוכיח העוסק לצרכן
+  כי חברת כרטיסי האשראי או גוף אחר שעמו התקשר העוסק לביצוע סליקת כרטיסי אשראי, גבו ממנו תשלום בעד סליקת כרטיס
+  האשראי בעסקה שבוטלה, רשאי העוסק לחייב את הצרכן גם בתשלום שנגבה ממנו." (`R-REG:52`). It is limited to cancellations
+  under regulation 2.
+- The exceptions: "6. (א) זכות הביטול כאמור בתקנות אלה לא תחול לגבי –" (`R-REG:55`). They include "(7) מידע כהגדרתו
+  בחוק המחשבים, התשנ"ה-1995;" (`R-REG:69`) and "(8) טובין הניתנים להקלטה, לשעתוק או לשכפול, שהצרכן פתח את אריזתם
+  המקורית;" (`R-REG:71`).
+- The regulations define the packaging that item (8) and 14ג(ד)(5) mention: `" אריזה מקורית " – חפץ וכל חומר שהוא המשמש את היצרן או היבואן, כעטיפה למוצר שייצר או ייבא ושאינו מהווה חלק בלתי נפרד מהמוצר ואינו חיוני לצורך השימוש במוצר;` (`R-REG:10`).
+  - [inference] That is a physical wrapper. The definition is the regulations' own, and the law does not adopt it
+    for 14ג(ד)(5).
+
+**1.5 Is a ₪79 downloadable licence key, sold by Gumroad as merchant of record to an Israeli consumer, excluded from
+cancellation?**
+- **Verdict: not shown to be excluded. The rendered text leaves it to one definition in another law.**
+  - Items (1), (2) and (4) do not fit on their words [inference]: the key is not perishable, not hospitality or
+    travel, and not made to the buyer's order.
+  - Item (5) needs "אריזתם המקורית", which an emailed key has none of [inference; see 1.4 for the regulations'
+    physical definition].
+  - Item (3) excludes only "מידע כהגדרתו בחוק המחשבים" (`R-CPL:718`). The Computers Law was **not** rendered this tick.
+    Its definition of "מידע", "למעט תוכנה" (tick 17 2.4, `COMP:64`), stays at github grade. On that text, software is
+    not "information".
+  - Whether a key that unlocks a feature of a web tool is "information", "software", a "right" (a "נכס" includes
+    "זכויות", `R-CPL:39`) or a service is a characterisation no text read here makes.
+- **If the right applies**, the buyer may cancel within 14 days of receiving the key or the 14ג(ב) document,
+  whichever is later (`R-CPL:708`). The fee is capped at ₪3.95 on ₪79, and is zero for a defect or breach (1.3).
+- **Foreign merchant of record.** Nothing in the captures read addresses jurisdiction over a foreign seller.
+  14ג(א)(1) does expect a dealer with an address abroad ("בארץ ובחוץ לארץ", `R-CPL:678`). Whether Gumroad or the
+  owner is the "עוסק" is still open, as in tick-17 1.5.
+
+**1.6 The disclosure duties, before and after the sale**
+- **Before the sale, while marketing at a distance.** The opening is "14ג. (א) בשיווק מרחוק חייב העוסק לגלות לצרכן
+  פרטים אלה לפחות:" (`R-CPL:676`). The seven items:
+  - "(1) השם, מספר הזהות והכתובת של העוסק בארץ ובחוץ לארץ;" (`:678`)
+  - "(2) התכונות העיקריות של הנכס או של השירות;" (`:680`)
+  - "(3) מחיר הנכס או השירות ותנאי התשלום האפשריים;" (`:682`)
+  - "(4) מועד ודרך הספקת הנכס או השירות;" (`:684`)
+  - "(5) התקופה שבה ההצעה תהיה בתוקף;" (`:686`)
+  - "(6) פרטים בדבר אחריות לנכס;" (`:688`)
+  - "(7) פרטים בדבר זכות הצרכן לבטל את החוזה בהתאם להוראות סעיף קטן (ג) או סעיף 14ג1(ג)." (`:690`)
+- **By the time of supply, in writing.** "(ב) בעסקת מכר מרחוק יספק העוסק לצרכן בכתב, בעברית או בשפה שבה נעשתה הפניה
+  לשיווק, לא יאוחר ממועד הספקת הנכס או השירות, מסמך הכולל פרטים אלה:" (`R-CPL:692`). The contents:
+  - "(1) הפרטים האמורים בסעיף קטן (א)(1) ו-(2);" (`:694`)
+  - "(2) מחיר הנכס או השירות ותנאי התשלום החלים על העסקה;" (`:696`)
+  - "(3) האופן שבו יכול הצרכן לממש את זכותו לבטל את העסקה בהתאם להוראות סעיף קטן (ג) או סעיף 14ג1(ג);" (`:698`)
+  - "(4) שם היצרן וארץ ייצור הנכס;" (`:700`)
+  - "(5) מידע בדבר האחריות לנכס או לשירות;" (`:702`)
+  - "(6) תנאים נוספים החלים על העסקה." (`:704`)
+  - [inference] If the marketing is in Hebrew (the il-biz-tools pages are: `lang="he"` in
+    `products/il-biz-tools/_site/vat.html`, repo), the document must be in Hebrew. A Gumroad
+    receipt in English would not meet that on its own.
+- **Section 14ט: how a consumer cancels, and the matching disclosure. Tick 17 did not cover it.** It applies to a
+  right to cancel under the law **or under a contract**, so it covers a seller's own refund policy as well:
+  - "14ט. (א) היתה לצרכן זכות לבטל עסקה לפי חוק זה או לפי חוזה, יאפשר לו העוסק לבטל את העסקה בהודעת ביטול שימסור לו
+    הצרכן בכל אחת מהדרכים המפורטות להלן" (`R-CPL:857`). The ways are:
+    - "(1) בעל פה – בטלפון או בהודעה בעל פה במקום העסק, למעט אם נקבע לפי החוק כי ביטול העסקה ייעשה בדרך של הודעה
+      בכתב;" (`:859`)
+    - "(2) בדואר רשום;" (`:861`)
+    - "(3) בדואר אלקטרוני;" (`:863`)
+    - "(4) בפקסימיליה, אם יש לעוסק;" (`:865`)
+    - "(5) באינטרנט – בעסקה שניתן להתקשר לגביה עם צרכן באמצעי זה;" (`:867`)
+  - "(ב) לעניין עסקה שניתן להתקשר לגביה עם צרכן באינטרנט, ייצור עוסק בדף הראשי של אתר האינטרנט שלו קישור ייעודי
+    שבאמצעותו ניתן לשלוח הודעת ביטול בהתאם להוראות סעיף קטן (א)(5), שימוקם באופן מובלט וברור." (`R-CPL:871`)
+  - "(ג) בהודעת ביטול יפרט הצרכן את שמו ומספר הזהות שלו" (`R-CPL:873`)
+  - "(ד) עוסק יגלה לצרכן, בכתב, את הדרכים למסירת הודעת ביטול כאמור בסעיף קטן (א), את פרטי ההתקשרות הנוגעים לכל דרך
+    ביטול כאמור באותו סעיף קטן, ואת הפרטים שיש לכלול בהודעת ביטול כאמור בסעיף קטן (ג), והכול לא יאוחר ממועד הספקת
+    הטובין או השירותים;" (`R-CPL:875`)
+  - "(ה) עוסק ימסור לצרכן מידע כאמור בסעיף קטן (ד) גם בכל אחד מאלה:" (`R-CPL:877`). The two places are:
+    - "(1) בחשבונית, בקבלה או בהודעת תשלום" (`:879`)
+    - "(2) אם יש לעוסק אתר אינטרנט – בדף הראשי של האתר, ואם ניתן להתקשר בעסקה באינטרנט כאמור בסעיף קטן (ב) –
+      בסמוך לקישור הייעודי כאמור באותו סעיף קטן." (`:881`)
+  - "(ו) פרטי מידע שיש לגלותו לצרכן לפי סעיפים קטנים (ד) ו-(ה) יופיעו בסמוך אחד לשני, בהבלטה מיוחדת ובאותיות ברורות
+    וקריאות." (`R-CPL:883`)
+  - "(ז) הוראות סעיף זה לא יחולו על ביטול עסקה לפי סעיף 14ו;" (`R-CPL:885`)
+  - [inference] Two consequences, both conditional on who the "עוסק" is (tick-17 1.5, still open):
+    - The tick-17 suggestion in 2.6 (fine print saying "reply to this receipt") covers way (3), email, only. 14ט(ד)
+      asks the dealer to disclose every way in (א), with the contact details for each.
+    - If the owner is the dealer, the il-biz-tools home page would need the dedicated cancellation link (14ט(ב)) and
+      the disclosure next to it (14ט(ה)(2)). If Gumroad is the dealer, these duties fall on Gumroad's own site.
+
+### 2. Gumroad articles 51 and 335, at rendered grade
+
+**2.1 What the buyer sees, and how a seller's period shows**
+- The seller sets the policy on the product: "You can set a custom refund policy by adding it to your product
+  settings." (`R-G335:51`). The toggle is named "Specify a refund policy for this product" (`R-G335:51`).
+- The article's own example wording: "Be clear about the conditions—whether it's a 30-day money-back guarantee or a
+  firm no-refunds policy." (`R-G335:51`)
+- Where it shows: "The refund policy will be shown on the product page. If fine print is provided, the policy will be
+  clickable and the details will be displayed to the customer in a modal:" (`R-G335:51`). A deep link exists: "When
+  the policy modal is visible on the product page, the product's URL contains an anchor so you can share that URL with
+  customers to send them directly to the refund policy." (`R-G335:51`)
+- **The rendered articles do not list the allowed periods.** They name only "No refunds allowed", "a 30-day
+  money-back guarantee" and "7 days or more" (2.3). The five-period list (none, 7, 14, 30, 183) stays at github grade
+  (tick 17 1.1). What the receipt shows stays at github grade too (tick 17 1.2, `item_info.rb`), because neither
+  article mentions the receipt.
+
+**2.2 Who issues refunds**
+- The seller. Gumroad "allows and encourages its sellers to" set their own policies ("therefore Gumroad allows and
+  encourages its sellers to", `R-G51:51`). Against a chargeback threat the article tells the seller: "If a customer is
+  threatening a chargeback, we recommend that you offer them a" partial refund "using the feature we've provided you
+  with." (`R-G51:51`). The article's related link for sellers is "Issuing a refund" (`47-how-to-refund-a-customer`,
+  `R-G51:51`).
+- Gumroad too, within 90 days: "That said, Gumroad reserves the right to issue refunds within 90 days of purchase, at
+  its discretion, to prevent chargebacks." The seller is told afterwards: "If Gumroad support refunds a sale on your
+  behalf, we'll email you to let you know, along with the reason for the refund." (both `R-G51:51`).
+- A stated policy lets Gumroad Support act for the seller: "This helps your customers know what to expect and allows
+  Gumroad Support to issue refunds (or not) on your behalf." It also travels into disputes: "We also include your
+  policy in any credit card or PayPal dispute, providing an extra layer of protection for your business." (both
+  `R-G335:51`).
+- Enforcement is confirmed and refined:
+  - "If more than 1% of your customers dispute their purchases, Gumroad enforces a refund policy on your entire
+    account." (`R-G51:51`)
+  - "If your account is set to "No refunds allowed" at that point, we automatically update it to a 30-day money-back
+    guarantee; refund policies you already offer of 7 days or more stay as they are." (`R-G51:51`)
+  - "To request a different refund period of at least 7 days, contact us with the specific steps you've taken to
+    reduce disputes, and we'll apply the change for you." (`R-G51:51`)
+  - The article adds that "refunding customers who ask is the fastest way to bring your dispute rate back down."
+    (`R-G51:51`).
+- Who issues the refund to a buyer who writes in, and the 30-day escalation, are in article 190. It was not rendered,
+  so tick-17 1.3 (`A190:10-14`) stays at github grade.
+
+**2.3 Local law**
+- Brazil is the only local law named, and the rendered text narrows it: "Separately, if the buyer is a consumer in
+  Brazil and the sale is a website purchase processed by Gumroad, Brazilian law (Consumer Protection Code, Article 49)
+  gives them 7 days from delivery to withdraw from a distance purchase, including digital products." Then: "We honor
+  that request even when the product is set to no refunds, and we will email you if we refund a sale on that basis."
+  (both `R-G51:51`).
+- Article 335 repeats it: "A no-refunds policy does not override the" Brazil withdrawal right, which Gumroad says
+  "we honor for Brazilian consumers on website purchases processed by Gumroad." (`R-G335:51`).
+- App sales are carved out: "In-app purchases are refunded by Apple or Google, not by Gumroad." (`R-G51:51`).
+- **Israel is not mentioned.** A case-insensitive grep for "israel" over both `.html` files, sidebar included,
+  returns 0 matches.
+- The terms are linked, not quoted: `http://www.gumroad.com/terms` (`R-G51:51`). Tick-17 1.5 (MoR, §24 local law)
+  stays at github grade.
+- The tick-17 quotes `A51:3`, `A51:4`, `A51:6`, `A335:2` and `A335:6` are all confirmed by the rendered text. No
+  tick-17 Gumroad claim is contradicted.
+
+### 3. Tick-17 claims this section supersedes
+- 2.2, `CPL:839`: the quote of 14ג(ג)(1) stopped before "או מיום קבלת המסמך … לפי המאוחר מביניהם" (1.2 above).
+- 2.5, "Currency caveat": whether (ד)(3) changed after October 2022 is now settled. The live consolidation of
+  02-08-2026 reads the same (1.1).
+
+### 4. Next-render URLs (not yet captured; each has a written source)
+
+| URL | Slug | Source of the URL | What it settles |
+|---|---|---|---|
+| `https://www.nevo.co.il/law_html/law00/72393.htm` | `nevo-computers-law` | tick 17 2.1 (lawsofisrael listing `page_004.html`, github) | Whether "מידע" still reads "למעט תוכנה". It is the one text that decides 1.5. |
+| `http://www.gumroad.com/terms` | `gumroad-terms` | the link inside `R-G51:51` (rendered) | MoR versus licensor (who is the "עוסק"), §8.1 and §24, at rendered grade. |
+| `https://gumroad.com/help/article/190-how-do-i-get-a-refund` | `gumroad-help-get-a-refund` | `gumroad-help-center-index.html:51` (rendered, tick 17 1.6) | The buyer route: creator first, then Gumroad after 30 days, and reply-to-receipt. |
+| `https://gumroad.com/help/article/47-how-to-refund-a-customer` | `gumroad-help-issue-refund` | the relative link `47-how-to-refund-a-customer` in `R-G51:51` | How the seller refunds, the balance rule, and the fee retained (tick 17 1.4, github today). |
+
+### What this settles for FABLE_QUEUE row 17
+- (b): the live 14ג(ד) (consolidated 02-08-2026) excludes "(3) מידע כהגדרתו בחוק המחשבים, התשנ"ה-1995;" in the
+  2022 words. 14ה(ב)(1) caps the fee at 5% or ₪100, whichever is lower (₪3.95 on ₪79). 14ה(א)(1) forbids any fee on a
+  cancellation for a defect or breach.
+- No rendered text excludes a software licence key. The exclusion turns on the Computers Law's "מידע", which is
+  github grade only ("למעט תוכנה"), and that law is not yet captured.
+- 14ג(ג)(1) runs 14 days from receipt of the asset or of the written 14ג(ב) document, whichever is later.
+- 14ט (cancellation by phone, registered mail, email and internet; a home-page cancellation link; disclosure on the
+  receipt) applies to a contractual refund right too. Whose duty it is still depends on whether Gumroad or the owner
+  is the "עוסק".
+- Gumroad's live articles: the seller sets the policy and refunds. Gumroad may refund within 90 days and emails the
+  seller the reason. Brazil is the only local law named; Israel is absent.

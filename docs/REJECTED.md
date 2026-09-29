@@ -1282,6 +1282,17 @@ coded fee, or a mandate collision.
   cohort at a median of ≥ 30 daily users (the Obsidian analogue, `research/breadth/BREADTH-SWEEP.md:474-475`). Either
   reopens Firefox as a candidate for a ₪0 test, not as an admission. (At the kill, (i) had not fired: the lines ruling's
   (a) kept the existing Pro and named no new feature.)
+- **Topcoder auto-scored challenges (loop row 12) — KILLED 29.9.2026 on the camera rule (G2), at rendered grade, by its
+  pre-registered kill** (no sitting needed: `research/channel-loop/RULING-2026-09-29-loop.md` (b), "if Trolley's rendered text
+  names a selfie, liveness or video step, Topcoder is killed on the camera rule without a sitting"; the kill clause
+  "a camera step in payee onboarding", `research/channel-loop/BOARD-LOOP.md:169`). Every Topcoder withdrawal passes Trolley's
+  identity verification (github, `research/measurements/topcoder.md`), and Trolley's IDV post lists among what IDV "has built in":
+  "Live photo validation: Use the power of image recognition to ensure the uploaded ID is from the actual person submitting it."
+  (`research/rendered/trolley-trust-idv-tool.txt:292`), separate from the document check (`:290`); a live photo is a camera
+  capture whether it shows a face or an ID. Read in tick 18 and checked by an adversarial verifier
+  (`research/measurements/topcoder.md`, "29.9 (tick 18, rendered)"). The auto-scored Marathon Matches themselves were fine.
+  **Reopens if** Trolley's rendered payee flow (or Topcoder's payment help) shows verification by document upload only, with
+  no live photo, selfie, liveness or video step.
 - **Shopify — pre-ruled conditional kill** on a rendered mandatory listing fee (the note under "Earlier rejections").
 - **Whop — re-recorded as camera-gated** (the correction under `content-seo`, "Clipping"): the rail is not reusable.
 - **Apify — the hidden-Actor note** under `distribution` → "What goes to the board".

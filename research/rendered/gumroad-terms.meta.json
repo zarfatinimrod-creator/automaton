@@ -1,0 +1,17 @@
+{
+  "url": "http://www.gumroad.com/terms",
+  "slug": "gumroad-terms",
+  "fetchedAt": "2026-09-29T10:46:46.872Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 153038,
+  "sha256": "6c4ab50be5f3dce5ff8729d4159465f10f9d0c1cc948e9471d318c6078516b85",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/gumroad-terms.html",
+  "textPath": "research/rendered/gumroad-terms.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
