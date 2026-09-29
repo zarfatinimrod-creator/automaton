@@ -285,3 +285,131 @@
 - קריאת §5–§7 של הפתק ושל `tiktok-policy.md` כדי לצטט נכון ב-N12 ו-N14 (פלט אחד נחתך ונקרא מקובץ).
 - הדמיית הדפסה פעמיים (הרצה ראשונה בלי צילום מסך, כי אין כלי להמרת PDF לתמונה).
 - ההודעות החוזרות על רשימת המשימות של הסשן הראשי (לא רלוונטיות לבונה).
+
+---
+
+# המתקן (Opus) — תיקוני שתי הסקירות, יושר וקוד (29.9.2026)
+
+## 1. מה המשתמש ביקש
+
+הסקריפט המתזמר העביר את שני דוחות הבונים ואת שתי הסקירות (יושר: 14 פריטים; קוד: 9 פריטים) וביקש לתקן כל ליקוי
+שמחזיק מול הקוד, בכתיבת בדיקה לפני קוד, לנמק כאן כל ליקוי שנדחה, להריץ שוב את בדיקות המוצר, את `pnpm typecheck`
+ואת `src/__tests__/revenue`, ולבצע commit בענף ה-worktree בלבד (בלי push, בלי stash, בלי לגעת ב-CHECKPOINT,
+CHANNEL_LOOP, FABLE_QUEUE, MISSION או CLAUDE.md).
+
+## 2. הפעולות המרכזיות שביצעתי
+
+1. **ההצעה ב-Gumroad חייבת להתאים לדף** (יושר 1, 3, 8, 11, 12; קוד 1, 4). `checkOffer` חדש ב-
+   `scripts/gumroad-pro-product.js`, ש-`enable` מריץ לפני `PUT .../enable` ושהפקודה החדשה `check` מריצה לבד:
+   - `site.json` במאגר ובאתר הפרוס נושאים אותו מזהה ואותו מחיר;
+   - Gumroad גובה בדיוק את המחיר הזה, פעם אחת;
+   - כתובת החשבון (`GET /v2/user`) היא הסוד `BRAND_MAIL_ADDRESS` של צעד 8. ההשוואה לא מדפיסה אף כתובת;
+   - מדיניות ההחזרים שהקונה יראה היא "No refunds allowed".
+2. `readBackPrice` מסרב גם למנוי מדורג (`is_tiered_membership`, `recurrences`), למחירי PPP (במוצר ובאפשרויות) ולאפשרות
+   שמשנה את החיוב (`price_difference`, `is_pay_what_you_want`, `recurrence_prices`).
+3. `brandMailboxGreen` בודק עכשיו את מפתחות `repliesByVenue` מול `VENUE_ID`, כמו `brand-mail.ts`. נוסף
+   `src/__tests__/revenue/brand-mail-parity.test.ts`, שמזין את שני הקוראים ב-31 אותם fixtures.
+4. `gumroad-pro-product.yml`: שלב ה-enable מקבל `BRAND_MAIL_ADDRESS`. `gumroad-pro-probe.yml`: נוספו setup-node ושלב
+   `check` בסוף (קריאה בלבד).
+5. **שאלות המחיר לפני שיש מכירה** (יושר 5, קוד 6): `<details data-pro-sale>` ("מה קורה אחרי התשלום?", "מי מוכר את
+   Pro", ו"כמה עולה Pro" בדף הבית). `withProPrice` מוריד אותן ואת תאומי ה-JSON-LD שלהן מהבנייה כל עוד הכפתור אינו
+   `ready`, ובודק גם את התאומים שלהן לסטייה.
+6. **נוסח** (יושר 6, 7, 9; קוד 7):
+   - שורת ה-nudge היא עכשיו "בהדפסה ובשמירה כ-PDF המסמך יוצא בלי המיתוג שניסיתם…", כי `afterprint` נורה גם כשמבטלים;
+   - שאלה (c) ושלב 4 בהפעלה אומרים שההפעלה מוסיפה הדפסה ו-PDF, לא ש"השדות נפתחים";
+   - תשובת ה-JSON-LD בדף הבית כבר לא נגמרת בתווית קישור.
+7. **כותרת ההדפסה של PCN874** (יושר 10, קוד 5):
+   - הכותרת מוסתרת בטעינה, מוצגת עם תוצאה, ומתרוקנת ומוסתרת כשבחירה מאוחרת נכשלת;
+   - נוסף `.print-only[hidden]{display:none !important}`;
+   - נבדק גם ב-Chromium headless בהדמיית הדפסה.
+8. **שורת המקור** (יושר 2, 4, 14; קוד 2):
+   - בקונפיג יש עכשיו `check {on, how, record, note}`. "נבדק" מופיע רק כש-`how` הוא `read`; בחיפוש השורה אומרת
+     "הושווה לתוצאות חיפוש: 7.9.2026"; בלי רשומה היא אומרת "תאריך הבדיקה לא תועד";
+   - הבדיקות פותחות את קובץ הרשומה ודורשות בו את התאריך ואת המספר;
+   - `allocation.html` קיבל שורת מקור, ודף הבית קיבל שורה שמפנה לדפי הכלים;
+   - שורה 7 ברשימת הווידאו אומרת אילו דפים עוד לא עוברים אותה.
+9. **הפניות מתוקנות ב-`07-ai-money-tooling.md`** (יושר 13): הערות התיקון מזהות את השורות לפי התווית שלהן.
+10. **שומרים שמוטציה עברה אותם** (קוד 3, 8, 9):
+    - בדיקות בנייה חצי-מוגדרות, בנייה עם JSON-LD שסטה, ותאום חסר או שאלה שהשם שלה שונה;
+    - דף osek-patur שנטען ב-2027, ומסנן מזהי הכללים בשיתוף;
+    - `.doc .brand-logo[hidden]{display:none}`.
+
+## 3. קבצים/מערכות ששונו
+
+- `products/il-biz-tools/scripts/gumroad-pro-product.js`, `src/lib/gumroad.js`, `src/lib/pro-offer.js`,
+  `src/lib/pro-nudge.js`, `src/lib/source-line.js`, `src/config/{site,osek-patur,vat,allocation-number}.json`.
+- `products/il-biz-tools/{index,invoice,osek-patur,vat,allocation,pcn874}.html`, `assets/page-pcn874.js`,
+  `assets/style.css`, `README.md`.
+- בדיקות: `tests/{gumroad-pro-product,pro-faq,pro-nudge,pcn874-page,pcn874-share,license-branding,statutory-sources,
+  tool-leads}.test.js`, `tests/osek-patur-page.test.js` (חדש), `src/__tests__/revenue/brand-mail-parity.test.ts` (חדש).
+- `.github/workflows/gumroad-pro-product.yml`, `.github/workflows/gumroad-pro-probe.yml`.
+- `docs/VIDEO_PUBLISHING_CHECKLIST.md`, `research/tiktok/07-ai-money-tooling.md`.
+- `docs/OWNER_STEPS.he.md` לא השתנה, ולכן לא נבנה PDF מחדש.
+
+## 4. החלטות והנחות משמעותיות
+
+- **מדיניות ההחזרים.** השער מקבל רק "No refunds allowed", ו-`create` לא קובע מדיניות.
+  - מה המדיניות לפני A1 זו החלטה של הת'רד הראשי. כל עוד לא הוחלט, `enable` יסרב, כי ברירת המחדל של חשבון חדש
+    היא 30 יום.
+  - הקביעה עצמה היא `PUT /v2/refund_policy` עם `refund_period=none`, באותו טוקן. זו עבודת סוכן, בלי צעד לבעלים.
+  - המקורות נקראו ב-antiwork/gumroad main ב-29.9.2026: `refund_policy.rb`, `user.rb`,
+    `api/v2/refund_policies_controller.rb`, `product/as_json.rb`.
+- **כתובת החשבון.** ההשוואה היא מול `BRAND_MAIL_ADDRESS`, ולא מול `data-a11y-contact` כפי שהציעה סקירת היושר.
+  הסוד הוא תיבת צעד 8 עצמה, ואיש הקשר בדף הנגישות עוד לא קיים (חוסם פרסום). `GET /v2/user` מחזיר `email` לטוקן עם
+  `edit_products` (`user/as_json.rb`, `base_controller.rb`).
+- **מס.** ישראל לא נמצאת באף רשימת גבייה של Gumroad (`lib/utilities/compliance/countries.rb`), ולכן ההערות רוככו
+  ונאמר בהן שקונה בחו"ל עשוי לראות מע"מ בקופה.
+- **allocation.** המקור המוצג הוא Grant Thornton, מתוך `sources`. אין רשומה מתוארכת, ולכן אין `check`.
+- **"הושווה לתוצאות חיפוש".** הניסוח נבחר על פני הסרת התאריך, כי זה מה שקרה בפועל ב-7.9 והרשומה מראה את זה.
+
+**ליקויים שנדחו או נדחו בחלקם, ולמה:**
+1. **יושר 1, החלק "create יקבע את המדיניות":** לא נבנה. הסקירה עצמה מתנה אותו בהחלטת הת'רד הראשי. השער ב-`enable`
+   מבטיח שאין מכירה עם הבטחת החזר עד אז.
+2. **יושר 8, "להוסיף 'לפני מס, אם חל' בדף":** נדחה. Gumroad לא גובה מס מקונה בישראל, והקהל עברי. התוספת הייתה
+   גורמת לקונה ישראלי לצפות למע"מ שלא יתווסף, כלומר נוסח מטעה. במקומה רוככו ההערות בקוד וב-`site.json`.
+3. **קוד 1, "שום דבר לא בודק שוב אחרי enable":** `check` נוסף לבדיקה של AT-16, אבל לא נוסף לה schedule. היא נשארת
+   `workflow_dispatch`, ולוח זמנים הוא החלטה על דקות Actions ועל הלולאה, של הת'רד הראשי. בינתיים רק מי שיכול לערוך
+   מחיר ב-Gumroad (הבעלים או הסוכן) יכול לגרום לסטייה.
+4. **יושר 13, ההפניה `08-reads/tiktok-policy.md:248`:** היא עדיין מצטטת את `07-ai-money-tooling.md:134` ואת
+   `:65/:166/:198` לפי המספור של 28.9. לא תוקנה, כי זו רשומת קריאה מתוארכת ולא הערת התיקון שהסקירה ציינה.
+
+## 5. שגיאות וניסיונות שנכשלו
+
+- הבדיקה "חשבון בלי כתובת" עברה בטעות בגרסה הראשונה. `email: undefined` הפעיל את ערך ברירת המחדל ב-destructuring,
+  ולכן הוחלף ב-`null`.
+- ניסיון לקרוא את `kolzchut`, `ynet` ו-`gov.il` מהקונטיינר נכשל (000, egress חסום), ולכן לא הייתה אפשרות להפוך את
+  השורה ל"נבדק".
+- ה-API של GitHub ל-antiwork/gumroad חסום (צריך add_repo). הקבצים נקראו דרך `raw.githubusercontent.com`, ונתיב
+  `countries.rb` נמצא בניחוש.
+
+## 6. בדיקות ופעולות ולידציה
+
+- כל בדיקה חדשה נכתבה לפני הקוד וראיתי אותה נכשלת. בדיקות לשומרים שכבר היו בקוד אומתו במוטציה: הוסרה השורה,
+  הבדיקה נכשלה, והשורה הוחזרה.
+  - 21 מוטציות ב-`gumroad-pro-product.js`. שתיים (`!want`, `!got`) שרדו בסבב הראשון ונהרגו אחרי שנוספה בדיקה לכתובת
+    חסרה בשני הצדדים.
+  - 4 מוטציות בבדיקת ה-parity בשורש.
+  - 2 ב-`build-site.js` ו-4 ב-`pro-offer.js`.
+  - 2 ב-`page-osek-patur.js` ו-1 ב-`pcn874-share.js`.
+- `products/il-biz-tools`:
+  - `npx vitest run`: 28 קבצים, 639 בדיקות (היו 27/586);
+  - `node scripts/check-html.js`: "all pages ok";
+  - `pcn874-rule-reference.js --check`: תקין.
+- `products/pcn874`: 331 בדיקות.
+- שורש: `pnpm typecheck` נקי. `npx vitest run src/__tests__/revenue`: 39 קבצים, 1006 בדיקות (היו 38/973).
+- Chromium headless בהדמיית הדפסה:
+  - כותרת ה-PCN874 היא `none` לפני בדיקה, `block` עם שם קובץ ותאריך אחרי קובץ A, ו-`none` עם שם ריק אחרי קובץ B
+    גדול מדי;
+  - הלוגו המוסתר בקבלה החינמית הוא `display:none` בהדפסה.
+- לא נבדק: ריצה חיה מול Gumroad (אין טוקן), תיבת הדפסה אמיתית, `afterprint` אמיתי.
+
+## 7. עבודה ידנית שחזרה על עצמה וכדאי להפוך לאוטומטית
+
+- **מריץ מוטציות:** סקריפט קטן ב-scratchpad (החלפה, הרצת קובץ הבדיקה, שחזור). כדאי כלי קבוע ב-`scripts/`.
+- **הדמיית הדפסה ב-Chromium:** בפעם השלישית ברצף. הסקריפט הקבוע שבונה B הציע עדיין חסר.
+
+## 8. על מה בוזבזו אסימונים, לפי פעולה
+
+- ניחוש נתיבים ב-antiwork/gumroad כי ה-API חסום (שני סבבים עד `lib/utilities/compliance/countries.rb`).
+- הרצה חוזרת של בדיקת הכתובת בגלל ה-sentinel של `undefined`.
+- ההודעות החוזרות על רשימת המשימות של הסשן הראשי (לא רלוונטיות למתקן).
