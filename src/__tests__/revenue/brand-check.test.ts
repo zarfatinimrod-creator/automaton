@@ -130,10 +130,15 @@ describe("brand-check probes, against a fake fetch (nothing leaves the container
 describe("the T1 sub-brand list (RULING-2026-09-29-lines.md (e))", () => {
   const path = "research/measurements/t1-subbrand-candidates.txt";
 
-  it("holds the five names in the ruling's order, and not the brand's own fallback", () => {
+  it("opens with the ruling's five names in its order, adds later rounds of five after them, and never the brand's own fallback", () => {
     const text = readFileSync(path, "utf8");
-    expect(parseCandidates(text)).toEqual(["chartexplained", "plotnotes", "axisnotes", "dataplotted", "linesandbars"]);
-    expect(parseCandidates(text)).not.toContain("tikufi");
+    const names = parseCandidates(text);
+    expect(names.slice(0, 5)).toEqual(["chartexplained", "plotnotes", "axisnotes", "dataplotted", "linesandbars"]);
+    // Ruling (e) APPLY 3: when none of a round is free on all four probes, the loop writes the next five and re-runs,
+    // keeping the earlier rounds above so the list order holds.
+    expect(names.length % 5).toBe(0);
+    expect(new Set(names).size).toBe(names.length);
+    expect(names).not.toContain("tikufi");
     expect(text).toContain("RULING-2026-09-29-lines.md (e)");
     // The account question is not decided by the name, and is not decided here.
     expect(text).toMatch(/FABLE_QUEUE row 16/);
