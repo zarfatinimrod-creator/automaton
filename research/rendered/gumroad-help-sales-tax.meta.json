@@ -1,0 +1,17 @@
+{
+  "url": "https://gumroad.com/help/article/121-sales-tax-on-gumroad",
+  "slug": "gumroad-help-sales-tax",
+  "fetchedAt": "2026-09-29T13:02:16.775Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 18654,
+  "sha256": "231113c245ac05823d9cd33c4da068ca3591b08ff048b3de4b11e37fe71b9787",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/gumroad-help-sales-tax.html",
+  "textPath": "research/rendered/gumroad-help-sales-tax.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

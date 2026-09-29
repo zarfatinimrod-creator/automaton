@@ -1,0 +1,17 @@
+{
+  "url": "https://gumroad.com/help/article/46-what-currency-does-gumroad-use",
+  "slug": "gumroad-help-currency",
+  "fetchedAt": "2026-09-29T13:02:15.729Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 22012,
+  "sha256": "d1c64b7a9db29b94c11e57ba7df5d7ac17182f17485fad92674db92cfa5cdc1f",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/gumroad-help-currency.html",
+  "textPath": "research/rendered/gumroad-help-currency.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

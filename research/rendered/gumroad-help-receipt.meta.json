@@ -1,0 +1,17 @@
+{
+  "url": "https://gumroad.com/help/article/204-get-to-know-your-gumroad-receipt",
+  "slug": "gumroad-help-receipt",
+  "fetchedAt": "2026-09-29T13:02:13.615Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 20711,
+  "sha256": "79d7561bc12928e4f457b880efa936bf696a70efc3fae556029a2bc8fca30400",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/gumroad-help-receipt.html",
+  "textPath": "research/rendered/gumroad-help-receipt.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
