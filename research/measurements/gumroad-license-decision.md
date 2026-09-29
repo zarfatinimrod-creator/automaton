@@ -26,6 +26,14 @@ The owner does nothing per sale. Nothing is added to his seven steps. The signin
 | What exactly does `verify` return? | Success: `{ success: true, uses, purchase: { …ping payload…, refunded, chargebacked, subscription_ended_at, subscription_cancelled_at, subscription_failed_at } }` — `WHITELIST_PURCHASE_ATTRIBUTES` at `:11-12`; the ping payload adds `email`, `full_name`, `price`, `card`, `ip_country`, `disputed`, `dispute_won`, `license_key`. Failure: HTTP 404 with one of exactly three bodies: `"This license key has been disabled."` (`:38`), `"That license does not exist for the provided product."` (`:86`), `"Access to the purchase associated with this license has expired."` (`:89`). Non-string params → HTTP 400 (`:110`). `increment_uses_count` increments unless the literal `"false"` is sent (`:117`, `:58`). | CODE; the "does not exist" body was also RENDERED on 25.9 | `app/controllers/api/v2/licenses_controller.rb`; the documented example payload in `_76-license-keys.html.erb` |
 | `refund_sales` scope? | **Not** in `public_scopes` (it is an optional scope, `doorkeeper.rb:42`). The colony cannot refund by API with the owner's token. | CODE | `config/initializers/doorkeeper.rb:10,42` |
 
+> **Correction to the `refund_sales` row, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §4.5, N14e; read in antiwork/gumroad main on 28.9.2026, not run).
+> `app/controllers/api/v2/sales_controller.rb:7` authorises refund with `doorkeeper_authorize! :refund_sales, :edit_sales`,
+> `base_controller.rb:7-8` adds `:account`, `config/initializers/doorkeeper.rb` puts `edit_sales` and `account` in
+> `public_scopes`, and `app/models/oauth_application.rb:121-122` gives a new application `public_scopes` by default. So a
+> dashboard-minted token carries a scope the refund action accepts (by Doorkeeper's any-of scope semantics); the
+> colony can refund by API. The remaining gates are a mailbox the agent reads, a responder, and a Gumroad balance that
+> covers the refund. The row above is left as it was written.
+
 ---
 
 ## 2. Why C — against the weights the task set
@@ -182,6 +190,15 @@ A stub cannot pass this set: AT-2/7/8 count fetch calls and inspect bodies, AT-3
 3. **Gumroad's review after the first 3-4 sales** may read a web-feature licence differently from "software". Gumroad's help text supports the shape and the product carries real content; still not a ruling. The existing kill criterion "Gumroad account rejected or the seller review fails" covers it.
 4. **The first real key verifies only with the first real sale.** The first buyer is the live test. Made safe: transient failures never read "invalid", the key is kept and retried, and the README says "not yet verified" until the ledger says otherwise.
 5. **Refunds are a customer contact the owner does not do.** `refund_sales` is not in the minted scopes, so the colony cannot refund by API; a refund request lands in the seller's Gumroad inbox. This belongs to the whole Gumroad rail, not to this decision, and the seller's refund-policy setting and Gumroad's buyer-side handling need a read before the first sale.
+
+   > **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §4.5, N14e; read in antiwork/gumroad main on 28.9.2026, not run).
+   > `app/controllers/api/v2/sales_controller.rb:7` authorises refund with `doorkeeper_authorize! :refund_sales, :edit_sales`,
+   > `base_controller.rb:7-8` adds `:account`, `config/initializers/doorkeeper.rb` puts `edit_sales` and `account` in
+   > `public_scopes`, and `app/models/oauth_application.rb:121-122` gives a new application `public_scopes` by default. So a
+   > dashboard-minted token carries a scope the refund action accepts (by Doorkeeper's any-of scope semantics); the
+   > colony can refund by API. The remaining gates are a mailbox the agent reads, a responder, and a Gumroad balance that
+   > covers the refund. Item 5 is left as it was written.
+
 6. **Buyer PII transits the buyer's own browser** in the verify response (email, name, card display, `ip_country`). A property of Gumroad's API we cannot switch off; discarded on arrival (AT-9) and disclosed (§6).
 7. **Client-side gating is bypassable** by editing JavaScript — unchanged from today and already stated in the README.
 8. **Key sharing is not enforced against.** No seat count; the seller sees `uses`. Accepted and disclosed ("any browser").

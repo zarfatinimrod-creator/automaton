@@ -3,5 +3,11 @@
   "ceiling": 122833,
   "warnBand": 0.85,
   "verified": true,
-  "source": "https://www.kolzchut.org.il/he/עוסק_פטור"
+  "source": "https://www.kolzchut.org.il/he/עוסק_פטור",
+  "check": {
+    "on": "2026-09-07",
+    "how": "search",
+    "record": "research/measurements/serp/2026-09-07-hebrew-calculators.md",
+    "note": "The only dated record is the search read of 7.9.2026: the search tool's summary stated 122,833 and Kol Zchut was a result, but no result page was opened (the record says so), so this is a comparison with search results, not a read of the source. The README's 'Verified figures and sources (September 2026)' lists the secondary sources (Kol Zchut, Bizportal, mako, CPA circulars) without a dated record. No gov.il page has been read, and Kol Zchut answers the runners with 403 (render of 28.9.2026). A dated read of a primary page (note §8.1 N13) turns this into how: \"read\"."
+  }
 }

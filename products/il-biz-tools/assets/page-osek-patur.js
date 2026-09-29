@@ -1,10 +1,19 @@
 import { initPage, $, setMoney } from './common.js';
 import { trackOsekPatur, MONTH_NAMES_HE, OSEK_PATUR_CEILING, OSEK_PATUR_YEAR, DEFAULT_WARN_BAND, statusLabelHe } from '../src/lib/osek-patur.js';
 import { parseAmount, formatILS } from '../src/lib/money.js';
+import { staleYearHe } from '../src/lib/source-line.js';
+import osekConfig from '../src/config/osek-patur.json' with { type: 'json' };
 
 initPage();
 const KEY = `ilbiz.osek-patur.${OSEK_PATUR_YEAR}`;
 $('#year').textContent = String(OSEK_PATUR_YEAR);
+// A ceiling is set per calendar year: once the year is over and nobody has
+// checked the new one, say so beside the source line (TikTok note N8).
+const stale = staleYearHe(osekConfig, new Date());
+if (stale) {
+  $('#ceiling-stale').textContent = stale;
+  $('#ceiling-stale').hidden = false;
+}
 setMoney($('#ceiling'), OSEK_PATUR_CEILING, 0);
 $('#meter .band').style.right = `${DEFAULT_WARN_BAND * 100}%`;
 

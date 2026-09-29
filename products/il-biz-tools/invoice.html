@@ -33,6 +33,36 @@
       "@type": "Question",
       "name": "איפה נשמרות הקבלות שלי?",
       "acceptedAnswer": { "@type": "Answer", "text": "בזיכרון המקומי של הדפדפן במכשיר שלכם בלבד (localStorage). הקבלות והלקוחות אינם נשלחים לשום שרת; רק מפתח רישיון Pro נבדק מול Gumroad – פעם אחת בהפעלה, ואחר כך לכל היותר פעם בשבוע. ניקוי נתוני האתר בדפדפן ימחק אותן – שמרו PDF לכל קבלה." }
+    },
+    {
+      "@type": "Question",
+      "name": "למה לשלם, אם מחולל הקבלות חינמי?",
+      "acceptedAnswer": { "@type": "Answer", "text": "לא חייבים. המחולל, שמירת הלקוחות, המספור האוטומטי, ההדפסה והשמירה כ-PDF חינמיים ובלי הרשמה. Pro מוסיף דבר אחד בלבד: הלוגו של העסק וצבע המותג על המסמך המודפס." }
+    },
+    {
+      "@type": "Question",
+      "name": "מה Pro מוסיף, ומה הוא לא עושה?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Pro מוסיף את הלוגו של העסק וצבע מותג למסמך שאתם מדפיסים או שומרים כ-PDF במחולל הזה: קבלה, חשבונית עסקה או חשבונית עסקה / קבלה. הוא לא מפיק חשבונית מס, הוא לא תוכנת הנהלת חשבונות ולא ייעוץ מס, והוא לא משנה את שאר הכלים באתר." }
+    },
+    {
+      "@type": "Question",
+      "name": "מה קורה אחרי התשלום?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Gumroad שולחת אליכם במייל קבלה ובה מפתח רישיון. חוזרים לכאן, פותחים בתיבת ה-Pro את \"יש לי מפתח רישיון\", מדביקים את המפתח ולוחצים \"הפעלה\". הדפדפן בודק את המפתח מול Gumroad, ומאותו רגע הלוגו והצבע מופיעים גם בהדפסה ובשמירה כ-PDF. אחרי ההפעלה המיתוג עובד גם בלי אינטרנט." }
+    },
+    {
+      "@type": "Question",
+      "name": "זה מנוי?",
+      "acceptedAnswer": { "@type": "Answer", "text": "לא. Pro הוא תשלום חד-פעמי, בלי מנוי ובלי חיוב חוזר. אפשר להזין את אותו מפתח בכל דפדפן." }
+    },
+    {
+      "@type": "Question",
+      "name": "הלוגו שלי עולה לשרת כלשהו?",
+      "acceptedAnswer": { "@type": "Answer", "text": "לא. הלוגו והצבע נשמרים בדפדפן שלכם בלבד. בבדיקת הרישיון הדפדפן שולח ל-Gumroad רק את המפתח ואת מזהה המוצר; הפירוט המלא תחת \"מה נשלח לאן\" בתיבת ה-Pro." }
+    },
+    {
+      "@type": "Question",
+      "name": "מי מוכר את Pro, ואיזו קבלה מקבלים?",
+      "acceptedAnswer": { "@type": "Answer", "text": "המכירה נעשית ב-Gumroad, בחנות Mehudak (מהודק). Gumroad היא המוכרת הרשמית (merchant of record): היא גובה את התשלום ושולחת אליכם את הקבלה שלה במייל." }
     }
   ]
 }
@@ -104,14 +134,17 @@
       <button type="button" class="btn secondary" id="save">שמירה בדפדפן</button>
       <button type="button" class="btn secondary" id="new">מסמך חדש</button>
     </div>
+    <p class="pro-nudge" id="pro-nudge" role="status" hidden><span id="pro-nudge-text"></span> <a href="#pro">לתיבת ה-Pro</a> <button type="button" class="btn secondary small" id="pro-nudge-close" aria-label="סגירת ההודעה">✕</button></p>
   </form>
 
   <section class="card pro-box" id="pro">
-    <h3>Pro – מיתוג המסמך</h3>
+    <h3>Pro – הלוגו וצבע המותג על המסמך</h3>
     <p>הוספת הלוגו של העסק וצבע מותג למסמך המודפס. כל שאר הכלים באתר – שמירת לקוחות, מספור אוטומטי, יצוא ל-PDF והמסמכים השמורים – חינמיים ונשארים חינמיים.</p>
+    <p class="pro-terms"><strong class="pro-price" id="pro-price" hidden></strong> תשלום חד-פעמי, בלי מנוי.</p>
     <div class="actions">
       <button type="button" class="btn" id="pro-cta" disabled>בקרוב</button>
       <span class="note" id="pro-note">המיתוג עדיין לא נמכר – החנות טרם נפתחה, ואין כאן מה לקנות.</span>
+      <span class="note pro-trust">הלוגו והמסמכים נשמרים בדפדפן שלכם בלבד; רק מפתח הרישיון נבדק מול Gumroad.</span>
     </div>
     <details id="pro-activate">
       <summary>יש לי מפתח רישיון</summary>
@@ -135,13 +168,14 @@
       <p>הרישיון הוא תשלום חד-פעמי, בלי מנוי, ואפשר להזין את המפתח בכל דפדפן שתרצו. ניקוי נתוני האתר בדפדפן מוחק את ההפעלה — המפתח נשאר בקבלה מ-Gumroad, ומזינים אותו שוב.</p>
     </details>
     <div id="branding-fields" hidden>
+      <p class="note" id="brand-trial-note" hidden>אפשר לנסות לפני שקונים: העלו לוגו ובחרו צבע, והם יופיעו בתצוגה המקדימה כאן על המסך. בהדפסה ובשמירה כ-PDF הם יופיעו רק אחרי הפעלת Pro.</p>
       <div class="row">
         <div class="field"><label for="brand-logo">לוגו (PNG/JPG/SVG, עד 512KB)</label><input type="file" id="brand-logo" accept="image/png,image/jpeg,image/webp,image/svg+xml"></div>
         <div class="field"><label for="brand-accent">צבע מותג</label><input type="color" id="brand-accent" value="#1f3a5f"></div>
       </div>
       <div class="actions">
         <button type="button" class="btn secondary" id="brand-clear">הסרת הלוגו</button>
-        <span class="note" id="brand-note">המיתוג נשמר בדפדפן שלך בלבד.</span>
+        <span class="note" id="brand-note">המיתוג נשמר בדפדפן שלכם בלבד.</span>
       </div>
     </div>
   </section>
@@ -195,6 +229,16 @@
     <details><summary>אילו פרטים חייבים להופיע בקבלה של עוסק פטור?</summary><p>שם העסק ומספר העוסק, המילה "קבלה", מספר סידורי רץ, תאריך, שם הלקוח, פירוט, סכום, אמצעי תשלום, והערה "עוסק פטור – לא חייב במע״מ". שמרו עותק של כל קבלה.</p></details>
     <details><summary>איך שומרים את הקבלה כ-PDF?</summary><p>לוחצים "הדפסה / PDF" ובוחרים ביעד "שמירה כ-PDF" בחלון ההדפסה. המסמך מעוצב לדף A4.</p></details>
     <details><summary>איפה נשמרות הקבלות שלי?</summary><p>בזיכרון המקומי של הדפדפן במכשיר שלכם בלבד. הקבלות והלקוחות אינם נשלחים לשום שרת; רק מפתח רישיון Pro נבדק מול Gumroad – פעם אחת בהפעלה, ואחר כך לכל היותר פעם בשבוע (פירוט ב"מה נשלח לאן" שבתיבת ה-Pro). ניקוי נתוני האתר ימחק אותן – שמרו PDF לכל קבלה.</p></details>
+  </section>
+
+  <section class="faq card" id="pro-faq">
+    <h2>שאלות על Pro ועל המחיר</h2>
+    <details><summary>למה לשלם, אם מחולל הקבלות חינמי?</summary><p>לא חייבים. המחולל, שמירת הלקוחות, המספור האוטומטי, ההדפסה והשמירה כ-PDF חינמיים ובלי הרשמה. Pro מוסיף דבר אחד בלבד: הלוגו של העסק וצבע המותג על המסמך המודפס.</p></details>
+    <details><summary>מה Pro מוסיף, ומה הוא לא עושה?</summary><p>Pro מוסיף את הלוגו של העסק וצבע מותג למסמך שאתם מדפיסים או שומרים כ-PDF במחולל הזה: קבלה, חשבונית עסקה או חשבונית עסקה / קבלה. הוא לא מפיק חשבונית מס, הוא לא תוכנת הנהלת חשבונות ולא ייעוץ מס, והוא לא משנה את שאר הכלים באתר.</p></details>
+    <details data-pro-sale><summary>מה קורה אחרי התשלום?</summary><p>Gumroad שולחת אליכם במייל קבלה ובה מפתח רישיון. חוזרים לכאן, פותחים בתיבת ה-Pro את "יש לי מפתח רישיון", מדביקים את המפתח ולוחצים "הפעלה". הדפדפן בודק את המפתח מול Gumroad, ומאותו רגע הלוגו והצבע מופיעים גם בהדפסה ובשמירה כ-PDF. אחרי ההפעלה המיתוג עובד גם בלי אינטרנט.</p></details>
+    <details><summary>זה מנוי?</summary><p>לא. Pro הוא תשלום חד-פעמי<span data-pro-price></span>, בלי מנוי ובלי חיוב חוזר. אפשר להזין את אותו מפתח בכל דפדפן.</p></details>
+    <details><summary>הלוגו שלי עולה לשרת כלשהו?</summary><p>לא. הלוגו והצבע נשמרים בדפדפן שלכם בלבד. בבדיקת הרישיון הדפדפן שולח ל-Gumroad רק את המפתח ואת מזהה המוצר; הפירוט המלא תחת "מה נשלח לאן" בתיבת ה-Pro.</p></details>
+    <details data-pro-sale><summary>מי מוכר את Pro, ואיזו קבלה מקבלים?</summary><p>המכירה נעשית ב-Gumroad, בחנות Mehudak (מהודק). Gumroad היא המוכרת הרשמית (merchant of record): היא גובה את התשלום ושולחת אליכם את הקבלה שלה במייל.</p></details>
   </section>
 </main>
 

@@ -72,6 +72,13 @@ human to tap "post" is not a distribution channel for us.
 | **TikTok** | Content Posting API. Prior colony research (`docs/REJECTED.md`, 2026-09-03): TikTok "is currently unable to onboard personal accounts or individual developers", and unaudited clients can only post `SELF_ONLY` (private). Nothing this session contradicts it. | **CLOSED** to us directly. |
 | **LinkedIn (company page)** | Posts API `/rest/posts` with `w_organization_social`, via the **Community Management API**, which is **"only available for legal registered entities (e.g. LLC, Corporations, 501(c)) and not individual developers"**; media uploads go through `/rest/videos` chunked; reported cap **150 uploads/24h per connected account**. *(snippet quoting Microsoft Learn, which is blocked. **URL to open: https://learn.microsoft.com/en-us/linkedin/marketing/community-management/community-management-overview**)* | **CLOSED to an individual developer** on the direct route. |
 
+> **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14a; §5.5 there). The YouTube row's "OPEN to an individual developer" holds for
+> calling `videos.insert`, not for publishing: uploads made through an unverified API project are locked as
+> private, and "For videos that have been locked as private due to upload via an unverified API service, you will
+> not be able to appeal" (`research/rendered/youtube-private-lock-help.txt:84`, rendered). The routes that survive
+> are an audited publisher's free tier (`research/faceless-youtube/T1-PROTOCOL.md`) or a manual upload. The row
+> above is left as it was written.
+
 ### 1.1 The route around three of those four gates
 
 Third-party publishing APIs hold the platform partnerships so their customers do not have to. This is

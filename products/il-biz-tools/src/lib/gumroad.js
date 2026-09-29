@@ -13,6 +13,30 @@
 // (research/measurements/gumroad-license-decision.md, Option C). That check
 // needs the product's public id, which is why the button needs it too: a key
 // the page cannot check against the product it was sold for is nothing.
+//
+// The price is Gumroad's, never ours: the product job reads the product back
+// from Gumroad and copies its `price` (minor units) and `currency` into
+// site.json (scripts/gumroad-pro-product.js, writeSiteJson), refusing a product
+// whose charge is not that one number, once (membership, pay-what-you-want,
+// purchasing-power-parity prices, priced options). Nothing on the page types a
+// number, and `enable` and the AT-16 probe (`check`) compare Gumroad's live
+// price with the deployed page's. What it cannot cover: tax Gumroad adds at
+// checkout for buyers in countries where it collects VAT/GST. Israel is in
+// none of its lists (antiwork/gumroad lib/utilities/compliance/countries.rb,
+// read 29.9.2026), so an Israeli buyer pays the price shown; a buyer abroad may
+// see tax added at checkout, before paying.
+import { formatILS } from './money.js';
+
+/**
+ * The one name the offer carries everywhere - the Pro box heading, the Gumroad
+ * product and its activation steps - named by what the buyer gets. The product
+ * job reuses a Gumroad product by exact name, so this may change only before
+ * the first `create` run.
+ */
+export const PRO_PRODUCT_NAME = 'Pro – הלוגו וצבע המותג על המסמך';
+
+/** The seller the buyer sees at checkout: the brand's Gumroad store (docs/OWNER_STEPS.he.md step 3). */
+export const GUMROAD_STORE_NAME = 'Mehudak (מהודק)';
 
 /** A product URL we are willing to send a buyer to: absolute, https, nothing else. */
 export function isValidProductUrl(url) {
@@ -42,9 +66,42 @@ export function gumroadProductId(cfg) {
   return trimmed !== '' && trimmed.length <= 128 && !/\s/.test(trimmed) ? trimmed : null;
 }
 
-/** True once there is both a product page to send the buyer to and a product id to check keys against. */
+/**
+ * The price Gumroad reported for the product, as { priceCents, currency }, or
+ * null. Whole minor units only (7900 = ₪79) and a three-letter currency code.
+ */
+export function gumroadPrice(cfg) {
+  const cents = cfg?.gumroad?.priceCents;
+  const currency = cfg?.gumroad?.currency;
+  if (!Number.isInteger(cents) || cents <= 0) return null;
+  if (typeof currency !== 'string' || !/^[a-z]{3}$/i.test(currency.trim())) return null;
+  return { priceCents: cents, currency: currency.trim().toLowerCase() };
+}
+
+/** "‏79 ‏₪", as the site formats every shekel amount; agorot only when there are some. Null if unformattable. */
+export function formatProPrice(price) {
+  if (!price || !Number.isInteger(price.priceCents) || typeof price.currency !== 'string') return null;
+  const amount = price.priceCents / 100;
+  const decimals = price.priceCents % 100 === 0 ? 0 : 2;
+  if (price.currency === 'ils') return formatILS(amount, { decimals });
+  // Intl formats any well-formed code, real or not; only a currency it knows is a price.
+  const known = typeof Intl.supportedValuesOf === 'function' ? Intl.supportedValuesOf('currency') : null;
+  if (known && !known.includes(price.currency.toUpperCase())) return null;
+  try {
+    return new Intl.NumberFormat('he-IL', {
+      style: 'currency',
+      currency: price.currency.toUpperCase(),
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    }).format(amount);
+  } catch {
+    return null;
+  }
+}
+
+/** True once there is a product page, a product id to check keys against, and the price Gumroad reported. */
 export function isProConfigured(cfg) {
-  return gumroadProductUrl(cfg) !== null && gumroadProductId(cfg) !== null;
+  return proButtonState(cfg).state === 'ready';
 }
 
 /**
@@ -52,12 +109,16 @@ export function isProConfigured(cfg) {
  * rather than in the DOM glue, so the honest states are unit-testable and a
  * page cannot accidentally enable checkout.
  *
- * Two conditions must BOTH hold before we take money:
- *   1. a product URL to send the buyer to, and
+ * Three conditions must ALL hold before we take money:
+ *   1. a product URL to send the buyer to,
  *   2. the product id, because the licence key Gumroad issues is checked
- *      against exactly that product - without it nothing can verify the key.
+ *      against exactly that product - without it nothing can verify the key,
+ *   3. the price Gumroad read back, because the buyer sees the price before
+ *      the button, and a price typed by hand could differ from the charge.
  *
- * @returns {{state:string, enabled:boolean, label:string, href:string|null, note:string}}
+ * `price` is the formatted price in the `ready` state and null in every other.
+ *
+ * @returns {{state:string, enabled:boolean, label:string, href:string|null, note:string, price:string|null}}
  */
 export function proButtonState(cfg) {
   const raw = cfg?.gumroad?.productUrl ?? '';
@@ -71,6 +132,7 @@ export function proButtonState(cfg) {
       enabled: false,
       label: 'בקרוב',
       href: null,
+      price: null,
       note: empty
         ? 'המיתוג עדיין לא נמכר – החנות טרם נפתחה, ואין כאן מה לקנות.'
         : 'כתובת המוצר בהגדרות אינה כתובת https תקינה, ולכן הכפתור סגור.',
@@ -82,15 +144,28 @@ export function proButtonState(cfg) {
       enabled: false,
       label: 'בקרוב',
       href: null,
+      price: null,
       note: 'החנות מוגדרת אך עדיין אין מזהה מוצר לאימות הרישיון, ולכן אי אפשר למכור.',
+    };
+  }
+  const price = formatProPrice(gumroadPrice(cfg));
+  if (!price) {
+    return {
+      state: 'no_price',
+      enabled: false,
+      label: 'בקרוב',
+      href: null,
+      price: null,
+      note: 'החנות מוגדרת, אבל המחיר עוד לא נקרא מ-Gumroad, ולכן הכפתור סגור.',
     };
   }
   return {
     state: 'ready',
     enabled: true,
-    label: 'שדרוג ל-Pro',
+    label: 'לרכישה ב-Gumroad',
     href: url,
-    note: 'התשלום מתבצע ב-Gumroad. מפתח הרישיון מגיע בקבלה במייל מ-Gumroad; הזנתו כאן נבדקת מול Gumroad פעם אחת ומפעילה את המיתוג.',
+    price,
+    note: `המכירה ב-Gumroad, בחנות ${GUMROAD_STORE_NAME}. מפתח הרישיון מגיע בקבלה במייל מ-Gumroad; הזנתו כאן נבדקת מול Gumroad פעם אחת ומפעילה את המיתוג.`,
   };
 }
 

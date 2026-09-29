@@ -6,7 +6,12 @@ import {
   isProConfigured,
   proButtonState,
   openProCheckout,
+  gumroadPrice,
+  formatProPrice,
+  PRO_PRODUCT_NAME,
+  GUMROAD_STORE_NAME,
 } from '../src/lib/gumroad.js';
+import { formatILS } from '../src/lib/money.js';
 import {
   buildAnalyticsSnippet,
   buildAnalyticsSnippets,
@@ -16,7 +21,10 @@ import {
 } from '../src/lib/analytics.js';
 import site from '../src/config/site.json' with { type: 'json' };
 
-const READY = { gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro', productId: '32-nPAicqbLj8B_WswVlMw==' } };
+// Gumroad's read-back carries the price as `price` (minor units) and `currency`
+// (antiwork/gumroad app/models/concerns/product/as_json.rb, as_json_for_api);
+// the product job copies both into site.json as priceCents and currency.
+const READY = { gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro', productId: '32-nPAicqbLj8B_WswVlMw==', priceCents: 7900, currency: 'ils' } };
 
 describe('gumroad product url', () => {
   it('accepts an https product page and nothing else', () => {
@@ -68,14 +76,36 @@ describe('pro button states', () => {
     expect(isProConfigured({ gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro', productId: '' } })).toBe(false);
   });
 
-  it('opens only when there is both a shop and a way to verify what it sells', () => {
+  it('opens only when there is a shop, a way to verify what it sells, and the price Gumroad read back', () => {
     const s = proButtonState(READY);
     expect(s.state).toBe('ready');
     expect(s.enabled).toBe(true);
     expect(s.href).toBe('https://kelim.gumroad.com/l/pro');
-    expect(s.label).toBe('שדרוג ל-Pro');
-    expect(s.note).toBe('התשלום מתבצע ב-Gumroad. מפתח הרישיון מגיע בקבלה במייל מ-Gumroad; הזנתו כאן נבדקת מול Gumroad פעם אחת ומפעילה את המיתוג.');
+    expect(s.label).toBe('לרכישה ב-Gumroad');
+    expect(s.price).toBe(formatILS(79, { decimals: 0 }));
+    expect(s.note).toBe(`המכירה ב-Gumroad, בחנות ${GUMROAD_STORE_NAME}. מפתח הרישיון מגיע בקבלה במייל מ-Gumroad; הזנתו כאן נבדקת מול Gumroad פעם אחת ומפעילה את המיתוג.`);
     expect(isProConfigured(READY)).toBe(true);
+  });
+
+  it('shows a price in the ready state only, and never one typed by hand', () => {
+    const states = [
+      proButtonState(site),
+      proButtonState({ gumroad: { productUrl: 'gumroad.com/l/pro', productId: 'P', priceCents: 7900, currency: 'ils' } }),
+      proButtonState({ gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro', productId: '', priceCents: 7900, currency: 'ils' } }),
+      proButtonState({ gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro', productId: 'P' } }),
+    ];
+    for (const s of states) {
+      expect(s.state).not.toBe('ready');
+      expect(s.price).toBeNull();
+      expect(s.enabled).toBe(false);
+    }
+  });
+
+  it('keeps checkout shut while Gumroad has not reported a price: no sale without a visible price', () => {
+    const s = proButtonState({ gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro', productId: 'P' } });
+    expect(s).toMatchObject({ state: 'no_price', enabled: false, href: null, label: 'בקרוב', price: null });
+    expect(s.note).toBe('החנות מוגדרת, אבל המחיר עוד לא נקרא מ-Gumroad, ולכן הכפתור סגור.');
+    expect(isProConfigured({ gumroad: { productUrl: 'https://kelim.gumroad.com/l/pro', productId: 'P' } })).toBe(false);
   });
 
   it('keeps the unconfigured and invalid-url states whatever the product id says', () => {
@@ -83,9 +113,45 @@ describe('pro button states', () => {
     expect(proButtonState({ gumroad: { productUrl: 'http://x.gumroad.com/l/p', productId: 'P' } }).state).toBe('invalid_url');
   });
 
-  it('ships with both fields empty', () => {
+  it('ships with every field empty: no url, no id, no price', () => {
     expect(site.gumroad.productUrl).toBe('');
     expect(site.gumroad.productId).toBe('');
+    expect(site.gumroad.priceCents).toBeNull();
+    expect(site.gumroad.currency).toBe('');
+  });
+});
+
+describe('the price, as Gumroad reported it', () => {
+  it('reads whole minor units and a three-letter currency, nothing else', () => {
+    expect(gumroadPrice(READY)).toEqual({ priceCents: 7900, currency: 'ils' });
+    expect(gumroadPrice({ gumroad: { priceCents: 7900, currency: 'ILS' } })).toEqual({ priceCents: 7900, currency: 'ils' });
+    for (const bad of [
+      { priceCents: null, currency: 'ils' },
+      { priceCents: 0, currency: 'ils' },
+      { priceCents: 79.5, currency: 'ils' },
+      { priceCents: '7900', currency: 'ils' },
+      { priceCents: 7900, currency: '' },
+      { priceCents: 7900, currency: 'shekel' },
+      {},
+    ]) {
+      expect(gumroadPrice({ gumroad: bad }), JSON.stringify(bad)).toBeNull();
+    }
+  });
+
+  it('formats shekels the way the rest of the site does, with agorot only when there are some', () => {
+    expect(formatProPrice({ priceCents: 7900, currency: 'ils' })).toBe(formatILS(79, { decimals: 0 }));
+    expect(formatProPrice({ priceCents: 7950, currency: 'ils' })).toBe(formatILS(79.5, { decimals: 2 }));
+    expect(formatProPrice({ priceCents: 900, currency: 'usd' })).toContain('9');
+    expect(formatProPrice({ priceCents: 900, currency: 'usd' })).toContain('$');
+    expect(formatProPrice({ priceCents: 900, currency: 'zzz' })).toBeNull();
+    expect(formatProPrice(null)).toBeNull();
+  });
+});
+
+describe('one name for the offer, by what it delivers', () => {
+  it('names Pro by its deliverable and the store by the brand', () => {
+    expect(PRO_PRODUCT_NAME).toBe('Pro – הלוגו וצבע המותג על המסמך');
+    expect(GUMROAD_STORE_NAME).toBe('Mehudak (מהודק)');
   });
 });
 

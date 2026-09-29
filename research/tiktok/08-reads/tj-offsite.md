@@ -161,6 +161,12 @@ it**. None of these has evidence that it sells.
 | L13 | **Dated newsjacking with a companion short.** Model releases and a September 2026 spam update get a post plus a short within days. Our analogue is dated Hebrew explainers of Israeli tax and VAT rule changes, each primary-sourced. | F24, F43 | rendered | **Yes** (as in the critic's list). Every figure needs a gov.il, Tax Authority or Kol Zchut source first. |
 | L14 | **Borrowed credibility only where it is earned.** His one third-party proof is a tool vendor's partner listing and video. Our analogue is listings we qualify for (the MCP registry, directories that accept a tool on merit). Never a bought placement, never an invented user count. | F7 | rendered | **Partly.** The low value of registries is already on file (`docs/REJECTED.md`, MCP server row). |
 
+> **Correction to L4, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14b; §5.5 there). "Through the official YouTube embed" cannot be done
+> on our site: its Content-Security-Policy says `frame-src 'none'` (`products/il-biz-tools/netlify.toml:36`) and its
+> pages promise cookie-free counting, which a YouTube iframe would break. The embed must be a same-origin
+> self-hosted `<video>` with `preload="none"`, a poster frame, burned-in captions and a `.vtt` track
+> (`docs/VIDEO_PUBLISHING_CHECKLIST.md`). L4 above is left as it was written.
+
 ---
 
 ## 4. Stage-1 scout claims: confirmed, corrected, refuted
