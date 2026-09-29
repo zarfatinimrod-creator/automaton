@@ -1,0 +1,19 @@
+{
+  "url": "https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json",
+  "fetchedAt": "2026-09-29T03:05:00Z",
+  "httpStatus": 200,
+  "bytes": 229200,
+  "sha256": "49e374691c73417e00c7a7cb18b7d30375b87bab0368b227db8f975667bec389",
+  "fullReadingOn2026-09-29": {
+    "listed": 397,
+    "undatable": 1,
+    "open": 30,
+    "openRegistrationClosed": 3,
+    "openNotYetLaunched": 0,
+    "openWithStatedUsdPrize": 24
+  },
+  "fieldsSeen": ["name", "url", "tags", "deadline", "launched", "prize", "platform", "sponsor", "additional_urls", "added", "registration-deadline", "conference", "conference_year", "conference-year", "data-size", "note", "additional_prizes", "end-date"],
+  "aiRuleField": "none of the 18 fields states whether AI or automated solutions are allowed; tags such as `llm` and `agents` name the task's subject, not a permission",
+  "why": "CHANNEL_LOOP.md §4 row 13 (AI-allowed prize-event intake, instrument only): the fixture for src/revenue/prize-intake.ts. 14 of the 397 entries, copied verbatim with their original field order, chosen to cover every case the reader handles: open with a stated USD prize, open with no prize (null), a deadline on the reading day itself (index 362, open by the inclusive rule), open with registration already closed (362, 369), launched missing (374), two-digit days (287, `07 Dec 2026`), the one malformed deadline in the list (`11 May 2026 Apr 2026`, index 7), both spellings of the conference year (`conference_year`, `conference-year`), `data-size`, and a closed entry with a free-text `note` (215). Indices are positions in the full body at the sha256 above.",
+  "indices": [0, 1, 7, 9, 28, 34, 190, 215, 287, 323, 362, 369, 373, 374]
+}

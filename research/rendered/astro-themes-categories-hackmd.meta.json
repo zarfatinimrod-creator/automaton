@@ -1,0 +1,17 @@
+{
+  "url": "https://hackmd.io/@sarah11918/categories/astro-themes",
+  "slug": "astro-themes-categories-hackmd",
+  "fetchedAt": "2026-09-29T03:53:07.240Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 55315,
+  "sha256": "b33a8b41d3fdfbc2060240221ff0b985a6da4d48c7ff7179c37f55179d3e8d07",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/astro-themes-categories-hackmd.html",
+  "textPath": "research/rendered/astro-themes-categories-hackmd.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

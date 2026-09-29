@@ -1,0 +1,290 @@
+Astro Theme Catalogue Review Guidelines - HackMD
+
+# Theme reviews
+
+Reviewing a theme consists of:
+
+1. Ensuring the listing itself is in good order.
+- The description renders properly (code/HTML)
+- It is not too long with rambling installation/use instructions
+- Images/text are SFW, but otherwise deep reading/editing is not required
+- No animated images allowed
+2. Making sure both the Demo and Get Started links are accurate.
+- The demo is a live, working deployment of the theme's repo (exactly as a new user will get when they start with the theme)
+- The demo is not a sample or production site *using* the theme (must be exact deployment of the theme repo)
+- The "Get Started" link points to the theme's open source repository or to a payment page for that theme
+3. Minimally testing the demo link for functionality and that it is an Astro site.
+- No subjective/judement calls, simply check a few pages/features to make sure the theme generally works.
+- Use Wappalyzer or https://isAstro.pages.dev and verify that the demo deployment is an Astro site
+4. Attempting to verify the theme is using the current major version of Astro.
+- Check the `package.json` of free themes
+- This may be possible to determine for paid themes using https://isAstro.pages.dev or looking for the generator meta tag in the page source.
+6. Setting the version number to 6 for accepted themes (both v6 and v7).
+- This indicates the theme is running at least Astro 6.
+- Do not set a lower number: these are only for older themes on previous versions of Astro that already exist in the catalogue.
+- If a theme is not running at least Astro 6, reject it. We will not accept lower versions of Astro, so you will never need to set the version number any lower than 6. (We'll see what happens when it's time for Astro 8... 😅)
+
+NOTE: (find a better place for this info)
+
+`Internal Error ID: xxxxxxxxxx` when uploading means too many images, or total size of all images is too large
+
+## The Listing/Description
+
+Mostly, this should "look" like a functioning, reasonable listing. The quality of the description text or images is not a consideration. (It's up to the theme author to "sell" their theme.) However, there should be nothing that makes the Astro theme catalogue look "broken" (e.g. Markdown or HTML syntax visible in the description).
+
+- [ ] Preview attached images
+- [ ] Test both links (get this theme and live demo)
+- [ ] Scan description, especially checking for
+- [ ] formatting issues
+- [ ] inappropriate length/including too much (e.g. including installation/troubleshooting instructions that are beyond the scope of this page)
+
+### If there are minor problems with the listing itself:
+
+- The “edit” button can be used to change any text/formatting, **including removing content you feel is inappropriate due to length**. This is often easier than rejecting and asking the author to e.g. fix a link or remove a small bit of syntax formatting that you can do quickly yourself.
+- If there are issues you cannot (or do not want) to fix (e.g. a poor image, significant unformatted text in a description), this is cause for rejection.
+
+## Demo
+
+We require that all themes contain a demo. We cannot approve a theme if we have no idea what it looks like when built and published. (It is not our responsibility to build and deploy their theme in order to determine this.) **It is safer to reject a theme that you cannot preview.**
+
+We do not have the resources to take the time to create and deploy all themes sent to us, so we use the demo as part of our review process. Therefore it must match the code of the repository. This is our policy for security (the theme repo could have different code that we are unaware of), and for some basic quality control. The theme code might not even build properly (even if an example site built similarly does), and we wouldn't know unless we see it deployed. We want people to be confident that they can trust our catalogue.
+
+- [ ] Navigate and scroll through a sample of pages for general look and feel. (This may also help guide your code inspection, to verify how this theme is built and what the experience of using it would be like.)
+- [ ] If there is a blog, check the navigation/feature experience: reading an article then returning back to list of articles, follow tags/related articles etc. to ensure those features work
+- [ ] Check navigation links and the page transition experience
+- [ ] Toggle light/dark mode if available and test a few pages in each mode
+- [ ] Test additional UI elements (especially if promoted in the blog description as a feature) e.g. search widget, language picker.
+- [ ] Evaluate the above simply as a user navigating the site; you are not responsible for using additional tools to check accessibility, verify stated Lighthouse scores in the description etc.
+
+## Rejecting a theme
+
+Denying a theme isn't a permanent action! The theme author can edit their listing and it will be automatically resubmitted for review.
+
+If you cannot accept a theme at this time (either because of the listing or the theme itself), make a reasonable attempt to contact the theme author (e.g. file an issue on the GitHub repo, use the contact information on a paid theme if it exists). If it is not possible to contact the author, then we just hope they resubmit and/or contact us for clarification.
+
+### Communicating the rejection
+
+Remember that theme authors may have varying proficiencies in English, so a structure that clearly says **what is wrong** and **how to fix their submission** in plain language is necessary.
+
+#### Example GitHub issues
+
+You can view [issues Sarah has filed in the past as examples](https://github.com/issues?q=is%3Aissue%20involves%3Asarah11918%20Astro%20Theme%20Catalogue).
+
+#### Sample Structure
+
+Here is a sample structure, and some common problems to fill in the blank are listed after:
+
+```
+Title: Astro Theme Catalogue submission
+
+Hello! Thank you for submitting a theme to <https://astro.build/themes/>
+
+I just wanted to let you know why your theme was not approved
+for the Astro theme catalogue so you can make the changes and resubmit!
+
+1. **Short description of problem with the theme**
+
+Further description with more information
+
+**To fix**: Please log into <https://portal.astro.build> and do the following things:
+
+- Direct instruction #1
+
+2. **Short description of 2nd problem**
+
+Further description with more information
+
+**To fix**: Please log into <https://portal.astro.build> and do the following things:
+
+- Direct instruction #2
+
+When you update and save your listing in the developer portal, your theme will automatically be re-submitted for review. Even if your site description requires no change, making a minor change and saving will trigger the submission process again, so you can just add/remove a blank line if necessary.
+
+Thank you very much, and I hope we can include your theme soon. I'm sure many people would want to try it! 🚀
+
+(You can close this issue at any time!)
+
+```
+
+## Issues and their fixes
+
+Here is the existing stock wording for most issues we have encountered. This list will be added to as theme authors find new and exciting ways to surprise us! :sweat_smile:
+
+Please also see the [Guide for Submissions](/J8pD89rBRsKckhxUZYQrGQ) for more helpful information on getting your theme accepted into the official Astro Theme Catalogue.
+
+1. **You are using an older version of Astro**: While some older themes submitted in previous years may still exist in the catalogue, we can only accept new themes using the current major version of Astro.
+
+**To fix:** Please upgrade your theme to Astro 7 and make all appropriate adjustments to the code. You can use the [Astro v6 upgrade guide](https://docs.astro.build/en/guides/upgrade-to/v6/) and the [Astro v7 upgrade guide](https://docs.astro.build/en/guides/upgrade-to/v7/) to help you with any breaking changes.
+
+Be sure to also update your demo and redeploy on v7! We also suggest including that your theme is v7 ready in its description.
+
+2. **Your description is not formatted properly**: You appear to have copy/pasted Markdown or HTML to create your theme listing. This cannot be displayed properly in our catalogue. You must use the included editor for any text formatting.
+
+**To fix**: Please log into https://portal.astro.build/ and update your description.
+
+- Please **do not** copy and paste Markdown or HTML into the text boxes.
+- Please only use the editor to style and format your text.
+- Please **review your listing** after editing to make sure no Markdown/HTML is remaining.
+
+3. **Your description does not meet our editorial standards**: You have included too many technical details such as installation instructions, project structure, or usage instructions that are not appropriate for a general listing.
+
+**To fix**: Please log into https://portal.astro.build/ and update your description.
+
+- Please **do not** copy and paste an entire README, or any Markdown/HTML into the text boxes.
+- Please include only information to help someone decide whether or not to try your theme, not instructions on how to use it.
+- Please only use the editor to style and format your text.
+- Please **review your listing** after editing to make sure no Markdown/HTML is remaining.
+
+Your description should only introduce your theme and give readers enough information to decide whether or not they would like to explore it further.
+
+4. **You have submitted an animated image**: Only static screenshots can be included in your listing.
+
+**To fix**: Please log into https://portal.astro.build/ and remove the animated image. You may upload a different image in its place, but animation is not allowed.
+
+5. **You are using Astro's Houston mascot to advertise your theme**: [Astro's branding guidelines](https://astro.build/press/) prohibit the use of Houston.
+
+**To fix**: Please remove the image of Houston from your repository, and from all pages. Please replace your listing images with new images of your theme that do not include Houston.
+
+6. **There is no live demo of a site using this template, or your demo appears broken**
+Unfortunately, we cannot accept submissions where we are unable to verify what the theme looks like. Also, it is more helpful for people browsing themes to know what your template looks like so they can decide if they are interested in it! It also assures them (and us!) that the site builds properly and is working.
+
+**To fix:** Please log into https://portal.astro.build/ and provide a link to a live, working demo of your theme.
+
+- Please also check that this demo link is also the one listed on your GitHub README.
+
+7. **The project README is the Astro default**
+Your README is identical to the Astro README, and does not help someone get set up with and use your project. For example, it contains the command `npm create astro@latest -- --template blog` which will not start someone with your project.
+
+**To fix:** Rewrite your README to help someone start and use **this** repository.
+- Do not copy the Astro Blog Template README.
+- If you show an installation command, make sure it creates your theme.
+- Tell people how your project is built, which tech it uses, and how to get started and use it.
+
+8. **Your screenshot images are not representative of your demo site**: You have submitted images that do not match your deployed theme.
+
+**To fix**: Please ensure **the screenshots are of the deployed demo theme**.
+
+It is important that the screenshots are representative of the deployed theme so that people can decide whether they want to visit your site and explore your theme further. Screenshots that are not of the theme itself can be misleading.
+
+9. **Your description must be in English**: Unfortunately, our website is only built to display English language text, and all listings must use English only. We are unable to review content in non-English languages, and we do not have the appropriate tests to ensure it is displayed properly.
+
+**To fix**: Please log into https://portal.astro.build/ and update your description with an English version.
+
+- Machine/AI translations are OK! But, if possible, it's a good idea to have an English speaker proofread your text.
+- We will not reject your description for spelling/grammar issues, and we understand that some authors are submitting text in a language they do not know. Please just try your best. 😄
+- Your images do not need to show English text. Please do use images from your live demo, and if your demo is in another language, then that is OK!
+- Your GitHub repo README does not need to be in English. We will link to repositories written in any language!
+
+10. **You have submitted a theme/demo that contains personalized information**: The theme catalogue must not include any personalized or real-world content.
+
+For example, if the theme is a personal portfolio, it must not include your actual personal information (e.g. links, actual projects, blog posts), or if a company marketing site, must not contain any information about a real company.
+
+You must not use phone numbers, links and email addresses that (could) reach existing individuals or companies as placeholder content.
+
+**To fix**: Please ensure you are only submitting **generic, non-identifiable content**.
+
+- Example blog posts may be about using your theme, generic industry, but not about any of your own past work or projects.
+- The "About" or example bio must not be your personal bio.
+- Social icons must **only link to the root domain with no username** (e.g. `https://github.com`). Do not use:
+- your own personal links.
+- generic sounding usernames. (Those are still valid URLs to profiles!) (e.g. `https://github.com/your-username`)
+- **Only use `example.com` for placeholder URLs and email addresses**. (e.g. `hello@example.com`) Do not use:
+- fake domains or accounts that match your theme name (You do not own that domain!). e.g. If your theme is named "Green Shore", you must not use `hello@greenshore.com` or `greenshore@gmail.com`
+
+11. **You are using a personal site as the demo link for your theme**: A demo should be the exact deployment of the theme repo, not a production example of the theme in use.
+
+**To fix**: Please update the link and images to a demo of the code.
+
+- Please **deploy exactly the repo you are linking to** and use the deployed URL as the demo link.
+- Please ensure **the screenshots are of the deployed example** theme.
+- It is important that the live demo matches what people see in the code. This helps them use the demo to learn more about using and customizing your theme.
+- You may include a link in your description to full working production sites that uses your theme as an *example*, but this cannot be the demo link.
+- The demo deployment should be as minimal as possible: use sample (not real) content wherever possible, and be sure to remove any tools or directories that are specific to deploying your personal website and not part of a general theme.
+- Please check carefully that you are also satisfying Reasons 10 and 12 when you fix this issue!
+
+12. **You appear to have submitted a personal or production site as a theme/demo**: The theme catalogue is not a showcase of production sites, including your theme's own marketing site. It is only intended for templates designed for others to use, complete with a description of the technology choices and instructional material on how to customize the site for individual use. The demo must not include any real personal information (e.g. reuse content from an existing personal site, use the author's contact/social media info as placeholder data.)
+
+**To fix**: Please ensure you are only submitting **a generic repo and demo deployment of that repo** that is intended for others to evaluate and use.
+
+**The theme catalogue is not intended for personal or production sites with real information, even if they they can be forked and are licensed for reuse.** Personal sites, including marketing sites for your own theme, are often not appropriate minimal starter templates.
+
+For example, if it is a personal portfolio, it must not include your personal information, or if a company marketing site, must not contain information about a real company.
+
+The demo must be deployed at a domain that indicates that this site is clearly a generic theme, and must not be a person or organization's own site. **It must be the exact deployment of the project that the user will get when they use/purchase your theme.**
+
+Additionally, you must explicitly offer a generic template and guidance on how to use it, for example, providing information in your project README (if the repository is public) showing where various configuration options are located, a project structure to explain the project, etc.
+
+Note: you are welcome to submit a personal or production website to the [site showcase](https://astro.build/showcase/submit/) which is intended for displaying these sites! You may also link to a production site in your listing as an example of a production site using your theme, but the demo itself must be an exact deployment of a the generic version of your theme that you provide to users.
+
+13. **Your listing has broken or incorrect links**: One or more of your demo or Getting Started links is not correct
+
+**To fix**: Please log into https://portal.astro.build/ and update the links in your description.
+
+- Especially if you have submitted multiple themes, please make sure that each listing links to the correct theme.
+- If you are submitting a Gumroad payment link, please do not include paramaters such as `?wanted=true`.
+- Please **review your listing** after editing and test the links after submitting.
+
+14. **This does not appear to be an Astro template**: The demo or repository does not appear to be built with Astro.
+
+**To fix**: Please ensure that you have linked to an Astro theme. If you have multiple version of the same theme (e.g. Next.js and Astro versions), please make sure you have submitted the correct version of both the repository/purchase page and the deployed demo.
+
+## Template shell for GitHub issue
+
+Hi! Thank you for submitting a theme to https://astro.build/themes/
+
+I just wanted to let you know why your theme was not approved for the Astro theme directory so you can make the changes and resubmit!
+
+The full theme review process and guidance for theme authors is available at https://hackmd.io/@sarah11918/categories/astro-themes. From our [list of possible reasons for rejection and their fixes](https://hackmd.io/@sarah11918/BJMjDSMDZl#Issues-and-their-fixes), please note the following reason(s):
+
+[REASON]
+
+When you update and save your listing in the developer portal, your theme will automatically be re-submitted for review. Even if your site description requires no change, making a minor change and saving will trigger the submission process again, so you can just add/remove a blank line if necessary.
+
+Thank you very much, and I hope we can include your theme soon. I'm sure many people would want to try it! 🚀
+
+(You can close this issue at any time!)
+
+## Template for Editing a paid theme's description
+
+YOUR THEME WAS NOT ACCEPTED. (REASON #10)
+
+Please see the list of possible reasons at https://hackmd.io/@sarah11918/BJMjDSMDZl#Issues-and-their-fixes for detailed explanations and suggested fixes.
+
+When you update your theme, please delete this message from your description. Your theme will automatically be re-submitted for review again!
+
+&times;
+
+Sign in
+
+Email
+
+Password
+
+Forgot password
+
+or
+
+Sign in via Google
+
+Sign in via Facebook
+
+Sign in via X(Twitter)
+
+Sign in via GitHub
+
+Sign in via Dropbox
+
+Sign in with Wallet
+
+Wallet
+(
+
+)
+
+Connect another wallet
+
+Continue with a different method
+
+New to HackMD? Sign up
+
+By signing in, you agree to our terms of service .

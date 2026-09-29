@@ -1,0 +1,35 @@
+Astro Dev Portal
+
+astro dev portal
+
+Login
+
+Login
+
+To submit themes, you have to be logged in.
+
+Sign in with GitHub
+
+Resources
+Documentation
+Starter templates
+Themes
+Integrations
+
+Ecosystem
+Community
+Showcase
+Contributing
+
+About
+Press
+Telemetry
+Partner with us!
+
+More links
+Blog
+Swag Shop
+Wallpapers
+
+Privacy Policy Terms of Service MIT License &copy; 2026
+Astro Contributors
