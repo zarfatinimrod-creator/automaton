@@ -135,6 +135,12 @@ which this fetcher does not read), and Mozilla's add-on API (its policy bars har
 results were redacted). 66 lines are paused. A site's **terms page** may be fetched once so its terms can be read;
 that is how the 23 terms rows (ZERO-TESTS 191-213) were queued.
 
+**Round 2 (tick 21) and the gate.** Fifteen more domains are barred. `research/channel-loop/terms-verdicts.json` now holds a
+verdict for every site with a line here, and `src/__tests__/revenue/render-watch-terms-barred.test.ts` fails when a line is
+active on a site that is not NOT_BARRED or CONDITIONAL_MET. The one exception is a TERMS_PENDING site's own terms page
+(slug `terms-...`). **To add a line for a new site:** read its terms first (queue its terms page, read it, set the
+verdict), then queue the line. A line for a site with no verdict fails CI.
+
 ## The js flag: a JavaScript-capable render
 
 Some pages reach the runner as an empty JavaScript shell: Salesforce help centres
