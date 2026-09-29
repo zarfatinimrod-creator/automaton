@@ -17,6 +17,7 @@ import { DEFAULT_PORTFOLIO, labelledKpis, summarizeTargetBasis, TARGET_BASIS } f
 import { frozenOwnerStepsForLine, heldOwnerStepsForLine, openOwnerStepsForLine } from "./owner-steps.js";
 import { DEFAULT_MEASUREMENTS_DIR, ingestAlgoraSupplyMeasurement, ingestApifyMeasurement, type IngestResult } from "./measurements.js";
 import { BRAND_MAIL_PROBE_FILE, readBrandMailProbe, type BrandMailReading } from "./brand-mail.js";
+import { PRIZE_INTAKE_FILE, readPrizeIntake, type PrizeIntakeReading } from "./prize-intake.js";
 import {
   computePortfolioSummary,
   getLine,
@@ -213,6 +214,8 @@ export interface TickOptions {
   measurementsDir?: string;
   /** Where the brand-mail probe commits its numbers (default state/colony/brand-mail.json, relative to the cwd). */
   brandMailFile?: string;
+  /** Where the weekly prize-intake read commits its numbers (default state/colony/prize-intake.json, relative to the cwd). */
+  prizeIntakeFile?: string;
 }
 
 export interface TickResult {
@@ -231,6 +234,8 @@ export interface TickResult {
   stalledLines: StalledLine[];
   /** The brand-mailbox probe's numbers (owner step 8), read every tick; absent until a probe has run. */
   brandMail: BrandMailReading;
+  /** The weekly mlcontests read (CHANNEL_LOOP.md §4 row 13): an instrument, one report line, never a blocker. */
+  prizeIntake: PrizeIntakeReading;
   blockers: string[];
   summary: PortfolioSummary | null;
 }
@@ -259,6 +264,7 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
     liveness: [],
     stalledLines: [],
     brandMail: { file: options.brandMailFile ?? BRAND_MAIL_PROBE_FILE, status: "absent", line: null, blockers: [] },
+    prizeIntake: readPrizeIntake(options.prizeIntakeFile ?? PRIZE_INTAKE_FILE, nowMs),
     blockers: [],
     summary: null,
   };
@@ -477,6 +483,7 @@ export function renderReport(db: Database, result: TickResult): string {
     out.push(`- Audit sampled ${result.audit.sampled} review(s), flagged ${result.audit.flagged}${result.audit.chiefAuditRan ? "; chief audit ran" : ""}`);
   }
   if (result.brandMail?.line) out.push(`- ${result.brandMail.line}`);
+  if (result.prizeIntake?.line) out.push(`- ${result.prizeIntake.line}`);
   if (decisions.length) {
     out.push("");
     out.push("### Board decisions");

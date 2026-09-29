@@ -1,0 +1,296 @@
+{
+  "data": [
+    {
+      "name": "Optimise LLM Operators & Inference Across AI Chips",
+      "url": "https://flagos.io/race-detail-season2?id=8q4m2x7p&lang=en&ref=mlcontests",
+      "tags": [
+        "measurable",
+        "performance",
+        "inference",
+        "llm",
+        "hardware",
+        "code",
+        "deep learning"
+      ],
+      "deadline": "15 Nov 2026",
+      "launched": "19 Jul 2026",
+      "prize": "$14,925",
+      "platform": "Independent",
+      "sponsor": "FlagOS Community, IEEE",
+      "additional_urls": [
+        "https://flagos.io/race-detail-season2?id=782kzq4m&lang=en",
+        "https://flagos.io/race-detail-season2?id=539vlt2p&lang=en"
+      ],
+      "added": "15 Sep 2026"
+    },
+    {
+      "name": "Predict Aircraft Taxi-Out Time at European Airports",
+      "url": "https://ansperformance.eu/study/data-challenge/dc2026/",
+      "tags": [
+        "supervised",
+        "regression",
+        "tabular",
+        "timeseries",
+        "measurable",
+        "science",
+        "transportation"
+      ],
+      "deadline": "11 Oct 2026",
+      "prize": "$5,800",
+      "platform": "Independent",
+      "sponsor": "EUROCONTROL Performance Review Commission (PRC)",
+      "launched": "1 Sep 2026",
+      "additional_urls": [
+        "https://ansperformance.eu/study/data-challenge/",
+        "https://ansperformance.eu/study/data-challenge/dc2026/eligibility.html",
+        "https://ansperformance.eu/study/data-challenge/dc2026/rationale.html",
+        "https://ansperformance.eu/study/data-challenge/dc2026/data.html",
+        "https://ansperformance.eu/study/data-challenge/dc2026/ranking.html",
+        "https://ansperformance.eu/study/data-challenge/dc2026/teams.html",
+        "https://opensky-network.org/",
+        "https://www.eurocontrol.int/air-navigation-services-performance-review"
+      ],
+      "added": "1 Sep 2026"
+    },
+    {
+      "name": "Optimise LLM Inference Performance on AMD MI355X GPUs",
+      "url": "https://luma.com/cqq4mojz?ref=mlcontests",
+      "tags": [
+        "hardware",
+        "inference",
+        "computer science",
+        "efficiency",
+        "measurable"
+      ],
+      "launched": "6 Mar 2026",
+      "registration-deadline": "30 Mar 2026",
+      "deadline": "11 May 2026 Apr 2026",
+      "prize": "$1,100,000",
+      "platform": "Independent",
+      "sponsor": "AMD, GPU Mode",
+      "conference": null,
+      "conference_year": null
+    },
+    {
+      "name": "Predict Cross-sectional Equity Returns",
+      "url": "https://hub.crunchdao.com/competitions/datacrunch-2?ref=mlcontests",
+      "tags": [
+        "supervised",
+        "tabular",
+        "timeseries",
+        "forecasting",
+        "measurable",
+        "regression",
+        "finance"
+      ],
+      "launched": "5 Jan 2026",
+      "registration-deadline": "31 Dec 2026",
+      "deadline": "31 Dec 2026",
+      "prize": "$52,000",
+      "platform": "CrunchDAO",
+      "sponsor": "Crunch Capital",
+      "conference": null,
+      "conference_year": null
+    },
+    {
+      "name": "Real-Time Market Data Forecasting",
+      "url": "https://www.kaggle.com/competitions/jane-street-real-time-market-data-forecasting?ref=mlcontests",
+      "tags": [
+        "finance",
+        "tabular",
+        "regression",
+        "custom metric",
+        "timeseries",
+        "forecasting",
+        "supervised",
+        "measurable"
+      ],
+      "launched": "14 Oct 2024",
+      "registration-deadline": "6 Jan 2025",
+      "deadline": "13 Jan 2025",
+      "prize": "$120,000",
+      "platform": "Kaggle",
+      "sponsor": "Jane Street",
+      "conference": null,
+      "conference_year": null,
+      "data-size": 12.3
+    },
+    {
+      "name": "Build cooperative language model agents",
+      "url": "https://www.codabench.org/competitions/3888/?ref=mlcontests",
+      "tags": [
+        "reinforcement learning",
+        "safety",
+        "nlp",
+        "measurable"
+      ],
+      "additional_urls": [
+        "https://www.cooperativeai.com/contests/concordia-2024"
+      ],
+      "launched": "17 Sep 2024",
+      "registration-deadline": "1 Nov 2024",
+      "deadline": "1 Nov 2024",
+      "prize": "$10,000",
+      "platform": "Codabench",
+      "sponsor": "Cooperative AI Foundation, Google DeepMind",
+      "conference": "NeurIPS",
+      "conference-year": 2024,
+      "data-size": null
+    },
+    {
+      "name": "Program Robots to Navigate Autonomously",
+      "url": "https://cs.gmu.edu/~xiao/Research/BARN_Challenge/BARN_Challenge25.html#the%20challenge?ref=mlcontests",
+      "tags": [
+        "robotics",
+        "in-person",
+        "driving"
+      ],
+      "launched": "1 Jan 2025",
+      "registration-deadline": "1 Apr 2025",
+      "deadline": "1 May 2025",
+      "prize": null,
+      "platform": "In-person",
+      "sponsor": "Clearpath Robotics",
+      "conference": "ICRA",
+      "conference_year": 2025
+    },
+    {
+      "name": "Demonstrate Innovative Uses of AI",
+      "url": "https://hpaistudio.devpost.com/?ref=mlcontests",
+      "tags": [
+        "subjective",
+        "analysis/visualisation",
+        "hackathon"
+      ],
+      "launched": "7 Apr 2025",
+      "registration-deadline": "10 Jun 2025",
+      "deadline": "10 Jun 2025",
+      "prize": "$70,000",
+      "platform": "DEVPOST",
+      "sponsor": "HP, NVIDIA",
+      "conference": null,
+      "conference_year": null,
+      "note": "This competition is open to U.S. residents only"
+    },
+    {
+      "name": "Build Speech Recognition Systems for Caribbean Voices",
+      "url": "https://zindi.africa/competitions/caribbean-voices-hackathon?utm_source=mlcontest&utm_medium=referral&utm_campaign=compupdates",
+      "tags": [
+        "supervised",
+        "nlp",
+        "audio",
+        "measurable"
+      ],
+      "launched": "17 Nov 2025",
+      "registration-deadline": "07 Dec 2026",
+      "deadline": "07 Dec 2026",
+      "prize": "$7,500",
+      "platform": "Zindi",
+      "sponsor": "UWI AI Innovation Centre, CIBC, Infolytics, Data Axis, CTU",
+      "conference": null,
+      "conference_year": null
+    },
+    {
+      "name": "ARC Prize 2026 - ARC-AGI-2",
+      "url": "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-2?ref=mlcontests",
+      "tags": [
+        "reasoning",
+        "supervised",
+        "generative",
+        "measurable"
+      ],
+      "launched": "25 Mar 2026",
+      "registration-deadline": "26 Oct 2026",
+      "deadline": "2 Nov 2026",
+      "prize": "$700,000",
+      "platform": "Kaggle",
+      "sponsor": "ARC Prize",
+      "conference": null,
+      "conference_year": null
+    },
+    {
+      "name": "Track Developing Cells in 3D Microscopy Data",
+      "url": "https://www.kaggle.com/competitions/biohub-cell-tracking-during-development?ref=mlcontests",
+      "tags": [
+        "biology",
+        "science",
+        "vision",
+        "image",
+        "video",
+        "detection",
+        "measurable"
+      ],
+      "launched": "29 Jun 2026",
+      "registration-deadline": "22 Sep 2026",
+      "deadline": "29 Sep 2026",
+      "prize": "$60,000",
+      "platform": "Kaggle",
+      "sponsor": "Biohub",
+      "conference": null,
+      "conference_year": null
+    },
+    {
+      "name": "RealPDE: Scientific ML for Real-World Physical Systems",
+      "url": "https://realpdecompetition.github.io/?ref=mlcontests",
+      "tags": [
+        "physics",
+        "science",
+        "deep learning",
+        "simulation"
+      ],
+      "launched": "5 Jul 2026",
+      "registration-deadline": "20 Aug 2026",
+      "deadline": "25 Oct 2026",
+      "added": "29 Jul 2026",
+      "prize": "$21,000",
+      "platform": "Codabench",
+      "sponsor": "Uniforce AI",
+      "conference": "NeurIPS",
+      "conference-year": 2026,
+      "additional_urls": [
+        "https://www.codabench.org/competitions/17363/",
+        "https://www.codabench.org/competitions/17385/"
+      ]
+    },
+    {
+      "name": "Generate Synthetic Humanitarian Survey Responses",
+      "url": "https://situatedevals.org/simulacrabench?ref=mlcontests",
+      "tags": [
+        "llm",
+        "benchmarks",
+        "generative",
+        "research"
+      ],
+      "launched": "1 Aug 2026",
+      "registration-deadline": null,
+      "deadline": "14 Nov 2026",
+      "added": "29 Jul 2026",
+      "prize": null,
+      "platform": "Independent",
+      "sponsor": null,
+      "conference": "NeurIPS",
+      "conference-year": 2026,
+      "additional_urls": []
+    },
+    {
+      "name": "Generative AI for Antimicrobial Peptide Design",
+      "url": "https://szczurek-lab.github.io/amp-challenge-website/?ref=mlcontests",
+      "tags": [
+        "biology",
+        "generative",
+        "chemistry",
+        "science"
+      ],
+      "launched": null,
+      "registration-deadline": null,
+      "deadline": "1 Oct 2026",
+      "added": "29 Jul 2026",
+      "prize": null,
+      "platform": "Independent",
+      "sponsor": null,
+      "conference": "NeurIPS",
+      "conference-year": 2026,
+      "additional_urls": []
+    }
+  ]
+}

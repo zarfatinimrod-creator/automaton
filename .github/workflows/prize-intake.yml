@@ -1,0 +1,113 @@
+name: prize-intake
+
+# The AI-allowed prize-event intake, logs/CHANNEL_LOOP.md §4 row 13 — AN INSTRUMENT ONLY.
+#
+# WHAT IT DOES. Once a week, one unauthenticated GET of the mlcontests list
+# (competitions.json in mlcontests/mlcontests.github.io, served by
+# raw.githubusercontent.com) through scripts/prize-intake.ts, and a commit of
+# NUMBERS ONLY to state/colony/prize-intake.json: how many competitions are open
+# by deadline, how many of those already closed registration, are not yet
+# launched, state a dollar prize or carry a free-text note. The hourly colony
+# tick prints the file as one line of the report (src/revenue/prize-intake.ts).
+#
+# WHAT IT DOES NOT. It files nothing, enters nothing, opens no account and spends
+# nothing. It needs no owner secret. The list has no field stating whether AI or
+# automated solutions are allowed, so that count is written as null with
+# aiRuleFieldInSource false — unmeasured, never zero, never inferred from tags
+# such as `llm` or `agents`, which name a task's subject, not a permission.
+#
+# NEVER A FAKE ZERO. On an HTTP error, a redirect, or a body that is not the list
+# the script writes nothing and exits 1, so this job goes red and last week's file
+# stays in place.
+#
+# Scheduled workflows run only from the default branch; like algora-supply.yml,
+# this one checks out main and commits the reading there, one series over time
+# (the file's git history is the series).
+
+on:
+  schedule:
+    # Tuesdays 05:41 UTC. Not on the hour (GitHub delays top-of-the-hour
+    # schedules), and not Monday, when algora-supply.yml runs.
+    - cron: "41 5 * * 2"
+  workflow_dispatch:
+  # Once when the instrument itself lands on main, so the first reading comes the
+  # week it merges. Main only: nothing runs from a feature branch. The commit this
+  # job makes touches none of these paths, so it cannot retrigger itself.
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/prize-intake.yml"
+      - "scripts/prize-intake.ts"
+      - "src/revenue/prize-intake.ts"
+
+permissions:
+  contents: write
+
+# Own group, not colony.yml's: GitHub keeps one pending run per group, so sharing
+# it could let an hourly tick cancel a weekly read. The race on push is handled by
+# the rebase-and-retry loop below.
+concurrency:
+  group: prize-intake
+  cancel-in-progress: false
+
+jobs:
+  read:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Committing needs real history, not a shallow clone.
+          fetch-depth: 0
+          # One series over time, on main, whichever branch a dispatch came from.
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: pnpm/action-setup@v4
+
+      # The reader is the colony's own TypeScript (src/revenue/prize-intake.ts), run
+      # under tsx like scripts/algora-supply.ts.
+      - run: pnpm install --frozen-lockfile
+
+      - name: Read the mlcontests list (one GET, numbers only)
+        id: read
+        run: pnpm exec tsx scripts/prize-intake.ts
+
+      - name: Commit the reading back to main
+        run: |
+          set -euo pipefail
+          JSON=state/colony/prize-intake.json
+          if [ ! -f "$JSON" ]; then
+            echo "::error::The read reported success but $JSON is missing; refusing to commit half a reading."
+            exit 1
+          fi
+
+          git config user.name "colony-bot"
+          git config user.email "colony-bot@users.noreply.github.com"
+
+          # Stage first, then compare the index: on the first run the file is
+          # untracked and `git diff` alone would report no change forever.
+          git add "$JSON"
+          if git diff --cached --quiet; then
+            echo "Reading unchanged since the last run."
+            exit 0
+          fi
+
+          SUBJECT=$(node -e 'const j=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write("measure(prize-intake): "+j.open+" open of "+j.listed+" listed; AI rule not stated by the list");' "$JSON")
+          # [skip ci] keeps a measurement commit from retriggering the test workflows.
+          git commit -m "${SUBJECT} [skip ci]"
+
+          # The hourly colony tick and the other measurement jobs commit to main
+          # too, so a push can lose a race. Rebase and retry rather than lose a week.
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            echo "Push rejected; rebasing and retrying (attempt ${attempt})."
+            git pull --rebase
+          done
+          echo "Could not push the prize-intake reading after 3 attempts." >&2
+          exit 1
