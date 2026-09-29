@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/youtube/answer/9229229?hl=en&ref_topic=9282435",
+  "slug": "yk2-yt-9229229",
+  "fetchedAt": "2026-09-28T23:21:24.977Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1586727,
+  "sha256": "f4c3bd63f7e0363b4cd40e2999e7cfcf86244b692c3888a294623156b64ef5aa",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk2-yt-9229229.html",
+  "textPath": "research/rendered/yk2-yt-9229229.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

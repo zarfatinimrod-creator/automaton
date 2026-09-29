@@ -1,0 +1,154 @@
+thewh1teagle/pocket-tts-onnx · Hugging Face
+
+Hugging Face
+
+Models
+Datasets
+Spaces
+Buckets new
+Docs
+Enterprise
+Pricing
+Website
+Tasks
+HuggingChat
+Collections
+Languages
+Organizations
+
+Community
+Blog
+Posts
+Daily Papers
+Hardware
+Learn
+Discord
+Forum
+GitHub
+
+Solutions
+Team & Enterprise
+Hugging Face PRO
+Enterprise Support
+Inference Providers
+Inference Endpoints
+Storage Buckets
+
+Log In
+Sign Up
+
+thewh1teagle /
+
+pocket-tts-onnx
+Like 1
+
+Text-to-Speech
+ONNX
+English
+Hebrew
+onnxruntime-web
+hebrew
+english
+License: cc-by-4.0
+
+Model card Files Files and versions xet
+Community
+
+Copy to bucket new
+
+pocket-tts-onnx Web asset set
+
+Single-file models
+
+pocket-tts-onnx
+
+Kyutai's Pocket TTS exported to ONNX for
+pocket-tts-onnx , including a Hebrew IPA
+adapter. Runs in the browser on onnxruntime-web, or in Python with onnxruntime and numpy.
+
+Try it: https://thewh1teagle.github.io/pocket-tts-onnx/
+
+Web asset set
+
+The browser app fetches these; they are hosted here rather than in a GitHub release because
+release assets are not served with CORS headers.
+
+file
+
+size
+
+what
+
+model.onnx
+
+177 MB
+
+the streaming step graph, int8, adapter bundled
+
+encoder.onnx
+
+39 MB
+
+the mimi voice encoder, fetched only when cloning
+
+assets.json
+
+1.4 MB
+
+config, tokenizer and voice conditionings
+
+manifest.json
+
+tiny
+
+what to fetch and how big it is
+
+renikud.onnx
+
+21 MB
+
+Hebrew G2P, mirrored from thewh1teagle/renikud
+
+Single-file models
+
+For the Python package, where everything rides inside one file:
+
+file
+
+size
+
+pocket-tts-english.onnx
+
+228 MB
+
+pocket-tts-english-ipa.onnx
+
+231 MB
+
+from pocket_tts_onnx import PocketTTS
+
+tts = PocketTTS( "pocket-tts-english-ipa.onnx" )
+samples, sample_rate = tts.create( "Hello world." , voice= "alba" )
+
+Voices baked in: alba , cosette , javert , male1 .
+
+Downloads last month
+-
+
+Downloads are not tracked for this model. How to track
+
+Inference Providers NEW
+
+Text-to-Speech
+
+This model isn't deployed by any Inference Provider. 🙋 Ask for provider support
+
+Space using thewh1teagle/pocket-tts-onnx 1
+
+thewh1teagle/PocketTTS
+
+System theme
+
+Company
+TOS Privacy About Careers Website
+Models Datasets Spaces Pricing Docs

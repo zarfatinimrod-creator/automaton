@@ -1,0 +1,18 @@
+{
+  "url": "https://fortune.com/2026/04/01/ai-slop-200-organizations-letter-youtube-google/",
+  "slug": "yk2-fortune-ai-slop-letter",
+  "fetchedAt": "2026-09-28T23:22:03.165Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 478349,
+  "sha256": "7b79e9985a4c0ea7868e4f3cd466b8ee1619831c607a532456beb1828e6fd617",
+  "truncated": false,
+  "redacted": 12,
+  "error": null,
+  "bodyPath": "research/rendered/yk2-fortune-ai-slop-letter.html",
+  "textPath": "research/rendered/yk2-fortune-ai-slop-letter.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

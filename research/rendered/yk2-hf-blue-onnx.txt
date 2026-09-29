@@ -1,0 +1,205 @@
+notmax123/blue-onnx · Hugging Face
+
+Hugging Face
+
+Models
+Datasets
+Spaces
+Buckets new
+Docs
+Enterprise
+Pricing
+Website
+Tasks
+HuggingChat
+Collections
+Languages
+Organizations
+
+Community
+Blog
+Posts
+Daily Papers
+Hardware
+Learn
+Discord
+Forum
+GitHub
+
+Solutions
+Team & Enterprise
+Hugging Face PRO
+Enterprise Support
+Inference Providers
+Inference Endpoints
+Storage Buckets
+
+Log In
+Sign Up
+
+notmax123 /
+
+blue-onnx
+Like 3
+
+Text-to-Speech
+ONNX
+notmax123/RanLevi40h
+
+notmax123/SententicDataTTS
+
+multilingual
+tts
+hebrew
+audio
+fast-inference
+License: mit
+
+Model card Files Files and versions xet
+Community 1
+
+Copy to bucket new
+
+Blue ONNX — Text-to-speech inference Model description
+
+Related weights
+
+Download
+
+How to get started
+
+Speed (indicative)
+
+Uses
+
+Citations
+
+License
+
+Blue ONNX — Text-to-speech inference
+
+This repository is the ONNX model bundle for BlueTTS : fast Hebrew-first multilingual speech synthesis with ONNX Runtime and optional NVIDIA TensorRT engines (see the GitHub repo).
+
+Project home (install, usage, examples, TensorRT): https://github.com/maxmelichov/BlueTTS
+
+Try in the browser: Hugging Face Space — notmax123/Blue · Website: lightbluetts.com
+
+Model description
+
+BlueTTS targets native Hebrew quality (including nikud and disambiguation of common homographs) while staying fast enough for real-time and batch use. The reference codebase also supports English, Spanish, Italian, German , and mixed-language segments in one utterance.
+
+Hebrew G2P at inference uses the renikud ONNX model ( model.onnx ); download it separately (see below).
+
+Related weights
+
+Repo
+
+Purpose
+
+This repo ( notmax123/blue-onnx )
+
+ONNX checkpoints for BlueTTS inference
+
+notmax123/blue
+
+PyTorch / Safetensors weights and stats for training, finetuning, and exporting new voice JSON
+
+Download
+
+Repo id is case-sensitive : notmax123/blue-onnx .
+
+hf download notmax123/blue-onnx --repo-type model --local-dir ./onnx_models
+wget -O model.onnx https://huggingface.co/thewh1teagle/renikud/resolve/main/model.onnx
+
+Classic CLI equivalent:
+
+huggingface-cli download notmax123/blue-onnx --repo-type model --local-dir ./onnx_models
+
+How to get started
+
+Clone BlueTTS , run uv sync , place the ONNX bundle and model.onnx as in the project README , then use src.blue_onnx.BlueTTS or the examples/ scripts.
+
+Minimal pattern:
+
+import soundfile as sf
+from src.blue_onnx import BlueTTS
+
+tts = BlueTTS(
+onnx_dir= "onnx_models" ,
+style_json= "voices/female1.json" ,
+renikud_path= "model.onnx" ,
+)
+samples, sr = tts.synthesize( "Hello, this is a short English sample from BlueTTS." , lang= "en" )
+sf.write( "output.wav" , samples, sr)
+
+(Adjust PYTHONPATH / imports if you install the package instead of running from a clone.)
+
+Speed (indicative)
+
+Reported reference throughput on tuned setups (see project materials and lightbluetts.com ); your hardware, batching, and TensorRT vs ONNX Runtime settings will change these numbers.
+
+Hardware
+
+Approx. speed
+
+~1 h audio
+
+NVIDIA RTX 3090 (GPU)
+
+very high RTF
+
+on the order of seconds
+
+Typical CPU
+
+strong RTF
+
+on the order of minutes
+
+Apple M1 class
+
+strong RTF
+
+on the order of a few minutes
+
+Uses
+
+Hebrew and multilingual TTS from text
+
+Real-time or offline apps on CPU or GPU
+
+Audiobooks, accessibility, assistants, and broadcasting pipelines
+
+Citations
+
+BibTeX and paper links are maintained in the BlueTTS README .
+
+License
+
+MIT — see the BlueTTS repository .
+
+Downloads last month
+-
+
+Downloads are not tracked for this model. How to track
+
+Inference Providers NEW
+
+Text-to-Speech
+
+This model isn't deployed by any Inference Provider. 🙋 Ask for provider support
+
+Datasets used to train notmax123/blue-onnx
+notmax123/SententicDataTTS
+
+Preview • Updated Aug 12 • 67 • 1
+
+notmax123/RanLevi40h
+
+Updated Feb 27 • 58
+
+System theme
+
+Company
+TOS Privacy About Careers Website
+Models Datasets Spaces Pricing Docs

@@ -1,0 +1,193 @@
+avris/kokoro-hebrew-saspeech · Hugging Face
+
+Hugging Face
+
+Models
+Datasets
+Spaces
+Buckets new
+Docs
+Enterprise
+Pricing
+Website
+Tasks
+HuggingChat
+Collections
+Languages
+Organizations
+
+Community
+Blog
+Posts
+Daily Papers
+Hardware
+Learn
+Discord
+Forum
+GitHub
+
+Solutions
+Team & Enterprise
+Hugging Face PRO
+Enterprise Support
+Inference Providers
+Inference Endpoints
+Storage Buckets
+
+Log In
+Sign Up
+
+avris /
+
+kokoro-hebrew-saspeech
+Like 4
+
+Text-to-Speech
+MLX
+Hebrew
+mlx-audio
+kokoro
+hebrew
+tts
+non-commercial
+License: saspeech-noncommercial
+
+Model card Files Files and versions xet
+Community
+
+Deploy
+
+Copy to bucket new
+Use this model Instructions to use avris/kokoro-hebrew-saspeech with libraries, inference providers, notebooks, and local apps. Follow these links to get started.
+Libraries
+MLX How to use avris/kokoro-hebrew-saspeech with MLX:
+# Download the model from the Hub
+pip install huggingface_hub[hf_xet]
+
+huggingface-cli download --local-dir kokoro-hebrew-saspeech avris/kokoro-hebrew-saspeech
+
+Notebooks
+Google Colab
+Kaggle
+Local Apps Settings
+LM Studio
+Atomic Chat
+
+You need to agree to share your contact information to access this model
+This repository is publicly accessible, but you have to accept the conditions to access its files and content .
+This model derives from the SASPEECH dataset (© Israeli Public Broadcasting Corporation). It is licensed for NON-COMMERCIAL use only. By accessing it you accept the SASPEECH terms reproduced in the model card below.
+
+Log in or Sign Up to review the conditions and access this model content.
+
+Kokoro-Hebrew (SASPEECH) — mlx Model & training Files
+
+⚠️ License — NON-COMMERCIAL (SASPEECH / IPBC) Intended use
+Out of scope
+
+Disclaimer
+
+Citation (dataset)
+
+Kokoro-Hebrew (SASPEECH) — mlx
+
+A Kokoro-82M text-to-speech model
+fine-tuned for Hebrew on the SASPEECH dataset (speaker: Shaul
+Amsterdamski), provided in mlx format for Apple-Silicon inference via
+mlx-audio .
+
+Hebrew grapheme→phoneme uses phonikud
+(vocalized Hebrew → IPA, normalized to Kokoro's 178-token vocab). The G2P must be
+applied identically at training and inference time.
+
+Model & training
+
+This release is fine-tuned from Kokoro-82M with a two-stage recipe (StyleTTS2
+trainer / kikiri) on both SASPEECH subsets, to trade breadth for polish:
+
+Stage 1 — breadth (~20 h): the SASPEECH automatic subset
+( OpenSLR SLR134 , ~26 h machine-transcribed with
+Whisper and machine-vocalized with Nakdimon; ~20 h after filtering). This gives
+the model wide phonetic and prosodic coverage, but noisier labels.
+
+Stage 2 — polish (~4 h): the clean, human-vocalized gold subset, which
+sharpens pronunciation and prosody on top of the stage-1 foundation.
+
+Diacritics for the automatic subset were restored where missing with phonikud's
+neural diacritizer; the exact same phonikud G2P is used at train and inference.
+
+Each checkpoint was tracked on held-out sentences for intelligibility
+(Whisper round-trip WER) and speaker similarity (ECAPA-TDNN cosine to real
+Shaul references); this release was selected by listening , favouring natural
+prosody. It corresponds to the stage-2 epoch-3 checkpoint.
+
+Files
+
+kokoro-v1_0.safetensors — the model (bf16, mlx-audio layout)
+
+voices/he_shaul.safetensors — the Shaul voicepack
+
+config.json , vocab.json , kokoro_symbols.py , hebrew_g2p.py — inference support
+
+⚠️ License — NON-COMMERCIAL (SASPEECH / IPBC)
+
+This model is a derivative of the SASPEECH dataset , whose recordings and
+transcriptions are © the Israeli Public Broadcasting Corporation (IPBC) and
+released for non-commercial use only ( OpenSLR SLR134 ).
+These terms govern this model. By using it you accept that you:
+
+may use it for non-commercial purposes only — not for commercial or broadcast needs;
+
+will not imply that the IPBC endorses you or your use;
+
+will not use it in a way that harms or defames Shaul Amsterdamski or the IPBC, including defamation;
+
+will not use it for political needs;
+
+will not use it in a manner that breaches any applicable law.
+
+A code/wrapper license (e.g. MIT) does not relax these terms — the voice
+itself is bound by the SASPEECH terms above , regardless of how it is packaged.
+
+Intended use
+
+Personal, research, and other non-commercial Hebrew TTS.
+
+Out of scope
+
+Commercial products or broadcast; political use; anything intended to harm,
+defame, or impersonate Shaul Amsterdamski or the IPBC; anything unlawful. For
+commercial use, source/train a model on a commercially-licensed dataset instead.
+
+Disclaimer
+
+Provided "AS IS" . Neither the IPBC nor the uploader makes any warranty or is
+liable for any loss, injury, or damage arising from use, nor for changes made to
+the model by you or any third party.
+
+Citation (dataset)
+
+Please cite the SASPEECH dataset — see OpenSLR SLR134
+(Sharon et al., SASPEECH: A Hebrew Single Speaker Dataset , INTERSPEECH 2023).
+
+Downloads last month
+13
+
+MLX
+Hardware compatibility
+Log In to add your hardware
+
+Quantized
+MLX
+164 MB
+
+Inference Providers NEW
+
+Text-to-Speech
+
+This model isn't deployed by any Inference Provider. 🙋 Ask for provider support
+
+System theme
+
+Company
+TOS Privacy About Careers Website
+Models Datasets Spaces Pricing Docs

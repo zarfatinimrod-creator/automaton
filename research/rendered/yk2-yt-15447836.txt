@@ -1,0 +1,234 @@
+Understanding ‘How this content was made’ disclosures on YouTube - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+YouTube policies
+Understanding ‘How this content was made’ disclosures on YouTube
+
+Understanding ‘How this content was made’ disclosures on YouTube
+While watching YouTube, you might find information about how content was made. This information, found in the video player or description, can offer insight into the content's origin and whether it has been meaningfully altered. The "How this content was made" section in the expanded video description provides further details.
+
+Disclosure types
+
+‘Made with AI’: This indicates that a video contains content that has been meaningfully altered or synthetically generated. There are several ways that this information ends up in the ‘How this content was made’ section of the expanded description of a video.
+
+You should expect to see this disclosure when:
+
+The creator manually discloses the use of 'AI content' in the YouTube Studio workflow. When content is undisclosed, in some cases, YouTube may take action to reduce the risk of harm to viewers by proactively applying a label that creators will not have the option to remove. Learn more about " Disclosing use of GenAI content ."
+
+The creator uses YouTube’s generative AI tools (e.g., DreamScreen).
+
+The content contains valid Content Credentials data indicating the entire video is made with AI. Learn more about Content Credentials ( C2PA ).
+
+YouTube will carry forward disclosures from tools and creators available with secure Content Credentials (C2PA) 2.1 or higher that indicate the entire video was made with AI. This may include a label on the video player itself, or language in the detailed description.
+
+Note: YouTube may also leverage Content Credentials (C2PA) to carry forward other disclosures about how content was made. Learn more about the "Captured with a camera” disclosure.
+
+Understanding ‘Info from’ attributions on YouTube
+
+Content Credential (C2PA) disclosures often include an attribution to the signing authority, which indicates the source that validated the information within the secure Content Credentials. When this is the case, you will see an ‘Info from’ attribution beneath the disclosure.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+YouTube policies
+1 of 9
+How YouTube evaluates Educational, Documentary, Scientific & Artistic (EDSA) content
+2 of 9
+Creator responsibility
+3 of 9
+Best practices for content with children
+4 of 9
+Reporting tools & policies for YouTube safety
+5 of 9
+Content policies for YouTube Kids
+6 of 9
+Disclosing use of GenAI content
+7 of 9
+Understanding ‘How this content was made’ disclosures on YouTube
+8 of 9
+Building trust on YouTube: ‘Captured with a camera’ disclosure
+9 of 9
+Your content & third-party training
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+6169194521098235819
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

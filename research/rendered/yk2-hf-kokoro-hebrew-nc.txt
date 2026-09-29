@@ -1,0 +1,87 @@
+thewh1teagle/kokoro-hebrew-nc · Hugging Face
+
+Hugging Face
+
+Models
+Datasets
+Spaces
+Buckets new
+Docs
+Enterprise
+Pricing
+Website
+Tasks
+HuggingChat
+Collections
+Languages
+Organizations
+
+Community
+Blog
+Posts
+Daily Papers
+Hardware
+Learn
+Discord
+Forum
+GitHub
+
+Solutions
+Team & Enterprise
+Hugging Face PRO
+Enterprise Support
+Inference Providers
+Inference Endpoints
+Storage Buckets
+
+Log In
+Sign Up
+
+thewh1teagle /
+
+kokoro-hebrew-nc
+Like 0
+
+Text-to-Speech
+ONNX
+Hebrew
+kokoro
+License: other
+
+Model card Files Files and versions xet
+Community
+
+Copy to bucket new
+
+Kokoro Hebrew NC
+
+Kokoro Hebrew NC
+
+Non-commercial Hebrew Kokoro ONNX export.
+
+This model was converted from the gated non-commercial model
+avris/kokoro-hebrew-saspeech .
+Use is subject to the original model and dataset terms.
+
+Files:
+
+kokoro.onnx - ONNX model export.
+
+voices-hebrew.bin - kokoro-onnx compatible voice archive with he_shaul .
+
+config.json - Hebrew vocab config for phoneme tokenization.
+
+Downloads last month
+193
+
+Inference Providers NEW
+
+Text-to-Speech
+
+This model isn't deployed by any Inference Provider. 🙋 Ask for provider support
+
+System theme
+
+Company
+TOS Privacy About Careers Website
+Models Datasets Spaces Pricing Docs

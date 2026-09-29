@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/youtubekids/answer/6130573?hl=iw&co=GENIE.Platform%3DAndroid",
+  "slug": "yk-availability-iw",
+  "fetchedAt": "2026-09-28T22:03:14.651Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1522721,
+  "sha256": "90c5d21b0f161a0ff9fe006ebd5c87a677c32108b1570ce60cc8ddad4059169f",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk-availability-iw.html",
+  "textPath": "research/rendered/yk-availability-iw.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

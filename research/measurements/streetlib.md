@@ -176,3 +176,208 @@ refuse.
 **The recipient for the held step-8 question.** The only StreetLib address in any capture is `support@streetlib.de`
 (chg.html:600, in the German footer; 10 hits across the StreetLib captures). [INFERENCE] It is the German (BookRix)
 service's inbox. The held question (above, §4) goes there only if renders 1 and 2 are both silent on fees.
+
+## Tick 10 (row 132 and row 133 renders)
+
+**Read 28.9.2026 by an Opus reader.** Two captures, both 200, first fetch, fetchedAt 2026-09-28T22:00Z:
+- `streetlib-it-prezzi-servizi` (row 132, short name `it`): 2,322 bytes (`it.meta.json:7`); its txt is empty (1 byte).
+- `help-streetlib-com-category-97-payments` (row 133, short name `pay`): 97 txt lines and 1,789 html lines. The txt
+  was read in full. In the html I read the article list (:1655-1676), the sidebar (:1703-1717), the JSON-LD (:72) and
+  the canonical link (:14), and grepped the whole file.
+
+Every quote was checked with `grep -n -F`.
+
+**Status: NEEDS_MORE. Neither render settles a kill.** Row 132 is the same empty JS shell as the three
+`www.streetlib.com` pages. Row 133 is a list of titles, like the changeover collection. It names the payout articles
+but shows none of their text.
+
+**Row 132 is a JS shell, not a redirect stub.** [RENDERED]
+- Its sha256 is `7a29449c…` (`it.meta.json:8`), byte-identical to `streetlib-com-pricing` (`.meta.json:8`) and to
+  `streetlib-com-legalpolicy`.
+- The body is only `<div id="root"></div>` (it.html:28), loaded by `/assets/js/index-46a3fa32.js` (:20). "Meta tags are
+  managed dynamically by react-helmet-async in PageLayout component" (:7).
+- There is no redirect: no `http-equiv` refresh, no `window.location` and no canonical (0 hits). The only Italian is a
+  code comment, "Ottimizzazione caricamento font" (:33).
+- [INFERENCE] `www.streetlib.it` and `www.streetlib.com` serve one single-page app. No marketing page on either host
+  renders on the runner, and that includes `https://www.streetlib.com/pro-plan-lifetime` (§Tick 9 already advised
+  against it). Plan prices can only come from the help centre, which renders, or from a written answer.
+
+**Row 133 lists the payout articles.** "Billing and Payments" (pay.txt:53) sits in the collection "Manage Your Account
+and Royalties" (:31; JSON-LD, pay.html:72). Its articles, with hrefs made absolute against the canonical
+`https://help.streetlib.com/category/97-payments` (pay.html:14), are:
+
+| Title (pay.txt) | href (pay.html) |
+|---|---|
+| "Billing Profile and Payment Method" (:63) | `/article/699-billing-profile-and-payment-method` (:1658) |
+| "Completing our Tax Information Interview" (:65) | `/article/433-completing-our-tax-information-interview` (:1660) |
+| "Withholding tax" (:67) | `/article/429-withholding-tax` (:1662) |
+| "Earnings" (:69), already read as `677` | `/article/677-earnings` (:1664) |
+| "Getting Paid" (:71) | `/article/670-getting-paid` (:1666) |
+| "Getting Paid (USA and Canada)" (:73) | `/article/432-getting-paid-usa-canada` (:1668) |
+| "Invoices" (:75) | `/article/431-billing` (:1670) |
+| "Invoices and Detailed Reports" (:77) | `/article/422-invoices-and-detailed-reports` (:1672) |
+| "How to Read Billing Reports" (:79) | `/article/704-how-to-read-billing-reports` (:1674) |
+
+- The sidebar holds two sister categories: `/category/72-create-and-manage-your-streetlib-account` (pay.html:1707) and
+  `/category/111-book-sales` (:1715).
+- "paypal", "bank", "payout", "israel" and "payoneer" have 0 hits in both the txt and the html.
+- The footer again links "Lifetime Pro Plan" (`label: 'Lifetime Pro Plan',` pay.html:399; `link:
+  'https://www.streetlib.com/pro-plan-lifetime'`, :400). That is still a name without a price.
+- [INFERENCE] A separate "(USA and Canada)" article implies that "Getting Paid" (670) is the article for the rest of the
+  world, so 670 is the one that answers (b) for Israel. A "Tax Information Interview" suggests a tax form at payout.
+  Whether it has an identity or camera step is UNKNOWN.
+
+**Kills. (a)-(d) are pre-registered on the board (§4 row 24). (e) is PROPOSED only.**
+- **(a) Any distribution plan, subscription or per-title fee: UNSETTLED.** Row 132, the page meant to settle it, is an
+  empty shell (it.html:28). No payments title names a plan, a subscription or a fee (pay.txt:63-79). The lean toward
+  firing is unchanged (677.txt:87; the footer, pay.html:399).
+- **(b) The payout cannot reach an Israeli individual, or needs a camera step: UNSETTLED.** The articles that settle it
+  now have captured URLs (670, 699 and 433 above). No payout text is rendered.
+- **(c) AI books barred even when declared: DOES NOT FIRE.** Unchanged (421.txt:87).
+- **(d) Web forms only, and the terms forbid automation: UNSETTLED; it parks.** Unchanged. The terms are on the shell
+  host (legalpolicy, §1).
+- **(e) The legal name is shown to buyers: UNKNOWN.** PROPOSED only.
+
+**Gate line.** Unchanged: G1 U↘(r) · G2 U(r) · G3 U(r) · G4 P(r) · G5 P in part (r) · G6 U · G7 U(r, "Surname, Name",
+380.txt:71). G2 gains only a map of where the answer is.
+
+**Next step (renders, in order; every URL is from `pay.html`, resolved against its canonical :14).**
+1. **https://help.streetlib.com/article/670-getting-paid** (pay.html:1666). It settles (b): payout methods, minimum and
+   countries, and whether PayPal or a bank reaches an Israeli individual.
+2. **https://help.streetlib.com/article/699-billing-profile-and-payment-method** (:1658). It covers (b): which payment
+   methods a billing profile takes, and whether an individual can hold one. It may touch (a) if a plan is billed there.
+3. **https://help.streetlib.com/article/433-completing-our-tax-information-interview** (:1660). It covers the camera
+   half of (b): any identity-document, photo or video step in the tax form.
+4. **https://help.streetlib.com/category/72-create-and-manage-your-streetlib-account** (:1707). It covers (a): the
+   account category, where an article on the Subscription and Lifetime options would sit if one exists. If it lists
+   one, render that article next.
+
+The held step-8 fee question (§4) stays held until renders 2 and 4 are read. The only captured address is still
+`support@streetlib.de` (§Tick 9).
+
+## Tick 11 (rows 136-139 render)
+
+**Read 28.9.2026 by an Opus reader (family "loop-venues").** Four captures, all 200 (`*.meta.json:5`), first fetch,
+fetchedAt 2026-09-28T23:21Z (`:4`). Short names: `670` = `help-streetlib-com-article-670-getting-paid` (row 136),
+`699` = `…-article-699-billing-profile` (row 137), `433` = `…-article-433-tax-interview` (row 138), `72` =
+`…-category-72-account` (row 139). All four txt files were read in full. In the html I read each article body
+(`<article id="fullArticle">`, :1639 onward), the category list (72.html:1658-1666) and the footer menu, and grepped each
+file. Every quote below was checked with `grep -n -F`. The four billing screenshots in 699 (699.html:1656, :1659, :1668,
+:1671) and two in 433 (433.html:1650) are images the runner did not capture; their content is UNKNOWN.
+
+**Status: NEEDS_MORE. Kill (b) is settled on the rails: bank or PayPal for anyone outside the USA and Canada, with a
+private-user profile type. Kill (a) is still open.** The account category lists no plans article.
+
+**Row 137: payout rails and who may hold them** [RENDERED]
+- "if you live outside USA or Canada , you can choose bank transfer or Paypal payments ." (699.txt:87). The same
+  sentence gives the USA and Canada "bank transfer, Payoneer or PayPal payments" (:87).
+- An individual may hold a profile: "you will not be able to change some data such as the profile type (private user,
+  company, etc.)" (699.txt:77). [INFERENCE] "private user" is the individual's profile type.
+- "The country of your payment method and billing profile must match." (699.txt:63). "The name and surname (or company
+  name) of the holder of the billing profile must coincide with those of the holder of the selected payment method"
+  (:65). [INFERENCE] An Israeli billing profile paid to an Israeli PayPal or bank account in the same name fits both
+  rules. The legal name goes on the billing profile; nothing in these pages shows it to buyers.
+- "You can receive payments of the earnings from the sales of your books only if you have successfully completed your
+  billing profile during the onboarding phase." (699.txt:59). The link is `/article/700-the-onboarding-process`
+  (699.html:1648). The onboarding article is unread, so any identity step there is UNKNOWN.
+- A profile's type is locked once a document is issued (:77). A new profile can be created and set as primary (:77), so
+  a later move from private user to a registered business (step 2) does not need a new account.
+- "Last updated on July 3, 2026" (699.txt:103). [INFERENCE] This is after the March 2026 earnings update (677.txt:107).
+  The article describes only the billing of earnings. It says nothing of paying for a plan.
+
+**Row 136: thresholds, timing and a monthly approval** [RENDERED]
+- Scope: "Please note that the payment conditions below only apply to publishers affiliated with StreetLib IT; click
+  here if you live in US or Canada." (670.txt:55). [INFERENCE] A publisher in Israel falls under StreetLib IT. The
+  Distribution Agreement file is named `StreetLib_SL_IT_Hub_20250130_en.pdf` (§4), which fits.
+- "€30 if the payment method chosen is PayPal (**)" (670.txt:69); "€200 if the payment method chosen is SEPA bank
+  transfer" (:71); "€200 if the payment method chosen is International Bank Transfer (neither SEPA nor ABA)" (:73).
+- PayPal's cost: "This commission is equal to 2% of the amount paid up to a maximum of € 12." (670.txt:81).
+- **A monthly approval step.** "you must enter the date and invoice number from your accounts and click on "Confirm""
+  (670.txt:61). "Remember to approve each month's pending invoice on the first days of the following month" (:63).
+  [INFERENCE] Someone must approve each month's draft in the dashboard (`https://dashboard.streetlib.com/billing`,
+  670.html:1646). It is one action a month, not one per title. [checker 28.9] At most one a month: "we will only issue
+  the invoice once the payment method threshold you set has been reached." (670.txt:75), so a month whose accrued amount
+  is still below the threshold brings no invoice to approve. If the terms allow an agent, the agent does it; if not, it
+  is a monthly owner step (G3/G6). "invoice number from your accounts" presumes the publisher keeps numbered
+  accounts, like an Israeli business issuing its own documents. 699 also speaks of a "draft invoice or receipt"
+  (699.txt:75). Whether a private-user profile outside Italy needs its own number is UNKNOWN. This page is dated "Last
+  updated on February 24, 2025" (670.txt:93).
+- **Slow money.** "Payment will be made starting 60 days (end of the month) from the date the invoice is approved."
+  (670.txt:63). [INFERENCE] The first payout comes about three months after the month of the first sale, and only once
+  the €30 PayPal threshold is reached. [checker 28.9] That is the earliest case, not an estimate: none of the four pages
+  says when a retailer's sale reaches the monthly invoice, so any retailer reporting lag comes on top.
+- "Every year StreetLib issues the income tax statements." (670.txt:85).
+
+**Row 138: the tax interview** [RENDERED]
+- "To get paid by StreetLib USA, you need to provide us with the relevant document requested by the US tax authorities :"
+  (433.txt:55). "If you live outside United States: a W8-BEN (individual) or W8-BEN-E (company).*" (:59).
+- It is a form in the dashboard: "you can digitally sign the document and certify what you have provided." (433.txt:63).
+  "We are obligated to provide the IRS with a new document every year." (:65).
+- "If you live outside the United States, US tax authorities take 30% of your revenues by default." (433.txt:67). A
+  treaty rate is self-declared: "We’ll apply the percentage you indicate." (:67).
+- "passport", "selfie", "camera", "video", "photo", "identity" and "verification" have 0 hits in all four txt and html
+  files. [INFERENCE] The form is signed digitally with no camera step. Whether it applies to a StreetLib IT publisher,
+  or only to one paid by "StreetLib USA", is UNKNOWN. The page is old: "Last updated on March 29, 2023" (433.txt:73).
+
+**Row 139: the account category** [RENDERED]
+- Five articles: "What you can do with StreetLib" (72.txt:63), "Create, Update, or Delete Your Account" (:65), "The
+  Onboarding Process" (:67), "StreetLib Dashboard" (:69), "Distribution Agreement" (:71).
+- Their hrefs, made absolute against the canonical `https://help.streetlib.com/category/72-create-and-manage-your-streetlib-account`
+  (72.html:14): `/article/706-what-you-can-do-with-streetlib` (:1658), `/article/425-create-modify-delete-account`
+  (:1660), `/article/700-the-onboarding-process` (:1662), `/article/570-the-new-streetlib-dashboard` (:1664),
+  `/article/427-distribution-agreement` (:1666).
+- No title names a plan, a subscription, Lifetime or Pro. "Lifetime Pro Plan" occurs only in the footer menu
+  (`label: 'Lifetime Pro Plan',` 72.html:399; 670.html:407; 699.html:407; 433.html:407), as in every earlier capture.
+- The only email address in all four captures is still `support@streetlib.de` (in the German footer, 72.html:604). Each
+  page's "Contact Us" opens a Help Scout Beacon form (`onclick="window.Beacon('open')"`), not an address.
+
+**Kills. (a)-(d) are pre-registered on the board (§4 row 24). (e) is PROPOSED only.**
+- **(a) Any distribution plan, subscription or per-title fee: UNSETTLED.** No plans article in the account category
+  (72.txt:63-71). The billing article updated in July 2026 describes only the billing of earnings (699.txt:55-97). That
+  absence is weak evidence against a required plan, not a settlement. The lean toward firing does not grow, and the
+  footer's "Lifetime Pro Plan" and the 85% options (677.txt:87) still stand unpriced.
+- **(b) The payout cannot reach an Israeli individual by PayPal or bank, or needs a camera step:**
+  - **Rails half: DOES NOT FIRE.** Bank transfer or PayPal for anyone outside the USA and Canada (699.txt:87); an
+    International Bank Transfer route exists (670.txt:73); a private-user profile type exists (699.txt:77).
+  - **Camera half: UNSETTLED, leaning DOES NOT FIRE.** No photo, ID or video step in 670, 699 or 433; the tax form is
+    signed digitally (433.txt:63). The billing profile is completed during onboarding (699.txt:59), and that article
+    (700) is unread.
+- **(c) AI books barred even when declared: DOES NOT FIRE.** Unchanged (421.txt:87).
+- **(d) Web forms only, and the terms forbid automation: UNSETTLED; it parks.** Nothing in these four pages on automated
+  access or an API. The billing and approval steps are dashboard actions (670.html:1646). "automat" occurs only in
+  "automatically made out" (699.txt:75) [checker 28.9: and in "will not be automatically associated" (699.txt:95);
+  neither is about automated access].
+- **(e) The legal name is shown to buyers: UNKNOWN.** PROPOSED only. The legal name sits on the billing profile
+  (699.txt:65); these pages do not show where the author name or publisher name appears to buyers.
+
+**Gate line (was G1 U↘(r) · G2 U(r) · G3 U(r) · G4 P(r) · G5 P in part (r) · G6 U · G7 U(r)).**
+Now: G1 U↘(r) · **G2 U↗(r)** · G3 U(r) · G4 P(r) · G5 P in part (r) · G6 U · G7 U(r, "Surname, Name", 380.txt:71).
+- **G2:** the rails pass for an Israeli individual (PayPal from €30, or an international bank transfer from €200). The
+  camera half waits on the onboarding article. A US tax form may apply, with a 30% default withholding unless a treaty
+  rate is declared (433.txt:67).
+- **G3 / G6:** a new recurring step: one invoice approval a month (670.txt:63). It is per month, not per title.
+  [checker 28.9] At most one a month, and only once the accrued amount reaches the threshold (670.txt:75).
+
+**Verdict: NEEDS_MORE.** No pre-registered kill fires. (b) is half settled in StreetLib's favour. (a) decides the row.
+
+**The held step-8 question (§4).** It is still right as drafted: it asks only about kill (a), which is the one that
+decides the row, and the payout rails no longer need asking. Its hold condition is met: §Tick 10 held it "until renders
+2 and 4 are read", and both (699 and 72) are now read and silent on fees. [INFERENCE] One more render first is cheaper
+than a letter: article 706 (next step 1) is the likeliest page to state the plans. If 706 is silent on fees too, send
+the question as drafted. StreetLib has
+no venue in `research/owner-asks/questions.json`. The recipient is unchanged: `support@streetlib.de` is the only address
+in any capture, and it is the German service's footer (72.html:604). The Beacon form is a web widget, not an email
+route.
+
+**Next step (renders, in order; every URL is from these captures, resolved against the canonical 72.html:14).**
+1. **https://help.streetlib.com/article/706-what-you-can-do-with-streetlib** (72.html:1658). It covers (a): the most
+   likely page to describe the offer, the plans and whether a free commission-only route remains.
+2. **https://help.streetlib.com/article/700-the-onboarding-process** (72.html:1662; 699.html:1648). It covers the camera
+   half of (b) (the billing profile is completed there) and (a) if onboarding asks for a plan.
+3. **https://help.streetlib.com/article/427-distribution-agreement** (72.html:1666). It covers (d) and the fees; it may
+   link a newer agreement than the 30.1.2025 PDF (§4).
+4. Lower value: `https://help.streetlib.com/article/431-billing` (670.html:1656; [checker 28.9] its title "Invoices" is at
+   pay.txt:75 and pay.html:1670, while in 670 the link text is "here", for managing payment methods (:1656), and "valid
+   billing profile" (:1660)), for whether a private
+   user outside Italy must supply its own invoice number; and `https://help.streetlib.com/article/570-the-new-streetlib-dashboard`
+   (72.html:1664), for any bulk or API route (G3).

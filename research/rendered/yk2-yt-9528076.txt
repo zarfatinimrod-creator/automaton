@@ -1,0 +1,305 @@
+Determining if your content is "made for kids" - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Privacy and safety center
+Made for kids content
+Determining if your content is "made for kids"
+
+Determining if your content is "made for kids"
+Regardless of your location, we require you to tell us whether or not your videos are made for kids according to an agreement with the US Federal Trade Commission (FTC) and to help you comply with the Children’s Online Privacy Protection Act (COPPA) and/or other applicable laws. Failure to set your content appropriately may result in consequences on YouTube or have legal consequences under COPPA and other laws.
+
+We provide some guidance on what is considered “made for kids” below, but we cannot provide legal advice. If you are unsure whether your videos meet this standard, we suggest you seek legal counsel.
+
+Important Update for All Creators: Complying with COPPA
+
+Note: In November 2019, the FTC released more information to help YouTube creators decide if their content is “made for kids” or not. You can learn more on the FTC’s blog .
+
+Made for kids
+
+Not made for kids
+
+Examples of what may be considered made for kids include:
+
+Children are the primary audience of the video.
+
+Children are not the primary audience, but the video is still directed at children because it features actors, characters, activities, games, songs, stories, or other subject matter that reflect an intent to target children.
+
+See more guidance below .
+
+Examples of what may be considered not made for kids include:
+
+Content that contains sexual themes, violence, obscene, or other mature themes not suitable for young audiences.
+
+Age-restricted videos that aren’t appropriate for viewers under 18.
+
+See more guidance below .
+
+How do I know if I should set my content as made for kids?
+
+If your video features actors, characters, activities, games, songs, stories, or other subject matter that reflect an intent to target children, it’s likely made for kids. According to the FTC’s guidance on COPPA , a video is child directed (which we call “made for kids”) if:
+
+Children are the primary audience based on the factors described below.
+
+Children are not the primary audience, but the video is still directed to children based on the factors below. (This is known under COPPA as “mixed audience” content, which is a type of child directed content. General audience content is not the same as mixed audience.)
+
+When deciding whether or not your channel or video is made for kids, you should consider various factors, including:
+
+Subject matter of the video (e.g. educational content for preschoolers).
+
+Whether children are your intended audience (e.g. as indicated in your video metadata) or the actual audience for the video.
+
+Whether the video includes child actors or models.
+
+Whether the video includes characters, celebrities, or toys that appeal to children, including animated characters or cartoon figures.
+
+Whether the language of the video is intended for children to understand.
+
+Whether the video includes activities that appeal to children, such as play-acting, simple songs or games, or early education.
+
+Whether the video includes songs, stories, or poems for children.
+
+Any other information you may have to help determine your video’s audience, like empirical evidence of the video’s audience.
+
+Whether the content is advertised to children.
+
+Notes:
+
+Just because your content may include some of these factors does not automatically mean it’s made for kids. You should carefully consider who you’re trying to reach with your videos as you evaluate your content and the factors above.
+
+YouTube Analytics (YTA) is not designed to help determine if your content is child directed. You should use the factors outlined by the FTC above to set your audience.
+
+Videos that you set as “made for kids” are more likely to be recommended alongside other kids’ videos. Check out our most frequently asked questions about content that is made for kids.
+
+Important: As a creator, you know your videos and your audience best, and it is your legal responsibility to comply with COPPA and/or other applicable laws and designate your content accurately. Do not rely on our systems to set your audience for you because our systems may not identify content that the FTC or other authorities consider to be made for kids. If you fail to categorize your content correctly, there may be consequences on YouTube, as well as legal consequences under the Children’s Online Privacy Protection Act (COPPA) or other applicable local laws.
+
+How do I know if I should set my content as NOT made for kids?
+
+Carefully consider who you’re trying to reach with your videos as you evaluate your content. For instance, a video is not necessarily made for kids just because:
+
+It’s safe or appropriate for everyone to watch (aka it’s “family friendly”).
+
+It covers an activity that’s traditionally associated with children.
+
+Children may incidentally see it.
+
+General audience content
+
+General audience content is content that could appeal to everyone, but isn’t intended specifically for children, or content that is intended for a teen or older audience. General audience content should be set as “not made for kids.”
+
+Here are some examples of the types of videos that could be considered “general audience”, in the absence of information suggesting an intent to target kids:
+
+A DIY video teaching hobbyists how to remake dolls or to make clay figurines
+
+A family vlog telling other parents about an amusement park visit
+
+A video featuring detailed instructions around creating mods or avatars
+
+Animated content that appeals to everyone
+
+A gaming video that features adult humor
+
+What’s the difference between general audience and mixed audience?
+
+Mixed audience content, on the other hand, is considered a type of made for kids content. This is content that targets children as one of its audiences, even if it’s not the main or primary audience, and that qualifies as child directed after balancing the factors described above.
+
+Note: Content that contains sexual themes, violence, obscene, or other mature themes not suitable for young audiences is likely not made for kids.
+
+How old is a kid?
+
+The age of a "kid" in the United States is defined as anyone under the age of 13. However, the age of a kid may be different in other countries, so consider any additional obligations you may have under applicable laws when evaluating whether content is “made for kids,” and consult legal counsel if you have additional questions.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+Made for kids content
+1 of 4
+Set your channel or video’s audience
+2 of 4
+Determining if your content is "made for kids"
+3 of 4
+Best practices for kids & family content
+4 of 4
+Frequently asked questions about “made for kids”
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+13370003201416842465
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

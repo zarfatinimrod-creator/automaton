@@ -1,0 +1,17 @@
+{
+  "url": "https://support.tiktok.com/en/business-and-creator/creator-and-business-accounts/promoting-a-brand-product-or-service",
+  "slug": "tt2-promoting-a-brand",
+  "fetchedAt": "2026-09-28T23:22:19.782Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 5316,
+  "sha256": "0d175523398ffca8f11c761384cf6edb98ad30d4c5648b6b034bda3f79430ca3",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/tt2-promoting-a-brand.html",
+  "textPath": "research/rendered/tt2-promoting-a-brand.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

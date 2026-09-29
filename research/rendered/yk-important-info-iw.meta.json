@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/youtubekids/answer/6130561?hl=iw",
+  "slug": "yk-important-info-iw",
+  "fetchedAt": "2026-09-28T22:03:15.960Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1537994,
+  "sha256": "0e0148296c7212e795842dd03e92d878f275d681985ac6a68fc2873687a93af5",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk-important-info-iw.html",
+  "textPath": "research/rendered/yk-important-info-iw.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

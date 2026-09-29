@@ -1,0 +1,121 @@
+Billing Profile and Payment Method - StreetLib Help Center
+
+Toggle Navigation
+
+Ebook
+
+Audiobook
+
+Libri cartacei
+
+Crea i tuoi libri con Write
+
+Direct Marketing
+
+Gestisci il tuo account e i pagamenti
+
+StreetLib Store
+
+Webinar
+
+Ready
+
+Ebooks
+
+Audiobooks
+
+Paperbooks
+
+Create Your Books
+
+Manage Your Account and Royalties
+
+StreetLib Direct Marketing
+
+SL Store
+
+Accountverwaltung und Einnahmen
+
+Ebook Veröffentlichung
+
+Hörbücher
+
+Bucherstellung
+
+FAQ zum Umzug auf die neue Plattform
+
+FAQ on Platform Changeover
+
+Contact
+
+Contact
+
+Billing Profile and Payment Method
+
+All information and documents concerning the Billing of your earnings are available in the appropriate section of your account .
+
+The billing profile
+
+You can receive payments of the earnings from the sales of your books only if you have successfully completed your billing profile during the onboarding phase.
+
+BE AWARE . We cannot proceed if there is a mismatch between the information entered in your billing profile and your payment method.
+
+The country of your payment method and billing profile must match.
+
+The name and surname (or company name) of the holder of the billing profile must coincide with those of the holder of the selected payment method
+
+In the case of shared accounts, it is advisable that the name of the holder of the billing profile appears as the sole holder of the payment method used.
+
+You can create multiple billing profiles, and choose which one to set as the main profile to which the accounting documents generated from sales will be made out to. Here is what the Profile section looks like when two billing profiles are entered.
+
+How to set up the main billing profile
+
+If you've created two billing profiles, you'll need to choose one as your primary profile. To do this, just click on the profile you want to set as default, and the tab that contains the profile information will open; at this point, you will have to click on the three dots symbol at the top right and select "Set default".
+
+Each time a new draft invoice or receipt is created in your account it will be automatically made out to the billing profile that was set as primary.
+
+PLEASE NOTE: Once a billing profile has been created and at least one accounting document has been generated under that profile, you will not be able to change some data such as the profile type (private user, company, etc.). You will always be able to edit your address and payment details. If you need to change that data because it is no longer valid or correct, you will have to create a new billing profile (Profiles section -> Create new) and then set it as primary, so that draft invoices/receipts and/or anything that will be generated from there onwards will be made out to this new profile.
+
+How to delete a billing profile
+
+To delete a billing profile, you can simply open it, click at the top right on the three dots and select "Delete".
+
+Please Note: it is not possible to delete billing profiles associated with accounting documents already issued.
+
+Payment methods
+
+If you live in USA or Canada , you can choose to receive your earnings through bank transfer, Payoneer or PayPal payments; if you live outside USA or Canada , you can choose bank transfer or Paypal payments . In both cases, you can enter and save multiple payment methods . By clicking on the links above, you will find the thresholds to receive your earnings according to the chosen payment method.
+
+A payment method can be used on multiple billing profiles (if you have more than one), but a billing profile can also be associated with a single payment method, which can be updated at any time. To delete a payment method, just click on it to open and click on your upper right menu " Delete ":
+
+How to add a payment method
+
+You can add a payment method by clicking on Profile and in the payment methods section click on "Create New".
+
+Please note that a new payment method will not be automatically associated with your billing profile. To do this, all you need to do is click on Profiles, open the profile previously created, click on the three dots at the top right to edit information, and select the new payment method to be attributed to the profile.
+
+Please also note: if you need to change your payment method, we recommend that you do so before approving the receipt/invoice - while the document is still a draft; in this way, the receipt/invoice will be paid with the new selected payment method.
+
+Still need help?
+Contact Us
+Contact Us
+
+Last updated on July 3, 2026
+
+Toggle Search
+
+Categories
+
+Create and manage your StreetLib account
+
+Billing and Payments
+
+Book sales
+
+No results found
+
+&copy;
+
+StreetLib SRL
+
+2026. Powered by Help Scout

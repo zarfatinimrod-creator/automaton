@@ -1,0 +1,478 @@
+Set your channel or video’s audience - Computer - YouTube Help
+Skip to main content
+
+YouTube Help
+
+Sign in
+
+Google Help
+
+Help Center
+Fix a problem
+Watch videos
+Manage your account & settings
+Supervised experiences on YouTube
+YouTube Premium
+Create & grow your channel
+Monetize your content
+Policy, safety, & copyright
+
+Community
+YouTube
+
+Privacy Policy
+YouTube Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+Creator Tips
+
+YouTube
+
+Fix a problem Troubleshoot problems playing videos Troubleshoot account issues Fix upload problems Get help with the YouTube Partner Program Learn about recent updates on YouTube Get help with YouTube
+
+Watch videos Find videos to watch Change video settings Watch videos on different devices Comment, subscribe, & connect with creators Save or share videos & playlists Troubleshoot problems playing videos Purchase & manage movies, TV shows & products on YouTube
+
+Manage your account & settings Sign up and manage your account Manage account settings Manage privacy settings Manage ad settings Manage accessibility settings Troubleshoot account issues YouTube updates
+
+Supervised experiences on YouTube Supervised accounts for kids Supervised accounts for teens
+
+YouTube Premium Join YouTube Premium YouTube Premium benefits Manage your Premium membership Manage Premium billing & payments Fix YouTube Premium issues
+
+Create & grow your channel Upload videos Edit videos & video settings Create Shorts Edit videos with YouTube Create Customize & manage your channel Analyze performance with analytics Translate videos, subtitles, & captions Manage your posts & comments Live stream on YouTube YouTube Creator Community Become a podcast creator on YouTube Creator and Studio App updates
+
+Monetize your content YouTube Partner Program Make money on YouTube Get paid Understand ads and related policies Get help with the YouTube Partner Program YouTube for Content Managers
+
+Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy and safety center Copyright and rights management
+
+Privacy and safety center
+Made for kids content
+Set your channel or video’s audience
+
+Set your channel or video’s audience
+
+Regardless of your location, you’re legally required to comply with the Children’s Online Privacy Protection Act and/or other laws. You’re required to tell us that your videos are made for kids if you make kids content.
+
+As a YouTube creator, you are required to set future and existing videos as made for kids or not. Even creators who don’t make content for kids need to set their audience. This will help ensure that we offer the appropriate features on your content.
+
+Important Update for All Creators: Complying with COPPA
+
+To help you comply, there are made for kids audience settings on YouTube Studio. You can set your audience:
+
+At the channel level, which will set all of your future and existing content as made for kids or not.
+
+Or, at the video level. If you choose this option, you’ll need to set each existing and future video as made for kids or not.
+
+Note :
+
+We'll make the audience selection tool available to third-party applications and the YouTube API Services in the near future. For now, please use YouTube Studio to upload made for kids content.
+
+Important: Why every creator must set their audience
+
+These changes are required as part of a settlement with the US Federal Trade Commission (FTC) and NY Attorney General, and will help you comply with the Children’s Online Privacy Protection Act (COPPA) and/or other applicable laws. Regardless of your location, we require you to tell us whether or not your videos are made for kids. If you fail to set your audience accurately, you may face compliance issues with the FTC or other authorities, and we may take action on your YouTube account. Learn more about the FTC’s enforcement of COPPA.
+
+A few notes :
+
+We use machine learning to help us identify videos that are clearly directed to young audiences. We trust you to set your audience accurately, but we may override your audience setting choice in cases of error or abuse.
+
+Do not rely on our systems to set your audience for you because our systems may not identify content that the FTC or other authorities consider to be made for kids.
+
+If you need help determining whether or not your content is made for kids, check out this Help Center article or consult legal counsel.
+
+Videos that you set as “made for kids” are more likely to be recommended alongside other kids’ videos.
+
+If you've already set your audience for your video and YouTube detects error or abuse, you may see your video set as “Set to Made for Kids". You won't be able to change your audience setting. If you think we made a mistake, you can appeal .
+
+Set your channel's audience
+
+Simplify your workflow by selecting a channel setting. This setting will affect existing and future videos . If you choose not to select a channel setting, you’ll be required to identify each video on your channel that’s made for kids. Settings for individual videos will override the channel setting.
+
+This will also restrict certain features on your channel. If you aren’t sure whether or not your videos are made for kids, check out this Help Center article .
+
+Sign in to studio.youtube.com (Web studio only).
+
+On the left menu, click Settings .
+
+Click Channel .
+
+Click the Advanced Settings tab.
+
+Under Audience , select:
+
+“Yes, set this channel as made for kids. I mostly upload content that’s made for kids.”
+
+“No, set this channel as not made for kids. I almost never upload content that’s made for kids.”
+
+“I want to review this setting for every video.”
+
+Click SAVE .
+
+Set your video's audience
+
+You can set individual videos as made for kids. This is a good option if only some of your videos are made for kids. If you aren’t sure whether or not your content is made for kids, check out this Help Center article .
+
+Set your audience during upload
+
+Go to studio.youtube.com . Note: to set your audience as made for kids, you'll need to use YouTube Studio . You won't be able to do so in Creator Studio Classic.
+
+In the upper right hand corner, click CREATE .
+
+Click Upload videos .
+
+On the Basic info tab, scroll to Audience .
+
+Select:
+
+Yes, it’s 'Made for Kids' .
+
+No, it’s not 'Made for Kids' .
+
+Click Next to continue uploading your content.
+
+Once you’ve uploaded your video, it’ll be labeled as “Made for kids - set by you” in your Uploads list .
+
+Update the audience setting on existing videos
+
+You may notice that YouTube has already set some videos as “made for kids”. Since you haven’t had a chance yet to set your videos or channel as made for kids or not, you’ll be able to do this now:
+
+Sign in to studio.youtube.com .
+
+From the left menu, select Content .
+
+Check the boxes next to the videos you'd like to edit. Note : You can select all of your videos by checking the box next to “Video” at the top of your upload list.
+
+Select Edit Audience Yes, it’s 'Made for Kids' .
+
+Select UPDATE VIDEOS .
+
+A few notes:
+
+We use machine learning to help us identify videos that are clearly directed to young audiences. We trust you to set your audience accurately, but we may override your audience setting choice in cases of error or abuse.
+
+Do not rely on our systems to set your audience for you because our systems may not identify content that the FTC or other authorities consider to be made for kids.
+
+If you need help determining whether or not your content is made for kids, check out this Help Center article or consult legal counsel.
+
+Videos that you set as “made for kids” are more likely to be recommended alongside other kids’ videos.
+
+If you've already set your audience for your video and YouTube detects error or abuse, you may see your video set as “Set to Made for Kids". You won't be able to change your audience setting. If you think we made a mistake, you can appeal .
+
+Set your live stream's audience
+
+Set your audience when creating a live stream
+
+If you aren’t sure whether or not your content is made for kids, check out this Help Center article .
+
+Go to studio.youtube.com .
+
+In the upper right hand corner, click CREATE .
+
+Click Go live . Note: Clicking this will send you to the Live Control Room . You won't be able to set your live stream's audience using our Classic live streaming tools, so you'll need to do so using the Live Control Room.
+
+After you’ve filled out the basic information and selected a privacy setting, scroll to Audience .
+
+Select:
+
+Yes, it’s 'Made for Kids' .
+
+No, it’s not 'Made for Kids' .
+
+Click Next to continue setting up your live stream.
+
+Update the audience setting on archived live streams
+
+You may notice that YouTube has already set some archived live streams as “made for kids”. Since you haven’t had a chance yet to set your archived live streams as made for kids or not, you’ll be able to do this now:
+
+Sign in to studio.youtube.com .
+
+From the left menu, select Content .
+
+Click the Live tab.
+
+Check the boxes next to the videos you'd like to edit. Note : You can select all of your videos by checking the box next to “Live stream” at the top of the list.
+
+Select Edit Audience Yes, it’s 'Made for Kids' if it’s kids content. Or, select No, it’s not 'Made for Kids' if it isn’t kids content.
+
+Select UPDATE VIDEOS .
+
+A few notes :
+
+We use machine learning to help us identify videos that are clearly directed to young audiences. We trust you to set your audience accurately, but we may override your audience setting choice in cases of error or abuse.
+
+Do not rely on our systems to set your audience for you because our systems may not identify content that the FTC or other authorities consider to be made for kids.
+
+If you need help determining whether or not your content is made for kids, check out this Help Center article or consult legal counsel.
+
+Videos that you set as “made for kids” are more likely to be recommended alongside other kids’ videos.
+
+If you've already set your audience for your video and YouTube detects error or abuse, you may see your video set as “Set to Made for Kids". You won't be able to change your audience setting. If you think we made a mistake, you can appeal .
+
+What happens when your content is set as made for kids
+
+We limit data collection and use on made for kids content to comply with the law. This means we need to restrict or disable certain features like comments, notifications, and others.
+
+Most importantly, we don’t serve personalized ads on kids content, as required by the Children’s Online Privacy Protection Act (COPPA) and/or other applicable laws. Not serving personalized ads on kids content may result in a decrease in revenue for some creators who mark their content as made for kids. We recognize that this won’t be easy for some creators, but these are important steps to take to ensure compliance with COPPA and other applicable laws.
+
+Read below for a list of affected features:
+
+If you set a video or live stream as made for kids
+
+When you set your audience as “made for kids”, we'll restrict certain features to comply with the Children’s Online Privacy Protection Act (COPPA) and other applicable laws. When this happens, the following features won’t be available on individual videos or live streams:
+
+Autoplay on home
+
+Cards or end screens
+
+Video watermarks
+
+Channel Memberships
+
+Comments
+
+Donate button
+
+Likes and dislikes on YouTube Music
+
+Live chat or live chat donations
+
+Merchandise and ticketing
+
+Notification bell
+
+Personalized advertising
+
+Playback in the Miniplayer
+
+Super Chat or Super Stickers
+
+Save to playlist and Save to watch later
+
+If you set your channel as made for kids
+
+If your channel is made for kids , your videos or live streams won’t have any of the features above. Your channel also won’t have the following:
+
+Channel Memberships
+
+Notification bell
+
+Posts
+
+Ask Studio
+
+Frequently Asked Questions
+
+Why are notifications, comments, and other features turned off on content set as made for kids?
+
+To comply with the Children’s Online Privacy Protection Act (COPPA) and other applicable laws, we limit data collection on content designated as made for kids. As a result, certain features may be restricted or turned off on this content, including notifications and comments.
+
+What happens if I set my video’s audience incorrectly?
+
+These changes are required as part of a settlement with the US Federal Trade Commission (FTC) and NY Attorney General, and will help you comply with the Children’s Online Privacy Protection Act (COPPA) and/or other applicable laws. Regardless of your location, we require you to tell us whether or not your videos are made for kids. If you fail to set your audience accurately, you may face compliance issues with the FTC or other authorities, and we may take action on your YouTube account. Learn more about the FTC’s enforcement of COPPA.
+
+Note : We’ll also use machine learning to help us identify videos that are clearly directed to young audiences. We trust you to set your audience accurately, but we may override your audience setting choice in cases of error or abuse. However, do not rely on our systems to set your audience for you because our systems may not identify content that the FTC or other authorities consider to be made for kids. If you don’t set your audience as made for kids accurately, you might face legal consequences or consequences on YouTube. If you need help determining whether or not your content is made for kids, check out this Help Center article or consult legal counsel.
+
+How do I know if I’ve set my video’s audience correctly?
+
+Unfortunately, we’re unable to provide guidance on whether you accurately set your audience as made for kids, but the FTC has provided some guidance on what it means to be child-directed (or, “made for kids”). The FTC is currently considering various updates to COPPA, which may include providing more guidance on this issue.
+
+We’ll also use machine learning systems to help us find content that is clearly made for kids. But please do not rely on our systems to set content for you -- like all automated systems, it’s not perfect. We may need to override your audience setting choice in cases where we detect error or abuse. But in most cases, we’ll rely on your audience setting to determine whether a video is made for kids.
+
+If you don’t set your audience as made for kids, and the FTC or other authorities think it should have been, you may face legal consequences. So check out this Help Center article or seek legal counsel if you’re still unsure whether or not your content should be set as made for kids.
+
+What do I do if YouTube says my video is made for kids, but I disagree?
+
+If you haven’t set your video’s audience yet : YouTube may have set your audience for you. This is to help you comply with COPPA and/or other applicable laws. However, if you disagree with how YouTube has set your content, you can still change the video’s audience setting in most cases.
+
+If you've already set your audience for your video : and YouTube detects error or abuse, you may see your video set as “Set to made for Kids.” When this happens, you won’t be able to change your audience setting.
+
+However, we understand that we sometimes make mistakes. If you think this is the case, you can appeal this decision.
+
+To start an appeal on your computer :
+
+On a computer, go to studio.youtube.com .
+
+From the left menu, select Content .
+
+Go to the video that you want to appeal.
+
+Hover over “Set to made for kids” and click Appeal .
+
+Enter your reason for appealing and click Submit .
+
+To start an appeal on your phone :
+
+Open the YouTube Studio app.
+
+Tap Menu Videos .
+
+In the Uploads tab, tap the video you want to appeal.
+
+Under Restrictions , tap Set to Made for kids .
+
+Tap Appeal and enter your reason for appealing.
+
+Tap Submit .
+
+After you submit an appeal
+
+You'll get an email from YouTube letting you know the result of your appeal request. One of the following will happen:
+
+If your appeal is successful, we'll remove the made for kids audience setting.
+
+If your appeal is unsuccessful, the made for kids audience setting will remain on your content. Going forward, please review your channel and/or individual video’s audience settings. Failure to set your audience appropriately may result in legal consequences under COPPA and/or other laws, or consequences on the YouTube platform.
+
+You may appeal each video only once.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Computer Android iPhone & iPad More
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+Made for kids content
+1 of 4
+Set your channel or video’s audience
+2 of 4
+Determining if your content is "made for kids"
+3 of 4
+Best practices for kids & family content
+4 of 4
+Frequently asked questions about “made for kids”
+
+©2026 Google Privacy Policy
+YouTube Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+7760500779501857852
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+true
+true
+59
+false
+
+false
+
+false
+false
+
+false

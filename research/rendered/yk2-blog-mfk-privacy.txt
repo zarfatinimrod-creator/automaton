@@ -1,0 +1,258 @@
+Our strict privacy standards around made for kids content
+
+Skip to main content
+
+Ads & Commerce Blog
+
+Our strict privacy standards around made for kids content
+
+[]
+
+Preferences
+
+Global (English)
+
+Africa (English)
+
+Australia (English)
+
+Brasil (Português)
+
+Canada (English)
+
+Canada (Français)
+
+Česko (Čeština)
+
+Deutschland (Deutsch)
+
+España (Español)
+
+France (Français)
+
+Greece (Ελληνικά)
+
+India (English)
+
+Indonesia (Bahasa Indonesia)
+
+Ireland (English)
+
+Italia (Italiano)
+
+日本 (日本語)
+
+대한민국 (한국어)
+
+Latinoamérica (Español)
+
+Malaysia (Melayu)
+
+الشرق الأوسط وشمال أفريقيا (اللغة العربية)
+
+MENA (English)
+
+Nederlands (Nederland)
+
+New Zealand (English)
+
+Polska (Polski)
+
+Portugal (Português)
+
+România (Română)
+
+Sverige (Svenska)
+
+ประเทศไทย (ไทย)
+
+Türkiye (Türkçe)
+
+台灣 (中文)
+
+Links
+
+Images
+
+RSS feed
+
+x.com
+
+Facebook
+
+LinkedIn
+
+Mail
+
+Copy link
+
+Google Ads
+
+Our strict privacy standards around made for kids content
+
+Aug 18, 2023
+
+|
+
+x.com
+
+Facebook
+
+LinkedIn
+
+Mail
+
+Copy link
+
+Dan Taylor
+
+Vice President, Global Ads
+
+Share
+
+x.com
+
+Facebook
+
+LinkedIn
+
+Mail
+
+Copy link
+
+Update: September 7, 2023
+In August, we outlined how we keep kids and teens safe online and the privacy practices we apply to “made for kids” content on YouTube. We are proud of the work we do in this space.
+Subsequently, Adalytics released a follow-up analysis that they believed supported their initial inaccurate claims. We analyzed this report, re-created their campaigns and found that our systems are working as intended. In no instance did personalized ads serve on made for kids content. You can view our analysis here.
+To conduct their analysis, Adalytics set up four campaigns targeted at “made for kids channels” and enabled demographic and audience targeting. At the conclusion of the campaign, they examined the Google-provided placement and audience segment reports. Adalytics incorrectly claimed the reports supported the original concerns they raised.
+As with Adalytics’ prior reports, this report is filled with basic errors:
+Adalytics failed to account for the fact that YouTube channels - even those designated by the creator as being made for kids - can have a mix of content. Although a channel might be designated as made for kids, a creator can label their individual videos on their channel as non-made for kids to account for the mix of content.
+Their analysis ignores the fact that when advertisers use “affinity audience segments” to customize their campaigns, it does not always result in personalized ads. These segments are derived from a person’s viewing data (personalized) or from contextual signals derived from other similar videos (non-personalized). As we have previously stated, we prohibit ads personalization on made for kids content on YouTube, regardless of the viewer’s age. Despite Adalytics claims, the ads in the report are not personalized and it does not indicate a violation of our policies.
+
+These flaws in the research and its conclusions - coupled with the fact that Adalytics continues to ignore our offer to meet and explain how our systems work - undermine the credibility of their work.
+
+Original Post: August 18, 2023
+At Google, we work tirelessly to provide a safer experience for kids and teens online, and we build our products with this mission in mind. Yesterday, Adalytics released a deeply flawed and uninformed report about how we manage advertising on made for kids content on YouTube, and our privacy policies for people under the age of 18 across our platforms.
+This research comes on the heels of a previous inaccurate report by them from earlier this summer about our video partner inventory . It was subsequently debunked by multiple independent third parties, including DoubleVerify , IAS and Pixability .
+Despite its length, this new report failed to substantiate claims that we are in violation of government regulations, such as COPPA, or our own policies around ads personalization. The New York Times in their reporting on the study clearly noted, “There is no evidence that Google and YouTube violated their 2019 agreement with the F.T.C."
+So let’s once again set the record straight and remind people of our longstanding approach.
+We have strict ads privacy protections in place on made for kids content, regardless of a user's age.
+Since January 2020 , YouTube has treated personal information from anyone watching “ made for kids ” content on the platform as coming from a child, regardless of the age of the viewer. This means we prohibit ads personalization. Additionally, we do not allow the use of third-party trackers in advertisements served on made for kids content on YouTube.
+This report falsely claims that the presence of cookies indicates a privacy breakdown. The opposite is true, and the report fails to show otherwise.
+COPPA allows for the use of cookies on child-directed content for practices such as statistical reporting, preventing ad fraud and avoiding showing ads too many times, and this is precisely how we use them on made for kids content.
+We do not link cookies to the viewing of made for kids content for advertising purposes, and a viewer’s activity on made for kids content can’t be used for ads personalization.
+The cookies identified in this report are encrypted and not usable by another tech company, advertiser, publisher or a data broker.
+These cookies do not enable brand advertisers to identify who a user is or what video they viewed.
+
+We limit age-sensitive ads from appearing next to kids’ content.
+Whether you’re in the YouTube Kids app, viewing made for kids content on YouTube or signed-in with a supervised account , we have strict policies on the type of ad content that we allow. While we allow advertising to support creators who make high-quality content for kids, these guidelines limit the types of products and services that can run next to their content. For example, we restrict ads for things like dating apps and food and beverage products, as well as ads with violent or graphic content. These restrictions are similar to what is employed by other industries, like television, who have their own guidelines for ad content that runs on kids channels or content.
+Advertisers are in complete control of where their ads run.
+We have long offered advertisers a one-click option that allows them to opt out of made for kids content on YouTube. This tool works across YouTube and Google, including on Performance Max campaigns. The report completely overlooks this fact, and at times suggests otherwise. We invest heavily in educating advertisers and making these tools simpler, including a recent launch of our new Content Suitability Center, which gives advertisers a single point of entry to control their suitability options and exclusions across Google platforms.
+Parents can choose the right YouTube experience for them and their children.
+You must be at least 13 years old to use YouTube, or a parent or legal guardian must enable it for you. We offer families a host of options for how to ensure their kids have a safer experience on YouTube. Parents can select YouTube Kids , which was designed specifically to meet the needs of kids. Personalized ads have never been allowed on YouTube Kids. And we have strict advertising guidelines for YouTube Kids which prohibit ads personalization and age-sensitive ad categories, as well as clickable ads or ads that link to external destinations. Parents of tweens can choose Supervised Accounts if they feel their tweens are ready to explore more of YouTube. We also do not serve personalized ads to supervised accounts, and restrict age-sensitive ad categories.
+We stand by our protections for kids and teens.
+We’ve invested a great deal of time and resources to protect kids on our platforms, especially when it comes to the ads they see – from building kid-specific products like YouTube Kids or supervised accounts, to launching a global restriction on personalized ads and age-sensitive ad categories for all users under 18.
+We welcome responsible research around our products, and we always appreciate the opportunity to speak with advertisers, users, regulators and third-party groups about the rules that govern our platform. But not only did Adalytics repeatedly ignore our offers to meet with them, but also their report — either accidentally or intentionally — draws misleading conclusions based on a deeply inaccurate understanding of our privacy practices. While we have serious issues with this report, our first priority remains the same: to continue upholding our industry-leading protections for kids and teens across our products.
+
+Posted in:
+
+Google Ads
+
+Related stories
+
+Google Ads
+
+Turn discovery into action with September’s Demand Gen Drop.
+
+Google Ads
+
+We’re bringing AI Brief to more languages and adding a new AI Max reporting feature.
+
+Google Ads
+
+Build campaigns that drive high-converting, sales-ready leads.
+
+Google Ads
+
+Rethink your strategy to drive sales this holiday season.
+
+Google Ads
+
+Drive profitable growth with new data and measurement tools
+
+By
+
+Nipoon Malhotra
+
+Google Ads
+
+Build a measurement stack you can rely on to steer your campaigns.
+
+Privacy
+
+Terms
+
+Help
+
+More of Google
+
+Google Products
+
+Global (English)
+
+Africa (English)
+
+Australia (English)
+
+Brasil (Português)
+
+Canada (English)
+
+Canada (Français)
+
+Česko (Čeština)
+
+Deutschland (Deutsch)
+
+España (Español)
+
+France (Français)
+
+Greece (Ελληνικά)
+
+India (English)
+
+Indonesia (Bahasa Indonesia)
+
+Ireland (English)
+
+Italia (Italiano)
+
+日本 (日本語)
+
+대한민국 (한국어)
+
+Latinoamérica (Español)
+
+Malaysia (Melayu)
+
+الشرق الأوسط وشمال أفريقيا (اللغة العربية)
+
+MENA (English)
+
+Nederlands (Nederland)
+
+New Zealand (English)
+
+Polska (Polski)
+
+Portugal (Português)
+
+România (Română)
+
+Sverige (Svenska)
+
+ประเทศไทย (ไทย)
+
+Türkiye (Türkçe)
+
+台灣 (中文)

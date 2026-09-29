@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/youtubekids/answer/6130558?hl=en&co=GENIE.Platform%3DAndroid",
+  "slug": "yk-timer-en",
+  "fetchedAt": "2026-09-28T22:03:04.227Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1491043,
+  "sha256": "8efee1713d29e091627d4759a28778345076201171a59db659fba0d1bf2ba029",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk-timer-en.html",
+  "textPath": "research/rendered/yk-timer-en.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

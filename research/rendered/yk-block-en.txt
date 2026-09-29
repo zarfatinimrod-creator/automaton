@@ -1,0 +1,451 @@
+Block & share content on YouTube Kids - YouTube For Families Help
+Skip to main content
+
+YouTube For Families Help
+
+Sign in
+
+Google Help
+
+Help Center
+Community
+YouTube For Families Help
+
+Privacy Policy
+Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+
+YouTube For Families Help
+
+Parental controls & settings
+Block & share content on YouTube Kids
+
+Block & share content on YouTube Kids
+You can sign in to the YouTube Kids app to block channels and videos, or change video quality settings. You can also sign in to YouTube using your linked parent account to:
+
+Block content from your child's YouTube Kids profile.
+
+Share content from YouTube to your child's YouTube Kids profile.
+
+Share channels & videos
+
+You can share channels and videos from the YouTube app to your child’s YouTube Kids account. Sharing videos from the YouTube app allows your child to watch videos that aren't normally available on YouTube Kids. Sharing is also a great tool for highlighting the content that you want your child to watch. Shared content will remain on your child's home screen until it's unshared or blocked.
+
+Share content from YouTube to your child’s YouTube Kids experience
+
+Subscribe to the YouTube Viewers channel for the latest news, updates, and tips.
+
+Note: To use the sharing feature, you must be signed in with the Google Account linked to your child's YouTube Kids profile. Make sure you’ve verified your birthday to confirm you’re over the age of 18. If your birthday isn’t verified, you can’t sign in with your Google Account to set up sharing.
+
+This feature is only available on the YouTube app on mobile devices.
+
+Share content from YouTube using your linked parent account
+
+To share content from the YouTube app:
+
+Tap More next to any video or channel page you’d like to share, OR under the video player, tap SHARE .
+
+In the dialog, tap With kids . This option will only surface if your account is linked to a YouTube Kids profile or a supervised Google Account.
+
+Tap the SHARE button next to the profile that you want to share the video to. Once you tap SHARE , the button will change to UNSHARE .
+
+Tap Done .
+
+Your child can view shared content under the Shared tab on the YouTube Kids Home screen.
+
+There are certain videos or channels you can’t share with your kid’s account:
+
+Age restricted videos.
+
+Videos with branded content.
+
+Live videos (available to share once the live stream is over).
+
+Purchased content.
+
+Videos and channels that you’ve previously blocked in YouTube Kids for that child.
+
+Shorts.
+
+Unshare content that you've previously shared with your child
+
+Unshare from YouTube Kids on your computer
+
+Sign in to YouTube Kids.
+
+Click on the Shared category on the homescreen. This category will show the content you’ve shared with your child.
+
+Tap More beside the shared video.
+
+Tap Remove from shared .
+
+Unshare from the YouTube app
+
+Sign in to the YouTube app.
+
+Go to the specific channel or video you’ve shared with your child previously.
+
+Tap More next to the video or channel, OR
+
+Under the video player, tap Share .
+
+In the dialog, tap With Kids. This option will only surface if your account is linked to a YouTube Kids profile or a supervised Google Account.
+
+Tap the UNSHARE button next to the child you want to unshare the video with.
+
+When the button changes to “SHARE” you can tap Done to exit the dialog.
+
+Unshare from the YouTube Kids app
+
+Sign in to the YouTube Kids app.
+
+Tap Your stuff .
+
+Tap SHARED .
+
+Tap More beside the shared video.
+
+Tap Remove from shared .
+
+Clear all content you've previously shared to YouTube Kids with your child
+
+Sign in the YouTube Kids app.
+
+Tap Settings .
+
+Complete the math problem or enter your custom passcode.
+
+Tap your child's profile.
+
+Under "Clear shared content," tap CLEAR SHARED .
+
+Block channels & videos
+
+When you block a channel for your child’s YouTube Kids profile using your linked parent account, you won't find it in YouTube Kids. You can also block a video or channel directly on YouTube Kids. If you try to block a video while signed out, a message will appear asking you to sign in.
+
+Blocking YouTube channels on supervised accounts
+
+If you change your mind about a video or channel you’ve blocked, you can unblock it. If you sign out of YouTube Kids, any content you’ve blocked while signed in will be available when you sign out.
+
+You can also report videos that you find inappropriate in YouTube Kids. The YouTube policy team will review the videos.
+
+Notes:
+
+If your child uses the same Google Account for YouTube and YouTube Kids, any channels blocked on YouTube will also be blocked on YouTube Kids.
+
+Blocking a channel only blocks content uploaded to that specific channel. It doesn’t block videos that are reuploaded on other channels, or similar channels with related content.
+
+Make sure you’ve verified your birthday to confirm you’re over the age of 18. If your birthday isn’t verified, you can’t sign in to YouTube Kids with your Google Account.
+
+Block specific channels from YouTube using your linked parent account
+
+To block a specific channel from YouTube on your computer:
+
+Go to the channel page for the YouTube channel that you want to block.
+
+Go to the About tab on the channel page.
+
+Click Report user .
+
+Select Block channel for kids . This option will only surface if you’re using your linked parent account.
+
+A pop-up may surface alerting you that similar videos may still be available on other channels. Click CONTINUE .
+
+Select BLOCK next to the child you’d like to block this channel for.
+
+BLOCK will change to UNBLOCK , giving you the option to undo the action.
+
+Click DONE .
+
+To block a specific channel from the YouTube app:
+
+Go to the channel page for the YouTube channel that you want to block.
+
+Tap More .
+
+Tap Block channel for kids . This option will only surface if you’re using your linked parent account.
+
+A pop-up may surface alerting you that similar videos may still be available on other channels. Tap CONTINUE.
+
+Tap BLOCK next to the child you’d like to block this channel for.
+
+BLOCK will change to UNBLOCK , giving you the option to undo the action.
+
+Tap Done .
+
+You can also block content directly in YouTube Kids on your child’s device .
+
+Block content from the YouTube Kids app
+
+To block a video from the home screen:
+
+Sign in to the YouTube Kids app.
+
+Tap More next to the video.
+
+Tap Block this video .
+
+Enter the numbers that show on the screen, or enter your custom passcode.
+
+To block a video from the watch page:
+
+Sign in to the YouTube Kids app.
+
+Tap More at the top of the video.
+
+Tap BLOCK .
+
+In the dialog that opens, select Block this video only, or select Block entire channel to block the channel associated with the video.
+
+Tap BLOCK .
+
+Enter the numbers that show on the screen, or enter your custom passcode.
+
+Unblock individual channels from YouTube using your linked parent account
+
+​On a computer:
+
+Go to the channel page for the YouTube channel that you want to unblock.
+
+Go to the About tab on the channel page.
+
+Click Report user .
+
+Select Block channel for kids . This option will only surface if you’re using your linked parent account.
+
+A pop-up may surface alerting you that similar videos may still be available on other channels. Click CONTINUE .
+
+Select UNBLOCK next to the child you’d like to unblock this channel for.
+
+UNBLOCK will change to BLOCK , giving you the option to undo the action.
+
+Click DONE .
+
+In the YouTube app:
+
+Go to the channel page for the YouTube channel you want to unblock.
+
+Tap More .
+
+Tap Block channel for kids . This option will only surface if you’re using your linked parent account.
+
+A pop-up may surface alerting you that similar videos may still be available on other channels. Tap CONTINUE.
+
+Tap UNBLOCK next to the child you’d like to unblock this channel for.
+
+UNBLOCK will change to BLOCK , giving you the option to undo the action.
+
+Tap DONE .
+
+Unblock all content from YouTube using your linked parent account
+
+On a computer:
+
+Sign in to YouTube on your computer.
+
+Go to your profile picture .
+
+Click Settings .
+
+Scroll down to Family Center and click Manage kids profiles and features for teens .
+
+Select your child.
+
+Under GENERAL SETTINGS, click Unblock videos .
+
+A pop-up may surface alerting you that all content you’ve blocked in YouTube and YouTube Kids will be unblocked. Select UNBLOCK .
+
+On a mobile device:
+
+Sign in to the YouTube app.
+
+Tap You in the bottom right-hand corner.
+
+Tap Settings .
+
+Tap Family Center .
+
+Select your child.
+
+Under GENERAL SETTINGS, click Unblock videos .
+
+A pop-up may surface alerting you that all content you’ve blocked in YouTube and YouTube Kids will be unblocked. Select UNBLOCK .
+
+Unblock content with the YouTube Kids app
+
+Sign in to the YouTube Kids app.
+
+Go to Settings .
+
+Complete the math problem or enter your custom passcode.
+
+Tap your child's profile and enter your parent account password.
+
+Tap UNBLOCK VIDEOS .
+
+Tap YES, UNBLOCK to confirm.
+
+Note : If you're using YouTube Kids with Family Link, you can also unblock videos in the Family Link settings. Learn more .
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+Parental controls & settings
+1 of 10
+Parental controls for YouTube Kids profiles
+2 of 10
+Block & share content on YouTube Kids
+3 of 10
+Manage YouTube Kids profile settings
+4 of 10
+Set content level for YouTube Kids with the Family Link app
+5 of 10
+Set a custom passcode on YouTube Kids
+6 of 10
+Limit screen time on YouTube Kids
+7 of 10
+Switch between YouTube Kids profiles
+8 of 10
+Delete a YouTube Kids profile
+9 of 10
+Change video quality settings
+10 of 10
+Explore your Family Center
+
+©2026 Google Privacy Policy
+Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+5777998234792825170
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+false
+
+false
+
+false
+false
+
+false

@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/youtubekids/answer/6130562?hl=iw",
+  "slug": "yk-flag-iw",
+  "fetchedAt": "2026-09-28T22:03:12.091Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1519961,
+  "sha256": "6968402914e91a69accce6c5e19383624ce5c82f43fec81b4551305f0b196bb1",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk-flag-iw.html",
+  "textPath": "research/rendered/yk-flag-iw.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

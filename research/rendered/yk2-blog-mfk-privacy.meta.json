@@ -1,0 +1,17 @@
+{
+  "url": "https://blog.google/products/ads-commerce/our-strict-privacy-standards-around-made-for-kids-content/",
+  "slug": "yk2-blog-mfk-privacy",
+  "fetchedAt": "2026-09-28T23:21:49.309Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 273890,
+  "sha256": "5423d0bec6b5d499773df7e08b0bbaf7a57ac5e9d9a2388c6a57f55d5d803d40",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk2-blog-mfk-privacy.html",
+  "textPath": "research/rendered/yk2-blog-mfk-privacy.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

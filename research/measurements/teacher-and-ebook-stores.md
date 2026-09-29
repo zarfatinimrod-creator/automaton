@@ -146,3 +146,80 @@ G1 P(r) · G2 U↗(r) · G3 P(r) · G4 U(r) · G5 U↘(r+re) · G6 U↗(r) · G7
   met by these terms, but the contributor FAQ already names PayPal. [INFERENCE] Its remaining value is the upload-team
   intake, which the written question also covers.
 - For the sitting: G5 is weak. Is one written question worth spending on a small subscription pool?
+
+## Tick 10 (row 135 render) — Teach Simple License Agreement
+
+**Read 28.9.2026 by an Opus reader.** Capture: `teachsimple-com-license-agreement` (200, fetchedAt 2026-09-28T22:00Z,
+first fetch). Short name `lic`. The txt (467 lines) was read in full; the licence itself is :255-339. I grepped the html
+(396 lines; the licence body is at :285, the page state at :394). Every quote was checked with `grep -n -F`.
+
+**Status: QUEUE-ON, unchanged. This render could only kill, and it does not.**
+- The page is the subscribers' licence for downloaded items. It is not a contributor document, and it is not the
+  Membership Agreement.
+- It has no AI clause, no automation clause and no US-only clause.
+
+**What the page is** [RENDERED]
+- It is headed "Teach Simple License" (lic.txt:255): "All Resources on Teach Simple have the same simple license terms."
+  (:257).
+- It licenses subscribers: "For each digital file (called a "Resource" ) you download under your Teach" / "Simple
+  subscription, you are granted a license to use the Resource on a non-exclusive," / "worldwide, and revocable basis,
+  for one single user." (:272-274).
+- "The license starts when you download the Resource and the license is only valid while your subscription is active."
+  (:279).
+- It ties itself to the Terms of Service: "This license applies in conjunction with the User Terms of Service for your
+  use of Teach Simple." (:331). The page's only legal links are `/license-agreement` (lic.html:390) and
+  `/terms-of-service` (:392).
+- Clauses that touch contributors, all on the subscriber side:
+  - "The owner of each Resource retains ownership. You can't claim ownership of a Resource." (:339);
+  - subscribers "can't redistribute the Resources on another marketplace" (:295);
+  - Teach Simple is not responsible for the accuracy of a Resource, "including the Resource's description and any
+    keywords provided by the owner of the Resource" (:319);
+  - third-party components may carry their own licence: "For some Resources, a component of the Resource will be sourced
+    from a third party" (:315).
+
+**Is it the "Membership Agreement"? No, as far as the text shows. That document is still uncaptured.**
+- [RENDERED] "Membership" has 0 hits in the txt and the html. The one "member" hit is inside "Remember" (:274).
+- The page calls its companion document the "User Terms of Service" (:331), not a Membership Agreement.
+- The contributor terms use the Membership Agreement for the contributor's own account: "If Teach Simple terminates
+  your membership pursuant to the terms of the Membership Agreement, such termination shall be deemed to be notice of
+  termination of this Agreement with respect to all Content" (contributor-terms.txt:430). See also :450 and :506.
+- [INFERENCE] The Membership Agreement governs the account, which this licence does not.
+- No Teach Simple capture links a document by that name. "membership" appears only in the contributor terms and in
+  the become-a-contributor page's meta description, as "a subscription membership" (become-a-contributor.html:4). No URL
+  is left to render for it.
+
+**Kills. All three are PROPOSED only (ZERO-TESTS row 135); the board's §4 row 28 does not pre-register them.**
+- **AI clause: DOES NOT FIRE.** "AI" as a word, "artificial" and "generat" have 0 hits in the txt and the html.
+- **Automation or bot clause: DOES NOT FIRE.**
+  - "automat", "robot", "scrap", "crawl" and "agent" have 0 hits.
+  - "bot" appears once in the txt, inside "both" (:283). The 83 "bot" hits in the html are CSS (`margin-bottom`,
+    `padding-bottom`, `border-bottom`).
+- **US-only clause: DOES NOT FIRE.**
+  - The licence is "worldwide" (:274).
+  - "citizen" and "U.S." have 0 hits. The html's three "resident" hits are a "presidents-day" menu slug.
+  - "United States" appears once, in the footer's locale list (:464-466), as on the Terms of Service page.
+
+**Gate line.** Unchanged: G1 P(r) · G2 U↗(r) · G3 P(r) · G4 U(r) · G5 U↘(r+re) · G6 U↗(r) · G7 U↗(r).
+- **G4:** there is still no AI rule anywhere. The original-creations warranty (contributor-terms.txt:406) is still the
+  honesty gate. The licence adds that item descriptions and keywords are the owner's, not Teach Simple's,
+  responsibility (:319).
+- **G5:** the subscriber model is confirmed on the buyer side. A licence lasts only while the subscription is active
+  (:268, :279), and each item is licensed per download (:272-273). Payout terms are not on this page ("PayPal" and
+  "royalt": 0 hits).
+- **G7:** "The owner of each Resource retains ownership." (:339). Nothing here about public names.
+
+**The drafted question (`research/owner-asks/questions.json`, venue `teachsimple`).**
+- **Its `preSend` condition is settled.** Row 135 has been rendered and read.
+  - It holds no AI, automation or US-only clause, so the "send nothing" branch does not apply.
+  - It says nothing about the ongoing upload service or about paying a contributor in Israel, so the "held question
+    instead" branch does not apply either.
+- **The question should go as drafted.** Nothing here changes its body.
+- One point for the main thread (I did not edit the file): the Membership Agreement that the contributor terms
+  incorporate (contributor-terms.txt:506) has no captured URL. The question does not ask for it. If a reply links it,
+  render that link.
+
+**Next step.**
+1. **Send the drafted `teachsimple` question** to `support@teachsimple.com` (tos.txt:420; also lic.txt:342). It settles
+   the ongoing upload service (G3) and PayPal to Israel (G2).
+2. No render is left that could kill cheaply. The sitting's question from Tick 9 still stands: G5 is weak, so is one
+   written question worth spending on a small subscription pool?

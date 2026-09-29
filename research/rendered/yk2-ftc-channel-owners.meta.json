@@ -1,0 +1,17 @@
+{
+  "url": "https://www.ftc.gov/business-guidance/blog/2019/11/youtube-channel-owners-your-content-directed-children",
+  "slug": "yk2-ftc-channel-owners",
+  "fetchedAt": "2026-09-28T23:21:51.964Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1065968,
+  "sha256": "86fe15c6afcf2cf60592602cf70806e57e324a36368db6b8d3082879128daccf",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk2-ftc-channel-owners.html",
+  "textPath": "research/rendered/yk2-ftc-channel-owners.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

@@ -1,0 +1,17 @@
+{
+  "url": "https://support.google.com/youtubekids/answer/6292172?hl=iw",
+  "slug": "yk-passcode-iw",
+  "fetchedAt": "2026-09-28T22:03:10.809Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 1528368,
+  "sha256": "611f0d4d33a3840ba4c9e30f19e97999d46156530a36b784462af1f36db5301d",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/yk-passcode-iw.html",
+  "textPath": "research/rendered/yk-passcode-iw.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

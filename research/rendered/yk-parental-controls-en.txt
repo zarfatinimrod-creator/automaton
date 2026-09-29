@@ -1,0 +1,445 @@
+Parental controls for YouTube Kids profiles - Android - YouTube For Families Help
+Skip to main content
+
+YouTube For Families Help
+
+Sign in
+
+Google Help
+
+Help Center
+Community
+YouTube For Families Help
+
+Privacy Policy
+Terms of Service
+Submit feedback
+
+Send feedback on...
+
+This help content & information
+
+General Help Center experience
+
+Close Next
+
+Help Center
+Community
+
+YouTube For Families Help
+
+Parental controls & settings
+Parental controls for YouTube Kids profiles
+
+Parental controls for YouTube Kids profiles
+YouTube Kids offer a safer and simpler experience for kids. There are various controls and settings for you to guide their viewing journey.
+
+Note: If you want to learn more about parental controls and settings for pre-teen supervised accounts, get more info in our Help Center .
+
+Manage parental controls & settings
+
+There are several ways that you can manage these controls. When you set up a Google Account for your child, you can set up parental controls for a YouTube Kids account through Family Link . When you set up a YouTube Kids profile for your child, you can set up parental controls through YouTube and YouTube Kids.
+
+Use parental controls and settings on YouTube Kids
+
+You can view parental controls and settings for YouTube Kids profiles from YouTube Kids:
+
+Select Settings in the corner of your screen.
+
+Complete the multiplication problem or enter your custom passcode .
+
+Note: There are some device settings, such as Cast and Custom Passcode, that you can change without selecting your child’s profile.
+
+Use YouTube’s Family Center
+
+To view parental controls and settings for YouTube Kids profiles from YouTube:
+
+Sign in to the YouTube app with your linked parent account.
+
+Tap You in the bottom right-hand corner.
+
+Tap Settings .
+
+Tap Family Center .
+
+Use the Family Link app
+
+To view parental controls and settings for YouTube Kids profiles from Family Link:
+
+On your device, open the Family Link app .
+
+Select your child.
+
+Tap Controls YouTube .
+
+Change your YouTube Kids settings, under "YouTube Kids Settings."
+
+Change specific parental controls & settings
+
+You can tailor the YouTube Kids account for your child by adjusting specific parental controls and settings. These controls and settings let you:
+
+Change your child's content level settings
+
+Parents can choose how content will be selected in YouTube Kids.
+
+YouTube Kids: How to select content levels based on your kid’s age
+
+Note: In addition to the content setting you choose for your child, any content you share with them from YouTube will also be available in YouTube Kids.
+
+Change your child’s content level setting from the YouTube Kids app:
+
+Tap Settings .
+
+Complete the multiplication problem or enter your custom passcode .
+
+Tap your child’s profile and enter your parent account password.
+
+Tap EDIT SETTINGS .
+
+Select Preschool , Younger , Older , or Approve content yourself .
+
+Change your child’s content level setting from YouTube:
+
+Sign in to the YouTube app with your linked parent account.
+
+Tap You in the bottom right-hand corner.
+
+Tap Settings .
+
+Tap Family Center .
+
+Select your child’s profile or account.
+
+Under "YouTube Kids Settings," select EDIT next to “Content Settings.”
+
+Note: If you want to change their content setting to Approve content yourself, you have to use the YouTube Kids app to make this change.
+
+If you manage your child’s Google Account with Family Link, you can also change their content level setting from the Family Link app:
+
+On your device, open the Family Link app .
+
+Select your child.
+
+Tap Controls YouTube .
+
+Change your child’s content level setting for YouTube Kids, under “YouTube Kids Settings."
+
+Note: You’ll get a preview of content that is available in each content setting when you click or tap the content setting’s name. You can change these settings at any time.
+
+Approved content only
+
+In this setting, your child can only watch videos, channels, and collections that you’ve handpicked. Collections are videos and channels grouped by topics, such as science and music, picked by the YouTube Kids teams or by our partners.
+
+In this setting, your child can’t search for any videos in YouTube Kids.
+
+YouTube Kids: How to approve what your kids can watch
+
+To change your child’s content setting to Approve content yourself:
+
+Open the YouTube Kids app on your child's device.
+
+Select Settings .
+
+Complete the multiplication problem or enter your custom passcode .
+
+Select your child’s profile and enter your parent account password.
+
+Select EDIT SETTINGS .
+
+Select Approve content yourself to turn on.
+
+Review the info in the “Getting Started” pop-up.
+
+Tap Select .
+
+Tap on any collection, channel, or video to approve content you’d like to make available to your child.
+
+Select DONE in the red box at the bottom of the screen to exit.
+
+Note: You can edit the list of collections, channels, and videos you’ve approved at any time by tapping Manage under the “Approved content only” setting. While you're approving content, you can preview what your child's account will be like by tapping PREVIEW . You can also turn off “Approved content only” at any time by returning to Settings.
+
+Turn off search
+
+You can restrict your child to a more limited set of videos in YouTube Kids by turning off the Search feature .
+
+With the Search feature turned off, your child can’t search for videos. Your child will also be limited to videos and channels verified by YouTube Kids. Learn more about Search in YouTube Kids and how to turn it off.
+
+If you turn off Search, the watch and search history for your kid’s YouTube Kids profile is cleared. Recommended videos and Watch it again will also be reset.
+
+Clear history
+
+You can clear the watch and search history for your child’s account across all of their linked devices from YouTube:
+
+Sign in to the YouTube app with your linked parent account.
+
+Tap You in the bottom right-hand corner.
+
+Tap Settings .
+
+Tap Family Center .
+
+Select your child’s profile or account.
+
+Select Clear history .
+
+To save your changes, select CLEAR .
+
+On the YouTube Kids app:
+
+Tap Settings .
+
+Complete the multiplication problem or enter your custom passcode .
+
+Tap your child’s profile and enter your parent account password.
+
+Tap CLEAR HISTORY .
+
+To save your changes, tap OK .
+
+Turn off autoplay
+
+You can turn off Autoplay for your child by selecting Disable autoplay . Your child can’t turn on Autoplay when this setting is on.
+
+To disable autoplay for your child from YouTube:
+
+Sign in to the YouTube app with your linked parent account.
+
+Tap You in the bottom right-hand corner.
+
+Tap Settings .
+
+Tap Family Center .
+
+Select your child’s profile or account.
+
+Switch Disable autoplay to on .
+
+Pause watch history
+
+You can stop new video views from being used as signals to recommend other videos. Pausing watch history will also stop new video views from being used as signals for Recommended videos and Watch it again .
+
+To pause your child’s watch history from the YouTube Kids app:
+
+Tap Settings .
+
+Complete the multiplication problem or enter your custom passcode .
+
+Tap your child’s profile and enter your parent account password.
+
+Switch Pause watch history on.
+
+To pause your child’s watch history from YouTube:
+
+Sign in to the YouTube app with your linked parent account.
+
+Tap You in the bottom right-hand corner.
+
+Tap Settings .
+
+Tap Family Center .
+
+Select your child’s profile or account.
+
+Switch Pause watch history to on .
+
+Pause search history
+
+Pausing search history will also stop new search terms from being used as signals for Recommended video s . Learn more about how to pause search history .
+
+​​​​YouTube Premium
+
+There are several benefits to using your YouTube Premium membership with YouTube Kids . For example, you and your child can watch videos on YouTube Kids without any paid ads.
+
+You’ll also get access to downloads and Background play. Learn more about these settings .
+
+Parent code
+
+Use parent code on your TV
+
+Turn on parent code on your TV to prevent kids from watching while signed out or accessing accounts meant for older members of their household. Turning on parent code won’t impact other signed-in devices.
+
+Note: Your parent code isn’t a password and can’t be used to verify your Google Account or other Google services.
+
+To switch on or to reset the parent code:
+
+Open the YouTube app on your TV.
+
+From the homepage, select Settings .
+
+Select the Parent code tab.
+
+Follow the prompts to set up or to reset your 4-digit code.
+
+When turned on, the parent code must be entered to:
+
+Watch YouTube as a signed out viewer
+
+Access accounts for older members of your household (over 13 years old, or applicable age in your country )
+
+Remove accounts from the TV device
+
+To remove the parent code:
+
+Open the YouTube app on your smart TV.
+
+From the homepage, select Settings .
+
+Select the Parent code tab.
+
+Select off , and then enter your 4-digit code.
+
+Once you remove the parent code, anyone who can access the smart TV can watch YouTube while signed out, access accounts for older members of the household, and remove accounts from the TV device.
+
+Was this helpful?
+How can we improve it?
+Yes No
+
+Submit
+
+Android Computer iPhone & iPad More
+
+Need more help?
+Try these next steps:
+
+Post to the help community Get answers from community members
+
+true
+Parental controls & settings
+1 of 10
+Parental controls for YouTube Kids profiles
+2 of 10
+Block & share content on YouTube Kids
+3 of 10
+Manage YouTube Kids profile settings
+4 of 10
+Set content level for YouTube Kids with the Family Link app
+5 of 10
+Set a custom passcode on YouTube Kids
+6 of 10
+Limit screen time on YouTube Kids
+7 of 10
+Switch between YouTube Kids profiles
+8 of 10
+Delete a YouTube Kids profile
+9 of 10
+Change video quality settings
+10 of 10
+Explore your Family Center
+
+©2026 Google Privacy Policy
+Terms of Service
+
+Language
+Afrikaans&lrm;
+azərbaycan&lrm;
+bosanski&lrm;
+català&lrm;
+dansk&lrm;
+Deutsch&lrm;
+eesti&lrm;
+English (United Kingdom)&lrm;
+español&lrm;
+español (Latinoamérica)&lrm;
+euskara&lrm;
+Filipino&lrm;
+français&lrm;
+français (Canada)&lrm;
+Gaeilge&lrm;
+galego&lrm;
+hrvatski&lrm;
+Indonesia&lrm;
+isiZulu&lrm;
+italiano&lrm;
+Kiswahili&lrm;
+latviešu&lrm;
+lietuvių&lrm;
+magyar&lrm;
+Malti&lrm;
+Melayu&lrm;
+Nederlands&lrm;
+norsk&lrm;
+o‘zbek&lrm;
+polski&lrm;
+português&lrm;
+português (Brasil)&lrm;
+română&lrm;
+shqip&lrm;
+slovenčina&lrm;
+slovenščina&lrm;
+suomi&lrm;
+svenska&lrm;
+Tiếng Việt&lrm;
+Türkçe&lrm;
+íslenska&lrm;
+čeština&lrm;
+Ελληνικά&lrm;
+беларуская&lrm;
+български&lrm;
+кыргызча&lrm;
+македонски&lrm;
+монгол&lrm;
+русский&lrm;
+српски&lrm;
+українська&lrm;
+қазақ тілі&lrm;
+հայերեն&lrm;
+&rlm; עברית
+&rlm; اردو
+&rlm; العربية
+&rlm; فارسی
+नेपाली&lrm;
+मराठी&lrm;
+हिन्दी&lrm;
+অসমীয়া&lrm;
+বাংলা&lrm;
+ਪੰਜਾਬੀ&lrm;
+ગુજરાતી&lrm;
+ଓଡ଼ିଆ&lrm;
+தமிழ்&lrm;
+తెలుగు&lrm;
+ಕನ್ನಡ&lrm;
+മലയാളം&lrm;
+සිංහල&lrm;
+ไทย&lrm;
+ລາວ&lrm;
+မြန်မာ&lrm;
+ქართული&lrm;
+አማርኛ&lrm;
+ខ្មែរ&lrm;
+中文（简体）&lrm;
+中文（繁體）&lrm;
+中文（香港）&lrm;
+日本語&lrm;
+한국어&lrm;
+English&lrm;
+
+Enable Dark Mode
+
+Send feedback on...
+This help content & information General Help Center experience
+
+Search
+Clear search
+Close search
+Google apps
+Main menu
+
+18138718747492501789
+true
+
+Search Help Center
+false
+true
+
+true
+
+true
+
+false
+
+false
+
+false
+false
+
+false
