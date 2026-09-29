@@ -1,23 +1,30 @@
 #!/usr/bin/env -S node --import tsx
 /**
  * The AI-allowed prize-event intake (logs/CHANNEL_LOOP.md §4 row 13) — an INSTRUMENT ONLY: one GET of the mlcontests
- * list, numbers written to state/colony/prize-intake.json. It files nothing, opens no account and spends nothing.
+ * list, then three files. It files nothing, opens no account, spends nothing and publishes nothing.
  *
  *   pnpm exec tsx scripts/prize-intake.ts
- *   pnpm exec tsx scripts/prize-intake.ts --out /tmp/prize-intake.json
+ *   pnpm exec tsx scripts/prize-intake.ts --root /tmp/prize-intake-dry-run
  *
- * Exit 0 only when the file was written. On a status other than 200, a redirect, a body that is not the list, or a
- * list whose deadlines, prizes, launch dates or registration deadlines mostly stopped parsing, NOTHING is written and
- * the exit code is 1: a week that could not be read is a missing reading, never a zero. The list carries no field
- * stating whether AI or automated solutions are allowed, so that count is written as null, never inferred; if the list
- * grows a key the reader does not know, the AI rule is recorded as unknown (src/revenue/prize-intake.ts). This is the
- * list-count half of BOARD-LOOP §13 only: the per-event rules-page read its number needs is not built.
+ * The three files, under the repository root (or --root):
+ *   - state/colony/prize-intake.json — the list-count numbers, and per quarter the rules-page counts;
+ *   - research/measurements/ai-allowed-events.md — the events with deadlines in the current or next calendar quarter,
+ *     in a table whose last three cells a reading session fills from rendered rules pages. The job carries those
+ *     cells forward by event URL and never fills one (src/revenue/ai-allowed-events.ts);
+ *   - research/measurements/ai-allowed-events.urls.txt — the URLs of rows not yet graded, in render-watch's urls
+ *     syntax, to paste into render-watch.yml's `urls` input. Never appended to research/rendered/urls.txt; tiktok.com
+ *     URLs are refused.
+ *
+ * Exit 0 only when all three were written. On a status other than 200, a redirect, a body that is not the list, a
+ * list whose deadlines, prizes, launch dates or registration deadlines mostly stopped parsing, or a table the job
+ * cannot read back (a session's cells are never overwritten), NOTHING is written and the exit code is 1: a week that
+ * could not be read is a missing reading, never a zero.
  */
 import { writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
-import { PRIZE_INTAKE_FILE, runPrizeIntake } from "../src/revenue/prize-intake.js";
+import { runPrizeIntake } from "../src/revenue/prize-intake.js";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -34,8 +41,8 @@ function notice(message: string): void {
 }
 
 async function main(argv: string[]): Promise<number> {
-  const { values } = parseArgs({ args: argv, options: { out: { type: "string" } }, allowPositionals: false });
-  const result = await runPrizeIntake({ outFile: resolve(values.out ?? resolve(REPO_ROOT, PRIZE_INTAKE_FILE)) });
+  const { values } = parseArgs({ args: argv, options: { root: { type: "string" } }, allowPositionals: false });
+  const result = await runPrizeIntake({ root: resolve(values.root ?? REPO_ROOT) });
   notice(result.message);
   return result.code;
 }
