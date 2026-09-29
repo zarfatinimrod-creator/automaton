@@ -57,16 +57,53 @@ passes (-14 LUFS integrated, true peak under -1.5 dBTP after AAC); the manifest 
 are converted with the BT.709 matrix and the file is tagged BT.709, which is what phones and browsers assume for HD
 video.
 
+**Motion (v2, 29.9.2026).** The owner asked whether people would really watch v1's still cards. The working answer
+(a judgement, not a measurement: nothing here measures retention) is that stills with narration give a viewer little
+reason to stay, and that movement tied to what is being said, plus a question and a promise on screen at once, give
+more. `research/tiktok/08-sales-marketing-lessons.md` backs the principles, not the numbers: "show, don't tell"
+(§4.1), titles that are a question or a "how to" (§2.4), no doom hook (§3) and no misleading hook, which TikTok
+keeps out of the For You feed (§5.1). So every frame
+is drawn from layers, driven by each scene's `motion` keys in the spec and the narration's measured timings:
+
+- **text reveals** — each body item eases in (fade and a 28 px rise, 250 ms) at its anchor in `motion.reveal[i]`:
+  `"start"`, a narration line n (from 100 ms before it is heard), `[n, seconds]` (a point inside the line), or
+  `[n, "end"]` (when the line stops: for on-screen text no line says, shown in the pause rather than over an
+  unrelated line); items on one anchor follow each other by 120 ms, and every page fills top to bottom;
+- **highlights** — `motion.highlight` runs a soft marker behind a step chain, right to left, while it is spoken,
+  and fades it away (s5's unlock chain);
+- **the picture** — each illustration kind has named beats (`motion.ART_BEATS`: a switch sliding off, a highlight
+  running down a list, a padlock closing, a menu opening, icons popping in), each anchored by `motion.art`; the part
+  that acts gets a soft halo while it acts. In a scene that slides in, no beat starts before the slide rests. Beats
+  only move, grow or recolour what the still shows; at rest the picture is the scene's layout-checked still, and it
+  adds no claim (the keypad's light runs over all ten keys, never a digit count). At supersampled size the drawings
+  at rest are v1's except five changes made on review (see `art.py`); on screen v2 places each layer within 1 px of
+  v1 and anti-aliases its edges on its own, so no still is v1's byte for byte;
+- **transitions** — the next scene slides in from the left by 30% of the width in 280 ms (sine ease, at most ~60 px
+  a frame) while it cross-fades with the last, which leaves to the right (forward in a right-to-left interface); a
+  later page of one step keeps its header and title still;
+- **progress bar** — the current step's segment fills continuously across its pages;
+- **the first seconds** — the question is on screen, whole, from the first frame, as the hook's script says; the
+  promise ("6 דברים שכדאי לעשות") eases in, the phone fades in as it rises and the "6" pops from 0.0 s; the rows on
+  the phone fill while "YouTube Kids" is said, and the "6" swells again on "שישה";
+- **the end card** — fades in over 280 ms and then stays fully opaque for the script's 5 s.
+
+The reading rule is applied in reveal order (a line that appears late is read from when it appears; exit 4 as
+before), a scene lasts until its motion has come to rest, and nothing is drawn above y 180 or below y 1500
+(`compose.blit` clips every layer to that band). The last frame of each scene is the layout-checked still. Frames go
+to ffmpeg as raw RGB (`-tune animation`), so a re-render is byte-identical. No new dependency: Pillow and ffmpeg only.
+
 ## Pieces
 
 | File | Job |
 |---|---|
 | `spec.py` | load and validate a spec (stdlib only) |
 | `canvas.py` | palette, fonts, right-to-left text (raqm, or python-bidi fallback), balanced wrapping, 2x supersampling |
-| `art.py` | the generic illustrations: phone, key, calendar, padlock, magnifier, stopwatch, flag, tiles |
-| `frame.py` | scene and end-card layout, with the collision and margin checks |
+| `art.py` | the generic illustrations (phone, key, calendar, padlock, magnifier, stopwatch, flag, tiles) and their beats |
+| `frame.py` | scene and end-card layout on named layers, with the collision and margin checks |
+| `motion.py` | the motion plan (stdlib only): easing, reveal and beat times from the narration, the reading rule in reveal order, progress fill |
+| `compose.py` | the per-frame compositor: layers + motion plan -> raw RGB frames, clipped to y 180-1500 |
 | `tts.py` | Hebrew narration: Phonikud IPA -> Kokoro-82M, sha256-pinned model files |
-| `render.py` | the CLI: validate -> frames -> narration -> ffmpeg -> `.srt` + `manifest.json` |
+| `render.py` | the CLI: validate -> settled frames -> narration -> motion frames -> ffmpeg -> `.srt` + `manifest.json` |
 | `asr_gate.py` | optional Whisper round-trip per narration line: CER on Hebrew letters, and negations, number words and person forms must be heard exactly |
 | `specs/` | one JSON per video; `yt-kids-setup.he.json` is the first sample |
 

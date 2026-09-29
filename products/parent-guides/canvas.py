@@ -143,15 +143,52 @@ def metrics(size: int, weight: int, engine: str) -> tuple[float, float]:
 
 
 class Frame:
-    """A drawing surface in 1x coordinates, backed by an SSx image."""
+    """A drawing surface in 1x coordinates, backed by an SSx image.
+
+    Layers (for the motion layer): after use(name), drawing goes to a transparent SSx layer of that name instead of
+    the background. layers_1x() gives each layer downsampled to 1x and cropped to what it draws, with its position;
+    final() composites them over the background in the order they were first used. compose.py moves, fades and
+    re-draws those same layers per video frame, so a settled video frame and final() come from one path."""
 
     def __init__(self, engine: str, size=(W, H), bg=PAPER, mode="RGB"):
         self.engine = engine
         self.w, self.h = size
+        self.bg = bg
         self.img = Image.new(mode, (s(size[0]), s(size[1])), bg)
         self.d = ImageDraw.Draw(self.img)
         self.boxes: list[tuple[str, tuple[int, int, int, int], str | None]] = []
         self.texts: list[tuple[str, str]] = []  # (name, text) for reports and tests
+        self.layers: dict[str, Image.Image] = {}
+        self.extra: list[tuple[str, Image.Image, int, int]] = []  # ready-made 1x RGBA layers (the illustration)
+        self._layers_1x = None
+
+    def use(self, name: str):
+        """Draw on the named layer from now on (created transparent on first use)."""
+        if name not in self.layers:
+            self.layers[name] = Image.new("RGBA", self.img.size, (0, 0, 0, 0))
+        self.d = ImageDraw.Draw(self.layers[name])
+        self._layers_1x = None
+
+    def add_layer_1x(self, name: str, img: Image.Image, x: int, y: int):
+        self.extra.append((name, img, x, y))
+        self._layers_1x = None
+
+    def layers_1x(self) -> list[tuple[str, Image.Image, int, int]]:
+        """[(name, RGBA image at 1x, x, y)]: each SSx layer cropped (with a margin wider than the LANCZOS kernel,
+        aligned to whole 1x pixels, so the crop downsamples exactly as the full layer would) and downsampled."""
+        if self._layers_1x is None:
+            out, pad = [], 4 * SS
+            for name, im in self.layers.items():
+                bb = im.getchannel("A").getbbox()
+                if not bb:
+                    continue
+                x0, y0 = max(0, (bb[0] // SS) * SS - pad), max(0, (bb[1] // SS) * SS - pad)
+                x1 = min(im.width, -(-bb[2] // SS) * SS + pad)
+                y1 = min(im.height, -(-bb[3] // SS) * SS + pad)
+                crop = im.crop((x0, y0, x1, y1)).resize(((x1 - x0) // SS, (y1 - y0) // SS), Image.LANCZOS)
+                out.append((name, crop, x0 // SS, y0 // SS))
+            self._layers_1x = out + list(self.extra)
+        return self._layers_1x
 
     def note(self, name: str, box, group: str | None = None):
         self.boxes.append((name, tuple(int(round(v)) for v in box), group))
@@ -170,12 +207,19 @@ class Frame:
         return bb
 
     def rrect(self, box, r, fill=None, outline=None, width=0):
+        """A rounded rectangle. A box with no area is skipped and the radius is capped at half the shorter side
+        (a part that is still popping in can be tiny); no still picture relies on anything beyond that cap."""
         x0, y0, x1, y1 = box
+        if x1 <= x0 or y1 <= y0:
+            return
+        r = min(r, (x1 - x0) / 2, (y1 - y0) / 2)
         self.d.rounded_rectangle((s(x0), s(y0), s(x1), s(y1)), radius=s(r), fill=fill,
                                  outline=outline, width=s(width) if width else 0)
 
     def rect(self, box, fill):
         x0, y0, x1, y1 = box
+        if x1 < x0 or y1 < y0:
+            return
         self.d.rectangle((s(x0), s(y0), s(x1), s(y1)), fill=fill)
 
     def circle(self, cx, cy, r, fill=None, outline=None, width=0):
@@ -204,7 +248,13 @@ class Frame:
         self.d = ImageDraw.Draw(self.img)
 
     def final(self) -> Image.Image:
-        return self.img.resize((self.w, self.h), Image.LANCZOS)
+        base = self.img.resize((self.w, self.h), Image.LANCZOS)
+        if not self.layers and not self.extra:
+            return base
+        out = base.convert("RGBA")
+        for _, im, x, y in self.layers_1x():
+            out.alpha_composite(im, (x, y))
+        return out.convert(base.mode)
 
 
 def star_points(cx, cy, r_out, r_in, n=5, rot=-90):

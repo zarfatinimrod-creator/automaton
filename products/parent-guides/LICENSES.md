@@ -28,6 +28,10 @@ the renderer loads, including what kokoro-onnx and Phonikud pull in (checked wit
 
 **No music** is used. **No stock** footage or images are used: every picture is drawn in code (`art.py`).
 
+**The motion layer (v2, 29.9.2026) adds no dependency.** Reveals, illustration beats, transitions and the progress bar
+are drawn with the Pillow already listed above and encoded by the same system ffmpeg (frames piped in as raw RGB);
+`motion.py` is standard library only. No animation library, no paid or GPU tool, no stock motion.
+
 **Trademarks.** YouTube and YouTube Kids are trademarks of Google LLC. The videos name them only to say what
 they are about (nominative use): no logo, no screenshot of the app, no imitation of its visual identity
 (no red, no play-button shape), and every end card states that the video is independent and not affiliated with
