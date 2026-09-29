@@ -1,0 +1,221 @@
+What you can do with StreetLib - StreetLib Help Center
+
+Toggle Navigation
+
+Ebook
+
+Audiobook
+
+Libri cartacei
+
+Crea i tuoi libri con Write
+
+Direct Marketing
+
+Gestisci il tuo account e i pagamenti
+
+StreetLib Store
+
+Webinar
+
+Ready
+
+Ebooks
+
+Audiobooks
+
+Paperbooks
+
+Create Your Books
+
+Manage Your Account and Royalties
+
+StreetLib Direct Marketing
+
+SL Store
+
+Accountverwaltung und Einnahmen
+
+Ebook Veröffentlichung
+
+Hörbücher
+
+Bucherstellung
+
+FAQ zum Umzug auf die neue Plattform
+
+FAQ on Platform Changeover
+
+Contact
+
+Contact
+
+What you can do with StreetLib
+
+What you can do with StreetLib
+
+With StreetLib, you can distribute your ebooks, audiobooks, and print-on-demand to over 50 bookstores and manage your entire publishing business with an easy-to-use dashboard
+
+The steps are very easy:
+
+1. Create your account for free
+
+Activate your StreetLib account , create a publisher or author profile and choose the payment method to receive your earnings.
+
+Using your personal account, you can access tools and services for producing files to be published (Write), manage and publish your catalog (Hub), and monitor your income.
+
+2. Create files that are suitable for publication
+
+StreetLib allows you to start publishing your books immediately, using the files you already have available. You only need to comply with the specifications required for the different formats: eBook - paper - audiobook. If you don't have files ready for publication, you can use the application Write to create them. Easily create your own ebook reflowable or with a fixed layout and a ready-to-print paper book . If you have specific requirements, you can rely on our team of consultants that will provide useful assistance during all phases of file creation.
+
+3. Distribute your titles
+
+Upload your catalog. Your books will be immediately available for sale in the stores you selected. Through our HUB (accessible from your account), you can upload ebooks , audiobooks , and paper books , in just a few simple clicks!
+
+4. Check your earnings
+
+Check your books' sales trend daily from the bookstores you have activated. You can filter sales information and get customized reports and statistics according to your needs using the Analytics app.
+
+Creating files
+
+Creating files for distribution has never been easier, thanks to StreetLib's integrated solutions.
+
+Ebook - creating the ePub file
+
+You can create the ePub format with StreetLib support in several ways:
+
+use the Write App accessible from your account;
+
+take advantage of our StreetLib Ready conversion services and leave it to us! Our publishing professionals will create your ebooks in ePub format. We also offer an Ebook and paper book publishing package and the availability of creating a professional cover for you.
+
+In addition, you will always have the freedom to create your own ePub independently; if you choose this option, it is essential that the file is valid for publishing, so it doesn't show errors in the code and has passed the ePubCheck.
+
+Audiobooks - creating the audio file
+
+The production of a quality audiobook represents an important investment, so our advice is to rely on trustworthy and competent professionals.
+
+StreetLib can help you with both the recording of your audiobook and the post-production phase:
+
+you can leave the entire creation of the audiobook to the experts from Il Narratore, by requesting a quote with no obligation;
+
+If you have recorded your audiobook independently, you can take advantage of the post-recording audio optimization services, dedicated to Mastering tracks , Editing, and Post-production .
+
+You can always produce your audiobooks independently, using adequate tools and software. We recommend consulting the volume “ How to make audiobooks in a Home Studio ", available in different formats. If you produce the audiobook yourself, it is essential that you are able to comply with the required specifications for mp3 files.
+
+Paper books - the creation of the file for paper books (only to publishers based in Italy)
+
+In order to distribute a print-on-demand book via StreetLib, you will need to prepare a ready-to-print PDF layout that supports all printer requirements.
+
+You can paginate PDFs with StreetLib support in several ways:
+
+independently, using the Write application accessible from your account;
+
+Requesting our publishing services according to your needs.
+
+You can also decide to paginate the files to be printed independently using any text editing and graphic design software, such as Word, InDesign, Photoshop, Pages, and more. In that case, it is essential that the technical requirements for internal pages and cover are met;
+
+The ebook publication
+
+You can choose in which stores your ebooks will be available for sale; to do so, you must convert your PDF/Doc files to ePub files .
+
+You will also need:
+
+the cover file in jpg format
+
+The data related to your book (title, author, synopsis, price, etc.)
+
+Once the files are made, your ebook is ready to be published. Upload your files and data to the HUB platform by following this written guide and video we created for you.
+
+StreetLib provides an integrated ebook distribution service to over 50 online bookstores, digital libraries, and subscription applications, including Amazon Kindle Store, Kobo Books, Apple iBooks, Google Play, Scribd, YouScribe, Stary, Bookbeat, and many more. In total, our system allows you to reach over 250 outlets worldwide.
+
+In this section of our help center, you will find all the information you need to publish your ebook anywhere online.
+
+The paper publication (only to publishers based in Italy)
+
+To be able to distribute your Print-On-Demand paper book with StreetLib, you will need to make two PDFs ready to print:
+
+The PDF of the inside of the book
+
+The PDF of the book cover
+
+Our Print Service offers two options:
+
+The distribution in Print On Demand includes the sale of the book in online and physical bookstores ;
+
+The personal print, which can start from a single copy, and can be managed according to your needs, in a completely independent way.
+
+You can take advantage of both or just one of the options above, the activation procedure will be the same.
+
+StreetLib provides a complete service to publish and distribute print-on-demand paper books. The system will activate the distribution of the book in our circuit of online and physical stores, including Amazon (.it, .de, .es, .fr, .co.uk, .com, .jp), IBS, La Feltrinelli, Libraccio, Il Giardino Dei Libri, Webster, and all physical stores using Fastbook and Libri Diffusi. The book will also be distributed in our store and on Totem, our B2B e-commerce dedicated to independent bookstores.
+
+Earnings and billing
+
+The StreetLib platform has several efficient sales monitoring and control tools, as well as billing management tools.
+
+Our application Analytics allows you to track the daily sales trend of your books, and the flexibility to filter and organize data to get views, charts, and reports tailored to your needs. We aggregate the sales generated by different stores active in your account to give you a global and detailed view of your earnings.
+
+The billing process is guided: we send you a notification at the end of each quarter to remind you to download sales reports and issue your invoice; the payments of your royalties are automated .
+
+Do you have any concerns about reports or invoice issuance? Our team is available to give you assistance and to answer any questions.
+
+Deals and marketing
+
+To promote your books, you have two tools that you can use:
+
+Deals
+
+this tool allows you to place your ebooks at a discounted price for a defined period of time (we do not recommend promos lasting more than a month). Even if you enter the promo price on a single store, the discount will automatically spread to all other stores integrated into our distribution.
+
+This feature is totally free and will soon be available in the front end of Hub, in the meantime if you want to insert an ebook in promo you just write us indicating: the ISBN code, promo price, promo start date, and promo end date. If you want to set up a promo for multiple items, just fill in this template .
+
+Marketing through Direct
+
+Direct is an app that allows you to promote your catalog without intermediaries, through the creation of campaigns and the generation of coupon codes to associate with your content ebooks and audiobooks. Direct also allows you to use emails from users who download your content for commercial purposes. It's an annual subscription tool. Click here to request the activation of the free trial.
+
+Editorial services
+
+Ready offers a dedicated service for every editorial need and ad-hoc assistance to help you create your ebook, audiobook, or paper book in all phases, from the revision of the text to the distribution and promotion of your final work.
+
+Pre-layout services
+
+Once the writing of the text has been completed, it's possible to request a scorecard with specific advice to make improvements to the manuscript and/or use the services of proofreading and editing ( light or deep ) to improve the structure and eliminate errors (grammatical, lexical, or syntax).
+
+Layout and file conversion services
+
+The layout of the book represents the creation of its design. StreetLib helps you turn your manuscript into a professionally designed paper book; it also converts your file into the ePub format , ready to be published in an ebook version.
+
+Finally, our graphic designers are available to create a book cover in line with your work, for greater appeal in all stores.
+
+If you prefer one of the all-inclusive packages , you just need to choose the one that best suits your needs.
+
+Services dedicated to audiobooks
+
+StreetLib, in collaboration with Il Narratore Audiolibri, can help you through all stages of making an audiobook, whether it is the initial stage of recording or post-production work. The leading experts in the field will follow you in the creation of a perfect audiobook.
+
+Services dedicated to distribution and promotion
+
+Once the book has been created, the last step is to publish it in all the available stores. You can entrust StreetLib with the publishing process of your work and, so that your book will reach as many readers as possible, you can promote it with the help of our consultants.
+
+Still need help?
+Contact Us
+Contact Us
+
+Last updated on August 11, 2026
+
+Toggle Search
+
+Categories
+
+Create and manage your StreetLib account
+
+Billing and Payments
+
+Book sales
+
+No results found
+
+&copy;
+
+StreetLib SRL
+
+2026. Powered by Help Scout
