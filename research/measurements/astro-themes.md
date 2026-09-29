@@ -227,3 +227,252 @@ inference, and it is flagged as such.
 
 **Money:** the capture shows **no listing fee field** and no price field. Whether listing costs anything is **NOT ON
 THIS PAGE**. On present evidence, nothing in this lane requires the owner to pay first.
+
+---
+
+## 29.9 (GitHub read)
+
+**Date:** 2026-09-29, fetched 03:18-03:24 UTC. **Reader:** Opus subagent, no git, no edits outside this section.
+**Question (loop row 7):** how themes are submitted (G3), what a paid theme and its seller must show (G2, G7), how the
+catalogue orders and features themes, any AI rule (G4), and whether the catalogue brings buyers (G5).
+
+**Grades in this section.** **github** = the platform's own source or its own GitHub issues, read from GitHub.
+Two sub-kinds: *raw* (bytes fetched from `raw.githubusercontent.com` with curl; the quotes are exact and carry line
+numbers) and *webfetch* (a `github.com` page read through WebFetch, which returns converted text; wording that it
+gave inside quotation marks is reproduced below, but a runner render should re-check it before anyone relies on
+the exact words). **rendered** = computed from `research/rendered/astro-themes-paid.json` (27.9), cited as `L1:b<offset>`.
+**snippet** = the one WebSearch. **repo** = this repo's earlier research. **none** = inference, flagged as such.
+
+### A. What was read (exact URLs)
+
+*Raw source, `withastro/astro.build` branch `main` (github/raw; 12-hex prefix of sha256, line count):*
+
+| URL | sha256[:12] | lines |
+|---|---|---|
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/pages/themes/%5Bpage%5D.astro | 5364d383cd2d | 156 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/pages/themes/index.astro | 1530fe117074 | 242 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/pages/themes/submit/index.astro | 49101d76729d | 3 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/pages/themes/details/%5Bslug%5D.astro | 72f73644fa1d | 110 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/pages/themes/author/%5Bid%5D/%5B...page%5D.astro | cfc0ebfb702c | 84 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/pages/themes/_components/ThemeCTAs.astro | 218810d8dbf2 | 75 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/pages/themes/_components/SubmitTheme.astro | c66c2e5a2809 | 22 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/pages/themes/_components/ThemeStats.astro | 5289c3ca2464 | 59 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/pages/themes/_components/ThemeCard.astro | ac6b44f735c9 | 57 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/pages/themes/_components/Avatar.astro | d512634c095e | 22 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/pages/themes/_components/ThemeAuthorProfile.astro | 242b0a7b784a | 51 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/pages/themes/_types/index.ts | b46cabdca9cf | 57 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/helpers/constants.ts | eb2242588c39 | 1 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/helpers/themes.ts | ca87ff08bc9a | 37 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/content/blog/themes-catalog-updates.mdx | 64e120d15241 | 76 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/content/pages/partnerships.mdx | 4f872cf5f4cd | 197 |
+| https://raw.githubusercontent.com/withastro/astro.build/main/src/content/pages/terms.md | 4ec568210614 | 113 |
+
+(Two guessed paths returned 404: `src/pages/themes/author/[id].astro` and `.../author/[id]/index.astro`. The GitHub
+REST API, `codeload.github.com` and curl of `github.com` HTML returned 403 from this container, so no commit SHA is
+recorded; the hashes above pin the bytes read.)
+
+*github.com pages through WebFetch (github/webfetch):*
+https://github.com/withastro/astro.build/tree/main/src/pages/themes ·
+https://github.com/withastro/astro.build/tree/main/src/pages/themes/details ·
+https://github.com/withastro/astro.build/tree/main/src/pages/themes/_components ·
+https://github.com/withastro/astro.build/tree/main/src/pages/themes/author/%5Bid%5D ·
+https://github.com/withastro/astro.build/tree/main/src/content/pages ·
+https://github.com/withastro/astro.build/tree/main/src/helpers ·
+https://github.com/orgs/withastro/repositories?q=portal ·
+https://github.com/orgs/withastro/repositories?q=theme ·
+https://github.com/withastro/astro.build/issues?q=is%3Aissue+theme+portal ·
+https://github.com/withastro/astro.build/issues?q=is%3Aissue+theme+approved ·
+https://github.com/withastro/astro.build/issues?q=is%3Aissue+theme+review ·
+https://github.com/withastro/astro.build/issues?q=is%3Aissue+themes+AI ·
+https://github.com/withastro/astro.build/issues/1178 ·
+https://github.com/withastro/astro.build/issues/1226 ·
+https://github.com/withastro/astro.build/issues/2387 ·
+https://github.com/withastro/astro.build/issues/2390 ·
+https://github.com/withastro/astro.build/commits/main/src/pages/themes/%5Bpage%5D.astro ·
+https://github.com/withastro/astro.build/pull/1477 (its description failed to load) ·
+https://github.com/MauCariApa-com/bloodstone/issues/1 ·
+https://github.com/njbSaab/astro-njx-store/issues/1 ·
+https://github.com/ashleycanva/stratum-free/issues/1 ·
+https://github.com/mearashadowfax/DomusPicturae/issues/2
+
+*The one WebSearch (snippet):* query `portal.astro.build submit theme review approved paid theme guidelines`.
+Result URLs: https://hackmd.io/@sarah11918/BJMjDSMDZl ("Astro Theme Catalogue Review Guidelines - HackMD") ·
+https://github.com/MauCariApa-com/bloodstone/issues/1 · https://github.com/njbSaab/astro-njx-store/issues/1 ·
+https://github.com/ashleycanva/stratum-free/issues/1 · https://github.com/agnilem/parley-astro/issues/1 ·
+https://github.com/njbSaab/astro-njx-saas/issues/1 · https://github.com/qubit-rider/astro-blog-starter/issues/1 ·
+https://github.com/Angeloamenta/PReload-astro-theme/issues/1 · https://github.com/mearashadowfax/DomusPicturae/issues/2.
+The HackMD pages were **not read** (not a GitHub host); they are the first render below.
+
+**The portal's own source is not public.** `withastro` has no repository matching "portal" ("No repositories matched
+your search", github/webfetch). The catalogue API, the submit form and the review queue all live on
+`portal.astro.build`; `astro.build` only reads it: `export const THEMES_API_URL = import.meta.env.THEMES_API_URL ??
+'https://portal.astro.build';` (`constants.ts:1`).
+
+### B. Submission (G3)
+
+- **A web form on the portal, not a PR or an API.** `return Astro.redirect('https://portal.astro.build/themes/submit');`
+  (`submit/index.astro:2`). The sidebar: `Anyone can submit a theme to Astro.` with `cta={{ href:
+  'https://portal.astro.build', text: 'Submit theme' }}` (`SubmitTheme.astro:13,16`). The 2022 announcement: `Gone are
+  the days of filling out GitHub issue templates. The new submission form makes it simple to upload multiple preview
+  images, select the tools used in your theme, and even includes a rich text editor for writing the full description of
+  your theme.` (`themes-catalog-updates.mdx:60`). github/raw.
+- **Sign-in is GitHub OAuth.** Issue #1178's title: `[GitHub OAuth Error on Astro Dev Portal] Unable to login to submit
+  theme`; its body quotes the OAuth error `The redirect_uri MUST match the registered callback URL for this application`.
+  The Author record carries GitHub identity: `githubId: number;` `username: string;` (`_types/index.ts:41-42`), and
+  27.9's capture has 109 of 110 avatars on `avatars.githubusercontent.com` (rendered, §Q5 above). github/webfetch + raw.
+- **Every theme is reviewed by a person, and every edit is re-reviewed.** The Theme type has `approved: boolean;`
+  `denied: boolean;` `hidden: boolean;` (`_types/index.ts:25-27`, github/raw). Rejections arrive as a GitHub issue
+  opened on the theme's own repository by an Astro maintainer's account (four read, all dated 18 Sep 2026). Shared
+  wording (github/webfetch): `I just wanted to let you know why your theme was not approved for the Astro theme
+  directory so you can make the changes and resubmit!` and `When you update and save your listing in the developer
+  portal, your theme will automatically be re-submitted for review. Even if your site description requires no change,
+  making a minor change and saving will trigger the submission process again, so you can just add/remove a blank line if
+  necessary.` The reasons are numbered (`2.`, `3.`, `10.` appear), so a numbered checklist exists; it lives at
+  `https://hackmd.io/@sarah11918/categories/astro-themes` (quoted in each issue), unread.
+- **No write API is visible.** The public source calls only GET endpoints: `/api/themes/tools` (`[page].astro:29`),
+  `/api/themes?${Astro.url.searchParams}` (`:83`), `/api/themes/featured` (`index.astro:37`),
+  `/api/themes/details?slug=` (`details/[slug].astro:19`), `/api/themes/related?slug=` (`:26`),
+  `/api/themes/author?id=` (`author/[id]/[...page].astro:27`) and `/api/themes/generate-checkout?themeId=`
+  (`ThemeCTAs.astro:18`). Whether the portal has a token API for authors: **UNKNOWN** (source not public).
+- **Terms.** `src/content/pages/terms.md` has no AI, agent or automation rule for posting (grep for `AI`, `artificial`,
+  `machine`, `generated`, `bot`: 0 hits). Its only robot clause is about taking data out: `(iii) using any data mining,
+  robots or similar data gathering or extraction methods` (`terms.md:65`). It forbids `Impersonate or post on behalf of
+  any person or entity or otherwise misrepresent your affiliation` (`terms.md:56`) and `Mass or repeated promotions`
+  (`terms.md:49`). github/raw.
+
+### C. What a paid theme and its seller must show (G2, G7)
+
+- **The buy button links out to whatever URL the author gives.** For a paid theme not sold through the portal:
+  `theme.Theme.paid && theme.Theme.repoUrl && ( <a href={theme.Theme.repoUrl} ...` with the label
+  `{theme.Theme.price > 0 ? `$${theme.Theme.price / 100} - ` : null} Buy now` (`ThemeCTAs.astro:30-40`). So the
+  Gumroad product URL goes in the repository-URL field, and the price, if entered, shows on the button. The blog:
+  `Whether a theme author uses [Gumroad](https://gumroad.com/) or sells on their own site, our catalog makes it easier to
+  share your theme and have Astro users discover it.` (`themes-catalog-updates.mdx:49`). github/raw.
+- **A second, Astro-run checkout exists.** `{theme.Theme.sellingThroughPortal ? ( <a href={new
+  URL(`${THEMES_API_URL}/api/themes/generate-checkout?themeId=${theme.Theme.id}`)}` (`ThemeCTAs.astro:16-18`), with
+  `stripeProductId?: string;` `stripePriceId?: string;` (`_types/index.ts:30-31`). This is a Stripe checkout run by
+  the portal. How it pays authors is **UNKNOWN**. Israel is not a Stripe account country and Connect cross-border
+  payouts exclude it (`research/measurements/stripe-israel.md`, rendered), so **the colony must use the Gumroad link path, not this one** (inference).
+- **Links are nofollow.** `const linkRel = isOfficial ? undefined : 'nofollow ugc';` (`ThemeCTAs.astro:12`); the
+  description sanitiser adds `rel="nofollow ugc"` to every non-Astro link (`themes.ts:34-35`). A listing gives no search
+  ranking to the Gumroad page. github/raw.
+- **The public name is `Author.name` and an avatar.** The card shows `src={theme.Author.avatar}` and
+  `{theme.Author.name}` (`Avatar.astro:14,21`). The author page shows avatar, name, `Joined`, and `Website` =
+  `author.url` (`ThemeAuthorProfile.astro:22-47`) and titles itself `Themes by ${author}` (`author/[id]/[...page].astro:51`).
+  `githubId`, `username` and `email` exist on the record (`_types/index.ts:38-42`) but none of the components read
+  displays them. github/raw. **A business name with its own avatar is accepted:** author 39 is `"name":"Lexington
+  Themes"` with `"avatar":"https://lexingtonthemes.com/images/favicons/apple-touch-icon.png"` (rendered, L1:b27910).
+  Whether the name is typed in the portal or copied from the GitHub profile that signs in: **UNKNOWN**.
+- **Content rules on the demo** (github/webfetch, the 18.9 rejection issues): `The theme catalogue must not include any
+  personalized or real-world content.`; `if a company marketing site, must not contain any information about a real
+  company.`; `**Only use `example.com` for placeholder URLs and email addresses**`; and one issue asks to `upgrade your
+  theme to Astro 7`. The snippet adds `New themes must use the current major version of Astro` and a README rule
+  (snippet). None of these touches the seller's legal name.
+
+### D. How the catalogue orders and features themes
+
+- **The grid shows the API's order untouched, minus featured themes, 18 per page:** `data: allThemes.filter((theme) =>
+  !theme.Theme.featured), pageSize: 18,` (`[page].astro:88-89`). There is no client-side sort. github/raw. So the
+  27.9 reading (updatedAt descending inside runs, rendered) **is** what a visitor sees under the Paid filter, minus the
+  3 featured rows: 635 themes on about 36 pages. (The commit list names "Update to 24 themes per page (#1497)", April
+  2025, but the current file says 18; the file wins.)
+- **The hidden run key is probably a field the list endpoint strips.** The type declares `stars: number;`
+  `publishDate: Date;` `price: number;` `sellingThroughPortal: boolean;` (`_types/index.ts:22-29`), none of which
+  appears in the 27.9 list response (rendered §Q2). Which one splits the five runs is **UNKNOWN** (none).
+- **Featured = sponsors, shuffled, on the landing page only.** `tagline: 'Professional themes designed and developed by
+  our sponsors'`, fetched from `/api/themes/featured` and `.sort(() => Math.random() - 0.5,)` (`index.astro:34-39`);
+  the footer CTA is `'Become a theme sponsor'` → `https://opencollective.com/astrodotbuild/contribute/theme-sponsor-86430`
+  (`index.astro:45-46`); `you can donate to Astro's Open Collective as a Theme Sponsor, and designate one or more of your
+  themes to be listed on our main themes page` (`partnerships.mdx:123`). Paid placement: forbidden under ₪0 and
+  MISSION.md:264-266, as before.
+- **Does updatedAt reward frequent updates?** Mechanically, probably yes. The reviewer's text says any save
+  re-submits for review (github/webfetch, above). The capture's September stamps come in clusters (rendered, computed
+  29.9): 4.9 5 themes/3 authors in 10 min; 9.9 17 themes/**1** author in 19 min; 18.9 9 themes/3 authors in 10 min;
+  26.9 **42 themes from 35 authors between 01:39 and 03:45 UTC**, and 18 of the 20 newest ids carry a 26.9 stamp. That
+  many authors in one two-hour window fits a reviewer approving a queue, not 35 people each editing at night.
+  Reading: approval (and perhaps the author's save) rewrites `updatedAt` and floats the theme to page 1 (none, an
+  inference from timing). The 18.9 cluster matches the date of the four rejection issues.
+- **Would exploiting it be honest? No.** A cosmetic save exists only to jump the order. It also spends a
+  maintainer's review time and signals "recently updated" to buyers when nothing changed. That fails G4, and it is
+  close to the terms' `Mass or repeated promotions` (`terms.md:49`). **Rule for the colony:** re-save a listing only
+  when a real release ships (an Astro major upgrade, which the review requires anyway, or new page templates). One
+  save per release, with the change named in the listing body. The honest version still gets some visibility, because
+  Astro majors force real updates.
+- **Visibility half-life (none, arithmetic on rendered counts).** 73 paid themes were re-stamped in September's four
+  clusters, 42 of them on one night. A new theme on paid page 1 (18 slots) can be pushed to page 3 by a single batch.
+
+### E. AI rule (G4)
+
+- **No AI rule in the site source or terms** (grep, github/raw). The unread HackMD checklist might contain one
+  (UNKNOWN).
+- **Approved paid listings already advertise AI-built work** (rendered): `built AI-first with AGENTS.md and Claude Code
+  workflows` (slug `apex-ai-first-astro-6-saas-template`, L1:b318525), and `built AI-first — ships with a documented
+  design system and component guide so AI coding tools like Claude Code, Cursor, Antigravity...` (slug `sidrano`,
+  L1:b115586). A plain "built by AI agents under the brand" line in the listing body would sit among these.
+
+### F. Buyers (G5)
+
+- The only statement is Astro's own claim: `The [Astro Theme Catalogue](/themes/) is often the first stop for visitors
+  looking to get up and running with a pre-made Astro site quickly.` (`partnerships.mdx:121`, github/raw, a
+  self-claim; its "over 500 free and paid options" is already stale against the 638 paid rows alone).
+- Astro tracks buy clicks (`data-analytics-event="PDDOCXCA:1"`, `ThemeCTAs.astro:20,35`, sent to Fathom at `:66-71`),
+  but no figure is public. **No sales, click or visitor number exists in anything read.** Sellers keep adding stock
+  (Lexington 99 themes, AeroLaunch 24; rendered), which hints that someone sells (none).
+- Bundles undercut single themes: `One $199 payment.` (L1:b138966) and `$99 once.` (L1:b381070) for all-access passes
+  (rendered, 27.9).
+
+### G. Gates
+
+| Gate | Status | Grade | Evidence |
+|---|---|---|---|
+| G1 ₪0 up front | **PASS** | github | `Anyone can submit a theme to Astro.` (`SubmitTheme.astro:16`). No listing fee appears in the site source or the Theme type. The only paid thing is the optional sponsor slot, which the colony will not buy. The portal form's own pages are unread. |
+| G2 Israeli individual, no camera | **PASS** (via Gumroad link) | github + repo | The catalogue pays nothing on the link path (`ThemeCTAs.astro:30-40`). Gumroad pays ILS with no camera step found (repo; github by absence, `research/breadth/BREADTH-SWEEP.md:175`). The portal's Stripe checkout path is excluded (Israel is not a Stripe country, `stripe-israel.md`, rendered). |
+| G3 list without per-item owner click; terms allow agents | **UNKNOWN, leaning FAIL** | github | Terms half: **PASS** (no agent or AI bar; `terms.md:49,56,65`). Listing half: submission is a GitHub-OAuth web form with image uploads and a rich-text editor. Every theme and every edit goes through human review, and no write API is visible. A runner can do it only by driving a browser login on a brand GitHub *user* account, which nobody has proposed or tested. |
+| G4 honest value, AI declared | **UNKNOWN** (venue half PASS) | github + rendered | No AI rule. Peers openly list AI-first builds (L1:b318525, L1:b115586). The value half needs a named differentiator (§H). The editorial rules (generic demo, example.com, current Astro major) are compatible. |
+| G5 venue brings buyers | **UNKNOWN** | github (self-claim) | "first stop for visitors" is Astro's claim; no numbers. Links are nofollow. A new listing's page-1 time is days, not weeks (§D). |
+| G6 one owner step unlocks many | **UNKNOWN, leaning FAIL** | github | Steps 3/6b/7 already exist. Each theme then needs a portal form session, plus another save after any rejection, unless G3's runner path exists. |
+| G7 brand the only public name | **UNKNOWN, leaning PASS** | github + rendered | Only `Author.name`, avatar, Joined and Website are shown. A business name with its own avatar is live (L1:b27910). Unknown: whether the portal lets the name differ from the signing-in GitHub profile, and whether the owner's personal GitHub would be the one signing in. |
+
+### H. Fit, and what it would cost
+
+- **No colony product fits as-is.** Nothing in `products/` is an Astro theme. `il-biz-tools` is plain HTML with real
+  Israeli business content, and the catalogue bars real-world content in demos.
+- **The honest new item:** a **Hebrew-first, RTL Astro 7 theme** for small service businesses (clinic, accountant,
+  studio). It would have logical-property CSS, an OFL Hebrew font stack, a he/en switch, and a generic accessibility-
+  statement page template. Every contact is `example.com`. It must pass Lighthouse and axe cleanly, and state in the
+  listing body that it was built by AI agents under the brand. **Why it is honest value:** of the 638 paid themes,
+  **0** mention Hebrew and **1** mentions RTL (`Bilingual (EN/AR + RTL) Astro 7 theme for dermatology...`, slug
+  `dermica-dermatology-aesthetics-clinic-theme`, L1:b124944; rendered). The free lane was not captured, so "free
+  nowhere" is still unproven. **The trade:** the niche is unique but small, which makes G5 weaker still.
+- **Build cost:** about **30-45 agent-hours** (≈4-6 agent-days, inside BOARD-LOOP's 4-7), ₪0. It reuses il-biz-tools'
+  RTL markup (`dir="rtl"` on every page) and its accessibility-page pattern. After that, one real upgrade per Astro
+  major (agent work, not owner work).
+- **Owner time per theme if G3 fails:** one portal session per theme and per rejection, estimated 10-15 min (none).
+  That is recurring owner work, KILL-4.
+
+### I. Verdict: **NEEDS_MORE** (leaning KILL-PROPOSED on G3/G6)
+
+GitHub settled the display order (the API order, featured removed, 18 per page), the buy path (any URL, so Gumroad
+works), the review (human, per theme, per edit) and the terms (no AI or agent bar). It did not settle the one gate
+that decides the line: **can the colony submit without the owner's hands?** The portal's source is not public.
+
+**Pre-registered kill.** KILL-PROPOSED if the renders below show that submission is only the GitHub-OAuth form (no
+author token or API), **or** that a paid theme needs something per theme that only a person can give (reviewer
+access to paid code, a call, an identity check). In either case every theme is an owner session, so G3, G6 and
+KILL-4 fail. **Queue on** only if a token or API route exists, or the board rules that a runner-driven login on a
+brand GitHub user account is allowed. Even then, build only after the owner has opened Gumroad (BBU rule, unchanged).
+
+### J. Next render URLs (runner, render-watch)
+
+1. https://hackmd.io/@sarah11918/categories/astro-themes — the numbered review checklist (paid-theme rules, any AI
+   rule, any per-theme requirement).
+2. https://hackmd.io/@sarah11918/BJMjDSMDZl — "Astro Theme Catalogue Review Guidelines".
+3. https://portal.astro.build/themes/submit — the form's fields and sign-in wall (is there anything besides GitHub OAuth?).
+4. https://portal.astro.build/ — portal landing (author docs, any API or token mention).
+5. https://portal.astro.build/api/themes/details?slug=bento-creative-studio-astro-theme — the Gumroad-linked seller's
+   detail record: `repoUrl`/`buyUrl`/`price`/`stars`/`publishDate`/`sellingThroughPortal` (confirms the Gumroad link
+   sits in `repoUrl`; may reveal the hidden run key).
+6. https://portal.astro.build/api/themes — the unfiltered listing (27.9's unmet ask; free-lane Hebrew/RTL count).
+7. https://portal.astro.build/api/themes/featured — the sponsor set.
+8. https://astro.build/themes/1/?price%5B%5D=paid — a rendered page 1, to confirm on the page itself that display
+   order equals API order minus featured.

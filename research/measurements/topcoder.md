@@ -195,3 +195,222 @@ field appears in the record. That the platform is free to join is **not stated o
 repo already knows about is Step 2: under the owner's ₪0 rule, the Bituach Leumi self-employed floor contribution
 recorded in `research/measurements/step2-cost.md` (PARTLY MEASURED) must not start before the ledger shows income.
 Whether Trolley or PayPal/Payoneer charge the payee a fee is **UNKNOWN** (not on this page).
+
+---
+
+## 29.9 (GitHub read)
+
+**Date:** 2026-09-29, read 03:05-03:33 UTC. **Reader:** Opus subagent; no git, no edits outside this section.
+**Question (loop row 12):** do auto-scored challenges exist at all (schema, scorer, history); is there an AI-use or agent
+rule; how are members paid, which countries, and is there an identity step with a camera (G2).
+
+**Grades in this section.** **github** = Topcoder's own source or issues on GitHub. Three sub-kinds:
+*codesearch* = a fragment returned by GitHub code search (exact indexed text, pinned to the commit in the result's
+`object_url`, listed in §A); *webfetch* = a `github.com` or `raw.githubusercontent.com` URL read through WebFetch, which
+returns model-converted text (where it returned a whole file it is marked "full file"; otherwise a render should re-check
+exact wording); *issue* = a GitHub issue read through the issues search API. **rendered** = the 27.9 capture above.
+**snippet** = the one WebSearch. **repo** = this repo's research. **none** = inference, flagged.
+curl to `api.github.com` returned 403 from this container, so no directory listings or commit history were read; the
+GitHub MCP file reader refused every `topcoder-platform` repo ("not configured for this session"). Code search and
+WebFetch worked.
+
+### A. What was read (exact URLs and pinned commits)
+
+*Code search (github/codesearch), repo @ commit:*
+`topcoder-platform/challenge-api-v6` @ `06ca2b60fef521b5ccc38c1ecfe68d59b9c2c461` ·
+`topcoder-platform/marathon-match-api-v6` @ `8b56089e95ae90f0145604c7d4481b096c7a2d13` ·
+`topcoder-platform/platform-ui` @ `e1e8136bc000441e47f94f8049e9b5de38795065` ·
+`topcoder-platform/tc-finance-api` @ `3b760d951a34420241291ef862616a42b0dad8d6` ·
+`topcoder-platform/terms-service` @ `062de8cf5c14035e06ccaa7e10b151a665a4eb71` ·
+`topcoder-platform/universal-navigation` @ `00c656f9be99a2defd092dddfaaeaf490f9ab95c` ·
+`topcoder-platform/identity-api-v6` @ `5e2d17a02ddb9da2e6f34cd3af8492cf2b62ecb4` ·
+`topcoder-platform/review-api-v6` @ `f8932063059519722f8f57ebb126ad1c3294494d` ·
+`topcoder-platform/tc-mcp` @ `36b5084f75a07326e9bf0e05419f5be07a01f606`.
+
+*WebFetch (github/webfetch):*
+https://github.com/topcoder-platform/marathon-match-api-v6 ·
+https://github.com/topcoder-platform/marathon-match-api-v6/tree/develop/examples ·
+https://github.com/topcoder-platform/marathon-match-api-v6/issues?q=is%3Aissue+sort%3Acreated-desc ·
+https://github.com/topcoder-platform/tc-mcp (only a partial README came back) ·
+https://raw.githubusercontent.com/topcoder-platform/challenge-api-v6/develop/src/scripts/seed/ChallengeType.json (summarised, not full) ·
+https://raw.githubusercontent.com/topcoder-platform/challenge-api-v6/develop/docs/swagger.yaml (parameter list) ·
+https://raw.githubusercontent.com/topcoder-platform/tc-finance-api/dev/src/api/webhooks/trolley/handlers/recipient-verification.types.ts (full file) ·
+https://raw.githubusercontent.com/topcoder-platform/tc-finance-api/dev/src/api/webhooks/trolley/handlers/recipient-verification.handler.ts (full file) ·
+https://raw.githubusercontent.com/topcoder-platform/tc-finance-api/dev/src/api/withdrawal/withdrawal.service.ts (quoted blocks) ·
+https://raw.githubusercontent.com/topcoder-platform/tc-finance-api/dev/src/shared/global/trolley.service.ts (quoted block) ·
+https://raw.githubusercontent.com/topcoder-platform/tc-finance-api/dev/src/api/repository/identity-verification.repo.ts (summarised).
+One guessed path returned 404: `raw.githubusercontent.com/topcoder-platform/challenge-api/develop/README.md` (the org
+search lists no repo named `challenge-api`; the live one is `challenge-api-v6`).
+
+*Issues (github/issue):* https://github.com/topcoder-platform/marathon-match-api-v6/issues/34 ·
+https://github.com/topcoder-platform/marathon-match-api-v6/issues/32 ·
+https://github.com/topcoder-platform/marathon-match-api-v6/issues/162 (and 17 more titles from the same repo, all
+28-30.5.2026 security/functionality reports).
+
+*The one WebSearch (snippet):* query `Trolley recipient identity verification government ID selfie "Trolley" payee
+verification`. Result URLs: https://support.trolley.com/s/article/Identity-Verification ·
+https://trolley.com/trust/ · https://trolley.com/use-cases/music-royalties/know-your-artist/ ·
+https://trolley.com/trust/dsa-compliance/ · https://trolley.com/blog/trolley-trust-idv-tool/ ·
+https://support.trolley.com/s/article/Identity-Verification-FAQ (plus two unrelated hosts). None of these was opened.
+
+### B. Auto-scored challenges: they exist in the schema and are being operated (settles the "none exist" question)
+
+- **The type exists and is active.** `src/scripts/seed/ChallengeType.json` (codesearch):
+  `"description": "A match predicated on solving one problem using only what is deemed the best method",` /
+  `"isActive": true,` / `"isTask": false,` / `"abbreviation": "MM",` / `"isLegacy": false,`; its id is paired with the
+  name in `data-migration/src/scripts/recalculateChallengeWinners.js`: `["929bc408-9cf2-4b3e-ba71-adfbf693046c",
+  "Marathon Match"],`. The 27.9 challenge's type `927abff4-…` is `"Challenge"` in the same list. github.
+- **A live machine scorer exists.** `marathon-match-api-v6/README.md` (codesearch): "NestJS service for managing
+  marathon match scorer configuration, compiling tester JARs, consuming submission events from Kafka, and launching ECS
+  scoring tasks." `docs/marathon-processor-specification-and-scoring-terminology.md`: "This article describes how
+  Topcoder Marathon Match submissions are compiled, executed, scored, and reported by the current Marathon Match
+  processor. … Marathon Match submissions are scored by an AWS ECS/Fargate runner task. Each scoring task downloads the
+  configured tester, downloads the member submission, runs the tester for the configured seed range, uploads artifacts,
+  and posts score results back to Topcoder services." The repo was created 2026-03-02 and last updated 2026-09-28
+  (repository search metadata). github.
+- **The challenge API closes MMs from scores, with no human reviewer.** `docs/swagger.yaml` (codesearch): "Close a
+  Marathon Match challenge by selecting winners from final review summations, closing all phases, and setting the
+  challenge status to COMPLETED." github.
+- **The front end promotes MMs as a running programme.** `platform-ui/src/apps/opportunities/src/components/
+  ChallengeSidebar.tsx` (codesearch): `{marathonMatch ? 'Marathon Match Tournament' : 'Join the AI Exponential league'}`
+  and `'Join the battle of competitors in a series of challenging Marathon Matches.'`; the site nav carries
+  `marketingPathname: '/marathon-match-tournament',` (`universal-navigation/src/lib/config/nav-menu/all-nav-items.config.ts`).
+  github.
+- **When the new scorer went live.** Issue #162 (29.5.2026), steps to reproduce: "1.Register and compete in Marathon
+  Match 2026 Beta Test". Issue #32 (28.5.2026) reports a member's live submission flow ("When submitting code, the
+  system reports "Failed submission" at first"). So the v6 MM stack was in a public beta at the end of May 2026.
+  github/issue.
+- **What this does NOT settle: volume.** Nothing on GitHub counts MMs per month. Issue #34 names MMs 144 and 145 and says
+  "For more recent matches the correct rank is shown", which dates nothing. The ≥3-a-month admission condition
+  (BOARD-LOOP.md:167) stays **UNKNOWN**.
+- **Why the 27.9 snapshot missed them:** it queried `status=ACTIVE` for all types and got one Development challenge.
+  The API filters by type: swagger `type` = "Filter by type abbreviation, exact match. If provided, the typeId will be
+  ignored"; `types` = "Filter by multiple type abbreviation, exact match. If types is provided, typeIds will be
+  ignored"; also `status`, `endDateStart`, `endDateEnd`, `page`, `perPage`, `isLightweight` (webfetch of swagger).
+  Status values include `ACTIVE`, `COMPLETED` and seven `CANCELLED_*` variants (webfetch).
+- **Page count lives in headers the capture did not store.** `src/common/helper.ts` (codesearch):
+  `res.set("X-Total", result.total);` / `res.set("X-Total-Pages", totalPages);`. So a bare-array body is expected;
+  `perPage=100` makes the array length the count whenever it is under 100.
+- **Side fact:** the `AI` track filter is a topic tag, not a policy: swagger `track` = "AI is a synthetic facet that
+  matches the exact canonical AI challenge tag." github.
+
+**Conclusion for B: the "no auto-scored challenges exist" kill reason is REFUTED at github grade.** The 27.9
+"leaning FAILS_TEST" rested on a snapshot that could not have seen an MM; it should not be carried forward.
+
+### C. AI-use and agent rules: none on GitHub
+
+Code search over `org:topcoder-platform` for `"AI-generated"`, `"use of AI"`, `"AI policy"` returned 0 hits, and over
+`platform-ui` for `"AI-assisted"` and `"AI tools" OR "AI assistance" OR "AI usage"` returned 0 hits. What exists is
+Topcoder's own AI reviewing members' work: `platform-ui/.../opportunity-learning.utils.ts` (codesearch) `/** Published
+guide to AI review behavior for challenge participants. */ export const AI_REVIEWERS_HELP_URL`, whose value in the spec
+is `'https://www.topcoder.com/thrive/articles/ai-reviewers-member-help-guide'`. No rule for or against AI-written
+submissions, bots or agent-operated accounts was found. **UNKNOWN (none).**
+
+### D. Terms attached to the 27.9 challenge: identified; one is a DocuSign NDA
+
+- `0a507fb7-3fe0-402b-b121-1a24af4a9cf1`: `platform-ui/src/config/environments/default.env.ts` (codesearch)
+  `export const DEFAULT_STANDARD_TERMS_UUID = '0a507fb7-3fe0-402b-b121-1a24af4a9cf1'`. github.
+- `4bc0e7fc-8413-4de6-a231-9f9c6bcc65d9`: `prod.env.ts` (codesearch) `export const NDA_TERMS_URL =
+  'https://www.topcoder.com/challenges/terms/detail/4bc0e7fc-8413-4de6-a231-9f9c6bcc65d9'` and `'DEFAULT_NDA_UUID',
+  '4bc0e7fc-8413-4de6-a231-9f9c6bcc65d9',`; the same file: `export const NDA_DOCUSIGN_TEMPLATE_ID = getReactEnv<string>(
+  'NDA_DOCUSIGN_TEMPLATE_ID', '8b101e82-87c0-42c9-8440-d922749c4076',)`. The prod general terms page is `export const
+  TERMS_URL = 'https://www.topcoder.com/challenges/terms/detail/564a981e-6840-4a5c-894e-d5ad22e9cd6f'`. github.
+- The terms service signs DocuSign-type terms through a template: `terms-service/src/services/TermsOfUseService.js`
+  (codesearch) `if (termsOfUse.agreeabilityTypeId === AGREE_FOR_DOCUSIGN_TEMPLATE) {`. Agreement is stored per user and
+  terms id (`TermsOfUse.hasMany(models.UserTermsOfUseXref, …)`, `src/models/TermsOfUse.js`), so one signature of the NDA
+  plausibly covers every later challenge that carries it (**inference, none**). A DocuSign NDA is signed in a legal
+  name: one owner step, not per item, if the inference holds. Whether MMs carry the NDA at all: **UNKNOWN**.
+
+### E. Payment: Trolley, with a mandatory identity check before any withdrawal (G2)
+
+- **Methods.** `tc-finance-api/README.md` (codesearch): "A comprehensive payment management system for Topcoder
+  platform, handling winnings, withdrawals, and payment processing through integration with Trolley payment provider."
+  and "**Payment Methods**: Support for multiple payment methods (Trolley, PayPal, Payoneer)". github.
+- **The payee onboards inside a Trolley widget that includes the identity product.** `trolley.service.ts`
+  (webfetch, quoted block): `products: 'pay,tax,trust',` alongside `refid: recipient.userId,` and `roEmail: 'true',`.
+  The wallet embeds it as an iframe: `title='Trolley'` (`platform-ui/src/apps/wallet/src/home/tabs/payout/PayoutTab.tsx`,
+  codesearch). github.
+- **No withdrawal without identity verification, tax form, payment method and an OTP.** `withdrawal.service.ts`
+  (codesearch + webfetch): `'Please complete identity verification before making a withdrawal.',` ·
+  `'Please complete your tax form before making a withdrawal.',` · `'Please add a payment method before making a
+  withdrawal.',` · `if (!otpCode) { const otpError = await this.otpService.generateOtpCode(userInfo,
+  reference_type.WITHDRAW_PAYMENT,);` · a floor `TROLLEY_MINIMUM_PAYMENT_AMOUNT` read from env (value not in source).
+  The identity check has no threshold or flag around it; `identity-verification.repo.ts` returns true only when an
+  ACTIVE verification record exists (webfetch, summarised). github.
+- **The OTP goes to the member's email.** `src/shared/global/otp.service.ts` (codesearch):
+  `async generateOtpCode(userInfo: BasicMemberInfo, actionType: reference_type) { const email = userInfo.email;`. So a
+  withdrawal needs a mailbox read every time: recurring owner action unless the agent reads the brand mailbox. github.
+- **What the identity record is.** `recipient-verification.types.ts` (webfetch, full file):
+  `export enum RecipientVerificationType { phone = 'phone', individual = 'individual', business = 'business', }`;
+  `VerifiedIdentityData` holds `dob`, `lastName`, `firstName`, `documentType`, `documentIssuingCountry`,
+  `documentValidUntil` and `matchSignals: { yobMatch: boolean; countryMatch: boolean; postalCodeMatch: boolean | null; }`.
+  The handler counts only `individual`/`business` ("Handling only individual/business status updates, ignoring phone
+  verification", full file). So a government ID document is required. github.
+- **Camera: yes, per Trolley's own help pages, at snippet grade.** The search summary of
+  support.trolley.com/s/article/Identity-Verification and trolley.com/trust: "Recipients are prompted to upload a clear
+  photo of their government-issued ID" and "**Live Selfie Verification**: Recipients take a live selfie to verify they
+  are the same person shown in the ID document"; "live photo validation uses the power of live image recognition to
+  ensure the uploaded ID matches the actual person submitting it." snippet.
+  **Counter-signal (github):** the webhook's `matchSignals` carry no face-match or liveness field, so the source cannot
+  confirm the selfie; it only confirms a document check. The render in §G settles which is true.
+- **Israel on Trolley's country list:** no GitHub file names countries; no Trolley country-list URL was seen.
+  **UNKNOWN (none).** Wipro accounts are barred from withdrawing (`isWiproEmail`), irrelevant here.
+
+### F. Submission route (G3)
+
+- Submissions are an API resource: `review-api-v6/docs/MANUAL_UPLOAD_FLOW.md` (codesearch) `Client->>ReviewAPI: POST
+  /submissions/manual-upload` "…the endpoint calls the standard `createSubmission(...)` path with a privileged flag."
+  The member-facing client lists them from `v6/submissions?challengeId=…&memberId=…&type=CONTEST_SUBMISSION`
+  (`opportunities.service.spec.ts`). MFA is per-user and off by default in fixtures (`mfa_enabled: input.mfa_enabled ===
+  undefined ? false : input.mfa_enabled`, identity-api-v6). github. Whether a runner can obtain a member token without a
+  browser login: **UNKNOWN**. Topcoder's own MCP server is read-only (`readOnlyHint: true`, "Query Topcoder Challenges",
+  tc-mcp). github.
+
+### Gates
+
+| Gate | Verdict | Grade | Basis |
+|---|---|---|---|
+| G1 ₪0 up front | **PASS** | github + rendered | No `entryFee` in challenge-api-v6 (0 hits); no fee field in the 27.9 record. Trolley/PayPal payee fees UNKNOWN. |
+| G2 paid in Israel, no camera | **FAIL** | github (gate) + snippet (camera) | Withdrawal throws without an ACTIVE identity verification; the widget loads `trust`; Trolley's IDV is ID photo + live selfie per its help pages (snippet). Israel on Trolley UNKNOWN. |
+| G3 list without per-item owner click; terms allow agents | **UNKNOWN** | github / none | Submission API exists; MM scoring is machine-only; headless member login UNKNOWN; no agent or AI clause found; DocuSign NDA plausibly once per member. |
+| G4 honest value, AI declared | **UNKNOWN** | none | No AI-use rule found on GitHub; render the MM how-to, AI-reviewers guide and terms. |
+| G5 venue brings buyers | **PASS** | rendered + github | Prizes are posted by the platform (27.9: USD 4,300 placements); MM tournament promoted in site nav. Only placing entries are paid; win rate unmeasured. |
+| G6 one owner step unlocks many | **PASS, conditional** | github | Account, Trolley pay/tax/trust and the NDA are one-time; the per-withdrawal OTP is emailed, so it is automatic only if the agent reads the brand mailbox (step 8). |
+| G7 brand is the only public name | **UNKNOWN** | none | Leaderboards show handles; legal name goes to Trolley and DocuSign. Whether a profile shows a real name: not read. |
+
+### Verdict: **KILL-PROPOSED** (on G2, not on auto-scoring)
+
+- The question this read was sent to settle comes out the other way: auto-scored challenges **do** exist and have a
+  live 2026 scorer (github, §B). Do not kill the row for "no auto-scored challenges".
+- The row fails the kill rule's camera clause instead: "or a camera step in payee onboarding" (BOARD-LOOP.md:169).
+  Topcoder will not release a withdrawal without Trolley identity verification (github), and Trolley's verification asks
+  for a live selfie (snippet). The proposal is graded by its weakest link, the snippet, so it goes to the board as
+  **proposed**, with one pre-registered check:
+  - **Confirm:** render https://support.trolley.com/s/article/Identity-Verification. If it shows a selfie or liveness
+    step that an individual recipient must complete, the kill stands and nothing else below needs rendering.
+  - **Reopen:** if the render shows the selfie is optional or payer-configurable (the webhook's missing face-match field
+    is the one hint of that), the row returns to NEEDS_MORE, and the MM history render below decides the ≥3-a-month
+    condition next.
+- Even if G2 were reopened, three more owner-facing costs are now on record (github): an OTP emailed on every
+  withdrawal, a DocuSign NDA in a legal name, and an ID document in a legal name.
+
+### G. Next render URLs (in order)
+
+*Seen verbatim in a source named above:*
+1. https://support.trolley.com/s/article/Identity-Verification (snippet result; decides the kill)
+2. https://support.trolley.com/s/article/Identity-Verification-FAQ (snippet result)
+3. https://trolley.com/trust/ (snippet result)
+4. https://www.topcoder.com/community/how-it-works/terms/ (`platform-ui` default.env.ts `TERMS_OF_USE`)
+5. https://www.topcoder.com/challenges/terms/detail/564a981e-6840-4a5c-894e-d5ad22e9cd6f (`prod.env.ts` `TERMS_URL`)
+6. https://www.topcoder.com/challenges/terms/detail/4bc0e7fc-8413-4de6-a231-9f9c6bcc65d9 (`prod.env.ts` `NDA_TERMS_URL`)
+7. https://www.topcoder.com/thrive/articles/How%20To%20Compete%20in%20a%20Marathon%20Match (`opportunity-learning.utils.ts`)
+8. https://www.topcoder.com/thrive/articles/ai-reviewers-member-help-guide (`ChallengeSidebar.spec.tsx`)
+
+*Constructed, not seen verbatim* (flagged for the `urls.txt` one-rule; host and base path from swagger `host:
+api.topcoder.com`, `basePath: /v6`; parameter names from the swagger; the web paths from `${TOPCODER_URL}` templates):
+9. https://api.topcoder.com/v6/challenges?type=MM&status=COMPLETED&endDateStart=2026-06-29T00:00:00.000Z&perPage=100&isLightweight=true (the 90-day MM count; only needed if the row is reopened)
+10. https://api.topcoder.com/v6/challenges?type=MM&status=ACTIVE&perPage=100&isLightweight=true
+11. https://www.topcoder.com/marathon-match-tournament (`opportunity-learning.utils.ts`: ``MARATHON_MATCH_TOURNAMENT_URL = `${EnvironmentConfig.TOPCODER_URL}/marathon-match-tournament` ``)
+12. https://www.topcoder.com/challenges/terms/detail/0a507fb7-3fe0-402b-b121-1a24af4a9cf1 (id from `DEFAULT_STANDARD_TERMS_UUID`, path pattern from item 6)
+
+No URL for Trolley's supported-country list was seen anywhere; the Israel question has no render target yet.
