@@ -36,20 +36,28 @@ COMMANDS
       inbox, possible replies per venue (as above, since that venue's first send), and accessibility-contact mail
       received, unanswered, unanswered for 7+ days, and the oldest unanswered one's age. No body, sender, address or
       subject is printed or written, ever. It also writes "responders": ["gumroad-refund"] - and [] otherwise - only
-      when this script has the respond-refunds command AND .github/workflows/brand-mail.yml runs it on a schedule
-      (a cron under `on: schedule:` and a `respond-refunds` job whose `if:` admits the schedule). il-biz-tools'
-      `enable` refuses without it: a refund window on the page is honest only while something answers the requests.
-  respond-refunds [--apply]
+      when this script has the respond-refunds command AND .github/workflows/brand-mail.yml runs it for real on a
+      schedule: a cron under `on: schedule:` and a `respond-refunds` job that is word for word the pinned one (its
+      `if:`, its environment, no `needs:`, no step `if:` but the main-ref guard's, and a respond step whose env and run
+      add --apply on the schedule; refund_job_runs_on_schedule). il-biz-tools' `enable` refuses without it: a refund
+      window on the page is honest only while something answers the requests.
+  respond-refunds [--apply] [--questions <file>] [--sent <file>]
       The Pro refund responder. A DRY RUN unless --apply (the schedule passes it; a manual dispatch does only when
       really_refund is ticked), and --apply runs only from refs/heads/main. Reads unanswered INBOX mail of the last
       REFUND_LOOKBACK_DAYS days (UID SEARCH NOT ANSWERED SINCE, FETCH BODY.PEEK[]: reading never sets \\Seen; a dry run
-      opens the inbox with EXAMINE) and acts on a message only when all of these hold:
-        - it is not the brand's own mail, not accessibility mail, not automated or list mail (Auto-Submitted,
-          Precedence bulk/list/junk, List-Id or List-Unsubscribe) and not from a no-reply, mailer-daemon or
-          gumroad.com address: an automatic answer to an automatic message is how mail loops start;
+      opens the inbox with EXAMINE) - and none at all while products/il-biz-tools/src/config/site.json has no
+      gumroad.productId: then nothing can have been sold, and it prints {"configured": false} and exits 0. It acts on
+      a message only when all of these hold:
+        - it is not the brand's own mail, not accessibility mail, not mail that may belong to a venue question's
+          thread (threaded to a sent.json message, from a venue's domain, or carrying a venue question's subject), not
+          automated or list mail (Auto-Submitted, Precedence bulk/list/junk, List-Id or List-Unsubscribe) and not from
+          a no-reply, mailer-daemon or gumroad.com address: an automatic answer to an automatic message is how mail
+          loops start;
         - the sender's own words - the subject, or the body above the quoted message ("> " lines and everything from
-          a reply header down; <blockquote> and Gmail's quote block in HTML-only mail) - name a refund or a
-          cancellation (REFUND_WORDS). A receipt reply that asks something else is not a refund request;
+          a reply header down; <blockquote> and Gmail's quote block in HTML-only mail) - ask for a refund, the money
+          back or the cancellation of the purchase, as whole words and phrases, never a bare verb (REFUND_REQUEST,
+          after NOT_A_REFUND_REQUEST - a tax, expense or customer refund, the policy, a refund the sender does not
+          want - is cut out). A receipt reply that asks something else is not a refund request;
         - the topmost Authentication-Results header - the one the receiving server prepends; anything below it came
           with the message and proves nothing - is the receiving server's own (authserv-id BRAND_MAIL_AUTHSERV_ID,
           default mx.google.com) and shows dkim=pass or spf=pass for a domain aligned with the one From address (the
@@ -64,7 +72,8 @@ COMMANDS
       UIDs and the command's own lines (sale ids and counts; any address redacted) - never an address, subject or body.
 
   All three exit 0 with {"configured": false, ...} while BRAND_MAIL_ADDRESS or BRAND_MAIL_APP_PASSWORD is unset (and
-  respond-refunds while GUMROAD_ACCESS_TOKEN is), so CI stays green before step 8 exists.
+  respond-refunds while GUMROAD_ACCESS_TOKEN or site.json's gumroad.productId is), so CI stays green before step 8
+  exists and before the Pro product does.
 
 WHICH MAIL IS READ
   Headers are parsed with the lenient compat32 parser: email.policy.default raises on some malformed address and
@@ -158,14 +167,46 @@ SPECIAL_USE = ("\\sent", "\\all", "\\junk")
 COMMANDS = ("send", "probe", "respond-refunds")
 WORKFLOW = os.path.join(REPO_ROOT, ".github", "workflows", "brand-mail.yml")
 PRODUCT_SCRIPT = os.path.join(REPO_ROOT, "products", "il-biz-tools", "scripts", "gumroad-pro-product.js")
+SITE_JSON = os.path.join(REPO_ROOT, "products", "il-biz-tools", "src", "config", "site.json")
 REFUND_RESPONDER = "gumroad-refund"
 DEFAULT_AUTHSERV_ID = "mx.google.com"
 REFUND_LOOKBACK_DAYS = 60
 MAX_REFUND_REQUESTS_PER_RUN = 20
 REFUND_COMMAND_TIMEOUT_SECONDS = 180
-# The sender's own words that make a message a refund request: a refund, the money back, or a cancellation ("ביטול
-# עסקה" is the consumer-law term). Matched in lower case.
-REFUND_WORDS = ("refund", "money back", "cancel", "החזר", "להחזיר", "תחזירו", "החזירו", "ביטול", "לבטל", "בטלו")
+# What makes a message a refund request: the sender's own words (own_words, lower case) name a refund, the money back
+# or the cancellation of the purchase itself ("ביטול עסקה" is the consumer-law term). Whole words and whole phrases,
+# never a bare verb: "איך להחזיר את הלוגו", "לבטל את צבע המותג", "cancel the logo on one invoice" and "the payment was
+# cancelled" ask for no refund, and a match here refunds a buyer inside the window (fixer review of 29.9, finding 1).
+# The product makes receipts and invoices, so a buyer's own bookkeeping names refunds too; NOT_A_REFUND_REQUEST is
+# cut out of the text first. A request these miss is left unanswered, never refunded unasked.
+HE = "א-ת"  # the Hebrew letters: a Hebrew word ends where none follows
+REFUND_REQUEST = (
+    re.compile(r"\brefund(?:s|ed|ing)?\b"),
+    re.compile(r"\bmoney[\s-]+back\b"),
+    re.compile(r"\bcancel(?:l?ed|l?ing|lation)?\s+(?:of\s+)?(?:my|the|this|our)\s+(?:purchase|order|payment)s?\b"),
+    # החזר as a word, with its prefixes (להחזר, ההחזר, וההחזר) - not החזרה or החזרים, and never inside להחזיר.
+    re.compile(r"(?<![%s])[ובלשה]{0,2}החזר(?![%s])" % (HE, HE)),
+    re.compile(r"(?<![%s])ה?כסף(?:\s+שלי)?\s+בחזרה(?![%s])" % (HE, HE)),
+    re.compile(r"(?<![%s])(?:להחזיר|תחזירו|החזירו|תחזיר|תחזירי|יחזירו)\s+(?:לי\s+|לנו\s+)?את\s+הכסף(?![%s])" % (HE, HE)),
+    re.compile(r"(?<![%s])ו?ה?ביטול\s+ה?(?:עסקה|רכישה|הזמנה)(?![%s])" % (HE, HE)),
+    re.compile(r"(?<![%s])ו?(?:לבטל|בטלו|תבטלו|תבטל|תבטלי)\s+(?:לי\s+)?(?:את\s+)?ה?(?:עסקה|רכישה|הזמנה)(?![%s])" % (HE, HE)),
+)
+NOT_A_REFUND_REQUEST = (
+    # Someone else's refund, or no request: a tax or expense refund, the policy or a document about refunds, a refund
+    # to the buyer's own customer, how to record one, the guarantee's name, and a refund the sender says they do not want.
+    re.compile(r"\b(?:tax|vat|income[\s-]+tax|expenses?)\s+refunds?\b"),
+    re.compile(r"\brefunds?\s+(?:policy|policies|period|window|terms|receipts?|invoices?|notes?|documents?|forms?)\b"),
+    re.compile(r"\b(?:receipts?|invoices?|credit\s+notes?)\s+(?:for|of)\s+(?:a\s+|the\s+)?refunds?\b"),
+    re.compile(r"\brefunds?\s+(?:to|for)\s+(?:my|a|an|the|our|his|her|their)\s+(?:customers?|clients?)\b"),
+    re.compile(r"\bhow\s+(?:do|can|should|would|to)\s+(?:i\s+|we\s+)?(?:issue|record|document|create|make|enter|add|show|write|register|log|process)\s+(?:a\s+|the\s+)?refunds?\b"),
+    re.compile(r"\bmoney[\s-]+back\s+guarantee\b"),
+    re.compile(r"\b(?:not|don['’]?t|do\s+not|never|no)\s+(?:(?:want|need|asking|ask|looking|requesting|request|expecting|expect|interested|seeking)\s+)?(?:(?:for|in)\s+)?(?:a\s+|any\s+)?refunds?\b"),
+    re.compile(r"(?<![%s])[ובלשה]{0,2}החזר\s+ה?(?:הוצאות|מס|מע\"מ|מע״מ|מעמ|נסיעות|הלוואה|הלוואות|חוב|חובות|ביטוח|דמי)(?![%s])" % (HE, HE)),
+    re.compile(r"(?<![%s])מדיניות\s+(?:ה)?החזר(?:ים|ות)?(?![%s])" % (HE, HE)),
+    re.compile(r"(?<![%s])(?:קבלה|קבלת|קבלות|חשבונית|חשבוניות|מסמך|זיכוי)\s+(?:על\s+|של\s+|ל)?ה?החזר(?![%s])" % (HE, HE)),
+    re.compile(r"(?<![%s])[ובלשה]{0,2}החזר\s+(?:ל|לה)?לקוח(?:ות|ה)?(?![%s])" % (HE, HE)),
+    re.compile(r"(?<![%s])(?:לא|בלי|ללא)\s+(?:(?:צריך|צריכה|רוצה|רוצים|מבקש|מבקשת|מבקשים|מעוניין|מעוניינת|מחפש|מחפשת)\s+)?[בל]?ה?החזר(?![%s])" % (HE, HE)),
+)
 # The whole answer. The same whatever the refund command found, so it never says whether this address bought
 # anything; it states the rule the responder applies, and that it is automatic.
 REFUND_REPLY = ("תשובה אוטומטית מ-Mehudak (מהודק): לפי מדיניות ההחזרים של Gumroad, רכישת Pro מהכתובת הזו בתוך "
@@ -818,12 +859,54 @@ def cmd_probe(args, env, out, now, imap_factory):
 # ---------------------------------------------------------------- the refund responder (RULING-2026-09-29-lines (h))
 
 
-def workflow_runs_on_schedule(text, job, script="scripts/brand_mail.py"):
-    """True when the workflow text has a cron under `on: schedule:` and a job named `job` that runs `script` and whose
-    job-level `if:` (if any) admits the schedule. Line-based on purpose: standard library only, and this workflow's
-    shape is pinned by src/__tests__/revenue/brand-mail-workflow.test.ts."""
-    lines = text.splitlines()
-    if "on:" not in lines or "jobs:" not in lines:
+# What brand-mail.yml's respond-refunds job must say, word for word, for the probe to report the responder in force.
+# Pinned, not pattern-matched: a job that still names the script but no longer applies anything on the schedule - a
+# job `if:` that is always false, a step `if:` that skips the respond step, a run without --apply, another command, an
+# environment without the secrets - runs green and answers no one, and enable would open the sale on it (fixer review
+# of 29.9, finding 2). A change to any of these lines needs the same change here; test_the_real_workflow_schedules_the_
+# responder fails until it is made. What is not pinned fails loudly instead (a step that exits 1 turns every run red).
+REFUND_JOB = "respond-refunds"
+REFUND_JOB_IF = "github.event_name == 'schedule' || inputs.command == 'respond-refunds'"
+REFUND_JOB_ENVIRONMENT = "brand-mailbox"
+REFUND_GUARD_IF = "github.event_name == 'workflow_dispatch' && inputs.really_refund"
+REFUND_STEP_ENV = (
+    "BRAND_MAIL_ADDRESS: ${{ secrets.BRAND_MAIL_ADDRESS }}",
+    "BRAND_MAIL_APP_PASSWORD: ${{ secrets.BRAND_MAIL_APP_PASSWORD }}",
+    "GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}",
+    "EVENT: ${{ github.event_name }}",
+    "REALLY_REFUND: ${{ inputs.really_refund }}",
+)
+REFUND_STEP_RUN = (
+    "set -euo pipefail",
+    "ARGS=(respond-refunds)",
+    'if [ "${EVENT:-}" = "schedule" ] || [ "${REALLY_REFUND:-}" = "true" ]; then ARGS+=(--apply); fi',
+    'python scripts/brand_mail.py "${ARGS[@]}"',
+)
+
+
+def indent_of(line):
+    return len(line) - len(line.lstrip(" "))
+
+
+def yaml_lines(lines):
+    """Lines that carry YAML: no blank lines, no comment lines."""
+    return [line for line in lines if line.strip() and not line.lstrip().startswith("#")]
+
+
+def block_under(lines, key_at):
+    """The stripped lines nested under the key on lines[key_at] ("- key:" puts the key two columns right of the dash)."""
+    column = indent_of(lines[key_at]) + (2 if lines[key_at].lstrip().startswith("- ") else 0)
+    out = []
+    for line in lines[key_at + 1:]:
+        if indent_of(line) <= column:
+            break
+        out.append(line.strip())
+    return out
+
+
+def has_schedule(lines):
+    """A cron under the top-level `on: schedule:`."""
+    if "on:" not in lines:
         return False
     on_block = []
     for line in lines[lines.index("on:") + 1:]:
@@ -834,27 +917,70 @@ def workflow_runs_on_schedule(text, job, script="scripts/brand_mail.py"):
         at = [line.strip() for line in on_block].index("schedule:")
     except ValueError:
         return False
-    indent = len(on_block[at]) - len(on_block[at].lstrip())
-    cron = False
     for line in on_block[at + 1:]:
-        if line.strip() and len(line) - len(line.lstrip()) <= indent:
+        if indent_of(line) <= indent_of(on_block[at]):
             break
-        cron = cron or bool(re.match(r"^\s+- cron:\s*[\"']?[0-9*]", line))
-    if not cron:
+        if re.match(r"^\s+- cron:\s*[\"']?[0-9*]", line):
+            return True
+    return False
+
+
+def refund_job_runs_on_schedule(text):
+    """True only when brand-mail.yml has a cron and its respond-refunds job is exactly the pinned one: the job `if:`
+    REFUND_JOB_IF, the environment holding the secrets, no `needs:` (a skipped dependency skips the job), no step `if:`
+    but the main-ref guard's, and one step that runs brand_mail.py - with no `if:` of its own, the pinned env (the
+    secrets, the event) and the pinned run, which adds --apply on the schedule. Line-based on purpose: standard library
+    only; the same shape is pinned from the other side by src/__tests__/revenue/brand-mail-workflow.test.ts."""
+    lines = yaml_lines(text.splitlines())
+    if not has_schedule(lines) or "jobs:" not in lines:
         return False
     body, inside = [], False
     for line in lines[lines.index("jobs:") + 1:]:
-        if re.match(r"^  [A-Za-z0-9_-]+:\s*$", line):
-            inside = line.strip() == "%s:" % job
-            continue
-        if line and not line.startswith(" "):
+        if not line.startswith(" "):
             break
+        if re.match(r"^  [A-Za-z0-9_-]+:\s*$", line):
+            inside = line.strip() == "%s:" % REFUND_JOB
+            continue
         if inside:
             body.append(line)
-    if not any(script in line for line in body):
+    job = {}  # a key twice (two jobs of this name, say) is refused below
+    for line in body:
+        m = re.match(r"^    ([A-Za-z_-]+):\s*(.*)$", line)
+        if m:
+            if m.group(1) in job:
+                return False
+            job[m.group(1)] = m.group(2).strip()
+    if job.get("if") != REFUND_JOB_IF or job.get("environment") != REFUND_JOB_ENVIRONMENT or "needs" in job or "steps" not in job:
         return False
-    guards = [line.split("if:", 1)[1] for line in body if re.match(r"^    if:", line)]
-    return not guards or "github.event_name == 'schedule'" in guards[0]
+    steps, at = [], [i for i, line in enumerate(body) if line.startswith("    steps:")][0]
+    for line in body[at + 1:]:
+        if indent_of(line) <= 4:
+            break
+        if line.startswith("      - "):
+            steps.append([line])
+        elif steps:
+            steps[-1].append(line)
+        else:
+            return False
+    respond = [st for st in steps if any("scripts/brand_mail.py" in line for line in st)]
+    if len(respond) != 1:
+        return False
+    for st in steps:
+        ifs = [line.split("if:", 1)[1].strip() for line in st if re.match(r"^      (- |  )if:", line)]
+        if st is respond[0] and ifs:
+            return False
+        if any(value != REFUND_GUARD_IF for value in ifs):
+            return False
+    (st,) = respond
+    keys = {}
+    for i, line in enumerate(st):
+        m = re.match(r"^      (?:- |  )([A-Za-z_-]+):\s*(.*)$", line)
+        if m:
+            keys[m.group(1)] = i
+    if "env" not in keys or "run" not in keys or st[keys["run"]].split("run:", 1)[1].strip() != "|":
+        return False
+    return (sorted(block_under(st, keys["env"])) == sorted(REFUND_STEP_ENV)
+            and tuple(block_under(st, keys["run"])) == REFUND_STEP_RUN)
 
 
 def refund_responder_scheduled(workflow_path=None):
@@ -866,7 +992,7 @@ def refund_responder_scheduled(workflow_path=None):
             text = f.read()
     except OSError:
         return False
-    return workflow_runs_on_schedule(text, "respond-refunds")
+    return refund_job_runs_on_schedule(text)
 
 
 def responders_in_force():
@@ -982,12 +1108,40 @@ def own_words(msg):
     return (decoded(msg, "Subject") + "\n" + "\n".join(kept)).lower()
 
 
+def asks_for_refund(words):
+    """True when these words (lower case) ask for a refund: a REFUND_REQUEST phrase outside every NOT_A_REFUND_REQUEST."""
+    for pattern in NOT_A_REFUND_REQUEST:
+        words = pattern.sub(" ", words)
+    return any(pattern.search(words) for pattern in REFUND_REQUEST)
+
+
 def names_refund(msg):
     try:
-        words = own_words(msg)
+        return asks_for_refund(own_words(msg))
     except Exception:  # noqa: BLE001 - a body that cannot be read asks for nothing
         return False
-    return any(word in words for word in REFUND_WORDS)
+
+
+def in_venue_thread(msg, questions, sent):
+    """True for mail that may belong to a venue's thread: threaded to a message sent.json records, from a venue's domain
+    (or a subdomain of it), or carrying a venue question's subject - may_be_venue_reply's test, at any date. A venue
+    that writes "refund" or "cancel" is answering our question, not buying: it never gets the refund answer, and its
+    mail is never marked answered. Unreadable counts as yes."""
+    ids = {}
+    for r in sent.get("sent", []):
+        if r.get("messageId"):
+            ids.setdefault(r.get("venue"), set()).add(r["messageId"])
+    for venue in questions.get("venues", []):
+        if may_be_venue_reply(None, msg, venue, ids.get(venue.get("venue"), set()), None):
+            return True
+    return False
+
+
+def pro_product_id(path=None):
+    """site.json's gumroad.productId, stripped: "" while there is none. Raises OSError or ValueError when unreadable."""
+    site = load_json(path or SITE_JSON)
+    gumroad = site.get("gumroad") if isinstance(site, dict) else None
+    return str((gumroad or {}).get("productId") or "").strip()
 
 
 def node_refund_runner(sender, requested_at, apply, env):
@@ -1067,6 +1221,17 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
         return done(out, {"configured": False, "missing": ["GUMROAD_ACCESS_TOKEN"]}, 0)
     if args.apply and env.get("GITHUB_REF") != MAIN_REF:
         raise Refused("a real refund run goes only from %s (the brand-mail workflow on main); run without --apply for a dry run." % MAIN_REF)
+    # No product id, no product: nothing can have been sold (enable needs a deployed productId), so there is nothing to
+    # refund and no mail is read. Without this, the refund command's "no productId" stop would fail every scheduled run
+    # from step 8 until the product exists, over any mail that names a refund (fixer review of 29.9, finding 5).
+    try:
+        product = pro_product_id()
+        sent = load_json(args.sent)
+        questions = load_json(args.questions)
+    except (OSError, ValueError) as exc:
+        return done(out, {"configured": True, "error": "unreadable repository file (%s)" % type(exc).__name__}, 1)
+    if not product:
+        return done(out, {"configured": False, "missing": ["gumroad.productId"]}, 0)
     authserv = env.get("BRAND_MAIL_AUTHSERV_ID") or DEFAULT_AUTHSERV_ID
     report = {"configured": True, "dryRun": not args.apply, "requests": 0, "unauthenticated": 0, "left": 0, "handled": []}
     failed = False
@@ -1090,6 +1255,8 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
             uid = uid.decode("ascii")
             received, msg = fetch_whole(imap, uid)
             if msg is None or is_own(msg, cfg["address"], set()) or is_accessibility_mail(msg) or not names_refund(msg):
+                continue
+            if in_venue_thread(msg, questions, sent):
                 continue
             report["requests"] += 1
             sender = authenticated_sender(msg, authserv)
@@ -1168,6 +1335,8 @@ def parse_args(argv):
     sub = parser.add_subparsers(dest="command", required=True)
     refunds = sub.add_parser("respond-refunds")
     refunds.add_argument("--apply", action="store_true", help="refund and answer for real (default: dry run); main only")
+    refunds.add_argument("--questions", default=QUESTIONS)
+    refunds.add_argument("--sent", default=SENT)
     for name in ("send", "probe"):
         p = sub.add_parser(name)
         p.add_argument("--questions", default=QUESTIONS)

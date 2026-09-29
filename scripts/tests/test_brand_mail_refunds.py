@@ -38,6 +38,7 @@ BUYER = "buyer.one@example.org"
 VICTIM = "victim.two@example.net"
 ENV = {"BRAND_MAIL_ADDRESS": BRAND, "BRAND_MAIL_APP_PASSWORD": PASSWORD, "GUMROAD_ACCESS_TOKEN": TOKEN}
 MAIN = dict(ENV, GITHUB_REF="refs/heads/main")
+PRODUCT_ID = "32-nPAicqbLj8B_WswVlMw=="
 GOOD_AR = "mx.google.com; dkim=pass header.i=@example.org header.s=s1 header.b=abc; spf=pass (google.com: domain of %s designates 192.0.2.1 as permitted sender) smtp.mailfrom=%s; dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=example.org" % (BUYER, BUYER)
 FAIL_AR = "mx.google.com; dkim=none; spf=softfail (google.com: domain of transitioning x@example.net does not designate 192.0.2.9 as permitted sender) smtp.mailfrom=x@example.net; dmarc=fail (p=NONE) header.from=example.net"
 
@@ -162,9 +163,26 @@ class Runner:
         return self.code, list(self.lines)
 
 
+def write_json(directory, name, data):
+    path = os.path.join(directory, name)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False)
+    return path
+
+
 class RespondHarness(unittest.TestCase):
     def setUp(self):
         FakeIMAP.instances, FakeSMTP.instances, FakeSMTP.fail, FakeSMTP.fail_login = [], [], None, None
+        # The product exists (create --write-site-json ran): the repository's own site.json has no productId yet.
+        self.dir = tempfile.mkdtemp()
+        self.addCleanup(lambda: __import__("shutil").rmtree(self.dir, ignore_errors=True))
+        self.site(PRODUCT_ID)
+
+    def site(self, product_id):
+        path = write_json(self.dir, "site.json", {"gumroad": {"productId": product_id, "productUrl": ""}})
+        patcher = mock.patch.object(brand_mail, "SITE_JSON", path)
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def respond(self, inbox, *flags, env=None, runner=None, smtp=FakeSMTP):
         out, err = io.StringIO(), io.StringIO()
@@ -208,6 +226,44 @@ class NotConfiguredTests(RespondHarness):
         code, out, err, runner = self.respond([mail()], env=dict(MAIN, BRAND_MAIL_ADDRESS="someone@example.org"))
         self.assertEqual(code, 2)
         self.assertEqual(runner.calls, [])
+
+
+class ProductNotCreatedTests(RespondHarness):
+    """Before create --write-site-json, site.json has no productId: nothing can have been sold (enable needs a deployed
+    productId), so the responder reads no mail and exits 0 - never a red scheduled run over a refund request that no
+    sale can match (fixer review of 29.9, finding 5)."""
+
+    def test_without_a_product_id_it_reads_nothing_and_exits_0(self):
+        for product_id in ("", "   ", None):
+            self.site(product_id)
+            FakeIMAP.instances = []
+            out, err = io.StringIO(), io.StringIO()
+            code = brand_mail.main(["respond-refunds", "--apply"], env=MAIN, stdout=out, stderr=err, now=NOW,
+                                   smtp_factory=refuse, imap_factory=refuse, refund_runner=refuse)
+            self.assertEqual(code, 0, err.getvalue())
+            self.assertEqual(json.loads(out.getvalue()), {"configured": False, "missing": ["gumroad.productId"]})
+
+    def test_a_site_json_without_a_gumroad_block_is_no_product_either(self):
+        path = write_json(self.dir, "bare.json", {"siteName": "x"})
+        with mock.patch.object(brand_mail, "SITE_JSON", path):
+            out = io.StringIO()
+            code = brand_mail.main(["respond-refunds"], env=MAIN, stdout=out, stderr=io.StringIO(), now=NOW,
+                                   smtp_factory=refuse, imap_factory=refuse, refund_runner=refuse)
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(out.getvalue())["missing"], ["gumroad.productId"])
+
+    def test_an_unreadable_site_json_fails_the_run_without_reading_mail(self):
+        with open(os.path.join(self.dir, "broken.json"), "w") as f:
+            f.write("{not json")
+        for path in (os.path.join(self.dir, "broken.json"), os.path.join(self.dir, "absent.json")):
+            with mock.patch.object(brand_mail, "SITE_JSON", path):
+                out = io.StringIO()
+                code = brand_mail.main(["respond-refunds", "--apply"], env=MAIN, stdout=out, stderr=io.StringIO(), now=NOW,
+                                       smtp_factory=refuse, imap_factory=refuse, refund_runner=refuse)
+            self.assertEqual(code, 1, path)
+            report = json.loads(out.getvalue())
+            self.assertTrue(report["configured"])
+            self.assertIn("error", report)
 
 
 class DryRunTests(RespondHarness):
@@ -381,6 +437,47 @@ class RecognitionTests(RespondHarness):
         self.assertTrue(self.handled(mail(body="hi", subject="Refund request")), "subject")
         self.assertTrue(self.handled(mail(body="אני מבקש החזר", charset_b64=True)), "base64 Hebrew")
 
+    def test_more_ways_of_asking_are_requests(self):
+        for words in ("Refund please", "Can you refund me?", "How do I get a refund?", "It does not work, so refund me.",
+                      "Per your refund policy, I want a refund.", "Cancellation of my order, please.", "Money-back please",
+                      "אני רוצה החזר", "אפשר לקבל החזר?", "בקשה להחזר", "אני רוצה את הכסף בחזרה", "ביטול הרכישה",
+                      "תבטלו לי את העסקה", "אפשר לבטל את ההזמנה?", "מגיע לי החזר מלא"):
+            self.assertTrue(brand_mail.asks_for_refund(words.lower()), words)
+
+    def test_a_support_question_that_uses_a_verb_or_a_bookkeeping_refund_is_not_a_request(self):
+        """Fixer review of 29.9, finding 1: each of the first six refunded a buyer inside the window who asked for nothing.
+        The rest are the product's own domain - receipts, invoices, VAT - or a refund the sender says they do not want."""
+        for body in (
+            "הלוגו נעלם מהקבלה, איך להחזיר אותו?",
+            "איך לבטל את צבע המותג במסמך אחד?",
+            "תחזירו לי את הצבע הקודם",
+            "How do I cancel the logo on a single invoice?",
+            "My bank says the payment was cancelled… I want to keep Pro",
+            "אפשר להפיק קבלה על החזר הוצאות?",
+            "What is your refund policy?",
+            "How do I issue a refund to my client?",
+            "How do I record refunds for my customers?",
+            "Can the invoice show a VAT refund?",
+            "Does Pro come with a money-back guarantee?",
+            "I'm not asking for a refund, just help with activation.",
+            "I don’t want a refund.",
+            "איך מפיקים קבלה על החזר ללקוח?",
+            "איך רושמים החזר מס בדוח?",
+            "מה עם החזר מע\"מ?",
+            "מה מדיניות ההחזרים?",
+            "אני לא מבקש החזר, רק עזרה בהפעלה",
+            "איך מבטלים חשבונית?",
+            "החזרה של מוצר ללקוח - איך רושמים?",
+            "I need an invoice for a refund.",
+            "The report should list refunds to my customers.",
+            "How do I issue a refund in the app?",
+            "מה מדיניות ההחזר שלכם?",
+            "איך מוציאים קבלה על החזר?",
+            "איך רושמים החזר ללקוחה?",
+        ):
+            self.assertFalse(brand_mail.asks_for_refund(body.lower()), body)
+            self.assertFalse(self.handled(mail(body=body, subject="Re: You bought Pro")), body)
+
     def test_a_receipt_reply_without_such_words_is_not_a_refund_request(self):
         self.assertFalse(self.handled(mail(body="How do I activate the key?")))
 
@@ -414,6 +511,39 @@ class RecognitionTests(RespondHarness):
     def test_mail_from_the_brand_itself_and_accessibility_mail_are_left_alone(self):
         self.assertFalse(self.handled(mail(sender=BRAND, body="refund", auth=(GOOD_AR.replace(BUYER, BRAND).replace("example.org", "brand.example"),))))
         self.assertFalse(self.handled(mail(subject="נגישות והחזר", body="refund")))
+
+    def venue_files(self, sent_records):
+        questions = write_json(self.dir, "questions.json", {"venues": [
+            {"venue": "displate", "to": "artists@displate.com", "subject": "Question: an artist shop run by an AI agent"},
+            {"venue": "n8n", "to": None, "subject": "Question: paid templates from an AI-operated creator account"},
+        ]})
+        sent = write_json(self.dir, "sent.json", {"sent": sent_records, "repliesRecorded": []})
+        return ["--questions", questions, "--sent", sent]
+
+    def test_a_venue_answering_our_question_never_gets_the_refund_answer(self):
+        """Fixer review of 29.9, finding 1: a venue that writes "refund" is answering us, not buying; it is neither
+        refunded, answered nor marked answered, so the probe still counts its reply."""
+        record = {"venue": "displate", "messageId": "<q-1@brand.example>", "sentAt": "2026-10-01T09:00:00Z", "status": "sent"}
+        files = self.venue_files([record])
+        helpdesk = "agent@help.example.com"
+        helpdesk_ar = (GOOD_AR.replace(BUYER, helpdesk).replace("example.org", "help.example.com"),)
+        displate = "team@support.displate.com"
+        displate_ar = (GOOD_AR.replace(BUYER, displate).replace("example.org", "support.displate.com"),)
+        for message, why in (
+            (mail(sender=helpdesk, auth=helpdesk_ar, body="We do not offer refunds on artist payouts.",
+                  extra=(("References", "<q-1@brand.example>"),)), "threaded to our question"),
+            (mail(sender=displate, auth=displate_ar, body="Please cancel the order of this design, a refund follows."), "the venue's domain"),
+            (mail(subject="[Ticket 88] Re: Question: paid templates from an AI-operated creator account", body="refund policy aside, a refund"), "our subject"),
+        ):
+            FakeSMTP.instances = []
+            code, out, err, runner = self.respond([message], "--apply", *files)
+            self.assertEqual(code, 0, err)
+            self.assertEqual(runner.calls, [], why)
+            self.assertEqual(self.replies(), [], why)
+            self.assertEqual(FakeIMAP.instances[-1].stores, [], why)
+        # A buyer's own request in the same run is still handled.
+        code, out, err, runner = self.respond([mail()], "--apply", *files)
+        self.assertEqual(len(runner.calls), 1)
 
     def test_only_recent_unanswered_inbox_mail_is_searched(self):
         self.respond([mail()], "--apply")
@@ -467,6 +597,10 @@ class RefundRunnerTests(unittest.TestCase):
             code, lines = brand_mail.node_refund_runner(BUYER, NOW, True, MAIN)
         self.assertNotEqual(code, 0)
 
+    def test_the_site_json_is_the_one_the_refund_command_reads(self):
+        self.assertEqual(brand_mail.SITE_JSON, os.path.join(REPO_ROOT, "products", "il-biz-tools", "src", "config", "site.json"))
+        self.assertIsInstance(brand_mail.pro_product_id(), str)
+
     def test_the_product_script_is_the_il_biz_tools_one(self):
         self.assertEqual(brand_mail.PRODUCT_SCRIPT, os.path.join(REPO_ROOT, "products", "il-biz-tools", "scripts", "gumroad-pro-product.js"))
         self.assertTrue(os.path.isfile(brand_mail.PRODUCT_SCRIPT))
@@ -486,21 +620,59 @@ class ProbeRespondersTests(unittest.TestCase):
         self.assertTrue(brand_mail.refund_responder_scheduled())
         self.assertEqual(brand_mail.responders_in_force(), ["gumroad-refund"])
 
-    SCHEDULED = (
-        "on:\n  schedule:\n    - cron: \"17 5,17 * * *\"\n  workflow_dispatch:\n\njobs:\n"
-        "  respond-refunds:\n    if: github.event_name == 'schedule' || inputs.command == 'respond-refunds'\n"
-        "    steps:\n      - run: python scripts/brand_mail.py \"${ARGS[@]}\"\n"
-    )
+    REAL = open(brand_mail.WORKFLOW, encoding="utf-8").read()
+    JOB_IF = "    if: github.event_name == 'schedule' || inputs.command == 'respond-refunds'\n"
+    RESPOND = "      - name: Respond to refund requests (a dry run unless scheduled or really_refund)\n"
+    GUARD_IF = "        if: github.event_name == 'workflow_dispatch' && inputs.really_refund\n"
 
-    def test_a_workflow_without_a_schedule_or_without_the_job_on_it_means_none(self):
-        self.assertTrue(brand_mail.refund_responder_scheduled(self.workflow(self.SCHEDULED)))
-        no_schedule = self.SCHEDULED.replace("  schedule:\n    - cron: \"17 5,17 * * *\"\n", "")
-        not_on_schedule = self.SCHEDULED.replace("github.event_name == 'schedule' || ", "")
-        no_job = self.SCHEDULED.replace("respond-refunds:", "something-else:")
-        no_script = self.SCHEDULED.replace("scripts/brand_mail.py", "scripts/other.py")
-        for text in (no_schedule, not_on_schedule, no_job, no_script, ""):
-            self.assertFalse(brand_mail.refund_responder_scheduled(self.workflow(text)), text)
+    def edited(self, old, new, after=None):
+        """The real workflow with `old` replaced once - in the part from `after` on, when given."""
+        at = self.REAL.index(after) if after else 0
+        head, tail = self.REAL[:at], self.REAL[at:]
+        self.assertEqual(tail.count(old), 1, old)
+        return head + tail.replace(old, new)
+
+    def scheduled(self, text):
+        return brand_mail.refund_responder_scheduled(self.workflow(text))
+
+    def test_the_pinned_lines_are_the_workflows_own(self):
+        for line in (self.JOB_IF, self.RESPOND, self.GUARD_IF):
+            self.assertEqual(self.REAL.count(line), 1, line)
+        self.assertTrue(self.scheduled(self.REAL))
+
+    def test_a_job_that_no_longer_refunds_on_the_schedule_means_none(self):
+        """Fixer review of 29.9, finding 2: each of these runs green and answers no one."""
+        cases = {
+            "job if always false": self.edited(self.JOB_IF, self.JOB_IF.replace("'respond-refunds'", "'respond-refunds' && false")),
+            "job if schedule and false": self.edited(self.JOB_IF, "    if: github.event_name == 'schedule' && false\n"),
+            "no --apply on the schedule": self.edited("then ARGS+=(--apply); fi", "then :; fi"),
+            "probe instead": self.edited("ARGS=(respond-refunds)", "ARGS=(probe)"),
+            "a step if skipping the respond step": self.edited(self.RESPOND, self.RESPOND + "        if: github.event_name != 'schedule'\n"),
+            "the guard's if on the respond step": self.edited(self.RESPOND, self.RESPOND + self.GUARD_IF),
+            "the guard's if loosened": self.edited(self.GUARD_IF, "        if: always()\n"),
+            "a dependency that is skipped": self.edited(self.JOB_IF, self.JOB_IF + "    needs: send\n"),
+            "an environment without the secrets": self.edited("    environment: brand-mailbox\n", "    environment: brand-mailbox-old\n", after=self.JOB_IF),
+            "no Gumroad token": self.edited("          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}\n", ""),
+            "no mailbox password": self.edited("          BRAND_MAIL_APP_PASSWORD: ${{ secrets.BRAND_MAIL_APP_PASSWORD }}\n", "", after=self.RESPOND),
+            "no event": self.edited("          EVENT: ${{ github.event_name }}\n", "", after=self.RESPOND),
+            "the script only echoed": self.edited('          python scripts/brand_mail.py "${ARGS[@]}"', '          echo python scripts/brand_mail.py "${ARGS[@]}"', after=self.RESPOND),
+            "an exit before the call": self.edited("          ARGS=(respond-refunds)\n", "          ARGS=(respond-refunds)\n          exit 0\n"),
+            "no schedule": self.edited('    - cron: "17 5,17 * * *"\n', ""),
+            "the job renamed": self.edited("  respond-refunds:\n", "  respond-refunds-off:\n"),
+            "empty": "",
+        }
+        self.assertNotIn(self.REAL, cases.values())
+        for why, text in cases.items():
+            self.assertFalse(self.scheduled(text), why)
         self.assertFalse(brand_mail.refund_responder_scheduled(os.path.join(tempfile.gettempdir(), "absent-workflow.yml")))
+
+    def test_comments_blank_lines_and_the_order_of_the_env_do_not_matter(self):
+        commented = self.edited(self.RESPOND, "      # a note\n\n" + self.RESPOND)
+        reordered = self.edited("          EVENT: ${{ github.event_name }}\n          REALLY_REFUND: ${{ inputs.really_refund }}\n",
+                                "          REALLY_REFUND: ${{ inputs.really_refund }}\n          EVENT: ${{ github.event_name }}\n",
+                                after=self.RESPOND)
+        for text in (commented, reordered):
+            self.assertTrue(self.scheduled(text))
 
     def test_without_the_command_in_this_script_there_is_no_responder(self):
         with mock.patch.object(brand_mail, "COMMANDS", ("send", "probe")):

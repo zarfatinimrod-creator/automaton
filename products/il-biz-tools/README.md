@@ -627,9 +627,12 @@ period is a number.
 
 Requests are answered by the brand-mail responder, never by the owner: `python3 scripts/brand_mail.py
 respond-refunds` (run by `.github/workflows/brand-mail.yml`, scheduled with the probe; inert until step 8's secrets
-exist) reads the brand mailbox, acts only on mail whose own receiving server's `Authentication-Results` show DKIM or
-SPF passing for the sender's From domain, and only when the sender's own words (subject, or body above the quoted
-receipt) ask for a refund or a cancellation; it calls `refund --email <sender> --requested-at <received>` and
+exist, and reads no mail while `site.json` has no `productId`, since nothing can have been sold) reads the brand
+mailbox, acts only on mail whose own receiving server's `Authentication-Results` show DKIM or SPF passing for the
+sender's From domain, never on mail in a venue question's thread, and only when the sender's own words (subject, or
+body above the quoted receipt) ask for a refund, the money back or the cancellation of the purchase — whole words
+and phrases, never a bare verb such as "לבטל" or "להחזיר", and not a tax, expense or customer refund the buyer's
+own bookkeeping names; it calls `refund --email <sender> --requested-at <received>` and
 answers with one fixed sentence that does not say whether the address bought anything. `refund` reads
 `GET /v2/sales?email=&product_id=`, keeps only sales of this product whose buyer address is exactly the sender,
 not already refunded, charged back or disputed, and inside the window in force measured at the request, and

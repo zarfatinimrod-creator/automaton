@@ -364,6 +364,12 @@ describe('refunds: a bounded window of at least 14 days, read back, or nothing i
       [ownPolicy('30.5'), thirty],
       [ownPolicy(''), thirty],
       [ownPolicy(30), thirty],
+      // A missing period is not Gumroad's 30-day default: the default is what a new account opens with, and a
+      // policy block without a period is simply unread (fixer review of 29.9, finding 4).
+      [ownPolicy(null), thirty],
+      [{ refund_policy: inherits }, accountPolicy(null)],
+      [{ refund_policy: { refund_period: undefined, inherited: false } }, thirty],
+      [{ refund_policy: inherits }, { ...thirty, refund_period: undefined }],
     ]) {
       const out = refundPolicyGate(product, account);
       expect(out.ok, JSON.stringify(product)).toBe(false);
@@ -975,5 +981,15 @@ describe('the workflows hand the script what it compares', () => {
     expect(step).toContain('GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}');
     expect(step).toContain('BRAND_MAIL_ADDRESS: ${{ secrets.BRAND_MAIL_ADDRESS }}');
     expect(yml).toMatch(/permissions:\s*\n\s*contents: read/);
+  });
+
+  it('the workflows describe the refund gate that runs: a window of 14 days or more, never "no refunds" (RULING-2026-09-29-lines (h))', () => {
+    // Comments joined across lines, so a phrase split over two lines is still found (fixer review of 29.9, finding 3).
+    for (const name of ['gumroad-pro-product.yml', 'gumroad-pro-probe.yml']) {
+      const comments = workflow(name).split('\n').filter((l) => l.trimStart().startsWith('#')).map((l) => l.replace(/^\s*#\s?/, '')).join(' ').replace(/\s+/g, ' ');
+      expect(comments, name).not.toMatch(/no refunds allowed|no refund is promised|refund promise waits/i);
+      expect(comments, name).toMatch(/at least 14 days/);
+      expect(comments, name).toMatch(/refundPeriodDays/);
+    }
   });
 });

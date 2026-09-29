@@ -109,6 +109,17 @@ describe("brand-mail.yml — what it is allowed to do", () => {
     expect(JSON.stringify(steps("respond-refunds"))).not.toMatch(/git (commit|push)/);
   });
 
+  it("nothing skips the respond step on the schedule: no job dependency, and no step condition but the main-ref guard's", () => {
+    // The probe vouches for the responder by these same lines (scripts/brand_mail.py refund_job_runs_on_schedule);
+    // a condition here would leave every scheduled run green with nobody answered (fixer review of 29.9, finding 2).
+    const job = wf().jobs["respond-refunds"];
+    expect(job.needs).toBeUndefined();
+    expect(job.environment).toBe("brand-mailbox");
+    expect(stepNamed("respond-refunds", "Respond to refund requests").if).toBeUndefined();
+    const conditions = steps("respond-refunds").filter((s) => s.if !== undefined).map((s) => [s.name, s.if]);
+    expect(conditions).toEqual([["Refuse a real refund run from any ref but main", "github.event_name == 'workflow_dispatch' && inputs.really_refund"]]);
+  });
+
   it("the responder has Node for the product's refund command", () => {
     const node = steps("respond-refunds").find((s) => s.uses?.startsWith("actions/setup-node"));
     expect((node as { with?: Record<string, unknown> }).with?.["node-version"]).toBe(22);

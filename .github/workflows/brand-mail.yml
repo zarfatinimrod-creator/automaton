@@ -33,7 +33,13 @@ name: brand-mail
 # step and the script check the ref again. Dispatch from main, dry runs included.
 #
 # Before step 8 the two secrets do not exist and every command prints {"configured": false}
-# and exits 0: nothing is read, nothing is sent or refunded, the run is green.
+# and exits 0: nothing is read, nothing is sent or refunded, the run is green. respond-refunds
+# does the same while products/il-biz-tools/src/config/site.json has no gumroad.productId:
+# before the Pro product exists nothing can have been sold, so no mail is read.
+#
+# The probe reports the responder only while the respond-refunds job below is word for word
+# what scripts/brand_mail.py pins (REFUND_JOB_IF, REFUND_STEP_ENV, REFUND_STEP_RUN): change
+# that job and the same change goes there, or enable refuses to open the sale.
 #
 # THE SCHEDULE (twice a day) runs the probe and the refund responder, and stays
 # inert until step 8 exists: before it, a scheduled probe commits nothing (a dispatched one still records

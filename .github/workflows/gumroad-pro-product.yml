@@ -29,19 +29,22 @@ name: gumroad-pro-product
 #   3. Dispatch with action=enable (from main, where brand-mail.yml commits its
 #      probe). It refuses unless state/colony/brand-mail.json shows the brand
 #      mailbox of owner step 8 configured and green (read within two days, no
-#      accessibility mail unanswered for 7+ days): a buyer's reply, refund
-#      request or question goes to the email the Gumroad account was opened
-#      with, and the owner answers no one (MISSION rule 1). Then it checks the
-#      offer (the script's checkOffer): the DEPLOYED <siteUrl>/src/config/site.json
-#      carries the same id - so a buyer could actually activate the key they
-#      would receive - and the same price as the repo; Gumroad charges exactly
-#      that price, once; the account's own address (GET /v2/user) is the
-#      BRAND_MAIL_ADDRESS secret; and the refund policy buyers will see is "No
-#      refunds allowed" - Gumroad opens accounts with a 30-day guarantee, and a
-#      refund promise waits on A1 (research/tiktok/08-sales-marketing-lessons.md
-#      §8.2). Only then it enables. `create` is not gated: a draft reaches no buyer.
+#      accessibility mail unanswered for 7+ days) and lists the refund responder
+#      ("gumroad-refund" in responders: brand-mail.yml schedules respond-refunds):
+#      a buyer's reply, refund request or question goes to the email the Gumroad
+#      account was opened with, and the owner answers no one (MISSION rule 1).
+#      Then it checks the offer (the script's checkOffer): the DEPLOYED
+#      <siteUrl>/src/config/site.json carries the same id - so a buyer could
+#      actually activate the key they would receive - and the same price as the
+#      repo; Gumroad charges exactly that price, once; the account's own address
+#      (GET /v2/user) is the BRAND_MAIL_ADDRESS secret; the refund policy buyers
+#      will see is a bounded refund window of at least 14 days (Gumroad's 30-day
+#      default as it stands; "none" and 7 days are refused - RULING-2026-09-29-lines
+#      (h)); and the deployed page's refundPeriodDays is exactly the window Gumroad
+#      applies. Only then it enables. `create` is not gated: a draft reaches no buyer.
 #   4. Run gumroad-pro-probe.yml (AT-16). It also re-runs the offer checks
-#      (`check`), so a price edited in the Gumroad dashboard after enable shows up.
+#      (`check`), so a price or a refund period edited in the Gumroad dashboard
+#      after enable shows up.
 #   Paste the logs of 1, 3 and 4 into a follow-up section of the decision file.
 #
 # WHAT THE OWNER HAS TO DO: nothing new. GUMROAD_ACCESS_TOKEN is already step 6
