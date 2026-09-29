@@ -1,0 +1,712 @@
+Terms of Service - United States (US) - Trolley
+
+Skip to content
+
+Talk to Sales
+
+Log in
+
+Platform
+
+Global payouts & compliance
+
+Send payouts worldwide and comply with local regulations
+
+Platform
+Automate payouts and compliance workflows
+
+Pay
+Pay your recipients globally with flexible payout options
+
+Tax
+Stay compliant with IRS taxes and OECD global reporting
+
+Sync
+Connect Trolley with your ERP and automate the flow of data
+
+Trust
+Verify identity, maintain KYC, and build trust with your recipients
+
+Developer tools
+
+Embed payouts and compliance directly in your platform
+
+API, SDK, Widget
+Build customized workflows or use pre-packaged libraries
+
+Docs
+Explore Trolley’s API architecture and access code snippets
+
+App integrations
+Connect your favorite tools and keep all systems up-to date
+
+Status
+Check our platform’s current status
+
+Support
+
+Access resources to help you use Trolley to its full potential
+
+Help center
+Understand how to get started with and use the Trolley platform
+
+Payout coverage
+Explore the 210+ countries and regions Trolley sends payments to
+
+Platform security
+Learn how Trolley keeps your data secure
+
+Migration
+Add global payouts and local compliance to your platform
+
+Product updates
+See what’s new across payouts, compliance, and recipient experience
+
+Solutions
+
+For finance & AP teams Consolidate and automate all payouts workflows and tax processes
+
+For risk & compliance teams De-risk your platform and automate local compliance
+
+For product & engineering teams Get to market faster by embedding payouts and compliance into your platform
+
+For operations & support teams Streamline recipient workflows and reduce support queries
+
+IRS tax compliance
+Comply with the IRS for US-sourced payouts
+
+DAC7 tax compliance
+Automate tax compliance for EU-based sellers
+
+Digital platform reporting
+Meet OECD information reporting requirements globally
+
+Recipient onboarding & management
+Offer a best-in-class recipient experience
+
+Payout automation
+Scale payout operations with less work
+
+See how Trolley is raising the bar for payouts and recipient experience.
+
+Get notified →
+
+Recipient onboarding & management
+Offer a best-in-class recipient experience
+
+DSA compliance
+Verify sellers, collect data, and comply with the EU’s Digital Services Act
+
+Know Your Artist (KYA)
+Protect artists and stop fraudulent payouts before they happen
+
+INFORM compliance
+Onboard and verify sellers in compliance with the USA’s INFORM Consumers Act
+
+Risk & fraud management
+Build trust and safety on your marketplace or platform
+
+The wait is over—discover how Trolley is transforming payout and recipient operations.
+
+See what’s new →
+
+Recipient onboarding & management
+Offer a best-in-class recipient experience
+
+Payout automation
+Scale payout operations with less work
+
+DSA compliance
+Verify sellers, collect data, and comply with the EU’s Digital Services Act
+
+INFORM compliance
+Onboard and verify sellers in compliance with the USA’s INFORM Consumers Act
+
+IRS tax compliance
+Comply with the IRS for US-sourced payouts
+
+DAC7 tax compliance
+Automate tax compliance for EU-based sellers
+
+Digital platform reporting
+Meet OECD information reporting requirements globally
+
+Risk & fraud management
+Build trust and safety on your marketplace or platform
+
+The wait is over—discover how Trolley is transforming payout and recipient operations.
+
+See what’s new →
+
+Recipient onboarding & management
+Offer a best-in-class recipient experience
+
+DAC7 tax compliance
+Automate tax compliance for EU-based sellers
+
+IRS tax compliance
+Comply with the IRS for US-sourced payouts
+
+Digital platform reporting
+Meet OECD information reporting requirements globally
+
+The wait is over—discover how Trolley is transforming payout and recipient operations.
+
+See what’s new →
+
+Industries
+
+Music & streaming royalties
+Recording artists, singers, musicians, songwriters, producers, & rights holders
+
+Freelancer platforms & expert networks
+Freelancers, gig workers, consultants, experts, and contractors
+
+Ad networks & publishers
+Webmasters, content distribution networks & publishers, digital media companies
+
+P2P marketplace sellers
+Online retailers, artisans, crafters, makers, curators, consignors, & resellers
+
+Creator & influencer platforms
+Social influencers, social media mavens, thought leaders, & community builders
+
+Marketplaces
+Sellers, freelancers, creators, influencers, and gig workers
+
+Video games & eSports
+Esports tournament winners, video game streamers, & game content creators
+
+Affiliate platform partners
+Offer partner brands a streamlined & efficient affiliate payout system.
+
+Customer stories
+
+Discover how our customers pay contractors, stay compliant, and fight fraud using Trolley.
+
+Dig into real-world wins →
+
+Pricing
+
+Resources
+
+Blog
+The latest news, product updates, and ideas from the Trolley team
+
+Customer stories & testimonials
+Interviews and case studies demonstrating the ROI of adding Trolley
+
+About Trolley
+We're building the payouts platform for the internet economy
+
+Careers at Trolley
+Come work with Trolley. We're hiring!
+
+Learning center
+Educational articles and how-to guides on payouts, tax, and compliance topics
+
+Press
+Press releases and media coverage
+
+Contact Us
+Contact Trolley to learn more about our solutions
+
+Our Latest Blog
+
+Scaling Artist-First Royalty Operations: New Tomorrow Music Group Partners with Trolley
+
+Read the full article →
+
+Get a demo
+
+Start free trial
+
+LEGAL AGREEMENTS
+
+Terms of Service
+
+Table of Contents
+
+For companies registered in the United States .
+Last Updated: May 01, 2025
+1. Introduction, Acceptance, Definitions, and Modifications
+These Terms of Service (the “TOS”) apply to the proprietary software system (the “Platform”) that Trolley has developed to facilitate the making of payments to third party individuals or companies around the world (“Recipients”) and other related services we provide to you (“Services”), as more fully described below. We may make the Services available to you at https://www.trolley.com (the “Website”) or such other channel we designate from time to time. When you obtain Services from us, we may require you to agree to additional terms set forth in an order form or supplemental terms of service (“Order Form”). The Order Form is an additional set of terms entered into between you and Trolley or one of our affiliates, and is incorporated herein by reference. In the event of a conflict between the Order Form and any other provision of these TOS, the Order Form shall control.
+For the purpose of the TOS, unless otherwise specified, using our Services includes visiting the Website, even if you have not created or logged into your Trolley account. By using the Services, or by clicking the acceptance box upon signing up for an account, you agree to be bound by the terms of the present agreement, the TOS, without any reservations, modifications, additions or deletions. If you do not agree to all the provisions contained in the TOS, you are not authorized to use the Services.
+The Services may only be used by legally-constituted entities including but not limited to corporations, partnerships, and legal organizations (hereinafter “Legal Entities”). If you are an individual using the Services on behalf of a Legal Entity, you represent and warrant that you have the capacity and authority to enter into the TOS on behalf of the Legal Entity, and hereby agree to be bound by the terms of the TOS on behalf of that Legal Entity.
+The TOS are a legal and binding agreement between you and Trolley US Inc. (“Trolley”), a corporation located at 78 SW 7th Street, Miami, Florida 33130. Unless otherwise specified, references to “Trolley” in the TOS mean Trolley US Inc., its affiliates, and / or their respective shareholders, officers, directors, employees, agents, partners, principals, representatives, successors or assigns, depending on the context. Any reference to “we”, “our”, or “us” in these TOS means Trolley. A user of our Services, a person who enters into these TOS concerning their use of the Services, Website visitor or user, or the Legal Entity they represent (depending on the context), may be referred to as “you,” “your” or “Customer.” When a Customer has created an account and is logged in to the Services, they may be referred to as a “Logged-in User”.
+To the extent not prohibited by law, Trolley reserves the right, at any time and without prior notice, to modify or replace any of the TOS. We may post changes to the TOS, or an updated version of the TOS, to our Website or its subdomain. The TOS and other legal agreements concerning your use of the Services may generally be found on the Website at the URL: https://trolley.com/legal-agreements/. It is your responsibility to check the TOS periodically for changes. If we make any substantial changes to the TOS that materially affect your legal relationship with Trolley, we will use commercially reasonable efforts to notify you by sending a notice to the primary email address specified in your account or by posting a prominent notice when you log in to your account for the first time following those changes. Your continued use of the Services after we notify you of such changes to the TOS, or after we post the amended TOS to our Website, constitutes your acceptance of those changes.
+The TOS should be read in conjunction with the Privacy Policy , as both these documents govern your use of the Services. Where you are using the Services via the Trolley Application Programming Interface (“API”), you are also subject to the API Terms of Use .
+If you have any questions about the TOS, please contact:
+Trolley – Legal Team
+[email protected]
+or:
+Trolley – Legal Team
+1100 Atwater Avenue, Suite 4300
+Westmount, QC, H3Z 2Y4, Canada.
+
+2. General Code of Conduct for Use of the Services
+In addition to the more specific rules found later in these TOS, you agree that by using the Services, you will:
+(i) Not use the Services in any manner that in any way violates these TOS;
+(ii) Not use the Services in any manner that violates any intellectual property rights of any third party;
+(iii) Not use the Services other than for your own specific business use, on behalf of your Legal Entity, or for other Authorized Users (as defined below) on your account;
+(iv) Not use the Services in any manner to propagate spam, including but not limited to unsolicited advertising or bulk electronic mail or messages, including to link to a spam or phishing website;
+(v) Not use the Services in any manner to propagate software viruses, Trojan horses, worms, or any other malicious or non-malicious computer code, files, or programs that are designed or intended to disrupt, damage, limit or interfere with the proper function of any software, hardware, or telecommunications equipment in any form whether belonging to Trolley or a third party, or to damage or obtain unauthorized access to any system, data, password or other information (whether Personal Information or not) of Trolley, other Trolley users, or any other third party;
+(vi) Not: (1) take any action that imposes or may impose (as determined by Trolley in its sole discretion) an unreasonable or disproportionately large load on Trolley’s (or its third party providers’) infrastructures;
+(2) interfere or attempt to interfere with the proper functioning of the Services or any activities conducted on the Website;
+(3) bypass any measures Trolley may use to prevent or restrict access to the Services or any element thereof;
+(4) use manual or automated software, devices, or other processes to “crawl” or “spider” any page of the Website; or
+(5) harvest or scrape any content from the Website in an unreasonable manner; and;
+(vii) Use the Services in good faith, and in compliance with all applicable local, state, provincial, national, and international laws.
+You represent and warrant to Trolley at all times:
+You are an entity duly organized, validly existing and in good standing under the laws of the state of your organization, and have all requisite corporate power and authority to carry on its business as now conducted and as proposed to be conducted;
+
+All corporate action necessary for receiving the Services and the performance of all obligations under the TOS has been taken. The TOS will constitute a valid and legally binding obligation of you, enforceable against you in accordance with its terms;
+
+All information and instructions you provide to Trolley or on the Website, including all payment instructions, are true, correct, complete and up to date;
+
+For each transaction you submit through the Services, you have obtained all requisite consent from the Recipient to initiate the transaction to or from the Recipient’s account;
+
+In the event that you are a Trolley Pay customer, your account with the applicable Financial Services Provider is open, current and in good standing, and you will comply with the Provider Terms at all times; and
+
+Your activities and transactions through the Services comply with all applicable laws and regulations, and any payout transaction you request has resulted from a legitimate transaction between you and the relevant Recipient.
+
+3. User Accounts, Passwords and Logged-in Users
+In addition to your Primary Account, you may choose to add additional team members from your Legal Entity who shall be able to use the Services as part of your account, by submitting additional Account Information as described in the Privacy Policy. These individuals may be referred to in these TOS or the Privacy Policy as “Users”. “Users” are your employees, representatives, or agents authorized to access the Services through the Trolley Platform UI (Merchant Dashboard) and/or API . You shall be responsible for the rights and obligations under these TOS or the Privacy Policy of any User for whom you have created a User Account in this manner. Any violations of these TOS by a User whose account was created by you shall be your sole responsibility, and you shall be liable for any actions taken by Trolley subsequent to such a violation.
+In order to use the Services, you are required to create a “User Account”. “User accounts are free, and are available to any Users who provide the requisite information and are connected to a Legal Entity with an active Trolley subscription. The information required to create a user account is the following: a valid email address, and your full name. This information plus any additional non-mandatory information you submit as part of the sign-up process or at a subsequent time may be referred to in the present TOS or the Privacy Policy as “Account Information”.
+As part of the account registration process, Users will be required to provide a password. It is the User’s responsibility to create a password of sufficient strength that cannot easily be discovered by third parties.
+If you are a “Logged-in User” (a User who has created an account and is logged in to the Services), it is strongly suggested that you log out of your User Account at the end of every session, or not leave a logged-in account unattended for any period of time. Trolley, its affiliates, and their respective shareholders, officers, directors, employees, agents, partners, principals, representatives, successors and assigns (collectively “Representatives”), will not be held liable for any losses or damages, direct or indirect, pecuniary or non-pecuniary, resulting from a User’s failure secure their User Account or to log out at the end of the session, an unattended logged-in session, or a third party using the Services with the User Account information and accessing your UserAccount through any means, and disclaims any responsibility in this regard. Trolley recommends Users create strong passwords of at least 12-16 characters using a password manager, and that Users enable Multi-Factor Authentication (MFA) on User Accounts using either the Time-based One-Time Password (TOTP) or FIDO-based options provided.
+Trolley reserves the right to terminate your account, or the account of any User, at its sole discretion, at any time and for any reason, including but not limited to whether you (or the User, as applicable) have violated the letter or spirit of the TOS, as more further described herein below. If you receive services provided by any Financial Services Provider in connection with the Services, your account with such Financial Services Provider may be suspended, terminated or restricted at any time in accordance with the Provider Terms. If your account with such Financial Services Provider is terminated or suspended, or you violate the Provider Terms, Trolley may terminate, restrict, or suspend your Services under these TOS. You agree that Trolley will not be liable to you for such suspension, termination or restriction imposed by the Financial Services Provider.
+
+4. Use of the Services
+By using the Services, you agree to be bound by the terms of the present section, in addition to the terms found elsewhere in the TOS.
+a. Definition of the Services and the Role of Trolley
+The Services are a proprietary software system that Trolley has developed to orchestrate the processing of payments to Recipients (“Trolley Pay”), as well as additional related functionalities and services such as tax compliance (“Trolley Tax”), data integration (“Trolley Sync”) and risk management (“Trolley Trust”). In the United States, Trolley is not a bank or a money transmitter, and Trolley does not offer banking, custody or MSB services subject to applicable U.S. federal or state laws. To the extent the Services provide access to banking, custody or money transmission services, such services will be provided by one or more of Trolley’s Providers that are duly licensed financial institutions (“Financial Services Provider”). In addition, you acknowledge and agree that Trolley and the Financial Services Providers may each engage additional processors, agents, and service providers, from time to time, to facilitate the payout transactions to your Recipients. You authorize Trolley to (i) disclose all information you provide us to the Financial Services Providers to the extent necessary to complete the payout transactions requested by you, and (ii) execute all payment instructions on your behalf to instruct the Financial Services Provider to effectuate the transactions and Services that you or your agent requests, and is supported by the Financial Services Provider.
+b. Acceptance Process; Important Information About Procedures for Opening a New Account
+To help the government fight the funding of terrorism and money laundering activities, federal law requires financial institutions to obtain, verify, and record information that identifies each individual or entity that opens an account. What this means for you: When you open an account with us or any Financial Services Provider, we will ask for your name, address, date of birth, and other information that will allow us to identify you, the Legal Entity you represent, and the beneficial owners of the Legal Entity. We may also ask to see your driver’s license or other identifying documents for you, the Legal Entity, and its beneficial owners.
+In addition to having a Trolley account, you may be required to open an account with one or more of our Financial Services Providers, in order to use all or certain features of the Services in their entirety. To open an account with a Financial Services Provider, you must submit certain information about you, your Legal Entity, and financial information as more fully described in the Privacy Policy (hereinafter “Onboarding Information”). By submitting this Onboarding Information, you represent and warrant that: (i) all the Onboarding Information you submit is truthful and accurate, to the best your knowledge;
+and (ii) you shall provide any additional information pertinent to the acceptance process when requested by us, which shall also be truthful and accurate to the best of your knowledge. Upon receipt of your Onboarding Information, Trolley shall determine if you are eligible to use the Services. Trolley reserves the right, in its absolute discretion, to determine whether you have been accepted to use the Services. Trolley or its Representatives shall not be held liable for any losses or damages, direct or indirect, pecuniary or non-pecuniary, resulting from our denial of your access to the Services.
+You authorize Trolley to disclose your Onboarding Information to the Financial Services Provider to facilitate such account opening process. Your use of the products and services provided by the Financial Services Provider is subject to such Financial Service Provider’s terms of service and/or account agreements, including the Merchant Agreement described below (collectively, “Provider Terms”). You must successfully complete the onboarding process required by the applicable Financial Services Provider in order to use the products and services provided by the Financial Services Provider, including bank transfer services.
+If you have been accepted to use the Services, you may be referred to as a “Merchant” in the TOS or the Privacy Policy.
+c. Merchant Agreement
+Upon becoming a Merchant, or if required by the Financial Services Provider, we will forward to you a “Merchant Agreement” between you (as a representative of your Legal Entity) and the Financial Services Provider. The Merchant Agreement governs the making of payments to Recipients, facilitated by the Services. It is your responsibility to execute this Merchant Agreement with the Financial Services Provider, and to adhere to the terms and conditions therein at all times when using the Services.
+Notwithstanding that Trolley has contracted with the Financial Services Providers we use, we have no control over their activities or business nor the terms and conditions of the Provider Terms. You acknowledge and agree that the transactions you submit through the Services are subject to limits and restrictions set by the Financial Services Providers in their sole discretion. Trolley acts only to facilitate payments made to Recipients via the Financial Services Provider. Trolley or its Representatives shall not be held liable for any losses or damages, direct or indirect, pecuniary or non-pecuniary, resulting from the actions or omissions of any Financial Services Provider, or your violation of the terms of any executed Merchant Agreement, and expressly disclaims any responsibility in this regard.
+d. Payment of Fees and Other Costs
+By using the Services, you agree to pay the applicable fees as outlined on our Pricing Page , which shall also be communicated with you upon your becoming a Merchant (hereinafter “Fees”). Standard fees are listed in U.S. Dollars, however, fees may vary according to the currency chosen for payment. As a Logged-in User, detailed fees can be found in your account under “Fee Schedule”. Fees do not include any applicable taxes in any form, duties, export or import fees, or any similar governmental charges; you shall solely be responsible for payment of any such charges and shall indemnify Trolley for any claim MADE against Trolley, its affiliates or their respective Representatives in connection therewith. The Fees may be adjusted from time to time in our sole discretion; if required by applicable law, we will provide you prior notice in accordance with such law.
+In addition, you will promptly reimburse us for any amount that we pay, or for which we become liable, to the Financial Services Providers due to your action or omission, including but not limited to, overdraft fees, chargebacks, returns, and refunds. You irrevocably authorize Trolley and the Financial Service Provider to automatically deduct such amount from any account you have with such Financial Services Providers, or offset such payments against any amounts owing to you under these TOS or the Provider Terms. This may include, for example, deducting the amounts you owe us from payouts of transactions paid to you, using any Service.
+Payment of the Fees shall occur without your intervention at the time of payment. We may also invoice you for any Fees or other amounts you owe us. Any amounts owed to us or the Financial Service Provider may also be deducted from your account balance.
+e. Third Party Payment Providers
+You may choose to use the Services to make payments to Recipients via “Third Party Payment Providers” such as PayPal. When you use these Services in this manner, you acknowledge and agree that you will comply with any Terms of Service or User Agreement or similar contract between you and the Third Party Payment Provider. Trolley and its Representatives shall not be held liable for any losses or damages, direct or indirect, pecuniary or non-pecuniary, resulting from the actions or omissions of any Third Party Payment Provider, and expressly disclaims any responsibility in this regard. Any fees for use of a Third Party Payment Provider to make payments to Recipients shall be borne by you. In addition to the fees owed to the Third Party Payment Provider, you shall also pay the Fees payable to Trolley.
+f. US Tax Product and Disclaimers
+(i) US Tax Product
+You may choose to use the “US Tax Product” portion of the Services, as described more fully on the Tax Compliance Page of the Website. When you use the US Tax Product, you are subject to the terms of this sub-section of the TOS.
+By using the US Tax Product, you authorize Trolley to act as a Transmitter between you and the Internal Revenue Service (“IRS”) which gives Trolley the authority to send your electronic tax information return data directly to the IRS. You agree that Trolley can e-file forms on your behalf as a Transmitter to the IRS. You have the responsibility of providing accurate, truthful and reliable information to Trolley.
+Prior to filing your information return, Trolley offers you access to the TIN Matching Program (“Program”) established by the IRS. This Program verifies the TIN (Taxpayer Identification Number) provided by your Recipients against their name. The IRS maintains a separate name/TIN database specifically for the Program. Trolley will provide you TIN status update to inform you whether or not the name/TIN combination provided by your Recipients matches a name/TIN combination in the database.
+If you have questions, please contact our Customer Support Team via our In-Product Live Chat or via email [email protected] .
+(ii) Disclaimers
+Trolley does not provide tax, legal or accounting advice. Trolley does not represent or warrant that the US Tax Product will enable you to fulfill your obligations under applicable law, including tax law. We will do our best to provide you with the information you need to make your own decisions about compliance with applicable U.S. tax laws. However, Trolley is not liable for your compliance with applicable tax obligations determined by the IRS or governmental authorities. If you still have questions after reviewing the tax information provided by Trolley and / or the IRS, you should contact your own tax, legal and/or accounting advisor prior to using the US Tax Product. The disclaimers in this paragraph apply equally to you as a Merchant or your Recipients.
+Information regarding tax withholding rates calculated by Trolley and provided to you is dependent on accurate and truthful information regarding Recipients and their situation or circumstances. Trolley shall in no way be liable to you or any third party (including but not limited to any tax authority or a Recipient) for any losses or penalties, pecuniary or otherwise, arising from a Recipient entering inaccurate or false information, whether purposefully or not, or misrepresenting their situation in any manner.
+Information regarding tax withholding rates calculated by Trolley and provided to you is further dependant on your specific business circumstances and tax form settings you provide to Trolley, as well as additional information included but not limited to the income type provided for in a payment to a Recipient. Trolley shall in no way be liable to you or any third party (including but not limited to any taxation authority or a Recipient) for any losses or penalties, pecuniary or otherwise, arising from your errors or misrepresentations with regards to your settings, circumstances or any other information provided to Trolley, whether made purposefully or not.
+Trolley shall respect the applicable IRS e-file rules and requirements of a Transmitter. Trolley shall ensure the security of your Recipients information from unauthorized disclosure, use and destruction. Trolley cannot be held liable for any breach of security of taxpayer information caused by you, your Recipients or the IRS.
+Trolley shall respect the Terms of Agreement of the Program provided by the IRS. Trolley will maintain the confidentiality of information obtained through TIN solicitation activities in accordance with the applicable law. However, you are responsible for any penalties under the Internal Revenue Code for unauthorized use of the Program by your authorized users.
+As a Merchant using the US Tax Product, you acknowledge and agree to the following:
+You are solely responsible for remitting any amounts owed by you to the IRS or other governmental authority in a timely fashion according to IRS rules and regulations:
+You shall update your settings to reflect any material changes to your situation or circumstances that would affect your tax withholding rates, within 30 days of becoming aware of such material change; and
+
+You shall inform Trolley of any errors or omissions you discover that would affect a tax withholding calculation, within 30 days of becoming aware of such error or omission.
+
+Trolley shall in no way be liable to you or any third party (including but not limited to any tax authority or a Recipient) for any losses or penalties, pecuniary or otherwise, arising from your failure to adhere to these obligations.
+g. Additional Terms
+By using the Services, you acknowledge and agree that any payments to Recipients that are facilitated by using the Services are made for services rendered that in no way violate any applicable civil or criminal law, in either your jurisdiction or the jurisdiction of the Recipient.
+Furthermore, both Trolley and any Financial Services Provider retain the absolute right to refuse to offer the Services or facilitate or complete any payments to Recipients where payments are to be made for services that we or the Financial Services Provider may consider “high risk” or that in any way violate any Provider Terms. This paragraph shall apply even if you have been accepted to use the Services generally.
+
+5. Subscriptions
+a. Subscription Term and Renewals. When you sign up for the Services you may select a subscription period and billing cycle, which shall be one (1) month, twelve (12) months, or another time period we support (“Subscription Term”). Unless otherwise specified on the applicable service agreement, each term for the Services will automatically renew for an additional Subscription Term, unless either party gives the other written notice of termination at least thirty (30) days prior to expiration of the then-current Subscription Term.
+b. Fees and Payment. All Subscription fees and Non-payment related usage fees (including tax services, fraud prevention services, bank account validation services, identity verification services, and background screening services), are as set forth in the applicable Fee Schedule or services agreement and will be paid by Customer within fifteen (15) days of invoice, unless (a) Customer is paying via Credit Card (as defined below) or (b) otherwise specified in the applicable service agreement. All fees are non-refundable. The rates in the Fee Schedule or service agreement may be updated by Trolley by providing the Customer with at least sixty (60) days written or emailed notice. Customer is responsible for paying all Taxes, and all Taxes are excluded from any fees set forth in the applicable Fee Schedule or service agreement. If Customer is required by law to withhold any Taxes from Customer’s payment to Trolley or a Financial Services Provider, the fees payable by Customer will be increased as necessary so that after making any required withholdings, Trolley receives and retains (free from any liability for payment of Taxes) an amount equal to the amount it would have received had no such withholdings been made. Any late payments will be subject to a service charge equal to 1.5% per month of the amount due or the maximum amount allowed by law, whichever is less.
+c. Payment Via Credit Card. If you are purchasing the Subscription Services via credit card, debit card or other payment card (“Credit Card”), the following terms apply:
+Recurring Billing Authorization. By providing Credit Card information and agreeing to purchase any Services, Customer hereby authorizes Trolley (or its designee) to automatically charge Customer’s Credit Card on the same date of each calendar month (or the closest prior date, if there are fewer days in a particular month) during the Subscription term for all fees accrued as of that date (if any) in accordance with the applicable Fee Schedule or service agreement. Customer acknowledges and agrees that the amount billed and charged each month may vary depending on Customer’s use of non-payment related services.
+
+Foreign Transaction Fees. Customer acknowledges that for certain Credit Cards, the issuer of Customer’s Credit Card may charge a foreign transaction fee or other charges.
+
+Invalid Payment. If a payment is not successfully settled due to expiration of a Credit Card, insufficient funds, or otherwise, Customer remains responsible for any amounts not remitted to Trolley and Trolley may, in its sole discretion, either (i) invoice Customer directly for the deficient amount, (ii) continue billing the Credit Card once it has been updated by Customer (if applicable) or (iii) terminate the TOS.
+
+Changing Credit Card Information. At any time, Customer may change its Credit Card information by entering updated Credit Card information via the “Settings > Subscription” page on the Dashboard.
+
+Termination of Recurring Billing. In addition to any termination rights set forth in the TOS, Customer may terminate the Subscription Term by sending Trolley notice of non-renewal to [email protected] in accordance with Section 5.a (Subscription Term and Renewals) or, by terminating via the “Settings > Subscription” page on the Dashboard, with termination effective at the end of the current Subscription Term. If the customer is on a trial Subscriptions, and Customer does not enter into a paid Subscription Term following a trial period, the TOS and Customer’s right to access and use the Services will terminate at the end of the trial period and Customer’s Credit Card will not be charged.
+
+Payment of Outstanding Fees. Upon any termination or expiration of the Subscription Term, Trolley will charge Customer’s Credit Card (or invoice Customer directly) for any outstanding fees for Customer’s use of the Services during the Subscription Term, after which Trolley will not charge Customer’s Credit Card for any additional fees.
+
+d. Suspension of Service. If Customer’s account is thirty (30) days or more overdue, in addition to any of its other rights or remedies (including but not limited to any termination rights set forth herein), Trolley reserves the right to suspend Customer’s access to the applicable Service (and any related services) without liability to Customer until such amounts are paid in full. Trolley also reserves the right to suspend Customer’s access to the Services without liability to Customer if Customer’s use of the Services is in violation of the TOS.
+
+6. Copyright and Intellectual Property Rights
+a. General
+The content, arrangement and layout of the Website and Computer Code (as defined below) are proprietary to Trolley, either owned or under license, and may not be copied, imitated, reproduced, displayed, distributed, transmitted, decompiled, derivative works made therefrom or otherwise used without the express permission of Trolley, or as permitted by the functionality of the Website or the TOS. Any unauthorized use of the content, arrangement or layout of the Website, Computer Code, images, logos, videos, audio or trademarks found in the Website or any derivative works thereof may violate civil or criminal laws, including but not limited to intellectual property laws, and Trolley may take action accordingly.
+The above paragraph further applies to third party property used as part of the Website and Services, including but not limited to third party Computer Code. For the purposes of the present section, “Computer Code” includes but is not limited to source code in any programming language, object code, frameworks, CSS, PHP, or JavaScript or similar files, templates, modules, or any similar files, and related documentation.
+If you choose to communicate to Trolley suggestions for improvements to the Website and / or the Services, (collectively, “Feedback”), Trolley shall own all right, title, and interest in and to the Feedback and will be entitled to use the Feedback without restriction. You hereby irrevocably assign all right, title and interest in and to the Feedback to Trolley and waive in favor of Trolley, its successors and assigns all your moral rights in the Feedback, and agree to provide Trolley such assistance as Trolley may require to document, perfect, and maintain Trolley’s rights to the Feedback. You acknowledge and agree that, by providing any Feedback to Trolley, you are not entitled to any compensation or reimbursement of any kind from Trolley under any circumstances.
+b. Application Programming Interface (“API”)
+If you choose to download and use the Trolley API, no ownership in the API or its constituent Computer Code is transferred to you. We hereby grant you a non-exclusive, worldwide, personal, non-transferable, non-assignable, non-sublicensable, royalty-free license to use the API as contemplated in the API documentation. The API documentation may include additional terms that govern the use of the API (the “ API Terms of Use ”); by downloading and using the API, you agree to be bound by the API Terms of Use.
+
+7. External Links
+From time to time Trolley may provide links to other websites or services, including the Financial Services Providers’. Links we provide you may take you to websites or services not covered by the TOS. When you access third party resources on the Internet in this manner, you do so at your own risk. Trolley provides those links as a convenience to you and Trolley takes no responsibility for your use of those other websites or services or protection of your privacy (including collection of your personal information) on those other websites or services. We encourage you to check the terms of service and / or privacy policy of any website or service you visit. Trolley does not make any claim or warranty whatsoever about the content of those websites or services to which we link, or any products or services available through those websites or the third parties operating those websites.
+In no way will Trolley be held responsible for any damages, direct or indirect, pecuniary or non-pecuniary: (1) for your use of websites or other services that may be linked to from the Website or the information thereon; (2) for any virus, Trojan horse, worm or other similar destructive file received as a result of your use of those websites or services; (3) caused by or in connection with, use of or reliance on any content, or products or services (whether free or for purchase) available on or through any linked-to website or service; or (4) for the actions of the operators of any such website or service.
+
+8. Interruption of Service
+From time to time, the Services may be unavailable for periods of time for maintenance and / or modifications to the Services. While we will endeavour to make this unavailability as brief as possible, Trolley shall not be held liable for any losses or damages, pecuniary or non-pecuniary, resulting from the interruption of the normal functioning of the Services, and disclaims any responsibility thereto.
+
+9. Data Protection
+Trolley processes Personal Data in accordance with its Privacy Policy and its Data Processing Agreement (DPA). The Privacy Policy and the DPA are incorporated into the ToS by reference.
+
+10. Termination of Your Access to the Services and the TOS
+You agree that Trolley, in their sole discretion, with or without cause, has the right (but not the obligation) to block your IP address, revoke your account credentials, or otherwise terminate your access to or use of the Services (or any portion thereof), immediately and without notice, for any reason, including, without limitation, if Trolley believes that you have acted inconsistently with the letter or spirit of the TOS or the Privacy Policy, or have violated your Provider Terms. If you receive services provided by any Financial Services Provider through the Services, your account with such Financial Services Provider may be suspended, terminated or restricted at any time in accordance with the Provider Terms. You agree that Trolley will not be liable to you for such suspension, termination or restriction imposed by the Financial Services Providers.
+Trolley may also, in their sole discretion and at any time, discontinue providing the Services, or any portion thereof, with or without notice. You agree that Trolley shall not be liable to you or any third party for any losses or damages, pecuniary or non-pecuniary, resulting from termination of your access to the Services, or from Trolley’s termination of the Services or any part thereof.
+You may also choose to terminate your access to the Services by cancelling your account. If you wish to cancel your account, please contact us at [email protected] . Canceling your Trolley account does not automatically cancel your account(s) with Financial Services Providers. You must follow the instructions in the applicable Provider Terms to cancel your account(s) with the Financial Services Providers.
+Termination of the Services or your access to the Services shall terminate the present TOS as between you and Trolley. All provisions of the TOS which by their nature should survive termination of the TOS shall survive termination, including without limitation, intellectual property provisions, disclaimers, indemnity and limitations of liability.
+
+11. Disclaimer of Warranties
+You expressly understand and agree that your use of the Services, the information thereon or materials downloaded therefrom, or any activity arising from your use of the Services or the information thereon or the materials downloaded therefrom is at your sole risk. The Services, any materials downloaded therefrom, or any third party materials, are provided on an ” as is” and “as available” basis, and you will be solely responsible for any damage to your computer system or loss of data that results from the download, stream or access of any material obtained through the use of the Services or any other functionalities of the Services, or losses or damages (financial or otherwise) resulting from your use of the Services, the information thereon, any materials downloaded therefrom, or any activity arising from the use of the Services, the information thereon or any materials downloaded therefrom.
+The information or resources provided through the Services, written or produced by Trolley staff, freelance writers or other subcontractors hired by Trolley are expected to be as accurate as possible at the time of writing or production, and every effort has been made to ensure that the information from the Services is as accurate and up-to-date as possible. However, certain information may change, and errors or omissions may occur, and Trolley shall not be responsible for any loss or damage, financial or otherwise, resulting from changes or errors in information, or any omission, in the Services or the information thereon.
+Trolley expressly disclaims all warranties of any kind, whether express or implied, including but not limited to: warranties of title and non-infringement; warranties that the Services, the information therefrom or any materials downloaded therefrom, and any third party materials or third party services accessed via the Services will be uninterrupted, error-free, accurate, reliable and free from virus and other harmful components; and the implied warranties of merchantability and fitness for a particular purpose. Trolley, its affiliates and their respective Representatives, do not warrant that: (i) the Services will be secure or available at any particular time or location; (ii) any defects or errors or omissions will be corrected; (iii) any content (whether provided by Trolley or third parties) available at or through the Services is free of viruses or other harmful components; or (iv) the results of using the Services or any content downloaded therefrom will meet your requirements.
+Some of the content displayed on the Website may include materials (including with respect to products or services) that belong to or are provided by third parties. You acknowledge that we assume no responsibility for such content, products and/or services.
+To the extent that the law does not permit a disclaimer of warranties, all content accessible via the Services, or any other website to which we link, and all operations of the Services are warranted only to the minimum amount legally required.
+
+12. Limitation Of Liability
+In no case will Trolley or its licensees be liable for any indirect, special, consequential, exemplary, punitive damages or other damages, or for any losses, damages, liabilities, costs and expenses arising out of or relating to (i) your access, use, misuse or inability to access or use the Services or any third party services accessed via the Services, or (ii) the interruption, suspension or termination of any part of or all the Services; and in both cases (i) and (ii) regardless of the cause of action (whether in contract, warranty, delict, quasi-delict, tort, negligence, strict liability or any other theory of liability) and even if we have been advised of the possibility of such damages. Notwithstanding anything to the contrary in the TOS, in no event will our aggregate liability for any claims in connection with your use of the Services exceed the lesser of (i) CAD$100 or (ii) the total amount of the fees paid by you to Trolley over the previous 6 (six) calendar months.
+Trolley disclaims any responsibility where we, our Financial Services Providers or any Third Party Payment Provider fails to fulfill any contractual obligations due to an act of God or to any force majeure event.
+You expressly understand and agree that Trolley and its licensees shall not be liable for any direct, indirect, incidental, special, consequential, punitive or exemplary damages, including, but not limited to, damages for loss of profits, goodwill, use, data or other intangible losses, in contract, tort, strict liability, negligence, general civil liability or any other cause of action under legal or equitable theory, relating to the Services, the information in the Services, the use of the Services, activities arising from your use of the Services, any third party materials on the Website, access to or use of any third party services available through the Services, including services provided by the Financial Services Providers, or any materials downloaded from the Website. This limitation of liability applies, without limitation, to any damages or injury caused by any error, omission or other failure of performance by Trolley or its business partners (including but not limited to our Financial Services Providers), agents or other subcontractors; any interruption, defect or delay in operation or transmission, including communication line failure; any computer virus; and any theft, destruction or alteration of, or unauthorized access to or use of, any electronic records.
+Some jurisdictions do not allow the limitation or exclusion of liability for incidental or consequential damages, so the above exclusions and limitations may or may not apply to you.
+
+13. Indemnity
+Notwithstanding any other term of the TOS or any act or failure to act by Trolley, you agree to indemnify, defend and hold harmless Trolley from and against any damages, liabilities, costs and expenses (including attorneys’ fees), claims or demands, arising out of (i) your use of or connection to the Services, the information thereon, the materials downloaded therefrom; (ii) your participation in any activities arising from the Services, the information thereon, or the third party services available through the Services, including services provided by our Financial Services Providers; (iii) your violation of, or failure to perform your obligations under the TOS, the Privacy Policy, Provider Terms, or your Merchant Agreement (as applicable); or (iv) your violation of any rights of a third party.
+
+14. Governing Law and Applicable Jurisdiction
+The TOS and your use of the Services shall be governed by and construed in accordance with the laws of the Province of Ontario, Canada, in force at the time, excluding any rules of private international law or the conflict of laws which would lead to the application of any other laws. Regardless of where you access the Services, you agree that any action arising out of or relating to the TOS or your use of the Services shall be filed and adjudicated only in the courts located in Toronto, Ontario, Canada, and you hereby irrevocably and unconditionally consent and attorn to the exclusive jurisdiction and venue of such court over any suit, action or proceeding arising out of the TOS or your use of the Services. Notwithstanding the foregoing, Trolley shall have the right to bring action against you in courts of competent jurisdiction in the jurisdiction in which you reside or are located: (i) to seek injunctive relief against you; (ii) to obtain a judgment against you where a judgment by the Toronto court will, or may not be, enforced by the jurisdiction in which you reside or are located; or (iii) to enforce a judgment obtained against you in the Toronto court.
+
+15. Law Enforcement
+Trolley reserves the right, without any limitation whatsoever, to: (i) investigate any suspected breaches of the Website security or its information technology or other systems or networks of Trolley; (ii) investigate any suspected breaches of the TOS or violations of any additional terms, conditions or rules posted in connection with a particular service or feature on the Website; (iii) involve and cooperate with law enforcement authorities in investigating any such matters; and (iv) prosecute violators of the TOS to the full extent permitted by applicable law.
+
+16. Miscellaneous Provisions
+(i) The TOS, in conjunction with the Privacy Policy the API Terms (where applicable), and the DPA, constitute the entire agreement between you and Trolley with respect to your use of the Services, superseding any prior agreements between you and Trolley. Any definitions made only in the TOS shall apply equally to the Privacy Policy, and any definitions made only in the Privacy Policy shall apply equally to the TOS.
+(ii) Trolley shall not be liable for any failure to perform its obligations under the present TOS where such failure results from any cause beyond Trolley’s reasonable control, including, but not limited to, mechanical, electronic or communications failure or degradation.
+(iii) If any provision of the TOS or Privacy Policy is found by a court of competent jurisdiction to be invalid, you and Trolley nevertheless agree that the court should endeavour to give effect to the parties’ intentions as reflected in the provision, and the other provisions of the TOS or Privacy Policy, as the case may be, shall remain in full force and effect.
+(iv) The failure of Trolley to exercise or enforce any right or provision of the TOS does not constitute a waiver of such right or provision, which will still be available to Trolley.
+(v) You shall not transfer or assign any rights or obligations you have under the TOS without the prior written consent of Trolley. Trolley may transfer and assign any of its rights and obligations under the TOS without consent.
+(vi) The section titles in the TOS and Privacy Policy are for convenience only and have no legal or contractual effect.
+
+Stay in the loop on payouts, creators, & compliance
+
+Get the Payouts Pulse in your inbox every month.
+
+Email
+
+Subscribe now
+
+Platform
+
+Platform
+
+Pay
+
+Instant Payout Methods
+
+Tax
+
+Trust
+
+Sync
+
+Pricing
+
+Developer Tools
+
+API, SDK, widget
+
+API docs
+
+App integrations
+
+Trolley status
+
+Support
+
+Help center
+
+Payout network
+
+Security
+
+Migration
+
+Product updates
+
+Solutions
+
+Referral Partners
+
+Embedded Partners & Integrated Resellers
+
+Product & Engineering Teams
+
+Recipient onboarding & management
+
+Payouts automation
+
+Risk management & fraud monitoring
+
+IRS tax compliance
+
+DAC7 tax compliance
+
+Digital Platform Reporting
+
+DSA compliance
+
+INFORM compliance
+
+Know Your Artist (KYA)
+
+Why choose us
+
+Trolley vs. Stripe Connect
+
+Trolley vs. Tipalti
+
+Trolley vs. Hyperwallet
+
+Trolley vs. Payoneer
+
+Trolley vs. Wise
+
+Trolley vs. Airwallex
+
+Trolley vs. Dwolla
+
+Trolley vs. MangoPay
+
+Trolley vs. Veem
+
+Trolley vs. Bill.com
+
+Industries
+
+Music & streaming royalties
+
+Know Your Artist (KYA)
+
+Freelance platforms & expert networks
+
+Creator & influencer platforms
+
+Ad networks & publishers
+
+Affiliate platform partners
+
+B2B accounts payable
+
+Healthcare, pharma, & clinical trial orgs
+
+Logistics & last-mile delivery platforms
+
+Marketplace
+
+P2P marketplace sellers
+
+Photo royalties
+
+Professional service platforms
+
+Travel and experience platforms
+
+Video games & esports
+
+Resources
+
+About Trolley
+
+Blog
+
+Learning center
+
+Customer stories & testimonials
+
+Press
+
+Contact Trolley
+
+Careers
+
+FAQ
+
+Legal
+
+Security policies
+
+Privacy policy
+
+Legal agreements
+
+Platform
+
+Platform
+
+Pay
+
+Instant Payout Methods
+
+Tax
+
+Trust
+
+Sync
+
+Pricing
+
+Developer Tools
+
+API, SDK, widget
+
+API docs
+
+App integrations
+
+Trolley status
+
+Support
+
+Help center
+
+Payout network
+
+Security
+
+Migration
+
+Product updates
+
+Solutions
+
+Referral Partners
+
+Embedded Partners & Integrated Resellers
+
+Product & Engineering Teams
+
+Recipient onboarding & management
+
+Payouts automation
+
+Risk management & fraud monitoring
+
+IRS tax compliance
+
+DAC7 tax compliance
+
+Digital Platform Reporting
+
+DSA compliance
+
+INFORM compliance
+
+Know Your Artist (KYA)
+
+Why Choose Us
+
+Trolley vs. Stripe Connect
+
+Trolley vs. Tipalti
+
+Trolley vs. Hyperwallet
+
+Trolley vs. Payoneer
+
+Trolley vs. Wise
+
+Trolley vs. Airwallex
+
+Trolley vs. Dwolla
+
+Trolley vs. MangoPay
+
+Trolley vs. Veem
+
+Trolley vs. Bill.com
+
+Industries
+
+Music & streaming royalties
+
+Know Your Artist (KYA)
+
+Freelance platforms & expert networks
+
+Creator & influencer platforms
+
+Ad networks & publishers
+
+Affiliate platform partners
+
+B2B accounts payable
+
+Healthcare, pharma, & clinical trial orgs
+
+Logistics & last-mile delivery platforms
+
+Marketplace
+
+P2P marketplace sellers
+
+Photo royalties
+
+Professional service platforms
+
+Travel and experience platforms
+
+Video games & esports
+
+Resources
+
+About Trolley
+
+Blog
+
+Learning center
+
+Customer stories & testimonials
+
+Press
+
+Contact Trolley
+
+Careers
+
+FAQ
+
+Legal
+
+Security policies
+
+Privacy policy
+
+Legal agreements
+
+© 2026 Trolley Technologies Inc. All rights reserved.
+
+LOG IN
+
+Sign up
+
+For Trolley US Inc. customers, deposits held at Cross River Bank, Member FDIC, are insured up to $250,000.
+
+Certain payment services are provided by Trolley US Inc., a licensed money transmitter (NMLS ID: 2309944). Trolley operates through multiple regulated entities depending on customer location. Full regulatory information is available here .
+
+All testimonials, reviews, opinions or case studies presented on our website may not be indicative of all customers. Results may vary and customers agree to proceed at their own risk.
+
+See Trolley in Action!
+
+Jump into our 5 minute product tour to see how we can simplify your payout workflows.
+
+Sign up to get started
+
+Business email
+
+Consent
+
+.elementor-widget-wrap" tabindex="0" aria-expanded="false" aria-label="Language selected: English" data-wg-target=".elementor-element-e69e4dd > .elementor-widget-wrap" data-wg-sibling="">

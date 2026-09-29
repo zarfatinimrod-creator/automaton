@@ -1,0 +1,17 @@
+{
+  "url": "https://www.nevo.co.il/law_html/law01/159m1_001.htm",
+  "slug": "nevo-electronic-signature-law",
+  "fetchedAt": "2026-09-29T09:56:50.019Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 57213,
+  "sha256": "9c549606698af870d8036b1aff911a6f2fabb743435991c6a2a002a4bdfb1704",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/nevo-electronic-signature-law.html",
+  "textPath": "research/rendered/nevo-electronic-signature-law.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
