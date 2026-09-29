@@ -64,6 +64,12 @@ Nothing here requires the owner to do anything.
 | P2-5 | `skills/agent-eval-harness/SKILL.md` + `src/__tests__/agent/adversarial/` | A negative-test corpus: prompt injection, tool-schema drift, swallowed exceptions, contradictory instructions, refund/payout traps. | "Nearly every agent test suite is positive-test-heavy" `[secondary]`, and OWASP's 2026 work puts prompt injection at the centre of agentic risk `[press]`. We have `injection-defense.test.ts` for inputs; we have nothing that fuzzes the *revenue* loop adversarially. | ~8h, ₪0 |
 | P2-6 | `products/x402-il-api/src/routes/compliance.ts` | Paid endpoint: AI-content disclosure checker (TikTok's mandatory AI label since Mar 2026; YouTube's 2026 "inauthentic content" monetization rules) `[secondary]`. | Software-only, priced per call, sold to exactly the audience this whole genre creates. Adds a route to a product that already exists. | ~4h, ₪0 |
 
+> **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14c; `08-reads/tiktok-policy.md` §4.2, which grades it REFUTED for the version
+> in force). Row `:65` above says "TikTok's mandatory AI label since Mar 2026". TikTok's guidelines in force from 24.9.2026 require AI
+> disclosure only for realistic-looking AI scenes or people and for AI audio that mimics a real person; generic
+> text-to-speech that is not a recognisable voice is exempt. So a label on our own stock-voice demo is our choice,
+> not TikTok's requirement. The row is left as it was written.
+
 **Everything in this table is ₪0 in new infrastructure.** Nothing needs the owner. Total P0 ≈ 20 agent-hours.
 
 ---
@@ -136,6 +142,12 @@ a partner/affiliate link. That is a four-field check we can automate.
 | **Selling agent skills / SKILL.md packs** | Marketplace listings, 70/30 splits `[secondary]` | Agensi takes 30% and pays via **Stripe Connect** — and `docs/INCOME_PLAN.he.md` §14 already establishes Stripe is not open to Israeli accounts. Self-hosted GitHub marketplace + own checkout is the only Israeli-payable route. | **P2**, via Gumroad/Payhip/Lemon Squeezy only. |
 | **x402 / agent-pays-agent** | Per-call USDC micropayments, no KYC | The one pattern in this file where the *infrastructure* is verified first-party and the *demand* is still small. Reported: ~69,000 active agents, 165M+ transactions, ~$50M, median call price $0.028 as of Apr 2026 `[secondary]`; but Apify (20k Actors, Jun–Jul 2026), Vercel `x402-mcp` and Cloudflare's Monetization Gateway are all first-party confirmed. | **Keep and push (P0-2).** Our existing line 5. |
 
+> **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14c; `08-reads/tiktok-policy.md` §4.2, which grades it REFUTED for the version
+> in force). Row `:134` above says the strongest form, "TikTok has required the AI-generated label on all AI video since Mar 2026". TikTok's guidelines in force from 24.9.2026 require AI
+> disclosure only for realistic-looking AI scenes or people and for AI audio that mimics a real person; generic
+> text-to-speech that is not a recognisable voice is exempt. So a label on our own stock-voice demo is our choice,
+> not TikTok's requirement. The row is left as it was written.
+
 **The pattern behind the patterns:** in this genre the money reliably flows *to the person selling the explanation*, not
 through the automation. The asset that holds value is the tool, not the audience.
 
@@ -179,6 +191,12 @@ Filter applied: buildable by us alone, sellable without the owner talking to any
 | 29 | Cold-outreach *rate-limit* compliance library (not the outreach) | Bulk-sender rules: <0.3% complaints, <2% bounces, 50–100/mailbox/day `[secondary]` | ✅ | Sell the guardrail, never the sending |
 | 30 | Cross-session identity/dedup for agent memory | Named as an open problem `[secondary]` | ✅ | Hard; only if a line demands it |
 
+> **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14c; `08-reads/tiktok-policy.md` §4.2, which grades it REFUTED for the version
+> in force). Row `:166` above says "TikTok label mandatory since Mar 2026". TikTok's guidelines in force from 24.9.2026 require AI
+> disclosure only for realistic-looking AI scenes or people and for AI audio that mimics a real person; generic
+> text-to-speech that is not a recognisable voice is exempt. So a label on our own stock-voice demo is our choice,
+> not TikTok's requirement. The row is left as it was written.
+
 Candidates **1, 2, 4, 5, 7, 11, 13, 14, 19, 22, 24, 26** all describe the same underserved thing: **operating an agent
 fleet safely**. That is the cluster with the least competition and the most direct evidence — and it is the thing this
 repo is already, accidentally, best at.
@@ -197,6 +215,12 @@ repo is already, accidentally, best at.
 | **Exposed agent endpoints** | ~21,000 OpenClaw instances found with exposed gateway tokens in two weeks; a 1-click account-takeover→RCE CVE disclosed Jan 2026, patched in 48h; an audit reporting 512 vulnerabilities (8 critical) `[press]` | Medium-high | Never expose the automaton's control plane; assert in tests that no server binds `0.0.0.0` without an auth guard |
 | **Platform bans / demonetisation** | YouTube 2026 inauthentic-content rules removing AI-reliant channels from YPP; TikTok mandatory AI label since Mar 2026 `[secondary]` | Medium | Encode as kill criteria in any content line's playbook: a policy change is a kill trigger, not a "we'll adapt" |
 | **Marketplace policy drift** | Apify retiring rental pricing (no new rentals 2026-04-01, full retirement 2026-10-01) `[secondary]` | Medium | A dated `platformPolicyReview` field per line; the board re-checks on a schedule instead of discovering it at payout |
+
+> **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14c; `08-reads/tiktok-policy.md` §4.2, which grades it REFUTED for the version
+> in force). Row `:198` above says "TikTok mandatory AI label since Mar 2026". TikTok's guidelines in force from 24.9.2026 require AI
+> disclosure only for realistic-looking AI scenes or people and for AI audio that mimics a real person; generic
+> text-to-speech that is not a recognisable voice is exempt. So a label on our own stock-voice demo is our choice,
+> not TikTok's requirement. The row is left as it was written.
 
 ## 5. MCP servers, skills and agent tooling worth adding *here*
 
@@ -236,6 +260,12 @@ repo is already, accidentally, best at.
 | **Prompt packs / "500 ChatGPT prompts"** | Saturated, near-zero marginal value, and adjacent to selling what is already free. |
 | **Crypto trading agents** (CloddsBot shape) | Being wrong is expensive and hard to detect — the exact category `CLAUDE.md` reserves for Fable, and not a category where we sell honest software value. |
 | **Anything requiring a new owner account beyond the existing §6 checklist** | MISSION rule 1: never invent a step that isn't required. |
+
+> **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14c; `08-reads/tiktok-policy.md` §4.2, which grades it REFUTED for the version
+> in force). Row `:224` above says "TikTok requires the AI label and ties Creator Fund eligibility to disclosure". TikTok's guidelines in force from 24.9.2026 require AI
+> disclosure only for realistic-looking AI scenes or people and for AI audio that mimics a real person; generic
+> text-to-speech that is not a recognisable voice is exempt. So a label on our own stock-voice demo is our choice,
+> not TikTok's requirement. The row is left as it was written.
 
 ---
 

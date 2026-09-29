@@ -39,6 +39,14 @@ Full report with per-claim confidence: `research/tiktok/01-monetization-israel.m
 | Creator Marketplace | Possibly open to Israel — unverified, sources copy each other. Dead anyway: brand deals mean briefs, negotiation, contracts and invoices, which is a person talking to people. |
 | Content Posting API | TikTok "is currently unable to onboard personal accounts or individual developers". Unaudited clients can only post privately (`SELF_ONLY`). |
 
+> **Correction to the Content Posting API row, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14d; §5.5 and §7 row 12 there). The quote "is
+> currently unable to onboard personal accounts or individual developers" is from TikTok's API for Business portal,
+> not from the Content Posting API (snippet grade: the page it came from was not re-found). The real gate is the
+> Developer Terms' intended-use rule, which lists as "Not acceptable" "A utility tool to help upload contents to the
+> account(s) you or your team manages" (`OpenTermsArchive/vlopses-us-versions` `TikTok/Developer Terms.md:533`,
+> "Last modified: Dec 26, 2025"; github), plus the audit without which a client posts only `SELF_ONLY`. The
+> conclusion stands; the stated reason was the wrong one. The row above is left as it was written.
+
 **The arithmetic, for the record.** Even in the counterfactual where Creator Rewards were
 open to Israel: ₪20,000/month ≈ $5,400, and at a creator-reported $0.20-$1.20 RPM that is
 roughly **6.75 million qualified views every month**, forever, from content the programme's
