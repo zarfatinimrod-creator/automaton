@@ -15,6 +15,10 @@ no app covers it.
 Every text box and the illustration are recorded; a frame reports a problem when a box leaves the side margins or the
 vertical safe area, or when two boxes come within 12 px of each other. render.py refuses to assemble a video from
 frames with problems.
+
+Layers. scene_layers() draws each part on its own named layer (progress, tag, header, title, item<i> per body item,
+illustration) so compose.py can reveal, move and redraw them per video frame; render_scene() composites them into the
+settled still, which is the frame the checks above run on and the last frame of the scene in the video.
 """
 
 from __future__ import annotations
@@ -22,7 +26,7 @@ from __future__ import annotations
 import re
 
 import art
-from canvas import (AMBER, AMBER_BG, INK, MUTED, TEAL, TEAL_SOFT, TRACK, W, H, Frame, display, measure,
+from canvas import (AMBER, AMBER_BG, INK, MUTED, SS, TEAL, TEAL_SOFT, TRACK, W, H, Frame, display, measure,
                     metrics, wrap_balanced)
 from spec import body_items, end_card_lines, split_title
 
@@ -57,13 +61,32 @@ def fit_size(text: str, size: int, min_size: int, weight: int, width: float, eng
     return size
 
 
-def draw_progress(fr: Frame, filled: int, total: int, y: float):
+def draw_progress(fr: Frame, filled: float, total: int, y: float, note: bool = True):
+    """One segment per step, step 1 at the right. `filled` may be fractional (the motion layer fills the current
+    step's segment continuously): a partly filled segment is teal from its right end, with a rounded head."""
     gap, h = 14, 10
     seg = (TEXT_W - gap * (total - 1)) / total
     for i in range(total):  # i = 0 is step 1, at the right edge
         x1 = RIGHT - i * (seg + gap)
-        fr.rrect((x1 - seg, y, x1, y + h), h / 2, fill=TEAL if i < filled else TRACK)
-    fr.note("progress", (MARGIN, y, RIGHT, y + h))
+        f = min(1.0, max(0.0, filled - i))
+        fr.rrect((x1 - seg, y, x1, y + h), h / 2, fill=TEAL if f >= 1 else TRACK)
+        if 0 < f < 1 and seg * f * SS >= 1:
+            wf = seg * f
+            fr.rrect((x1 - wf, y, x1, y + h), min(h, wf) / 2, fill=TEAL)
+    if note:
+        fr.note("progress", (MARGIN, y, RIGHT, y + h))
+
+
+PROGRESS_STRIP = (0, PROGRESS_Y - 4, W, PROGRESS_Y + 14)  # the band the progress bar occupies, alone
+
+
+def progress_strip(filled: float, total: int, engine: str):
+    """The progress band as an opaque 1x image over paper, for pasting at PROGRESS_STRIP[:2] on every video frame.
+    Drawn at the same supersampling phase as a full frame, so an integer fill matches render_scene's pixels."""
+    x0, y0, x1, y1 = PROGRESS_STRIP
+    fr = Frame(engine, size=(x1 - x0, y1 - y0))
+    draw_progress(fr, filled, total, PROGRESS_Y - y0, note=False)
+    return fr.final()
 
 
 def draw_badge(fr: Frame, step: int, cx: float, cy: float, r: float):
@@ -168,13 +191,20 @@ def check(fr: Frame) -> list[str]:
     return problems
 
 
-def render_scene(scene: dict, spec: dict, engine: str, ai_line: str, filled: int, total: int):
+def scene_layers(scene: dict, spec: dict, engine: str, ai_line: str, filled: float, total: int):
+    """Lay out a scene on named layers: "progress", "tag", "header" (step badge and series line), "title", one
+    "item<i>" per body item (footnotes included; i is the item's index in on_screen_body) and "illustration" (a 1x
+    layer: the settled picture). Returns (frame, report). The report adds "art" = {kind, labels, box} for the
+    motion layer, which redraws the picture per beat inside the same integer box, and "item_boxes"/"title_box"."""
     fr = Frame(engine)
     step, title = split_title(scene["on_screen_title"])
+    fr.use("progress")
     draw_progress(fr, filled, total, PROGRESS_Y)
     tag = frame_tag(spec, ai_line)
+    fr.use("tag")
     fr.text((RIGHT, TAG_BASE), tag, fit_size(tag, TAG_SIZE, 22, 500, TEXT_W, engine), 500, MUTED, "tag")
 
+    fr.use("header")
     if step is not None:
         bcx = RIGHT - BADGE_R
         draw_badge(fr, step, bcx, HEADER_CY, BADGE_R)
@@ -192,6 +222,7 @@ def render_scene(scene: dict, spec: dict, engine: str, ai_line: str, filled: int
     cap, desc = metrics(tsize, 800, engine)
     tpitch = round(tsize * 1.16)
     base = HEADER_CY + BADGE_R + 40 + cap
+    fr.use("title")
     for j, ln in enumerate(tlines):
         fr.text((RIGHT, base + j * tpitch), ln, tsize, 800, INK, f"title[{j}]")
     title_bottom = base + (len(tlines) - 1) * tpitch + desc
@@ -203,8 +234,10 @@ def render_scene(scene: dict, spec: dict, engine: str, ai_line: str, filled: int
     body_top = title_bottom + 48
     chosen = None
     for size in BODY_SIZES:
-        blocks = [plan_block(it, k, size, engine) for it, k in zip(items, kinds) if k != "footnote"]
-        feet = [plan_block(it, k, size, engine) for it, k in zip(items, kinds) if k == "footnote"]
+        blocks = [plan_block(it, k, size, engine) | {"item": i}
+                  for i, (it, k) in enumerate(zip(items, kinds)) if k != "footnote"]
+        feet = [plan_block(it, k, size, engine) | {"item": i}
+                for i, (it, k) in enumerate(zip(items, kinds)) if k == "footnote"]
         body_h = sum(b["height"] for b in blocks) + 30 * max(0, len(blocks) - 1)
         foot_h = sum(b["height"] for b in feet) + 16 * max(0, len(feet) - 1)
         floor = SAFE_BOTTOM - (foot_h + 40 if feet else 0)
@@ -216,35 +249,55 @@ def render_scene(scene: dict, spec: dict, engine: str, ai_line: str, filled: int
 
     y = body_top
     for bi, b in enumerate(blocks):
+        fr.use(f"item{b['item']}")
         y = draw_block(fr, b, y, f"body{bi}") + 30
     body_bottom = y - 30
     fy = SAFE_BOTTOM - foot_h
     for k, b in enumerate(feet):
+        fr.use(f"item{b['item']}")
         fy = draw_block(fr, b, fy, f"footnote{k}") + 16
 
     ill = scene.get("illustration")
-    art_box = None
+    art_box, art_spec = None, None
     if ill:
         top, bottom = body_bottom + 44, floor - 44
-        layer = art.illustration(ill["kind"], engine, ill.get("labels", []))
-        lw, lh = layer.w, layer.h
+        labels = ill.get("labels", [])
+        lw, lh = art.nominal_size(ill["kind"])
         scale = min(TEXT_W / lw, (bottom - top) / lh, 1.1)
         if scale * lh >= 180:
-            w, h = lw * scale, lh * scale
-            x0, y0 = (W - w) / 2, top + (bottom - top - h) / 2
+            w, h = round(lw * scale), round(lh * scale)
+            x0, y0 = round((W - w) / 2), round(top + (bottom - top - h) / 2)
             art_box = (x0, y0, x0 + w, y0 + h)
-            fr.paste_layer(layer.img, art_box)
+            art_spec = {"kind": ill["kind"], "labels": labels, "box": art_box}
+            fr.add_layer_1x("illustration", art.render(ill["kind"], engine, labels, w, h), x0, y0)
             fr.note("illustration", art_box)
     problems = check(fr)
     if len(tlines) > 2:
         problems.append(f"title needs {len(tlines)} lines at {tsize}px; shorten it")
     if ill and art_box is None:
         problems.append(f"illustration {ill['kind']!r} omitted: only {slot:.0f} px left")
+
+    def union(bs):
+        return [min(b[0] for b in bs), min(b[1] for b in bs), max(b[2] for b in bs), max(b[3] for b in bs)]
+
+    item_boxes: dict[int, list] = {}
+    for prefix, group in (("body", blocks), ("footnote", feet)):
+        for k, b in enumerate(group):
+            item_boxes[b["item"]] = union([bx for n, bx, _ in fr.boxes
+                                           if n == f"{prefix}{k}" or n.startswith(f"{prefix}{k}[")])
     report = {"engine": engine, "body_size": size, "title_size": tsize, "title_lines": tlines,
               "body_lines": [b["lines"] for b in blocks], "footnotes": [b["lines"] for b in feet],
-              "illustration_box": [round(v) for v in art_box] if art_box else None,
+              "illustration_box": list(art_box) if art_box else None,
               "boxes": [(n, list(b)) for n, b, _ in fr.boxes],
-              "texts": dict(fr.texts), "problems": problems}
+              "item_boxes": dict(sorted(item_boxes.items())),
+              "title_box": union([bx for n, bx, _ in fr.boxes if n.startswith("title[")]),
+              "art": art_spec, "texts": dict(fr.texts), "problems": problems}
+    return fr, report
+
+
+def render_scene(scene: dict, spec: dict, engine: str, ai_line: str, filled: float, total: int):
+    """The settled frame of a scene (every text revealed, every beat at rest) and its layout report."""
+    fr, report = scene_layers(scene, spec, engine, ai_line, filled, total)
     return fr.final(), report
 
 
@@ -253,6 +306,7 @@ def render_end_card(spec: dict, engine: str, ai_line: str):
     wording when the video has no narration, so the card never claims a synthetic voice that is not there. A line
     that is a bare address (support.google.com/youtubekids) is set left to right in the accent colour."""
     fr = Frame(engine)
+    fr.use("card")
     lines = end_card_lines(spec)
     brand, rest = lines[0], lines[1:]
     rest = [ai_line if ln == spec["ai_line"] else ln for ln in rest]

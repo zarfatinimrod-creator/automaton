@@ -1,20 +1,31 @@
-"""Generic, abstract illustrations for the parent-guide frames.
+"""Generic, abstract illustrations for the parent-guide frames, and their motion.
 
 Brand safety is the design brief: no logo, no screenshot, no imitation of any app's look, no red, no
 play-button triangle, no faces. Phones are plain rounded rectangles; videos are plain coloured tiles; icons
 (key, calendar, padlock, magnifier, stopwatch, flag) are built from circles, bars and lines. Layouts are
 mirrored for a right-to-left interface: the first thing sits on the right.
 
-Each illustration draws on its own transparent layer at a nominal size; frame.py scales it into the space
-left between the body text and the brand line.
+Each illustration draws on its own transparent layer at a nominal size (NOMINAL); frame.py scales it into the
+space left between the body text and the bottom of the safe area.
+
+Motion. Every illustration takes `beats`: {beat name: linear progress 0..1} for the beats motion.ART_BEATS lists
+for its kind (a toggle sliding off, a list item highlighting, a lock closing, parts popping in). A missing beat,
+or beats=None, is 1.0: the settled picture, which is the still picture of the first cut. Motion only moves, grows
+or recolours what the still picture shows; it adds nothing the still does not (no digit count on the keypad, no
+tick on a card the source does not tick). Everything stays on the layer, so it can never leave its box.
 """
 
 from __future__ import annotations
 
 import math
 
+from PIL import Image
+
 from canvas import (AMBER, AMBER_BG, BAR, DIM, INK, LINE, MUTED, SKY_SOFT, TEAL, TEAL_MID, TEAL_SOFT, WHITE,
                     YELLOW, YELLOW_SOFT, Frame, s, star_points)
+from motion import ease_back, ease_in_out, ease_out, lerp, lerp_rgb, window
+
+TINY = 0.05  # a part scaled below this is not drawn (it is still invisible, and tiny shapes can invert)
 
 # ---------------------------------------------------------------- primitives
 
@@ -27,7 +38,7 @@ def phone(fr: Frame, x0, y0, w, h, screen=WHITE):
     fr.rrect(sb, w * 0.13, fill=screen)
     cx = x0 + w / 2
     fr.rrect((cx - w * 0.12, sb[1] + w * 0.045, cx + w * 0.12, sb[1] + w * 0.085), w * 0.02,
-             fill=INK if screen == WHITE else (40, 50, 72))
+             fill=INK if tuple(screen) == WHITE else (40, 50, 72))
     return sb
 
 
@@ -54,7 +65,8 @@ def key_icon(fr: Frame, cx, cy, size, color=TEAL):
     fr.rect((x_end + t * 2, cy, x_end + t * 3, cy + size * 0.14), fill=color)
 
 
-def calendar_icon(fr: Frame, x0, y0, w, h):
+def calendar_icon(fr: Frame, x0, y0, w, h, check=1.0):
+    """check: scale of the tick on one day (0 = a plain dot like the others, 1 = the tick badge)."""
     fr.rrect((x0, y0, x0 + w, y0 + h), w * 0.1, fill=WHITE, outline=INK, width=5)
     fr.rrect((x0, y0, x0 + w, y0 + h * 0.26), w * 0.1, fill=TEAL)
     fr.rect((x0, y0 + h * 0.16, x0 + w, y0 + h * 0.26), fill=TEAL)
@@ -67,7 +79,10 @@ def calendar_icon(fr: Frame, x0, y0, w, h):
         for c in range(cols):
             x, y = gx0 + c * dx, gy0 + r * dy
             if (r, c) == (1, 2):
-                check_badge(fr, x, y, w * 0.1)
+                if check < 1:
+                    fr.circle(x, y, w * 0.035, fill=BAR)
+                if check > TINY:
+                    check_badge(fr, x, y, w * 0.1 * check)
             else:
                 fr.circle(x, y, w * 0.035, fill=BAR)
 
@@ -97,12 +112,13 @@ def avatar(fr: Frame, cx, cy, r, shape: str, fill):
         fr.rrect((cx - t, cy - r * 0.38, cx + t, cy + r * 0.38), t, fill=MUTED)
 
 
-def radio(fr: Frame, cx, cy, r, on: bool):
-    if on:
-        fr.circle(cx, cy, r * 1.55, fill=TEAL_MID)  # tap halo
-        check_badge(fr, cx, cy, r)
-    else:
+def radio(fr: Frame, cx, cy, r, on: float):
+    """on: 0 = an empty ring; above 0 the tap halo and the tick badge pop in, scaled by `on`."""
+    if on < 1:
         fr.circle(cx, cy, r, outline=BAR, width=max(3, r * 0.22))
+    if on > TINY:
+        fr.circle(cx, cy, r * 1.55 * on, fill=TEAL_MID)  # tap halo
+        check_badge(fr, cx, cy, r * on)
 
 
 def magnifier(fr: Frame, cx, cy, r, color=INK, width=None):
@@ -112,10 +128,11 @@ def magnifier(fr: Frame, cx, cy, r, color=INK, width=None):
     fr.line([(cx + a, cy + a), (cx + r * 1.55, cy + r * 1.55)], color, width * 1.2, caps=True)
 
 
-def slash(fr: Frame, cx, cy, r, color=INK, width=None):
+def slash(fr: Frame, cx, cy, r, color=INK, width=None, drawn=1.0):
+    """A diagonal stroke from top left to bottom right; `drawn` is how much of it is drawn."""
     width = width or r * 0.2
     a = r * 0.9
-    fr.line([(cx - a, cy - a), (cx + a, cy + a)], color, width, caps=True)
+    fr.line([(cx - a, cy - a), (cx - a + 2 * a * drawn, cy - a + 2 * a * drawn)], color, width, caps=True)
 
 
 def ban_icon(fr: Frame, cx, cy, r, color=INK):
@@ -132,40 +149,47 @@ def flag_icon(fr: Frame, cx, cy, size, color=TEAL):
              (cx + size * 0.4, bot), (x, bot)], fill=color)
 
 
-def padlock(fr: Frame, cx, cy, w, color=TEAL, open_=False, body=None):
-    """Body centred on (cx, cy); shackle above it. open_ lifts the shackle's left leg."""
+def padlock(fr: Frame, cx, cy, w, color=TEAL, open_: float = 0.0, body=None):
+    """Body centred on (cx, cy); shackle above it. open_ (0..1) lifts the shackle's left leg."""
     bh = w * 0.78
     x0, y0, x1, y1 = cx - w / 2, cy - bh / 2, cx + w / 2, cy + bh / 2
     sw = w * 0.13
     sr = w * 0.3
-    lift = w * 0.22 if open_ else 0
+    lift = w * 0.22 * float(open_)
     top = y0 - sr * 2 - w * 0.04 - lift
     # shackle: a U upside down, legs at cx +- sr
     fr.arc((cx - sr, top, cx + sr, top + 2 * sr), 180, 360, color, sw)
     fr.line([(cx + sr - sw / 2, top + sr), (cx + sr - sw / 2, y0 + 4)], color, sw)
     fr.line([(cx - sr + sw / 2, top + sr), (cx - sr + sw / 2, y0 + 4 - lift * 1.6)], color, sw)
     fr.rrect((x0, y0, x1, y1), w * 0.14, fill=body or color)
-    kh = WHITE if (body or color) != WHITE else INK
+    kh = WHITE if tuple(body or color) != WHITE else INK
     fr.circle(cx, cy - bh * 0.06, w * 0.09, fill=kh)
     fr.rrect((cx - w * 0.035, cy - bh * 0.06, cx + w * 0.035, cy + bh * 0.22), w * 0.03, fill=kh)
 
 
-def toggle(fr: Frame, x0, cy, w, h, on: bool):
-    """RTL switch: ON has a teal track with the knob on the left; OFF is grey with the knob on the right."""
-    fr.rrect((x0, cy - h / 2, x0 + w, cy + h / 2), h / 2, fill=TEAL if on else BAR)
-    kx = x0 + h / 2 if on else x0 + w - h / 2
+def toggle(fr: Frame, x0, cy, w, h, on: float):
+    """RTL switch: ON (1) has a teal track with the knob on the left; OFF (0) is grey with the knob on the right.
+    In between, the knob slides and the track colour blends."""
+    on = float(on)
+    fr.rrect((x0, cy - h / 2, x0 + w, cy + h / 2), h / 2, fill=lerp_rgb(BAR, TEAL, on))
+    kx = lerp(x0 + w - h / 2, x0 + h / 2, on)
     fr.circle(kx, cy, h / 2 - 7, fill=WHITE)
 
 
-def tile(fr: Frame, box, fill, bar=True):
+def tile(fr: Frame, box, fill, bar=True, scale=1.0):
+    """A plain video tile (and its title bar), scaled about the centre of its box."""
     x0, y0, x1, y1 = box
+    if scale != 1.0:
+        cx, cy, hw, hh = (x0 + x1) / 2, (y0 + y1) / 2, (x1 - x0) / 2 * scale, (y1 - y0) / 2 * scale
+        x0, y0, x1, y1 = cx - hw, cy - hh, cx + hw, cy + hh
     th = (y1 - y0) * (0.72 if bar else 1)
-    fr.rrect((x0, y0, x1, y0 + th), 14, fill=fill)
+    fr.rrect((x0, y0, x1, y0 + th), 14 * min(1.0, scale), fill=fill)
     if bar:
-        fr.rrect((x1 - (x1 - x0) * 0.78, y0 + th + 12, x1, y0 + th + 26), 7, fill=BAR)
+        fr.rrect((x1 - (x1 - x0) * 0.78, y0 + th + 12 * scale, x1, y0 + th + 26 * scale), 7 * scale, fill=BAR)
 
 
-def stopwatch(fr: Frame, cx, cy, r):
+def stopwatch(fr: Frame, cx, cy, r, sweep=1.0):
+    """sweep: how much of the set time is drawn (the sector and the hand turn from 12 o'clock to 4 o'clock)."""
     fr.rrect((cx - r * 0.16, cy - r * 1.3, cx + r * 0.16, cy - r * 1.08), r * 0.06, fill=INK)
     fr.rrect((cx - r * 0.06, cy - r * 1.12, cx + r * 0.06, cy - r * 0.9), r * 0.03, fill=INK)
     fr.line([(cx + r * 0.72, cy - r * 0.72), (cx + r * 0.9, cy - r * 0.9)], INK, r * 0.12, caps=True)
@@ -176,10 +200,11 @@ def stopwatch(fr: Frame, cx, cy, r):
         fr.line([(cx + r0 * math.sin(a), cy - r0 * math.cos(a)),
                  (cx + r * 0.82 * math.sin(a), cy - r * 0.82 * math.cos(a))], BAR if k % 3 else MUTED,
                 r * 0.05)
-    # a filled sector for the time set, drawn as a fan of thin lines
-    fr.d.pieslice((s(cx - r * 0.62), s(cy - r * 0.62), s(cx + r * 0.62), s(cy + r * 0.62)), -90, 30,
-                  fill=TEAL_SOFT)
-    a = math.radians(120)
+    deg = 120 * sweep
+    if deg >= 0.5:  # the filled sector for the time set
+        fr.d.pieslice((s(cx - r * 0.62), s(cy - r * 0.62), s(cx + r * 0.62), s(cy + r * 0.62)), -90, -90 + deg,
+                      fill=TEAL_SOFT)
+    a = math.radians(deg)
     fr.line([(cx, cy), (cx + r * 0.6 * math.sin(a), cy - r * 0.6 * math.cos(a))], TEAL, r * 0.09, caps=True)
     fr.circle(cx, cy, r * 0.09, fill=INK)
 
@@ -193,14 +218,17 @@ def slider(fr: Frame, x0, x1, cy, frac):
     fr.circle(kx, cy, 26, fill=WHITE, outline=TEAL, width=6)
 
 
-def bubble(fr: Frame, box, text, size=46):
-    x0, y0, x1, y1 = box
-    fr.poly([(x1 - 70, y1 - 2), (x1 - 30, y1 + 34), (x1 - 26, y1 - 2)], fill=WHITE)
-    fr.rrect(box, 26, fill=WHITE)
-    fr.line([(x1 - 70, y1), (x1 - 30, y1 + 34), (x1 - 26, y1)], TEAL, 5)
-    fr.rrect(box, 26, outline=TEAL, width=5)
-    fr.rect((x1 - 66, y1 - 6, x1 - 30, y1 - 1), fill=WHITE)
-    fr.text(((x0 + x1) / 2, (y0 + y1) / 2), text, size, 700, INK, anchor="mm")
+def bubble(fr: Frame, box, text, size=46, scale=1.0):
+    """A speech bubble with its tail at the bottom right, scaled about the centre of its box."""
+    bx0, by0, bx1, by1 = box
+    cx, cy, k = (bx0 + bx1) / 2, (by0 + by1) / 2, scale
+    x0, y0, x1, y1 = cx + (bx0 - cx) * k, cy + (by0 - cy) * k, cx + (bx1 - cx) * k, cy + (by1 - cy) * k
+    fr.poly([(x1 - 70 * k, y1 - 2 * k), (x1 - 30 * k, y1 + 34 * k), (x1 - 26 * k, y1 - 2 * k)], fill=WHITE)
+    fr.rrect((x0, y0, x1, y1), 26 * k, fill=WHITE)
+    fr.line([(x1 - 70 * k, y1), (x1 - 30 * k, y1 + 34 * k), (x1 - 26 * k, y1)], TEAL, 5)
+    fr.rrect((x0, y0, x1, y1), 26 * k, outline=TEAL, width=5)
+    fr.rect((x1 - 66 * k, y1 - 6 * k, x1 - 30 * k, y1 - 1 * k), fill=WHITE)
+    fr.text(((x0 + x1) / 2, (y0 + y1) / 2), text, max(1, round(size * k)), 700, INK, anchor="mm")
 
 
 def kebab(fr: Frame, cx, cy, r, color=INK):
@@ -219,12 +247,21 @@ def cards_icon(fr: Frame, cx, cy, size):
 
 def checklist_icon(fr: Frame, cx, cy, size):
     w, h = size * 0.78, size
-    fr.rrect((cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2), size * 0.08, fill=WHITE, outline=INK, width=6)
-    fr.rrect((cx - w * 0.2, cy - h / 2 - 12, cx + w * 0.2, cy - h / 2 + 16), 8, fill=INK)
+    k = size / 200  # the fixed offsets below were drawn for size 200
+    fr.rrect((cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2), size * 0.08, fill=WHITE, outline=INK, width=6 * k)
+    fr.rrect((cx - w * 0.2, cy - h / 2 - 12 * k, cx + w * 0.2, cy - h / 2 + 16 * k), 8 * k, fill=INK)
     for i in range(3):
         y = cy - h * 0.2 + i * h * 0.22
-        check_mark(fr, cx + w * 0.26, y, size * 0.07, TEAL, width=6)
-        fr.rrect((cx - w * 0.36, y - 7, cx + w * 0.12, y + 7), 7, fill=BAR)
+        check_mark(fr, cx + w * 0.26, y, size * 0.07, TEAL, width=6 * k)
+        fr.rrect((cx - w * 0.36, y - 7 * k, cx + w * 0.12, y + 7 * k), 7 * k, fill=BAR)
+
+
+def arrow_left(fr: Frame, x_from, x_to, y, width, tip, back, half, drawn=1.0):
+    """A plain arrow pointing left (the reading direction): a shaft from x_from to x_to and a head whose point is
+    `tip` px beyond the shaft's end and whose base is `back` px behind it. `drawn` (0..1) draws the shaft out."""
+    x = lerp(x_from, x_to, drawn)
+    fr.line([(x_from, y), (x, y)], MUTED, width, caps=True)
+    fr.poly([(x - tip, y), (x + back, y - half), (x + back, y + half)], fill=MUTED)
 
 
 # ---------------------------------------------------------------- illustrations (one per scene kind)
@@ -234,103 +271,161 @@ def _layer(engine, w, h):
     return Frame(engine, size=(w, h), bg=(0, 0, 0, 0), mode="RGBA")
 
 
-def hook(engine, labels):
+def _beat(beats, name) -> float:
+    return 1.0 if beats is None else float(beats.get(name, 1.0))
+
+
+def hook(engine, labels, beats=None):
+    """A phone rising into place with a blank screen, and the video's own count ("6") popping in on a yellow disc."""
     fr = _layer(engine, 760, 760)
-    sb = phone(fr, 200, 20, 380, 720)
+    dy = (1 - ease_out(_beat(beats, "phone"))) * 160
+    sb = phone(fr, 200, 20 + dy, 380, 720)
     fr.rrect((sb[0] + 40, sb[1] + 110, sb[2] - 40, sb[1] + 330), 26, fill=SKY_SOFT)
-    for i, wdt in enumerate((230, 170, 200)):
+    rows = _beat(beats, "rows")
+    for i, wdt in enumerate((230, 170, 200)):  # plain lines of text filling in from the right
+        e = ease_out(window(rows, i * 0.2, i * 0.2 + 0.6))
+        if e <= 0:
+            continue
         y = sb[1] + 380 + i * 60
-        fr.rrect((sb[2] - 40 - wdt, y, sb[2] - 40, y + 22), 11, fill=BAR)
+        fr.rrect((sb[2] - 40 - max(22, wdt * e), y, sb[2] - 40, y + 22), 11, fill=BAR)
     label = labels[0] if labels else ""
-    fr.circle(580, 190, 150, fill=YELLOW)
-    fr.circle(580, 190, 150, outline=WHITE, width=10)
-    fr.text((580, 196), label, 190, 800, INK, anchor="mm", rtl=False)
+    k = ease_back(_beat(beats, "pop"))
+    if k > TINY:
+        fr.circle(580, 190, 150 * k, fill=YELLOW)
+        fr.circle(580, 190, 150 * k, outline=WHITE, width=10)
+        fr.text((580, 190 + 6 * k), label, max(1, round(190 * k)), 800, INK, anchor="mm", rtl=False)
     return fr
 
 
-def account(engine, labels):
+def account(engine, labels, beats=None):
+    """Sign-in card (a key, then a tick), the calendar's date tick, and the profile avatars popping in one by one."""
     fr = _layer(engine, 900, 780)
     sb = phone(fr, 500, 20, 380, 740)
     # sign-in card: key and a check, no brand marks
     fr.rrect((sb[0] + 30, sb[1] + 100, sb[2] - 30, sb[1] + 270), 26, fill=TEAL_SOFT)
-    key_icon(fr, sb[2] - 110, sb[1] + 185, 120)
-    check_badge(fr, sb[0] + 88, sb[1] + 185, 38)
-    calendar_icon(fr, sb[0] + 80, sb[1] + 340, 200, 200)
+    si = _beat(beats, "signin")
+    k = ease_back(window(si, 0, 0.6))
+    if k > TINY:
+        key_icon(fr, sb[2] - 110, sb[1] + 185, 120 * k)
+    k = ease_back(window(si, 0.4, 1.0))
+    if k > TINY:
+        check_badge(fr, sb[0] + 88, sb[1] + 185, 38 * k)
+    calendar_icon(fr, sb[0] + 80, sb[1] + 340, 200, 200, check=ease_back(_beat(beats, "calendar")))
     for i, wdt in enumerate((220, 160)):
         y = sb[1] + 600 + i * 50
         fr.rrect((sb[2] - 36 - wdt, y, sb[2] - 36, y + 20), 10, fill=BAR)
     # profile avatars: shapes, never faces
-    for (cx, cy), shape, fill in zip(((350, 150), (150, 150), (350, 360), (150, 360)),
-                                     ("star", "moon", "leaf", "plus"),
-                                     (TEAL_SOFT, YELLOW_SOFT, SKY_SOFT, WHITE)):
-        avatar(fr, cx, cy, 82, shape, fill)
-    if labels:
-        fr.rrect((110, 510, 390, 610), 50, fill=TEAL)
-        fr.text((250, 562), labels[0], 58, 700, WHITE, anchor="mm")
+    pr = _beat(beats, "profiles")
+    for i, ((cx, cy), shape, fill) in enumerate(zip(((350, 150), (150, 150), (350, 360), (150, 360)),
+                                                    ("star", "moon", "leaf", "plus"),
+                                                    (TEAL_SOFT, YELLOW_SOFT, SKY_SOFT, WHITE))):
+        k = ease_back(window(pr, i * 0.14, i * 0.14 + 0.45))
+        if k > TINY:
+            avatar(fr, cx, cy, 82 * k, shape, fill)
+    k = ease_back(window(pr, 0.55, 1.0))
+    if labels and k > TINY:
+        fr.rrect((250 - 140 * k, 560 - 50 * k, 250 + 140 * k, 560 + 50 * k), 50 * k, fill=TEAL)
+        fr.text((250, 560 + 2 * k), labels[0], max(1, round(58 * k)), 700, WHITE, anchor="mm")
     return fr
 
 
-def content(engine, labels):
+def content(engine, labels, beats=None):
+    """Four plain option cards drop in; a highlight runs down them and settles on the fourth, which is ticked
+    (the approved-content option); a checklist pops in; a stroke crosses out the magnifier (no search)."""
     fr = _layer(engine, 900, 780)
     sb = phone(fr, 470, 20, 400, 740)
     rx0, rx1 = sb[0] + 26, sb[2] - 26
     fr.rrect((rx1 - 170, sb[1] + 90, rx1, sb[1] + 108), 9, fill=MUTED)
+    cards, sel = _beat(beats, "cards"), _beat(beats, "select")
+    chosen = window(sel, 0.7, 1.0)
+    cx = (rx0 + rx1) / 2
     for i, wdt in enumerate((150, 190, 170, 210)):
+        k = ease_back(window(cards, i * 0.13, i * 0.13 + 0.5))
+        if k <= TINY:
+            continue
         y0 = sb[1] + 140 + i * 132
-        sel = i == 3
-        fr.rrect((rx0, y0, rx1, y0 + 110), 22, fill=TEAL_SOFT if sel else WHITE, outline=TEAL if sel else LINE,
-                 width=5 if sel else 3)
         cy = y0 + 55
-        radio(fr, rx1 - 46, cy, 20, sel)
-        fr.rrect((rx1 - 90 - wdt, cy - 10, rx1 - 90, cy + 10), 10, fill=INK if sel else BAR)
-    checklist_icon(fr, 230, 200, 200)
+        on = i == 3 and chosen > 0
+        X = lambda x: cx + (x - cx) * k  # noqa: E731 - scale about the card's centre
+        fr.rrect((X(rx0), cy - 55 * k, X(rx1), cy + 55 * k), 22 * k, fill=TEAL_SOFT if on else WHITE,
+                 outline=TEAL if on else LINE, width=5 if on else 3)
+        radio(fr, X(rx1 - 46), cy, 20 * k, ease_back(chosen) if i == 3 else 0.0)
+        fr.rrect((X(rx1 - 90 - wdt), cy - 10 * k, X(rx1 - 90), cy + 10 * k), 10 * k,
+                 fill=INK if on else BAR)
+    if 0 < sel < 1:  # the moving highlight
+        y0 = sb[1] + 140 + ease_in_out(window(sel, 0, 0.7)) * 3 * 132
+        fr.rrect((rx0, y0, rx1, y0 + 110), 22, outline=TEAL, width=5)
+    k = ease_back(window(sel, 0, 0.5))
+    if k > TINY:
+        checklist_icon(fr, 230, 200, 200 * k)
     magnifier(fr, 205, 555, 70, color=MUTED)
-    slash(fr, 230, 580, 120, color=INK, width=18)
+    ns = ease_out(_beat(beats, "nosearch"))
+    if ns > 0:
+        slash(fr, 230, 580, 120, color=INK, width=18, drawn=ns)
     return fr
 
 
-def keypad(fr: Frame, cx, cy, pitch, r):
-    """A generic 3x4 keypad of plain dots: says "a code", not how many digits it has."""
+def keypad(fr: Frame, cx, cy, pitch, r, sweep=1.0):
+    """A generic 3x4 keypad of plain dots: says "a code", not how many digits it has. `sweep` runs a light across
+    every key in reading order (right to left, top to bottom), so it never stops on a count."""
+    k = 0
     for row in range(4):
-        for col in range(3):
+        for col in (2, 1, 0):
             if row == 3 and col != 1:
                 continue
             x, y = cx + (col - 1) * pitch, cy + (row - 1.5) * pitch
-            fr.circle(x, y, r, fill=WHITE, outline=TEAL, width=5)
+            glow = 0.0 if not 0 < sweep < 1 else max(0.0, 1 - abs(sweep - (0.12 + 0.76 * k / 9)) / 0.14)
+            fr.circle(x, y, r, fill=lerp_rgb(WHITE, TEAL_MID, glow), outline=TEAL, width=5)
+            k += 1
 
 
-def passcode(engine, labels):
-    """A padlock over a generic keypad (the code), "או", and a made-up sum card (the multiplication question)."""
+def passcode(engine, labels, beats=None):
+    """A padlock over a generic keypad (the code), "או", and a made-up sum card (the multiplication question).
+    A light runs over the keypad, the sum card pops in beside "או", and the padlock opens: either one opens the
+    settings."""
     fr = _layer(engine, 900, 560)
-    padlock(fr, 720, 200, 150, open_=True)
-    keypad(fr, 720, 400, 62, 22)
+    padlock(fr, 720, 200, 150, open_=ease_out(_beat(beats, "open")))
+    keypad(fr, 720, 400, 62, 22, sweep=_beat(beats, "keys"))
     sum_label = next((l for l in labels if any(ch.isdigit() for ch in l)), "")
     word = next((l for l in labels if l != sum_label), "")
-    fr.text((450, 330), word, 72, 700, MUTED, anchor="mm")
-    fr.rrect((40, 230, 360, 430), 30, fill=WHITE, outline=INK, width=6)
-    fr.text((200, 332), sum_label, 64, 700, INK, anchor="mm", rtl=False)
+    k = ease_back(_beat(beats, "or"))
+    if k > TINY:
+        fr.text((450, 330), word, max(1, round(72 * k)), 700, MUTED, anchor="mm")
+        fr.rrect((200 - 160 * k, 330 - 100 * k, 200 + 160 * k, 330 + 100 * k), 30 * k, fill=WHITE, outline=INK,
+                 width=6)
+        fr.text((200, 330 + 2 * k), sum_label, max(1, round(64 * k)), 700, INK, anchor="mm", rtl=False)
     return fr
 
 
-def search(engine, labels):
+def search(engine, labels, beats=None):
+    """A loose grid of plain tiles under a magnifier; a generic switch slides off; an arrow draws out leftwards to a
+    smaller grid. The smaller grid carries nothing: fewer, not "checked"."""
     fr = _layer(engine, 900, 640)
+    grid = _beat(beats, "grid")
     fills = (TEAL_SOFT, YELLOW_SOFT, SKY_SOFT, SKY_SOFT, TEAL_SOFT, YELLOW_SOFT, YELLOW_SOFT, SKY_SOFT, TEAL_SOFT)
     for i, f in enumerate(fills):  # before: a loose grid, on the right
         c, r = i % 3, i // 3
         x1 = 880 - c * 128
         y0 = 40 + r * 150
-        tile(fr, (x1 - 112, y0, x1, y0 + 120), f)
-    magnifier(fr, 690, 230, 95, color=INK)
+        k = ease_back(window(grid, i * 0.05, i * 0.05 + 0.5))
+        if k > TINY:
+            tile(fr, (x1 - 112, y0, x1, y0 + 120), f, scale=k)
+    k = ease_back(window(grid, 0.4, 1.0))
+    if k > TINY:
+        magnifier(fr, 690, 230, 95 * k, color=INK)
     # the switch that turns search off, then an arrow leftwards (RTL reading order)
-    toggle(fr, 400, 250, 120, 62, on=False)
-    fr.line([(505, 350), (415, 350)], MUTED, 10, caps=True)
-    fr.poly([(395, 350), (430, 322), (430, 378)], fill=MUTED)
-    # after: fewer tiles, and nothing on them - a tick would read as "checked", which the help center does not say
+    toggle(fr, 400, 250, 120, 62, on=1 - ease_in_out(_beat(beats, "switch")))
+    fewer = _beat(beats, "fewer")
+    a = ease_out(window(fewer, 0, 0.4))
+    if a > TINY:
+        arrow_left(fr, 505, 415, 350, 10, tip=20, back=15, half=28, drawn=a)
     for i, f in enumerate((TEAL_SOFT, YELLOW_SOFT, SKY_SOFT, TEAL_SOFT)):
         c, r = i % 2, i // 2
         x1 = 350 - c * 170
         y0 = 150 + r * 190
-        tile(fr, (x1 - 150, y0, x1, y0 + 150), f)
+        k = ease_back(window(fewer, 0.3 + i * 0.1, 0.7 + i * 0.1))
+        if k > TINY:
+            tile(fr, (x1 - 150, y0, x1, y0 + 150), f, scale=k)
     return fr
 
 
@@ -342,105 +437,164 @@ def history_icon(fr: Frame, cx, cy, r):
     fr.line([(cx, cy), (cx + r * 0.4, cy + r * 0.2)], INK, r * 0.12, caps=True)
 
 
-def history(engine, labels):
-    """Left: a few tiles, one of them with an amber "!" (unwanted content can still turn up). Right: the history
-    list, its rows struck through (turning search off deletes the profile's watch and search history)."""
+def history(engine, labels, beats=None):
+    """Left: a few tiles; an amber "!" pops onto one (unwanted content can still turn up). Right: the history list,
+    struck through row by row, right to left (turning search off deletes the profile's watch and search history)."""
     fr = _layer(engine, 900, 600)
     history_icon(fr, 790, 110, 70)
+    erase = _beat(beats, "erase")
     for i, wdt in enumerate((300, 250, 280, 220)):
         y = 230 + i * 90
         fr.rrect((860 - wdt, y, 860, y + 30), 15, fill=BAR)
-        fr.line([(860 - wdt - 14, y + 15), (874, y + 15)], MUTED, 7, caps=True)
+        e = ease_out(window(erase, i * 0.18, i * 0.18 + 0.46))
+        if e > 0:
+            fr.line([(lerp(874, 860 - wdt - 14, e), y + 15), (874, y + 15)], MUTED, 7, caps=True)
+    warn = ease_back(_beat(beats, "warn"))
     for i, f in enumerate((TEAL_SOFT, SKY_SOFT, YELLOW_SOFT, TEAL_SOFT)):
         c, r = i % 2, i // 2
         x1 = 420 - c * 190
         y0 = 90 + r * 230
         tile(fr, (x1 - 170, y0, x1, y0 + 180), f)
-        if i == 1:
-            fr.circle(x1 - 30, y0 + 30, 34, fill=AMBER_BG, outline=AMBER, width=6)
-            fr.rrect((x1 - 35, y0 + 10, x1 - 25, y0 + 36), 5, fill=AMBER)
-            fr.circle(x1 - 30, y0 + 47, 6, fill=AMBER)
+        if i == 1 and warn > TINY:
+            cx, cy, k = x1 - 30, y0 + 30, warn
+            fr.circle(cx, cy, 34 * k, fill=AMBER_BG, outline=AMBER, width=6)
+            fr.rrect((cx - 5 * k, cy - 20 * k, cx + 5 * k, cy + 6 * k), 5 * k, fill=AMBER)
+            fr.circle(cx, cy + 17 * k, 6 * k, fill=AMBER)
     return fr
 
 
-def timer(engine, labels):
+def timer(engine, labels, beats=None):
+    """The stopwatch sweeps to the time set and the slider moves to it; at the end the phone screen dims, its
+    padlock closes and the speech bubble pops up."""
     fr = _layer(engine, 900, 760)
-    stopwatch(fr, 230, 250, 150)
-    slider(fr, 70, 400, 520, 0.62)
-    sb = phone(fr, 500, 20, 380, 720, screen=DIM)
-    padlock(fr, (sb[0] + sb[2]) / 2, sb[1] + 250, 130, color=WHITE, body=WHITE)
-    if labels:
-        bubble(fr, (sb[0] + 20, sb[1] + 420, sb[2] - 20, sb[1] + 530), labels[0], 46)
+    stopwatch(fr, 230, 250, 150, sweep=ease_out(_beat(beats, "sweep")))
+    slider(fr, 70, 400, 520, lerp(0.12, 0.62, ease_in_out(_beat(beats, "slide"))))
+    lock = _beat(beats, "lock")
+    dim = ease_in_out(window(lock, 0, 0.5))
+    sb = phone(fr, 500, 20, 380, 720, screen=lerp_rgb(WHITE, DIM, dim))
+    lock_colour = lerp_rgb(TEAL, WHITE, dim)
+    padlock(fr, (sb[0] + sb[2]) / 2, sb[1] + 250, 130, color=lock_colour, body=lock_colour,
+            open_=1 - ease_out(window(lock, 0.2, 0.7)))
+    k = ease_back(window(lock, 0.45, 1.0))
+    if labels and k > TINY:
+        bubble(fr, (sb[0] + 20, sb[1] + 420, sb[2] - 20, sb[1] + 530), labels[0], 46, scale=k)
     return fr
 
 
-def block(engine, labels):
-    """Blocking: a video tile with a generic three-dot button, a plain two-row menu, and the tile greyed out."""
+def block(engine, labels, beats=None):
+    """Blocking: a video tile whose generic three-dot button is tapped, a plain two-row menu that opens, and an
+    arrow to the same tile greyed out with a ban sign."""
     fr = _layer(engine, 900, 600)
     # the video tile and its generic three-dot button (top corner, left in RTL)
     fr.rrect((470, 30, 870, 270), 24, fill=SKY_SOFT)
     fr.rrect((520, 290, 870, 306), 8, fill=BAR)
+    tap = _beat(beats, "tap")
+    if 0 < tap < 1:  # a tap halo that grows and shrinks behind the button
+        fr.circle(520, 80, 34 + 22 * math.sin(math.pi * tap), fill=TEAL_MID)
     fr.circle(520, 80, 34, fill=WHITE)
     kebab(fr, 520, 80, 6)
-    # menu: two plain rows
-    fr.rrect((500, 330, 870, 560), 24, fill=WHITE, outline=LINE, width=4)
-    rows = labels or ["", ""]
-    for i, (lab, icon) in enumerate(zip(rows, ("ban", "flag"))):
-        cy = 390 + i * 110
-        if icon == "ban":
-            ban_icon(fr, 820, cy, 26)
-        else:
-            flag_icon(fr, 820, cy, 58)
-        fr.text((770, cy + 16), lab, 46, 600, INK)
-        if i == 0:
-            fr.line([(530, cy + 55), (840, cy + 55)], LINE, 3)
+    # menu: two plain rows, opening downwards
+    mh = 230 * ease_out(_beat(beats, "menu"))
+    if mh > 8:
+        fr.rrect((500, 330, 870, 330 + mh), 24, fill=WHITE, outline=LINE, width=4)
+        rows = labels or ["", ""]
+        for i, (lab, icon) in enumerate(zip(rows, ("ban", "flag"))):
+            cy = 390 + i * 110
+            if 330 + mh < cy + 40:
+                continue  # the menu has not opened this far yet
+            if icon == "ban":
+                ban_icon(fr, 820, cy, 26)
+            else:
+                flag_icon(fr, 820, cy, 58)
+            fr.text((770, cy + 16), lab, 46, 600, INK)
+            if i == 0:
+                fr.line([(530, cy + 55), (840, cy + 55)], LINE, 3)
     # outcome of blocking: the tile greys out
-    fr.rrect((40, 130, 400, 370), 24, fill=BAR)
-    fr.circle(220, 250, 68, fill=WHITE)
-    ban_icon(fr, 220, 250, 52)
-    fr.line([(462, 250), (438, 250)], MUTED, 8, caps=True)  # an arrow from the video to the result, leftwards
-    fr.poly([(418, 250), (442, 234), (442, 266)], fill=MUTED)
+    bl = _beat(beats, "blocked")
+    k = ease_back(window(bl, 0.3, 0.8))
+    if k > TINY:
+        fr.rrect((220 - 180 * k, 250 - 120 * k, 220 + 180 * k, 250 + 120 * k), 24 * k, fill=BAR)
+    k = ease_back(window(bl, 0.5, 1.0))
+    if k > TINY:
+        fr.circle(220, 250, 68 * k, fill=WHITE)
+        ban_icon(fr, 220, 250, 52 * k)
+    a = ease_out(window(bl, 0, 0.35))
+    if a > TINY:  # an arrow from the video to the result, leftwards
+        arrow_left(fr, 462, 438, 250, 8, tip=20, back=4, half=16, drawn=a)
     return fr
 
 
-def report(engine, labels):
-    """Reporting: a flag and three plain reason chips; signed in, the reported video is also blocked (a key, then a
-    greyed tile with the ban sign)."""
+def report(engine, labels, beats=None):
+    """Reporting: a flag and three plain reason chips growing in; signed in, the reported video is also blocked (a
+    key, then a greyed tile with the ban sign)."""
     fr = _layer(engine, 900, 560)
-    flag_icon(fr, 760, 90, 110)
+    chips = _beat(beats, "chips")
+    k = ease_back(window(chips, 0, 0.45))
+    if k > TINY:
+        flag_icon(fr, 760, 90, 110 * k)
     for i, wdt in enumerate((330, 270, 200)):
+        e = ease_out(window(chips, 0.25 + i * 0.15, 0.7 + i * 0.15))
+        if e <= TINY:
+            continue
         y = 190 + i * 100
-        fr.rrect((880 - wdt, y, 880, y + 70), 35, fill=WHITE, outline=TEAL, width=4)
-        fr.rrect((880 - wdt + 44, y + 27, 836, y + 43), 8, fill=BAR)
-    fr.circle(360, 110, 80, fill=TEAL_SOFT)
-    key_icon(fr, 360, 110, 110)
-    fr.rrect((170, 250, 460, 450), 24, fill=BAR)
-    fr.circle(315, 350, 60, fill=WHITE)
-    ban_icon(fr, 315, 350, 46)
+        w = max(70, wdt * e)  # a chip grows from its right end
+        fr.rrect((880 - w, y, 880, y + 70), 35, fill=WHITE, outline=TEAL, width=4)
+        if w - 88 > 16:
+            fr.rrect((880 - w + 44, y + 27, 836, y + 43), 8, fill=BAR)
+    signed = _beat(beats, "signed")
+    k = ease_back(window(signed, 0, 0.5))
+    if k > TINY:
+        fr.circle(360, 110, 80 * k, fill=TEAL_SOFT)
+        key_icon(fr, 360, 110, 110 * k)
+    k = ease_back(window(signed, 0.35, 0.85))
+    if k > TINY:
+        fr.rrect((315 - 145 * k, 350 - 100 * k, 315 + 145 * k, 350 + 100 * k), 24 * k, fill=BAR)
+    k = ease_back(window(signed, 0.5, 1.0))
+    if k > TINY:
+        fr.circle(315, 350, 60 * k, fill=WHITE)
+        ban_icon(fr, 315, 350, 46 * k)
     return fr
 
 
-def recap(engine, labels):
+def recap(engine, labels, beats=None):
+    """The six step icons popping in one after another, first step on the right."""
     fr = _layer(engine, 900, 330)
-    draws = (lambda cx, cy: key_icon(fr, cx, cy, 86),
-             lambda cx, cy: cards_icon(fr, cx, cy, 90),
-             lambda cx, cy: padlock(fr, cx, cy + 16, 62),
-             lambda cx, cy: magnifier(fr, cx - 10, cy - 10, 26, color=TEAL),
-             lambda cx, cy: stopwatch(fr, cx, cy + 8, 34),
-             lambda cx, cy: flag_icon(fr, cx, cy, 70))
+    draws = (lambda cx, cy, k: key_icon(fr, cx, cy, 86 * k),
+             lambda cx, cy, k: cards_icon(fr, cx, cy, 90 * k),
+             lambda cx, cy, k: padlock(fr, cx, cy + 16 * k, 62 * k),
+             lambda cx, cy, k: magnifier(fr, cx - 10 * k, cy - 10 * k, 26 * k, color=TEAL),
+             lambda cx, cy, k: stopwatch(fr, cx, cy + 8 * k, 34 * k),
+             lambda cx, cy, k: flag_icon(fr, cx, cy, 70 * k))
+    icons = _beat(beats, "icons")
     for i, draw in enumerate(draws):  # first step on the right; the grid is centred on the 900 px layer
+        k = ease_back(window(icons, i * 0.1, i * 0.1 + 0.5))
+        if k <= TINY:
+            continue
         cx = 720 - (i % 3) * 270
         cy = 80 + (i // 3) * 170
-        fr.circle(cx, cy, 72, fill=TEAL_SOFT)
-        draw(cx, cy)
+        fr.circle(cx, cy, 72 * k, fill=TEAL_SOFT)
+        draw(cx, cy, k)
     return fr
 
 
 KINDS = {"hook": hook, "account": account, "content": content, "passcode": passcode, "search": search,
          "history": history, "timer": timer, "block": block, "report": report, "recap": recap}
+NOMINAL = {"hook": (760, 760), "account": (900, 780), "content": (900, 780), "passcode": (900, 560),
+           "search": (900, 640), "history": (900, 600), "timer": (900, 760), "block": (900, 600),
+           "report": (900, 560), "recap": (900, 330)}
 
 
-def illustration(kind: str, engine: str, labels: list[str]) -> Frame:
+def nominal_size(kind: str) -> tuple[int, int]:
     if kind not in KINDS:
         raise ValueError(f"unknown illustration kind {kind!r}; known: {sorted(KINDS)}")
-    return KINDS[kind](engine, labels)
+    return NOMINAL[kind]
+
+
+def illustration(kind: str, engine: str, labels: list[str], beats: dict[str, float] | None = None) -> Frame:
+    nominal_size(kind)
+    return KINDS[kind](engine, labels, beats)
+
+
+def render(kind: str, engine: str, labels: list[str], w: int, h: int, beats: dict[str, float] | None = None):
+    """The illustration at the given beats as a w x h RGBA image (1x), ready to composite at its box."""
+    return illustration(kind, engine, labels, beats).img.resize((w, h), Image.LANCZOS)

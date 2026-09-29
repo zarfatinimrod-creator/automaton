@@ -7,14 +7,22 @@ Order of work, and where it stops:
   1. spec.validate()  - an unsourced scene, a quote not on its cited line, an unsourced number, an unvowelised
                         narration line or an end card without the AI and non-affiliation lines -> exit 2, nothing
                         written.
-  2. frames           - one 1080x1920 PNG per scene plus the end card; any layout problem -> exit 3.
+  2. frames           - one 1080x1920 PNG per scene plus the end card, each the scene's settled state (every text
+                        revealed, every illustration beat at rest); any layout problem -> exit 3.
   3. narration        - per line, with measured timings; or, with --voice none, each scene lasts
                         max(3.5 s, reading time) and the video gets a silent AAC track.
      reading time     - every scene must stay on screen long enough to read all its text at 14 characters a
-                        second (spec.reading_chars: title, body, footnotes, illustration labels). A narrated scene
-                        may hold up to MAX_HOLD_S of silence after its last line for that; a scene that would need
-                        more -> exit 4, and the fix is less text or more narration, not a longer silent still.
-  4. ffmpeg           - H.264 yuv420p, BT.709 matrix and colour tags (phones and browsers assume BT.709 for HD;
+                        second (spec.reading_chars: title, body, footnotes, illustration labels), counted from when
+                        each text appears (motion.reading_need: a line revealed with the last narration line cannot
+                        be read before it). A narrated scene may hold up to MAX_HOLD_S of silence after its last line
+                        for that; a scene that would need more -> exit 4, and the fix is less text, an earlier reveal
+                        or more narration, not a longer silent still.
+  4. motion           - compose.Video draws every video frame from the scenes' layers and the spec's `motion` keys
+                        (motion.py): texts ease in at the narration line that speaks them, the illustration plays
+                        its beats, scenes slide in (<= 300 ms), the progress bar fills continuously, and the hook's
+                        question moves from 0.0 s. Nothing is drawn outside y 180-1500. Frames go to ffmpeg as raw
+                        RGB, so a re-render is byte-identical.
+     ffmpeg           - H.264 yuv420p, BT.709 matrix and colour tags (phones and browsers assume BT.709 for HD;
                         an untagged BT.601 encode shifts the palette), 30 fps; AAC 48 kHz stereo, the mono
                         narration copied to both channels and loudness-normalised in two passes to -14 LUFS
                         integrated, true peak under -1.5 dBTP after encoding (platforms turn loud videos down but do not turn quiet ones up);
@@ -36,6 +44,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+import motion as M
 import spec as S
 
 HERE = Path(__file__).resolve().parent
@@ -80,15 +89,25 @@ def silent_duration(scene: dict, title_seen: bool = False) -> float:
     return quantize(max(MIN_SCENE_S, reading_time(scene, title_seen)) + float(scene.get("hold_extra_s", 0)))
 
 
-def scene_timing(narrated_s: float, scene: dict, title_seen: bool = False) -> dict:
+def revealed_reading_time(scene: dict, title_seen: bool, cues: list[dict]) -> float:
+    """Seconds until everything is read when each text can only be read once it has appeared (motion.py): the
+    reading rule applied in reveal order. Equals reading_time() when everything is on screen from the start."""
+    return M.reading_need(M.reading_elements(scene, title_seen, cues), CPS)
+
+
+def scene_timing(narrated_s: float, scene: dict, title_seen: bool = False, cues: list[dict] | None = None) -> dict:
     """A narrated scene's length. narrated_s is lead + lines + gaps + tail. The scene lasts until its text can be
-    read at CPS; the silence that adds after the narration is the hold, and a hold over MAX_HOLD_S marks the scene
-    too dense (render.py refuses it)."""
+    read at CPS - counted from when each text appears, given the cues - and until its motion has come to rest; the
+    silence that adds after the narration is the hold, and a hold over MAX_HOLD_S marks the scene too dense
+    (render.py refuses it)."""
     base = narrated_s + float(scene.get("hold_extra_s", 0))
     need = reading_time(scene, title_seen)
-    dur = quantize(max(base, need))
+    revealed = revealed_reading_time(scene, title_seen, cues) if cues else need
+    rest = M.motion_end(scene, cues) if cues else 0.0
+    dur = quantize(max(base, need, revealed, rest))
     return {"duration": dur, "narrated_s": round(narrated_s, 3), "reading_s": round(need, 2),
-            "hold_s": round(dur - narrated_s, 3), "too_dense": need - base > MAX_HOLD_S}
+            "reading_revealed_s": round(revealed, 2), "motion_rest_s": round(rest, 2),
+            "hold_s": round(dur - narrated_s, 3), "too_dense": max(need, revealed, rest) - base > MAX_HOLD_S}
 
 
 def silent_cues(scene: dict, dur: float) -> list[dict]:
@@ -101,6 +120,21 @@ def silent_cues(scene: dict, dur: float) -> list[dict]:
         cues.append({"text": ln, "caption": caption_for(scene, j), "start": round(t, 3), "end": round(t + d, 3)})
         t += d
     return cues
+
+
+def silent_scene(scene: dict, title_seen: bool = False) -> tuple[float, list[dict], dict]:
+    """A silent scene: silent_duration(), stretched (whole frames) until its text can be read in reveal order and
+    its motion has come to rest, with the captions spread over the final length."""
+    dur = silent_duration(scene, title_seen)
+    for _ in range(60):
+        cues = silent_cues(scene, dur)
+        revealed = revealed_reading_time(scene, title_seen, cues)
+        need = max(revealed, M.motion_end(scene, cues))
+        if need <= dur + 1e-9:
+            break
+        dur = quantize(need)
+    return dur, cues, {"duration": dur, "reading_s": round(reading_time(scene, title_seen), 2),
+                       "reading_revealed_s": round(revealed, 2)}
 
 
 def srt_time(t: float) -> str:
@@ -198,29 +232,39 @@ def measure_output(mp4: Path) -> dict:
             "true_peak_dbfs": get(r"Peak:\s+(-?[\d.]+) dBFS")}
 
 
-def ffmpeg_cmd(frames: list[Path], durations: list[float], audio: Path | None, measured: dict | None, total: float,
-               title: str, artist: str, mp4: Path) -> list[str]:
-    """The assembly command. audio=None gives a silent stereo track."""
-    cmd = ["ffmpeg", "-y", "-loglevel", "error"]
-    for fp, d in zip(frames, durations):
-        cmd += ["-loop", "1", "-framerate", str(FPS), "-t", f"{d:.6f}", "-i", str(fp)]
-    n = len(frames)
-    graph = ("".join(f"[{k}:v]" for k in range(n)) + f"concat=n={n}:v=1:a=0,"
-             "scale=out_color_matrix=bt709:out_range=tv,format=yuv420p[v]")
+def ffmpeg_cmd(audio: Path | None, measured: dict | None, total: float, title: str, artist: str,
+               mp4: Path) -> list[str]:
+    """The assembly command. The video arrives on stdin as raw 1080x1920 rgb24 frames at FPS (compose.Video.write);
+    audio=None gives a silent stereo track."""
+    cmd = ["ffmpeg", "-y", "-loglevel", "error",
+           "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", "1080x1920", "-framerate", str(FPS), "-i", "pipe:0"]
+    graph = "[0:v]scale=out_color_matrix=bt709:out_range=tv,format=yuv420p[v]"
     if audio is not None:
         cmd += ["-i", str(audio)]
-        graph += f";[{n}:a]{loudnorm_filter(measured)}[a]"
+        graph += f";[1:a]{loudnorm_filter(measured)}[a]"
         amap = "[a]"
     else:
         cmd += ["-f", "lavfi", "-t", f"{total:.6f}", "-i", "anullsrc=r=48000:cl=stereo"]
-        amap = f"{n}:a"
+        amap = "1:a"
     cmd += ["-filter_complex", graph, "-map", "[v]", "-map", amap,
-            "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-tune", "stillimage", "-r", str(FPS), *COLOUR_TAGS,
+            "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-tune", "animation", "-r", str(FPS), *COLOUR_TAGS,
             "-c:a", "aac", "-b:a", "160k", "-ar", "48000", "-ac", "2", "-movflags", "+faststart",
             "-metadata", f"title={title}", "-metadata", f"artist={artist}",
             "-metadata", "comment=Sample, unpublished. Made with AI; synthetic narration. Independent; not "
                          "affiliated with YouTube or Google.", str(mp4)]
     return cmd
+
+
+def encode(video, audio: Path | None, measured: dict | None, total: float, title: str, artist: str, mp4: Path,
+           stop: int | None = None) -> None:
+    """Stream the video's frames into ffmpeg and wait for it (stop: only the first `stop` frames, for tests)."""
+    proc = subprocess.Popen(ffmpeg_cmd(audio, measured, total, title, artist, mp4), stdin=subprocess.PIPE)
+    try:
+        video.write(proc.stdin, stop=stop)
+    finally:
+        proc.stdin.close()
+    if proc.wait() != 0:
+        raise subprocess.CalledProcessError(proc.returncode, "ffmpeg")
 
 
 def tool_versions() -> dict:
@@ -324,19 +368,20 @@ def main(argv=None) -> int:
                 if j < len(lines) - 1:
                     parts.append(np.zeros(int(GAP_S * sr), np.float32))
                     t += GAP_S
-            timing = scene_timing(t + TAIL_S, sc, seen[i])
+            timing = scene_timing(t + TAIL_S, sc, seen[i], cues)
             dur = timing["duration"]
             if timing["too_dense"]:
-                dense.append(f"{sc['id']}: its text needs {timing['reading_s']:.1f} s to read at {CPS:.0f} "
-                             f"characters a second; the narration covers {timing['narrated_s']:.1f} s and a scene may "
-                             f"hold at most {MAX_HOLD_S:.1f} s of silence. Cut text or add narration.")
+                dense.append(f"{sc['id']}: its text needs {timing['reading_revealed_s']:.1f} s to read at {CPS:.0f} "
+                             f"characters a second, counted from when each line appears ({timing['reading_s']:.1f} s "
+                             f"if all were shown at once), and its motion rests at {timing['motion_rest_s']:.1f} s; "
+                             f"the narration covers {timing['narrated_s']:.1f} s and a scene may hold at most "
+                             f"{MAX_HOLD_S:.1f} s of silence. Cut text, reveal it earlier (motion.reveal) or add "
+                             "narration.")
             audio = np.concatenate(parts)
             audio = np.concatenate([audio, np.zeros(int(round(dur * sr)) - len(audio), np.float32)])
             track.append(audio)
         else:
-            dur = silent_duration(sc, seen[i])
-            timing = {"duration": dur, "reading_s": round(reading_time(sc, seen[i]), 2)}
-            cues = silent_cues(sc, dur)
+            dur, cues, timing = silent_scene(sc, seen[i])
         timeline.append({"id": sc["id"], "start": round(t0, 3), "duration": dur, "cues": cues, "timing": timing,
                          "title_seen": seen[i]})
         all_cues += [{**c, "start": round(t0 + c["start"], 3), "end": round(t0 + c["end"], 3)} for c in cues]
@@ -361,8 +406,10 @@ def main(argv=None) -> int:
         sf.write(wav, np.concatenate(track), sr, subtype="PCM_16")
         measured = measure_loudnorm(wav)
     title = f"{spec['brand']} · {spec.get('title_he', stem)}"
-    subprocess.run(ffmpeg_cmd(frames, [seg["duration"] for seg in timeline], wav, measured, total, title,
-                              spec["brand"], mp4), check=True)
+    import compose
+
+    video = compose.Video(spec, timeline, engine, ai_line, FPS)
+    encode(video, wav, measured, total, title, spec["brand"], mp4)
     probe = ffprobe(mp4)
     loudness = ({"target": LOUDNESS, "narration_measured": {k: measured[k] for k in
                                                               ("input_i", "input_tp", "input_lra", "input_thresh")},
@@ -385,7 +432,9 @@ def main(argv=None) -> int:
                   "codec": "H.264 yuv420p + AAC 48 kHz stereo",
                   "colour": "RGB to YUV with the BT.709 matrix, limited range; tagged bt709 primaries, transfer and "
                             "matrix",
-                  "duration_s": round(total, 3), "captions": srt_path.name, "music": None},
+                  "duration_s": round(total, 3), "captions": srt_path.name, "music": None,
+                  "stills": "frames/: each scene's settled still (every text revealed, every beat at rest): the frame "
+                            "the layout checks ran on, and the scene's last video frame outside the progress band"},
         "loudness": loudness,
         "voice": ({"voice": a.voice, "speed": a.speed, **tts.PROVENANCE,
                    "human_review_required": "A native Hebrew listener must approve the narration before anything "
@@ -393,6 +442,15 @@ def main(argv=None) -> int:
         "timing": ({"lead_s": LEAD_S, "gap_s": GAP_S, "tail_s": TAIL_S, "reading_chars_per_second": CPS,
                     "max_hold_s": MAX_HOLD_S} if voiced
                    else {"chars_per_second": CPS, "min_scene_s": MIN_SCENE_S}),
+        "motion": {"reveal_s": M.REVEAL_S, "reveal_lead_s": M.REVEAL_LEAD_S, "stagger_s": M.STAGGER_S,
+                   "rise_px": M.RISE_PX, "transition_s": M.TRANSITION_S,
+                   "transition": "slide in from the left, previous scene out to the right (right-to-left "
+                                 "forward); later pages of one step keep header and title still; the end card "
+                                 "cross-fades",
+                   "progress_bar": "the current step's segment fills continuously across its pages",
+                   "hook": "the first scene's question, its 'start' items and beats move from 0.0 s",
+                   "drawn_band_y": [compose.BAND[1], compose.BAND[3]],
+                   "frames": video.n_frames, "schedule": video.schedule()},
         "font": {**FONT, "sha256": sha256(HERE / FONT["file"])},
         "tools": tool_versions(),
         "scenes": [],
