@@ -1235,8 +1235,8 @@ coded fee, or a mandate collision.
 
   **Reconfirmed, unchanged:** the Israeli teacher-to-teacher sites (`:1249-1251`, now with CrUX weight as the free floor),
   Garmin Connect IQ (`:1233-1234`), Zepp OS (`:1233`), Samsung Galaxy Store (`:1249`), Google Play for Wear OS
-  (`:1247`, `:1525`), Modrinth (`:1244`). The pass also notes line drift in citations to this file; the table above
-  uses the lines as they stand on 28.9.
+  (`:1247`, `:1525`), Modrinth (`:1244`). The pass also notes line drift in citations to this file; the references in the
+  tables were re-pointed on 29.9 to the file after the loop board's entries; those in this paragraph still use the 28.9 lines.
 - **The second refill of 28.9.2026 (tick 9): seven gate refutations by Opus verifiers, for the next sitting to confirm**
   (`research/breadth/REPLENISH-2026-09-28-2.md` §4 holds the evidence and every reopen trigger).
 

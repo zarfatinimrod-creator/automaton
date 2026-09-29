@@ -132,7 +132,9 @@ describe("the owner's checklist is eight steps and stays eight", () => {
     // il-biz-tools now waits on it, first in its asked-now list.
     expect(openOwnerStepsForLine("il-biz-tools").map((s) => s.number)).toEqual([8, 3, 6]);
     // Loop board 29.9.2026 (RULING-2026-09-29-loop.md (b)): what waits on the mailbox, counted once.
-    expect(step8.unlocks).toMatch(/seven written questions, il-biz-tools' publish gate, the pcn874 page, npm's account and Displate's login/);
+    // npm step 9 is proposed, not asked, and Displate is not admitted (ruling (c)): both are qualified so neither reads as
+    // a step on the way (review of the loop-board diff, finding 6).
+    expect(step8.unlocks).toMatch(/seven written questions, il-biz-tools' publish gate, the pcn874 page, npm's account \(proposed step 9, not yet asked\) and Displate's login \(if Displate is admitted\)/);
     expect(step8.unlocks).toMatch(/first among the free steps/);
   });
 
@@ -590,6 +592,9 @@ describe("the Hebrew document has not drifted from the code", () => {
     for (const waits of ["7 שאלות בכתב", "il-biz-tools", "pcn874", "npm", "Displate"]) {
       expect(flat, `the count line does not name "${waits}"`).toContain(waits);
     }
+    // npm is not asked yet and Displate is not admitted: the line says so (review finding 6).
+    expect(flat).toContain("חשבון npm שעוד לא מבוקש");
+    expect(flat).toContain("Displate אם הזירה תתקבל");
     // Stated once in the whole document, and without pressure.
     expect(doc.match(/7 שאלות בכתב/g)).toHaveLength(1);
     expect(item8).not.toMatch(/!|דחוף|שוב ושוב|תזכורת/);
@@ -597,6 +602,8 @@ describe("the Hebrew document has not drifted from the code", () => {
     const step8 = doc.slice(doc.indexOf("## צעד 8"), doc.indexOf("## מה מגיע רק אם"));
     expect(step8).not.toContain("השני ברשימה החינמית");
     expect(step8).toContain("הראשון ברשימה החינמית");
+    // The reason (it unblocks the most) is given once, with the count, not again in the step's own section (finding 5).
+    expect(step8).not.toMatch(/משחרר יותר מכל צעד/);
     const sentence = step8.slice(step8.indexOf("ארבעת הצעדים החינמיים"));
     expect(sentence.indexOf("צעד 8")).toBeGreaterThan(-1);
     expect(sentence.indexOf("צעד 8")).toBeLessThan(sentence.indexOf("הגדרת הרשת של הסביבה"));
@@ -618,6 +625,9 @@ describe("the Hebrew document has not drifted from the code", () => {
   it("carries no personal GitHub account in any repository URL", () => {
     expect(doc).not.toMatch(/github\.com\/(?!mehudak\b)[A-Za-z0-9-]+\/automaton/);
     expect(doc).not.toMatch(/github\.com\/[A-Za-z0-9-]*-creator/);
+    // The rewritten line is in the infinitive like steps 6 and 7, never the masculine imperative (review finding 1).
+    expect(doc).toContain("1. לפתוח את PR #2 בריפו `automaton`");
+    expect(doc).not.toMatch(/^1\. פתח /m);
   });
 
   it("points the USDC line to the booking rule of RULING-2026-09-28-bounty-rail.md §6.2", () => {
