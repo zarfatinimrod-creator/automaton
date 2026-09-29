@@ -12,13 +12,22 @@ name: prize-intake
 #
 # WHAT IT DOES NOT. It files nothing, enters nothing, opens no account and spends
 # nothing. It needs no owner secret. The list has no field stating whether AI or
-# automated solutions are allowed, so that count is written as null with
-# aiRuleFieldInSource false — unmeasured, never zero, never inferred from tags
-# such as `llm` or `agents`, which name a task's subject, not a permission.
+# automated solutions are allowed, so that count is written as null —
+# unmeasured, never zero, never inferred from tags such as `llm` or `agents`,
+# which name a task's subject, not a permission. aiRuleFieldInSource is false
+# while every key is known and null (unknown) once the list grows a key this
+# reader does not read; the commit subject says which.
 #
-# NEVER A FAKE ZERO. On an HTTP error, a redirect, or a body that is not the list
-# the script writes nothing and exits 1, so this job goes red and last week's file
-# stays in place.
+# PARTLY BUILT. This is the list-count half of research/channel-loop/BOARD-LOOP.md
+# §13. The number §13 is for — events with deadlines in the quarter whose rules
+# pages explicitly permit AI-built entries — needs a per-event rules-page read,
+# research/measurements/ai-allowed-events.md and a quarterly calendar entry, none
+# of which is built.
+#
+# NEVER A FAKE ZERO. On an HTTP error, a redirect, a body that is not the list, or
+# a list whose deadlines, prizes, launch dates or registration deadlines mostly do
+# not parse, the script writes nothing and exits 1, so this job goes red and last
+# week's file stays in place.
 #
 # Scheduled workflows run only from the default branch; like algora-supply.yml,
 # this one checks out main and commits the reading there, one series over time
@@ -26,9 +35,13 @@ name: prize-intake
 
 on:
   schedule:
-    # Tuesdays 05:41 UTC. Not on the hour (GitHub delays top-of-the-hour
-    # schedules), and not Monday, when algora-supply.yml runs.
-    - cron: "41 5 * * 2"
+    # Wednesdays 06:47 UTC. Not on the hour (GitHub delays top-of-the-hour
+    # schedules), and at a minute no other scheduled workflow uses, so this job
+    # does not start its own push race with another committer to main
+    # (apify-publish.yml daily 05:41, colony.yml hourly :17, algora-supply.yml
+    # Mondays 06:23, render-watch.yml Tuesdays 05:23, pcn874-spec-watch.yml
+    # Mondays 04:17). The rebase-and-retry loop below still covers a race.
+    - cron: "47 6 * * 3"
   workflow_dispatch:
   # Once when the instrument itself lands on main, so the first reading comes the
   # week it merges. Main only: nothing runs from a feature branch. The commit this
@@ -96,7 +109,9 @@ jobs:
             exit 0
           fi
 
-          SUBJECT=$(node -e 'const j=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write("measure(prize-intake): "+j.open+" open of "+j.listed+" listed; AI rule not stated by the list");' "$JSON")
+          # "not stated" only while every key of the list is known; a new key may
+          # state an AI rule, so the subject then says unknown, never "not stated".
+          SUBJECT=$(node -e 'const j=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));const ai=j.aiRuleFieldInSource===false?"AI rule not stated by the list":"AI rule unknown: "+j.unknownFields+" new field(s) to read by hand";process.stdout.write("measure(prize-intake): "+j.open+" open of "+j.listed+" listed; "+ai);' "$JSON")
           # [skip ci] keeps a measurement commit from retriggering the test workflows.
           git commit -m "${SUBJECT} [skip ci]"
 

@@ -7,7 +7,7 @@
  */
 import { afterAll, describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
-import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,6 +41,33 @@ describe("prize-intake.yml — what it is allowed to do", () => {
     expect(Number(hour)).toBeGreaterThanOrEqual(0);
     expect(on.push.branches).toEqual(["main"]);
     expect([...on.push.paths].sort()).toEqual([".github/workflows/prize-intake.yml", "scripts/prize-intake.ts", "src/revenue/prize-intake.ts"]);
+  });
+
+  it("fires at a minute no other scheduled workflow uses, so it starts no push race with another committer to main", () => {
+    const [minute, hour, , , dow] = wf().on.schedule[0].cron.split(" ");
+    /** Does a cron field ("*", "5", "1,7,13", "*\/6", "1-5", "5/10") fire at this value? */
+    const hits = (field: string, value: number): boolean =>
+      field.split(",").some((part) => {
+        const [range, step] = part.split("/");
+        const [lo, hi] = range === "*" ? [0, 59] : range.includes("-") ? range.split("-").map(Number) : [Number(range), step ? 59 : Number(range)];
+        return value >= lo && value <= hi && (value - lo) % Number(step ?? 1) === 0;
+      });
+    const dir = join(ROOT, ".github", "workflows");
+    let others = 0;
+    for (const f of readdirSync(dir).filter((x) => /\.ya?ml$/.test(x) && x !== "prize-intake.yml")) {
+      const other = parse(readFileSync(join(dir, f), "utf8")) as Record<string, any>;
+      for (const s of other?.on?.schedule ?? []) {
+        others += 1;
+        const [m, h, , , d] = String(s.cron).split(" ");
+        const clash = hits(m, Number(minute)) && hits(h, Number(hour)) && hits(d, Number(dow));
+        expect(clash, `${f} "${s.cron}" fires at the same minute as prize-intake.yml`).toBe(false);
+      }
+    }
+    // The comparison ran against the other schedules, not an empty directory.
+    expect(others).toBeGreaterThanOrEqual(5);
+    // The helper itself: apify-publish.yml's daily 05:41 would have clashed with the Tuesday 05:41 this job first took.
+    expect(hits("41", 41) && hits("5", 5) && hits("*", 2)).toBe(true);
+    expect(hits("*/6", 12) && !hits("*/6", 13) && hits("1,7,13", 7) && hits("1-5", 3) && !hits("1-5", 6) && !hits("17", 47)).toBe(true);
   });
 
   it("needs no secret and asks only to write contents", () => {
@@ -138,6 +165,18 @@ exit 0
     const commit = r.calls.find((c) => c.startsWith("git [commit]"));
     expect(commit).toBe("git [commit] [-m] [measure(prize-intake): 9 open of 14 listed; AI rule not stated by the list [skip ci]]");
     expect(r.calls.filter((c) => c === "git [push]")).toHaveLength(1);
+  });
+
+  it("says the AI rule is unknown in the subject when the list grew a field the reader does not know", () => {
+    const box = sandbox();
+    mkdirSync(join(box.dir, "state", "colony"), { recursive: true });
+    const body = JSON.stringify({ data: [...JSON.parse(FIXTURE_TEXT).data, { ...JSON.parse(FIXTURE_TEXT).data[0], ai_generated_submissions: "forbidden" }] });
+    writeFileSync(join(box.dir, "state", "colony", "prize-intake.json"), JSON.stringify(summarisePrizeIntake(body, "2026-09-29T05:41:00Z")));
+    const r = run(box);
+    expect(r.status, r.out).toBe(0);
+    const commit = r.calls.find((c) => c.startsWith("git [commit]"));
+    expect(commit).toBe("git [commit] [-m] [measure(prize-intake): 10 open of 15 listed; AI rule unknown: 1 new field(s) to read by hand [skip ci]]");
+    expect(commit).not.toMatch(/not stated/);
   });
 
   it("does not commit an unchanged reading", () => {

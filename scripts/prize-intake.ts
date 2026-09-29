@@ -6,10 +6,12 @@
  *   pnpm exec tsx scripts/prize-intake.ts
  *   pnpm exec tsx scripts/prize-intake.ts --out /tmp/prize-intake.json
  *
- * Exit 0 only when the file was written. On an HTTP error, a redirect, or a body that is not the list, NOTHING is
- * written and the exit code is 1: a week that could not be read is a missing reading, never a zero. The list carries
- * no field stating whether AI or automated solutions are allowed, so that count is written as null, never inferred
- * (src/revenue/prize-intake.ts).
+ * Exit 0 only when the file was written. On a status other than 200, a redirect, a body that is not the list, or a
+ * list whose deadlines, prizes, launch dates or registration deadlines mostly stopped parsing, NOTHING is written and
+ * the exit code is 1: a week that could not be read is a missing reading, never a zero. The list carries no field
+ * stating whether AI or automated solutions are allowed, so that count is written as null, never inferred; if the list
+ * grows a key the reader does not know, the AI rule is recorded as unknown (src/revenue/prize-intake.ts). This is the
+ * list-count half of BOARD-LOOP §13 only: the per-event rules-page read its number needs is not built.
  */
 import { writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";

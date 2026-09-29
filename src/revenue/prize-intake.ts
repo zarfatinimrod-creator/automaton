@@ -11,14 +11,27 @@
  * (KNOWN_FIELDS — every key seen in the 397 entries read on 29.9.2026). NONE of them states whether AI-generated or
  * automated solutions are allowed or forbidden. Tags such as `llm` or `agents` name the task's subject, not a
  * permission, and a note is free text. So the reader counts what the fields state — open by deadline, registration
- * closed, not yet launched, a stated dollar prize, a note present — and writes the AI-rule counts as `null` with
- * `aiRuleFieldInSource: false`: unmeasured, never 0, and never inferred from tags or prose. A key outside
- * KNOWN_FIELDS is counted (`unknownFields`) but its values are not read; the report asks for it to be read by hand.
+ * closed, not yet launched, a stated dollar prize, a note present — and writes the AI-rule counts as `null`:
+ * unmeasured, never 0, and never inferred from tags or prose. `aiRuleFieldInSource` is `false` only while every key
+ * the list carries is in KNOWN_FIELDS. A key outside KNOWN_FIELDS is counted (`unknownFields`) but its values are not
+ * read, so the moment one appears `aiRuleFieldInSource` becomes `null` — unknown, since the new key may state an AI
+ * rule — and the report asks for it to be read by hand. It is never `true`: this reader reads no AI rule.
  *
- * NEVER A FAKE ZERO. An HTTP error, a redirect, a body that is not the list, an empty list, or a list where more than
- * half the deadlines do not parse (the schema moved) writes NOTHING and exits 1, so the weekly job goes red and last
- * week's file stays. "Open" is judged by calendar date: a deadline on or after the reading's UTC day is open (the list
- * gives dates without a time or zone, so the deadline day itself counts as open).
+ * NEVER A FAKE ZERO. An HTTP status other than 200, a redirect, a body that is not the list, an empty list, or a list
+ * where more than half the stated deadlines, prizes, launch dates or registration deadlines do not parse (the format
+ * moved) writes NOTHING and exits 1, so the weekly job goes red and last week's file stays. Below that threshold, an
+ * open entry whose prize or date is stated but unreadable is counted as such (`openPrizeUnparsed`,
+ * `openLaunchedUnparsed`, `openRegistrationDeadlineUnparsed`) and named in the report, so a 0 beside it is not read as
+ * a real zero. "Open" is judged by calendar date: a deadline on or after the reading's UTC day is open (the list gives
+ * dates without a time or zone, so the deadline day itself counts as open).
+ *
+ * PARTLY BUILT against research/channel-loop/BOARD-LOOP.md §13. The number §13 exists for is the count of events with
+ * deadlines IN THE QUARTER whose rendered RULES PAGES explicitly permit AI-built entries (no human-authorship
+ * attestation), written to research/measurements/ai-allowed-events.md, read quarterly from the measurement calendar,
+ * and killed after two consecutive quarters under 3. This module is only the list-count half: it counts open entries
+ * from the reading day on (not the quarter) and reads no rules page. The rules-page read, the quarterly window, that
+ * measurement file and the calendar entry are NOT built; the report line says so every tick, and CHANNEL_LOOP.md row
+ * 13 should read "partly built", never "built".
  */
 
 import { createHash } from "node:crypto";
@@ -77,13 +90,23 @@ export interface PrizeIntakeMeasurement {
   openWithStatedUsdPrize: number;
   /** The sum of those stated amounts — the list's figures, all places combined, not an expected payout. */
   openStatedUsdPrizeTotal: number;
+  /** Open, with a prize stated but not as a plain dollar amount: not read, so in neither of the two counts above. */
+  openPrizeUnparsed: number;
+  /** Open, with a launch date stated but unreadable: counted neither launched nor not yet launched. */
+  openLaunchedUnparsed: number;
+  /** Open, with a registration deadline stated but unreadable: counted neither closed nor open for registration. */
+  openRegistrationDeadlineUnparsed: number;
   /** Open, carrying a free-text note (read by hand; never parsed). */
   openWithNote: number;
   /** Distinct keys outside KNOWN_FIELDS: counted, their values never read. */
   unknownFields: number;
-  /** false: no field of the list states whether AI or automated solutions are allowed. */
-  aiRuleFieldInSource: false;
-  /** null while aiRuleFieldInSource is false — unmeasured, not zero. */
+  /**
+   * false: every key the list carries is in KNOWN_FIELDS, and none of those states whether AI or automated solutions
+   * are allowed. null: the list carries keys this reader does not know (unknownFields > 0), so whether one of them
+   * states an AI rule is unknown until read by hand. Never true: this reader reads no AI rule.
+   */
+  aiRuleFieldInSource: false | null;
+  /** Always null — unmeasured, not zero. */
   openAiAllowedStated: null;
   openAiNotForbiddenStated: null;
 }
@@ -116,6 +139,17 @@ export function parseStatedUsd(value: unknown): number | null {
   return amount > 0 ? amount : null;
 }
 
+/** A value the list states: present, not null, and not an empty or whitespace-only string. */
+const stated = (value: unknown): boolean =>
+  value !== undefined && value !== null && !(typeof value === "string" && value.trim() === "");
+
+/** The fields besides the deadline whose parsed values feed a count, guarded against format drift like the deadline. */
+const PARSED_FIELDS: readonly (readonly [string, (value: unknown) => unknown])[] = [
+  ["prize", parseStatedUsd],
+  ["launched", parseListDate],
+  ["registration-deadline", parseListDate],
+];
+
 /** The list's text → the numbers. Throws PrizeIntakeError on anything that is not the list. */
 export function summarisePrizeIntake(bodyText: string, measuredAtIso: string): PrizeIntakeMeasurement {
   const at = Date.parse(measuredAtIso);
@@ -134,10 +168,12 @@ export function summarisePrizeIntake(bodyText: string, measuredAtIso: string): P
 
   const unknown = new Set<string>();
   let undatable = 0;
+  const entries: Record<string, unknown>[] = [];
   const open: Record<string, unknown>[] = [];
   data.forEach((raw, i) => {
     if (typeof raw !== "object" || raw === null || Array.isArray(raw)) throw new PrizeIntakeError(`entry ${i} is not an object`);
     const e = raw as Record<string, unknown>;
+    entries.push(e);
     for (const key of Object.keys(e)) if (!KNOWN.has(key)) unknown.add(key);
     const deadline = parseListDate(e.deadline);
     if (deadline === null) undatable += 1;
@@ -146,6 +182,17 @@ export function summarisePrizeIntake(bodyText: string, measuredAtIso: string): P
   if (undatable * 2 > data.length) {
     throw new PrizeIntakeError(`${undatable} of ${data.length} deadlines do not parse; the list's format has moved`);
   }
+  // The same guard for every other parsed field, over the values the list states: a format change must fail the
+  // reading, not be committed as "0 with a stated USD prize" or "0 with registration closed".
+  for (const [field, parse] of PARSED_FIELDS) {
+    const values = entries.map((e) => e[field]).filter(stated);
+    const unparsed = values.filter((v) => parse(v) === null).length;
+    if (unparsed * 2 > values.length) {
+      throw new PrizeIntakeError(`${unparsed} of ${values.length} stated ${field} values do not parse; the list's format has moved`);
+    }
+  }
+  const unparsedAmongOpen = (field: string, parse: (value: unknown) => unknown) =>
+    open.filter((e) => stated(e[field]) && parse(e[field]) === null).length;
 
   const prizes = open.map((e) => parseStatedUsd(e.prize)).filter((p): p is number => p !== null);
   const before = (value: unknown, cmp: (d: string) => boolean) => {
@@ -165,9 +212,13 @@ export function summarisePrizeIntake(bodyText: string, measuredAtIso: string): P
     openNotYetLaunched: open.filter((e) => before(e.launched, (d) => d > today)).length,
     openWithStatedUsdPrize: prizes.length,
     openStatedUsdPrizeTotal: prizes.reduce((a, b) => a + b, 0),
+    openPrizeUnparsed: unparsedAmongOpen("prize", parseStatedUsd),
+    openLaunchedUnparsed: unparsedAmongOpen("launched", parseListDate),
+    openRegistrationDeadlineUnparsed: unparsedAmongOpen("registration-deadline", parseListDate),
     openWithNote: open.filter((e) => typeof e.note === "string" && e.note.trim() !== "").length,
     unknownFields: unknown.size,
-    aiRuleFieldInSource: false,
+    // False only when every key is known; a key this reader does not read may state an AI rule, so that is unknown.
+    aiRuleFieldInSource: unknown.size === 0 ? false : null,
     openAiAllowedStated: null,
     openAiNotForbiddenStated: null,
   };
@@ -177,6 +228,10 @@ const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one :
 /** 861225 → "861,225", without depending on the runtime's locale data. */
 const thousands = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 const headline = (m: PrizeIntakeMeasurement) => `${m.open} open of ${m.listed} listed`;
+const aiRuleShort = (m: PrizeIntakeMeasurement) =>
+  m.aiRuleFieldInSource === false
+    ? "not stated by the list"
+    : `unknown (${plural(m.unknownFields, "new field", "new fields")} to read by hand)`;
 
 export interface RunPrizeIntakeOptions {
   outFile?: string;
@@ -208,7 +263,7 @@ export async function runPrizeIntake(options: RunPrizeIntakeOptions = {}): Promi
       code: 0,
       message:
         `Prize intake: ${headline(m)} (${m.openRegistrationClosed} registration closed, ${m.openWithStatedUsdPrize} with a stated USD prize); ` +
-        `AI rule: not stated by the list. Wrote ${outFile}.`,
+        `AI rule: ${aiRuleShort(m)}. Wrote ${outFile}.`,
     };
   } catch (error) {
     const why = error instanceof Error ? error.message : String(error);
@@ -232,6 +287,9 @@ const COUNTS = [
   "openNotYetLaunched",
   "openWithStatedUsdPrize",
   "openStatedUsdPrizeTotal",
+  "openPrizeUnparsed",
+  "openLaunchedUnparsed",
+  "openRegistrationDeadlineUnparsed",
   "openWithNote",
   "unknownFields",
 ] as const;
@@ -242,12 +300,20 @@ function problemWith(d: Record<string, unknown>): string | null {
   for (const key of COUNTS) if (!isCount(d[key])) return `${key} is not a count`;
   const n = d as unknown as PrizeIntakeMeasurement;
   if (n.open + n.undatable > n.listed) return "more open and undatable than listed";
-  for (const key of ["openRegistrationClosed", "openNotYetLaunched", "openWithStatedUsdPrize", "openWithNote"] as const) {
+  for (const key of [
+    "openRegistrationClosed",
+    "openNotYetLaunched",
+    "openWithStatedUsdPrize",
+    "openPrizeUnparsed",
+    "openLaunchedUnparsed",
+    "openRegistrationDeadlineUnparsed",
+    "openWithNote",
+  ] as const) {
     if (n[key] > n.open) return `${key} exceeds open`;
   }
-  // No field of the list states an AI rule, so this reader never writes an AI count; a file that has one was not
-  // written by it.
-  if (d.aiRuleFieldInSource !== false) return "aiRuleFieldInSource is not false";
+  if (n.openWithStatedUsdPrize + n.openPrizeUnparsed > n.open) return "more open prizes, read and unread, than open";
+  // false exactly when every key was known, null exactly when one was not; never true — this reader reads no AI rule.
+  if (d.aiRuleFieldInSource !== (n.unknownFields === 0 ? false : null)) return "aiRuleFieldInSource does not match unknownFields";
   if (d.openAiAllowedStated !== null || d.openAiNotForbiddenStated !== null) return "it carries an AI-rule count this reader never produces";
   return null;
 }
@@ -280,16 +346,25 @@ export function readPrizeIntake(file: string = PRIZE_INTAKE_FILE, nowMs: number 
   const m = data as PrizeIntakeMeasurement;
 
   const ageDays = Math.max(0, (nowMs - Date.parse(m.measuredAt)) / 86_400_000);
+  const unread = [
+    m.openPrizeUnparsed ? `${plural(m.openPrizeUnparsed, "prize", "prizes")} not stated as a plain $ amount` : "",
+    m.openLaunchedUnparsed ? plural(m.openLaunchedUnparsed, "launch date", "launch dates") : "",
+    m.openRegistrationDeadlineUnparsed ? plural(m.openRegistrationDeadlineUnparsed, "registration deadline", "registration deadlines") : "",
+  ].filter(Boolean);
   let line =
     `Prize-event intake (instrument only; files nothing): ${headline(m)} on the mlcontests list, read ${utcMinute(m.measuredAt)} ` +
     `(${ageDays.toFixed(1)} days ago) — ${m.openRegistrationClosed} with registration already closed, ${m.openNotYetLaunched} not yet launched, ` +
-    `${m.openWithStatedUsdPrize} with a stated USD prize ($${thousands(m.openStatedUsdPrizeTotal)} stated in total)` +
+    `${m.openWithStatedUsdPrize} with a stated USD prize ($${thousands(m.openStatedUsdPrizeTotal)} stated in total, all places combined, not an expected payout)` +
     (m.openWithNote ? `, ${m.openWithNote} with a free-text note to read by hand` : "") +
     (m.undatable ? `, ${m.undatable} listed with a deadline that does not parse (neither open nor closed)` : "") +
-    ". AI or automated solutions allowed: not counted — the list has no field that states it.";
-  if (m.unknownFields) {
-    line += ` The list carries ${plural(m.unknownFields, "field", "fields")} this reader does not know — read them by hand; one may state an AI rule.`;
-  }
+    "." +
+    (unread.length ? ` Stated among the open but not read, so in none of those counts: ${unread.join(", ")}.` : "") +
+    (m.aiRuleFieldInSource === false
+      ? " AI or automated solutions allowed: not counted — none of the list's fields states it."
+      : ` AI or automated solutions allowed: unknown — the list carries ${plural(m.unknownFields, "field", "fields")} this reader does not know, ` +
+        `${m.unknownFields === 1 ? "which may state it; read it" : "any of which may state it; read them"} by hand.`) +
+    " Partly built: this is the list-count half of BOARD-LOOP §13; its number (events with deadlines in the quarter whose rules pages" +
+    " explicitly permit AI-built entries) needs a per-event rules-page read that is not built.";
   if (ageDays > PRIZE_INTAKE_STALE_DAYS) {
     line += ` STALE: read ${ageDays.toFixed(1)} days ago, so the weekly job has missed a run; these are not this week's numbers.`;
   }
