@@ -7,7 +7,7 @@
 #   1. refuses if the working tree is dirty or the branch is already merged
 #   2. git merge --no-ff with the repo's commit trailers
 #   3. pnpm typecheck, then the revenue test suite (the fold-in test is in it)
-#   4. push (unless --no-push)
+#   4. push (unless --no-push); if the remote branch moved, rebase onto it (--rebase-merges) and retry
 #   5. removes the worktree directory and deletes the branch
 #
 # On a merge conflict it stops after step 2 with the conflicted files listed; resolve,
@@ -44,7 +44,19 @@ npx vitest run src/__tests__/revenue >/dev/null 2>&1 || { echo "revenue tests fa
 
 if [ "$PUSH" = 1 ]; then
   echo "== push"
-  for i in 1 2 3 4; do git push -q -u origin "$CURRENT" && break || sleep $((2**i)); done
+  pushed=0
+  for i in 1 2 3 4; do
+    if git push -q -u origin "$CURRENT"; then pushed=1; break; fi
+    # A render bot's commit landing mid-merge rejects the push (ticks 12-13). Replay ours on top, keeping merge commits.
+    if git fetch -q origin "$CURRENT" && ! git merge-base --is-ancestor "origin/$CURRENT" HEAD; then
+      echo "origin/$CURRENT moved; rebasing onto it"
+      git rebase -q --rebase-merges "origin/$CURRENT" || {
+        echo "rebase onto origin/$CURRENT conflicted: resolve, git rebase --continue, then re-run" >&2; exit 1; }
+    else
+      sleep $((2**i))
+    fi
+  done
+  [ "$pushed" = 1 ] || { echo "push failed after 4 attempts" >&2; exit 1; }
 fi
 
 echo "== cleanup"
