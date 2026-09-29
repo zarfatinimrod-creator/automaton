@@ -108,7 +108,7 @@ https://downloads.h-erp.co.il/files/vatr/Guidance874W.pdf	pcn874-h-erp-mirror
 # --------------------------------------------------------------------------------
 https://www.swiftness.co.il/%D7%9B%D7%9C%D7%9C%D7%99-%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA/	sweep2-pension-memsakim-rules
 https://data.gov.il/dataset/ica-changes	sweep2-ica-changes-dataset
-https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/vrp-faq.md	sweep2-google-vrp-faq
+# paused (terms audit, 29.9.2026): googlesource.com — see TERMS_BARRED in scripts/render-watch.mjs — https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/vrp-faq.md	sweep2-google-vrp-faq
 https://github.com/marketplace	sweep2-github-marketplace
 # REMOVED 26.9.2026: https://algora.io/PrimeIntellect-ai/bounties (sweep2-algora-primeintellect).
 # Algora's terms forbid "any robot, spider, or other automatic device, process, or means to access
@@ -117,7 +117,7 @@ https://github.com/marketplace	sweep2-github-marketplace
 # stays as the record; the weekly job must not fetch algora.io again.
 https://huntr.com/guidelines	sweep2-huntr-guidelines
 https://apps.odoo.com/apps/modules/category/Localization/browse	sweep2-odoo-localization
-https://www.metaculus.com/tournament-rules/	sweep2-metaculus-rules
+# paused (terms audit, 29.9.2026): metaculus.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.metaculus.com/tournament-rules/	sweep2-metaculus-rules
 https://github.com/adam2314/linet3	sweep2-linet3-licence
 
 # 7. Faceless YouTube, reassessed against the owner's 25.9 reel (research/faceless-youtube/).
@@ -127,21 +127,21 @@ https://github.com/adam2314/linet3	sweep2-linet3-licence
 # paraphrase with the verbatim policy text before this document is cited in a board
 # decision." Canonical page named in §3.2 of the same file.
 # --------------------------------------------------------------------------------
-https://support.google.com/youtube/answer/1311392	youtube-monetization-policies
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/1311392	youtube-monetization-policies
 # research/colony-sweep/scouts/risk-governance--ai-disclosure.md, "What I could NOT verify":
 # "https://support.google.com/youtube/answer/14328491 — YouTube altered/synthetic content
 # disclosure. **Unverified.**" The reel proposes Sora 2 clips, so this disclosure rule applies.
-https://support.google.com/youtube/answer/14328491	youtube-altered-synthetic-disclosure
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/14328491	youtube-altered-synthetic-disclosure
 # research/colony-sweep/scouts/bounties-grants--creator-funds.md §1 (YPP payout rail):
 # "Snippets from https://support.google.com/adsense/answer/3372975 ,
 # https://support.google.com/adsense/answer/7164703 , https://support.google.com/youtube/answer/14728151"
-https://support.google.com/youtube/answer/14728151	youtube-ypp-payout
-https://support.google.com/adsense/answer/3372975	adsense-payment-3372975
-https://support.google.com/adsense/answer/7164703	adsense-payment-7164703
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/14728151	youtube-ypp-payout
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/adsense/answer/3372975	adsense-payment-3372975
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/adsense/answer/7164703	adsense-payment-7164703
 # research/colony-sweep/scouts/distribution--short-video.md, "Seen as search results / snippets
 # only (2026-09-04), weaker": the two pages that decide whether uploads can be automated at all.
-https://developers.google.com/youtube/v3/determine_quota_cost	youtube-api-quota-cost
-https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits	youtube-api-compliance-audits
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://developers.google.com/youtube/v3/determine_quota_cost	youtube-api-quota-cost
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits	youtube-api-compliance-audits
 # research/tiktok/06-faceless-video-tooling.md §5.1-5.2: the licence and API-guideline texts
 # behind rejection reason 5 ("The licensing trap is structural"), all marked blocked there.
 https://www.pexels.com/license/	pexels-license
@@ -156,30 +156,30 @@ https://pixabay.com/service/license-summary/	pixabay-license-summary
 # --------------------------------------------------------------------------------
 # audits/monetization-gates.md:171-187 - Israel's YPP eligibility, the thresholds, the 1 Feb
 # 2027 doubling to 8,000 watch hours, US withholding and the treaty rate, brand deals.
-https://support.google.com/youtube/answer/7101720?hl=en	youtube-ypp-availability
-https://support.google.com/youtube/answer/72851?hl=en&co=GENIE.Platform%3DAndroid	youtube-ypp-overview
-https://blog.youtube/news-and-events/youtube-partner-program-updates-2027-new-opportunities-earn/	youtube-blog-ypp-2027
-https://support.google.com/youtube/answer/12843009?hl=en	youtube-ypp-2027-terms
-https://support.google.com/youtube/answer/10390801?hl=en	youtube-us-tax
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/7101720?hl=en	youtube-ypp-availability
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/72851?hl=en&co=GENIE.Platform%3DAndroid	youtube-ypp-overview
+# paused (terms audit, 29.9.2026): blog.youtube — see TERMS_BARRED in scripts/render-watch.mjs — https://blog.youtube/news-and-events/youtube-partner-program-updates-2027-new-opportunities-earn/	youtube-blog-ypp-2027
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/12843009?hl=en	youtube-ypp-2027-terms
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/10390801?hl=en	youtube-us-tax
 https://www.irs.gov/pub/irs-trty/israel.pdf	irs-us-israel-treaty
-https://support.google.com/youtube/answer/9385307?hl=en&co=GENIE.CountryCode%3DUS	youtube-creator-partnerships
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/9385307?hl=en&co=GENIE.CountryCode%3DUS	youtube-creator-partnerships
 # scouts/policy.md:486 - "The first-party changelog is https://support.google.com/youtube/answer/10008196, not rendered."
-https://support.google.com/youtube/answer/10008196	youtube-policy-changelog
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/10008196	youtube-policy-changelog
 # audits/monetization-gates.md:186-187, audits/upload-automation.md:211-216 - the private lock on
 # unaudited API uploads, the Developer Policies consent clause, refresh-token expiry, no-appeal wording.
-https://developers.google.com/youtube/v3/docs/videos/insert	youtube-api-videos-insert
-https://developers.google.com/youtube/v3/revision_history	youtube-api-revision-history
-https://developers.google.com/youtube/terms/developer-policies	youtube-developer-policies
-https://support.google.com/youtube/answer/7300965?hl=en	youtube-private-lock-help
-https://developers.google.com/identity/protocols/oauth2	google-oauth2
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://developers.google.com/youtube/v3/docs/videos/insert	youtube-api-videos-insert
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://developers.google.com/youtube/v3/revision_history	youtube-api-revision-history
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://developers.google.com/youtube/terms/developer-policies	youtube-developer-policies
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/7300965?hl=en	youtube-private-lock-help
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://developers.google.com/identity/protocols/oauth2	google-oauth2
 # scouts/upload-automation.md:351 - whether a Brand Account channel shows only the brand.
-https://support.google.com/youtube/answer/7286468?hl=en	youtube-brand-account
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/7286468?hl=en	youtube-brand-account
 # audits/discovery.md:168 - impressions and CTR, the constraint-7 measurement YouTube itself provides.
-https://support.google.com/youtube/answer/7628154?hl=en	youtube-impressions-ctr
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/7628154?hl=en	youtube-impressions-ctr
 # audits/rpm-evidence.md:151 - YouTube's own RPM definition.
-https://support.google.com/youtube/answer/9314357/understand-ad-revenue-analytics	youtube-rpm-definition
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/9314357/understand-ad-revenue-analytics	youtube-rpm-definition
 # audits/production-stack.md:270-272 - the Sora shutdown and Kokoro's model card (licence, training data).
-https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation	openai-sora-discontinuation
+# paused (terms audit, 29.9.2026): openai.com — see TERMS_BARRED in scripts/render-watch.mjs — https://help.openai.com/en/articles/20001152-what-to-know-about-the-sora-discontinuation	openai-sora-discontinuation
 https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md	kokoro-82m-model-card
 
 # --------------------------------------------------------------------------------
@@ -205,17 +205,17 @@ https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md	kokoro-82m-model-c
 # quoted verbatim from the file named above it. Added 27.9.2026.
 # --------------------------------------------------------------------------------
 # research/colony-sweep/scouts/content-seo--hebrew-seo.md:47 — AdSense supported countries.
-https://support.google.com/adsense/answer/9905	adsense-supported-countries
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/adsense/answer/9905	adsense-supported-countries
 # research/faceless-youtube/audits/monetization-gates.md:175-177 — threshold, payment method, PIN.
-https://support.google.com/youtube/answer/14727140	youtube-revenue-threshold
-https://support.google.com/youtube/answer/14728152	youtube-payment-method
-https://support.google.com/youtube/answer/157667	youtube-address-pin
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/14727140	youtube-revenue-threshold
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/14728152	youtube-payment-method
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/157667	youtube-address-pin
 # research/faceless-youtube/audits/discovery.md:169 — reach reports ("Decoding CTR & impressions").
-https://support.google.com/youtube/answer/16767369?hl=en	youtube-decoding-ctr
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/16767369?hl=en	youtube-decoding-ctr
 # research/faceless-youtube/audits/discovery.md:170 — possible first-party "experiments … small creators" line.
-https://support.google.com/youtube/answer/16559651?hl=en	youtube-small-creators
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/youtube/answer/16559651?hl=en	youtube-small-creators
 # research/faceless-youtube/audits/rpm-evidence.md:153 — advertiser content exclusions (AI content).
-https://support.google.com/google-ads/answer/7515513?hl=en	google-ads-content-exclusions
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/google-ads/answer/7515513?hl=en	google-ads-content-exclusions
 # research/faceless-youtube/T1-PRECHECK.md:264, :268 — Upload-Post's analytics fields and AI-label guide.
 https://docs.upload-post.com/api/get-analytics/	upload-post-get-analytics
 https://docs.upload-post.com/guides/ai-content-labeling/	upload-post-ai-content-labeling
@@ -241,7 +241,7 @@ https://uis.unesco.org/en/terms-and-conditions	unesco-uis-terms
 # research/channel-loop/ZERO-TESTS.md row 1 — CrazyGames developer FAQ (submission, payouts, account).
 https://docs.crazygames.com/faq/	crazygames-faq
 # ZERO-TESTS.md row 2 — Astro Theme Catalogue API, paid lane (ordering fields, count).
-https://portal.astro.build/api/themes?price[]=paid	astro-themes-paid
+# paused (terms audit, 29.9.2026): astro.build — see TERMS_BARRED in scripts/render-watch.mjs — https://portal.astro.build/api/themes?price[]=paid	astro-themes-paid
 # ZERO-TESTS.md row 3 — Stripe's country list (Israel as an account country).
 https://stripe.com/global	stripe-global
 # ZERO-TESTS.md row 4 — Stripe Connect cross-border payouts (Express recipients by country).
@@ -249,7 +249,7 @@ https://docs.stripe.com/connect/cross-border-payouts	stripe-cross-border-payouts
 # ZERO-TESTS.md row 5 — Wix App Market payments and billing FAQ (payout countries, $200 floor).
 https://dev.wix.com/docs/build-apps/launch-your-app/pricing-and-billing/payments-and-billing-faqs	wix-app-payments-faq
 # ZERO-TESTS.md row 6 — Topcoder active challenges (auto-scored, prize-bearing).
-https://api.topcoder.com/v6/challenges?status=ACTIVE	topcoder-active-challenges
+# retired (tick 20): Topcoder was killed in tick 18 (docs/REJECTED.md) — https://api.topcoder.com/v6/challenges?status=ACTIVE	topcoder-active-challenges
 # ZERO-TESTS.md row 7 — Bituach Leumi rates for the self-employed.
 https://www.btl.gov.il/Insurance/National%20Insurance/type_list/Self_Employed/Pages/rates.aspx	btl-self-employed-rates
 # ZERO-TESTS.md row 8 — Bituach Leumi minimum for those not working / income not from work.
@@ -330,11 +330,11 @@ https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs	tipalti-pa
 # ZERO-TESTS.md row 34 — Firefox Add-ons (16): the add-on policies.
 https://extensionworkshop.com/documentation/publish/add-on-policies/	amo-add-on-policies
 # ZERO-TESTS.md row 35 — Firefox Add-ons (16): the newest cohort's daily users.
-https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&sort=created&page_size=50	amo-search-newest
+# paused (terms audit, 29.9.2026): addons.mozilla.org — see TERMS_BARRED in scripts/render-watch.mjs — https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&sort=created&page_size=50	amo-search-newest
 # ZERO-TESTS.md row 36 — Firefox Add-ons (16): Hebrew utilities and their users.
-https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=hebrew&page_size=50	amo-search-hebrew
+# paused (terms audit, 29.9.2026): addons.mozilla.org — see TERMS_BARRED in scripts/render-watch.mjs — https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=hebrew&page_size=50	amo-search-hebrew
 # ZERO-TESTS.md row 37 — Firefox Add-ons (16): the Hebrew language pack's audience.
-https://addons.mozilla.org/api/v5/addons/addon/hebrew-il-language-pack/	amo-hebrew-langpack
+# paused (terms audit, 29.9.2026): addons.mozilla.org — see TERMS_BARRED in scripts/render-watch.mjs — https://addons.mozilla.org/api/v5/addons/addon/hebrew-il-language-pack/	amo-hebrew-langpack
 # ZERO-TESTS.md row 38 — Pebble (19): KiezelPay's FAQ; pre-registered kill on a no.
 https://kiezelpay.com/faq/	kiezelpay-faq
 # ZERO-TESTS.md row 39 — Pebble (19): whether the store lists and ranks new faces.
@@ -352,11 +352,11 @@ https://www.spreadshirt.com/blog/2024/06/07/ai-and-designs-dos-donts/	spreadshir
 # ZERO-TESTS.md row 45 — Spreadshirt (17): the developer site (any upload API).
 https://developer.spreadshirt.net/	spreadshirt-developer
 # ZERO-TESTS.md row 46 — PayPal Israel receiving (21): the user agreement.
-https://www.paypal.com/il/legalhub/paypal/useragreement-full?locale.x=en_IL	paypal-il-user-agreement
+# paused (terms audit, 29.9.2026): paypal.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.paypal.com/il/legalhub/paypal/useragreement-full?locale.x=en_IL	paypal-il-user-agreement
 # ZERO-TESTS.md row 47 — PayPal Israel receiving (21): the user agreement at its second recorded address.
-https://www.paypal.com/il/webapps/mpp/ua/useragreement-full	paypal-il-user-agreement-mpp
+# paused (terms audit, 29.9.2026): paypal.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.paypal.com/il/webapps/mpp/ua/useragreement-full	paypal-il-user-agreement-mpp
 # ZERO-TESTS.md row 48 — PayPal Israel receiving (21): linking an Israeli bank account.
-https://www.paypal.com/il/cshelp/article/how-do-i-link-a-bank-account-to-my-paypal-account-help183?locale.x=en_IL	paypal-il-link-bank
+# paused (terms audit, 29.9.2026): paypal.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.paypal.com/il/cshelp/article/how-do-i-link-a-bank-account-to-my-paypal-account-help183?locale.x=en_IL	paypal-il-link-bank
 # ZERO-TESTS.md row 49 — n8n paid templates (20): the template catalogue's ordering.
 https://api.n8n.io/api/templates/search?rows=100&page=1	n8n-templates-search
 # ZERO-TESTS.md row 50 — n8n paid templates (20): the Creator Hub.
@@ -369,11 +369,11 @@ https://api.apify.com/v2/store?search=israel&limit=1000	apify-store-israel-defau
 https://eur-lex.europa.eu/eli/reg/2022/2065/oj	eu-dsa-2022-2065
 # ---- Dispatch 2 (Batch B, rows 53-58): switched on 28.9.2026 16:10 UTC (tick 6, started early at the owner's "תמשיך"). ----
 # ZERO-TESTS.md row 53 — Google Play Books (18), Batch B: the payment-country table.
-https://support.google.com/books/partner/table/6052428?hl=en	play-books-payment-countries
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/books/partner/table/6052428?hl=en	play-books-payment-countries
 # ZERO-TESTS.md row 54 — Google Play Books (18), Batch B.
-https://support.google.com/books/partner/answer/3250840?hl=en	play-books-answer-3250840
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/books/partner/answer/3250840?hl=en	play-books-answer-3250840
 # ZERO-TESTS.md row 55 — Google Play Books (18), Batch B.
-https://support.google.com/books/partner/answer/4490848?hl=en	play-books-answer-4490848
+# paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/books/partner/answer/4490848?hl=en	play-books-answer-4490848
 # ZERO-TESTS.md row 56 — Wix App Market (11), Batch B: Tipalti's payment-method coverage, US-ROW.
 https://help.tipalti.com/hc/en-us/articles/31314361313815-Payment-methods-coverage-US-ROW	tipalti-payment-methods-us-row
 # ZERO-TESTS.md row 57 — Wix App Market (11), Batch B: the App Market guidelines.
@@ -384,13 +384,13 @@ https://dev.wix.com/docs/build-apps/launch-your-app/market-listing/add-your-comp
 # ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Privy's docs root, for whether it sponsors fees on platform-created wallets.
 # https://docs.privy.io/	privy-docs-root  (moot since 28.9 tick 5: Superteam Earn killed on the name rule; the platform pays gas)
 # research/channel-loop/ZERO-TESTS.md row 59 — PayPal Israel (21): the help index, to find the verification article (tick 5, 28.9.2026).
-https://www.paypal.com/il/cshelp/personal	paypal-il-help-index
+# paused (terms audit, 29.9.2026): paypal.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.paypal.com/il/cshelp/personal	paypal-il-help-index
 # research/channel-loop/ZERO-TESTS.md row 60 — n8n paid templates (20): linked from a tick-5 capture (28.9.2026).
 https://n8n.notion.site/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f	n8n-creator-hub-notion
 # research/channel-loop/ZERO-TESTS.md row 61 — Superteam T4 / Israeli off-ramp: linked from a tick-5 capture (28.9.2026).
 https://bit2c.co.il/home/faq	bit2c-faq
 # research/channel-loop/ZERO-TESTS.md row 62 — Firefox Add-ons (16): the reopen check on G4, same endpoint as rows 35-36 (tick 5, 28.9.2026).
-https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=invoice&page_size=50	amo-search-invoice
+# paused (terms audit, 29.9.2026): addons.mozilla.org — see TERMS_BARRED in scripts/render-watch.mjs — https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&q=invoice&page_size=50	amo-search-invoice
 # research/channel-loop/ZERO-TESTS.md row 63 — Spreadshirt (17): a second route, seen in tick-6 search results (28.9.2026).
 https://developer.spreadshirt.net/bin/view/API/Spreadshirt%20Public%20Shop%20API%20Documentation/API%20REST%20Resources/Design%20Details/	spreadshirt-api-design-details
 # research/channel-loop/ZERO-TESTS.md row 64 — Spreadshirt (17): a second route, seen in tick-6 search results (28.9.2026).
@@ -398,33 +398,33 @@ https://www.spreadshop.com/blog/2018/01/30/new-upload-guidelines/	spreadshop-upl
 # research/channel-loop/ZERO-TESTS.md row 65 — Wix App Market (11): the security-and-privacy submission step, linked from a tick-6 capture (28.9.2026).
 https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/add-security-and-privacy-information	wix-security-privacy-info
 # research/channel-loop/ZERO-TESTS.md row 66 — PayPal Israel (21): HELP534, linked from a tick-6 capture (28.9.2026).
-https://www.paypal.com/il/cshelp/article/%D7%9E%D7%93%D7%95%D7%A2-%D7%97%D7%A9%D7%91%D7%95%D7%9F-%D7%94--paypal-%D7%A9%D7%9C%D7%99-%D7%94%D7%95%D7%92%D7%91%D7%9C-help534	paypal-il-help534-limited
+# paused (terms audit, 29.9.2026): paypal.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.paypal.com/il/cshelp/article/%D7%9E%D7%93%D7%95%D7%A2-%D7%97%D7%A9%D7%91%D7%95%D7%9F-%D7%94--paypal-%D7%A9%D7%9C%D7%99-%D7%94%D7%95%D7%92%D7%91%D7%9C-help534	paypal-il-help534-limited
 # research/channel-loop/ZERO-TESTS.md row 67 — n8n paid templates (20): the verified-creator requirements thread, from one tick-6 search (28.9.2026).
 https://community.n8n.io/t/requirements-for-becoming-a-verified-creator/134401	n8n-verified-creator-requirements
 # research/channel-loop/ZERO-TESTS.md row 68 — Indiebook (22), replenish pass (28.9.2026).
-https://indiebook.co.il/	indiebook-home
+# paused (terms audit, 29.9.2026): indiebook.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://indiebook.co.il/	indiebook-home
 # research/channel-loop/ZERO-TESTS.md row 69 — Indiebook (22), replenish pass (28.9.2026).
-https://indiebook.co.il/97/%D7%9E%D7%93%D7%A8%D7%99%D7%9A-%D7%9C%D7%94%D7%A4%D7%A7%D7%AA-%D7%93%D7%95%D7%97-%D7%AA%D7%9E%D7%9C%D7%95%D7%92%D7%99%D7%9D--%D7%A1%D7%95%D7%A4%D7%A8%D7%99%D7%9D-%D7%A2%D7%A6%D7%9E%D7%90%D7%99%D7%99%D7%9D	indiebook-royalty-guide
+# paused (terms audit, 29.9.2026): indiebook.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://indiebook.co.il/97/%D7%9E%D7%93%D7%A8%D7%99%D7%9A-%D7%9C%D7%94%D7%A4%D7%A7%D7%AA-%D7%93%D7%95%D7%97-%D7%AA%D7%9E%D7%9C%D7%95%D7%92%D7%99%D7%9D--%D7%A1%D7%95%D7%A4%D7%A8%D7%99%D7%9D-%D7%A2%D7%A6%D7%9E%D7%90%D7%99%D7%99%D7%9D	indiebook-royalty-guide
 # research/channel-loop/ZERO-TESTS.md row 70 — Indiebook (22), replenish pass (28.9.2026).
-https://indiebook.co.il/product-category/%D7%94%D7%95%D7%A6%D7%90%D7%AA-%D7%A1%D7%A4%D7%A8%D7%99%D7%9D/%D7%94%D7%95%D7%A6%D7%90%D7%94-%D7%A2%D7%A6%D7%9E%D7%99%D7%AA	indiebook-self-publishing
+# paused (terms audit, 29.9.2026): indiebook.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://indiebook.co.il/product-category/%D7%94%D7%95%D7%A6%D7%90%D7%AA-%D7%A1%D7%A4%D7%A8%D7%99%D7%9D/%D7%94%D7%95%D7%A6%D7%90%D7%94-%D7%A2%D7%A6%D7%9E%D7%99%D7%AA	indiebook-self-publishing
 # research/channel-loop/ZERO-TESTS.md row 71 — Facer (23), replenish pass (28.9.2026).
-https://www.facer.io/terms	facer-terms
+# paused (terms audit, 29.9.2026): facer.io — see TERMS_BARRED in scripts/render-watch.mjs — https://www.facer.io/terms	facer-terms
 # research/channel-loop/ZERO-TESTS.md row 72 — Facer (23), replenish pass (28.9.2026).
-https://www.facer.io/creator/partner	facer-creator-partner
+# paused (terms audit, 29.9.2026): facer.io — see TERMS_BARRED in scripts/render-watch.mjs — https://www.facer.io/creator/partner	facer-creator-partner
 # research/channel-loop/ZERO-TESTS.md row 73 — Facer (23), replenish pass (28.9.2026).
-https://community.facer.io/t/premium-designer-program-admission-rankings-and-revenue-sharing-terms/25147	facer-premium-admission
+# paused (terms audit, 29.9.2026): facer.io — see TERMS_BARRED in scripts/render-watch.mjs — https://community.facer.io/t/premium-designer-program-admission-rankings-and-revenue-sharing-terms/25147	facer-premium-admission
 # research/channel-loop/ZERO-TESTS.md row 74 — Facer (23), replenish pass (28.9.2026).
-https://community.facer.io/t/how-to-become-a-premium-designer-and-sell-your-watch-face-designs-on-facer/3540	facer-premium-route
+# paused (terms audit, 29.9.2026): facer.io — see TERMS_BARRED in scripts/render-watch.mjs — https://community.facer.io/t/how-to-become-a-premium-designer-and-sell-your-watch-face-designs-on-facer/3540	facer-premium-route
 # research/channel-loop/ZERO-TESTS.md row 75 — Facer (23), replenish pass (28.9.2026).
-https://community.facer.io/t/payment-options/53518	facer-payment-options
+# paused (terms audit, 29.9.2026): facer.io — see TERMS_BARRED in scripts/render-watch.mjs — https://community.facer.io/t/payment-options/53518	facer-payment-options
 # research/channel-loop/ZERO-TESTS.md row 76 — Facer (23), replenish pass (28.9.2026).
-https://help.facer.io/hc/en-us/articles/16559872033819-Facer-Community-Guidelines	facer-community-guidelines
+# paused (terms audit, 29.9.2026): facer.io — see TERMS_BARRED in scripts/render-watch.mjs — https://help.facer.io/hc/en-us/articles/16559872033819-Facer-Community-Guidelines	facer-community-guidelines
 # research/channel-loop/ZERO-TESTS.md row 77 — Facer (23), replenish pass (28.9.2026).
-https://help.facercreator.io/hc/en-us/articles/4412573509403-Getting-Started-with-Facer-Creator	facer-creator-getting-started
+# paused (terms audit, 29.9.2026): facercreator.io — see TERMS_BARRED in scripts/render-watch.mjs — https://help.facercreator.io/hc/en-us/articles/4412573509403-Getting-Started-with-Facer-Creator	facer-creator-getting-started
 # research/channel-loop/ZERO-TESTS.md row 78 — Facer (23), replenish pass (28.9.2026).
-https://community.facer.io/t/software-to-create-watch-faces-here-on-facer/86976	facer-third-party-tools
+# paused (terms audit, 29.9.2026): facer.io — see TERMS_BARRED in scripts/render-watch.mjs — https://community.facer.io/t/software-to-create-watch-faces-here-on-facer/86976	facer-third-party-tools
 # research/channel-loop/ZERO-TESTS.md row 79 — Facer (23), replenish pass (28.9.2026).
-https://news.facer.io/celebrating-1-million-in-designer-payouts-and-launching-our-first-facer-creator-partner-program-85bd2e11baff?gi=5c49d09ba159	facer-payouts-news
+# paused (terms audit, 29.9.2026): facer.io — see TERMS_BARRED in scripts/render-watch.mjs — https://news.facer.io/celebrating-1-million-in-designer-payouts-and-launching-our-first-facer-creator-partner-program-85bd2e11baff?gi=5c49d09ba159	facer-payouts-news
 # research/channel-loop/ZERO-TESTS.md row 80 — Y8 (14), replenish pass (28.9.2026).
 https://www.y8.com/revshare	y8-revshare
 # research/channel-loop/ZERO-TESTS.md row 81 — Y8 (14), replenish pass (28.9.2026).
@@ -458,11 +458,11 @@ https://lemidatova.com	lemidatova-home
 # research/channel-loop/ZERO-TESTS.md row 95 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
 https://lomdimhofshi.co.il	lomdimhofshi-home
 # research/channel-loop/ZERO-TESTS.md row 96 — Indiebook (22): the author page, linked from a tick-7 capture (28.9.2026).
-https://indiebook.co.il/41/%D7%90%D7%99%D7%9A-%D7%9C%D7%9E%D7%9B%D7%95%D7%A8-%D7%A1%D7%A4%D7%A8-%D7%91%D7%90%D7%AA%D7%A8	indiebook-sell-a-book
+# paused (terms audit, 29.9.2026): indiebook.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://indiebook.co.il/41/%D7%90%D7%99%D7%9A-%D7%9C%D7%9E%D7%9B%D7%95%D7%A8-%D7%A1%D7%A4%D7%A8-%D7%91%D7%90%D7%AA%D7%A8	indiebook-sell-a-book
 # research/channel-loop/ZERO-TESTS.md row 97 — Indiebook (22): the site terms, linked from a tick-7 capture (28.9.2026).
-https://indiebook.co.il/16/	indiebook-terms
+# paused (terms audit, 29.9.2026): indiebook.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://indiebook.co.il/16/	indiebook-terms
 # research/channel-loop/ZERO-TESTS.md row 98 — Facer (23): the template cache, linked from a tick-7 capture (28.9.2026).
-https://www.facer.io/js/templates.min.js?t=1790275483051	facer-templates-js
+# paused (terms audit, 29.9.2026): facer.io — see TERMS_BARRED in scripts/render-watch.mjs — https://www.facer.io/js/templates.min.js?t=1790275483051	facer-templates-js
 # research/channel-loop/ZERO-TESTS.md row 99 — Spreadshirt (17): legal information, linked from a tick-7 capture (28.9.2026).
 https://www.spreadshop.com/legal-information/	spreadshop-legal-information
 # research/channel-loop/ZERO-TESTS.md row 100 — Wix App Market (11): the submission step, linked from a tick-7 capture (28.9.2026).
@@ -472,7 +472,7 @@ https://docs.y8.com/studio/studio/	y8-docs-studio
 # research/channel-loop/ZERO-TESTS.md row 102 — GameDistribution (14): the SDK wiki, linked from a tick-7 capture (28.9.2026).
 https://github.com/GameDistribution/GD-HTML5/wiki/SDK-Implementation/	gamedistribution-sdk-implementation
 # research/channel-loop/ZERO-TESTS.md row 103 — PayPal Israel (21): the help topics, linked from a tick-7 capture (28.9.2026).
-https://www.paypal.com/il/cshelp/browse-topics	paypal-il-browse-topics
+# paused (terms audit, 29.9.2026): paypal.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.paypal.com/il/cshelp/browse-topics	paypal-il-browse-topics
 # research/channel-loop/ZERO-TESTS.md row 104 — n8n paid templates (20): a 2026 verified-creator thread, linked from a tick-7 capture (28.9.2026).
 https://community.n8n.io/t/requesting-feedback-for-verified-creator-status-on-my-published-n8n-workflows/269435	n8n-verified-creator-feedback-2026
 # research/channel-loop/ZERO-TESTS.md row 105 — Y8 (14): the studio overview, linked from a tick-8 capture (28.9.2026).
@@ -518,15 +518,15 @@ https://help.society6.com/en-US/updates-to-society6-artists-account-effective-ma
 # research/channel-loop/ZERO-TESTS.md row 125 — Society6 (new row 27), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
 https://help.society6.com/en-US/updates-to-pricing-and-artist-earnings-effective-march-18-2025-1261599	help-society6-com-en-us-updates-to-pricing-and-artist-earnin
 # research/channel-loop/ZERO-TESTS.md row 126 — Teach Simple (unsettled), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://teachsimple.com/contributor-terms-of-service	teachsimple-com-contributor-terms-of-service
+# paused (terms audit, 29.9.2026): teachsimple.com — see TERMS_BARRED in scripts/render-watch.mjs — https://teachsimple.com/contributor-terms-of-service	teachsimple-com-contributor-terms-of-service
 # research/channel-loop/ZERO-TESTS.md row 127 — Teach Simple (unsettled), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-https://teachsimple.com/become-a-contributor	teachsimple-com-become-a-contributor
+# paused (terms audit, 29.9.2026): teachsimple.com — see TERMS_BARRED in scripts/render-watch.mjs — https://teachsimple.com/become-a-contributor	teachsimple-com-become-a-contributor
 # research/channel-loop/ZERO-TESTS.md row 128 — Smashwords / Draft2Digital (scout-grade death, confirmation), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
 https://draft2digital.com/terms-of-service/	draft2digital-com-terms-of-service
 # research/channel-loop/ZERO-TESTS.md row 129 — StreetLib (24): the platform-changeover FAQ, linked from a tick-9 capture (28.9.2026).
 https://help.streetlib.com/collection/1492-faq-on-platform-changeover	streetlib-faq-platform-changeover
 # research/channel-loop/ZERO-TESTS.md row 130 — Teach Simple (28): the terms of use, linked from a tick-9 capture (28.9.2026).
-https://teachsimple.com/terms-of-service	teachsimple-terms-of-service
+# paused (terms audit, 29.9.2026): teachsimple.com — see TERMS_BARRED in scripts/render-watch.mjs — https://teachsimple.com/terms-of-service	teachsimple-terms-of-service
 # research/channel-loop/ZERO-TESTS.md row 131 — Displate (26): the terms, linked from a tick-9 capture (28.9.2026).
 https://displate.com/about-regulations	displate-about-regulations
 # research/channel-loop/ZERO-TESTS.md row 132 — StreetLib (24), after row 129 (28.9.2026).
@@ -536,7 +536,7 @@ https://help.streetlib.com/category/97-payments	help-streetlib-com-category-97-p
 # research/channel-loop/ZERO-TESTS.md row 134 — Displate (26), after row 131 (28.9.2026).
 https://displate.com/about-privacy	displate-com-about-privacy
 # research/channel-loop/ZERO-TESTS.md row 135 — Teach Simple (28), after row 130 (28.9.2026).
-https://teachsimple.com/license-agreement	teachsimple-com-license-agreement
+# paused (terms audit, 29.9.2026): teachsimple.com — see TERMS_BARRED in scripts/render-watch.mjs — https://teachsimple.com/license-agreement	teachsimple-com-license-agreement
 # research/channel-loop/ZERO-TESTS.md row 136 — StreetLib (24), after row 133 (28.9.2026).
 https://help.streetlib.com/article/670-getting-paid	help-streetlib-com-article-670-getting-paid
 # research/channel-loop/ZERO-TESTS.md row 137 — StreetLib (24), after row 133 (28.9.2026).
@@ -570,7 +570,7 @@ https://hackmd.io/@sarah11918/BJMjDSMDZl	astro-themes-guidelines-hackmd
 # research/channel-loop/ZERO-TESTS.md row 151 — Astro themes (7), after the 29.9 GitHub read (29.9.2026).
 # retired: did not render (tick 15) — https://hackmd.io/@sarah11918/categories/astro-themes	astro-themes-categories-hackmd
 # research/channel-loop/ZERO-TESTS.md row 152 — Astro themes (7), after the 29.9 GitHub read (29.9.2026).
-https://portal.astro.build/themes/submit	astro-portal-themes-submit
+# paused (terms audit, 29.9.2026): astro.build — see TERMS_BARRED in scripts/render-watch.mjs — https://portal.astro.build/themes/submit	astro-portal-themes-submit
 # research/channel-loop/ZERO-TESTS.md row 153 — loop board 29.9 (e)3: kolzchut's exempt-dealer page (URL from the 7.9 SERP, not guessed; no site search before kolzchut's terms allow it), the documents an exempt dealer issues and whether software may issue them (29.9.2026).
 https://www.kolzchut.org.il/he/%D7%A2%D7%95%D7%A1%D7%A7_%D7%A4%D7%98%D7%95%D7%A8	kolzchut-osek-patur
 # research/channel-loop/ZERO-TESTS.md row 154 — lines ruling 29.9 (h): consumer protection law 14C(d), refunds on digital content (29.9.2026).
@@ -647,3 +647,49 @@ https://docs.github.com/en/billing/concepts/product-billing/github-actions	gh-do
 https://docs.github.com/en/rest/billing/usage?apiVersion=2022-11-28	gh-docs-rest-billing-usage
 # research/channel-loop/ZERO-TESTS.md row 190 — Mozilla (8): REST billing budgets docs (tick 19) (29.9.2026).
 https://docs.github.com/en/rest/billing/budgets?apiVersion=2022-11-28	gh-docs-rest-billing-budgets
+# research/channel-loop/ZERO-TESTS.md row 191 — terms audit (tick 20): streetlib's terms page, URL from research/breadth/REPLENISH-2026-09-28-2.md:522; fetched once so its terms can be read (29.9.2026).
+https://community.streetlib.com/terms	terms-streetlib-community
+# research/channel-loop/ZERO-TESTS.md row 192 — terms audit (tick 20): streetlib.it's terms page, URL from help-streetlib-com-article-380-publish-an-ebook.html:563; fetched once so its terms can be read (29.9.2026).
+https://www.streetlib.it/legalpolicy	terms-streetlib-it
+# research/channel-loop/ZERO-TESTS.md row 193 — terms audit (tick 20): bit2c's terms page, URL from bit2c-home.html:1293; fetched once so its terms can be read (29.9.2026).
+https://bit2c.co.il/terms-of-use	terms-bit2c
+# research/channel-loop/ZERO-TESTS.md row 194 — terms audit (tick 20): btl.gov.il's terms page, URL from btl-self-employed-rates.html:1999; fetched once so its terms can be read (29.9.2026).
+https://www.btl.gov.il/About/Pages/%d7%aa%d7%a0%d7%90%d7%99%20%d7%a9%d7%99%d7%9e%d7%95%d7%a9.aspx	terms-btl
+# research/channel-loop/ZERO-TESTS.md row 195 — terms audit (tick 20): data.gov.il's terms page, URL from research scouts data-apis--israeli-open-data.md:27; fetched once so its terms can be read (29.9.2026).
+https://data.gov.il/he/terms-of-use	terms-data-gov-il
+# research/channel-loop/ZERO-TESTS.md row 196 — terms audit (tick 20): freemius's terms page, URL from freemius-our-pricing.html:63; fetched once so its terms can be read (29.9.2026).
+https://freemius.com/terms/	terms-freemius
+# research/channel-loop/ZERO-TESTS.md row 197 — terms audit (tick 20): hackmd's terms page, URL from astro-themes-guidelines-hackmd.html:994; fetched once so its terms can be read (29.9.2026).
+https://hackmd.io/s/terms	terms-hackmd
+# research/channel-loop/ZERO-TESTS.md row 198 — terms audit (tick 20): huggingface's terms page, URL from yk2-hf-kokoro-hebrew-nc.html:152; fetched once so its terms can be read (29.9.2026).
+https://huggingface.co/terms-of-service	terms-huggingface
+# research/channel-loop/ZERO-TESTS.md row 199 — terms audit (tick 20): icount's terms page, URL from icount-plans.html:4759; fetched once so its terms can be read (29.9.2026).
+https://www.icount.co.il/eula/	terms-icount
+# research/channel-loop/ZERO-TESTS.md row 200 — terms audit (tick 20): invoice4u's terms page, URL from invoice4u-pricelist.html:2206; fetched once so its terms can be read (29.9.2026).
+https://www.invoice4u.co.il/%d7%aa%d7%a7%d7%a0%d7%95%d7%9f/	terms-invoice4u
+# research/channel-loop/ZERO-TESTS.md row 201 — terms audit (tick 20): kolzchut's terms page, URL from israel-bureaucracy--worker-rights.md:86; fetched once so its terms can be read (29.9.2026).
+https://www.kolzchut.org.il/he/%D7%9B%D7%9C-%D7%96%D7%9B%D7%95%D7%AA:%D7%96%D7%9B%D7%95%D7%99%D7%95%D7%AA_%D7%99%D7%95%D7%A6%D7%A8%D7%99%D7%9D	terms-kolzchut
+# research/channel-loop/ZERO-TESTS.md row 202 — terms audit (tick 20): lomdimhofshi's terms page, URL from lomdimhofshi-home.html:1837; fetched once so its terms can be read (29.9.2026).
+https://lomdimhofshi.co.il/%d7%aa%d7%a0%d7%90%d7%99-%d7%a9%d7%99%d7%9e%d7%95%d7%a9/	terms-lomdimhofshi
+# research/channel-loop/ZERO-TESTS.md row 203 — terms audit (tick 20): lomdiml's terms page, URL from lomdiml-home.html:1691; fetched once so its terms can be read (29.9.2026).
+https://lomdiml.co.il/%d7%aa%d7%a7%d7%a0%d7%95%d7%9f-%d7%90%d7%aa%d7%a8/	terms-lomdiml
+# research/channel-loop/ZERO-TESTS.md row 204 — terms audit (tick 20): n8n's terms page, URL from n8n-verified-creator-requirements.html:931; fetched once so its terms can be read (29.9.2026).
+https://community.n8n.io/tos	terms-n8n-community
+# research/channel-loop/ZERO-TESTS.md row 205 — terms audit (tick 20): n8n.io's terms page, URL from n8n-creators.html:43; fetched once so its terms can be read (29.9.2026).
+https://n8n.io/legal/	terms-n8n-legal
+# research/channel-loop/ZERO-TESTS.md row 206 — terms audit (tick 20): odoo's terms page, URL from sweep2-odoo-localization.html:1411; fetched once so its terms can be read (29.9.2026).
+https://www.odoo.com/legal	terms-odoo
+# research/channel-loop/ZERO-TESTS.md row 207 — terms audit (tick 20): polar's terms page, URL from polar-acceptable-use.html:401; fetched once so its terms can be read (29.9.2026).
+https://polar.sh/legal/acceptable-use-policy	terms-polar-aup
+# research/channel-loop/ZERO-TESTS.md row 208 — terms audit (tick 20): stripe's terms page, URL from stripe-global.html:17638; fetched once so its terms can be read (29.9.2026).
+https://stripe.com/privacy	terms-stripe-privacy-and-terms
+# research/channel-loop/ZERO-TESTS.md row 209 — terms audit (tick 20): sumit's terms page, URL from sumit-invoices.html:118; fetched once so its terms can be read (29.9.2026).
+https://help.sumit.co.il/he/articles/10340800	terms-sumit
+# research/channel-loop/ZERO-TESTS.md row 210 — terms audit (tick 20): un.org's terms page, URL from research/faceless-youtube/LICENCE-IGO-DECISION.md:30; fetched once so its terms can be read (29.9.2026).
+https://www.un.org/en/about-us/terms-of-use	terms-un
+# research/channel-loop/ZERO-TESTS.md row 211 — terms audit (tick 20): upload-post's terms page, URL from upload-post-ai-content-labeling.html:34; fetched once so its terms can be read (29.9.2026).
+https://www.upload-post.com/terms-of-use/	terms-upload-post
+# research/channel-loop/ZERO-TESTS.md row 212 — terms audit (tick 20): wix's terms page, URL from wix-payout-account docs footer; fetched once so its terms can be read (29.9.2026).
+https://www.wix.com/about/terms-of-use	terms-wix
+# research/channel-loop/ZERO-TESTS.md row 213 — terms audit (tick 20): worksheets4kids's terms page, URL from worksheets4kids-home.html:711; fetched once so its terms can be read (29.9.2026).
+https://worksheets4kids.co.il/privacy-policy/	terms-worksheets4kids

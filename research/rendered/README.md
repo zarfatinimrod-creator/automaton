@@ -127,6 +127,14 @@ then; their lines in `urls.txt` are commented out as `# paused (tick 19 ...)`, s
 not fetch them again. Whether any Gumroad page may be fetched again waits on `logs/FABLE_QUEUE.md`
 row 16(d). A new site's terms are read **before** its first line is queued, not after.
 
+**The tick-20 terms audit (29.9)** checked all 81 active sites against their own terms
+(`research/channel-loop/TERMS-AUDIT-2026-09-29.md`). Thirteen more domains are now in `TERMS_BARRED`: ten whose terms bar
+automated access (PayPal, Teach Simple, Indiebook, Astro, Facer and its creator site, YouTube and its blog, Metaculus,
+OpenAI), Google's and googlesource's pages (Google's terms allow automated access only while respecting robots.txt,
+which this fetcher does not read), and Mozilla's add-on API (its policy bars harvesting names and emails; the stored
+results were redacted). 66 lines are paused. A site's **terms page** may be fetched once so its terms can be read;
+that is how the 23 terms rows (ZERO-TESTS 191-213) were queued.
+
 ## The js flag: a JavaScript-capable render
 
 Some pages reach the runner as an empty JavaScript shell: Salesforce help centres
