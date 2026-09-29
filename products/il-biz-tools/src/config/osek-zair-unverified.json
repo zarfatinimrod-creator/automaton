@@ -1,19 +1,11 @@
 {
   "verified": false,
-  "about": "Figures for osek-zair.html that no primary text read in this repository states. osek-zair.html renders none of them and no page or module loads this file; CONFIG_PUBLISH_RULES gives it the 'verified' rule, so a shipped page that loaded it would stop the build. A value leaves this file only when a rendered primary text states it: then it moves into osek-zair.json with that capture's line as its cite, and is deleted here.",
-  "years": {
-    "2026": {
-      "cap": 122833,
-      "grade": "secondary: the 2026 osek patur ceiling in src/config/osek-patur.json, which cites Kol Zchut and was compared with search results on 7.9.2026 (no page opened). The בעל עסק זעיר cap is that same amount by statutory reference (gazette p.171, section 87ב(1)).",
-      "why": "The gazette (p.173, section 37(ב)) and the Tax Authority report (tt2-capitax-21072025-1.txt lines 34-35) say the amount is CPI-linked from 1.1.2026; neither states the 2026 figure, and no document read post-dates the report's data (26.6.2025). The reader of 28.9.2026 notes 122,833 is consistent with a 2.36% CPI step (arithmetic), which is not a source.",
-      "toVerify": "Render a primary text that states the 2026 עוסק פטור amount (a Reshumot notice of the CPI update, a gov.il page or a Tax Authority circular), cite its capture line, move the amount into osek-zair.json `years` with that cite, and remove 2026 from `pendingYears` there and from this file."
-    }
-  },
+  "about": "Figures for osek-zair.html that no primary text read in this repository states. osek-zair.html renders none of them and no page or module loads this file; CONFIG_PUBLISH_RULES gives it the 'verified' rule, so a shipped page that loaded it would stop the build. A value leaves this file only when a rendered primary text states it: then it moves into osek-zair.json with that capture's line as its cite, and is deleted here. One recorded exception: on 29.9.2026 the 2026 cap (122,833) left this file on nevo's consolidated text of the VAT law (research/rendered/nevo-vat-law-2026-09-29.txt:93, current to 13-07-2026), which is a legal publisher's consolidation and not a primary text. The workflow that moved it accepted nevo in place of the primary text this rule asks for (record: logs/2026-09-29-osek-zair-2026.md, section 4); the primary check still owed is osek-zair.json years.2026.toVerify. The rule itself is unchanged.",
   "vatLawSense": {
     "law": "חוק מס ערך מוסף",
     "section": "31(3)",
-    "grade": "statute mirror quoted in the repo, not rendered: research/colony-sweep/scouts/risk-governance--selling-as-individual.md:132 quotes תקנות מע\"מ (רישום) 15א(ג) (\"עוסק זעיר לענין סעיף 31(3) לחוק\"); research/tiktok/08-reads/hebrew-israel.md:244 repeats it.",
-    "why": "The task asked the page to say that עוסק זעיר in VAT law (section 31(3)) is a different thing. The distinction is on the page in words, marked as secondary; the section number is held here because no capture of the VAT law or its regulations has been read.",
-    "toVerify": "Render a primary copy of the VAT law (section 31) or of תקנות מע\"מ (רישום), cite the line, and move the section reference into osek-zair.json."
+    "grade": "statute mirror quoted in the repo, not rendered: research/colony-sweep/scouts/risk-governance--selling-as-individual.md:132 quotes תקנות מע\"מ (רישום) 15א(ג) (\"עוסק זעיר לענין סעיף 31(3) לחוק\"); research/tiktok/08-reads/hebrew-israel.md:244 repeats it. For the law itself it is contradicted by a rendered text read on 29.9.2026: nevo's consolidated VAT law (see `why`).",
+    "why": "The page used to say, as secondary, that עוסק זעיר is also a VAT-law term, and this section number was held here for it. Nevo's consolidated VAT law (research/rendered/nevo-vat-law-2026-09-29.txt, current to 13-07-2026), read on 29.9.2026, shows otherwise for the law: the definition of \"עוסק זעיר\" reads \"(נמחקה)\" (line 89), section 31(3) reads \"(3) עסקאות של עוסק פטור\" (line 484), and the phrase is otherwise only in the headings over repealed sections 42 and 57 (lines 610-611, 782-783). The page now says that, cited to those lines (osek-zair.json facts.vatSense), and never cites 31(3). What stays unread is the regulation the mirror quotes: תקנות מס ערך מוסף (רישום) have not been rendered here, so whether 15א(ג) still speaks of 'עוסק זעיר לענין סעיף 31(3) לחוק' is not known.",
+    "toVerify": "Nothing here is to move onto the page: the law is read and the page states what it shows. When תקנות מס ערך מוסף (רישום) are rendered (research/rendered/urls.txt, slug nevo-vat-registration-regs), read 15א(ג), record what it says, and delete this entry either way."
   }
 }

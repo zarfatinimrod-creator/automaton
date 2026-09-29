@@ -6,7 +6,8 @@
 //   - the cap: turnover "אינו עולה על" the עוסק פטור amount (87ב(1)), so turnover equal to the cap is under it;
 //   - taxable income only, never tax: no text read gives the brackets or credit points, and the Tax Authority's own
 //     report says almost 80% of the businesses it segmented by marginal rate do not reach the tax threshold;
-//   - tax year 2026 is refused: its cap is CPI-linked and no text read states it;
+//   - tax year 2026 computes with 122,833, the amount nevo's consolidated text of the VAT law (current to 13-07-2026)
+//     states; a year no text read states (2027 on) is refused;
 //   - over the cap there is no comparison, but the result names section 87ד(ג): someone registered at the start of
 //     the year who stops qualifying during it may still deduct, up to 30% of the cap (gazette p.172);
 //   - when regular reporting wins, the verdict carries the two-year cooling-off of 87ה(ב) (gazette p.173).
@@ -27,14 +28,15 @@ const config = JSON.parse(readFileSync(join(productRoot, 'src/config/osek-zair.j
 const CAP = config.years['2025'].cap;
 
 describe('the config the module computes with', () => {
-  it('is the same object as the file, with the 30% rate and the 2024 and 2025 caps', () => {
+  it('is the same object as the file, with the 30% rate, the 2024 and 2025 caps and the 2026 cap', () => {
     expect(OSEK_ZAIR_CONFIG).toEqual(config);
     expect(config.rate).toBe(0.3);
     expect(config.yearOfExitRate).toBe(0.3);
     expect(config.years['2024'].cap).toBe(120000);
     expect(config.years['2025'].cap).toBe(120000);
-    expect(Object.keys(config.pendingYears)).toEqual(['2026']);
-    expect(config.years['2026']).toBeUndefined();
+    expect(config.years['2026'].cap).toBe(122833);
+    expect(Object.keys(config.years).sort()).toEqual(['2024', '2025', '2026']);
+    expect(config.pendingYears).toEqual({});
   });
 
   it('hard-codes no figure: the module reads the rate and the caps only from the config', () => {
@@ -63,6 +65,27 @@ describe('the cap: "אינו עולה על" (87ב(1))', () => {
   it('one shekel under the cap is under it; a shekel over is over', () => {
     expect(compareTracks({ year: 2024, turnover: CAP - 1, expenses: 0 }).status).toBe('compared');
     expect(compareTracks({ year: 2024, turnover: CAP + 1, expenses: 0 })).toMatchObject({ status: 'over-cap', overBy: 1 });
+  });
+});
+
+describe('tax year 2026: its own cap, 122,833, under the same "אינו עולה על"', () => {
+  const CAP_2026 = config.years['2026'].cap;
+
+  it('turnover exactly at the 2026 cap is under it, and the comparison runs with the 30% rate', () => {
+    expect(compareTracks({ year: '2026', turnover: CAP_2026, expenses: 0 })).toMatchObject({
+      status: 'compared', year: '2026', cap: 122833, rate: 0.3, deduction: 36849.9, trackTaxable: 85983.1, regularTaxable: 122833,
+    });
+  });
+
+  it('one shekel over is over, with the 87ד(ג) ceiling of 30% of the 2026 cap', () => {
+    expect(compareTracks({ year: 2026, turnover: CAP_2026 + 1, expenses: 0 })).toEqual({
+      status: 'over-cap', year: '2026', cap: 122833, rate: 0.3, turnover: 122834, overBy: 1, exitCeiling: 36849.9,
+    });
+  });
+
+  it('a turnover over the 2025 cap and within the 2026 cap: over in 2025, compared in 2026', () => {
+    expect(compareTracks({ year: '2025', turnover: 121000, expenses: 10000 }).status).toBe('over-cap');
+    expect(compareTracks({ year: '2026', turnover: 121000, expenses: 10000 })).toMatchObject({ status: 'compared', lower: 'track' });
   });
 });
 
@@ -111,11 +134,12 @@ describe('the comparison: taxable income from the business, never tax', () => {
 });
 
 describe('what the module refuses', () => {
-  it('tax year 2026: refused, whatever the numbers, because its cap is not in any text read', () => {
-    for (const turnover of [0, 50000, 200000]) {
-      expect(compareTracks({ year: '2026', turnover, expenses: 0 })).toEqual({ status: 'refused', year: '2026', reason: 'pending' });
+  it('tax year 2027 and later: refused, whatever the numbers, because no text read states their cap', () => {
+    for (const year of ['2027', 2028, '2030']) {
+      for (const turnover of [0, 50000, 200000]) {
+        expect(compareTracks({ year, turnover, expenses: 0 })).toEqual({ status: 'refused', year: String(year), reason: 'unknown' });
+      }
     }
-    expect(compareTracks({ year: 2026, turnover: 1, expenses: 1 }).reason).toBe('pending');
   });
 
   it('a year the config does not know, and a config that is not verified', () => {
@@ -124,8 +148,8 @@ describe('what the module refuses', () => {
   });
 
   it('a pending year stays refused even if someone adds it to `years` without removing it from `pendingYears`', () => {
-    const both = { ...config, years: { ...config.years, 2026: { cap: 1 } } };
-    expect(compareTracks({ year: '2026', turnover: 0, expenses: 0 }, both).status).toBe('refused');
+    const both = { ...config, years: { ...config.years, 2027: { cap: 1 } }, pendingYears: { 2027: { he: 'x', cite: [] } } };
+    expect(compareTracks({ year: '2027', turnover: 0, expenses: 0 }, both)).toEqual({ status: 'refused', year: '2027', reason: 'pending' });
   });
 
   it('negative or non-numeric input is invalid, and names the field', () => {
@@ -143,12 +167,17 @@ describe('what the module refuses', () => {
 });
 
 describe('the years the page offers', () => {
-  it('the verified years newest first, then 2026 marked as not computed', () => {
+  it('the three years with a cap, newest first, and no year marked as not computed', () => {
     expect(offeredYears()).toEqual([
+      { year: '2026', available: true, cap: 122833 },
       { year: '2025', available: true, cap: 120000 },
       { year: '2024', available: true, cap: 120000 },
-      { year: '2026', available: false },
     ]);
+  });
+
+  it('a pending year, when a config has one, comes after them, marked as not computed', () => {
+    const withPending = { ...config, pendingYears: { 2027: { he: 'x', cite: [] } } };
+    expect(offeredYears(withPending).map((y) => [y.year, y.available])).toEqual([['2026', true], ['2025', true], ['2024', true], ['2027', false]]);
   });
 });
 
@@ -214,11 +243,19 @@ describe('what the result says (resultHe)', () => {
     expect(over.verdict).toContain('המסלול לפי החוק');
   });
 
-  it('2026: the refusal is the config\'s own text, word for word', () => {
-    const r = resultHe(compareTracks({ year: '2026', turnover: 1000, expenses: 0 }));
-    expect(r.cap).toBe(config.pendingYears['2026'].he);
+  it('2026: the cap line names the 2026 cap', () => {
+    const r = resultHe(compareTracks({ year: '2026', turnover: 121000, expenses: 0 }));
+    expect(r.capTone).toBe('ok');
+    expect(r.cap).toContain(`לשנת המס 2026 (${ils(122833)})`);
+  });
+
+  it('2027: refused in words, no verdict; a pending year (when a config has one) is refused in the config\'s own text', () => {
+    const r = resultHe(compareTracks({ year: '2027', turnover: 1000, expenses: 0 }));
+    expect(r.cap).toBe('לשנת המס 2027 אין בכלי נתונים, ולכן הוא לא מחשב.');
     expect(r.capTone).toBe('warn');
     expect(r.verdict).toBeNull();
+    const withPending = { ...config, pendingYears: { 2027: { he: 'טקסט הסירוב של הקונפיג.', cite: [] } } };
+    expect(resultHe(compareTracks({ year: '2027', turnover: 1, expenses: 0 }, withPending), withPending).cap).toBe('טקסט הסירוב של הקונפיג.');
   });
 
   it('never states a tax amount, and never addresses the reader in the masculine singular', () => {
@@ -227,7 +264,11 @@ describe('what the result says (resultHe)', () => {
       { turnover: 0, expenses: 500 }, { turnover: CAP + 1, expenses: 0 }, { turnover: 100000, expenses: '' }, { turnover: '', expenses: '' },
       { turnover: -1, expenses: 0 },
     ];
-    const texts = [...inputs.map((i) => say(i)), resultHe(compareTracks({ year: '2026', turnover: 1, expenses: 1 }))]
+    const texts = [
+      ...inputs.map((i) => say(i)),
+      resultHe(compareTracks({ year: '2027', turnover: 1, expenses: 1 })),
+      resultHe(compareTracks({ year: '2026', turnover: 100000, expenses: 45000 })),
+    ]
       .flatMap((r) => [r.cap, r.verdict, r.note].filter(Boolean));
     expect(texts.length).toBeGreaterThan(10);
     for (const t of texts) {
