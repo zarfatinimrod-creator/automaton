@@ -36,7 +36,7 @@ describe('the leads', () => {
       const lead = /<p class="lead">[\s\S]*?<\/p>/.exec(html)[0];
       const afterLead = html.slice(html.indexOf(lead) + lead.length, html.indexOf(NO_DETAILS));
       // Only the source line (N8) may stand between the lead and this line.
-      expect(afterLead.replace(/<p class="note[^"]*" id="(?:ceiling|rate)-(?:source|stale)"[^>]*>[\s\S]*?<\/p>/g, '').trim(), page).toBe('<p class="note">');
+      expect(afterLead.replace(/<p class="note[^"]*" id="(?:ceiling|rate|threshold)-(?:source|stale)"[^>]*>[\s\S]*?<\/p>/g, '').trim(), page).toBe('<p class="note">');
     }
   });
 

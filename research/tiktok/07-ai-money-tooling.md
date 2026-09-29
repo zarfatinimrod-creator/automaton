@@ -65,7 +65,7 @@ Nothing here requires the owner to do anything.
 | P2-6 | `products/x402-il-api/src/routes/compliance.ts` | Paid endpoint: AI-content disclosure checker (TikTok's mandatory AI label since Mar 2026; YouTube's 2026 "inauthentic content" monetization rules) `[secondary]`. | Software-only, priced per call, sold to exactly the audience this whole genre creates. Adds a route to a product that already exists. | ~4h, ₪0 |
 
 > **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14c; `08-reads/tiktok-policy.md` §4.2, which grades it REFUTED for the version
-> in force). Row `:65` above says "TikTok's mandatory AI label since Mar 2026". TikTok's guidelines in force from 24.9.2026 require AI
+> in force). Row "P2-6" above (line 65 when this note was written) says "TikTok's mandatory AI label since Mar 2026". TikTok's guidelines in force from 24.9.2026 require AI
 > disclosure only for realistic-looking AI scenes or people and for AI audio that mimics a real person; generic
 > text-to-speech that is not a recognisable voice is exempt. So a label on our own stock-voice demo is our choice,
 > not TikTok's requirement. The row is left as it was written.
@@ -143,7 +143,7 @@ a partner/affiliate link. That is a four-field check we can automate.
 | **x402 / agent-pays-agent** | Per-call USDC micropayments, no KYC | The one pattern in this file where the *infrastructure* is verified first-party and the *demand* is still small. Reported: ~69,000 active agents, 165M+ transactions, ~$50M, median call price $0.028 as of Apr 2026 `[secondary]`; but Apify (20k Actors, Jun–Jul 2026), Vercel `x402-mcp` and Cloudflare's Monetization Gateway are all first-party confirmed. | **Keep and push (P0-2).** Our existing line 5. |
 
 > **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14c; `08-reads/tiktok-policy.md` §4.2, which grades it REFUTED for the version
-> in force). Row `:134` above says the strongest form, "TikTok has required the AI-generated label on all AI video since Mar 2026". TikTok's guidelines in force from 24.9.2026 require AI
+> in force). Row "Faceless video farms (MoneyPrinterTurbo genre)" above (line 134 before these notes were added) says the strongest form, "TikTok has required the AI-generated label on all AI video since Mar 2026". TikTok's guidelines in force from 24.9.2026 require AI
 > disclosure only for realistic-looking AI scenes or people and for AI audio that mimics a real person; generic
 > text-to-speech that is not a recognisable voice is exempt. So a label on our own stock-voice demo is our choice,
 > not TikTok's requirement. The row is left as it was written.
@@ -192,7 +192,7 @@ Filter applied: buildable by us alone, sellable without the owner talking to any
 | 30 | Cross-session identity/dedup for agent memory | Named as an open problem `[secondary]` | ✅ | Hard; only if a line demands it |
 
 > **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14c; `08-reads/tiktok-policy.md` §4.2, which grades it REFUTED for the version
-> in force). Row `:166` above says "TikTok label mandatory since Mar 2026". TikTok's guidelines in force from 24.9.2026 require AI
+> in force). Row "16 — AI-content disclosure compliance checker" above (line 166 before these notes were added) says "TikTok label mandatory since Mar 2026". TikTok's guidelines in force from 24.9.2026 require AI
 > disclosure only for realistic-looking AI scenes or people and for AI audio that mimics a real person; generic
 > text-to-speech that is not a recognisable voice is exempt. So a label on our own stock-voice demo is our choice,
 > not TikTok's requirement. The row is left as it was written.
@@ -217,7 +217,7 @@ repo is already, accidentally, best at.
 | **Marketplace policy drift** | Apify retiring rental pricing (no new rentals 2026-04-01, full retirement 2026-10-01) `[secondary]` | Medium | A dated `platformPolicyReview` field per line; the board re-checks on a schedule instead of discovering it at payout |
 
 > **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14c; `08-reads/tiktok-policy.md` §4.2, which grades it REFUTED for the version
-> in force). Row `:198` above says "TikTok mandatory AI label since Mar 2026". TikTok's guidelines in force from 24.9.2026 require AI
+> in force). Row "Platform bans / demonetisation" above (line 198 before these notes were added) says "TikTok mandatory AI label since Mar 2026". TikTok's guidelines in force from 24.9.2026 require AI
 > disclosure only for realistic-looking AI scenes or people and for AI audio that mimics a real person; generic
 > text-to-speech that is not a recognisable voice is exempt. So a label on our own stock-voice demo is our choice,
 > not TikTok's requirement. The row is left as it was written.
@@ -262,7 +262,7 @@ repo is already, accidentally, best at.
 | **Anything requiring a new owner account beyond the existing §6 checklist** | MISSION rule 1: never invent a step that isn't required. |
 
 > **Correction, 28.9.2026** (`research/tiktok/08-sales-marketing-lessons.md` §8.1 N14c; `08-reads/tiktok-policy.md` §4.2, which grades it REFUTED for the version
-> in force). Row `:224` above says "TikTok requires the AI label and ties Creator Fund eligibility to disclosure". TikTok's guidelines in force from 24.9.2026 require AI
+> in force). Row "Faceless video content farms (MoneyPrinterTurbo as a business)" above (line 224 before these notes were added) says "TikTok requires the AI label and ties Creator Fund eligibility to disclosure". TikTok's guidelines in force from 24.9.2026 require AI
 > disclosure only for realistic-looking AI scenes or people and for AI audio that mimics a real person; generic
 > text-to-speech that is not a recognisable voice is exempt. So a label on our own stock-voice demo is our choice,
 > not TikTok's requirement. The row is left as it was written.

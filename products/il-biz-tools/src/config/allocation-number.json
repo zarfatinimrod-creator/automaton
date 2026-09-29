@@ -1,6 +1,8 @@
 {
   "verified": true,
   "updated": "2026-09-03",
+  "source": "https://www.grantthornton.co.il/insights1/tax-insignths/2026/From_June_the_allocation_number/",
+  "sourceNote": "The one address the page's source line names, from `sources`. No record in the repository dates a read of any of them (research/owner-docs-audit/il-biz-tools.md F11), so the config has no `check` and the line says the check date was not recorded.",
   "notes": "Israel Invoices (חשבוניות ישראל) allocation-number thresholds. An invoice above the threshold, before VAT, must carry a valid 9-digit allocation number from the Tax Authority or the RECIPIENT cannot deduct input VAT. Applies to domestic B2B only; B2C, B2G and cross-border are outside the mandate.",
   "sources": [
     "https://www.gov.il/he/departments/israel_tax_authority",
@@ -10,9 +12,25 @@
     "https://www.icount.co.il/blog/invoice-israel/"
   ],
   "thresholds": [
-    { "from": "2024-05-05", "amountIls": 25000, "note": "השלב הראשון. בשנת 2024 כל בקשה אושרה אוטומטית." },
-    { "from": "2025-01-01", "amountIls": 20000, "note": "מ-2025 כל בקשה נבחנת לפי קריטריונים ואינה מאושרת אוטומטית." },
-    { "from": "2026-01-01", "amountIls": 10000, "note": "הורדת סף מואצת." },
-    { "from": "2026-06-01", "amountIls": 5000, "note": "הסף הנוכחי." }
+    {
+      "from": "2024-05-05",
+      "amountIls": 25000,
+      "note": "השלב הראשון. בשנת 2024 כל בקשה אושרה אוטומטית."
+    },
+    {
+      "from": "2025-01-01",
+      "amountIls": 20000,
+      "note": "מ-2025 כל בקשה נבחנת לפי קריטריונים ואינה מאושרת אוטומטית."
+    },
+    {
+      "from": "2026-01-01",
+      "amountIls": 10000,
+      "note": "הורדת סף מואצת."
+    },
+    {
+      "from": "2026-06-01",
+      "amountIls": 5000,
+      "note": "הסף הנוכחי."
+    }
   ]
 }

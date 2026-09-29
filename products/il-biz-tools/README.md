@@ -66,15 +66,21 @@ search sends no one, the page-view kill rule is what answers it.
 Not modelled in net salary: surtax, pension tax credit, special credit points (children, degree,
 army), benefits in kind, study fund.
 
-**Source and check date on the page (TikTok note N8, 28.9.2026).** `osek-patur.html` and `vat.html` state a
-statutory figure, so each shows "מקור: <name> (מקור משני) · נבדק: <date>" right after its lead and in the FAQ
-answer that states the figure (the JSON-LD answer too), from `source`, `checkedOn` and `checkedNote` in the
-config (`src/lib/source-line.js`). Both are marked secondary because no gov.il page was read; `checkedOn` is
-2026-09-07, the dated search read that found the same figures on page one (`checkedNote` says so). The osek
-patur ceiling is set per calendar year, so once the year in the config is over the page script shows "הנתון לא
-עודכן עדיין לשנת <year>" beside the source line until someone checks the new figure. Only verified configs get a
-line: `net-salary.html` renders `tax-2026.json` (`verified: false`) and claims no check date anywhere
-(`tests/statutory-sources.test.js`).
+**Source, and what was checked when, on the page (TikTok note N8; corrected 29.9.2026).** `osek-patur.html`,
+`vat.html` and `allocation.html` state a statutory figure, so each shows "מקור: <name> (מקור משני) · <check>" right
+after its lead, and in the answer that states the figure (the JSON-LD answer too), from `source` and `check` in the
+config (`src/lib/source-line.js`). The check says only what a record in the repository backs: "נבדק: <date>" for a
+dated read of the cited page (`check.how: "read"`, none yet), "הושווה לתוצאות חיפוש: <date>" for a comparison with
+search results (`"search"`), and "תאריך הבדיקה לא תועד" when no dated record exists. The ceiling and the VAT rate
+rest on the search read of 7.9.2026 (`research/measurements/serp/2026-09-07-hebrew-calculators.md`), which opened no
+page - so they say "compared with search results", not "checked" (review of 29.9: the earlier "נבדק: 7.9.2026"
+claimed a read nobody made). The allocation threshold has no dated record at all. `tests/statutory-sources.test.js`
+opens each `check.record` and requires the date and the figure in it (and, for "read", the cited address). A dated
+read of a primary page (note §8.1 N13) is what turns a line into "נבדק". The home page says each figure's source is
+on its tool's page. The osek patur ceiling is set per calendar year, so once the year in the config is over the
+page script shows "הנתון לא עודכן עדיין לשנת <year>" beside the source line until someone checks the new figure.
+Only verified configs get a line: `net-salary.html` renders `tax-2026.json` (`verified: false`) and claims no
+check date anywhere.
 
 ## The unverified-rate gate (why `net-salary.html` is not on the public site)
 
