@@ -139,7 +139,9 @@ that is how the 23 terms rows (ZERO-TESTS 191-213) were queued.
 verdict for every site with a line here, and `src/__tests__/revenue/render-watch-terms-barred.test.ts` fails when a line is
 active on a site that is not NOT_BARRED or CONDITIONAL_MET. The one exception is a TERMS_PENDING site's own terms page
 (slug `terms-...`). **To add a line for a new site:** read its terms first (queue its terms page, read it, set the
-verdict), then queue the line. A line for a site with no verdict fails CI.
+verdict), then queue the line. A line for a site with no verdict fails CI, and since tick 24
+`scripts/queue-zero-test.mjs` refuses it at queue time with the reason (`termsGate`). After a verdict changes,
+`node scripts/queue-zero-test.mjs --apply-verdicts [--dry-run]` comments out every active line that fails the gate.
 
 ## The js flag: a JavaScript-capable render
 
