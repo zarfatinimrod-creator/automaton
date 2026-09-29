@@ -35,9 +35,10 @@
    "checked": "2026-09-29"
   },
   "bitsofgold.co.il": {
-   "verdict": "TERMS_PENDING",
-   "source": "https://www.bitsofgold.co.il/terms",
-   "checked": "2026-09-29"
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-3)",
+   "checked": "2026-09-29",
+   "note": "the terms page returned 403 (round 3)"
   },
   "blog.youtube": {
    "verdict": "BARRED",
@@ -55,10 +56,10 @@
    "checked": "2026-09-29"
   },
   "data.gov.il": {
-   "verdict": "TERMS_PENDING",
-   "source": "https://www.gov.il/he/general/terms_of_use",
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-3)",
    "checked": "2026-09-29",
-   "note": "terms-data-gov-il.txt:19: site use is governed by the gov.il terms of use; the dataset licence itself has no access bar"
+   "note": "its terms page defers site use to the gov.il terms (terms-data-gov-il.txt:19), which are unread"
   },
   "digital-invoice.co.il": {
    "verdict": "NO_TERMS",
@@ -132,9 +133,10 @@
    "note": "403"
   },
   "greeninvoice.co.il": {
-   "verdict": "TERMS_PENDING",
-   "source": "https://www.greeninvoice.co.il/terms/",
-   "checked": "2026-09-29"
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-3)",
+   "checked": "2026-09-29",
+   "note": "the terms page returned 403 (round 3)"
   },
   "gumroad.com": {
    "verdict": "BARRED",
@@ -193,6 +195,12 @@
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
    "checked": "2026-09-29"
   },
+  "knesset.gov.il": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx",
+   "checked": "2026-09-29",
+   "note": "found at github grade (theWallProject/mono page.html:2299, tick 22); fs.knesset.gov.il carries the official gazette PDFs, an alternative law source while nevo is paused"
+  },
   "kolzchut.org.il": {
    "verdict": "NO_TERMS",
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
@@ -226,9 +234,10 @@
    "checked": "2026-09-29"
   },
   "mr.gov.il": {
-   "verdict": "TERMS_PENDING",
-   "source": "http://www.mr.gov.il/Pages/Terms-of-Use.aspx",
-   "checked": "2026-09-29"
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-3)",
+   "checked": "2026-09-29",
+   "note": "the terms page fetch failed (round 3)"
   },
   "mybooks.co.il": {
    "verdict": "NO_TERMS",
@@ -333,9 +342,10 @@
    "note": "legalpolicy is a JavaScript shell"
   },
   "stripe.com": {
-   "verdict": "TERMS_PENDING",
-   "source": "https://stripe.com/legal",
-   "checked": "2026-09-29"
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-3)",
+   "checked": "2026-09-29",
+   "note": "stripe.com/legal is an index of service agreements; no website terms found, in the repo or at github grade (round 3)"
   },
   "sumit.co.il": {
    "verdict": "NO_TERMS",
@@ -365,8 +375,9 @@
   },
   "tipalti.com": {
    "verdict": "TERMS_PENDING",
-   "source": "https://tipalti.com/legal",
-   "checked": "2026-09-29"
+   "source": "https://tipalti.com/legal/website-terms/",
+   "checked": "2026-09-29",
+   "note": "terms-tipalti.txt:255 is the legal index, which links the Website Terms of Use (terms-tipalti.html:838); the index line is paused"
   },
   "trolley.com": {
    "verdict": "CONDITIONAL_MET",
@@ -390,8 +401,13 @@
    "checked": "2026-09-29"
   },
   "wavedash.com": {
-   "verdict": "TERMS_PENDING",
-   "source": "https://wavedash.com/terms",
+   "verdict": "BARRED",
+   "source": "TERMS_BARRED in scripts/render-watch.mjs (research/rendered/terms-wavedash.txt:118; round 3)",
+   "checked": "2026-09-29"
+  },
+  "wikisource.org": {
+   "verdict": "CONDITIONAL_UNMET",
+   "source": "tosdr/tosdr-snapshots Wikimedia/Terms of Service.html:981 (round 3): automated uses must follow the robot and User-Agent policies, which are unread",
    "checked": "2026-09-29"
   },
   "wix.com": {
@@ -405,9 +421,10 @@
    "checked": "2026-09-29"
   },
   "www.gov.il": {
-   "verdict": "TERMS_PENDING",
-   "source": "https://www.gov.il/he/general/terms_of_use",
-   "checked": "2026-09-29"
+   "verdict": "NO_TERMS",
+   "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-3)",
+   "checked": "2026-09-29",
+   "note": "the terms page returned 403 to the runner (round 3); no copy at github grade"
   },
   "y8.com": {
    "verdict": "CONDITIONAL_UNMET",
@@ -420,9 +437,10 @@
    "checked": "2026-09-29"
   },
   "ypay.co.il": {
-   "verdict": "TERMS_PENDING",
-   "source": "https://ypay.co.il/front/terms",
-   "checked": "2026-09-29"
+   "verdict": "NOT_BARRED",
+   "source": "research/rendered/terms-ypay.txt:55 (round 3): only human users may use 'השירות' and accounts may not be created by script",
+   "checked": "2026-09-29",
+   "note": "'השירות' is defined as the bookkeeping service (terms-ypay.html:278-292); if read as the whole site the verdict would be BARRED, so the three ypay lines stay paused (no weekly need)"
   },
   "zazzle.com": {
    "verdict": "NO_TERMS",

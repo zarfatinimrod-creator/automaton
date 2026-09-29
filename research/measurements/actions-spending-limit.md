@@ -505,3 +505,123 @@ ZERO-TESTS rows 188-190 (captured 29.9 ~13:02 UTC by render-watch). Read by an O
 - Option (iii) condition confirmed at rendered grade: Copilot code review consumes private-repo Actions minutes (gh-docs-actions-billing.txt:222, :224, :380) and runs on standard Ubuntu runners by default (:228).
 - Moot for (b): whether classic or fine-grained tokens work for user usage (rendered reference :1165 against AUR:31), and whether user usage covers Actions (the intro at :491 against 'total usage' at :1158 and an Actions example copied from the organization one, :808-813 vs :1239-1244). No user endpoint reads a limit.
 - Nothing was filed or run. Mozilla row 8 stays parked (logs/CHANNEL_LOOP.md:147).
+
+---
+
+## 29.9 (tick 22, rendered)
+
+ZERO-TESTS rows 214-215 (captured 29.9 ~16:22 UTC). Read by an Opus reader, checked by an adversarial verifier.
+
+### Budgets at rendered grade (tick 22)
+
+**Read by:** a tick-22 Opus reader, from the render-watch captures of ZERO-TESTS rows 214-215 (`research/channel-loop/ZERO-TESTS.md:223-224`), for FABLE_QUEUE row 18 option (i)(b) (`logs/FABLE_QUEUE.md:42`). Checked by an adversarial verifier. Every quote below was checked with `grep -n -F` against its `.txt`.
+- verifier: all 37 rendered quotes were re-checked with `grep -n -F`. Every line number holds.
+
+| Short name | Capture (under `research/rendered/`) | fetchedAt (UTC) | sha256 (first 12, `.html` per `.meta.json`) | Lines | Docs version |
+|---|---|---|---|---|---|
+| `R-SB` | `gh-docs-set-up-budgets.txt` | 2026-09-29 16:22:18 | `cefb4fccd9b6` | 401 | Free, Pro & Team |
+| `R-BA` | `gh-docs-budgets-and-alerts.txt` | 2026-09-29 16:22:19 | `b0189522a494` | 301 | Free, Pro & Team |
+
+- **Capture status:** both have status 200, `firstFetch: true` and `truncated: false`. `currentVersion` is `free-pro-team@latest` in both `.html` files.
+- **Source unchanged:** the reader re-fetched raw SB and BA at 16:29 UTC and got sha256 `1e517fd1956d` (173 lines) and `1528e37f6497` (78 lines). These are the tick-19 hashes, so the tick-19 `SB:n` and `BA:n` line numbers still apply.
+  - verifier: re-fetched raw SB, BA, LFS, ABS and PUI at 16:35 UTC. All five match the tick-19 table: `1e517fd1956d`, `1528e37f6497`, `819024f58957`, `5205eb52216c`, `da16b2b79ce0`.
+- **Terms:** docs.github.com falls under `github.com`, which is `CONDITIONAL_MET` (`research/channel-loop/terms-verdicts.json:113-114`). The footer's "All Docs are open source." (`R-SB:395`) is not a terms reading.
+  - verifier: the verdict stands. The audit row describes our use as "one GET per week of 7 public, non-personal pages" (`research/channel-loop/TERMS-AUDIT-2026-09-29.md:25`). The captures now hold 11 URLs on github.com hosts, 6 of them on docs.github.com. That is still one plain GET per page per week, but the count in the audit row is out of date.
+
+**1. Personal-account budgets exist. Confirmed.**
+- The heading "Managing budgets for your personal account" is at `R-SB:215` (SB:44; also in the page's contents list at `:197`).
+- "Budgets can be set for a specific repository or for your whole account." (`R-SB:217`; SB:46, word for word).
+- The concepts page says: "personal account owners can set budgets for their own account." (`R-BA:235`; BA:37).
+- New at rendered grade: the page's "Who can use this feature?" (`R-SB:190`) is "Organization owners, billing managers, and personal account users" (`R-SB:192`).
+- The owner's route is rendered too: "Open your billing overview page: https://github.com/settings/billing ." (`R-SB:219`; ABS:1), then "Click Budgets and alerts ." (`R-SB:221`; SB:50).
+- The personal steps offer three types: "Under "Budget Type" select Product-level budget , SKU-level budget , or Bundled AI credits budget ." (`R-SB:225`). Scope and amount are separate steps: "Under "Budget scope", set the scope of spending for this budget." (`:233`) and "Under "Budget", set a budget amount." (`:235`).
+- verifier: this confirms personal-account budgets **in the Free, Pro & Team docs**. It does not confirm them for the GitHub Free plan by name.
+  - `R-SB:192` is the `fpt` branch of a reusable: "{% ifversion fpt %}Organization owners, billing managers, and personal account users" (PEBP:1, github grade: `data/reusables/permissions/enhanced-billing-platform.md`, fetched 16:38 UTC, sha256 `ea41455338a7`, 1 line).
+  - Both pages are versioned `feature: enhanced-billing-platform` (SB:5, BA:6). That flag's comment names only "GitHub Enterprise plan from June 2024 and GitHub Team plan from Nov 2024" (EBP:1; re-fetched, same sha256 `59cf5461aae4`).
+  - Neither capture names GitHub Free.
+  - Tick 20's open point, "Whether GitHub Free accounts have the enhanced billing platform." (`actions-spending-limit.md:407`), is narrowed but not closed. The owner look settles it: either "Budgets and alerts" appears under `https://github.com/settings/billing` or it does not.
+
+**2. "Stop usage when budget limit is reached": confirmed in the personal steps, but "if available". No rendered sentence names personal account, Actions and Stop usage together.**
+- **In the personal steps:** "To stop any usage and further spending once the budget limit is reached, select Stop usage when budget limit is reached , if available. This option is not available for user-level budgets, which always enforce a hard stop." (`R-SB:237`; SB:61, word for word).
+- **Without the option there is no stop:** "If you do not select Stop usage when budget limit is reached , you will be notified by email if you exceed your budget, but usage will not be stopped." (`R-SB:241`; SB:63).
+- **The only rule for when it is available is in the organization/enterprise section, not the personal one:** "This option is available for metered products and for Advanced Security SKU-level budgets ." (`R-SB:335`, under "Managing budgets for your organization or enterprise", `:259`). The personal section gives no rule of its own.
+  - verifier: the organization section says it a second time: "For budgets that control metered use of a product, you can also block further use when the budget is exhausted." (`R-SB:265`). Both statements are in the organization section.
+- **Actions is a metered product that can be stopped. This sentence does not limit the account type:** "For metered products such as GitHub Actions, Copilot AI credits, or cloud sandboxes, you can set budgets to prevent usage once the budget threshold is reached." (`R-BA:215`; BA:20).
+- **The personal steps never name Actions.** Their product example is Codespaces: "To limit spending at a Product-level, in "Product-level budget" choose a product from the dropdown, for example: Codespaces." (`R-SB:227`). In the article body, "Actions" appears only in the organization example (`R-SB:209`).
+- **"User-level" budgets mean Copilot budgets:**
+  - "For Copilot under usage-based billing, user-level budgets add another layer to consider." (`R-SB:213`).
+  - "Users : Sets a per-user budget. Available when you select Bundled AI credits budget as the budget type." (`R-SB:315`).
+  - "User-scoped budgets are currently only supported for Copilot AI credits, and have three scopes:" (`R-BA:223`; BA:27).
+  - [inference] A personal Actions budget is scoped to a repository or to the whole account (`R-SB:217`), so it is not a user-level budget. Tick 19's reading (`actions-spending-limit.md:56`) stands. If someone read it the other way, the text says such budgets "always enforce a hard stop" (`R-SB:237`). Neither reading leaves an Actions budget unable to stop.
+  - verifier: under that second reading, a personal budget with no checkbox would be a hard stop the look cannot see. The only rendered rule for a box that is not selected is `R-SB:241`: usage "will not be stopped". So a missing box still fails (b). That is the fail-closed choice.
+- **Stacking and the Actions example (organization), confirmed:**
+  - "if any budget with Stop usage when budget limit is reached enabled is exhausted, additional usage is blocked." (`R-SB:207`; SB:34).
+  - "The organization has used all the included quota of actions minutes and an extra $50 of billed minutes." and "Members are now blocked from using all GitHub-hosted runners until the next billing cycle or until the "Actions" product budget is increased." (`R-SB:209`; SB:38).
+- **Only paid use counts:** "Each budget has a type and a scope that define which paid use contributes to spending against the budget." (`R-BA:219`; BA:24). [inference] Together with `R-SB:209`, this means a $0 Actions budget should leave the free minutes usable. That inference now rests on rendered text.
+- **Still not rendered: a $0 amount.** "$0" has 0 matches in both `.txt` files (verifier: and in both `.html` files). The $0 case is still documented only for Git LFS: "**Budget set to $0**: You are not charged for overages, but" LFS usage is blocked "for the rest of the calendar month" (LFS:58, github grade; re-fetched 16:29, same line; verifier: again at 16:35, same sha256). [inference] If GitHub treated a $0 Actions budget as used up from the start and blocked free minutes too, the fence fails closed: jobs are blocked and nothing is billed. The first dry-run job would show it.
+
+**3. The first-cycle gap. Confirmed word for word.**
+- Under "Your first billing cycle after creating a budget" (`R-BA:275`): "When you first create a budget, be aware that the budget applies only to metered usage from the date of its creation onwards. Any use made before you created the budget is not included in the calculations. This means that you may exceed your budget in the first billing cycle after you create your budget, even if you select the option stop usage when the limit is reached." (`R-BA:277`; BA:70). Tick 19 quoted only the first and last sentences. The middle one gives the cause.
+- [inference] The gap comes from use made before the budget existed, and only paid use counts (`R-BA:219`). So the rule "a $0 budget must exist before the first private-repo run" (`actions-spending-limit.md:79`) now rests on rendered text, and it is enough to close the gap. Free minutes used earlier in the month are not paid use and do not open the gap. The page says "from the date of its creation" and does not give the granularity, so create the budget before the first run, not alongside it.
+- Answer (a), no payment method on file, still has no such gap (tick 19 §5.3).
+- verifier: neither page says how quickly a budget blocks usage once it is used up. "delay", "real time", "real-time" and "immediately" have 0 matches in both `.txt` files. [inference] With a $0 budget, a job that is running when the quota runs out might bill some minutes before the block. The monthly ceiling "well under 2,000 minutes" (`actions-spending-limit.md:218`) keeps usage below the quota, so it stays the first fence and the budget is the backstop. "It is enough" above applies to the first-cycle gap only, not to how fast the block takes effect.
+
+**4. What this means for FABLE_QUEUE row 18, option (i)(b)** ([inference] unless cited)
+1. **The github-grade dependency is closed.** Tick 20 said (b) "still rests on SB:61 (github grade)" (`actions-spending-limit.md:423`, `:503`). It now rests on `R-SB:237`, `:241` and `R-BA:215`, `:277`. Both answers of option (i) are now rendered: (a) on `R-GA:384`, `:500`, and (b) on these lines.
+2. **What stays open. The owner look settles four points by sight. The first dry-run job settles a fifth.** The look should be written as a checklist:
+   - Open `https://github.com/settings/billing`, then Budgets and alerts (`R-SB:219`, `:221`).
+   - Budget type Product-level (`R-SB:225`) on product Actions, not a SKU-level budget. A SKU budget leaves the other Actions SKUs unfenced, as with SkuPricing in tick 20 (`R-RBB:724`).
+   - Scope: the whole account, not a repository (`R-SB:217`). verifier: the organization section says "you cannot change the scope of a budget after creating it" (`R-SB:361`), and the personal section is silent. Set the scope correctly at creation.
+   - Amount: $0 (`R-SB:235`).
+   - "Stop usage when budget limit is reached" ticked (`R-SB:237`, `:241`).
+   - Created before the first private-repo run (`R-BA:277`).
+   - **By sight:**
+     - (1) "Budgets and alerts" offers an Actions product-level budget on this account. This is the plan question in §1.
+     - (2) The checkbox is offered ("if available").
+     - (3) $0 is accepted.
+     - (4) A budget can be created with no payment method on file. This matters only if (a) also holds.
+   - If (1), (2) or (3) fails, (b) fails and only (a) remains.
+   - **Not by sight:** whether a $0 budget leaves the free minutes usable. Only the first dry-run job shows that, and it fails closed (§2).
+   - verifier: the reader wrote "The owner look settles all three by sight" and counted "whether $0 leaves the free minutes usable" among them. That cannot be seen on the settings page; §2's own inference says the first dry-run job would show it. Points (1) and (4) are added.
+3. **(b) is also a snapshot, but a sturdier one than (a).**
+   - "To edit or delete a budget, on the "Budget and alerts" page, click Edit or Delete next to the budget you want to edit or delete." (`R-SB:247`, personal section). The deletion warning, "Deleting a budget may remove any limits on spending, depending on your other existing budgets." (`R-SB:359`; SB:152), is only in the organization/enterprise section, as tick 19 noted.
+   - The pages name only edit and delete as ways a personal budget ends. (a) lapses as soon as a payment method is added for any product (tick 19 §5.3). Setting (b) even while (a) holds covers a payment method added later.
+   - verifier: the reader wrote "(b) lapses only if the owner edits or deletes it." The pages do not promise that. GitHub has changed budgets on its own: "Existing premium request budgets have been automatically converted to AI credit budgets." (`R-SB:263`). It also removes individual user-level budgets when they expire (`R-SB:327-329`). Neither touches an Actions product budget. [inference] (b) is sturdier than (a), but it is not permanent.
+   - The pages do not say whether an account with no payment method can create a budget. verifier: "payment" (case-insensitive) appears only in the breadcrumb and sidebar: `R-SB:12`, `:18`, `:70`, `:76`, `:77`, `:87`, `:171`, and the same lines in `R-BA`. It never appears in either article body. The reader cited only `R-SB:76-77`. The look will find out (point (4) above).
+4. **Alerts:**
+   - [inference] A $0 budget's 75%/90%/100% threshold alerts carry no signal.
+   - "Budget alerts are available for budgets scoped to your enterprise, a cost center, an organization, or a repository." (`R-BA:239`). That list has no personal whole-account scope, although the personal steps offer the alerts (`R-SB:243`).
+   - The useful warning is the included-usage alert: "GitHub can send email notifications when the included usage for your plan reaches 90% and 100% during a billing period." (`R-BA:247`). It covers "GitHub Actions minutes" (`R-BA:251`) and "GitHub Actions storage" (`:253`), and it fires "regardless of whether you have set a budget" (`R-BA:273`). The owner opts in on the same page (`R-SB:257`; SB:77).
+5. **After step 7 (option (ii)'s budget), now also rendered:**
+   - "Organization budget scopes : the whole organization or a single repository within the organization" (`R-SB:267`).
+   - "As the owner of an enterprise or organization account, or as a billing manager, you can set a budget at the account level, or at any level below this." (`R-SB:295`).
+   - `R-SB:335` and `:265` apply there directly.
+6. **Unchanged:**
+   - (i) is still an owner step and crosses `research/breadth/BOARD.md:185`.
+   - The choice among (i)-(iv) stays with the 1.10 sitting (`logs/FABLE_QUEUE.md:42`).
+   - Nothing was filed, run or created. No budget was read or made.
+
+**5. Grade changes to R4** (`actions-spending-limit.md:403`)
+- **Now rendered:**
+  - SB:34 (`R-SB:207`), :38 (`:209`), :44 (`:215`), :46 (`:217`), :50 (`:221`), :61 (`:237`), :63 (`:241`), :77 (`:257`), :152 (`:359`).
+  - ABS:1 (`:219`).
+  - BA:20 (`R-BA:215`), :24 (`:219`), :27 (`:223`), :37 (`:235`), :70 (`:277`).
+- **Still github grade:**
+  - SB:10. The "spending limit" redirect is front matter and does not appear on the page (0 matches for the redirect path in either `.html`). verifier: the same applies to SB:14-20 (the Codespaces and Packages redirects, tick 19 §1).
+  - PUI:13. A render is now optional, since `R-SB:241` with `R-GA:502` carries its substance (verifier: with `R-GA:388` for the charge itself).
+  - LFS:58-59, HBW:50, :54, LRP:1, RP:14, :68, GT:17, GTP:4-33, AUR:26, :31, IB:50, EBP:4.
+  - verifier: new github-grade citations in this section: SB:5, BA:6, EBP:1 and PEBP:1 (§1).
+- **R6 rows 1-2** (set-up-budgets, budgets-and-alerts) are captured and read.
+- **Citation drift:**
+  - This file cites Mozilla's row as `logs/CHANNEL_LOOP.md:147` (lines 3, 418, 453, 507). The row is now at `logs/CHANNEL_LOOP.md:149`. Line 147 is CrazyGames (row 6).
+  - verifier: line 198 cites step 7 as `logs/CHANNEL_LOOP.md:210-212`. Step 7 is now at `:212-214`: it starts at `:212`, and "The same sitting creates `BRAND_GITHUB_TOKEN`." is at `:214`. Line 210 is now step 6a (Apify).
+
+**For the sitting:** option (i)(b) is now rendered. It is a $0 Actions product-level budget on the whole personal account, with "Stop usage when budget limit is reached" (research/rendered/gh-docs-set-up-budgets.txt:215, :217, :237, :241; gh-docs-budgets-and-alerts.txt:215, :235, :277). The page qualifies the checkbox with "if available". Its only availability rules, "available for metered products" (:335) and "block further use" (:265), sit in the organization section. The page never shows a $0 amount, and neither page names the GitHub Free plan. The pages are gated on a billing-platform flag whose comment names only Enterprise and Team (EBP:1, github grade).
+
+The owner look must confirm by sight:
+- "Budgets and alerts" offers an Actions product-level budget on the account.
+- The checkbox is offered, and it is ticked.
+- $0 is accepted.
+- The budget exists before the first private-repo run.
+
+Whether $0 leaves the free minutes usable shows only on the first dry-run job, which fails closed. The pages give no timing for the block, so the monthly minute ceiling stays the first fence. verifier: the reader's list of three things replaced "Budgets and alerts offers an Actions budget" with nothing, and its §4.2 list differed from this one. The two lists now match.

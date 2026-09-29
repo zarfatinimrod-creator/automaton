@@ -371,6 +371,8 @@ export const TERMS_BARRED = [
   { domain: "spreadshirt.com", why: "Spreadshirt's terms bar \"a robot or other automated means to monitor the activity on or copy information or pages from the site\", except search engines (tosdr/tosdr-snapshots Spreadshirt/Terms of Service.html:145, github grade; terms audit round 2)" },
   { domain: "spreadshop.com", why: "Spreadshirt's terms, which cover Spreadshops, bar robots that copy pages from the site (tosdr/tosdr-snapshots Spreadshirt/Terms of Service.html:145, :129, github grade; terms audit round 2)" },
   { domain: "teacherspayteachers.com", why: "TpT's terms: \"Don't use any automated means such as bots, spiders, or crawlers to download or otherwise obtain data from our services\" (sernl/listing-sync docs/notes/legal/marketplace-terms-assessment.md:100, github grade; terms audit round 2)" },
+  // Round 3 (tick 22): the terms pages rendered by rows 216-223.
+  { domain: "wavedash.com", why: "Wavedash's terms bar \"any robot, spider, or other automatic device, process, or means to access the Website for any purpose\" (research/rendered/terms-wavedash.txt:118; terms audit round 3)" },
 ];
 
 /** The TERMS_BARRED entry a host falls under (the domain or any subdomain; case and trailing dot ignored), or null. */

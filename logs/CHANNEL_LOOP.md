@@ -19,7 +19,7 @@ The forecast is in `research/channel-loop/FORECAST.md`.
 
 | | |
 |---|---|
-| Last tick | tick 21 (29.9 ~15:28-~16:10 UTC, continuous; a container restart lost the first run of its workflow): PR #23 merged (`8a4cc99`); terms audit round 2: 15 more domains barred (Wix, CrazyGames, Spreadshirt, TpT, Pexels, Pixabay among them), `terms-verdicts.json` gates every active render line in CI, 141 lines paused, nevo's lines paused until its terms are found; rows 214-223 rendered. Log: `logs/2026-09-29-channel-loop-tick-21.md` |
+| Last tick | tick 22 (29.9 ~16:10-~17:10 UTC, continuous): PR #24 merged (`06add62`); rows 214-223 read: Wavedash barred, YPay not barred (lines stay paused), five terms pages refused; nevo has no terms anywhere, so law texts come from the `lawsofisrael` GitHub mirror (laws have no copyright); GitHub's budget docs make Mozilla's option (i)(b) rendered; rows 224-225 queued (Tipalti's website terms, the Knesset's terms). Log: `logs/2026-09-29-channel-loop-tick-22.md` |
 | Branch | `claude/new-session-j071dx`; PRs #3-#18 merged into `main` under the standing consent (the loop merges its own green PRs). |
 | Routine | "Channel loop tick", every 6 h (`11 1,7,13,19 * * *` UTC), fires into this session; see §11 |
 | Fable | the 29.9 07:12 sitting ran two agents (rows 14-15), no 429. Next sitting: 30.9 ~07:11, row 16 (video channels and TikTok's terms). |
@@ -106,7 +106,7 @@ it (verifying second-tier venues from `research/breadth/`), not stopping.
 | Built-but-unlaunched ≤ 6 | **6/6 — binding** | apify-il-open-data, il-biz-tools, pcn874, mcp-il-tools, T1 web page, T1 video |
 | Experiments measuring ≤ 3 | 1/3 | faceless-youtube (in code, not yet measuring anything public) |
 | Builds in flight ≤ 1 | 0/1 | none (osek-zair 2026 merged, `a0c25a1`) |
-| Render dispatches this tick ≤ 1 | 1/1 | tick 21, ~16:05 UTC: rows 214-223 by override (GitHub's budget docs for FABLE_QUEUE row 18; eight terms pages found at github grade) |
+| Render dispatches this tick ≤ 1 | 1/1 | tick 22, ~17:10 UTC: rows 224-225 by override (Tipalti's website terms, the Knesset's terms) |
 
 Because the BBU cap binds, **no new product whose launch needs an owner step starts** until something launches. The loop's work is launch preparation, ₪0 tests, instruments and maintenance.
 
@@ -322,7 +322,9 @@ Fixed in tick 19 (29.9): `scripts/queue-zero-test.mjs --override N-M` prints the
 
 ## 10. Next tick's first action
 
-**Tick 22 (next):** read rows 214-223 (rendered ~16:05): the eight terms pages (bitsofgold, greeninvoice, mr.gov.il, tipalti, wavedash, gov.il, which also governs data.gov.il, ypay, stripe legal) and set each site's verdict in `research/channel-loop/terms-verdicts.json`, un-pausing its lines only if the terms allow it; GitHub's budget docs into `actions-spending-limit.md` for row 18. Find nevo's terms (the law source the sitting relies on) at github grade or in a nevo page already captured. The 30.9 ~07:11 sitting takes rows 16 (now with the full terms-audit picture in (d)) and 17; row 18 goes to 1.10.
+**Tick 23 (next):** read rows 224-225 (Tipalti's website terms; the Knesset's terms, which would make fs.knesset.gov.il's official gazette PDFs a law source) and set their verdicts. Law texts for the sitting come from the `lawsofisrael` GitHub mirror at github grade while nevo stays paused (`osek-patur-documents.md` "29.9 (tick 22)"). The 30.9 ~07:11 sitting takes rows 16 and 17; row 18 (now with option (i)(b) rendered) goes to 1.10.
+
+**Was planned for tick 22 (done 29.9, log `logs/2026-09-29-channel-loop-tick-22.md`):** read rows 214-223 (rendered ~16:05): the eight terms pages (bitsofgold, greeninvoice, mr.gov.il, tipalti, wavedash, gov.il, which also governs data.gov.il, ypay, stripe legal) and set each site's verdict in `research/channel-loop/terms-verdicts.json`, un-pausing its lines only if the terms allow it; GitHub's budget docs into `actions-spending-limit.md` for row 18. Find nevo's terms (the law source the sitting relies on) at github grade or in a nevo page already captured. The 30.9 ~07:11 sitting takes rows 16 (now with the full terms-audit picture in (d)) and 17; row 18 goes to 1.10.
 
 **Was planned for tick 21 (done 29.9, log `logs/2026-09-29-channel-loop-tick-21.md`):** read the 23 terms pages (rows 191-213, rendered ~14:25) for an automated-access bar, one Opus agent per group with a verifier; every site that bars it goes into `TERMS_BARRED`; then settle the 38 NO_TERMS_CAPTURE sites that have no known terms URL (find one in a capture, or pause the lines) **before the weekly run on Tuesday 6.10**. nevo.co.il is one of them and carries the law pages the sitting relies on: find its terms first, and hold new nevo lines (271_005, the general VAT regulations) until then. Queue for the next dispatch: GitHub's set-up-budgets and budgets-and-alerts docs (row 18, option (i)(b)). The 30.9 ~07:11 sitting takes rows 16 and 17; row 18 goes to 1.10.
 

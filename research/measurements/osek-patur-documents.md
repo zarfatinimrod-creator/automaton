@@ -1115,3 +1115,81 @@ Line numbers without a file name are this file's (`research/measurements/osek-pa
 - (a), watch item: reg 8 requires written notice within 15 days of a change of address, the business stopping, or a change of economic branch (registration-regs.txt:96). A new colony income line might count [inference]. It is event-driven owner paperwork, not per document.
 - Step 2 wording (outside (a) but bears on it): 'אונליין' (OWNER_STEPS.he.md:130) is not in reg 2's 10-12-2024 text, which provides delivery by hand or through a listed professional (registration-regs.txt:43). 'דיווח **פעם בשנה**' (:156) is rendered only for the annual declaration. On the law alone, §67(א2)(1) would make an exempt dealer report two-monthly unless the Minister set longer or exempted the class (vat-law.txt:852, :862).
 - Queue before the next sitting: the general VAT regulations have a URL the reader missed. nevo 271_005 is at lawsofisrael listing page_028.html:921/:934 at aeca0b25 (github). It holds reg 6א (bearing on reg 1(2), 13(1) and 15א(ה)) and probably the exempt dealer's report exemption. Still open: how offices treat §58 requests (gov.il, likely 403), and the 1991 gazette TAK-5321, still not a ZERO-TESTS row.
+
+---
+
+## 29.9 (tick 22)
+
+Written after the terms audit paused every nevo line (nevo.co.il has no terms on file). One Opus reader, checked by an adversarial verifier.
+
+### Where the law texts come from if nevo stays paused
+
+Written 29.9 as a follow-up to the terms audit, and checked by an adversarial verifier. Grades are as in "Grades" above. Each GitHub file was fetched raw at the pinned commit, and each quote was checked with `grep -n -F`. One exception: the Copyright Act line has an inline `<ref>` tag around "סעיף 4", so only the part after the tag matches `grep -F`.
+
+**nevo's own terms: none found (NO_TERMS stands, `terms-verdicts.json:248-253`).**
+- **No capture names any terms.** A `grep -i -F` over all ten captures (`research/rendered/nevo-*.html` and `.txt`) found 0 hits for each of these strings: תקנון, תנאי שימוש, terms, copyright, זכויות יוצרים, זכות יוצרים, כל הזכויות, ©, privacy, policy and robots (rendered).
+  - The one hit for "תנאי השימוש" is statute text, in the timeshare list of חוק הגנת הצרכן (`nevo-consumer-protection-law-70305.txt:640`).
+- **No capture has a site footer.** Every page ends with its last provision followed by an AdSense block (e.g. `nevo-vat-law.txt:1818`, §151).
+- **The only site notice** is a link in `nevo-books-instructions` (twice) and `nevo-vat-bookkeeping-regs` (once): "הודעה למנויים על עריכה ושינויים במסמכי פסיקה, חקיקה ועוד באתר נבו - הקש כאן".
+  - It appears at `nevo-books-instructions.txt:13080`, `:13082` and `nevo-vat-bookkeeping-regs.txt:709`.
+  - The link goes to `http://www.nevo.co.il/advertisements/nevo-100.doc`. It is an editing notice for subscribers, not terms, and it was not opened.
+- **GitHub code search found no copy of nevo's terms and no terms URL.** Queries tried: "nevo.co.il" with תקנון, with "תנאי שימוש", with "terms of use", and with robots. Four third-party statements turned up. None of them quotes any terms text:
+  - `barkk678-lgtm/legislator` `docs/data-sources.md:3-5` at `b4344c1d`: "**אין לגרד את נבו או את דינים.** … האתרים האלה הם מוצרים מסחריים עם תנאי שימוש." The file says terms exist but quotes none.
+  - `dk-forge/ai-layoff-tracker` `railway/country_coverage.py` at `4ce5e163`. Its `REFUSAL_LEDGER` (`:321`) lists nevo.co.il as one that "bans GPTBot, Google-Extended, Perplexity and '*' outright" (`:467-468`). The entry is marked `"verified_here": False` (`:472`).
+  - `calcagnocarloalberto1-star/mediaresenzaconfini` `testi-in-vigore-israele/index.html:92` at `89075e47` reports a nevo page as "accesso bloccato da robots.txt".
+  - `lawsofisrael/lawsofisrael` `scripts/scripts.txt:1` at `aeca0b25` says: "please note: while the law information is public domain however the activity of using the website might be not under the terms of the website".
+- **robots.txt is not terms, and render-watch never fetches it.** The runner's own notes say so (`scripts/render-watch.mjs:352-353`, repo). Fetching nevo's robots.txt would also be a new nevo line, and those are held back ("new nevo lines wait", `terms-verdicts.json:252`).
+
+**What §6 of the Copyright Act settles, and what it leaves open.**
+- **The text of §6** (חוק זכות יוצרים, התשס"ח-2007, "פרסומים רשמיים"): "על אף הוראות סעיף 4, לא תהא זכות יוצרים בחוקים, בתקנות, בדברי הכנסת ובהחלטות שיפוטיות של בית משפט או של כל רשות שלטונית המפעילה סמכות שפיטה על פי דין."
+  - Source: `nitzba/OCR_Error_Detection_Deep_Learning` `LawRepoWiki/akn/il/act/PrimaryLegislation/2007-11-25/113653/he@/main.xml:379`, with the heading at `:374`, at `030c1399` (github).
+  - The lawsofisrael README gives it in English (`README.md:31-32` at `aeca0b25`).
+- **What it settles:** there is no copyright in the statutory text.
+- **What it does not cover:** nevo's own additions, such as the "נוסח עדכני נכון ליום" stamp (`nevo-vat-law.txt:3`), the amendment notes and the subscriber notice. These are not "חוקים" or "תקנות". A date stamp is in any case a fact [inference].
+  - A third-party project puts it this way: "The editorial apparatus of a consolidation belongs to its publisher" (`TheAxiomFoundation/rulespec-il` `README.md:105-106` at `3e0df172`, github).
+  - [inference] Whether "תקנות" in §6 covers the Director's הוראות (the books instructions) is not settled here.
+- **What it does not answer:** whether nevo's unread site terms bar a weekly GET. That is a contract question, not a copyright one. `legislator` frames it the same way: "הסיכון הוא חוזי, לא זכויות יוצרים" (`docs/data-sources.md:5`).
+
+**Alternative 1, with terms already read: the GitHub mirror (`github.com`, CONDITIONAL_MET).**
+- **The verdict** is `terms-verdicts.json:113-116`. The condition is research use of public, non-personal information, with any publications open access (`TERMS-AUDIT-2026-09-29.md:25`).
+- **The mirror** is `https://github.com/lawsofisrael/lawsofisrael` at `aeca0b25`, which is HEAD. This file's first reading used it (`:30`), and so did `refund-law-il.md:57`.
+  - README: "the files are from different source" (`README.md:12`) and "public domain" (`:15`).
+  - `2023-03-06/israel/` holds the VAT law, the VAT bookkeeping regulations, the income-tax bookkeeping instructions and the Electronic Signature Law, in `docs/`, `convert/` and `converted_docx/` (file names, blobless clone, github).
+- **Limits:**
+  - The folder is dated 2023-03-06, and all 8 commits are from 2023-06-29 (`git log`). That is older than the consolidations read at rendered grade here, e.g. the VAT law as of 13-07-2026 (`nevo-vat-law.txt:3`).
+  - The files are nevo's own documents. The mirror's scripts downloaded them from nevo in a browser (`scripts/scripts.txt:6`, `:27`, `:31`), and its author flags nevo's terms (`:1`). So GitHub's terms cover our reading of the mirror, but they do not clean up how the mirror obtained the files, and nevo's editorial layer comes along with them.
+  - A `raw.githubusercontent.com` URL maps to the site `githubusercontent.com` (`siteOf`, `scripts/queue-zero-test.mjs:110-123`), which has no verdict entry. A pinned blob never changes, so read it once through a clone rather than adding a weekly render line.
+
+**Alternative 2, for newer text: he.wikisource.org, ספר החוקים הפתוח (`wikisource.org`, CONDITIONAL_UNMET).**
+- **The Knesset database links here for full text.** It "points its "לחוק המלא" link at the he.wikisource.org ספר החוקים הפתוח project".
+  - Source: `TheAxiomFoundation/axiom-corpus` `manifests/il-taxben-pilot-openlaw.yaml:5-6` at `dbb69efb`. The link was followed for the Income Tax Ordinance (`:32`). `rulespec-il` says the same (`README.md:88-90`) and ranks nevo as "commercial consolidation, cross-check only" (`:97`).
+  - The database itself gives no text: it "renders client-side and `KNS_DocumentIsraelLaw` returns empty over OData" (`rulespec-il` `README.md:82-83`).
+- **It carries 2026 changes, and it can differ from nevo.** A third party fetched the VAT law page on 27.8.2026 (`https://he.wikisource.org/wiki/%D7%97%D7%95%D7%A7_%D7%9E%D7%A1_%D7%A2%D7%A8%D7%9A_%D7%9E%D7%95%D7%A1%D7%A3`).
+  - Its §38(א1) read "(מינואר 2026 ועד מאי 2026: 10,000 שקלים חדשים)" (`skills-il/tax-and-finance` `tranzila-payment-gateway/evidence.json:333-335` at `df1bc2da`, github).
+  - nevo's 13-07-2026 text of the same clause has no interim figure (`nevo-vat-law.txt:567`).
+  - Neither source is shown here to be complete.
+- **Scope and upkeep**, per `legislator` `docs/data-sources.md`:
+  - about 6,100 pages under the category "בוט חוקים", with "רישיון חופשי, MediaWiki API מלא, dumps להורדה" (`:10-11`);
+  - "51% תקנות" (`:15`);
+  - kept by volunteers, with a lag on recent amendments (`:25`).
+  - Not checked: whether it holds the VAT registration regulations, the VAT bookkeeping regulations and the books instructions.
+- **Its terms are conditional.** The Wikimedia Terms of Use were read at github grade from `tosdr/tosdr-snapshots` `Wikimedia/Terms of Service.html` at `b44ae1b6`. They have been in force since 7.6.2023 (`:1155`), and the snapshot's footer says "last edited on 31 March 2024" (`:1210`).
+  - They bar "Engaging in automated uses of the Project Websites that are abusive or disruptive of the services, violate acceptable usage policies where available, or have not been approved by the Wikimedia community;" (`:981`).
+  - They bind API users to "the User-Agent Policy, the Robot Policy, and the API:Etiquette" (`:1100`).
+- **Why the condition is not met:** the runner sends a copied Chrome User-Agent (`scripts/render-watch.mjs:189-190`). The User-Agent policy has not been read first-hand, but two third parties quote it: "Do not copy a browser's user agent for your bot, as bot-like behavior with a browser's user agent will be assumed malicious." (`Nieole/romcat` `docs/research/scraper-sources.md:1318` at `43ef95da`; also `Shaostoul/Humanity` `docs/reference/findings/2026-09-25-site-embed-terms.md:154` at `0954d4a1`).
+  - Both policies are unread and queued: the Robot Policy (`https://wikitech.wikimedia.org/wiki/Robot_policy`) and the User-Agent policy, each linked at `:1100`.
+- **Access:** he.wikisource.org was EGRESS_BLOCKED from this project's container on 4.9.2026 (`research/colony-sweep/scouts/distribution--email-acquisition.md:15`). It has not been re-tested. render-watch runs on GitHub Actions, not in this container.
+
+**Checked and not usable yet.**
+- **The Knesset (`knesset.gov.il`, NO_TERMS).**
+  - The homepage footer links "תנאי שימוש" to `/About/Pages/TermsOfUse.aspx` on `main.knesset.gov.il`. The footer also reads "כל הזכויות שמורות למדינת ישראל - הכנסת או לצדדים שלישיים, כמפורט בתנאי שימוש" (`theWallProject/mono` `packages/scrapper/logs/homepage_ai_extractor/1773740627845_The_Israeli_Knesset_(Parliament)/page.html:2299`, `:2367` at `07ffcbd1`, captured 17.3.2026, github).
+  - No copy of the terms text was found on GitHub. Queue: `https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx`.
+  - What it would open: the official gazette PDFs on `fs.knesset.gov.il`, "the authentic text of each amending act" (`rulespec-il` `README.md:85-87`). These are official texts but not consolidated.
+- **gov.il.** `www.gov.il` is TERMS_PENDING (`terms-verdicts.json:407-411`). Its terms page answered the runner with 403 on 29.9 at 16:22Z (`research/rendered/terms-gov-il.meta.json`). This search found no gov.il page with consolidated legislation.
+
+**What this leaves [inference].**
+- The nevo pages already captured stay readable (`terms-verdicts.json:252`).
+- For text as of early 2023, the lawsofisrael mirror on GitHub can be read under terms already read, with the provenance caveat above.
+- For newer consolidated text, Wikisource is the only candidate found. Before any runner line: read the Robot Policy and the User-Agent policy, and give that host an identifying User-Agent with contact details.
+- The dumps that `legislator` mentions (`:11`) would make a one-time read possible without weekly page fetches. That route is also unread.
+- For official, unconsolidated text, read the Knesset's terms first.
