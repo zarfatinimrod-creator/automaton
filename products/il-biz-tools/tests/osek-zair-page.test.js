@@ -1,4 +1,5 @@
-// osek-zair.html: every number traces to a primary text, 2026 stays refused, and the page says what it is not.
+// osek-zair.html: every number traces to the text it was read in, 2026 computes from nevo's consolidated VAT law (and
+// the page says that is what the text is), later years stay refused, and the page says what it is not.
 //
 // Three chains are proved here, all from files in the repository:
 //   1. page -> config: every run of text with a digit in it (main, FAQ JSON-LD) is a config string the page renders
@@ -9,7 +10,7 @@
 //      pages it cites (page bounds from the record) and inside the section it names, and each capture is the bytes
 //      the render stored (sha256 against its .meta.json);
 //   3. build: the page ships as itself while osek-zair.json is verified, is withheld by the existing gate the day it
-//      is not, and the unverified 2026 cap (osek-zair-unverified.json) never ships and is never loaded.
+//      is not, and the unverified file (osek-zair-unverified.json) never ships and is never loaded.
 import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from 'vitest';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -17,6 +18,7 @@ import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import {
   OSEK_ZAIR_CONFIG as config,
+  compareTracks,
   offeredYears,
   citeHe,
   citesHe,
@@ -100,7 +102,10 @@ describe('the documents: each is the capture the render stored', () => {
       expect(meta.status).toBe(200);
       expect(createHash('sha256').update(readFileSync(join(repoRoot, meta.bodyPath))).digest('hex')).toBe(doc.sha256);
       expect(existsSync(join(repoRoot, doc.capture)), doc.capture).toBe(true);
-      expect(doc.url.startsWith('https://www.capitax.co.il/')).toBe(true);
+      // A copy says where it is copied (the source line names the site); the one document that is not a copy is
+      // nevo's consolidated VAT law, and its name says whose text it is.
+      if (doc.copyOn) expect(doc.url.startsWith(`https://www.${doc.copyOn}/`), id).toBe(true);
+      else expect(doc.url.startsWith('https://www.nevo.co.il/') && doc.he.includes('נבו'), id).toBe(true);
     });
   }
 
@@ -112,6 +117,7 @@ describe('the documents: each is the capture the render stored', () => {
     expect(config.documents.gazette.idLines).toBeDefined();
     expect(config.documents.regulations.idLines).toBeDefined();
     expect(config.documents.draft.idLines).toBeDefined();
+    expect(config.documents.vatLaw.idLines).toBeDefined();
   });
 
   it('the draft regulations are named a draft, and the capture says so', () => {
@@ -135,13 +141,13 @@ describe('the check: a dated read, with a record that shows it', () => {
     expect(config.check.on).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(new Date(config.check.on).getTime()).toBeLessThanOrEqual(Date.now());
     expect(trackSourceLineHe()).toBe(
-      `מקור: ${config.documents.gazette.he} ו${config.documents.report.he} (עותקים באתר capitax.co.il) · נבדק: ${dateHe(config.check.on)}`,
+      `מקור: ${config.documents.gazette.he} ו${config.documents.report.he} (עותקים באתר capitax.co.il); ${config.documents.vatLaw.he} · נבדק: ${dateHe(config.check.on)}`,
     );
   });
 
   it('the records carry the date, every document address and the figures', () => {
     expect(record).toContain(config.check.on);
-    const both = `${record}\n${readRepo(config.check.review.record)}`;
+    const both = `${record}\n${readRepo(config.check.review.record)}\n${readRepo(config.check.vatLaw.record)}`;
     for (const doc of Object.values(config.documents)) expect(both, doc.url).toContain(doc.url);
     for (const figure of ['120,000', '30%', '25%']) expect(record).toContain(figure);
   });
@@ -153,6 +159,13 @@ describe('the check: a dated read, with a record that shows it', () => {
         for (const f of fragments(cite.quote)) expect(flat.includes(f), `${where}: "${f}"`).toBe(true);
       }
     }
+  });
+
+  it('the read of nevo\'s VAT law is on record: its date, address, capture, stamp, lines and the amount', () => {
+    const r = readRepo(config.check.vatLaw.record);
+    expect(r).toContain(config.check.vatLaw.on);
+    const doc = config.documents.vatLaw;
+    for (const s of [doc.url, doc.capture, '13-07-2026', '122,833', 'nevo-vat-law.txt:93', 'nevo-vat-law.txt:1637']) expect(r, s).toContain(s);
   });
 
   it('the earlier read of 28.9.2026 is on record too', () => {
@@ -270,51 +283,83 @@ describe('config -> capture: every figure in a fact is in the text it cites', ()
   });
 });
 
-describe('2026: refused on the page, its unverified cap never shown and never shipped', () => {
-  const cap2026 = unverified.years['2026'].cap;
-  const forms = [String(cap2026), cap2026.toLocaleString('en-US'), formatILS(cap2026, { decimals: 0 })];
+describe('2026: computed with the cap nevo\'s consolidated VAT law states, and the page says what that text is', () => {
+  const vat = config.documents.vatLaw;
+  const cap2026 = config.years['2026'].cap;
+  const capture = readRepo(vat.capture).split('\n');
 
-  it('the unverified file holds the 2026 cap and the VAT section, and says it is not verified', () => {
-    expect(unverified.verified).toBe(false);
-    expect(Object.keys(unverified.years)).toEqual(Object.keys(config.pendingYears));
-    for (const y of Object.keys(config.pendingYears)) expect(config.years[y], y).toBeUndefined();
-    expect(unverified.vatLawSense.section).toBe('31(3)');
+  it('the 2026 cap is the amount in the VAT law\'s "עוסק פטור" definition, at the line the config cites', () => {
+    const def = config.facts.cap.cite.find((c) => c.doc === 'vatLaw');
+    const line = norm(capture[def.lines[1] - 1]);
+    expect(line.startsWith('" עוסק פטור " –'), line).toBe(true);
+    const m = /אינו עולה על ([\d,]+) שקלים חדשים לשנה/.exec(line);
+    expect(m, line).not.toBeNull();
+    expect(Number(m[1].replace(/,/g, ''))).toBe(cap2026);
+    expect(config.facts.cap2026.cite[0]).toEqual(def);
   });
 
-  it('the 2026 value is the osek patur ceiling of 2026, the amount the cap is tied to by statute (secondary grade)', () => {
+  it('the capture is the VAT law with nevo\'s own stamp, and the document\'s name and grade say whose text it is', () => {
+    expect(vat.url).toBe('https://www.nevo.co.il/law_html/law01/271_001.htm');
+    expect(norm(capture[0])).toBe('חוק מס ערך מוסף, תשל"ו-1975');
+    expect(norm(capture[2])).toBe('נוסח עדכני נכון ליום: 13-07-2026');
+    expect(vat.he).toContain('נוסח משולב של אתר נבו');
+    expect(vat.he).toContain('13-07-2026');
+    expect(vat.copyOn).toBeUndefined();
+    expect(vat.grade).toMatch(/not the official text/);
+  });
+
+  it('section 126(א) of the same text indexes the amount every 1 January, and the 2026 statement cites it', () => {
+    const c126 = config.facts.cap2026.cite.find((c) => c.label === 'סעיף 126(א)');
+    expect(c126.doc).toBe('vatLaw');
+    expect(linesOf(vat.capture, c126.lines)).toContain('בהגדרה "עוסק פטור" ובסעיף 35 או לפיהם יותאמו ב-1 בינואר של כל שנה');
+  });
+
+  it('the 2026 cap is the osek patur ceiling of 2026, the amount the בעל עסק זעיר cap is tied to by 87ב(1)', () => {
     const osek = JSON.parse(read('src/config/osek-patur.json'));
-    if (osek.year === 2026) expect(cap2026).toBe(osek.ceiling);
-    expect(unverified.years['2026'].grade).toMatch(/secondary/);
+    expect(osek.year).toBe(2026);
+    expect(cap2026).toBe(osek.ceiling);
+    expect(config.facts.cap.cite[0].quote).toContain('הסכום הקבוע בהגדרה "עוסק פטור" שבסעיף 1 לחוק מס ערך מוסף');
   });
 
-  it('the page, its script and the module never state it, and never cite the VAT section', () => {
-    for (const f of [PAGE, 'assets/page-osek-zair.js', 'src/lib/osek-zair.js', 'src/config/osek-zair.json']) {
-      const text = read(f);
-      for (const form of forms) expect(text.includes(form), `${f} contains ${form}`).toBe(false);
-      expect(text, f).not.toContain('31(3)');
-    }
+  it('the page states the 2026 cap with the nevo source, says the text is nevo\'s consolidation and not the official publication, and links it', () => {
+    expect(citesHe(config.facts.cap.cite)).toContain(vat.he);
+    expect(textOf(elementById(html, 'cap-2026'))).toBe(`${config.facts.cap2026.he} (מקור: ${citesHe(config.facts.cap2026.cite)})`);
+    expect(config.facts.cap2026.he).toContain('נוסח משולב שמפרסם אתר נבו');
+    expect(config.facts.cap2026.he).toContain('נוסח עדכני נכון ליום 13-07-2026');
+    expect(config.facts.cap2026.he).toContain('זה לא הפרסום הרשמי ברשומות');
+    expect(elementById(html, 'track-source')).toContain(`<a href="${vat.url}">${vat.he}</a>`);
   });
 
-  it('nothing the page loads names the unverified file', () => {
-    for (const f of ['assets/page-osek-zair.js', 'src/lib/osek-zair.js', PAGE]) expect(read(f), f).not.toContain('osek-zair-unverified');
+  it('no line on the page or the home page says the tool does not compute 2026', () => {
+    const text = textOf(html);
+    expect(text).not.toMatch(/2026 – הכלי לא מחשב|לשנת המס 2026 הכלי לא מחשב|לא מחשב לשנת המס 2026/);
+    expect(text).not.toContain('לא מופיע באף אחד מהמסמכים שקראנו');
+    expect(textOf(read('index.html'))).not.toMatch(/לא מחשב(?:ת)? לשנת (?:המס )?2026/);
   });
 
-  it('the year list offers 2026 as not computed, and the page picks a verified year by default', () => {
+  it('the year list offers 2026, 2025 and 2024, none marked as not computed, and the default stays 2025', () => {
     const select = elementById(html, 'year');
     const options = [...select.matchAll(/<option value="([^"]+)"( selected)?>([^<]*)<\/option>/g)].map((m) => ({ value: m[1], selected: !!m[2], label: m[3] }));
     expect(options.map((o) => o.value)).toEqual(offeredYears().map((y) => y.year));
-    for (const o of options) {
-      const offered = offeredYears().find((y) => y.year === o.value);
-      expect(o.label, o.value).toBe(offered.available ? o.value : `${o.value} – הכלי לא מחשב`);
-    }
+    expect(options.map((o) => o.value)).toEqual(['2026', '2025', '2024']);
+    for (const o of options) expect(o.label, o.value).toBe(o.value);
     expect(options.filter((o) => o.selected).map((o) => o.value)).toEqual([config.defaultYear]);
-    expect(config.years[config.defaultYear]).toBeDefined();
+    expect(config.defaultYear).toBe('2025');
   });
 
-  it('the page states why 2026 is not computed, in the config\'s words, with its source', () => {
-    const p = config.pendingYears['2026'];
-    expect(textOf(html)).toContain(p.he);
-    expect(textOf(html)).toContain(`מקור: ${citesHe(p.cite)}`);
+  it('a later year stays refused: not offered, refused by the module, and the page says so', () => {
+    expect(offeredYears().map((y) => y.year)).not.toContain('2027');
+    expect(compareTracks({ year: '2027', turnover: 1, expenses: 0 })).toEqual({ status: 'refused', year: '2027', reason: 'unknown' });
+    expect(textOf(elementById(html, 'not-done'))).toContain('לא מחשב לשנות המס שאחרי 2026');
+    expect(faqJsonLd(html).get('מהי תקרת המחזור לבעל עסק זעיר?')).toMatch(/לשנות המס שאחרי 2026 הכלי לא מחשב\.$/);
+  });
+
+  it('the unverified file keeps only what no capture states (the VAT section), says it is not verified, and nothing loads it', () => {
+    expect(unverified.verified).toBe(false);
+    expect(unverified.years).toBeUndefined();
+    expect(unverified.vatLawSense.section).toBe('31(3)');
+    for (const f of [PAGE, 'assets/page-osek-zair.js', 'src/lib/osek-zair.js', 'src/config/osek-zair.json']) expect(read(f), f).not.toContain('31(3)');
+    for (const f of ['assets/page-osek-zair.js', 'src/lib/osek-zair.js', PAGE]) expect(read(f), f).not.toContain('osek-zair-unverified');
   });
 });
 
@@ -329,14 +374,16 @@ describe('page -> config: every number on the page is one the config renders', (
   const CORE = new Set(
     [config.rate * 100, config.yearOfExitRate * 100, ...Object.values(config.years).map((y) => y.cap), ...Object.keys(config.years), ...Object.keys(config.pendingYears)].map(String),
   );
-  /** Page-authored strings with a digit in them: the lead, the h1, a table label, a question, one list item. */
+  /** Page-authored strings with a digit in them: the lead, the h1, a table label, a question, one list item, and the
+   *  sentence that closes the cap answer. */
   const FIXED = [
     'בדקו אם ניכוי של 30% מהמחזור משאיר לכם הכנסה חייבת נמוכה יותר מדיווח רגיל עם ההוצאות בפועל.',
-    'תקרת המחזור של בעל עסק זעיר: 120,000 ₪ בשנות המס 2024 ו-2025.',
+    'תקרת המחזור של בעל עסק זעיר: 120,000 ₪ בשנות המס 2024 ו-2025, ו-122,833 ₪ בשנת המס 2026.',
     'בעל עסק זעיר: ניכוי 30% מהמחזור או הוצאות בפועל?',
     'ניכוי במסלול בעל עסק זעיר (30% מהמחזור)',
     'מתי מסלול ה-30% מפסיד?',
-    'הוא לא בודק את התנאים שלמעלה, לא מחשב מס ולא מחשב לשנת המס 2026.',
+    'הוא לא בודק את התנאים שלמעלה, לא מחשב מס ולא מחשב לשנות המס שאחרי 2026.',
+    'לשנות המס שאחרי 2026 הכלי לא מחשב.',
   ];
   /** Every config string the page renders, as it renders it. */
   const RENDERED = [
@@ -383,6 +430,7 @@ describe('page -> config: every number on the page is one the config renders', (
     const lead = /<p class="lead">[\s\S]*?<\/p>/.exec(html)[0];
     expect(textOf(lead)).toContain(`${config.rate * 100}%`);
     expect(textOf(lead)).toContain('120,000 ₪');
+    for (const { cap } of Object.values(config.years)) expect(textOf(lead)).toContain(`${cap.toLocaleString('en-US')} ₪`);
     // Section 87ד(ג) lets someone registered on 1 January deduct in the year they cross the cap: no "only".
     expect(textOf(lead)).not.toMatch(/רק למחזור|פתוח רק/);
     for (const y of Object.keys(config.years)) expect(textOf(lead)).toContain(y);
@@ -581,7 +629,7 @@ describe('the site around it', () => {
     expect(textOf(card)).not.toContain('מקור');
     const lead = textOf(/<p class="lead">([\s\S]*?)<\/p>/.exec(index)[1]);
     expect(lead).toContain('בעל עסק זעיר');
-    expect(lead).not.toMatch(/2024|2025|30%|120,000/);
+    expect(lead).not.toMatch(/2024|2025|30%|120,000|122,833/);
   });
 
   it('the home page lists it, the sitemap lists it, and every page with the main navigation links to it', () => {
@@ -662,14 +710,25 @@ describe('the page script, against a stub DOM', () => {
     expect(page.used).toEqual([]);
   });
 
-  it('over the cap: no comparison; 2026: the refusal, and every cell empty', async () => {
+  it('over the 2025 cap: no comparison; the same turnover in 2026 is within its cap and compares; 2027: refused, every cell empty', async () => {
     const page = await load();
-    page.set('#turnover', String(config.years[config.defaultYear].cap + 1));
+    const turnover = config.years[config.defaultYear].cap + 1;
+    page.set('#turnover', String(turnover));
     page.set('#expenses', '0');
     expect(page.el('#cap-status').className).toBe('status-box over');
     expect(page.el('#out-track').textContent).toBe('—');
     page.set('#year', '2026');
-    expect(page.el('#cap-status').textContent).toBe(config.pendingYears['2026'].he);
+    const r = compareTracks({ year: '2026', turnover, expenses: 0 });
+    expect(r.status).toBe('compared');
+    const ils = (n) => formatILS(n, { decimals: Number.isInteger(n) ? 0 : 2 });
+    expect(page.el('#cap-status').className).toBe('status-box ok');
+    expect(page.el('#cap-status').textContent).toContain(`(${ils(config.years['2026'].cap)})`);
+    expect(page.el('#out-deduction').textContent).toBe(ils(r.deduction));
+    expect(page.el('#out-track').textContent).toBe(ils(r.trackTaxable));
+    expect(page.el('#verdict').hidden).toBe(false);
+    // A year the list does not offer (a stub can set any value): refused in words, nothing computed.
+    page.set('#year', '2027');
+    expect(page.el('#cap-status').textContent).toBe('לשנת המס 2027 אין בכלי נתונים, ולכן הוא לא מחשב.');
     for (const s of ['#out-deduction', '#out-track', '#out-regular', '#out-by']) expect(page.el(s).textContent, s).toBe('—');
     expect(page.el('#verdict').hidden).toBe(true);
     expect(page.used).toEqual([]);
@@ -703,14 +762,15 @@ describe('the build', () => {
     expect(readIn(site, 'sitemap.xml')).toContain('osek-zair.html');
   });
 
-  it('never ships the unverified file, and no shipped page, script or config states the 2026 cap', () => {
+  it('never ships the unverified file; the 2026 cap ships in the verified config and on the page, with its nevo link', () => {
     const files = listFiles(site);
     expect(files).not.toContain('src/config/osek-zair-unverified.json');
-    const cap2026 = unverified.years['2026'].cap;
-    for (const f of [PAGE, 'assets/page-osek-zair.js', 'src/lib/osek-zair.js', 'src/config/osek-zair.json']) {
-      const text = readIn(site, f);
-      for (const form of [String(cap2026), cap2026.toLocaleString('en-US')]) expect(text.includes(form), `${f}: ${form}`).toBe(false);
-    }
+    const shipped = JSON.parse(readIn(site, 'src/config/osek-zair.json'));
+    expect(shipped.years['2026'].cap).toBe(config.years['2026'].cap);
+    const built = readIn(site, PAGE);
+    expect(built).toContain(`${config.years['2026'].cap.toLocaleString('en-US')} ₪`);
+    expect(built).toContain(`href="${config.documents.vatLaw.url}"`);
+    for (const f of [PAGE, 'assets/page-osek-zair.js', 'src/lib/osek-zair.js']) expect(readIn(site, f), f).not.toContain('osek-zair-unverified');
   });
 
   it('the day osek-zair.json is not verified, the existing gate withholds the page and drops it from the sitemap', () => {
@@ -722,6 +782,7 @@ describe('the build', () => {
     const withheld = readIn(out, PAGE);
     expect(withheld).toContain('לא מאומת');
     expect(withheld).not.toContain('120,000');
+    expect(withheld).not.toContain('122,833');
     expect(withheld).not.toContain('30%');
     // The notice takes the page title up to its first "–": nothing before it may carry a figure or a year.
     expect(/<title>([^<]*)<\/title>/.exec(withheld)[1]).not.toMatch(/\d/);
