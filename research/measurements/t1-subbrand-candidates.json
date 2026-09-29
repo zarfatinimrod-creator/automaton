@@ -1,0 +1,125 @@
+{
+  "measuredAt": "2026-09-29T08:54:04.933Z",
+  "candidates": "research/measurements/t1-subbrand-candidates.txt",
+  "note": "Status codes only; no page bodies stored. 404 = free, 200 = taken, anything else = unknown. Netlify's 404 reading is grade none until a fold reads it.",
+  "allFree": [],
+  "firstAllFree": null,
+  "unknown": [],
+  "rows": [
+    {
+      "name": "chartexplained",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/chartexplained.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/chartexplained",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@chartexplained",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "netlify": {
+        "url": "https://chartexplained.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "plotnotes",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/plotnotes.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/plotnotes",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@plotnotes",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "netlify": {
+        "url": "https://plotnotes.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "axisnotes",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/axisnotes.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/axisnotes",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@axisnotes",
+        "status": 404,
+        "verdict": "free"
+      },
+      "netlify": {
+        "url": "https://axisnotes.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "dataplotted",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/dataplotted.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/dataplotted",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@dataplotted",
+        "status": 404,
+        "verdict": "free"
+      },
+      "netlify": {
+        "url": "https://dataplotted.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "linesandbars",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/linesandbars.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/linesandbars",
+        "status": 404,
+        "verdict": "free"
+      },
+      "youtube": {
+        "url": "https://www.youtube.com/@linesandbars",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "netlify": {
+        "url": "https://linesandbars.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    }
+  ]
+}
