@@ -576,7 +576,7 @@ https://www.kolzchut.org.il/he/%D7%A2%D7%95%D7%A1%D7%A7_%D7%A4%D7%98%D7%95%D7%A8
 # research/channel-loop/ZERO-TESTS.md row 154 — lines ruling 29.9 (h): consumer protection law 14C(d), refunds on digital content (29.9.2026).
 # retired: court-routing regulations, not the consumer-protection law (tick 17; the law is law00/70305.htm) — https://www.nevo.co.il/law_html/law01/055_001.htm	nevo-consumer-protection-law
 # research/channel-loop/ZERO-TESTS.md row 155 — lines ruling 29.9 (h): Gumroad help index, to find the refund-policy article's URL (29.9.2026).
-https://gumroad.com/help	gumroad-help-center-index
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help	gumroad-help-center-index
 # research/channel-loop/ZERO-TESTS.md row 156 — lines ruling 29.9 (a): Green Invoice pricing, logo on a receipt in a free tier (29.9.2026).
 https://www.greeninvoice.co.il/pricing/	greeninvoice-pricing
 # research/channel-loop/ZERO-TESTS.md row 157 — lines ruling 29.9 (a): iCount plans, logo on a receipt in a free tier (29.9.2026).
@@ -590,9 +590,9 @@ https://www.nevo.co.il/law_html/law00/70305.htm	nevo-consumer-protection-law-703
 # research/channel-loop/ZERO-TESTS.md row 161 — lines ruling 29.9 (h): cancellation regulations, nevo id 84257 (29.9.2026).
 https://www.nevo.co.il/law_html/law00/84257.htm	nevo-cancellation-regulations
 # research/channel-loop/ZERO-TESTS.md row 162 — lines ruling 29.9 (h): Gumroad help article 51, URL from gumroad-help-center-index.html:51 (29.9.2026).
-https://gumroad.com/help/article/51-what-is-gumroads-refund-policy	gumroad-help-refund-policy
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/51-what-is-gumroads-refund-policy	gumroad-help-refund-policy
 # research/channel-loop/ZERO-TESTS.md row 163 — lines ruling 29.9 (h): Gumroad help article 335 (29.9.2026).
-https://gumroad.com/help/article/335-custom-refund-policy	gumroad-help-custom-refund-policy
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/335-custom-refund-policy	gumroad-help-custom-refund-policy
 # research/channel-loop/ZERO-TESTS.md row 164 — loop ruling 29.9 (e)3: הוראות ניהול פנקסי חשבונות (research/measurements/osek-patur-documents.md) (29.9.2026).
 https://www.nevo.co.il/law_html/law01/255_179.htm	nevo-books-instructions
 # research/channel-loop/ZERO-TESTS.md row 165 — loop ruling 29.9 (e)3: חוק חתימה אלקטרונית (29.9.2026).
@@ -616,29 +616,29 @@ https://digital-invoice.co.il/	digital-invoice-home
 # research/channel-loop/ZERO-TESTS.md row 174 — tick 18 read (refund-law-il.md): the Computers Law, nevo id 72393 (29.9.2026).
 https://www.nevo.co.il/law_html/law00/72393.htm	nevo-computers-law
 # research/channel-loop/ZERO-TESTS.md row 175 — tick 18 read: Gumroad's terms (29.9.2026).
-http://www.gumroad.com/terms	gumroad-terms
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — http://www.gumroad.com/terms	gumroad-terms
 # research/channel-loop/ZERO-TESTS.md row 176 — tick 18 read: Gumroad help article 190 (29.9.2026).
-https://gumroad.com/help/article/190-how-do-i-get-a-refund	gumroad-help-get-a-refund
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/190-how-do-i-get-a-refund	gumroad-help-get-a-refund
 # research/channel-loop/ZERO-TESTS.md row 177 — tick 18 read: Gumroad help article 47 (29.9.2026).
-https://gumroad.com/help/article/47-how-to-refund-a-customer	gumroad-help-issue-refund
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/47-how-to-refund-a-customer	gumroad-help-issue-refund
 # research/channel-loop/ZERO-TESTS.md row 178 — tick 18 read (osek-patur-documents.md): the VAT law (29.9.2026).
 https://www.nevo.co.il/law_html/law01/271_001.htm	nevo-vat-law
 # research/channel-loop/ZERO-TESTS.md row 179 — tick 18 read: the VAT bookkeeping regulations (29.9.2026).
 https://www.nevo.co.il/law_html/law01/271_019.htm	nevo-vat-bookkeeping-regs
 # research/channel-loop/ZERO-TESTS.md row 180 — lines ruling (h): Gumroad help article 204, URL from gumroad-help-center-index.html:51 (tick 19, refund-law-il.md) (29.9.2026).
-https://gumroad.com/help/article/204-get-to-know-your-gumroad-receipt	gumroad-help-receipt
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/204-get-to-know-your-gumroad-receipt	gumroad-help-receipt
 # research/channel-loop/ZERO-TESTS.md row 181 — lines ruling (h): Gumroad help article 352 (tick 19) (29.9.2026).
-https://gumroad.com/help/article/352-supporting-your-customers	gumroad-help-supporting-customers
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/352-supporting-your-customers	gumroad-help-supporting-customers
 # research/channel-loop/ZERO-TESTS.md row 182 — lines ruling (h): Gumroad help article 46 (tick 19; article 47 says USD-charged refunds can differ in local currency) (29.9.2026).
-https://gumroad.com/help/article/46-what-currency-does-gumroad-use	gumroad-help-currency
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/46-what-currency-does-gumroad-use	gumroad-help-currency
 # research/channel-loop/ZERO-TESTS.md row 183 — lines ruling (h): Gumroad help article 121 (tick 19) (29.9.2026).
-https://gumroad.com/help/article/121-sales-tax-on-gumroad	gumroad-help-sales-tax
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/121-sales-tax-on-gumroad	gumroad-help-sales-tax
 # research/channel-loop/ZERO-TESTS.md row 184 — lines ruling (h): Gumroad help article 194 (tick 19) (29.9.2026).
-https://gumroad.com/help/article/194-i-need-an-invoice	gumroad-help-invoice
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/194-i-need-an-invoice	gumroad-help-invoice
 # research/channel-loop/ZERO-TESTS.md row 185 — lines ruling (h): Gumroad help article 66, linked from gumroad-help-issue-refund.html data-page (tick 19) (29.9.2026).
-https://gumroad.com/help/article/66-gumroads-fees	gumroad-help-fees
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/66-gumroads-fees	gumroad-help-fees
 # research/channel-loop/ZERO-TESTS.md row 186 — lines ruling (h): Gumroad's API page (tick 19; research/measurements/gumroad-license-decision.md:25) (29.9.2026).
-https://gumroad.com/api	gumroad-api-docs
+# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/api	gumroad-api-docs
 # research/channel-loop/ZERO-TESTS.md row 187 — loop ruling (e)3: VAT registration regulations, URL from the lawsofisrael nevo listing (tick 19, osek-patur-documents.md) (29.9.2026).
 https://www.nevo.co.il/law_html/law01/271_004.htm	nevo-vat-registration-regs
 # research/channel-loop/ZERO-TESTS.md row 188 — Mozilla (8): GitHub Actions billing docs (tick 19, research/measurements/actions-spending-limit.md) (29.9.2026).

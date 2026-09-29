@@ -118,6 +118,15 @@ redirects to TikTok is not followed either: a plain fetch follows redirects by h
 followed` with the redirect's status. Research on TikTok reads GitHub mirrors (Open Terms Archive)
 instead.
 
+**Never a site whose terms bar automated access.** `TERMS_BARRED` in `scripts/render-watch.mjs` lists
+them, each with the terms line that bars it, and the fetcher refuses them exactly as it refuses TikTok:
+at parse time in both modes, and as a redirect hop. The first is Gumroad (tick 19, 29.9.2026): its terms
+forbid "any manual or automated software ... to 'scrape' or download data from any web pages contained
+in the Services" (`gumroad-terms.txt:326`, also `:343`). Thirteen Gumroad pages had been fetched by
+then; their lines in `urls.txt` are commented out as `# paused (tick 19 ...)`, so the weekly run does
+not fetch them again. Whether any Gumroad page may be fetched again waits on `logs/FABLE_QUEUE.md`
+row 16(d). A new site's terms are read **before** its first line is queued, not after.
+
 ## The js flag: a JavaScript-capable render
 
 Some pages reach the runner as an empty JavaScript shell: Salesforce help centres

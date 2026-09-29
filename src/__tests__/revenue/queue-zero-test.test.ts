@@ -263,17 +263,11 @@ describe("queue-zero-test --override (the render-watch dispatch lines for a row 
     expect(() => overrideLines(bad, 20, 20)).toThrow();
   });
 
-  it("finds the rows of the committed list (rows 174-179, rendered 29.9)", () => {
+  it("finds the rows of the committed list (rows 174-179, rendered 29.9), skipping the Gumroad rows paused in tick 19", () => {
     const { lines, retired } = overrideLines(readFileSync(URLS, "utf8"), 174, 179);
-    expect(retired).toEqual([]);
-    expect(lines.map((l: string) => l.split("\t")[1])).toEqual([
-      "nevo-computers-law",
-      "gumroad-terms",
-      "gumroad-help-get-a-refund",
-      "gumroad-help-issue-refund",
-      "nevo-vat-law",
-      "nevo-vat-bookkeeping-regs",
-    ]);
-    expect(parseUrlList(lines.join("\n"))).toHaveLength(6);
+    // Rows 175-177 are Gumroad pages, paused because Gumroad's terms bar automated access.
+    expect(retired).toEqual([175, 176, 177]);
+    expect(lines.map((l: string) => l.split("\t")[1])).toEqual(["nevo-computers-law", "nevo-vat-law", "nevo-vat-bookkeeping-regs"]);
+    expect(parseUrlList(lines.join("\n"))).toHaveLength(3);
   });
 });

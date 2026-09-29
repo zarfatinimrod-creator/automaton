@@ -1128,3 +1128,14 @@ Every quote was checked with `grep -n -F` against its file before it was written
 - (h) The responder's route, PUT /v2/sales/:id/refund, is documented on no rendered page, and article 47 says to refund 'only' from the dashboard. No clause of the terms names it. [inference] §11.2(f) and §14's 'not expressly permitted' could be read against it. At github grade the endpoint exists with the same balance rule. It stays unproven until the first real refund (REOPEN (iii)).
 - (h) REOPEN (ii) now stands on rendered text. There is no 'claw back' wording, but Gumroad offsets against unpaid funds (:154), the supplier reimburses Gumroad-issued refunds (:177), and a negative balance is a ground for suspension (:262). At github grade, staff refunds skip the balance check (refundable.rb:92). The balance note is a cost rule, with a suspension risk attached.
 - (h) New, for the board: under §11.3(b) a refund rate above 15% triggers a 25% reserve held for 90 days, and above 25% the account may be suspended (R-TERMS:264). An automatic responder lets buyers set that rate.
+
+### Provenance note (tick 19, 29.9.2026): the Gumroad captures were fetched against Gumroad's terms
+
+Gumroad's terms, captured by row 175 at ~10:46 UTC, forbid "any manual or automated software, devices or other
+processes ... to "scrape" or download data from any web pages contained in the Services"
+(`research/rendered/gumroad-terms.txt:326`; also `:343`). The runner had fetched Gumroad pages in rows 155, 162-163
+and 175-177, and rows 180-186 were dispatched at 13:01, after the terms were captured but before that clause was read.
+Every Gumroad capture cited in this file was fetched against that clause. Gumroad is now paused in code
+(`TERMS_BARRED` in `scripts/render-watch.mjs`) and in `urls.txt`, and FABLE_QUEUE row 16(d) rules whether any
+Gumroad page may be fetched again and whether these captures stay in use.
+
