@@ -507,3 +507,67 @@ Rows 147-149 should come off `urls.txt`: two will always return the shell, and t
     HTML is UNKNOWN.
   - https://www.topcoder.com/challenges/terms/detail/564a981e-6840-4a5c-894e-d5ad22e9cd6f (§G item 5, `prod.env.ts`
     `TERMS_URL`). It is the live candidate to replace row 149's dead URL.
+
+## 29.9 (tick 17): the URL of Trolley's own terms
+
+**Read 29.9.2026 by an Opus reader (tick 17, task B item 4).** The question: where are Trolley's terms of service on
+trolley.com, as opposed to the `support.trolley.com/s/…` Salesforce shell that rows 147-148 returned? The goal is a URL
+a runner can render plainly. Nothing below is rendered yet. Grades: **github** (a GitHub file or code-search fragment I
+read), **snippet** (a search result I could not open), **none** (my inference, marked [inference]).
+
+### What was searched
+- **GitHub code search, 29.9:**
+  - `"trolley.com/legal"`: 0 results.
+  - `"trolley.com/terms"`: 0 results.
+  - `trolley "recipient terms"`: 0 results.
+  - `"paymentrails.com/terms" OR "paymentrails.com/legal"`: 0 results.
+- **Two third-party GitHub files name trolley.com legal pages (github):**
+  - An `llms.txt` copy of trolley.com stored by a third party lists `- [API Terms of Use](https://trolley.com/api-terms):
+    Legal agreement governing use of Trolley API and developer applications`. Source:
+    `afterpartyai/llms_txt_store` at `148b11d989a6`, `com/t/r/o/l/l/e/y/llms.txt:39`, sha256 `461214c5ebf3`, 39 lines,
+    checked with `grep -n -F`. It lists no terms of service and no recipient agreement. It is not Trolley's own file.
+  - `chardinne/Zik4U-web` `src/app/legal/privacy/page.tsx` (code-search fragment, ref `06cc8b2976ee`) names Trolley as
+    "Creator payout processing (KYC)" with the link `https://trolley.com/privacy-policy/`.
+- **The one WebSearch** (`trolley.com terms of service payouts recipient legal`, restricted to trolley.com) returned
+  these result titles and URLs (snippet):
+  - "Terms of Service - United States (US) - Trolley", https://trolley.com/terms-of-service/
+  - "Terms of Service - EU - Trolley", https://trolley.com/terms-eu/
+  - "Legal Agreements - Trolley", https://trolley.com/legal-agreements/
+  - "Terms of Service - Canada (CA) - Trolley", https://trolley.com/terms-canada/
+  - "Terms of Service - United Kingdom (UK) - Trolley", https://trolley.com/terms-uk/
+  - "API Terms of Use - Trolley", https://trolley.com/api-terms
+  - "Privacy Policy (US, CA) - Trolley", https://trolley.com/privacy/
+- **What the search summary said (snippet only).** The terms apply to software "to facilitate the making of payments to
+  third party individuals or companies around the world ("Recipients")". Also, "Upon becoming a Merchant, users receive
+  a "Merchant Agreement"". [inference] The regional terms of service are the payer's (merchant's) contract, which here
+  means Topcoder's. Whether a separate agreement binds a recipient, such as a Topcoder member, is UNKNOWN. The
+  legal-agreements index is the page that would list one. Which regional version would govern an Israeli recipient is
+  also UNKNOWN.
+
+### Why this matters for the camera clause (G2)
+- Tick 15 wrote "Render-watch can never render this page" (`:494`). That was before the opt-in `js` mode.
+- Now a `support.trolley.com/s/article/…` line can be rendered in Chromium, if it is queued with
+  `scripts/queue-zero-test.mjs --js --terms <slug>`. The `<slug>` must be a successful capture with at least 1,000
+  characters of text, from the same registrable domain, and not the target page itself (`research/rendered/README.md:154-158`).
+- [inference] A plain capture of `trolley.com/terms-of-service/` is on the same registrable domain as
+  `support.trolley.com`. If its `.txt` is real text, it is exactly that `--terms` capture.
+- **The reader must still check that the terms do not bar automated access.** If they do not, rows 147 (Identity
+  Verification) and 148 (FAQ) can be re-queued as `js` lines. That is the pre-registered confirm step for the camera
+  clause in BOARD-LOOP.md:169, which §29.9 and tick 15 could not run.
+- Whether trolley.com's marketing and legal pages are served as HTML or as a JavaScript shell is UNKNOWN. No trolley.com
+  page outside the help centre has been captured.
+
+### Verdict: **KILL-PROPOSED** (unchanged)
+Nothing here is rendered, so G2 keeps its grades: github for the gate, snippet for the camera. The change is the route:
+three plain renders on trolley.com, then possibly two `js` re-renders on support.trolley.com.
+
+### Next render URLs (in order; each URL is written above with its source)
+| # | URL | Slug | What it settles |
+|---|---|---|---|
+| 1 | https://trolley.com/terms-of-service/ | `trolley-terms-of-service` | The US terms: recipient definitions, any bar on automated access. If ≥ 1,000 characters with no such bar, this becomes the `--terms` capture for re-queuing rows 147-148 with `js`. |
+| 2 | https://trolley.com/legal-agreements/ | `trolley-legal-agreements` | Which agreements exist; whether one binds a recipient (a Topcoder member) and which region's version applies to Israel. |
+| 3 | https://trolley.com/privacy/ | `trolley-privacy` | Whether Trolley's privacy policy names biometric or facial data for identity checks. That is rendered-grade evidence on the camera clause, weaker than the verification article but not a snippet. |
+
+Not queued: https://trolley.com/api-terms (the developer and payer API contract, not the payee side), the EU, Canada and
+UK variants (only if item 2 names one of them for Israel), and https://trolley.com/privacy-policy/ (a third party's link;
+item 3 is the URL under Trolley's own title).
