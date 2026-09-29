@@ -1222,16 +1222,16 @@ coded fee, or a mandate collision.
   | Venue | Killed on | Grade | Reopens if |
   |---|---|---|---|
   | שיעור חופשי (Shiur Hofshi) | G5: absent from all 20 monthly Israel CrUX lists; the domain does not resolve | github | a render returns 200 and the origin enters a CrUX IL list |
-  | Teachers Pay Teachers | G1: Basic is a one-time $29, Premium $59.95 a year, quoted from TPT's fees page. **Settles the "unsettled" item at `:1253`** | github | the rendered fees page (ZERO-TESTS row 88) shows a free seller tier |
+  | Teachers Pay Teachers | G1: Basic is a one-time $29, Premium $59.95 a year, quoted from TPT's fees page. **Settles the "unsettled" item at `:1328`** | github | the rendered fees page (ZERO-TESTS row 88) shows a free seller tier |
   | Fitbit Gallery (+ KiezelPay) | G3, G6: the official CLI has no publish command; each face is uploaded by hand | github | a submission API or CLI publish command ships |
   | Nexus Mods (Donation Points) | G3, G6: automation needs a hand-made mod page first (`Using.md:91`) | github | the v3 API adds mod creation |
-  | CurseForge Authors Rewards | G3, G6: the token API only adds files to existing projects; creation only via the owner's browser cookies (the RED precedent, `:274`) | github | a project-creation API appears |
+  | CurseForge Authors Rewards | G3, G6: the token API only adds files to existing projects; creation only via the owner's browser cookies (the RED precedent, `:282`) | github | a project-creation API appears |
   | SeaArt Creator Incentive Program | G3: no publish command in the official CLI; publishing only through the web App Builder | github (absence) | a publish endpoint ships |
   | Apple Books direct | G7: the legal entity name is the default public seller name; another name needs a trade-name document | snippet, github corroborates | the brand gains a legal entity or accepted trade name, then G2 is rendered |
-  | Apple Books via PublishDrive / Draft2Digital | G1 ($9.99/month) / G4 (AI rule, standing `:1251`) | github / snippet | a commission-only aggregator that reaches Apple and takes disclosed AI work |
+  | Apple Books via PublishDrive / Draft2Digital | G1 ($9.99/month) / G4 (AI rule, standing `:1254`) | github / snippet | a commission-only aggregator that reaches Apple and takes disclosed AI work |
   | Wavedash (browser games; added tick 7) | G3: the CLI (`wvdsh/cli@5d8f5a5`, all 19 source files) never writes store-page metadata, and the docs block publishing until it is set in the Developer Portal (`wavedash-llms-full.txt:4731,4738`): a per-game portal step, `BOARD-LOOP.md:183` (`research/measurements/wavedash.md`) | github + rendered | a CLI command or API endpoint that writes description, art, video, tags, input methods or languages |
   | Facer creator marketplace (added tick 8) | G3, proposed kill (a): the terms bar reaching the Services through "any engine, software, tool, agent, device or mechanism" other than Facer's own software or ordinary browsers (`facer-templates-js.bin` bytes 475268-475582); publishing is one web form per face; `.face` import is admin-only; no API. **Weakness recorded:** standard anti-scraping wording, which a lenient reading would let an agent drive an ordinary browser under (`research/measurements/facer.md`, Tick 8) | rendered | a creator upload API, or Facer confirming in writing that an agent may operate Facer Creator for a brand account |
-  | LottieFiles marketplace (IconScout) | G4: loaders, icons and micro-interactions are free everywhere, LottieFiles' own library included (the floor at `:991-997`) | snippet + github | a Lottie product with a named feature that is free nowhere |
+  | LottieFiles marketplace (IconScout) | G4: loaders, icons and micro-interactions are free everywhere, LottieFiles' own library included (the floor at `:1000-1001`) | snippet + github | a Lottie product with a named feature that is free nowhere |
 
   **Reconfirmed, unchanged:** the Israeli teacher-to-teacher sites (`:1249-1251`, now with CrUX weight as the free floor),
   Garmin Connect IQ (`:1233-1234`), Zepp OS (`:1233`), Samsung Galaxy Store (`:1249`), Google Play for Wear OS
@@ -1242,11 +1242,11 @@ coded fee, or a mandate collision.
 
   | Venue | Killed on | Grade | Reopens if |
   |---|---|---|---|
-  | TeePublic (Articore) | G3: no upload API; the only public automation drives a logged-in browser with randomised delays "to avoid detection" (the Redbubble shape; detection evasion is the RED class at `:274`) | github | an upload API or a written rule permitting automated uploads |
+  | TeePublic (Articore) | G3: no upload API; the only public automation drives a logged-in browser with randomised delays "to avoid detection" (the Redbubble shape; detection evasion is the RED class at `:282`) | github | an upload API or a written rule permitting automated uploads |
   | WordPress.org plugin directory (+ a Freemius add-on) | G3, G6: a new plugin enters only through a logged-in form with two-factor and nine attestations | github | a submission API, or a sitting accepting one owner upload per plugin |
   | WordPress.org theme directory | G3: login, two-factor, nonce-checked form | github | a theme submission API |
   | WooCommerce.com Marketplace | G3, G6: a dashboard submission and a business review per product, with a support duty | github | a submission API and no vendor support duty |
-  | MCPize | G5: absent from all 40 CrUX monthly lists (Israel and global, Jan 2025-Aug 2026). **Settles the "unsettled" item at `:1275`** | github | the origin enters a CrUX list AND a render shows a payout to Israel with no camera step |
+  | MCPize | G5: absent from all 40 CrUX monthly lists (Israel and global, Jan 2025-Aug 2026). **Settles the "unsettled" item at `:1328`** | github | the origin enters a CrUX list AND a render shows a payout to Israel with no camera step |
   | AgenticMarket | G2 (its commit `93ec039` made calls free, so no creator is paid) and G5 | github | paid calls and payouts return, with a route to Israel, and the origin enters a CrUX list |
   | MCP Marketplace (mcp-marketplace.io) | G5: absent from all 40 CrUX lists | github | the origin enters a CrUX list AND a payout route to Israel is rendered |
 
@@ -1261,6 +1261,27 @@ coded fee, or a mandate collision.
   board-registered kill (`research/breadth/REPLENISH-2026-09-28-2.md:217-218`). Its partial reopen of the Apple aggregator kill falls
   with it. Evidence: `research/measurements/streetlib.md` Tick 13. **Reopens if** a rendered page shows a free distribution path for
   a new international account, or the ₪0 rule is lifted.
+- **Confirmed by the loop board 29.9.2026** (`research/channel-loop/RULING-2026-09-29-loop.md` (f)): all nineteen; D2D
+  re-based to G1 rendered; Fitbit re-based to G5; Wavedash's `:183` sentence withdrawn under (e2); Facer's wording ruled
+  to bar an agent-driven browser; StreetLib board-registered; G3 reopen triggers widened by "or the venue's written yes to
+  a brand account operated by an automated browser, with disclosure". No question is sent to any of the nineteen.
+- **Firefox Add-ons (AMO; loop row 16) — KILLED 29.9.2026 on G4, at rendered grade** (the loop board,
+  `research/channel-loop/RULING-2026-09-29-loop.md` (a)). The admission gate was set in writing: "name in writing one Pro
+  feature that is free nowhere (our own il-biz-tools included); none → not admitted (G4)" (`research/breadth/BOARD.md:72`).
+  The colony's only Pro feature, the logo and accent colour on the printed document, is refuted on evidence, not absence:
+  a logo on the invoice is free in `free-invoice-generator`, `merabill-gst-invoice-generator`, `estimate-invoice-maker`
+  and SnapInvoice's free tier, plus two AliExpress generators at 696 and 219 users (`research/measurements/firefox-amo.md:132-137`,
+  read from `research/rendered/amo-search-invoice.json`). The accent colour rests on absence in 50 of 281 results, so it
+  cannot carry a PARK. The market reads the same way: nine general invoice makers at a median of 1 daily user and a
+  maximum of 20; the closest analogue (offline, logo free, one-time PRO) has 0 users after 29 days (`:139-142`). AMO's
+  policies were friendly (no fee, paid features with disclosure) and are not the reason. The proposed Mozilla add-ons
+  account (step 14) is withdrawn; this kill does not touch il-biz-tools' own Pro. **Reopens if** either holds: (i)
+  `RULING-2026-09-29-lines.md` (a) names a Pro feature for il-biz-tools that is free nowhere, **and** a later render of
+  AMO's `q=invoice` pages 2-6 (231 results) shows no add-on offering that feature free, and the free-elsewhere register
+  (`firefox-amo.md`) records the check; or (ii) a later render of the same AMO search shows the general invoice-maker
+  cohort at a median of ≥ 30 daily users (the Obsidian analogue, `research/breadth/BREADTH-SWEEP.md:474-475`). Either
+  reopens Firefox as a candidate for a ₪0 test, not as an admission. (At the kill, (i) had not fired: the lines ruling's
+  (a) kept the existing Pro and named no new feature.)
 - **Shopify — pre-ruled conditional kill** on a rendered mandatory listing fee (the note under "Earlier rejections").
 - **Whop — re-recorded as camera-gated** (the correction under `content-seo`, "Clipping"): the rail is not reusable.
 - **Apify — the hidden-Actor note** under `distribution` → "What goes to the board".

@@ -149,7 +149,7 @@ The form at `:566` is on the Zendesk host that refused rows 76-77. The question:
     and an "agent" in the clause's own words, and the exceptions cover only Facer's software and ordinary browsers. **The
     weak point:** the clause is standard anti-scraping wording, and a lenient reading lets an agent drive an ordinary
     browser. Even on that reading there is no API, CLI or bulk route, which is the fact that killed Fitbit ("each face is
-    uploaded by hand", `docs/REJECTED.md:1218`). So G3 fails on the Fitbit standard, and Facer's terms also bar the one
+    uploaded by hand", `docs/REJECTED.md:1226`). So G3 fails on the Fitbit standard, and Facer's terms also bar the one
     workaround in writing.
 - **G1 fee: PASS. Kill (c) does not fire.** [RENDERED] "Creation of an Account and use of basic Services is free."
   (461897). Pro is optional: "Start free, unlock advanced tools with Pro, or apply to Partner" (251879). A partner gets

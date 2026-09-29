@@ -4,7 +4,9 @@
 render can settle. Each venue gets one written yes/no question from the brand mailbox (`docs/OWNER_STEPS.he.md` step
 8; `research/breadth/BOARD.md` Q2). An address appears only where a capture under `research/rendered/` holds it, cited
 `file:line`. Tick 8 (28.9.2026) gave Spreadshirt its recipient and added §5, Indiebook. Tick 9 (28.9.2026) added §6,
-Displate, and §7, Teach Simple, both addressed from their Terms of Use captures.
+Displate, and §7, Teach Simple, both addressed from their Terms of Use captures. The loop board of 29.9.2026
+(`research/channel-loop/RULING-2026-09-29-loop.md`) added Wix's second held question ((e)3) and Displate's
+pre-registered KILL-4 on a written no ((c)); Facer gets no question (killed, (f) row 11).
 
 **The messages' single source is `research/owner-asks/questions.json`** (subject, body, recipient, route, pre-send
 check, held questions, follow-up delay per venue). `scripts/brand_mail.py` sends from that file and nothing else. This
@@ -104,8 +106,15 @@ Mehudak (מהודק)
   met at ₪0, and Israel-as-payee still gates the occupancy scan (`wix-app-market.md:11`; BOARD-LOOP.md:160). **No**
   (only a paid tester satisfies (v)): the cost recurs for every app (`wix-app-market.md:486`). The ₪0 test then refutes
   candidate 11, which goes to the board as KILL-5 (BOARD-LOOP.md:68); the cost is KILL-4-shaped (:67).
-- **Held, after a yes (in the thread):** "Can a partner resident in Israel, as an individual, receive App Market payouts
-  through Tipalti?" Settles "Israel not payable" (BOARD-LOOP.md:162). Tipalti refused the render twice (`wix-app-market.md:498`).
+- **Held, after a yes, one at a time in the thread:** (1) "Can a partner resident in Israel, as an individual, receive
+  App Market payouts through Tipalti?" Settles "Israel not payable" (BOARD-LOOP.md:162). Tipalti refused the render twice
+  (`wix-app-market.md:498`). Then (2), added by the loop board of 29.9.2026 (`research/channel-loop/RULING-2026-09-29-loop.md`
+  (e)3) and sent only after Wix's first written yes: "Does Wix accept a receipt from an Israeli exempt dealer (עוסק פטור)
+  in place of a tax invoice?" Wix pays "against a lawful tax invoice to be issued by the Party receiving"
+  (`wix-partner-agreement-body.txt:385`), and an exempt dealer issues a receipt, not a חשבונית מס. It is a condition,
+  not a kill: a written no makes Wix's payout depend on VAT registration, a cost decision for the owner under the ₪0
+  rule, not a per-payout step. Either way the document itself is the runner's after step 2, never owner paperwork
+  (ruling (e)3's six conditions).
 
 ## 3. Spreadshirt (candidate 17; BOARD.md:75)
 
@@ -233,7 +242,10 @@ Mehudak (מהודק)
   a decision, and `abuse@displate.com` (`txt:849`) takes copyright complaints; a question about the rules is none of
   those. **Pre-send:** render ZERO-TESTS row 134 first, the privacy policy (`txt:116`; `wall-art-pod.md` §4, next step 2).
   If it or a later render has settled (d), send the first held question instead, or nothing. The sign-up page render
-  (next step 3) does not hold the send.
+  (next step 3) does not hold the send. **Pre-registered by the loop board of 29.9.2026**
+  (`research/channel-loop/RULING-2026-09-29-loop.md` (c)): a written no to this question is KILL-4 without a sitting
+  (the Spreadshirt pattern, `research/breadth/BOARD.md:75`); a written yes goes to the next admission sitting, where
+  Displate is first in the pre-registered order (Displate, Indiebook, Teach Simple, CrazyGames).
 - **Subject:** Question: an artist shop run by an AI agent
 
 ```text
@@ -272,7 +284,8 @@ Mehudak (מהודק)
 - **Language.** English, as Displate's Terms and FAQ are; §1-4 are English only too, and the sender and the tests hold
   every body to the same English phrases.
 - **Settles** kill (d), as pre-registered (`wall-art-pod.md:276-281`). **Yes** from a Displate domain: (d) cannot fire,
-  and the held questions follow. **No** fires (d) for the sitting; it reopens on a written yes or an upload API. Anything
+  and the held questions follow. **No** is KILL-4 without a sitting (pre-registered 29.9.2026, above; before that it
+  fired (d) for a sitting to confirm); it reopens on a written yes or an upload API. Anything
   else is NOT ANSWERED. The Terms let Displate ignore bot-generated messages "if they are not genuine" (`:881`), so
   silence reads as nothing, not as a no. A yes leaves two owner steps already on the sitting's list: the Artist must be a
   business (`:98`; step 2), and the one SMS code (`:455`).

@@ -37,7 +37,12 @@
         {
           "text": "Can a partner resident in Israel, as an individual, receive App Market payouts through Tipalti?",
           "to": null,
-          "when": "only after a written yes, in the same thread"
+          "when": "only after a written yes, in the same thread, first of two, one at a time"
+        },
+        {
+          "text": "Does Wix accept a receipt from an Israeli exempt dealer (עוסק פטור) in place of a tax invoice?",
+          "to": null,
+          "when": "only after a written yes, in the same thread, second of two, one at a time: sent only after Wix's first written yes (loop board 29.9.2026, research/channel-loop/RULING-2026-09-29-loop.md (e)3). Wix pays against \"a lawful tax invoice\" (wix-partner-agreement-body.txt:385) and an exempt dealer issues a receipt, not a חשבונית מס. A condition, not a kill: a written no makes Wix's payout depend on VAT registration, a cost decision for the owner under the ₪0 rule, not a per-payout step"
         }
       ],
       "followUpAfterDays": 7
@@ -118,7 +123,7 @@
       "route": "Email to artists@displate.com, the Terms of Use's address for an artist's request (displate-about-regulations.txt:447, printed there with the sentence's full stop, \"artists@displate.com.\"; mailto: at displate-about-regulations.html:340), rendered in tick 9 (wall-art-pod.md §4, next step 1). It is the only artist address in any Displate capture. Not support@displate.com (txt:331, :833, :847, :875: buyers' complaints, service faults and appeals against a decision) and not abuse@displate.com (txt:849, copyright complaints): a question about the rules is none of those, and an appeal presumes a decision.",
       "subject": "Question: an artist shop run by an AI agent",
       "body": "Hello Displate artist team,\n\nMehudak (מהודק) is a small design brand considering a Displate artist shop. Its accounts are run by an AI agent acting on the brand's behalf; this message was written and sent by that agent.\n\nThe shop would be opened, and its phone verification completed, once by the brand's owner; the agent would then upload artworks and write their titles and descriptions through the normal website, at a human pace, and each description would say that the artwork was made with AI.\n\nOne question, yes or no: is an artist account run this way allowed under your Terms of Use, including the rules on accounts created using automated tools and on software that distorts the website's functioning? We are asking for your current rule only, not for an exception or a commitment.\n\nThank you,\nMehudak (מהודק)\n",
-      "preSend": "Render ZERO-TESTS row 134 first, the privacy policy https://displate.com/about-privacy (displate-about-regulations.txt:116; wall-art-pod.md §4, next step 2), then re-read wall-art-pod.md. If that render or a later one has settled kill (d), whether an agent may operate an artist account through the website (displate-about-regulations.txt:471, :561), send nothing, or the first held question if the answer there is a written yes. The sign-up page render (next step 3) does not hold the send.",
+      "preSend": "Render ZERO-TESTS row 134 first, the privacy policy https://displate.com/about-privacy (displate-about-regulations.txt:116; wall-art-pod.md §4, next step 2), then re-read wall-art-pod.md. If that render or a later one has settled kill (d), whether an agent may operate an artist account through the website (displate-about-regulations.txt:471, :561), send nothing, or the first held question if the answer there is a written yes. The sign-up page render (next step 3) does not hold the send. Pre-registered by the loop board 29.9.2026 (research/channel-loop/RULING-2026-09-29-loop.md (c)): a written no to this question is KILL-4 without a sitting (the Spreadshirt pattern, research/breadth/BOARD.md:75); a written yes goes to the next admission sitting, where Displate is first in the pre-registered order (Displate, Indiebook, Teach Simple, CrazyGames).",
       "heldQuestions": [
         {
           "text": "Can an artist resident in Israel receive Displate payouts to a PayPal account?",

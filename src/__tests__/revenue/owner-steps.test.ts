@@ -131,6 +131,9 @@ describe("the owner's checklist is eight steps and stays eight", () => {
     expect(step8.unlocks).toMatch(/Spreadshirt/);
     // il-biz-tools now waits on it, first in its asked-now list.
     expect(openOwnerStepsForLine("il-biz-tools").map((s) => s.number)).toEqual([8, 3, 6]);
+    // Loop board 29.9.2026 (RULING-2026-09-29-loop.md (b)): what waits on the mailbox, counted once.
+    expect(step8.unlocks).toMatch(/seven written questions, il-biz-tools' publish gate, the pcn874 page, npm's account and Displate's login/);
+    expect(step8.unlocks).toMatch(/first among the free steps/);
   });
 
   it("prints three stop rules on step 4, and on no other step (§4.2)", () => {
@@ -556,6 +559,65 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(later).toContain("סלפי");
     expect(later).toMatch(/Publish/);
     expect(later).toMatch(/אף פעם|לעולם לא/);
+  });
+
+  // Loop board 29.9.2026 (research/channel-loop/RULING-2026-09-29-loop.md (g)): condition (i), no selfie, liveness or
+  // video in PayPal IL's public text, PASSES at rendered grade; the step stays held on (ii) and (iii).
+  it("says PayPal's condition (i) is met and step 13 is held on (ii) and (iii) (ruling (g))", () => {
+    const later = doc
+      .slice(doc.indexOf("## מה מגיע רק אם"), doc.indexOf("## מה קורה אחרי שסיימת"))
+      .replace(/\s+/g, " ");
+    const paypal = later.slice(later.indexOf("**PayPal ישראל**"), later.indexOf("**USDC**"));
+    expect(paypal).toMatch(/תנאי \(i\)[^.]*התקיים/);
+    expect(paypal).toContain("(ii)");
+    expect(paypal).toContain("(iii)");
+    expect(paypal).toContain("RULING-2026-09-29-loop.md");
+    expect(paypal).not.toMatch(/יבוקש רק כששלושה דברים נכונים יחד/);
+  });
+
+  // Loop board 29.9.2026 (a): Firefox Add-ons was killed on G4, so the proposed Mozilla add-ons account (step 14) goes.
+  it("proposes no step 14 and no Mozilla add-ons account (ruling (a))", () => {
+    expect(doc).not.toMatch(/צעד 14/);
+    expect(doc).not.toMatch(/Mozilla|Firefox/);
+  });
+
+  // Loop board 29.9.2026 (b): no nagging, and only order and information may change. Step 8 unblocks more than any
+  // other free step, so it is listed first among the free steps, and what waits on it is stated ONCE.
+  it("lists step 8 first among the free steps and states once, plainly, what waits on it (ruling (b))", () => {
+    const box = doc.slice(doc.indexOf("### כלל ה-0 ₪ (27.9)"), doc.indexOf("סדר ביצוע של הדירקטוריון"));
+    const item8 = box.slice(box.indexOf("**צעד 8 — תיבת דואר של המותג**"), box.indexOf("**צעד 6 — רק החלק של Apify**"));
+    const flat = item8.replace(/>\s*/g, " ").replace(/\s+/g, " ");
+    for (const waits of ["7 שאלות בכתב", "il-biz-tools", "pcn874", "npm", "Displate"]) {
+      expect(flat, `the count line does not name "${waits}"`).toContain(waits);
+    }
+    // Stated once in the whole document, and without pressure.
+    expect(doc.match(/7 שאלות בכתב/g)).toHaveLength(1);
+    expect(item8).not.toMatch(/!|דחוף|שוב ושוב|תזכורת/);
+    // The step 8 section says first, not second, and the free-steps sentence names step 8 before the network setting.
+    const step8 = doc.slice(doc.indexOf("## צעד 8"), doc.indexOf("## מה מגיע רק אם"));
+    expect(step8).not.toContain("השני ברשימה החינמית");
+    expect(step8).toContain("הראשון ברשימה החינמית");
+    const sentence = step8.slice(step8.indexOf("ארבעת הצעדים החינמיים"));
+    expect(sentence.indexOf("צעד 8")).toBeGreaterThan(-1);
+    expect(sentence.indexOf("צעד 8")).toBeLessThan(sentence.indexOf("הגדרת הרשת של הסביבה"));
+  });
+
+  // Loop board 29.9.2026 (e)3: after step 2 the runner issues the payout documents the paying platforms need, under six
+  // conditions; the owner signs nothing per payout. One sentence under step 2.
+  it("says under step 2 that the company issues its own payout documents after it (ruling (e)3)", () => {
+    const step2 = doc.slice(doc.indexOf("## צעד 2"), doc.indexOf("## צעד 3")).replace(/\s+/g, " ");
+    expect(step2).toContain("החברה מפיקה בעצמה את מסמכי התשלום");
+    expect(step2).toMatch(/לא חותמים על שום דבר בכל תשלום/);
+    expect(step2).toContain("RULING-2026-09-29-loop.md");
+    expect(ownerStepById("tax-file")!.unlocks).toMatch(/issues its own payout documents/);
+    expect(ownerStepById("tax-file")!.unlocks).toMatch(/signs nothing per payout/);
+  });
+
+  // MISSION, anonymous publishing: the owner's personal GitHub handle is a personal identifier. The document names the
+  // repository by name and the brand organisation, never a personal account's URL.
+  it("carries no personal GitHub account in any repository URL", () => {
+    expect(doc).not.toMatch(/github\.com\/(?!mehudak\b)[A-Za-z0-9-]+\/automaton/);
+    expect(doc).not.toMatch(/github\.com\/[A-Za-z0-9-]*-creator/);
   });
 
   it("points the USDC line to the booking rule of RULING-2026-09-28-bounty-rail.md §6.2", () => {
