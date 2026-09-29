@@ -1,0 +1,17 @@
+{
+  "url": "https://www.odoo.com/legal",
+  "slug": "terms-odoo",
+  "fetchedAt": "2026-09-29T14:02:58.346Z",
+  "status": 200,
+  "contentType": "text/html",
+  "byteLength": 424059,
+  "sha256": "a7997ee1b8b354c49ed4e34e71ca065019b4e0f992692ce1998618e2ed9e2754",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-odoo.html",
+  "textPath": "research/rendered/terms-odoo.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

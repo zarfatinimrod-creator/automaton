@@ -1,0 +1,17 @@
+{
+  "url": "https://www.wix.com/about/terms-of-use",
+  "slug": "terms-wix",
+  "fetchedAt": "2026-09-29T14:03:18.037Z",
+  "status": 200,
+  "contentType": "text/html; charset=UTF-8",
+  "byteLength": 942319,
+  "sha256": "cbaf14e95d3d9eb42a466b61bb9491d0bb2dae22570655d0ad9358b969d26241",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-wix.html",
+  "textPath": "research/rendered/terms-wix.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
