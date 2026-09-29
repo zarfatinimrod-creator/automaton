@@ -44,6 +44,12 @@ jobs:
           python -c "from PIL import features; raise SystemExit(not features.check('raqm'))" \
             || { sudo apt-get update -qq && sudo apt-get install -y -qq libfribidi0; }
           python -c "from PIL import features as f; assert f.check('raqm'); print('raqm', f.version('raqm'), 'fribidi', f.version('fribidi'))"
+      - name: ffmpeg for the encode tests
+        # test_motion's byte-identical re-render and test_timing_captions build and run the renderer's ffmpeg
+        # command; hosted runner images do not ship ffmpeg.
+        run: |
+          command -v ffmpeg >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg; }
+          ffmpeg -hide_banner -version | head -1
       - name: Tests (a failure or a skip fails the job)
         run: |
           set -o pipefail
