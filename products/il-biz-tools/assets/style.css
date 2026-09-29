@@ -69,6 +69,7 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); out
 .faq p { margin: 8px 0 0; color: var(--muted); }
 .site-footer { border-top: 1px solid var(--line); padding: 20px 0; color: var(--muted); font-size: .9rem; }
 .site-footer a { color: var(--muted); }
+.site-footer .ai-declaration { margin: 6px 0 0; }
 .error-list { color: var(--over); margin: 0; padding-right: 18px; }
 .lines-table { width: 100%; border-collapse: collapse; }
 .lines-table th, .lines-table td { padding: 6px 4px; text-align: right; }

@@ -148,9 +148,13 @@ export function checkPageA11y(html) {
 // ---------------------------------------------------------------------------
 // CSS
 
-/** The stylesheet without its `@media print { ... }` blocks: paper is not what a screen reader of the site sees. */
+/**
+ * The stylesheet without its `@media print { ... }` blocks: paper is not what a screen reader of the site sees.
+ * Only a query that is print alone (`print`, `only print`) is dropped; `print, screen` or `print and (...)` stays,
+ * read as screen, because a screen may match it.
+ */
 function dropPrintBlocks(css) {
-  const re = /@media\s+print\b[^{]*\{/gi;
+  const re = /@media\s+(?:only\s+)?print\s*\{/gi;
   let out = '';
   let from = 0;
   let m;

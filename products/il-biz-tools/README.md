@@ -316,6 +316,58 @@ three files, correct summaries and rows, no network call, no injected markup. Th
 stale runs, reading notes, the neutral clean box) ran only against the tests' fake DOM, not under jsdom or a
 browser. A screen reader, keyboard use in a real browser and 200% zoom remain unchecked.
 
+## The AI declaration (every page, since 29.9.2026)
+
+The constitution ("You must never deny what you are") and MISSION rule 4 say a visitor is told who builds this
+site. Every page the build ships — each tool page, the accessibility statement, a withheld page's notice and the
+404 — carries one line in its site footer (`src/lib/ai-declaration.js`):
+
+> האתר והכלים שבו נבנו ומתוחזקים על ידי סוכני בינה מלאכותית (AI) הפועלים מטעם המותג מהודק.
+
+The home page's FAQ answers "מי בונה ומתחזק את האתר?" with that line, one sentence on figures and the footers'
+existing "not tax advice" wording; its FAQPage JSON-LD carries the same text. `pcn874.html`'s "למה הבודק חינמי?",
+the one answer that says who runs the site, ends with the line too.
+
+What it does **not** say, because nothing in the repository backs it: that a person reviewed the site or its
+results, or that a figure was checked against its source - no record shows such a check, and the source lines say a
+figure was compared with search results, or that no check date was recorded. Until the review of 29.9.2026 one page
+did imply the second: the notice that replaces a withheld page said its figures were not verified "against the
+official source" and linked back to "the tools that are verified". It now says only that the page's data file is
+not marked as checked, and links to the home page; a test keeps every shipped page from saying that figures, or
+other tools, were verified against the official source. No `author`, `creator` or `publisher` went into the
+JSON-LD: those fields take a Person or an Organization, AI agents are neither, and the repository holds no record of
+the brand as a registered body to name as one.
+
+The figures sentence names only the figure pages that ship as themselves in that build (`src/lib/source-line.js`
+writes their lines): the build rewrites it on the page and in the JSON-LD (`withShippedFiguresSentence`), so with
+`vat.json` flipped to unverified the answer names the ceiling and allocation pages only, and with all three withheld
+the sentence goes. A withheld page's notice shows no figure and no source line, so the sentence must not name it.
+
+Enforced three ways. `scripts/build-site.js` refuses to publish:
+- a page whose site footer lacks the line written exactly as `AI_DECLARATION_HTML` (one class, the marker, the text
+  and nothing inside it), or with anything that can hide it (`aiDeclarationProblems` in `src/lib/publish-gate.js`):
+  a hidden, inert, aria-hidden, popover or style attribute on it or around it; a wrapper other than html, body, the
+  footer and a div (a closed `<details>` folds it away); a screen rule in the shipped stylesheets or an inline
+  `<style>` that can hide it or anything around it - display, visibility, opacity, a tiny font or box, transparent
+  text, a clip, a transform, an off-screen position. Rules inside `@media print` alone are left out: print hides the
+  whole footer, and the printout is the user's document;
+- a shipped script, file or inline, that names `ai-declaration` or `site-footer` (`declarationScriptProblems`);
+- a figures sentence that names any other set of pages, a `#who-builds` answer or JSON-LD twin that is not
+  `whoBuildsAnswer()` of that set, and a named page whose line is not exactly `sourceLineHe()` of its config
+  (`figureSourceProblems`). The check is on whenever the `#who-builds` entry or the figures claim is on a page, so
+  rewording the answer does not switch it off.
+
+The preview lists all of these. `node scripts/check-html.js` reports a source page without the line.
+`tests/ai-declaration.test.js` builds the site and checks every built page, holds the allowlist of claims the text
+may make with what backs each one, and holds each bypass the review found as a case the gate must refuse.
+
+The printed PCN874 findings carry the line too, in `#pcn-print-header` (unmarked; the gate keys on the footer):
+print hides the site footer, and the findings are the tool's own analysis that goes on to whoever files the report.
+A customer's receipt from the invoice generator is the customer's document and carries none.
+
+What the gate cannot see: a script that hides the line without naming it or its footer, and another element drawn
+over it. It reads the HTML and CSS as they ship; no browser has rendered the pages.
+
 ## Layout
 
 ```
@@ -328,7 +380,7 @@ src/lib/*.js                pure ES modules: vat, osek-patur, net-salary, invoic
                             registrar-fee, gumroad, license, branding, analytics, money, pro-nudge,
                             pcn874-report, pcn874-share, source-line - and build-time ones that never ship:
                             publish-gate, site-deps, a11y-check, pcn874-bundle, pcn874-rule-reference,
-                            pro-offer
+                            pro-offer, ai-declaration
 src/vendor/pcn874/*.js      GENERATED: products/pcn874's validator with its types stripped (do not edit)
 src/config/*.json           vat.json, osek-patur.json, tax-2026.json, allocation-number.json,
                             registrar-fee.json, site.json
@@ -350,7 +402,7 @@ netlify.toml robots.txt sitemap.xml
 ```bash
 cd products/il-biz-tools
 npm install          # vitest only
-npm test             # 586 tests (vitest, 27 files; re-measured 28.9.2026 after the TikTok note N7-N10)
+npm test             # 694 tests (vitest, 29 files; re-measured 29.9.2026 after the AI declaration review fixes)
 node scripts/bundle-pcn874.js   # after ANY change under products/pcn874/src - the build refuses a stale bundle
 node scripts/pcn874-rule-reference.js   # then this: the build refuses a stale rule reference too
 npm run check:html   # static page sanity checks + what the publish gate will withhold
@@ -577,6 +629,8 @@ registrar reminder form ships **disabled** and posts nowhere: no address is coll
 that does not exist, and the §30א(ג) and Amendment 13 copy is written and flagged for legal review
 before it ever does.
 No scraping, no third-party ToS involved beyond Gumroad and the optional analytics opt-ins.
+Never deny what it is: every page says in its footer that AI agents build and keep the site for the brand
+(see [The AI declaration](#the-ai-declaration-every-page-since-2992026)), and the build refuses a page that does not.
 
 ---
 
@@ -623,8 +677,18 @@ No scraping, no third-party ToS involved beyond Gumroad and the optional analyti
 לא משחררת את השער: הוא מסרב גם כשמילות ממלא המקום נשארות בדף, וגם כשאין בהצהרה קישור פנייה אמיתי וגלוי
 (`<a data-a11y-contact href="mailto:…">` או `https:` או `tel:`, בדומיין ציבורי ולא בדומיין דוגמה).
 
+**הצהרת AI בכל דף (29.9.2026):** בתחתית כל דף שעולה לאתר – גם בהודעה של דף מושהה וגם בדף 404 – כתוב: "האתר והכלים
+שבו נבנו ומתוחזקים על ידי סוכני בינה מלאכותית (AI) הפועלים מטעם המותג מהודק." בשאלות הנפוצות בדף הבית יש גם תשובה
+מלאה ל"מי בונה ומתחזק את האתר?". ההצהרה לא טוענת שאדם בדק משהו ולא שנתון נבדק מול המקור שלו – אין לכך תיעוד. ה-build
+מסרב לפרסם דף בלי השורה, וגם דף שבו היא כתובה אחרת או שמשהו יכול להסתיר אותה: מאפיין, עטיפה (כמו `<details>` סגור),
+כלל CSS שחל עליה או על מה שסביבה, או סקריפט שנוגע בה. משפט הנתונים בתשובה נכתב בכל build רק על דפי הנתונים שעולים
+כמו שהם – דף מושהה יוצא ממנו – וכל שורת מקור חייבת להיות בדיוק מה שקובץ הנתונים שלה נותן. ההודעה שעולה במקום דף
+מושהה אומרת רק שקובץ הנתונים שלו אינו מסומן כנבדק ומקשרת לדף הבית (עד 29.9 היא אמרה "לא אומתו מול המקור הרשמי"
+וקישרה ל"כלים שכן מאומתים", כלומר רמזה ששאר הכלים אומתו מול המקור הרשמי). גם הדפסת ממצאי PCN874 נושאת את השורה.
+הבדיקה `tests/ai-declaration.test.js` מחזיקה את רשימת הטענות המותרות ואת כל דרך העקיפה שנמצאה בסקירה.
+
 **צעדים שרק הבעלים יכול לבצע:** פתיחת חנות Gumroad על שם המותג (KYC + פרטי משיכה) והטוקן שלה,
 חשבון Netlify ודומיין, אימות ב-Google Search Console. יצירת מוצר ה-Pro והדבקת הכתובת והמזהה שלו
 ב-`site.json` הן עבודה שלי, דרך אותו טוקן (`.github/workflows/gumroad-pro-product.yml`).
 
-**בדיקות:** `npm install && npm test` (447 בדיקות, vitest). **הרצה מקומית:** `npm run serve`.
+**בדיקות:** `npm install && npm test` (694 בדיקות ב-29 קבצים, vitest, 29.9.2026). **הרצה מקומית:** `npm run serve`.
