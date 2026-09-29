@@ -115,6 +115,11 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--brand); out
   .container { max-width: none; padding: 0; }
 }
 
+/* PCN874 findings printout: the file name, the date and the "not tax advice"
+   line print above the scope box and the findings; on screen they are not shown. */
+.print-only { display: none; }
+@media print { .print-only { display: block; } }
+
 /* Pro branding: the accent variable is only set when a valid licence is active,
    so the free tier renders the document exactly as it always did. */
 .doc { --brand-accent: inherit; }

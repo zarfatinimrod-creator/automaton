@@ -7,9 +7,17 @@
 // scans every module this page loads for it and runs this script with every
 // network and storage API trapped. Everything is written with textContent, never
 // as HTML: a finding can quote bytes from the file.
+//
+// After a check (TikTok note N7): a print / PDF button, and a share button that
+// only the user can press and that exists only where the browser has
+// navigator.share. The shared text is src/lib/pcn874-share.js's - counts and
+// rule names, never a value from the file or its name. The api.whatsapp.com
+// fallback is built there but stays off (WHATSAPP_FALLBACK_ENABLED) until a
+// device test is recorded.
 import { initPage } from './common.js';
 import { validatePcn874 } from '../src/vendor/pcn874/validate.js';
 import { MAX_FILE_BYTES, buildReport, readPcn874File } from '../src/lib/pcn874-report.js';
+import { WHATSAPP_FALLBACK_ENABLED, shareSummary, shareText, whatsappHref } from '../src/lib/pcn874-share.js';
 
 initPage();
 
@@ -19,6 +27,12 @@ const status = $('#pcn-status');
 const results = $('#pcn-results');
 const tbody = $('#pcn-findings');
 const more = $('#pcn-more');
+const after = $('#pcn-after');
+const printFile = $('#pcn-print-file');
+const printDate = $('#pcn-print-date');
+const shareButton = $('#pcn-share');
+const shareNote = $('#pcn-share-note');
+const shareStatus = $('#pcn-share-status');
 
 // A clean result is neutral, not green: the checker checks structure only, and
 // a file it passes can still be rejected.
@@ -70,7 +84,57 @@ function clearFindings() {
   tbody.textContent = '';
   more.textContent = '';
   results.hidden = true;
+  hideAfter();
 }
+
+// --- After a result: print / PDF, and share -------------------------------
+
+const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+/** The share text of the latest finished check; null while there is none. */
+let shareable = null;
+/** The WhatsApp link, made only when the fallback is on and navigator.share is missing. */
+let whatsappLink = null;
+
+after.hidden = true;
+shareButton.hidden = !canShare;
+shareNote.hidden = !canShare && !WHATSAPP_FALLBACK_ENABLED;
+
+const dateHe = (d) => `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`;
+
+function hideAfter() {
+  after.hidden = true;
+  shareable = null;
+  shareStatus.textContent = '';
+  if (whatsappLink) whatsappLink.hidden = true;
+}
+
+function showAfter(result, fileName) {
+  printFile.textContent = fileName;
+  printDate.textContent = dateHe(new Date());
+  shareable = shareText(shareSummary(result));
+  if (!canShare && WHATSAPP_FALLBACK_ENABLED) {
+    if (!whatsappLink) {
+      whatsappLink = el('a', 'שיתוף בוואטסאפ', { class: 'btn secondary', rel: 'noopener', target: '_blank' });
+      shareButton.parentNode?.append(whatsappLink);
+    }
+    whatsappLink.setAttribute('href', whatsappHref(shareable));
+    whatsappLink.hidden = false;
+  }
+  after.hidden = false;
+}
+
+$('#pcn-print').addEventListener('click', () => window.print());
+
+shareButton.addEventListener('click', async () => {
+  if (!canShare || !shareable) return;
+  shareStatus.textContent = '';
+  try {
+    await navigator.share({ text: shareable });
+  } catch (e) {
+    // Closing the share sheet is the user's choice, not a failure.
+    if (e?.name !== 'AbortError') shareStatus.textContent = 'השיתוף לא הושלם. אפשר להדפיס את הממצאים או לשמור אותם כ-PDF במקום.';
+  }
+});
 
 function setStatus(className, ...paragraphs) {
   status.className = className;
@@ -129,7 +193,9 @@ input.addEventListener('change', async () => {
   if (run !== latestRun) return;
 
   try {
-    show(buildReport(validatePcn874(reading.text), { reading }), name);
+    const result = validatePcn874(reading.text);
+    show(buildReport(result, { reading }), name);
+    showAfter(result, name);
   } catch {
     // The file was read; the checker failed on it. That is a fault in the
     // checker, not a finding about the file, and it must not read as one.
