@@ -1,7 +1,7 @@
 # il-biz-tools — כלים לעסק
 
-A static, dependency-free, Hebrew (RTL) micro-site with seven tools for Israeli freelancers and
-small businesses (the seventh, `pcn874.html`, is the free validator page of the separate `pcn874` line). No framework, no dependencies at runtime: the build ships only the files the shipped pages
+A static, dependency-free, Hebrew (RTL) micro-site with eight tools for Israeli freelancers and
+small businesses (`pcn874.html` is the free validator page of the separate `pcn874` line). No framework, no dependencies at runtime: the build ships only the files the shipped pages
 load, writes a no-figures notice in place of any withheld page, filters the sitemap, and refuses to build at all
 while a publish blocker stands; the deploy artifact is `_site/`.
 
@@ -16,6 +16,7 @@ while a publish blocker stands; the deploy artifact is `_site/`.
 |---|---|---|---|
 | VAT calculator (מחשבון מע"מ) | `vat.html` | yes | — |
 | Osek patur ceiling tracker (מעקב תקרת עוסק פטור) | `osek-patur.html` | yes | — |
+| בעל עסק זעיר self-check (30% of turnover or actual expenses?) | `osek-zair.html` | yes — tax years 2024 and 2025 only, taxable income only, every figure cited to a primary text | — |
 | Net salary estimator (אומדן שכר נטו) | `net-salary.html` | yes | — |
 | Receipt / invoice generator (קבלה / חשבונית עסקה) | `invoice.html` | print / PDF, local save, saved client list, per-type auto numbering | document branding: your logo and accent colour |
 | Allocation-number check (מספר הקצאה) | `allocation.html` | yes | — |
@@ -62,6 +63,9 @@ search sends no one, the page-view kill rule is what answers it.
 | Allocation-number thresholds | ₪25,000 → ₪20,000 → ₪10,000 → ₪5,000 from 1.6.2026 (`src/config/allocation-number.json`) | verified | Chamber of Commerce, Grant Thornton IL, Green Invoice, iCount |
 | Companies-Registrar annual fee (reduced / full) | `1338` / `1777` held in `src/config/registrar-fee.json` and **never rendered** | **unverified — not published** | six independent accountancy circulars (Stark, YFCPA, PKF Amit Halfon, Gabbay & Shlafman, Brit Pikuach, Erlich) as quoted in `research/colony-sweep/audits/israel-bureaucracy.md` §2.2 and `groups/israel-bureaucracy.md`. No primary source (תקנות החברות (אגרות) / רשות התאגידים) was ever opened |
 | Registrar reduced-rate window (through 31 March; full rate from 1 April) | `deadline` in `src/config/registrar-fee.json` | unverified against a primary source, **rendered anyway, labelled** | same six circulars |
+| בעל עסק זעיר deduction rate | 30% of turnover (`src/config/osek-zair.json`) | **read in a primary text** (third-party copy), 29.9.2026 | ספר החוקים 3045 p.172, Income Tax Ordinance 87ד(א) (image; transcribed in `logs/2026-09-29-osek-zair-check.md`); Tax Authority data report, `research/rendered/tt2-capitax-21072025-1.txt:27-28` |
+| בעל עסק זעיר cap, tax years 2024 and 2025 | ₪120,000 (`src/config/osek-zair.json`) | **read in a primary text** (third-party copy), 29.9.2026 | gazette p.171 (87ב(1): the VAT עוסק פטור amount) and p.173 (section 35: 120,000; 37(ב): first CPI step 1.1.2026); report `:27-28`, `:34-35` |
+| בעל עסק זעיר cap, tax year 2026 | `122833` held in `src/config/osek-zair-unverified.json` and **never rendered or shipped** | **unverified** — CPI-linked from 1.1.2026; no text read states it | the osek patur ceiling of `osek-patur.json` (secondary). The page refuses 2026 |
 
 Not modelled in net salary: surtax, pension tax credit, special credit points (children, degree,
 army), benefits in kind, study fund.
@@ -98,7 +102,8 @@ Each JSON file reached then goes through `CONFIG_PUBLISH_RULES` (`src/lib/publis
 
 | Config | Rule | What ships today |
 |---|---|---|
-| `vat.json`, `osek-patur.json`, `allocation-number.json` | `verified` — ships only while `"verified": true` | the whole file |
+| `vat.json`, `osek-patur.json`, `allocation-number.json`, `osek-zair.json` | `verified` — ships only while `"verified": true` | the whole file |
+| `osek-zair-unverified.json` | `verified` | **nothing**: no page loads it (the 2026 cap waits there), and a shipped page that did would stop the build |
 | `tax-2026.json` | `verified` | **nothing**: no shipped page loads it (its page is withheld), and if one did the build would stop |
 | `registrar-fee.json` | whole once verified; until then only `verified`, `renderAmounts`, `updated`, `deadline` | the dates and the two flags, rewritten into a fresh file — **no amount, no notes, no internal sources** |
 | `site.json` | `no-figures` (site metadata) | the whole file |
@@ -122,7 +127,7 @@ flagged `"verified": true`:
 
 Nothing in the source tree moves, so `npm run serve`, the tests and local development still see the
 real page; the day the rates are confirmed against the Tax Authority booklet, flipping one JSON flag
-republishes it. `node scripts/check-html.js` prints the same verdict for its fixed list of 9 pages (the 8 tool
+republishes it. `node scripts/check-html.js` prints the same verdict for its fixed list of 10 pages (the 9 tool
 pages and `accessibility.html`) plus `404.html`. What **fails** on an HTML page missing from the map is the build (`scripts/build-site.js`) and
 `tests/publish-gate.test.js` — a page nobody classified is a page nobody decided about.
 
@@ -181,6 +186,31 @@ that one `<p>` with a paragraph holding the real, brand-owned contact as
 `<a data-a11y-contact href="mailto:…">…</a>` (or an `https:` form or a `tel:` number). The gate can check that
 a contact is well-formed and visible; it cannot check that someone reads it. Choosing the contact is a decision,
 not code — it is on the owner-ask list, not solved here.
+
+## The בעל עסק זעיר self-check (`osek-zair.html`, TikTok note A11)
+
+What it answers, for tax years 2024 and 2025: is the year's turnover within the cap (₪120,000; "אינו עולה על", so
+equal is within), and is taxable income from the business lower under the track (turnover minus 30% of turnover)
+or under regular reporting (turnover minus the expenses entered) - and by how much. It says, in the result, when the
+30% track loses (expenses above 30% of turnover). Pure arithmetic in `src/lib/osek-zair.js`; nothing stored or sent.
+
+What it refuses: **tax** (no text read gives brackets or credit points; the page says why and quotes the Tax
+Authority's own "almost 80% under the tax threshold"), **tax year 2026** (the cap is CPI-linked from 1.1.2026 and no
+text read states it; its amount waits in `osek-zair-unverified.json`, which no page loads and the build never ships),
+**the conditions** (listed with section and page, not checked), and **National Insurance** (the same law amended it;
+the meaning is unread).
+
+Where every number comes from: `src/config/osek-zair.json`. Each fact and condition cites a text capture by file and
+line (the quote must be at those lines after bidi marks become spaces) or the gazette - ספר החוקים 3045, an
+image-only PDF - by page, with the quote in the dated read record `logs/2026-09-29-osek-zair-check.md` (the three
+pages were rendered to images and read on 29.9.2026). `tests/osek-zair-page.test.js` walks the chain both ways: every
+number on the page is in a config string the page renders; every number in a fact is in its quotes; every quote is
+at its lines or in the record; every capture's sha256 matches its `.meta.json`. The source line after the lead says
+"עותקים באתר capitax.co.il · נבדק: 29.9.2026": the documents are primary texts, the copies are a tax firm's.
+
+The name: the track is "בעל עסק זעיר" (amendment 265); "עוסק זעיר" appears only as the search phrase and in the
+answer that sets it apart. The VAT-law sense is stated in words and marked secondary; its section number (31(3)) is
+not on the page, because no capture of the VAT law has been read - it waits in `osek-zair-unverified.json`.
 
 ## The registrar annual-fee page (`registrar-fee.html`)
 
@@ -371,19 +401,19 @@ over it. It reads the HTML and CSS as they ship; no browser has rendered the pag
 ## Layout
 
 ```
-index.html  vat.html  osek-patur.html  net-salary.html  invoice.html
+index.html  vat.html  osek-patur.html  osek-zair.html  net-salary.html  invoice.html
 allocation.html  registrar-fee.html  pcn874.html  accessibility.html  404.html
 assets/style.css            shared RTL styles incl. @media print for the receipt
 assets/common.js            nav, canonical, optional analytics
 assets/page-*.js            DOM glue per page (no logic)
-src/lib/*.js                pure ES modules: vat, osek-patur, net-salary, invoice, allocation,
+src/lib/*.js                pure ES modules: vat, osek-patur, osek-zair, net-salary, invoice, allocation,
                             registrar-fee, gumroad, license, branding, analytics, money, pro-nudge,
                             pcn874-report, pcn874-share, source-line - and build-time ones that never ship:
                             publish-gate, site-deps, a11y-check, pcn874-bundle, pcn874-rule-reference,
                             pro-offer, ai-declaration
 src/vendor/pcn874/*.js      GENERATED: products/pcn874's validator with its types stripped (do not edit)
-src/config/*.json           vat.json, osek-patur.json, tax-2026.json, allocation-number.json,
-                            registrar-fee.json, site.json
+src/config/*.json           vat.json, osek-patur.json, osek-zair.json, osek-zair-unverified.json,
+                            tax-2026.json, allocation-number.json, registrar-fee.json, site.json
 tests/*.test.js             vitest (node environment); tests/helpers/ builds in a throwaway copy
 scripts/serve.js            zero-dependency local server
 scripts/build-site.js       ships only what the shipped pages load, applies the unverified-rate and

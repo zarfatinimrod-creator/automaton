@@ -1,0 +1,19 @@
+{
+  "verified": false,
+  "about": "Figures for osek-zair.html that no primary text read in this repository states. osek-zair.html renders none of them and no page or module loads this file; CONFIG_PUBLISH_RULES gives it the 'verified' rule, so a shipped page that loaded it would stop the build. A value leaves this file only when a rendered primary text states it: then it moves into osek-zair.json with that capture's line as its cite, and is deleted here.",
+  "years": {
+    "2026": {
+      "cap": 122833,
+      "grade": "secondary: the 2026 osek patur ceiling in src/config/osek-patur.json, which cites Kol Zchut and was compared with search results on 7.9.2026 (no page opened). The בעל עסק זעיר cap is that same amount by statutory reference (gazette p.171, section 87ב(1)).",
+      "why": "The gazette (p.173, section 37(ב)) and the Tax Authority report (tt2-capitax-21072025-1.txt lines 34-35) say the amount is CPI-linked from 1.1.2026; neither states the 2026 figure, and no document read post-dates the report's data (26.6.2025). The reader of 28.9.2026 notes 122,833 is consistent with a 2.36% CPI step (arithmetic), which is not a source.",
+      "toVerify": "Render a primary text that states the 2026 עוסק פטור amount (a Reshumot notice of the CPI update, a gov.il page or a Tax Authority circular), cite its capture line, move the amount into osek-zair.json `years` with that cite, and remove 2026 from `pendingYears` there and from this file."
+    }
+  },
+  "vatLawSense": {
+    "law": "חוק מס ערך מוסף",
+    "section": "31(3)",
+    "grade": "statute mirror quoted in the repo, not rendered: research/colony-sweep/scouts/risk-governance--selling-as-individual.md:132 quotes תקנות מע\"מ (רישום) 15א(ג) (\"עוסק זעיר לענין סעיף 31(3) לחוק\"); research/tiktok/08-reads/hebrew-israel.md:244 repeats it.",
+    "why": "The task asked the page to say that עוסק זעיר in VAT law (section 31(3)) is a different thing. The distinction is on the page in words, marked as secondary; the section number is held here because no capture of the VAT law or its regulations has been read.",
+    "toVerify": "Render a primary copy of the VAT law (section 31) or of תקנות מע\"מ (רישום), cite the line, and move the section reference into osek-zair.json."
+  }
+}

@@ -6,7 +6,7 @@ import { PAGE_RATE_SOURCES, publishPlan, unregisteredPages, aiDeclarationProblem
 const root = new URL('..', import.meta.url).pathname;
 // Tool pages answer search questions and carry FAQ JSON-LD; the accessibility
 // statement is a plain page and gets every other check.
-const toolPages = ['index.html', 'vat.html', 'osek-patur.html', 'net-salary.html', 'invoice.html', 'allocation.html', 'registrar-fee.html', 'pcn874.html'];
+const toolPages = ['index.html', 'vat.html', 'osek-patur.html', 'osek-zair.html', 'net-salary.html', 'invoice.html', 'allocation.html', 'registrar-fee.html', 'pcn874.html'];
 const plainPages = ['accessibility.html'];
 const pages = [...toolPages, ...plainPages];
 let failures = 0;
@@ -35,7 +35,7 @@ for (const p of pages) {
 const css = await readFile(join(root, 'assets/style.css'), 'utf8');
 const defined = new Set([...css.matchAll(/\.(-?[_a-zA-Z][\w-]*)/g)].map((m) => m[1]));
 // Classes applied at runtime by page scripts, not present in any HTML source.
-for (const file of ['common.js', 'page-vat.js', 'page-osek-patur.js', 'page-net-salary.js', 'page-invoice.js', 'page-allocation.js', 'page-registrar-fee.js', 'page-pcn874.js']) {
+for (const file of ['common.js', 'page-vat.js', 'page-osek-patur.js', 'page-osek-zair.js', 'page-net-salary.js', 'page-invoice.js', 'page-allocation.js', 'page-registrar-fee.js', 'page-pcn874.js']) {
   try {
     const js = await readFile(join(root, 'assets', file), 'utf8');
     for (const m of js.matchAll(/class(?:Name|List)[^\n]*?['"`]([^'"`]+)['"`]/g)) {
