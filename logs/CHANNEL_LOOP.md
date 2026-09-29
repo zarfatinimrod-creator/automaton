@@ -41,7 +41,7 @@ The forecast is in `research/channel-loop/FORECAST.md`.
 5. **Recount the caps.** Built-but-unlaunched (BBU) at most 6; experiments measuring at most 3; builds in flight at most 1; render-watch dispatches per tick at most 1.
 6. **Pick work, in this order:**
    1. preparation, so a parked channel launches the minute the owner acts;
-   2. ₪0 tests for queued candidates, in **one** render-watch dispatch plus GitHub-hosted reads;
+   2. ₪0 tests for queued candidates, in **one** render-watch dispatch plus GitHub-hosted reads (the dispatch's `urls` input for rows N-M is the output of `node scripts/queue-zero-test.mjs --override N-M`; it prints, writes nothing, skips retired rows and refuses tiktok.com);
    3. instruments and measurement plumbing;
    4. the top admitted build, only if every cap allows it and it needs no unapproved owner step;
    5. maintenance, otherwise record "idle-by-cap".

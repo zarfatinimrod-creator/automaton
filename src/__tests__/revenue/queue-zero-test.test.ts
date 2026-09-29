@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as render-watch.mjs)
-import { MIN_TERMS_TEXT, queueZeroTest, siteOf, URLS, ZERO_TESTS } from "../../../scripts/queue-zero-test.mjs";
+import { MIN_TERMS_TEXT, overrideLines, queueZeroTest, siteOf, URLS, ZERO_TESTS } from "../../../scripts/queue-zero-test.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { parseUrlList } from "../../../scripts/render-watch.mjs";
 
@@ -219,5 +219,61 @@ describe("siteOf — the site a terms capture must share with its target", () =>
     expect(siteOf("docs.n8n.notion.site")).toBe("n8n.notion.site");
     expect(siteOf("acme.my.site.com")).toBe("acme.my.site.com");
     expect(siteOf("someone.github.io")).not.toBe(siteOf("other.github.io"));
+  });
+});
+
+describe("queue-zero-test --override (the render-watch dispatch lines for a row range)", () => {
+  const row = (n: number, note: string) => `# research/channel-loop/ZERO-TESTS.md row ${n} — ${note} (29.9.2026).`;
+  const LIST = [
+    "# research/rendered/urls.txt — header",
+    "https://old.example/x\told-x",
+    row(10, "a plain page"),
+    "https://a.example/10\ta-ten",
+    row(11, "retired"),
+    "# retired: wrong page — https://b.example/11\tb-eleven",
+    row(12, "a js page"),
+    "https://c.example/12\tc-twelve\tjs",
+    row(13, "last"),
+    "https://d.example/13\td-thirteen",
+    "",
+  ].join("\n");
+
+  it("returns each row's own line in row order, keeps the js flag, and names retired rows", () => {
+    expect(overrideLines(LIST, 10, 13)).toEqual({
+      lines: ["https://a.example/10\ta-ten", "https://c.example/12\tc-twelve\tjs", "https://d.example/13\td-thirteen"],
+      retired: [11],
+    });
+    expect(overrideLines(LIST, 12, 12).lines).toEqual(["https://c.example/12\tc-twelve\tjs"]);
+  });
+
+  it("never takes the next row's line for a retired row", () => {
+    // Row 11 is retired: its search must stop at row 12's comment, not return row 12's URL.
+    expect(overrideLines(LIST, 11, 12).lines).toEqual(["https://c.example/12\tc-twelve\tjs"]);
+  });
+
+  it("refuses a row missing from urls.txt, a backwards range, and a range that is all retired", () => {
+    expect(() => overrideLines(LIST, 10, 14)).toThrow(/row 14 has no line/);
+    expect(() => overrideLines(LIST, 13, 10)).toThrow(/not a row range/);
+    expect(() => overrideLines(LIST, 0, 1)).toThrow(/not a row range/);
+    expect(() => overrideLines(LIST, 11, 11)).toThrow(/every row is retired/);
+  });
+
+  it("re-parses the output with render-watch's parser, so a tiktok.com line can never reach a dispatch", () => {
+    const bad = `${row(20, "x")}\nhttps://www.tiktok.com/@x\tx\n`;
+    expect(() => overrideLines(bad, 20, 20)).toThrow();
+  });
+
+  it("finds the rows of the committed list (rows 174-179, rendered 29.9)", () => {
+    const { lines, retired } = overrideLines(readFileSync(URLS, "utf8"), 174, 179);
+    expect(retired).toEqual([]);
+    expect(lines.map((l: string) => l.split("\t")[1])).toEqual([
+      "nevo-computers-law",
+      "gumroad-terms",
+      "gumroad-help-get-a-refund",
+      "gumroad-help-issue-refund",
+      "nevo-vat-law",
+      "nevo-vat-bookkeeping-regs",
+    ]);
+    expect(parseUrlList(lines.join("\n"))).toHaveLength(6);
   });
 });

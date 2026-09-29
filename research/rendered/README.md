@@ -150,6 +150,10 @@ instead of fetched. What that does and does not do:
   run (a nonce, a timestamp), which the weekly run then commits as a change. If a `js` capture of a
   Salesforce page still comes back empty, shadow DOM is the first suspect — write that down rather than
   concluding the page is blank.
+- **Dispatching queued rows.** `node scripts/queue-zero-test.mjs --override 174-179` prints the lines for
+  the workflow's `urls` input that render exactly ZERO-TESTS rows 174-179, each row's own line with its
+  `js` flag. It writes nothing, skips a retired row (its URL commented out) and names it on stderr, fails
+  on a row with no line, and re-parses the output with render-watch's parser.
 - **The same terms gate as a plain GET.** A `js` line is queued with
   `scripts/queue-zero-test.mjs --js --terms <slug>`, and writes that slug into the line's comment. The
   script refuses unless `<slug>` is a successful capture (its meta has no error and a 2xx status) with

@@ -37,6 +37,15 @@
  *
  * Only this script checks. A js line written into urls.txt by hand, or typed into the
  * workflow's dispatch box, is checked by no code: the reviewed commit is the gate there.
+ *
+ *   node scripts/queue-zero-test.mjs --override 174-179
+ *
+ * prints, and writes nothing, the lines for render-watch's `urls` dispatch input that
+ * render exactly ZERO-TESTS rows 174-179: each row's urls.txt line, found under its
+ * "# research/channel-loop/ZERO-TESTS.md row N —" comment, js flag kept. Ticks 16-18
+ * copied these by hand (logs/2026-09-29-channel-loop-tick-17.md §7). A retired row
+ * (its URL line commented out) is skipped and named on stderr; a row with no line is
+ * an error; the output is re-parsed with render-watch's own parser.
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -278,6 +287,39 @@ export function queueZeroTest({
   return { zeroTests: lines.join("\n"), urls: newUrls, row: n };
 }
 
+const LIST_ROW = /^# research\/channel-loop\/ZERO-TESTS\.md row (\d+) —/;
+
+/**
+ * The dispatch override for ZERO-TESTS rows from..to: each row's active urls.txt line, in
+ * row order. Retired rows come back in `retired`; a row with no comment in urls.txt throws.
+ */
+export function overrideLines(urls, from, to) {
+  if (!Number.isInteger(from) || !Number.isInteger(to) || from < 1 || to < from) {
+    throw new Error(`not a row range: ${from}-${to}`);
+  }
+  const lines = urls.split(/\r?\n/);
+  const out = [];
+  const retired = [];
+  for (let n = from; n <= to; n += 1) {
+    const at = lines.findIndex((l) => Number(l.match(LIST_ROW)?.[1]) === n);
+    if (at < 0) throw new Error(`row ${n} has no line in urls.txt`);
+    // The row's own line is the first non-comment line after its comment, before the next row's comment.
+    let line = null;
+    for (let i = at + 1; i < lines.length && !LIST_ROW.test(lines[i]); i += 1) {
+      const t = lines[i].trim();
+      if (t !== "" && !t.startsWith("#")) {
+        line = t;
+        break;
+      }
+    }
+    if (line) out.push(line);
+    else retired.push(n);
+  }
+  if (out.length === 0) throw new Error(`rows ${from}-${to}: every row is retired, nothing to render`);
+  parseUrlList(out.join("\n")); // tiktok.com, a malformed line or a duplicate slug fails here
+  return { lines: out, retired };
+}
+
 function today() {
   const d = new Date();
   return `${d.getUTCDate()}.${d.getUTCMonth() + 1}.${d.getUTCFullYear()}`;
@@ -295,8 +337,23 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
       terms: { type: "string" },
       date: { type: "string", default: today() },
       "dry-run": { type: "boolean", default: false },
+      override: { type: "string" },
     },
   });
+  if (values.override !== undefined) {
+    try {
+      const m = values.override.match(/^(\d+)(?:-(\d+))?$/);
+      if (!m) throw new Error(`--override takes a row or a range, like 174-179: ${values.override}`);
+      const from = Number(m[1]);
+      const out = overrideLines(readFileSync(URLS, "utf8"), from, m[2] === undefined ? from : Number(m[2]));
+      if (out.retired.length) console.error(`skipped retired row(s): ${out.retired.join(", ")}`);
+      console.log(out.lines.join("\n"));
+    } catch (err) {
+      console.error(`queue-zero-test: ${err.message}`);
+      process.exit(1);
+    }
+    process.exit(0);
+  }
   try {
     const out = queueZeroTest({
       zeroTests: readFileSync(ZERO_TESTS, "utf8"),
