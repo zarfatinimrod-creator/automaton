@@ -505,11 +505,18 @@ describe("--changed and --summary (the captures a render-watch run just stored, 
   //   fresh:   stored a new capture, an AWS WAF challenge page (flagged: bot-challenge)
   //   newok:   stored a new capture that reads as a page (ok)
   //   staged:  a new capture somebody already `git add`ed, too short (flagged: short)
+  //   moved:   abckept's meta renamed with `git mv` (staged): the new name is listed, and no piece of the old path is
+  //            (read as an entry of its own, "research/rendered/abckept.meta.json" past its first 3 + 18 characters
+  //            is "kept.meta.json", a capture that did not change)
   // and the store also holds what --changed must leave out: kept (committed, untouched), gone (a meta deleted),
-  // textonly (its .txt changed but not its meta), sub/deep (a meta in a subdirectory), research/other/elsewhere.
+  // textonly (its .txt changed but not its meta), sub/deep (a meta in a subdirectory), research/other/elsewhere, and
+  // research/renderer/kept (a sibling directory whose name is as long as rendered's, holding a meta named like one here).
   const [root, rendered] = repo();
-  for (const slug of ["kept", "edited", "gone", "textonly"]) capture(rendered, slug, "ok");
+  for (const slug of ["kept", "edited", "gone", "textonly", "abckept"]) capture(rendered, slug, "ok");
   commitAll(root);
+  git(root, "mv", "research/rendered/abckept.meta.json", "research/rendered/moved.meta.json");
+  mkdirSync(join(root, "research", "renderer"));
+  capture(join(root, "research", "renderer"), "kept", "short");
   capture(rendered, "edited", "403");
   capture(rendered, "fresh", "challenge");
   capture(rendered, "newok", "ok");
@@ -523,7 +530,7 @@ describe("--changed and --summary (the captures a render-watch run just stored, 
   capture(join(root, "research", "other"), "elsewhere", "short");
 
   it("changedSlugs: exactly the *.meta.json directly in the directory that are modified, new or staged, sorted", () => {
-    expect(changedSlugs(rendered)).toEqual(["edited", "fresh", "newok", "staged"]);
+    expect(changedSlugs(rendered)).toEqual(["edited", "fresh", "moved", "newok", "staged"]);
   });
 
   it("changedSlugs: on the first run the whole directory is untracked, and every capture in it is new", () => {
@@ -550,8 +557,8 @@ describe("--changed and --summary (the captures a render-watch run just stored, 
     const r = cli(["--dir", rendered, "--changed"]);
     expect(r.code).toBe(3);
     const lines = r.stdout.trim().split("\n");
-    expect(lines.map((l) => l.split("\t").slice(0, 2).join(" "))).toEqual(["edited status", "fresh bot-challenge", "newok ok", "staged short"]);
-    expect(r.stderr).toMatch(/^4 changed or new captures: status 1, bot-challenge 1, ok 1, short 1$/m);
+    expect(lines.map((l) => l.split("\t").slice(0, 2).join(" "))).toEqual(["edited status", "fresh bot-challenge", "moved ok", "newok ok", "staged short"]);
+    expect(r.stderr).toMatch(/^5 changed or new captures: status 1, bot-challenge 1, ok 2, short 1$/m);
   });
 
   it("--changed --summary: a Markdown table of the flagged captures on stdout (slug, kind, evidence), none of the ok ones", () => {
@@ -559,13 +566,13 @@ describe("--changed and --summary (the captures a render-watch run just stored, 
     expect(r.code).toBe(3);
     const md = r.stdout;
     expect(md).toMatch(/^### capture-check\n/);
-    expect(md).toContain(`Not read pages: 3 of 4 changed or new captures in ${rendered}.`);
+    expect(md).toContain(`Not read pages: 3 of 5 changed or new captures in ${rendered}.`);
     expect(md).toContain("| slug | kind | evidence |\n| --- | --- | --- |\n");
     const rows = md.split("\n").filter((l) => l.startsWith("| ") && !l.startsWith("| slug") && !l.startsWith("| ---"));
     expect(rows.map((l) => l.split(" | ").slice(0, 2).join(" "))).toEqual(["| edited status", "| fresh bot-challenge", "| staged short"]);
     expect(rows[0]).toMatch(/the server answered 403 \(refused\)/);
     expect(rows[1]).toMatch(/AWS WAF challenge page/);
-    expect(md).not.toMatch(/\| newok /);
+    expect(md).not.toMatch(/\| (newok|moved|kept) /);
     expect(md).toMatch(/the reader judges each one \(research\/rendered\/README\.md, step 0\)/);
   });
 

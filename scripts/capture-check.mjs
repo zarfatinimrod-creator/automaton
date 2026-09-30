@@ -234,13 +234,13 @@ export function changedSlugs(dir = RENDERED) {
   };
   const prefix = git("rev-parse", "--show-prefix").trim(); // dir from the top of the repository: "" or "research/rendered/"
   // -z: raw paths from the top, never quoted. --untracked-files=all: each new file, even when the whole directory is new
-  // (a first run), where the default names only the directory. --no-renames: every entry is "XY <path>".
+  // (a first run), where the default names only the directory. --no-renames: every entry is "XY <path>" (a staged
+  // rename is a deletion and an addition, not two paths in one entry). "-- .": only paths under dir, so each starts
+  // with prefix.
   const entries = git("status", "--porcelain=v1", "-z", "--untracked-files=all", "--no-renames", "--", ".").split("\0");
   const slugs = new Set();
   for (const entry of entries) {
-    const path = entry.slice(3);
-    if (!path.startsWith(prefix)) continue;
-    const file = path.slice(prefix.length);
+    const file = entry.slice(3 + prefix.length);
     // Not in a subdirectory, a meta, and on disk (a deleted meta is a change with nothing to read).
     if (file.includes("/") || !file.endsWith(".meta.json") || !existsSync(join(dir, file))) continue;
     slugs.add(file.slice(0, -".meta.json".length));
