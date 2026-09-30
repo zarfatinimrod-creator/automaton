@@ -73,8 +73,10 @@ if (src.includes("NOLOAD")) {
 if (src.includes("FAILCRASH")) { console.log(summary(1, 3)); process.kill(process.pid, "SIGKILL"); }
 if (src.includes("EXIT1PASS")) { console.log(summary(0, 4)); process.exit(1); }
 if (src.includes("NOISYFAIL")) console.log("No test files found, exiting with code 1");
+if (src.includes("FAKESUMMARY")) console.log("      Tests  4 passed (4)");
 if (src.includes("HANG")) {
   if (src.includes("HANGHARD")) process.on("SIGTERM", () => {});
+  else process.on("SIGTERM", () => { writeFileSync(process.env.HANG_MARK + ".term", "SIGTERM"); process.exit(143); });
   writeFileSync(process.env.HANG_MARK, String(process.pid));
   setTimeout(() => process.exit(0), 60000);
 } else {
@@ -258,6 +260,13 @@ describe("scripts/mutate.mjs: killed? — a non-zero exit with no sign a test fa
     expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\s+exit 1\b/);
   });
 
+  it("the runner's last Tests line decides, not a summary-like line a test printed before it", () => {
+    const repo = makeRepo();
+    const r = harness(repo, one("a + b", "a - b /*FAKESUMMARY*/"));
+    expect(r.code).toBe(0);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\s+exit 1\b/);
+  });
+
   it("reads pytest's summary line too (for --cmd scripts/pytest-product.sh ...)", () => {
     const repo = makeRepo();
     const py = { PYTEST_STYLE: "1" };
@@ -434,6 +443,8 @@ describe("scripts/mutate.mjs: restore, always", () => {
     expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
     expect(clean(repo)).toBe("");
     expect(out).toMatch(/restored/);
+    // The runner itself was sent SIGTERM (a chance to clean up), not only killed later.
+    expect(readFileSync(`${mark}.term`, "utf8")).toBe("SIGTERM");
     await waitFor(() => !alive(runnerPid), 5_000);
   }, 30_000);
 
