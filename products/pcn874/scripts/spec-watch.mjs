@@ -32,6 +32,10 @@
  *   - a URL that cannot be reached                 -> reported, does not fail
  *   - no URL reachable at all                      -> exit 0 with a loud notice
  *
+ * A fetched source's lock entry is rewritten with its `baseline` (the capture docs/SPEC.md
+ * was derived from) carried over, and with `readByAHuman` false whenever the hash is new or
+ * changed: downloaded bytes are not read bytes.
+ *
  * The downloaded bytes are written to .spec-downloads/ so the workflow can keep
  * them as an artefact; that directory is git-ignored.
  */
@@ -185,7 +189,10 @@ export async function runSpecWatch({
       contentType: result.contentType,
       lastSeenAt: new Date().toISOString(),
       ...(previous?.firstSeenAt ? { firstSeenAt: previous.firstSeenAt } : { firstSeenAt: new Date().toISOString() }),
-      readByAHuman: previous?.readByAHuman ?? false,
+      // Only the bytes a human read carry true: a new or changed hash was downloaded, not read (the lock note).
+      readByAHuman: status === 'unchanged' ? (previous?.readByAHuman ?? false) : false,
+      // The capture docs/SPEC.md was derived from: it does not move because the source did.
+      ...(previous?.baseline ? { baseline: previous.baseline } : {}),
     };
   }
 

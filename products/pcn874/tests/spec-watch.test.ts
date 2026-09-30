@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { copyFileSync, existsSync, mkdtempSync, readFileSync, readdirSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -163,6 +163,80 @@ describe('spec-watch fetches nothing from a site whose terms are unread (ruling 
     const after = JSON.parse(readFileSync(box.lockPath, 'utf8')) as { sources: Record<string, unknown> };
     expect(after.sources['gov-il-874-eng']).toEqual(before.sources['gov-il-874-eng']);
     expect(after.sources['h-erp-mirror']).toEqual(before.sources['h-erp-mirror']);
+  });
+
+  type LockEntry = { sha256: string; readByAHuman: boolean; baseline?: string; firstSeenAt?: string };
+  const readLockAt = (path: string) =>
+    (JSON.parse(readFileSync(path, 'utf8')) as { sources: Record<string, LockEntry> }).sources;
+
+  it('keeps baseline and readByAHuman when a fetched source is unchanged', async () => {
+    const box = sandbox();
+    const verdicts = { ...loadVerdicts(), 'rivhit.co.il': { verdict: 'NOT_BARRED' } };
+    const bytes = readFileSync(join(root, '..', '..', 'research', 'rendered', 'pcn874-rivhit-mirror.pdf'));
+    const { fetchImpl } = recordingFetch(bytes);
+    const run = (await runSpecWatch({
+      verdicts,
+      fetchImpl,
+      lockPath: box.lockPath,
+      downloadDir: box.downloadDir,
+      write: () => {},
+    })) as Run;
+
+    expect(run.results.find(r => r.id === 'rivhit-mirror')!.status).toBe('unchanged');
+    const before = (JSON.parse(box.lockText) as { sources: Record<string, LockEntry> }).sources['rivhit-mirror']!;
+    const after = readLockAt(box.lockPath)['rivhit-mirror']!;
+    expect(before.baseline).toMatch(/^research\/rendered\/pcn874-rivhit-mirror\.pdf/);
+    expect(after.baseline).toBe(before.baseline);
+    expect(after.sha256).toBe(before.sha256);
+    expect(after.readByAHuman).toBe(true);
+    expect(after.firstSeenAt).toBe(before.firstSeenAt);
+  });
+
+  it('on a CHANGED hash keeps the baseline but marks the entry unread: the new bytes were not read', async () => {
+    // The lock's own note: "A hash here does NOT mean the new bytes have been read." A rewrite that carried
+    // readByAHuman: true onto a hash nobody read contradicted it, and the rewrite also dropped the baseline field.
+    const box = sandbox();
+    const verdicts = { ...loadVerdicts(), 'h-erp.co.il': { verdict: 'NOT_BARRED' } };
+    const edition = new TextEncoder().encode('%PDF-1.7 a new edition');
+    const { fetchImpl } = recordingFetch(edition);
+    const run = (await runSpecWatch({
+      verdicts,
+      fetchImpl,
+      lockPath: box.lockPath,
+      downloadDir: box.downloadDir,
+      write: () => {},
+      writeErr: () => {},
+    })) as Run;
+
+    expect(run.exitCode).toBe(1);
+    const before = (JSON.parse(box.lockText) as { sources: Record<string, LockEntry> }).sources['h-erp-mirror']!;
+    const after = readLockAt(box.lockPath)['h-erp-mirror']!;
+    expect(before.readByAHuman).toBe(true);
+    expect(after.sha256).toBe(createHash('sha256').update(edition).digest('hex'));
+    expect(after.sha256).not.toBe(before.sha256);
+    expect(after.readByAHuman).toBe(false);
+    expect(after.baseline).toBe(before.baseline);
+  });
+
+  it('a source seen for the first time is recorded unread and with no invented baseline', async () => {
+    const box = sandbox();
+    const lockBefore = JSON.parse(box.lockText) as { sources: Record<string, unknown> };
+    delete lockBefore.sources['rivhit-mirror'];
+    writeFileSync(box.lockPath, JSON.stringify(lockBefore), 'utf8');
+    const verdicts = { ...loadVerdicts(), 'rivhit.co.il': { verdict: 'NOT_BARRED' } };
+    const { fetchImpl } = recordingFetch(new TextEncoder().encode('%PDF-1.7 first sight'));
+    const run = (await runSpecWatch({
+      verdicts,
+      fetchImpl,
+      lockPath: box.lockPath,
+      downloadDir: box.downloadDir,
+      write: () => {},
+    })) as Run;
+
+    expect(run.results.find(r => r.id === 'rivhit-mirror')!.status).toBe('new');
+    const after = readLockAt(box.lockPath)['rivhit-mirror']!;
+    expect(after.readByAHuman).toBe(false);
+    expect(after).not.toHaveProperty('baseline');
   });
 
   it('still fails the job when a fetched source changed, while the refused ones stay out of it', async () => {
