@@ -191,6 +191,12 @@
    "source": "IRS privacy and security policy, ToS;DR snapshot, github grade (round 2)",
    "checked": "2026-09-29"
   },
+  "israelpost.co.il": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://doar.israelpost.co.il/content/term-of-use/ (URL from skills-il/government-services israeli-address-autocomplete/evidence.json:307-313 at dd885910, github; that repo paraphrases the terms as silent on programmatic access and records Radware bot protection on the website host, optimization-log.json:7); no terms text in the repo or in tosdr-snapshots or Open Terms Archive",
+   "checked": "2026-09-30",
+   "note": "the terms page is fetched once as a terms- line (ruling 30.9 16(d) D2(iii)) for the documents ruling fold 11(c), the registered-mail rate; no GitHub-hosted price list exists (tick 31 reader)"
+  },
   "kiezelpay.com": {
    "verdict": "NO_TERMS",
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
