@@ -69,7 +69,10 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
   const basis = summarizeTargetBasis();
   const stalled = findStalledLines(db, nowMs);
   const coverage = sweepCoverage(db, nowMs);
+  // Converted money (bank) and unconverted money (USDC in the wallet, at its shekel value on the day it arrived) are two
+  // numbers, never one; the headline and the target % are converted only (RULING-2026-09-28-bounty-rail.md §6.2).
   const earnedAgorot = summary?.total30dAgorot ?? 0;
+  const unconvertedAgorot = summary?.unconverted30dAgorot ?? 0;
   const goalIls = Math.round((summary?.targetMonthlyAgorot ?? 0) / 100);
 
   // What is still asked, as the report asks it (owner-steps.ts openSetupItems): an item goes once the owner steps it
@@ -104,6 +107,7 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
         <td><strong>${esc(line.name)}</strong><br><code>${esc(line.id)}</code></td>
         <td><span class="pill s-${esc(line.status)}">${esc(STATUS_HE[line.status] ?? line.status)}</span></td>
         <td class="num">${esc(formatIls(m?.revenue30dAgorot ?? 0))}</td>
+        <td class="num">${esc(formatIls(m?.unconverted30dAgorot ?? 0))}</td>
         <td class="num">${esc(formatIls(line.targetMonthlyAgorot))}<br><span class="grade g-${esc(b?.grade ?? "unevidenced")}">${esc(GRADE_HE[b?.grade ?? "unevidenced"])}</span></td>
         <td>${esc(review?.decision ?? "—")}</td>
       </tr>`;
@@ -178,6 +182,12 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
 <div class="wrap">
   <h1>${esc(headline)}</h1>
   <p class="lede">${esc(subhead)}</p>
+  <div class="card">
+    <div class="basis">
+      <div>כסף מומר (בנק), 30 יום</div><div>${esc(formatIls(earnedAgorot))}</div>
+      <div>כסף לא מומר (ארנק), 30 יום — לא נספר בשום יעד</div><div>${esc(formatIls(unconvertedAgorot))}</div>
+    </div>
+  </div>
 
   <h2>מה התוכנית נשענת עליו</h2>
   <div class="card">
@@ -200,7 +210,7 @@ ${ownerBlocks}
   <h2>מקורות ההכנסה</h2>
   <div class="card">
     <table>
-      <thead><tr><th>קו</th><th>מצב</th><th>30 יום</th><th>יעד</th><th>החלטת מפקח</th></tr></thead>
+      <thead><tr><th>קו</th><th>מצב</th><th>30 יום, מומר</th><th>30 יום, לא מומר</th><th>יעד</th><th>החלטת מפקח</th></tr></thead>
       <tbody>
 ${rows}
       </tbody>

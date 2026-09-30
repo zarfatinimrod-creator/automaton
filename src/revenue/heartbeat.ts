@@ -260,6 +260,8 @@ export async function runLedgerSync(
     }
     if (local.nextCursor) setConnectorCursor(db, "x402", local.nextCursor);
     if (local.entries.length) result.sources.push("x402");
+    // A held USDC receipt is money that arrived and is not booked: it stays a blocker at every sync until it can be.
+    for (const h of local.held) result.errors.push(`x402: USDC receipt ${h.rowId} held: ${h.detail}`);
   } catch (error) {
     result.errors.push(`x402: ${(error as Error).message}`);
   }

@@ -9,7 +9,7 @@
 
 import type { Database } from "better-sqlite3";
 import { ulid } from "ulid";
-import { toAgorot } from "./money.js";
+import { getFxRateOn, isUnconvertedCurrency, normalizeCurrency, receiptDay, toAgorot, toAgorotAtRate } from "./money.js";
 import {
   DEFAULT_REVENUE_COLONY_CONFIG,
   REVENUE_KV,
@@ -117,6 +117,7 @@ function rowToLedger(row: any): LedgerEntry {
     occurredAt: row.occurred_at,
     recordedAt: row.recorded_at,
     note: row.note ?? null,
+    unconverted: Number(row.unconverted ?? 0) === 1,
   };
 }
 
@@ -431,24 +432,50 @@ export function recordLedgerEntry(db: Database, input: LedgerEntryInput): Ledger
     : Math.abs(input.amountMinor);
 
   const now = new Date().toISOString();
+  const currency = normalizeCurrency(input.currency);
+  const occurredAt = input.occurredAt ?? now;
+
+  // RULING-2026-09-28-bounty-rail.md §6.2: wallet money (USDC) is booked at its shekel value on the day of receipt and
+  // flagged unconverted. With no rate recorded for that day there is no such value, and none is invented: refused.
+  const unconverted = isUnconvertedCurrency(currency);
+  let amountAgorot: number;
+  if (unconverted) {
+    if (input.kind === "cost") {
+      throw new Error(`a ${currency} cost would mean the colony spent from the owner's wallet, and the colony never moves funds (§6.2)`);
+    }
+    const day = receiptDay(occurredAt);
+    const rate = getFxRateOn(db, currency, day);
+    if (rate === null) {
+      throw new Error(
+        `no ILS rate recorded for ${currency} on ${day}: a ${currency} receipt is booked at its shekel value on the day ` +
+        `of receipt, and no rate is invented. Record that day's rate first: ` +
+        `pnpm exec tsx scripts/colony.ts fx --currency ${currency} --date ${day} --rate <ILS per ${currency}>`,
+      );
+    }
+    amountAgorot = toAgorotAtRate(signedMinor, currency, rate);
+  } else {
+    amountAgorot = toAgorot(db, signedMinor, currency);
+  }
+
   const entry: LedgerEntry = {
     id: ulid(),
     lineId: input.lineId.trim(),
     kind: input.kind,
     amountMinor: signedMinor,
-    currency: input.currency.trim().toUpperCase(),
-    amountAgorot: toAgorot(db, signedMinor, input.currency),
+    currency,
+    amountAgorot,
     source,
     externalId,
-    occurredAt: input.occurredAt ?? now,
+    occurredAt,
     recordedAt: now,
     note: input.note ?? null,
+    unconverted,
   };
 
   db.prepare(
     `INSERT INTO revenue_ledger
-      (id, line_id, kind, amount_minor, currency, amount_agorot, source, external_id, occurred_at, recorded_at, note)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (id, line_id, kind, amount_minor, currency, amount_agorot, source, external_id, occurred_at, recorded_at, note, unconverted)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).run(
     entry.id,
     entry.lineId,
@@ -461,11 +488,14 @@ export function recordLedgerEntry(db: Database, input: LedgerEntryInput): Ledger
     entry.occurredAt,
     entry.recordedAt,
     entry.note,
+    entry.unconverted ? 1 : 0,
   );
 
   // First positive revenue on a building line promotes it to live automatically:
-  // "live" is defined by money, not by a status the director sets.
-  if (REVENUE_POSITIVE_KINDS.has(entry.kind) && entry.amountAgorot > 0) {
+  // "live" is defined by money, not by a status the director sets. Converted money only: `live` starts the kill
+  // floor's clock and asks the board for a target set from the reading that made it live, and no target may rest on
+  // unconverted money (§6.2).
+  if (REVENUE_POSITIVE_KINDS.has(entry.kind) && entry.amountAgorot > 0 && !entry.unconverted) {
     const line = getLine(db, entry.lineId);
     if (line && line.status === "building") {
       updateLineStatus(db, line.id, "live");
@@ -504,12 +534,17 @@ interface WindowSums {
   count: number;
 }
 
+/**
+ * Converted money only. Every metric built from these sums feeds a target, a floor or a rule (rules.ts decideLine,
+ * allocateBudget, the ₪20,000 test in computePortfolioSummary), and none of them may rest on unconverted money
+ * (RULING-2026-09-28-bounty-rail.md §6.2). Unconverted money is summed apart, by sumUnconverted.
+ */
 function sumWindow(db: Database, lineId: string, sinceIso: string, untilIso: string): WindowSums {
   const rows = db
     .prepare(
       `SELECT kind, COALESCE(SUM(amount_agorot), 0) AS total, COUNT(*) AS count
        FROM revenue_ledger
-       WHERE line_id = ? AND occurred_at >= ? AND occurred_at <= ?
+       WHERE line_id = ? AND occurred_at >= ? AND occurred_at <= ? AND unconverted = 0
        GROUP BY kind`,
     )
     .all(lineId, sinceIso, untilIso) as Array<{ kind: string; total: number; count: number }>;
@@ -526,6 +561,18 @@ function sumWindow(db: Database, lineId: string, sinceIso: string, untilIso: str
     }
   }
   return sums;
+}
+
+/** Unconverted (wallet) money in the window: revenue less refunds. Shown beside the converted sums, never added in. */
+function sumUnconverted(db: Database, lineId: string, sinceIso: string, untilIso: string): number {
+  const row = db
+    .prepare(
+      `SELECT COALESCE(SUM(amount_agorot), 0) AS total FROM revenue_ledger
+       WHERE line_id = ? AND occurred_at >= ? AND occurred_at <= ? AND unconverted = 1
+         AND kind IN ('sale', 'subscription', 'payout', 'refund')`,
+    )
+    .get(lineId, sinceIso, untilIso) as { total: number };
+  return Number(row.total);
 }
 
 function daysBetween(fromIso: string | null, nowMs: number): number | null {
@@ -546,7 +593,7 @@ export function computeLineMetrics(db: Database, line: RevenueLine, nowIso = new
   const lastRevenueRow = db
     .prepare(
       `SELECT MAX(occurred_at) AS ts FROM revenue_ledger
-       WHERE line_id = ? AND kind IN ('sale','subscription','payout') AND amount_agorot > 0`,
+       WHERE line_id = ? AND kind IN ('sale','subscription','payout') AND amount_agorot > 0 AND unconverted = 0`,
     )
     .get(line.id) as { ts: string | null } | undefined;
 
@@ -569,6 +616,7 @@ export function computeLineMetrics(db: Database, line: RevenueLine, nowIso = new
     daysSinceLastRevenue: daysBetween(lastRevenueRow?.ts ?? null, nowMs),
     targetMonthlyAgorot: line.targetMonthlyAgorot,
     targetAttainment: line.targetMonthlyAgorot > 0 ? (w30.revenue - w30.refunds) / line.targetMonthlyAgorot : 0,
+    unconverted30dAgorot: sumUnconverted(db, line.id, since30, nowIso),
   };
 }
 
@@ -593,6 +641,7 @@ export function computePortfolioSummary(db: Database, nowIso = new Date().toISOS
     net30dAgorot: total30 - cost30,
     attainment: target > 0 ? total30 / target : 0,
     runRateMonthlyAgorot: Math.round(total7 * (30 / 7)),
+    unconverted30dAgorot: metrics.reduce((s, m) => s + m.unconverted30dAgorot, 0),
     lines: metrics,
     counts,
   };

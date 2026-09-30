@@ -10,6 +10,7 @@ import { getRevenueStatus } from "../../revenue/status.js";
 import { createRevenueTools } from "../../revenue/tools.js";
 import { REVENUE_KV } from "../../revenue/types.js";
 import type { ToolContext } from "../../types.js";
+import { receiptDay, setFxRateOn } from "../../revenue/money.js";
 
 function kv(db: BetterSqlite3.Database, key: string): string | undefined {
   return (db.prepare("SELECT value FROM kv WHERE key = ?").get(key) as { value: string } | undefined)?.value;
@@ -219,15 +220,20 @@ describe("revenue/loop (board → queue → orchestrator)", () => {
     });
     updateLineStatus(db, "agent-services", "building");
     const now = new Date().toISOString();
+    // x402 settles USDC: the row carries its on-chain hash, and it is valued at its receipt day's rate
+    // (RULING-2026-09-28-bounty-rail.md §6.2; usdc-unconverted.test.ts holds the rule in full).
+    setFxRateOn(db, "USDC", receiptDay(now), 3.7);
     db.prepare("INSERT INTO transactions (id, type, amount_cents, description, created_at) VALUES (?, ?, ?, ?, ?)")
-      .run("tx1", "transfer_in", 250, "x402 payment [line:agent-services]", now);
+      .run("tx1", "transfer_in", 250, `x402 payment [line:agent-services] [tx:0x${"ab".repeat(32)}]`, now);
     db.prepare("INSERT INTO transactions (id, type, amount_cents, description, created_at) VALUES (?, ?, ?, ?, ?)")
       .run("tx2", "transfer_in", 5000, "creator funding", now);
     const first = await runLedgerSync(db, {}, undefined);
     expect(first.recorded).toBe(1);
     const again = await runLedgerSync(db, {}, undefined);
     expect(again.recorded).toBe(0);
-    expect(getLine(db, "agent-services")?.status).toBe("live");
+    // Unconverted money never makes a line live: `live` would start the kill floor's clock and ask for a target set
+    // from a reading no target may rest on.
+    expect(getLine(db, "agent-services")?.status).toBe("building");
   });
 
   it("uses a remote connector when configured and maps products to lines", async () => {
