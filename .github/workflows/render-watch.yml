@@ -208,6 +208,25 @@ jobs:
           NODE_PATH: ${{ runner.temp }}/render-watch-js/node_modules
         run: node scripts/render-watch.mjs
 
+      # Names, in the job summary (a table) and as a warning annotation each on the run page (GitHub
+      # may show only some of them), the captures this run just stored that are not read pages:
+      # status, bot-challenge, js-shell, short, unreadable, timeout (tick 33 found EUR-Lex and UNESCO
+      # answering with bot challenges for days before anyone looked). It only reads: it writes nothing
+      # under research/, needs no token and fetches nothing.
+      # Before the commit, on purpose: here `git status` of research/rendered is exactly what this run
+      # wrote (the tree was clean at the tip), while after the commit the tree is clean and a push
+      # retry may have rebased HEAD onto other runs' captures. It cannot cost the captures: 3 (flagged)
+      # is its expected answer, any other exit is a warning, never a failure; continue-on-error covers
+      # the shell itself and timeout-minutes a hang, so the commit step below runs either way. Each
+      # capture gets at most 10 s (a page can be written to make a regex backtrack for minutes), and
+      # each row is written as it is found, so even a run stopped at the timeout keeps what it had.
+      - name: Name the captures this run stored that are not read pages (capture-check)
+        continue-on-error: true
+        timeout-minutes: 3
+        run: |
+          node scripts/capture-check.mjs --changed --summary >> "$GITHUB_STEP_SUMMARY" \
+            || { c=$?; [ "$c" -eq 3 ] || echo "::warning title=capture-check::capture-check exited ${c}, not 0 or 3: the list of flagged captures in the job summary is missing or incomplete (its lines above say why). The captures are committed anyway."; }
+
       - name: Commit the fetched pages back to this branch
         env:
           GH_TOKEN: ${{ github.token }}

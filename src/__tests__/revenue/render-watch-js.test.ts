@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -1085,6 +1085,7 @@ describe(".github/workflows/render-watch.yml — the browser only when a js line
     run?: string;
     env?: Record<string, string>;
     "continue-on-error"?: boolean;
+    "timeout-minutes"?: number;
   };
   const steps: Step[] = wf.jobs.render.steps;
   const named = (prefix: string): Step => {
@@ -1179,6 +1180,150 @@ describe(".github/workflows/render-watch.yml — the browser only when a js line
     expect(failed.status).toBe(1);
     expect(failed.stderr + failed.stdout).toMatch(/2 js line\(s\)/);
     expect(fail.env?.JS_SKIPPED).toBe("${{ steps.fetch.outputs.js_skipped }}");
+  });
+
+  // Tick 35: every run names the captures it just stored that are not read pages (tick 33 found two active lines
+  // answering with bot challenges for days, by hand).
+  const CHECK = "Name the captures this run stored that are not read pages";
+
+  it("runs capture-check on the captures this run stored, between the fetch and the commit, into the job summary", () => {
+    const check = named(CHECK);
+    expect(check.name).toMatch(/\(capture-check\)$/);
+    expect(index(check)).toBe(index(named("Fetch the pages")) + 1);
+    expect(index(named("Commit the fetched pages"))).toBe(index(check) + 1);
+    expect(check.run).toMatch(/^node scripts\/capture-check\.mjs --changed --summary >> "\$GITHUB_STEP_SUMMARY" \\\n/);
+    // Runs exactly when the commit step does (no `if`), with nothing interpolated and no token.
+    expect(check.if).toBeUndefined();
+    expect(check.env).toBeUndefined();
+    expect(check.run).not.toMatch(/\$\{\{/);
+    expect(JSON.stringify(check)).not.toMatch(/github\.token|secrets\./);
+  });
+
+  it("the check writes only the job summary: no git command, no other redirect, nothing under research/", () => {
+    const run = named(CHECK).run!;
+    expect(run).not.toMatch(/\bgit\b/);
+    expect(run).not.toMatch(/research\//);
+    expect(run.replace('>> "$GITHUB_STEP_SUMMARY"', "")).not.toMatch(/>/);
+  });
+
+  it("cannot fail the job: continue-on-error, a short timeout, and every exit of capture-check is an answer", () => {
+    const check = named(CHECK);
+    expect(check["continue-on-error"]).toBe(true);
+    expect(check["timeout-minutes"]).toBeGreaterThan(0);
+    expect(check["timeout-minutes"]).toBeLessThanOrEqual(5);
+    const dir = mkdtempSync(join(tmpdir(), "render-watch-check-"));
+    try {
+      // A stand-in for node on PATH: prints a summary line and exits with the code the case asks for.
+      writeFileSync(join(dir, "node"), '#!/bin/sh\necho "fake summary line"\nexit "$FAKE_EXIT"\n', { mode: 0o755 });
+      // bash -e: what GitHub runs a `run:` block with when no shell is named.
+      const run = (code: number, summary: string) =>
+        spawnSync("bash", ["-e", "-c", check.run!], {
+          cwd: ROOT,
+          env: { ...process.env, PATH: `${dir}:${process.env.PATH}`, FAKE_EXIT: String(code), GITHUB_STEP_SUMMARY: summary },
+          encoding: "utf8",
+        });
+      for (const code of [0, 3]) {
+        const summary = join(dir, `summary-${code}.md`);
+        const r = run(code, summary);
+        expect(r.status, `capture-check exit ${code}`).toBe(0);
+        expect(r.stdout + r.stderr).not.toMatch(/::warning/);
+        expect(readFileSync(summary, "utf8")).toBe("fake summary line\n");
+      }
+      // The summary is written as capture-check goes, so a failure midway can leave part of a list: the warning says
+      // "missing or incomplete", never "no list" (review of tick 35, defect 2: it said "no list" over a full table).
+      const says = (code: number) =>
+        new RegExp(`^::warning title=capture-check::capture-check exited ${code}, not 0 or 3: the list of flagged captures in the job summary is missing or incomplete \\(its lines above say why\\)\\. The captures are committed anyway\\.$`, "m");
+      for (const code of [1, 2, 127, 137]) {
+        const r = run(code, join(dir, `summary-${code}.md`));
+        expect(r.status, `capture-check exit ${code}`).toBe(0);
+        expect(r.stdout).toMatch(says(code));
+        expect(r.stdout).not.toMatch(/no list/);
+      }
+      // A summary file that cannot be written (the redirect itself fails): a warning, and still exit 0.
+      const unwritable = run(0, join(dir, "no-such-dir", "summary.md"));
+      expect(unwritable.status).toBe(0);
+      expect(unwritable.stdout).toMatch(says(1));
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("research/rendered/README.md step 0 says the run's job summary now lists the flagged captures", () => {
+    const readme = readFileSync(join(ROOT, "research", "rendered", "README.md"), "utf8");
+    const step0 = readme.split("\n").find((l) => l.startsWith("0. "));
+    expect(step0).toMatch(/node scripts\/capture-check\.mjs <slug\.\.\.>/);
+    expect(step0).toMatch(/--changed --summary/);
+    expect(step0).toMatch(/job summary lists the flagged ones/);
+    // GitHub limits the annotations a step shows: the table is the full list, the warnings are not (review of tick 35).
+    expect(step0).not.toMatch(/a warning each/);
+    expect(step0).toMatch(/GitHub may show only some of them/);
+    expect(step0).toMatch(/start from the job summary/);
+  });
+
+  // The step's own command line, run under bash -e with the real node and the real scripts (copied into a toy
+  // repository, so research/rendered is the toy's), over a simulated fetch: a 403, a JavaScript shell, a torn capture
+  // (its text file missing), a read page, and an unchanged committed capture.
+  it("end to end with real node: every changed capture in the summary, one warning per flagged one, no step warning, nothing written", () => {
+    const dir = mkdtempSync(join(tmpdir(), "render-watch-check-e2e-"));
+    try {
+      const emptyConfig = join(dir, "empty.gitconfig");
+      writeFileSync(emptyConfig, "");
+      const env = {
+        ...process.env,
+        GIT_CONFIG_GLOBAL: emptyConfig,
+        GIT_CONFIG_NOSYSTEM: "1",
+        GIT_AUTHOR_NAME: "toy",
+        GIT_AUTHOR_EMAIL: "toy@example.invalid",
+        GIT_COMMITTER_NAME: "toy",
+        GIT_COMMITTER_EMAIL: "toy@example.invalid",
+        GIT_CEILING_DIRECTORIES: dir,
+      };
+      const root = join(dir, "repo");
+      const rendered = join(root, "research", "rendered");
+      mkdirSync(join(root, "scripts"), { recursive: true });
+      mkdirSync(rendered, { recursive: true });
+      for (const f of ["capture-check.mjs", "queue-zero-test.mjs", "render-watch.mjs"]) copyFileSync(join(ROOT, "scripts", f), join(root, "scripts", f));
+      const git = (...args: string[]) => {
+        const r = spawnSync("git", args, { cwd: root, env, encoding: "utf8" });
+        if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${r.stderr}`);
+        return r.stdout;
+      };
+      const long = "Terms of service. ".repeat(100);
+      const put = (slug: string, meta: Record<string, unknown>, html: string | null, text: string | null) => {
+        const base = { slug, status: 200, error: null, contentType: "text/html; charset=utf-8", bodyPath: `research/rendered/${slug}.html`, textPath: `research/rendered/${slug}.txt` };
+        writeFileSync(join(rendered, `${slug}.meta.json`), `${JSON.stringify({ ...base, ...meta }, null, 2)}\n`);
+        if (html != null) writeFileSync(join(rendered, `${slug}.html`), html);
+        if (text != null) writeFileSync(join(rendered, `${slug}.txt`), text);
+      };
+      put("kept", { status: 403, error: "HTTP 403 Forbidden", bodyPath: null, textPath: null }, null, null);
+      git("init", "-q");
+      git("add", "-A");
+      git("commit", "-q", "-m", "toy");
+      put("denied", { status: 403, error: "HTTP 403 Forbidden", bodyPath: null, textPath: null }, null, null);
+      put("shell", {}, '<html><body><div id="root"></div><script src="/app.js"></script></body></html>', "");
+      put("torn", {}, "<html><body><p>x</p></body></html>", null);
+      put("good", {}, `<html><body><p>${long}</p></body></html>`, long);
+      const status = git("status", "--porcelain=v1", "--untracked-files=all");
+      const summary = join(dir, "summary.md");
+      const r = spawnSync("bash", ["-e", "-c", named(CHECK).run!], { cwd: root, env: { ...env, GITHUB_STEP_SUMMARY: summary }, encoding: "utf8", timeout: 30_000 });
+      expect(r.status).toBe(0);
+      expect(r.stdout + r.stderr).not.toMatch(/capture-check exited/);
+      const md = readFileSync(summary, "utf8");
+      // The workflow names no --dir: the summary says research/rendered, not the runner's absolute path.
+      expect(md).toMatch(/^### capture-check\n\nChecking 4 changed or new captures in research\/rendered\. /);
+      expect(md).toContain("Not read pages: 3 of 4 changed or new captures in research/rendered.");
+      const rows = md.split("\n").filter((l) => /^\| (denied|shell|torn|good|kept) /.test(l)).map((l) => l.split(" | ").slice(0, 2).join(" "));
+      expect(rows).toEqual(["| denied status", "| shell js-shell", "| torn unreadable"]);
+      const warnings = r.stderr.split("\n").filter((l) => l.startsWith("::"));
+      expect(warnings.map((l) => l.split("::")[1])).toEqual([
+        "warning title=capture-check%3A status",
+        "warning title=capture-check%3A js-shell",
+        "warning title=capture-check%3A unreadable",
+      ]);
+      expect(git("status", "--porcelain=v1", "--untracked-files=all")).toBe(status);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 
   it("documents the mode in the header comment and in research/rendered/README.md", () => {
