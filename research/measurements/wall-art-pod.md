@@ -1,7 +1,7 @@
 # Wall-art print-on-demand: Displate (row 26), Zazzle (row 25), Society6 (row 27)
 
 **28.9.2026, branch `claude/new-session-j071dx`; an Opus reader in the channel loop; wrote this file only.** Read in full:
-`research/rendered/displate-com-about-faq.txt` (1,279 lines) and `displate-com-about-copyright.txt` (135), both 200, fetched
+`research/rendered/displate-com-about-faq-2026-09-28.txt` (1,279 lines) and `displate-com-about-copyright-2026-09-28.txt` (135), both 200, fetched
 2026-09-28T20:35Z. Also read the seven Zazzle/Society6 `.meta.json` files, `research/breadth/REPLENISH-2026-09-28-2.md`
 §2, §3.2-3.4, §6 and `logs/CHANNEL_LOOP.md:149-151`. **Grades:** [RENDERED] = quoted from a capture, `file:line`;
 [INFERENCE] = my reading; UNKNOWN = no capture answers it. A proposed kill fires only on a rendered fact and goes to the
@@ -14,7 +14,7 @@ Use points 3.2-3.3, which the FAQ cites but does not quote.** Gates now: G1 P(r)
 G4 U(r) · G5 P(g) · G6 U(r) · G7 U↗(r).
 
 - **Sign-up is a form, not a portfolio review (kill b: not met).** [RENDERED] "Fill out the form and click "Create an
-  account." Once your shop is set up, we'll send you a verification email." (`displate-com-about-faq.txt:1048`); "That's it -
+  account." Once your shop is set up, we'll send you a verification email." (`displate-com-about-faq-2026-09-29.txt:1048`); "That's it -
   your shop is ready! You can start uploading your artworks." (`:1050`). This supersedes the 2024 guide's "registration is
   subject to a review where you need to have a portfolio online" (`REPLENISH-2026-09-28-2.md:132`). Review is per artwork:
   "Displate reserves the right not to publish or to reject any artwork that is not in line with our Terms of Use points 3.2
@@ -23,7 +23,7 @@ G4 U(r) · G5 P(g) · G6 U(r) · G7 U↗(r).
   badge covers work "whether created entirely by hand or with assistance from the latest technologies like AI", and the list
   excludes portfolios "whose artworks are clearly generated without human creative input". That gates a badge and a search
   filter (`:429`), not the marketplace. The copyright page has zero hits for "AI", "artificial" or "generated"; it is an
-  infringement rule, "a zero tolerance policy" (`displate-com-about-copyright.txt:93`, `:97`). [INFERENCE] Any AI rule is in
+  infringement rule, "a zero tolerance policy" (`displate-com-about-copyright-2026-09-28.txt:93`, `:97`). [INFERENCE] Any AI rule is in
   ToU 3.2-3.3; a "primarily AI" ban there fires (a) on the Modrinth precedent (`REPLENISH-2026-09-28.md:88`).
 - **No fee to join (G1 PASS).** [RENDERED] "Becoming an artist on Displate is completely free!" (`:1053`); own-link sales:
   "there is no additional fee" (`:1235`). Commission is fixed: "$4.50 USD for M size", "$9.00 USD for L size", "$14.50 USD
@@ -52,7 +52,7 @@ name?); the tax-data form; whether PayPal's linked country list covers this payo
 is ever found (main-page featuring is automatic on profile visits, `:1150`).
 
 **One next check:** render `https://displate.com/about-regulations`, the target of all 11 "Terms of Use" links in the FAQ
-(10 in the body, 1 in the footer; `displate-com-about-faq.html`). Read 3.2 and 3.3 first: a primarily-AI ban fires (a); a
+(10 in the body, 1 in the footer; `displate-com-about-faq-2026-09-28.html`). Read 3.2 and 3.3 first: a primarily-AI ban fires (a); a
 bar on automated access, with the manual route above, fires (d).
 
 ## 2. Zazzle (row 25)

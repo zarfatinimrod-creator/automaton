@@ -1,0 +1,23 @@
+{
+  "url": "https://huggingface.co/terms-of-service",
+  "slug": "terms-huggingface-2026-09-29",
+  "fetchedAt": "2026-09-29T14:02:44.824Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 114693,
+  "sha256": "b450c8c7556d0ae7004b9a3a5dc946bfbe79f4e0666500f19d87ee380fb95702",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-huggingface-2026-09-29.html",
+  "textPath": "research/rendered/terms-huggingface-2026-09-29.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-09-30",
+    "from": "research/rendered/terms-huggingface.meta.json",
+    "commit": "20c7304",
+    "why": "A dated copy of the render-watch capture of terms-huggingface as commit 20c7304 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/TERMS-AUDIT-2026-09-29.md, research/channel-loop/terms-verdicts.json keep pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug terms-huggingface stays on the weekly watch."
+  }
+}

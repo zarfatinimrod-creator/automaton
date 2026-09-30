@@ -1,0 +1,301 @@
+Budgets and alerts - GitHub Docs
+Skip to main content
+
+Skip to content
+GitHub Docs
+
+Search or ask Copilot /
+Menu
+
+Collapse sidebar Expand sidebar
+Scroll breadcrumbs left Home
+Billing and payments
+Concepts
+Budgets and alerts
+
+Scroll breadcrumbs right
+
+Billing and payments
+
+Get started
+How billing works
+
+Introduction to billing
+
+Billing manager onboard
+
+Concepts
+Billing cycles
+
+Budgets and alerts
+
+Cost centers
+
+Azure subscriptions
+
+Impact of plan changes
+
+Discounted plans
+
+Enterprise billing
+Billing for enterprises
+
+Usage-based licenses
+
+Combined enterprise use
+
+GHES license files
+
+Azure DevOps licenses
+
+Product billing
+GitHub Actions
+
+GitHub Advanced Security
+
+GitHub Codespaces
+
+GitHub Code Quality
+
+GitHub Copilot billing
+
+GitHub Copilot licenses
+
+GitHub Packages
+
+Cloud and local sandboxes
+
+Git LFS
+
+Third-party payments
+GitHub Sponsors
+
+GitHub Marketplace apps
+
+How-tos
+Set up payment
+Manage payment info
+
+Connect Azure sub
+
+Redeem coupon
+
+Add sales tax certificate
+
+Manage enterprise invoice
+
+Payments in India
+
+Manage plan and licenses
+Upgrade plan
+
+Downgrade plan
+
+Manage pending changes
+
+View enterprise usage
+
+Manage user licenses
+
+Set up budgets
+
+Products
+View product/license use
+
+Download license use
+
+Buy Advanced Security
+
+View and estimate spending
+
+Use cost centers
+
+Manage GHAS licenses
+
+Disable GHAS for enterprise
+
+Pay third-parties
+Upgrade Marketplace app
+
+Downgrade Marketplace app
+
+Cancel Marketplace app
+
+Upgrade sponsorship
+
+Downgrade sponsorship
+
+Cancel sponsorship
+
+End sponsorship
+
+Manage for client
+Create client org
+
+Create client enterprise
+
+Create as CSP partner
+
+Manage client org
+
+Troubleshooting
+Declined card
+
+Locked account
+
+Azure sub connection
+
+Enterprise license usage
+
+Reference
+Actions runner pricing
+
+Azure billing
+
+Azure subscription
+
+Billing reports
+
+Billing roles
+
+Cost center allocation
+
+GitHub license users
+
+License reports
+
+Product and SKU names
+
+Product usage included
+
+Supported payment methods
+
+Tutorials
+Automate usage reporting
+
+Monitor costs with soft budgets
+
+Control costs at scale
+
+Gather insights
+
+In this article
+
+Budgets and alerts
+
+Budgets help you track and control spending on different products.
+
+Copy markdown
+
+In this article
+Stopping usage
+
+Types and scopes
+
+Roles and access for budgets
+
+Budget alerts
+
+Included usage alerts
+
+Your first billing cycle after creating a budget
+
+Budget limitation
+
+Set up a budget
+
+Budgets and alerts allow you to track spending on metered products for your enterprise, organizations, cost centers (enterprise only), users, and repositories. Budgets and alerts are not available for pre-paid volume licenses.
+
+By setting a monthly budget, you can monitor your spending and receive notifications by email when your spending exceeds certain preset percentages of your budget threshold. This can help you stay within your budget and avoid overspending.
+
+Stopping usage
+
+For most license-based products such as GitHub Copilot, GitHub Team, and GitHub Enterprise, setting a budget does not prevent usage over the budget amount but does provide alerts. GitHub Advanced Security SKUs are an exception to this, as they can be set to stop usage when the budget amount is reached. See GitHub Advanced Security license billing .
+
+For metered products such as GitHub Actions, Copilot AI credits, or cloud sandboxes, you can set budgets to prevent usage once the budget threshold is reached.
+
+Types and scopes
+
+Each budget has a type and a scope that define which paid use contributes to spending against the budget.
+
+Type : Defines which metered product or SKU is measured.
+
+Scope : Defines whether the budget applies to the whole account, or to a subset of repositories, organizations, cost centers (enterprise only), or users. User-scoped budgets are currently only supported for Copilot AI credits, and have three scopes:
+
+Universal : applies to all licensed users by default
+
+Cost center user-level : applies to every user in a cost center
+
+Individual : overrides the above for specific users, and can be given an optional expiration date so a temporary override is removed automatically
+
+For Copilot, cost centers can also have included usage controls, which cap how much of the shared AI credits pool a cost center can use before metered usage begins. This is a separate control from the budgets and the included usage alerts described below. See Budgets for usage-based billing .
+
+Roles and access for budgets
+
+Enterprise owners and billing managers can create and edit enterprise and cost center budgets, and they receive budget alerts by default. Organization owners can set budgets for their own organization, and personal account owners can set budgets for their own account. Each of these roles can view usage for the scopes they manage.
+
+Budget alerts
+
+You can enable alerts for budgets to be notified when usage reaches 75%, 90%, and 100% of the budget amount. Alerts are shown in the GitHub UI and sent by email. By default, alerts go to account owners and billing managers, and you can add additional recipients as needed. Budget alerts are available for budgets scoped to your enterprise, a cost center, an organization, or a repository.
+
+Note
+
+Alerting for user-level budgets is not consistently available in all scenarios. Don't rely on user-level budget alerts as your only signal, also monitor usage at the cost center or enterprise level.
+
+Included usage alerts
+
+In addition to budget alerts, GitHub can send email notifications when the included usage for your plan reaches 90% and 100% during a billing period. This helps you stay ahead of unexpected overage charges or workflow disruptions before you exceed your free allowance.
+
+Included usage alerts are available for the following metered products:
+
+GitHub Actions minutes
+
+GitHub Actions storage
+
+GitHub Packages bandwidth
+
+GitHub Packages storage
+
+Git Large File Storage bandwidth
+
+Git Large File Storage storage
+
+GitHub Codespaces core hours
+
+GitHub Codespaces storage
+
+Each email identifies the account, the product, the approximate usage compared to the included allowance, and the current billing period. The email also includes a direct link to your budgets page for further monitoring.
+
+Enterprise owners, organization owners, personal account owners, and billing managers can opt in or out of these notifications from the Included usage alerts control on the "Budgets and alerts" page. For more information, see Setting up budgets to control spending on metered products .
+
+Note
+
+Included usage alerts are different from budget threshold alerts. Budget threshold alerts notify you when spending reaches a percentage of a dollar budget you have set. Included usage alerts notify you when your plan's free usage allowance is approaching depletion, regardless of whether you have set a budget.
+
+Your first billing cycle after creating a budget
+
+When you first create a budget, be aware that the budget applies only to metered usage from the date of its creation onwards. Any use made before you created the budget is not included in the calculations. This means that you may exceed your budget in the first billing cycle after you create your budget, even if you select the option stop usage when the limit is reached.
+
+Budget limitation
+
+The maximum number of budgets per account is 10,000.
+
+Set up a budget
+
+To get started with budgets, see Setting up budgets to control spending on metered products .
+
+Back to top
+
+Help and support
+Was this Doc helpful?
+Yes
+No
+
+Help us make GitHub Docs great!
+All Docs are open source. See something that's wrong or unclear? Submit a pull request.
+Make a contribution
+
+Still need help?
+Ask the GitHub community Contact support Expert services Blog
+
+GitHub Inc. © 2026 Terms Privacy Status Pricing

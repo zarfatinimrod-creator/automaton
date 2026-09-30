@@ -1,0 +1,23 @@
+{
+  "url": "https://docs.github.com/en/billing/how-tos/set-up-budgets",
+  "slug": "gh-docs-set-up-budgets-2026-09-29",
+  "fetchedAt": "2026-09-29T16:22:18.255Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 222657,
+  "sha256": "cefb4fccd9b6ab543aec32377955abc5fb6a7674e49728bb87acc6cd6a091fee",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/gh-docs-set-up-budgets-2026-09-29.html",
+  "textPath": "research/rendered/gh-docs-set-up-budgets-2026-09-29.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-09-30",
+    "from": "research/rendered/gh-docs-set-up-budgets.meta.json",
+    "commit": "6f6cc40",
+    "why": "A dated copy of the render-watch capture of gh-docs-set-up-budgets as commit 6f6cc40 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/SITTING-2026-10-01-BRIEF.md, research/measurements/actions-spending-limit.md keep pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug gh-docs-set-up-budgets stays on the weekly watch."
+  }
+}

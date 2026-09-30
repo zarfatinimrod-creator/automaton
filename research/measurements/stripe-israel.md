@@ -452,7 +452,7 @@ Polar uses.
 
 ## Tick 3 cross-reference (28.9.2026): Polar
 
-Polar verdict: **NEEDS_MORE.** Polar's supported-countries page lists Israel for payouts (`polar-supported-countries.txt:246`) and
+Polar verdict: **NEEDS_MORE.** Polar's supported-countries page lists Israel for payouts (`polar-supported-countries-2026-09-29.txt:246`) and
 pays from a US platform through Stripe Connect Express accounts under a recipient service agreement (`:392`, `:399-405`), but it
 never names Global Payouts; Israeli-individual onboarding, acceptable use and all-in cost are still unread. Details, quotes and
 the next check: `research/measurements/polar-rail.md`.

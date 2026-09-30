@@ -371,7 +371,7 @@ credit prices rendered second-hand here) · `https://www.a11yscope.com/blog/acce
 ## 10. Rendered 7.9.2026, after this report — by `render-watch.yml`
 
 `https://api.apify.com/v2/store?search=accessibility` was fetched by a GitHub Actions runner
-(`research/rendered/apify-store-accessibility.json`, HTTP 200, 3,027,635 bytes, 803 items — the search is
+(`research/rendered/apify-store-accessibility-2026-09-07.json`, HTTP 200, 3,027,635 bytes, 803 items — the search is
 loose). **[RENDERED]** Filtering title/name/description for accessib|wcag|eaa|axe gives 108 items. The free
 axe-core audit Actor `katzino/actor-web-a11y-audit` shows **84 total users, 3 in the last 30 days, 1,986 runs**;
 `constant_quadruped/lighthouse-auditor` (FREE) 164 users / 32 in 30 days / 5,411 runs. §8.1 asked whether the

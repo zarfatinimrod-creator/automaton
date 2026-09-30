@@ -11,18 +11,18 @@ a recurring charge by itself existing. So its cost is read from the source befor
 
 | Capture | fetchedAt | Status |
 |---|---|---|
-| `research/rendered/btl-self-employed-rates.txt` | 2026-09-27T22:46:07Z | 200 |
-| `research/rendered/btl-not-working-rates.txt` | 2026-09-27T22:46:09Z | 200 |
+| `research/rendered/btl-self-employed-rates-2026-09-27.txt` | 2026-09-27T22:46:07Z | 200 |
+| `research/rendered/btl-not-working-rates-2026-09-27.txt` | 2026-09-27T22:46:09Z | 200 |
 | `research/rendered/kolzchut-employee-plus-self-employed` | 2026-09-27T22:46:10Z | **403**, not read |
 
 ## What the pages say [RENDERED]
 
 1. **Someone who does not work and has no income already pays a minimum, business or not.**
-   `btl-not-working-rates.txt:347-352`: "מי שאינו עובד ואין לו הכנסות חייבות בדמי ביטוח, חייב לשלם דמי ביטוח לאומי
+   `btl-not-working-rates-2026-09-27.txt:347-352`: "מי שאינו עובד ואין לו הכנסות חייבות בדמי ביטוח, חייב לשלם דמי ביטוח לאומי
    מינימליים: דמי ביטוח לאומי בסך 143 ש"ח לחודש … דמי ביטוח בריאות בסך 123 ש"ח לחודש … בסך הכל, מי שאינו עובד ואין לו
    הכנסות ישלם 266 ש"ח בחודש."
 2. **A self-employed person with low income pays on a floor income, not on their actual income.**
-   `btl-self-employed-rates.txt:410`: "מי שהכנסתו נמוכה מ- 3,442 ש"ח לחודש, ישלם דמי ביטוח מהכנסה מזערית."
+   `btl-self-employed-rates-2026-09-27.txt:410`: "מי שהכנסתו נמוכה מ- 3,442 ש"ח לחודש, ישלם דמי ביטוח מהכנסה מזערית."
    The reduced rate for the self-employed (up to ₪7,703 a month) is 4.47% national insurance plus 3.23% health, 7.7% in
    all (`:366-380`, in force from 1.1.2026, `:412`).
 3. **Arithmetic, not quoted from the page:** 7.7% of ₪3,442 is ₪265.03 a month. So a recognised self-employed person
@@ -52,13 +52,13 @@ plan needs it.
 
 ## Tick 2 (28.9.2026): the salaried-and-self-employed page, read
 
-`research/rendered/btl-employee-and-self-employed.txt`, fetched 28.9.2026 00:52 UTC, status 200.
+`research/rendered/btl-employee-and-self-employed-2026-09-28.txt`, fetched 28.9.2026 00:52 UTC, status 200.
 
 - `:347`: "עובד עצמאי שהוא גם עובד שכיר ישלם דמי ביטוח מכל הכנסותיו עד להכנסה המרבית לתשלום דמי ביטוח בסך 51,910 ש"ח (החל ב- 01.01.2026)."
 - `:348-349`: on the salaried income, the salaried rates; on the self-employed income, the self-employed rates.
 
 **What this settles and what it does not.** Someone salaried who also opens a business pays on each income at its
-own rate [RENDERED]. The page does **not** say whether the ₪3,442 floor income (`btl-self-employed-rates.txt:410`)
+own rate [RENDERED]. The page does **not** say whether the ₪3,442 floor income (`btl-self-employed-rates-2026-09-27.txt:410`)
 applies to the self-employed part when the person is also salaried. So the salaried case is still **UNKNOWN**: the
 cost could be close to ₪0 while income is ₪0, or about ₪265 a month. Nothing is told to the owner as fact.
 
@@ -74,9 +74,9 @@ The owner is not a salaried employee, so the salaried-and-self-employed case abo
 
 **What follows [INFERENCE from the rendered pages, check before relying on it]:**
 - Someone who does not work and has no income is already liable for the ₪266 monthly minimum
-  (`btl-not-working-rates.txt:347-352`), business or not.
+  (`btl-not-working-rates-2026-09-27.txt:347-352`), business or not.
 - A self-employed person with income under ₪3,442 a month pays on that floor: 7.7% × ₪3,442 ≈ ₪265
-  (`btl-self-employed-rates.txt:410`, `:366-380`).
+  (`btl-self-employed-rates-2026-09-27.txt:410`, `:366-380`).
 - So opening the עוסק פטור file replaces one monthly floor with a nearly equal one. **The expected added
   cost is about ₪0 a month**, which fits the ₪0 rule.
 
@@ -90,7 +90,7 @@ under the ₪0 rule, for a paid product that is ready to sell (`logs/CHANNEL_LOO
 
 ## Tick 4 reading (28.9.2026): who is exempt from the minimum
 
-`research/rendered/btl-who-is-exempt.txt`, fetched 2026-09-28T07:15:29Z, status 200 (meta alongside). The page's own
+`research/rendered/btl-who-is-exempt-2026-09-28.txt`, fetched 2026-09-28T07:15:29Z, status 200 (meta alongside). The page's own
 footer: "אתר זה כולל מידע כללי, אין להתייחס למידע זה כנוסח מחייב של החוק." (`:543`). In the HTML, items 1-5 below stand
 alone; items 6-12 sit under one heading that conditions all of them (`:363`): "מי שהוא אחד מאלה, ואין לו הכנסות מעבודה
 וממקורות אחרים, או שיש לו הכנסות ממקורות אחרים שאינן עולות על 5% מהשכר הממוצע - 688 ש"ח".
@@ -113,7 +113,7 @@ alone; items 6-12 sit under one heading that conditions all of them (`:363`): "�
 | 12 | `:381` "עובד שכיר שלא יכול לעבוד עקב מחלה, תאונה, שביתה מאורגנת או אבל במשפחתו" | NI only: "יהיה פטור מתשלום דמי ביטוח לאומי בלבד" | Not relevant: the owner is not salaried |
 
 "Silent" rows say "דמי ביטוח" without splitting NI from health. Where an exemption is NI-only, the person already pays
-health, ₪123 a month at the minimum (`btl-not-working-rates.txt:347-352`).
+health, ₪123 a month at the minimum (`btl-not-working-rates-2026-09-27.txt:347-352`).
 
 **What this means for step 2 [INFERENCE, check before relying on it]:**
 - Items 1, 3, 5 and the `:363` heading end the exemption once there is income from work. Sales from a business are

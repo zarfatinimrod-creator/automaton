@@ -1,0 +1,27 @@
+{
+  "url": "https://www.un.org/en/about-us/terms-of-use",
+  "slug": "terms-un-2026-09-29",
+  "fetchedAt": "2026-09-29T14:03:14.945Z",
+  "status": 504,
+  "contentType": "text/html",
+  "byteLength": 0,
+  "sha256": null,
+  "truncated": false,
+  "error": "HTTP 504 Gateway Time-out",
+  "bodyPath": null,
+  "textPath": null,
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-09-30",
+    "from": "research/rendered/terms-un.meta.json",
+    "commit": "20c7304",
+    "why": "A dated copy of the render-watch meta of terms-un as its commit stored it: the fetch of un.org's terms of use answered 504 and stored no body. It is frozen as the record of that failure, not as the page: research/channel-loop/TERMS-AUDIT-2026-09-29.md (the un.org row) cites its status (:5) and error (:10) lines, which a later successful render would rewrite. The slug is not in urls.txt; the live slug terms-un stays on the weekly watch.",
+    "flagged": {
+      "kind": "status",
+      "evidence": "status 504: the server answered 504 (a server error); error \"HTTP 504 Gateway Time-out\""
+    }
+  }
+}

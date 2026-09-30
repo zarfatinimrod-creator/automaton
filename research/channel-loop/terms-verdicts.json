@@ -47,7 +47,7 @@
   },
   "btl.gov.il": {
    "verdict": "NOT_BARRED",
-   "source": "research/rendered/terms-btl.txt:303 (round 2): copyright only; full-page republication in a public repo is a storage question",
+   "source": "research/rendered/terms-btl-2026-09-29.txt:303 (round 2): copyright only; full-page republication in a public repo is a storage question",
    "checked": "2026-09-29"
   },
   "crazygames.com": {
@@ -68,12 +68,12 @@
   },
   "displate.com": {
    "verdict": "CONDITIONAL_MET",
-   "source": "displate-about-regulations.txt:565, :567: software allowed if it does not distort the site (round 1)",
+   "source": "displate-about-regulations-2026-09-29.txt:565, :567: software allowed if it does not distort the site (round 1)",
    "checked": "2026-09-29"
   },
   "draft2digital.com": {
    "verdict": "NOT_BARRED",
-   "source": "research/rendered/draft2digital-com-terms-of-service.txt (round 1)",
+   "source": "research/rendered/draft2digital-com-terms-of-service-2026-09-28.txt (round 1)",
    "checked": "2026-09-29"
   },
   "europa.eu": {
@@ -103,7 +103,7 @@
   },
   "gamedistribution.com": {
    "verdict": "CONDITIONAL_MET",
-   "source": "gamedistribution-developer-terms.txt:20-22: barred only for monitoring or benchmarking (round 1)",
+   "source": "gamedistribution-developer-terms-2026-09-28.txt:20-22: barred only for monitoring or benchmarking (round 1)",
    "checked": "2026-09-29"
   },
   "ganim-mall.co.il": {
@@ -163,7 +163,7 @@
   },
   "huggingface.co": {
    "verdict": "NOT_BARRED",
-   "source": "research/rendered/terms-huggingface.txt (round 2)",
+   "source": "research/rendered/terms-huggingface-2026-09-29.txt (round 2)",
    "checked": "2026-09-29"
   },
   "huntr.com": {
@@ -184,7 +184,7 @@
   },
   "invoice4u.co.il": {
    "verdict": "NOT_BARRED",
-   "source": "research/rendered/terms-invoice4u.txt:122 (round 2)",
+   "source": "research/rendered/terms-invoice4u-2026-09-29.txt:122 (round 2)",
    "checked": "2026-09-29"
   },
   "irs.gov": {
@@ -228,7 +228,7 @@
   },
   "lomdiml.co.il": {
    "verdict": "NOT_BARRED",
-   "source": "research/rendered/terms-lomdiml.txt:219 (round 2)",
+   "source": "research/rendered/terms-lomdiml-2026-09-29.txt:219 (round 2)",
    "checked": "2026-09-29"
   },
   "medium.com": {
@@ -272,7 +272,7 @@
    "verdict": "NO_TERMS",
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
    "checked": "2026-09-29",
-   "note": "exhaustive-negative (osek-patur-documents.md:1129-1141). robots.txt read 30.9 (research/rendered/robots-nevo.txt, rendered): 'User-agent: *' 'Disallow: /', and every named AI crawler is disallowed too; only Googlebot and Bingbot may read /law_html/law00/ and law01/. So NO_TERMS_ROBOTS_OK is refused (scripts/robots-verdict.mjs, 8 of 8 paths disallowed) and no nevo law page is fetched again; law texts come from the lawsofisrael mirror (github). The robots-nevo probe stays weekly to see a change (ruling 30.9 16(d) D2(v))"
+   "note": "exhaustive-negative (osek-patur-documents.md:1129-1141). robots.txt read 30.9 (research/rendered/robots-nevo-2026-09-30.txt, rendered): 'User-agent: *' 'Disallow: /', and every named AI crawler is disallowed too; only Googlebot and Bingbot may read /law_html/law00/ and law01/. So NO_TERMS_ROBOTS_OK is refused (scripts/robots-verdict.mjs, 8 of 8 paths disallowed) and no nevo law page is fetched again; law texts come from the lawsofisrael mirror (github). The robots-nevo probe stays weekly to see a change (ruling 30.9 16(d) D2(v))"
   },
   "odoo.com": {
    "verdict": "NO_TERMS",
@@ -410,7 +410,7 @@
   },
   "unesco.org": {
    "verdict": "NOT_BARRED",
-   "source": "research/rendered/unesco-uis-databrowser-terms.txt:11, :13 (round 1; corrected 30.9, tick 36: the earlier source, unesco-uis-terms.txt, is an F5 bot page)",
+   "source": "research/rendered/unesco-uis-databrowser-terms-2026-09-29.txt:11, :13 (round 1; corrected 30.9, tick 36: the earlier source, unesco-uis-terms.txt, is an F5 bot page)",
    "checked": "2026-09-29",
    "note": "NOT_BARRED covers databrowser.uis.unesco.org only, whose own terms were read; uis.unesco.org answered the runner with an F5 bot challenge (refusal-type, ruling 30.9 16(d) D2(iv)) and its line is retired; queue no other unesco.org host (TERMS-AUDIT-2026-09-29.md:169). termsGate cannot enforce the host split (siteOf maps both to unesco.org), so this note is the guard"
   },
@@ -443,7 +443,7 @@
   },
   "worksheets4kids.co.il": {
    "verdict": "NOT_BARRED",
-   "source": "research/rendered/terms-worksheets4kids.txt:195 (round 2): copy/publish bar, no access bar",
+   "source": "research/rendered/terms-worksheets4kids-2026-09-29.txt:195 (round 2): copy/publish bar, no access bar",
    "checked": "2026-09-29"
   },
   "www.gov.il": {
@@ -464,9 +464,9 @@
   },
   "ypay.co.il": {
    "verdict": "NOT_BARRED",
-   "source": "research/rendered/terms-ypay.txt:55 (round 3): only human users may use 'השירות' and accounts may not be created by script",
+   "source": "research/rendered/terms-ypay-2026-09-29.txt:55 (round 3): only human users may use 'השירות' and accounts may not be created by script",
    "checked": "2026-09-29",
-   "note": "'השירות' is defined as the bookkeeping service (terms-ypay.html:278-292); if read as the whole site the verdict would be BARRED, so the three ypay lines stay paused (no weekly need)"
+   "note": "'השירות' is defined as the bookkeeping service (terms-ypay-2026-09-29.html:278-292); if read as the whole site the verdict would be BARRED, so the three ypay lines stay paused (no weekly need)"
   },
   "zazzle.com": {
    "verdict": "NO_TERMS",
