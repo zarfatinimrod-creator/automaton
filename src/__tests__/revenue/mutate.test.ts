@@ -863,6 +863,15 @@ describe("scripts/mutate.mjs: git is the way back", () => {
     expect(readFileSync(join(repo, "gen/[id].ts"), "utf8")).toBe("export const id = 1;\n");
   });
 
+  it("mutates a tracked file whose name looks like a glob (like Heebo[wght].ttf) even when the glob matches others too", () => {
+    const repo = makeRepo({ "gen/[id].ts": "export const id = 1;\n", "gen/i.ts": "export const i = 1;\n", "gen/d.ts": "export const d = 1;\n" });
+    const r = harness(repo, ["--file", "gen/[id].ts", "--find", "1", "--replace", "2", ...STUB]);
+    expect(r.code).toBe(1); // applied; nothing tests it, so it survives
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+survived\s/);
+    expect(readFileSync(join(repo, "gen/[id].ts"), "utf8")).toBe("export const id = 1;\n");
+    expect(clean(repo)).toBe("");
+  });
+
   it("checks the bytes it read against git's index: a git status that says clean is not enough", () => {
     const repo = makeRepo();
     const dirty = `// a local edit\n${TOY}`;
