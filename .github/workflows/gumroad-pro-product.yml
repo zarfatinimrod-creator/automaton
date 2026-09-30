@@ -24,7 +24,11 @@ name: gumroad-pro-product
 #   1. Dispatch with action=create. The product is created AS A DRAFT (or the
 #      one already named the same is reused), read back, and required to hold a
 #      licenseKey node. The log prints its public id and short_url, and a PR
-#      writes both into products/il-biz-tools/src/config/site.json.
+#      writes both into products/il-biz-tools/src/config/site.json. The same run
+#      says what it would write as the refund policy's fine print
+#      (docs/refund-fine-print.he.txt: how to cancel, what the notice carries,
+#      how the refund is paid - RULING-2026-09-30-documents (b)); dispatch
+#      create again with write_fine_print ticked to write it. No owner step.
 #   2. Merge that PR and let Netlify deploy.
 #   3. Dispatch with action=enable (from main, where brand-mail.yml commits its
 #      probe). It refuses unless state/colony/brand-mail.json shows the brand
@@ -37,11 +41,12 @@ name: gumroad-pro-product
 #      <siteUrl>/src/config/site.json carries the same id - so a buyer could
 #      actually activate the key they would receive - and the same price as the
 #      repo; Gumroad charges exactly that price, once; the account's own address
-#      (GET /v2/user) is the BRAND_MAIL_ADDRESS secret; the refund policy buyers
+#      (GET /v2/user) is the BRAND_MAIL_ADDRESS secret and its name is the
+#      brand's; the refund policy buyers
 #      will see is a bounded refund window of at least 14 days (Gumroad's 30-day
 #      default as it stands; "none" and 7 days are refused - RULING-2026-09-29-lines
-#      (h)); and the deployed page's refundPeriodDays is exactly the window Gumroad
-#      applies. Only then it enables. `create` is not gated: a draft reaches no buyer.
+#      (h)); the deployed page's refundPeriodDays is exactly the window Gumroad
+#      applies; and that policy's fine print is the committed text. Only then it enables. `create` is not gated: a draft reaches no buyer.
 #   4. Run gumroad-pro-probe.yml (AT-16). It also re-runs the offer checks
 #      (`check`), so a price or a refund period edited in the Gumroad dashboard
 #      after enable shows up.
@@ -71,6 +76,10 @@ on:
         description: "Gumroad price_currency_type (ils is in Gumroad's currencies.json)"
         type: string
         default: "ils"
+      write_fine_print:
+        description: "create only: write docs/refund-fine-print.he.txt as the refund policy's fine print. Off = dry run (says what it would write)."
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -119,7 +128,14 @@ jobs:
           GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
           PRICE_CENTS: ${{ inputs.price_cents }}
           CURRENCY: ${{ inputs.currency }}
-        run: node scripts/gumroad-pro-product.js create --write-site-json
+          WRITE_FINE_PRINT: ${{ inputs.write_fine_print }}
+        # The refund policy's fine print (RULING-2026-09-30-documents (b)): the committed Hebrew text,
+        # a dry run unless write_fine_print is ticked. `check` refuses an offer without it.
+        run: |
+          set -euo pipefail
+          ARGS=(create --write-site-json --fine-print docs/refund-fine-print.he.txt)
+          if [ "${WRITE_FINE_PRINT:-}" = "true" ]; then ARGS+=(--apply); fi
+          node scripts/gumroad-pro-product.js "${ARGS[@]}"
 
       - name: Open a PR that writes the product id and URL into site.json
         if: steps.token.outputs.present == 'true' && inputs.action == 'create'
