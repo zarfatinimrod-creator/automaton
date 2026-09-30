@@ -114,3 +114,4 @@ to ffmpeg as raw RGB (`-tune animation`), so a re-render is byte-identical. No n
 - The only public name is **מהודק**. The owner's name appears nowhere in output or metadata.
 - Honest value: every fact is quoted from a first-party capture; see `LICENSES.md` for the trademark note.
 - **A native Hebrew listener must approve the narration before anything is published** (the ASR gate is a proxy).
+- **Narration (the third mode of `research/youtube-kids/ASSESSMENT.md` §9.4):** Hebrew narration through Kokoro-82M's official voices with Phonikud G2P — held sample only; publication needs P-1 and a native listener's approval (ruling 30.9 16(c)). P-1 is the publication-gate rule that narration comes only from a voice whose weights licence and training-data statement are both rendered (`research/channel-loop/RULING-2026-09-30-video.md` 16(c) item 7).

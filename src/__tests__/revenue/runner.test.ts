@@ -8,6 +8,7 @@ import {
   LOOP_GAP_ALERT_MS,
   markRan,
   renderCommitSummary,
+  heldSecretRowsNote,
   renderReport,
   SILENT_LINE_ALERT_DAYS,
   tick,
@@ -18,6 +19,7 @@ import { getLine, listLines, recordKpi, recordLedgerEntry, setHumanSetupDone, se
 import { REVENUE_TASK_INTERVALS_MS } from "../../revenue/heartbeat.js";
 import { getActiveGoals } from "../../state/database.js";
 import { DEFAULT_PORTFOLIO, portfolioTargetAgorot, summarizeTargetBasis } from "../../revenue/portfolio.js";
+import { readSite } from "../../revenue/page-views-reader.js";
 
 const HOUR = 3_600_000;
 
@@ -311,6 +313,29 @@ describe("revenue/runner report rendering", () => {
       tax.precondition = saved;
     }
     expect(ownerStepById("tax-file")!.precondition!.metOn).toBeUndefined();
+  });
+
+  it("holds step 6's POSTHOG_READ_KEY row until the brand's PostHog project exists (ruling 30.9 documents (c))", async () => {
+    // The gate in owner-steps.ts is read by the report: while posthog.projectId in site.json is empty the row is named
+    // on its own line with its reason, never as something to do; once the colony writes the id, the line goes and
+    // step 6 is asked with the row.
+    const held = "step 6's `POSTHOG_READ_KEY` row waits until the colony has created the brand's PostHog project";
+    expect(heldSecretRowsNote("il-biz-tools", { projectId: "" })).toContain(held);
+    expect(heldSecretRowsNote("il-biz-tools", { projectId: "" })).toMatch(/^Not asked yet: /);
+    expect(heldSecretRowsNote("il-biz-tools", { projectId: "12345" })).toBe("");
+    // A line with no asked-now step that has gated rows carries no note.
+    expect(OWNER_STEPS.filter((s) => s.secrets?.some((r) => r.askedOnlyWhen)).map((s) => s.id)).toEqual(["ci-tokens"]);
+
+    const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
+    const report = renderReport(db, result);
+    const lines = report.split("\n");
+    const row = lines.findIndex((l) => l.startsWith("Owner steps still open for `il-biz-tools`"));
+    expect(row).toBeGreaterThan(-1);
+    // The report reads the real site.json, as the page-view reader does.
+    if (readSite().projectId === "") expect(lines[row + 1]).toContain(held);
+    else expect(report).not.toContain("POSTHOG_READ_KEY");
+    // The row line itself is unchanged: the asked-now list and its not-asked note.
+    expect(lines[row]).not.toContain("POSTHOG_READ_KEY");
   });
 
   it("asks the owner to tell Claude, not to run the ledger command on his own machine", async () => {

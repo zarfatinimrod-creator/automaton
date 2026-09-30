@@ -105,8 +105,14 @@ describe("parseUrlList — tiktok.com is refused in both modes (CHANNEL_LOOP §9
     }
   });
 
-  it("names the pause and the pending ruling in the refusal", () => {
-    expect(() => parseUrlList("https://www.tiktok.com/")).toThrow(/CHANNEL_LOOP\.md §9.*FABLE_QUEUE\.md row 16\(d\)/s);
+  // Row 16(d) was ruled on 30.9.2026: no tiktok.com fetch ever (RULING-2026-09-30-video.md 16(d) D2(i)).
+  it("names the pause and the ruling in the refusal", () => {
+    expect(() => parseUrlList("https://www.tiktok.com/")).toThrow(
+      /CHANNEL_LOOP\.md §9.*ruled: research\/channel-loop\/RULING-2026-09-30-video\.md 16\(d\) D2/s,
+    );
+    // The redirect refusal is the same rule, D2(i), and no text in the script still calls row 16(d) pending.
+    expect(tiktokRedirectError("www.tiktok.com")).toContain("ruled: research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(i)");
+    expect(readFileSync(join(ROOT, "scripts", "render-watch.mjs"), "utf8")).not.toMatch(/FABLE_QUEUE\.md row 16\(d\)/);
   });
 
   it("refuses it in the workflow_dispatch override too, which goes through the same parser", async () => {

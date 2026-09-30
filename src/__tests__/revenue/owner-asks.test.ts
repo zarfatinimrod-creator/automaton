@@ -102,8 +102,17 @@ describe("research/owner-asks/questions.json is the single source the sender rea
       }
     }
     expect(q.venues.find((v) => v.venue === "spreadshirt")!.heldQuestions).toHaveLength(2);
-    // Indiebook: the AI question goes first; the other four of indiebook.md's draft wait for its yes.
-    expect(q.venues.find((v) => v.venue === "indiebook")!.heldQuestions).toHaveLength(4);
+    // Indiebook: the AI question goes first; the other four of indiebook.md's draft wait for its yes, and the payer's
+    // consent to computerised documents joins them fourth (RULING-2026-09-30-documents.md fold action 9).
+    const indiebook = q.venues.find((v) => v.venue === "indiebook")!;
+    expect(indiebook.heldQuestions).toHaveLength(5);
+    expect(indiebook.heldQuestions.map((h) => h.when.match(/(first|second|third|fourth|fifth) of five/)?.[1])).toEqual([
+      "first", "second", "third", "fourth", "fifth",
+    ]);
+    expect(indiebook.heldQuestions[3].text).toContain("חשבונית עסקה (לא חשבונית מס)");
+    expect(indiebook.heldQuestions[3].text).toContain("חתימה אלקטרונית מאובטחת");
+    expect(indiebook.heldQuestions[3].when).toMatch(/RULING-2026-09-30-documents \(a\)/);
+    expect(indiebook.heldQuestions[4].when).toMatch(/so it goes last/);
     // Tick 9: Displate holds PayPal-to-Israel then the camera check (kill c); Teach Simple the file intake then the tax form.
     expect(q.venues.find((v) => v.venue === "displate")!.heldQuestions).toHaveLength(2);
     expect(q.venues.find((v) => v.venue === "teachsimple")!.heldQuestions).toHaveLength(2);
@@ -112,20 +121,25 @@ describe("research/owner-asks/questions.json is the single source the sender rea
   // Loop board 29.9.2026 (research/channel-loop/RULING-2026-09-29-loop.md (e)3): a runner-issued payout document after
   // step 2 is not owner paperwork, but Wix asks for "a lawful tax invoice" and an exempt dealer issues a receipt. The
   // question is a condition, not a kill, and it waits for Wix's first written yes.
-  it("holds Wix's exempt-dealer receipt question second, after Tipalti, one at a time (ruling (e)3)", () => {
+  // Documents ruling 30.9.2026 (RULING-2026-09-30-documents.md (a), fold action 9): the question is reworded around the
+  // lawful document, a §45 transaction invoice plus a receipt sent by computer under a secured signature, with Wix's
+  // consent to receive them; "a receipt in place of a tax invoice" rested on the repealed reg 12.
+  it("holds Wix's exempt-dealer document question second, after Tipalti, one at a time (rulings (e)3 and 30.9 (a))", () => {
     const wix = readQuestions().venues.find((v) => v.venue === "wix")!;
     expect(wix.heldQuestions).toHaveLength(2);
     expect(wix.heldQuestions[0].text).toMatch(/Tipalti/);
     expect(wix.heldQuestions[0].when).toMatch(/first of two, one at a time/);
     const receipt = wix.heldQuestions[1];
     expect(receipt.text).toBe(
-      "Does Wix accept a receipt from an Israeli exempt dealer (עוסק פטור) in place of a tax invoice?",
+      "Does Wix accept from an Israeli exempt dealer (עוסק פטור) a computer-sent transaction invoice (חשבונית עסקה, not a tax invoice) and receipt, signed with the dealer's secured electronic signature, and does Wix consent to receive such computerised documents?",
     );
     expect(receipt.to).toBeNull(); // in the same thread, like the Tipalti question
     expect(receipt.when).toMatch(/second of two/);
     expect(receipt.when).toMatch(/Wix's first written yes/);
     expect(receipt.when).toMatch(/RULING-2026-09-29-loop\.md \(e\)3/);
     expect(receipt.when).toMatch(/VAT registration/);
+    expect(receipt.when).toMatch(/a written no leads to incorporating, a §58 request or Wix out, not a plain cost decision \(RULING-2026-09-30-documents \(a\)\)/);
+    expect(receipt.when).not.toMatch(/a cost decision for the owner/);
     // The note quotes it in the Wix section.
     const wixSection = md.slice(md.indexOf("## 2. Wix App Market"), md.indexOf("## 3. Spreadshirt"));
     expect(wixSection.replace(/\s+/g, " ")).toContain(receipt.text);
@@ -222,6 +236,10 @@ describe("what every message says, and what none may say", () => {
       "יכולה", "להתנהל", "בדוא", "ל", "ההפצה", "בלעדית", "ומי", "קובע", "מחיר",
       // Loop board 29.9.2026: the legal term in Wix's held question, "exempt dealer".
       "עוסק", "פטור",
+      // Documents ruling 30.9.2026 (a): "transaction invoice" in Wix's held question, and Indiebook's held consent
+      // question, reviewed word by word: legal terms and common words only.
+      "חשבונית", "עסקה", "מעוסק", "מס", "וקבלה", "שנשלחות", "במחשב", "וחתומות", "בחתימה", "אלקטרונית", "מאובטחת",
+      "העוסק", "מסכימים", "לקבל", "מסמכים", "ממוחשבים", "כאלה",
     ]);
     const texts = q.venues.flatMap((v) => [v.subject, v.body, ...v.heldQuestions.map((h) => h.text)]);
     const unknown = new Set<string>();

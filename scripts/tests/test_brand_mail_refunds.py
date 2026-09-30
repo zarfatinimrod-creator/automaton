@@ -94,10 +94,17 @@ class FakeIMAP:
         command = command.upper()
         if command == "SEARCH":
             self.searches.append(args)
-            assert args[:3] == ("NOT", "ANSWERED", "SINCE"), args
-            since = dt.datetime.strptime(args[3], "%d-%b-%Y").replace(tzinfo=UTC)
+            assert args[:3] == ("NOT", "ANSWERED", "SINCE") or args[:2] == ("ANSWERED", "SINCE"), args
+            answered = args[0] == "ANSWERED"
+            keys = list(args[1:] if answered else args[2:])
+            dates = dict(zip(keys[0::2], keys[1::2]))
+            assert set(dates) <= {"SINCE", "BEFORE"} and len(keys) % 2 == 0, args
+            day = lambda key: dt.datetime.strptime(dates[key], "%d-%b-%Y").replace(tzinfo=UTC)
+            since = day("SINCE")
+            before = day("BEFORE") if "BEFORE" in dates else None
             uids = [str(i + 1).encode() for i, m in enumerate(self.inbox)
-                    if "\\Answered" not in m["flags"] and m["received"] >= since]
+                    if ("\\Answered" in m["flags"]) == answered and m["received"] >= since
+                    and (before is None or m["received"] < before)]
             return "OK", [b" ".join(uids)]
         if command == "FETCH":
             uid, parts = args
@@ -163,6 +170,23 @@ class Runner:
         return self.code, list(self.lines)
 
 
+# What refund --sale --email prints for a retry that refunded the sale of the sender it was handed.
+REFUNDED_LINES = ["buyer: the sender", "refund: refunded (sale sale-A)"]
+
+
+class RetryRunner:
+    """`refund --sale`, faked: records (sale id, requested at, apply), and apart the sender (--email) it was handed;
+    `answers` pops one (code, lines) per call."""
+
+    def __init__(self, *answers):
+        self.calls, self.senders, self.answers = [], [], list(answers) or [(0, list(REFUNDED_LINES))]
+
+    def __call__(self, sale_id, requested_at, apply, env, sender=None):
+        self.calls.append((sale_id, requested_at, apply))
+        self.senders.append(sender)
+        return self.answers.pop(0) if len(self.answers) > 1 else self.answers[0]
+
+
 def write_json(directory, name, data):
     path = os.path.join(directory, name)
     with open(path, "w", encoding="utf-8") as f:
@@ -177,6 +201,11 @@ class RespondHarness(unittest.TestCase):
         self.dir = tempfile.mkdtemp()
         self.addCleanup(lambda: __import__("shutil").rmtree(self.dir, ignore_errors=True))
         self.site(PRODUCT_ID)
+        # The balance retries live in a scratch file, never the repository's state/colony/refund-retries.json.
+        self.retries = os.path.join(self.dir, "refund-retries.json")
+        patcher = mock.patch.object(brand_mail, "REFUND_RETRIES", self.retries)
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def site(self, product_id):
         path = write_json(self.dir, "site.json", {"gumroad": {"productId": product_id, "productUrl": ""}})
@@ -184,13 +213,13 @@ class RespondHarness(unittest.TestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
 
-    def respond(self, inbox, *flags, env=None, runner=None, smtp=FakeSMTP):
+    def respond(self, inbox, *flags, env=None, runner=None, smtp=FakeSMTP, retry_runner=None, now=NOW):
         out, err = io.StringIO(), io.StringIO()
         runner = runner or Runner()
         code = brand_mail.main(
-            ["respond-refunds", *flags], env=MAIN if env is None else env, stdout=out, stderr=err, now=NOW,
+            ["respond-refunds", *flags], env=MAIN if env is None else env, stdout=out, stderr=err, now=now,
             smtp_factory=smtp, imap_factory=lambda host, port, ssl_context=None, timeout=None: FakeIMAP(inbox),
-            refund_runner=runner,
+            refund_runner=runner, retry_runner=retry_runner or refuse,
         )
         return code, out.getvalue(), err.getvalue(), runner
 
@@ -296,6 +325,23 @@ class ApplyTests(RespondHarness):
         self.assertEqual(reply.get_content().strip(), brand_mail.REFUND_REPLY)
         self.assertEqual(json.loads(out)["handled"][0]["outcome"], "answered")
 
+    def test_a_notice_sent_through_the_home_pages_cancellation_link_is_a_refund_request(self):
+        # il-biz-tools' "ביטול עסקה (Pro)" link: mailto:<the brand mailbox, no +tag>?subject=ביטול עסקה – Pro, with the
+        # name and ID number the page asks for (RULING-2026-09-30-documents (b), 14ט). It must reach this responder.
+        notice = mail(subject="ביטול עסקה – Pro", body="שלום, ישראלה ישראלי, ת.ז. 000000018.", received=days_ago(1))
+        code, out, err, runner = self.respond([notice], "--apply")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(runner.calls, [(BUYER, days_ago(1), True)])
+        self.assertEqual(json.loads(out)["handled"][0]["outcome"], "answered")
+        # The same notice to the statement's +accessibility address is accessibility mail, never read here - which is
+        # why publish-gate.js cancelHref drops the +tag (reviewers of 30.9).
+        tagged = dict(notice, raw=notice["raw"].replace(b"To: " + BRAND.encode(), b"To: mehudak+accessibility@brand.example"))
+        self.assertNotEqual(tagged["raw"], notice["raw"])
+        FakeSMTP.instances = []
+        code, out, err, runner = self.respond([tagged], "--apply")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(runner.calls, [])
+
     def test_the_reply_is_one_fixed_sentence_that_says_nothing_about_a_purchase(self):
         s = brand_mail.REFUND_REPLY
         self.assertEqual(s.count("."), 1)
@@ -303,6 +349,8 @@ class ApplyTests(RespondHarness):
         self.assertIn("Mehudak (מהודק)", s)
         self.assertIn("תשובה אוטומטית", s)  # an automated answer says it is one
         self.assertIn("Gumroad", s)
+        # RULING-2026-09-30-documents (d): "refunded in full" is made exact - in the currency charged.
+        self.assertIn("במלואה, במטבע שבו חויבתם, דרך Gumroad", s)
         for word in ("לא נמצאה", "לא נמצא", "מצאנו", "הוחזרה", "not found", "no purchase", "בלי שאלות", "מובטח"):
             self.assertNotIn(word, s)
         # Whatever the refund command found - a refund, nothing, a sale outside the window - the reply is the same.
@@ -569,6 +617,356 @@ class NothingLeaksTests(RespondHarness):
         self.assertNotIn(BUYER, out + err)
 
 
+BALANCE_LINES = ["STOPPED: Gumroad refused the refund of sale sale-A for balance", "refund: balance-insufficient (sale sale-A)"]
+
+
+class BalanceRetryTests(RespondHarness):
+    """RULING-2026-09-30-documents (d), fold action 5: a refund Gumroad refuses for balance (the refund command's exit 3)
+    gets one facts-only holding reply, is marked answered, and is retried by sale id at the start of every run until it
+    goes through; then the ordinary REFUND_REPLY goes out and the retry is dropped. The state holds sale ids and times,
+    never an address or a name."""
+
+    def state(self):
+        if not os.path.exists(self.retries):
+            return None
+        with open(self.retries, encoding="utf-8") as f:
+            return json.load(f)
+
+    def refused(self, inbox=None, **kw):
+        inbox = inbox if inbox is not None else [mail(received=days_ago(2))]
+        return inbox, self.respond(inbox, "--apply", runner=Runner(brand_mail.BALANCE_EXIT, BALANCE_LINES), **kw)
+
+    def test_a_balance_refusal_gets_the_holding_reply_once_is_marked_answered_and_leaves_a_retry(self):
+        inbox, (code, out, err, runner) = self.refused()
+        self.assertEqual(code, 0, err)  # a known wait, not a failure
+        (reply,) = self.replies()
+        self.assertEqual(reply["To"], BUYER)
+        self.assertEqual(reply["In-Reply-To"], "<req-1@example.org>")
+        self.assertEqual(reply["Auto-Submitted"], "auto-replied")
+        self.assertEqual(reply.get_content().strip(), brand_mail.HOLDING_REPLY)
+        self.assertEqual(FakeIMAP.instances[0].stores, [1])
+        self.assertEqual(self.state(), [{"saleId": "sale-A", "requestedAt": "2026-10-18T12:00:00Z", "holdingReplySentAt": "2026-10-20T12:00:00Z"}])
+        self.assertIn("holding reply", json.loads(out)["handled"][0]["outcome"])
+        # Once: the next run finds the request answered and sends nothing new; the retry is what runs.
+        FakeSMTP.instances = []
+        still = RetryRunner((brand_mail.BALANCE_EXIT, BALANCE_LINES))
+        code, out, err, runner = self.respond(inbox, "--apply", retry_runner=still)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(runner.calls, [])
+        self.assertEqual(still.calls, [("sale-A", days_ago(2), True)])
+        self.assertEqual(self.replies(), [])
+        self.assertEqual(len(self.state()), 1)
+
+    def test_a_later_success_sends_the_refund_reply_in_the_request_thread_and_clears_the_retry(self):
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        later = NOW + dt.timedelta(days=5)
+        ok = RetryRunner((0, REFUNDED_LINES))
+        code, out, err, runner = self.respond(inbox, "--apply", retry_runner=ok, now=later)
+        self.assertEqual(code, 0, err)
+        # The window is measured at the original request, not at this run; the request's sender is handed over for
+        # the buyer check.
+        self.assertEqual(ok.calls, [("sale-A", days_ago(2), True)])
+        self.assertEqual(ok.senders, [BUYER])
+        (reply,) = self.replies()
+        self.assertEqual(reply["To"], BUYER)
+        self.assertEqual(reply["In-Reply-To"], "<req-1@example.org>")
+        self.assertEqual(reply.get_content().strip(), brand_mail.REFUND_REPLY)
+        self.assertEqual(self.state(), [])
+        self.assertIn("answered", json.loads(out)["retries"][0]["outcome"])
+        # Nothing left to retry.
+        FakeSMTP.instances = []
+        code, out, err, _ = self.respond(inbox, "--apply", retry_runner=refuse, now=later)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(self.replies(), [])
+
+    def test_the_state_file_never_holds_an_address_or_a_name(self):
+        inbox = [mail(received=days_ago(2)),
+                 mail(sender="b2@example.org", auth=(GOOD_AR.replace(BUYER, "b2@example.org"),), message_id="<r2@example.org>",
+                      received=days_ago(1))]
+        def runner(sender, requested_at, apply, env):
+            return brand_mail.BALANCE_EXIT, ["refund: balance-insufficient (sale %s)" % ("sale-A" if sender == BUYER else "sale-B")]
+
+        code, out, err, _ = self.respond(inbox, "--apply", runner=runner)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(len(self.replies()), 2)
+        with open(self.retries, encoding="utf-8") as f:
+            text = f.read()
+        self.assertNotIn("@", text)
+        for leak in (BUYER, "buyer.one", "b2@", BRAND, "Mehudak", "מהודק"):
+            self.assertNotIn(leak, text)
+        for entry in json.loads(text):
+            self.assertEqual(sorted(entry), ["holdingReplySentAt", "requestedAt", "saleId"])
+
+    def test_a_second_request_for_a_sale_already_waiting_is_covered_without_a_second_holding_reply(self):
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        inbox.append(mail(message_id="<req-2@example.org>", body="still waiting for my refund", received=days_ago(0.5)))
+        code, out, err, runner = self.respond(inbox, "--apply", runner=Runner(brand_mail.BALANCE_EXIT, BALANCE_LINES),
+                                               retry_runner=RetryRunner((brand_mail.BALANCE_EXIT, BALANCE_LINES)))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(self.replies(), [])
+        self.assertEqual(FakeIMAP.instances[-1].stores, [2])
+        self.assertEqual(len(self.state()), 1)
+
+    def test_a_retry_the_refund_command_cannot_decide_is_kept_and_fails_the_run(self):
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        code, out, err, _ = self.respond(inbox, "--apply", retry_runner=RetryRunner((1, ["STOPPED: GET /v2/sales/sale-A was refused live"])))
+        self.assertEqual(code, 1)
+        self.assertEqual(self.replies(), [])
+        self.assertEqual(len(self.state()), 1)
+
+    def test_an_answer_that_cannot_be_sent_keeps_the_retry_so_the_next_run_answers(self):
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        FakeSMTP.fail = OSError("connection reset")
+        code, out, err, _ = self.respond(inbox, "--apply", retry_runner=RetryRunner((0, REFUNDED_LINES)))
+        self.assertEqual(code, 1)
+        self.assertEqual(len(self.state()), 1)
+        FakeSMTP.fail = None
+        # The next run finds the sale refunded by the last one: "already-refunded" is a refund that happened.
+        code, out, err, _ = self.respond(inbox, "--apply", retry_runner=RetryRunner((0, ["buyer: the sender", "refund: already-refunded (sale sale-A)"])))
+        self.assertEqual(code, 0, err)
+        self.assertEqual([r.get_content().strip() for r in self.replies()], [brand_mail.REFUND_REPLY])
+        self.assertEqual(self.state(), [])
+
+    def test_a_holding_reply_that_cannot_be_sent_records_nothing_and_leaves_the_request_unanswered(self):
+        FakeSMTP.fail = OSError("connection reset")
+        inbox, (code, out, err, runner) = self.refused()
+        self.assertEqual(code, 1)
+        self.assertEqual(FakeIMAP.instances[0].stores, [])
+        self.assertIsNone(self.state())
+
+    def test_a_retry_whose_request_is_gone_from_the_inbox_is_cleared_without_an_answer(self):
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        del inbox[0]  # archived or deleted since
+        code, out, err, _ = self.respond(inbox, "--apply", retry_runner=RetryRunner((0, REFUNDED_LINES)))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(self.replies(), [])
+        self.assertEqual(self.state(), [])
+        self.assertIn("no longer", json.loads(out)["retries"][0]["outcome"])
+
+    def test_the_answer_goes_to_the_request_received_at_the_retrys_time_and_to_no_other_answered_mail(self):
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        other = "other@example.net"
+        other_ar = (GOOD_AR.replace(BUYER, other).replace("example.org", "example.net"),)
+        # Answered mail beside it: another buyer's refund request a day later, and at the very same second a message that
+        # asks for no refund - neither is the request this retry answers.
+        inbox.append(dict(mail(sender=other, auth=other_ar, message_id="<o1@example.net>", received=days_ago(1)), flags={"\\Answered"}))
+        inbox.append(dict(mail(sender=other, auth=other_ar, message_id="<o2@example.net>", body="How do I activate?",
+                               subject="Pro", received=days_ago(2)), flags={"\\Answered"}))
+        code, out, err, _ = self.respond(inbox, "--apply", retry_runner=RetryRunner((0, REFUNDED_LINES)))
+        self.assertEqual(code, 0, err)
+        (reply,) = self.replies()
+        self.assertEqual(reply["To"], BUYER)
+        self.assertEqual(reply["In-Reply-To"], "<req-1@example.org>")
+
+    def test_two_requests_received_the_same_second_from_two_senders_answer_no_one(self):
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        other = "other@example.net"
+        other_ar = (GOOD_AR.replace(BUYER, other).replace("example.org", "example.net"),)
+        inbox.append(dict(mail(sender=other, auth=other_ar, message_id="<o3@example.net>", received=days_ago(2)), flags={"\\Answered"}))
+        code, out, err, _ = self.respond(inbox, "--apply", retry_runner=RetryRunner((0, REFUNDED_LINES)))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(self.replies(), [])
+        self.assertEqual(self.state(), [])
+
+    def test_the_same_buyer_writing_from_two_addresses_gets_one_holding_reply_for_the_one_sale(self):
+        account = "account@example.org"
+        inbox = [mail(received=days_ago(2)),
+                 mail(sender=account, auth=(GOOD_AR.replace(BUYER, account),), message_id="<r2@example.org>", received=days_ago(1))]
+        inbox, (code, out, err, runner) = self.refused(inbox)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(len(runner.calls), 2)
+        self.assertEqual([r.get_content().strip() for r in self.replies()], [brand_mail.HOLDING_REPLY])
+        self.assertEqual(sorted(FakeIMAP.instances[0].stores), [1, 2])
+        self.assertEqual(len(self.state()), 1)
+
+    def test_a_balance_line_from_a_command_that_did_not_exit_3_is_a_stop(self):
+        code, out, err, _ = self.respond([mail()], "--apply", runner=Runner(1, ["refund: balance-insufficient (sale sale-A)"]))
+        self.assertEqual(code, 1)
+        self.assertEqual(self.replies(), [])
+        self.assertIsNone(self.state())
+
+    def test_retries_are_bounded_per_run_and_their_lines_carry_no_address(self):
+        entries = [{"saleId": "sale-%d" % i, "requestedAt": "2026-10-18T12:00:00Z", "holdingReplySentAt": "2026-10-18T12:00:00Z"}
+                   for i in range(brand_mail.MAX_REFUND_REQUESTS_PER_RUN + 2)]
+        with open(self.retries, "w", encoding="utf-8") as f:
+            json.dump(entries, f)
+        still = RetryRunner((brand_mail.BALANCE_EXIT, ["STOPPED: echo %s" % BUYER, "refund: balance-insufficient (sale sale-0)"]))
+        code, out, err, _ = self.respond([], "--apply", retry_runner=still)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(len(still.calls), brand_mail.MAX_REFUND_REQUESTS_PER_RUN)
+        report = json.loads(out)
+        self.assertEqual(report["left"], 2)
+        self.assertEqual(report["waiting"], brand_mail.MAX_REFUND_REQUESTS_PER_RUN + 2)
+        self.assertNotIn(BUYER, out + err)
+        self.assertIn("[address]", out)
+
+    def test_a_dry_run_retries_as_a_dry_run_and_changes_nothing(self):
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        before = self.state()
+        dry = RetryRunner((0, ["dry run: would refund sale sale-A in full", "refund: dry-run (sale sale-A) - dry run"]))
+        code, out, err, _ = self.respond(inbox, retry_runner=dry)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(dry.calls, [("sale-A", days_ago(2), False)])
+        self.assertEqual(self.replies(), [])
+        self.assertEqual(self.state(), before)
+        # And a balance refusal in a dry run records nothing and sends nothing.
+        os.remove(self.retries)
+        code, out, err, _ = self.respond([mail(message_id="<d@example.org>")], runner=Runner(brand_mail.BALANCE_EXIT, BALANCE_LINES))
+        self.assertEqual(code, 0, err)
+        self.assertIsNone(self.state())
+        self.assertEqual(FakeSMTP.instances, [])
+
+    def test_a_balance_exit_without_a_sale_id_is_a_stop_not_a_wait(self):
+        inbox = [mail()]
+        code, out, err, _ = self.respond(inbox, "--apply", runner=Runner(brand_mail.BALANCE_EXIT, ["STOPPED: something"]))
+        self.assertEqual(code, 1)
+        self.assertEqual(self.replies(), [])
+        self.assertEqual(FakeIMAP.instances[0].stores, [])
+        self.assertIsNone(self.state())
+
+    def test_an_unreadable_retries_file_fails_the_run_before_any_mail_is_read(self):
+        for text in ("{not json", '{"retries": []}', "{}", '[{"saleId": "x@y", "requestedAt": "2026-10-18T12:00:00Z", "holdingReplySentAt": "2026-10-18T12:00:00Z"}]',
+                     '[{"saleId": "sale-A", "requestedAt": "yesterday", "holdingReplySentAt": "2026-10-18T12:00:00Z"}]'):
+            with open(self.retries, "w", encoding="utf-8") as f:
+                f.write(text)
+            FakeIMAP.instances = []
+            out = io.StringIO()
+            code = brand_mail.main(["respond-refunds", "--apply"], env=MAIN, stdout=out, stderr=io.StringIO(), now=NOW,
+                                   smtp_factory=refuse, imap_factory=refuse, refund_runner=refuse, retry_runner=refuse)
+            self.assertEqual(code, 1, text)
+            self.assertIn("error", json.loads(out.getvalue()))
+
+    def test_the_holding_reply_states_facts_and_promises_no_date(self):
+        s = brand_mail.HOLDING_REPLY
+        self.assertIn("תשובה אוטומטית", s)
+        self.assertIn("Mehudak (מהודק)", s)
+        self.assertIn("התקבלה", s)
+        self.assertIn("Gumroad", s)
+        self.assertIn("דרך הקבלה", s)  # the buyer may also write to Gumroad through its receipt
+        self.assertNotRegex(s, r"\d")
+        for word in ("ימים", "שעות", "עד ה", "תוך", "מובטח", "בקרוב", "מיד", "יוחזר ב", "within", "days"):
+            self.assertNotIn(word, s)
+        self.assertNotEqual(s, brand_mail.REFUND_REPLY)
+
+    # ---- reviewers of 30.9
+
+    def test_a_retry_that_exits_0_without_naming_a_refund_of_its_sale_is_kept_and_fails_the_run(self):
+        # The holding reply said the refund will be issued: a quiet "nothing to refund" (the window shrank, the sale is
+        # disputed) must never pass as done, and neither may a line about another sale or no result line at all.
+        for lines in (["refund: none"], ["buyer: the sender", "refund: none"], ["buyer: the sender"], [],
+                      ["buyer: the sender", "refund: refunded (sale sale-B)"],
+                      ["buyer: the sender", "refund: dry-run (sale sale-A) - dry run"],
+                      ["buyer: the sender", "refund: refunded (sale sale-A)", "refund: none"]):
+            FakeSMTP.instances = []
+            if os.path.exists(self.retries):
+                os.remove(self.retries)
+            inbox, _ = self.refused()
+            FakeSMTP.instances = []
+            code, out, err, _ = self.respond(inbox, "--apply", retry_runner=RetryRunner((0, lines)))
+            self.assertEqual(code, 1, lines)
+            self.assertEqual(self.replies(), [], lines)
+            self.assertEqual(len(self.state()), 1, lines)
+            self.assertIn("kept", json.loads(out)["retries"][0]["outcome"], lines)
+
+    def test_a_sale_gumroad_already_refunded_is_answered_and_dropped(self):
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        code, out, err, _ = self.respond(inbox, "--apply", retry_runner=RetryRunner((0, ["buyer: the sender", "refund: already-refunded (sale sale-A)"])))
+        self.assertEqual(code, 0, err)
+        self.assertEqual([r.get_content().strip() for r in self.replies()], [brand_mail.REFUND_REPLY])
+        self.assertEqual(self.state(), [])
+
+    def test_a_buyer_whose_retry_is_answered_gets_one_reply_even_with_a_follow_up_waiting(self):
+        # One answer per sender per run, the retries' answers included.
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        inbox.append(mail(message_id="<req-2@example.org>", body="עדיין מחכה להחזר שלי", received=days_ago(0.5)))
+        code, out, err, runner = self.respond(inbox, "--apply", runner=Runner(0, ["refund: none"]), retry_runner=RetryRunner((0, REFUNDED_LINES)))
+        self.assertEqual(code, 0, err)
+        self.assertEqual([r.get_content().strip() for r in self.replies()], [brand_mail.REFUND_REPLY])
+        self.assertEqual(runner.calls, [])  # covered by the retry's answer: no second refund command either
+        self.assertEqual(sorted(FakeIMAP.instances[-1].stores), [2])
+        (handled,) = json.loads(out)["handled"]
+        self.assertIn("covered", handled["outcome"])
+        self.assertEqual(self.state(), [])
+
+    def test_two_retries_of_one_sender_answer_once(self):
+        entries = [{"saleId": sale, "requestedAt": "2026-10-18T12:00:00Z", "holdingReplySentAt": "2026-10-18T12:00:00Z"}
+                   for sale in ("sale-A", "sale-B")]
+        with open(self.retries, "w", encoding="utf-8") as f:
+            json.dump(entries, f)
+        inbox = [dict(mail(received=days_ago(2)), flags={"\\Answered"})]
+        runner = RetryRunner((0, REFUNDED_LINES), (0, ["buyer: the sender", "refund: refunded (sale sale-B)"]))
+        code, out, err, _ = self.respond(inbox, "--apply", retry_runner=runner)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(len(self.replies()), 1)
+        self.assertEqual(self.state(), [])
+        self.assertIn("covered", json.loads(out)["retries"][1]["outcome"])
+
+    def test_the_retry_key_is_the_servers_own_receipt_time_even_when_it_is_ahead_of_this_runners_clock(self):
+        # find_request compares INTERNALDATE exactly; a key clamped to this runner's clock would never find it again.
+        ahead = NOW + dt.timedelta(minutes=5)
+        inbox = [mail(received=ahead)]
+        code, out, err, runner = self.respond(inbox, "--apply", runner=Runner(brand_mail.BALANCE_EXIT, BALANCE_LINES))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(runner.calls, [(BUYER, NOW, True)])  # the window is still measured no later than now
+        self.assertEqual(self.state()[0]["requestedAt"], "2026-10-20T12:05:00Z")
+        FakeSMTP.instances = []
+        ok = RetryRunner((0, REFUNDED_LINES))
+        code, out, err, _ = self.respond(inbox, "--apply", retry_runner=ok, now=NOW + dt.timedelta(days=3))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(ok.senders, [BUYER])
+        (reply,) = self.replies()
+        self.assertEqual(reply["In-Reply-To"], "<req-1@example.org>")
+
+    def test_the_answer_goes_only_to_the_sales_buyer(self):
+        # The request found at that second is from someone the refund command says is not the sale's buyer (the real
+        # request is gone, another one arrived the same second): the refund stands, no one is answered.
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        other = "other@example.net"
+        other_ar = (GOOD_AR.replace(BUYER, other).replace("example.org", "example.net"),)
+        inbox[0] = dict(mail(sender=other, auth=other_ar, message_id="<o9@example.net>", received=days_ago(2)), flags={"\\Answered"})
+        runner = RetryRunner((0, ["buyer: not the sender", "refund: refunded (sale sale-A)"]))
+        code, out, err, _ = self.respond(inbox, "--apply", retry_runner=runner)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(runner.senders, [other])
+        self.assertEqual(self.replies(), [])
+        self.assertEqual(self.state(), [])
+        self.assertIn("not from the sale's buyer", json.loads(out)["retries"][0]["outcome"])
+        self.assertNotIn(other, out + err)
+        # No buyer line at all (an older command) answers no one either.
+        if os.path.exists(self.retries):
+            os.remove(self.retries)
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        code, out, err, _ = self.respond(inbox, "--apply", retry_runner=RetryRunner((0, ["refund: refunded (sale sale-A)"])))
+        self.assertEqual(code, 0, err)
+        self.assertEqual(self.replies(), [])
+
+    def test_a_retry_whose_request_is_not_found_hands_the_command_no_sender(self):
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        runner = RetryRunner((brand_mail.BALANCE_EXIT, BALANCE_LINES))
+        self.respond([], "--apply", retry_runner=runner)
+        self.assertEqual(runner.senders, [None])
+
+    def test_finding_the_request_again_searches_only_the_days_around_it(self):
+        inbox, _ = self.refused()
+        FakeSMTP.instances = []
+        self.respond(inbox, "--apply", retry_runner=RetryRunner((brand_mail.BALANCE_EXIT, BALANCE_LINES)), now=NOW + dt.timedelta(days=40))
+        answered = [a for a in FakeIMAP.instances[-1].searches if a[0] == "ANSWERED"]
+        self.assertEqual(answered, [("ANSWERED", "SINCE", "17-Oct-2026", "BEFORE", "20-Oct-2026")])
+
+
 class RefundRunnerTests(unittest.TestCase):
     def test_runs_the_product_command_as_arguments_never_a_shell_with_only_the_token_and_path(self):
         seen = {}
@@ -588,6 +986,38 @@ class RefundRunnerTests(unittest.TestCase):
         with mock.patch.object(brand_mail.subprocess, "run", fake_run):
             brand_mail.node_refund_runner(BUYER, days_ago(2), True, MAIN)
         self.assertEqual(seen["argv"][-1], "--apply")
+
+    def test_the_retry_hands_the_sender_to_the_buyer_check_only_when_one_was_found(self):
+        seen = {}
+
+        def fake_run(argv, **kw):
+            seen["argv"] = argv
+            return subprocess.CompletedProcess(argv, 0, stdout="buyer: the sender\nrefund: refunded (sale sale-A)\n", stderr="")
+
+        with mock.patch.object(brand_mail.subprocess, "run", fake_run):
+            code, lines = brand_mail.node_retry_runner("sale-A", days_ago(2), True, dict(MAIN, PATH="/usr/bin"), BUYER)
+        self.assertEqual(seen["argv"], ["node", brand_mail.PRODUCT_SCRIPT, "refund", "--sale", "sale-A",
+                                        "--requested-at", "2026-10-18T12:00:00Z", "--email", BUYER, "--apply"])
+        self.assertEqual(lines, ["buyer: the sender", "refund: refunded (sale sale-A)"])
+
+    def test_the_retries_file_is_the_state_colony_one(self):
+        self.assertEqual(brand_mail.REFUND_RETRIES, os.path.join(REPO_ROOT, "state", "colony", "refund-retries.json"))
+
+    def test_the_retry_runs_refund_by_sale_id_with_the_original_request_time_and_no_address(self):
+        seen = {}
+
+        def fake_run(argv, **kw):
+            seen["argv"], seen["kw"] = argv, kw
+            return subprocess.CompletedProcess(argv, 3, stdout="refund: balance-insufficient (sale sale-A)\n", stderr="")
+
+        with mock.patch.object(brand_mail.subprocess, "run", fake_run):
+            code, lines = brand_mail.node_retry_runner("sale-A", days_ago(2), True, dict(MAIN, PATH="/usr/bin"))
+        self.assertEqual(code, 3)
+        self.assertEqual(lines, ["refund: balance-insufficient (sale sale-A)"])
+        self.assertEqual(seen["argv"], ["node", brand_mail.PRODUCT_SCRIPT, "refund", "--sale", "sale-A",
+                                        "--requested-at", "2026-10-18T12:00:00Z", "--apply"])
+        self.assertEqual(seen["kw"]["env"], {"PATH": "/usr/bin", "GUMROAD_ACCESS_TOKEN": TOKEN})
+        self.assertEqual(brand_mail.BALANCE_EXIT, 3)
 
     def test_a_command_that_hangs_is_a_failure(self):
         def slow(argv, **kw):
@@ -624,6 +1054,7 @@ class ProbeRespondersTests(unittest.TestCase):
     JOB_IF = "    if: github.event_name == 'schedule' || inputs.command == 'respond-refunds'\n"
     RESPOND = "      - name: Respond to refund requests (a dry run unless scheduled or really_refund)\n"
     GUARD_IF = "        if: github.event_name == 'workflow_dispatch' && inputs.really_refund\n"
+    COMMIT_IF = "        if: always() && steps.respond.outcome != 'skipped'\n"
 
     def edited(self, old, new, after=None):
         """The real workflow with `old` replaced once - in the part from `after` on, when given."""
@@ -636,7 +1067,7 @@ class ProbeRespondersTests(unittest.TestCase):
         return brand_mail.refund_responder_scheduled(self.workflow(text))
 
     def test_the_pinned_lines_are_the_workflows_own(self):
-        for line in (self.JOB_IF, self.RESPOND, self.GUARD_IF):
+        for line in (self.JOB_IF, self.RESPOND, self.GUARD_IF, self.COMMIT_IF):
             self.assertEqual(self.REAL.count(line), 1, line)
         self.assertTrue(self.scheduled(self.REAL))
 
@@ -650,6 +1081,10 @@ class ProbeRespondersTests(unittest.TestCase):
             "a step if skipping the respond step": self.edited(self.RESPOND, self.RESPOND + "        if: github.event_name != 'schedule'\n"),
             "the guard's if on the respond step": self.edited(self.RESPOND, self.RESPOND + self.GUARD_IF),
             "the guard's if loosened": self.edited(self.GUARD_IF, "        if: always()\n"),
+            # RULING-2026-09-30-documents (d): the balance-retries commit step may carry its one pinned condition, and
+            # only on itself - never another one, and never on the respond step.
+            "the commit step's if loosened": self.edited(self.COMMIT_IF, "        if: always()\n"),
+            "the commit step's if on the respond step": self.edited(self.RESPOND, self.RESPOND + self.COMMIT_IF),
             "a dependency that is skipped": self.edited(self.JOB_IF, self.JOB_IF + "    needs: send\n"),
             "an environment without the secrets": self.edited("    environment: brand-mailbox\n", "    environment: brand-mailbox-old\n", after=self.JOB_IF),
             "no Gumroad token": self.edited("          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}\n", ""),

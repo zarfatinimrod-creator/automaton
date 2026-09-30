@@ -109,12 +109,15 @@ Mehudak (מהודק)
 - **Held, after a yes, one at a time in the thread:** (1) "Can a partner resident in Israel, as an individual, receive
   App Market payouts through Tipalti?" Settles "Israel not payable" (BOARD-LOOP.md:162). Tipalti refused the render twice
   (`wix-app-market.md:498`). Then (2), added by the loop board of 29.9.2026 (`research/channel-loop/RULING-2026-09-29-loop.md`
-  (e)3) and sent only after Wix's first written yes: "Does Wix accept a receipt from an Israeli exempt dealer (עוסק פטור)
-  in place of a tax invoice?" Wix pays "against a lawful tax invoice to be issued by the Party receiving"
-  (`wix-partner-agreement-body.txt:385`), and an exempt dealer issues a receipt, not a חשבונית מס. It is a condition,
-  not a kill: a written no makes Wix's payout depend on VAT registration, a cost decision for the owner under the ₪0
-  rule, not a per-payout step. Either way the document itself is the runner's after step 2, never owner paperwork
-  (ruling (e)3's six conditions).
+  (e)3) and sent only after Wix's first written yes: "Does Wix accept from an Israeli exempt dealer (עוסק פטור) a
+  computer-sent transaction invoice (חשבונית עסקה, not a tax invoice) and receipt, signed with the dealer's secured
+  electronic signature, and does Wix consent to receive such computerised documents?" Wix pays "against a lawful tax
+  invoice to be issued by the Party receiving" (`wix-partner-agreement-body.txt:385`), and an exempt dealer never issues
+  a חשבונית מס: its lawful document is a §45 transaction invoice plus a receipt, and under the ceiling it cannot elect
+  VAT registration (reg 11). Reworded 30.9.2026 (`research/channel-loop/RULING-2026-09-30-documents.md` (a)): the old
+  "receipt in place of a tax invoice" rested on the repealed reg 12. It is a condition, not a kill: a written no leads to
+  incorporating, a §58 request or Wix out, not a plain cost decision, and never a per-payout step. Either way the
+  document itself is the runner's after step 2, never owner paperwork (ruling (e)3's conditions, as narrowed).
 
 ## 3. Spreadshirt (candidate 17; BOARD.md:75)
 
@@ -227,10 +230,14 @@ Mehudak (מהודק)
 - **Held, after a yes, one at a time in the same thread, so to `office@indiebook.co.il` (the only address in any
   capture):** (1) "האם יש עלות כלשהי לסופר (פרסום, המרה או חבילה), ומה אחוז התמלוגים לסופר ממכירה ומקריאה במנוי?"
   (kill a); (2) "האם שם המחבר ושם ההוצאה המוצגים יכולים להיות "מהודק" בלבד?" (the name half of c); (3) "האם ממלאים את
-  טופס הגשת הספר פעם אחת לכל ספר, והאם כל ההתקשרות, כולל ההסכם, יכולה להתנהל בדוא"ל בלבד?" (the one-time rule); and
-  last, because it gates nothing, (4) "האם ההפצה בלעדית, ומי קובע את מחיר הספר?" In English: any cost to the author and
-  the royalty share; whether "Mehudak" alone can be the displayed author and publisher; whether the submission form is
-  filled once per book and all contact, the agreement included, can be by email; whether distribution is exclusive and
+  טופס הגשת הספר פעם אחת לכל ספר, והאם כל ההתקשרות, כולל ההסכם, יכולה להתנהל בדוא"ל בלבד?" (the one-time rule);
+  (4), added 30.9.2026 (`research/channel-loop/RULING-2026-09-30-documents.md` (a)), "האם אתם מקבלים מעוסק פטור חשבונית
+  עסקה (לא חשבונית מס) וקבלה שנשלחות במחשב וחתומות בחתימה אלקטרונית מאובטחת של העוסק, והאם אתם מסכימים לקבל מסמכים
+  ממוחשבים כאלה?" (the payer's consent to computerised documents); and last, because it gates nothing, (5) "האם ההפצה
+  בלעדית, ומי קובע את מחיר הספר?" In English: any cost to the author and the royalty share; whether "Mehudak" alone can be
+  the displayed author and publisher; whether the submission form is filled once per book and all contact, the agreement
+  included, can be by email; whether the store accepts an exempt dealer's computer-sent transaction invoice and receipt
+  under a secured electronic signature, and consents to receive such documents; whether distribution is exclusive and
   who sets the price.
 
 ## 6. Displate (candidate 26; CHANNEL_LOOP.md:150)

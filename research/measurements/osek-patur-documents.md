@@ -1138,7 +1138,7 @@ Written 29.9 as a follow-up to the terms audit, and checked by an adversarial ve
   - `dk-forge/ai-layoff-tracker` `railway/country_coverage.py` at `4ce5e163`. Its `REFUSAL_LEDGER` (`:321`) lists nevo.co.il as one that "bans GPTBot, Google-Extended, Perplexity and '*' outright" (`:467-468`). The entry is marked `"verified_here": False` (`:472`).
   - `calcagnocarloalberto1-star/mediaresenzaconfini` `testi-in-vigore-israele/index.html:92` at `89075e47` reports a nevo page as "accesso bloccato da robots.txt".
   - `lawsofisrael/lawsofisrael` `scripts/scripts.txt:1` at `aeca0b25` says: "please note: while the law information is public domain however the activity of using the website might be not under the terms of the website".
-- **robots.txt is not terms, and render-watch never fetches it.** The runner's own notes say so (`scripts/render-watch.mjs:352-353`, repo). Fetching nevo's robots.txt would also be a new nevo line, and those are held back ("new nevo lines wait", `terms-verdicts.json:252`).
+- **robots.txt is not terms, and render-watch never fetches it.** The runner's own notes say so (`scripts/render-watch.mjs:352-353`, repo). Fetching nevo's robots.txt would also be a new nevo line, and those are held back (nevo is "fetchable only under NO_TERMS_ROBOTS_OK once render-watch honours robots.txt with an identifying UA", `terms-verdicts.json` key `nevo.co.il`, note at `:261`).
 
 **What §6 of the Copyright Act settles, and what it leaves open.**
 - **The text of §6** (חוק זכות יוצרים, התשס"ח-2007, "פרסומים רשמיים"): "על אף הוראות סעיף 4, לא תהא זכות יוצרים בחוקים, בתקנות, בדברי הכנסת ובהחלטות שיפוטיות של בית משפט או של כל רשות שלטונית המפעילה סמכות שפיטה על פי דין."
@@ -1188,8 +1188,225 @@ Written 29.9 as a follow-up to the terms audit, and checked by an adversarial ve
 - **gov.il.** `www.gov.il` was TERMS_PENDING when this was written and is now NO_TERMS (`terms-verdicts.json` key `www.gov.il`; round 3). Its terms page answered the runner with 403 on 29.9 at 16:22Z (`research/rendered/terms-gov-il.meta.json`). This search found no gov.il page with consolidated legislation.
 
 **What this leaves [inference].**
-- The nevo pages already captured stay readable (`terms-verdicts.json` key `nevo.co.il`, its note).
+- The nevo pages already captured stay readable (ruling 30.9 16(d) D1(2): `[no-terms]` captures are unrestricted; `terms-verdicts.json` key `nevo.co.il` records when nevo may be fetched again).
 - For text as of early 2023, the lawsofisrael mirror on GitHub can be read under terms already read, with the provenance caveat above.
 - For newer consolidated text, Wikisource is the only candidate found. Before any runner line: read the Robot Policy and the User-Agent policy, and give that host an identifying User-Agent with contact details.
 - The dumps that `legislator` mentions (`:11`) would make a one-time read possible without weekly page fetches. That route is also unread.
 - For official, unconsolidated text, read the Knesset's terms first.
+
+**Ruled 30.9 (16(d) D1, `research/channel-loop/RULING-2026-09-30-video.md`):** the nevo captures this section cites are `[no-terms]` and stay in use at rendered grade, unrestricted; no re-fetch until render-watch honours robots.txt with an identifying UA (D2(v)); until then the `lawsofisrael` mirror on GitHub (2023 text) is the only fresh read. The Knesset route is retired: the site refused the runner (D2(iv)). This file cites no Gumroad capture, so the `[against-bar]` rule for Gumroad captures is recorded in `refund-law-il.md`.
+
+## 30.9 (tick 26, github): the lawsofisrael mirror — §145(א1), 271_005, 14ט, the registration regulations
+
+**How this was read (github, 30.9.2026).**
+- **Source.** A blobless clone of `lawsofisrael/lawsofisrael` at `aeca0b25fa4542f4d9bddf76ccdf862f5347b188`. That commit is HEAD, and `git log` shows 8 commits, the last on 2023-06-29.
+- **Listings.** All 145 `2023-03-06/israel/listing/page_*.html` were checked out, plus the 4 pages of `2023-03-06/shtahim/listing/` (185 entries).
+  - The israel listing has 7,218 entries, numbered 1 to 7,218 with no gap. Every one is headed "חקיקה בנוסח מלא:".
+  - It is a saved copy of nevo's consolidated-legislation search results (`scripts/scripts.txt:27-31`). The parameters of that search are not recorded.
+- **Line numbers.** Every `w:p` in `word/document.xml`, taken in document order, gets its own line. That line holds only its own `w:t` text: a nested paragraph's text is not repeated in the outer line, and tab runs are collapsed to one space.
+  - This reproduces this file's `VAT:988` and `VAT:1779`, `BK:962`, and `refund-law-il.md`'s `CPL:822` and `:824`.
+  - All paths below are under `2023-03-06/israel/`.
+
+| Short | Path | git blob | Header / text date |
+|---|---|---|---|
+| `GEN` | `converted_docx/תקנות מס ערך מוסף, תשל%22ו-1976.docx` | `3fe7b5f954f3` | "נוסח מלא ומעודכן" (`word/header1.xml`). The footer names nevo's file `…\LawsForTableRun\02\271_005.doc` (`word/footer1.xml`). The latest amendment note is "ק"ת תשפ"ג מס' 10588 מיום 12.3.2023 עמ' 1130" (GEN:1379). |
+| `MREG` | `converted_docx/תקנות מס ערך מוסף (רישום), תשל%22ו-1976.docx` | `0767e5840e59` | "נוסח מלא ומעודכן". The footer names `…\04\271_004.doc`. The latest amendment note is "ק"ת תשע"ו מס' 7677 מיום 28.6.2016 עמ' 1458" (MREG:143). |
+| `VAT` | `converted_docx/חוק מס ערך מוסף, תשל%22ו-1975.docx` (same blob as `:38`) | `e20977680182` | "נוסח מלא ומעודכן". The footer names `…\271_001.doc`. The latest amendment notes cite "ס"ח תשפ"ג מס' 3045 מיום 31.5.2023" on 16 lines, for example "ס"ח תשפ"ג מס' 3045 מיום 31.5.2023 עמ' 174 (ה"ח 1612)" (VAT:2364). |
+| `CPL` | `docs/חוק הגנת הצרכן, תשמ%22א-1981.docx` (also at `original_docx/`) | `91a3f5c75348` | "חוק הגנת הצרכן, תשמ"א-1981, נוסח עדכני נכון ליום 03.10.2022" (`word/header1.xml`) |
+| `HOB` | `converted_docx/הוראות מס ערך מוסף (פטור מחובת הובלת טובין עם חשבונית לאזור או לשטחי עזה ויריחו), תשע%22ז-2017.docx` | `fb867696ed32` | "נוסח מלא ומעודכן" under its own title (`word/header2.xml`). `header1.xml` carries the title of another VAT regulation, of 1996. The footer names `…\271_044.doc`. |
+
+**The converted texts date from late May to early June 2023, not from 6.3.2023.**
+- **The conversion date.** `docProps/core.xml` says `created 2023-06-05` in every one of the 5,705 israel `converted_docx` files, GEN, MREG, VAT and HOB among them. The 140 shtahim conversions say 2023-06-28.
+  - The created and modified times are the same minute, so this is the date of the mirror's batch conversion. Each `.doc` had been fetched by 5.6.2023.
+- **The amendment notes.** The texts carry notes up to 31.5.2023 (VAT:2364).
+- **The listing is later than its folder name too.**
+  - Its amendment notes run to "מיום 30.05.2023" (`listing/page_071.html:813`).
+  - GEN's entry lists the amendment of 12.3.2023 (`listing/page_028.html:1010`).
+  - The VAT law's entry stops at 16.5.2023 (`page_010.html:1110`), but the VAT text holds the 31.5.2023 amendment. So the texts were fetched after the listing was saved: between about 30.5 and 5.6.2023.
+- **CPL is the exception.** It is an `original_docx` text consolidated to 3.10.2022 (its header), and it has no `docProps/core.xml`.
+- **What this refines.** "text as of 6.3.2023" (`:9`, `:49`; ruling (a) under 16(d) (ii), `RULING-2026-09-30-documents.md:134`).
+
+### 1. The listings: "חתימה אלקטרונית", "145", "271_005"
+- **"חתימה אלקטרונית": 8 hits, all in `israel/listing/`. `shtahim/listing/` has none.**
+  - `page_007.html:3473`: the title "חוק חתימה אלקטרונית, תשס"א-2001".
+  - `page_010.html:1962`: an amendment note in the entry for "חוק מרשם האוכלוסין, תשכ"ה-1965" (title `:1866`). It reads "תיקון מס' 20 בסעיף 13 לחוק חתימה אלקטרונית (תיקון מס' 3), תשע"ח-2018".
+  - `page_025.html:3155`: an amendment note in the entry for "פקודת המסים (גביה)" (title `:3079`). It reads "תיקון מס' 10 בסעיף 11 לחוק חתימה אלקטרונית (תיקון מס' 3), תשע"ח-2018".
+  - `page_065.html:2415`, `:2490`, `:2555`, `:2700`: the four "תקנות חתימה אלקטרונית (…)". Each is made under the Electronic Signature Law, never the VAT law:
+    - "בתוקף סמכותי לפי סעיף 17(ב)(3) לחוק חתימה אלקטרונית" (blob `0434cefd1b89`:22).
+    - "לפי סעיפים 19(א)(1) ו-24(א)(9) עד (11) לחוק חתימה אלקטרונית" (`604552e06015`:100).
+    - "לפי סעיפים 10(א)(3), 20(ב), 24(א)(1)…" (`e2edbf6c1865`:120).
+    - "לפי סעיפים 10(א), (א1), 11(א)(1)(ד) ו-24 לחוק חתימה אלקטרונית" (`9d659aedb925`:24).
+    - None of the four texts mentions "מס ערך מוסף", "מע"מ", "רשות המסים" or "145".
+  - `page_103.html:96`: "צו המרכז לגביית קנסות, אגרות והוצאות (תחילת החוק לגבי עיצום כספי המוטל לפי חוק חתימה אלקטרונית, התשס"א-2001), תשע"ט-2018".
+  - **None of the 8 is an instruction or regulation under VAT §145(א1).**
+- **A wider title sweep.** In both listings, 39 titles contain חתימ, אלקטרוני, דיגיטל, מקוון, ממוחשב, מחשב or רשות המסים. None is titled as a VAT instrument.
+  - The tax ones whose preambles I read are made under other statutes:
+    - the Taxes (Collection) Ordinance §12ב1(ה) (`4af3b232cb50`:36);
+    - the Land Taxation Law §§76א(ב), 115 and §76א(ג) (`4b85f2456c95`:43, `1ac1bf1bc50e`:59);
+    - the Income Tax Ordinance §20(א)(4) and §131(ב2)(4) (`eaadca2bd828`:20, `48df07f4ab18`:24).
+  - "תקנות מרשם האוכלוסין (תעודה אלקטרונית לאימות)" is made under the Population Registry Law (`88bdeeb44516`:72).
+- **"145" near "מס ערך מוסף" / "מע"מ": no hit.**
+  - 163 listing lines contain "145". Only 15 hold it as a number of its own, and they sit in 11 entries:
+    - page numbers, "עמ' 145": `page_003.html:986`, `page_056.html:1107`, `page_065.html:367`, `page_133.html:1147`;
+    - an item number and an element id, in entries 145 and 146: `page_003.html:3704`, `:3825`;
+    - "תיקון מס' 145" in the Penal Law: `page_005.html:942`;
+    - nevo file ids 039_145, 501_145, 180_145 and 065_145: `page_098.html:2500`/`:2503`, `page_113.html:1328`/`:1331`, `page_134.html:1993`/`:1996`, `page_138.html:655`/`:658`.
+  - None of these 11 entries mentions "מס ערך מוסף" or "מע"מ" anywhere, and no listing entry holds both.
+  - No listing line holds "145(א1)". "מאובטחת" occurs only in the title at `page_065.html:2490`.
+  - Shtahim's two "145" hits are an item number and an element id (`shtahim/listing/page_003.html:3084`, `:3152`).
+- **"271_005": 2 hits.** They are `page_028.html:921` (htm link) and `:924` (doc link). The entry is no. 1364 (`:930`), nevo db id 72815 (`:910`), titled "תקנות מס ערך מוסף, תשל"ו-1976" (`:934`).
+- **The VAT family in the listing.** 22 titles contain "מס ערך מוסף": `page_010.html:1034`, `page_028.html:934`, eleven on `page_074.html`, eight on `page_118.html`, and `page_144.html:1428`.
+  - Exactly one is "הוראות": "הוראות מס ערך מוסף (פטור מחובת הובלת טובין עם חשבונית לאזור או לשטחי עזה ויריחו), תשע"ז-2017" (`page_144.html:1428`).
+  - Its authority is "בתוקף סמכותי לפי סעיפים 129(א) לחוק מס ערך מוסף, התשל"ו-1975 (להלן – החוק), אני קובע הוראות אלה:" (HOB:25), and it is signed as "מנהל רשות המסים" (HOB:55). **It is not made under §145(א1).**
+  - By title, none of the other 49 of the 50 "הוראות …" titles concerns VAT or signatures.
+  - In its body one of them does use the term: the books instructions. They are made "בתוקף סמכותי לפי סעיף 130 לפקודת מס הכנסה" (BK:590). They define "חתימה אלקטרונית מאובטחת" as "כהגדרתה בחוק חתימה אלקטרונית, התשס"א-2001;" (BK:725) and use it in §18ב(ד) (BK:1904). This is the unnarrowed definition that ground 4 reads from the 2026 capture.
+- **Full-text backstop.**
+  - A first pass read 107 `.docx` files selected by name: those whose names start with "הוראות" or "כללי מס", or contain "חתימה", "מס ערך מוסף" or "מע%22מ".
+  - The verification pass read every unique `.docx` blob in `converted_docx/` and `original_docx/` of both folders: 7,402, with no read error. This covers every entry of the israel listing (5,705 converted plus 1,513 original).
+  - 12 of the 7,402 are stubs under 300 characters. None is a VAT or e-signature text. The Income Tax Ordinance stub has a full twin ("- לא מרובד"), which was read.
+  - Searched: "145(א1)" (spaces allowed); any line holding both a standalone "145" and "(א1)"; any line holding a standalone "145" and "מס ערך מוסף" or "מע"מ"; and "חתימה אלקטרונית מאובטחת".
+  - **No text in the mirror cites VAT §145(א1) except the VAT law itself.** Its narrowed definition cites it at VAT:895, and the subsection is at VAT:5145, with its history at :5166.
+  - **"145(א1)" occurs in 3 other texts, all about the Planning and Building Law's own §145(א1):** that law (`f505a4ed84e6`, for example :9417), a Covid extension law (`70362993ad3c`:185) and a planning regulation (`02b811b0bfbd`:461).
+  - **Ten VAT instruments cite §145 in their preambles.** Nine name it among their powers, as the Minister's general power ("ו-145", or "145(א)"). The tenth cites it only for Finance Committee approval:
+    - GEN:260 (older preambles :266, :271): "בתוקף סמכותי לפי סעיפים 1, 5, 12, 13, 21, 29, 30, 34, 36, 38, 42, 44, 51, 67, 69, 99, 129 ו-145 לחוק מס ערך מוסף";
+    - MREG:96;
+    - `VATR:56`;
+    - מוסדות כספיים ומלכ"רים (`54ef3956ce46`:32);
+    - מכירת מטבעות, מדליות ומטילי זהב (`e798a37c3d64`:28);
+    - מכירת רהיטים משומשים (`dad60b6c2ab6`:40);
+    - תכנון מס החייב בדיווח, "לפי סעיפים 67(ה) ו-145(א)" (`6d36acde6036`:33);
+    - צו … (קביעת מדינות גובלות) (`e18650ce7af2`:12);
+    - צו … (קביעת מוסד כספי) (`b60fdedec750`:20);
+    - `צו מס ערך מוסף (קביעת שיעור ריבית)`, which is made under §§93 and 97 and cites §145 only for Finance Committee approval: "בתוקף סמכותי לפי סעיפים 93 ו-97 לחוק מס ערך מוסף, תשל"ו-1975, ובאישור ועדת הכספים של הכנסת, לפי סעיף 145 לחוק" (`fe216ed3db33`:21).
+  - **The other "145" hits concern other statutes.**
+    - The Income Tax Ordinance's own §145 (assessment) appears beside §77 of the VAT law (`5bb76066ddf7`:8957, :8978).
+    - Its §145א and §145ב are cited at `11dcf847bf0d`:13 and BK:3085.
+    - Two elections instructions were made under §145(ד) of the Elections Law (`78020cffd954`:25, `0d3d53c3b879`:8).
+  - **"חתימה אלקטרונית מאובטחת": 25 texts.** The tax ones are three:
+    - the VAT law: the definition, §72א(א) and its history, and §145(א1);
+    - BK (:709, :723, :725, :730, :1904);
+    - the Income Tax Ordinance, whose own definition is deleted: "(נמחקה)", amendment 213, 2015 (`5bb76066ddf7`:9361).
+  - The other 22 are non-tax by title: the Electronic Signature Law and its regulations, and securities, population-registry, tenders, medical, IP, planning and civil-procedure texts. None cites §145(א1).
+- **What §145(א1) is.** "(א1) שר האוצר ושר המשפטים רשאי לקבוע הוראות לעניין אופן הנפקת חתימה אלקטרונית מאובטחת, וכן הוראות לעניין חובותיו של בעל אמצעי החתימה האלקטרונית ואחריותו לשימוש בה; … תחילתן של הוראות כאמור תהא, לכל המוקדם, ביום פרסומן." (VAT:5145).
+  - It was added by "(תיקון מס' 37) תשס"ט-2009" (:5146), in force from 15.7.2009 (:5163-5165).
+  - Such instruments are exempt from Finance Committee approval: "למעט תקנות לפי סעיף קטן (א1)" (VAT:5149). §145(ג) calls them "תקנות", so a search limited to "הוראות" titles would not be enough. The title and full-text searches above are not so limited.
+  - The narrowed definition is at VAT:895. It is word for word the same as `research/rendered/nevo-vat-law.txt:37`; the capture only pads the quoted term with spaces.
+- **A nuance to ruling (a) ground 4.** In the mirror's 2023 text the narrowed term has one operative use: "72א. (א) דוחות לפי סעיפים 67א(א), 68(א), 70(א) ו-(ב), 71 ו-71א, יוגשו באופן מקוון, כשהם חתומים בחתימה אלקטרונית מאושרת או בחתימה אלקטרונית מאובטחת, כפי שיורה המנהל." (VAT:3185).
+  - That use was already slated for removal. Amendment 52 ("ס"ח תשע"ו מס' 2511 מיום 30.11.2015") strikes the signature words "מיום שקבע שר האוצר בצו" (VAT:3202-3205).
+  - The 2026 capture no longer has them (`research/rendered/nevo-vat-law.txt:1057`).
+  - **[inference]** Ground 4's "used nowhere else" is true of the 2026 text only. In neither text does the term reach a §45 invoice or a receipt.
+  - **[inference]** The exempt dealer files none of the §72א reports:
+    - §67א(א) is for dealers under detailed reporting (VAT:2859);
+    - §68(א) is a provisional report in place of a report (VAT:2983);
+    - §70(א) is for a מלכ"ר or financial institution (VAT:3123);
+    - §71 is a supplementary report to a periodic report (VAT:3157);
+    - §71א(א) is for jointly registered dealers (VAT:3166);
+    - the periodic report itself is exempted by reg 22 (section 2 below).
+
+### 2. The general VAT regulations (nevo 271_005): the mirror holds them
+- **Where.** GEN, plus the original `.doc` at `docs/` and `convert/` (blob `201ceb89da48`).
+- **Nothing on computerised documents.**
+  - A grep of GEN for ממוחשב, מחשב, אלקטרוני, מקוון and חתימ finds:
+    - the dealer signing a report: "ויחתום אישית" (reg 23(א), GEN:2376);
+    - the signed §72 additional report: "יהא חתום בידי העוסק" (reg 23א(ב), GEN:2689);
+    - a precious-stone buyer's personal signature on a declaration on the invoice: "יחתום הלקוח אישית על הצהרה זו" (reg 11א(ב)(4), GEN:1442);
+    - bank-stamp and bank-details rules, including a notice's "הזנתה למחשב" (GEN:1798-1801, :1981, :2386);
+    - online periodic reports (reg 23ג, GEN:2717-2730);
+    - a treaty title ("פרוטוקול החתימה", GEN:1643).
+  - No provision covers an invoice or a receipt made or signed by computer.
+- **Reg 6א (heading "חיוב מקבל שירות בתשלום המס", GEN:707).**
+  - The chapeau: "6א. (א) עוסק, מלכ"ר או מוסד כספי שקיבלו שירות מן המפורטים להלן ממי שעיקר הכנסתו ממשכורת, גימלה או קיצבה, יהיו חייבים בתשלום המס בשל השירות, זולת אם קיבלו חשבונית מס מנותן השירות. ואלה השירותים:" (GEN:706).
+  - (1) is "מופע אמנותי, … הרצאה, הוראה, הדרכה, תרגול … ; כתבנות או קצרנות; תרגום בכתב או בעל פה; כתיבה או עריכה; פישור, … או חברות בועדות שהוקמו על פי דין;" (GEN:710).
+  - (2) is "שירותים של בעלי מקצועות אלה: אגרונום, אדריכל, הנדסאי, … טכנאי, … מהנדס, … סוכן ביטוח, …" (GEN:713).
+  - The recipient reports and self-invoices under (ד) (GEN:716). The provider files only if it has other transactions, under (ו) (GEN:722).
+  - The latest margin note is "תק' (מס' 5) תשנ"ז-1997" (GEN:711-712). The history's last entry is the same amendment, "ק"ת תשנ"ז מס' 5855 מיום 1.10.1997" (GEN:797-799).
+  - **[inference] Three limits:**
+    - Reg 6א reaches a provider only "ממי שעיקר הכנסתו ממשכורת, גימלה או קיצבה". That is the owner's fact, not the colony's.
+    - The recipient must be "עוסק, מלכ"ר או מוסד כספי". Whether a foreign platform is one is not settled by this text.
+    - Software development and licence sales are not named. The nearest items are "כתיבה או עריכה" and "הרצאה, הוראה, הדרכה".
+  - **Where it bites.**
+    - MREG reg 1(2) excludes from "חייב במס" a person all of whose tax is paid by the recipient under 6א (MREG:101).
+    - MREG reg 13(1)'s second limb reaches "עוסקים שעיסוקם מתן שירותים מהסוגים המפורטים בתקנה 6א … ולגבי אותם שירותים בלבד" (MREG:316).
+    - **[inference]** 13(1)'s second limb is keyed to the kinds of service, not to the salary condition. So an income line for writing, editing, lecturing, teaching or training would be registered עוסק מורשה for that service.
+    - The ruling's occupation line names none of these. The nearest colony line is Indiebook's ebook royalties (`logs/CHANNEL_LOOP.md:164`). Whether royalties on copies of an ebook are a "כתיבה" service is not settled by these texts.
+- **The report period and the §67 exemption.**
+  - The law:
+    - §67(א2)(1): two-monthly for a dealer at or below "1,520,000 שקלים חדשים" (VAT:2773; 1,775,000 in the 2026 text, `nevo-vat-law.txt:852`).
+    - §67(ב): due "אף אם לא היו באותה תקופה עסקים או פעילות" (VAT:2777).
+    - §67(ד): "שר האוצר רשאי לפטור מחובת הגשת דו"ח תקופתי סוגי עוסקים שכל עסקם בעסקאות פטורות ממס או בעסקאות החייבות במס בשעור אפס." (VAT:2783).
+  - The regulations:
+    - Reg 20(ב): monthly (GEN:2179).
+    - Reg 20(ג)(1): two-monthly up to "910,000 שקלים חדשים" (GEN:2180).
+    - **Reg 22 is the exemption:** "22. אלה פטורים מהגשת דו"ח:" (GEN:2372), then "(1) עוסק שכל עסקאותיו הן כאמור בסעיף 31(1) או (2) לחוק;" (GEN:2374) and "(2) עוסק זעיר הפטור ממס לפי סעיף 31(3) לחוק." (GEN:2375).
+    - No amendment note follows reg 22 (GEN:2376 is reg 23), and no history line in GEN names "תקנה 22".
+    - The preamble names §67 among its authorities (GEN:260). Which subsection of §67 reg 22 rests on is not stated; (ד) fits **[inference]**.
+  - **[inference]** "עוסק זעיר" was deleted from the law (VAT:988), and §31(3) now reads "עסקאות של עוסק פטור" (VAT:1779). Reg 22(2) therefore reaches today's עוסק פטור through the §31(3) formula, as §2א of the instructions does (`:61-64`).
+  - **Result [inference, resting on the reading of reg 22(2) above]:**
+    - As of 2023 an exempt dealer files **no periodic report**. The one yearly VAT filing in these texts is reg 15's declaration by 31 January (MREG:390).
+    - Step 2 (`docs/OWNER_STEPS.he.md:156`) already says "**הצהרת מחזור שנתית עד 31 בינואר** (תק' 15 שנקראה); הפטור מדיווח תקופתי יושב בתקנות הכלליות שעוד לא נקראו". The exemption it points to is reg 22(2), now read at github grade.
+    - The ruling's "two-monthly" fallback does not reach an exempt dealer.
+- **Side-finds, not asked.**
+  - Reg 23ג(ב)(2): "רשאי, לבקשתו, להגיש דוח תקופתי באופן מקוון, באמצעות שם משתמש וסיסמה שיינתנו לו למטרה זו." (GEN:2726). This matters only on the עוסק מורשה outcome, as input to "whether the runner can file".
+  - Reg 25א(א): "עוסק יציג דרך קבע בחצרי עסקו ובמקום בולט את תעודת העוסק או אישור שקיבל לפי סעיף 53 לחוק." (GEN:3063). **[inference]** This is a ₪0 duty. The text does not say how it applies to a business with no premises.
+
+### 3. The CPL blob `91a3f5c75348`: "14ט"
+- **9 lines contain "14ט"** (the raw `word/document.xml` also holds 9 occurrences):
+  - the table of contents: "דרכי ביטול עסקה וחובת גילוי" / "סעיף 14ט" (CPL:137-138);
+  - §13ד(ג)-(ד) (CPL:722-723) and §13ו(ב) (CPL:761);
+  - the section itself (CPL:917);
+  - two items in §22ג's monetary-sanction list (§22ג starts at CPL:1184): "(31א) לא אפשר לצרכן למסור לו הודעה על ביטול עסקה בכל אחת מהדרכים המנויות בסעיף 14ט(א) ו-(ב)" and "(31ב) לא גילה לצרכן מידע שהיה עליו לגלותו בהתאם להוראות סעיף 14ט(ד) ו-(ה);" (CPL:1223-1224);
+  - §31א's exemplary damages (§31א starts at CPL:1455): (2ב) (CPL:1461) and (ב) (CPL:1472).
+- **The section, CPL:917-932.**
+  - "14ט. (א) היתה לצרכן זכות לבטל עסקה לפי חוק זה או לפי חוזה, יאפשר לו העוסק לבטל את העסקה בהודעת ביטול שימסור לו הצרכן בכל אחת מהדרכים המפורטות להלן ובהתאם לפרטי ההתקשרות שמסר העוסק לצרכן לפי סעיף קטן (ד) הנוגע לאותה דרך ביטול (בסעיף זה – הודעת ביטול):" (CPL:917).
+  - The ways (1)-(6) are at CPL:919-924.
+  - "(ב) … ייצור עוסק בדף הראשי של אתר האינטרנט שלו קישור ייעודי …" (CPL:925).
+  - "(ה) … (1) בחשבונית, בקבלה או בהודעת תשלום, …" (CPL:929).
+  - "(ז) הוראות סעיף זה לא יחולו על ביטול עסקה לפי סעיף 14ו; …" (CPL:932).
+- **It matches the 2026 capture.** Every subsection of CPL:917-932 is word for word identical to `research/rendered/nevo-consumer-protection-law-70305.txt:857-885`. There are two differences, both whitespace only:
+  - an extra no-break space after "בהודעת" in (ג) (CPL:926 against `:873`);
+  - the spaces inside the quotation marks around "בכתב" in (ד) (CPL:927 against `:875`).
+- **Result:** 14ט is in the text consolidated to 3.10.2022, and its wording is unchanged through the 2026 capture. Breaching it carries monetary sanctions and exemplary damages (the CPL:1223-1224 and :1461 lines above).
+
+### 4. The VAT registration regulations (nevo 271_004): the mirror holds them
+- **Where.** MREG. Its footer says `271_004.doc`. Its listing entry is `page_074.html:1663`, title `:1676`, with last listed amendments "5.5.2016"/"28.6.2016" (`:1702`, `:1712`).
+- **Reg 1** lists four exclusions from "חייב במס", (1)-(4) (MREG:97-103), including (2), the reg 6א case (MREG:101).
+- **Reg 2(א)(1)** is at MREG:150, identical to `R-REG:43`. Reg 2(א)(2) is "חייב במס ימציא למנהל טופס כאמור בתקנה זו לא יאוחר מהיום שבו החל בעסקיו או בפעולותיו." (MREG:152).
+- **Reg 11(א)** is at MREG:271. It is identical to `R-REG:123` except that the mirror reads "תשל"ו-1976" where the capture reads "התשל"ו-1976". Reg 11(ב) is at MREG:278.
+- **Reg 13**: the chapeau is at MREG:312 and (7) at MREG:335.
+  - 13(1) is at MREG:316 and **differs from `R-REG:135`** in three ways: the mirror omits "סוכן ביטוח"; it has ";" before "וכן"; and it reads "תשל"ו-1976" where the capture has "תשל"ו- 1976" (a space).
+  - The mirror's own history includes "סוכן ביטוח" in the 23.4.1976 and 1.10.1976 wordings (MREG:340, :345). No history entry records its deletion.
+  - None of this touches the occupation line.
+- **Reg 15** is at MREG:390, identical to `R-REG:173`.
+- **Reg 15א(א)** is at MREG:403, identical to `R-REG:176`. 15א(ה) is at MREG:414.
+- **Result:** ruling (a) under 16(d) (ii) said "the registration regulations … have no github twin". Regs 2(א)(1), 11, 13 and 15 now have one: the text was fetched by 5.6.2023, and its latest amendment is of 2016. It matches the 10-12-2024 capture except in reg 11(א) and reg 13(1) as above.
+
+### What is absent
+- **No instrument issued under VAT §145(א1).**
+  - It is not among the 7,218 entries of the mirror's nevo listing, by title.
+  - It is not in any of the mirror's 7,402 `.docx` texts: no text but the VAT law cites §145(א1) of the VAT law.
+- **Nothing after about 5.6.2023.**
+- **The listing is one saved nevo search, not the gazette.**
+  - Its parameters are not recorded, so it is not shown to be nevo's complete consolidated set.
+  - An instrument nevo never consolidated, or one outside that search, would not appear.
+- **No reg 6א text on foreign recipients.**
+- **No GEN provision on computerised invoices or receipts.**
+- **A 403 was not a gap.** A GitHub API tree call (`api.github.com`) returned 403. Nothing above depends on it; the tree was read from the clone.
+
+**Does the §145(א1) check pass, fail, or stay open?** It passes on the ruling's own terms, at github grade. Ruling (a) set the test as "If no such instruction exists (as of 2023)":
+- The mirror's nevo listing, fetched about 30.5.2023, holds no instruction or regulation under VAT §145(א1) among its 7,218 entries.
+- Across all 7,402 texts in the mirror, only the VAT law itself cites VAT §145(א1).
+- The only VAT "הוראות" in the mirror is made under §129(א) (HOB:25).
+- The four e-signature regulations are made under the Electronic Signature Law.
+
+§145(א1) has been in force since 15.7.2009 (VAT:5163). In the 14 years to mid-2023, the mirror holds nothing made under it. The "state-only issuance" that would trigger KILL-4 is therefore not shown.
+
+Under the ruling, grounds 3-4 decide, and the secured route stands under ground 3's conditions. The first document still waits on step 2, the one-time notices, the class guard and the first payer's written acceptance.
+
+Four residuals remain, and none is a REOPEN trigger as the ruling words them (`RULING-2026-09-30-documents.md:142-144`):
+1. The listing is neither the gazette nor shown to be nevo's complete set, so this is strong evidence of absence, not proof.
+2. 6.2023 to 2026 is unread. The 2026 VAT law keeps the same definition (`nevo-vat-law.txt:37`), but a statute's text would not list its instruments anyway.
+3. In 2023 the narrowed term did have one operative use, in §72א(א) reports (VAT:3185). Amendment 52 had already been enacted in 2015 to remove it from a date set by order (VAT:3202-3205), and it is gone from the 2026 text. "No operative content" therefore holds for the exempt dealer's documents, not for the 2023 law as a whole.
+4. **[inference]** Absence does not dispose of OP 7.6's first reading, that the VAT definition governs the words when the instructions are applied for VAT (`:612-616`). On that reading, a proviso requiring issuance "בהתאם להוראות לפי סעיף 145(א1)" with no such instructions cannot be met by any key: absence makes it unmeetable, not empty. Ground 4 already carries this as "a noted risk, not a bar" (`RULING-2026-09-30-documents.md:59`); this check does not reopen it.
+
+
+**Provenance.** Read by one Opus reader and re-read from a fresh clone by an adversarial Opus verifier, who made 16 corrections before this was filed (wrong line references, a date overclaim, the full-text scan widened to all 7,402 blobs, two residuals added). Footer paths are cut to file names because the full paths carry staff names.

@@ -77,7 +77,7 @@
  *
  *   - Q2: step 8, the brand mailbox, is ADDED and asked now — ordered second,
  *     straight after merge-pr. A Google account under the brand name, so one
- *     account later serves YouTube and Search Console (Play Books too, until it was
+ *     account later serves YouTube (until ruling 30.9 16(c) moved Stage A to a dedicated account) and Search Console (Play Books too, until it was
  *     killed 28.9 in tick 6: Israel is not a supported country); free, about ten
  *     minutes, no identity beyond a phone check. Every other step keeps its number
  *     and moves one place down the order: 1 → 8 → 2 → 3 → 5 → 7 → 4 → 6.
@@ -113,6 +113,34 @@ export type OwnerStepId =
   | "ci-tokens"
   | "github-org"
   | "brand-mailbox";
+
+/**
+ * A condition on the site's own config under which a secret row is asked. The colony makes it true, never the owner.
+ *   - "posthog-project-exists": `posthog.projectId` in products/il-biz-tools/src/config/site.json is non-empty. The agent
+ *     creates the brand's PostHog project through the connector and writes the id there first
+ *     (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4).
+ */
+export type SecretRowGate = "posthog-project-exists";
+
+/** How the report names a gate that still holds a row back: a reason, never something for the owner to do. */
+export const SECRET_ROW_GATE_SHORT: Record<SecretRowGate, string> = {
+  "posthog-project-exists":
+    "waits until the colony has created the brand's PostHog project (posthog.projectId in products/il-biz-tools/src/config/site.json)",
+};
+
+/** One row of step 6's secrets table. */
+export interface OwnerSecretRow {
+  /** The secret's exact name under Settings → Secrets and variables → Actions. */
+  name: string;
+  /** Where its value comes from. */
+  source: string;
+  askedOnlyWhen?: SecretRowGate;
+}
+
+/** The site facts a row's gate reads; `readSite()` in page-views-reader.ts returns a superset. */
+export interface SecretGateSite {
+  projectId: string;
+}
 
 export interface OwnerStep {
   id: OwnerStepId;
@@ -178,6 +206,12 @@ export interface OwnerStep {
    * plainly; `freeInstead` is what replaces it at ₪0.
    */
   frozen?: { since: string; rule: string; why: string; costs: string; freeInstead: string; returnsWhen: string };
+  /**
+   * The GitHub secrets the owner pastes in this step — the rows of the table in the Hebrew document (step 6, part ב),
+   * in the same order. A row with `askedOnlyWhen` is held back until something the colony makes itself exists, so the
+   * owner is never asked for a key to nothing; `isSecretRowAsked` reads it. Only step 6 has rows.
+   */
+  secrets?: OwnerSecretRow[];
 }
 
 export const OWNER_STEPS: OwnerStep[] = [
@@ -205,7 +239,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "תיבת דואר של המותג (חשבון Google בשם המותג)",
     minutes: [10, 10],
     unlocks:
-      "A Google account under the brand (Gmail, mehudak) — the inbox every new-account venue needs for verification mail and one-time codes, and the brand-owned accessibility contact that is il-biz-tools' last publish gate. It is a Google account rather than a mailbox elsewhere because the same account later serves YouTube Stage A (the brand Google account T1-PROTOCOL.md already names) and Search Console: one account, several venues (MISSION constraint 2). Google Play Books Partner Center was a third use until 28.9.2026, when it was killed: Israel is not a supported country (research/measurements/google-play-books.md). If Google's sign-up asks for more than a phone number — an ID document, a video or a payment — stop and use a free Outlook.com mailbox instead (IMAP). The owner's own phone number for the sign-up check is allowed (private, no camera); it is never the owner's personal Gmail (PUBLISH-9). The agent reads it and the owner never answers anyone: a second Gmail connector for the brand account in this environment, and for CI an app password (or OAuth token) as a secret of the GitHub environment brand-mailbox, whose deployment branches are limited to main — not a repository secret, which every branch and workflow could read. Once step 8 is done, the tick's probe will report the unread count, with accessibility mail unanswered for 7 days as a blocker, and the colony will answer accessibility mail itself — neither runs yet: the probe is built but not scheduled (scripts/brand_mail.py probe via .github/workflows/brand-mail.yml, dispatch only; the report already reads its numbers from state/colony/brand-mail.json, and it joins colony.yml's schedule once this step is done), and the responder is not built. Every written question the colony sends a platform from this address discloses that it comes from the company's automated operator (as disclosure.ts does), which is what lets the colony ask the written questions that decide CrazyGames (runner-operated submission) and Spreadshirt (automated uploads); the seven are drafted in research/owner-asks/questions.json and leave through the same workflow, dry run first. The address is published only as the brand's accessibility contact. Cost ₪0; about ten minutes; no identity step (research/breadth/BOARD.md Q2, 28.9.2026). It is first among the free steps because it unblocks more than any other (loop board 29.9.2026, research/channel-loop/RULING-2026-09-29-loop.md (b)): seven written questions, il-biz-tools' publish gate, the pcn874 page, npm's account (proposed step 9, not yet asked) and Displate's login (if Displate is admitted) wait on it — said once, never as a reminder.",
+      "A Google account under the brand (Gmail, mehudak) — the inbox every new-account venue needs for verification mail and one-time codes, and the brand-owned accessibility contact that is il-biz-tools' last publish gate. It is a Google account rather than a mailbox elsewhere because the same account later serves Search Console; YouTube Stage A uses a dedicated brand Google account (ruling 30.9 16(c)). Google Play Books Partner Center was another use until 28.9.2026, when it was killed: Israel is not a supported country (research/measurements/google-play-books.md). If Google's sign-up asks for more than a phone number — an ID document, a video or a payment — stop and use a free Outlook.com mailbox instead (IMAP). The owner's own phone number for the sign-up check is allowed (private, no camera); it is never the owner's personal Gmail (PUBLISH-9). The agent reads it and the owner never answers anyone: a second Gmail connector for the brand account in this environment, and for CI an app password (or OAuth token) as a secret of the GitHub environment brand-mailbox, whose deployment branches are limited to main — not a repository secret, which every branch and workflow could read. Once step 8 is done, the tick's probe will report the unread count, with accessibility mail unanswered for 7 days as a blocker, and the colony will answer accessibility mail itself — neither runs yet: the probe is built but not scheduled (scripts/brand_mail.py probe via .github/workflows/brand-mail.yml, dispatch only; the report already reads its numbers from state/colony/brand-mail.json, and it joins colony.yml's schedule once this step is done), and the responder is not built. Every written question the colony sends a platform from this address discloses that it comes from the company's automated operator (as disclosure.ts does), which is what lets the colony ask the written questions that decide CrazyGames (runner-operated submission) and Spreadshirt (automated uploads); the seven are drafted in research/owner-asks/questions.json and leave through the same workflow, dry run first. The address is published only as the brand's accessibility contact. Cost ₪0; about ten minutes; no identity step (research/breadth/BOARD.md Q2, 28.9.2026). It is first among the free steps because it unblocks more than any other (loop board 29.9.2026, research/channel-loop/RULING-2026-09-29-loop.md (b)): seven written questions, il-biz-tools' publish gate, the pcn874 page, npm's account (proposed step 9, not yet asked) and Displate's login (if Displate is admitted) wait on it — said once, never as a reminder.",
     lines: ["il-biz-tools"],
     // Not an identity step and not in the chief audit's catalogue: a brand account asked for by the breadth board.
     catalogueRef: null,
@@ -217,7 +251,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "פתיחת תיק עוסק פטור + רישום בביטוח לאומי",
     minutes: [60, 90],
     unlocks:
-      "The legal right to receive any shekel at all. This is the law rather than a platform's requirement: business income needs a file at the Tax Authority, and ₪10 counts. Written here ONCE — it used to be repeated in every line's humanSetup, which is how a six-item catalogue reads as eleven. After it, the company issues its own payout documents (an exempt dealer's receipt or payment demand, generated by the runner from the payer's own statement and sent from the brand mailbox to payee-billing platforms), and the owner signs nothing per payout (loop board 29.9.2026, research/channel-loop/RULING-2026-09-29-loop.md (e)3, under its six conditions; the first document waits for the bookkeeping read that ruling names).",
+      "The legal right to receive any shekel at all. This is the law rather than a platform's requirement: business income needs a file at the Tax Authority, and ₪10 counts. Written here ONCE — it used to be repeated in every line's humanSetup, which is how a six-item catalogue reads as eleven. After it, the company issues its own payout documents (an exempt dealer's receipt or payment demand, generated by the runner from the payer's own statement and sent from the brand mailbox to payee-billing platforms), and the owner signs nothing per payout (loop board 29.9.2026, research/channel-loop/RULING-2026-09-29-loop.md (e)3, under its six conditions; the first document waits for the bookkeeping read that ruling names). As narrowed by the documents ruling of 30.9.2026 (research/channel-loop/RULING-2026-09-30-documents.md (a)): the first document goes out only after the signature question is closed. The form is delivered by hand or through an accountant, lawyer, tax adviser or bookkeeper under reg 2(א)(1) of the VAT registration regulations as read; an online route on the Tax Authority's site is unverified from here. The occupation line describes the business as it runs (digital tools and software, licence sales, platform royalties and revenue shares; operated by an automated system of AI agents on the business's behalf), the office decides the class, and if the approval says עוסק מורשה the owner writes that word with 'צעד 2 בוצע', because the documents and the reporting then change. The law attaches to the exempt status an annual turnover declaration by 31 January (reg 15), which the runner computes from the ledger and drafts (who delivers it is not stated in the text read), and a one-time registered-mail notice to the assessing officer and the VAT Director before the first computerised document (§18ב(ב); reg 2(א)(2) of the VAT bookkeeping regulations), recorded and not asked while the cost of registered mail is unchecked. The exemption from periodic reports is reg 22(2) of the general VAT regulations (a 2023 text read on GitHub), which reaches the exempt dealer by inference through §31(3).",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.1",
     precondition: {
@@ -239,7 +273,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "חשבון Gumroad + טוקן",
     minutes: [20, 20],
     unlocks:
-      "The only merchant-of-record rail with RENDERED proof of a native ILS payout to an Israeli bank (Freemius pays Israel from a USD balance, ILS only via Wise or wire) (Gumroad's own _13-getting-paid.html.erb carries a row reading `Israel | ILS`). It collects from the buyer, holds 7 days, and pays out in shekels above a $100 balance. It supplies no buyers — its Discover gate requires a sale to already exist — so it is a rail, not a storefront. The dashboard-minted token carries edit_products (Gumroad doorkeeper.rb:10, oauth_application.rb:121-122), so the agent creates the Pro product with Gumroad's own licence-key block, and Gumroad mints and emails a key per sale — there is no per-sale owner step (research/measurements/gumroad-license-decision.md, Option C). The account is opened with the brand mailbox (owner step 8), never a personal address: a buyer's reply to the Gumroad receipt, a refund request or a question goes to that address, and the colony reads only the brand mailbox — so the product job refuses to enable the Pro product until the brand-mail probe is green (products/il-biz-tools/scripts/gumroad-pro-product.js, enableProduct; research/tiktok/08-sales-marketing-lessons.md N6).",
+      "The only merchant-of-record rail with RENDERED proof of a native ILS payout to an Israeli bank (Freemius pays Israel from a USD balance, ILS only via Wise or wire) (Gumroad's own _13-getting-paid.html.erb carries a row reading `Israel | ILS`). It collects from the buyer, holds 7 days, and pays out in shekels above a $100 balance. It supplies no buyers — its Discover gate requires a sale to already exist — so it is a rail, not a storefront. The dashboard-minted token carries edit_products (Gumroad doorkeeper.rb:10, oauth_application.rb:121-122), so the agent creates the Pro product with Gumroad's own licence-key block, and Gumroad mints and emails a key per sale — there is no per-sale owner step (research/measurements/gumroad-license-decision.md, Option C). The account is opened with the brand mailbox (owner step 8), never a personal address: a buyer's reply to the Gumroad receipt, a refund request or a question goes to that address, and the colony reads only the brand mailbox — so the product job refuses to enable the Pro product until the brand-mail probe is green (products/il-biz-tools/scripts/gumroad-pro-product.js, enableProduct; research/tiktok/08-sales-marketing-lessons.md N6). Receipt replies go to the account's Support email when one is set, so the owner leaves Settings → Support → Email blank or sets it to the brand mailbox, sets no product-level support address, and names the account (name) Mehudak, which prints on receipts, invoices and the refund email (research/channel-loop/RULING-2026-09-30-documents.md (d)).",
     lines: ["il-biz-tools", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.2",
     ownerDecision:
@@ -313,9 +347,20 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "לחבר את Netlify, להדביק את הטוקנים ב-GitHub, וקליק אחד ב-Apify",
     minutes: [15, 20],
     unlocks:
-      "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; the same token creates the il-biz-tools Pro product once (Option C, Gumroad-native licences); BRAND_GITHUB_TOKEN, made in step 7's sitting and pasted here with the others, lets bounty PRs leave the brand account once the board's week-4 clock allows it — the intake is gated in code until then (RULING-2026-09-28-bounty-rail.md §4.4). The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can.",
+      "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; the same token creates the il-biz-tools Pro product once (Option C, Gumroad-native licences); BRAND_GITHUB_TOKEN, made in step 7's sitting and pasted here with the others, lets bounty PRs leave the brand account once the board's week-4 clock allows it — the intake is gated in code until then (RULING-2026-09-28-bounty-rail.md §4.4). POSTHOG_READ_KEY, a PostHog personal API key with the query-read scope only, turns on the weekly page-view reader, which is a strict no-op without it, so without it Pro's PASS gate is never read; it is asked only after the agent has created the brand's PostHog project and written its id to site.json, and only while PostHog's query API stays on the free tier (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4). The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can.",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.5",
+    secrets: [
+      { name: "GUMROAD_ACCESS_TOKEN", source: "the Gumroad access token from step 3" },
+      { name: "APIFY_TOKEN", source: "the Apify personal API token (part ב, item 2)" },
+      { name: "BRAND_GITHUB_TOKEN", source: "the brand machine account's personal access token, made in step 7's sitting" },
+      {
+        name: "POSTHOG_READ_KEY",
+        source:
+          "a PostHog personal API key with the 'Performing analytics queries' scope only, in the account that holds the brand's project",
+        askedOnlyWhen: "posthog-project-exists",
+      },
+    ],
     earlyPart: {
       what:
         "Apify sign-up with the BRAND as the username (the Store URL apify.com/<username>/… is public) and APIFY_TOKEN into GitHub secrets. This alone starts the 30-day stranger count a month earlier than the rest of the checklist would, and it needs no identity verification.",
@@ -366,6 +411,26 @@ export function frozenOwnerStepsForLine(lineId: string, steps: OwnerStep[] = OWN
  */
 export function heldOwnerStepsForLine(lineId: string, steps: OwnerStep[] = OWNER_STEPS): OwnerStep[] {
   return ownerStepsForLine(lineId, steps).filter((s) => !s.doneOn && !s.frozen && hasPendingPrecondition(s));
+}
+
+/** True when a secret row may be asked now: it has no gate, or its gate holds on the site's config. */
+export function isSecretRowAsked(row: OwnerSecretRow, site: SecretGateSite): boolean {
+  switch (row.askedOnlyWhen) {
+    case undefined:
+      return true;
+    case "posthog-project-exists":
+      return site.projectId.trim() !== "";
+  }
+}
+
+/** A step's secret rows the owner may be asked for now, in table order. */
+export function askedSecretRows(step: OwnerStep, site: SecretGateSite): OwnerSecretRow[] {
+  return (step.secrets ?? []).filter((r) => isSecretRowAsked(r, site));
+}
+
+/** A step's secret rows its gates still hold back, in table order: the complement of `askedSecretRows`. */
+export function heldSecretRows(step: OwnerStep, site: SecretGateSite): OwnerSecretRow[] {
+  return (step.secrets ?? []).filter((r) => !isSecretRowAsked(r, site));
 }
 
 /** Line ids that no step unlocks — always empty, and the test says why that matters. */

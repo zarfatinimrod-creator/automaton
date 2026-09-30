@@ -1,5 +1,5 @@
 {
-  "measuredAt": "2026-09-29T08:55:52.306Z",
+  "measuredAt": "2026-09-30T08:53:40.348Z",
   "candidates": "research/measurements/t1-subbrand-candidates.txt",
   "note": "Status codes only; no page bodies stored. 404 = free, 200 = taken, anything else = unknown. Netlify's 404 reading is grade none until a fold reads it.",
   "allFree": [

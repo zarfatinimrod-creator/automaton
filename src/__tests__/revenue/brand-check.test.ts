@@ -140,8 +140,9 @@ describe("the T1 sub-brand list (RULING-2026-09-29-lines.md (e))", () => {
     expect(new Set(names).size).toBe(names.length);
     expect(names).not.toContain("tikufi");
     expect(text).toContain("RULING-2026-09-29-lines.md (e)");
-    // The account question is not decided by the name, and is not decided here.
+    // The account question is not decided by the name; row 16 decided it (a dedicated account).
     expect(text).toMatch(/FABLE_QUEUE row 16/);
+    expect(text).toContain("RULING-2026-09-30-video.md 16(c)");
   });
 
   it("derives where a list's answers go, and refuses a path outside research/measurements", () => {

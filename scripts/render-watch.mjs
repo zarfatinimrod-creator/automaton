@@ -155,7 +155,7 @@
  * Stated limits: a TikTok server addressed by a bare IP address is not recognised by
  * any of these, and behind such a proxy a subresource redirected to TikTok would still
  * be requested (the runner has no proxy). logs/CHANNEL_LOOP.md §9 paused every TikTok fetch on 28.9, and whether
- * any fetch of TikTok is allowed at all is pending logs/FABLE_QUEUE.md row 16(d).
+ * any fetch of TikTok is allowed at all is ruled: research/channel-loop/RULING-2026-09-30-video.md 16(d) D2.
  */
 
 import { execFile } from "node:child_process";
@@ -271,12 +271,12 @@ export function parseUrlList(text) {
     }
     // Never tiktok.com, plain or js. logs/CHANNEL_LOOP.md §9 paused every TikTok fetch on 28.9
     // (their terms bar automated access; the runner had fetched ~110 pages before that was read),
-    // and whether any fetch of TikTok is allowed at all is pending logs/FABLE_QUEUE.md row 16(d).
+    // and whether any fetch of TikTok is allowed at all is ruled: research/channel-loop/RULING-2026-09-30-video.md 16(d) D2.
     // Refused here, at parse time, so neither urls.txt nor a dispatch override can reach it.
     if (isTikTokHost(hostname)) {
       throw new Error(
         `urls.txt line ${lineNumber}: ${url} is on tiktok.com, which render-watch never fetches in either mode ` +
-          "(the TikTok pause, logs/CHANNEL_LOOP.md §9; pending logs/FABLE_QUEUE.md row 16(d)).",
+          "(the TikTok pause, logs/CHANNEL_LOOP.md §9; ruled: research/channel-loop/RULING-2026-09-30-video.md 16(d) D2).",
       );
     }
     // A site whose rendered terms bar automated access is refused the same way, in both modes
@@ -329,7 +329,7 @@ export function parseUrlList(text) {
  * "any manual or automated software ... to 'scrape' or download data from any web pages
  * contained in the Services" (research/rendered/gumroad-terms.txt:326, also :343). Found
  * in tick 19, after rows 155-186 had been fetched; whether any fetch is allowed again
- * waits on logs/FABLE_QUEUE.md row 16(d). The Gumroad API is not a web page and is not
+ * is ruled: research/channel-loop/RULING-2026-09-30-video.md 16(d) D2. The Gumroad API is not a web page and is not
  * fetched by this script.
  */
 export const TERMS_BARRED = [
@@ -337,7 +337,7 @@ export const TERMS_BARRED = [
     domain: "gumroad.com",
     why:
       "Gumroad's terms bar automated software that scrapes or downloads data from any web page of the Services " +
-      "(research/rendered/gumroad-terms.txt:326, :343; paused in tick 19, logs/CHANNEL_LOOP.md §9; pending logs/FABLE_QUEUE.md row 16(d))",
+      "(research/rendered/gumroad-terms.txt:326, :343; paused in tick 19, logs/CHANNEL_LOOP.md §9; ruled: research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(ii))",
   },
   // The tick-20 terms audit of every active site (research/channel-loop/TERMS-AUDIT-2026-09-29.md): each entry
   // below cites the clause that bars a runner, or a condition the runner does not meet.
@@ -812,7 +812,7 @@ const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
 export function tiktokRedirectError(host) {
   return (
     `redirected to tiktok.com (${host}); not followed — render-watch never fetches tiktok.com ` +
-    "(logs/CHANNEL_LOOP.md §9; pending logs/FABLE_QUEUE.md row 16(d))"
+    "(logs/CHANNEL_LOOP.md §9; ruled: research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(i))"
   );
 }
 
@@ -1028,7 +1028,7 @@ export async function renderWithBrowser(
     // No request to tiktok.com from inside a page either — an embed, a script, a frame, and (route() does
     // not see these) a WebSocket, which is closed before it reaches the server. A second layer: route() is
     // called only for the first URL of a redirect chain, so the resolver rule in chromiumLaunchOptions is
-    // what stops a redirect. The TikTok pause (logs/CHANNEL_LOOP.md §9) and logs/FABLE_QUEUE.md row 16(d).
+    // what stops a redirect. The TikTok pause (logs/CHANNEL_LOOP.md §9), ruled: research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(i).
     const onTikTok = (url) => isTikTokHost(url.hostname);
     await context.route(onTikTok, (route) => route.abort("blockedbyclient"));
     await context.routeWebSocket(onTikTok, (ws) => ws.close({ code: 1008, reason: "render-watch never contacts tiktok.com" }));

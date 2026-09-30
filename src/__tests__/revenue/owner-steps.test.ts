@@ -3,10 +3,13 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   OWNER_STEPS,
+  askedSecretRows,
   frozenOwnerStepsForLine,
   hasPendingPrecondition,
   heldOwnerStepsForLine,
+  heldSecretRows,
   isOwnerStepOpen,
+  isSecretRowAsked,
   linesWithNoOwnerStep,
   openOwnerStepsForLine,
   ownerStepById,
@@ -15,6 +18,7 @@ import {
   ownerStepsInOrder,
 } from "../../revenue/owner-steps.js";
 import { DEFAULT_PORTFOLIO } from "../../revenue/portfolio.js";
+import { readSite } from "../../revenue/page-views-reader.js";
 
 const repoRoot = path.resolve(__dirname, "../../..");
 const doc = fs.readFileSync(path.join(repoRoot, "docs/OWNER_STEPS.he.md"), "utf-8");
@@ -103,9 +107,14 @@ describe("the owner's checklist is eight steps and stays eight", () => {
     expect(step8.unlocks).toMatch(/Outlook\.com/);
     // Play Books was killed 28.9 (tick 6, Israel not a supported country): it is recorded, not offered as a use.
     expect(step8.unlocks).not.toMatch(/serves Google Play Books/);
-    expect(step8.unlocks).toMatch(/Play Books Partner Center was a third use[^:]*killed/);
+    expect(step8.unlocks).toMatch(/Play Books Partner Center was another use[^:]*killed/);
+    expect(step8.unlocks).not.toMatch(/third use/);
     expect(step8.unlocks).toMatch(/Search Console/);
     expect(step8.unlocks).toMatch(/YouTube/);
+    // Ruling 30.9 16(c) (RULING-2026-09-30-video.md): YouTube Stage A leaves step 8's account for a dedicated brand
+    // Google account, so the step-8 account no longer "serves YouTube Stage A".
+    expect(step8.unlocks).toMatch(/serves Search Console; YouTube Stage A uses a dedicated brand Google account \(ruling 30\.9 16\(c\)\)/);
+    expect(step8.unlocks).not.toMatch(/serves YouTube Stage A/);
     expect(step8.unlocks).toMatch(/second Gmail connector/);
     // CHANGED 28.9.2026 (brand-mail review, exposure finding 1): the CI secret lives in the environment brand-mailbox,
     // limited to main, because a repository secret reaches every branch and every workflow.
@@ -509,6 +518,9 @@ describe("the Hebrew document has not drifted from the code", () => {
     expect(step8).not.toMatch(/ישמש אחר כך גם ל-Google Play Books/);
     expect(step8).toMatch(/Play Books[^\n]*נפסלה/);
     expect(step8).toContain("YouTube");
+    // Ruling 30.9 16(c): Stage A gets its own brand Google account; step 8's account keeps Search Console.
+    expect(step8).toContain("לערוץ ה-YouTube (Stage A) ייפתח חשבון Google נפרד של המותג (פסיקה 30.9, 16(c))");
+    expect(step8).not.toContain("גם ל-YouTube ול-Search Console");
     expect(step8).toContain("נגישות");
     expect(step8).toMatch(/Gmail האישי/);
     expect(step8).toContain("research/breadth/BOARD.md");
@@ -640,5 +652,128 @@ describe("the Hebrew document has not drifted from the code", () => {
   it("still tells the owner the Apify token may go in right after step 1", () => {
     expect(doc).toMatch(/Apify/);
     expect(doc).toMatch(/מיד אחרי צעד 1|אחרי צעד 1/);
+  });
+});
+
+// Documents ruling of 30.9.2026 (research/channel-loop/RULING-2026-09-30-documents.md), fold actions 1-3.
+describe("step 2's wording as read, step 3's support field, and step 6's POSTHOG_READ_KEY row (ruling 30.9 documents)", () => {
+  const step2Doc = doc.slice(doc.indexOf("## צעד 2"), doc.indexOf("## צעד 3"));
+  const step3Doc = doc.slice(doc.indexOf("## צעד 3"), doc.indexOf("## צעד 4"));
+  const step6Doc = doc.slice(doc.indexOf("## צעד 6"), doc.indexOf("## צעד 7"));
+
+  it("never asserts an online filing route for the tax file, and says how reg 2(א)(1) delivers it", () => {
+    const timeLine = step2Doc.split("\n").find((l) => l.startsWith("**זמן:"))!;
+    expect(timeLine).toBeDefined();
+    // The Tax Authority part of the step: the time line and the "what to do" item for רשות המסים.
+    const taxItem = step2Doc.slice(step2Doc.indexOf("1. **רשות המסים**"), step2Doc.indexOf("2. **ביטוח לאומי**"));
+    expect(timeLine).not.toContain("אונליין");
+    expect(taxItem).not.toContain("אונליין");
+    // Not only the word: no government-ID login instruction and no leftover of the online clause either.
+    expect(timeLine).not.toMatch(/היכנס|ההזדהות הממשלתית/);
+    expect(taxItem).not.toMatch(/היכנס|ההזדהות הממשלתית/);
+    expect(taxItem).toContain("למסור ביד או דרך רו\"ח/עו\"ד/יועץ מס/מנהל חשבונות");
+    expect(taxItem).toContain("מסלול מקוון לא אומת מכאן");
+    expect(timeLine).toContain("לפי תק' 2(א)(1) שנקראה, הטופס נמסר ביד או דרך רו\"ח/עו\"ד/יועץ מס/מנהל חשבונות");
+    expect(timeLine).toContain("מסלול מקוון באתר רשות המסים לא אומת מכאן");
+    // Across the whole "what to do" block (ביטוח לאומי included), "אונליין" appears only beside "לא אומת".
+    const todo = step2Doc.slice(step2Doc.indexOf("### מה לעשות"), step2Doc.indexOf("### מה זה עושה"));
+    const onlineLines = todo.split("\n").filter((l) => l.includes("אונליין"));
+    expect(onlineLines.length).toBeGreaterThan(0);
+    for (const l of onlineLines) expect(l).toContain("לא אומת");
+    // The notice's reg 2(א)(2) is the VAT bookkeeping regulations', not the registration regulations' 2(א)(1).
+    expect(step2Doc).toContain("תק' 2(א)(2) לתקנות מע\"מ (ניהול פנקסי חשבונות)");
+    expect(ownerStepById("tax-file")!.unlocks).toMatch(/reg 2\(א\)\(2\) of the VAT bookkeeping regulations/);
+    expect(ownerStepById("tax-file")!.unlocks).toMatch(/online route on the Tax Authority's site is unverified/);
+  });
+
+  it("describes the occupation as the business runs, and has the owner report an עוסק מורשה class in one word", () => {
+    expect(step2Doc).toContain(
+      "פיתוח והפעלה של כלים דיגיטליים ותוכנה ומכירת רישיונות לשימוש בהם באינטרנט; תמלוגים וחלוקת הכנסות מפלטפורמות מקוונות.",
+    );
+    expect(step2Doc).toContain("הפעילות מבוצעת על ידי מערכת אוטומטית (סוכני AI) מטעם העסק.");
+    expect(step2Doc).toContain("המשרד קובע את הסיווג");
+    expect(step2Doc).toContain("לכתוב לי את המילה הזאת עם 'צעד 2 בוצע'");
+    expect(step2Doc).not.toContain("פיתוח תוכנה ומכירת כלים דיגיטליים");
+    const tax = ownerStepById("tax-file")!.unlocks;
+    expect(tax).toMatch(/the office decides the class/);
+    expect(tax).toMatch(/עוסק מורשה the owner writes that word with 'צעד 2 בוצע'/);
+  });
+
+  it("names the annual declaration and the one-time registered-mail notice, and asks neither", () => {
+    expect(step2Doc).not.toMatch(/דיווח \*\*פעם בשנה\*\*/);
+    expect(step2Doc).toContain("הצהרת מחזור שנתית עד 31 בינואר");
+    // Reg 22(2) of the general VAT regulations, read 30.9 at github grade from the lawsofisrael mirror (a 2023 text);
+    // it names "עוסק זעיר הפטור ממס לפי סעיף 31(3)", and §31(3) now reads "עסקאות של עוסק פטור" — hence the inference
+    // (research/measurements/osek-patur-documents.md, "30.9 (tick 26, github)" §2).
+    expect(step2Doc).toContain(
+      "הפטור מדיווח תקופתי הוא תק' 22(2) לתקנות מע\"מ הכלליות (נוסח 2023 שנקרא ב-GitHub), והיא חלה על עוסק פטור בהסקה דרך §31(3)",
+    );
+    expect(step2Doc).not.toContain("יושב בתקנות הכלליות שעוד לא נקראו");
+    const what = step2Doc.slice(step2Doc.indexOf("### מה זה עושה"), step2Doc.indexOf("### מה יוצא לך מזה"));
+    expect(what).toContain("המכונה מחשבת את הסכום מהלדג'ר ומכינה את הטופס");
+    expect(what).toContain("הודעה חד-פעמית בדואר רשום");
+    expect(what).toContain("עלות הדואר הרשום עוד לא נבדקה, ולכן היא עוד לא מבוקשת");
+    expect(step2Doc).toContain("המסמך הראשון יוצא רק אחרי שנסגרה שאלת החתימה");
+    expect(step2Doc).toContain("RULING-2026-09-30-documents.md");
+    const tax = ownerStepById("tax-file")!.unlocks;
+    expect(tax).toMatch(/annual turnover declaration by 31 January \(reg 15\)/);
+    expect(tax).toContain(
+      "The exemption from periodic reports is reg 22(2) of the general VAT regulations (a 2023 text read on GitHub), which reaches the exempt dealer by inference through §31(3).",
+    );
+    expect(tax).not.toMatch(/general VAT regulations, still unread/);
+    expect(tax).toMatch(/one-time registered-mail notice[^.]*recorded and not asked while the cost of registered mail is unchecked/);
+    expect(tax).toMatch(/the first document goes out only after the signature question is closed/);
+  });
+
+  it("tells step 3 to leave Gumroad's Support email blank or on the brand mailbox, and to name the account Mehudak", () => {
+    const todo = step3Doc.slice(step3Doc.indexOf("### מה לעשות"), step3Doc.indexOf("### מה זה עושה"));
+    expect(todo).toContain("הגדרות → Support → Email: להשאיר ריק או לשים את תיבת המותג; לא להגדיר כתובת תמיכה למוצר");
+    expect(todo).toContain("שם החשבון (name) = Mehudak");
+    // A field holding the brand mailbox is allowed, so only a different address diverts receipt replies.
+    expect(todo).toContain("כשבשדה כתובת אחרת, תשובות הקונים לקבלה הולכות אליה ולא לתיבה שהמכונה קוראת");
+    expect(todo).not.toContain("כשהשדה מלא");
+    const gumroad = ownerStepById("gumroad")!.unlocks;
+    expect(gumroad).toMatch(/Settings → Support → Email blank or sets it to the brand mailbox/);
+    expect(gumroad).toMatch(/names the account \(name\) Mehudak/);
+  });
+
+  it("adds POSTHOG_READ_KEY as step 6's fourth row, held until the brand's PostHog project exists", () => {
+    const step6 = ownerStepById("ci-tokens")!;
+    expect(step6.secrets!.map((r) => r.name)).toEqual([
+      "GUMROAD_ACCESS_TOKEN", "APIFY_TOKEN", "BRAND_GITHUB_TOKEN", "POSTHOG_READ_KEY",
+    ]);
+    const key = step6.secrets!.find((r) => r.name === "POSTHOG_READ_KEY")!;
+    expect(key.source).toMatch(/'Performing analytics queries' scope only/);
+    expect(key.askedOnlyWhen).toBe("posthog-project-exists");
+    // Only the new row is gated; the other three are asked as before.
+    expect(step6.secrets!.filter((r) => r.askedOnlyWhen).map((r) => r.name)).toEqual(["POSTHOG_READ_KEY"]);
+    // The gate: never asked while posthog.projectId is empty, asked once the colony has written it.
+    expect(isSecretRowAsked(key, { projectId: "" })).toBe(false);
+    expect(isSecretRowAsked(key, { projectId: "   " })).toBe(false);
+    expect(isSecretRowAsked(key, { projectId: "12345" })).toBe(true);
+    expect(askedSecretRows(step6, { projectId: "" }).map((r) => r.name)).toEqual([
+      "GUMROAD_ACCESS_TOKEN", "APIFY_TOKEN", "BRAND_GITHUB_TOKEN",
+    ]);
+    expect(askedSecretRows(step6, { projectId: "12345" }).map((r) => r.name)).toContain("POSTHOG_READ_KEY");
+    expect(heldSecretRows(step6, { projectId: "" }).map((r) => r.name)).toEqual(["POSTHOG_READ_KEY"]);
+    expect(heldSecretRows(step6, { projectId: "12345" })).toEqual([]);
+    // The gate reads the same field the page-view reader reads, from the real site.json.
+    const site = readSite();
+    expect(isSecretRowAsked(key, site)).toBe(site.projectId !== "");
+    // No other step has secret rows.
+    expect(OWNER_STEPS.filter((s) => s.secrets).map((s) => s.id)).toEqual(["ci-tokens"]);
+    expect(step6.unlocks).toMatch(/POSTHOG_READ_KEY/);
+    expect(step6.unlocks).toMatch(/only after the agent has created the brand's PostHog project and written its id to site\.json/);
+  });
+
+  it("carries the same secret rows in the Hebrew table, in the same order, and says the new one waits for the project", () => {
+    const names = [...step6Doc.matchAll(/^\s*\| `([A-Z_]+)` \|/gm)].map((m) => m[1]);
+    expect(names).toEqual(ownerStepById("ci-tokens")!.secrets!.map((r) => r.name));
+    const row = step6Doc.split("\n").find((l) => l.includes("| `POSTHOG_READ_KEY` |"))!;
+    expect(row).toContain("מפתח API אישי ב-PostHog עם ההרשאה 'Performing analytics queries' בלבד, בחשבון שבו הפרויקט של המותג");
+    expect(row).toContain("מפעיל את קורא הצפיות השבועי; בלעדיו שער ה-PASS של Pro לא נקרא לעולם");
+    expect(row).toContain("נשאל רק אחרי שהפרויקט קיים");
+    expect(row).toContain("`posthog.projectId`");
+    expect(row).toContain("RULING-2026-09-30-documents.md");
   });
 });

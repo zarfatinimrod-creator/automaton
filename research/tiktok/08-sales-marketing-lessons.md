@@ -489,7 +489,7 @@ and `…originality-policy.html` (`tiktok-policy.md`).
 **Two structural limits.**
 - The chief audit set three preconditions before any SEO hour: deploy, domain, one SERP read
   (`research/colony-sweep/BOARD.md` line 100). The domain is frozen by the ₪0 rule, and
-  `src/revenue/owner-steps.ts:252` says "no SEO work is done while it is frozen". So the page changes above are
+  `src/revenue/owner-steps.ts:286` says "no SEO work is done while it is frozen". So the page changes above are
   justified as tool value on the page, not as an SEO campaign; the citation audit and query mining are SEO work
   and wait (§8 A2, A9).
 - Search Console is not a checklist step. By standing ruling it is the owner's choice, in his own Google account
@@ -691,14 +691,14 @@ These are for the main thread to add to `logs/FABLE_QUEUE.md`. This stage does n
 | # | Action | Owner step it waits on |
 |---|---|---|
 | A1 | **Bounded refund line**, e.g. "החזר כספי בתוך 7 ימים מהרכישה: משיבים למייל הקבלה מ-Gumroad". It mirrors Gumroad's own policy, which the product job reads via `GET /v2/refund_policy` into `site.json`. It renders only when `in_effect` is true and a responder flag is set, and only after the first real refund confirms the balance covers it. Never "בלי שאלות"; never cite consumer-protection law | Step 8, with step 3's Gumroad sign-up on that mailbox; steps 2 and 6 for the product. No new step: the refund is an agent API call |
-| A2 | **Search Console**: a URL-prefix property verified by a file the colony ships, the sitemap submitted, and monthly reads of queries (→ answer-first FAQ entries the page truly answers) and the generative-AI report. The account is the owner's choice under BOARD §6.3; the brand account is our proposal (§5.4) | Not a checklist step. Asked for only after il-biz-tools shows 100 weekly views (`research/colony-sweep/BOARD.md` §6.3, lines 278–284), and the page-view counter is not wired yet (`logs/CHANNEL_LOOP.md` pcn874 row). The query reads that feed FAQ entries are SEO work, so they also wait for the board's three preconditions, the domain among them (step 5, frozen: `src/revenue/owner-steps.ts:252`, "no SEO work is done while it is frozen"). The site must be public first (step 8 plus the deploy route) |
+| A2 | **Search Console**: a URL-prefix property verified by a file the colony ships, the sitemap submitted, and monthly reads of queries (→ answer-first FAQ entries the page truly answers) and the generative-AI report. The account is the owner's choice under BOARD §6.3; the brand account is our proposal (§5.4) | Not a checklist step. Asked for only after il-biz-tools shows 100 weekly views (`research/colony-sweep/BOARD.md` §6.3, lines 278–284), and the page-view counter is not wired yet (`logs/CHANNEL_LOOP.md` pcn874 row). The query reads that feed FAQ entries are SEO work, so they also wait for the board's three preconditions, the domain among them (step 5, frozen: `src/revenue/owner-steps.ts:286`, "no SEO work is done while it is frozen"). The site must be public first (step 8 plus the deploy route) |
 | A3 | **Code link as a credential**, plus a build-generated test count | Step 7 (GitHub organisation). Today every raw URL carries the owner's username |
 | A4 | **Receipt FAQ**: "מקבלים חשבונית מס?" answered only with confirmed facts: Gumroad is the seller of record and issues its receipt; deductibility is a question for your accountant. First settle whether Gumroad sales to Israelis also need an Israeli invoice (MISSION: an invoice to an Israeli customer names the עוסק) | Steps 2 and 3 |
 | A5 | **The six post-T1 chart-explainer videos.** The title is a question, as in his 2025-12+ captions and his Shorts titles (§2.4; rendered); one true, dated surprise; one pointer to the page. Released at review pace; no cross-posts during T1 (7 of 10 free-tier uploads are reserved) | Stage A (the step-8 brand Google account, plus one publisher sign-in), asked only after the web arm's day-56 read |
 | A6 | **mcp-il-tools README**: a real terminal cast of one tool call | Step 7 and proposed step 9 (npm user `mehudak`) |
 | A7 | **Any brand profile bio**: "מהודק – כלים חינמיים לעסקים קטנים בישראל" plus the free tool's address; the link goes to a free tool page, never to checkout. On TikTok a clickable bio link for a new brand profile is unverified (grade none; TJ has no `bioLink` key), so plan for the address as plain text | YouTube: step 8 plus Stage A. TikTok: a new step, only if F1 says yes |
 | A8 | **Hebrew tool demos on YouTube** (one per verified page, low volume, brand-only description) | Stage A, and only after T1 shows the publisher returns public uploads; the second-channel question is weighed against cluster detection |
-| A9 | **TJ-style citation audit** (10–20 Hebrew prompts, several runs, logged), then fixing our own pages | It is SEO work, so the board's three preconditions apply (`research/colony-sweep/BOARD.md` line 100): deploy (step 8 plus the deploy route), domain (step 5, frozen by the ₪0 rule; `src/revenue/owner-steps.ts:252`), and one SERP read (done: `research/measurements/serp/2026-09-07-hebrew-calculators.md`). Frozen until the owner unfreezes step 5, and then only once the site is indexed. We do not argue it is not an SEO hour: TJ's own step is "Publish pages that take the citation slot" |
+| A9 | **TJ-style citation audit** (10–20 Hebrew prompts, several runs, logged), then fixing our own pages | It is SEO work, so the board's three preconditions apply (`research/colony-sweep/BOARD.md` line 100): deploy (step 8 plus the deploy route), domain (step 5, frozen by the ₪0 rule; `src/revenue/owner-steps.ts:286`), and one SERP read (done: `research/measurements/serp/2026-09-07-hebrew-calculators.md`). Frozen until the owner unfreezes step 5, and then only once the site is indexed. We do not argue it is not an SEO hour: TJ's own step is "Publish pages that take the citation slot" |
 | A10 | **Indiebook**: one sourced section of a Hebrew ebook as a page on our site, labelled as an excerpt, AI declared | Whatever Indiebook requires (`research/measurements/indiebook.md` is NEEDS_MORE; the next check is a written question from the step-8 mailbox) |
 | A11 | **"פטור + בעל עסק זעיר, או דיווח רגיל?" self-check tool.** It shows when the 30% track loses. Blocked on a primary render (N16), not an owner step. The copy rules are in §6.3 | None; primary source first |
 
@@ -764,6 +764,16 @@ These are for the main thread to add to `logs/FABLE_QUEUE.md`. This stage does n
 ---
 
 ## 9. URLs to render next
+
+**Ruled 30.9.2026 (`research/channel-loop/RULING-2026-09-30-video.md` 16(d)).** No fetch of any tiktok.com host, in
+either mode, for any purpose, permanently — policy pages and the `/oembed` endpoint included (D2(i)). **P1b is
+KILLED.** **P1, P3, P4, P6, P7 and P8 are RETIRED**, not paused (P4 because youtube.com is `BARRED`). **P2 and P5
+continue only on hosts that pass the terms gate** (`research/channel-loop/terms-verdicts.json`). Policy text comes
+from the Open Terms Archive mirrors on GitHub. **Quarantine (D1(4)):** the 27 `tt-video-*`/`tt-profile-*` pages, the
+33 `tt-oembed-*` responses and the `tt-src-tiktok-com-discover*`/`-tag-*` pages (75 tiktok.com-host captures in all:
+72 `www.`, 2 `support.`, 1 `ads.`) — no new finding cites them; existing citations in this note stay with the
+`[against-bar]` mark, each supporting a decision not to act (16(a)); no file is deleted. The lists below stay as the
+record of what was planned.
 
 Only URLs seen in a capture are listed, in priority order, except the constructed URLs in P1b and P3, which are
 marked as such. The source capture is named where it is not obvious.

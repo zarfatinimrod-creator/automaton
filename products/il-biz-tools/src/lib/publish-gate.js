@@ -26,6 +26,9 @@
 //     missing from the build, or a statement without a real contact link
 //     (data-a11y-contact). The contact is checked for being there, not only
 //     the marker for being gone: deleting the marker must not clear the gate.
+//   - withCancelLinks() and cancelLinkProblems() do the same for the home
+//     page's cancellation link (RULING-2026-09-30-documents (b)): its address
+//     is the statement's contact, filled at build, and checked, never typed.
 //   - aiDeclarationProblems() keeps the AI declaration (src/lib/ai-declaration.js)
 //     in every shipped page's footer, written exactly and visible: no attribute,
 //     wrapper or stylesheet rule that can hide it. declarationScriptProblems()
@@ -423,6 +426,114 @@ function contactProblems(html) {
     else if (!text) say('has no visible link text');
     if (hides(tag.attrs) || tag.ancestors.some((a) => hides(a.attrs))) say('is hidden (hidden, inert, aria-hidden or display:none on it or around it)');
     if (!tag.ancestors.some((a) => a.name === 'main')) say('is outside <main>');
+  }
+  return problems;
+}
+
+// ---------------------------------------------------------------------------
+// The cancellation link (RULING-2026-09-30-documents (b), fold action 7).
+//
+// Consumer-protection law 14ט(ב) wants a dedicated, prominent link on the home page through which a cancellation
+// notice is sent. It is a mailto: to the brand mailbox with a fixed subject, and the address is never typed into a
+// page: the build takes it from the accessibility statement's own contact (the one brand address the site already
+// publishes), drops any "+tag" from it (bareAddress: +accessibility mail is never read as a refund request), and writes
+// it into every <a data-cancel-link>. In the source the link carries the placeholder marker
+// data-publish-blocker="cancel-link", so publishBlockers refuses it until the build fills it; and cancelLinkProblems
+// checks the link itself, so deleting the marker clears nothing.
+
+/** The marker on the link: <a data-cancel-link href="mailto:…?subject=…">ביטול עסקה (Pro)</a>. */
+export const CANCEL_LINK_ATTR = 'data-cancel-link';
+/** The page that must carry it, in its site footer. */
+export const CANCEL_LINK_PAGE = 'index.html';
+/** The subject a cancellation notice arrives with. */
+export const CANCEL_SUBJECT = 'ביטול עסקה – Pro';
+
+/**
+ * The mailbox an address delivers to, without a "+tag" in its local part. The statement's contact is meant to be
+ * <brand-local>+accessibility@<brand-domain> (scripts/brand_mail.py, "HOW ACCESSIBILITY MAIL IS RECOGNISED"), and
+ * mail to "+accessibility@" or "+a11y@" is accessibility mail there: the refund responder skips it, so a cancellation
+ * notice sent to the tagged address would never be answered or refunded (reviewers of 30.9). The bare address is the
+ * same brand mailbox and publishes nothing new: it is the tagged one minus its tag.
+ */
+export function bareAddress(address) {
+  const text = String(address ?? '').trim();
+  const at = text.lastIndexOf('@');
+  if (at <= 0) return text;
+  return `${text.slice(0, at).split('+')[0]}${text.slice(at)}`;
+}
+
+/** The link's href for the brand address: its bare mailbox (bareAddress), with the fixed subject. */
+export function cancelHref(address) {
+  return `mailto:${bareAddress(address)}?subject=${encodeURIComponent(CANCEL_SUBJECT)}`;
+}
+
+/**
+ * The address of the accessibility statement's contact: the first <a data-a11y-contact> whose href is a mailto: the
+ * contact rules accept (contactHrefProblem), or null - while the contact is a placeholder, or is a form or a phone.
+ */
+export function statementAddress(html) {
+  for (const tag of startTags(renderedMarkup(html))) {
+    if (tag.name !== 'a' || !tag.attrs.has(CONTACT_ATTR)) continue;
+    const href = decodeEntities(tag.attrs.get('href') ?? '').trim();
+    if (!/^mailto:/i.test(href) || contactHrefProblem(href)) continue;
+    try {
+      return decodeURIComponent(href.slice('mailto:'.length)).split('?')[0].trim();
+    } catch {
+      continue;
+    }
+  }
+  return null;
+}
+
+/**
+ * `html` with every <a data-cancel-link> rewritten as <a data-cancel-link href="cancelHref(address)"> - its placeholder
+ * marker and anything else in the tag gone. Without an address the page comes back unchanged, marker and all.
+ */
+export function withCancelLinks(html, address) {
+  const source = String(html ?? '');
+  if (!address) return source;
+  const href = cancelHref(address);
+  return source.replace(TAG, (raw, closing, name, attrText) =>
+    !closing && name.toLowerCase() === 'a' && parseAttrs(attrText).has(CANCEL_LINK_ATTR) ? `<a ${CANCEL_LINK_ATTR} href="${href}">` : raw);
+}
+
+/**
+ * What is wrong with the cancellation links of the pages that would ship; empty means none. Every element marked
+ * data-cancel-link, on any page, must be a visible <a> with link text whose href is exactly cancelHref() of the
+ * accessibility statement's address - so a hand-typed address, another subject, or the statement still a placeholder
+ * all refuse - and the home page must carry one in its site footer.
+ *
+ * @param {{path: string, html: string}[]} shipped  every HTML page that would ship
+ * @returns {string[]} problems, each prefixed with the page
+ */
+export function cancelLinkProblems(shipped, { contactPage = CONTACT_PAGE, linkPage = CANCEL_LINK_PAGE } = {}) {
+  const problems = [];
+  const statement = shipped.find((p) => p.path === contactPage);
+  const address = statement ? statementAddress(statement.html) : null;
+  const want = address ? cancelHref(address) : null;
+  let onHome = false;
+  for (const { path, html } of shipped) {
+    const markup = renderedMarkup(html);
+    for (const tag of startTags(markup).filter((t) => t.attrs.has(CANCEL_LINK_ATTR))) {
+      const say = (why) => problems.push(`${path}: the cancellation link ${why}`);
+      if (tag.name !== 'a') {
+        say(`is marked on a <${tag.name}>; ${CANCEL_LINK_ATTR} goes on the <a> itself`);
+        continue;
+      }
+      const href = decodeEntities(tag.attrs.get('href') ?? '').trim();
+      if (/^mailto:[^@?]*\+/i.test(href)) {
+        say('carries a "+tag" in its address: mail to a tagged address such as +accessibility@ is accessibility mail to the refund responder (scripts/brand_mail.py), which never answers it as a cancellation');
+      }
+      if (!want) say(`cannot be filled: the accessibility statement (${contactPage}) has no mailto: contact to take the brand address from`);
+      else if (href !== want) say(`must be exactly ${want} (the statement's mailbox without a +tag, the subject "${CANCEL_SUBJECT}"), and is "${href.slice(0, 80)}"`);
+      const close = markup.slice(tag.end).search(/<\/a\s*>/i);
+      if (close === -1 || !normalizeText(stripTags(markup.slice(tag.end, tag.end + close)))) say('has no visible link text');
+      if (hides(tag.attrs) || tag.ancestors.some((a) => hides(a.attrs))) say('is hidden');
+      if (path === linkPage && tag.ancestors.some(isSiteFooter)) onHome = true;
+    }
+  }
+  if (!onHome) {
+    problems.push(`${linkPage}: no cancellation link (<a ${CANCEL_LINK_ATTR}>) in the site footer; consumer-protection law 14ט(ב) wants one on the home page (RULING-2026-09-30-documents (b))`);
   }
   return problems;
 }

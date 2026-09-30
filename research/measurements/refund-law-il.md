@@ -1137,7 +1137,7 @@ processes ... to "scrape" or download data from any web pages contained in the S
 and 175-177, and rows 180-186 were dispatched at 13:01, after the terms were captured but before that clause was read.
 Every Gumroad capture cited in this file was fetched against that clause. Gumroad is now paused in code
 (`TERMS_BARRED` in `scripts/render-watch.mjs`) and in `urls.txt`, and FABLE_QUEUE row 16(d) rules whether any
-Gumroad page may be fetched again and whether these captures stay in use.
+Gumroad page may be fetched again and whether these captures stay in use. **Ruled 30.9 (16(d) D1):** these captures stay in use for compliance questions at rendered grade `[against-bar]`; no re-fetch; refresh from antiwork/gumroad (github) (`research/channel-loop/RULING-2026-09-30-video.md`).
 
 ---
 
@@ -1147,7 +1147,7 @@ ZERO-TESTS rows 180-186 (captured 29.9 ~13:02 UTC by render-watch). Read by an O
 
 ### 29.9 tick 20: Gumroad articles 204, 352, 46, 121, 194 and 66, and the /api page (rendered, ZERO-TESTS rows 180-186)
 
-**Provenance:** these seven captures (ZERO-TESTS rows 180-186, dispatched 13:01 UTC and captured 13:02:13-13:02:19 UTC on 29.9) were fetched against Gumroad's terms, which bar software used `to "scrape" or download data from any web pages contained in the Services` (`research/rendered/gumroad-terms.txt:326`; also `:343`), so every rendered finding below rests on pages fetched against that clause, and FABLE_QUEUE row 16(d) (`logs/FABLE_QUEUE.md:40`) decides whether they stay in use.
+**Provenance:** these seven captures (ZERO-TESTS rows 180-186, dispatched 13:01 UTC and captured 13:02:13-13:02:19 UTC on 29.9) were fetched against Gumroad's terms, which bar software used `to "scrape" or download data from any web pages contained in the Services` (`research/rendered/gumroad-terms.txt:326`; also `:343`), so every rendered finding below rests on pages fetched against that clause, and FABLE_QUEUE row 16(d) (`logs/FABLE_QUEUE.md:40`) decides whether they stay in use. **Ruled 30.9 (16(d) D1):** these captures stay in use for compliance questions at rendered grade `[against-bar]`; no re-fetch; refresh from antiwork/gumroad (github) (`research/channel-loop/RULING-2026-09-30-video.md`).
 
 **Read by:** the tick-20 reader, from the render-watch captures of rows 180-186. An adversarial verifier then decoded every `data-page` again, re-grepped every quote and read seven more github files. No Gumroad page was fetched this tick. Besides the seven captures, this section reads:
 - the tick-19 captures `R-TERMS`, `R-G190`, `R-G47` and `R-CPL`, each quote re-grepped in its file;
@@ -1445,7 +1445,7 @@ This is what Gumroad's code does. It is not a ruling on whether Israeli VAT is d
 - After fees, one ₪79 sale credits about ₪65.93, which is less than ₪79.
 - So on a new account the first refund request cannot be issued by the seller, from the dashboard or by the API, until more sales arrive.
 - **[github] The code agrees.** The check is `amount_cents_to_refund = amount_cents.presence || amount_refundable_cents` and `if amount_cents_to_refund > seller.unpaid_balance_cents && charged_using_gumroad_merchant_account?` (`refundable.rb:98-99`). The balance is `balances.unpaid.sum(:amount_cents)` (`user/money_balance.rb:14`). [inference] At about ₪65.93 net per sale, two unpaid sales cover one refund.
-- **[github] Payouts never take the last week.** `MIN_AMOUNT_CENTS = 100_00` (`payouts.rb:8`; "the normal $100 minimum", `:10`) and `PAYOUT_DELAY_DAYS = 7` (`payout_schedule.rb:4`). A payout covers balances only up to `payout_cycle_for_payout_date(payout_date) - PAYOUT_DELAY_DAYS` (`:164`). This matches the owner steps' "מינימום $100, 7 ימים" (`docs/OWNER_STEPS.he.md:500`).
+- **[github] Payouts never take the last week.** `MIN_AMOUNT_CENTS = 100_00` (`payouts.rb:8`; "the normal $100 minimum", `:10`) and `PAYOUT_DELAY_DAYS = 7` (`payout_schedule.rb:4`). A payout covers balances only up to `payout_cycle_for_payout_date(payout_date) - PAYOUT_DELAY_DAYS` (`:164`). This matches the owner steps' "מינימום $100, 7 ימים" (`docs/OWNER_STEPS.he.md:501`).
   - [inference] About six ₪79 sales ($18.31 each, at 3.6) come before the first payout, and a payout leaves the last seven days' sales unpaid. So the balance falls short in two cases: the first sale on a new account, and later a request about a sale that was already paid out when fewer than two sales came in during the last week.
 - **The responder does not answer while it waits.** A refused refund makes the refund command exit 1 ("a refund refused", `gumroad-pro-product.js:62-63`; "the request is left for the next run", `:673`). The responder then records "the refund command stopped: not answered, left for the next run" (`scripts/brand_mail.py:1286`) and sends no reply.
 - **The 14-day deadline can pass.** 14ה(ב)(1) has the dealer return the money "בתוך 14 ימים מיום קבלת ההודעה על הביטול" (`R-CPL:797`). [inference] At launch volume that deadline can pass while the balance is short. Staff refunds skip the balance check (`refundable.rb:92`, tick 19 T2). But article 190 brings Gumroad in only after 30 days: "Please write to us if you haven’t heard back from the creator for 30 days since first contacting them" (`R-G190:51`).
@@ -1489,7 +1489,7 @@ This is what Gumroad's code does. It is not a ruling on whether Israeli VAT is d
 - **Tick 19 T6's claim** (`refund-law-il.md:1044`, "The one text on that receipt the seller controls is the refund policy's fine print."): at github grade there is a second one, the product's custom receipt text (≤500 characters), which `R-G46:51` hints at. It can be set only in the dashboard: the API's `custom_receipt` parameter is one "which nothing reads anymore" (`backfill_custom_receipt_text.rb:37`). For a runner, T6's claim stands.
 - **Tick 19 T8's queued article 196** (`refund-law-il.md:1091`): article 352 links "Contact Gumroad" to article 20, not 196.
 - **FABLE_QUEUE row 17 (d)** says "no rendered page documents the `PUT /v2/sales/:id/refund`" (`logs/FABLE_QUEUE.md:41`). That still stands after row 186. The capture cannot show the docs, and at github grade the page's source does document the endpoint.
-- **The owner steps' payout line** ("מינימום $100, 7 ימים", `OWNER_STEPS.he.md:500`) now has a github source (`payouts.rb:8`, `payout_schedule.rb:4`).
+- **The owner steps' payout line** ("מינימום $100, 7 ימים", `OWNER_STEPS.he.md:501`) now has a github source (`payouts.rb:8`, `payout_schedule.rb:4`).
 - **New since tick 19:**
   - the support-email chain and addresses per product;
   - ILS on the checkout list, and the terms' USD price for a non-USD listing;

@@ -54,10 +54,14 @@ describe("render-watch refuses sites whose terms bar automated access", () => {
     const text = readFileSync("research/rendered/urls.txt", "utf8");
     const entries = parseUrlList(text); // throws if an active Gumroad line were left
     expect(entries.some((e: { url: string }) => /gumroad\.com/i.test(new URL(e.url).hostname))).toBe(false);
-    // Each paused line keeps its URL and slug, and cites the terms line, so it can be restored if the sitting allows.
-    const paused = text.split("\n").filter((l) => l.startsWith("# paused (tick 19"));
-    expect(paused).toHaveLength(13);
-    for (const l of paused) expect(l).toMatch(/gumroad-terms\.txt:326.*— https?:\/\/(www\.)?gumroad\.com\S*\t[a-z0-9-]+$/);
+    // Paused in tick 19; retired by the sitting of 30.9 (RULING-2026-09-30-video.md 16(d) D2(ii)): Gumroad's terms bar any
+    // fetch, and the refresh route is Gumroad's source on GitHub. Each retired line keeps its URL and slug as the record.
+    expect(text.split("\n").filter((l) => l.startsWith("# paused (tick 19"))).toEqual([]);
+    const retired = text.split("\n").filter((l) => l.startsWith("# retired (ruling 30.9 16(d) D2(ii)"));
+    expect(retired).toHaveLength(13);
+    for (const l of retired) {
+      expect(l).toMatch(/refresh from antiwork\/gumroad on GitHub\) — https?:\/\/(www\.)?gumroad\.com\S*\t[a-z0-9-]+$/);
+    }
     // A dispatch override for the Gumroad rows now finds only paused rows.
     expect(() => overrideLines(text, 180, 186)).toThrow(/every row is retired/);
   });

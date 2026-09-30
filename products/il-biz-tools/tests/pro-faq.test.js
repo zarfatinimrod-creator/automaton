@@ -11,7 +11,8 @@ import { DOC_TYPES } from '../src/lib/invoice.js';
 import { verifyWithGumroad } from '../src/lib/license.js';
 import { activationContent, readBackPrice, StopError, MIN_REFUND_DAYS } from '../scripts/gumroad-pro-product.js';
 import { textOf, elementById, faqDetails, faqJsonLd, jsonLdBlocks } from './helpers/html.js';
-import { copyProduct, removeCopy, runBuild, editIn, readIn } from './helpers/product-copy.js';
+import { copyProduct, removeCopy, runBuild, editIn, readIn, fillContact, TEST_CONTACT_ADDRESS } from './helpers/product-copy.js';
+import { CANCEL_LINK_ATTR, cancelHref } from '../src/lib/publish-gate.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -28,8 +29,9 @@ const Q = {
   f: 'מי מוכר את Pro, ואיזו קבלה מקבלים?',
   g: 'אפשר לקבל החזר?',
 };
-// RULING-2026-09-29-lines (h) APPLY 2, word for word; {n} is the slot the build fills from site.json.
-const REFUND_ANSWER = 'החזר כספי בתוך {n} ימים מהרכישה, לפי מדיניות ההחזרים של Gumroad: משיבים למייל הקבלה מ-Gumroad. מדיניות מלאה בדף המוצר ב-Gumroad.';
+// RULING-2026-09-29-lines (h) APPLY 2, with RULING-2026-09-30-documents fold action 7: "in the currency charged" and
+// the home page's cancellation link ("ביטול עסקה (Pro)"). {n} is the slot the build fills from site.json.
+const REFUND_ANSWER = 'החזר כספי בתוך {n} ימים מהרכישה, במטבע שבו חויבתם, לפי מדיניות ההחזרים של Gumroad: משיבים למייל הקבלה מ-Gumroad, או כותבים לנו בקישור ביטול עסקה (Pro). מדיניות מלאה בדף המוצר ב-Gumroad.';
 const INDEX_Q = 'כמה עולה Pro, ומה הוא נותן?';
 
 const proFaq = () => faqDetails(elementById(invoice, 'pro-faq'));
@@ -129,6 +131,14 @@ describe('each answer is true of the code', () => {
     expect(answer(Q.g)).toBe(REFUND_ANSWER);
     const g = elementById(invoice, 'pro-faq').slice(elementById(invoice, 'pro-faq').indexOf(`<summary>${Q.g}</summary>`));
     expect(g.slice(0, g.indexOf('</details>'))).toContain(REFUND_DAYS_SLOT);
+    // RULING-2026-09-30-documents fold action 7: the currency charged, and the cancellation link the build fills from
+    // the accessibility statement's address - never an address typed here.
+    expect(answer(Q.g)).toContain('במטבע שבו חויבתם');
+    const link = /<a\b([^>]*)>([^<]*)<\/a>/.exec(g.slice(0, g.indexOf('</details>')));
+    expect(link[1]).toContain(CANCEL_LINK_ATTR);
+    expect(link[1]).toContain('data-publish-blocker="cancel-link"');
+    expect(link[1]).not.toContain('@');
+    expect(link[2]).toBe('ביטול עסקה (Pro)');
     expect(REFUND_ANSWER).not.toMatch(/חוק|בלי שאלות|מובטח/);
     // The product job never sells under a window shorter than the one the page may state.
     expect(MIN_REFUND_DAYS).toBe(14);
@@ -386,6 +396,34 @@ describe('the built pages (preview build in a throwaway copy)', () => {
     const i = faqDetails(elementById(idx, 'faq')).find((x) => x.question === INDEX_Q);
     expect(textOf(i.answerHtml)).toContain(price);
     expect(faqJsonLd(idx).get(INDEX_Q)).toBe(textOf(i.answerHtml));
+  });
+});
+
+// RULING-2026-09-30-documents fold action 7: once the shop is open and the statement has its contact, the refund
+// answer's link is the brand address the statement publishes, with the subject; the page names no one else.
+describe('the published refund answer carries the cancellation link, filled from the statement', () => {
+  let dir;
+  afterAll(() => removeCopy(dir));
+
+  it('links the brand address with the subject, on screen, and its JSON-LD twin says the same words', () => {
+    dir = copyProduct();
+    editIn(dir, 'src/config/site.json', (json) => {
+      const site = JSON.parse(json);
+      site.gumroad = { ...site.gumroad, productUrl: 'https://mehudak.gumroad.com/l/pro', productId: 'P', priceCents: 7900, currency: 'ils', refundPeriodDays: 30 };
+      return JSON.stringify(site, null, 2);
+    });
+    fillContact(dir);
+    const r = runBuild(dir);
+    expect(r.status, r.stderr).toBe(0);
+    const inv = readIn(join(dir, '_site'), 'invoice.html');
+    const g = faqDetails(elementById(inv, 'pro-faq')).find((x) => x.question === Q.g);
+    expect(g.answerHtml).toContain(`<a ${CANCEL_LINK_ATTR} href="${cancelHref(TEST_CONTACT_ADDRESS)}">ביטול עסקה (Pro)</a>`);
+    expect(textOf(g.answerHtml)).toBe(REFUND_ANSWER.replace('{n}', '30'));
+    expect(faqJsonLd(inv).get(Q.g)).toBe(REFUND_ANSWER.replace('{n}', '30'));
+    const addresses = inv.match(/[^\s"'<>:?=@]+@[^\s"'<>?&]+/g) ?? [];
+    expect(addresses.length).toBeGreaterThan(0);
+    expect(addresses.every((a) => a === TEST_CONTACT_ADDRESS)).toBe(true);
+    expect(inv).not.toMatch(/data-publish-blocker/i);
   });
 });
 

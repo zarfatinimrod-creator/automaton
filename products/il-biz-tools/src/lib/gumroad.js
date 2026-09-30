@@ -38,6 +38,13 @@ export const PRO_PRODUCT_NAME = 'Pro – הלוגו וצבע המותג על ה�
 /** The seller the buyer sees at checkout: the brand's Gumroad store (docs/OWNER_STEPS.he.md step 3). */
 export const GUMROAD_STORE_NAME = 'Mehudak (מהודק)';
 
+/**
+ * The Gumroad account's own `name` (docs/OWNER_STEPS.he.md step 3, "שם החנות: Mehudak"): it prints on receipts,
+ * invoices and the refund email, so the product job refuses to sell from an account named anything else
+ * (RULING-2026-09-30-documents (d), fold action 4(a)).
+ */
+export const GUMROAD_ACCOUNT_NAME = 'Mehudak';
+
 /** A product URL we are willing to send a buyer to: absolute, https, nothing else. */
 export function isValidProductUrl(url) {
   if (typeof url !== 'string' || url.trim() === '') return false;
