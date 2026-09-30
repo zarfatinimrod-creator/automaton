@@ -91,6 +91,9 @@ The judge wrote 20-40 minutes; the red team measured the omissions and made it *
   monetization-policy failure can suspend monetization "on all or any of your accounts"
   [RENDERED youtube-monetization-policies.txt:342]; the personal account stays out of that radius. Phone verification
   of the brand account is why this step is the owner's.
+  **Amended 30.9.2026** (`research/channel-loop/RULING-2026-09-30-video.md` 16(c)): a dedicated brand Google account
+  under the sub-brand name, not step 8's brand-mailbox account; phone verification only; if Google asks for more than a
+  phone, or refuses a second account on that phone, stop and tell us.
 - The channel is created as a Brand Account under the brand name the colony supplies; the colony's manager account is
   added as manager [RENDERED youtube-brand-account.txt:61]. 2-Step Verification on the manager account uses TOTP (the
   colony can hold it), not SMS (RED-TEAM §2.8).

@@ -177,6 +177,8 @@ The first two appear in `research/tiktok/06-faceless-video-tooling.md` §3.3; `r
 
 ### 2.9 Verdict: which rules stop a faceless, screen-recorded product demo with a synthetic voice and an AI label
 
+**Ruled 30.9.2026:** `research/channel-loop/RULING-2026-09-30-video.md` 16(a) and 16(d) — the brand opens no TikTok account; these captures stay citable for our own compliance and decisions not to act only (`[against-bar]`); no re-fetch.
+
 | Element of the demo | Stopped? | Governing text |
 |---|---|---|
 | No face on camera | **No.** No rule requires one. | S4 |

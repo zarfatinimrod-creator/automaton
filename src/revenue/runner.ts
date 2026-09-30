@@ -14,7 +14,14 @@
 import type { Database } from "better-sqlite3";
 import { describeStall, findStalledLines, type StalledLine } from "./watchdog.js";
 import { DEFAULT_PORTFOLIO, labelledKpis, summarizeTargetBasis, TARGET_BASIS } from "./portfolio.js";
-import { frozenOwnerStepsForLine, heldOwnerStepsForLine, openOwnerStepsForLine } from "./owner-steps.js";
+import {
+  frozenOwnerStepsForLine,
+  heldOwnerStepsForLine,
+  heldSecretRows,
+  openOwnerStepsForLine,
+  SECRET_ROW_GATE_SHORT,
+  type SecretGateSite,
+} from "./owner-steps.js";
 import { DEFAULT_MEASUREMENTS_DIR, ingestAlgoraSupplyMeasurement, ingestApifyMeasurement, type IngestResult } from "./measurements.js";
 import { BRAND_MAIL_PROBE_FILE, readBrandMailProbe, type BrandMailReading } from "./brand-mail.js";
 import { PRIZE_INTAKE_FILE, readPrizeIntake, type PrizeIntakeReading } from "./prize-intake.js";
@@ -23,6 +30,7 @@ import {
   DEFAULT_PAGE_VIEW_SITE_DIR,
   evaluatePageViewLines,
   readPageViews,
+  readSite,
   type PageViewReadResult,
 } from "./page-views-reader.js";
 import type { PageViewGateReading } from "./page-views.js";
@@ -571,6 +579,8 @@ export function renderReport(db: Database, result: TickResult): string {
         `Owner steps still open for \`${line.id}\` (docs/OWNER_STEPS.he.md): ${askedNowList(line.id)}` +
           notAskedNowNote(line.id),
       );
+      const heldRows = heldSecretRowsNote(line.id);
+      if (heldRows) out.push(heldRows);
       for (const step of line.humanSetup) out.push(`- [ ] ${step}`);
       out.push("");
     }
@@ -640,6 +650,33 @@ function openOwnerSteps(lineId: string): number[] {
 function askedNowList(lineId: string): string {
   const open = openOwnerSteps(lineId);
   return open.length ? open.join(", ") : "none asked now";
+}
+
+/**
+ * The site facts a secret row's gate reads (owner-steps.ts `askedOnlyWhen`). A site.json that cannot be read holds
+ * every gated row back, so a row is never asked before the thing it opens exists.
+ */
+function secretGateSite(siteDir: string = DEFAULT_PAGE_VIEW_SITE_DIR): SecretGateSite {
+  try {
+    return readSite(siteDir);
+  } catch {
+    return { projectId: "" };
+  }
+}
+
+/**
+ * The secret rows of an asked-now step that a gate still holds back, as one report line, or "" when there are none.
+ * Today that is step 6's POSTHOG_READ_KEY until the colony has created the brand's PostHog project and written its id
+ * to site.json (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4): named with its reason, never as
+ * something to do. Once the id is written the line disappears and step 6 is asked with the row.
+ */
+export function heldSecretRowsNote(lineId: string, site: SecretGateSite = secretGateSite()): string {
+  const parts = openOwnerStepsForLine(lineId).flatMap((step) =>
+    heldSecretRows(step, site).map(
+      (row) => `step ${step.number}'s \`${row.name}\` row ${SECRET_ROW_GATE_SHORT[row.askedOnlyWhen!]}`,
+    ),
+  );
+  return parts.length ? `Not asked yet: ${parts.join("; ")}.` : "";
 }
 
 /**

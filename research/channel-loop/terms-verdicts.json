@@ -199,13 +199,13 @@
    "verdict": "NO_TERMS",
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-4)",
    "checked": "2026-09-29",
-   "note": "the terms page answered with a bot challenge (status 247, a script-only page with an empty body; research/rendered/terms-knesset.html), so the site screens out automated clients; the gazette PDFs on fs.knesset.gov.il stay unread"
+   "note": "refusal-type: the terms page answered a bot challenge (status 247, a script-only page with an empty body; research/rendered/terms-knesset.html); retired until a GitHub-hosted copy is read (ruling 30.9 16(d) D2(iv)); the gazette PDFs on fs.knesset.gov.il stay unread"
   },
   "kolzchut.org.il": {
    "verdict": "NO_TERMS",
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
    "checked": "2026-09-29",
-   "note": "its copyright page returned 403"
+   "note": "refusal-type: the terms page answered 403 (its copyright page); retired until a GitHub-hosted copy is read (ruling 30.9 16(d) D2(iv))"
   },
   "lemidatova.com": {
    "verdict": "NO_TERMS",
@@ -258,7 +258,7 @@
    "verdict": "NO_TERMS",
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
    "checked": "2026-09-29",
-   "note": "no terms link in any nevo capture; the law pages already captured stay readable, new nevo lines wait"
+   "note": "exhaustive-negative (osek-patur-documents.md:1129-1141); fetchable only under NO_TERMS_ROBOTS_OK once render-watch honours robots.txt with an identifying UA (ruling 30.9 16(d) D2(v))"
   },
   "odoo.com": {
    "verdict": "NO_TERMS",
@@ -375,8 +375,8 @@
   },
   "tiktok.com": {
    "verdict": "BARRED",
-   "source": "refused by its own code path in scripts/render-watch.mjs (isTikTokHost), in both render modes and as a redirect; the TikTok pause, logs/CHANNEL_LOOP.md §9",
-   "checked": "2026-09-29"
+   "source": "research/rendered/tt2-terms-of-service-us.txt:63 (US §3.4); EEA and ROW via OTA mirrors (tt2-render-check.md:184-196); ruling 30.9 16(d)",
+   "checked": "2026-09-30"
   },
   "tipalti.com": {
    "verdict": "BARRED",
@@ -428,7 +428,7 @@
    "verdict": "NO_TERMS",
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-3)",
    "checked": "2026-09-29",
-   "note": "the terms page returned 403 to the runner (round 3); no copy at github grade"
+   "note": "refusal-type: the terms page answered 403 (round 3); retired until a GitHub-hosted copy is read (ruling 30.9 16(d) D2(iv)); no copy at github grade yet"
   },
   "y8.com": {
    "verdict": "CONDITIONAL_UNMET",

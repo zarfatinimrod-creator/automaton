@@ -71,6 +71,34 @@ no TikTok policy page was opened directly. The country-list findings are consist
 many independent sources and are graded high confidence; the Creator Marketplace question is
 explicitly unresolved.
 
+> **Amendment, 30.9.2026 — ruled by the Fable sitting** (`research/channel-loop/RULING-2026-09-30-video.md` 16(a),
+> 16(d), 16(e)).
+> - **A brand TikTok account: NO.** The brand opens no TikTok account; the one-batch variant is refused too. BookTok for
+>   the Indiebook ebooks closes with it (`research/tiktok/08-sales-marketing-lessons.md:711-714`). Grounds (16(a)): it
+>   would be a new owner step nothing requires (the only route is manual in-app posting); there is no owner-free kill
+>   signal that measures anything (TikTok's own checks need the account holder's eyes, and the agent may not read
+>   TikTok); the rest-of-world commercial-solicitation bar below; and one venue, one product, posted by hand, is per-store
+>   promotion with no structural leverage (`MISSION.md:140-149`). "What remains legitimate" above no longer covers an
+>   account of our own.
+> - **The reason in the Content Posting API row, corrected.** The operative text is not the API for Business portal quote
+>   in that row but the Developer Terms' "Not acceptable" line for own-account upload tools: "A utility tool to help upload
+>   contents to the account(s) you or your team manages" (`OpenTermsArchive/vlopses-us-versions`
+>   `TikTok/Developer Terms.md:533`, github; `research/tiktok/08-sales-marketing-lessons.md:507`). The 28.9 correction
+>   note above is confirmed.
+> - **P1b KILLED** (16(d) D2(i)): no fetch of any tiktok.com host, in either mode, for any purpose, permanently, policy
+>   pages and the `/oembed` endpoint included. The TikTok captures already made stay readable only for our own
+>   compliance and for decisions not to act, marked `[against-bar]`, and the user-content captures are quarantined (D1).
+> - **The rest-of-world commercial-solicitation bar (16(e)).** The rest-of-world Terms bar using the Services "to advertise
+>   or perform any commercial solicitation" (line 61) and, without "express written consent", "for any commercial or
+>   unauthorized purpose" (line 62) (`research/tiktok/08-reads/tt2-render-check.md:198-201`, github, OTA AU mirror); a
+>   Business Account is under the same Terms (`:202-205`). No text read grants that consent, so an account whose only
+>   purpose is promoting our product is on the bar side until the consent text is found. An independent second ground.
+> - **Reopens only if all three hold:** (1) a TikTok text at github grade (OTA) or rendered from a non-tiktok host grants
+>   businesses the consent of the rest-of-world line 62, or states that a Business Account or the disclosure setting is
+>   that consent; (2) an audited own-account posting route exists (the Developer Terms' "Not acceptable" line changes);
+>   (3) a bio link on a new brand profile is verified. Or the owner asks for a TikTok presence as a mandate change; then
+>   it is a numbered step with a phone only and a stop at any camera.
+
 ---
 
 ## Automated faceless-video pipelines, as a revenue line — REJECTED 2026-09-03
@@ -1599,6 +1627,61 @@ all-in** (Gumroad is 17–22% at small tickets), and verification is a dashboard
 documents reviewed in days, with no camera step on the page. The one thing no page settles is whether an
 individual עוסק פטור passes that form; only an application would. `rails.ts` carries all of it with line
 numbers. Nothing is added to the owner's seven steps: Freemius becomes a step only when a line chooses it.
+
+## YouTube Kids: A, A-he and B — REJECTED 30.9.2026 (Fable-confirmed)
+
+**Verdict: D stands** (`research/youtube-kids/ASSESSMENT.md:330-337`; confirmed by the Fable sitting,
+`research/channel-loop/RULING-2026-09-30-video.md` 16(c)). No YouTube channel for either reading of the owner's "videos on
+the topic of YouTube Kids". T1 (English data explainers) stays the colony's only YouTube test, in its binding order: web
+arm, then the day-56 read, then Stage A. Rejected:
+
+- **A** — content made for children, `selfDeclaredMadeForKids = true`, in English (judges' mean 1.5, NO_GO);
+- **A-he** — the same in Hebrew (mean 0.5, NO_GO);
+- **B** — guides for parents about the YouTube Kids app, adult-directed (mean 2.8, NO_GO).
+
+Full assessment: `research/youtube-kids/ASSESSMENT.md`; the render check: `research/youtube-kids/RENDER-CHECK-2026-09-28.md`.
+
+**Standing ruling on rule 4 for audiences who cannot yet read** (16(c) item 2). Honest value toward pre-readers cannot be
+evaluated without a reviewer of developmental quality outside the colony, which the mandate forbids
+(`ASSESSMENT.md:459-464`; `MISSION.md:12`, `:211`, `:420`). **No colony line targets an audience that cannot read the AI
+declaration.** Only the owner can change this; nothing here asks them to.
+
+**B as ₪0 web pages: NO** (16(c) item 4). No non-public input, no acquisition channel (constraint 7), and the pages could
+not be kept accurate without re-rendering Google's help pages, which the runner may no longer fetch (`google.com` is
+`BARRED`). Constraint 8 for B is NO for the same reason: a dated render history of Google's help pages is a derivative of
+public pages, and the runner may no longer make it.
+
+**What would reopen it** — §9.3's triggers, verbatim (`ASSESSMENT.md:441-469`):
+
+- **B (English only):** all of the following:
+  1. T1 has passed K3, and preferably human YPP review.
+  2. Built-but-unlaunched is below 6.
+  3. The spec names its non-public input.
+  4. A dedicated brand Google account exists.
+  5. No footage comes from automated access to YouTube or YouTube Kids.
+  6. A board ruling replaces G4 for guides with a `sources.py` citation check: every step's `{src:}` must match a rendered
+     help line no older than 30 days. G4 as written (`publication-gate.ts:292-295`) needs a fact-check covering at least one
+     dataset figure, which a click-path guide cannot pass.
+
+  If B were ever run: every step cites a rendered help line no older than 30 days; a weekly re-render unlists a video
+  within 7 days when its cited line changes; two stale events in 90 days kill the line; G2 is unchanged, so steps are
+  written as imperatives and screen-time advice stays out (§5 item 5); T1's K0 and K3 apply.
+- **A:** all of the following:
+  1. answer/9528076, 10774223 and 10938174 and the YouTube Kids creator topic are rendered, and they show an admission
+     path for new AI-made channels;
+  2. T1 has passed K3 and human YPP review;
+  3. a Fable board rules that honest value toward pre-readers can be evaluated;
+  4. a reviewer of developmental quality exists who is not the owner.
+
+  **A is closed under the current mandate unless the owner changes it.** Trigger 4 cannot be met as the mandate stands.
+  It needs a human outside the colony. Reaching one means contact ("אני לא מדבר עם אנשים", `MISSION.md:12`; "no selling,
+  no talking", `:211`; rule 1, `:420`) and very likely payment ("Nothing is bought", `:354`). Triggers 1-3 cannot
+  reopen A on their own. Only the owner can change the mandate, and nothing here asks them to.
+
+  If A were ever run: `true` always, and zero `youtubeProduct=KIDS` views by day 56 kills it. That dimension exists:
+  `yt-analytics-dimensions.txt:731-751`, rendered. The reader does not use it today.
+- **A-he:** everything required for A, plus a Hebrew voice whose weights licence and training-data terms are both rendered as
+  commercial, and which passes a Whisper round-trip and a listener check.
 
 ## Earlier rejections
 

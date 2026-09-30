@@ -1138,7 +1138,7 @@ Written 29.9 as a follow-up to the terms audit, and checked by an adversarial ve
   - `dk-forge/ai-layoff-tracker` `railway/country_coverage.py` at `4ce5e163`. Its `REFUSAL_LEDGER` (`:321`) lists nevo.co.il as one that "bans GPTBot, Google-Extended, Perplexity and '*' outright" (`:467-468`). The entry is marked `"verified_here": False` (`:472`).
   - `calcagnocarloalberto1-star/mediaresenzaconfini` `testi-in-vigore-israele/index.html:92` at `89075e47` reports a nevo page as "accesso bloccato da robots.txt".
   - `lawsofisrael/lawsofisrael` `scripts/scripts.txt:1` at `aeca0b25` says: "please note: while the law information is public domain however the activity of using the website might be not under the terms of the website".
-- **robots.txt is not terms, and render-watch never fetches it.** The runner's own notes say so (`scripts/render-watch.mjs:352-353`, repo). Fetching nevo's robots.txt would also be a new nevo line, and those are held back ("new nevo lines wait", `terms-verdicts.json:252`).
+- **robots.txt is not terms, and render-watch never fetches it.** The runner's own notes say so (`scripts/render-watch.mjs:352-353`, repo). Fetching nevo's robots.txt would also be a new nevo line, and those are held back (nevo is "fetchable only under NO_TERMS_ROBOTS_OK once render-watch honours robots.txt with an identifying UA", `terms-verdicts.json` key `nevo.co.il`, note at `:261`).
 
 **What §6 of the Copyright Act settles, and what it leaves open.**
 - **The text of §6** (חוק זכות יוצרים, התשס"ח-2007, "פרסומים רשמיים"): "על אף הוראות סעיף 4, לא תהא זכות יוצרים בחוקים, בתקנות, בדברי הכנסת ובהחלטות שיפוטיות של בית משפט או של כל רשות שלטונית המפעילה סמכות שפיטה על פי דין."
@@ -1188,8 +1188,10 @@ Written 29.9 as a follow-up to the terms audit, and checked by an adversarial ve
 - **gov.il.** `www.gov.il` was TERMS_PENDING when this was written and is now NO_TERMS (`terms-verdicts.json` key `www.gov.il`; round 3). Its terms page answered the runner with 403 on 29.9 at 16:22Z (`research/rendered/terms-gov-il.meta.json`). This search found no gov.il page with consolidated legislation.
 
 **What this leaves [inference].**
-- The nevo pages already captured stay readable (`terms-verdicts.json` key `nevo.co.il`, its note).
+- The nevo pages already captured stay readable (ruling 30.9 16(d) D1(2): `[no-terms]` captures are unrestricted; `terms-verdicts.json` key `nevo.co.il` records when nevo may be fetched again).
 - For text as of early 2023, the lawsofisrael mirror on GitHub can be read under terms already read, with the provenance caveat above.
 - For newer consolidated text, Wikisource is the only candidate found. Before any runner line: read the Robot Policy and the User-Agent policy, and give that host an identifying User-Agent with contact details.
 - The dumps that `legislator` mentions (`:11`) would make a one-time read possible without weekly page fetches. That route is also unread.
 - For official, unconsolidated text, read the Knesset's terms first.
+
+**Ruled 30.9 (16(d) D1, `research/channel-loop/RULING-2026-09-30-video.md`):** the nevo captures this section cites are `[no-terms]` and stay in use at rendered grade, unrestricted; no re-fetch until render-watch honours robots.txt with an identifying UA (D2(v)); until then the `lawsofisrael` mirror on GitHub (2023 text) is the only fresh read. The Knesset route is retired: the site refused the runner (D2(iv)). This file cites no Gumroad capture, so the `[against-bar]` rule for Gumroad captures is recorded in `refund-law-il.md`.

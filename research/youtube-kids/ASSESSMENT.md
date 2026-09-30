@@ -484,7 +484,7 @@ capability demonstration:
 - no upload and no Stage A;
 - not counted as a line or a launch candidate;
 - every on-screen step quotes a rendered `yk-*` line;
-- English Kokoro narration, or Hebrew on-screen text;
+- English Kokoro narration, or Hebrew on-screen text, or, as a third mode, Hebrew narration through Kokoro-82M's official voices with Phonikud G2P — held sample only; publication needs P-1 and a native listener's approval (ruling 30.9 16(c)) (`research/channel-loop/RULING-2026-09-30-video.md`);
 - `madeForKids` false and `containsSyntheticMedia` true;
 - no app footage, children, cartoon characters or other creators' videos;
 - the video states in its own content that it was made automatically.

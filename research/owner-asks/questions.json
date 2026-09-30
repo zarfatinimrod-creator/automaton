@@ -40,9 +40,9 @@
           "when": "only after a written yes, in the same thread, first of two, one at a time"
         },
         {
-          "text": "Does Wix accept a receipt from an Israeli exempt dealer (עוסק פטור) in place of a tax invoice?",
+          "text": "Does Wix accept from an Israeli exempt dealer (עוסק פטור) a computer-sent transaction invoice (חשבונית עסקה, not a tax invoice) and receipt, signed with the dealer's secured electronic signature, and does Wix consent to receive such computerised documents?",
           "to": null,
-          "when": "only after a written yes, in the same thread, second of two, one at a time: sent only after Wix's first written yes (loop board 29.9.2026, research/channel-loop/RULING-2026-09-29-loop.md (e)3). Wix pays against \"a lawful tax invoice\" (wix-partner-agreement-body.txt:385) and an exempt dealer issues a receipt, not a חשבונית מס. A condition, not a kill: a written no makes Wix's payout depend on VAT registration, a cost decision for the owner under the ₪0 rule, not a per-payout step"
+          "when": "only after a written yes, in the same thread, second of two, one at a time: sent only after Wix's first written yes (loop board 29.9.2026, research/channel-loop/RULING-2026-09-29-loop.md (e)3). Wix pays against \"a lawful tax invoice\" (wix-partner-agreement-body.txt:385), and an exempt dealer never issues a חשבונית מס: its lawful document is a §45 transaction invoice plus a receipt, computer-sent with the payer's consent, and under the ceiling it cannot elect VAT registration (reg 11). A condition, not a kill: a written no leads to incorporating, a §58 request or Wix out, not a plain cost decision (RULING-2026-09-30-documents (a)); never a per-payout step"
         }
       ],
       "followUpAfterDays": 7
@@ -95,22 +95,27 @@
         {
           "text": "האם יש עלות כלשהי לסופר (פרסום, המרה או חבילה), ומה אחוז התמלוגים לסופר ממכירה ומקריאה במנוי?",
           "to": "office@indiebook.co.il",
-          "when": "only after a written yes, in the same thread, first of four, one at a time; any required cost fires kill (a) (indiebook.md:252)"
+          "when": "only after a written yes, in the same thread, first of five, one at a time; any required cost fires kill (a) (indiebook.md:252)"
         },
         {
           "text": "האם שם המחבר ושם ההוצאה המוצגים יכולים להיות \"מהודק\" בלבד?",
           "to": "office@indiebook.co.il",
-          "when": "only after a written yes, in the same thread, second of four; the legal name required, with no brand or pen-name option, fires the name half of kill (c) (indiebook.md:254)"
+          "when": "only after a written yes, in the same thread, second of five; the legal name required, with no brand or pen-name option, fires the name half of kill (c) (indiebook.md:254)"
         },
         {
           "text": "האם ממלאים את טופס הגשת הספר פעם אחת לכל ספר, והאם כל ההתקשרות, כולל ההסכם, יכולה להתנהל בדוא\"ל בלבד?",
           "to": "office@indiebook.co.il",
-          "when": "only after a written yes, in the same thread, third of four; a call per title fails MISSION's one-time rule, a one-time call or signature is an owner step for the sitting to weigh (indiebook.md:255-256)"
+          "when": "only after a written yes, in the same thread, third of five; a call per title fails MISSION's one-time rule, a one-time call or signature is an owner step for the sitting to weigh (indiebook.md:255-256)"
+        },
+        {
+          "text": "האם אתם מקבלים מעוסק פטור חשבונית עסקה (לא חשבונית מס) וקבלה שנשלחות במחשב וחתומות בחתימה אלקטרונית מאובטחת של העוסק, והאם אתם מסכימים לקבל מסמכים ממוחשבים כאלה?",
+          "to": "office@indiebook.co.il",
+          "when": "only after a written yes, in the same thread, fourth of five; the payer's consent to computerised documents (§18ב(ג)), one written yes per payer from the brand mailbox (RULING-2026-09-30-documents (a)); a written refusal of a software-issued document reopens loop ruling (e)3 for this venue"
         },
         {
           "text": "האם ההפצה בלעדית, ומי קובע את מחיר הספר?",
           "to": "office@indiebook.co.il",
-          "when": "only after a written yes, in the same thread, fourth of four; it gates nothing (indiebook.md:257), so it goes last"
+          "when": "only after a written yes, in the same thread, fifth of five; it gates nothing (indiebook.md:257), so it goes last"
         }
       ],
       "followUpAfterDays": 7

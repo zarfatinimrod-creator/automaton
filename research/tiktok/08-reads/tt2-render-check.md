@@ -18,7 +18,7 @@ checked with `grep -n -F` on that local copy.
 ---
 
 ## 0. Verdicts
-
+**Ruled 30.9.2026:** `research/channel-loop/RULING-2026-09-30-video.md` 16(d) and 16(a) — no tiktok.com fetch ever, P1b KILLED, no brand TikTok account; this read's TikTok captures stay citable for our own compliance and decisions not to act only (`[against-bar]`).
 1. **The בעל עסק זעיר income-tax track is settled at primary-text grade, for tax years 2024–2025:**
    - **Legal basis:** **Amendment 265** to the Income Tax Ordinance (not 277), chapter 8, sections 87ב–87ז, in force
      from 1.1.2024.
@@ -217,7 +217,7 @@ the 2026 mode needs the same sourced `checkedOn` value as the cap.] Proposed sha
 "the rendered DOM plus the item JSON it received" (note §9 P1b). That is extracting data and content from the
 Platform with automated software. The research purpose does not help, because the clause says "for any purpose". **It
 breaches §3.4.** The note's own gate says the Google-SERP test "applies to automated TikTok search queries"
-(`08-sales-marketing-lessons.md:802-804`). **So the gate fails: N16 must not add a P1b job.** A formal kill of P1b is
+(`08-sales-marketing-lessons.md:812-814`). **So the gate fails: N16 must not add a P1b job.** A formal kill of P1b is
 **PROPOSED** for the Fable sitting, since the loop board did not pre-register it. What the owner asked for, "search
 TikTok", has no ToS-clean automated route.
 

@@ -96,7 +96,7 @@ colony ask the written questions that decide CrazyGames and Spreadshirt.
 - **A brand Google account** (Gmail under the brand name), not a mailbox on another provider, because the same account
   later serves Google Play Books Partner Center (rank 5), YouTube Stage A (the brand Google account `T1-PROTOCOL.md`
   already names) and Search Console. Constraint 2: one account, several venues. If Google's sign-up demands more than a
-  phone number — an ID document, a video, a payment — stop and fall back to a free Outlook.com mailbox (IMAP available).
+  phone number — an ID document, a video, a payment — stop and fall back to a free Outlook.com mailbox (IMAP available). **Note, 30.9.2026:** YouTube Stage A no longer uses this account; T1's channel gets its own dedicated brand Google account under the sub-brand name, opened at Stage A (`research/channel-loop/RULING-2026-09-30-video.md` 16(c)), and Play Books was killed on 28.9, so this account's later use is Search Console. The text above is left as the board wrote it.
 - The owner's own phone number for the sign-up check is an identity-lite, private, camera-free step and is allowed. The
   owner's personal Gmail is never used (PUBLISH-9).
 - **The agent reads it, the owner never answers anyone.** A second Gmail connector for the brand account in this

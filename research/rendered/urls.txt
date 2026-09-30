@@ -90,7 +90,7 @@ https://api.apify.com/v2/store?search=accessibility	apify-store-accessibility
 # pcn874-spec-watch.yml run #2 (18:26 UTC) fetched all three from a GitHub runner (49 KB, 782 KB, 3.5 MB)
 # but only hashed them; storing the bytes here is what lets a session read the official layout and
 # reconcile the seven disagreements in products/pcn874/docs/SPEC-FROM-SOURCES.md.
-# paused (terms unread, 29.9.2026): www.gov.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://www.gov.il/BlobFolder/generalpage/tax-vat-online-invoice-reporting/he/IncomeTax_IncomeTaxSoftwareHousesInfo_874-eng.pdf	pcn874-gov-il-874-eng
+# retired (ruling 30.9 16(d) D2(iv): www.gov.il refused the runner; until a GitHub-hosted copy of its terms is read) — https://www.gov.il/BlobFolder/generalpage/tax-vat-online-invoice-reporting/he/IncomeTax_IncomeTaxSoftwareHousesInfo_874-eng.pdf	pcn874-gov-il-874-eng
 # paused (terms unread, 29.9.2026): rivhit.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.rivhit.co.il/uploaded_files/documents/pcn874_manual_U1231.pdf	pcn874-rivhit-mirror
 # paused (terms unread, 29.9.2026): h-erp.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://downloads.h-erp.co.il/files/vatr/Guidance874W.pdf	pcn874-h-erp-mirror
 
@@ -255,7 +255,7 @@ https://www.btl.gov.il/Insurance/National%20Insurance/type_list/Self_Employed/Pa
 # ZERO-TESTS.md row 8 — Bituach Leumi minimum for those not working / income not from work.
 https://www.btl.gov.il/Insurance/Rates/Pages/%D7%9E%D7%99%20%D7%A9%D7%90%D7%99%D7%A0%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D%20%D7%95%D7%91%D7%A2%D7%9C%D7%99%20%D7%94%D7%9B%D7%A0%D7%A1%D7%94%20%D7%A9%D7%9C%D7%90%20%D7%9E%D7%A2%D7%91%D7%95%D7%93%D7%94.aspx	btl-not-working-rates
 # ZERO-TESTS.md row 9 — Kol Zchut: contributions for an employee who also has self-employment income.
-# paused (terms unread, 29.9.2026): kolzchut.org.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.kolzchut.org.il/he/%D7%93%D7%9E%D7%99_%D7%91%D7%99%D7%98%D7%95%D7%97_%D7%9C%D7%90%D7%95%D7%9E%D7%99_%D7%9C%D7%A9%D7%9B%D7%99%D7%A8_%D7%A2%D7%9D_%D7%9E%D7%A7%D7%95%D7%A8%D7%95%D7%AA_%D7%94%D7%9B%D7%A0%D7%A1%D7%94_%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D	kolzchut-employee-plus-self-employed
+# retired (ruling 30.9 16(d) D2(iv): kolzchut.org.il refused the runner; until a GitHub-hosted copy of its terms is read) — https://www.kolzchut.org.il/he/%D7%93%D7%9E%D7%99_%D7%91%D7%99%D7%98%D7%95%D7%97_%D7%9C%D7%90%D7%95%D7%9E%D7%99_%D7%9C%D7%A9%D7%9B%D7%99%D7%A8_%D7%A2%D7%9D_%D7%9E%D7%A7%D7%95%D7%A8%D7%95%D7%AA_%D7%94%D7%9B%D7%A0%D7%A1%D7%94_%D7%A0%D7%95%D7%A1%D7%A4%D7%99%D7%9D	kolzchut-employee-plus-self-employed
 # research/measurements/step2-cost.md ("The page that settles the salaried case") — Bituach Leumi: salaried AND self-employed.
 https://www.btl.gov.il/Insurance/National%20Insurance/type_list/%D7%A2%D7%95%D7%91%D7%93%20%D7%A9%D7%9B%D7%99%D7%A8%20%D7%95%D7%92%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%20%D7%A2%D7%A6%D7%9E%D7%90%D7%99/Pages/default.aspx	btl-employee-and-self-employed
 # research/channel-loop/ZERO-TESTS.md rows 11-14 — tick 2 follow-ups the tick-1 readings named (27.9-28.9.2026).
@@ -572,11 +572,11 @@ https://assets-static-prod.displate.com/next-assets/_next/static/chunks/pages/ab
 # research/channel-loop/ZERO-TESTS.md row 152 — Astro themes (7), after the 29.9 GitHub read (29.9.2026).
 # paused (terms audit, 29.9.2026): astro.build — see TERMS_BARRED in scripts/render-watch.mjs — https://portal.astro.build/themes/submit	astro-portal-themes-submit
 # research/channel-loop/ZERO-TESTS.md row 153 — loop board 29.9 (e)3: kolzchut's exempt-dealer page (URL from the 7.9 SERP, not guessed; no site search before kolzchut's terms allow it), the documents an exempt dealer issues and whether software may issue them (29.9.2026).
-# paused (terms unread, 29.9.2026): kolzchut.org.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.kolzchut.org.il/he/%D7%A2%D7%95%D7%A1%D7%A7_%D7%A4%D7%98%D7%95%D7%A8	kolzchut-osek-patur
+# retired (ruling 30.9 16(d) D2(iv): kolzchut.org.il refused the runner; until a GitHub-hosted copy of its terms is read) — https://www.kolzchut.org.il/he/%D7%A2%D7%95%D7%A1%D7%A7_%D7%A4%D7%98%D7%95%D7%A8	kolzchut-osek-patur
 # research/channel-loop/ZERO-TESTS.md row 154 — lines ruling 29.9 (h): consumer protection law 14C(d), refunds on digital content (29.9.2026).
 # retired: court-routing regulations, not the consumer-protection law (tick 17; the law is law00/70305.htm) — https://www.nevo.co.il/law_html/law01/055_001.htm	nevo-consumer-protection-law
 # research/channel-loop/ZERO-TESTS.md row 155 — lines ruling 29.9 (h): Gumroad help index, to find the refund-policy article's URL (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help	gumroad-help-center-index
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/help	gumroad-help-center-index
 # research/channel-loop/ZERO-TESTS.md row 156 — lines ruling 29.9 (a): Green Invoice pricing, logo on a receipt in a free tier (29.9.2026).
 # paused (terms unread, 29.9.2026): greeninvoice.co.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://www.greeninvoice.co.il/pricing/	greeninvoice-pricing
 # research/channel-loop/ZERO-TESTS.md row 157 — lines ruling 29.9 (a): iCount plans, logo on a receipt in a free tier (29.9.2026).
@@ -586,17 +586,17 @@ https://assets-static-prod.displate.com/next-assets/_next/static/chunks/pages/ab
 # research/channel-loop/ZERO-TESTS.md row 159 — lines ruling 29.9 (a): Invoice4u price list (URL unverified), logo on a free receipt (29.9.2026).
 https://www.invoice4u.co.il/pricelist-invoice/	invoice4u-pricelist
 # research/channel-loop/ZERO-TESTS.md row 160 — lines ruling 29.9 (h): the consumer-protection law at nevo, id 70305 (research/measurements/refund-law-il.md) (29.9.2026).
-# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law00/70305.htm	nevo-consumer-protection-law-70305
+# paused (NO_TERMS, exhaustive-negative; waits on robots.txt support, ruling 30.9 16(d) D2(v)): nevo.co.il in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law00/70305.htm	nevo-consumer-protection-law-70305
 # research/channel-loop/ZERO-TESTS.md row 161 — lines ruling 29.9 (h): cancellation regulations, nevo id 84257 (29.9.2026).
-# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law00/84257.htm	nevo-cancellation-regulations
+# paused (NO_TERMS, exhaustive-negative; waits on robots.txt support, ruling 30.9 16(d) D2(v)): nevo.co.il in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law00/84257.htm	nevo-cancellation-regulations
 # research/channel-loop/ZERO-TESTS.md row 162 — lines ruling 29.9 (h): Gumroad help article 51, URL from gumroad-help-center-index.html:51 (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/51-what-is-gumroads-refund-policy	gumroad-help-refund-policy
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/help/article/51-what-is-gumroads-refund-policy	gumroad-help-refund-policy
 # research/channel-loop/ZERO-TESTS.md row 163 — lines ruling 29.9 (h): Gumroad help article 335 (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/335-custom-refund-policy	gumroad-help-custom-refund-policy
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/help/article/335-custom-refund-policy	gumroad-help-custom-refund-policy
 # research/channel-loop/ZERO-TESTS.md row 164 — loop ruling 29.9 (e)3: הוראות ניהול פנקסי חשבונות (research/measurements/osek-patur-documents.md) (29.9.2026).
-# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/255_179.htm	nevo-books-instructions
+# paused (NO_TERMS, exhaustive-negative; waits on robots.txt support, ruling 30.9 16(d) D2(v)): nevo.co.il in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/255_179.htm	nevo-books-instructions
 # research/channel-loop/ZERO-TESTS.md row 165 — loop ruling 29.9 (e)3: חוק חתימה אלקטרונית (29.9.2026).
-# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/159m1_001.htm	nevo-electronic-signature-law
+# paused (NO_TERMS, exhaustive-negative; waits on robots.txt support, ruling 30.9 16(d) D2(v)): nevo.co.il in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/159m1_001.htm	nevo-electronic-signature-law
 # research/channel-loop/ZERO-TESTS.md row 166 — Topcoder (12): Trolley's terms, URL snippet grade (research/measurements/topcoder.md, 29.9 tick 17) (29.9.2026).
 https://trolley.com/terms-of-service/	trolley-terms-of-service
 # research/channel-loop/ZERO-TESTS.md row 167 — Topcoder (12): Trolley's IDV blog post, plain (29.9.2026).
@@ -614,33 +614,33 @@ https://trolley.com/blog/trolley-trust-idv-tool/	trolley-trust-idv-tool
 # research/channel-loop/ZERO-TESTS.md row 173 — lines ruling 29.9 (a): digital-invoice.co.il (29.9.2026).
 # paused (terms unread, 29.9.2026): digital-invoice.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://digital-invoice.co.il/	digital-invoice-home
 # research/channel-loop/ZERO-TESTS.md row 174 — tick 18 read (refund-law-il.md): the Computers Law, nevo id 72393 (29.9.2026).
-# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law00/72393.htm	nevo-computers-law
+# paused (NO_TERMS, exhaustive-negative; waits on robots.txt support, ruling 30.9 16(d) D2(v)): nevo.co.il in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law00/72393.htm	nevo-computers-law
 # research/channel-loop/ZERO-TESTS.md row 175 — tick 18 read: Gumroad's terms (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — http://www.gumroad.com/terms	gumroad-terms
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — http://www.gumroad.com/terms	gumroad-terms
 # research/channel-loop/ZERO-TESTS.md row 176 — tick 18 read: Gumroad help article 190 (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/190-how-do-i-get-a-refund	gumroad-help-get-a-refund
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/help/article/190-how-do-i-get-a-refund	gumroad-help-get-a-refund
 # research/channel-loop/ZERO-TESTS.md row 177 — tick 18 read: Gumroad help article 47 (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/47-how-to-refund-a-customer	gumroad-help-issue-refund
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/help/article/47-how-to-refund-a-customer	gumroad-help-issue-refund
 # research/channel-loop/ZERO-TESTS.md row 178 — tick 18 read (osek-patur-documents.md): the VAT law (29.9.2026).
-# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/271_001.htm	nevo-vat-law
+# paused (NO_TERMS, exhaustive-negative; waits on robots.txt support, ruling 30.9 16(d) D2(v)): nevo.co.il in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/271_001.htm	nevo-vat-law
 # research/channel-loop/ZERO-TESTS.md row 179 — tick 18 read: the VAT bookkeeping regulations (29.9.2026).
-# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/271_019.htm	nevo-vat-bookkeeping-regs
+# paused (NO_TERMS, exhaustive-negative; waits on robots.txt support, ruling 30.9 16(d) D2(v)): nevo.co.il in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/271_019.htm	nevo-vat-bookkeeping-regs
 # research/channel-loop/ZERO-TESTS.md row 180 — lines ruling (h): Gumroad help article 204, URL from gumroad-help-center-index.html:51 (tick 19, refund-law-il.md) (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/204-get-to-know-your-gumroad-receipt	gumroad-help-receipt
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/help/article/204-get-to-know-your-gumroad-receipt	gumroad-help-receipt
 # research/channel-loop/ZERO-TESTS.md row 181 — lines ruling (h): Gumroad help article 352 (tick 19) (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/352-supporting-your-customers	gumroad-help-supporting-customers
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/help/article/352-supporting-your-customers	gumroad-help-supporting-customers
 # research/channel-loop/ZERO-TESTS.md row 182 — lines ruling (h): Gumroad help article 46 (tick 19; article 47 says USD-charged refunds can differ in local currency) (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/46-what-currency-does-gumroad-use	gumroad-help-currency
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/help/article/46-what-currency-does-gumroad-use	gumroad-help-currency
 # research/channel-loop/ZERO-TESTS.md row 183 — lines ruling (h): Gumroad help article 121 (tick 19) (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/121-sales-tax-on-gumroad	gumroad-help-sales-tax
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/help/article/121-sales-tax-on-gumroad	gumroad-help-sales-tax
 # research/channel-loop/ZERO-TESTS.md row 184 — lines ruling (h): Gumroad help article 194 (tick 19) (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/194-i-need-an-invoice	gumroad-help-invoice
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/help/article/194-i-need-an-invoice	gumroad-help-invoice
 # research/channel-loop/ZERO-TESTS.md row 185 — lines ruling (h): Gumroad help article 66, linked from gumroad-help-issue-refund.html data-page (tick 19) (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/help/article/66-gumroads-fees	gumroad-help-fees
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/help/article/66-gumroads-fees	gumroad-help-fees
 # research/channel-loop/ZERO-TESTS.md row 186 — lines ruling (h): Gumroad's API page (tick 19; research/measurements/gumroad-license-decision.md:25) (29.9.2026).
-# paused (tick 19, 29.9.2026): Gumroad's terms bar automated access (research/rendered/gumroad-terms.txt:326, :343) — https://gumroad.com/api	gumroad-api-docs
+# retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/api	gumroad-api-docs
 # research/channel-loop/ZERO-TESTS.md row 187 — loop ruling (e)3: VAT registration regulations, URL from the lawsofisrael nevo listing (tick 19, osek-patur-documents.md) (29.9.2026).
-# paused (terms unread, 29.9.2026): nevo.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/271_004.htm	nevo-vat-registration-regs
+# paused (NO_TERMS, exhaustive-negative; waits on robots.txt support, ruling 30.9 16(d) D2(v)): nevo.co.il in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/271_004.htm	nevo-vat-registration-regs
 # research/channel-loop/ZERO-TESTS.md row 188 — Mozilla (8): GitHub Actions billing docs (tick 19, research/measurements/actions-spending-limit.md) (29.9.2026).
 https://docs.github.com/en/billing/concepts/product-billing/github-actions	gh-docs-actions-billing
 # research/channel-loop/ZERO-TESTS.md row 189 — Mozilla (8): REST billing usage docs (tick 19) (29.9.2026).
@@ -668,7 +668,7 @@ https://huggingface.co/terms-of-service	terms-huggingface
 # research/channel-loop/ZERO-TESTS.md row 200 — terms audit (tick 20): invoice4u's terms page, URL from invoice4u-pricelist.html:2206; fetched once so its terms can be read (29.9.2026).
 https://www.invoice4u.co.il/%d7%aa%d7%a7%d7%a0%d7%95%d7%9f/	terms-invoice4u
 # research/channel-loop/ZERO-TESTS.md row 201 — terms audit (tick 20): kolzchut's terms page, URL from israel-bureaucracy--worker-rights.md:86; fetched once so its terms can be read (29.9.2026).
-# paused (terms unread, 29.9.2026): kolzchut.org.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.kolzchut.org.il/he/%D7%9B%D7%9C-%D7%96%D7%9B%D7%95%D7%AA:%D7%96%D7%9B%D7%95%D7%99%D7%95%D7%AA_%D7%99%D7%95%D7%A6%D7%A8%D7%99%D7%9D	terms-kolzchut
+# retired (ruling 30.9 16(d) D2(iv): kolzchut.org.il refused the runner; until a GitHub-hosted copy of its terms is read) — https://www.kolzchut.org.il/he/%D7%9B%D7%9C-%D7%96%D7%9B%D7%95%D7%AA:%D7%96%D7%9B%D7%95%D7%99%D7%95%D7%AA_%D7%99%D7%95%D7%A6%D7%A8%D7%99%D7%9D	terms-kolzchut
 # research/channel-loop/ZERO-TESTS.md row 202 — terms audit (tick 20): lomdimhofshi's terms page, URL from lomdimhofshi-home.html:1837; fetched once so its terms can be read (29.9.2026).
 # paused (terms audit, 29.9.2026): lomdimhofshi.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://lomdimhofshi.co.il/%d7%aa%d7%a0%d7%90%d7%99-%d7%a9%d7%99%d7%9e%d7%95%d7%a9/	terms-lomdimhofshi
 # research/channel-loop/ZERO-TESTS.md row 203 — terms audit (tick 20): lomdiml's terms page, URL from lomdiml-home.html:1691; fetched once so its terms can be read (29.9.2026).
@@ -708,7 +708,7 @@ https://docs.github.com/en/billing/concepts/budgets-and-alerts	gh-docs-budgets-a
 # research/channel-loop/ZERO-TESTS.md row 220 — terms audit (tick 21): wavedash's terms page, URL from wvdsh/wavedash-deck README.md:63 (github); fetched once so its terms can be read (29.9.2026).
 # paused (terms audit, 29.9.2026): wavedash.com — see TERMS_BARRED in scripts/render-watch.mjs — https://wavedash.com/terms	terms-wavedash
 # research/channel-loop/ZERO-TESTS.md row 221 — terms audit (tick 21): gov.il's terms page, URL from CIOIL/knockout-govil-forms Footer.html:9 (github); governs data.gov.il too (terms-data-gov-il.txt:19); fetched once so its terms can be read (29.9.2026).
-# paused (terms unread, 29.9.2026): www.gov.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.gov.il/he/general/terms_of_use	terms-gov-il
+# retired (ruling 30.9 16(d) D2(iv): www.gov.il refused the runner; until a GitHub-hosted copy of its terms is read) — https://www.gov.il/he/general/terms_of_use	terms-gov-il
 # research/channel-loop/ZERO-TESTS.md row 222 — terms audit (tick 21): ypay's terms page, URL from ypay-faq.html:955; fetched once so its terms can be read (29.9.2026).
 https://ypay.co.il/front/terms	terms-ypay
 # research/channel-loop/ZERO-TESTS.md row 223 — terms audit (tick 21): stripe's terms page, URL from terms-stripe-privacy-and-terms.html:783; fetched once so its terms can be read (29.9.2026).
@@ -716,4 +716,4 @@ https://ypay.co.il/front/terms	terms-ypay
 # research/channel-loop/ZERO-TESTS.md row 224 — terms audit (tick 22): tipalti's terms page, URL from terms-tipalti.html:838; fetched once so its terms can be read (29.9.2026).
 # paused (terms audit, 29.9.2026): tipalti.com — see TERMS_BARRED in scripts/render-watch.mjs — https://tipalti.com/legal/website-terms/	terms-tipalti-website
 # research/channel-loop/ZERO-TESTS.md row 225 — terms audit (tick 22): knesset's terms page, URL from theWallProject/mono page.html:2299 (github); fetched once so its terms can be read (29.9.2026).
-# paused (terms unread, 29.9.2026): knesset.gov.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx	terms-knesset
+# retired (ruling 30.9 16(d) D2(iv): the site refused the runner) — https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx	terms-knesset

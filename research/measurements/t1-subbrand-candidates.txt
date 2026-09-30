@@ -7,8 +7,8 @@
 # at any point. The owner may veto by saying so; nothing is asked.
 # Criteria (brand-candidates.txt:1-4): sayable, spelled one obvious way, no owner name, no claim the colony cannot back;
 # for an English data-explainer the name says what the page is. `tikufi` is excluded: it is the brand's own fallback.
-# The brand Google-account question (one account for several venues vs a dedicated one) is deferred to
-# FABLE_QUEUE row 16; the name is the same under either answer.
+# The brand Google-account question (one account for several venues vs a dedicated one) went to FABLE_QUEUE row 16;
+# ruled 30.9 (RULING-2026-09-30-video.md 16(c)): a dedicated brand Google account under this sub-brand name at Stage A.
 chartexplained
 plotnotes
 axisnotes
