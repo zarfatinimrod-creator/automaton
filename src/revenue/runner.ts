@@ -34,7 +34,7 @@ import {
   type PageViewReadResult,
 } from "./page-views-reader.js";
 import type { PageViewGateReading, PageViewVerdict } from "./page-views.js";
-import { GUMROAD_REFUND_RATE_KPI, REFUND_RATE_WINDOW_DAYS, parseRefundRateUnit } from "./connectors/gumroad.js";
+import { REFUND_RATE_WINDOW_DAYS } from "./connectors/gumroad.js";
 import {
   computePortfolioSummary,
   getLine,
@@ -46,6 +46,7 @@ import {
 import { formatIls } from "./money.js";
 import {
   REVENUE_TASK_INTERVALS_MS,
+  lastGumroadRefundRateRead,
   runAudit,
   runBoardReview,
   runLedgerSync,
@@ -639,41 +640,38 @@ export function describePageViewGate(g: PageViewGateReading): string {
 
 const REFUND_RATE_TAIL = "a number for the board, never a reason to refuse a refund";
 
-function refundRateReading(rate: number, c: { refunded: number; sales: number; partiallyRefunded: number }): string {
+function refundRateReading(
+  rate: number,
+  c: { refunded: number; sales: number; partiallyRefunded: number; disputed: number; chargedback: number },
+): string {
   return (
-    `${rate.toFixed(3)} — ${c.refunded} refunded of ${c.sales} sales ` +
-    `(partly refunded ${c.partiallyRefunded}: counted as sales, not as refunded)`
+    `${rate.toFixed(3)} — ${c.refunded} refunded of ${c.sales} sales (the rate counts \`refunded\` only; also in the ` +
+    `window: partly refunded ${c.partiallyRefunded}, disputed ${c.disputed}, chargebacks not reversed ${c.chargedback})`
   );
 }
 
 /**
- * The report's refund-rate line. This sync's read when the ledger sync ran; otherwise the last row recorded, with its
- * date; nothing when neither exists. It never prints a rate without its counts, and never a rate for no sales.
+ * The report's refund-rate line. This sync's read when the ledger sync ran; otherwise the last sync's read, whatever
+ * it found, with its time (GUMROAD_REFUND_RATE_LAST_READ_KEY); nothing when no sync has read yet. It never prints a
+ * rate without its counts, never a rate for no sales, and never an older rate once a later read found none.
  */
 export function describeGumroadRefundRate(db: Database, read: GumroadRefundRateRead | null): string | null {
-  const head = `Gumroad Pro refund rate, trailing ${REFUND_RATE_WINDOW_DAYS} days`;
-  if (read) {
-    switch (read.status) {
-      case "recorded":
-        return `${head}: ${refundRateReading(read.rate!, read.count!)} — ${REFUND_RATE_TAIL}`;
-      case "no_sales":
-        return `${head}: no rate — ${read.detail}`;
-      case "not_configured":
-        return `Gumroad Pro refund rate: not configured — ${read.detail}`;
-      case "no_product":
-      case "error":
-        return `Gumroad Pro refund rate: not read — ${read.detail}`;
-    }
+  const last = read ? null : lastGumroadRefundRateRead(db);
+  const r = read ?? last;
+  if (!r) return null;
+  const when = last ? ` (last read ${last.at})` : "";
+  const head = `Gumroad Pro refund rate, trailing ${REFUND_RATE_WINDOW_DAYS} days${when}`;
+  switch (r.status) {
+    case "recorded":
+      return `${head}: ${refundRateReading(r.rate!, r.count!)} — ${REFUND_RATE_TAIL}`;
+    case "no_sales":
+      return `${head}: no rate — ${r.detail}`;
+    case "not_configured":
+      return `Gumroad Pro refund rate${when}: not configured — ${r.detail}`;
+    case "no_product":
+    case "error":
+      return `Gumroad Pro refund rate${when}: not read — ${r.detail}`;
   }
-  const row = db
-    .prepare(
-      `SELECT value, unit, captured_at AS capturedAt FROM revenue_kpi_snapshots WHERE kpi = ?
-        ORDER BY captured_at DESC, rowid DESC LIMIT 1`,
-    )
-    .get(GUMROAD_REFUND_RATE_KPI) as { value: number; unit: string | null; capturedAt: string } | undefined;
-  const u = row ? parseRefundRateUnit(row.unit) : null;
-  if (!row || !u || !Number.isFinite(row.value)) return null;
-  return `${head} (last recorded ${row.capturedAt}): ${refundRateReading(row.value, u)} — ${REFUND_RATE_TAIL}`;
 }
 
 /** One-line summary suitable for a commit message. */

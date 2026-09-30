@@ -10,7 +10,9 @@
  * refuse a refund. The fields are Gumroad's API v2 sale object as its public source writes it (antiwork/gumroad
  * 0656875c5fbfbf1a7f339f4716a0b9059539d790, app/models/purchase.rb#as_json, version 2): `created_at` (:1018),
  * `product_id: link.external_id` (:1050), `refunded: stripe_refunded` (:1052), `partially_refunded:
- * stripe_partially_refunded` (:1053). The index (app/controllers/api/v2/sales_controller.rb) filters `created_at >=
+ * stripe_partially_refunded` (:1053), `chargedback: chargedback_not_reversed?` (:1054), `disputed: chargedback?`
+ * (:1079; `chargedback?` is `chargeback_date.present?` and `chargedback_not_reversed?` adds `!chargeback_reversed?`,
+ * :1313-1314). The index (app/controllers/api/v2/sales_controller.rb) filters `created_at >=
  * after` (:282) and `link_id` on `product_id` (:285), answers ten sales a page (RESULTS_PER_PAGE, :14) and pages with
  * `next_page_key` / `page_key` (base_controller.rb:163-167, sales_controller.rb:91-98); every answer carries
  * `success` (base_controller.rb:42-44).
@@ -83,6 +85,14 @@ export interface RefundRateCount {
    * `partially_refunded` otherwise, never both (antiwork/gumroad app/modules/purchase/refundable.rb:317-318, :406-412).
    */
   partiallyRefunded: number;
+  /**
+   * Of those, the ones with a chargeback filed (`disputed`, purchase.rb:1079), reversed or not. Shown beside the rate and
+   * NOT counted as refunded: the ruling's measure is `refunded` alone. Counted on its own field, so a sale that is also
+   * refunded is in both counts.
+   */
+  disputed: number;
+  /** Of those, the ones whose chargeback was not reversed (`chargedback`, purchase.rb:1054): money that did go back. */
+  chargedback: number;
   /** Pro sales with no readable `created_at`: they cannot be placed in the window, so they are left out and counted here. */
   undated: number;
   windowDays: number;
@@ -103,7 +113,16 @@ export function countProRefunds(
 ): RefundRateCount {
   const end = Date.parse(nowIso);
   const start = end - windowDays * DAY_MS;
-  const out: RefundRateCount = { sales: 0, refunded: 0, partiallyRefunded: 0, undated: 0, windowDays, windowEnd: new Date(end).toISOString() };
+  const out: RefundRateCount = {
+    sales: 0,
+    refunded: 0,
+    partiallyRefunded: 0,
+    disputed: 0,
+    chargedback: 0,
+    undated: 0,
+    windowDays,
+    windowEnd: new Date(end).toISOString(),
+  };
   for (const raw of sales) {
     if (!raw || typeof raw !== "object") continue;
     const sale = raw as Record<string, unknown>;
@@ -117,6 +136,8 @@ export function countProRefunds(
     out.sales += 1;
     if (sale.refunded === true) out.refunded += 1;
     else if (sale.partially_refunded === true) out.partiallyRefunded += 1;
+    if (sale.disputed === true) out.disputed += 1;
+    if (sale.chargedback === true) out.chargedback += 1;
   }
   return out;
 }
@@ -126,15 +147,20 @@ export function refundRate(count: Pick<RefundRateCount, "sales" | "refunded">): 
   return count.sales > 0 ? count.refunded / count.sales : null;
 }
 
-/** The KPI row's unit carries its two counts, the product, the window and the partly refunded count. */
+/**
+ * The KPI row's unit carries its two counts, the product, the window, and the counts shown beside the rate but not
+ * counted as refunded (partly refunded, disputed, chargebacks not reversed).
+ */
 export function refundRateUnit(count: RefundRateCount, productId: string): string {
   return (
     `refunded ${count.refunded} of ${count.sales} sales · gumroad:${productId} · ` +
-    `${count.windowDays} days to ${count.windowEnd} · partly refunded ${count.partiallyRefunded}`
+    `${count.windowDays} days to ${count.windowEnd} · partly refunded ${count.partiallyRefunded} · ` +
+    `disputed ${count.disputed} · chargedback ${count.chargedback}`
   );
 }
 
-const REFUND_RATE_UNIT_RE = /^refunded (\d+) of (\d+) sales · (gumroad:\S*) · (\d+) days to (\S+) · partly refunded (\d+)$/;
+const REFUND_RATE_UNIT_RE =
+  /^refunded (\d+) of (\d+) sales · (gumroad:\S*) · (\d+) days to (\S+) · partly refunded (\d+) · disputed (\d+) · chargedback (\d+)$/;
 
 export interface RefundRateUnit {
   refunded: number;
@@ -143,6 +169,8 @@ export interface RefundRateUnit {
   windowDays: number;
   windowEnd: string;
   partiallyRefunded: number;
+  disputed: number;
+  chargedback: number;
 }
 
 export function parseRefundRateUnit(unit: unknown): RefundRateUnit | null {
@@ -155,7 +183,23 @@ export function parseRefundRateUnit(unit: unknown): RefundRateUnit | null {
     windowDays: Number(m[4]),
     windowEnd: m[5]!,
     partiallyRefunded: Number(m[6]),
+    disputed: Number(m[7]),
+    chargedback: Number(m[8]),
   };
+}
+
+type RefundCounts = Pick<RefundRateCount, "sales" | "refunded" | "partiallyRefunded" | "disputed" | "chargedback" | "windowDays">;
+
+/** Whether two readings carry the same counts over the same window length: the sync writes a new row only when not. */
+export function sameRefundCounts(a: RefundCounts, b: RefundCounts): boolean {
+  return (
+    a.sales === b.sales &&
+    a.refunded === b.refunded &&
+    a.partiallyRefunded === b.partiallyRefunded &&
+    a.disputed === b.disputed &&
+    a.chargedback === b.chargedback &&
+    a.windowDays === b.windowDays
+  );
 }
 
 /** The Pro product's Gumroad id from the site's config (written by the product-creation job), or "" while unset. */

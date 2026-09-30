@@ -19,10 +19,12 @@ import {
   GUMROAD_REFUND_RATE_KPI,
   PRO_LINE_ID,
   gumroadConnector,
+  parseRefundRateUnit,
   readProProductId,
   readProRefundCount,
   refundRate,
   refundRateUnit,
+  sameRefundCounts,
   type RefundRateCount,
 } from "./connectors/gumroad.js";
 import {
@@ -34,6 +36,7 @@ import {
   hasRevenueTables,
   insertReview,
   isRevenueColonyEnabled,
+  latestKpis,
   latestReviewForLine,
   listLines,
   listReviews,
@@ -131,8 +134,39 @@ export interface GumroadRefundRateRead {
   /** The line the row went on (or would have): the product map's line for the Pro product, else il-biz-tools. */
   lineId: string | null;
   count: RefundRateCount | null;
-  /** refunded / sales; null whenever there is no row (no sales, not read). */
+  /** refunded / sales; null whenever there is no rate (no sales, not read). */
   rate: number | null;
+  /**
+   * Whether this read wrote a KPI row. A rate is written only when its counts differ from the line's latest row, or when
+   * the read before it found no sale: re-reading the same old sales every hour is not a new reading.
+   */
+  rowWritten: boolean;
+}
+
+/** Every sync's refund-rate read, whatever its status, with the sync's clock: what a tick with no sync reports. */
+export const GUMROAD_REFUND_RATE_LAST_READ_KEY = "revenue.gumroad_refund_rate.last_read";
+
+export interface GumroadRefundRateLastRead extends GumroadRefundRateRead {
+  /** The sync's clock when it read (the window's end when it counted). */
+  at: string;
+}
+
+const REFUND_RATE_STATUSES: readonly GumroadRefundRateStatus[] = ["not_configured", "no_product", "no_sales", "recorded", "error"];
+
+/** The last sync's refund-rate read, or null when none is stored or what is stored cannot be read as one. */
+export function lastGumroadRefundRateRead(db: Database): GumroadRefundRateLastRead | null {
+  const raw = getKv(db, GUMROAD_REFUND_RATE_LAST_READ_KEY);
+  if (!raw) return null;
+  let v: Partial<GumroadRefundRateLastRead>;
+  try {
+    v = JSON.parse(raw) as Partial<GumroadRefundRateLastRead>;
+  } catch {
+    return null;
+  }
+  if (!v || typeof v !== "object" || !REFUND_RATE_STATUSES.includes(v.status as GumroadRefundRateStatus)) return null;
+  if (typeof v.at !== "string" || Number.isNaN(Date.parse(v.at)) || typeof v.detail !== "string") return null;
+  if (v.status === "recorded" && (typeof v.rate !== "number" || !Number.isFinite(v.rate) || !v.count || !(v.count.sales > 0))) return null;
+  return v as GumroadRefundRateLastRead;
 }
 
 export interface LedgerSyncResult {
@@ -155,6 +189,8 @@ export interface LedgerSyncOptions {
 /**
  * gumroadRefundRate90d: refunded / sales of the Pro product over the trailing 90 days, one KPI row carrying both counts
  * in its unit. No sale in the window writes no row (there is no rate to write), and neither does a read that failed.
+ * A rate whose counts equal the line's latest row writes no row either, unless the read before it found no sale: the
+ * last read, whatever it found, is kept under GUMROAD_REFUND_RATE_LAST_READ_KEY, and that is what the report prints.
  */
 async function syncGumroadRefundRate(
   db: Database,
@@ -169,6 +205,7 @@ async function syncGumroadRefundRate(
     lineId: null,
     count: null,
     rate: null,
+    rowWritten: false,
     ...extra,
   });
   const token = env.GUMROAD_ACCESS_TOKEN;
@@ -185,8 +222,20 @@ async function syncGumroadRefundRate(
   if (rate === null) {
     return read("no_sales", `no Pro sale in the window (0 sales since ${new Date(Date.parse(count.windowEnd) - count.windowDays * DAY_MS).toISOString()}), so nothing is divided and no row is written${undated}`, { lineId, count });
   }
+  const latest = latestKpis(db, lineId)[GUMROAD_REFUND_RATE_KPI];
+  const latestUnit = latest ? parseRefundRateUnit(latest.unit) : null;
+  const unchanged =
+    latest !== undefined &&
+    latestUnit !== null &&
+    latestUnit.productKey === `gumroad:${productId}` &&
+    sameRefundCounts(latestUnit, count) &&
+    lastGumroadRefundRateRead(db)?.status !== "no_sales";
+  const counted = `${count.refunded} refunded of ${count.sales} sales${undated}`;
+  if (unchanged) {
+    return read("recorded", `${counted}; the same counts as the row of ${latest.capturedAt}, so no new row`, { lineId, count, rate });
+  }
   recordKpi(db, lineId, GUMROAD_REFUND_RATE_KPI, rate, refundRateUnit(count, productId), nowIso);
-  return read("recorded", `${count.refunded} refunded of ${count.sales} sales${undated}`, { lineId, count, rate });
+  return read("recorded", counted, { lineId, count, rate, rowWritten: true });
 }
 
 export async function runLedgerSync(
@@ -240,8 +289,17 @@ export async function runLedgerSync(
   try {
     result.gumroadRefundRate = await syncGumroadRefundRate(db, env, fetchImpl, resolveLine, options);
   } catch (error) {
-    result.gumroadRefundRate = { status: "error", detail: `${(error as Error).message}; no row written`, lineId: null, count: null, rate: null };
+    result.gumroadRefundRate = {
+      status: "error",
+      detail: `${(error as Error).message}; no row written`,
+      lineId: null,
+      count: null,
+      rate: null,
+      rowWritten: false,
+    };
   }
+  const lastRead: GumroadRefundRateLastRead = { ...result.gumroadRefundRate, at: options.nowIso ?? new Date().toISOString() };
+  setKv(db, GUMROAD_REFUND_RATE_LAST_READ_KEY, JSON.stringify(lastRead));
 
   result.unmapped = [...new Set(result.unmapped)];
   if (result.unmapped.length) {
