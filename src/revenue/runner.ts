@@ -33,7 +33,7 @@ import {
   readSite,
   type PageViewReadResult,
 } from "./page-views-reader.js";
-import type { PageViewGateReading } from "./page-views.js";
+import type { PageViewGateReading, PageViewVerdict } from "./page-views.js";
 import {
   computePortfolioSummary,
   getLine,
@@ -346,7 +346,8 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
   }
 
   // The gates read the rows every tick, like the brand-mail probe: an instrument fault stays a blocker until it is
-  // fixed and the clock restarted, and a due verdict stays in the report until the board applies it.
+  // fixed and the clock restarted, a reader that is down stays a blocker until it reads the missing weeks (never a
+  // clock restart: RULING-2026-09-30-documents (c)), and a due verdict stays in the report until the board applies it.
   const pageViewGates = evaluatePageViewLines(db, {
     nowIso,
     siteDir: options.pageViewSiteDir ?? DEFAULT_PAGE_VIEW_SITE_DIR,
@@ -362,6 +363,7 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
   }
   for (const g of result.pageViewGates) {
     if (g.verdict === "instrument_fault") result.blockers.push(`page views ${g.lineId}: instrument fault — ${g.notes.join("; ")}`);
+    if (g.verdict === "reader_down") result.blockers.push(`page views ${g.lineId}: reader down — ${g.notes.join("; ")}`);
   }
 
   if (shouldRun("revenue_supervisor_review")) {
@@ -610,12 +612,19 @@ const PAGE_VIEW_STATUS_WORDS: Record<PageViewReadResult["status"], string> = {
   error: "error",
 };
 
+/** The page-view verdicts the board applies; typed, so a verdict the gates no longer return fails the typecheck. */
+const PAGE_VIEW_BOARD_VERDICTS: readonly PageViewVerdict[] = ["pause", "pass", "extend", "kill"];
+
 /** One report line per page-view line: the verdict, its clock, why, and the weekly readings. */
 export function describePageViewGate(g: PageViewGateReading): string {
   const clock = g.period ? ` (${g.period} period from ${g.anchorDay}, day ${g.day})` : "";
   const weeks = g.weeks.length ? `; weeks: ${g.weeks.map((w) => `w${w.week} ${w.views}`).join(", ")}` : "";
-  const board = ["pause", "pass", "extend", "extension_exhausted", "kill"].includes(g.verdict) ? " — a reading for the board to apply" : "";
-  return `Page views \`${g.lineId}\`: ${g.verdict}${clock} — ${g.notes.join("; ")}${weeks}${board}`;
+  const tail = PAGE_VIEW_BOARD_VERDICTS.includes(g.verdict)
+    ? " — a reading for the board to apply"
+    : g.verdict === "reader_down"
+      ? " — a blocker until the reader reads the missing weeks; never a clock restart"
+      : "";
+  return `Page views \`${g.lineId}\`: ${g.verdict}${clock} — ${g.notes.join("; ")}${weeks}${tail}`;
 }
 
 /** One-line summary suitable for a commit message. */

@@ -1,8 +1,23 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-30 ~10:45 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-30 ~11:15 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
+
+## ▶ 30.9, ~11:15 UTC — **סבב 28 (רציף, מוקדם): `reader_down` בקורא הצפיות; Wikimedia נקרא; wikisource עדיין לא.**
+
+- **PR #29 מוזג** (`321c3c5`).
+- **שערי הצפיות** (`b0d2526`):
+  - פער בקריאה מחזיר `reader_down`: חוסם עד שהשבועות נקראים, ואף פעם לא הריגה או איפוס שעון.
+  - "between" שני מחזיר `pause`.
+  - `extension_exhausted` נמחק.
+  - 1,416 בדיקות.
+- **Wikimedia:** מדיניות ה-User-Agent נקראה (שורה 232). היא דורשת פרטי קשר, וה-URL שלנו (il-biz-tools.netlify.app) עוד לא חי, ולכן wikisource נשאר CONDITIONAL_UNMET.
+- **FABLE_QUEUE:**
+  - שורה 21 קיבלה סעיף (b) על פרטי הקשר ב-UA.
+  - שורה 22 (3.10): האם מועד היום ה-21 חל גם על תקופת הדומיין.
+- **הבא (סבב 29, 13:11):** מדד שיעור ההחזרים של Pro.
+- **היומן:** `logs/2026-09-30-channel-loop-tick-28.md`.
 
 ## ▶ 30.9, ~10:45 UTC — **סבב 27 (רציף): render-watch מכבד robots.txt ומזדהה; נבו חוסם בוטים; Medium מסרב לרץ.**
 

@@ -1,0 +1,486 @@
+Policy:Wikimedia Foundation User-Agent Policy - Wikimedia Foundation Governance Wiki
+
+Jump to content
+
+Main menu
+
+Main menu
+
+move to sidebar
+hide
+
+About the Foundation
+
+Home
+Official website
+Contact us
+Wikimedia News
+Movement Blog
+Movement Calendar
+Questions for Wikimedia?
+
+Support Wikimedia
+
+Volunteering
+Wikimedia Endowment
+Wikimedia Enterprise
+Wikipedia Store
+
+Corporate
+
+Bylaws
+Values
+Policies
+Resolutions
+Board meetings
+Movement affiliates
+
+Documentation
+
+Annual report
+Financial reports and Form 990
+Fundraising reports
+Legal
+Memory Bank
+Security
+Transparency report
+Wikimedia Endowment
+Wikimedia Enterprise
+
+Wiki
+
+Give us your feedback
+Babel
+Help
+Recent changes
+Special pages
+
+Search
+
+Search
+
+English
+
+Appearance
+
+Donate
+
+Log in
+
+Personal tools
+
+Donate
+
+Log in
+
+Contents
+
+move to sidebar
+hide
+
+Beginning
+
+1
+Code examples
+
+Toggle Code examples subsection
+
+1.1
+JavaScript
+
+1.2
+PHP
+
+1.3
+cURL
+
+1.4
+Python
+
+2
+Notes
+
+3
+See also
+
+Toggle the table of contents
+
+Policy : Wikimedia Foundation User-Agent Policy
+
+Add languages
+
+Add links
+
+Policy
+
+Discussion
+
+English
+
+Read
+
+View source
+
+View history
+
+Tools
+
+Tools
+
+move to sidebar
+hide
+
+Actions
+
+Read
+
+View source
+
+View history
+
+General
+
+What links here
+Related changes
+Permanent link
+Page information
+Get shortened URL
+
+Print/export
+
+Create a book
+Download as PDF
+Printable version
+
+In other projects
+
+Appearance
+
+move to sidebar
+hide
+
+From Wikimedia Foundation Governance Wiki
+
+(Redirected from Policy:User-Agent policy )
+
+Translate this page
+Other languages:
+Bahasa Indonesia
+
+Deutsch
+
+English
+
+dansk
+
+français
+
+magyar
+
+português do Brasil
+
+svenska
+
+čeština
+
+русский
+
+українська
+
+العربية
+
+فارسی
+
+বাংলা
+
+ગુજરાતી
+
+中文
+
+日本語
+
+한국어
+
+This page is purely informative, reflecting the current state of affairs. To discuss this topic, please use the wikitech-l mailing list .
+
+This policy or procedure is maintained by the Wikimedia Foundation .
+
+Please note that in the event of any differences in meaning or interpretation between the original English version of this content and a translation, the original English version takes precedence.
+
+Wikimedia policies
+
+Wikimedia projects
+
+Access to nonpublic personal data
+Underage exemptions
+
+Access to temporary account IP addresses
+
+API usage guidelines
+
+Code of conduct for Wikimedia technical spaces, including events
+
+Combating online child exploitation
+
+Commercial sales and contracts
+
+Cookie statement
+
+Data collection guidelines
+
+Data publication guidelines
+
+Data retention guidelines
+
+Digital Millennium Copyright Act (DMCA)
+
+Donor privacy
+SMS supplementary terms
+
+General disclaimer
+
+Human rights
+
+IP Information Tool
+
+Licensing
+
+Modifying CheckUser logs guidelines
+
+Office actions
+
+Privacy
+Non-wiki
+
+Terms of Use
+Wikimedia Maps
+
+Wikimedia Phabricator
+
+Terrorist and violent extremist content procedures and guidelines
+
+Trademarks
+
+Universal code of conduct
+Enforcement guidelines
+
+Use of Wikimedia sites for advocacy purposes
+
+Foundation Board and staff
+
+Board of Trustees candidate review process
+
+Code of Conduct
+Board of Trustees
+
+Conflict of interest
+
+Confidentiality agreement of the Board of Trustees
+
+Credit card usage
+
+Delegation of authority
+
+Duty entertainment
+
+Foreign Corrupt Practices Act (FCPA)
+
+Gifts
+
+Non-discrimination
+
+Policy and political association guideline
+
+Staff test account
+
+Staff userrights
+
+Travel and expense
+
+Whistleblower
+
+Other
+
+Expense reimbursement
+
+Feedback privacy statement
+
+Friendly space policy
+
+Investment policy
+
+Legal policies
+
+Open access policy
+
+Peering policy
+
+Purchasing and disbursements procedures
+
+Requests for user information
+
+Scholarship travel policy
+
+Service provider travel guidance
+
+v
+t
+e
+
+As of February 15, 2010, Wikimedia sites require a HTTP User-Agent header for all requests. This was an operative decision made by the technical staff and was announced and discussed on the technical mailing list. [ 1 ] [ 2 ] The rationale is, that clients that do not send a User-Agent string are mostly ill behaved scripts that cause a lot of load on the servers, without benefiting the projects. User-Agent strings that begin with non-descriptive default values, such as python-requests/x , may also be blocked from Wikimedia sites (or parts of a website, e.g. api.php ).
+
+Requests (e.g. from browsers or scripts) that do not send a descriptive User-Agent header, may encounter an error message like this:
+
+Scripts should use an informative User-Agent string with contact information, or they may be blocked without notice.
+
+Requests from disallowed user agents may instead encounter a less helpful error message like this:
+
+Our servers are currently experiencing a technical problem. Please try again in a few minutes.
+
+This change is most likely to affect scripts (bots) accessing Wikimedia websites such as Wikipedia automatically, via api.php or otherwise, and command line programs. [ 3 ] If you operate a bot, please send a User-Agent header identifying the bot in a way that isn't going to be confused with many other bots, and supplying some way of contacting you, the operator, in accordance with the API Usage Guidelines . The contact information should be given as an email address, a website, or a wiki user using the format (<project>; User:<name>) , e.g. (wikipedia:de; User:DuesenBot) . For example:
+
+User-Agent: CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org) generic-library/0.0
+
+The generic format is <client name>/<version> (<contact information>) <library/framework name>/<version> [<library name>/<version> ...] . Parts that are not applicable can be omitted.
+
+If you run an automated agent, please consider following the Internet-wide convention of including the string "bot" in the User-Agent string, in any combination of lowercase or uppercase letters. This is recognized by Wikimedia's systems, and used to classify traffic and provide more accurate statistics.
+
+Do not copy a browser's user agent for your bot, as bot-like behavior with a browser's user agent will be assumed malicious. [ 4 ] Do not use generic agents such as "curl", "lwp", "Python-urllib", and so on. For large frameworks like pywikibot, there are so many users that just "pywikibot" is likely to be somewhat vague. Including detail about the specific task/script/etc would be a good idea, even if that detail is opaque to anyone besides the operator. [ 5 ]
+
+Web browsers generally send a User-Agent string automatically; if you encounter the above error, please refer to your browser's manual to find out how to set the User-Agent string. Note that some plugins or proxies for privacy enhancement may suppress this header. However, for anonymous surfing, it is recommended to send a generic User-Agent string, instead of suppressing it or sending an empty string. Note that other features are much more likely to identify you to a website — if you are interested in protecting your privacy, visit the Cover Your Tracks project .
+
+Browser-based applications written in JavaScript are typically forced to send the same User-Agent header as the browser that hosts them. This is not a violation of policy, however such applications are encouraged to include the Api-User-Agent header to supply an appropriate agent.
+
+As of 2015, Wikimedia sites do not reject all page views and API requests from clients that do not set a User-Agent header. As such, the requirement is not automatically enforced. Rather, it may be enforced in specific cases as needed. [ 6 ]
+
+Code examples
+
+On Wikimedia wikis, if you don't supply a User-Agent header, or you supply an empty or generic one, your request will fail with an HTTP 403 error. Other MediaWiki installations may have similar policies.
+
+JavaScript
+
+If you are calling the API from browser-based JavaScript, you won't be able to influence the User-Agent header: the browser will use its own. To work around this, use the Api-User-Agent header and indicate the feature, user script or gadget that is making the call, ideally including a link to the source code:
+
+// Using XMLHttpRequest
+xhr . setRequestHeader ( 'Api-User-Agent' , 'Example/1.0' );
+
+// Using jQuery
+$ . ajax ( {
+url : 'https://example/...' ,
+data : ...,
+dataType : 'json' ,
+type : 'GET' ,
+headers : { 'Api-User-Agent' : 'Example/1.0' },
+} ). then ( function ( data ) {
+// ..
+} );
+
+// Using mw.Api
+var api = new mw . Api ( {
+userAgent : 'Example/1.0'
+} );
+api . get ( ... ). then ( function ( data ) {
+// ...
+});
+
+// Using Fetch
+fetch ( 'https://example/...' , {
+method : 'GET' ,
+headers : new Headers ( {
+'Api-User-Agent' : 'Example/1.0'
+} )
+} ). then ( function ( response ) {
+return response . json ();
+} ). then ( function ( data ) {
+// ...
+});
+
+PHP
+
+In PHP, you can identify your user-agent with code such as this:
+
+ini_set ( 'user_agent' , 'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)' );
+
+cURL
+
+Or if you use cURL :
+
+curl_setopt ( $curl , CURLOPT_USERAGENT , 'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)' );
+
+Python
+
+In Python, you can use the Requests library to set a header:
+
+import requests
+
+url = 'https://example/...'
+headers = { 'User-Agent' : 'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)' }
+
+response = requests . get ( url , headers = headers )
+
+Or, if you want to use SPARQLWrapper like in https://people.wikimedia.org/~bearloga/notes/wdqs-python.html :
+
+from SPARQLWrapper import SPARQLWrapper , JSON
+
+url = 'https://example/...'
+user_agent = 'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)'
+
+sparql = SPARQLWrapper ( url , agent = user_agent )
+results = sparql . query ()
+
+Notes
+
+↑ The Wikitech-l February 2010 Archive by subject
+
+↑ User-Agent: - Wikitech-l - lists.wikimedia.org
+
+↑ API:FAQ - MediaWiki
+
+↑ [Wikitech-l] User-Agent:
+
+↑ Clarification on what is needed for "identifying the bot" in bot user-agent?
+
+↑ gmane.science.linguistics.wikipedia.technical/83870 ( deadlink )
+
+See also
+
+Policy for crawlers and bots that wish to operate on Wikimedia websites
+
+Retrieved from " https://foundation.wikimedia.org/w/index.php?title=Policy:Wikimedia_Foundation_User-Agent_Policy&oldid=564705 "
+
+Categories : Policies
+Bots
+
+This page was last edited on 27 March 2026, at 17:17.
+
+Text is available under the Creative Commons Attribution-ShareAlike License ;
+additional terms may apply.
+See Terms of Use for details.
+
+Privacy policy
+
+About Wikimedia Foundation Governance Wiki
+
+Disclaimers
+
+Code of Conduct
+
+Developers
+
+Statistics
+
+Cookie statement
+
+Mobile view
+
+Search
+
+Search
+
+Toggle the table of contents
+
+Policy : Wikimedia Foundation User-Agent Policy
+
+Add languages
+
+Add topic

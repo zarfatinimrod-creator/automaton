@@ -5,6 +5,7 @@ import {
   DAY_MS,
   OTHER_BUCKET,
   PAGE_VIEW_GATES,
+  PAGE_VIEW_VERDICTS,
   PREVIEW_BUCKET,
   QUERY_ROW_LIMIT,
   READ_GRACE_MS,
@@ -257,15 +258,15 @@ describe("evaluatePageViewGates — the ruling's gates on the weekly readings", 
     const waiting = evaluatePageViewGates("il-biz-tools", netlify, seven, at(56, READ_LAG_MS + READ_GRACE_MS - 60_000));
     expect(waiting.verdict).toBe("measuring");
     expect(waiting.notes[0]).toMatch(/waits for week\(s\) 8/);
-    // Past the lag and the grace with week 8 still missing: the reader is down.
-    const fault = evaluatePageViewGates("il-biz-tools", netlify, seven, at(56, READ_LAG_MS + READ_GRACE_MS + 60_000));
-    expect(fault.verdict).toBe("instrument_fault");
-    expect(fault.notes[0]).toMatch(/week\(s\) 8 still have no reading/);
+    // Past the lag and the grace with week 8 still missing: the reader is down — a blocker, not an instrument fault.
+    const down = evaluatePageViewGates("il-biz-tools", netlify, seven, at(56, READ_LAG_MS + READ_GRACE_MS + 60_000));
+    expect(down.verdict).toBe("reader_down");
+    expect(down.notes[0]).toMatch(/week\(s\) 8 still have no reading/);
     // With week 8 in, the read is made.
     expect(evaluatePageViewGates("il-biz-tools", netlify, weeks(0, 0, 0, 0, 0, 0, 0, 0), at(56, READ_LAG_MS + 60_000)).verdict).toBe("pause");
   });
 
-  it("M-reach between the two → one extension, re-read over weeks 9-16 at D0+112, and no second", () => {
+  it("M-reach between the two → one extension, re-read over weeks 9-16 at D0+112; between again → pause, no second", () => {
     expect(evaluatePageViewGates("il-biz-tools", netlify, weeks(...eight), at(56)).verdict).toBe("extend");
     expect(evaluatePageViewGates("il-biz-tools", netlify, weeks(...eight, 9, 9), at(70)).verdict).toBe("extend");
     // Day 111: the second read is not due yet, whatever weeks 9-15 say.
@@ -274,12 +275,17 @@ describe("evaluatePageViewGates — the ruling's gates on the weekly readings", 
     expect(evaluatePageViewGates("il-biz-tools", netlify, weeks(...eight, 1, 0, 0, 0, 1, 0, 1), at(112, 17 * 60_000)).verdict).toBe("extend");
     expect(evaluatePageViewGates("il-biz-tools", netlify, weeks(...eight, 1, 0, 0, 0, 1, 0, 1, 1), at(112)).verdict).toBe("pause");
     expect(evaluatePageViewGates("il-biz-tools", netlify, weeks(...eight, 50, 60, 70, 80, 100, 120, 100, 100), at(112)).verdict).toBe("pass");
+    // Between again at D0+112: the one extension was spent and not passed, so the read resolves to its non-pass
+    // outcome — pause, as under 5 — and the line re-enters measuring at the domain deploy (RULING-2026-09-30-documents
+    // (c) call 3). The board is not handed an outcome the floors never defined.
     const between = evaluatePageViewGates("il-biz-tools", netlify, weeks(...eight, ...eight), at(112));
-    expect(between.verdict).toBe("extension_exhausted");
-    expect(between.notes.join(" ")).toMatch(/no second extension/);
-    // Week 16 missing past the grace: the second read cannot be made.
+    expect(between.verdict).toBe("pause");
+    expect(between.notes).toContain("one extension, not passed: paused as under 5; re-enters at the domain deploy");
+    expect(between.notes[0]).toMatch(/^weeks 1-8: 36 page views in total, 6.5 a week over weeks 5-8 — between/);
+    expect(between.notes[1]).toMatch(/^weeks 9-16: 36 page views in total, 6.5 a week over weeks 13-16 — between/);
+    // Week 16 missing past the grace: the second read cannot be made — the reader is down.
     const noSixteen = evaluatePageViewGates("il-biz-tools", netlify, weeks(...eight, 1, 1, 1, 1, 1, 1, 1), at(113, 8 * HOUR));
-    expect(noSixteen.verdict).toBe("instrument_fault");
+    expect(noSixteen.verdict).toBe("reader_down");
     expect(noSixteen.notes.join(" ")).toMatch(/day-112 read over weeks 9-16 cannot be made: week\(s\) 16/);
   });
 
@@ -289,25 +295,70 @@ describe("evaluatePageViewGates — the ruling's gates on the weekly readings", 
     expect(() => endWeekOfDay(111)).toThrow(RangeError);
   });
 
-  it("a missing week that is overdue is an instrument fault — never read as zero — and clears when it is read", () => {
+  it("a missing week that is overdue is the reader down — never read as zero — and clears when it is read", () => {
     const gap = weeks(0, 0, 0, 0, 0, 0, 0, 0).filter((w) => w.week !== 6);
     const r = evaluatePageViewGates("il-biz-tools", netlify, gap, at(56));
-    expect(r.verdict).toBe("instrument_fault");
+    expect(r.verdict).toBe("reader_down");
     expect(r.notes[0]).toMatch(/week\(s\) 6 still have no reading/);
     // Between the second write and day 56: weeks 1-2 written, then nothing — a fault a day after week 3 was readable.
     expect(evaluatePageViewGates("il-biz-tools", netlify, weeks(5, 5), at(21, READ_LAG_MS + READ_GRACE_MS - 60_000)).verdict).toBe("measuring");
     const stopped = evaluatePageViewGates("il-biz-tools", netlify, weeks(5, 5), at(30));
-    expect(stopped.verdict).toBe("instrument_fault");
+    expect(stopped.verdict).toBe("reader_down");
     expect(stopped.notes[0]).toMatch(/week\(s\) 3, 4 still have no reading/);
     // The reader comes back and reads weeks 3-4 late: PostHog kept the events, so the measurement is whole again.
     const backfilled = [...weeks(5, 5), { week: 3, views: 5, writtenAt: at(30) }, { week: 4, views: 5, writtenAt: at(30) }];
     expect(evaluatePageViewGates("il-biz-tools", netlify, backfilled, at(30, 13 * HOUR)).verdict).toBe("measuring");
   });
 
-  it("after a final netlify-period verdict a later gap is a note, not a fault", () => {
+  it("KILL-1's word is kept for the instrument: a reader gap is reader_down and never asks for a clock restart", () => {
+    // RULING-2026-09-30-documents (c) call 1: a reader that stops does not alter the measurement (PostHog keeps the
+    // events), so a gap is a blocker that clears on a late read; only the M-instrument deadline miss restarts the clock.
+    const deadlineMiss = evaluatePageViewGates("il-biz-tools", netlify, [], at(21));
+    expect(deadlineMiss.verdict).toBe("instrument_fault");
+    expect(deadlineMiss.notes.join(" ")).toMatch(/restart the clock/);
+    for (const r of [
+      evaluatePageViewGates("il-biz-tools", netlify, weeks(5, 5), at(30)),
+      evaluatePageViewGates("il-biz-tools", netlify, weeks(0, 0, 0, 0, 0, 0, 0), at(57, 7 * HOUR)),
+      evaluatePageViewGates("il-biz-tools", netlify, weeks(...eight, 1, 1, 1, 1, 1, 1, 1), at(113, 8 * HOUR)),
+    ]) {
+      expect(r.verdict).toBe("reader_down");
+      expect(r.notes.join(" ")).toMatch(/the reader is down — never a clock restart/);
+      // The ruling's other half: an instrument fault is also "a week that cannot be read at all" — the loop's call,
+      // which no gate makes, so the blocker's note is where it is said.
+      expect(r.notes.join(" ")).toMatch(/only a week that cannot be read at all is an instrument fault — the loop's call/);
+    }
+  });
+
+  it("the verdicts are the ruling's words, and no consumer names the retired one", () => {
+    // The verdicts as RULING-2026-09-30-documents (c) leaves them: the gap verdict renamed, and the second-"between"
+    // one retired (its name is built here so that a repository grep for it finds only the history that records it).
+    expect([...PAGE_VIEW_VERDICTS]).toEqual(["no_clock", "not_started", "uninstrumented", "instrument_fault", "reader_down", "measuring", "pause", "pass", "extend", "continue", "kill"]);
+    const retired = ["extension", "exhausted"].join("_");
+    for (const file of ["page-views.ts", "page-views-reader.ts", "runner.ts"]) {
+      expect(readFileSync(join(__dirname, "..", "..", "revenue", file), "utf8"), file).not.toContain(retired);
+    }
+    // No gate returns instrument_fault for a week that cannot be read at all (such a week is never written, so it
+    // stays reader_down): the README says whose call it is instead of listing it among what the gates return.
+    const readme = readFileSync(join(__dirname, "..", "..", "..", "products", "il-biz-tools", "README.md"), "utf8").replace(/\s+/g, " ");
+    expect(readme).toMatch(/a week that cannot be read at all is the loop's call, recorded as an instrument fault with a new d0/);
+  });
+
+  it("after a final netlify-period verdict a later gap is a note, not a fault, and never asks for a restart", () => {
     const r = evaluatePageViewGates("pcn874", netlify, weeks(0, 0, 10, 40, 90, 100, 110, 100), at(70));
     expect(r.verdict).toBe("pass");
     expect(r.notes.join(" ")).toMatch(/after the final read no gate of this period waits on later weeks, but week\(s\) 9 /);
+    // The measurement is finished: restarting the clock over weeks no gate reads would throw it away.
+    expect(r.notes.join(" ")).not.toMatch(/restart the clock/);
+  });
+
+  it("after a second 'between' the pause still carries the netlify period's later gaps as diagnostics", () => {
+    // RULING-2026-09-30-documents (c) call 3: the reader keeps reading the netlify period as diagnostics after the
+    // pause. Weeks 1-16 between, week 17 unread and overdue at day 126.
+    const r = evaluatePageViewGates("il-biz-tools", netlify, weeks(...eight, ...eight), at(126));
+    expect(r.verdict).toBe("pause");
+    expect(r.notes).toContain("one extension, not passed: paused as under 5; re-enters at the domain deploy");
+    expect(r.notes.join(" ")).toMatch(/after the final read no gate of this period waits on later weeks, but week\(s\) 17 /);
+    expect(r.notes.join(" ")).not.toMatch(/restart the clock/);
   });
 
   describe("the domain period (PUBLISH-10: its clock starts at the domain deploy)", () => {
@@ -326,19 +377,27 @@ describe("evaluatePageViewGates — the ruling's gates on the weekly readings", 
       expect(evaluatePageViewGates("il-biz-tools", domain, dWeeks(99, 50, 0, 10, 100, 30, 40, 99), atDomain(57)).verdict).toBe("continue");
     });
 
-    it("a missing week is never 'under 100': it breaks the run, and once overdue it is an instrument fault", () => {
+    it("a missing week is never 'under 100': it breaks the run, and once overdue the reader is down", () => {
       const gap = dWeeks(1, 1, 1, 1, 1, 1, 1, 1, 1).filter((w) => w.week !== 5);
       const r = evaluatePageViewGates("pcn874", domain, gap, atDomain(64));
-      expect(r.verdict).toBe("instrument_fault");
+      expect(r.verdict).toBe("reader_down");
       expect(r.notes[0]).toMatch(/week\(s\) 5 still have no reading/);
       // Read late, the run is whole and measured: now it is a kill.
       const whole = [...gap, { week: 5, views: 1, writtenAt: atDomain(64) }];
       expect(evaluatePageViewGates("pcn874", domain, whole, atDomain(64)).verdict).toBe("kill");
     });
 
-    it("a reader that stops after instrumentation cannot hide the kill: weeks 1-2, then nothing, by day 200 is a fault", () => {
+    it("a measured kill outranks a later gap: weeks 1-8 under 100, then weeks 9-10 unread and overdue → kill", () => {
+      // RULING-2026-09-30-documents (c) call 1 keeps "a measured kill outranks a later gap": a blocker that clears on a
+      // late read must never hide a kill already measured.
+      const r = evaluatePageViewGates("il-biz-tools", domain, dWeeks(99, 50, 0, 10, 20, 30, 40, 99), atDomain(80));
+      expect(r.verdict).toBe("kill");
+      expect(r.notes[0]).toMatch(/weeks 1-8 after the domain deploy each under 100/);
+    });
+
+    it("a reader that stops after instrumentation cannot hide the kill: weeks 1-2, then nothing, by day 200 is a blocker", () => {
       const r = evaluatePageViewGates("il-biz-tools", domain, dWeeks(3, 3), atDomain(200));
-      expect(r.verdict).toBe("instrument_fault");
+      expect(r.verdict).toBe("reader_down");
       expect(r.notes[0]).toMatch(/week\(s\) 3, 4, 5/);
       expect(evaluatePageViewGates("il-biz-tools", domain, dWeeks(3, 3), atDomain(15)).verdict).toBe("continue");
     });

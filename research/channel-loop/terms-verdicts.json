@@ -420,12 +420,13 @@
    "verdict": "TERMS_PENDING",
    "source": "Wikimedia Terms of Use, tosdr/tosdr-snapshots Wikimedia/Terms of Service.html at b44ae1b (github grade): automated use must follow the User-Agent Policy and the Robot Policy, which it links",
    "checked": "2026-09-30",
-   "note": "Robot Policy read 30.9 (research/rendered/terms-wikimedia-robot-policy.txt:146-253, rendered): identify the bot by the User-Agent Policy, gzip, respect 429 Retry-After, /wiki/Title URLs, low concurrency; a weekly handful of requests is inside it. The User-Agent Policy page at meta.wikimedia.org is a moved-notice stub (row 229); its new home at foundation.wikimedia.org is queued (row 232). wikisource.org is re-judged once it is read"
+   "note": "both bot policies read 30.9 at rendered grade: the Robot Policy (terms-wikimedia-robot-policy.txt:146-253) and the User-Agent Policy at its new home (terms-wikimedia-user-agent-policy-foundation.txt:330-362; the meta.wikimedia.org page, row 229, is a moved-notice stub). Their conditions are carried by wikisource.org's entry"
   },
   "wikisource.org": {
    "verdict": "CONDITIONAL_UNMET",
    "source": "tosdr/tosdr-snapshots Wikimedia/Terms of Service.html:981 (round 3): automated uses must follow the robot and User-Agent policies, which are unread",
-   "checked": "2026-09-29"
+   "checked": "2026-09-30",
+   "note": "re-judged 30.9 (tick 28) on the two policies, both rendered: the Robot Policy's limits hold at a weekly handful of requests (terms-wikimedia-robot-policy.txt:146-253); the User-Agent Policy asks for 'an informative User-Agent string with contact information' in the form <client>/<version> (<contact>) (terms-wikimedia-user-agent-policy-foundation.txt:334, :344, :348). render-watch's UA has that form, but its contact URL, il-biz-tools.netlify.app, is not live until the site deploys, so the condition stays unmet; it becomes CONDITIONAL_MET once the URL answers or the brand mailbox is in the UA (FABLE_QUEUE row 21 (b))"
   },
   "wix.com": {
    "verdict": "BARRED",
