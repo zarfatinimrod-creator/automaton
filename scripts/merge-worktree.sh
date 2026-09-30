@@ -7,7 +7,8 @@
 #   1. refuses if the working tree is dirty or the branch is already merged
 #   2. git merge --no-ff with the repo's commit trailers
 #   3. pnpm install --frozen-lockfile (a merged branch may add a dependency; ~3 s when nothing changed),
-#      then pnpm typecheck, then the revenue test suite (the fold-in test is in it)
+#      then scripts/verify.sh: pnpm typecheck and the revenue test suite (the fold-in test is in it), one run,
+#      judged by the runners' exit codes
 #   4. push (unless --no-push); if the remote branch moved, rebase onto it (--rebase-merges) and retry
 #   5. removes the worktree directory and deletes the branch
 #
@@ -41,9 +42,8 @@ fi
 
 # The render-js merge (tick 16) failed its tests because the branch added playwright-core and nothing installed it.
 echo "== install"; pnpm install -s --frozen-lockfile --prefer-offline
-echo "== typecheck"; pnpm -s typecheck
-echo "== revenue tests"; npx vitest run src/__tests__/revenue 2>&1 | grep -E 'Test Files|Tests |FAIL' || true
-npx vitest run src/__tests__/revenue >/dev/null 2>&1 || { echo "revenue tests failed" >&2; exit 1; }
+echo "== typecheck + revenue tests"
+"$ROOT/scripts/verify.sh" src/__tests__/revenue || { echo "typecheck or revenue tests failed (verify.sh named which)" >&2; exit 1; }
 
 if [ "$PUSH" = 1 ]; then
   echo "== push"
