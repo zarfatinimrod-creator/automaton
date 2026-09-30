@@ -11,7 +11,8 @@ import {
  * P-2 (research/channel-loop/RULING-2026-09-30-video.md 16(c) item 7, fold step 10; research/youtube-kids/ASSESSMENT.md
  * §9.2 item 2): YouTube setting a video on T1's channel to "made for kids" over our declaration. The first override: the
  * video goes private, one appeal, never a relabel or a re-upload, and the board is flagged. A second override kills the
- * YouTube line. Nothing reads the override yet, and the verdict says so instead of pretending a zero.
+ * YouTube line. Nothing reads the override yet: before the first upload the verdict says so; from the first upload on,
+ * an unread count is a due gate with no reading and escalates (K-mfk-unmeasured) instead of pretending a zero.
  */
 
 const SPEC = FACELESS_YOUTUBE_EXPERIMENT;
@@ -60,19 +61,40 @@ describe("P-2: made-for-kids overrides on T1's channel", () => {
     expect(v.notes.join(" ")).toMatch(/never a replacement channel/);
   });
 
-  it("with no reader, says so and decides nothing from it", () => {
+  it("unread after an upload: a due gate with no reading counts as failed — the board is flagged, not reassured", () => {
+    // ASSESSMENT §9.2 item 2: a read-back after each upload, so the count is due from the first one.
     const v = evaluateExperiment(SPEC, readings(null));
+    expect(v.decision).toBe("escalate");
+    expect(v.triggered).toEqual(["K-mfk-unmeasured"]);
+    const notes = v.notes.join(" ");
+    expect(notes).toMatch(/K-mfk is due from the first upload and has no reading/);
+    expect(notes).toMatch(/status\.madeForKids/);
+    expect(notes).toMatch(/counts as failed/);
+  });
+
+  it("unread once a video has passed the gate, even before T1 has reported", () => {
+    const v = evaluateExperiment(SPEC, { ...readings(null), t1Passed: null, videosPassedGate: 1 });
+    expect(v.decision).toBe("escalate");
+    expect(v.triggered).toEqual(["K-mfk-unmeasured"]);
+  });
+
+  it("unread before any upload: not due, a note and nothing else", () => {
+    const v = evaluateExperiment(SPEC, { ...readings(null), day: 0, t1Passed: null, videosPassedGate: 0 });
     expect(v.decision).toBe("continue");
     expect(v.triggered).toEqual([]);
     const notes = v.notes.join(" ");
     expect(notes).toMatch(/K-mfk has no reader/);
-    expect(notes).toMatch(/status\.madeForKids/);
+    expect(notes).toMatch(/not due before the first upload/);
+  });
+
+  it("a read zero clears the unmeasured flag", () => {
+    expect(evaluateExperiment(SPEC, readings(0)).triggered).not.toContain("K-mfk-unmeasured");
   });
 
   it("a kill elsewhere still kills when the override count is unread", () => {
     const v = evaluateExperiment(SPEC, { ...readings(null), policySignal: true });
     expect(v.decision).toBe("kill");
-    expect(v.triggered).toEqual(["K-policy"]);
+    expect(v.triggered).toEqual(["K-policy", "K-mfk-unmeasured"]);
   });
 
   it("is pinned as pre-registered on 30.9.2026, apart from the 27.9 gates", () => {

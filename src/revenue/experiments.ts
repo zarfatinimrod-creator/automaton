@@ -42,7 +42,8 @@ export interface ExperimentReadings {
    * NO READER EXISTS. Nothing in this repository reads `status.madeForKids` yet: the read-back after each upload
    * (research/youtube-kids/ASSESSMENT.md §9.2 item 2, the unbuilt G11) is the planned source, through a Data API key on
    * the brand account (Stage A), and Upload-Post's quoted response carries no audience field
-   * (research/faceless-youtube/T1-PRECHECK.md:50). Until a reader exists every caller passes null, and the verdict says so.
+   * (research/faceless-youtube/T1-PRECHECK.md:50). Until a reader exists every caller passes null. Before the first upload
+   * that is only a note; from T1 or the first gate-passing video on, a null count escalates as K-mfk-unmeasured.
    */
   madeForKidsOverrides: number | null;
   maxRunnerMinutesPerVideo: number | null;
@@ -175,10 +176,20 @@ export function evaluateExperiment(spec: ExperimentSpec, r: ExperimentReadings):
     kills.push("K-cash");
     notes.push("a recurring cost the owner has not granted");
   }
-  // P-2 (MADE_FOR_KIDS_OVERRIDES): a YouTube-set made-for-kids override flags the board; the second kills.
+  // P-2 (MADE_FOR_KIDS_OVERRIDES): a YouTube-set made-for-kids override flags the board; the second kills. The count is
+  // due from the first upload (ASSESSMENT §9.2 item 2: a read-back after each upload). T1 is the first upload, and a
+  // gate-passing video is one cleared to go up, so either makes an unread count a due gate with no reading.
   const mfkKillAt = MADE_FOR_KIDS_OVERRIDES.killAt;
   if (r.madeForKidsOverrides === null) {
-    notes.push("K-mfk has no reader: nothing reads status.madeForKids yet (the read-back of ASSESSMENT §9.2 item 2 is unbuilt), so an override would go unseen");
+    const uploadDue = r.t1Passed !== null || r.videosPassedGate > 0;
+    if (uploadDue) {
+      // Counted as failed (the rule above) at the first override's level: the board is flagged, and whether an unread
+      // count should kill instead is the board's call (logs/2026-09-30-p1-p3-in-code.md), not this function's.
+      escalations.push("K-mfk-unmeasured");
+      notes.push("K-mfk is due from the first upload and has no reading: nothing reads status.madeForKids yet (the read-back of ASSESSMENT §9.2 item 2 is unbuilt), so an override would go unseen — an unmeasured gate that is due counts as failed; the board is flagged");
+    } else {
+      notes.push("K-mfk has no reader: nothing reads status.madeForKids yet (the read-back of ASSESSMENT §9.2 item 2 is unbuilt); not due before the first upload");
+    }
   } else if (r.madeForKidsOverrides >= mfkKillAt) {
     kills.push("K-mfk");
     notes.push(`${r.madeForKidsOverrides} made-for-kids overrides by YouTube on this channel (kill at ${mfkKillAt}): the YouTube line is killed — never a replacement channel`);
