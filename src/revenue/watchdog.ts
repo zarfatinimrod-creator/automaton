@@ -19,10 +19,19 @@
  */
 
 import type { Database } from "better-sqlite3";
+import { GUMROAD_REFUND_RATE_KPI } from "./connectors/gumroad.js";
 import type { RevenueLineStatus } from "./types.js";
 
 /** A line that should be producing something and has not, for this long. */
 export const STALL_DAYS = 7;
+
+/**
+ * KPIs that re-read what the line already did rather than record anything new, so their rows are not progress. The Pro
+ * refund rate re-counts sales up to 90 days old on every ledger sync: its row would reset the stall clock for as long as
+ * one old sale stays in the window, while the sales and refunds themselves are already ledger rows dated when they
+ * happened.
+ */
+export const NOT_PROGRESS_KPIS: readonly string[] = [GUMROAD_REFUND_RATE_KPI];
 
 /** Statuses where silence is a problem. Others are legitimately quiet. */
 const WORKING_STATUSES: readonly RevenueLineStatus[] = ["building", "measuring", "live", "scaling"];
@@ -54,16 +63,18 @@ const DAY_MS = 86_400_000;
  */
 export function findStalledLines(db: Database, nowMs: number, stallDays = STALL_DAYS): StalledLine[] {
   const placeholders = WORKING_STATUSES.map(() => "?").join(", ");
+  const notProgress = NOT_PROGRESS_KPIS.map(() => "?").join(", ");
   const rows = db
     .prepare(
       `SELECT r.id AS id, r.status AS status, r.created_at AS created_at,
-              (SELECT MAX(captured_at) FROM revenue_kpi_snapshots k WHERE k.line_id = r.id) AS kpi_at,
+              (SELECT MAX(captured_at) FROM revenue_kpi_snapshots k
+                WHERE k.line_id = r.id AND k.kpi NOT IN (${notProgress}))  AS kpi_at,
               (SELECT MAX(occurred_at)  FROM revenue_ledger      l WHERE l.line_id = r.id) AS ledger_at,
               (SELECT MAX(period_end)   FROM revenue_reviews     v WHERE v.line_id = r.id) AS review_at
          FROM revenue_lines r
         WHERE r.status IN (${placeholders})`,
     )
-    .all(...WORKING_STATUSES) as SignalRow[];
+    .all(...NOT_PROGRESS_KPIS, ...WORKING_STATUSES) as SignalRow[];
 
   const out: StalledLine[] = [];
   for (const row of rows) {
