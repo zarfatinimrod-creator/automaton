@@ -323,6 +323,9 @@ describe("evaluatePageViewGates — the ruling's gates on the weekly readings", 
     ]) {
       expect(r.verdict).toBe("reader_down");
       expect(r.notes.join(" ")).toMatch(/the reader is down — never a clock restart/);
+      // The ruling's other half: an instrument fault is also "a week that cannot be read at all" — the loop's call,
+      // which no gate makes, so the blocker's note is where it is said.
+      expect(r.notes.join(" ")).toMatch(/only a week that cannot be read at all is an instrument fault — the loop's call/);
     }
   });
 
@@ -334,12 +337,28 @@ describe("evaluatePageViewGates — the ruling's gates on the weekly readings", 
     for (const file of ["page-views.ts", "page-views-reader.ts", "runner.ts"]) {
       expect(readFileSync(join(__dirname, "..", "..", "revenue", file), "utf8"), file).not.toContain(retired);
     }
+    // No gate returns instrument_fault for a week that cannot be read at all (such a week is never written, so it
+    // stays reader_down): the README says whose call it is instead of listing it among what the gates return.
+    const readme = readFileSync(join(__dirname, "..", "..", "..", "products", "il-biz-tools", "README.md"), "utf8").replace(/\s+/g, " ");
+    expect(readme).toMatch(/a week that cannot be read at all is the loop's call, recorded as an instrument fault with a new d0/);
   });
 
-  it("after a final netlify-period verdict a later gap is a note, not a fault", () => {
+  it("after a final netlify-period verdict a later gap is a note, not a fault, and never asks for a restart", () => {
     const r = evaluatePageViewGates("pcn874", netlify, weeks(0, 0, 10, 40, 90, 100, 110, 100), at(70));
     expect(r.verdict).toBe("pass");
     expect(r.notes.join(" ")).toMatch(/after the final read no gate of this period waits on later weeks, but week\(s\) 9 /);
+    // The measurement is finished: restarting the clock over weeks no gate reads would throw it away.
+    expect(r.notes.join(" ")).not.toMatch(/restart the clock/);
+  });
+
+  it("after a second 'between' the pause still carries the netlify period's later gaps as diagnostics", () => {
+    // RULING-2026-09-30-documents (c) call 3: the reader keeps reading the netlify period as diagnostics after the
+    // pause. Weeks 1-16 between, week 17 unread and overdue at day 126.
+    const r = evaluatePageViewGates("il-biz-tools", netlify, weeks(...eight, ...eight), at(126));
+    expect(r.verdict).toBe("pause");
+    expect(r.notes).toContain("one extension, not passed: paused as under 5; re-enters at the domain deploy");
+    expect(r.notes.join(" ")).toMatch(/after the final read no gate of this period waits on later weeks, but week\(s\) 17 /);
+    expect(r.notes.join(" ")).not.toMatch(/restart the clock/);
   });
 
   describe("the domain period (PUBLISH-10: its clock starts at the domain deploy)", () => {
@@ -366,6 +385,14 @@ describe("evaluatePageViewGates — the ruling's gates on the weekly readings", 
       // Read late, the run is whole and measured: now it is a kill.
       const whole = [...gap, { week: 5, views: 1, writtenAt: atDomain(64) }];
       expect(evaluatePageViewGates("pcn874", domain, whole, atDomain(64)).verdict).toBe("kill");
+    });
+
+    it("a measured kill outranks a later gap: weeks 1-8 under 100, then weeks 9-10 unread and overdue → kill", () => {
+      // RULING-2026-09-30-documents (c) call 1 keeps "a measured kill outranks a later gap": a blocker that clears on a
+      // late read must never hide a kill already measured.
+      const r = evaluatePageViewGates("il-biz-tools", domain, dWeeks(99, 50, 0, 10, 20, 30, 40, 99), atDomain(80));
+      expect(r.verdict).toBe("kill");
+      expect(r.notes[0]).toMatch(/weeks 1-8 after the domain deploy each under 100/);
     });
 
     it("a reader that stops after instrumentation cannot hide the kill: weeks 1-2, then nothing, by day 200 is a blocker", () => {

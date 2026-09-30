@@ -51,8 +51,9 @@
  *     the kill or the reach read by leaving weeks unmeasured. It is not an instrument fault and never restarts the
  *     clock (RULING-2026-09-30-documents (c) call 1): it clears when the reader reads the week (PostHog keeps the
  *     events, so a late read is the same measurement). Only a week that cannot be read at all is an instrument
- *     fault. After a final netlify-period verdict no gate waits on later weeks, and a gap there is a note, not a
- *     blocker.
+ *     fault, and that is the loop's call (a new d0 with its evidence): no gate detects it, since such a week is
+ *     never written and stays `reader_down`. After a final netlify-period verdict no gate waits on later weeks, and
+ *     a gap there is a diagnostic note — not a blocker, and nothing to restart.
  * A verdict is a reading for the board, which applies it; nothing here moves a line.
  */
 
@@ -315,7 +316,9 @@ export const PAGE_VIEW_VERDICTS = [
   "no_clock", // no D0 recorded: nothing is read and no gate runs
   "not_started", // the anchor day is in the future
   "uninstrumented", // fewer than two consecutive weekly writes, before the instrument deadline: no gate is read
-  "instrument_fault", // M-instrument missed (or a week that cannot be read at all): fixed, clock restarted, recorded — never a fail
+  // M-instrument missed: fixed, clock restarted, recorded — never a fail. A week that cannot be read at all is the loop's
+  // call on a `reader_down` (a new d0 with its evidence); the gates never return it for that.
+  "instrument_fault",
   "reader_down", // a readable week still unread a day on: a blocker until the reader reads it — never a clock restart
   "measuring", // instrumented; the next read is not due
   "pause", // M-reach: under 5 page views over the read's 56 days, or between again after the one extension
@@ -411,11 +414,17 @@ export function evaluatePageViewGates(
   const writtenByDeadline = sorted.filter((w) => Date.parse(w.writtenAt) <= deadlineMs).map((w) => w.week);
   const instrumented = hasConsecutiveWrites(writtenByDeadline, g.instrumentedWrites);
   const reading = (verdict: PageViewVerdict, ...notes: string[]): PageViewGateReading => ({ ...base, day, instrumented, verdict, notes });
-  const gapNote = (late: number[]): string =>
+  // The gap as a blocker (a gate waits on the weeks) or as a note after the period's final read (no gate does). Only
+  // the blocker names the instrument-fault restart: after a final verdict the measurement is finished, and restarting
+  // the clock over weeks no gate reads would throw it away.
+  const gapNote = (late: number[], blocker = true): string =>
     `week(s) ${late.join(", ")} still have no reading ${hours(READ_GRACE_MS)}h after they became readable: the reader is down — ` +
-    "never a clock restart; unmeasured, never zero. Fix the reader: it reads every missing week it can and " +
-    "this clears when they are in (PostHog keeps the events, so a late read is the same count); only a week that " +
-    "cannot be read at all is an instrument fault — restart the clock and record it";
+    "never a clock restart; unmeasured, never zero. Fix the reader: it reads every missing week it can" +
+    (blocker
+      ? " and this clears when they are in (PostHog keeps the events, so a late read is the same count); only a week " +
+        "that cannot be read at all is an instrument fault — the loop's call, which no gate makes: restart the clock " +
+        "(a new d0 with its evidence) and record it"
+      : " (PostHog keeps the events, so a late read is the same count); diagnostics only, nothing to restart");
 
   if (!instrumented) {
     if (nowMs < deadlineMs) {
@@ -453,7 +462,7 @@ export function evaluatePageViewGates(
   };
   const afterFinal = (lastWeek: number): string[] => {
     const late = overdue.filter((w) => w > lastWeek);
-    return late.length ? [`after the final read no gate of this period waits on later weeks, but ${gapNote(late)}`] : [];
+    return late.length ? [`after the final read no gate of this period waits on later weeks, but ${gapNote(late, false)}`] : [];
   };
 
   const firstEnd = endWeekOfDay(g.reachDay);

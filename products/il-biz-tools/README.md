@@ -377,8 +377,10 @@ read the same way over weeks 9-16, and between again → pause, as under 5, re-e
 (`RULING-2026-09-30-documents.md` (c)); and "under 100 a week for 8 consecutive weeks" → kill, on the clock that starts
 at the domain deploy (BOARD-LOOP PUBLISH-10, restated in `RULING-2026-09-28-floors.md` row 9). A week still unread a
 day after it became readable is `reader_down` in either period - a blocker until the reader reads it, never a clock
-restart, because PostHog keeps the events and a late read is the same count; only a week that cannot be read at all is
-an instrument fault - and a reader that is not configured while a D0 is recorded is a blocker at once. A verdict is printed in the report for
+restart, because PostHog keeps the events and a late read is the same count; a week that cannot be read at all is the
+loop's call, recorded as an instrument fault with a new d0 (no gate detects it: such a week is never written and stays
+`reader_down`); after a final netlify-period verdict a later gap is a diagnostic note, not a blocker - and a reader
+that is not configured while a D0 is recorded is a blocker at once. A verdict is printed in the report for
 the board to apply; nothing moves a line by itself. A week that cannot be read is not written, and a missing week
 is unmeasured, never zero. Tests: `src/__tests__/revenue/page-views*.test.ts`, against a fake fetch and fixtures
 shaped like PostHog's documented response.
