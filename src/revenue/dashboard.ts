@@ -69,7 +69,11 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
   const basis = summarizeTargetBasis();
   const stalled = findStalledLines(db, nowMs);
   const coverage = sweepCoverage(db, nowMs);
+  // Converted money (not in the wallet) and unconverted money (USDC in the wallet, at its shekel value on the day it
+  // arrived) are two numbers, never one; the target % is converted only, and the headline names both whenever wallet
+  // money exists (RULING-2026-09-28-bounty-rail.md §6.2).
   const earnedAgorot = summary?.total30dAgorot ?? 0;
+  const unconvertedAgorot = summary?.unconverted30dAgorot ?? 0;
   const goalIls = Math.round((summary?.targetMonthlyAgorot ?? 0) / 100);
 
   // What is still asked, as the report asks it (owner-steps.ts openSetupItems): an item goes once the owner steps it
@@ -87,13 +91,19 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
 
   // The headline is a sentence about the state, not a figure in a tile. A real
   // zero deserves an explanation, not a decoration.
-  const headline = earnedAgorot > 0
-    ? `החברה הרוויחה ${formatIls(earnedAgorot)} ב-30 הימים האחרונים.`
-    : "החברה עדיין לא הרוויחה שקל.";
+  // Wallet money that arrived is income the ledger holds: the headline says so rather than "not a shekel", and the
+  // subhead does not say no line can receive money when one just did.
+  const earnedPart = earnedAgorot > 0
+    ? `החברה הרוויחה ${formatIls(earnedAgorot)} בכסף מומר ב-30 הימים האחרונים`
+    : "החברה עדיין לא הרוויחה שקל מומר";
+  const headline = unconvertedAgorot > 0
+    ? `${earnedPart}, ובארנק ${formatIls(unconvertedAgorot)} לא מומר, שלא נספר בשום יעד.`
+    : `${earnedPart}.`;
   const subhead = earnedAgorot > 0
     ? `זה ${((earnedAgorot / Math.max(1, summary?.targetMonthlyAgorot ?? 1)) * 100).toFixed(1)}% מהיעד של ${formatIls(summary?.targetMonthlyAgorot ?? 0)} לחודש.`
     : needsOwner.length > 0
-      ? `${needsOwner.length} מקורות הכנסה בנויים ומחכים להרשמות חד-פעמיות שלך. כל עוד הן לא בוצעו, אף אחד מהם לא יכול לקבל כסף.`
+      ? `${needsOwner.length} מקורות הכנסה בנויים ומחכים להרשמות חד-פעמיות שלך.` +
+        (unconvertedAgorot > 0 ? "" : " כל עוד הן לא בוצעו, אף אחד מהם לא יכול לקבל כסף.")
       : "אין קווים שממתינים לך — הבלימה היא אצלנו, לא אצלך.";
 
   const rows = lines.map((line) => {
@@ -104,6 +114,7 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
         <td><strong>${esc(line.name)}</strong><br><code>${esc(line.id)}</code></td>
         <td><span class="pill s-${esc(line.status)}">${esc(STATUS_HE[line.status] ?? line.status)}</span></td>
         <td class="num">${esc(formatIls(m?.revenue30dAgorot ?? 0))}</td>
+        <td class="num">${esc(formatIls(m?.unconverted30dAgorot ?? 0))}</td>
         <td class="num">${esc(formatIls(line.targetMonthlyAgorot))}<br><span class="grade g-${esc(b?.grade ?? "unevidenced")}">${esc(GRADE_HE[b?.grade ?? "unevidenced"])}</span></td>
         <td>${esc(review?.decision ?? "—")}</td>
       </tr>`;
@@ -178,6 +189,12 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
 <div class="wrap">
   <h1>${esc(headline)}</h1>
   <p class="lede">${esc(subhead)}</p>
+  <div class="card">
+    <div class="basis">
+      <div>כסף מומר (לא בארנק), 30 יום</div><div>${esc(formatIls(earnedAgorot))}</div>
+      <div>כסף לא מומר (ארנק), 30 יום — לא נספר בשום יעד</div><div>${esc(formatIls(unconvertedAgorot))}</div>
+    </div>
+  </div>
 
   <h2>מה התוכנית נשענת עליו</h2>
   <div class="card">
@@ -200,7 +217,7 @@ ${ownerBlocks}
   <h2>מקורות ההכנסה</h2>
   <div class="card">
     <table>
-      <thead><tr><th>קו</th><th>מצב</th><th>30 יום</th><th>יעד</th><th>החלטת מפקח</th></tr></thead>
+      <thead><tr><th>קו</th><th>מצב</th><th>30 יום, מומר</th><th>30 יום, לא מומר</th><th>יעד</th><th>החלטת מפקח</th></tr></thead>
       <tbody>
 ${rows}
       </tbody>

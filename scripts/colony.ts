@@ -4,7 +4,8 @@
  *
  *   pnpm exec tsx scripts/colony.ts tick
  *   pnpm exec tsx scripts/colony.ts status
- *   pnpm exec tsx scripts/colony.ts record --line paid-apis --kind sale --amount 200 --currency USD --source x402 --external-id 0xabc
+ *   pnpm exec tsx scripts/colony.ts record --line paid-apis --kind sale --amount 200 --currency USD --source stripe --external-id ch_abc
+ *   pnpm exec tsx scripts/colony.ts fx --currency USDC --date 2026-09-29 --rate 3.71
  *   pnpm exec tsx scripts/colony.ts setup-done apify-actors --evidence "owner confirmed 2026-09-03"
  *
  * The governance half of the colony needs only a SQLite file: no wallet, no
@@ -24,7 +25,7 @@ import {
   setTargets,
   updateLineStatus,
 } from "../src/revenue/ledger.js";
-import { agorotFromIls, formatIls } from "../src/revenue/money.js";
+import { agorotFromIls, formatIls, setFxRateOn } from "../src/revenue/money.js";
 import { seedDefaultPortfolio, syncPortfolio } from "../src/revenue/portfolio.js";
 import { getRevenueStatus } from "../src/revenue/status.js";
 import { renderCommitSummary, renderReport, tick, type TickResult } from "../src/revenue/runner.js";
@@ -66,7 +67,14 @@ Commands:
                        lines in KILLED_LINES with the board's stated reason. Run it
                        after a board ruling, then \`report\`, or the report keeps
                        printing the portfolio the board just replaced.
-  record               Record one ledger entry by hand.
+  record               Record one ledger entry by hand. Currency ILS, USD, EUR or GBP (converted)
+                       or USDC (wallet money); any other code is refused. A USDC entry needs its
+                       on-chain transaction id as --external-id and --occurred-at; it is flagged
+                       unconverted and valued at the rate recorded for its receipt day (see fx),
+                       and with none it is refused (RULING-2026-09-28-bounty-rail.md §6.2).
+  fx                   Record one day's rate: --currency USDC --date YYYY-MM-DD --rate <ILS per unit>
+                       (the Israeli calendar day of the receipt, not later than today). A held USDC
+                       receipt names it.
   setup-done <lineId>  Mark a line's one-time owner setup as done and queue its build goal.
   target               Set the monthly target (and optional stretch target) in shekels.
   criteria             Show the search criteria and how much of the space is covered.
@@ -168,6 +176,8 @@ async function main(): Promise<void> {
       evidence: { type: "string" },
       undo: { type: "boolean", default: false },
       ils: { type: "string" },
+      date: { type: "string" },
+      rate: { type: "string" },
       stretch: { type: "string" },
       due: { type: "boolean", default: false },
       group: { type: "string" },
@@ -282,10 +292,20 @@ async function main(): Promise<void> {
         if (!entry) {
           console.log(`Already recorded: ${source}/${values["external-id"]}. Nothing changed.`);
         } else {
-          console.log(`Recorded ${entry.kind} ${formatIls(entry.amountAgorot)} on ${entry.lineId} via ${entry.source}.`);
+          const flag = entry.unconverted ? " unconverted (wallet money, counted in no target)" : "";
+          console.log(`Recorded ${entry.kind} ${formatIls(entry.amountAgorot)}${flag} on ${entry.lineId} via ${entry.source}.`);
           const line = getLine(db.raw, lineId)!;
           console.log(`  ${line.id} is now ${line.status}.`);
         }
+        break;
+      }
+
+      case "fx": {
+        const currency = values.currency ?? fail("--currency is required");
+        const day = values.date ?? fail("--date is required (YYYY-MM-DD, the Israeli calendar day of the receipt)");
+        const rate = num(values.rate ?? fail("--rate is required (ILS per unit on that day)"), "rate");
+        setFxRateOn(db.raw, currency, day, rate);
+        console.log(`Recorded ${currency.trim().toUpperCase()} on ${day}: ${rate} ILS per unit.`);
         break;
       }
 

@@ -5,7 +5,7 @@
  * The database IS the automaton's memory.
  */
 
-export const SCHEMA_VERSION = 12;
+export const SCHEMA_VERSION = 13;
 
 export const CREATE_TABLES = `
   -- Schema version tracking
@@ -754,4 +754,13 @@ export const MIGRATION_V12 = `
   );
 
   CREATE INDEX IF NOT EXISTS idx_revenue_kpi_line ON revenue_kpi_snapshots(line_id, kpi, captured_at);
+`;
+
+// === Revenue Colony: USDC booked unconverted (RULING-2026-09-28-bounty-rail.md §6.2) ===
+
+export const MIGRATION_V13 = `
+  -- Schema version: 13
+  -- revenue_ledger.unconverted: 1 on a USDC row (money in the owner's wallet, not in the bank). The ledger sets it from
+  -- the currency (src/revenue/money.ts isUnconvertedCurrency); every target, floor and rule reads unconverted = 0 only.
+  ALTER TABLE revenue_ledger ADD COLUMN unconverted INTEGER NOT NULL DEFAULT 0;
 `;

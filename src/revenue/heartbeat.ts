@@ -33,6 +33,7 @@ import {
   getConnectorCursor,
   getLine,
   getProductMap,
+  getX402HeldRows,
   hasRevenueTables,
   insertReview,
   isRevenueColonyEnabled,
@@ -44,6 +45,7 @@ import {
   recordLedgerEntry,
   setConnectorCursor,
   setLineBudget,
+  setX402HeldRows,
   updateLineStatus,
   ACTIVE_LINE_STATUSES,
 } from "./ledger.js";
@@ -253,13 +255,17 @@ export async function runLedgerSync(
 
   // Local x402 / credit transfers tagged with [line:<id>]
   try {
-    const local = readLocalTransfers(db, getConnectorCursor(db, "x402"));
+    const local = readLocalTransfers(db, getConnectorCursor(db, "x402"), getX402HeldRows(db));
     for (const entry of local.entries) {
       const rec = recordLedgerEntry(db, entry);
       if (rec) result.recorded += 1; else result.duplicates += 1;
     }
     if (local.nextCursor) setConnectorCursor(db, "x402", local.nextCursor);
+    // A held USDC receipt is money that arrived and is not booked: its row is read again, and it stays a blocker, at
+    // every sync until it can be booked.
+    setX402HeldRows(db, local.held.map((h) => h.rowId));
     if (local.entries.length) result.sources.push("x402");
+    for (const h of local.held) result.errors.push(`x402: USDC receipt ${h.rowId} held: ${h.detail}`);
   } catch (error) {
     result.errors.push(`x402: ${(error as Error).message}`);
   }
