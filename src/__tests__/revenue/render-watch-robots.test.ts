@@ -31,6 +31,7 @@ const {
   robotsDecision,
   robotsRulesFor,
   robotsTxtUrl,
+  ROBOTS_MAX_BYTES,
   ROBOTS_MAX_REDIRECTS,
   ROBOTS_PRODUCT_TOKEN,
   USER_AGENT,
@@ -145,6 +146,17 @@ describe("parseRobotsTxt and robotsRulesFor — which group applies", () => {
     expect(allowed(star, "https://s.example/b")).toBe(false);
   });
 
+  it("ends a run of user-agent lines at an empty Disallow: the 'allow this crawler everything' idiom", () => {
+    // An empty Disallow is no rule, but it is a rule line: the User-agent: * after it opens a new group, and the
+    // Disallow: / there is not ours. Merged into one group, it would shut us out of the whole site.
+    const idiom = "User-agent: MehudakRenderWatch\nDisallow:\n\nUser-agent: *\nDisallow: /\n";
+    expect(allowed(idiom, "https://s.example/anything")).toBe(true);
+    expect(allowed(idiom, "https://s.example/anything", "OtherBot")).toBe(false);
+    expect(parseRobotsTxt(idiom).groups).toHaveLength(2);
+    // An empty Allow ends the run the same way.
+    expect(allowed("User-agent: MehudakRenderWatch\nAllow:\nUser-agent: *\nDisallow: /\n", "https://s.example/a")).toBe(true);
+  });
+
   it("lets consecutive user-agent lines share one group, and starts a new group after a rule", () => {
     const text = "User-agent: OtherBot\nUser-agent: MehudakRenderWatch\nDisallow: /shared\nUser-agent: ThirdBot\nDisallow: /third\n";
     expect(allowed(text, "https://s.example/shared")).toBe(false);
@@ -186,6 +198,14 @@ describe("robotsDecision — RFC 9309 §2.2.2 matching", () => {
     expect(decide("Disallow: /*?session", "https://s.example/a?session=1").allowed).toBe(false);
     expect(decide("Disallow: /$", "https://s.example/").allowed).toBe(false);
     expect(decide("Disallow: /$", "https://s.example/a").allowed).toBe(true);
+    // A * must be free to start its run at the earliest place the pattern so far could have reached, not the last.
+    expect(decide("Disallow: /*a*bc", "https://s.example/abcxa").allowed).toBe(false);
+    expect(decide("Disallow: /*a*bc", "https://s.example/xaxbxbc").allowed).toBe(false);
+    expect(decide("Disallow: /*a*bc", "https://s.example/xaxb").allowed).toBe(true);
+    expect(decide("Disallow: /*/private/*.pdf", "https://s.example/x/private/y/private/z.pdf").allowed).toBe(false);
+    expect(decide("Disallow: /*/private/*.pdf$", "https://s.example/x/private/y.pdf/z").allowed).toBe(true);
+    expect(decide("Disallow: /a*b*c$", "https://s.example/abcabc").allowed).toBe(false);
+    expect(decide("Disallow: /a*b*c$", "https://s.example/abcabd").allowed).toBe(true);
     // A wildcard rule is weighed by its own length, like any other.
     expect(decide("Disallow: /*\nAllow: /law", "https://s.example/law00/1.htm").allowed).toBe(true);
     expect(decide("Allow: /l\nDisallow: /*.htm", "https://s.example/law00/1.htm").allowed).toBe(false);
@@ -209,6 +229,23 @@ describe("robotsDecision — RFC 9309 §2.2.2 matching", () => {
     expect(decide("Disallow: /a%2fb", "https://s.example/a%2Fb").allowed).toBe(false);
     // A reserved character stays encoded: %2F is not a path separator.
     expect(decide("Disallow: /a/b", "https://s.example/a%2Fb").allowed).toBe(true);
+  });
+
+  it("compares characters URL parsers percent-encode and robots.txt writes literally: \" < > ` { } in a path, ' in a query", () => {
+    // WHATWG parsing turns /search{q} into /search%7Bq%7D; the rule is written as the site sees it. Both sides are
+    // encoded the same way before the comparison, so each rule below still matches its URL.
+    expect(decide("Disallow: /search{q}", "https://s.example/search{q}").allowed).toBe(false);
+    expect(decide('Disallow: /a"b', 'https://s.example/a"b').allowed).toBe(false);
+    expect(decide("Disallow: /c<d>", "https://s.example/c<d>/1").allowed).toBe(false);
+    expect(decide("Disallow: /x`y", "https://s.example/x`y").allowed).toBe(false);
+    expect(decide("Disallow: /q?x='y'", "https://s.example/q?x='y'").allowed).toBe(false);
+    // The encoded form in the rule matches too, and so do | and ^, which parsers leave literal or not.
+    expect(decide("Disallow: /search%7bq%7d", "https://s.example/search{q}").allowed).toBe(false);
+    expect(decide("Disallow: /p|q", "https://s.example/p%7Cq").allowed).toBe(false);
+    expect(decide("Disallow: /p%5Eq", "https://s.example/p^q").allowed).toBe(false);
+    // Wildcards and the end anchor are untouched.
+    expect(decide("Disallow: /*{q}$", "https://s.example/a/search{q}").allowed).toBe(false);
+    expect(rw.normalizeRobotsPath("/*a$%41%7e{")).toBe("/*a$A~%7B");
   });
 
   it("always allows /robots.txt itself", () => {
@@ -266,11 +303,37 @@ describe("robotsChecker — fetching robots.txt once per host per run", () => {
   });
 
   it("reads a 4xx as no robots.txt at all: everything allowed, recorded as none", async () => {
-    for (const status of [400, 401, 403, 404, 410, 429]) {
+    for (const status of [400, 401, 403, 404, 410, 451]) {
       const hosts = stubHosts({ "https://a.example/robots.txt": { status } });
       const decision = await robotsChecker({ fetchImpl: hosts.fetchImpl }).decide("https://a.example/x");
       expect(decision, String(status)).toMatchObject({ allowed: true, robots: "none", robotsUrl: "https://a.example/robots.txt" });
     }
+  });
+
+  it("reads a 429 as unreachable, not as no rules: a site asking us to slow down has not said it has none", async () => {
+    const hosts = stubHosts({ "https://a.example/robots.txt": { status: 429 } });
+    const decision = await robotsChecker({ fetchImpl: hosts.fetchImpl }).decide("https://a.example/x");
+    expect(decision).toMatchObject({ allowed: false, robots: "unreachable", reason: "HTTP 429" });
+  });
+
+  it("reads at most 500 KiB of a robots.txt, and only to its last complete line when cut short", async () => {
+    expect(ROBOTS_MAX_BYTES).toBe(500 * 1024);
+    // Past the limit: the Disallow is never read.
+    const long = `User-agent: *\n# ${"x".repeat(600 * 1024)}\nDisallow: /\n`;
+    const hosts = stubHosts({ "https://big.example/robots.txt": { status: 200, body: long } });
+    const robots = robotsChecker({ fetchImpl: hosts.fetchImpl });
+    expect(await robots.decide("https://big.example/x")).toMatchObject({ allowed: true, robots: "allowed" });
+    const probe = await robots.probe("https://big.example/robots.txt");
+    expect(probe).toMatchObject({ truncated: true, error: null });
+    expect(probe.bytes.length).toBe(ROBOTS_MAX_BYTES);
+    // Cut mid-rule: "Allow: /public/only-this" arrives as "Allow: /pub", which would open /pub-secret. It is dropped.
+    const text = "User-agent: *\nDisallow: /\nAllow: /public/only-this\n";
+    const cut = stubHosts({ "https://cut.example/robots.txt": { status: 200, body: text } });
+    const small = robotsChecker({ fetchImpl: cut.fetchImpl, maxBytes: 37 });
+    expect(await small.decide("https://cut.example/pub-secret")).toMatchObject({ allowed: false, robots: "disallowed" });
+    expect(await small.decide("https://cut.example/public/only-this")).toMatchObject({ allowed: false });
+    expect(rw.completeRobotsLines("User-agent: *\r\nDisallow: /a\r\nAllow: /p")).toBe("User-agent: *\r\nDisallow: /a\r\n");
+    expect(rw.completeRobotsLines("Allow: /p")).toBe("");
   });
 
   it("reads a 5xx, a network error or a timeout as complete disallow for the run, recorded as unreachable", async () => {
@@ -303,7 +366,10 @@ describe("robotsChecker — fetching robots.txt once per host per run", () => {
   it(`reads more than ${5} redirects as unreachable, which is complete disallow`, async () => {
     const answers: Record<string, Answer> = {};
     for (let i = 0; i <= 7; i += 1) {
-      answers[i === 0 ? "https://a.example/robots.txt" : `https://a.example/r${i}`] = { status: 302, location: `https://a.example/r${i + 1}` };
+      answers[i === 0 ? "https://a.example/robots.txt" : `https://r${i}.a.example/robots.txt`] = {
+        status: 302,
+        location: `https://r${i + 1}.a.example/robots.txt`,
+      };
     }
     const hosts = stubHosts(answers);
     const decision = await robotsChecker({ fetchImpl: hosts.fetchImpl }).decide("https://a.example/x");
@@ -320,6 +386,35 @@ describe("robotsChecker — fetching robots.txt once per host per run", () => {
       expect(decision, location).toMatchObject({ allowed: false, robots: "unreachable" });
       expect(hosts.urls(), location).toEqual(["https://a.example/robots.txt"]);
     }
+  });
+
+  it("follows a robots.txt redirect only to another /robots.txt: a redirect to a page is unreachable, and that page is never asked", async () => {
+    for (const location of ["/law/secret-page.htm", "https://www.neg.example/robots.txt?lang=he", "https://other.example/", "/robots.txt/"]) {
+      const hosts = stubHosts({
+        "https://www.neg.example/robots.txt": { status: 301, location },
+        "https://www.neg.example/law/secret-page.htm": { status: 200, body: "<p>a law page</p>", contentType: "text/html" },
+      });
+      const robots = robotsChecker({ fetchImpl: hosts.fetchImpl });
+      expect(await robots.decide("https://www.neg.example/law/1.htm"), location).toMatchObject({ allowed: false, robots: "unreachable" });
+      expect((await robots.decide("https://www.neg.example/law/1.htm")).reason, location).toMatch(/which is not a robots\.txt; not followed/);
+      // A probe line stores nothing from it either.
+      expect(await robots.probe("https://www.neg.example/robots.txt"), location).toMatchObject({ bytes: null, robots: "unreachable" });
+      expect(hosts.urls(), location).toEqual(["https://www.neg.example/robots.txt"]);
+    }
+  });
+
+  it("answers a URL that is not http(s) with a refusal and no request, never an exception", async () => {
+    const hosts = stubHosts({});
+    const robots = robotsChecker({ fetchImpl: hosts.fetchImpl });
+    for (const url of ["about:blank", "data:text/html,<p>x</p>", "blob:https://a.example/1", "not a url", "ftp://a.example/x"]) {
+      const decision = await robots.decide(url);
+      expect(decision, url).toMatchObject({ allowed: false, robots: null, robotsUrl: null });
+      expect(decision.reason, url).toMatch(/not an http\(s\) URL/);
+      expect(await robots.probe(url), url).toMatchObject({ bytes: null, robots: null });
+    }
+    expect(hosts.calls).toEqual([]);
+    expect(rw.isHttpUrl("https://a.example/")).toBe(true);
+    expect(rw.isHttpUrl("about:blank")).toBe(false);
   });
 
   it("sends no request of any kind, robots.txt included, for a barred host or tiktok.com", async () => {
@@ -612,6 +707,19 @@ describe("main — robots.txt in a run", () => {
     expect(hosts.urls()).toEqual(["https://a.example/robots.txt", "https://a.example/page"]);
   });
 
+  it("sends the pages through deps.fetchImpl too, not only robots.txt: a stub in deps stubs the whole run", async () => {
+    const network = stubGlobal({}); // the real network, as far as this test goes: it must see nothing
+    const hosts = stubHosts({
+      "https://a.example/robots.txt": { status: 404 },
+      "https://a.example/one": { status: 200, body: "<p>one</p>", contentType: "text/html" },
+    });
+    const list = writeList(out, ["https://a.example/one\ta-one"]);
+    expect(await main(["--list", list, "--out", out], {}, { delayMs: 0, fetchImpl: hosts.fetchImpl })).toBe(0);
+    expect(hosts.urls()).toEqual(["https://a.example/robots.txt", "https://a.example/one"]);
+    expect(network.calls).toEqual([]);
+    expect(readMeta(out, "a-one")).toMatchObject({ status: 200, robots: "none" });
+  });
+
   it("writes nothing at all on a second run when robots.txt and the page are unchanged", async () => {
     stubGlobal({
       "https://a.example/robots.txt": { status: 200, body: "User-agent: *\nDisallow: /closed\n" },
@@ -735,5 +843,233 @@ describe("the js mode and robots.txt", () => {
     const result = await renderWithBrowser({ url: "https://help.example/s/article/X", slug: "help-x", js: true }, { browser: fake.browser, robots });
     expect(result).toMatchObject({ bytes: null, robots: "disallowed", robotsUrl: "https://other.example/robots.txt" });
     expect(result.error).toMatch(/other\.example.*robots\.txt disallows.*not stored/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The js mode: what route() holds back before it is sent
+// ---------------------------------------------------------------------------
+
+type RouteEntry = { matcher: (url: URL) => boolean; handler: (route: unknown) => unknown };
+type RoutedPage = {
+  html?: string;
+  /** Server redirect hops after the listed URL: the browser follows these itself, and route() never sees them. */
+  hops?: string[];
+  /** The last hop's name does not resolve (a resolver rule applied): goto fails after the request event. */
+  hopUnresolvable?: boolean;
+  /** Requests the page starts itself once loaded: a script, an image, an XHR. */
+  subresources?: string[];
+  /** Main-frame navigations the page's own script starts. */
+  scriptNavigations?: string[];
+};
+
+/**
+ * A fake browser whose route() is live, as Playwright's is: every request a page starts goes through the matching
+ * routes, the last registered first, and fallback() hands it to the one registered before; a request no route
+ * aborted is "sent". A server redirect hop is a request event only — Playwright calls a route for the first URL of a
+ * redirect chain and no other.
+ */
+function routingBrowser(pages: Record<string, RoutedPage>) {
+  const sent: string[] = [];
+  const aborted: Array<{ url: string; code: string }> = [];
+  const contexts: Array<{ routes: RouteEntry[] }> = [];
+  const browser = {
+    isConnected: () => true,
+    version: () => "141.0.7390.37",
+    async close() {},
+    async newContext() {
+      const ctx = { routes: [] as RouteEntry[] };
+      contexts.push(ctx);
+      return {
+        async route(matcher: (url: URL) => boolean, handler: (route: unknown) => unknown) {
+          ctx.routes.push({ matcher, handler });
+        },
+        async routeWebSocket() {},
+        async newPage() {
+          const listeners: Array<(request: unknown) => void> = [];
+          const mainFrame = { name: "main" };
+          const requestOf = (url: string, navigation: boolean) => ({ url: () => url, isNavigationRequest: () => navigation, frame: () => mainFrame });
+          const emit = (request: unknown) => {
+            for (const listener of listeners) listener(request);
+          };
+          const throughRoutes = async (url: string, navigation: boolean) => {
+            const request = requestOf(url, navigation);
+            emit(request); // Playwright emits "request" before the route decides
+            for (const { matcher, handler } of [...ctx.routes].reverse()) {
+              if (!matcher(new URL(url))) continue;
+              let outcome = "none";
+              await handler({
+                request: () => request,
+                abort: async (code: string) => {
+                  outcome = "abort";
+                  aborted.push({ url, code });
+                },
+                fallback: async () => {
+                  outcome = "fallback";
+                },
+              });
+              if (outcome === "abort") return false;
+              if (outcome !== "fallback") throw new Error(`a route handler for ${url} neither aborted nor fell back`);
+            }
+            sent.push(url);
+            return true;
+          };
+          let current = "";
+          return {
+            on(event: string, listener: (request: unknown) => void) {
+              if (event === "request") listeners.push(listener);
+            },
+            mainFrame: () => mainFrame,
+            async goto(url: string) {
+              current = url;
+              const spec = pages[url] ?? {};
+              if (!(await throughRoutes(url, true))) throw new Error("page.goto: net::ERR_BLOCKED_BY_CLIENT");
+              const hops = spec.hops ?? [];
+              for (const [i, hop] of hops.entries()) {
+                emit(requestOf(hop, true));
+                if (spec.hopUnresolvable && i === hops.length - 1) throw new Error(`page.goto: net::ERR_NAME_NOT_RESOLVED at ${hop}`);
+                sent.push(hop);
+              }
+              for (const sub of spec.subresources ?? []) await throughRoutes(sub, false);
+              for (const nav of spec.scriptNavigations ?? []) await throughRoutes(nav, true);
+              const chain = [url, ...hops];
+              const at = (i: number): unknown => (i < 0 ? null : { url: () => chain[i], redirectedFrom: () => at(i - 1) });
+              return {
+                url: () => chain[chain.length - 1],
+                request: () => at(chain.length - 1),
+                status: () => 200,
+                statusText: () => "",
+                ok: () => true,
+                headers: () => ({ "content-type": "text/html; charset=utf-8" }),
+              };
+            },
+            async waitForLoadState() {},
+            content: () => Promise.resolve(pages[current]?.html ?? ""),
+          };
+        },
+        async close() {},
+      };
+    },
+  };
+  return { browser, sent, aborted, contexts };
+}
+
+describe("the js mode holds every request a page starts to robots.txt before it is sent", () => {
+  const LISTED = "https://help.example/s/article/X";
+  const entry = { url: LISTED, slug: "help-x", js: true };
+  const robotsFor = (answers: Record<string, Answer>) => {
+    const hosts = stubHosts({ "https://help.example/robots.txt": { status: 200, body: "User-agent: *\nDisallow: /api/\n" }, ...answers });
+    return { hosts, robots: robotsChecker({ fetchImpl: hosts.fetchImpl }) };
+  };
+
+  it("registers the robots route first, so the refused-host route runs before it", async () => {
+    const fake = routingBrowser({ [LISTED]: { html: "<p>x</p>" } });
+    const { robots } = robotsFor({});
+    await renderWithBrowser(entry, { browser: fake.browser, robots });
+    expect(fake.contexts[0].routes).toHaveLength(2);
+    expect(fake.contexts[0].routes[0].matcher(new URL("https://anything.example/"))).toBe(true);
+    expect(fake.contexts[0].routes[1].matcher(new URL("https://www.gumroad.com/"))).toBe(true);
+    expect(fake.contexts[0].routes[1].matcher(new URL("https://help.example/"))).toBe(false);
+  });
+
+  it("aborts a subresource robots.txt disallows before it is sent, stores the page, and lists what was held back", async () => {
+    const fake = routingBrowser({
+      [LISTED]: {
+        html: "<p>article</p>",
+        subresources: ["https://help.example/api/session", "https://help.example/static/app.js", "https://cdn.example/lib.js", "data:image/png;base64,AAAA"],
+      },
+    });
+    const { hosts, robots } = robotsFor({ "https://cdn.example/robots.txt": { status: 200, body: "User-agent: MehudakRenderWatch\nDisallow: /\n" } });
+    const result = await renderWithBrowser(entry, { browser: fake.browser, robots });
+    expect(result).toMatchObject({ error: null, bytes: Buffer.from("<p>article</p>"), robots: "allowed", robotsUrl: "https://help.example/robots.txt" });
+    expect(result.robotsBlocked).toEqual(["https://help.example/api/session", "https://cdn.example/lib.js"]);
+    expect(fake.aborted).toEqual([
+      { url: "https://help.example/api/session", code: "blockedbyclient" },
+      { url: "https://cdn.example/lib.js", code: "blockedbyclient" },
+    ]);
+    expect(fake.sent).toEqual([LISTED, "https://help.example/static/app.js", "data:image/png;base64,AAAA"]);
+    expect(hosts.urls()).toEqual(["https://help.example/robots.txt", "https://cdn.example/robots.txt"]);
+  });
+
+  it("aborts a page's requests to a barred host or tiktok.com without asking for their robots.txt", async () => {
+    const fake = routingBrowser({
+      [LISTED]: {
+        html: "<p>article</p>",
+        subresources: ["https://www.google.com/recaptcha/api.js", "https://www.youtube.com/embed/x", "https://www.tiktok.com/embed.js"],
+      },
+    });
+    const { hosts, robots } = robotsFor({});
+    const result = await renderWithBrowser(entry, { browser: fake.browser, robots });
+    expect(result.error).toBeNull();
+    expect(fake.aborted.map((a) => a.url)).toEqual([
+      "https://www.google.com/recaptcha/api.js",
+      "https://www.youtube.com/embed/x",
+      "https://www.tiktok.com/embed.js",
+    ]);
+    expect(fake.sent).toEqual([LISTED]);
+    expect(hosts.urls()).toEqual(["https://help.example/robots.txt"]);
+    // The refused-host route answered them: robots.txt was never consulted, so they are not in robotsBlocked.
+    expect(result.robotsBlocked).toBeUndefined();
+  });
+
+  it("stops a script's move to a disallowed page before it is sent, and stores nothing", async () => {
+    const fake = routingBrowser({ [LISTED]: { html: "<p>article</p>", scriptNavigations: ["https://help.example/api/login"] } });
+    const { robots } = robotsFor({});
+    const result = await renderWithBrowser(entry, { browser: fake.browser, robots });
+    expect(result).toMatchObject({ bytes: null, robots: "disallowed", robotsUrl: "https://help.example/robots.txt" });
+    expect(result.error).toMatch(/^the page tried to go on to help\.example, and robots\.txt disallows this URL.*stopped before it was sent/);
+    expect(result.error).not.toMatch(/requested before/);
+    expect(fake.sent).toEqual([LISTED]);
+  });
+
+  it("keeps out a page reached through a server redirect to a barred host, and says only what is true", async () => {
+    // Where the resolver rule did not apply (a proxy): the browser went there, and the page is not stored.
+    const proxied = routingBrowser({ [LISTED]: { html: "<p>moved</p>", hops: ["https://support.google.com/x"] } });
+    const one = robotsFor({});
+    const kept = await renderWithBrowser(entry, { browser: proxied.browser, robots: one.robots });
+    expect(kept).toMatchObject({ bytes: null });
+    expect(kept.error).toBe("the browser was sent on to google.com (support.google.com), whose terms bar automated access; not stored");
+    expect(kept.error).not.toMatch(/no request of any kind/);
+    expect(one.hosts.urls().some((u) => /google/.test(u))).toBe(false);
+    // Where it did: the name does not resolve, goto fails, and the meta says why rather than "name not resolved".
+    const resolved = routingBrowser({ [LISTED]: { hops: ["https://seller.gumroad.com/l/x"], hopUnresolvable: true } });
+    const failed = await renderWithBrowser(entry, { browser: resolved.browser, robots: robotsFor({}).robots });
+    expect(failed.error).toBe("the browser was sent on to gumroad.com (seller.gumroad.com), whose terms bar automated access; not stored");
+    // And with no robots checker at all, the same.
+    const bare = await renderWithBrowser(entry, { browser: routingBrowser({ [LISTED]: { hops: ["https://www.youtube.com/x"] } }).browser });
+    expect(bare.error).toMatch(/^the browser was sent on to youtube\.com/);
+  });
+
+  it("records the robots.txt of the page it stored when an allowed redirect put it on another host", async () => {
+    const fake = routingBrowser({ [LISTED]: { html: "<p>moved</p>", hops: ["https://docs.example/article"] } });
+    const { robots } = robotsFor({ "https://docs.example/robots.txt": { status: 404 } });
+    const result = await renderWithBrowser(entry, { browser: fake.browser, robots });
+    expect(result).toMatchObject({ error: null, robots: "none", robotsUrl: "https://docs.example/robots.txt" });
+  });
+
+  it("skips main-frame URLs that are not http(s) instead of throwing on them", async () => {
+    const fake = routingBrowser({ [LISTED]: { html: "<p>x</p>", scriptNavigations: ["about:blank"] } });
+    const { robots } = robotsFor({});
+    const result = await renderWithBrowser(entry, { browser: fake.browser, robots });
+    expect(result).toMatchObject({ error: null, robots: "allowed" });
+    expect(result.error ?? "").not.toMatch(/Invalid URL/);
+  });
+
+  it("counts what robots.txt held back in the run log", async () => {
+    const hosts = stubHosts({ "https://help.example/robots.txt": { status: 200, body: "User-agent: *\nDisallow: /api/\n" } });
+    vi.stubGlobal("fetch", hosts.fetchImpl);
+    const out = tmpOut();
+    const stdout = captureStdout();
+    try {
+      const fake = routingBrowser({ [LISTED]: { html: "<p>article</p>", subresources: ["https://help.example/api/a", "https://help.example/api/b"] } });
+      const list = writeList(out, [`${LISTED}\thelp-x\tjs`]);
+      await main(["--list", list, "--out", out], {}, { launchBrowser: async () => fake.browser, delayMs: 0 });
+      expect(stdout.text()).toMatch(/robots\.txt held back 2 request\(s\) the page made; they were not sent/);
+      expect(readMeta(out, "help-x")).toMatchObject({ status: 200, robots: "allowed" });
+      expect(readMeta(out, "help-x")).not.toHaveProperty("robotsBlocked");
+    } finally {
+      stdout.restore();
+      vi.unstubAllGlobals();
+    }
   });
 });

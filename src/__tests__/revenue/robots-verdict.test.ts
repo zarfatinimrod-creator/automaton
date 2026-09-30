@@ -48,6 +48,7 @@ const capture = (body: string | null, meta: Record<string, unknown> = {}): Captu
     url: "https://www.law.example/robots.txt",
     fetchedAt: "2026-10-06T05:23:00.000Z",
     status: 200,
+    contentType: "text/plain; charset=utf-8",
     error: null,
     sha256: "0123456789abcdef0123456789abcdef",
     bodyPath: "research/rendered/robots-law.txt",
@@ -131,6 +132,55 @@ describe("judgeSite — NO_TERMS_ROBOTS_OK only when every queued path is allowe
     });
     expect(out.changed).toBe(true);
     expect(out.verdicts.sites["law.example"].source).toMatch(/answered 404.*no rules/);
+  });
+
+  it("reads a 410 as no robots.txt too", () => {
+    const out = judge({
+      readCapture: reader({ "https://www.law.example/robots.txt": capture(null, { status: 410, error: "HTTP 410", sha256: null, bodyPath: null }) }),
+    });
+    expect(out.changed).toBe(true);
+  });
+
+  it("sets nothing on a 401, 403, 429 or other 4xx: the site refused or throttled us, which is its answer (D2(iv))", () => {
+    for (const status of [401, 403, 429, 400, 451]) {
+      const out = judge({
+        readCapture: reader({
+          "https://www.law.example/robots.txt": capture(null, { status, error: `HTTP ${status}`, sha256: null, bodyPath: null }),
+        }),
+      });
+      expect(out.changed, String(status)).toBe(false);
+      expect(out.verdicts).toEqual(VERDICTS);
+      expect(out.why, String(status)).toMatch(new RegExp(`HTTP ${status}.*D2\\(iv\\)`));
+    }
+  });
+
+  it("sets nothing on a 2xx that is not a plain-text robots.txt: a bot challenge, a soft 404, an HTML or JSON answer", () => {
+    const challenge = '<!DOCTYPE html><html><head><title>Just a moment...</title></head><body>Checking your browser</body></html>';
+    for (const [body, contentType] of [
+      [challenge, "text/html; charset=UTF-8"],
+      [challenge, "text/plain"], // a challenge page served as text/plain is still markup
+      ["\uFEFF  <html><body>Not found</body></html>", "text/plain; charset=utf-8"],
+      ["User-agent: *\nDisallow:\n", "text/html"],
+      ["User-agent: *\nDisallow:\n", "application/json"],
+      ["User-agent: *\nDisallow:\n", null],
+    ] as Array<[string, string | null]>) {
+      const out = judge({ readCapture: reader({ "https://www.law.example/robots.txt": capture(body, { contentType }) }) });
+      expect(out.changed, `${contentType} ${body.slice(0, 20)}`).toBe(false);
+      expect(out.why).toMatch(/not a robots\.txt the site served.*D2\(iv\)/);
+    }
+    // text/plain, any case, with or without parameters, is a file.
+    for (const contentType of ["text/plain", "TEXT/PLAIN; charset=ISO-8859-1"]) {
+      expect(judge({ readCapture: reader({ "https://www.law.example/robots.txt": capture("User-agent: *\nAllow: /\n", { contentType }) }) }).changed).toBe(true);
+    }
+  });
+
+  it("reads a capture cut short at the robots.txt limit only to its last complete line", () => {
+    // Cut mid-rule: "Disallow: /law_html/law01/" arrives as "Disallow: /law_html/la", which would refuse law-one too.
+    const cut = "User-agent: *\nAllow: /\nDisallow: /law_html/la";
+    const out = judge({ readCapture: reader({ "https://www.law.example/robots.txt": capture(cut, { truncated: true }) }) });
+    expect(out.changed).toBe(true);
+    // The same bytes as a whole file do refuse it: the cut line is what the limit drops.
+    expect(judge({ readCapture: reader({ "https://www.law.example/robots.txt": capture(cut) }) }).changed).toBe(false);
   });
 
   it("changes nothing when the robots.txt capture is missing, failed or unreachable", () => {

@@ -17,8 +17,13 @@
  *   2. every queued line of the site in urls.txt — active, or commented out as `# paused …` (not `# retired`) —
  *      is collected; a robots- probe line is not a page, and at least one page must be queued
  *   3. each host those pages sit on must have a committed robots.txt capture: research/rendered/robots-*.meta.json
- *      whose url is that host's /robots.txt, made by render-watch's robots-only probe line. A 2xx capture is parsed;
- *      a 4xx one is no rules (RFC 9309 §2.3.1.3); anything else is complete disallow and nothing is set
+ *      whose url is that host's /robots.txt, made by render-watch's robots-only probe line. The capture must be a
+ *      robots.txt the site actually served (readableCapture): a 2xx whose Content-Type is text/plain and whose body
+ *      is not markup is parsed (only to its last complete line when cut short), and a 404 or 410 means the site has
+ *      none, so no rules (RFC 9309 §2.3.1.3). Anything else sets nothing. A 401, 403 or 429, or a 2xx HTML page (a bot
+ *      challenge, a soft 404), is the site refusing or not answering, not a file that says yes: a single render-watch
+ *      run may read a 4xx as no rules, but this verdict unlocks the site for good, and ruling D2(iv) calls a 403 or a
+ *      bot challenge the site's answer. A 5xx or no answer is complete disallow (§2.3.1.4)
  *   4. every page is checked with render-watch's own parser (parseRobotsTxt, robotsRulesFor, robotsDecision), for
  *      the product token MehudakRenderWatch, else `*`
  *   5. only if every page is allowed does the entry become NO_TERMS_ROBOTS_OK, with a source line citing the
@@ -36,7 +41,15 @@ import { basename, join } from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { isExhaustiveNegative, isRobotsProbe, siteOf, URLS, RENDERED, VERDICTS } from "./queue-zero-test.mjs";
-import { parseRobotsTxt, robotsDecision, robotsRulesFor, robotsTxtUrl, ROBOTS_PRODUCT_TOKEN, slugFromUrl } from "./render-watch.mjs";
+import {
+  completeRobotsLines,
+  parseRobotsTxt,
+  robotsDecision,
+  robotsRulesFor,
+  robotsTxtUrl,
+  ROBOTS_PRODUCT_TOKEN,
+  slugFromUrl,
+} from "./render-watch.mjs";
 
 const RULING = "research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(v)";
 
@@ -111,6 +124,31 @@ export function readRobotsCapture(robotsUrl, renderedDir = RENDERED) {
   return null;
 }
 
+/**
+ * Is a committed robots.txt capture something the verdict may rest on? { kind: "file" } for a 2xx text/plain body that
+ * is not markup, { kind: "absent" } for a 404 or 410 (the site has no robots.txt), else { kind: "refused" | "unreachable",
+ * why }. Stricter than render-watch's run-time reading on purpose: that one decides one run, this one unlocks a site.
+ */
+export function readableCapture(meta, body) {
+  const status = meta?.status;
+  const contentType = String(meta?.contentType ?? "").toLowerCase();
+  if (meta?.error == null && Number.isInteger(status) && status >= 200 && status <= 299) {
+    if (body === null || body === undefined) return { kind: "refused", why: `a ${status} capture with no stored body` };
+    if (!/^text\/plain(\s*;|$)/.test(contentType)) {
+      return { kind: "refused", why: `a ${status} answered ${meta?.contentType ?? "with no Content-Type"}, not text/plain` };
+    }
+    if (/^\s*</.test(String(body).replace(/^\uFEFF/, ""))) {
+      return { kind: "refused", why: `a ${status} whose body is markup (a bot challenge or an error page), not a robots.txt` };
+    }
+    return { kind: "file" };
+  }
+  if (status === 404 || status === 410) return { kind: "absent" };
+  if (Number.isInteger(status) && status >= 400 && status <= 499) {
+    return { kind: "refused", why: `HTTP ${status}: the site refused or throttled the request, which says nothing about its rules` };
+  }
+  return { kind: "unreachable", why: `status ${status ?? "none"}, error ${JSON.stringify(meta?.error ?? null)}` };
+}
+
 /** "the rule" as a meta or a person would quote it. */
 const quoteRule = (rule) => (rule ? `"${rule.allow ? "Allow" : "Disallow"}: ${rule.pattern}"` : "no rule");
 
@@ -151,17 +189,25 @@ export function judgeSite({ site, verdicts, urls, readCapture = (url) => readRob
     const { meta, body, slug } = capture;
     const status = meta?.status;
     const where = `research/rendered/${slug}`;
-    if (meta?.error == null && Number.isInteger(status) && status >= 200 && status <= 299 && body !== null) {
-      rulesByRobots.set(robotsUrl, robotsRulesFor(parseRobotsTxt(body)));
+    const readable = readableCapture(meta, body);
+    if (readable.kind === "file") {
+      const text = meta.truncated ? completeRobotsLines(body) : body;
+      rulesByRobots.set(robotsUrl, robotsRulesFor(parseRobotsTxt(text)));
       const file = meta.bodyPath ? `research/rendered/${basename(meta.bodyPath)}` : `${where}.txt`;
       cites.push(`robots.txt read at ${file} (${robotsUrl}, fetched ${meta.fetchedAt}, sha256 ${String(meta.sha256 ?? "").slice(0, 12)})`);
-    } else if (Number.isInteger(status) && status >= 400 && status <= 499) {
+    } else if (readable.kind === "absent") {
       rulesByRobots.set(robotsUrl, []);
       cites.push(`robots.txt answered ${status} at ${robotsUrl} (${where}.meta.json, fetched ${meta.fetchedAt}): no rules, RFC 9309 §2.3.1.3`);
+    } else if (readable.kind === "refused") {
+      return decline(
+        `the robots.txt capture of ${origin} (${where}.meta.json) is not a robots.txt the site served: ${readable.why}. ` +
+          "Ruling 30.9 16(d) D2(iv): a refusal or a bot challenge is the site's answer, and NO_TERMS_ROBOTS_OK is set only " +
+          "on a robots.txt read (a 2xx text/plain file) or on a 404/410",
+      );
     } else {
       return decline(
-        `the robots.txt capture of ${origin} (${where}.meta.json) is not a read file (status ${status ?? "none"}, error ` +
-          `${JSON.stringify(meta?.error ?? null)}): RFC 9309 §2.3.1.4 reads that as complete disallow`,
+        `the robots.txt capture of ${origin} (${where}.meta.json) is not a read file (${readable.why}): RFC 9309 §2.3.1.4 ` +
+          "reads that as complete disallow",
       );
     }
   }

@@ -135,7 +135,7 @@ site's terms are read **before** its first line is queued, not after.
 (`research/channel-loop/TERMS-AUDIT-2026-09-29.md`). Thirteen more domains are now in `TERMS_BARRED`: ten whose terms bar
 automated access (PayPal, Teach Simple, Indiebook, Astro, Facer and its creator site, YouTube and its blog, Metaculus,
 OpenAI), Google's and googlesource's pages (Google's terms allow automated access only while respecting robots.txt,
-which this fetcher does not read), and Mozilla's add-on API (its policy bars harvesting names and emails; the stored
+which this fetcher did not read until 30.9), and Mozilla's add-on API (its policy bars harvesting names and emails; the stored
 results were redacted). 66 lines are paused. A site's **terms page** may be fetched once so its terms can be read;
 that is how the 23 terms rows (ZERO-TESTS 191-213) were queued.
 
@@ -158,19 +158,26 @@ verdict), then queue the line. A line for a site with no verdict fails CI, and s
   fetches that host's `/robots.txt` and keeps it for the run. It reads it as RFC 9309 says: the group naming
   `MehudakRenderWatch` (case-insensitive) if there is one, else the `*` group; the longest matching `Allow`/`Disallow`
   decides, `Allow` wins a tie, `*` matches any run of characters and a final `$` the end of the path, and the path is
-  compared with its query. A **2xx** is read; a **4xx** means no robots.txt, so nothing is disallowed; a **5xx**, a
-  network error, a timeout or more than five redirects means complete disallow — nothing on that host is fetched in
-  that run. A disallowed URL is not requested at all; its meta says `error: "robots.txt disallows this URL …"` and the
-  run carries on. Every redirect hop is checked the same way before it is requested, against the robots.txt of the
-  host it goes to.
+  compared with its query (characters URL parsers disagree on, such as `"`, `{` or `'`, are percent-encoded on both
+  sides first). A **2xx** is read, up to 500 KiB — a file cut short there is read only to its last complete line; a
+  **4xx** other than 429 means no robots.txt, so nothing is disallowed; a **5xx**, a **429**, a network error, a
+  timeout, more than five redirects, or a redirect to anything but another `/robots.txt` means complete disallow —
+  nothing on that host is fetched in that run. A disallowed URL is not requested at all; its meta says
+  `error: "robots.txt disallows this URL …"` and the run carries on. In a plain GET every redirect hop is checked the
+  same way before it is requested, against the robots.txt of the host it goes to.
 - **The meta says so.** `robots` is `"allowed"`, `"disallowed"`, `"none"` (4xx) or `"unreachable"`, and `robotsUrl`
   names the robots.txt that decided. Like every field it is written only when the meta is: an unchanged page keeps the
   robots state of the fetch that captured it.
 - **A barred host is never asked, not even for its robots.txt.** The terms refusals (`TERMS_BARRED`, `tiktok.com`)
   run first, at parse time and on every hop; the robots.txt check comes after them, and refuses such a host again itself.
-- **The `js` mode** reads the listed URL's robots.txt with a plain GET before the browser is asked for it. A page the
-  browser reached through a redirect that robots.txt disallows is not stored — but the browser follows redirects itself,
-  so that hop was already requested (a stated limit). Subresources a page loads are not held to robots.txt.
+- **The `js` mode** reads the listed URL's robots.txt with a plain GET before the browser is asked for it. Every
+  request the page then starts itself — scripts, images, XHR, frames, a script's move to another page — is checked
+  before it is sent, and one robots.txt disallows is aborted unsent; a page whose own move was aborted is not stored,
+  and one that only lost a subresource is (the run log counts what was held back). A server redirect is the exception:
+  the browser follows it itself, so that hop is checked only once the page has settled, and a page reached through a
+  disallowed one is not stored, but the hop was already requested (a stated limit). A `TERMS_BARRED` host gets the
+  tiktok.com treatment inside the browser: its name does not resolve, a page's requests and WebSockets to it are
+  refused, and a page sent there is not stored.
 - **A robots-only probe line.** A line whose slug starts `robots-` and whose URL path is exactly `/robots.txt`:
 
   ```
@@ -180,13 +187,18 @@ verdict), then queue the line. A line for a site with no verdict fails CI, and s
   fetches that file and nothing else from the host, and stores it like any capture (`robots-example.txt` for a
   text/plain answer, plus its meta). A `robots-` slug on any other path, a `/robots.txt` URL under any other slug, and a
   probe with the `js` flag are refused at parse time. It exists for sites whose terms leave robots.txt as the only
-  signal: `termsGate` lets a probe through for a **TERMS_PENDING** site, and for a **NO_TERMS** site whose note opens
-  `exhaustive-negative` (a recorded search found no terms anywhere: nevo) — and nothing else from such a site.
+  signal: `termsGate` lets a probe through only for a **NO_TERMS** site whose note opens `exhaustive-negative` (a
+  recorded search found no terms anywhere: nevo) — and nothing else from such a site. A **TERMS_PENDING** site gets no
+  probe: its terms are unread, and ruling D2(iv) allows it its terms page and nothing more. A probe's redirect is
+  followed only to another `/robots.txt`, so a probe never fetches a page.
 - **NO_TERMS_ROBOTS_OK.** A verdict that counts like NOT_BARRED. It is set only by
   `node scripts/robots-verdict.mjs <site> [--apply]`, and only when the site is NO_TERMS with an exhaustive-negative
-  note, it has a committed `robots-` capture for every host its queued lines sit on, and that robots.txt allows every
-  queued path (active or `# paused`) for `MehudakRenderWatch`, read with the fetcher's own parser. Otherwise it changes
-  nothing and says why (exit 3). Dry run by default; `--apply` rewrites the one entry, citing the capture and the
+  note, it has a committed `robots-` capture for every host its queued lines sit on, each capture is a robots.txt the
+  site served (a 2xx `text/plain` file that is not markup) or a 404/410, and that robots.txt allows every queued path
+  (active or `# paused`) for `MehudakRenderWatch`, read with the fetcher's own parser. A capture that answered 401, 403,
+  429 or an HTML page (a bot challenge) sets nothing: that is the site's answer (D2(iv)), not a file that says yes.
+  Otherwise it changes nothing and says why (exit 3). The gate checks the result: a NO_TERMS_ROBOTS_OK entry counts
+  only with a note opening `exhaustive-negative` and a source naming the script, so one set by hand fails CI. Dry run by default; `--apply` rewrites the one entry, citing the capture and the
   ruling. It never edits this list: un-pausing the site's lines afterwards is a separate, reviewed edit. A
   **refusal-type** NO_TERMS site (the terms page answered 403 or a bot challenge) is never eligible.
 - **googlesource.com** left `TERMS_BARRED` for CONDITIONAL_MET: its one condition was robots.txt

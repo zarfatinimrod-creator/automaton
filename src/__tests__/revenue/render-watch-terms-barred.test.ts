@@ -146,22 +146,39 @@ describe("terms-verdicts.json gates every active line (terms audit round 2)", ()
   });
 
   it("lets a line be active only on a site whose terms allow it, or as a pending site's own terms page", () => {
-    // Since 30.9 (ruling 16(d) D2(v)): NO_TERMS_ROBOTS_OK allows a line too, and a robots- probe of /robots.txt is
-    // allowed for a TERMS_PENDING site and for a NO_TERMS site whose note opens exhaustive-negative.
+    // Since 30.9 (ruling 16(d) D2(iv)-(v)): NO_TERMS_ROBOTS_OK allows a line too, as scripts/robots-verdict.mjs writes
+    // it (a note opening exhaustive-negative, a source naming the script), and a robots- probe of /robots.txt is
+    // allowed for a NO_TERMS site whose note opens exhaustive-negative. Not for a TERMS_PENDING site: unread terms,
+    // no fetch but the terms page.
     const bad = entries().filter((e) => {
-      const entry = verdicts[siteOf(new URL(e.url).hostname.toLowerCase())] as { verdict: string; note?: string } | undefined;
+      const entry = verdicts[siteOf(new URL(e.url).hostname.toLowerCase())] as { verdict: string; source?: string; note?: string } | undefined;
       const v = entry?.verdict;
       const probe = e.slug.startsWith("robots-") && new URL(e.url).pathname === "/robots.txt";
-      const exhaustive = v === "NO_TERMS" && /^exhaustive-negative\b/.test(entry?.note ?? "");
+      const exhaustiveNote = /^exhaustive-negative\b/.test(entry?.note ?? "");
+      const exhaustive = v === "NO_TERMS" && exhaustiveNote;
+      const robotsOk = v === "NO_TERMS_ROBOTS_OK" && exhaustiveNote && (entry?.source ?? "").includes("scripts/robots-verdict.mjs");
       return !(
         v === "NOT_BARRED" ||
         v === "CONDITIONAL_MET" ||
-        v === "NO_TERMS_ROBOTS_OK" ||
+        robotsOk ||
         (v === "TERMS_PENDING" && e.slug.startsWith("terms-")) ||
-        (probe && (v === "TERMS_PENDING" || exhaustive))
+        (probe && exhaustive)
       );
     });
     expect(bad.map((e) => e.slug)).toEqual([]);
+  });
+
+  it("holds every NO_TERMS_ROBOTS_OK entry to what scripts/robots-verdict.mjs writes: an exhaustive-negative note, the script in its source", () => {
+    // Ruling 30.9 16(d) D2(v): the verdict is "set only for exhaustive-negative sites by a script that reads the site's
+    // robots.txt for the queued paths". An entry edited in by hand, on a refusal-type site or anywhere else, fails here.
+    const robotsOk = Object.entries(verdicts).filter(([, v]) => v.verdict === "NO_TERMS_ROBOTS_OK") as [
+      string,
+      { verdict: string; source: string; note?: string },
+    ][];
+    for (const [site, v] of robotsOk) {
+      expect(v.note ?? "", site).toMatch(/^exhaustive-negative\b/);
+      expect(v.source, site).toContain("scripts/robots-verdict.mjs");
+    }
   });
 
   it("makes googlesource.com CONDITIONAL_MET now that render-watch reads robots.txt, and keeps google.com BARRED", () => {

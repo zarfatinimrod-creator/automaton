@@ -53,10 +53,12 @@
  * refuses anything else and says what to do. `--apply-verdicts` comments out every active line that fails
  * the gate, the step ticks 21-23 ran by hand (logs/2026-09-29-channel-loop-tick-22.md §7).
  *
- * Since 30.9 (research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(v)): NO_TERMS_ROBOTS_OK passes like NOT_BARRED
- * (scripts/robots-verdict.mjs sets it, and only for a NO_TERMS site whose note opens "exhaustive-negative"), and a
- * robots-only probe — a robots-... slug whose URL path is exactly /robots.txt — passes for a TERMS_PENDING site and
- * for an exhaustive-negative NO_TERMS site. Nothing else about the gate changed.
+ * Since 30.9 (research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(iv)-(v)): NO_TERMS_ROBOTS_OK passes like
+ * NOT_BARRED, but only as scripts/robots-verdict.mjs writes it — a note opening "exhaustive-negative" and a source naming
+ * that script (isRobotsOkVerdict); one set by hand fails. A robots-only probe — a robots-... slug whose URL path is
+ * exactly /robots.txt — passes for an exhaustive-negative NO_TERMS site only: D2(v) allows that read so the script can
+ * judge the site, and D2(iv) allows no fetch at all of a site whose terms are unread (TERMS_PENDING: its terms page
+ * only). Nothing else about the gate changed.
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -75,8 +77,25 @@ export function loadVerdicts(path = VERDICTS) {
   return JSON.parse(readFileSync(path, "utf8")).sites;
 }
 
-/** The verdicts under which any line of a site may be active. NO_TERMS_ROBOTS_OK: ruling 30.9 16(d) D2(v). */
+/**
+ * The verdicts under which any line of a site may be active. NO_TERMS_ROBOTS_OK (ruling 30.9 16(d) D2(v)) counts only
+ * when isRobotsOkVerdict says scripts/robots-verdict.mjs set it; termsGate checks that.
+ */
 export const ACTIVE_VERDICTS = new Set(["NOT_BARRED", "CONDITIONAL_MET", "NO_TERMS_ROBOTS_OK"]);
+
+/**
+ * A NO_TERMS_ROBOTS_OK entry as scripts/robots-verdict.mjs writes it: the note it keeps opens "exhaustive-negative",
+ * and its source names the script. The ruling allows the verdict "only for exhaustive-negative sites by a script that
+ * reads the site's robots.txt for the queued paths" (16(d) D2(v)); a hand-set one — on a refusal-type site, say — is
+ * not that, and the gate refuses it.
+ */
+export function isRobotsOkVerdict(entry) {
+  return (
+    entry?.verdict === "NO_TERMS_ROBOTS_OK" &&
+    /^exhaustive-negative\b/.test(String(entry?.note ?? "")) &&
+    String(entry?.source ?? "").includes("scripts/robots-verdict.mjs")
+  );
+}
 
 /**
  * A NO_TERMS entry whose note opens "exhaustive-negative": a recorded search found no terms anywhere (nevo),
@@ -104,9 +123,10 @@ export function isRobotsProbe(url, slug) {
  * Whether a line for this URL and slug passes the terms gate, and if not, why. Barred hosts (TERMS_BARRED in
  * render-watch) always fail; otherwise the site's verdict decides. Never throws.
  *
- * Since 30.9 (ruling 16(d) D2(v)): NO_TERMS_ROBOTS_OK is active-eligible like NOT_BARRED (scripts/robots-verdict.mjs
- * sets it), and a robots- probe of /robots.txt passes for a TERMS_PENDING site and for an exhaustive-negative
- * NO_TERMS site — the one thing that may be fetched from such a site until its robots.txt is read and recorded.
+ * Since 30.9 (ruling 16(d) D2(iv)-(v)): NO_TERMS_ROBOTS_OK is active-eligible like NOT_BARRED when
+ * scripts/robots-verdict.mjs set it (isRobotsOkVerdict), and a robots- probe of /robots.txt passes for an
+ * exhaustive-negative NO_TERMS site — the one thing that may be fetched from such a site until its robots.txt is read
+ * and recorded. Not for a TERMS_PENDING site: its terms are unread, and unread terms mean no fetch but the terms page.
  */
 export function termsGate(url, slug, verdicts) {
   let host;
@@ -120,17 +140,19 @@ export function termsGate(url, slug, verdicts) {
   const site = siteOf(host);
   const entry = verdicts?.[site] ?? null;
   const verdict = entry?.verdict ?? null;
-  if (ACTIVE_VERDICTS.has(verdict)) return { ok: true, site, verdict };
+  if (verdict === "NO_TERMS_ROBOTS_OK" ? isRobotsOkVerdict(entry) : ACTIVE_VERDICTS.has(verdict)) return { ok: true, site, verdict };
   if (verdict === "TERMS_PENDING" && String(slug).startsWith("terms-")) return { ok: true, site, verdict };
-  if (isRobotsProbe(url, slug) && (verdict === "TERMS_PENDING" || isExhaustiveNegative(entry))) return { ok: true, site, verdict };
+  if (isRobotsProbe(url, slug) && isExhaustiveNegative(entry)) return { ok: true, site, verdict };
   const why =
     verdict === null
       ? `${site} has no verdict in research/channel-loop/terms-verdicts.json: read its terms first (queue its terms page as a terms-... slug after adding a TERMS_PENDING verdict with the terms URL)`
       : verdict === "TERMS_PENDING"
-        ? `${site} is TERMS_PENDING: only its terms page (a terms-... slug) or its robots.txt (a robots-... slug) may be queued until its terms are read`
-        : isExhaustiveNegative(entry)
-          ? `${site} is NO_TERMS, exhaustive-negative: only a robots- probe of /robots.txt may be queued until scripts/robots-verdict.mjs sets NO_TERMS_ROBOTS_OK (ruling 30.9 16(d) D2(v))`
-          : `${site} is ${verdict} in research/channel-loop/terms-verdicts.json`;
+        ? `${site} is TERMS_PENDING: only its terms page (a terms-... slug) may be queued until its terms are read (ruling 30.9 16(d) D2(iv))`
+        : verdict === "NO_TERMS_ROBOTS_OK"
+          ? `${site} is NO_TERMS_ROBOTS_OK, but not as scripts/robots-verdict.mjs writes it (a note opening exhaustive-negative and a source naming the script): only that script sets the verdict (ruling 30.9 16(d) D2(v))`
+          : isExhaustiveNegative(entry)
+            ? `${site} is NO_TERMS, exhaustive-negative: only a robots- probe of /robots.txt may be queued until scripts/robots-verdict.mjs sets NO_TERMS_ROBOTS_OK (ruling 30.9 16(d) D2(v))`
+            : `${site} is ${verdict} in research/channel-loop/terms-verdicts.json`;
   return { ok: false, site, verdict, why };
 }
 

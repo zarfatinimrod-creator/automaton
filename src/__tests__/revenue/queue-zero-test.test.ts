@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as render-watch.mjs)
-import { MIN_TERMS_TEXT, applyVerdicts, loadVerdicts, overrideLines, queueZeroTest, siteOf, termsGate, URLS, ZERO_TESTS } from "../../../scripts/queue-zero-test.mjs";
+import { MIN_TERMS_TEXT, applyVerdicts, isRobotsOkVerdict, loadVerdicts, overrideLines, queueZeroTest, siteOf, termsGate, URLS, ZERO_TESTS } from "../../../scripts/queue-zero-test.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { parseUrlList } from "../../../scripts/render-watch.mjs";
 
@@ -330,7 +330,8 @@ describe("queue-zero-test's terms gate (research/channel-loop/terms-verdicts.jso
  * The ruling of 30.9 (RULING-2026-09-30-video.md 16(d) D2(iv)-(v)): NO_TERMS splits by its note into refusal-type and
  * exhaustive-negative. An exhaustive-negative site (nevo) may be fetched only under NO_TERMS_ROBOTS_OK, which a script
  * sets after reading the site's robots.txt for its queued paths; until then the one thing that may be queued for it is
- * that robots.txt, as a robots- probe line. A TERMS_PENDING site may have its robots.txt probed too.
+ * that robots.txt, as a robots- probe line. A TERMS_PENDING site may not: its terms are unread, and D2(iv) allows it its
+ * terms page and nothing else. The verdict counts only as the script writes it (note and source), never set by hand.
  */
 describe("the terms gate and robots.txt (ruling 30.9 16(d) D2(v))", () => {
   const V = {
@@ -339,18 +340,40 @@ describe("the terms gate and robots.txt (ruling 30.9 16(d) D2(v))", () => {
     "mention.example": { verdict: "NO_TERMS", note: "refusal-type, not exhaustive-negative" },
     "bare.example": { verdict: "NO_TERMS" },
     "pending.example": { verdict: "TERMS_PENDING" },
-    "robotsok.example": { verdict: "NO_TERMS_ROBOTS_OK", note: "exhaustive-negative (a.md:1-2)" },
+    "robotsok.example": {
+      verdict: "NO_TERMS_ROBOTS_OK",
+      source: "robots.txt read at research/rendered/robots-x.txt: all 2 queued paths allowed (scripts/robots-verdict.mjs)",
+      note: "exhaustive-negative (a.md:1-2)",
+    },
+    // Set by hand: on a refusal-type site, and on an exhaustive-negative one with no script behind it.
+    "handset.example": { verdict: "NO_TERMS_ROBOTS_OK", source: "robots.txt allows us (scripts/robots-verdict.mjs)", note: "refusal-type: 403" },
+    "nosource.example": { verdict: "NO_TERMS_ROBOTS_OK", source: "read the robots.txt by hand", note: "exhaustive-negative (a.md:1-2)" },
     "unmet.example": { verdict: "CONDITIONAL_UNMET" },
     "ok.example": { verdict: "NOT_BARRED" },
   };
 
-  it("treats NO_TERMS_ROBOTS_OK as active-eligible, like NOT_BARRED", () => {
+  it("treats NO_TERMS_ROBOTS_OK as active-eligible, like NOT_BARRED, as scripts/robots-verdict.mjs writes it", () => {
     expect(termsGate("https://www.robotsok.example/law/1.htm", "robotsok-law-1", V)).toMatchObject({ ok: true, verdict: "NO_TERMS_ROBOTS_OK" });
+    expect(isRobotsOkVerdict(V["robotsok.example"])).toBe(true);
   });
 
-  it("passes a robots- probe of exactly /robots.txt on an exhaustive-negative NO_TERMS site and on a TERMS_PENDING site", () => {
+  it("refuses a NO_TERMS_ROBOTS_OK set by hand: a note that is not exhaustive-negative, or a source that does not name the script", () => {
+    for (const site of ["handset.example", "nosource.example"]) {
+      const gate = termsGate(`https://${site}/law/1.htm`, "x-law-1", V);
+      expect(gate, site).toMatchObject({ ok: false, verdict: "NO_TERMS_ROBOTS_OK" });
+      expect(gate.why, site).toMatch(/only that script sets the verdict/);
+      expect(isRobotsOkVerdict(V[site as keyof typeof V]), site).toBe(false);
+    }
+    expect(isRobotsOkVerdict({ verdict: "NOT_BARRED", source: "scripts/robots-verdict.mjs", note: "exhaustive-negative" })).toBe(false);
+  });
+
+  it("passes a robots- probe of exactly /robots.txt on an exhaustive-negative NO_TERMS site, and not on a TERMS_PENDING site", () => {
     expect(termsGate("https://www.neg.example/robots.txt", "robots-neg", V)).toMatchObject({ ok: true, verdict: "NO_TERMS" });
-    expect(termsGate("https://pending.example/robots.txt", "robots-pending", V)).toMatchObject({ ok: true, verdict: "TERMS_PENDING" });
+    // D2(iv): unread terms, no fetch — a TERMS_PENDING site gets its terms page and nothing else, its robots.txt included.
+    const pending = termsGate("https://pending.example/robots.txt", "robots-pending", V);
+    expect(pending).toMatchObject({ ok: false, verdict: "TERMS_PENDING" });
+    expect(pending.why).toMatch(/only its terms page/);
+    expect(pending.why).not.toMatch(/robots/);
   });
 
   it("refuses the probe on a refusal-type or note-less NO_TERMS site, and on any other failing verdict", () => {

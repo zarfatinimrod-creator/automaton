@@ -32,6 +32,8 @@ const {
   parseUrlList,
   renderWithBrowser,
   sha256,
+  TERMS_BARRED,
+  TERMS_BARRED_HOST_RESOLVER_RULES,
   TIKTOK_HOST_RESOLVER_RULES,
   tiktokHostInChain,
   tiktokRedirectError,
@@ -342,6 +344,7 @@ describe("renderWithBrowser — plain navigation only", () => {
     const closed: unknown[] = [];
     let connected = false;
     await ws.handler({
+      url: () => "wss://webcast.tiktok.com/ws",
       close: async (options: unknown) => closed.push(options),
       connectToServer: () => {
         connected = true;
@@ -349,6 +352,28 @@ describe("renderWithBrowser — plain navigation only", () => {
     });
     expect(connected).toBe(false);
     expect(closed).toEqual([{ code: 1008, reason: "render-watch never contacts tiktok.com" }]);
+  });
+
+  it("aborts every request, and closes every WebSocket, a page starts to a host whose terms bar automated access", async () => {
+    const fake = fakeBrowser({ [ENTRY.url]: { html: RENDERED } });
+    await renderWithBrowser(ENTRY, { browser: fake.browser });
+    const { matcher, handler } = fake.contexts[0].routes[0];
+    const matches = matcher as (url: URL) => boolean;
+    for (const url of ["https://www.google.com/recaptcha/api.js", "https://www.youtube.com/embed/x", "https://seller.gumroad.com/l/x", "https://WWW.GUMROAD.COM./x"]) {
+      expect(matches(new URL(url)), url).toBe(true);
+    }
+    expect(matches(new URL("https://chromium.googlesource.com/x"))).toBe(false);
+    expect(matches(new URL("https://cdn.example.test/x.js"))).toBe(false);
+    const aborted: string[] = [];
+    await handler({ abort: async (code: string) => aborted.push(code) });
+    expect(aborted).toEqual(["blockedbyclient"]);
+
+    const ws = fake.contexts[0].wsRoutes[0];
+    expect((ws.matcher as (url: URL) => boolean)(new URL("wss://www.youtube.com/live"))).toBe(true);
+    const closed: unknown[] = [];
+    await ws.handler({ url: () => "wss://www.youtube.com/live", close: async (options: unknown) => closed.push(options), connectToServer: () => {} });
+    expect(closed).toEqual([{ code: 1008, reason: "render-watch never contacts youtube.com: its terms bar automated access" }]);
+    expect(Buffer.byteLength((closed[0] as { reason: string }).reason)).toBeLessThanOrEqual(123);
   });
 
   it("takes the DOM as it stands when the network never goes quiet, and says so", async () => {
@@ -515,7 +540,22 @@ describe("chromiumLaunchOptions — exactly what Chromium is started with", () =
     expect(TIKTOK_HOST_RESOLVER_RULES).toBe(
       "MAP tiktok.com ~NOTFOUND, MAP *.tiktok.com ~NOTFOUND, MAP tiktok.com. ~NOTFOUND, MAP *.tiktok.com. ~NOTFOUND",
     );
-    expect(chromiumLaunchOptions()).toEqual({ headless: true, args: [`--host-resolver-rules=${TIKTOK_HOST_RESOLVER_RULES}`] });
+    expect(chromiumLaunchOptions()).toEqual({
+      headless: true,
+      args: [`--host-resolver-rules=${TIKTOK_HOST_RESOLVER_RULES}, ${TERMS_BARRED_HOST_RESOLVER_RULES}`],
+    });
+  });
+
+  it("makes every TERMS_BARRED name fail to resolve too, so a redirect there is never requested (ruling 30.9 16(d) D2(ii))", () => {
+    const rules = String(TERMS_BARRED_HOST_RESOLVER_RULES).split(", ");
+    expect(rules).toHaveLength(TERMS_BARRED.length * 4);
+    for (const { domain } of TERMS_BARRED as Array<{ domain: string }>) {
+      for (const name of [domain, `*.${domain}`, `${domain}.`, `*.${domain}.`]) expect(rules, name).toContain(`MAP ${name} ~NOTFOUND`);
+    }
+    expect(rules).toContain("MAP *.gumroad.com ~NOTFOUND");
+    expect(rules).toContain("MAP *.google.com ~NOTFOUND");
+    // googlesource.com left TERMS_BARRED on 30.9, so it resolves.
+    expect(rules.some((r) => r.includes("googlesource"))).toBe(false);
   });
 
   it("is what launchChromium passes to chromium.launch, and nothing else", async () => {
