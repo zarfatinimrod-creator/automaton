@@ -383,7 +383,11 @@ export interface TargetBasis {
   basis: string;
   /** Required for `measured`: where the number can be checked. */
   source?: string;
-  /** How the money reaches us. Cross-checked against `rails.ts` by its own test. */
+  /**
+   * How the money reaches us. Cross-checked against `rails.ts` by its own test. A line AdSense pays names AdSense here
+   * and rides payin `adsense` in `LINE_RAILS`, where the portfolio counts that rail once: one AdSense payee account
+   * serves every such line, so one ban takes them together (ruling 30.9.2026 16(c), P-3; `linesMissingAdsenseRail`).
+   */
   rail: string;
   /** MISSION constraint 7: how a stranger finds this line. Never blank. */
   acquisitionChannel: string;

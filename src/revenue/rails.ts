@@ -19,7 +19,7 @@
  *               because the ledger says we have it.
  */
 
-import { DEFAULT_PORTFOLIO } from "./portfolio.js";
+import { DEFAULT_PORTFOLIO, TARGET_BASIS, type TargetBasis } from "./portfolio.js";
 import type { RevenueLineSeed } from "./types.js";
 
 export type PayinRail =
@@ -30,7 +30,40 @@ export type PayinRail =
   | "x402"
   | "telegram-stars"
   | "affiliate-networks"
-  | "bounty-platform";
+  | "bounty-platform"
+  | "adsense";
+
+/**
+ * P-3 (research/channel-loop/RULING-2026-09-30-video.md 16(c) items 5 and 7, adopted 30.9.2026): AdSense is ONE shared
+ * rail in portfolio accounting. "You can only have one AdSense or AdSense for YouTube account under the same payee
+ * name" (research/rendered/yk2-yt-9914702.txt:63), and one such account can "monetize more than one YouTube channel"
+ * (:67); the html5-games route pays into "the developer's own AdSense account" too
+ * (research/youtube-kids/RENDER-CHECK-2026-09-28.md:143-144). So every AdSense-paid line rides payin `adsense`, and
+ * `platformConcentration` counts all of them under this one account whatever login each line has: the dedicated brand
+ * Google account T1 gets isolates the login and the enforcement radius, not the payee (ruling 16(c) item 5).
+ */
+export const ADSENSE_PAYEE_ACCOUNT = "adsense:one-payee-account";
+
+/** The account a ban would land on for concentration: an AdSense-paid line's is the one AdSense payee account (P-3). */
+function banAccount(rail: LineRails): string {
+  return rail.payin === "adsense" ? ADSENSE_PAYEE_ACCOUNT : rail.platformAccount;
+}
+
+const NAMES_ADSENSE = /\badsense\b/i;
+
+/**
+ * P-3's "every AdSense-paid line carries the rail": lines whose target basis says AdSense pays them (`rail` names it)
+ * but whose rail in LINE_RAILS is not `adsense`, and lines on `adsense` whose basis does not say so. Empty when the two
+ * agree. A line missing from either map is not judged here (target-basis.test.ts and rails.test.ts cover coverage).
+ */
+export function linesMissingAdsenseRail(
+  basis: Record<string, TargetBasis> = TARGET_BASIS,
+  rails: Record<string, LineRails> = LINE_RAILS,
+): string[] {
+  return Object.keys(basis)
+    .filter((id) => rails[id] !== undefined && NAMES_ADSENSE.test(basis[id]!.rail) !== (rails[id]!.payin === "adsense"))
+    .sort();
+}
 
 export type PayoutRail =
   | "paypal"
@@ -66,7 +99,9 @@ export interface LineRails {
    * FOUR of the seven audited groups, and `railConcentration` reported one line,
    * because it keys by line id and all four collapse into `apify-actors`. Rails
    * measure how the money moves; this measures what a single email from a
-   * platform takes away.
+   * platform takes away. For a line on payin `adsense` it may name the line's own
+   * login (a channel's brand Google account); `platformConcentration` still counts
+   * the line under ADSENSE_PAYEE_ACCOUNT, the payee a ban would reach (P-3).
    */
   platformAccount: string;
   /**
@@ -285,11 +320,12 @@ export function platformConcentration(
   for (const seed of seeds) {
     const rail = rails[seed.id];
     if (!rail) continue;
-    const row = by.get(rail.platformAccount) ?? { lineIds: [], targetAgorot: 0, observable: true };
+    const account = banAccount(rail);
+    const row = by.get(account) ?? { lineIds: [], targetAgorot: 0, observable: true };
     row.lineIds.push(seed.id);
     row.targetAgorot += seed.targetMonthlyAgorot;
     row.observable = row.observable && rail.observable;
-    by.set(rail.platformAccount, row);
+    by.set(account, row);
   }
 
   const platforms: PlatformShare[] = [...by.entries()]
