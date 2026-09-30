@@ -65,9 +65,10 @@ the second and third of those. To move one:
    not describe the stored bytes: check it before citing. Once you have re-checked the hand text
    against the new PDF, delete `textError` from the meta by hand; the fetcher does not bring it back
    while the bytes stay the same.
-2. **Check `<slug>.meta.json` first.** A `status` of 403 or a non-null `error` means the page was
-   never fetched: the finding is "the site refused a GitHub runner on this date", which stays
-   **[BLOCKED]** and is itself worth writing down. A `truncated: true` caps what you may claim.
+2. **Check `<slug>.meta.json` first.** A `status` of 403 is the server's refusal; another 4xx or 5xx
+   is its answer too; a non-null `error` with no status means no answer came. In every case the page's
+   content was not read: the finding is "the site refused (or did not answer) a GitHub runner on this
+   date", which stays **[BLOCKED]** and is itself worth writing down. A `truncated: true` caps what you may claim.
    A failed fetch writes no file, so an older capture's `.pdf`/`.html`/`.txt` may still sit beside
    such a meta: it is from an earlier date, found in git history. For a PDF, the failed fetch's meta
    keeps the last capture's `textPath`, `textError` and `redacted`, because they still describe those

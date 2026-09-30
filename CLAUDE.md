@@ -130,4 +130,11 @@ shared WebSearch budget. See `docs/CRITERIA_SWEEP.md`.
 
 ## Build / test
 - `pnpm install`, `pnpm typecheck`, `pnpm test` (full suite takes >10 minutes here; run targeted files with `npx vitest run <path>` while iterating).
+- **Before any push: `scripts/verify.sh [test paths]`** (typecheck, then vitest on the paths, default `src/__tests__/revenue`;
+  judged by the runners' exit codes, never a grep; exit 1 names the failed step). Two pushes of failing tests came from
+  `vitest | grep`. `scripts/merge-worktree.sh` runs the pre-merge copy of it, so a branch cannot pass itself.
+- **Python products: `scripts/pytest-product.sh <product>`** (chart-explainer, parent-guides): keeps one venv per product
+  and requirements under `~/.cache/mehudak-pytest/`, and fails on skips where the product's CI does.
+- **New render captures: `node scripts/capture-check.mjs <slug...>` before reading them** (exit 3 = flagged: `status`,
+  `bot-challenge`, `js-shell` or `short`). It only flags; the reader judges.
 - Revenue colony: `src/revenue/`, docs in `docs/CHAIN_OF_COMMAND.md` and `docs/INCOME_PLAN.he.md`, playbooks in `skills/`.
