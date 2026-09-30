@@ -6,7 +6,7 @@
 # (workflow_dispatch); each capture lands at research/rendered/<slug>.txt, the pointer a session cites in the table.
 # This is NOT research/rendered/urls.txt, and nothing here is ever appended to it.
 #
-# Every URL is verbatim from the mlcontests list (read 2026-09-29T09:21:18.529Z, sha256 49e374691c73417e…)
+# Every URL is verbatim from the mlcontests list (read 2026-09-30T13:02:14.346Z, sha256 49e374691c73417e…)
 # and appears verbatim in its event's row of the table. No rules-page URL is guessed.
 # tiktok.com URLs are refused (logs/CHANNEL_LOOP.md §9: no tiktok.com URL in any render list or override).
 
