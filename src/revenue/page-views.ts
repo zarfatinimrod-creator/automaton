@@ -39,16 +39,20 @@
  *     it covers: a week read late (a key added at day 30 backfills weeks 1-4 in one tick) was not written by D0+21,
  *     so the fault stands until the clock is restarted.
  *   - M-reach at D0+56 (same item): total page views over the 56 days below 5 → `pause`; at or above 100 a week
- *     averaged over weeks 5-8 → `pass`; between → `extend` to D0+112, the same read, no second extension. pcn874 rides
- *     the same deploy and takes the same read (RULING-2026-09-29-lines (f)). The read is made once its last week
- *     (week 8, then week 16) has been read — its end plus READ_LAG_MS — not at the stroke of day 56.
+ *     averaged over weeks 5-8 → `pass`; between → `extend` to D0+112, the same read over weeks 9-16, no second
+ *     extension: between again → `pause`, as under 5, re-entering measuring at the domain deploy
+ *     (RULING-2026-09-30-documents (c) call 3). pcn874 rides the same deploy and takes the same read
+ *     (RULING-2026-09-29-lines (f)). The read is made once its last week (week 8, then week 16) has been read — its
+ *     end plus READ_LAG_MS — not at the stroke of day 56.
  *   - The domain-period kill (portfolio.ts killCriteria, PUBLISH-10): weekly page views under 100 for 8 consecutive
  *     weeks after the domain deploy → `kill`.
  *   - A reader that stops (in either period, once instrumented): a completed week still without a reading
- *     READ_GRACE_MS after it became readable is an instrument fault, a blocker — so a deleted or expired key cannot
- *     hide the kill or the reach read by leaving weeks unmeasured. It clears when the reader reads the week (PostHog
- *     keeps the events, so a late read is the same measurement). After a final netlify-period verdict no gate waits
- *     on later weeks, and a gap there is a note, not a fault.
+ *     READ_GRACE_MS after it became readable is `reader_down`, a blocker — so a deleted or expired key cannot hide
+ *     the kill or the reach read by leaving weeks unmeasured. It is not an instrument fault and never restarts the
+ *     clock (RULING-2026-09-30-documents (c) call 1): it clears when the reader reads the week (PostHog keeps the
+ *     events, so a late read is the same measurement). Only a week that cannot be read at all is an instrument
+ *     fault. After a final netlify-period verdict no gate waits on later weeks, and a gap there is a note, not a
+ *     blocker.
  * A verdict is a reading for the board, which applies it; nothing here moves a line.
  */
 
@@ -101,7 +105,7 @@ export const WEEK_MS = 7 * DAY_MS;
 export const READ_LAG_MS = 6 * 60 * 60 * 1000;
 /**
  * A readable week with no reading this long after it became readable is overdue: the reader is down. One day of the
- * hourly tick is about 24 attempts, so one PostHog outage or one failed run is not a fault. Our choice.
+ * hourly tick is about 24 attempts, so one PostHog outage or one failed run is not the reader down. Our choice.
  */
 export const READ_GRACE_MS = DAY_MS;
 
@@ -287,7 +291,7 @@ export const PAGE_VIEW_GATES = {
   reachMinTotal: 5,
   /** At or above 100 a week, averaged over the last four weeks of the read (weeks 5-8) → pass. */
   passMinWeeklyAverage: 100,
-  /** Between the two → one extension to D0+112, the same read over weeks 9-16; there is no second. */
+  /** Between the two → one extension to D0+112, the same read over weeks 9-16; there is no second (between again → pause). */
   extensionDay: 112,
   /** The domain-period kill: under 100 a week … */
   killWeeklyBelow: 100,
@@ -302,18 +306,25 @@ export interface PageViewClock {
   domainDeployDay: string | null;
 }
 
-export type PageViewVerdict =
-  | "no_clock" // no D0 recorded: nothing is read and no gate runs
-  | "not_started" // the anchor day is in the future
-  | "uninstrumented" // fewer than two consecutive weekly writes, before the instrument deadline: no gate is read
-  | "instrument_fault" // an instrument fault: fixed, clock restarted, recorded — never a fail
-  | "measuring" // instrumented; the next read is not due
-  | "pause" // M-reach: under 5 page views over the read's 56 days
-  | "pass" // M-reach: 100 a week or more over the read's last four weeks
-  | "extend" // M-reach between the two at D0+56: re-read at D0+112
-  | "extension_exhausted" // between the two again at D0+112: no second extension, the board rules
-  | "continue" // domain period, no kill
-  | "kill"; // domain period: under 100 a week for 8 consecutive weeks
+/**
+ * Every verdict the gates return, in the words of RULING-2026-09-30-documents (c): the gap verdict is `reader_down`, so
+ * KILL-1's "instrument fault … the clock restarted" is never applied to a reader outage, and a second "between" is a
+ * pause — there is no outcome for the board to invent.
+ */
+export const PAGE_VIEW_VERDICTS = [
+  "no_clock", // no D0 recorded: nothing is read and no gate runs
+  "not_started", // the anchor day is in the future
+  "uninstrumented", // fewer than two consecutive weekly writes, before the instrument deadline: no gate is read
+  "instrument_fault", // M-instrument missed (or a week that cannot be read at all): fixed, clock restarted, recorded — never a fail
+  "reader_down", // a readable week still unread a day on: a blocker until the reader reads it — never a clock restart
+  "measuring", // instrumented; the next read is not due
+  "pause", // M-reach: under 5 page views over the read's 56 days, or between again after the one extension
+  "pass", // M-reach: 100 a week or more over the read's last four weeks
+  "extend", // M-reach between the two at D0+56: re-read at D0+112
+  "continue", // domain period, no kill
+  "kill", // domain period: under 100 a week for 8 consecutive weeks
+] as const;
+export type PageViewVerdict = (typeof PAGE_VIEW_VERDICTS)[number];
 
 export interface WeeklyReading {
   week: number;
@@ -352,6 +363,9 @@ export function endWeekOfDay(day: number): number {
 }
 
 const hours = (ms: number): number => Math.round(ms / 3_600_000);
+
+/** The note a second "between" carries with its pause (RULING-2026-09-30-documents (c) call 3, fold 8). */
+export const SECOND_BETWEEN_NOTE = "one extension, not passed: paused as under 5; re-enters at the domain deploy";
 
 /** The M-reach read over weeks `from..to`, all present: pause, pass, or neither (null). */
 function reachRead(byWeek: Map<number, number>, from: number, to: number, g: typeof PAGE_VIEW_GATES): { verdict: "pause" | "pass" | null; note: string } {
@@ -399,8 +413,9 @@ export function evaluatePageViewGates(
   const reading = (verdict: PageViewVerdict, ...notes: string[]): PageViewGateReading => ({ ...base, day, instrumented, verdict, notes });
   const gapNote = (late: number[]): string =>
     `week(s) ${late.join(", ")} still have no reading ${hours(READ_GRACE_MS)}h after they became readable: the reader is down — ` +
-    "unmeasured, never zero. Fix the reader: it reads every missing week it can and this clears when they are in; " +
-    "a week that cannot be read at all is an instrument fault — restart the clock and record it";
+    "never a clock restart; unmeasured, never zero. Fix the reader: it reads every missing week it can and " +
+    "this clears when they are in (PostHog keeps the events, so a late read is the same count); only a week that " +
+    "cannot be read at all is an instrument fault — restart the clock and record it";
 
   if (!instrumented) {
     if (nowMs < deadlineMs) {
@@ -421,17 +436,17 @@ export function evaluatePageViewGates(
         return reading("kill", `weeks ${span[0]}-${end} after the domain deploy each under ${g.killWeeklyBelow} page views (${span.map((w) => byWeek.get(w)).join(", ")})`);
       }
     }
-    if (overdue.length) return reading("instrument_fault", gapNote(overdue));
+    if (overdue.length) return reading("reader_down", gapNote(overdue));
     return reading("continue", `no ${g.killConsecutiveWeeks} consecutive measured weeks under ${g.killWeeklyBelow} since the domain deploy`);
   }
 
   // The netlify.app period: the reach read over weeks from..to is made once week `to` has a reading. Until then a
-  // missing week is a fault only once it is overdue.
-  const pendingRead = (from: number, to: number, dueDay: number): { verdict: "pause" | "pass" | null; note: string } | { waiting: string } | { fault: string } => {
+  // missing week is the reader down only once it is overdue.
+  const pendingRead = (from: number, to: number, dueDay: number): { verdict: "pause" | "pass" | null; note: string } | { waiting: string } | { readerDown: string } => {
     const missing = range(from, to).filter((w) => !byWeek.has(w));
     if (!missing.length) return reachRead(byWeek, from, to, g);
     const late = missing.filter((w) => overdue.includes(w));
-    if (late.length) return { fault: `the day-${dueDay} read over weeks ${from}-${to} cannot be made: ${gapNote(late)}` };
+    if (late.length) return { readerDown: `the day-${dueDay} read over weeks ${from}-${to} cannot be made: ${gapNote(late)}` };
     return readable.has(to)
       ? { waiting: `the day-${dueDay} read waits for week(s) ${missing.join(", ")}: readable, not yet read (overdue ${hours(READ_GRACE_MS)}h after the lag)` }
       : { waiting: `the reach read over weeks ${from}-${to} is due on day ${dueDay}, once week ${to} is read (${hours(READ_LAG_MS)}h after it ends)` };
@@ -443,16 +458,18 @@ export function evaluatePageViewGates(
 
   const firstEnd = endWeekOfDay(g.reachDay);
   const first = pendingRead(1, firstEnd, g.reachDay);
-  if ("fault" in first) return reading("instrument_fault", first.fault);
+  if ("readerDown" in first) return reading("reader_down", first.readerDown);
   if ("waiting" in first) return reading("measuring", first.waiting);
   if (first.verdict) return reading(first.verdict, first.note, ...afterFinal(firstEnd));
 
   const secondEnd = endWeekOfDay(g.extensionDay);
   const second = pendingRead(firstEnd + 1, secondEnd, g.extensionDay);
-  if ("fault" in second) return reading("instrument_fault", first.note, second.fault);
+  if ("readerDown" in second) return reading("reader_down", first.note, second.readerDown);
   if ("waiting" in second) {
     return reading("extend", first.note, `one extension: the same read over weeks ${firstEnd + 1}-${secondEnd} on day ${g.extensionDay}`, second.waiting);
   }
   if (second.verdict) return reading(second.verdict, first.note, second.note, ...afterFinal(secondEnd));
-  return reading("extension_exhausted", first.note, second.note, "there is no second extension: the board rules", ...afterFinal(secondEnd));
+  // Between again: the one extension is spent and not passed. "Same two outcomes" (floors row 9): not passing is the
+  // pause, as under 5, and the line re-enters measuring at the domain deploy (RULING-2026-09-30-documents (c) call 3).
+  return reading("pause", first.note, second.note, SECOND_BETWEEN_NOTE, ...afterFinal(secondEnd));
 }
