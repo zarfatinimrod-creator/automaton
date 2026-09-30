@@ -235,6 +235,9 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 226 | terms audit (tick 27): medium | https://policy.medium.com/medium-terms-of-service-9db0094a1e0f | whether Medium's current Terms bar automated access or AI-written posts (ruling 30.9 16(b); URL from tosdr/tosdr-snapshots Medium/Terms of Service.html, github) |
 | 227 | terms audit (tick 27): medium | https://policy.medium.com/medium-rules-30e5502c4eb4 | what the Medium Rules, which the Terms incorporate, say about automation, spam and AI content (ruling 30.9 16(b); URL from the same tosdr snapshot's links) |
 | 228 | terms audit (tick 27): medium | https://help.medium.com/hc/en-us/articles/22576852947223-Artificial-Intelligence-AI-content-policy | Medium's AI content policy: whether disclosed AI-assisted guides may be published and earn (ruling 30.9 16(b); URL already recorded in the repo) |
+| 229 | terms audit (tick 27): terms-wikimedia-user-agent-policy | https://meta.wikimedia.org/wiki/User-Agent_policy | what Wikimedia's User-Agent Policy requires of a bot's UA, for wikisource.org's CONDITIONAL_UNMET (ruling 30.9 16(d) D2(iii), D2(v); URL from the Terms of Use link, tosdr snapshot, github) |
+| 230 | terms audit (tick 27): terms-wikimedia-robot-policy | https://wikitech.wikimedia.org/wiki/Robot_policy | what Wikimedia's Robot Policy allows a bot, for wikisource.org's CONDITIONAL_UNMET (ruling 30.9 16(d) D2(iii), D2(v); URL from the Terms of Use link, tosdr snapshot, github) |
+| 231 | terms audit (tick 27): robots-nevo | https://www.nevo.co.il/robots.txt | whether nevo's robots.txt allows the paused law paths, so robots-verdict.mjs can set NO_TERMS_ROBOTS_OK (ruling 30.9 16(d) D2(v)) |
 
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no

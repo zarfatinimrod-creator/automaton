@@ -416,6 +416,12 @@
    "source": "TERMS_BARRED in scripts/render-watch.mjs (research/rendered/terms-wavedash.txt:118; round 3)",
    "checked": "2026-09-29"
   },
+  "wikimedia.org": {
+   "verdict": "TERMS_PENDING",
+   "source": "Wikimedia Terms of Use, tosdr/tosdr-snapshots Wikimedia/Terms of Service.html at b44ae1b (github grade): automated use must follow the User-Agent Policy and the Robot Policy, which it links",
+   "checked": "2026-09-30",
+   "note": "the two policies are fetched once each as terms- lines, now that render-watch sends an identifying UA (ruling 30.9 16(d) D2(iii), D2(v)); wikisource.org is re-judged on them"
+  },
   "wikisource.org": {
    "verdict": "CONDITIONAL_UNMET",
    "source": "tosdr/tosdr-snapshots Wikimedia/Terms of Service.html:981 (round 3): automated uses must follow the robot and User-Agent policies, which are unread",
