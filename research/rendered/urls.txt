@@ -108,7 +108,7 @@ https://api.apify.com/v2/store?search=accessibility	apify-store-accessibility
 # --------------------------------------------------------------------------------
 # paused (terms unread, 29.9.2026): swiftness.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.swiftness.co.il/%D7%9B%D7%9C%D7%9C%D7%99-%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA/	sweep2-pension-memsakim-rules
 # paused (terms unread, 29.9.2026): data.gov.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://data.gov.il/dataset/ica-changes	sweep2-ica-changes-dataset
-# paused (terms audit, 29.9.2026): googlesource.com — see TERMS_BARRED in scripts/render-watch.mjs — https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/vrp-faq.md	sweep2-google-vrp-faq
+https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/vrp-faq.md	sweep2-google-vrp-faq
 https://github.com/marketplace	sweep2-github-marketplace
 # REMOVED 26.9.2026: https://algora.io/PrimeIntellect-ai/bounties (sweep2-algora-primeintellect).
 # Algora's terms forbid "any robot, spider, or other automatic device, process, or means to access
@@ -717,3 +717,17 @@ https://ypay.co.il/front/terms	terms-ypay
 # paused (terms audit, 29.9.2026): tipalti.com — see TERMS_BARRED in scripts/render-watch.mjs — https://tipalti.com/legal/website-terms/	terms-tipalti-website
 # research/channel-loop/ZERO-TESTS.md row 225 — terms audit (tick 22): knesset's terms page, URL from theWallProject/mono page.html:2299 (github); fetched once so its terms can be read (29.9.2026).
 # retired (ruling 30.9 16(d) D2(iv): the site refused the runner) — https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx	terms-knesset
+# research/channel-loop/ZERO-TESTS.md row 226 — terms audit (tick 27): medium (30.9.2026).
+# retired (ruling 30.9 16(d) D2(iv): medium.com answered 403 to the runner on 30.9) — https://policy.medium.com/medium-terms-of-service-9db0094a1e0f	terms-medium
+# research/channel-loop/ZERO-TESTS.md row 227 — terms audit (tick 27): medium (30.9.2026).
+# retired (ruling 30.9 16(d) D2(iv): medium.com answered 403 to the runner on 30.9) — https://policy.medium.com/medium-rules-30e5502c4eb4	terms-medium-rules
+# research/channel-loop/ZERO-TESTS.md row 228 — terms audit (tick 27): medium (30.9.2026).
+# retired (ruling 30.9 16(d) D2(iv): medium.com answered 403 to the runner on 30.9) — https://help.medium.com/hc/en-us/articles/22576852947223-Artificial-Intelligence-AI-content-policy	terms-medium-ai-policy
+# research/channel-loop/ZERO-TESTS.md row 229 — terms audit (tick 27): terms-wikimedia-user-agent-policy (30.9.2026).
+# retired (ruling 30.9 16(d) D2(iv): the page is a moved-notice stub; its new home is row 232) — https://meta.wikimedia.org/wiki/User-Agent_policy	terms-wikimedia-user-agent-policy
+# research/channel-loop/ZERO-TESTS.md row 230 — terms audit (tick 27): terms-wikimedia-robot-policy (30.9.2026).
+https://wikitech.wikimedia.org/wiki/Robot_policy	terms-wikimedia-robot-policy
+# research/channel-loop/ZERO-TESTS.md row 231 — terms audit (tick 27): robots-nevo (30.9.2026).
+https://www.nevo.co.il/robots.txt	robots-nevo
+# research/channel-loop/ZERO-TESTS.md row 232 — terms audit (tick 27): wikimedia user-agent policy (moved) (30.9.2026).
+https://foundation.wikimedia.org/wiki/Policy:User-Agent_policy	terms-wikimedia-user-agent-policy-foundation

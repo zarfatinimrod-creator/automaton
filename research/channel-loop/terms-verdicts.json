@@ -1,5 +1,5 @@
 {
- "_about": "Terms verdict for every site render-watch has a line for (research/channel-loop/TERMS-AUDIT-2026-09-29.md). A line may be active only when its site is NOT_BARRED or CONDITIONAL_MET, or TERMS_PENDING and the line is the site's terms page (slug starting 'terms-'). Enforced by src/__tests__/revenue/render-watch-terms-barred.test.ts.",
+ "_about": "Terms verdict for every site render-watch has a line for (research/channel-loop/TERMS-AUDIT-2026-09-29.md). A line may be active only when its site is NOT_BARRED or CONDITIONAL_MET, or TERMS_PENDING and the line is the site's terms page (slug starting 'terms-'). Since 30.9 (RULING-2026-09-30-video.md 16(d) D2(v)) NO_TERMS_ROBOTS_OK is active-eligible too, set only by scripts/robots-verdict.mjs (its source names the script and its note opens 'exhaustive-negative'; a hand-set one fails the gate), and a robots-only probe (slug starting 'robots-', URL path exactly /robots.txt) may be active only for a NO_TERMS site whose note opens 'exhaustive-negative' (D2(iv): a TERMS_PENDING site gets its terms page and nothing else). Enforced by src/__tests__/revenue/render-watch-terms-barred.test.ts.",
  "sites": {
   "accessalyze.com": {
    "verdict": "NO_TERMS",
@@ -122,9 +122,10 @@
    "checked": "2026-09-29"
   },
   "googlesource.com": {
-   "verdict": "BARRED",
-   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
-   "checked": "2026-09-29"
+   "verdict": "CONDITIONAL_MET",
+   "source": "Google's terms allow automated access only while respecting robots.txt (research/colony-sweep/scouts/risk-governance--automation-tos.md:106, github grade); ruling research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(v)",
+   "checked": "2026-09-30",
+   "note": "condition met by code: scripts/render-watch.mjs fetches each host's robots.txt once per run and does not fetch what it disallows for MehudakRenderWatch or * (robotsChecker), with an identifying User-Agent; BARRED on 29.9 only for want of that"
   },
   "govi.co.il": {
    "verdict": "NO_TERMS",
@@ -223,6 +224,12 @@
    "source": "research/rendered/terms-lomdiml.txt:219 (round 2)",
    "checked": "2026-09-29"
   },
+  "medium.com": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://policy.medium.com/medium-terms-of-service-9db0094a1e0f (URL and 2020 text from tosdr/tosdr-snapshots Medium/Terms of Service.html at b44ae1b, github grade; that text has no automated-access clause, 0 hits for automat|robot|scrap|crawl|spider)",
+   "checked": "2026-09-30",
+   "note": "refusal-type since 30.9: the Terms, the Rules and the AI content policy all answered 403 to the runner (rows 226-228, research/rendered/terms-medium*.meta.json); the lines are retired (ruling 30.9 16(d) D2(iv)). The 2020 Terms read at github grade have no automated-access clause; the Rules and the AI policy stay unread until a GitHub-hosted copy is found, so ruling 16(b)'s one check cannot run from the runner"
+  },
   "metaculus.com": {
    "verdict": "BARRED",
    "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
@@ -258,7 +265,7 @@
    "verdict": "NO_TERMS",
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
    "checked": "2026-09-29",
-   "note": "exhaustive-negative (osek-patur-documents.md:1129-1141); fetchable only under NO_TERMS_ROBOTS_OK once render-watch honours robots.txt with an identifying UA (ruling 30.9 16(d) D2(v))"
+   "note": "exhaustive-negative (osek-patur-documents.md:1129-1141). robots.txt read 30.9 (research/rendered/robots-nevo.txt, rendered): 'User-agent: *' 'Disallow: /', and every named AI crawler is disallowed too; only Googlebot and Bingbot may read /law_html/law00/ and law01/. So NO_TERMS_ROBOTS_OK is refused (scripts/robots-verdict.mjs, 8 of 8 paths disallowed) and no nevo law page is fetched again; law texts come from the lawsofisrael mirror (github). The robots-nevo probe stays weekly to see a change (ruling 30.9 16(d) D2(v))"
   },
   "odoo.com": {
    "verdict": "NO_TERMS",
@@ -408,6 +415,12 @@
    "verdict": "BARRED",
    "source": "TERMS_BARRED in scripts/render-watch.mjs (research/rendered/terms-wavedash.txt:118; round 3)",
    "checked": "2026-09-29"
+  },
+  "wikimedia.org": {
+   "verdict": "TERMS_PENDING",
+   "source": "Wikimedia Terms of Use, tosdr/tosdr-snapshots Wikimedia/Terms of Service.html at b44ae1b (github grade): automated use must follow the User-Agent Policy and the Robot Policy, which it links",
+   "checked": "2026-09-30",
+   "note": "Robot Policy read 30.9 (research/rendered/terms-wikimedia-robot-policy.txt:146-253, rendered): identify the bot by the User-Agent Policy, gzip, respect 429 Retry-After, /wiki/Title URLs, low concurrency; a weekly handful of requests is inside it. The User-Agent Policy page at meta.wikimedia.org is a moved-notice stub (row 229); its new home at foundation.wikimedia.org is queued (row 232). wikisource.org is re-judged once it is read"
   },
   "wikisource.org": {
    "verdict": "CONDITIONAL_UNMET",

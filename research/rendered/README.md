@@ -19,7 +19,7 @@ Per URL, three files:
 |---|---|
 | `<slug>.html` / `.json` / `.pdf` / `.xml` / `.txt` / `.bin` | the raw response body, extension chosen from the `Content-Type` |
 | `<slug>.txt` | for HTML: a plain-text extraction — scripts, styles and tags stripped, whitespace collapsed. For a PDF: the output of `pdftotext -layout` on the stored `.pdf`, made on the runner (page breaks kept as form feeds). This is the file to read and grep |
-| `<slug>.meta.json` | `url`, `fetchedAt`, `status`, `contentType`, `byteLength`, `sha256`, `bodyPath`, `textPath`, `changed`, `firstFetch`, `previousSha256`, `truncated`, `error` — and, for a PDF whose text could not be extracted, `textError` saying why; for a line flagged `js`, `renderedWith` (`"chromium"`) and `networkIdle` (below) |
+| `<slug>.meta.json` | `url`, `fetchedAt`, `status`, `contentType`, `byteLength`, `sha256`, `bodyPath`, `textPath`, `changed`, `firstFetch`, `previousSha256`, `truncated`, `error` — and, for a PDF whose text could not be extracted, `textError` saying why; for a line flagged `js`, `renderedWith` (`"chromium"`) and `networkIdle` (below); since 30.9, `robots` and `robotsUrl`: what the host's robots.txt said about the URL on the fetch that wrote the meta (below) |
 
 ## Three things about these files that are easy to get wrong
 
@@ -70,7 +70,10 @@ the second and third of those. To move one:
    A failed fetch writes no file, so an older capture's `.pdf`/`.html`/`.txt` may still sit beside
    such a meta: it is from an earlier date, found in git history. For a PDF, the failed fetch's meta
    keeps the last capture's `textPath`, `textError` and `redacted`, because they still describe those
-   files; `sha256` and `bodyPath` are null because this fetch stored nothing.
+   files; `sha256` and `bodyPath` are null because this fetch stored nothing. An `error` that says
+   `robots.txt disallows this URL` or `robots.txt could not be read` means the fetcher did not ask for
+   that URL at all: the site's robots.txt said no, or could not be read (below) — our refusal, not the
+   site's answer.
 3. **Answer the specific question the research file asked**, not a question the page happens to
    answer. Each entry in `urls.txt` carries the sentence that put it there, quoted from the file
    that wants it.
@@ -111,8 +114,9 @@ parse, and any URL on `tiktok.com` or a subdomain of it are refused the same way
 
 **Never `tiktok.com`.** The fetcher refuses it at parse time in both modes, in this file and in the
 dispatch override alike: `logs/CHANNEL_LOOP.md` §9 paused every TikTok fetch on 28.9 (TikTok's terms
-bar automated access, and the runner had already fetched about 110 of its pages), and whether any
-fetch of TikTok is allowed at all waits on `logs/FABLE_QUEUE.md` row 16(d). A listed page that
+bar automated access, and the runner had already fetched about 110 of its pages), and the sitting of
+30.9 ruled that none ever is, in either mode, for any purpose
+(`research/channel-loop/RULING-2026-09-30-video.md` 16(d) D2(i)). A listed page that
 redirects to TikTok is not followed either: a plain fetch follows redirects by hand and refuses a
 `tiktok.com` hop before requesting it, and the meta records `redirected to tiktok.com (<host>); not
 followed` with the redirect's status. Research on TikTok reads GitHub mirrors (Open Terms Archive)
@@ -123,15 +127,15 @@ them, each with the terms line that bars it, and the fetcher refuses them exactl
 at parse time in both modes, and as a redirect hop. The first is Gumroad (tick 19, 29.9.2026): its terms
 forbid "any manual or automated software ... to 'scrape' or download data from any web pages contained
 in the Services" (`gumroad-terms.txt:326`, also `:343`). Thirteen Gumroad pages had been fetched by
-then; their lines in `urls.txt` are commented out as `# paused (tick 19 ...)`, so the weekly run does
-not fetch them again. Whether any Gumroad page may be fetched again waits on `logs/FABLE_QUEUE.md`
-row 16(d). A new site's terms are read **before** its first line is queued, not after.
+then; their lines in `urls.txt` are commented out, now as `# retired (ruling 30.9 16(d) D2(ii) ...)`:
+no Gumroad web page is fetched again, and the refresh route is Gumroad's own source on GitHub. A new
+site's terms are read **before** its first line is queued, not after.
 
 **The tick-20 terms audit (29.9)** checked all 81 active sites against their own terms
 (`research/channel-loop/TERMS-AUDIT-2026-09-29.md`). Thirteen more domains are now in `TERMS_BARRED`: ten whose terms bar
 automated access (PayPal, Teach Simple, Indiebook, Astro, Facer and its creator site, YouTube and its blog, Metaculus,
 OpenAI), Google's and googlesource's pages (Google's terms allow automated access only while respecting robots.txt,
-which this fetcher does not read), and Mozilla's add-on API (its policy bars harvesting names and emails; the stored
+which this fetcher did not read until 30.9), and Mozilla's add-on API (its policy bars harvesting names and emails; the stored
 results were redacted). 66 lines are paused. A site's **terms page** may be fetched once so its terms can be read;
 that is how the 23 terms rows (ZERO-TESTS 191-213) were queued.
 
@@ -142,6 +146,64 @@ active on a site that is not NOT_BARRED or CONDITIONAL_MET. The one exception is
 verdict), then queue the line. A line for a site with no verdict fails CI, and since tick 24
 `scripts/queue-zero-test.mjs` refuses it at queue time with the reason (`termsGate`). After a verdict changes,
 `node scripts/queue-zero-test.mjs --apply-verdicts [--dry-run]` comments out every active line that fails the gate.
+
+**robots.txt and an identifying User-Agent (30.9).** The sitting of 30.9 ordered both
+(`research/channel-loop/RULING-2026-09-30-video.md` 16(d) D2(v)), and the fetcher has them:
+
+- **Who is asking.** Every request — a plain GET, a `js` render, a robots.txt fetch — sends
+  `MehudakRenderWatch/1.0 (+https://il-biz-tools.netlify.app)`: the brand's product token and the brand's URL, never a
+  username and never the repository's URL (a test pins the string and refuses both). It replaced a copied Chrome string.
+  A site that answered a browser but refuses an honest crawler is recorded as refusing it; nothing is done to get past it.
+- **robots.txt first, once per host per run.** Before the first page of a host (scheme, host and port), the fetcher
+  fetches that host's `/robots.txt` and keeps it for the run. It reads it as RFC 9309 says: the group naming
+  `MehudakRenderWatch` (case-insensitive) if there is one, else the `*` group; the longest matching `Allow`/`Disallow`
+  decides, `Allow` wins a tie, `*` matches any run of characters and a final `$` the end of the path, and the path is
+  compared with its query (characters URL parsers disagree on, such as `"`, `{` or `'`, are percent-encoded on both
+  sides first). A **2xx** is read, up to 500 KiB — a file cut short there is read only to its last complete line; a
+  **4xx** other than 429 means no robots.txt, so nothing is disallowed; a **5xx**, a **429**, a network error, a
+  timeout, more than five redirects, or a redirect to anything but another `/robots.txt` means complete disallow —
+  nothing on that host is fetched in that run. A disallowed URL is not requested at all; its meta says
+  `error: "robots.txt disallows this URL …"` and the run carries on. In a plain GET every redirect hop is checked the
+  same way before it is requested, against the robots.txt of the host it goes to.
+- **The meta says so.** `robots` is `"allowed"`, `"disallowed"`, `"none"` (4xx) or `"unreachable"`, and `robotsUrl`
+  names the robots.txt that decided. Like every field it is written only when the meta is: an unchanged page keeps the
+  robots state of the fetch that captured it.
+- **A barred host is never asked, not even for its robots.txt.** The terms refusals (`TERMS_BARRED`, `tiktok.com`)
+  run first, at parse time and on every hop; the robots.txt check comes after them, and refuses such a host again itself.
+- **The `js` mode** reads the listed URL's robots.txt with a plain GET before the browser is asked for it. Every
+  request the page then starts itself — scripts, images, XHR, frames, a script's move to another page — is checked
+  before it is sent, and one robots.txt disallows is aborted unsent; a page whose own move was aborted is not stored,
+  and one that only lost a subresource is (the run log counts what was held back). A server redirect is the exception:
+  the browser follows it itself, so that hop is checked only once the page has settled, and a page reached through a
+  disallowed one is not stored, but the hop was already requested (a stated limit). A `TERMS_BARRED` host gets the
+  tiktok.com treatment inside the browser: its name does not resolve, a page's requests and WebSockets to it are
+  refused, and a page sent there is not stored.
+- **A robots-only probe line.** A line whose slug starts `robots-` and whose URL path is exactly `/robots.txt`:
+
+  ```
+  https://www.example.org/robots.txt	robots-example
+  ```
+
+  fetches that file and nothing else from the host, and stores it like any capture (`robots-example.txt` for a
+  text/plain answer, plus its meta). A `robots-` slug on any other path, a `/robots.txt` URL under any other slug, and a
+  probe with the `js` flag are refused at parse time. It exists for sites whose terms leave robots.txt as the only
+  signal: `termsGate` lets a probe through only for a **NO_TERMS** site whose note opens `exhaustive-negative` (a
+  recorded search found no terms anywhere: nevo) — and nothing else from such a site. A **TERMS_PENDING** site gets no
+  probe: its terms are unread, and ruling D2(iv) allows it its terms page and nothing more. A probe's redirect is
+  followed only to another `/robots.txt`, so a probe never fetches a page.
+- **NO_TERMS_ROBOTS_OK.** A verdict that counts like NOT_BARRED. It is set only by
+  `node scripts/robots-verdict.mjs <site> [--apply]`, and only when the site is NO_TERMS with an exhaustive-negative
+  note, it has a committed `robots-` capture for every host its queued lines sit on, each capture is a robots.txt the
+  site served (a 2xx `text/plain` file that is not markup) or a 404/410, and that robots.txt allows every queued path
+  (active or `# paused`) for `MehudakRenderWatch`, read with the fetcher's own parser. A capture that answered 401, 403,
+  429 or an HTML page (a bot challenge) sets nothing: that is the site's answer (D2(iv)), not a file that says yes.
+  Otherwise it changes nothing and says why (exit 3). The gate checks the result: a NO_TERMS_ROBOTS_OK entry counts
+  only with a note opening `exhaustive-negative` and a source naming the script, so one set by hand fails CI. Dry run by default; `--apply` rewrites the one entry, citing the capture and the
+  ruling. It never edits this list: un-pausing the site's lines afterwards is a separate, reviewed edit. A
+  **refusal-type** NO_TERMS site (the terms page answered 403 or a bot challenge) is never eligible.
+- **googlesource.com** left `TERMS_BARRED` for CONDITIONAL_MET: its one condition was robots.txt
+  (`research/colony-sweep/scouts/risk-governance--automation-tos.md:106`), and its line (`sweep2-google-vrp-faq`) is
+  active again. `google.com` stays barred: YouTube's terms bar the Help pages outright.
 
 ## The js flag: a JavaScript-capable render
 
@@ -163,8 +225,9 @@ instead of fetched. What that does and does not do:
   then is stored as `<slug>.html` and goes through
   the same text extraction, secret masking, 5 MB cap, hash and quiet-history rule as any page. No
   clicks, no typing, no form fills, no logins; a fresh browser context per URL, so no cookie or
-  storage survives from one URL to the next; the same User-Agent as a plain GET, no stealth plugin,
-  no anti-detection setting — the site can see a browser under automation.
+  storage survives from one URL to the next; the same identifying User-Agent as a plain GET, no
+  stealth plugin, no anti-detection setting — the site can see a browser under automation. The host's
+  robots.txt is read before the browser is asked for the URL (above).
 - **The meta says so.** `renderedWith: "chromium"`, and `networkIdle`: `true` if the page went quiet
   before the DOM was taken, `false` if the 30 s ran out first (the DOM may be partial), `null` when no
   DOM was taken (a refusal or an error, recorded exactly as for a plain GET).

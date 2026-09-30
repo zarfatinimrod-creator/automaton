@@ -604,6 +604,8 @@ describe("main — HTML, JSON and refused pages (pinned before the PDF branch ex
     const raw = readFileSync(join(out, "ex-terms.meta.json"), "utf8");
     const meta = JSON.parse(raw);
     expect(raw).toBe(`${JSON.stringify(meta, null, 2)}\n`);
+    // Since 30.9 every capture also records what its host's robots.txt said (ruling 30.9 16(d) D2(v)). The stub
+    // answers every URL, robots.txt included, with the same HTML page, which parses to no rules: allowed.
     expect(Object.keys(meta)).toEqual([
       "url",
       "slug",
@@ -616,12 +618,16 @@ describe("main — HTML, JSON and refused pages (pinned before the PDF branch ex
       "error",
       "bodyPath",
       "textPath",
+      "robots",
+      "robotsUrl",
       "changed",
       "firstFetch",
       "previousSha256",
       "note",
     ]);
     expect(meta).toMatchObject({
+      robots: "allowed",
+      robotsUrl: "https://example.test/robots.txt",
       url: "https://example.test/terms",
       slug: "ex-terms",
       fetchedAt: "2026-09-28T01:00:00.000Z",
