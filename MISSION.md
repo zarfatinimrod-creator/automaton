@@ -402,6 +402,26 @@ lost session. Nobody has to say "continue".
 value, the brand-only rule and the owner's own steps are unchanged. Payout accounts still need the owner's one-time
 identity steps; the loop works around them and says so plainly once per summary, without nagging.
 
+## יוטיוב גם לילדים וגם רגיל — תוספת הבעלים, 30.9.2026 (verbatim)
+
+> שהיוטיוב יהיה גם של ילדים וגם יוטיוב רגיל נתתי אפשרות לא אמרתי רק זה
+
+### What this addition changes
+
+**YouTube is two lines, not one.** The owner's 28.9 question about YouTube Kids offered kids content as an option alongside
+regular YouTube, not in place of it and not as the only reading. The 30.9 sitting's ruling 16(c) (D: no YouTube channel
+for either reading of "YouTube Kids"; A, A-he and B rejected) is overridden as to direction: a kids YouTube line is
+reopened as a candidate beside T1, the regular YouTube test. It goes through the loop like any line: a Fable sitting
+designs and admits it (`logs/FABLE_QUEUE.md` row 23), with its own pre-registered kills.
+
+**The audience default.** Ruling 16(c)(2) says no line targets an audience that cannot read the AI declaration, and that
+only the owner can change that. This addition asks for kids content; it does not say pre-readers. Until the owner says
+otherwise, the kids line is for children who can read the declaration (on screen and spoken), with a parent-facing
+description.
+
+**It changes nothing else.** Honest value, AI declared, the brand as the only public face, the ₪0 rule, no camera, no
+account opened in the owner's name by us, and YouTube's own made-for-kids and synthetic-content rules all hold.
+
 ---
 
 ## The rules this mandate implies
