@@ -81,7 +81,11 @@ the second and third of those. To move one:
    that wants it.
 4. **Edit the research file.** Change the grade to `[RENDERED]`, quote the page verbatim, and cite
    it as `research/rendered/<slug>.txt` plus the URL and the `fetchedAt` date from the meta file —
-   so the next reader can check the quote against the stored bytes without a network call.
+   so the next reader can check the quote against the stored bytes without a network call. **A
+   citation by line names a frozen copy, not the live capture:** run
+   `node scripts/freeze-capture.mjs <slug>` and cite `research/rendered/<slug>-<fetchedAt day>.txt:NNN`
+   (next section). The weekly render rewrites `<slug>.txt` whenever the page changes, and a line number
+   into it then points at other text.
 5. **Update the verdict and everything downstream of it.** A verdict table in
    `research/measurements/`, the matching section of `docs/REJECTED.md`, and — if a rail's status
    moved — `src/revenue/rails.ts` and its tests. A page that settles a question and leaves the
@@ -100,6 +104,31 @@ Quote what the page says; grade the inference separately.
 Israeli publishers geo-block non-Israeli traffic. A GitHub runner is not in Israel. A block or an
 empty page from `govi.co.il` or `mr.gov.il` is a fact about where the runner sits, not about the
 site, and must be written down that way.
+
+## Frozen copies: what a citation by line points at
+
+`<slug>.txt:NNN` is only as stable as the page. render-watch rewrites a capture in place when the page
+changes, and by 30.9.2026 13 citations by line in the research notes already pointed at text the render had
+rewritten (the BTL rate lines under `research/measurements/step2-cost.md`, Displate's bot clause under the loop
+ruling), and 11 more named a capture the render had since replaced. A **frozen copy** is a
+dated copy of one capture, `<slug>-<YYYY-MM-DD>.*`, byte for byte, whose slug no `urls.txt` line names, so
+no render ever touches it; the live line stays on the watch.
+
+- `node scripts/freeze-capture.mjs <slug> [--date YYYY-MM-DD] [--from-commit <sha>] [--dry-run]` makes one.
+  The date defaults to the capture's `fetchedAt` day, so the name says when the text was fetched. The copy's
+  meta names the copy (`slug`, `bodyPath`, `textPath`) and gains `frozen: { on, from, commit, why }`, the shape
+  of the three copies frozen by hand before the tool (`nevo-vat-law-2026-09-29`, `kokoro-82m-model-card-2026-09-29`,
+  `hexgrad-kokoro-voices-js-dfb907a`). It refuses a capture capture-check flags (an error page or a shell frozen
+  as evidence would be cited as the page; `--allow-flagged` for a claim about the failure itself, recorded in
+  `frozen.flagged`), a name any `urls.txt` line gives, and an existing copy with other bytes.
+- `node scripts/freeze-capture.mjs --cited [--unlined] [--keep <file>:<line>] [--history] [--apply]` does it
+  for every citation of an active capture in the decision-bearing files (`research/channel-loop/*.md`,
+  `terms-verdicts.json`, `research/measurements/*.md`, `docs/*.md`, product configs and READMEs; not `logs/`)
+  and repoints them, same line numbers. It checks each citation against the capture in the commit that added it:
+  a citation whose line the render has since moved is DRIFTED, printed with both texts, and with `--history`
+  repointed to a copy of the capture as that commit stored it.
+- `src/__tests__/revenue/frozen-citations.test.ts` fails when a decision-bearing file cites an active capture by
+  line. A frozen copy is a record: `scripts/robots-verdict.mjs` skips frozen `robots-` copies and reads the live one.
 
 ## Adding a URL
 

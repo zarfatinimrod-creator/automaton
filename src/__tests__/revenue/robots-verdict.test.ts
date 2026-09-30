@@ -276,6 +276,19 @@ describe("robots-verdict CLI", () => {
     expect(f.verdicts()).toBe(before);
   });
 
+  it("reads the live capture, never a dated frozen copy of it (scripts/freeze-capture.mjs), which sorts first", () => {
+    const f = fixture("User-agent: *\nDisallow: /search\n");
+    // A frozen copy keeps the url of the live capture and says it is frozen; its name sorts before the live one's.
+    const frozen = { ...capture("User-agent: *\nDisallow: /\n").meta, slug: "robots-law-2026-09-30", bodyPath: "research/rendered/robots-law-2026-09-30.txt" };
+    writeFileSync(join(f.rendered, "robots-law-2026-09-30.txt"), "User-agent: *\nDisallow: /\n");
+    writeFileSync(
+      join(f.rendered, "robots-law-2026-09-30.meta.json"),
+      `${JSON.stringify({ ...frozen, frozen: { on: "2026-09-30", from: "research/rendered/robots-law.meta.json", commit: "abc1234", why: "test" } }, null, 2)}\n`,
+    );
+    expect(readRobotsCapture("https://www.law.example/robots.txt", f.rendered)).toMatchObject({ slug: "robots-law", body: "User-agent: *\nDisallow: /search\n" });
+    expect(f.run().stdout).toMatch(/would set law\.example to NO_TERMS_ROBOTS_OK/);
+  });
+
   it("writes the entry with --apply, and nothing else in the file", () => {
     const f = fixture("User-agent: *\nDisallow: /search\n");
     const got = f.run("--apply");
