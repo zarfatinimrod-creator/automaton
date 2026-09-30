@@ -48,7 +48,7 @@ document's own bytes), **[SNIPPET]** (a search summary quoting a page I could no
 (the primary source exists and the proxy refused it). Most of what this directory exists to fix is
 the second and third of those. To move one:
 
-0. **Run `node scripts/capture-check.mjs <slug...>` on new captures before reading them** (exit 3 = flagged: `status`, `bot-challenge`, `js-shell` or `short`, with the evidence); it only flags, the reader still judges.
+0. **Run `node scripts/capture-check.mjs <slug...>` on new captures before reading them** (exit 3 = flagged: `status`, `bot-challenge`, `js-shell` or `short`, with the evidence); it only flags, the reader still judges. Every render-watch run now does this for the captures it just stored (`--changed --summary`, before its commit): the run's job summary lists the flagged ones in a table (slug, kind, evidence), with a warning each on the run page, so start from the run page.
 1. **Read the text.** `research/rendered/<slug>.txt` for HTML and PDF, the raw file otherwise. If the
    `.txt` comes back nearly empty, the page is client-rendered and the server sent a shell (or, for a
    PDF, the pages are images with no text layer) — record that as what happened, do not conclude the

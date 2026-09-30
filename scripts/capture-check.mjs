@@ -4,9 +4,19 @@
  *
  *   node scripts/capture-check.mjs <slug...>        one line per capture: slug, kind, evidence (tab-separated)
  *   node scripts/capture-check.mjs --all            every research/rendered/*.meta.json (counts per kind on stderr)
+ *   node scripts/capture-check.mjs --changed        the captures git says are changed or new: every *.meta.json directly
+ *                                                   in the directory that is modified, staged or untracked, and still on
+ *                                                   disk (changedSlugs; counts per kind on stderr). None is not an error.
+ *   --summary                                       instead of the tab lines: Markdown for a GitHub job summary on stdout
+ *                                                   (summaryMarkdown), and one ::warning:: workflow command per flagged
+ *                                                   capture on stderr (warningLine). A capture that cannot be read is a
+ *                                                   row and a warning of its own, kind "unreadable".
  *   --dir <path>                                    read captures from another directory (tests)
+ * render-watch.yml runs `--changed --summary` between its fetch and its commit, so each run's job summary names the
+ * captures it just stored that are not read pages. The workflow step treats every exit code as an answer, never a failure.
  *
- * Exit 0 when every capture is "ok", 3 when any is flagged, 2 on a usage error or a missing capture.
+ * Exit 0 when every capture is "ok" (or --changed found none), 3 when any is flagged, 2 on a usage error, a missing or
+ * unreadable capture, or a directory git cannot read for --changed.
  *
  * A capture is research/rendered/<slug>.{meta.json,txt,html} (render-watch.mjs). The kinds:
  *   status         the meta has an error, or a status outside 200-299. The evidence says which: the server answered
@@ -36,6 +46,7 @@
  * It only flags. It writes nothing, and it never edits terms-verdicts.json: whether a challenge is the site's
  * refusal (ruling 16(d) D2(iv), research/channel-loop/RULING-2026-09-30-video.md) is the reader's judgement.
  */
+import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -207,41 +218,135 @@ export function readCapture(slug, dir = RENDERED) {
   return { meta, text, textFrom, html: isHtml ? named(meta.bodyPath) : null };
 }
 
+/**
+ * The captures in dir that git says are changed or new, as sorted slugs: every <slug>.meta.json directly in dir that
+ * is modified, staged or untracked against HEAD, and still on disk. Between render-watch.yml's fetch step and its
+ * commit step that is exactly what the run stored: the tree is clean at the branch tip before the fetch, and a page
+ * that did not change writes nothing (render-watch.mjs). A changed .txt beside an unchanged meta is not a new capture.
+ * Throws when git cannot say (no git, or dir is not in a repository).
+ */
+export function changedSlugs(dir = RENDERED) {
+  const git = (...args) => {
+    // --no-optional-locks: a status that only reads does not refresh (write) the index either.
+    const r = spawnSync("git", ["--no-optional-locks", ...args], { cwd: dir, encoding: "utf8", maxBuffer: 256 * 1024 * 1024 });
+    if (r.error || r.status !== 0) throw new Error(`git ${args[0]} could not read ${dir}: ${String(r.error?.message ?? r.stderr).trim()}`);
+    return r.stdout;
+  };
+  const prefix = git("rev-parse", "--show-prefix").trim(); // dir from the top of the repository: "" or "research/rendered/"
+  // -z: raw paths from the top, never quoted. --untracked-files=all: each new file, even when the whole directory is new
+  // (a first run), where the default names only the directory. --no-renames: every entry is "XY <path>".
+  const entries = git("status", "--porcelain=v1", "-z", "--untracked-files=all", "--no-renames", "--", ".").split("\0");
+  const slugs = new Set();
+  for (const entry of entries) {
+    const path = entry.slice(3);
+    if (!path.startsWith(prefix)) continue;
+    const file = path.slice(prefix.length);
+    // Not in a subdirectory, a meta, and on disk (a deleted meta is a change with nothing to read).
+    if (file.includes("/") || !file.endsWith(".meta.json") || !existsSync(join(dir, file))) continue;
+    slugs.add(file.slice(0, -".meta.json".length));
+  }
+  return [...slugs].sort();
+}
+
+/** One Markdown table cell on one line, with what GitHub would read as markup or a cell break backslash-escaped. */
+const cell = (s) => String(s).replace(/\s+/g, " ").replace(/[\\`*_[\]<>&|~]/g, "\\$&");
+
+/**
+ * The job summary, from rows of { slug, kind, evidence }: a table of the rows that are not "ok", or one line saying
+ * every capture reads as a page, or that there was none to check. where names the directory; scope qualifies
+ * "capture" ("changed or new " for --changed).
+ */
+export function summaryMarkdown(rows, { where = "research/rendered", scope = "" } = {}) {
+  const lines = ["### capture-check", ""];
+  const flagged = rows.filter((r) => r.kind !== "ok");
+  if (!rows.length) lines.push(`No ${scope}capture in ${cell(where)}: nothing to check.`);
+  else if (!flagged.length) lines.push(`Every ${scope}capture in ${cell(where)} reads as a page (${rows.length} checked, kind ok).`);
+  else {
+    lines.push(
+      `Not read pages: ${flagged.length} of ${rows.length} ${scope}captures in ${cell(where)}. ` +
+        "capture-check only flags: the reader judges each one (research/rendered/README.md, step 0).",
+      "",
+      "| slug | kind | evidence |",
+      "| --- | --- | --- |",
+      ...flagged.map((r) => `| ${cell(r.slug)} | ${cell(r.kind)} | ${cell(r.evidence)} |`),
+    );
+  }
+  return `${lines.join("\n")}\n`;
+}
+
+// A workflow command's escaping (the Actions toolkit's): the data escapes %, CR and LF; a property also : and ,.
+const commandData = (s) => String(s).replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
+const commandProperty = (s) => commandData(s).replace(/:/g, "%3A").replace(/,/g, "%2C");
+
+/**
+ * A ::warning:: workflow command for one flagged capture: an annotation on the run page. GitHub shows only the first
+ * few annotations of a step (ten warnings when this was written); the summary table has every row.
+ */
+export const warningLine = ({ slug, kind, evidence }) =>
+  `::warning title=${commandProperty(`capture-check: ${kind}`)}::${commandData(`${slug}: ${evidence}`)}`;
+
 function main(argv) {
-  const usage = "usage: node scripts/capture-check.mjs [--dir <path>] <slug...> | --all";
+  const usage = "usage: node scripts/capture-check.mjs [--dir <path>] [--summary] <slug...> | --all | --changed";
   let args;
   try {
-    args = parseArgs({ args: argv, allowPositionals: true, options: { all: { type: "boolean" }, dir: { type: "string" } } });
+    args = parseArgs({
+      args: argv,
+      allowPositionals: true,
+      options: { all: { type: "boolean" }, changed: { type: "boolean" }, dir: { type: "string" }, summary: { type: "boolean" } },
+    });
   } catch (err) {
     console.error(`${err.message}\n${usage}`);
     return 2;
   }
+  const { all, changed, summary } = args.values;
   const dir = args.values.dir ?? RENDERED;
-  const slugs = args.values.all
-    ? readdirSync(dir).filter((f) => f.endsWith(".meta.json")).map((f) => f.slice(0, -".meta.json".length)).sort()
-    : args.positionals;
-  if (!slugs.length || (args.values.all && args.positionals.length)) {
-    console.error(usage);
-    return 2;
-  }
-  const counts = {};
-  let errors = 0;
-  for (const slug of slugs) {
-    if (!/^[a-z0-9][a-z0-9._-]*$/i.test(slug)) {
-      console.error(`not a capture slug: ${slug}`);
-      errors += 1;
-      continue;
+  let slugs;
+  if (changed) {
+    if (all || args.positionals.length) {
+      console.error(usage);
+      return 2;
     }
     try {
-      const { kind, evidence } = classifyCapture(readCapture(slug, dir));
-      counts[kind] = (counts[kind] ?? 0) + 1;
-      console.log(`${slug}\t${kind}\t${evidence}`);
+      slugs = changedSlugs(dir);
     } catch (err) {
       console.error(err.message);
-      errors += 1;
+      if (summary) process.stdout.write(`### capture-check\n\ncapture-check could not list the changed captures: ${cell(err.message)}\n`);
+      return 2;
+    }
+  } else {
+    slugs = all
+      ? readdirSync(dir).filter((f) => f.endsWith(".meta.json")).map((f) => f.slice(0, -".meta.json".length)).sort()
+      : args.positionals;
+    if (!slugs.length || (all && args.positionals.length)) {
+      console.error(usage);
+      return 2;
     }
   }
-  if (args.values.all) console.error(`${slugs.length} captures: ${Object.entries(counts).map(([k, v]) => `${k} ${v}`).join(", ")}`);
+  const counts = {};
+  const rows = [];
+  let errors = 0;
+  for (const slug of slugs) {
+    let row;
+    try {
+      if (!/^[a-z0-9][a-z0-9._-]*$/i.test(slug)) throw new Error(`not a capture slug: ${slug}`);
+      row = { slug, ...classifyCapture(readCapture(slug, dir)) };
+    } catch (err) {
+      errors += 1;
+      if (!summary) console.error(err.message);
+      rows.push({ slug, kind: "unreadable", evidence: err.message });
+      continue;
+    }
+    counts[row.kind] = (counts[row.kind] ?? 0) + 1;
+    rows.push(row);
+    if (!summary) console.log(`${slug}\t${row.kind}\t${row.evidence}`);
+  }
+  if (summary) {
+    process.stdout.write(summaryMarkdown(rows, { where: args.values.dir ?? "research/rendered", scope: changed ? "changed or new " : "" }));
+    for (const row of rows) if (row.kind !== "ok") console.error(warningLine(row));
+  }
+  const tally = Object.entries(counts).map(([k, v]) => `${k} ${v}`).join(", ");
+  if (all) console.error(`${slugs.length} captures: ${tally}`);
+  if (changed) console.error(`${slugs.length} changed or new captures${tally ? `: ${tally}` : ""}`);
   if (errors) return 2;
   return Object.keys(counts).some((k) => k !== "ok") ? 3 : 0;
 }

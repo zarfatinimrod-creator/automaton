@@ -1085,6 +1085,7 @@ describe(".github/workflows/render-watch.yml — the browser only when a js line
     run?: string;
     env?: Record<string, string>;
     "continue-on-error"?: boolean;
+    "timeout-minutes"?: number;
   };
   const steps: Step[] = wf.jobs.render.steps;
   const named = (prefix: string): Step => {
@@ -1179,6 +1180,75 @@ describe(".github/workflows/render-watch.yml — the browser only when a js line
     expect(failed.status).toBe(1);
     expect(failed.stderr + failed.stdout).toMatch(/2 js line\(s\)/);
     expect(fail.env?.JS_SKIPPED).toBe("${{ steps.fetch.outputs.js_skipped }}");
+  });
+
+  // Tick 35: every run names the captures it just stored that are not read pages (tick 33 found two active lines
+  // answering with bot challenges for days, by hand).
+  const CHECK = "Name the captures this run stored that are not read pages";
+
+  it("runs capture-check on the captures this run stored, between the fetch and the commit, into the job summary", () => {
+    const check = named(CHECK);
+    expect(check.name).toMatch(/\(capture-check\)$/);
+    expect(index(check)).toBe(index(named("Fetch the pages")) + 1);
+    expect(index(named("Commit the fetched pages"))).toBe(index(check) + 1);
+    expect(check.run).toMatch(/^node scripts\/capture-check\.mjs --changed --summary >> "\$GITHUB_STEP_SUMMARY" \\\n/);
+    // Runs exactly when the commit step does (no `if`), with nothing interpolated and no token.
+    expect(check.if).toBeUndefined();
+    expect(check.env).toBeUndefined();
+    expect(check.run).not.toMatch(/\$\{\{/);
+    expect(JSON.stringify(check)).not.toMatch(/github\.token|secrets\./);
+  });
+
+  it("the check writes only the job summary: no git command, no other redirect, nothing under research/", () => {
+    const run = named(CHECK).run!;
+    expect(run).not.toMatch(/\bgit\b/);
+    expect(run).not.toMatch(/research\//);
+    expect(run.replace('>> "$GITHUB_STEP_SUMMARY"', "")).not.toMatch(/>/);
+  });
+
+  it("cannot fail the job: continue-on-error, a short timeout, and every exit of capture-check is an answer", () => {
+    const check = named(CHECK);
+    expect(check["continue-on-error"]).toBe(true);
+    expect(check["timeout-minutes"]).toBeGreaterThan(0);
+    expect(check["timeout-minutes"]).toBeLessThanOrEqual(5);
+    const dir = mkdtempSync(join(tmpdir(), "render-watch-check-"));
+    try {
+      // A stand-in for node on PATH: prints a summary line and exits with the code the case asks for.
+      writeFileSync(join(dir, "node"), '#!/bin/sh\necho "fake summary line"\nexit "$FAKE_EXIT"\n', { mode: 0o755 });
+      // bash -e: what GitHub runs a `run:` block with when no shell is named.
+      const run = (code: number, summary: string) =>
+        spawnSync("bash", ["-e", "-c", check.run!], {
+          cwd: ROOT,
+          env: { ...process.env, PATH: `${dir}:${process.env.PATH}`, FAKE_EXIT: String(code), GITHUB_STEP_SUMMARY: summary },
+          encoding: "utf8",
+        });
+      for (const code of [0, 3]) {
+        const summary = join(dir, `summary-${code}.md`);
+        const r = run(code, summary);
+        expect(r.status, `capture-check exit ${code}`).toBe(0);
+        expect(r.stdout + r.stderr).not.toMatch(/::warning/);
+        expect(readFileSync(summary, "utf8")).toBe("fake summary line\n");
+      }
+      for (const code of [1, 2, 127, 137]) {
+        const r = run(code, join(dir, `summary-${code}.md`));
+        expect(r.status, `capture-check exit ${code}`).toBe(0);
+        expect(r.stdout).toMatch(new RegExp(`^::warning title=capture-check::capture-check exited ${code}, not 0 or 3`, "m"));
+      }
+      // A summary file that cannot be written (the redirect itself fails): a warning, and still exit 0.
+      const unwritable = run(0, join(dir, "no-such-dir", "summary.md"));
+      expect(unwritable.status).toBe(0);
+      expect(unwritable.stdout).toMatch(/^::warning title=capture-check::capture-check exited 1,/m);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("research/rendered/README.md step 0 says the run's job summary now lists the flagged captures", () => {
+    const readme = readFileSync(join(ROOT, "research", "rendered", "README.md"), "utf8");
+    const step0 = readme.split("\n").find((l) => l.startsWith("0. "));
+    expect(step0).toMatch(/node scripts\/capture-check\.mjs <slug\.\.\.>/);
+    expect(step0).toMatch(/--changed --summary/);
+    expect(step0).toMatch(/job summary lists the flagged ones/);
   });
 
   it("documents the mode in the header comment and in research/rendered/README.md", () => {
