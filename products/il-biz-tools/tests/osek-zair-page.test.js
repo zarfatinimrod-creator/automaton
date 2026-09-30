@@ -335,12 +335,17 @@ describe('2026: computed with the cap nevo\'s consolidated VAT law states, and t
     expect(meta.slug).toBe('nevo-vat-law-2026-09-29');
     expect(meta.frozen.on).toBe('2026-09-29');
     expect(meta.frozen.from).toBe('research/rendered/nevo-vat-law.meta.json');
-    const watched = readRepo('research/rendered/urls.txt')
-      .split('\n')
-      .filter((l) => l.trim() && !l.trim().startsWith('#'))
-      .map((l) => l.trim().split(/\s+/)[1]);
+    const lines = readRepo('research/rendered/urls.txt').split('\n').filter((l) => l.trim());
+    const watched = lines.filter((l) => !l.trim().startsWith('#')).map((l) => l.trim().split(/\s+/)[1]);
+    // A paused line keeps its URL and slug after the reason: "# paused (…) — <url>\t<slug>".
+    const listed = lines.map((l) => l.trim().split(/\s+/).pop());
     expect(watched).not.toContain(meta.slug);
-    expect(watched).toContain('nevo-vat-law');
+    expect(listed).not.toContain(meta.slug);
+    // The live capture stays listed, so a render may rewrite it: active, or paused until nevo's
+    // robots.txt is read (research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(v)).
+    const live = lines.find((l) => l.trim().split(/\s+/).pop() === 'nevo-vat-law');
+    expect(live, 'nevo-vat-law line').toBeDefined();
+    if (live.trim().startsWith('#')) expect(live).toMatch(/^# paused \(NO_TERMS, exhaustive-negative; waits on robots\.txt support, ruling 30\.9 16\(d\) D2\(v\)\)/);
     // No cite, record or note of this page points at the live capture, which the weekly render rewrites.
     for (const f of ['src/config/osek-zair.json', 'src/config/osek-zair-unverified.json', 'src/config/osek-patur.json']) {
       expect(read(f), f).not.toMatch(/nevo-vat-law\.(?:txt|html|meta\.json)/);
