@@ -61,6 +61,17 @@ describe("revenue/rules decideLine", () => {
     expect(d.triggered).toContain("awaiting_human_setup");
   });
 
+  it("words a setup block from what is still asked when the caller passes it, else from the stored list", () => {
+    // Tick 32 review: the board's rationale listed setup items whose owner steps were done. The caller that knows the
+    // checklist (heartbeat.ts, owner-steps.ts describeOpenSetup) passes what is still asked; the decision is unchanged.
+    const blocked = line({ status: "awaiting_setup", humanSetup: ["open account", "paste token"] });
+    expect(decideLine(blocked, metrics()).rationale).toBe("blocked on one-time human setup: open account; paste token");
+    const d = decideLine(blocked, metrics(), undefined, { setupStillAsked: "paste token" });
+    expect(d.rationale).toBe("blocked on one-time human setup: paste token");
+    expect(d.decision).toBe("escalate");
+    expect(decideLine(line({ status: "awaiting_setup" }), metrics()).rationale).toBe("blocked on one-time human setup: unspecified");
+  });
+
   it("escalates an overdue build with no revenue, holds within grace", () => {
     expect(decideLine(line({ status: "building" }), metrics({ daysSinceCreated: 10 })).decision).toBe("hold");
     const d = decideLine(line({ status: "building" }), metrics({ daysSinceCreated: 31 }));

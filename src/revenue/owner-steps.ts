@@ -101,8 +101,8 @@
  *     Hebrew document's "later" section and in logs/CHANNEL_LOOP.md, never here.
  */
 
-import { DEFAULT_PORTFOLIO } from "./portfolio.js";
-import type { RevenueLineSeed } from "./types.js";
+import { DEFAULT_PORTFOLIO, humanSetupItemFor } from "./portfolio.js";
+import type { RevenueLine, RevenueLineSeed } from "./types.js";
 
 export type OwnerStepId =
   | "merge-pr"
@@ -141,6 +141,13 @@ export interface OwnerSecretRow {
   /** Where its value comes from. */
   source: string;
   askedOnlyWhen?: SecretRowGate;
+  /**
+   * The step whose sitting makes this secret, when it is not the step that pastes it: step 6 pastes the Gumroad token
+   * step 3 mints and the machine account's token step 7's sitting creates. The paste cannot come first, so a step is
+   * never recorded done — which says its rows went in — before the step that makes one of them
+   * (`secretRowsPastedBeforeMade`; owner-steps.test.ts holds the checklist to it, and `source` must name this step).
+   */
+  madeIn?: OwnerStepId;
   /**
    * Set only for a row its step's `doneOn.heldRows` names, when the row's secret is verifiably pasted afterwards, with
    * the evidence. Until then the row is owed: asked alone once its gate holds (`followUpSecretRows`), named as held
@@ -368,9 +375,13 @@ export const OWNER_STEPS: OwnerStep[] = [
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.5",
     secrets: [
-      { name: "GUMROAD_ACCESS_TOKEN", source: "the Gumroad access token from step 3" },
+      { name: "GUMROAD_ACCESS_TOKEN", source: "the Gumroad access token from step 3", madeIn: "gumroad" },
       { name: "APIFY_TOKEN", source: "the Apify personal API token (part ב, item 2)" },
-      { name: "BRAND_GITHUB_TOKEN", source: "the brand machine account's personal access token, made in step 7's sitting" },
+      {
+        name: "BRAND_GITHUB_TOKEN",
+        source: "the brand machine account's personal access token, made in step 7's sitting",
+        madeIn: "github-org",
+      },
       {
         name: "POSTHOG_READ_KEY",
         source:
@@ -475,6 +486,69 @@ export function followUpSecretRows(site: SecretGateSite, steps: OwnerStep[] = OW
 /** The owed rows whose gate still holds them back: named with the reason, never asked. */
 export function heldFollowUpSecretRows(site: SecretGateSite, steps: OwnerStep[] = OWNER_STEPS): OwedSecretRow[] {
   return owedSecretRows(steps).filter(({ row }) => !isSecretRowAsked(row, site));
+}
+
+/**
+ * Each secret row recorded pasted before the step that makes it was done, as one sentence per row; empty when the
+ * record is consistent. A row goes in with its step (the step's `doneOn.date`) unless the step's `heldRows` names it,
+ * in which case it goes in on its own `doneOn.date`, or not yet. `doneOn` dates are YYYY-MM-DD, so they compare as
+ * strings; the same day is fine (step 6's Gumroad row is pasted "כשצעד 3 בוצע", once step 3 is done).
+ *
+ * Why it matters: the report stops asking a setup item once every step it belongs to has a `doneOn`
+ * (`openSetupItems`). A step 6 recorded done before step 3 would drop "paste GUMROAD_ACCESS_TOKEN (owner step 6)"
+ * while the token did not exist, and nothing would ask for the paste again.
+ */
+export function secretRowsPastedBeforeMade(steps: OwnerStep[] = OWNER_STEPS): string[] {
+  return ownerStepsInOrder(steps).flatMap((step) =>
+    (step.secrets ?? []).flatMap((row) => {
+      if (!step.doneOn || !row.madeIn) return [];
+      const pastedOn = step.doneOn.heldRows?.includes(row.name) ? row.doneOn?.date : step.doneOn.date;
+      if (!pastedOn) return [];
+      const maker = ownerStepById(row.madeIn, steps);
+      const madeOn = maker?.doneOn?.date;
+      if (madeOn && madeOn <= pastedOn) return [];
+      return [
+        `step ${step.number}'s ${row.name} is recorded pasted on ${pastedOn}, but step ${maker?.number ?? row.madeIn}, ` +
+          `which makes it, is ${madeOn ? `done only on ${madeOn}` : "not done"}`,
+      ];
+    }),
+  );
+}
+
+/**
+ * A line's setup items as the owner is asked them, in stored order. An item linked to its owner steps (portfolio.ts
+ * `humanSetupItems`) goes once every one of those steps is done; with only some done it prints whole, followed by which
+ * of its steps are done and which are still open. Steps its text names only as context never keep it. An item the
+ * portfolio does not link prints as written: asking once more is cheaper than hiding an open step. Every surface the
+ * owner reads uses this — the report's checklist and blockers, the board's decision and action lines, the dashboard —
+ * so none of them asks for a step another says is done.
+ */
+export function openSetupItems(line: Pick<RevenueLine, "id" | "humanSetup">, steps: OwnerStep[] = OWNER_STEPS): string[] {
+  const isDone = (n: number) => Boolean(steps.find((s) => s.number === n)?.doneOn);
+  const named = (ns: number[]) => `${ns.length === 1 ? "step" : "steps"} ${ns.join(", ")}`;
+  return line.humanSetup.flatMap((text) => {
+    const item = humanSetupItemFor(line.id, text);
+    if (!item) return [text];
+    const done = item.steps.filter(isDone);
+    if (done.length === item.steps.length) return [];
+    if (done.length === 0) return [text];
+    return [`${text} — ${named(done)} done; still open: ${named(item.steps.filter((n) => !isDone(n)))}`];
+  });
+}
+
+/** What a line waiting on setup is said to wait on once none of its items is still asked. */
+export const NO_SETUP_ITEM_ASKED =
+  "no setup item is still asked — every owner step its items belong to is done; the line's setup is not yet recorded done";
+
+/**
+ * `openSetupItems` as one phrase, for the lines that say what a line waits on (the board's decision rationale and its
+ * "waiting on creator" action): the open items joined by "; ", `NO_SETUP_ITEM_ASKED` when every item is behind a done
+ * step, and "unspecified" for a line with no setup list at all.
+ */
+export function describeOpenSetup(line: Pick<RevenueLine, "id" | "humanSetup">, steps: OwnerStep[] = OWNER_STEPS): string {
+  const items = openSetupItems(line, steps);
+  if (items.length) return items.join("; ");
+  return line.humanSetup.length ? NO_SETUP_ITEM_ASKED : "unspecified";
 }
 
 /** Line ids that no step unlocks — always empty, and the test says why that matters. */
