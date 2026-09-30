@@ -113,6 +113,13 @@ if (src.includes("PIPEHOLD")) {
   writeFileSync(process.env.HANG_MARK, String(c.pid));
   console.log(summary(1, 3)); process.exit(1);
 }
+// A leftover that left the process group (setsid) and still holds stdout: out of the harness's reach.
+if (src.includes("PIPEESCAPE")) {
+  const c = spawn("sleep", ["30"], { detached: true, stdio: ["ignore", "inherit", "inherit"] });
+  c.unref();
+  writeFileSync(process.env.HANG_MARK, String(c.pid));
+  console.log(summary(1, 3)); process.exit(1);
+}
 // A leftover that does not hold the pipe and writes the mutated bytes back 1.5s later.
 if (src.includes("LATEWRITE")) {
   const code = "setTimeout(() => require('fs').writeFileSync('src/toy.mjs', process.env.LATE_BYTES), 1500)";
@@ -692,6 +699,25 @@ describe("scripts/mutate.mjs: nothing a run starts outlives it", () => {
     expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\s/);
     expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
     expect(alive(Number(readFileSync(mark, "utf8")))).toBe(false);
+  }, 60_000);
+
+  it("finishes when the runner exits even if a process outside its group holds the output (a grace period, not for ever)", () => {
+    const repo = makeRepo();
+    const mark = join(scratch, "pipeescape.pid");
+    const t0 = Date.now();
+    try {
+      const r = harness(repo, one("a + b", "a - b /*PIPEESCAPE*/"), { HANG_MARK: mark });
+      expect(Date.now() - t0).toBeLessThan(15_000); // the escaped leftover sleeps 30s
+      expect(r.code).toBe(0);
+      expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\s/); // the summary printed before the exit was kept
+      expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+    } finally {
+      try {
+        process.kill(Number(readFileSync(mark, "utf8")), "SIGKILL");
+      } catch {
+        /* already gone */
+      }
+    }
   }, 60_000);
 
   it("a leftover process that would write the mutation back later is killed before the restore", async () => {
