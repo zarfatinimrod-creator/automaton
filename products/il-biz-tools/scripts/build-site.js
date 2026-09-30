@@ -36,6 +36,11 @@
 //      without exactly the source line its config gives (src/lib/ai-declaration.js).
 //      The build writes that sentence per build: a figure page withheld as a
 //      notice drops out of it (withShippedFiguresSentence).
+//      And the home page's cancellation link (RULING-2026-09-30-documents (b)):
+//      the build fills it from the accessibility statement's own mailto: contact
+//      (withCancelLinks); while there is none it keeps its placeholder marker,
+//      and cancelLinkProblems refuses any link that is not exactly that address
+//      with the subject "ביטול עסקה – Pro", or a home page without one.
 //
 // Fail closed: a refused build exits 1 and deletes _site/, so no stale copy is
 // left for anyone to upload by hand. `--preview` builds the same tree into
@@ -60,6 +65,10 @@ import {
   declarationScriptProblems,
   figureSourceProblems,
   withShippedFiguresSentence,
+  CONTACT_PAGE,
+  statementAddress,
+  withCancelLinks,
+  cancelLinkProblems,
 } from '../src/lib/publish-gate.js';
 import { collectDependencies } from '../src/lib/site-deps.js';
 import { bundleProblems, fsBundleAccess } from '../src/lib/pcn874-bundle.js';
@@ -174,6 +183,12 @@ for (const page of shipped) {
   }
 }
 
+// 1c. The cancellation link, filled from the one brand address the site already publishes: the accessibility
+// statement's mailto: contact. While that is a placeholder the link keeps its marker, and the gate refuses both.
+const statementPage = shipped.find((p) => p.path === CONTACT_PAGE);
+const brandAddress = statementPage ? statementAddress(statementPage.html) : null;
+for (const page of shipped) page.html = withCancelLinks(page.html, brandAddress);
+
 // 2. Files the shipped pages load.
 const deps = collectDependencies(shipped, readText);
 if (deps.errors.length) refuse('a shipped page references something the build cannot ship', deps.errors);
@@ -210,6 +225,7 @@ for (const { path, html } of shipped) {
 }
 blockers.push(...declarationScriptProblems(scripts));
 blockers.push(...figureSourceProblems(shipped, { asThemselves: publish, configs: rateConfigs }));
+blockers.push(...cancelLinkProblems(shipped));
 for (const { path, html } of shipped) {
   for (const p of checkPageA11y(html)) blockers.push(`${path}: accessibility check "${p.check}" failed - ${p.message}`);
 }
