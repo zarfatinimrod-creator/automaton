@@ -1,8 +1,11 @@
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdtempSync, readFileSync, readdirSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { loadVerdicts } from '../../../scripts/queue-zero-test.mjs';
+import { URLS as WATCHED, runSpecWatch } from '../scripts/spec-watch.mjs';
 import { OFFICIAL_SPEC_URLS } from '../src/sources.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -81,5 +84,107 @@ describe('spec-watch stays honest about what it is for', () => {
     expect(workflow).toContain('never "compliant"');
     expect(workflow).toContain('a new edition must be diffed against docs/SPEC.md');
     expect(workflow).not.toContain('SPEC-FROM-SOURCES.md');
+  });
+});
+
+describe('spec-watch fetches nothing from a site whose terms are unread (ruling 30.9 16(d) D2(iv))', () => {
+  type Result = { id: string; status: string; reason?: string };
+  type Run = { exitCode: number; results: Result[] };
+  const SKIP = (verdict: string) => `terms (${verdict}, ruling 30.9 16(d) D2(iv))`;
+  const urlOf = (id: string) => WATCHED.find((e: { id: string }) => e.id === id)!.url as string;
+
+  /** A private copy of the real lock and a download directory that does not exist yet. */
+  function sandbox() {
+    const dir = mkdtempSync(join(tmpdir(), 'spec-watch-'));
+    const lockPath = join(dir, 'SPEC-SOURCES.lock.json');
+    copyFileSync(join(root, 'docs', 'SPEC-SOURCES.lock.json'), lockPath);
+    return { lockPath, downloadDir: join(dir, 'downloads'), lockText: readFileSync(lockPath, 'utf8') };
+  }
+
+  /** A fetch that never touches the network and records every URL it was asked for. */
+  function recordingFetch(body: Uint8Array) {
+    const calls: string[] = [];
+    const fetchImpl = async (url: string | URL) => {
+      calls.push(String(url));
+      return new Response(body, { status: 200, headers: { 'content-type': 'application/pdf' } });
+    };
+    return { calls, fetchImpl };
+  }
+
+  it("refuses all three sources under today's verdicts: no fetch, no download, lock untouched, exit 0", async () => {
+    // Today's terms-verdicts.json: www.gov.il, rivhit.co.il and h-erp.co.il are all NO_TERMS. When one of them is
+    // read and its verdict changes, this test is meant to change with it.
+    const box = sandbox();
+    const { calls, fetchImpl } = recordingFetch(new Uint8Array([1, 2, 3]));
+    const out: string[] = [];
+    const run = (await runSpecWatch({
+      fetchImpl,
+      lockPath: box.lockPath,
+      downloadDir: box.downloadDir,
+      write: (s: string) => out.push(s),
+    })) as Run;
+
+    expect(calls).toEqual([]);
+    expect(run.exitCode).toBe(0);
+    expect(run.results.map(r => [r.id, r.status, r.reason])).toEqual(
+      WATCHED.map((e: { id: string }) => [e.id, 'skipped', SKIP('NO_TERMS')]),
+    );
+    expect(readFileSync(box.lockPath, 'utf8')).toBe(box.lockText);
+    expect(existsSync(box.downloadDir)).toBe(false);
+    const text = out.join('');
+    expect(text).toContain(`skipped      gov-il-874-eng  ${SKIP('NO_TERMS')}`);
+    expect(text).toMatch(/every specification source was refused by the terms gate/i);
+  });
+
+  it('still fetches a source whose site is NOT_BARRED, and a refused source is neither fetched nor a change', async () => {
+    const box = sandbox();
+    const verdicts = { ...loadVerdicts(), 'rivhit.co.il': { verdict: 'NOT_BARRED' } } as Record<string, unknown>;
+    delete verdicts['h-erp.co.il'];
+    // The exact bytes the lock's rivhit hash was taken from, so the fetched copy reads as unchanged.
+    const baseline = readFileSync(join(root, '..', '..', 'research', 'rendered', 'pcn874-rivhit-mirror.pdf'));
+    const { calls, fetchImpl } = recordingFetch(baseline);
+    const run = (await runSpecWatch({
+      verdicts,
+      fetchImpl,
+      lockPath: box.lockPath,
+      downloadDir: box.downloadDir,
+      write: () => {},
+    })) as Run;
+
+    expect(calls).toEqual([urlOf('rivhit-mirror')]);
+    expect(run.exitCode).toBe(0);
+    const byId = Object.fromEntries(run.results.map(r => [r.id, r]));
+    expect(byId['rivhit-mirror']!.status).toBe('unchanged');
+    expect(byId['gov-il-874-eng']).toMatchObject({ status: 'skipped', reason: SKIP('NO_TERMS') });
+    expect(byId['h-erp-mirror']).toMatchObject({ status: 'skipped', reason: SKIP('no verdict') });
+    expect(readdirSync(box.downloadDir)).toEqual(['rivhit-mirror.pdf']);
+
+    const before = JSON.parse(box.lockText) as { sources: Record<string, unknown> };
+    const after = JSON.parse(readFileSync(box.lockPath, 'utf8')) as { sources: Record<string, unknown> };
+    expect(after.sources['gov-il-874-eng']).toEqual(before.sources['gov-il-874-eng']);
+    expect(after.sources['h-erp-mirror']).toEqual(before.sources['h-erp-mirror']);
+  });
+
+  it('still fails the job when a fetched source changed, while the refused ones stay out of it', async () => {
+    const box = sandbox();
+    const verdicts = { ...loadVerdicts(), 'h-erp.co.il': { verdict: 'NOT_BARRED' } };
+    const { calls, fetchImpl } = recordingFetch(new TextEncoder().encode('%PDF-1.7 a new edition'));
+    const err: string[] = [];
+    const run = (await runSpecWatch({
+      verdicts,
+      fetchImpl,
+      lockPath: box.lockPath,
+      downloadDir: box.downloadDir,
+      write: () => {},
+      writeErr: (s: string) => err.push(s),
+    })) as Run;
+
+    expect(calls).toEqual([urlOf('h-erp-mirror')]);
+    expect(run.exitCode).toBe(1);
+    expect(err.join('')).toContain('A specification hash changed');
+    expect(run.results.filter(r => r.status === 'changed').map(r => r.id)).toEqual(['h-erp-mirror']);
+    expect(run.results.filter(r => r.status === 'skipped').map(r => r.id).sort()).toEqual(
+      ['gov-il-874-eng', 'rivhit-mirror'],
+    );
   });
 });

@@ -702,7 +702,13 @@ describe("step 2's wording as read, step 3's support field, and step 6's POSTHOG
   it("names the annual declaration and the one-time registered-mail notice, and asks neither", () => {
     expect(step2Doc).not.toMatch(/דיווח \*\*פעם בשנה\*\*/);
     expect(step2Doc).toContain("הצהרת מחזור שנתית עד 31 בינואר");
-    expect(step2Doc).toContain("הפטור מדיווח תקופתי יושב בתקנות הכלליות שעוד לא נקראו");
+    // Reg 22(2) of the general VAT regulations, read 30.9 at github grade from the lawsofisrael mirror (a 2023 text);
+    // it names "עוסק זעיר הפטור ממס לפי סעיף 31(3)", and §31(3) now reads "עסקאות של עוסק פטור" — hence the inference
+    // (research/measurements/osek-patur-documents.md, "30.9 (tick 26, github)" §2).
+    expect(step2Doc).toContain(
+      "הפטור מדיווח תקופתי הוא תק' 22(2) לתקנות מע\"מ הכלליות (נוסח 2023 שנקרא ב-GitHub), והיא חלה על עוסק פטור בהסקה דרך §31(3)",
+    );
+    expect(step2Doc).not.toContain("יושב בתקנות הכלליות שעוד לא נקראו");
     const what = step2Doc.slice(step2Doc.indexOf("### מה זה עושה"), step2Doc.indexOf("### מה יוצא לך מזה"));
     expect(what).toContain("המכונה מחשבת את הסכום מהלדג'ר ומכינה את הטופס");
     expect(what).toContain("הודעה חד-פעמית בדואר רשום");
@@ -711,6 +717,10 @@ describe("step 2's wording as read, step 3's support field, and step 6's POSTHOG
     expect(step2Doc).toContain("RULING-2026-09-30-documents.md");
     const tax = ownerStepById("tax-file")!.unlocks;
     expect(tax).toMatch(/annual turnover declaration by 31 January \(reg 15\)/);
+    expect(tax).toContain(
+      "The exemption from periodic reports is reg 22(2) of the general VAT regulations (a 2023 text read on GitHub), which reaches the exempt dealer by inference through §31(3).",
+    );
+    expect(tax).not.toMatch(/general VAT regulations, still unread/);
     expect(tax).toMatch(/one-time registered-mail notice[^.]*recorded and not asked while the cost of registered mail is unchecked/);
     expect(tax).toMatch(/the first document goes out only after the signature question is closed/);
   });

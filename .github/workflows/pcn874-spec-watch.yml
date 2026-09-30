@@ -17,6 +17,11 @@ name: pcn874-spec-watch
 # later changes it does not specify; a changed hash is the only signal that a new
 # edition exists, and a new edition must be diffed against docs/SPEC.md before
 # anything ships. A green run means "unchanged", never "compliant".
+#
+# Since 30.9.2026 the script fetches a URL only when its site passes the terms gate
+# (termsGate in scripts/queue-zero-test.mjs, research/channel-loop/terms-verdicts.json;
+# research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(iv): unread terms, no
+# fetch). All three sites are NO_TERMS today, so a run skips all three and exits 0.
 
 on:
   schedule:
