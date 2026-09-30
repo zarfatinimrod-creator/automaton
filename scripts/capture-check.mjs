@@ -9,14 +9,18 @@
  *                                                   disk (changedSlugs; counts per kind on stderr). None is not an error.
  *   --summary                                       instead of the tab lines: Markdown for a GitHub job summary on stdout
  *                                                   (summaryMarkdown), and one ::warning:: workflow command per flagged
- *                                                   capture on stderr (warningLine). A capture that cannot be read is a
- *                                                   row and a warning of its own, kind "unreadable".
+ *                                                   capture on stderr (warningLine), each written as soon as that capture
+ *                                                   is checked, so a run stopped midway keeps what it had. A capture that
+ *                                                   cannot be read is a row and a warning of its own, kind "unreadable".
+ *   --timeout <s>                                   seconds one capture may take (default CAPTURE_TIMEOUT_S); past that it
+ *                                                   is kind "timeout", not checked (timedClassifier), and the next goes on
  *   --dir <path>                                    read captures from another directory (tests)
  * render-watch.yml runs `--changed --summary` between its fetch and its commit, so each run's job summary names the
  * captures it just stored that are not read pages. The workflow step treats every exit code as an answer, never a failure.
  *
- * Exit 0 when every capture is "ok" (or --changed found none), 3 when any is flagged, 2 on a usage error, a missing or
- * unreadable capture, or a directory git cannot read for --changed.
+ * Exit 0 when every capture is "ok" (or --changed found none), 3 when any is flagged (with --summary that includes a
+ * capture it could not read: it is listed), 2 on a usage error, a directory git cannot read for --changed, or, without
+ * --summary, a missing or unreadable capture.
  *
  * A capture is research/rendered/<slug>.{meta.json,txt,html} (render-watch.mjs). The kinds:
  *   status         the meta has an error, or a status outside 200-299. The evidence says which: the server answered
@@ -32,6 +36,11 @@
  *                  noscript notice, page state shipped for scripts, a React streaming placeholder, a splash screen.
  *   short          too little text and none of the above (a real short page is flagged too: the reader decides).
  *   ok             enough text; any marker found is still named in the evidence.
+ *   timeout        (the CLI's) not checked: reading and checking it took longer than --timeout. Some of the markers'
+ *                  regexes backtrack on crafted HTML: 26 KB of `<div ui-view ` took 16 s, and the time grows with the
+ *                  cube of the size. A capture's HTML is a stranger's, so the CLI checks each one on a worker thread
+ *                  it can stop.
+ *   unreadable     (the CLI's) the capture could not be read: no meta, a meta that is not JSON, a file it names missing.
  * "Too little text" is fewer than queue-zero-test's MIN_TERMS_TEXT characters, counted in the text
  * queue-zero-test's readTermsCapture reads: <slug>.txt. The evidence says whose text that is: the fetcher's (the meta's
  * textPath), the body itself (a plain-text capture), or a .txt the meta does not name (the hand extractions beside
@@ -51,6 +60,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
+import { isMainThread, MessageChannel, parentPort, receiveMessageOnPort, Worker, workerData } from "node:worker_threads";
 import { MIN_TERMS_TEXT, RENDERED } from "./queue-zero-test.mjs";
 
 /**
@@ -248,30 +258,43 @@ export function changedSlugs(dir = RENDERED) {
   return [...slugs].sort();
 }
 
-/** One Markdown table cell on one line, with what GitHub would read as markup or a cell break backslash-escaped. */
-const cell = (s) => String(s).replace(/\s+/g, " ").replace(/[\\`*_[\]<>&|~]/g, "\\$&");
+/**
+ * One Markdown table cell on one line, with what GitHub would read as markup or a cell break backslash-escaped: also $
+ * (math) and @ (a mention). A bare URL is left as it is: GitHub may make it a link, to the page it names.
+ */
+const cell = (s) => String(s).replace(/\s+/g, " ").replace(/[\\`*_[\]<>&|~$@]/g, "\\$&");
 
 /**
- * The job summary, from rows of { slug, kind, evidence }: a table of the rows that are not "ok", or one line saying
- * every capture reads as a page, or that there was none to check. where names the directory; scope qualifies
- * "capture" ("changed or new " for --changed).
+ * The job summary is written in three parts, so a caller can write each row as soon as it has it: summaryHead(total),
+ * then summaryRow(row, first) for each row that is not "ok" (first: the first such row, which also writes the table
+ * header), then summaryEnd(rows) with every row. summaryMarkdown(rows) is the three at once. where names the
+ * directory; scope qualifies "capture" ("changed or new " for --changed).
  */
-export function summaryMarkdown(rows, { where = "research/rendered", scope = "" } = {}) {
-  const lines = ["### capture-check", ""];
+export function summaryHead(total, { where = "research/rendered", scope = "" } = {}) {
+  if (!total) return "### capture-check\n\n";
+  return (
+    `### capture-check\n\nChecking ${total} ${scope}capture${total === 1 ? "" : "s"} in ${cell(where)}. ` +
+    "A row below for each one that is not a read page, as it is checked; the last line counts them, and without it the check was cut short.\n\n"
+  );
+}
+
+export const summaryRow = (row, first) =>
+  `${first ? "| slug | kind | evidence |\n| --- | --- | --- |\n" : ""}| ${cell(row.slug)} | ${cell(row.kind)} | ${cell(row.evidence)} |\n`;
+
+export function summaryEnd(rows, { where = "research/rendered", scope = "" } = {}) {
+  const flagged = rows.filter((r) => r.kind !== "ok").length;
+  if (!rows.length) return `No ${scope}capture in ${cell(where)}: nothing to check.\n`;
+  if (!flagged) return `Every ${scope}capture in ${cell(where)} reads as a page (${rows.length} checked, kind ok).\n`;
+  return (
+    `\nNot read pages: ${flagged} of ${rows.length} ${scope}captures in ${cell(where)}. ` +
+    "capture-check only flags: the reader judges each one (research/rendered/README.md, step 0).\n"
+  );
+}
+
+/** The whole job summary for rows of { slug, kind, evidence }: a table of the rows that are not "ok", and a count. */
+export function summaryMarkdown(rows, options = {}) {
   const flagged = rows.filter((r) => r.kind !== "ok");
-  if (!rows.length) lines.push(`No ${scope}capture in ${cell(where)}: nothing to check.`);
-  else if (!flagged.length) lines.push(`Every ${scope}capture in ${cell(where)} reads as a page (${rows.length} checked, kind ok).`);
-  else {
-    lines.push(
-      `Not read pages: ${flagged.length} of ${rows.length} ${scope}captures in ${cell(where)}. ` +
-        "capture-check only flags: the reader judges each one (research/rendered/README.md, step 0).",
-      "",
-      "| slug | kind | evidence |",
-      "| --- | --- | --- |",
-      ...flagged.map((r) => `| ${cell(r.slug)} | ${cell(r.kind)} | ${cell(r.evidence)} |`),
-    );
-  }
-  return `${lines.join("\n")}\n`;
+  return summaryHead(rows.length, options) + flagged.map((r, i) => summaryRow(r, i === 0)).join("") + summaryEnd(rows, options);
 }
 
 // A workflow command's escaping (the Actions toolkit's): the data escapes %, CR and LF; a property also : and ,.
@@ -279,20 +302,80 @@ const commandData = (s) => String(s).replace(/%/g, "%25").replace(/\r/g, "%0D").
 const commandProperty = (s) => commandData(s).replace(/:/g, "%3A").replace(/,/g, "%2C");
 
 /**
- * A ::warning:: workflow command for one flagged capture: an annotation on the run page. GitHub shows only the first
- * few annotations of a step (ten warnings when this was written); the summary table has every row.
+ * A ::warning:: workflow command for one flagged capture: an annotation on the run page. GitHub limits how many
+ * annotations it shows for a step (the limit is GitHub's, not checked here); the summary table has every row.
  */
 export const warningLine = ({ slug, kind, evidence }) =>
   `::warning title=${commandProperty(`capture-check: ${kind}`)}::${commandData(`${slug}: ${evidence}`)}`;
 
+/** Seconds one capture may take to read and check before the CLI reports it as kind "timeout" (the slowest capture in
+ * the store took 0.2 s when this was written: gamedistribution-guidelines, 5 MB of HTML). */
+export const CAPTURE_TIMEOUT_S = 10;
+
+/**
+ * Reads and checks captures on a worker thread, at most timeoutS seconds each, so one capture whose HTML makes a regex
+ * backtrack cannot hold up the rest: past the limit the worker is stopped (a regex is interrupted too) and a fresh one
+ * takes the next capture. check(slug) returns { slug, kind, evidence }, kind "timeout" past the limit, and throws what
+ * readCapture throws. close() stops the worker. The main thread waits with Atomics.wait, so this stays synchronous.
+ */
+export function timedClassifier(dir = RENDERED, timeoutS = CAPTURE_TIMEOUT_S) {
+  let worker = null;
+  let flag;
+  let port;
+  const close = () => {
+    if (worker) void worker.terminate();
+    worker = null;
+  };
+  const check = (slug) => {
+    if (!worker) {
+      flag = new Int32Array(new SharedArrayBuffer(4));
+      const channel = new MessageChannel();
+      port = channel.port1;
+      worker = new Worker(new URL(import.meta.url), { workerData: { captureCheckWorker: true, flag, port: channel.port2 }, transferList: [channel.port2] });
+      worker.unref(); // a worker still running a regex never holds the process open
+    }
+    Atomics.store(flag, 0, 0);
+    worker.postMessage({ slug, dir });
+    Atomics.wait(flag, 0, 0, timeoutS * 1e3);
+    const reply = receiveMessageOnPort(port);
+    if (!reply) {
+      close();
+      return {
+        slug,
+        kind: "timeout",
+        evidence: `not checked: reading and checking it took longer than ${timeoutS} s (a page's HTML can be written to make the markers' regexes backtrack for minutes); read the capture by hand`,
+      };
+    }
+    if (reply.message.error != null) throw new Error(reply.message.error);
+    return reply.message.row;
+  };
+  return { check, close };
+}
+
+// The worker's side of timedClassifier: one capture per message, the answer on the port, then the flag.
+if (!isMainThread && workerData?.captureCheckWorker === true) {
+  const { flag, port } = workerData;
+  parentPort.on("message", ({ slug, dir }) => {
+    let reply;
+    try {
+      reply = { row: { slug, ...classifyCapture(readCapture(slug, dir)) } };
+    } catch (err) {
+      reply = { error: String(err?.message ?? err) };
+    }
+    port.postMessage(reply);
+    Atomics.store(flag, 0, 1);
+    Atomics.notify(flag, 0);
+  });
+}
+
 function main(argv) {
-  const usage = "usage: node scripts/capture-check.mjs [--dir <path>] [--summary] <slug...> | --all | --changed";
+  const usage = "usage: node scripts/capture-check.mjs [--dir <path>] [--summary] [--timeout <s>] <slug...> | --all | --changed";
   let args;
   try {
     args = parseArgs({
       args: argv,
       allowPositionals: true,
-      options: { all: { type: "boolean" }, changed: { type: "boolean" }, dir: { type: "string" }, summary: { type: "boolean" } },
+      options: { all: { type: "boolean" }, changed: { type: "boolean" }, dir: { type: "string" }, summary: { type: "boolean" }, timeout: { type: "string" } },
     });
   } catch (err) {
     console.error(`${err.message}\n${usage}`);
@@ -300,6 +383,11 @@ function main(argv) {
   }
   const { all, changed, summary } = args.values;
   const dir = args.values.dir ?? RENDERED;
+  const timeoutS = args.values.timeout === undefined ? CAPTURE_TIMEOUT_S : Number(args.values.timeout);
+  if (!(timeoutS > 0 && Number.isFinite(timeoutS))) {
+    console.error(`--timeout takes a number of seconds above 0, got ${JSON.stringify(args.values.timeout)}\n${usage}`);
+    return 2;
+  }
   let slugs;
   if (changed) {
     if (all || args.positionals.length) {
@@ -322,33 +410,44 @@ function main(argv) {
       return 2;
     }
   }
+  const where = { where: args.values.dir ?? "research/rendered", scope: changed ? "changed or new " : "" };
+  if (summary) process.stdout.write(summaryHead(slugs.length, where));
+  const classifier = timedClassifier(dir, timeoutS);
   const counts = {};
   const rows = [];
   let errors = 0;
+  let flagged = 0;
   for (const slug of slugs) {
     let row;
     try {
       if (!/^[a-z0-9][a-z0-9._-]*$/i.test(slug)) throw new Error(`not a capture slug: ${slug}`);
-      row = { slug, ...classifyCapture(readCapture(slug, dir)) };
+      row = classifier.check(slug);
     } catch (err) {
       errors += 1;
+      // With --summary the message is only a row and a warning, both escaped: raw, its newlines could start a line
+      // GitHub reads as a workflow command (a meta that is not JSON has its first characters in the message).
       if (!summary) console.error(err.message);
-      rows.push({ slug, kind: "unreadable", evidence: err.message });
-      continue;
+      row = { slug, kind: "unreadable", evidence: err.message };
     }
     counts[row.kind] = (counts[row.kind] ?? 0) + 1;
     rows.push(row);
-    if (!summary) console.log(`${slug}\t${row.kind}\t${row.evidence}`);
+    if (summary) {
+      // Written now, not at the end: a run stopped by its step's timeout keeps every row before the one it stopped in.
+      if (row.kind !== "ok") {
+        flagged += 1;
+        process.stdout.write(summaryRow(row, flagged === 1));
+        console.error(warningLine(row));
+      }
+    } else if (row.kind !== "unreadable") console.log(`${slug}\t${row.kind}\t${row.evidence}`);
   }
-  if (summary) {
-    process.stdout.write(summaryMarkdown(rows, { where: args.values.dir ?? "research/rendered", scope: changed ? "changed or new " : "" }));
-    for (const row of rows) if (row.kind !== "ok") console.error(warningLine(row));
-  }
+  classifier.close();
+  if (summary) process.stdout.write(summaryEnd(rows, where));
   const tally = Object.entries(counts).map(([k, v]) => `${k} ${v}`).join(", ");
   if (all) console.error(`${slugs.length} captures: ${tally}`);
   if (changed) console.error(`${slugs.length} changed or new captures${tally ? `: ${tally}` : ""}`);
-  if (errors) return 2;
+  // With --summary an unreadable capture is listed like any flagged one: exit 2 there means no list at all.
+  if (errors && !summary) return 2;
   return Object.keys(counts).some((k) => k !== "ok") ? 3 : 0;
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) process.exitCode = main(process.argv.slice(2));
+if (isMainThread && process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) process.exitCode = main(process.argv.slice(2));

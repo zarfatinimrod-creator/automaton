@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, unlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -457,10 +457,14 @@ describe("--changed and --summary (the captures a render-watch run just stored, 
     if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${r.stderr}`);
     return r.stdout;
   };
-  const cli = (args: string[]) => {
-    const r = spawnSync(process.execPath, [SCRIPT, ...args], { cwd: ROOT, env: { ...process.env, ...gitEnv }, encoding: "utf8" });
-    return { code: r.status, stdout: r.stdout, stderr: r.stderr };
+  /** killAfterMs: stop the run with SIGTERM after that long, the way a step's timeout-minutes stops it. */
+  const cli = (args: string[], killAfterMs?: number) => {
+    const started = Date.now();
+    const r = spawnSync(process.execPath, [SCRIPT, ...args], { cwd: ROOT, env: { ...process.env, ...gitEnv }, encoding: "utf8", timeout: killAfterMs ?? 25_000 });
+    return { code: r.status, signal: r.signal, stdout: r.stdout, stderr: r.stderr, ms: Date.now() - started };
   };
+  /** The lines of a --summary run's stderr that GitHub reads as workflow commands (a line starting with "::"). */
+  const commands = (stderr: string) => stderr.split(/\r\n|\r|\n/).filter((l) => l.startsWith("::"));
 
   let repos = 0;
   /** A repository with one committed file outside research/rendered; returns [root, research/rendered]. */
@@ -479,14 +483,22 @@ describe("--changed and --summary (the captures a render-watch run just stored, 
     git(root, "add", "-A");
     git(root, "commit", "-q", "-m", "captures");
   };
-  type Shape = "ok" | "short" | "403" | "challenge";
-  /** Writes a capture the way render-watch.mjs lays one out, in one of four shapes. */
+  type Shape = "ok" | "short" | "403" | "challenge" | "slow";
+  /**
+   * Writes a capture the way render-watch.mjs lays one out, in one of five shapes. "slow" is 52 KB of HTML that makes
+   * the empty-app-root regex backtrack for about two minutes (a stranger's page can be written to do that; 26 KB of it
+   * took 16 s when this was measured, and the time grows with the cube of the size).
+   */
   const capture = (dir: string, slug: string, shape: Shape) => {
     const meta = (over: Record<string, unknown>) =>
       writeFileSync(join(dir, `${slug}.meta.json`), `${JSON.stringify({ slug, ...OK_META, bodyPath: `research/rendered/${slug}.html`, textPath: `research/rendered/${slug}.txt`, ...over }, null, 2)}\n`);
     if (shape === "403") return meta({ status: 403, error: "HTTP 403 Forbidden", bodyPath: null, textPath: null });
     meta({});
-    const html = shape === "ok" ? page(`<p>${LONG}</p>`) : shape === "short" ? page(`<p>${SHORT}</p>`) : page('<div id="challenge-container"></div>');
+    const html =
+      shape === "ok" ? page(`<p>${LONG}</p>`)
+      : shape === "short" ? page(`<p>${SHORT}</p>`)
+      : shape === "slow" ? page("<div ui-view ".repeat(4000))
+      : page('<div id="challenge-container"></div>');
     writeFileSync(join(dir, `${slug}.html`), html);
     writeFileSync(join(dir, `${slug}.txt`), shape === "ok" ? LONG : SHORT);
   };
@@ -619,20 +631,27 @@ describe("--changed and --summary (the captures a render-watch run just stored, 
     expect(plain.stdout).toBe("");
   });
 
-  it("a changed capture that cannot be read is a row and a warning of its own (unreadable), and exit 2", () => {
+  // Review of tick 35, defect 2: with --summary an unreadable capture is listed like any flagged one, so the run's answer
+  // is 3 (a list) and the workflow step raises no "exited 2" warning over a complete table. Exit 2 with --summary is
+  // left for "no list at all" (a usage error, or git could not list the changes). Without --summary it stays 2.
+  it("a changed capture that cannot be read is a row and a warning of its own (unreadable): exit 3 with --summary, 2 without", () => {
     const [brokenRoot, broken] = repo();
     capture(broken, "fine", "ok");
     commitAll(brokenRoot);
     capture(broken, "torn", "ok");
     unlinkSync(join(broken, "torn.txt"));
+    capture(broken, "tiny", "short");
     const r = cli(["--dir", broken, "--changed", "--summary"]);
-    expect(r.code).toBe(2);
-    expect(r.stdout).toContain("Not read pages: 1 of 1 changed or new captures in");
+    expect(r.code).toBe(3);
+    expect(r.stdout).toContain("Not read pages: 2 of 2 changed or new captures in");
+    expect(r.stdout).toMatch(/^\| tiny \| short \| /m);
     expect(r.stdout).toMatch(/^\| torn \| unreadable \| capture torn is incomplete: its meta names research\/rendered\/torn\.txt/m);
     expect(r.stderr).toMatch(/^::warning title=capture-check%3A unreadable::torn: capture torn is incomplete/m);
+    expect(r.stderr).toMatch(/^2 changed or new captures: short 1, unreadable 1$/m); // the count names the unreadable one too
     const plain = cli(["--dir", broken, "--changed"]);
     expect(plain.code).toBe(2);
     expect(plain.stderr).toMatch(/^capture torn is incomplete/m); // the existing CLI's own error line, unchanged
+    expect(plain.stderr).toMatch(/^2 changed or new captures: short 1, unreadable 1$/m);
   });
 
   it("a directory git cannot read: exit 2, the reason on stderr, and with --summary a line in the summary too", () => {
@@ -665,9 +684,10 @@ describe("--changed and --summary (the captures a render-watch run just stored, 
   });
 
   it("summaryMarkdown escapes what GitHub would read as markup or a cell break, so evidence shows as written", () => {
-    const md = summaryMarkdown([{ slug: "a", kind: "js-shell", evidence: 'empty app root "<div id=\\"root\\"></div>" | `x` *y* _z_ [l](u) &amp; ~s~\nnext' }], { where: "d" });
+    const md = summaryMarkdown([{ slug: "a", kind: "js-shell", evidence: 'empty app root "<div id=\\"root\\"></div>" | `x` *y* _z_ [l](u) &amp; ~s~\nnext $x$ @someone' }], { where: "d" });
     const row = md.split("\n").find((l: string) => l.startsWith("| a "));
-    expect(row).toBe('| a | js-shell | empty app root "\\<div id=\\\\"root\\\\"\\>\\</div\\>" \\| \\`x\\` \\*y\\* \\_z\\_ \\[l\\](u) \\&amp; \\~s\\~ next |');
+    // $ (math) and @ (a mention) too: review of tick 35, defect 5.
+    expect(row).toBe('| a | js-shell | empty app root "\\<div id=\\\\"root\\\\"\\>\\</div\\>" \\| \\`x\\` \\*y\\* \\_z\\_ \\[l\\](u) \\&amp; \\~s\\~ next \\$x\\$ \\@someone |');
   });
 
   it("summaryMarkdown: the three answers, word for word", () => {
@@ -675,26 +695,120 @@ describe("--changed and --summary (the captures a render-watch run just stored, 
       "### capture-check\n\nNo changed or new capture in research/rendered: nothing to check.\n",
     );
     expect(summaryMarkdown([{ slug: "a", kind: "ok", evidence: "e" }, { slug: "b", kind: "ok", evidence: "e" }], { where: "d", scope: "changed or new " })).toBe(
-      "### capture-check\n\nEvery changed or new capture in d reads as a page (2 checked, kind ok).\n",
+      [
+        "### capture-check",
+        "",
+        "Checking 2 changed or new captures in d. A row below for each one that is not a read page, as it is checked; the last line counts them, and without it the check was cut short.",
+        "",
+        "Every changed or new capture in d reads as a page (2 checked, kind ok).",
+        "",
+      ].join("\n"),
     );
+    expect(summaryMarkdown([{ slug: "b", kind: "short", evidence: "7 characters" }], { where: "d" })).toMatch(/^### capture-check\n\nChecking 1 capture in d\. /);
     expect(summaryMarkdown([{ slug: "a", kind: "ok", evidence: "e" }, { slug: "b", kind: "short", evidence: "7 characters" }], { where: "d" })).toBe(
       [
         "### capture-check",
         "",
-        "Not read pages: 1 of 2 captures in d. capture-check only flags: the reader judges each one (research/rendered/README.md, step 0).",
+        "Checking 2 captures in d. A row below for each one that is not a read page, as it is checked; the last line counts them, and without it the check was cut short.",
         "",
         "| slug | kind | evidence |",
         "| --- | --- | --- |",
         "| b | short | 7 characters |",
         "",
+        "Not read pages: 1 of 2 captures in d. capture-check only flags: the reader judges each one (research/rendered/README.md, step 0).",
+        "",
       ].join("\n"),
     );
   });
 
-  it("warningLine escapes a workflow command's data and its title property (%, CR, LF; and : , in the title)", () => {
-    expect(warningLine({ slug: "s", kind: "status", evidence: "100% down\r\nsecond: line, here" })).toBe(
-      "::warning title=capture-check%3A status::s: 100%25 down%0D%0Asecond: line, here",
+  // Review of tick 35, defect 4: one of each character let a /g-less replace pass. Two of each, and a title with two.
+  it("warningLine escapes a workflow command's data and its title property (every %, CR, LF; and every : , in the title)", () => {
+    expect(warningLine({ slug: "s", kind: "status", evidence: "100% down, 5% up\r\nsecond: line\r\nthird\nfourth\rfifth" })).toBe(
+      "::warning title=capture-check%3A status::s: 100%25 down, 5%25 up%0D%0Asecond: line%0D%0Athird%0Afourth%0Dfifth",
     );
-    expect(warningLine({ slug: "s", kind: "a,b%", evidence: "e" })).toBe("::warning title=capture-check%3A a%2Cb%25::s: e");
+    expect(warningLine({ slug: "s", kind: "a,b,c:d%e%", evidence: "e" })).toBe("::warning title=capture-check%3A a%2Cb%2Cc%3Ad%25e%25::s: e");
+  });
+
+  it("--summary puts nothing on stderr that GitHub would read as a command of the page's: a torn meta's raw lines stay inside its warning", () => {
+    const [, hostile] = repo();
+    // A meta that is not JSON: V8's parse error quotes the file's first characters, raw newlines and all.
+    writeFileSync(join(hostile, "evil.meta.json"), "x\n::stop-commands::tok\n::error::forged\r\n%0A\n");
+    capture(hostile, "plain", "short");
+    const r = cli(["--dir", hostile, "--changed", "--summary"]);
+    expect(r.code).toBe(3);
+    const lines = commands(r.stderr);
+    expect(lines).toHaveLength(2);
+    for (const line of lines) expect(line).toMatch(/^::warning title=capture-check%3A (unreadable|short)::(evil|plain): /);
+    expect(r.stdout).not.toMatch(/^::/m);
+    expect(r.stdout).toMatch(/^\| evil \| unreadable \| /m);
+  });
+
+  // Review of tick 35, defect 1: a page can be written to make one regex backtrack for minutes. Each capture now gets
+  // --timeout seconds (default CAPTURE_TIMEOUT_S) on a worker thread; past that it is a row of kind "timeout", and the
+  // captures after it are still checked.
+  it("a capture that takes longer than --timeout to check is a row of kind timeout, and the ones after it are still checked", () => {
+    const [, slow] = repo();
+    capture(slow, "aaa", "short");
+    capture(slow, "mmm", "slow");
+    capture(slow, "zzz", "challenge");
+    const r = cli(["--dir", slow, "--changed", "--summary", "--timeout", "1"]);
+    expect(r.signal).toBeNull();
+    expect(r.code).toBe(3);
+    expect(r.ms).toBeLessThan(15_000);
+    const rows = r.stdout.split("\n").filter((l) => /^\| (aaa|mmm|zzz) /.test(l)).map((l) => l.split(" | ").slice(0, 2).join(" "));
+    expect(rows).toEqual(["| aaa short", "| mmm timeout", "| zzz bot-challenge"]);
+    expect(r.stdout).toMatch(/^\| mmm \| timeout \| not checked: reading and checking it took longer than 1 s/m);
+    expect(r.stdout).toContain("Not read pages: 3 of 3 changed or new captures in");
+    expect(commands(r.stderr).map((l) => l.split("::")[1])).toEqual([
+      "warning title=capture-check%3A short",
+      "warning title=capture-check%3A timeout",
+      "warning title=capture-check%3A bot-challenge",
+    ]);
+    expect(r.stderr).toMatch(/^3 changed or new captures: short 1, timeout 1, bot-challenge 1$/m);
+    const plain = cli(["--dir", slow, "--changed", "--timeout", "1"]);
+    expect(plain.code).toBe(3);
+    expect(plain.stdout).toMatch(/^mmm\ttimeout\tnot checked: /m);
+    expect(plain.stdout).toMatch(/^zzz\tbot-challenge\t/m);
+  });
+
+  it("the summary is written as the captures are checked: a run stopped during a slow one keeps the heading, the rows before it and their warnings", () => {
+    const [, slow] = repo();
+    capture(slow, "aaa", "403");
+    capture(slow, "bbb", "short");
+    capture(slow, "mmm", "slow");
+    capture(slow, "zzz", "challenge");
+    const r = cli(["--dir", slow, "--changed", "--summary", "--timeout", "600"], 4_000);
+    expect(r.signal).toBe("SIGTERM"); // stopped by the stand-in for the step's timeout, not finished
+    expect(r.stdout).toMatch(/^### capture-check\n\nChecking 4 changed or new captures in /);
+    expect(r.stdout).toMatch(/^\| aaa \| status \| /m);
+    expect(r.stdout).toMatch(/^\| bbb \| short \| /m);
+    expect(r.stdout).not.toMatch(/\| (mmm|zzz) \||Not read pages/);
+    expect(commands(r.stderr).map((l) => l.split("::")[2].split(":")[0])).toEqual(["aaa", "bbb"]);
+  });
+
+  it.each([["0"], ["-1"], ["soon"], ["Infinity"]])("exits 2 on --timeout %s (a usage error)", (value) => {
+    const r = cli(["--dir", rendered, "--changed", `--timeout=${value}`]);
+    expect(r.code).toBe(2);
+    expect(r.stderr).toMatch(/usage:/);
+  });
+
+  // Review of tick 35, defect 3: "writes no files" rests on --no-optional-locks. A plain `git status` refreshes the
+  // index after a capture's mtime changed (same bytes) and writes .git/index; killed mid-write, it leaves index.lock,
+  // and the commit step's `git add` then fails.
+  it("reads git without writing its index: after a capture is touched, .git/index is the same bytes and mtime, and no lock is left", () => {
+    const [touchRoot, touch] = repo();
+    capture(touch, "kept", "ok");
+    capture(touch, "other", "short");
+    commitAll(touchRoot);
+    capture(touch, "fresh", "short");
+    const later = new Date(Date.now() + 5_000);
+    for (const f of ["kept.meta.json", "kept.html", "kept.txt", "other.meta.json"]) utimesSync(join(touch, f), later, later);
+    const index = join(touchRoot, ".git", "index");
+    const bytes = () => createHash("sha256").update(readFileSync(index)).digest("hex");
+    const before = { sha: bytes(), mtime: statSync(index).mtimeMs };
+    expect(cli(["--dir", touch, "--changed"]).code).toBe(3);
+    expect(cli(["--dir", touch, "--changed", "--summary"]).code).toBe(3);
+    expect({ sha: bytes(), mtime: statSync(index).mtimeMs }).toEqual(before);
+    expect(existsSync(`${index}.lock`)).toBe(false);
   });
 });
