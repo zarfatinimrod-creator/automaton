@@ -1,17 +1,25 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import {
+  checkManifest,
   cited,
+  classifyFiles,
   diskFiles,
   findCitations,
   freezeCapture,
   isDay,
   listedNames,
+  main,
+  MANIFEST,
   planFreeze,
+  readManifest,
+  recordFiles,
   repoint,
+  resolveCommit,
   sourceVersion,
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/freeze-capture.mjs";
@@ -65,7 +73,7 @@ describe("planFreeze / freezeCapture", () => {
     const p = freezeCapture({ slug: "page", files: diskFiles("page", dir), dir, urlsText: URLS, on: "2026-09-30", commit: "abc1234", why: "because" });
     expect(p.frozenSlug).toBe("page-2026-09-28");
     expect(p.already).toBe(false);
-    expect(readdirSync(dir).sort()).toEqual(["page-2026-09-28.html", "page-2026-09-28.meta.json", "page-2026-09-28.txt", "page.html", "page.meta.json", "page.txt"]);
+    expect(readdirSync(dir).sort()).toEqual([MANIFEST, "page-2026-09-28.html", "page-2026-09-28.meta.json", "page-2026-09-28.txt", "page.html", "page.meta.json", "page.txt"]);
     expect(readFileSync(join(dir, "page-2026-09-28.txt"))).toEqual(readFileSync(join(dir, "page.txt")));
     expect(readFileSync(join(dir, "page-2026-09-28.html"))).toEqual(readFileSync(join(dir, "page.html")));
     const frozen = JSON.parse(readFileSync(join(dir, "page-2026-09-28.meta.json"), "utf8"));
@@ -165,6 +173,105 @@ describe("planFreeze / freezeCapture", () => {
     expect(p.writes.map((w: { ext: string }) => w.ext)).toEqual(["meta.json", "txt", "pdf"]);
     const m = JSON.parse(p.writes[0].bytes.toString("utf8"));
     expect([m.bodyPath, m.textPath]).toEqual(["research/rendered/page-2026-09-28.pdf", null]);
+  });
+
+  it("refuses a PDF whose meta says the text beside it may describe other bytes (textError), unless allowed", () => {
+    const dir = fresh();
+    const textError = "the PDF changed beside a hand extraction (sha256 of the stored copy it sat beside: ab); it may not describe these bytes";
+    capture(dir, "page", { over: { contentType: "application/pdf", bodyPath: "research/rendered/page.pdf", textPath: null, textError } });
+    writeFileSync(join(dir, "page.pdf"), "%PDF-1.4 new");
+    rmSync(join(dir, "page.html"));
+    expect(() => plan(dir)).toThrow(/not a read page \(its meta's textError: textError;.*--allow-flagged/);
+    const allowed = plan(dir, { allowFlagged: true });
+    expect(JSON.parse(allowed.writes[0].bytes.toString("utf8")).frozen.flagged).toEqual({ kind: "textError", evidence: textError });
+  });
+
+  it("refuses an existing copy whose meta says other things, or cannot be read, even with the same body bytes", () => {
+    const dir = fresh();
+    capture(dir, "page");
+    freezeCapture({ slug: "page", files: diskFiles("page", dir), dir, urlsText: URLS, on: "2026-09-30" });
+    const path = join(dir, "page-2026-09-28.meta.json");
+    const good = readFileSync(path, "utf8");
+    writeFileSync(path, good.replace('"status": 200', '"status": 203'));
+    expect(() => plan(dir)).toThrow(/already exists with other bytes \(page-2026-09-28\.meta\.json\)/);
+    writeFileSync(path, "{ not json");
+    expect(() => plan(dir)).toThrow(/already exists with other bytes \(page-2026-09-28\.meta\.json\)/);
+  });
+
+  it("accepts a flagged capture's existing copy only when that copy records the flag it was allowed with", () => {
+    const dir = fresh();
+    capture(dir, "page", { over: { status: 504, error: "HTTP 504", bodyPath: null, textPath: null }, text: null });
+    freezeCapture({ slug: "page", files: diskFiles("page", dir), dir, urlsText: URLS, on: "2026-09-30", allowFlagged: true });
+    const path = join(dir, "page-2026-09-28.meta.json");
+    const m = JSON.parse(readFileSync(path, "utf8"));
+    delete m.frozen.flagged;
+    writeFileSync(path, `${JSON.stringify(m, null, 2)}\n`);
+    expect(() => plan(dir, { on: "2026-10-02" })).toThrow(/not a read page/);
+  });
+
+  it("never rewrites a copy that is already frozen: its frozen.on stays the day it was made", () => {
+    const dir = fresh();
+    capture(dir, "page");
+    freezeCapture({ slug: "page", files: diskFiles("page", dir), dir, urlsText: URLS, on: "2026-09-30" });
+    const before = readFileSync(join(dir, "page-2026-09-28.meta.json"));
+    expect(freezeCapture({ slug: "page", files: diskFiles("page", dir), dir, urlsText: URLS, on: "2026-10-05" }).already).toBe(true);
+    expect(readFileSync(join(dir, "page-2026-09-28.meta.json"))).toEqual(before);
+  });
+
+  it("takes a slug for a file name only: a path is refused before anything is written", () => {
+    const dir = fresh();
+    capture(dir, "page");
+    expect(() => planFreeze({ slug: "../x", files: diskFiles("page", dir), dir, urlsText: URLS, on: "2026-09-30" })).toThrow(/not a capture slug/);
+    expect(classifyFiles("../x", diskFiles("page", dir)).kind).toBe("unreadable");
+    expect(diskFiles("../x", dir).size).toBe(0);
+    expect(() => sourceVersion(dir, "../x")).toThrow(/not a capture slug/);
+  });
+});
+
+describe(`${MANIFEST}: every frozen copy's files, by sha256`, () => {
+  const sha = (b: Buffer) => createHash("sha256").update(b).digest("hex");
+
+  it("records each file a freeze writes, sorted, in sha256sum's format, and keeps the other copies' lines", () => {
+    const dir = fresh();
+    capture(dir, "page");
+    capture(dir, "other");
+    freezeCapture({ slug: "page", files: diskFiles("page", dir), dir, urlsText: URLS, on: "2026-09-30" });
+    freezeCapture({ slug: "other", files: diskFiles("other", dir), dir, urlsText: URLS, on: "2026-09-30" });
+    const text = readFileSync(join(dir, MANIFEST), "utf8");
+    expect(text.split("\n").filter(Boolean).map((l) => l.split("  ")[1])).toEqual([
+      "other-2026-09-28.html", "other-2026-09-28.meta.json", "other-2026-09-28.txt",
+      "page-2026-09-28.html", "page-2026-09-28.meta.json", "page-2026-09-28.txt",
+    ]);
+    expect(readManifest(dir).get("page-2026-09-28.txt")).toBe(sha(readFileSync(join(dir, "page-2026-09-28.txt"))));
+    expect(checkManifest(dir)).toEqual([]);
+    // A dry run records nothing.
+    capture(dir, "third");
+    freezeCapture({ slug: "third", files: diskFiles("third", dir), dir, urlsText: URLS, on: "2026-09-30", dryRun: true });
+    expect(readFileSync(join(dir, MANIFEST), "utf8")).toBe(text);
+  });
+
+  it("finds a rewritten, deleted, unrecorded or thawed copy", () => {
+    const dir = fresh();
+    capture(dir, "page");
+    freezeCapture({ slug: "page", files: diskFiles("page", dir), dir, urlsText: URLS, on: "2026-09-30" });
+    const txt = join(dir, "page-2026-09-28.txt");
+    writeFileSync(txt, `${TEXT}\nedited`);
+    expect(checkManifest(dir)).toEqual([`page-2026-09-28.txt is not the bytes ${MANIFEST} records`]);
+    rmSync(txt);
+    expect(checkManifest(dir)).toEqual([`page-2026-09-28.txt is recorded in ${MANIFEST} but not on disk`]);
+    writeFileSync(txt, TEXT);
+    const metaPath = join(dir, "page-2026-09-28.meta.json");
+    const frozenMeta = readFileSync(metaPath, "utf8");
+    writeFileSync(metaPath, frozenMeta.replace('"frozen": {', '"thawed": {'));
+    expect(checkManifest(dir)).toContain(`page-2026-09-28 is recorded in ${MANIFEST} but its meta is not a frozen copy naming it`);
+    writeFileSync(metaPath, frozenMeta);
+    // A copy frozen by hand, not recorded: named, and --record takes it.
+    writeFileSync(join(dir, "page-hand.txt"), TEXT);
+    writeFileSync(join(dir, "page-hand.meta.json"), `${JSON.stringify({ ...meta("page-hand"), bodyPath: null, textPath: "research/rendered/page-hand.txt", frozen: { on: "2026-09-29", from: "research/rendered/page.meta.json", commit: null, why: "by hand" } }, null, 2)}\n`);
+    expect(checkManifest(dir)).toEqual([`page-hand is a frozen copy that ${MANIFEST} does not record (node scripts/freeze-capture.mjs --record page-hand)`]);
+    expect(recordFiles(dir, "page-hand")).toBe(2);
+    expect(checkManifest(dir)).toEqual([]);
+    expect(() => recordFiles(dir, "page")).toThrow(/not a frozen copy/);
   });
 });
 
@@ -267,5 +374,264 @@ describe("sourceVersion and --cited, in a repository", () => {
     writeFileSync(join(r.rendered, "page.txt"), "edited");
     expect(() => sourceVersion(r.root, "page")).toThrow(/uncommitted changes/);
     expect(existsSync(join(r.rendered, "page-2026-09-28.meta.json"))).toBe(false);
+  });
+});
+
+describe("sourceVersion: a failed fetch's older text, and only the same bytes from a read page", () => {
+  it("does not fall back when the failed fetch removed a file the older capture had", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page");
+    r.commit("v1");
+    writeFileSync(join(r.rendered, "page.meta.json"), `${JSON.stringify(meta("page", { status: 503, error: "HTTP 503", bodyPath: null, textPath: null, fetchedAt: "2026-09-29T00:00:00.000Z" }), null, 2)}\n`);
+    rmSync(join(r.rendered, "page.html"));
+    const c2 = r.commit("503, html gone");
+    const v = sourceVersion(r.root, "page");
+    expect([v.commit, v.note]).toEqual([c2, null]);
+  });
+
+  it("does not fall back to an older capture that was not a read page either", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page", { over: { status: 403, error: "HTTP 403" } });
+    r.commit("a 403 page, stored");
+    writeFileSync(join(r.rendered, "page.meta.json"), `${JSON.stringify(meta("page", { status: 503, error: "HTTP 503", bodyPath: null, textPath: null, fetchedAt: "2026-09-29T00:00:00.000Z" }), null, 2)}\n`);
+    const c2 = r.commit("503");
+    const v = sourceVersion(r.root, "page");
+    expect([v.commit, v.note]).toEqual([c2, null]);
+  });
+});
+
+describe("--cited: each range is judged by the commit that wrote it, and nothing unsure is repointed", () => {
+  const V3 = V2.replace("line 40:", "line 40 (moved):");
+  const noteOf = (r: ReturnType<typeof repo>) => readFileSync(join(r.root, "research/measurements/note.md"), "utf8");
+  const run = (r: ReturnType<typeof repo>, over: Record<string, unknown> = {}) => {
+    const out: string[] = [];
+    const code = cited({ root: r.root, apply: true, on: "2026-09-30", log: (s: string) => out.push(s), ...over });
+    return { code, out: out.join("\n") };
+  };
+
+  it("never repoints a citation whose file has uncommitted changes (unknown), and exits 1", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page");
+    r.note("Line three is `page.txt:3`.\n");
+    r.commit("v1");
+    r.note("Line three is `page.txt:3`.\nMore.\n");
+    const { code, out } = run(r, { history: true });
+    expect(code).toBe(1);
+    expect(out).toMatch(/UNKNOWN research\/measurements\/note\.md:1 page\.txt:3 \[:3\]: .*has uncommitted changes.*; not repointed/);
+    expect(noteOf(r)).toBe("Line three is `page.txt:3`.\nMore.\n");
+  });
+
+  it("never repoints in a shallow clone whose history stops before the citation was written", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page");
+    r.note("Line three is `page.txt:3`.\n");
+    r.commit("v1");
+    capture(r.rendered, "page", { text: V2, over: { fetchedAt: "2026-09-29T11:00:00.000Z" } });
+    r.commit("v2: line 3 moved");
+    const clone = join(fresh(), "clone");
+    const cl = spawnSync("git", ["clone", "-q", "--depth", "1", `file://${r.root}`, clone], { encoding: "utf8" });
+    expect(cl.status, cl.stderr).toBe(0);
+    const out: string[] = [];
+    expect(cited({ root: clone, apply: true, history: true, on: "2026-09-30", log: (s: string) => out.push(s) })).toBe(1);
+    expect(out.join("\n")).toMatch(/UNKNOWN .*where this shallow clone's history stops; not repointed/);
+    expect(readFileSync(join(clone, "research/measurements/note.md"), "utf8")).toBe("Line three is `page.txt:3`.\n");
+  });
+
+  it("never repoints where git cannot read the history at all", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page");
+    r.note("Line three is `page.txt:3`.\n");
+    r.commit("v1");
+    const bare = join(fresh(), "no-git");
+    cpSync(join(r.root, "research"), join(bare, "research"), { recursive: true });
+    const out: string[] = [];
+    expect(cited({ root: bare, apply: true, history: true, on: "2026-09-30", log: (s: string) => out.push(s) })).toBe(1);
+    expect(out.join("\n")).toMatch(/UNKNOWN .*; not repointed/);
+    expect(readFileSync(join(bare, "research/measurements/note.md"), "utf8")).toBe("Line three is `page.txt:3`.\n");
+  });
+
+  it("repoints to the version every range reads as written: a range added later against a later capture", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page");
+    r.note("See `page.txt:3`.\n");
+    r.commit("v1");
+    // The render moves line 40 only; the note then adds :40, read against the new capture.
+    capture(r.rendered, "page", { text: TEXT.replace("line 40:", "line 40 (moved):"), over: { fetchedAt: "2026-09-29T11:00:00.000Z" } });
+    r.commit("render");
+    r.note("See `page.txt:3`, `:40`.\n");
+    r.commit("v2 of the note");
+    const { code } = run(r);
+    expect(code).toBe(0);
+    expect(noteOf(r)).toBe("See `page-2026-09-29.txt:3`, `:40`.\n");
+  });
+
+  it("refuses a line whose ranges were written against versions no one version satisfies (split), even with --history", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page");
+    r.note("See `page.txt:3`.\n");
+    r.commit("v1");
+    capture(r.rendered, "page", { text: V3, over: { fetchedAt: "2026-09-29T11:00:00.000Z" } });
+    r.commit("render: lines 3 and 40 moved");
+    r.note("See `page.txt:3`, `:40`.\n");
+    r.commit("v2 of the note");
+    const { code, out } = run(r, { history: true });
+    expect(code).toBe(1);
+    expect(out).toMatch(/SPLIT research\/measurements\/note\.md:1 page\.txt:3 \[:3, :40\]: .*no one of them reads what every range was written against; not repointed/);
+    expect(noteOf(r)).toBe("See `page.txt:3`, `:40`.\n");
+  });
+
+  it("moves a short-name table row only when every reference wants one version", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page");
+    r.note("| `P` | `page.txt` |\nIt says (`P:3`).\n");
+    r.commit("v1");
+    capture(r.rendered, "page", { text: V3, over: { fetchedAt: "2026-09-29T11:00:00.000Z" } });
+    r.commit("render");
+    r.note("| `P` | `page.txt` |\nIt says (`P:3`).\nAnd (`P:40`).\n");
+    r.commit("v2 of the note");
+    const { code, out } = run(r, { history: true });
+    expect(code).toBe(1);
+    expect(out).toMatch(/SPLIT research\/measurements\/note\.md:1 page\.txt \[:3, :40\]/);
+    expect(noteOf(r)).toBe("| `P` | `page.txt` |\nIt says (`P:3`).\nAnd (`P:40`).\n");
+  });
+
+  it("refuses a range past the end of the capture it was written against (invalid)", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page");
+    r.note("See `page.txt:99`.\n");
+    r.commit("v1");
+    capture(r.rendered, "page", { text: V2, over: { fetchedAt: "2026-09-29T11:00:00.000Z" } });
+    r.commit("render");
+    const { code, out } = run(r, { history: true });
+    expect(code).toBe(1);
+    expect(out).toMatch(/INVALID research\/measurements\/note\.md:1 page\.txt:99 \[:99\]: page\.txt:99 .*is past the end of page\.txt as \w+ stored it; not repointed/);
+    expect(noteOf(r)).toBe("See `page.txt:99`.\n");
+  });
+
+  it("freezes the version read when only the html or the meta changed since, so the copy's meta says what the note says", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page");
+    r.note("Fetched 2026-09-28T20:35Z (`page.txt:3`).\n");
+    const c1 = r.commit("v1");
+    capture(r.rendered, "page", { html: "<html><body><p>page, new chrome</p></body></html>", over: { fetchedAt: "2026-09-29T11:00:00.000Z", sha256: "cd" } });
+    r.commit("render: html and meta only");
+    const { code, out } = run(r);
+    expect(code).toBe(0);
+    expect(out).toMatch(/drift: changed 1/);
+    expect(noteOf(r)).toBe("Fetched 2026-09-28T20:35Z (`page-2026-09-28.txt:3`).\n");
+    const frozen = JSON.parse(readFileSync(join(r.rendered, "page-2026-09-28.meta.json"), "utf8"));
+    expect([frozen.fetchedAt, frozen.sha256, frozen.frozen.commit]).toEqual(["2026-09-28T20:35:42.598Z", "ab", c1]);
+  });
+
+  it("judges a PDF capture by all its files: a hand text beside a changed PDF goes to the version it was made with", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), "https://a.example/doc\tdoc\n");
+    const pdfMeta = (over: Record<string, unknown>) => ({ ...meta("doc"), contentType: "application/pdf", bodyPath: "research/rendered/doc.pdf", textPath: null, ...over });
+    writeFileSync(join(r.rendered, "doc.meta.json"), `${JSON.stringify(pdfMeta({}), null, 2)}\n`);
+    writeFileSync(join(r.rendered, "doc.pdf"), "%PDF-1.4 old");
+    writeFileSync(join(r.rendered, "doc.txt"), TEXT);
+    r.note("See `doc.txt:3`.\n");
+    r.commit("v1");
+    writeFileSync(join(r.rendered, "doc.meta.json"), `${JSON.stringify(pdfMeta({ fetchedAt: "2026-09-29T11:00:00.000Z", textError: "the PDF changed beside a hand extraction" }), null, 2)}\n`);
+    writeFileSync(join(r.rendered, "doc.pdf"), "%PDF-1.4 new");
+    r.commit("render: new PDF bytes");
+    const { code } = run(r);
+    expect(code).toBe(0);
+    expect(noteOf(r)).toBe("See `doc-2026-09-28.txt:3`.\n");
+    expect(readFileSync(join(r.rendered, "doc-2026-09-28.pdf"), "utf8")).toBe("%PDF-1.4 old");
+  });
+
+  it("names a second version of one fetch day <slug>-<day>-<commit>, in a dry run too, and repoints both", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page", { over: { fetchedAt: "2026-09-29T01:00:00.000Z" } });
+    r.note("Early: `page.txt:3`.\n");
+    const c1 = r.commit("v1");
+    capture(r.rendered, "page", { text: V2, over: { fetchedAt: "2026-09-29T11:00:00.000Z" } });
+    r.note("Early: `page.txt:3`.\nLate: `page.txt:5`.\n");
+    const c2 = r.commit("v2");
+    const dry = run(r, { apply: false, history: true });
+    expect(dry.code).toBe(1);
+    // The first fetch of the day takes the plain name; the later one, its commit.
+    expect(dry.out).toMatch(new RegExp(`would freeze page as ${c1} stored it -> page-2026-09-29 `));
+    expect(dry.out).toMatch(new RegExp(`would freeze page -> page-2026-09-29-${c2} `));
+    const { code } = run(r, { history: true });
+    expect(code).toBe(0);
+    expect(noteOf(r)).toBe(`Early: \`page-2026-09-29.txt:3\`.\nLate: \`page-2026-09-29-${c2}.txt:5\`.\n`);
+    expect(checkManifest(r.rendered)).toEqual([]);
+  });
+
+  it("reuses an existing frozen copy with the same bytes whatever its name (a --date copy)", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page");
+    r.note("See `page.txt:3`.\n");
+    r.commit("v1");
+    freezeCapture({ slug: "page", files: diskFiles("page", r.rendered), dir: r.rendered, urlsText: URLS, on: "2026-10-01", date: "2026-10-01" });
+    r.commit("a --date copy");
+    const { code, out } = run(r);
+    expect(code).toBe(0);
+    expect(out).toMatch(/already frozen page -> page-2026-10-01/);
+    expect(noteOf(r)).toBe("See `page-2026-10-01.txt:3`.\n");
+    expect(existsSync(join(r.rendered, "page-2026-09-28.meta.json"))).toBe(false);
+  });
+
+  it("says a drifted citation whose freeze was refused was not repointed", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page", { over: { contentType: "application/pdf", bodyPath: "research/rendered/page.pdf", textPath: null, textError: "the PDF changed beside it" } });
+    writeFileSync(join(r.rendered, "page.pdf"), "%PDF-1.4 x");
+    rmSync(join(r.rendered, "page.html"));
+    r.note("See `page.txt:3`.\n");
+    r.commit("v1: a flagged capture");
+    capture(r.rendered, "page", { text: V2, over: { fetchedAt: "2026-09-29T11:00:00.000Z" } });
+    r.commit("render");
+    const { code, out } = run(r, { history: true });
+    expect(code).toBe(1);
+    expect(out).toMatch(/REFUSED page as \w+ stored it: .*textError/);
+    expect(out).toMatch(/1 DRIFTED \(0 repointed to the version each was written against\)/);
+    expect(noteOf(r)).toBe("See `page.txt:3`.\n");
+  });
+});
+
+describe("the command line takes a slug and a commit, never a path or an option", () => {
+  it("refuses a slug that is a path before any git call or temporary file (exit 2)", () => {
+    const tmp = fresh();
+    const cli = spawnSync(process.execPath, ["scripts/freeze-capture.mjs", "../zz/trav"], { encoding: "utf8", env: { ...process.env, TMPDIR: tmp } });
+    expect(cli.status).toBe(2);
+    expect(cli.stderr).toMatch(/not a capture slug: "\.\.\/zz\/trav"/);
+    expect(readdirSync(tmp)).toEqual([]);
+  });
+
+  it("refuses a --from-commit that git would read as an option, and anything that is not a commit", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page");
+    r.commit("v1");
+    const out = fresh();
+    const errors: string[] = [];
+    const err = console.error;
+    console.error = (s: string) => errors.push(s);
+    try {
+      expect(main(["page", `--from-commit=--output=${out}/x`], r.root)).toBe(2);
+      expect(main(["page", "--from-commit", "no-such-commit"], r.root)).toBe(1);
+    } finally {
+      console.error = err;
+    }
+    expect(errors.join("\n")).toMatch(/not a commit: "--output=/);
+    expect(errors.join("\n")).toMatch(/not a commit: no-such-commit/);
+    expect(readdirSync(out)).toEqual([]);
+    expect(resolveCommit(r.root, "HEAD")).toMatch(/^[0-9a-f]{40}$/);
+    expect(() => resolveCommit(r.root, "-p")).toThrow(/not a commit/);
   });
 });

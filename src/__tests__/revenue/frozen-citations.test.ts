@@ -1,57 +1,101 @@
-import { createHash } from "node:crypto";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   activeCitations,
   activeSlugs,
   byLine,
+  checkManifest,
   decisionFiles,
-  findCitations,
+  isProse,
   listedNames,
+  manifestSlugs,
+  MANIFEST,
+  readManifest,
+  scanCitations,
+  scanKnown,
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/freeze-capture.mjs";
 
+type Ref = { range: [number, number]; ext: string | null; fileLine: number; token: string };
 type Citation = {
   file: string;
   slug: string;
-  ext: string;
+  ext: string | null;
   lines: [number, number][];
+  refs: Ref[];
   full: boolean;
+  form: string;
   alias: string | null;
   aliasFor?: string;
   text: string;
   fileLine: number;
 };
+type Other = { name: string; ext: string; lines: [number, number][]; fileLine: number; text: string };
 
 const RENDERED = "research/rendered";
-const where = (c: Citation) => `${c.file}:${c.fileLine} ${c.text}`;
+const where = (c: { file: string; fileLine: number; text: string }) => `${c.file}:${c.fileLine} ${c.text}`;
 const metaOf = (slug: string) => JSON.parse(readFileSync(`${RENDERED}/${slug}.meta.json`, "utf8"));
+const lineOf = (slug: string, ext: string, n: number) => readFileSync(`${RENDERED}/${slug}.${ext}`, "utf8").split("\n")[n - 1];
+const read = (file: string) => readFileSync(file, "utf8");
+
+/**
+ * Where a decision note names an ACTIVE capture on purpose, without a line: the live page, not what was read. Each
+ * entry is "<file> <slug>" and says why. Any other name of an active capture in a note (md or json) fails below: a
+ * section that names the live capture and cites its lines in a form the scanner cannot place (bare :N lines after a
+ * name, an abbreviation) would otherwise pass unseen. Code (src/) is not held to this: tests read live captures.
+ */
+const LIVE_MENTIONS: Record<string, string> = {
+  "research/channel-loop/RULING-2026-09-29-loop.md displate-about-regulations": "the watch itself: which capture tick 21 re-renders",
+  "research/channel-loop/TERMS-AUDIT-2026-09-29.md sweep2-google-vrp-faq": "the audit reports the live capture's failed fetch (its meta)",
+  "research/channel-loop/ZERO-TESTS.md robots-nevo": "a render row: the slug the weekly probe writes",
+  "research/channel-loop/terms-verdicts.json robots-nevo": "the weekly probe, which is meant to see a change",
+  "research/measurements/actions-spending-limit.md gh-docs-set-up-budgets": "the table of slugs rendered for this note (what urls.txt holds)",
+  "research/measurements/actions-spending-limit.md gh-docs-budgets-and-alerts": "the table of slugs rendered for this note (what urls.txt holds)",
+  "research/measurements/html5-syndication.md gamedistribution-sdk-implementation": "\"Suggested slug\": the name a render was asked to use",
+  "research/measurements/html5-syndication.md gamedistribution-wiki-faq": "\"Suggested slug\": the name a render was asked to use",
+  "products/apify-il-open-data/docs/PUBLISH.md apify-store-accessibility": "the weekly store count the publish check reads",
+  "research/owner-docs-audit/FINDINGS.md apify-store-accessibility": "the live store listing a later run re-reads for the count",
+  "research/owner-docs-audit/JUDGEMENT.md apify-store-accessibility": "the live store listing a later run re-reads for the count",
+  "research/owner-docs-audit/apify-publish.md apify-store-accessibility": "the live store listing a later run re-reads for the count",
+  "research/owner-docs-audit/x402-il-api.md apify-store-accessibility": "the live store listing a later run re-reads for the count",
+  "research/breadth/scouts/automation-marketplaces.json apify-store-accessibility": "a scout's output, naming the watched listing",
+  "research/breadth/verify/verdicts.json apify-store-accessibility": "a verifier's output, naming the watched listing",
+};
 
 /**
  * Tick 38 (30.9.2026). The weekly render (.github/workflows/render-watch.yml) rewrites a capture in place whenever the
  * page changed, so a research note, ruling or verdict that cites research/rendered/<slug>.txt:NNN can come to point at
- * other text without anyone touching it. It already had: 13 citations by line pointed at text the render had rewritten
- * (the BTL rate lines under step2-cost.md, Displate's bot clause under the loop ruling). Every citation in a decision-bearing
- * file now names a dated frozen copy (scripts/freeze-capture.mjs), which no urls.txt line names and so no render
- * rewrites. This fails when one cites a capture the weekly run can rewrite, by line.
+ * other text without anyone touching it. It already had: 37 citations by line pointed at text the render had rewritten
+ * (the BTL rate lines under step2-cost.md, Displate's bot clause under the loop ruling and wall-art-pod.md, the Kokoro
+ * card under the faceless-YouTube verdicts and parent-guides' LICENSES.md). Every citation in a decision-bearing file
+ * now names a dated frozen copy (scripts/freeze-capture.mjs), which no urls.txt line names and so no render rewrites,
+ * and FROZEN.sha256 holds each copy's bytes. This fails when one cites a capture the weekly run can rewrite, by line.
  */
 describe("decision-bearing files cite frozen captures, never a live one by line", () => {
-  const urls = readFileSync(`${RENDERED}/urls.txt`, "utf8");
+  const urls = read(`${RENDERED}/urls.txt`);
+  const active: Set<string> = activeSlugs(urls);
+  const known: Set<string> = scanKnown(".", urls);
+  const listed: Set<string> = listedNames(urls);
+  const files: string[] = decisionFiles();
 
-  it("reads the files a decision is read from, and no log or capture notes", () => {
-    const files: string[] = decisionFiles();
+  it("reads the files a decision, a claim or a release is read from, and no log or capture", () => {
     for (const f of [
       "research/channel-loop/terms-verdicts.json",
       "research/channel-loop/TERMS-AUDIT-2026-09-29.md",
       "research/measurements/actions-spending-limit.md",
+      "research/faceless-youtube/VERDICT.md",
+      "research/owner-asks/questions.json",
       "docs/REJECTED.md",
       "products/il-biz-tools/src/config/osek-zair.json",
       "products/il-biz-tools/README.md",
+      "products/parent-guides/LICENSES.md",
+      "products/chart-explainer/releases/t1/render-report.json",
       "products/README.md",
+      "src/__tests__/revenue/owner-asks.test.ts",
     ]) {
       expect(files, f).toContain(f);
     }
-    expect(files.filter((f) => f.startsWith("logs/") || f.startsWith(`${RENDERED}/`) || f.includes("node_modules"))).toEqual([]);
+    expect(files.filter((f) => f.startsWith("logs/") || f.startsWith(`${RENDERED}/`) || f.includes("node_modules") || f.endsWith("package-lock.json"))).toEqual([]);
   });
 
   it("finds no citation by line of a capture whose urls.txt line is active", () => {
@@ -59,82 +103,184 @@ describe("decision-bearing files cite frozen captures, never a live one by line"
     expect(byLine(activeCitations({})).map(where)).toEqual([]);
   });
 
-  it("points every citation of a frozen copy at a copy that exists, holds the lines cited, matches its own hash and is on no urls.txt line", () => {
-    const all = new Set(readdirSync(RENDERED).filter((f) => f.endsWith(".meta.json")).map((f) => f.slice(0, -".meta.json".length)));
-    const listed = listedNames(urls);
-    let checked = 0;
-    for (const file of decisionFiles() as string[]) {
-      for (const c of findCitations(readFileSync(file, "utf8"), all) as Citation[]) {
-        if (!all.has(c.slug)) continue;
-        const meta = metaOf(c.slug);
-        if (!meta.frozen) continue;
-        checked += 1;
-        expect(listed.has(c.slug), `${where({ ...c, file })}: a urls.txt line names it`).toBe(false);
-        expect(meta.slug, c.slug).toBe(c.slug);
-        expect(existsSync(meta.frozen.from), `${c.slug}: frozen.from ${meta.frozen.from}`).toBe(true);
-        const path = `${RENDERED}/${c.slug}.${c.ext}`;
-        expect(existsSync(path), `${where({ ...c, file })}: ${path}`).toBe(true);
-        // The citation's own :N (a bare :N after it may name another file's line: the attribution is a heuristic).
-        const own = /:(\d+)(?:-(\d+))?$/.exec(c.text);
-        if (own) {
-          const count = readFileSync(path, "utf8").split("\n").length;
-          expect(Number(own[2] ?? own[1]), `${where({ ...c, file })} past the end of ${path}`).toBeLessThanOrEqual(count);
-        }
-        if (meta.bodyPath && meta.sha256) {
-          const sha = createHash("sha256").update(readFileSync(meta.bodyPath)).digest("hex");
-          expect(sha, `${c.slug}: the body is not the bytes its meta hashed`).toBe(meta.sha256);
-        }
+  it("names an active capture in a note only where LIVE_MENTIONS says the live page is meant, and never by line", () => {
+    const seen = new Set<string>();
+    const unlisted: string[] = [];
+    for (const file of files.filter(isProse)) {
+      for (const c of scanCitations(read(file), known).citations as Citation[]) {
+        if (!active.has(c.slug) || c.alias) continue;
+        const key = `${file} ${c.slug}`;
+        seen.add(key);
+        if (!LIVE_MENTIONS[key] || c.lines.length) unlisted.push(`${where({ ...c, file })}${c.lines.length ? " (by line)" : ""}`);
       }
     }
-    expect(checked).toBeGreaterThan(300);
+    expect(unlisted).toEqual([]);
+    // An entry nothing matches any more is removed, so the list says only what is true.
+    expect(Object.keys(LIVE_MENTIONS).filter((k) => !seen.has(k))).toEqual([]);
+  });
+
+  it(`records every frozen copy's files in ${MANIFEST}, byte for byte, and every recorded copy is a frozen one`, () => {
+    // A rewritten, deleted or re-made frozen file fails here, and so does a copy whose meta lost its "frozen" block.
+    expect(checkManifest(RENDERED)).toEqual([]);
+    expect(manifestSlugs(readManifest(RENDERED)).size).toBeGreaterThan(50);
+  });
+
+  it("cites only captures on disk: a watched one, or a recorded frozen copy that holds every line cited", () => {
+    const recorded: Set<string> = manifestSlugs(readManifest(RENDERED));
+    const lineCount = new Map<string, number>();
+    const count = (path: string) => {
+      if (!lineCount.has(path)) lineCount.set(path, existsSync(path) ? read(path).split("\n").length : -1);
+      return lineCount.get(path) as number;
+    };
+    const problems: string[] = [];
+    let checked = 0;
+    for (const file of files) {
+      const { citations, others } = scanCitations(read(file), known, { carry: isProse(file) }) as { citations: Citation[]; others: Other[] };
+      for (const c of citations) {
+        const at = where({ ...c, file });
+        if (!existsSync(`${RENDERED}/${c.slug}.meta.json`)) {
+          problems.push(`${at}: no capture ${c.slug} on disk`);
+          continue;
+        }
+        if (listed.has(c.slug)) continue;
+        checked += 1;
+        if (!recorded.has(c.slug)) problems.push(`${at}: ${c.slug} is on no urls.txt line and ${MANIFEST} does not record it`);
+        for (const r of c.refs) {
+          const exts = r.ext ? [r.ext] : ["txt", "html"];
+          const [a, b] = r.range;
+          if (!exts.some((ext) => a >= 1 && b >= a && b <= count(`${RENDERED}/${c.slug}.${ext}`))) {
+            problems.push(`${at}: ${r.token} (line ${r.fileLine}) is past the end of ${c.slug}.${exts.join("/")}`);
+          }
+        }
+      }
+      // A dated name that is no copy on disk: a frozen copy that does not exist.
+      for (const o of others) {
+        if (/-\d{4}-\d{2}-\d{2}(-[0-9a-f]{7,})?$/.test(o.name)) problems.push(`${file}:${o.fileLine} ${o.text}: no frozen copy ${o.name} on disk`);
+      }
+    }
+    expect(problems).toEqual([]);
+    expect(checked).toBeGreaterThan(400);
   });
 
   it("repoints the instances tick 36 named to frozen copies that say what the verdicts quote, on the same lines", () => {
-    const verdicts = readFileSync("research/channel-loop/terms-verdicts.json", "utf8");
+    const verdicts = read("research/channel-loop/terms-verdicts.json");
     expect(verdicts).toContain("research/rendered/terms-btl-2026-09-29.txt:303");
     expect(verdicts).toContain("research/rendered/terms-ypay-2026-09-29.txt:55");
     expect(verdicts).not.toMatch(/terms-(btl|ypay)\.txt:/);
-    const line = (slug: string, n: number) => readFileSync(`${RENDERED}/${slug}.txt`, "utf8").split("\n")[n - 1];
-    expect(line("terms-btl-2026-09-29", 303)).toBe(line("terms-btl", 303));
-    expect(line("terms-ypay-2026-09-29", 55)).toMatch(/רובוטים/);
+    expect(lineOf("terms-btl-2026-09-29", "txt", 303)).toBe(lineOf("terms-btl", "txt", 303));
+    expect(lineOf("terms-ypay-2026-09-29", "txt", 55)).toMatch(/רובוטים/);
     // actions-spending-limit.md cites by short name (R-GA:502); its capture tables name the frozen copies.
-    const asl = readFileSync("research/measurements/actions-spending-limit.md", "utf8");
+    const asl = read("research/measurements/actions-spending-limit.md");
     expect(asl).toContain("| `R-GA` | `gh-docs-actions-billing-2026-09-29.txt` |");
     expect(asl).toContain("| `R-SB` | `gh-docs-set-up-budgets-2026-09-29.txt` |");
   });
 
   it("repoints a citation the render had already moved to the capture it was written against, not to today's", () => {
     // step2-cost.md read the BTL pages of 27.9 22:46Z; the render of 29.9 moved the minimum-contribution lines.
-    const step2 = readFileSync("research/measurements/step2-cost.md", "utf8");
+    const step2 = read("research/measurements/step2-cost.md");
     expect(step2).toContain("`btl-self-employed-rates-2026-09-27.txt:410`");
     expect(step2).toContain("| `research/rendered/btl-self-employed-rates-2026-09-27.txt` | 2026-09-27T22:46:07Z | 200 |");
     expect(metaOf("btl-self-employed-rates-2026-09-27").fetchedAt).toBe("2026-09-27T22:46:07.842Z");
-    const at410 = readFileSync(`${RENDERED}/btl-self-employed-rates-2026-09-27.txt`, "utf8").split("\n")[409];
-    expect(at410).toContain('מי שהכנסתו נמוכה מ- 3,442 ש"ח לחודש');
+    expect(lineOf("btl-self-employed-rates-2026-09-27", "txt", 410)).toContain('מי שהכנסתו נמוכה מ- 3,442 ש"ח לחודש');
   });
 
-  it("takes every citation form these files use, and only for a capture whose line is active", () => {
-    const active = activeSlugs(
-      [
-        "https://a.example/x\tlive-page",
-        "# paused (terms unread): x — https://b.example/y\tpaused-page",
-        "# retired (tick 36) — https://c.example/z\tretired-page",
-      ].join("\n"),
-    );
-    expect([...active]).toEqual(["live-page"]);
-    const text = [
-      "research/rendered/live-page.txt:12 and live-page.html:3-4, also `:40`",
-      "| Short | Capture |",
-      "| `R-LP` | `live-page.txt` | 2026-09-29 |",
-      "It says so (`R-LP:7`, `:9`).",
-      "live-page.html:5 links it; PAT:108, :118 are another file's lines.",
-      "research/rendered/live-page.txt, fetched 2026-09-29T11:30:37Z, has the section at :563.",
-      "paused-page.txt:5 and research/rendered/retired-page.txt:6 are not re-fetched; some-script.js:5 is not a capture.",
-      "research/rendered/live-page.txt names it without a line.",
-    ].join("\n");
-    const found = findCitations(text, active) as Citation[];
-    const forLive = found.filter((c) => active.has(c.slug));
-    expect(byLine(forLive).map((c: Citation) => `${c.fileLine} ${c.text} ${JSON.stringify(c.lines)}`)).toEqual([
+  it("wall-art-pod.md §4-§6 name the 28.9 captures their short names (tou, priv, chunk) stand for", () => {
+    const w = read("research/measurements/wall-art-pod.md");
+    expect(w).toContain("Capture: `displate-about-regulations-2026-09-28` (200, fetchedAt 2026-09-28T21:03Z");
+    expect(w).toContain("Capture: `displate-com-about-privacy-2026-09-28` (200, fetchedAt 2026-09-28T22:00Z");
+    expect(w).toContain("Capture: `displate-about-privacy-chunk-2026-09-28` (200,");
+    expect(metaOf("displate-about-regulations-2026-09-28").fetchedAt.slice(0, 16)).toBe("2026-09-28T21:03");
+    expect(metaOf("displate-about-privacy-chunk-2026-09-28").fetchedAt.slice(0, 16)).toBe("2026-09-28T23:21");
+    // G7 PASS rests on tou.txt:447, and the bot clause on :471: the 28.9 text, which the live capture no longer has there.
+    expect(lineOf("displate-about-regulations-2026-09-28", "txt", 447)).toMatch(/^The User has the option to convert their Account and register as an Artist/);
+    expect(lineOf("displate-about-regulations-2026-09-28", "txt", 471)).toMatch(/^The Service Provider reserves the right to delete Accounts/);
+    // The menu lines named at line 8 are the faq copy's, named in full.
+    expect(w).toContain("(`displate-com-about-faq-2026-09-28.txt:38-43`)");
+  });
+
+  it("html5-syndication.md cites the html line that holds the edit date, in the copy the line was written against", () => {
+    const h = read("research/measurements/html5-syndication.md").split("\n");
+    const sdk = h.find((l) => l.includes('datetime="2021-12-09'));
+    const faq = h.find((l) => l.includes('datetime="2018-04-16'));
+    expect(sdk).toContain("gamedistribution-sdk-implementation-2026-09-28.txt:154");
+    expect(faq).toContain("gamedistribution-wiki-faq-2026-09-28.");
+    expect(lineOf("gamedistribution-sdk-implementation-2026-09-28", "html", 713)).toContain('datetime="2021-12-09');
+    expect(lineOf("gamedistribution-wiki-faq-2026-09-28", "html", 713)).toContain('datetime="2018-04-16');
+  });
+
+  it("polar-rail.md names copies whose metas say what its source lines say (fetchedAt, sha256, byteLength)", () => {
+    const p = read("research/measurements/polar-rail.md");
+    for (const [slug, fetchedAt, sha] of [
+      ["polar-supported-countries-2026-09-28", "2026-09-28T01:55:22", "80ca9109"],
+      ["polar-acceptable-use-2026-09-28", "2026-09-28T07:15:22", "8b94125b7f68"],
+      ["polar-fees-2026-09-28", "2026-09-28T07:15:23", "f1a66d91b3ff"],
+    ]) {
+      expect(p, slug).toContain(slug);
+      expect(metaOf(slug).fetchedAt.slice(0, 19), slug).toBe(fetchedAt);
+      expect(metaOf(slug).sha256.startsWith(sha), slug).toBe(true);
+    }
+    expect(p).not.toMatch(/polar-(supported-countries|acceptable-use|fees)-2026-09-29/);
+  });
+
+  it("names the frozen D2D terms and Invoice4u price list where their bare lines are cited", () => {
+    expect(read("research/measurements/teacher-and-ebook-stores.md")).toContain("`draft2digital-com-terms-of-service-2026-09-28` (200, 768 lines)");
+    expect(read("research/measurements/israeli-invoicing-free-tiers.md")).toContain("## Invoice4u (`invoice4u-pricelist-2026-09-29`)");
+    expect(lineOf("draft2digital-com-terms-of-service-2026-09-28", "txt", 490)).toMatch(/To use the Program, you must open an account, which is free/);
+  });
+
+  it("the Kokoro licence notes cite the card the release read: training on closed TTS models' audio", () => {
+    const card = "kokoro-82m-model-card-2026-09-28";
+    expect(lineOf(card, "txt", 233)).toMatch(/^Synthetic audio \[1\] generated by closed \[2\] TTS models/);
+    expect(read("products/parent-guides/LICENSES.md")).toContain(`research/rendered/${card}.txt:233`);
+    expect(read("products/chart-explainer/releases/t1/render-report.json")).toContain(`research/rendered/${card}.txt:233`);
+  });
+
+  it("TERMS-AUDIT cites the frozen IRS meta's url, fetchedAt and status lines, not the slug line the freeze renamed", () => {
+    const audit = read("research/channel-loop/TERMS-AUDIT-2026-09-29.md");
+    expect(audit).toContain("irs-us-israel-treaty-2026-09-25.meta.json:2, :4-5");
+    expect(lineOf("irs-us-israel-treaty-2026-09-25", "meta.json", 2)).toMatch(/"url"/);
+    expect(lineOf("irs-us-israel-treaty-2026-09-25", "meta.json", 4)).toMatch(/"fetchedAt"/);
+    expect(lineOf("irs-us-israel-treaty-2026-09-25", "meta.json", 5)).toMatch(/"status"/);
+  });
+});
+
+describe("scanCitations reads every citation form the notes use", () => {
+  const known = new Set(["live-page", "other-page", "a.bin-x", "help-x-article-677-earnings", "live-page-2026-09-28"]);
+  const text = [
+    /* 1 */ "research/rendered/live-page.txt:12 and live-page.html:3-4, also `:40`",
+    /* 2 */ "| Short | Capture |",
+    /* 3 */ "| `R-LP` | `live-page.txt` | 2026-09-29 |",
+    /* 4 */ "It says so (`R-LP:7`, `:9`).",
+    /* 5 */ "live-page.html:5 links it; PAT:108, :118 are another file's lines.",
+    /* 6 */ "research/rendered/live-page.txt, fetched 2026-09-29T11:30:37Z, has the section at :563.",
+    /* 7 */ "paused-page.txt:5 and research/rendered/retired-page.txt:6 are not re-fetched; some-script.js:5 is not a capture.",
+    /* 8 */ "research/rendered/live-page.txt names it without a line.",
+    /* 9 */ "## 4. The terms",
+    /* 10 */ 'Capture: `live-page` (200, fetchedAt 2026-09-28T21:03Z). Read in full (lp.txt:90-945, "in force", :945). Short name `lp`.',
+    /* 11 */ "- The bot clause (lp.txt:471), the form (lp.html:640).",
+    /* 12 */ "  :473 goes on.",
+    /* 13 */ "## 5. More forms",
+    /* 14 */ ":12 belongs to no capture here.",
+    /* 15 */ "[the clause](../rendered/live-page.txt:21) and [again](../../research/rendered/live-page.txt:22)",
+    /* 16 */ "research/rendered/live-page.txt#L23, research/rendered/live-page.txt:L24, research/rendered/live-page.txt:25–26",
+    /* 17 */ "research/rendered/live-page.txt line 27 and research/rendered/live-page.txt: 28",
+    /* 18 */ "`live-page`.txt:29 and live-page:30; research/rendered/live-page.txt: 2026-09-29 is a date.",
+    /* 19 */ "The capture `research/rendered/live-page.{txt,html}` (200) says so at :31, and the html has it at :713.",
+    /* 20 */ "| `AUP` | `live-page.txt`, `live-page.html` |",
+    /* 21 */ "| `B.1` | `live-page.txt` (row 12) |",
+    /* 22 */ "It says (AUP:32, B.1:33).",
+    /* 23 */ "Short names: `677` = `…-article-677-earnings` (row 136), `OP` = `research/rendered/other-page`.",
+    /* 24 */ "In 677 (677.html:1656, :1659); OP:34.",
+    /* 25 */ "research/rendered/a.bin-x.txt:5 and a.bin-x.txt:6",
+    /* 26 */ "- `live-page` (row 132, short name `lv`): 2,322 bytes (`lv.meta.json:7`, `.txt:1`); `*.meta.json:5`.",
+    /* 27 */ "The frozen copy live-page-2026-09-28.txt:3 is not the live one; research/channel-loop/terms-verdicts.json (`:163-166`).",
+  ].join("\n");
+  const { citations, unattributed, others } = scanCitations(text, known) as { citations: Citation[]; unattributed: { fileLine: number; text: string }[]; others: Other[] };
+  const show = (c: Citation) => `${c.fileLine} ${c.text} ${JSON.stringify(c.lines)}`;
+  const of = (slug: string) => citations.filter((c) => c.slug === slug);
+
+  it("takes paths, short names, braces, mentions, backticks, anchors and line words, each with the lines written after it", () => {
+    expect(byLine(of("live-page")).map(show)).toEqual([
       "1 research/rendered/live-page.txt:12 [[12,12]]",
       "1 live-page.html:3-4 [[3,4],[40,40]]",
       "3 live-page.txt [[7,7],[9,9]]",
@@ -143,9 +289,56 @@ describe("decision-bearing files cite frozen captures, never a live one by line"
       "5 live-page.html:5 [[5,5]]",
       // A time is not a reference, so :563 is the capture's line: a citation without a line of its own, cited by line.
       "6 research/rendered/live-page.txt [[563,563]]",
+      // A prose short name: every lp.txt:N, lp.html:N, and the :N that starts a later line of the section.
+      "10 live-page [[90,945],[945,945],[471,471],[640,640],[473,473]]",
+      "10 lp.txt:90-945 [[90,945],[945,945]]",
+      "11 lp.txt:471 [[471,471]]",
+      "11 lp.html:640 [[640,640],[473,473]]",
+      "15 ../rendered/live-page.txt:21 [[21,21]]",
+      "15 ../../research/rendered/live-page.txt:22 [[22,22]]",
+      "16 research/rendered/live-page.txt#L23 [[23,23]]",
+      "16 research/rendered/live-page.txt:L24 [[24,24]]",
+      "16 research/rendered/live-page.txt:25–26 [[25,26]]",
+      "17 research/rendered/live-page.txt [[27,27]]",
+      "17 research/rendered/live-page.txt: 28 [[28,28]]",
+      "18 `live-page`.txt:29 [[29,29]]",
+      "18 live-page:30 [[30,30]]",
+      "19 research/rendered/live-page.{txt,html} [[31,31],[713,713]]",
+      // A table row with two files of the capture, or text after it, and a short name with a dot.
+      "20 live-page.txt [[32,32]]",
+      "21 live-page.txt [[33,33]]",
+      "22 AUP:32 [[32,32]]",
+      "22 B.1:33 [[33,33]]",
+      // "(row 132, short name `lv`)" names the capture before it; `.txt:1` and `*.meta.json:5` are its files' lines.
+      "26 live-page [[7,7],[1,1],[5,5]]",
+      "26 lv.meta.json:7 [[7,7],[1,1],[5,5]]",
     ]);
-    expect(forLive.filter((c) => c.lines.length === 0).map((c) => c.fileLine)).toEqual([8]);
-    // A short name is a capture only when it is one being checked; a full path always is.
-    expect(found.filter((c) => !active.has(c.slug)).map((c) => c.slug)).toEqual(["retired-page"]);
+    // Without a line: the name alone, a date after ": ", the second file on a short-name row.
+    expect(of("live-page").filter((c) => c.lines.length === 0).map((c) => c.fileLine)).toEqual([8, 18, 20]);
+  });
+
+  it("gives each line the file it is in: the html when the sentence says so, the extension after a short name", () => {
+    const brace = of("live-page").find((c) => c.form === "brace") as Citation;
+    expect(brace.refs.map((r) => `${r.range[0]} ${r.ext}`)).toEqual(["31 txt", "713 html"]);
+    const lv = of("live-page").find((c) => c.fileLine === 26 && !c.alias) as Citation;
+    expect(lv.refs.map((r) => `${r.range[0]} ${r.ext}`)).toEqual(["7 meta.json", "1 txt", "5 meta.json"]);
+    expect(lv.aliasFor).toBe("lv");
+  });
+
+  it("reads short-name pairs, including a slug named by its end, and a slug with a dot and an extension inside it", () => {
+    expect(of("help-x-article-677-earnings").map(show)).toEqual(["23 …-article-677-earnings [[1656,1656],[1659,1659]]", "24 677.html:1656 [[1656,1656],[1659,1659]]"]);
+    expect(of("other-page").map(show)).toEqual(["23 research/rendered/other-page [[34,34]]", "24 OP:34 [[34,34]]"]);
+    expect(of("a.bin-x").map((c) => `${c.slug} ${c.ext} ${JSON.stringify(c.lines)}`)).toEqual(["a.bin-x txt [[5,5]]", "a.bin-x txt [[6,6]]"]);
+    expect(of("live-page-2026-09-28").map(show)).toEqual(["27 live-page-2026-09-28.txt:3 [[3,3]]"]);
+  });
+
+  it("keeps what is no capture out: another file's lines, a paused short name, a line after no name", () => {
+    // A short name is a capture only when it is a known one; a full path always is.
+    expect(citations.filter((c) => !known.has(c.slug)).map((c) => c.slug)).toEqual(["retired-page"]);
+    expect(others.map((o) => `${o.fileLine} ${o.text}`)).toEqual(["7 paused-page.txt:5"]);
+    // A path to another file (a note, a verdicts file) owns the bare lines after it.
+    expect(citations.filter((c) => c.lines.some(([x]) => x === 163))).toEqual([]);
+    // A heading ends the section: :12 belongs to nothing, and the scan says so.
+    expect(unattributed.map((u) => `${u.fileLine} ${u.text}`)).toEqual(["14 :12"]);
   });
 });
