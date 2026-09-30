@@ -35,7 +35,7 @@ function video(overrides: Partial<VideoManifest> = {}): VideoManifest {
     factCheck: { auditor: "opus-auditor", verdict: "PASS", figuresChecked: 7 },
     promiseMatch: { auditor: "opus-auditor", verdict: "PASS" },
     containsSyntheticMedia: true,
-    narration: { engine: "kokoro-82m", voiceId: "af_heart" },
+    narration: { engine: "kokoro-82m", voiceId: "af_heart", voicesFile: "voices-v1.0.bin", modelFile: "kokoro-v1.0.onnx" },
     scheduledAt: "2026-11-10T09:00:00.000Z",
     runnerMinutes: 20,
     tokenCostIls: 8,
@@ -220,7 +220,7 @@ describe("publication gate G1-G10 (VERDICT §12)", () => {
       expect(failed(checkPublication(video({ description: noVoice }), channel(), "publish", exists))).toContain("G7");
     });
     it("fails on any narration engine but Kokoro: a voice that imitates a real person is never made", () => {
-      expect(failed(checkPublication(video({ narration: { engine: "voice-clone-x", voiceId: "someone" } }), channel(), "publish", exists))).toContain("G7");
+      expect(failed(checkPublication(video({ narration: { engine: "voice-clone-x", voiceId: "someone", voicesFile: "voices-v1.0.bin", modelFile: "kokoro-v1.0.onnx" } }), channel(), "publish", exists))).toContain("G7");
     });
     it("fails when the description does not attribute the source and licence", () => {
       expect(failed(checkPublication(video({ description: "A video about solar." }), channel(), "publish", exists))).toContain("G7");

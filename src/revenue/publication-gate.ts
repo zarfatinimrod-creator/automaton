@@ -58,11 +58,12 @@ export interface VideoManifest {
   containsSyntheticMedia: boolean | null;
   /**
    * What speaks. Only an engine in ALLOWED_NARRATION_ENGINES passes; a voice imitating a real person is never made (§2c).
-   * P-1: `voiceId` must be one of KOKORO_82M_VOICE_LICENCE.voices. `voicesFile` is the voice archive's file name when the
-   * renderer records it; when present it must be the archive the allowlist was read from. Optional so a manifest that
-   * names only the voice keeps working (the chart-explainer's sha256 pin fixes the archive, `tts.py`).
+   * P-1: `voiceId` must be one of the engine's official voices (NARRATION_VOICE_LICENCES). `voicesFile` and `modelFile`
+   * are the file names of the voice archive and the model the renderer loaded, and must be the engine's pinned ones: a
+   * non-commercial export ships its own archive and model (yk2-hf-kokoro-hebrew-nc.txt:68, :70), so a manifest that
+   * names neither cannot show which it used and is refused. The chart-explainer writes both from tts.py's pins.
    */
-  narration: { engine: string; voiceId: string; voicesFile?: string };
+  narration: { engine: string; voiceId: string; voicesFile: string; modelFile: string };
   scheduledAt: string;
   runnerMinutes: number;
   tokenCostIls: number;
@@ -138,7 +139,8 @@ export const SYNTHETIC_VOICE_DISCLOSURE =
  * Narration engines whose stock voices are nobody's (PREREG-DECISIONS.md §2c). Kokoro's training excluded "custom voice
  * clones" (research/rendered/kokoro-82m-model-card-2026-09-29.txt:245; the live capture's line moves with each render).
  * A cloning engine, or a voice that imitates an identifiable person, cannot pass this gate with or without the flag: such
- * a video is never made.
+ * a video is never made. Every engine here must also have a record in NARRATION_VOICE_LICENCES, or P-1 refuses it
+ * (narration-licence-gate.test.ts pins both).
  */
 export const ALLOWED_NARRATION_ENGINES: ReadonlySet<string> = new Set(["kokoro-82m"]);
 
@@ -149,37 +151,89 @@ export interface CapturedLine {
   quote: string;
 }
 
+/** A model file the renderer downloads and verifies by sha256 before use, and records by name in the manifest. */
+export interface PinnedModelFile {
+  file: string;
+  sha256: string;
+  /** The renderer sources that pin it; a test reads each one for both values. */
+  pinnedIn: readonly string[];
+}
+
+/**
+ * P-1's record for one narration engine (research/channel-loop/RULING-2026-09-30-video.md 16(c) item 7): the rendered
+ * evidence the ruling requires, the voices it covers, and the files a manifest must name.
+ */
+export interface NarrationVoiceLicence {
+  engine: string;
+  /**
+   * Fold step 10's `licenceEvidence`: the weights licence and the training-data statement, both rendered. The author's
+   * rendered statement counts for the training data; demanding the upstream providers' terms is a regress (ruling). P-1
+   * refuses an engine whose record leaves either list empty.
+   */
+  licenceEvidence: { weightsLicence: readonly CapturedLine[]; trainingData: readonly CapturedLine[] };
+  /** How many voices the release says it has. */
+  voiceCount: CapturedLine;
+  /** The model author's own repository, as the model card names it. */
+  authorRepo: CapturedLine;
+  /** The author's own list of voice ids, frozen at a commit: `voices` is asserted equal to it. */
+  voiceList: { path: string; sha256: string; url: string };
+  /** The voice archive and the model file the renderer loads; the manifest must name both (`voicesFile`, `modelFile`). */
+  archive: PinnedModelFile;
+  model: PinnedModelFile;
+  voices: ReadonlySet<string>;
+  ruling: string;
+}
+
 /** The dated frozen copy of the model card (its meta says why): the weekly render rewrites the live capture's lines. */
 const KOKORO_CARD = "research/rendered/kokoro-82m-model-card-2026-09-29.txt";
 
 /**
- * P-1, the narration-licence gate (research/channel-loop/RULING-2026-09-30-video.md 16(c) item 7, adopted 30.9.2026):
- * narration only from a voice whose weights licence and training-data statement are both rendered; the author's
- * rendered statement counts for the training data. Kokoro-82M's official voices are the one set that passes today.
+ * P-1, the narration-licence gate (ruling 30.9 16(c) item 7, adopted 30.9.2026): narration only from a voice whose weights
+ * licence and training-data statement are both rendered. Kokoro-82M's official voices are the one set that passes today.
  *
- * `voices` are the 54 keys of the voice archive both Kokoro products pin by sha256 (`archive`; read from the pinned
- * file on 30.9.2026 — the file is downloaded, never committed). The model card's release table gives v1.0 "8 & 54"
- * languages and voices (`voiceCount`), and the archive holds exactly that many. A blend such as "af_bella,af_jessica"
- * is not an official voice id and does not pass. The ruling's own pointers were :235 and :241 of the live capture; the
- * frozen copy carries the same text on the same lines, and the weights licence is on :53 and :97.
+ * `voices` are the 54 ids of hexgrad's own `kokoro.js/src/voices.js` at commit dfb907a (`voiceList`; 28 live keys and 26
+ * more commented out under "TODO: Add support for other languages"), fetched from GitHub on 30.9.2026. hexgrad/kokoro is
+ * the repository the model card names as its own (`authorRepo`, :99), and the card's release table gives v1.0 "8 & 54"
+ * languages and voices (`voiceCount`). The same 54 ids are the keys of the voice archive both Kokoro products pin by
+ * sha256 (`archive`; re-listed from the pinned file on 30.9.2026 — the file is downloaded, never committed). The archive
+ * is a third party's packaging (thewh1teagle/kokoro-onnx, the same publisher as the refused Hebrew export), which is why
+ * the names are checked against the author's list and not taken from the archive. A blend such as "af_bella,af_jessica"
+ * is not an official voice id and does not pass. The card's own voice list (VOICES.md, :119) sits on huggingface.co and
+ * is not captured.
+ *
+ * The ruling's pointers were :235 and :241 of the live capture; the frozen copy carries the same text on the same lines
+ * (the training-data statement), and the weights licence is on :53 and :97.
  *
  * REOPEN (ruling, "What stays open" 9): if a rendered term of a named upstream TTS provider bars reuse of its synthetic
- * audio for commercial training, the premise behind `trainingData` falls, and with it this allowlist.
+ * audio for commercial training, the premise behind `licenceEvidence.trainingData` falls, and with it this allowlist.
  */
-export const KOKORO_82M_VOICE_LICENCE = {
+export const KOKORO_82M_VOICE_LICENCE: NarrationVoiceLicence = {
   engine: "kokoro-82m",
-  weightsLicence: [
-    { path: KOKORO_CARD, line: 53, quote: "License: apache-2.0" },
-    { path: KOKORO_CARD, line: 97, quote: "With Apache-licensed weights" },
-  ] as readonly CapturedLine[],
-  trainingData: [
-    { path: KOKORO_CARD, line: 235, quote: "Kokoro was trained exclusively on permissive/non-copyrighted audio data" },
-    { path: KOKORO_CARD, line: 241, quote: "Synthetic audio [1] generated by closed [2] TTS models from large providers" },
-  ] as readonly CapturedLine[],
-  voiceCount: { path: KOKORO_CARD, line: 147, quote: "8 & 54" } as CapturedLine,
+  licenceEvidence: {
+    weightsLicence: [
+      { path: KOKORO_CARD, line: 53, quote: "License: apache-2.0" },
+      { path: KOKORO_CARD, line: 97, quote: "With Apache-licensed weights" },
+    ],
+    trainingData: [
+      { path: KOKORO_CARD, line: 235, quote: "Kokoro was trained exclusively on permissive/non-copyrighted audio data" },
+      { path: KOKORO_CARD, line: 241, quote: "Synthetic audio [1] generated by closed [2] TTS models from large providers" },
+    ],
+  },
+  voiceCount: { path: KOKORO_CARD, line: 147, quote: "8 & 54" },
+  authorRepo: { path: KOKORO_CARD, line: 99, quote: "GitHub : https://github.com/hexgrad/kokoro" },
+  voiceList: {
+    path: "research/rendered/hexgrad-kokoro-voices-js-dfb907a.txt",
+    sha256: "7650e788fcf0e2dfc6ad13ef185f3f1d1362b4360e3623e1ba39a699b376d201",
+    url: "https://raw.githubusercontent.com/hexgrad/kokoro/dfb907a02bba8152ca444717ca5d78747ccb4bec/kokoro.js/src/voices.js",
+  },
   archive: {
     file: "voices-v1.0.bin",
     sha256: "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d",
+    pinnedIn: ["products/chart-explainer/tts.py", "products/parent-guides/tts.py"],
+  },
+  model: {
+    file: "kokoro-v1.0.onnx",
+    sha256: "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
     pinnedIn: ["products/chart-explainer/tts.py", "products/parent-guides/tts.py"],
   },
   voices: new Set([
@@ -189,11 +243,19 @@ export const KOKORO_82M_VOICE_LICENCE = {
     "ef_dora", "em_alex", "em_santa", "ff_siwis", "hf_alpha", "hf_beta", "hm_omega", "hm_psi", "if_sara", "im_nicola",
     "jf_alpha", "jf_gongitsune", "jf_nezumi", "jf_tebukuro", "jm_kumo", "pf_dora", "pm_alex", "pm_santa",
     "zf_xiaobei", "zf_xiaoni", "zf_xiaoxiao", "zf_xiaoyi", "zm_yunjian", "zm_yunxi", "zm_yunxia", "zm_yunyang",
-  ]) as ReadonlySet<string>,
+  ]),
   ruling: "research/channel-loop/RULING-2026-09-30-video.md 16(c) item 7 (P-1)",
-} as const;
+};
 
-/** Voices and voice archives refused by name (P-1), with the line that refuses them. Checked before the allowlist. */
+/** P-1's record per narration engine. An engine without one narrates nothing, whatever ALLOWED_NARRATION_ENGINES says. */
+export const NARRATION_VOICE_LICENCES: Readonly<Record<string, NarrationVoiceLicence>> = {
+  [KOKORO_82M_VOICE_LICENCE.engine]: KOKORO_82M_VOICE_LICENCE,
+};
+
+/**
+ * Voices and voice archives refused by name (P-1), with the line that refuses them. Checked first, against every name the
+ * narration carries (engine, voice, archive, model), whatever the engine string says.
+ */
 export const REFUSED_NARRATION_VOICES: Readonly<Record<string, string>> = {
   he_shaul:
     'the Hebrew community voice of kokoro-hebrew-nc: "Non-commercial Hebrew Kokoro ONNX export." ' +
@@ -204,25 +266,40 @@ export const REFUSED_NARRATION_VOICES: Readonly<Record<string, string>> = {
     '(research/rendered/yk2-hf-kokoro-hebrew-nc.txt:70) in a "Non-commercial Hebrew Kokoro ONNX export." (:60)',
 };
 
+/** The file name of a recorded path, or undefined when the manifest recorded none (JSON may carry anything). */
+const fileName = (p: unknown): string | undefined => (typeof p === "string" && p !== "" ? p.split(/[\\/]/).pop() : undefined);
+
 /** P-1 on one narration: the reasons it may not speak in a published video, empty when it may. */
 function narrationLicenceFailures(n: VideoManifest["narration"]): string[] {
-  if (n.engine !== KOKORO_82M_VOICE_LICENCE.engine) return []; // the engine check above already refuses it
   const out: string[] = [];
-  const archive = n.voicesFile?.split(/[\\/]/).pop();
-  for (const name of [n.voiceId, archive]) {
-    if (name !== undefined && Object.hasOwn(REFUSED_NARRATION_VOICES, name)) {
+  const archive = fileName(n.voicesFile);
+  const model = fileName(n.modelFile);
+  for (const name of new Set([n.engine, n.voiceId, archive, model])) {
+    if (typeof name === "string" && Object.hasOwn(REFUSED_NARRATION_VOICES, name)) {
       out.push(`P-1: narration "${name}" is refused by name — ${REFUSED_NARRATION_VOICES[name]}`);
     }
   }
   if (out.length) return out;
-  if (!KOKORO_82M_VOICE_LICENCE.voices.has(n.voiceId)) {
+  const rec = Object.hasOwn(NARRATION_VOICE_LICENCES, n.engine) ? NARRATION_VOICE_LICENCES[n.engine] : undefined;
+  if (!rec) {
+    return [`P-1: engine "${n.engine}" has no narration-licence record: no rendered weights licence and training-data statement cover its voices`];
+  }
+  const { weightsLicence, trainingData } = rec.licenceEvidence;
+  if (weightsLicence.length === 0 || trainingData.length === 0) {
+    out.push(`P-1: engine "${n.engine}" lacks a rendered ${weightsLicence.length === 0 ? "weights licence" : "training-data statement"} (${rec.ruling})`);
+  }
+  if (!rec.voices.has(n.voiceId)) {
     out.push(
-      `P-1: voice "${n.voiceId}" is not one of Kokoro-82M's official voices; only a voice whose weights licence and ` +
-        `training-data statement are both rendered narrates (${KOKORO_82M_VOICE_LICENCE.ruling})`,
+      `P-1: voice "${n.voiceId}" is not one of ${n.engine}'s official voices; only a voice whose weights licence and ` +
+        `training-data statement are both rendered narrates (${rec.ruling})`,
     );
   }
-  if (archive !== undefined && archive !== KOKORO_82M_VOICE_LICENCE.archive.file) {
-    out.push(`P-1: voice archive "${archive}" is not ${KOKORO_82M_VOICE_LICENCE.archive.file}, the archive the allowlist was read from`);
+  for (const [what, got, want] of [
+    ["voice archive", archive, rec.archive.file],
+    ["model file", model, rec.model.file],
+  ] as const) {
+    if (got === undefined) out.push(`P-1: the manifest does not record the ${what}; only the pinned ${want} passes, so an unnamed one is refused`);
+    else if (got !== want) out.push(`P-1: ${what} "${got}" is not ${want}, the file ${n.engine}'s licence record pins`);
   }
   return out;
 }
@@ -412,7 +489,8 @@ export function checkPublication(
   if (!ALLOWED_NARRATION_ENGINES.has(video.narration.engine)) {
     fail("G7", `narration engine "${video.narration.engine}" is not one whose voices imitate nobody; such a video is never made`);
   }
-  // P-1 — the voice itself: an official Kokoro-82M voice, never a community voice under non-commercial terms.
+  // P-1 — the voice itself, its archive and its model: an engine with a licence record, one of its official voices from
+  // the pinned files, and never a name the ruling refuses, whatever the engine string says.
   for (const reason of narrationLicenceFailures(video.narration)) fail("G7", reason);
   for (const d of video.datasets) {
     if (!desc.includes(normLicence(d.name)) || (d.licence && !desc.includes(normLicence(d.licence)))) {
