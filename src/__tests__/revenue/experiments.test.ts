@@ -23,6 +23,7 @@ function readings(overrides: Partial<ExperimentReadings> = {}): ExperimentReadin
     averageViewPercentage: null,
     policySignal: false,
     ungrantedRecurringCost: false,
+    madeForKidsOverrides: 0, // read and zero; the unread case is t1-made-for-kids-kill.test.ts (P-2)
     maxRunnerMinutesPerVideo: 20,
     maxTokenCostIlsPerVideo: 8,
     ...overrides,

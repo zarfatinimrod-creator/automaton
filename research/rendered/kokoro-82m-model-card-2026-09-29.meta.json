@@ -1,0 +1,23 @@
+{
+  "url": "https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md",
+  "slug": "kokoro-82m-model-card-2026-09-29",
+  "fetchedAt": "2026-09-29T11:27:12.497Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 122720,
+  "sha256": "5b8e9927197c7e1820a55ab6aea3c9b09b571204f8f17fa964ac49c9c1db2e70",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/kokoro-82m-model-card-2026-09-29.html",
+  "textPath": "research/rendered/kokoro-82m-model-card-2026-09-29.txt",
+  "changed": true,
+  "firstFetch": false,
+  "previousSha256": "c9bf5bbffe3b2164d47866f36a4973bd09a42f1f9b511aeec52ab7be29b35a42",
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-09-30",
+    "from": "research/rendered/kokoro-82m-model-card.meta.json",
+    "commit": "f9a41c6",
+    "why": "A dated copy of the render-watch capture of kokoro-82m-model-card as commit f9a41c6 stored it (fetchedAt above), byte for byte, so that the narration-licence gate P-1 (src/revenue/publication-gate.ts, KOKORO_82M_VOICE_LICENCE; research/channel-loop/RULING-2026-09-30-video.md 16(c) item 7) keeps pointing at the lines that were read: the weights licence (:53, :97), the training-data statement (:235, :241) and the v1.0 voice count (:141, :147). The slug is not in urls.txt, so render-watch never rewrites these three files; the live slug kokoro-82m-model-card stays on the weekly watch, and its line numbers have already moved once (the 29.9 11:27Z render moved the training-data lines to :235 and :241; logs/CHANNEL_LOOP.md's note on citation drift)."
+  }
+}

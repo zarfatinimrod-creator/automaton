@@ -24,7 +24,9 @@
   "containsSyntheticMedia": true,
   "narration": {
     "engine": "kokoro-82m",
-    "voiceId": "af_heart"
+    "voiceId": "af_heart",
+    "voicesFile": "voices-v1.0.bin",
+    "modelFile": "kokoro-v1.0.onnx"
   },
   "scheduledAt": "2026-09-27T10:48:07Z",
   "runnerMinutes": 1.87,
