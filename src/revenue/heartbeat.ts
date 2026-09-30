@@ -15,6 +15,17 @@ import type { HeartbeatLegacyContext, HeartbeatTaskFn, TickContext } from "../ty
 import { createLogger } from "../observability/logger.js";
 import { REMOTE_CONNECTORS, readLocalTransfers } from "./connectors/index.js";
 import {
+  DEFAULT_PRO_SITE_DIR,
+  GUMROAD_REFUND_RATE_KPI,
+  PRO_LINE_ID,
+  gumroadConnector,
+  readProProductId,
+  readProRefundCount,
+  refundRate,
+  refundRateUnit,
+  type RefundRateCount,
+} from "./connectors/gumroad.js";
+import {
   computeLineMetrics,
   computePortfolioSummary,
   getConnectorCursor,
@@ -26,6 +37,7 @@ import {
   latestReviewForLine,
   listLines,
   listReviews,
+  recordKpi,
   recordLedgerEntry,
   setConnectorCursor,
   setLineBudget,
@@ -107,20 +119,83 @@ function readyToRun(db: Database): boolean {
 
 // ─── Ledger sync ────────────────────────────────────────────────
 
+export type GumroadRefundRateStatus = "not_configured" | "no_product" | "no_sales" | "recorded" | "error";
+
+/**
+ * The Pro product's refund rate as this sync read it (RULING-2026-09-30-documents (d), fold action 6). A number for the
+ * board: nothing reads it to gate, hold or refuse anything, and a failed read is a report line, never a sync error.
+ */
+export interface GumroadRefundRateRead {
+  status: GumroadRefundRateStatus;
+  detail: string;
+  /** The line the row went on (or would have): the product map's line for the Pro product, else il-biz-tools. */
+  lineId: string | null;
+  count: RefundRateCount | null;
+  /** refunded / sales; null whenever there is no row (no sales, not read). */
+  rate: number | null;
+}
+
 export interface LedgerSyncResult {
   recorded: number;
   duplicates: number;
   unmapped: string[];
   sources: string[];
   errors: string[];
+  /** Null only when the colony is not running; otherwise what the Pro refund-rate read did this sync. */
+  gumroadRefundRate: GumroadRefundRateRead | null;
+}
+
+export interface LedgerSyncOptions {
+  /** The sync's clock: the refund-rate window ends here and the KPI row is dated by it (default: now). */
+  nowIso?: string;
+  /** The site whose Gumroad Pro product the refund rate is read for (default products/il-biz-tools, from the cwd). */
+  proSiteDir?: string;
+}
+
+/**
+ * gumroadRefundRate90d: refunded / sales of the Pro product over the trailing 90 days, one KPI row carrying both counts
+ * in its unit. No sale in the window writes no row (there is no rate to write), and neither does a read that failed.
+ */
+async function syncGumroadRefundRate(
+  db: Database,
+  env: NodeJS.ProcessEnv,
+  fetchImpl: typeof fetch | undefined,
+  resolveLine: (key: string) => string | undefined,
+  options: LedgerSyncOptions,
+): Promise<GumroadRefundRateRead> {
+  const read = (status: GumroadRefundRateStatus, detail: string, extra: Partial<GumroadRefundRateRead> = {}): GumroadRefundRateRead => ({
+    status,
+    detail,
+    lineId: null,
+    count: null,
+    rate: null,
+    ...extra,
+  });
+  const token = env.GUMROAD_ACCESS_TOKEN;
+  if (!gumroadConnector.isConfigured(env) || !token) return read("not_configured", "GUMROAD_ACCESS_TOKEN is not set");
+  const { productId, problem } = readProProductId(options.proSiteDir ?? DEFAULT_PRO_SITE_DIR);
+  if (!productId) return read("no_product", problem ?? "no Pro product yet: site.json gumroad.productId is empty");
+  const lineId = resolveLine(`gumroad:${productId}`) ?? PRO_LINE_ID;
+  const nowIso = options.nowIso ?? new Date().toISOString();
+  const got = await readProRefundCount({ token, productId, nowIso, fetchImpl });
+  if (!got.ok) return read("error", `${got.detail}; no row written`, { lineId });
+  const { count } = got;
+  const rate = refundRate(count);
+  const undated = count.undated ? `; ${count.undated} Pro sale(s) with no readable created_at left out` : "";
+  if (rate === null) {
+    return read("no_sales", `no Pro sale in the window (0 sales since ${new Date(Date.parse(count.windowEnd) - count.windowDays * DAY_MS).toISOString()}), so nothing is divided and no row is written${undated}`, { lineId, count });
+  }
+  recordKpi(db, lineId, GUMROAD_REFUND_RATE_KPI, rate, refundRateUnit(count, productId), nowIso);
+  return read("recorded", `${count.refunded} refunded of ${count.sales} sales${undated}`, { lineId, count, rate });
 }
 
 export async function runLedgerSync(
   db: Database,
   env: NodeJS.ProcessEnv = process.env,
   fetchImpl?: typeof fetch,
+  options: LedgerSyncOptions = {},
 ): Promise<LedgerSyncResult> {
-  const result: LedgerSyncResult = { recorded: 0, duplicates: 0, unmapped: [], sources: [], errors: [] };
+  const result: LedgerSyncResult = { recorded: 0, duplicates: 0, unmapped: [], sources: [], errors: [], gumroadRefundRate: null };
   if (!readyToRun(db)) return result;
 
   const productMap = getProductMap(db);
@@ -158,6 +233,14 @@ export async function runLedgerSync(
     } catch (error) {
       result.errors.push(`${connector.source}: ${(error as Error).message}`);
     }
+  }
+
+  // The Pro refund rate rides the Gumroad sync. Its failure is never a sync error: it is a number for the board, and a
+  // number that could not be read is reported as such and nothing else (RULING-2026-09-30-documents (d)).
+  try {
+    result.gumroadRefundRate = await syncGumroadRefundRate(db, env, fetchImpl, resolveLine, options);
+  } catch (error) {
+    result.gumroadRefundRate = { status: "error", detail: `${(error as Error).message}; no row written`, lineId: null, count: null, rate: null };
   }
 
   result.unmapped = [...new Set(result.unmapped)];

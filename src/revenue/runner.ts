@@ -34,6 +34,7 @@ import {
   type PageViewReadResult,
 } from "./page-views-reader.js";
 import type { PageViewGateReading, PageViewVerdict } from "./page-views.js";
+import { GUMROAD_REFUND_RATE_KPI, REFUND_RATE_WINDOW_DAYS, parseRefundRateUnit } from "./connectors/gumroad.js";
 import {
   computePortfolioSummary,
   getLine,
@@ -51,6 +52,7 @@ import {
   runSupervisorReview,
   type AuditResult,
   type BoardReviewResult,
+  type GumroadRefundRateRead,
   type LedgerSyncResult,
   type SupervisorReviewResult,
 } from "./heartbeat.js";
@@ -236,6 +238,8 @@ export interface TickOptions {
   pageViewSiteDir?: string;
   /** The page-view clocks: D0 and the domain deploy day per line (default state/colony/page-view-clock.json). */
   pageViewClockFile?: string;
+  /** The site whose Gumroad Pro product the refund rate is read for (default products/il-biz-tools, relative to the cwd). */
+  proSiteDir?: string;
 }
 
 export interface TickResult {
@@ -315,7 +319,10 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
   };
 
   if (shouldRun("revenue_ledger_sync")) {
-    result.ledgerSync = await runLedgerSync(db, options.env ?? process.env, options.fetchImpl);
+    result.ledgerSync = await runLedgerSync(db, options.env ?? process.env, options.fetchImpl, {
+      nowIso,
+      proSiteDir: options.proSiteDir,
+    });
     markRan(db, "revenue_ledger_sync", nowMs);
     result.ran.push("revenue_ledger_sync");
     if (result.ledgerSync.unmapped.length) {
@@ -534,6 +541,9 @@ export function renderReport(db: Database, result: TickResult): string {
     const ls = result.ledgerSync;
     out.push(`- Ledger sync: ${ls.recorded} new entries, ${ls.duplicates} already known, sources [${ls.sources.join(", ") || "none configured"}]`);
   }
+  // Beside the sales the Gumroad sync books: the Pro refund rate (RULING-2026-09-30-documents (d), fold action 6).
+  const refundRateLine = describeGumroadRefundRate(db, result.ledgerSync?.gumroadRefundRate ?? null);
+  if (refundRateLine) out.push(`- ${refundRateLine}`);
   if (result.supervisor) {
     out.push(`- Supervisors reviewed ${result.supervisor.reviewed} line(s), escalating ${result.supervisor.escalations.length}`);
   }
@@ -625,6 +635,45 @@ export function describePageViewGate(g: PageViewGateReading): string {
       ? " — a blocker until the reader reads the missing weeks; never a clock restart"
       : "";
   return `Page views \`${g.lineId}\`: ${g.verdict}${clock} — ${g.notes.join("; ")}${weeks}${tail}`;
+}
+
+const REFUND_RATE_TAIL = "a number for the board, never a reason to refuse a refund";
+
+function refundRateReading(rate: number, c: { refunded: number; sales: number; partiallyRefunded: number }): string {
+  return (
+    `${rate.toFixed(3)} — ${c.refunded} refunded of ${c.sales} sales ` +
+    `(partly refunded ${c.partiallyRefunded}: counted as sales, not as refunded)`
+  );
+}
+
+/**
+ * The report's refund-rate line. This sync's read when the ledger sync ran; otherwise the last row recorded, with its
+ * date; nothing when neither exists. It never prints a rate without its counts, and never a rate for no sales.
+ */
+export function describeGumroadRefundRate(db: Database, read: GumroadRefundRateRead | null): string | null {
+  const head = `Gumroad Pro refund rate, trailing ${REFUND_RATE_WINDOW_DAYS} days`;
+  if (read) {
+    switch (read.status) {
+      case "recorded":
+        return `${head}: ${refundRateReading(read.rate!, read.count!)} — ${REFUND_RATE_TAIL}`;
+      case "no_sales":
+        return `${head}: no rate — ${read.detail}`;
+      case "not_configured":
+        return `Gumroad Pro refund rate: not configured — ${read.detail}`;
+      case "no_product":
+      case "error":
+        return `Gumroad Pro refund rate: not read — ${read.detail}`;
+    }
+  }
+  const row = db
+    .prepare(
+      `SELECT value, unit, captured_at AS capturedAt FROM revenue_kpi_snapshots WHERE kpi = ?
+        ORDER BY captured_at DESC, rowid DESC LIMIT 1`,
+    )
+    .get(GUMROAD_REFUND_RATE_KPI) as { value: number; unit: string | null; capturedAt: string } | undefined;
+  const u = row ? parseRefundRateUnit(row.unit) : null;
+  if (!row || !u || !Number.isFinite(row.value)) return null;
+  return `${head} (last recorded ${row.capturedAt}): ${refundRateReading(row.value, u)} — ${REFUND_RATE_TAIL}`;
 }
 
 /** One-line summary suitable for a commit message. */
