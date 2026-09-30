@@ -749,7 +749,10 @@ export function heldSecretRowsNote(lineId: string, site: SecretGateSite = secret
  * whatever the lines' setup state: a done step owes them, not a line. Without this a step 6 marked done before the
  * brand's PostHog project existed took POSTHOG_READ_KEY with it (heldSecretRowsNote reads open steps only), and the key
  * surfaced only as a page-view blocker once a clock ran. A row whose gate now holds is asked alone, never the rest of
- * its step; one whose gate still holds it back is named with the reason, never as something to do. Empty when none.
+ * its step; one whose gate still holds it back is named with the reason, under "## Owed by done steps", never as
+ * something to do. The asked row's text claims only what holds — step N is not listed as open again on any line — and
+ * not that nothing else of step N is asked: a line's own setup list (portfolio.ts humanSetup) may still name step N.
+ * Empty when none.
  */
 export function doneStepRowsReport(site: SecretGateSite = secretGateSite()): string[] {
   const out: string[] = [];
@@ -762,8 +765,9 @@ export function doneStepRowsReport(site: SecretGateSite = secretGateSite()): str
         `- Step ${step.number}'s \`${row.name}\` row, alone: ${row.source}. Paste it under Settings → Secrets and ` +
           `variables → Actions with exactly that name (docs/OWNER_STEPS.he.md, step ${step.number}). Step ${step.number} ` +
           `was done on ${step.doneOn!.date} without it, because the row was held back then; ` +
-          `${SECRET_ROW_GATE_MET[row.askedOnlyWhen!]}. Nothing else in step ${step.number} is asked again. Tell ` +
-          "Claude when it is in; Claude records it on the row (its `doneOn` in src/revenue/owner-steps.ts).",
+          `${SECRET_ROW_GATE_MET[row.askedOnlyWhen!]}. This section asks for this row only; step ${step.number} is ` +
+          "not listed as open again on any line. Tell Claude when it is in; Claude records it on the row (its " +
+          "`doneOn` in src/revenue/owner-steps.ts).",
       );
     }
     out.push("");
@@ -774,6 +778,9 @@ export function doneStepRowsReport(site: SecretGateSite = secretGateSite()): str
       "itself is done, and the row will be asked alone",
   );
   if (held.length) {
+    // Its own heading: printed straight after "## Blocked on", a bare paragraph read as one more blocker.
+    out.push("## Owed by done steps");
+    out.push("");
     out.push(`Not asked yet: ${held.join("; ")}.`);
     out.push("");
   }

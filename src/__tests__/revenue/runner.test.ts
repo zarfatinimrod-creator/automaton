@@ -349,6 +349,20 @@ describe("revenue/runner report rendering", () => {
     const askedNow = (report: string) =>
       report.split("\n").filter((l) => l.startsWith("Owner steps still open for "))
         .map((l) => l.split(" (not asked now: ")[0].split("): ")[1].split(", "));
+    // The body under one "## " heading, up to the next heading or the footer rule; "" when the heading is absent.
+    const section = (report: string, heading: string) => {
+      const lines = report.split("\n");
+      const start = lines.indexOf(heading);
+      if (start < 0) return "";
+      const end = lines.findIndex((l, i) => i > start && (l.startsWith("## ") || l === "---"));
+      return lines.slice(start + 1, end < 0 ? undefined : end).join("\n");
+    };
+    // The "## " heading a line sits under.
+    const headingOf = (report: string, pattern: RegExp) => {
+      const lines = report.split("\n");
+      const at = lines.findIndex((l) => pattern.test(l));
+      return at < 0 ? undefined : lines.slice(0, at).reverse().find((l) => l.startsWith("## "));
+    };
     step6.doneOn = { date: "2026-10-02", evidence: "test only", heldRows: ["POSTHOG_READ_KEY"] };
     try {
       const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
@@ -360,16 +374,28 @@ describe("revenue/runner report rendering", () => {
         /^Not asked yet: step 6's `POSTHOG_READ_KEY` row waits until the colony has created the brand's PostHog project[^\n]* — step 6 itself is done, and the row will be asked alone\.$/m,
       );
       expect(before).not.toContain("## Asked now: one row of a done step");
+      // Under a heading of its own, never read as one of the "## Blocked on" items above it.
+      expect(headingOf(before, /^Not asked yet: step 6's `POSTHOG_READ_KEY` row/)).toBe("## Owed by done steps");
+      expect(section(before, "## Blocked on")).not.toContain("POSTHOG_READ_KEY");
 
       // The project exists: the one row is asked, alone and once.
       const after = renderReport(db, result, { projectId: "12345" });
       expect(after).toContain("## Asked now: one row of a done step");
       expect(count(after, "`POSTHOG_READ_KEY`")).toBe(1);
       expect(after).toContain(`- Step 6's \`POSTHOG_READ_KEY\` row, alone: ${key.source}.`);
-      expect(after).not.toContain("`GUMROAD_ACCESS_TOKEN`");
       expect(after).not.toContain("Not asked yet: step 6");
-      // Step 6 itself is not asked again on any line.
-      for (const asked of askedNow(after)) expect(asked).not.toContain("6");
+      expect(after).not.toContain("## Owed by done steps");
+      // The section asks that one row and no other part of step 6: one item, and no other secret of the step in it.
+      const asked = section(after, "## Asked now: one row of a done step");
+      expect(asked.split("\n").filter((l) => l.startsWith("- "))).toHaveLength(1);
+      for (const other of step6.secrets!.filter((r) => r.name !== "POSTHOG_READ_KEY")) {
+        expect(asked).not.toContain(other.name);
+      }
+      // It claims only what holds: step 6 is not listed as open again on any line. A line's own setup list may still
+      // name step 6 (portfolio.ts humanSetup, "(owner step 6)"), so the report must not say nothing else of it is asked.
+      expect(asked).toContain("This section asks for this row only; step 6 is not listed as open again on any line.");
+      expect(after).not.toContain("Nothing else in step 6 is asked again");
+      for (const list of askedNow(after)) expect(list).not.toContain("6");
 
       // It is asked even when no line is still waiting on its setup, because a done step owes it, not a line.
       for (const line of listLines(db)) setHumanSetupDone(db, line.id, true);
