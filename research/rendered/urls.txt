@@ -717,3 +717,9 @@ https://ypay.co.il/front/terms	terms-ypay
 # paused (terms audit, 29.9.2026): tipalti.com — see TERMS_BARRED in scripts/render-watch.mjs — https://tipalti.com/legal/website-terms/	terms-tipalti-website
 # research/channel-loop/ZERO-TESTS.md row 225 — terms audit (tick 22): knesset's terms page, URL from theWallProject/mono page.html:2299 (github); fetched once so its terms can be read (29.9.2026).
 # retired (ruling 30.9 16(d) D2(iv): the site refused the runner) — https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx	terms-knesset
+# research/channel-loop/ZERO-TESTS.md row 226 — terms audit (tick 27): medium (30.9.2026).
+https://policy.medium.com/medium-terms-of-service-9db0094a1e0f	terms-medium
+# research/channel-loop/ZERO-TESTS.md row 227 — terms audit (tick 27): medium (30.9.2026).
+https://policy.medium.com/medium-rules-30e5502c4eb4	terms-medium-rules
+# research/channel-loop/ZERO-TESTS.md row 228 — terms audit (tick 27): medium (30.9.2026).
+https://help.medium.com/hc/en-us/articles/22576852947223-Artificial-Intelligence-AI-content-policy	terms-medium-ai-policy

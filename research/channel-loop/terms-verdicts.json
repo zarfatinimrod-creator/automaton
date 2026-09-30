@@ -223,6 +223,12 @@
    "source": "research/rendered/terms-lomdiml.txt:219 (round 2)",
    "checked": "2026-09-29"
   },
+  "medium.com": {
+   "verdict": "TERMS_PENDING",
+   "source": "https://policy.medium.com/medium-terms-of-service-9db0094a1e0f (URL and 2020 text from tosdr/tosdr-snapshots Medium/Terms of Service.html at b44ae1b, github grade; that text has no automated-access clause, 0 hits for automat|robot|scrap|crawl|spider)",
+   "checked": "2026-09-30",
+   "note": "the Terms bind users to the Medium Rules (/medium-rules-30e5502c4eb4), unread; ruling 30.9 16(b) needs the terms and the AI content policy at rendered grade, so each is fetched once as a terms- line (16(d) D2(iii))"
+  },
   "metaculus.com": {
    "verdict": "BARRED",
    "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",

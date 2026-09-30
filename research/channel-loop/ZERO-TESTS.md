@@ -232,6 +232,9 @@ not `logs/CHANNEL_LOOP.md`, which each tick rewrites.
 | 223 | terms audit (tick 21): stripe | https://stripe.com/legal | whether stripe's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
 | 224 | terms audit (tick 22): tipalti | https://tipalti.com/legal/website-terms/ | whether tipalti's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) |
 | 225 | terms audit (tick 22): knesset | https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx | whether knesset's terms bar automated access by the runner (research/channel-loop/terms-verdicts.json: TERMS_PENDING) **RETIRED 30.9 (16(d) D2(iv)).** |
+| 226 | terms audit (tick 27): medium | https://policy.medium.com/medium-terms-of-service-9db0094a1e0f | whether Medium's current Terms bar automated access or AI-written posts (ruling 30.9 16(b); URL from tosdr/tosdr-snapshots Medium/Terms of Service.html, github) |
+| 227 | terms audit (tick 27): medium | https://policy.medium.com/medium-rules-30e5502c4eb4 | what the Medium Rules, which the Terms incorporate, say about automation, spam and AI content (ruling 30.9 16(b); URL from the same tosdr snapshot's links) |
+| 228 | terms audit (tick 27): medium | https://help.medium.com/hc/en-us/articles/22576852947223-Artificial-Intelligence-AI-content-policy | Medium's AI content policy: whether disclosed AI-assisted guides may be published and earn (ruling 30.9 16(b); URL already recorded in the repo) |
 
 Rows 33-58 were added by the breadth board of 28.9.2026 (`research/breadth/BOARD.md` §"Exact changes"), with only
 URLs the plan (`research/breadth/BREADTH-SWEEP.md` §6.5) or the rulings already name. Terms come first everywhere, no
