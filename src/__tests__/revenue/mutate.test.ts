@@ -56,11 +56,25 @@ const TOY2 = `export const greet = (name) => "hi " + name;
 const RUNNER = `import { appendFileSync, copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 if (process.env.RUN_LOG) appendFileSync(process.env.RUN_LOG, ["run", ...process.argv.slice(2)].join(" ") + "\\n");
 if (process.env.SNAPSHOT_SRC) copyFileSync(process.env.SNAPSHOT_SRC, process.env.SNAPSHOT_DST);
-if (process.env.RUNNER_FAILS) { console.log("      Tests  1 failed | 3 passed (4)"); process.exit(1); }
+if (process.env.TOUCH_TOY2) appendFileSync("src/toy2.mjs", "// touched by the runner\\n");
+// A vitest-like summary, or pytest's last line with PYTEST_STYLE.
+const summary = (failed, passed) =>
+  process.env.PYTEST_STYLE
+    ? "==== " + (failed ? failed + " failed, " : "") + passed + " passed in 0.12s ===="
+    : " Test Files  " + (failed ? "1 failed" : "1 passed") + " (1)\\n      Tests  " + (failed ? failed + " failed | " : "") + passed + " passed (" + (failed + passed) + ")";
+if (process.env.RUNNER_FAILS) { console.log(summary(1, 3)); process.exit(1); }
 const src = readFileSync("src/toy.mjs", "utf8");
 if (src.includes("CRASH")) process.kill(process.pid, "SIGKILL");
 if (src.includes("NOFILES")) { console.log("No test files found, exiting with code 1"); process.exit(1); }
+if (src.includes("NOLOAD")) {
+  if (process.env.PYTEST_STYLE) { console.log("!!!! Interrupted: 1 error during collection !!!!\\n==== 1 error in 0.05s ===="); process.exit(2); }
+  console.log(" Test Files  1 failed (1)\\n      Tests  no tests"); process.exit(1);
+}
+if (src.includes("FAILCRASH")) { console.log(summary(1, 3)); process.kill(process.pid, "SIGKILL"); }
+if (src.includes("EXIT1PASS")) { console.log(summary(0, 4)); process.exit(1); }
+if (src.includes("NOISYFAIL")) console.log("No test files found, exiting with code 1");
 if (src.includes("HANG")) {
+  if (src.includes("HANGHARD")) process.on("SIGTERM", () => {});
   writeFileSync(process.env.HANG_MARK, String(process.pid));
   setTimeout(() => process.exit(0), 60000);
 } else {
@@ -69,10 +83,8 @@ if (src.includes("HANG")) {
   if (src.includes("CLOBBER")) { rmSync("src/toy.mjs"); mkdirSync("src/toy.mjs"); }
   const results = [add(2, 3) === 5, isPositive(1) === true, isPositive(-1) === false, greet("x") === "hi x"];
   const failed = results.filter((r) => !r).length;
-  const passed = results.length - failed;
   for (let i = 0; i < 12; i++) console.log("noise line " + i);
-  console.log(" Test Files  " + (failed ? "1 failed" : "1 passed") + " (1)");
-  console.log("      Tests  " + (failed ? failed + " failed | " : "") + passed + " passed (" + results.length + ")");
+  console.log(summary(failed, results.length - failed));
   process.exit(failed ? 1 : 0);
 }
 `;
@@ -127,6 +139,15 @@ function line(out: string, id: string): string {
   const found = out.split("\n").find((l) => l.startsWith(`${id} `));
   if (!found) throw new Error(`no report line for ${id} in:\n${out}`);
   return found;
+}
+
+/** The "why:" line printed under a mutation's report line. */
+function why(out: string, id: string): string {
+  const lines = out.split("\n");
+  const at = lines.indexOf(line(out, id));
+  const next = lines[at + 1] ?? "";
+  if (!next.trim().startsWith("why:")) throw new Error(`no why: line under ${id} in:\n${out}`);
+  return next;
 }
 
 const STUB = ["--cmd", "node runner.mjs"];
@@ -193,8 +214,16 @@ describe("scripts/mutate.mjs: killed? — a non-zero exit with no sign a test fa
     const r = harness(repo, one("a + b", "a + b /*NOFILES*/"));
     expect(r.code).toBe(1);
     expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\?\s+exit 1\b/);
-    expect(r.stdout).toContain("No test files found");
+    expect(why(r.stdout, "M1")).toMatch(/vitest said "No test files found"/);
     expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+  });
+
+  it('vitest\'s "Tests  no tests" (a test file failed to load) is killed? and says so', () => {
+    const repo = makeRepo();
+    const r = harness(repo, one("a + b", "a + b /*NOLOAD*/"));
+    expect(r.code).toBe(1);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\?\s+exit 1\b/);
+    expect(why(r.stdout, "M1")).toMatch(/failed to load/);
   });
 
   it("a runner that dies before any summary line (a syntax error the mutation made) is killed?", () => {
@@ -202,8 +231,48 @@ describe("scripts/mutate.mjs: killed? — a non-zero exit with no sign a test fa
     const r = harness(repo, one("a + b", "a + "));
     expect(r.code).toBe(1);
     expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\?\s+exit 1\b/);
-    expect(r.stdout).toMatch(/no test summary/i);
+    expect(why(r.stdout, "M1")).toMatch(/no test summary/i);
     expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+  });
+
+  it("a runner killed by a signal after printing a failed test is still killed?: the exit code is not its verdict", () => {
+    const repo = makeRepo();
+    const r = harness(repo, one("a + b", "a + b /*FAILCRASH*/"));
+    expect(r.code).toBe(1);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\?\s+SIGKILL\b/);
+    expect(why(r.stdout, "M1")).toMatch(/killed by SIGKILL/);
+  });
+
+  it("exit 1 with a summary that counts no failed test is killed?, not killed", () => {
+    const repo = makeRepo();
+    const r = harness(repo, one("a + b", "a + b /*EXIT1PASS*/"));
+    expect(r.code).toBe(1);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\?\s+exit 1\b/);
+    expect(why(r.stdout, "M1")).toMatch(/counts no failed test: Tests\s+4 passed \(4\)/);
+  });
+
+  it('a failed Tests line is a clean kill even when the output also says "No test files found" (a test printed it)', () => {
+    const repo = makeRepo();
+    const r = harness(repo, one("a + b", "a - b /*NOISYFAIL*/"));
+    expect(r.code).toBe(0);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\s+exit 1\b/);
+  });
+
+  it("reads pytest's summary line too (for --cmd scripts/pytest-product.sh ...)", () => {
+    const repo = makeRepo();
+    const py = { PYTEST_STYLE: "1" };
+    const killed = harness(repo, one("a + b", "a - b"), py);
+    expect(killed.code).toBe(0);
+    expect(line(killed.stdout, "M1")).toMatch(/^M1\s+killed\s+exit 1\b/);
+
+    const noFailure = harness(repo, one("a + b", "a + b /*EXIT1PASS*/"), py);
+    expect(noFailure.code).toBe(1);
+    expect(why(noFailure.stdout, "M1")).toMatch(/counts no failed test: .*4 passed in 0\.12s/);
+
+    const collection = harness(repo, one("a + b", "a + b /*NOLOAD*/"), py);
+    expect(collection.code).toBe(1);
+    expect(line(collection.stdout, "M1")).toMatch(/^M1\s+killed\?\s+exit 2\b/);
+    expect(why(collection.stdout, "M1")).toMatch(/error during collection/);
   });
 });
 
@@ -367,6 +436,37 @@ describe("scripts/mutate.mjs: restore, always", () => {
     expect(out).toMatch(/restored/);
     await waitFor(() => !alive(runnerPid), 5_000);
   }, 30_000);
+
+  it("a runner that ignores SIGTERM is killed with SIGKILL, and the harness still exits after restoring", async () => {
+    const repo = makeRepo();
+    const mark = join(scratch, "hang-hard.pid");
+    const child = spawn(process.execPath, [HARNESS, ...one("a + b", "a + b /*HANGHARD*/")], {
+      cwd: repo,
+      env: env(repo, { HANG_MARK: mark }),
+    });
+    const closed = new Promise<number | null>((done) => child.on("close", (code) => done(code)));
+    await waitFor(() => existsSync(mark) && readFileSync(mark, "utf8").length > 0, 20_000);
+    const runnerPid = Number(readFileSync(mark, "utf8"));
+    child.kill("SIGTERM");
+    expect(await closed).toBe(143);
+    expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+    await waitFor(() => !alive(runnerPid), 5_000);
+  }, 30_000);
+
+  it("a file that changed on disk after the checks (a runner wrote to it) is not applied, not mutated from stale bytes", () => {
+    const repo = makeRepo();
+    const plan = writePlan(repo, [
+      { file: "src/toy.mjs", find: "a + b", replace: "a - b" },
+      { file: "src/toy2.mjs", find: '"hi "', replace: '"yo "' },
+    ]);
+    // The runner appends to toy2.mjs on every run, the baseline included.
+    const r = harness(repo, ["--plan", plan, ...STUB], { TOUCH_TOY2: "1" });
+    expect(r.code).toBe(2);
+    expect(line(r.stdout, "M1")).toMatch(/killed/);
+    expect(line(r.stdout, "M2")).toMatch(/not applied/);
+    expect(why(r.stdout, "M2")).toMatch(/changed on disk/);
+    expect(readFileSync(join(repo, "src/toy2.mjs"), "utf8")).not.toContain('"yo "');
+  });
 });
 
 describe("scripts/mutate.mjs: git is the way back", () => {

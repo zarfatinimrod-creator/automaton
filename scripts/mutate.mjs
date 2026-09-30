@@ -28,11 +28,12 @@
  *   3. For each mutation: writes the edit (bytes, so CRLF and non-UTF-8 files are safe), runs the command, and restores
  *      the original bytes in a finally, then checks the file's sha256 against the original. The verdict is the exit
  *      code: non-zero "killed", zero "survived". A non-zero exit that shows no test failed is "killed?": the runner died
- *      on a signal or could not start, vitest said "No test files found" or "Tests  no tests" (a test file failed to
- *      load), there is no summary line at all (vitest "Tests ..." or pytest "N passed/failed ... in Ns"), or the summary
- *      counts no failure.
- *   4. SIGINT, SIGTERM or SIGHUP stops the runner's process group, restores the file and exits 130/143/129. SIGKILL
- *      cannot be caught: that is what the git check in step 1 is for.
+ *      on a signal or could not start; its last vitest "Tests" line counts no failure or says "no tests" (a test file
+ *      failed to load); with no such line, vitest said "No test files found", pytest was "Interrupted: N error during
+ *      collection", pytest's "N passed/failed ... in Ns" line counts no failure, or there is no summary at all.
+ *   4. SIGINT, SIGTERM or SIGHUP sends SIGTERM to the runner's process group (SIGKILL 2s later if it is still there),
+ *      restores the file and exits 130/143/129. SIGKILL of the harness cannot be caught: that is what the git check in
+ *      step 1 is for.
  *
  * Exit: 0 every applied mutation was killed; 1 any survived or is killed?; 2 a usage error, a failing baseline or any
  * mutation not applied (the others still run); 4 a restore that did not bring the original bytes back (it stops at
@@ -47,6 +48,7 @@ import { parseArgs } from "node:util";
 
 const DEFAULT_CMD = ["npx", "vitest", "run"];
 const KEEP_OUTPUT = 256 * 1024; // characters of output kept per run: the summary is at the end
+const STOP_GRACE_MS = 2000; // after SIGTERM to the runner on a signal, how long before SIGKILL
 
 class UsageError extends Error {}
 const usage = (message) => {
@@ -176,10 +178,12 @@ function prepare(m, root, allowDirty) {
 /** What the output shows about tests: whether any ran, the summary line, and whether it counts a failure. */
 function summarize(output) {
   const text = plain(output);
-  if (/No test files found/.test(text)) return { ran: false, reason: 'vitest said "No test files found": no test ran' };
-  if (/^\s*Tests\s+no tests\b/m.test(text)) return { ran: false, reason: 'vitest said "Tests  no tests": a test file failed to load, no test ran' };
-  const vitest = text.match(/^[ \t]*Tests[ \t]+\d+ (?:passed|failed|skipped|todo)\b.*$/m);
-  if (vitest) return { ran: true, line: vitest[0].trim(), failed: /\bfailed\b/.test(vitest[0]) };
+  // The runner's own summary is its last one: tests can print summary-like text of their own (this harness's do).
+  const vitest = [...text.matchAll(/^[ \t]*Tests[ \t]+(?:(\d+ (?:passed|failed|skipped|todo)\b.*)|(no tests))[ \t]*$/gm)].pop();
+  if (vitest?.[2]) return { ran: false, reason: 'vitest said "Tests  no tests": a test file failed to load, no test ran' };
+  if (vitest) return { ran: true, line: vitest[0].trim(), failed: /\bfailed\b/.test(vitest[1]) };
+  if (/^No test files found\b/m.test(text)) return { ran: false, reason: 'vitest said "No test files found": no test ran' };
+  if (/Interrupted: \d+ errors? during collection/.test(text)) return { ran: false, reason: "pytest: error during collection, no test ran" };
   const pytest = [...text.matchAll(/^.*\b\d+ (?:passed|failed|errors?)\b.*\bin \d+(?:\.\d+)?s\b.*$/gm)].pop();
   if (pytest) return { ran: true, line: pytest[0].trim(), failed: /\b\d+ (?:failed|errors?)\b/.test(pytest[0]) };
   return { ran: false, reason: 'no test summary in the output (a vitest "Tests ..." line or a pytest "N passed/failed ... in Ns" line), so nothing shows a test ran' };
@@ -261,25 +265,32 @@ function restore(m) {
   return false;
 }
 
-function onSignal(sig) {
-  const code = 128 + constants.signals[sig];
-  if (stopping) process.exit(code);
-  stopping = true;
-  const child = active;
-  if (child?.pid) {
-    try {
-      process.kill(-child.pid, "SIGTERM");
-    } catch {
-      /* already gone */
-    }
+/** Signals the runner's whole process group (it was started detached, as the group's leader). */
+function killGroup(child, sig) {
+  try {
+    process.kill(-child.pid, sig);
+  } catch {
+    /* already gone */
   }
+}
+
+function onSignal(sig) {
+  if (stopping) return; // already restoring and stopping; the exit follows within STOP_GRACE_MS
+  stopping = true;
+  const code = 128 + constants.signals[sig];
+  const child = active;
+  if (child?.pid) killGroup(child, "SIGTERM");
   const m = current;
   const ok = m ? restore(m) : true;
   console.error(`mutate: ${sig}: stopped${m ? (ok ? `; ${m.rel} restored` : "") : "; no file was mutated"}`);
   const exit = () => process.exit(ok ? code : 4);
-  if (child && child.exitCode === null && child.signalCode === null) {
+  if (child?.pid && child.exitCode === null && child.signalCode === null) {
     child.once("close", exit);
-    setTimeout(exit, 2000);
+    // A runner that ignores SIGTERM is not left running on its own.
+    setTimeout(() => {
+      killGroup(child, "SIGKILL");
+      exit();
+    }, STOP_GRACE_MS);
   } else exit();
 }
 
