@@ -1,6 +1,6 @@
 # Brand check — research/measurements/t1-subbrand-candidates.txt
 
-Measured 2026-09-29T08:55:52.306Z by `scripts/brand-check.mjs` from a runner. Status codes only; no page body stored.
+Measured 2026-09-30T08:53:40.348Z by `scripts/brand-check.mjs` from a runner. Status codes only; no page body stored.
 404 = free, 200 = taken, anything else (a redirect, a refusal, an error) = unknown.
 
 | name | .com | GitHub | YouTube | Netlify | all four free |
