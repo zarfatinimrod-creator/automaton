@@ -309,6 +309,7 @@ describe("USDC: the report and the manager's screen show two numbers, never one"
     expect(h).toContain("כסף לא מומר (ארנק)");
     expect(h).toContain("₪370.00");
     expect(h).toContain("<th>30 יום, מומר</th><th>30 יום, לא מומר</th>");
+    expect(h).toMatch(/<td class="num">₪2,000\.00<\/td>\s*<td class="num">₪370\.00<\/td>/); // the line's own two cells
     expect(h).not.toContain("₪2,370.00");
   });
 
