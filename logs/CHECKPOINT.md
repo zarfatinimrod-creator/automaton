@@ -1,8 +1,21 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-09-30 ~10:00 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-09-30 ~10:45 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
+
+## ▶ 30.9, ~10:45 UTC — **סבב 27 (רציף): render-watch מכבד robots.txt ומזדהה; נבו חוסם בוטים; Medium מסרב לרץ.**
+
+- **PR #28 מוזג** (`a4719e1`).
+- **render-watch:** robots.txt לפי RFC 9309, User-Agent `MehudakRenderWatch/1.0`, קווי `robots-`, `robots-verdict.mjs` ו-`NO_TERMS_ROBOTS_OK`. googlesource עבר ל-CONDITIONAL_MET. המיזוג: `916403d`. 1,410 בדיקות.
+- **רינדור אחד (שורות 226-231):**
+  - Medium החזיר 403 בכל שלושת הדפים. השורות הוצאו, ובדיקת 16(b) לא יכולה לרוץ מהרץ.
+  - מדיניות הרובוטים של Wikimedia נקראה. דף ה-User-Agent הוא הודעת "הועבר", וכתובתו החדשה בתור (שורה 232).
+  - ה-robots.txt של נבו חוסם הכל (`*`), חוץ מ-Googlebot ו-Bingbot. נבו נשאר מושהה.
+- **שורה 21 ב-FABLE_QUEUE (2.10):** האם robots.txt הוא חסימה במובן D1. אם כן, לכידות נבו הן לציות בלבד, ול-2026 של osek-zair אין מקור.
+- **טעות:** `4b33703` נדחף עם שתי בדיקות נכשלות (grep בשרשרת `&&`). תוקן ב-`be69599`.
+- **הבא (סבב 28, 13:11):** בניית `reader_down` ורינדור של שורה 232.
+- **היומן:** `logs/2026-09-30-channel-loop-tick-27.md`.
 
 ## ▶ 30.9, ~10:00 UTC — **סבב 26: ישיבת Fable על שורות 16-17; ההכרעות נקלטו על Opus.**
 

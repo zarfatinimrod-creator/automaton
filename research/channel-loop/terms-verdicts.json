@@ -228,7 +228,7 @@
    "verdict": "TERMS_PENDING",
    "source": "https://policy.medium.com/medium-terms-of-service-9db0094a1e0f (URL and 2020 text from tosdr/tosdr-snapshots Medium/Terms of Service.html at b44ae1b, github grade; that text has no automated-access clause, 0 hits for automat|robot|scrap|crawl|spider)",
    "checked": "2026-09-30",
-   "note": "the Terms bind users to the Medium Rules (/medium-rules-30e5502c4eb4), unread; ruling 30.9 16(b) needs the terms and the AI content policy at rendered grade, so each is fetched once as a terms- line (16(d) D2(iii))"
+   "note": "refusal-type since 30.9: the Terms, the Rules and the AI content policy all answered 403 to the runner (rows 226-228, research/rendered/terms-medium*.meta.json); the lines are retired (ruling 30.9 16(d) D2(iv)). The 2020 Terms read at github grade have no automated-access clause; the Rules and the AI policy stay unread until a GitHub-hosted copy is found, so ruling 16(b)'s one check cannot run from the runner"
   },
   "metaculus.com": {
    "verdict": "BARRED",
@@ -265,7 +265,7 @@
    "verdict": "NO_TERMS",
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
    "checked": "2026-09-29",
-   "note": "exhaustive-negative (osek-patur-documents.md:1129-1141); fetchable only under NO_TERMS_ROBOTS_OK once render-watch honours robots.txt with an identifying UA (ruling 30.9 16(d) D2(v))"
+   "note": "exhaustive-negative (osek-patur-documents.md:1129-1141). robots.txt read 30.9 (research/rendered/robots-nevo.txt, rendered): 'User-agent: *' 'Disallow: /', and every named AI crawler is disallowed too; only Googlebot and Bingbot may read /law_html/law00/ and law01/. So NO_TERMS_ROBOTS_OK is refused (scripts/robots-verdict.mjs, 8 of 8 paths disallowed) and no nevo law page is fetched again; law texts come from the lawsofisrael mirror (github). The robots-nevo probe stays weekly to see a change (ruling 30.9 16(d) D2(v))"
   },
   "odoo.com": {
    "verdict": "NO_TERMS",
@@ -420,7 +420,7 @@
    "verdict": "TERMS_PENDING",
    "source": "Wikimedia Terms of Use, tosdr/tosdr-snapshots Wikimedia/Terms of Service.html at b44ae1b (github grade): automated use must follow the User-Agent Policy and the Robot Policy, which it links",
    "checked": "2026-09-30",
-   "note": "the two policies are fetched once each as terms- lines, now that render-watch sends an identifying UA (ruling 30.9 16(d) D2(iii), D2(v)); wikisource.org is re-judged on them"
+   "note": "Robot Policy read 30.9 (research/rendered/terms-wikimedia-robot-policy.txt:146-253, rendered): identify the bot by the User-Agent Policy, gzip, respect 429 Retry-After, /wiki/Title URLs, low concurrency; a weekly handful of requests is inside it. The User-Agent Policy page at meta.wikimedia.org is a moved-notice stub (row 229); its new home at foundation.wikimedia.org is queued (row 232). wikisource.org is re-judged once it is read"
   },
   "wikisource.org": {
    "verdict": "CONDITIONAL_UNMET",

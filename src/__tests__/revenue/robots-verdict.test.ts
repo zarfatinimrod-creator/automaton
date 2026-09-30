@@ -303,9 +303,10 @@ describe("robots-verdict CLI", () => {
     expect(spawnSync(process.execPath, [SCRIPT, "law.example", "--force"], { encoding: "utf8" }).status).toBe(1);
   });
 
-  it("declines for nevo on the committed files today: no robots.txt capture exists yet", () => {
+  it("declines for nevo on the committed files: its robots.txt (rendered 30.9) disallows every queued law path", () => {
     const got = spawnSync(process.execPath, [SCRIPT, "nevo.co.il"], { encoding: "utf8" });
     expect(got.status).toBe(3);
-    expect(got.stdout).toMatch(/no committed robots\.txt capture for https:\/\/www\.nevo\.co\.il/);
+    expect(got.stdout).toMatch(/no change: robots\.txt disallows 8 queued path\(s\) for MehudakRenderWatch/);
+    expect(got.stdout).not.toMatch(/NO_TERMS_ROBOTS_OK/);
   });
 });

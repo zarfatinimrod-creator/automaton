@@ -718,14 +718,16 @@ https://ypay.co.il/front/terms	terms-ypay
 # research/channel-loop/ZERO-TESTS.md row 225 — terms audit (tick 22): knesset's terms page, URL from theWallProject/mono page.html:2299 (github); fetched once so its terms can be read (29.9.2026).
 # retired (ruling 30.9 16(d) D2(iv): the site refused the runner) — https://main.knesset.gov.il/About/Pages/TermsOfUse.aspx	terms-knesset
 # research/channel-loop/ZERO-TESTS.md row 226 — terms audit (tick 27): medium (30.9.2026).
-https://policy.medium.com/medium-terms-of-service-9db0094a1e0f	terms-medium
+# retired (ruling 30.9 16(d) D2(iv): medium.com answered 403 to the runner on 30.9) — https://policy.medium.com/medium-terms-of-service-9db0094a1e0f	terms-medium
 # research/channel-loop/ZERO-TESTS.md row 227 — terms audit (tick 27): medium (30.9.2026).
-https://policy.medium.com/medium-rules-30e5502c4eb4	terms-medium-rules
+# retired (ruling 30.9 16(d) D2(iv): medium.com answered 403 to the runner on 30.9) — https://policy.medium.com/medium-rules-30e5502c4eb4	terms-medium-rules
 # research/channel-loop/ZERO-TESTS.md row 228 — terms audit (tick 27): medium (30.9.2026).
-https://help.medium.com/hc/en-us/articles/22576852947223-Artificial-Intelligence-AI-content-policy	terms-medium-ai-policy
+# retired (ruling 30.9 16(d) D2(iv): medium.com answered 403 to the runner on 30.9) — https://help.medium.com/hc/en-us/articles/22576852947223-Artificial-Intelligence-AI-content-policy	terms-medium-ai-policy
 # research/channel-loop/ZERO-TESTS.md row 229 — terms audit (tick 27): terms-wikimedia-user-agent-policy (30.9.2026).
-https://meta.wikimedia.org/wiki/User-Agent_policy	terms-wikimedia-user-agent-policy
+# retired (ruling 30.9 16(d) D2(iv): the page is a moved-notice stub; its new home is row 232) — https://meta.wikimedia.org/wiki/User-Agent_policy	terms-wikimedia-user-agent-policy
 # research/channel-loop/ZERO-TESTS.md row 230 — terms audit (tick 27): terms-wikimedia-robot-policy (30.9.2026).
 https://wikitech.wikimedia.org/wiki/Robot_policy	terms-wikimedia-robot-policy
 # research/channel-loop/ZERO-TESTS.md row 231 — terms audit (tick 27): robots-nevo (30.9.2026).
 https://www.nevo.co.il/robots.txt	robots-nevo
+# research/channel-loop/ZERO-TESTS.md row 232 — terms audit (tick 27): wikimedia user-agent policy (moved) (30.9.2026).
+https://foundation.wikimedia.org/wiki/Policy:User-Agent_policy	terms-wikimedia-user-agent-policy-foundation
