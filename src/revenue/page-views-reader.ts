@@ -22,7 +22,9 @@
  * most a few a week.
  *
  * A week that cannot be read is not written: the next tick tries again, and the gates read a missing week as
- * unmeasured, never as zero — and as an instrument fault once it is a day overdue (page-views.ts READ_GRACE_MS).
+ * unmeasured, never as zero — and as `reader_down` once it is a day overdue (page-views.ts READ_GRACE_MS): a blocker until
+ * a later tick reads it, never a clock restart, and never an instrument fault from the gates: a week that can never be
+ * read at all is one only by the loop's call, with a new d0 and its evidence (RULING-2026-09-30-documents (c)).
  *
  * A row is dated by when it was WRITTEN (the tick's time), and says which week it covers in its unit. M-instrument
  * ("two consecutive weekly writes by D0+21") is judged on the write time, so a late backfill cannot pass for an

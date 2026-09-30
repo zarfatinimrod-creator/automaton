@@ -17,7 +17,7 @@ import {
   readPageViews,
   sitePages,
 } from "../../revenue/page-views-reader.js";
-import { renderReport, tick } from "../../revenue/runner.js";
+import { describePageViewGate, renderReport, tick } from "../../revenue/runner.js";
 
 // Fixtures shaped like PostHog's documented query response (contents/docs/sql/index.mdx, via Context7
 // /posthog/posthog.com, 29.9.2026). No test here reaches PostHog: every request goes to a fake fetch.
@@ -469,6 +469,40 @@ describe("the colony tick — the KPI step reads, the gates read the rows", () =
     const fault = result.pageViewGates.find((g) => g.lineId === "il-biz-tools");
     expect(fault?.verdict).toBe("instrument_fault");
     expect(result.blockers.join("\n")).toMatch(/page views il-biz-tools: instrument fault/);
+  });
+
+  it("a reader that stops after instrumentation is reader_down: a blocker by that name, never an instrument fault", async () => {
+    writeClock(clockFile, { "il-biz-tools": { d0: D0, d0Evidence: "test" } });
+    // Day 14: weeks 1-2 read on time — instrumented.
+    await runTick("2026-10-19T12:00:00.000Z", ENV, fakeFetch(() => ok()).fetchImpl);
+    // Day 30: the key is refused, and weeks 3-4 are a day past readable.
+    const refused = fakeFetch(() => new Response(JSON.stringify({ detail: "Invalid personal API key." }), { status: 401 }));
+    const result = await runTick("2026-11-04T12:00:00.000Z", ENV, refused.fetchImpl);
+    const gate = result.pageViewGates.find((g) => g.lineId === "il-biz-tools");
+    expect(gate?.verdict).toBe("reader_down");
+    expect(gate?.instrumented).toBe(true);
+    const blockers = result.blockers.join("\n");
+    expect(blockers).toMatch(/page views il-biz-tools: reader down — the day-56 read over weeks 1-8 cannot be made: week\(s\) 3, 4 still have no reading/);
+    expect(blockers).not.toMatch(/page views il-biz-tools: instrument fault/);
+    const report = renderReport(db, result);
+    expect(report).toMatch(/Page views `il-biz-tools`: reader_down \(netlify period from 2026-10-05, day 30\)/);
+    expect(report).toMatch(/Page views `il-biz-tools`: reader_down .* — a blocker until the reader reads the missing weeks; never a clock restart$/m);
+  });
+
+  it("the report hands the board its readings, the second-\"between\" pause among them", () => {
+    const base = { lineId: "pcn874", period: "netlify" as const, anchorDay: D0, day: 112, weeks: [], instrumented: true };
+    const pause = describePageViewGate({
+      ...base,
+      verdict: "pause",
+      notes: ["weeks 9-16: 36 page views in total", "one extension, not passed: paused as under 5; re-enters at the domain deploy"],
+    });
+    expect(pause).toMatch(/: pause .*one extension, not passed: paused as under 5; re-enters at the domain deploy — a reading for the board to apply$/);
+    for (const verdict of ["pass", "extend", "kill"] as const) {
+      expect(describePageViewGate({ ...base, verdict, notes: [] })).toMatch(/a reading for the board to apply$/);
+    }
+    for (const verdict of ["instrument_fault", "reader_down", "measuring"] as const) {
+      expect(describePageViewGate({ ...base, verdict, notes: [] })).not.toMatch(/for the board to apply/);
+    }
   });
 
   it("a reader that cannot read while a clock runs is a blocker at once, not only when weeks turn overdue", async () => {
