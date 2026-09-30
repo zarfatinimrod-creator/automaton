@@ -1,0 +1,19 @@
+{
+  "url": "https://www.nevo.co.il/robots.txt",
+  "slug": "robots-nevo",
+  "fetchedAt": "2026-09-30T10:25:33.422Z",
+  "status": 200,
+  "contentType": "text/plain",
+  "byteLength": 2852,
+  "sha256": "f47e11ef28db7f0496acacf2287c83d184c5738b0e7b93d8adc1d39d199fc313",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/robots-nevo.txt",
+  "textPath": null,
+  "robots": "allowed",
+  "robotsUrl": "https://www.nevo.co.il/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
