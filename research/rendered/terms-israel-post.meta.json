@@ -1,0 +1,19 @@
+{
+  "url": "https://doar.israelpost.co.il/content/term-of-use/",
+  "slug": "terms-israel-post",
+  "fetchedAt": "2026-09-30T13:40:17.304Z",
+  "status": 200,
+  "contentType": "text/html",
+  "byteLength": 4375,
+  "sha256": "bca20850aa6a3ddf1162f7b1a9a18639bbffd7b47c9418f31a00d277ebb27f4f",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/terms-israel-post.html",
+  "textPath": "research/rendered/terms-israel-post.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://doar.israelpost.co.il/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
