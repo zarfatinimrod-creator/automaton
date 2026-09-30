@@ -1,5 +1,5 @@
 {
- "_about": "Terms verdict for every site render-watch has a line for (research/channel-loop/TERMS-AUDIT-2026-09-29.md). A line may be active only when its site is NOT_BARRED or CONDITIONAL_MET, or TERMS_PENDING and the line is the site's terms page (slug starting 'terms-'). Enforced by src/__tests__/revenue/render-watch-terms-barred.test.ts.",
+ "_about": "Terms verdict for every site render-watch has a line for (research/channel-loop/TERMS-AUDIT-2026-09-29.md). A line may be active only when its site is NOT_BARRED or CONDITIONAL_MET, or TERMS_PENDING and the line is the site's terms page (slug starting 'terms-'). Since 30.9 (RULING-2026-09-30-video.md 16(d) D2(v)) NO_TERMS_ROBOTS_OK is active-eligible too, set only by scripts/robots-verdict.mjs (its source names the script and its note opens 'exhaustive-negative'; a hand-set one fails the gate), and a robots-only probe (slug starting 'robots-', URL path exactly /robots.txt) may be active only for a NO_TERMS site whose note opens 'exhaustive-negative' (D2(iv): a TERMS_PENDING site gets its terms page and nothing else). Enforced by src/__tests__/revenue/render-watch-terms-barred.test.ts.",
  "sites": {
   "accessalyze.com": {
    "verdict": "NO_TERMS",
@@ -122,9 +122,10 @@
    "checked": "2026-09-29"
   },
   "googlesource.com": {
-   "verdict": "BARRED",
-   "source": "TERMS_BARRED in scripts/render-watch.mjs (the clause is cited there)",
-   "checked": "2026-09-29"
+   "verdict": "CONDITIONAL_MET",
+   "source": "Google's terms allow automated access only while respecting robots.txt (research/colony-sweep/scouts/risk-governance--automation-tos.md:106, github grade); ruling research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(v)",
+   "checked": "2026-09-30",
+   "note": "condition met by code: scripts/render-watch.mjs fetches each host's robots.txt once per run and does not fetch what it disallows for MehudakRenderWatch or * (robotsChecker), with an identifying User-Agent; BARRED on 29.9 only for want of that"
   },
   "govi.co.il": {
    "verdict": "NO_TERMS",

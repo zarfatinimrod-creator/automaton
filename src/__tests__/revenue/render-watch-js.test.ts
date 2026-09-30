@@ -32,6 +32,8 @@ const {
   parseUrlList,
   renderWithBrowser,
   sha256,
+  TERMS_BARRED,
+  TERMS_BARRED_HOST_RESOLVER_RULES,
   TIKTOK_HOST_RESOLVER_RULES,
   tiktokHostInChain,
   tiktokRedirectError,
@@ -342,6 +344,7 @@ describe("renderWithBrowser — plain navigation only", () => {
     const closed: unknown[] = [];
     let connected = false;
     await ws.handler({
+      url: () => "wss://webcast.tiktok.com/ws",
       close: async (options: unknown) => closed.push(options),
       connectToServer: () => {
         connected = true;
@@ -349,6 +352,28 @@ describe("renderWithBrowser — plain navigation only", () => {
     });
     expect(connected).toBe(false);
     expect(closed).toEqual([{ code: 1008, reason: "render-watch never contacts tiktok.com" }]);
+  });
+
+  it("aborts every request, and closes every WebSocket, a page starts to a host whose terms bar automated access", async () => {
+    const fake = fakeBrowser({ [ENTRY.url]: { html: RENDERED } });
+    await renderWithBrowser(ENTRY, { browser: fake.browser });
+    const { matcher, handler } = fake.contexts[0].routes[0];
+    const matches = matcher as (url: URL) => boolean;
+    for (const url of ["https://www.google.com/recaptcha/api.js", "https://www.youtube.com/embed/x", "https://seller.gumroad.com/l/x", "https://WWW.GUMROAD.COM./x"]) {
+      expect(matches(new URL(url)), url).toBe(true);
+    }
+    expect(matches(new URL("https://chromium.googlesource.com/x"))).toBe(false);
+    expect(matches(new URL("https://cdn.example.test/x.js"))).toBe(false);
+    const aborted: string[] = [];
+    await handler({ abort: async (code: string) => aborted.push(code) });
+    expect(aborted).toEqual(["blockedbyclient"]);
+
+    const ws = fake.contexts[0].wsRoutes[0];
+    expect((ws.matcher as (url: URL) => boolean)(new URL("wss://www.youtube.com/live"))).toBe(true);
+    const closed: unknown[] = [];
+    await ws.handler({ url: () => "wss://www.youtube.com/live", close: async (options: unknown) => closed.push(options), connectToServer: () => {} });
+    expect(closed).toEqual([{ code: 1008, reason: "render-watch never contacts youtube.com: its terms bar automated access" }]);
+    expect(Buffer.byteLength((closed[0] as { reason: string }).reason)).toBeLessThanOrEqual(123);
   });
 
   it("takes the DOM as it stands when the network never goes quiet, and says so", async () => {
@@ -515,7 +540,22 @@ describe("chromiumLaunchOptions — exactly what Chromium is started with", () =
     expect(TIKTOK_HOST_RESOLVER_RULES).toBe(
       "MAP tiktok.com ~NOTFOUND, MAP *.tiktok.com ~NOTFOUND, MAP tiktok.com. ~NOTFOUND, MAP *.tiktok.com. ~NOTFOUND",
     );
-    expect(chromiumLaunchOptions()).toEqual({ headless: true, args: [`--host-resolver-rules=${TIKTOK_HOST_RESOLVER_RULES}`] });
+    expect(chromiumLaunchOptions()).toEqual({
+      headless: true,
+      args: [`--host-resolver-rules=${TIKTOK_HOST_RESOLVER_RULES}, ${TERMS_BARRED_HOST_RESOLVER_RULES}`],
+    });
+  });
+
+  it("makes every TERMS_BARRED name fail to resolve too, so a redirect there is never requested (ruling 30.9 16(d) D2(ii))", () => {
+    const rules = String(TERMS_BARRED_HOST_RESOLVER_RULES).split(", ");
+    expect(rules).toHaveLength(TERMS_BARRED.length * 4);
+    for (const { domain } of TERMS_BARRED as Array<{ domain: string }>) {
+      for (const name of [domain, `*.${domain}`, `${domain}.`, `*.${domain}.`]) expect(rules, name).toContain(`MAP ${name} ~NOTFOUND`);
+    }
+    expect(rules).toContain("MAP *.gumroad.com ~NOTFOUND");
+    expect(rules).toContain("MAP *.google.com ~NOTFOUND");
+    // googlesource.com left TERMS_BARRED on 30.9, so it resolves.
+    expect(rules.some((r) => r.includes("googlesource"))).toBe(false);
   });
 
   it("is what launchChromium passes to chromium.launch, and nothing else", async () => {
@@ -677,6 +717,22 @@ function stubPlainFetch() {
   return calls;
 }
 
+/**
+ * Since 30.9 every run reads a host's robots.txt with a plain GET before its first page, js lines included
+ * (ruling 30.9 16(d) D2(v); src/__tests__/revenue/render-watch-robots.test.ts). The default for these tests:
+ * every robots.txt answers 404 (no rules), and anything else fetch is asked for fails, so no test reaches the
+ * network. A test that needs plain pages stubs fetch itself.
+ */
+function stubNoRobots() {
+  const calls: string[] = [];
+  vi.stubGlobal("fetch", async (url: string) => {
+    calls.push(String(url));
+    if (new URL(String(url)).pathname === "/robots.txt") return new Response(null, { status: 404 });
+    throw new TypeError(`fetch failed (the test stub has no ${url})`);
+  });
+  return calls;
+}
+
 function neverLaunch() {
   return vi.fn(async () => {
     throw new Error("the browser must not be launched for a list with no js line");
@@ -690,6 +746,7 @@ describe("main — js lines", () => {
   beforeEach(() => {
     out = tmpOut();
     stdout = captureStdout();
+    stubNoRobots();
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2026-09-29T05:23:00.000Z"));
   });
@@ -721,7 +778,8 @@ describe("main — js lines", () => {
     expect(await main(["--list", list, "--out", out], {}, { launchBrowser: fake.launchBrowser, delayMs: 0 })).toBe(0);
 
     expect(snapshot(out, "ex-terms")).toEqual(reference);
-    expect(fetched).toEqual([PLAIN_URL]); // the js URL never went through fetch
+    // The js URL never went through fetch; only its host's robots.txt did, read before the browser was asked.
+    expect(fetched).toEqual(["https://example.test/robots.txt", PLAIN_URL, "https://support.example.test/robots.txt"]);
     expect(fake.gotos.map((g) => g.url)).toEqual([ENTRY.url]);
 
     expect(readFileSync(join(out, "ex-identity.html"), "utf8")).toBe(RENDERED);
@@ -745,12 +803,16 @@ describe("main — js lines", () => {
       "textPath",
       "renderedWith",
       "networkIdle",
+      "robots",
+      "robotsUrl",
       "changed",
       "firstFetch",
       "previousSha256",
       "note",
     ]);
     expect(meta).toMatchObject({
+      robots: "allowed",
+      robotsUrl: "https://support.example.test/robots.txt",
       url: ENTRY.url,
       fetchedAt: "2026-09-29T05:23:00.000Z",
       status: 200,
@@ -899,11 +961,13 @@ describe("main — js lines", () => {
     const calls: string[] = [];
     vi.stubGlobal("fetch", async (url: string) => {
       calls.push(String(url));
+      if (new URL(String(url)).pathname === "/robots.txt") return new Response(null, { status: 404 });
       return new Response(null, { status: 302, headers: { location: "https://www.tiktok.com/@someone" } });
     });
     const list = writeList(out, ["https://link.example.test/bio\tex-bio"]);
     expect(await main(["--list", list, "--out", out], {}, { delayMs: 0 })).toBe(0);
-    expect(calls).toEqual(["https://link.example.test/bio"]);
+    // The listed host's robots.txt, then the page; nothing at all to tiktok.com, not even its robots.txt.
+    expect(calls).toEqual(["https://link.example.test/robots.txt", "https://link.example.test/bio"]);
     expect(readdirSync(out).sort()).toEqual(["ex-bio.meta.json", "urls.txt"]);
     const meta = JSON.parse(readFileSync(join(out, "ex-bio.meta.json"), "utf8"));
     expect(meta).toMatchObject({ status: 302, bodyPath: null, sha256: null, error: tiktokRedirectError("www.tiktok.com") });
