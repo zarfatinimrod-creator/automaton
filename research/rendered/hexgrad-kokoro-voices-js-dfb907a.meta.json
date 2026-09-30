@@ -1,0 +1,17 @@
+{
+  "url": "https://raw.githubusercontent.com/hexgrad/kokoro/dfb907a02bba8152ca444717ca5d78747ccb4bec/kokoro.js/src/voices.js",
+  "slug": "hexgrad-kokoro-voices-js-dfb907a",
+  "fetchedAt": "2026-09-30T12:27:33.000Z",
+  "status": 200,
+  "contentType": "text/plain; charset=utf-8",
+  "byteLength": 10494,
+  "sha256": "7650e788fcf0e2dfc6ad13ef185f3f1d1362b4360e3623e1ba39a699b376d201",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/hexgrad-kokoro-voices-js-dfb907a.txt",
+  "textPath": "research/rendered/hexgrad-kokoro-voices-js-dfb907a.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content (Apache-2.0, hexgrad/kokoro), stored for citation only. Fetched by an agent session (not render-watch.yml) from raw.githubusercontent.com at the pinned commit dfb907a02bba8152ca444717ca5d78747ccb4bec, saved byte-for-byte as served; a shallow clone of github.com/hexgrad/kokoro at the same commit gave the same sha256. hexgrad/kokoro is the GitHub repository the Kokoro-82M model card names as its own (research/rendered/kokoro-82m-model-card-2026-09-29.txt:99 \"GitHub : https://github.com/hexgrad/kokoro\"). The file's VOICES object lists 28 voices as live keys and 26 more (Japanese, Mandarin, Spanish, French, Hindi, Italian, Brazilian Portuguese) as commented-out entries under \"TODO: Add support for other languages\" (:210): 54 voice ids in all, the model card's v1.0 count (:147 \"8 & 54\"). P-1's allowlist (src/revenue/publication-gate.ts, KOKORO_82M_VOICE_LICENCE.voices) is asserted equal to these 54 ids by narration-licence-gate.test.ts. The model card's own voice list, VOICES.md (card :119), is on huggingface.co and was not fetched from this container. Not added to urls.txt: the commit pin makes these bytes immutable."
+}

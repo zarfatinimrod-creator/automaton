@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from figures import FilledSpec
+from tts import KOKORO_MODEL, KOKORO_VOICES
 
 AUTHOR = "opus-builder"
 
@@ -108,7 +109,14 @@ def build_manifest(
         "factCheck": None,
         "promiseMatch": None,
         "containsSyntheticMedia": CHART_TTS_SYNTHETIC_MEDIA,
-        "narration": {"engine": voice["engine"], "voiceId": voice["voice"]},
+        # P-1 (ruling 30.9 16(c) item 7): the archive and model tts.py loads, each fetched only against its sha256 pin;
+        # the gate refuses a manifest that does not name both (publication-gate.ts, NARRATION_VOICE_LICENCES).
+        "narration": {
+            "engine": voice["engine"],
+            "voiceId": voice["voice"],
+            "voicesFile": KOKORO_VOICES.filename,
+            "modelFile": KOKORO_MODEL.filename,
+        },
         "scheduledAt": scheduled_at,
         "runnerMinutes": math.ceil(runner_minutes * 100) / 100,
         "tokenCostIls": token_cost_ils,
@@ -168,7 +176,9 @@ def build_notes(manifest: dict[str, Any], render: dict[str, Any]) -> dict[str, s
         "promiseMatch": "null on purpose: G5 needs an auditor to confirm the first 30 seconds answer the title.",
         "containsSyntheticMedia": "true: board ruling 27.9.2026 (PREREG-DECISIONS.md §2a) for every chart + "
         "synthetic-narration video; the description carries SYNTHETIC_VOICE_DISCLOSURE verbatim (§2b).",
-        "narration": "Kokoro-82M stock voice; no cloned or imitated voice (PREREG-DECISIONS.md §2c).",
+        "narration": "Kokoro-82M stock voice; no cloned or imitated voice (PREREG-DECISIONS.md §2c). voicesFile "
+        "and modelFile are the files tts.py loads, each fetched only against its sha256 pin; P-1 (ruling 30.9 "
+        "16(c) item 7) refuses a manifest that does not name both.",
         "scheduledAt": "NOT a schedule. T1 is held unpublished until Stage A; this is the render's finish time, the "
         "earliest moment a publish could happen, so G6 has a real date. The publish step must re-run the gate with "
         "the actual time, and must not schedule a later publish time: a scheduled video stays private until then "

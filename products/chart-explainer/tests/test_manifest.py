@@ -8,6 +8,7 @@ import pytest
 
 import figures
 import manifest
+import tts
 
 PRODUCT = Path(__file__).resolve().parent.parent
 REPO_ROOT = PRODUCT.parent.parent
@@ -58,6 +59,23 @@ def test_board_constants_mirror_the_gate():
     assert set(re.findall(r'"([^"]+)"', engines)) == set(manifest.ALLOWED_NARRATION_ENGINES)
 
 
+def test_narration_names_the_pinned_files_p1_requires():
+    """P-1 (ruling 30.9 16(c) item 7): the gate refuses a manifest that does not name the archive and the model, and
+    accepts only the files its licence record pins — which must be the ones tts.py fetches by sha256."""
+    required, _ = interface_fields("VideoManifest")
+    assert "narration" in required
+    narration_type = re.search(r"^  narration: \{(.*?)\};$", GATE, re.M).group(1)
+    assert re.findall(r"(\w+)(\??):", narration_type) == [
+        ("engine", ""), ("voiceId", ""), ("voicesFile", ""), ("modelFile", "")
+    ]
+    record = GATE[GATE.index("export const KOKORO_82M_VOICE_LICENCE"):]
+    for key, pinned in (("archive", tts.KOKORO_VOICES), ("model", tts.KOKORO_MODEL)):
+        entry = re.search(rf'  {key}: \{{\n    file: "([^"]+)",\n    sha256: "([0-9a-f]{{64}})"', record)
+        assert entry.groups() == (pinned.filename, pinned.sha256), key
+    assert FIXTURE["narration"]["voicesFile"] == tts.KOKORO_VOICES.filename
+    assert FIXTURE["narration"]["modelFile"] == tts.KOKORO_MODEL.filename
+
+
 def _filled():
     figs = {n: figures.Figure(n, "text", 0, "", "x", None, "7", "", "") for n in figures.FIGURES}
     return figures.fill_spec(SPEC, figs)
@@ -70,7 +88,12 @@ def test_build_manifest_leaves_the_auditors_fields_to_the_auditors():
     assert m["author"] == "opus-builder"
     assert m["originality"] is None and m["factCheck"] is None and m["promiseMatch"] is None
     assert m["containsSyntheticMedia"] is True
-    assert m["narration"] == {"engine": "kokoro-82m", "voiceId": SPEC["voice"]["voice"]}
+    assert m["narration"] == {
+        "engine": "kokoro-82m",
+        "voiceId": SPEC["voice"]["voice"],
+        "voicesFile": "voices-v1.0.bin",
+        "modelFile": "kokoro-v1.0.onnx",
+    }
     assert m["runnerMinutes"] == 2.25  # rounded up, never down
     assert m["topic"] == SPEC["topic"]
 
