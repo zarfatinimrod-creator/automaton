@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { chmodSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,27 +8,32 @@ import { afterAll, describe, expect, it } from "vitest";
 /**
  * scripts/verify.sh — the check a contributor runs before pushing: typecheck, then the vitest paths (default
  * src/__tests__/revenue), each with its full output in a log file and its own exit code recorded. Two pushes of failing
- * tests on this project came from `npx vitest ... | grep ...`, which returns grep's status, not the tests'. So the
- * verdict here must come from the runners' exit codes and never from a grep of their output: the stubs below print
- * a passing summary and exit 1, and verify.sh must still fail.
+ * tests on this project came from `npx vitest ... | grep ...`, which returns grep's status, not the tests'. So a pass
+ * here comes only from the runners' exit codes, never from a grep of their output: the stubs below print a passing
+ * summary and exit 1, and verify.sh must still fail. The output may only veto a pass (review of tick 33): an exit-0
+ * test step with no "Tests" line, or with a summary that says "failed", fails too, so a verify.sh broken to ignore
+ * the exit code still fails on the suite that tests it.
  */
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const SCRIPT = join(ROOT, "scripts", "verify.sh");
-const MERGE = join(ROOT, "scripts", "merge-worktree.sh");
 
 const scratch = mkdtempSync(join(tmpdir(), "verify-sh-test-"));
 afterAll(() => rmSync(scratch, { recursive: true, force: true }));
 
 let n = 0;
-/** A stub command: prints `output`, records its arguments in args.txt, exits `code`. */
-function stub(output: string, code: number): { cmd: string; argsFile: string } {
+/** A stub command: prints `output`, records its arguments in <n>.args and its working directory in <n>.pwd, exits `code`. */
+function stub(output: string, code: number): { cmd: string; argsFile: string; pwdFile: string } {
   n += 1;
   const path = join(scratch, `stub-${n}.sh`);
   const argsFile = join(scratch, `stub-${n}.args`);
-  writeFileSync(path, `#!/usr/bin/env bash\nprintf '%s\\n' "$@" > '${argsFile}'\ncat <<'OUT'\n${output}\nOUT\nexit ${code}\n`);
+  const pwdFile = join(scratch, `stub-${n}.pwd`);
+  writeFileSync(
+    path,
+    `#!/usr/bin/env bash\nprintf '%s\\n' "$@" > '${argsFile}'\npwd > '${pwdFile}'\ncat <<'OUT'\n${output}\nOUT\nexit ${code}\n`,
+  );
   chmodSync(path, 0o755);
-  return { cmd: `bash ${path}`, argsFile };
+  return { cmd: `bash ${path}`, argsFile, pwdFile };
 }
 
 const PASSING_SUMMARY = [
@@ -39,15 +44,23 @@ const PASSING_SUMMARY = [
   "   Start at  12:00:00",
 ].join("\n");
 
-function run(typecheck: { cmd: string }, tests: { cmd: string }, args: string[] = [], out?: string) {
+function run(
+  typecheck: { cmd: string },
+  tests: { cmd: string },
+  args: string[] = [],
+  out?: string,
+  opts: { script?: string; extraEnv?: Record<string, string> } = {},
+) {
   const env: Record<string, string | undefined> = {
     ...process.env,
     VERIFY_TYPECHECK_CMD: typecheck.cmd,
     VERIFY_TEST_CMD: tests.cmd,
+    ...(opts.extraEnv ?? {}),
   };
   if (out) env.VERIFY_OUT = out;
   else delete env.VERIFY_OUT;
-  const r = spawnSync("bash", [SCRIPT, ...args], { cwd: ROOT, env, encoding: "utf8" });
+  if (!opts.extraEnv?.VERIFY_ROOT) delete env.VERIFY_ROOT;
+  const r = spawnSync("bash", [opts.script ?? SCRIPT, ...args], { cwd: ROOT, env, encoding: "utf8" });
   return { code: r.status, stdout: r.stdout, stderr: r.stderr, all: r.stdout + r.stderr };
 }
 
@@ -116,19 +129,69 @@ describe("scripts/verify.sh", () => {
     expect(r.code).not.toBe(0);
     expect(r.stdout).toMatch(/no "Test Files" or "Tests" line/);
   });
-});
 
-describe("scripts/merge-worktree.sh uses verify.sh for typecheck + revenue suite", () => {
-  const text = readFileSync(MERGE, "utf8");
-
-  it("runs scripts/verify.sh on the revenue suite once, after install", () => {
-    const call = text.search(/^[^#\n]*scripts\/verify\.sh"? src\/__tests__\/revenue/m);
-    expect(call).toBeGreaterThan(-1);
-    expect(text.search(/^[^#\n]*pnpm install/m)).toBeLessThan(call);
+  // Review of tick 33: a pass may only come from exit codes, but a grep may veto one.
+  it("a test step that exits 0 and prints no Tests summary line fails: nothing shows any test ran", () => {
+    const r = run(stub("tsc: fine", 0), stub("", 0), [], join(scratch, "out-silent"));
+    expect(r.code).toBe(1);
+    expect(r.all).toMatch(/FAILED: tests \(exit 0, but no "Tests" summary line/);
+    expect(r.all).not.toMatch(/verify: passed/);
   });
 
-  it("no longer runs vitest itself (twice) nor decides anything from a grep", () => {
-    expect(text).not.toMatch(/npx vitest/);
-    expect(text).not.toMatch(/\|\s*grep[^\n]*\|\|\s*true/);
+  it("a Tests or Test Files line that says failed vetoes an exit-0 run (a broken runner or a broken verify.sh)", () => {
+    const failedButZero = [" Test Files  1 failed | 2 passed (3)", "      Tests  3 failed | 6 passed (9)"].join("\n");
+    const r = run(stub("tsc: fine", 0), stub(failedButZero, 0), [], join(scratch, "out-veto"));
+    expect(r.code).toBe(1);
+    expect(r.all).toMatch(/FAILED: tests \(exit 0, but the summary says failed\)/);
+  });
+
+  it("a command override of only spaces is a usage error (exit 2), not a step that 'exited 0'; nothing runs", () => {
+    for (const env of [{ VERIFY_TYPECHECK_CMD: " " }, { VERIFY_TEST_CMD: "   " }]) {
+      const tc = stub("tsc: fine", 0);
+      const tests = stub(PASSING_SUMMARY, 0);
+      const r = run(tc, tests, [], join(scratch, `out-empty-${n}`), { extraEnv: env });
+      expect(r.code).toBe(2);
+      expect(r.all).toMatch(/empty/);
+      expect(r.all).not.toMatch(/verify: passed/);
+      expect(existsSync(tc.argsFile)).toBe(false);
+      expect(existsSync(tests.argsFile)).toBe(false);
+    }
+  });
+
+  it("each step's header names the command that actually ran", () => {
+    const tc = stub("tsc: fine", 0);
+    const tests = stub(PASSING_SUMMARY, 0);
+    const r = run(tc, tests, [], join(scratch, "out-cmd"));
+    expect(r.code).toBe(0);
+    expect(r.stdout).toContain(`== typecheck (${tc.cmd}): exit 0`);
+    expect(r.stdout).toContain(`== tests (${tests.cmd} src/__tests__/revenue): exit 0`);
+  });
+
+  it("when the logs cannot be written it says so and exits 2 before running anything (no step is misnamed)", () => {
+    const tc = stub("tsc: fine", 0);
+    const tests = stub(PASSING_SUMMARY, 0);
+    const r = run(tc, tests, [], "/proc/self");
+    expect(r.code).toBe(2);
+    expect(r.all).toMatch(/verify: cannot write logs in \/proc\/self/);
+    expect(r.all).not.toMatch(/== typecheck/);
+    expect(existsSync(tc.argsFile)).toBe(false);
+  });
+
+  it("VERIFY_ROOT names the checkout to verify, so a copy of verify.sh kept elsewhere checks that tree", () => {
+    const elsewhere = join(scratch, "trusted-copy");
+    rmSync(elsewhere, { recursive: true, force: true });
+    mkdirSync(elsewhere, { recursive: true });
+    writeFileSync(join(elsewhere, "verify.sh"), readFileSync(SCRIPT, "utf8"));
+    const tree = join(scratch, "tree-to-verify");
+    mkdirSync(tree, { recursive: true });
+    const tc = stub("tsc: fine", 0);
+    const tests = stub(PASSING_SUMMARY, 0);
+    const r = run(tc, tests, [], join(scratch, "out-root"), { script: join(elsewhere, "verify.sh"), extraEnv: { VERIFY_ROOT: tree } });
+    expect(r.code).toBe(0);
+    expect(readFileSync(tc.pwdFile, "utf8").trim()).toBe(tree);
+    expect(readFileSync(tests.pwdFile, "utf8").trim()).toBe(tree);
+    expect(r.stdout).toContain(`verify: checking ${tree}`);
   });
 });
+
+// merge-worktree.sh's use of verify.sh is tested by running it: merge-worktree.test.ts.
