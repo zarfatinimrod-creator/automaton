@@ -34,6 +34,17 @@ export interface ExperimentReadings {
   policySignal: boolean;
   /** A recurring cost the owner has not explicitly granted. */
   ungrantedRecurringCost: boolean;
+  /**
+   * P-2: videos on the channel whose audience YouTube set to "made for kids" over our declaration ("you may see your
+   * video set as “Set to Made for Kids"", research/rendered/yk2-yt-9527654.txt:93), counted when YouTube sets them,
+   * whatever the one appeal later decides. null = unread.
+   *
+   * NO READER EXISTS. Nothing in this repository reads `status.madeForKids` yet: the read-back after each upload
+   * (research/youtube-kids/ASSESSMENT.md §9.2 item 2, the unbuilt G11) is the planned source, through a Data API key on
+   * the brand account (Stage A), and Upload-Post's quoted response carries no audience field
+   * (research/faceless-youtube/T1-PRECHECK.md:50). Until a reader exists every caller passes null, and the verdict says so.
+   */
+  madeForKidsOverrides: number | null;
   maxRunnerMinutesPerVideo: number | null;
   maxTokenCostIlsPerVideo: number | null;
 }
@@ -109,6 +120,16 @@ export const FACELESS_YOUTUBE_EXPERIMENT: ExperimentSpec = {
 };
 
 /**
+ * P-2, pre-registered 30.9.2026 (research/channel-loop/RULING-2026-09-30-video.md 16(c) item 7; research/youtube-kids/
+ * ASSESSMENT.md §9.2 item 2, :421-422): YouTube setting a video on T1's channel to "made for kids" over our declaration.
+ * The first override flags the board; the video goes private, gets its one appeal ("You may appeal each video only
+ * once.", research/rendered/yk2-yt-9527654.txt:333) and is never relabelled or re-uploaded. `killAt` overrides kill the
+ * YouTube line. Kept apart from FACELESS_YOUTUBE_EXPERIMENT.gates, which are pinned as the 27.9 pre-registration and stay
+ * byte-identical; this criterion carries its own date and its own pin (t1-made-for-kids-kill.test.ts).
+ */
+export const MADE_FOR_KIDS_OVERRIDES = { killAt: 2 } as const;
+
+/**
  * The web comparison arm's reach floor (research/faceless-youtube/PREREG-DECISIONS.md §3, board 28.9.2026), read at
  * day 56 from the arm's own D0 (public deploy + recorded discovery submission). Kept apart from the experiment's gates:
  * the arm has its own clock, and its verdict is procedural — whether Stage A may be put to the owner (T1-PROTOCOL order
@@ -153,6 +174,17 @@ export function evaluateExperiment(spec: ExperimentSpec, r: ExperimentReadings):
   if (r.ungrantedRecurringCost) {
     kills.push("K-cash");
     notes.push("a recurring cost the owner has not granted");
+  }
+  // P-2 (MADE_FOR_KIDS_OVERRIDES): a YouTube-set made-for-kids override flags the board; the second kills.
+  const mfkKillAt = MADE_FOR_KIDS_OVERRIDES.killAt;
+  if (r.madeForKidsOverrides === null) {
+    notes.push("K-mfk has no reader: nothing reads status.madeForKids yet (the read-back of ASSESSMENT §9.2 item 2 is unbuilt), so an override would go unseen");
+  } else if (r.madeForKidsOverrides >= mfkKillAt) {
+    kills.push("K-mfk");
+    notes.push(`${r.madeForKidsOverrides} made-for-kids overrides by YouTube on this channel (kill at ${mfkKillAt}): the YouTube line is killed — never a replacement channel`);
+  } else if (r.madeForKidsOverrides > 0) {
+    escalations.push("K-mfk-override");
+    notes.push("YouTube set a video to made for kids over our declaration: it goes private, gets one appeal, and is never relabelled or re-uploaded; the board is flagged, and a second override kills the line");
   }
   if (r.day >= g.supplyByDay && r.videosPassedGate < g.supplyVideos) {
     kills.push("K-supply");
