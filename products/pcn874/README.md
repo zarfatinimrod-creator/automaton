@@ -133,7 +133,7 @@ Plus **§6.9**, which was never in the log because all three implementations agr
 
 ```bash
 npm install
-npm test          # 327 tests (re-measured 28.9.2026)
+npm test          # 337 tests (re-measured 30.9.2026)
 npm run typecheck
 npm run build
 node dist/cli.js validate path/to/PCN874.txt
