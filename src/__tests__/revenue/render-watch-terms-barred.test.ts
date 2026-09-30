@@ -83,7 +83,8 @@ describe("the terms audit's barred sites (29.9.2026)", () => {
     "youtube.com",
     "blog.youtube",
     "google.com",
-    "googlesource.com",
+    // googlesource.com was here: its only condition was robots.txt, which render-watch reads since 30.9, so it left
+    // TERMS_BARRED for CONDITIONAL_MET (ruling 30.9 16(d) D2(v); tested below).
     "metaculus.com",
     "openai.com",
     "addons.mozilla.org",
@@ -99,10 +100,10 @@ describe("the terms audit's barred sites (29.9.2026)", () => {
   });
 
   it("bars exactly those sites: Mozilla's other sites and GitHub are not caught by a neighbour's entry", () => {
-    for (const h of ["support.google.com", "developers.google.com", "www.youtube.com", "blog.youtube", "chromium.googlesource.com", "addons.mozilla.org", "www.paypal.com", "community.facer.io"]) {
+    for (const h of ["support.google.com", "developers.google.com", "www.youtube.com", "blog.youtube", "addons.mozilla.org", "www.paypal.com", "community.facer.io"]) {
       expect(termsBarred(h), h).not.toBeNull();
     }
-    for (const h of ["www.mozilla.org", "extensionworkshop.com", "github.com", "raw.githubusercontent.com", "googleapis.com", "notyoutube.com", "displate.com", "www.nevo.co.il"]) {
+    for (const h of ["www.mozilla.org", "extensionworkshop.com", "github.com", "raw.githubusercontent.com", "googleapis.com", "notyoutube.com", "displate.com", "www.nevo.co.il", "chromium.googlesource.com"]) {
       expect(termsBarred(h), h).toBeNull();
     }
   });
@@ -134,7 +135,7 @@ describe("the terms audit's barred sites (29.9.2026)", () => {
  */
 describe("terms-verdicts.json gates every active line (terms audit round 2)", () => {
   const verdicts = JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8")).sites as Record<string, { verdict: string; source: string }>;
-  const VERDICTS = ["NOT_BARRED", "CONDITIONAL_MET", "TERMS_PENDING", "CONDITIONAL_UNMET", "BARRED", "NO_TERMS"];
+  const VERDICTS = ["NOT_BARRED", "CONDITIONAL_MET", "TERMS_PENDING", "CONDITIONAL_UNMET", "BARRED", "NO_TERMS", "NO_TERMS_ROBOTS_OK"];
   const entries = () => parseUrlList(readFileSync("research/rendered/urls.txt", "utf8")) as { url: string; slug: string }[];
 
   it("gives every site a known verdict and a source", () => {
@@ -145,11 +146,45 @@ describe("terms-verdicts.json gates every active line (terms audit round 2)", ()
   });
 
   it("lets a line be active only on a site whose terms allow it, or as a pending site's own terms page", () => {
+    // Since 30.9 (ruling 16(d) D2(v)): NO_TERMS_ROBOTS_OK allows a line too, and a robots- probe of /robots.txt is
+    // allowed for a TERMS_PENDING site and for a NO_TERMS site whose note opens exhaustive-negative.
     const bad = entries().filter((e) => {
-      const v = verdicts[siteOf(new URL(e.url).hostname.toLowerCase())]?.verdict;
-      return !(v === "NOT_BARRED" || v === "CONDITIONAL_MET" || (v === "TERMS_PENDING" && e.slug.startsWith("terms-")));
+      const entry = verdicts[siteOf(new URL(e.url).hostname.toLowerCase())] as { verdict: string; note?: string } | undefined;
+      const v = entry?.verdict;
+      const probe = e.slug.startsWith("robots-") && new URL(e.url).pathname === "/robots.txt";
+      const exhaustive = v === "NO_TERMS" && /^exhaustive-negative\b/.test(entry?.note ?? "");
+      return !(
+        v === "NOT_BARRED" ||
+        v === "CONDITIONAL_MET" ||
+        v === "NO_TERMS_ROBOTS_OK" ||
+        (v === "TERMS_PENDING" && e.slug.startsWith("terms-")) ||
+        (probe && (v === "TERMS_PENDING" || exhaustive))
+      );
     });
     expect(bad.map((e) => e.slug)).toEqual([]);
+  });
+
+  it("makes googlesource.com CONDITIONAL_MET now that render-watch reads robots.txt, and keeps google.com BARRED", () => {
+    // Its one condition was robots.txt (research/colony-sweep/scouts/risk-governance--automation-tos.md:106); the
+    // ruling of 30.9 (16(d) D2(v)) makes it CONDITIONAL_MET once render-watch honours robots.txt with an identifying UA.
+    const gs = verdicts["googlesource.com"] as { verdict: string; source: string; note?: string };
+    expect(gs.verdict).toBe("CONDITIONAL_MET");
+    expect(`${gs.source} ${gs.note}`).toContain("RULING-2026-09-30-video.md 16(d) D2(v)");
+    expect(`${gs.source} ${gs.note}`).toContain("risk-governance--automation-tos.md:106");
+    expect(gs.note).toMatch(/robotsChecker/);
+    expect(termsBarred("chromium.googlesource.com")).toBeNull();
+    // google.com stays barred: YouTube's terms bar the Help pages outright (ruling 30.9 16(d) D2(v)).
+    expect(verdicts["google.com"].verdict).toBe("BARRED");
+    expect(termsBarred("support.google.com")?.domain).toBe("google.com");
+    expect(termsBarred("support.google.com")?.why).toContain("discovery.md:209-211");
+  });
+
+  it("un-pauses the googlesource line to its original active form, and nothing else of Google's", () => {
+    const text = readFileSync("research/rendered/urls.txt", "utf8");
+    expect(text.split("\n")).toContain("https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/vrp-faq.md\tsweep2-google-vrp-faq");
+    expect(text).not.toMatch(/^# paused .*googlesource\.com/m);
+    const active = entries().filter((e) => /(^|\.)google(source)?\.com$/.test(new URL(e.url).hostname));
+    expect(active.map((e) => e.slug)).toEqual(["sweep2-google-vrp-faq"]);
   });
 
   it("records the round-2 barred sites in TERMS_BARRED, each with its citation", () => {

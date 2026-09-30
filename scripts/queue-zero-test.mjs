@@ -52,6 +52,11 @@
  * CONDITIONAL_MET), or when it is a TERMS_PENDING site's own terms page (slug `terms-...`). queueZeroTest
  * refuses anything else and says what to do. `--apply-verdicts` comments out every active line that fails
  * the gate, the step ticks 21-23 ran by hand (logs/2026-09-29-channel-loop-tick-22.md §7).
+ *
+ * Since 30.9 (research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(v)): NO_TERMS_ROBOTS_OK passes like NOT_BARRED
+ * (scripts/robots-verdict.mjs sets it, and only for a NO_TERMS site whose note opens "exhaustive-negative"), and a
+ * robots-only probe — a robots-... slug whose URL path is exactly /robots.txt — passes for a TERMS_PENDING site and
+ * for an exhaustive-negative NO_TERMS site. Nothing else about the gate changed.
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -70,9 +75,38 @@ export function loadVerdicts(path = VERDICTS) {
   return JSON.parse(readFileSync(path, "utf8")).sites;
 }
 
+/** The verdicts under which any line of a site may be active. NO_TERMS_ROBOTS_OK: ruling 30.9 16(d) D2(v). */
+export const ACTIVE_VERDICTS = new Set(["NOT_BARRED", "CONDITIONAL_MET", "NO_TERMS_ROBOTS_OK"]);
+
+/**
+ * A NO_TERMS entry whose note opens "exhaustive-negative": a recorded search found no terms anywhere (nevo),
+ * as against "refusal-type", where the terms page refused the runner (RULING-2026-09-30-video.md 16(d) D2(iv)).
+ */
+export function isExhaustiveNegative(entry) {
+  return entry?.verdict === "NO_TERMS" && /^exhaustive-negative\b/.test(String(entry?.note ?? ""));
+}
+
+/**
+ * A robots-only probe: a slug starting robots- on a URL whose path is exactly /robots.txt, with no query
+ * (render-watch fetches that file and nothing else from the host; research/rendered/README.md).
+ */
+export function isRobotsProbe(url, slug) {
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+  return String(slug).startsWith("robots-") && parsed.pathname === "/robots.txt" && parsed.search === "" && parsed.hash === "";
+}
+
 /**
  * Whether a line for this URL and slug passes the terms gate, and if not, why. Barred hosts (TERMS_BARRED in
  * render-watch) always fail; otherwise the site's verdict decides. Never throws.
+ *
+ * Since 30.9 (ruling 16(d) D2(v)): NO_TERMS_ROBOTS_OK is active-eligible like NOT_BARRED (scripts/robots-verdict.mjs
+ * sets it), and a robots- probe of /robots.txt passes for a TERMS_PENDING site and for an exhaustive-negative
+ * NO_TERMS site — the one thing that may be fetched from such a site until its robots.txt is read and recorded.
  */
 export function termsGate(url, slug, verdicts) {
   let host;
@@ -84,15 +118,19 @@ export function termsGate(url, slug, verdicts) {
   const barred = termsBarred(host);
   if (barred) return { ok: false, site: barred.domain, verdict: "BARRED", why: `${barred.domain} is in TERMS_BARRED: ${barred.why}` };
   const site = siteOf(host);
-  const verdict = verdicts?.[site]?.verdict ?? null;
-  if (verdict === "NOT_BARRED" || verdict === "CONDITIONAL_MET") return { ok: true, site, verdict };
+  const entry = verdicts?.[site] ?? null;
+  const verdict = entry?.verdict ?? null;
+  if (ACTIVE_VERDICTS.has(verdict)) return { ok: true, site, verdict };
   if (verdict === "TERMS_PENDING" && String(slug).startsWith("terms-")) return { ok: true, site, verdict };
+  if (isRobotsProbe(url, slug) && (verdict === "TERMS_PENDING" || isExhaustiveNegative(entry))) return { ok: true, site, verdict };
   const why =
     verdict === null
       ? `${site} has no verdict in research/channel-loop/terms-verdicts.json: read its terms first (queue its terms page as a terms-... slug after adding a TERMS_PENDING verdict with the terms URL)`
       : verdict === "TERMS_PENDING"
-        ? `${site} is TERMS_PENDING: only its terms page (a terms-... slug) may be queued until its terms are read`
-        : `${site} is ${verdict} in research/channel-loop/terms-verdicts.json`;
+        ? `${site} is TERMS_PENDING: only its terms page (a terms-... slug) or its robots.txt (a robots-... slug) may be queued until its terms are read`
+        : isExhaustiveNegative(entry)
+          ? `${site} is NO_TERMS, exhaustive-negative: only a robots- probe of /robots.txt may be queued until scripts/robots-verdict.mjs sets NO_TERMS_ROBOTS_OK (ruling 30.9 16(d) D2(v))`
+          : `${site} is ${verdict} in research/channel-loop/terms-verdicts.json`;
   return { ok: false, site, verdict, why };
 }
 

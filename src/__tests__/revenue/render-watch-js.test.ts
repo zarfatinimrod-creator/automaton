@@ -677,6 +677,22 @@ function stubPlainFetch() {
   return calls;
 }
 
+/**
+ * Since 30.9 every run reads a host's robots.txt with a plain GET before its first page, js lines included
+ * (ruling 30.9 16(d) D2(v); src/__tests__/revenue/render-watch-robots.test.ts). The default for these tests:
+ * every robots.txt answers 404 (no rules), and anything else fetch is asked for fails, so no test reaches the
+ * network. A test that needs plain pages stubs fetch itself.
+ */
+function stubNoRobots() {
+  const calls: string[] = [];
+  vi.stubGlobal("fetch", async (url: string) => {
+    calls.push(String(url));
+    if (new URL(String(url)).pathname === "/robots.txt") return new Response(null, { status: 404 });
+    throw new TypeError(`fetch failed (the test stub has no ${url})`);
+  });
+  return calls;
+}
+
 function neverLaunch() {
   return vi.fn(async () => {
     throw new Error("the browser must not be launched for a list with no js line");
@@ -690,6 +706,7 @@ describe("main — js lines", () => {
   beforeEach(() => {
     out = tmpOut();
     stdout = captureStdout();
+    stubNoRobots();
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2026-09-29T05:23:00.000Z"));
   });
@@ -721,7 +738,8 @@ describe("main — js lines", () => {
     expect(await main(["--list", list, "--out", out], {}, { launchBrowser: fake.launchBrowser, delayMs: 0 })).toBe(0);
 
     expect(snapshot(out, "ex-terms")).toEqual(reference);
-    expect(fetched).toEqual([PLAIN_URL]); // the js URL never went through fetch
+    // The js URL never went through fetch; only its host's robots.txt did, read before the browser was asked.
+    expect(fetched).toEqual(["https://example.test/robots.txt", PLAIN_URL, "https://support.example.test/robots.txt"]);
     expect(fake.gotos.map((g) => g.url)).toEqual([ENTRY.url]);
 
     expect(readFileSync(join(out, "ex-identity.html"), "utf8")).toBe(RENDERED);
@@ -745,12 +763,16 @@ describe("main — js lines", () => {
       "textPath",
       "renderedWith",
       "networkIdle",
+      "robots",
+      "robotsUrl",
       "changed",
       "firstFetch",
       "previousSha256",
       "note",
     ]);
     expect(meta).toMatchObject({
+      robots: "allowed",
+      robotsUrl: "https://support.example.test/robots.txt",
       url: ENTRY.url,
       fetchedAt: "2026-09-29T05:23:00.000Z",
       status: 200,
@@ -899,11 +921,13 @@ describe("main — js lines", () => {
     const calls: string[] = [];
     vi.stubGlobal("fetch", async (url: string) => {
       calls.push(String(url));
+      if (new URL(String(url)).pathname === "/robots.txt") return new Response(null, { status: 404 });
       return new Response(null, { status: 302, headers: { location: "https://www.tiktok.com/@someone" } });
     });
     const list = writeList(out, ["https://link.example.test/bio\tex-bio"]);
     expect(await main(["--list", list, "--out", out], {}, { delayMs: 0 })).toBe(0);
-    expect(calls).toEqual(["https://link.example.test/bio"]);
+    // The listed host's robots.txt, then the page; nothing at all to tiktok.com, not even its robots.txt.
+    expect(calls).toEqual(["https://link.example.test/robots.txt", "https://link.example.test/bio"]);
     expect(readdirSync(out).sort()).toEqual(["ex-bio.meta.json", "urls.txt"]);
     const meta = JSON.parse(readFileSync(join(out, "ex-bio.meta.json"), "utf8"));
     expect(meta).toMatchObject({ status: 302, bodyPath: null, sha256: null, error: tiktokRedirectError("www.tiktok.com") });

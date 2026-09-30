@@ -26,8 +26,20 @@
  * text is. `research/rendered/README.md` says how that hand-off works.
  *
  * BEHAVIOUR.
- *   - every URL in research/rendered/urls.txt is fetched with a browser-like
- *     User-Agent and a 30 s timeout
+ *   - every URL in research/rendered/urls.txt is fetched with an identifying
+ *     User-Agent (USER_AGENT: the brand, never a username or the repository URL)
+ *     and a 30 s timeout
+ *   - before the first page of a host, that host's /robots.txt is fetched once for
+ *     the run (robotsChecker) and read per RFC 9309 for the product token
+ *     MehudakRenderWatch, else `*`. A URL it disallows is not fetched, and nor is
+ *     anything on a host whose robots.txt answered 5xx or could not be reached; the
+ *     meta records `robots` (allowed | disallowed | none | unreachable) and
+ *     `robotsUrl`. Every redirect hop is checked the same way before it is requested.
+ *     A host refused on its terms (TERMS_BARRED, tiktok.com) gets no request of any
+ *     kind, its robots.txt included. Ruled 30.9: RULING-2026-09-30-video.md 16(d) D2(v)
+ *   - a line whose slug starts `robots-` and whose URL path is exactly /robots.txt is
+ *     a robots-only probe: that file is fetched and stored like any capture, and
+ *     nothing else from the host (research/rendered/README.md)
  *   - redirects are followed by hand (fetchOne), up to MAX_REDIRECTS (20, the Fetch
  *     standard's own limit), inside the same 30 s. A hop to tiktok.com is refused
  *     before it is requested, and the meta records the redirect instead
@@ -127,6 +139,13 @@
  *     between URLs: every URL gets a fresh browser context, closed after it
  *   - no stealth plugin and no anti-detection setting: the same USER_AGENT and
  *     accept-language as a plain GET, and the page can see it is automated
+ *   - robots.txt first: the listed URL is checked against its host's robots.txt,
+ *     read by a plain GET, before the browser is asked for it (or launched). A URL
+ *     the main frame then went on to — a server redirect, or the page's own script —
+ *     is checked after the page settles, and the page is not stored if robots.txt
+ *     disallows it. A stated limit: the browser follows a redirect itself, so that
+ *     hop was already requested; only a plain GET refuses a hop before asking.
+ *     Subresources (scripts, images, XHR) are not held to robots.txt
  *   - HTML only: a js line that answers a PDF or JSON stores nothing and says to
  *     drop the flag
  *   - a browser that is unavailable is a host failure, not a site's answer: when it
@@ -180,14 +199,22 @@ export const MAX_BYTES = 5 * 1024 * 1024;
 export const DELAY_MS = 1_000;
 
 /**
- * A normal browser User-Agent. Not a disguise: several of the pages on the list
- * return 403 to a default Node user-agent string and render fine to a browser,
- * and a 403 that is an artefact of our own headers would be recorded here as if
- * it were the site's answer. Nothing else is done to get past a block — no proxy,
- * no retry storm, no cookie games. A site that says no is recorded as saying no.
+ * The product token render-watch answers to in a robots.txt `User-agent` line (RFC 9309 §2.2.1:
+ * letters, underscores and hyphens only). Ruled 30.9: research/channel-loop/RULING-2026-09-30-video.md
+ * 16(d) D2(v).
  */
-export const USER_AGENT =
-  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36";
+export const ROBOTS_PRODUCT_TOKEN = "MehudakRenderWatch";
+
+/**
+ * An identifying User-Agent: the product token, a version, and the brand's own URL, so a site can see
+ * who is asking and say no to it by name in its robots.txt. Sent by both modes and by the robots.txt
+ * fetch. It names the brand and nothing else — never a username, never the repository's URL
+ * (MISSION.md:276-279; ruling 30.9 16(d) D2(v)). It replaced a copied Chrome string on 30.9: some pages
+ * may now answer 403 where they rendered to a browser, and that 403 is the site's answer to an honest
+ * crawler, recorded as such. Nothing is done to get past a block — no proxy, no retry storm, no cookie
+ * games. A site that says no is recorded as saying no.
+ */
+export const USER_AGENT = `${ROBOTS_PRODUCT_TOKEN}/1.0 (+https://il-biz-tools.netlify.app)`;
 
 /** Sent by both modes, so a js line asks for the same languages a plain GET does. */
 export const ACCEPT_LANGUAGE = "en-US,en;q=0.9,he;q=0.8";
@@ -200,6 +227,9 @@ const SLUG_RE = /^[a-z0-9][a-z0-9._-]*$/;
 
 /** The flags a urls.txt line may carry after its slug. One, today: `js` (header comment). */
 const FLAGS = new Set(["js"]);
+
+/** A slug starting with this, on a URL whose path is exactly /robots.txt, is a robots-only probe. */
+export const ROBOTS_SLUG_PREFIX = "robots-";
 
 /**
  * Derive a filesystem-safe slug from a URL, for a list line that does not name one.
@@ -235,9 +265,14 @@ export function slugFromUrl(url) {
  *     `js` is not a usable slug, so `URL js` cannot silently become a plain line
  *     named "js". The entry then carries `js: true`; a line without the flag comes
  *     back in exactly the shape it always had, with no `js` key at all
+ *   - a slug starting `robots-` marks a robots-only probe (ruling 30.9 16(d) D2(v)):
+ *     its URL path must be exactly /robots.txt with no query, a /robots.txt URL must
+ *     have such a slug, and a probe takes no `js` flag. The entry carries
+ *     `robotsProbe: true`; main fetches that file and nothing else from the host
  *
  * Throws on an authoring mistake — a non-http(s) line, a URL that does not parse,
- * an unusable slug, an unknown flag, two lines claiming the same slug (which would
+ * an unusable slug, an unknown flag, a robots- slug or a /robots.txt URL out of the
+ * probe form, two lines claiming the same slug (which would
  * have one page silently overwrite another), a tiktok.com URL (isTikTokHost), or a
  * URL on a site whose terms bar automated access (termsBarred).
  * Those are the "the script itself is broken" cases; everything that can go wrong
@@ -309,6 +344,27 @@ export function parseUrlList(text) {
         `urls.txt line ${lineNumber}: slug "${slug}" is not usable as a file name (want ${SLUG_RE}).`,
       );
     }
+    // The robots-only probe (ruling 30.9 16(d) D2(v)): a robots- slug is exactly a /robots.txt URL, and back.
+    const probe = slug.startsWith(ROBOTS_SLUG_PREFIX);
+    const parsed = new URL(url);
+    const robotsPath = parsed.pathname === "/robots.txt";
+    if (probe && !(robotsPath && parsed.search === "" && parsed.hash === "")) {
+      throw new Error(
+        `urls.txt line ${lineNumber}: slug "${slug}" starts ${ROBOTS_SLUG_PREFIX}, which marks a robots-only probe: ` +
+          `its URL path must be exactly /robots.txt, with no query (got ${url}).`,
+      );
+    }
+    if (robotsPath && !probe) {
+      throw new Error(
+        `urls.txt line ${lineNumber}: ${url} is a robots.txt: list it as a robots-only probe, with a slug starting ` +
+          `${ROBOTS_SLUG_PREFIX} (research/rendered/README.md).`,
+      );
+    }
+    if (probe && flag === "js") {
+      throw new Error(
+        `urls.txt line ${lineNumber}: a robots-only probe is read by a plain GET only; drop the js flag after "${slug}".`,
+      );
+    }
     if (seen.has(slug)) {
       throw new Error(
         `urls.txt line ${lineNumber}: slug "${slug}" is already used on line ${seen.get(slug)}. ` +
@@ -316,7 +372,13 @@ export function parseUrlList(text) {
       );
     }
     seen.set(slug, lineNumber);
-    entries.push(flag === "js" ? { url, slug, lineNumber, js: true } : { url, slug, lineNumber });
+    entries.push(
+      flag === "js"
+        ? { url, slug, lineNumber, js: true }
+        : probe
+          ? { url, slug, lineNumber, robotsProbe: true }
+          : { url, slug, lineNumber },
+    );
   }
 
   return entries;
@@ -331,6 +393,9 @@ export function parseUrlList(text) {
  * in tick 19, after rows 155-186 had been fetched; whether any fetch is allowed again
  * is ruled: research/channel-loop/RULING-2026-09-30-video.md 16(d) D2. The Gumroad API is not a web page and is not
  * fetched by this script.
+ *
+ * A host on this list gets no request of any kind — not its pages, and not its robots.txt either: the robots.txt
+ * check (robotsChecker) runs only after these refusals, and refuses such a host again itself.
  */
 export const TERMS_BARRED = [
   {
@@ -349,8 +414,9 @@ export const TERMS_BARRED = [
   { domain: "facercreator.io", why: "Facer's terms (Little Labs) bar spiders, robots and crawlers on the Services, which the creator site is part of (research/rendered/facer-templates-js.bin bytes 475268-475660; terms audit 29.9)" },
   { domain: "youtube.com", why: "YouTube's terms bar accessing the Service \"using any automated means (such as robots, botnets or scrapers)\" except search engines or with written permission (research/faceless-youtube/scouts/discovery.md:209-211; terms audit 29.9)" },
   { domain: "blog.youtube", why: "YouTube's blog links YouTube's terms, which bar automated access except search engines or with written permission (research/rendered/youtube-blog-ypp-2027.html:3341; research/faceless-youtube/scouts/discovery.md:209-211; terms audit 29.9)" },
-  { domain: "google.com", why: "Google's terms allow automated access only while respecting robots.txt, which render-watch does not read, and YouTube's terms bar the YouTube Help pages outright (research/colony-sweep/scouts/risk-governance--automation-tos.md:106; research/faceless-youtube/scouts/discovery.md:209-211; terms audit 29.9)" },
-  { domain: "googlesource.com", why: "Google's terms allow automated access only while respecting robots.txt, which render-watch does not read (research/colony-sweep/scouts/risk-governance--automation-tos.md:106; terms audit 29.9)" },
+  { domain: "google.com", why: "YouTube's terms bar the YouTube Help pages outright (research/faceless-youtube/scouts/discovery.md:209-211); Google's own terms allow automated access only while respecting robots.txt (research/colony-sweep/scouts/risk-governance--automation-tos.md:106), which render-watch reads since 30.9, but the Help pages' bar stands (terms audit 29.9; ruling 30.9 16(d) D2(v))" },
+  // googlesource.com left this list on 30.9: its one condition was robots.txt, which render-watch now reads
+  // (robotsChecker), so it is CONDITIONAL_MET in research/channel-loop/terms-verdicts.json (ruling 30.9 16(d) D2(v)).
   { domain: "metaculus.com", why: "Metaculus's terms bar viewing, copying or procuring content \"by automated means (such as scripts, bots, spiders, crawlers, or scrapers)\" outside its API (Metaculus/metaculus front_end terms-of-use page.tsx:187-196; terms audit 29.9)" },
   { domain: "openai.com", why: "OpenAI's terms bar \"Automatically or programmatically extract data or Output\" (OpenTermsArchive/genai-contrib-versions OpenAI/Terms of Service.md:40; terms audit 29.9)" },
   { domain: "addons.mozilla.org", why: "Mozilla's acceptable-use policy bars harvesting personal information such as account names and email addresses, and the AMO search API returns both for every author (mozilla/legal-docs en/acceptable_use_policy.md:14; terms audit 29.9; the stored results were redacted)" },
@@ -685,6 +751,11 @@ export function hasChanged(previousMeta, next) {
  * networkIdle is true when the page's network went quiet before the DOM was taken,
  * false when the time ran out first (the DOM may then be partial), and null when no
  * DOM was taken at all.
+ * `robots` and `robotsUrl` say what the host's robots.txt said about this URL on the
+ * fetch that wrote the meta: "allowed" or "disallowed" (it was read), "none" (it
+ * answered 4xx: no rules) or "unreachable" (5xx or no answer: complete disallow), and
+ * which robots.txt that was. main always records them; a meta written by an older run
+ * has neither.
  */
 export function buildMeta({
   url,
@@ -703,6 +774,8 @@ export function buildMeta({
   redacted = 0,
   renderedWith = null,
   networkIdle = null,
+  robots = null,
+  robotsUrl = null,
 }) {
   const next = {
     url,
@@ -722,6 +795,10 @@ export function buildMeta({
     ...(textError ? { textError } : {}),
     // Present only for a js line, so a plain line's meta is byte-identical to what it always was.
     ...(renderedWith ? { renderedWith, networkIdle } : {}),
+    // What the host's robots.txt said about this URL on the fetch that wrote this meta (ruling 30.9 16(d) D2(v)).
+    // Not part of the change test: an unchanged page writes nothing, so its meta keeps the robots state of the
+    // fetch that captured its bytes. A refusal is an error, and that is a change.
+    ...(robots ? { robots, robotsUrl } : {}),
   };
   return {
     ...next,
@@ -825,6 +902,292 @@ async function discardBody(response) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// robots.txt (RFC 9309) — ruled 30.9: research/channel-loop/RULING-2026-09-30-video.md 16(d) D2(v)
+// ---------------------------------------------------------------------------
+
+/**
+ * RFC 9309 §2.3.1.2: "crawlers SHOULD follow at least five consecutive redirects" for robots.txt, and MAY
+ * then assume it unavailable (which would allow everything). render-watch follows five and reads a sixth as
+ * unreachable instead — complete disallow — because the stricter reading can never fetch what a site meant
+ * to refuse.
+ */
+export const ROBOTS_MAX_REDIRECTS = 5;
+
+/** The robots.txt that governs a URL: /robots.txt at its own scheme, host and port (RFC 9309 §2.3). */
+export function robotsTxtUrl(url) {
+  return new URL("/robots.txt", new URL(String(url)).origin).href;
+}
+
+const UNRESERVED_CHAR = /^[A-Za-z0-9._~-]$/;
+const HEX_PAIR = /^[0-9A-Fa-f]{2}$/;
+
+/**
+ * One form for a rule's path and a URL's path before they are compared (RFC 9309 §2.2.2): every octet
+ * outside printable ASCII is percent-encoded from its UTF-8 bytes, a percent-encoded unreserved character is
+ * decoded, and any other percent escape keeps its encoding with upper-case hex. `*` and `$` are printable
+ * ASCII and pass through, so a pattern keeps its wildcards.
+ */
+export function normalizeRobotsPath(text) {
+  const bytes = Buffer.from(String(text), "utf8");
+  let out = "";
+  for (let i = 0; i < bytes.length; i += 1) {
+    const byte = bytes[i];
+    const pair = i + 2 < bytes.length ? String.fromCharCode(bytes[i + 1], bytes[i + 2]) : "";
+    if (byte === 0x25 && HEX_PAIR.test(pair)) {
+      const decoded = String.fromCharCode(Number.parseInt(pair, 16));
+      out += UNRESERVED_CHAR.test(decoded) ? decoded : `%${pair.toUpperCase()}`;
+      i += 2;
+    } else if (byte <= 0x20 || byte >= 0x7f) {
+      out += `%${byte.toString(16).toUpperCase().padStart(2, "0")}`;
+    } else {
+      out += String.fromCharCode(byte);
+    }
+  }
+  return out;
+}
+
+/**
+ * Parse a robots.txt body into groups: { groups: [{ agents: [value, …], rules: [{ allow, pattern }, …] }] }.
+ * RFC 9309 §2.1-2.2: a run of consecutive `user-agent` lines opens one group and the `allow`/`disallow`
+ * lines after it belong to it; a `user-agent` line after a rule opens the next group. Keys are
+ * case-insensitive, `#` starts a comment, blank lines and other records (sitemap, crawl-delay) are ignored,
+ * and a rule before any `user-agent` line belongs to no group. An empty rule value is no rule. A pattern
+ * that does not start with `/` or `*` is read as if it did start with `/`. Patterns are stored normalised
+ * (normalizeRobotsPath). An HTML error page parses to no groups at all, which allows everything, as the RFC
+ * reads a file with no matching group.
+ */
+export function parseRobotsTxt(text) {
+  const groups = [];
+  let current = null;
+  let lastWasRule = false;
+  for (const rawLine of String(text ?? "").replace(/^﻿/, "").split(/\r\n|\r|\n/)) {
+    const line = rawLine.replace(/#.*$/, "").trim();
+    const colon = line.indexOf(":");
+    if (line === "" || colon < 0) continue;
+    const key = line.slice(0, colon).trim().toLowerCase();
+    const value = line.slice(colon + 1).trim();
+    if (key === "user-agent") {
+      if (current === null || lastWasRule) {
+        current = { agents: [], rules: [] };
+        groups.push(current);
+      }
+      current.agents.push(value);
+      lastWasRule = false;
+    } else if (key === "allow" || key === "disallow") {
+      if (current === null) continue;
+      lastWasRule = true;
+      if (value === "") continue;
+      const pattern = value.startsWith("/") || value.startsWith("*") ? value : `/${value}`;
+      current.rules.push({ allow: key === "allow", pattern: normalizeRobotsPath(pattern) });
+    }
+  }
+  return { groups };
+}
+
+/**
+ * The rules that apply to `token` (RFC 9309 §2.2.1): every group with a `user-agent` naming the token —
+ * the value's leading run of letters, `_` and `-`, compared case-insensitively — combined; failing that,
+ * every `*` group combined; failing that, none.
+ */
+export function robotsRulesFor(parsed, token = ROBOTS_PRODUCT_TOKEN) {
+  const want = String(token).toLowerCase();
+  const names = (agent) => (agent.match(/^[A-Za-z_-]+/)?.[0] ?? "").toLowerCase() === want;
+  const mine = parsed.groups.filter((g) => g.agents.some(names));
+  const chosen = mine.length > 0 ? mine : parsed.groups.filter((g) => g.agents.some((agent) => agent === "*"));
+  return chosen.flatMap((g) => g.rules);
+}
+
+/**
+ * Does `pattern` (normalised; `*` any run of characters, a final `$` the end of the path) match `path` from
+ * its start? The position-set walk of Google's reference parser: linear in the pattern times the path, with
+ * no backtracking, so a hostile pattern cannot stall a run.
+ */
+function robotsPatternMatches(pattern, path) {
+  let positions = [0];
+  for (let i = 0; i < pattern.length; i += 1) {
+    const ch = pattern[i];
+    if (ch === "$" && i === pattern.length - 1) return positions.at(-1) === path.length;
+    if (ch === "*") {
+      const from = positions[0];
+      positions = [];
+      for (let p = from; p <= path.length; p += 1) positions.push(p);
+    } else {
+      const next = [];
+      for (const p of positions) if (p < path.length && path[p] === ch) next.push(p + 1);
+      if (next.length === 0) return false;
+      positions = next;
+    }
+  }
+  return true;
+}
+
+/**
+ * Is `url` allowed by `rules` (robotsRulesFor)? RFC 9309 §2.2.2: the path and query, normalised, are matched
+ * case-sensitively against every rule; the longest matching pattern decides, an Allow wins a tie, no match
+ * allows, and /robots.txt itself is always allowed. Returns { allowed, rule } where rule is the deciding
+ * { allow, pattern }, or null.
+ */
+export function robotsDecision(rules, url) {
+  const parsed = new URL(String(url));
+  const path = normalizeRobotsPath(`${parsed.pathname}${parsed.search}`);
+  if (path === "/robots.txt") return { allowed: true, rule: null };
+  let best = null;
+  for (const rule of rules) {
+    if (!robotsPatternMatches(rule.pattern, path)) continue;
+    const longer = best === null || rule.pattern.length > best.pattern.length;
+    const allowOnTie = best !== null && rule.pattern.length === best.pattern.length && rule.allow && !best.allow;
+    if (longer || allowOnTie) best = rule;
+  }
+  return best === null ? { allowed: true, rule: null } : { allowed: best.allow, rule: { allow: best.allow, pattern: best.pattern } };
+}
+
+/** Why no request of any kind goes to a host, or null when it may be asked. The terms refusals come first, always. */
+function refusedHost(hostname) {
+  if (isTikTokHost(hostname)) return "tiktok.com, which render-watch never contacts";
+  const barred = termsBarred(hostname);
+  return barred ? `${barred.domain}, whose terms bar automated access` : null;
+}
+
+/**
+ * Fetch one robots.txt, following up to ROBOTS_MAX_REDIRECTS redirects by hand (the same refusals as a page:
+ * no hop to tiktok.com or a TERMS_BARRED host is requested), with the identifying User-Agent and its own
+ * timeout. Never throws. Returns { robotsUrl, state, status, contentType, bytes, truncated, reason, rules }:
+ *   - state "parsed": a 2xx; `rules` are the ones that apply to ROBOTS_PRODUCT_TOKEN
+ *   - state "none": a 4xx, which RFC 9309 §2.3.1.3 reads as no robots.txt (everything allowed)
+ *   - state "unreachable": a 5xx, a network error, a timeout, too many redirects, a refused hop or any other
+ *     answer, which §2.3.1.4 reads as complete disallow; `reason` says which
+ */
+export async function fetchRobots(robotsUrl, { fetchImpl, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES } = {}) {
+  const doFetch = fetchImpl ?? globalThis.fetch;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const answer = (state, fields) => ({
+    robotsUrl,
+    state,
+    status: null,
+    contentType: null,
+    bytes: null,
+    truncated: false,
+    reason: null,
+    rules: [],
+    ...fields,
+  });
+  try {
+    let url = robotsUrl;
+    for (let redirects = 0; ; redirects += 1) {
+      const response = await doFetch(url, {
+        signal: controller.signal,
+        redirect: "manual",
+        headers: { "user-agent": USER_AGENT, accept: "text/plain,*/*;q=0.8", "accept-language": ACCEPT_LANGUAGE },
+      });
+      const status = response.status;
+      const contentType = response.headers?.get?.("content-type") ?? null;
+      if (REDIRECT_STATUSES.has(status)) {
+        await discardBody(response);
+        const location = response.headers?.get?.("location") ?? null;
+        let next = null;
+        try {
+          next = location === null ? null : new URL(location, url);
+        } catch {
+          next = null;
+        }
+        if (next === null || (next.protocol !== "http:" && next.protocol !== "https:")) {
+          return answer("unreachable", { status, contentType, reason: `HTTP ${status} redirect with no usable Location` });
+        }
+        const refused = refusedHost(next.hostname);
+        if (refused) {
+          return answer("unreachable", {
+            status,
+            contentType,
+            reason: `redirected to ${refused} (${next.hostname.toLowerCase()}); not followed`,
+          });
+        }
+        if (redirects >= ROBOTS_MAX_REDIRECTS) {
+          return answer("unreachable", { status, contentType, reason: `more than ${ROBOTS_MAX_REDIRECTS} redirects` });
+        }
+        url = next.href;
+        continue;
+      }
+      if (status >= 200 && status <= 299) {
+        const { bytes, truncated } = await readCappedBody(response, maxBytes);
+        const rules = robotsRulesFor(parseRobotsTxt(bytes.toString("utf8")));
+        return answer("parsed", { status, contentType, bytes, truncated, rules });
+      }
+      await discardBody(response);
+      if (status >= 400 && status <= 499) return answer("none", { status, contentType, reason: `HTTP ${status}` });
+      return answer("unreachable", { status, contentType, reason: `HTTP ${status}` });
+    }
+  } catch (error) {
+    const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+    return answer("unreachable", {
+      reason: controller.signal.aborted ? `timeout after ${timeoutMs}ms (${message})` : message,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** The one line a meta says when robots.txt kept a URL from being fetched. Deterministic, like every meta line. */
+export function robotsRefusalError(decision, hopHost = null) {
+  const head = hopHost ? `redirected to ${String(hopHost).toLowerCase()}: ` : "";
+  if (decision.robots === "disallowed") {
+    const rule = decision.rule ? `, "${decision.rule.allow ? "Allow" : "Disallow"}: ${decision.rule.pattern}"` : "";
+    return `${head}robots.txt disallows this URL for ${ROBOTS_PRODUCT_TOKEN} (${decision.robotsUrl}${rule}); not fetched`;
+  }
+  if (decision.robots === "unreachable") {
+    return (
+      `${head}robots.txt could not be read (${decision.robotsUrl}: ${decision.reason}); RFC 9309 §2.3.1.4 reads that ` +
+      "as complete disallow, so nothing on the host is fetched this run; not fetched"
+    );
+  }
+  return `${head}${decision.reason ?? "refused"}; not fetched`;
+}
+
+/**
+ * The robots.txt of every host a run touches, fetched once per scheme, host and port (fetchRobots) and kept
+ * for the run. `decide(url)` answers { allowed, robots, robotsUrl, rule, reason }, where `robots` is what the
+ * meta records: "allowed" or "disallowed" (robots.txt was read), "none" (it answered 4xx: no rules), or
+ * "unreachable" (5xx, no answer: nothing on the host is fetched this run). `probe(url)` is the robots-only
+ * line: that host's robots.txt as a capture result, from the same fetch. A host refused on its terms is
+ * answered without a request of any kind — the callers refuse it first, and this refuses it again.
+ */
+export function robotsChecker({ fetchImpl, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES } = {}) {
+  const cache = new Map();
+  const robotsFor = (url) => {
+    const robotsUrl = robotsTxtUrl(url);
+    if (!cache.has(robotsUrl)) cache.set(robotsUrl, fetchRobots(robotsUrl, { fetchImpl, timeoutMs, maxBytes }));
+    return cache.get(robotsUrl);
+  };
+  const refusal = (url) => {
+    const refused = refusedHost(new URL(String(url)).hostname);
+    return refused ? `${refused}: no request of any kind, robots.txt included` : null;
+  };
+  return {
+    async decide(url) {
+      const refused = refusal(url);
+      if (refused) return { allowed: false, robots: null, robotsUrl: null, rule: null, reason: refused };
+      const got = await robotsFor(url);
+      if (got.state === "none") return { allowed: true, robots: "none", robotsUrl: got.robotsUrl, rule: null, reason: got.reason };
+      if (got.state === "unreachable") {
+        return { allowed: false, robots: "unreachable", robotsUrl: got.robotsUrl, rule: null, reason: got.reason };
+      }
+      const { allowed, rule } = robotsDecision(got.rules, url);
+      return { allowed, robots: allowed ? "allowed" : "disallowed", robotsUrl: got.robotsUrl, rule, reason: null };
+    },
+    async probe(url) {
+      const refused = refusal(url);
+      if (refused) {
+        return { status: null, contentType: null, bytes: null, truncated: false, error: refused, robots: null, robotsUrl: null };
+      }
+      const got = await robotsFor(url);
+      const base = { status: got.status, contentType: got.contentType, robotsUrl: got.robotsUrl };
+      if (got.state === "parsed") return { ...base, bytes: Buffer.from(got.bytes), truncated: got.truncated, error: null, robots: "allowed" };
+      return { ...base, bytes: null, truncated: false, error: got.reason, robots: got.state };
+    },
+  };
+}
+
 /**
  * Fetch one entry. Never throws: a non-2xx answer and a network failure both come
  * back as a result object, because a page that refuses us is a finding, not a
@@ -837,8 +1200,29 @@ async function discardBody(response) {
  * MAX_REDIRECTS hops are followed — what "follow" did for a GET, apart from the hop
  * that is refused: a tiktok.com one (isTikTokHost), recorded with the redirect's
  * status and tiktokRedirectError, before it is requested.
+ *
+ * With `robots` (a robotsChecker, which main always passes), every URL of the chain is
+ * checked against its host's robots.txt before it is requested: the listed URL before
+ * anything else, and each hop after the tiktok.com and TERMS_BARRED refusals, so a
+ * refused host is never asked even for its robots.txt. A URL robots.txt disallows, or
+ * one on a host whose robots.txt could not be read, is not requested; the result says
+ * why (robotsRefusalError). The result then carries `robots` and `robotsUrl` for the
+ * last URL checked — the page stored, or the one refused. Without `robots` the result
+ * has neither key and no robots.txt is fetched, as before.
  */
-export async function fetchOne(entry, { fetchImpl = fetch, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES } = {}) {
+export async function fetchOne(
+  entry,
+  { fetchImpl = fetch, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES, robots = null } = {},
+) {
+  let decision = null;
+  const withRobots = (result) =>
+    decision ? { ...result, robots: decision.robots, robotsUrl: decision.robotsUrl } : result;
+  if (robots) {
+    decision = await robots.decide(entry.url);
+    if (!decision.allowed) {
+      return withRobots({ status: null, contentType: null, bytes: null, truncated: false, error: robotsRefusalError(decision) });
+    }
+  }
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -857,13 +1241,14 @@ export async function fetchOne(entry, { fetchImpl = fetch, timeoutMs = TIMEOUT_M
       const location = REDIRECT_STATUSES.has(response.status) ? (response.headers?.get?.("location") ?? null) : null;
       if (location === null) break; // not a redirect: this is the answer (a 3xx with no Location included, as before)
 
-      const refused = (error) => ({
-        status: response.status,
-        contentType: response.headers?.get?.("content-type") ?? null,
-        bytes: null,
-        truncated: false,
-        error,
-      });
+      const refused = (error) =>
+        withRobots({
+          status: response.status,
+          contentType: response.headers?.get?.("content-type") ?? null,
+          bytes: null,
+          truncated: false,
+          error,
+        });
       await discardBody(response);
       let next;
       try {
@@ -880,31 +1265,36 @@ export async function fetchOne(entry, { fetchImpl = fetch, timeoutMs = TIMEOUT_M
         return refused(`redirected to ${barredNext.domain} (${next.hostname.toLowerCase()}), whose terms bar automated access; not followed`);
       }
       if (redirects >= MAX_REDIRECTS) return refused(`more than ${MAX_REDIRECTS} redirects; not followed`);
+      if (robots) {
+        // After the refusals above: a barred host is never asked, not even for its robots.txt.
+        decision = await robots.decide(next.href);
+        if (!decision.allowed) return refused(robotsRefusalError(decision, next.hostname));
+      }
       url = next.href;
     }
 
     const contentType = response.headers?.get?.("content-type") ?? null;
     if (!response.ok) {
-      return {
+      return withRobots({
         status: response.status,
         contentType,
         bytes: null,
         truncated: false,
         error: `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ""}`,
-      };
+      });
     }
 
     const { bytes, truncated } = await readCappedBody(response, maxBytes);
-    return { status: response.status, contentType, bytes, truncated, error: null };
+    return withRobots({ status: response.status, contentType, bytes, truncated, error: null });
   } catch (error) {
     const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
-    return {
+    return withRobots({
       status: null,
       contentType: null,
       bytes: null,
       truncated: false,
       error: controller.signal.aborted ? `timeout after ${timeoutMs}ms (${message})` : message,
-    };
+    });
   } finally {
     clearTimeout(timer);
   }
@@ -964,6 +1354,17 @@ export function tiktokHostInChain(response) {
   return hosts.find((host) => host !== null && isTikTokHost(host)) ?? null;
 }
 
+/** Every URL of a navigation response's redirect chain, last to first (the response's own URL, then redirectedFrom). */
+function redirectChainUrls(response) {
+  const urls = [];
+  const own = response?.url?.();
+  if (own) urls.push(String(own));
+  for (let request = response?.request?.() ?? null; request; request = request.redirectedFrom?.() ?? null) {
+    urls.push(String(request.url()));
+  }
+  return urls;
+}
+
 /** What withinBudget resolves to when the time ran out first. */
 const TIMED_OUT = Symbol("timed out");
 
@@ -1003,10 +1404,16 @@ async function withinBudget(promise, ms) {
  * script moving it — stores nothing either; the meta says tiktokRedirectError. The
  * browser's host-resolver rule (chromiumLaunchOptions) is what stops the request
  * itself; this is what keeps the page out when that rule did not apply.
+ *
+ * With `robots` (a robotsChecker), every URL the main frame went to other than the
+ * listed one — each redirect hop, and any move the page's own script made — is held
+ * to its host's robots.txt once the page has settled, and a page reached through a
+ * disallowed or unreadable one stores nothing; the result carries that hop's
+ * `robots` and `robotsUrl`. The listed URL is checked by the caller, before this runs.
  */
 export async function renderWithBrowser(
   entry,
-  { browser, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES, now = Date.now } = {},
+  { browser, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES, now = Date.now, robots = null } = {},
 ) {
   const failed = (fields) => ({
     status: null,
@@ -1023,6 +1430,8 @@ export async function renderWithBrowser(
   let context = null;
   // The first tiktok.com host the page's main frame tried to navigate to, if any.
   let tiktokNavigation = null;
+  // Every URL the main frame navigated to: the listed one, its redirect hops, and any move its script made.
+  const mainFrameUrls = [];
   try {
     context = await browser.newContext(browserContextOptions());
     // No request to tiktok.com from inside a page either — an embed, a script, a frame, and (route() does
@@ -1035,15 +1444,17 @@ export async function renderWithBrowser(
     const page = await context.newPage();
     // Every hop of a main-frame navigation is a request here, redirect targets included.
     page.on("request", (request) => {
-      if (tiktokNavigation !== null || !request.isNavigationRequest()) return;
+      if (!request.isNavigationRequest()) return;
       let mainFrame = false;
       try {
         mainFrame = request.frame() === page.mainFrame();
       } catch {
         return; // a service worker's request has no frame (and service workers are blocked)
       }
+      if (!mainFrame) return;
+      mainFrameUrls.push(request.url());
       const host = hostOf(request.url());
-      if (mainFrame && host !== null && isTikTokHost(host)) tiktokNavigation = host;
+      if (tiktokNavigation === null && host !== null && isTikTokHost(host)) tiktokNavigation = host;
     });
     const refusedTikTok = () => failed({ error: tiktokRedirectError(tiktokNavigation) });
 
@@ -1086,6 +1497,27 @@ export async function renderWithBrowser(
     }
     // The page's own script may have moved it to tiktok.com while the network settled.
     if (tiktokNavigation !== null) return refusedTikTok();
+
+    // Every other URL the main frame went to is held to its host's robots.txt, as a plain GET's hops are. The
+    // browser follows a server redirect itself, so a hop was requested before this can look at it: what the
+    // check can still do is keep that page out of the repository (a stated limit).
+    if (robots) {
+      const hops = [...mainFrameUrls, ...redirectChainUrls(response)].filter((url) => url !== entry.url);
+      for (const hop of [...new Set(hops)]) {
+        const decision = await robots.decide(hop);
+        if (!decision.allowed) {
+          return failed({
+            status,
+            contentType,
+            error:
+              `the browser went on to ${hostOf(hop) ?? hop}, and ${robotsRefusalError(decision).replace(/; not fetched$/, "")}; ` +
+              "not stored (a browser follows redirects itself, so the hop was requested before this check)",
+            robots: decision.robots,
+            robotsUrl: decision.robotsUrl,
+          });
+        }
+      }
+    }
 
     const all = Buffer.from(html, "utf8");
     const truncated = all.length > maxBytes;
@@ -1169,8 +1601,17 @@ const BROWSER_DISCONNECTED = "the browser disconnected during the run";
  * for them — including the line that was rendering when it died: its error
  * ("page.goto: net::ERR_ABORTED", "browser has been closed") is the host's failure,
  * not the site's answer, so it is not stored either.
+ *
+ * `robots` (the run's robotsChecker) goes to renderWithBrowser, which holds every URL
+ * the main frame went on to against its host's robots.txt. The listed URL itself is
+ * checked by the caller before render() is called.
  */
-export function jsRenderer({ launchBrowser = launchChromium, timeoutMs = TIMEOUT_MS, maxBytes = MAX_BYTES } = {}) {
+export function jsRenderer({
+  launchBrowser = launchChromium,
+  timeoutMs = TIMEOUT_MS,
+  maxBytes = MAX_BYTES,
+  robots = null,
+} = {}) {
   let browser = null;
   let launchError = null;
   const disconnected = () => typeof browser?.isConnected === "function" && !browser.isConnected();
@@ -1187,7 +1628,7 @@ export function jsRenderer({ launchBrowser = launchChromium, timeoutMs = TIMEOUT
       }
       if (!launchError && disconnected()) launchError = BROWSER_DISCONNECTED;
       if (launchError) return { skipped: launchError };
-      const result = await renderWithBrowser(entry, { browser, timeoutMs, maxBytes });
+      const result = await renderWithBrowser(entry, { browser, timeoutMs, maxBytes, robots });
       // Died during this line: skip it too rather than record the crash as the site's error.
       if (result.error && disconnected()) {
         launchError = BROWSER_DISCONNECTED;
@@ -1391,6 +1832,8 @@ export async function storeCapture(
     redacted,
     renderedWith,
     networkIdle,
+    robots: result.robots ?? null,
+    robotsUrl: result.robotsUrl ?? null,
   });
   // An extraction always has a text to write, even when nothing in the meta moved: the meta
   // claimed a <slug>.txt that had been deleted, or the stored .pdf had been replaced by hand.
@@ -1450,18 +1893,40 @@ export function resolveListText(env, readFile = readFileSync, listPath = DEFAULT
  * adds to the run's counts. A js line whose browser is unavailable (never started, or
  * stopped before or during the line) is skipped: a host failure, not the site's answer,
  * so nothing is written and the last capture stays exactly as it was.
+ *
+ * robots.txt comes first in every mode (`robots`, the run's robotsChecker): a plain line
+ * is checked inside fetchOne, hop by hop; a js line's URL is checked with a plain GET of
+ * robots.txt before the browser is asked for it (or even launched); a robots-only probe
+ * line is that host's robots.txt itself, from the same one fetch per host.
  */
-async function captureEntry(entry, { js, outDir, deps, summaryLines }) {
+async function captureEntry(entry, { js, robots, outDir, deps, summaryLines }) {
   let result;
-  if (entry.js) {
-    result = await js.render(entry);
-    if (result.skipped) {
-      process.stdout.write(`SKIPPED     ${entry.slug}  js mode: ${result.skipped}\n            ${entry.url}\n`);
-      summaryLines.push(`- \`${entry.slug}\` — SKIPPED (js mode): ${result.skipped}`);
-      return { changed: 0, failed: 0, skippedJs: 1 };
+  if (entry.robotsProbe) {
+    result = await robots.probe(entry.url);
+  } else if (entry.js) {
+    const decision = await robots.decide(entry.url);
+    if (!decision.allowed) {
+      result = {
+        status: null,
+        contentType: null,
+        bytes: null,
+        truncated: false,
+        error: robotsRefusalError(decision),
+        renderedWith: RENDERED_WITH,
+        networkIdle: null,
+      };
+    } else {
+      result = await js.render(entry);
+      if (result.skipped) {
+        process.stdout.write(`SKIPPED     ${entry.slug}  js mode: ${result.skipped}\n            ${entry.url}\n`);
+        summaryLines.push(`- \`${entry.slug}\` — SKIPPED (js mode): ${result.skipped}`);
+        return { changed: 0, failed: 0, skippedJs: 1 };
+      }
     }
+    // The meta says what robots.txt said about the listed URL, unless a hop's refusal says more.
+    if (result.robots === undefined) result = { ...result, robots: decision.robots, robotsUrl: decision.robotsUrl };
   } else {
-    result = await fetchOne(entry);
+    result = await fetchOne(entry, { robots });
   }
 
   const { meta, bytesChanged } = await storeCapture(entry, result, {
@@ -1528,13 +1993,15 @@ export async function main(argv = process.argv.slice(2), env = process.env, deps
   let skippedJs = 0;
   const summaryLines = [];
   const delayMs = deps.delayMs ?? DELAY_MS;
+  // One robots.txt fetch per host for the whole run, shared by every mode (ruling 30.9 16(d) D2(v)).
+  const robots = robotsChecker({ fetchImpl: deps.fetchImpl });
   // Launched on the first js line, if there is one; a plain list never loads playwright-core.
-  const js = jsRenderer({ launchBrowser: deps.launchBrowser ?? launchChromium });
+  const js = jsRenderer({ launchBrowser: deps.launchBrowser ?? launchChromium, robots });
 
   try {
     for (const [index, entry] of entries.entries()) {
       if (index > 0) await sleep(delayMs);
-      const counts = await captureEntry(entry, { js, outDir: options.outDir, deps, summaryLines });
+      const counts = await captureEntry(entry, { js, robots, outDir: options.outDir, deps, summaryLines });
       changedCount += counts.changed;
       failedCount += counts.failed;
       skippedJs += counts.skippedJs;
