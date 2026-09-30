@@ -22,8 +22,11 @@ name: brand-mail
 #          domain) it runs products/il-biz-tools/scripts/gumroad-pro-product.js refund, which
 #          refunds only that buyer's sale of that product inside the window Gumroad applies,
 #          once; then it answers with one fixed sentence and marks the mail answered. A DRY
-#          RUN unless scheduled or really_refund is ticked; a real run only from main. It
-#          commits nothing. The probe reports it in state/colony/brand-mail.json
+#          RUN unless scheduled or really_refund is ticked; a real run only from main. A
+#          refund Gumroad refuses for balance gets one holding reply and waits in
+#          state/colony/refund-retries.json (sale ids and times, never an address), retried by
+#          sale id every run (RULING-2026-09-30-documents (d)); that file is the one thing it
+#          commits. The probe reports it in state/colony/brand-mail.json
 #          ("responders": ["gumroad-refund"]) only because this file schedules it, and
 #          il-biz-tools' enable refuses to open the sale without that.
 #
@@ -254,9 +257,10 @@ jobs:
     if: github.event_name == 'schedule' || inputs.command == 'respond-refunds'
     runs-on: ubuntu-latest
     environment: brand-mailbox
-    # It changes mail flags and Gumroad sales, never the repository.
+    # It changes mail flags and Gumroad sales, and in the repository only
+    # state/colony/refund-retries.json (the balance retries), which the last step commits.
     permissions:
-      contents: read
+      contents: write
     # One responder at a time: two runs reading the same unanswered mail could answer twice
     # (a second refund of the same sale is refused by the refund command and by Gumroad).
     concurrency:
@@ -273,7 +277,8 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          # Committing the balance retries needs real history, not a shallow clone.
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -285,12 +290,21 @@ jobs:
         with:
           node-version: 22
 
+      # The balance retries must be the last ones committed, or a run queued behind another
+      # would retry from a stale list (a schedule run checks out the commit it was queued on).
+      - name: Move to the branch tip
+        run: |
+          git config user.name "colony-bot"
+          git config user.email "colony-bot@users.noreply.github.com"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+
       - name: Unit tests (fake IMAP, SMTP and refund command, no network) before any refund
         run: python -m unittest -v
 
       # The script checks the ref again for --apply, prints counts, UIDs and sale ids only,
       # and hands the Gumroad token to the refund command alone.
       - name: Respond to refund requests (a dry run unless scheduled or really_refund)
+        id: respond
         env:
           BRAND_MAIL_ADDRESS: ${{ secrets.BRAND_MAIL_ADDRESS }}
           BRAND_MAIL_APP_PASSWORD: ${{ secrets.BRAND_MAIL_APP_PASSWORD }}
@@ -302,3 +316,36 @@ jobs:
           ARGS=(respond-refunds)
           if [ "${EVENT:-}" = "schedule" ] || [ "${REALLY_REFUND:-}" = "true" ]; then ARGS+=(--apply); fi
           python scripts/brand_mail.py "${ARGS[@]}"
+
+      # Runs after a failed respond step too: a holding reply may already have gone out, and its
+      # retry must reach the repository or the refund is never retried. Sale ids and times only.
+      # A dry run writes nothing, so there is nothing to commit. The one condition besides the
+      # guard's that scripts/brand_mail.py pins (REFUND_COMMIT_IF).
+      - name: Commit the balance retries
+        if: always() && steps.respond.outcome != 'skipped'
+        run: |
+          set -euo pipefail
+          FILE=state/colony/refund-retries.json
+          if [ ! -f "$FILE" ]; then
+            echo "No balance retries recorded."
+            exit 0
+          fi
+          git add "$FILE"
+          if git diff --cached --quiet; then
+            echo "No change to the balance retries."
+            exit 0
+          fi
+          git config user.name "colony-bot"
+          git config user.email "colony-bot@users.noreply.github.com"
+          # [skip ci]: a record is data, not code.
+          git commit -m "brand-mail: refund balance retries [skip ci]"
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+            echo "Push rejected; rebasing and retrying (attempt ${attempt})."
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+          done
+          { echo '### state/colony/refund-retries.json (not pushed)'; echo '```json'; cat "$FILE"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error::Could not push state/colony/refund-retries.json. It is in this run's summary; add it by hand, or the refunds in it are not retried."
+          exit 1

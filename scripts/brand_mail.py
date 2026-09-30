@@ -41,7 +41,7 @@ COMMANDS
       `if:`, its environment, no `needs:`, no step `if:` but the main-ref guard's, and a respond step whose env and run
       add --apply on the schedule; refund_job_runs_on_schedule). il-biz-tools' `enable` refuses without it: a refund
       window on the page is honest only while something answers the requests.
-  respond-refunds [--apply] [--questions <file>] [--sent <file>]
+  respond-refunds [--apply] [--questions <file>] [--sent <file>] [--retries <file>]
       The Pro refund responder. A DRY RUN unless --apply (the schedule passes it; a manual dispatch does only when
       really_refund is ticked), and --apply runs only from refs/heads/main. Reads unanswered INBOX mail of the last
       REFUND_LOOKBACK_DAYS days (UID SEARCH NOT ANSWERED SINCE, FETCH BODY.PEEK[]: reading never sets \\Seen; a dry run
@@ -70,6 +70,16 @@ COMMANDS
       leaves it alone. One answer per sender per run, at most MAX_REFUND_REQUESTS_PER_RUN per run. A command that stops
       or a reply that cannot be sent leaves the request unanswered for the next run and exits 1. Prints counts, IMAP
       UIDs and the command's own lines (sale ids and counts; any address redacted) - never an address, subject or body.
+      BALANCE (RULING-2026-09-30-documents (d)): when the command exits BALANCE_EXIT (3) - Gumroad refused the refund
+      because the unpaid balance does not cover it ("Your balance is insufficient to process this refund.") - and names
+      the sale, the request gets HOLDING_REPLY once (facts only, no date promised), its retry {saleId, requestedAt,
+      holdingReplySentAt} is appended to state/colony/refund-retries.json (--retries; sale ids and times, never an
+      address or a name), and only then is it marked \\Answered. A second request for a sale already waiting is marked
+      answered without a second holding reply. At the START of every run each waiting retry runs `refund --sale <id>
+      --requested-at <the original request>`: on success the request - found again as the answered inbox message the
+      server received at that very second, from one authenticated sender - gets REFUND_REPLY and the retry is dropped
+      (dropped unanswered when that message is gone or ambiguous); on the balance again it waits quietly; anything else
+      keeps it and exits 1. A dry run retries as a dry run and writes nothing. brand-mail.yml commits the file.
 
   All three exit 0 with {"configured": false, ...} while BRAND_MAIL_ADDRESS or BRAND_MAIL_APP_PASSWORD is unset (and
   respond-refunds while GUMROAD_ACCESS_TOKEN or site.json's gumroad.productId is), so CI stays green before step 8
@@ -173,6 +183,16 @@ DEFAULT_AUTHSERV_ID = "mx.google.com"
 REFUND_LOOKBACK_DAYS = 60
 MAX_REFUND_REQUESTS_PER_RUN = 20
 REFUND_COMMAND_TIMEOUT_SECONDS = 180
+# RULING-2026-09-30-documents (d), fold action 5: the refunds Gumroad refused for balance, waiting to be retried by sale
+# id. A list of {saleId, requestedAt, holdingReplySentAt} - sale ids and times only, never an address or a name.
+# .github/workflows/brand-mail.yml commits it after every respond-refunds run.
+REFUND_RETRIES = os.path.join(REPO_ROOT, "state", "colony", "refund-retries.json")
+# The refund command's exit code for Gumroad's balance refusal alone ("Your balance is insufficient to process this
+# refund.", antiwork/gumroad app/modules/purchase/refundable.rb:99-100), and the line that names the sale.
+BALANCE_EXIT = 3
+BALANCE_LINE = re.compile(r"^refund: balance-insufficient \(sale ([A-Za-z0-9_=+-]{1,128})\)$")
+SALE_ID = re.compile(r"^[A-Za-z0-9_=+-]{1,128}$")
+ANY_ADDRESS = re.compile(r"[^\s@<>\"'(),;:]+@[^\s@<>\"'(),;:]+")
 # What makes a message a refund request: the sender's own words (own_words, lower case) name a refund, the money back
 # or the cancellation of the purchase itself ("ביטול עסקה" is the consumer-law term). Whole words and whole phrases,
 # never a bare verb: "איך להחזיר את הלוגו", "לבטל את צבע המותג", "cancel the logo on one invoice" and "the payment was
@@ -211,6 +231,12 @@ NOT_A_REFUND_REQUEST = (
 # anything; it states the rule the responder applies, and that it is automatic.
 REFUND_REPLY = ("תשובה אוטומטית מ-Mehudak (מהודק): לפי מדיניות ההחזרים של Gumroad, רכישת Pro מהכתובת הזו בתוך "
                 "תקופת ההחזר מוחזרת במלואה דרך Gumroad.")
+# The one answer to a request Gumroad refused for balance (RULING-2026-09-30-documents (d)): facts only - the request
+# was received and when is recorded; the refund goes through Gumroad as soon as Gumroad permits it; the buyer may also
+# write to Gumroad through its receipt. No date is promised. Sent once; REFUND_REPLY follows when the retry succeeds.
+HOLDING_REPLY = ("תשובה אוטומטית מ-Mehudak (מהודק): בקשת ההחזר שלכם התקבלה, ומועד קבלתה נרשם. "
+                 "ההחזר על רכישת Pro ניתן דרך Gumroad, והוא יינתן ברגע ש-Gumroad תאפשר זאת. "
+                 "אפשר גם לפנות ל-Gumroad דרך הקבלה שלה.")
 NO_REPLY_LOCAL = re.compile(r"^(no-?reply|do-?not-?reply|mailer-daemon|postmaster|bounces?)([+.-]|$)", re.IGNORECASE)
 NEVER_ANSWERED_DOMAINS = ("gumroad.com",)
 MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
@@ -869,6 +895,10 @@ REFUND_JOB = "respond-refunds"
 REFUND_JOB_IF = "github.event_name == 'schedule' || inputs.command == 'respond-refunds'"
 REFUND_JOB_ENVIRONMENT = "brand-mailbox"
 REFUND_GUARD_IF = "github.event_name == 'workflow_dispatch' && inputs.really_refund"
+# The balance-retries commit step's condition (RULING-2026-09-30-documents (d)): it runs after a failed respond step
+# too, so a retry whose holding reply went out always reaches the repository. It conditions that step, never the
+# respond step, which still may carry no `if:` at all.
+REFUND_COMMIT_IF = "always() && steps.respond.outcome != 'skipped'"
 REFUND_STEP_ENV = (
     "BRAND_MAIL_ADDRESS: ${{ secrets.BRAND_MAIL_ADDRESS }}",
     "BRAND_MAIL_APP_PASSWORD: ${{ secrets.BRAND_MAIL_APP_PASSWORD }}",
@@ -928,8 +958,9 @@ def has_schedule(lines):
 def refund_job_runs_on_schedule(text):
     """True only when brand-mail.yml has a cron and its respond-refunds job is exactly the pinned one: the job `if:`
     REFUND_JOB_IF, the environment holding the secrets, no `needs:` (a skipped dependency skips the job), no step `if:`
-    but the main-ref guard's, and one step that runs brand_mail.py - with no `if:` of its own, the pinned env (the
-    secrets, the event) and the pinned run, which adds --apply on the schedule. Line-based on purpose: standard library
+    but the main-ref guard's and the balance-retries commit's (REFUND_COMMIT_IF), and one step that runs brand_mail.py -
+    with no `if:` of its own, the pinned env (the secrets, the event) and the pinned run, which adds --apply on the
+    schedule. Line-based on purpose: standard library
     only; the same shape is pinned from the other side by src/__tests__/revenue/brand-mail-workflow.test.ts."""
     lines = yaml_lines(text.splitlines())
     if not has_schedule(lines) or "jobs:" not in lines:
@@ -969,7 +1000,7 @@ def refund_job_runs_on_schedule(text):
         ifs = [line.split("if:", 1)[1].strip() for line in st if re.match(r"^      (- |  )if:", line)]
         if st is respond[0] and ifs:
             return False
-        if any(value != REFUND_GUARD_IF for value in ifs):
+        if any(value not in (REFUND_GUARD_IF, REFUND_COMMIT_IF) for value in ifs):
             return False
     (st,) = respond
     keys = {}
@@ -1147,7 +1178,16 @@ def pro_product_id(path=None):
 def node_refund_runner(sender, requested_at, apply, env):
     """Run the product's refund command: arguments, never a shell; only PATH and the token in its environment. Returns
     (exit code, stdout lines). stderr is dropped: a stack trace could quote anything."""
-    argv = ["node", PRODUCT_SCRIPT, "refund", "--email", sender, "--requested-at", iso_z(requested_at)]
+    return run_product_refund(["--email", sender, "--requested-at", iso_z(requested_at)], apply, env)
+
+
+def node_retry_runner(sale_id, requested_at, apply, env):
+    """The balance retry: refund --sale <id> --requested-at <the original request> (no address), as node_refund_runner."""
+    return run_product_refund(["--sale", sale_id, "--requested-at", iso_z(requested_at)], apply, env)
+
+
+def run_product_refund(flags, apply, env):
+    argv = ["node", PRODUCT_SCRIPT, "refund", *flags]
     if apply:
         argv.append("--apply")
     child_env = {"PATH": env.get("PATH") or os.defpath, "GUMROAD_ACCESS_TOKEN": env["GUMROAD_ACCESS_TOKEN"]}
@@ -1169,7 +1209,7 @@ def reply_subject(msg):
     return subject if subject.lower().startswith("re:") else ("Re: " + subject).strip()
 
 
-def build_refund_reply(msg, sender, brand, now):
+def build_refund_reply(msg, sender, brand, now, text=REFUND_REPLY):
     reply = EmailMessage()
     reply["From"] = Address(display_name=BRAND_DISPLAY_NAME, addr_spec=brand)
     reply["To"] = sender
@@ -1181,7 +1221,7 @@ def build_refund_reply(msg, sender, brand, now):
     if request_id:
         reply["In-Reply-To"] = request_id
         reply["References"] = " ".join(message_ids(" ".join(raw_values(msg, "References"))) + [request_id])
-    reply.set_content(REFUND_REPLY, cte="quoted-printable")
+    reply.set_content(text, cte="quoted-printable")
     return reply
 
 
@@ -1213,7 +1253,67 @@ def fetch_whole(imap, uid):
     return None, None
 
 
-def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_runner):
+def load_retries(path):
+    """The waiting balance retries: [] when the file does not exist. Raises ValueError on anything but a list of
+    {saleId, requestedAt, holdingReplySentAt} with a sale id and two ISO times - never an address."""
+    if not os.path.exists(path):
+        return []
+    data = load_json(path)
+    if not isinstance(data, list):
+        raise ValueError("refund-retries.json is not a list")
+    for entry in data:
+        if not isinstance(entry, dict) or sorted(entry) != ["holdingReplySentAt", "requestedAt", "saleId"]:
+            raise ValueError("a retry entry is not {saleId, requestedAt, holdingReplySentAt}")
+        if not isinstance(entry["saleId"], str) or not SALE_ID.match(entry["saleId"]):
+            raise ValueError("a retry entry has no sale id")
+        for key in ("requestedAt", "holdingReplySentAt"):
+            if not isinstance(entry[key], str):
+                raise ValueError("a retry entry has no %s" % key)
+            parse_iso(entry[key])
+    return data
+
+
+def redact_addresses(lines):
+    """The command's lines with anything shaped like an address replaced, whoever's it is."""
+    return [ANY_ADDRESS.sub("[address]", line) for line in lines]
+
+
+def balance_sale(code, lines):
+    """The sale id of a balance refusal (exit BALANCE_EXIT and its line), or None."""
+    if code != BALANCE_EXIT:
+        return None
+    for line in lines:
+        m = BALANCE_LINE.match(line.strip())
+        if m:
+            return m.group(1)
+    return None
+
+
+def find_request(imap, requested_at, brand, questions, sent, authserv):
+    """(message, sender) of the one answered refund request the server received at `requested_at` - the retry's key,
+    the request's own INTERNALDATE - that passes every rule a new request passes; None when there is not exactly one
+    such sender (archived, deleted, or ambiguous): then no one is answered rather than the wrong one."""
+    typ, data = imap.uid("SEARCH", "ANSWERED", "SINCE", imap_since(requested_at - dt.timedelta(days=1)))
+    if typ != "OK":
+        raise ProbeError("SEARCH failed")
+    found = {}
+    for uid in (data[0] or b"").split() if data else []:
+        received, msg = fetch_whole(imap, uid.decode("ascii"))
+        if msg is None or received is None or received != requested_at:
+            continue
+        if is_own(msg, brand, set()) or is_accessibility_mail(msg) or not names_refund(msg) or in_venue_thread(msg, questions, sent):
+            continue
+        sender = authenticated_sender(msg, authserv)
+        if sender is None or automated(msg, sender):
+            continue
+        found.setdefault(sender, msg)
+    if len(found) != 1:
+        return None
+    ((sender, msg),) = found.items()
+    return msg, sender
+
+
+def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_runner, retry_runner):
     cfg, missing = brand_config(env)
     if cfg is None:
         return done(out, {"configured": False, "missing": missing}, 0)
@@ -1228,14 +1328,35 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
         product = pro_product_id()
         sent = load_json(args.sent)
         questions = load_json(args.questions)
+        retries_path = args.retries or REFUND_RETRIES
+        retries = load_retries(retries_path)
     except (OSError, ValueError) as exc:
         return done(out, {"configured": True, "error": "unreadable repository file (%s)" % type(exc).__name__}, 1)
     if not product:
         return done(out, {"configured": False, "missing": ["gumroad.productId"]}, 0)
     authserv = env.get("BRAND_MAIL_AUTHSERV_ID") or DEFAULT_AUTHSERV_ID
-    report = {"configured": True, "dryRun": not args.apply, "requests": 0, "unauthenticated": 0, "left": 0, "handled": []}
+    report = {"configured": True, "dryRun": not args.apply, "requests": 0, "unauthenticated": 0, "left": 0, "handled": [],
+              "retries": []}
     failed = False
     smtp = None
+
+    def send(message):
+        """Send over one SMTP connection per run, opened on the first answer; kept only once logged in."""
+        nonlocal smtp
+        if smtp is None:
+            host, port = cfg["smtp"]
+            conn = smtp_factory(host, port, timeout=TIMEOUT_SECONDS, context=tls_context())
+            try:
+                conn.login(cfg["address"], cfg["password"])
+            except (OSError, smtplib.SMTPException):
+                close_smtp(conn)
+                raise
+            smtp = conn  # kept only once logged in, so a failed login is retried for the next answer
+        smtp.send_message(message)
+
+    def save_retries():
+        write_json_atomic(retries_path, retries)
+
     try:
         imap = connect_imap(cfg, imap_factory)
     except (OSError, imaplib.IMAP4.error) as exc:
@@ -1244,13 +1365,50 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
         typ, _data = imap.select(quote_mailbox("INBOX"), readonly=not args.apply)
         if typ != "OK":
             raise ProbeError("SELECT failed")
+        attempts = 0
+        # First the refunds Gumroad refused for balance, each by its sale id, the window measured at the original
+        # request (RULING-2026-09-30-documents (d)). A success answers the request with REFUND_REPLY and drops the retry;
+        # a balance refusal again keeps it quietly; anything else keeps it and fails the run.
+        for entry in list(retries):
+            if attempts >= MAX_REFUND_REQUESTS_PER_RUN:
+                report["left"] += 1
+                continue
+            attempts += 1
+            requested = parse_iso(entry["requestedAt"])
+            code, lines = retry_runner(entry["saleId"], requested, args.apply, env)
+            record = {"saleId": entry["saleId"], "retryExit": code, "retryLog": redact_addresses(lines)}
+            report["retries"].append(record)
+            if code == BALANCE_EXIT:
+                record["outcome"] = "still refused for balance: kept for the next run"
+                continue
+            if code != 0:
+                failed = True
+                record["outcome"] = "the refund command stopped: kept for the next run"
+                continue
+            if not args.apply:
+                record["outcome"] = "dry run: would answer the request and drop the retry"
+                continue
+            found = find_request(imap, requested, cfg["address"], questions, sent, authserv)
+            if found is not None:
+                request, sender = found
+                try:
+                    send(build_refund_reply(request, sender, cfg["address"], now))
+                except (OSError, smtplib.SMTPException) as exc:
+                    failed = True
+                    record["outcome"] = "the answer could not be sent (%s): kept, so the next run answers" % type(exc).__name__
+                    continue
+                record["outcome"] = "answered and dropped"
+            else:
+                record["outcome"] = "done; the request is no longer in the inbox to answer: dropped"
+            retries.remove(entry)
+            save_retries()
+        waiting = {entry["saleId"] for entry in retries}
         since = imap_since(now - dt.timedelta(days=REFUND_LOOKBACK_DAYS))
         # NOT ANSWERED is IMAP4rev1's spelling of the unanswered search key (RFC 3501 6.4.4).
         typ, data = imap.uid("SEARCH", "NOT", "ANSWERED", "SINCE", since)
         if typ != "OK":
             raise ProbeError("SEARCH failed")
         answered_senders = set()
-        attempts = 0
         for uid in (data[0] or b"").split() if data else []:
             uid = uid.decode("ascii")
             received, msg = fetch_whole(imap, uid)
@@ -1281,6 +1439,33 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
             code, lines = refund_runner(sender, requested, args.apply, env)
             entry["refundExit"] = code
             entry["refundLog"] = redacted(lines, sender)
+            sale = balance_sale(code, lines)
+            if sale is not None:
+                # Gumroad refused for balance alone: one holding reply, the request marked answered, and the sale
+                # retried by id every run (RULING-2026-09-30-documents (d)). The retry is written before the mail is
+                # marked answered, so a failure between the two can repeat the holding reply but never lose the refund.
+                answered_senders.add(sender)
+                if not args.apply:
+                    entry["outcome"] = "dry run: refused for balance; would send the holding reply and retry sale %s" % sale
+                elif sale in waiting:
+                    imap.uid("STORE", uid, "+FLAGS", "(\\Answered)")
+                    entry["outcome"] = "refused for balance; sale %s is already waiting: covered by its retry" % sale
+                else:
+                    try:
+                        send(build_refund_reply(msg, sender, cfg["address"], now, HOLDING_REPLY))
+                    except (OSError, smtplib.SMTPException) as exc:
+                        failed = True
+                        answered_senders.discard(sender)
+                        entry["outcome"] = "the holding reply could not be sent (%s): not marked answered, left for the next run" % type(exc).__name__
+                        report["handled"].append(entry)
+                        continue
+                    retries.append({"saleId": sale, "requestedAt": iso_z(requested), "holdingReplySentAt": iso_z(now)})
+                    waiting.add(sale)
+                    save_retries()
+                    imap.uid("STORE", uid, "+FLAGS", "(\\Answered)")
+                    entry["outcome"] = "refused for balance: holding reply sent, sale %s retried by id every run" % sale
+                report["handled"].append(entry)
+                continue
             if code != 0:
                 failed = True
                 entry["outcome"] = "the refund command stopped: not answered, left for the next run"
@@ -1292,16 +1477,7 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
                 report["handled"].append(entry)
                 continue
             try:
-                if smtp is None:
-                    host, port = cfg["smtp"]
-                    conn = smtp_factory(host, port, timeout=TIMEOUT_SECONDS, context=tls_context())
-                    try:
-                        conn.login(cfg["address"], cfg["password"])
-                    except (OSError, smtplib.SMTPException):
-                        close_smtp(conn)
-                        raise
-                    smtp = conn  # kept only once logged in, so a failed login is retried for the next answer
-                smtp.send_message(build_refund_reply(msg, sender, cfg["address"], now))
+                send(build_refund_reply(msg, sender, cfg["address"], now))
             except (OSError, smtplib.SMTPException) as exc:
                 failed = True
                 entry["outcome"] = "the answer could not be sent (%s): not marked answered, left for the next run" % type(exc).__name__
@@ -1318,6 +1494,7 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
         close_imap(imap)
         if smtp is not None:
             close_smtp(smtp)
+    report["waiting"] = len(retries)
     return done(out, report, 1 if failed else 0)
 
 
@@ -1337,6 +1514,7 @@ def parse_args(argv):
     refunds.add_argument("--apply", action="store_true", help="refund and answer for real (default: dry run); main only")
     refunds.add_argument("--questions", default=QUESTIONS)
     refunds.add_argument("--sent", default=SENT)
+    refunds.add_argument("--retries", default=None, help="the balance retries (default state/colony/refund-retries.json)")
     for name in ("send", "probe"):
         p = sub.add_parser(name)
         p.add_argument("--questions", default=QUESTIONS)
@@ -1350,7 +1528,8 @@ def parse_args(argv):
     return parser.parse_args(argv)
 
 
-def main(argv=None, env=None, stdout=None, stderr=None, now=None, smtp_factory=None, imap_factory=None, refund_runner=None):
+def main(argv=None, env=None, stdout=None, stderr=None, now=None, smtp_factory=None, imap_factory=None, refund_runner=None,
+         retry_runner=None):
     env = os.environ if env is None else env
     out = stdout or sys.stdout
     err = stderr or sys.stderr
@@ -1358,12 +1537,13 @@ def main(argv=None, env=None, stdout=None, stderr=None, now=None, smtp_factory=N
     smtp_factory = smtp_factory or smtplib.SMTP_SSL
     imap_factory = imap_factory or imaplib.IMAP4_SSL
     refund_runner = refund_runner or node_refund_runner
+    retry_runner = retry_runner or node_retry_runner
     args = parse_args(argv)
     try:
         if args.command == "send":
             return cmd_send(args, env, out, now, smtp_factory, imap_factory)
         if args.command == "respond-refunds":
-            return cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_runner)
+            return cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_runner, retry_runner)
         return cmd_probe(args, env, out, now, imap_factory)
     except Refused as exc:
         err.write("refused: %s\n" % exc)
