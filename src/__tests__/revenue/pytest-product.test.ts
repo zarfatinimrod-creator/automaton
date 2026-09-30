@@ -1,4 +1,4 @@
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -20,13 +20,24 @@ const scratch = mkdtempSync(join(tmpdir(), "pytest-product-test-"));
 afterAll(() => rmSync(scratch, { recursive: true, force: true }));
 
 const STUB = join(scratch, "python-stub");
+// pip "installs" two packages into <venv>/site, STUB_PIP_SLEEP seconds apart; pytest refuses to run without both
+// (a half-built venv), and writes STUB_JUNIT (default: a suite with no skips; "none": no file) to its --junitxml path.
+const NO_SKIPS = '<testsuites><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="3"></testsuite></testsuites>';
 writeFileSync(
   STUB,
   `#!/usr/bin/env bash
 if [ "$1" = -m ] && [ "$2" = venv ]; then echo "venv $3" >> "$STUB_LOG"; mkdir -p "$3/bin"; cp "$0" "$3/bin/python"; exit 0; fi
-if [ "$1" = -m ] && [ "$2" = pip ]; then echo "pip \${*:3}" >> "$STUB_LOG"; exit "\${STUB_PIP_EXIT:-0}"; fi
+v="$(cd "$(dirname "$0")/.." 2>/dev/null && pwd)"
+if [ "$1" = -m ] && [ "$2" = pip ]; then
+  echo "pip \${*:3}" >> "$STUB_LOG"; mkdir -p "$v/site"; touch "$v/site/first"; sleep "\${STUB_PIP_SLEEP:-0}"
+  [ "\${STUB_PIP_EXIT:-0}" = 0 ] || exit "$STUB_PIP_EXIT"; touch "$v/site/second" 2>/dev/null; exit 0
+fi
 if [ "$1" = -m ] && [ "$2" = pytest ]; then
-  echo "pytest cwd=$PWD args=\${*:3}" >> "$STUB_LOG"; printf '%s\\n' "\${STUB_PYTEST_OUT:-}"; exit "\${STUB_PYTEST_EXIT:-0}"
+  echo "pytest cwd=$PWD args=\${*:3}" >> "$STUB_LOG"
+  [ -f "$v/site/second" ] || { echo "ModuleNotFoundError: No module named 'second'"; exit 2; }
+  j=""; prev=""; for a in "$@"; do [ "$prev" = --junitxml ] && j="$a"; prev="$a"; done
+  if [ -n "$j" ] && [ "\${STUB_JUNIT:-}" != none ]; then printf '%s\\n' "\${STUB_JUNIT:-${NO_SKIPS}}" > "$j"; fi
+  printf '%s\\n' "\${STUB_PYTEST_OUT:-}"; exit "\${STUB_PYTEST_EXIT:-0}"
 fi
 echo "unexpected $*" >> "$STUB_LOG"; exit 99
 `,
@@ -45,27 +56,55 @@ function fakeRoot(files: Record<string, string>): string {
   return root;
 }
 
-type Opts = { root?: string; venvs: string; out?: string; pytestOut?: string; pytestExit?: number; pipExit?: number };
-function run(args: string[], o: Opts) {
-  const stubLog = join(o.venvs, "stub.log");
-  mkdirSync(o.venvs, { recursive: true });
+type Opts = {
+  root?: string;
+  venvs: string;
+  out?: string;
+  pytestOut?: string;
+  pytestExit?: number;
+  pipExit?: number;
+  pipSleep?: number;
+  junit?: string;
+};
+function envFor(o: Opts) {
   const env: Record<string, string | undefined> = {
     ...process.env,
     PYTEST_PRODUCT_PYTHON: STUB,
     PYTEST_PRODUCT_VENVS: o.venvs,
     PYTEST_PRODUCT_OUT: o.out ?? join(o.venvs, "out"),
-    STUB_LOG: stubLog,
+    STUB_LOG: join(o.venvs, "stub.log"),
     STUB_PYTEST_OUT: o.pytestOut ?? "3 passed in 0.10s",
     STUB_PYTEST_EXIT: String(o.pytestExit ?? 0),
     STUB_PIP_EXIT: String(o.pipExit ?? 0),
+    STUB_PIP_SLEEP: String(o.pipSleep ?? 0),
   };
+  if (o.junit !== undefined) env.STUB_JUNIT = o.junit;
+  else delete env.STUB_JUNIT;
   if (o.root) env.PYTEST_PRODUCT_ROOT = o.root;
   else delete env.PYTEST_PRODUCT_ROOT;
-  const r = spawnSync("bash", [SCRIPT, ...args], { env, encoding: "utf8" });
-  const calls = existsSync(stubLog) ? readFileSync(stubLog, "utf8").trim().split("\n").filter(Boolean) : [];
-  return { code: r.status, stdout: r.stdout, stderr: r.stderr, all: r.stdout + r.stderr, calls };
+  return env;
 }
-const venvDirs = (venvs: string) => readdirSync(venvs).filter((d) => d !== "stub.log" && d !== "out");
+const stubCalls = (venvs: string) => {
+  const stubLog = join(venvs, "stub.log");
+  return existsSync(stubLog) ? readFileSync(stubLog, "utf8").trim().split("\n").filter(Boolean) : [];
+};
+function run(args: string[], o: Opts) {
+  mkdirSync(o.venvs, { recursive: true });
+  const r = spawnSync("bash", [SCRIPT, ...args], { env: envFor(o), encoding: "utf8" });
+  return { code: r.status, stdout: r.stdout, stderr: r.stderr, all: r.stdout + r.stderr, calls: stubCalls(o.venvs) };
+}
+/** The same run, not waiting: resolves when the script exits. */
+function start(args: string[], o: Opts): Promise<{ code: number | null; all: string }> {
+  mkdirSync(o.venvs, { recursive: true });
+  return new Promise((done) => {
+    const child = spawn("bash", [SCRIPT, ...args], { env: envFor(o) });
+    let all = "";
+    child.stdout.on("data", (d) => (all += d));
+    child.stderr.on("data", (d) => (all += d));
+    child.on("close", (code) => done({ code, all }));
+  });
+}
+const venvDirs = (venvs: string) => readdirSync(venvs).filter((d) => d !== "stub.log" && d !== "out" && !d.endsWith(".lock"));
 
 const TOY = { "products/toy/requirements.txt": "numpy==2.4.6\n", "products/toy/requirements-dev.txt": "-r requirements.txt\npytest\n" };
 
@@ -136,7 +175,8 @@ describe("pytest-product.sh runs pytest from the product directory and exits wit
     const r = run(["toy", "-q", "-k", "thing"], { root, venvs, pytestExit: code, pytestOut: `summary line for ${code}` });
     expect(r.code).toBe(code);
     const call = r.calls.find((c) => c.startsWith("pytest"));
-    expect(call).toBe(`pytest cwd=${join(root, "products/toy")} args=-q -k thing`);
+    // The caller's arguments, then the script's own --junitxml (last, so a caller's --junitxml cannot replace it).
+    expect(call).toBe(`pytest cwd=${join(root, "products/toy")} args=-q -k thing --junitxml ${join(venvs, "out", "junit.xml")}`);
     expect(r.stdout).toContain(`summary line for ${code}`); // the tail is printed
     expect(readFileSync(join(venvs, "out", "pytest.log"), "utf8")).toContain(`summary line for ${code}`);
   });
@@ -173,6 +213,39 @@ describe("pytest-product.sh fails on a skip exactly where the product's CI does"
     expect(failed.code).toBe(1);
   });
 
+  // Review of tick 33: CI always prints the "N skipped" line (-q -rs); a caller's flags can hide it (-qq, -p no:terminal).
+  // So the skips are read from the JUnit XML the script asks pytest for, which every output mode writes.
+  const skipXml = (skipped: string) =>
+    `<testsuites><testsuite name="pytest" errors="0" failures="0" skipped="1" tests="2"><testcase classname="t" name="a"/>` +
+    `<testcase classname="t" name="b">${skipped}</testcase></testsuite></testsuites>`;
+  it.each([
+    ["-qq (a dot and an s, no summary line)", ["-qq"], ".s", skipXml('<skipped type="pytest.skip" message="because">t.py:3: because</skipped>')],
+    ["-p no:terminal (no output at all)", ["-p", "no:terminal"], "", skipXml('<skipped type="pytest.skip" message="because" />')],
+    ["a module skipped at collection (importorskip)", ["-qq"], "", skipXml('<skipped message="collection skipped">could not import x</skipped>')],
+  ])("a strict product fails on a skip the output does not show: %s", (_label, args, out, junit) => {
+    const root = fakeRoot({ ...TOY, ".github/workflows/toy-ci.yml": STRICT_CI });
+    const r = run(["toy", ...args], { root, venvs: join(scratch, `venvs-hidden-${n++}`), pytestOut: out, junit });
+    expect(r.code).toBe(1);
+    expect(r.all).toMatch(/skipped/);
+    expect(r.all).toContain("junit.xml");
+  });
+
+  it("an xfail is not a skip, as in CI (pytest prints it as xfailed, and CI greps for skipped)", () => {
+    const root = fakeRoot({ ...TOY, ".github/workflows/toy-ci.yml": STRICT_CI });
+    const junit = skipXml('<skipped type="pytest.xfail" message="known" />');
+    const r = run(["toy"], { root, venvs: join(scratch, "venvs-xfail"), pytestOut: "1 passed, 1 xfailed in 0.02s", junit });
+    expect(r.code).toBe(0);
+  });
+
+  it("a strict product whose pytest exits 0 but writes no JUnit XML fails: nothing shows whether a test was skipped", () => {
+    const root = fakeRoot({ ...TOY, ".github/workflows/toy-ci.yml": STRICT_CI });
+    const r = run(["toy"], { root, venvs: join(scratch, "venvs-nojunit"), junit: "none" });
+    expect(r.code).toBe(1);
+    expect(r.all).toMatch(/junit\.xml/);
+    // A product whose CI allows skips does not need the file.
+    expect(run(["toy"], { root: fakeRoot(TOY), venvs: join(scratch, "venvs-nojunit-lax"), junit: "none" }).code).toBe(0);
+  });
+
   it("reads the real workflows: parent-guides fails on a skip, chart-explainer does not", () => {
     const pg = run(["parent-guides"], { venvs: join(scratch, "venvs-real-pg"), pytestOut: SKIPPED });
     expect(pg.code).toBe(1);
@@ -183,4 +256,29 @@ describe("pytest-product.sh fails on a skip exactly where the product's CI does"
     expect(venvDirs(join(scratch, "venvs-real-pg"))[0]).toMatch(/^parent-guides-[0-9a-f]{12}$/);
     expect(venvDirs(join(scratch, "venvs-real-ce"))[0]).toMatch(/^chart-explainer-[0-9a-f]{12}$/);
   });
+});
+
+describe("pytest-product.sh builds a venv once when two runs start together (worktrees share the venv cache)", () => {
+  it("the second run waits for the first build and reuses it: one venv, one install, both runs pass", async () => {
+    const root = fakeRoot(TOY);
+    const venvs = join(scratch, "venvs-race");
+    const o = { root, venvs, pipSleep: 1.5 };
+    const a = start(["toy"], { ...o, out: join(venvs, "out-a") });
+    // Start B while A is inside its install.
+    for (let i = 0; i < 100 && !stubCalls(venvs).some((c) => c.startsWith("pip ")); i++) await new Promise((r) => setTimeout(r, 50));
+    expect(stubCalls(venvs).some((c) => c.startsWith("pip "))).toBe(true);
+    const b = start(["toy"], { ...o, out: join(venvs, "out-b") });
+    const [ra, rb] = await Promise.all([a, b]);
+    expect(ra.code).toBe(0);
+    expect(rb.code).toBe(0);
+    const calls = stubCalls(venvs);
+    expect(calls.filter((c) => c.startsWith("venv "))).toHaveLength(1);
+    expect(calls.filter((c) => c.startsWith("pip "))).toHaveLength(1);
+    expect(calls.filter((c) => c.startsWith("pytest "))).toHaveLength(2);
+    expect(rb.all).toMatch(/\(reused\)/);
+    // Later runs reuse the one complete venv.
+    const c = run(["toy"], { root, venvs, out: join(venvs, "out-c") });
+    expect(c.code).toBe(0);
+    expect(c.stdout).toMatch(/\(reused\)/);
+  }, 20_000);
 });
