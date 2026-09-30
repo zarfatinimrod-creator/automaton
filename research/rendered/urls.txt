@@ -731,3 +731,5 @@ https://wikitech.wikimedia.org/wiki/Robot_policy	terms-wikimedia-robot-policy
 https://www.nevo.co.il/robots.txt	robots-nevo
 # research/channel-loop/ZERO-TESTS.md row 232 — terms audit (tick 27): wikimedia user-agent policy (moved) (30.9.2026).
 https://foundation.wikimedia.org/wiki/Policy:User-Agent_policy	terms-wikimedia-user-agent-policy-foundation
+# research/channel-loop/ZERO-TESTS.md row 233 — terms audit (tick 31): israel post (30.9.2026).
+# retired (ruling 30.9 16(d) D2(iv): a JavaScript shell behind reCAPTCHA; the runner cannot read it) — https://doar.israelpost.co.il/content/term-of-use/	terms-israel-post

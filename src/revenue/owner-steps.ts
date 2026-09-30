@@ -128,6 +128,12 @@ export const SECRET_ROW_GATE_SHORT: Record<SecretRowGate, string> = {
     "waits until the colony has created the brand's PostHog project (posthog.projectId in products/il-biz-tools/src/config/site.json)",
 };
 
+/** How the report says a gate now holds, when it asks a row a done step held back. */
+export const SECRET_ROW_GATE_MET: Record<SecretRowGate, string> = {
+  "posthog-project-exists":
+    "the colony has since created the brand's PostHog project (posthog.projectId in products/il-biz-tools/src/config/site.json)",
+};
+
 /** One row of step 6's secrets table. */
 export interface OwnerSecretRow {
   /** The secret's exact name under Settings → Secrets and variables → Actions. */
@@ -135,6 +141,12 @@ export interface OwnerSecretRow {
   /** Where its value comes from. */
   source: string;
   askedOnlyWhen?: SecretRowGate;
+  /**
+   * Set only for a row its step's `doneOn.heldRows` names, when the row's secret is verifiably pasted afterwards, with
+   * the evidence. Until then the row is owed: asked alone once its gate holds (`followUpSecretRows`), named as held
+   * before that (`heldFollowUpSecretRows`). A row pasted with its step needs none: the step's `doneOn` covers it.
+   */
+  doneOn?: { date: string; evidence: string };
 }
 
 /** The site facts a row's gate reads; `readSite()` in page-views-reader.ts returns a superset. */
@@ -184,8 +196,13 @@ export interface OwnerStep {
   /**
    * Set only when the step is verifiably done, with the evidence. The report stops
    * asking for it, and a test keeps the Hebrew heading's "✅ בוצע" in step with it.
+   *
+   * `heldRows` is required (a test says so) on a step that has gated secret rows: the gated rows whose gate did NOT
+   * hold on the day the step was done, so the owner was not asked for them and did not paste them — `[]` when every
+   * row went in with the step. A done step no longer asks anything, so a held row would otherwise be lost with it; the
+   * report asks each one alone once its gate holds, until the row carries its own `doneOn`.
    */
-  doneOn?: { date: string; evidence: string };
+  doneOn?: { date: string; evidence: string; heldRows?: string[] };
   /**
    * Something that must be true BEFORE the owner is asked for this step, and
    * that the colony establishes itself — not an owner action; the point is that
@@ -431,6 +448,33 @@ export function askedSecretRows(step: OwnerStep, site: SecretGateSite): OwnerSec
 /** A step's secret rows its gates still hold back, in table order: the complement of `askedSecretRows`. */
 export function heldSecretRows(step: OwnerStep, site: SecretGateSite): OwnerSecretRow[] {
   return (step.secrets ?? []).filter((r) => !isSecretRowAsked(r, site));
+}
+
+/** A secret row a DONE step still owes: held back on the day the step was done, and not pasted since. */
+export interface OwedSecretRow {
+  step: OwnerStep;
+  row: OwnerSecretRow;
+}
+
+/**
+ * Every row done steps still owe, in execution order then table order: named in the step's `doneOn.heldRows` and
+ * without a `doneOn` of its own. An open step owes nothing here; it asks its rows itself (`askedSecretRows`).
+ */
+function owedSecretRows(steps: OwnerStep[]): OwedSecretRow[] {
+  return ownerStepsInOrder(steps).flatMap((step) => {
+    const held = step.doneOn?.heldRows ?? [];
+    return (step.secrets ?? []).filter((row) => held.includes(row.name) && !row.doneOn).map((row) => ({ step, row }));
+  });
+}
+
+/** The owed rows the owner is asked for now, each alone, as a follow-up to its done step: the gate holds. */
+export function followUpSecretRows(site: SecretGateSite, steps: OwnerStep[] = OWNER_STEPS): OwedSecretRow[] {
+  return owedSecretRows(steps).filter(({ row }) => isSecretRowAsked(row, site));
+}
+
+/** The owed rows whose gate still holds them back: named with the reason, never asked. */
+export function heldFollowUpSecretRows(site: SecretGateSite, steps: OwnerStep[] = OWNER_STEPS): OwedSecretRow[] {
+  return owedSecretRows(steps).filter(({ row }) => !isSecretRowAsked(row, site));
 }
 
 /** Line ids that no step unlocks — always empty, and the test says why that matters. */
