@@ -609,7 +609,9 @@ step 6 carries `edit_products` (Gumroad's `doorkeeper.rb:10`, `oauth_application
    print the public `id` and `short_url`; open a PR writing both, the read-back `priceCents` and `currency`, and
    `refundPeriodDays` (the days Gumroad applies, or `null` when unreadable or not a bounded period) into
    `src/config/site.json`. With `--fine-print docs/refund-fine-print.he.txt` it also says what it would write as the
-   refund policy's fine print, and with `--apply` writes it (see "Refunds").
+   refund policy's fine print - or why it cannot be written yet, still exit 0 - and with `--apply` writes it (see
+   "Refunds"); a write that stops fails the run only after site.json is written, and the workflow's PR step runs on
+   `!cancelled()`, so the productId PR opens either way.
 2. `enable` — a second dispatch, only once `state/colony/brand-mail.json` shows the brand mailbox of owner step 8
    probed green (within 2 days, no accessibility mail unanswered for 7+ days — a buyer's receipt reply or refund
    request goes to the Gumroad sign-up email, and the owner answers no one), that same probe lists the refund
@@ -623,8 +625,9 @@ step 6 carries `edit_products` (Gumroad's `doorkeeper.rb:10`, `oauth_application
    `refundPeriodDays` is exactly that window, compared as the price is; and that policy's fine print is the
    committed text. See "Refunds", below.
 4. `refund --email <addr> [--requested-at <iso>] [--apply]` — what the brand-mail responder calls; and
-   `refund --sale <id> --requested-at <iso> [--apply]`, its retry of one sale Gumroad refused for balance. See
-   "Refunds".
+   `refund --sale <id> --requested-at <iso> [--email <addr>] [--apply]`, its retry of one sale Gumroad refused for
+   balance, whose last line names what happened (`refunded`, `already-refunded`; anything else stops, exit 1) and
+   whose `--email` only reports whether that address is the sale's buyer. See "Refunds".
 
 Without the secret `create`, `enable` and `check` exit 0 with a notice; `refund` exits 1, because nothing was
 refunded and the responder must not answer as if it had been. `.github/workflows/gumroad-pro-probe.yml` then checks the real
@@ -685,12 +688,15 @@ only while the button is `ready` and the period is a number.
 **The cancellation link and the fine print** (`research/channel-loop/RULING-2026-09-30-documents.md` (b), fold
 actions 4(c) and 7). The home page footer carries a dedicated link, "ביטול עסקה (Pro)" — a `mailto:` with the subject
 "ביטול עסקה – Pro" — and one paragraph beside it: cancel through that link or by replying to the Gumroad receipt,
-give name and ID number, and the refund is paid through Gumroad in the currency charged. The refund answer above
-links it too. No address is typed into a page: the build fills every `<a data-cancel-link>` from the accessibility
-statement's own `mailto:` contact (`withCancelLinks`, `src/lib/publish-gate.js`), the one brand address the site
-already publishes. In the source the link carries `data-publish-blocker="cancel-link"`, so the publish gate refuses
-it while the statement's contact is a placeholder, and `cancelLinkProblems` refuses any link that is not exactly
-that address and subject, or a home page without one in its footer - deleting the marker clears nothing. The same
+give name and ID number, and a cancellation inside the refund period gets a full refund through Gumroad in the
+currency charged. The refund answer above links it too. No address is typed into a page: the build fills every
+`<a data-cancel-link>` from the accessibility statement's own `mailto:` contact (`withCancelLinks`,
+`src/lib/publish-gate.js`), the one brand address the site already publishes, without its `+tag` (`bareAddress`):
+the statement's contact is meant to be `<brand>+accessibility@…`, and `scripts/brand_mail.py` reads mail to a
+`+accessibility`/`+a11y` address as accessibility mail that the refund responder never answers. In the source the
+link carries `data-publish-blocker="cancel-link"`, so the publish gate refuses it while the statement's contact is a
+placeholder, and `cancelLinkProblems` refuses any link that is not exactly that bare address and subject, a link with
+a `+tag`, or a home page without one in its footer - deleting the marker clears nothing. The same
 Hebrew, with the site's URL, is the refund policy's fine print, which Gumroad shows under the policy's title on the
 receipt and the product page: `docs/refund-fine-print.he.txt`, written by `create --fine-print … --apply`
 (`PUT /v2/refund_policy` with the period already in force; `gumroad-pro-product.yml`, `write_fine_print`) and
@@ -719,8 +725,12 @@ account waits for more sales. `refund` exits 3 on that refusal alone and names t
 one holding reply (facts only, no date), records `{saleId, requestedAt, holdingReplySentAt}` in
 `state/colony/refund-retries.json` (never an address or a name; `brand-mail.yml` commits it), marks the request
 answered, and at the start of every run retries that sale with `refund --sale <id> --requested-at <the original
-request>`; when it goes through, the usual reply goes out in the request's thread and the retry is dropped. The
-first real refund is still the recorded check.
+request>` (the request's own receipt time), handing the command the sender of the request it finds again so the
+command can say whether that is the sale's buyer. Only a refund that happened (`refunded`, or `already-refunded`)
+drops the retry, and the usual reply goes out in the request's thread only to the sale's buyer, once per sender per
+run; anything else - outside the window as it now stands, disputed, another product - keeps the retry and fails the
+run for a session to look at, because the holding reply said the refund will be issued. The first real refund is
+still the recorded check.
 
 No Gumroad code runs on this site: no SDK, no overlay, no iframe. The only contact is one `fetch` from the
 buyer's browser to `api.gumroad.com/v2/licenses/verify`, at activation and at most every 7 days after. The

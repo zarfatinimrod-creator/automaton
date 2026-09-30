@@ -13,6 +13,7 @@ import {
   CANCEL_LINK_PAGE,
   CANCEL_SUBJECT,
   cancelHref,
+  bareAddress,
   statementAddress,
   withCancelLinks,
   cancelLinkProblems,
@@ -84,11 +85,49 @@ describe('the home page, in the source', () => {
     for (const phrase of ['בקישור הזה', 'משיבים למייל הקבלה מ-Gumroad', 'שם ומספר תעודת זהות', 'דרך Gumroad', 'במטבע שבו חויבתם']) {
       expect(text, phrase).toContain(phrase);
     }
+    // The refund is promised only inside the window, as the responder grants it and the fine print says (reviewers of
+    // 30.9): never an unbounded "the refund is given".
+    expect(text).toContain('בתוך תקופת ההחזר');
+    expect(text).not.toMatch(/ההחזר ניתן דרך/);
     expect(p[1]).toContain(CANCEL_LINK_ATTR);
   });
 
   it('no page in the source carries an address: the only one the site ever shows is the statement\'s, filled at build', () => {
     for (const page of [index, invoice]) expect(page.replace(/"@(context|type|graph|id)"/g, '')).not.toContain('@');
+  });
+});
+
+describe('the address is the statement\'s mailbox without its +tag (reviewers of 30.9)', () => {
+  // scripts/brand_mail.py reads mail to "+accessibility@" / "+a11y@" as accessibility mail and the refund responder
+  // skips it, and the statement's contact is meant to be exactly such an address. A cancellation sent to it would never
+  // be answered or refunded, so the link carries the bare mailbox - the same brand mailbox, nothing new published.
+  const TAGGED = 'mehudak.brand+accessibility@il-biz-tools.netlify.app';
+  const BARE = 'mehudak.brand@il-biz-tools.netlify.app';
+  const tagged = statementWithContact(STATEMENT, `<p>פניות בנושא נגישות: <a data-a11y-contact href="mailto:${TAGGED}">${TAGGED}</a></p>`);
+
+  it('bareAddress drops the +tag of the local part and nothing else', () => {
+    expect(bareAddress(TAGGED)).toBe(BARE);
+    expect(bareAddress('x+a11y@y.example')).toBe('x@y.example');
+    expect(bareAddress(TEST_CONTACT_ADDRESS)).toBe(TEST_CONTACT_ADDRESS);
+    expect(cancelHref(TAGGED)).toBe(cancelHref(BARE));
+    expect(cancelHref(TAGGED)).not.toMatch(/\+|accessibility|a11y/i);
+  });
+
+  it('the build fills the bare mailbox from a tagged statement contact, and the gate accepts exactly that', () => {
+    expect(statementAddress(tagged)).toBe(TAGGED);
+    const home = withCancelLinks(index, statementAddress(tagged));
+    expect(cancelTags(home)).toEqual([`<a ${CANCEL_LINK_ATTR} href="${cancelHref(BARE)}">`]);
+    const shippedPages = [{ path: 'accessibility.html', html: tagged }, { path: 'index.html', html: home }];
+    expect(cancelLinkProblems(shippedPages)).toEqual([]);
+  });
+
+  it('refuses a cancellation link that carries a +tag - the statement\'s own tagged address included', () => {
+    for (const address of [TAGGED, 'mehudak.brand+a11y@il-biz-tools.netlify.app', 'mehudak.brand+cancel@il-biz-tools.netlify.app']) {
+      const href = `mailto:${address}?subject=${encodeURIComponent(CANCEL_SUBJECT)}`;
+      const home = index.replace(cancelTags(index)[0], `<a ${CANCEL_LINK_ATTR} href="${href}">`);
+      const found = cancelLinkProblems([{ path: 'accessibility.html', html: tagged }, { path: 'index.html', html: home }]).join('\n');
+      expect(found, address).toMatch(/index\.html: the cancellation link carries a "\+tag"/);
+    }
   });
 });
 

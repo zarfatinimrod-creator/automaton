@@ -35,9 +35,12 @@
 //       under the policy's title on the receipt and the product page: PUT
 //       /v2/refund_policy with the refund_period already in force, read back and
 //       compared. A DRY RUN unless --apply. The text is checked before Gumroad is
-//       asked anything (at most 3000 characters, no HTML: Gumroad strips it);
-//       nothing is written where a product policy of its own hides the account's,
-//       or where the window in force is not 14 days or more. The committed text is
+//       asked anything (at most 3000 characters, no HTML and no "&": Gumroad
+//       strips tags and re-encodes); nothing is written where a product policy of
+//       its own hides the account's, or where the window in force is not 14 days
+//       or more - with --apply that stops the run (exit 1, after site.json and the
+//       step outputs are written, so the site.json PR still opens); a dry run only
+//       says why it cannot be written yet and exits 0. The committed text is
 //       docs/refund-fine-print.he.txt.
 //
 //   node scripts/gumroad-pro-product.js enable
@@ -80,10 +83,21 @@
 //       with the line "refund: balance-insufficient (sale <id>)": the responder
 //       then sends its holding reply and retries that sale by id.
 //
-//   node scripts/gumroad-pro-product.js refund --sale <id> --requested-at <iso> [--apply]
+//   node scripts/gumroad-pro-product.js refund --sale <id> --requested-at <iso> [--email <addr>] [--apply]
 //       The retry of one sale, by its id (GET /v2/sales/:id): the same window,
 //       measured at the ORIGINAL request (so --requested-at is required), the
-//       same product, the same idempotence, the same exit codes. No address.
+//       same product, the same exit codes - and the result named on its last line,
+//       because the responder answers only a refund that happened:
+//       "refund: refunded (sale <id>)", or "refund: already-refunded (sale <id>)"
+//       for a sale Gumroad reports wholly refunded (by anyone), exit 0. Everything
+//       else about the sale is a stop (exit 1: the retry is kept and the run fails,
+//       so a session looks): partly refunded, charged back or disputed, another
+//       product, no purchase time, or outside the window measured at the request -
+//       the request was found eligible once, so a refund promised by the holding
+//       reply is never dropped as "nothing to refund". --email is optional and
+//       changes nothing about the refund: it adds the line "buyer: the sender" or
+//       "buyer: not the sender" (whether the sale's buyer address is that one; the
+//       address is never printed), so the responder answers only the sale's buyer.
 //
 // What is CODE-grade and what this run renders: Gumroad's own help FAQ says
 // products cannot be created through the API; its code (links_controller.rb
@@ -681,7 +695,7 @@ export const FINE_PRINT_MAX = 3000;
 // Gumroad's StrippedFields, which RefundPolicy applies to fine_print before saving it (refund_policy.rb:21;
 // app/models/concerns/stripped_fields.rb:54-95 at 0656875c): these invisible characters are deleted, these Unicode
 // spaces become a space, the ends are stripped and runs of spaces squeezed. HTML tags are stripped too, so a text with
-// "<" or ">" is refused here rather than altered there.
+// "<", ">" or "&" is refused here rather than altered there.
 const INVISIBLE_FORMAT_CHARS = /[\u00AD\u200B\u200E\u200F\u2060\uFEFF]/g;
 const UNICODE_SPACES = /[\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]/g;
 
@@ -702,6 +716,11 @@ export function finePrintText(raw, site) {
   if (!text) throw new StopError('The fine print file is empty: Gumroad would clear the fine print, not write it.');
   if (/[<>]/.test(text)) {
     throw new StopError('The fine print holds "<" or ">": Gumroad strips HTML from it (refund_policy.rb:21), so buyers would not see this text.');
+  }
+  // strip_tags re-emits what it keeps as HTML (rails-html-sanitizer 1.6.2 in Gumroad's Gemfile.lock), so a stored "&"
+  // reads back as "&amp;" and the write's read-back and `check` would never match it.
+  if (text.includes('&')) {
+    throw new StopError('The fine print holds "&": Gumroad\'s tag stripping stores it as "&amp;" (refund_policy.rb:21), so the text read back would never match it. Write "ו" or "and".');
   }
   if (/\{[A-Za-z]+\}/.test(text)) throw new StopError('The fine print holds a {slot} nothing fills; only {siteUrl} is filled.');
   if (text.length > FINE_PRINT_MAX) {
@@ -725,17 +744,25 @@ async function readFinePrint(path, site) {
  * (Gumroad requires it, refund_policies_controller.rb:23, and this job never changes it) and fine_print (:36). Routes:
  * config/routes.rb:112 (`resource :refund_policy, only: [:show, :update]`, under scope "v2", :70); documented in
  * Gumroad's /api page source (ApiDocumentation/Endpoints/RefundPolicy.tsx:52-64). Read back from the answer and
- * compared. A dry run unless `apply`. Nothing is written - and the job stops - where the account's fine print is not
- * what this product's buyers see (a product policy of its own, or the account policy not in effect, which Gumroad
- * refuses to update anyway, :22), or where the window in force is not a bounded one of MIN_REFUND_DAYS days or more.
+ * compared. A dry run unless `apply`. Nothing is written where the account's fine print is not what this product's
+ * buyers see (a product policy of its own, or the account policy not in effect, which Gumroad refuses to update
+ * anyway, :22), or where the window in force is not a bounded one of MIN_REFUND_DAYS days or more: with `apply` the
+ * job stops; a dry run only says why it cannot be written yet and returns 'blocked', so a `create` that asked for
+ * nothing to be written never fails on it (the site.json PR must still open: a draft reaches no buyer, and `check`
+ * refuses the offer until the fine print is there).
  *
- * @returns {Promise<{action: 'written'|'dry-run'|'unchanged'}>}
+ * @returns {Promise<{action: 'written'|'dry-run'|'unchanged'|'blocked'}>}
  */
 export async function writeFinePrint({ fetchImpl, token, productId, text, apply = false, log = console.log }) {
+  const blocked = (reason) => {
+    if (apply) throw new StopError(`${reason} Nothing was written.`);
+    log(`fine print: cannot be written yet: ${reason} (a dry run: nothing was asked to be written)`);
+    return { action: 'blocked' };
+  };
   const p = await gumroad({ fetchImpl, token, method: 'GET', path: `/products/${encodeURIComponent(productId)}`, log });
   if (p.status !== 200 || p.body?.success !== true || !p.body.product) throw new StopError(refusal(`GET /v2/products/${productId}`, p));
   if (p.body.product.refund_policy?.inherited === false) {
-    throw new StopError('This product has a refund policy of its own, so the account fine print PUT /v2/refund_policy writes would not reach its buyers. Nothing was written.');
+    return blocked('This product has a refund policy of its own, so the account fine print PUT /v2/refund_policy writes would not reach its buyers.');
   }
   const a = await gumroad({ fetchImpl, token, method: 'GET', path: '/refund_policy', log });
   if (a.status !== 200 || a.body?.success !== true || !a.body.refund_policy) throw new StopError(refusal('GET /v2/refund_policy', a));
@@ -743,7 +770,7 @@ export async function writeFinePrint({ fetchImpl, token, productId, text, apply 
   // An account policy not in effect fails the gate as unread; Gumroad refuses to update it then anyway (:22).
   const gate = refundPolicyGate(p.body.product, account);
   if (!gate.ok) {
-    throw new StopError(`${gate.reason}. The fine print is written beside the period in force, and a period under ${MIN_REFUND_DAYS} days or "none" is never written back. Nothing was written.`);
+    return blocked(`${gate.reason}. The fine print is written beside the period in force, and a period under ${MIN_REFUND_DAYS} days or "none" is never written back.`);
   }
   if (canonicalFinePrint(account.fine_print) === text) {
     log('fine print: already the committed text; nothing to write');
@@ -900,19 +927,28 @@ const ANY_ADDRESS = /[^\s@<>"'(),;:]+@[^\s@<>"'(),;:]+/g;
  * Retry one sale by its id (RULING-2026-09-30-documents (d), fold action 4(b)): what the brand-mail responder runs,
  * every run, for a refund Gumroad refused for balance. The same rules as refundSale - a sale of THIS product only,
  * inside the window in force measured at `requestedAtMs` (the ORIGINAL request, required: the retry must not shrink the
- * window), never a sale already refunded, charged back or disputed, in full, a dry run unless `apply`, a BalanceError
- * while the balance still does not cover it. The sale id came from refundSale's own balance refusal for a verified
- * sender, so no address is sent or needed; GET /v2/sales/:id reads it (api/v2/sales_controller.rb:125-128). Nothing
- * shaped like an address is logged or thrown.
+ * window), in full, a dry run unless `apply`, a BalanceError while the balance still does not cover it. The sale id
+ * came from refundSale's own balance refusal for a verified sender, so no address is needed to find it; GET
+ * /v2/sales/:id reads it (api/v2/sales_controller.rb:125-128). Nothing shaped like an address is logged or thrown.
  *
- * @returns {Promise<{action: 'refunded'|'dry-run'|'none', saleId?: string}>}
+ * Unlike refundSale, whose one reply never depends on what it found, a retry answers a buyer who was told the refund
+ * "will be issued", so its result is never a quiet "none": a sale Gumroad reports wholly refunded (by anyone) is
+ * 'already-refunded' - the promise was kept - and anything else that stops the refund is a StopError (the responder
+ * keeps the retry and fails the run, so a session looks): partly refunded, charged back or disputed, another product,
+ * no purchase time, or outside the window as it now stands. `email`, when given, is only compared: the line
+ * "buyer: the sender" / "buyer: not the sender" says whether it is the sale's buyer address, so the responder answers
+ * no one but the buyer; it changes nothing about the refund.
+ *
+ * @returns {Promise<{action: 'refunded'|'already-refunded'|'dry-run', saleId: string}>}
  */
-export async function refundSaleById({ fetchImpl, token, site, saleId, requestedAtMs, nowMs = Date.now(), apply = false, log = console.log }) {
+export async function refundSaleById({ fetchImpl, token, site, saleId, requestedAtMs, email, nowMs = Date.now(), apply = false, log = console.log }) {
   const productId = String(site?.gumroad?.productId ?? '').trim();
   if (!productId) throw new StopError('src/config/site.json has no gumroad.productId: there is no product to refund.');
   const id = String(saleId ?? '').trim();
   if (!SALE_ID.test(id)) throw new StopError('refund --sale needs a Gumroad sale id (letters, numerals, "-", "_", "=", "+").');
   if (!Number.isFinite(requestedAtMs)) throw new StopError('refund --sale needs --requested-at, the original request: the window is measured there.');
+  const sender = email === undefined ? null : addressOf(email);
+  if (sender !== null && !PLAIN_ADDRESS.test(sender)) throw new StopError('refund --sale --email needs one plain address (not printed here).');
   const redact = (text) => String(text).replace(ANY_ADDRESS, '[address]');
   const say = (line) => log(redact(line));
   const stop = (message) => new StopError(redact(message));
@@ -928,16 +964,26 @@ export async function refundSaleById({ fetchImpl, token, site, saleId, requested
       throw stop(`GET /v2/sales/${id} was refused live (HTTP ${s.status}); nothing was refunded, and ${left}.`);
     }
     if (String(sale.product_id ?? '') !== productId) {
-      say(`sale ${id} is not a sale of this product: nothing to refund`);
-      return { action: 'none' };
+      throw stop(`Sale ${id} is not a sale of this product (site.json's gumroad.productId); nothing was refunded, and ${left}.`);
+    }
+    if (sender !== null) {
+      say(`buyer: ${[sale.purchase_email, sale.email].some((a) => addressOf(a) === sender) ? 'the sender' : 'not the sender'}`);
+    }
+    if (sale.refunded === true) {
+      say(`sale ${id} is already refunded in full: nothing more to refund`);
+      return { action: 'already-refunded', saleId: id };
     }
     if (settled(sale)) {
-      say(`sale ${id} is already refunded, charged back or disputed: nothing to refund`);
-      return { action: 'none' };
+      throw stop(`Sale ${id} is partly refunded, charged back or disputed, so it is not refunded here; ${left}, and a session decides.`);
+    }
+    if (!Number.isFinite(createdAt(sale))) {
+      throw stop(`Sale ${id} carries no purchase time, so the window cannot be measured; nothing was refunded, and ${left}.`);
     }
     if (!insideWindow(sale, asked, window.days)) {
-      say(`sale ${id} is outside the ${window.days}-day window measured at the request: nothing to refund`);
-      return { action: 'none' };
+      throw stop(
+        `Sale ${id} is outside the ${window.days}-day window in force now, measured at the original request, though the request `
+        + `was found inside the window when it was made (the window shrank?); nothing was refunded, and ${left}, and a session decides.`,
+      );
     }
     if (!apply) {
       say(`dry run: would refund sale ${id} in full (nothing was sent; --apply refunds)`);
@@ -950,8 +996,8 @@ export async function refundSaleById({ fetchImpl, token, site, saleId, requested
 }
 
 /**
- * `refund`'s flags: exactly one of --email <addr> or --sale <id>; --requested-at <iso> (required with --sale); --apply.
- * Null on anything else.
+ * `refund`'s flags: --email <addr> or --sale <id> (with --sale, --requested-at <iso> is required and --email is only the
+ * buyer check); --requested-at <iso>; --apply. Null on anything else.
  */
 function refundFlags(flags) {
   const out = { email: undefined, sale: undefined, requestedAt: undefined, apply: false };
@@ -966,7 +1012,7 @@ function refundFlags(flags) {
       i += 1;
     } else return null;
   }
-  if ((out.email === undefined) === (out.sale === undefined)) return null;
+  if (out.email === undefined && out.sale === undefined) return null;
   if (out.sale !== undefined && out.requestedAt === undefined) return null;
   return out;
 }
@@ -1009,7 +1055,7 @@ export const NO_TOKEN_NOTICE = 'Not calling Gumroad: repository secret GUMROAD_A
   + 'Until then Pro stays on "בקרוב" and nothing can be bought.';
 
 const USAGE = 'Usage: node scripts/gumroad-pro-product.js <create [--write-site-json] [--fine-print <file> [--apply]] | enable | check '
-  + '| refund --email <addr> [--requested-at <iso>] [--apply] | refund --sale <id> --requested-at <iso> [--apply]>';
+  + '| refund --email <addr> [--requested-at <iso>] [--apply] | refund --sale <id> --requested-at <iso> [--email <addr>] [--apply]>';
 
 export async function main(argv = process.argv.slice(2), env = process.env, { fetchImpl = globalThis.fetch, log = console.log, sitePath = SITE_JSON } = {}) {
   const [command, ...flags] = argv;
@@ -1057,7 +1103,7 @@ export async function main(argv = process.argv.slice(2), env = process.env, { fe
       const requestedAtMs = refundArgs.requestedAt === undefined ? undefined : Date.parse(refundArgs.requestedAt);
       if (Number.isNaN(requestedAtMs)) throw new StopError('--requested-at is not a date (ISO 8601, e.g. 2026-10-20T12:00:00Z).');
       const out = refundArgs.sale !== undefined
-        ? await refundSaleById({ fetchImpl, token, site, saleId: refundArgs.sale, requestedAtMs, apply: refundArgs.apply, log })
+        ? await refundSaleById({ fetchImpl, token, site, saleId: refundArgs.sale, requestedAtMs, email: refundArgs.email, apply: refundArgs.apply, log })
         : await refundSale({ fetchImpl, token, site, email: refundArgs.email, requestedAtMs, apply: refundArgs.apply, log });
       log(`refund: ${out.action}${out.saleId ? ` (sale ${out.saleId})` : ''}${refundArgs.apply ? '' : ' - dry run'}`);
     } else if (command === 'enable') {

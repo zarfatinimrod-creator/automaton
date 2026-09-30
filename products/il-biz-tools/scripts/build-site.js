@@ -40,6 +40,7 @@
 //      the build fills it from the accessibility statement's own mailto: contact
 //      (withCancelLinks); while there is none it keeps its placeholder marker,
 //      and cancelLinkProblems refuses any link that is not exactly that address
+//      without its "+tag" (the refund responder skips +accessibility mail) and
 //      with the subject "ביטול עסקה – Pro", or a home page without one.
 //
 // Fail closed: a refused build exits 1 and deletes _site/, so no stale copy is

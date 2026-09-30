@@ -25,10 +25,11 @@ name: gumroad-pro-product
 #      one already named the same is reused), read back, and required to hold a
 #      licenseKey node. The log prints its public id and short_url, and a PR
 #      writes both into products/il-biz-tools/src/config/site.json. The same run
-#      says what it would write as the refund policy's fine print
-#      (docs/refund-fine-print.he.txt: how to cancel, what the notice carries,
-#      how the refund is paid - RULING-2026-09-30-documents (b)); dispatch
-#      create again with write_fine_print ticked to write it. No owner step.
+#      says what it would write as the refund policy's fine print, or why it
+#      cannot be written yet (docs/refund-fine-print.he.txt: how to cancel, what
+#      the notice carries, how the refund is paid - RULING-2026-09-30-documents
+#      (b)); dispatch create again with write_fine_print ticked to write it. No
+#      owner step. Neither ever keeps the PR from opening.
 #   2. Merge that PR and let Netlify deploy.
 #   3. Dispatch with action=enable (from main, where brand-mail.yml commits its
 #      probe). It refuses unless state/colony/brand-mail.json shows the brand
@@ -137,8 +138,13 @@ jobs:
           if [ "${WRITE_FINE_PRINT:-}" = "true" ]; then ARGS+=(--apply); fi
           node scripts/gumroad-pro-product.js "${ARGS[@]}"
 
+      # !cancelled(), not the implicit success(): the create step writes site.json and its
+      # product_id output before it writes the fine print, so a fine-print write that stops
+      # (write_fine_print ticked, a policy that cannot carry it) fails the run but still opens
+      # this PR - `create` is not gated. (A dry run that cannot write it only says why, exit 0.)
+      # No product_id output means the create itself stopped and nothing was written.
       - name: Open a PR that writes the product id and URL into site.json
-        if: steps.token.outputs.present == 'true' && inputs.action == 'create'
+        if: ${{ !cancelled() && steps.token.outputs.present == 'true' && inputs.action == 'create' && steps.create.outputs.product_id != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
           BASE: ${{ github.ref_name }}

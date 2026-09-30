@@ -279,6 +279,12 @@ jobs:
         with:
           # Committing the balance retries needs real history, not a shallow clone.
           fetch-depth: 0
+          # No token left in .git/config: the respond step holds the mailbox password and the
+          # Gumroad token and reads untrusted mail. The two steps that talk to the remote -
+          # "Move to the branch tip" and "Commit the balance retries" - get github.token by env
+          # and hand it to git per command (remote(), below), as the header actions/checkout
+          # would have stored; no other step of this job ever holds it.
+          persist-credentials: false
 
       - uses: actions/setup-python@v5
         with:
@@ -293,10 +299,20 @@ jobs:
       # The balance retries must be the last ones committed, or a run queued behind another
       # would retry from a stale list (a schedule run checks out the commit it was queued on).
       - name: Move to the branch tip
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
           git config user.name "colony-bot"
           git config user.email "colony-bot@users.noreply.github.com"
-          git pull --rebase origin "${GITHUB_REF_NAME}"
+          remote() {
+            local auth
+            auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+            echo "::add-mask::${auth}"
+            GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0="http.https://github.com/.extraheader" \
+              GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${auth}" git "$@"
+          }
+          remote pull --rebase origin "${GITHUB_REF_NAME}"
 
       - name: Unit tests (fake IMAP, SMTP and refund command, no network) before any refund
         run: python -m unittest -v
@@ -323,6 +339,8 @@ jobs:
       # guard's that scripts/brand_mail.py pins (REFUND_COMMIT_IF).
       - name: Commit the balance retries
         if: always() && steps.respond.outcome != 'skipped'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           FILE=state/colony/refund-retries.json
@@ -335,17 +353,29 @@ jobs:
             echo "No change to the balance retries."
             exit 0
           fi
+          # On the run page first, so the retries survive even if every push below fails.
+          { echo '### state/colony/refund-retries.json after this run'; echo '```json'; cat "$FILE"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           git config user.name "colony-bot"
           git config user.email "colony-bot@users.noreply.github.com"
           # [skip ci]: a record is data, not code.
           git commit -m "brand-mail: refund balance retries [skip ci]"
+          remote() {
+            local auth
+            auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+            echo "::add-mask::${auth}"
+            GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0="http.https://github.com/.extraheader" \
+              GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${auth}" git "$@"
+          }
           for attempt in 1 2 3; do
-            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+            if remote push origin "HEAD:${GITHUB_REF_NAME}"; then
               exit 0
             fi
             echo "Push rejected; rebasing and retrying (attempt ${attempt})."
-            git pull --rebase origin "${GITHUB_REF_NAME}"
+            # A pull that fails too (the outage that failed the push) or stops on a conflict must not end
+            # the step under set -e before the error below: abort the rebase and try again.
+            if ! remote pull --rebase origin "${GITHUB_REF_NAME}"; then
+              git rebase --abort || true
+            fi
           done
-          { echo '### state/colony/refund-retries.json (not pushed)'; echo '```json'; cat "$FILE"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           echo "::error::Could not push state/colony/refund-retries.json. It is in this run's summary; add it by hand, or the refunds in it are not retried."
           exit 1

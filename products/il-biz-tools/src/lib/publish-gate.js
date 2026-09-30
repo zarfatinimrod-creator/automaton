@@ -436,7 +436,8 @@ function contactProblems(html) {
 // Consumer-protection law 14ט(ב) wants a dedicated, prominent link on the home page through which a cancellation
 // notice is sent. It is a mailto: to the brand mailbox with a fixed subject, and the address is never typed into a
 // page: the build takes it from the accessibility statement's own contact (the one brand address the site already
-// publishes) and writes it into every <a data-cancel-link>. In the source the link carries the placeholder marker
+// publishes), drops any "+tag" from it (bareAddress: +accessibility mail is never read as a refund request), and writes
+// it into every <a data-cancel-link>. In the source the link carries the placeholder marker
 // data-publish-blocker="cancel-link", so publishBlockers refuses it until the build fills it; and cancelLinkProblems
 // checks the link itself, so deleting the marker clears nothing.
 
@@ -447,9 +448,23 @@ export const CANCEL_LINK_PAGE = 'index.html';
 /** The subject a cancellation notice arrives with. */
 export const CANCEL_SUBJECT = 'ביטול עסקה – Pro';
 
-/** The link's href for the brand address. */
+/**
+ * The mailbox an address delivers to, without a "+tag" in its local part. The statement's contact is meant to be
+ * <brand-local>+accessibility@<brand-domain> (scripts/brand_mail.py, "HOW ACCESSIBILITY MAIL IS RECOGNISED"), and
+ * mail to "+accessibility@" or "+a11y@" is accessibility mail there: the refund responder skips it, so a cancellation
+ * notice sent to the tagged address would never be answered or refunded (reviewers of 30.9). The bare address is the
+ * same brand mailbox and publishes nothing new: it is the tagged one minus its tag.
+ */
+export function bareAddress(address) {
+  const text = String(address ?? '').trim();
+  const at = text.lastIndexOf('@');
+  if (at <= 0) return text;
+  return `${text.slice(0, at).split('+')[0]}${text.slice(at)}`;
+}
+
+/** The link's href for the brand address: its bare mailbox (bareAddress), with the fixed subject. */
 export function cancelHref(address) {
-  return `mailto:${address}?subject=${encodeURIComponent(CANCEL_SUBJECT)}`;
+  return `mailto:${bareAddress(address)}?subject=${encodeURIComponent(CANCEL_SUBJECT)}`;
 }
 
 /**
@@ -506,8 +521,11 @@ export function cancelLinkProblems(shipped, { contactPage = CONTACT_PAGE, linkPa
         continue;
       }
       const href = decodeEntities(tag.attrs.get('href') ?? '').trim();
+      if (/^mailto:[^@?]*\+/i.test(href)) {
+        say('carries a "+tag" in its address: mail to a tagged address such as +accessibility@ is accessibility mail to the refund responder (scripts/brand_mail.py), which never answers it as a cancellation');
+      }
       if (!want) say(`cannot be filled: the accessibility statement (${contactPage}) has no mailto: contact to take the brand address from`);
-      else if (href !== want) say(`must be exactly ${want} (the statement's address, the subject "${CANCEL_SUBJECT}"), and is "${href.slice(0, 80)}"`);
+      else if (href !== want) say(`must be exactly ${want} (the statement's mailbox without a +tag, the subject "${CANCEL_SUBJECT}"), and is "${href.slice(0, 80)}"`);
       const close = markup.slice(tag.end).search(/<\/a\s*>/i);
       if (close === -1 || !normalizeText(stripTags(markup.slice(tag.end, tag.end + close)))) say('has no visible link text');
       if (hides(tag.attrs) || tag.ancestors.some((a) => hides(a.attrs))) say('is hidden');

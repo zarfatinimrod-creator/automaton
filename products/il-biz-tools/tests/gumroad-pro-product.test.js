@@ -761,8 +761,8 @@ describe('the fine print: the Hebrew 14ט(ד) / 14ג(ב)(3) text on the receipt,
     expect(canonicalFinePrint(null)).toBe('');
   });
 
-  it('finePrintText refuses what Gumroad would change or refuse: tags, an unfilled slot, nothing, or more than 3000 characters', () => {
-    for (const raw of ['', '   ', '<b>ביטול</b>', 'x {other}', 'x'.repeat(3001)]) {
+  it('finePrintText refuses what Gumroad would change or refuse: tags, "&" (stored back as "&amp;"), an unfilled slot, nothing, or more than 3000 characters', () => {
+    for (const raw of ['', '   ', '<b>ביטול</b>', 'x {other}', 'x'.repeat(3001), 'שם & תעודת זהות', 'x &amp; y']) {
       expect(() => finePrintText(raw, SITE_READY), raw.slice(0, 20)).toThrow(StopError);
     }
     expect(finePrintText('ראו {siteUrl}.', { siteUrl: 'https://a.example/' })).toBe('ראו https://a.example.');
@@ -825,18 +825,34 @@ describe('the fine print: the Hebrew 14ט(ד) / 14ג(ב)(3) text on the receipt,
     }
   });
 
+  const blockedCases = [
+    ['the product has a policy of its own', { product: ownPolicy('30') }],
+    ['the account policy is not in effect', { account: accountPolicy('30', { in_effect: false }) }],
+    ['no refunds', { account: accountPolicy('none') }],
+    ['7 days', { account: accountPolicy('7') }],
+  ];
+
   it('writes nothing where the account text would not be what buyers see, or where the window is not 14 days or more', async () => {
-    for (const [why, routes] of [
-      ['the product has a policy of its own', { product: ownPolicy('30') }],
-      ['the account policy is not in effect', { account: accountPolicy('30', { in_effect: false }) }],
-      ['no refunds', { account: accountPolicy('none') }],
-      ['7 days', { account: accountPolicy('7') }],
-    ]) {
+    for (const [why, routes] of blockedCases) {
       const fetchImpl = policyRoutes(routes);
       const err = await write(fetchImpl, { apply: true }).catch((e) => e);
       expect(err, why).toBeInstanceOf(StopError);
+      expect(err.message, why).toMatch(/Nothing was written/);
       expect(putsTo(fetchImpl), why).toHaveLength(0);
     }
+  });
+
+  it('a dry run that could not write it says why and returns "blocked" - it never stops the run', async () => {
+    for (const [why, routes] of blockedCases) {
+      const fetchImpl = policyRoutes(routes);
+      const log = sink();
+      expect(await write(fetchImpl, { log }), why).toMatchObject({ action: 'blocked' });
+      expect(log.lines.join('\n'), why).toMatch(/fine print: cannot be written yet: /);
+      expect(putsTo(fetchImpl), why).toHaveLength(0);
+    }
+    // A Gumroad that cannot be read is not "blocked": that still stops, dry run or not.
+    const unreadable = fakeGumroad({ [`GET /products/${encodeURIComponent(ID)}`]: [500, { success: false }] });
+    expect(await write(unreadable).catch((e) => e)).toBeInstanceOf(StopError);
   });
 
   it('the CLI: create --fine-print <file> is a dry run; --apply writes; --apply alone is a usage error', async () => {
@@ -857,6 +873,31 @@ describe('the fine print: the Hebrew 14ט(ד) / 14ג(ב)(3) text on the receipt,
       const f = createRoutes();
       expect(await main(argv, env, { fetchImpl: f, log: sink(), sitePath }), argv.join(' ')).toBe(2);
       expect(f.calls).toHaveLength(0);
+    }
+    // What gumroad-pro-product.yml runs on every create: a dry run the policy blocks still exits 0 with site.json written
+    // (the workflow opens the productId PR only after a green create step - reviewers of 30.9, defect 1); --apply stops
+    // with exit 1, but only after site.json and the step outputs are written, so the PR still opens (!cancelled()).
+    for (const [why, routes] of blockedCases) {
+      const blockedSite = join(dir, `site-${why.replace(/\W+/g, '-')}.json`);
+      writeFileSync(blockedSite, JSON.stringify(SITE));
+      const outputs = join(dir, `out-${why.replace(/\W+/g, '-')}`);
+      writeFileSync(outputs, '');
+      const blockedLog = sink();
+      const f = policyRoutes(routes);
+      const argv = ['create', '--write-site-json', '--fine-print', FINE_PRINT_FILE];
+      expect(await main(argv, { ...env, GITHUB_OUTPUT: outputs }, { fetchImpl: f, log: blockedLog, sitePath: blockedSite }), why).toBe(0);
+      expect(JSON.parse(readFileSync(blockedSite, 'utf8')).gumroad.productId, why).toBe(ID);
+      expect(readFileSync(outputs, 'utf8'), why).toContain(`product_id=${ID}`);
+      expect(blockedLog.lines.join('\n'), why).toMatch(/fine print: cannot be written yet/);
+      expect(blockedLog.lines, why).toContain('fine print: blocked');
+      expect(putsTo(f), why).toHaveLength(0);
+      writeFileSync(blockedSite, JSON.stringify(SITE));
+      writeFileSync(outputs, '');
+      const applied = policyRoutes(routes);
+      expect(await main([...argv, '--apply'], { ...env, GITHUB_OUTPUT: outputs }, { fetchImpl: applied, log: sink(), sitePath: blockedSite }), why).toBe(1);
+      expect(JSON.parse(readFileSync(blockedSite, 'utf8')).gumroad.productId, why).toBe(ID);
+      expect(readFileSync(outputs, 'utf8'), why).toContain(`product_id=${ID}`);
+      expect(putsTo(applied), why).toHaveLength(0);
     }
     // A file Gumroad would change stops before anything is created or written.
     const bad = join(dir, 'bad.txt');
@@ -1149,30 +1190,78 @@ describe('refund --email: one sale of this product, by this buyer, inside the li
     it('measures the window at the original request: asked on day 29, retried on day 40, still refunded', async () => {
       const old = () => gumroadWith([sale({ created_at: iso(NOW - 40 * DAY) })]);
       expect(await bySale(old(), { apply: true, requestedAtMs: NOW - 11 * DAY })).toMatchObject({ action: 'refunded' });
+      // Outside the window as it now stands is a stop, never a quiet "nothing to refund": the holding reply said the
+      // refund will be issued, so the responder keeps the retry and the run fails for a session to look.
       const late = old();
-      expect(await bySale(late, { apply: true, requestedAtMs: NOW - 5 * DAY })).toMatchObject({ action: 'none' });
+      const err = await bySale(late, { apply: true, requestedAtMs: NOW - 5 * DAY }).catch((e) => e);
+      expect(err).toBeInstanceOf(StopError);
+      expect(err).not.toBeInstanceOf(BalanceError);
+      expect(err.message).toMatch(/outside the 30-day window/);
       expect(puts(late)).toHaveLength(0);
       // A request time in the future is clamped to now; a request before the purchase is not about that purchase.
       const before = gumroadWith([sale({ created_at: iso(NOW - DAY) })]);
-      expect(await bySale(before, { apply: true, requestedAtMs: NOW - 2 * DAY })).toMatchObject({ action: 'none' });
+      expect(await bySale(before, { apply: true, requestedAtMs: NOW - 2 * DAY }).catch((e) => e)).toBeInstanceOf(StopError);
+      expect(puts(before)).toHaveLength(0);
     });
 
-    it('is idempotent: a sale already refunded, charged back or disputed is never touched', async () => {
-      for (const over of [{ refunded: true }, { partially_refunded: true }, { chargedback: true }, { disputed: true }]) {
-        const done = gumroadWith([sale(over)]);
-        expect(await bySale(done, { apply: true }), JSON.stringify(over)).toMatchObject({ action: 'none' });
-        expect(puts(done)).toHaveLength(0);
+    it('a sale with no purchase time stops: the window cannot be measured', async () => {
+      for (const created_at of [undefined, null, 'yesterday']) {
+        const fetchImpl = gumroadWith([sale({ created_at })]);
+        const err = await bySale(fetchImpl, { apply: true }).catch((e) => e);
+        expect(err, String(created_at)).toBeInstanceOf(StopError);
+        expect(err.message, String(created_at)).toMatch(/no purchase time/);
+        expect(puts(fetchImpl)).toHaveLength(0);
       }
+    });
+
+    it('is idempotent: a sale Gumroad reports refunded in full is "already-refunded", touched never again', async () => {
+      const done = gumroadWith([sale({ refunded: true })]);
+      expect(await bySale(done, { apply: true })).toMatchObject({ action: 'already-refunded', saleId: 'sale-A' });
+      expect(await bySale(done)).toMatchObject({ action: 'already-refunded', saleId: 'sale-A' });
+      expect(puts(done)).toHaveLength(0);
       const once = gumroadWith([sale()]);
-      await bySale(once, { apply: true });
-      expect(await bySale(once, { apply: true })).toMatchObject({ action: 'none' });
+      expect(await bySale(once, { apply: true })).toMatchObject({ action: 'refunded' });
+      expect(await bySale(once, { apply: true })).toMatchObject({ action: 'already-refunded' });
       expect(puts(once)).toHaveLength(1);
     });
 
-    it('never refunds a sale of another product', async () => {
+    it('a sale partly refunded, charged back or disputed is never touched, and stops rather than pass as done', async () => {
+      for (const over of [{ partially_refunded: true }, { chargedback: true }, { disputed: true }]) {
+        const fetchImpl = gumroadWith([sale(over)]);
+        const err = await bySale(fetchImpl, { apply: true }).catch((e) => e);
+        expect(err, JSON.stringify(over)).toBeInstanceOf(StopError);
+        expect(err, JSON.stringify(over)).not.toBeInstanceOf(BalanceError);
+        expect(puts(fetchImpl)).toHaveLength(0);
+      }
+    });
+
+    it('never refunds a sale of another product, and says so as a stop', async () => {
       const other = gumroadWith([sale({ product_id: 'zz-other-product==' })]);
-      expect(await bySale(other, { apply: true })).toMatchObject({ action: 'none' });
+      expect(await bySale(other, { apply: true }).catch((e) => e)).toBeInstanceOf(StopError);
       expect(puts(other)).toHaveLength(0);
+    });
+
+    it('--email only says whether the sale\'s buyer is the sender - never the address - and changes nothing', async () => {
+      for (const [who, expected] of [[BUYER, 'buyer: the sender'], [` ${BUYER.toUpperCase()} `, 'buyer: the sender'], ['someone.else@example.net', 'buyer: not the sender']]) {
+        const fetchImpl = gumroadWith([sale()]);
+        const log = sink();
+        expect(await bySale(fetchImpl, { apply: true, email: who, log }), who).toMatchObject({ action: 'refunded' });
+        expect(log.lines, who).toContain(expected);
+        expect(puts(fetchImpl), who).toHaveLength(1);
+        expect(log.lines.join('\n'), who).not.toMatch(/@/);
+      }
+      // The buyer-account address counts as the purchase address does (refundSale's own rule).
+      const account = gumroadWith([sale({ purchase_email: 'other@example.net', email: BUYER })]);
+      const log = sink();
+      await bySale(account, { email: BUYER, log });
+      expect(log.lines).toContain('buyer: the sender');
+      // Without --email there is no buyer line; a malformed one stops before Gumroad is asked.
+      const plain = sink();
+      await bySale(gumroadWith([sale()]), { log: plain });
+      expect(plain.lines.some((l) => l.startsWith('buyer:'))).toBe(false);
+      const bad = gumroadWith([sale()]);
+      expect(await bySale(bad, { email: 'not an address' }).catch((e) => e)).toBeInstanceOf(StopError);
+      expect(bad.calls).toHaveLength(0);
     });
 
     it('a balance refusal again is a BalanceError again; an unknown sale or no window in force stops', async () => {
@@ -1202,7 +1291,7 @@ describe('refund --email: one sale of this product, by this buyer, inside the li
       for (const text of texts) expect(text).not.toContain(BUYER);
     });
 
-    it('the CLI: --sale needs --requested-at and excludes --email; exit 0 on a retry, 3 on the balance again', async () => {
+    it('the CLI: --sale needs --requested-at; exit 0 on a retry that refunded, 3 on the balance again, 1 on anything else', async () => {
       const dir = mkdtempSync(join(tmpdir(), 'ilbiz-'));
       const sitePath = join(dir, 'site.json');
       writeFileSync(sitePath, JSON.stringify(SITE_READY));
@@ -1210,8 +1299,28 @@ describe('refund --email: one sale of this product, by this buyer, inside the li
       const recent = (opts) => gumroadWith([sale({ created_at: new Date(Date.now() - 3 * DAY).toISOString() })], opts);
       const asked = new Date(Date.now() - DAY).toISOString();
       const ok = recent();
-      expect(await main(['refund', '--sale', 'sale-A', '--requested-at', asked, '--apply'], env, { fetchImpl: ok, log: sink(), sitePath })).toBe(0);
+      const okLog = sink();
+      expect(await main(['refund', '--sale', 'sale-A', '--requested-at', asked, '--apply'], env, { fetchImpl: ok, log: okLog, sitePath })).toBe(0);
       expect(puts(ok)).toHaveLength(1);
+      // The result the responder reads is the last line, and names the sale.
+      expect(okLog.lines.at(-1)).toBe('refund: refunded (sale sale-A)');
+      const again = sink();
+      expect(await main(['refund', '--sale', 'sale-A', '--requested-at', asked, '--apply'], env, { fetchImpl: ok, log: again, sitePath })).toBe(0);
+      expect(again.lines.at(-1)).toBe('refund: already-refunded (sale sale-A)');
+      // --email beside --sale is the buyer check: its line, never the address.
+      const checked = sink();
+      expect(await main(['refund', '--sale', 'sale-A', '--email', BUYER, '--requested-at', asked], env, { fetchImpl: recent(), log: checked, sitePath })).toBe(0);
+      expect(checked.lines).toContain('buyer: the sender');
+      expect(checked.lines.at(-1)).toBe('refund: dry-run (sale sale-A) - dry run');
+      expect(checked.lines.join('\n')).not.toContain(BUYER);
+      // Outside the window as it now stands, disputed, another product: exit 1, no "refund:" result line at all.
+      for (const over of [{ created_at: new Date(Date.now() - 90 * DAY).toISOString() }, { disputed: true }, { product_id: 'zz-other-product==' }]) {
+        const stopped = sink();
+        const f = gumroadWith([sale(over)]);
+        expect(await main(['refund', '--sale', 'sale-A', '--requested-at', asked, '--apply'], env, { fetchImpl: f, log: stopped, sitePath }), JSON.stringify(over)).toBe(1);
+        expect(stopped.lines.some((l) => l.startsWith('refund: ')), JSON.stringify(over)).toBe(false);
+        expect(puts(f)).toHaveLength(0);
+      }
       const dry = recent();
       expect(await main(['refund', '--sale', 'sale-A', '--requested-at', asked], env, { fetchImpl: dry, log: sink(), sitePath })).toBe(0);
       expect(puts(dry)).toHaveLength(0);
@@ -1220,8 +1329,9 @@ describe('refund --email: one sale of this product, by this buyer, inside the li
       expect(log.lines).toContain('refund: balance-insufficient (sale sale-A)');
       for (const argv of [
         ['refund', '--sale', 'sale-A', '--apply'],
-        ['refund', '--sale', 'sale-A', '--email', BUYER, '--requested-at', asked],
+        ['refund', '--sale', 'sale-A', '--email', BUYER, '--apply'],
         ['refund', '--sale'],
+        ['refund', '--requested-at', asked],
       ]) {
         const f = recent();
         expect(await main(argv, env, { fetchImpl: f, log: sink(), sitePath }), argv.join(' ')).toBe(2);
@@ -1334,6 +1444,20 @@ describe('the workflows hand the script what it compares', () => {
     expect(calls('')).toBe(base);
     expect(calls('true')).toBe(`${base} [--apply]`);
     expect(existsSync(join(fileURLToPath(new URL('..', import.meta.url)), 'docs', 'refund-fine-print.he.txt'))).toBe(true);
+  });
+
+  it('the site.json PR opens after a create whose fine-print write stopped: !cancelled(), once the create wrote a product id', () => {
+    // Without a status function GitHub adds success(), and a failed fine-print write would skip the PR - `create` must
+    // stay ungated (reviewers of 30.9, defect 1). The create step writes product_id before the fine print.
+    const yml = workflow('gumroad-pro-product.yml');
+    const steps = yml.split(/\n(?=      - )/);
+    const [pr] = steps.filter((st) => st.includes('name: Open a PR that writes the product id'));
+    const cond = pr.match(/\n {8}if: (.*)\n/)[1];
+    expect(cond).toBe("${{ !cancelled() && steps.token.outputs.present == 'true' && inputs.action == 'create' && steps.create.outputs.product_id != '' }}");
+    const [create] = steps.filter((st) => st.includes('name: Create the Pro product'));
+    expect(create).toContain('id: create');
+    const source = readFileSync(fileURLToPath(new URL('../scripts/gumroad-pro-product.js', import.meta.url)), 'utf8');
+    expect(source.indexOf('GITHUB_OUTPUT, `product_id=')).toBeLessThan(source.indexOf('await writeFinePrint({'));
   });
 
   it('enable gets the step-8 address by env, beside the token', () => {
