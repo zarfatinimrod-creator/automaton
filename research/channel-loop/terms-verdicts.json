@@ -192,10 +192,10 @@
    "checked": "2026-09-29"
   },
   "israelpost.co.il": {
-   "verdict": "TERMS_PENDING",
+   "verdict": "NO_TERMS",
    "source": "https://doar.israelpost.co.il/content/term-of-use/ (URL from skills-il/government-services israeli-address-autocomplete/evidence.json:307-313 at dd885910, github; that repo paraphrases the terms as silent on programmatic access and records Radware bot protection on the website host, optimization-log.json:7); no terms text in the repo or in tosdr-snapshots or Open Terms Archive",
    "checked": "2026-09-30",
-   "note": "the terms page is fetched once as a terms- line (ruling 30.9 16(d) D2(iii)) for the documents ruling fold 11(c), the registered-mail rate; no GitHub-hosted price list exists (tick 31 reader)"
+   "note": "refusal-type since 30.9 (tick 31): the terms page answered 200 but is a JavaScript shell whose only text is the title (research/rendered/terms-israel-post.txt:1, rendered) and it loads Google reCAPTCHA (terms-israel-post.html script tags), a bot challenge; the line is retired until a GitHub-hosted copy of the terms is read (ruling 30.9 16(d) D2(iv)). The registered-mail rate (documents ruling fold 11(c)) stays unread, so step 2's registered-mail notice stays recorded, not asked"
   },
   "kiezelpay.com": {
    "verdict": "NO_TERMS",
