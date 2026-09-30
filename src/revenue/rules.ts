@@ -20,6 +20,12 @@ export interface DecisionContext {
   previousDecision?: ReviewDecision | null;
   /** Days since the previous decision was filed. */
   daysSincePreviousDecision?: number | null;
+  /**
+   * What of the line's one-time setup is still asked, worded by owner-steps.ts `describeOpenSetup` — which drops an
+   * item once the owner steps it belongs to are done. It changes the rationale's words only, never the decision, so the
+   * auditor's replay needs none. Absent, the rationale lists the stored `humanSetup`, as a caller with no checklist would.
+   */
+  setupStillAsked?: string;
 }
 
 /**
@@ -50,7 +56,8 @@ export function decideLine(
   if (line.status === "proposed" || line.status === "awaiting_setup") {
     if (line.status === "awaiting_setup" && !line.humanSetupDone) {
       triggered.push("awaiting_human_setup");
-      return decide("escalate", `blocked on one-time human setup: ${line.humanSetup.join("; ") || "unspecified"}`);
+      const setup = ctx.setupStillAsked ?? (line.humanSetup.join("; ") || "unspecified");
+      return decide("escalate", `blocked on one-time human setup: ${setup}`);
     }
     return decide("hold", "line not started yet");
   }

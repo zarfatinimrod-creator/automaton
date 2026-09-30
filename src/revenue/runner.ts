@@ -21,6 +21,7 @@ import {
   heldOwnerStepsForLine,
   heldSecretRows,
   openOwnerStepsForLine,
+  openSetupItems,
   SECRET_ROW_GATE_MET,
   SECRET_ROW_GATE_SHORT,
   type SecretGateSite,
@@ -424,10 +425,11 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
 
   for (const line of listLines(db)) {
     if (line.status === "awaiting_setup" && !line.humanSetupDone) {
+      const items = openSetupItems(line);
       result.blockers.push(
         `${line.id} is waiting on the owner: steps ${askedNowList(line.id)} of docs/OWNER_STEPS.he.md` +
-          notAskedNowNote(line.id) + "; " +
-          line.humanSetup.join("; "),
+          notAskedNowNote(line.id) +
+          (items.length ? "; " + items.join("; ") : ""),
       );
     }
   }
@@ -595,15 +597,16 @@ export function renderReport(db: Database, result: TickResult, site: SecretGateS
   if (waiting.length) {
     out.push("## What the owner has to do (one time, per line)");
     out.push("");
+    // Once per report, above the lines: a held row belongs to its step, which every line below that lists it shares.
+    const heldRows = heldSecretRowsNote(waiting.map((l) => l.id), site);
+    if (heldRows) out.push(heldRows, "");
     for (const line of waiting) {
       out.push(`**${line.name}** (\`${line.id}\`)`);
       out.push(
         `Owner steps still open for \`${line.id}\` (docs/OWNER_STEPS.he.md): ${askedNowList(line.id)}` +
           notAskedNowNote(line.id),
       );
-      const heldRows = heldSecretRowsNote(line.id, site);
-      if (heldRows) out.push(heldRows);
-      for (const step of line.humanSetup) out.push(`- [ ] ${step}`);
+      for (const item of openSetupItems(line)) out.push(`- [ ] ${item}`);
       out.push("");
     }
     out.push(
@@ -730,13 +733,16 @@ function secretGateSite(siteDir: string = DEFAULT_PAGE_VIEW_SITE_DIR): SecretGat
 }
 
 /**
- * The secret rows of an asked-now step that a gate still holds back, as one report line, or "" when there are none.
- * Today that is step 6's POSTHOG_READ_KEY until the colony has created the brand's PostHog project and written its id
- * to site.json (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4): named with its reason, never as
- * something to do. Once the id is written the line disappears and step 6 is asked with the row.
+ * The secret rows of the steps asked now of the given lines that a gate still holds back, as one report line, or ""
+ * when there are none. Each step is named once however many of the lines it gates, so the report prints the line once
+ * (tick 32: it printed once per line waiting on step 6, four times). Today that is step 6's POSTHOG_READ_KEY until the
+ * colony has created the brand's PostHog project and written its id to site.json
+ * (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4): named with its reason, never as something to do.
+ * Once the id is written the line disappears and step 6 is asked with the row.
  */
-export function heldSecretRowsNote(lineId: string, site: SecretGateSite = secretGateSite()): string {
-  const parts = openOwnerStepsForLine(lineId).flatMap((step) =>
+export function heldSecretRowsNote(lineIds: string[], site: SecretGateSite = secretGateSite()): string {
+  const steps = [...new Set(lineIds.flatMap((id) => openOwnerStepsForLine(id)))].sort((a, b) => a.order - b.order);
+  const parts = steps.flatMap((step) =>
     heldSecretRows(step, site).map(
       (row) => `step ${step.number}'s \`${row.name}\` row ${SECRET_ROW_GATE_SHORT[row.askedOnlyWhen!]}`,
     ),
