@@ -1,5 +1,5 @@
 import { spawn, spawnSync } from "node:child_process";
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -16,14 +16,26 @@ import { afterAll, describe, expect, it } from "vitest";
  *   - the file is restored byte for byte after every run, also after a crash and on SIGTERM/SIGINT of the harness, and a
  *     restore that does not match the original's hash exits 4 with the original bytes saved elsewhere;
  *   - a file with uncommitted changes is refused unless --allow-dirty, so `git checkout -- <file>` is always a way back.
+ * Added after the tick-34 reviews (every one of these was shown to fail on the first version):
+ *   - a run has a time limit, and when the runner exits its whole process group is killed before the restore: a hung
+ *     mutant, a leftover holding the output pipe, or a leftover that writes the file later cannot outlive the run;
+ *   - on a signal the runner is stopped first and the file restored after (SIGQUIT too), never the other way round;
+ *   - the restore does not follow links, recreates a deleted file with its mode, and refuses to overwrite bytes that are
+ *     neither the original nor the mutation (someone's edit), with exit 4;
+ *   - one run per checkout (a lock), the bytes read are checked against git's index, and git reads paths literally;
+ *   - the checkout is compared before and after every run, and the baseline runs again at the end: tests that write to
+ *     the tree or that fail the second time void the verdicts;
+ *   - a run where no test ran (all skipped, "No test files found") never passes a baseline, whatever --cmd is.
  * Everything runs in a scratch git repository with a toy module and a stub runner (runner.mjs) that checks the toy and
  * prints a vitest-like summary. Markers put into the toy by a mutation make the stub misbehave on purpose: CRASH kills
  * it with SIGKILL, NOFILES prints vitest's "No test files found", HANG makes it wait (for the signal tests), CLOBBER
- * replaces the toy with a directory so the restore cannot write it. Nothing touches the network.
+ * replaces the toy with a directory so the restore cannot write it, and so on (each is named where it is used).
+ * Nothing touches the network.
  */
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const HARNESS = join(ROOT, "scripts", "mutate.mjs");
+const REAL_GIT = spawnSync("sh", ["-c", "command -v git"], { encoding: "utf8" }).stdout.trim();
 
 const scratch = mkdtempSync(join(tmpdir(), "mutate-test-"));
 afterAll(() => rmSync(scratch, { recursive: true, force: true }));
@@ -53,9 +65,14 @@ export function isPositive(n) {
 `;
 const TOY2 = `export const greet = (name) => "hi " + name;
 `;
-const RUNNER = `import { appendFileSync, copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+const RUNNER = `import { appendFileSync, chmodSync, copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { spawn } from "node:child_process";
 if (process.env.RUN_LOG) appendFileSync(process.env.RUN_LOG, ["run", ...process.argv.slice(2)].join(" ") + "\\n");
-if (process.env.SNAPSHOT_SRC) copyFileSync(process.env.SNAPSHOT_SRC, process.env.SNAPSHOT_DST);
+// A copy of a file as this run saw it, numbered by the run (1 is the baseline, 2 the first mutation's run).
+if (process.env.SNAPSHOT_SRC) {
+  const n = readFileSync(process.env.RUN_LOG, "utf8").split("\\n").filter(Boolean).length;
+  copyFileSync(process.env.SNAPSHOT_SRC, process.env.SNAPSHOT_DST + "." + n);
+}
 if (process.env.TOUCH_TOY2) appendFileSync("src/toy2.mjs", "// touched by the runner\\n");
 // A vitest-like summary, or pytest's last line with PYTEST_STYLE.
 const summary = (failed, passed) =>
@@ -63,26 +80,62 @@ const summary = (failed, passed) =>
     ? "==== " + (failed ? failed + " failed, " : "") + passed + " passed in 0.12s ===="
     : " Test Files  " + (failed ? "1 failed" : "1 passed") + " (1)\\n      Tests  " + (failed ? failed + " failed | " : "") + passed + " passed (" + (failed + passed) + ")";
 if (process.env.RUNNER_FAILS) { console.log(summary(1, 3)); process.exit(1); }
+if (process.env.SKIPALL) { console.log(" Test Files  1 skipped (1)\\n      Tests  3 skipped (3)"); process.exit(0); }
+if (process.env.NOFILES_OK) { console.log("No test files found, exiting with code 0"); process.exit(0); }
+if (process.env.HANGBASE) await new Promise((r) => setTimeout(r, 60000));
+// Tests that leave state behind: they pass the first time and fail every time after.
+if (process.env.STATEFUL_MARK) {
+  if (existsSync(process.env.STATEFUL_MARK)) { console.log(summary(4, 0)); process.exit(1); }
+  writeFileSync(process.env.STATEFUL_MARK, "ran");
+}
+if (existsSync("scripts/run.sh") && readFileSync("scripts/run.sh", "utf8").includes("DELETEME")) rmSync("scripts/run.sh");
 const src = readFileSync("src/toy.mjs", "utf8");
+if (src.includes("CHMODX")) chmodSync("src/toy.mjs", 0o755);
+if (src.includes("TOUCHOTHER")) appendFileSync("src/toy2.mjs", "// touched\\n");
+if (src.includes("TOUCHIGNORED")) appendFileSync("cache/data.txt", "more\\n");
+if (src.includes("FAILCRASH")) { console.log(summary(1, 3)); process.kill(process.pid, "SIGKILL"); }
 if (src.includes("CRASH")) process.kill(process.pid, "SIGKILL");
 if (src.includes("NOFILES")) { console.log("No test files found, exiting with code 1"); process.exit(1); }
 if (src.includes("NOLOAD")) {
   if (process.env.PYTEST_STYLE) { console.log("!!!! Interrupted: 1 error during collection !!!!\\n==== 1 error in 0.05s ===="); process.exit(2); }
   console.log(" Test Files  1 failed (1)\\n      Tests  no tests"); process.exit(1);
 }
-if (src.includes("FAILCRASH")) { console.log(summary(1, 3)); process.kill(process.pid, "SIGKILL"); }
 if (src.includes("EXIT1PASS")) { console.log(summary(0, 4)); process.exit(1); }
+if (src.includes("SKIPPED")) { console.log("      Tests  4 skipped (4)"); process.exit(0); }
 if (src.includes("NOISYFAIL")) console.log("No test files found, exiting with code 1");
+if (src.includes("QUOTEINTERRUPT")) console.log("!!!! Interrupted: 1 error during collection !!!!");
 if (src.includes("FAKESUMMARY")) console.log("      Tests  4 passed (4)");
+// A mutant that never ends: a synchronous loop no test timeout can interrupt.
+if (src.includes("LOOPFOREVER")) { writeFileSync(process.env.HANG_MARK, String(process.pid)); for (;;) {} }
+// A leftover that holds the runner's stdout after the runner itself has exited.
+if (src.includes("PIPEHOLD")) {
+  const c = spawn("sleep", ["30"], { stdio: ["ignore", "inherit", "inherit"] });
+  writeFileSync(process.env.HANG_MARK, String(c.pid));
+  console.log(summary(1, 3)); process.exit(1);
+}
+// A leftover that does not hold the pipe and writes the mutated bytes back 1.5s later.
+if (src.includes("LATEWRITE")) {
+  const code = "setTimeout(() => require('fs').writeFileSync('src/toy.mjs', process.env.LATE_BYTES), 1500)";
+  const c = spawn(process.execPath, ["-e", code], { stdio: "ignore", env: { ...process.env, LATE_BYTES: src } });
+  c.unref();
+  writeFileSync(process.env.HANG_MARK, String(c.pid));
+  console.log(summary(1, 3)); process.exit(1);
+}
 if (src.includes("HANG")) {
   if (src.includes("HANGHARD")) process.on("SIGTERM", () => {});
-  else process.on("SIGTERM", () => { writeFileSync(process.env.HANG_MARK + ".term", "SIGTERM"); process.exit(143); });
+  else if (src.includes("HANGWRITEBACK")) {
+    // Writes what it read (the mutation) back when told to stop: a restore done before it is dead is undone.
+    process.on("SIGTERM", () => { writeFileSync("src/toy.mjs", src); writeFileSync(process.env.HANG_MARK + ".term", "SIGTERM"); process.exit(143); });
+  } else process.on("SIGTERM", () => { writeFileSync(process.env.HANG_MARK + ".term", "SIGTERM"); process.exit(143); });
   writeFileSync(process.env.HANG_MARK, String(process.pid));
   setTimeout(() => process.exit(0), 60000);
 } else {
   const { add, isPositive } = await import("./src/toy.mjs");
   const { greet } = await import("./src/toy2.mjs");
   if (src.includes("CLOBBER")) { rmSync("src/toy.mjs"); mkdirSync("src/toy.mjs"); }
+  if (src.includes("SWAPLINK")) { rmSync("src/toy.mjs"); symlinkSync("other.txt", "src/toy.mjs"); }
+  if (src.includes("SWAPDIR")) { renameSync("src", "src-moved"); mkdirSync("elsewhere", { recursive: true }); symlinkSync("elsewhere", "src"); }
+  if (src.includes("EDITDURING")) appendFileSync("src/toy.mjs", "// edited during the run\\n");
   const results = [add(2, 3) === 5, isPositive(1) === true, isPositive(-1) === false, greet("x") === "hi x"];
   const failed = results.filter((r) => !r).length;
   for (let i = 0; i < 12; i++) console.log("noise line " + i);
@@ -108,8 +161,8 @@ function git(cwd: string, ...args: string[]): string {
 }
 
 let repos = 0;
-/** A committed scratch repository with the toy modules and the stub runner, plus `extra` files. */
-function makeRepo(extra: Record<string, string | Buffer> = {}): string {
+/** A committed scratch repository with the toy modules and the stub runner, plus `extra` files (with `modes`). */
+function makeRepo(extra: Record<string, string | Buffer> = {}, modes: Record<string, number> = {}): string {
   repos += 1;
   const dir = join(scratch, `repo-${repos}`);
   const files: Record<string, string | Buffer> = { "src/toy.mjs": TOY, "src/toy2.mjs": TOY2, "runner.mjs": RUNNER, ...extra };
@@ -117,6 +170,7 @@ function makeRepo(extra: Record<string, string | Buffer> = {}): string {
     mkdirSync(dirname(join(dir, p)), { recursive: true });
     writeFileSync(join(dir, p), content);
   }
+  for (const [p, mode] of Object.entries(modes)) chmodSync(join(dir, p), mode);
   git(dir, "init", "-q");
   git(dir, "add", "-A");
   git(dir, "commit", "-q", "-m", "toy");
@@ -155,7 +209,19 @@ function why(out: string, id: string): string {
 const STUB = ["--cmd", "node runner.mjs"];
 const one = (find: string, replace: string, ...more: string[]) => ["--file", "src/toy.mjs", "--find", find, "--replace", replace, ...more, ...STUB];
 const toyBytes = (repo: string) => readFileSync(join(repo, "src/toy.mjs"));
-const clean = (repo: string) => git(repo, "status", "--porcelain");
+const clean = (repo: string) => git(repo, "status", "--porcelain", "--untracked-files=all");
+const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const lockOf = (repo: string) => join(repo, ".git", "mutate.lock");
+
+/** Starts the harness without waiting, for the tests that signal it or run a second one beside it. */
+function startHarness(repo: string, args: string[], extra: Record<string, string> = {}) {
+  const child = spawn(process.execPath, [HARNESS, ...args], { cwd: repo, env: env(repo, extra) });
+  let out = "";
+  child.stdout.on("data", (d) => (out += d));
+  child.stderr.on("data", (d) => (out += d));
+  const closed = new Promise<number | null>((done) => child.on("close", (code) => done(code)));
+  return { child, closed, out: () => out };
+}
 
 describe("scripts/mutate.mjs: killed and survived, judged by the exit code", () => {
   it("killed: the runner exits non-zero with a failed test; exit 0; the file is restored byte for byte", () => {
@@ -163,11 +229,12 @@ describe("scripts/mutate.mjs: killed and survived, judged by the exit code", () 
     const r = harness(repo, one("a + b", "a - b"));
     expect(r.code).toBe(0);
     expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\s+exit 1\b.*src\/toy\.mjs/);
-    expect(r.stdout).toMatch(/1 applied: 1 killed, 0 survived, 0 killed\?; 0 not applied/);
+    expect(r.stdout).toMatch(/1 applied: 1 killed, 0 survived, 0 killed\?, 0 timeout; 0 not applied; 0 not run/);
     expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
     expect(clean(repo)).toBe("");
-    // One baseline run, then the mutation's run.
-    expect(runs(repo)).toEqual(["run", "run"]);
+    // One baseline run, the mutation's run, then the baseline again (it must still pass: repeatable tests).
+    expect(runs(repo)).toEqual(["run", "run", "run"]);
+    expect(existsSync(lockOf(repo))).toBe(false);
   });
 
   it("survived: the runner exits 0 on the mutated code; exit 1; the file is restored", () => {
@@ -175,7 +242,7 @@ describe("scripts/mutate.mjs: killed and survived, judged by the exit code", () 
     const r = harness(repo, one("n > 0", "n >= 0", "--note", "zero counts as positive"));
     expect(r.code).toBe(1);
     expect(line(r.stdout, "M1")).toMatch(/^M1\s+survived\s+exit 0\b.*src\/toy\.mjs.*zero counts as positive/);
-    expect(r.stdout).toMatch(/1 applied: 0 killed, 1 survived, 0 killed\?; 0 not applied/);
+    expect(r.stdout).toMatch(/1 applied: 0 killed, 1 survived, 0 killed\?, 0 timeout; 0 not applied; 0 not run/);
     expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
     expect(clean(repo)).toBe("");
   });
@@ -189,6 +256,8 @@ describe("scripts/mutate.mjs: killed and survived, judged by the exit code", () 
     expect(j.exitCode).toBe(0);
     expect(j.baseline).toHaveLength(1);
     expect(j.baseline[0]).toMatchObject({ command: ["node", "runner.mjs"], exit: 0, ok: true });
+    expect(j.baselineAgain).toHaveLength(1);
+    expect(j.baselineAgain[0]).toMatchObject({ command: ["node", "runner.mjs"], exit: 0, ok: true });
     expect(j.results).toHaveLength(1);
     const m = j.results[0];
     expect(m).toMatchObject({ id: "M1", file: "src/toy.mjs", find: "a + b", replace: "a - b", status: "killed", exit: 1 });
@@ -196,6 +265,8 @@ describe("scripts/mutate.mjs: killed and survived, judged by the exit code", () 
     expect(m.durationMs).toBeGreaterThanOrEqual(0);
     expect(m.tail).toHaveLength(3);
     expect(m.tail[2]).toMatch(/Tests\s+1 failed \| 3 passed \(4\)/);
+    // No --timeout: a run may take ten times its baseline, and never less than a minute.
+    expect(m.timeoutMs).toBe(60_000);
   });
 });
 
@@ -282,6 +353,19 @@ describe("scripts/mutate.mjs: killed? — a non-zero exit with no sign a test fa
     expect(collection.code).toBe(1);
     expect(line(collection.stdout, "M1")).toMatch(/^M1\s+killed\?\s+exit 2\b/);
     expect(why(collection.stdout, "M1")).toMatch(/error during collection/);
+
+    // A real failure whose output also quotes a collection-error line (a test printed it): the summary decides.
+    const quoted = harness(repo, one("a + b", "a - b /*QUOTEINTERRUPT*/"), py);
+    expect(quoted.code).toBe(0);
+    expect(line(quoted.stdout, "M1")).toMatch(/^M1\s+killed\s+exit 1\b/);
+  });
+
+  it("exit 0 where no test ran (every test skipped) is survived, and says no test ran", () => {
+    const repo = makeRepo();
+    const r = harness(repo, one("a + b", "a + b /*SKIPPED*/"));
+    expect(r.code).toBe(1);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+survived\s+exit 0\b/);
+    expect(why(r.stdout, "M1")).toMatch(/no test ran|skipped/);
   });
 });
 
@@ -310,7 +394,7 @@ describe("scripts/mutate.mjs: not applied — the edit must be exact", () => {
     const second = harness(repo, one("return ", "return !", "--nth", "2"), { SNAPSHOT_SRC: "src/toy.mjs", SNAPSHOT_DST: snap });
     expect(second.code).toBe(0);
     expect(line(second.stdout, "M1")).toMatch(/^M1\s+killed\s+exit 1\b/);
-    expect(readFileSync(snap, "utf8")).toBe(TOY.replace("return n > 0", "return !n > 0"));
+    expect(readFileSync(`${snap}.2`, "utf8")).toBe(TOY.replace("return n > 0", "return !n > 0"));
     expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
 
     const past = harness(repo, one("return ", "return !", "--nth", "3"));
@@ -348,14 +432,82 @@ describe("scripts/mutate.mjs: not applied — the edit must be exact", () => {
 });
 
 describe("scripts/mutate.mjs: the baseline comes first", () => {
-  it("a failing baseline stops everything with exit 2: no mutation is applied", () => {
+  it("a failing baseline stops everything with exit 2: no mutation is applied, and the report and --json still come", () => {
     const repo = makeRepo();
-    const r = harness(repo, one("a + b", "a - b"), { RUNNER_FAILS: "1" });
+    const out = join(scratch, "failing-baseline.json");
+    const r = harness(repo, [...one("a + b", "a - b"), "--json", out], { RUNNER_FAILS: "1" });
     expect(r.code).toBe(2);
     expect(r.all).toMatch(/baseline/i);
     expect(r.all).toMatch(/proves nothing/);
+    expect(r.stderr).not.toMatch(/TypeError/);
     expect(runs(repo)).toEqual(["run"]); // the baseline only
-    expect(r.stdout).not.toMatch(/^M1\s+killed/m);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+not run\b/);
+    expect(why(r.stdout, "M1")).toMatch(/baseline failed/);
+    expect(r.stdout).toMatch(/0 applied: 0 killed, 0 survived, 0 killed\?, 0 timeout; 0 not applied; 1 not run/);
+    const j = JSON.parse(readFileSync(out, "utf8"));
+    expect(j.exitCode).toBe(2);
+    expect(j.results[0]).toMatchObject({ id: "M1", status: "not run" });
+    expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+  });
+
+  it("a baseline where every test was skipped fails (no test ran), whatever the command", () => {
+    const repo = makeRepo();
+    const r = harness(repo, one("a + b", "a - b"), { SKIPALL: "1" });
+    expect(r.code).toBe(2);
+    expect(r.all).toMatch(/baseline FAILED/);
+    expect(r.all).toMatch(/skipped/);
+    expect(runs(repo)).toEqual(["run"]);
+  });
+
+  it('a --cmd baseline that says "No test files found" fails even with exit 0 (vitest --passWithNoTests)', () => {
+    const repo = makeRepo();
+    const r = harness(repo, one("a + b", "a - b"), { NOFILES_OK: "1" });
+    expect(r.code).toBe(2);
+    expect(r.all).toMatch(/baseline FAILED/);
+    expect(r.all).toMatch(/No test files found/);
+    expect(runs(repo)).toEqual(["run"]);
+  });
+
+  it("a baseline past --timeout fails (exit 2): nothing is mutated", () => {
+    const repo = makeRepo();
+    const t0 = Date.now();
+    const r = harness(repo, [...one("a + b", "a - b"), "--timeout", "2"], { HANGBASE: "1" });
+    expect(Date.now() - t0).toBeLessThan(20_000);
+    expect(r.code).toBe(2);
+    expect(r.all).toMatch(/timed out after 2\.0s/);
+    expect(line(r.stdout, "M1")).toMatch(/not run/);
+    expect(runs(repo)).toEqual(["run"]);
+    expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+  }, 30_000);
+
+  it("a baseline that changes the checkout stops with exit 2, naming the path: nothing is mutated", () => {
+    const repo = makeRepo();
+    const plan = writePlan(repo, [
+      { file: "src/toy.mjs", find: "a + b", replace: "a - b" },
+      { file: "src/toy2.mjs", find: '"hi "', replace: '"yo "' },
+    ]);
+    // The runner appends to toy2.mjs on every run: a later run would see what an earlier one left.
+    const r = harness(repo, ["--plan", plan, ...STUB], { TOUCH_TOY2: "1" });
+    expect(r.code).toBe(2);
+    expect(r.stderr).toMatch(/changed the checkout/);
+    expect(r.stderr).toContain("src/toy2.mjs");
+    expect(line(r.stdout, "M1")).toMatch(/not run/);
+    expect(line(r.stdout, "M2")).toMatch(/not run/);
+    expect(runs(repo)).toEqual(["run"]);
+    expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+    expect(readFileSync(join(repo, "src/toy2.mjs"), "utf8")).not.toContain('"yo "');
+  });
+
+  it("runs the baseline again at the end: tests that fail the second time void every kill (exit 2)", () => {
+    const repo = makeRepo();
+    const mark = join(scratch, "stateful.mark");
+    // A comment-only mutation: it cannot break a test, so its "kill" can only come from state an earlier run left.
+    const r = harness(repo, one("return a + b;", "return a + b; // a comment, changed"), { STATEFUL_MARK: mark });
+    expect(r.code).toBe(2);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\?\s/);
+    expect(why(r.stdout, "M1")).toMatch(/baseline failed when run again/);
+    expect(r.all).toMatch(/not repeatable/);
+    expect(runs(repo)).toEqual(["run", "run", "run"]);
     expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
   });
 
@@ -364,6 +516,7 @@ describe("scripts/mutate.mjs: the baseline comes first", () => {
     const r = harness(repo, ["--file", "src/toy.mjs", "--find", "a + b", "--replace", "a - b", "--test", "tests/toy.test.ts"]);
     expect(r.code).toBe(0);
     expect(runs(repo).filter((l) => l.startsWith("npx"))).toEqual([
+      "npx vitest run tests/toy.test.ts",
       "npx vitest run tests/toy.test.ts",
       "npx vitest run tests/toy.test.ts",
     ]);
@@ -391,7 +544,7 @@ describe("scripts/mutate.mjs: restore, always", () => {
     // The runner does not read the blob, so the mutation survives; what matters is the bytes.
     expect(r.code).toBe(1);
     const mutated = Buffer.concat([Buffer.from("line one\r\nKEY=22\r\n"), Buffer.from([0xff, 0xfe, 0x00, 0x80]), Buffer.from("\r\nend")]);
-    expect(readFileSync(snap).equals(mutated)).toBe(true);
+    expect(readFileSync(`${snap}.2`).equals(mutated)).toBe(true);
     expect(readFileSync(join(repo, "data/blob.bin")).equals(blob)).toBe(true);
     expect(clean(repo)).toBe("");
   });
@@ -420,6 +573,7 @@ describe("scripts/mutate.mjs: restore, always", () => {
   it.each([
     ["SIGTERM", 143],
     ["SIGINT", 130],
+    ["SIGQUIT", 131],
   ] as const)("restores the file when the harness itself gets %s mid-run, and stops the runner", async (sig, expected) => {
     const repo = makeRepo();
     const mark = join(scratch, `hang-${sig}.pid`);
@@ -464,20 +618,183 @@ describe("scripts/mutate.mjs: restore, always", () => {
     await waitFor(() => !alive(runnerPid), 5_000);
   }, 30_000);
 
-  it("a file that changed on disk after the checks (a runner wrote to it) is not applied, not mutated from stale bytes", () => {
+  it("on a signal it stops the runner before restoring: a runner that writes the file when told to stop cannot undo the restore", async () => {
     const repo = makeRepo();
+    const mark = join(scratch, "hang-writeback.pid");
+    const h = startHarness(repo, one("a + b", "a + b /*HANGWRITEBACK*/"), { HANG_MARK: mark });
+    await waitFor(() => existsSync(mark) && readFileSync(mark, "utf8").length > 0, 20_000);
+    h.child.kill("SIGINT");
+    expect(await h.closed).toBe(130);
+    expect(readFileSync(`${mark}.term`, "utf8")).toBe("SIGTERM"); // it did write, before the restore
+    expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+    expect(clean(repo)).toBe("");
+  }, 30_000);
+
+  it("a target an earlier run changed (an ignored file the checkout check cannot see) is not applied, not mutated from stale bytes", () => {
+    const repo = makeRepo({ ".gitignore": "cache/\n" });
+    mkdirSync(join(repo, "cache"));
+    writeFileSync(join(repo, "cache/data.txt"), "data\n");
     const plan = writePlan(repo, [
-      { file: "src/toy.mjs", find: "a + b", replace: "a - b" },
-      { file: "src/toy2.mjs", find: '"hi "', replace: '"yo "' },
+      { file: "src/toy.mjs", find: "a + b", replace: "a - b /*TOUCHIGNORED*/" },
+      { file: "cache/data.txt", find: "data", replace: "DATA" },
     ]);
-    // The runner appends to toy2.mjs on every run, the baseline included.
-    const r = harness(repo, ["--plan", plan, ...STUB], { TOUCH_TOY2: "1" });
+    const r = harness(repo, ["--plan", plan, "--allow-dirty", ...STUB]);
     expect(r.code).toBe(2);
-    expect(line(r.stdout, "M1")).toMatch(/killed/);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\s/);
     expect(line(r.stdout, "M2")).toMatch(/not applied/);
     expect(why(r.stdout, "M2")).toMatch(/changed on disk/);
+    expect(readFileSync(join(repo, "cache/data.txt"), "utf8")).toBe("data\nmore\n");
+  });
+
+  it("a mutation run that changes another file in the checkout stops everything with exit 4; the rest are not run", () => {
+    const repo = makeRepo();
+    const plan = writePlan(repo, [
+      { file: "src/toy.mjs", find: "a + b", replace: "a - b /*TOUCHOTHER*/" },
+      { file: "src/toy2.mjs", find: '"hi "', replace: '"yo "' },
+    ]);
+    const r = harness(repo, ["--plan", plan, ...STUB]);
+    expect(r.code).toBe(4);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\s/);
+    expect(line(r.stdout, "M2")).toMatch(/^M2\s+not run\b/);
+    expect(r.stderr).toMatch(/the run of M1 changed the checkout/);
+    expect(r.stderr).toContain("src/toy2.mjs");
+    expect(runs(repo)).toEqual(["run", "run"]);
+    expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
     expect(readFileSync(join(repo, "src/toy2.mjs"), "utf8")).not.toContain('"yo "');
   });
+});
+
+describe("scripts/mutate.mjs: nothing a run starts outlives it", () => {
+  it("a run past --timeout is stopped with its whole process group and recorded as timeout (exit 1); the file is restored", () => {
+    const repo = makeRepo();
+    const mark = join(scratch, "loop.pid");
+    const out = join(scratch, "loop.json");
+    const t0 = Date.now();
+    const r = harness(repo, [...one("a + b", "a + b /*LOOPFOREVER*/"), "--timeout", "2", "--json", out], { HANG_MARK: mark });
+    expect(Date.now() - t0).toBeLessThan(20_000);
+    expect(r.code).toBe(1);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+timeout\s/);
+    expect(why(r.stdout, "M1")).toMatch(/2\.0s/);
+    expect(r.stdout).toMatch(/1 applied: 0 killed, 0 survived, 0 killed\?, 1 timeout; 0 not applied; 0 not run/);
+    expect(JSON.parse(readFileSync(out, "utf8")).results[0]).toMatchObject({ status: "timeout", timeoutMs: 2000 });
+    expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+    expect(clean(repo)).toBe("");
+    expect(alive(Number(readFileSync(mark, "utf8")))).toBe(false);
+  }, 30_000);
+
+  it("does not wait on a leftover process that holds the runner's output: the group is killed when the runner exits", () => {
+    const repo = makeRepo();
+    const mark = join(scratch, "pipehold.pid");
+    const t0 = Date.now();
+    const r = harness(repo, one("a + b", "a - b /*PIPEHOLD*/"), { HANG_MARK: mark });
+    expect(Date.now() - t0).toBeLessThan(15_000); // the leftover sleeps 30s
+    expect(r.code).toBe(0);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\s/);
+    expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+    expect(alive(Number(readFileSync(mark, "utf8")))).toBe(false);
+  }, 60_000);
+
+  it("a leftover process that would write the mutation back later is killed before the restore", async () => {
+    const repo = makeRepo();
+    const mark = join(scratch, "latewrite.pid");
+    const r = harness(repo, one("a + b", "a - b /*LATEWRITE*/"), { HANG_MARK: mark });
+    expect(r.code).toBe(0);
+    await pause(3000); // the leftover would have written at 1.5s
+    expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+    expect(clean(repo)).toBe("");
+    expect(alive(Number(readFileSync(mark, "utf8")))).toBe(false);
+  }, 30_000);
+});
+
+describe("scripts/mutate.mjs: the restore writes the file, never through what replaced it", () => {
+  it("a file the run deleted is recreated with its mode (an executable stays 100755)", () => {
+    const repo = makeRepo({ "scripts/run.sh": "#!/bin/sh\necho hi\n" }, { "scripts/run.sh": 0o755 });
+    const r = harness(repo, ["--file", "scripts/run.sh", "--find", "echo hi", "--replace", "echo DELETEME", ...STUB]);
+    expect(r.code).toBe(1); // nothing tests run.sh: survived
+    expect(line(r.stdout, "M1")).toMatch(/survived/);
+    expect(readFileSync(join(repo, "scripts/run.sh"), "utf8")).toBe("#!/bin/sh\necho hi\n");
+    expect(statSync(join(repo, "scripts/run.sh")).mode & 0o777).toBe(0o755);
+    expect(clean(repo)).toBe("");
+  });
+
+  it("a file whose mode the run changed gets its mode back", () => {
+    const repo = makeRepo();
+    const r = harness(repo, one("a + b", "a + b /*CHMODX*/"));
+    expect(r.code).toBe(1);
+    expect(line(r.stdout, "M1")).toMatch(/survived/);
+    expect(statSync(join(repo, "src/toy.mjs")).mode & 0o777).toBe(0o644);
+    expect(clean(repo)).toBe("");
+  });
+
+  it("a file the run replaced with a symlink: the link is removed and the file recreated; the link's target is untouched", () => {
+    const repo = makeRepo({ "src/other.txt": "other\n" });
+    const r = harness(repo, one("a + b", "a + b /*SWAPLINK*/"));
+    expect(r.code).toBe(1);
+    expect(line(r.stdout, "M1")).toMatch(/survived/);
+    expect(readFileSync(join(repo, "src/other.txt"), "utf8")).toBe("other\n");
+    expect(lstatSync(join(repo, "src/toy.mjs")).isFile()).toBe(true);
+    expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+    expect(clean(repo)).toBe("");
+  });
+
+  it("a directory the run replaced with a link: exit 4, and nothing is written where the link points", () => {
+    const repo = makeRepo();
+    const r = harness(repo, one("a + b", "a + b /*SWAPDIR*/"));
+    expect(r.code).toBe(4);
+    expect(r.stderr).toMatch(/RESTORE FAILED/);
+    expect(existsSync(join(repo, "elsewhere", "toy.mjs"))).toBe(false);
+    const saved = r.stderr.match(/original bytes saved to (\S+)/);
+    expect(readFileSync(saved![1]).equals(Buffer.from(TOY))).toBe(true);
+  });
+
+  it("bytes that are neither the original nor the mutation (an edit during the run) are left alone and saved: exit 4", () => {
+    const repo = makeRepo();
+    const r = harness(repo, one("a + b", "a + b /*EDITDURING*/"));
+    expect(r.code).toBe(4);
+    expect(r.stderr).toMatch(/RESTORE FAILED: src\/toy\.mjs: it changed during the run/);
+    const now = readFileSync(join(repo, "src/toy.mjs"), "utf8");
+    expect(now).toContain("EDITDURING");
+    expect(now).toContain("// edited during the run");
+    const saved = r.stderr.match(/original bytes saved to (\S+)/);
+    expect(readFileSync(saved![1]).equals(Buffer.from(TOY))).toBe(true);
+    const found = r.stderr.match(/bytes found there saved to (\S+)/);
+    expect(readFileSync(found![1], "utf8")).toBe(now);
+  });
+});
+
+describe("scripts/mutate.mjs: one run per checkout", () => {
+  it("refuses to start while another mutate run holds the checkout's lock (exit 2, nothing runs, the lock is left)", () => {
+    const repo = makeRepo();
+    writeFileSync(lockOf(repo), `${process.pid}\n`);
+    const r = harness(repo, one("a + b", "a - b"));
+    expect(r.code).toBe(2);
+    expect(r.stderr).toMatch(new RegExp(`another mutate run \\(pid ${process.pid}\\)`));
+    expect(runs(repo)).toEqual([]);
+    expect(readFileSync(lockOf(repo), "utf8")).toBe(`${process.pid}\n`);
+  });
+
+  it("takes over a lock whose process is gone, and removes its own lock when done", () => {
+    const repo = makeRepo();
+    const dead = spawnSync(process.execPath, ["-e", ""]).pid;
+    writeFileSync(lockOf(repo), `${dead}\n`);
+    const r = harness(repo, one("a + b", "a - b"));
+    expect(r.code).toBe(0);
+    expect(existsSync(lockOf(repo))).toBe(false);
+  });
+
+  it("a second run started while the first has a mutation on disk is refused, and the first finishes clean", async () => {
+    const repo = makeRepo();
+    const mark = join(scratch, "concurrent.pid");
+    const first = startHarness(repo, one("a + b", "a + b /*HANG*/"), { HANG_MARK: mark });
+    await waitFor(() => existsSync(mark) && readFileSync(mark, "utf8").length > 0, 20_000);
+    const second = harness(repo, ["--file", "src/toy2.mjs", "--find", '"hi "', "--replace", '"yo "', ...STUB]);
+    expect(second.code).toBe(2);
+    expect(second.stderr).toMatch(/another mutate run/);
+    first.child.kill("SIGTERM");
+    expect(await first.closed).toBe(143);
+    expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+    expect(clean(repo)).toBe("");
+  }, 30_000);
 });
 
 describe("scripts/mutate.mjs: git is the way back", () => {
@@ -508,6 +825,34 @@ describe("scripts/mutate.mjs: git is the way back", () => {
     expect(r.stdout).toMatch(/not tracked by git/);
     expect(runs(repo)).toEqual([]);
   });
+
+  it("reads the path literally, not as a glob: an ignored gen/[id].ts is not tracked just because gen/i.ts is", () => {
+    const repo = makeRepo({ "gen/i.ts": "export const i = 1;\n", ".gitignore": "gen/\\[id\\].ts\n" });
+    writeFileSync(join(repo, "gen/[id].ts"), "export const id = 1;\n");
+    expect(clean(repo)).toBe(""); // ignored: git status says nothing about it
+    const r = harness(repo, ["--file", "gen/[id].ts", "--find", "1", "--replace", "2", ...STUB]);
+    expect(r.code).toBe(2);
+    expect(r.stdout).toMatch(/not tracked by git/);
+    expect(runs(repo)).toEqual([]);
+    expect(readFileSync(join(repo, "gen/[id].ts"), "utf8")).toBe("export const id = 1;\n");
+  });
+
+  it("checks the bytes it read against git's index: a git status that says clean is not enough", () => {
+    const repo = makeRepo();
+    const dirty = `// a local edit\n${TOY}`;
+    writeFileSync(join(repo, "src/toy.mjs"), dirty);
+    // A git whose status always says clean (as a status taken a moment before another run's write would).
+    const shim = join(scratch, "git-shim");
+    mkdirSync(shim, { recursive: true });
+    writeFileSync(join(shim, "git"), `#!/usr/bin/env bash\nfor a in "$@"; do [ "$a" = status ] && exit 0; done\nexec "${REAL_GIT}" "$@"\n`);
+    chmodSync(join(shim, "git"), 0o755);
+    const r = harness(repo, one("a + b", "a - b"), { PATH: `${shim}:${BIN}:${process.env.PATH}` });
+    expect(r.code).toBe(2);
+    expect(line(r.stdout, "M1")).toMatch(/not applied/);
+    expect(why(r.stdout, "M1")).toMatch(/not what git has/);
+    expect(runs(repo)).toEqual([]);
+    expect(readFileSync(join(repo, "src/toy.mjs"), "utf8")).toBe(dirty);
+  });
 });
 
 function writePlan(repo: string, plan: unknown): string {
@@ -530,9 +875,9 @@ describe("scripts/mutate.mjs: --plan", () => {
     expect(line(r.stdout, "M1")).toMatch(/^M1\s+killed\s+exit 1\b.*src\/toy\.mjs.*add subtracts/);
     expect(line(r.stdout, "zero")).toMatch(/^zero\s+survived\s+exit 0\b.*zero is positive/);
     expect(line(r.stdout, "M3")).toMatch(/^M3\s+killed\s+exit 1\b.*src\/toy2\.mjs.*greeting/);
-    expect(r.stdout).toMatch(/3 applied: 2 killed, 1 survived, 0 killed\?; 0 not applied/);
-    // Two baselines (the test paths make a second command), then the three mutations in order.
-    expect(runs(repo)).toEqual(["run", "run t2.test.ts", "run", "run", "run t2.test.ts"]);
+    expect(r.stdout).toMatch(/3 applied: 2 killed, 1 survived, 0 killed\?, 0 timeout; 0 not applied; 0 not run/);
+    // Two baselines (the test paths make a second command), the three mutations in order, then both baselines again.
+    expect(runs(repo)).toEqual(["run", "run t2.test.ts", "run", "run", "run t2.test.ts", "run", "run t2.test.ts"]);
     const j = JSON.parse(readFileSync(out, "utf8"));
     expect(j.results.map((m: { id: string; status: string }) => [m.id, m.status])).toEqual([
       ["M1", "killed"],
@@ -555,7 +900,22 @@ describe("scripts/mutate.mjs: --plan", () => {
     expect(r.code).toBe(2);
     expect(line(r.stdout, "M1")).toMatch(/killed/);
     expect(line(r.stdout, "M2")).toMatch(/not applied/);
-    expect(runs(repo)).toEqual(["run", "run"]);
+    expect(runs(repo)).toEqual(["run", "run", "run"]);
+  });
+
+  it("keeps its exit code and still writes --json when its stdout is closed early (piped into head -n 1)", () => {
+    const repo = makeRepo();
+    const out = join(scratch, "epipe.json");
+    const plan = writePlan(repo, [
+      { file: "src/toy.mjs", find: "a + b", replace: "a - b" },
+      { file: "src/toy2.mjs", find: '"hi "', replace: '"yo "' },
+    ]);
+    const cmd = `"${process.execPath}" "${HARNESS}" --plan "${plan}" --json "${out}" --cmd "node runner.mjs" | head -n 1 >/dev/null; exit \${PIPESTATUS[0]}`;
+    const r = spawnSync("bash", ["-c", cmd], { cwd: repo, env: env(repo), encoding: "utf8" });
+    expect(r.stderr).not.toMatch(/EPIPE/);
+    expect(r.status).toBe(0);
+    expect(JSON.parse(readFileSync(out, "utf8")).exitCode).toBe(0);
+    expect(clean(repo)).toBe("");
   });
 });
 
@@ -569,6 +929,9 @@ describe("scripts/mutate.mjs: usage errors exit 2 and run nothing", () => {
     ["--nth 0", ["--file", "src/toy.mjs", "--find", "a + b", "--replace", "a - b", "--nth", "0", ...STUB]],
     ["the default command with no --test (it would run the whole suite)", ["--file", "src/toy.mjs", "--find", "a + b", "--replace", "a - b"]],
     ["an empty --cmd", ["--file", "src/toy.mjs", "--find", "a + b", "--replace", "a - b", "--cmd", " "]],
+    ["the default command spelled out with no --test", ["--file", "src/toy.mjs", "--find", "a + b", "--replace", "a - b", "--cmd", "npx vitest run"]],
+    ["--timeout 0", ["--file", "src/toy.mjs", "--find", "a + b", "--replace", "a - b", "--timeout", "0", ...STUB]],
+    ["--json in a directory that does not exist", ["--file", "src/toy.mjs", "--find", "a + b", "--replace", "a - b", "--json", "/nonexistent-dir/out.json", ...STUB]],
   ])("%s", (_name, args) => {
     const repo = makeRepo();
     const r = harness(repo, args as string[]);
