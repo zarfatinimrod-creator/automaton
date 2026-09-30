@@ -338,6 +338,62 @@ describe("revenue/runner report rendering", () => {
     expect(lines[row]).not.toContain("POSTHOG_READ_KEY");
   });
 
+  it("asks step 6's POSTHOG_READ_KEY row alone, once, when step 6 was done before the project existed", async () => {
+    // Open from the tick-26 builds (logs/CHANNEL_LOOP.md §9): heldSecretRowsNote reads open steps only, so a step 6
+    // marked done while the row was held took the row with it, and the key surfaced only as a blocker once a page-view
+    // clock ran. The row is now asked on its own, once per report — not the rest of step 6, and not once per line.
+    const step6 = ownerStepById("ci-tokens")!;
+    const key = step6.secrets!.find((r) => r.name === "POSTHOG_READ_KEY")!;
+    const saved = step6.doneOn;
+    const count = (text: string, needle: string) => text.split(needle).length - 1;
+    const askedNow = (report: string) =>
+      report.split("\n").filter((l) => l.startsWith("Owner steps still open for "))
+        .map((l) => l.split(" (not asked now: ")[0].split("): ")[1].split(", "));
+    step6.doneOn = { date: "2026-10-02", evidence: "test only", heldRows: ["POSTHOG_READ_KEY"] };
+    try {
+      const result = await tick(db, { nowIso: "2026-09-03T00:00:00.000Z" });
+
+      // Before the project exists: named once, with its reason, never as something to do.
+      const before = renderReport(db, result, { projectId: "" });
+      expect(count(before, "`POSTHOG_READ_KEY`")).toBe(1);
+      expect(before).toMatch(
+        /^Not asked yet: step 6's `POSTHOG_READ_KEY` row waits until the colony has created the brand's PostHog project[^\n]* — step 6 itself is done, and the row will be asked alone\.$/m,
+      );
+      expect(before).not.toContain("## Asked now: one row of a done step");
+
+      // The project exists: the one row is asked, alone and once.
+      const after = renderReport(db, result, { projectId: "12345" });
+      expect(after).toContain("## Asked now: one row of a done step");
+      expect(count(after, "`POSTHOG_READ_KEY`")).toBe(1);
+      expect(after).toContain(`- Step 6's \`POSTHOG_READ_KEY\` row, alone: ${key.source}.`);
+      expect(after).not.toContain("`GUMROAD_ACCESS_TOKEN`");
+      expect(after).not.toContain("Not asked yet: step 6");
+      // Step 6 itself is not asked again on any line.
+      for (const asked of askedNow(after)) expect(asked).not.toContain("6");
+
+      // It is asked even when no line is still waiting on its setup, because a done step owes it, not a line.
+      for (const line of listLines(db)) setHumanSetupDone(db, line.id, true);
+      const allSetUp = renderReport(db, await tick(db, { nowIso: "2026-09-03T01:00:00.000Z" }), { projectId: "12345" });
+      expect(allSetUp).not.toContain("## What the owner has to do");
+      expect(allSetUp).toContain(`- Step 6's \`POSTHOG_READ_KEY\` row, alone: ${key.source}.`);
+
+      // Once the row records its own doneOn, nothing is asked or named.
+      key.doneOn = { date: "2026-10-09", evidence: "test only" };
+      try {
+        expect(renderReport(db, result, { projectId: "12345" })).not.toContain("`POSTHOG_READ_KEY`");
+      } finally {
+        delete key.doneOn;
+      }
+      // A step 6 done with the row pasted in the same sitting owes nothing.
+      step6.doneOn = { date: "2026-10-02", evidence: "test only", heldRows: [] };
+      expect(renderReport(db, result, { projectId: "12345" })).not.toContain("`POSTHOG_READ_KEY`");
+    } finally {
+      step6.doneOn = saved;
+    }
+    expect(ownerStepById("ci-tokens")!.doneOn).toBeUndefined();
+    expect(key.doneOn).toBeUndefined();
+  });
+
   it("asks the owner to tell Claude, not to run the ledger command on his own machine", async () => {
     // setup-done writes to a local state/colony/colony.db; the scheduled loop reads the
     // committed copy and runs `tick --no-feed`, which never builds. The owner's part is

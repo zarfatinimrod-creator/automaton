@@ -4,8 +4,10 @@ import path from "node:path";
 import {
   OWNER_STEPS,
   askedSecretRows,
+  followUpSecretRows,
   frozenOwnerStepsForLine,
   hasPendingPrecondition,
+  heldFollowUpSecretRows,
   heldOwnerStepsForLine,
   heldSecretRows,
   isOwnerStepOpen,
@@ -775,5 +777,74 @@ describe("step 2's wording as read, step 3's support field, and step 6's POSTHOG
     expect(row).toContain("נשאל רק אחרי שהפרויקט קיים");
     expect(row).toContain("`posthog.projectId`");
     expect(row).toContain("RULING-2026-09-30-documents.md");
+  });
+});
+
+// Open from the tick-26 builds (logs/CHANNEL_LOOP.md §9): a step marked done while its gated row was still held back
+// took the row with it. askedSecretRows/heldSecretRows only ever ran on open steps, so POSTHOG_READ_KEY was never asked
+// once the project existed, and the runner raised it only as a blocker once a page-view clock ran.
+describe("a gated row held back when its step was done is asked alone later, as a follow-up", () => {
+  const step6 = ownerStepById("ci-tokens")!;
+  type Done = NonNullable<typeof step6.doneOn>;
+  const doneWith = (doneOn: Done, rowDone = false) => [{
+    ...step6,
+    doneOn,
+    secrets: step6.secrets!.map((r) =>
+      rowDone && r.name === "POSTHOG_READ_KEY" ? { ...r, doneOn: { date: "2026-10-09", evidence: "test only" } } : r,
+    ),
+  }];
+  const held: Done = { date: "2026-10-02", evidence: "test only", heldRows: ["POSTHOG_READ_KEY"] };
+  const names = (rows: { step: { number: number }; row: { name: string } }[]) =>
+    rows.map(({ step, row }) => `${step.number}:${row.name}`);
+
+  it("asks the held row alone once its gate holds, and names it held until then", () => {
+    const steps = doneWith(held);
+    expect(isOwnerStepOpen(steps[0])).toBe(false);
+    expect(names(followUpSecretRows({ projectId: "" }, steps))).toEqual([]);
+    expect(names(heldFollowUpSecretRows({ projectId: "" }, steps))).toEqual(["6:POSTHOG_READ_KEY"]);
+    expect(names(followUpSecretRows({ projectId: "12345" }, steps))).toEqual(["6:POSTHOG_READ_KEY"]);
+    expect(names(heldFollowUpSecretRows({ projectId: "12345" }, steps))).toEqual([]);
+  });
+
+  it("stops asking once the row records its own doneOn", () => {
+    const steps = doneWith(held, true);
+    expect(followUpSecretRows({ projectId: "12345" }, steps)).toEqual([]);
+    expect(heldFollowUpSecretRows({ projectId: "" }, steps)).toEqual([]);
+  });
+
+  it("asks nothing again when the row was pasted with its step (heldRows empty)", () => {
+    const steps = doneWith({ date: "2026-10-02", evidence: "test only", heldRows: [] });
+    expect(followUpSecretRows({ projectId: "12345" }, steps)).toEqual([]);
+    expect(heldFollowUpSecretRows({ projectId: "" }, steps)).toEqual([]);
+  });
+
+  it("leaves an open step's rows to the step itself: no follow-up while the step is still asked", () => {
+    expect(followUpSecretRows({ projectId: "12345" }, [step6])).toEqual([]);
+    expect(heldFollowUpSecretRows({ projectId: "" }, [step6])).toEqual([]);
+  });
+
+  it("makes every done step with a gated row say which gated rows it held back, and never a row that is not gated", () => {
+    // The record is required, so marking step 6 done forces the choice; a missing heldRows would lose the row again.
+    for (const step of OWNER_STEPS.filter((s) => s.doneOn && s.secrets?.some((r) => r.askedOnlyWhen))) {
+      expect(Array.isArray(step.doneOn!.heldRows), `step ${step.number} doneOn.heldRows`).toBe(true);
+      const gated = step.secrets!.filter((r) => r.askedOnlyWhen).map((r) => r.name);
+      for (const name of step.doneOn!.heldRows!) expect(gated, `step ${step.number} heldRows`).toContain(name);
+    }
+    for (const step of OWNER_STEPS.filter((s) => s.doneOn?.heldRows)) {
+      expect(step.secrets?.some((r) => r.askedOnlyWhen), `step ${step.number} has no gated row to hold`).toBe(true);
+    }
+    // A row today's site.json still holds back cannot have been pasted with a done step: it must be listed as held.
+    const site = readSite();
+    for (const step of OWNER_STEPS.filter((s) => s.doneOn)) {
+      for (const row of heldSecretRows(step, site)) {
+        expect(step.doneOn!.heldRows ?? [], `step ${step.number} is done while ${row.name} is still held`).toContain(row.name);
+      }
+    }
+  });
+
+  it("tells the owner in the Hebrew row that a done step 6 gets this row alone later", () => {
+    const step6Doc = doc.slice(doc.indexOf("## צעד 6"), doc.indexOf("## צעד 7"));
+    const row = step6Doc.split("\n").find((l) => l.includes("| `POSTHOG_READ_KEY` |"))!;
+    expect(row).toContain("אם צעד 6 כבר בוצע עד אז, השורה הזאת לבדה נשאלת אחר כך, כהשלמה");
   });
 });

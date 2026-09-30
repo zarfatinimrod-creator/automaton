@@ -15,10 +15,13 @@ import type { Database } from "better-sqlite3";
 import { describeStall, findStalledLines, type StalledLine } from "./watchdog.js";
 import { DEFAULT_PORTFOLIO, labelledKpis, summarizeTargetBasis, TARGET_BASIS } from "./portfolio.js";
 import {
+  followUpSecretRows,
   frozenOwnerStepsForLine,
+  heldFollowUpSecretRows,
   heldOwnerStepsForLine,
   heldSecretRows,
   openOwnerStepsForLine,
+  SECRET_ROW_GATE_MET,
   SECRET_ROW_GATE_SHORT,
   type SecretGateSite,
 } from "./owner-steps.js";
@@ -433,8 +436,11 @@ export async function tick(db: Database, options: TickOptions = {}): Promise<Tic
   return result;
 }
 
-/** Human-readable board report. This is what the owner reads in the git diff. */
-export function renderReport(db: Database, result: TickResult): string {
+/**
+ * Human-readable board report. This is what the owner reads in the git diff. `site` is what the secret rows' gates read
+ * (default: the real site.json); tests pass their own.
+ */
+export function renderReport(db: Database, result: TickResult, site: SecretGateSite = secretGateSite()): string {
   const out: string[] = [];
   const s = result.summary;
 
@@ -582,6 +588,9 @@ export function renderReport(db: Database, result: TickResult): string {
     out.push("");
   }
 
+  // Before the per-line lists, and printed even when no line is waiting: a row a done step owes is asked once.
+  out.push(...doneStepRowsReport(site));
+
   const waiting = listLines(db).filter((l) => l.status === "awaiting_setup" && !l.humanSetupDone);
   if (waiting.length) {
     out.push("## What the owner has to do (one time, per line)");
@@ -592,7 +601,7 @@ export function renderReport(db: Database, result: TickResult): string {
         `Owner steps still open for \`${line.id}\` (docs/OWNER_STEPS.he.md): ${askedNowList(line.id)}` +
           notAskedNowNote(line.id),
       );
-      const heldRows = heldSecretRowsNote(line.id);
+      const heldRows = heldSecretRowsNote(line.id, site);
       if (heldRows) out.push(heldRows);
       for (const step of line.humanSetup) out.push(`- [ ] ${step}`);
       out.push("");
@@ -733,6 +742,42 @@ export function heldSecretRowsNote(lineId: string, site: SecretGateSite = secret
     ),
   );
   return parts.length ? `Not asked yet: ${parts.join("; ")}.` : "";
+}
+
+/**
+ * The secret rows DONE steps still owe (owner-steps.ts `doneOn.heldRows`), as report lines, printed once per report and
+ * whatever the lines' setup state: a done step owes them, not a line. Without this a step 6 marked done before the
+ * brand's PostHog project existed took POSTHOG_READ_KEY with it (heldSecretRowsNote reads open steps only), and the key
+ * surfaced only as a page-view blocker once a clock ran. A row whose gate now holds is asked alone, never the rest of
+ * its step; one whose gate still holds it back is named with the reason, never as something to do. Empty when none.
+ */
+export function doneStepRowsReport(site: SecretGateSite = secretGateSite()): string[] {
+  const out: string[] = [];
+  const asked = followUpSecretRows(site);
+  if (asked.length) {
+    out.push(asked.length === 1 ? "## Asked now: one row of a done step" : `## Asked now: ${asked.length} rows of done steps`);
+    out.push("");
+    for (const { step, row } of asked) {
+      out.push(
+        `- Step ${step.number}'s \`${row.name}\` row, alone: ${row.source}. Paste it under Settings → Secrets and ` +
+          `variables → Actions with exactly that name (docs/OWNER_STEPS.he.md, step ${step.number}). Step ${step.number} ` +
+          `was done on ${step.doneOn!.date} without it, because the row was held back then; ` +
+          `${SECRET_ROW_GATE_MET[row.askedOnlyWhen!]}. Nothing else in step ${step.number} is asked again. Tell ` +
+          "Claude when it is in; Claude records it on the row (its `doneOn` in src/revenue/owner-steps.ts).",
+      );
+    }
+    out.push("");
+  }
+  const held = heldFollowUpSecretRows(site).map(
+    ({ step, row }) =>
+      `step ${step.number}'s \`${row.name}\` row ${SECRET_ROW_GATE_SHORT[row.askedOnlyWhen!]} — step ${step.number} ` +
+      "itself is done, and the row will be asked alone",
+  );
+  if (held.length) {
+    out.push(`Not asked yet: ${held.join("; ")}.`);
+    out.push("");
+  }
+  return out;
 }
 
 /**
