@@ -18,6 +18,7 @@ import {
   ownerStepMinutes,
   ownerStepsForLine,
   ownerStepsInOrder,
+  secretRowsPastedBeforeMade,
 } from "../../revenue/owner-steps.js";
 import { DEFAULT_PORTFOLIO } from "../../revenue/portfolio.js";
 import { readSite } from "../../revenue/page-views-reader.js";
@@ -266,6 +267,8 @@ describe("each humanSetup item is linked to exactly the owner steps its text nam
     for (const line of DEFAULT_PORTFOLIO) {
       for (const item of line.humanSetupItems ?? []) {
         const where = `${line.id}: "${item.text.slice(0, 70)}…"`;
+        // The check below reads "step N" only; a plural ("steps 3 and 6") would slip past it, so it fails here instead.
+        expect(item.text, `${where} — name each step as "step N" so the link check reads it`).not.toMatch(/\bsteps \d/i);
         const linked = [...item.steps, ...(item.contextSteps ?? [])].sort((a, b) => a - b);
         expect(linked, `${where} — linked steps differ from the steps its text names`).toEqual(namedInText(item.text));
         expect(item.steps.length, `${where} belongs to no step`).toBeGreaterThan(0);
@@ -289,6 +292,64 @@ describe("each humanSetup item is linked to exactly the owner steps its text nam
     expect([item("oss-bounties", 0).steps, item("oss-bounties", 0).contextSteps]).toEqual([[7, 6], undefined]);
     // "(The company domain, owner step 5, is frozen … and is not asked for.)": named, never asked.
     expect([item("pcn874", 2).steps, item("pcn874", 2).contextSteps]).toEqual([[6], [5]]);
+  });
+});
+
+// Tick 32 review. The report drops a setup item once every step it belongs to has a `doneOn`, so a `doneOn` must mean
+// what it says. Step 6 pastes two tokens other steps make — GUMROAD_ACCESS_TOKEN (step 3) and BRAND_GITHUB_TOKEN (step
+// 7's sitting) — and `heldRows` may name only gated rows, so a done step 6 says both were pasted. Recorded before step 3
+// or step 7, that is impossible, and the report would stop asking the pastes: "Link the repo in Netlify and paste
+// GUMROAD_ACCESS_TOKEN (owner step 6)" would go while the token did not exist yet.
+describe("a secret another step makes is never recorded pasted before that step is done", () => {
+  const step6 = ownerStepById("ci-tokens")!;
+  const done = (date: string, heldRows?: string[]) => ({ date, evidence: "test only", ...(heldRows ? { heldRows } : {}) });
+  const withDoneOn = (doneOn: Partial<Record<"gumroad" | "github-org" | "ci-tokens", ReturnType<typeof done>>>) =>
+    OWNER_STEPS.map((s) => (s.id in doneOn ? { ...s, doneOn: doneOn[s.id as keyof typeof doneOn] } : s));
+
+  it("holds on the checklist as recorded", () => {
+    expect(secretRowsPastedBeforeMade()).toEqual([]);
+  });
+
+  it("says which step makes each row whose source names another step, and no other row", () => {
+    for (const step of OWNER_STEPS) {
+      for (const row of step.secrets ?? []) {
+        const named = [...row.source.matchAll(/\bstep (\d+)/gi)].map((m) => Number(m[1])).filter((n) => n !== step.number);
+        const maker = row.madeIn ? ownerStepById(row.madeIn) : undefined;
+        expect(maker ? [maker.number] : [], `step ${step.number}'s ${row.name}: madeIn vs its source`).toEqual(named);
+      }
+    }
+    expect(step6.secrets!.filter((r) => r.madeIn).map((r) => `${r.name}<-${r.madeIn}`)).toEqual([
+      "GUMROAD_ACCESS_TOKEN<-gumroad",
+      "BRAND_GITHUB_TOKEN<-github-org",
+    ]);
+  });
+
+  it("catches a done step 6 recorded before step 3 or step 7, or on an earlier date", () => {
+    const alone = secretRowsPastedBeforeMade(withDoneOn({ "ci-tokens": done("2026-10-02", ["POSTHOG_READ_KEY"]) }));
+    expect(alone).toHaveLength(2);
+    expect(alone[0]).toMatch(/GUMROAD_ACCESS_TOKEN.*step 3/);
+    expect(alone[1]).toMatch(/BRAND_GITHUB_TOKEN.*step 7/);
+    const early = secretRowsPastedBeforeMade(withDoneOn({
+      gumroad: done("2026-10-03"),
+      "github-org": done("2026-10-01"),
+      "ci-tokens": done("2026-10-02", ["POSTHOG_READ_KEY"]),
+    }));
+    expect(early).toHaveLength(1);
+    expect(early[0]).toMatch(/GUMROAD_ACCESS_TOKEN.*2026-10-03/);
+    // The same day, or later, is what the Hebrew document asks: step 6's Gumroad row "כשצעד 3 בוצע".
+    expect(secretRowsPastedBeforeMade(withDoneOn({
+      gumroad: done("2026-10-02"),
+      "github-org": done("2026-10-01"),
+      "ci-tokens": done("2026-10-02", ["POSTHOG_READ_KEY"]),
+    }))).toEqual([]);
+  });
+
+  it("compares dates it can compare: every doneOn date is YYYY-MM-DD", () => {
+    for (const step of OWNER_STEPS) {
+      for (const d of [step.doneOn?.date, ...(step.secrets ?? []).map((r) => r.doneOn?.date)]) {
+        if (d !== undefined) expect(d, `step ${step.number}`).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      }
+    }
   });
 });
 

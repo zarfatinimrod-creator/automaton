@@ -14,7 +14,16 @@ import {
   tick,
   TASK_ORDER,
 } from "../../revenue/runner.js";
-import { OWNER_STEPS, isOwnerStepOpen, ownerStepById, ownerStepsForLine, type OwnerStepId } from "../../revenue/owner-steps.js";
+import {
+  NO_SETUP_ITEM_ASKED,
+  OWNER_STEPS,
+  isOwnerStepOpen,
+  ownerStepById,
+  ownerStepsForLine,
+  secretRowsPastedBeforeMade,
+  type OwnerStepId,
+} from "../../revenue/owner-steps.js";
+import { renderDashboard } from "../../revenue/dashboard.js";
 import { getLine, listLines, recordKpi, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
 import { REVENUE_TASK_INTERVALS_MS } from "../../revenue/heartbeat.js";
 import { getActiveGoals } from "../../state/database.js";
@@ -494,25 +503,37 @@ describe("revenue/runner owner checklist follows the steps each item belongs to"
   afterEach(() => { db.close(); });
 
   const NOW = "2026-09-03T00:00:00.000Z";
-  // Records steps as done for the length of fn, as a real doneOn would, and restores them after.
+  // Records steps as done for the length of fn, as a real doneOn would, and restores them after. A gated row the site
+  // below still holds back (projectId "") cannot have gone in with its step, so it is recorded held, as the real record
+  // must be. A set of done steps the checklist cannot reach — step 6 done before step 3 or 7 made the tokens it pastes
+  // (owner-steps.ts secretRowsPastedBeforeMade) — is refused rather than rendered: the report's output for it means
+  // nothing, and pinning it once taught these tests an owner could skip the Gumroad paste.
   const withDone = async (ids: OwnerStepId[], fn: () => Promise<void>) => {
     const saved = ids.map((id) => ({ step: ownerStepById(id)!, doneOn: ownerStepById(id)!.doneOn }));
     for (const { step } of saved) {
-      step.doneOn = { date: "2026-10-01", evidence: "test only", ...(step.secrets ? { heldRows: [] } : {}) };
+      const heldRows = step.secrets?.filter((r) => r.askedOnlyWhen).map((r) => r.name);
+      step.doneOn = { date: "2026-10-01", evidence: "test only", ...(heldRows ? { heldRows } : {}) };
     }
     try {
+      const impossible = secretRowsPastedBeforeMade();
+      if (impossible.length) throw new Error(`not a reachable set of done steps: ${impossible.join("; ")}`);
       await fn();
     } finally {
       for (const { step, doneOn } of saved) step.doneOn = doneOn;
     }
   };
+  // Step 6 done means its pastes are in, so steps 3 and 7, which make two of its tokens, are done too.
+  const STEP_6_REACHED: OwnerStepId[] = ["gumroad", "github-org", "ci-tokens"];
+  const STEP_6_REACHED_NUMBERS = new Set([3, 7, 6]);
   const itemsOf = (lineId: string) => DEFAULT_PORTFOLIO.find((l) => l.id === lineId)!.humanSetupItems!;
   const checklist = (report: string) => report.split("\n").filter((l) => l.startsWith("- [ ] "));
   const blockerOf = (blockers: string[], lineId: string) =>
     blockers.find((b) => b.startsWith(`${lineId} is waiting on the owner`))!;
+  const escapeHtml = (v: string) =>
+    v.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
   it("stops asking an item once every step it belongs to is done, in the checklist and in the blockers", async () => {
-    await withDone(["ci-tokens"], async () => {
+    await withDone(STEP_6_REACHED, async () => {
       const result = await tick(db, { nowIso: NOW });
       const asked = checklist(renderReport(db, result, { projectId: "" }));
       let gone = 0;
@@ -521,17 +542,29 @@ describe("revenue/runner owner checklist follows the steps each item belongs to"
         expect(blocker, `${line.id} has no blocker`).toBeTruthy();
         expect(blocker, `${line.id}: a blocker ending in an empty item list`).not.toMatch(/; $/);
         for (const item of line.humanSetupItems ?? []) {
-          const open = !item.steps.every((n) => n === 6);
+          const open = !item.steps.every((n) => STEP_6_REACHED_NUMBERS.has(n));
           if (!open) gone++;
           const where = `${line.id}: "${item.text.slice(0, 60)}…"`;
           expect(asked.some((l) => l.startsWith(`- [ ] ${item.text}`)), `${where} in the checklist`).toBe(open);
           expect(blocker.includes(item.text), `${where} in the blocker`).toBe(open);
         }
       }
-      // apify-actors' one item, il-biz-tools' Netlify item and pcn874's token item — which names the frozen step 5
-      // only as context, so step 5 never keeps it asked.
-      expect(gone).toBe(3);
+      // Of the nine items only il-biz-tools' mailbox (step 8) and oss-bounties' step 4 are still asked. pcn874's token
+      // item names the frozen step 5 only as context, so step 5 never keeps it asked.
+      expect(gone).toBe(7);
       expect(asked.some((l) => l.includes(itemsOf("pcn874")[2].text))).toBe(false);
+    });
+  });
+
+  it("keeps asking step 6's Gumroad pastes when only step 3, which makes the token, is done", async () => {
+    await withDone(["gumroad"], async () => {
+      const asked = checklist(renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" }));
+      // Step 3's own items go: the account is open and the token minted…
+      expect(asked.some((l) => l.startsWith(`- [ ] ${itemsOf("il-biz-tools")[1].text}`))).toBe(false);
+      expect(asked.some((l) => l.startsWith(`- [ ] ${itemsOf("pcn874")[0].text}`))).toBe(false);
+      // …and pasting it, which is step 6, is still asked on both lines.
+      expect(asked).toContain(`- [ ] ${itemsOf("il-biz-tools")[2].text}`);
+      expect(asked).toContain(`- [ ] ${itemsOf("pcn874")[2].text}`);
     });
   });
 
@@ -545,17 +578,51 @@ describe("revenue/runner owner checklist follows the steps each item belongs to"
       // pcn874's organisation item is step 7 alone, so it goes.
       expect(report).not.toContain(`- [ ] ${itemsOf("pcn874")[1].text}`);
     });
-    await withDone(["ci-tokens"], async () => {
-      const report = renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" });
-      expect(checklist(report)).toContain(`- [ ] ${machine.text} — step 6 done; still open: step 7`);
-    });
-    await withDone(["github-org", "ci-tokens"], async () => {
+    // The other half — step 6 done, step 7 open — cannot be recorded: step 6 pastes the token step 7 makes. So
+    // "step 6 done; still open: step 7" is never printed.
+    await expect(withDone(["ci-tokens"], async () => {})).rejects.toThrow(/GUMROAD_ACCESS_TOKEN.*BRAND_GITHUB_TOKEN/);
+    await withDone(STEP_6_REACHED, async () => {
       const result = await tick(db, { nowIso: NOW });
       expect(renderReport(db, result, { projectId: "" })).not.toContain(`- [ ] ${machine.text}`);
       expect(blockerOf(result.blockers, "oss-bounties")).not.toContain(machine.text);
     });
     // With none of its steps done it prints exactly as written.
     expect(checklist(renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" }))).toContain(`- [ ] ${machine.text}`);
+  });
+
+  // Tick 32 review: the report dropped a done item from its two owner sections while "### Board decisions" and
+  // "### Actions taken" above them, and the dashboard written by the same tick, still listed it.
+  it("drops a done item from every surface the owner reads: the whole report and the dashboard", async () => {
+    await withDone(STEP_6_REACHED, async () => {
+      const result = await tick(db, { nowIso: NOW });
+      const report = renderReport(db, result, { projectId: "" });
+      const html = renderDashboard(db, { nowIso: NOW, blockers: result.blockers });
+      // Both sections print this tick, so the check below reads them.
+      expect(report).toContain("### Board decisions");
+      expect(report).toContain("### Actions taken");
+      for (const line of DEFAULT_PORTFOLIO) {
+        for (const item of line.humanSetupItems ?? []) {
+          const open = !item.steps.every((n) => STEP_6_REACHED_NUMBERS.has(n));
+          const where = `${line.id}: "${item.text.slice(0, 60)}…"`;
+          expect(report.includes(item.text), `${where} in the report`).toBe(open);
+          expect(html.includes(escapeHtml(item.text)), `${where} on the dashboard`).toBe(open);
+        }
+      }
+      // apify-actors and pcn874 have no item left to ask, so the screen does not list them as waiting on the owner,
+      // and the decision and action lines say so rather than "unspecified" or an empty list.
+      expect(html).toContain("מה מחכה לך (2)");
+      for (const id of ["apify-actors", "pcn874"]) {
+        expect(result.board!.decisions.find((d) => d.lineId === id)!.rationale).toBe(
+          `blocked on one-time human setup: ${NO_SETUP_ITEM_ASKED}`,
+        );
+        expect(result.board!.actions).toContain(`waiting on creator for ${id}: ${NO_SETUP_ITEM_ASKED}`);
+      }
+    });
+    // Before any of those steps, the screen lists all four lines and every item.
+    const result = await tick(db, { nowIso: NOW });
+    const html = renderDashboard(db, { nowIso: NOW, blockers: result.blockers });
+    expect(html).toContain("מה מחכה לך (4)");
+    for (const line of DEFAULT_PORTFOLIO) for (const t of line.humanSetup) expect(html).toContain(escapeHtml(t));
   });
 
   it("names step 6's held POSTHOG_READ_KEY row once per report, at the head of the owner's section", async () => {

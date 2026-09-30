@@ -50,6 +50,7 @@ import {
 import { enqueueGoal, feedNextGoal, lineGoalStatus, listQueuedGoals, removeQueuedGoals } from "./goal-queue.js";
 import { renderBoardDirective } from "./org.js";
 import { policyForLine, seedDefaultPortfolio } from "./portfolio.js";
+import { describeOpenSetup } from "./owner-steps.js";
 import { allocateBudget, auditDecision, decideLine, describeDecision, experimentsToPause } from "./rules.js";
 import {
   DEFAULT_DECISION_POLICY,
@@ -337,6 +338,7 @@ export function runSupervisorReview(
     const decision = decideLine(line, metrics, policyForLine(line.id, policy), {
       previousDecision: previous?.decision ?? null,
       daysSincePreviousDecision: previous ? (nowMs - Date.parse(previous.createdAt)) / DAY_MS : null,
+      setupStillAsked: describeOpenSetup(line),
     });
     insertReview(db, {
       lineId: line.id,
@@ -396,7 +398,10 @@ export function runBoardReview(
     const metrics = computeLineMetrics(db, line, nowIso);
     metricsById.set(line.id, metrics);
     const previous = latestReviewForLine(db, line.id, "supervisor");
-    const decision = decideLine(line, metrics, policyForLine(line.id, policy), { previousDecision: previous?.decision ?? null });
+    const decision = decideLine(line, metrics, policyForLine(line.id, policy), {
+      previousDecision: previous?.decision ?? null,
+      setupStillAsked: describeOpenSetup(line),
+    });
     decisionsById.set(line.id, decision);
     decisions.push(decision);
   }
@@ -433,7 +438,7 @@ export function runBoardReview(
             actions.push(`queued fix goal for ${line.id}: ${decision.rationale}`);
           }
         } else if (line.status === "awaiting_setup") {
-          actions.push(`waiting on creator for ${line.id}: ${line.humanSetup.join("; ")}`);
+          actions.push(`waiting on creator for ${line.id}: ${describeOpenSetup(line)}`);
         } else if (line.status === "building") {
           const goal = lineGoalStatus(db, line.id);
           if (!goal || goal.status === "completed" || goal.status === "failed") {

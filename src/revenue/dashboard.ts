@@ -22,6 +22,7 @@ import type { Database } from "better-sqlite3";
 import { computePortfolioSummary, latestReviewForLine, listLines } from "./ledger.js";
 import { formatIls } from "./money.js";
 import { labelledKpis, summarizeTargetBasis, TARGET_BASIS } from "./portfolio.js";
+import { openSetupItems } from "./owner-steps.js";
 import { sweepCoverage } from "./criteria.js";
 import { findStalledLines } from "./watchdog.js";
 import { FINAL_GOAL_MONTHLY_ILS, PLANNING_ASSUMPTIONS, storesNeededFor } from "./growth.js";
@@ -71,9 +72,12 @@ export function renderDashboard(db: Database, options: DashboardOptions = {}): s
   const earnedAgorot = summary?.total30dAgorot ?? 0;
   const goalIls = Math.round((summary?.targetMonthlyAgorot ?? 0) / 100);
 
+  // What is still asked, as the report asks it (owner-steps.ts openSetupItems): an item goes once the owner steps it
+  // belongs to are done, and a line with no item left is not waiting on the owner — recording its setup done is ours.
   const needsOwner = lines
     .filter((l) => !l.humanSetupDone && l.humanSetup.length > 0)
-    .map((l) => ({ id: l.id, name: l.name, steps: l.humanSetup }));
+    .map((l) => ({ id: l.id, name: l.name, steps: openSetupItems(l) }))
+    .filter((l) => l.steps.length > 0);
 
   const storesNeeded = storesNeededFor(FINAL_GOAL_MONTHLY_ILS);
   const float = ownerFloatState(db);
