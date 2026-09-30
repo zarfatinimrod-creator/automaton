@@ -249,6 +249,49 @@ describe("every line's human setup maps to a step, and every step unlocks a line
   });
 });
 
+// Tick 32: the report stopped asking nothing when a step was done — each line's items were free text, so an item for
+// step 6 stayed "- [ ]" after step 6. Each item is now linked to its steps in data (portfolio.ts `humanSetupItems`),
+// and the link must say exactly what the text says, or it hides an open item or keeps asking a done one.
+describe("each humanSetup item is linked to exactly the owner steps its text names", () => {
+  const namedInText = (text: string) =>
+    [...new Set([...text.matchAll(/\bstep (\d+)/gi)].map((m) => Number(m[1])))].sort((a, b) => a - b);
+
+  it("links every item of every line, one link per stored text, in the same order", () => {
+    for (const line of DEFAULT_PORTFOLIO) {
+      expect(line.humanSetupItems?.map((i) => i.text) ?? [], `${line.id}: items and stored texts differ`).toEqual(line.humanSetup);
+    }
+  });
+
+  it("links the steps an item belongs to plus the ones it names only as context — no more, no fewer", () => {
+    for (const line of DEFAULT_PORTFOLIO) {
+      for (const item of line.humanSetupItems ?? []) {
+        const where = `${line.id}: "${item.text.slice(0, 70)}…"`;
+        const linked = [...item.steps, ...(item.contextSteps ?? [])].sort((a, b) => a - b);
+        expect(linked, `${where} — linked steps differ from the steps its text names`).toEqual(namedInText(item.text));
+        expect(item.steps.length, `${where} belongs to no step`).toBeGreaterThan(0);
+        for (const n of item.steps) {
+          const step = OWNER_STEPS.find((s) => s.number === n);
+          expect(step, `${where} names step ${n}, which is not on the checklist`).toBeDefined();
+          expect(step!.lines, `${where}: step ${n} does not gate ${line.id}`).toContain(line.id);
+        }
+        for (const n of item.contextSteps ?? []) {
+          expect(OWNER_STEPS.some((s) => s.number === n), `${where} names step ${n} as context`).toBe(true);
+        }
+      }
+    }
+  });
+
+  it("links the items that name more than one step as the texts read", () => {
+    const item = (id: string, i: number) => DEFAULT_PORTFOLIO.find((l) => l.id === id)!.humanSetupItems![i];
+    // "(owner step 6; this half may be done straight after step 1)": step 1 is an order note, not part of the item.
+    expect([item("apify-actors", 0).steps, item("apify-actors", 0).contextSteps]).toEqual([[6], [1]]);
+    // The machine account is step 7; its token is "made with step 7, pasted in step 6" — both are the item's.
+    expect([item("oss-bounties", 0).steps, item("oss-bounties", 0).contextSteps]).toEqual([[7, 6], undefined]);
+    // "(The company domain, owner step 5, is frozen … and is not asked for.)": named, never asked.
+    expect([item("pcn874", 2).steps, item("pcn874", 2).contextSteps]).toEqual([[6], [5]]);
+  });
+});
+
 describe("the owner's ₪0 rule and standing consent of 27.9.2026", () => {
   it("freezes exactly one step — the domain, the only one that costs money", () => {
     const frozen = OWNER_STEPS.filter((s) => s.frozen);

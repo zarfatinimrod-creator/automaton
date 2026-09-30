@@ -50,7 +50,7 @@ import { removeQueuedGoals } from "./goal-queue.js";
 import { getLine, insertLineFromSeed, latestKpis, listLines, updateLineFromSeed, updateLineStatus } from "./ledger.js";
 import { agorotFromIls } from "./money.js";
 import { PAGE_VIEW_KPI } from "./page-views.js";
-import { DEFAULT_DECISION_POLICY, type DecisionPolicy, type RevenueLineSeed } from "./types.js";
+import { DEFAULT_DECISION_POLICY, type DecisionPolicy, type HumanSetupItem, type RevenueLineSeed } from "./types.js";
 
 /**
  * The label Apify's stranger count carries wherever it is printed (breadth board, research/breadth/BOARD.md Q5,
@@ -116,6 +116,27 @@ export function labelledKpis(db: Database, lineIds: string[], labels: Record<str
     }
   }
   return out;
+}
+
+/**
+ * A line's setup list from its linked items: the texts the ledger stores (`humanSetup`) and the items the report reads
+ * to stop asking one whose owner steps are done (`humanSetupItems`), from one array so the two cannot differ.
+ */
+function humanSetupOf(items: HumanSetupItem[]): Pick<RevenueLineSeed, "humanSetup" | "humanSetupItems"> {
+  return { humanSetup: items.map((i) => i.text), humanSetupItems: items };
+}
+
+/**
+ * The linked item behind one of a line's stored setup texts, matched on the exact text; undefined when this file does
+ * not link it (a line it does not know, or a database not yet synced to a changed text), which the report asks as
+ * written rather than hide.
+ */
+export function humanSetupItemFor(
+  lineId: string,
+  text: string,
+  seeds: RevenueLineSeed[] = DEFAULT_PORTFOLIO,
+): HumanSetupItem | undefined {
+  return seeds.find((s) => s.id === lineId)?.humanSetupItems?.find((i) => i.text === text);
 }
 
 export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
@@ -189,9 +210,13 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     // asked if it needs a camera. It is still an identity step asked after the
     // free batch, never before it.
     // "Register as osek patur" is gone from every line: it is owner step 2, once.
-    humanSetup: [
-      "Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify identity verification (ID, proof of address, a tax document, ownership information) is asked at that Publish sitting only if the apify-docs read shows it is document-only — no selfie, liveness or video — because an unverified developer's Actors are hidden from default Store-API search; if the read shows any camera step it is never asked (breadth board, 28.9.2026, research/breadth/BOARD.md Q5). A PayPal or Wise payout waits for pricing (scaleCriteria).",
-    ],
+    ...humanSetupOf([
+      {
+        text: "Sign up at Apify with the brand as the username — the Store URL apify.com/<username>/… is public — and paste APIFY_TOKEN as a GitHub Actions secret (owner step 6; this half may be done straight after step 1). After the first CI push, open the Actor in the Apify Console once and press Publication → Publish to Store: the push creates it private and the workflow deliberately does not publish it (apify-publish.yml). Neither needs identity verification. Apify identity verification (ID, proof of address, a tax document, ownership information) is asked at that Publish sitting only if the apify-docs read shows it is document-only — no selfie, liveness or video — because an unverified developer's Actors are hidden from default Store-API search; if the read shows any camera step it is never asked (breadth board, 28.9.2026, research/breadth/BOARD.md Q5). A PayPal or Wise payout waits for pricing (scaleCriteria).",
+        steps: [6],
+        contextSteps: [1],
+      },
+    ]),
     skillName: "revenue-apify-actors",
   },
   {
@@ -225,16 +250,25 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     // which the board sets the target from that reading in the same sitting.
     targetMonthlyAgorot: agorotFromIls(0),
     budgetMonthlyCents: 4000,
-    humanSetup: [
+    ...humanSetupOf([
       // Breadth board, 28.9.2026 (research/breadth/BOARD.md Q2): step 8 gates this line, so it is on the checklist too —
       // otherwise humanSetupDone could be set after steps 3 and 6 without the mailbox the site must publish.
-      "Open the brand mailbox (owner step 8): a Google account under the brand (Gmail, mehudak) — or a free Outlook.com mailbox if Google's sign-up asks for more than a phone number — connected here as a second Gmail connector. The site's accessibility page (accessibility.html) will publish it as the brand-owned accessibility contact — the publish gate refuses the site until a real one is there, so it is the line's last publish gate — and it is published in no other role (research/breadth/BOARD.md Q2)",
-      "Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3)",
+      {
+        text: "Open the brand mailbox (owner step 8): a Google account under the brand (Gmail, mehudak) — or a free Outlook.com mailbox if Google's sign-up asks for more than a phone number — connected here as a second Gmail connector. The site's accessibility page (accessibility.html) will publish it as the brand-owned accessibility contact — the publish gate refuses the site until a real one is there, so it is the line's last publish gate — and it is published in no other role (research/breadth/BOARD.md Q2)",
+        steps: [8],
+      },
+      {
+        text: "Open a Gumroad account in your legal identity with the BRAND as the store name, add an Israeli bank account with the holder's name in Latin characters, and mint one access token (owner step 3)",
+        steps: [3],
+      },
       // Owner step 5 (the domain) is not asked for: it is frozen by the owner's
       // ₪0 rule of 27.9.2026, and the site ships on *.netlify.app until the owner
       // decides to spend after income. owner-steps.ts keeps the step and says so.
-      "Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6)",
-    ],
+      {
+        text: "Link the repo in Netlify and paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6)",
+        steps: [6],
+      },
+    ]),
     skillName: "revenue-il-biz-tools",
   },
   {
@@ -285,13 +319,19 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     // routes it to a Stripe Connect Express account, rendered twice).
     targetMonthlyAgorot: agorotFromIls(300),
     budgetMonthlyCents: 3000,
-    humanSetup: [
-      "Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in \"bot\" (BOARD-2 §2.1.3(c)). In the same sitting, create its token for BRAND_GITHUB_TOKEN — made with step 7, pasted in step 6, and the only other thing step 7's sitting does; the intake stays disabled in code until the corrected week-4 read, so the token changes nothing before then (RULING-2026-09-28-bounty-rail.md §4.4)",
+    ...humanSetupOf([
+      {
+        text: "Create the brand machine account on GitHub alongside your personal one and add it to the organisation (owner step 7) — a normal user account whose login does not end in \"bot\" (BOARD-2 §2.1.3(c)). In the same sitting, create its token for BRAND_GITHUB_TOKEN — made with step 7, pasted in step 6, and the only other thing step 7's sitting does; the intake stays disabled in code until the corrected week-4 read, so the token changes nothing before then (RULING-2026-09-28-bounty-rail.md §4.4)",
+        steps: [7, 6],
+      },
       // Owner step 4a (a separate two-minute Algora sign-in in step 7's sitting) was dropped by the breadth board of
       // 28.9.2026 (research/breadth/BOARD.md Part B(b)): a /claim creates the solver's Algora user from the GitHub
       // login (workspace.ex ensure_user), so the sign-in is not required before 4b and becomes 4b's first instruction.
-      "Owner step 4b, asked only when the corrected week-4 mean is 3 or more AND a reward for a merged brand-account PR is held by Algora: the form begins by signing in to Algora with GitHub as the brand machine account, then Stripe Connect Express onboarding in your legal identity — individual, Israel, Israeli bank — under three stop rules: a US account country or a US bank/SSN/ITIN/EIN, a selfie or liveness check, or any fee → close the tab and complete nothing (RULING-2026-09-28-bounty-rail.md §4.1-§4.2; research/breadth/BOARD.md Part B(b))",
-    ],
+      {
+        text: "Owner step 4b, asked only when the corrected week-4 mean is 3 or more AND a reward for a merged brand-account PR is held by Algora: the form begins by signing in to Algora with GitHub as the brand machine account, then Stripe Connect Express onboarding in your legal identity — individual, Israel, Israeli bank — under three stop rules: a US account country or a US bank/SSN/ITIN/EIN, a selfie or liveness check, or any fee → close the tab and complete nothing (RULING-2026-09-28-bounty-rail.md §4.1-§4.2; research/breadth/BOARD.md Part B(b))",
+        steps: [4],
+      },
+    ]),
     skillName: "revenue-oss-bounties",
   },
   {
@@ -320,11 +360,21 @@ export const DEFAULT_PORTFOLIO: RevenueLineSeed[] = [
     // 2 — an obligation somebody must discharge and cannot get free.
     targetMonthlyAgorot: agorotFromIls(600),
     budgetMonthlyCents: 4000,
-    humanSetup: [
-      "Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses",
-      "Create the GitHub organisation under the brand name so the open-source core's repository URL carries it and not your username (owner step 7). The npm scope `@mehudak` (the brand the board chose on 27.9.2026) is a separate namespace on npm, not created by the GitHub organisation; publishing to it is our work and no workflow does it yet.",
-      "Paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — shared with il-biz-tools; without the token the loop cannot see a sale. (The company domain, owner step 5, is frozen by the owner's ₪0 rule of 27.9.2026 and is not asked for.)",
-    ],
+    ...humanSetupOf([
+      {
+        text: "Open a Gumroad account in your legal identity with the BRAND as the store name and mint one access token (owner step 3) — the same account il-biz-tools uses",
+        steps: [3],
+      },
+      {
+        text: "Create the GitHub organisation under the brand name so the open-source core's repository URL carries it and not your username (owner step 7). The npm scope `@mehudak` (the brand the board chose on 27.9.2026) is a separate namespace on npm, not created by the GitHub organisation; publishing to it is our work and no workflow does it yet.",
+        steps: [7],
+      },
+      {
+        text: "Paste GUMROAD_ACCESS_TOKEN as a GitHub Actions secret (owner step 6) — shared with il-biz-tools; without the token the loop cannot see a sale. (The company domain, owner step 5, is frozen by the owner's ₪0 rule of 27.9.2026 and is not asked for.)",
+        steps: [6],
+        contextSteps: [5],
+      },
+    ]),
     skillName: "revenue-pcn874",
   },
 ];

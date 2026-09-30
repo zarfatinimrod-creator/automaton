@@ -14,7 +14,7 @@ import {
   tick,
   TASK_ORDER,
 } from "../../revenue/runner.js";
-import { OWNER_STEPS, isOwnerStepOpen, ownerStepById, ownerStepsForLine } from "../../revenue/owner-steps.js";
+import { OWNER_STEPS, isOwnerStepOpen, ownerStepById, ownerStepsForLine, type OwnerStepId } from "../../revenue/owner-steps.js";
 import { getLine, listLines, recordKpi, recordLedgerEntry, setHumanSetupDone, setRevenueColonyEnabled, updateLineStatus } from "../../revenue/ledger.js";
 import { REVENUE_TASK_INTERVALS_MS } from "../../revenue/heartbeat.js";
 import { getActiveGoals } from "../../state/database.js";
@@ -320,9 +320,13 @@ describe("revenue/runner report rendering", () => {
     // on its own line with its reason, never as something to do; once the colony writes the id, the line goes and
     // step 6 is asked with the row.
     const held = "step 6's `POSTHOG_READ_KEY` row waits until the colony has created the brand's PostHog project";
-    expect(heldSecretRowsNote("il-biz-tools", { projectId: "" })).toContain(held);
-    expect(heldSecretRowsNote("il-biz-tools", { projectId: "" })).toMatch(/^Not asked yet: /);
-    expect(heldSecretRowsNote("il-biz-tools", { projectId: "12345" })).toBe("");
+    expect(heldSecretRowsNote(["il-biz-tools"], { projectId: "" })).toContain(held);
+    expect(heldSecretRowsNote(["il-biz-tools"], { projectId: "" })).toMatch(/^Not asked yet: /);
+    expect(heldSecretRowsNote(["il-biz-tools"], { projectId: "12345" })).toBe("");
+    // Step 6 gates all four lines and is named once for them (tick 32).
+    expect(heldSecretRowsNote(DEFAULT_PORTFOLIO.map((l) => l.id), { projectId: "" })).toBe(
+      heldSecretRowsNote(["il-biz-tools"], { projectId: "" }),
+    );
     // A line with no asked-now step that has gated rows carries no note.
     expect(OWNER_STEPS.filter((s) => s.secrets?.some((r) => r.askedOnlyWhen)).map((s) => s.id)).toEqual(["ci-tokens"]);
 
@@ -331,11 +335,14 @@ describe("revenue/runner report rendering", () => {
     const lines = report.split("\n");
     const row = lines.findIndex((l) => l.startsWith("Owner steps still open for `il-biz-tools`"));
     expect(row).toBeGreaterThan(-1);
-    // The report reads the real site.json, as the page-view reader does.
-    if (readSite().projectId === "") expect(lines[row + 1]).toContain(held);
+    // The report reads the real site.json, as the page-view reader does. Since tick 32 the note is printed once, at the
+    // head of the owner's section, not under each line's row.
+    const heading = lines.indexOf("## What the owner has to do (one time, per line)");
+    if (readSite().projectId === "") expect(lines[heading + 2]).toContain(held);
     else expect(report).not.toContain("POSTHOG_READ_KEY");
     // The row line itself is unchanged: the asked-now list and its not-asked note.
     expect(lines[row]).not.toContain("POSTHOG_READ_KEY");
+    expect(lines[row + 1]).not.toContain("POSTHOG_READ_KEY");
   });
 
   it("asks step 6's POSTHOG_READ_KEY row alone, once, when step 6 was done before the project existed", async () => {
@@ -477,6 +484,98 @@ describe("revenue/runner report rendering", () => {
   });
 });
 
+
+// Tick 32. Two defects in state/colony/REPORT.md: a line's setup items were free text, so an item for step N stayed
+// "- [ ]" (and in "## Blocked on") after step N was done; and step 6's held POSTHOG_READ_KEY note printed once per line
+// waiting on step 6 — four times in the report of 30.9.2026.
+describe("revenue/runner owner checklist follows the steps each item belongs to", () => {
+  let db: BetterSqlite3.Database;
+  beforeEach(() => { db = createInMemoryDb(); });
+  afterEach(() => { db.close(); });
+
+  const NOW = "2026-09-03T00:00:00.000Z";
+  // Records steps as done for the length of fn, as a real doneOn would, and restores them after.
+  const withDone = async (ids: OwnerStepId[], fn: () => Promise<void>) => {
+    const saved = ids.map((id) => ({ step: ownerStepById(id)!, doneOn: ownerStepById(id)!.doneOn }));
+    for (const { step } of saved) {
+      step.doneOn = { date: "2026-10-01", evidence: "test only", ...(step.secrets ? { heldRows: [] } : {}) };
+    }
+    try {
+      await fn();
+    } finally {
+      for (const { step, doneOn } of saved) step.doneOn = doneOn;
+    }
+  };
+  const itemsOf = (lineId: string) => DEFAULT_PORTFOLIO.find((l) => l.id === lineId)!.humanSetupItems!;
+  const checklist = (report: string) => report.split("\n").filter((l) => l.startsWith("- [ ] "));
+  const blockerOf = (blockers: string[], lineId: string) =>
+    blockers.find((b) => b.startsWith(`${lineId} is waiting on the owner`))!;
+
+  it("stops asking an item once every step it belongs to is done, in the checklist and in the blockers", async () => {
+    await withDone(["ci-tokens"], async () => {
+      const result = await tick(db, { nowIso: NOW });
+      const asked = checklist(renderReport(db, result, { projectId: "" }));
+      let gone = 0;
+      for (const line of DEFAULT_PORTFOLIO) {
+        const blocker = blockerOf(result.blockers, line.id);
+        expect(blocker, `${line.id} has no blocker`).toBeTruthy();
+        expect(blocker, `${line.id}: a blocker ending in an empty item list`).not.toMatch(/; $/);
+        for (const item of line.humanSetupItems ?? []) {
+          const open = !item.steps.every((n) => n === 6);
+          if (!open) gone++;
+          const where = `${line.id}: "${item.text.slice(0, 60)}…"`;
+          expect(asked.some((l) => l.startsWith(`- [ ] ${item.text}`)), `${where} in the checklist`).toBe(open);
+          expect(blocker.includes(item.text), `${where} in the blocker`).toBe(open);
+        }
+      }
+      // apify-actors' one item, il-biz-tools' Netlify item and pcn874's token item — which names the frozen step 5
+      // only as context, so step 5 never keeps it asked.
+      expect(gone).toBe(3);
+      expect(asked.some((l) => l.includes(itemsOf("pcn874")[2].text))).toBe(false);
+    });
+  });
+
+  it("prints an item with part of its steps done whole, then which of its steps are done and which are open", async () => {
+    const machine = itemsOf("oss-bounties")[0]; // the machine account (step 7) and its token, pasted in step 6
+    await withDone(["github-org"], async () => {
+      const result = await tick(db, { nowIso: NOW });
+      const report = renderReport(db, result, { projectId: "" });
+      expect(checklist(report)).toContain(`- [ ] ${machine.text} — step 7 done; still open: step 6`);
+      expect(blockerOf(result.blockers, "oss-bounties")).toContain(`${machine.text} — step 7 done; still open: step 6`);
+      // pcn874's organisation item is step 7 alone, so it goes.
+      expect(report).not.toContain(`- [ ] ${itemsOf("pcn874")[1].text}`);
+    });
+    await withDone(["ci-tokens"], async () => {
+      const report = renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" });
+      expect(checklist(report)).toContain(`- [ ] ${machine.text} — step 6 done; still open: step 7`);
+    });
+    await withDone(["github-org", "ci-tokens"], async () => {
+      const result = await tick(db, { nowIso: NOW });
+      expect(renderReport(db, result, { projectId: "" })).not.toContain(`- [ ] ${machine.text}`);
+      expect(blockerOf(result.blockers, "oss-bounties")).not.toContain(machine.text);
+    });
+    // With none of its steps done it prints exactly as written.
+    expect(checklist(renderReport(db, await tick(db, { nowIso: NOW }), { projectId: "" }))).toContain(`- [ ] ${machine.text}`);
+  });
+
+  it("names step 6's held POSTHOG_READ_KEY row once per report, at the head of the owner's section", async () => {
+    const result = await tick(db, { nowIso: NOW });
+    const lines = renderReport(db, result, { projectId: "" }).split("\n");
+    const notes = lines.filter((l) => l.includes("`POSTHOG_READ_KEY`"));
+    expect(notes, "once per report, not once per line waiting on step 6").toHaveLength(1);
+    expect(notes[0]).toMatch(
+      /^Not asked yet: step 6's `POSTHOG_READ_KEY` row waits until the colony has created the brand's PostHog project/,
+    );
+    const heading = lines.indexOf("## What the owner has to do (one time, per line)");
+    const at = lines.indexOf(notes[0]);
+    const firstLine = lines.findIndex((l, i) => i > heading && l.startsWith("**"));
+    expect(heading).toBeGreaterThan(-1);
+    expect(at).toBeGreaterThan(heading);
+    expect(at).toBeLessThan(firstLine);
+    // Once the project exists, step 6 is asked with the row and the note goes.
+    expect(renderReport(db, result, { projectId: "12345" })).not.toContain("`POSTHOG_READ_KEY`");
+  });
+});
 
 describe("revenue/runner liveness watchdog", () => {
   let db: BetterSqlite3.Database;
