@@ -290,4 +290,5 @@ export const REVENUE_KV = {
   lastBoardDirective: "revenue.last_board_directive",
   productMap: "revenue.product_map", // JSON { "<source>:<productId>": "<lineId>" }
   connectorCursorPrefix: "revenue.connector_cursor.", // + source
+  x402HeldRows: "revenue.x402_held_rows", // JSON [transactions.id]: tagged receipts not yet bookable (connectors/x402-local.ts)
 } as const;

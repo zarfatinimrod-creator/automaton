@@ -464,9 +464,11 @@ export function renderReport(db: Database, result: TickResult, site: SecretGateS
     out.push("");
     out.push(`| | |`);
     out.push(`|---|---|`);
-    // Two numbers, never one (RULING-2026-09-28-bounty-rail.md §6.2): money in the bank, and USDC in the owner's wallet
-    // at its shekel value on the day it arrived. The target %, run-rate and net read converted money only.
-    out.push(`| 30-day revenue, converted (bank) | **${formatIls(s.total30dAgorot)}** |`);
+    // Two numbers, never one (RULING-2026-09-28-bounty-rail.md §6.2): converted money, and USDC in the owner's wallet at
+    // its shekel value on the day it arrived. The target %, run-rate and net read converted money only. "Converted" is
+    // not called "bank": the ledger books a sale when the platform records it, and money can wait in a Gumroad, PayPal
+    // or Apify balance; the one thing it knows is that the money is not in the wallet.
+    out.push(`| 30-day revenue, converted (not in the wallet) | **${formatIls(s.total30dAgorot)}** |`);
     out.push(`| 30-day revenue, unconverted (wallet; in no target) | ${formatIls(s.unconverted30dAgorot)} |`);
     out.push(`| Target | ${formatIls(s.targetMonthlyAgorot)} (${pct}%) |`);
     out.push(`| Stretch target | ${formatIls(s.stretchMonthlyAgorot)} |`);

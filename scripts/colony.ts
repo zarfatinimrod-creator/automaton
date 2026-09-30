@@ -67,11 +67,14 @@ Commands:
                        lines in KILLED_LINES with the board's stated reason. Run it
                        after a board ruling, then \`report\`, or the report keeps
                        printing the portfolio the board just replaced.
-  record               Record one ledger entry by hand. A USDC entry is flagged unconverted and
-                       valued at the rate recorded for its receipt day (see fx); with none, it
-                       is refused (RULING-2026-09-28-bounty-rail.md §6.2).
+  record               Record one ledger entry by hand. Currency ILS, USD, EUR or GBP (converted)
+                       or USDC (wallet money); any other code is refused. A USDC entry needs its
+                       on-chain transaction id as --external-id and --occurred-at; it is flagged
+                       unconverted and valued at the rate recorded for its receipt day (see fx),
+                       and with none it is refused (RULING-2026-09-28-bounty-rail.md §6.2).
   fx                   Record one day's rate: --currency USDC --date YYYY-MM-DD --rate <ILS per unit>
-                       (the Israeli calendar day of the receipt). A held USDC receipt names it.
+                       (the Israeli calendar day of the receipt, not later than today). A held USDC
+                       receipt names it.
   setup-done <lineId>  Mark a line's one-time owner setup as done and queue its build goal.
   target               Set the monthly target (and optional stretch target) in shekels.
   criteria             Show the search criteria and how much of the space is covered.
@@ -289,7 +292,8 @@ async function main(): Promise<void> {
         if (!entry) {
           console.log(`Already recorded: ${source}/${values["external-id"]}. Nothing changed.`);
         } else {
-          console.log(`Recorded ${entry.kind} ${formatIls(entry.amountAgorot)} on ${entry.lineId} via ${entry.source}.`);
+          const flag = entry.unconverted ? " unconverted (wallet money, counted in no target)" : "";
+          console.log(`Recorded ${entry.kind} ${formatIls(entry.amountAgorot)}${flag} on ${entry.lineId} via ${entry.source}.`);
           const line = getLine(db.raw, lineId)!;
           console.log(`  ${line.id} is now ${line.status}.`);
         }

@@ -9,7 +9,19 @@
 
 import type { Database } from "better-sqlite3";
 import { ulid } from "ulid";
-import { getFxRateOn, isUnconvertedCurrency, normalizeCurrency, receiptDay, toAgorot, toAgorotAtRate } from "./money.js";
+import {
+  chainTxId,
+  CONVERTED_CURRENCIES,
+  getFxRateOn,
+  isUnconvertedCurrency,
+  normalizeCurrency,
+  receiptDay,
+  toAgorot,
+  toAgorotAtRate,
+  toIsoInstant,
+  UNCONVERTED_CURRENCIES,
+  WALLET_SOURCES,
+} from "./money.js";
 import {
   DEFAULT_REVENUE_COLONY_CONFIG,
   REVENUE_KV,
@@ -204,6 +216,20 @@ export function getConnectorCursor(db: Database, source: string): string | undef
 
 export function setConnectorCursor(db: Database, source: string, cursor: string): void {
   setKv(db, `${REVENUE_KV.connectorCursorPrefix}${source}`, cursor);
+}
+
+/** The x402 rows held back from the ledger (connectors/x402-local.ts): read again, and reported, at every sync. */
+export function getX402HeldRows(db: Database): string[] {
+  try {
+    const parsed = JSON.parse(getKv(db, REVENUE_KV.x402HeldRows) ?? "[]");
+    return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+export function setX402HeldRows(db: Database, rowIds: readonly string[]): void {
+  setKv(db, REVENUE_KV.x402HeldRows, JSON.stringify([...new Set(rowIds)]));
 }
 
 // ─── Revenue lines ───────────────────────────────────────────────
@@ -419,10 +445,50 @@ export function recordLedgerEntry(db: Database, input: LedgerEntryInput): Ledger
     );
   }
 
-  if (externalId) {
-    const existing = db
-      .prepare("SELECT id FROM revenue_ledger WHERE source = ? AND external_id = ?")
-      .get(source, externalId) as { id: string } | undefined;
+  // RULING-2026-09-28-bounty-rail.md §6.2: wallet money (USDC) is booked at its shekel value on the day of receipt,
+  // with the on-chain transaction id, flagged unconverted; converted money is the fiat of a bank or a platform balance.
+  // Every other code is refused: booked as converted it would enter targets at an invented rate.
+  const currency = normalizeCurrency(input.currency);
+  const unconverted = isUnconvertedCurrency(currency);
+  if (!unconverted && !CONVERTED_CURRENCIES.has(currency)) {
+    throw new Error(
+      `no rule books ${currency}: converted money is ${[...CONVERTED_CURRENCIES].join(", ")}, and wallet money is ` +
+      `${[...UNCONVERTED_CURRENCIES].join(", ")} (RULING-2026-09-28-bounty-rail.md §6.2). Refused rather than valued at an invented rate.`,
+    );
+  }
+  const chainId = chainTxId(externalId);
+  if (unconverted) {
+    if (input.kind === "cost") {
+      throw new Error(`a ${currency} cost would mean the colony spent from the owner's wallet, and the colony never moves funds (§6.2)`);
+    }
+    if (!chainId) {
+      throw new Error(
+        `a ${currency} entry's external id must be its on-chain transaction id — an EVM hash (0x and 64 hex) or a ` +
+        `Solana signature (§6.2); "${externalId ?? ""}" is neither`,
+      );
+    }
+    if (!input.occurredAt?.trim()) {
+      throw new Error(
+        `a ${currency} entry needs occurred_at (--occurred-at): when it arrived picks the day whose rate values it, and ` +
+        "the day it is recorded is not that day (§6.2)",
+      );
+    }
+  } else {
+    if (WALLET_SOURCES.has(source)) {
+      throw new Error(`${source} pays into a wallet, not a bank: book it as USDC with its on-chain transaction id (§6.2), never as ${currency}`);
+    }
+    if (chainId) {
+      throw new Error(`"${externalId}" is an on-chain transaction id: that is wallet money, booked as USDC (§6.2), never as ${currency}`);
+    }
+  }
+
+  // A chain id names one transfer on a public chain, whoever books it: it is checked across every source, in its one
+  // canonical form. Any other id is a platform's own, unique within that platform.
+  const bookedId = chainId ?? externalId;
+  if (bookedId) {
+    const existing = (chainId
+      ? db.prepare("SELECT id FROM revenue_ledger WHERE external_id = ?").get(chainId)
+      : db.prepare("SELECT id FROM revenue_ledger WHERE source = ? AND external_id = ?").get(source, externalId)) as { id: string } | undefined;
     if (existing) return null;
   }
 
@@ -432,17 +498,12 @@ export function recordLedgerEntry(db: Database, input: LedgerEntryInput): Ledger
     : Math.abs(input.amountMinor);
 
   const now = new Date().toISOString();
-  const currency = normalizeCurrency(input.currency);
-  const occurredAt = input.occurredAt ?? now;
+  // A USDC receipt's time is stored as ISO UTC, so its window and its day read the same instant on any machine.
+  const occurredAt = unconverted ? toIsoInstant(input.occurredAt!) : input.occurredAt ?? now;
 
-  // RULING-2026-09-28-bounty-rail.md §6.2: wallet money (USDC) is booked at its shekel value on the day of receipt and
-  // flagged unconverted. With no rate recorded for that day there is no such value, and none is invented: refused.
-  const unconverted = isUnconvertedCurrency(currency);
+  // With no rate recorded for the receipt's day there is no value on that day, and none is invented: refused.
   let amountAgorot: number;
   if (unconverted) {
-    if (input.kind === "cost") {
-      throw new Error(`a ${currency} cost would mean the colony spent from the owner's wallet, and the colony never moves funds (§6.2)`);
-    }
     const day = receiptDay(occurredAt);
     const rate = getFxRateOn(db, currency, day);
     if (rate === null) {
@@ -465,7 +526,7 @@ export function recordLedgerEntry(db: Database, input: LedgerEntryInput): Ledger
     currency,
     amountAgorot,
     source,
-    externalId,
+    externalId: bookedId,
     occurredAt,
     recordedAt: now,
     note: input.note ?? null,

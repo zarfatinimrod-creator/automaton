@@ -146,13 +146,15 @@ export function createRevenueTools(): AutomatonTool[] {
           `Kill criteria: ${line.killCriteria.join(" | ")}`,
           `Scale criteria: ${line.scaleCriteria.join(" | ")}`,
           "",
-          `30d revenue ${formatIls(metrics.revenue30dAgorot)} (refunds ${formatIls(metrics.refunds30dAgorot)}, costs ${formatIls(metrics.cost30dAgorot)}, net ${formatIls(metrics.net30dAgorot)}) | 7d ${formatIls(metrics.revenue7dAgorot)} | trend ${metrics.trend} | tx ${metrics.transactions30d} | attainment ${(metrics.targetAttainment * 100).toFixed(1)}%`,
+          // Two numbers, never one (RULING-2026-09-28-bounty-rail.md §6.2): every figure the rules read is converted money;
+          // wallet money is printed apart, labelled as counted in no target.
+          `30d converted revenue ${formatIls(metrics.revenue30dAgorot)} (refunds ${formatIls(metrics.refunds30dAgorot)}, costs ${formatIls(metrics.cost30dAgorot)}, net ${formatIls(metrics.net30dAgorot)}) | 7d ${formatIls(metrics.revenue7dAgorot)} | trend ${metrics.trend} | tx ${metrics.transactions30d} | attainment ${(metrics.targetAttainment * 100).toFixed(1)}% | 30d unconverted (wallet, in no target) ${formatIls(metrics.unconverted30dAgorot)}`,
           `Days: created ${metrics.daysSinceCreated.toFixed(0)}, live ${metrics.daysSinceLaunch?.toFixed(0) ?? "-"}, since last revenue ${metrics.daysSinceLastRevenue?.toFixed(0) ?? "-"}`,
           `Rules now: ${describeDecision(decision)}`,
           "",
           `Latest KPIs: ${Object.keys(kpis).length ? Object.entries(kpis).map(([k, v]) => `${k}=${v.value}${v.unit ?? ""} (${v.capturedAt.slice(0, 10)})${labels[k] ? ` [${labels[k].label}]` : ""}`).join(", ") : "none"}`,
           ...[...labelGroups.values()].map((g) => `KPI label (${g.kpis.join(", ")}): ${g.label}. Rule: ${g.rule}.`),
-          `Recent ledger: ${ledger.length ? ledger.map((e) => `${e.occurredAt.slice(0, 10)} ${e.kind} ${formatIls(e.amountAgorot)} via ${e.source}${e.note ? ` (${e.note.slice(0, 40)})` : ""}`).join("; ") : "none"}`,
+          `Recent ledger: ${ledger.length ? ledger.map((e) => `${e.occurredAt.slice(0, 10)} ${e.kind} ${formatIls(e.amountAgorot)}${e.unconverted ? " unconverted" : ""} via ${e.source}${e.note ? ` (${e.note.slice(0, 40)})` : ""}`).join("; ") : "none"}`,
           `Recent reviews: ${reviews.length ? reviews.map((r) => `${r.createdAt.slice(0, 10)} ${r.level}:${r.decision}`).join("; ") : "none"}`,
         ].join("\n");
       },
@@ -160,7 +162,7 @@ export function createRevenueTools(): AutomatonTool[] {
     {
       name: "revenue_record",
       description:
-        "Record money in the revenue ledger. Use for every sale, subscription payment, refund, payout and cost of a line. Amount is in MINOR units (cents/agorot). Always pass external_id (platform transaction id) so re-recording is a no-op. Never record projected or promised money.",
+        "Record money in the revenue ledger. Use for every sale, subscription payment, refund, payout and cost of a line. Amount is in MINOR units (cents/agorot). Always pass external_id (platform transaction id) so re-recording is a no-op. Never record projected or promised money. Money that arrives in a wallet is USDC: it needs its on-chain transaction id as external_id, occurred_at, and that day's rate recorded (colony.ts fx); it is booked unconverted and counts toward no target (RULING-2026-09-28-bounty-rail.md §6.2).",
       category: CATEGORY,
       riskLevel: "caution" as RiskLevel,
       parameters: {
@@ -169,10 +171,10 @@ export function createRevenueTools(): AutomatonTool[] {
           line_id: { type: "string", description: "Revenue line id" },
           kind: { type: "string", enum: LEDGER_KINDS, description: "sale | subscription | payout | refund | cost" },
           amount_minor: { type: "number", description: "Integer amount in minor units (e.g. 1990 for $19.90)" },
-          currency: { type: "string", description: "ILS | USD | USDC | EUR | GBP" },
-          source: { type: "string", description: "stripe | lemonsqueezy | gumroad | paddle | x402 | conway | manual | <platform>" },
-          external_id: { type: "string", description: "Platform transaction id (idempotency key)" },
-          occurred_at: { type: "string", description: "ISO timestamp (default now)" },
+          currency: { type: "string", description: "ILS | USD | EUR | GBP (converted) | USDC (wallet money, unconverted). Any other code is refused." },
+          source: { type: "string", description: "stripe | lemonsqueezy | gumroad | paddle | x402 | superteam | conway | manual | <platform>. x402 and superteam take USDC only." },
+          external_id: { type: "string", description: "Platform transaction id (idempotency key); for USDC, the on-chain transaction id (0x hash or Solana signature)" },
+          occurred_at: { type: "string", description: "ISO timestamp (default now; required for USDC, whose receipt day picks the rate)" },
           note: { type: "string", description: "Short note (product name, customer type)" },
         },
         required: ["line_id", "kind", "amount_minor", "currency", "source"],
@@ -202,7 +204,9 @@ export function createRevenueTools(): AutomatonTool[] {
             note: str(args, "note") || null,
           });
           if (!entry) return `Duplicate: ${source}/${str(args, "external_id")} was already recorded. Nothing changed.`;
-          return `Recorded ${entry.kind} ${formatIls(entry.amountAgorot)} (${entry.amountMinor} ${entry.currency}) on ${entry.lineId} via ${entry.source} [${entry.id}].`;
+          const flag = entry.unconverted ? " unconverted" : "";
+          const note = entry.unconverted ? " Wallet money: shown apart, and counted in no target." : "";
+          return `Recorded ${entry.kind} ${formatIls(entry.amountAgorot)}${flag} (${entry.amountMinor} ${entry.currency}) on ${entry.lineId} via ${entry.source} [${entry.id}].${note}`;
         } catch (error) {
           return `Error: ${(error as Error).message}`;
         }

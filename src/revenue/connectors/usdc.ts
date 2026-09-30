@@ -16,7 +16,7 @@
  */
 
 import type { Database } from "better-sqlite3";
-import { getFxRateOn, receiptDay } from "../money.js";
+import { chainTxId, getFxRateOn, receiptDay, toIsoInstant } from "../money.js";
 import type { LedgerEntryInput, LedgerSource } from "../types.js";
 
 export interface UsdcReceipt {
@@ -25,9 +25,9 @@ export interface UsdcReceipt {
   kind?: "sale" | "payout";
   /** USDC in cents (2 decimals), as MINOR_UNITS.USDC reads it. */
   amountMinor: number;
-  /** The on-chain transaction hash, or null when the source did not give one. */
+  /** The on-chain transaction id (an EVM hash or a Solana signature), or null when the source did not give one. */
   txHash: string | null;
-  /** When the USDC arrived (ISO); its Israeli calendar day picks the rate. */
+  /** When the USDC arrived: ISO, or a zone-less UTC time as SQLite writes it. Its Israeli calendar day picks the rate. */
   receivedAt: string;
   source: LedgerSource;
   note?: string | null;
@@ -47,8 +47,11 @@ export function extractTxHash(description: string): string | null {
 }
 
 export function usdcReceiptEntry(db: Database, receipt: UsdcReceipt): UsdcBooking {
-  const day = receiptDay(receipt.receivedAt);
-  if (!receipt.txHash) {
+  const receivedAt = toIsoInstant(receipt.receivedAt);
+  const day = receiptDay(receivedAt);
+  // The ledger refuses a USDC row whose id is not an on-chain transaction id; a malformed one is held like a missing one.
+  const txId = chainTxId(receipt.txHash);
+  if (!txId) {
     return {
       status: "held",
       reason: "no_tx_hash",
@@ -74,8 +77,8 @@ export function usdcReceiptEntry(db: Database, receipt: UsdcReceipt): UsdcBookin
       amountMinor: receipt.amountMinor,
       currency: "USDC",
       source: receipt.source,
-      externalId: receipt.txHash,
-      occurredAt: receipt.receivedAt,
+      externalId: txId,
+      occurredAt: receivedAt,
       note: receipt.note ?? null,
     },
   };

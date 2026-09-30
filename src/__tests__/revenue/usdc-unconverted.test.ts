@@ -13,6 +13,7 @@ import {
   insertLineFromSeed,
   listLedger,
   recordLedgerEntry,
+  setConnectorCursor,
   updateLineStatus,
 } from "../../revenue/ledger.js";
 import { agorotFromIls, getFxRateOn, receiptDay, setFxRate, setFxRateOn } from "../../revenue/money.js";
@@ -180,9 +181,10 @@ describe("USDC: the x402 connector", () => {
     expect(read.nextCursor).toBe(AT);
   });
 
-  it("holds a receipt whose day has no rate: not booked, cursor kept before it, booked once the rate is recorded", async () => {
+  it("holds a receipt whose day has no rate: not booked, read again by its row id, booked once the rate is recorded", async () => {
     const early = `${DAY}T08:00:00.000Z`;
     const later = "2026-09-30T09:00:00.000Z";
+    setConnectorCursor(db, "x402", "2026-09-01T00:00:00.000Z"); // not 30 days before the real now
     setFxRateOn(db, "USDC", "2026-09-30", 3.7);
     insertTransfer(db, "local-0", 100, "creator funding", early); // untagged: funding, never revenue
     insertTransfer(db, "local-1", 250, `x402 payment [line:paid-apis] [tx:${HASH_A}]`, AT);
@@ -200,7 +202,7 @@ describe("USDC: the x402 connector", () => {
     setFxRateOn(db, "USDC", DAY, 3.6);
     const third = await runLedgerSync(db, {}, undefined);
     expect(third.recorded).toBe(1);
-    expect(third.duplicates).toBe(1);
+    expect(third.duplicates).toBe(0); // the cursor passed the booked row; only the held one is read again
     expect(third.errors).toEqual([]);
     expect(listLedger(db).find((e) => e.externalId === HASH_A)?.amountAgorot).toBe(900); // $2.50 × 3.6
   });
@@ -211,16 +213,19 @@ describe("USDC: the x402 connector", () => {
     const read = readLocalTransfers(db, "2026-09-01T00:00:00.000Z");
     expect(read.entries).toEqual([]);
     expect(read.held).toMatchObject([{ rowId: "local-1", reason: "no_tx_hash" }]);
-    expect(read.nextCursor).toBe("2026-09-01T00:00:00.000Z");
+    // The cursor does not wait for it (review of tick 37, defect 3): a row that can never be booked as written would
+    // otherwise stop every later receipt from being read. It is read again by its id instead.
+    expect(read.nextCursor).toBe(AT);
   });
 
-  it("keeps the cursor strictly before a held row that shares a timestamp with a booked one", () => {
+  it("reads a held row again by its id once the cursor has passed it", () => {
     setFxRateOn(db, "USDC", DAY, 3.7);
     insertTransfer(db, "local-1", 250, `x402 payment [line:paid-apis] [tx:${HASH_A}]`, AT);
     insertTransfer(db, "local-2", 250, "x402 payment [line:paid-apis]", AT);
-    const read = readLocalTransfers(db, "2026-09-01T00:00:00.000Z");
-    expect(read.entries).toHaveLength(1);
-    expect(read.nextCursor! < AT).toBe(true);
+    const read = readLocalTransfers(db, AT, ["local-2"]);
+    expect(read.entries).toEqual([]); // local-1 is behind the cursor and was never held
+    expect(read.held).toMatchObject([{ rowId: "local-2", reason: "no_tx_hash" }]);
+    expect(read.nextCursor).toBe(AT);
   });
 });
 
@@ -293,7 +298,7 @@ describe("USDC: the report and the manager's screen show two numbers, never one"
     bookBoth();
     const result = await tick(db, { nowIso: NOW, force: true, feedGoals: false });
     const report = renderReport(db, result);
-    expect(report).toContain("| 30-day revenue, converted (bank) | **₪2,000.00** |");
+    expect(report).toContain("| 30-day revenue, converted (not in the wallet) | **₪2,000.00** |");
     expect(report).toContain("| 30-day revenue, unconverted (wallet; in no target) | ₪370.00 |");
     expect(report).toContain("(10.0%)");
     expect(report).toContain("| Line | Tier | Status | 30d converted | 30d unconverted | Target | Last supervisor call |");
@@ -305,7 +310,7 @@ describe("USDC: the report and the manager's screen show two numbers, never one"
   it("the manager's screen: converted money leads, unconverted stands beside it as its own number", () => {
     bookBoth();
     const h = renderDashboard(db, { nowIso: NOW });
-    expect(h).toContain("החברה הרוויחה ₪2,000.00 ב-30 הימים האחרונים.");
+    expect(h).toContain("החברה הרוויחה ₪2,000.00 בכסף מומר ב-30 הימים האחרונים, ובארנק ₪370.00 לא מומר, שלא נספר בשום יעד.");
     expect(h).toContain("כסף לא מומר (ארנק)");
     expect(h).toContain("₪370.00");
     expect(h).toContain("<th>30 יום, מומר</th><th>30 יום, לא מומר</th>");
@@ -313,10 +318,10 @@ describe("USDC: the report and the manager's screen show two numbers, never one"
     expect(h).not.toContain("₪2,370.00");
   });
 
-  it("the manager's screen with USDC only: no shekel earned, and the wallet number still shown", () => {
+  it("the manager's screen with USDC only: no converted shekel earned, and the wallet number still shown", () => {
     recordLedgerEntry(db, { lineId: "oss-bounties", kind: "payout", amountMinor: 10_000, currency: "USDC", source: "superteam", externalId: HASH_A, occurredAt: AT });
     const h = renderDashboard(db, { nowIso: NOW });
-    expect(h).toContain("החברה עדיין לא הרוויחה שקל");
+    expect(h).toContain("החברה עדיין לא הרוויחה שקל מומר");
     expect(h).toContain("כסף לא מומר (ארנק)");
     expect(h).toContain("₪370.00");
   });
