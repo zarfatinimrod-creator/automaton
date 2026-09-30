@@ -218,7 +218,9 @@ describe("terms-verdicts.json gates every active line (terms audit round 2)", ()
 
   it("keeps nevo's already captured law pages readable while no new nevo line can run", () => {
     expect(verdicts["nevo.co.il"].verdict).toBe("NO_TERMS");
-    expect(entries().some((e) => /nevo\.co\.il$/.test(new URL(e.url).hostname))).toBe(false);
+    // Only nevo's robots.txt probe may be active (ruling 30.9 16(d) D2(v)); no law page is fetched again.
+    const nevo = entries().filter((e) => /nevo\.co\.il$/.test(new URL(e.url).hostname));
+    expect(nevo.every((e) => new URL(e.url).pathname === "/robots.txt")).toBe(true);
     expect(readFileSync("research/rendered/nevo-vat-law.txt", "utf8")).toContain("122,833");
   });
 });

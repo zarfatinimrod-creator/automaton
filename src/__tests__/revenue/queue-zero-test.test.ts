@@ -421,8 +421,9 @@ describe("the terms gate and robots.txt (ruling 30.9 16(d) D2(v))", () => {
     expect(verdicts["nevo.co.il"].note).toMatch(/^exhaustive-negative/);
     expect(termsGate("https://www.nevo.co.il/robots.txt", "robots-nevo", verdicts).ok).toBe(true);
     expect(termsGate("https://www.nevo.co.il/law_html/law00/70305.htm", "nevo-consumer-protection-law-70305", verdicts).ok).toBe(false);
-    // No nevo line is active in the committed list: the probe is queued by the loop, not by this build.
+    // The only active nevo line may be the robots.txt probe the loop queued (row 231); no law page runs.
     const active = parseUrlList(readFileSync(URLS, "utf8")) as { url: string }[];
-    expect(active.some((e) => /nevo\.co\.il$/.test(new URL(e.url).hostname))).toBe(false);
+    const nevo = active.filter((e) => /nevo\.co\.il$/.test(new URL(e.url).hostname));
+    expect(nevo.every((e) => new URL(e.url).pathname === "/robots.txt")).toBe(true);
   });
 });

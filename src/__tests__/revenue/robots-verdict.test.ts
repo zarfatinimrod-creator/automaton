@@ -77,10 +77,16 @@ describe("queuedPaths — the site's lines in urls.txt, active or paused", () =>
     expect(queuedPaths(URLS, "open.example")).toEqual([{ url: "https://open.example/a", slug: "open-a", state: "active" }]);
   });
 
-  it("reads the committed urls.txt: nevo's eight law pages are queued, all paused", () => {
-    const paths = queuedPaths(readFileSync(join(ROOT, "research", "rendered", "urls.txt"), "utf8"), "nevo.co.il");
-    expect(paths.length).toBe(8);
-    expect(paths.every((p: { state: string; url: string }) => p.state === "paused" && p.url.startsWith("https://www.nevo.co.il/law_html/"))).toBe(true);
+  it("reads the committed urls.txt: nevo's eight law pages are queued, all paused, beside its robots.txt probe", () => {
+    type P = { state: string; url: string; slug: string };
+    const paths: P[] = queuedPaths(readFileSync(join(ROOT, "research", "rendered", "urls.txt"), "utf8"), "nevo.co.il");
+    const laws = paths.filter((p) => new URL(p.url).pathname !== "/robots.txt");
+    expect(laws.length).toBe(8);
+    expect(laws.every((p) => p.state === "paused" && p.url.startsWith("https://www.nevo.co.il/law_html/"))).toBe(true);
+    // The loop queued the probe in tick 27 (ZERO-TESTS row 231); it is the only active nevo line.
+    expect(paths.filter((p) => p.state === "active")).toEqual([
+      { url: "https://www.nevo.co.il/robots.txt", slug: "robots-nevo", state: "active" },
+    ]);
   });
 });
 
