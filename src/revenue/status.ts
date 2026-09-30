@@ -26,7 +26,7 @@ export function getRevenueStatus(db: Database, opts: { maxLines?: number; includ
 
     const out: string[] = [];
     out.push(
-      `Target ${formatIls(summary.targetMonthlyAgorot)}/mo (stretch ${formatIls(summary.stretchMonthlyAgorot)}) | 30d revenue ${formatIls(summary.total30dAgorot)} (${(summary.attainment * 100).toFixed(1)}%) | run-rate ${formatIls(summary.runRateMonthlyAgorot)}/mo | net ${formatIls(summary.net30dAgorot)}`,
+      `Target ${formatIls(summary.targetMonthlyAgorot)}/mo (stretch ${formatIls(summary.stretchMonthlyAgorot)}) | 30d converted revenue ${formatIls(summary.total30dAgorot)} (${(summary.attainment * 100).toFixed(1)}%) | run-rate ${formatIls(summary.runRateMonthlyAgorot)}/mo | net ${formatIls(summary.net30dAgorot)} | unconverted (wallet, in no target) ${formatIls(summary.unconverted30dAgorot)}`,
     );
     const counts = Object.entries(summary.counts).filter(([, n]) => n > 0).map(([s, n]) => `${s}:${n}`).join(" ");
     out.push(`Lines: ${counts}`);

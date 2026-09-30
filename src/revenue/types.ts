@@ -129,6 +129,12 @@ export interface LedgerEntry {
   occurredAt: string;
   recordedAt: string;
   note: string | null;
+  /**
+   * True on money that sits in the owner's wallet, not his bank (USDC; money.ts UNCONVERTED_CURRENCIES), booked at its
+   * shekel value on the day of receipt (RULING-2026-09-28-bounty-rail.md §6.2). The ledger sets it from the currency;
+   * a caller cannot. No target, floor or rule counts such a row.
+   */
+  unconverted: boolean;
 }
 
 export interface LedgerEntryInput {
@@ -159,6 +165,12 @@ export interface LineMetrics {
   targetMonthlyAgorot: number;
   /** revenue30d / target, 0..∞ */
   targetAttainment: number;
+  /**
+   * Unconverted (wallet) money in the 30-day window, net of unconverted refunds, in agorot at each receipt day's rate.
+   * Every other money field here counts converted money only (§6.2: no target rests on unconverted money); this one is
+   * printed beside them, never added to them.
+   */
+  unconverted30dAgorot: number;
 }
 
 export interface PortfolioSummary {
@@ -173,6 +185,8 @@ export interface PortfolioSummary {
   attainment: number;
   /** 7d run-rate extrapolated to a month */
   runRateMonthlyAgorot: number;
+  /** Unconverted (wallet) money in 30 days, net of its refunds. In none of the totals above, nor in `attainment`. */
+  unconverted30dAgorot: number;
   lines: LineMetrics[];
   counts: Record<RevenueLineStatus, number>;
 }
@@ -271,9 +285,10 @@ export const REVENUE_KV = {
   enabled: "revenue.enabled",
   target: "revenue.target_monthly_agorot",
   stretch: "revenue.stretch_monthly_agorot",
-  fxPrefix: "revenue.fx.", // + CURRENCY, value = ILS per unit
+  fxPrefix: "revenue.fx.", // + CURRENCY, value = ILS per unit; + CURRENCY.YYYY-MM-DD = that day's rate (money.ts setFxRateOn)
   goalQueue: "revenue.goal_queue",
   lastBoardDirective: "revenue.last_board_directive",
   productMap: "revenue.product_map", // JSON { "<source>:<productId>": "<lineId>" }
   connectorCursorPrefix: "revenue.connector_cursor.", // + source
+  x402HeldRows: "revenue.x402_held_rows", // JSON [transactions.id]: tagged receipts not yet bookable (connectors/x402-local.ts)
 } as const;

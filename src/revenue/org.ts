@@ -322,7 +322,7 @@ export function renderBoardDirective(
   const lines: string[] = [];
   lines.push(`Board review ${summary.asOf.slice(0, 16)}Z`);
   lines.push(
-    `30d revenue ${formatIls(summary.total30dAgorot)} of target ${formatIls(summary.targetMonthlyAgorot)} (${(summary.attainment * 100).toFixed(1)}%); run-rate ${formatIls(summary.runRateMonthlyAgorot)}/mo; net ${formatIls(summary.net30dAgorot)}`,
+    `30d converted revenue ${formatIls(summary.total30dAgorot)} of target ${formatIls(summary.targetMonthlyAgorot)} (${(summary.attainment * 100).toFixed(1)}%); run-rate ${formatIls(summary.runRateMonthlyAgorot)}/mo; net ${formatIls(summary.net30dAgorot)}; unconverted (wallet, in no target) ${formatIls(summary.unconverted30dAgorot)}`,
   );
   const nonHold = decisions.filter((d) => d.decision !== "hold");
   if (nonHold.length) {

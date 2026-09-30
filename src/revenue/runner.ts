@@ -464,7 +464,12 @@ export function renderReport(db: Database, result: TickResult, site: SecretGateS
     out.push("");
     out.push(`| | |`);
     out.push(`|---|---|`);
-    out.push(`| 30-day revenue | **${formatIls(s.total30dAgorot)}** |`);
+    // Two numbers, never one (RULING-2026-09-28-bounty-rail.md §6.2): converted money, and USDC in the owner's wallet at
+    // its shekel value on the day it arrived. The target %, run-rate and net read converted money only. "Converted" is
+    // not called "bank": the ledger books a sale when the platform records it, and money can wait in a Gumroad, PayPal
+    // or Apify balance; the one thing it knows is that the money is not in the wallet.
+    out.push(`| 30-day revenue, converted (not in the wallet) | **${formatIls(s.total30dAgorot)}** |`);
+    out.push(`| 30-day revenue, unconverted (wallet; in no target) | ${formatIls(s.unconverted30dAgorot)} |`);
     out.push(`| Target | ${formatIls(s.targetMonthlyAgorot)} (${pct}%) |`);
     out.push(`| Stretch target | ${formatIls(s.stretchMonthlyAgorot)} |`);
     out.push(`| Run-rate from last 7 days | ${formatIls(s.runRateMonthlyAgorot)}/month |`);
@@ -515,14 +520,14 @@ export function renderReport(db: Database, result: TickResult, site: SecretGateS
   if (lines.length) {
     out.push("## Revenue lines");
     out.push("");
-    out.push("| Line | Tier | Status | 30d | Target | Last supervisor call |");
-    out.push("|---|---|---|---|---|---|");
+    out.push("| Line | Tier | Status | 30d converted | 30d unconverted | Target | Last supervisor call |");
+    out.push("|---|---|---|---|---|---|---|");
     const metrics = new Map((s?.lines ?? []).map((m) => [m.lineId, m]));
     for (const line of lines) {
       const m = metrics.get(line.id);
       const review = latestReviewForLine(db, line.id, "supervisor");
       out.push(
-        `| \`${line.id}\` | ${line.tier} | ${line.status} | ${formatIls(m?.revenue30dAgorot ?? 0)} | ${formatIls(line.targetMonthlyAgorot)} | ${review?.decision ?? "—"} |`,
+        `| \`${line.id}\` | ${line.tier} | ${line.status} | ${formatIls(m?.revenue30dAgorot ?? 0)} | ${formatIls(m?.unconverted30dAgorot ?? 0)} | ${formatIls(line.targetMonthlyAgorot)} | ${review?.decision ?? "—"} |`,
       );
     }
     out.push("");
@@ -690,7 +695,7 @@ export function describeGumroadRefundRate(db: Database, read: GumroadRefundRateR
 export function renderCommitSummary(result: TickResult): string {
   if (!result.enabled) return "colony tick: disabled";
   const s = result.summary;
-  const money = s ? formatIls(s.total30dAgorot) : "?";
+  const money = s ? `${formatIls(s.total30dAgorot)} converted, ${formatIls(s.unconverted30dAgorot)} unconverted` : "?";
   const decisions = (result.board?.decisions ?? []).filter((d) => d.decision !== "hold").length;
   const parts = [`30d ${money}`];
   if (result.ran.length) parts.push(`ran ${result.ran.length}`);
