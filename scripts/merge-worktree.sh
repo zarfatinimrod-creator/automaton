@@ -7,7 +7,10 @@
 #   1. refuses if the working tree is dirty or the branch is already merged
 #   2. git merge --no-ff with the repo's commit trailers
 #   3. pnpm install --frozen-lockfile (a merged branch may add a dependency; ~3 s when nothing changed),
-#      then pnpm typecheck, then the revenue test suite (the fold-in test is in it)
+#      then scripts/verify.sh: pnpm typecheck and the revenue test suite (the fold-in test is in it), one run,
+#      judged by the runners' exit codes. The verify.sh that runs is the one the current branch had BEFORE the
+#      merge (copied out of git), so a branch cannot pass itself by changing verify.sh; its VERIFY_*_CMD
+#      overrides are cleared, so the real commands run.
 #   4. push (unless --no-push); if the remote branch moved, rebase onto it (--rebase-merges) and retry
 #   5. removes the worktree directory and deletes the branch
 #
@@ -41,9 +44,26 @@ fi
 
 # The render-js merge (tick 16) failed its tests because the branch added playwright-core and nothing installed it.
 echo "== install"; pnpm install -s --frozen-lockfile --prefer-offline
-echo "== typecheck"; pnpm -s typecheck
-echo "== revenue tests"; npx vitest run src/__tests__/revenue 2>&1 | grep -E 'Test Files|Tests |FAIL' || true
-npx vitest run src/__tests__/revenue >/dev/null 2>&1 || { echo "revenue tests failed" >&2; exit 1; }
+echo "== typecheck + revenue tests"
+# The judge is the verify.sh from before the merge: the newest first-parent commit that does not contain the branch
+# (the tip we merged into, also on the re-run after a conflict). Run from the merged tree via VERIFY_ROOT.
+PRE=""
+for c in $(git rev-list --first-parent HEAD); do
+  if ! git merge-base --is-ancestor "$BRANCH" "$c"; then PRE="$c"; break; fi
+done
+[ -n "$PRE" ] || { echo "cannot find $CURRENT's commit from before $BRANCH was merged; not verifying with the branch's own verify.sh" >&2; exit 1; }
+JUDGE="$(mktemp "${TMPDIR:-/tmp}/merge-worktree-verify.XXXXXX")"
+trap 'rm -f "$JUDGE"' EXIT
+if git cat-file -e "$PRE:scripts/verify.sh" 2>/dev/null; then
+  git show "$PRE:scripts/verify.sh" > "$JUDGE"
+  echo "(verify.sh as of ${PRE:0:12}, from before the merge)"
+else
+  # Only the merge that adds verify.sh: there is no earlier judge to take.
+  echo "no scripts/verify.sh before this merge (${PRE:0:12}): the merged copy judges this one merge" >&2
+  cp "$ROOT/scripts/verify.sh" "$JUDGE"
+fi
+env -u VERIFY_TYPECHECK_CMD -u VERIFY_TEST_CMD -u VERIFY_OUT VERIFY_ROOT="$ROOT" bash "$JUDGE" src/__tests__/revenue \
+  || { echo "typecheck or revenue tests failed (verify.sh named which)" >&2; exit 1; }
 
 if [ "$PUSH" = 1 ]; then
   echo "== push"

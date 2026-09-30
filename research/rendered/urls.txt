@@ -232,7 +232,7 @@ https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md	kokoro-82m-model-c
 # ShareAlike; UIS stays FAIL until this page is read. If it says BY-SA, the UIS entry is closed for good.
 https://databrowser.uis.unesco.org/terms-and-conditions	unesco-uis-databrowser-terms
 # LICENCE-IGO-DECISION.md §1: the UIS main-site terms page a search summarised as "Attribution-ShareAlike 3.0 IGO".
-https://uis.unesco.org/en/terms-and-conditions	unesco-uis-terms
+# retired (tick 33: uis.unesco.org answered the runner with an F5 BIG-IP challenge page, scripts/capture-check.mjs bot-challenge; the site's answer (ruling 30.9 16(d) D2(iv)), and TERMS-AUDIT-2026-09-29.md:169 already said to retire it; UNESCO's reuse terms are read from unesco-uis-databrowser-terms) — https://uis.unesco.org/en/terms-and-conditions	unesco-uis-terms
 
 # --------------------------------------------------------------------------------
 # 12. The channel loop's ₪0 tests and the step-2 cost check under the owner's ₪0 rule (27.9.2026).
@@ -366,7 +366,7 @@ https://api.apify.com/v2/store?search=israel&limit=1000&includeUnrunnableActors=
 # ZERO-TESTS.md row 51 — … and the same search as default Store-API search shows it; the difference is the hidden share.
 https://api.apify.com/v2/store?search=israel&limit=1000	apify-store-israel-default
 # ZERO-TESTS.md row 52 — Spreadshirt (17) / any EU marketplace (breadth board Q10): the Digital Services Act, Articles 30-31.
-https://eur-lex.europa.eu/eli/reg/2022/2065/oj	eu-dsa-2022-2065
+# retired (tick 33: eur-lex.europa.eu answered the runner with an AWS WAF challenge, scripts/capture-check.mjs bot-challenge; the site's answer (ruling 30.9 16(d) D2(iv)), and TERMS-AUDIT-2026-09-29.md:111 said solving it in js mode would circumvent a measure aimed at robots; the DSA text comes from a GitHub-hosted copy if a line needs it) — https://eur-lex.europa.eu/eli/reg/2022/2065/oj	eu-dsa-2022-2065
 # ---- Dispatch 2 (Batch B, rows 53-58): switched on 28.9.2026 16:10 UTC (tick 6, started early at the owner's "תמשיך"). ----
 # ZERO-TESTS.md row 53 — Google Play Books (18), Batch B: the payment-country table.
 # paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/books/partner/table/6052428?hl=en	play-books-payment-countries
@@ -438,9 +438,9 @@ https://static.gamedistribution.com/terms/developer.html	gamedistribution-develo
 # research/channel-loop/ZERO-TESTS.md row 85 — GameDistribution (14), replenish pass (28.9.2026).
 https://static.gamedistribution.com/developer/developers-guidelines.html	gamedistribution-guidelines
 # research/channel-loop/ZERO-TESTS.md row 86 — GameDistribution (14), replenish pass (28.9.2026).
-https://gamedistribution.com/developers/faq/getting-started/setting-up-and-receiving-your-payment/	gamedistribution-payment
+# paused (tick 33: a plain fetch gets an empty Next.js shell, 0 characters of text, scripts/capture-check.mjs js-shell; the tick-17 plan to flag it js was never done. Re-queue with js once candidate 14 has a game and the text matters; gamedistribution.com is CONDITIONAL_MET and its developer terms are captured) — https://gamedistribution.com/developers/faq/getting-started/setting-up-and-receiving-your-payment/	gamedistribution-payment
 # research/channel-loop/ZERO-TESTS.md row 87 — GameDistribution (14), replenish pass (28.9.2026).
-https://gamedistribution.com/developers/partnership/	gamedistribution-partnership
+# paused (tick 33: a plain fetch gets an empty Next.js shell, 0 characters of text, scripts/capture-check.mjs js-shell; the tick-17 plan to flag it js was never done. Re-queue with js once candidate 14 has a game and the text matters; gamedistribution.com is CONDITIONAL_MET and its developer terms are captured) — https://gamedistribution.com/developers/partnership/	gamedistribution-partnership
 # research/channel-loop/ZERO-TESTS.md row 88 — Teachers Pay Teachers (kill confirmation), replenish pass (28.9.2026).
 # paused (terms audit, 29.9.2026): teacherspayteachers.com — see TERMS_BARRED in scripts/render-watch.mjs — https://help.teacherspayteachers.com/hc/en-us/articles/360044219891-Seller-Fees-and-Payout-Rates	tpt-seller-fees
 # research/channel-loop/ZERO-TESTS.md row 89 — Wavedash (unsettled), replenish pass (28.9.2026).
