@@ -384,11 +384,19 @@ export interface TargetBasis {
   /** Required for `measured`: where the number can be checked. */
   source?: string;
   /**
-   * How the money reaches us. Cross-checked against `rails.ts` by its own test. A line AdSense pays names AdSense here
-   * and rides payin `adsense` in `LINE_RAILS`, where the portfolio counts that rail once: one AdSense payee account
-   * serves every such line, so one ban takes them together (ruling 30.9.2026 16(c), P-3; `linesMissingAdsenseRail`).
+   * How the money reaches us. Cross-checked against `rails.ts` by its own test. A line AdSense pays rides payin `adsense`
+   * in `LINE_RAILS`, where the portfolio counts that rail once: one AdSense payee account serves every such line, so one
+   * ban takes them together (ruling 30.9.2026 16(c), P-3; `linesMissingAdsenseRail`). Text naming AdSense, YouTube or
+   * YPP here marks the line AdSense-paid: YouTube pays every channel through AdSense for YouTube
+   * (research/rendered/yk2-yt-9914702.txt:67), whatever the line calls its programme.
    */
   rail: string;
+  /**
+   * P-3's structured mark: `"adsense"` when Google pays this line through an AdSense account, whether or not `rail` says
+   * so in words (a games portal's ad share paid into "the developer's own AdSense account",
+   * research/breadth/REPLENISH-2026-09-28.md:196-197, need not name AdSense in its rail text). Omitted otherwise.
+   */
+  paidBy?: "adsense";
   /** MISSION constraint 7: how a stranger finds this line. Never blank. */
   acquisitionChannel: string;
   /**

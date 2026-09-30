@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   ADSENSE_PAYEE_ACCOUNT,
   LINE_RAILS,
+  isAdsensePaid,
   linesMissingAdsenseRail,
   platformConcentration,
   railConcentration,
@@ -63,9 +64,32 @@ describe("P-3: every AdSense-paid line carries the rail", () => {
     expect(linesMissingAdsenseRail(b, r)).toEqual(["yt"]);
   });
 
-  it("names a line on the adsense rail whose basis does not say AdSense pays it", () => {
-    const b = { yt: basis("YouTube Partner Program"), tools: basis("Gumroad") };
+  it("names a line on the adsense rail whose basis says nothing of AdSense paying it", () => {
+    const b = { yt: basis("Y8 ad share, 50%"), tools: basis("Gumroad") };
     expect(linesMissingAdsenseRail(b, { yt: RAILS.yt!, tools: RAILS.tools! } as typeof LINE_RAILS)).toEqual(["yt"]);
+  });
+
+  it("a YouTube Partner Program line is AdSense-paid: YouTube pays through AdSense for YouTube (yk2-yt-9914702.txt:67)", () => {
+    const tools = RAILS.tools!;
+    for (const rail of ["YouTube Partner Program", "YPP ad revenue share", "YouTube channel memberships"]) {
+      // On the adsense rail it agrees...
+      expect(linesMissingAdsenseRail({ yt: basis(rail), tools: basis("Gumroad") }, { yt: RAILS.yt!, tools } as typeof LINE_RAILS), rail).toEqual([]);
+      // ...and on any other payin it is named, so it cannot be counted under its own login.
+      for (const payin of ["affiliate-networks", "gumroad"] as const) {
+        const r = { yt: { ...RAILS.yt!, payin }, tools } as typeof LINE_RAILS;
+        expect(linesMissingAdsenseRail({ yt: basis(rail), tools: basis("Gumroad") }, r), `${rail} on ${payin}`).toEqual(["yt"]);
+      }
+    }
+    expect(isAdsensePaid(basis("Gumroad (merchant of record)"))).toBe(false);
+  });
+
+  it("the structured mark covers a line whose rail text does not name AdSense", () => {
+    const games = { ...basis("Y8 ad share, 50%"), paidBy: "adsense" as const };
+    expect(isAdsensePaid(games)).toBe(true);
+    const onAdsense = { games: { ...RAILS.games! } } as typeof LINE_RAILS;
+    expect(linesMissingAdsenseRail({ games }, onAdsense)).toEqual([]);
+    const elsewhere = { games: { ...RAILS.games!, payin: "affiliate-networks" } } as typeof LINE_RAILS;
+    expect(linesMissingAdsenseRail({ games }, elsewhere)).toEqual(["games"]);
   });
 
   it("accepts lines whose basis and rail agree", () => {

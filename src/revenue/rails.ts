@@ -49,19 +49,30 @@ function banAccount(rail: LineRails): string {
   return rail.payin === "adsense" ? ADSENSE_PAYEE_ACCOUNT : rail.platformAccount;
 }
 
-const NAMES_ADSENSE = /\badsense\b/i;
+/**
+ * Words in a target basis's `rail` that mean Google pays the line through AdSense. Not only "AdSense": "You get paid on
+ * YouTube through the AdSense for YouTube account linked to your channel" (research/rendered/yk2-yt-9914702.txt:67), so a
+ * line whose rail says YouTube, YouTube Partner Program or YPP is AdSense-paid whatever it calls the programme.
+ */
+const PAID_BY_ADSENSE_WORDS = /\b(adsense|youtube|ypp)\b/i;
+
+/** Whether a target basis says AdSense pays the line: the structured mark, or the words in its rail text (P-3). */
+export function isAdsensePaid(b: TargetBasis): boolean {
+  return b.paidBy === "adsense" || PAID_BY_ADSENSE_WORDS.test(b.rail);
+}
 
 /**
- * P-3's "every AdSense-paid line carries the rail": lines whose target basis says AdSense pays them (`rail` names it)
- * but whose rail in LINE_RAILS is not `adsense`, and lines on `adsense` whose basis does not say so. Empty when the two
- * agree. A line missing from either map is not judged here (target-basis.test.ts and rails.test.ts cover coverage).
+ * P-3's "every AdSense-paid line carries the rail": lines whose target basis says AdSense pays them (`isAdsensePaid`)
+ * but whose rail in LINE_RAILS is not `adsense`, and lines on `adsense` whose basis says nothing of the kind. Empty when
+ * the two agree. A line missing from either map is not judged here (target-basis.test.ts and rails.test.ts cover
+ * coverage).
  */
 export function linesMissingAdsenseRail(
   basis: Record<string, TargetBasis> = TARGET_BASIS,
   rails: Record<string, LineRails> = LINE_RAILS,
 ): string[] {
   return Object.keys(basis)
-    .filter((id) => rails[id] !== undefined && NAMES_ADSENSE.test(basis[id]!.rail) !== (rails[id]!.payin === "adsense"))
+    .filter((id) => rails[id] !== undefined && isAdsensePaid(basis[id]!) !== (rails[id]!.payin === "adsense"))
     .sort();
 }
 
