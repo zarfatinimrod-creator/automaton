@@ -19,7 +19,7 @@ The forecast is in `research/channel-loop/FORECAST.md`.
 
 | | |
 |---|---|
-| Last tick | tick 24 (29.9 ~19:11-~19:45 UTC, the 6-hourly heartbeat, maintenance only): PR #26 merged (`cc4fbbb`); the terms gate moved into `queue-zero-test.mjs` (`termsGate` refuses a line whose site's terms were not read and found to allow it; `--apply-verdicts` replaces the hand-run pause script). No render: no queued row can kill or admit. Log: `logs/2026-09-29-channel-loop-tick-24.md` |
+| Last tick | tick 25 (30.9 ~01:12 UTC, the 6-hourly heartbeat, maintenance only): PR #27 merged (`82359ce`); no owner comments; `--apply-verdicts --dry-run` finds 0 lines to pause; two colony ticks on main (30d ₪0.00, 4 blockers); nothing else due before the sitting. Log: `logs/2026-09-30-channel-loop-tick-25.md` |
 | Branch | `claude/new-session-j071dx`; PRs #3-#18 merged into `main` under the standing consent (the loop merges its own green PRs). |
 | Routine | "Channel loop tick", every 6 h (`11 1,7,13,19 * * *` UTC), fires into this session; see §11 |
 | Fable | the 29.9 07:12 sitting ran two agents (rows 14-15), no 429. Next sitting: 30.9 ~07:11, row 16 (video channels and TikTok's terms). |
@@ -324,7 +324,7 @@ Fixed in tick 19 (29.9): `scripts/queue-zero-test.mjs --override N-M` prints the
 
 ## 10. Next tick's first action
 
-**Tick 25 (next, the 30.9 ~07:11 routine tick, the Fable sitting; the 01:11 tick before it is maintenance only):** one-word Fable probe; then two Fable agents (`model: 'fable'`), one per row, each reading `research/channel-loop/SITTING-2026-09-30-BRIEF.md` (row 16: Parts A and C; row 17: Parts B and C) and writing `research/channel-loop/RULING-2026-09-30-video.md` and `RULING-2026-09-30-documents.md`. On a 429, record it in `logs/FABLE_QUEUE.md`'s probe log and run the Opus work instead. Then fold the rulings on Opus (builder, reviewer, fixer for anything in code). The 19:11 and 01:11 ticks before it: owner-free maintenance only (the brief's Part C housekeeping), no new render unless a queued row can kill or admit.
+**Tick 26 (next, the 30.9 ~07:11 routine tick, the Fable sitting):** one-word Fable probe; then two Fable agents (`model: 'fable'`), one per row, each reading `research/channel-loop/SITTING-2026-09-30-BRIEF.md` (row 16: Parts A and C; row 17: Parts B and C) and writing `research/channel-loop/RULING-2026-09-30-video.md` and `RULING-2026-09-30-documents.md`. On a 429, record it in `logs/FABLE_QUEUE.md`'s probe log and run the Opus work instead. Then fold the rulings on Opus (builder, reviewer, fixer for anything in code). The 19:11 and 01:11 ticks before it: owner-free maintenance only (the brief's Part C housekeeping), no new render unless a queued row can kill or admit.
 
 **Was planned for tick 23 (done 29.9, log `logs/2026-09-29-channel-loop-tick-23.md`):** read rows 224-225 (Tipalti's website terms; the Knesset's terms, which would make fs.knesset.gov.il's official gazette PDFs a law source) and set their verdicts. Law texts for the sitting come from the `lawsofisrael` GitHub mirror at github grade while nevo stays paused (`osek-patur-documents.md` "29.9 (tick 22)"). The 30.9 ~07:11 sitting takes rows 16 and 17; row 18 (now with option (i)(b) rendered) goes to 1.10.
 
