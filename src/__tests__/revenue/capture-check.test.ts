@@ -216,6 +216,8 @@ describe("classifyCapture: JavaScript shells", () => {
     ["an app root holding only a style and a comment", page('<div id="app" data-csr="1"><style>.a{}</style><!-- ssr --></div>'), /app root/],
     ["an empty AngularJS view", page('<div ui-view>\n  </div><div id="fonts"><span>TEST</span></div>'), /app root/],
     ["a body of scripts only", page("<script>var a=1</script><script src=/x.js></script>"), /body/],
+    // A noscript that does not ask for JavaScript (a tracking pixel) is still not page text (tick 34's mutation C7).
+    ["a body of scripts and a noscript pixel", page('<script>var a=1</script><noscript><img src="/px.gif" height="1" width="1"></noscript>'), /body/],
     ["a Salesforce loading box", page('<div class="auraMsgBox" id="auraLoadingBox"><span>Loading</span></div>'), /Salesforce/],
   ])("js-shell: %s is a strong sign, at any length under the threshold", (_label, html, evidence) => {
     for (const text of [SHORT, "x".repeat(MIN_TERMS_TEXT - 1)]) {

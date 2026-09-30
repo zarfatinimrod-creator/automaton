@@ -135,6 +135,9 @@ shared WebSearch budget. See `docs/CRITERIA_SWEEP.md`.
   `vitest | grep`. `scripts/merge-worktree.sh` runs the pre-merge copy of it, so a branch cannot pass itself.
 - **Python products: `scripts/pytest-product.sh <product>`** (chart-explainer, parent-guides): keeps one venv per product
   and requirements under `~/.cache/mehudak-pytest/`, and fails on skips where the product's CI does.
+- **Mutation checks: `node scripts/mutate.mjs --plan <plan.json>`** (or `--file --find --replace --test`): applies one exact
+  edit at a time, runs the tests, restores the file byte for byte, and reports killed or survived after a passing
+  baseline. Use it instead of a hand-written harness; `--cmd "scripts/pytest-product.sh <product>"` for Python.
 - **New render captures: `node scripts/capture-check.mjs <slug...>` before reading them** (exit 3 = flagged: `status`,
   `bot-challenge`, `js-shell` or `short`). It only flags; the reader judges.
 - Revenue colony: `src/revenue/`, docs in `docs/CHAIN_OF_COMMAND.md` and `docs/INCOME_PLAN.he.md`, playbooks in `skills/`.
