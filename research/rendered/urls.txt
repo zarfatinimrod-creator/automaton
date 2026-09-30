@@ -40,7 +40,7 @@ https://api.apify.com/v2/store?search=accessibility	apify-store-accessibility
 # exactly two of them with a /pricing path; those two are taken and no other site's
 # pricing path is guessed at.
 # --------------------------------------------------------------------------------
-# paused (terms unread, 29.9.2026): accessalyze.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://accessalyze.com/pricing	accessalyze-pricing
+# retired (tick 36: the fetch never produced a byte (DNS failure, 7.9), TERMS-AUDIT-2026-09-29.md:97) — https://accessalyze.com/pricing	accessalyze-pricing
 # paused (terms unread, 29.9.2026): accessiguard.app is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.accessiguard.app/pricing	accessiguard-pricing
 
 # --------------------------------------------------------------------------------
@@ -226,7 +226,7 @@ https://huggingface.co/hexgrad/Kokoro-82M/blob/main/README.md	kokoro-82m-model-c
 # url: https://population.un.org/wpp/downloads/". The rendered page is the only acceptable G1 snapshot for a UN
 # WPP dataset; the auditor confirms it says CC BY 3.0 IGO and records any added condition. Added 27.9.2026.
 # --------------------------------------------------------------------------------
-# paused (terms unread, 29.9.2026): un.org is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://population.un.org/wpp/downloads/	un-wpp-downloads
+# retired (tick 36: HTTP 404, TERMS-AUDIT-2026-09-29.md:168; a replacement needs a URL already written in a repo file) — https://population.un.org/wpp/downloads/	un-wpp-downloads
 # DATASETS.md B1 quotes `education_sdgs.zip.dvc` l.15-17: "name: CC BY 3.0 IGO / url:
 # https://databrowser.uis.unesco.org/terms-and-conditions". LICENCE-IGO-DECISION.md §3: four records say UIS is
 # ShareAlike; UIS stays FAIL until this page is read. If it says BY-SA, the UIS entry is closed for good.
@@ -302,11 +302,11 @@ https://www.btl.gov.il/Insurance/National%20Insurance/Pages/%D7%9E%D7%99%20%D7%A
 # research/channel-loop/ZERO-TESTS.md rows 29-32 — Superteam Earn's four ₪0 tests (RULING-2026-09-28-bounty-rail.md §6.3, 28.9.2026).
 # Rows 29 (T1, a weekly CI count with the brand agent's key) and 31 (T3, a code read via add_repo) are not page renders and are not listed here.
 # ZERO-TESTS.md row 30 — Superteam Earn (15), T2: the agent page.
-https://superteam.fun/earn/agents/	superteam-earn-agents
+# retired (tick 36: Superteam Earn (candidate 15) was killed 28.9 in tick 5, logs/CHANNEL_LOOP.md §7; RULING-2026-09-28-bounty-rail.md:376-381) — https://superteam.fun/earn/agents/	superteam-earn-agents
 # ZERO-TESTS.md row 30 — Superteam Earn (15), T2: the Superteam Earn FAQ.
-https://docs.superteam.fun/the-superteam-handbook/community/faqs/superteam-earn-faq	superteam-earn-faq
+# retired (tick 36: Superteam Earn (candidate 15) was killed 28.9 in tick 5, logs/CHANNEL_LOOP.md §7; RULING-2026-09-28-bounty-rail.md:376-381) — https://docs.superteam.fun/the-superteam-handbook/community/faqs/superteam-earn-faq	superteam-earn-faq
 # ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Bits of Gold, for its onboarding requirements (REJECTED.md:615).
-# paused (terms unread, 29.9.2026): bitsofgold.co.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://www.bitsofgold.co.il/en	bitsofgold-home
+# retired (ruling 30.9 16(d) D2(iv), tick 36: bitsofgold.co.il refused the runner (403 on its terms page); until a GitHub-hosted copy of its terms is read) — https://www.bitsofgold.co.il/en	bitsofgold-home
 # ZERO-TESTS.md row 32 — Superteam Earn (15), T4: Bit2C, for its onboarding requirements.
 # paused (terms audit, 29.9.2026): bit2c.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://bit2c.co.il/	bit2c-home
 
@@ -324,7 +324,7 @@ https://docs.superteam.fun/the-superteam-handbook/community/faqs/superteam-earn-
 #   Batch C is not listed yet (later ticks, in the plan's §6.5 order).
 # --------------------------------------------------------------------------------
 # ZERO-TESTS.md row 30 — Superteam Earn (15), T2: the terms of use (breadth board Q1 rank 2).
-https://superteam.fun/earn/terms-of-use.pdf	superteam-earn-terms-pdf
+# retired (tick 36: Superteam Earn (candidate 15) was killed 28.9 in tick 5, logs/CHANNEL_LOOP.md §7; RULING-2026-09-28-bounty-rail.md:376-381) — https://superteam.fun/earn/terms-of-use.pdf	superteam-earn-terms-pdf
 # ZERO-TESTS.md row 33 — CrazyGames (6) and Wix App Market (11): Tipalti's payees FAQ; gates step 10.
 # paused (terms unread, 29.9.2026): tipalti.com is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs	tipalti-payees-faq
 # ZERO-TESTS.md row 34 — Firefox Add-ons (16): the add-on policies.
@@ -386,7 +386,7 @@ https://api.apify.com/v2/store?search=israel&limit=1000	apify-store-israel-defau
 # research/channel-loop/ZERO-TESTS.md row 59 — PayPal Israel (21): the help index, to find the verification article (tick 5, 28.9.2026).
 # paused (terms audit, 29.9.2026): paypal.com — see TERMS_BARRED in scripts/render-watch.mjs — https://www.paypal.com/il/cshelp/personal	paypal-il-help-index
 # research/channel-loop/ZERO-TESTS.md row 60 — n8n paid templates (20): linked from a tick-5 capture (28.9.2026).
-# paused (terms audit, 29.9.2026): notion.site — see TERMS_BARRED in scripts/render-watch.mjs — https://n8n.notion.site/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f	n8n-creator-hub-notion
+# retired (tick 36: a Notion JavaScript shell that yields no text to a plain fetch, and notion.site is in TERMS_BARRED, TERMS-AUDIT-2026-09-29.md:142) — https://n8n.notion.site/n8n-Creator-hub-7bd2cbe0fce0449198ecb23ff4a2f76f	n8n-creator-hub-notion
 # research/channel-loop/ZERO-TESTS.md row 61 — Superteam T4 / Israeli off-ramp: linked from a tick-5 capture (28.9.2026).
 # paused (terms audit, 29.9.2026): bit2c.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://bit2c.co.il/home/faq	bit2c-faq
 # research/channel-loop/ZERO-TESTS.md row 62 — Firefox Add-ons (16): the reopen check on G4, same endpoint as rows 35-36 (tick 5, 28.9.2026).
@@ -500,13 +500,13 @@ https://github.com/GameDistribution/GD-HTML5/wiki/F.A.Q.	gamedistribution-wiki-f
 # research/channel-loop/ZERO-TESTS.md row 116 — StreetLib (new row 24), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
 # paused (terms unread, 29.9.2026): streetlib.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.streetlib.com/distribution-partners	streetlib-com-distribution-partners
 # research/channel-loop/ZERO-TESTS.md row 117 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-# paused (terms unread, 29.9.2026): zazzle.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.zazzle.com/terms/user_agreement	zazzle-com-terms-user-agreement
+# retired (ruling 30.9 16(d) D2(iv), tick 36: zazzle.com refused the runner (403 on its terms page); until a GitHub-hosted copy of its terms is read) — https://www.zazzle.com/terms/user_agreement	zazzle-com-terms-user-agreement
 # research/channel-loop/ZERO-TESTS.md row 118 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-# paused (terms unread, 29.9.2026): zazzle.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.zazzle.com/terms/updated_creator_license_agreement	zazzle-com-terms-updated-creator-license-agreement
+# retired (ruling 30.9 16(d) D2(iv), tick 36: zazzle.com refused the runner (403 on its terms page); until a GitHub-hosted copy of its terms is read) — https://www.zazzle.com/terms/updated_creator_license_agreement	zazzle-com-terms-updated-creator-license-agreement
 # research/channel-loop/ZERO-TESTS.md row 119 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-# paused (terms unread, 29.9.2026): zazzle.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.zazzle.com/assets/graphics/z5/zmisc/ambassador_program/Zazzle_Creator_FAQs.pdf	zazzle-com-assets-graphics-z5-zmisc-ambassador-program-zazzl
+# retired (ruling 30.9 16(d) D2(iv), tick 36: zazzle.com refused the runner (403 on its terms page); until a GitHub-hosted copy of its terms is read) — https://www.zazzle.com/assets/graphics/z5/zmisc/ambassador_program/Zazzle_Creator_FAQs.pdf	zazzle-com-assets-graphics-z5-zmisc-ambassador-program-zazzl
 # research/channel-loop/ZERO-TESTS.md row 120 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-# paused (terms unread, 29.9.2026): zazzle.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.zazzle.com/sell/developers	zazzle-com-sell-developers
+# retired (ruling 30.9 16(d) D2(iv), tick 36: zazzle.com refused the runner (403 on its terms page); until a GitHub-hosted copy of its terms is read) — https://www.zazzle.com/sell/developers	zazzle-com-sell-developers
 # research/channel-loop/ZERO-TESTS.md row 121 — Zazzle (new row 25), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
 # paused (terms unread, 29.9.2026): zazzle.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.zazzle.com/hc/en-us/sections/360005063194-Create-A-Product-API	help-zazzle-com-hc-en-us-sections-360005063194-create-a-prod
 # research/channel-loop/ZERO-TESTS.md row 122 — Displate (new row 26), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
@@ -514,9 +514,9 @@ https://displate.com/about-faq	displate-com-about-faq
 # research/channel-loop/ZERO-TESTS.md row 123 — Displate (new row 26), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
 https://displate.com/about-copyright	displate-com-about-copyright
 # research/channel-loop/ZERO-TESTS.md row 124 — Society6 (new row 27), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-# paused (terms unread, 29.9.2026): society6.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.society6.com/en-US/updates-to-society6-artists-account-effective-march-18-2025-1261598	help-society6-com-en-us-updates-to-society6-artists-account
+# retired (tick 36: HTTP 404, TERMS-AUDIT-2026-09-29.md:153) — https://help.society6.com/en-US/updates-to-society6-artists-account-effective-march-18-2025-1261598	help-society6-com-en-us-updates-to-society6-artists-account
 # research/channel-loop/ZERO-TESTS.md row 125 — Society6 (new row 27), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
-# paused (terms unread, 29.9.2026): society6.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://help.society6.com/en-US/updates-to-pricing-and-artist-earnings-effective-march-18-2025-1261599	help-society6-com-en-us-updates-to-pricing-and-artist-earnin
+# retired (tick 36: HTTP 404, TERMS-AUDIT-2026-09-29.md:153) — https://help.society6.com/en-US/updates-to-pricing-and-artist-earnings-effective-march-18-2025-1261599	help-society6-com-en-us-updates-to-pricing-and-artist-earnin
 # research/channel-loop/ZERO-TESTS.md row 126 — Teach Simple (unsettled), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
 # paused (terms audit, 29.9.2026): teachsimple.com — see TERMS_BARRED in scripts/render-watch.mjs — https://teachsimple.com/contributor-terms-of-service	teachsimple-com-contributor-terms-of-service
 # research/channel-loop/ZERO-TESTS.md row 127 — Teach Simple (unsettled), second refill (REPLENISH-2026-09-28-2.md §6) (28.9.2026).
@@ -578,7 +578,7 @@ https://assets-static-prod.displate.com/next-assets/_next/static/chunks/pages/ab
 # research/channel-loop/ZERO-TESTS.md row 155 — lines ruling 29.9 (h): Gumroad help index, to find the refund-policy article's URL (29.9.2026).
 # retired (ruling 30.9 16(d) D2(ii): Gumroad's terms bar any fetch; refresh from antiwork/gumroad on GitHub) — https://gumroad.com/help	gumroad-help-center-index
 # research/channel-loop/ZERO-TESTS.md row 156 — lines ruling 29.9 (a): Green Invoice pricing, logo on a receipt in a free tier (29.9.2026).
-# paused (terms unread, 29.9.2026): greeninvoice.co.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://www.greeninvoice.co.il/pricing/	greeninvoice-pricing
+# retired (ruling 30.9 16(d) D2(iv), tick 36: greeninvoice.co.il refused the runner (403 on its terms page); until a GitHub-hosted copy of its terms is read) — https://www.greeninvoice.co.il/pricing/	greeninvoice-pricing
 # research/channel-loop/ZERO-TESTS.md row 157 — lines ruling 29.9 (a): iCount plans, logo on a receipt in a free tier (29.9.2026).
 # paused (terms audit, 29.9.2026): icount.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://www.icount.co.il/plans/	icount-plans
 # research/channel-loop/ZERO-TESTS.md row 158 — lines ruling 29.9 (a): YPAY FAQ (URL unverified), logo on a free receipt (29.9.2026).
@@ -598,9 +598,9 @@ https://www.invoice4u.co.il/pricelist-invoice/	invoice4u-pricelist
 # research/channel-loop/ZERO-TESTS.md row 165 — loop ruling 29.9 (e)3: חוק חתימה אלקטרונית (29.9.2026).
 # paused (NO_TERMS, exhaustive-negative; waits on robots.txt support, ruling 30.9 16(d) D2(v)): nevo.co.il in research/channel-loop/terms-verdicts.json — https://www.nevo.co.il/law_html/law01/159m1_001.htm	nevo-electronic-signature-law
 # research/channel-loop/ZERO-TESTS.md row 166 — Topcoder (12): Trolley's terms, URL snippet grade (research/measurements/topcoder.md, 29.9 tick 17) (29.9.2026).
-https://trolley.com/terms-of-service/	trolley-terms-of-service
+# retired (tick 36: Topcoder (candidate 12), the only candidate these served, was killed 29.9 in tick 18, logs/CHANNEL_LOOP.md §7) — https://trolley.com/terms-of-service/	trolley-terms-of-service
 # research/channel-loop/ZERO-TESTS.md row 167 — Topcoder (12): Trolley's IDV blog post, plain (29.9.2026).
-https://trolley.com/blog/trolley-trust-idv-tool/	trolley-trust-idv-tool
+# retired (tick 36: Topcoder (candidate 12), the only candidate these served, was killed 29.9 in tick 18, logs/CHANNEL_LOOP.md §7) — https://trolley.com/blog/trolley-trust-idv-tool/	trolley-trust-idv-tool
 # research/channel-loop/ZERO-TESTS.md row 168 — lines ruling 29.9 (a): YPAY shop (israeli-invoicing-free-tiers.md) (29.9.2026).
 # paused (terms unread, 29.9.2026): ypay.co.il is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://ypay.co.il/front/shop/index	ypay-shop
 # research/channel-loop/ZERO-TESTS.md row 169 — lines ruling 29.9 (a): YPAY knowledge centre (29.9.2026).
@@ -698,9 +698,9 @@ https://docs.github.com/en/billing/how-tos/set-up-budgets	gh-docs-set-up-budgets
 # research/channel-loop/ZERO-TESTS.md row 215 — Mozilla (8): GitHub's budgets-and-alerts docs (tick 20) (29.9.2026).
 https://docs.github.com/en/billing/concepts/budgets-and-alerts	gh-docs-budgets-and-alerts
 # research/channel-loop/ZERO-TESTS.md row 216 — terms audit (tick 21): bitsofgold's terms page, URL from theWallProject/mono links.json:41 (github); fetched once so its terms can be read (29.9.2026).
-# paused (terms unread, 29.9.2026): bitsofgold.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.bitsofgold.co.il/terms	terms-bitsofgold
+# retired (ruling 30.9 16(d) D2(iv), tick 36: bitsofgold.co.il refused the runner (403 on its terms page); until a GitHub-hosted copy of its terms is read) — https://www.bitsofgold.co.il/terms	terms-bitsofgold
 # research/channel-loop/ZERO-TESTS.md row 217 — terms audit (tick 21): greeninvoice's terms page, URL from theWallProject/mono ai_prompt.txt:35 (github); fetched once so its terms can be read (29.9.2026).
-# paused (terms unread, 29.9.2026): greeninvoice.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.greeninvoice.co.il/terms/	terms-greeninvoice
+# retired (ruling 30.9 16(d) D2(iv), tick 36: greeninvoice.co.il refused the runner (403 on its terms page); until a GitHub-hosted copy of its terms is read) — https://www.greeninvoice.co.il/terms/	terms-greeninvoice
 # research/channel-loop/ZERO-TESTS.md row 218 — terms audit (tick 21): mr.gov.il's terms page, URL from OpenBudget/budgetkey-data-pipelines fixture publication_595431:831 (github); fetched once so its terms can be read (29.9.2026).
 # paused (terms unread, 29.9.2026): mr.gov.il is NO_TERMS in research/channel-loop/terms-verdicts.json — http://www.mr.gov.il/Pages/Terms-of-Use.aspx	terms-mr-gov-il
 # research/channel-loop/ZERO-TESTS.md row 219 — terms audit (tick 21): tipalti's terms page, URL from theWallProject/mono links.json:48 (github); fetched once so its terms can be read (29.9.2026).
@@ -726,10 +726,12 @@ https://ypay.co.il/front/terms	terms-ypay
 # research/channel-loop/ZERO-TESTS.md row 229 — terms audit (tick 27): terms-wikimedia-user-agent-policy (30.9.2026).
 # retired (ruling 30.9 16(d) D2(iv): the page is a moved-notice stub; its new home is row 232) — https://meta.wikimedia.org/wiki/User-Agent_policy	terms-wikimedia-user-agent-policy
 # research/channel-loop/ZERO-TESTS.md row 230 — terms audit (tick 27): terms-wikimedia-robot-policy (30.9.2026).
-https://wikitech.wikimedia.org/wiki/Robot_policy	terms-wikimedia-robot-policy
+# retired (tick 36: once-fetch done 30.9 and read (ZERO-TESTS rows 230, 232), ruling 30.9 16(d) D2(iii); the conditions they set are carried by wikisource.org's verdict) — https://wikitech.wikimedia.org/wiki/Robot_policy	terms-wikimedia-robot-policy
 # research/channel-loop/ZERO-TESTS.md row 231 — terms audit (tick 27): robots-nevo (30.9.2026).
 https://www.nevo.co.il/robots.txt	robots-nevo
 # research/channel-loop/ZERO-TESTS.md row 232 — terms audit (tick 27): wikimedia user-agent policy (moved) (30.9.2026).
-https://foundation.wikimedia.org/wiki/Policy:User-Agent_policy	terms-wikimedia-user-agent-policy-foundation
+# retired (tick 36: once-fetch done 30.9 and read (ZERO-TESTS rows 230, 232), ruling 30.9 16(d) D2(iii); the conditions they set are carried by wikisource.org's verdict) — https://foundation.wikimedia.org/wiki/Policy:User-Agent_policy	terms-wikimedia-user-agent-policy-foundation
 # research/channel-loop/ZERO-TESTS.md row 233 — terms audit (tick 31): israel post (30.9.2026).
-# retired (ruling 30.9 16(d) D2(iv): a JavaScript shell behind reCAPTCHA; the runner cannot read it) — https://doar.israelpost.co.il/content/term-of-use/	terms-israel-post
+# retired (tick 31; reason corrected tick 36: a React shell carrying an invisible reCAPTCHA v3 script and a Radware sensor, not a challenge page; its terms stay unread, so no fetch (ruling 30.9 16(d) D2(iv)); a js render of it is FABLE_QUEUE row 21 (c)) — https://doar.israelpost.co.il/content/term-of-use/	terms-israel-post
+# research/channel-loop/ZERO-TESTS.md row 234 — Displate (row 26), terms audit follow-up (tick 36) (30.9.2026).
+https://cms-static-pages-assets.displate.com/DISPLATE_TERMS_OF_USE_US_26_06clean_9524ecc20f.pdf	terms-displate-us

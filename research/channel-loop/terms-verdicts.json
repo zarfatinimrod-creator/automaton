@@ -38,7 +38,7 @@
    "verdict": "NO_TERMS",
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-3)",
    "checked": "2026-09-29",
-   "note": "the terms page returned 403 (round 3)"
+   "note": "refusal-type since 30.9 (tick 36): the terms page returned 403 (round 3, 29.9); its lines are retired until a GitHub-hosted copy of its terms is read (ruling 30.9 16(d) D2(iv))"
   },
   "blog.youtube": {
    "verdict": "BARRED",
@@ -114,7 +114,8 @@
   "github.com": {
    "verdict": "CONDITIONAL_MET",
    "source": "GitHub Acceptable Use: research use of public, non-personal information, publications open access (round 1)",
-   "checked": "2026-09-29"
+   "checked": "2026-09-29",
+   "note": "the condition holds only while this research is published open access, i.e. while the repo is public (TERMS-AUDIT-2026-09-29.md:25); a private repo makes github.com CONDITIONAL_UNMET and closes the GitHub-hosted fallback every barred or refusal-type site depends on (ruling 30.9 video, What stays open 5). The repo-visibility decision is the owner's (CHANNEL_LOOP.md §6)"
   },
   "google.com": {
    "verdict": "BARRED",
@@ -137,7 +138,7 @@
    "verdict": "NO_TERMS",
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-3)",
    "checked": "2026-09-29",
-   "note": "the terms page returned 403 (round 3)"
+   "note": "refusal-type since 30.9 (tick 36): the terms page returned 403 (round 3, 29.9); its lines are retired until a GitHub-hosted copy of its terms is read (ruling 30.9 16(d) D2(iv))"
   },
   "gumroad.com": {
    "verdict": "BARRED",
@@ -409,8 +410,9 @@
   },
   "unesco.org": {
    "verdict": "NOT_BARRED",
-   "source": "research/rendered/unesco-uis-terms.txt (round 1)",
-   "checked": "2026-09-29"
+   "source": "research/rendered/unesco-uis-databrowser-terms.txt:11, :13 (round 1; corrected 30.9, tick 36: the earlier source, unesco-uis-terms.txt, is an F5 bot page)",
+   "checked": "2026-09-29",
+   "note": "NOT_BARRED covers databrowser.uis.unesco.org only, whose own terms were read; uis.unesco.org answered the runner with an F5 bot challenge (refusal-type, ruling 30.9 16(d) D2(iv)) and its line is retired; queue no other unesco.org host (TERMS-AUDIT-2026-09-29.md:169). termsGate cannot enforce the host split (siteOf maps both to unesco.org), so this note is the guard"
   },
   "upload-post.com": {
    "verdict": "BARRED",
@@ -470,7 +472,7 @@
    "verdict": "NO_TERMS",
    "source": "no terms text in the repo or in a GitHub-hosted copy (terms audit rounds 1-2)",
    "checked": "2026-09-29",
-   "note": "the user agreement returns 403 to the runner"
+   "note": "refusal-type since 30.9 (tick 36): the user agreement returned 403 to the runner (28.9); its lines are retired until a GitHub-hosted copy of its terms is read (ruling 30.9 16(d) D2(iv))"
   }
  }
 }
