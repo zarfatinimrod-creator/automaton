@@ -1,6 +1,6 @@
 # Revenue colony — board report
 
-Generated 2026-10-03T17:15:14.426Z
+Generated 2026-10-03T19:51:38.546Z
 
 ## Where we are
 
@@ -45,12 +45,13 @@ Labelled measurements — each is printed with its label wherever it is printed:
 
 ## This tick
 
-Ran: revenue_ledger_sync
-Skipped as not yet due: revenue_supervisor_review, revenue_board_review, revenue_audit
+Ran: revenue_ledger_sync, revenue_supervisor_review
+Skipped as not yet due: revenue_board_review, revenue_audit
 
 - Ledger sync: 0 new entries, 0 already known, sources [none configured]
 - Gumroad Pro refund rate: not configured — GUMROAD_ACCESS_TOKEN is not set
-- Prize-event intake (instrument only; files nothing): 29 open of 397 listed on the mlcontests list, read 2026-09-30 13:02 UTC (3.2 days ago) — 2 with registration already closed, 0 not yet launched, 23 with a stated USD prize ($2,564,825 stated in total, all places combined, not an expected payout), 1 listed with a deadline that does not parse (neither open nor closed). AI or automated solutions allowed: not counted — none of the list's fields states it. Rules pages (research/measurements/ai-allowed-events.md, graded by a reading session, never by the job): 2026-Q3 (current): 39 events, 0 graded, qualifying not counted (no row graded), 39 awaiting a reading; 2026-Q4 (next): 27 events, 0 graded, qualifying not counted (no row graded), 27 awaiting a reading. 101 URLs await a render (research/measurements/ai-allowed-events.urls.txt, for render-watch's urls input). Kill (two consecutive closed, fully graded quarters under 3 qualifying): not computable yet.
+- Supervisors reviewed 4 line(s), escalating 4
+- Prize-event intake (instrument only; files nothing): 29 open of 397 listed on the mlcontests list, read 2026-09-30 13:02 UTC (3.3 days ago) — 2 with registration already closed, 0 not yet launched, 23 with a stated USD prize ($2,564,825 stated in total, all places combined, not an expected payout), 1 listed with a deadline that does not parse (neither open nor closed). AI or automated solutions allowed: not counted — none of the list's fields states it. Rules pages (research/measurements/ai-allowed-events.md, graded by a reading session, never by the job): 2026-Q3 (current): 39 events, 0 graded, qualifying not counted (no row graded), 39 awaiting a reading; 2026-Q4 (next): 27 events, 0 graded, qualifying not counted (no row graded), 27 awaiting a reading. 101 URLs await a render (research/measurements/ai-allowed-events.urls.txt, for render-watch's urls input). Kill (two consecutive closed, fully graded quarters under 3 qualifying): not computable yet.
 - Page views: not configured — POSTHOG_READ_KEY is not set; no project id (POSTHOG_PROJECT_ID, or posthog.projectId in site.json) — nothing is read
 - Page views `il-biz-tools`: no_clock — no D0 recorded: nothing is read and no gate runs
 - Page views `pcn874`: no_clock — no D0 recorded: nothing is read and no gate runs
