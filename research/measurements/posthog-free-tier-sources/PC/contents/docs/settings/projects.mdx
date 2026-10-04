@@ -1,0 +1,94 @@
+---
+title: Projects
+sidebar: Docs
+showTitle: true
+availability:
+    free: partial
+    selfServe: partial
+    enterprise: full
+---
+
+A project is a silo of data within PostHog. All data belongs to a single project and all queries are project-specific.
+
+Every project has its own distinct write-only token, which you can use to initialize your [integration of choice](/docs/integrate), as well as to connect to our [API](/docs/api). You can always regenerate this token, but keep in mind that the old one will be immediately revoked.
+
+Every new organization (including the one created for you on account creation) comes with a fresh project named "Default Project". You can rename or delete it as you see fit.
+
+To switch between projects, navigate to project settings, or create new projects, use the project switcher in the middle of the top bar. You can also quickly go to the current project's settings from the sidebar.
+
+## How to organize projects
+
+For most companies, we recommend creating **three projects**:
+1. Local Development - when you're running the app on your own device
+2. Staging - when you're running your app on a staging server
+3. Production - for all your production data (e.g. your live website/app)
+
+This way you can test out analytics in development and staging environments, while keeping that test data separate from production.
+
+We also **strongly recommend** keeping your apps and marketing website on the same production project. This way you can track the user journey holistically (e.g. how many blog readers convert to paid product users) and see all the relevant events for a person in one place.
+
+You can still query data for your app or marketing website separately if needed. A way to do this is [filtering](/docs/product-analytics/trends/filters) by the `host` property, for example setting `host` to `posthog.com`. Alternatively, you could set [super properties](/docs/libraries/js/usage#super-properties) and then filter by them.
+
+### Project settings inheritance
+
+New projects automatically inherit certain settings from their organization, including:
+
+- **IP data capture settings**: New projects inherit the organization's default IP data capture policy, ensuring consistent privacy controls across all environments
+- **Access control defaults**: Project access levels are set according to organization defaults
+
+This inheritance helps maintain consistent configuration across all projects without requiring manual setup for each new environment.
+
+#### IP data capture configuration
+
+IP data capture can be configured at both the organization and project levels:
+
+- **Organization level**: Set a default policy in **Settings** > **Organization** > **General** under **IP data capture default**. This applies to all new projects automatically. EU organizations default to IP capture disabled for GDPR compliance.
+- **Project level**: Override the organization default in **Settings** > **Project** > **General** under **IP data capture configuration**. This allows you to customize IP capture for specific projects or environments.
+
+Individual projects can override organization defaults to meet specific privacy requirements.
+
+It's best to use separate projects for:
+- Apps that are entirely separate products with unlinked authentication systems
+- Admin apps that aren't customer-facing products
+- Internal websites and services
+- [Embedded analytics](/docs/data/embedded-analytics-projects) products that need to isolate each customer's data
+
+## Moving projects between organizations
+
+You can move a project from one organization to another through [project settings](https://app.posthog.com/settings/project#project-move). The process differs depending on whether you're staying within the same region or moving between regions.
+
+### Requirements
+
+Before moving a project, keep these requirements in mind:
+
+- You need to be an owner or admin of both the originating organization and the target organization to transfer a project
+- The originating organization must have at least two projects before you can move one
+- Since free organizations are limited to one project, you may need to temporarily upgrade your plan and add billing details to create a second project
+- After the move is complete, you can downgrade the original organization back to the free plan if desired
+
+> Moving a project will mean all original organization members will lose access (including via things like API keys) unless they also are part of the target organization.
+
+### Same region (self-serve)
+
+If both organizations are in the **same region** (e.g., both on US Cloud or both on EU Cloud), you can move projects yourself through the UI:
+
+1. Go to your project settings
+2. Navigate to the "Move project" section
+3. Select the destination organization
+4. Confirm the move
+
+This option is **free and available to all customers** regardless of plan level. Since both organizations are in the same data center, the move simply transfers project ownership without needing to physically relocate any data.
+
+### Cross-region (requires Scale or Enterprise)
+
+If you need to move a project **between regions** (e.g., from US Cloud to EU Cloud), this requires a different process:
+
+> **Important:** Cross-region migration is only available to customers on the **Scale** or **Enterprise** plan as it requires significant engineering time. A PostHog engineer must run this migration for you.
+
+To request a cross-region migration:
+
+1. Contact us via in-app support
+2. Provide details about your source and destination projects
+3. Our engineering team will coordinate the migration with you
+
+Cross-region moves require physically transferring all your event data between data centers, which is why engineering support is needed.

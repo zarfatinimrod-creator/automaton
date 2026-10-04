@@ -1,0 +1,329 @@
+---
+title: Controlling data collection
+sidebarTitle: Data collection
+sidebar: Docs
+showTitle: true
+---
+
+PostHog offers a range of controls to help you manage data collection. This guide covers data collection controls available to you **before** data reaches PostHog servers.
+
+You should consider the following tools to help you manage data collection:
+
+| Feature | Description |
+|---------|-------------|
+| [Asking for opt out](#asking-for-opt-out) | A top-level opt out of all data collection |
+| [Using a consent management platform](#using-posthog-with-a-consent-management-platform-cmp) | Integrate PostHog with a CMP like OneTrust or Cookiebot |
+| [IP data capture](#ip-data-capture) | Control whether client IP addresses are captured or discarded |
+| [Autocapture behavior](#autocapture) | Configure what elements and interactions are automatically captured |
+| [Masking sensitive information](#masking-sensitive-information) | Prevent specific sensitive data from being collected |
+| [Overriding captured events](#overriding-captured-events) | Modify or filter event data before it's sent to PostHog |
+| [Cookieless tracking](#cookieless-tracking) | Track users without using browser cookies |
+| [Identifying users](#identifying-users) | Set up user identification and manage user properties |
+
+If you require that certain data never reaches PostHog servers, you can use one of the tools below to prevent data from being captured.
+
+## Asking for opt out
+
+Before capturing data, you may need to ask your users for consent. PostHog provides a top level switch to control data collection. 
+
+Opting out on a PostHog client will prevent **all data** from being captured and sent to PostHog. This includes any autocaptures, manual captures, and session replays.
+
+### Opting in and out
+You can opt out the current device by calling `posthog.opt_out_capturing()`.
+
+import OptOutPerPerson from '../product-analytics/_snippets/multilanguage/opt-out-per-person.mdx'
+
+<OptOutPerPerson />
+
+Similarly, you can opt users in:
+
+import OptIn from '../product-analytics/_snippets/multilanguage/opt-in.mdx'
+
+<OptIn />
+
+### Checking if a user is opted out
+
+You can check if a user is opted out by calling `posthog.has_opted_out_capturing()`.
+
+import CheckOptOut from '../product-analytics/_snippets/multilanguage/check-opt-out.mdx'
+
+<CheckOptOut />
+
+### Opt out preference persistence
+
+Opting out status is persisted automatically using:
+- **local storage** or **cookies** for browsers
+- **shared preferences** for Android 
+- **`posthog.optOut`** file in your app's support directory for iOS
+- **`.posthog-rn.json`** for React Native
+
+Set `opt_out_capturing_persistence_type` to `localStorage` or `cookie` to choose where the browser stores the opt out state.
+
+```js-web
+posthog.init("<ph_project_token>", {
+    opt_out_capturing_persistence_type: "localStorage",
+});
+```
+
+To persist opt out across sessions and devices, you can save your user's opt out preferences in your app logic. On launch, you can check if the user has opted out and set the opt out state accordingly.
+
+### Share consent across subdomains
+
+By default, the JavaScript SDK stores consent in `localStorage`, which belongs to one origin. A choice made on `www.example.com` is not automatically shared with `app.example.com`, even when their analytics identity cookie is shared.
+
+If one consent decision should cover both subdomains, add cookie-based consent storage to your existing initialization on each subdomain. Keep your existing capture and consent-gating settings:
+
+```js-web
+posthog.init("<ph_project_token>", {
+    api_host: "<ph_client_api_host>",
+    defaults: "<ph_posthog_js_defaults>",
+    opt_out_capturing_persistence_type: "cookie",
+})
+```
+
+For subdomains of your own parent domain, [`cross_subdomain_cookie`](/docs/libraries/js/config) is enabled by default. Keep it enabled on both subdomains so the first-party consent cookie can be shared. This does not share consent across unrelated domains.
+
+Use the same project token and consent storage settings on both. If you set `consent_persistence_name`, use the same name on both subdomains too.
+
+Call `posthog.opt_in_capturing()` or `posthog.opt_out_capturing()` when the visitor makes a choice. That choice is then available to the SDK on both subdomains.
+
+For a banner that uses SDK consent status, show it only when `posthog.get_explicit_consent_status()` is `"pending"`. This setting does not share a [consent management platform's](#using-posthog-with-a-consent-management-platform-cmp) separate consent state.
+
+Keep the default `localStorage` consent storage if the subdomains need separate consent decisions. Consent storage is separate from your capture policy. Use [consent gating](#using-posthog-with-a-consent-management-platform-cmp) or [cookieless tracking](#cookieless-tracking) to control when PostHog captures events.
+
+### Opting out by default
+
+To opt users out by default, set `opt_out_capturing_by_default` to `true` in the `init` call.  
+
+import OptOutDefault from '../product-analytics/_snippets/multilanguage/opt-out-default.mdx'
+
+<OptOutDefault />
+
+### Using PostHog with a consent management platform (CMP)
+
+If you use a consent management platform (such as OneTrust, Cookiebot, Osano, Usercentrics, or a home-grown banner), integrate it with PostHog's opt in and out controls rather than the loader snippet.
+
+<CalloutBox type="warning" title="Don't gate the snippet behind consent">
+
+A common mistake is wrapping the PostHog snippet (or `<script>` tag) so that it only runs after consent is given. Many CMPs make this easy by letting you tag scripts as a specific cookie category and blocking them until the user accepts.
+
+The problem: if the SDK never loads, it can't count the visitors who ignore or dismiss the banner, and it can't respect a consent choice made later in the session. This is a frequent cause of sudden, large drops in event volume.
+
+**Always load posthog-js.** Control whether it captures data using the opt in and out APIs below.
+
+</CalloutBox>
+
+The recommended pattern is to load PostHog opted out by default, then opt the user in once they consent:
+
+1. Initialize PostHog with `opt_out_capturing_by_default: true` (see [opting out by default](#opting-out-by-default)) so nothing is captured until the user consents.
+2. When the user grants consent, call `posthog.opt_in_capturing()`.
+3. When the user withdraws or denies consent, call `posthog.opt_out_capturing()`.
+
+```js-web
+posthog.init('<ph_project_token>', {
+    api_host: '<ph_client_api_host>',
+    defaults: '<ph_posthog_js_defaults>',
+    opt_out_capturing_by_default: true,
+})
+
+// Wire these into your CMP's consent-change callback
+function onConsentChange(hasConsented) {
+    if (hasConsented) {
+        posthog.opt_in_capturing()
+    } else {
+        posthog.opt_out_capturing()
+    }
+}
+```
+
+Every CMP (OneTrust, Cookiebot, and others) exposes some kind of callback or event that fires when consent changes. Call `opt_in_capturing()` and `opt_out_capturing()` from that callback, using whatever consent-change hook your CMP provides.
+
+Alternatively, use [cookieless tracking](#cookieless-tracking) with `cookieless_mode: "on_reject"`. PostHog still loads and counts users with a privacy-preserving hash, and only starts storing cookies once the user opts in – without you needing to wire up the opt in and out calls yourself.
+
+## IP data capture
+
+You can control whether client IP addresses are captured or discarded at both the organization and project levels. This helps ensure consistent privacy controls across all environments.
+
+### Organization-level configuration
+
+Organizations can set a default IP data capture policy that automatically applies to all new projects created within the organization. This eliminates the need to manually configure IP data capture settings for each new environment.
+
+To configure the organization default:
+
+1. Go to **Settings** > **Organization** > **General**
+2. Find the **IP data capture default** setting
+3. Choose whether new projects should capture or discard client IP data by default
+
+**EU organizations**: Automatically default to IP data capture disabled for GDPR compliance. This ensures that all new projects created in EU organizations are configured with appropriate privacy settings from the start.
+
+### Project-level configuration
+
+Individual projects can configure their own IP data capture setting, which overrides the organization default if needed. This is useful when you have specific privacy requirements for a particular project or environment.
+
+To configure at the project level:
+
+1. Go to **Settings** > **Project** > **General**
+2. Find the **IP data capture configuration** setting
+3. Choose whether this project should capture or discard client IP data
+
+### How it works
+
+- **New projects**: Automatically inherit the organization's IP data capture default setting
+- **Existing projects**: Are not affected by organization-level changes - they retain their current configuration
+- **Project-level override**: Individual projects can override the organization default if needed
+- **Privacy compliance**: Disabling IP capture helps with GDPR and other privacy regulations by preventing collection of identifiable network information
+
+## Autocapture
+
+PostHog has powerful autocapture features that capture data automatically on the client side. Autocapture is available for Web, iOS, and React Native, and is used by **product analytics**, **web vitals**, and **heatmaps**.
+
+### Project level autocapture controls
+
+You can control autocapture behavior at the project level in **Settings** > **Project** > [**Autocapture & heatmaps**](https://us.posthog.com/settings/project-autocapture). 
+
+import Tab from "components/Tab"
+import AutocaptureWeb from './_snippets/autocapture-web.mdx'
+import AutocaptureIOS from './_snippets/autocapture-ios.mdx'
+import AutocaptureReactNative from './_snippets/autocapture-react-native.mdx'
+
+### Session level autocapture controls
+
+You can also control autocapture behavior programmatically on the client side.
+
+<Tab.Group tabs={['Web', 'iOS', 'React Native']}>
+    <Tab.List>
+        <Tab>Web</Tab>
+        <Tab>iOS</Tab>
+        <Tab>React Native</Tab>
+    </Tab.List>
+    <Tab.Panels>
+        <Tab.Panel>
+            <AutocaptureWeb />
+        </Tab.Panel>
+        <Tab.Panel>
+            <AutocaptureIOS />
+        </Tab.Panel>
+        <Tab.Panel>
+            <AutocaptureReactNative />
+        </Tab.Panel>
+    </Tab.Panels>
+</Tab.Group>
+
+### Hide sensitive information with autocapture
+
+You can also mask individual elements of the view hierarchy from being captured.
+
+import MaskingProductAnalytics from './_snippets/masking-product-analytics.mdx'
+
+<MaskingProductAnalytics />
+
+## Masking sensitive information
+
+You can safely capture [session replays](/docs/session-replay) events without compromising your users' privacy. PostHog offers a range of masking techniques that let you mask over sensitive information.
+
+The following masking techniques are available:
+
+- [Masking inputs](/docs/session-replay/privacy#input-elements): Mask out sensitive inputs from being captured. Individual inputs can be unmasked.
+- [Masking text elements](/docs/session-replay/privacy#text-elements): Mask out sensitive text from being captured. Individual text elements can be unmasked.
+- [Masking other elements](/docs/session-replay/privacy#other-elements): Mask out any individual element from being captured.
+- [Redacting information on network captures](/docs/session-replay/network-recording#sensitive-information): Redact sensitive information from network captures.
+
+### Private by default 
+
+If you have data that should never be captured, a safe way to start with PostHog is to mask all inputs and text, only selectively unmasking elements that you need to capture.
+
+You can set specific [data attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/How_to/Use_data_attributes) on elements to control whether they are captured or not:
+
+```js-web
+{
+    // mask all inputs by default
+    maskAllInputs: true,
+    maskTextSelector: "*",
+    maskTextFn: (text, element) => {
+        // only elements with `data-capture="true"` will be captured
+        if (element?.dataset['capture'] === 'true') {
+            return text
+        }
+        return '*'.repeat(text.trim().length)
+    },
+}
+```
+
+import { CalloutBox } from 'components/Docs/CalloutBox'
+
+<CalloutBox type="info" title="Mobile session replay masking">
+
+Selectively unmasking elements is not currently available for mobile session replay. You should be more selective about which screens you capture, and take care to mask out sensitive information.
+
+</CalloutBox>
+
+Masking all inputs and text by default in session replay ensures that data is only captured when explicitly unmasked, putting you in control of what's captured.
+
+## Overriding captured events
+
+Before an event is sent to PostHog, you have a final chance to modify it to remove sensitive information. You can do this by using the `before_send` hook. This hook is **only available for the JavaScript Web SDK**.
+
+```js-web
+posthog.init('<ph_project_token>', {
+  api_host: '<ph_client_api_host>',  
+  defaults: '<ph_posthog_js_defaults>', 
+  before_send: function(event) {
+        if (event.properties['$current_url']) {
+            event.properties['$current_url'] = null;
+        }
+
+        return event;
+    },
+})
+``` 
+
+## Cookieless tracking
+
+PostHog can be configured to do cookieless tracking by setting `cookieless_mode` to `always` or `on_reject`.
+
+<CalloutBox type="info" title="Cookieless server hash mode">
+
+Before configuring cookieless tracking, you need to enable "Cookieless server hash mode" in your PostHog project settings under **Project Settings** > **Web analytics**.
+
+</CalloutBox>
+
+First is `cookieless_mode: "always"`:
+- Doesn't require a cookie banner (unless something else on your website uses cookies)
+- Never stores PostHog data in cookies or local/session storage
+- Doesn't block `identify()`, but you should avoid identifying users in this mode: a persistent distinct ID is considered Personal Data under GDPR and other similar privacy regulations, which undoes the privacy benefit of cookieless tracking. Set [`person_profiles: 'never'`](/docs/data/anonymous-vs-identified-events) to turn `identify()` calls into no-ops
+- Doesn't support `alias()`: alias events are dropped during ingestion
+- Counts the number of users on your site using a privacy-preserving hash, calculated on PostHog's servers
+
+Second is `cookieless_mode: "on_reject"`:
+- Is useful if you do want to show a cookie banner and only enable cookies when the user consents with `posthog.opt_in_capturing()` or similar method
+- Never stores PostHog data in cookies or local/session storage until the user opts in
+- **No events are captured** until after consent is either given or denied
+- If consent is denied, still counts those users, using a privacy-preserving hash calculated on PostHog's servers
+
+<CalloutBox type="info" title="More to do">
+
+Using `cookieless_mode` helps comply with cookie and consent requirements. You still need to configure data collection and [storage](/docs/privacy/data-storage) separately to comply with relevant regulations.
+
+Do not send data that could be used to identify users (e.g. setting an email address as a [person property](/docs/product-analytics/person-properties) if they have not given consent.
+
+</CalloutBox>
+
+For more information on how to set up cookieless audience measurement, you can follow our detailed tutorial on [cookieless tracking](/docs/tutorials/cookieless-tracking).
+
+## Identifying users
+
+To track users across sessions and devices, PostHog needs to identify them. This is done by calling `posthog.identify()`.
+
+Some features depend on [cohorts](/docs/data/cohorts) to work well. Some information beyond a basic `distinct_id` is required to use these features:
+
+- [Feature flags](/docs/feature-flags) - target specific user segments in experiments
+- [Surveys](/docs/surveys) - Enable for specific cohorts of users
+- [Insights](/docs/product-analytics/insights) - filter and breakdown by user characteristics
+
+import IdentifyFrontendCode from "../_snippets/identify-frontend-code.mdx"
+
+<IdentifyFrontendCode />
+
+Information you pass to `posthog.identify()` will be sent to PostHog servers. Depending on your compliance requirements, you may not be able to store some of this information.
+
+If you plan to use these features, consider how you can identify these groups of users without breaking compliance requirements.
