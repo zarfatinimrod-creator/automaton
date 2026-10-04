@@ -21,13 +21,14 @@ import {
   repoint,
   resolveCommit,
   sourceVersion,
+  writtenIn,
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/freeze-capture.mjs";
 
 /**
  * scripts/freeze-capture.mjs (tick 38, 30.9.2026): a dated copy of a render-watch capture that the weekly render never
- * rewrites, in the shape of the three copies frozen by hand (nevo-vat-law-2026-09-29, kokoro-82m-model-card-2026-09-29,
- * hexgrad-kokoro-voices-js-dfb907a), and --cited, which freezes what the decision-bearing files cite and repoints them.
+ * rewrites, in the shape of the two copies frozen by hand (nevo-vat-law-2026-09-29, kokoro-82m-model-card-2026-09-29),
+ * and --cited, which freezes what the decision-bearing files cite and repoints them.
  */
 
 const scratch = mkdtempSync(join(tmpdir(), "freeze-capture-test-"));
@@ -422,6 +423,32 @@ describe("--cited: each range is judged by the commit that wrote it, and nothing
     expect(code).toBe(1);
     expect(out).toMatch(/UNKNOWN research\/measurements\/note\.md:1 page\.txt:3 \[:3\]: .*has uncommitted changes.*; not repointed/);
     expect(noteOf(r)).toBe("Line three is `page.txt:3`.\nMore.\n");
+  });
+
+  it("exits 1 for a citation without a line it could not judge, though nothing by line is left", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page");
+    r.note("Read `research/rendered/page.txt` in full.\n");
+    r.commit("v1");
+    r.note("Read `research/rendered/page.txt` in full.\nMore.\n");
+    const { code, out } = run(r, { unlined: true });
+    expect(out).toMatch(/UNKNOWN research\/measurements\/note\.md:1 research\/rendered\/page\.txt: .*not repointed/);
+    expect(out).toMatch(/0 citation\(s\) by line of an active capture left/);
+    expect(code).toBe(1);
+  });
+
+  it("takes a range's commit from the newest unbroken run of the line's versions that hold it", () => {
+    // Newest first: c3 holds the reference again after c2 dropped it, so c3 wrote this occurrence, not c1.
+    const versions = [
+      { commit: "c3", text: "Line three is `page.txt:3`." },
+      { commit: "c2", text: "Line three is gone." },
+      { commit: "c1", text: "Line three is `page.txt:3`." },
+    ];
+    expect(writtenIn(versions, "page.txt:3")).toBe("c3");
+    expect(writtenIn(versions.slice(1), "page.txt:3")).toBe(null);
+    // A bare :3 is not held by :30.
+    expect(writtenIn([{ commit: "c4", text: "see `:30`" }], ":3")).toBe(null);
   });
 
   it("never repoints in a shallow clone whose history stops before the citation was written", () => {

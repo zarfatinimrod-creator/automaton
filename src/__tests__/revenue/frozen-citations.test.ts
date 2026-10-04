@@ -364,6 +364,22 @@ describe("scanCitations reads every citation form the notes use", () => {
     expect(of("live-page-2026-09-28").map(show)).toEqual(["27 live-page-2026-09-28.txt:3 [[3,3]]"]);
   });
 
+  it("gives a line reference that starts a line to the section's capture, even one named without a line", () => {
+    // teacher-and-ebook-stores.md names draft2digital-com-terms-of-service once, without an extension, and its D2D
+    // section then cites the terms by bare lines that start list items, paragraphs after the name.
+    const note = [
+      "## D2D",
+      "Capture: `live-page` (200, 768 lines).",
+      "",
+      "- `:490-491` the account is free; `:33` too.",
+      "## Next",
+      "- `:12` belongs to no capture.",
+    ].join("\n");
+    const scan = scanCitations(note, known);
+    expect(scan.citations.map((c: Citation) => `${c.fileLine} ${c.slug} ${JSON.stringify(c.lines)}`)).toEqual(["2 live-page [[490,491],[33,33]]"]);
+    expect(scan.unattributed.map((u: { text: string }) => u.text)).toEqual([":12"]);
+  });
+
   it("takes urls.txt for the list it is, not a capture", () => {
     const scan = scanCitations("Queued at research/rendered/urls.txt:111 and research/rendered/live-page.txt:5.", known);
     expect(scan.citations.map((c: Citation) => `${c.slug} ${JSON.stringify(c.lines)}`)).toEqual(["live-page [[5,5]]"]);
