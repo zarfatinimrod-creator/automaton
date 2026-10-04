@@ -54,18 +54,18 @@ flight 0/1 (`:109`). Nothing in this file is revenue, and nothing in it opens an
    minutes can never bill) and only inside the free private-repo allowance" (`RULING-2026-09-29-loop.md:116-118`, repo). The
    phrase is carried in row 8 (`CHANNEL_LOOP.md:150`), the tick-17 plan (`:381`) and `:420`.
 2. "Spending limit" is the old name; its pages redirect to budgets (SB:10, github, note `:49`). A personal account can hold
-   budgets (`gh-docs-set-up-budgets.txt:215-217`, rendered), but the REST budgets API has five operations, all under
-   `/organizations/{org}/settings/billing/budgets` (`gh-docs-rest-billing-budgets.txt:152-160`, rendered). No endpoint reads a
+   budgets (`gh-docs-set-up-budgets-2026-09-29.txt:215-217`, rendered), but the REST budgets API has five operations, all under
+   `/organizations/{org}/settings/billing/budgets` (`gh-docs-rest-billing-budgets-2026-09-29.txt:152-160`, rendered). No endpoint reads a
    personal account's budget or any payment method: "payment" has 0 matches on both REST pages (note `:308`, `:353`, rendered
    basis).
 3. The four user usage endpoints take GitHub App user access tokens or fine-grained PATs with "Plan" user permissions (read)
-   and list no installation token (`gh-docs-rest-billing-usage.txt:1163-1168`, rendered). Plan is an account permission,
+   and list no installation token (`gh-docs-rest-billing-usage-2026-09-29.txt:1163-1168`, rendered). Plan is an account permission,
    usable "only ... when the current user is the resource owner" (PAT:173, :191, github), so only the owner's own token
    could read the owner's usage. They return "total usage" (`:1158`, rendered), never a limit, and the page limits them to
    Copilot (`:491-493`, rendered). `GITHUB_TOKEN` is a repository-scoped installation token with no `plan` or
    `administration` key (GT:17, GTP:4-21, github).
 4. "If your account does not have a valid payment method on file, usage is blocked once you use up your quota."
-   (`gh-docs-actions-billing.txt:384`, `:500`, rendered); "cannot bill" is the note's inference (`:421`). With one on file,
+   (`gh-docs-actions-billing-2026-09-29.txt:384`, `:500`, rendered); "cannot bill" is the note's inference (`:421`). With one on file,
    "spending may be limited by one or more budgets" (`:502`, rendered). Which state the owner's account is in is held in no
    file (Part C row 18 item 1, none).
 5. A runner can read only its own repository's jobs (`actions: read`, GTP:5, github): the harness's minutes, never the
@@ -99,7 +99,7 @@ and does not extend it" (`RULING-2026-09-29-loop.md:119`).
   the free batch (`CHANNEL_LOOP.md:216-218`, repo).
 - Its (a) answer, no payment method on file, is a state that lapses when any payment method is added for any product (note
   `:192`; HBW:50, :54, github): a fence the colony could not see fall. Its (b) answer rests on by-sight items the pages do
-  not settle: the personal section never names Actions (its example is Codespaces, `gh-docs-set-up-budgets.txt:227`,
+  not settle: the personal section never names Actions (its example is Codespaces, `gh-docs-set-up-budgets-2026-09-29.txt:227`,
   rendered); the checkbox is "if available" (`:237`) and its only availability rules sit in the organisation section
   (`:335`, `:265`); "$0" has 0 matches in both captures (`grep -c -F '$0'`, re-run at `f2fca6d`: 0 and 0); neither page
   names GitHub Free, and the feature flag's comment names Enterprise and Team only (EBP:1, github; note `:538-542`).
@@ -108,7 +108,7 @@ and does not extend it" (`RULING-2026-09-29-loop.md:119`).
 
 **(iii) A zero-minute, session-only run: REJECTED as the dry run.**
 - A private repository with no workflow files runs no jobs, provided Copilot code review is off: it consumes private-repo
-  minutes and runs on Ubuntu runners by default (`gh-docs-actions-billing.txt:222-228`, `:380`, rendered). The minutes
+  minutes and runs on Ubuntu runners by default (`gh-docs-actions-billing-2026-09-29.txt:222-228`, `:380`, rendered). The minutes
   question disappears. But the dry run counts "reproducible, minimised, non-duplicate findings that meet the bounty bar"
   (`BOARD-LOOP.md:139`, repo), and reproduction needs Mozilla's ASan/fuzzing builds, which the design fetches "on a runner"
   (`:139`).
@@ -134,9 +134,9 @@ and does not extend it" (`RULING-2026-09-29-loop.md:119`).
 **(ii) with (iv): ADOPTED together. Row 8 parks on step 7; step 7's sitting gains the organisation's ₪0 fence and its read;
 Mozilla itself asks for nothing.**
 - After step 7 the private repository belongs to the organisation `mehudak` (`CHANNEL_LOOP.md:216-218`; `BOARD-LOOP.md:139`),
-  whose Free plan has the same 2,000 minutes, 500 MB and 10 GB (`gh-docs-actions-billing.txt:348-352`, rendered). An
+  whose Free plan has the same 2,000 minutes, 500 MB and 10 GB (`gh-docs-actions-billing-2026-09-29.txt:348-352`, rendered). An
   organisation's budgets are readable: "The authenticated user must be an organization admin or billing manager"
-  (`gh-docs-rest-billing-budgets.txt:504`, rendered) with "Administration" organization permissions (read) (`:514`), by GitHub
+  (`gh-docs-rest-billing-budgets-2026-09-29.txt:504`, rendered) with "Administration" organization permissions (read) (`:514`), by GitHub
   App user tokens, installation tokens or fine-grained PATs (`:509-511`). Write needs Administration (write) and can delete
   the budget (`:1029`) or switch Stop usage off (the update example, `:990`): never granted (note `:380-383`).
 - **The budget is not a Mozilla step.** The §6 open decision reads "make it private (Actions minutes become metered,
@@ -144,8 +144,8 @@ Mozilla itself asks for nothing.**
   (`cron: "17 * * * *"`, `.github/workflows/colony.yml:23`, repo), about 720-744 runs a month, each job rounded up to a whole
   minute (RP:14, github), across 27 `runs-on: ubuntu-latest` lines (grep, repo). [inference] If the owner ever chooses
   "private", the organisation meters those minutes whether or not Mozilla exists. A $0 Actions product-level budget scoped
-  to the whole organisation with "Stop usage when budget limit is reached" (`gh-docs-set-up-budgets.txt:259-267`, `:295`,
-  `:335`, rendered; stopping is for metered products "such as GitHub Actions", `gh-docs-budgets-and-alerts.txt:215`) turns
+  to the whole organisation with "Stop usage when budget limit is reached" (`gh-docs-set-up-budgets-2026-09-29.txt:259-267`, `:295`,
+  `:335`, rendered; stopping is for metered products "such as GitHub Actions", `gh-docs-budgets-and-alerts-2026-09-29.txt:215`) turns
   "possibly a cost" into "jobs stop", at ₪0, in the sitting where the owner is already in the organisation's settings. It
   is the ₪0 rule (`MISSION.md:352-354`) made enforceable by GitHub for the organisation's account; Mozilla inherits it.
   `BOARD.md:185` is kept in letter and purpose: no owner attention goes to Mozilla before a finding.
@@ -156,7 +156,7 @@ Mozilla itself asks for nothing.**
   `:605`, `:883`), `budget_scope` `organization`, `budget_amount` 0 and `prevent_further_usage` true; a 403, a 404 ("Feature
   not enabled or organization not found", `:755`), an empty list, SkuPricing-only budgets (`:724`) or any other product value
   fails (note `:434-437`, rendered basis). It never uses the organisation usage report, which needs an administrator
-  (`gh-docs-rest-billing-usage.txt:726`, rendered).
+  (`gh-docs-rest-billing-usage-2026-09-29.txt:726`, rendered).
 - **Who holds the read-only token** is settled in the step-7 sitting, in this order, both at ₪0. **Shape A:** the machine
   account, already a member of the organisation for the repository (it is "add[ed] to the organisation",
   `src/revenue/portfolio.ts:324`, repo; billing managers cannot "Create or access repositories", BM:31, github), is also made
@@ -173,12 +173,12 @@ Mozilla itself asks for nothing.**
 - **The owner's by-sight list for the organisation budget, reconciled into one** (the note's two lists differ in item 4,
   `:579-582` against `:621-625`; Part C row 18 item 12): (1) "Budgets and alerts" offers an Actions product-level budget on
   the organisation; (2) scope is the whole organisation, not a repository, since scope "cannot [be] change[d] ... after
-  creating it" (`gh-docs-set-up-budgets.txt:361`, rendered); (3) $0 is accepted; (4) "Stop usage when budget limit is
+  creating it" (`gh-docs-set-up-budgets-2026-09-29.txt:361`, rendered); (3) $0 is accepted; (4) "Stop usage when budget limit is
   reached" is offered and ticked (`:335`; without it "usage will not be stopped", `:241`); (5) it is created before the
   first private repository exists in the organisation, because a budget "applies only to metered usage from the date of
-  its creation onwards" (`gh-docs-budgets-and-alerts.txt:277`, rendered) and only paid use counts (`:219`). Optional, same
-  screen: the included-usage alerts at 90% and 100% (`gh-docs-set-up-budgets.txt:257`), which fire "regardless of whether
-  you have set a budget" (`gh-docs-budgets-and-alerts.txt:273`, rendered). If (1), (3) or (4) fails by sight, the owner
+  its creation onwards" (`gh-docs-budgets-and-alerts-2026-09-29.txt:277`, rendered) and only paid use counts (`:219`). Optional, same
+  screen: the included-usage alerts at 90% and 100% (`gh-docs-set-up-budgets-2026-09-29.txt:257`), which fire "regardless of whether
+  you have set a budget" (`gh-docs-budgets-and-alerts-2026-09-29.txt:273`, rendered). If (1), (3) or (4) fails by sight, the owner
   records what the page showed; no private repository is then created in the organisation, Mozilla stays parked, and the
   §6 decision's "possibly a cost" stands as written.
 - **The fence on any Actions route** stays as the note sets it (`:211-219`, inference on rendered and github basis):
@@ -230,7 +230,7 @@ Mozilla itself asks for nothing.**
   render dispatch for AMO" (`:52`). Its REOPEN needs renders of AMO's `q=invoice` search pages 2-6 or the cohort's daily
   users (`:57-63`; `docs/REJECTED.md:1296-1311`), on `addons.mozilla.org`, which stays in `TERMS_BARRED`
   (`scripts/render-watch.mjs:433`), never the policy page. The policy capture has done its work: it is cited by line as
-  rendered evidence in the kill ("paid features allowed with disclosure", `amo-add-on-policies.txt:2051`; "machine-generated
+  rendered evidence in the kill ("paid features allowed with disclosure", `amo-add-on-policies-2026-09-28.txt:2051`; "machine-generated
   code allowed with source", `:2069`; `RULING-2026-09-29-loop.md:46-47`) and in the terms audit (`.html:3251`, `:2177`,
   `:3252`; `TERMS-AUDIT-2026-09-29.md:43`). Tick 36 retired the lines of the other killed candidates (Superteam Earn's
   three, Trolley's two; `CHANNEL_LOOP.md:334`). The page's source is on GitHub under a Creative Commons licence
@@ -313,8 +313,8 @@ Mozilla itself asks for nothing.**
 > **Amended 4.10.2026 (`RULING-2026-10-04-mozilla-precondition.md`, FABLE_QUEUE row 18).** The "Tick 18+" item's
 > precondition, "only after a runner has read the account's Actions spending limit as $0", cannot be met by a runner on a
 > personal account: no REST endpoint reads a personal account's budget or payment method
-> (`gh-docs-rest-billing-budgets.txt:152-160`, rendered); the user usage endpoints read usage, with a Plan: read token of
-> the account's own owner (`gh-docs-rest-billing-usage.txt:1158-1168`, rendered; PAT:173, github); `GITHUB_TOKEN` is an
+> (`gh-docs-rest-billing-budgets-2026-09-29.txt:152-160`, rendered); the user usage endpoints read usage, with a Plan: read token of
+> the account's own owner (`gh-docs-rest-billing-usage-2026-09-29.txt:1158-1168`, rendered; PAT:173, github); `GITHUB_TOKEN` is an
 > installation token with no plan permission (GT:17, github). It now reads: *Mozilla's dry-run harness runs only in a
 > private repository owned by the organisation `mehudak` (after step 7); only after a runner has read the organisation's
 > budgets through `GET /organizations/mehudak/settings/billing/budgets?scope=organization&per_page=100` and found one
@@ -347,8 +347,8 @@ the real `urls.txt`; a grep of every edited owner-facing file for the owner's id
    ticked, created before any private repository exists in the organisation; opt in to the included-usage alerts; and a
    read-only token: make `mehudak-ci` a billing manager and create its fine-grained PAT with the organisation as resource
    owner and Administration: read only — if GitHub refuses, a PAT of the owner's own account with that one permission.
-   Never Administration: write." — rendered (`gh-docs-set-up-budgets.txt:259-267`, `:335`, `:361`;
-   `gh-docs-budgets-and-alerts.txt:277`; `gh-docs-rest-billing-budgets.txt:504-514`), github (BM:31, BR:19, PAT:118, :139).
+   Never Administration: write." — rendered (`gh-docs-set-up-budgets-2026-09-29.txt:259-267`, `:335`, `:361`;
+   `gh-docs-budgets-and-alerts-2026-09-29.txt:277`; `gh-docs-rest-billing-budgets-2026-09-29.txt:504-514`), github (BM:31, BR:19, PAT:118, :139).
 4. `logs/CHANNEL_LOOP.md` §6 decision line (`:236-238`) — the one sentence of §4 rule 2 — repo, inference marked.
 5. `logs/CHANNEL_LOOP.md` §9 — tick-36 item 4 (`:340`) marked done by this ruling; §5 (`:185`) gains "row 8 kill check:
    step 7 + 90 days (date set when step 7 is done)" — repo.
@@ -385,8 +385,8 @@ the real `urls.txt`; a grep of every edited owner-facing file for the owner's id
 4. Whether the organisation's "Budgets and alerts" offers an Actions product-level budget, accepts $0 and shows the
    checkbox on GitHub Free (EBP:1 names Enterprise and Team only, github; "$0" is unrendered). Check: the five by-sight
    items in the step-7 sitting; a fail is recorded, never worked around.
-5. Whether a $0 budget leaves the free minutes usable (inference from `gh-docs-budgets-and-alerts.txt:219` and
-   `gh-docs-set-up-budgets.txt:209`, rendered basis). Check: the first dry-run job; it fails closed.
+5. Whether a $0 budget leaves the free minutes usable (inference from `gh-docs-budgets-and-alerts-2026-09-29.txt:219` and
+   `gh-docs-set-up-budgets-2026-09-29.txt:209`, rendered basis). Check: the first dry-run job; it fails closed.
 6. How fast a block takes effect ("delay", "real time", "immediately": 0 matches, note `:567`; none). Check: none
    available; the ceiling keeps usage under the quota, so the question stays moot.
 7. Which host serves mozilla-central's builds and what its terms say (none; `*.mozilla.com` has no verdict). Check: when
