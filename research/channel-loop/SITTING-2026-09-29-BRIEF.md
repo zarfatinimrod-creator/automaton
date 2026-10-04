@@ -168,9 +168,9 @@ human step" under `BOARD-LOOP.md:183`? The four networks are CrazyGames, GameMon
 every upload is an owner click". `CHANNEL_LOOP.md:75`: no per-item owner action.
 
 **Evidence (rendered).** **GameDistribution.** The activation ad is a demo: "A demo VAST tag for calling a fake
-advertisement is already enabled" (`gamedistribution-sdk-implementation-2026-09-29.txt:275`). Watching it "completely" approves the
+advertisement is already enabled" (`gamedistribution-sdk-implementation-2026-09-28-12e095c.txt:275`). Watching it "completely" approves the
 SDK (`:281`); this is the 2021 page. The 2018 FAQ says the watch is "only possible from the page within your
-Gamedistribution.com control panel" (`gamedistribution-wiki-faq-2026-09-29.txt:180`). Publishing is gated on the SDK
+Gamedistribution.com control panel" (`gamedistribution-wiki-faq-2026-09-28-12e095c.txt:180`). Publishing is gated on the SDK
 (`gamedistribution-developer-terms-2026-09-28.txt:141-142`), and there is no upload API (`html5-syndication.md:226`). A "no
 monitoring" clause bars our watchers from polling a live game (`CHANNEL_LOOP.md:138`). **Y8.** "creating a studio and a
 game, … uploading builds, and submitting for review" all happen in the portal (`y8-docs-overview.txt:77-80`). Bots and

@@ -1,0 +1,296 @@
+F.A.Q. · GameDistribution/GD-HTML5 Wiki · GitHub
+
+Skip to content
+
+Navigation Menu
+
+Sign in Appearance settings
+
+Platform AI CODE CREATION GitHub Copilot Write better code with AI
+GitHub Copilot app Direct agents from issue to merge
+MCP Registry Integrate external tools
+
+DEVELOPER WORKFLOWS Actions Automate any workflow
+Codespaces Instant dev environments
+Issues Plan and track work
+Code Review Manage code changes
+Code Quality Enforce quality at merge
+
+APPLICATION SECURITY GitHub Advanced Security Find and fix vulnerabilities
+Code security Secure your code as you build
+Secret protection Stop leaks before they start
+
+EXPLORE Why GitHub
+Documentation
+Blog
+Changelog
+Marketplace
+
+View all features
+
+Solutions BY COMPANY SIZE Enterprises
+Small and medium teams
+Startups
+Nonprofits
+
+BY USE CASE App Modernization
+DevSecOps
+DevOps
+CI/CD
+View all use cases
+
+BY INDUSTRY Healthcare
+Financial services
+Manufacturing
+Government
+View all industries
+
+View all solutions
+
+Resources EXPLORE BY TOPIC AI
+Software Development
+DevOps
+Security
+View all topics
+
+EXPLORE BY TYPE Customer stories
+Events & webinars
+Ebooks & reports
+Business insights
+GitHub Skills
+
+SUPPORT & SERVICES Documentation
+Customer support
+Community forum
+Trust center
+Partners
+
+View all resources
+
+Open Source COMMUNITY GitHub Sponsors Fund open source developers
+
+PROGRAMS Security Lab
+Maintainer Community
+GitHub Stars
+Archive Program
+
+REPOSITORIES Topics
+Trending
+Collections
+
+Enterprise ENTERPRISE SOLUTIONS Enterprise platform AI-powered developer platform
+
+AVAILABLE ADD-ONS GitHub Advanced Security Enterprise-grade security features
+Copilot for Business Enterprise-grade AI features
+Premium Support Enterprise-grade 24/7 support
+
+Pricing
+
+Search /
+
+Sign in
+Sign up Appearance settings
+
+You signed in with another tab or window. Reload to refresh your session.
+You signed out in another tab or window. Reload to refresh your session.
+You switched accounts on another tab or window. Reload to refresh your session.
+
+Dismiss alert
+
+GameDistribution
+
+/
+
+GD-HTML5
+
+Public
+
+Notifications
+You must be signed in to change notification settings
+
+Fork
+18
+
+Star
+34
+
+Code
+
+Issues
+7
+
+Pull requests
+0
+
+Actions
+
+Wiki
+
+Security and quality
+0
+
+Insights
+
+Additional navigation options
+
+Code
+
+Issues
+
+Pull requests
+
+Actions
+
+Wiki
+
+Security and quality
+
+Insights
+
+F.A.Q.
+
+Jump to bottom
+
+Arthur Hulsman edited this page Apr 16, 2018
+&middot;
+12 revisions
+
+SDK integration
+
+I don't see any ads!
+
+This can happen, sometimes the provider does something wrong, but most of the time - and when you are testing locally - your ads get blocked from showing. That's right, ads don't show when testing locally.
+
+It is possible to enable a fake ad for proper testing. Simply open your game with SDK integration within a browser and open the developer tools. Now within the console type the following and hit enter. This will give you some testing capabilities. Make sure to select the correct frame to call this from if you're testing your game from an iframe.
+
+gdsdk.openConsole();
+
+This will also work for the Unity and Construct SDK's.
+
+If you find this a bit hard, then simply set the debug property within your SDK settings to true . However don't forget to set it back to false before you upload your game. It is better to use the gdsdk.openConsole() method as it allows you to also test your game when its already on a production environment.
+
+In order to disable debugging; clear your localStorage.
+
+Another way to see ads is by testing your game on a server (online). However, ads are region specific, so its possible that you might not even get ads based on your current location.
+
+Another work around would be to adjust your /etc/hosts .
+
+Why isn't my game active? It works and I uploaded it successfully. Why is my SDK flag not marked as active?
+
+This can happen when the SDK is not flagged as implemented within your game. In order for us to verify a correct SDK implementation it is mandatory to completely watch a video advertisement within your uploaded game. This is only possible from the page within your Gamedistribution.com control panel where you've uploaded your game. A flag will be set for your games once an advertisement is watched or skipped.
+
+Now you can request your game to be published by clicking the designated button within your control panel. It can take up to 2 days for a game to be reviewed.
+
+When do I get paid?
+
+After the minimum of 50 euro share is met, payment is sent once data is collected at the end of each month.
+Payments have a maximum payment term of 8 weeks.
+
+Why do I see cross-promotion for other games?
+
+In order to maximise traffic for other developers we sometimes enable cross-promotion from your game to someone else's. Your game can be promoted as well. This is decided by our content team; based on engagement, session duration, organic game plays and more.
+
+Known Issues
+
+I signed up as a publisher but am marked as a developer. Why does this happen?
+
+We are currently investigating an issue with user roles.
+Users who sign up as publishers do have the correct role.
+These users are just shown with the incorrect label on the website.
+We are working on resolving this.
+
+Gamedistribution.com offers a free service for developers and publishers. We help game developers monetize and distribute their games. We offer publishers a wide range of high quality cross platform games.
+
+Wiki pages
+
+Pages 6
+
+Loading
+
+Home
+
+Uh oh!
+
+There was an error while loading. Please reload this page .
+
+Loading
+
+Display Ads
+
+Uh oh!
+
+There was an error while loading. Please reload this page .
+
+Loading
+
+F.A.Q.
+
+SDK integration
+
+I don't see any ads!
+
+Why isn't my game active? It works and I uploaded it successfully. Why is my SDK flag not marked as active?
+
+When do I get paid?
+
+Why do I see cross-promotion for other games?
+
+Known Issues
+
+I signed up as a publisher but am marked as a developer. Why does this happen?
+
+Loading
+
+Rewarded Ads
+
+Uh oh!
+
+There was an error while loading. Please reload this page .
+
+Loading
+
+SDK Implementation
+
+Uh oh!
+
+There was an error while loading. Please reload this page .
+
+Loading
+
+Store API Integration
+
+Uh oh!
+
+There was an error while loading. Please reload this page .
+
+DEVELOPERS
+
+Use The Source
+
+Clone this wiki locally
+
+Footer
+
+&copy; 2026 GitHub, Inc.
+
+Footer navigation
+
+Terms
+
+Privacy
+
+Security
+
+Status
+
+Community
+
+Docs
+
+Contact
+
+Manage cookies
+
+Do not share my personal information
+
+You can’t perform that action at this time.

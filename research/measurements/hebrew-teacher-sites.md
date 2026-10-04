@@ -39,7 +39,7 @@ shop, חנות, premium).
 
 ## 2. worksheets4kids.co.il: (b) a free materials site, one publisher [RENDERED]
 
-- "מאגר פדגוגי מקצועי בחינם" (`worksheets4kids-home-2026-09-29.txt:181`); "והכל להדפסה בחינם!" (`:238`).
+- "מאגר פדגוגי מקצועי בחינם" (`worksheets4kids-home-2026-09-28.txt:181`); "והכל להדפסה בחינם!" (`:238`).
 - The creators are in-house: "מי שיוצר את הדפים שלנו הם אנשי חינוך" (`:238`). "כל התכנים באתר הנם מקוריים ולשימוש
   אישי בלבד" (`:326`). There is no upload or seller path among its links.
 - Its only commerce hint is a newsletter promising "המלצות והנחות על מוצרי לימוד לילדים" (`:335`). It sells nothing
@@ -47,10 +47,10 @@ shop, חנות, premium).
 
 ## 3. lomdiml.co.il: (a) one educator's own business, selling courses and workshops, not materials [RENDERED]
 
-- "קורסים וכלים פרקטיים להורים, מורים ותלמידים" (`lomdiml-home-2026-09-29.txt:77`), written in the first person singular: "שלחו לי
+- "קורסים וכלים פרקטיים להורים, מורים ותלמידים" (`lomdiml-home-2026-09-28.txt:77`), written in the first person singular: "שלחו לי
   הודעה ואני אחזור אליכם בהקדם האפשרי" (`:182`). It also sells to schools under "גפ"ן" (`:216`), claiming "125 בתי ספר"
   (`:83-84`).
-- The "אתר הקורסים" button points off-site, to `https://www.mindtreesadnaot.com/` (`lomdiml-home-2026-09-29.html:277`). No price or
+- The "אתר הקורסים" button points off-site, to `https://www.mindtreesadnaot.com/` (`lomdiml-home-2026-09-28.html:277`). No price or
   ₪ appears on the homepage, so prices are UNKNOWN. There are 8 named testimonials under "לקוחות ממליצים" (`.txt:224`);
   the names were not copied.
 - **Side note.** There is an off-screen spam link, "casino buitenland" (`.txt:332`), inside `position: absolute; left:

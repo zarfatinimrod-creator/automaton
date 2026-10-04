@@ -224,9 +224,9 @@ of **portal acts**, none written as a person's act, and the ad is a fake demo so
 (e2) that is not a "per-game human step". GameDistribution **parks behind CrazyGames**, subject to (e2)'s conditions and
 one written yes.
 
-**BASIS.** "A demo VAST tag for calling a fake advertisement is already enabled" (`gamedistribution-sdk-implementation-2026-09-29.txt:275`,
+**BASIS.** "A demo VAST tag for calling a fake advertisement is already enabled" (`gamedistribution-sdk-implementation-2026-09-28-12e095c.txt:275`,
 rendered); watching it completely approves the SDK (`:281`); the 2018 FAQ places the watch "only … within your
-Gamedistribution.com control panel" (`gamedistribution-wiki-faq-2026-09-29.txt:180`, rendered) and the publish request is "clicking the
+Gamedistribution.com control panel" (`gamedistribution-wiki-faq-2026-09-28-12e095c.txt:180`, rendered) and the publish request is "clicking the
 designated button" (`:182`); publishing is gated on the SDK (`gamedistribution-developer-terms-2026-09-28.txt:141-142`, rendered);
 no upload API (`html5-syndication.md:226`, repo); tick 8 withdrew the lean to kill (`:175-177`, repo). The terms' one access
 clause, "No monitoring. You may not access the Distribution Platform, including the Games, for monitoring availability,

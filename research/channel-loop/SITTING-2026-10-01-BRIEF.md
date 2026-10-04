@@ -25,8 +25,8 @@ notes. `inference`: reasoning, not a text, always marked. `none`: no source.
   support.google.com, so marking developers.google.com `[against-bar]` is inference.
 - **When they landed.** All three bars were first added in `52dafb4` (29.9 14:01:49Z; `git log -S`). `f6191d0` (29.9
   16:21Z) created `terms-verdicts.json`, not the bars. Every YouTube or Google capture cited here predates 14:01Z:
-  25.9 `irs-us-israel-treaty` (irs.gov); 27.9 `yt-analytics-dimensions`; 28.9 22:00-23:22Z `yk-*` and `yk2-*`; 29.9
-  11:26-11:27Z `youtube-*` and `kokoro-82m-model-card`. No blog.youtube capture is cited anywhere in this brief.
+  25.9 `irs-us-israel-treaty-2026-09-25` (irs.gov); 27.9 `yt-analytics-dimensions`; 28.9 22:00-23:22Z `yk-*` and `yk2-*`; 29.9
+  11:26-11:27Z `youtube-*` and `kokoro-82m-model-card-2026-09-29`. No blog.youtube capture is cited anywhere in this brief.
 - **Other hosts** (`research/channel-loop/terms-verdicts.json`): huggingface.co `NOT_BARRED` (`:163-166`); irs.gov
   `NOT_BARRED` (`:189-193`); github.com `CONDITIONAL_MET` (`:114-118`); google.com and youtube.com `BARRED` (`:119-123`,
   `:452-456`); mozilla.org `BARRED` (`:238-241`). No verdict is on file for ftc.gov, fortune.com, blog.google or

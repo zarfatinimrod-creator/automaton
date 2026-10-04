@@ -56,7 +56,7 @@ Earlier: YPAY's homepage title on the 7.9 Hebrew SERP, "הפקת חשבונית 
 (`research/measurements/serp/2026-09-07-hebrew-calculators.md:77`, snippet). Today's capture confirms a free product. It
 does not confirm a free logo.
 
-## Invoice4u (`invoice4u-pricelist`)
+## Invoice4u (`invoice4u-pricelist-2026-09-29`)
 
 | Question | Finding | Quote | Source | Grade |
 |---|---|---|---|---|
