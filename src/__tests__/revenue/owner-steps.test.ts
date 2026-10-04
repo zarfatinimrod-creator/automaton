@@ -321,14 +321,17 @@ describe("a secret another step makes is never recorded pasted before that step 
     expect(step6.secrets!.filter((r) => r.madeIn).map((r) => `${r.name}<-${r.madeIn}`)).toEqual([
       "GUMROAD_ACCESS_TOKEN<-gumroad",
       "BRAND_GITHUB_TOKEN<-github-org",
+      // Ruling 4.10 (RULING-2026-10-04-mozilla-precondition.md §2): the organisation's budgets read token.
+      "ORG_BUDGETS_READ_TOKEN<-github-org",
     ]);
   });
 
   it("catches a done step 6 recorded before step 3 or step 7, or on an earlier date", () => {
     const alone = secretRowsPastedBeforeMade(withDoneOn({ "ci-tokens": done("2026-10-02", ["POSTHOG_READ_KEY"]) }));
-    expect(alone).toHaveLength(2);
+    expect(alone).toHaveLength(3);
     expect(alone[0]).toMatch(/GUMROAD_ACCESS_TOKEN.*step 3/);
     expect(alone[1]).toMatch(/BRAND_GITHUB_TOKEN.*step 7/);
+    expect(alone[2]).toMatch(/ORG_BUDGETS_READ_TOKEN.*step 7/);
     const early = secretRowsPastedBeforeMade(withDoneOn({
       gumroad: done("2026-10-03"),
       "github-org": done("2026-10-01"),
@@ -698,7 +701,14 @@ describe("the Hebrew document has not drifted from the code", () => {
   // Loop board 29.9.2026 (a): Firefox Add-ons was killed on G4, so the proposed Mozilla add-ons account (step 14) goes.
   it("proposes no step 14 and no Mozilla add-ons account (ruling (a))", () => {
     expect(doc).not.toMatch(/צעד 14/);
-    expect(doc).not.toMatch(/Mozilla|Firefox/);
+    expect(doc).not.toMatch(/Firefox|add-ons|addons\.mozilla/i);
+    // Ruling 4.10 (RULING-2026-10-04-mozilla-precondition.md §2 rule 3) names Mozilla once, in step 7, as one line that
+    // would use the organisation's ₪0 fence and asks for nothing of its own; it is never an account or a step.
+    const mentions = doc.split("\n").filter((l) => /Mozilla/.test(l));
+    expect(mentions).toHaveLength(1);
+    expect(mentions[0]).toContain("קו Mozilla (שורה 8 בלופ) הוא רק אחד הקווים שישתמשו בגדר");
+    expect(doc.indexOf(mentions[0])).toBeGreaterThan(doc.indexOf("## צעד 7"));
+    expect(doc.indexOf(mentions[0])).toBeLessThan(doc.indexOf("## צעד 8"));
   });
 
   // Loop board 29.9.2026 (b): no nagging, and only order and information may change. Step 8 unblocks more than any
@@ -843,10 +853,11 @@ describe("step 2's wording as read, step 3's support field, and step 6's POSTHOG
     expect(gumroad).toMatch(/names the account \(name\) Mehudak/);
   });
 
-  it("adds POSTHOG_READ_KEY as step 6's fourth row, held until the brand's PostHog project exists", () => {
+  it("adds POSTHOG_READ_KEY as step 6's last row, held until the brand's PostHog project exists", () => {
     const step6 = ownerStepById("ci-tokens")!;
+    // ORG_BUDGETS_READ_TOKEN joined after BRAND_GITHUB_TOKEN on 4.10 (RULING-2026-10-04-mozilla-precondition.md §2).
     expect(step6.secrets!.map((r) => r.name)).toEqual([
-      "GUMROAD_ACCESS_TOKEN", "APIFY_TOKEN", "BRAND_GITHUB_TOKEN", "POSTHOG_READ_KEY",
+      "GUMROAD_ACCESS_TOKEN", "APIFY_TOKEN", "BRAND_GITHUB_TOKEN", "ORG_BUDGETS_READ_TOKEN", "POSTHOG_READ_KEY",
     ]);
     const key = step6.secrets!.find((r) => r.name === "POSTHOG_READ_KEY")!;
     expect(key.source).toMatch(/'Performing analytics queries' scope only/);
@@ -858,7 +869,7 @@ describe("step 2's wording as read, step 3's support field, and step 6's POSTHOG
     expect(isSecretRowAsked(key, { projectId: "   " })).toBe(false);
     expect(isSecretRowAsked(key, { projectId: "12345" })).toBe(true);
     expect(askedSecretRows(step6, { projectId: "" }).map((r) => r.name)).toEqual([
-      "GUMROAD_ACCESS_TOKEN", "APIFY_TOKEN", "BRAND_GITHUB_TOKEN",
+      "GUMROAD_ACCESS_TOKEN", "APIFY_TOKEN", "BRAND_GITHUB_TOKEN", "ORG_BUDGETS_READ_TOKEN",
     ]);
     expect(askedSecretRows(step6, { projectId: "12345" }).map((r) => r.name)).toContain("POSTHOG_READ_KEY");
     expect(heldSecretRows(step6, { projectId: "" }).map((r) => r.name)).toEqual(["POSTHOG_READ_KEY"]);
@@ -950,5 +961,89 @@ describe("a gated row held back when its step was done is asked alone later, as 
     const step6Doc = doc.slice(doc.indexOf("## צעד 6"), doc.indexOf("## צעד 7"));
     const row = step6Doc.split("\n").find((l) => l.includes("| `POSTHOG_READ_KEY` |"))!;
     expect(row).toContain("אם צעד 6 כבר בוצע עד אז, השורה הזאת לבדה נשאלת אחר כך, כהשלמה");
+  });
+});
+
+/**
+ * Ruling of 4.10.2026 on Mozilla's precondition (research/channel-loop/RULING-2026-10-04-mozilla-precondition.md §2
+ * rule 3; fold action 7). Step 7's sitting gains the organisation's ₪0 fence for the open repo-visibility decision —
+ * a $0 Actions product-level budget on the whole organisation that stops usage, created before any private repository
+ * exists there, the included-usage alerts, and a read-only token — with Mozilla named only as one line that would use
+ * it. No step is added; the token is a step-6 row made in step 7's sitting.
+ */
+describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", () => {
+  const step7 = ownerStepById("github-org")!;
+  const step7Doc = doc.slice(doc.indexOf("## צעד 7"), doc.indexOf("## צעד 8"));
+  const fence = step7Doc.slice(step7Doc.indexOf("8. **גדר ה-0 ₪ של הארגון"), step7Doc.indexOf("### מה זה עושה"));
+
+  it("keeps eight steps and puts the fence inside step 7's sitting, with its time", () => {
+    expect(OWNER_STEPS).toHaveLength(8);
+    expect(step7.minutes).toEqual([15, 20]);
+    expect(step7Doc).toMatch(/^\*\*זמן: 15–20 דקות\*\*/m);
+    const table = doc.slice(doc.indexOf("## סיכום בטבלה אחת"));
+    expect(table).toMatch(/^\| 7 \| [^\n]*תקציב Actions של \$0[^\n]*\| 15–20 \|/m);
+  });
+
+  it("states the fence in code as the ruling words it: $0, Actions, whole organisation, stop usage, before any private repo", () => {
+    const u = step7.unlocks;
+    expect(u).toContain("₪0 fence for the open repo-visibility decision");
+    expect(u).toContain("$0 Actions product-level budget scoped to the whole organisation");
+    expect(u).toContain('"Stop usage when budget limit is reached" ticked');
+    expect(u).toContain("created before any private repository exists in the organisation");
+    expect(u).toContain("included-usage alerts");
+    expect(u).toContain("Administration: read only");
+    expect(u).toContain("if GitHub refuses, a PAT of the owner's own account with that one permission");
+    expect(u).toContain("Never Administration: write");
+    expect(u).toContain("billing manager");
+    // Mozilla is one user of the fence, not its reason, and asks for nothing of its own.
+    expect(u).toMatch(/Mozilla's dry-run harness \(loop row 8\) is one line that would use the fence/);
+    expect(u).toContain("RULING-2026-10-04-mozilla-precondition.md");
+    // The step's earlier text stands.
+    expect(u).toMatch(/same sitting/);
+    expect(u).toMatch(/BRAND_GITHUB_TOKEN/);
+  });
+
+  it("writes the fence in the Hebrew step 7: the five by-sight items, the alerts, the stop rule and the token", () => {
+    expect(fence.length).toBeGreaterThan(500);
+    expect(fence).toContain("**Product-level budget**, והמוצר **Actions**");
+    expect(fence).toContain("**Budget scope:** **Organization**");
+    expect(fence).toContain("`0` (כלומר $0)");
+    expect(fence).toContain("**Stop usage when budget limit is reached**");
+    expect(fence).toMatch(/\*\*לפני\*\* שיש בארגון ריפו פרטי כלשהו/);
+    expect(fence).toContain("**Included usage alerts**");
+    expect(fence).toMatch(/\*\*לעצור אם\*\* אין שם תקציב Actions/);
+    // The framing: the organisation's fence for the open decision; Mozilla only one line that would use it.
+    expect(fence).toContain("להחלטה שעוד פתוחה, אם להפוך את הריפו לפרטי");
+    expect(fence).toContain("קו Mozilla (שורה 8 בלופ) הוא רק אחד הקווים שישתמשו בגדר");
+    // The token: billing manager, organisation as resource owner, read only, the fallback, never write.
+    expect(fence).toContain("**מנהל חיוב (billing manager)**");
+    expect(fence).toContain("**מה התפקיד הזה יכול:**");
+    expect(fence).toContain("`ORG_BUDGETS_READ_TOKEN`");
+    expect(fence).toMatch(/\*\*Administration\*\* \(בהרשאות הארגון\) ברמת \*\*קריאה בלבד\*\*/);
+    expect(fence).toContain("**אם GitHub מסרב**");
+    expect(fence).toContain("**אף פעם לא Administration ברמת כתיבה (write):**");
+    // Rendered sources, cited by their frozen copies only.
+    expect(fence).toContain("gh-docs-set-up-budgets-2026-09-29.txt:");
+    expect(fence).toContain("gh-docs-budgets-and-alerts-2026-09-29.txt:");
+    expect(fence).toContain("gh-docs-rest-billing-budgets-2026-09-29.txt:504");
+    expect(fence).not.toMatch(/gh-docs-[a-z-]+\.txt:/);
+  });
+
+  it("says what a billing manager is able to do from lines that say it", () => {
+    const line = (slug: string, n: number) =>
+      fs.readFileSync(path.join(repoRoot, `research/rendered/${slug}.txt`), "utf8").split("\n")[n - 1];
+    expect(line("gh-docs-set-up-budgets-2026-09-29", 279)).toMatch(/billing manager, any account-level budget is listed/);
+    expect(line("gh-docs-set-up-budgets-2026-09-29", 295)).toMatch(/or as a billing manager, you can set a budget at the account level/);
+    expect(line("gh-docs-budgets-and-alerts-2026-09-29", 239)).toMatch(/alerts go to account owners and billing managers/);
+    expect(line("gh-docs-budgets-and-alerts-2026-09-29", 269)).toMatch(/billing managers can opt in or out of these notifications/);
+    expect(line("gh-docs-rest-billing-budgets-2026-09-29", 504)).toMatch(/must be an organization admin or billing manager/);
+  });
+
+  it("adds no gendered singular to the owner's new lines (infinitive or impersonal forms, as the steps are written)", () => {
+    const added = [fence, doc.slice(doc.indexOf("**עודכן 4.10.2026"), doc.indexOf("> ### כלל ה-0 ₪ (27.9)"))].join("\n");
+    expect(added.length).toBeGreaterThan(600);
+    const GENDERED = ["אתה", "תסמן", "תסמני", "תיצור", "תיצרי", "תכתוב", "תכתבי", "סמן", "צור", "כתוב", "הוסף", "שמור", "אשר"];
+    const words = new Set(added.split(/[\s,.;:()*"`'—–\-]+/));
+    expect(GENDERED.filter((w) => words.has(w))).toEqual([]);
   });
 });
