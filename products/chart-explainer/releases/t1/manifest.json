@@ -1,8 +1,11 @@
 {
   "id": "t1-typescript-javascript",
   "author": "opus-builder",
+  "line": "faceless-youtube",
   "title": "Is TypeScript catching up with JavaScript on GitHub?",
   "description": "Is TypeScript catching up with JavaScript on GitHub? An explainer computed from GitHub's own quarterly counts of developers pushing code, economy by economy.\n\nNarration: a synthetic voice (Kokoro text-to-speech), not a recording of any person and not an imitation of anyone. Charts are drawn by code from the data cited below. Produced with AI systems.\n\nData: GitHub Innovation Graph, data/languages.csv at commit 078fb62ee4395d321bec9f4f06694cca68f6b6cb (https://github.com/github/innovationgraph). Licence: CC0-1.0 (Creative Commons CC0 1.0 Universal), as GitHub states it in the dataset's README and datasheet. GitHub did not produce, endorse or approve this video.\n\nMethod: every number is computed from that file; the EU aggregate is excluded; the comparison follows the economies reported for both languages in every quarter. Public activity only. Not advice.\n\nCounting: GitHub counts the developers in each economy who push to repositories containing each language, so a repository that holds both languages counts for both (GitHub Docs, \"About repository languages\"; the dataset's datasheet).\n\nContext: GitHub's Octoverse 2025 report named TypeScript the most used language on GitHub in August 2025, by contributor counts. That is a different count from the quarterly pushers in this video. (https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/)",
+  "tags": [],
+  "thumbnailBrief": null,
   "topic": "programming languages on GitHub",
   "script": "Is TypeScript catching up with JavaScript on GitHub? As a share of JavaScript, yes, and quickly; in raw numbers, no: JavaScript's lead grew. Every quarter, GitHub counts the developers in each economy who push to repositories containing each language; a repository that holds both languages counts for both. We follow the 92 economies reported for both in every quarter. In the first quarter of 2020, TypeScript had 18% as many pushers as JavaScript. By the first quarter of 2026, it had 49%. In raw numbers, though, JavaScript's lead grew, from 1.1 million to 2.5 million pushers, because both languages grew. GitHub's Octoverse 2025 report named TypeScript the most used language on GitHub in August 2025, by contributor counts. That is a different count from the quarterly pushers in this video. Over the 6 years, TypeScript pushers grew 9.5 times over, and JavaScript pushers 3.4 times. Among the 10 languages with the most pushers, the fastest growing was TypeScript. The ratio moved fastest in the last year: it rose 12 percentage points, against at most 5 percentage points in any earlier year. Economy by economy, the picture is the same. TypeScript reached 50% of JavaScript's pushers in 47 of the 92 economies, up from 0 in 2020. The highest ratio was 61%. Limits: GitHub omits economies with too few active developers; those reported for TypeScript rose from 93 to 162, hence the fixed set. Only public repositories count, developers can count under both, and location comes from IP addresses. The data shows how many pushed, not why. Source: GitHub's Innovation Graph, public domain.",
   "datasets": [
@@ -32,6 +35,8 @@
     "verdict": "PASS"
   },
   "containsSyntheticMedia": true,
+  "madeForKids": false,
+  "onScreenTagEveryFrame": null,
   "narration": {
     "engine": "kokoro-82m",
     "voiceId": "af_heart",

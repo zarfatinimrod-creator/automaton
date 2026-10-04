@@ -42,7 +42,10 @@ route exists, for the cost of one honest short video and one owner sign-in. If i
    JavaScript on GitHub?" (GitHub Innovation Graph, CC0), 116.7 s. First audit: G3 PASS, G4 and G5 FAIL (numbers
    right; framing: GitHub's Octoverse 2025 headline unaddressed, the per-repository language counting unsaid, the "no"
    half after 0:30). Revision 1 answered every required change; re-audit G3/G4/G5 PASS on script `bf98a1b0…`;
-   `checkPublication()` 0 failures. Evidence: `products/chart-explainer/releases/t1/`.
+   `checkPublication()` 0 failures. Evidence: `products/chart-explainer/releases/t1/`. [4.10.2026: that pass was G1-G10;
+   G11 and G7-k came with the kids ruling and the release manifest lacked their five fields, so it failed. They were added
+   without a re-render, as `manifest.py` writes them for T1 (`releases/t1/manifest.notes.json`); G1-G11 0 failures since,
+   checked by `src/__tests__/revenue/publication-check.test.ts`.]
 6. **Only then** Stage A is put to the owner, with the pre-check and the web result attached to the ask.
 7. T1 runs. Six real videos are rendered only after it passes.
 
