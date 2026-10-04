@@ -10,9 +10,11 @@ import { describe, expect, it } from "vitest";
  *
  *   - a verbatim copy: the header's "Original file: N lines, M bytes, sha256 `H`" must describe the bytes after the
  *     "verbatim copy begins on the next line" marker exactly (Apify's two copies, Apache-2.0);
- *   - a pinned reference: the body is not copied (PostHog's repo LICENSE:5-6 asks that its pages' source not be
- *     duplicated), and each excerpt is a fenced block of original lines A-B whose sha256 is in the marker above it, so
- *     the block can be re-checked against a re-fetch at the pinned commit with `sed -n A,Bp | sha256sum`.
+ *   - a pinned reference: the body is not copied, only the clauses a verdict relies on (PostHog's repo LICENSE:5-6
+ *     asks that its pages not be duplicated or copied; the excerpts are verbatim copies too, so the header says what
+ *     they copy, and whether a full evidence copy is allowed is the main thread's ruling). Each excerpt is a fenced
+ *     block of original lines A-B, the range stated in its heading and in the marker above it with the block's sha256,
+ *     so the block can be re-checked against a re-fetch at the pinned commit with `sed -n A,Bp | sha256sum`.
  *
  * A verdict that cites one of these files by line must land on quoted original text (the body, or inside an excerpt
  * block), never on the header.
@@ -133,6 +135,24 @@ describe("saved terms texts (research/channel-loop/terms/) hold what their heade
     expect(parse("posthog-privacy-2026-10-04.md").sha).toBe("4d4795166a37daf5ec39e935d10fd63dab1d127ab1db5368f0a687efd5c74abc");
   });
 
+  it("does not claim the excerpts escape the licence line: it counts what they copy and leaves a full copy to the main thread", () => {
+    // Tick 40 review, defect 8: LICENSE:5-6 makes no whole/part distinction, and the excerpts copy original lines
+    // verbatim, so "a verbatim copy is what the licence asks us not to make" cannot be the whole reason. The header
+    // says what the excerpts copy, counted here from the markers, and that a full evidence copy is the main thread's call.
+    for (const f of ["posthog-terms-2026-10-04.md", "posthog-privacy-2026-10-04.md"]) {
+      const text = readFileSync(join(DIR, f), "utf8");
+      const p = parse(f);
+      const copied = [...text.matchAll(new RegExp(EXCERPT.source, "gm"))].reduce((n, m) => n + Number(m[2]) - Number(m[1]) + 1, 0);
+      const stated = text.match(/^> - \*\*The body is not copied here\.\*\* .*?(\d+) of the ([\d,]+) original lines are quoted below/m);
+      expect(stated, f).not.toBeNull();
+      expect(Number(stated![1]), f).toBe(copied);
+      expect(Number(stated![2].replace(/,/g, "")), f).toBe(p.lines);
+      expect(text, f).toContain("The licence line draws no line between a whole copy and a part");
+      expect(text, f).toContain("whether it allows a full evidence copy here is the main thread's ruling");
+      expect(text, f).not.toContain("is what that licence line asks us not to make");
+    }
+  });
+
   it("lands every file:line a verdict cites in these files on quoted original text, not on a header", () => {
     const verdicts = readFileSync(VERDICTS, "utf8");
     const cite = /research\/channel-loop\/terms\/([a-z0-9-]+\.md):(\d+)(?:-(\d+))?/g;
@@ -220,10 +240,16 @@ describe("posthog.com's verdict rests on the pinned references", () => {
       [T, 41, 43, "apply to any Customer (as defined below) accessing or using PostHog cloud-based software, products or services"],
       [T, 52, 52, "By signing up to, creating an account, using or otherwise accessing PostHog Cloud"],
       [T, 58, 58, "on a free or pay-as-you-go basis"],
-      [T, 113, 115, "(d) access or use the Licensed Materials in a manner intended to circumvent or exceed any usage limits"],
-      [T, 115, 118, "(e) access or use the Licensed Materials to interfere with, disrupt, or attempt to gain unauthorized access to any systems"],
-      [T, 132, 136, "(i) use the Licensed Materials for the purpose of monitoring their availability, performance, or functionality for benchmarking"],
-      [T, 187, 187, "pleeeeeease don’t copy our website."],
+      [T, 103, 104, "The Software and Other PostHog Materials are collectively referred to herein as the \" Licensed Materials\""],
+      [T, 79, 80, "(a) internally (i) use"],
+      [T, 86, 87, "the documentation, training materials or other materials, products or services supplied or provided by PostHog"],
+      [T, 120, 121, "(a) use the Licensed Materials for any purpose other than as specifically authorized in"],
+      [T, 125, 126, "otherwise make the Licensed Materials available to any third party other than Users"],
+      [T, 108, 108, "end user (person or machine) of Customer"],
+      [T, 129, 131, "(d) access or use the Licensed Materials in a manner intended to circumvent or exceed any usage limits"],
+      [T, 131, 134, "(e) access or use the Licensed Materials to interfere with, disrupt, or attempt to gain unauthorized access to any systems"],
+      [T, 148, 152, "(i) use the Licensed Materials for the purpose of monitoring their availability, performance, or functionality for benchmarking"],
+      [T, 203, 203, "pleeeeeease don’t copy our website."],
       [T, 24, 25, "They're not legally binding."],
       [P, 42, 44, "applies to all visitors, users and customers of the PostHog.com hosted services and websites"],
       [P, 53, 55, "By accessing or using any part of the Websites"],
@@ -237,6 +263,12 @@ describe("posthog.com's verdict rests on the pinned references", () => {
     expect(e.note).toContain(`terms.tsx:328-330, ${T}:41-43`);
     expect(lineOf(T, 38)).toMatch(/^<!-- excerpt: original lines 327-355, sha256 [0-9a-f]{64};/);
     expect(lineOf(T, 39)).toBe("```tsx");
+    // Tick 40 review, defect 1: the "Licensed Materials" definition (original 408-409) is quoted and cited, and the
+    // old reading that 2.1 governs only the product, not reading the website, is gone: 2.1 reaches the documentation.
+    expect(e.note).toContain(`terms.tsx:408-409, ${T}:103-104`);
+    expect(lineOf(T, 100)).toMatch(/^<!-- excerpt: original lines 407-416, sha256 [0-9a-f]{64};/);
+    expect(e.note).not.toContain("they govern use of the product, not reading the website");
+    expect(e.note).toContain("so 2.1 reaches a Customer reading PostHog's documentation, not only its product");
   });
 
   it("keeps the storage caveat and sends the reader's API use to the free-tier note", () => {
@@ -245,6 +277,10 @@ describe("posthog.com's verdict rests on the pinned references", () => {
     expect(e.note).toContain("Open caveat, for storage and not access");
     expect(e.note).toContain("'Please do not duplicate, copy, or use our website'");
     expect(e.note).toContain("LICENSE:5-6 at 35fc817");
+    // Tick 40 review, defect 1: the docs are MIT, and a Customer also holds them under 1.1(a)(ii) and 2.1(b); which one
+    // governs a committed docs capture is the main thread's call, and the note says so instead of clearing the docs.
+    expect(e.note).toContain("the docs under /contents/ are MIT (LICENSE:12-32), but a Customer holds the same documentation under 1.1(a)(ii)");
+    expect(e.note).toContain("is the main thread's call, to make before the first posthog.com line is queued");
     expect(e.note).toContain("research/measurements/posthog-free-tier.md");
     expect(existsSync("research/measurements/posthog-free-tier.md")).toBe(true);
   });

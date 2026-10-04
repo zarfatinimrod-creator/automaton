@@ -8,7 +8,7 @@
 > - Fetched at (UTC): 2026-10-04T09:40:18Z
 > - Original file: 1390 lines, 100246 bytes, sha256 `cc34fd5bed10c4ad1c74dff6bc2c7a5625ebc760b4e60b94854d9fdeba807bca`
 > - Licence of the repo: its root `LICENSE` at this commit (34 lines, sha256 `5391d207b47157cc27002385e33373240d5a9824bfc194832f41b0a7c24b7715`, unchanged at HEAD) has two parts. Content in `/contents/` is under the MIT licence (LICENSE:12-32). For everything else (LICENSE:1) it says: "Please do not duplicate, copy, or use our website for commercial or non-commercial use." (LICENSE:5-6). This file is outside `/contents/`.
-> - **The body is not copied here.** A verbatim copy of this page's source in our repository is what that licence line asks us not to make, so this file departs from the Apify copies' form (`apify-general-terms-2026-10-04.md`, Apache-2.0). Only the passages the posthog.com verdict in `research/channel-loop/terms-verdicts.json` relies on are quoted below, each as the exact original lines, with their original line numbers and the sha256 of those lines in the marker above the block. A re-fetch at the commit above checks every quote byte for byte: `curl -s <Fetched from> | sed -n A,Bp | sha256sum`. The test `src/__tests__/revenue/terms-saved-copies.test.ts` recomputes each block's sha256 against its marker.
+> - **The body is not copied here.** Only the passages the posthog.com verdict in `research/channel-loop/terms-verdicts.json` relies on are quoted, each as the exact original lines: 221 of the 1,390 original lines are quoted below. The licence line draws no line between a whole copy and a part, and these excerpts are verbatim copies too, so they do not escape it; they keep what is copied to the clauses the verdict cites, as quotation for the record. That departs from the Apify copies' form (`apify-general-terms-2026-10-04.md`, Apache-2.0) and from the saved copy `logs/CHANNEL_LOOP.md` §9 asked for ("Queued 4.10 (tick 39)" item 1, "a saved copy under `research/channel-loop/terms/` as Apify's"); whether it allows a full evidence copy here is the main thread's ruling, not made here (the full file can be re-fetched at the pinned commit and checked against the sha256 above). Each excerpt states its original line numbers twice, in its heading and in its marker, with the sha256 of those lines in the marker. A re-fetch at the commit above checks every quote byte for byte: `curl -s <Fetched from> | sed -n A,Bp | sha256sum`. The test `src/__tests__/revenue/terms-saved-copies.test.ts` recomputes each block's sha256 against its marker and checks that its heading states the same range.
 > - Read in full on 2026-10-04, all 1,390 lines. A search for scrap, crawl, robot, automat, spider and bot finds no clause on automated access to the website; "automatically" occurs only at original :1040 and :1053, both about renewal (quoted under 6.4).
 > - Not edited: inside each fenced block, every line is the original line, byte for byte. Cite this file's own line numbers, or the original's (`src/pages/terms.tsx:N` at the commit above).
 
@@ -92,6 +92,22 @@
                             copied, modified, displayed, distributed, or otherwise exploited in full compliance with
                             this Agreement, and with a valid PostHog Cloud subscription for the correct level of
                             usage.&nbsp;
+                        </p>
+```
+
+## 1.1 Definitions: "Licensed Materials" and "User" (original lines 407-416)
+
+<!-- excerpt: original lines 407-416, sha256 34cffc2020394d80ee7e7a120ccd2287857a3c88abbcc7e1fd1e7b49ed0c9a81; the fenced block below is those lines, byte for byte -->
+```tsx
+                        <p>
+                            The Software and Other PostHog Materials are collectively referred to herein as the "
+                            <b>Licensed Materials</b>". As used herein, "<b>Affiliate</b>" means any entity that
+                            directly or indirectly controls, is controlled by, and/or is under common control with the
+                            subject entity, where "control" means the ownership or control of more than fifty percent
+                            (50%) of the voting interests in such subject entity. "<b>User</b>" means each individual
+                            end user (person or machine) of Customer and/or its Affiliates (including, without
+                            limitation, employees, agents or consultants thereof) with access to the Licensed Materials
+                            hereunder.
                         </p>
 ```
 

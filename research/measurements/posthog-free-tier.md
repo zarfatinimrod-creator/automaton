@@ -169,8 +169,8 @@ then the `POSTHOG_READ_KEY` row.
    as paid while active", PC `queries.mdx:449`). **Not in the source:** which plan the connector's account is on; that is a
    live read, the first thing to check before creating anything.
 4. PostHog uses the Terms against a no-credit account: it may "introduce new charges" on thirty days' notice (6.1,
-   `research/channel-loop/terms/posthog-terms-2026-10-04.md:215-217`) and terminate an account without prepaid credits on
-   thirty days' notice (7.1, `posthog-terms-2026-10-04.md:266-269`).
+   `research/channel-loop/terms/posthog-terms-2026-10-04.md:231-233`) and terminate an account without prepaid credits on
+   thirty days' notice (7.1, `posthog-terms-2026-10-04.md:282-285`).
 5. A second project is wanted and the free route (a second organization) is refused.
 
 **What it does not settle.** Whether the connector's account is on the free plan, whether it can mint a personal API key
