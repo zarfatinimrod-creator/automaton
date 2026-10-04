@@ -1,6 +1,6 @@
 #!/usr/bin/env -S node --import tsx
 /**
- * Run the publication gate (G1-G10, src/revenue/publication-gate.ts) on a rendered video's manifest.json.
+ * Run the publication gate (G1-G11, src/revenue/publication-gate.ts) on a rendered video's manifest.json.
  *
  *   pnpm exec tsx scripts/publication-check.ts products/chart-explainer/out/t1/manifest.json
  *   pnpm exec tsx scripts/publication-check.ts <manifest.json> --expect G3,G4,G5
@@ -28,8 +28,11 @@ export const T1_CHANNEL: ChannelState = { published: [], yppReviewPending: false
 export const MANIFEST_FIELDS = [
   "id",
   "author",
+  "line",
   "title",
   "description",
+  "tags",
+  "thumbnailBrief",
   "topic",
   "script",
   "datasets",
@@ -37,6 +40,8 @@ export const MANIFEST_FIELDS = [
   "factCheck",
   "promiseMatch",
   "containsSyntheticMedia",
+  "madeForKids",
+  "onScreenTagEveryFrame",
   "narration",
   "scheduledAt",
   "runnerMinutes",
@@ -80,8 +85,8 @@ function parseExpect(argv: string[]): GateId[] | null {
   const i = argv.indexOf("--expect");
   if (i < 0) return null;
   const list = (argv[i + 1] ?? "").split(",").map((s) => s.trim()).filter(Boolean);
-  const bad = list.filter((g) => !/^G([1-9]|10)$/.test(g));
-  if (bad.length) throw new Error(`--expect takes gate ids G1-G10, got ${bad.join(", ")}`);
+  const bad = list.filter((g) => !/^G([1-9]|1[01])$/.test(g));
+  if (bad.length) throw new Error(`--expect takes gate ids G1-G11, got ${bad.join(", ")}`);
   return list as GateId[];
 }
 

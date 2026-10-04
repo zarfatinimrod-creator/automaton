@@ -85,6 +85,38 @@ describe("the command line", () => {
     expect(out).toContain("FAIL G4");
     expect(out).toContain("-> as expected");
   });
+
+  it("takes G11 in --expect: an undecided designation is one more failing gate, never a hidden one", () => {
+    const dir = mkdtempSync(join(tmpdir(), "pubcheck-"));
+    const raw = JSON.parse(readFileSync(FIXTURE, "utf8")) as Record<string, unknown>;
+    raw.madeForKids = null;
+    writeFileSync(join(dir, "m.json"), JSON.stringify(raw));
+    const run = (expect: string) => {
+      try {
+        return { code: 0, out: execFileSync(process.execPath, ["--import", "tsx", "scripts/publication-check.ts", join(dir, "m.json"), "--expect", expect], { cwd: REPO_ROOT, encoding: "utf8" }) };
+      } catch (e) {
+        const err = e as { status: number; stdout: string };
+        return { code: err.status, out: err.stdout };
+      }
+    };
+    const ok = run("G3,G4,G5,G11");
+    expect(ok.code).toBe(0);
+    expect(ok.out).toContain("FAIL G11");
+    expect(run("G3,G4,G5").code).toBe(1);
+  });
+});
+
+describe("the T1 manifest's designation (ruling 4.10 §6 rule 1)", () => {
+  it("is T1's line, not made for kids, with no on-screen tag", () => {
+    const v = fixture();
+    expect([v.line, v.madeForKids, v.onScreenTagEveryFrame, v.tags, v.thumbnailBrief]).toEqual(["faceless-youtube", false, null, [], null]);
+  });
+
+  it("fails G11, and only G11 beyond the pending audits, when the designation is flipped or undecided", () => {
+    for (const madeForKids of [true, null]) {
+      expect(failingGates(runPublicationCheck({ ...fixture(), madeForKids }))).toEqual(["G3", "G4", "G5", "G11"]);
+    }
+  });
 });
 
 describe("the render workflow (chart-explainer-render.yml)", () => {

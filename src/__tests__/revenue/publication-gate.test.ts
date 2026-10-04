@@ -15,10 +15,13 @@ function video(overrides: Partial<VideoManifest> = {}): VideoManifest {
   return {
     id: "v1",
     author: "opus-writer",
+    line: "faceless-youtube", // T1's line; the kids line's gates are kids-publication-gate.test.ts
     title: "How fast did solar capacity grow after 2010?",
     description:
       "Every chart is computed from Our World in Data, CO2 and Greenhouse Gas Emissions dataset, licensed CC BY 4.0. " +
       SYNTHETIC_VOICE_DISCLOSURE,
+    tags: [],
+    thumbnailBrief: null,
     topic: "technology adoption",
     script:
       "Solar capacity grew roughly tenfold between 2010 and 2020. The data shows the steepest rise after 2015. " +
@@ -35,6 +38,8 @@ function video(overrides: Partial<VideoManifest> = {}): VideoManifest {
     factCheck: { auditor: "opus-auditor", verdict: "PASS", figuresChecked: 7 },
     promiseMatch: { auditor: "opus-auditor", verdict: "PASS" },
     containsSyntheticMedia: true,
+    madeForKids: false, // G11: T1's line declares not made for kids
+    onScreenTagEveryFrame: null,
     narration: { engine: "kokoro-82m", voiceId: "af_heart", voicesFile: "voices-v1.0.bin", modelFile: "kokoro-v1.0.onnx" },
     scheduledAt: "2026-11-10T09:00:00.000Z",
     runnerMinutes: 20,
@@ -49,7 +54,7 @@ function channel(overrides: Partial<ChannelState> = {}): ChannelState {
 
 const failed = (r: ReturnType<typeof checkPublication>) => r.failures.map((f) => f.gate);
 
-describe("publication gate G1-G10 (VERDICT §12)", () => {
+describe("publication gate G1-G11 (VERDICT §12; G11 ruling 4.10 §6 rule 1)", () => {
   it("passes a clean video", () => {
     const r = checkPublication(video(), channel(), "publish", exists);
     expect(r.failures).toEqual([]);
