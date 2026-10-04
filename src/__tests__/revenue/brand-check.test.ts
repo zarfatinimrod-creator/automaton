@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as apify-runs.mjs)
 import { PROBES, YOUTUBE_REFUSAL, activeProbes, checkName, lookups, outputsFor, parseCandidates, probeStatus, readTermsVerdicts, renderMarkdown, summarise, verdictOf, youtubeBarred } from "../../../scripts/brand-check.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
@@ -205,6 +209,36 @@ describe("the YouTube probe is refused while youtube.com is barred (ruling 30.9 
     expect(md).toContain("| `worldincharts` | free (404) | free (404) | free (404) | **yes** |");
     expect(md).toContain(YOUTUBE_REFUSAL);
     expect(md).not.toMatch(/\| YouTube \|/);
+  });
+});
+
+describe("a whole run of brand-check.mjs, offline (the path brand-check.yml takes)", () => {
+  // The script's own main(), in a child process whose global fetch is a fake installed by --import before the script
+  // loads: it answers 404 to everything and records each URL. Nothing leaves the container.
+  it("prints the refusal, asks three probes per name, never youtube.com, and writes three columns", () => {
+    const dir = mkdtempSync(join(tmpdir(), "brand-run-"));
+    const fake = join(dir, "fake-fetch.mjs");
+    writeFileSync(
+      fake,
+      [
+        "globalThis.__asked = [];",
+        "globalThis.fetch = async (url) => { globalThis.__asked.push(String(url)); return { status: 404, body: { cancel: async () => undefined } }; };",
+        'process.on("exit", () => { process.stderr.write("ASKED " + JSON.stringify(globalThis.__asked)); });',
+      ].join("\n"),
+    );
+    const r = spawnSync(process.execPath, ["--import", pathToFileURL(fake).href, "scripts/brand-check.mjs", "--out", join(dir, "x.json"), "--md", join(dir, "x.md"), "worldincharts", "askthechart"], { encoding: "utf8" });
+    expect(r.status).toBe(0);
+    expect(r.stdout.split("\n")[0]).toBe(YOUTUBE_REFUSAL);
+    expect(r.stdout).toContain("worldincharts: .com free (404), GitHub free (404), Netlify free (404)");
+    expect(r.stdout).toContain("all three free: worldincharts, askthechart");
+    const asked = JSON.parse(r.stderr.slice(r.stderr.indexOf("ASKED ") + 6)) as string[];
+    expect(asked).toHaveLength(6);
+    expect(asked.some((u) => /youtube/.test(u))).toBe(false);
+    const out = JSON.parse(readFileSync(join(dir, "x.json"), "utf8"));
+    expect(out.probes).toEqual(["com", "github", "netlify"]);
+    expect(out.refused).toEqual({ youtube: YOUTUBE_REFUSAL });
+    expect(out.allFree).toEqual(["worldincharts", "askthechart"]);
+    expect(readFileSync(join(dir, "x.md"), "utf8")).toContain("| name | .com | GitHub | Netlify | all three free |");
   });
 });
 

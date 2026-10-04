@@ -315,9 +315,10 @@ describe("G7-k: the narrator says what it is, never a teacher or a friend (rulin
 });
 
 describe("G9 on the kids line reads the kids experiment's caps", () => {
-  it("fails over 60 runner minutes or ₪20 of tokens", () => {
-    expect(run(kids({ runnerMinutes: 61 })).some((r) => r.startsWith("G9:"))).toBe(true);
-    expect(run(kids({ tokenCostIls: 21 })).some((r) => r.startsWith("G9:"))).toBe(true);
+  it("fails over 60 runner minutes or ₪20 of tokens, naming the kids experiment's caps", () => {
+    expect(run(kids({ runnerMinutes: 61 })).find((r) => r.startsWith("G9:"))).toMatch(/\(kids-explainers caps\)$/);
+    expect(run(kids({ tokenCostIls: 21 })).find((r) => r.startsWith("G9:"))).toMatch(/\(kids-explainers caps\)$/);
     expect(run(kids({ runnerMinutes: 60, tokenCostIls: 20 }))).toEqual([]);
+    expect(run(t1({ runnerMinutes: 61 })).find((r) => r.startsWith("G9:"))).toMatch(/\(faceless-youtube caps\)$/);
   });
 });

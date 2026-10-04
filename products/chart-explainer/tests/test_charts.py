@@ -178,7 +178,14 @@ def test_render_refuses_a_kids_frame_whose_tag_is_not_the_pinned_text(tmp_path, 
         charts.render_scene_chart(scene, an, labels, spec, tmp_path / "k.png")
 
 
-def test_render_refuses_a_kids_frame_whose_tag_is_cut_off(tmp_path, monkeypatch):
+@pytest.mark.parametrize("where, position, problem", [
+    ("off the right edge", (1.2, 0.968), "leaves the frame's margins"),
+    ("past the right margin", (0.97, 0.968), "leaves the frame's margins"),
+    ("past the left margin", (0.3, 0.968), "leaves the frame's margins"),
+    ("over the top edge", (0.95, 1.0), "leaves the frame's margins"),
+    ("on the title", (0.6, 0.925), "overlaps the text"),
+])
+def test_render_refuses_a_kids_frame_whose_tag_is_cut_off_or_covers_text(tmp_path, monkeypatch, where, position, problem):
     spec = _kids_spec()
     an, labels, filled, out = _draw_all(tmp_path, spec)
     _close(out)
@@ -189,11 +196,11 @@ def test_render_refuses_a_kids_frame_whose_tag_is_cut_off(tmp_path, monkeypatch)
         fig = original(*args)
         for t in fig.texts:
             if t.get_gid() == charts.TAG_GID:
-                t.set_position((1.2, 0.968))  # off the right edge
+                t.set_position(position)
         return fig
 
     monkeypatch.setitem(charts.CHARTS, scene["chart"], moved)
-    with pytest.raises(charts.ChartError, match="KIDS_ON_SCREEN_TAG"):
+    with pytest.raises(charts.ChartError, match=f"KIDS_ON_SCREEN_TAG.*{problem}|{problem}"):
         charts.render_scene_chart(scene, an, labels, spec, tmp_path / "k.png")
 
 

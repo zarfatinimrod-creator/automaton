@@ -689,12 +689,13 @@ export function checkPublication(
 
   // G9 — per-video spend caps, the same numbers the line's experiment gates use.
   const known = Object.hasOwn(EXPERIMENT_BY_LINE, video.line);
-  const caps = (known ? EXPERIMENT_BY_LINE[video.line] : FACELESS_YOUTUBE_EXPERIMENT).gates;
+  const capsOf = known ? EXPERIMENT_BY_LINE[video.line] : FACELESS_YOUTUBE_EXPERIMENT;
+  const caps = capsOf.gates;
   if (video.runnerMinutes > caps.maxRunnerMinutesPerVideo) {
-    fail("G9", `${video.runnerMinutes} runner-minutes > ${caps.maxRunnerMinutesPerVideo}`);
+    fail("G9", `${video.runnerMinutes} runner-minutes > ${caps.maxRunnerMinutesPerVideo} (${capsOf.id} caps)`);
   }
   if (video.tokenCostIls > caps.maxTokenCostIlsPerVideo) {
-    fail("G9", `₪${video.tokenCostIls} of tokens > ₪${caps.maxTokenCostIlsPerVideo}`);
+    fail("G9", `₪${video.tokenCostIls} of tokens > ₪${caps.maxTokenCostIlsPerVideo} (${capsOf.id} caps)`);
   }
 
   // G11 — the audience designation (ruling 4.10 §6 rule 1): the kids line declares made for kids on every upload, T1's
