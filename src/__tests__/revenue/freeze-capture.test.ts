@@ -660,5 +660,10 @@ describe("the command line takes a slug and a commit, never a path or an option"
     expect(readdirSync(out)).toEqual([]);
     expect(resolveCommit(r.root, "HEAD")).toMatch(/^[0-9a-f]{40}$/);
     expect(() => resolveCommit(r.root, "-p")).toThrow(/not a commit/);
+    // git refuses a branch or tag named "-p", but update-ref writes refs/heads/-p, and rev-parse then resolves it:
+    // a name that starts with "-" is refused before git is asked.
+    r.g("update-ref", "refs/heads/-p", "HEAD");
+    expect(r.g("rev-parse", "--verify", "--quiet", "--end-of-options", "-p^{commit}")).toMatch(/^[0-9a-f]{40}$/);
+    expect(() => resolveCommit(r.root, "-p")).toThrow(/not a commit: "-p"/);
   });
 });
