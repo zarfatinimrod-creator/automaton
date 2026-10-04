@@ -83,3 +83,87 @@
 - הדפסת התנאים הכלליים המלאים (36KB) לקריאה. היה הכרחי לקריאה אחת מלאה, אבל אפשר היה להסתפק ב-grep ובקריאת סעיפים 1-6 ו-14-15 בלבד.
 - תזכורות חוזרות של רשימת המשימות של ה-thread הראשי, שלא שייכות לסוכן הזה.
 - ניסיון WebFetch למשיכה מילה במילה, שנכשל, ופקודות bash שנחסמו על ידי השומר והורצו מחדש.
+
+---
+
+# תוספת: תיקון ארבעת הפגמים מהביקורת (tick 39, סוכן מתקן, Opus)
+
+אותו worktree ואותו ענף. ה-commit של התיקון: `f8e90a7`, על גבי `6c6ac04`.
+
+## 1. מה המשתמש ביקש
+
+הסקריפט המתזמר (לא בעל הפרויקט) העביר את דוח הבונה ואת ארבעת הפגמים של הסוקר, וביקש לתקן כל פגם שמחזיק, בדיקה לפני קוד (test-first), או לנמק דחייה. אחר כך להריץ `scripts/verify.sh`, את pytest של chart-explainer ותוכנית `scripts/mutate.mjs` עם מוטציה אחת לכל תיקון, לבצע commit ולהוסיף את העבודה ליומן הזה.
+
+## 2. הפעולות המרכזיות שביצעתי
+
+- **אימות הפגמים לפני תיקון.** בדקתי ב-`urls.txt`, ב-`terms-verdicts.json` וב-`render-watch.mjs`. ‏tipalti.com ו-wavedash.com נמצאים ב-`TERMS_BARRED`, ושניהם נוספו ב-29.9 (‏`0ac5d1e`, ‏`ebfed26`). ‏ypay.co.il הוא NOT_BARRED לפי תנאים שנקראו. בשש השורות נכתב "terms unread", והסיבה הזו שגויה. ארבעת הפגמים מחזיקים, ולא דחיתי אף אחד.
+- **בדיקות קודם (RED).** הוספתי ל-fixture של `urls-pause-comments.test.ts` שבע שורות: שורת tipalti בצורה הישנה; שתי שורות במצב שה-`--fix` הראשון השאיר (מילת פסק הדין נכונה, הסיבה לא); שתי שורות עם סיבה שאדם כתב (`tick 21`, `terms unread round 2`); שורת CONDITIONAL_UNMET; ושורת `tick 21` על host חסום. הוספתי גם בדיקות ישירות ל-`assertOnlyCommentsChanged`. שבע בדיקות נכשלו מהסיבות הנכונות. ב-pytest הוספתי בדיקה לשורת ה-README, והיא נכשלה כי ה-host לא הופיע בשורה.
+- **פגם 1.** `reasonFor(verdict)` קובעת את הסיבה לפי פסק הדין: TERMS_PENDING ו-NO_TERMS מקבלים "terms unread"; BARRED מקבל "terms read"; NOT_BARRED ו-CONDITIONAL_MET מקבלים "terms read, left paused". ל-CONDITIONAL_UNMET ול-NO_TERMS_ROBOTS_OK היא מחזירה null, ואז הסיבה נשארת כמו שנכתבה. שורה על host שנמצא ב-`TERMS_BARRED` נכתבת בצורה ש-`applyVerdicts` כותבת: `# paused (terms audit[, <תאריך השהיה>]): <domain> — see TERMS_BARRED in scripts/render-watch.mjs — ...`. גם שורה שמילת פסק הדין בה נכונה והסיבה לא נכונה משוכתבת עכשיו.
+- **פגם 2.** הסרתי את בדיקת ה-tail, שהשוותה זנב לעצמו. במקומה כתבתי את `assertOnlyCommentsChanged(before, after, changedLines)` המיוצאת, ו-`syncPauseComments` מריצה אותה על הפלט שלה לפני כל כתיבה. היא בודקת שמספר השורות זהה, ששורה שלא ברשימה זהה בייט לבייט, ושכל שורה ששונתה היא עדיין `# paused` עם אותם URL, slug ודגל js. את ה-URL וה-slug היא קוראת עם `PAUSED_LINE` של `robots-verdict.mjs`, שעכשיו מיוצא (שינוי של מילה אחת).
+- **פגם 3.** רק סיבה מתוך `DERIVED_REASONS` ("terms unread", "terms read", "terms read, left paused") מוחלפת. כל סיבה אחרת נשמרת, ומשתנים רק מילת פסק הדין והערת התאריך.
+- **פגם 4.** שורת `netlify_files.py` ב-README אומרת עכשיו: "No host is hard-coded in this module: the host is an argument, which the deploy configuration passes in (none exists yet; ... (e), APPLY 3). The host itself is decided: `https://chartsplained.netlify.app` ...". בדקתי ש-"none exists yet" נכון: אין קובץ פריסה ואין קורא ל-`netlify_files` עם host, ב-`.github/` וב-`products/chart-explainer/*.py`.
+- הרצתי `--check` על `urls.txt` (exit 1, בדיוק שש השורות שהסוקר מנה), אחריו `--fix --today 4.10.2026` (exit 0, ‏6 שוכתבו), ואחריו `--check` שוב (exit 0).
+
+## 3. קבצים/מערכות ששונו
+
+- `scripts/urls-pause-comments.mjs`: הפונקציות `reasonFor`, `DERIVED_REASONS` ו-`assertOnlyCommentsChanged`, וצורת ה-terms audit. התיעוד בכותרת עודכן.
+- `scripts/robots-verdict.mjs`: ‏`PAUSED_LINE` מיוצא, עם הערת שורה. ההתנהגות לא השתנתה.
+- `src/__tests__/revenue/urls-pause-comments.test.ts`: ‏fixture מורחב, שתי בדיקות חדשות ל-`syncPauseComments`, שלוש בדיקות ל-`assertOnlyCommentsChanged`, ובדיקת ה-CLI מצפה עכשיו ל-10 שכתובים.
+- `research/rendered/urls.txt`: שש שורות הערה (329, ‏378, ‏447, ‏585, ‏605, ‏607). אין שינוי ב-URL, ב-slug או בשורה פעילה.
+- `products/chart-explainer/README.md` (שורה 53) ו-`products/chart-explainer/tests/test_netlify_files.py`, שבו בדיקה חדשה.
+- commit: ‏`f8e90a7`, ואחריו ה-commit של התוספת הזו ליומן.
+
+## 4. החלטות והנחות משמעותיות
+
+- **CONDITIONAL_UNMET לא משנה את הסיבה.** הסוקר הציע להחליף "terms unread" בכל פסק דין שאינו TERMS_PENDING. בדקתי מה הפסקים אומרים בפועל. ב-n8n.io ה-CONDITIONAL_UNMET נובע מכך שה-AUP "linked but unread", כלומר שם "terms unread" נכון. ב-y8.com התנאים נקראו. פסק הדין לבדו לא מכריע, ולכן הסיבה נשארת כמו שנכתבה. לכן תשע השורות של n8n ו-y8 לא השתנו.
+- **NO_TERMS שומר על "terms unread".** פירוש NO_TERMS הוא "no terms text in the repo or in a GitHub-hosted copy". לא נקרא שום טקסט תנאים, אז הסיבה נכונה. הסוקר לא סימן את שש השורות האלה, ואני מסכים איתו.
+- **צורת ה-terms audit לא כוללת "verdict as of".** זו בדיוק הצורה של 120 השורות האחרות ושל `applyVerdicts`. היא לא נוקבת בפסק דין, ולכן אין תאריך פסק דין לציין. תאריך ההשהיה 29.9 נכון בשתי המשמעויות: השורות הושהו ב-29.9, ושני האתרים נחסמו בסבב 3 ובסבב 4 של אותו יום.
+- **"terms read, left paused"** ל-NOT_BARRED ו-CONDITIONAL_MET. השורה עוברת את השער ונשארת מושהית עד שה-thread הראשי יוציא אותה, וזו עריכה שעוברת ביקורת. הניסוח זהה ל-"left paused" שהסקריפט מדפיס ברשימת היציאה מהשהיה. ההערה של האתר ב-`terms-verdicts.json` מסבירה למה שורות ypay נשארות מושהות. לא הכנסתי את טקסט ההערה לשורה, כי ההערות ארוכות ומכילות סוגריים ונקודה-פסיק.
+- **`applyVerdicts` לא שונה.** הוא כותב "terms unread" רק לפסקים שנכשלים בשער. מהם, היחיד ש-`reasonFor` הייתה משנה הוא BARRED שאינו ב-`TERMS_BARRED`. כרגע זה רק mozilla.org ו-tiktok.com, ואין להם שורות "terms unread". הפער תאורטי, ורשמתי אותו כאן במקום להרחיב את השינוי.
+- **ה-guard כהגנה לעומק.** הוא נבדק ישירות, עם קלט שבור בכוונה. מחיקת הקריאה אליו מתוך `syncPauseComments` לא יכולה להיתפס בבדיקה, כי הבנייה הנוכחית לא מייצרת שורה שבורה. הרצתי את המוטציה הזו כבדיקה נוספת, והיא survived, כצפוי (ראו §6).
+
+## 5. שגיאות וניסיונות שנכשלו
+
+- לא היו שגיאות בתיקון עצמו. המוטציה הנוספת (מחיקת הקריאה ל-guard) שרדה כצפוי, ואני מדווח עליה בגלוי ולא מסתיר אותה.
+- התחלתי לכתוב את מיפוי הסיבות כך ש-CONDITIONAL_UNMET יקבל "terms read". רשומת n8n.io ב-`terms-verdicts.json` הראתה שזה לא נכון, ושיניתי לפני שכתבתי קוד.
+
+## 6. בדיקות ופעולות ולידציה
+
+- RED: שבע בדיקות vitest נכשלו לפני התיקון, ובדיקת ה-pytest החדשה נכשלה על `assert '`https://chartsplained.netlify.app`' in row`.
+- אחרי התיקון ולפני `--fix`, רק בדיקת "the committed urls.txt" נכשלה, ובדיוק על השורות 329, ‏378, ‏447, ‏585, ‏605, ‏607.
+- בדיקה עצמאית של `urls.txt` מול HEAD: ‏738 שורות בשני הצדדים, 6 שורות שונו, 0 אי-התאמות ב-URL, ב-slug או ב-js לפי `PAUSED_LINE`, ו-`parseUrlList` מחזירה רשימה זהה של שורות פעילות.
+- `scripts/verify.sh` המלא: ‏exit 0. ‏typecheck exit 0, ‏Test Files 60 passed (60), ‏Tests 1829 passed | 1 skipped (1830).
+- `scripts/pytest-product.sh chart-explainer`: ‏exit 0, ‏156 passed.
+- מוטציות (`scripts/mutate.mjs`; ה-baseline עבר לפני ההרצה ואחריה):
+
+| id | קובץ | מוטציה | תוצאה |
+|---|---|---|---|
+| F1a | `scripts/urls-pause-comments.mjs` | `const barred = null;` (שורות TERMS_BARRED לא מקבלות את צורת ה-terms audit) | killed |
+| F1b | `scripts/urls-pause-comments.mjs` | ל-NOT_BARRED ול-CONDITIONAL_MET מוחזר "terms unread" | killed |
+| F2 | `scripts/urls-pause-comments.mjs` | השוואת URL, slug ו-js ב-guard הוחלפה ב-`if (false)` | killed |
+| F3 | `scripts/urls-pause-comments.mjs` | גם סיבה שאדם כתב מוחלפת (`const why = reasonFor(current) ?? reason;`) | killed |
+| F4 | `products/chart-explainer/README.md` | השורה חזרה ל-"no host is committed" (‏`--cmd "scripts/pytest-product.sh chart-explainer"`) | killed |
+| X1 (נוספת) | `scripts/urls-pause-comments.mjs` | הקריאה ל-`assertOnlyCommentsChanged` הוסרה | survived (צפוי: ראו §4) |
+
+‏5 מתוך 5 מוטציות התיקון killed.
+
+**לפני ואחרי מול הבסיס `f2fca6d`, כל 12 ההערות (רק החלק שלפני " — " האחרון):**
+
+| שורה | slug | לפני | אחרי |
+|---|---|---|---|
+| 74 | mr-gov-il-storefront | `(terms unread, 29.9.2026): mr.gov.il is TERMS_PENDING` | `(terms unread, 29.9.2026; verdict as of 4.10.2026): mr.gov.il is NO_TERMS` |
+| 110 | sweep2-ica-changes-dataset | `(terms unread, 29.9.2026): data.gov.il is TERMS_PENDING` | `(terms unread, 29.9.2026; verdict as of 4.10.2026): data.gov.il is NO_TERMS` |
+| 246, 248, 269, 281 | stripe-* | `(terms unread, 29.9.2026): stripe.com is TERMS_PENDING` | `(terms unread, 29.9.2026; verdict as of 4.10.2026): stripe.com is NO_TERMS` |
+| 329, 378 | tipalti-* | `(terms unread, 29.9.2026): tipalti.com is TERMS_PENDING` | `(terms audit, 29.9.2026): tipalti.com — see TERMS_BARRED in scripts/render-watch.mjs` |
+| 447 | wavedash-llms-full | `(terms unread, 29.9.2026): wavedash.com is TERMS_PENDING` | `(terms audit, 29.9.2026): wavedash.com — see TERMS_BARRED in scripts/render-watch.mjs` |
+| 585, 605, 607 | ypay-* | `(terms unread, 29.9.2026): ypay.co.il is TERMS_PENDING` | `(terms read, left paused, 29.9.2026; verdict as of 4.10.2026): ypay.co.il is NOT_BARRED` |
+
+## 7. עבודה ידנית שחזרה על עצמה וכדאי להפוך לאוטומטית
+
+- תוכנית מוטציות ל-vitest ותוכנית ל-pytest דורשות שתי הרצות נפרדות של `mutate.mjs`, כי `--cmd` חל על כל התוכנית. שדה `cmd` לכל מוטציה בתוכנית היה מאפשר הרצה אחת.
+- `urls-pause-comments.mjs --check` עדיין לא רץ ב-`merge-worktree.sh`. בדיקת ה-vitest על הקובץ המחויב מכסה את זה בינתיים.
+
+## 8. על מה בוזבזו אסימונים, לפי פעולה
+
+- תזכורות חוזרות של רשימת המשימות של ה-thread הראשי, שלא שייכות לסוכן הזה (שלוש פעמים).
+- קריאת `queue-zero-test.mjs` מההתחלה (60 שורות של תיעוד) כדי למצוא את `applyVerdicts`. ‏grep לפי שם היה מספיק.
