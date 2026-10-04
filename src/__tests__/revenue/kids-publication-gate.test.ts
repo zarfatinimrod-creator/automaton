@@ -261,7 +261,8 @@ describe("G7-k: no pre-reader, song, story, character or toy framing (ruling 4.1
       expect(kidsFailures(kids({ tags: [tag] })).some((r) => /tag/.test(r))).toBe(true);
     },
   );
-  it.each(["מגן מפני השמש", "ארגון המדינות", "גנרי", "בובותיים", "פעוטותיהם"])("passes Hebrew that only contains a term's letters: %s", (tag) => {
+  // The last is not a word: a non-prefix letter (ק) before a term, which the (?<!\p{L}) boundary must not let through.
+  it.each(["מגן מפני השמש", "ארגון המדינות", "גנרי", "בובותיים", "פעוטותיהם", "קבובות"])("passes Hebrew that only contains a term's letters: %s", (tag) => {
     expect(kidsFailures(kids({ tags: [tag] }))).toEqual([]);
   });
 
