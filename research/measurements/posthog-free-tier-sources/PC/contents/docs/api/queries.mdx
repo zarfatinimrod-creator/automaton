@@ -1,0 +1,459 @@
+---
+title: API queries
+sidebarTitle: Overview
+sidebar: Docs
+showTitle: true
+---
+
+import { CalloutBox } from 'components/Docs/CalloutBox'
+
+API queries enable you to query your data in PostHog. This is useful for:
+
+- Building [embedded analytics](/tutorials/embedded-analytics). 
+- Pulling aggregated PostHog data into your own or other apps.
+
+<CalloutBox icon="IconWarning" type="caution" title="The /query endpoint is not for exports">
+
+The `/query` endpoint is intended for ad-hoc analytics and embedded use cases. It is **not a supported export mechanism**.
+
+- **Bulk or recurring exports of `events`, `persons`, or `query_log` are not supported** over `/query`. Use [batch exports](/docs/cdp/batch-exports) for ETL, data warehouse syncs, and any integration that pulls more than a few thousand rows on a schedule. For one-off bulk exports, use [file download exports](/docs/cdp/file-download-exports).
+- **Third-party connectors must use [batch exports](/docs/cdp/batch-exports) or [file download exports](/docs/cdp/file-download-exports)**, not `/query`. Connectors built on `/query` are not supported and will be rate-limited or rejected.
+- **`OFFSET` pagination is not supported for programmatic requests** (personal API keys, OAuth tokens, and similar). It currently returns HTTP 400 for personal API keys, and we may reject it for other authentication methods at any time. Use keyset pagination on `timestamp` instead (see [below](#7-use-keyset-pagination-instead-of-offset)).
+- We **reserve the right to rate-limit, restrict, or reject** queries that look like exports, including without prior notice. Pipelines built on `/query` may break at any time.
+- Use [real-time destinations](/docs/cdp/destinations) for sending data to Slack, webhooks, etc.
+- Use [materialized views](/docs/data-warehouse/views/materialize) for expensive recurring aggregations. You can [query these through SQL](#2-materialize-a-view-for-the-data-you-need) and get faster results.
+
+</CalloutBox>
+
+## Prerequisites
+
+Using API queries requires:
+
+1. A PostHog project and its project ID which you can get from [your project settings](https://us.posthog.com/settings/project#variables).
+2. A personal API key for your project with the **Query Read** permission. You can create this in [your user settings](https://us.posthog.com/settings/user-api-keys#personal-api-keys).
+
+## Creating a query
+
+To create a query, you make a `POST` request to the `/api/projects/:project_id/query/` endpoint. The body of the request should be a JSON object with a `query` property with a `kind` and `query` property.
+
+<CalloutBox icon="IconInfo" type="fyi" title="Query limits">
+
+By default, API queries return up to 100 rows. If you specify your own `LIMIT`, you can return up to 50k rows per query.
+
+For paginating beyond a single query, you **must** use [keyset pagination on `timestamp`](#7-use-keyset-pagination-instead-of-offset). `OFFSET` is not supported for programmatic requests and is currently rejected with HTTP 400 for personal API keys. For exporting larger volumes, use [batch exports](/docs/cdp/batch-exports) or [file download exports](/docs/cdp/file-download-exports) – `/query` is not a supported export path.
+
+</CalloutBox>
+
+
+For example, to create a query that gets events where the `$current_url` contains blog, you use `kind: HogQLQuery` and SQL like:
+
+<MultiLanguage>
+
+```bash
+curl \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer $POSTHOG_PERSONAL_API_KEY" \
+  <ph_app_host>/api/projects/:project_id/query/ \
+  -d '{
+        "query": {
+          "kind": "HogQLQuery",
+          "query": "select properties.$current_url from events where properties.$current_url like '\''%/blog%'\'' limit 100"
+        },
+        "name": "get 100 blog urls"
+      }'
+```
+
+```python
+import requests
+import json
+
+url = "<ph_app_host>/api/projects/{project_id}/query/"
+headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer {POSTHOG_PERSONAL_API_KEY}'
+}
+payload = {
+    "query": {
+        "kind": "HogQLQuery",
+        "query": "select properties.$current_url from events where properties.$current_url like '%/blog%' limit 100"
+    },
+    "name": "get 100 blog urls"
+}
+response = requests.post(url, headers=headers, data=json.dumps(payload))
+print(response.json())
+```
+
+```node
+import fetch from "node-fetch";
+
+async function createQuery() {
+  const url = "<ph_app_host>/api/projects/:project_id/query/";
+  const headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer {POSTHOG_PERSONAL_API_KEY}"
+  };
+
+  const payload = {
+    "query": {
+      "kind": "HogQLQuery",
+      "query": "select properties.$current_url from events where properties.$current_url like '%/blog%' limit 100"
+    },
+    "name": "get 100 blog urls"
+  }
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json();
+  console.log(data);
+}
+
+createQuery()
+```
+
+</MultiLanguage>
+
+This is also useful for querying non-event data like persons, data warehouse, session replay metadata, and more. For example, to get a list of all people with the `email` property:
+
+<MultiLanguage>
+
+```bash
+curl \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer $POSTHOG_PERSONAL_API_KEY" \
+  <ph_app_host>/api/projects/:project_id/query/ \
+  -d '{
+        "query": {
+          "kind": "HogQLQuery",
+          "query": "select properties.email from persons where properties.email is not null"
+        },
+        "name": "get user emails"
+      }'
+```
+
+```python
+import requests
+import json
+
+url = "<ph_app_host>/api/projects/{project_id}/query/"
+headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer {POSTHOG_PERSONAL_API_KEY}'
+}
+payload = {
+    "query": {
+        "kind": "HogQLQuery",
+        "query": "select properties.email from persons where properties.email is not null"
+    },
+    "name": "get user emails"
+}
+response = requests.post(url, headers=headers, data=json.dumps(payload))
+print(response.json())
+```
+
+```node
+import fetch from "node-fetch";
+
+async function createQuery() {
+  const url = "<ph_app_host>/api/projects/:project_id/query/";
+  const headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer {POSTHOG_PERSONAL_API_KEY}"
+  };
+
+  const payload = {
+    "query": {
+      "kind": "HogQLQuery",
+      "query": "select properties.email from persons where properties.email is not null"
+    },
+    "name": "get user emails"
+  }
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json();
+  console.log(data);
+}
+
+createQuery()
+```
+
+</MultiLanguage>
+
+Every query you run is logged in the [`query_log` table](/docs/data/query-log) along with details like duration, read bytes, read rows, and more. The `name` parameter you provide appears in this log, making it easier to identify and analyze your queries.
+
+## Writing performant queries
+
+import OptimalQueries from '../_snippets/optimal-queries.mdx'
+
+<OptimalQueries />
+
+## Query parameters
+
+Top level request parameters include:
+
+- `query` (required): Specifies what data to retrieve. This must include a `kind` property that defines the query type.
+- `client_query_id` (optional): A client-provided identifier for tracking the query.
+- `refresh` (optional): Controls caching behavior and execution mode (sync vs async).
+- `filters_override` (optional): Dashboard-specific filters to apply.
+- `variables_override` (optional): Variable overrides for queries that support variables.
+- `name` (optional): A descriptive name for the query to better identify it in the [`query_log` table](/docs/data/query-log). We strongly recommend providing meaningful names for easier debugging and performance analysis.
+
+### Caching and execution modes
+
+The `refresh` parameter controls the execution mode of the query. It can be one of the following values:
+
+- `blocking` (default): Executes synchronously unless fresh results exist in cache
+- `async`: Executes asynchronously unless fresh results exist in cache
+- `force_blocking`: Always executes synchronously
+- `force_async`: Always executes asynchronously
+- `force_cache`: Only returns cached results (never calculates)
+- `lazy_async`: Use extended cache period before asynchronous calculation
+- `async_except_on_cache_miss`: Use cache but execute synchronously on cache miss
+
+> **Tip:** To cancel a running query, send a `DELETE` request to the `/api/projects/:project_id/query/:query_id/` endpoint.
+
+### Query types
+
+The `kind` property in the `query` parameter can be one of the following values. 
+
+- `HogQLQuery`: Queries using [PostHog's version of SQL](/docs/sql).
+- `EventsQuery`: Raw event data retrieval
+- `TrendsQuery`: Time-series trend analysis
+- `FunnelsQuery`: Conversion funnel analysis
+- `RetentionQuery`: User retention analysis
+- `PathsQuery`: User journey path analysis
+
+`HogQLQuery` is the most flexible type, and it is the right choice for most use cases. The other types run the same calculations that PostHog insights use. Two of them are hard to reproduce in SQL, so they are documented below: [`FunnelsQuery`](#funnel-queries) and [`RetentionQuery`](#retention-queries).
+
+For the complete list of types, and for every optional field, see the [frontend query schema](https://github.com/PostHog/posthog/blob/master/frontend/src/queries/schema/schema-general.ts).
+
+### Funnel queries
+
+A `FunnelsQuery` returns the number of users who completed each step of an ordered sequence.
+
+The `series` array is required. Each entry is one step, in order. Use `EventsNode` with an `event` name, or `ActionsNode` with a numeric action `id`.
+
+```bash
+curl \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer $POSTHOG_PERSONAL_API_KEY" \
+  <ph_app_host>/api/projects/:project_id/query/ \
+  -d '{
+        "query": {
+          "kind": "FunnelsQuery",
+          "dateRange": { "date_from": "-7d" },
+          "series": [
+            { "kind": "EventsNode", "event": "signed_up" },
+            { "kind": "EventsNode", "event": "project_created" },
+            { "kind": "EventsNode", "event": "subscription_started" }
+          ],
+          "funnelsFilter": {
+            "funnelWindowInterval": 14,
+            "funnelWindowIntervalUnit": "day"
+          }
+        },
+        "name": "signup to subscription funnel"
+      }'
+```
+
+The optional `funnelsFilter` object controls how the funnel is calculated:
+
+- `funnelVizType`: `steps` (default), `time_to_convert`, or `trends`. This changes the shape of `results`.
+- `funnelOrderType`: `ordered` (default), `strict`, or `unordered`.
+- `funnelWindowInterval`: how long a user has to complete the funnel. Defaults to `14`.
+- `funnelWindowIntervalUnit`: `second`, `minute`, `hour`, `day` (default), `week`, or `month`.
+- `breakdownAttributionType`: `first_touch` (default), `last_touch`, `all_events`, or `step`.
+
+You can also set `dateRange`, `properties`, `filterTestAccounts`, and `breakdownFilter`, which work the same way as in other insight queries.
+
+#### Funnel response
+
+For the default `steps` visualization, `results` is an array with one object per step, in the same order as `series`:
+
+```json
+{
+  "results": [
+    {
+      "action_id": "signed_up",
+      "name": "signed_up",
+      "custom_name": null,
+      "order": 0,
+      "type": "events",
+      "count": 1000,
+      "people": [],
+      "average_conversion_time": null,
+      "median_conversion_time": null
+    },
+    {
+      "action_id": "project_created",
+      "name": "project_created",
+      "custom_name": null,
+      "order": 1,
+      "type": "events",
+      "count": 640,
+      "people": [],
+      "average_conversion_time": 3600.5,
+      "median_conversion_time": 1800.0
+    }
+  ]
+}
+```
+
+- `count` is the number of users who reached that step.
+- `average_conversion_time` and `median_conversion_time` are in seconds, and measure the time from the previous step. They are `null` on the first step.
+- `people` is always empty on this endpoint. The response gives counts, not user lists.
+
+**Conversion rates and drop-off are not in the response. Calculate them from `count`:**
+
+- Conversion from the previous step: `results[i].count / results[i - 1].count`
+- Conversion from the first step: `results[i].count / results[0].count`
+- Drop-off at a step: `results[i - 1].count - results[i].count`
+
+If you set a `breakdownFilter`, `results` becomes an array of arrays. There is one inner array per breakdown value, and each step gains a `breakdown` and a `breakdown_value` field.
+
+### Retention queries
+
+A `RetentionQuery` returns how many users from each cohort came back in later intervals.
+
+The `retentionFilter` object is required:
+
+```bash
+curl \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer $POSTHOG_PERSONAL_API_KEY" \
+  <ph_app_host>/api/projects/:project_id/query/ \
+  -d '{
+        "query": {
+          "kind": "RetentionQuery",
+          "dateRange": { "date_from": "-4w" },
+          "retentionFilter": {
+            "targetEntity": { "id": "signed_up", "type": "events" },
+            "returningEntity": { "id": "project_created", "type": "events" },
+            "retentionType": "retention_first_time",
+            "period": "Week",
+            "totalIntervals": 5
+          }
+        },
+        "name": "weekly signup retention"
+      }'
+```
+
+- `targetEntity`: the event or action that puts a user into a cohort. Use `{ "id": "<event name>", "type": "events" }`, or `{ "id": <action id>, "type": "actions" }`.
+- `returningEntity`: the event or action that counts as a return. It uses the same shape.
+- `retentionType`: `retention_recurring` counts a user for every interval in which they return. `retention_first_time` starts the cohort at the user's first matching occurrence. `retention_first_ever_occurrence` starts it at the user's first ever occurrence of the event.
+- `period`: `Hour`, `Day` (default), `Week`, or `Month`.
+- `totalIntervals`: how many intervals to return, including interval 0. Defaults to `8`.
+
+#### Retention response
+
+`results` holds one object per cohort:
+
+```json
+{
+  "results": [
+    {
+      "date": "2026-08-17T00:00:00Z",
+      "label": "Week 0",
+      "breakdown_value": null,
+      "values": [
+        { "count": 210, "label": "Week 0" },
+        { "count": 96, "label": "Week 1" },
+        { "count": 71, "label": "Week 2" }
+      ]
+    }
+  ]
+}
+```
+
+- `date` is the start of the cohort's interval, and `label` names it.
+- `values[n].count` is the number of users from that cohort who returned in interval `n`.
+- `values[0].count` is the cohort size.
+
+**Retention percentages are not in the response. Calculate them from `count`:** `values[n].count / values[0].count * 100`.
+
+## Response structure
+
+The response format depends on the query type, but all responses include:
+
+- `results`: The data returned by the query
+- `is_cached` (for cached responses): Indicates the result came from cache
+- `timings` (when available): Performance metrics for the query execution
+
+### Cached responses
+
+API queries are cached by default. You can check if a response is cached by checking the `is_cached` property. Responses also contain cache-related details like:
+
+- `cache_key`: A unique identifier for the cached result
+- `cache_target_age`: The timestamp until which the cached result is considered valid
+- `last_refresh`: When the data was last computed
+- `next_allowed_client_refresh`: The earliest time when a client can request a fresh calculation
+
+### Asynchronous queries
+
+For asynchronous queries (like ones with `refresh: async`), the initial response includes a query status with its completion status, query ID, start time, and more:
+
+```json
+{
+  "query_status": {
+    "id": "2fbd4b19413342a4ad08c307155187bc",
+    "team_id": 123,
+    "complete": false
+  }
+}
+```
+
+You can then poll the status by sending a `GET` request to the `/api/projects/:project_id/query/:query_id/` endpoint.
+
+```bash
+curl \
+  -H "Authorization: Bearer $POSTHOG_PERSONAL_API_KEY" \
+  <ph_app_host>/api/projects/:project_id/query/$QUERY_ID/
+```
+
+## Rate limits
+
+API queries are limited at the project-level to:
+
+- 2400 requests per hour
+- 240 requests per minute
+- 3 queries running concurrently
+- 60 threads per query
+- 10 seconds of max execution time
+  - applies to query execution time, not HTTP request duration
+
+
+At this time, we are not offering higher limits than these, but you may wish to try our [endpoints product](/docs/endpoints), which offers query customization and higher limits. Alternatively, you may be able to use our [batch exports product](/docs/cdp/batch-exports) to pull the data that you need from our events or persons tables on a faster cadence, or a [file download export](/docs/cdp/file-download-exports) for a one-off export.
+
+If the project's concurrency quota is exhausted, we put the query in queue and wait. The query may wait up to 30 seconds in a queue before executing, being canceled, or timing out.
+
+<CalloutBox type="fyi" icon="IconLightBulb" title="Legacy query limits">
+Some customers haven't been migrated to the above limit and are on an old limit of 120 queries/hour.
+</CalloutBox>
+
+### Hourly read budget
+
+Queries made with a personal API key draw from an hourly read budget per project, and every query debits the bytes it read. The budget refills continuously, and unused budget carries over up to a cap.
+
+Once it is exhausted, queries return a `429` response with the code `api_queries_budget_exceeded` and a `Retry-After` header. Every `/query` response made with a personal API key includes `X-PostHog-Query-Bytes-Read` and `X-PostHog-Query-Budget-Remaining-Bytes`; for asynchronous queries, the same headers arrive on the poll response once the query completes.
+
+Cached results still work while the budget is exhausted. Queries made in the PostHog app are not affected.
+
+For the larger budget, [subscribe to a paid plan](/pricing). PostHog is pay-as-you-go with no monthly minimum, and trials count as paid while active. To read less per query, see [writing performant queries](#writing-performant-queries) above.
+
+## Further reading
+
+- [File download exports for one-off bulk exports](/docs/cdp/file-download-exports)
+- [Project setup for embedded analytics](/docs/data/embedded-analytics-projects)
+- [How to set up embedded analytics with PostHog, Next.js, and Recharts](/tutorials/embedded-analytics)
+- [How to use Recharts to visualize analytics data (with examples)](/tutorials/recharts)
+- [How Mintlify launched user-facing analytics, powered by PostHog](/customers/mintlify)
+- [The query endpoint API reference](/docs/api/query/)
+- [The query API endpoint code on GitHub](https://github.com/PostHog/posthog/blob/master/posthog/api/query.py)

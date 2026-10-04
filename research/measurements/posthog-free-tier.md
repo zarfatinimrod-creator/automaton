@@ -17,7 +17,11 @@ item 5: "read PostHog's free-tier terms for the query API first".
 
 **Grades.** `github` = a file read on GitHub at a pinned commit, cited `<repo>@<sha> <path>:<line>`; `repo` = our own files;
 `none` = inference, flagged. "Not in the source" means the files listed below do not say it, not that it is false. Every
-quote below was checked against the fetched file with `grep -n -F`.
+quote in a table below, and in a paragraph that cites a PC or PH file or the terms reference by line, is checked on the
+lines it cites by `src/__tests__/revenue/posthog-free-tier-sources.test.ts`: against the pinned copies in
+`research/measurements/posthog-free-tier-sources/` (PC's `/contents/` files and its LICENSE, all of PH), and for PC's
+three `src/` files, which are not copied, against the quotes that test lists as read at PC on 4.10 (added after the
+tick-40 review; until then the check was a script outside the repository).
 
 ## What was read
 
@@ -58,8 +62,10 @@ Two pins, both the repository's `master` HEAD on 4.10.2026 (from the repo's comm
 The terms and privacy pages themselves are in `research/channel-loop/terms/posthog-terms-2026-10-04.md` and
 `posthog-privacy-2026-10-04.md` (pinned references at `35fc817`, byte-identical at PC). Licences: PC's docs under
 `/contents/` are MIT; everything else in PC (the `src/` files above included) carries "Please do not duplicate, copy, or
-use our website" (PC `LICENSE:5-6`), so this note quotes and does not copy; PH is MIT Expat outside `ee/` (PH
-`LICENSE:3-7`). One path tried did not exist: PC `contents/docs/cdp/transformations/template-geoip.mdx` (HTTP 404).
+use our website" (PC `LICENSE:5-6`), so those three are quoted and not copied; PH is MIT Expat outside `ee/` (PH
+`LICENSE:3-7`). The other 23 files, the two LICENSEs among them, are kept byte for byte in
+`research/measurements/posthog-free-tier-sources/` with `SOURCES.json` (pin, path, lines, bytes, sha256 of all 26). One
+path tried did not exist: PC `contents/docs/cdp/transformations/template-geoip.mdx` (HTTP 404).
 
 ## (a) Product analytics events at our volume (a few thousand a month at most)
 
@@ -74,14 +80,18 @@ use our website" (PC `LICENSE:5-6`), so this note quotes and does not copy; PH i
 
 **(a): covered.** At our volume the allowance is not approached, and on the free plan an overrun drops events rather
 than billing. The ₪0 rule therefore rests on the organization staying on the free plan with no card, which is also the
-owner's step and not ours (MISSION, the ₪0 rule of 27.9).
+owner's step and not ours (the ₪0 rule of 27.9, `MISSION.md:352-354`: "₪0 until the ledger shows it works", "Nothing is
+bought"; the owner's own clicks, "identity, payout, and anything bought", are outside the standing consent, `:349-350`).
 
 ## (b) The query API that `src/revenue/page-views.ts` reads
 
 What the reader does (repo): one HogQL query per completed week per clock, `POST {eu|us}.posthog.com/api/projects/:id/query/`
-with a personal API key as Bearer (`src/revenue/page-views-reader.ts:264-269`), a `SELECT … count() … GROUP BY pathname …
-LIMIT 1000` that returns at most the site's page count plus two rows (`src/revenue/page-views.ts:189-218`,
-`QUERY_ROW_LIMIT` `:152`). No `OFFSET`.
+with a personal API key as Bearer (`src/revenue/page-views-reader.ts:264-269`), one after another and at most
+`MAX_WEEKS_PER_READ` (20) in one tick, so a reader catching up after a gap sends up to 20 at once and a caught-up one a
+single query a week (`page-views-reader.ts:62`, `:348`). Each is a `SELECT … count() … GROUP BY pathname … LIMIT 1000`
+that returns at most `sitePaths(pages).length + 2` rows: the site's paths plus a preview row and an `(other)` row, where
+`sitePaths` gives two paths per page (three for the home page), so 23 paths for il-biz-tools' 11 `.html` pages and at
+most 25 rows on 4.10.2026 (`src/revenue/page-views.ts:177-187`, `:189-217`, `QUERY_ROW_LIMIT` `:152`). No `OFFSET`.
 
 | Question | Finding | Quote | Source | Grade |
 |---|---|---|---|---|
@@ -91,15 +101,22 @@ LIMIT 1000` that returns at most the site's page count plus two rows (`src/reven
 | Can a free account mint the key? | Nothing marks personal API keys as paid; only the organization-wide key **view** "requires a plan that includes organization security settings" | quoted | PC `contents/docs/api/personal-api-keys.mdx:7`, `:53` | github |
 | Is it charged today? | **No**: free during the public beta | "**Will there be API pricing?** The SQL API is free to use while it's in the public beta and we work out the details. After we launch for real, we plan to charge a competitive rate for heavy usage. Stay tuned." | PC `sql/index.mdx:148` | github |
 | Will it be? | **Announced**: "eventually" | "**Future pricing** - We strongly discourage Query API usage and will eventually charge for it." | PC `contents/docs/endpoints/endpoints-vs-query-api.mdx:16` | github |
-| Rate limits | 2,400 requests/hour, 240/minute, 3 concurrent, 10 s execution, per project; some projects still on 120/hour | quoted list | PC `queries.mdx:423-430`, `:437-438`; PC `contents/docs/api/index.mdx:36` | github |
+| Rate limits | 2,400 requests/hour, 240/minute, 3 concurrent, 10 s execution, per project; some projects still on 120/hour | "API queries are limited at the project-level to:" · "2400 requests per hour" · "240 requests per minute" · "3 queries running concurrently" · "10 seconds of max execution time" · "an old limit of 120 queries/hour" · "has a rate limit of `2400/hour`" | PC `queries.mdx:423-430`, `:437-438`; PC `contents/docs/api/index.mdx:36` | github |
 | Hourly read budget (personal-key queries) | Exists, per project, in bytes read; a paid plan's is larger. **Code default: 20 GB/hour free, ×10 paid, 24 hours of carry-over**; the deployed value is not in the source (each is an environment override) | "Queries made with a personal API key draw from an hourly read budget per project" · "For the larger budget, [subscribe to a paid plan](/pricing)." · `"API_QUERIES_BUDGET_FREE_BYTES_PER_HOUR", 20_000_000_000` · `"API_QUERIES_BUDGET_PAID_MULTIPLIER", 10.0` · `"API_QUERIES_BUDGET_CAPACITY_HOURS", 24.0` | PC `queries.mdx:443`, `:449`; PH `posthog/settings/web.py:1027-1031`; PH `posthog/api_queries_budget.py:78-85` | github |
-| What the endpoint is for | "ad-hoc analytics and embedded use cases"; **not exports**: "Bulk or recurring exports of `events`, `persons`, or `query_log` are not supported … any integration that pulls more than a few thousand rows on a schedule" | quoted | PC `queries.mdx:17`, `:19`, `:22` | github |
-| Our use against it | A weekly aggregate of at most a dozen rows, one query a week per clock: no export, nowhere near 2,400/hour, and a week of a few thousand events is a sliver of a 20 GB/hour budget | — | repo; budget arithmetic is ours | none (arithmetic) |
+| What the endpoint is for | A listed use is ours: "Pulling aggregated PostHog data into your own or other apps."; the endpoint "is intended for ad-hoc analytics and embedded use cases"; **not exports**: "Bulk or recurring exports of `events`, `persons`, or `query_log` are not supported … any integration that pulls more than a few thousand rows on a schedule" | quoted | PC `contents/docs/api/queries.mdx:13`, `:17`, `:19` | github |
+| Third-party connectors | **Turned away**: "Third-party connectors must use [batch exports](…) … not `/query`. Connectors built on `/query` are not supported and will be rate-limited or rejected." The reader is not one: it is our own script reading our own project with a key on our own account, which is what a personal API key is for: "They're the right choice when you're using PostHog from your own scripts, automations, or any integration tied to your own account." | quoted | PC `queries.mdx:20`; PC `contents/docs/api/personal-api-keys.mdx:7` | github |
+| Will it keep working? | **Not promised, and not a cost.** PostHog reserves the right to restrict export-like queries "including without prior notice", and "Pipelines built on `/query` may break at any time." A break is a reliability risk, separate from the free-tier question: the reader's week goes unread and the line shows `reader_down`, a blocker, a day after the week became readable (repo `src/revenue/page-views.ts:50`); nothing is charged | quoted | PC `queries.mdx:22`; repo `src/revenue/page-views.ts:50` | github |
+| Our use against it | A weekly aggregate of at most a few dozen rows (25 on 4.10), one query per completed week, sent one at a time, at most 20 in one tick when catching up: no export, nowhere near 240/minute or 2,400/hour, never more than one of the 3 concurrent, and a week of a few thousand events is a sliver of a 20 GB/hour budget | — | repo (`src/revenue/page-views-reader.ts:62`, `:348`); budget arithmetic is ours | none (arithmetic) |
 | The alternative if the query API is priced | Endpoints: "free during beta. When pricing ships, it will be usage-based with a generous monthly free tier" | quoted | PC `src/hooks/productData/endpoints.tsx:31-32` | github |
 
-**(b): covered today.** The query API is on the free plan, ungated in code, uncharged, and the reader sits inside every
-limit and inside the endpoint's stated purpose. **The reader's exposure is the announced pricing**, and the free plan's
-read budget, whose deployed size is not in the source.
+**(b): covered today.** The query API is on the free plan, ungated in code and uncharged, and the reader sits inside every
+limit. Its use is one the page lists, "Pulling aggregated PostHog data into your own or other apps." (PC
+`queries.mdx:13`), made by our own script with a key on our own account, which is what personal API keys are for (PC
+`personal-api-keys.mdx:7`), and not a third-party connector, which the page turns away (PC `queries.mdx:20`): if PostHog
+read "connector" more widely, the reader would be rate-limited or rejected, not billed. **The reader's exposure is the
+announced pricing**, and the free plan's read budget, whose deployed size is not in the source. Its reliability is a
+separate risk: "Pipelines built on `/query` may break at any time." (PC `queries.mdx:22`), which the reader would show as
+`reader_down`, not as a cost.
 
 ## (c) Retention long enough for the 8-week read (and its 16-week extension)
 
