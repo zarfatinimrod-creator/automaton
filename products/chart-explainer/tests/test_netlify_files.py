@@ -8,12 +8,15 @@ in research/measurements/t1-subbrand-check.md), so no host is guessed or committ
 
 import re
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 import pytest
 
 import netlify_files
 
 ORIGIN = "https://example-sub-brand.netlify.app"  # made up; the real host is chosen by the loop
+PRODUCT = Path(__file__).resolve().parent.parent
+REPO_ROOT = PRODUCT.parent.parent
 SITEMAP_NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
 
 
@@ -67,3 +70,22 @@ def test_the_files_carry_nothing_but_the_host():
 def test_an_origin_that_is_not_a_bare_https_origin_is_refused(origin):
     with pytest.raises(ValueError):
         netlify_files.netlify_files(origin)
+
+
+def test_the_readme_names_the_recorded_host_and_the_module_hard_codes_none():
+    # Tick 39 review, defect 4: "no host is committed" read as if no host was decided, but PREREG-DECISIONS.md:547
+    # records it. What is true of this module is that it hard-codes none: the deploy configuration passes the host
+    # (RULING-2026-09-29-lines.md (e), APPLY 3).
+    prereg = (REPO_ROOT / "research" / "faceless-youtube" / "PREREG-DECISIONS.md").read_text(encoding="utf-8")
+    recorded = re.search(r"sub-brand host: \*\*`([a-z0-9-]+)`\*\* \(`(https://[a-z0-9-]+\.netlify\.app)`\)", prereg)
+    assert recorded, "PREREG-DECISIONS.md no longer records the sub-brand host"
+    name, host = recorded.groups()
+    readme = (PRODUCT / "README.md").read_text(encoding="utf-8").splitlines()
+    row = next(line for line in readme if line.startswith("| `netlify_files.py` |"))
+    assert "PREREG-DECISIONS.md:547" in row and "sub-brand host" in prereg.splitlines()[546]
+    assert f"`{host}`" in row
+    assert "No host is hard-coded in this module" in row
+    assert "no host is committed" not in row
+    # And the module does hard-code none: after its docstring, neither the name nor the host appears.
+    code = (PRODUCT / "netlify_files.py").read_text(encoding="utf-8").split('"""', 2)[2]
+    assert name not in code and host not in code

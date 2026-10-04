@@ -326,7 +326,7 @@ https://www.btl.gov.il/Insurance/National%20Insurance/Pages/%D7%9E%D7%99%20%D7%A
 # ZERO-TESTS.md row 30 — Superteam Earn (15), T2: the terms of use (breadth board Q1 rank 2).
 # retired (tick 36: Superteam Earn (candidate 15) was killed 28.9 in tick 5, logs/CHANNEL_LOOP.md §7; RULING-2026-09-28-bounty-rail.md:376-381) — https://superteam.fun/earn/terms-of-use.pdf	superteam-earn-terms-pdf
 # ZERO-TESTS.md row 33 — CrazyGames (6) and Wix App Market (11): Tipalti's payees FAQ; gates step 10.
-# paused (terms unread, 29.9.2026; verdict as of 4.10.2026): tipalti.com is BARRED in research/channel-loop/terms-verdicts.json — https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs	tipalti-payees-faq
+# paused (terms audit, 29.9.2026): tipalti.com — see TERMS_BARRED in scripts/render-watch.mjs — https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs	tipalti-payees-faq
 # ZERO-TESTS.md row 34 — Firefox Add-ons (16): the add-on policies.
 https://extensionworkshop.com/documentation/publish/add-on-policies/	amo-add-on-policies
 # ZERO-TESTS.md row 35 — Firefox Add-ons (16): the newest cohort's daily users.
@@ -375,7 +375,7 @@ https://api.apify.com/v2/store?search=israel&limit=1000	apify-store-israel-defau
 # ZERO-TESTS.md row 55 — Google Play Books (18), Batch B.
 # paused (terms audit, 29.9.2026): google.com — see TERMS_BARRED in scripts/render-watch.mjs — https://support.google.com/books/partner/answer/4490848?hl=en	play-books-answer-4490848
 # ZERO-TESTS.md row 56 — Wix App Market (11), Batch B: Tipalti's payment-method coverage, US-ROW.
-# paused (terms unread, 29.9.2026; verdict as of 4.10.2026): tipalti.com is BARRED in research/channel-loop/terms-verdicts.json — https://help.tipalti.com/hc/en-us/articles/31314361313815-Payment-methods-coverage-US-ROW	tipalti-payment-methods-us-row
+# paused (terms audit, 29.9.2026): tipalti.com — see TERMS_BARRED in scripts/render-watch.mjs — https://help.tipalti.com/hc/en-us/articles/31314361313815-Payment-methods-coverage-US-ROW	tipalti-payment-methods-us-row
 # ZERO-TESTS.md row 57 — Wix App Market (11), Batch B: the App Market guidelines.
 # paused (terms audit, 29.9.2026): wix.com — see TERMS_BARRED in scripts/render-watch.mjs — https://dev.wix.com/docs/build-apps/launch-your-app/app-distribution/app-market-guidelines	wix-app-market-guidelines
 # ZERO-TESTS.md row 58 — Wix App Market (11), Batch B: what the listing publishes about the company.
@@ -444,7 +444,7 @@ https://static.gamedistribution.com/developer/developers-guidelines.html	gamedis
 # research/channel-loop/ZERO-TESTS.md row 88 — Teachers Pay Teachers (kill confirmation), replenish pass (28.9.2026).
 # paused (terms audit, 29.9.2026): teacherspayteachers.com — see TERMS_BARRED in scripts/render-watch.mjs — https://help.teacherspayteachers.com/hc/en-us/articles/360044219891-Seller-Fees-and-Payout-Rates	tpt-seller-fees
 # research/channel-loop/ZERO-TESTS.md row 89 — Wavedash (unsettled), replenish pass (28.9.2026).
-# paused (terms unread, 29.9.2026; verdict as of 4.10.2026): wavedash.com is BARRED in research/channel-loop/terms-verdicts.json — https://docs.wavedash.com/llms-full.txt	wavedash-llms-full
+# paused (terms audit, 29.9.2026): wavedash.com — see TERMS_BARRED in scripts/render-watch.mjs — https://docs.wavedash.com/llms-full.txt	wavedash-llms-full
 # research/channel-loop/ZERO-TESTS.md row 90 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
 # paused (terms unread, 29.9.2026): ganim-mall.co.il is NO_TERMS in research/channel-loop/terms-verdicts.json — https://ganim-mall.co.il	ganim-mall-home
 # research/channel-loop/ZERO-TESTS.md row 91 — Hebrew teacher-site lead (unsettled), replenish pass (28.9.2026).
@@ -582,7 +582,7 @@ https://assets-static-prod.displate.com/next-assets/_next/static/chunks/pages/ab
 # research/channel-loop/ZERO-TESTS.md row 157 — lines ruling 29.9 (a): iCount plans, logo on a receipt in a free tier (29.9.2026).
 # paused (terms audit, 29.9.2026): icount.co.il — see TERMS_BARRED in scripts/render-watch.mjs — https://www.icount.co.il/plans/	icount-plans
 # research/channel-loop/ZERO-TESTS.md row 158 — lines ruling 29.9 (a): YPAY FAQ (URL unverified), logo on a free receipt (29.9.2026).
-# paused (terms unread, 29.9.2026; verdict as of 4.10.2026): ypay.co.il is NOT_BARRED in research/channel-loop/terms-verdicts.json — https://ypay.co.il/front/faq	ypay-faq
+# paused (terms read, left paused, 29.9.2026; verdict as of 4.10.2026): ypay.co.il is NOT_BARRED in research/channel-loop/terms-verdicts.json — https://ypay.co.il/front/faq	ypay-faq
 # research/channel-loop/ZERO-TESTS.md row 159 — lines ruling 29.9 (a): Invoice4u price list (URL unverified), logo on a free receipt (29.9.2026).
 https://www.invoice4u.co.il/pricelist-invoice/	invoice4u-pricelist
 # research/channel-loop/ZERO-TESTS.md row 160 — lines ruling 29.9 (h): the consumer-protection law at nevo, id 70305 (research/measurements/refund-law-il.md) (29.9.2026).
@@ -602,9 +602,9 @@ https://www.invoice4u.co.il/pricelist-invoice/	invoice4u-pricelist
 # research/channel-loop/ZERO-TESTS.md row 167 — Topcoder (12): Trolley's IDV blog post, plain (29.9.2026).
 # retired (tick 36: Topcoder (candidate 12), the only candidate these served, was killed 29.9 in tick 18, logs/CHANNEL_LOOP.md §7) — https://trolley.com/blog/trolley-trust-idv-tool/	trolley-trust-idv-tool
 # research/channel-loop/ZERO-TESTS.md row 168 — lines ruling 29.9 (a): YPAY shop (israeli-invoicing-free-tiers.md) (29.9.2026).
-# paused (terms unread, 29.9.2026; verdict as of 4.10.2026): ypay.co.il is NOT_BARRED in research/channel-loop/terms-verdicts.json — https://ypay.co.il/front/shop/index	ypay-shop
+# paused (terms read, left paused, 29.9.2026; verdict as of 4.10.2026): ypay.co.il is NOT_BARRED in research/channel-loop/terms-verdicts.json — https://ypay.co.il/front/shop/index	ypay-shop
 # research/channel-loop/ZERO-TESTS.md row 169 — lines ruling 29.9 (a): YPAY knowledge centre (29.9.2026).
-# paused (terms unread, 29.9.2026; verdict as of 4.10.2026): ypay.co.il is NOT_BARRED in research/channel-loop/terms-verdicts.json — https://ypay.co.il/front/articles	ypay-articles
+# paused (terms read, left paused, 29.9.2026; verdict as of 4.10.2026): ypay.co.il is NOT_BARRED in research/channel-loop/terms-verdicts.json — https://ypay.co.il/front/articles	ypay-articles
 # research/channel-loop/ZERO-TESTS.md row 170 — lines ruling 29.9 (a): Quickly Invoice (snippet PASS) (29.9.2026).
 # paused (terms unread, 29.9.2026): quicklyinvoice.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://quicklyinvoice.com/	quicklyinvoice-home
 # research/channel-loop/ZERO-TESTS.md row 171 — lines ruling 29.9 (a): SUMIT (29.9.2026).

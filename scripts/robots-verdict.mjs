@@ -58,7 +58,8 @@ export function serializeVerdicts(verdicts) {
   return JSON.stringify(verdicts, null, 1);
 }
 
-const PAUSED_LINE = /^#\s*paused\b.*\s(https?:\/\/\S+)\s+([a-z0-9][a-z0-9._-]*)(?:\s+js)?\s*$/;
+/** A `# paused …` line ending in URL<TAB>slug[<TAB>js]: [, url, slug]. Also read by scripts/urls-pause-comments.mjs. */
+export const PAUSED_LINE = /^#\s*paused\b.*\s(https?:\/\/\S+)\s+([a-z0-9][a-z0-9._-]*)(?:\s+js)?\s*$/;
 
 /**
  * The site's lines in urls.txt, in file order: active lines, and lines commented out as `# paused …` that end in

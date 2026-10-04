@@ -5,13 +5,21 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as queue-zero-test.mjs)
-import { KEEP_AS_IS, syncPauseComments, todayNote } from "../../../scripts/urls-pause-comments.mjs";
+import { applyVerdicts } from "../../../scripts/queue-zero-test.mjs";
+// @ts-expect-error — plain ESM script, no type declarations by design
+import { termsBarred } from "../../../scripts/render-watch.mjs";
+// @ts-expect-error — plain ESM script, no type declarations by design (same as queue-zero-test.mjs)
+import { KEEP_AS_IS, assertOnlyCommentsChanged, reasonFor, syncPauseComments, todayNote } from "../../../scripts/urls-pause-comments.mjs";
 
 /**
  * scripts/urls-pause-comments.mjs — urls.txt's "# paused (terms unread ...)" comments name the site's verdict of the
- * day they were written; when terms-verdicts.json changes, the script rewrites the verdict word and the date note and
- * nothing else (logs/CHANNEL_LOOP.md §9, tick 36, item 7). It never changes a URL or slug, never un-pauses a line,
- * never touches an active or retired line, and leaves nevo.co.il's pinned comments as they are.
+ * day they were written; when terms-verdicts.json changes, the script rewrites the verdict word and the date note
+ * (logs/CHANNEL_LOOP.md §9, tick 36, item 7), and the reason when it is one the verdict decides ("terms unread",
+ * "terms read", "terms read, left paused"; tick 39 review, defect 1). A TERMS_BARRED host's comment takes the
+ * "terms audit ... see TERMS_BARRED" form queue-zero-test --apply-verdicts writes for it. A reason a person wrote is
+ * kept (defect 3). It never changes a URL, slug or js flag (checked by assertOnlyCommentsChanged before anything is
+ * written; defect 2), never un-pauses a line, never touches an active or retired line, and leaves nevo.co.il's pinned
+ * comments as they are.
  */
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -23,6 +31,10 @@ const SITES = {
   "same.example": { verdict: "TERMS_PENDING", source: "https://same.example/terms", checked: "2026-09-29" },
   "read.example": { verdict: "NOT_BARRED", source: "terms read", checked: "2026-09-29", note: "lines stay paused (no weekly need)" },
   "barred.example": { verdict: "BARRED", source: "terms bar robots", checked: "2026-09-29" },
+  // A real TERMS_BARRED domain (scripts/render-watch.mjs), so the terms-audit form is the real one.
+  "tipalti.com": { verdict: "BARRED", source: "TERMS_BARRED in scripts/render-watch.mjs", checked: "2026-09-29" },
+  // CONDITIONAL_UNMET does not say whether the terms were read (n8n.io's is "linked but unread"; y8.com's was read).
+  "unmet.example": { verdict: "CONDITIONAL_UNMET", source: "its policy is linked but unread", checked: "2026-09-29" },
   "nevo.co.il": {
     verdict: "NO_TERMS_ROBOTS_OK",
     source: "scripts/robots-verdict.mjs",
@@ -44,8 +56,18 @@ const URLS = [
   /* 10 */ `#paused (terms unread, 29.9.2026): pending.example is TERMS_PENDING in ${V} — https://pending.example/f\tpending-f`,
   /* 11 */ "https://read.example/active\tread-active",
   /* 12 */ `# paused (tick 33: an empty shell; read.example is NO_TERMS in ${V}) — https://read.example/g\tread-g`,
+  /* 13 */ `# paused (terms unread, 29.9.2026): tipalti.com is TERMS_PENDING in ${V} — https://help.tipalti.com/hc/a\ttipalti-a`,
+  // 14-15: what the first --fix left in the committed file: the verdict is current, the reason is not.
+  /* 14 */ `# paused (terms unread, 29.9.2026; verdict as of 4.10.2026): tipalti.com is BARRED in ${V} — https://help.tipalti.com/hc/b\ttipalti-b`,
+  /* 15 */ `# paused (terms unread; verdict as of 1.10.2026): read.example is NOT_BARRED in ${V} — https://read.example/h\tread-h`,
+  // 16-19: reasons the verdict does not decide; kept as written.
+  /* 16 */ `# paused (tick 21, 29.9.2026): read.example is TERMS_PENDING in ${V} — https://read.example/i\tread-i`,
+  /* 17 */ `# paused (terms unread round 2, 29.9.2026): unmet.example is TERMS_PENDING in ${V} — https://unmet.example/j\tunmet-j`,
+  /* 18 */ `# paused (terms unread, 29.9.2026): unmet.example is TERMS_PENDING in ${V} — https://unmet.example/k\tunmet-k`,
+  /* 19 */ `# paused (tick 21, 29.9.2026): tipalti.com is TERMS_PENDING in ${V} — https://help.tipalti.com/hc/c\ttipalti-c`,
   "",
 ].join("\n");
+const AUDIT = "see TERMS_BARRED in scripts/render-watch.mjs";
 
 const sync = (urls = URLS, sites: Record<string, unknown> = SITES, today = "4.10.2026") => syncPauseComments(urls, sites, { today });
 const lineOf = (text: string, n: number) => text.split("\n")[n - 1];
@@ -57,19 +79,64 @@ describe("syncPauseComments — the verdict word and the date note, nothing else
     expect(lineOf(out.text, 2)).toBe(
       `# paused (terms unread, 29.9.2026; verdict as of 4.10.2026): pending.example is NO_TERMS in ${V} — https://pending.example/a\tpending-a`,
     );
-    // An earlier "verdict as of" note is replaced, not stacked; the js flag stays.
+    // An earlier "verdict as of" note is replaced, not stacked; the js flag stays. NOT_BARRED came from reading the
+    // terms, so "terms unread" goes; the gate passes, and the line is left paused for the main thread.
     expect(lineOf(out.text, 4)).toBe(
-      `# paused (terms unread, 29.9.2026; verdict as of 4.10.2026): read.example is NOT_BARRED in ${V} — https://read.example/c\tread-c\tjs`,
+      `# paused (terms read, left paused, 29.9.2026; verdict as of 4.10.2026): read.example is NOT_BARRED in ${V} — https://read.example/c\tread-c\tjs`,
     );
     // A comment without a pause date (as queue-zero-test --apply-verdicts writes it) gets the note and no invented date.
+    // barred.example is BARRED in the verdict file but not in TERMS_BARRED: the verdict form stays, the reason is "terms read".
     expect(lineOf(out.text, 5)).toBe(
-      `# paused (terms unread; verdict as of 4.10.2026): barred.example is BARRED in ${V} — https://barred.example/d?x=1&y=2\tbarred-d`,
+      `# paused (terms read; verdict as of 4.10.2026): barred.example is BARRED in ${V} — https://barred.example/d?x=1&y=2\tbarred-d`,
     );
     expect(out.changes.map((c: { line: number; from: string; to: string }) => [c.line, c.from, c.to])).toEqual([
       [2, "TERMS_PENDING", "NO_TERMS"],
       [4, "NO_TERMS", "NOT_BARRED"],
       [5, "TERMS_PENDING", "BARRED"],
+      [13, "TERMS_PENDING", "BARRED"],
+      [14, "BARRED", "BARRED"],
+      [15, "NOT_BARRED", "NOT_BARRED"],
+      [16, "TERMS_PENDING", "NOT_BARRED"],
+      [17, "TERMS_PENDING", "CONDITIONAL_UNMET"],
+      [18, "TERMS_PENDING", "CONDITIONAL_UNMET"],
+      [19, "TERMS_PENDING", "BARRED"],
     ]);
+  });
+
+  it("writes a TERMS_BARRED host's comment in the terms-audit form --apply-verdicts writes, keeping the pause date", () => {
+    expect(termsBarred("help.tipalti.com")?.domain).toBe("tipalti.com");
+    const out = sync();
+    expect(lineOf(out.text, 13)).toBe(`# paused (terms audit, 29.9.2026): tipalti.com — ${AUDIT} — https://help.tipalti.com/hc/a\ttipalti-a`);
+    // The same form applyVerdicts gives the active line, with the pause date added.
+    const applied = applyVerdicts("https://help.tipalti.com/hc/a\ttipalti-a", SITES).urls;
+    expect(lineOf(out.text, 13)).toBe(applied.replace("# paused (terms audit): ", "# paused (terms audit, 29.9.2026): "));
+    // A comment whose verdict word is already BARRED is rewritten too: its reason was the stale part.
+    expect(lineOf(out.text, 14)).toBe(`# paused (terms audit, 29.9.2026): tipalti.com — ${AUDIT} — https://help.tipalti.com/hc/b\ttipalti-b`);
+  });
+
+  it("replaces only a reason the verdict decides; a reason a person wrote, or one the verdict cannot judge, is kept", () => {
+    const out = sync();
+    // The verdict is current and only the reason was wrong (ypay's lines after the first --fix): the reason is rewritten.
+    expect(lineOf(out.text, 15)).toBe(
+      `# paused (terms read, left paused; verdict as of 4.10.2026): read.example is NOT_BARRED in ${V} — https://read.example/h\tread-h`,
+    );
+    // A person's reason stays, on an ordinary site and on a TERMS_BARRED one; only the verdict word and the note change.
+    expect(lineOf(out.text, 16)).toBe(
+      `# paused (tick 21, 29.9.2026; verdict as of 4.10.2026): read.example is NOT_BARRED in ${V} — https://read.example/i\tread-i`,
+    );
+    expect(lineOf(out.text, 17)).toBe(
+      `# paused (terms unread round 2, 29.9.2026; verdict as of 4.10.2026): unmet.example is CONDITIONAL_UNMET in ${V} — https://unmet.example/j\tunmet-j`,
+    );
+    expect(lineOf(out.text, 19)).toBe(
+      `# paused (tick 21, 29.9.2026; verdict as of 4.10.2026): tipalti.com is BARRED in ${V} — https://help.tipalti.com/hc/c\ttipalti-c`,
+    );
+    // CONDITIONAL_UNMET does not say whether the terms were read, so "terms unread" is left as written.
+    expect(lineOf(out.text, 18)).toBe(
+      `# paused (terms unread, 29.9.2026; verdict as of 4.10.2026): unmet.example is CONDITIONAL_UNMET in ${V} — https://unmet.example/k\tunmet-k`,
+    );
+    expect(
+      ["TERMS_PENDING", "NO_TERMS", "BARRED", "NOT_BARRED", "CONDITIONAL_MET", "CONDITIONAL_UNMET", "NO_TERMS_ROBOTS_OK"].map(reasonFor),
+    ).toEqual(["terms unread", "terms unread", "terms read", "terms read, left paused", "terms read, left paused", null, null]);
   });
 
   it("never changes a URL or slug, never un-pauses, and leaves every other line byte-identical", () => {
@@ -108,7 +175,10 @@ describe("syncPauseComments — the verdict word and the date note, nothing else
 
   it("lists a terms-paused line that would pass the terms gate now, and leaves it paused", () => {
     const out = sync();
-    expect(out.unpause).toEqual([{ line: 4, site: "read.example", verdict: "NOT_BARRED", slug: "read-c", url: "https://read.example/c" }]);
+    expect(out.unpause).toEqual([
+      { line: 4, site: "read.example", verdict: "NOT_BARRED", slug: "read-c", url: "https://read.example/c" },
+      { line: 15, site: "read.example", verdict: "NOT_BARRED", slug: "read-h", url: "https://read.example/h" },
+    ]);
     expect(lineOf(out.text, 4).startsWith("# paused")).toBe(true);
     // A line paused for another reason (line 12, a js shell) is not a terms pause and is not listed.
     expect(out.unpause.some((u: { line: number }) => u.line === 12)).toBe(false);
@@ -124,6 +194,33 @@ describe("syncPauseComments — the verdict word and the date note, nothing else
   it("refuses a malformed --today rather than write a bad note", () => {
     expect(() => sync(URLS, SITES, "2026-10-04")).toThrow(/D\.M\.YYYY/);
     expect(todayNote(new Date("2026-10-04T23:30:00Z"))).toBe("4.10.2026");
+  });
+});
+
+describe("assertOnlyCommentsChanged — the check syncPauseComments runs before anything is written", () => {
+  const out = sync();
+  const changed = out.changes.map((c: { line: number }) => c.line);
+  const edit = (n: number, f: (l: string) => string) => {
+    const lines = out.text.split("\n");
+    lines[n - 1] = f(lines[n - 1]);
+    return lines.join("\n");
+  };
+  const check = (after: string) => () => assertOnlyCommentsChanged(URLS, after, changed);
+
+  it("passes the script's own output", () => {
+    expect(check(out.text)).not.toThrow();
+  });
+
+  it("throws when a changed line's URL, slug or js flag differs, read the way robots-verdict.mjs reads them", () => {
+    expect(check(edit(2, (l) => l.replace("https://pending.example/a", "https://pending.example/z")))).toThrow(/line 2:/);
+    expect(check(edit(13, (l) => l.replace("\ttipalti-a", "\ttipalti-z")))).toThrow(/line 13:/);
+    expect(check(edit(4, (l) => l.replace(/\tjs$/, "")))).toThrow(/line 4:/);
+  });
+
+  it("throws when a changed line is no longer paused, a line not listed as changed differs, or a line is added", () => {
+    expect(check(edit(2, (l) => l.slice(l.lastIndexOf(" — ") + 3)))).toThrow(/line 2:/);
+    expect(check(edit(3, (l) => `${l} `))).toThrow(/line 3:/);
+    expect(check(`${out.text}\nhttps://extra.example/x\textra-x`)).toThrow(/lines/);
   });
 });
 
@@ -152,12 +249,13 @@ describe("urls-pause-comments CLI", () => {
     const check = f.run("--check");
     expect(check.status).toBe(1);
     expect(check.stdout).toContain("pending.example: TERMS_PENDING -> NO_TERMS");
+    expect(check.stdout).toContain("tipalti.com: BARRED -> BARRED (the reason changed)");
     expect(check.stdout).toContain("left paused");
     expect(readFileSync(f.urls, "utf8")).toBe(original);
 
     const fix = f.run("--fix");
     expect(fix.status).toBe(0);
-    expect(fix.stdout).toContain("3 comment(s) rewritten");
+    expect(fix.stdout).toContain("10 comment(s) rewritten");
     const fixed = readFileSync(f.urls, "utf8");
     expect(fixed).not.toBe(original);
     expect(fixed.split("\n").map(tail)).toEqual(original.split("\n").map(tail));
