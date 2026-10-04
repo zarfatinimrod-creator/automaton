@@ -68,8 +68,8 @@ blocks below. Row 16 writes `research/channel-loop/RULING-video-channels.md` (`l
 4. **The portal ruling and the terms audit (16(d) against loop ruling (e2)).**
    - (e2)'s C1 says a clause that bars "only scraping, crawling, data-mining or **collecting others' content**" does not bar
      operating our own account. A clause naming "automated means" for "**any access**" does bar it
-     (`RULING-2026-09-29-loop.md:304-308`). Its REOPEN fires on "a rendered clause names agents or automated means for any
-     access" (`:370-371`).
+     (`RULING-2026-09-29-loop.md:324-328`). Its REOPEN fires on "a rendered clause names agents or automated means for any
+     access" (`:390-391`).
    - The audit has now read clauses on these venues that the board may place on either side of that line (the
      placement is not made here):
      - CrazyGames: a robot or other automated tool may not be used "to access, acquire, copy or monitor any portion of
@@ -310,10 +310,10 @@ Hebrew.
   - Astro: "(iii) using any data mining, robots or similar data gathering or extraction methods" (TA:13, github).
 - **Whether those venues stay candidates (repo).**
   - The loop board's admission order is Displate, Indiebook, Teach Simple, CrazyGames, "each conditional on its own
-    step-8 answer" (`RULING-2026-09-29-loop.md:139-142`).
+    step-8 answer" (`RULING-2026-09-29-loop.md:159-162`).
   - (e2) C1 reads Indiebook's robots clause and Teach Simple's scrape ban as not barring operation of our own account
-    (`:306-307`).
-  - Astro's written question goes by GitHub Discussion from the step-7 machine account (`:352-353`).
+    (`:326-327`).
+  - Astro's written question goes by GitHub Discussion from the step-7 machine account (`:372-373`).
   - The NEEDS_MORE policy already dispatches a render only for "a queued URL that can kill or admit without step 8"
     (`CHANNEL_LOOP.md:88-92`).
 - **The captures already made.**
@@ -382,9 +382,9 @@ Each has sections for ticks 17, 18, 19 and 20; OP also has one for tick 22.
 ### B(a) Does loop ruling (e)3 survive §18ב? The key in a GitHub secret, a certified signature, or KILL-4
 **What is being tested (repo).**
 - **The ruling.** (e)3 lets the runner issue payee-billing documents after step 2 under six conditions, "The owner does
-  nothing per document" among them (`RULING-2026-09-29-loop.md:244-261`).
+  nothing per document" among them (`RULING-2026-09-29-loop.md:264-281`).
 - **Its REOPEN.** If the bookkeeping read shows "the עוסק must personally sign or issue each document", then Y8, Wix and
-  Indiebook "are killed under KILL-4 together" (`:287-289`).
+  Indiebook "are killed under KILL-4 together" (`:307-309`).
 - **Which venues it touches.** Payee-billing: Y8, Wix, Indiebook. Self-billing, needing nothing from us: CrazyGames,
   GameDistribution (`:265-269`).
 
@@ -444,7 +444,7 @@ Each has sections for ticks 17, 18, 19 and 20; OP also has one for tick 22.
   - Reg 11 excludes "עוסק הפטור ממס על פי סעיף 31(3)" (R-REG:123).
   - §58 is discretionary (R-VAT:785), and the definition names §58 registrants only if "ואינו עוסק פטור" (R-VAT:91).
   - [inference] So a no leads to incorporating, a long-shot §58 letter, or Wix out (OP:1054-1062). OP calls that "not a
-    simple cost decision", against (e)3's "a cost decision for the owner" (`RULING-2026-09-29-loop.md:275`).
+    simple cost decision", against (e)3's "a cost decision for the owner" (`RULING-2026-09-29-loop.md:295`).
   - If authorised status were reached, periodic reports would follow even with no activity (R-VAT:852, :856).
 - **A yearly owner filing.** The exempt dealer declares turnover "עד 31 בינואר בכל שנה" (R-REG:173). That is one filing a
   year, not one per payout ([inference], OP:1073-1077).

@@ -1,9 +1,9 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { TERMS_BARRED, fetchOne, parseUrlList, termsBarred } from "../../../scripts/render-watch.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
-import { overrideLines, siteOf } from "../../../scripts/queue-zero-test.mjs";
+import { overrideLines, siteOf, termsGate } from "../../../scripts/queue-zero-test.mjs";
 
 /**
  * Tick 19 (29.9.2026): Gumroad's rendered terms bar "any manual or automated software ... to
@@ -222,5 +222,69 @@ describe("terms-verdicts.json gates every active line (terms audit round 2)", ()
     const nevo = entries().filter((e) => /nevo\.co\.il$/.test(new URL(e.url).hostname));
     expect(nevo.every((e) => new URL(e.url).pathname === "/robots.txt")).toBe(true);
     expect(readFileSync("research/rendered/nevo-vat-law.txt", "utf8")).toContain("122,833");
+  });
+});
+
+/**
+ * Ruling 4.10 on FABLE_QUEUE row 18 (research/channel-loop/RULING-2026-10-04-mozilla-precondition.md §3). The AMO
+ * add-on policy page was still an active urls.txt line although Firefox was killed 29.9, so the weekly run would have
+ * fetched it again; it is retired, and its capture stays as the kill's evidence (frozen by tick 38). mozilla.org's
+ * verdict was BARRED on "its other pages have no active line", a statement about our lines rather than a reading of its
+ * terms; it is now the audit's terms reading, CONDITIONAL_UNMET on the personal-data condition, and the gate behaves as
+ * before: no mozilla.org line passes.
+ */
+describe("ruling 4.10 row 18 §3: the AMO policy line retired, mozilla.org judged on its terms", () => {
+  const POLICY_URL = "https://extensionworkshop.com/documentation/publish/add-on-policies/";
+  const urlsText = () => readFileSync("research/rendered/urls.txt", "utf8");
+  const verdicts = () => JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8")).sites;
+
+  it("retires the AMO add-on policy line in the house form, keeping its URL and slug as the record", () => {
+    const lines = urlsText().split("\n").filter((l) => l.includes(POLICY_URL));
+    expect(lines).toHaveLength(1);
+    expect(lines[0]).toMatch(
+      /^# retired \(ruling 4\.10 row 18 §3 rule 1: Firefox Add-ons \(loop row 16\) was killed 29\.9, RULING-2026-09-29-loop\.md \(a\);[^\n]*the capture stays as the kill's rendered evidence[^\n]*\) — https:\/\/extensionworkshop\.com\/documentation\/publish\/add-on-policies\/\tamo-add-on-policies$/,
+    );
+    expect((parseUrlList(urlsText()) as { slug: string }[]).some((e) => e.slug === "amo-add-on-policies")).toBe(false);
+    // The line went because its candidate was killed, not because of the site's terms: extensionworkshop.com keeps its
+    // verdict, and the frozen copy the kill and the terms audit cite by line is still on disk.
+    expect(verdicts()["extensionworkshop.com"].verdict).toBe("CONDITIONAL_MET");
+    for (const ext of ["txt", "html", "meta.json"]) {
+      expect(existsSync(`research/rendered/amo-add-on-policies-2026-09-28.${ext}`), ext).toBe(true);
+    }
+    expect(readFileSync("research/rendered/FROZEN.sha256", "utf8")).toContain("amo-add-on-policies-2026-09-28.txt");
+  });
+
+  it("marks ZERO-TESTS row 34, the line's row, retired for the same reason", () => {
+    const row = readFileSync("research/channel-loop/ZERO-TESTS.md", "utf8").split("\n").find((l) => l.startsWith("| 34 |"))!;
+    expect(row).toContain(POLICY_URL);
+    expect(row).toContain("**RETIRED (status noted 4.10, ruling 4.10 row 18 §3 rule 1: Firefox Add-ons, loop row 16, was killed 29.9;");
+    expect(row).toMatch(/see its urls\.txt line\)\.\*\* \|$/);
+  });
+
+  it("gives mozilla.org the audit's terms reading: CONDITIONAL_UNMET on the personal-data condition, with the ruling's note", () => {
+    const m = verdicts()["mozilla.org"] as { verdict: string; source: string; checked: string; note: string };
+    expect(m.verdict).toBe("CONDITIONAL_UNMET");
+    expect(m.source).toContain("mozilla/legal-docs en/websites_tou.md");
+    expect(m.source).toContain("en/acceptable_use_policy.md:14");
+    expect(m.source).toContain("no access bar");
+    expect(m.source).toContain("TERMS-AUDIT-2026-09-29.md:27, :138");
+    expect(m.checked).toBe("2026-10-04");
+    expect(m.note).toContain("RULING-2026-10-04-mozilla-precondition.md");
+    expect(m.note).toContain("addons.mozilla.org stays in TERMS_BARRED");
+    expect(m.note).toContain("no bugzilla.mozilla.org /rest/ line is ever active");
+    expect(m.note).toContain("CONDITIONAL_MET only in the fold that queues a line whose capture lists no accounts or addresses");
+  });
+
+  it("changes nothing at the gate: no mozilla.org page passes, and the AMO API stays barred by name", () => {
+    const v = verdicts();
+    for (const url of ["https://www.mozilla.org/en-US/security/client-bug-bounty/", "https://bugzilla.mozilla.org/rest/bug/1"]) {
+      const gate = termsGate(url, "x", v);
+      expect(gate.ok, url).toBe(false);
+      expect(gate.verdict, url).toBe("CONDITIONAL_UNMET");
+    }
+    expect(termsGate("https://addons.mozilla.org/api/v5/addons/search/", "x", v).verdict).toBe("BARRED");
+    expect(termsBarred("addons.mozilla.org")?.domain).toBe("addons.mozilla.org");
+    const active = (parseUrlList(urlsText()) as { url: string }[]).filter((e) => siteOf(new URL(e.url).hostname) === "mozilla.org");
+    expect(active).toEqual([]);
   });
 });

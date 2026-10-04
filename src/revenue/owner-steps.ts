@@ -99,6 +99,18 @@
  *   - (a), (g): the proposed Mozilla add-ons step (14) is gone with Firefox's kill,
  *     and PayPal's proposed step 13 has condition (i) met; both live only in the
  *     Hebrew document's "later" section and in logs/CHANNEL_LOOP.md, never here.
+ *
+ * Ruling of 4.10.2026 on Mozilla's precondition (research/channel-loop/RULING-2026-10-04-mozilla-precondition.md
+ * §2 rule 3) — no step added, removed, renumbered or reordered:
+ *
+ *   - Step 7's sitting gains the organisation's ₪0 fence for the open repo-visibility decision (logs/CHANNEL_LOOP.md
+ *     §6): a $0 Actions product-level budget scoped to the whole organisation with "Stop usage when budget limit is
+ *     reached" ticked, created before any private repository exists there; the included-usage alerts; and a read-only
+ *     token (Administration: read on the organisation, never write) so a runner can read the budget back. Mozilla's
+ *     dry-run harness (loop row 8) is one line that would use the fence and asks the owner for nothing of its own.
+ *   - That token is a step-6 secret row, ORG_BUDGETS_READ_TOKEN, made in step 7's sitting as BRAND_GITHUB_TOKEN is
+ *     (`madeIn`), from the owner's own account (amendment 4.10). Nothing reads it yet: the budgets read is built after step 7.
+ *   - Step 7's estimate goes from 10-15 to 15-20 minutes for the two additions.
  */
 
 import { DEFAULT_PORTFOLIO, humanSetupItemFor } from "./portfolio.js";
@@ -331,9 +343,10 @@ export const OWNER_STEPS: OwnerStep[] = [
     number: 7,
     order: 6,
     title: "להעביר את הריפו לארגון ב-GitHub (וחשבון מכונה בשם המותג)",
-    minutes: [10, 15],
+    minutes: [15, 20],
     unlocks:
-      "Takes the owner's name off every raw.githubusercontent.com URL in the repository, and creates the ONE brand machine account GitHub's terms allow alongside a personal account. That account is what authors bounty pull requests and signs in to Algora — an organisation cannot sign in anywhere, so the org alone does not fix the byline. In the same sitting the owner creates its personal access token, BRAND_GITHUB_TOKEN, pasted in step 6 with the others (RULING-2026-09-28-bounty-rail.md §4.4). It is an ordinary User account whose login does not end in \"bot\" — Algora's contributor queries drop %bot logins, and a GitHub App (type Bot) fails its human-author check (BOARD-2 §2.1.3(c); bounties/intake.ts brandAccountProblems).",
+      "Takes the owner's name off every raw.githubusercontent.com URL in the repository, and creates the ONE brand machine account GitHub's terms allow alongside a personal account. That account is what authors bounty pull requests and signs in to Algora — an organisation cannot sign in anywhere, so the org alone does not fix the byline. In the same sitting the owner creates its personal access token, BRAND_GITHUB_TOKEN, pasted in step 6 with the others (RULING-2026-09-28-bounty-rail.md §4.4). It is an ordinary User account whose login does not end in \"bot\" — Algora's contributor queries drop %bot logins, and a GitHub App (type Bot) fails its human-author check (BOARD-2 §2.1.3(c); bounties/intake.ts brandAccountProblems). " +
+      "The same sitting sets the organisation's ₪0 fence for the open repo-visibility decision (logs/CHANNEL_LOOP.md §6; a private repository meters Actions minutes, the colony's own hourly workflows included): on the organisation's Billing & Licensing → Budgets and alerts, a $0 Actions product-level budget scoped to the whole organisation with \"Stop usage when budget limit is reached\" ticked, created before any private repository exists in the organisation (a budget counts only metered use from its creation onwards, gh-docs-budgets-and-alerts-2026-09-29.txt:277); the included-usage alerts opted in; and a read-only token, ORG_BUDGETS_READ_TOKEN, so a runner can read the budget back before the first metered-capable minute. The token's shape, as the ruling's amendment of 4.10 sets it (RULING-2026-10-04-mozilla-precondition.md, which withdrew shape A): a fine-grained personal access token of the owner's own account, with the organisation as resource owner, Administration: read only and the longest expiry GitHub offers; if the organisation's token policy must first allow fine-grained tokens, that switch is part of the same sitting, and the token is renewed when BRAND_GITHUB_TOKEN is, never as an action of its own. Never Administration: write, which can delete the budget or switch its stop off. The machine account is never made a billing manager: the role can add payment methods and change the plan, and an automation identity holds no power to spend, so the role, not the token, would be the exposure. The role's own list, read 4.10 from github/docs (data/reusables/billing/org-billing-manager-permissions.md, which adding-a-billing-manager-to-your-organization.md:24 includes), gives a billing manager \"Add, update, or remove payment methods.\", \"Upgrade or downgrade between\" the Free and Team plans and \"Start, modify, or cancel sponsorships.\" — three ways to spend money — beside viewing usage, budgets and receipts and inviting billing managers. Its list says only \"View organization-level budgets.\", but the budgets page addressed to the role (gh-docs-set-up-budgets-2026-09-29.txt:295) says a budget can be edited or deleted at any time (gh-docs-set-up-budgets-2026-09-29.txt:361), so the role's own session may be able to remove the $0 fence, which the read-only token cannot. The ruling chose the role before that list was read (§2 rule 3); the amendment withdrew it, and item 9 is asked with the rest of the sitting. If the page offers no Actions product-level budget, refuses $0 or shows no stop option, the owner records what it showed and no private repository is created in the organisation. Mozilla's dry-run harness (loop row 8) is one line that would use the fence; it runs only after the read passes and asks for nothing of its own (RULING-2026-10-04-mozilla-precondition.md §2).",
     lines: ["oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.6",
     ownerDecision:
@@ -371,7 +384,7 @@ export const OWNER_STEPS: OwnerStep[] = [
     title: "לחבר את Netlify, להדביק את הטוקנים ב-GitHub, וקליק אחד ב-Apify",
     minutes: [15, 20],
     unlocks:
-      "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; the same token creates the il-biz-tools Pro product once (Option C, Gumroad-native licences); BRAND_GITHUB_TOKEN, made in step 7's sitting and pasted here with the others, lets bounty PRs leave the brand account once the board's week-4 clock allows it — the intake is gated in code until then (RULING-2026-09-28-bounty-rail.md §4.4). POSTHOG_READ_KEY, a PostHog personal API key with the query-read scope only, turns on the weekly page-view reader, which is a strict no-op without it, so without it Pro's PASS gate is never read; it is asked only after the agent has created the brand's PostHog project and written its id to site.json, and only while PostHog's query API stays on the free tier (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4). The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can.",
+      "Converts every 'the owner must push' recurring operation into a one-time step. Netlify link deploys the site; GUMROAD_ACCESS_TOKEN lets the loop read sales and write each one to the ledger with its transaction id — which is the definition of money here; the same token creates the il-biz-tools Pro product once (Option C, Gumroad-native licences); BRAND_GITHUB_TOKEN, made in step 7's sitting and pasted here with the others, lets bounty PRs leave the brand account once the board's week-4 clock allows it — the intake is gated in code until then (RULING-2026-09-28-bounty-rail.md §4.4). ORG_BUDGETS_READ_TOKEN, also made in step 7's sitting (Administration: read on the organisation, nothing else), lets a runner read the organisation's $0 Actions budget back before the first metered-capable minute; nothing reads it yet, because the budgets read is built after step 7 (RULING-2026-10-04-mozilla-precondition.md §2), and it is the owner's own fine-grained token, never the machine account's: the machine account is never made a billing manager (the ruling's amendment of 4.10). POSTHOG_READ_KEY, a PostHog personal API key with the query-read scope only, turns on the weekly page-view reader, which is a strict no-op without it, so without it Pro's PASS gate is never read; it is asked only after the agent has created the brand's PostHog project and written its id to site.json, and only while PostHog's query API stays on the free tier (research/channel-loop/RULING-2026-09-30-documents.md (c) call 4). The container cannot reach Netlify, Apify or Gumroad; GitHub Actions runners can.",
     lines: ["apify-actors", "il-biz-tools", "oss-bounties", "pcn874"],
     catalogueRef: "CHIEF-AUDIT §4A.5",
     secrets: [
@@ -380,6 +393,12 @@ export const OWNER_STEPS: OwnerStep[] = [
       {
         name: "BRAND_GITHUB_TOKEN",
         source: "the brand machine account's personal access token, made in step 7's sitting",
+        madeIn: "github-org",
+      },
+      {
+        name: "ORG_BUDGETS_READ_TOKEN",
+        source:
+          "a fine-grained personal access token of the owner's own account (never the machine account's), with the organisation as resource owner, Administration: read only and the longest expiry GitHub offers, made in item 9 of step 7's sitting",
         madeIn: "github-org",
       },
       {

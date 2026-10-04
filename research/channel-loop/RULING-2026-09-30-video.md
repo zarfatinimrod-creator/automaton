@@ -110,7 +110,7 @@ captures to this sitting (`:216-228`). oEmbed: the Developer Terms are unread (`
 ### D3 — Is a render-watch bar also a loop-ruling (e2) C1 bar? No, not by itself
 
 **RULING.** Two different acts: render-watch *reads others' pages*; C1 is about *operating our own account*
-(`RULING-2026-09-29-loop.md:304-308`, repo). A clause that bars scraping, crawling, monitoring, copying or data-gathering
+(`RULING-2026-09-29-loop.md:324-328`, repo). A clause that bars scraping, crawling, monitoring, copying or data-gathering
 bars the first and not the second. A clause naming automated means, or "any means", for **any access** to the site or to
 accounts bars both, until a written yes. Placement, with grades:
 - **CrazyGames** (github, ToS;DR snapshot, `TERMS-AUDIT-2026-09-29.md:193`): "automated data gathering or extraction
@@ -124,13 +124,13 @@ accounts bars both, until a written yes. Placement, with grades:
   interfaces". **C1 bar for a runner-driven browser on the Dev Center; not a bar for Wix's documented developer APIs and
   CLI**, which are publicly supported interfaces. The Wix line proceeds by API only, or by a written yes for the browser.
 - **Astro** (github, `TERMS-AUDIT-2026-09-29.md:13`): data mining, robots, data gathering. **Not a C1 bar.** (e2) stands:
-  the written question goes by GitHub Discussion from the step-7 machine account (`RULING-2026-09-29-loop.md:352-353`).
+  the written question goes by GitHub Discussion from the step-7 machine account (`RULING-2026-09-29-loop.md:372-373`).
 - **Indiebook** (`research/rendered/indiebook-terms.txt:169`, rendered) and **Teach Simple**
-  (`teachsimple-terms-of-service.txt:363`, rendered): collecting and scraping. **Not C1 bars**, as (e2) held (`:306-307`).
+  (`teachsimple-terms-of-service.txt:363`, rendered): collecting and scraping. **Not C1 bars**, as (e2) held (`:326-327`).
 - **Spreadshirt/Spreadshop** (github, `TERMS-AUDIT-2026-09-29.md:228`, `:230`): "monitor the activity on or copy
   information or pages". **Not a C1 bar for uploads**; the drafted question on automated uploads stands (venue 3); a
   written no is KILL-4 (`research/breadth/BOARD.md:75`, repo).
-- **Facer**: KILLED 29.9 (f) (`RULING-2026-09-29-loop.md:396`, `:414`; `docs/REJECTED.md:1262-1265`, repo). Unchanged.
+- **Facer**: KILLED 29.9 (f) (`RULING-2026-09-29-loop.md:416`, `:434`; `docs/REJECTED.md:1262-1265`, repo). Unchanged.
 - **Gumroad** `:343` names "access … any pages", but our account runs through the API Gumroad provides; a provided interface
   is not "other means". C1 met for the API route.
 
@@ -141,7 +141,7 @@ CrazyGames (6): **candidate**, order 4, conditional on its written yes; Tipalti'
 Astro (7): **candidate**, ranked last, waits on step 7. Wix (11): **candidate**, NEEDS_MORE, API route only. Spreadshirt
 (17): **parked** as tick 8 left it, behind the step-8 question. Indiebook (22): **candidate**, order 2. Teach Simple (28):
 **candidate**, order 3. Facer (23): **KILLED**, no change. Nothing is demoted for unreadability alone; nothing is admitted
-(the 29.9 order, `RULING-2026-09-29-loop.md:139-142`, stands).
+(the 29.9 order, `RULING-2026-09-29-loop.md:159-162`, stands).
 
 **REOPEN IF** a rendered clause of CrazyGames, Astro, Indiebook, Teach Simple or Spreadshirt names automated means for
 any access (KILL-4 per (e2)); or a venue's written answer is a no.

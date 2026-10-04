@@ -686,7 +686,7 @@ G1 and G3-G7 are unchanged.
   unreasonable scraping either.
   - Rows 166-167's plain GETs of trolley.com already ran under this same clause. A `js` line that rests on it is the same
     kind of access.
-  - Facer is different (`RULING-2026-09-29-loop.md:396`). Its clause named "agent" and "software" as barred means of any
+  - Facer is different (`RULING-2026-09-29-loop.md:416`). Its clause named "agent" and "software" as barred means of any
     access. Trolley's clause names only the crawl, spider and scrape activities.
 - **Script check (dry run; nothing written).**
   - `checkTermsCapture` passed with no throw for `terms: trolley-terms-of-service`, target
