@@ -120,6 +120,24 @@ export function isRobotsProbe(url, slug) {
 }
 
 /**
+ * Sites whose terms allow a runner but whose captures may be committed only under some paths: site (siteOf) ->
+ * { prefixes, why }. A render line commits what it captures, so a site that asks not to be copied outside some part
+ * gets lines there and nowhere else, whatever the slug (tick 40 review, defect 2).
+ *
+ * posthog.com is NOT_BARRED for access (research/channel-loop/terms/posthog-terms-2026-10-04.md), but its repository's
+ * LICENSE asks "Please do not duplicate, copy, or use our website" for everything outside /contents/ (PostHog/posthog.com
+ * LICENSE:5-6 at 35fc817), and only the MIT-licensed /contents/ folder builds /docs/ and /tutorials/. Whether even a
+ * docs capture may be committed (the Terms' 1.1(a)(ii) and 2.1(b) against the MIT grant) is still the main thread's
+ * call; the verdict's note in terms-verdicts.json says so.
+ */
+export const PATH_LIMITS = {
+  "posthog.com": {
+    prefixes: ["/docs/", "/tutorials/"],
+    why: "PostHog/posthog.com LICENSE:5-6 asks that nothing outside /contents/ be duplicated or copied, and only /contents/ builds /docs/ and /tutorials/ (tick 40 review, defect 2)",
+  },
+};
+
+/**
  * Whether a line for this URL and slug passes the terms gate, and if not, why. Barred hosts (TERMS_BARRED in
  * render-watch) always fail; otherwise the site's verdict decides. Never throws.
  *
@@ -127,14 +145,27 @@ export function isRobotsProbe(url, slug) {
  * scripts/robots-verdict.mjs set it (isRobotsOkVerdict), and a robots- probe of /robots.txt passes for an
  * exhaustive-negative NO_TERMS site — the one thing that may be fetched from such a site until its robots.txt is read
  * and recorded. Not for a TERMS_PENDING site: its terms are unread, and unread terms mean no fetch but the terms page.
+ *
+ * Since 4.10 (tick 40 review, defect 2): a line on a site in PATH_LIMITS that would pass fails unless its path starts
+ * with one of the site's prefixes; the result then carries pathLimited: true.
  */
 export function termsGate(url, slug, verdicts) {
-  let host;
+  let parsed;
   try {
-    host = new URL(url).hostname.toLowerCase();
+    parsed = new URL(url);
   } catch {
     return { ok: false, why: `not a URL: ${url}` };
   }
+  const gate = verdictGate(url, slug, parsed.hostname.toLowerCase(), verdicts);
+  const limit = gate.ok && Object.hasOwn(PATH_LIMITS, gate.site) ? PATH_LIMITS[gate.site] : undefined;
+  if (limit && !limit.prefixes.some((p) => parsed.pathname.startsWith(p))) {
+    return { ok: false, site: gate.site, verdict: gate.verdict, pathLimited: true, why: `${gate.site} lines may be active only under ${limit.prefixes.join(" or ")}: ${limit.why}` };
+  }
+  return gate;
+}
+
+/** termsGate before PATH_LIMITS: the barred list and the site's verdict. */
+function verdictGate(url, slug, host, verdicts) {
   const barred = termsBarred(host);
   if (barred) return { ok: false, site: barred.domain, verdict: "BARRED", why: `${barred.domain} is in TERMS_BARRED: ${barred.why}` };
   const site = siteOf(host);
@@ -158,7 +189,8 @@ export function termsGate(url, slug, verdicts) {
 
 /**
  * Comment out every active urls.txt line that fails the terms gate. Returns the new text and counts; the caller
- * writes it. A barred host's line says so; any other failing line names its site and verdict.
+ * writes it. A barred host's line says so, a line outside its site's PATH_LIMITS names that list, and any other
+ * failing line names its site and verdict.
  */
 export function applyVerdicts(urls, verdicts) {
   const lines = urls.split("\n");
@@ -172,7 +204,9 @@ export function applyVerdicts(urls, verdicts) {
     const head =
       gate.verdict === "BARRED" && termsBarred(new URL(url).hostname)
         ? `# paused (terms audit): ${gate.site} — see TERMS_BARRED in scripts/render-watch.mjs — `
-        : `# paused (terms unread): ${gate.site} is ${gate.verdict} in research/channel-loop/terms-verdicts.json — `;
+        : gate.pathLimited
+          ? `# paused (path limit): ${gate.site} — see PATH_LIMITS in scripts/queue-zero-test.mjs — `
+          : `# paused (terms unread): ${gate.site} is ${gate.verdict} in research/channel-loop/terms-verdicts.json — `;
     lines[i] = head + lines[i];
     paused.push(slug ?? url);
   }
