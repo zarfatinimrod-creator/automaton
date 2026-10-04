@@ -9,11 +9,13 @@ import { afterAll, describe, expect, it } from "vitest";
 import { CAPTURE_EXTS as FREEZE_EXTS } from "../../../scripts/freeze-capture.mjs";
 import {
   CAPTURE_EXTS,
+  COMMANDS,
   STATUS_CELLS,
   cells,
   checkEdit,
   insertAfter,
   joinLines,
+  parseCommand,
   parseLines,
   protectedTokens,
   replaceInLine,
@@ -71,7 +73,11 @@ function tree(files: Record<string, string | Buffer> = {}) {
 }
 
 const sha = (path: string) => createHash("sha256").update(readFileSync(path)).digest("hex");
-const cli = (args: string[], cwd = ROOT) => spawnSync(process.execPath, [SCRIPT, ...args], { cwd, encoding: "utf8" });
+/** The CLI, always on a scratch tree: a set-status without --file would edit the repository's own FABLE_QUEUE.md. */
+function cli(args: string[], cwd = ROOT) {
+  if (args[0] === "set-status" && !args.some((a) => a === "--file" || a.startsWith("--file="))) throw new Error("set-status needs --file in a test");
+  return spawnSync(process.execPath, [SCRIPT, ...args], { cwd, encoding: "utf8" });
+}
 const lineOf = (text: string, n: number) => text.split("\n")[n - 1];
 const crlf = (text: string) => text.replace(/\n/g, "\r\n");
 
@@ -191,6 +197,8 @@ describe("set-status — FABLE_QUEUE's last cell", () => {
     refused(() => setStatus(dup, { row: 22, text: "x" }), /2 table rows have the first cell "22" \(lines 9, 11\)/);
     refused(() => setStatus(QUEUE, { row: 14, text: "x" }), /row 14 \(line 8\) has 7 cells, not 8/);
     refused(() => setStatus(QUEUE, { row: 1, text: "x" }), /has 7 cells, not 8/);
+    const nine = `${QUEUE}| 26 | a | b | c | d | e | f | g | queued |\n`;
+    refused(() => setStatus(nine, { row: 26, text: "x" }), /row 26 \(line 19\) has 9 cells, not 8/);
     const malformed = QUEUE.replace(lineOf(QUEUE, Q.row24), lineOf(QUEUE, Q.row24).replace(/ \|$/, ""));
     refused(() => setStatus(malformed, { row: 24, text: "x" }), /no parsable cells/);
   });
@@ -460,6 +468,36 @@ describe("the CLI", () => {
     expectOnly(QUEUE, readFileSync(file, "utf8"), [Q.row22]);
   });
 
+  it("--replace and --append reach their commands", () => {
+    const root = tree();
+    const q = join(root, "logs/FABLE_QUEUE.md");
+    const l = join(root, "logs/CHANNEL_LOOP.md");
+    expect(cli(["set-status", "--file", q, "--row", "25", "--text", "**DONE**", "--replace"]).status).toBe(0);
+    expect(cells(lineOf(readFileSync(q, "utf8"), Q.row25))[7]).toBe(" **DONE** ");
+    expect(cli(["set-status", "--file", q, "--row", "24", "--text", "seen", "--prepend"]).status).toBe(0);
+    expect(cells(lineOf(readFileSync(q, "utf8"), Q.row24))[7].startsWith(" seen Was: ")).toBe(true);
+    expect(cli(["set-cell", "--file", l, "--row-key", "T1 video", "--col", "5", "--text", "(4.10)", "--append"]).status).toBe(0);
+    expect(cells(lineOf(readFileSync(l, "utf8"), C.t1video))[4]).toBe(" none (4.10) ");
+    expect(cli(["set-cell", "--file", l, "--row-key", "T1 video", "--col", "5", "--text", "later"]).status).toBe(0);
+    expect(cells(lineOf(readFileSync(l, "utf8"), C.t1video))[4]).toBe(" later ");
+  });
+
+  it("refuses, and keeps the other writer's bytes, when the file changes during the edit", () => {
+    const root = tree();
+    const q = join(root, "logs/FABLE_QUEUE.md");
+    const original = COMMANDS["set-status"];
+    try {
+      COMMANDS["set-status"] = (src: string, o: unknown) => {
+        writeFileSync(q, `${src}| 26 | late | row | x | y | z | w | queued |\n`);
+        return original(src, o);
+      };
+      refused(() => runCommand("set-status", { file: q, row: "22", text: "x" }), /changed while it was being edited/);
+    } finally {
+      COMMANDS["set-status"] = original;
+    }
+    expect(readFileSync(q, "utf8")).toBe(`${QUEUE}| 26 | late | row | x | y | z | w | queued |\n`);
+  });
+
   it("--dry-run prints the diff and writes nothing", () => {
     const root = tree();
     const file = join(root, "logs/CHANNEL_LOOP.md");
@@ -507,8 +545,9 @@ describe("the CLI", () => {
   });
 
   it("edits logs/*.md and research/channel-loop/*.md only: urls.txt and the rest are refused untouched", () => {
-    const root = tree({ "research/channel-loop/terms/x.md": "a\n", "logs/notes.txt": "a\n", "products/p/README.md": "a\n", "research/measurements/m.md": "a\n" });
-    for (const rel of ["research/rendered/urls.txt", "research/channel-loop/terms/x.md", "logs/notes.txt", "products/p/README.md", "research/measurements/m.md"]) {
+    const others = ["research/channel-loop/terms/x.md", "logs/notes.txt", "products/p/README.md", "research/measurements/m.md", "products/channel-loop/x.md", "logs/sub/x.md"];
+    const root = tree(Object.fromEntries(others.map((rel) => [rel, "a\n"])));
+    for (const rel of ["research/rendered/urls.txt", ...others]) {
       const file = join(root, rel);
       const was = sha(file);
       const r = cli(["insert-after", "--file", file, "--anchor", rel.endsWith("urls.txt") ? "https://www.btl" : "a", "--text", "x"]);
@@ -553,17 +592,17 @@ describe("the CLI", () => {
     expect(lineOf(out.toString("utf8").replace(/\r\n/g, "\n"), Q.row23)).toContain("| נבדק → ₪0 Was: ");
   });
 
-  it("set-status defaults to the repository's logs/FABLE_QUEUE.md (dry run, read only)", () => {
-    const real = join(ROOT, "logs/FABLE_QUEUE.md");
-    const was = sha(real);
-    const row = parseLines(readFileSync(real, "utf8"))
-      .map((l: { text: string }) => cells(l.text))
-      .find((c: string[] | null) => c && c.length === STATUS_CELLS && /^\d+$/.test(c[0].trim()));
-    expect(row, "a FABLE_QUEUE row with 8 cells").toBeTruthy();
-    const r = cli(["set-status", "--dry-run", "--row", row[0].trim(), "--text", "probe"]);
-    expect(r.status).toBe(0);
-    expect(r.stdout).toContain(`--- ${real}`);
-    expect(sha(real)).toBe(was);
+  it("set-status defaults to the repository's logs/FABLE_QUEUE.md; no test runs a writer on a real file", () => {
+    // Parsed, never run: under mutation (a --dry-run that writes) a CLI run here would edit the real queue (tick 43).
+    const [command, values, dryRun] = parseCommand(["set-status", "--row", "25", "--text", "x", "--dry-run"]);
+    expect(command).toBe("set-status");
+    expect(values.file).toBe(join(ROOT, "logs", "FABLE_QUEUE.md"));
+    expect(dryRun).toBe(true);
+    expect(parseCommand(["set-status", "--file", "logs/X.md", "--row", "1", "--text", "x"])[1].file).toBe("logs/X.md");
+    expect(() => parseCommand(["set-cell", "--row-key", "1", "--col", "2", "--text", "x"])).toThrow(/set-cell needs --file/);
+    // The real queue (read only): rows since 19 have the 8 cells set-status needs.
+    const real = parseLines(readFileSync(join(ROOT, "logs/FABLE_QUEUE.md"), "utf8")).map((l: { text: string }) => cells(l.text));
+    expect(real.some((c: string[] | null) => c && c.length === STATUS_CELLS && /^\d+$/.test(c[0].trim()))).toBe(true);
   });
 
   it("usage errors exit 2 and write nothing", () => {
