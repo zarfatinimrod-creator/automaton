@@ -204,6 +204,24 @@ def test_render_refuses_a_kids_frame_whose_tag_is_cut_off_or_covers_text(tmp_pat
         charts.render_scene_chart(scene, an, labels, spec, tmp_path / "k.png")
 
 
+@pytest.mark.parametrize("side", ["left", "right"])
+def test_a_tag_inside_the_frame_but_outside_a_side_margin_is_refused(tmp_path, side):
+    """Between the frame's edge and the 5% margin: inside the picture, outside the safe area the renderer keeps."""
+    spec = _kids_spec()
+    _, _, _, out = _draw_all(tmp_path, spec)
+    fig = out[0][1]
+    fig.canvas.draw()
+    tag = next(t for t in fig.texts if t.get_gid() == charts.TAG_GID)
+    width = tag.get_window_extent(renderer=fig.canvas.get_renderer()).width
+    # ha="right": the position is the right edge. Put the box 2% of the frame from the chosen edge.
+    x1 = 0.02 * charts.WIDTH + width if side == "left" else 0.98 * charts.WIDTH
+    tag.set_position((x1 / charts.WIDTH, charts.TAG_Y))
+    box = tag.get_window_extent(renderer=fig.canvas.get_renderer())
+    assert 0 < box.x0 and box.x1 < charts.WIDTH  # still inside the frame
+    assert any("leaves the frame's margins" in p for p in charts.tag_problems(fig, spec)), side
+    _close(out)
+
+
 def test_a_tag_on_t1s_line_is_refused(drawn):
     spec, _, _, out = drawn
     fig = out[0][1]
