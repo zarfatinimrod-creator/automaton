@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -224,5 +224,18 @@ describe("posthog.com's verdict rests on the pinned references", () => {
     expect(e.note).toContain("'Please do not duplicate, copy, or use our website'");
     expect(e.note).toContain("LICENSE:5-6 at 35fc817");
     expect(e.note).toContain("research/measurements/posthog-free-tier.md");
+    expect(existsSync("research/measurements/posthog-free-tier.md")).toBe(true);
+  });
+
+  it("the free-tier note answers ruling (c)'s condition, with the announced pricing as its first REOPEN", () => {
+    const note = readFileSync("research/measurements/posthog-free-tier.md", "utf8");
+    expect(note).toContain('"the project and the query API stay on PostHog\'s free\ntier", is MET on the text**');
+    expect(note).toContain("PostHog/posthog.com@4c27ff7578f24c75b40d1024e4e0cbd40c9922ba");
+    expect(note).toContain("PostHog/posthog@526d64dd82340b1bf4293d6d9baea7e965997048");
+    // The two places PostHog says the query API will be charged for, both cited in "What would reopen it".
+    const reopen = note.slice(note.indexOf("**What would reopen it**"));
+    expect(reopen).toContain("PC `sql/index.mdx:148`");
+    expect(reopen).toContain("PC `endpoints-vs-query-api.mdx:16`");
+    expect(reopen).toContain("not on the free plan");
   });
 });
