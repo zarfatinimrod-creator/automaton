@@ -1,5 +1,6 @@
 /**
- * Revenue Colony — the publication gate for the faceless-YouTube experiment (VERDICT §12, G1-G10).
+ * Revenue Colony — the publication gate for the colony's YouTube lines (VERDICT §12, G1-G10; G11 and G7-k from
+ * research/channel-loop/RULING-2026-10-04-kids-youtube.md, for T1's line and the kids-explainers line).
  *
  * Every gate is a FAIL that blocks the action. The gate is code so that "we checked" is a result, not a memory:
  * the verdict names the failure modes (reused content, advice from a synthetic persona, a licence nobody read,
@@ -11,10 +12,22 @@
  * exists, says PASS, and did not come from the author. Pure: the caller supplies `exists` for the file system.
  */
 
-import { FACELESS_YOUTUBE_EXPERIMENT } from "./experiments.js";
+import { FACELESS_YOUTUBE_EXPERIMENT, KIDS_EXPLAINERS_EXPERIMENT, type ExperimentSpec } from "./experiments.js";
 
-export type GateId = "G1" | "G2" | "G3" | "G4" | "G5" | "G6" | "G7" | "G8" | "G9" | "G10";
+export type GateId = "G1" | "G2" | "G3" | "G4" | "G5" | "G6" | "G7" | "G8" | "G9" | "G10" | "G11";
 export type ChannelAction = "publish" | "privatize" | "delete";
+
+/** The colony's YouTube lines: T1's regular channel and the kids channel (ruling 4.10 §2 rule 1, §7 rule 1). */
+export type YoutubeLine = "faceless-youtube" | "kids-explainers";
+
+/**
+ * Each line's experiment: the audience its uploads declare (G11, `declaresMadeForKids`) and the per-video caps (G9). A
+ * manifest's `line` picks one; a line not listed here publishes nothing.
+ */
+export const EXPERIMENT_BY_LINE: Readonly<Record<YoutubeLine, ExperimentSpec>> = {
+  "faceless-youtube": FACELESS_YOUTUBE_EXPERIMENT,
+  "kids-explainers": KIDS_EXPLAINERS_EXPERIMENT,
+};
 
 export interface DatasetUse {
   /** As it must appear in the description, e.g. "Our World in Data, CO2 and Greenhouse Gas Emissions". */
@@ -45,8 +58,14 @@ export interface VideoManifest {
   id: string;
   /** The agent that wrote the script. Auditors must be someone else. */
   author: string;
+  /** Which YouTube line the video is for (ruling 4.10 §2 rule 1): decides G11's designation, G7-k and G9's caps. */
+  line: YoutubeLine;
   title: string;
   description: string;
+  /** The tags the publisher sends, exactly; [] = none. G7-k lints them on the kids line. */
+  tags: string[];
+  /** The brief for a custom thumbnail; null = none (YouTube shows a frame of the video). G7-k lints it on the kids line. */
+  thumbnailBrief: string | null;
   topic: string;
   /** The narration, exactly as it will be spoken. */
   script: string;
@@ -56,6 +75,16 @@ export interface VideoManifest {
   promiseMatch: AuditVerdict | null;
   /** YouTube's altered-or-synthetic flag: must be decided, and for this video class the board ruled `true` (G7). */
   containsSyntheticMedia: boolean | null;
+  /**
+   * `status.selfDeclaredMadeForKids` as the publisher will send it (G11, ruling 4.10 §6 rule 1): `true` on the kids line,
+   * `false` on T1's, never `null` ("never decided" fails, as G7's flag does).
+   */
+  madeForKids: boolean | null;
+  /**
+   * The tag the renderer burned into every frame and asserted on every frame, or null when it drew none. On the kids line
+   * it must be KIDS_ON_SCREEN_TAG (G7-k, ruling 4.10 §4 rule 1(ii)); products/chart-explainer writes it.
+   */
+  onScreenTagEveryFrame: string | null;
   /**
    * What speaks. Only an engine in ALLOWED_NARRATION_ENGINES passes; a voice imitating a real person is never made (§2c).
    * P-1: `voiceId` must be one of the engine's official voices (NARRATION_VOICE_LICENCES). `voicesFile` and `modelFile`
@@ -136,6 +165,28 @@ export const SYNTHETIC_VOICE_DISCLOSURE =
   "Charts are drawn by code from the data cited below. Produced with AI systems.";
 
 /**
+ * The kids line's declaration, to the child, spoken first: the opening of every kids-explainers narration, verbatim
+ * (research/channel-loop/RULING-2026-10-04-kids-youtube.md §4 rule 1(i)). G7-k checks the script starts with it.
+ * products/chart-explainer/manifest.py mirrors it, and tests/test_manifest.py fails if the two drift.
+ */
+export const KIDS_SPOKEN_DECLARATION =
+  "This video was made by a computer program, not by a person. The voice is a computer voice, not a real person. " +
+  "Every number comes from real data, listed under the video.";
+
+/**
+ * The kids line's declaration, to the child, shown throughout: the English tag the renderer burns into every frame, never
+ * only on an end card (ruling 4.10 §4 rule 1(ii)). G7-k checks the manifest's `onScreenTagEveryFrame` equals it.
+ */
+export const KIDS_ON_SCREEN_TAG = "Made by a computer program · computer voice · not a person";
+
+/**
+ * The kids line's declaration to the parent: the description's first sentence, followed directly by
+ * SYNTHETIC_VOICE_DISCLOSURE, then the data attribution G7 requires (ruling 4.10 §4 rule 2). Saying "made for kids" in the
+ * metadata matches the designation G11 checks; a mismatch is what YouTube names (§4 rule 2).
+ */
+export const KIDS_AUDIENCE_SENTENCE = "Made for children who can read. This channel is set as made for kids.";
+
+/**
  * Narration engines whose stock voices are nobody's (PREREG-DECISIONS.md §2c). Kokoro's training excluded "custom voice
  * clones" (research/rendered/kokoro-82m-model-card-2026-09-29.txt:245; the live capture's line moves with each render).
  * A cloning engine, or a voice that imitates an identifiable person, cannot pass this gate with or without the flag: such
@@ -202,7 +253,13 @@ const KOKORO_CARD = "research/rendered/kokoro-82m-model-card-2026-09-29.txt";
  * is not captured.
  *
  * The ruling's pointers were :235 and :241 of the live capture; the frozen copy carries the same text on the same lines
- * (the training-data statement), and the weights licence is on :53 and :97.
+ * (the training-data statement), and the weights licence is on :53 and :97. The card's CC BY table, under "The following
+ * CC BY audio was part of the dataset used to train Kokoro v1.0." (:253), joined the record on 4.10.2026
+ * (research/channel-loop/RULING-2026-10-04-kids-youtube.md §5 rule 2): "Koniwa tnc" (:263) under "CC BY 3.0" (:267) and
+ * "SIWIS" (:271) under "CC BY 4.0" (:275). CC BY permits commercial use with attribution, which the author's card gives;
+ * one set of weights trained on one dataset, so every voice id is downstream of that audio equally and no voice is struck
+ * alone. REOPEN (§5 rule 2): a rendered CC BY text or licensor's statement, from a permitted host, saying attribution
+ * attaches to a model's output — then every voice is affected together and the attribution joins the fixed description.
  *
  * REOPEN (ruling, "What stays open" 9): if a rendered term of a named upstream TTS provider bars reuse of its synthetic
  * audio for commercial training, the premise behind `licenceEvidence.trainingData` falls, and with it this allowlist.
@@ -217,6 +274,10 @@ export const KOKORO_82M_VOICE_LICENCE: NarrationVoiceLicence = {
     trainingData: [
       { path: KOKORO_CARD, line: 235, quote: "Kokoro was trained exclusively on permissive/non-copyrighted audio data" },
       { path: KOKORO_CARD, line: 241, quote: "Synthetic audio [1] generated by closed [2] TTS models from large providers" },
+      { path: KOKORO_CARD, line: 263, quote: "Koniwa tnc" },
+      { path: KOKORO_CARD, line: 267, quote: "CC BY 3.0" },
+      { path: KOKORO_CARD, line: 271, quote: "SIWIS" },
+      { path: KOKORO_CARD, line: 275, quote: "CC BY 4.0" },
     ],
   },
   voiceCount: { path: KOKORO_CARD, line: 147, quote: "8 & 54" },
@@ -246,6 +307,18 @@ export const KOKORO_82M_VOICE_LICENCE: NarrationVoiceLicence = {
   ]),
   ruling: "research/channel-loop/RULING-2026-09-30-video.md 16(c) item 7 (P-1)",
 };
+
+/**
+ * The voices the kids line narrates with (G7-k, ruling 4.10 §5 rule 1): the 28 live keys of hexgrad's voices.js at
+ * dfb907a (KOKORO_82M_VOICE_LICENCE.voiceList), every one `en-us` or `en-gb`, in the file's order. They sit at :5-208 of
+ * the frozen copy, above the "TODO: Add support for other languages:" line at :210 (the ruling cites :7-203). A subset of
+ * P-1's allowlist: G7-k narrows the language for this line; P-1 is a licence gate and is not narrowed.
+ */
+export const KIDS_VOICES: ReadonlySet<string> = new Set([
+  "af_heart", "af_alloy", "af_aoede", "af_bella", "af_jessica", "af_kore", "af_nicole", "af_nova", "af_river", "af_sarah",
+  "af_sky", "am_adam", "am_echo", "am_eric", "am_fenrir", "am_liam", "am_michael", "am_onyx", "am_puck", "am_santa",
+  "bf_emma", "bf_isabella", "bm_george", "bm_lewis", "bf_alice", "bf_lily", "bm_daniel", "bm_fable",
+]);
 
 /** P-1's record per narration engine. An engine without one narrates nothing, whatever ALLOWED_NARRATION_ENGINES says. */
 export const NARRATION_VOICE_LICENCES: Readonly<Record<string, NarrationVoiceLicence>> = {
@@ -372,6 +445,119 @@ const ADVICE = [
   /\bconsult (a|an|your|with)\b/i,
   /\b(talk|speak) to (a|an|your) (doctor|lawyer|advisor|adviser|accountant)\b/i,
 ];
+
+/**
+ * The framings the kids line excludes as decisions not to act (ruling 4.10 §2 rule 2): songs, rhymes, stories or poems for
+ * children; cartoon characters, mascots, puppets, toys, surprise eggs, unboxing; "learn colours", "ABC", "numbers" and any
+ * preschool or toddler framing. Read against research/youtube-kids/ASSESSMENT.md's G11 list (:402-405), whose English
+ * terms are all covered here (nursery rhyme(s), toddler(s), preschool(er), baby song(s), ABC song, learn colo(u)rs,
+ * cartoon, mascot, puppet(s), surprise egg(s), toy unboxing). Whole words, not prefixes (G2's lesson): "history",
+ * "storyline", "Toyota", "number" and "numbered" pass. "numbers" is blocked as the bare word the ruling names (corrected
+ * 4.10 after review: it had been narrowed to "learn numbers" on the claim that the pinned "Every number comes from real
+ * data" needs it, but that sentence is singular and spoken, and the script is not word-linted).
+ */
+const KIDS_EXCLUDED_EN = new RegExp(
+  "\\b(" +
+    [
+      "songs?",
+      "rhymes?",
+      "stor(y|ies)",
+      "poems?",
+      "cartoons?",
+      "mascots?",
+      "puppets?",
+      "toys?",
+      "surprise eggs?",
+      "unboxing",
+      "learn(ing)? (the |your |our )?colou?rs",
+      "numbers",
+      "abcs?",
+      "pre-?school(ers?)?",
+      "toddlers?",
+      "nursery",
+      "kindergarten",
+    ].join("|") +
+    ")\\b",
+  "i",
+);
+
+/**
+ * A Hebrew term as a whole word with up to two one-letter prefixes (ASSESSMENT.md:411-415): JavaScript's \b does not see
+ * Hebrew letters as word characters, so a term is bounded by "no letter" on each side, with the `u` flag.
+ */
+const hebrewWords = (terms: readonly string[]) =>
+  new RegExp(terms.map((t) => `(?<!\\p{L})[ובהלמשכ]{0,2}${t}(?!\\p{L})`).join("|"), "u");
+/** ASSESSMENT.md:403-405's Hebrew terms. There is no bare גן: as a substring it hits מגן, ארגון and גנרי. */
+const KIDS_EXCLUDED_HE = hebrewWords(["שירי ילדים", "פעוטות", "גן ילדים", "גננת", "דמות מצוירת", "בובות"]);
+
+/** "Child figures or characters in thumbnails" (ruling 4.10 §2 rule 2): any child, character, mascot or toy in the brief. */
+const THUMBNAIL_EXCLUDED_EN =
+  /\b(child|children|kids?|boys?|girls?|bab(y|ies)|toddlers?|characters?|cartoons?|mascots?|puppets?|toys?|dolls?|teddy)\b/i;
+const THUMBNAIL_EXCLUDED_HE = hebrewWords(["ילד", "ילדה", "ילדים", "ילדות", "דמות", "דמויות", "בובה", "בובות", "צעצוע", "צעצועים", "קמע"]);
+
+/**
+ * The kids line is English (ruling 4.10 §2 rule 1; §4 rule 4: "The pinned texts are English because the line is
+ * English"; §5 rules 1, 3: English voices only, Hebrew narration does not publish; §2 rule 3: A-he is closed): any Hebrew
+ * letter in what it says or how it is described fails. The Hebrew word check above stays, so its terms are named.
+ */
+const HEBREW_LETTER = /\p{Script=Hebrew}/u;
+
+/** "A narrator posing as a teacher or friend" (ruling 4.10 §2 rule 2): the narrator says what it is (§4). */
+const NARRATOR_PERSONA = /\b((i am|i'm|i will be|i'll be) (your|a) (new )?(teacher|friend)|your (new |best )?(teacher|friend))\b/i;
+
+/** The first excluded word in a text, or null. */
+const excludedWord = (text: string, ...patterns: RegExp[]): string | null => {
+  for (const re of patterns) {
+    const m = text.match(re);
+    if (m) return m[0];
+  }
+  return null;
+};
+
+/** G7-k (ruling 4.10 §4, §5 rule 1, §2 rule 2): the kids line's own checks. Empty when the manifest passes them. */
+function kidsLineFailures(video: VideoManifest): string[] {
+  const out: string[] = [];
+  if (typeof video.script !== "string" || !video.script.startsWith(KIDS_SPOKEN_DECLARATION)) {
+    out.push("G7-k: the narration script does not open with KIDS_SPOKEN_DECLARATION verbatim (§4 rule 1(i))");
+  }
+  if (video.onScreenTagEveryFrame !== KIDS_ON_SCREEN_TAG) {
+    out.push(`G7-k: the renderer did not assert KIDS_ON_SCREEN_TAG on every frame (onScreenTagEveryFrame is ${JSON.stringify(video.onScreenTagEveryFrame)}; §4 rule 1(ii))`);
+  }
+  const afterAudience = video.description.startsWith(KIDS_AUDIENCE_SENTENCE)
+    ? video.description.slice(KIDS_AUDIENCE_SENTENCE.length).trimStart()
+    : null;
+  if (afterAudience === null || !afterAudience.startsWith(SYNTHETIC_VOICE_DISCLOSURE)) {
+    out.push("G7-k: the description opens with KIDS_AUDIENCE_SENTENCE and then SYNTHETIC_VOICE_DISCLOSURE, verbatim, or not at all (§4 rule 2)");
+  }
+  if (!KIDS_VOICES.has(video.narration.voiceId)) {
+    out.push(`G7-k: voice "${video.narration.voiceId}" is not one of the 28 English live keys of voices.js the kids line narrates with (KIDS_VOICES; §5 rule 1)`);
+  }
+  const tags: unknown = video.tags;
+  const tagList = Array.isArray(tags) && tags.every((t) => typeof t === "string") ? (tags as string[]) : null;
+  if (tagList === null) out.push("G7-k: tags must be a list of strings, so each can be checked");
+  const metadata: [string, string][] = [
+    ["the title", video.title],
+    ["the description", video.description],
+    ...(tagList ?? []).map((t, i): [string, string] => [`tag ${i + 1}`, t]),
+  ];
+  for (const [where, text] of metadata) {
+    const word = excludedWord(text, KIDS_EXCLUDED_EN, KIDS_EXCLUDED_HE);
+    if (word) out.push(`G7-k: ${where} carries "${word}", a framing the kids line excludes (songs, stories, characters, toys, pre-readers; §2 rule 2)`);
+  }
+  const spoken: [string, unknown][] = [...metadata, ["the thumbnail brief", video.thumbnailBrief], ["the script", video.script]];
+  for (const [where, text] of spoken) {
+    if (typeof text === "string" && HEBREW_LETTER.test(text)) {
+      out.push(`G7-k: ${where} carries Hebrew; the kids line is English (§2 rule 1, §4 rule 4, §5 rules 1 and 3)`);
+    }
+  }
+  if (video.thumbnailBrief !== null) {
+    const word = excludedWord(String(video.thumbnailBrief), THUMBNAIL_EXCLUDED_EN, THUMBNAIL_EXCLUDED_HE);
+    if (word) out.push(`G7-k: the thumbnail brief carries "${word}": no child, character, mascot or toy in a thumbnail (§2 rule 2)`);
+  }
+  const persona = typeof video.script === "string" ? video.script.match(NARRATOR_PERSONA) : null;
+  if (persona) out.push(`G7-k: the narrator poses as a teacher or a friend ("${persona[0]}"); it says what it is (§2 rule 2, §4)`);
+  return out;
+}
 
 const SEVEN_DAYS_MS = 7 * 86_400_000;
 const MAX_PER_SEVEN_DAYS = 2;
@@ -510,14 +696,31 @@ export function checkPublication(
       if (titleHit) fail("G7", `${d.name}: the title names the licensor; attribution belongs in the description (§4(b))`);
     }
   }
+  // G7-k — the kids line only: the declaration to the child (spoken first, a tag in every frame) and to the parent (the
+  // description's opening), the English voices, and none of the framings §2 rule 2 excludes (ruling 4.10 §4, §5, §2).
+  if (video.line === "kids-explainers") for (const reason of kidsLineFailures(video)) fail("G7", reason);
 
-  // G9 — per-video spend caps, the same numbers the experiment's gates use.
-  const caps = FACELESS_YOUTUBE_EXPERIMENT.gates;
+  // G9 — per-video spend caps, the same numbers the line's experiment gates use.
+  const known = Object.hasOwn(EXPERIMENT_BY_LINE, video.line);
+  const capsOf = known ? EXPERIMENT_BY_LINE[video.line] : FACELESS_YOUTUBE_EXPERIMENT;
+  const caps = capsOf.gates;
   if (video.runnerMinutes > caps.maxRunnerMinutesPerVideo) {
-    fail("G9", `${video.runnerMinutes} runner-minutes > ${caps.maxRunnerMinutesPerVideo}`);
+    fail("G9", `${video.runnerMinutes} runner-minutes > ${caps.maxRunnerMinutesPerVideo} (${capsOf.id} caps)`);
   }
   if (video.tokenCostIls > caps.maxTokenCostIlsPerVideo) {
-    fail("G9", `₪${video.tokenCostIls} of tokens > ₪${caps.maxTokenCostIlsPerVideo}`);
+    fail("G9", `₪${video.tokenCostIls} of tokens > ₪${caps.maxTokenCostIlsPerVideo} (${capsOf.id} caps)`);
+  }
+
+  // G11 — the audience designation (ruling 4.10 §6 rule 1): the kids line declares made for kids on every upload, T1's
+  // line never does, and an undecided value fails on both. The publisher sends `selfDeclaredMadeForKids` equal to it.
+  if (!known) {
+    fail("G11", `line "${String(video.line)}" is not a YouTube line this gate knows (${Object.keys(EXPERIMENT_BY_LINE).join(", ")})`);
+  } else {
+    const want = EXPERIMENT_BY_LINE[video.line].declaresMadeForKids;
+    if (video.madeForKids === null) fail("G11", `madeForKids was never decided; the ${video.line} line declares ${want} on every upload`);
+    else if (video.madeForKids !== want) {
+      fail("G11", `madeForKids is ${video.madeForKids}; the ${video.line} line declares ${want} on every upload (ruling 4.10 §6 rule 1)`);
+    }
   }
 
   return { pass: failures.length === 0, failures };

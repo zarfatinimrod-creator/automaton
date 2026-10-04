@@ -1,6 +1,8 @@
 {
   "id": "t1-typescript-javascript",
   "author": "opus-builder",
+  "line": "faceless-youtube",
+  "madeForKids": false,
   "question": "Is TypeScript catching up with JavaScript on GitHub?",
   "title": "Is TypeScript catching up with JavaScript on GitHub?",
   "topic": "programming languages on GitHub",

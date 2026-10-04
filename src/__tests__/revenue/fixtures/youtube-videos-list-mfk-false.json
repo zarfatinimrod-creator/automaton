@@ -1,0 +1,19 @@
+{
+  "_fixture": "Hand-written, not a captured response; see youtube-videos-list-mfk-true.json for the grade of each field.",
+  "kind": "youtube#videoListResponse",
+  "items": [
+    {
+      "kind": "youtube#video",
+      "id": "kidsVid0002",
+      "status": {
+        "uploadStatus": "processed",
+        "privacyStatus": "public",
+        "license": "youtube",
+        "embeddable": true,
+        "publicStatsViewable": true,
+        "madeForKids": false
+      }
+    }
+  ],
+  "pageInfo": { "totalResults": 1, "resultsPerPage": 1 }
+}

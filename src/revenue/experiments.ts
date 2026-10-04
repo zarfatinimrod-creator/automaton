@@ -20,7 +20,11 @@ export type ExperimentDecision = "continue" | "extend" | "escalate" | "kill";
 export interface ExperimentReadings {
   /** Days since the experiment started (the first gate-passing video, or T1 for the T1 gate). */
   day: number;
-  /** T1: one honest test video through the audited publisher stayed public for 72 h. null = not run yet. */
+  /**
+   * The first-upload window: one honest test video through the audited publisher stayed public for 72 h. T1 for
+   * faceless-youtube (K-T1); the kids channel's own window for kids-explainers (K-T1k, ruling 4.10 §8 rule 3). null = not
+   * run yet. A non-null value means at least one upload exists.
+   */
   t1Passed: boolean | null;
   /** Videos that passed the publication gate (licence snapshot, fact-check, no-advice check). */
   videosPassedGate: number;
@@ -35,17 +39,27 @@ export interface ExperimentReadings {
   /** A recurring cost the owner has not explicitly granted. */
   ungrantedRecurringCost: boolean;
   /**
-   * P-2: videos on the channel whose audience YouTube set to "made for kids" over our declaration ("you may see your
-   * video set as “Set to Made for Kids"", research/rendered/yk2-yt-9527654.txt:93), counted when YouTube sets them,
-   * whatever the one appeal later decides. null = unread.
+   * The designation read-back (ruling 4.10 §6 rule 2): `status.madeForKids` of every uploaded video, in upload order — one
+   * entry per upload, "true", "false", or null for an upload with no reading yet. It is src/revenue/youtube-madeforkids.ts
+   * `readbackOf(state, uploads)`: the reader re-reads every upload on every run, and an entry is the designation the line
+   * does NOT declare once any read has carried it (that read is kept whatever later reads or the one appeal say), else the
+   * declared one, else null.
    *
-   * NO READER EXISTS. Nothing in this repository reads `status.madeForKids` yet: the read-back after each upload
-   * (research/youtube-kids/ASSESSMENT.md §9.2 item 2, the unbuilt G11) is the planned source, through a Data API key on
-   * the brand account (Stage A), and Upload-Post's quoted response carries no audience field
-   * (research/faceless-youtube/T1-PRECHECK.md:50). Until a reader exists every caller passes null. Before the first upload
-   * that is only a note; from T1 or the first gate-passing video on, a null count escalates as K-mfk-unmeasured.
+   * On a channel that declares made for kids, "false" kills (K-mfk-designation). On one that declares not made for kids
+   * (today T1), "true" is YouTube's override ("you may see your video set as “Set to Made for Kids"",
+   * research/rendered/yk2-yt-9527654.txt:93), and P-2's count is the number of "true" entries — counted when YouTube sets
+   * them, whatever the one appeal later decides (ruling 4.10 §8 rule 4). There is no other override input: since 4.10 the
+   * count is derived from this list, never typed in beside it.
+   *
+   * THE READ IS A PRECONDITION OF UPLOADING (ruling 4.10 §10 rule 1): `videos.list`, `part=status`, with a Data API key
+   * from Stage A (scripts/youtube-madeforkids-readback.ts), fixture-tested and never run live before Stage A; Upload-Post's
+   * quoted response carries no audience field (research/faceless-youtube/T1-PRECHECK.md:50). Before the first upload the
+   * list is empty and nothing is due — a video that passed the gate but is not uploaded has nothing to read. A null is an
+   * upload that exists and is unread: an instrument fault (KILL-1) that escalates and freezes the next upload
+   * (K-mfk-unmeasured, §10 rule 2), and kills as K0-unmeasured from the K0 day on (§10 rule 3: "measured" at K0 includes
+   * the designation read of every upload).
    */
-  madeForKidsOverrides: number | null;
+  madeForKidsReadback: ("true" | "false" | null)[];
   maxRunnerMinutesPerVideo: number | null;
   maxTokenCostIlsPerVideo: number | null;
 }
@@ -75,6 +89,13 @@ export interface ExperimentSpec {
   /** Where every number below comes from. */
   sources: string[];
   gates: ExperimentGates;
+  /**
+   * The audience every upload of the line declares (`selfDeclaredMadeForKids`; G11 in publication-gate.ts): false for
+   * T1, true for kids-explainers. Decides which way the designation read-back is judged.
+   */
+  declaresMadeForKids: boolean;
+  /** The kill id of the first-upload window: T1's "K-T1", the kids channel's "K-T1k" (ruling 4.10 §8 rule 3). */
+  firstUploadKill: "K-T1" | "K-T1k";
 }
 
 export interface ExperimentVerdict {
@@ -83,6 +104,14 @@ export interface ExperimentVerdict {
   triggered: string[];
   /** Readable reasons and diagnostics, in the order they were checked. */
   notes: string[];
+  /**
+   * The next upload on this channel must wait: any kill; K-mfk-unmeasured (an upload that exists and has no designation
+   * reading: "it also blocks the next upload on that channel until the reading exists", ruling 4.10 §10 rule 2); or
+   * K-compute ("pause the next upload and fix"). The publisher MUST read it before every upload. No publisher exists yet
+   * (nothing in this repository uploads), so nothing enforces the freeze today: a publisher that does not refuse an upload
+   * while this is true, with a test that it refuses, may not be built.
+   */
+  uploadsFrozen: boolean;
 }
 
 /**
@@ -105,6 +134,49 @@ export const FACELESS_YOUTUBE_EXPERIMENT: ExperimentSpec = {
     "research/faceless-youtube/VERDICT.md §10 (judge, Fable, 27.9.2026)",
     "research/faceless-youtube/RED-TEAM.md §2.3, §2.4, §2.5 (red team, Fable, 27.9.2026) — binding amendments",
   ],
+  declaresMadeForKids: false,
+  firstUploadKill: "K-T1",
+  gates: {
+    supplyVideos: 6,
+    supplyByDay: 42,
+    k0Day: 56,
+    k0MinMedianStrangerViews: 35,
+    diagnosticMinAverageViewPercentage: 30,
+    k3Day: 112,
+    k3KillBelow: 307,
+    k3EscalateAtOrAbove: 1200,
+    k3ExtensionDay: 196,
+    maxRunnerMinutesPerVideo: 60,
+    maxTokenCostIlsPerVideo: 20,
+  },
+};
+
+/**
+ * The kids-explainers experiment, admitted 4.10.2026 (research/channel-loop/RULING-2026-10-04-kids-youtube.md §11):
+ * English, declared made for kids, for children who can read; one question from one of T1's cleared datasets, charts drawn
+ * by code, Kokoro narration from the English voices; no revenue target (§6 rule 5), held by protocol behind T1 (§8 rule 2).
+ *
+ * Its kills (§8 rule 3), with T1's numbers on the kids channel's own D0. The gates below are a copy of
+ * FACELESS_YOUTUBE_EXPERIMENT.gates written out, so a later board change to T1's numbers does not move this line's:
+ *   - K-mfk-designation (KILL-4): any upload reads back `madeForKids = false` — kill; never a Studio click, never a
+ *     relabel (§6 rule 2). The ruling's other two triggers (the publisher cannot send `selfDeclaredMadeForKids`; the
+ *     channel-level setting cannot be made in the Stage A sitting) are protocol events, not readings this module sees.
+ *   - K-policy (KILL-3), K-T1k (the kids channel's own first-upload window: P1-P4 as T1's, read through the publisher's
+ *     response and `videos.list part=status`, never the watch page), K-supply, K0, K3, K-cash, K-compute.
+ *   - K-mfk-read (§10): an unread designation escalates and freezes the next upload; from the K0 day it kills
+ *     (K0-unmeasured).
+ *   - No K-web: the line has no web arm (§8 rule 1). The `youtubeProduct = KIDS` split is a diagnostic, never a kill,
+ *     and is not coded until a github-grade source for the dimension is read ("Not ruled here" 5).
+ * Pinned under its own hash (kids-explainers-kills.test.ts), never T1's PINNED_GATES_SHA256.
+ */
+export const KIDS_EXPLAINERS_EXPERIMENT: ExperimentSpec = {
+  id: "kids-explainers",
+  sources: [
+    "research/channel-loop/RULING-2026-10-04-kids-youtube.md §8 rule 3 (kills), §10 (the designation read), §6 rule 2 (read-back) — Fable, 4.10.2026",
+    "research/faceless-youtube/VERDICT.md §10 as amended by RED-TEAM.md §2.3-§2.5 — T1's numbers, which §8 rule 3 adopts",
+  ],
+  declaresMadeForKids: true,
+  firstUploadKill: "K-T1k",
   gates: {
     supplyVideos: 6,
     supplyByDay: 42,
@@ -122,11 +194,14 @@ export const FACELESS_YOUTUBE_EXPERIMENT: ExperimentSpec = {
 
 /**
  * P-2, pre-registered 30.9.2026 (research/channel-loop/RULING-2026-09-30-video.md 16(c) item 7; research/youtube-kids/
- * ASSESSMENT.md §9.2 item 2, :421-422): YouTube setting a video on T1's channel to "made for kids" over our declaration.
- * The first override flags the board; the video goes private, gets its one appeal ("You may appeal each video only
- * once.", research/rendered/yk2-yt-9527654.txt:333) and is never relabelled or re-uploaded. `killAt` overrides kill the
- * YouTube line. Kept apart from FACELESS_YOUTUBE_EXPERIMENT.gates, which are pinned as the 27.9 pre-registration and stay
- * byte-identical; this criterion carries its own date and its own pin (t1-made-for-kids-kill.test.ts).
+ * ASSESSMENT.md §9.2 item 2, :421-422), in the wording research/channel-loop/RULING-2026-10-04-kids-youtube.md §8 rule 4
+ * unified: a YouTube-set made-for-kids override on a video of a channel that declares not made for kids (today T1). The
+ * first override → private plus one appeal ("You may appeal each video only once.", research/rendered/yk2-yt-9527654.txt
+ * :333), never relabelled or re-uploaded, and the board is flagged; the `killAt`-th kills that channel's line — the
+ * channel's line, not both YouTube lines. On the kids channel, which declares made for kids, the mirror-image event is
+ * K-mfk-designation (KIDS_EXPLAINERS_EXPERIMENT). Kept apart from FACELESS_YOUTUBE_EXPERIMENT.gates, which are pinned as
+ * the 27.9 pre-registration and stay byte-identical; this criterion carries its own date and its own pin
+ * (t1-made-for-kids-kill.test.ts).
  */
 export const MADE_FOR_KIDS_OVERRIDES = { killAt: 2 } as const;
 
@@ -165,8 +240,12 @@ export function evaluateExperiment(spec: ExperimentSpec, r: ExperimentReadings):
   let extend = false;
 
   if (r.t1Passed === false) {
-    kills.push("K-T1");
-    notes.push("T1 failed: no owner-free public upload route — stays rejected unless the owner explicitly opts into a paid tier or per-batch confirmation");
+    kills.push(spec.firstUploadKill);
+    notes.push(
+      spec.firstUploadKill === "K-T1k"
+        ? "K-T1k: the kids channel's first-upload window failed (P1-P4 as T1's, read through the publisher's response and videos.list part=status, never a fetch of the watch page) — kill"
+        : "T1 failed: no owner-free public upload route — stays rejected unless the owner explicitly opts into a paid tier or per-batch confirmation",
+    );
   }
   if (r.policySignal) {
     kills.push("K-policy");
@@ -176,26 +255,49 @@ export function evaluateExperiment(spec: ExperimentSpec, r: ExperimentReadings):
     kills.push("K-cash");
     notes.push("a recurring cost the owner has not granted");
   }
-  // P-2 (MADE_FOR_KIDS_OVERRIDES): a YouTube-set made-for-kids override flags the board; the second kills. The count is
-  // due from the first upload (ASSESSMENT §9.2 item 2: a read-back after each upload). T1 is the first upload, and a
-  // gate-passing video is one cleared to go up, so either makes an unread count a due gate with no reading.
-  const mfkKillAt = MADE_FOR_KIDS_OVERRIDES.killAt;
-  if (r.madeForKidsOverrides === null) {
-    const uploadDue = r.t1Passed !== null || r.videosPassedGate > 0;
-    if (uploadDue) {
-      // Counted as failed (the rule above) at the first override's level: the board is flagged, and whether an unread
-      // count should kill instead is the board's call (logs/2026-09-30-p1-p3-in-code.md), not this function's.
-      escalations.push("K-mfk-unmeasured");
-      notes.push("K-mfk is due from the first upload and has no reading: nothing reads status.madeForKids yet (the read-back of ASSESSMENT §9.2 item 2 is unbuilt), so an override would go unseen — an unmeasured gate that is due counts as failed; the board is flagged");
-    } else {
-      notes.push("K-mfk has no reader: nothing reads status.madeForKids yet (the read-back of ASSESSMENT §9.2 item 2 is unbuilt); not due before the first upload");
+  // The designation read-back (ruling 4.10 §6 rule 2): one entry per upload. A first-upload window that has been judged
+  // means an upload exists, so an empty read-back then is an unread upload, not a clean one. An empty read-back otherwise
+  // means nothing is uploaded: nothing to read, nothing due, nothing frozen (§10 rule 1 makes the reader, built and
+  // tested, the precondition before the first upload).
+  const readback: ("true" | "false" | null)[] =
+    r.madeForKidsReadback.length === 0 && r.t1Passed !== null ? [null] : r.madeForKidsReadback;
+  const unread = readback.flatMap((v, i) => (v === null ? [i + 1] : []));
+  const of = (i: number) => `upload ${i} of ${readback.length}`;
+  if (spec.declaresMadeForKids) {
+    // K-mfk-designation (KILL-4): `false` means the machine route did not carry our designation; the only remedy would be
+    // a Studio click per upload, a per-item owner action.
+    const readFalse = readback.flatMap((v, i) => (v === "false" ? [i + 1] : []));
+    if (readFalse.length) {
+      kills.push("K-mfk-designation");
+      notes.push(`${readFalse.map(of).join(", ")} read back madeForKids = false on a channel that declares made for kids: the line is killed (K-mfk-designation) — never a Studio click, never relabelled, never re-uploaded`);
     }
-  } else if (r.madeForKidsOverrides >= mfkKillAt) {
-    kills.push("K-mfk");
-    notes.push(`${r.madeForKidsOverrides} made-for-kids overrides by YouTube on this channel (kill at ${mfkKillAt}): the YouTube line is killed — never a replacement channel`);
-  } else if (r.madeForKidsOverrides > 0) {
-    escalations.push("K-mfk-override");
-    notes.push("YouTube set a video to made for kids over our declaration: it goes private, gets one appeal, and is never relabelled or re-uploaded; the board is flagged, and a second override kills the line");
+    notes.push("P-2 does not apply: this channel declares made for kids, so YouTube cannot set it to made for kids over our declaration; the mirror-image event is K-mfk-designation");
+  } else {
+    // P-2 (MADE_FOR_KIDS_OVERRIDES): a YouTube-set made-for-kids override flags the board; the second kills that channel's
+    // line. The count is due from the first upload (ASSESSMENT §9.2 item 2: a read-back after each upload), and it is the
+    // read-back's `true` entries: an unread upload is flagged below (K-mfk-unmeasured), never counted as a zero.
+    const mfkKillAt = MADE_FOR_KIDS_OVERRIDES.killAt;
+    if (readback.length === 0) {
+      notes.push("K-mfk has no reading: the read-back runs after each upload (src/revenue/youtube-madeforkids.ts); not due before the first upload");
+    } else if (unread.length) {
+      notes.push(`K-mfk is due from the first upload and has no reading for ${unread.map(of).join(", ")}: an override there would go unseen (status.madeForKids) — an unmeasured gate that is due counts as failed, and the board is flagged`);
+    }
+    const overrides = readback.filter((v) => v === "true").length;
+    if (overrides >= mfkKillAt) {
+      kills.push("K-mfk");
+      notes.push(`${overrides} made-for-kids overrides by YouTube on this channel (kill at ${mfkKillAt}): this channel's line is killed, not both YouTube lines — never a replacement channel`);
+    } else if (overrides > 0) {
+      escalations.push("K-mfk-override");
+      notes.push("YouTube set a video to made for kids over our declaration: it goes private, gets one appeal, and is never relabelled or re-uploaded; the board is flagged, and a second override kills the line");
+    }
+  }
+  if (unread.length) {
+    escalations.push("K-mfk-unmeasured");
+    notes.push(`${unread.map(of).join(", ")} has no designation reading (status.madeForKids): an instrument fault under KILL-1 — no upload on this channel until the reading exists; the board is flagged (ruling 4.10 §10 rule 2)`);
+    if (r.day >= g.k0Day) {
+      kills.push("K0-unmeasured");
+      notes.push(`K0 is due at day ${g.k0Day} and the designation of ${unread.map(of).join(", ")} is still unread: K0 is unmeasured (ruling 4.10 §10 rule 3)`);
+    }
   }
   if (r.day >= g.supplyByDay && r.videosPassedGate < g.supplyVideos) {
     kills.push("K-supply");
@@ -247,8 +349,12 @@ export function evaluateExperiment(spec: ExperimentSpec, r: ExperimentReadings):
   }
 
   const triggered = [...new Set([...kills, ...escalations])];
-  if (kills.length) return { decision: "kill", triggered, notes };
-  if (escalations.length) return { decision: "escalate", triggered, notes };
-  if (extend) return { decision: "extend", triggered: ["K3-extension"], notes };
-  return { decision: "continue", triggered: [], notes };
+  const uploadsFrozen = kills.length > 0 || escalations.some((e) => FREEZING_ESCALATIONS.has(e));
+  if (kills.length) return { decision: "kill", triggered, notes, uploadsFrozen };
+  if (escalations.length) return { decision: "escalate", triggered, notes, uploadsFrozen };
+  if (extend) return { decision: "extend", triggered: ["K3-extension"], notes, uploadsFrozen };
+  return { decision: "continue", triggered: [], notes, uploadsFrozen };
 }
+
+/** Escalations that hold the next upload (ExperimentVerdict.uploadsFrozen): an unread upload, and a spend overrun. */
+const FREEZING_ESCALATIONS: ReadonlySet<string> = new Set(["K-mfk-unmeasured", "K-compute"]);

@@ -1,0 +1,20 @@
+# Kids sub-brand candidates, in the order the loop takes them. Source: research/channel-loop/RULING-2026-10-04-kids-youtube.md §7 rule 4
+# (the kids-YouTube board, FABLE_QUEUE row 23, 4.10.2026). Written 4.10.2026 by an Opus fold agent (fold action 8).
+# The name is for the kids-explainers channel: a second Brand Account channel on T1's dedicated Stage A account, under its
+# own sub-brand — never chartsplained, never the brand's own name (ruling §7 rule 1).
+# Checked by scripts/brand-check.mjs from a runner on three probes, status codes only: .com RDAP, GitHub, and
+# <name>.netlify.app (404 = free; the Netlify reading is grade none until a fold reads the first result).
+# YouTube: not probed (terms barred, ruling 30.9 16(d) D2; the handle is tried at Stage A)
+# The FIRST name free on all three is the kids sub-brand. At Stage A the owner tries its YouTube handle inside the one
+# sitting; if the handle is taken, the next name in list order that is free on all three is used. If none of the five is
+# free, the loop writes the next five by the same criteria and re-runs; no owner action at any point.
+# Criteria (ruling §7 rule 4; brand-candidates.txt:1-4): short topic words a child can read, plain English, usable as a
+# YouTube handle and a .com; sayable, spelled one obvious way, no owner name, no claim the colony cannot back; no "kids"
+# or "children" in the name, and none of §2 rule 2's words (no song, rhyme, story or poem; no character, mascot, puppet,
+# toy or unboxing; no "learn colours", "ABC", "numbers", preschool or toddler framing), so nothing in the name claims
+# to be for children who cannot yet read (ruling §3 rule 1: the audience is children who can read).
+worldincharts
+askthechart
+chartfacts
+graphfacts
+chartcorner

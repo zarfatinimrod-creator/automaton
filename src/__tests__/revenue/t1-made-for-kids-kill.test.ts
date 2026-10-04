@@ -11,14 +11,19 @@ import {
  * P-2 (research/channel-loop/RULING-2026-09-30-video.md 16(c) item 7, fold step 10; research/youtube-kids/ASSESSMENT.md
  * §9.2 item 2): YouTube setting a video on T1's channel to "made for kids" over our declaration. The first override: the
  * video goes private, one appeal, never a relabel or a re-upload, and the board is flagged. A second override kills the
- * YouTube line. Nothing reads the override yet: before the first upload the verdict says so; from the first upload on,
- * an unread count is a due gate with no reading and escalates (K-mfk-unmeasured) instead of pretending a zero.
+ * YouTube line. Since 4.10 the count is not typed in: it is the uploads whose made-for-kids read-back is `true`
+ * (src/revenue/youtube-madeforkids.ts readbackOf; ruling 4.10 §8 rule 2). Before the first upload there is nothing to read
+ * and the verdict says so; from the first upload on, an unread upload is a due gate with no reading and escalates
+ * (K-mfk-unmeasured) instead of pretending a zero.
  */
 
 const SPEC = FACELESS_YOUTUBE_EXPERIMENT;
 
-/** A healthy day-20 channel: nothing else due, nothing else firing. */
-function readings(madeForKidsOverrides: number | null): ExperimentReadings {
+/**
+ * A healthy day-20 channel: nothing else due, nothing else firing. `overrides` uploads read back made for kids (YouTube's
+ * override) beside one read back as declared; null = one upload not read back yet.
+ */
+function readings(overrides: number | null): ExperimentReadings {
   return {
     day: 20,
     t1Passed: true,
@@ -28,7 +33,7 @@ function readings(madeForKidsOverrides: number | null): ExperimentReadings {
     averageViewPercentage: null,
     policySignal: false,
     ungrantedRecurringCost: false,
-    madeForKidsOverrides,
+    madeForKidsReadback: overrides === null ? [null] : ["false", ...Array<"true">(overrides).fill("true")],
     maxRunnerMinutesPerVideo: 20,
     maxTokenCostIlsPerVideo: 8,
   };
@@ -72,18 +77,31 @@ describe("P-2: made-for-kids overrides on T1's channel", () => {
     expect(notes).toMatch(/counts as failed/);
   });
 
-  it("unread once a video has passed the gate, even before T1 has reported", () => {
+  it("unread once an upload exists, even before T1 has reported", () => {
     const v = evaluateExperiment(SPEC, { ...readings(null), t1Passed: null, videosPassedGate: 1 });
     expect(v.decision).toBe("escalate");
     expect(v.triggered).toEqual(["K-mfk-unmeasured"]);
+    expect(v.uploadsFrozen).toBe(true);
+  });
+
+  it("a video that passed the gate but is not uploaded has nothing to read: not due, not frozen (ruling 4.10 §10 rule 1)", () => {
+    // T1 has had a gate-passed video since 27.9 (releases/t1). Freezing its first upload "until the reading exists" would
+    // freeze it for good: nothing can be read before an upload. The precondition before the first upload is the reader
+    // itself, built and tested (§10 rule 1); the freeze is for an upload that exists and is unread (§10 rule 2).
+    const v = evaluateExperiment(SPEC, { ...readings(null), day: 0, t1Passed: null, videosPassedGate: 1, madeForKidsReadback: [] });
+    expect(v.decision).toBe("continue");
+    expect(v.triggered).toEqual([]);
+    expect(v.uploadsFrozen).toBe(false);
+    expect(v.notes.join(" ")).toMatch(/not due before the first upload/);
   });
 
   it("unread before any upload: not due, a note and nothing else", () => {
-    const v = evaluateExperiment(SPEC, { ...readings(null), day: 0, t1Passed: null, videosPassedGate: 0 });
+    const v = evaluateExperiment(SPEC, { ...readings(null), day: 0, t1Passed: null, videosPassedGate: 0, madeForKidsReadback: [] });
     expect(v.decision).toBe("continue");
     expect(v.triggered).toEqual([]);
     const notes = v.notes.join(" ");
-    expect(notes).toMatch(/K-mfk has no reader/);
+    // "no reader" until 4.10: the reader exists since (src/revenue/youtube-madeforkids.ts), so the note says "no reading".
+    expect(notes).toMatch(/K-mfk has no reading/);
     expect(notes).toMatch(/not due before the first upload/);
   });
 

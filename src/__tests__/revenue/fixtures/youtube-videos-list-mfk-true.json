@@ -1,0 +1,19 @@
+{
+  "_fixture": "Hand-written, not a captured response. The field names status.madeForKids, status.selfDeclaredMadeForKids and status.privacyStatus are rendered (research/rendered/youtube-api-revision-history.txt:987-990, youtube-api-videos-insert.txt:360, :366; research/rendered/yk2-dev-made-for-kids-status.txt:187-198); the envelope (kind, items[].id) is inference until the first live read (ruling 4.10, Not ruled here 4).",
+  "kind": "youtube#videoListResponse",
+  "items": [
+    {
+      "kind": "youtube#video",
+      "id": "kidsVid0001",
+      "status": {
+        "uploadStatus": "processed",
+        "privacyStatus": "public",
+        "license": "youtube",
+        "embeddable": true,
+        "publicStatsViewable": true,
+        "madeForKids": true
+      }
+    }
+  ],
+  "pageInfo": { "totalResults": 1, "resultsPerPage": 1 }
+}

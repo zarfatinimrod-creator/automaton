@@ -1,0 +1,15 @@
+{
+  "_fixture": "Hand-written, not a captured response: an id asked for and not returned (a private, removed or not yet processed video), and a returned item whose status carries no madeForKids. Both must read as null, never as false.",
+  "kind": "youtube#videoListResponse",
+  "items": [
+    {
+      "kind": "youtube#video",
+      "id": "kidsVid0004",
+      "status": {
+        "uploadStatus": "uploaded",
+        "privacyStatus": "private"
+      }
+    }
+  ],
+  "pageInfo": { "totalResults": 1, "resultsPerPage": 1 }
+}
