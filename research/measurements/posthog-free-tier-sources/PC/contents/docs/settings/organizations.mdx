@@ -1,0 +1,110 @@
+---
+title: Organizations
+sidebar: Docs
+showTitle: true
+availability:
+  free: partial
+  selfServe: partial
+  enterprise: full
+
+  features:
+    multipleOrgs:
+      openSource: false
+      free: true
+      selfServe: true
+      enterprise: true
+---
+
+> Multiple organizations and projects aren't available on open source hobby deployments.
+
+## Organizations
+
+An organization is the highest abstraction level within a PostHog instance. It's made up of projects (see more in the [project settings guide](/docs/settings/projects)) and members.
+
+Most commonly a PostHog organization represents a real-world company or other type of isolated grouping.
+
+Use the organization dropdown in the top bar to switch between organizations or create a new one.
+
+PostHog Cloud users can create, manage, and join organizations without limits.
+
+Organization members have different access levels based on their membership type. See more in our [access control docs](/docs/settings/access-control).
+
+### Adding new members
+
+By default, any organization member can create and view organization invites. Admins and owners can restrict this by disabling **Members can invite** in organization settings – when disabled, only admins and owners can create and view invites. Members can only see invites at or below their own membership level. Invites are valid **for 3 days** after creation and **only for the specified email**. Emails can be resent by removing and re-adding the invitee.
+
+Sending invites is subject to [rate limits](/docs/api#rate-limiting), which apply across your organization.
+
+In an [email-enabled PostHog instance](/docs/self-host/configure/email) (including PostHog Cloud) the invite is sent automatically to the specified email. If the PostHog instance can't send emails, remember to share the invite link yourself.
+
+If there's no account associated with that email, the invited person will have to create an account. Otherwise, they'll be able to join with their existing account.
+
+If you sign up with an email that has a pending invite, PostHog automatically detects it and shows the inviting organization's name with an option to resend the invite email. You can skip this and create your own organization instead.
+
+If you already have an account, pending invites for your email appear in the project switcher. Open the project switcher from the organization dropdown in the top bar to see and accept them.
+
+Newly-joined users get the basic Member access level.
+
+### Deleting an organization
+
+An organization can be deleted by any organization Owner. This action is irreversible. See the Danger Zone in your [organization settings](https://app.posthog.com/settings/organization) for more information.
+
+Deletion is processed asynchronously in the background. While it completes, all organization members are redirected to a blocking screen – this typically takes a couple of minutes. From this screen, you can switch to another organization (if you belong to one) or contact support.
+
+### IP data capture default
+
+Organizations can set a default IP data capture policy that automatically applies to all new projects created within the organization. This setting helps ensure consistent privacy controls across all environments.
+
+- **IP data capture enabled**: New projects will capture client IP addresses by default
+- **IP data capture disabled**: New projects will automatically discard client IP data for enhanced privacy
+
+This setting is particularly useful for organizations with GDPR compliance requirements, as it ensures all new environments are configured with appropriate privacy settings from the start.
+
+**Note**: EU organizations automatically default to IP data capture disabled for GDPR compliance. Existing projects are not affected by this setting - only newly created projects will inherit the organization's default.
+
+Individual projects can override this organization default by configuring their own IP data capture setting in **Settings** > **Project** > **General** under the **IP data capture configuration** setting.
+
+### Notifications
+
+By default every time a member joins an organization in an [email-enabled PostHog instance](/docs/self-host/configure/email) (including PostHog Cloud), all existing members of the organization get notified about this with an email. This increases security by making it explicit who gains access to your product data.
+
+If you'd rather not get such notifications, you can disable them in the "Notification Preferences" section of organization settings.
+
+### Member notification settings
+
+Organization admins and owners can choose which email notifications members receive. Find this under [**Settings** > **Organization** > **Members**](https://app.posthog.com/settings/organization-members#member-notifications), in the **Member notifications** section.
+
+A setting you choose here overrides the member's own preference, and the member can't change it back. Members get an in-app notification when you change their settings.
+
+- A rule can apply to one project only.
+- Settings belong to the person, so a rule also applies in that member's other organizations.
+
+> **Note:** Member notification settings are part of Member governance, which is available on the Boost, Scale, and Enterprise add-ons.
+
+### Personal API key access
+
+Organization admins and owners can view all [personal API keys](/docs/api/personal-api-keys) that have access to their organization or its projects. This includes organization-scoped keys, project-scoped keys, and fully unscoped keys held by any member.
+
+Find this under [**Settings** > **Organization** > **Security** > **Personal API key access**](https://app.posthog.com/settings/organization-security#organization-personal-api-keys). For each key, you can see:
+
+- **Owner** – the member who created the key
+- **Masked value** – a display-safe hint (e.g. `phx_***1234`) to help identify the key
+- **Scopes** – the API scopes granted (e.g. `insight:read`, or `*` for full access)
+- **Access scope** – whether the key applies to the whole organization, specific projects, or all projects (unscoped)
+- **Last used** and **Created** timestamps
+
+You can search the table by owner name, email, or scope. Click any of the **Owner**, **Masked value**, **Last used**, or **Created** column headers to sort the table. The table is paginated at 25 rows per page.
+
+The secret key value and key label are never exposed.
+
+> **Note:** This feature requires a plan that includes organization security settings. Only admins and owners can access this section.
+
+### Member list visibility
+
+Organization admins and owners can restrict members from viewing the full list of org members. This is useful if you invite external collaborators into separate projects, like when you set up [embedded analytics](/tutorials/embedded-analytics).
+
+Find this setting under [**Settings** > **Organization** > **Security**](https://app.posthog.com/settings/organization-security), labeled **Members can see the full member list**.
+
+When disabled, members only see themselves and other members in their projects.
+
+> **Note:** This feature requires the [Boost, Scale, or Enterprise plan](/platform-packages).

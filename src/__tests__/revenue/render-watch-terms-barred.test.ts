@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 // @ts-expect-error — plain ESM script, no type declarations by design
 import { TERMS_BARRED, fetchOne, parseUrlList, termsBarred } from "../../../scripts/render-watch.mjs";
 // @ts-expect-error — plain ESM script, no type declarations by design
-import { overrideLines, siteOf, termsGate } from "../../../scripts/queue-zero-test.mjs";
+import { PATH_LIMITS, applyVerdicts, overrideLines, siteOf, termsGate } from "../../../scripts/queue-zero-test.mjs";
 
 /**
  * Tick 19 (29.9.2026): Gumroad's rendered terms bar "any manual or automated software ... to
@@ -286,5 +286,63 @@ describe("ruling 4.10 row 18 §3: the AMO policy line retired, mozilla.org judge
     expect(termsBarred("addons.mozilla.org")?.domain).toBe("addons.mozilla.org");
     const active = (parseUrlList(urlsText()) as { url: string }[]).filter((e) => siteOf(new URL(e.url).hostname) === "mozilla.org");
     expect(active).toEqual([]);
+  });
+});
+
+/**
+ * Tick 40 review, defect 2. posthog.com is NOT_BARRED for access (research/channel-loop/terms/posthog-terms-2026-10-04.md),
+ * but its repository's LICENSE asks "Please do not duplicate, copy, or use our website" for everything outside /contents/
+ * (PostHog/posthog.com LICENSE:5-6 at 35fc817), and a render line commits what it captures. The verdict's note said no
+ * page outside the docs is committed, and nothing enforced it: a posthog.com/pricing line would have passed every gate.
+ * Only /contents/ builds /docs/ and /tutorials/, so the terms gate admits posthog.com lines there and nowhere else.
+ */
+describe("PATH_LIMITS: posthog.com lines only under /docs/ or /tutorials/ (tick 40 review, defect 2)", () => {
+  const verdicts = () => JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8")).sites;
+
+  it("names posthog.com, its two paths and the licence line, and the verdict's note points at it", () => {
+    const limit = (PATH_LIMITS as Record<string, { prefixes: string[]; why: string }>)["posthog.com"];
+    expect(limit.prefixes).toEqual(["/docs/", "/tutorials/"]);
+    expect(limit.why).toContain("LICENSE:5-6");
+    expect(verdicts()["posthog.com"].verdict).toBe("NOT_BARRED");
+    expect(verdicts()["posthog.com"].note).toContain("the terms gate admits a posthog.com line only under /docs/ or /tutorials/ (PATH_LIMITS in scripts/queue-zero-test.mjs)");
+    expect(JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8"))._about).toContain("a line on a site in PATH_LIMITS (scripts/queue-zero-test.mjs termsGate) passes only under that site's listed paths");
+  });
+
+  it("refuses a posthog.com line outside those paths, on any of the site's hosts and whatever its slug", () => {
+    const v = verdicts();
+    for (const [url, slug] of [
+      ["https://posthog.com/pricing", "posthog-pricing"],
+      ["https://posthog.com/terms", "terms-posthog"],
+      ["https://posthog.com/", "posthog-home"],
+      ["https://posthog.com/docs", "posthog-docs-index"],
+      ["https://posthog.com/blog/x", "posthog-blog"],
+      ["https://posthog.com/handbook/docs/x", "posthog-handbook"],
+      ["https://eu.posthog.com/api/projects/1/query/", "posthog-query"],
+    ]) {
+      const gate = termsGate(url, slug, v);
+      expect(gate.ok, url).toBe(false);
+      expect(gate.site, url).toBe("posthog.com");
+      expect(gate.verdict, url).toBe("NOT_BARRED");
+      expect(gate.why, url).toMatch(/posthog\.com lines may be active only under \/docs\/ or \/tutorials\//);
+    }
+    for (const url of ["https://posthog.com/docs/api/queries", "https://posthog.com/tutorials/cookieless-tracking"]) {
+      expect(termsGate(url, "posthog-x", v).ok, url).toBe(true);
+    }
+    // Another NOT_BARRED site has no path limit.
+    expect(termsGate("https://docs.apify.com/legal/general-terms-and-conditions", "x", v).ok).toBe(true);
+  });
+
+  it("leaves no active urls.txt line that the terms gate refuses", () => {
+    const v = verdicts();
+    const entries = parseUrlList(readFileSync("research/rendered/urls.txt", "utf8")) as { url: string; slug: string }[];
+    expect(entries.filter((e) => !termsGate(e.url, e.slug, v).ok).map((e) => e.slug)).toEqual([]);
+  });
+
+  it("pauses a path-limited line in its own words, not as terms unread", () => {
+    const out = applyVerdicts("https://posthog.com/pricing\tposthog-pricing\nhttps://posthog.com/docs/api/queries\tposthog-queries\n", verdicts());
+    expect(out.paused).toEqual(["posthog-pricing"]);
+    expect(out.urls).toBe(
+      "# paused (path limit): posthog.com — see PATH_LIMITS in scripts/queue-zero-test.mjs — https://posthog.com/pricing\tposthog-pricing\nhttps://posthog.com/docs/api/queries\tposthog-queries\n",
+    );
   });
 });

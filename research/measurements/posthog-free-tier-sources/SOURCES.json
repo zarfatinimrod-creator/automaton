@@ -1,0 +1,225 @@
+{
+ "_about": "Pinned copies of the GitHub-hosted files research/measurements/posthog-free-tier.md read on 2026-10-04 (tick 40), so that its quotes are checked on their cited lines offline by src/__tests__/revenue/posthog-free-tier-sources.test.ts (tick 40 review, defect 6). Each file was fetched from https://raw.githubusercontent.com/<repo>/<commit>/<path> (HTTP 200) on 2026-10-04 by the tick-40 builder and again by its reviewer; the two fetches are byte-identical. copied=true: the file is under <pin>/<path> here, byte for byte. copied=false: a posthog.com file outside /contents/, which that repository's LICENSE asks not to be duplicated or copied (LICENSE:5-6); only its size and sha256 are kept, and the test lists the note's quotes from it as read on 4.10.",
+ "pins": {
+  "PC": {
+   "repo": "PostHog/posthog.com",
+   "commit": "4c27ff7578f24c75b40d1024e4e0cbd40c9922ba",
+   "licence": "LICENSE (copied as PC/LICENSE): content in /contents/ is under the MIT licence (LICENSE:12-32); for everything else, 'Please do not duplicate, copy, or use our website for commercial or non-commercial use.' (LICENSE:5-6). Only /contents/ files and the LICENSE are copied."
+  },
+  "PH": {
+   "repo": "PostHog/posthog",
+   "commit": "526d64dd82340b1bf4293d6d9baea7e965997048",
+   "licence": "LICENSE (copied as PH/LICENSE): everything outside ee/ (and third-party components) is under the MIT Expat licence (LICENSE:3-7). None of these files is under ee/."
+  }
+ },
+ "files": [
+  {
+   "pin": "PC",
+   "path": "src/pages-content/pricing-data.js",
+   "lines": 335,
+   "bytes": 14073,
+   "sha256": "56266b5ef9e45fd384cb1f948df1bd4612c13b0c1391ee2dc00b276d11b99235",
+   "copied": false
+  },
+  {
+   "pin": "PC",
+   "path": "src/hooks/productData/product_analytics.tsx",
+   "lines": 469,
+   "bytes": 23806,
+   "sha256": "b8db7bfc30a83d366fef604cf436a154c429fc3ee0ee84c5f18baff106cdb688",
+   "copied": false
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/data/events-retention.mdx",
+   "lines": 38,
+   "bytes": 1825,
+   "sha256": "264636ac81e232459bc1e1fdff501b9dc9316f0e9d949c26481a526fbb89bdf1",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/sql/index.mdx",
+   "lines": 160,
+   "bytes": 6374,
+   "sha256": "e003193d449c07e91c3bba7ac2d24cf21bb1c680a42374f20d30d165f79d6441",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/api/queries.mdx",
+   "lines": 459,
+   "bytes": 18747,
+   "sha256": "21d29e3753930d01981970fcee4a361d3967a6f944283125cddde0f821258e26",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/api/index.mdx",
+   "lines": 169,
+   "bytes": 9918,
+   "sha256": "f946a15be2bc2faded1ffe3c0724f285a40bd73df73a961ca176ae1bc9cbee1f",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/api/personal-api-keys.mdx",
+   "lines": 53,
+   "bytes": 2652,
+   "sha256": "c3c57194e58b11ffb78e8235e21558928e0ca9c38cb4503b3833d9322f1cc101",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/endpoints/endpoints-vs-query-api.mdx",
+   "lines": 36,
+   "bytes": 1781,
+   "sha256": "c620d20449ee9b0348b32f55fd310591f91f365557f00f7ef35c99ae6aedfe49",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "src/hooks/productData/endpoints.tsx",
+   "lines": 326,
+   "bytes": 22556,
+   "sha256": "fa20f23b74975b10402a7fb17bb342a55acfb3b58edce1bce6d9349611ac679a",
+   "copied": false
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/settings/projects.mdx",
+   "lines": 94,
+   "bytes": 5738,
+   "sha256": "f453ec30a2d9f626a37f79ef4bb71e4af0da6554c19aa86653adbb3111cd076c",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/settings/organizations.mdx",
+   "lines": 110,
+   "bytes": 7173,
+   "sha256": "d339327e13770fe57dd4d783d5ddd6cdc08de21243425a2c50c26e6cdba40bf8",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/privacy/data-collection.mdx",
+   "lines": 329,
+   "bytes": 16531,
+   "sha256": "cf8b8984dd3aa2ced75dda6e7a3a7eebef9d0c409f9004618a34e0d638f64cfb",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/privacy/data-storage.mdx",
+   "lines": 293,
+   "bytes": 18571,
+   "sha256": "227922aec7c42706afa27898ed711818d5b5bb92ad53a2e9b09c385278e70fbc",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/product-analytics/privacy.mdx",
+   "lines": 98,
+   "bytes": 4372,
+   "sha256": "92ac509b89d65f5e104222c114a42f8fdf2fe5c69e93bd7201d20e6a656a5393",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "contents/tutorials/cookieless-tracking.md",
+   "lines": 124,
+   "bytes": 6735,
+   "sha256": "03f7a9208c9137b6aef5ce3e41c5cbb5a05c30d641aba376e9c31f5e89124eaa",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/libraries/js/persistence.mdx",
+   "lines": 156,
+   "bytes": 11157,
+   "sha256": "39bfb328ea75b7df995ec15769042abf2d611f719242cd152e016e12181d30a6",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "contents/docs/how-posthog-works/ingestion-pipeline.mdx",
+   "lines": 206,
+   "bytes": 12255,
+   "sha256": "2c3a193c16d4cee75ab25bab71cdd2e38d23f9aef671b902889a350496939166",
+   "copied": true
+  },
+  {
+   "pin": "PC",
+   "path": "LICENSE",
+   "lines": 34,
+   "bytes": 1490,
+   "sha256": "5391d207b47157cc27002385e33373240d5a9824bfc194832f41b0a7c24b7715",
+   "copied": true
+  },
+  {
+   "pin": "PH",
+   "path": "posthog/api/query.py",
+   "lines": 662,
+   "bytes": 31506,
+   "sha256": "9fd7d1cbcc8a747a16af14ff22d17698f6c0a6b5ca5bb70d14b803134a6f8909",
+   "copied": true
+  },
+  {
+   "pin": "PH",
+   "path": "posthog/api_queries_budget.py",
+   "lines": 217,
+   "bytes": 7833,
+   "sha256": "7dd0ba08e2c99f34d30636d0cf7d5aa0bb86657c30dc90a6254ee69a695d223b",
+   "copied": true
+  },
+  {
+   "pin": "PH",
+   "path": "posthog/settings/web.py",
+   "lines": 1565,
+   "bytes": 86346,
+   "sha256": "1255ad0ead5ccd8d1a2ad79f478157b7051ac58f7bda855ad09d4a21fce6a6b6",
+   "copied": true
+  },
+  {
+   "pin": "PH",
+   "path": "posthog/models/team/team.py",
+   "lines": 1295,
+   "bytes": 57237,
+   "sha256": "8d2648ab6cd0bd8826bfd919840a227576baa97064e19e2777922e858819d058",
+   "copied": true
+  },
+  {
+   "pin": "PH",
+   "path": "products/cdp/backend/models/hog_functions/hog_function.py",
+   "lines": 493,
+   "bytes": 20205,
+   "sha256": "77a09fdabeab259f8593b482709a6aa8668ff7e6ee62ba47c319fc56303dec6f",
+   "copied": true
+  },
+  {
+   "pin": "PH",
+   "path": "nodejs/src/cdp/templates/_transformations/geoip/geoip.template.ts",
+   "lines": 96,
+   "bytes": 3223,
+   "sha256": "09db26b18ebf6cbc9622906f16ef48aa42eb5bb9629cd86414001fe33a350f79",
+   "copied": true
+  },
+  {
+   "pin": "PH",
+   "path": "nodejs/src/ingestion/common/steps/event-processing/prepare-event-step.ts",
+   "lines": 73,
+   "bytes": 2565,
+   "sha256": "0f708bd3f0a7fbde22b94b342422b9281c998751d4c425e406673971fc70210e",
+   "copied": true
+  },
+  {
+   "pin": "PH",
+   "path": "LICENSE",
+   "lines": 25,
+   "bytes": 1563,
+   "sha256": "6d82d67dba42eb94ba10f1e986d2eec338c22fb7c5216c2c0ebdecd83d53a029",
+   "copied": true
+  }
+ ]
+}
