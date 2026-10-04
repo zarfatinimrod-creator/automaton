@@ -12,7 +12,10 @@
  * A value that starts with "-" needs the = form: --text="- a bullet". Several lines (insert-after only): --text $'a\nb'.
  * A "|" inside a table cell is written "\|" (an unescaped one would add a cell, and the edit is refused).
  * Each run prints the target line before and after as a unified diff. Exit: 0 written (or --dry-run); 2 refused or a
- * usage error, with the reason on stderr, and the file is byte for byte what it was.
+ * usage error, with the reason on stderr, and the file is byte for byte what it was; 3 the write itself failed (a full
+ * disk, a file-size limit), and stderr says "write failed" and whether the file is as it was. The edit is written to a
+ * temporary file beside the target (".<name>.loop-edit-<pid>-<hex>.tmp", the target's mode) and renamed over it, so a
+ * failed write leaves the target whole; the temporary file is removed on every failure.
  *
  * WHY. The main thread edited CHANNEL_LOOP.md and FABLE_QUEUE.md with one-off Python whose assertions failed on a table
  * cell three times on 4.10 (logs/2026-10-04-channel-loop-tick-38.md, -39.md, -40.md §7). These files are long single
@@ -26,28 +29,48 @@
  *   set-cell         in the table row whose first cell equals --row-key exactly, replace (or --append to) cell --col
  *                    (1-based, the first cell is 1). Refused on a missing or duplicated key, or when the row's cell count
  *                    is not its table's header's.
- *   insert-after     insert the --text line(s) after the one line that starts with --anchor (an exact line is its own
- *                    prefix). Refused when no line or more than one line starts with it.
- *   replace-in-line  in the one line that starts with --anchor, replace --old with --new once. Refused when --old is
- *                    absent from that line or occurs in it more than once (overlapping occurrences count).
+ *   insert-after     insert the --text line(s) after the one line that starts with --anchor. A line equal to the anchor
+ *                    wins over longer lines it starts (so "|---|---|" names the 2-column delimiter row, not the wider
+ *                    ones). Refused when no line starts with it, more than one does and none equals it, or two equal it.
+ *                    Inside a table only rows of the header's cell count go in; after a table's last line, rows and then
+ *                    an empty line before any other text; after a header row, nothing.
+ *   replace-in-line  in the one line --anchor names (as for insert-after), replace --old with --new once. Refused when
+ *                    --old is absent from that line or occurs in it more than once (overlapping occurrences count).
  *   repoint-capture  on line --line only, replace every "<live>.<ext>:" with "<frozen>.<ext>:" (a capture cited by line,
  *                    as tick 38/39 did by hand for CHANNEL_LOOP :158/:168/:338 and FABLE_QUEUE :38/:42/:45), after
  *                    checking that research/rendered/<frozen>.<ext> exists for each ext seen.
  *
  * WHAT IS CHECKED before anything is written (checkEdit runs on every command's output, not only in the commands):
- *   - the target is a regular file (not a link) named logs/<name>.md or research/channel-loop/<name>.md, so
- *     research/rendered/urls.txt and every other file is refused; it must be valid UTF-8;
+ *   - the target is a regular file named logs/<name>.md or research/channel-loop/<name>.md of a repository root (the
+ *     folder holds .git), reached through no link below that root, so research/rendered/urls.txt, a linked logs/ or
+ *     research/channel-loop/, node_modules/<pkg>/logs/x.md and every other file are refused; it must be valid UTF-8;
  *   - the line count changes only by the lines insert-after adds, and every other line is byte for byte as it was,
  *     line ending included (CRLF stays CRLF; a missing final newline stays missing);
- *   - a table edit changes only its own cell, and the row keeps its cell count;
+ *   - a line that starts with "|" keeps its cell count (whatever the command), a table edit changes only its own cell,
+ *     and the file's tables keep their header, delimiter and rows (an insertion adds only rows of the header's width,
+ *     or a whole new table);
  *   - a URL (http:// or https://), or a slug field of a tab-separated line, on the target line is never altered, removed
- *     or created unless the command's own text contains it;
- *   - an edit that changes nothing is refused, and the file is re-read (sha256) just before writing: a concurrent change
- *     is refused, not overwritten.
+ *     or created unless the command's own text contains it; a URL that is on the line twice counts twice, and its end
+ *     is compared as written except trailing . , ; : ! ? and a closing bracket it does not open;
+ *   - an edit that changes nothing is refused, and the file is re-read (sha256) just before the rename: a concurrent
+ *     change, even one of the same length, is refused, not overwritten.
  */
-import { createHash } from "node:crypto";
-import { existsSync, lstatSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { basename, dirname, join, resolve } from "node:path";
+import { createHash, randomBytes } from "node:crypto";
+import {
+  chmodSync,
+  closeSync,
+  existsSync,
+  fsyncSync,
+  lstatSync,
+  openSync,
+  readFileSync,
+  realpathSync,
+  renameSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
+import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
@@ -55,7 +78,11 @@ export const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 export const FABLE_QUEUE = "logs/FABLE_QUEUE.md";
 export const RENDERED_REL = "research/rendered";
 
-/** A FABLE_QUEUE row since row 19: #, script, agents, reads, writes, question, then, status. */
+/**
+ * A FABLE_QUEUE row since row 19: #, script, agents, reads, writes, question, then, status. Its header has 7 cells, so
+ * set-cell refuses these rows and insert-after refuses an 8-cell row 26 until the header and delimiter rows gain the 8th
+ * column (a hand edit: loop-edit never changes a row's cell count).
+ */
 export const STATUS_CELLS = 8;
 
 /** The files a capture can have: freeze-capture.mjs CAPTURE_EXTS (a test holds the two lists equal). */
@@ -74,6 +101,14 @@ export class Refusal extends Error {
 const refuse = (message) => {
   throw new Refusal(message);
 };
+
+/** A write that failed after every check passed: exit 3, and the message says whether the file is still as it was. */
+export class WriteFailure extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "WriteFailure";
+  }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Lines
@@ -146,6 +181,12 @@ function firstCell(row) {
   return s.length >= 2 && s[0] === 0 ? row.slice(1, s[1]).trim() : null;
 }
 
+/**
+ * What a cell count check compares: null for a line that does not start with "|", else its count of unescaped "|" and
+ * whether it closes as a "| ... |" row. Two lines with the same shape have the same number of cells.
+ */
+const rowShape = (text) => (text.startsWith("|") ? `${separators(text).length}${cells(text) ? "" : " open"}` : null);
+
 const DELIMITER = /^\|(\s*:?-+:?\s*\|)+\s*$/;
 
 /** Every table: a run of lines starting with "|" whose second line is a delimiter row. 0-based indices. */
@@ -168,6 +209,9 @@ export function tables(lines) {
   }
   return out;
 }
+
+/** A table's last line: its last body row, or its delimiter row when it has none. */
+const lastLine = (t) => (t.rows.length ? t.rows[t.rows.length - 1] : t.header + 1);
 
 /** The body rows (never a header or delimiter row) whose first cell is `key`, with their table's header index. */
 export function findRows(lines, key) {
@@ -200,9 +244,27 @@ function oneRow(lines, key, what) {
 
 const URL_RE = /https?:\/\/[^\s<>`"'|\\]+/g;
 
-/** The URLs on a line (trailing punctuation dropped), and on a tab-separated line its slug fields. */
+const OPENER = { ")": "(", "]": "[", "}": "{" };
+const count = (text, ch) => text.split(ch).length - 1;
+
+/**
+ * A URL without what follows it in prose: trailing sentence punctuation (. , ; : ! ?), and a closing bracket only when
+ * the URL has more of it than of its opening one (GFM's rule for ")": "(https://a.example/x)" ends at x, and
+ * "https://en.wikipedia.org/wiki/Foo_(bar)" keeps its ")"). "_" and "*" are kept: "a_b_" and "a_b*" are two URLs.
+ */
+function trimUrl(url) {
+  let u = url;
+  for (;;) {
+    const last = u[u.length - 1];
+    const strip = ".,;:!?".includes(last) || (OPENER[last] !== undefined && count(u, last) > count(u, OPENER[last]));
+    if (!strip) return u;
+    u = u.slice(0, -1);
+  }
+}
+
+/** The URLs on a line (trimUrl), and on a tab-separated line its slug fields. */
 export function protectedTokens(line) {
-  const urls = (line.match(URL_RE) ?? []).map((u) => u.replace(/[.,;:!?)\]}*_]+$/, ""));
+  const urls = (line.match(URL_RE) ?? []).map(trimUrl);
   const slugs = line.includes("\t") ? line.split("\t").map((f) => f.trim()).filter((f) => SLUG_RE.test(f)) : [];
   return [...urls, ...slugs];
 }
@@ -222,10 +284,48 @@ function guardTokens(before, after, commandText, line) {
 // The check every edit passes before it is written
 
 /**
+ * An insertion keeps every table whole. Inside a table (after its delimiter row or a body row) every inserted line must
+ * be a row with the header's cell count: anything else would cut the table off there. After a table's last line the
+ * inserted lines may be such rows and then, after an empty line, anything (a text line straight after a table joins it
+ * as a row in GFM). After a header row nothing goes in. Then the file's tables must be the old ones, shifted, with the
+ * inserted rows added, and no other change; a whole new table made of inserted lines only is allowed.
+ */
+function checkInsertedTables(a, b, t, inserted, insertedText) {
+  const old = tables(a);
+  const host = old.find((T) => T.header <= t && t <= lastLine(T));
+  const added = [];
+  if (host) {
+    if (t === host.header) refuse(`line ${t + 1} is a table's header row; insert after its delimiter row`);
+    const width = cells(a[host.header].text)?.length ?? 0;
+    let k = 0;
+    while (k < inserted && insertedText[k].startsWith("|")) {
+      const n = cells(insertedText[k])?.length ?? 0;
+      if (n !== width) refuse(`inserted line ${k + 1} has ${n} cells, the table's header (line ${host.header + 1}) ${width}`);
+      added.push(t + 1 + k);
+      k += 1;
+    }
+    if (k < inserted && t !== lastLine(host)) {
+      refuse(`inserted line ${k + 1} is not a row of the table at line ${host.header + 1} (${width} cells), and it would cut the table off`);
+    }
+    if (k < inserted && insertedText[k] !== "") {
+      refuse(`inserted line ${k + 1} would join the table at line ${host.header + 1}; start --text with an empty line, or insert rows of ${width} cells`);
+    }
+  }
+  const shift = (i) => (i <= t ? i : i + inserted);
+  const expected = old.map((T) => ({
+    header: shift(T.header),
+    rows: [...T.rows.filter((r) => r <= t), ...(T === host ? added : []), ...T.rows.filter((r) => r > t).map(shift)],
+  }));
+  const fresh = (T) => T.header > t && lastLine(T) <= t + inserted;
+  if (JSON.stringify(tables(b).filter((T) => !fresh(T))) !== JSON.stringify(expected)) refuse("the edit would change the file's tables");
+}
+
+/**
  * Throws a Refusal unless `after` is `before` with only line `line` (1-based) changed, or, with `inserted` > 0, with
- * exactly the lines of `insertedText` added after it and line `line` itself unchanged. With `cell`, the target row keeps
- * its cell count and only that cell (1-based) changes. Protected tokens (protectedTokens) on the target line survive
- * unless a string in `commandText` contains them.
+ * exactly the lines of `insertedText` added after it and line `line` itself unchanged. A line that starts with "|" keeps
+ * its cell count (rowShape), and the file's tables keep their headers and rows (an insertion adds only rows of the
+ * header's width: checkInsertedTables). With `cell`, only that cell (1-based) of the target row changes. Protected
+ * tokens (protectedTokens) on the target line survive unless a string in `commandText` contains them.
  */
 export function checkEdit(before, after, { line, inserted = 0, insertedText = [], cell = null, commandText = [] }) {
   const a = parseLines(before);
@@ -250,14 +350,17 @@ export function checkEdit(before, after, { line, inserted = 0, insertedText = []
       const lastOfFile = t + 1 + k === b.length - 1;
       if (got.eol !== b[t].eol && !(lastOfFile && got.eol === "")) refuse(`inserted line ${t + 2 + k} has another line ending than the anchor`);
     }
+    checkInsertedTables(a, b, t, inserted, insertedText);
     return true;
   }
   if (b[t].eol !== a[t].eol) refuse(`line ${line}'s line ending would change`);
+  if (rowShape(a[t].text) !== rowShape(b[t].text)) refuse(`line ${line}: the row's cell count would change (an unescaped "|" in the text?)`);
+  if (JSON.stringify(tables(a)) !== JSON.stringify(tables(b))) refuse("the edit would change the file's tables");
   guardTokens(a[t].text, b[t].text, commandText, line);
   if (cell !== null) {
     const ca = cells(a[t].text);
     const cb = cells(b[t].text);
-    if (!ca || !cb || ca.length !== cb.length) refuse(`line ${line}: the row's cell count would change (an unescaped "|" in the text?)`);
+    if (!ca || !cb) refuse(`line ${line} is not a "| ... |" row`);
     for (let k = 0; k < ca.length; k += 1) {
       if (k !== cell - 1 && ca[k] !== cb[k]) refuse(`line ${line}: cell ${k + 1} would change, and the edit is to cell ${cell}`);
     }
@@ -291,7 +394,7 @@ export function setStatus(source, { row, text, mode = "prepend" }) {
     refuse(`row ${n} (line ${index + 1}) has ${c ? c.length : "no parsable"} cells, not ${STATUS_CELLS}`);
   }
   const k = c.length;
-  const next = editCell(lines[index].text, k, (old) => (mode === "replace" ? text : [text, "Was:", old].filter(Boolean).join(" ")));
+  const next = editCell(lines[index].text, k, (old) => (mode === "replace" || !old ? text : `${text} Was: ${old}`));
   return finishLine(source, lines, index, next, { cell: k, commandText: [text] });
 }
 
@@ -322,6 +425,9 @@ function oneLineStartingWith(lines, anchor) {
   lines.forEach((l, i) => {
     if (l.text.startsWith(anchor)) hits.push(i);
   });
+  const exact = hits.filter((i) => lines[i].text === anchor);
+  if (exact.length > 1) refuse(`${exact.length} lines are the anchor (lines ${exact.map((i) => i + 1).join(", ")}); it must name one line`);
+  if (exact.length === 1) return exact[0];
   if (hits.length === 0) refuse(`no line starts with the anchor "${anchor}"`);
   if (hits.length > 1) refuse(`${hits.length} lines start with the anchor (lines ${hits.map((i) => i + 1).join(", ")}); make it longer`);
   return hits[0];
@@ -394,15 +500,59 @@ export function repointCapture(source, { line, slug, to, exists }) {
 
 const sha256 = (buf) => createHash("sha256").update(buf).digest("hex");
 
-/** The repository a target belongs to, or a Refusal: only logs/<name>.md and research/channel-loop/<name>.md. */
+/**
+ * The repository a target belongs to, or a Refusal: only <root>/logs/<name>.md and <root>/research/channel-loop/<name>.md
+ * where <root> holds a .git (a directory, or a worktree's .git file), so node_modules/pkg/logs/x.md is refused.
+ */
 export function targetRoot(file) {
   const abs = resolve(file);
   const parent = dirname(abs);
+  let root = null;
   if (abs.endsWith(".md")) {
-    if (basename(parent) === "logs") return dirname(parent);
-    if (basename(parent) === "channel-loop" && basename(dirname(parent)) === "research") return dirname(dirname(parent));
+    if (basename(parent) === "logs") root = dirname(parent);
+    else if (basename(parent) === "channel-loop" && basename(dirname(parent)) === "research") root = dirname(dirname(parent));
   }
-  refuse(`${file}: loop-edit edits logs/*.md and research/channel-loop/*.md only`);
+  if (root === null) refuse(`${file}: loop-edit edits logs/*.md and research/channel-loop/*.md only`);
+  if (!existsSync(join(root, ".git"))) refuse(`${file}: ${root} is not a repository's root (no .git)`);
+  return root;
+}
+
+/**
+ * Writes `text` to a new temporary file beside `file`, with `file`'s mode, then renames it over `file`: a failed write
+ * leaves `file` as it was. Just before the rename `file` is read again, and refused if it is no longer `original` (a
+ * concurrent change). On any failure the temporary file is removed; a failure other than that refusal is a WriteFailure
+ * that says whether `file` is still as it was.
+ */
+function writeAtomically(file, text, original) {
+  const tmp = join(dirname(file), `.${basename(file)}.loop-edit-${process.pid}-${randomBytes(6).toString("hex")}.tmp`);
+  const { mode } = statSync(file);
+  try {
+    const fd = openSync(tmp, "wx");
+    try {
+      writeFileSync(fd, text);
+      fsyncSync(fd);
+    } finally {
+      closeSync(fd);
+    }
+    chmodSync(tmp, mode & 0o7777);
+    if (sha256(readFileSync(file)) !== sha256(original)) refuse(`${file} changed while it was being edited`);
+    renameSync(tmp, file);
+  } catch (err) {
+    let left = "";
+    try {
+      rmSync(tmp, { force: true });
+    } catch {
+      left = `; the temporary file ${tmp} is left behind`;
+    }
+    if (err instanceof Refusal) throw new Refusal(`${err.message}${left}`);
+    let state;
+    try {
+      state = sha256(readFileSync(file)) === sha256(original) ? "the file is as it was" : `${file} is not what was read: check it`;
+    } catch {
+      state = `${file} could not be read back: check it`;
+    }
+    throw new WriteFailure(`${err.message}; ${state}${left}`);
+  }
 }
 
 const isFile = (path) => existsSync(path) && statSync(path).isFile();
@@ -445,15 +595,14 @@ export function runCommand(command, options, { dryRun = false } = {}) {
   }
   if (st.isSymbolicLink()) refuse(`${file} is a symbolic link; edit the file it points to`);
   if (!st.isFile()) refuse(`${file} is not a regular file`);
+  const real = realpathSync(file);
+  if (real !== join(realpathSync(root), relative(root, resolve(file)))) refuse(`${file} passes through a symbolic link (it is ${real})`);
   const buf = readFileSync(file);
   const source = buf.toString("utf8");
   if (!Buffer.from(source, "utf8").equals(buf)) refuse(`${file} is not valid UTF-8`);
   const out = run(source, options, root);
   const diff = unifiedDiff(file, out.change);
-  if (!dryRun) {
-    if (sha256(readFileSync(file)) !== sha256(buf)) refuse(`${file} changed while it was being edited`);
-    writeFileSync(file, out.text);
-  }
+  if (!dryRun) writeAtomically(file, out.text, buf);
   return { ...out, notes: out.notes ?? [], diff, written: !dryRun };
 }
 
@@ -521,8 +670,12 @@ export function main(argv, { log = console.log, error = console.error } = {}) {
     log(dryRun ? "loop-edit: dry run, nothing written" : `loop-edit: written ${values.file}`);
     return 0;
   } catch (err) {
-    error(`loop-edit: refused: ${err.message}; nothing written`);
-    return 2;
+    if (err instanceof Refusal) {
+      error(`loop-edit: refused: ${err.message}; nothing written`);
+      return 2;
+    }
+    error(err instanceof WriteFailure ? `loop-edit: write failed: ${err.message}` : `loop-edit: error: ${err.message}; nothing written`);
+    return 3;
   }
 }
 

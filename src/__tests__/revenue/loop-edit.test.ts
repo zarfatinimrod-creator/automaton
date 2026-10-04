@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -32,7 +32,9 @@ import {
 
 /**
  * scripts/loop-edit.mjs — the loop-file editor (logs/CHANNEL_LOOP.md §10, tick 43): set-status, set-cell, insert-after,
- * replace-in-line and repoint-capture, each finding exactly one target or refusing with exit 2 and writing nothing.
+ * replace-in-line and repoint-capture, each finding exactly one target or refusing with exit 2 and writing nothing (a
+ * write that fails exits 3 and leaves the file as it was). The tick-43 fixer's tests (reviewer's defects 1-8) cover the
+ * temporary-file write, table cell counts and table shape, linked folders, an empty status cell, URL ends and anchors.
  * The fixtures are real lines of logs/FABLE_QUEUE.md and logs/CHANNEL_LOOP.md (and two pre-repoint lines from git,
  * 729b6b9^: CHANNEL_LOOP :338 and FABLE_QUEUE :38), trimmed to a few lines of each file.
  */
@@ -63,6 +65,7 @@ function tree(files: Record<string, string | Buffer> = {}) {
     "research/channel-loop/RULING-X.md": "# Ruling\n\n## Folds\n\n- one\n",
     "research/rendered/urls.txt": URLS_TXT,
     [FROZEN_BTL]: "frozen copy\n",
+    ".git/HEAD": "ref: refs/heads/main\n",
     ...files,
   };
   for (const [rel, body] of Object.entries(all)) {
@@ -182,6 +185,15 @@ describe("set-status — FABLE_QUEUE's last cell", () => {
     expectOnly(QUEUE, out.text, [Q.row25]);
   });
 
+  it("on an empty status cell writes the text alone, with no dangling \"Was:\" (either mode)", () => {
+    const src = QUEUE.replace(lineOf(QUEUE, Q.row25), `${lineOf(QUEUE, Q.row25)}\n| 26 |a|b|c|d|e|f| |`);
+    for (const mode of ["prepend", "replace"]) {
+      const out = setStatus(src, { row: 26, text: "DONE", mode });
+      expect(lineOf(out.text, Q.row25 + 1)).toBe("| 26 |a|b|c|d|e|f| DONE |");
+      expectOnly(src, out.text, [Q.row25 + 1]);
+    }
+  });
+
   it("keeps Hebrew and ₪ byte for byte (row 23)", () => {
     const out = setStatus(QUEUE, { row: 23, text: "נבדק → ₪0" });
     const cb = cells(lineOf(QUEUE, Q.row23));
@@ -289,13 +301,52 @@ describe("insert-after — after the one line that starts with the anchor", () =
     expect(insertAfter(LOOP, { anchor: "**Tick 43 (next", text: "- y" }).text.split("\n")[C.next]).toBe("- y");
   });
 
-  it("refuses no match and more than one match (an exact line that prefixes another is two matches)", () => {
+  it("refuses no match and more than one match", () => {
     refused(() => insertAfter(LOOP, { anchor: "## 11.", text: "x" }), /no line starts with the anchor/);
     refused(() => insertAfter(LOOP, { anchor: "## ", text: "x" }), /5 lines start with the anchor \(lines 3, 13, 20, 28, 32\)/);
     refused(() => insertAfter(LOOP, { anchor: "| ", text: "x" }), /lines start with the anchor/);
-    refused(() => insertAfter("a\nab\n", { anchor: "a", text: "x" }), /2 lines start with the anchor \(lines 1, 2\)/);
+    refused(() => insertAfter("ab\nabc\n", { anchor: "a", text: "x" }), /2 lines start with the anchor \(lines 1, 2\)/);
     refused(() => insertAfter(LOOP, { anchor: "", text: "x" }), /--anchor is empty/);
     refused(() => insertAfter(LOOP, { anchor: "## 9.", text: "a\rb" }), /one line/);
+  });
+
+  it("a line equal to the anchor wins over the longer lines it starts; two equal lines are refused", () => {
+    expect(insertAfter("a\nab\n", { anchor: "a", text: "x" }).text).toBe("a\nx\nab\n");
+    expect(replaceInLine("ab\nabc\n", { anchor: "ab", old: "b", new: "B" }).text).toBe("aB\nabc\n");
+    refused(() => insertAfter("a\nab\na\n", { anchor: "a", text: "x" }), /2 lines are the anchor \(lines 1, 3\)/);
+    // A delimiter row that starts a wider table's delimiter row (CHANNEL_LOOP :22 and :107): a first body row can go in.
+    const out = insertAfter(LOOP, { anchor: "|---|---|", text: "| Probe | first |" });
+    expect(lineOf(out.text, 7)).toBe("| Probe | first |");
+    expect(tables(parseLines(out.text))[0]).toEqual({ header: 4, rows: [6, 7, 8, 9, 10, 11] });
+  });
+
+  it("inside a table, inserts only rows with the header's cell count (the table must not be cut off)", () => {
+    refused(() => insertAfter(QUEUE, { anchor: "| 22 |", text: "note: row 22 ran" }), /inserted line 1 is not a row of the table at line 5 \(7 cells\)/);
+    refused(() => insertAfter(QUEUE, { anchor: "| 14 |", text: "" }), /inserted line 1 is not a row of the table at line 5/);
+    refused(() => insertAfter(QUEUE, { anchor: "| 1 |", text: "| 2 | a | b |" }), /inserted line 1 has 3 cells, the table's header \(line 5\) 7/);
+    refused(() => insertAfter(QUEUE, { anchor: "| 25 |", text: "| 26 | a | b | c | d | e | f | queued |" }), /inserted line 1 has 8 cells, the table's header \(line 5\) 7/);
+    refused(() => insertAfter(QUEUE, { anchor: "| # | Script |", text: "| x |" }), /line 5 is a table's header row; insert after its delimiter row/);
+    const row = "| 2 | `x.js` | judge | r | w | then | queued |";
+    const out = insertAfter(QUEUE, { anchor: "| 1 |", text: row });
+    expect(lineOf(out.text, Q.row1 + 1)).toBe(row);
+    expect(tables(parseLines(out.text)).map((t: { header: number; rows: number[] }) => [t.header + 1, t.rows.map((r) => r + 1)])).toEqual([
+      [5, [7, 8, 9, 10, 11, 12, 13]],
+      [17, [19]],
+    ]);
+  });
+
+  it("after a table's last line: rows, or an empty line first (a text line there would join the table)", () => {
+    refused(() => insertAfter(QUEUE, { anchor: "| 27.9 07:44 |", text: "note" }), /inserted line 1 would join the table at line 16; start --text with an empty line/);
+    refused(() => insertAfter(QUEUE, { anchor: "| 25 |", text: "| 26 | a | b | c | d | e | f |\nnote" }), /inserted line 2 would join the table at line 5/);
+    expect(insertAfter(QUEUE, { anchor: "| 27.9 07:44 |", text: "| 4.10 13:00 | OK |" }).text).toBe(`${QUEUE}| 4.10 13:00 | OK |\n`);
+    expect(insertAfter(QUEUE, { anchor: "| 27.9 07:44 |", text: "\nnote" }).text).toBe(`${QUEUE}\nnote\n`);
+    expect(insertAfter(QUEUE, { anchor: "| 27.9 07:44 |", text: "\n| a | b |\n|---|---|\n| 1 | 2 |" }).text).toBe(`${QUEUE}\n| a | b |\n|---|---|\n| 1 | 2 |\n`);
+  });
+
+  it("refuses a line that would turn a table's header into a body line", () => {
+    const t = "intro\n| h | i |\n|---|---|\n| 1 | 2 |\n";
+    refused(() => insertAfter(t, { anchor: "intro", text: "| x | y |" }), /the edit would change the file's tables/);
+    expect(insertAfter(t, { anchor: "intro", text: "more" }).text).toBe("intro\nmore\n| h | i |\n|---|---|\n| 1 | 2 |\n");
   });
 
   it("keeps CRLF, and a missing final newline stays missing", () => {
@@ -339,6 +390,37 @@ describe("replace-in-line — once, in the one line that starts with the anchor"
     expect(lineOf(replaceInLine(LOOP, { anchor: "| Routine |", old: "every 6 h", new: "https://x.example/" }).text, C.routine)).toContain("https://x.example/");
     refused(() => replaceInLine("see http and ://y.example now\n", { anchor: "see", old: " and ", new: "s" }), /"https:\/\/y.example" would appear/);
     refused(() => replaceInLine("foo https://a.example bar\n", { anchor: "foo", old: " bar", new: "/x bar" }), /"https:\/\/a.example" would be altered or removed/);
+  });
+
+  it("refuses an edit that adds or removes a table cell (an unescaped \"|\" in --old or --new)", () => {
+    refused(() => replaceInLine(LOOP, { anchor: "| Routine |", old: "every 6 h", new: "every 6 h | extra" }), /line 9: the row's cell count would change/);
+    refused(() => replaceInLine("| a \\| b | c |\n", { anchor: "| a", old: "\\|", new: "|" }), /line 1: the row's cell count would change/);
+    refused(() => replaceInLine("| x | y | z |\n", { anchor: "| x", old: "x | y", new: "x y" }), /line 1: the row's cell count would change/);
+    refused(() => replaceInLine("| x | y |\n", { anchor: "| x", old: "y |", new: "y" }), /line 1: the row's cell count would change/);
+    expect(lineOf(replaceInLine(LOOP, { anchor: "| Routine |", old: "every 6 h", new: "every 6 h \\| extra" }).text, C.routine)).toContain("every 6 h \\| extra (");
+  });
+
+  it("counts a URL that is on the line twice: losing one copy is a removal", () => {
+    const two = "a https://x.example/p b https://x.example/p c\n";
+    refused(() => replaceInLine(two, { anchor: "a ", old: "/p c", new: " c" }), /"https:\/\/x.example\/p" would be altered or removed/);
+    refused(() => checkEdit(two, "a https://x.example/p b c\n", { line: 1, commandText: ["b c"] }), /"https:\/\/x.example\/p" would be altered or removed/);
+  });
+
+  it("sees a change at the end of a URL: a balanced \")\", a \"_\" or a \"*\"", () => {
+    const wiki = "see https://en.wikipedia.org/wiki/Foo_(bar) now and https://x.example/a_b_ end\n";
+    refused(() => replaceInLine(wiki, { anchor: "see", old: ") now", new: "] now" }), /"https:\/\/en.wikipedia.org\/wiki\/Foo_\(bar\)" would be altered or removed/);
+    refused(() => replaceInLine(wiki, { anchor: "see", old: "b_ end", new: "b* end" }), /"https:\/\/x.example\/a_b_" would be altered or removed/);
+    expect(protectedTokens("https://en.wikipedia.org/wiki/Foo_(bar), (https://a.example/x). [https://b.example/y]; {https://c.example/z}!")).toEqual([
+      "https://en.wikipedia.org/wiki/Foo_(bar)",
+      "https://a.example/x",
+      "https://b.example/y",
+      "https://c.example/z",
+    ]);
+    expect(protectedTokens("[https://polar.sh](https://polar.sh) and https://x.example/a_b_ and **https://y.example/q**")).toEqual([
+      "https://polar.sh](https://polar.sh)",
+      "https://x.example/a_b_",
+      "https://y.example/q**",
+    ]);
   });
 
   it("never alters a tab-separated slug unless the command's text carries it", () => {
@@ -441,6 +523,18 @@ describe("checkEdit — the invariants every edit passes before it is written", 
     expect(protectedTokens("a slug-a b")).toEqual([]);
   });
 
+  it("refuses a changed cell count on a table line with or without a cell, and a changed table", () => {
+    refused(() => ok("one\n| a | https://x.example/p | c | d |\nthree\r\nfour\n"), /line 2: the row's cell count would change/);
+    refused(() => ok("one\na | https://x.example/p | c |\nthree\r\nfour\n"), /line 2: the row's cell count would change/);
+    const T = "| h | i |\n|---|---|\n| 1 | 2 |\n";
+    refused(() => checkEdit(T, "| h | i |\n|---|-x-|\n| 1 | 2 |\n", { line: 2 }), /the edit would change the file's tables/);
+  });
+
+  it("for an insertion too, refuses a file that gains or loses its final newline", () => {
+    refused(() => checkEdit("a\nb", "a\nb\nc\n", { line: 2, inserted: 1, insertedText: ["c"] }), /ends with a newline/);
+    expect(checkEdit("a\nb", "a\nb\nc", { line: 2, inserted: 1, insertedText: ["c"] })).toBe(true);
+  });
+
   it("with a cell, refuses another cell's change and a changed cell count", () => {
     refused(() => ok("one\n| A | https://x.example/p | C |\nthree\r\nfour\n", { cell: 3 }), /cell 1 would change, and the edit is to cell 3/);
     refused(() => ok("one\n| a | https://x.example/p | c | d |\nthree\r\nfour\n", { cell: 3 }), /cell count would change/);
@@ -496,6 +590,54 @@ describe("the CLI", () => {
       COMMANDS["set-status"] = original;
     }
     expect(readFileSync(q, "utf8")).toBe(`${QUEUE}| 26 | late | row | x | y | z | w | queued |\n`);
+    expect(readdirSync(join(root, "logs")).sort()).toEqual(["CHANNEL_LOOP.md", "FABLE_QUEUE.md"]);
+  });
+
+  it("refuses a concurrent change of the same length (sha256, not the size), and leaves no temporary file", () => {
+    const root = tree();
+    const q = join(root, "logs/FABLE_QUEUE.md");
+    const original = COMMANDS["set-status"];
+    const theirs = QUEUE.replace("# Fable queue", "# FABLE queue");
+    expect(theirs.length).toBe(QUEUE.length);
+    try {
+      COMMANDS["set-status"] = (src: string, o: unknown) => {
+        writeFileSync(q, theirs);
+        return original(src, o);
+      };
+      refused(() => runCommand("set-status", { file: q, row: "22", text: "x" }), /changed while it was being edited/);
+    } finally {
+      COMMANDS["set-status"] = original;
+    }
+    expect(readFileSync(q, "utf8")).toBe(theirs);
+    expect(readdirSync(join(root, "logs")).sort()).toEqual(["CHANNEL_LOOP.md", "FABLE_QUEUE.md"]);
+  });
+
+  it("a write that fails leaves the file as it was and no temporary file, says \"write failed\" and exits 3", () => {
+    // ulimit -f 20 caps a written file at 20,480 bytes: the edit cannot be written in full (the reviewer's EFBIG case).
+    const big = `${QUEUE}\n${"a filler line that makes the file bigger than the cap\n".repeat(600)}`;
+    expect(big.length).toBeGreaterThan(30000);
+    const root = tree({ "logs/FABLE_QUEUE.md": big });
+    const file = join(root, "logs/FABLE_QUEUE.md");
+    const was = sha(file);
+    const capped = ["-c", 'ulimit -f 20 && exec "$@"', "bash", process.execPath, SCRIPT];
+    const r = spawnSync("bash", [...capped, "set-status", "--file", file, "--row", "22", "--text", "DONE"], { encoding: "utf8" });
+    expect(r.status).toBe(3);
+    expect(r.stderr).toMatch(/^loop-edit: write failed: .*EFBIG.*; the file is as it was\n$/);
+    expect(r.stderr).not.toContain("refused");
+    expect(sha(file)).toBe(was);
+    expect(readdirSync(join(root, "logs")).sort()).toEqual(["CHANNEL_LOOP.md", "FABLE_QUEUE.md"]);
+    // The same edit without the cap is written (the cap, not the edit, failed).
+    expect(cli(["set-status", "--file", file, "--row", "22", "--text", "DONE"]).status).toBe(0);
+  });
+
+  it("writes through a temporary file renamed over the target: the mode is kept, nothing else is left", () => {
+    const root = tree();
+    const file = join(root, "logs/FABLE_QUEUE.md");
+    chmodSync(file, 0o600);
+    expect(cli(["set-status", "--file", file, "--row", "22", "--text", "DONE"]).status).toBe(0);
+    expect(statSync(file).mode & 0o7777).toBe(0o600);
+    expect(lineOf(readFileSync(file, "utf8"), Q.row22)).toContain("| DONE Was: ");
+    expect(readdirSync(join(root, "logs")).sort()).toEqual(["CHANNEL_LOOP.md", "FABLE_QUEUE.md"]);
   });
 
   it("--dry-run prints the diff and writes nothing", () => {
@@ -558,6 +700,36 @@ describe("the CLI", () => {
     expect(cli(["insert-after", "--file", join(root, "research/channel-loop/RULING-X.md"), "--anchor", "## Folds", "--text=- two"]).status).toBe(0);
     expect(targetRoot(join(root, "logs", "X.md"))).toBe(root);
     expect(targetRoot(join(root, "research", "channel-loop", "X.md"))).toBe(root);
+  });
+
+  it("refuses a path through a linked folder, and a logs/ or research/ that is not at a repository's root", () => {
+    const root = tree({ "research/rendered/README.md": "# R\n" });
+    const rendered = join(root, "research/rendered/README.md");
+    const was = sha(rendered);
+    rmSync(join(root, "research/channel-loop"), { recursive: true });
+    symlinkSync(join(root, "research/rendered"), join(root, "research/channel-loop"));
+    const viaDir = cli(["insert-after", "--file", join(root, "research/channel-loop/README.md"), "--anchor", "# R", "--text", "x"]);
+    expect(viaDir.status).toBe(2);
+    expect(viaDir.stderr).toContain("passes through a symbolic link");
+    const linkedLogs = tree({ "research/rendered/README.md": "# R\n" });
+    rmSync(join(linkedLogs, "logs"), { recursive: true });
+    symlinkSync(join(linkedLogs, "research/rendered"), join(linkedLogs, "logs"));
+    expect(cli(["insert-after", "--file", join(linkedLogs, "logs/README.md"), "--anchor", "# R", "--text", "x"]).stderr).toContain("passes through a symbolic link");
+    expect(sha(rendered)).toBe(was);
+    expect(sha(join(linkedLogs, "research/rendered/README.md"))).toBe(was);
+    // node_modules/pkg/logs/x.md: logs/ is there, but its parent is no repository root (no .git).
+    const nested = join(root, "node_modules/pkg/logs/x.md");
+    mkdirSync(dirname(nested), { recursive: true });
+    writeFileSync(nested, "a\n");
+    const r = cli(["insert-after", "--file", nested, "--anchor", "a", "--text", "x"]);
+    expect(r.status).toBe(2);
+    expect(r.stderr).toContain("is not a repository's root (no .git)");
+    expect(readFileSync(nested, "utf8")).toBe("a\n");
+    expect(() => targetRoot(join(root, "node_modules/pkg/research/channel-loop/x.md"))).toThrow(/no \.git/);
+    // A repository reached through a link to its root is still that repository.
+    const alias = join(scratch, `alias${trees}`);
+    symlinkSync(tree(), alias);
+    expect(cli(["insert-after", "--file", join(alias, "logs/CHANNEL_LOOP.md"), "--anchor", "## 9.", "--text", "x"]).status).toBe(0);
   });
 
   it("refuses a symbolic link, a missing file and a file that is not UTF-8", () => {
