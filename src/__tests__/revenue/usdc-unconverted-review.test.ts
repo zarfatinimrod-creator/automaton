@@ -30,7 +30,7 @@ import type { ToolContext } from "../../types.js";
 
 /**
  * The review of tick 37's USDC build (two reviewers, 30.9.2026): each block below is one defect they showed, written
- * as a test before its fix. The rule is RULING-2026-09-28-bounty-rail.md §6.2 and docs/OWNER_STEPS.he.md:486-490.
+ * as a test before its fix. The rule is RULING-2026-09-28-bounty-rail.md §6.2 and docs/OWNER_STEPS.he.md:537-541.
  */
 
 const NOW = "2026-09-30T12:00:00.000Z";
