@@ -274,7 +274,7 @@ change into "set the flag"; it changes into "the video is not made."
 - It is misrepresentation under the creator-integrity rule (`youtube-monetization-policies.txt:294`) and deception under
   MISSION rule 4 (`MISSION.md:342-346`), which "wins over the revenue goal every time".
 - This video class passes at all because Kokoro's stock voices are nobody's: its training excluded "custom voice clones"
-  — "[2] No synthetic audio from open TTS models or 'custom voice clones'" (`research/rendered/kokoro-82m-model-card.txt:237`)
+  — "[2] No synthetic audio from open TTS models or 'custom voice clones'" (`research/rendered/kokoro-82m-model-card-2026-09-25.txt:237`)
   — and its voices are not presented as any person's. A cloning engine, or a voice marketed or derived from an
   identifiable person, is banned for this channel and for any successor. That is a "must never" in the sense of
   `src/revenue/org.ts`, so it is enforced in the gate below, not remembered.
@@ -309,7 +309,7 @@ export const SYNTHETIC_VOICE_DISCLOSURE =
 
 /**
  * Narration engines whose stock voices are nobody's (PREREG-DECISIONS.md §2c). Kokoro's training excluded "custom voice
- * clones" (kokoro-82m-model-card.txt:237). A cloning engine, or a voice that imitates an identifiable person, cannot pass
+ * clones" (kokoro-82m-model-card-2026-09-25.txt:237). A cloning engine, or a voice that imitates an identifiable person, cannot pass
  * this gate with or without the flag: such a video is never made.
  */
 export const ALLOWED_NARRATION_ENGINES: ReadonlySet<string> = new Set(["kokoro-82m"]);
@@ -410,7 +410,7 @@ in the direction already recorded; nothing here would need to move, but the sent
 DISC:157, :163, :83, :173) → `audits/discovery.md` (§0.2, §4) → rendered: `yt-analytics-metrics.txt:180-230`,
 `yt-analytics-channel-reports.txt:1000-1052`, `youtube-policy-changelog.txt:62, :318-326`,
 `youtube-altered-synthetic-disclosure.txt` (all 351 lines), `youtube-api-revision-history.txt:245, :401-407`,
-`youtube-monetization-policies.txt:82-86, :112-142, :216, :244-252, :294, :342`, `kokoro-82m-model-card.txt:225-260`,
+`youtube-monetization-policies.txt:82-86, :112-142, :216, :244-252, :294, :342`, `kokoro-82m-model-card-2026-09-25.txt:225-260`,
 `upload-post-ai-content-labeling.txt:55-120`. No WebSearch. No git. No owner identifier appears in this file.
 
 ---

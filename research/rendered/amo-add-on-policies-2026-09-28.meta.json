@@ -1,0 +1,23 @@
+{
+  "url": "https://extensionworkshop.com/documentation/publish/add-on-policies/",
+  "slug": "amo-add-on-policies-2026-09-28",
+  "fetchedAt": "2026-09-28T13:17:49.555Z",
+  "status": 200,
+  "contentType": "text/html",
+  "byteLength": 254555,
+  "sha256": "bbc0d0de3f8898eb021a9adaf4f546629b51506dbb12040dc5c3bd629b04d0b6",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/amo-add-on-policies-2026-09-28.html",
+  "textPath": "research/rendered/amo-add-on-policies-2026-09-28.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-09-30",
+    "from": "research/rendered/amo-add-on-policies.meta.json",
+    "commit": "815c2e5",
+    "why": "A dated copy of the render-watch capture of amo-add-on-policies as commit 815c2e5 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/RULING-2026-09-29-loop.md, research/channel-loop/SITTING-2026-09-29-BRIEF.md, research/channel-loop/TERMS-AUDIT-2026-09-29.md, research/measurements/firefox-amo.md keep pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug amo-add-on-policies stays on the weekly watch."
+  }
+}

@@ -9,7 +9,7 @@ The main thread folds it ("Fold actions for Opus"); row 17's decider applies §1
 REOPEN. Every pointer below was reopened with `sed -n` or `grep -n -F` and carries its grade (`rendered`, `github`,
 `snippet`, `repo`, `inference`, `none`, as `BRIEF:9-11` defines them). The marks `[against-bar]` and `[no-terms]` are kept
 as `BRIEF:12-17` defines them. One pointer moved since the brief: RC's Kokoro lines are now
-`kokoro-82m-model-card.txt:235` and `:241` (re-rendered 29.9 11:27Z; the drift `CHANNEL_LOOP.md:319` warns of).
+`kokoro-82m-model-card-2026-09-29.txt:235` and `:241` (re-rendered 29.9 11:27Z; the drift `CHANNEL_LOOP.md:319` warns of).
 **Standing rules applied.** One-time identity and payout steps only, never a per-item action, "Never invent a step that
 isn't required" (`MISSION.md:411-420`, repo); "no selling, no talking, no camera, no manual ops" (`:211`); no ToS
 violations (`:434-439`); ₪0, fees out of a sale allowed (`:352-360`); no account in the owner's name, the brand as the
@@ -247,7 +247,7 @@ general distribution (then the value is nil and it closes).
    strengthens D.
 7. **P-1 adopted** as a publication-gate rule: narration only from a voice whose weights licence and training-data
    statement are both rendered; an author's rendered statement counts for the training data
-   (`kokoro-82m-model-card.txt:235`, `:241`, rendered) — demanding upstream providers' terms is a regress no model passes
+   (`kokoro-82m-model-card-2026-09-29.txt:235`, `:241`, rendered) — demanding upstream providers' terms is a regress no model passes
    [inference]; `he_shaul`/`voices-hebrew.bin` refused by name (`yk2-hf-kokoro-hebrew-nc.txt:60`, `:70`, rendered).
    **P-2 adopted**: a second Made-for-Kids override kills the YouTube line (one appeal, never a re-upload,
    `ASSESSMENT.md:420-423`). **P-3 adopted**: AdSense is one shared rail in portfolio accounting.
@@ -342,7 +342,7 @@ Every step is ₪0, on Opus, in a worktree, with the base check first; none need
    Google asks for more than a phone, or refuses a second account on that phone, stop and tell us". Run the owner-steps and
    owner-asks tests under `src/__tests__/revenue/`.
 10. **P-1, P-2, P-3 in code**: `src/revenue/publication-gate.ts` — a narration gate: `voice` must be in an allowlist of
-    Kokoro-82M official voices with `licenceEvidence` naming `kokoro-82m-model-card.txt:235`, `:241` (pin a dated copy, per
+    Kokoro-82M official voices with `licenceEvidence` naming `kokoro-82m-model-card-2026-09-29.txt:235`, `:241` (pin a dated copy, per
     `CHANNEL_LOOP.md:319`); `he_shaul` and `voices-hebrew.bin` refused by name (`yk2-hf-kokoro-hebrew-nc.txt:60`, `:70`).
     T1's kill criteria (`src/revenue/experiments.ts`, YK §9.2): a second `madeForKids` override → KILL, one appeal, no
     re-upload. `src/revenue/portfolio.ts`: a shared `rail: "adsense"` on every AdSense-paid line, counted once. Targeted

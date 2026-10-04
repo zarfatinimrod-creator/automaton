@@ -1,0 +1,23 @@
+{
+  "url": "https://api.apify.com/v2/store?search=accessibility",
+  "slug": "apify-store-accessibility-2026-09-22",
+  "fetchedAt": "2026-09-22T20:39:45.497Z",
+  "status": 200,
+  "contentType": "application/json; charset=utf-8",
+  "byteLength": 3166720,
+  "sha256": "0aa6267c598793105088fc27ee373358d3808d228ffe752b6c6cc21930ffb4a6",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/apify-store-accessibility-2026-09-22.json",
+  "textPath": null,
+  "changed": true,
+  "firstFetch": false,
+  "previousSha256": "f62d9c3cd7d78867d3d4bf68009f471748dc0df3ad91c8793dd34374ba58d039",
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-10-04",
+    "from": "research/rendered/apify-store-accessibility.meta.json",
+    "commit": "9654448",
+    "why": "A dated copy of the render-watch capture of apify-store-accessibility as commit 9654448 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/breadth/scouts/education.json keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug apify-store-accessibility stays on the weekly watch."
+  }
+}

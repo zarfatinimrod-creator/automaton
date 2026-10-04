@@ -1279,7 +1279,7 @@ coded fee, or a mandate collision.
   | MCP Marketplace (mcp-marketplace.io) | G5: absent from all 40 CrUX lists | github | the origin enters a CrUX list AND a payout route to Israel is rendered |
 
   **Also:** Tes Resources is upgraded from scout to github grade (its Author Code bars AI resources with limited human input);
-  the Smashwords Store is **dead at rendered grade on G1 (tick 9)**: Draft2Digital's terms, which cover Smashwords.com as one of its channels, require "a one-time Account Activation Fee" before distribution (`draft2digital-com-terms-of-service.txt:490-491`), plus $12 a year from the second year; the AI rule is not in the terms (it sits in separate Content Guidelines, still scout grade); Freemius, CodeCanyon, Agensi and Smithery
+  the Smashwords Store is **dead at rendered grade on G1 (tick 9)**: Draft2Digital's terms, which cover Smashwords.com as one of its channels, require "a one-time Account Activation Fee" before distribution (`draft2digital-com-terms-of-service-2026-09-28.txt:490-491`), plus $12 a year from the second year; the AI rule is not in the terms (it sits in separate Content Guidelines, still scout grade); Freemius, CodeCanyon, Agensi and Smithery
   stand as recorded.
 - **StreetLib (queue row 24) — gate refutation on G1 at rendered grade, 29.9.2026 (tick 13), for the sitting to confirm.**
   Authors outside Italy and the DACH countries "are subject to our membership plans" (`research/rendered/help-streetlib-com-article-425-account.txt:69`):

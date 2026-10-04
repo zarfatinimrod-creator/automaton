@@ -1,0 +1,23 @@
+{
+  "url": "https://www.btl.gov.il/Insurance/Rates/Pages/%D7%9E%D7%99%20%D7%A9%D7%90%D7%99%D7%A0%D7%9D%20%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D%20%D7%95%D7%91%D7%A2%D7%9C%D7%99%20%D7%94%D7%9B%D7%A0%D7%A1%D7%94%20%D7%A9%D7%9C%D7%90%20%D7%9E%D7%A2%D7%91%D7%95%D7%93%D7%94.aspx",
+  "slug": "btl-not-working-rates-2026-09-29",
+  "fetchedAt": "2026-09-29T11:27:43.652Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 144883,
+  "sha256": "5c816612a7dac9361e3bfc87d291a9a8221f3725430e6c81fe2eb2044240564f",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/btl-not-working-rates-2026-09-29.html",
+  "textPath": "research/rendered/btl-not-working-rates-2026-09-29.txt",
+  "changed": true,
+  "firstFetch": false,
+  "previousSha256": "460b2288c6fb6366464a8dbdcad25ca2ab25190d43151f56d194b38265ff2156",
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-09-30",
+    "from": "research/rendered/btl-not-working-rates.meta.json",
+    "commit": "f9a41c6",
+    "why": "A dated copy of the render-watch capture of btl-not-working-rates as commit f9a41c6 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/TERMS-AUDIT-2026-09-29.md keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug btl-not-working-rates stays on the weekly watch."
+  }
+}

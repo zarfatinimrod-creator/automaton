@@ -13,7 +13,7 @@ admitted (G4). Read the newest cohort's daily users and the Hebrew langpack's. T
 Hebrew utilities under about 500.
 
 ## What was read
-- `amo-add-on-policies.txt`: lines 1-2007 are three copies of the site navigation, and the policy body (2008-2222) was read
+- `amo-add-on-policies-2026-09-28.txt`: lines 1-2007 are three copies of the site navigation, and the policy body (2008-2222) was read
   in full.
 - `amo-search-newest.json` (sort=created, the newest 50 of 105,270 extensions), `amo-search-hebrew.json` (q=hebrew, page 1 of
   4, i.e. 50 of 153 results) and `amo-hebrew-langpack.json`, parsed with python3. No author names were recorded.

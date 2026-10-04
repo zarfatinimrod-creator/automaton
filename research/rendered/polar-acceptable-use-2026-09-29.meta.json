@@ -1,0 +1,23 @@
+{
+  "url": "https://polar.sh/docs/merchant-of-record/acceptable-use/introduction",
+  "slug": "polar-acceptable-use-2026-09-29",
+  "fetchedAt": "2026-09-29T11:27:59.487Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 370970,
+  "sha256": "25e973278793f805bbf005828ee597ef6c0050ba4ea27b00d7522150c233ceb8",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/polar-acceptable-use-2026-09-29.html",
+  "textPath": "research/rendered/polar-acceptable-use-2026-09-29.txt",
+  "changed": true,
+  "firstFetch": false,
+  "previousSha256": "61262538f06882ceff034bf28f03e82168d60ff97b089b83796cff1047320f1e",
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-09-30",
+    "from": "research/rendered/polar-acceptable-use.meta.json",
+    "commit": "f9a41c6",
+    "why": "A dated copy of the render-watch capture of polar-acceptable-use as commit f9a41c6 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/TERMS-AUDIT-2026-09-29.md, research/measurements/polar-rail.md keep pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug polar-acceptable-use stays on the weekly watch."
+  }
+}

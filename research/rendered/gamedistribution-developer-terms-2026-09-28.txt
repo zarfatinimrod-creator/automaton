@@ -1,0 +1,468 @@
+DEVELOPER GAME LICENSE AGREEMENT
+
+This Agreement . This Agreement governs Y our right to provide Games for distribution through Our Distribution
+Platform. By submitting Y our Games to Our Distribution Platform, Y ou allow Us to make Y our Games available for
+Users, where In-Game Ads will be displayed and In-Game Purchases may be offered. In exchange, Y ou will
+receive a Developer Revenue Share of the Net Revenue generated from such Ads and In-Game Purchases
+associated with Y our Games. Y ou agree that Y our Games shall not be distributed as part of a subscription or
+pay-to-own model, nor via native apps.
+
+Acceptance of terms . By accepting this Agreement, whether by clicking a box or executing an order form
+referencing these terms, Y ou confirm that Y ou have read, understood, and agreed to comply with all terms,
+conditions, and obligations outlined herein, including compliance with applicable laws.
+
+Company customers . If you are entering into this Agreement on behalf of a company or other legal entity , you
+represent that you have the authority to bind such entity and its affiliates to these terms and conditions, in which
+case the terms “Y ou” or “Y our” will refer to such entity and its affiliates. If you do not have such authority , or if you
+do not agree with these terms and conditions, you must not accept this Agreement and may not use the
+Distribution Platform.
+
+No monitoring. Y ou may not access the Distribution Platform, including the Games, for monitoring availability ,
+performance, or functionality , or for benchmarking or competitive purposes without prior written consent. Any
+unauthorized access for these purposes may constitute a breach of this Agreement and applicable laws,
+including the Digital Services Act (“DSA”).
+
+Date. This Agreement was last updated on 19 June 2025 It is effective between Y ou and Us as of the date of Y ou
+accepting this Agreement.
+
+1. DEFINITIONS
+
+“ Agreement ”: means this Developer Game License Agreement.
+
+“ Developer ”: means the third-parties that provide the Games to Distributor for distribution on the Distribution
+Platform.
+
+“ Developer Net Revenue ” means the share of Net Revenue paid to the Developer hereunder , as defined in
+Section 3.1.
+
+“ Distribution Platform ”: means the distribution platform and associated services exploited by Distributor under
+the domain name www .gamedistribution.com.
+
+“ Games ”: means the games owned by Y ou and/or Y our licensor which Y ou will upload to the Distribution Platform
+to make them available for Publisher Properties.
+
+“ In-Games Ads Revenue ”: means the gross revenues generated and received by Distributor through In-Game
+Ads less: (i) In-Game Ads and Hosting costs; (ii) any applicable Invalid T raffic / Fraud deductions and
+reservations.
+
+" In-Game Purchase Revenue ”: means the gross revenue generated and received by Distributor through
+In-Game Purchase less (i) payment provider costs; and (ii) V A T .
+
+“ In-Game Purchase ” or “ (IGP) ”: means a micro-transaction that allows Users to purchase a digital
+product/item/service within the Games.
+
+“ In-Game Ads ” or “ Ads ”: means the digital advertising displayed to Users when they view and play the Games.
+In-Game Ads can but are not limited to the in-game display formats of interstitials, banners, pre-roll / mid-roll /
+post-roll and rewarded video ads.
+
+“ In-Game Ads and Hosting Costs ”: means the ln-Game Ads platform costs and fees, and content hosting costs
+and fees incurred by Distributor in connection with the distribution and making available of the Games and
+including In-Game Ads.
+
+“ Intellectual Property Rights ”: means all intellectual property rights, either registered or unregistered, including
+trademarks, patent rights, design rights, trade names, copyrights, neighboring rights, moral rights, database
+rights, and similar proprietary rights.
+
+“ Invalid T raffic / Fraud ”: means any In-Game Ads and/or IGPs, impressions, clicks, purchases or similar billing
+events that are determined by Distributor , advertisers, and/or third-party providers, to be fraudulent, suspect in
+quality , or unusable according to such party’s standards. Invalid T raffic / Fraud includes, but is not limited to,
+pop-unders, click-jacking, auto scrolling, forced navigation, auto navigation, dark pages, auto-play video in
+pop-under with sound off, auto-refresh of ad slots, call video ads behind the video player , referrer stripping or
+replacement, empty or spoofed domains, unauthorized (re)selling of ad inventory by seller , stacked redirects,
+auto-click on recommendation widget tile, content-recommendation tile trick play , rogue mobile apps auto-loading
+impressions, fraudulent or abnormal numbers of clicks per install / download, or refund fraud.
+
+“ Net Revenue ”: means the In-Game Ads Revenue and/or In Game Purchase Revenue.
+
+“Publisher” : means the third parties who are Our registered partners that owns or operates the Publisher
+Properties where they provide access to the Games for Users.
+
+“ Publisher Properties ”: means the desktop (PC) and mobile website(s), domain(s) or other content hosting
+infrastructure, which is owned by or licensed to Publisher where Publisher will display the Games or provide links
+to the Games (in an iFrame or otherwise).
+
+“ Sanctioned Person ”: means at any time during the term of this Agreement, any natural person, corporation, or
+other legal entity: (i) listed on any Sanctions-related list of designated or blocked persons; (ii) that is any agency
+or instrumentality of the government of, resident in, or organized under the laws of a country or territory that is the
+subject of comprehensive restrictive Sanctions from time to time (as of the date of this Agreement) such as but
+not limited to Cuba, Iran, North Korea, the Crimea Region of Ukraine, Donetsk People's Republic and Luhansk
+People's Republic, and Syria); or (iii) 50% or more owned or controlled by any of, including a combination of, the
+foregoing.
+
+“ Sanctions ”: means individually and collectively , any and all applicable economic or financial sanctions or trade
+embargoes imposed, administered or enforced from time to time by: (i) the United States of America, including
+those administered by Office of Foreign Asset Control (OF AC), the U.S. Department of State or through any
+existing or future executive order; (ii) the United Nations; (iii) the European Union or any European Union
+member state; (iv) HM T reasury of the United Kingdom; or (v) other similar governmental authority having
+jurisdiction over any Party to this Agreement.
+
+“ SDK ” : means software code (and associated documentation) provided by Distributor to Developers to implement
+in the Games, to allow for , including but not limited to, ad tracking features, ad code(s), statistics, and IGP
+capability , and to calculate, monitor and optimize revenues and game performance.
+
+“ T erm ”: means the term of this Agreement as described in Section 7.
+
+“ Third-Party Supplier ”: means a third-party , which may include corporate af filiates of Us, that delivers a
+product or service to Us in connection with Us offering the Distribution Platform and the Games, to select and
+deliver the In-Game Ads and In-Game Purchases, and any associated products and services as part thereof, as
+supplier or subcontractor .
+“ Y ou ” or “ Y our ”: the company or other legal entity for which you are accepting this Agreement, as entered into
+the sign-up form, and Affiliates of that company or entity . For the purposes of this Agreement, “Y ou” or “Y our”
+shall also be referred to as the Developer .
+“ We ,” “ Us ”, “ Our ”, “ Distributor ” or “ GameDistribution ”: KEYGAMES NETWORK B.V . , a Dutch company with
+Company registration number 14077784, with its registered office at Boeing A venue 30, 1 1 19 PE, Schiphol-Rijk,
+the Netherlands doing business as GameDistribution.
+“ Party ”: means Y ou or Us separately , “ Parties ” means Y ou and We together .
+“Users ”: means users that access the Games on Publisher Properties.
+
+2. DEVELOPER LICENSE / DEVELOPER & DISTRIBUTOR SER VICES
+
+2.1 Subject to this Agreement, Developer hereby grants to Distributor a worldwide, royalty-free, non-exclusive
+license, with the right to sublicense to the extent necessary for the proper performance of this Agreement,
+including without limitation, to distribute, publish, commercially exploit, advertise and promote the Games through
+the Distribution Platform, Publisher Properties, applications, and other platforms.
+
+2.2 Distributor may subcontract its obligations under this Agreement to any third party .
+
+2.3 Developer hereby grants to Distributor a non-exclusive, limited license to use and publish Developer
+trademarks and logos in connection with the execution of the Agreement.
+
+2.4 Developer will not alter , change, modify , observe, reverse-engineer , or interfere with, in any way whatsoever ,
+the SDK, provided by Distributor .
+
+2.5 Distributor will, with respect to the Games, use commercially reasonable efforts to make the Games available
+and to sell In-Game Ads and In-Game Purchases, and to solve any defects in the operation of the Games, but
+otherwise does not undertake or promise that the Games, including the In-Game Ads and In-Game Purchases
+will be available at all times, or without interruption or error , for inclusion on the Publisher Properties.
+2.6 During the T erm of this Agreement, Developer shall:
+2.6.1 be solely responsible for all programming, design and game development of the Games;
+2.6.2 not use any copyrighted or registered trademarks of any kind of names and/or visual materials in the
+Games that are not owned by Developer;
+2.6.3 before uploading the Games, implement the SDK in the Games as instructed by the Distributor; failure
+to do this will result in a denied request for publishing;
+2.6.4 ensure that all Games updates and features of the Games are made available for the version integrated
+on the Distribution Platform and that Games distributed on the Distribution Platform hereunder is always
+identical to the latest version of the Games published on other platforms/websites, apps etc.;
+2.6.5 provide the games localized at least in English language;
+2.6.6 be responsible for providing user support in relation to the Games, including community management;
+2.6.7 not include any link to a web domain or content(s) outside the Distribution Platform in Games integrated
+on the Distribution Platform without Distributor ’s prior consent;
+2.6.8 not include any third-party Ads, In-Game Purchases or data tracking software;
+2.6.9 use commercially reasonable efforts to make the Games available and to make available to sell
+In-Game Ads and In-Game Purchases, and to solve any defects in the operation of the Games, for
+inclusion on the Publisher Properties;
+2.6.10 comply with Developer Guidelines which are indicated under the following link:
+https://static.gamedistribution.com/developer/developers-guidelines.html .
+2.6.1 1 clearly and distinguishably disclose that a content that is part of the Games has been artificially created
+or manipulated by labelling the AI output accordingly and disclosing its artificial origin, if such content is
+constituted as deep fake. Throughout this Agreement and for this obligation deep fake content is defined
+as AI-generated or manipulated image, audio or video content that resembles existing persons, objects,
+places, entities or events and would falsely appear to a person to be authentic or truthful.
+2.7 Distributor will communicate updates or changes to the Developer Guidelines to Developer .
+2.8 With respect to the Games, during the T erm, the Developer adheres and agrees to meet the levels of
+dedication required for operating/distributing an online gaming experience on the Distribution Platform.
+2.9 Subject to the terms and conditions of this Agreement, during the T erm, Distributor shall host the Games in
+full on the Distribution Platform. Exceptions for hosting the Games in full will be accepted only by written consent
+of the Distributor . Distributor shall use commercially reasonable efforts to serve the advertisements within the
+Games through use of the SDK, but otherwise does not undertake or promise that the Games, including the
+
+In-Game Ads and In-Game Purchases will be available at all times, or without interruption or error , for inclusion
+on the Publisher Properties. Distributor has the right to block any outgoing links in the Games through the SDK
+in order to meet Publisher property requirements for placing content.
+
+3. REVENUE SHARE
+
+3.1 During the T erm of this Agreement the Developer is entitled to a revenue share of 33% (thirty three percent)
+of the Net Revenue (the " Developer Revenue Share ”).
+
+3.2 During the T erm of this Agreement the Developer can access at any time the revenue share reports on the
+Developer Net Revenue made each preceding calendar month in the reporting section of Y our account on the
+Distribution Platform.
+
+3.3 Within 60 days after the report for the preceding calendar month becoming available, the Distributor will pay
+the Developer Revenue Share with respect to that month if: (i) the Developer Revenue Share is at least EUR
+100; and (ii) the Developer has filled out the payment information needed to make the payment in its account,
+including any V A T information, if applicable. If the Developer Revenue Share is less than EUR 100, it will
+accumulate and be paid when the Developer Revenue Share is EUR 100 or more. The Developer agrees that the
+Distributor sends a credit invoice to the Developer for the payments made by the Distributor to the Developer .
+
+3.4 Each party will be responsible for its own taxes of whatever nature.
+
+3.5 The Developer declares by entering into this Agreement that it acts as a V A T taxable person within the
+meaning of Article 9 of the EU V A T Directive 2006 (Council Directive 2006/1 12/EC, PbEU, L 347), if applicable.
+Where required under law , Distributor will add applicable V A T ( BTW ) to be charged by Developer to the
+Developer Revenue Share. Developer agrees to pay or to bear the costs of all applicable taxes and charges
+imposed by any government entity in connection with this Agreement, including without limitation taxes and
+charges related to Developer ’s receipt of Developer Net Revenue, such as withholding tax. Notwithstanding the
+foregoing, in the event Distributor operates in multiple jurisdictions, Distributor may appoint another Distributor
+entity to issue credit invoices and make the corresponding payments.
+
+3.6 Detection of or any reasonable suspicion of any Invalid T raffic / Fraud as evidenced by Distributor ’s and
+Third-Party Suppliers Invalid T raffic /Fraud hold-backs and reports gives Distributor the right to: (i) withhold or
+set-off any Publisher Revenue Share related to such Invalid T raffic / Fraud; (ii) obtain a refund of prior payments
+(or any portion thereof) made to Publisher relating to Invalid T raffic. In order to be able to detect such Invalid
+T raffic / Fraud and control In-Game Ads quality , Distributor has the right to use third-party verification tools and
+Publisher is obliged to assist and to cooperate with Distributor where and when needed. Any costs associated
+with the deployment and/or use of third-party verification tools by Distributor related to Invalid T raffic / Fraud are
+at the expense of Publisher .
+
+4. INTELLECTUAL PROPERTY RIGHTS
+
+4.1. All Intellectual Property Rights which already existed at the time of entering into this Agreement remain the
+property of the party to which they belonged at that time. Parties will only acquire rights from the other Party as
+are explicitly granted in this Agreement, and nothing in this Agreement shall confer on the Developer any right of
+ownership in the Distribution Platform, and/or SDK and/or anything embodying or featuring any of them, or any
+goodwill inuring to them, and subject to the limited rights expressly granted hereunder , We and Our licensors and
+Third-Party Suppliers reserve all of Our/their right, title and interest therein. Developer agrees that it will not
+modify , prepare derivative works from, or reverse engineer the Distribution Platform (including the SDK), or
+create or attempt to create a substitute or similar service or product through use of or access to the Distribution
+Platform (including the SDK), or proprietary information related thereto.
+
+4.2 Developer hereby grants to Distributor a worldwide, royalty-free license, with the right to sublicense to the
+extent necessary for the proper performance of this Agreement, including without limitation, to distribute, publish,
+advertise and promote the Games through the Distribution Platform and Publisher Properties.
+
+5. DA T A PROTECTION
+
+5.1. The Developer hereby agrees and confirms that it will comply with all applicable data protection laws, in
+particular with the General Data Protection Regulation (“GDPR” 2016/679/EU), the e-Privacy Directive
+(2002/58/EG) and local data protection laws. The Developer shall have a valid legal basis for processing of
+personal data for each of its processing activities.
+
+5.2. The Developer hereby agrees and confirms that it will not place any tracking tool except agreed upon under
+this Agreement (SDK, pixel, cookies etc.) or collect personal data of the end users (“Data Subjects”) any other
+way through the games it will provide to Company .
+
+5.3. In this regard, the Distributor may , at its sole discretion scan the game in its best effort to detect if the
+Developer processes any personal data. If the Distributor becomes aware of any data processing by the
+Developer except the processing that is strictly necessary , the Developer warrants that it will terminate such data
+processing immediately .
+
+5.4. If the Developer fails to comply with this Clause hereby , the Distributor may terminate this Agreement without
+any liability thereof.
+
+5.5. In the course of this Agreement, Parties will promptly notify each other and in any case, -to the extent
+applicable- within the timeframes envisaged in the GDPR, if one of the parties receive a data subject request,
+assessment, enquiry , notice or investigation from a Supervisory Authority (that is, a data protection authority
+established by a member state pursuant to Article 51 of the GDPR) or a self-regulatory organization or become
+aware of a breach of security leading to the accidental or unlawful destruction, loss, alteration, unauthorized
+disclosure of, or access to, personal data transmitted, stored or otherwise processed ("Data Breach").
+
+5.6. In the event that there is a change in the technical integration, including but not limited to implementation of
+the Distributor's SDK or any change in ad serving, Parties will promptly sign a data protection agreement as an
+addendum to this Agreement
+
+6. REPRESENT A TIONS AND W ARRANTIES / INDEMNIFICA TION / LIABILITY
+6.1 The Distributor represents and warrants that: (i) Distributor is authorized to enter in this Agreement.
+6.2 The Developer represents and warrants that:
+(i) Developer is authorized to enter into this Agreement and perform its obligations
+hereunder;
+(ii) Developer hereby represents and warrants that:
+a. it conducts its business in compliance with all applicable laws, rules and regulations, including
+without limitation applicable data protection laws and Distributor ’s Developer Guideline Document
+which is available at Developer Guidelines as part of this Agreement and Distributor ’s SDK
+Documentation which is available at Quality Guidelines as part of this Agreement and Design
+Guidelines which is available at Quality Guidelines as part of this Agreement ;
+b. it will comply with all applicable laws on personal data protection as well as Distributor privacy
+policy in respect of the collection, use and disclosure of any personally identifiable information;
+c. the execution of this Agreement and the performance of its obligations hereunder will not conflict
+with or cause a breach or violation of any agreement, law , regulation or other obligation to which
+it is a party or subject;
+d. it owns all or has a license to the Intellectual Property Rights in the Games, including the right to
+(sub)license to Distributor under this Agreement;
+e. the Games will be up-to-date, true, correct, accurate, and will not: (i) be misleading or deceptive;
+(ii) be obscene, defamatory or otherwise unlawful; (iii) be violent, sexual or abusive in nature so
+as to be reasonably likely to cause offence to any material group of people;
+f. the Games, including any product or services offered through the Games, and the use thereof
+will not infringe any right of any person or entity , will not infringe any Intellectual Property right or
+other rights of any person or entity , and will not breach any applicable law , regulation, rule or
+relevant industry codes;
+g. the availability of, and support for the Games will be at all times of a high quality , and will meet
+the specifications and service level criteria under this Agreement;
+h. Distributor nor the Publishers or the Users will be exposed to any computer virus (or any similar
+or other damaging components) from the Games;
+i. there is no current or impending claim or proceedings anywhere in the world in respect to the
+Games.
+
+(iii) Developer will not:
+a. abuse, decompile, reverse engineer , attempt to derive the source code, or disassemble the
+Distribution Platform or any parts thereof;
+b. interrupt or attempt to interrupt the proper operation or exploitation of the Distribution Platform or
+any parts thereof in any way whatsoever;
+c. register any rights regarding the Games which are not legally owned by Developer or the
+Distribution Platform, or Distributor and their business or any parts thereof; and
+
+d. violate any applicable laws, including data protection laws.
+
+6.3 Developer will fully defend, indemnify , and hold the Distributor harmless from and against any and all
+liabilities, losses, damages, government actions, penalties costs and/or expenses (including legal fees and
+expenses) associated with any claim or action brought against the Distributor or its affiliates or its Publishers
+regarding (a) actual or alleged infringement of any Intellectual Property Rights in the Games;(b) a breach of
+above mentioned representations and warranties; (c) any end user ’s/ player’s use of the Games including,
+without limitation, any actions or claims in product liability , tort, contract, or equity .
+6.4 Developer acknowledges that the Distribution Platform and any advertising, information, data, or Game
+thereon are “AS IS”. Except as expressly provided in this Agreement, Distributor disclaims any and all
+representations and warranties with respect to the Distribution Platform and all advertising, information, data and
+Game thereon including without limitation, any implied warranties and any warranty of continuous, uninterrupted,
+bug-free, secure, virus-free access to the Distribution Platform and/or any of its advertising, information, data and
+Game.
+
+6.5 Distributor ’s total aggregate liability in connection with an attributable failure to fulfil any obligations under the
+Agreement, a wrongful act and/or any other legal grounds, for any kind of damage including claims of third
+parties, including data subjects, and regulatory authorities, will be limited to the amount of revenue share paid out
+by Distributor to Developer in the previous three (3) months prior to the date the alleged failure to fulfil any
+obligations under the Agreement and/or the wrongful act first arose, but in no event to exceed €10,000 (ten
+thousand euro). Distributor is not liable for any indirect, special or consequential damages, including, without
+limitation, any loss or damage to business earnings, lost profits or goodwill, suffered by any person. Distributor
+will have no obligation or liability to the Developer if a claim is made with the competent court after a period of
+one (1) year from the date on which Developer was aware or could have been aware of the facts on which the
+claim is based.
+6.6 The restrictions to the liability as included in this article shall also apply in favor of all Third-Party Suppliers
+that Distributor engages for the performance of this Agreement.
+6.7 The limitations of liability in this Agreement are not applicable in case of willful misconduct or gross
+negligence ( opzet en bewuste roekeloosheid ).
+
+7. TERM AND TERMINA TION
+
+7.1 This Agreement will be entered into for indefinite duration (the “ T erm ”), with each Party able to terminate this
+Agreement with thirty (30) days’ notice at any time.
+7.2 In addition, either Party may terminate the Agreement before the end of the T erm if:
+(i) the other Party materially breaches a term or conditions of the Agreement and fails to cure such
+breach within ten (10) business days of written notice specifying the breach;
+(ii) the other Party is put into liquidation or has ceased to conduct its business;
+(iii) the other Party requests or obtains (provisional) suspension of payments or is declared bankrupt;
+(iv) the other Party loses command over its assets or part thereof due to seizure, by being placed under
+trusteeship or in any other way , and such command is not returned within thirty (30) days after the
+loss thereof;
+(v) it can be reasonably expected that the other Party can no longer meet its obligations under this
+Agreement.
+(vi) The other Party is found to be in violation of its respective obligations under the GDPR and other
+applicable data protection laws, or its contractual data protection commitments.
+
+7.3 Notwithstanding with the Section 7.2 of this Agreement, Distributor may terminate this Agreement, in whole or
+in part with immediate effect and without any liability for damages in the case where: (i) the Games or any related
+services or part thereof infringes any third party rights or is in violation of any applicable laws or regulations, (ii)
+the warranties of Developers set out in the Agreement are not fulfilled, (iii) in case there is a direct breach of any
+general terms of this Agreement by the Developer that materially affects the ability of the Distributor to operate
+legally or effectively;
+
+7.4 The termination grounds referred to in 7.2 and 7.3 do not prejudice the causes for termination and relating
+remedies arising from law .
+
+7.5 Obligations, which, according to their nature, are destined to continue also after the termination of this
+Agreement, will survive any termination of this Agreement.
+
+8. SANCTIONS
+
+8.1 Without limiting any previously stated compliance obligations herein, Developer hereby represents and
+warrants that:
+(i) neither Developer , nor any person(s) or entity(ies) owning or controlling (whether individually or
+collectively) 50% or more of Developer , is a Sanctioned Person,
+(ii) neither Developer nor its agents, directly or knowingly indirectly: (a) has transacted any business
+with, provided or received any services to/from, or otherwise acted for the benefit of any Sanctioned Person; or
+(b) will transact any business with, provide or receive any services from, or otherwise act for the benefit of any
+Sanctioned Person.
+(iii) it is compliant with the Sanctions.
+
+8.2. Developer covenants that it shall, in fulfillment of its obligations in this Agreement, follow reasonable
+procedures and conduct appropriate due diligence to assure that it does not engage, formally or informally , with
+any Sanctioned Person in connection with its performance under this Agreement. Developer agrees that if such
+activity is identified or if Developer itself becomes subject to any Sanctions whether directly or because of 50% or
+more ownership by one or more Sanctioned Persons), it will immediately notify Distributor , which may , in its sole
+discretion, immediately suspend or terminate this Agreement and/or any agreement between the Parties, without
+limiting any other right, without liability and without a notice period.
+
+9. MISCELLANEOUS
+
+9.1 Distributor will provide the services under this Agreement, including the provision of In-Game Ads and
+In-Game Purchases, and the Games to the best of its knowledge and capabilities, and in a professional and
+workmanlike manner in accordance with generally accepted industry standards, but cannot and does not warrant
+or guarantee that the Games will be available at all times or operate error free, or that Developer will receive a
+guaranteed level of Developer Revenue Share from exploitation of In-Game Ads and In-Game Purchases
+through the making available of Games on the Publisher Properties. More specifically , Distributor makes no
+warranties or representations about, and assumes no liability or responsibility for: (i) tags results and/or any third
+party ad-serving content products or services, (ii) any errors, mistakes, or inaccuracies incorporated into its
+services and/or any third party ad-serving content products and/or services, (iii) any interruption or cessation of
+transmission to or from Distributors services, the Games, and/or In-Games Ads and In-Game Purchases, (iv) any
+bugs, viruses, trojan horses, or the like which may be transmitted to or through Distributor , the Games, In-Games
+Ads and/or In-Game Purchases, or (iv) any partial removal and/or termination of the availability of the Games, the
+In-Games Ads and/or In-Game Purchases at any time whatsoever . In the case of Invalid T raffic or Fraud,
+deductions and recalculations regarding In-Game Ads Revenue may be required, and Distributor reserves the
+right to adjust the Publisher Net Revenue within 90 days if Invalid T raffic or Fraud is reported.
+
+9.2 The Parties hereto are and will remain independent contractors. Nothing herein will be deemed to establish a
+partnership, joint venture, or agency relationship between the Parties. Neither Party will be deemed to be an
+employee, agent or legal representative of the other Party for any purpose, and neither will have any right, power
+or authority to create any obligation or responsibility on behalf of the other Party .
+
+9.3 Except as expressly and unambiguously allowed herein, or provided by the relevant privacy statements of
+GameDistribution or any of its group companies, or provided by the relevant privacy statements of
+GameDistribution or any of its group companies, each Party will hold in confidence and not use (other than
+necessary for the proper performance of this Agreement or by the relevant privacy statements of
+GameDistribution or its Third-Party Suppliers) or disclose any Confidential Information and will similarly bind its
+employees and contractors in writing. “ Confidential Information ” means all information disclosed by a party to
+the other party , whether orally or in writing, that is designated as confidential or that reasonably should be
+understood to be confidential given the nature of the information and the circumstances of disclosure. Excluded
+from the definition of Confidential Information is information that:
+(i) Is or becomes publicly known (other than through unauthorized disclosure);
+(ii) disclosed by the owner of such information to a third party free of any obligation or confidentiality;
+(iii) was already known by the other Party without an obligation of confidentiality;
+(iv) is rightful received by the other Party free of any obligation of confidentiality; or
+(v) is mandatorily required by law or order of a court, administrative body or other governmental body to
+be disclosed by the receiving Party .
+
+The Parties' obligations with respect to Confidential Information will remain in effect for ten (10) years from the
+date of last disclosure made by any Party .
+
+9.4 Developer will not assign, transfer , encumber or otherwise dispose of the Agreement without the prior written
+approval of the Distributor . Any attempted assignment, transfer , encumbrance or other disposal of the Agreement
+by Developer in violation of this provision will constitute a material default and breach of this Agreement. Except
+
+as otherwise provided, this Agreement will be binding upon and inure to the benefit of the Parties' successors
+and lawful assigns.
+
+9.5 Distributor is entitled to suspend its services under any Agreement during the period that Developer is in
+breach of Developers warranties and obligations in this Agreement.
+
+9.6 Distributor is allowed to transfer its legal relationship with the Developer to a third party . Developer gives it
+irrevocable permission in advance for such a transfer .
+
+9.7 No Party will be deemed in default hereunder for any cessation, interruption or delay in the performance of its
+obligations due to causes beyond its reasonable control, including but not limited to: earthquake, flood, or other
+natural disaster , act of God, labor controversy , pandemic, civil disturbance, war (whether or not officially declared)
+or the inability to obtain sufficient supplies, transportation, or other essential commodity or service required in the
+conduct of its business, or any change in or the adoption of any law , regulation, judgment or decree (each a
+“ Force Majeure Event ”). Each Party will have the right to terminate the Agreement immediately upon written
+notice if any Force Majeure Event of another Party continues for more than thirty (30) days.
+
+9.8 A Party’s failure to exercise or delay in exercising any right, power or privilege under this Agreement will not
+operate as a waiver thereof; nor will any single or partial exercise of any right, power or privilege preclude any
+other or further exercise thereof.
+
+9.9 This Agreement may be periodically updated and the current version will be published on the Distribution
+Platform. Y ou will be notified of any significant changes to the Agreement through clear notice on the Distribution
+Platform or via email, if an email address has been provided. Y our continued use of the Distribution Platform after
+a revised Agreement has been published on the Distribution Platform constitutes Y our acceptance of its terms.
+However , if Y ou do not agree with the updated terms, Y ou have the right to stop using the Distribution Platform.
+
+9.10 Without prejudice to the foregoing, Distributor may at its sole discretion at any time take-down the
+Distribution Platform or remove or change the Games or any part thereof from the Distribution Platform, or to
+require adjustments to the Games, for any reason whatsoever and Distributor is not required to provide
+Developer with any reasoned motivation in connection with such take-down, removal, change or required
+adjustment.
+
+9.1 1 The applicability of the Developer ’s general or special terms and conditions, however named, is hereby
+expressly rejected.
+
+9.12 In the event of technical issues or questions regarding any actions taken under this Agreement, Y ou may
+contact Our support team for assistance and further evaluation.
+
+9.13 Any provision of this Agreement which is prohibited or unenforceable in any jurisdiction will, as to such
+jurisdiction, be ineffective only to the minimum extent necessary without invalidating the remaining provisions of
+this Agreement or affecting the validity or enforceability of such provisions in any other jurisdiction and Parties will
+in good faith negotiate to replace the invalid/unenforceable provisions with valid/enforceable provisions.
+
+9.14 This Agreement will be governed by the laws of The Netherlands with the exclusion of its conflict of laws
+rules, including the UN Convention on Contracts for the International Sale of Goods (CISG). Disputes, claims and
+all other issues arising out of or in connection with this Agreement or further contracts resulting thereof will be
+submitted to the exclusive jurisdiction of the competent court in Amsterdam, the Netherlands.

@@ -1,0 +1,23 @@
+{
+  "url": "https://github.com/marketplace",
+  "slug": "sweep2-github-marketplace-2026-09-22",
+  "fetchedAt": "2026-09-22T20:40:16.086Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 559588,
+  "sha256": "01760095ff027eb9de987da72a53e04a10b09cfe26caa283302dd29853f224bb",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/sweep2-github-marketplace-2026-09-22.html",
+  "textPath": "research/rendered/sweep2-github-marketplace-2026-09-22.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-10-04",
+    "from": "research/rendered/sweep2-github-marketplace.meta.json",
+    "commit": "9654448",
+    "why": "A dated copy of the render-watch capture of sweep2-github-marketplace as commit 9654448 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/colony-sweep/screen-2/github-marketplace-app.md, research/colony-sweep/screen-2/results.json keep pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug sweep2-github-marketplace stays on the weekly watch."
+  }
+}

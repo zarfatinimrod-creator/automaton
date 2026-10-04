@@ -212,7 +212,7 @@
    },
    "gate_israel_payout_no_camera": {
     "status": "FAIL",
-    "evidence": "Israel is on the payout list (polar-supported-countries.txt:246), but the KYC is Stripe Identity with a required live-capture matching selfie (account-reviews.mdx; server/polar/integrations/stripe/service.py).",
+    "evidence": "Israel is on the payout list (polar-supported-countries-2026-09-28.txt:246), but the KYC is Stripe Identity with a required live-capture matching selfie (account-reviews.mdx; server/polar/integrations/stripe/service.py).",
     "grade": "github"
    },
    "gate_programmatic_listing": {

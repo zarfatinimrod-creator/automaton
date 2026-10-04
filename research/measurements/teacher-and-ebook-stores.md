@@ -5,7 +5,7 @@
 `research/rendered/`, cited `file:line`, each quote checked with `grep -n -F`. [INFERENCE] = my reading, not the venue's
 words. UNKNOWN = no capture answers it. **Captures read in full:** `teachsimple-com-contributor-terms-of-service` (200,
 674 lines), `teachsimple-com-become-a-contributor` (200, 421 lines; its FAQ answers exist only in the page's JSON-LD, all
-on `.html:4`), `draft2digital-com-terms-of-service` (200, 768 lines). Gates as in REPLENISH §2 (:113-121).
+on `.html:4`), `draft2digital-com-terms-of-service-2026-09-28` (200, 768 lines). Gates as in REPLENISH §2 (:113-121).
 
 ## Teach Simple (row 17)
 
