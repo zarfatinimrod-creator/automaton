@@ -29,6 +29,7 @@ function readings(madeForKidsOverrides: number | null): ExperimentReadings {
     policySignal: false,
     ungrantedRecurringCost: false,
     madeForKidsOverrides,
+    madeForKidsReadback: ["false"], // T1's upload read back not made for kids, as declared (ruling 4.10 §8 rule 2)
     maxRunnerMinutesPerVideo: 20,
     maxTokenCostIlsPerVideo: 8,
   };
@@ -79,11 +80,12 @@ describe("P-2: made-for-kids overrides on T1's channel", () => {
   });
 
   it("unread before any upload: not due, a note and nothing else", () => {
-    const v = evaluateExperiment(SPEC, { ...readings(null), day: 0, t1Passed: null, videosPassedGate: 0 });
+    const v = evaluateExperiment(SPEC, { ...readings(null), day: 0, t1Passed: null, videosPassedGate: 0, madeForKidsReadback: [] });
     expect(v.decision).toBe("continue");
     expect(v.triggered).toEqual([]);
     const notes = v.notes.join(" ");
-    expect(notes).toMatch(/K-mfk has no reader/);
+    // "no reader" until 4.10: the reader exists since (src/revenue/youtube-madeforkids.ts), so the note says "no reading".
+    expect(notes).toMatch(/K-mfk has no reading/);
     expect(notes).toMatch(/not due before the first upload/);
   });
 

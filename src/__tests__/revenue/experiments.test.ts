@@ -24,6 +24,9 @@ function readings(overrides: Partial<ExperimentReadings> = {}): ExperimentReadin
     policySignal: false,
     ungrantedRecurringCost: false,
     madeForKidsOverrides: 0, // read and zero; the unread case is t1-made-for-kids-kill.test.ts (P-2)
+    // T1's upload read back not made for kids, as declared; the unread and true cases are kids-explainers-kills.test.ts
+    // (ruling 4.10 §10, which applies to T1 alike).
+    madeForKidsReadback: ["false"],
     maxRunnerMinutesPerVideo: 20,
     maxTokenCostIlsPerVideo: 8,
     ...overrides,
