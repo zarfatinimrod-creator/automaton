@@ -21,7 +21,7 @@ flagged. Every quote below was checked with `grep -n -F` against the file it cit
 |---|---|---|---|
 | `icount-plans.txt` (`https://www.icount.co.il/plans/`) | 2026-09-29T08:59:32Z | 200, not truncated | all 1,197 lines; `.html` grepped for `logo`/`לוגו` |
 | `ypay-faq.txt` (`https://ypay.co.il/front/faq`) | 2026-09-29T08:59:33Z | 200, not truncated | all 423 lines; `.html` grepped, links listed |
-| `invoice4u-pricelist.txt` (`https://www.invoice4u.co.il/pricelist-invoice/`) | 2026-09-29T08:59:35Z | 200, not truncated | all 618 lines; `.html` grepped, links listed |
+| `invoice4u-pricelist-2026-09-29.txt` (`https://www.invoice4u.co.il/pricelist-invoice/`) | 2026-09-29T08:59:35Z | 200, not truncated | all 618 lines; `.html` grepped, links listed |
 | `greeninvoice-pricing.meta.json` (`https://www.greeninvoice.co.il/pricing/`) | 2026-09-29T08:59:31Z | **403**, 0 bytes | nothing to read |
 | WebSearch `הפקת קבלות בחינם עם לוגו העסק מסלול חינמי חשבונית` | 29.9.2026 | 9 results | titles and URLs; the tool's summary is a paraphrase, not a quote |
 | GitHub code search `greeninvoice logo businesses file` + one raw file | 29.9.2026 | 32 hits | `Jango-AI-com/morning-cli` `businesses.py`, downloaded and grepped |
@@ -56,11 +56,11 @@ Earlier: YPAY's homepage title on the 7.9 Hebrew SERP, "הפקת חשבונית 
 (`research/measurements/serp/2026-09-07-hebrew-calculators.md:77`, snippet). Today's capture confirms a free product. It
 does not confirm a free logo.
 
-## Invoice4u (`invoice4u-pricelist`)
+## Invoice4u (`invoice4u-pricelist-2026-09-29`)
 
 | Question | Finding | Quote | Source | Grade |
 |---|---|---|---|---|
-| Free tier or free plan? | **No.** A two-month free trial, granted at registration, then a paid plan | "חודשיים חינם מ-ע-כ-ש-י-ו" · "ימי הניסיון מוענקים בעת ההרשמה, טרם רכישת מנוי בתשלום, ואינם חלים על סליקת אשראי." | `invoice4u-pricelist.txt:3`, `:441` | rendered |
+| Free tier or free plan? | **No.** A two-month free trial, granted at registration, then a paid plan | "חודשיים חינם מ-ע-כ-ש-י-ו" · "ימי הניסיון מוענקים בעת ההרשמה, טרם רכישת מנוי בתשלום, ואינם חלים על סליקת אשראי." | `invoice4u-pricelist-2026-09-29.txt:3`, `:441` | rendered |
 | What the free trial includes | Broad use of documents, reports and clients; no card clearing | "הם כן כוללים שימוש נרחב במערכת הפקת המסמכים, דוחות, לקוחות ועוד." | `:443` | rendered |
 | Logo on documents | **The product has a logo feature; the price list does not say which plan has it.** The help-centre menu links a document-design guide category. The price table's 21 row labels (`:115-157`) have no logo or design row. Since nothing is free after the trial, a logo here is not free beyond two months (none: inference from the rendered absence of a free plan) | "עיצוב המסמכים מדריכים לעיצוב מקצועי של מסמכים, הוספת לוגו והתאמה אישית" | `:68` | rendered (feature); tier: none |
 | Cheapest paid plan | **"המסלול הורוד", ₪21 a month billed yearly (₪252 in one payment) or ₪24 monthly, 50 documents a month**, excluding VAT. Cheapest cash outlay: **a 30-document pass, ₪79, valid for a year, no subscription** | "המסלול הורוד" · "21 ₪ לחודש" · "בתשלום אחד של 252 ₪" · "24 ₪" · "50 מסמכים בחודש" · "תקף לשנה שלמה" · "מסלול כרטיסיית 30 מסמכים ללא דמי מנוי וללא התחייבות" · "79 ₪" | `:161`, `:163`, `:165`, `:167`, `:173`, `:405`, `:407`, `:409` | rendered |
@@ -97,7 +97,7 @@ a trial".
 
 **Verdict: UNKNOWN (rendered). Snippet leans PASS**, meaning the logo is probably free elsewhere in Israel.
 - **FAIL for iCount and Invoice4u, rendered.** Neither has a free plan, only trials (45 days, `icount-plans.txt:109`; two
-  months, `invoice4u-pricelist.txt:3`, `:441`). Neither gives anything free beyond the trial, the logo included. These two
+  months, `invoice4u-pricelist-2026-09-29.txt:3`, `:441`). Neither gives anything free beyond the trial, the logo included. These two
   are paid services with trials, not free alternatives.
 - **UNKNOWN for YPAY, rendered.** It is the one rendered permanent free product (`ypay-faq.txt:35`), with no stated
   document cap. Its FAQ is silent on a logo. Its store page would say whether a logo is a paid module. **Superseded (tick 18):** the
@@ -107,7 +107,7 @@ a trial".
   Unrendered.
 - **Account: every rendered route needs one.** YPAY requires registration and email confirmation (`ypay-faq.txt:43-47`).
   iCount's trial needs an account with an ID number (`icount-plans.txt:1181-1189`). Invoice4u's trial starts at
-  registration (`invoice4u-pricelist.txt:441`). No source at any grade shows an Israeli service giving a logo free
+  registration (`invoice4u-pricelist-2026-09-29.txt:441`). No source at any grade shows an Israeli service giving a logo free
   **without an account**. That is the condition in the ruling's APPLY 4 and reopen (iv)
   (`RULING-2026-09-29-lines.md:105-107`, `:114`).
 
@@ -238,7 +238,7 @@ trial".
 
 **Verdict: UNKNOWN (rendered). The lean towards PASS is still snippet grade only**, and rests on Quickly Invoice alone.
 - **Services with a logo feature: three.** MyBooks (rendered, `mybooks-free-invoicing.txt:35`), Invoice4u (rendered,
-  `invoice4u-pricelist.txt:68`) and Morning (github, `businesses.py:37`). **None** of them ties the logo to a free tier,
+  `invoice4u-pricelist-2026-09-29.txt:68`) and Morning (github, `businesses.py:37`). **None** of them ties the logo to a free tier,
   at any grade.
 - **YPAY**, the one rendered permanent free product: it says nothing about a logo, and its store does not sell one.
 - **SUMIT** starts free, and whether that is a standing tier is not stated. Its page does not mention a logo.

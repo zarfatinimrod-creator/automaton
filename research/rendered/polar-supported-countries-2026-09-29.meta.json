@@ -1,0 +1,23 @@
+{
+  "url": "https://polar.sh/docs/merchant-of-record/supported-countries",
+  "slug": "polar-supported-countries-2026-09-29",
+  "fetchedAt": "2026-09-29T11:27:55.727Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 391043,
+  "sha256": "080e031bf45d0249043f57023121c4ef37770edde89fc2719057d4bba6d06c0e",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/polar-supported-countries-2026-09-29.html",
+  "textPath": "research/rendered/polar-supported-countries-2026-09-29.txt",
+  "changed": true,
+  "firstFetch": false,
+  "previousSha256": "ce5182ae9e660b761b3f5fe7416820a56dd723d973a432f5f7de0504124c64ad",
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-09-30",
+    "from": "research/rendered/polar-supported-countries.meta.json",
+    "commit": "f9a41c6",
+    "why": "A dated copy of the render-watch capture of polar-supported-countries as commit f9a41c6 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/measurements/polar-rail.md, research/measurements/stripe-israel.md keep pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug polar-supported-countries stays on the weekly watch."
+  }
+}

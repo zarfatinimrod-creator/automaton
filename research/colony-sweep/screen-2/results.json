@@ -240,7 +240,7 @@
    {
     "fact": "Google pays directly via its own Google Payments / p2p ('Legacy') route, not only via Bugcrowd",
     "grade": "CONFIRMED",
-    "evidence": "OSS VRP rules line 362: 'If Google Payments is your selected payment option...'; research/rendered/sweep2-google-vrp-faq.txt:282 'There are two options for payment of a VRP Reward -- direct through Google or through Bugcrowd.' and :292 'Select Legacy to receive your payments through Google p2p payments processing.' Caveat :286 'Through Bugcrowd (preferred)'."
+    "evidence": "OSS VRP rules line 362: 'If Google Payments is your selected payment option...'; research/rendered/sweep2-google-vrp-faq-2026-09-22.txt:282 'There are two options for payment of a VRP Reward -- direct through Google or through Bugcrowd.' and :292 'Select Legacy to receive your payments through Google p2p payments processing.' Caveat :286 'Through Bugcrowd (preferred)'."
    },
    {
     "fact": "Israel is not on the exclusion list",
@@ -290,7 +290,7 @@
    {
     "fact": "Payment arrives 1-2 weeks after the reward decision, after one-time p2p-vrp enrolment",
     "grade": "CONFIRMED",
-    "evidence": "sweep2-google-vrp-faq.txt:282-283. This is the Chrome VRP FAQ, which applies it to the 'first VRP reward for a Google program'. meta.json shows status 200, error null."
+    "evidence": "sweep2-google-vrp-faq-2026-09-22.txt:282-283. This is the Chrome VRP FAQ, which applies it to the 'first VRP reward for a Google program'. meta.json shows status 200, error null."
    },
    {
     "fact": "p2p-vrp enrolment has no camera, selfie or liveness step",
@@ -388,7 +388,7 @@
    {
     "fact": "The first 100 installers arrive from the free listing plus the repo",
     "grade": "UNVERIFIED",
-    "evidence": "No channel is named. searching-github-marketplace.md:22-26 describes only a keyword box and filters, so ranking is undocumented. research/rendered/sweep2-github-marketplace.txt shows Featured (6 editorial picks: Render, LovableBot, Linear Code, OpenCode, CodeRabbit, Codemagic) and Recommended (20 incumbents: CircleCI, Codecov and others). A 'Recently added' category exists (txt lines 132, 207), but its contents are not in the payload. curl to it from this container returned 403."
+    "evidence": "No channel is named. searching-github-marketplace.md:22-26 describes only a keyword box and filters, so ranking is undocumented. research/rendered/sweep2-github-marketplace-2026-09-22.txt shows Featured (6 editorial picks: Render, LovableBot, Linear Code, OpenCode, CodeRabbit, Codemagic) and Recommended (20 incumbents: CircleCI, Codecov and others). A 'Recently added' category exists (txt lines 132, 207), but its contents are not in the payload. curl to it from this container returned 403."
    },
    {
     "fact": "GitHub bills the buyer's existing GitHub payment method and is merchant of record; 14-day auto-enrolling trial",
@@ -880,7 +880,7 @@
    {
     "fact": "Upstream licences unknown (404), so a legal check is outstanding",
     "grade": "CONTRADICTED",
-    "evidence": "research/rendered/sweep2-linet3-licence.txt:227-235 'subject to the GNU AFFERO GENERAL PUBLIC LICENSE Version 3.0'; products/pcn874/src/sources.ts:118-120 'AGPL-3.0 ... Cited for facts only; no code copied.'"
+    "evidence": "research/rendered/sweep2-linet3-licence-2026-09-22.txt:227-235 'subject to the GNU AFFERO GENERAL PUBLIC LICENSE Version 3.0'; products/pcn874/src/sources.ts:118-120 'AGPL-3.0 ... Cited for facts only; no code copied.'"
    },
    {
     "fact": "Vendors will buy a contract-free, support-free card licence for a regulated component",
@@ -1027,7 +1027,7 @@
    {
     "fact": "US withholding (30%) likely not reduced by treaty for prize income",
     "grade": "UNVERIFIED",
-    "evidence": "research/rendered/irs-us-israel-treaty.txt:7-39 lists Articles 1-32 with no 'Other Income' article; applying that to prize income is a legal inference, not a rendered rule"
+    "evidence": "research/rendered/irs-us-israel-treaty-2026-09-25.txt:7-39 lists Articles 1-32 with no 'Other Income' article; applying that to prize income is a legal inference, not a rendered rule"
    },
    {
     "fact": "The settling page https://www.metaculus.com/tournament-rules/ could be rendered from a GitHub runner",

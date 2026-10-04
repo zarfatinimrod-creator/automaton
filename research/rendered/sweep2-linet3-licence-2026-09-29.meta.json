@@ -1,0 +1,23 @@
+{
+  "url": "https://github.com/adam2314/linet3",
+  "slug": "sweep2-linet3-licence-2026-09-29",
+  "fetchedAt": "2026-09-29T11:26:35.462Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 260006,
+  "sha256": "1f0f2135e375cd4bf4ea3aa0a7ebe51022597ac851fa06d1a2a1f3a69e23b09d",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/sweep2-linet3-licence-2026-09-29.html",
+  "textPath": "research/rendered/sweep2-linet3-licence-2026-09-29.txt",
+  "changed": true,
+  "firstFetch": false,
+  "previousSha256": "e0d21a994e7127df29678ffd5cd1a4f8f87e5a95714099166437edd371f71185",
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-09-30",
+    "from": "research/rendered/sweep2-linet3-licence.meta.json",
+    "commit": "f9a41c6",
+    "why": "A dated copy of the render-watch capture of sweep2-linet3-licence as commit f9a41c6 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/TERMS-AUDIT-2026-09-29.md keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug sweep2-linet3-licence stays on the weekly watch."
+  }
+}

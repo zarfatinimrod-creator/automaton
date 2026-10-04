@@ -1,0 +1,23 @@
+{
+  "url": "https://www.btl.gov.il/Insurance/National%20Insurance/type_list/Self_Employed/Pages/rates.aspx",
+  "slug": "btl-self-employed-rates-2026-09-29",
+  "fetchedAt": "2026-09-29T11:27:41.848Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 153088,
+  "sha256": "21433efbdbb8c847f5572c182fa460ace08643e985c38a021749bf319433aa12",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/btl-self-employed-rates-2026-09-29.html",
+  "textPath": "research/rendered/btl-self-employed-rates-2026-09-29.txt",
+  "changed": true,
+  "firstFetch": false,
+  "previousSha256": "3d338431ba0f68db432ed5afaf00c4314ad0db2d32201c150a09e032bde63fad",
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file.",
+  "frozen": {
+    "on": "2026-09-30",
+    "from": "research/rendered/btl-self-employed-rates.meta.json",
+    "commit": "f9a41c6",
+    "why": "A dated copy of the render-watch capture of btl-self-employed-rates as commit f9a41c6 stored it (fetchedAt above), byte for byte, made by scripts/freeze-capture.mjs so that research/channel-loop/TERMS-AUDIT-2026-09-29.md keeps pointing at the lines that were read. The slug is not in urls.txt, so render-watch never rewrites these files; the live slug btl-self-employed-rates stays on the weekly watch."
+  }
+}

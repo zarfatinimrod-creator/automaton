@@ -8,7 +8,7 @@ Stripe mechanism") and Q11 of `research/measurements/stripe-israel.md`.
 **Grades:** [RENDERED] is quoted from the capture with its line. [INFERENCE] is reasoned, not read; check it before relying on it.
 
 ## What was read
-- `research/rendered/polar-supported-countries.txt` (431 lines), read in full: extracted text of
+- `research/rendered/polar-supported-countries-2026-09-28.txt` (431 lines), read in full: extracted text of
   `https://polar.sh/docs/merchant-of-record/supported-countries`.
 - `.meta.json`: `status` 200, `fetchedAt` `2026-09-28T01:55:22.949Z`, `byteLength` 386196, `truncated` false, `firstFetch` true,
   `sha256` `80ca9109d36b1740c4c60a6115b05a1392fca4aff2a9cd704c45802c8837e954`.
@@ -17,7 +17,7 @@ Stripe mechanism") and Q11 of `research/measurements/stripe-israel.md`.
 - Searches over the `.txt`: `grep -n -i israel` gives 1 hit (`:246`). `grep -n -w IL` gives 0. "Global Payouts" gives 0.
 
 ## What the page says [RENDERED]
-1. **Israel is on the payout list.** Under the heading "Payouts" (`:140`), `polar-supported-countries.txt:142`: "Polar uses
+1. **Israel is on the payout list.** Under the heading "Payouts" (`:140`), `polar-supported-countries-2026-09-28.txt:142`: "Polar uses
    Stripe Connect Express to issue payouts to residents or businesses in any of the countries below. See Payout Accounts for
    how to connect one." The entry, `:246`: "🇮🇱 Israel", between Ireland (`:244`) and Italy (`:248`). The list runs from
    Albania (`:146`) to Vietnam (`:382`), 119 entries.
@@ -75,12 +75,12 @@ and which identity documents does it require.
 **Ordered by:** `research/channel-loop/ZERO-TESTS.md:28-30` (rows 19-21). **Grades:** as at the top of this file.
 **Read in full:** the three `.txt` files below, plus their `.html` (for link targets and, for Stripe, the page state). All have `status`
 200, `truncated` false and `firstFetch` true. For Stripe, `redacted` 65 means 65 copies of `[redacted:stripe-secret-key]` (the docs sample key).
-- `polar-acceptable-use.txt` (177 lines), `.../merchant-of-record/acceptable-use/introduction`, `fetchedAt` `2026-09-28T07:15:22.367Z`, sha256 `8b94125b7f68…`
-- `polar-fees.txt` (330 lines), `.../merchant-of-record/fees`, `fetchedAt` `2026-09-28T07:15:23.537Z`, sha256 `f1a66d91b3ff…`
+- `polar-acceptable-use-2026-09-28.txt` (177 lines), `.../merchant-of-record/acceptable-use/introduction`, `fetchedAt` `2026-09-28T07:15:22.367Z`, sha256 `8b94125b7f68…`
+- `polar-fees-2026-09-28.txt` (330 lines), `.../merchant-of-record/fees`, `fetchedAt` `2026-09-28T07:15:23.537Z`, sha256 `f1a66d91b3ff…`
 - `stripe-connect-required-verification.txt` (79 lines), `docs.stripe.com/connect/required-verification-information`, `2026-09-28T07:15:21.014Z`, sha256 `60805c9a4ea0…`
 
 ### (1) Acceptable use
-- [RENDERED] `polar-acceptable-use.txt:140`: "Polar is built for software companies, so the policy covers digital goods and services such as:";
+- [RENDERED] `polar-acceptable-use-2026-09-28.txt:140`: "Polar is built for software companies, so the policy covers digital goods and services such as:";
   `:142` "Software & SaaS"; `:144` "Digital products: templates, eBooks, code, icons, fonts, design assets, and similar".
 - [RENDERED] `:148`: "It also lists what isn’t supported — for example physical goods, human services, marketplaces, and high-risk or
   regulated categories — along with businesses that require a closer review."
@@ -95,7 +95,7 @@ and which identity documents does it require.
   only the binding list can say whether a tax-filing tool is one. Nothing is shown banned, and nothing is cleared against the binding list.
 
 ### (2) Fees
-- [RENDERED] `polar-fees.txt:147-149` "Starter" / "Free" / "5% + 50¢"; `:140` "a free Starter plan plus three optional paid plans";
+- [RENDERED] `polar-fees-2026-09-28.txt:147-149` "Starter" / "Free" / "5% + 50¢"; `:140` "a free Starter plan plus three optional paid plans";
   `:213` "Organizations created on or after May 27, 2026 start on Starter (5% + 50¢)." The Early Member rate (`:203-210`) is for older organizations only.
 - [RENDERED] `:220` "+1.5% for international cards (non-US)"; `:222` "+0.5% for subscription payments — Early Member only . Starter,
   Pro, Growth, and Scale have no separate subscription fee."; `:224` "We also reserve the right to pass on any other fees Stripe might impose in the future."
@@ -125,7 +125,7 @@ and which identity documents does it require.
 - [RENDERED] Selfie text exists, but every passage is scoped to one country or region. The CA notes (`reqinfo--CA`) say "proof of
   liveness, which entails taking a selfie and uploading a government-issued ID document using Stripe Identity". Similar passages sit
   under TH, SG, BR and EU. None applies to IL or to all countries.
-- [RENDERED] Polar's own deep link (`polar-supported-countries.html:519`) is `#US+RS+express+recipient+individual+transfers`. Its
+- [RENDERED] Polar's own deep link (`polar-supported-countries-2026-09-28.html:519`) is `#US+RS+express+recipient+individual+transfers`. Its
   account country is RS (Serbia), not IL.
 - **What would hold the answer** (the page's own flow): first `https://docs.stripe.com/_endpoint/get-requirement-selections-for-platform-country?platformCountry=US`,
   read `country_map.IL` (`dashboard_types`, `tos_types`, `entity_type_structures`); then
@@ -141,7 +141,7 @@ The fees pass the ₪0 rule: Starter is free, and every fee comes out of a sale,
 categories the acceptable-use summary names, but the binding list and any AI rule were not captured. The camera gate is still
 unread on any rendered page: Stripe's capture has no Israel entry, and a scout (github grade) reports that Polar's own account review
 requires a Stripe Identity selfie. **Next check:** render `https://polar.sh/docs/merchant-of-record/account-reviews` (linked at
-`polar-acceptable-use.txt:154`). If it says the organization owner must verify with a selfie, the camera kill clause
+`polar-acceptable-use-2026-09-28.txt:154`). If it says the organization owner must verify with a selfie, the camera kill clause
 (`BOARD-LOOP.md:148`) is met on Polar's own page, and the verdict becomes FAILS_TEST with no further Stripe reading.
 
 ## Tick 4 verdict (28.9.2026, main thread): FAILS_TEST on the camera gate

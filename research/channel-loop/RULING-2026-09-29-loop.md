@@ -45,7 +45,7 @@ below: ₪0, no camera step, no tiktok.com fetch, no per-item owner action.
   rendered counts). The empty slot on AMO is the free Hebrew/RTL receipt base, already free on our own site
   (`:144-146`).
 - The policies are friendly and are not the reason: no fee, paid features allowed with disclosure
-  (`amo-add-on-policies.txt:2051`, rendered), machine-generated code allowed with source (`:2069`, rendered). A friendly
+  (`amo-add-on-policies-2026-09-28.txt:2051`, rendered), machine-generated code allowed with source (`:2069`, rendered). A friendly
   venue with nothing to sell is still nothing to sell.
 - PARK was the alternative. It fails on the loop's own economics: a parked row keeps a proposed owner step alive
   (`CHANNEL_LOOP.md:220`) for a venue whose sole Pro feature is refuted, and MISSION rule 1 says never keep a step that
@@ -146,7 +146,7 @@ a sitting (the Spreadshirt pattern, `BOARD.md:75`).
   Creator badge); fixed $4.50/$9.00/$14.50 per sale; PayPal from $50; pseudonym accepted; G7 pass (public profile shows
   what the holder selects) (`CHANNEL_LOOP.md:150`, repo, citing `displate-about-regulations.txt` and the privacy chunk).
   Open: kill (d), automation, UNSETTLED on two clauses read today: accounts "created using automated tools (e.g., bots)"
-  may be deleted (`displate-about-regulations.txt:471`, rendered) and the site must not be used "in a way that does not
+  may be deleted (`displate-about-regulations-2026-09-28.txt:471`, rendered) and the site must not be used "in a way that does not
   distort its functioning, in particular through the use of certain software" (`:561`, rendered). Under (e2) below neither
   clause bars a runner operating an owner-opened account, but Displate's own reading governs, so the drafted question
   (`questions.json` venue `displate`) decides. Owner steps it would need, all one-time: the SMS code at first publication
@@ -224,10 +224,10 @@ of **portal acts**, none written as a person's act, and the ad is a fake demo so
 (e2) that is not a "per-game human step". GameDistribution **parks behind CrazyGames**, subject to (e2)'s conditions and
 one written yes.
 
-**BASIS.** "A demo VAST tag for calling a fake advertisement is already enabled" (`gamedistribution-sdk-implementation.txt:275`,
+**BASIS.** "A demo VAST tag for calling a fake advertisement is already enabled" (`gamedistribution-sdk-implementation-2026-09-28-12e095c.txt:275`,
 rendered); watching it completely approves the SDK (`:281`); the 2018 FAQ places the watch "only … within your
-Gamedistribution.com control panel" (`gamedistribution-wiki-faq.txt:180`, rendered) and the publish request is "clicking the
-designated button" (`:182`); publishing is gated on the SDK (`gamedistribution-developer-terms.txt:141-142`, rendered);
+Gamedistribution.com control panel" (`gamedistribution-wiki-faq-2026-09-28-12e095c.txt:180`, rendered) and the publish request is "clicking the
+designated button" (`:182`); publishing is gated on the SDK (`gamedistribution-developer-terms-2026-09-28.txt:141-142`, rendered);
 no upload API (`html5-syndication.md:226`, repo); tick 8 withdrew the lean to kill (`:175-177`, repo). The terms' one access
 clause, "No monitoring. You may not access the Distribution Platform, including the Games, for monitoring availability,
 performance, or functionality" (`:20`, rendered), bars our watchers from polling a live game: the plays KPI must come from
@@ -264,7 +264,7 @@ six hold:
 produced by software and sent by the company's operator costs the owner zero minutes, which is the test `CHANNEL_LOOP.md:75`
 applies. The colony already ships exactly this generator with per-type auto numbering (`products/il-biz-tools/README.md:21`,
 repo). Payers split two ways on rendered text: **self-billing** (CrazyGames, `crazygames-payouts.txt:339`; GameDistribution,
-`gamedistribution-developer-terms.txt:187`) needs nothing from us; **payee-billing** (Y8 `y8-revshare.txt:393`; Wix, "against
+`gamedistribution-developer-terms-2026-09-28.txt:187`) needs nothing from us; **payee-billing** (Y8 `y8-revshare.txt:393`; Wix, "against
 a lawful tax invoice to be issued by the Party receiving", `wix-partner-agreement-body.txt:385`; Indiebook, a payment request
 and tax invoice after each quarter, `indiebook-royalty-guide.txt:35`) is covered by the six conditions.
 
@@ -390,7 +390,7 @@ widening changes nothing now: none of these venues is on the §4 queue with a pr
 | 5 | CurseForge | **CONFIRM** | The token API covers existing projects only (R1:272-274, github); the only creation route seen uses the owner's copied cookies, which is the RED shape (R1:275-277; `REJECTED.md:282`). The brief is right that a brand login in an ordinary browser is **not** cookie reuse (C2), so the RED note describes the tool, not our route; C1 still fails (no API, no written yes). | a project-creation API, **or** a written yes |
 | 6 | SeaArt | **CONFIRM** | No publish command in the official CLI; web App Builder only (R1:280-284, github, absence). C1 fails today. | a publish endpoint, **or** a written yes **and** G2 rendered |
 | 7 | Apple Books direct | **CONFIRM** at snippet grade, marked "dead until rendered" | The legal entity name is the default public seller name; a different name needs a DBA-type document (R1:286-292, snippet; a live listing shows a personal seller name, github). A snippet-grade kill is a kill only until Apple's page renders; the brand-only rule (`MISSION.md:275-279`) makes the basis decisive if the text holds. | the rendered help page shows a seller display name settable without a legal document, then G2 rendered |
-| 8 | Apple via PublishDrive / Draft2Digital | **CONFIRM**; the D2D half **upgraded to G1 at rendered grade** | PublishDrive $9.99/month (R1:295, github; a subscription, twice forbidden). D2D: "a one-time Account Activation Fee is required" plus $12/yr (`draft2digital-com-terms-of-service.txt:490-491`, rendered), so D2D fails G1 rendered and its snippet-grade G4 is no longer load-bearing. | a commission-only aggregator reaching Apple that takes disclosed AI (StreetLib was the candidate and fails G1, row 19) |
+| 8 | Apple via PublishDrive / Draft2Digital | **CONFIRM**; the D2D half **upgraded to G1 at rendered grade** | PublishDrive $9.99/month (R1:295, github; a subscription, twice forbidden). D2D: "a one-time Account Activation Fee is required" plus $12/yr (`draft2digital-com-terms-of-service-2026-09-28.txt:490-491`, rendered), so D2D fails G1 rendered and its snippet-grade G4 is no longer load-bearing. | a commission-only aggregator reaching Apple that takes disclosed AI (StreetLib was the candidate and fails G1, row 19) |
 | 9 | LottieFiles | **CONFIRM** G4 | Loaders, icons and micro-interactions are free everywhere, LottieFiles' own library included (R1:299-303, snippet + github); the standing zero-price floor (`REJECTED.md:1000-1001`). | a Lottie product with a named feature free nowhere |
 | 10 | Wavedash | **CONFIRM** G3 as it stands; `:183` reading replaced by (e2) | The CLI never writes store metadata; "Set these under Metadata in the Developer Portal" (`wavedash-llms-full.txt:4731, :4738`, rendered; `wavedash.md:162-164`, github). Under (e2) that portal step is a runner step, not a human step, so the recorded sentence "That is 'a per-game human step'" is **withdrawn**; the kill stands on C1 (silent terms, no written yes; the reader itself declined to propose driving an undocumented portal route, `:166-167`). No game exists. | a CLI/API metadata write, **or** a written yes |
 | 11 | Facer | **CONFIRM** G3 at rendered grade; the anti-scraping question answered: **barred** | The clause bars attempting to "access or search the Services or Content … through the use of any engine, software, tool, agent, device or mechanism (including spiders, robots, crawlers, data mining tools or the like) other than the software and/or search agents provided by Little Labs or other generally available third-party web browsers" (`facer-templates-js.bin` bytes 475268-475582, decoded by this board; rendered). **Ruling on the wording:** wording that bars only crawlers collecting content does not bar operating one's own account through a browser (C1); wording that names "agent" and "software" as prohibited **means for any access**, with the carve-out covering the browser and not what drives it, does. Facer's is the second kind: the list is "including", not exhaustive, and an agent operating a browser attempts access "through the use of" an agent. When the plain words go both ways, the honest-value rule decides against us (`MISSION.md:434-439`). Also one web form per face, `.face` import admin-only, no API (`facer.md:127-152`). Fitbit fallback (`facer.md:151-152`) is (e2)-shaped and not needed. | a creator upload API, **or** Facer's written yes to an agent operating Facer Creator for a brand account |

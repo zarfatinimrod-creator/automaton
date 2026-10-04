@@ -58,7 +58,8 @@ export function serializeVerdicts(verdicts) {
   return JSON.stringify(verdicts, null, 1);
 }
 
-const PAUSED_LINE = /^#\s*paused\b.*\s(https?:\/\/\S+)\s+([a-z0-9][a-z0-9._-]*)(?:\s+js)?\s*$/;
+/** A `# paused …` line ending in URL<TAB>slug[<TAB>js]: [, url, slug]. Also read by scripts/urls-pause-comments.mjs. */
+export const PAUSED_LINE = /^#\s*paused\b.*\s(https?:\/\/\S+)\s+([a-z0-9][a-z0-9._-]*)(?:\s+js)?\s*$/;
 
 /**
  * The site's lines in urls.txt, in file order: active lines, and lines commented out as `# paused …` that end in
@@ -96,7 +97,8 @@ export function queuedPaths(urls, site) {
 
 /**
  * The committed robots- capture of one robots.txt URL: { slug, meta, body } from research/rendered/robots-*.meta.json
- * whose `url` is that URL, with the stored body (null when the capture stored none), or null when there is none.
+ * whose `url` is that URL and that is not a frozen copy, with the stored body (null when the capture stored none), or
+ * null when there is none.
  */
 export function readRobotsCapture(robotsUrl, renderedDir = RENDERED) {
   if (!existsSync(renderedDir)) return null;
@@ -110,6 +112,9 @@ export function readRobotsCapture(robotsUrl, renderedDir = RENDERED) {
     } catch {
       continue;
     }
+    // A dated frozen copy (scripts/freeze-capture.mjs) keeps the live capture's url, and its name sorts first; it is a
+    // record of what one fetch said, not the robots.txt the weekly render keeps current.
+    if (meta?.frozen) continue;
     let url;
     try {
       url = new URL(meta?.url).href;

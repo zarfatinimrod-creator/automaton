@@ -1,11 +1,11 @@
 # Wall-art print-on-demand: Displate (row 26), Zazzle (row 25), Society6 (row 27)
 
 **28.9.2026, branch `claude/new-session-j071dx`; an Opus reader in the channel loop; wrote this file only.** Read in full:
-`research/rendered/displate-com-about-faq.txt` (1,279 lines) and `displate-com-about-copyright.txt` (135), both 200, fetched
+`research/rendered/displate-com-about-faq-2026-09-28.txt` (1,279 lines) and `displate-com-about-copyright-2026-09-28.txt` (135), both 200, fetched
 2026-09-28T20:35Z. Also read the seven Zazzle/Society6 `.meta.json` files, `research/breadth/REPLENISH-2026-09-28-2.md`
 §2, §3.2-3.4, §6 and `logs/CHANNEL_LOOP.md:149-151`. **Grades:** [RENDERED] = quoted from a capture, `file:line`;
 [INFERENCE] = my reading; UNKNOWN = no capture answers it. A proposed kill fires only on a rendered fact and goes to the
-sitting to confirm. Artist names in the captures' menus (`faq.txt:38-43`) are not reproduced. Ledger: ₪0.00.
+sitting to confirm. Artist names in the captures' menus (`displate-com-about-faq-2026-09-28.txt:38-43`) are not reproduced. Ledger: ₪0.00.
 
 ## 1. Displate (row 26)
 
@@ -14,7 +14,7 @@ Use points 3.2-3.3, which the FAQ cites but does not quote.** Gates now: G1 P(r)
 G4 U(r) · G5 P(g) · G6 U(r) · G7 U↗(r).
 
 - **Sign-up is a form, not a portfolio review (kill b: not met).** [RENDERED] "Fill out the form and click "Create an
-  account." Once your shop is set up, we'll send you a verification email." (`displate-com-about-faq.txt:1048`); "That's it -
+  account." Once your shop is set up, we'll send you a verification email." (`displate-com-about-faq-2026-09-28.txt:1048`); "That's it -
   your shop is ready! You can start uploading your artworks." (`:1050`). This supersedes the 2024 guide's "registration is
   subject to a review where you need to have a portfolio online" (`REPLENISH-2026-09-28-2.md:132`). Review is per artwork:
   "Displate reserves the right not to publish or to reject any artwork that is not in line with our Terms of Use points 3.2
@@ -23,7 +23,7 @@ G4 U(r) · G5 P(g) · G6 U(r) · G7 U↗(r).
   badge covers work "whether created entirely by hand or with assistance from the latest technologies like AI", and the list
   excludes portfolios "whose artworks are clearly generated without human creative input". That gates a badge and a search
   filter (`:429`), not the marketplace. The copyright page has zero hits for "AI", "artificial" or "generated"; it is an
-  infringement rule, "a zero tolerance policy" (`displate-com-about-copyright.txt:93`, `:97`). [INFERENCE] Any AI rule is in
+  infringement rule, "a zero tolerance policy" (`displate-com-about-copyright-2026-09-28.txt:93`, `:97`). [INFERENCE] Any AI rule is in
   ToU 3.2-3.3; a "primarily AI" ban there fires (a) on the Modrinth precedent (`REPLENISH-2026-09-28.md:88`).
 - **No fee to join (G1 PASS).** [RENDERED] "Becoming an artist on Displate is completely free!" (`:1053`); own-link sales:
   "there is no additional fee" (`:1235`). Commission is fixed: "$4.50 USD for M size", "$9.00 USD for L size", "$14.50 USD
@@ -52,7 +52,7 @@ name?); the tax-data form; whether PayPal's linked country list covers this payo
 is ever found (main-page featuring is automatic on profile visits, `:1150`).
 
 **One next check:** render `https://displate.com/about-regulations`, the target of all 11 "Terms of Use" links in the FAQ
-(10 in the body, 1 in the footer; `displate-com-about-faq.html`). Read 3.2 and 3.3 first: a primarily-AI ban fires (a); a
+(10 in the body, 1 in the footer; `displate-com-about-faq-2026-09-28.html`). Read 3.2 and 3.3 first: a primarily-AI ban fires (a); a
 bar on automated access, with the manual route above, fires (d).
 
 ## 2. Zazzle (row 25)
@@ -136,7 +136,7 @@ selfie check (c). Anything else is NOT ANSWERED. Society6 stays the smallest exp
 
 ## 4. Tick 9 (row 131 render) — Displate Terms of Use
 
-**Read 28.9.2026 by an Opus reader.** Capture: `displate-about-regulations` (200, fetchedAt 2026-09-28T21:03Z, first fetch;
+**Read 28.9.2026 by an Opus reader.** Capture: `displate-about-regulations-2026-09-28` (200, fetchedAt 2026-09-28T21:03Z, first fetch;
 983 txt lines). The whole Terms text was read (tou.txt:90-945, "These Terms of Use come into force on the 15 of July
 2026.", :945). The html was used for the section numbering (the `<ol>` nesting, and the `__NEXT_DATA__` markdown at
 tou.html:640) and for links. Short name `tou`. Every quote was checked with `grep -n -F`. Artist handles in the page's
@@ -287,7 +287,7 @@ Now G1 P(r) · G2 U↗(r+repo) · **G3 U(r)** · **G4 U↗(r)** · G5 P(g) · **
 
 ## 5. Tick 10 (row 134 render) — Displate Privacy Policy
 
-**Read 28.9.2026 by an Opus reader.** Capture: `displate-com-about-privacy` (200, fetchedAt 2026-09-28T22:00Z, first
+**Read 28.9.2026 by an Opus reader.** Capture: `displate-com-about-privacy-2026-09-28` (200, fetchedAt 2026-09-28T22:00Z, first
 fetch). Short name `priv`. The txt (295 lines, 211 non-empty) was read in full. The html body is a single line (:115),
 so every html citation is `priv.html:115`. I grepped it, including the `__NEXT_DATA__` JSON. Every quote below was
 checked with `grep -n -F`. Artist handles in the menus (:38-43, :83) and the data-protection officer's name (:153) are
@@ -391,7 +391,7 @@ Now: G1 P(r) · G2 U↗(r+repo) · G3 U(r) · G4 U↗(r) · G5 P(g) · G6 U↗(r
 
 ## 6. Tick 11 (row 140 render) — the privacy policy's script chunk
 
-**Read 28.9.2026 by an Opus reader (family "loop-venues").** Capture: `displate-about-privacy-chunk` (200,
+**Read 28.9.2026 by an Opus reader (family "loop-venues").** Capture: `displate-about-privacy-chunk-2026-09-28` (200,
 `.meta.json:5`; fetchedAt 2026-09-28T23:21Z, `:4`; first fetch; 67,536 bytes, `text/javascript`). Short name `chunk`.
 The runner stored the script itself as the txt (`bodyPath`, `.meta.json:11`); there is no html. Line 1 holds the whole
 page component (61,784 bytes, 61,732 characters [checker 28.9]); lines 2-56 are a chat-widget script (line 56 is a

@@ -28,7 +28,7 @@ Two warnings for that builder:
 1. **Never swap in the Hebrew Kokoro voice.** kokoro-onnx's Hebrew archive is "voices-hebrew.bin - kokoro-onnx compatible
    voice archive with he_shaul ." (`yk2-hf-kokoro-hebrew-nc.txt:70`). It is a "Non-commercial Hebrew Kokoro ONNX export."
    (`:60`), and its source model bars use "not for commercial or broadcast needs;" (`yk2-hf-kokoro-hebrew-saspeech.txt:138`).
-   The voices file has to be Kokoro-82M's official one ("License: apache-2.0", `kokoro-82m-model-card.txt:53`).
+   The voices file has to be Kokoro-82M's official one ("License: apache-2.0", `kokoro-82m-model-card-2026-09-28.txt:53`).
 2. **Hebrew narration in an English Kokoro voice is outside ASSESSMENT §9.4.** §9.4 allows "English Kokoro narration, or
    Hebrew on-screen text;" (`ASSESSMENT.md:487`), and this chain "is **accented, and nobody has measured whether listeners
    understand it**" (`:290`). The `--voice none` silent path (`requirements.txt:9`) fits §9.4. Any voiced Hebrew take
@@ -162,7 +162,7 @@ Every piece of evidence that moved made the case against A and B stronger:
 - **P-1, a narration-licence gate:** publication refuses any narration from a voice whose weights and training data are
   not both rendered commercial. Today the allowlist is Kokoro-82M's official voices, and he_shaul / `voices-hebrew.bin` is
   refused by name. [checker 28.9] Kokoro passes on its author's data statement only: "Kokoro was trained exclusively on
-  permissive/non-copyrighted audio data" (`kokoro-82m-model-card.txt:227`), which includes "Synthetic audio [1] generated
+  permissive/non-copyrighted audio data" (`kokoro-82m-model-card-2026-09-28.txt:227`), which includes "Synthetic audio [1] generated
   by closed [2] TTS models from large providers" (`:233`), whose terms no capture shows. The gate should say whether an
   author's statement counts as "rendered", or it would refuse Kokoro by the same test that leaves BlueTTS unproven.
 - **P-2, a kill:** a YouTube-set "Set to Made for Kids" override on any colony video privatises it and allows one appeal,

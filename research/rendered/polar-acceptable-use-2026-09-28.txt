@@ -1,0 +1,177 @@
+Acceptable Use - Polar
+
+Documentation Index
+Fetch the complete documentation index at: /docs/llms.txt
+Use this file to discover all available pages before exploring further.
+
+Skip to main content
+Polar home page
+
+Search...
+
+⌘ K
+
+Bootup
+
+Introduction
+
+Migrate from Stripe
+
+Features
+
+Products
+
+Usage Based Billing
+
+Cost Insights Beta
+
+Benefits
+
+Checkout
+
+Seat-Based Pricing
+
+Unit-Based Pricing
+
+Custom Fields
+
+Discounts
+
+Tax Inclusive Pricing
+
+Subscriptions
+
+Orders
+
+Refunds
+
+Analytics
+
+Customer Management
+
+Team Management
+
+SSO
+
+Customer Portal
+
+Finance & Payouts
+
+Integrations
+
+Integrate
+
+Authentication
+
+Sandbox Environment
+
+Customer State
+
+Model Context Protocol (MCP)
+
+SDKs
+
+Framework Adapters
+
+Framework Guides
+
+Webhooks
+
+OAuth 2.0
+
+Merchant of Record (MoR)
+
+Introduction
+
+Fees
+
+Supported countries
+
+Acceptable Use
+
+Account reviews
+
+Migrate Away
+
+llms-full.txt
+
+Contact support
+
+Dashboard
+
+Docs
+API Reference
+Changelog
+Support
+
+Polar home page
+
+Search...
+
+⌘ K Ask Assistant ⌘ I
+llms-full.txt
+Contact support
+Dashboard
+Dashboard
+
+Search...
+
+Navigation
+Merchant of Record (MoR)
+Acceptable Use
+
+Docs
+API Reference
+Changelog
+Support
+
+Merchant of Record (MoR)
+Acceptable Use
+Copy page Copy page
+
+What you can sell with Polar, and why we have a policy for it
+
+Copy page Copy page
+
+​
+
+What is the Acceptable Use Policy?
+
+The Acceptable Use Policy (AUP) defines which products and business models can be sold through Polar. Polar is built for software companies, so the policy covers digital goods and services such as:
+
+Software & SaaS
+
+Digital products: templates, eBooks, code, icons, fonts, design assets, and similar
+
+Premium content & access: courses, private GitHub repositories, Discord servers, and subscription content
+
+It also lists what isn’t supported — for example physical goods, human services, marketplaces, and high-risk or regulated categories — along with businesses that require a closer review.
+​
+
+Why do we have one?
+
+As your Merchant of Record , Polar is the legal seller of your products. That means we’re accountable to card networks, payment partners, and tax authorities for every transaction on the platform. The AUP keeps the platform compliant, protects buyers from fraud and abuse, and keeps chargeback and risk levels low so we can keep offering great rates and fast payouts to everyone.
+Every organization is reviewed against the AUP before its first payout and monitored continuously afterwards. Learn more in Account Reviews .
+
+Read the full Acceptable Use Policy
+The complete and binding list of acceptable, prohibited, and restricted products.
+
+Was this page helpful?
+Yes No
+
+Previous Account reviews
+
+Next
+
+⌘ I
+
+x github discord
+Powered by This documentation is built and hosted on Mintlify, a developer documentation platform
+
+On this page
+What is the Acceptable Use Policy?
+Why do we have one?
+
+Assistant
+
+Responses are generated using AI and may contain mistakes.

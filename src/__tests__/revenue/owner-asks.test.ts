@@ -166,7 +166,7 @@ describe("research/owner-asks/questions.json is the single source the sender rea
     for (const v of q.venues) expect(v.route.length, v.venue).toBeGreaterThan(20);
     // Spreadshirt's and Indiebook's came from tick-8 captures (spreadshop-legal-information.txt:36,
     // indiebook-sell-a-book.html:735), Displate's and Teach Simple's from tick-9 captures
-    // (displate-about-regulations.txt:447, teachsimple-terms-of-service.txt:420); n8n's route is a form.
+    // (displate-about-regulations-2026-09-28.txt:447, teachsimple-terms-of-service.txt:420); n8n's route is a form.
     expect(q.venues.filter((v) => v.to).map((v) => v.venue)).toEqual([
       "crazygames", "wix", "spreadshirt", "indiebook", "displate", "teachsimple",
     ]);

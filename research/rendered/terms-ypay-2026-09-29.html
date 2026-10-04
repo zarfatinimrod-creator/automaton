@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>חשבונית ירוקה חינם של Ypay | הפקת חשבונית אונליין | חשבונית דיגיטלית</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="title" content="חשבונית ירוקה חינם של Ypay | הפקת חשבונית אונליין | חשבונית דיגיטלית">
+    <meta name="description" content="תוכנה הנהלת חשבונות באינטרנט בחינם הכוללת הפקת חשבונית ירוקה חינם, מערכת סליקה, CRM, חשבוניות מחזוריות ועוד שירותים שיעזרו לך בניהול העסק.">
+        <meta property="og:title" content="מערכת הנהלת חשבונות באיטרנט חינם - סליקה, הפקת חשבונית דיגיטלית ירוקה חינם - YPAY">
+    <meta property="og:description" content="תוכנה הנהלת חשבונות באינטרנט בחינם הכוללת הפקת חשבונית ירוקה חינם, מערכת סליקה, CRM, חשבוניות מחזוריות ועוד שירותים שיעזרו לך בניהול העסק.">
+        <!--meta property="og:image" content="/images/banners/banner-01-620x360.png"-->
+    <meta property="og:url" content="http://ypay.co.il">
+        <link rel="preload" href="/components/front/base/base.css" as="style">
+    <link rel="preload" href="/components/front/base/core.js" as="script">
+    <link rel="preload" href="/components/front/base/script.js?v=1.3" as="script">
+    <link rel="icon" href="/assets/img/shared/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/components/front/base/base.css">
+    <script src="/components/front/base/core.js"></script>
+    <script src="/components/front/base/script.js?v=1.3"></script>
+
+    <style>
+        .hidden {
+            display: none;
+            }
+
+        .rtl {
+        direction: rtl;
+        }
+        .right {
+        text-align: right;
+        }
+    </style>
+        <noscript>
+            <img height="1" width="1" style="display:none" alt="תמונה של קוד פייסבוק" src="https://www.facebook.com/tr?id=665012010333938&ev=PageView&noscript=1">
+        </noscript>
+        <script>
+        document.addEventListener('DOMContentLoaded', function(event) {
+            let stateCheck = setInterval(() => {
+              if (document.readyState === 'complete') {
+                clearInterval(stateCheck);
+
+
+                let nextloading = setInterval(() => {
+                clearInterval(nextloading);
+
+                        loadScript();
+                        }, 5000);
+              }
+            }, 100);
+        });
+
+        function loadScript()
+        {
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = '/components/main/base/jquery-3.6.1.min.js';
+                document.getElementsByTagName('head')[0].appendChild(script);
+
+                  var lazyVideos = [].slice.call(document.querySelectorAll("video.lazy"));
+
+                  if ("IntersectionObserver" in window) {
+                    var lazyVideoObserver = new IntersectionObserver(function(entries, observer) {
+                      entries.forEach(function(video) {
+                        if (video.isIntersecting) {
+                          for (var source in video.target.children) {
+                            var videoSource = video.target.children[source];
+                            if (typeof videoSource.tagName === "string" && videoSource.tagName === "SOURCE") {
+                              videoSource.src = videoSource.dataset.src;
+                            }
+                          }
+
+                          video.target.load();
+                          video.target.classList.remove("lazy");
+                          lazyVideoObserver.unobserve(video.target);
+                        }
+                      });
+                    });
+
+                    lazyVideos.forEach(function(lazyVideo) {
+                      lazyVideoObserver.observe(lazyVideo);
+                    });
+                  }
+                  
+                // document ready
+                var disabledAndi = localStorage.getItem('disabledAndi');
+                if (disabledAndi != "yes")
+                {
+                    console.log("run andi");
+                    var s = document.createElement("script");
+                    s.type = "text/javascript";
+                    s.src = "https://system.user-a.co.il/Customers/3748629/_ypay_co_il-/andifn1.js";
+                    s.id = "andipath";
+                    document.head.append(s);
+
+                }
+
+                    var google_conversion_id = 870896759;
+                    var google_custom_params = window.google_tag_params;
+                    var google_remarketing_only = true;
+
+                    // Facebook Pixel Code
+                        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                                            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+                                        n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+                                        t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+                                            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+                                    fbq('init', '665012010333938');
+                                    fbq('track', "PageView");
+                    // End Facebook Pixel Code -->
+
+                    // GoogleAnalytics
+                        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+                        ga('create', 'UA-79987025-1', 'auto');
+                        ga('send', 'pageview');
+
+                    // End GoogleAnalytics
+
+                    
+
+                    // MessengerPlugin (BOT)
+/*
+                      window.fbMessengerPlugins = window.fbMessengerPlugins || {
+                        init: function () {
+                          FB.init({
+                            appId            : '1678638095724206',
+                            autoLogAppEvents : true,
+                            xfbml            : true,
+                            version          : 'v3.0'
+                          });
+                        }, callable: []
+                      };
+                      window.fbAsyncInit = window.fbAsyncInit || function () {
+                        window.fbMessengerPlugins.callable.forEach(function (item) { item(); });
+                        window.fbMessengerPlugins.init();
+                      };
+                      setTimeout(function () {
+                        (function (d, s, id) {
+                          var js, fjs = d.getElementsByTagName(s)[0];
+                          if (d.getElementById(id)) { return; }
+                          js = d.createElement(s);
+                          js.id = id;
+                         // js.src = "https://connect.facebook.net/en_US/sdk/debug.js";
+                          js.src = "https://connect.facebook.net/he_IL/sdk/xfbml.customerchat.js";
+                          fjs.parentNode.insertBefore(js, fjs);
+                        }(document, 'script', 'facebook-jssdk'));
+                      }, 0);
+*/
+                      // End MessengerPlugin (BOT)
+
+                      //$.getScript("https://www.google.com/recaptcha/api.js");
+        }
+
+        </script>
+</head>
+<body>
+<div
+          class="fb-customerchat"
+          page_id="1737772539795299"
+          ref="your-ref"
+          greeting_dialog_display="show"
+          theme_color="#6b39bd"
+          minimized=false
+          logged_out_greeting="היי, התוכנה בחינם... אבל יש לנו מספר מוצרים בתשלום שממש משתלמים :)"
+          logged_in_greeting="היי, התוכנה בחינם... אבל יש לנו מספר מוצרים בתשלום שממש משתלמים :)">
+        </div>
+<div class="page">
+<!--RD Navbar-->
+    <header class="section rd-navbar-wrap"
+            data-preset='{"title":"Navbar Default","category":"header","reload":true,"id":"navbar-default"}'>
+        <nav class="rd-navbar">
+            <div class="navbar-container">
+                <div class="navbar-cell">
+                    <div class="navbar-panel">
+                        <button class="navbar-switch int-hamburger novi-icon"
+                                data-multi-switch='{"targets":".rd-navbar","scope":".rd-navbar","isolate":"[data-multi-switch]"}'></button>
+                        <div class="navbar-logo"><a class="navbar-logo-link" href="/front">
+                        <img class="navbar-logo-default" src="/images/logos/logo.png" alt="Intense" width="159.8" height="62.2" style='max-width:70%;'>
+                        <img class="navbar-logo-inverse" src="/images/logos/logo.png" alt="Intense" width="159.8" height="62.2" style='max-width:70%;'></a></div>
+                    </div>
+                </div>
+                <div class="navbar-cell navbar-spacer"></div>
+                <div class="navbar-cell navbar-sidebar rtl">
+                    <ul class="navbar-navigation rd-navbar-nav">
+                        <li class="navbar-navigation-root-item "><a class="navbar-navigation-root-link"
+                                                                          href="/front">דף הבית</a>
+                        </li>
+                        <li class="navbar-navigation-root-item "><a class="navbar-navigation-root-link"
+                                                                   href="/front/about">אודותינו</a>
+
+                        </li>
+                        <li class="navbar-navigation-root-item ""><a class="navbar-navigation-root-link"
+                                                                   href="/front/articles">מרכז ידע</a>
+                        </li>
+                        <li class="navbar-navigation-root-item "><a class="navbar-navigation-root-link" href="/front/contact">צור קשר</a>
+                        </li>
+                        <li class="navbar-navigation-root-item"><a class="navbar-navigation-root-link" href="/front/faq">שאלות נפוצות</a>
+                        </li>
+                        <li class="navbar-navigation-root-item"><a class="navbar-navigation-root-link" href="/front/shop/index">חנות</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="navbar-cell rtl">
+                    <div class="navbar-subpanel">
+                        <!--div class="navbar-subpanel-item">
+                            <div class="navbar-search rtl">
+                                <div class="navbar-search-container">
+                                    <form class="navbar-search-form" action="front/searchresults" method="GET"
+                                          data-rd-search='{"output":".navbar-search-results","mode":"live","liveResults":3,"template":"<h5 class=\"search-title\"><a target=\"_top\" href=\"#{href}\" class=\"search-link\">#{title}</a></h5><p>...#{token}...</p>"}'>
+                                        <input class="navbar-search-input" type="text"
+                                               placeholder="הקלד מילת חיפוש..." autocomplete="off" name="s">
+                                        <button class="navbar-search-btn int-search novi-icon"></button>
+                                        <button class="navbar-search-close search-switch int-close novi-icon"
+                                                type="button"
+                                                data-multi-switch='{"targets":".rd-navbar","scope":".rd-navbar","class":"navbar-search-active","isolate":"[data-multi-switch]:not(.search-switch)"}'></button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="navbar-search-results">No results</div>
+                            <button class="navbar-button search-switch int-search novi-icon"
+                                    data-multi-switch='{"targets":".rd-navbar","scope":".rd-navbar","class":"navbar-search-active","isolate":"[data-multi-switch]:not(.search-switch)"}'></button>
+                        </div-->
+                        <div class="navbar-subpanel-item">
+                            <button class="navbar-button int-cart novi-icon"
+                                    data-multi-switch='{"targets":".rd-navbar","scope":".rd-navbar","class":"navbar-cart-active","isolate":"[data-multi-switch]"}'>
+                            </button>
+
+                                                    <div class="navbar-cart rtl" style="text-align:right" data-vat=18>
+                                <h5 class="navbar-cart-heading">סל קניות</h5>
+					                                            
+                                
+                                <div class="navbar-cart-line">
+                                    <div class="navbar-cart-line-name">סה״כ ללא מע״מ:</div>
+                                    <div id="novattotal" class="navbar-cart-line-value">0.00</div>
+                                </div>
+                                <!--div class="navbar-cart-line">
+                                    <div class="navbar-cart-line-name">Shipping:</div>
+                                    <div class="navbar-cart-line-value">Free</div>
+                                </div-->
+                                <div class="navbar-cart-line">
+                                    <div class="navbar-cart-line-name">מע״מ:</div>
+                                    <div id="vattotal" class="navbar-cart-line-value">0.00</div>
+                                </div>
+                                <div class="navbar-cart-line">
+                                    <div class="navbar-cart-line-name">סה״כ:</div>
+                                    <div id="totalwithvat" class="navbar-cart-total">0.00</div>
+                                </div>
+                                <div class="navbar-cart-buttons">
+                                    <div class="navbar-cart-group">
+                                    <a class="btn btn-dark btn-sm" href="/front/shop/index">המשך קניה</a>
+                                    <!--a class="btn btn-primary btn-sm" href="/front/shop/payment">
+                                    <span class="btn-icon int-check novi-icon"></span><span>המשך לתשלום</span></a--></div>
+                                </div>
+                            </div>
+                                     </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+            
+
+<section class="section section-lg bg-transparent novi-background rtl"  >
+    <div class="container"  >
+        <h2 class="text-center"   ><!--novi-static-text-node-->תנאי שימוש</h2>
+        <div class="accordion accordion-boxed"  >
+
+                                <div class="accordion-item accordion-boxed-sample-1" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-1&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;,&quot;state&quot;:true}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->תנאים כלליים לשימוש בשירותי YPAY</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-1" data-multi-switch-target-slide="" >
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->
+וואי פיי הנהלת חשבונות בע"מ  (להלן גם: "<strong>
+החברה
+</strong>
+
+") מפעילה שירות המאפשר ניהול 
+</span></span><br>
+ומעקב אחר ההכנסות וההוצאות בצורה קלה ומהירה על גבי רשת האינטרנט באתר החברה: ypay.co.il 
+</span></span><br>
+("<strong>
+האתר
+</strong>
+"), אשר עוצב ותוכנן במיוחד לעצמאיים, ובעלי מקצועות חופשיים ("<strong>
+השירות
+</strong>
+").
+</span></span><br>
+השימוש בשירות ובכלים המוטמעים בו, ייעשה בכפוף לתנאים המפורטים להלן בתקנון זה 
+</span></span><br>
+(להלן - "<strong>
+תנאי השימוש
+</strong>
+").  
+</span></span><br>
+השימוש בכל המודולים, הפיצ'רים ואפשרויות השימוש
+שיתווספו לשירות בעתיד, יהיה כפוף לתנאי השימוש. 
+</span></span><br>
+השימוש בלשון זכר או נקבה בתנאי השימוש נעשה לצורך הנוחות בלבד ותנאים אלו יחולו על כל משתמשי השירות, גברים ונשים כאחד.
+</span></span><br>
+המשתמשים באתר (להלן: "<strong>
+את</strong>" או "<strong>
+אתה</strong>" או: "<strong>
+המשתמשים</strong>") נדרשים לקרוא תקנון זה בעיון בטרם שימוש בשירות שכן המשך השימוש מהווה הסכמת המשתמשים להוראות תקנון זה.
+</span></span><br> 
+החברה שומרת לעצמה את הזכות לעדכן תנאי שימוש אלו, מעת לעת, לפי שיקול דעתה הבלעדי וללא צורך במסירת הודעה כלשהי מראש. תוקפו של שינוי בתנאי השימוש יחל מרגע פרסומו באתר.
+</span></span><br><strong>
+אינכם רשאים לעשות שימוש בשירות אם אינכם מסכימים לתנאים אלה.
+</strong></span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-2" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-2&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->כללי</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-2" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->
+השימוש שלך בשירות כפוף לתנאים המפורטים בתנאי השימוש.
+</span></span><br>
+הפרת אחד מהתנאים הבאים עלול להוביל לסיום מיידי של החשבון שלך.
+</span></span><br>
+בסימון התיבה " קראתי את הסכם השימוש ואני מאשר את הסכמתי לו " הנך מאשר בזאת כי אתה מקבל את ההסכם ותנאי השימוש של האתר ומודע  לכך כי השימוש שאתה עושה באתר מבוצע על אחריותך בלבד.
+</span></span><br>
+וואי פיי הנהלת חשבונות בע"מ לא תשא בשום אחריות לרבות אובדן נתונים, עיכוב בגישה לאתר, פגיעה או נזק ישיר או עקיף, או תשלום בגין הפסדים או אובדן רווחים, כתוצאה מפעולה או אי פעולה, שימוש או אי שימוש באתר או במידע שהופק ממנו.
+</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-3" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-3&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->הרשמה</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-3" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->אתה רשאי להשתמש באתר אך ורק למטרות חוקיות.</span></span><br>עליך להבטיח ולשמור את סיסמאות הגישה שלך ושל מורשים מטעמך.</span></span><br>אנא הקפד להחליף בתדירות גבוהה את סיסמאות גישה אלו.</span></span><br>וואי פיי הנהלת חשבונות בע"מ לא תהיה אחראית לכל נזק או הפסד שיגרם בגין כישלון אבטחת פרטי הכניסה שלך ואו שימוש לרעה בפרטים אלו.</span></span><br>במידה ואתה משתמש בשרות למען אחרים עליך לוודא כי הנך מורשה לעשות כן.</span></span><br>רק בני אדם רשאים להשתמש בשירות. חל איסור ליצור חשבונות ע"י שיטות אוטומטיות שונות כגון סקריפטים, רובוטים, או שיטות אוטומטיות אחרות.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-4" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-4&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->הדפסת העתקים וגיבויים ופטור מאחריות</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-4" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->עליך להדפיס ולשמור העתק של כל מסמך תיעוד פנים ( חשבונית מס, חשבונית מס קבלה, חשבון עסקה, חשבונית זיכוי, קבלה, תעודת משלוח, הזמנת עבודה ) אשר מופק מתוכנת Ypay.</span></span><br>וואי פיי הנהלת חשבונות בע"מ אינה יכולה להיות ערבה לכך שהשירות יהיה זמין בעת שאתה תזדקק למסמכים אלו. Ypay לא תישא בשום אחריות בגין נזק ישיר או עקיף, או תשלום בגין הפסדים או אובדן רווחים כתוצאה מאובדן נתונים ואי זמינות השרות באופן זמני או קבוע.</span></span><br>עליך לגבות ולשמור את נתוני המערכת באופן שוטף.</span></span><br>בנוסף עליך להדפיס ולשמור את כל הכרטיסים והדוחות שבמערכת מידי תקופה ( מומלץ פעם בחודש ).</span></span><br>הדוחות שיש להדפיס הינם דוח רווח והפסד, ספר תקבולים תשלומים, ספר הכנסות והוצאות וכן כל כרטיסי החשבונות שישנם במערכת.</span></span><br>את הדוחות והכרטיסים הנ"ל &nbsp;יש לשמור במשך 7 שנים.</span></span><br>Ypay מיישמת מדיניות ונהלים בכדי למנוע אובדן נתונים הכוללים משטר גיבוי קפדני, אך אינה יכולה להיות ערבה לכך שמקרים מסוג זה אכן לא יתרחשו.</span></span><br>Ypay לא תישא בשום אחריות בגין נזק ישיר או עקיף, או תשלום בגין הפסדים או אובדן רווחים כתוצאה מאובדן נתונים ואי זמינות השירות באופן זמני או קבוע.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-5" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-5&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->שיפוי&nbsp;</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-5" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->הנך מתחייב לשפות את וואי פיי הנהלת חשבונות בע"מ או מי מעובדיה, מנהליה או מי מטעמה בגין כל נזק, הפסד, אובדן רווחים, תשלום או הוצאה שיגרמו להם ובכלל זה שכר טרחה עורך דין והוצאות משפט עקב הפרת תנאי שימוש אלה.</span></span><br>הינך מתחייב לשפות את וואי פיי הנהלת חשבונות בע"מ או מי מעובדיה, מנהליה או מי מטעמה בגין כל טענה או תביעה או דרישה שתועלה נגדם על ידי צד שלישי כלשהו כתוצאה מהפרת תנאי שימוש אלו או תכנים שמסרת או פרסמת באתר או קישורים שונים שביצעת לאתר.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-6" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-6&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->גריעה מהשרות</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-6" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->וואי פיי הנהלת חשבונות בע"מ יכולה לגרוע אותך מהשירות במקרים הבאים:</span></span><br>א.נרשמת מספר פעמים תחת שמות משתמשים שונים</span></span><br>ב.ביצעת מעשה או מחדל שעלול לפגוע במשתמשים אחרים</span></span><br>ג.לא ביצעת פעילות כלשהי בשירות בתקופה העולה על ארבעה חודשים וקיבלת על כך התראה בדואר אלקטרוני אותו מסרת בעת ההרשמה לשירות, או דואר אלקטרוני אחר הנמצא בידי חברת וואי פיי הנהלת חשבונות בע"מ לפני פעולת המחיקה.</span></span><br>ד.ביצעת מעשה או מחדל, או ניסיון לביצוע מעשה או מחדל, או מעשה הנחזה על פניו לסייע או לעודד ביצועו של מעשה שכזה, תוך כדי השימוש באתר, העשוי לפגוע בחוקי מדינת ישראל.</span></span><br>ה.ביצעת פעולה שתמנע מאחרים להצטרף לשירות</span></span><br> ו. פיגור של 30 יום בתשלום דמי מנוי עבור חבילה או מוצר כלשהו שנמצא בחנות. </span></span><br>ז.הפרת תנאי מהסכם זה</span></span><br>ח. אם חשבון המשתמש לא פעיל מזה 7 שנים , שמורה לחברת וואי פיי הנהלת חשבונות בע"מ לגרוע את המשתמש מהחשבון ללא הודעה מראש.</span></span><br>ט. אם החשבון פעיל ועברו 7 שנים – שמורה לחברת וואי פיי הנהלת חשבונות בע"מ הזכות למחוק את הנתונים של השנה ה-8 ואילך ולהשאיר נתונים ומסמכים חשבונאיים זמינים שהופקו ונרשמו במהלך 7 שנים האחרונות.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-7" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-7&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->אבטחת מידע ופטור מאחריות</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-7" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->וואי פיי הנהלת חשבונות בע"מ עושה שימוש באמצעי אבטחה סבירים התואמים המקובל באתרים מסוג זה. אמצעי האבטחה כוללים בין היתר מערכי גיבוי,הצפנת נתונים וחומות אש. למרות האמור לעיל קיים סיכון של חדירה למאגרי המידע של האתר.</span></span><br>וואי פיי הנהלת חשבונות בע"מ לא תהה אחראית לנזק או הפסד שיגרם בעקבות פריצה למאגר הנתונים כאמור ועל שימוש שיעשה המידע זה.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-8" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-8&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->זמינות השירות ופטור מאחריות &nbsp;&nbsp;</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-8" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->וואי פיי הנהלת חשבונות בע"מ אינה מתחייבת שהשרות יהיה תמיד זמין.</span></span><br>וואי פיי הנהלת חשבונות בע"מ אינה מתחייבת שהשרות לא יופרע.</span></span><br>וואי פיי הנהלת חשבונות בע"מ אינה מתחייבת שהשרות יינתן כסדרו ללא הפסקות.</span></span><br>וואי פיי הנהלת חשבונות בע"מ עושה את מיטב מאמציה שתקלות מסוג זה אינן יקרו, אך אינה יכולה לתת ערבות לדבר שכזה.</span></span><br>
+באישור הסכם זה הינך מסכים בזאת כי לא תהיה לך כל תביעה נגד וואי פיי הנהלת חשבונות בע"מ אם יקרו מקרים מסוג זה.
+</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-9" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-9&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->סרוב למתן גישה ורישום משתמשים חדשים &nbsp;&nbsp;</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-9" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->וואי פיי הנהלת חשבונות בע"מ רשאית לסרב להעניק גישה לאתר או לחלקים ממנו וכן לסרב לרשום משתמשים חדשים וזאת על פי שיקול דעתה הבלעדי.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-10" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-10&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->תכני האתר ופטור מאחריות</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-10" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->התכנים באתר ניתנים לשימוש כמות שהם.</span></span><br>
+וואי פאי הנהלת חשבונות בע"מ אינה מתחייבת להתאימם לצרכיו של כל אדם ואדם, או לעשות בהם שינוי כלשהו.
+</span></span><br>לא תהיה לך כל טענה, תביעה או דרישה כלפי וואי פיי הנהלת חשבונות בע"מ בגין תכונות של התכנים, יכולותיהם, מגבלותיהם, התאמתם לצרכיך או התגובות שיעורר &nbsp;פרסום תכנים באתר.</span></span><br>המידע אשר באתר אינו משמש תחליף לייעוץ מקצועי ואינו בגדר חוות דעת מקצועית.</span></span><br>אנו ממליצים לך לקבל חוות דעת מקצועית לפני כל פעולה המסתמכת על המידע שבאתר.</span></span><br>וואי פיי הנהלת חשבונות בע"מ אינה אחראית בשום צורה ואופן לנכונות המידע אשר מפורסם במדריכים המקצועיים השונים בפורום ובבלוג, ולא תשא בשום אחריות לרבות בגין נזק או הפסד אשר נגרם בעקבות שימוש במידע זה.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-11" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-11&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->שלמות ודיוק הנתונים ופטור מאחריות</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-11" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->וואי פיי הנהלת חשבונות בע"מ עושה ככל שביכולתה בכדי שהתחשיבים והמידע המופקים מתוכנת ypay יהיו שלמים ומדויקים ובהתאם להוראות החוק.</span></span><br>אולם יתכן מצב שיהיו שגיאות שונות עקב טעויות אנוש, שגיאות בקוד, בעיות חומרה או תוכנה או בעיות שונות הקשורות לתקשורת בין מחשבים.</span></span><br>במקרים מעין אלו וואי פיי הנהלת חשבונות בע"מ לא תהיה אחראית בגין נזק או הפסד או הוצאה כספית של המשתמש.</span></span><br>באישור הסכם זה הינך מסכים בזאת כי לא תהא לך כל תביעה בנדון.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-12" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-12&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->
+פטור כללי מאחריות</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-12" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->
+וואי פיי הנהלת חשבונות בע"מ לא תישא באחריות וחבות לרבות במקרים של רשלנות, בגין: (א) נזקים ישירים, עקיפים, מיוחדים, עונשיים, מקריים, תוצאתיים לרבות, אך לא רק, פגיעה במוניטין, נזק לעסק, הפרעה לבצוע עסקה, אובדן רווחים, אובדן הכנסות, אובדן תוכניות או אובדן מידע, או לנזקים אחרים הנובעים בכל דרך מן הזמינות, השימוש, ההסתמכות על חומרים באתר או בשירות, או חוסר היכולת להשתמש בהם וזאת גם אם החברה או נציג החברה כבר קיבל מידע אודות האפשרות להתרחשות נזקים כאלה; או (ב) תביעה או דרישה כלשהי שעילתה בייחוס לטעויות, השמטות או אי דיוקים אחרים, או מאפיינים הרסניים בשירות. 
+</span></span><br>
+מבלי לפגוע או לגרוע מן האמור לעיל, בשום מקרה לא תעלה סך האחריות והחבות המצטברת של החברה בגין או בקשר לכל תביעה או פעולה הנובעת או הקשורה בשימוש בשירות בין אם בחוזה, בנזיקין, או אחרת, על סכום השווה למאה (100) ש"ח או לתמורה שקיבלה החברה מאת המשתמש עבור השימוש בשירות, לפי הנמוך. 
+</span></span><br>
+בכל מקרה, אחריות החברה מוגבלת למידת ההגבלה המירבית המותרת על פי החוק.
+</span></span><br>
+הופעתם של קישורים ("לינקים") באתר, המפנים לאתרי אינטרנט אחרים אינם מהווים ערובה לתכנים באתרים אלה לרבות מבחינת מהימנותם, שלמותם, בטחון או בטיחות הגלישה בהם או מכל בחינה אחרת. 
+</span></span><br>
+בכל הנוגע לקישורים לאתרים אחרים, אשר אינם מתופעלים על ידי החברה, מובהר כי החברה לא תהיה אחראית לנכונות המידע ו/או לכל נזק ישיר או עקיף, כספי או אחר, ככל שנזק כאמור יגרם למשתמש כתוצאה משימוש או הסתמכות על המידע המופיע באתרים אלה או בשל מדיניות השמירה על הפרטיות שלהם. 
+</span></span><br>
+בחר המשתמש לעשות שימוש בקישורים לאתרים אחרים כאמור, הוא עושה זאת על אחריותו ועל דעתו, והחברה לא תקבל כל אחריות על תוצאות פעולות המשתמש באפליקציות או אתרים אחרים. 
+</span></span><br>
+כמו כן מובהר כי בעת גלישה באתרים אחרים, לרבות באמצעות קישור מאתר החברה, אחריות המשתמש לציית לתנאים ולכללים של אותן אפליקציות או אתרים  העלולים להיות שונים מהתנאים, המגבלות והזכויות של הגלישה באתר זה.
+</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-13" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-13&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->הפסקת שירות</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-13" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->וואי פיי הנהלת חשבונות בע"מ יכולה להפסיק את השירות באופן זמני או קבוע בכל עת.</span></span><br>הודעה על הפסקת השירותים תפורסם באתר תוך זמן סביר מראש.</span></span><br>לאחר ההודעה על הפסקת השירות תהה רשאית וואי פיי הנהלת חשבונות בע"מ למחוק את הנתונים הנמצאים באתר.</span></span><br>באישור הסכם זה הינך מסכים בזאת כי לא תהיה לך כל תביעה בנדון.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-14" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-14&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->מוצרים</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-14" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node--><strong>
+    מוצרים פאסיביים (חבילות בשירות עצמי)
+    </strong></span></span><br>מוצר פאסיבי הינו מוצר או חבילה הנרכשים על ידי הלקוח באופן עצמאי דרך המערכת, ללא מעורבות, ליווי או שירות אישי מצד החברה.</span></span><br>במסגרת מוצרים אלו:</span></span><br>
+    •  הרכישה, ההפעלה והשימוש מבוצעים על ידי הלקוח בלבד
+    </span></span><br>
+    •  לא ניתן שירות אישי, ייעוץ או טיפול פרטני על ידי עובדי החברה
+    </span></span><br>
+    •  החברה אינה מעמידה כוח אדם ייעודי לצורך מתן שירות שוטף (למעט מענה במייל או בצ'אט)
+    </span></span><br>
+    •  החיוב מתבצע באופן חודשי קבוע, עבור עצם הגישה למערכת והשימוש העצמאי בה
+    </span></span><br><br>ערוצי תמיכה וזמני מענה:</span></span><br>במסגרת מוצרים פאסיביים, התמיכה ניתנת בערוצים הבאים בלבד: דואר אלקטרוני (מייל) וצ’אט
+</span></span><br>לא יינתן מענה טלפוני או שירות אישי, אלא אם נרכש מוצר אקטיבי או שירות נוסף בנפרד.
+</span></span><br><br>הבהרה</span></span><br>רכישת מוצר פאסיבי אינה כוללת שירותי משרד רואה חשבון, ייעוץ, ליווי מקצועי או כל טיפול פרטני אחר. פניות החורגות מתמיכה טכנית בסיסית עשויות להיות מחויבות בתשלום נוסף.</span></span><br><br><strong>
+    מוצרים אקטיביים (שירותים בליווי מקצועי)
+    </strong></span></span><br>מוצר אקטיבי הינו שירות הנרכש על ידי הלקוח וכולל מעורבות, טיפול או ליווי מקצועי מצד החברה ו/או עובדיה.</span></span><br>במסגרת מוצרים אלו:</span></span><br>
+    •  ניתן שירות אישי על ידי צוות מקצועי
+    </span></span><br>
+    •  מתבצע טיפול בפועל בנתוני הלקוח (כגון עיבוד, בדיקה, הגשה או ליווי)
+    </span></span><br>
+    •  החברה מעמידה כוח אדם לצורך מתן השירות
+    </span></span><br>
+    •  השירות ניתן באופן יזום או בהתאם לצורך, גם ללא פעולה שוטפת מצד הלקוח
+    </span></span><br><br>דוגמאות למוצרים אקטיביים כוללות, בין היתר: הנהלת חשבונות אונליין, דוח שנתי, ייעוץ, שירותי שכר, הצהרת הון, החזרי מס, החזר מס שבח, וכן כל שירות אחר הניתן במסגרת משרד רואה חשבון.
+</span></span><br><br>תחילת שירות וחיוב</span></span><br>מוצר אקטיבי ייחשב כפעיל מרגע הזמנתו או מרגע תחילת הטיפול בו (לפי המוקדם מביניהם), ויחויב בהתאם לתנאי השירות—גם אם הלקוח לא השלים מסמכים או לא עשה שימוש בפועל.</span></span><br><br>ערוצי שירות</span></span><br>מוצר אקטיבי ייחשב כפעיל מרגע הזמנתו או מרגע תחילתמוצרים אקטיביים עשויים לכלול מענה רחב יותר, לרבות: מענה טלפוני, פגישות, ליווי אישי, טיפול פרטני. הכל בהתאם לסוג השירות שנרכש.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-15" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-15&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->
+דמי גישה ומנוי</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-15" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->
+השימוש בשירות ובאתר אינו כרוך בתשלום למי שבוחר בחבילת "מסלול חינם". </span></span><br>המחירים בחנות אינם כוללים מע"מ. יש להוסיף מע"מ על כל מחיר נקוב.</span></span><br>הורדת המסמכים מסוג PDF וקישור למסמך שישלח ללקוח, מוגבלת ל 3 ימים במסלול זה.
+אולם חבילות שירות פאסיביות המוצעות בחנות (מסלול לייט, מסלול בסיס, מסלול פרימיום)  חייבות בתשלום על פי המחיר הנקוב בחבילה. 
+</span></span><br>
+ניתן יהיה לרכוש שחזור ארכיון מסמכים לתקופה בה לא שולמו דמי מנוי , המחיר יקבע בחנות תחת מוצר ארכיון. </span></span><br>
+שימוש בארכיב האחסון של מסמכים הנמצא גם בחבילות וגם כמוצר בודד בחנות , לרבות מסמכי פי די אף,  מחייב בתשלום והוא מתומחר כחלק מחבילה  (ולהלן: "דמי המנוי”).
+</span></span><br> 
+מובהר כי בגין תשלום דמי המנוי יקבל המשתמש גישה לארכיב אחסון המסמכים ואולם ככל שיבחר המשתמש להפסיק לשלם דמי מנוי חודשיים, יינעל הארכיב וגם הקישור של מסמך הpdf בפני המשתמש לאחר 3 ימים מיום הפקת כל מסמך מסוג חשבונית מס / קבלה / חשבונית מס קבלה / חשבונית זיכוי / חשבון עסקה / וכל שאר סוגי המסמכים שמייצרים pdf ולא תהיה לו גישה למסמכים האגורים בו, החל ממועד הפסקת התשלום ואילך. 
+</span></span><br>
+יחד עם זאת, הארכיב והמסמכים האגורים בו עד ליום 1.11.2023 יישארו נגישים והמשתמש יוכל להמשיך לעשות בהם שימוש למשך 7 שנים ממועד הפקת המסמך. ככל שיבחר המשתמש לחזור ולקבל שירותי גישה לארכיב, לאחר תקופת אי תשלום, הוא יידרש לשלם רטרואקטיבית בגין התקופה שלא שילם עבורם דמי מנוי לצורך שחזור הארכיב.
+</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-16" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-16&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->
+תנאי תשלום של דמי מנוי  - מוצר פאסיבי </span></span></a>
+                <div class="accordion-body accordion-boxed-sample-16" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->
+גובה התשלום עבור דמי המנוי יתבצע בכל חודש. החברה רשאית לשנות מעת לעת את גובה התשלום שהיא גובה עבור חבילות השימוש (כולן או חלקן) וסוגי המנויים. 
+</span></span><br>
+שינתה החברה את גובה התשלום, תפרסם הודעה על שינוי כאמור ושינויים כאמור יחולו החל מהתאריך הקובע עליו תודיע החברה בפרסום הרלוונטי. 
+</span></span><br>
+ההרשמה לקבלת המוצר יכולה להתבצע במסגרת של מנוי חודשי אשר יתחדש כל חודש באופן אוטומטי עד לביטולו על ידי המשתמש.
+</span></span><br>
+בגין עסקה לרכישת מנוי אשר מתבצעת במהלך חודש קלנדרי, התשלום הראשון, אשר יבוצע במועד רכישת המנוי, יכלול תשלום בעבור יתרת התקופה מיום רכישת המנוי ועד לסוף החודש הקלנדרי בו נרכש המנוי, וכן בעבור מלוא תקופת החודש הקלנדרי העוקב לחודש בו נרכש המנוי. בסיום אותו חודש עוקב, התשלום החודשי יבוצע בתחילת כל חודש.
+</span></span><br>
+המחיר לדמי המנוי נקוב על החבילה או על המוצר הפאסיבי שנמצא בחנות
+</span></span><br>
+החיוב יעשה בתחילת כל חודש
+</span></span><br>
+ניתן לבטל את הרכישה על ידי מייל שישלח עד השעה 16:00 של יום הרכישה או בכניסה לחנות וביטול רכישת המוצר.
+</span></span><br>
+לחיצה על ביטול המוצר -  יבטל את הגביה העתידית של החודש שלאחר החודש העוקב. </span></span><br>
+וואי פיי הנהלת חשבונות בע"מ רשאית לחייב את המשתמש גם עבור השירות או חלק ממנו בכל עת, לאחר מתן הודעה סבירה מראש.
+</span></span><br>
+וואי פיי הנהלת חשבונות בע"מ לא תישא באחריות כלפי המשתמש או כלפי צד שלישי כלשהו, בגין כל שינוי במחיר או בגין הפסקת השירות באופן זמני או קבוע.
+</span></span><br>
+הודעות למשתמשים יופיעו באתר ועל המשתמש האחריות להתעדכן בהודעות אלה מעת
+</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-17" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-17&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->
+עדכון תנאים חבילות ומוצרים </span></span></a>
+                <div class="accordion-body accordion-boxed-sample-17" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->
+מוצרים אקטיביים חייבים בתשלום לפי המחיר הנקוב בחנות. 
+</span></span><br>
+שחזור ארכיון - לא ניתן לבטל תשלום על שחזור ארכיון לאחר שהשתמשת במוצר השחזור. החיוב בגין שחזור הארכיון נקוב בחנות.  
+</span></span><br>כמות מסמכים למשתמש API- מוגבלת עד ל-300 מסמכים בחודש לבית עסק . מעבר לכמות זו, המחיר ייקבע בתיאום עם חברת YPAY.
+</span></span><br><br>
+החל מתאריך 01.01.2024 מודול רישום ההוצאות והספקים יהיה זמין אך ורק ללקוחות המנויים לאחת מהחבילות התשלום בחנות. 
+</span></span><br><br>
+החל מתאריך 15.05.2026 משתמשים בחבילת החינם יהיו רשאים להפיק ללא עלות אך ורק את סוגי המסמכים הבאים: חשבונית מס, חשבונית מס/קבלה, קבלה, וחשבונית מס זיכוי
+</span></span><br>
+כל יתר סוגי המסמכים, לרבות אך לא רק: הצעת מחיר, הזמנת עבודה, חשבון עסקה, תעודת משלוח, תעודת החזרה וקבלה על תרומה– יהיו זמינים להפקה למשתמשים המנויים לאחת מחבילות התשלום בלבד (לייט, בסיס או פרימיום).
+</span></span><br>
+למען הסר ספק, החל מהמועד הקובע לא ניתן יהיה להפיק חשבון עסקה במסגרת חבילת החינם.
+</span></span><br><br>
+החל מתאריך 15.05.2026 הפקת מספר הקצאה באופן אוטומטי על גבי: חשבונית מס, חשבונית מס/קבלה וכן הפקת מספר אישור על גבי חשבון עסקה וקבלה על תרומה תתאפשר אך ורק למשתמשים המנויים לאחת מחבילות התשלום (לייט, בסיס או פרימיום).
+</span></span><br><br>
+החל מתאריך 15.05.2026 משתמש אשר יבחר שלא להצטרף לחבילת תשלום:
+</span></span><br>
+א. יהיה רשאי להפיק אך ורק את סוגי המסמכים המפורטים: חשבונית מס, חשבונית מס/קבלה, קבלה, חשבונית מס זיכוי
+</span></span><br>
+ב. לא יהיה זכאי להפקת מספר הקצאה או מספר אישור באופן אוטומטי באמצעות המערכת
+</span></span><br>
+ג. ככל שנדרש מספר הקצאה על פי דין, המשתמש יידרש להפיקו באופן עצמאי באמצעות מערכת שע"מ (באזור האישי של רשות המסים), ולהזינו ידנית במסמך.
+</span></span><br><br>
+החל מיום 15.05.2026 לא תינתן תמיכה טכנית בנושא הפקת מספרי הקצאה או מספרי אישור למשתמש שאינו מנוי לאחת מחבילות התשלום.
+</span></span><br><br>
+המשך שימוש במערכת לאחר מועד כניסת העדכון לתוקף יהווה הסכמה מלאה לתנאים המעודכנים.
+</span></span><br>
+זכות החברה לעדכן חבילות ושירותים מעת לעת
+</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-18" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-18&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->מבנה האתר</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-18" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->וואי פיי הנהלת חשבונות בע"מ תוכל לשנות מעת לעת את מבנה האתר, צורתו, ועיצובו.</span></span><br>שינויים מסוג זה עלולים לגרום לשיבושים שונים ועלולים לעורר אי נוחות.</span></span><br>באישור הסכם זה הינך מסכים בזאת שלא תהה לך כל תביעה בנדון.</span></span><br>הקשר בין המשתמש לבין וואי פיי הנהלת חשבונות בע"מ ומי מעובדיה פטור מאחריות.</span></span><br>תשובתה של וואי פיי הנהלת חשבונות בע"מ או מי מעובדיה או מי מטעמה, לשאלות או בקשות משתמשים, בין באמצעות הטלפון, המייל, הפורום או כל אמצעי אחר, תחשב כאמירה כללית המחייבת בדיקה מעמיקה עם אנשי מקצוע מתאימים, אינה מהווה יעוץ מקצועי ולא תטיל כל חבות מקצועית ו/או חבות מכל מן וסוג שהוא על וואי פיי.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-19" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-19&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->תמיכה מקצועית</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-19" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->האתר מוגש לציבור כמו שהוא, As Is, ללא תמיכה מקצועית, ללא הדרכה, וללא מענה לפניות שונות אשר יגיעו לחברת וואי פיי הנהלת חשבונות בע"מ</span></span><br>וואי פיי הנהלת חשבונות בע"מ על פי שיקול דעתה הבלעדי תענה מפעם לפעם לפניות שונות אך אינה מתחייבת לעשות זאת.</span></span><br>רק המנויים על שרותי התמיכה השנתית או בעלי שרות מנהל חשבונות אישי זכאים לתמיכה.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-20" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-20&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->קניין רוחני וזכויות יוצרים</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-20" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->כל זכויות היוצרים והקניין הרוחני באתר בשירותים המוצעים בו ובכל תוכן הכלול בו הינן של וואי פיי הנהלת חשבונות בע&rdquo;מ.&nbsp;</span></span><br>אין להעתיק, להפיץ, להציג בפומבי, לבצע בפומבי, להעביר לציבור, לשנות, לעבד, ליצור יצירות נגזרות, למכור או להשכיר כל חלק מן הנ"ל, בין על ידך ובין באמצעות או בשיתוף צד שלישי, בכל דרך או אמצעי בין אם אלקטרוניים, מכאניים, אופטיים, אמצעי צילום או הקלטה, או בכל אמצעי ודרך אחרת, בלא קבלת הסכמה בכתב ומראש מוואי פיי הנהלת חשבונות בע"מ.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-21" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-21&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->דפדפנים שבשימוש</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-21" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->השימוש באתר מותאם לכל הדפדפנים התקניים, האתר עובד בצורה מיטבית בדפדפן מסוג chrom.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-22" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-22&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->הסעד הבלעדי למי שאינו מרוצה מתנאי השימוש או השירות של האתר</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-22" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->במידה ואינך מרוצה מחלק כלשהו של השירות או האתר, או אחד מתנאי השימוש, הסעד היחידי והבלעדי העומד לרשותך הוא הפסקת השימוש באתר וואי פיי הנהלת חשבונות בע&rdquo;מ.&nbsp;
+</span></span><br>
+וואי פיי הנהלת חשבונות בע"מ רשאית לשנות תנאי שימוש אלה בכל עת. מרגע שינוי התנאים והופעתם באתר, יחייבו התנאים החדשים והמשך השימוש באתר ייחשב כאישור המשתמש את תנאי השימוש החדשים.
+</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                                <div class="accordion-item accordion-boxed-sample-23" >
+                <a class="accordion-header accordion-boxed-sample-group" href="#" data-multi-switch="{&quot;targets&quot;:&quot;.accordion-boxed-sample-23&quot;,&quot;isolate&quot;:&quot;.accordion-boxed-sample-group&quot;}"  data-x-href="true"   style="text-align:right"><!--novi-static-text-node-->סמכות שיפוט</span></span></a>
+                <div class="accordion-body accordion-boxed-sample-23" data-multi-switch-target-slide="" style="display: none;">
+                    <div class="row row-15"  >
+                        <div class="col-md-12" style="text-align:right"><!--novi-static-text-node-->על הסכם זה יחולו אך ורק דיני מדינת ישראל, אולם לא תהיה תחולה לכללי ברירת הדין הבינלאומי הקבועים בהם.</span></span><br>סמכות השיפוט הבלעדית נתונה לבית-המשפט המוסמך במחוזות תל-אביב והמרכז בישראל.</span></span><br></div>
+                    </div>
+                </div>
+            </div>
+                </div>
+        </div>
+    </div>
+</section>
+    <footer class="section footer bg-800 text-400 context-dark pended-element novi-background rtl"
+            data-preset='{"title":"Footer Extended","category":"footer","reload":false,"id":"footer-extended"}'>
+        <div class="container">
+            <div class="row row-30 justify-content-xxl-between novi-disabled">
+                <div class="col-lg-5" style="text-align:right"><!-- Logo-->
+                    <div class="logo"><a class="logo-link" href="/front"><img class="logo-image-default"
+                                                                                  src="/images/logos/logo_white.png"
+                                                                                  alt="Intense" width="114" height="27"><img
+                            class="logo-image-inverse" src="/images/logos/logo_white.png" alt="Intense" width="114"
+                            height="27"></a></div>
+                    <p class="small">תוכנת הנהלת חשבונות מלאה לעצמאים והפקת חשבונית דיגיטלית ירוקה (גם לחברות בע"מ), הניתנת בחינם מכל מקום ומכל מכשיר .</p>
+                    </div>
+                <div class="col-md-11 col-lg-7 col-xxl-6" style="text-align:right;><p class="small">מגדל ב.ס.ר 4 - רח' מצדה 7, בני ברק, 5126112</p>
+                    <div class="row row-20 novi-disabled">
+                        <!--div class="col-auto col-sm-4">
+                            <div class="media media-xxs text-white">
+                                <div class="media-left"><span class="icon icon-xs int-phone novi-icon"></span></div>
+                                <div class="media-body">
+                                    <ul class="list list-contact">
+                                        <li class="list-contact-item"><a class="list-contact-link" href="tel:#">+1 234
+                                            567 8901</a></li>
+                                        <li class="list-contact-item"><a class="list-contact-link" href="tel:#">+1 234
+                                            567 8902</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div-->
+                        <div class="col-auto col-sm-10">
+                            <ul class="list list-xs small">
+                                <li class="list-item">ראשון-חמישי: 09:00 - 16:00</li>
+                                <li class="list-item">חגים - סגור</li>
+                            </ul>
+                        </div>
+                        <div class="col-auto col-sm-10">
+                            <ul class="list list-lg small text-white">
+                                <li class="list-item"><a class="link link-contrast link-secondary" href="mailto:service@ypay.co.il">service@ypay.co.il</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                                        <hr class="divider footer-divider">
+                            <div class="row row-40" style="text-align: right">
+                                <div class="col-xl-12">
+                                    <h6>קישורים חשובים</h6>
+                                    <ul class="list footer-list small font-weight-normal">
+                                        <li class="list-item">
+                                            <a class="list-link" href="/">חשבונית ירוקה</a>
+                                        </li>
+                                                                                <li class="list-item">
+                                            <a class="list-link" href="/front/article/73">מערכת CRM</a>
+                                        </li>
+                                                                                <li class="list-item">
+                                            <a class="list-link" href="/front/article/65">סליקת אשראי</a>
+                                        </li>
+                                                                                <li class="list-item">
+                                            <a class="list-link" href="/front/article/57">עוסק מורשה</a>
+                                        </li>
+                                                                                <li class="list-item">
+                                            <a class="list-link" href="/front/article/53">פתיחת חברה</a>
+                                        </li>
+                                                                                <li class="list-item">
+                                            <a class="list-link" href="/front/article/32">פתיחת עסק</a>
+                                        </li>
+                                                                                <li class="list-item">
+                                            <a class="list-link" href="/front/article/8">פתיחת תיק במע״מ</a>
+                                        </li>
+                                                                                <li class="list-item">
+                                            <a class="list-link" href="/front/article/7">עוסק פטור</a>
+                                        </li>
+                                                                                <li class="list-item">
+                                            <a class="list-link" href="/front/article/25">פתיחת תיק מס הכנסה</a>
+                                        </li>
+                                                                                <li class="list-item">
+                                            <a class="list-link" href="/front/article/24">דוח שנתי מס הכנסה</a>
+                                        </li>
+                                                                                <li class="list-item">
+                                            <a class="list-link" href="/front/article/22">הצהרת הון</a>
+                                        </li>
+                                                                            </ul>
+                                </div>
+                            </div>
+                                    <hr class="divider footer-divider">
+            <div class="row row-15 align-items-center justify-content-between footer-panel novi-disabled">
+                <div class="col-auto"><!-- Copyright--><p class="rights", style="text-align:right">
+                    <span>&copy;</span><span>&nbsp;כל הזכויות שמורות לחברת </span><span>&nbsp;Ypay</span><span>&nbsp;בע״מ</span>
+                    <a class="rights-link mr-2" href='/front/terms'>תנאי השימוש</a> <a class="rights-link mr-2" href='/front/accessability'>הצהרת נגישות</a> <a class="rights-link mr-2" href='/front/privacy'>מדיניות פרטיות</a> <a class="rights-link mr-2" href='/front/certificate'>תעודת רישום</a></p></div>
+                <div class="col-auto">
+                <!-- remove d-flex class from group-30-->
+                    <div class="group-30 align-items-center text-white"><a
+                            class="icon icon-xs icon-social int-youtube novi-icon" href="https://www.youtube.com/watch?v=O_2l-F8jPIo&feature=youtu.be"></a><a
+                            class="icon icon-xs icon-social int-facebook novi-icon" href="https://www.facebook.com/Ypay.co.il/?ref=bookmarks"></a><a
+                            class="icon icon-xs icon-social int-instagram novi-icon" href="https://instagram.com/ypay.co.il?igshid=j9t3vvalk393"></a><a
+                            class="icon icon-xs icon-social icon-box-icon novi-icon mdi-web" href="https://www.golang.co.il/"></a><!--a
+                            class="icon icon-xs icon-social int-twitter novi-icon" href="#"></a><a
+                            class="icon icon-xs icon-social int-linkedin novi-icon" href="#"></a--></div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+<!-- Page Loader-->
+<div class="page-loader bg-gradient-animated">
+    <svg class="page-loader-progress" x="0px" y="0px" width="180" height="180" viewBox="0 0 180 180">
+        <circle class="page-loader-circle" cx="90" cy="90" r="88"></circle>
+    </svg>
+    <div class="page-loader-inner">
+        <div class="page-loader-inner-side page-loader-inner-side-1"><img class="page-loader-logo"
+                                                                          src="/images/logo.svg" alt=""
+                                                                          width="114" height="27"
+                                                                          data-target=".page-loader-inner"></div>
+        <div class="page-loader-inner-side page-loader-inner-side-2 rtl">טוען...</div>
+    </div>
+</div>
+<div class="notifications-area" id="notifications-area"></div>
+        <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+        </script>
+        <noscript>
+            <div style="display:inline;">
+                <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/870896759/?guid=ON&amp;script=0"/>
+            </div>
+        </noscript>
+
+
+
+<!-- Cookie Consent Banner -->
+<div id="cookie-consent-overlay"></div>
+
+<div id="cookie-consent-banner">
+
+    <div class="cookie-content">
+        <div class="cookie-text text-right">
+            <h4>גם האתר הזה אוהב עוגיות <span class="mdi-cookie cookie-icon"></span></h4>
+
+            <p>
+אנחנו עושים שימוש בעוגיות (קובצי Cookie) כדי להתאים לך תכנים. המשך הגלישה באתר מהווה הסכמה <a href="front/privacy" target="_blank">
+                למדיניות הפרטיות
+            </a> שלנו
+            </p>
+        </div>
+
+        <div class="cookie-buttons">
+            <button id="cookie-accept-all" class="cookie-btn primary">
+                אשר
+            </button>
+
+            <!--button id="cookie-reject-all" class="cookie-btn secondary">
+                דחה
+            </button>
+
+            <button id="cookie-open-settings" class="cookie-btn light">
+                הגדרות
+            </button-->
+        </div>
+    </div>
+</div>
+
+
+<!-- Settings Modal -->
+<div id="cookie-settings-modal">
+
+    <div class="cookie-modal-content">
+
+        <div class="cookie-modal-header">
+            <h3>הגדרות עוגיות</h3>
+        </div>
+
+        <div class="cookie-category">
+            <div>
+                <strong>עוגיות חיוניות</strong>
+                <p>נדרשות להפעלת האתר ואינן ניתנות לביטול.</p>
+            </div>
+
+            <label class="switch">
+                <input type="checkbox" checked disabled>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="cookie-category">
+            <div>
+                <strong>אנליטיקה</strong>
+                <p>מאפשרות לנו להבין כיצד משתמשים באתר.</p>
+            </div>
+
+            <label class="switch">
+                <input type="checkbox" id="cookie-analytics">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="cookie-category">
+            <div>
+                <strong>שיווק ופרסום</strong>
+                <p>משמשות להצגת תוכן ופרסום מותאם.</p>
+            </div>
+
+            <label class="switch">
+                <input type="checkbox" id="cookie-marketing">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="cookie-modal-buttons">
+            <button id="cookie-save-settings" class="cookie-btn primary">
+                שמור הגדרות
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,1383 @@
+Billing usage - GitHub Docs
+Skip to main content
+
+Skip to content
+GitHub Docs
+
+Search or ask Copilot /
+Menu
+
+Collapse sidebar Expand sidebar
+Scroll breadcrumbs left Home
+REST API
+Billing
+Billing usage
+
+Scroll breadcrumbs right
+
+REST API
+API Version: 2022-11-28
+
+Quickstart
+
+About the REST API
+About the REST API
+
+Comparing GitHub's APIs
+
+API Versions
+
+Breaking changes
+
+OpenAPI description
+
+Using the REST API
+Getting started
+
+Rate limits
+
+Pagination
+
+Libraries
+
+Best practices
+
+Troubleshooting
+
+Timezones
+
+CORS and JSONP
+
+Issue event types
+
+GitHub event types
+
+Authentication
+Authenticating
+
+Keeping API credentials secure
+
+Endpoints for GitHub App installation tokens
+
+Endpoints for GitHub App user tokens
+
+Endpoints for fine-grained PATs
+
+Permissions for GitHub Apps
+
+Permissions for fine-grained PATs
+
+Guides
+Script with JavaScript
+
+Script with Ruby
+
+Discover resources for a user
+
+Delivering deployments
+
+Rendering data as graphs
+
+Working with comments
+
+Building a CI server
+
+Get started - Git database
+
+Get started - Checks
+
+Encrypt secrets
+
+Actions
+Artifacts
+
+Cache
+
+Actions concurrency groups
+
+GitHub-hosted runners
+
+OIDC
+
+Permissions
+
+Actions policies
+
+Secrets
+
+Self-hosted runner groups
+
+Self-hosted runners
+
+Variables
+
+Workflow jobs
+
+Workflow runs
+
+Workflows
+
+Activity
+Events
+
+Feeds
+
+Notifications
+
+Starring
+
+Watching
+
+Agent tasks
+Agent tasks
+
+Agents
+Secrets
+
+Variables
+
+Apps
+GitHub Apps
+
+Installations
+
+Marketplace
+
+OAuth authorizations
+
+Webhooks
+
+Billing
+Budgets
+
+Billing usage
+Get billing AI credit usage report for an organization
+
+Get billing premium request usage report for an organization
+
+Get billing usage report for an organization
+
+Get billing usage summary for an organization
+
+Get billing AI credit usage report for a user
+
+Get billing premium request usage report for a user
+
+Get billing usage report for a user
+
+Get billing usage summary for a user
+
+Branches
+Branches
+
+Protected branches
+
+Campaigns
+Security campaigns
+
+Checks
+Check runs
+
+Check suites
+
+Classroom
+Classroom
+
+Code quality
+Code quality
+
+Code scanning
+Code scanning
+
+Code security settings
+Configurations
+
+Codes of conduct
+Codes of conduct
+
+Codespaces
+Codespaces
+
+Organizations
+
+Organization secrets
+
+Machines
+
+Repository secrets
+
+User secrets
+
+Collaborators
+Collaborators
+
+Invitations
+
+Commits
+Commits
+
+Commit comments
+
+Commit statuses
+
+Copilot
+Cloud agent repository management
+
+Copilot cloud agent management
+
+Copilot content exclusion management
+
+Copilot usage metrics
+
+Copilot user management
+
+Copilot Spaces
+Collaborators
+
+Copilot Spaces
+
+Resources
+
+Credentials
+Revocation
+
+Dependabot
+Alerts
+
+Repository access
+
+Secrets
+
+Dependency graph
+Dependency review
+
+Dependency submission
+
+Software bill of materials (SBOM)
+
+Deploy keys
+Deploy keys
+
+Deployments
+Deployment branch policies
+
+Deployments
+
+Environments
+
+Protection rules
+
+Deployment statuses
+
+Emojis
+Emojis
+
+Gists
+Gists
+
+Comments
+
+Git database
+Blobs
+
+Commits
+
+References
+
+Tags
+
+Trees
+
+Gitignore
+Gitignore
+
+Interactions
+Organization
+
+Repository
+
+User
+
+Issues
+Assignees
+
+Comments
+
+Events
+
+Issue dependencies
+
+Issue field values
+
+Issues
+
+Labels
+
+Milestones
+
+Sub-issues
+
+Timeline
+
+Licenses
+Licenses
+
+Markdown
+Markdown
+
+Meta
+Meta
+
+Metrics
+Community
+
+Statistics
+
+Traffic
+
+Migrations
+Organizations
+
+Source endpoints
+
+Users
+
+Organizations
+API Insights
+
+Artifact metadata
+
+Artifact attestations
+
+Blocking users
+
+Custom properties
+
+Issue fields
+
+Issue types
+
+Members
+
+Network configurations
+
+Organization roles
+
+Organizations
+
+Outside collaborators
+
+Personal access tokens
+
+Rule suites
+
+Rules
+
+Security managers
+
+Webhooks
+
+Packages
+Packages
+
+Pages
+Pages
+
+Private registries
+Organization configurations
+
+Projects
+Draft Project items
+
+Project fields
+
+Project items
+
+Projects
+
+Project views
+
+Pull requests
+Review comments
+
+Pull requests
+
+Review requests
+
+Reviews
+
+Stacked pull requests
+
+Rate limit
+Rate limit
+
+Reactions
+Reactions
+
+Releases
+Releases
+
+Release assets
+
+Repositories
+Attestations
+
+Autolinks
+
+Contents
+
+Custom properties
+
+Forks
+
+Issue types
+
+Repositories
+
+Rule suites
+
+Rules
+
+Webhooks
+
+Search
+Search
+
+Secret scanning
+Custom patterns
+
+Push protection
+
+Secret scanning
+
+Security advisories
+Global security advisories
+
+Repository security advisories
+
+Teams
+Members
+
+Teams
+
+Users
+Attestations
+
+Blocking users
+
+Emails
+
+Followers
+
+GPG keys
+
+Git SSH keys
+
+Social accounts
+
+SSH signing keys
+
+Users
+
+In this article
+
+The REST API is now versioned. For more information, see " About API versioning ."
+
+Billing usage
+Use the REST API to get billing usage information.
+
+The endpoints on this page return usage that is billed to the account associated with the endpoint. For help deciding which level of usage to report on, see Automating usage reporting with the REST API .
+
+User endpoints return Copilot usage that is billed directly to an individual user’s personal account. These endpoints are only applicable if the user has purchased their own Copilot plan.
+
+If a user’s Copilot license is managed and billed through an organization or enterprise, their usage is not included in user-level endpoints. In that case, you must use the organization- or enterprise-level endpoints instead.
+
+To view enterprise-level endpoints, select the dropdown menu at the top of the page and switch from Free, Pro, & Team to GitHub Enterprise Cloud.
+
+Get billing AI credit usage report for an organization
+Gets a report of AI credit usage for an organization. To use this endpoint, you must be an administrator of an organization within an enterprise or an organization account.
+
+Note: Only data from the past 24 months is accessible via this endpoint.
+
+Fine-grained access tokens for "Get billing AI credit usage report for an organization"
+This endpoint works with the following fine-grained token types :
+GitHub App user access tokens
+GitHub App installation access tokens
+Fine-grained personal access tokens
+
+The fine-grained token must have the following permission set:
+"Administration" organization permissions (read)
+
+Parameters for "Get billing AI credit usage report for an organization"
+Headers Name, Type, Description
+
+accept string
+Setting to application/vnd.github+json is recommended.
+
+Path parameters Name, Type, Description
+
+org string Required
+The organization name. The name is not case sensitive.
+
+Query parameters Name, Type, Description
+
+year integer
+If specified, only return results for a single year. The value of year is an integer with four digits representing a year. For example, 2025 . Default value is the current year.
+
+month integer
+If specified, only return results for a single month. The value of month is an integer between 1 and 12 . Default value is the current month. If no year is specified the default year is used.
+
+day integer
+If specified, only return results for a single day. The value of day is an integer between 1 and 31 . If no year or month is specified, the default year and month are used.
+
+user string
+The user name to query usage for. The name is not case sensitive.
+
+model string
+The model name to query usage for. The name is not case sensitive.
+
+product string
+The product name to query usage for. The name is not case sensitive.
+
+HTTP response status codes for "Get billing AI credit usage report for an organization"
+Status code
+Description
+
+200
+Response when getting a billing AI credit usage report
+
+400
+Bad Request
+
+403
+Forbidden
+
+404
+Resource not found
+
+500
+Internal Error
+
+503
+Service unavailable
+
+Code samples for "Get billing AI credit usage report for an organization"
+Request example
+get /organizations /{org} /settings /billing /ai_ credit /usage
+
+cURL
+
+JavaScript
+
+GitHub CLI
+
+Copy to clipboard curl request example
+
+curl -L \
+-H "Accept: application/vnd.github+json" \
+-H "Authorization: Bearer <YOUR-TOKEN>" \
+-H "X-GitHub-Api-Version: 2026-03-10" \
+https://api.github.com/organizations/ORG/settings/billing/ai_credit/usage
+
+Response when getting a billing AI credit usage report
+
+Example response
+
+Response schema
+
+Status: 200
+{
+"timePeriod": {
+"year": 2025
+},
+"organization": "GitHub",
+"usageItems": [
+{
+"product": "Copilot",
+"sku": "Copilot AI Credits",
+"model": "GPT-5",
+"unitType": "credits",
+"pricePerUnit": 0.01,
+"grossQuantity": 100,
+"grossAmount": 1,
+"discountQuantity": 0,
+"discountAmount": 0,
+"netQuantity": 100,
+"netAmount": 1
+}
+]
+}
+
+Get billing premium request usage report for an organization
+Gets a report of premium request usage for an organization. To use this endpoint, you must be an administrator of an organization within an enterprise or an organization account.
+
+Note: Only data from the past 24 months is accessible via this endpoint.
+
+Fine-grained access tokens for "Get billing premium request usage report for an organization"
+This endpoint works with the following fine-grained token types :
+GitHub App user access tokens
+GitHub App installation access tokens
+Fine-grained personal access tokens
+
+The fine-grained token must have the following permission set:
+"Administration" organization permissions (read)
+
+Parameters for "Get billing premium request usage report for an organization"
+Headers Name, Type, Description
+
+accept string
+Setting to application/vnd.github+json is recommended.
+
+Path parameters Name, Type, Description
+
+org string Required
+The organization name. The name is not case sensitive.
+
+Query parameters Name, Type, Description
+
+year integer
+If specified, only return results for a single year. The value of year is an integer with four digits representing a year. For example, 2025 . Default value is the current year.
+
+month integer
+If specified, only return results for a single month. The value of month is an integer between 1 and 12 . Default value is the current month. If no year is specified the default year is used.
+
+day integer
+If specified, only return results for a single day. The value of day is an integer between 1 and 31 . If no year or month is specified, the default year and month are used.
+
+user string
+The user name to query usage for. The name is not case sensitive.
+
+model string
+The model name to query usage for. The name is not case sensitive.
+
+product string
+The product name to query usage for. The name is not case sensitive.
+
+HTTP response status codes for "Get billing premium request usage report for an organization"
+Status code
+Description
+
+200
+Response when getting a billing premium request usage report
+
+400
+Bad Request
+
+403
+Forbidden
+
+404
+Resource not found
+
+500
+Internal Error
+
+503
+Service unavailable
+
+Code samples for "Get billing premium request usage report for an organization"
+Request example
+get /organizations /{org} /settings /billing /premium_ request /usage
+
+cURL
+
+JavaScript
+
+GitHub CLI
+
+Copy to clipboard curl request example
+
+curl -L \
+-H "Accept: application/vnd.github+json" \
+-H "Authorization: Bearer <YOUR-TOKEN>" \
+-H "X-GitHub-Api-Version: 2026-03-10" \
+https://api.github.com/organizations/ORG/settings/billing/premium_request/usage
+
+Response when getting a billing premium request usage report
+
+Example response
+
+Response schema
+
+Status: 200
+{
+"timePeriod": {
+"year": 2025
+},
+"organization": "GitHub",
+"usageItems": [
+{
+"product": "Copilot",
+"sku": "Copilot Premium Request",
+"model": "GPT-5",
+"unitType": "requests",
+"pricePerUnit": 0.04,
+"grossQuantity": 100,
+"grossAmount": 4,
+"discountQuantity": 0,
+"discountAmount": 0,
+"netQuantity": 100,
+"netAmount": 4
+}
+]
+}
+
+Get billing usage report for an organization
+Gets a report of the total usage for an organization. To use this endpoint, you must be an administrator of an organization within an enterprise or an organization account.
+
+Note: This endpoint is only available to organizations with access to the enhanced billing platform. For more information, see " About the enhanced billing platform ."
+
+Fine-grained access tokens for "Get billing usage report for an organization"
+This endpoint works with the following fine-grained token types :
+GitHub App user access tokens
+GitHub App installation access tokens
+Fine-grained personal access tokens
+
+The fine-grained token must have the following permission set:
+"Administration" organization permissions (read)
+
+Parameters for "Get billing usage report for an organization"
+Headers Name, Type, Description
+
+accept string
+Setting to application/vnd.github+json is recommended.
+
+Path parameters Name, Type, Description
+
+org string Required
+The organization name. The name is not case sensitive.
+
+Query parameters Name, Type, Description
+
+year integer
+If specified, only return results for a single year. The value of year is an integer with four digits representing a year. For example, 2025 . Default value is the current year.
+
+month integer
+If specified, only return results for a single month. The value of month is an integer between 1 and 12 . If no year is specified the default year is used.
+
+day integer
+If specified, only return results for a single day. The value of day is an integer between 1 and 31 . If no year or month is specified, the default year and month are used.
+
+HTTP response status codes for "Get billing usage report for an organization"
+Status code
+Description
+
+200
+Billing usage report response for an organization
+
+400
+Bad Request
+
+403
+Forbidden
+
+500
+Internal Error
+
+503
+Service unavailable
+
+Code samples for "Get billing usage report for an organization"
+Request example
+get /organizations /{org} /settings /billing /usage
+
+cURL
+
+JavaScript
+
+GitHub CLI
+
+Copy to clipboard curl request example
+
+curl -L \
+-H "Accept: application/vnd.github+json" \
+-H "Authorization: Bearer <YOUR-TOKEN>" \
+-H "X-GitHub-Api-Version: 2026-03-10" \
+https://api.github.com/organizations/ORG/settings/billing/usage
+
+Billing usage report response for an organization
+
+Example response
+
+Response schema
+
+Status: 200
+{
+"usageItems": [
+{
+"date": "2023-08-01",
+"product": "Actions",
+"sku": "Actions Linux",
+"quantity": 100,
+"unitType": "minutes",
+"pricePerUnit": 0.008,
+"grossAmount": 0.8,
+"discountAmount": 0,
+"netAmount": 0.8,
+"organizationName": "GitHub",
+"repositoryName": "github/example"
+}
+]
+}
+
+Get billing usage summary for an organization
+Note
+
+This endpoint is in public preview and is subject to change.
+
+Gets a summary report of usage for an organization. To use this endpoint, you must be an administrator of an organization within an enterprise or an organization account.
+
+Note: Only data from the past 24 months is accessible via this endpoint.
+
+Fine-grained access tokens for "Get billing usage summary for an organization"
+This endpoint works with the following fine-grained token types :
+GitHub App user access tokens
+GitHub App installation access tokens
+Fine-grained personal access tokens
+
+The fine-grained token must have the following permission set:
+"Administration" organization permissions (read)
+
+Parameters for "Get billing usage summary for an organization"
+Headers Name, Type, Description
+
+accept string
+Setting to application/vnd.github+json is recommended.
+
+Path parameters Name, Type, Description
+
+org string Required
+The organization name. The name is not case sensitive.
+
+Query parameters Name, Type, Description
+
+year integer
+If specified, only return results for a single year. The value of year is an integer with four digits representing a year. For example, 2025 . Default value is the current year.
+
+month integer
+If specified, only return results for a single month. The value of month is an integer between 1 and 12 . Default value is the current month. If no year is specified the default year is used.
+
+day integer
+If specified, only return results for a single day. The value of day is an integer between 1 and 31 . If no year or month is specified, the default year and month are used.
+
+repository string
+The repository name to query for usage in the format owner/repository.
+
+product string
+The product name to query usage for. The name is not case sensitive.
+
+sku string
+The SKU to query for usage.
+
+HTTP response status codes for "Get billing usage summary for an organization"
+Status code
+Description
+
+200
+Response when getting a billing usage summary
+
+400
+Bad Request
+
+403
+Forbidden
+
+500
+Internal Error
+
+503
+Service unavailable
+
+Code samples for "Get billing usage summary for an organization"
+Request example
+get /organizations /{org} /settings /billing /usage /summary
+
+cURL
+
+JavaScript
+
+GitHub CLI
+
+Copy to clipboard curl request example
+
+curl -L \
+-H "Accept: application/vnd.github+json" \
+-H "Authorization: Bearer <YOUR-TOKEN>" \
+-H "X-GitHub-Api-Version: 2026-03-10" \
+https://api.github.com/organizations/ORG/settings/billing/usage/summary
+
+Response when getting a billing usage summary
+
+Example response
+
+Response schema
+
+Status: 200
+{
+"timePeriod": {
+"year": 2025
+},
+"organization": "GitHub",
+"usageItems": [
+{
+"product": "Actions",
+"sku": "actions_linux",
+"unitType": "minutes",
+"pricePerUnit": 0.008,
+"grossQuantity": 1000,
+"grossAmount": 8,
+"discountQuantity": 0,
+"discountAmount": 0,
+"netQuantity": 1000,
+"netAmount": 8
+}
+]
+}
+
+Get billing AI credit usage report for a user
+Gets a report of AI credit usage for a user.
+
+Note: Only data from the past 24 months is accessible via this endpoint.
+
+Fine-grained access tokens for "Get billing AI credit usage report for a user"
+This endpoint works with the following fine-grained token types :
+GitHub App user access tokens
+Fine-grained personal access tokens
+
+The fine-grained token must have the following permission set:
+"Plan" user permissions (read)
+
+Parameters for "Get billing AI credit usage report for a user"
+Headers Name, Type, Description
+
+accept string
+Setting to application/vnd.github+json is recommended.
+
+Path parameters Name, Type, Description
+
+username string Required
+The handle for the GitHub user account.
+
+Query parameters Name, Type, Description
+
+year integer
+If specified, only return results for a single year. The value of year is an integer with four digits representing a year. For example, 2025 . Default value is the current year.
+
+month integer
+If specified, only return results for a single month. The value of month is an integer between 1 and 12 . Default value is the current month. If no year is specified the default year is used.
+
+day integer
+If specified, only return results for a single day. The value of day is an integer between 1 and 31 . If no year or month is specified, the default year and month are used.
+
+model string
+The model name to query usage for. The name is not case sensitive.
+
+product string
+The product name to query usage for. The name is not case sensitive.
+
+HTTP response status codes for "Get billing AI credit usage report for a user"
+Status code
+Description
+
+200
+Response when getting a billing AI credit usage report
+
+400
+Bad Request
+
+403
+Forbidden
+
+404
+Resource not found
+
+500
+Internal Error
+
+503
+Service unavailable
+
+Code samples for "Get billing AI credit usage report for a user"
+Request example
+get /users /{username} /settings /billing /ai_ credit /usage
+
+cURL
+
+JavaScript
+
+GitHub CLI
+
+Copy to clipboard curl request example
+
+curl -L \
+-H "Accept: application/vnd.github+json" \
+-H "Authorization: Bearer <YOUR-TOKEN>" \
+-H "X-GitHub-Api-Version: 2026-03-10" \
+https://api.github.com/users/USERNAME/settings/billing/ai_credit/usage
+
+Response when getting a billing AI credit usage report
+
+Example response
+
+Response schema
+
+Status: 200
+{
+"timePeriod": {
+"year": 2025
+},
+"user": "monalisa",
+"usageItems": [
+{
+"product": "Copilot AI Credits",
+"sku": "AI Credit",
+"model": "GPT-5",
+"unitType": "ai-credits",
+"pricePerUnit": 0.01,
+"grossQuantity": 100,
+"grossAmount": 1,
+"discountQuantity": 0,
+"discountAmount": 0,
+"netQuantity": 100,
+"netAmount": 1
+}
+]
+}
+
+Get billing premium request usage report for a user
+Gets a report of premium request usage for a user.
+
+Note: Only data from the past 24 months is accessible via this endpoint.
+
+Fine-grained access tokens for "Get billing premium request usage report for a user"
+This endpoint works with the following fine-grained token types :
+GitHub App user access tokens
+Fine-grained personal access tokens
+
+The fine-grained token must have the following permission set:
+"Plan" user permissions (read)
+
+Parameters for "Get billing premium request usage report for a user"
+Headers Name, Type, Description
+
+accept string
+Setting to application/vnd.github+json is recommended.
+
+Path parameters Name, Type, Description
+
+username string Required
+The handle for the GitHub user account.
+
+Query parameters Name, Type, Description
+
+year integer
+If specified, only return results for a single year. The value of year is an integer with four digits representing a year. For example, 2025 . Default value is the current year.
+
+month integer
+If specified, only return results for a single month. The value of month is an integer between 1 and 12 . Default value is the current month. If no year is specified the default year is used.
+
+day integer
+If specified, only return results for a single day. The value of day is an integer between 1 and 31 . If no year or month is specified, the default year and month are used.
+
+model string
+The model name to query usage for. The name is not case sensitive.
+
+product string
+The product name to query usage for. The name is not case sensitive.
+
+HTTP response status codes for "Get billing premium request usage report for a user"
+Status code
+Description
+
+200
+Response when getting a billing premium request usage report
+
+400
+Bad Request
+
+403
+Forbidden
+
+404
+Resource not found
+
+500
+Internal Error
+
+503
+Service unavailable
+
+Code samples for "Get billing premium request usage report for a user"
+Request example
+get /users /{username} /settings /billing /premium_ request /usage
+
+cURL
+
+JavaScript
+
+GitHub CLI
+
+Copy to clipboard curl request example
+
+curl -L \
+-H "Accept: application/vnd.github+json" \
+-H "Authorization: Bearer <YOUR-TOKEN>" \
+-H "X-GitHub-Api-Version: 2026-03-10" \
+https://api.github.com/users/USERNAME/settings/billing/premium_request/usage
+
+Response when getting a billing premium request usage report
+
+Example response
+
+Response schema
+
+Status: 200
+{
+"timePeriod": {
+"year": 2025
+},
+"user": "monalisa",
+"usageItems": [
+{
+"product": "Copilot",
+"sku": "Copilot Premium Request",
+"model": "GPT-5",
+"unitType": "requests",
+"pricePerUnit": 0.04,
+"grossQuantity": 100,
+"grossAmount": 4,
+"discountQuantity": 0,
+"discountAmount": 0,
+"netQuantity": 100,
+"netAmount": 4
+}
+]
+}
+
+Get billing usage report for a user
+Gets a report of the total usage for a user.
+
+Note: This endpoint is only available to users with access to the enhanced billing platform.
+
+Fine-grained access tokens for "Get billing usage report for a user"
+This endpoint works with the following fine-grained token types :
+GitHub App user access tokens
+Fine-grained personal access tokens
+
+The fine-grained token must have the following permission set:
+"Plan" user permissions (read)
+
+Parameters for "Get billing usage report for a user"
+Headers Name, Type, Description
+
+accept string
+Setting to application/vnd.github+json is recommended.
+
+Path parameters Name, Type, Description
+
+username string Required
+The handle for the GitHub user account.
+
+Query parameters Name, Type, Description
+
+year integer
+If specified, only return results for a single year. The value of year is an integer with four digits representing a year. For example, 2025 . Default value is the current year.
+
+month integer
+If specified, only return results for a single month. The value of month is an integer between 1 and 12 . If no year is specified the default year is used.
+
+day integer
+If specified, only return results for a single day. The value of day is an integer between 1 and 31 . If no year or month is specified, the default year and month are used.
+
+HTTP response status codes for "Get billing usage report for a user"
+Status code
+Description
+
+200
+Response when getting a billing usage report
+
+400
+Bad Request
+
+403
+Forbidden
+
+500
+Internal Error
+
+503
+Service unavailable
+
+Code samples for "Get billing usage report for a user"
+Request example
+get /users /{username} /settings /billing /usage
+
+cURL
+
+JavaScript
+
+GitHub CLI
+
+Copy to clipboard curl request example
+
+curl -L \
+-H "Accept: application/vnd.github+json" \
+-H "Authorization: Bearer <YOUR-TOKEN>" \
+-H "X-GitHub-Api-Version: 2026-03-10" \
+https://api.github.com/users/USERNAME/settings/billing/usage
+
+Response when getting a billing usage report
+
+Example response
+
+Response schema
+
+Status: 200
+{
+"usageItems": [
+{
+"date": "2023-08-01",
+"product": "Actions",
+"sku": "Actions Linux",
+"quantity": 100,
+"unitType": "minutes",
+"pricePerUnit": 0.008,
+"grossAmount": 0.8,
+"discountAmount": 0,
+"netAmount": 0.8,
+"repositoryName": "user/example"
+}
+]
+}
+
+Get billing usage summary for a user
+Note
+
+This endpoint is in public preview and is subject to change.
+
+Gets a summary report of usage for a user.
+
+Note: Only data from the past 24 months is accessible via this endpoint.
+
+Fine-grained access tokens for "Get billing usage summary for a user"
+This endpoint works with the following fine-grained token types :
+GitHub App user access tokens
+Fine-grained personal access tokens
+
+The fine-grained token must have the following permission set:
+"Plan" user permissions (read)
+
+Parameters for "Get billing usage summary for a user"
+Headers Name, Type, Description
+
+accept string
+Setting to application/vnd.github+json is recommended.
+
+Path parameters Name, Type, Description
+
+username string Required
+The handle for the GitHub user account.
+
+Query parameters Name, Type, Description
+
+year integer
+If specified, only return results for a single year. The value of year is an integer with four digits representing a year. For example, 2025 . Default value is the current year.
+
+month integer
+If specified, only return results for a single month. The value of month is an integer between 1 and 12 . Default value is the current month. If no year is specified the default year is used.
+
+day integer
+If specified, only return results for a single day. The value of day is an integer between 1 and 31 . If no year or month is specified, the default year and month are used.
+
+repository string
+The repository name to query for usage in the format owner/repository.
+
+product string
+The product name to query usage for. The name is not case sensitive.
+
+sku string
+The SKU to query for usage.
+
+HTTP response status codes for "Get billing usage summary for a user"
+Status code
+Description
+
+200
+Response when getting a billing usage summary
+
+400
+Bad Request
+
+403
+Forbidden
+
+404
+Resource not found
+
+500
+Internal Error
+
+503
+Service unavailable
+
+Code samples for "Get billing usage summary for a user"
+Request example
+get /users /{username} /settings /billing /usage /summary
+
+cURL
+
+JavaScript
+
+GitHub CLI
+
+Copy to clipboard curl request example
+
+curl -L \
+-H "Accept: application/vnd.github+json" \
+-H "Authorization: Bearer <YOUR-TOKEN>" \
+-H "X-GitHub-Api-Version: 2026-03-10" \
+https://api.github.com/users/USERNAME/settings/billing/usage/summary
+
+Response when getting a billing usage summary
+
+Example response
+
+Response schema
+
+Status: 200
+{
+"timePeriod": {
+"year": 2025
+},
+"user": "monalisa",
+"usageItems": [
+{
+"product": "Actions",
+"sku": "actions_linux",
+"unitType": "minutes",
+"pricePerUnit": 0.008,
+"grossQuantity": 1000,
+"grossAmount": 8,
+"discountQuantity": 0,
+"discountAmount": 0,
+"netQuantity": 1000,
+"netAmount": 8
+}
+]
+}
+
+Back to top
+
+Help and support
+Was this Doc helpful?
+Yes
+No
+
+Help us make GitHub Docs great!
+All Docs are open source. See something that's wrong or unclear? Submit a pull request.
+Make a contribution
+
+Still need help?
+Ask the GitHub community Contact support Expert services Blog
+
+GitHub Inc. © 2026 Terms Privacy Status Pricing

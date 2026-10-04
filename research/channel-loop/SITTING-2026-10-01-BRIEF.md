@@ -25,8 +25,8 @@ notes. `inference`: reasoning, not a text, always marked. `none`: no source.
   support.google.com, so marking developers.google.com `[against-bar]` is inference.
 - **When they landed.** All three bars were first added in `52dafb4` (29.9 14:01:49Z; `git log -S`). `f6191d0` (29.9
   16:21Z) created `terms-verdicts.json`, not the bars. Every YouTube or Google capture cited here predates 14:01Z:
-  25.9 `irs-us-israel-treaty` (irs.gov); 27.9 `yt-analytics-dimensions`; 28.9 22:00-23:22Z `yk-*` and `yk2-*`; 29.9
-  11:26-11:27Z `youtube-*` and `kokoro-82m-model-card`. No blog.youtube capture is cited anywhere in this brief.
+  25.9 `irs-us-israel-treaty-2026-09-25` (irs.gov); 27.9 `yt-analytics-dimensions`; 28.9 22:00-23:22Z `yk-*` and `yk2-*`; 29.9
+  11:26-11:27Z `youtube-*` and `kokoro-82m-model-card-2026-09-29`. No blog.youtube capture is cited anywhere in this brief.
 - **Other hosts** (`research/channel-loop/terms-verdicts.json`): huggingface.co `NOT_BARRED` (`:163-166`); irs.gov
   `NOT_BARRED` (`:189-193`); github.com `CONDITIONAL_MET` (`:114-118`); google.com and youtube.com `BARRED` (`:119-123`,
   `:452-456`); mozilla.org `BARRED` (`:238-241`). No verdict is on file for ftc.gov, fortune.com, blog.google or
@@ -124,7 +124,7 @@ blocks: this one, the standing rules and the links.
    repo). ASSESSMENT then says: "**Runner minutes cost ₪0 only while the repo stays public, and that is an open
    decision.** … So every ₪0 recipe below depends on the owner keeping the repo public" (`ASSESSMENT.md:281-284`, repo).
    That open decision is the one in Part B(e) (`CHANNEL_LOOP.md:234-236`). A GitHub Free account has 2,000 minutes a
-   month, and a Free organisation the same (`gh-docs-actions-billing.txt:336-340`, `:348-352`, rendered). [inference]
+   month, and a Free organisation the same (`gh-docs-actions-billing-2026-09-29.txt:336-340`, `:348-352`, rendered). [inference]
    Row 23's ₪0 production path and row 18's minutes fence meet at that decision, which is the owner's. RULING calls its
    consequence "Not an ask; a fact for the existing decision" (`RULING:377`).
 3. **GitHub-hosted sources.** A private repo "would make `github.com` `CONDITIONAL_UNMET` and close the fallback every
@@ -382,10 +382,10 @@ facet applied them to the reopened line before this brief.
   (`:194-200`, `:239-245`); a frozen copy of hexgrad's voice list (`hexgrad-kokoro-voices-js-dfb907a.txt`, github;
   `logs/2026-09-30-p1-p3-in-code.md:22-27`); `he_shaul` and `voices-hebrew.bin` refused by name
   (`publication-gate.ts:256-279`).
-- **Licence evidence** (rendered; huggingface.co `NOT_BARRED`): "License: apache-2.0" (`kokoro-82m-model-card.txt:53`).
+- **Licence evidence** (rendered; huggingface.co `NOT_BARRED`): "License: apache-2.0" (`kokoro-82m-model-card-2026-09-29.txt:53`).
   The author's data statement (`:235`, `:241`) is accepted by the ruling (`RULING:248-251`).
 - **Row 23's own P-1 question.** The model card lists CC BY training audio: Koniwa tnc, CC BY 3.0
-  (`kokoro-82m-model-card.txt:263-267`), and SIWIS, CC BY 4.0 (`:271-275`). Row 23 asks whether `ff_siwis` and the
+  (`kokoro-82m-model-card-2026-09-29.txt:263-267`), and SIWIS, CC BY 4.0 (`:271-275`). Row 23 asks whether `ff_siwis` and the
   Japanese voices stay on the allowlist (`FABLE_QUEUE.md:47`). The builder left it open: "אלה שאלות שיפוט, לא פגם קוד"
   ("these are judgement questions, not a code defect", `logs/2026-09-30-p1-p3-in-code.md:102-103`). That Koniwa sits
   behind the Japanese voices is "probably", per row 23. No file maps a voice ID to a dataset.
@@ -483,7 +483,7 @@ facet applied them to the reopened line before this brief.
   comes by international mail in about 3 weeks (`youtube-address-pin.txt:91`, `:94`).
 - Tax: maximum-rate withholding without tax info (`youtube-us-tax.txt:65`); a treaty claim needs a Foreign TIN or a US TIN
   (`:211`); YPP income is "Other Copyright Royalties" (`:243`); the treaty caps royalties at 10%
-  (`irs-us-israel-treaty.txt:590-592`, rendered, irs.gov `NOT_BARRED`). The link between Google's category and the
+  (`irs-us-israel-treaty-2026-09-25.txt:590-592`, rendered, irs.gov `NOT_BARRED`). The link between Google's category and the
   treaty's is not stated (`REGRADE.md:20`).
 - Entry is 1,000 subscribers and 4,000 hours (`youtube-ypp-overview.txt:89`), then 8,000 hours from 1.2.2027
   (`youtube-ypp-2027-terms.txt:94`); review takes about a month (`:123`). Re-applying after 30 days applies only after a
@@ -628,14 +628,14 @@ mozilla.org host is cited.
 
 **The budgets REST API is organisation-only; budgets themselves also exist for personal accounts, in the settings UI
 (B(c)).**
-- Five operations, all under `/organizations/{org}/settings/billing/budgets` (`gh-docs-rest-billing-budgets.txt:152-160`).
+- Five operations, all under `/organizations/{org}/settings/billing/budgets` (`gh-docs-rest-billing-budgets-2026-09-29.txt:152-160`).
   Reading needs "Administration" organization permissions (read) (`:514`), and "The authenticated user must be an
   organization admin or billing manager" (`:504`). Installation tokens are accepted (`:509-511`). Writes need
   Administration (write): create `:665`, update `:907`, delete `:1029`. Rendered; note `:345-362`.
 - No endpoint reads a personal account's budget or a payment method (note `:133`, github). "payment" has 0 matches on both
   REST pages (note `:308`, `:353`, `:499`; rendered).
 
-**The four user usage endpoints** (`gh-docs-rest-billing-usage.txt:1163-1168`, also `:944-948`, `:1054-1058`,
+**The four user usage endpoints** (`gh-docs-rest-billing-usage-2026-09-29.txt:1163-1168`, also `:944-948`, `:1054-1058`,
 `:1264-1268`; note `:309-323`; rendered).
 - They take GitHub App user access tokens or fine-grained PATs with "Plan" user permissions (read); they do not list
   installation tokens. Plan is an account permission: "Account permissions can only be used when the current user is the
@@ -660,31 +660,31 @@ limit (note `:180-188`, `:221`, `:412-418`).
 
 **(i)(a) No payment method on file.**
 - "If your account does not have a valid payment method on file, usage is blocked once you use up your quota. Usage of
-  larger runners is always blocked until you set up a payment method." (`gh-docs-actions-billing.txt:384`; first
+  larger runners is always blocked until you set up a payment method." (`gh-docs-actions-billing-2026-09-29.txt:384`; first
   sentence again at `:500`; rendered). "Cannot bill" is the note's inference (`:421`).
 - It is a state, not a setting: it lapses when any payment method is added for any product (note `:192`; HBW:50, :54;
   github). The note says it has no first-cycle gap (`:192`, `:566`).
 
 **(i)(b) A $0 Actions product-level budget on the whole personal account, with "Stop usage when budget limit is
 reached", created before the first run.**
-- Personal budgets exist (`gh-docs-set-up-budgets.txt:215`, `:217`); "Who can use this feature?" is "Organization owners,
+- Personal budgets exist (`gh-docs-set-up-budgets-2026-09-29.txt:215`, `:217`); "Who can use this feature?" is "Organization owners,
   billing managers, and personal account users" (`:190`, `:192`); "personal account owners can set budgets for their own
-  account" (`gh-docs-budgets-and-alerts.txt:235`); route `https://github.com/settings/billing`, then "Budgets and alerts"
-  (`gh-docs-set-up-budgets.txt:219`, `:221`). Rendered.
+  account" (`gh-docs-budgets-and-alerts-2026-09-29.txt:235`); route `https://github.com/settings/billing`, then "Budgets and alerts"
+  (`gh-docs-set-up-budgets-2026-09-29.txt:219`, `:221`). Rendered.
 - The personal steps offer Product-level, SKU-level or Bundled AI credits types (`:225`); scope and amount are separate
   steps (`:233`, `:235`).
 - The checkbox: "select Stop usage when budget limit is reached, if available" (`:237`); without it, "usage will not be
   stopped" (`:241`). [asm] The same line `:237` goes on: "This option is not available for user-level budgets, which
   always enforce a hard stop." The note reads a personal Actions budget as scoped to a repository or the whole account,
   so not a user-level budget (note `:545`, `:555`, inference).
-- Actions is metered and stoppable (`gh-docs-budgets-and-alerts.txt:215`).
+- Actions is metered and stoppable (`gh-docs-budgets-and-alerts-2026-09-29.txt:215`).
 - First-cycle gap: the budget "applies only to metered usage from the date of its creation onwards. Any use made before
-  you created the budget is not included" (`gh-docs-budgets-and-alerts.txt:277`). "Must exist before the first run" is the
+  you created the budget is not included" (`gh-docs-budgets-and-alerts-2026-09-29.txt:277`). "Must exist before the first run" is the
   note's inference (`:79`, `:565`), not the page's words. The note also infers that free minutes used earlier in the month
   are not paid use and do not open the gap (`:565`).
 - The note's checklist (`:572-577`, inference on rendered basis): product-level on Actions, not SKU-level, since a SKU
   budget leaves the other Actions SKUs unfenced (`:573`); whole-account scope, not a repository. "you cannot change the
-  scope of a budget after creating it" (`gh-docs-set-up-budgets.txt:361`), but that line is in the organisation section;
+  scope of a budget after creating it" (`gh-docs-set-up-budgets-2026-09-29.txt:361`), but that line is in the organisation section;
   the personal section is silent.
 - The look takes "about 2 minutes (estimate)" (note `:190`). "Either look covers only the personal-account phase"; after
   step 7 the organisation is billed as a separate account, "so the check must be made again there" (note `:195`; HBW:50,
@@ -692,7 +692,7 @@ reached", created before the first run.**
 - **(i) crosses `BOARD.md:185`**, as the note says (`:196`, `:600`) and the queue row says.
 
 **Rendered gaps** (each stated in the note and checked by its verifier).
-- The only availability rules for the checkbox sit in the organisation section (`gh-docs-set-up-budgets.txt:335`, `:265`,
+- The only availability rules for the checkbox sit in the organisation section (`gh-docs-set-up-budgets-2026-09-29.txt:335`, `:265`,
   under the heading at `:259`; note `:547-548`).
 - The personal steps never name Actions; their product example is Codespaces (`:227`; note `:550`).
 - "$0" has 0 matches in both captures (`grep -c -F '$0'`: 0 and 0; [asm] re-run at `e6c7a2f`, 0 and 0). The $0 case is
@@ -700,11 +700,11 @@ reached", created before the first run.**
 - Neither page names GitHub Free. Both are versioned under a billing-platform feature flag (SB:5, BA:6), whose comment
   names only Enterprise and Team (EBP:1). PEBP:1 is the reusable behind `:192`. All github (note `:538-542`).
 - No timing is given for when the block takes effect; "delay", "real time" and "immediately" have 0 matches (note `:567`).
-- "payment" never appears in either article body, only in navigation (`gh-docs-set-up-budgets.txt:12`, `:18`, `:70`,
+- "payment" never appears in either article body, only in navigation (`gh-docs-set-up-budgets-2026-09-29.txt:12`, `:18`, `:70`,
   `:76`, `:77`, `:87`, `:171`; note `:590`).
 - Budget threshold alerts are listed "for budgets scoped to your enterprise, a cost center, an organization, or a
-  repository" (`gh-docs-budgets-and-alerts.txt:239`), with no personal whole-account scope; the personal steps offer them
-  anyway (`gh-docs-set-up-budgets.txt:243`). The note infers that a $0 budget's threshold alerts carry no signal
+  repository" (`gh-docs-budgets-and-alerts-2026-09-29.txt:239`), with no personal whole-account scope; the personal steps offer them
+  anyway (`gh-docs-set-up-budgets-2026-09-29.txt:243`). The note infers that a $0 budget's threshold alerts carry no signal
   (`:592-593`).
 
 **The four by-sight items: the note carries two versions.**
@@ -720,14 +720,14 @@ reached", created before the first run.**
 
 **Other facts on (i).**
 - Whether $0 leaves the free minutes usable: the note infers it should, from "Each budget has a type and a scope that
-  define which paid use contributes" (`gh-docs-budgets-and-alerts.txt:219`) and the org example at
-  `gh-docs-set-up-budgets.txt:209` (note `:560`). It is not visible on the settings page; only the first dry-run job would
+  define which paid use contributes" (`gh-docs-budgets-and-alerts-2026-09-29.txt:219`) and the org example at
+  `gh-docs-set-up-budgets-2026-09-29.txt:209` (note `:560`). It is not visible on the settings page; only the first dry-run job would
   observe it, and it fails closed (note `:561`, `:584`; inference).
 - [inference, note `:589`] (b) is sturdier than (a) but not permanent: "Existing premium request budgets have been
-  automatically converted to AI credit budgets." (`gh-docs-set-up-budgets.txt:263`); GitHub also removes user-level
+  automatically converted to AI credit budgets." (`gh-docs-set-up-budgets-2026-09-29.txt:263`); GitHub also removes user-level
   budgets at expiry (`:327-329`).
 - Included-usage alerts fire at 90% and 100% "regardless of whether you have set" a budget, covering Actions minutes and
-  storage (`gh-docs-budgets-and-alerts.txt:247-253`, `:273`); the opt-in is at `gh-docs-set-up-budgets.txt:257` (note
+  storage (`gh-docs-budgets-and-alerts-2026-09-29.txt:247-253`, `:273`); the opt-in is at `gh-docs-set-up-budgets-2026-09-29.txt:257` (note
   `:594`).
 
 ### B(d) Options (ii) to (iv)
@@ -738,7 +738,7 @@ reached", created before the first run.**
   (`owner-steps.ts:312`), which is only "add[ed] to the organisation" (`portfolio.ts:288`). `docs/OWNER_STEPS.he.md:287`
   names one "Personal access token", type and permissions unstated. Step 7's data lists `["oss-bounties", "pcn874"]`, not
   Mozilla (`owner-steps.ts:313`). No file gives the machine account an org role or permission (note `:199`). All repo.
-- The pass read and its fail conditions: note `:434-437`, on rendered basis `gh-docs-rest-billing-budgets.txt:505`,
+- The pass read and its fail conditions: note `:434-437`, on rendered basis `gh-docs-rest-billing-budgets-2026-09-29.txt:505`,
   `:537`, `:542`, `:605`, `:722-724`, `:755`, `:883`.
 - The note advises never granting write, because write can create (`:665`), delete (`:1029`) and switch Stop usage off
   (update example `:990`). The advice is the note's (`:380-383`, `:429`); the lines are rendered.
@@ -751,7 +751,7 @@ reached", created before the first run.**
 
 **(iii) Zero minutes.**
 - A private repo with no workflows runs no jobs, provided Copilot code review is off. Copilot code review consumes
-  private-repo minutes (`gh-docs-actions-billing.txt:222`, `:224`, `:380`) and runs on standard Ubuntu runners by default
+  private-repo minutes (`gh-docs-actions-billing-2026-09-29.txt:222`, `:224`, `:380`) and runs on standard Ubuntu runners by default
   (`:228`). Rendered (note `:205`, `:438`).
 - "LLM-guided review running in CI would need a paid API key. Under the ₪0 rule the review must run inside the existing
   session, not on a metered API." (`research/breadth/scouts/security-bounties.json:15`, repo, self-marked inference).
@@ -795,7 +795,7 @@ jobs. "The ceiling cannot see minutes used by other private repos on the same ac
   - The decision is about the automaton repo. Mozilla's harness is a separate private repo (`BOARD-LOOP.md:139`). No file
     says whether a separate private research repo affects the research condition.
   - If the automaton repo went private, it would draw on the same 2,000-minute account quota as Mozilla's repo
-    (`gh-docs-actions-billing.txt:336-340`, rendered basis). Step 7 moves both to the org, whose Free quota is the same
+    (`gh-docs-actions-billing-2026-09-29.txt:336-340`, rendered basis). Step 7 moves both to the org, whose Free quota is the same
     (`:348-352`). The workflows hold 27 `runs-on` lines, all `ubuntu-latest`, across 20 files (note `:113`; re-counted);
     two files use a matrix, so jobs may exceed 27. `colony.yml` is scheduled hourly (`.github/workflows/colony.yml:23`,
     `cron: "17 * * * *"`). If it fires, that is about 720-744 runs a month, each rounded up to at least one minute
@@ -921,7 +921,7 @@ two items of each; the items below come from the statements in the checked evide
   - `LOOP-RULING:16-21` ("Standing rules applied") has three stale pointers: `MISSION.md:411-420` for one-time identity
     steps (that range now holds the YouTube text; the rule is at `:431-433`, also `:402-403`); `CHANNEL_LOOP.md:75` for the
     per-item ban, now `:76`; `MISSION.md:434-439` for "charging for something already free", now `:454-458`.
-  - `FABLE_QUEUE.md:42` paraphrases `gh-docs-budgets-and-alerts.txt:277` as "the budget must exist before usage"; the page
+  - `FABLE_QUEUE.md:42` paraphrases `gh-docs-budgets-and-alerts-2026-09-29.txt:277` as "the budget must exist before usage"; the page
     says "from the date of its creation onwards", and "must exist before" is the note's inference (`:79`, `:565`).
   - `FABLE_QUEUE.md:42`'s question column still reads "a fine-grained Plan: read token". Tick 20 asked for "a
     fine-grained PAT or a GitHub App user access token" (note `:498`); the row's status column carries the corrected

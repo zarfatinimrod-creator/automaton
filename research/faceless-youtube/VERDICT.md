@@ -62,7 +62,7 @@ RTL support that works, plus a TTS licence that permits commercial use. All thre
 | A platform paying Israel | **Met for eligibility, open for the rail.** Israel is on YouTube's own YPP availability list. The AdSense payment method to Israel is still unrendered: the wire page names no countries. | [RENDERED research/rendered/youtube-ypp-availability.txt:175] "Israel" under :61 "You can sign up for the YouTube Partner Program in the following areas"; [RENDERED research/rendered/adsense-payment-3372975.txt:774] "Wire transfer payments are currently only available to a number of countries." Creator-funds scout: AdSense-to-Israel YES at medium confidence (Payoneer route, SNIPPET). |
 | "…content this pipeline can **legally and honestly** produce" | **The deciding clause, and undecidable before the test.** Compliance is judged by "automated systems and human reviewers" on "your channel as a whole", only after the eligibility thresholds, typically about a month. Nothing offers a verdict earlier. | [RENDERED research/rendered/youtube-ypp-overview.txt:121, :123]. The reel's prompts fail it (P3 = reused content, MP:186/:210); the colony rewrite (§12) removes the named disqualifiers but "the creator's original, authentic insights" ([RENDERED research/rendered/youtube-monetization-policies.txt:140]) is decided by reviewers, not by us. |
 | Hebrew RTL that works | **Moot, and should be struck for English variants.** Nothing in MISSION requires Hebrew; the Hebrew assumption belonged to the Israeli-bureaucracy product line. The content-seo audit named this as the group's largest missed angle. | `research/colony-sweep/audits/content-seo.md:195-199`; `00-owner-reel-2026-09-25.md:53-55`. |
-| A TTS licence permitting commercial use | **Met for English.** Kokoro-82M weights are Apache-2.0 per the author's card; no Hebrew voice exists (production-stack #18). | [RENDERED research/rendered/kokoro-82m-model-card.txt:53] "License: apache-2.0"; [:97] "This is an Apache-licensed model, and Kokoro has been deployed in numerous projects and commercial APIs." |
+| A TTS licence permitting commercial use | **Met for English.** Kokoro-82M weights are Apache-2.0 per the author's card; no Hebrew voice exists (production-stack #18). | [RENDERED research/rendered/kokoro-82m-model-card-2026-09-25.txt:53] "License: apache-2.0"; [:97] "This is an Apache-licensed model, and Kokoro has been deployed in numerous projects and commercial APIs." |
 
 **Assessment.** Two legs met, one moot, and the clause that actually decides ("legally and honestly") is testable only by
 running the honest version and reaching review. The trigger also missed a fourth condition that the mandate makes
@@ -102,7 +102,7 @@ Payability and money
   start with an investigation [:126]. US tax: form expires after the third full calendar year [RENDERED
   youtube-us-tax.txt:63], check by Dec 10 each year [:61], legal name exactly as on documents [:191], a foreign TIN
   suffices for the treaty claim — no ITIN [:211]; YPP income is "Other Copyright Royalties" [:243] → treaty Art. 14
-  10% cap (irs-us-israel-treaty.txt:591-593), creditable in Israel (:855).
+  10% cap (irs-us-israel-treaty-2026-09-25.txt:591-593), creditable in Israel (:855).
 - RPM is after YouTube's share and includes unmonetized views [RENDERED youtube-rpm-definition.txt:75, :81]; geography
   and season move it [:171, :169]; the page gives **no** niche or country figures.
 
@@ -144,7 +144,7 @@ Discovery
   (discovery #6, #17); demand is measurable only afterwards from our own Analytics.
 
 Production
-- Sora is gone [RENDERED openai-sora-discontinuation.txt:11, :13]. Kokoro Apache-2.0 [kokoro-82m-model-card.txt:53,
+- Sora is gone [RENDERED openai-sora-discontinuation.txt:11, :13]. Kokoro Apache-2.0 [kokoro-82m-model-card-2026-09-25.txt:53,
   :97], hosted rate under $0.06/hour of audio [:95]. Measured: RTF 0.236, 107 ms/frame, encode 0.29× real time; a
   9-minute chart video is 10-25 wall-minutes on 4 cores, ₪0 cash on a free host (production-stack #7, MEASURED;
   host UNKNOWN). MoneyPrinterTurbo is the wrong tool for chart-led long-form (#19).
@@ -325,7 +325,7 @@ listener quality UNKNOWN (retention is the only test).
   OWID keep upstream licences → UNKNOWN means FAIL. World Bank only after its licence page is rendered.
 - Visuals: charts rendered by code (matplotlib) from raw data, one chart set per video, sentence-synced to narration;
   DejaVu font; shared intro/outro allowed [:124]. **No stock footage. No generative b-roll.** No music.
-- Narration: Kokoro-82M, English (Apache-2.0 weights [kokoro-82m-model-card.txt:53, :97]; kokoro-onnx MIT, CODE;
+- Narration: Kokoro-82M, English (Apache-2.0 weights [kokoro-82m-model-card-2026-09-25.txt:53, :97]; kokoro-onnx MIT, CODE;
   GPL phonemiser output exempt), with the number-normalisation and sentence-level synthesis fixes already in the
   MoneyPrinterTurbo fork (PR #1). Provenance note recorded: closed-model synthetic audio and CC BY recordings in the
   training set. Edge TTS banned; Piper not clean.

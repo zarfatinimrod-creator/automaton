@@ -49,7 +49,7 @@ after 29 days (`:139-142`; an inference on rendered counts). **Tick 5 found the 
 and Hebrew utilities at 1-85 users (`:85, :98-99`).
 
 **For PARK or caution.** **The policies are friendly** (rendered): no fee; paid features are allowed with disclosure
-(`amo-add-on-policies.txt:2051`); machine-generated code is allowed with its source (`:2069`); display-name accounts
+(`amo-add-on-policies-2026-09-28.txt:2051`); machine-generated code is allowed with its source (`:2069`); display-name accounts
 (`firefox-amo.md:94-99`). **Only page 1 was read**, 50 of 281 results (`:108`). The accent colour's absence rests on
 those 50 (`:135-136`). **No Hebrew or Israeli invoice add-on exists** (`:114-116`). The empty slot is the free base,
 which is already free on our site (`:144-146`).
@@ -104,7 +104,7 @@ starts no build (`CHANNEL_LOOP.md:96`).
 **Options:** none, Displate, Teach Simple, Indiebook, or CrazyGames.
 
 **Displate (26).** No proposed kill fires, and G7 passes at rendered grade (`:150`). Against it, kill (d) is unsettled:
-accounts "created using automated tools (e.g., bots)" may be deleted (`displate-about-regulations.txt:471`), and
+accounts "created using automated tools (e.g., bots)" may be deleted (`displate-about-regulations-2026-09-28.txt:471`), and
 software that distorts the site is barred (`:561`); an artist is "not a consumer" (`:98`), so it needs step 2; there is
 a one-time SMS identity check (`:455`); payout is PayPal only, from $50, so it needs step 13. **Teach Simple (28).** G3
 passes at rendered grade, because the platform's own team uploads the items (`teacher-and-ebook-stores.md:30-34`).
@@ -148,7 +148,7 @@ CrazyGames (`html5-syndication.md:156, :212`).
 **3. Is an invoice the colony issues after step 2 owner paperwork?** `BOARD.md:78` says it is "settled after step 2,
 never by owner paperwork".
 **Payers that self-bill:** CrazyGames (`crazygames-payouts.txt:339`) and GameDistribution ("credit invoice",
-`gamedistribution-developer-terms.txt:187`). **Payers that want our invoice:** Y8; Wix ("against a lawful tax invoice to
+`gamedistribution-developer-terms-2026-09-28.txt:187`). **Payers that want our invoice:** Y8; Wix ("against a lawful tax invoice to
 be issued by the Party receiving", `wix-partner-agreement-body.txt:385`); and Indiebook (A(h)). **Background:** an
 Israeli invoice must name the עוסק (`MISSION.md:302-303`), and the colony already ships a receipt generator
 (`products/il-biz-tools/README.md:21`).
@@ -168,10 +168,10 @@ human step" under `BOARD-LOOP.md:183`? The four networks are CrazyGames, GameMon
 every upload is an owner click". `CHANNEL_LOOP.md:75`: no per-item owner action.
 
 **Evidence (rendered).** **GameDistribution.** The activation ad is a demo: "A demo VAST tag for calling a fake
-advertisement is already enabled" (`gamedistribution-sdk-implementation.txt:275`). Watching it "completely" approves the
+advertisement is already enabled" (`gamedistribution-sdk-implementation-2026-09-28-12e095c.txt:275`). Watching it "completely" approves the
 SDK (`:281`); this is the 2021 page. The 2018 FAQ says the watch is "only possible from the page within your
-Gamedistribution.com control panel" (`gamedistribution-wiki-faq.txt:180`). Publishing is gated on the SDK
-(`gamedistribution-developer-terms.txt:141-142`), and there is no upload API (`html5-syndication.md:226`). A "no
+Gamedistribution.com control panel" (`gamedistribution-wiki-faq-2026-09-28-12e095c.txt:180`). Publishing is gated on the SDK
+(`gamedistribution-developer-terms-2026-09-28.txt:141-142`), and there is no upload API (`html5-syndication.md:226`). A "no
 monitoring" clause bars our watchers from polling a live game (`CHANNEL_LOOP.md:138`). **Y8.** "creating a studio and a
 game, … uploading builds, and submitting for review" all happen in the portal (`y8-docs-overview.txt:77-80`). Bots and
 automated plays are barred on live games (`y8-revshare.txt:429`). **CrazyGames.** Submission is through the portal only,
@@ -208,7 +208,7 @@ depends on the portal ruling.
 | 5 | CurseForge | G3, G6 | github | R1:272-279: the token API covers existing projects only; creation via the owner's copied cookies | a project-creation API | **(e2)** in part: a brand login in an ordinary browser is not cookie reuse |
 | 6 | SeaArt | G3 | github | R1:280-285: no publish command; web App Builder only | a publish endpoint | rests on **absence** (R1:280) |
 | 7 | Apple Books direct | G7 | snippet | R1:286-294: the legal name is the default seller name | a legal entity or trade name, then G2 rendered | **snippet** grade |
-| 8 | Apple via PublishDrive / D2D | G1 / G4 | github / snippet | R1:295-298 | a commission-only aggregator reaching Apple that takes disclosed AI | The D2D half can be **upgraded**: its activation fee is now rendered (`draft2digital-com-terms-of-service.txt:490-491`; `REJECTED.md:1254`) |
+| 8 | Apple via PublishDrive / D2D | G1 / G4 | github / snippet | R1:295-298 | a commission-only aggregator reaching Apple that takes disclosed AI | The D2D half can be **upgraded**: its activation fee is now rendered (`draft2digital-com-terms-of-service-2026-09-28.txt:490-491`; `REJECTED.md:1254`) |
 | 9 | LottieFiles | G4 | snippet + github | R1:299-305: free everywhere | a Lottie product that is free nowhere | none |
 | 10 | Wavedash | G3 | github + rendered | `wavedash.md:162-164`; "Set these under Metadata in the Developer Portal" (`wavedash-llms-full.txt:4731, :4738`) | a CLI or API that writes store metadata | **(e2), explicitly**: "That is 'a per-game human step'" |
 | 11 | Facer | G3 | rendered | `facer.md:127-152, :196-213`; terms at bytes 475268-475582 of `facer-templates-js.bin` | an upload API, or a written yes to an agent operating Facer Creator | **Weak, as recorded.** The clause bars *access, search or download* by "any … agent" "other than … generally available third-party web browsers", and an agent driving an ordinary browser may fall inside that exception. The fallback "Fitbit standard" (`facer.md:151-152`) is **(e2)** |
