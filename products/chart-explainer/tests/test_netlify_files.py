@@ -1,8 +1,9 @@
 """The four Netlify files deployed beside the web arm's index.html (research/faceless-youtube/PREREG-DECISIONS.md §3.6).
 
 `/preview/` serves the same page under a different `$current_url`, so our own loads never count (§3.4(a)); it is kept
-out of search; the sitemap lists the canonical URL only (§3.5 route 1). The host is an argument because the sub-brand
-name is not chosen yet (RULING-2026-09-28-floors.md, "not decided"): no host is guessed or committed.
+out of search; the sitemap lists the canonical URL only (§3.5 route 1). The host is an argument: the sub-brand
+name, chartsplained, was chosen 29.9, pending the owner's veto (research/faceless-youtube/PREREG-DECISIONS.md:547; probes
+in research/measurements/t1-subbrand-check.md), so no host is guessed or committed here.
 """
 
 import re

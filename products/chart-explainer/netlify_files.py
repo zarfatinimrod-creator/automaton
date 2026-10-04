@@ -27,9 +27,10 @@ settle them:
   `Disallow: /preview/` does not cover `/preview`; only the header keeps it out of an index. `curl -sI
   <preview-host>/preview` must show `X-Robots-Tag: noindex` as well.
 
-The host is an argument because the sub-brand name is not chosen (RULING-2026-09-28-floors.md, "What was not decided
-here"). It must be a bare lowercase https origin — no port, path, query or trailing slash — or ValueError is raised
-before anything is produced.
+The host is an argument, and no host is committed here. The sub-brand name, `chartsplained`, was chosen 29.9, pending
+the owner's veto (research/faceless-youtube/PREREG-DECISIONS.md:547, by the rule of RULING-2026-09-29-lines.md (e); the
+probes are in research/measurements/t1-subbrand-check.md). It must be a bare lowercase https origin — no port, path,
+query or trailing slash — or ValueError is raised before anything is produced.
 """
 
 from __future__ import annotations
