@@ -28,7 +28,7 @@ personally sign or issue each document, and the one text on point says the oppos
 The **certified (approved) signature route is rejected**. The **secured-signature route with a key the runner holds is the
 only ₪0, zero-minute route the texts leave open, and it is not cleared**: it rests on one legal characterisation no text
 makes. Until the one check below settles it, **no payee-billing document is produced or sent** (already (e)3's rule,
-`RULING-2026-09-29-loop.md:279-280`). Seven ₪0 guards and wording changes are adopted now regardless of the route.
+`RULING-2026-09-29-loop.md:299-300`). Seven ₪0 guards and wording changes are adopted now regardless of the route.
 
 **GROUNDS.**
 1. *The signature is the preparer's, not the taxpayer's.* A computerised document is signed "בחתימה אלקטרונית מאושרת או
@@ -113,7 +113,7 @@ rule: no step that costs anything is asked before its cost is checked, `MISSION.
 subject to the terms rule, `CHANNEL_LOOP.md:284`). The payer's consent (§18ב(ג), `R-BK:2240`) is one written yes per payer
 from the brand mailbox and rides each venue's held questions.
 
-**Wix.** (e)3's sentence "a cost decision for the owner" (`RULING-2026-09-29-loop.md:275`) and the held question's `when`
+**Wix.** (e)3's sentence "a cost decision for the owner" (`RULING-2026-09-29-loop.md:295`) and the held question's `when`
 (`research/owner-asks/questions.json:45`) are **reworded**: on the text a dealer under the ceiling cannot elect authorised
 status (reg 11 excludes the §31(3) dealer, `R-REG:123`; §58 is discretionary and its reach doubtful, `R-VAT:785`, `:91`),
 so a written no leads to incorporating, a long-shot §58 letter, or Wix out (OP:1054-1062). The held question itself is
