@@ -1656,7 +1656,7 @@ not be kept accurate without re-rendering Google's help pages, which the runner 
 `BARRED`). Constraint 8 for B is NO for the same reason: a dated render history of Google's help pages is a derivative of
 public pages, and the runner may no longer make it.
 
-**What would reopen it** — §9.3's triggers, verbatim (`ASSESSMENT.md:441-469`):
+**What would reopen it** — §9.3's triggers, verbatim (`ASSESSMENT.md:441-469`; ASSESSMENT's `:467` now ends with the 4.10.2026 ruling note, which this file carries at `:1636`, not in the copy below):
 
 - **B (English only):** all of the following:
   1. T1 has passed K3, and preferably human YPP review.

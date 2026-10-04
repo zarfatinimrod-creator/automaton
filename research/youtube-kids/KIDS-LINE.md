@@ -48,8 +48,8 @@ ruling's sections, not repeated here; ftc.gov and fortune.com have no terms verd
    - a narrator posing as a teacher or friend (the narrator says what it is, §4).
 
    The same grounds keep out what YouTube's low-quality kids principles name: heavily promotional content, deceptively
-   educational content, audio that is hard to follow, keyword stuffing, and templated or mass-produced output (ruling §2,
-   [against-bar], decision not to act).
+   educational content, audio that is hard to follow, keyword stuffing; and, from the general monetization policy,
+   templated or mass-produced output (ruling §2, [against-bar], decision not to act).
 4. **Closed and rejected** (ruling §2 rule 3): **A-he** (Hebrew) is closed until "Not ruled here" 2 is met (below);
    **B** (guides about the Kids app) stays rejected as ruled 30.9; ASSESSMENT's **A** (pre-readers) stays closed under
    16(c)(2). The owner's instruction is met by rule 1: YouTube is two lines, T1 and `kids-explainers`.
@@ -83,7 +83,8 @@ The strings are the ruling's, character for character (ruling §4 rules 1-2). Th
 
   > Made by a computer program · computer voice · not a person
 
-- `KIDS_AUDIENCE_SENTENCE`, for the parent: the first sentence of every description, and of the channel's About text.
+- `KIDS_AUDIENCE_SENTENCE`, for the parent: opens every description; the About text carries it and `SYNTHETIC_VOICE_DISCLOSURE`
+  (ruling §4 rule 2, which sets no order for the About text).
 
   > Made for children who can read. This channel is set as made for kids.
 
@@ -97,8 +98,8 @@ Around them (ruling §4 rules 1-4):
    intended audience (rendered, no verdict).
 3. **G7-k** fails a manifest whose narration script does not open with the spoken sentence or whose renderer did not
    assert the tag for every frame (ruling §4 rule 1). Fold 6 adds to it the description order above, the voice set
-   (§5), and a lint of title, description and tags for §2 rule 3's words, and of the thumbnail brief for any child,
-   character, mascot or toy.
+   (§5), and a lint of title, description and tags for ruling §2 rule 2's words (this file's §2 item 3), and of the
+   thumbnail brief for any child, character, mascot or toy.
 4. **Never relies on YouTube's labels.** YouTube's label "may appear" and the Kids app's labels are in development; our
    declaration is ours and always there (ruling §4 rule 3).
 5. The pinned texts are English because the line is English; a Hebrew line would pin its own (ruling §4 rule 4).
@@ -172,9 +173,9 @@ All YouTube-help grounds in this section are [against-bar], compliance; the FTC'
    has passed P1-P4 and its read-back (§8); the kids line's `K-policy` kills it on the first platform signal, the same
    day, so a kids-side action is caught before it compounds; its Stage B never precedes T1's (§6 rule 5).
 4. **A sub-brand name without the YouTube probe** (ruling §7 rule 4). Criteria: short topic words a child can read; no
-   "kids" or "children" in the name; none of §2 rule 3's words. The list is checked by `scripts/brand-check.mjs` on three
-   probes only (.com, GitHub, netlify.app); the YouTube handle is tried by the owner at Stage A, and if it is taken the
-   next name in list order is used.
+   "kids" or "children" in the name; none of ruling §2 rule 2's words (this file's §2 item 3). The list is checked by
+   `scripts/brand-check.mjs` on three probes only (.com, GitHub, netlify.app); the YouTube handle is tried by the owner
+   at Stage A, and if it is taken the next name in list order is used.
    **The list is not written with this file.** `research/measurements/kids-subbrand-candidates.txt` is written beside the
    brand-check fix (fold 8), in that build: `.github/workflows/brand-check.yml:20-25` runs on any push that changes a
    `*-candidates.txt`, and today `scripts/brand-check.mjs:46` probes `https://www.youtube.com/@<name>` from a runner, while
@@ -195,7 +196,7 @@ All YouTube-help grounds in this section are [against-bar], compliance; the FTC'
   08:06:37Z, with WebFetch: two reads, one asking for every sentence containing "terminat" verbatim, one an exact-string
   search. The path is the one `research/faceless-youtube/scouts/policy.md:513-517` names, and the commit is the capture
   that note already quotes as `4d29ee7`. No other host was fetched.
-- **What it says about termination** (verbatim, github):
+- **What it says about termination** (selected, not every termination sentence on the page; verbatim, github):
   - "We may terminate your channel or account for repeated violations of the Community Guidelines or Terms of Service."
   - "We may also terminate your channel or account after a single case of severe abuse, or when the channel is dedicated
     to a policy violation."
@@ -204,18 +205,31 @@ All YouTube-help grounds in this section are [against-bar], compliance; the FTC'
     Service, content from creators with a current channel restriction, or content from creators who have been terminated
     is considered circumvention under our Terms of Service. If you post such content, it may be removed, and your YouTube
     channel may also be penalized or terminated. This may also apply to other channels you own."
+  - The Spam policy's scope: "This policy applies to all types of content on YouTube, including unlisted and private
+    content, comments, links, posts and thumbnails, and coordinated networks of channels." (`@4d29ee7:186`, quoted
+    line-cited in `research/faceless-youtube/scouts/policy.md:177-190`, which also quotes the Spam items at `:201-209`
+    and, elided, the Spam consequence "we may suspend your monetization or terminate your channel or account …").
+  - Three more termination sentences, as the 4.10 review's WebFetch reads of the same SHA gave them (github; not re-read
+    by the fix that added them): Spam, "If your content violates this policy, we may suspend your monetization or
+    terminate your channel or account."; fake engagement, "Content and channels that don't follow this policy may be
+    terminated and removed from YouTube."; nudity, "If your content contains pornography, we may terminate your
+    channel." None of them names another channel or the account's other channels.
   - Not found (exact-string search): "any other YouTube channel", "create any other", "create new channels", "all of your
     channels", "all channels", "any channels", "Google Account". The page points to a separate help page for the rest
     ("Learn more about channel or account terminations."); that page is on support.google.com, barred, and was not read.
 - **Finding:** the Community Guidelines text does **not** state that termination of one channel bars the Google
-  account's other channels, so rule 5's reopen does not fire and rule 1 stands. Two things it does say bear on the
-  radius: an account, not only a channel, may be terminated; and circumvention enforcement "may also apply to other
-  channels you own". The second is scoped to the owner, not to the login, so a separate Google account would not have
-  escaped it; that is the ruling's own ground for rule 1 [inference]. What an account-level termination does to a Brand
-  Account channel the account manages is not stated on this page [none].
+  account's other channels, so rule 5's reopen does not fire and rule 1 stands. Three things it does say bear on the
+  radius: an account, not only a channel, may be terminated; circumvention enforcement "may also apply to other
+  channels you own"; and the Spam policy reaches "coordinated networks of channels", which bears on two channels fed
+  by one pipeline [inference]. The second and third are scoped to the owner and to the channels' coordination, not to
+  the login, so a separate Google account would not have escaped them; that is the ruling's own ground for rule 1
+  [inference]. None of the three says one channel's termination bars the account's other channels, so none fires the
+  reopen. What an account-level termination does to a Brand Account channel the account manages is not stated on this
+  page [none].
 - **Grade and its limit:** github. WebFetch hands back a model's reading of the page, not its bytes: the quotes above were
   asked for verbatim and the decisive phrase ("other channels you own") was confirmed by a second, exact-string read, but
-  no line numbers exist. A runner's byte-level read of the same SHA (`grep -n terminat`) would make them line-cited.
+  no line numbers exist for this read. `scouts/policy.md:177-190` quotes the same capture line-cited (`@4d29ee7:186`,
+  `:201-209`); a runner's byte-level read of the same SHA (`grep -n terminat`) would line-cite the rest.
 
 ## §8 Order and kills
 
@@ -289,7 +303,12 @@ All YouTube-help grounds in this section are [against-bar], compliance; the FTC'
 5. The `youtubeProduct` dimension at a permitted grade: a github read before the diagnostic is coded.
 6. Made-for-kids revenue and Hebrew ad fill: unknowable before YPP; not needed for an experiment with no target.
 7. The Kids app's admission path for AI-made channels: unrenderable; the line does not depend on it.
-8. COPPA's current penalty and its reach to an Israel-based operator: not needed by the line.
+8. COPPA's current penalty and its reach to an Israel-based operator: the line does not need the number; whether the
+   exposure reaches the operator stays open, stated once to the owner (§6 rule 4); check: a once-fetch of ftc.gov's
+   terms under D2 before any re-render.
 9. The repo-public decision: the owner's; every ₪0 render depends on it.
 10. Whether Google issues the second channel, or asks for more than a phone, at Stage A: known only there.
-11. T1's P2/P4 reads of the watch page: flagged in `T1-PROTOCOL.md` (the P2 and P4 rows) for T1's own row, not ruled here.
+11. T1's reads of the watch page: the ruling names P2 and P4 (`T1-PROTOCOL.md:75`, `:77`), but the rows that read the
+    video's public URL are P1 (`:74`) and P2 (`:75`); P4 reads channel state through the publisher and the manager
+    account, not the watch page. Flagged in `T1-PROTOCOL.md`'s P1 and P2 rows for T1's own row (P4 carries a note saying
+    why it has no flag); not ruled here.
