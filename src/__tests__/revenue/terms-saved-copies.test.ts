@@ -164,3 +164,65 @@ describe("saved terms texts (research/channel-loop/terms/) hold what their heade
     expect(() => parse("y.md", swap(terms, "Commit SHA: `35fc817d", "Commit SHA: `35fc817e"))).toThrow(/does not name the pinned commit/);
   });
 });
+
+/**
+ * Tick 40 (4.10.2026, logs/CHANNEL_LOOP.md §9 "Queued 4.10 (tick 39)" item 1): posthog.com's verdict, read from the
+ * pinned references above. The verdict is about access; the storage caveat (the repo LICENSE's "do not duplicate,
+ * copy") is why the references quote instead of copying, and it must stay in the note.
+ */
+describe("posthog.com's verdict rests on the pinned references", () => {
+  const T = "research/channel-loop/terms/posthog-terms-2026-10-04.md";
+  const P = "research/channel-loop/terms/posthog-privacy-2026-10-04.md";
+  const v = () => JSON.parse(readFileSync(VERDICTS, "utf8")).sites["posthog.com"] as { verdict: string; source: string; checked: string; note: string };
+  const lineOf = (file: string, n: number) => readFileSync(file, "utf8").split("\n")[n - 1];
+  const linesOf = (file: string, a: number, b: number) =>
+    readFileSync(file, "utf8")
+      .split("\n")
+      .slice(a - 1, b)
+      .map((l) => l.trim())
+      .join(" ");
+
+  it("is NOT_BARRED, checked 4.10, sourced to both references at the pinned commit", () => {
+    const e = v();
+    expect(e.verdict).toBe("NOT_BARRED");
+    expect(e.checked).toBe("2026-10-04");
+    expect(e.source).toContain(T);
+    expect(e.source).toContain(P);
+    expect(e.source).toContain("35fc817dfc2b7ed21d59504e349d1f47616edb10");
+    expect(e.source).toContain("(github grade)");
+  });
+
+  it("quotes clauses that are on the lines it cites", () => {
+    const e = v();
+    const cited: [string, number, number, string][] = [
+      [T, 41, 43, "apply to any Customer (as defined below) accessing or using PostHog cloud-based software, products or services"],
+      [T, 52, 52, "By signing up to, creating an account, using or otherwise accessing PostHog Cloud"],
+      [T, 58, 58, "on a free or pay-as-you-go basis"],
+      [T, 113, 115, "(d) access or use the Licensed Materials in a manner intended to circumvent or exceed any usage limits"],
+      [T, 115, 118, "(e) access or use the Licensed Materials to interfere with, disrupt, or attempt to gain unauthorized access to any systems"],
+      [T, 132, 136, "(i) use the Licensed Materials for the purpose of monitoring their availability, performance, or functionality for benchmarking"],
+      [T, 187, 187, "pleeeeeease don’t copy our website."],
+      [T, 24, 25, "They're not legally binding."],
+      [P, 42, 44, "applies to all visitors, users and customers of the PostHog.com hosted services and websites"],
+      [P, 53, 55, "By accessing or using any part of the Websites"],
+      [P, 74, 77, "PostHog automatically collects (i) technical information about your device including your device's internet protocol (IP) address"],
+    ];
+    for (const [file, a, b, text] of cited) {
+      expect(e.note, `${file}:${a}`).toContain(`${file}:${a === b ? a : `${a}-${b}`}`);
+      expect(linesOf(file, a, b).replace(/<\/?b>/g, ""), `${file}:${a}-${b}`).toContain(text);
+    }
+    // The original line numbers it names match the reference's marker: original 327 is the first line of the block.
+    expect(e.note).toContain(`terms.tsx:328-330, ${T}:41-43`);
+    expect(lineOf(T, 38)).toMatch(/^<!-- excerpt: original lines 327-355, sha256 [0-9a-f]{64};/);
+    expect(lineOf(T, 39)).toBe("```tsx");
+  });
+
+  it("keeps the storage caveat and sends the reader's API use to the free-tier note", () => {
+    const e = v();
+    expect(e.note).toMatch(/^no clause bars or conditions automated access to posthog\.com pages\./);
+    expect(e.note).toContain("Open caveat, for storage and not access");
+    expect(e.note).toContain("'Please do not duplicate, copy, or use our website'");
+    expect(e.note).toContain("LICENSE:5-6 at 35fc817");
+    expect(e.note).toContain("research/measurements/posthog-free-tier.md");
+  });
+});
