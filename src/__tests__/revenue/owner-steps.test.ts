@@ -992,9 +992,12 @@ describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", (
     expect(u).toContain("created before any private repository exists in the organisation");
     expect(u).toContain("included-usage alerts");
     expect(u).toContain("Administration: read only");
-    expect(u).toContain("if GitHub refuses, a PAT of the owner's own account with that one permission");
+    // The token's shape, as the ruling's amendment of 4.10 sets it: the owner's own PAT; never the machine account's.
+    expect(u).toContain(
+      "a fine-grained personal access token of the owner's own account, with the organisation as resource owner, Administration: read only and the longest expiry GitHub offers",
+    );
     expect(u).toContain("Never Administration: write");
-    expect(u).toContain("billing manager");
+    expect(u).toContain("The machine account is never made a billing manager");
     // Mozilla is one user of the fence, not its reason, and asks for nothing of its own.
     expect(u).toMatch(/Mozilla's dry-run harness \(loop row 8\) is one line that would use the fence/);
     expect(u).toContain("RULING-2026-10-04-mozilla-precondition.md");
@@ -1015,12 +1018,13 @@ describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", (
     // The framing: the organisation's fence for the open decision; Mozilla only one line that would use it.
     expect(fence).toContain("להחלטה שעוד פתוחה, אם להפוך את הריפו לפרטי");
     expect(fence).toContain("קו Mozilla (שורה 8 בלופ) הוא רק אחד הקווים שישתמשו בגדר");
-    // The token: billing manager, organisation as resource owner, read only, the fallback, never write.
-    expect(fence).toContain("**מנהל חיוב (billing manager)**");
+    // The token (the amendment of 4.10, shape B): never the machine account as billing manager, the role's list as the
+    // reason, organisation as resource owner, read only, no shape-A fallback, never write.
+    expect(fence).toContain("**חשבון המכונה לא נעשה אף פעם מנהל חיוב (billing manager) של הארגון**");
     expect(fence).toContain("**מה התפקיד הזה יכול (הרשימה של GitHub עצמה):**");
     expect(fence).toContain("`ORG_BUDGETS_READ_TOKEN`");
     expect(fence).toMatch(/\*\*Administration\*\* \(בהרשאות הארגון\) ברמת \*\*קריאה בלבד\*\*/);
-    expect(fence).toContain("**אם GitHub מסרב**");
+    expect(fence).not.toContain("**אם GitHub מסרב**");
     expect(fence).toContain("**אף פעם לא Administration ברמת כתיבה (write):**");
     // Rendered sources, cited by their frozen copies only.
     expect(fence).toContain("gh-docs-set-up-budgets-2026-09-29.txt:");
@@ -1050,18 +1054,32 @@ describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", (
    * summarises it in one line. BM's "Billing managers can:" (BM:22-24) is an include,
    * data/reusables/billing/org-billing-manager-permissions.md, read 4.10 from github/docs at github grade (the note's
    * "The billing-manager line" key table). It gives the role three ways to spend money — payment methods, the plan,
-   * sponsorships — that the ruling did not weigh when it chose the role, so the line names them and item 9 waits on one
-   * decision; item 8, the budget itself, does not.
+   * sponsorships — and the ruling's amendment of 4.10 (~09:00 UTC, main thread on Fable) withdrew shape A on that list:
+   * the machine account is never made a billing manager, and the token is the owner's own fine-grained PAT (shape B).
+   * The role's line stays only as the reason the role is not granted, and item 9 is asked with the sitting, no hold.
    */
-  it("summarises the billing-manager role from its own list, money powers first, and holds item 9 on one decision", () => {
+  it("asks item 9 as shape B, the owner's own token, and never makes the machine account a billing manager", () => {
     const item9 = fence.slice(fence.indexOf("9. **טוקן לקריאה בלבד של התקציב**"));
     expect(item9.length).toBeGreaterThan(300);
-    // The hold comes before any instruction in the item, asks the owner nothing, and item 8 does not wait for it.
-    const hold = item9.indexOf("⏸ **הסעיף הזה מחכה להחלטה אחת, ועד שאכתוב לך — לדלג עליו** (סעיף 8 לא מחכה לו)");
-    expect(hold).toBeGreaterThan(0);
-    expect(hold).toBeLessThan(item9.indexOf("להוסיף את `mehudak-ci` גם כ**מנהל חיוב"));
-    expect(item9).toContain("ההחלטה מתקבלת אצלנו, ולא נדרש ממך כלום עד שאכתוב לך");
-    // The one line, from the role's own list: the three ways to spend money, then the rest, then the budgets page.
+    // The hold is lifted: the item is asked with the rest of the sitting.
+    expect(item9).not.toContain("⏸");
+    expect(item9).not.toMatch(/מחכה להחלטה|לדלג עליו|עד שאכתוב/);
+    // Shape B, as the amendment words it: the owner's own account, the organisation as resource owner, one permission
+    // at read, the longest expiry, the name; the token-policy switch in the same sitting; renewal with BRAND_GITHUB_TOKEN.
+    expect(item9).toMatch(/\*\*הטוקן יוצא מהחשבון האישי של הבעלים,\s+לא מחשבון המכונה\*\*/);
+    expect(item9).toContain("בחשבון **האישי** של הבעלים (לא בחשבון המכונה)");
+    expect(item9).toContain("**Resource owner** — הארגון `mehudak`");
+    expect(item9).toMatch(/\*\*Expiration\*\* — התוקף\s+הארוך ביותר ש-GitHub מציע/);
+    expect(item9).toMatch(/הרשאה אחת בלבד — \*\*Administration\*\* \(בהרשאות הארגון\) ברמת \*\*קריאה בלבד\*\* \(read\)/);
+    expect(item9).toContain("לשמור אותו בצד בשם `ORG_BUDGETS_READ_TOKEN`");
+    expect(item9).toContain("אם מדיניות הטוקנים של הארגון לא מאפשרת fine-grained tokens");
+    expect(item9).toContain("— חלק מאותה ישיבה");
+    expect(item9).toContain("מחדשים אותו באותו רגע שבו מחדשים את `BRAND_GITHUB_TOKEN` — אף פעם לא כפעולה נפרדת");
+    expect(item9).toContain("RULING-2026-10-04-mozilla-precondition.md");
+    // Why the role is not granted, in one clause, then the role's own list as the evidence.
+    expect(item9).toContain("**חשבון המכונה לא נעשה אף פעם מנהל חיוב (billing manager) של הארגון**");
+    expect(item9).toMatch(/כי התפקיד הזה יכול להוסיף אמצעי תשלום\s+ולשנות את המסלול/);
+    expect(item9).toContain("החשיפה היא התפקיד");
     expect(item9).toContain("**מה התפקיד הזה יכול (הרשימה של GitHub עצמה):**");
     expect(item9).toContain("**להוסיף, לעדכן ולהסיר אמצעי תשלום**");
     expect(item9).toContain("**להעביר את הארגון בין Free ל-Team**");
@@ -1070,34 +1088,59 @@ describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", (
     expect(item9).toContain("`data/reusables/billing/org-billing-manager-permissions.md`, sha256 `bd7467c0b55f`");
     expect(item9).toContain("sha256 `97ea127f989c`");
     expect(item9).toMatch(/`gh-docs-set-up-budgets-2026-09-29\.txt:279`,\s+`:295`, `:361`/);
-    // The invite path, from BM's own steps.
-    expect(item9).toContain("**Billing and licensing** → **Additional billing details** → ליד \"Billing managers\", **Invite**");
     // The old line cited BM for powers BM's own lines do not state.
     expect(item9).not.toContain("**מה התפקיד הזה יכול:**");
-    // The code says the same: held on a decision, the three money powers quoted from the include.
+    // No instruction anywhere in the document makes the machine account a billing manager (shape A, withdrawn): no
+    // verb granting the role to it, no invite path, no token "of the machine account" for the budgets, no fallback.
+    const grant = /(להוסיף|להזמין|לתת|לעשות|למנות|לצרף)[^.\n]{0,80}(`mehudak-ci`|חשבון המכונה)[^.\n]{0,80}מנהלי? חיוב/;
+    expect(doc).not.toMatch(grant);
+    expect("להוסיף את `mehudak-ci` גם כ**מנהל חיוב (billing manager)**").toMatch(grant); // the withdrawn line
+    expect(doc).not.toMatch(/כ\*\*מנהל חיוב/);
+    expect(doc).not.toContain('ליד "Billing managers", **Invite**');
+    expect(item9).not.toMatch(/בחשבון המכונה, Developer settings|\*\*אם GitHub מסרב\*\*/);
+    // The code says the same: shape B, the reason, the three money powers quoted from the include, no hold.
     const u = step7.unlocks;
-    expect(u).toContain("That part is held, not asked, until one decision is recorded");
+    expect(u).not.toContain("held, not asked");
+    expect(u).not.toMatch(/machine account is made a billing manager|as billing manager|if GitHub refuses/);
+    expect(u).toContain("The machine account is never made a billing manager: the role can add payment methods and change the plan");
+    expect(u).toContain("which withdrew shape A");
+    expect(u).toContain("the organisation's token policy must first allow fine-grained tokens, that switch is part of the same sitting");
+    expect(u).toContain("the token is renewed when BRAND_GITHUB_TOKEN is, never as an action of its own");
     expect(u).toContain("data/reusables/billing/org-billing-manager-permissions.md");
     expect(u).toContain('"Add, update, or remove payment methods."');
     expect(u).toContain('"Start, modify, or cancel sponsorships."');
     expect(u).toContain('"Upgrade or downgrade between" the Free and Team plans');
     expect(u).toContain("gh-docs-set-up-budgets-2026-09-29.txt:361");
     expect(u).toContain("the role's own session may be able to remove the $0 fence, which the read-only token cannot");
-    // The step-6 row and the 4.10 summary point at the hold, so nothing asks the token around it.
+    // The step-6 row, step 6's text and the 4.10 summary say shape B, and none still points at a hold.
     const row = doc.split("\n").find((l) => l.includes("| `ORG_BUDGETS_READ_TOKEN` |"))!;
-    expect(row).toContain("שמחכה להחלטה אחת — ראה שם");
-    expect(doc.slice(doc.indexOf("**עודכן 4.10.2026"), doc.indexOf("> ### כלל ה-0 ₪ (27.9)"))).toContain(
-      "הסעיף שלו מחכה להחלטה אחת, ראה צעד 7 סעיף 9",
-    );
-    const source = ownerStepById("ci-tokens")!.secrets!.find((r) => r.name === "ORG_BUDGETS_READ_TOKEN")!.source;
-    expect(source).toContain("held with item 9 of that sitting until one decision on the billing-manager role is recorded");
-    // The note records the read: both files' hashes and the list, quoted.
+    expect(row).toContain("**מהחשבון האישי של הבעלים** ולא מחשבון המכונה");
+    expect(row).not.toContain("מחכה להחלטה");
+    const summary = doc.slice(doc.indexOf("**עודכן 4.10.2026"), doc.indexOf("> ### כלל ה-0 ₪ (27.9)"));
+    expect(summary).toContain("מהחשבון האישי של הבעלים");
+    expect(summary).toContain("חשבון המכונה לא נעשה מנהל חיוב");
+    expect(summary).not.toContain("מחכה להחלטה");
+    const step6 = ownerStepById("ci-tokens")!;
+    const source = step6.secrets!.find((r) => r.name === "ORG_BUDGETS_READ_TOKEN")!.source;
+    expect(source).toContain("of the owner's own account (never the machine account's)");
+    expect(source).toContain("the longest expiry GitHub offers");
+    expect(source).not.toMatch(/billing manager|held/);
+    expect(step6.unlocks).toContain("it is the owner's own fine-grained token, never the machine account's");
+    expect(step6.unlocks).not.toContain("held on one decision");
+    // The note records the read (both files' hashes and the list) and that the shape question is closed.
     const note = fs.readFileSync(path.join(repoRoot, "research/measurements/actions-spending-limit.md"), "utf8");
     const section = note.slice(note.indexOf("### The billing-manager line"));
     expect(section).toContain("97ea127f989c88607e83425ad0ec0c098d212e283b55149aea95281016d23c9b");
     expect(section).toContain("bd7467c0b55f683a120b073099ae8f8c03761e81d45df9cad5c3c684aab47065");
     expect(section).toContain("78141f05f6b3cd7aa7f198b50ffc3c60338467fd");
     expect(section).toContain("* Add, update, or remove payment methods.");
+    expect(section).toContain("the shape question is closed, shape B");
+    // The amendment the fold applies stands at the end of the ruling.
+    const ruling = fs.readFileSync(path.join(repoRoot, "research/channel-loop/RULING-2026-10-04-mozilla-precondition.md"), "utf8");
+    const amendment = ruling.slice(ruling.indexOf("## Amendment (4.10, ~09:00 UTC, main thread on Fable 5.1): the token's shape"));
+    expect(amendment).toContain("1. Shape A is withdrawn. The machine account is never made a billing manager");
+    expect(amendment).toContain("2. Shape B is the only shape");
+    expect(amendment).toContain("3. Item 9's hold is lifted by this text.");
   });
 
   it("pins read-only on the token wherever it is written, not only in step 7's text", () => {
@@ -1113,12 +1156,13 @@ describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", (
     expect(row).not.toMatch(/כתיבה|write/i);
   });
 
-  it("says in step 4 that the second token comes from the machine account, else the owner's own (shape B)", () => {
+  it("says in step 4 that the second token comes from the owner's own account, not the machine account (shape B)", () => {
     const step4Doc = doc.slice(doc.indexOf("## צעד 4"), doc.indexOf("## צעד 5"));
     const note = step4Doc.slice(step4Doc.indexOf("(מאז 4.10"), step4Doc.indexOf("סעיף 9.)") + "סעיף 9.)".length);
     expect(note.length).toBeGreaterThan(50);
     expect(note).toContain("נוצר באותה ישיבה גם טוקן");
-    expect(note).toMatch(/`ORG_BUDGETS_READ_TOKEN` — מחשבון המכונה, ואם GitHub מסרב, מהחשבון של הבעלים;\s+פירוט בצעד 7, סעיף 9\.\)/);
+    expect(note).toMatch(/`ORG_BUDGETS_READ_TOKEN` — מהחשבון האישי של הבעלים, לא מחשבון המכונה;\s+פירוט בצעד 7, סעיף 9\.\)/);
+    expect(note).not.toContain("ואם GitHub מסרב");
     expect(note).not.toContain("יוצא ממנו");
   });
 
@@ -1162,11 +1206,18 @@ describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", (
     expect(added.length).toBeGreaterThan(2000);
     const words = new Set(added.split(/[\s,.;:()*"`'—–\-?!/[\]|]+/).filter(Boolean));
     const HEB = /^[\u05d0-\u05ea]+$/;
-    const stems = [...words]
-      .filter((w) => HEB.test(w) && w.length >= 4 && w.startsWith("ל"))
-      .flatMap((w) => [w.slice(1), ...(w.startsWith("לה") ? [w.slice(2)] : [])]);
-    const derived = stems.flatMap((x) => [`ת${x}`, `ת${x}י`, `ת${x.replace(/[וי](?=[\u05d0-\u05ea]$)/, "")}י`]);
-    expect(derived).toContain("תאשר"); // the form review R2 slipped past the old list
+    const derive = (ws: Iterable<string>) =>
+      [...ws]
+        .filter((w) => HEB.test(w) && w.length >= 4 && w.startsWith("ל"))
+        .flatMap((w) => [w.slice(1), ...(w.startsWith("לה") ? [w.slice(2)] : [])])
+        .flatMap((x) => [`ת${x}`, `ת${x}י`, `ת${x.replace(/[וי](?=[\u05d0-\u05ea]$)/, "")}י`]);
+    // The form review R2 slipped past the old list. Its infinitive, "לאשר", left the text with shape A's lines (the
+    // amendment of 4.10), so the derivation is checked on it directly; and on two infinitives the text still uses, so an
+    // empty read of the text cannot pass.
+    expect(derive(["לאשר"])).toContain("תאשר");
+    expect(derive(["לשמור", "להוסיף"])).toEqual(expect.arrayContaining(["תשמור", "תשמרי", "תוסיף"]));
+    const derived = derive(words);
+    expect(derived).toEqual(expect.arrayContaining(["תשמור", "תוסיף"]));
     const FIXED = ["אתה", "סמן", "צור", "כתוב", "הוסף", "שמור", "אשר", "בעל"];
     const found = [...new Set([...derived, ...FIXED])].filter((w) => words.has(w));
     expect(found).toEqual([]);
