@@ -72,9 +72,9 @@ all of these are true, recorded with timestamps:
 | # | Check | How it is read |
 |---|---|---|
 | P1 | The upload returns public, not private | the publisher's API response and the video's public URL |
-| P2 | It is still public 72 hours later | the public URL, fetched from a runner at +72 h |
+| P2 | It is still public 72 hours later | the public URL, fetched from a runner at +72 h [flag, 4.10.2026: youtube.com is barred (`TERMS_BARRED`, `scripts/render-watch.mjs:426`), so this read must move off the watch page to the same Data API call as the made-for-kids read-back (`videos.list`, `part=status`, `privacyStatus`, on the Stage A API key below); flagged by `research/channel-loop/RULING-2026-10-04-kids-youtube.md` (fold 7; "Not ruled here" 11), not ruled: T1's own protocol, row 16's domain] |
 | P3 | No "locked as private" email reached the channel mailbox | the brand mailbox (the manager account's) |
-| P4 | No auto-privating and no forced sign-out within 72 h | channel state via the publisher; the manager account |
+| P4 | No auto-privating and no forced sign-out within 72 h | channel state via the publisher; the manager account [flag, 4.10.2026: the auto-privating read must not fetch the watch page (youtube.com is barred, `scripts/render-watch.mjs:426`); it moves to the same Data API call as P2 (`privacyStatus`); flagged by the 4.10 kids ruling (fold 7; "Not ruled here" 11), not ruled: row 16's domain] |
 | P5 | The instrument works: per-video views and watch time split by traffic source **and** by subscribed status | the publisher's analytics API if it has one; otherwise the analytics-only consent below |
 
 T1 **fails** on any of P1-P4 — including the case where Upload-Post's sign-in cannot select the Brand Account channel,
@@ -110,6 +110,21 @@ The judge wrote 20-40 minutes; the red team measured the omissions and made it *
   our video length) and labelled so; and it offers both `views` and `engagedViews`, so the RED-TEAM §2.4 pin is a
   choice between two real metrics. **Pinned 27.9 by the board: `engagedViews`** (PREREG-DECISIONS.md §1); an all-zero
   `engagedViews` beside real plays is an instrument fault (unmeasured), never a K0 FAIL.
+- **The Data API key — in the same sitting** (added 4.10.2026: `research/channel-loop/RULING-2026-10-04-kids-youtube.md`
+  fold 7, §6 rule 2, §10 rule 1). One API key created in the same analytics-only Cloud project on the brand account,
+  about a minute (`research/youtube-kids/ASSESSMENT.md:427-430`). The `madeForKids` read-back after every upload
+  (`videos.list`, `part=status`) runs on it; the analytics-only consent does not cover the Data API
+  (`ASSESSMENT.md:423-426`). Stage A is not asked before that reader is built and fixture-tested (ruling §10 rule 1).
+- **The kids channel, optional — a click-set inside this sitting, not a new step** (added 4.10.2026: ruling §7 rules
+  1-2, §6 rule 1; the design is `research/youtube-kids/KIDS-LINE.md`). Only if `kids-explainers` has cleared its build
+  gate (ruling §9 rule 2) when Stage A is asked: a second Brand Account channel on this same dedicated account, under the
+  kids sub-brand (never `chartsplained`, never `mehudak`; the YouTube handle is tried here, and if it is taken the next
+  name in list order is used), its audience set to made for kids **at channel level** in this sitting, and connected to
+  the publisher like T1's. About five more minutes. If the kids line has not cleared its gate, it is not asked here; it
+  waits as one held click-set in the batch. **If Google refuses the second channel, stop and tell us:** the kids channel
+  waits and nothing is substituted (ruling §7 rule 5); T1's part of the sitting is unaffected. If the channel-level
+  made-for-kids setting cannot be made in the sitting, the same: stop and tell us (the kids line is then killed,
+  `K-mfk-designation`, ruling §8 rule 3).
 - **Nothing** of AdSense, tax forms, PIN letters or YPP. Those are stage B, and stage B is not even put to the board
   below 1,200 stranger watch hours per 28 days (`k3EscalateAtOrAbove`, RED-TEAM §2.3).
 

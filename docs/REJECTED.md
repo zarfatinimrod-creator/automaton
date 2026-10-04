@@ -1633,7 +1633,7 @@ numbers. Nothing is added to the owner's seven steps: Freemius becomes a step on
 **REOPENED 30.9.2026 by the owner (`MISSION.md`, "יוטיוב גם לילדים וגם רגיל"):** the owner wants YouTube both for kids and
 regular; kids content was offered as an option beside regular YouTube, not in its place. A kids YouTube line is a
 candidate again beside T1, to be designed and admitted by a Fable sitting (`logs/FABLE_QUEUE.md` row 23). The record
-below stays as the evidence that sitting starts from.
+below stays as the evidence that sitting starts from. **Ruled 4.10.2026:** a readers-only English made-for-kids shape (`kids-explainers`) admitted as an experiment; A (pre-readers) and A-he stay closed; B stays rejected; the pre-written A kill at `:1686-1687` is superseded by the ruling's §8 rule 3 (the KIDS split is a diagnostic) (`research/channel-loop/RULING-2026-10-04-kids-youtube.md`; the design: `research/youtube-kids/KIDS-LINE.md`).
 
 **Verdict: D stands** (`research/youtube-kids/ASSESSMENT.md:330-337`; confirmed by the Fable sitting,
 `research/channel-loop/RULING-2026-09-30-video.md` 16(c)). No YouTube channel for either reading of the owner's "videos on
