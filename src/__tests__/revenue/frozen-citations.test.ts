@@ -61,14 +61,23 @@ const LIVE_MENTIONS: Record<string, string> = {
   "research/owner-docs-audit/x402-il-api.md apify-store-accessibility": "the live store listing a later run re-reads for the count",
   "research/breadth/scouts/automation-marketplaces.json apify-store-accessibility": "a scout's output, naming the watched listing",
   "research/breadth/verify/verdicts.json apify-store-accessibility": "a verifier's output, naming the watched listing",
+  "research/faceless-youtube/LICENCE-IGO-DECISION.md unesco-uis-databrowser-terms": "a urls.txt line the note proposed: the slug a render writes",
+};
+
+/**
+ * A path under research/rendered/ that names no capture on purpose: "<file> <path>" and why. Anything else that names a
+ * capture not on disk fails below.
+ */
+const NOT_CAPTURES: Record<string, string> = {
+  "research/faceless-youtube/LICENCE-IGO-DECISION.md research/rendered/owid-co2-licence.txt": "a fixture path in a quoted test (narration-licence-gate.test.ts), turned into a snapshots/ path",
 };
 
 /**
  * Tick 38 (30.9.2026). The weekly render (.github/workflows/render-watch.yml) rewrites a capture in place whenever the
  * page changed, so a research note, ruling or verdict that cites research/rendered/<slug>.txt:NNN can come to point at
- * other text without anyone touching it. It already had: 37 citations by line pointed at text the render had rewritten
- * (the BTL rate lines under step2-cost.md, Displate's bot clause under the loop ruling and wall-art-pod.md, the Kokoro
- * card under the faceless-YouTube verdicts and parent-guides' LICENSES.md). Every citation in a decision-bearing file
+ * other text without anyone touching it. It already had: 44 citations by line, in 17 files, had a cited range the render
+ * had rewritten, 118 ranges in all (the BTL rate lines under step2-cost.md, Displate's Terms of Use under the loop
+ * ruling and wall-art-pod.md, the Kokoro card under the faceless-YouTube verdicts and parent-guides' LICENSES.md). Every citation in a decision-bearing file
  * now names a dated frozen copy (scripts/freeze-capture.mjs), which no urls.txt line names and so no render rewrites,
  * and FROZEN.sha256 holds each copy's bytes. This fails when one cites a capture the weekly run can rewrite, by line.
  */
@@ -138,19 +147,24 @@ describe("decision-bearing files cite frozen captures, never a live one by line"
       return lineCount.get(path) as number;
     };
     const DATED = /-\d{4}-\d{2}-\d{2}(-[0-9a-f]{7,})?$/;
+    // A dated name is a frozen copy's when the name without its date is a capture (owner-reel-2026-09-22 is a capture
+    // fetched under a dated slug; sweep-2026-09-28.json is a scout's file).
+    const copyName = (name: string) => DATED.test(name) && known.has(name.replace(DATED, ""));
     const problems: string[] = [];
+    const exempt = new Set<string>();
     let checked = 0;
     for (const file of files) {
       const { citations, others } = scanCitations(read(file), known, scanOptions(file)) as { citations: Citation[]; others: Other[] };
       for (const c of citations) {
         const at = where({ ...c, file });
         if (!existsSync(`${RENDERED}/${c.slug}.meta.json`)) {
-          problems.push(`${at}: no capture ${c.slug} on disk`);
+          if (NOT_CAPTURES[`${file} ${c.text}`]) exempt.add(`${file} ${c.text}`);
+          else problems.push(`${at}: no capture ${c.slug} on disk`);
           continue;
         }
         // A capture no urls.txt line names is never rendered again: a copy that says it is frozen, or is named by a
         // day, is one only when FROZEN.sha256 holds its bytes (a copy whose meta lost its "frozen" block included).
-        if (listed.has(c.slug) || !(DATED.test(c.slug) || metaOf(c.slug).frozen)) continue;
+        if (listed.has(c.slug) || !(copyName(c.slug) || metaOf(c.slug).frozen)) continue;
         if (!recorded.has(c.slug)) problems.push(`${at}: ${c.slug} is a frozen copy ${MANIFEST} does not record`);
         // A frozen copy holds every line cited of it: a line past the end is a misread citation (another file's line
         // given to this capture, or the wrong file of it), never a skip.
@@ -165,10 +179,11 @@ describe("decision-bearing files cite frozen captures, never a live one by line"
       }
       // A dated name that is no copy on disk: a frozen copy that does not exist.
       for (const o of others) {
-        if (DATED.test(o.name)) problems.push(`${file}:${o.fileLine} ${o.text}: no frozen copy ${o.name} on disk`);
+        if (copyName(o.name)) problems.push(`${file}:${o.fileLine} ${o.text}: no frozen copy ${o.name} on disk`);
       }
     }
     expect(problems).toEqual([]);
+    expect(Object.keys(NOT_CAPTURES).filter((k) => !exempt.has(k))).toEqual([]);
     expect(checked).toBeGreaterThan(900);
   });
 
@@ -238,11 +253,18 @@ describe("decision-bearing files cite frozen captures, never a live one by line"
     expect(lineOf("draft2digital-com-terms-of-service-2026-09-28", "txt", 490)).toMatch(/To use the Program, you must open an account, which is free/);
   });
 
-  it("the Kokoro licence notes cite the card the release read: training on closed TTS models' audio", () => {
-    const card = "kokoro-82m-model-card-2026-09-28";
-    expect(lineOf(card, "txt", 233)).toMatch(/^Synthetic audio \[1\] generated by closed \[2\] TTS models/);
-    expect(read("products/parent-guides/LICENSES.md")).toContain(`research/rendered/${card}.txt:233`);
-    expect(read("products/chart-explainer/releases/t1/render-report.json")).toContain(`research/rendered/${card}.txt:233`);
+  it("the Kokoro licence notes cite the card each was written against: training on closed TTS models' audio", () => {
+    // LICENSES.md:9 was written on 29.9 (6f9f8f2) against the 28.9 20:32Z fetch; the t1 render report on 27.9 (78fafc9)
+    // against the 25.9 fetch. Line 233 says the same in both; the lines after it (:245-:267) moved in between.
+    for (const [file, card] of [
+      ["products/parent-guides/LICENSES.md", "kokoro-82m-model-card-2026-09-28"],
+      ["products/chart-explainer/releases/t1/render-report.json", "kokoro-82m-model-card-2026-09-25"],
+    ]) {
+      expect(lineOf(card, "txt", 233), card).toMatch(/^Synthetic audio \[1\] generated by closed \[2\] TTS models/);
+      expect(read(file), file).toContain(`research/rendered/${card}.txt:233`);
+    }
+    expect(metaOf("kokoro-82m-model-card-2026-09-28").fetchedAt).toBe("2026-09-28T20:32:16.298Z");
+    expect(metaOf("kokoro-82m-model-card-2026-09-25").fetchedAt).toBe("2026-09-25T16:04:30.468Z");
   });
 
   it("TERMS-AUDIT cites the frozen IRS meta's url, fetchedAt and status lines, not the slug line the freeze renamed", () => {
@@ -386,11 +408,17 @@ describe("scanCitations reads every citation form the notes use", () => {
       "Rendered (`live-page.txt:219`, `:221`); the note's inference (`:79`, `:565`) and note `:545`, `:555`.",
       "  (`:573`) goes on, as the note cites `:54`.",
       "The page (`live-page.txt:300`) has an install note (`:222`) and a GameMaker note (`:223`).",
+      // A line break inside "the note's" or "(note `:594`)" (SITTING-2026-10-01-BRIEF.md:682-683, :730-731).
+      "So (`live-page.txt:400`) and the",
+      "  note's inference (`:79`, `:565`); the opt-in (`live-page.txt:500`) (note",
+      "  `:594`).",
     ].join("\n");
     const { citations } = scanCitations(brief, known) as { citations: Citation[] };
     expect(citations.map((c) => `${c.slug} ${JSON.stringify(c.lines)}`)).toEqual([
       "live-page [[219,219],[221,221]]",
       "live-page [[300,300],[222,222],[223,223]]",
+      "live-page [[400,400]]",
+      "live-page [[500,500]]",
     ]);
   });
 

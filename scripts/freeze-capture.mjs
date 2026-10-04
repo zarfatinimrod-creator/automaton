@@ -8,9 +8,11 @@
  *
  * Why: research notes, rulings and verdicts cite captures by line (research/rendered/<slug>.txt:NNN), and
  * render-watch.yml rewrites a capture in place whenever the page changed, so a cited line can silently come to say
- * something else. Three captures were frozen by hand for that reason (nevo-vat-law-2026-09-29,
- * kokoro-82m-model-card-2026-09-29, hexgrad-kokoro-voices-js-dfb907a: their metas' "frozen" blocks say why, and
+ * something else. Two captures were frozen by hand for that reason (nevo-vat-law-2026-09-29 and
+ * kokoro-82m-model-card-2026-09-29: their metas' "frozen" blocks say why, and
  * products/il-biz-tools/tests/osek-zair-page.test.js pins the shape). This does the same by script.
+ * (hexgrad-kokoro-voices-js-dfb907a is no frozen copy: a file fetched at a pinned commit, on no urls.txt line, with no
+ * "frozen" block, so FROZEN.sha256 does not record it.)
  *
  * FREEZE ONE. <slug> copies every file of the capture (research/rendered/<slug>.{meta.json,txt,html,json,pdf,xml,bin},
  * whichever exist; with --from-commit, as that commit stored them) to <slug>-<date>.*, byte for byte, except the meta:
@@ -519,11 +521,12 @@ const NAMED_RE = /(?<![A-Za-z0-9_./-])[A-Za-z0-9_./-]*[A-Za-z_]:\d+(?:-\d+)?/g;
  * is its line. A capture named the same way is marked first, so this only takes what is no capture.
  */
 /**
- * The research note a brief summarises: "the note" ("the note's inference (`:79`)", "as the note says (`:196`)", "the
- * note cites `:54`"), or "note" right before its line ("note `:545`", "(note `:190`)"). A bare :N after it is the
- * note's line. A page's own note ("an install note (`:115`)", "a GameMaker note (`:8831`") is not one.
+ * The research note a brief summarises: "the note" ("as the note says (`:196`)", "the note cites `:54`"), "note's" ("the
+ * note's inference (`:79`)", also after a line break), or "note" right before its line ("note `:545`", "(note `:190`)",
+ * and "(note" that ends a line whose next starts with the line). A bare :N after it is the note's line. A page's own
+ * note ("an install note (`:115`)", "a GameMaker note (`:8831`") is not one.
  */
-const NOTE_RE = /(?<![A-Za-z0-9_-])(?:[Tt]he note(?:'s)?(?![A-Za-z0-9_-])|[Nn]ote(?=\s+`?:L?\d))/g;
+const NOTE_RE = /(?<![A-Za-z0-9_-])(?:[Tt]he note(?![A-Za-z0-9_'-])|[Nn]ote's(?![A-Za-z0-9_-])|[Nn]ote(?=\s+`?:L?\d)|(?<=\()[Nn]ote\s*$)/g;
 const OTHER_FILE_RE = new RegExp(
   `(?<![A-Za-z0-9_./-])[A-Za-z0-9_./-]*[A-Za-z0-9_-]\\.(?:md|py|ts|tsx|js|mjs|cjs|jsx|yml|yaml|csv|sh|toml|rb|ex|exs|go|rs|php|sql|${EXTS_RE})(?![A-Za-z0-9_])`,
   "g",

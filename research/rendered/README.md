@@ -108,27 +108,34 @@ site, and must be written down that way.
 ## Frozen copies: what a citation by line points at
 
 `<slug>.txt:NNN` is only as stable as the page. render-watch rewrites a capture in place when the page
-changes, and by 30.9.2026 13 citations by line in the research notes already pointed at text the render had
-rewritten (the BTL rate lines under `research/measurements/step2-cost.md`, Displate's bot clause under the loop
-ruling), and 11 more named a capture the render had since replaced. A **frozen copy** is a
-dated copy of one capture, `<slug>-<YYYY-MM-DD>.*`, byte for byte, whose slug no `urls.txt` line names, so
-no render ever touches it; the live line stays on the watch.
+changes, and by 30.9.2026 44 citations by line in 17 decision-bearing files already had a cited range that the
+render had rewritten: 118 ranges in all (the BTL rate lines under `research/measurements/step2-cost.md`,
+Displate's Terms of Use under the loop ruling and `wall-art-pod.md`, the Kokoro card under the faceless-YouTube
+verdicts and `products/parent-guides/LICENSES.md`), and 29 more named a capture the render had since replaced. A
+**frozen copy** is a dated copy of one capture, `<slug>-<YYYY-MM-DD>.*`, byte for byte, whose slug no `urls.txt`
+line names, so no render ever touches it; the live line stays on the watch. Its files and their sha256 are in
+[`FROZEN.sha256`](./FROZEN.sha256) (`sha256sum -c FROZEN.sha256` here checks them).
 
 - `node scripts/freeze-capture.mjs <slug> [--date YYYY-MM-DD] [--from-commit <sha>] [--dry-run]` makes one.
   The date defaults to the capture's `fetchedAt` day, so the name says when the text was fetched. The copy's
   meta names the copy (`slug`, `bodyPath`, `textPath`) and gains `frozen: { on, from, commit, why }`, the shape
-  of the three copies frozen by hand before the tool (`nevo-vat-law-2026-09-29`, `kokoro-82m-model-card-2026-09-29`,
-  `hexgrad-kokoro-voices-js-dfb907a`). It refuses a capture capture-check flags (an error page or a shell frozen
-  as evidence would be cited as the page; `--allow-flagged` for a claim about the failure itself, recorded in
-  `frozen.flagged`), a name any `urls.txt` line gives, and an existing copy with other bytes.
+  of the two copies frozen by hand before the tool (`nevo-vat-law-2026-09-29`, `kokoro-82m-model-card-2026-09-29`).
+  It refuses a capture capture-check flags or whose meta has `textError` (an error page, a shell or a stale hand
+  extraction frozen as evidence would be cited as the page; `--allow-flagged` for a claim about the failure itself,
+  recorded in `frozen.flagged`), a name any `urls.txt` line gives, and an existing copy with other bytes.
+  `--record <frozen-slug>` writes a copy made by hand into `FROZEN.sha256`.
 - `node scripts/freeze-capture.mjs --cited [--unlined] [--keep <file>:<line>] [--history] [--apply]` does it
-  for every citation of an active capture in the decision-bearing files (`research/channel-loop/*.md`,
-  `terms-verdicts.json`, `research/measurements/*.md`, `docs/*.md`, product configs and READMEs; not `logs/`)
-  and repoints them, same line numbers. It checks each citation against the capture in the commit that added it:
-  a citation whose line the render has since moved is DRIFTED, printed with both texts, and with `--history`
-  repointed to a copy of the capture as that commit stored it.
+  for every citation of an active capture in the decision-bearing files (`research/**` notes and JSON, `docs/`,
+  product READMEs, licences, configs and release reports; not `logs/`, which are history, and not code) and
+  repoints them, same line numbers. Each cited range is judged by the commit that wrote its line (`git log -L`), and
+  the copy is the capture as that commit stored it, every file of it: unchanged since is `same`; a range the render
+  has since moved is DRIFTED, printed with both texts, and with `--history` repointed to that version. A citation
+  whose history cannot say (`unknown`: uncommitted, git failed, a shallow clone's boundary), whose ranges want
+  different versions (`split`) or that cites past the end of what it read (`invalid`) is never repointed.
 - `src/__tests__/revenue/frozen-citations.test.ts` fails when a decision-bearing file cites an active capture by
-  line. A frozen copy is a record: `scripts/robots-verdict.mjs` skips frozen `robots-` copies and reads the live one.
+  line, names one where `LIVE_MENTIONS` does not say the live page is meant, cites a line past the end of a frozen
+  copy, or when `FROZEN.sha256` and the copies on disk disagree. A frozen copy is a record:
+  `scripts/robots-verdict.mjs` skips frozen `robots-` copies and reads the live one.
 
 ## Adding a URL
 
