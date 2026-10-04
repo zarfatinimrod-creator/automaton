@@ -29,6 +29,8 @@ const files = () =>
 const VERBATIM_MARKER = /^<!-- verbatim copy begins on the next line: original line N is line N\+(\d+) of this file; check with: tail -n \+(\d+) <this file> \| sha256sum -->$/;
 const ORIGINAL = /^> - Original file: (\d+) lines, (\d+) bytes, sha256 `([0-9a-f]{64})`$/m;
 const EXCERPT = /^<!-- excerpt: original lines (\d+)-(\d+), sha256 ([0-9a-f]{64}); the fenced block below is those lines, byte for byte -->$/;
+/** The section heading over each excerpt, which states the same original range a second time. */
+const HEADING = /^## .+ \(original lines (\d+)-(\d+)\)$/;
 
 type Parsed = {
   kind: "verbatim" | "reference";
@@ -79,6 +81,13 @@ function parse(name: string, raw: Buffer = readFileSync(join(DIR, name))): Parse
     const [a, b, eh] = [Number(e[1]), Number(e[2]), e[3]];
     if (!(a >= 1 && b >= a && b <= n)) throw new Error(`${name}:${i + 1}: excerpt ${a}-${b} is outside the original's ${n} lines`);
     if (a <= last) throw new Error(`${name}:${i + 1}: excerpt ${a}-${b} overlaps or precedes the previous one (ended ${last})`);
+    let above = i - 1;
+    while (above >= 0 && lines[above].trim() === "") above--;
+    const heading = (lines[above] ?? "").match(HEADING);
+    if (!heading) throw new Error(`${name}:${i + 1}: no "## … (original lines A-B)" heading above the marker`);
+    if (Number(heading[1]) !== a || Number(heading[2]) !== b) {
+      throw new Error(`${name}:${i + 1}: the heading above says original lines ${heading[1]}-${heading[2]}, the marker ${a}-${b}`);
+    }
     if (!/^```[a-z]*$/.test(lines[i + 1] ?? "")) throw new Error(`${name}:${i + 2}: the excerpt marker is not followed by a fence`);
     const start = i + 2;
     const end = lines.indexOf("```", start);
@@ -159,9 +168,22 @@ describe("saved terms texts (research/channel-loop/terms/) hold what their heade
 
     const terms = readFileSync(join(DIR, "posthog-terms-2026-10-04.md"), "utf8");
     expect(() => parse("y.md", swap(terms, "PostHog Cloud</b>\"). Separate", "PostHog Cloud</b>\"); Separate"))).toThrow(/block sha256/);
-    expect(() => parse("y.md", swap(terms, "original lines 327-355, sha256", "original lines 327-354, sha256"))).toThrow(/block has 29 lines, the marker says 28/);
+    // Heading and marker shortened together: the heading check agrees, and the block's length does not.
+    const shorter = swap(swap(terms, "(original lines 327-355)", "(original lines 327-354)").toString("utf8"), "original lines 327-355, sha256", "original lines 327-354, sha256");
+    expect(() => parse("y.md", shorter)).toThrow(/block has 29 lines, the marker says 28/);
     expect(() => parse("y.md", swap(terms, "**The body is not copied here.**", "The body is not copied here."))).toThrow(/exactly one of/);
     expect(() => parse("y.md", swap(terms, "Commit SHA: `35fc817d", "Commit SHA: `35fc817e"))).toThrow(/does not name the pinned commit/);
+    // Tick 40 review, defect 7: a marker's original line range shifted with the block unchanged passed every check
+    // above (the block's sha256 and length do not know where the lines came from). The section heading states the
+    // range a second time; the two must agree, so a one-sided edit of either fails. A full re-check of the numbers
+    // still needs a re-fetch at the pinned commit.
+    expect(() => parse("y.md", swap(terms, "<!-- excerpt: original lines 948-973, sha256", "<!-- excerpt: original lines 949-974, sha256"))).toThrow(
+      /the heading above says original lines 948-973, the marker 949-974/,
+    );
+    expect(() => parse("y.md", swap(terms, "## 6.1 Fees (original lines 948-973)", "## 6.1 Fees (original lines 948-974)"))).toThrow(
+      /the heading above says original lines 948-974, the marker 948-973/,
+    );
+    expect(() => parse("y.md", swap(terms, "## 6.1 Fees (original lines 948-973)", "## 6.1 Fees"))).toThrow(/no "## … \(original lines A-B\)" heading above the marker/);
   });
 });
 
