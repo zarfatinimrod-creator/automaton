@@ -1,0 +1,111 @@
+{
+  "measuredAt": "2026-10-04T09:28:53.632Z",
+  "candidates": "research/measurements/kids-subbrand-candidates.txt",
+  "probes": [
+    "com",
+    "github",
+    "netlify"
+  ],
+  "refused": {
+    "youtube": "YouTube: not probed (terms barred, ruling 30.9 16(d) D2; the handle is tried at Stage A)"
+  },
+  "note": "Status codes only; no page bodies stored. 404 = free, 200 = taken, anything else = unknown. Netlify's 404 reading is grade none until a fold reads it.",
+  "allFree": [
+    "worldincharts",
+    "askthechart"
+  ],
+  "firstAllFree": "worldincharts",
+  "unknown": [],
+  "rows": [
+    {
+      "name": "worldincharts",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/worldincharts.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/worldincharts",
+        "status": 404,
+        "verdict": "free"
+      },
+      "netlify": {
+        "url": "https://worldincharts.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "askthechart",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/askthechart.com",
+        "status": 404,
+        "verdict": "free"
+      },
+      "github": {
+        "url": "https://api.github.com/users/askthechart",
+        "status": 404,
+        "verdict": "free"
+      },
+      "netlify": {
+        "url": "https://askthechart.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "chartfacts",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/chartfacts.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/chartfacts",
+        "status": 404,
+        "verdict": "free"
+      },
+      "netlify": {
+        "url": "https://chartfacts.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "graphfacts",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/graphfacts.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/graphfacts",
+        "status": 404,
+        "verdict": "free"
+      },
+      "netlify": {
+        "url": "https://graphfacts.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    },
+    {
+      "name": "chartcorner",
+      "com": {
+        "url": "https://rdap.verisign.com/com/v1/domain/chartcorner.com",
+        "status": 200,
+        "verdict": "taken"
+      },
+      "github": {
+        "url": "https://api.github.com/users/chartcorner",
+        "status": 404,
+        "verdict": "free"
+      },
+      "netlify": {
+        "url": "https://chartcorner.netlify.app",
+        "status": 404,
+        "verdict": "free"
+      }
+    }
+  ]
+}

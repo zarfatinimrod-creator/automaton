@@ -328,7 +328,7 @@ https://www.btl.gov.il/Insurance/National%20Insurance/Pages/%D7%9E%D7%99%20%D7%A
 # ZERO-TESTS.md row 33 — CrazyGames (6) and Wix App Market (11): Tipalti's payees FAQ; gates step 10.
 # paused (terms audit, 29.9.2026): tipalti.com — see TERMS_BARRED in scripts/render-watch.mjs — https://help.tipalti.com/hc/en-us/articles/30607242003223-Payees-FAQs	tipalti-payees-faq
 # ZERO-TESTS.md row 34 — Firefox Add-ons (16): the add-on policies.
-https://extensionworkshop.com/documentation/publish/add-on-policies/	amo-add-on-policies
+# retired (ruling 4.10 row 18 §3 rule 1: Firefox Add-ons (loop row 16) was killed 29.9, RULING-2026-09-29-loop.md (a); the capture stays as the kill's rendered evidence, frozen by tick 38 (FROZEN.sha256); the page's source is mozilla/extension-workshop on GitHub) — https://extensionworkshop.com/documentation/publish/add-on-policies/	amo-add-on-policies
 # ZERO-TESTS.md row 35 — Firefox Add-ons (16): the newest cohort's daily users.
 # paused (terms audit, 29.9.2026): addons.mozilla.org — see TERMS_BARRED in scripts/render-watch.mjs — https://addons.mozilla.org/api/v5/addons/search/?app=firefox&type=extension&sort=created&page_size=50	amo-search-newest
 # ZERO-TESTS.md row 36 — Firefox Add-ons (16): Hebrew utilities and their users.

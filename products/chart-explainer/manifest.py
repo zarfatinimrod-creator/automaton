@@ -3,8 +3,14 @@
 What the author may fill, it fills. What only someone else may fill stays null: `originality`, `factCheck` and
 `promiseMatch` are verdicts by separate auditor agents (G3-G5), and the gate rejects any the author signs.
 
-The three constants below mirror `publication-gate.ts` (board ruling, research/faceless-youtube/PREREG-DECISIONS.md
-§2). Python cannot import them, so `tests/test_manifest.py` reads the TypeScript source and fails if they drift.
+The constants below mirror `publication-gate.ts`: the board's three (research/faceless-youtube/PREREG-DECISIONS.md §2)
+and the kids line's three pinned sentences (research/channel-loop/RULING-2026-10-04-kids-youtube.md §4). Python cannot
+import them, so `tests/test_manifest.py` reads the TypeScript source and fails if any drifts.
+
+Which YouTube line a video is for, and its made-for-kids designation, come from the spec (`line`, `madeForKids`); the
+gate's G11 judges them. On the kids line the renderer burns KIDS_ON_SCREEN_TAG into every frame (charts.py) and the
+manifest records it as `onScreenTagEveryFrame`; the description opens with KIDS_AUDIENCE_SENTENCE, then the voice
+sentence. No kids spec exists yet (ruling §9): this is the code path one will use.
 """
 
 from __future__ import annotations
@@ -27,12 +33,27 @@ SYNTHETIC_VOICE_DISCLOSURE = (
 )
 ALLOWED_NARRATION_ENGINES = frozenset({"kokoro-82m"})
 
+# Ruling 4.10 §4 rules 1-2, verbatim; publication-gate.ts holds the originals (G7-k).
+KIDS_SPOKEN_DECLARATION = (
+    "This video was made by a computer program, not by a person. The voice is a computer voice, not a real person. "
+    "Every number comes from real data, listed under the video."
+)
+KIDS_ON_SCREEN_TAG = "Made by a computer program · computer voice · not a person"
+KIDS_AUDIENCE_SENTENCE = "Made for children who can read. This channel is set as made for kids."
+
+# The YouTube lines a manifest may be written for (publication-gate.ts YoutubeLine). The kids line burns the tag.
+KIDS_LINE = "kids-explainers"
+LINES = ("faceless-youtube", KIDS_LINE)
+
 # VideoManifest, in declaration order. tests/test_manifest.py checks this against the interface itself.
 MANIFEST_FIELDS = (
     "id",
     "author",
+    "line",
     "title",
     "description",
+    "tags",
+    "thumbnailBrief",
     "topic",
     "script",
     "datasets",
@@ -40,6 +61,8 @@ MANIFEST_FIELDS = (
     "factCheck",
     "promiseMatch",
     "containsSyntheticMedia",
+    "madeForKids",
+    "onScreenTagEveryFrame",
     "narration",
     "scheduledAt",
     "runnerMinutes",
@@ -47,14 +70,35 @@ MANIFEST_FIELDS = (
 )
 
 
+def line_of(spec: dict[str, Any]) -> str:
+    """The spec's YouTube line. A manifest is written only for a line the gate knows."""
+    line = spec.get("line")
+    if line not in LINES:
+        raise ValueError(f"the spec's line is {line!r}; a manifest is written only for {', '.join(LINES)}")
+    return line
+
+
+def on_screen_tag(spec: dict[str, Any]) -> str | None:
+    """The tag burned into every frame: KIDS_ON_SCREEN_TAG on the kids line, none on T1's (ruling 4.10 §4 rule 1)."""
+    return KIDS_ON_SCREEN_TAG if line_of(spec) == KIDS_LINE else None
+
+
 def description(spec: dict[str, Any]) -> str:
-    """Summary, the board's voice sentence, then the data attribution the sentence points to ("cited below")."""
+    """The opening, the board's voice sentence, then the data attribution the sentence points to ("cited below").
+
+    T1 opens with a summary. The kids line opens with KIDS_AUDIENCE_SENTENCE and goes straight on to the voice sentence
+    (ruling 4.10 §4 rule 2: the parent reads who it is for, then what made it, then the data)."""
     d = spec["dataset"]
     excluded = ", ".join(spec["params"]["excludeEconomies"])
+    opening = (
+        KIDS_AUDIENCE_SENTENCE
+        if line_of(spec) == KIDS_LINE
+        else f"{spec['question']} An explainer computed from GitHub's own quarterly counts of developers pushing code, "
+        f"economy by economy."
+    )
     return "\n\n".join(
         [
-            f"{spec['question']} An explainer computed from GitHub's own quarterly counts of developers pushing code, "
-            f"economy by economy.",
+            opening,
             SYNTHETIC_VOICE_DISCLOSURE,
             f"Data: {d['name']}, {d['file']} at commit {d['commit']} ({d['homepage']}). "
             f"Licence: {d['licence']} (Creative Commons CC0 1.0 Universal), as GitHub states it in the dataset's "
@@ -100,8 +144,11 @@ def build_manifest(
     m = {
         "id": spec["id"],
         "author": AUTHOR,
+        "line": line_of(spec),
         "title": filled.title,
         "description": description(spec),
+        "tags": list(spec.get("tags", [])),
+        "thumbnailBrief": spec.get("thumbnailBrief"),
         "topic": spec["topic"],
         "script": filled.script,
         "datasets": datasets(spec),
@@ -109,6 +156,10 @@ def build_manifest(
         "factCheck": None,
         "promiseMatch": None,
         "containsSyntheticMedia": CHART_TTS_SYNTHETIC_MEDIA,
+        # G11 (ruling 4.10 §6 rule 1): from the spec as written; a spec that does not decide it writes null, which fails.
+        "madeForKids": spec.get("madeForKids"),
+        # G7-k: the tag charts.py burned into, and asserted on, every frame (render_scene_chart refuses a frame without it).
+        "onScreenTagEveryFrame": on_screen_tag(spec),
         # P-1 (ruling 30.9 16(c) item 7): the archive and model tts.py loads, each fetched only against its sha256 pin;
         # the gate refuses a manifest that does not name both (publication-gate.ts, NARRATION_VOICE_LICENCES).
         "narration": {
@@ -176,6 +227,11 @@ def build_notes(manifest: dict[str, Any], render: dict[str, Any]) -> dict[str, s
         "promiseMatch": "null on purpose: G5 needs an auditor to confirm the first 30 seconds answer the title.",
         "containsSyntheticMedia": "true: board ruling 27.9.2026 (PREREG-DECISIONS.md §2a) for every chart + "
         "synthetic-narration video; the description carries SYNTHETIC_VOICE_DISCLOSURE verbatim (§2b).",
+        "madeForKids": f"{json.dumps(manifest['madeForKids'])}: the spec's designation for the {manifest['line']} line, "
+        "sent as selfDeclaredMadeForKids; G11 requires true on kids-explainers and false on faceless-youtube "
+        "(ruling 4.10 §6 rule 1), and the read-back after upload must say the same.",
+        "onScreenTagEveryFrame": f"{json.dumps(manifest['onScreenTagEveryFrame'], ensure_ascii=False)}: the tag "
+        "charts.py burned into every frame and checked on each before saving (kids line only; ruling 4.10 §4 rule 1).",
         "narration": "Kokoro-82M stock voice; no cloned or imitated voice (PREREG-DECISIONS.md §2c). voicesFile "
         "and modelFile are the files tts.py loads, each fetched only against its sha256 pin; P-1 (ruling 30.9 "
         "16(c) item 7) refuses a manifest that does not name both.",

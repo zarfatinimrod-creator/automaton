@@ -5,6 +5,10 @@ name: brand-check
 # candidate list `research/measurements/<stem>-candidates.txt` and writes `<stem>-candidates.json` and `<stem>-check.md`
 # beside it, committed to the branch it ran on. No secret, no page body stored, nothing registered: a lookup is not a
 # purchase. The Netlify probe was added for the T1 sub-brand (research/channel-loop/RULING-2026-09-29-lines.md (e)).
+# The YouTube probe is refused while youtube.com is terms-barred (TERMS_BARRED in scripts/render-watch.mjs, or BARRED in
+# research/channel-loop/terms-verdicts.json): brand-check.mjs then asks three probes and prints "YouTube: not probed
+# (terms barred, ruling 30.9 16(d) D2; the handle is tried at Stage A)" (ruling 4.10 §7 rule 4, fold 8). Every probe
+# this job makes goes through brand-check.mjs, so the refusal holds on a push as on a dispatch.
 
 on:
   workflow_dispatch:
@@ -85,7 +89,7 @@ jobs:
           for f in $LISTS; do
             stem="${f%-candidates.txt}"
             git add "${stem}-candidates.json" "${stem}-check.md"
-            summary="${summary}$(STEM="$stem" node -e 'const j=require("./"+process.env.STEM+"-candidates.json"); process.stdout.write(process.env.STEM.split("/").pop()+": "+j.allFree.length+" of "+j.rows.length+" free on all four; ")')"
+            summary="${summary}$(STEM="$stem" node -e 'const j=require("./"+process.env.STEM+"-candidates.json"); const n=(j.probes||[1,2,3,4]).length; process.stdout.write(process.env.STEM.split("/").pop()+": "+j.allFree.length+" of "+j.rows.length+" free on all "+n+" probes; ")')"
           done
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "brand-check: ${summary%; } [skip ci]"

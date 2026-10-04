@@ -1,8 +1,13 @@
 {
+  "line": "\"faceless-youtube\": analyses/t1.json `line`. Added 4.10.2026 without a re-render, when G11 and G7-k (research/channel-loop/RULING-2026-10-04-kids-youtube.md §6 rule 1, §4) began to require the five fields line, tags, thumbnailBrief, madeForKids and onScreenTagEveryFrame. Each value is what manifest.py writes for analyses/t1.json; none of the five changes a frame, the narration or the script the audits are bound to. The 27.9 \"checkPublication() 0 failures\" (T1-PROTOCOL.md) was G1-G10, before G11 existed; src/__tests__/revenue/publication-check.test.ts now runs G1-G11 on this file.",
+  "tags": "[]: analyses/t1.json sets no tags, so manifest.py writes none (added 4.10.2026 without a re-render; see `line`).",
+  "thumbnailBrief": "null: analyses/t1.json sets none, so YouTube shows a frame of the video (added 4.10.2026 without a re-render; see `line`).",
   "originality": "t1-originality.json: PASS by opus-originality-auditor",
   "factCheck": "t1-factcheck.json: PASS by opus-factcheck-auditor",
   "promiseMatch": "t1-promise.json: PASS by opus-promise-auditor",
   "containsSyntheticMedia": "true: board ruling 27.9.2026 (PREREG-DECISIONS.md §2a) for every chart + synthetic-narration video; the description carries SYNTHETIC_VOICE_DISCLOSURE verbatim (§2b).",
+  "madeForKids": "false: analyses/t1.json `madeForKids`; T1's line declares not made for kids on every upload, and G11 fails anything else (added 4.10.2026 without a re-render; see `line`).",
+  "onScreenTagEveryFrame": "null: T1's line burns no tag (charts.py draws KIDS_ON_SCREEN_TAG only on the kids line), so the 27.9 frames are T1's as drawn (added 4.10.2026 without a re-render; see `line`).",
   "narration": "Kokoro-82M stock voice; no cloned or imitated voice (PREREG-DECISIONS.md §2c). voicesFile and modelFile were added to this manifest on 30.9.2026 without a re-render, when P-1 (ruling 30.9 16(c) item 7) began to require them: they are the file names in tts.py's pins (KOKORO_VOICES, KOKORO_MODEL), and fetch() refuses a file whose sha256 differs, so the 27.9 render could only have loaded those two files. A re-render writes the same values (manifest.py).",
   "scheduledAt": "NOT a schedule. T1 is held unpublished until Stage A; this is the render's finish time, the earliest moment a publish could happen, so G6 has a real date. The publish step must re-run the gate with the actual time, and must not schedule a later publish time: a scheduled video stays private until then (T1-PROTOCOL.md).",
   "runnerMinutes": "wall-clock minutes measured by render.py from render.py start to the end of the render, rounded up to 0.01 (G9 cap: 60).",

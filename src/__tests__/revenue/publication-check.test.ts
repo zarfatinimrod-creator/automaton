@@ -85,6 +85,71 @@ describe("the command line", () => {
     expect(out).toContain("FAIL G4");
     expect(out).toContain("-> as expected");
   });
+
+  it("takes G11 in --expect: an undecided designation is one more failing gate, never a hidden one", () => {
+    const dir = mkdtempSync(join(tmpdir(), "pubcheck-"));
+    const raw = JSON.parse(readFileSync(FIXTURE, "utf8")) as Record<string, unknown>;
+    raw.madeForKids = null;
+    writeFileSync(join(dir, "m.json"), JSON.stringify(raw));
+    const run = (expect: string) => {
+      try {
+        return { code: 0, out: execFileSync(process.execPath, ["--import", "tsx", "scripts/publication-check.ts", join(dir, "m.json"), "--expect", expect], { cwd: REPO_ROOT, encoding: "utf8" }) };
+      } catch (e) {
+        const err = e as { status: number; stdout: string };
+        return { code: err.status, out: err.stdout };
+      }
+    };
+    const ok = run("G3,G4,G5,G11");
+    expect(ok.code).toBe(0);
+    expect(ok.out).toContain("FAIL G11");
+    expect(run("G3,G4,G5").code).toBe(1);
+  });
+});
+
+describe("the T1 manifest's designation (ruling 4.10 §6 rule 1)", () => {
+  it("is T1's line, not made for kids, with no on-screen tag", () => {
+    const v = fixture();
+    expect([v.line, v.madeForKids, v.onScreenTagEveryFrame, v.tags, v.thumbnailBrief]).toEqual(["faceless-youtube", false, null, [], null]);
+  });
+
+  it("fails G11, and only G11 beyond the pending audits, when the designation is flipped or undecided", () => {
+    for (const madeForKids of [true, null]) {
+      expect(failingGates(runPublicationCheck({ ...fixture(), madeForKids }))).toEqual(["G3", "G4", "G5", "G11"]);
+    }
+  });
+});
+
+/**
+ * The committed evidence: research/faceless-youtube/T1-PROTOCOL.md cites products/chart-explainer/releases/t1/ for
+ * "`checkPublication()` 0 failures". A gate change that the release manifest no longer passes must fail here, not go
+ * unnoticed until the publisher runs (the 4.10 review found G11's five fields missing from it). The fields were added
+ * without a re-render, as manifest.py writes them for T1 (releases/t1/manifest.notes.json says so per field).
+ */
+describe("the committed T1 release manifest (releases/t1/manifest.json)", () => {
+  const RELEASE = resolve(REPO_ROOT, "products/chart-explainer/releases/t1/manifest.json");
+
+  it("is a whole VideoManifest, its fields in the renderer's order", () => {
+    const raw = JSON.parse(readFileSync(RELEASE, "utf8")) as Record<string, unknown>;
+    expect(Object.keys(raw)).toEqual([...MANIFEST_FIELDS]);
+  });
+
+  it("passes every gate, G1-G11, with its three audits signed", () => {
+    const result = runPublicationCheck(loadManifest(RELEASE));
+    expect(result.failures).toEqual([]);
+    expect(result.pass).toBe(true);
+  });
+
+  it("carries T1's designation exactly as manifest.py writes it from analyses/t1.json", () => {
+    const v = loadManifest(RELEASE);
+    expect([v.line, v.madeForKids, v.onScreenTagEveryFrame, v.tags, v.thumbnailBrief]).toEqual(["faceless-youtube", false, null, [], null]);
+    // Everything else matches the renderer's own fixture except the audits the release carries and the render's clock.
+    const { originality, factCheck, promiseMatch, scheduledAt, runnerMinutes, ...rest } = v;
+    const { originality: _o, factCheck: _f, promiseMatch: _p, scheduledAt: _s, runnerMinutes: _r, ...fixtureRest } = fixture();
+    expect([originality, factCheck, promiseMatch].every((a) => a?.verdict === "PASS")).toBe(true);
+    expect(scheduledAt).toMatch(/^2026-09-27T/);
+    expect(runnerMinutes).toBeLessThanOrEqual(60);
+    expect(rest).toEqual(fixtureRest);
+  });
 });
 
 describe("the render workflow (chart-explainer-render.yml)", () => {

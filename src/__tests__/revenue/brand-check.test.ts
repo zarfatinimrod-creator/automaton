@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 // @ts-expect-error — plain ESM script, no type declarations by design (same as apify-runs.mjs)
-import { PROBES, checkName, lookups, outputsFor, parseCandidates, probeStatus, renderMarkdown, summarise, verdictOf } from "../../../scripts/brand-check.mjs";
+import { PROBES, YOUTUBE_REFUSAL, activeProbes, checkName, lookups, outputsFor, parseCandidates, probeStatus, readTermsVerdicts, renderMarkdown, summarise, verdictOf, youtubeBarred } from "../../../scripts/brand-check.mjs";
+// @ts-expect-error — plain ESM script, no type declarations by design
+import { termsBarred } from "../../../scripts/render-watch.mjs";
 
 /** research/measurements/brand-name-check.md: a name is offered to the owner only after a runner found it free. */
 describe("brand-check", () => {
@@ -111,10 +117,11 @@ describe("brand-check probes, against a fake fetch (nothing leaves the container
     expect(verdictOf(failed)).toBe("unknown");
   });
 
-  it("checks one name on all four probes, in order, and records url, status and verdict for each", async () => {
+  it("checks one name on all four probes, in order, when nothing bars YouTube, and records url, status and verdict", async () => {
+    // The bar lifted (both sources say so): the four probes run as before 30.9. Today the bar holds; see below.
     const urls = lookups("chartexplained");
     const { impl, calls } = fakeFetch({ [urls.com]: 404, [urls.github]: 404, [urls.youtube]: 404, [urls.netlify]: 200 });
-    const row = await checkName("chartexplained", { fetchImpl: impl, pauseMs: 0 });
+    const row = await checkName("chartexplained", { fetchImpl: impl, pauseMs: 0, probes: activeProbes(false), barredHost: () => null });
     expect(calls.map((c) => c.url)).toEqual([urls.com, urls.github, urls.youtube, urls.netlify]);
     expect(row).toEqual({
       name: "chartexplained",
@@ -124,6 +131,147 @@ describe("brand-check probes, against a fake fetch (nothing leaves the container
       netlify: { url: urls.netlify, status: 200, verdict: "taken" },
     });
     expect(summarise([row]).allFree).toEqual([]);
+  });
+});
+
+describe("the YouTube probe is refused while youtube.com is barred (ruling 30.9 16(d) D2; ruling 4.10 §7 rule 4, fold 8)", () => {
+  function fakeFetch(byUrl: Record<string, number>) {
+    const calls: string[] = [];
+    const impl = async (url: string) => {
+      calls.push(url);
+      if (!(url in byUrl)) throw new Error(`unexpected fetch ${url}`);
+      return { status: byUrl[url], body: { cancel: async () => undefined } };
+    };
+    return { impl, calls };
+  }
+  const verdicts = (v: string | null) => ({ sites: v === null ? {} : { "youtube.com": { verdict: v } } });
+  const barredYoutube = (h: string) => (h === "www.youtube.com" || h.endsWith(".youtube.com") ? { domain: "youtube.com" } : null);
+
+  it("is barred today on both sources: TERMS_BARRED and terms-verdicts.json", () => {
+    expect(termsBarred("www.youtube.com")?.domain).toBe("youtube.com");
+    const file = JSON.parse(readFileSync("research/channel-loop/terms-verdicts.json", "utf8"));
+    expect(file.sites["youtube.com"].verdict).toBe("BARRED");
+    expect(youtubeBarred()).toBe(true);
+    expect(activeProbes()).toEqual(["com", "github", "netlify"]);
+  });
+
+  it("is barred if either source bars it, and when the verdict file cannot be read (fail closed)", () => {
+    expect(youtubeBarred({ barredHost: barredYoutube, verdicts: verdicts("NOT_BARRED") })).toBe(true);
+    expect(youtubeBarred({ barredHost: () => null, verdicts: verdicts("BARRED") })).toBe(true);
+    expect(youtubeBarred({ barredHost: () => null, verdicts: null })).toBe(true);
+    expect(youtubeBarred({ barredHost: () => null, verdicts: verdicts("NOT_BARRED") })).toBe(false);
+    expect(youtubeBarred({ barredHost: () => null, verdicts: verdicts(null) })).toBe(false);
+    expect(readTermsVerdicts("research/channel-loop/no-such-file.json")).toBeNull();
+  });
+
+  it("asks .com, GitHub and Netlify only, in order, and never fetches youtube.com", async () => {
+    const urls = lookups("worldincharts");
+    const { impl, calls } = fakeFetch({ [urls.com]: 404, [urls.github]: 404, [urls.netlify]: 404 });
+    const row = await checkName("worldincharts", { fetchImpl: impl, pauseMs: 0 });
+    expect(calls).toEqual([urls.com, urls.github, urls.netlify]);
+    expect(calls.some((u) => /youtube\.com/.test(u))).toBe(false);
+    expect(row).toEqual({
+      name: "worldincharts",
+      com: { url: urls.com, status: 404, verdict: "free" },
+      github: { url: urls.github, status: 404, verdict: "free" },
+      netlify: { url: urls.netlify, status: 404, verdict: "free" },
+    });
+  });
+
+  it("refuses a barred host even when a caller asks for it by name", async () => {
+    const { impl, calls } = fakeFetch({});
+    const status = await probeStatus("https://www.youtube.com/@worldincharts", impl);
+    expect(calls).toEqual([]);
+    expect(status).toMatch(/^refused: terms barred/);
+    expect(verdictOf(status)).toBe("unknown");
+    const row = await checkName("worldincharts", { fetchImpl: fakeFetch({ [lookups("worldincharts").com]: 404, [lookups("worldincharts").github]: 404, [lookups("worldincharts").netlify]: 404 }).impl, pauseMs: 0, probes: ["com", "github", "youtube", "netlify"] });
+    expect(row.youtube.verdict).toBe("unknown");
+  });
+
+  it("counts a name all-free on the three probes asked", () => {
+    const three = ["com", "github", "netlify"];
+    const row = (name: string, com: string, github: string, netlify: string) => ({ name, com: { verdict: com }, github: { verdict: github }, netlify: { verdict: netlify } });
+    expect(summarise([row("a", "free", "free", "free"), row("b", "free", "taken", "free"), row("c", "unknown", "free", "free")], three)).toEqual({
+      allFree: ["a"],
+      firstAllFree: "a",
+      unknown: ["c"],
+    });
+    // Without the probe list, a row with no YouTube reading is never all-free: the default stays the four.
+    expect(summarise([row("a", "free", "free", "free")]).allFree).toEqual([]);
+  });
+
+  it("prints the refusal in the ruling's words, and the table has three columns", () => {
+    expect(YOUTUBE_REFUSAL).toBe("YouTube: not probed (terms barred, ruling 30.9 16(d) D2; the handle is tried at Stage A)");
+    const probes = ["com", "github", "netlify"];
+    const rows = [{ name: "worldincharts", com: { status: 404, verdict: "free" }, github: { status: 404, verdict: "free" }, netlify: { status: 404, verdict: "free" } }];
+    const md = renderMarkdown({ measuredAt: "2026-10-04T09:00:00.000Z", candidates: "research/measurements/kids-subbrand-candidates.txt", probes, refused: { youtube: YOUTUBE_REFUSAL }, ...summarise(rows, probes), rows });
+    expect(md).toContain("| name | .com | GitHub | Netlify | all three free |");
+    expect(md).toContain("| `worldincharts` | free (404) | free (404) | free (404) | **yes** |");
+    expect(md).toContain(YOUTUBE_REFUSAL);
+    expect(md).not.toMatch(/\| YouTube \|/);
+  });
+});
+
+describe("a whole run of brand-check.mjs, offline (the path brand-check.yml takes)", () => {
+  // The script's own main(), in a child process whose global fetch is a fake installed by --import before the script
+  // loads: it answers 404 to everything and records each URL. Nothing leaves the container.
+  it("prints the refusal, asks three probes per name, never youtube.com, and writes three columns", () => {
+    const dir = mkdtempSync(join(tmpdir(), "brand-run-"));
+    const fake = join(dir, "fake-fetch.mjs");
+    writeFileSync(
+      fake,
+      [
+        "globalThis.__asked = [];",
+        "globalThis.fetch = async (url) => { globalThis.__asked.push(String(url)); return { status: 404, body: { cancel: async () => undefined } }; };",
+        'process.on("exit", () => { process.stderr.write("ASKED " + JSON.stringify(globalThis.__asked)); });',
+      ].join("\n"),
+    );
+    const r = spawnSync(process.execPath, ["--import", pathToFileURL(fake).href, "scripts/brand-check.mjs", "--out", join(dir, "x.json"), "--md", join(dir, "x.md"), "worldincharts", "askthechart"], { encoding: "utf8" });
+    expect(r.status).toBe(0);
+    expect(r.stdout.split("\n")[0]).toBe(YOUTUBE_REFUSAL);
+    expect(r.stdout).toContain("worldincharts: .com free (404), GitHub free (404), Netlify free (404)");
+    expect(r.stdout).toContain("all three free: worldincharts, askthechart");
+    const asked = JSON.parse(r.stderr.slice(r.stderr.indexOf("ASKED ") + 6)) as string[];
+    expect(asked).toHaveLength(6);
+    expect(asked.some((u) => /youtube/.test(u))).toBe(false);
+    const out = JSON.parse(readFileSync(join(dir, "x.json"), "utf8"));
+    expect(out.probes).toEqual(["com", "github", "netlify"]);
+    expect(out.refused).toEqual({ youtube: YOUTUBE_REFUSAL });
+    expect(out.allFree).toEqual(["worldincharts", "askthechart"]);
+    expect(readFileSync(join(dir, "x.md"), "utf8")).toContain("| name | .com | GitHub | Netlify | all three free |");
+  });
+});
+
+describe("the kids sub-brand list (ruling 4.10 §7 rule 4, fold 8)", () => {
+  const path = "research/measurements/kids-subbrand-candidates.txt";
+  const text = readFileSync(path, "utf8");
+  const names = parseCandidates(text);
+
+  it("is a list of five, in the t1 list's pattern, answered beside it", () => {
+    expect(names).toHaveLength(5);
+    expect(outputsFor(path)).toEqual({
+      candidates: path,
+      json: "research/measurements/kids-subbrand-candidates.json",
+      md: "research/measurements/kids-subbrand-check.md",
+    });
+    expect(text).toContain("research/channel-loop/RULING-2026-10-04-kids-youtube.md §7 rule 4");
+    expect(text).toMatch(/three probes/);
+    expect(text).toContain(YOUTUBE_REFUSAL);
+  });
+
+  it("never names the brand, the T1 sub-brand or any T1 candidate", () => {
+    const t1 = parseCandidates(readFileSync("research/measurements/t1-subbrand-candidates.txt", "utf8"));
+    const brand = parseCandidates(readFileSync("research/measurements/brand-candidates.txt", "utf8"));
+    for (const n of names) {
+      expect(t1, n).not.toContain(n);
+      expect(brand, n).not.toContain(n);
+      expect(n).not.toMatch(/chartsplained|mehudak|tikufi/);
+    }
+  });
+
+  it("has no kids, children, character, toy, song, story or pre-reader word in any name", () => {
+    const banned = /kid|child|teen|baby|toddler|preschool|nursery|abc|toy|doll|puppet|mascot|cartoon|character|song|rhyme|story|stories|poem|tale|colou?r|number|count|teacher|friend|buddy|pal|fun|play|learn|school|class/;
+    for (const n of names) expect(n, n).not.toMatch(banned);
   });
 });
 
@@ -212,5 +360,19 @@ describe("brand-check.yml takes the candidate list as an input", () => {
     // A dispatch input interpolated into `run:` is a script-injection route; outputsFor() validates it once it is data.
     const runBlocks = yml.split("\n").filter((l) => !/^\s*[A-Z_]+: \$\{\{/.test(l));
     expect(runBlocks.join("\n")).not.toMatch(/\$\{\{\s*(github\.event\.)?inputs\./);
+  });
+
+  it("runs only scripts/brand-check.mjs for the probes, so its refusal holds on every run (ruling 4.10 fold 8)", () => {
+    // A push that changes a *-candidates.txt runs this job (the push paths above): the probes it can make are the ones
+    // brand-check.mjs allows, and nothing in the workflow fetches a URL itself.
+    const code = yml.split("\n").filter((l) => !/^\s*#/.test(l)).join("\n");
+    expect(code).not.toMatch(/curl|wget|youtube\.com|fetch\(/);
+    expect(code).toMatch(/node scripts\/brand-check\.mjs --candidates/);
+    expect(yml).toMatch(/terms-barred|TERMS_BARRED/);
+  });
+
+  it("counts the probes the run asked in its commit message, not a fixed four", () => {
+    expect(yml).not.toMatch(/free on all four/);
+    expect(yml).toMatch(/j\.probes/);
   });
 });

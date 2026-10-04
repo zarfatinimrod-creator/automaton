@@ -425,3 +425,29 @@ the real `urls.txt`; a grep of every edited owner-facing file for the owner's id
   `BOARD.md:183-185`; `BOARD-LOOP.md:17`, `:67-68`, `:138-141`; `CLAUDE.md:86`; `TERMS-AUDIT:25-27`, `:43`;
   `RULING-2026-09-30-video.md:82`, `:136-137`, `:374-377`; `RULING-2026-09-29-loop.md:116-119`, `:479`;
   `.github/workflows/colony.yml:23`.
+
+## Amendment (4.10, ~09:00 UTC, main thread on Fable 5.1): the token's shape, after the role's list was read
+
+§2 rule 3 chose shape A (the brand machine account as a billing manager, holding a fine-grained PAT with Administration:
+read) before the role's "able to" list had been read ("Not ruled here" item 3). The fold's fixer read it at github grade
+from two local clones of github/docs (`data/reusables/billing/org-billing-manager-permissions.md`, recorded with its blob
+and sha256 in `research/measurements/actions-spending-limit.md`'s 4.10 section): a billing manager can add, update or
+remove payment methods, move the organisation between the Free and Team plans, and start, modify or cancel sponsorships;
+the budgets page adds that the role can edit or delete a budget (`gh-docs-set-up-budgets-2026-09-29.txt:295`, `:361`,
+rendered).
+
+**RULING (apply as written).**
+1. Shape A is withdrawn. The machine account is never made a billing manager: the role carries three ways to spend the
+   owner's money and the power to delete the $0 fence, and an automation identity holds no power to spend (`MISSION.md`
+   ₪0; "one platform banning us must not take the company down"). This holds although its PAT would be read-only: the
+   role, not the token, is the exposure.
+2. Shape B is the only shape: in the step-7 sitting the owner creates a fine-grained personal access token of their own
+   account with the organisation as resource owner and exactly one permission, Administration: read (organisation), the
+   longest expiry GitHub offers, and stores it as `ORG_BUDGETS_READ_TOKEN` with the step-6 secrets. If the organisation's
+   token policy must first allow fine-grained tokens, that switch is part of the same sitting. The token's renewal shares
+   `BRAND_GITHUB_TOKEN`'s renewal moment and is never a per-item action.
+3. Item 9's hold is lifted by this text. The budget itself (item 8) was never held. Nothing else in §2 changes: the
+   budgets read, the per-job re-read, "private only after the fence is read" and the step 7 + 90 days kill stand.
+4. Fold: `src/revenue/owner-steps.ts` step 7 and the `ORG_BUDGETS_READ_TOKEN` row; `docs/OWNER_STEPS.he.md` and its PDF;
+   `research/measurements/actions-spending-limit.md`'s 4.10 section (one line: the shape question is closed, shape B);
+   `logs/CHANNEL_LOOP.md` §6 item 4 (the main thread).

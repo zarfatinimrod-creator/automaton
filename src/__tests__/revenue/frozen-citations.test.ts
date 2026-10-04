@@ -62,7 +62,8 @@ const LIVE_MENTIONS: Record<string, string> = {
   "research/breadth/scouts/automation-marketplaces.json apify-store-accessibility": "a scout's output, naming the watched listing",
   "research/breadth/verify/verdicts.json apify-store-accessibility": "a verifier's output, naming the watched listing",
   "research/faceless-youtube/LICENCE-IGO-DECISION.md unesco-uis-databrowser-terms": "a urls.txt line the note proposed: the slug a render writes",
-  "research/channel-loop/RULING-2026-10-04-mozilla-precondition.md amo-add-on-policies": "the urls.txt line the ruling retires (its slug, quoted from urls.txt:331) and the slug tick 38 froze; its lines are cited from amo-add-on-policies-2026-09-28",
+  // The 4.10 row-18 ruling named amo-add-on-policies while urls.txt:331 was still active; its fold retired that line
+  // (ruling §3 rule 1), so the slug is no longer an active capture and its entry here went with it.
 };
 
 /**

@@ -244,9 +244,10 @@
    "checked": "2026-09-29"
   },
   "mozilla.org": {
-   "verdict": "BARRED",
-   "source": "addons.mozilla.org is in TERMS_BARRED (personal data); mozilla.org's other pages have no active line",
-   "checked": "2026-09-29"
+   "verdict": "CONDITIONAL_UNMET",
+   "source": "Mozilla Websites & Communications Terms of Use (mozilla/legal-docs en/websites_tou.md, scope :12) and Acceptable Use Policy (en/acceptable_use_policy.md:14): no access bar; condition: a capture may store no account names or email addresses (TERMS-AUDIT-2026-09-29.md:27, :138; github via the audit)",
+   "checked": "2026-10-04",
+   "note": "Ruling 4.10 row 18 §3 rule 3 (RULING-2026-10-04-mozilla-precondition.md); until then BARRED on 'no active line', a statement about our lines rather than a terms reading. Unmet as last exercised: the three AMO search lines stored authors[] and support_email (redacted 29.9), so addons.mozilla.org stays in TERMS_BARRED (scripts/render-watch.mjs). A bug record names its reporter and assignee, so no bugzilla.mozilla.org /rest/ line is ever active under this condition (grade none: no capture holds the schema; presumed to fail until one shows otherwise). The verdict moves to CONDITIONAL_MET only in the fold that queues a line whose capture lists no accounts or addresses (a static policy page such as the client bug bounty page or BMO's etiquette page, or a build artifact), with capture-check and the reader checking the first capture for names and addresses before it is kept. Today no line needs it: row 8's render half is held at github grade from mozilla/bedrock and mozilla-bteam/bmo (16(d) D3's pattern), and no mozilla.org render is queued before a qualifying finding."
   },
   "mr.gov.il": {
    "verdict": "NO_TERMS",
