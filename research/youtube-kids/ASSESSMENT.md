@@ -464,7 +464,7 @@ gate-passed videos within six weeks. Never a replacement channel (`youtube-monet
   reopen A on their own. Only the owner can change the mandate, and nothing here asks them to.
 
   If A were ever run: `true` always, and zero `youtubeProduct=KIDS` views by day 56 kills it. That dimension exists:
-  `yt-analytics-dimensions.txt:731-751`, rendered. The reader does not use it today.
+  `yt-analytics-dimensions.txt:731-751`, rendered. The reader does not use it today. **Ruled 4.10.2026:** a readers-only English made-for-kids shape (`kids-explainers`) admitted as an experiment; A (pre-readers) and A-he stay closed; B stays rejected; this pre-written A kill (here and at `docs/REJECTED.md:1686-1687`) is superseded by the ruling's §8 rule 3 (the KIDS split is a diagnostic) (`research/channel-loop/RULING-2026-10-04-kids-youtube.md`; the design: `research/youtube-kids/KIDS-LINE.md`).
 - **A-he:** everything required for A, plus a Hebrew voice whose weights licence and training-data terms are both rendered as
   commercial, and which passes a Whisper round-trip and a listener check.
 
