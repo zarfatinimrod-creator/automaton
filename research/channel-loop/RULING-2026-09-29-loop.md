@@ -117,6 +117,26 @@ trigger and filter in item 4.
   account's Actions spending limit as $0 (so private-repo minutes can never bill) and only inside the free private-repo
   allowance; nothing filed; the private repo moves at step 7. It is agent work, not a product build, and does not enter
   BBU. If the free allowance cannot hold a meaningful run, the tick records that and does not extend it.
+  > **Amended 4.10.2026 (`RULING-2026-10-04-mozilla-precondition.md`, FABLE_QUEUE row 18).** The "Tick 18+" item's
+  > precondition, "only after a runner has read the account's Actions spending limit as $0", cannot be met by a runner on a
+  > personal account: no REST endpoint reads a personal account's budget or payment method
+  > (`gh-docs-rest-billing-budgets-2026-09-29.txt:152-160`, rendered); the user usage endpoints read usage, with a Plan: read token of
+  > the account's own owner (`gh-docs-rest-billing-usage-2026-09-29.txt:1158-1168`, rendered; PAT:173, github); `GITHUB_TOKEN` is an
+  > installation token with no plan permission (GT:17, github). It now reads: *Mozilla's dry-run harness runs only in a
+  > private repository owned by the organisation `mehudak` (after step 7); only after a runner has read the organisation's
+  > budgets through `GET /organizations/mehudak/settings/billing/budgets?scope=organization&per_page=100` and found one
+  > `ProductPricing` budget on product `actions`, scope `organization`, amount 0, `prevent_further_usage` true (a 403, a 404,
+  > an empty list, SKU-only or other-product budgets fail; the read is repeated at the start of every tick that runs a job);
+  > only after the host serving Mozilla's builds has a verdict that admits the fetch (`CHANNEL_LOOP.md:78` covers a harness
+  > download); and only inside the free allowance under the note's fence (`actions-spending-limit.md:211-219`). Nothing is
+  > filed.* The owner creates that budget in the step-7 sitting (five by-sight items, ruling 4.10 §2) as the organisation's
+  > ₪0 fence for the open repo-visibility decision, and grants a read-only token (the machine account as billing manager,
+  > else the owner's own; Administration: read only, never write); Mozilla asks for nothing before a qualifying finding
+  > (`BOARD.md:185`). No private repository is created and no runner minute is spent for row 8 on the personal account. A
+  > session-only source review is not "a meaningful run" (`:119`) and is not built. Pre-registered kill: 90 days after step 7
+  > is done without a completed 30-day dry run, row 8 is killed as "no ₪0 route". The summary row's "instruments and Mozilla
+  > harness meanwhile" (`:479`) reads "instruments meanwhile; the Mozilla harness waits on step 7".
+  > *(Fold note, 4.10.2026: the line numbers in this note are the 29.9 text's. With the note inserted here, the summary row it names as `:479` is at `:499`; every line of the 29.9 text after `:119` has moved down by 20, and after `:479` by 21 (a pointer row follows the summary row).)*
 - **Standing:** one render dispatch per tick only when a queued URL exists that can kill or admit; otherwise record
   "idle-by-cap: awaiting step 8" and move to instruments, prep and maintenance (`BOARD-LOOP.md:17` order (i)-(vi)).
 - **The hour step 8 lands (owner one-time step):** send in the drafted order 1-7 after each `preSend` check (n8n's web form
@@ -477,6 +497,7 @@ shows the עוסק must issue personally (KILL-4, together with Y8 and Wix).
 |---|---|---|
 | (a) Firefox | **KILL** on G4, rendered; reopen on a free-nowhere Pro feature named by row 15(a) and confirmed on AMO pages 2-6, or a cohort median ≥ 30 | REJECTED entry; §4 row 16 killed; step 14 out of §6 (Opus) |
 | (b) NEEDS_MORE policy | No third refill; no nagging; step 8 first in the free batch with a count; render only what can kill or admit; JS-capable render counts as rendering; instruments and Mozilla harness meanwhile; refill only when rendering is exhausted **and** filtered to mailbox-free venues | §6 reorder; KPI read path; prize-intake half 2; render-watch JS mode; Trolley/GD/n8n renders with pre-registered Topcoder kill (Opus/runner) |
+| (b) amended 4.10 | Read "instruments and Mozilla harness meanwhile" in the row above as "instruments meanwhile; the Mozilla harness waits on step 7" (`RULING-2026-10-04-mozilla-precondition.md` §2 rule 7; the amendment note under (b), after `:119`) | Row 8 parked on step 7 and the organisation's budgets read (main thread fold of the 4.10 ruling) |
 | (c) Admission | **None.** Pre-registered order: Displate → Indiebook → Teach Simple → CrazyGames, each on its written answer; Displate's written no = KILL-4 | §8 line; Displate `preSend` (Opus) |
 | (d) §9 wording | **Confirmed** (Q9); delete `:264`; adopt "500 plays / 21 days" and re-base the benchmark kill to "no Full Launch invitation" | §4 row 6, §9 (Opus) |
 | (e)1 Y8 kill (a) | **Does not fire**; PARK behind CrazyGames | §4 row 14 (Opus) |
