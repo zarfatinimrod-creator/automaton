@@ -9,6 +9,13 @@ surface, so its bars carry visible count labels).
 Every number a frame shows is read from figures.json (`labels`, built by figures.labels_from_json), where it has a
 name, a raw value, half-up rounding and the code that computed it. `untraced_chart_numbers()` walks every text on a
 drawn frame and refuses any number figures.json does not hold; render_scene_chart runs it before saving.
+
+On the kids line (spec `line` "kids-explainers") every frame also carries KIDS_ON_SCREEN_TAG, "Made by a computer
+program · computer voice · not a person", in the band above the title, inside the 5% side margins the title and footer
+already keep — never only on an end card (research/channel-loop/RULING-2026-10-04-kids-youtube.md §4 rule 1(ii), the
+per-frame pattern of products/parent-guides/README.md:47-48). `tag_problems()` reads it back from the drawn frame and
+render_scene_chart refuses to save a frame without it, so manifest.json's `onScreenTagEveryFrame` is a checked fact:
+assemble.py makes every video frame from these PNGs. T1's frames carry no tag and are drawn exactly as before.
 """
 
 from __future__ import annotations
@@ -25,8 +32,13 @@ from matplotlib import font_manager  # noqa: E402
 from matplotlib.figure import Figure as MplFigure  # noqa: E402
 
 from figures import HIST_BIN_WIDTH, Analysis, histogram_bins, slug  # noqa: E402
+from manifest import on_screen_tag  # noqa: E402
 
 WIDTH, HEIGHT, DPI = 1920, 1080, 100
+# The kids line's tag: right-aligned at the right margin, centred in the band between the frame's top and the title.
+TAG_GID = "kids-on-screen-tag"
+TAG_X, TAG_Y, TAG_SIZE = 0.95, 0.968, 20
+MARGIN = 0.05
 FONT = "DejaVu Sans"
 
 SURFACE = "#fcfcfb"
@@ -84,6 +96,9 @@ def _frame(title: str, subtitle: str, spec: dict[str, Any], left: float = 0.085)
     for text, y, size, weight, colour in ((title, 0.925, 40, "bold", TEXT), (subtitle, 0.855, 24, "normal", TEXT_2)):
         _fit(fig, fig.text(0.05, y, text, fontsize=size, fontweight=weight, color=colour, va="center"))
     _fit(fig, fig.text(0.05, 0.045, footer_text(spec), fontsize=17, color=TEXT_2, va="center", linespacing=1.5))
+    tag = on_screen_tag(spec)
+    if tag is not None:
+        _fit(fig, fig.text(TAG_X, TAG_Y, tag, fontsize=TAG_SIZE, color=TEXT_2, ha="right", va="center", gid=TAG_GID))
     ax = fig.add_axes([left, 0.19, 0.915 - left, 0.60], facecolor=SURFACE)
     ax.grid(axis="y", color=GRID, linewidth=1.2)
     ax.set_axisbelow(True)
@@ -286,18 +301,49 @@ def untraced_chart_numbers(fig: MplFigure, labels: Labels, spec: dict[str, Any])
     return [n for t in chart_texts(fig, spec) for n in _NUMBER.findall(t) if n not in allowed]
 
 
+def tag_problems(fig: MplFigure, spec: dict[str, Any]) -> list[str]:
+    """Why a drawn frame's on-screen tag is not the line's, read back from the frame. Empty when it is.
+
+    Kids line: exactly one tag artist, its text KIDS_ON_SCREEN_TAG, wholly inside the 5% side margins and the frame, and
+    overlapping no other text. T1's line: no tag artist at all."""
+    want = on_screen_tag(spec)
+    tags = [t for t in fig.texts if t.get_gid() == TAG_GID]
+    if want is None:
+        return [f"a tag is drawn on the {spec['line']} line, which carries none"] if tags else []
+    if len(tags) != 1:
+        return [f"the frame carries {len(tags)} KIDS_ON_SCREEN_TAG artists, not one"]
+    tag = tags[0]
+    if tag.get_text() != want:
+        return [f"the frame's tag reads {tag.get_text()!r}, not KIDS_ON_SCREEN_TAG {want!r}"]
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    box = tag.get_window_extent(renderer=renderer)
+    problems = []
+    if box.x0 < MARGIN * WIDTH or box.x1 > (1 - MARGIN) * WIDTH or box.y0 < 0 or box.y1 > HEIGHT:
+        problems.append(f"the KIDS_ON_SCREEN_TAG box {box.bounds} leaves the frame's margins")
+    for other in fig.texts:
+        if other is not tag and other.get_text() and box.overlaps(other.get_window_extent(renderer=renderer)):
+            problems.append(f"the KIDS_ON_SCREEN_TAG overlaps the text {other.get_text()[:40]!r}")
+    return problems
+
+
 def draw_scene_chart(scene: dict[str, Any], an: Analysis, labels: Labels, spec: dict[str, Any]) -> MplFigure:
     _setup_fonts()
     return CHARTS[scene["chart"]](an, labels, spec, scene["chartTitle"])
 
 
 def render_scene_chart(scene: dict[str, Any], an: Analysis, labels: Labels, spec: dict[str, Any], out: Path) -> Path:
-    """Draw, refuse any untraced number, save at exactly WIDTH x HEIGHT (no tight bbox: that would change the size)."""
+    """Draw, refuse any untraced number and any frame whose tag is not its line's, then save at exactly WIDTH x HEIGHT
+    (no tight bbox: that would change the size)."""
     fig = draw_scene_chart(scene, an, labels, spec)
     untraced = untraced_chart_numbers(fig, labels, spec)
     if untraced:
         plt.close(fig)
         raise ChartError(f"{scene['id']}: numbers on the chart that figures.json does not hold: {untraced}")
+    problems = tag_problems(fig, spec)
+    if problems:
+        plt.close(fig)
+        raise ChartError(f"{scene['id']}: {'; '.join(problems)}")
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, dpi=DPI, facecolor=SURFACE)
     plt.close(fig)

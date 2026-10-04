@@ -7,6 +7,7 @@ import pytest
 
 import charts
 import figures
+import manifest
 from helpers import PARAMS, small_dataset, small_spec
 
 
@@ -87,3 +88,134 @@ def test_chart_frames_are_exactly_1920_by_1080(drawn, tmp_path):
     spec, an, labels, out = drawn
     p = charts.render_scene_chart(out[0][0], an, labels, spec, tmp_path / "s1.png")
     assert Image.open(p).size == (1920, 1080)
+
+
+# --- The kids line's on-screen tag (ruling 4.10 §4 rule 1(ii); fold action 9) -----------------------------------------
+# assemble.py loops each scene's PNG for its frames and concatenates them, so a tag in every scene PNG is a tag in every
+# video frame (tests/test_tts_assemble.py: the MP4 has exactly the timeline's frames).
+
+def _draw_all(tmp_path, spec):
+    an = figures.Analysis(figures.load_languages(small_dataset(tmp_path), ["EU"]), PARAMS)
+    figs = figures.compute_figures(an)
+    cf = figures.compute_chart_figures(an, [s["chart"] for s in spec["scenes"]])
+    labels = figures.labels_from_json(json.loads(json.dumps(figures.figures_json(figs, [], spec, an, cf))))
+    filled = figures.fill_spec(spec, figs)
+    return an, labels, filled, [(s, charts.draw_scene_chart(s, an, labels, spec)) for s in filled.scenes]
+
+
+def _close(out):
+    for _, fig in out:
+        charts.plt.close(fig)
+
+
+def _kids_spec():
+    spec = small_spec()
+    spec.update({"line": "kids-explainers", "madeForKids": True})
+    return spec
+
+
+def test_every_kids_frame_carries_the_tag_once_inside_the_frame_and_clear_of_every_other_text(tmp_path):
+    spec = _kids_spec()
+    _, _, _, out = _draw_all(tmp_path, spec)
+    assert len(out) == 6
+    for scene, fig in out:
+        fig.canvas.draw()
+        renderer = fig.canvas.get_renderer()
+        tags = [t for t in fig.texts if t.get_gid() == charts.TAG_GID]
+        assert [t.get_text() for t in tags] == [manifest.KIDS_ON_SCREEN_TAG], scene["id"]
+        box = tags[0].get_window_extent(renderer=renderer)
+        assert 0.05 * charts.WIDTH <= box.x0 and box.x1 <= 0.95 * charts.WIDTH, scene["id"]  # the 5% side margins
+        assert 0 <= box.y0 and box.y1 <= charts.HEIGHT, scene["id"]
+        others = [t.get_window_extent(renderer=renderer) for t in fig.texts if t is not tags[0] and t.get_text()]
+        assert not any(box.overlaps(o) for o in others), scene["id"]
+        assert charts.tag_problems(fig, spec) == [], scene["id"]
+    _close(out)
+
+
+def test_t1_frames_carry_no_tag(drawn):
+    spec, _, _, out = drawn
+    for _, fig in out:
+        assert [t for t in fig.texts if t.get_gid() == charts.TAG_GID] == []
+        assert charts.tag_problems(fig, spec) == []
+
+
+def test_render_refuses_a_kids_frame_without_the_tag(tmp_path, monkeypatch):
+    spec = _kids_spec()
+    an, labels, filled, out = _draw_all(tmp_path, spec)
+    _close(out)
+    scene = filled.scenes[0]
+    original = charts.CHARTS[scene["chart"]]
+
+    def untagged(*args):
+        fig = original(*args)
+        for t in [t for t in fig.texts if t.get_gid() == charts.TAG_GID]:
+            t.remove()
+        return fig
+
+    monkeypatch.setitem(charts.CHARTS, scene["chart"], untagged)
+    with pytest.raises(charts.ChartError, match="KIDS_ON_SCREEN_TAG"):
+        charts.render_scene_chart(scene, an, labels, spec, tmp_path / "k.png")
+    assert not (tmp_path / "k.png").exists()
+
+
+@pytest.mark.parametrize("text", ["", "Made by a computer program", "AI video"])
+def test_render_refuses_a_kids_frame_whose_tag_is_not_the_pinned_text(tmp_path, monkeypatch, text):
+    spec = _kids_spec()
+    an, labels, filled, out = _draw_all(tmp_path, spec)
+    _close(out)
+    scene = filled.scenes[1]
+    original = charts.CHARTS[scene["chart"]]
+
+    def altered(*args):
+        fig = original(*args)
+        for t in fig.texts:
+            if t.get_gid() == charts.TAG_GID:
+                t.set_text(text)
+        return fig
+
+    monkeypatch.setitem(charts.CHARTS, scene["chart"], altered)
+    with pytest.raises(charts.ChartError, match="KIDS_ON_SCREEN_TAG"):
+        charts.render_scene_chart(scene, an, labels, spec, tmp_path / "k.png")
+
+
+def test_render_refuses_a_kids_frame_whose_tag_is_cut_off(tmp_path, monkeypatch):
+    spec = _kids_spec()
+    an, labels, filled, out = _draw_all(tmp_path, spec)
+    _close(out)
+    scene = filled.scenes[2]
+    original = charts.CHARTS[scene["chart"]]
+
+    def moved(*args):
+        fig = original(*args)
+        for t in fig.texts:
+            if t.get_gid() == charts.TAG_GID:
+                t.set_position((1.2, 0.968))  # off the right edge
+        return fig
+
+    monkeypatch.setitem(charts.CHARTS, scene["chart"], moved)
+    with pytest.raises(charts.ChartError, match="KIDS_ON_SCREEN_TAG"):
+        charts.render_scene_chart(scene, an, labels, spec, tmp_path / "k.png")
+
+
+def test_a_tag_on_t1s_line_is_refused(drawn):
+    spec, _, _, out = drawn
+    fig = out[0][1]
+    fig.text(0.95, 0.968, manifest.KIDS_ON_SCREEN_TAG, gid=charts.TAG_GID)
+    assert charts.tag_problems(fig, spec) != []
+
+
+def test_the_tag_is_burned_into_the_pixels(tmp_path):
+    """The saved kids frame differs from T1's only where the tag is drawn: the band above the title."""
+    from PIL import Image, ImageChops
+
+    t1_spec, kids_spec = small_spec(), _kids_spec()
+    an, labels, filled, out = _draw_all(tmp_path, kids_spec)
+    _close(out)
+    scene = filled.scenes[0]
+    a = Image.open(charts.render_scene_chart(scene, an, labels, t1_spec, tmp_path / "t1.png")).convert("RGB")
+    b = Image.open(charts.render_scene_chart(scene, an, labels, kids_spec, tmp_path / "kids.png")).convert("RGB")
+    diff = ImageChops.difference(a, b).getbbox()
+    assert diff is not None, "the kids frame is pixel-identical to T1's: no tag was drawn"
+    x0, y0, x1, y1 = diff
+    assert y1 <= int(0.05 * charts.HEIGHT), diff  # the top 5% of the frame (PIL counts y from the top edge)
+    assert x0 >= int(0.05 * charts.WIDTH) and x1 <= int(0.95 * charts.WIDTH) + 1, diff
