@@ -107,9 +107,9 @@ export interface ExperimentVerdict {
   /**
    * The next upload on this channel must wait: any kill; K-mfk-unmeasured (an upload that exists and has no designation
    * reading: "it also blocks the next upload on that channel until the reading exists", ruling 4.10 §10 rule 2); or
-   * K-compute ("pause the next upload and fix"). The publisher MUST read it before every upload. No publisher exists yet
-   * (nothing in this repository uploads), so nothing enforces the freeze today: a publisher that does not refuse an upload
-   * while this is true, with a test that it refuses, may not be built.
+   * K-compute ("pause the next upload and fix"). The publisher MUST read it before every upload. No publisher exists yet;
+   * none may be built that does not call publisher-guard.ts `assertMayUpload` first, which refuses while this is true
+   * (publisher-guard.test.ts fails on any code in the colony that can upload without calling it).
    */
   uploadsFrozen: boolean;
 }
