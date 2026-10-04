@@ -193,3 +193,13 @@ then the `POSTHOG_READ_KEY` row.
 **What it does not settle.** Whether the connector's account is on the free plan, whether it can mint a personal API key
 (the ruling has the owner mint and paste it, so this does not block), the deployed size of the free read budget, and
 whether server-hash mode reaches the T1 raw event: none is in the source, and each is a live read for the main thread.
+
+## 4.10 (tick 40, main thread): the live check through the connector, and the decision
+
+Read-only calls through the attached PostHog connector (`project-get`, `organization-get`, `projects-get`, `billing-overview-get`, `read-data-schema`), 4.10 ~10:35 UTC. Grade: live account state, not a text.
+
+- **Plan:** `billing_plan: free`, `subscription_level: free`, `has_active_subscription: false`, `trial: null`, `free_trial_until: null`. Ruling (c)'s condition holds live as well as on the text (above).
+- **Projects:** the free plan's `organizations_projects` feature has `limit: 1`; the organisation holds exactly one project, created 20.8.2026. That project carries another product's telemetry (139 events in the current billing period, custom game events plus `$pageview` and `$web_vitals`; session recording on, 8 recordings). It is the owner's existing product, not the brand's, and the brand never shares it: mixed data, and its public project token already identifies that other product's site.
+- **Consequence:** the colony cannot create the brand's project in this organisation on the free plan (`project-create` would be refused or push toward the paid "Boost" add-on, which the ₪0 rule forbids). Organisations are free and unlimited (`organizations.mdx`, above), but the MCP server has no tool that creates one, so a second organisation is an owner click in PostHog: one time, free, no identity check, inside an account the owner already holds. Proposed as a §6 free step (after step 8, before any deploy's D0); FABLE_QUEUE row 25 confirms its place.
+- **After the click:** the colony switches the connector's active organisation (`switch-organization`), creates the project (`project-create`) with session recording off, GeoIP off (every new project gets it on, above), "Discard client IP data" on and cookieless mode, and writes the project token to `products/il-biz-tools/src/config/site.json`. Nothing was created on 4.10.
+- **REOPEN (unchanged):** PostHog's announced charge for the query API; a plan change on the account; a cut to the free read budget, the event allowance or the retention.
