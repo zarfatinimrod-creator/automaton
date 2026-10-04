@@ -140,4 +140,9 @@ shared WebSearch budget. See `docs/CRITERIA_SWEEP.md`.
   baseline. Use it instead of a hand-written harness; `--cmd "scripts/pytest-product.sh <product>"` for Python.
 - **New render captures: `node scripts/capture-check.mjs <slug...>` before reading them** (exit 3 = flagged: `status`,
   `bot-challenge`, `js-shell` or `short`). It only flags; the reader judges.
+- **Loop-file edits: `node scripts/loop-edit.mjs set-status|set-cell|insert-after|replace-in-line|repoint-capture …`** (usage in its
+  header), never one-off Python with assertions. Each command finds exactly one row or line or exits 2 having written nothing;
+  `--dry-run` shows the diff; it writes through a temp file, keeps CRLF, the final newline and Hebrew/₪ byte for byte, keeps a
+  table's cell count and shape, and never changes a URL or tab-separated slug on the line unless the command's own text holds it.
+  Targets: `logs/*.md` and `research/channel-loop/*.md` only (`urls.txt`, symlinks and non-UTF-8 files are refused).
 - Revenue colony: `src/revenue/`, docs in `docs/CHAIN_OF_COMMAND.md` and `docs/INCOME_PLAN.he.md`, playbooks in `skills/`.

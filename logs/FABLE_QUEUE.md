@@ -20,8 +20,8 @@ died twice). When one finishes, mark it done here with the date and the commit t
 
 ## Queue (oldest first)
 
-| # | Script | Fable agents | Reads | Writes | Then (on Opus, main thread) | Status |
-|---|---|---|---|---|---|---|
+| # | Script | Fable agents | Reads | Writes | Question (rows 19+; earlier rows carry it in Writes) | Then (on Opus, main thread) | Status |
+|---|---|---|---|---|---|---|---|
 | 1 | `fable-faceless-youtube-judge.js` | judge, red-team | `research/faceless-youtube/DIGEST.md`, `REGRADE.md` | `VERDICT.md`, `RED-TEAM.md` there | fold into `docs/REJECTED.md`; if REOPEN, the pilot workflow (task #4); update `logs/2026-09-25-faceless-youtube-reel.md` | **DONE 27.9** (run `wf_80e3a5c4-aa1`, commit `020688a`): REOPEN_AS_EXPERIMENT; red team — decision survives, 6 MAJOR amendments to the design |
 | 2 | `fable-owner-docs-judgement.js` | one refuter (+ Opus editors) | `research/owner-docs-audit/APPLIED.md` §Queued (26 rows) | `JUDGEMENT.md` there; edits to 8 owner docs | regenerate `docs/OWNER_STEPS.he.pdf` (`node scripts/owner-steps-pdf.mjs`); apply any `codeChange` | **DONE 27.9** (run `wf_9e50d5ef-d16`): 26/26 CONFIRMED, 0 refuted; 25 document edits applied by Opus editors + step-6 token row; PDF regenerated. Code changes listed in `JUDGEMENT.md` follow separately |
 | 3 | `fable-license-choice.js` | one decider | `research/measurements/gumroad-native-licenses.md` | `gumroad-license-decision.md` there | build the chosen option on Opus against its acceptance tests; drop the per-sale owner step | **DONE 27.9** (run `wf_0fcea9b7-c3b`, `ebe0d8d`): **Option C** — Gumroad's own key, verified once in the browser, cached, re-checked ≤7 days, never revoked on a transient failure; 18 acceptance tests. **Built 27.9 on Opus** (`619c4d7`, `298b1bc`, `41cd2ba`; report `products/il-biz-tools/docs/OPTION-C-BUILD.md`): AT-1..14, 17, 18 pass (217/217, mutation-checked, headless-browser check); AT-15/16 written, not runnable until the owner's GUMROAD_ACCESS_TOKEN exists. Six departures, all toward keeping a paying buyer's Pro on (e.g. only Gumroad's three exact "invalid key" 404s revoke) — reviewed and accepted |
