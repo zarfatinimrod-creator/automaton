@@ -452,9 +452,9 @@ const ADVICE = [
  * preschool or toddler framing. Read against research/youtube-kids/ASSESSMENT.md's G11 list (:402-405), whose English
  * terms are all covered here (nursery rhyme(s), toddler(s), preschool(er), baby song(s), ABC song, learn colo(u)rs,
  * cartoon, mascot, puppet(s), surprise egg(s), toy unboxing). Whole words, not prefixes (G2's lesson): "history",
- * "storyline" and "Toyota" pass. "numbers" is read as the preschool framing "learn numbers" (a numbers song is a song):
- * a kids explainer's own metadata names its numbers ("Every number comes from real data"), so the bare word would block
- * the line's honest attribution — a reading of the ruling, recorded in logs/2026-10-04-fold-row-23-code.md.
+ * "storyline", "Toyota", "number" and "numbered" pass. "numbers" is blocked as the bare word the ruling names (corrected
+ * 4.10 after review: it had been narrowed to "learn numbers" on the claim that the pinned "Every number comes from real
+ * data" needs it, but that sentence is singular and spoken, and the script is not word-linted).
  */
 const KIDS_EXCLUDED_EN = new RegExp(
   "\\b(" +
@@ -470,7 +470,7 @@ const KIDS_EXCLUDED_EN = new RegExp(
       "surprise eggs?",
       "unboxing",
       "learn(ing)? (the |your |our )?colou?rs",
-      "learn(ing)? (the |your |our )?numbers",
+      "numbers",
       "abcs?",
       "pre-?school(ers?)?",
       "toddlers?",
@@ -494,6 +494,13 @@ const KIDS_EXCLUDED_HE = hebrewWords(["שירי ילדים", "פעוטות", "ג
 const THUMBNAIL_EXCLUDED_EN =
   /\b(child|children|kids?|boys?|girls?|bab(y|ies)|toddlers?|characters?|cartoons?|mascots?|puppets?|toys?|dolls?|teddy)\b/i;
 const THUMBNAIL_EXCLUDED_HE = hebrewWords(["ילד", "ילדה", "ילדים", "ילדות", "דמות", "דמויות", "בובה", "בובות", "צעצוע", "צעצועים", "קמע"]);
+
+/**
+ * The kids line is English (ruling 4.10 §2 rule 1; §4 rule 4: "The pinned texts are English because the line is
+ * English"; §5 rules 1, 3: English voices only, Hebrew narration does not publish; §2 rule 3: A-he is closed): any Hebrew
+ * letter in what it says or how it is described fails. The Hebrew word check above stays, so its terms are named.
+ */
+const HEBREW_LETTER = /\p{Script=Hebrew}/u;
 
 /** "A narrator posing as a teacher or friend" (ruling 4.10 §2 rule 2): the narrator says what it is (§4). */
 const NARRATOR_PERSONA = /\b((i am|i'm|i will be|i'll be) (your|a) (new )?(teacher|friend)|your (new |best )?(teacher|friend))\b/i;
@@ -536,6 +543,12 @@ function kidsLineFailures(video: VideoManifest): string[] {
   for (const [where, text] of metadata) {
     const word = excludedWord(text, KIDS_EXCLUDED_EN, KIDS_EXCLUDED_HE);
     if (word) out.push(`G7-k: ${where} carries "${word}", a framing the kids line excludes (songs, stories, characters, toys, pre-readers; §2 rule 2)`);
+  }
+  const spoken: [string, unknown][] = [...metadata, ["the thumbnail brief", video.thumbnailBrief], ["the script", video.script]];
+  for (const [where, text] of spoken) {
+    if (typeof text === "string" && HEBREW_LETTER.test(text)) {
+      out.push(`G7-k: ${where} carries Hebrew; the kids line is English (§2 rule 1, §4 rule 4, §5 rules 1 and 3)`);
+    }
   }
   if (video.thumbnailBrief !== null) {
     const word = excludedWord(String(video.thumbnailBrief), THUMBNAIL_EXCLUDED_EN, THUMBNAIL_EXCLUDED_HE);

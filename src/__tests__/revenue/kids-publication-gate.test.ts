@@ -119,6 +119,21 @@ describe("G11: the designation (ruling 4.10 §6 rule 1)", () => {
     expect(r.filter((x) => x.startsWith("G11:"))).toHaveLength(1);
   });
 
+  // A manifest read from JSON can carry anything: a missing key (undefined) or the string "true" is not the boolean the
+  // publisher sends as selfDeclaredMadeForKids, and must fail on both lines (4.10 review: `!== want` → `=== !want` survived).
+  it.each([
+    ["kids-explainers", undefined],
+    ["kids-explainers", "true"],
+    ["kids-explainers", 1],
+    ["faceless-youtube", undefined],
+    ["faceless-youtube", "false"],
+    ["faceless-youtube", 0],
+  ] as const)("fails line %s with madeForKids %j, which is not a boolean", (line, value) => {
+    const madeForKids = value as unknown as boolean;
+    const v = line === "kids-explainers" ? kids({ madeForKids }) : t1({ madeForKids });
+    expect(run(v).filter((x) => x.startsWith("G11:"))).toHaveLength(1);
+  });
+
   it("says why: never decided, or the line's own declaration", () => {
     expect(run(kids({ madeForKids: null })).find((r) => r.startsWith("G11:"))).toMatch(/never decided/);
     expect(run(kids({ madeForKids: false })).find((r) => r.startsWith("G11:"))).toMatch(/kids-explainers line declares true/);
@@ -222,6 +237,9 @@ describe("G7-k: no pre-reader, song, story, character or toy framing (ruling 4.1
     "Learn colours with rainbows",
     "Learning colors",
     "Learn numbers with rain",
+    "Big numbers: how much rain falls?",
+    "Rain in numbers",
+    "Numbers about clouds",
     "ABC of weather",
     "Weather ABCs",
     "Preschool weather",
@@ -254,7 +272,19 @@ describe("G7-k: no pre-reader, song, story, character or toy framing (ruling 4.1
     expect(kidsFailures(kids({ title }))).toEqual([]);
   });
 
-  // ASSESSMENT.md:411-415: Hebrew terms wrapped as (?<!\p{L})[ובהלמשכ]{0,2}TERM(?!\p{L}), with the u flag.
+  // §2 rule 2 names "numbers" as a word, and it is linted as one (4.10 review). The pinned sentences use the singular
+  // ("Every number comes from real data" is spoken, and the script is not word-linted), and no pinned description sentence
+  // carries "numbers", so the bare word costs the line nothing it must say.
+  it("blocks the bare word \"numbers\" as ruled, and nothing in the pinned texts carries it", () => {
+    expect(kidsFailures(kids({ title: "Big numbers: how much rain falls?" })).some((r) => r.includes('"numbers"'))).toBe(true);
+    for (const pinned of [KIDS_AUDIENCE_SENTENCE, SYNTHETIC_VOICE_DISCLOSURE, KIDS_ON_SCREEN_TAG, KIDS_SPOKEN_DECLARATION]) {
+      expect(/\bnumbers\b/i.test(pinned), pinned).toBe(false);
+    }
+    expect(run(kids())).toEqual([]);
+  });
+
+  // ASSESSMENT.md:411-415: Hebrew terms wrapped as (?<!\p{L})[ובהלמשכ]{0,2}TERM(?!\p{L}), with the u flag. The kids line
+  // also refuses any Hebrew letter (below), so these assert the word check by its own message.
   it.each(["שירי ילדים על השמש", "שמש לפעוטות", "והפעוטות", "בגן ילדים", "הגננת מסבירה", "דמות מצוירת", "בובות ומזג אוויר"])(
     "fails the Hebrew pattern: %s",
     (tag) => {
@@ -262,8 +292,8 @@ describe("G7-k: no pre-reader, song, story, character or toy framing (ruling 4.1
     },
   );
   // The last is not a word: a non-prefix letter (ק) before a term, which the (?<!\p{L}) boundary must not let through.
-  it.each(["מגן מפני השמש", "ארגון המדינות", "גנרי", "בובותיים", "פעוטותיהם", "קבובות"])("passes Hebrew that only contains a term's letters: %s", (tag) => {
-    expect(kidsFailures(kids({ tags: [tag] }))).toEqual([]);
+  it.each(["מגן מפני השמש", "ארגון המדינות", "גנרי", "בובותיים", "פעוטותיהם", "קבובות"])("the word check passes Hebrew that only contains a term's letters: %s", (tag) => {
+    expect(kidsFailures(kids({ tags: [tag] })).filter((r) => /a framing the kids line excludes/.test(r))).toEqual([]);
   });
 
   it("names the word and where it was found", () => {
@@ -279,6 +309,25 @@ describe("G7-k: no pre-reader, song, story, character or toy framing (ruling 4.1
 
   it("does not lint T1's metadata (G7-k is the kids line's)", () => {
     expect(run(t1({ title: "Rain stories by country" })).filter((r) => r.startsWith("G7:G7-k"))).toEqual([]);
+  });
+});
+
+describe("G7-k: the kids line is English — no Hebrew anywhere it speaks or is described (ruling 4.10 §2 rules 1, 3; §4 rule 4; §5 rules 1, 3)", () => {
+  const hebrew = "באילו מדינות יש הכי הרבה שמש?";
+  it.each([
+    ["the title", { title: hebrew }],
+    ["the description", { description: `${kids().description}\n\n${hebrew}` }],
+    ["a tag", { tags: ["sunshine", "שמש"] }],
+    ["the thumbnail brief", { thumbnailBrief: "The bar chart, with the title גרף" }],
+    ["the script", { script: `${KIDS_SPOKEN_DECLARATION} ${hebrew} The chart shows which.` }],
+  ] as const)("fails Hebrew letters in %s", (where, o) => {
+    const r = kidsFailures(kids(o as Partial<VideoManifest>));
+    expect(r.some((x) => /Hebrew/.test(x) && x.includes(where.replace(/^a tag$/, "tag 2"))), JSON.stringify(r)).toBe(true);
+  });
+
+  it("passes the English manifest, and leaves T1's line alone", () => {
+    expect(kidsFailures(kids())).toEqual([]);
+    expect(run(t1({ tags: ["שמש"] })).filter((r) => r.startsWith("G7:G7-k"))).toEqual([]);
   });
 });
 
