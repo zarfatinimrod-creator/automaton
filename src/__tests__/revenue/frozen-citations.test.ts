@@ -13,6 +13,7 @@ import {
   readManifest,
   scanCitations,
   scanKnown,
+  scanOptions,
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/freeze-capture.mjs";
 
@@ -42,7 +43,7 @@ const read = (file: string) => readFileSync(file, "utf8");
  * Where a decision note names an ACTIVE capture on purpose, without a line: the live page, not what was read. Each
  * entry is "<file> <slug>" and says why. Any other name of an active capture in a note (md or json) fails below: a
  * section that names the live capture and cites its lines in a form the scanner cannot place (bare :N lines after a
- * name, an abbreviation) would otherwise pass unseen. Code (src/) is not held to this: tests read live captures.
+ * name, an abbreviation) would otherwise pass unseen. Code (src/) is not a decision-bearing file (decisionFiles).
  */
 const LIVE_MENTIONS: Record<string, string> = {
   "research/channel-loop/RULING-2026-09-29-loop.md displate-about-regulations": "the watch itself: which capture tick 21 re-renders",
@@ -91,11 +92,15 @@ describe("decision-bearing files cite frozen captures, never a live one by line"
       "products/parent-guides/LICENSES.md",
       "products/chart-explainer/releases/t1/render-report.json",
       "products/README.md",
-      "src/__tests__/revenue/owner-asks.test.ts",
     ]) {
       expect(files, f).toContain(f);
     }
     expect(files.filter((f) => f.startsWith("logs/") || f.startsWith(`${RENDERED}/`) || f.includes("node_modules") || f.endsWith("package-lock.json"))).toEqual([]);
+    // Not code: a test's slugs are fixtures (research/rendered/x.txt, page-2026-09-28.txt), and a comment in src/ is
+    // not where a decision is read from. Code that reads a capture reads it at run time, live or frozen as it names.
+    expect(files.filter((f) => f.startsWith("src/") || /\.(ts|tsx|js|mjs|cjs|py)$/.test(f))).toEqual([]);
+    // The same list from a relative root (the paths are relative to it either way).
+    expect(decisionFiles(".")).toEqual(files);
   });
 
   it("finds no citation by line of a capture whose urls.txt line is active", () => {
@@ -107,7 +112,7 @@ describe("decision-bearing files cite frozen captures, never a live one by line"
     const seen = new Set<string>();
     const unlisted: string[] = [];
     for (const file of files.filter(isProse)) {
-      for (const c of scanCitations(read(file), known).citations as Citation[]) {
+      for (const c of scanCitations(read(file), known, scanOptions(file)).citations as Citation[]) {
         if (!active.has(c.slug) || c.alias) continue;
         const key = `${file} ${c.slug}`;
         seen.add(key);
@@ -125,27 +130,32 @@ describe("decision-bearing files cite frozen captures, never a live one by line"
     expect(manifestSlugs(readManifest(RENDERED)).size).toBeGreaterThan(50);
   });
 
-  it("cites only captures on disk: a watched one, or a recorded frozen copy that holds every line cited", () => {
+  it("cites only captures on disk, never a line past the end of the file it names, and a dated or frozen one only as recorded", () => {
     const recorded: Set<string> = manifestSlugs(readManifest(RENDERED));
     const lineCount = new Map<string, number>();
     const count = (path: string) => {
       if (!lineCount.has(path)) lineCount.set(path, existsSync(path) ? read(path).split("\n").length : -1);
       return lineCount.get(path) as number;
     };
+    const DATED = /-\d{4}-\d{2}-\d{2}(-[0-9a-f]{7,})?$/;
     const problems: string[] = [];
     let checked = 0;
     for (const file of files) {
-      const { citations, others } = scanCitations(read(file), known, { carry: isProse(file) }) as { citations: Citation[]; others: Other[] };
+      const { citations, others } = scanCitations(read(file), known, scanOptions(file)) as { citations: Citation[]; others: Other[] };
       for (const c of citations) {
         const at = where({ ...c, file });
         if (!existsSync(`${RENDERED}/${c.slug}.meta.json`)) {
           problems.push(`${at}: no capture ${c.slug} on disk`);
           continue;
         }
-        if (listed.has(c.slug)) continue;
-        checked += 1;
-        if (!recorded.has(c.slug)) problems.push(`${at}: ${c.slug} is on no urls.txt line and ${MANIFEST} does not record it`);
+        // A capture no urls.txt line names is never rendered again: a copy that says it is frozen, or is named by a
+        // day, is one only when FROZEN.sha256 holds its bytes (a copy whose meta lost its "frozen" block included).
+        if (listed.has(c.slug) || !(DATED.test(c.slug) || metaOf(c.slug).frozen)) continue;
+        if (!recorded.has(c.slug)) problems.push(`${at}: ${c.slug} is a frozen copy ${MANIFEST} does not record`);
+        // A frozen copy holds every line cited of it: a line past the end is a misread citation (another file's line
+        // given to this capture, or the wrong file of it), never a skip.
         for (const r of c.refs) {
+          checked += 1;
           const exts = r.ext ? [r.ext] : ["txt", "html"];
           const [a, b] = r.range;
           if (!exts.some((ext) => a >= 1 && b >= a && b <= count(`${RENDERED}/${c.slug}.${ext}`))) {
@@ -155,11 +165,11 @@ describe("decision-bearing files cite frozen captures, never a live one by line"
       }
       // A dated name that is no copy on disk: a frozen copy that does not exist.
       for (const o of others) {
-        if (/-\d{4}-\d{2}-\d{2}(-[0-9a-f]{7,})?$/.test(o.name)) problems.push(`${file}:${o.fileLine} ${o.text}: no frozen copy ${o.name} on disk`);
+        if (DATED.test(o.name)) problems.push(`${file}:${o.fileLine} ${o.text}: no frozen copy ${o.name} on disk`);
       }
     }
     expect(problems).toEqual([]);
-    expect(checked).toBeGreaterThan(400);
+    expect(checked).toBeGreaterThan(900);
   });
 
   it("repoints the instances tick 36 named to frozen copies that say what the verdicts quote, on the same lines", () => {
@@ -330,6 +340,58 @@ describe("scanCitations reads every citation form the notes use", () => {
     expect(of("other-page").map(show)).toEqual(["23 research/rendered/other-page [[34,34]]", "24 OP:34 [[34,34]]"]);
     expect(of("a.bin-x").map((c) => `${c.slug} ${c.ext} ${JSON.stringify(c.lines)}`)).toEqual(["a.bin-x txt [[5,5]]", "a.bin-x txt [[6,6]]"]);
     expect(of("live-page-2026-09-28").map(show)).toEqual(["27 live-page-2026-09-28.txt:3 [[3,3]]"]);
+  });
+
+  it("takes urls.txt for the list it is, not a capture", () => {
+    const scan = scanCitations("Queued at research/rendered/urls.txt:111 and research/rendered/live-page.txt:5.", known);
+    expect(scan.citations.map((c: Citation) => `${c.slug} ${JSON.stringify(c.lines)}`)).toEqual(["live-page [[5,5]]"]);
+  });
+
+  it("in JSON, gives a line's references only to a capture named on that line: each string value stands alone", () => {
+    const json = [
+      '  { "evidence": "research/rendered/live-page.txt:12 says so, and :14." },',
+      '  { "evidence": "OSS VRP rules lines 341-346 exclude them; the CoC at :86-90." },',
+    ].join("\n");
+    expect(scanOptions("research/x/results.json")).toEqual({ carry: true, lineParagraphs: true });
+    expect(scanOptions("research/x/note.md")).toEqual({ carry: true, lineParagraphs: false });
+    expect(scanOptions("src/x.ts")).toEqual({ carry: false, lineParagraphs: false });
+    const scan = scanCitations(json, known, scanOptions("research/x/results.json"));
+    expect(scan.citations.map((c: Citation) => `${c.slug} ${JSON.stringify(c.lines)}`)).toEqual(["live-page [[12,12],[14,14]]"]);
+    expect(scan.unattributed.map((u: { text: string }) => u.text)).toEqual(["lines 341-346", ":86-90"]);
+    // In a note the same two lines are one paragraph, and the second line's references go to the capture.
+    expect(scanCitations(json, known, scanOptions("research/x/note.md")).citations[0].lines).toEqual([[12, 12], [14, 14], [341, 346], [86, 90]]);
+  });
+
+  it("gives a reference carried from an earlier line the capture's own file, not an html short-name reference's", () => {
+    const note = [
+      "Capture: `live-page` (200). Short name `lp`. The html body is one line, so every html citation is `lp.html:115`. The",
+      "menus (:38-43) and the officer (:153) are not reproduced; `lp.html:115` again, and there :116.",
+      "The `.html:615` holds the posts",
+      "  (:655), and `lp.txt:2` the title.",
+      "- A path: research/rendered/other-page.html:5, and",
+      "  :7 goes on.",
+    ].join("\n");
+    const { citations } = scanCitations(note, known) as { citations: Citation[] };
+    const anchor = citations.find((c) => c.slug === "live-page" && !c.alias) as Citation;
+    expect(anchor.refs.map((r) => `${r.range[0]} ${r.ext}`)).toEqual(["115 html", "38 null", "153 null", "115 html", "116 html", "615 html", "655 html", "2 txt"]);
+    const other = citations.find((c) => c.slug === "other-page") as Citation;
+    expect(other.refs.map((r) => `${r.range[0]} ${r.ext}`)).toEqual(["5 html", "7 html"]);
+  });
+
+  it("gives a line after the note (\"the note\", \"note `:N`\") to the note, not to a capture named before it", () => {
+    // SITTING-2026-10-01-BRIEF.md summarises a research note: "note `:545`" and "the note's inference (`:79`)" are the
+    // note's lines, and a reference that goes on into the next line stays the note's. A page's own note ("an install
+    // note (`:115`)", docs/REJECTED.md; "a GameMaker note (`:8831`", wavedash.md) is the page's line.
+    const brief = [
+      "Rendered (`live-page.txt:219`, `:221`); the note's inference (`:79`, `:565`) and note `:545`, `:555`.",
+      "  (`:573`) goes on, as the note cites `:54`.",
+      "The page (`live-page.txt:300`) has an install note (`:222`) and a GameMaker note (`:223`).",
+    ].join("\n");
+    const { citations } = scanCitations(brief, known) as { citations: Citation[] };
+    expect(citations.map((c) => `${c.slug} ${JSON.stringify(c.lines)}`)).toEqual([
+      "live-page [[219,219],[221,221]]",
+      "live-page [[300,300],[222,222],[223,223]]",
+    ]);
   });
 
   it("keeps what is no capture out: another file's lines, a paused short name, a line after no name", () => {

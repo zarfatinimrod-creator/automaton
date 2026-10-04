@@ -37,7 +37,7 @@
  * RECORD ONE. --record <frozen-slug> writes an existing frozen copy's files into FROZEN.sha256 (a copy frozen by hand).
  *
  * FREEZE WHAT IS CITED. --cited finds the citations that matter (activeCitations) in the decision-bearing files
- * (DECISION_FILES; not logs/, which are history, and not research/rendered/): every citation of a capture whose
+ * (DECISION_FILES; not logs/, which are history, not research/rendered/, not code): every citation of a capture whose
  * urls.txt line is ACTIVE (a commented-out line is not re-fetched), in any form scanCitations reads (its comment lists
  * them). A citation "by line" has at least one line number; the guard test holds those. --unlined also takes the
  * citations without a line (a source table, "read in full"), except the ones --keep names.
@@ -64,7 +64,7 @@ import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { classifyCapture, readCapture } from "./capture-check.mjs";
@@ -427,9 +427,9 @@ export function checkManifest(dir) {
 
 /**
  * The decision-bearing files: what a decision, a claim or a release is read from. Research notes, rulings and verdicts
- * (research/**, md and json, not research/rendered/), docs, product READMEs, licences, configs and release reports, and
- * the comments of src/ (tests and code that say where a fact came from). Not logs/: history, a log's citation stays as
- * written.
+ * (research/**, md and json, not research/rendered/), docs, product READMEs, licences, configs and release reports.
+ * Not logs/: history, a log's citation stays as written. Not code (src/, tests): a test's slugs are fixtures
+ * (research/rendered/x.txt), a comment is not where a decision is read from, and code reads a capture at run time.
  */
 export const DECISION_FILES = [
   "research/**/*.md",
@@ -439,7 +439,6 @@ export const DECISION_FILES = [
   "products/**/README*",
   "products/**/config/**",
   "products/**/releases/**/*.json",
-  "src/**/*.ts",
 ];
 
 const SKIP_DIRS = new Set(["node_modules", ".git", ".venv", "venv", "__pycache__", "dist", ".pytest_cache", ".cache"]);
@@ -459,7 +458,7 @@ function walk(dir, out) {
 /** The DECISION_FILES under root, as sorted repository-relative paths. */
 export function decisionFiles(root = REPO_ROOT) {
   const files = new Set();
-  const rel = (path) => path.slice(root.length + 1).split("\\").join("/");
+  const rel = (path) => relative(root, path).split("\\").join("/");
   for (const path of walk(join(root, "research"), [])) {
     const r = rel(path);
     if (!r.startsWith(`${RENDERED_REL}/`) && /\.(md|json)$/.test(r)) files.add(r);
@@ -472,7 +471,6 @@ export function decisionFiles(root = REPO_ROOT) {
     if (name === "package-lock.json") continue;
     if (name.endsWith(".md") || /^README/i.test(name) || parts.slice(1, -1).includes("config") || (parts.includes("releases") && name.endsWith(".json"))) files.add(r);
   }
-  for (const path of walk(join(root, "src"), [])) if (path.endsWith(".ts")) files.add(rel(path));
   return [...files].sort();
 }
 
@@ -520,6 +518,12 @@ const NAMED_RE = /(?<![A-Za-z0-9_./-])[A-Za-z0-9_./-]*[A-Za-z_]:\d+(?:-\d+)?/g;
  * Another file named without a line (a note, a script, research/channel-loop/terms-verdicts.json): a bare :N after it
  * is its line. A capture named the same way is marked first, so this only takes what is no capture.
  */
+/**
+ * The research note a brief summarises: "the note" ("the note's inference (`:79`)", "as the note says (`:196`)", "the
+ * note cites `:54`"), or "note" right before its line ("note `:545`", "(note `:190`)"). A bare :N after it is the
+ * note's line. A page's own note ("an install note (`:115`)", "a GameMaker note (`:8831`") is not one.
+ */
+const NOTE_RE = /(?<![A-Za-z0-9_-])(?:[Tt]he note(?:'s)?(?![A-Za-z0-9_-])|[Nn]ote(?=\s+`?:L?\d))/g;
 const OTHER_FILE_RE = new RegExp(
   `(?<![A-Za-z0-9_./-])[A-Za-z0-9_./-]*[A-Za-z0-9_-]\\.(?:md|py|ts|tsx|js|mjs|cjs|jsx|yml|yaml|csv|sh|toml|rb|ex|exs|go|rs|php|sql|${EXTS_RE})(?![A-Za-z0-9_])`,
   "g",
@@ -558,7 +562,9 @@ function bySuffix(known, suffix, exact) {
  *   reference, those, when it was the last name before them. A short name (a table row | `R-GA` | `<slug>.txt` |, a
  *   pair `NAME` = `<slug>`, or "Short name `NAME`" after a capture in the same section) makes each NAME:N and
  *   NAME.<ext>:N a citation with alias NAME; the capture's own citation there (aliasFor NAME) also holds all of their
- *   ranges, and is the one text that names the capture (repoint moves it; the references follow).
+ *   ranges, and is the one text that names the capture (repoint moves it; the references follow). Another file's
+ *   name (PAT:173, a note's path) or the note a brief summarises ("the note's inference (`:79`)", "note `:545`":
+ *   NOTE_RE) owns the bare lines after it, on its line and, carried, on the next.
  *   full:     written with a path (…rendered/); a short one counts only when its slug is known
  *   slugStart, slugEnd: where the slug (or the …-suffix) is written: repoint inserts the frozen date at slugEnd
  * unattributed: { fileLine, text, index }: line references after no name at all in their section.
@@ -566,7 +572,7 @@ function bySuffix(known, suffix, exact) {
  *   (faq.txt:38, contributor-terms.html:495, urls.txt:111).
  * known: the capture slugs (anything with .has, and iterable for …-suffixes).
  */
-export function scanCitations(text, known = new Set(), { carry = true } = {}) {
+export function scanCitations(text, known = new Set(), { carry = true, lineParagraphs = false } = {}) {
   const source = String(text);
   const lines = source.split("\n");
   const starts = [];
@@ -608,7 +614,9 @@ export function scanCitations(text, known = new Set(), { carry = true } = {}) {
       const exts = ext ? [ext] : brace ? brace.split(",") : [];
       const slugStart = starts[i] + m.index + (prefix ?? "").length;
       const c = { slug, ext: exts[0] ?? null, exts, full, form: brace ? "brace" : exts.length ? (full ? "path" : "short") : "mention", index: starts[i] + m.index, text: whole, fileLine: i + 1, slugStart, slugEnd: slugStart + slug.length, own };
-      if (known.has(slug) || (full && exts.length)) anchor(c);
+      // research/rendered/urls.txt is the list of captures, not one.
+      if (full && slug === "urls" && ext === "txt") taken.push([m.index, m.index + whole.length]);
+      else if (known.has(slug) || (full && exts.length)) anchor(c);
       // A name with an extension that is no capture (a short name, or another file). Not "30:37" of a time.
       else if (exts.length) pending.push(c);
     }
@@ -679,7 +687,7 @@ export function scanCitations(text, known = new Set(), { carry = true } = {}) {
   let paragraph = 0;
   lines.forEach((line, i) => {
     if (isHeading(line)) ctx = null;
-    if (!line.trim() || isHeading(line)) paragraph += 1;
+    if (lineParagraphs || !line.trim() || isHeading(line)) paragraph += 1;
     const row = isRow(line);
     const marks = [];
     const overlaps = (s, e) => marks.some((k) => s < k.end && k.start < e);
@@ -715,7 +723,7 @@ export function scanCitations(text, known = new Set(), { carry = true } = {}) {
       mark(s, s + p.text.length, "other", null, null);
       if (p.exts.length) others.push({ name: p.slug, ext: p.ext, lines: p.own ? [p.own] : [], fileLine: i + 1, text: p.text, index: p.index });
     }
-    for (const re of [NAMED_RE, OTHER_FILE_RE]) {
+    for (const re of [NAMED_RE, OTHER_FILE_RE, NOTE_RE]) {
       for (const m of line.matchAll(re)) {
         if (!overlaps(m.index, m.index + m[0].length) && !inExtRef(m.index, m.index + m[0].length)) mark(m.index, m.index + m[0].length, "other", null, null);
       }
@@ -750,7 +758,11 @@ export function scanCitations(text, known = new Set(), { carry = true } = {}) {
         continue;
       }
       if (!last) {
-        last = owner;
+        // Carried from an earlier line after a short name's reference (`priv.html:115`): the file is the capture's own
+        // (a mention's is none: txt or html), as the short name stands for the capture. After a path, a slug or a
+        // `.html:615`, the file stays the one written.
+        const alias = owner.kind === "capture" && owner.c.alias && !owner.extRef ? owner.c.aliasOf : null;
+        last = alias ? { ...owner, ext: alias.ext } : owner;
         lastEnd = e.start;
       }
       if (last.kind !== "capture") continue;
@@ -761,7 +773,7 @@ export function scanCitations(text, known = new Set(), { carry = true } = {}) {
       addRef(last.c, { range: e.range, ext, fileLine: i + 1, token: e.text, index: starts[i] + e.start });
       if (e.isExt) {
         // `.meta.json:5` is itself a mark: a bare :N after it is a line of the same file.
-        last = { ...last, ext: e.ext };
+        last = { ...last, ext: e.ext, extRef: true };
         lastEnd = e.end;
       }
     }
@@ -786,6 +798,12 @@ export const findCitations = (text, known = new Set(), options = {}) => scanCita
 /** Notes and data carry a section's capture to a reference that starts a later line; code does not (carry: false). */
 export const isProse = (file) => /\.(md|json)$/.test(file) || /(^|\/)README[^/]*$/i.test(file);
 
+/**
+ * How a file is scanned: notes and data carry a section's capture (isProse); in JSON each line is a string value that
+ * stands alone, so a reference is carried only within its line (a paragraph is a line).
+ */
+export const scanOptions = (file) => ({ carry: isProse(file), lineParagraphs: /\.json$/.test(file) });
+
 /** The slugs a citation scan knows: every capture on disk, and every active urls.txt slug. */
 export function scanKnown(root, urlsText) {
   const known = knownSlugs(join(root, RENDERED_REL));
@@ -801,7 +819,7 @@ export function activeCitations({ root = REPO_ROOT, urlsText } = {}) {
   const out = [];
   for (const file of decisionFiles(root)) {
     const text = readFileSync(join(root, file), "utf8");
-    for (const c of findCitations(text, known, { carry: isProse(file) })) {
+    for (const c of findCitations(text, known, scanOptions(file))) {
       if (!active.has(c.slug)) continue;
       const withFile = Object.assign(c, { file });
       out.push(withFile);
