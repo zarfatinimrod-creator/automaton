@@ -30,8 +30,6 @@ function readings(overrides: Partial<ExperimentReadings> = {}): ExperimentReadin
     averageViewPercentage: null,
     policySignal: false,
     ungrantedRecurringCost: false,
-    // P-2 cannot occur on a channel that declares made for kids (ruling 4.10 §8, BRIEF:567-568); its mirror is the read-back.
-    madeForKidsOverrides: null,
     madeForKidsReadback: ["true", "true", "true"],
     maxRunnerMinutesPerVideo: 20,
     maxTokenCostIlsPerVideo: 8,
@@ -101,12 +99,13 @@ describe("K-mfk-designation: the read-back must say made for kids (ruling 4.10 �
     expect(v.notes.join(" ")).toMatch(/upload 2 of 2/);
   });
 
-  it("does not apply P-2's override count to a channel that declares made for kids", () => {
-    // An unread override count is not a due gate here: the designation read-back is this line's measurement.
-    const v = evaluateExperiment(KIDS, readings({ madeForKidsOverrides: null }));
-    expect(v.triggered).not.toContain("K-mfk-unmeasured");
+  it("does not apply P-2 to a channel that declares made for kids: a true read-back is the declaration, not an override", () => {
+    // P-2 cannot occur on a channel that declares made for kids (ruling 4.10 §8, BRIEF:567-568); its mirror is
+    // K-mfk-designation. Five uploads reading true are five passing readings, never five overrides.
+    const v = evaluateExperiment(KIDS, readings({ madeForKidsReadback: ["true", "true", "true", "true", "true"] }));
+    expect(v.decision).toBe("continue");
+    expect(v.triggered).toEqual([]);
     expect(v.notes.join(" ")).toMatch(/P-2 does not apply/);
-    expect(evaluateExperiment(KIDS, readings({ madeForKidsOverrides: 5 })).decision).toBe("continue");
   });
 });
 
@@ -148,7 +147,7 @@ describe("K0-unmeasured on an unread designation at the K0 day (ruling 4.10 §10
     ["kids-explainers", KIDS, "true"],
     ["faceless-youtube", T1, "false"],
   ] as const)("%s: an upload still unread at day 56 kills, whatever the views say", (_, spec, read) => {
-    const healthy = { day: 56, videosPassedGate: 6, medianStrangerViews: 120, madeForKidsOverrides: 0 };
+    const healthy = { day: 56, videosPassedGate: 6, medianStrangerViews: 120 };
     expect(evaluateExperiment(spec as ExperimentSpec, readings({ ...healthy, madeForKidsReadback: [read, read] })).decision).toBe("continue");
     const v = evaluateExperiment(spec as ExperimentSpec, readings({ ...healthy, madeForKidsReadback: [read, null] }));
     expect(v.decision).toBe("kill");
@@ -178,7 +177,7 @@ describe("the other kills with T1's numbers, on the kids channel's own D0 (rulin
     expect(v.notes.join(" ")).toMatch(/videos\.list/);
     expect(v.notes.join(" ")).toMatch(/never a fetch of the watch page/);
     // T1 keeps its own id.
-    expect(evaluateExperiment(T1, readings({ day: 3, t1Passed: false, madeForKidsReadback: ["false"], madeForKidsOverrides: 0 })).triggered).toContain("K-T1");
+    expect(evaluateExperiment(T1, readings({ day: 3, t1Passed: false, madeForKidsReadback: ["false"] })).triggered).toContain("K-T1");
   });
 
   it("K-policy kills the same day, never a workaround channel", () => {
@@ -215,8 +214,8 @@ describe("the other kills with T1's numbers, on the kids channel's own D0 (rulin
 });
 
 describe("T1 reads its designation the same way (ruling 4.10 §8 rule 2, §10 rule 3)", () => {
-  /** T1 at day 20: uploaded, override count read and zero. */
-  const t1 = (o: Partial<ExperimentReadings> = {}) => readings({ madeForKidsOverrides: 0, madeForKidsReadback: ["false"], ...o });
+  /** T1 at day 20: uploaded, and its upload read back not made for kids, as declared. */
+  const t1 = (o: Partial<ExperimentReadings> = {}) => readings({ madeForKidsReadback: ["false"], ...o });
 
   it("a false read-back on T1 is the expected reading", () => {
     const v = evaluateExperiment(T1, t1());
@@ -231,9 +230,16 @@ describe("T1 reads its designation the same way (ruling 4.10 §8 rule 2, §10 ru
     const two = evaluateExperiment(T1, t1({ madeForKidsReadback: ["true", "true"] }));
     expect(two.decision).toBe("kill");
     expect(two.triggered).toContain("K-mfk");
-    // The override count never reads lower than what the reader saw.
-    expect(evaluateExperiment(T1, t1({ madeForKidsOverrides: 1, madeForKidsReadback: ["true", "false"] })).triggered).toEqual(["K-mfk-override"]);
-    expect(evaluateExperiment(T1, t1({ madeForKidsOverrides: 2, madeForKidsReadback: ["false"] })).triggered).toContain("K-mfk");
+    // The count is the read-back's `true` entries, wherever they sit; nothing is typed in beside it.
+    expect(evaluateExperiment(T1, t1({ madeForKidsReadback: ["true", "false"] })).triggered).toEqual(["K-mfk-override"]);
+    expect(evaluateExperiment(T1, t1({ madeForKidsReadback: ["true", "false", "true"] })).triggered).toContain("K-mfk");
+  });
+
+  it("an override beside an unread upload counts and freezes: both are flagged", () => {
+    const v = evaluateExperiment(T1, t1({ madeForKidsReadback: ["true", null] }));
+    expect(v.decision).toBe("escalate");
+    expect(v.triggered).toEqual(["K-mfk-override", "K-mfk-unmeasured"]);
+    expect(v.uploadsFrozen).toBe(true);
   });
 
   it("K-mfk-designation is the kids line's kill only: T1 reading false is not it", () => {
@@ -247,8 +253,27 @@ describe("T1 reads its designation the same way (ruling 4.10 §8 rule 2, §10 ru
     expect(v.uploadsFrozen).toBe(true);
   });
 
-  it("an unread override count also freezes the next upload (§10 rule 2)", () => {
-    const v = evaluateExperiment(T1, t1({ madeForKidsOverrides: null }));
+  // The reviewer's case (4.10): T1 has had a gate-passed video since 27.9 and nothing is uploaded. §10 rule 2 freezes "the
+  // next upload ... until the reading exists" for an upload that exists; before the first upload nothing can be read, and
+  // the precondition is the reader itself (§10 rule 1). A freeze here could only be cleared by typing a reading in.
+  it("T1 is not frozen before its first upload, though a video has passed the gate", () => {
+    const v = evaluateExperiment(T1, t1({ day: 0, t1Passed: null, videosPassedGate: 1, madeForKidsReadback: [] }));
+    expect(v.decision).toBe("continue");
+    expect(v.triggered).toEqual([]);
+    expect(v.uploadsFrozen).toBe(false);
+    expect(v.notes.join(" ")).toMatch(/not due before the first upload/);
+  });
+
+  it("the reader's real output clears T1: one upload read back false, the window not judged yet", () => {
+    // Nothing else is fed: the override count is derived from the read-back, so no hand-typed zero is needed.
+    const v = evaluateExperiment(T1, t1({ day: 1, t1Passed: null, videosPassedGate: 1, madeForKidsReadback: ["false"] }));
+    expect(v.decision).toBe("continue");
+    expect(v.triggered).toEqual([]);
+    expect(v.uploadsFrozen).toBe(false);
+  });
+
+  it("an upload listed but not read back yet freezes T1 even before its window is judged", () => {
+    const v = evaluateExperiment(T1, t1({ day: 1, t1Passed: null, videosPassedGate: 1, madeForKidsReadback: [null] }));
     expect(v.triggered).toEqual(["K-mfk-unmeasured"]);
     expect(v.uploadsFrozen).toBe(true);
   });

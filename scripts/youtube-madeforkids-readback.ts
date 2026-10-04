@@ -12,9 +12,11 @@
  *                          state/colony/measurements/youtube-videos.json (the file scripts/youtube-analytics.ts reads);
  *                          kids-explainers reads state/colony/measurements/kids-explainers-videos.json. No file = nothing
  *                          uploaded = nothing to read (exit 0).
- * WRITES state/colony/measurements/<line>-madeforkids.json: one reading per upload (madeForKids "true"/"false"/null,
- * privacyStatus, readAt). A reading once taken is kept; only uploads without one are asked about. readbackOf() of that
- * file is ExperimentReadings.madeForKidsReadback.
+ * WRITES state/colony/measurements/<line>-madeforkids.json: one entry per upload. EVERY listed upload is asked about on
+ * every run (an override YouTube sets after the first read must be seen; corrected 4.10): the entry keeps the first read
+ * that carried a designation, the latest read (madeForKids "true"/"false"/null, privacyStatus, readAt), and the times a
+ * read first contradicted the line's declaration or found a public upload no longer public. readbackOf(<that file>,
+ * <the uploads>) is ExperimentReadings.madeForKidsReadback.
  *
  * NO LIVE CALL BEFORE STAGE A. No workflow runs this script and no package script names it
  * (src/__tests__/revenue/youtube-madeforkids.test.ts asserts both); its tests use a fake fetch and fixtures. It talks to
@@ -33,7 +35,6 @@ import {
   MAX_IDS_PER_CALL,
   READ_HOST,
   emptyState,
-  idsToRead,
   isReadbackLine,
   mergeReadings,
   parseVideosList,
@@ -87,9 +88,9 @@ export async function runReadback(run: ReadbackRun): Promise<number> {
   const state: MadeForKidsState = existsSync(run.statePath)
     ? (JSON.parse(readFileSync(run.statePath, "utf8")) as MadeForKidsState)
     : emptyState(run.experiment);
-  const ids = idsToRead(state, uploads);
+  const ids = uploads.map((u) => u.id);
   if (ids.length === 0) {
-    run.log(`youtube-madeforkids: every upload on ${run.experiment} has a reading; nothing asked.`);
+    run.log(`youtube-madeforkids: ${run.videosPath} lists no upload on ${run.experiment}; nothing asked.`);
     return 0;
   }
 
@@ -122,7 +123,7 @@ export async function runReadback(run: ReadbackRun): Promise<number> {
   const next = mergeReadings(state, uploads, fresh, run.now);
   mkdirSync(dirname(run.statePath), { recursive: true });
   writeFileSync(run.statePath, JSON.stringify(next, null, 2) + "\n");
-  const rb = readbackOf(next);
+  const rb = readbackOf(next, uploads);
   run.log(
     `youtube-madeforkids: ${run.experiment} (declares made for kids: ${next.declaresMadeForKids}): asked ${ids.length}, ` +
       `read-back ${rb.map((v) => v ?? "unread").join(", ")}; wrote ${run.statePath}`,
