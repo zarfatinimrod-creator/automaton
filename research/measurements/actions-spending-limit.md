@@ -665,3 +665,34 @@ The earlier sections are history and are not rewritten; read their pointers as b
 - `src/revenue/portfolio.ts:289` (line 199): "add it to the organisation (owner step 7)" is at `src/revenue/portfolio.ts:324`.
 - `src/revenue/owner-steps.ts:312` (line 199): the ruling gave `src/revenue/owner-steps.ts:381`, the `BRAND_GITHUB_TOKEN` secret row as it stood at `f2fca6d`. The sentence line 199 quotes ("In the same sitting the owner creates its personal access token, BRAND_GITHUB_TOKEN, pasted in step 6 with the others") is in step 7's `unlocks`, at `src/revenue/owner-steps.ts:336` at `240fae3`. This fold's header paragraph moved both: the sentence is at `src/revenue/owner-steps.ts:348` and the row at `src/revenue/owner-steps.ts:394`.
 - `research/channel-loop/terms-verdicts.json:113-114` (line 528): the ruling gave `research/channel-loop/terms-verdicts.json:114-118`, right at `f2fca6d`. Tick 39's Apify note added a line above it, so the `github.com` entry is at `research/channel-loop/terms-verdicts.json:115-119`, with `CONDITIONAL_MET` at `research/channel-loop/terms-verdicts.json:116`.
+
+### The billing-manager line: the role's own list, read 4.10
+
+The ruling has a runner read what a billing manager is able to do, from github/docs, before the owner page names the role (§2 rule 3; "Not ruled here" item 3). The fold's first text summarised the role from the budget pages and cited BM only for `:31`; the review of 4.10 found that, and this is the read. Nothing was fetched: both files were read from copies already on this container, each tied to github/docs commits by its git blob id (`git hash-object` of the copy against `git ls-tree HEAD` of each clone).
+
+| Short | github/docs path | Copy read | Commits holding the same blob | git blob | sha256 | Lines |
+|---|---|---|---|---|---|---|
+| BM | `content/organizations/managing-peoples-access-to-your-organization-with-roles/adding-a-billing-manager-to-your-organization.md` | the 29.9 verifier's raw fetch of `main` (13:58:24 UTC), the BM row of the tick-22 key table | `b5f08dd` and `f4e8afc` (`main`, 28.9.2026) | `cd308b208b41003c424b54aad5fb428b58ac92d8` | `97ea127f989c88607e83425ad0ec0c098d212e283b55149aea95281016d23c9b` | 53 |
+| BMP | `data/reusables/billing/org-billing-manager-permissions.md` | two blobless sparse clones of github/docs that earlier sessions made (28.9 17:46 UTC at `b5f08dd`; 29.9 12:28 UTC at `f4e8afc`) | `b5f08dd` and `f4e8afc` | `78141f05f6b3cd7aa7f198b50ffc3c60338467fd` | `bd7467c0b55f683a120b073099ae8f8c03761e81d45df9cad5c3c684aab47065` | 9 |
+
+BM's "able to" list is not text in BM: BM:22-24 reads "Billing managers can:" and then the include `{% data reusables.billing.org-billing-manager-permissions %}`; the billing-roles page pulls in the same include (BR:47-51). The include, BMP, in full:
+
+> * View all metered usage for your organization and its repositories.
+> * View organization-level budgets.
+> * Review requests from members for additional {% data variables.product.prodname_copilot_short %} budget.
+> * Download CSV usage reports.
+> * View payment history and download receipts.
+> * Add, update, or remove payment methods.
+> * Upgrade or downgrade between {% data variables.product.prodname_free_user %} and {% data variables.product.prodname_team %} plans.
+> * View, invite, and remove billing managers.
+> * Start, modify, or cancel sponsorships.
+
+BM's own lines add: the role "manages the billing settings for your organization, such as updating payment information" (BM:3); once accepted it "can invite additional people to be billing managers" (BM:15); billing managers "do not use paid licenses" (BM:18) and "receive billing receipts by email" (BM:26); they are not able to change an Enterprise plan, "Create or access repositories in your organizations", see private members, be seen in the member list, or buy Marketplace or Copilot subscriptions (BM:28-35). The invited account accepts by the link in its invitation email (BM:44); the path is the organisation's settings, "Billing and licensing", then "Additional billing details", then "Invite" next to "Billing managers" (BM:46-49).
+
+- **Three of the nine are ways to spend money:** payment methods (BMP:6), the plan (BMP:7; [inference] the two variables name GitHub Free and GitHub Team), and sponsorships (BMP:9). The ruling chose shape A, the machine account as billing manager, before this list was read.
+- **Budgets: two GitHub pages disagree.** BMP:2 gives the role "View organization-level budgets." and nothing more, and BR gives "Set budgets" to organisation owners only (BR:36-41). The rendered budgets page addresses the role as able to "set a budget at the account level" (`gh-docs-set-up-budgets-2026-09-29.txt:295`) and, in the same organisation section (`gh-docs-set-up-budgets-2026-09-29.txt:259`), says "You can edit or delete a budget at any time" (`gh-docs-set-up-budgets-2026-09-29.txt:361`). [inference] Until the step-7 sitting shows otherwise, a billing manager is taken as able to delete the $0 budget.
+- **The token is unchanged.** It holds "Administration" organization permissions (read) (`gh-docs-rest-billing-budgets-2026-09-29.txt:514`). The powers above belong to the account's own session, not to the token.
+
+**What the fold changed.** Step 7's item 9 (`docs/OWNER_STEPS.he.md`) and its code text (`src/revenue/owner-steps.ts`) name the role from this list, money powers first, and are held, not asked, until one decision is recorded: whether shape A stands now that the list is read, or the token comes from shape B (the owner's own account, which already holds every power above, so B grants none). That is a judgement about where money can leak, the kind `CLAUDE.md` routes to Fable, and it is not made here. Item 8, the budget itself, does not wait; step 6's `ORG_BUDGETS_READ_TOKEN` row waits with item 9. Nothing reads the token before the budgets read is built after step 7, so the hold stops no running work.
+
+**Open for the main thread:** (1) record the decision on shape A against BMP:6, :7 and :9; (2) then lift or rewrite item 9 in both files and regenerate the PDF; (3) the step-7 text that fold action 3 puts in `logs/CHANNEL_LOOP.md` §6 names the billing-manager role and should carry the same hold.

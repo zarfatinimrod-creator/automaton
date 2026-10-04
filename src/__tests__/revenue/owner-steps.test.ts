@@ -1017,7 +1017,7 @@ describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", (
     expect(fence).toContain("קו Mozilla (שורה 8 בלופ) הוא רק אחד הקווים שישתמשו בגדר");
     // The token: billing manager, organisation as resource owner, read only, the fallback, never write.
     expect(fence).toContain("**מנהל חיוב (billing manager)**");
-    expect(fence).toContain("**מה התפקיד הזה יכול:**");
+    expect(fence).toContain("**מה התפקיד הזה יכול (הרשימה של GitHub עצמה):**");
     expect(fence).toContain("`ORG_BUDGETS_READ_TOKEN`");
     expect(fence).toMatch(/\*\*Administration\*\* \(בהרשאות הארגון\) ברמת \*\*קריאה בלבד\*\*/);
     expect(fence).toContain("**אם GitHub מסרב**");
@@ -1037,13 +1037,138 @@ describe("step 7 carries the organisation's ₪0 fence (ruling 4.10, row 18)", (
     expect(line("gh-docs-budgets-and-alerts-2026-09-29", 239)).toMatch(/alerts go to account owners and billing managers/);
     expect(line("gh-docs-budgets-and-alerts-2026-09-29", 269)).toMatch(/billing managers can opt in or out of these notifications/);
     expect(line("gh-docs-rest-billing-budgets-2026-09-29", 504)).toMatch(/must be an organization admin or billing manager/);
+    // The power the summary must not leave out: the organisation section (:259) that names billing managers (:295) says a
+    // budget can be edited or deleted at any time, so the role's own session can remove the $0 fence.
+    expect(line("gh-docs-set-up-budgets-2026-09-29", 259)).toBe("Managing budgets for your organization or enterprise");
+    expect(line("gh-docs-set-up-budgets-2026-09-29", 355)).toBe("Editing or deleting a budget");
+    expect(line("gh-docs-set-up-budgets-2026-09-29", 361)).toMatch(/^You can edit or delete a budget at any time/);
   });
 
+  /**
+   * Ruling 4.10 §2 rule 3 and "Not ruled here" item 3: before the owner page names the billing-manager role, a runner
+   * reads what that role is able to do, from github/docs' adding-a-billing-manager-to-your-organization.md (BM), and
+   * summarises it in one line. BM's "Billing managers can:" (BM:22-24) is an include,
+   * data/reusables/billing/org-billing-manager-permissions.md, read 4.10 from github/docs at github grade (the note's
+   * "The billing-manager line" key table). It gives the role three ways to spend money — payment methods, the plan,
+   * sponsorships — that the ruling did not weigh when it chose the role, so the line names them and item 9 waits on one
+   * decision; item 8, the budget itself, does not.
+   */
+  it("summarises the billing-manager role from its own list, money powers first, and holds item 9 on one decision", () => {
+    const item9 = fence.slice(fence.indexOf("9. **טוקן לקריאה בלבד של התקציב**"));
+    expect(item9.length).toBeGreaterThan(300);
+    // The hold comes before any instruction in the item, asks the owner nothing, and item 8 does not wait for it.
+    const hold = item9.indexOf("⏸ **הסעיף הזה מחכה להחלטה אחת, ועד שאכתוב לך — לדלג עליו** (סעיף 8 לא מחכה לו)");
+    expect(hold).toBeGreaterThan(0);
+    expect(hold).toBeLessThan(item9.indexOf("להוסיף את `mehudak-ci` גם כ**מנהל חיוב"));
+    expect(item9).toContain("ההחלטה מתקבלת אצלנו, ולא נדרש ממך כלום עד שאכתוב לך");
+    // The one line, from the role's own list: the three ways to spend money, then the rest, then the budgets page.
+    expect(item9).toContain("**מה התפקיד הזה יכול (הרשימה של GitHub עצמה):**");
+    expect(item9).toContain("**להוסיף, לעדכן ולהסיר אמצעי תשלום**");
+    expect(item9).toContain("**להעביר את הארגון בין Free ל-Team**");
+    expect(item9).toContain("**להתחיל, לשנות ולבטל חסויות (sponsorships)**");
+    expect(item9).toMatch(/\*\*לערוך ולמחוק\*\* תקציב — כלומר ייתכן שגם את גדר ה-\$0, מה שהטוקן לקריאה בלבד לא יכול/);
+    expect(item9).toContain("`data/reusables/billing/org-billing-manager-permissions.md`, sha256 `bd7467c0b55f`");
+    expect(item9).toContain("sha256 `97ea127f989c`");
+    expect(item9).toMatch(/`gh-docs-set-up-budgets-2026-09-29\.txt:279`,\s+`:295`, `:361`/);
+    // The invite path, from BM's own steps.
+    expect(item9).toContain("**Billing and licensing** → **Additional billing details** → ליד \"Billing managers\", **Invite**");
+    // The old line cited BM for powers BM's own lines do not state.
+    expect(item9).not.toContain("**מה התפקיד הזה יכול:**");
+    // The code says the same: held on a decision, the three money powers quoted from the include.
+    const u = step7.unlocks;
+    expect(u).toContain("That part is held, not asked, until one decision is recorded");
+    expect(u).toContain("data/reusables/billing/org-billing-manager-permissions.md");
+    expect(u).toContain('"Add, update, or remove payment methods."');
+    expect(u).toContain('"Start, modify, or cancel sponsorships."');
+    expect(u).toContain('"Upgrade or downgrade between" the Free and Team plans');
+    expect(u).toContain("gh-docs-set-up-budgets-2026-09-29.txt:361");
+    expect(u).toContain("the role's own session may be able to remove the $0 fence, which the read-only token cannot");
+    // The step-6 row and the 4.10 summary point at the hold, so nothing asks the token around it.
+    const row = doc.split("\n").find((l) => l.includes("| `ORG_BUDGETS_READ_TOKEN` |"))!;
+    expect(row).toContain("שמחכה להחלטה אחת — ראה שם");
+    expect(doc.slice(doc.indexOf("**עודכן 4.10.2026"), doc.indexOf("> ### כלל ה-0 ₪ (27.9)"))).toContain(
+      "הסעיף שלו מחכה להחלטה אחת, ראה צעד 7 סעיף 9",
+    );
+    const source = ownerStepById("ci-tokens")!.secrets!.find((r) => r.name === "ORG_BUDGETS_READ_TOKEN")!.source;
+    expect(source).toContain("held with item 9 of that sitting until one decision on the billing-manager role is recorded");
+    // The note records the read: both files' hashes and the list, quoted.
+    const note = fs.readFileSync(path.join(repoRoot, "research/measurements/actions-spending-limit.md"), "utf8");
+    const section = note.slice(note.indexOf("### The billing-manager line"));
+    expect(section).toContain("97ea127f989c88607e83425ad0ec0c098d212e283b55149aea95281016d23c9b");
+    expect(section).toContain("bd7467c0b55f683a120b073099ae8f8c03761e81d45df9cad5c3c684aab47065");
+    expect(section).toContain("78141f05f6b3cd7aa7f198b50ffc3c60338467fd");
+    expect(section).toContain("* Add, update, or remove payment methods.");
+  });
+
+  it("pins read-only on the token wherever it is written, not only in step 7's text", () => {
+    const step6 = ownerStepById("ci-tokens")!;
+    const source = step6.secrets!.find((r) => r.name === "ORG_BUDGETS_READ_TOKEN")!.source;
+    expect(source).toContain("Administration: read only");
+    expect(source).not.toMatch(/write/i);
+    const u6 = step6.unlocks.slice(step6.unlocks.indexOf("ORG_BUDGETS_READ_TOKEN"), step6.unlocks.indexOf("POSTHOG_READ_KEY"));
+    expect(u6).toContain("Administration: read on the organisation, nothing else");
+    expect(u6).not.toMatch(/write/i);
+    const row = doc.split("\n").find((l) => l.includes("| `ORG_BUDGETS_READ_TOKEN` |"))!;
+    expect(row).toContain("Administration ברמת קריאה בלבד");
+    expect(row).not.toMatch(/כתיבה|write/i);
+  });
+
+  it("says in step 4 that the second token comes from the machine account, else the owner's own (shape B)", () => {
+    const step4Doc = doc.slice(doc.indexOf("## צעד 4"), doc.indexOf("## צעד 5"));
+    const note = step4Doc.slice(step4Doc.indexOf("(מאז 4.10"), step4Doc.indexOf("סעיף 9.)") + "סעיף 9.)".length);
+    expect(note.length).toBeGreaterThan(50);
+    expect(note).toContain("נוצר באותה ישיבה גם טוקן");
+    expect(note).toMatch(/`ORG_BUDGETS_READ_TOKEN` — מחשבון המכונה, ואם GitHub מסרב, מהחשבון של הבעלים;\s+פירוט בצעד 7, סעיף 9\.\)/);
+    expect(note).not.toContain("יוצא ממנו");
+  });
+
+  it("promises the fence's effects only as conditional and future: by-sight items (3)-(4) may fail, the read is not built", () => {
+    const got = step7Doc.slice(step7Doc.indexOf("### מה יוצא לך מזה"));
+    const fenceGot = got.slice(got.indexOf("וגדר ה-0 ₪ (סעיפים 8–9)"));
+    expect(fenceGot.length).toBeGreaterThan(100);
+    expect(fenceGot).toMatch(/אם העמוד מקבל \$0 ומציע עצירה, שימוש בתשלום\s+ב-Actions נעצר/);
+    expect(fenceGot).toMatch(/והבדיקה, כשתיבנה אחרי צעד 7, קוראת את הגדר לפני הדקה הראשונה שעלולה\s+לעלות כסף/);
+    expect(fenceGot).toMatch(/"פרטי" אפשר לבחור רק אחרי שהיא קראה אותה/);
+    expect(fenceGot).not.toContain("ומכונה בודקת");
+    // Item 9's purpose and the step-6 row promise the ruling's read (before the first metered-capable minute), not more.
+    expect(fence).toContain("כדי שהבדיקה, כשתיבנה אחרי צעד 7, תוכל לקרוא שהגדר באמת קיימת לפני הדקה הראשונה");
+    expect(fence).not.toContain("לפני כל דקה");
+    const row = doc.split("\n").find((l) => l.includes("| `ORG_BUDGETS_READ_TOKEN` |"))!;
+    expect(row).toContain("היא תקרא את התקציב לפני הדקה הראשונה שעלולה לעלות כסף");
+    expect(row).not.toContain("לפני כל עבודה");
+    // The summary table's step-7 row says the same.
+    const row7 = doc.slice(doc.indexOf("## סיכום בטבלה אחת")).split("\n").find((l) => l.startsWith("| 7 |"))!;
+    expect(row7).toContain("אם העמוד מקבל $0 ומציע עצירה, שימוש בתשלום ב-Actions נעצר בגבול");
+  });
+
+  /**
+   * The steps are written in infinitive or impersonal forms, and the owner is "הבעלים". A fixed word list missed
+   * "תאשר" (review R2), so the second-person future forms are derived from every infinitive the 4.10 text itself uses:
+   * ל+X gives תX, תXי and the feminine with X's last ו/י dropped (לכתוב → תכתוב, תכתבי); לה+X gives תX (להוסיף →
+   * תוסיף). A third-person feminine future is spelled like the second masculine, so a sentence whose subject is "הבדיקה"
+   * is written in the present instead.
+   */
   it("adds no gendered singular to the owner's new lines (infinitive or impersonal forms, as the steps are written)", () => {
-    const added = [fence, doc.slice(doc.indexOf("**עודכן 4.10.2026"), doc.indexOf("> ### כלל ה-0 ₪ (27.9)"))].join("\n");
-    expect(added.length).toBeGreaterThan(600);
-    const GENDERED = ["אתה", "תסמן", "תסמני", "תיצור", "תיצרי", "תכתוב", "תכתבי", "סמן", "צור", "כתוב", "הוסף", "שמור", "אשר"];
-    const words = new Set(added.split(/[\s,.;:()*"`'—–\-]+/));
-    expect(GENDERED.filter((w) => words.has(w))).toEqual([]);
+    const step4Doc = doc.slice(doc.indexOf("## צעד 4"), doc.indexOf("## צעד 5"));
+    const got = step7Doc.slice(step7Doc.indexOf("### מה יוצא לך מזה"));
+    const added = [
+      fence,
+      doc.slice(doc.indexOf("**עודכן 4.10.2026"), doc.indexOf("> ### כלל ה-0 ₪ (27.9)")),
+      step4Doc.slice(step4Doc.indexOf("(מאז 4.10"), step4Doc.indexOf("סעיף 9.)")),
+      doc.split("\n").find((l) => l.includes("| `ORG_BUDGETS_READ_TOKEN` |"))!,
+      got.slice(got.indexOf("וגדר ה-0 ₪ (סעיפים 8–9)")),
+      doc.split("\n").find((l) => l.startsWith("| 7 |"))!,
+    ].join("\n");
+    expect(added.length).toBeGreaterThan(2000);
+    const words = new Set(added.split(/[\s,.;:()*"`'—–\-?!/[\]|]+/).filter(Boolean));
+    const HEB = /^[\u05d0-\u05ea]+$/;
+    const stems = [...words]
+      .filter((w) => HEB.test(w) && w.length >= 4 && w.startsWith("ל"))
+      .flatMap((w) => [w.slice(1), ...(w.startsWith("לה") ? [w.slice(2)] : [])]);
+    const derived = stems.flatMap((x) => [`ת${x}`, `ת${x}י`, `ת${x.replace(/[וי](?=[\u05d0-\u05ea]$)/, "")}י`]);
+    expect(derived).toContain("תאשר"); // the form review R2 slipped past the old list
+    const FIXED = ["אתה", "סמן", "צור", "כתוב", "הוסף", "שמור", "אשר", "בעל"];
+    const found = [...new Set([...derived, ...FIXED])].filter((w) => words.has(w));
+    expect(found).toEqual([]);
   });
 });
