@@ -74,30 +74,21 @@
 //       (default now, never later than now), is eligible; the most recent one is
 //       refunded in full (PUT /v2/sales/:id/refund, no amount: no cancellation
 //       fee). A dry run unless --apply. Idempotent: a refunded sale is never
-//       touched again. Logs sale ids, never the address. Exit 0 whether or not
+//       touched again. When nothing is eligible but the most recent sale of
+//       this product to <addr> inside that window is wholly refunded (by
+//       anyone), the last line is "refund: already-refunded (sale <id>)", not
+//       "refund: none": the responder's retry of a balance refusal is this same
+//       lookup, and it must tell a kept promise from nothing. Logs sale ids,
+//       never the address. Exit 0 whether or not
 //       anything was eligible (the responder's one reply does not depend on it);
 //       exit 1 when it cannot decide (no window in force, Gumroad unreadable, a
 //       refund refused), so nothing is answered as if it were done. Exit 3
 //       (BALANCE_EXIT) when Gumroad refuses the refund for balance alone ("Your
 //       balance is insufficient to process this refund.", refundable.rb:100),
 //       with the line "refund: balance-insufficient (sale <id>)": the responder
-//       then sends its holding reply and retries that sale by id.
-//
-//   node scripts/gumroad-pro-product.js refund --sale <id> --requested-at <iso> [--email <addr>] [--apply]
-//       The retry of one sale, by its id (GET /v2/sales/:id): the same window,
-//       measured at the ORIGINAL request (so --requested-at is required), the
-//       same product, the same exit codes - and the result named on its last line,
-//       because the responder answers only a refund that happened:
-//       "refund: refunded (sale <id>)", or "refund: already-refunded (sale <id>)"
-//       for a sale Gumroad reports wholly refunded (by anyone), exit 0. Everything
-//       else about the sale is a stop (exit 1: the retry is kept and the run fails,
-//       so a session looks): partly refunded, charged back or disputed, another
-//       product, no purchase time, or outside the window measured at the request -
-//       the request was found eligible once, so a refund promised by the holding
-//       reply is never dropped as "nothing to refund". --email is optional and
-//       changes nothing about the refund: it adds the line "buyer: the sender" or
-//       "buyer: not the sender" (whether the sale's buyer address is that one; the
-//       address is never printed), so the responder answers only the sale's buyer.
+//       then sends its holding reply, flags the request in the brand mailbox and
+//       runs this same lookup again every run until the refund happens
+//       (RULING-2026-10-05-refund-state).
 //
 // What is CODE-grade and what this run renders: Gumroad's own help FAQ says
 // products cannot be created through the API; its code (links_controller.rb
@@ -155,7 +146,7 @@ export class StopError extends Error {}
  */
 export const GUMROAD_BALANCE_REFUSAL = 'Your balance is insufficient to process this refund.';
 
-/** `refund`'s exit code for that refusal alone: the brand-mail responder sends its holding reply and retries by sale id. */
+/** `refund`'s exit code for that refusal alone: the brand-mail responder sends its holding reply and retries the request. */
 export const BALANCE_EXIT = 3;
 
 /** A refund Gumroad refused for balance, and nothing else: the sale is known, only the money to refund it is not there yet. */
@@ -846,7 +837,7 @@ async function putRefund({ fetchImpl, token, sale, say, stop, left }) {
     if (isBalanceRefusal(r.body)) {
       throw new BalanceError(
         `Gumroad refused the refund of sale ${id} for balance ("${GUMROAD_BALANCE_REFUSAL}", refundable.rb:99-100): the unpaid `
-        + `balance does not cover it yet. Sale ${id} is not refunded; it is retried by sale id (refund --sale) until Gumroad permits it.`,
+        + `balance does not cover it yet. Sale ${id} is not refunded; the brand-mail responder retries the request until Gumroad permits it.`,
         id,
       );
     }
@@ -874,12 +865,15 @@ function redactedStop(e, redact) {
  * day 31 is still inside. One request refunds at most one sale, the most recent eligible one, in full (no amount:
  * no cancellation fee). A sale already refunded, charged back or disputed is never touched, so a second request does
  * nothing. A dry run unless `apply`. Gumroad's balance refusal throws a BalanceError with the sale's id
- * (RULING-2026-09-30-documents (d)): the responder then retries that sale by id (refundSaleById).
+ * (RULING-2026-09-30-documents (d)): the responder then flags the request and runs this same lookup again every run
+ * (RULING-2026-10-05-refund-state (a)5). So when nothing is eligible but the most recent sale of this product to this
+ * address inside the window is wholly refunded (`refunded === true`, by anyone), the result is 'already-refunded' with
+ * that sale's id - a kept promise - and 'none' only otherwise.
  *
  * The address is never logged or thrown: lines carry sale ids and counts only, and every line and message passes
  * through a redaction of the address first, in case Gumroad ever echoes it.
  *
- * @returns {Promise<{action: 'refunded'|'dry-run'|'none', saleId?: string}>}
+ * @returns {Promise<{action: 'refunded'|'already-refunded'|'dry-run'|'none', saleId?: string}>}
  */
 export async function refundSale({ fetchImpl, token, site, email, requestedAtMs, nowMs = Date.now(), apply = false, log = console.log }) {
   const productId = String(site?.gumroad?.productId ?? '').trim();
@@ -904,6 +898,11 @@ export async function refundSale({ fetchImpl, token, site, email, requestedAtMs,
     say(`sales of this product to the requesting address: ${mine.length} (already refunded or disputed: ${mine.length - open.length}; `
       + `outside the ${window.days}-day window: ${open.length - eligible.length}; eligible: ${eligible.length})`);
     if (!eligible.length) {
+      const [done] = mine.filter((x) => x.refunded === true && insideWindow(x, asked, window.days)).sort((a, b) => createdAt(b) - createdAt(a));
+      if (done) {
+        say(`sale ${done.id} is already refunded in full: nothing more to refund`);
+        return { action: 'already-refunded', saleId: String(done.id) };
+      }
       say('nothing to refund');
       return { action: 'none' };
     }
@@ -918,90 +917,10 @@ export async function refundSale({ fetchImpl, token, site, email, requestedAtMs,
   }
 }
 
-/** A Gumroad sale id as the API prints it (e.g. "A-m3CDDC5dlrSdKZp0RFhA=="): nothing that could walk another path. */
-const SALE_ID = /^[A-Za-z0-9_=+-]{1,128}$/;
-/** Anything shaped like an address, whoever's it is: the sale read by id carries the buyer's. */
-const ANY_ADDRESS = /[^\s@<>"'(),;:]+@[^\s@<>"'(),;:]+/g;
-
-/**
- * Retry one sale by its id (RULING-2026-09-30-documents (d), fold action 4(b)): what the brand-mail responder runs,
- * every run, for a refund Gumroad refused for balance. The same rules as refundSale - a sale of THIS product only,
- * inside the window in force measured at `requestedAtMs` (the ORIGINAL request, required: the retry must not shrink the
- * window), in full, a dry run unless `apply`, a BalanceError while the balance still does not cover it. The sale id
- * came from refundSale's own balance refusal for a verified sender, so no address is needed to find it; GET
- * /v2/sales/:id reads it (api/v2/sales_controller.rb:125-128). Nothing shaped like an address is logged or thrown.
- *
- * Unlike refundSale, whose one reply never depends on what it found, a retry answers a buyer who was told the refund
- * "will be issued", so its result is never a quiet "none": a sale Gumroad reports wholly refunded (by anyone) is
- * 'already-refunded' - the promise was kept - and anything else that stops the refund is a StopError (the responder
- * keeps the retry and fails the run, so a session looks): partly refunded, charged back or disputed, another product,
- * no purchase time, or outside the window as it now stands. `email`, when given, is only compared: the line
- * "buyer: the sender" / "buyer: not the sender" says whether it is the sale's buyer address, so the responder answers
- * no one but the buyer; it changes nothing about the refund.
- *
- * @returns {Promise<{action: 'refunded'|'already-refunded'|'dry-run', saleId: string}>}
- */
-export async function refundSaleById({ fetchImpl, token, site, saleId, requestedAtMs, email, nowMs = Date.now(), apply = false, log = console.log }) {
-  const productId = String(site?.gumroad?.productId ?? '').trim();
-  if (!productId) throw new StopError('src/config/site.json has no gumroad.productId: there is no product to refund.');
-  const id = String(saleId ?? '').trim();
-  if (!SALE_ID.test(id)) throw new StopError('refund --sale needs a Gumroad sale id (letters, numerals, "-", "_", "=", "+").');
-  if (!Number.isFinite(requestedAtMs)) throw new StopError('refund --sale needs --requested-at, the original request: the window is measured there.');
-  const sender = email === undefined ? null : addressOf(email);
-  if (sender !== null && !PLAIN_ADDRESS.test(sender)) throw new StopError('refund --sale --email needs one plain address (not printed here).');
-  const redact = (text) => String(text).replace(ANY_ADDRESS, '[address]');
-  const say = (line) => log(redact(line));
-  const stop = (message) => new StopError(redact(message));
-  const asked = Math.min(requestedAtMs, nowMs);
-  const left = 'the retry is kept for the next run';
-
-  try {
-    const window = await windowInForce({ fetchImpl, token, productId, say, stop, left });
-    say(`refund window in force: ${window.days} days, measured at the original request (${new Date(asked).toISOString()})`);
-    const s = await gumroad({ fetchImpl, token, method: 'GET', path: `/sales/${encodeURIComponent(id)}`, log: say });
-    const sale = s.body?.sale;
-    if (s.status !== 200 || s.body?.success !== true || !sale || typeof sale !== 'object') {
-      throw stop(`GET /v2/sales/${id} was refused live (HTTP ${s.status}); nothing was refunded, and ${left}.`);
-    }
-    if (String(sale.product_id ?? '') !== productId) {
-      throw stop(`Sale ${id} is not a sale of this product (site.json's gumroad.productId); nothing was refunded, and ${left}.`);
-    }
-    if (sender !== null) {
-      say(`buyer: ${[sale.purchase_email, sale.email].some((a) => addressOf(a) === sender) ? 'the sender' : 'not the sender'}`);
-    }
-    if (sale.refunded === true) {
-      say(`sale ${id} is already refunded in full: nothing more to refund`);
-      return { action: 'already-refunded', saleId: id };
-    }
-    if (settled(sale)) {
-      throw stop(`Sale ${id} is partly refunded, charged back or disputed, so it is not refunded here; ${left}, and a session decides.`);
-    }
-    if (!Number.isFinite(createdAt(sale))) {
-      throw stop(`Sale ${id} carries no purchase time, so the window cannot be measured; nothing was refunded, and ${left}.`);
-    }
-    if (!insideWindow(sale, asked, window.days)) {
-      throw stop(
-        `Sale ${id} is outside the ${window.days}-day window in force now, measured at the original request, though the request `
-        + `was found inside the window when it was made (the window shrank?); nothing was refunded, and ${left}, and a session decides.`,
-      );
-    }
-    if (!apply) {
-      say(`dry run: would refund sale ${id} in full (nothing was sent; --apply refunds)`);
-      return { action: 'dry-run', saleId: id };
-    }
-    return await putRefund({ fetchImpl, token, sale: { ...sale, id }, say, stop, left });
-  } catch (e) {
-    throw redactedStop(e, redact);
-  }
-}
-
-/**
- * `refund`'s flags: --email <addr> or --sale <id> (with --sale, --requested-at <iso> is required and --email is only the
- * buyer check); --requested-at <iso>; --apply. Null on anything else.
- */
+/** `refund`'s flags: --email <addr> (required), --requested-at <iso>, --apply. Null on anything else. */
 function refundFlags(flags) {
-  const out = { email: undefined, sale: undefined, requestedAt: undefined, apply: false };
-  const named = { '--email': 'email', '--sale': 'sale', '--requested-at': 'requestedAt' };
+  const out = { email: undefined, requestedAt: undefined, apply: false };
+  const named = { '--email': 'email', '--requested-at': 'requestedAt' };
   for (let i = 0; i < flags.length; i += 1) {
     const flag = flags[i];
     if (flag === '--apply') out.apply = true;
@@ -1012,8 +931,7 @@ function refundFlags(flags) {
       i += 1;
     } else return null;
   }
-  if (out.email === undefined && out.sale === undefined) return null;
-  if (out.sale !== undefined && out.requestedAt === undefined) return null;
+  if (out.email === undefined) return null;
   return out;
 }
 
@@ -1055,7 +973,7 @@ export const NO_TOKEN_NOTICE = 'Not calling Gumroad: repository secret GUMROAD_A
   + 'Until then Pro stays on "בקרוב" and nothing can be bought.';
 
 const USAGE = 'Usage: node scripts/gumroad-pro-product.js <create [--write-site-json] [--fine-print <file> [--apply]] | enable | check '
-  + '| refund --email <addr> [--requested-at <iso>] [--apply] | refund --sale <id> --requested-at <iso> [--email <addr>] [--apply]>';
+  + '| refund --email <addr> [--requested-at <iso>] [--apply]>';
 
 export async function main(argv = process.argv.slice(2), env = process.env, { fetchImpl = globalThis.fetch, log = console.log, sitePath = SITE_JSON } = {}) {
   const [command, ...flags] = argv;
@@ -1102,9 +1020,7 @@ export async function main(argv = process.argv.slice(2), env = process.env, { fe
     } else if (command === 'refund') {
       const requestedAtMs = refundArgs.requestedAt === undefined ? undefined : Date.parse(refundArgs.requestedAt);
       if (Number.isNaN(requestedAtMs)) throw new StopError('--requested-at is not a date (ISO 8601, e.g. 2026-10-20T12:00:00Z).');
-      const out = refundArgs.sale !== undefined
-        ? await refundSaleById({ fetchImpl, token, site, saleId: refundArgs.sale, requestedAtMs, email: refundArgs.email, apply: refundArgs.apply, log })
-        : await refundSale({ fetchImpl, token, site, email: refundArgs.email, requestedAtMs, apply: refundArgs.apply, log });
+      const out = await refundSale({ fetchImpl, token, site, email: refundArgs.email, requestedAtMs, apply: refundArgs.apply, log });
       log(`refund: ${out.action}${out.saleId ? ` (sale ${out.saleId})` : ''}${refundArgs.apply ? '' : ' - dry run'}`);
     } else if (command === 'enable') {
       const brandMail = await readProbe(env.BRAND_MAIL_PROBE_FILE || BRAND_MAIL_PROBE);
