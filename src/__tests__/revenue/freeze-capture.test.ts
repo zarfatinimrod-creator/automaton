@@ -8,13 +8,16 @@ import {
   checkManifest,
   cited,
   classifyFiles,
+  commitFiles,
   diskFiles,
+  existingCopy,
   findCitations,
   freezeCapture,
   isDay,
   listedNames,
   main,
   MANIFEST,
+  maskCapture,
   planFreeze,
   readManifest,
   recordFiles,
@@ -24,6 +27,8 @@ import {
   writtenIn,
   // @ts-expect-error — plain ESM script, no type declarations by design
 } from "../../../scripts/freeze-capture.mjs";
+// @ts-expect-error — plain ESM script, no type declarations by design
+import { redactSecrets } from "../../../scripts/render-watch.mjs";
 
 /**
  * scripts/freeze-capture.mjs (tick 38, 30.9.2026): a dated copy of a render-watch capture that the weekly render never
@@ -628,6 +633,150 @@ describe("--cited: each range is judged by the commit that wrote it, and nothing
     expect(out).toMatch(/REFUSED page as \w+ stored it: .*textError/);
     expect(out).toMatch(/1 DRIFTED \(0 repointed to the version each was written against\)/);
     expect(noteOf(r)).toBe("See `page.txt:3`.\n");
+  });
+});
+
+describe("tick 50: every byte a new frozen copy gets passes through redactSecrets, history included", () => {
+  // No address is written in this file: each is built from its parts at run time, the Cloudflare hex by encoding one.
+  const at = (local: string, domain: string, sep = String.fromCharCode(64)) => [local, domain].join(sep);
+  const PCT = ["%", "40"].join("");
+  const cf = (address: string, key = 0x2b) =>
+    [key, ...Buffer.from(address, "utf8").map((b) => b ^ key)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  const LOCALS = ["chair.person", "lab.office", "press.desk", "web.master"];
+  const HEX = cf(at(LOCALS[2], "agency.example.gov"));
+  const ADDRESS_TEXT = TEXT.replace("line 3:", `line 3: write to ${at(LOCALS[0], "example.org")} or`);
+  const ADDRESS_HTML =
+    `<html><body><p>Chair: <a href="mailto:${at(LOCALS[0], "example.org")}">x</a></p>\n` +
+    `<p><a href="/r?u=${at(LOCALS[1], "uni.example.edu", PCT)}">lab</a></p>\n` +
+    `<p><span class="__cf_email__" data-cfemail="${HEX}">[email&#160;protected]</span></p></body></html>`;
+  const sha = (b: Buffer) => createHash("sha256").update(b).digest("hex");
+  const noLocal = (s: string) => LOCALS.filter((l) => s.includes(l)).concat(s.includes(HEX) ? ["hex"] : []);
+  const lines = (s: string) => s.split("\n").length;
+
+  it("--history --apply masks a version taken from git history; its meta says so; FROZEN.sha256 holds the masked bytes", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    // Its meta as render-watch writes one: sha256 and byteLength of the stored body.
+    const body = Buffer.from(ADDRESS_HTML);
+    capture(r.rendered, "page", { text: ADDRESS_TEXT, html: ADDRESS_HTML, over: { sha256: sha(body), byteLength: body.length } });
+    r.note("Line three is `page.txt:3`.\n");
+    const c1 = r.commit("v1: a capture from before the fold, with addresses");
+    capture(r.rendered, "page", { text: V2, over: { fetchedAt: "2026-09-29T11:00:00.000Z" } });
+    r.commit("v2: the render moved line 3");
+
+    const dry: string[] = [];
+    expect(cited({ root: r.root, apply: false, history: true, on: "2026-10-06", log: (s: string) => dry.push(s) })).toBe(1);
+    expect(dry.join("\n")).toMatch(new RegExp(`would freeze page as ${c1} stored it -> page-2026-09-28 \\(meta\\.json, txt, html\\); would mask 4\\b`));
+    expect(existsSync(join(r.rendered, "page-2026-09-28.meta.json"))).toBe(false);
+    // Nothing printed names an address, the DRIFTED range included: it quotes the cited line as it was written, from
+    // history, masked as the copy is (review fix).
+    expect(dry.join("\n")).toMatch(/^ {2}then: "line 3: write to \[redacted:email\]@example\.org or /m);
+    expect(noLocal(dry.join("\n"))).toEqual([]);
+
+    const out: string[] = [];
+    expect(cited({ root: r.root, apply: true, history: true, on: "2026-10-06", log: (s: string) => out.push(s) })).toBe(0);
+    expect(out.join("\n")).toMatch(/froze page as \w+ stored it -> page-2026-09-28 \(meta\.json, txt, html\); masked 4\b/);
+    expect(out.join("\n")).toMatch(/^ {2}then: /m);
+    expect(noLocal(out.join("\n"))).toEqual([]);
+    expect(readFileSync(join(r.root, "research/measurements/note.md"), "utf8")).toBe("Line three is `page-2026-09-28.txt:3`.\n");
+
+    const text = readFileSync(join(r.rendered, "page-2026-09-28.txt"), "utf8");
+    const html = readFileSync(join(r.rendered, "page-2026-09-28.html"));
+    expect(text).toBe(ADDRESS_TEXT.replace(at(LOCALS[0], "example.org"), "[redacted:email]@example.org"));
+    expect(lines(text)).toBe(lines(ADDRESS_TEXT));
+    expect(html.toString("utf8")).toBe(
+      ADDRESS_HTML.replace(at(LOCALS[0], "example.org"), "[redacted:email]@example.org")
+        .replace(at(LOCALS[1], "uni.example.edu", PCT), `[redacted:email]${PCT}uni.example.edu`)
+        .replace(HEX, "[redacted:email]@agency.example.gov"),
+    );
+    expect(noLocal(`${text}${html.toString("utf8")}`)).toEqual([]);
+
+    const m = JSON.parse(readFileSync(join(r.rendered, "page-2026-09-28.meta.json"), "utf8"));
+    // 3 in the body, 1 in the text; the meta had counted none.
+    expect([m.redacted, m.remasked]).toEqual([4, { on: "2026-10-06", addresses: 4, fold: "12143ca" }]);
+    expect([m.sha256, m.byteLength]).toEqual([sha(html), html.length]);
+    const keys = Object.keys(m);
+    expect(keys.slice(keys.indexOf("truncated"), keys.indexOf("truncated") + 4)).toEqual(["truncated", "redacted", "remasked", "error"]);
+    expect(keys.at(-1)).toBe("frozen");
+    expect(m.frozen.commit).toBe(c1);
+    expect(checkManifest(r.rendered)).toEqual([]);
+    expect(readManifest(r.rendered).get("page-2026-09-28.html")).toBe(sha(html));
+    expect(readManifest(r.rendered).get("page-2026-09-28.txt")).toBe(sha(Buffer.from(text)));
+
+    // Another day, the same version: the masked copy is the same capture (only remasked.on would differ): reused.
+    const again = maskCapture(commitFiles(r.root, c1, "page"), "2026-10-07");
+    expect(again.count).toBe(4);
+    expect(existingCopy(r.rendered, "page", again.files)).toBe("page-2026-09-28");
+    const p = planFreeze({ slug: "page", files: commitFiles(r.root, c1, "page"), dir: r.rendered, urlsText: URLS, on: "2026-10-07", commit: c1, frozenSlug: "page-2026-09-28" });
+    expect(p.already).toBe(true);
+  });
+
+  it("--cited reuses a copy of the same version masked on another day, and makes no second one", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    const body = Buffer.from(ADDRESS_HTML);
+    capture(r.rendered, "page", { text: ADDRESS_TEXT, html: ADDRESS_HTML, over: { sha256: sha(body), byteLength: body.length } });
+    r.note("Line three is `page.txt:3`.\n");
+    const c1 = r.commit("v1");
+    capture(r.rendered, "page", { text: V2, over: { fetchedAt: "2026-09-29T11:00:00.000Z" } });
+    r.commit("v2");
+    // The version the citation was written against, frozen on 6.10 from history (masked, remasked.on 2026-10-06).
+    freezeCapture({ slug: "page", files: commitFiles(r.root, c1, "page"), dir: r.rendered, urlsText: URLS, on: "2026-10-06", commit: c1, why: "w" });
+    r.commit("frozen on 6.10");
+    const out: string[] = [];
+    expect(cited({ root: r.root, apply: true, history: true, on: "2026-10-07", log: (s: string) => out.push(s) })).toBe(0);
+    expect(out.join("\n")).toMatch(new RegExp(`already frozen page as ${c1} stored it -> page-2026-09-28 `));
+    expect(readFileSync(join(r.root, "research/measurements/note.md"), "utf8")).toBe("Line three is `page-2026-09-28.txt:3`.\n");
+    expect(readdirSync(r.rendered).filter((f) => f.startsWith("page-2026-09-28-"))).toEqual([]);
+    expect(JSON.parse(readFileSync(join(r.rendered, "page-2026-09-28.meta.json"), "utf8")).remasked.on).toBe("2026-10-06");
+  });
+
+  it("masks a copy frozen from a live capture that still holds an address, and leaves the live files alone", () => {
+    const dir = fresh();
+    const live = capture(dir, "page", { text: ADDRESS_TEXT, html: ADDRESS_HTML, over: { redacted: 1 } });
+    const before = diskFiles("page", dir);
+    const p = freezeCapture({ slug: "page", files: diskFiles("page", dir), dir, urlsText: URLS, on: "2026-10-06", commit: "abc1234", why: "w" });
+    expect(p.masked).toBe(4);
+    expect(diskFiles("page", dir)).toEqual(before);
+    const m = JSON.parse(readFileSync(join(dir, "page-2026-09-28.meta.json"), "utf8"));
+    // The fixture's sha256 is not of its body, so it stays (as remask-captures leaves a hand-redacted meta's).
+    expect([m.redacted, m.remasked, m.sha256]).toEqual([5, { on: "2026-10-06", addresses: 4, fold: "12143ca" }, live.sha256]);
+    expect(noLocal(readFileSync(join(dir, "page-2026-09-28.html"), "utf8") + readFileSync(join(dir, "page-2026-09-28.txt"), "utf8"))).toEqual([]);
+    expect(checkManifest(dir)).toEqual([]);
+  });
+
+  it("changes nothing in a copy of a capture that is already masked (idempotence), and says so in a dry run", () => {
+    const dir = fresh();
+    const masked = (s: string) => redactSecrets(Buffer.from(s), "text/html").bytes as Buffer;
+    const html = masked(ADDRESS_HTML);
+    const text = masked(ADDRESS_TEXT);
+    const live = capture(dir, "page", { text: text.toString("utf8"), html: html.toString("utf8"), over: { redacted: 4, sha256: sha(html), byteLength: html.length } });
+    const dry = freezeCapture({ slug: "page", files: diskFiles("page", dir), dir, urlsText: URLS, on: "2026-10-06", why: "w", dryRun: true });
+    expect(dry.masked).toBe(0);
+    freezeCapture({ slug: "page", files: diskFiles("page", dir), dir, urlsText: URLS, on: "2026-10-06", commit: "abc1234", why: "w" });
+    expect(readFileSync(join(dir, "page-2026-09-28.html"))).toEqual(html);
+    expect(readFileSync(join(dir, "page-2026-09-28.txt"))).toEqual(text);
+    const m = JSON.parse(readFileSync(join(dir, "page-2026-09-28.meta.json"), "utf8"));
+    expect(m).toEqual({ ...live, slug: "page-2026-09-28", bodyPath: "research/rendered/page-2026-09-28.html", textPath: "research/rendered/page-2026-09-28.txt", frozen: m.frozen });
+    expect("remasked" in m).toBe(false);
+  });
+
+  it("prints what a one-capture dry run would mask, as a count", () => {
+    const r = repo();
+    writeFileSync(join(r.rendered, "urls.txt"), URLS);
+    capture(r.rendered, "page", { text: ADDRESS_TEXT, html: ADDRESS_HTML });
+    r.commit("v1");
+    const logs: string[] = [];
+    const log = console.log;
+    console.log = (s: string) => logs.push(s);
+    try {
+      expect(main(["page", "--dry-run"], r.root)).toBe(0);
+    } finally {
+      console.log = log;
+    }
+    expect(logs.join("\n")).toMatch(/^would freeze page -> page-2026-09-28 \(.*\); would mask 4$/m);
+    expect(noLocal(logs.join("\n"))).toEqual([]);
+    expect(existsSync(join(r.rendered, "page-2026-09-28.meta.json"))).toBe(false);
   });
 });
 

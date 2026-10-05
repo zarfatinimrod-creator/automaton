@@ -711,7 +711,8 @@ function isTextLike(contentType) {
 
 /**
  * An email address: a local part, @, and a domain whose last label is letters; group 1
- * is the domain, which the mask keeps. Not an address, and left alone:
+ * is the @ as the view holds it (`@`, or a script escape `\u0040` or `\x40`), group 2 the
+ * domain, which the mask keeps. Not an address, and left alone:
  *   - a "domain" ending in a file extension: `<name>@2x.png` and `<name>@2x-<sha>.png`, the
  *     retina image names (64 of the address-shaped strings in research/rendered/ on 5.10)
  *   - a local part that runs on from a longer word, or follows `/` (a path or a URL's
@@ -723,30 +724,96 @@ function isTextLike(contentType) {
  * A string escape in a script (`\u003e`, `\x22`, `\n`, `\t`, any one-letter escape) ends
  * the word before a local part, as a space would, except an escaped slash (`\u002F`,
  * `\x2F`), which counts as a slash: a handle after it (`\u002F@<handle>`) stays a handle.
- * Not found at all, and so not masked: an address whose @ is itself encoded (`%40`,
- * `\u0040`, `\x40`, Cloudflare's data-cfemail), or obfuscated (`[at]`).
+ * The same rules hold for an address whose @ is encoded, since tick 50 (5.10.2026). An @
+ * written `\u0040` or `\x40` in a script string is an @ (the escape's letter in either case).
+ * Which text the rules read (maskAddresses): a plain @ or a script escape first in the text as
+ * it is, percent escapes and all, exactly as before tick 50 (there `%2F` is three local-part
+ * characters, not a slash, so `%2F<local>@<domain>` is masked whole); then the text with its
+ * percent escapes decoded, where `<local>%40<domain>` is read as the plain matcher reads
+ * `<local>@<domain>` (an escape of a local-part character, `%2B`, is part of the local part;
+ * `%20` ends it as a space would; after `%2F` it is a path and is left), as is a plain @ the
+ * first reading left only because its word ran on through a percent escape.
+ * Not found at all, and so not masked: an @ encoded twice (`%2540`, `&#37;40`), or
+ * obfuscated (`[at]`, ` at `), or an address a script assembles. Cloudflare's email
+ * protection is not an @ at all: maskAddresses reads it on its own (CLOUDFLARE), as a
+ * data-cfemail value quoted `"`, `'`, `\"`, `\u0022`, `\x22`, `&quot;`, `&#34;`, `&#x22;` or not
+ * at all, and as the hex after `email-protection#`; a value escaped twice (`\\\"` in JSON
+ * inside JSON, `&amp;quot;`) is not found. Any `email-protection#` followed by a word made of hex
+ * digits alone is read as one (a fragment `#cafe` becomes a bare mask): a harmless over-mask.
  */
 const ADDRESS_PATTERN =
-  /(?<=^|[^A-Za-z0-9._%+\-\/\\]|\\(?:u00(?!2f)[0-9a-f]{2}|x(?!2f)[0-9a-f]{2}|[nrtbfv]))[A-Za-z0-9._%+-]+@(?<!\/[^\s"'<>()?=&,;|#]{0,256}:[A-Za-z0-9._%+-]+@)((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,63})(?![A-Za-z0-9]|\.[A-Za-z0-9-])(?<!\.(?:png|jpe?g|gif|svg|webp|avif|css|js|mjs|json|map|woff2?|ttf|otf|ico|mp4|webm|pdf|html?))/gi;
+  /(?<=^|[^A-Za-z0-9._%+\-\/\\]|\\(?:u00(?!2f)[0-9a-f]{2}|x(?!2f)[0-9a-f]{2}|[nrtbfv]))[A-Za-z0-9._%+-]+(@|\\u0040|\\x40)(?<!\/[^\s"'<>()?=&,;|#]{0,256}:[A-Za-z0-9._%+-]+(?:@|\\u0040|\\x40))((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,63})(?![A-Za-z0-9]|\.[A-Za-z0-9-])(?<!\.(?:png|jpe?g|gif|svg|webp|avif|css|js|mjs|json|map|woff2?|ttf|otf|ico|mp4|webm|pdf|html?))/gi;
 
-// A character reference, as decodeEntities reads one: hex, decimal, or a name it knows.
+// A character reference, as decodeEntities reads one: hex, decimal, or a name it knows. The first pass's view.
 const CHARACTER_REFERENCE = /&#x[0-9a-f]+;|&#\d+;|&[a-z]+;/gi;
+// The same, or a URL's percent escape: the second pass's view.
+const REFERENCE_OR_ESCAPE = /&#x[0-9a-f]+;|&#\d+;|&[a-z]+;|%[0-9a-f]{2}/gi;
+const decodeReference = (ref) => (ref[0] === "%" ? String.fromCharCode(Number.parseInt(ref.slice(1), 16)) : decodeEntities(ref));
+
+// Cloudflare's email protection: an address as hex, its first byte the key and every other byte the address's UTF-8
+// XORed with it, in a span's data-cfemail or after an anchor's /cdn-cgi/l/email-protection#. Group 1 is what comes
+// before the hex, kept as written: the attribute's quote may be ", ', none, an escaped one (\" in a JSON string,
+// \u0022 or \x22 in a script) or an entity (&quot;, &#34;, &#x22;: HTML inside an attribute, a srcdoc). Group 2 is the hex.
+const CLOUDFLARE =
+  /(data-cfemail=(?:\\?["']|&quot;|&#0*34;|&#x0*22;|\\u0022|\\x22)?|email-protection#)([0-9a-f]+)(?![0-9a-z])/gi;
 
 /**
- * Mask the addresses ADDRESS_PATTERN finds in a text, keeping each domain. The search runs
- * over the text with its character references decoded, so an address spelt in them (each
- * character as `&#NNN;`, as some Markdown converters write a mailto link) is found too.
- * The view decodes in one pass; decodeEntities decodes hex, then decimal, then named
+ * The domain of the one address a Cloudflare hex decodes to (a mailto query after it, `?subject=…`, is allowed and goes
+ * with the mask), or null. Decoded in memory only, never logged.
+ */
+function cloudflareDomain(hex) {
+  if (hex.length < 4 || hex.length % 2 !== 0) return null;
+  const bytes = Buffer.from(hex, "hex");
+  const decoded = Buffer.from(bytes.subarray(1).map((b) => b ^ bytes[0])).toString("utf8");
+  return /^[^@\s?]+@((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,63})(?:\?[^@]*)?$/.exec(decoded)?.[1] ?? null;
+}
+
+/**
+ * Mask the addresses ADDRESS_PATTERN finds in a text, keeping each domain, in this order:
+ *   1. Cloudflare's email protection: each data-cfemail value and email-protection# hash is one
+ *      mask, `[redacted:email]@<domain>` with the domain of the address it decodes to, or
+ *      `[redacted:email]` alone when it does not decode to one address (odd or short hex, no @,
+ *      two; a mailto query after the one address goes with the mask).
+ *   2. The rule as it was before tick 50, over the text with its character references decoded
+ *      (an address spelt in them, each character as `&#NNN;` as some Markdown converters write a
+ *      mailto link, is found too) and its percent escapes not: a plain @ (or a script escape) is
+ *      masked here exactly as before, its local part read from the raw text, where `%2F` is
+ *      three local-part characters and not a slash.
+ *   3. The same rule over the text with its percent escapes decoded as well: the `%40` form
+ *      (`<local>%40<domain>`, as a query string or an encoded note writes it, read as the plain
+ *      rule reads the decoded text), and a plain @ that pass 2 leaves only because its word runs
+ *      on through a percent escape (`/search/Contact%20<local>@<domain>`).
+ * The mask keeps the @ as the text wrote it when it was `%40`, `\u0040` or `\x40`
+ * (`[redacted:email]%40<domain>`); a character reference's @ is written `@`, as before. A mask's
+ * `]` is never a local-part character, so no pass finds an address in an earlier one's mask.
+ * Each view decodes in one pass; decodeEntities decodes hex, then decimal, then named
  * references, so a reference that decodes into another (`&#x26;#64;`) is an @ in the
  * extracted .txt but not here: storeCapture masks that .txt on its own. Each match is
  * replaced in the text itself, so the text changes only where an address was.
  */
-function maskAddresses(text) {
+function maskAddresses(input) {
+  let count = 0;
+  let text = input.replace(CLOUDFLARE, (_m, prefix, hex) => {
+    count += 1;
+    const domain = cloudflareDomain(hex);
+    return `${prefix}[redacted:email]${domain ? `@${domain}` : ""}`;
+  });
+  for (const references of [CHARACTER_REFERENCE, REFERENCE_OR_ESCAPE]) {
+    const pass = maskView(text, references);
+    text = pass.text;
+    count += pass.count;
+  }
+  return { text, count };
+}
+
+/** One pass of maskAddresses: ADDRESS_PATTERN over a view of text with the references matched by `references` decoded. */
+function maskView(text, references) {
+  let count = 0;
   let view = "";
   const shifts = []; // [index in view of a decoded reference, its length in text minus its length in view]
   let last = 0;
-  for (const m of text.matchAll(CHARACTER_REFERENCE)) {
-    const decoded = decodeEntities(m[0]);
+  for (const m of text.matchAll(references)) {
+    const decoded = decodeReference(m[0]);
     if (decoded === m[0]) continue;
     view += text.slice(last, m.index);
     shifts.push([view.length, m[0].length - decoded.length]);
@@ -762,9 +829,11 @@ function maskAddresses(text) {
   };
   let masked = "";
   let from = 0;
-  let count = 0;
   for (const m of view.matchAll(ADDRESS_PATTERN)) {
-    masked += `${text.slice(from, inText(m.index))}[redacted:email]@${m[1]}`;
+    const start = inText(m.index);
+    const sep = m.index + m[0].length - m[2].length - m[1].length; // where the @ is in the view
+    const written = text.slice(inText(sep), inText(sep + m[1].length));
+    masked += `${text.slice(from, start)}[redacted:email]${written === "%40" ? written : m[1]}${m[2]}`;
     from = inText(m.index + m[0].length);
     count += 1;
   }

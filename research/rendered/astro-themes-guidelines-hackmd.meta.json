@@ -4,13 +4,13 @@
   "fetchedAt": "2026-09-29T11:30:57.768Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 72785,
-  "sha256": "bb57cf28223928709bdfd65330c53d42151bc919285ae7676516f3d94f147e96",
+  "byteLength": 72813,
+  "sha256": "72f50e58bf0a3e67916a4f595b34c7e436fc14b4d6f2ea7c066c031f087e3d1c",
   "truncated": false,
-  "redacted": 6,
+  "redacted": 9,
   "remasked": {
     "on": "2026-10-05",
-    "addresses": 6,
+    "addresses": 9,
     "fold": "12143ca"
   },
   "error": null,

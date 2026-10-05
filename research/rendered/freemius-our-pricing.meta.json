@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:26:08.176Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 61875,
-  "sha256": "6b3b2376cc313ff654abbd16b12c76e801c7e051e805d9ee0e95196d35246582",
+  "byteLength": 61862,
+  "sha256": "4c659303ab69af20dfab012f1c4015c9178d69a8056e1bdb435f0c2fda1105fc",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/freemius-our-pricing.html",
   "textPath": "research/rendered/freemius-our-pricing.txt",

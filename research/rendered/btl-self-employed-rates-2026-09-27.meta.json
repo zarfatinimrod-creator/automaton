@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-27T22:46:07.842Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 152997,
-  "sha256": "236cba4649c54669b6dc6c47446610265f5e3390ce9a554d8ca10b887a612264",
+  "byteLength": 153008,
+  "sha256": "08d5f9814439687e62fd67df37f6c20c1d18cfe16905f8f281a8ee4bf0def209",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/btl-self-employed-rates-2026-09-27.html",
   "textPath": "research/rendered/btl-self-employed-rates-2026-09-27.txt",

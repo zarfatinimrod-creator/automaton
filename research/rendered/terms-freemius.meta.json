@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T14:02:42.034Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 372427,
-  "sha256": "ab04abd44ddc6d0d01183e3180547213154208f2a558c43fba8558f09c3bb197",
+  "byteLength": 372388,
+  "sha256": "2a8afee856f20f81d7b7021dfef718df7e4a509a9593e37b2a5c1b22412d78d6",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-freemius.html",
   "textPath": "research/rendered/terms-freemius.txt",

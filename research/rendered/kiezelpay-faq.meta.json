@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:28:24.617Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 91819,
-  "sha256": "6d442999846714de74192a96fb9bc1f0ad4808a0f905ad4bec53651afa71a70a",
+  "byteLength": 91811,
+  "sha256": "bf2911447e96d841583e76aef870702b4f5c8ad3a5be99b06c999a55dcf60d30",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/kiezelpay-faq.html",
   "textPath": "research/rendered/kiezelpay-faq.txt",

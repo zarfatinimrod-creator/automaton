@@ -708,6 +708,173 @@ describe("redactSecrets — email addresses are masked before a capture is writt
 });
 
 
+describe("redactSecrets — addresses whose @ is encoded: %40, a script escape, Cloudflare's email protection (tick 50)", () => {
+  // As above, no address is written in this file: each is built from its parts at run time, and so is every Cloudflare
+  // hex (an address encoded at run time). The decoded local part is asserted absent from everything redactSecrets returns.
+  const at = (local: string, domain: string, sep = "@") => [local, domain].join(sep);
+  const PCT = ["%", "40"].join("");
+  const masked = (domain: string, sep = "@") => `[redacted:email]${sep}${domain}`;
+  // Cloudflare's encoding: the first byte is the key, each byte of the address (UTF-8) XORed with it, all in hex.
+  const cf = (address: string, key = 0x5a) =>
+    [key, ...Buffer.from(address, "utf8").map((b) => b ^ key)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  const mask = (page: string, type = "text/html") => {
+    const r = redactSecrets(Buffer.from(page), type) as { bytes: Buffer; count: number };
+    return { out: r.bytes.toString("latin1"), count: r.count, all: `${r.bytes.toString("latin1")}${JSON.stringify(r)}` };
+  };
+  const idempotent = (out: string) => {
+    const again = redactSecrets(Buffer.from(out, "latin1"), "text/html") as { bytes: Buffer; count: number };
+    expect(again.count, out).toBe(0);
+    expect(again.bytes.toString("latin1")).toBe(out);
+  };
+
+  it("masks a %40 address in an href and in a query string, keeping %40 and the domain, and counts each", () => {
+    const page =
+      `<a href="mailto:${at("first.last", "example.org", PCT)}">write</a>\n` +
+      `<a href="/search?username=${at("user123", "example.net", PCT)}&amp;page=2">next</a>`;
+    const { out, count } = mask(page);
+    expect(out).toBe(
+      `<a href="mailto:${masked("example.org", PCT)}">write</a>\n` +
+        `<a href="/search?username=${masked("example.net", PCT)}&amp;page=2">next</a>`,
+    );
+    expect(count).toBe(2);
+    idempotent(out);
+  });
+
+  it("reads the local part as the plain matcher would read the decoded text: its escapes are in it, an encoded space ends it", () => {
+    // A percent-encoded Markdown blob (as HackMD stores a note): two addresses, encoded text between them.
+    const blob =
+      `data-md="Write%20to%20${at(["first", "last"].join("%2B"), "example.org", PCT)}%60%20or%20%60` +
+      `${at("help", "lists.example.org", PCT)}%60.%0A"`;
+    const { out, count } = mask(blob);
+    expect(out).toBe(`data-md="Write%20to%20${masked("example.org", PCT)}%60%20or%20%60${masked("lists.example.org", PCT)}%60.%0A"`);
+    expect(count).toBe(2);
+    idempotent(out);
+  });
+
+  it("leaves what the plain matcher leaves: an asset name, a local part after a slash or %2F, a URL password, a handle", () => {
+    const page = [
+      `<img src="/img/${at("logo", "2x.png", PCT)}"><img src="${at("hero", "2x-0a1b2c.webp", PCT)}">`,
+      `<a href="https://lists.example.org/archive/${at("list", "lists.example.org", PCT)}/">archive</a>`,
+      `<a href="/share?u=https%3A%2F%2Flists.example.org%2Farchive%2F${at("list", "lists.example.org", PCT)}">share</a>`,
+      `<a href="/go?to=https%3A%2F%2F${at("reader%3As3cret", "git.example.org", PCT)}%2Frepo.git">git</a>`,
+      `<a href="https://video.example.com/${PCT}someone%2Fvideo%2F123">handle</a> ${at("", "handle.team", PCT)}`,
+    ].join("\n");
+    const { out, count } = mask(page);
+    expect(count).toBe(0);
+    expect(out).toBe(page);
+  });
+
+  it("masks an address whose @ is a script escape, \\u0040 or \\x40, keeping the escape", () => {
+    const page = `<script>var a = "${at("first.last", "example.org", "\\u0040")}", b = '${at("info", "example.net", "\\x40")}';</script>`;
+    const { out, count } = mask(page);
+    expect(out).toBe(`<script>var a = "${masked("example.org", "\\u0040")}", b = '${masked("example.net", "\\x40")}';</script>`);
+    expect(count).toBe(2);
+    idempotent(out);
+    expect(mask(`<script>s = "\\u0040media x"; t = "${at("logo", "2x.png", "\\u0040")}"</script>`).count).toBe(0);
+  });
+
+  it("masks Cloudflare's email protection, the span and the anchor, keeping only the domain of the address it decodes", () => {
+    const local = ["chair", "person"].join(".");
+    const hex = cf(at(local, "example.org"));
+    const other = cf(at("info", "example.net"), 0x3c).toUpperCase();
+    const page =
+      `<p>Chair: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="${hex}">[email&#160;protected]</a></p>\n` +
+      `<p><a href="/cdn-cgi/l/email-protection#${other}">write to us</a></p>`;
+    const { out, count, all } = mask(page);
+    expect(out).toBe(
+      `<p>Chair: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="${masked("example.org")}">[email&#160;protected]</a></p>\n` +
+        `<p><a href="/cdn-cgi/l/email-protection#${masked("example.net")}">write to us</a></p>`,
+    );
+    expect(count).toBe(2);
+    // The decoded local part is nowhere in what comes back, nor the hex that carries it.
+    for (const s of [local, "info", hex, other]) expect(all).not.toContain(s);
+    idempotent(out);
+    // An anchor encodes the whole mailto target: a query after the address goes with the mask, the domain stays.
+    const subject = cf(`${at(local, "example.org")}?subject=Entry%20question`);
+    expect(mask(`<a href="/cdn-cgi/l/email-protection#${subject}">x</a>`).out).toBe(`<a href="/cdn-cgi/l/email-protection#${masked("example.org")}">x</a>`);
+  });
+
+  it("writes the bare mask for a Cloudflare hex that does not decode to one address: odd, too short, no @, two @", () => {
+    const cases = [
+      ["abc", "odd length"],
+      [`${cf(at("x", "example.org"))}0`, "one address and a stray digit: odd length"],
+      ["5a", "the key alone"],
+      [cf("no address here"), "no @"],
+      [cf(`${at("a", "b.example.org")} ${at("c", "d.example.org")}`), "two addresses"],
+      [cf(at("x", "nodot")), "a domain with no dot"],
+    ];
+    for (const [hex, why] of cases) {
+      const { out, count, all } = mask(`<span data-cfemail="${hex}">x</span><a href="/cdn-cgi/l/email-protection#${hex}">y</a>`);
+      expect(out, why).toBe(`<span data-cfemail="[redacted:email]">x</span><a href="/cdn-cgi/l/email-protection#[redacted:email]">y</a>`);
+      expect(count, why).toBe(2);
+      expect(all, why).not.toContain(hex);
+      idempotent(out);
+    }
+    // Not a hex value at all: nothing to decode and nothing masked.
+    expect(mask(`<a href="/cdn-cgi/l/email-protection#contact">x</a>`).count).toBe(0);
+  });
+
+  it("still masks a plain address after an encoded slash or backslash, exactly as the masker before tick 50 did (review fix)", () => {
+    // The decoded view must not take a plain @ away from the rule that masked it: before tick 50 each of these was masked,
+    // its local part read from the raw text (where %2F is three local-part characters, not a slash).
+    const local = ["sam", "ple"].join("");
+    const cases: [string, string][] = [
+      [`see=%2F${at(local, "example.org")}`, `see=${masked("example.org")}`],
+      [`see=%5C${at(local, "example.org")}`, `see=${masked("example.org")}`],
+      [`{"next":"%2Fusers%2F${at(local, "example.org")}"}`, `{"next":"${masked("example.org")}"}`],
+      [`share?text=Mail%20me%3A%2F${at(local, "example.org")}`, `share?text=${masked("example.org")}`],
+      [`/go?u=https%3A%2F%2Fh.org%2Fp%3A${at(local, "example.org")}`, `/go?u=${masked("example.org")}`],
+    ];
+    for (const [page, want] of cases) {
+      const { out, count, all } = mask(page);
+      expect(out, page).toBe(want);
+      expect(count, page).toBe(1);
+      expect(all, page).not.toContain(local);
+      idempotent(out);
+    }
+    // A plain address the raw rule leaves (its word runs on from a path) but whose boundary is an encoded space: the
+    // decoded view finds it, and it stays masked.
+    expect(mask(`/search/Contact%20${at(local, "example.org")}`)).toMatchObject({ out: `/search/Contact%20${masked("example.org")}`, count: 1 });
+  });
+
+  it("masks a Cloudflare value however its attribute is quoted or escaped: single quotes, none, in a JSON string, an entity, a script escape", () => {
+    const local = ["chair", "person"].join(".");
+    const hex = cf(at(local, "example.org"));
+    for (const q of ["'", "", '\\"', "&quot;", "&#34;", "&#x22;", "\\u0022", "\\x22"]) {
+      const { out, count, all } = mask(`<span class="__cf_email__" data-cfemail=${q}${hex}${q}>x</span>`);
+      expect(out, q).toBe(`<span class="__cf_email__" data-cfemail=${q}${masked("example.org")}${q}>x</span>`);
+      expect(count, q).toBe(1);
+      for (const s of [local, hex]) expect(all, q).not.toContain(s);
+      idempotent(out);
+    }
+  });
+
+  it("leaves a URL's password alone when its @ is a script escape, as it does when the @ is plain or %40", () => {
+    const secret = ["s3", "cret"].join("");
+    for (const sep of ["\\u0040", "\\x40", "@", PCT]) {
+      const page = `<script>u = "https://reader:${at(secret, "git.example.org", sep)}/repo.git"</script>`;
+      expect(mask(page), sep).toMatchObject({ out: page, count: 0 });
+    }
+  });
+
+  it("counts the encoded forms in the meta's redacted with the plain ones, and stores the body masked", async () => {
+    const out = tmpOut();
+    const hex = cf(at("e.f", "example.net"));
+    const page =
+      `<html><body><p>Mail <a href="mailto:${at("a.b", "example.org", PCT)}">us</a>, ${at("c.d", "example.org")}, ` +
+      `<span class="__cf_email__" data-cfemail="${hex}">[email&#160;protected]</span></p></body></html>`;
+    const entry = { url: "https://rules.example.test/", slug: "ex-rules", lineNumber: 1 };
+    const result = { status: 200, contentType: "text/html; charset=utf-8", bytes: Buffer.from(page), truncated: false, error: null };
+    const { meta } = await storeCapture(entry, result, { outDir: out, now: () => T0 });
+    const body = readFileSync(join(out, "ex-rules.html"), "utf8");
+    for (const gone of ["a.b", "c.d", hex]) expect(body).not.toContain(gone);
+    expect(body).toContain(`data-cfemail="${masked("example.net")}"`);
+    expect(readFileSync(join(out, "ex-rules.txt"), "utf8")).not.toContain("c.d");
+    expect(meta.redacted).toBe(3);
+    expect(meta.sha256).toBe(sha256(readFileSync(join(out, "ex-rules.html"))));
+  });
+});
+
 describe("buildMeta — the redaction count", () => {
   it("records `redacted` only when something was masked, keeping every other meta's shape", () => {
     const base = { url: "https://example.com/", slug: "ex", fetchedAt: "2026-09-27T00:00:00.000Z" };

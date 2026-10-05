@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:29:52.276Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 540792,
-  "sha256": "33bac2de865cee7b19cb46363a13e6e31c99cc3e27bd3df1ea33de6f58ca483d",
+  "byteLength": 540736,
+  "sha256": "7ce86a21f2ad39724ab41b7507734d8fa4f0ad908ae9f704bc09174d6078c4bd",
   "truncated": false,
+  "redacted": 4,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 4,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/indiebook-sell-a-book.html",
   "textPath": "research/rendered/indiebook-sell-a-book.txt",

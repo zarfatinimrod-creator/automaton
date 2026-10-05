@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:48.852Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 59466,
-  "sha256": "43edc4bc9e50b2079ce4299b528291de6e06761281cc6d384f997e1124a62d87",
+  "byteLength": 59346,
+  "sha256": "6b99abb6c7c65084bfa8f4666c7058781425aaa4c15da918c82e351d422fb5cd",
   "truncated": false,
+  "redacted": 8,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 8,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/crazygames-payouts.html",
   "textPath": "research/rendered/crazygames-payouts.txt",

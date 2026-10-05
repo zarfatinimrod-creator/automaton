@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:26:05.660Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 70762,
-  "sha256": "7d6faf2f1a03dbd9ecdd0f7717f58a051edd84f123e355b616ba700686e90b26",
+  "byteLength": 70749,
+  "sha256": "dd070f8bf9b442fab84d69c5748fef6327e46c31400153aae84e7b9410d04062",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/freemius-allowed-prohibited.html",
   "textPath": "research/rendered/freemius-allowed-prohibited.txt",

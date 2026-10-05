@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:25:55.394Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 73001,
-  "sha256": "ad319be30d388f26f00d298685b1706a565ead8941c486682325ac872beb51c2",
+  "byteLength": 72988,
+  "sha256": "bc6829fb9855959b0110d552a70926dd2fac25d5f27652846c907dc628d56575",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/freemius-supported-countries.html",
   "textPath": "research/rendered/freemius-supported-countries.txt",

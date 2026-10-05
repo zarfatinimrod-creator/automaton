@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:28:05.928Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 149373,
-  "sha256": "0aa0d269cb559f7dbe961b90ec882ad32bf3746f5dc6fcca9fb4fa0105ea89de",
+  "byteLength": 149384,
+  "sha256": "15f09f56b31c60b98382cc3406452ae3d5913d8518c27d93ff23105f14f8d758",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/btl-who-is-exempt.html",
   "textPath": "research/rendered/btl-who-is-exempt.txt",

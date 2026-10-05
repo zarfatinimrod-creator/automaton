@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:26:04.141Z",
   "status": 200,
   "contentType": "text/html",
-  "byteLength": 81367,
-  "sha256": "e003f4ae662669b52a15c2b64dad71c6d03ad09754858baf12c7cd603751e009",
+  "byteLength": 81341,
+  "sha256": "db93d662bc9163775152ea4cd230b5eb696b1fca4fca1f33a0afba834e9bd591",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/freemius-your-earnings.html",
   "textPath": "research/rendered/freemius-your-earnings.txt",
