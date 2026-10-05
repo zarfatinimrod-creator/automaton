@@ -59,7 +59,7 @@ const HAND_BODY = `{"note": "kept by hand", "contact": "${PLACE2}"}\n`;
 
 type Fixture = { root: string; dir: string; files: Map<string, Buffer>; g: (...args: string[]) => string };
 
-function metaFor(slug: string, body: Buffer, contentType: string, ext: string, text: boolean) {
+function metaFor(slug: string, body: Buffer, contentType: string, ext: string, text: boolean, redacted = 0) {
   return buildMeta({
     url: `https://site.test/${slug}`,
     slug,
@@ -70,6 +70,7 @@ function metaFor(slug: string, body: Buffer, contentType: string, ext: string, t
     sha256: sha(body),
     bodyPath: `research/rendered/${slug}.${ext}`,
     textPath: text ? `research/rendered/${slug}.txt` : null,
+    redacted,
   });
 }
 const metaText = (m: unknown) => `${JSON.stringify(m, null, 2)}\n`;
@@ -101,9 +102,9 @@ function fixture({ git = true } = {}): Fixture {
   w("quiet.html", QUIET_HTML);
   w("quiet.txt", QUIET_TEXT);
   w("quiet.meta.json", metaText(quietMeta));
-  // A JSON body, no text.
+  // A JSON body, no text, one string already masked when it was fetched (a secret-shaped one).
   w("api.json", JSON_BODY);
-  w("api.meta.json", metaText(metaFor("api", Buffer.from(JSON_BODY), "application/json; charset=utf-8", "json", false)));
+  w("api.meta.json", metaText(metaFor("api", Buffer.from(JSON_BODY), "application/json; charset=utf-8", "json", false, 1)));
   // A PDF (binary, never rewritten) and its extracted text.
   w("doc.pdf", PDF);
   w("doc.txt", PDF_TEXT);
@@ -262,8 +263,11 @@ describe("--apply", () => {
     expect([docMeta.sha256, docMeta.byteLength]).toEqual([sha(PDF), PDF.length]);
     expect(docMeta.redacted).toBe(1);
     expect(docMeta.remasked).toEqual(remasked(1));
-    expect(meta(f, "api").sha256).toBe(sha(readFileSync(join(f.dir, "api.json"))));
-    expect(meta(f, "api").remasked).toEqual(remasked(2));
+    // A meta that already counted a mask: redacted grows by the new ones, and remasked follows it where it stood.
+    const apiMeta = meta(f, "api");
+    expect(apiMeta.sha256).toBe(sha(readFileSync(join(f.dir, "api.json"))));
+    expect([apiMeta.redacted, apiMeta.remasked]).toEqual([3, remasked(2)]);
+    expect(Object.keys(apiMeta).slice(Object.keys(apiMeta).indexOf("redacted") - 1, Object.keys(apiMeta).indexOf("redacted") + 3)).toEqual(["truncated", "redacted", "remasked", "error"]);
 
     // The hand-edited meta: its sha256 was of the original body, not the stored one, and stays so; its sentence stays.
     const handText = readFileSync(join(f.dir, "hand.meta.json"), "utf8");
@@ -342,6 +346,20 @@ describe("--apply", () => {
     expect(run(["--apply", "--dry-run", "--date", "2026-10-05", ...rendered(g)]).code).toBe(1);
     expect(run(["--apply", "--date", "2026-10-05", ...rendered(g), "stray"]).code).toBe(1);
     expect(snapshot(g.dir)).toEqual(g.files);
+  });
+
+  it("refuses a mask that would move a line (a multi-line secret), writing nothing", () => {
+    const f = fixture();
+    const dash = "-".repeat(5);
+    const block = `${dash}BEGIN PRIVATE KEY${dash}\nAAAA\nBBBB\n${dash}END PRIVATE KEY${dash}`;
+    writeFileSync(join(f.dir, "api.json"), `${JSON_BODY}${block}\n`);
+    f.g("add", "-A");
+    f.g("commit", "-q", "-m", "a key in a body");
+    const was = snapshot(f.dir);
+    const { code, text } = run(["--apply", "--date", "2026-10-05", ...rendered(f)]);
+    expect(code).toBe(1);
+    expect(text).toContain("api.json: masking would move a line");
+    expect(snapshot(f.dir)).toEqual(was);
   });
 
   it("refuses FROZEN.sha256 that already disagrees with a frozen file it would rewrite", () => {
