@@ -144,7 +144,7 @@ const AUDITED: Record<string, string> = {
   "thinkonward.com": "NO_TERMS",
   "virtualembryo.ai": "TERMS_PENDING",
   "wundernn.io": "NO_TERMS",
-  "xiuwenz2.github.io": "CONDITIONAL_UNMET",
+  "xiuwenz2.github.io": "CONDITIONAL_MET",
   "zindi.africa": "TERMS_PENDING",
 };
 /** The ten GitHub Pages sites (lbl.gov and robosyn-bench.net by CNAME): their verdicts rest on GitHub's terms. */
@@ -168,11 +168,14 @@ const PAGES = [
 const ROLE_ADDRESSES_ONLY = ["aimo-interp.github.io", "fomo26.github.io", "lbl.gov", "realpdecompetition.github.io", "roco-spring.github.io"];
 /**
  * Ruling R3: the Pages site whose page carries a named individual's address. The verifiers' condition is "redact
- * addresses before commit" (tick 45 review, defect 1); render-watch commits every capture and masks no address, so the
- * runner does not meet it: CONDITIONAL_UNMET, as mozilla.org (RULING-2026-10-04-mozilla-precondition.md §3 rule 3),
- * until render-watch masks addresses before it commits a capture.
+ * addresses before commit" (tick 45 review, defect 1); render-watch committed every capture and masked no address, so
+ * the runner did not meet it: CONDITIONAL_UNMET, as mozilla.org (RULING-2026-10-04-mozilla-precondition.md §3 rule 3),
+ * until render-watch masked addresses before it commits a capture. The masking fold (5.10, tick 48) made it do so, and
+ * the site is CONDITIONAL_MET.
  */
 const NAMED_ADDRESSES = ["xiuwenz2.github.io"];
+/** The five Pages sites the tick 45 review moved to CONDITIONAL_UNMET because their pages carry email addresses. */
+const REVIEW_FIVE = ["aimo-interp.github.io", "fomo26.github.io", "realpdecompetition.github.io", "roco-spring.github.io", "xiuwenz2.github.io"];
 /**
  * Ruling R1 (5.10): the nine NO_TERMS sites the review had left short of exhaustive-negative, six because GitHub code
  * search was not run and three because their auditors probed Open Terms Archive in eight declarations repos only (their
@@ -237,7 +240,8 @@ const RULINGS_SECTION = [
 /**
  * The render groups of the audit note's "What the reading can render", in order: the opening of each group's bullet, and
  * which rules URLs of the fixture belong to it (by the verdict of the URL's site; "probed" is a site with an active
- * robots- line in urls.txt).
+ * robots- line in urls.txt). The last group held xiuwenz2.github.io until the masking fold (5.10, tick 48) made it
+ * CONDITIONAL_MET; it is empty now, and the note's bullet says 0 URLs.
  */
 const RENDER_GROUPS: { opens: string; holds: (site: string, e: Entry, probed: boolean) => boolean }[] = [
   { opens: "- **Now: ", holds: (_, e) => ["CONDITIONAL_MET", "NOT_BARRED"].includes(e.verdict) },
@@ -331,32 +335,37 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
       expect(v[site].source, site).toContain("research/channel-loop/terms/github-terms-of-service-2026-10-05.md");
       expect(v[site].note, site).toContain("the condition holds only while this research is published open access, i.e. while the repo is public");
     }
-    expect(Object.entries(AUDITED).filter(([, x]) => x === "CONDITIONAL_MET").map(([s]) => s).sort()).toEqual(
-      PAGES.filter((s) => !NAMED_ADDRESSES.includes(s)).sort(),
-    );
+    expect(Object.entries(AUDITED).filter(([, x]) => x === "CONDITIONAL_MET").map(([s]) => s).sort()).toEqual([...PAGES].sort());
     expect(v["openreview.net"].source).toContain("research/channel-loop/terms/openreview-terms-of-use-2026-10-05.md");
     expect(v["codabench.org"].source).toContain("research/channel-loop/terms/codabench-privacy-and-terms-2026-10-05.md");
     expect(v["ansperformance.eu"].source).toContain("research/channel-loop/terms/ansperformance-disclaimer-2026-10-05.md");
   });
 
-  it("applies ruling R3: Pages sites with only role addresses are CONDITIONAL_MET, one with a named individual's address stays CONDITIONAL_UNMET", () => {
-    // The premise of the UNMET verdict: render-watch masks keys and tokens before it writes and commits a capture, never
-    // an email address. If it ever learns to, this fails: the verdict moves to CONDITIONAL_MET in that fold (R3; §9).
-    const page = Buffer.from("<p>Contact: organisers@example.org</p>", "utf8");
-    expect(redactSecrets(page, "text/html").count).toBe(0);
+  it("applies ruling R3 and the masking fold: render-watch masks addresses before commit, so all five Pages sites with addresses are CONDITIONAL_MET", () => {
+    // The fold R3 waited for (5.10, tick 48): render-watch masks an email address before it writes and commits a capture,
+    // keeping the domain. If it ever stops, this fails, and the named-address site goes back to CONDITIONAL_UNMET (R3).
+    const page = Buffer.from(`<p>Contact: ${["organisers", "example.org"].join("@")}</p>`, "utf8");
+    const masked = redactSecrets(page, "text/html");
+    expect(masked.count).toBe(1);
+    expect(masked.bytes.toString("utf8")).toBe("<p>Contact: [redacted:email]@example.org</p>");
     const v = verdicts();
     for (const site of NAMED_ADDRESSES) {
-      expect(v[site].verdict, site).toBe("CONDITIONAL_UNMET");
-      expect(v[site].note, site).toMatch(/^CONDITIONAL_UNMET \(tick 45 review/);
+      expect(v[site].verdict, site).toBe("CONDITIONAL_MET");
+      expect(v[site].note, site).toMatch(/^CONDITIONAL_MET on github\.com's condition/);
+      expect(v[site].note, site).toContain("tick 45 review had put it (defect 1)");
       expect(v[site].note, site).toContain("redact addresses before commit");
       expect(v[site].note, site).toContain("RULING-2026-10-04-mozilla-precondition.md §3 rule 3");
       expect(v[site].note, site).toContain("ruling R3");
       expect(v[site].note, site).toContain("named individuals' university addresses");
+      expect(v[site].note, site).toContain("render-watch masks every email address before it hashes, writes or commits a capture");
+      expect(v[site].note, site).toContain("The masking fold of 5.10 (tick 48) did that");
+      expect(v[site].note, site).not.toMatch(/stays CONDITIONAL_UNMET|no line of this site is queued/);
       expect(v[site].note, site).not.toMatch(/before (a capture is|it is) relied on/);
       for (const e of audited().filter((x) => siteOfUrl(x.url) === site)) {
-        expect(termsGate(e.url, e.slug, v).ok, e.url).toBe(false);
+        expect(termsGate(e.url, e.slug, v).ok, e.url).toBe(true);
       }
     }
+    for (const site of REVIEW_FIVE) expect(v[site].verdict, site).toBe("CONDITIONAL_MET");
     for (const site of ROLE_ADDRESSES_ONLY) {
       expect(v[site].verdict, site).toBe("CONDITIONAL_MET");
       expect(v[site].note, site).toMatch(/^CONDITIONAL_MET on github\.com's condition/);

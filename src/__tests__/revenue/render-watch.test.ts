@@ -513,6 +513,148 @@ describe("redactSecrets — a captured page must never trip push protection", ()
   });
 });
 
+describe("redactSecrets — email addresses are masked before a capture is written (ruling R3, tick 48)", () => {
+  // Every address-shaped string here is built at runtime from its parts, so this file holds none: the repository is
+  // public, and the masking exists because render-watch commits every capture to it (ruling R3 and the tick 45
+  // review's defect 1, research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md).
+  const at = (local: string, domain: string) => [local, domain].join("@");
+  const person = at("first.last", "example.org");
+  const list = at("organisers", "lists.example.org");
+  const other = at("info", "example.net");
+  const masked = (domain: string) => `[redacted:email]@${domain}`;
+  const ADDRESS = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}/;
+
+  it("masks an address in HTML, plain text and JSON, keeping its domain, and counts it", () => {
+    const html = redactSecrets(Buffer.from(`<p>Contact: ${person}</p>`), "text/html; charset=utf-8");
+    expect(html.bytes.toString("utf8")).toBe(`<p>Contact: ${masked("example.org")}</p>`);
+    expect(html.count).toBe(1);
+    const text = redactSecrets(Buffer.from(`Write to ${person}.\n`), "text/plain");
+    expect(text.bytes.toString("utf8")).toBe(`Write to ${masked("example.org")}.\n`);
+    expect(text.count).toBe(1);
+    const json = redactSecrets(Buffer.from(`{"contact":"${person}"}`), "application/json");
+    expect(json.bytes.toString("utf8")).toBe(`{"contact":"${masked("example.org")}"}`);
+    expect(json.count).toBe(1);
+  });
+
+  it("masks an address however the text around it starts and ends", () => {
+    const edges = [["(", ")"], ["", "."], ["", ","], ["", "-"], ["<br>", "<br>"], ["'", "'"], ["", ""], ["\t", "\n"], ["Email:", ""], ["sip:", ";"]];
+    for (const [before, after] of edges) {
+      const r = redactSecrets(Buffer.from(`${before}${person}${after}`), "text/plain");
+      expect(r.bytes.toString("utf8"), JSON.stringify([before, after])).toBe(`${before}${masked("example.org")}${after}`);
+    }
+  });
+
+  it("masks every address on a page and counts each one, in one count with the secrets", () => {
+    const key = ["sk", "test", "4eC39HqLyjWDarjtT1zdp7dc"].join("_");
+    const page = `<li>${person}</li><li>${list}</li><li>${other}</li><li>${person}</li><code>${key}</code>`;
+    const r = redactSecrets(Buffer.from(page), "text/html");
+    expect(r.bytes.toString("utf8")).toBe(
+      `<li>${masked("example.org")}</li><li>${masked("lists.example.org")}</li><li>${masked("example.net")}</li>` +
+        `<li>${masked("example.org")}</li><code>[redacted:stripe-secret-key]</code>`,
+    );
+    expect(r.count).toBe(5);
+  });
+
+  it("masks a mailto: link's address, in its href and in its text", () => {
+    const r = redactSecrets(Buffer.from(`<a href="mailto:${list}?subject=Rules">${list}</a>`), "text/html");
+    expect(r.bytes.toString("utf8")).toBe(
+      `<a href="mailto:${masked("lists.example.org")}?subject=Rules">${masked("lists.example.org")}</a>`,
+    );
+    expect(r.count).toBe(2);
+    expect(redactSecrets(Buffer.from(`<a href="MAILTO:${list}">x</a>`), "text/html").count).toBe(1);
+  });
+
+  it("masks an address written with character references, which the extracted text would decode, and no other byte", () => {
+    // Each character as a decimal reference, as some Markdown converters write a mailto link; and one bare &#x40;.
+    const refs = (s: string) => [...s].map((c) => `&#${String(c.charCodeAt(0)).padStart(3, "0")};`).join("");
+    const page =
+      `<p>Chair: <a href="${refs("mailto")}:${refs(person)}">${refs(person)}</a> &amp; ` +
+      `${at("x", "example.net").replace("@", "&#x40;")}&nbsp;&#169;</p>`;
+    const r = redactSecrets(Buffer.from(page), "text/html");
+    const out = r.bytes.toString("utf8");
+    expect(out).toBe(
+      `<p>Chair: <a href="${refs("mailto")}:${masked("example.org")}">${masked("example.org")}</a> &amp; ` +
+        `${masked("example.net")}&nbsp;&#169;</p>`,
+    );
+    expect(r.count).toBe(3);
+    expect(ADDRESS.test(extractText(page))).toBe(true);
+    expect(ADDRESS.test(extractText(out))).toBe(false);
+  });
+
+  it("masks an address inside a script's escaped string, keeping the escapes around it", () => {
+    const page = `<script>var c = "\\u003cb\\u003e${person}\\u003c/b\\u003e\\n${other}";</script>`;
+    const r = redactSecrets(Buffer.from(page), "text/html");
+    expect(r.bytes.toString("utf8")).toBe(
+      `<script>var c = "\\u003cb\\u003e${masked("example.org")}\\u003c/b\\u003e\\n${masked("example.net")}";</script>`,
+    );
+    expect(r.count).toBe(2);
+  });
+
+  it("leaves image names, paths, URL credentials and handles alone, byte-identical", () => {
+    const hex = "9d417ae5210a64ce75de798dbf779eb32df15b6c649b58e889b9d41dcdb9866c";
+    const page = [
+      // A part after @ that ends in a file extension is an asset name: the retina images that fill many captures.
+      `<img src="/img/${at("logo", "2x.png")}" srcset="${at("hero", "2x.jpg")} 2x, ${at("hero", "3x.webp")} 3x">`,
+      `<img src="${at("logo", `2x-${hex}.png`)}"><img src="${at("Logo", "2X.PNG")}">`,
+      `<link href="${at("icons", "2x.f3a9c1.css")}"><script src="${at("chunk", "1.2.3.js")}"></script>`,
+      `<img src="${at("banner", "cdn.example.png")}"><a href="${at("guide", "docs.example.pdf")}">pdf</a>`,
+      // A local part after / or : is a path or a URL's user: a list archive, a form path, a Sentry DSN.
+      `<a href="https://lists.example.org/archive/list/${list}/thread/">archive</a>`,
+      `<a href="https://forms.example.gov/mw/forms/${at("Form1", "agency.example.gov")}#!auth">form</a>`,
+      `<script>init({dsn:"https://${at("0123abcd", "o1.ingest.example.io")}/4"})</script>`,
+      // A local part after a : inside a URL or a path: a URL's password, a wiki page name.
+      `<a href="https://${at("reader:s3cret", "git.example.org")}/repo.git">git</a>`,
+      `<a href="https://wiki.example.org/wiki/User:${at("Someone", "example.org")}">user page</a>`,
+      `<script>u = "https:\\u002F\\u002F${at("0123abcd", "o1.ingest.example.io")}\\u002F4"</script>`,
+      // A handle after an escaped slash or bracket, and @ signs with no address at all.
+      `<a href="https:\\u002F\\u002Fwww.example.com\\u002F${at("", "channel.name")}">c</a> \\u003e${at("", "handle.team")}`,
+      `@media (min-width: 40rem) { a { color: red } } @import url(x.css); npm i ${at("react", "18.2.0")}; ssh ${at("user", "localhost")}`,
+    ].join("\n");
+    const r = redactSecrets(Buffer.from(page), "text/html");
+    expect(r.count).toBe(0);
+    expect(r.bytes.equals(Buffer.from(page))).toBe(true);
+  });
+
+  it("changes no other byte of a body that is not UTF-8", () => {
+    // windows-1255 Hebrew around the address: a round trip through UTF-8 would turn each of these bytes into U+FFFD.
+    const before = Buffer.from([0xf9, 0xec, 0xe5, 0xed, 0x20]);
+    const after = Buffer.from([0x20, 0xe0, 0xf3]);
+    const r = redactSecrets(Buffer.concat([before, Buffer.from(person), after]), "text/html; charset=windows-1255");
+    expect(r.bytes.equals(Buffer.concat([before, Buffer.from(masked("example.org")), after]))).toBe(true);
+    expect(r.count).toBe(1);
+  });
+
+  it("stores an HTML capture with its addresses masked in the body and in the .txt, and counts them in the meta", async () => {
+    const out = tmpOut();
+    const page = `<html><body><h1>Rules</h1><p>Chair: <a href="mailto:${person}">${person}</a></p><p>List: ${list}</p></body></html>`;
+    const entry = { url: "https://rules.example.test/", slug: "ex-rules", lineNumber: 1 };
+    const result = { status: 200, contentType: "text/html; charset=utf-8", bytes: Buffer.from(page), truncated: false, error: null };
+    const { meta } = await storeCapture(entry, result, { outDir: out, now: () => T0 });
+    const body = readFileSync(join(out, "ex-rules.html"));
+    const text = readFileSync(join(out, "ex-rules.txt"), "utf8");
+    for (const stored of [body.toString("utf8"), text]) expect(ADDRESS.test(stored)).toBe(false);
+    expect(text).toBe(`Rules\nChair: ${masked("example.org")}\nList: ${masked("lists.example.org")}\n`);
+    expect(meta.redacted).toBe(3);
+    expect(meta.sha256).toBe(sha256(body));
+    expect(meta.byteLength).toBe(body.length);
+  });
+
+  it("masks an address in a PDF's extracted text and counts it, leaving the PDF bytes and hash alone", async () => {
+    const out = tmpOut();
+    const { meta } = await storeCapture(PDF_ENTRY, pdfResult(), {
+      outDir: out,
+      now: () => T0,
+      extractPdfText: async () => `Contact ${person} or ${list}\n`,
+    });
+    expect(readFileSync(join(out, "ex-terms-pdf.txt"), "utf8")).toBe(
+      `Contact ${masked("example.org")} or ${masked("lists.example.org")}\n`,
+    );
+    expect(meta.redacted).toBe(2);
+    expect(meta.sha256).toBe(sha256(PDF_BYTES));
+    expect(readFileSync(join(out, "ex-terms-pdf.pdf")).equals(PDF_BYTES)).toBe(true);
+  });
+});
+
 
 describe("buildMeta — the redaction count", () => {
   it("records `redacted` only when something was masked, keeping every other meta's shape", () => {

@@ -84,7 +84,8 @@
  *     one bad week would make the script's own text look like a hand extraction.
  *     Only a PDF's state is carried: the error meta of every other page keeps the
  *     shape it always had
- *   - secret-shaped strings (vendor docs print sample keys) are masked before the
+ *   - secret-shaped strings (vendor docs print sample keys) and, since 5.10.2026,
+ *     email addresses (the local part; the domain is kept) are masked before the
  *     body is hashed or stored, and the meta file counts them as `redacted`. A PDF
  *     body is binary and stored as fetched; its extracted text is masked instead,
  *     and those are what `redacted` counts for a PDF
@@ -677,11 +678,21 @@ export function sha256(bytes) {
 }
 
 /**
- * Secret-shaped strings that GitHub push protection refuses. Vendor docs print
- * sample keys in exactly these shapes: on 27.9.2026 Stripe's cross-border payouts
- * page carried one, push protection rejected the capture commit, and the whole
- * run's pages were lost. A capture is for citing prose, never for reusing a key,
- * so the key is masked before anything is hashed or written.
+ * What a capture is masked of before anything is hashed, written or committed: every
+ * capture is committed to this repository, and the repository is public.
+ *
+ * Secret-shaped strings that GitHub push protection refuses (SECRET_PATTERNS). Vendor
+ * docs print sample keys in exactly these shapes: on 27.9.2026 Stripe's cross-border
+ * payouts page carried one, push protection rejected the capture commit, and the whole
+ * run's pages were lost. A capture is for citing prose, never for reusing a key, so a
+ * key is masked whole, as `[redacted:<kind>]`.
+ *
+ * Email addresses (ADDRESS_PATTERN), since 5.10.2026 (tick 48). A person's address is
+ * personal information, and GitHub's terms, which every GitHub Pages site carries, let
+ * research use only non-personal information (ruling R3 and the tick 45 review's
+ * defect 1, research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md). The local
+ * part is masked and the domain kept, as `[redacted:email]@<domain>`, so a reader can
+ * still tell a project's or a mailing list's domain from a person's mail host.
  */
 export const SECRET_PATTERNS = [
   { kind: "stripe-secret-key", re: /\b(?:sk|rk)_(?:test|live)_[0-9A-Za-z]{10,}\b/g },
@@ -698,14 +709,72 @@ function isTextLike(contentType) {
 }
 
 /**
- * Mask secret-shaped strings in a text body. A body with none comes back as the
- * same bytes, so its hash (and the quiet git history) does not change; binary
- * bodies are never rewritten. Returns the bytes to store and how many were masked.
+ * An email address: a local part, @, and a domain whose last label is letters; group 1
+ * is the domain, which the mask keeps. Not an address, and left alone:
+ *   - a "domain" ending in a file extension: `<name>@2x.png` and `<name>@2x-<sha>.png`, the
+ *     retina image names (64 of the address-shaped strings in research/rendered/ on 5.10)
+ *   - a local part that runs on from a longer word, or follows `/` (a path or a URL's
+ *     user: a list archive, a form path, a Sentry DSN), or follows a `:` inside a URL or
+ *     path (`https://user:password@host`, `/wiki/User:Name@host`); a `:` with no `/`
+ *     before it in the same word (`mailto:`, `Email:`, `sip:`) is a boundary like a space
+ * A string escape in a script (`\u003e`, `\n`) ends the word before a local part, as
+ * a space would, except an escaped slash (`\u002F`), which counts as a slash: a handle
+ * after it (`\u002F@<handle>`) stays a handle.
+ */
+const ADDRESS_PATTERN =
+  /(?<=^|[^A-Za-z0-9._%+\-\/\\]|\\(?:u00(?!2f)[0-9a-f]{2}|[nrt]))[A-Za-z0-9._%+-]+@(?<!\/[^\s"'<>()]{0,256}:[A-Za-z0-9._%+-]+@)((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,63})(?![A-Za-z0-9]|\.[A-Za-z0-9-])(?<!\.(?:png|jpe?g|gif|svg|webp|avif|css|js|mjs|json|map|woff2?|ttf|otf|ico|mp4|webm|pdf|html?))/gi;
+
+// A character reference, as decodeEntities reads one: hex, decimal, or a name it knows.
+const CHARACTER_REFERENCE = /&#x[0-9a-f]+;|&#\d+;|&[a-z]+;/gi;
+
+/**
+ * Mask every address in a text, keeping its domain. The search runs over the text as
+ * decodeEntities decodes it, so an address spelt in character references (each
+ * character as `&#NNN;`, as some Markdown converters write a mailto link) is found too,
+ * and the .txt extracted from a stored HTML body, which decodes them, cannot show an
+ * address the body kept. Each match is replaced in the text itself, so the text changes
+ * only where an address was.
+ */
+function maskAddresses(text) {
+  let view = "";
+  const shifts = []; // [index in view of a decoded reference, its length in text minus its length in view]
+  let last = 0;
+  for (const m of text.matchAll(CHARACTER_REFERENCE)) {
+    const decoded = decodeEntities(m[0]);
+    if (decoded === m[0]) continue;
+    view += text.slice(last, m.index);
+    shifts.push([view.length, m[0].length - decoded.length]);
+    view += decoded;
+    last = m.index + m[0].length;
+  }
+  view += text.slice(last);
+  let next = 0;
+  let shift = 0;
+  const inText = (i) => {
+    for (; next < shifts.length && shifts[next][0] < i; next += 1) shift += shifts[next][1];
+    return i + shift;
+  };
+  let masked = "";
+  let from = 0;
+  let count = 0;
+  for (const m of view.matchAll(ADDRESS_PATTERN)) {
+    masked += `${text.slice(from, inText(m.index))}[redacted:email]@${m[1]}`;
+    from = inText(m.index + m[0].length);
+    count += 1;
+  }
+  return count === 0 ? { text, count } : { text: masked + text.slice(from), count };
+}
+
+/**
+ * Mask secret-shaped strings and email addresses in a text body. A body with neither
+ * comes back as the same bytes, so its hash (and the quiet git history) does not
+ * change; binary bodies are never rewritten. The body is read as latin1, one character
+ * per byte, so every byte outside a mask is written back as it was whatever the page's
+ * charset (every pattern is ASCII). Returns the bytes to store and how many were masked.
  */
 export function redactSecrets(bytes, contentType) {
   if (!bytes || !isTextLike(contentType)) return { bytes, count: 0 };
-  const original = bytes.toString("utf8");
-  let text = original;
+  let text = bytes.toString("latin1");
   let count = 0;
   for (const { kind, re } of SECRET_PATTERNS) {
     text = text.replace(re, () => {
@@ -713,7 +782,9 @@ export function redactSecrets(bytes, contentType) {
       return `[redacted:${kind}]`;
     });
   }
-  return count === 0 ? { bytes, count: 0 } : { bytes: Buffer.from(text, "utf8"), count };
+  const addresses = maskAddresses(text);
+  count += addresses.count;
+  return count === 0 ? { bytes, count: 0 } : { bytes: Buffer.from(addresses.text, "latin1"), count };
 }
 
 /**
