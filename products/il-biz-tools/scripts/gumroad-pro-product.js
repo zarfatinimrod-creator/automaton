@@ -898,10 +898,12 @@ export async function refundSale({ fetchImpl, token, site, email, requestedAtMs,
     say(`sales of this product to the requesting address: ${mine.length} (already refunded or disputed: ${mine.length - open.length}; `
       + `outside the ${window.days}-day window: ${open.length - eligible.length}; eligible: ${eligible.length})`);
     if (!eligible.length) {
-      const [done] = mine.filter((x) => x.refunded === true && insideWindow(x, asked, window.days)).sort((a, b) => createdAt(b) - createdAt(a));
-      if (done) {
-        say(`sale ${done.id} is already refunded in full: nothing more to refund`);
-        return { action: 'already-refunded', saleId: String(done.id) };
+      // The most recent sale inside the window decides, and only when Gumroad reports IT wholly refunded: an older refund
+      // under a newer disputed or charged-back sale is not the promise the holding reply made (ruling (a)5).
+      const [latest] = mine.filter((x) => insideWindow(x, asked, window.days)).sort((a, b) => createdAt(b) - createdAt(a));
+      if (latest?.refunded === true) {
+        say(`sale ${latest.id} is already refunded in full: nothing more to refund`);
+        return { action: 'already-refunded', saleId: String(latest.id) };
       }
       say('nothing to refund');
       return { action: 'none' };
