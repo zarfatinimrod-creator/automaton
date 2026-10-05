@@ -129,11 +129,21 @@ export function isRobotsProbe(url, slug) {
  * LICENSE:5-6 at 35fc817), and only the MIT-licensed /contents/ folder builds /docs/ and /tutorials/. Whether even a
  * docs capture may be committed (the Terms' 1.1(a)(ii) and 2.1(b) against the MIT grant) is still the main thread's
  * call; the verdict's note in terms-verdicts.json says so.
+ *
+ * An entry may also list `hosts` (tick 45, 5.10.2026): the site's lines then pass only on those hosts. lbl.gov's
+ * CONDITIONAL_MET rests on fair-universe.lbl.gov being a GitHub Pages site (FAIR-Universe/FAIR-Universe.github.io CNAME),
+ * under GitHub's terms; siteOf keys every *.lbl.gov host to lbl.gov, and no other lbl.gov host's terms were read
+ * (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md).
  */
 export const PATH_LIMITS = {
   "posthog.com": {
     prefixes: ["/docs/", "/tutorials/"],
     why: "PostHog/posthog.com LICENSE:5-6 asks that nothing outside /contents/ be duplicated or copied, and only /contents/ builds /docs/ and /tutorials/ (tick 40 review, defect 2)",
+  },
+  "lbl.gov": {
+    hosts: ["fair-universe.lbl.gov"],
+    prefixes: ["/"],
+    why: "lbl.gov's CONDITIONAL_MET rests on fair-universe.lbl.gov being a GitHub Pages site under GitHub's terms; no other lbl.gov host's terms were read (tick 45 prize-terms audit)",
   },
 };
 
@@ -147,7 +157,8 @@ export const PATH_LIMITS = {
  * and recorded. Not for a TERMS_PENDING site: its terms are unread, and unread terms mean no fetch but the terms page.
  *
  * Since 4.10 (tick 40 review, defect 2): a line on a site in PATH_LIMITS that would pass fails unless its path starts
- * with one of the site's prefixes; the result then carries pathLimited: true.
+ * with one of the site's prefixes; the result then carries pathLimited: true. Since 5.10 (tick 45): and, when the entry
+ * lists hosts, unless its host is one of them.
  */
 export function termsGate(url, slug, verdicts) {
   let parsed;
@@ -156,10 +167,13 @@ export function termsGate(url, slug, verdicts) {
   } catch {
     return { ok: false, why: `not a URL: ${url}` };
   }
-  const gate = verdictGate(url, slug, parsed.hostname.toLowerCase(), verdicts);
+  const host = parsed.hostname.toLowerCase().replace(/\.+$/, "");
+  const gate = verdictGate(url, slug, host, verdicts);
   const limit = gate.ok && Object.hasOwn(PATH_LIMITS, gate.site) ? PATH_LIMITS[gate.site] : undefined;
-  if (limit && !limit.prefixes.some((p) => parsed.pathname.startsWith(p))) {
-    return { ok: false, site: gate.site, verdict: gate.verdict, pathLimited: true, why: `${gate.site} lines may be active only under ${limit.prefixes.join(" or ")}: ${limit.why}` };
+  const hostOk = !limit?.hosts || limit.hosts.includes(host);
+  if (limit && !(hostOk && limit.prefixes.some((p) => parsed.pathname.startsWith(p)))) {
+    const on = limit.hosts ? `on ${limit.hosts.join(" or ")} ` : "";
+    return { ok: false, site: gate.site, verdict: gate.verdict, pathLimited: true, why: `${gate.site} lines may be active only ${on}under ${limit.prefixes.join(" or ")}: ${limit.why}` };
   }
   return gate;
 }

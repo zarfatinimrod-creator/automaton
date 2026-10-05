@@ -9,6 +9,8 @@
 # is invented, guessed, or extrapolated from a pattern — including "the same site
 # probably has a /pricing page". A URL nobody wrote down is a URL nobody can cite.
 #
+# Exception (ruling 5.10.2026, tick 45, TERMS-AUDIT-2026-10-05-prize-events.md): a terms- line of a TERMS_PENDING site may carry a URL derived from the site's own source code at a pinned commit when its comment cites the template line and the domain line; a 404, or a redirect to another host, retires the line. Never a rules page.
+#
 # Adding one: quote the sentence that names it. Removing one: the question it was
 # going to settle has been answered, or the line it belonged to is closed for good.
 
@@ -735,3 +737,63 @@ https://www.nevo.co.il/robots.txt	robots-nevo
 # retired (tick 31; reason corrected tick 36: a React shell carrying an invisible reCAPTCHA v3 script and a Radware sensor, not a challenge page; its terms stay unread, so no fetch (ruling 30.9 16(d) D2(iv)); a js render of it is FABLE_QUEUE row 21 (c)) — https://doar.israelpost.co.il/content/term-of-use/	terms-israel-post
 # research/channel-loop/ZERO-TESTS.md row 234 — Displate (row 26), terms audit follow-up (tick 36) (30.9.2026).
 https://cms-static-pages-assets.displate.com/DISPLATE_TERMS_OF_USE_US_26_06clean_9524ecc20f.pdf	terms-displate-us
+# research/channel-loop/ZERO-TESTS.md row 235 — kaggle.com TERMS_PENDING (tick 45 prize-terms audit): URL from tosdr/tosdr-snapshots Kaggle/Terms of Service.html:76 (og:url) at b44ae1b, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)); every snapshot of the page is a JavaScript shell, so the capture may hold no terms text (5.10.2026).
+https://www.kaggle.com/terms	terms-kaggle
+# research/channel-loop/ZERO-TESTS.md row 236 — devpost.com TERMS_PENDING (tick 45 prize-terms audit): URL from challengepost/reimagine app/views/reimagine2/devpost/_footer.html.erb:101 at abc3b7d, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
+https://info.devpost.com/legal/terms-of-service	terms-devpost
+# research/channel-loop/ZERO-TESTS.md row 237 — grand-challenge.org TERMS_PENDING (tick 45 prize-terms audit): URL derived from the platform's own source (exception, ruling R2, 5.10.2026): DIAGNijmegen/rse-grand-challenge app/config/settings.py:767 (the platform's own terms-URL template) on the domain README.md:1 and app/grandchallenge/subdomains/utils.py:24 fix, at ff2fb5c, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)); a 404, or a redirect to another host, retires the line (5.10.2026).
+https://grand-challenge.org/policies/terms-of-service/	terms-grand-challenge
+# research/channel-loop/ZERO-TESTS.md row 238 — zindi.africa TERMS_PENDING (tick 45 prize-terms audit): URL from research/colony-sweep/scouts/bounties-grants--data-challenges.md:67 (a scout's to-do, weak); Zindi's own rules name a Terms of Use (ZindiAfrica/AI-for-Equity-Challenges-Getting-Started-with-AWS-Resources SUAOutsmartingOutbreaksChallenge.md:166 at 12deb40, github grade); plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
+https://zindi.africa/terms	terms-zindi
+# research/channel-loop/ZERO-TESTS.md row 239 — stanford.edu TERMS_PENDING (tick 45 prize-terms audit): URL from SU-SWS/decanter core/src/templates/components/global-footer/global-footer.twig:34-35 at 63cda9d (Stanford's universal footer), github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
+https://www.stanford.edu/site/terms/	terms-stanford
+# research/channel-loop/ZERO-TESTS.md row 240 — adaptionlabs.ai TERMS_PENDING (tick 45 prize-terms audit): URL from adaptionlabs/adaption-api-docs src/content/docs/resources/faq.mdx:66 at 7ba014b, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
+https://adaptionlabs.ai/terms-of-service	terms-adaptionlabs
+# research/channel-loop/ZERO-TESTS.md row 241 — virtualembryo.ai TERMS_PENDING (tick 45 prize-terms audit): URL from xxx12e/vec-community-kit rules-watch/pages/terms.json:138 at 2cf9662 and gh-dv-openclaw/vec-submit-check README.md:202 at 521cce3, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
+https://virtualembryo.ai/challenge/terms	terms-virtualembryo
+# research/channel-loop/ZERO-TESTS.md row 242 — eurocontrol.int TERMS_PENDING (tick 45 prize-terms audit): URL from euctrl-pru/aiu-portal config.toml:594 and themes/pru-theme/layouts/partials/footer.html:222 at 6a64528, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
+https://www.eurocontrol.int/info/privacy-and-website-terms-use	terms-eurocontrol
+# research/channel-loop/ZERO-TESTS.md row 243 — opensky-network.org TERMS_PENDING (tick 45 prize-terms audit): URL from openskynetwork/opensky-api README.md:4 and docs/free/index.rst:28 at c4af9c9, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)); the site says it may block hyperscaler IPs (5.10.2026).
+https://opensky-network.org/about/terms-of-use	terms-opensky
+# research/channel-loop/ZERO-TESTS.md row 244 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://hub.crunchdao.com/robots.txt	robots-crunchdao
+# research/channel-loop/ZERO-TESTS.md row 245 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://flagos.io/robots.txt	robots-flagos
+# research/channel-loop/ZERO-TESTS.md row 246 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://wundernn.io/robots.txt	robots-wundernn
+# research/channel-loop/ZERO-TESTS.md row 247 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://www.agenthon.net/robots.txt	robots-agenthon
+# research/channel-loop/ZERO-TESTS.md row 248 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://www.aicrowd.com/robots.txt	robots-aicrowd
+# research/channel-loop/ZERO-TESTS.md row 249 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://www.alignmentforum.org/robots.txt	robots-alignmentforum
+# research/channel-loop/ZERO-TESTS.md row 250 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://competition.bcamlc.com/robots.txt	robots-bcamlc
+# research/channel-loop/ZERO-TESTS.md row 251 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://www.drivendata.org/robots.txt	robots-drivendata
+# research/channel-loop/ZERO-TESTS.md row 252 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://www.geminixprize.com/robots.txt	robots-geminixprize
+# research/channel-loop/ZERO-TESTS.md row 253 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://platform.k12-ai-infrastructure.org/robots.txt	robots-k12-ai-infrastructure
+# research/channel-loop/ZERO-TESTS.md row 254 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://www.learn2design2026.com/robots.txt	robots-learn2design2026
+# research/channel-loop/ZERO-TESTS.md row 255 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://freuid2026.microblink.com/robots.txt	robots-microblink
+# research/channel-loop/ZERO-TESTS.md row 256 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://pasteurlabs.ai/robots.txt	robots-pasteurlabs
+# research/channel-loop/ZERO-TESTS.md row 257 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://situatedevals.org/robots.txt	robots-situatedevals
+# research/channel-loop/ZERO-TESTS.md row 258 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://community.solafune.com/robots.txt	robots-solafune
+# research/channel-loop/ZERO-TESTS.md row 259 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://fusion-equilibrium-challenge.sophelio.io/robots.txt	robots-sophelio
+# research/channel-loop/ZERO-TESTS.md row 260 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://theemailgame.com/robots.txt	robots-theemailgame
+# research/channel-loop/ZERO-TESTS.md row 261 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://thinkonward.com/robots.txt	robots-thinkonward
+# research/channel-loop/ZERO-TESTS.md row 262 — exhaustive-negative NO_TERMS site (ruling R1, 5.10); the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://www.health-data-hub.fr/robots.txt	robots-health-data-hub
+# research/channel-loop/ZERO-TESTS.md row 263 — exhaustive-negative NO_TERMS site (ruling R1, 5.10); the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://2026.ijcai.org/robots.txt	robots-ijcai-2026
+# research/channel-loop/ZERO-TESTS.md row 264 — exhaustive-negative NO_TERMS site (ruling R1, 5.10); the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://competitions.mozilladatacollective.com/robots.txt	robots-mozilladatacollective
