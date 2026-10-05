@@ -15,8 +15,11 @@
  *     row's URL with its name and deadline) and never writes a verdict: no row is graded by a machine, and no "yes"
  *     is ever the job's.
  *   - A READING SESSION renders the pages (the URLs still awaiting a reading are written, in render-watch's urls
- *     syntax, to research/measurements/ai-allowed-events.urls.txt — a file to paste into render-watch.yml's `urls`
- *     input, never appended to research/rendered/urls.txt; tiktok.com URLs are refused, CHANNEL_LOOP.md §9), reads the
+ *     syntax, to research/measurements/ai-allowed-events.urls.txt, never appended to research/rendered/urls.txt;
+ *     tiktok.com URLs are refused, CHANNEL_LOOP.md §9). The file is never pasted whole: `node scripts/prize-dispatch.mjs`
+ *     prints the lines whose site passes the terms gate (a site's terms are read before its first line is fetched,
+ *     CHANNEL_LOOP.md §9, the rule of tick 20), and its output is what goes in render-watch.yml's `urls` input;
+ *     render-watch's parser refuses a line on a barred host, such as sites.google.com. The session then reads the
  *     captures and fills the three cells.
  *
  * WHAT COUNTS AS GRADED. A row counts only when its qualifies cell is yes or no, its grade is RENDERED, and its clause
@@ -662,9 +665,13 @@ function renderMarkdown(
   out.push("**How a reading session fills a row.**");
   out.push("");
   out.push(
-    `1. Render the URLs in \`${AI_ALLOWED_URLS_FILE}\`: paste its lines into render-watch.yml's \`urls\` input ` +
-      "(workflow_dispatch). Never append them to `research/rendered/urls.txt`. Each capture lands at " +
-      "`research/rendered/<slug>.txt`, the slug beside its URL in that file. tiktok.com URLs are never rendered.",
+    `1. Render the URLs in \`${AI_ALLOWED_URLS_FILE}\` whose site's terms allow it: ` +
+      "`node scripts/prize-dispatch.mjs` prints the lines whose site passes the terms gate (a site's terms are read " +
+      "before its first line is fetched, `logs/CHANNEL_LOOP.md` §9, the rule of tick 20), and its output is what goes " +
+      "in render-watch.yml's `urls` input (workflow_dispatch), never the whole file (render-watch's parser refuses a " +
+      "line on a barred host, such as sites.google.com). Never append them to `research/rendered/urls.txt`. Each " +
+      "capture lands at `research/rendered/<slug>.txt`, the slug beside its URL in that file. tiktok.com URLs are " +
+      "never rendered.",
   );
   out.push(
     "2. Read the capture. The list names no rules page as such; if the rules sit on a page the list does not give, its " +
@@ -802,8 +809,11 @@ function renderUrls(input: BuildAiAllowedInput, summary: AiAllowedSummary, group
     "#",
     "# render-watch's urls syntax (research/rendered/urls.txt): one URL per line, a slug after a TAB, a line starting",
     `# with # is a comment. It holds the URLs of every row of ${AI_ALLOWED_TABLE_FILE}`,
-    "# that no session has graded yet. To render them, paste these lines into render-watch.yml's `urls` input",
-    "# (workflow_dispatch); each capture lands at research/rendered/<slug>.txt, the pointer a session cites in the table.",
+    "# that no session has graded yet. Never paste the whole file: `node scripts/prize-dispatch.mjs` prints the lines",
+    "# whose site passes the terms gate (a site's terms are read before its first line is fetched, logs/CHANNEL_LOOP.md",
+    "# §9, the rule of tick 20), and its output is what goes in render-watch.yml's `urls` input (workflow_dispatch);",
+    "# render-watch's parser refuses a line on a barred host, such as sites.google.com. Each capture lands at",
+    "# research/rendered/<slug>.txt, the pointer a session cites in the table.",
     "# This is NOT research/rendered/urls.txt, and nothing here is ever appended to it.",
     "#",
     `# Every URL is verbatim from the mlcontests list (read ${input.measuredAt}, sha256 ${input.sourceSha256.slice(0, 16)}…)`,
