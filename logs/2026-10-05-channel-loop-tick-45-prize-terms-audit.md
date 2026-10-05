@@ -51,3 +51,113 @@
 - ניסיונות bash שנדחו על ידי ארגז החול: כ-3%.
 - כתיבת 43 הערות פסקי הדין והערת הביקורת: כ-25%.
 - בדיקות, mutation ו-verify: כ-7%.
+
+---
+
+# תוספת: תיקון ארבעת הפגמים של הסוקר (5.10.2026, סוכן Opus בתפקיד "מתקן")
+
+ההחלטות בסעיף 4 למעלה לגבי חמשת אתרי ה-Pages עם כתובות, שישת אתרי ה-NO_TERMS ו-grand-challenge.org בוטלו בתיקון הזה. הטקסט למעלה נשאר כפי שנכתב, כי יומנים הם היסטוריה, וכך גם השורה על "להשחיר כתובות לפני הסתמכות על לכידה". המצב הנכון מתואר כאן ובסעיף "Review corrections" שבהערת הביקורת.
+
+## 1. מה המשתמש ביקש
+סקריפט ה-workflow של סבב 45 נתן לי את דו"ח המרכיב ואת ארבעת הפגמים שהסוקר מצא, וביקש:
+- לתקן כל פגם שמחזיק, בדיקה קודם, ולנמק כל פגם שאני דוחה;
+- להריץ את `scripts/verify.sh`, את בדיקת frozen-citations, את `urls-pause-comments.mjs --check`, את בדיקות saved-copies, terms-barred ו-queue-zero-test, ותוכנית `mutate.mjs` עם מוטציה אחת לכל תיקון;
+- לבצע commit, להוסיף את העבודה ליומן הזה, ולמחוק את תיקיית ה-scratch.
+
+בלי push, בלי עריכת CHECKPOINT/CHANNEL_LOOP/FABLE_QUEUE/MISSION/CLAUDE.md, ובלי לגעת בשני קובצי ai-allowed-events.
+
+## 2. הפעולות המרכזיות שביצעתי
+- **אימות לפני תיקון.** בדקתי כל פגם מול המקור:
+  - בקלט המאומת (`verified-sites.json` בתיקיית ה-scratch של ה-main thread, קריאה בלבד), שדה ה-`condition` של חמשת האתרים אומר "redact addresses before commit". שש רשומות NO_TERMS מסתיימות ב-"the search is not exhaustive".
+  - `redactSecrets` ו-`SECRET_PATTERNS` (`scripts/render-watch.mjs:686-717`) ממסכים רק מפתחות וטוקנים, לא כתובת דוא"ל. `render-watch.yml` עושה `git add research/rendered/` ו-commit.
+  - ה-cron של prize-intake הוא `47 6 * * 3`, ו-`windowQuarters` מחזיר [2026-Q4, 2027-Q1] ב-7.10.
+  - חיפוש nevo, הדוגמה שבפסיקה (`RULING-2026-09-30-video.md:87`), כלל GitHub code search (`osek-patur-documents.md:1136`).
+  - שלפתי מחדש את `settings.py` ב-ff2fb5c: ה-sha256 תואם, ב-:302-303 ברירת המחדל היא `.gc.localhost`, וב-:767 נמצאת התבנית.
+- **בדיקות קודם.** כתבתי מחדש את `src/__tests__/revenue/prize-terms-audit.test.ts` (12 בדיקות, 7 מהן נכשלו לפני התיקון) והוספתי fixture: `src/__tests__/revenue/fixtures/ai-allowed-events-548be52.urls.txt`, זהה בבתים ל-blob ב-548be52.
+- **פגם 1 (התקבל).** aimo-interp, fomo26, realpdecompetition, roco-spring ו-xiuwenz2 עברו ל-CONDITIONAL_UNMET לפי הכלל של mozilla.org (`RULING-2026-10-04-mozilla-precondition.md` §3 כלל 3).
+  - ההערות מחזירות את התנאי "redact addresses before commit".
+  - הוספתי בדיקת tripwire: ביום ש-`redactSecrets` ימסך כתובת, הבדיקה תיכשל, וזה הסימן להחזיר את חמשת האתרים ל-CONDITIONAL_MET.
+- **פגם 2 (התקבל).** כל ציטוט של `ai-allowed-events.urls.txt` לפי שורה הוצמד ל-`@548be52`, ב-JSON ובהערת הביקורת.
+  - guard על כל `decisionFiles()` אוסר ציטוט לא מוצמד.
+  - בדיקה מוודאת שכל שורה מצוטטת היא שורת כללים של האתר שמצטט אותה, שתא ה-"Rules URLs" בטבלה מכיל בדיוק את שורות האתר, ושכל URL ברשימת "Now" עומד בשורה שהוא מציין.
+  - את הקובץ החי הבדיקה קוראת רק כדי לוודא שאף URL שלו לא נכנס ל-`urls.txt`. אתר חדש בלי פסק דין לא מפיל אותה.
+- **פגם 3 (התקבל).** ההערות של agenthon, alignmentforum, bcamlc, flagos, geminixprize ו-k12-ai-infrastructure נפתחות עכשיו ב-"not exhaustive-negative:".
+  - שש בדיקות ה-robots הושהו דרך `queue-zero-test.mjs --apply-verdicts`, והוספתי תאריך: "# paused (terms unread, 5.10.2026)".
+  - הערות השורה ב-`urls.txt` עודכנו, ושורות 245, 247, 249, 250, 252 ו-253 ב-ZERO-TESTS סומנו ‎**PAUSED 5.10** דרך `loop-edit.mjs set-cell --append`.
+- **פגם 4 (התקבל).** שורה 237 (terms-grand-challenge) הושהתה כ-"held for a main-thread ruling", וההסבר נכתב בפסק הדין, ב-`urls.txt` וב-ZERO-TESTS. האתר נשאר TERMS_PENDING.
+- **הערת הביקורת.** עדכנתי את הספירות (CONDITIONAL_MET 5, CONDITIONAL_UNMET 7, NO_TERMS 21: 12 exhaustive-negative ו-9 לא), את שורות הטבלה ואת "What the reading can render":
+
+  | קבוצה | כתובות | אתרים |
+  |---|---|---|
+  | עכשיו | 8 | 7 |
+  | אחרי שליפת התנאים | 35 | 8 |
+  | אחרי בדיקות ה-robots | 15 | 12 |
+  | ממתינות לפסיקת ה-main thread | 15 | 9 |
+  | יידונו בלי לכידה | 28 | 9 |
+  | **סך הכול** | **101** | **45** |
+
+  הוספתי גם סעיף "Review corrections".
+
+## 3. קבצים/מערכות ששונו
+- **חדש:** `src/__tests__/revenue/fixtures/ai-allowed-events-548be52.urls.txt`.
+- **שונו:**
+  - `research/channel-loop/terms-verdicts.json`: 5 פסקי דין, 12 הערות, וכל הציטוטים הוצמדו;
+  - `research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md`;
+  - `research/channel-loop/ZERO-TESTS.md`: 7 שורות;
+  - `research/rendered/urls.txt`: 7 שורות הושהו ו-7 הערות עודכנו;
+  - `src/__tests__/revenue/prize-terms-audit.test.ts`;
+  - היומן הזה (תוספת בלבד).
+- **לא נגעתי:** `scripts/*.mjs`, `TERMS_BARRED`, CHECKPOINT, CHANNEL_LOOP, FABLE_QUEUE, MISSION, CLAUDE.md, ושני קובצי ai-allowed-events. אין push.
+
+## 4. החלטות והנחות משמעותיות
+- **פגם 1: CONDITIONAL_UNMET ולא רק הוצאה מקבוצת "Now".** הוצאה מהרשימה הייתה משאירה את השער בקוד פתוח, ו-dispatch שמחושב מהשער היה כולל את חמשת האתרים. CONDITIONAL_UNMET נאכף בקוד, וזה התקדים ש-Fable פסק ל-mozilla.org.
+- **פגם 3: "paused" ולא "retired" כפי שהסוקר הציע.** "retired" פירושו שהשורה נסגרה לתמיד. כאן פסיקה אחת יכולה להחזיר את שש הבדיקות, ובצורת ה-pause הסטנדרטית `urls-pause-comments` מזהה אותן.
+- **שאר האתרים שתלויים באותה פסיקה.** 12 האתרים שנשארו exhaustive-negative נשארים כך, כי הרשומות המאומתות שלהם טוענות לתווית. אבל אף אחד מהם לא מתעד שהריץ code search (ארבעה כותבים במפורש שלא), ולכן פסיקה שתחייב code search תחול גם עליהם. health-data-hub ו-ijcai תלויים באותה פסיקה, וזה כתוב בהערה.
+- **fixture ולא `git show` בבדיקה.** ב-`ci.yml` אין fetch-depth, כלומר ה-checkout רדוד ו-548be52 לא קיים שם. הבדיקה משווה את ה-fixture ל-blob רק כשהקומיט זמין, ותמיד בודקת את ה-sha256 המוצמד.
+- **grand-challenge.** לא חיפשתי מופע מילולי של הכתובת: code search לא זמין, וניחוש נתיבים בריפו הוא ניחוש. לכן בחרתי באפשרות השנייה של הסוקר, להשהות.
+- **lbl.gov נשאר CONDITIONAL_MET.** המאמת שלו לא דרש להשחיר את תיבת הפרויקט היחידה בעמוד, בעוד שהמאמת של realpdecompetition דרש להשחיר כתובת של רשימת תפוצה. האם תיבה של ארגון היא מידע "אישי" — זו שאלה ל-main thread, והיא רשומה בהערה.
+- **לא דחיתי אף פגם.**
+
+## 5. שגיאות וניסיונות שנכשלו
+- בטיוטה ציטטתי את `osek-patur-documents.md:1138`. grep הראה שהשורה הנכונה היא 1136, ותיקנתי לפני ה-commit.
+- אחרי התיקון נכשלו שתי בדיקות:
+  - סעיף "Review corrections" שכתבתי ציטט את הנוסח האסור "before a capture is relied on", ונוסח מחדש;
+  - ה-regex של grand-challenge לא כלל ", defect 4", ויושר לנוסח.
+- בטיוטה של קבוצת "Now" כתבתי שאין כתובת אישית במקור של אף אחד מהעמודים. זה שגוי לגבי build-arena: במקור יש כתובת, וה-GET הרגיל מחזיר shell ריק. תוקן.
+- הרצת vitest על קובץ בדיקה מחוץ לריפו (`--root /`) נכשלה ב-EACCES על `/proc`. קראתי את `windowQuarters` ישירות מהקוד.
+
+## 6. בדיקות ופעולות ולידציה
+- `scripts/verify.sh`: exit 0. typecheck עבר עם exit 0, ובחבילה עברו 71 קבצים: 2,332 בדיקות, אחת דולגה.
+- כל בדיקה בנפרד, לפי קוד היציאה:
+
+  | בדיקה | exit | בדיקות שעברו |
+  |---|---|---|
+  | frozen-citations | 0 | 22 |
+  | terms-saved-copies | 0 | 14 |
+  | render-watch-terms-barred | 0 | 24 |
+  | queue-zero-test | 0 | 38 |
+  | prize-terms-audit | 0 | 12 |
+
+- `node scripts/urls-pause-comments.mjs --check`: exit 0, אפס הערות מיושנות.
+- `node scripts/mutate.mjs --plan`: exit 0. ארבע מוטציות, כולן נהרגו:
+
+  | מזהה | פגם | המוטציה |
+  |---|---|---|
+  | F1 | 1 | fomo26 חזר ל-CONDITIONAL_MET |
+  | F2 | 2 | ציטוט kaggle לא מוצמד |
+  | F3 | 3 | בדיקת ה-robots של agenthon בוטלה מהשהיה |
+  | F4 | 4 | שורת התנאים של grand-challenge בוטלה מהשהיה |
+
+- grep למזהי הבעלים בכל מה שנוסף: 0.
+
+## 7. עבודה ידנית שחזרה על עצמה וכדאי להפוך לאוטומטית
+- את קבוצות "What the reading can render" חישבתי בסקריפט חד-פעמי. כדאי `scripts/prize-render-groups.mjs` שמדפיס אותן מפסקי הדין, מה-fixture ומ-`urls.txt`, ובדיקה שמשווה אותו לספירות בהערה.
+- כדאי guard כללי שאוסר ציטוט לפי שורה של כל קובץ שעבודה אוטומטית כותבת (רשימה אחת של הקבצים האלה), במקום guard נפרד לכל קובץ.
+- הבדיקה שקושרת שורה ב-ZERO-TESTS לשורה ב-`urls.txt` מכסה עכשיו רק את שורות 235-261. כדאי להרחיב אותה לכל השורות; זו מוטציה R2 של הסוקר, ששרדה.
+
+## 8. על מה בוזבזו אסימונים, לפי פעולה
+- קריאת ההקשר (דו"ח המרכיב, הבדיקות, הסקריפטים, הפסיקות וקלט המאמתים): כ-40%.
+- כתיבת הבדיקות וסקריפטי העריכה: כ-25%.
+- הערת הביקורת ונוסח ההערות: כ-20%.
+- verify, הבדיקות ו-mutate: כ-10%.
+- ניסיון ה-vitest שנכשל ותיקוני הנוסח: כ-5%.
