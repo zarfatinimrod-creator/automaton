@@ -668,13 +668,16 @@ describe("tick 50: every byte a new frozen copy gets passes through redactSecret
     expect(cited({ root: r.root, apply: false, history: true, on: "2026-10-06", log: (s: string) => dry.push(s) })).toBe(1);
     expect(dry.join("\n")).toMatch(new RegExp(`would freeze page as ${c1} stored it -> page-2026-09-28 \\(meta\\.json, txt, html\\); would mask 4\\b`));
     expect(existsSync(join(r.rendered, "page-2026-09-28.meta.json"))).toBe(false);
+    // Nothing printed names an address, the DRIFTED range included: it quotes the cited line as it was written, from
+    // history, masked as the copy is (review fix).
+    expect(dry.join("\n")).toMatch(/^ {2}then: "line 3: write to \[redacted:email\]@example\.org or /m);
+    expect(noLocal(dry.join("\n"))).toEqual([]);
 
     const out: string[] = [];
     expect(cited({ root: r.root, apply: true, history: true, on: "2026-10-06", log: (s: string) => out.push(s) })).toBe(0);
     expect(out.join("\n")).toMatch(/froze page as \w+ stored it -> page-2026-09-28 \(meta\.json, txt, html\); masked 4\b/);
-    // The freeze line names no address. (A DRIFTED line quotes the cited range as it was written, from history: that is
-    // terminal output, not a file, and is not masked by this build.)
-    expect(noLocal(out.filter((l) => l.startsWith("froze ")).join("\n"))).toEqual([]);
+    expect(out.join("\n")).toMatch(/^ {2}then: /m);
+    expect(noLocal(out.join("\n"))).toEqual([]);
     expect(readFileSync(join(r.root, "research/measurements/note.md"), "utf8")).toBe("Line three is `page-2026-09-28.txt:3`.\n");
 
     const text = readFileSync(join(r.rendered, "page-2026-09-28.txt"), "utf8");

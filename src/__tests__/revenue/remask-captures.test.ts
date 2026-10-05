@@ -675,6 +675,20 @@ describe("tick 50: the encoded forms on captures re-masked on 5.10, and remasked
     expect(run(["--dry-run", ...rendered(f)]).code).toBe(0);
   });
 
+  it("counts a mask whose @ is a script escape under its domain's kind, never as a mask with no domain (review fix)", () => {
+    const f = fixture();
+    const esc = `<html><body>\n<script>var a = "${["press", "agency.gov"].join("\\u0040")}", b = '${["desk", "agency.gov"].join("\\x40")}';</script>\n</body></html>\n`;
+    w(f, "esc.html", esc);
+    w(f, "esc.meta.json", metaText(metaFor("esc", Buffer.from(esc), "text/html", "html", false)));
+    commit(f, "script escapes");
+    const { code, text } = run(["--dry-run", ...rendered(f), "--only", "esc"]);
+    expect(code).toBe(3);
+    expect(text).toContain("would change: 1 capture, 1 file (1 .html); 2 addresses masked");
+    expect(text).toContain("by domain kind: free-mail provider 0, organisation or university 0, mailing-list host 0, government 2, placeholder 0");
+    expect(text).not.toContain("no domain kept");
+    expect(text).not.toMatch(/press|desk/);
+  });
+
   it("counts a Cloudflare value that is not one address in addresses, and says it kept no domain", () => {
     const f = fixture();
     const odd = `<html><body>\n<span data-cfemail="${CF}0">x</span>\n</body></html>\n`;
@@ -712,6 +726,7 @@ describe("the real research/rendered, dry run", () => {
     expect(text).toContain("asset names masked: 0");
     expect(text).toMatch(/^ {2}files no meta path names, masked as well: \d+ \(\d+ address(es)?\)$/m);
     expect(text).toMatch(/^ {2}pins that go stale: \d+ /m);
-    expect(text).not.toMatch(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}/);
+    // No address in any form the mask reads: a plain @, %40 or a script escape.
+    expect(text).not.toMatch(/[A-Za-z0-9._%+-]+(?:@|%40|\\u0040|\\x40)[A-Za-z0-9.-]+\.[a-z]{2,}/i);
   }, 300_000);
 });

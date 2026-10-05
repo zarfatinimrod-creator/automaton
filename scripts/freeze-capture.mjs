@@ -40,8 +40,11 @@
  * text/plain, any other file by its extension), because history keeps the addresses the 5.10 re-mask removed and the
  * repository is public. When that masks anything, the copy's meta records it as remask-captures does (maskedMeta:
  * `redacted` grown, `remasked: { on: <the copy's frozen.on>, addresses, fold: "12143ca" }` after it, sha256 and
- * byteLength of the masked body), and FROZEN.sha256 records the masked bytes. A capture that is already masked is
- * copied byte for byte, as before. Every freeze prints how many strings it masks (or, in a dry run, would mask).
+ * byteLength of the masked body when the meta's were of the body as stored, as every meta render-watch writes; a
+ * meta whose sha256 was not, a hand redaction's, keeps it, as remask-captures keeps it), and FROZEN.sha256 records the
+ * masked bytes. A capture that is already masked is copied byte for byte, as before. Every freeze prints how many
+ * strings it masks (or, in a dry run, would mask), and the text --cited prints for a DRIFTED range (taken from git
+ * history) is masked the same way before it is printed.
  *
  * RECORD ONE. --record <frozen-slug> writes an existing frozen copy's files into FROZEN.sha256 (a copy frozen by hand).
  *
@@ -1056,8 +1059,16 @@ export function repoint(text, citations, frozenOf) {
 // --cited.
 
 const todayUtc = () => new Date().toISOString().slice(0, 10);
-/** A cited text for the terminal: JSON-quoted, cut to 400 characters (a minified HTML line can run to megabytes). */
-const clip = (s) => (s == null ? "null" : s.length > 400 ? `${JSON.stringify(s.slice(0, 400))}... (${s.length} characters)` : JSON.stringify(s));
+/**
+ * A cited text for the terminal: masked by redactSecrets as text/plain (a DRIFTED range's "then" comes from git history,
+ * which still holds the addresses the 5.10 re-mask removed), then JSON-quoted and cut to 400 characters (a minified HTML
+ * line can run to megabytes). Masked before it is cut, so no cut can split an address the mask would have found.
+ */
+const clip = (s) => {
+  if (s == null) return "null";
+  const t = redactSecrets(Buffer.from(s, "utf8"), "text/plain").bytes.toString("utf8");
+  return t.length > 400 ? `${JSON.stringify(t.slice(0, 400))}... (${t.length} characters)` : JSON.stringify(t);
+};
 const rangesOf = (c) => c.lines.map(([a, b]) => (a === b ? `:${a}` : `:${a}-${b}`)).join(", ");
 const where = (c) => `${c.file}:${c.fileLine} ${c.text}${c.lines.length ? ` [${rangesOf(c)}]` : ""}`;
 

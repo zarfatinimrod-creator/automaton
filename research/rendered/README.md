@@ -87,11 +87,17 @@ the second and third of those. To move one:
    (`redacted`, `remasked: { on, addresses, fold }` saying why these bytes differ from the fetch, and `sha256`
    and `byteLength` where the body changed and they were its hash and size) and `FROZEN.sha256`; git history
    keeps every earlier byte. Since 5.10.2026 (tick 50) the mask also finds an address whose @ is encoded: `%40`
-   (read as the plain rule reads the decoded text, and written `[redacted:email]%40<domain>`), a script escape
-   (`\u0040` or `\x40`, kept as written), and Cloudflare's email protection (`data-cfemail="<hex>"` and
-   `email-protection#<hex>`: the hex is decoded in memory only and becomes `[redacted:email]@<domain>`, or
-   `[redacted:email]` alone when it is not one address). Still not found: an @ encoded twice (`%2540`, `&#37;40`)
-   or obfuscated (`[at]`), and an address a script assembles. `remask-captures.mjs`, run again, masks what the
+   (written `[redacted:email]%40<domain>`), a script escape (`\u0040` or `\x40`, kept as written), and Cloudflare's
+   email protection (a `data-cfemail` value quoted `"`, `'`, `\"`, `\u0022`, `\x22`, `&quot;`, `&#34;`, `&#x22;` or not
+   at all, and the hex after `email-protection#`: the hex is decoded in memory only and becomes
+   `[redacted:email]@<domain>`, or `[redacted:email]` alone when it is not one address). Which text each rule reads:
+   a plain @ (and a script escape) is read first in the text as it is, exactly as before tick 50, where `%2F` is
+   three characters of a local part and not a slash; then the text is read again with its percent escapes decoded,
+   which finds the `%40` form (there `%20` ends a local part as a space would, and after `%2F` it is a path and is
+   left) and a plain @ the first reading left only because its word ran on through a percent escape. Still not
+   found: an @ encoded twice (`%2540`, `&#37;40`) or obfuscated (`[at]`), an address a script assembles, and a
+   Cloudflare value escaped twice (`\\\"`, `&amp;quot;`). An `email-protection#` followed by a fragment made of hex
+   digits alone (`#cafe`) becomes a bare mask too. `remask-captures.mjs`, run again, masks what the
    masker now finds in the stored captures; a capture re-masked twice keeps one `remasked`, whose `on` is the later
    run's date and whose `addresses` is the sum of both runs.
 3. **Answer the specific question the research file asked**, not a question the page happens to
@@ -138,8 +144,10 @@ is inline, so a cited line number still names the same line, which reads the mas
 their lines in `FROZEN.sha256`, and left `remasked` in their metas; git history keeps the bytes as they were frozen.
 Since tick 50 (5.10.2026) `freeze-capture.mjs` masks every byte it writes into a new copy, from the working tree or
 from git history (whose bytes still hold the addresses the re-mask removed), with the same `redactSecrets`; when that
-masks anything the copy's meta says so (`redacted`, `remasked`, and `sha256`/`byteLength` of the masked body) and its
-`FROZEN.sha256` lines are of the masked bytes. A copy of a capture that is already masked is still byte for byte.
+masks anything the copy's meta says so (`redacted`, `remasked`, and `sha256`/`byteLength` of the masked body where
+they were of the body as stored, as in every meta render-watch writes) and its `FROZEN.sha256` lines are of the masked
+bytes. A copy of a capture that is already masked is still byte for byte. `--cited` masks the same way the old text
+it prints for a DRIFTED range, which it reads from git history.
 
 - `node scripts/freeze-capture.mjs <slug> [--date YYYY-MM-DD] [--from-commit <sha>] [--dry-run]` makes one.
   The date defaults to the capture's `fetchedAt` day, so the name says when the text was fetched. The copy's
