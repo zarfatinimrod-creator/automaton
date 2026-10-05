@@ -50,7 +50,7 @@ service (changing step 2 and the line's documents), restructured, or killed? Con
 reg 22(2) (the exempt dealer files no periodic report, by inference through §31(3))."
 
 **The fold target** (same row): "fold into `CHANNEL_LOOP.md` §4 rows 22 and 28 and §6, `docs/OWNER_STEPS.he.md` step 2".
-Rows 22 and 28 are at `logs/CHANNEL_LOOP.md:166` and `:172`; §6 is `:201-262` and its item 5 `:224-234`; step 2 is
+Rows 22 and 28 are at `logs/CHANNEL_LOOP.md:166` and `:172`; §6 is `:201-263` and its item 5 `:224-234`; step 2 is
 `docs/OWNER_STEPS.he.md:132-179` with its data at `src/revenue/owner-steps.ts:283-304` (repo; the brief's ranges hold).
 
 **RULING in one paragraph.** Reg 6א(1) and the second limb of registration reg 13(1) reach **no colony line**. Every
@@ -72,7 +72,7 @@ No owner question is needed.
 ## 2. The texts read, with grade and pointer, and what each says
 
 **2.1 Reg 6א of the general VAT regulations** (GEN:706-722; github via note, `osek-patur-documents.md:1317-1326`;
-the mirror text was fetched by 5.6.2023, `:1223-1226`). The heading is "חיוב מקבל שירות בתשלום המס" (GEN:707). The
+the mirror text was fetched by 5.6.2023, `:1219`). The heading is "חיוב מקבל שירות בתשלום המס" (GEN:707). The
 chapeau, as the note quotes it (`:1318`):
 
 > 6א. (א) עוסק, מלכ"ר או מוסד כספי שקיבלו שירות מן המפורטים להלן ממי שעיקר הכנסתו ממשכורת, גימלה או קיצבה, יהיו
@@ -113,7 +113,7 @@ note quotes it in full, `:967`, rendered via note, `[no-terms]`; `grep -c -F 'ו
 > מעבדה כימית או רפואית וכן עוסקים שעיסוקם מתן שירותים מהסוגים המפורטים בתקנה 6א לתקנות מס ערך מוסף, תשל"ו- 1976,
 > ולגבי אותם שירותים בלבד;
 
-The mirror's 2023 wording differs in three small ways (`:1377`: no "סוכן ביטוח", a ";" before "וכן", no space in the
+The mirror's 2023 wording differs in three small ways (`:1376`: no "סוכן ביטוח", a ";" before "וכן", no space in the
 year); none touches the second limb.
 
 *In my words.* A mandatory class, not a choice: the Director registers these dealers as עוסק מורשה whatever their
@@ -216,7 +216,7 @@ printed document." (`:571`); `RULING:157` "a right, not information", `:164-165`
 the עוסק toward the buyer. oss-bounties (`src/revenue/portfolio.ts:275-337`): `category: "service"`; the operating loop
 "require TypeScript / Python / docs / tests" (`:281`); the intake's stacks `["typescript", "javascript", "python",
 "docs", "tests"]` (`src/revenue/bounties/intake.ts:446`) with `docs: /\b(?:docs?|documentation|readme|docstring|changelog|typo)\b/i`
-(`:490`); a bounty is eligible on any one matched stack (`:655-666`, the `not-our-stack` rule fires only when none
+(`:490`); a bounty is eligible on any one matched stack (`:654-664`, the `not-our-stack` rule fires only when none
 matches). The weekly supply counter (`src/revenue/bounties/supply.ts`) does not import `scoreBounty` or `requiredStacks`
 (`grep` at `56d4c66`: 0 hits), so an intake rule leaves `claimableBounties` as it is.
 
@@ -301,9 +301,9 @@ decides (`RULING:78-82`). pcn874 builds a file; it is not "יועץ מס". **Not
 
 **3.7 oss-bounties** (§3, `logs/CHANNEL_LOOP.md:136`; portfolio line, `category: "service"`, `portfolio.ts:277`). This is
 the one colony supply that is a service performed for a named payer, MISSION constraint 8's third shape (`MISSION.md`,
-"Work performed on demand for a named payer"). A code bounty is software work: not a listed kind, and nothing in 6א(1)
+"Work performed on demand for a named payer", `:230`). A code bounty is software work: not a listed kind, and nothing in 6א(1)
 or (2) as read names it (the elided spans are unread, §7). But the intake admits a bounty on the `docs` stack alone
-(`intake.ts:446`, `:490`, `:655-666`), and a bounty whose whole deliverable is a README, a changelog, a typo fix or a
+(`intake.ts:446`, `:490`, `:654-664`), and a bounty whose whole deliverable is a README, a changelog, a typo fix or a
 translation is, on a plain reading of K3, "כתיבה או עריכה" or "תרגום בכתב" **performed for the payer**. Whether one such
 pull request makes writing the colony's "עיסוק" for reg 13(1), and whether a foreign sponsor is a 6א recipient, is not
 settled by the texts [inference either way]. The conservative reading (3.0(ii)) decides: the colony does not do it, at
@@ -417,7 +417,7 @@ wording and this ruling's confirmation. Nothing is added to the owner-ask list: 
 **6.6 `logs/FABLE_QUEUE.md:43`**: row 19 DONE with this path and the one-paragraph ruling.
 
 **6.7 Code.** `src/revenue/bounties/intake.ts`: one skip rule in `scoreBounty`, with its test in
-`src/__tests__/revenue/bounties-intake.test.ts`; `src/revenue/portfolio.ts:281` and `skills/revenue-oss-bounties/SKILL.md`
+`src/__tests__/revenue/bounties-intake.test.ts`; `src/revenue/portfolio.ts:282` and `skills/revenue-oss-bounties/SKILL.md`
 step 3 say so in one sentence each. `src/revenue/owner-steps.ts` and `docs/OWNER_STEPS.he.md`: **no change.**
 `src/revenue/bounties/supply.ts` and `scripts/algora-supply.ts`: **no change** (the counter).
 
@@ -441,7 +441,7 @@ Any one of these reopens the matching part; none is a step for the owner.
    (`osek-patur-documents.md:1319-1320`), names a service a colony line performs **for a payer** (software development,
    data processing, design, testing); **or** a text of the registration regulations later than the 10-12-2024 capture
    changes reg 13(1). The read is GitHub-first (the mirror holds nothing later; Wikisource and the Knesset only after
-   their terms, `RULING:138-140`).
+   their terms, `RULING:136-140`).
 2. **An agreement.** Indiebook's author agreement, or its written answer to the held question
    (`research/owner-asks/questions.json:86-93`), frames the author's supply as a service of writing or editing performed
    for the store, or pays a fee per manuscript rather than a royalty on sales; the same for Teach Simple's contributor
@@ -500,6 +500,15 @@ them as said:**
 omits translation, which 6א(1) and reg 13(1)'s first limb both carry (2.3); the brief's `RULING:93-95` "two-monthly" is
 the עוסק מורשה outcome only (5.2); the PDF twin was unopened by the checkers and matches (2.8).
 
+**8.4 Provenance of this file.** Its first write was committed by the main thread as `5c4bad0` ("Tick 46: the row-19
+ruling …") while this decider was still re-checking its own pointers. That committed text carries eight pointers off by a
+line or two (`osek-patur-documents.md:1223-1226` for `:1219`; `:1377` for `:1376`; `intake.ts:655-666` for `:654-664`;
+`portfolio.ts:281` for `:282`; `RULING:138-140` for `:136-140`; `SKILL.md:38-40` for `:40-42`; §6 as `:201-262` for
+`:201-263`; MISSION's third shape without its line, `:230`) and a §9 item 3 whose anchor was split across two lines and
+whose text carried shell-quoting artifacts. The working tree holds the corrected text, 619 lines, and is the version to
+commit and to fold from; nothing else differs (`git diff 5c4bad0 -- <this file>`: one file, 21 insertions, 20 deletions,
+before this paragraph was added).
+
 ---
 
 ## 9. Fold instructions for Opus (a numbered checklist; `--dry-run` first on every `loop-edit` call)
@@ -521,16 +530,17 @@ text to write, verbatim.
    nobody; the contributor terms call the money Royalties and License Fees on a per-download licence
    (`teacher-and-ebook-stores.md:20`, `:43`, `:164-167`), a מכר of a זכות, not הוראה or הדרכה. Unchanged; the originality
    warranty stays the standing honesty risk. At admission the contributor agreement's framing is read, as for row 22."
-3. **§6 item 5** (`:234`): `replace-in-line --file logs/CHANNEL_LOOP.md --anchor "   recorded but not asked while its cost
-   is unchecked."` `--old '"אונליין" and "פעם בשנה" are marked unverified.'` `--new` with: '"אונליין" stays unverified for
-   the Tax Authority route (reg 2(א)(1) as read names delivery by hand or through a listed professional,
-   `OWNER_STEPS.he.md:134`, `:149`; the Bituach Leumi form is a search snippet, `:151`). "פעם בשנה" is gone: the page
-   names reg 15'"'"'s annual declaration and reg 22(2)'"'"'s exemption from periodic reports, a 2023 text read on GitHub, by
-   inference through §31(3) (`:160`). **Confirmed 5.10** (FABLE_QUEUE row 19,
+3. **§6 item 5** (`:234`). The target is the one line that starts with the anchor below (three leading spaces; check
+   with `grep -c -F` that exactly one line does). `replace-in-line --file logs/CHANNEL_LOOP.md --anchor "   recorded but not asked while its cost is unchecked."`;
+   `--old` is the sentence `"אונליין" and "פעם בשנה" are marked unverified.` (once on that line); `--new` is the text
+   below, passed as one argument with its quotation marks and apostrophes exactly as written here:
+   "אונליין" stays unverified for the Tax Authority route (reg 2(א)(1) as read names delivery by hand or through a listed
+   professional, `OWNER_STEPS.he.md:134`, `:149`; the Bituach Leumi form is a search snippet, `:151`). "פעם בשנה" is
+   gone: the page names reg 15's annual declaration and reg 22(2)'s exemption from periodic reports, a 2023 text read on
+   GitHub, by inference through §31(3) (`:160`). **Confirmed 5.10** (FABLE_QUEUE row 19,
    `research/channel-loop/RULING-2026-10-05-vat-services.md` §5): the clause, the occupation line and the class guard
-   stand; reg 6א(1) and registration reg 13(1)'"'"'s second limb reach no colony line (§3-§4); on an עוסק מורשה approval the
-   reports are two-monthly and due with no activity. No owner question arises.' (The fold writes the apostrophes plainly;
-   the shell quoting above is only to show the text.) Check the anchor is the one line that starts so (`grep -c -F`).
+   stand; reg 6א(1) and registration reg 13(1)'s second limb reach no colony line (§3-§4); on an עוסק מורשה approval the
+   reports are two-monthly and due with no activity. No owner question arises.
 4. **§8** (`:292`): two `replace-in-line` calls with `--anchor "Rows 8-18 and 23 are done"`: (a) `--old "Rows 8-18 and 23
    are done"` `--new "Rows 8-19 and 23 are done"`; (b) `--old "**Row 19 (queued tick 26)** goes to 5.10 ~07:11 (moved from
    2.10): reg 6א and registration reg 13(1)'s second limb against the writing and teaching lines (Indiebook, Teach Simple,
@@ -554,7 +564,7 @@ text to write, verbatim.
    at ₪0 (the intake skips writing-only and translation-only bounties; the counter untouched). Step 2 confirmed: the
    occupation line, the class guard and the reg 22(2) clause stand, hedged as inference; the PDF matches. §6 item 5
    corrected. No owner question." (The default prepends "<text> Was: " to the status cell, as row 18's was done.)
-8. **Code, with tests.** (a) `src/revenue/bounties/intake.ts`, in `scoreBounty` after step 8 ("Our stack", `:655-666`):
+8. **Code, with tests.** (a) `src/revenue/bounties/intake.ts`, in `scoreBounty` after step 8 ("Our stack", `:654-664`):
    compute `codeStacks = stacks ∩ {"typescript","javascript","python"}`; add a constant
    `TRANSLATION_PATTERN = /\b(?:translat(?:e|ion|ing)|localis(?:e|ation)|localiz(?:e|ation))\b/i` tested against the
    same `haystack` and label text; when `codeStacks` is empty **and** (`stacks` includes `"docs"` **or**
@@ -568,11 +578,11 @@ text to write, verbatim.
    whose text also says "update the docs" → eligible as before, no such skip; a tests-only bounty → unchanged. (c) A guard
    test, in the same file or `bounties-supply.test.ts`: `src/revenue/bounties/supply.ts` and `scripts/algora-supply.ts`
    contain neither `scoreBounty` nor `requiredStacks` (read the files; a string assertion), so the rule cannot move the
-   counter. (d) `src/revenue/portfolio.ts:281`: append one sentence to the "Filter before attempting" item, keeping the
+   counter. (d) `src/revenue/portfolio.ts:282`: append one sentence to the "Filter before attempting" item, keeping the
    existing text intact: "A bounty whose deliverable is text only (documentation, README, changelog, typo, translation) is
    skipped, not attempted (ruling 5.10, FABLE_QUEUE row 19: writing, editing and translation for a payer are reg 6א(1)
    kinds, and the exempt-dealer premise of step 2 must not rest on them)." (e) `skills/revenue-oss-bounties/SKILL.md` step
-   3 (`:38-40`): one sentence naming the rule. Run `scripts/verify.sh src/__tests__/revenue` before the push.
+   3 (`:40-42`): one sentence naming the rule. Run `scripts/verify.sh src/__tests__/revenue` before the push.
 9. **`research/measurements/osek-patur-documents.md`**: append after the file's last line (`:1412`) a block headed
    "**Pointer drift recorded 5.10 (row 19 fold; lines above are not rewritten).**" listing §8.1's note items with old →
    new (`:1331` CHANNEL_LOOP `:164` → `:166`; `:1346`, `:1003`, `:1037` OWNER_STEPS `:156` → `:160`, wording now reg 22(2);
