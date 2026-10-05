@@ -1,10 +1,19 @@
 # CHECKPOINT — where we stopped
 
-עדכון: 2026-10-05 ~08:50 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
+עדכון: 2026-10-05 ~14:55 UTC · branch `claude/new-session-j071dx` · הקומיט האחרון: ראה `git log -1`
 
 קרא קודם את `MISSION.md` (המנדט של הבעלים), ואז את הקובץ הזה.
 
 > **❓ פתוח לבעלים (30.9, ~21:25 UTC):** הבעלים שלחו קישור לסרטון YouTube (`nWt3CbE96LA`) עם "תלמד מזה". אין דרך מכונה לקרוא אותו: youtube.com חסום בשער התנאים שלנו (BARRED, ביקורת 29.9; הכרעת 30.9 16(d)), והמכולה חסומה ממילא; חיפוש ברשת לפי המזהה לא מחזיר דבר. נתבקשה הדבקה של התמלול (YouTube → "הצג תמלול") או של הכותרת ומה ללמוד ממנו. כשהטקסט יגיע: אותו תהליך כמו מחקר הטיקטוק של 28.9 (`research/tiktok/08-sales-marketing-lessons.md`), על Opus, ותוצאה ב-`research/owner-videos/`.
+
+## ▶ 5.10, ~14:55 UTC — **סבב 47 (טיק 13:11): השיגור הראשון של קריאת אירועי הפרסים — 5 שורות דורגו (RENDERED/no), 1 BLOCKED, 2 לא נגעו; `scripts/prize-dispatch.mjs` מוזג.**
+
+- **בדיקה (13:11):** PR #48 מוזג ב-08:45 (`da3744a`); main התקדם בקומיט colony אחד (`df3948c`; ₪0, אותם 4 חוסמים — צעדי בעלים); אין PR פתוח; MoneyPrinterTurbo#1 ללא שינוי; אין הודעת בעלים. 2.5 GB של scratch מסבבים גמורים נמחקו (19 GB פנויים).
+- **הקריאה:** `termsGate` העביר בדיוק את 12 השורות שהביקורת ציינה; ארבעה שיגורי render-watch על main (`ed03815`, `595457b`, `a679fd9`, `447bd55`: 12 הכתובות, ואז דפי הכללים שהלכידות מקשרות — כל דף נבדק קודם ב-github grade לכתובות דוא"ל) → 23 לכידות, 19 קריאות, 3 shells (build-arena, szczurek-lab, robosyn-bench), 1 Turnstile (openreview); רק כתובות תפקיד (R3). שלושה workflows של Opus (קורא + מאמת אדברסרי לכל אירוע, 16 סוכנים): **RENDERED/no** — fomo26, roco-spring (Q3), aimo-interp, realpdecompetition, neural-interfaces26 (Q4): כל rulebook שותק על הגשות שנבנו ע"י AI, והיתרי ה-AI שנמצאו הם היתרי שיטה (LLM controllers בתוך מודל Track 2); **BLOCKED** — Weak Lensing (הכללים על codabench.org); **לא נגעו** — build-arena, RoboSyn (shells). 0 מ-5 מזכים. ה-intake קורא: 5 graded, 1 unsettled, 60 awaiting. קומיטים `dfd820f`, `73be624` — ייקלטו בריצת prize-intake של רביעי 06:47 אחרי מיזוג ה-PR.
+- **הכרעת R4 (ה-thread הראשי, Fable):** כתובת דף כללים שנצפתה בריפו המקור של האתר בקומיט נעוץ (roco-spring `rules-faq.html` @ `fca18b99`, מקושר משום דף) היא תצפית ולא ניחוש — נרשמה ב-`TERMS-AUDIT-2026-10-05-prize-events.md`; תבנית ה-intake (צעד 2) תתוקן בסבב 48 (§9 פריט 5).
+- **הבנייה (§9 5.10 פריט 2, מיזוג `c312b3c`):** `scripts/prize-dispatch.mjs` — שורות `ai-allowed-events.urls.txt` שעוברות `termsGate`, re-parse ב-parser של render-watch, `--skip-captured`, סיכום סירובים לפי אתר; 29 בדיקות, 28 מוטציות נהרגו; משפטי ההדרכה של ה-instrument מצביעים עליו. **תקלה:** ניקוי ה-scratch של הבונה מחק את קבצי ה-thread הראשי בתיקייה המשותפת (שוחזרו תחת `scratchpad/tick47-main/`; לקח ב-§9 פריט 1).
+- **הבא:** **סבב 48 (send_later ~60 דק', אחרת 19:11):** §9 5.10 פריט 1 — render-watch ממסך כתובות דוא"ל לפני קומיט (xiuwenz2 → CONDITIONAL_MET; שורת js ל-build-arena אפשרית); אם יש מקום — שלושת המשפטים הישנים (§9 פריט 5 וממצא הסקירה שמחוץ לתחום). **6.10 05:23:** הריצה השבועית (44 + 30 שורות); **07:11:** סיכום הריצה, 9 לכידות תנאים, `robots-verdict.mjs`, `prize-dispatch.mjs --skip-captured` לשיגור הבא (Kaggle 17), ושורות 21 ו-22 של Fable. **7.10:** שורות 24 ו-25; **7.10 06:47:** prize-intake קולט את הדירוגים. **8.10:** שורה 26.
+- **היומן:** `logs/2026-10-05-channel-loop-tick-47.md`; יומן הבנייה: `logs/2026-10-05-channel-loop-tick-47-prize-dispatch.md`.
 
 ## ▶ 5.10, ~08:50 UTC — **סבב 46 (טיק 07:11, ישיבת Fable): שורות 19 ו-20 נפסקו וקופלו; שורה 26 חדשה — מזהי המכירה הגולמיים בלדג'ר.**
 
