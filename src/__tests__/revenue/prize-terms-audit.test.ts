@@ -176,8 +176,10 @@ const NAMED_ADDRESSES = ["xiuwenz2.github.io"];
 /**
  * Ruling R1 (5.10): the nine NO_TERMS sites the review had left short of exhaustive-negative, six because GitHub code
  * search was not run and three because their auditors probed Open Terms Archive in eight declarations repos only (their
- * verifiers covered the organisation's full listing). Code search is outside this session's scope and the ruling does not
- * require it, so each note now opens "exhaustive-negative" and each site has one robots.txt probe.
+ * verifiers covered 17 of the organisation's 18 declarations repos; the eighteenth, template-declarations, a template
+ * holding only Open Terms Archive.json, was checked 5.10 at 3332fbe by the tick 45 checker and names none of the nine).
+ * Code search is outside this session's scope and the ruling does not require it, so each note now opens
+ * "exhaustive-negative" and each site has one robots.txt probe.
  */
 const RULED_EXHAUSTIVE = [
   "agenthon.net",
@@ -190,6 +192,19 @@ const RULED_EXHAUSTIVE = [
   "k12-ai-infrastructure.org",
   "mozilladatacollective.com",
 ];
+/**
+ * The Open Terms Archive coverage the three notes record (the tick 45 checker, 5.10): the organisation lists 18
+ * *-declarations repos, and the verifiers of health-data-hub.fr, ijcai.org and mozilladatacollective.com probed 17.
+ */
+const OTA_LISTING = "17 of the organisation's 18; template-declarations (a template, only Open Terms Archive.json) checked 5.10 at 3332fbe: no match";
+/** The verified record's own reason for withholding the label from mozilladatacollective.com (not GitHub code search). */
+const MDC_WITHHELD = "'Not exhaustive-negative: the platform operator's terms very likely exist, but no GitHub file cites them.'";
+/** The READMEs health-data-hub.fr's verified record names as read, of the 8 results of its README search. */
+const HDH_READMES =
+  "repository search '\"health-data-hub.fr\" in:readme' (8 results; the READMEs of six read: boas-explorer, AllergenChipChallenge, datahub-healthdcat-ap-exporter, meetup-hdh-22--2024, OMOP_HDH and depot_git";
+/** Ruling R1's test, as the audit note's "Verdicts" paragraph states it. */
+const R1_DEFINITION =
+  "the site's record shows a search of every Open Terms Archive declarations repository (the organisation's full listing), tosdr/tosdr-snapshots, the site's own GitHub presence, and research/ and docs/ of this repository";
 /** The six probes the review had paused (rows 245-253) and ruling R1 restored. */
 const UNPAUSED_PROBES = [245, 247, 249, 250, 252, 253];
 /** The three probes ruling R1 queued: sites that never had one. */
@@ -201,6 +216,38 @@ const NEW_PROBES = [
 /** The comment every active probe line of this audit carries in urls.txt; the rows ruling R1 queued say so. */
 const PROBE_COMMENT =
   /^# research\/channel-loop\/ZERO-TESTS\.md row \d+ — exhaustive-negative NO_TERMS site( \(ruling R1, 5\.10\))?; the probe scripts\/robots-verdict\.mjs reads; no rules page is fetched before it \(5\.10\.2026\)\.$/;
+/**
+ * The audit note's "Main-thread rulings" section, line for line from its heading to the next section: the three rulings
+ * as the main thread gave them (Fable 5.1, 5.10.2026; recorded in 7befaa6). A changed word in a ruling fails the test.
+ */
+const RULINGS_SECTION = [
+  "## Main-thread rulings (5.10.2026, tick 45; Fable 5.1, the session model)",
+  "",
+  "**R1. Exhaustive-negative does not require GitHub code search.** Ruling 30.9 16(d) D2(iv) (research/channel-loop/RULING-2026-09-30-video.md:84-87) defines exhaustive-negative as \"a recorded search found none\"; nevo is its example, not its definition. GitHub-wide code search is outside this session's repository scope (logs/CHANNEL_LOOP.md §9, tick-36 item 6 and 4.10 item 7), so a definition that needs it would make the label unreachable for every site and leave D2(v) a dead letter. From 5.10 a NO_TERMS site is exhaustive-negative when its record shows a search of: every Open Terms Archive declarations repository (the organisation's full listing), tosdr/tosdr-snapshots, the site's own GitHub presence (organisation and repositories found by repository search, their contents grepped for terms, legal, privacy, impressum and mentions légales), and this repository (research/, docs/). A record that says only \"GitHub code search was unavailable\" describes every search this loop can make, not a thin one. Consequence: agenthon.net, alignmentforum.org, bcamlc.com, flagos.io, geminixprize.com, k12-ai-infrastructure.org, health-data-hub.fr, ijcai.org and mozilladatacollective.com are exhaustive-negative on their verifiers' records; the six paused probes are active again and three probes are queued (www.health-data-hub.fr, 2026.ijcai.org, competitions.mozilladatacollective.com). mozilladatacollective.com's note keeps both readings (DrivenData's platform serves the pages; Mozilla's Websites Terms of Use set aside third-party apps) and says the probe reads only robots.txt; if its robots.txt allows the paths, the rules pages are fetched under the same address rule as R3.",
+  "",
+  "**R2. grand-challenge.org's terms URL.** urls.txt's one rule exists to stop guessed URLs. A URL built from the platform's own source at a pinned commit, whose template line and production-domain lines are each cited, is a derivation, not a guess, and the one page it names is the terms page the gate exists to let a TERMS_PENDING site show. Admitted as a narrow exception, for terms- lines only: research/rendered/urls.txt's header gains, after its one rule, the sentence \"Exception (ruling 5.10.2026, tick 45, TERMS-AUDIT-2026-10-05-prize-events.md): a terms- line of a TERMS_PENDING site may carry a URL derived from the site's own source code at a pinned commit when its comment cites the template line and the domain line; a 404, or a redirect to another host, retires the line. Never a rules page.\" If a verbatim occurrence of https://grand-challenge.org/policies/terms-of-service/ exists at github grade, cite it instead and the exception is not needed for this line. Row 237 is active again either way.",
+  "",
+  "**R3. Personal versus role addresses.** The \"non-personal\" limb of GitHub AUP §7 (github.com's condition) concerns personal information. An organisation's, project's or mailing-list address (a project mailbox at an institution, a group list, info@ or contact@) is a role address and not personal information; a named individual's address is. lbl.gov stays CONDITIONAL_MET. Of the five Pages sites moved to CONDITIONAL_UNMET in review (aimo-interp, fomo26, realpdecompetition, roco-spring, xiuwenz2): a site whose pages carry only role addresses returns to CONDITIONAL_MET; a site carrying a named individual's address stays CONDITIONAL_UNMET until render-watch masks addresses before it commits a capture (queued by the main thread in §9 as the next maintenance item; the test the fixer wrote is its signal). Each of the five notes records the kind of address found (never the address itself).",
+  "",
+];
+/**
+ * The render groups of the audit note's "What the reading can render", in order: the opening of each group's bullet, and
+ * which rules URLs of the fixture belong to it (by the verdict of the URL's site; "probed" is a site with an active
+ * robots- line in urls.txt).
+ */
+const RENDER_GROUPS: { opens: string; holds: (site: string, e: Entry, probed: boolean) => boolean }[] = [
+  { opens: "- **Now: ", holds: (_, e) => ["CONDITIONAL_MET", "NOT_BARRED"].includes(e.verdict) },
+  { opens: "- **After Tuesday's terms fetch ", holds: (_, e) => e.verdict === "TERMS_PENDING" },
+  { opens: "- **After Tuesday's robots probes ", holds: (_, e, probed) => isExhaustiveNegative(e) && probed },
+  {
+    opens: "- **Graded with no capture, on their terms: ",
+    holds: (site, e) => e.verdict === "BARRED" || (e.verdict === "CONDITIONAL_UNMET" && !NAMED_ADDRESSES.includes(site)),
+  },
+  {
+    opens: "- **Graded with no capture until render-watch masks addresses before commit: ",
+    holds: (site, e) => e.verdict === "CONDITIONAL_UNMET" && NAMED_ADDRESSES.includes(site),
+  },
+];
 /** grand-challenge.org's terms line, admitted by ruling R2 as a URL derived from the platform's own source. */
 const DERIVED_TERMS = { site: "grand-challenge.org", url: "https://grand-challenge.org/policies/terms-of-service/", slug: "terms-grand-challenge", row: 237 };
 /** Ruling R2's sentence, which urls.txt's header carries directly after its one rule. */
@@ -451,19 +498,75 @@ describe("tick 45: the prize-event sites' terms verdicts", () => {
     expect(applyVerdicts(readFileSync(URLS, "utf8"), v).paused).toEqual([]);
   });
 
-  it("records the main thread's three rulings in the audit note, and the render groups add up to the 101 URLs over 45 sites", () => {
-    const audit = readFileSync(AUDIT, "utf8");
-    const at = audit.indexOf("## Main-thread rulings (5.10.2026, tick 45; Fable 5.1, the session model)");
-    expect(at).toBeGreaterThan(-1);
-    expect(at).toBeLessThan(audit.indexOf("## Every URL the agents fetched"));
-    for (const r of ["**R1. Exhaustive-negative does not require GitHub code search.**", "**R2. grand-challenge.org's terms URL.**", "**R3. Personal versus role addresses.**"]) {
-      expect(audit.slice(at), r).toContain(r);
+  it("records the main thread's three rulings in the audit note word for word, before its appendix", () => {
+    const lines = readFileSync(AUDIT, "utf8").split("\n");
+    const start = lines.indexOf(RULINGS_SECTION[0]);
+    expect(start).toBeGreaterThan(-1);
+    const end = lines.findIndex((l, i) => i > start && l.startsWith("## "));
+    expect(lines[end]).toBe("## Every URL the agents fetched");
+    expect(lines.slice(start, end)).toEqual(RULINGS_SECTION);
+    // R2's sentence is the one urls.txt's header carries.
+    expect(RULINGS_SECTION[4]).toContain(`the sentence "${EXCEPTION}"`);
+    expect(lines.join("\n")).not.toContain("Waiting on a main-thread ruling");
+  });
+
+  it("counts each render group's URLs and sites from the fixture and the verdicts, as its heading and its list state them", () => {
+    const v = verdicts();
+    const probed = new Set(active().filter((l) => isRobotsProbe(l.url, l.slug)).map((l) => siteOfUrl(l.url)));
+    // Every audited rules URL falls in exactly one group.
+    const counts = RENDER_GROUPS.map(() => new Map<string, number>());
+    for (const e of audited()) {
+      const site = siteOfUrl(e.url);
+      const into = RENDER_GROUPS.map((g, i) => (g.holds(site, v[site], probed.has(site)) ? i : -1)).filter((i) => i >= 0);
+      expect(into, `${site} ${e.url}`).toHaveLength(1);
+      counts[into[0]].set(site, (counts[into[0]].get(site) ?? 0) + 1);
     }
-    expect(audit).not.toContain("Waiting on a main-thread ruling");
-    const total = audit.match(/^Total: ([\d + ]+) = (\d+) URLs, over ([\d + ]+) = (\d+) sites\.$/m);
+    const audit = readFileSync(AUDIT, "utf8");
+    const section = audit.slice(audit.indexOf("## What the reading can render"), audit.indexOf("## Verifier notes, and the assembler's decisions"));
+    const bullets = section.split("\n").filter((l) => l.startsWith("- **"));
+    expect(bullets.map((b) => RENDER_GROUPS.findIndex((g) => b.startsWith(g.opens)))).toEqual(RENDER_GROUPS.map((_, i) => i));
+    const stated = bullets.map((b) => {
+      const m = b.match(/^- \*\*[^*]*?(\d+) URLs? on (\d+) sites?\*\*/);
+      expect(m, b.slice(0, 60)).not.toBeNull();
+      return [Number(m![1]), Number(m![2])];
+    });
+    const computed = counts.map((m) => [[...m.values()].reduce((a, b) => a + b, 0), m.size]);
+    expect(stated).toEqual(computed);
+    // Each bullet's per-site list: `site` n, for every site of the group and no other.
+    bullets.forEach((b, i) => {
+      const listed = Object.fromEntries([...b.matchAll(/`([a-z0-9.-]+\.[a-z]+)` (\d+)/g)].map((m) => [m[1], Number(m[2])]));
+      expect(listed, RENDER_GROUPS[i].opens).toEqual(Object.fromEntries(counts[i]));
+    });
+    // The total line adds the groups up, in the same order, to the 101 URLs over 45 sites.
+    const total = section.match(/^Total: ([\d + ]+) = (\d+) URLs, over ([\d + ]+) = (\d+) sites\.$/m);
     expect(total).not.toBeNull();
-    const sum = (s: string) => s.split("+").reduce((a, b) => a + Number(b.trim()), 0);
-    expect([sum(total![1]), Number(total![2]), sum(total![3]), Number(total![4])]).toEqual([101, 101, 45, 45]);
+    const terms = (s: string) => s.split("+").map((x) => Number(x.trim()));
+    expect([terms(total![1]), terms(total![3])]).toEqual([computed.map((c) => c[0]), computed.map((c) => c[1])]);
+    expect([Number(total![2]), Number(total![4])]).toEqual([101, 45]);
+    expect(computed.reduce((a, c) => a + c[0], 0)).toBe(101);
+    expect(computed.reduce((a, c) => a + c[1], 0)).toBe(45);
+  });
+
+  it("states R1's test in the audit note's Verdicts paragraph, and the three R1 notes record their search as it was", () => {
+    const audit = readFileSync(AUDIT, "utf8");
+    const para = audit.split("\n").find((l) => l.startsWith("**Verdicts.** "))!;
+    expect(para).toContain(R1_DEFINITION);
+    expect(para).not.toContain("claims the label");
+    expect(para).toContain("after R1 no site of this audit is in this class");
+    const v = verdicts();
+    for (const site of ["health-data-hub.fr", "ijcai.org", "mozilladatacollective.com"]) {
+      expect(v[site].note, site).toContain(OTA_LISTING);
+      expect(v[site].note, site).not.toContain("all 17 declarations repos");
+    }
+    // health-data-hub.fr: six READMEs read, of the 8 results, as its verified record names them.
+    expect(v["health-data-hub.fr"].note).toContain(HDH_READMES);
+    expect(v["health-data-hub.fr"].note).not.toContain("the eight repositories");
+    // mozilladatacollective.com: its verifier's reason was not code search; the likely DrivenData terms stay an inference.
+    const mdc = v["mozilladatacollective.com"].note!;
+    expect(mdc).toContain(`The verifier withheld the label for another reason, in its record's words: ${MDC_WITHHELD}`);
+    expect(mdc).toContain("Under ruling R1 the label rests on the recorded search, which found none");
+    expect(mdc).toContain("its terms very likely exist (inference)");
+    expect(mdc).not.toContain("withheld the label for that reason");
   });
 
   it("confines lbl.gov's CONDITIONAL_MET to the GitHub Pages host it rests on", () => {
