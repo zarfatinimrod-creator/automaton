@@ -15,8 +15,8 @@ import { parseUrlList, termsBarred } from "../../../scripts/render-watch.mjs";
 /**
  * scripts/prize-dispatch.mjs (logs/CHANNEL_LOOP.md §9, queued 5.10 by tick 45, item 2) prints the lines of
  * research/measurements/ai-allowed-events.urls.txt whose site passes termsGate: the text for render-watch.yml's `urls`
- * workflow_dispatch input. The whole file can never be pasted: render-watch's parser refuses its sites.google.com line,
- * and the rule of tick 20 (a site's terms are read before its first line is fetched) fails most of the rest. What it
+ * workflow_dispatch input. The whole file can never be pasted: render-watch's parser refuses a line on a barred host
+ * (sites.google.com today), and the rule of tick 20 (a site's terms are read before its first line is fetched) fails most of the rest. What it
  * must never do: print a line the gate refuses, print anything but the lines on stdout, add a js flag, or print a
  * line render-watch's own parser would refuse.
  */
@@ -51,7 +51,7 @@ const LIST = [
   "#",
   "# 2026-Q4 · 2026-10-20 · Event A",
   `https://www.met.example/rules?ref=x${T}prize-met-a`,
-  `https://open.example/challenge${T}prize-open-b`,
+  `https://open.example/challenge \t prize-open-b`,
   "",
   "# 2026-Q4 · 2026-11-01 · Event B",
   `https://pending.example/rules${T}prize-pending-rules`,
@@ -63,7 +63,7 @@ const LIST = [
   "# 2026-Q4 · 2026-12-01 · Event C",
   `https://fair-universe.lbl.gov/?ref=mlcontests${T}prize-lbl-fair`,
   `https://www.lbl.gov/challenge${T}prize-lbl-www`,
-  `   https://met.example/second${T}prize-met-second   `,
+  "   https://met.example/second   prize-met-second   ",
   "",
 ].join("\r\n");
 
@@ -89,6 +89,13 @@ describe("selectDispatchLines — the lines whose site passes termsGate, verbati
       ["lbl.gov", "CONDITIONAL_MET", 15],
       ["met.example", "CONDITIONAL_MET", 17],
     ]);
+  });
+
+  it("splits fields on any whitespace, as parseUrlList does, and always prints URL<TAB>slug with a real TAB", () => {
+    // The intake writes a TAB; a line separated by spaces, or by a mix, still comes out as URL<TAB>slug.
+    const out = select(`https://met.example/a   prize-a\nhttps://open.example/b \t prize-b\nhttps://met.example/c\tprize-c\n`, VERDICTS);
+    expect(out.lines).toEqual([`https://met.example/a\tprize-a`, `https://open.example/b\tprize-b`, `https://met.example/c\tprize-c`]);
+    expect(select(LIST, VERDICTS).lines.filter((l) => / /.test(l))).toEqual([]);
   });
 
   it("never prints a TERMS_BARRED host, whatever the verdicts say", () => {
@@ -154,6 +161,27 @@ describe("selectDispatchLines — the lines whose site passes termsGate, verbati
     expect(() => select(`https://met.example/a${T}js\n`, VERDICTS)).toThrow(/is a flag, not a slug/);
   });
 
+  it("names the input file's line numbers when the parser refuses the output, not the output text's", () => {
+    // Three comments and a blank first, then a duplicate slug on input lines 5 and 8 with failing lines between them:
+    // in the output text the two are lines 1 and 2, which would send a reader to the wrong lines of the list.
+    const dup = [
+      "# a",
+      "# b",
+      "# c",
+      "",
+      `https://met.example/a${T}prize-dup`,
+      `https://plain.example/x${T}prize-x`,
+      `https://plain.example/y${T}prize-y`,
+      `https://open.example/b${T}prize-dup`,
+      "",
+    ].join("\n");
+    expect(() => select(dup, VERDICTS)).toThrow(/\bline 8: slug "prize-dup" is already used on line 5\b/);
+    expect(() => select(dup, VERDICTS)).not.toThrow(/\bline [12]\b/);
+    // The same for a refusal of one line: a tiktok.com line on input line 4, the only passing line.
+    const tt = `# c\nhttps://plain.example/x${T}prize-x\n\nhttps://www.tiktok.com/@a/contest${T}prize-tt\n`;
+    expect(() => select(tt, { ...VERDICTS, "tiktok.com": { verdict: "NOT_BARRED" } })).toThrow(/\bline 4: .*tiktok\.com/);
+  });
+
   it("skips exactly the passing lines whose capture exists, only when asked", () => {
     const captured = new Set(["prize-open-b", "prize-lbl-fair", "prize-pending-rules"]);
     const captureExists = (slug: string) => captured.has(slug);
@@ -186,7 +214,7 @@ describe("describeSelection — the stderr summary", () => {
     ]);
     expect(sites[0]).toMatch(/TERMS_PENDING/);
     // Sites and reasons only: no line names a slug unless --why asks for the passing ones.
-    const slugs = LIST.split("\r\n").filter(URL_LINE).map((l) => l.trim().split("\t")[1]);
+    const slugs = LIST.split("\r\n").filter(URL_LINE).map((l) => l.trim().split(/\s+/)[1]);
     expect(slugs).toHaveLength(10);
     expect(text.filter((l) => slugs.some((slug) => l.includes(slug)))).toEqual([]);
   });
@@ -203,8 +231,10 @@ describe("describeSelection — the stderr summary", () => {
 
   it("says how many were skipped as captured, and that nothing passes when nothing does", () => {
     const skipped = describeSelection(select(LIST, VERDICTS, { skipCaptured: true, captureExists: () => true }), { source: "l" }) as string[];
+    expect(skipped[0]).toMatch(/read 10 line\(s\) of l: 4 pass the terms gate \(3 site\(s\)\), 6 fail/);
     expect(skipped.join("\n")).toMatch(/skipped 4 passing line\(s\) already captured/);
-    expect(skipped.join("\n")).toMatch(/nothing to dispatch/);
+    expect(skipped.join("\n")).toMatch(/every passing line is already captured: nothing to dispatch/);
+    expect(skipped.join("\n")).not.toMatch(/nothing passes the terms gate/);
     expect((describeSelection(select(LIST, {}), { source: "l" }) as string[]).join("\n")).toMatch(/nothing passes the terms gate/);
   });
 });
@@ -262,6 +292,19 @@ describe("prize-dispatch CLI", () => {
     expect(f.run().stdout).toBe(`${PASSING.join("\n")}\n`);
   });
 
+  it("exits 3 with an empty stdout when --skip-captured skips every passing line", () => {
+    const f = fixture(LIST);
+    for (const slug of ["prize-met-a", "prize-open-b", "prize-lbl-fair", "prize-met-second"]) {
+      writeFileSync(join(f.rendered, `${slug}.meta.json`), "{}\n");
+    }
+    const got = f.run("--skip-captured");
+    expect(got.status).toBe(3);
+    expect(got.stdout).toBe("");
+    expect(got.stderr.split("\n")[0]).toMatch(/4 pass the terms gate \(3 site\(s\)\), 6 fail$/);
+    expect(got.stderr).toMatch(/skipped 4 passing line\(s\) already captured/);
+    expect(got.stderr).toMatch(/every passing line is already captured: nothing to dispatch/);
+  });
+
   it("exits 3 with an empty stdout when the file was read but nothing passes", () => {
     const got = fixture(LIST, {}).run();
     expect(got.status).toBe(3);
@@ -278,10 +321,28 @@ describe("prize-dispatch CLI", () => {
     expect(duplicate.status).toBe(1);
     expect(duplicate.stdout).toBe("");
     expect(duplicate.stderr).toMatch(/already used/);
+    expect(duplicate.stderr).toMatch(/line 2: slug "prize-same" is already used on line 1\b/);
+    const late = fixture(`# a\n# b\n\nhttps://met.example/a${T}prize-same\nhttps://plain.example/x${T}prize-x\nhttps://open.example/b${T}prize-same\n`).run();
+    expect(late.status).toBe(1);
+    expect(late.stdout).toBe("");
+    expect(late.stderr).toMatch(/line 6: slug "prize-same" is already used on line 4\b/);
     const f = fixture(LIST);
     expect(spawnSync(process.execPath, [SCRIPT, "--urls", join(f.dir, "missing.txt")], { encoding: "utf8" }).status).toBe(1);
     expect(f.run("--force").status).toBe(1);
     expect(f.run("extra-positional").status).toBe(1);
+  });
+
+  it("exits 1 when the --verdicts file has no sites object, instead of failing every line for want of a verdict", () => {
+    const f = fixture(LIST);
+    writeFileSync(join(f.dir, "no-sites.json"), JSON.stringify({ name: "not a verdicts file" }));
+    writeFileSync(join(f.dir, "array-sites.json"), JSON.stringify({ sites: [] }));
+    for (const file of [join(f.dir, "no-sites.json"), join(f.dir, "array-sites.json"), join(ROOT, "package.json")]) {
+      const got = f.run("--verdicts", file);
+      expect(got.status, file).toBe(1);
+      expect(got.stdout, file).toBe("");
+      expect(got.stderr, file).toMatch(/has no "sites" object/);
+      expect(got.stderr, file).not.toMatch(/no verdict/);
+    }
   });
 
   it("writes no file", () => {

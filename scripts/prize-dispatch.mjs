@@ -9,7 +9,7 @@
  * --rendered research/rendered.
  *
  * WHY. The list is written by the weekly prize-intake job (src/revenue/ai-allowed-events.ts) and never edited by hand.
- * It cannot be pasted whole: render-watch's parser refuses a line on a TERMS_BARRED host (its sites.google.com line),
+ * It cannot be pasted whole: render-watch's parser refuses a line on a TERMS_BARRED host (sites.google.com today),
  * and the rule of tick 20 — a site's terms are read before its first line is fetched (logs/CHANNEL_LOOP.md §9;
  * research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md, "What the reading can render") — fails most of the
  * rest. Queued in logs/CHANNEL_LOOP.md §9 (5.10, tick 45, item 2); built in tick 47.
@@ -18,7 +18,8 @@
  * verdict, PATH_LIMITS with its hosts) says ok, as URL<TAB>slug, in file order, newline-terminated. Never a js flag:
  * an automatic filter does not decide that a page gets the JavaScript render. The text is re-parsed with render-watch's
  * own parseUrlList before anything is printed (as queue-zero-test.mjs --override does), so a line render-watch would
- * refuse — tiktok.com, a barred host, a duplicate or unusable slug — never reaches a dispatch.
+ * refuse — tiktok.com, a barred host, a duplicate or unusable slug — never reaches a dispatch; its refusal names the
+ * lines of the input file, not of the re-parsed text.
  * stderr: how many URL lines were read and how many pass, and one line per failing site with its count and the gate's
  * reason (sites by count, then name). --why adds each passing line's site and verdict. --skip-captured leaves out a
  * passing line whose <rendered>/<slug>.meta.json exists, and says how many.
@@ -28,8 +29,8 @@
  * slug is refused, with its line number: the intake writes neither.
  *
  * Exit codes: 0 — at least one line printed; 3 — the file was read and nothing passes (or every passing line is
- * already captured, with --skip-captured); 1 — a usage or read error, a refused line, or a parseUrlList refusal (and
- * nothing on stdout). It writes no file.
+ * already captured, with --skip-captured); 1 — a usage or read error (a --verdicts file with no "sites" object is
+ * one), a refused line, or a parseUrlList refusal (and nothing on stdout). It writes no file.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
@@ -77,7 +78,16 @@ export function selectDispatchLines(text, verdicts, { skipCaptured = false, capt
       passed.push({ url, slug, lineNumber, site: gate.site, verdict: gate.verdict });
       lines.push(`${url}\t${slug}`);
     });
-  if (lines.length) parseUrlList(`${lines.join("\n")}\n`); // tiktok.com, a barred host, a duplicate or bad slug: throws
+  // tiktok.com, a barred host, a duplicate or bad slug: parseUrlList throws. Its "line N" counts lines of the output
+  // text, whose line N is passed[N - 1]; the message names the input file's line instead.
+  if (lines.length) {
+    try {
+      parseUrlList(`${lines.join("\n")}\n`);
+    } catch (err) {
+      const inputLine = (n) => passed[Number(n) - 1]?.lineNumber ?? `${n} of the output`;
+      throw new Error(`render-watch's parser refuses the output: ${err.message.replace(/^urls\.txt /, "").replace(/\bline (\d+)/g, (_, n) => `line ${inputLine(n)}`)}`);
+    }
+  }
   return { lines, read, passed, skipped, failures };
 }
 
@@ -113,7 +123,12 @@ function main(argv) {
       why: { type: "boolean", default: false },
     },
   });
-  const out = selectDispatchLines(readFileSync(values.urls, "utf8"), loadVerdicts(values.verdicts), {
+  const verdicts = loadVerdicts(values.verdicts);
+  // Not research/channel-loop/terms-verdicts.json's shape: every line would fail for want of a verdict, a wrong reason.
+  if (verdicts === null || typeof verdicts !== "object" || Array.isArray(verdicts)) {
+    throw new Error(`--verdicts ${values.verdicts} has no "sites" object (the shape of research/channel-loop/terms-verdicts.json)`);
+  }
+  const out = selectDispatchLines(readFileSync(values.urls, "utf8"), verdicts, {
     skipCaptured: values["skip-captured"],
     captureExists: (slug) => existsSync(join(values.rendered, `${slug}.meta.json`)),
   });
