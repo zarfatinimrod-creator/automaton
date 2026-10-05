@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:01:36.529Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 105420,
-  "sha256": "987bc92e8529889a1f4b93a599d1323d1df3b09069ea87af3392fc8d1779ef5c",
+  "byteLength": 105434,
+  "sha256": "fd59e79769caff2de2b05945a805712e1d13c8380550e40b537bfaf5c608f281",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-src-tjrobertson-com-how-to-use-reddit-so-ai-recommends-your-busines.html",
   "textPath": "research/rendered/tt-src-tjrobertson-com-how-to-use-reddit-so-ai-recommends-your-busines.txt",

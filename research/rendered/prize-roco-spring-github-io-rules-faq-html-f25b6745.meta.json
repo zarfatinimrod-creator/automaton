@@ -4,9 +4,15 @@
   "fetchedAt": "2026-10-05T13:34:51.471Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 8618,
-  "sha256": "8ad668f28e5d38ec4b5d7811b8a5b57e2b61fb4818f67eb050dbb4a18ba38c3f",
+  "byteLength": 8622,
+  "sha256": "6e5fe03418ed8154bf2a6dcc987829fcabcc9035d496ba96fc292e2c110f8482",
   "truncated": false,
+  "redacted": 6,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 6,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/prize-roco-spring-github-io-rules-faq-html-f25b6745.html",
   "textPath": "research/rendered/prize-roco-spring-github-io-rules-faq-html-f25b6745.txt",

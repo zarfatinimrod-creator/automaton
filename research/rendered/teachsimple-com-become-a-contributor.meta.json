@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:32.379Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 373076,
-  "sha256": "abf9369223eb443c29df4b6a43205317c9eea5471a399a614d0e5b8b29b54c21",
+  "byteLength": 373094,
+  "sha256": "27e87b700cfe396b0131c2a646653f415303900392949de092be6669fc5bee84",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/teachsimple-com-become-a-contributor.html",
   "textPath": "research/rendered/teachsimple-com-become-a-contributor.txt",

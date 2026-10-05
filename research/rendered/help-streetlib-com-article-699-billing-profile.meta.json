@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:44.927Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 86482,
-  "sha256": "c6e3a21b76693c35d3678d51c1a68fdb968b578fdad349c4a7e31480c45e5158",
+  "byteLength": 86500,
+  "sha256": "b8bd2ca7fc2884949d0f4b97ac70dc477bb6fec958f2638f89ca352a57140c23",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/help-streetlib-com-article-699-billing-profile.html",
   "textPath": "research/rendered/help-streetlib-com-article-699-billing-profile.txt",

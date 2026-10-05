@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:22.257Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1685876,
-  "sha256": "78fa6adb0197a7ed3285fbdff865971d391653700ed86eda63d0b0d41a0a80b9",
+  "byteLength": 1685873,
+  "sha256": "74b543510ca3156c5ccad06017c8899d4a7dbb8a2b58f3683c122991ad64d0a4",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/google-ads-content-exclusions.html",
   "textPath": "research/rendered/google-ads-content-exclusions.txt",

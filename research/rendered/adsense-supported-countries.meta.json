@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:13.912Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1606842,
-  "sha256": "3749eca7824397c38d4f8140767aff8c0f39ab71742b601f5ee291f1e98990f5",
+  "byteLength": 1606839,
+  "sha256": "d048eac83af61ac8bb4d4aff144ed141e0b896d24147b11f6968863b3984c3f1",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/adsense-supported-countries.html",
   "textPath": "research/rendered/adsense-supported-countries.txt",

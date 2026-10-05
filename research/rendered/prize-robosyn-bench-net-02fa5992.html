@@ -1,0 +1,225 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evaluation | RoboSynChallenge</title>
+    <meta name="description" content="RoboSynChallenge is a NeurIPS 2026 competition on sim-to-real robot manipulation with synthesized and real-world co-training.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/site.css?v=20260909-leaderboard-faq">
+    <link rel="stylesheet" href="static/css/pages.css?v=20260906-success-faq">
+    <script defer="" src="static/assets/result-videos/baseline-results.js"></script>
+    <script defer="" src="static/assets/released-checkpoint-evals.js?v=20260903-smolvla-sample-sr"></script>
+    <script defer="" src="static/config.js"></script>
+    <script defer="" src="static/js/pages-app.js?v=20260926-deadline-oct11"></script>
+  </head>
+  <body>
+    <div class="site-chrome"></div>
+    <header class="site-header">
+      <div class="shell header-row">
+        <a class="brand" href="#/home">
+          <span class="brand-mark">RS</span>
+          <span class="brand-copy">
+            <strong>RoboSynChallenge</strong>
+            <small>NeurIPS 2026 Competition</small>
+          </span>
+          <img class="brand-event-logo" src="static/assets/neurips-logo.svg" alt="NeurIPS">
+        </a>
+        <button class="nav-toggle" type="button" data-nav-toggle="" aria-label="Toggle navigation">
+          Menu
+        </button>
+        <nav class="site-nav" data-nav-menu="" id="site-nav"><a href="#/home" class="">Home</a><a href="#/data" class="">Data</a><a href="#/faq" class="">FAQ</a><a href="#/evaluation" class="active">Evaluation</a><a href="#/leaderboard" class="">Leaderboard</a></nav>
+        <div class="header-actions" id="header-actions">
+        <a href="#/login" class="button button-secondary">Sign in</a>
+        <a href="#/register" class="button button-primary">Request access</a>
+      </div>
+      </div>
+    </header>
+
+    <section class="flash-zone shell" id="flash-zone"></section>
+    <main id="app"><div class="page-shell">
+      <section class="page-hero shell data-hero">
+        <span class="eyebrow">Evaluation</span>
+        <h1>Sim first. Robot final.</h1>
+        <p class="lead data-lead">
+          RoboSynChallenge evaluation includes one simulation-only preliminary round and one real-robot
+          final round. Published results report success rate, action steps, and inference time.
+        </p>
+        <div class="cta-row">
+          <a href="#/submit-policy" class="button button-primary">Submit Policy</a>
+          <a href="https://edem-ai.github.io/RoboSynChallenge/html/tutorials/policy/your_own_policy.html" target="_blank" rel="noreferrer" class="button button-secondary">Policy tutorial ↗</a>
+          <a href="#/leaderboard" class="button button-ghost">View leaderboard</a>
+        </div>
+      </section>
+
+      <section class="section shell data-section">
+        <div class="data-columns">
+          <article class="data-panel data-panel-sim evaluation-panel evaluation-panel-sim">
+            <header class="data-panel-header">
+              <div><span class="tag">Preliminary round</span><h2>Simulation-only evaluation</h2></div>
+              <strong class="data-count">01<small>stage</small></strong>
+            </header>
+            <p>Policies are evaluated in RoboSynChallenge simulation on held-out test settings before finalists are selected.</p>
+            
+      <div class="evaluation-video-wall" aria-label="Simulation evaluation task videos">
+        
+          <div class="evaluation-video-row evaluation-video-row-4">
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Table rearrangement">
+                <source src="static/assets/evaluation-videos/table_rearrangement.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Click bell">
+                <source src="static/assets/evaluation-videos/click_bell.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Water pouring">
+                <source src="static/assets/evaluation-videos/water_pouring.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Handle basket">
+                <source src="static/assets/evaluation-videos/handle_basket.mp4" type="video/mp4">
+              </video>
+            
+          </div>
+        
+          <div class="evaluation-video-row evaluation-video-row-3">
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Items handover">
+                <source src="static/assets/evaluation-videos/items_handover.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Drawer open place">
+                <source src="static/assets/evaluation-videos/drawer_open_place.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Mixer operating">
+                <source src="static/assets/evaluation-videos/mixer_operating.mp4" type="video/mp4">
+              </video>
+            
+          </div>
+        
+          <div class="evaluation-video-row evaluation-video-row-3">
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Item assembly">
+                <source src="static/assets/evaluation-videos/item_assembly.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Manipulate pipette">
+                <source src="static/assets/evaluation-videos/manipulate_pipette.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Sample loading">
+                <source src="static/assets/evaluation-videos/sample_loading.mp4" type="video/mp4">
+              </video>
+            
+          </div>
+        
+      </div>
+    
+            <div class="randomization-list">
+              <div><strong>Simulation only.</strong><span>No physical robot is used in the preliminary round.</span></div>
+              <div><strong>Same metrics.</strong><span>Success rate, action steps, and inference time are reported.</span></div>
+              <div><strong>Finalists advance.</strong><span>Approximately 30-40 teams move to the real-robot final round.</span></div>
+            </div>
+          </article>
+
+          <article class="data-panel data-panel-real evaluation-panel evaluation-panel-real">
+            <header class="data-panel-header">
+              <div><span class="tag">Final round</span><h2>Real-robot evaluation</h2></div>
+              <strong class="data-count">02<small>stage</small></strong>
+            </header>
+            <p>Finalist policies are run by organizers on the standardized RoboSynChallenge real-robot setup.</p>
+            
+      <div class="evaluation-video-wall" aria-label="Real-robot evaluation task videos">
+        
+          <div class="evaluation-video-row evaluation-video-row-4">
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Table rearrangement">
+                <source src="static/assets/real-evaluation-videos/cobotmagic_Real_table_rearrangement.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Click bell">
+                <source src="static/assets/real-evaluation-videos/cobotmagic_Real_click_bell.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Water pouring">
+                <source src="static/assets/real-evaluation-videos/cobotmagic_Real_water_pouring.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Handle basket">
+                <source src="static/assets/real-evaluation-videos/cobotmagic_Real_handle_basket.mp4" type="video/mp4">
+              </video>
+            
+          </div>
+        
+          <div class="evaluation-video-row evaluation-video-row-3">
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Items handover">
+                <source src="static/assets/real-evaluation-videos/cobotmagic_Real_items_handover.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Drawer open place">
+                <source src="static/assets/real-evaluation-videos/cobotmagic_Real_drawer_open_place.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Mixer operating">
+                <source src="static/assets/real-evaluation-videos/cobotmagic_Real_mixer_operating.mp4" type="video/mp4">
+              </video>
+            
+          </div>
+        
+          <div class="evaluation-video-row evaluation-video-row-3">
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Item assembly">
+                <source src="static/assets/real-evaluation-videos/cobotmagic_Real_item_assembly.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Manipulate pipette">
+                <source src="static/assets/real-evaluation-videos/cobotmagic_Real_manipulate_pipette.mp4" type="video/mp4">
+              </video>
+            
+              <video muted="" loop="" autoplay="" playsinline="" preload="metadata" aria-label="Sample loading">
+                <source src="static/assets/real-evaluation-videos/cobotmagic_Real_sample_loading.mp4" type="video/mp4">
+              </video>
+            
+          </div>
+        
+      </div>
+    
+            <div class="randomization-list">
+              <div><strong>Robot only.</strong><span>The final round runs on the real RoboSynChallenge platform.</span></div>
+              <div><strong>Same metrics.</strong><span>Success rate, action steps, and inference time are reported.</span></div>
+              <div><strong>Final ranking.</strong><span>Published results determine the final leaderboard.</span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div></main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <div>
+          <div class="footer-heading">RoboSynChallenge</div>
+          <p>
+            A public benchmark for studying how synthesized manipulation data improves real-world
+            generalization under scarce physical supervision.
+          </p>
+        </div>
+        <div>
+          <div class="footer-heading">Resources</div>
+          <a href="https://github.com/EDEM-AI/RoboSynChallenge/tree/main" target="_blank" rel="noreferrer">RoboSynChallenge GitHub</a>
+          <a href="https://huggingface.co/RoboSynChallenge/datasets" target="_blank" rel="noreferrer">Released data</a>
+          <a href="https://edem-ai.github.io/RoboSynChallenge/html/getting_started/overview.html" target="_blank" rel="noreferrer">Tutorial</a>
+          <a href="#/faq">Competition FAQ</a>
+          <a href="material/RoboSynChallenge-report.pdf" target="_blank" rel="noreferrer">Competition report</a>
+        </div>
+      </div>
+      <div class="shell footer-bottom">
+        <span>© 2026 RoboSynChallenge</span>
+        <span>Designed for open research evaluation</span>
+      </div>
+    </footer>
+  
+
+</body></html>

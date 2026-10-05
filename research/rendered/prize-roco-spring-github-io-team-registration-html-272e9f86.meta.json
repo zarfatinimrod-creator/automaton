@@ -4,9 +4,15 @@
   "fetchedAt": "2026-10-05T13:33:09.100Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 31920,
-  "sha256": "2262933be33b370b38a0c6b71a7adfd76952840c9d87f2525e99d35ab5793f2b",
+  "byteLength": 31922,
+  "sha256": "985642b7776e61ef3e88e4b38468b3232f3aaaf3c0237e63ac905a15cb0b7ef4",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/prize-roco-spring-github-io-team-registration-html-272e9f86.html",
   "textPath": "research/rendered/prize-roco-spring-github-io-team-registration-html-272e9f86.txt",

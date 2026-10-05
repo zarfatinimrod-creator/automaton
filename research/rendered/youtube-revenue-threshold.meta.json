@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:15.156Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1608627,
-  "sha256": "1faaad57e8db4e2e59643515157eaecb3856703d2e4ca17beccfd332c0095744",
+  "byteLength": 1608624,
+  "sha256": "af517092f8822fdc5dd66269f6b4f731ae4f89076947424335fe9f629c0ebeae",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-revenue-threshold.html",
   "textPath": "research/rendered/youtube-revenue-threshold.txt",

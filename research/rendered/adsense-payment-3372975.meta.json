@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:26:40.903Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1605188,
-  "sha256": "61c41b64dba8f22800813de3e17c0075a15fe4b6dd68bf5d46b9abb80379e055",
+  "byteLength": 1605185,
+  "sha256": "21df7b496a819fa2ae72bd0bcae17e9581480f7e5282a61fcae2b7ed2a16f854",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/adsense-payment-3372975.html",
   "textPath": "research/rendered/adsense-payment-3372975.txt",

@@ -1,4 +1,4 @@
-RoboSynChallenge
+Home | RoboSynChallenge
 
 RS
 
@@ -6,6 +6,116 @@ RoboSynChallenge
 NeurIPS 2026 Competition
 
 Menu
+
+Home Data FAQ Evaluation Leaderboard
+
+Sign in
+Request access
+
+RoboSynChallenge:
+
+Mastering Real-World Dexterity via Generalizing Synthesized Manipulation Skills.
+
+General-purpose robot manipulation needs policies that can learn from broad experience and
+remain reliable in unfamiliar real-world scenes. Yet real robot data is scarce, costly, and
+hardware-specific, while simulation scales but often breaks across the Sim2Real gap.
+RoboSynChallenge turns this bottleneck into a benchmark: teams train with scalable synthetic
+data plus limited real demonstrations, qualify in simulation, and prove generalization on a
+standardized real-robot platform.
+
+Scarce real data limits scalable robot learning
+Synthetic trials expand training diversity
+Real-robot evaluation measures true transfer
+
+Register your team
+GitHub codebase ↗
+Read tutorial ↗
+Read report ↗
+
+Registration opens July 13 · Preliminary submissions close October 11 · Final evaluation starts November 15
+
+The RoboSynChallenge pipeline
+Filter manipulation trials, synthesize diverse training data, co-train with synthetic and real demonstrations, then deploy and evaluate policies on the standardized dual-arm platform.
+
+10
+official manipulation tasks
+
+2
+competition stages
+
+0
+robots needed for preliminaries
+
+1
+standardized final platform
+
+How it works
+One competition, two stages.
+
+Every team follows the same route from scalable simulation testing to a controlled physical final.
+
+01
+
+Preliminary evaluation
+Train, then qualify in simulation
+
+Train from July 13 to October 11. Simulation evaluation runs October 11–25 on held-out tests, with roughly 30-40 finalists announced on October 25.
+
+→
+
+02
+
+Final evaluation
+Update, then prove it on robots
+
+Finalists update models until November 15. Final evaluation then starts on the unified dual-arm robot platform.
+
+Competition timeline
+Key dates for 2026.
+
+July 13 Registration
+Teams receive the codebase, tutorial, released data, and baselines.
+
+July 13 – October 11 Training period
+Train and improve models with official synthetic and limited real data.
+
+October 11 – 25 Preliminary evaluation & finalists
+Models are evaluated in simulation on held-out tests; roughly 30-40 finalists are announced on October 25.
+
+October 25 – November 15 Model update period
+Finalists continue updating models before the final submission deadline.
+
+Starts November 15 Final evaluation
+Final submissions are evaluated on the unified real dual-arm robot platform.
+
+Early December Awards and showcase
+Winning teams are invited to present and receive awards at NeurIPS 2026.
+
+Official benchmark
+Ten tasks, one test of robust manipulation.
+
+Entry-level
+Table rearrangement Click-bell Water pouring Handle basket
+
+Mid-level
+Items hand-over Drawer open-and-place Mixer operating
+
+High-level
+Item assembly Manipulate pipette Sample loading
+
+Success rate task completion
+Action steps execution efficiency
+Inference time policy runtime
+
+Organizers
+
+Sponsors
+
+Partner Institutions
+
+Academic Platform
+
+Media Partners
 
 RoboSynChallenge
 

@@ -188,7 +188,7 @@ Team name
 Primary contact/login email
 
 To change the account's primary login email,
-contact roco-spring-org@googlegroups.com .
+contact [redacted:email]@googlegroups.com .
 
 02 Competition
 tracks

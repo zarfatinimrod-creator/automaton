@@ -26,7 +26,7 @@ You can raise a support query using the following form:
 
 https://help.facer.io/hc/en-us/requests/new
 
-Or send an email to: Facer-support@little-labs.com
+Or send an email to: [redacted:email]@little-labs.com
 
 masslock.steve39
 

@@ -250,7 +250,7 @@ Community bots that need a higher volume of API requests should run in WMCS or a
 
 If you are an external entity and you need a higher volume of requests, you should use Wikimedia Enterprise APIs instead. This is the preferred choice for commercial, high-volume users of the APIs.
 
-Bot operators who are unsure how to get the access they need can contact the Wikimedia Foundation at bot-traffic@wikimedia.org .
+Bot operators who are unsure how to get the access they need can contact the Wikimedia Foundation at [redacted:email]@wikimedia.org .
 
 See also
 

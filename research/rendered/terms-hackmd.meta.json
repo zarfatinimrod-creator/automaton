@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T14:02:43.709Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 95752,
-  "sha256": "d2f614119895417bb0939cf107ab470d6a7be28f0b85c5806d8e3d4adaaf3d74",
+  "byteLength": 95779,
+  "sha256": "f2c9727bfa59f3bf81a7092c58f68c47ebba8eb55909dc0b5f5728b7b59e75ae",
   "truncated": false,
+  "redacted": 6,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 6,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-hackmd.html",
   "textPath": "research/rendered/terms-hackmd.txt",

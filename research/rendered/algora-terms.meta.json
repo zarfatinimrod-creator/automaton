@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-26T00:44:35.882Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 56401,
-  "sha256": "d9ebc3a0f4c09f383c587ff50a3236f66cc4dde11a8c85fea27b32260cec9702",
+  "byteLength": 56446,
+  "sha256": "9ba3b6d2fe300f3dcd0d730cb1634c0327fc6e9f9fb7e4c65e328288f73b4fdb",
   "truncated": false,
+  "redacted": 10,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 10,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/algora-terms.html",
   "textPath": "research/rendered/algora-terms.txt",

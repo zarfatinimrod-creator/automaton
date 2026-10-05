@@ -1,25 +1,17 @@
-<!doctype html>
-<html lang="en">
-  <head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>RoboSynChallenge</title>
-    <meta
-      name="description"
-      content="RoboSynChallenge is a NeurIPS 2026 competition on sim-to-real robot manipulation with synthesized and real-world co-training."
-    >
+    <title>Home | RoboSynChallenge</title>
+    <meta name="description" content="RoboSynChallenge is a NeurIPS 2026 competition on sim-to-real robot manipulation with synthesized and real-world co-training.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    >
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="static/css/site.css?v=20260909-leaderboard-faq">
     <link rel="stylesheet" href="static/css/pages.css?v=20260906-success-faq">
-    <script defer src="static/assets/result-videos/baseline-results.js"></script>
-    <script defer src="static/assets/released-checkpoint-evals.js?v=20260903-smolvla-sample-sr"></script>
-    <script defer src="static/config.js"></script>
-    <script defer src="static/js/pages-app.js?v=20260926-deadline-oct11"></script>
+    <script defer="" src="static/assets/result-videos/baseline-results.js"></script>
+    <script defer="" src="static/assets/released-checkpoint-evals.js?v=20260903-smolvla-sample-sr"></script>
+    <script defer="" src="static/config.js"></script>
+    <script defer="" src="static/js/pages-app.js?v=20260926-deadline-oct11"></script>
   </head>
   <body>
     <div class="site-chrome"></div>
@@ -33,16 +25,264 @@
           </span>
           <img class="brand-event-logo" src="static/assets/neurips-logo.svg" alt="NeurIPS">
         </a>
-        <button class="nav-toggle" type="button" data-nav-toggle aria-label="Toggle navigation">
+        <button class="nav-toggle" type="button" data-nav-toggle="" aria-label="Toggle navigation">
           Menu
         </button>
-        <nav class="site-nav" data-nav-menu id="site-nav"></nav>
-        <div class="header-actions" id="header-actions"></div>
+        <nav class="site-nav" data-nav-menu="" id="site-nav"><a href="#/home" class="active">Home</a><a href="#/data" class="">Data</a><a href="#/faq" class="">FAQ</a><a href="#/evaluation" class="">Evaluation</a><a href="#/leaderboard" class="">Leaderboard</a></nav>
+        <div class="header-actions" id="header-actions">
+        <a href="#/login" class="button button-secondary">Sign in</a>
+        <a href="#/register" class="button button-primary">Request access</a>
+      </div>
       </div>
     </header>
 
     <section class="flash-zone shell" id="flash-zone"></section>
-    <main id="app"></main>
+    <main id="app"><div class="page-shell">
+      <section class="hero home-hero">
+        <div class="shell home-hero-grid">
+          <div class="hero-copy">
+            <h1>RoboSynChallenge:</h1>
+            <h2>Mastering Real-World Dexterity via Generalizing Synthesized Manipulation Skills.</h2>
+            <p class="lead">
+              General-purpose robot manipulation needs policies that can learn from broad experience and
+              remain reliable in unfamiliar real-world scenes. Yet real robot data is scarce, costly, and
+              hardware-specific, while simulation scales but often breaks across the Sim2Real gap.
+              RoboSynChallenge turns this bottleneck into a benchmark: teams train with scalable synthetic
+              data plus limited real demonstrations, qualify in simulation, and prove generalization on a
+              standardized real-robot platform.
+            </p>
+            <div class="hero-thesis" aria-label="Challenge motivation">
+              <span><strong>Scarce real data</strong> limits scalable robot learning</span>
+              <span><strong>Synthetic trials</strong> expand training diversity</span>
+              <span><strong>Real-robot evaluation</strong> measures true transfer</span>
+            </div>
+            <div class="cta-row">
+              <a href="#/register" class="button button-primary">Register your team</a>
+              <a href="https://github.com/EDEM-AI/RoboSynChallenge/tree/main" target="_blank" rel="noreferrer" class="button button-secondary">GitHub codebase ↗</a>
+              <a href="https://edem-ai.github.io/RoboSynChallenge/html/getting_started/overview.html" target="_blank" rel="noreferrer" class="button button-ghost">Read tutorial ↗</a>
+              <a href="material/RoboSynChallenge-report.pdf" target="_blank" rel="noreferrer" class="button button-ghost">Read report ↗</a>
+            </div>
+            <p class="hero-note">Registration opens July 13 · Preliminary submissions close October 11 · Final evaluation starts November 15</p>
+          </div>
+          <figure class="home-hero-figure">
+            <img src="static/assets/robosynchallenge-pipeline.png" alt="RoboSynChallenge pipeline from synthetic data generation to real-world evaluation">
+            <figcaption>
+              <strong>The RoboSynChallenge pipeline</strong>
+              <span>Filter manipulation trials, synthesize diverse training data, co-train with synthetic and real demonstrations, then deploy and evaluate policies on the standardized dual-arm platform.</span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="stat-ribbon">
+        <div class="shell stat-grid">
+          
+            <article class="stat-card">
+              <strong>10</strong>
+              <span>official manipulation tasks</span>
+            </article>
+          
+            <article class="stat-card">
+              <strong>2</strong>
+              <span>competition stages</span>
+            </article>
+          
+            <article class="stat-card">
+              <strong>0</strong>
+              <span>robots needed for preliminaries</span>
+            </article>
+          
+            <article class="stat-card">
+              <strong>1</strong>
+              <span>standardized final platform</span>
+            </article>
+          
+        </div>
+      </section>
+
+      <section class="section shell home-section">
+        <div class="section-heading compact-heading">
+          <span class="eyebrow">How it works</span>
+          <h2>One competition, two stages.</h2>
+          <p>Every team follows the same route from scalable simulation testing to a controlled physical final.</p>
+        </div>
+        <div class="stage-grid">
+          <article class="stage-card">
+            <span class="stage-number">01</span>
+            <div>
+              <span class="tag">Preliminary evaluation</span>
+              <h3>Train, then qualify in simulation</h3>
+              <p>Train from July 13 to October 11. Simulation evaluation runs October 11–25 on held-out tests, with roughly 30-40 finalists announced on October 25.</p>
+            </div>
+          </article>
+          <div class="stage-arrow" aria-hidden="true">→</div>
+          <article class="stage-card stage-card-final">
+            <span class="stage-number">02</span>
+            <div>
+              <span class="tag">Final evaluation</span>
+              <h3>Update, then prove it on robots</h3>
+              <p>Finalists update models until November 15. Final evaluation then starts on the unified dual-arm robot platform.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section-alt home-section" id="timeline">
+        <div class="shell">
+          <div class="section-heading compact-heading">
+            <span class="eyebrow">Competition timeline</span>
+            <h2>Key dates for 2026.</h2>
+          </div>
+          <ol class="competition-timeline">
+            <li><time>July 13</time><div><h3>Registration</h3><p>Teams receive the codebase, tutorial, released data, and baselines.</p></div></li>
+            <li><time>July 13 – October 11</time><div><h3>Training period</h3><p>Train and improve models with official synthetic and limited real data.</p></div></li>
+            <li><time>October 11 – 25</time><div><h3>Preliminary evaluation &amp; finalists</h3><p>Models are evaluated in simulation on held-out tests; roughly 30-40 finalists are announced on October 25.</p></div></li>
+            <li><time>October 25 – November 15</time><div><h3>Model update period</h3><p>Finalists continue updating models before the final submission deadline.</p></div></li>
+            <li><time>Starts November 15</time><div><h3>Final evaluation</h3><p>Final submissions are evaluated on the unified real dual-arm robot platform.</p></div></li>
+            <li><time>Early December</time><div><h3>Awards and showcase</h3><p>Winning teams are invited to present and receive awards at NeurIPS 2026.</p></div></li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section shell home-section">
+        <div class="section-heading compact-heading">
+          <span class="eyebrow">Official benchmark</span>
+          <h2>Ten tasks, one test of robust manipulation.</h2>
+        </div>
+        <div class="compact-task-grid">
+          
+            <article class="compact-task-group tone-mint">
+              <span class="tag">Entry-level</span>
+              <div class="compact-task-list"><span>Table rearrangement</span><span>Click-bell</span><span>Water pouring</span><span>Handle basket</span></div>
+            </article>
+          
+            <article class="compact-task-group tone-powder">
+              <span class="tag">Mid-level</span>
+              <div class="compact-task-list"><span>Items hand-over</span><span>Drawer open-and-place</span><span>Mixer operating</span></div>
+            </article>
+          
+            <article class="compact-task-group tone-sand">
+              <span class="tag">High-level</span>
+              <div class="compact-task-list"><span>Item assembly</span><span>Manipulate pipette</span><span>Sample loading</span></div>
+            </article>
+          
+        </div>
+        <div class="metric-strip">
+          <span><strong>Success rate</strong> task completion</span>
+          <span><strong>Action steps</strong> execution efficiency</span>
+          <span><strong>Inference time</strong> policy runtime</span>
+        </div>
+      </section>
+
+      
+      <section class="partner-section" aria-label="Competition network">
+        <div class="shell partner-shell">
+          <div class="partner-board">
+            
+              <section class="partner-group partner-group-organizers" aria-label="Organizers">
+                <h3>Organizers</h3>
+                <div class="partner-logo-grid partner-logo-grid-organizers">
+                  
+                    <div class="partner-logo-item partner-logo-wide">
+                      <img src="static/assets/partners/shenzhen-loop-area-institute.png?v=20260901-logo-cutouts" alt="Shenzhen Loop Area Institute" loading="lazy">
+                    </div>
+                  
+                    <div class="partner-logo-item partner-logo-medium">
+                      <img src="static/assets/partners/dexforce.png?v=20260901-logo-cutouts" alt="DEXFORCE" loading="lazy">
+                    </div>
+                  
+                </div>
+              </section>
+            
+              <section class="partner-group partner-group-sponsors" aria-label="Sponsors">
+                <h3>Sponsors</h3>
+                <div class="partner-logo-grid partner-logo-grid-sponsors">
+                  
+                    <div class="partner-logo-item partner-logo-medium">
+                      <img src="static/assets/partners/dexforce.png?v=20260901-logo-cutouts" alt="DEXFORCE" loading="lazy">
+                    </div>
+                  
+                    <div class="partner-logo-item partner-logo-wide">
+                      <img src="static/assets/partners/tencent-cloud.png?v=20260901-logo-cutouts" alt="Tencent Cloud" loading="lazy">
+                    </div>
+                  
+                    <div class="partner-logo-item partner-logo-wide">
+                      <img src="static/assets/partners/agilex.png?v=20260901-logo-cutouts" alt="AGILE·X Robotics" loading="lazy">
+                    </div>
+                  
+                    <div class="partner-logo-item partner-logo-wide">
+                      <img src="static/assets/partners/computational-freedom.png?v=20260901-logo-cutouts" alt="Computational Freedom" loading="lazy">
+                    </div>
+                  
+                </div>
+              </section>
+            
+              <section class="partner-group partner-group-institutions" aria-label="Partner Institutions">
+                <h3>Partner Institutions</h3>
+                <div class="partner-logo-grid partner-logo-grid-institutions">
+                  
+                    <div class="partner-logo-item partner-logo-wide">
+                      <img src="static/assets/partners/cuhk-shenzhen.png?v=20260901-logo-cutouts" alt="The Chinese University of Hong Kong, Shenzhen" loading="lazy">
+                    </div>
+                  
+                    <div class="partner-logo-item partner-logo-wide">
+                      <img src="static/assets/partners/cuhk.png?v=20260901-logo-cutouts" alt="The Chinese University of Hong Kong" loading="lazy">
+                    </div>
+                  
+                    <div class="partner-logo-item partner-logo-wide">
+                      <img src="static/assets/partners/hkust.png?v=20260901-logo-cutouts" alt="The Hong Kong University of Science and Technology" loading="lazy">
+                    </div>
+                  
+                    <div class="partner-logo-item partner-logo-square">
+                      <img src="static/assets/partners/fudan.png?v=20260901-logo-cutouts" alt="Fudan University" loading="lazy">
+                    </div>
+                  
+                    <div class="partner-logo-item partner-logo-wide">
+                      <img src="static/assets/partners/sun-yat-sen.png?v=20260901-logo-cutouts" alt="Sun Yat-sen University" loading="lazy">
+                    </div>
+                  
+                    <div class="partner-logo-item partner-logo-wide">
+                      <img src="static/assets/partners/waterloo.png?v=20260901-logo-cutouts" alt="University of Waterloo" loading="lazy">
+                    </div>
+                  
+                    <div class="partner-logo-item partner-logo-wide">
+                      <img src="static/assets/partners/vector-institute.png?v=20260901-logo-cutouts" alt="Vector Institute" loading="lazy">
+                    </div>
+                  
+                </div>
+              </section>
+            
+              <section class="partner-group partner-group-academic" aria-label="Academic Platform">
+                <h3>Academic Platform</h3>
+                <div class="partner-logo-grid partner-logo-grid-academic">
+                  
+                    <div class="partner-logo-item partner-logo-wide">
+                      <img src="static/assets/partners/neurips.png?v=20260901-logo-cutouts" alt="NeurIPS" loading="lazy">
+                    </div>
+                  
+                </div>
+              </section>
+            
+              <section class="partner-group partner-group-media" aria-label="Media Partners">
+                <h3>Media Partners</h3>
+                <div class="partner-logo-grid partner-logo-grid-media">
+                  
+                    <div class="partner-logo-item partner-logo-wide">
+                      <img src="static/assets/partners/xbotics.png?v=20260901-logo-cutouts" alt="Xbotics" loading="lazy">
+                    </div>
+                  
+                    <div class="partner-logo-item partner-logo-mark">
+                      <img src="static/assets/partners/nice-academic.png?v=20260901-logo-cutouts" alt="NICE Academic" loading="lazy">
+                    </div>
+                  
+                </div>
+              </section>
+            
+          </div>
+        </div>
+      </section>
+    
+    </div></main>
 
     <footer class="site-footer">
       <div class="shell footer-grid">
@@ -67,5 +307,6 @@
         <span>Designed for open research evaluation</span>
       </div>
     </footer>
-  </body>
-</html>
+  
+
+</body></html>

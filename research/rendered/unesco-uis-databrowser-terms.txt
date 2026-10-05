@@ -18,9 +18,9 @@ UIS databases are subject to updates and revisions on a regular basis. Therefore
 No association or endorsement
 The User may neither represent nor imply that the UIS Data Browser has participated in, approved, endorsed or otherwise supported his or her use or reproduction of the Material. The User may not claim any affiliation with the UIS Data Browser. For information about the use of the UIS name, acronym and logo, please see section below.
 Website links
-Linking to the UIS website: An external website may include a hyperlink to any page of the UIS website without requesting permission. However, this must not infringe on the Institute’s intellectual property rights in particular relating to its name, logo, copyright or author’s rights. To request permission to use the UIS logo when linking to the Institute’s website or referring to the Institute, please contact: uis.publications@unesco.org .
+Linking to the UIS website: An external website may include a hyperlink to any page of the UIS website without requesting permission. However, this must not infringe on the Institute’s intellectual property rights in particular relating to its name, logo, copyright or author’s rights. To request permission to use the UIS logo when linking to the Institute’s website or referring to the Institute, please contact: [redacted:email]@unesco.org .
 Links from the UIS website: Hyperlinks to other websites imply neither responsibility for, nor approval of, the information, documents and materials contained in those other websites on the part of the UIS. These hyperlinks should not be construed as an endorsement by the Institute of the validity, accuracy or views expressed in those other websites.
 Questions and comments
-If you have any trouble finding or interpreting UIS Data Browser data, please send your requests and questions to uis.datarequests@unesco.org . We also welcome your suggestions and ideas for using or facilitating access to our data.
+If you have any trouble finding or interpreting UIS Data Browser data, please send your requests and questions to [redacted:email]@unesco.org . We also welcome your suggestions and ideas for using or facilitating access to our data.
 
 UNESCO Home UIS Home Terms and conditions Disclaimer Privacy

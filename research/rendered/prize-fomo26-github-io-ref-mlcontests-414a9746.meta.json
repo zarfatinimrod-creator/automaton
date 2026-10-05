@@ -4,9 +4,15 @@
   "fetchedAt": "2026-10-05T13:19:02.951Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 58861,
-  "sha256": "c2f8a275bfc5870300d1905195c09cacc051b66bcf88ea2588f13a10602ea361",
+  "byteLength": 58901,
+  "sha256": "bdb7075d300cc4d4e887fb8e360929fc10384785a991fa081ba6be9a5e9eff9d",
   "truncated": false,
+  "redacted": 6,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 6,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/prize-fomo26-github-io-ref-mlcontests-414a9746.html",
   "textPath": "research/rendered/prize-fomo26-github-io-ref-mlcontests-414a9746.txt",

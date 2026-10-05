@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:01:56.441Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 391356,
-  "sha256": "201f433eaf6dde6dba4f06d6530557c16aa98c84c786851a6db0a913d365830f",
+  "byteLength": 391365,
+  "sha256": "e441ad3c059f2a62ccea85b06206041e9e718d9f9fe3f356c6bef517962cc25b",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-video-michael-danilovv-7311263185841982721.html",
   "textPath": "research/rendered/tt-video-michael-danilovv-7311263185841982721.txt",

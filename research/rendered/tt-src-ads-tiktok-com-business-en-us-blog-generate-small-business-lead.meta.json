@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:01:49.039Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 1155388,
-  "sha256": "4e0578f4681c2f14cf18044867b486e9efeaec8302bfeb0ae0ba176409ada06b",
+  "byteLength": 1155440,
+  "sha256": "76843947e8c7b88756cbd0520177951332dfb52aed55c8006e3ea617042e1944",
   "truncated": false,
+  "redacted": 5,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 5,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-src-ads-tiktok-com-business-en-us-blog-generate-small-business-lead.html",
   "textPath": "research/rendered/tt-src-ads-tiktok-com-business-en-us-blog-generate-small-business-lead.txt",

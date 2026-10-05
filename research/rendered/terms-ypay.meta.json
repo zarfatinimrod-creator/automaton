@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T16:22:28.093Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 78012,
-  "sha256": "f37d3bbdd0c65cdc3368cc9d74385e8c19d5472f0c15ac316a82a192a216cf79",
+  "byteLength": 78030,
+  "sha256": "c817fa07fa7c5343dc8c038c4276b3554e368448df685c529e6eb4f7d1dfeec4",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-ypay.html",
   "textPath": "research/rendered/terms-ypay.txt",

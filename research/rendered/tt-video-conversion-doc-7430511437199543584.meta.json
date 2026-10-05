@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:02:58.620Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 411914,
-  "sha256": "e41c2fdd6a6d621ffeebfa6f1818e28a1ccbb7b93831a49a8e82eb1f978213b2",
+  "byteLength": 411923,
+  "sha256": "8c95cb988e1343d92ace59ab934d466a0f3b26c48389fb476db3f59a4ecec794",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-video-conversion-doc-7430511437199543584.html",
   "textPath": "research/rendered/tt-video-conversion-doc-7430511437199543584.txt",

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T14:02:51.002Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 122702,
-  "sha256": "0723a17d76eed3622081c4e0d54c8284d4d3b4a7441966dab15d26bc6cdbdcaf",
+  "byteLength": 122714,
+  "sha256": "431f1eea690e95a102a2c900bc97d15f063f082cbe300c6db5e8181ecb7de180",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-lomdimhofshi.html",
   "textPath": "research/rendered/terms-lomdimhofshi.txt",

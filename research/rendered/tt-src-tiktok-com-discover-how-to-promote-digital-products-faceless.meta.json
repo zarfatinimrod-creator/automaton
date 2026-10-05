@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:02:21.396Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 373511,
-  "sha256": "ceea1125e9774132de91edc86cc311e8b02b5c96f324e6dce8c34a8dd4ba61b0",
+  "byteLength": 373520,
+  "sha256": "1db067381a625f723d97a016bd72a9afebfbd348cb806e0a30b1aeea63ef4bc3",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-src-tiktok-com-discover-how-to-promote-digital-products-faceless.html",
   "textPath": "research/rendered/tt-src-tiktok-com-discover-how-to-promote-digital-products-faceless.txt",

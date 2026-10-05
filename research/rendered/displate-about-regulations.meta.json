@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:37.588Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 338948,
-  "sha256": "f2c36b5fd3cd9efd50411fc78e7cfa2af9e509fdde6ab9abbc287a8bb702d4fe",
+  "byteLength": 339377,
+  "sha256": "fb96a869322c594f5723511f09b68856076c38090ed133f4cb95716d12b019f6",
   "truncated": false,
+  "redacted": 56,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 56,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/displate-about-regulations.html",
   "textPath": "research/rendered/displate-about-regulations.txt",

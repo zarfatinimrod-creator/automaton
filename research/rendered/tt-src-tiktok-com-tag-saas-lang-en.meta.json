@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:03:08.354Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 360766,
-  "sha256": "756e8ca0cc40b2adf53b0069395d7ed61357209b4156e461a33e4b34c5145eb8",
+  "byteLength": 360775,
+  "sha256": "01d86a4a42244eed20f6e5519cf74c548daa8937a65ad62593936a7e2f70965d",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-src-tiktok-com-tag-saas-lang-en.html",
   "textPath": "research/rendered/tt-src-tiktok-com-tag-saas-lang-en.txt",

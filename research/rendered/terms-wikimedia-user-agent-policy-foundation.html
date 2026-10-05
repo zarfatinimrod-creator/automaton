@@ -779,7 +779,7 @@ Please note that in the event of any differences in meaning or interpretation be
 <dl><dd><i>Our servers are currently experiencing a technical problem. Please try again in a few minutes.</i></dd></dl>
 <p>This change is most likely to affect scripts (bots) accessing Wikimedia websites such as Wikipedia automatically, via api.php or otherwise, and command line programs.<sup id="cite&#95;ref-3" class="reference"><a href="#cite_note-3"><span class="cite-bracket">&#91;</span>3<span class="cite-bracket">&#93;</span></a></sup> If you operate a bot, please send a User-Agent header identifying the bot in a way that isn't going to be confused with many other bots, and supplying some way of contacting you, the operator, in accordance with the <a href="/wiki/Special:MyLanguage/Policy:Wikimedia_Foundation_API_Usage_Guidelines" title="Special:MyLanguage/Policy:Wikimedia Foundation API Usage Guidelines">API Usage Guidelines</a>. The contact information should be given as an email address, a website, or a wiki user using the format <code>(&lt;project&gt;; User:&lt;name&gt;)</code>, e.g. <code>(wikipedia:de; User:DuesenBot)</code>. For example:
 </p>
-<pre>User-Agent: CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org) generic-library/0.0
+<pre>User-Agent: CoolBot/0.0 (https://example.org/coolbot/; [redacted:email]@example.org) generic-library/0.0
 </pre>
 <p>The generic format is <code>&lt;client name&gt;/&lt;version&gt; (&lt;contact information&gt;) &lt;library/framework name&gt;/&lt;version&gt; [&lt;library name&gt;/&lt;version&gt; ...]</code>. Parts that are not applicable can be omitted.
 </p><p>If you run an automated agent, please consider following the Internet-wide convention of including the string "bot" in the User-Agent string, in any combination of lowercase or uppercase letters. This is recognized by Wikimedia's systems, and used to classify traffic and provide more accurate statistics.
@@ -832,12 +832,12 @@ Please note that in the event of any differences in meaning or interpretation be
 <div class="mw-heading mw-heading3"><h3 id="PHP">PHP</h3></div>
 <p>In PHP, you can identify your user-agent with code such as this:
 </p>
-<div class="mw-highlight mw-highlight-lang-php mw-content-ltr" dir="ltr"><pre><span></span><span class="nb">ini_set</span><span class="p">(</span> <span class="s1">'user_agent'</span><span class="p">,</span> <span class="s1">'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)'</span> <span class="p">);</span>
+<div class="mw-highlight mw-highlight-lang-php mw-content-ltr" dir="ltr"><pre><span></span><span class="nb">ini_set</span><span class="p">(</span> <span class="s1">'user_agent'</span><span class="p">,</span> <span class="s1">'CoolBot/0.0 (https://example.org/coolbot/; [redacted:email]@example.org)'</span> <span class="p">);</span>
 </pre></div>
 <div class="mw-heading mw-heading3"><h3 id="cURL">cURL</h3></div>
 <p>Or if you use <a href="https://en.wikipedia.org/wiki/cURL" class="extiw" title="en:cURL">cURL</a>:
 </p>
-<div class="mw-highlight mw-highlight-lang-php mw-content-ltr" dir="ltr"><pre><span></span><span class="nb">curl_setopt</span><span class="p">(</span> <span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_USERAGENT</span><span class="p">,</span> <span class="s1">'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)'</span> <span class="p">);</span>
+<div class="mw-highlight mw-highlight-lang-php mw-content-ltr" dir="ltr"><pre><span></span><span class="nb">curl_setopt</span><span class="p">(</span> <span class="nv">$curl</span><span class="p">,</span> <span class="nx">CURLOPT_USERAGENT</span><span class="p">,</span> <span class="s1">'CoolBot/0.0 (https://example.org/coolbot/; [redacted:email]@example.org)'</span> <span class="p">);</span>
 </pre></div>
 <div class="mw-heading mw-heading3"><h3 id="Python">Python</h3></div>
 <p>In Python, you can use the <a href="https://en.wikipedia.org/wiki/Requests_(software)" class="extiw" title="en:Requests (software)">Requests</a> library to set a header:
@@ -845,7 +845,7 @@ Please note that in the event of any differences in meaning or interpretation be
 <div class="mw-highlight mw-highlight-lang-python mw-content-ltr" dir="ltr"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
 <span class="n">url</span> <span class="o">=</span> <span class="s1">'https://example/...'</span>
-<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)'</span><span class="p">}</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'CoolBot/0.0 (https://example.org/coolbot/; [redacted:email]@example.org)'</span><span class="p">}</span>
 
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
 </pre></div>
@@ -854,7 +854,7 @@ Please note that in the event of any differences in meaning or interpretation be
 <div class="mw-highlight mw-highlight-lang-python mw-content-ltr" dir="ltr"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">SPARQLWrapper</span><span class="w"> </span><span class="kn">import</span> <span class="n">SPARQLWrapper</span><span class="p">,</span> <span class="n">JSON</span>
 
 <span class="n">url</span> <span class="o">=</span> <span class="s1">'https://example/...'</span>
-<span class="n">user_agent</span> <span class="o">=</span> <span class="s1">'CoolBot/0.0 (https://example.org/coolbot/; coolbot@example.org)'</span>
+<span class="n">user_agent</span> <span class="o">=</span> <span class="s1">'CoolBot/0.0 (https://example.org/coolbot/; [redacted:email]@example.org)'</span>
 
 <span class="n">sparql</span> <span class="o">=</span> <span class="n">SPARQLWrapper</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">agent</span> <span class="o">=</span> <span class="n">user_agent</span> <span class="p">)</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">sparql</span><span class="o">.</span><span class="n">query</span><span class="p">()</span>

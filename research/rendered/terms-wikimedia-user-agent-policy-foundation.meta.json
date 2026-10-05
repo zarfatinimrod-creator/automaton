@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-30T10:40:19.662Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 100236,
-  "sha256": "f33ea68bd54f6d46c0dbf50bcb0b1164f1cde03c48701cce2db6f1b606d3924f",
+  "byteLength": 100281,
+  "sha256": "0551975d80b4052da5bae0d2e37b20ed97450448a865a07f46eaa52576fcd1f4",
   "truncated": false,
+  "redacted": 10,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 10,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-wikimedia-user-agent-policy-foundation.html",
   "textPath": "research/rendered/terms-wikimedia-user-agent-policy-foundation.txt",

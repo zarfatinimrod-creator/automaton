@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:02:45.080Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 394284,
-  "sha256": "32e63b53e1365b02349b6bb357f7d9f2823a02edb890f4e4968c2d6ada0a8816",
+  "byteLength": 394293,
+  "sha256": "d4bb966711fddb817cd1391cc055ba4083d508831becc9bd26f76fd2959e98a6",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-video-edelmanir-7426249678359940373.html",
   "textPath": "research/rendered/tt-video-edelmanir-7426249678359940373.txt",

@@ -105,7 +105,7 @@ The form at `:566` is on the Zendesk host that refused rows 76-77. The question:
 
 ### What was read
 
-- **`facer-templates-js.bin`**: 1,141,780 bytes on one line, fetched 2026-09-28T18:36:12Z, HTTP 200, sha256 `0a69bfd2…`
+- **`facer-templates-js.bin`**: 1,141,780 bytes on one line, fetched 2026-09-28T18:36:12Z, HTTP 200, sha256 `0a69bfd2…` (re-masked 5.10.2026, 18 addresses: now `86029b2c…`)
   (`facer-templates-js.meta.json`). It is a webpack chunk (`webpackChunkFacerWeb`, byte 0) whose module map lists 464
   template paths. Each template is a JS string put into `$templateCache` as `/html/<name>` or `/components/<path>`.
   Citations below are **byte offsets into the .bin**, each checked with `grep -F -b -o`. Source lines are joined by a raw

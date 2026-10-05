@@ -281,7 +281,7 @@ When will I receive my reward?
 Once the bug has been assessed by the VRP Panel, the bug report is updated with a reward decision and information.
 There are two options for payment of a VRP Reward -- direct through Google or through Bugcrowd. Through Google: If this is your first VRP reward for a Google program, a member of the finance p2p-vrp team will reach out to enroll you in the Google payment system.
 VRP payments are handled by the p2p-vrp finance team. Once you have been enrolled, you will receive you payment within 1-2 weeks of a reward decision.
-Please reach out to p2p-vrp@google.com with questions about the payment enrollment process or assistance with any payments issues.
+Please reach out to [redacted:email]@google.com with questions about the payment enrollment process or assistance with any payments issues.
 
 Through Bugcrowd (preferred): You must already have or create a new Google Bughunters profile. (Please note, you can set your Bughunters profile to be private if you prefer to not have a public profile).
 Associate your Bughunters profile with the email address you use for reporting Chrome security issues.
@@ -301,6 +301,6 @@ Other
 I have a security-related question that is not listed here.
 This is a statement not a question, but we're happy to help. Take a look at the Chrome Security FAQ to see if your question is answered there.
 Also, if you have not already, please check the Chrome VRP Rewards and Policies page .
-If you still need assistance, please reach out to security-vrp@chromium.org .
+If you still need assistance, please reach out to [redacted:email]@chromium.org .
 
 Powered by Gitiles | Privacy | Terms source

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:29:19.393Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 228912,
-  "sha256": "68efd5ae841dd9837f5db10e8c9d80288f8a52670fb3e33c5b8457bf46e61f63",
+  "byteLength": 228933,
+  "sha256": "57db3aaf6c36ff277ce6bcbcc72d4cfadc3b429af5fa2e170738c22705e406f6",
   "truncated": false,
+  "redacted": 6,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 6,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/facer-payment-options.html",
   "textPath": "research/rendered/facer-payment-options.txt",

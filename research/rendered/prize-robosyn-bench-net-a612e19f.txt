@@ -1,0 +1,171 @@
+FAQ | RoboSynChallenge
+
+RS
+
+RoboSynChallenge
+NeurIPS 2026 Competition
+
+Menu
+
+Home Data FAQ Evaluation Leaderboard
+
+Sign in
+Request access
+
+FAQ
+Competition questions, answered.
+
+Official guidance on ranking, evaluation, observation inputs, and model submission.
+
+01
+
+Q: How is the leaderboard ranked?
+
+A:
+The overall score is:
+
+Overall Score = 75% Success Rate + 20% Action Efficiency + 5% Inference Efficiency
+
+Success Rate is the percentage of successful official episodes. Action Efficiency is calculated for every episode as:
+
+Episode Action Efficiency = (1 − Used Action Steps / H) × 100
+
+H is the maximum number of steps for that task. Inference Efficiency is measured on a single NVIDIA RTX 5090 and calculated as:
+
+Episode Inference Efficiency = max(0, 1 − Measured Inference Time / T) × 100
+
+T is the time required by the published ACT baseline to infer the corresponding number of action steps for that task, using the official standard code on the standardized NVIDIA RTX 5090 platform.
+
+02
+
+Q: Is ranking based mainly on Success Rate, and is the official evaluation identical to the public code?
+
+A:
+Success Rate has the largest weight at 75%. The official evaluation uses private held-out test parameters that are not published. They differ from the public parameters but follow a similar in-distribution setting. Please do not overfit the public test parameters.
+
+03
+
+Q: Will the preliminary evaluation use the same settings as the current public code?
+
+A:
+No. The official preliminary simulation evaluation will use a held-out test setup. The evaluation script interface and policy adapter contract remain unchanged, but seeds, domain-randomization settings, scene/config values, and other test parameters may differ from the currently released public examples.
+
+04
+
+Q: Are action steps and inference time calculated only from successful episodes?
+
+A:
+No. Both are averaged over all episodes. A failed episode is assigned the maximum number of steps for that task. Its Action Efficiency is therefore zero. Inference time includes all policy calls in all episodes.
+
+05
+
+Q: How is success defined for each task?
+
+A:
+All 10 tasks are judged by observable final or steady-state physical conditions in the environment. Some tasks use sticky success flags or require the condition to hold for a number of steps.
+
+water_pouring. The agent tilts the bottle to pour into the cup, returns the bottle upright, and the cup is not tipped over.
+
+mixer_operating. The beaker is placed next to the mixer and the mixer button is pressed, with the beaker remaining upright.
+
+items_handover. The item is placed near the receiver or holder and remains in position without falling.
+
+click_bell. The bell or button is pressed through its detectable travel, producing a clear press displacement.
+
+manipulate_pipette. The pipette slide is pushed to the target minimum position the required number of times, and related objects have not fallen.
+
+item_assembly. The two parts are aligned and joined, with parallel axes and lateral alignment indicating a completed assembly.
+
+table_rearrangement. The spoon and fork are placed at the designated positions beside the plate and are not floating excessively above it.
+
+handle_basket. The contents are placed into the basket, the basket is lifted and moved toward the target direction, then placed down and kept stable for the required duration.
+
+drawer_open_place. The target object is placed within the drawer or place region and remains there.
+
+sample_loading. The sample is placed into the rack slot and remains stably placed, not held or tipped, for the required stabilization period.
+
+06
+
+Q: Can participants use depth data, camera intrinsics, or point clouds as model inputs?
+
+A:
+No. Official evaluation provides RGB images only, without depth data, camera intrinsics, or point clouds. Participants may estimate depth or 3D information from a single RGB image using their own models.
+
+07
+
+Q: Do the organizers provide tools for generating depth data?
+
+A:
+Yes. We provide data-collection examples and scripts for generating simulated training data with depth information. This data may be used for training, but official evaluation remains RGB-only.
+
+08
+
+Q: Does the code repository need to be public for policy evaluation?
+
+A:
+No. The GitHub repository can remain private. Please invite our official GitHub account, robosynchallenge , as a collaborator and make sure the organizers have access to the repository for evaluation.
+
+09
+
+Q: What should a policy submission include?
+
+A:
+Sign in with your registered team account before submitting. Each submission should include the required fields from the evaluation page :
+
+Artifact name and experiment name. Use names that clearly identify the policy checkpoint being evaluated.
+
+Short description. Summarize the method, training setup, or intended run in a few sentences.
+
+Code URL. Use a GitHub repository for the evaluation code. Teams should register a GitHub account if they do not already have one. Private repositories are allowed if robosynchallenge is invited as a collaborator.
+
+Hugging Face checkpoint URL. Provide the checkpoint link on Hugging Face for the submitted policy.
+
+Data source. Describe the data used for training, including official released data and any additional allowed data.
+
+Run and dependency notes. Include the commands, environment details, and dependencies needed by the organizers. The repository should expose the RoboSynChallenge policy adapter entrypoints and include eval.sh , deploy_policy.yml , and deploy_policy.py .
+
+Leaderboard option. Choose whether the run should count on the public leaderboard once the result is published.
+
+10
+
+Q: Can teams submit separate checkpoints for different tasks?
+
+A:
+Yes. Teams may provide task-specific checkpoints. Please submit one GitHub repository that contains the evaluation code for all tasks, and list the Hugging Face checkpoint for each task in the submission notes or README. The organizers will use the corresponding checkpoint when evaluating each task.
+
+11
+
+Q: How many times may a team submit, and what is the deadline?
+
+A:
+Teams may submit multiple times before October 11, 2026, Anywhere on Earth (AoE, UTC−12) . The preliminary simulation evaluation period has been extended by one week. We will evaluate each team only once, using its latest valid submission received before the deadline.
+
+12
+
+Q: How many teams will advance to the final round?
+
+A:
+We expect approximately 30-40 teams to advance from the preliminary simulation stage to the real-robot final round. The final count may be adjusted based on valid submission quality, evaluation capacity, and organizer review.
+
+13
+
+Q: Can finalists submit a paper?
+
+A:
+Yes. Finalist teams may submit papers of up to 6 pages, and the papers will be presented in the RoboSynChallenge session at NeurIPS.
+
+RoboSynChallenge
+
+A public benchmark for studying how synthesized manipulation data improves real-world
+generalization under scarce physical supervision.
+
+Resources
+
+RoboSynChallenge GitHub
+Released data
+Tutorial
+Competition FAQ
+Competition report
+
+© 2026 RoboSynChallenge
+Designed for open research evaluation

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:01:25.204Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 91856,
-  "sha256": "31537110a7b71ae5934538599639f0f7a4edcc6911234aa2269e9cb018d5feb0",
+  "byteLength": 91870,
+  "sha256": "8d2b30aa19f0a4e260d7027ab9b7d73df3a390ee5e22b51e8facd9af6649ea05",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-src-tjrobertson-com-category-seo.html",
   "textPath": "research/rendered/tt-src-tjrobertson-com-category-seo.txt",

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:02:49.430Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 396010,
-  "sha256": "28e1a3c17f08ccb14f7f0985e4fa6ed9004a63328435048d461c3fbb57a2964d",
+  "byteLength": 396019,
+  "sha256": "2b53bd0a79e65c9e50fa2c15446a7894e883af26b94c0236b479dce75429583e",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-video-ahormozi-7336007528070958382.html",
   "textPath": "research/rendered/tt-video-ahormozi-7336007528070958382.txt",

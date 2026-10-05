@@ -10,7 +10,7 @@ Dear Weak Lensing Uncertainty Challenge Participants,
 
 To be considered for the monetary prizes and the NeurIPS 2025 workshop invitation, please carefully follow the guidelines below and prepare the necessary items in advance:
 
-The participant or team must send the following items to us fair-universe@lbl.gov before 2025/11/20:
+The participant or team must send the following items to us [redacted:email]@lbl.gov before 2025/11/20:
 
 Summary write-up: A brief report summarizing your solution, results, and findings. You can download a LaTeX template for the summary write-up through this https://www.overleaf.com/read/vrskxhgdxvxj#705a8f
 

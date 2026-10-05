@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:29:16.950Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 320665,
-  "sha256": "1fbfdd828479ade17de2c488981d124e639c6830aa3a3b7051203fd49c22ccbf",
+  "byteLength": 320674,
+  "sha256": "6c8750141c3e80c035283a3c3dc74b9c238ab37b0376e5af72b934ebfadaa07c",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/facer-premium-admission.html",
   "textPath": "research/rendered/facer-premium-admission.txt",

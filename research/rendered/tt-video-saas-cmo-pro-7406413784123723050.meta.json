@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:03:04.233Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 401000,
-  "sha256": "6c1fc78eda44dd8c7f0759a68513ce35e92c80d2472e36c9b424dc19fe12476f",
+  "byteLength": 401009,
+  "sha256": "b0df155ea5591fa74f4ed6298fe9e8b9549f17dcfaef810b3fbcba73fb8172d1",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-video-saas-cmo-pro-7406413784123723050.html",
   "textPath": "research/rendered/tt-video-saas-cmo-pro-7406413784123723050.txt",

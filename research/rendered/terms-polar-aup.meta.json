@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T14:02:59.443Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 128603,
-  "sha256": "cbb2316491531edb6b3df0d558fa3e70a4e53142c93a5c6c539b0bfaed5a97b4",
+  "byteLength": 128612,
+  "sha256": "fd3d0d30d8c2da63503cf20fde39f32e2ee278a0235a55fd5a1720c0a955479e",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-polar-aup.html",
   "textPath": "research/rendered/terms-polar-aup.txt",

@@ -327,7 +327,7 @@ Interactive webinars on competition design, airfoil simulation, and the Codabenc
 
 Community
 
-Codabench has a built-in forum for Q&A, team formation, and technical discussions. For anything else, reach the organizing team at realpde-competition@googlegroups.com .
+Codabench has a built-in forum for Q&A, team formation, and technical discussions. For anything else, reach the organizing team at [redacted:email]@googlegroups.com .
 
 Team
 

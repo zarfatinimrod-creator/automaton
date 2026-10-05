@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:28:49.892Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1589998,
-  "sha256": "3c4de7549da0a5bd1bbc080795484b6bdb3bd6f543981b8cace0b86ff1a7254d",
+  "byteLength": 1589995,
+  "sha256": "b4278326592dbf2acce8add0217a5d0455d8a03765b2e1006cdfee9adfac3d7d",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/play-books-answer-4490848.html",
   "textPath": "research/rendered/play-books-answer-4490848.txt",

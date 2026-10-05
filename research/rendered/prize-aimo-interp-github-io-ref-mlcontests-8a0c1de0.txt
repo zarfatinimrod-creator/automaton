@@ -290,7 +290,7 @@ Yes — Qwen/Qwen3.5-4B uses thinking mode, and openai/gpt-oss-120b uses low , m
 
 15. What if I have more questions?
 
-Reach out to us on AIMO-Interp Discord or via aimo.interp@gmail.com or open an issue in the getting-started repository . This FAQ will be updated regularly.
+Reach out to us on AIMO-Interp Discord or via [redacted:email]@gmail.com or open an issue in the getting-started repository . This FAQ will be updated regularly.
 
 Team
 
@@ -429,7 +429,7 @@ For any questions about the challenge, compute access proposals, or technical is
 ✉️
 
 Primary contacts:
-AIMO-Interp Discord and aimo.interp@gmail.com .
+AIMO-Interp Discord and [redacted:email]@gmail.com .
 
 For technical questions, please also consider opening an issue or discussion on the corresponding
 GitHub repository .
@@ -437,4 +437,4 @@ GitHub repository .
 AIMO Interpretability Challenge &middot;
 Proposal paper &middot;
 Getting started &middot;
-aimo.interp@gmail.com
+[redacted:email]@gmail.com

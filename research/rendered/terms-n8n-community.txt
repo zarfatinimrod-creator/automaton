@@ -120,7 +120,7 @@ Your Account
 
 You must create and log into an account to use some features of the forum.
 
-To create an account, you must provide some information about yourself. If you create an account, you agree to provide, at a minimum, a valid e-mail address, and to keep that address up-to-date. You may close your account at any time by e-mailing hello@n8n.io .
+To create an account, you must provide some information about yourself. If you create an account, you agree to provide, at a minimum, a valid e-mail address, and to keep that address up-to-date. You may close your account at any time by e-mailing [redacted:email]@n8n.io .
 
 You agree to be responsible for all action taken using your account, whether authorized by you or not, until you either close your account or notify the company that your account has been compromised. You agree to notify the company immediately if you suspect your account has been compromised. You agree to select a secure password for your account, and keep it secret.
 
@@ -188,7 +188,7 @@ These terms embody all the terms of agreement between you and the company about 
 
 Contact
 
-You may notify the company under these terms, and send questions to the company, at hello@n8n.io .
+You may notify the company under these terms, and send questions to the company, at [redacted:email]@n8n.io .
 
 The company may notify you under these terms using the e-mail address you provide for your account on the forum, or by posting a message to the homepage of the forum or your account page.
 

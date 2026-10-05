@@ -105,14 +105,14 @@ term.
 
 Where should questions be asked?
 
-Through GitHub issues and public question threads, or the contact email roco-spring-org@googlegroups.com .
+Through GitHub issues and public question threads, or the contact email [redacted:email]@googlegroups.com .
 
 Contact
 
 Get in Touch
 
 Challenge email:
-roco-spring-org@googlegroups.com
+[redacted:email]@googlegroups.com
 
 GitHub issues:
 Report a website or challenge issue

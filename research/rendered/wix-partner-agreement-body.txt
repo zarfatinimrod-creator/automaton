@@ -544,7 +544,7 @@ This Section 13.4, Section 11 (Confidentiality) and Section 12 (Disclaimer, Limi
 
 14.1 Notices.
 
-All notices provided by a Partner to Wix under this Agreement must be sent to Wix to the following email address: support.developers@in.wixanswers.com .
+All notices provided by a Partner to Wix under this Agreement must be sent to Wix to the following email address: [redacted:email]@in.wixanswers.com .
 
 14.2 Assignment.
 

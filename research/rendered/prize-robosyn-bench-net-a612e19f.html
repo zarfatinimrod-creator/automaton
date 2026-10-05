@@ -1,0 +1,240 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FAQ | RoboSynChallenge</title>
+    <meta name="description" content="RoboSynChallenge is a NeurIPS 2026 competition on sim-to-real robot manipulation with synthesized and real-world co-training.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/site.css?v=20260909-leaderboard-faq">
+    <link rel="stylesheet" href="static/css/pages.css?v=20260906-success-faq">
+    <script defer="" src="static/assets/result-videos/baseline-results.js"></script>
+    <script defer="" src="static/assets/released-checkpoint-evals.js?v=20260903-smolvla-sample-sr"></script>
+    <script defer="" src="static/config.js"></script>
+    <script defer="" src="static/js/pages-app.js?v=20260926-deadline-oct11"></script>
+  </head>
+  <body>
+    <div class="site-chrome"></div>
+    <header class="site-header">
+      <div class="shell header-row">
+        <a class="brand" href="#/home">
+          <span class="brand-mark">RS</span>
+          <span class="brand-copy">
+            <strong>RoboSynChallenge</strong>
+            <small>NeurIPS 2026 Competition</small>
+          </span>
+          <img class="brand-event-logo" src="static/assets/neurips-logo.svg" alt="NeurIPS">
+        </a>
+        <button class="nav-toggle" type="button" data-nav-toggle="" aria-label="Toggle navigation">
+          Menu
+        </button>
+        <nav class="site-nav" data-nav-menu="" id="site-nav"><a href="#/home" class="">Home</a><a href="#/data" class="">Data</a><a href="#/faq" class="active">FAQ</a><a href="#/evaluation" class="">Evaluation</a><a href="#/leaderboard" class="">Leaderboard</a></nav>
+        <div class="header-actions" id="header-actions">
+        <a href="#/login" class="button button-secondary">Sign in</a>
+        <a href="#/register" class="button button-primary">Request access</a>
+      </div>
+      </div>
+    </header>
+
+    <section class="flash-zone shell" id="flash-zone"></section>
+    <main id="app"><div class="page-shell">
+      <section class="page-hero shell faq-hero">
+        <span class="eyebrow">FAQ</span>
+        <h1>Competition questions, answered.</h1>
+        <p class="lead narrow">
+          Official guidance on ranking, evaluation, observation inputs, and model submission.
+        </p>
+      </section>
+
+      <section class="section shell faq-section" aria-label="Frequently asked questions">
+        <div class="faq-list">
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">01</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> How is the leaderboard ranked?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p>The overall score is:</p>
+        <div class="faq-formula" role="note">
+          Overall Score = 75% Success Rate + 20% Action Efficiency + 5% Inference Efficiency
+        </div>
+        <p>Success Rate is the percentage of successful official episodes. Action Efficiency is calculated for every episode as:</p>
+        <div class="faq-formula" role="note">Episode Action Efficiency = (1 − Used Action Steps / H) × 100</div>
+        <p><em>H</em> is the maximum number of steps for that task. Inference Efficiency is measured on a single NVIDIA RTX 5090 and calculated as:</p>
+        <div class="faq-formula" role="note">Episode Inference Efficiency = max(0, 1 − Measured Inference Time / T) × 100</div>
+        <p><em>T</em> is the time required by the published ACT baseline to infer the corresponding number of action steps for that task, using the official standard code on the standardized NVIDIA RTX 5090 platform.</p>
+      </div></div>
+              </div>
+            </article>
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">02</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> Is ranking based mainly on Success Rate, and is the official evaluation identical to the public code?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p>Success Rate has the largest weight at 75%. The official evaluation uses private held-out test parameters that are not published. They differ from the public parameters but follow a similar in-distribution setting. Please do not overfit the public test parameters.</p>
+      </div></div>
+              </div>
+            </article>
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">03</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> Will the preliminary evaluation use the same settings as the current public code?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p>No. The official preliminary simulation evaluation will use a held-out test setup. The evaluation script interface and policy adapter contract remain unchanged, but seeds, domain-randomization settings, scene/config values, and other test parameters may differ from the currently released public examples.</p>
+      </div></div>
+              </div>
+            </article>
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">04</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> Are action steps and inference time calculated only from successful episodes?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p>No. Both are averaged over all episodes. A failed episode is assigned the maximum number of steps for that task. Its Action Efficiency is therefore zero. Inference time includes all policy calls in all episodes.</p>
+      </div></div>
+              </div>
+            </article>
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">05</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> How is success defined for each task?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p>All 10 tasks are judged by observable final or steady-state physical conditions in the environment. Some tasks use sticky success flags or require the condition to hold for a number of steps.</p>
+        <ol class="faq-task-list">
+          <li><strong>water_pouring.</strong> The agent tilts the bottle to pour into the cup, returns the bottle upright, and the cup is not tipped over.</li>
+          <li><strong>mixer_operating.</strong> The beaker is placed next to the mixer and the mixer button is pressed, with the beaker remaining upright.</li>
+          <li><strong>items_handover.</strong> The item is placed near the receiver or holder and remains in position without falling.</li>
+          <li><strong>click_bell.</strong> The bell or button is pressed through its detectable travel, producing a clear press displacement.</li>
+          <li><strong>manipulate_pipette.</strong> The pipette slide is pushed to the target minimum position the required number of times, and related objects have not fallen.</li>
+          <li><strong>item_assembly.</strong> The two parts are aligned and joined, with parallel axes and lateral alignment indicating a completed assembly.</li>
+          <li><strong>table_rearrangement.</strong> The spoon and fork are placed at the designated positions beside the plate and are not floating excessively above it.</li>
+          <li><strong>handle_basket.</strong> The contents are placed into the basket, the basket is lifted and moved toward the target direction, then placed down and kept stable for the required duration.</li>
+          <li><strong>drawer_open_place.</strong> The target object is placed within the drawer or place region and remains there.</li>
+          <li><strong>sample_loading.</strong> The sample is placed into the rack slot and remains stably placed, not held or tipped, for the required stabilization period.</li>
+        </ol>
+      </div></div>
+              </div>
+            </article>
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">06</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> Can participants use depth data, camera intrinsics, or point clouds as model inputs?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p>No. Official evaluation provides RGB images only, without depth data, camera intrinsics, or point clouds. Participants may estimate depth or 3D information from a single RGB image using their own models.</p>
+      </div></div>
+              </div>
+            </article>
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">07</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> Do the organizers provide tools for generating depth data?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p>Yes. We provide data-collection examples and scripts for generating simulated training data with depth information. This data may be used for training, but official evaluation remains RGB-only.</p>
+      </div></div>
+              </div>
+            </article>
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">08</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> Does the code repository need to be public for policy evaluation?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p>No. The GitHub repository can remain private. Please invite our official GitHub account, <a href="https://github.com/robosynchallenge" target="_blank" rel="noreferrer">robosynchallenge</a>, as a collaborator and make sure the organizers have access to the repository for evaluation.</p>
+      </div></div>
+              </div>
+            </article>
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">09</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> What should a policy submission include?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p><a href="#/login">Sign in</a> with your registered team account before submitting. Each submission should include the required fields from the <a href="#/submit-policy">evaluation page</a>:</p>
+        <ol class="faq-task-list">
+          <li><strong>Artifact name and experiment name.</strong> Use names that clearly identify the policy checkpoint being evaluated.</li>
+          <li><strong>Short description.</strong> Summarize the method, training setup, or intended run in a few sentences.</li>
+          <li><strong>Code URL.</strong> Use a GitHub repository for the evaluation code. Teams should register a GitHub account if they do not already have one. Private repositories are allowed if <a href="https://github.com/robosynchallenge" target="_blank" rel="noreferrer">robosynchallenge</a> is invited as a collaborator.</li>
+          <li><strong>Hugging Face checkpoint URL.</strong> Provide the checkpoint link on Hugging Face for the submitted policy.</li>
+          <li><strong>Data source.</strong> Describe the data used for training, including official released data and any additional allowed data.</li>
+          <li><strong>Run and dependency notes.</strong> Include the commands, environment details, and dependencies needed by the organizers. The repository should expose the RoboSynChallenge policy adapter entrypoints and include <code>eval.sh</code>, <code>deploy_policy.yml</code>, and <code>deploy_policy.py</code>.</li>
+          <li><strong>Leaderboard option.</strong> Choose whether the run should count on the public leaderboard once the result is published.</li>
+        </ol>
+      </div></div>
+              </div>
+            </article>
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">10</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> Can teams submit separate checkpoints for different tasks?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p>Yes. Teams may provide task-specific checkpoints. Please submit one GitHub repository that contains the evaluation code for all tasks, and list the Hugging Face checkpoint for each task in the submission notes or README. The organizers will use the corresponding checkpoint when evaluating each task.</p>
+      </div></div>
+              </div>
+            </article>
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">11</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> How many times may a team submit, and what is the deadline?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p>Teams may submit multiple times before <strong>October 11, 2026, Anywhere on Earth (AoE, UTC−12)</strong>. The preliminary simulation evaluation period has been extended by one week. We will evaluate each team only once, using its latest valid submission received before the deadline.</p>
+      </div></div>
+              </div>
+            </article>
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">12</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> How many teams will advance to the final round?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p>We expect approximately <strong>30-40 teams</strong> to advance from the preliminary simulation stage to the real-robot final round. The final count may be adjusted based on valid submission quality, evaluation capacity, and organizer review.</p>
+      </div></div>
+              </div>
+            </article>
+          
+            <article class="faq-item">
+              <div class="faq-index" aria-hidden="true">13</div>
+              <div class="faq-content">
+                <h2><span>Q:</span> Can finalists submit a paper?</h2>
+                <div class="faq-answer"><strong>A:</strong><div>
+        <p>Yes. Finalist teams may submit papers of up to 6 pages, and the papers will be presented in the RoboSynChallenge session at NeurIPS.</p>
+      </div></div>
+              </div>
+            </article>
+          
+        </div>
+      </section>
+    </div></main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <div>
+          <div class="footer-heading">RoboSynChallenge</div>
+          <p>
+            A public benchmark for studying how synthesized manipulation data improves real-world
+            generalization under scarce physical supervision.
+          </p>
+        </div>
+        <div>
+          <div class="footer-heading">Resources</div>
+          <a href="https://github.com/EDEM-AI/RoboSynChallenge/tree/main" target="_blank" rel="noreferrer">RoboSynChallenge GitHub</a>
+          <a href="https://huggingface.co/RoboSynChallenge/datasets" target="_blank" rel="noreferrer">Released data</a>
+          <a href="https://edem-ai.github.io/RoboSynChallenge/html/getting_started/overview.html" target="_blank" rel="noreferrer">Tutorial</a>
+          <a href="#/faq">Competition FAQ</a>
+          <a href="material/RoboSynChallenge-report.pdf" target="_blank" rel="noreferrer">Competition report</a>
+        </div>
+      </div>
+      <div class="shell footer-bottom">
+        <span>© 2026 RoboSynChallenge</span>
+        <span>Designed for open research evaluation</span>
+      </div>
+    </footer>
+  
+
+</body></html>

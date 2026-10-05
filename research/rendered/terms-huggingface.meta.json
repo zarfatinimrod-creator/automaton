@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T14:02:44.824Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 114693,
-  "sha256": "b450c8c7556d0ae7004b9a3a5dc946bfbe79f4e0666500f19d87ee380fb95702",
+  "byteLength": 114752,
+  "sha256": "a5cce9a1046260fdc5b62c641f67a4c6c8ca1fdba6f498c1be75d3666d2d2f7b",
   "truncated": false,
+  "redacted": 7,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 7,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-huggingface.html",
   "textPath": "research/rendered/terms-huggingface.txt",

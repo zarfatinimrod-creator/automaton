@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:02:47.763Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 372511,
-  "sha256": "582060a87f48bb08af160a9da51d6e72a89538c6fa4064c5090aaf05be8b1e5b",
+  "byteLength": 372520,
+  "sha256": "d3e5aaa3d76c2df6a73c2ca8eb1fa75052ab58262e9dc28990d3e0bc5223b334",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-profile-edelmanir.html",
   "textPath": "research/rendered/tt-profile-edelmanir.txt",

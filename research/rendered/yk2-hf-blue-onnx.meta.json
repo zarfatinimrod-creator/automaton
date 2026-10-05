@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T23:21:59.504Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 136334,
-  "sha256": "95a62e73ef3d4edbd4714f35043980ea03a978756f5be604498d830b8e1309d5",
+  "byteLength": 136347,
+  "sha256": "6eecbb1ec40322f9d868082683fbf6c7c7ecb8c77beafe8193d8a1696363d3a7",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/yk2-hf-blue-onnx.html",
   "textPath": "research/rendered/yk2-hf-blue-onnx.txt",

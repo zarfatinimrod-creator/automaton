@@ -4,9 +4,15 @@
   "fetchedAt": "2026-10-05T13:30:29.297Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 40262,
-  "sha256": "9f76bee65df3e4a6ad2e4da23e24eb62a5c86d840b9c4c39bfd8d393691b293a",
+  "byteLength": 40268,
+  "sha256": "531b06b2b7fdd0f44b42cf443f0ed8ee0b53292171cf5f881437a51a0927329d",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/prize-fair-universe-lbl-gov-weaklensing-uncertainty-ch-148ee1ab.html",
   "textPath": "research/rendered/prize-fair-universe-lbl-gov-weaklensing-uncertainty-ch-148ee1ab.txt",

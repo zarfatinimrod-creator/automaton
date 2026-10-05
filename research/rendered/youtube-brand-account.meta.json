@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:07.192Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1590872,
-  "sha256": "1f402a6711fc1f8db930ef0929c9e465b693ae94bad2e9b4cf550dc05209d3ea",
+  "byteLength": 1590869,
+  "sha256": "d66800d7b718909863b3f175b53aa4201e51ed0e60fdbe0cd030c589d3796165",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-brand-account.html",
   "textPath": "research/rendered/youtube-brand-account.txt",

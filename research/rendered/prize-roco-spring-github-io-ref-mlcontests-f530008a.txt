@@ -301,7 +301,7 @@ Contact
 Get in Touch
 
 Challenge email:
-roco-spring-org@googlegroups.com
+[redacted:email]@googlegroups.com
 
 GitHub Starter Kit:
 hmorimitsu/roco-spring-devkit

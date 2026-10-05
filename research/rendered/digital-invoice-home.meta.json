@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:31:28.941Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 46740,
-  "sha256": "adc4053e098a8d779c8e529347c83cb45ae7d953a85c480aa8e03ff5b3355cad",
+  "byteLength": 46752,
+  "sha256": "416c047d091d95aabe091a789f628bb6fdf0d4b5315c6375ac2e9d526482361d",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/digital-invoice-home.html",
   "textPath": "research/rendered/digital-invoice-home.txt",

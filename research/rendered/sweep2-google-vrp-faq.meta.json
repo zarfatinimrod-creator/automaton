@@ -7,6 +7,12 @@
   "byteLength": 0,
   "sha256": null,
   "truncated": false,
+  "redacted": 6,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 6,
+    "fold": "12143ca"
+  },
   "error": "HTTP 503 Service Unavailable",
   "bodyPath": null,
   "textPath": null,

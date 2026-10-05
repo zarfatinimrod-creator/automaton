@@ -94,7 +94,7 @@ T3 (the profile schema in `SuperteamDAO/earn`) decides Q6a.
 ## Tick 5 reading (28.9.2026): the FAQ and the agents page
 
 **What was read:** all 172 lines of `research/rendered/superteam-earn-faq.txt` (the Handbook FAQ, captured 2026-09-28T13:17:43Z,
-HTTP 200, sha256 `a2b93e23…`) and all 309 lines of `research/rendered/superteam-earn-agents.txt` (`superteam.fun/earn/agents/`,
+HTTP 200, sha256 `a2b93e23…`; re-masked 5.10.2026, 3 addresses: now `76ac3b54…`) and all 309 lines of `research/rendered/superteam-earn-agents.txt` (`superteam.fun/earn/agents/`,
 captured 13:17:40Z, HTTP 200, sha256 `18035474…`; it embeds skill.md and heartbeat.md). Below, `faq` and `agents` are those two
 files. A grep of both HTML bodies adds only one fact: sign-in runs on Privy (`superteam-earn-agents.html:1`, prefetch of `auth.privy.io`).
 - [INFERENCE] The FAQ is stale: *"Last updated 2 years ago"* (faq:161). It says submissions cannot be edited (faq:62-63),

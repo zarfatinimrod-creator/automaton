@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:28:40.556Z",
   "status": 200,
   "contentType": "application/json; charset=utf-8",
-  "byteLength": 2243312,
-  "sha256": "e3e866e917bbd2d7a5dd2c38b07384554ef127b159813102209bd9da5c96d645",
+  "byteLength": 2243479,
+  "sha256": "5598e32b5fcf5e61debbe2f5f612c3340723ff07fc1e9b74e01b46619b310f73",
   "truncated": false,
+  "redacted": 20,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 20,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/n8n-templates-search.json",
   "textPath": null,

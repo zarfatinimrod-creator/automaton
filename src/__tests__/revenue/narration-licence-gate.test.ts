@@ -1,8 +1,10 @@
 import { describe, it, expect } from "vitest";
+import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { redactSecrets } from "../../../scripts/render-watch.mjs";
 import {
   ALLOWED_NARRATION_ENGINES,
   KOKORO_82M_VOICE_LICENCE,
@@ -223,13 +225,25 @@ describe("P-1's evidence: the frozen model card, the author's voice list and the
     expect(lineOf(`${FROZEN}.txt`, 99)).toBe("🐈 GitHub : https://github.com/hexgrad/kokoro");
   });
 
-  it("is byte for byte the capture commit f9a41c6 stored, and its meta says so", () => {
-    const sha = sha256(readFileSync(resolve(ROOT, `${FROZEN}.html`)));
-    // The live meta's sha256 at f9a41c6 (fetched 2026-09-29T11:27:12.497Z).
-    expect(sha).toBe("5b8e9927197c7e1820a55ab6aea3c9b09b571204f8f17fa964ac49c9c1db2e70");
+  it("is byte for byte the capture commit f9a41c6 stored, with its one address masked on 5.10.2026, and its meta says so", () => {
+    const stored = readFileSync(resolve(ROOT, `${FROZEN}.html`));
+    const sha = sha256(stored);
+    // The live meta's sha256 at f9a41c6 (fetched 2026-09-29T11:27:12.497Z) was 5b8e9927…; the one-time re-mask of
+    // 5.10.2026 (scripts/remask-captures.mjs, after the 12143ca fold) masked one address in it, so the stored bytes are
+    // redactSecrets of the bytes f9a41c6 stored, and nothing else changed. Where git history is available (a full clone;
+    // CI's checkout is shallow) that is checked byte for byte against the commit itself.
+    expect(sha).toBe("6b67cb055fb2ff9908d6ac52ceffa188d5858b1c373bda5d8dc6fef65fd94ec1");
+    const atCommit = spawnSync("git", ["show", "f9a41c6:research/rendered/kokoro-82m-model-card.html"], { cwd: ROOT, maxBuffer: 64 * 1024 * 1024 });
+    if (atCommit.status === 0) {
+      expect(sha256(atCommit.stdout)).toBe("5b8e9927197c7e1820a55ab6aea3c9b09b571204f8f17fa964ac49c9c1db2e70");
+      const masked = redactSecrets(atCommit.stdout, "text/html");
+      expect(masked.count).toBe(1);
+      expect(Buffer.compare(masked.bytes, stored)).toBe(0);
+    }
     const meta = JSON.parse(read(`${FROZEN}.meta.json`)) as Record<string, unknown> & { frozen: Record<string, string> };
     expect(meta.slug).toBe("kokoro-82m-model-card-2026-09-29");
     expect(meta.sha256).toBe(sha);
+    expect(meta.remasked).toEqual({ on: "2026-10-05", addresses: 1, fold: "12143ca" });
     expect(meta.textPath).toBe(`${FROZEN}.txt`);
     expect(meta.frozen.from).toBe("research/rendered/kokoro-82m-model-card.meta.json");
     expect(meta.frozen.commit).toBe("f9a41c6");

@@ -5,9 +5,14 @@
   "status": 200,
   "contentType": "text/html; charset=utf-8",
   "byteLength": 478349,
-  "sha256": "7b79e9985a4c0ea7868e4f3cd466b8ee1619831c607a532456beb1828e6fd617",
+  "sha256": "944be9350da5eb6e4bd6dbb808aebb70f3563b48422fd32658953a4b5546a8eb",
   "truncated": false,
-  "redacted": 12,
+  "redacted": 15,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/yk2-fortune-ai-slop-letter.html",
   "textPath": "research/rendered/yk2-fortune-ai-slop-letter.txt",

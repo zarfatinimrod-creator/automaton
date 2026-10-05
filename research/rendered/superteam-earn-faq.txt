@@ -151,7 +151,7 @@ Any Solana project can choose to sponsor a bounty or project through Superteam E
 
 Miscellaneous
 
-If you want to report a bug or share feedback, please reach out to us at hello@superteamearn.com, and we will get back to you ASAP.
+If you want to report a bug or share feedback, please reach out to us at [redacted:email]@superteamearn.com, and we will get back to you ASAP.
 
 Superteam Earn is open source, feel free to contribute to our GitHub repo !
 

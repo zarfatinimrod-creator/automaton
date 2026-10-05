@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-27T10:08:35.006Z",
   "status": 200,
   "contentType": "text/plain; charset=utf-8",
-  "byteLength": 12450,
-  "sha256": "7d26f221a71c9079ea70d05edcf95d58807c3f29c3eed69f9d4e5bf67874c0c7",
+  "byteLength": 12460,
+  "sha256": "ead1221d3ce904006496cbb4b8a572bb7b4f8c15d0fb7717d3606d4b45c7d42c",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/github-innovationgraph-datasheet.txt",
   "textPath": "research/rendered/github-innovationgraph-datasheet.txt",

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:04.331Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1588453,
-  "sha256": "e6e16b836e0d4b38ba395f25f405ef37fbdde14a8a5fdc49f45f1eef3cf3cecc",
+  "byteLength": 1588450,
+  "sha256": "bf6a255b9147c7f985acfcce990a2e45d00f72bd406a802d653cdeb94021399d",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-private-lock-help.html",
   "textPath": "research/rendered/youtube-private-lock-help.txt",

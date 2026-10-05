@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:43.831Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 83186,
-  "sha256": "d9772ee1c0031ee7258d6ed958b8562bfbfe06db9c0baf6972a64f2ccae4c6aa",
+  "byteLength": 83204,
+  "sha256": "717429e0c155a98a639a9c05411ec36542473caaf5ac763f98478b0f148e9423",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/help-streetlib-com-article-670-getting-paid.html",
   "textPath": "research/rendered/help-streetlib-com-article-670-getting-paid.txt",

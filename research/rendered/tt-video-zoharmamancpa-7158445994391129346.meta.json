@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:01:53.417Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 390216,
-  "sha256": "b6273dec51b9bdb59cf7982230fae96f6032cd1f6b14eb38fe1a8f5ebc6b4442",
+  "byteLength": 390225,
+  "sha256": "e1dc8b93ba2ab10709bbf681a5a0c527b238af6bc1c6eae8365fce35a66bafae",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-video-zoharmamancpa-7158445994391129346.html",
   "textPath": "research/rendered/tt-video-zoharmamancpa-7158445994391129346.txt",

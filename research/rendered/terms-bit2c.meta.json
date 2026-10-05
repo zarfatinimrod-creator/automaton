@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T14:02:35.761Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 197342,
-  "sha256": "dcc30a04e2f4e99dc5786b913c2e19ace1a81c8de0dec533d1712bae91499e92",
+  "byteLength": 197362,
+  "sha256": "c41247da0de2793deeaadb12277360849b3f997bbf91de78a04be3db3c1b34eb",
   "truncated": false,
+  "redacted": 3,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 3,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/terms-bit2c.html",
   "textPath": "research/rendered/terms-bit2c.txt",

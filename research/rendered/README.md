@@ -81,8 +81,12 @@ the second and third of those. To move one:
    domain kept, as `[redacted:email]@<domain>`, because every capture is committed to this public repository
    and a person's address is personal information (ruling R3,
    `research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md`). The masking runs when a capture is
-   written: a capture stored before 5.10.2026 and not fetched since keeps its addresses, and git history keeps
-   every earlier byte; an address whose @ is itself encoded (`%40`, a script escape, Cloudflare's email
+   written, and the one-time re-mask of 5.10.2026 (`node scripts/remask-captures.mjs --apply`) masked the
+   captures stored before it in place, frozen copies included, with a capture's files no meta path names (the
+   earlier fetch beside a failed one, a text extracted by hand beside a PDF), and rewrote each one's meta
+   (`redacted`, `remasked: { on, addresses, fold }` saying why these bytes differ from the fetch, and `sha256`
+   and `byteLength` where the body changed and they were its hash and size) and `FROZEN.sha256`; git history
+   keeps every earlier byte. An address whose @ is itself encoded (`%40`, a script escape, Cloudflare's email
    protection) is not found.
 3. **Answer the specific question the research file asked**, not a question the page happens to
    answer. Each entry in `urls.txt` carries the sentence that put it there, quoted from the file
@@ -122,7 +126,10 @@ Displate's Terms of Use under the loop ruling and `wall-art-pod.md`, the Kokoro 
 verdicts and `products/parent-guides/LICENSES.md`), and 29 more named a capture the render had since replaced. A
 **frozen copy** is a dated copy of one capture, `<slug>-<YYYY-MM-DD>.*`, byte for byte, whose slug no `urls.txt`
 line names, so no render ever touches it; the live line stays on the watch. Its files and their sha256 are in
-[`FROZEN.sha256`](./FROZEN.sha256) (`sha256sum -c FROZEN.sha256` here checks them).
+[`FROZEN.sha256`](./FROZEN.sha256) (`sha256sum -c FROZEN.sha256` here checks them). The one exception to "byte for
+byte": the one-time re-mask of 5.10.2026 masked the addresses in the frozen copies too, on the same lines (the mask
+is inline, so a cited line number still names the same line, which reads the mask where an address was), rewrote
+their lines in `FROZEN.sha256`, and left `remasked` in their metas; git history keeps the bytes as they were frozen.
 
 - `node scripts/freeze-capture.mjs <slug> [--date YYYY-MM-DD] [--from-commit <sha>] [--dry-run]` makes one.
   The date defaults to the capture's `fetchedAt` day, so the name says when the text was fetched. The copy's

@@ -4,9 +4,15 @@
   "fetchedAt": "2026-10-05T13:19:13.872Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 88912,
-  "sha256": "c852521b27765ef95da8153d78a85da07bfd233c685a4377ab2c0e735d568e0d",
+  "byteLength": 88942,
+  "sha256": "51ebd85de7754580016724170105e92d002f11b5fb1ea393e36c0ddc926ebc45",
   "truncated": false,
+  "redacted": 9,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 9,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/prize-aimo-interp-github-io-ref-mlcontests-8a0c1de0.html",
   "textPath": "research/rendered/prize-aimo-interp-github-io-ref-mlcontests-8a0c1de0.txt",

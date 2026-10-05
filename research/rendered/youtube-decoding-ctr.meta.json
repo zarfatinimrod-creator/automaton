@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:27:19.367Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1582260,
-  "sha256": "08f31cbac5bdc013ac545b1ad174b6a88ced06e8f9b9c7032e1562837d3b40bb",
+  "byteLength": 1582257,
+  "sha256": "c78443c56494d788fdf6ad01f3c30a93691dd9ab886ac6a81910350064c60644",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-decoding-ctr.html",
   "textPath": "research/rendered/youtube-decoding-ctr.txt",

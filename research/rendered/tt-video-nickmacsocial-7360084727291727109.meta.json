@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:02:55.651Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 410787,
-  "sha256": "294c10d34ad21fb7dccd1d41347906a889356a032c302b630e4bf7cbc5e66260",
+  "byteLength": 410796,
+  "sha256": "dc03d8748f1905431d4d921db8aa13ebcfb9e5af9479aa939687fa50c5a20a61",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-video-nickmacsocial-7360084727291727109.html",
   "textPath": "research/rendered/tt-video-nickmacsocial-7360084727291727109.txt",

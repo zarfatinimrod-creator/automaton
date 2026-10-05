@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-28T21:01:50.766Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 408167,
-  "sha256": "7bb56322a11b83c3e33ac1d19ec96d820b861b786f9be4b2d6c986917ec3eb3b",
+  "byteLength": 408176,
+  "sha256": "33469d19df4e6d3f4bf0e14c09a617cea6805851cd2c0c20700a8469e27c8fc0",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/tt-video-nissimhamawi-7447094375772884232.html",
   "textPath": "research/rendered/tt-video-nissimhamawi-7447094375772884232.txt",

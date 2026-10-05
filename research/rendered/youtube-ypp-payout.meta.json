@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:26:39.664Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1610193,
-  "sha256": "7602902a6b364cd51a051045701a55a6191a04eb76f1e65f7d121e208003608b",
+  "byteLength": 1610190,
+  "sha256": "7ad2bd7d299a9ee8ddd48c2c3aa2e54fd5d5021d7a8a8a5966ccb2019e7ae88a",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-ypp-payout.html",
   "textPath": "research/rendered/youtube-ypp-payout.txt",

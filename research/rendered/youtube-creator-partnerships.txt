@@ -57,7 +57,7 @@ Policy, safety, & copyright YouTube policies Reporting and enforcement Privacy a
 Get started with YouTube Creator Partnerships
 YouTube Creator Partnerships features enable brands to discover creators for brand deals. All eligible YouTube Partner Program creators will be discoverable to brands and have a Creator Partnerships tab in the “Earn” page of the YouTube Studio app and desktop. This tab aims to provide features and functionality that enhances brand deal management for creators.
 
-Creators may be discovered by brands and may receive inquiries periodically from brands through the Creator Partnerships tab. To opt-out of search recommendations and brand deal outreach inquiries, please reach out to youtube-brandconnect-opt-out@google.com to make the request.
+Creators may be discovered by brands and may receive inquiries periodically from brands through the Creator Partnerships tab. To opt-out of search recommendations and brand deal outreach inquiries, please reach out to [redacted:email]@google.com to make the request.
 
 The YouTube Creator Partnerships tab features
 
@@ -263,7 +263,7 @@ In addition to brand reviews, your content is also reviewed against Google Ads p
 
 How do I turn off YouTube Creator Partnerships?
 
-You can turn off Creator Partnerships by reaching out to youtube-creator-partnerships-opt-out@google.com to make the request.
+You can turn off Creator Partnerships by reaching out to [redacted:email]@google.com to make the request.
 
 Was this helpful?
 How can we improve it?

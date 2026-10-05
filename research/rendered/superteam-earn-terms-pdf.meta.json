@@ -7,6 +7,12 @@
   "byteLength": 201397,
   "sha256": "23b29c23367c08d651ae490bdc108c2af2cbba7162057f74d6c98cc0b2238a5b",
   "truncated": false,
+  "redacted": 1,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 1,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/superteam-earn-terms-pdf.pdf",
   "textPath": "research/rendered/superteam-earn-terms-pdf.txt",

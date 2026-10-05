@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:30:41.340Z",
   "status": 200,
   "contentType": "text/html; charset=utf-8",
-  "byteLength": 169443,
-  "sha256": "29911c7ea29a8f4844ba428d333f03a07cd5544273d07664c216c334c22b7f34",
+  "byteLength": 169513,
+  "sha256": "72b8bfb31516540c07ccacaaea5abe84fb58e116b35b3e917d0978427b0ba6b4",
   "truncated": false,
+  "redacted": 9,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 9,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/displate-com-about-privacy.html",
   "textPath": "research/rendered/displate-com-about-privacy.txt",

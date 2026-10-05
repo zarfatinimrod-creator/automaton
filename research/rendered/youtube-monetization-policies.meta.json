@@ -4,9 +4,15 @@
   "fetchedAt": "2026-09-29T11:26:36.919Z",
   "status": 200,
   "contentType": "text/html; charset=UTF-8",
-  "byteLength": 1618975,
-  "sha256": "d20fbbd5183d4e4501d34d339a6618bb9dbc07277e27d1f004c7c6bc5576978b",
+  "byteLength": 1618972,
+  "sha256": "8f4306d17bb8b29b19babdaf1d47251b50ab1bfdce14370004f65f5357e16897",
   "truncated": false,
+  "redacted": 2,
+  "remasked": {
+    "on": "2026-10-05",
+    "addresses": 2,
+    "fold": "12143ca"
+  },
   "error": null,
   "bodyPath": "research/rendered/youtube-monetization-policies.html",
   "textPath": "research/rendered/youtube-monetization-policies.txt",
