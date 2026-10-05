@@ -302,9 +302,11 @@ describe("prize-dispatch CLI", () => {
 describe("on the committed ai-allowed-events.urls.txt and terms-verdicts.json", () => {
   const text = readFileSync(PRIZE_URLS, "utf8");
   const verdicts = loadVerdicts();
-  const out = select(text, verdicts);
+  // Selected inside each test, never at collection time: a throw there would fail the file with no test run.
+  const committed = () => select(text, verdicts);
 
   it("prints only lines of the file, verbatim, each passing termsGate and none on a TERMS_BARRED host", () => {
+    const out = committed();
     const fileLines = new Set(text.split(/\r?\n/));
     for (const l of out.lines) {
       expect(fileLines.has(l), l).toBe(true);
@@ -317,6 +319,7 @@ describe("on the committed ai-allowed-events.urls.txt and terms-verdicts.json", 
   });
 
   it("the CLI with its defaults prints exactly that, exit 0, or nothing with exit 3", () => {
+    const out = committed();
     const got = spawnSync(process.execPath, [SCRIPT], { encoding: "utf8", cwd: tmpdir() });
     expect(got.status).toBe(out.lines.length ? 0 : 3);
     expect(got.stdout).toBe(out.lines.length ? `${out.lines.join("\n")}\n` : "");
