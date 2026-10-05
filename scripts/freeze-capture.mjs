@@ -35,6 +35,13 @@
  *     "frozen", is left as it is: "already frozen", exit 0);
  *   - from the working tree, a capture with uncommitted changes: the copy names the commit its bytes came from.
  * It never edits urls.txt: the live line stays on the weekly watch.
+ * MASKED AS IT IS WRITTEN (tick 50, 5.10.2026). Every byte a new copy gets, from the working tree or from git history,
+ * passes through render-watch's redactSecrets first (maskCapture: the body with the meta's contentType, the text as
+ * text/plain, any other file by its extension), because history keeps the addresses the 5.10 re-mask removed and the
+ * repository is public. When that masks anything, the copy's meta records it as remask-captures does (maskedMeta:
+ * `redacted` grown, `remasked: { on: <the copy's frozen.on>, addresses, fold: "12143ca" }` after it, sha256 and
+ * byteLength of the masked body), and FROZEN.sha256 records the masked bytes. A capture that is already masked is
+ * copied byte for byte, as before. Every freeze prints how many strings it masks (or, in a dry run, would mask).
  *
  * RECORD ONE. --record <frozen-slug> writes an existing frozen copy's files into FROZEN.sha256 (a copy frozen by hand).
  *
@@ -70,13 +77,19 @@ import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { classifyCapture, readCapture } from "./capture-check.mjs";
-import { parseUrlList, slugFromUrl } from "./render-watch.mjs";
+import { parseUrlList, redactSecrets, slugFromUrl } from "./render-watch.mjs";
 
 export const REPO_ROOT = join(fileURLToPath(new URL(".", import.meta.url)), "..");
 export const RENDERED_REL = "research/rendered";
 
 /** The files a capture can have (render-watch.mjs extensionFor, plus the meta). */
 export const CAPTURE_EXTS = ["meta.json", "txt", "html", "json", "pdf", "xml", "bin"];
+
+/** The merge that made render-watch mask addresses; a re-masked meta names it (remask-captures, and a masked freeze). */
+export const FOLD = "12143ca";
+
+/** The type a capture's file is masked as when no meta path names it, by its extension: a .pdf or .bin is binary. */
+export const EXT_TYPES = { txt: "text/plain", html: "text/html", json: "application/json", xml: "application/xml", pdf: "application/pdf", bin: "application/octet-stream" };
 
 /** The record of every frozen copy's files: `<sha256>  <file>` lines, sorted by file, in research/rendered. */
 export const MANIFEST = "FROZEN.sha256";
@@ -246,10 +259,76 @@ export function frozenMeta(meta, { slug, frozenSlug, on, commit, why, flagged })
 }
 
 const metaBytes = (meta) => Buffer.from(`${JSON.stringify(meta, null, 2)}\n`);
+// A meta with the day of its re-mask left out: two copies of one version, masked on different days, are one capture.
+const undated = (meta) => (meta.remasked && typeof meta.remasked === "object" ? { ...meta, remasked: { ...meta.remasked, on: null } } : meta);
 const dataOf = (meta) => {
   const { frozen, ...rest } = meta; // eslint-disable-line no-unused-vars
-  return JSON.stringify(rest);
+  return JSON.stringify(undated(rest));
 };
+
+/**
+ * A capture's meta after a mask, as remask-captures and a masked freeze write it: `redacted` grown by count (a
+ * `redacted` that is a sentence, a hand redaction's, stays as it is), `remasked: { on, addresses, fold }` right after it
+ * (an earlier remasked block's addresses added in, on the new day), and, when body ({ before, bytes }) changed and the
+ * meta's sha256 was of its bytes before, sha256 and byteLength of the masked bytes. Both keys sit where buildMeta puts
+ * `redacted` (after `truncated`); nothing else moves. Returns a new object.
+ */
+export function maskedMeta(meta, { count, addresses, on, body = null }) {
+  const follows = body && meta.sha256 === sha256(body.before);
+  const prev = meta.redacted;
+  const redacted = prev === undefined ? count : Number.isInteger(prev) ? prev + count : prev;
+  const earlier = Number.isInteger(meta.remasked?.addresses) ? meta.remasked.addresses : 0;
+  const remasked = { on, addresses: earlier + addresses, fold: FOLD };
+  const anchor = ["redacted", "truncated", "sha256"].find((k) => k in meta) ?? null;
+  const out = {};
+  for (const [key, value] of Object.entries(meta)) {
+    if (key === "remasked") continue;
+    if (key !== "redacted") out[key] = value;
+    if (follows && key === "sha256") out.sha256 = sha256(body.bytes);
+    if (follows && key === "byteLength") out.byteLength = body.bytes.length;
+    if (key === anchor) Object.assign(out, { redacted, remasked });
+  }
+  if (anchor === null) Object.assign(out, { redacted, remasked });
+  return out;
+}
+
+const emailMasks = (bytes) => bytes.toString("latin1").split("[redacted:email]").length - 1;
+
+/**
+ * A capture's files (Map ext -> Buffer) through redactSecrets, as remask-captures masks them: the body (the meta's
+ * bodyPath) with the meta's contentType, the text (textPath) as text/plain, any other file by its extension (EXT_TYPES).
+ * Returns { files, meta, count, addresses }: the masked files, the meta as maskedMeta writes it for day `on` (in files
+ * too) when anything was masked, every mask counted, and the new `[redacted:email]` masks among them. Files with no
+ * meta, or a meta that is not JSON, come back as they are (planFreeze refuses them).
+ */
+export function maskCapture(files, on) {
+  let meta;
+  try {
+    meta = JSON.parse(files.get("meta.json").toString("utf8"));
+  } catch {
+    return { files, meta: null, count: 0, addresses: 0 };
+  }
+  const extOf = (path) => (typeof path === "string" ? CAPTURE_EXTS.find((ext) => ext !== "meta.json" && path.endsWith(`.${ext}`)) : undefined);
+  const bodyExt = extOf(meta.bodyPath);
+  const textExt = extOf(meta.textPath);
+  const out = new Map(files);
+  let count = 0;
+  let addresses = 0;
+  let body = null;
+  for (const [ext, bytes] of files) {
+    if (ext === "meta.json") continue;
+    const masked = redactSecrets(bytes, ext === bodyExt ? meta.contentType : ext === textExt ? "text/plain" : EXT_TYPES[ext]);
+    if (!masked.count) continue;
+    out.set(ext, masked.bytes);
+    count += masked.count;
+    addresses += emailMasks(masked.bytes) - emailMasks(bytes);
+    if (ext === bodyExt) body = { before: bytes, bytes: masked.bytes };
+  }
+  if (!count) return { files, meta, count, addresses };
+  const after = maskedMeta(meta, { count, addresses, on, body });
+  out.set("meta.json", metaBytes(after));
+  return { files: out, meta: after, count, addresses };
+}
 
 /** The default frozen.why. */
 export function defaultWhy({ slug, commit, citedBy, note }) {
@@ -271,7 +350,8 @@ export function frozenName(slug, meta, date) {
 }
 
 /**
- * Plan a freeze without writing: { slug, frozenSlug, date, kind, writes: [{ ext, path, bytes }], already }.
+ * Plan a freeze without writing: { slug, frozenSlug, date, kind, writes: [{ ext, path, bytes }], already, masked }.
+ * The writes are the files masked by maskCapture (masked: how many strings it masked; 0 for a capture already masked).
  * files: the capture's files (Map ext -> Buffer: diskFiles, commitFiles or sourceVersion). dir: where the copy goes.
  * frozenSlug: the copy's name (default: frozenName). already: the copy exists with the same bytes (its meta compared
  * without "frozen"). Throws an Error saying why on every refusal.
@@ -300,11 +380,12 @@ export function planFreeze({ slug, files, dir, urlsText, date, on, commit = null
     throw new Error(`${frozenSlug} is named on a urls.txt line: a render would rewrite the frozen copy. Choose another --date`);
   }
 
-  const newMeta = frozenMeta(meta, { slug, frozenSlug, on, commit, why: why ?? defaultWhy({ slug, commit }), flagged });
+  const masked = maskCapture(files, on);
+  const newMeta = frozenMeta(masked.meta, { slug, frozenSlug, on, commit, why: why ?? defaultWhy({ slug, commit }), flagged });
   const writes = [...files.keys()].map((ext) => ({
     ext,
     path: join(dir, `${frozenSlug}.${ext}`),
-    bytes: ext === "meta.json" ? metaBytes(newMeta) : files.get(ext),
+    bytes: ext === "meta.json" ? metaBytes(newMeta) : masked.files.get(ext),
   }));
 
   const existing = CAPTURE_EXTS.filter((ext) => existsSync(join(dir, `${frozenSlug}.${ext}`)));
@@ -337,7 +418,7 @@ export function planFreeze({ slug, files, dir, urlsText, date, on, commit = null
         "freezes it anyway, for a claim about the failure itself.",
     );
   }
-  return { slug, frozenSlug, date: frozenSlug.slice(slug.length + 1, slug.length + 11), kind: flagged?.kind ?? row.kind, writes, already };
+  return { slug, frozenSlug, date: frozenSlug.slice(slug.length + 1, slug.length + 11), kind: flagged?.kind ?? row.kind, writes, already, masked: masked.count };
 }
 
 /**
@@ -980,7 +1061,10 @@ const clip = (s) => (s == null ? "null" : s.length > 400 ? `${JSON.stringify(s.s
 const rangesOf = (c) => c.lines.map(([a, b]) => (a === b ? `:${a}` : `:${a}-${b}`)).join(", ");
 const where = (c) => `${c.file}:${c.fileLine} ${c.text}${c.lines.length ? ` [${rangesOf(c)}]` : ""}`;
 
-/** Whether two captures are one version: the same files, byte for byte, the metas the same apart from name and "frozen". */
+/**
+ * Whether two captures are one version: the same files, byte for byte, the metas the same apart from name, "frozen" and
+ * the day of a re-mask (remasked.on).
+ */
 function sameCapture(copy, copySlug, files, slug) {
   if (copy.size !== files.size || ![...files.keys()].every((ext) => copy.has(ext))) return false;
   for (const [ext, bytes] of files) if (ext !== "meta.json" && !copy.get(ext).equals(bytes)) return false;
@@ -991,7 +1075,7 @@ function sameCapture(copy, copySlug, files, slug) {
     a.slug = slug;
     a.bodyPath = rewritePath(a.bodyPath, copySlug, slug);
     a.textPath = rewritePath(a.textPath, copySlug, slug);
-    return JSON.stringify(a) === JSON.stringify(b);
+    return JSON.stringify(undated(a)) === JSON.stringify(undated(b));
   } catch {
     return false;
   }
@@ -1091,7 +1175,8 @@ export function cited({ root = REPO_ROOT, apply = false, unlined = false, keep =
     try {
       if (version.error) throw version.error;
       const citedBy = [...new Set(members.map((c) => c.file))].join(", ");
-      let name = existingCopy(dir, slug, version.files);
+      // Compared as the copy would be written: masked (a copy re-masked on 5.10 holds no address; history does).
+      let name = existingCopy(dir, slug, maskCapture(version.files, on).files);
       if (!name) {
         const meta = JSON.parse(version.files.get("meta.json").toString("utf8"));
         name = frozenName(slug, meta);
@@ -1112,7 +1197,8 @@ export function cited({ root = REPO_ROOT, apply = false, unlined = false, keep =
       });
       frozen.set(group, plan.frozenSlug);
       const verb = plan.already ? "already frozen" : apply ? "froze" : "would freeze";
-      log(`${verb} ${slug}${as} -> ${plan.frozenSlug} (${plan.writes.map((w) => w.ext).join(", ")})${version.note ? `; ${version.note}` : ""}`);
+      const masks = plan.masked && !plan.already ? `; ${apply ? "masked" : "would mask"} ${plan.masked}` : "";
+      log(`${verb} ${slug}${as} -> ${plan.frozenSlug} (${plan.writes.map((w) => w.ext).join(", ")})${masks}${version.note ? `; ${version.note}` : ""}`);
     } catch (err) {
       refused.push(group);
       log(`REFUSED ${slug}${as}: ${err.message}`);
@@ -1230,6 +1316,7 @@ export function main(argv, root = REPO_ROOT) {
     const verb = plan.already ? "already frozen" : v["dry-run"] ? "would freeze" : "froze";
     console.log(
       `${verb} ${slug} -> ${plan.frozenSlug} (${plan.writes.map((w) => `${plan.frozenSlug}.${w.ext}`).join(", ")})` +
+        `${plan.masked && !plan.already ? `; ${v["dry-run"] ? "would mask" : "masked"} ${plan.masked}` : ""}` +
         `${plan.kind === "ok" ? "" : `; flagged: ${plan.kind}`}${version.note ? `; ${version.note}` : ""}`,
     );
     return 0;

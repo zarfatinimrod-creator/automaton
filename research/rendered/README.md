@@ -132,10 +132,14 @@ Displate's Terms of Use under the loop ruling and `wall-art-pod.md`, the Kokoro 
 verdicts and `products/parent-guides/LICENSES.md`), and 29 more named a capture the render had since replaced. A
 **frozen copy** is a dated copy of one capture, `<slug>-<YYYY-MM-DD>.*`, byte for byte, whose slug no `urls.txt`
 line names, so no render ever touches it; the live line stays on the watch. Its files and their sha256 are in
-[`FROZEN.sha256`](./FROZEN.sha256) (`sha256sum -c FROZEN.sha256` here checks them). The one exception to "byte for
+[`FROZEN.sha256`](./FROZEN.sha256) (`sha256sum -c FROZEN.sha256` here checks them). The exceptions to "byte for
 byte": the one-time re-mask of 5.10.2026 masked the addresses in the frozen copies too, on the same lines (the mask
 is inline, so a cited line number still names the same line, which reads the mask where an address was), rewrote
 their lines in `FROZEN.sha256`, and left `remasked` in their metas; git history keeps the bytes as they were frozen.
+Since tick 50 (5.10.2026) `freeze-capture.mjs` masks every byte it writes into a new copy, from the working tree or
+from git history (whose bytes still hold the addresses the re-mask removed), with the same `redactSecrets`; when that
+masks anything the copy's meta says so (`redacted`, `remasked`, and `sha256`/`byteLength` of the masked body) and its
+`FROZEN.sha256` lines are of the masked bytes. A copy of a capture that is already masked is still byte for byte.
 
 - `node scripts/freeze-capture.mjs <slug> [--date YYYY-MM-DD] [--from-commit <sha>] [--dry-run]` makes one.
   The date defaults to the capture's `fetchedAt` day, so the name says when the text was fetched. The copy's

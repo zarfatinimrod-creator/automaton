@@ -68,10 +68,13 @@ import {
   activeSlugs,
   CAPTURE_EXTS,
   decisionFiles,
+  EXT_TYPES,
+  FOLD,
   isDay,
   isSlug,
   knownSlugs,
   MANIFEST,
+  maskedMeta,
   readManifest,
   RENDERED_REL,
   REPO_ROOT,
@@ -80,8 +83,8 @@ import {
 } from "./freeze-capture.mjs";
 import { redactSecrets, sha256 } from "./render-watch.mjs";
 
-/** The merge that made render-watch mask addresses; a re-masked meta names it. */
-export const FOLD = "12143ca";
+/** The merge that made render-watch mask addresses; a re-masked meta names it (defined in freeze-capture.mjs). */
+export { FOLD };
 
 export const KINDS = ["free-mail provider", "organisation or university", "mailing-list host", "government", "placeholder"];
 
@@ -126,8 +129,6 @@ export function domainKind(domain) {
 const MASKED = /\[redacted:email\](?:(?:@|%40|\\[uU]0040|\\[xX]40)((?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,63})(?![A-Za-z0-9]|\.[A-Za-z0-9-]))?/g;
 // A kept "domain" that is a file name: the mask would have taken an asset name (`<name>@2x.png`) for an address.
 const ASSET_DOMAIN = /\.(?:png|jpe?g|gif|svg|webp|avif|css|js|mjs|json|map|woff2?|ttf|otf|ico|mp4|webm|pdf|html?)$/i;
-// The type of a capture's file that no meta path names, by its extension: a .pdf or .bin is binary and stays as it is.
-const EXT_TYPES = { txt: "text/plain", html: "text/html", json: "application/json", xml: "application/xml", pdf: "application/pdf", bin: "application/octet-stream" };
 
 const masksIn = (text) => {
   const out = new Map();
@@ -175,27 +176,11 @@ export function maskFile(bytes, contentType, redact = redactSecrets) {
   };
 }
 
-/** The capture's meta rewritten for its new bytes (see the header): the text to write. */
+/** The capture's meta rewritten for its new bytes (see the header; freeze-capture's maskedMeta): the text to write. */
 export function remaskedMetaText(capture, on) {
-  const { meta, metaText } = capture;
-  const body = capture.parts.find((p) => p.role === "body" && p.count > 0);
-  // The meta's sha256 follows the body only where it was the stored body's to begin with.
-  const follows = body && meta.sha256 === sha256(body.before);
-  const prev = meta.redacted;
-  const redacted = prev === undefined ? capture.count : Number.isInteger(prev) ? prev + capture.count : prev;
-  const earlier = Number.isInteger(meta.remasked?.addresses) ? meta.remasked.addresses : 0;
-  const remasked = { on, addresses: earlier + capture.addresses, fold: FOLD };
-  const anchor = ["redacted", "truncated", "sha256"].find((k) => k in meta) ?? null;
-  const out = {};
-  for (const [key, value] of Object.entries(meta)) {
-    if (key === "remasked") continue;
-    if (key !== "redacted") out[key] = value;
-    if (follows && key === "sha256") out.sha256 = sha256(body.bytes);
-    if (follows && key === "byteLength") out.byteLength = body.bytes.length;
-    if (key === anchor) Object.assign(out, { redacted, remasked });
-  }
-  if (anchor === null) Object.assign(out, { redacted, remasked });
-  return `${JSON.stringify(out, null, 2)}${metaText.endsWith("\n") ? "\n" : ""}`;
+  const body = capture.parts.find((p) => p.role === "body" && p.count > 0) ?? null;
+  const out = maskedMeta(capture.meta, { count: capture.count, addresses: capture.addresses, on, body });
+  return `${JSON.stringify(out, null, 2)}${capture.metaText.endsWith("\n") ? "\n" : ""}`;
 }
 
 /**
