@@ -1,0 +1,342 @@
+GitHub - EDEM-AI/RoboSynChallenge · GitHub
+
+Skip to content
+
+Navigation Menu
+
+Sign in Appearance settings
+
+Platform AI CODE CREATION GitHub Copilot Write better code with AI
+GitHub Copilot app Direct agents from issue to merge
+MCP Registry Integrate external tools
+
+DEVELOPER WORKFLOWS Actions Automate any workflow
+Codespaces Instant dev environments
+Issues Plan and track work
+Code Review Manage code changes
+Code Quality Enforce quality at merge
+
+APPLICATION SECURITY GitHub Advanced Security Find and fix vulnerabilities
+Code security Secure your code as you build
+Secret protection Stop leaks before they start
+
+EXPLORE Why GitHub
+Documentation
+Blog
+Changelog
+Marketplace
+
+View all features
+
+Solutions BY COMPANY SIZE Enterprises
+Small and medium teams
+Startups
+Nonprofits
+
+BY USE CASE App Modernization
+DevSecOps
+DevOps
+CI/CD
+View all use cases
+
+BY INDUSTRY Healthcare
+Financial services
+Manufacturing
+Government
+View all industries
+
+View all solutions
+
+Resources EXPLORE BY TOPIC AI
+Software Development
+DevOps
+Security
+View all topics
+
+EXPLORE BY TYPE Customer stories
+Events & webinars
+Ebooks & reports
+Business insights
+GitHub Skills
+
+SUPPORT & SERVICES Documentation
+Customer support
+Community forum
+Trust center
+Partners
+
+View all resources
+
+Open Source COMMUNITY GitHub Sponsors Fund open source developers
+
+PROGRAMS Security Lab
+Maintainer Community
+GitHub Stars
+Archive Program
+
+REPOSITORIES Topics
+Trending
+Collections
+
+Enterprise ENTERPRISE SOLUTIONS Enterprise platform AI-powered developer platform
+
+AVAILABLE ADD-ONS GitHub Advanced Security Enterprise-grade security features
+Copilot for Business Enterprise-grade AI features
+Premium Support Enterprise-grade 24/7 support
+
+Pricing
+
+Search /
+
+Sign in
+Sign up Appearance settings
+
+You signed in with another tab or window. Reload to refresh your session.
+You signed out in another tab or window. Reload to refresh your session.
+You switched accounts on another tab or window. Reload to refresh your session.
+
+Dismiss alert
+
+EDEM-AI
+
+/
+
+RoboSynChallenge
+
+Public
+
+Notifications
+You must be signed in to change notification settings
+
+Fork
+18
+
+Star
+48
+
+Code
+
+Issues
+12
+
+Pull requests
+12
+
+Actions
+
+Projects
+
+Security and quality
+0
+
+Insights
+
+Additional navigation options
+
+Code
+
+Issues
+
+Pull requests
+
+Actions
+
+Projects
+
+Security and quality
+
+Insights
+
+main
+
+Branches Tags
+
+Go to file
+
+Code Open more actions menu
+
+Latest commit
+
+History
+194 Commits
+194 Commits
+
+Folders and files
+Name
+Name
+Last commit message
+
+Last commit date
+
+.github
+
+.github
+
+assets
+
+assets
+
+configs
+
+configs
+
+docs
+
+docs
+
+evaluation_results
+
+evaluation_results
+
+launch
+
+launch
+
+lerobot_dataset
+
+lerobot_dataset
+
+misc
+
+misc
+
+policy
+
+policy
+
+robosynchallenge
+
+robosynchallenge
+
+scripts
+
+scripts
+
+.gitignore
+
+.gitignore
+
+LICENSE
+
+LICENSE
+
+README.md
+
+README.md
+
+VERSION
+
+VERSION
+
+delete.json
+
+delete.json
+
+merge_config.json
+
+merge_config.json
+
+pyproject.toml
+
+pyproject.toml
+
+View all files
+
+Repository files navigation
+
+README
+Apache-2.0 license
+
+More items
+
+RoboSynChallenge: Mastering Real-World Dexterity via Generalizing Synthesized Manipulation Skills
+
+👉 Webpage | Document | Paper | Leaderboard
+
+Contents
+
+Contents
+
+Installtion
+
+Datasets
+
+Training and Evaluation
+
+Released Checkpoint Results
+
+LeaderBoard
+
+Installtion
+
+Based on the EmbodiChain , we offer both docker and local installation methods. For detailed installation instructions, please refer to Installation Document .
+
+Datasets
+
+We provide 1,000 pre-collected trajectories per task as part of the open-source release RoboSynChallenge Dataset. The datasets hosted on HuggingFace are available at here .
+
+However, we still strongly recommend users to perform data collection themselves. For detailed data collection instructions, please refer to Data Collection Document .
+
+Training and Evaluation
+
+Currently, RoboSynChallenge integrates training and evaluation for PI0 , PI0.5 , and Motus . Detailed procedures can be found in the documentation for the corresponding strategies: 👉 Webpage .
+In addition, you can easily extend your own policys for training and evaluation by following the documentation 👉 Webpage .
+
+Released Checkpoint Results
+
+100-episode simulation evaluations for the released ACT and Diffusion Policy checkpoints are published in evaluation_results . The machine-readable result file pins success rate, action steps, millisecond inference time, Hugging Face checkpoint revisions, and the random protocol configuration.
+
+LeaderBoard
+
+The full leaderboard and setting can be found in: https://edem-ai.github.io/robosynchallenge.github.io/#/leaderboard .
+
+About
+No description, website, or topics provided.
+Resources
+Readme
+Apache-2.0 license
+Activity
+Custom properties
+
+Stars
+48 stars
+Watchers
+3 watching
+Forks
+18 forks
+
+Report repository
+
+Releases
+
+Packages
+
+Contributors
+
+Languages
+
+Footer
+
+&copy; 2026 GitHub, Inc.
+
+Footer navigation
+
+Terms
+
+Privacy
+
+Security
+
+Status
+
+Community
+
+Docs
+
+Contact
+
+Manage cookies
+
+Do not share my personal information
+
+You can’t perform that action at this time.

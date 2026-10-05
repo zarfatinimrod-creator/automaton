@@ -1,0 +1,309 @@
+RoCo-Spring: The Robust Correspondence Challenge
+
+RoCo-Spring: The Robust Correspondence Challenge
+
+NeurIPS 2026 Workshop
+
+Date
+
+December 12, 2026
+
+Location
+
+MR C4.3 Workshop room
+
+Time
+
+15:30–17:45 Sydney local time
+
+A NeurIPS 2026 challenge on robust dense correspondence under realistic distribution shifts,
+covering Optical Flow, Stereo Matching, and Scene Flow.
+
+Dense correspondence has made remarkable progress on standard benchmarks. Although modern
+Optical Flow, Stereo Matching, and Scene Flow methods achieve strong performance under ideal
+conditions, their accuracy can degrade substantially under real-world visual shifts.
+
+Robustness under realistic corruptions remains a challenge for the deployment of these methods
+in autonomous driving, robotics, and other safety-critical settings. RoCo-Spring jointly
+evaluates clean accuracy and corrupted robustness, targeting methods that remain accurate under
+camera noise, adverse weather conditions, blur, compression, and changes in illumination.
+
+Participate
+
+OpenReview
+Submission
+
+Leaderboard
+
+GitHub Starter Kit
+
+Tracks
+Optical Flow · Stereo Matching · Scene Flow · Exploration Track
+
+Registration
+Register or manage your team
+
+Leaderboard
+View current standings
+
+Leaderboard Preview
+
+Top Three by Track
+
+A quick view of the latest registered teams and live public benchmark scores.
+Registered teams without scores remain visible on the full leaderboard.
+
+Open full leaderboard
+
+Snapshot updated Loading…
+
+Loading published standings…
+
+Datasets
+
+Spring and RobustSpring
+
+Spring
+
+Spring provides high-resolution stereo video with left and right images at
+1920x1080 px, together with dense scene-flow ground truth at 4x
+super-resolution. It includes bidirectional disparities for stereo and depth,
+disparity changes for Scene Flow, and forward/backward Optical Flow for both
+left and right views. This makes Spring a unified high-detail benchmark for
+Optical Flow, Stereo Matching, and Scene Flow.
+
+Paper
+Benchmark
+Dataset
+
+RobustSpring
+
+RobustSpring extends Spring into a robustness benchmark with 20 realistic
+image corruptions, including blur, color changes, noise, quality degradations,
+and weather effects. The corruptions are applied to stereo video data and are
+integrated consistently over time, across stereo views, and with depth where
+applicable, enabling controlled robustness evaluation for Optical Flow, Stereo Matching,
+and Scene Flow.
+
+Paper
+Benchmark
+Dataset
+
+Tracks
+
+Four Challenge Tracks
+
+Optical Flow
+
+Estimate a dense 2D displacement field between consecutive frames,
+assigning each visible pixel a horizontal and vertical motion vector.
+
+Stereo Matching
+
+Estimate a dense disparity map from a rectified stereo image pair,
+assigning each pixel the horizontal offset to its corresponding point.
+
+Scene Flow
+
+Estimate dense 3D motion from stereo image sequences, combining
+per-pixel geometry and temporal motion into a single correspondence task.
+
+Exploration Track
+
+Submit a rigorous analysis of robustness in dense correspondence,
+focusing on failure modes, method behavior, metrics, or evaluation design.
+
+Timeline
+
+Competition Schedule
+
+Date
+
+Milestone
+
+July 2, 2026
+
+Website launch
+
+July 13, 2026
+
+Development leaderboard opens for all quantitative tasks
+
+September 25, 2026 NEW
+
+Workshop paper submission deadline (4–6 main pages)
+
+September 30, 2026
+
+Final quantitative submission deadline
+
+October 06, 2026
+
+Workshop paper author notification
+
+October 15, 2026
+
+Camera-ready paper, code, and reproducibility package deadline
+
+October 15, 2026
+
+Final evaluation, reproducibility checks, and award shortlisting
+
+October 31, 2026
+
+Winners notified and workshop program finalized
+
+December 12, 2026
+
+In-person NeurIPS Competition Track workshop · Room MR C4.3 · 15:30–17:45 (Sydney local time)
+
+All dates are tentative and subject to change.
+
+Workshop
+
+Confirmed Keynote Speakers
+
+Jia Deng
+
+Princeton University · Princeton Vision & Learning Lab
+
+Jia Deng is Professor of Computer Science at Princeton University and
+Director of the Princeton Vision & Learning Lab. He brings a uniquely
+relevant perspective to RoCo-Spring: his work spans benchmark-driven computer
+vision, large-scale datasets such as ImageNet [1] , and
+influential dense correspondence architectures across multiple tasks,
+including RAFT for Optical Flow [2] , RAFT-Stereo for Stereo Matching [3] , and SEA-RAFT for efficient and accurate
+Optical Flow [4] . His keynote will connect the evolution
+of correspondence methods and benchmark design with the central question of
+the challenge: how to turn clean benchmark progress into robust Optical Flow,
+Stereo Matching, and Scene Flow methods that remain reliable under realistic visual
+shifts.
+
+Fatih Porikli
+
+Qualcomm AI Research
+
+Fatih Porikli is an IEEE Fellow and Vice President of Technology at Qualcomm
+AI Research. His expertise connects robust visual perception, video
+understanding, low-level vision, and real-world deployment. His prior work
+includes scene-flow estimation under degraded video conditions, including
+simultaneous stereo video deblurring and Scene Flow estimation [5] , joint stereo video
+deblurring, scene
+flow estimation, and moving-object segmentation [6] , and
+adversarial robustness for vision systems [7] .
+His talk will provide an industry-facing and deployment-oriented perspective
+on robust dense correspondence.
+
+References
+
+Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., & Fei-Fei, L. (2009).
+ImageNet: A Large-Scale Hierarchical Image Database. Proc. IEEE Conference
+on Computer Vision and Pattern Recognition (CVPR) , 248–255.
+
+Teed, Z., & Deng, J. (2020). RAFT: Recurrent All-Pairs Field Transforms
+for Optical Flow. Proc. European Conference on Computer Vision (ECCV) ,
+402–419.
+
+Lipson, L., Teed, Z., & Deng, J. (2021). RAFT-Stereo: Multilevel Recurrent
+Field Transforms for Stereo Matching. Proc. International Conference on 3D
+Vision (3DV) , 218–227.
+
+Wang, Y., Lipson, L., & Deng, J. (2024). SEA-RAFT: Simple, Efficient,
+Accurate RAFT for Optical Flow. Proc. European Conference on Computer Vision
+(ECCV) , 36–54.
+
+Pan, L., Dai, Y., Liu, M., & Porikli, F. (2017). Simultaneous Stereo Video
+Deblurring and Scene Flow Estimation. Proc. IEEE Conference on Computer
+Vision and Pattern Recognition (CVPR) , 6987–6996.
+
+Pan, L., Dai, Y., Liu, M., Porikli, F., & Pan, Q. (2020). Joint Stereo Video
+Deblurring, Scene Flow Estimation and Moving Object Segmentation.
+IEEE Transactions on Image Processing (TIP) , 29, 1748–1761.
+
+Naseer, M., Khan, S., Hayat, M., Khan, F. S., & Porikli, F. (2020). A
+Self-Supervised Approach for Adversarial Robustness. Proc. IEEE/CVF
+Conference on Computer Vision and Pattern Recognition (CVPR) , 262–271.
+
+Schedule
+
+Workshop Schedule
+
+Date
+
+Time (Sydney local)
+
+Location
+
+December 12, 2026
+
+15:30–17:45
+
+Room MR C4.3
+
+Detailed program to be announced.
+
+Organizers
+
+Organizing Team
+
+Shashank Agnihotri University of Mannheim
+
+Victor Oei University of Stuttgart
+
+Jenny Schmalfuss NVIDIA
+
+Katrin Bauer University of Stuttgart
+
+Noah Berenguel Senn University of Stuttgart
+
+Steffen Jung University of Mannheim
+
+Henrique Morimitsu University of Science and Technology Beijing
+
+Andrés Bruhn University of Stuttgart
+
+Margret Keuper University of Mannheim and MPI-INF
+
+Support
+
+Sponsors & Acknowledgements
+
+Event support
+
+Sponsors
+
+This event is supported by the
+SFB-TRR 161 Quantitative Methods for Visual Computing .
+
+Research funding
+
+Acknowledgements
+
+Shashank Agnihotri and Margret Keuper acknowledge funding by the DFG Research Unit 5336 –
+Learning to Sense (L2S). Margret Keuper acknowledges funding by BMFTR project TrackOpt
+(01IS24074A-D). Andres Bruhn and Victor Oei acknowledge funding by the Deutsche
+Forschungsgemeinschaft (DFG, German Research Foundation) – Project-ID 251654672 – TRR 161:
+Quantitative Methods for Visual Computing (B04, A07). Katrin Bauer and Andres Bruhn acknowledge
+funding by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) – Project-ID
+533085500 – Robust Optical Flow. Katrin Bauer and Victor Oei acknowledge support from the
+International Max Planck Research School for Intelligent Systems (IMPRS-IS).
+
+German Research Foundation
+
+Learning to Sense
+
+SFB-TRR 161
+
+IMPRS-IS
+
+Contact
+
+Get in Touch
+
+Challenge email:
+roco-spring-org@googlegroups.com
+
+GitHub Starter Kit:
+hmorimitsu/roco-spring-devkit
+
+×

@@ -1,0 +1,229 @@
+FAIR Universe
+
+Home
+
+About
+
+Goals
+
+News
+
+Partners
+
+Credits
+
+Uncertainty aware large-compute-scale AI platform for high energy physics and cosmology
+
+Uncertainty-Aware AI
+High Energy Physics
+Cosmology
+Bias in Data
+Uncertainties
+
+NeurIPS 2026 Weak Lensing Uncertainty Challenge - Phase 2
+
+The competition is now open for submission until 11:59 PM October 11th 2026 (UTC)!
+
+Challenge Website
+Challenge White Paper
+Challenge GitHub Repo
+Phase-2 Leaderboard
+
+Weak gravitational lensing reveals the large-scale structure of the universe by observing subtle distortions in galaxy shapes due to intervening matter. To fully exploit the non-Gaussian features present in the cosmic web, modern machine learning (ML) methods have become increasingly important. These approaches, including deep learning and simulation-based inference, have been shown to extract significant more information in weak lensing maps than traditional techniques. However, different analyses assume different dataset setups and lead to different results, making it hard to directly compare with existing approaches. Furthermore, most (if not all) of these methods rely heavily on simulations that may not accurately represent real data due to modeling approximations and missing systematics. We can frame this problem as an out-of-distribution (OoD) detection task; that is, whether or not the actual observations deviate from the simulation or forward model used to train our models?
+
+Through this competition, participants will analyze a suite of carefully designed mock weak lensing convergence maps (2D fields similar to images). Participants have to develop methods for the OoD detection, with the goal of identifying a fraction of the test data that deviates from the training distribution.
+
+The outcomes of this competition are expected to guide the development of next-generation weak lensing analysis pipelines, foster cross-disciplinary collaboration between the astrophysics and machine learning communities, and ultimately improve the reliability of cosmological inference from current and upcoming surveys such as LSST, Euclid, and the Roman Space Telescope. By explicitly addressing simulation-model mismatch and the need to quantify systematic uncertainties, this competition emphasizes scientific robustness and interpretability, aligning with the growing emphasis on trustworthy ML in scientific domains.
+
+About
+
+The FAIR Universe project is a collaboration between and include scientists from
+Lawrence Berkeley National Laboratory ,
+Université Paris-Saclay ,
+University of Washington ,
+Institute for Advanced Study , and
+ChaLearn .
+The project is funded by the
+Department of Energy
+.
+
+The collaboration is building a large-compute-scale AI platform for the hosting of large scientific datasets, models, and machine learning competitions to drive forward discoveries in high energy physics and cosmology. The initial focus is on discovering and minimizing systematic uncertainties in High Energy Physics through a sequence of challenges that will bring together researchers across physics and machine learning.
+
+The collaboration includes scientists from Lawrence Berkeley National Laboratory, Université Paris-Saclay, the University of Washington, and ChaLearn, a non-profit that organizes challenges to stimulate research in machine learning.
+
+NeurIPS 2025 Weak Lensing Uncertainty Challenge - Phase 1
+
+Challenge Overview
+Challenge Website
+Phase-1 Winners
+Workshop Agenda
+
+NeurIPS 2024 HiggsML Uncertainty Challenge
+
+Challenge Website
+Read the White Paper
+Challenge Dataset
+Challenge Winners
+
+Goals
+
+We are building an open, large-compute-scale AI ecosystem for sharing datasets, training large models, fine-tuning those models, and hosting challenges and benchmarks. Hosting of all these datasets and benchmarks will be achieved by interfacing the
+NERSC
+HPC center to
+Codabench
+, a recently developed open-source platform, to provide a next generation reproducible-science AI ecosystem. This project will build the essential pieces of such an ecosystem through deployment of:
+
+Three HEP systematic uncertainty datasets and tasks, of increasing sophistication, tailored for studies of systematic-uncertainty aware AI techniques, in particle physics and cosmology.
+
+A set of HEP-AI challenges and long-lived task and algorithm benchmarks addressing compelling questions about the impact of systematic effects in AI models.
+
+An HPC-enabled AI benchmark platform capable of hosting datasets and models; producing new simulated datasets; applying new AI algorithms on existing datasets; and applying uploaded AI algo- rithms on new datasets.
+
+The collaboration with Codabench and NERSC will ensure that the project platform, benchmarks and a portfolio of algorithms will be curated and made accessible, and therefore continue to benefit the HEP community, as well as other sciences and the machine learning research community well beyond the end of the project. The research community will benefit from being exposed to well-established, empirical UQ approaches for estimation that experimenters have deployed on problems with hundreds of systematic effects. The develop- ment of principled methodologies to quantify the impact of systematic effects in the training and inference of ML models, will increase the trust of the scientific community on AI methods applied to experimental high-energy physics and beyond. The progressive structure of our challenges will bring together activity across particle physics and cosmology. Finally, both the methods and platform developed in this project will serve as a foundation for future AI challenges and benchmarks in high-energy physics, scientific and industrial applications.
+
+News
+
+FAIR Universe – Weak Lensing Uncertainty Challenge @ NeurIPS 2026
+
+June 27, 2026
+Our new challenge "FAIR Universe – Weak Lensing Uncertainty Challenge Phase-2" is accepted at NeurIPS 2026 Competition Track.
+
+FAIR Universe – Weak Lensing Uncertainty Challenge Phase 2 Launched
+
+April 22, 2026
+We have launched the Phase-2 of the Weak Lensing Uncertainty Challenge. The challenge website is available on Codabench.
+
+Weak Lensing Uncertainty Challenge Phase 2 - Codabench website
+
+FAIR Universe - Weak Lensing Uncertainty Challenge Phase-1 Winners
+
+December 07, 2025
+We have announced the winners of the Weak Lensing Uncertainty Challenge Phase-1.
+
+Phase-1 Winners Page
+
+Join us for the FAIR Universe - Weak Lensing Uncertainty Challenge Workshop @ NeurIPS 2025
+
+December 03, 2025
+The workshop will be held on December 07, 2025 at Exhibit Hall G,H.
+
+Workshop Page
+
+FAIR Universe – Weak Lensing Uncertainty Challenge Phase 1 Final Submission Guidelines
+
+November 04, 2025
+We have published detailed guidelines for participants of phase 1 about their final submission to be considered for the monetary prizes.
+
+Weak Lensing Uncertainty Challenge Phase 1 - Final Submission Guidelines
+
+FAIR Universe – Weak Lensing Uncertainty Challenge Phase 1 Launched
+
+August 29, 2025
+We have launched the Phase-1 of the Weak Lensing Uncertainty Challenge. The challenge website is available on Codabench.
+
+Weak Lensing Uncertainty Challenge Phase 1 - Codabench website
+
+FAIR Universe – Weak Lensing Uncertainty Challenge @ NeurIPS 2025
+
+June 11, 2025
+Our new challenge "FAIR Universe – Weak Lensing Uncertainty Challenge" is accepted at NeurIPS 2025 Competition Track.
+
+FAIR Universe - HiggsML Uncertainty Challenge Public Dataset
+
+May 16, 2025
+
+We have released the HigssML Public Dataset on Zenodo.
+
+Higgs Uncertainty Challenge Public Dataset
+
+Higgs Uncertainty Challenge Winners
+
+May 08, 2025
+
+We have announced the results and winners of NeurIPS 2024 Higgs Uncertainty challenge.
+
+Higgs Uncertainty Challenge Winners
+
+Tutorial Video - Higgs Uncertainty Challenge
+
+February 10, 2025
+We have uploaded a tutorial video that will help you understand the Higgs Uncertainty challenge and provide you with some useful tips. The slides for this video are also available.
+
+You can submit your solutions to Codabench before March 13 (the deadline for the current phase) to win our final prize!
+
+Tutorial Video
+
+Tutorial Slides
+
+NeurIPS Competition Recording - Higgs Uncertainty Challenge Workshop @ NeurIPS 2024
+
+February 09, 2025
+You will find the recording of the FAIR Universe Higgs Uncertainty Competition at NeurIPS 2024 along with other talks delivered at the workshop here:
+
+NeurIPS Competition Recording and Resources
+
+Join us for the FAIR Universe - Higgs Uncertainty Challenge Workshop @ NeurIPS 2024
+
+December 02, 2024
+The workshop will be held on December 14, 2024 at the Vancouver Convention Center in Vancouver, BC, Canada as a part of the 38th annual conference on Neural Information Processing Systems (NeurIPS).
+
+Workshop Page
+
+FAIR Universe – NeurIPS 2024 Higgs Uncertainty Challenge launched on Codabench
+
+October 01, 2024
+We have launched the "FAIR Universe – NeurIPS 2024 Higgs Uncertainty Challenge" on Codabench.
+
+Competition Website
+
+FAIR Universe – the challenge of handling
+uncertainties in fundamental science @ NeurIPS 2024
+
+June 10, 2024
+Our new challenge "FAIR Universe – the challenge of handling
+uncertainties in fundamental science" is accepted at NeurIPS 2024 Competition Track.
+
+HiggsML Uncertainty Pilot Competition
+
+March 12, 2024
+We have launched the pilot version of HiggsML Uncertainty Competition today! Join the competition here:
+
+Competition Website
+
+FAIR Universe @ ACAT 2024
+
+March 07, 2024
+Wahid Bhimji, FAIR Universe Project Principal Investigator, will deliver a talk about Fair Universe - HiggsML Uncertainty Challenge. Join us at the event:
+
+Event details
+
+Particle Physics challenge trial
+
+November 29, 2023
+
+We hosted a hackathon at the
+Artificial Intelligence and the Uncertainty Challenge in Fundamental Physics
+workshop on Wednesday November 29, 2023. We released a tiral version of a challenge using detailed physics simulations of accelerator data.
+
+Trial Codabench Challenge
+
+First toy challenge
+
+October 2, 2023
+
+We have designed and released our first toy challenge on the Codabench platform. This challenge is designed to test the platform and provide a simple example for the community to follow. We have developed a toy dataset to illustrate the types of analyses performed on real data from particle accelerators.
+
+Project Announcement
+
+November 27, 2022
+The FAIR Universe project received funding as part of a $6.4 million DoE spend on AI in high energy physics:
+
+LBNL announcement
+
+DoE announcement
+
+Partners
+
+&copy; Copyright FAIR Universe . All Rights Reserved
+
+Developed by

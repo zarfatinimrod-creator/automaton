@@ -1,0 +1,2130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIMO Interpretability Challenge at NeurIPS 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg-dark: #0d1a3f;
+            --color-bg-hero: #1f3a7d;
+            --color-bg-light: #f7f8fc;
+            --color-bg-white: #ffffff;
+            --color-primary: #3b6cf5;
+            --color-primary-light: #5b8aff;
+            --color-accent: #d4a843;
+            --color-accent-light: #f0cd6a;
+            --color-text: #1e2333;
+            --color-text-light: #5a6178;
+            --color-text-hero: #c8cde0;
+            --color-border: #e2e5ef;
+            --color-card-bg: #ffffff;
+            --color-robust: #3b6cf5;
+            --color-spurious: #ef4444;
+            --color-blackbox: #8b5cf6;
+            --color-whitebox: #06b6d4;
+            --max-width: 960px;
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--color-text);
+            line-height: 1.7;
+            background: var(--color-bg-white);
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(18, 36, 82, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            transition: background 0.3s;
+        }
+
+        nav .nav-inner {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+
+        nav .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        nav .logo span {
+            color: var(--color-accent);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav ul li a {
+            color: var(--color-text-hero);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            letter-spacing: 0.01em;
+        }
+
+        nav ul li a:hover {
+            color: var(--color-accent-light);
+        }
+
+        nav ul li a.active {
+            color: var(--color-accent-light);
+            border-bottom: 2px solid var(--color-accent);
+            padding-bottom: 2px;
+        }
+
+        /* HERO */
+        .hero {
+            background: var(--color-bg-hero);
+            background-image:
+                radial-gradient(ellipse 55% 45% at 18% 20%, rgba(91,138,255,0.14) 0%, transparent 62%),
+                radial-gradient(ellipse 50% 40% at 84% 78%, rgba(212,168,67,0.10) 0%, transparent 60%),
+                radial-gradient(ellipse 95% 75% at 50% 32%, #2f4da6 0%, #1f3a7d 48%, #122452 100%);
+            padding: 10rem 2rem 5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(1.2px 1.2px at 12% 28%, rgba(255,255,255,0.55) 50%, transparent 100%),
+                radial-gradient(1px 1px at 28% 12%, rgba(255,255,255,0.4) 50%, transparent 100%),
+                radial-gradient(1.4px 1.4px at 43% 38%, rgba(255,255,255,0.45) 50%, transparent 100%),
+                radial-gradient(1px 1px at 61% 16%, rgba(255,255,255,0.45) 50%, transparent 100%),
+                radial-gradient(1.3px 1.3px at 76% 42%, rgba(255,255,255,0.5) 50%, transparent 100%),
+                radial-gradient(1px 1px at 89% 24%, rgba(255,255,255,0.4) 50%, transparent 100%),
+                radial-gradient(1.2px 1.2px at 7% 64%, rgba(255,255,255,0.35) 50%, transparent 100%),
+                radial-gradient(1px 1px at 34% 80%, rgba(255,255,255,0.3) 50%, transparent 100%),
+                radial-gradient(1.4px 1.4px at 55% 68%, rgba(255,255,255,0.3) 50%, transparent 100%),
+                radial-gradient(1px 1px at 80% 86%, rgba(255,255,255,0.3) 50%, transparent 100%),
+                radial-gradient(1.2px 1.2px at 94% 60%, rgba(255,255,255,0.35) 50%, transparent 100%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero .header-bubble {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.9rem 0 1.75rem;
+            padding: 0.9rem 1.45rem;
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(240,205,106,0.28), rgba(212,168,67,0.4));
+            border: 1px solid rgba(240,205,106,0.75);
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 14px 36px rgba(10,15,30,0.34);
+        }
+
+        .hero .header-bubble:hover {
+            transform: translateY(-2px) scale(1.01);
+            background: linear-gradient(135deg, rgba(240,205,106,0.34), rgba(212,168,67,0.48));
+            box-shadow: 0 18px 40px rgba(10,15,30,0.4);
+        }
+
+        .hero .header-bubble .underline,
+        .hero .header-bubble a {
+            color: inherit;
+            text-decoration: underline;
+            text-underline-offset: 0.14em;
+            text-decoration-thickness: 2px;
+        }
+
+        .hero .venue {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: #949bb5;
+            margin-bottom: 1.1rem;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: var(--color-text-hero);
+            max-width: 620px;
+            margin: 1.5rem auto 2.5rem;
+            font-weight: 300;
+            line-height: 1.8;
+        }
+
+        .hero .badges {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2.5rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 999px;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.85rem;
+            color: var(--color-text-hero);
+            font-weight: 500;
+        }
+
+        .badge .emoji {
+            font-size: 1.1rem;
+        }
+
+        .badge strong {
+            color: var(--color-accent-light);
+        }
+
+        .hero .cta-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.8rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(59,108,245,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 28px rgba(59,108,245,0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--color-text-hero);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        /* SECTIONS */
+        section {
+            padding: 5rem 2rem;
+        }
+
+        .section-inner {
+            max-width: var(--max-width);
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--color-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 700;
+            color: var(--color-text);
+            letter-spacing: -0.02em;
+            line-height: 1.25;
+            margin-bottom: 1.5rem;
+        }
+
+        section p {
+            color: var(--color-text-light);
+            font-size: 1rem;
+            line-height: 1.85;
+            margin-bottom: 1.25rem;
+        }
+
+        section a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(59,108,245,0.2);
+            transition: border-color 0.2s;
+        }
+
+        section a:hover {
+            border-color: var(--color-primary);
+        }
+
+        section strong {
+            color: var(--color-text);
+            font-weight: 600;
+        }
+
+        section em {
+            font-style: italic;
+        }
+
+        .bg-light {
+            background: var(--color-bg-light);
+        }
+
+        /* CHALLENGE CARDS */
+        .model-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .model-card {
+            background: var(--color-card-bg);
+            border-radius: 12px;
+            padding: 1.8rem;
+            border: 1px solid var(--color-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .model-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .model-card.robust::before {
+            background: linear-gradient(90deg, var(--color-robust), var(--color-primary-light));
+        }
+
+        .model-card.spurious::before {
+            background: linear-gradient(90deg, var(--color-spurious), #f87171);
+        }
+
+        .model-card .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .model-card.robust .card-icon {
+            background: rgba(59,108,245,0.1);
+        }
+
+        .model-card.spurious .card-icon {
+            background: rgba(239,68,68,0.1);
+        }
+
+        .model-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            color: var(--color-text);
+        }
+
+        .model-card p {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+            line-height: 1.7;
+            margin-bottom: 0;
+        }
+
+        /* SUBMISSION TYPE CARDS */
+        .submission-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .sub-card {
+            background: var(--color-card-bg);
+            border-radius: 12px;
+            padding: 1.8rem;
+            border: 1px solid var(--color-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sub-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .sub-card.main::before {
+            background: linear-gradient(90deg, var(--color-blackbox), #a78bfa);
+        }
+
+        .sub-card.small::before {
+            background: linear-gradient(90deg, var(--color-whitebox), #22d3ee);
+        }
+
+        .sub-card .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .sub-card.main .card-icon {
+            background: rgba(139,92,246,0.1);
+        }
+
+        .sub-card.small .card-icon {
+            background: rgba(6,182,212,0.1);
+        }
+
+        .sub-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            color: var(--color-text);
+        }
+
+        .sub-card p {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+            line-height: 1.7;
+            margin-bottom: 0;
+        }
+
+        /* PRIZES */
+        .prize-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 2rem 0 1.5rem;
+        }
+
+        .prize-card {
+            background: var(--color-card-bg);
+            border-radius: 12px;
+            padding: 1.8rem;
+            border: 1px solid var(--color-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prize-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .prize-card.main::before {
+            background: linear-gradient(90deg, var(--color-blackbox), #a78bfa);
+        }
+
+        .prize-card.small::before {
+            background: linear-gradient(90deg, var(--color-whitebox), #22d3ee);
+        }
+
+        .prize-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 0.9rem;
+            color: var(--color-text);
+        }
+
+        .prize-list {
+            list-style: none;
+        }
+
+        .prize-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--color-border);
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        .prize-list li:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .prize-list .place {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+        }
+
+        .prize-list .amount {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--color-text);
+        }
+
+        .prize-list li:first-child .amount {
+            color: #a07d22;
+        }
+
+        /* WRITEUP PRIZES */
+        .writeup-box h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .writeup-topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 1.1rem;
+        }
+
+        .topic-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 999px;
+            padding: 0.35rem 0.95rem;
+            font-size: 0.82rem;
+            color: var(--color-text-hero);
+            font-weight: 500;
+        }
+
+        /* EVALUATION */
+        .eval-box {
+            background: var(--color-bg-hero);
+            background-image: radial-gradient(ellipse 130% 140% at 15% 0%, #2a4693 0%, #1f3a7d 52%, #182f68 100%);
+            border-radius: 12px;
+            padding: 2rem 2.5rem;
+            margin-top: 2rem;
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .eval-box .eval-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+            margin-top: 0.2rem;
+        }
+
+        .eval-box p {
+            color: var(--color-text-hero);
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        .eval-box a {
+            color: var(--color-accent-light);
+            border-bottom-color: rgba(212,168,67,0.3);
+        }
+
+        .eval-box a:hover {
+            border-bottom-color: var(--color-accent-light);
+        }
+
+        .eval-box strong {
+            color: #ffffff;
+        }
+
+        .section-subtitle {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-top: 2rem;
+            margin-bottom: 0.6rem;
+            padding-top: 1.4rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        /* keep linked subtitles clear of the fixed nav */
+        .section-subtitle[id] {
+            scroll-margin-top: 80px;
+        }
+
+        /* suppress top border on very first subtitle in a section */
+        .section-title + .section-subtitle,
+        p + .section-subtitle:first-of-type {
+            border-top: none;
+        }
+
+        /* compact numbered rules */
+        .rules-list {
+            margin: 0 0 1.25rem;
+            padding-left: 1.5rem;
+            color: var(--color-text-light);
+        }
+
+        .rules-list li {
+            margin: 0;
+        }
+
+        /* muted trailing note after a card list */
+        .section-note {
+            font-size: 0.9rem;
+            margin-top: -0.4rem;
+            margin-bottom: 0;
+        }
+
+        /* ENVIRONMENT CARDS */
+        .env-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin: 2rem 0;
+        }
+
+        .env-card {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 1.6rem 1.8rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.2rem;
+        }
+
+        .env-card .env-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            background: rgba(59, 108, 245, 0.08);
+        }
+
+        .env-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: 0.35rem;
+        }
+
+        .env-card p {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+            line-height: 1.7;
+            margin-bottom: 0;
+        }
+
+        .aimo-ch-fig { margin: 2rem 0 1.75rem; }
+        .aimo-ch-fig svg { width: 100%; height: auto; display: block; border-radius: 16px; }
+        .aimo-ch-wide { display: block; }
+        .aimo-ch-stacked { display: none; }
+
+        /* TEAM */
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+            gap: 2rem 1.4rem;
+            margin: 2.2rem 0 0.5rem;
+        }
+
+        .team-card {
+            text-align: center;
+        }
+
+        .team-avatar {
+            position: relative;
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            margin: 0 auto 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #fff;
+            letter-spacing: 0.01em;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+            box-shadow: 0 4px 14px rgba(59, 108, 245, 0.18);
+        }
+
+        .team-card.advisor .team-avatar {
+            background: linear-gradient(135deg, var(--color-accent), var(--color-accent-light));
+            box-shadow: 0 4px 14px rgba(212, 168, 67, 0.2);
+        }
+
+        .team-avatar img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .team-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--color-text);
+            line-height: 1.25;
+        }
+
+        .team-affil {
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin: 0.15rem 0 0.45rem;
+        }
+
+        .team-sticker {
+            display: inline-block;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.66rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #8a6d1f;
+            background: rgba(212, 168, 67, 0.16);
+            border: 1px solid rgba(212, 168, 67, 0.4);
+            border-radius: 999px;
+            padding: 0.1rem 0.55rem;
+            margin: -0.1rem 0 0.5rem;
+        }
+
+        .team-role {
+            font-size: 0.8rem;
+            color: var(--color-text-light);
+            line-height: 1.55;
+        }
+
+        .team-role strong {
+            color: var(--color-text);
+        }
+
+        .team-card.advisor .team-role strong {
+            color: var(--color-text);
+        }
+
+        .team-subhead {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.13em;
+            color: var(--color-text-light);
+            margin: 2.6rem 0 0;
+        }
+
+        @media (max-width: 600px) {
+            .team-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1.6rem 1rem; }
+            .team-avatar { width: 72px; height: 72px; }
+        }
+
+        /* TIMELINE */
+        .timeline {
+            position: relative;
+            margin: 2.5rem 0 0;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: linear-gradient(180deg, var(--color-primary), var(--color-accent));
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 0 0 2.2rem 2rem;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--color-card-bg);
+            border: 3px solid var(--color-primary);
+            z-index: 1;
+        }
+
+        .timeline-item:last-child::before {
+            border-color: var(--color-accent);
+            background: var(--color-accent);
+        }
+
+        .timeline-date {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--color-text);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-item.gold::before {
+            border-color: var(--color-accent);
+        }
+
+        .timeline-item.gold .timeline-date {
+            color: var(--color-accent);
+        }
+
+        .timeline-item.gold .timeline-desc {
+            color: var(--color-text);
+        }
+
+        .timeline-desc {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+            line-height: 1.6;
+        }
+
+        /* LEADERBOARD */
+        .leaderboard-header {
+            margin-bottom: 1.25rem;
+        }
+
+        .leaderboard-header p {
+            margin-bottom: 0;
+        }
+
+        .leaderboard-notice {
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.15rem;
+            border: 1px solid var(--color-border);
+            border-left: 3px solid var(--color-accent);
+            border-radius: 8px;
+            background: #fffbeb;
+            color: var(--color-text-light);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .leaderboard-notice strong {
+            color: var(--color-text);
+        }
+
+        .leaderboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: start;
+            gap: 1.25rem;
+        }
+
+        .leaderboard-card {
+            min-width: 0;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            background: var(--color-bg-white);
+            box-shadow: 0 8px 30px rgba(13,26,63,0.05);
+            position: relative;
+        }
+
+        .leaderboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .leaderboard-card.main::before {
+            background: linear-gradient(90deg, var(--color-blackbox), #a78bfa);
+        }
+
+        .leaderboard-card.small::before {
+            background: linear-gradient(90deg, var(--color-whitebox), #22d3ee);
+        }
+
+        .leaderboard-track-title {
+            padding: 1.1rem 1rem 1rem;
+            border-bottom: 1px solid var(--color-border);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        .leaderboard-table-wrap {
+            max-height: 32rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-gutter: stable;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .leaderboard-table th {
+            padding: 0.7rem 0.45rem;
+            border-bottom: 1px solid var(--color-border);
+            background: var(--color-bg-light);
+            color: var(--color-text-light);
+            font-size: 0.64rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-align: left;
+            text-transform: uppercase;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .leaderboard-table td {
+            padding: 0.75rem 0.45rem;
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-text-light);
+            vertical-align: middle;
+        }
+
+        .leaderboard-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .leaderboard-table tbody tr:hover {
+            background: rgba(59,108,245,0.025);
+        }
+
+        .leaderboard-table .leaderboard-baseline td {
+            border-top: 2px solid;
+            border-bottom: 1px solid;
+            font-weight: 600;
+        }
+
+        .leaderboard-table .leaderboard-baseline.main td {
+            border-color: rgba(139,92,246,0.35);
+            background: rgba(139,92,246,0.07);
+        }
+
+        .leaderboard-table .leaderboard-baseline.small td {
+            border-color: rgba(6,182,212,0.35);
+            background: rgba(6,182,212,0.07);
+        }
+
+        .leaderboard-table .leaderboard-baseline .participant {
+            color: var(--color-text);
+        }
+
+        .leaderboard-table .leaderboard-baseline .submitted {
+            color: var(--color-text-light);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .leaderboard-table .leaderboard-baseline.main .score {
+            color: var(--color-blackbox);
+        }
+
+        .leaderboard-table .leaderboard-baseline.small .score {
+            color: #0891a2;
+        }
+
+        .leaderboard-table .rank {
+            width: 42px;
+            text-align: center;
+        }
+
+        .leaderboard-table td.rank {
+            color: var(--color-text);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .leaderboard-table .participant {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .leaderboard-table td.participant {
+            font-weight: 600;
+        }
+
+        .leaderboard-table .participant a {
+            display: block;
+            overflow: hidden;
+            color: var(--color-text);
+            border-bottom: 0;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .leaderboard-table .participant a:hover {
+            color: var(--color-primary);
+        }
+
+        .leaderboard-table .submitted {
+            width: 92px;
+            white-space: nowrap;
+        }
+
+        .leaderboard-table td.submitted {
+            font-size: 0.7rem;
+            line-height: 1.4;
+        }
+
+        .leaderboard-table td.submitted span {
+            display: block;
+        }
+
+        .leaderboard-table .submission-time {
+            color: var(--color-text);
+            font-weight: 500;
+        }
+
+        .leaderboard-table .score {
+            width: 78px;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .leaderboard-table td.score {
+            color: var(--color-primary);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.86rem;
+            font-weight: 700;
+        }
+
+        .leaderboard-state {
+            padding: 3.5rem 1.5rem;
+            color: var(--color-text-light);
+            text-align: center;
+        }
+
+        .leaderboard-state p {
+            margin-bottom: 0.75rem;
+        }
+
+        .leaderboard-state p:last-child {
+            margin-bottom: 0;
+        }
+
+        .leaderboard-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding-top: 0.85rem;
+            color: var(--color-text-light);
+            font-size: 0.76rem;
+        }
+
+        .leaderboard-meta[hidden] {
+            display: none;
+        }
+
+        .leaderboard-meta a {
+            flex: 0 0 auto;
+        }
+
+        .live-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            margin-right: 0.45rem;
+            border-radius: 50%;
+            background: #22a06b;
+            box-shadow: 0 0 0 3px rgba(34,160,107,0.12);
+            vertical-align: 0.05em;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--color-bg-dark);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        footer p {
+            color: rgba(200,205,224,0.5);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--color-accent);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(212,168,67,0.2);
+        }
+
+        footer a:hover {
+            border-bottom-color: var(--color-accent);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 700px) {
+            nav ul {
+                gap: 0.85rem;
+            }
+
+            nav ul li a {
+                font-size: 0.78rem;
+            }
+
+            .hero {
+                padding: 8rem 1.5rem 3.5rem;
+            }
+
+            .model-cards,
+            .submission-cards,
+            .prize-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .eval-box {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1.5rem;
+            }
+
+            section {
+                padding: 3.5rem 1.5rem;
+            }
+
+            .leaderboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav ul {
+                gap: 0.6rem;
+            }
+
+            nav ul li:not(:nth-child(3)):not(:nth-child(4)) {
+                display: none;
+            }
+
+            .badges {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .leaderboard-table th,
+            .leaderboard-table td {
+                padding-left: 0.7rem;
+                padding-right: 0.7rem;
+            }
+
+            .leaderboard-meta {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="#" class="logo">AIMO <span>Interpretability</span></a>
+        <ul>
+            <li><a href="#background">Background</a></li>
+            <li><a href="#challenge">Challenge</a></li>
+            <li><a href="#leaderboard">Leaderboard</a></li>
+            <li><a href="#timeline">Timeline</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#team">Team</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <p class="venue">NeurIPS 2026 Competition</p>
+    <h1>AIMO <span class="highlight">Interpretability</span> Challenge</h1>
+    <p class="subtitle">
+        Can your method tell when AI genuinely solves the problem and when it is faking it?<br>
+        Distinguish robust from spurious reasoning in frontier AI.
+    </p>
+        <div class="header-bubble">
+        <b>Starting August 2026 -- <a href="https://discord.gg/PaAMFmpsBQ" target="_blank" rel="noopener noreferrer">Join our discord</a> or <a href="https://forms.gle/EmvfJz2uSEQpbttB9" target="_blank" rel="noopener noreferrer">register for updates!</a></b>
+    </div>
+    <div class="badges">
+        <span class="badge"><span class="emoji">💰</span> <strong>$12,500</strong> in prizes</span>
+        <span class="badge"><span class="emoji">📐</span> Unseen olympiad problems</span>
+        <span class="badge"><span class="emoji">🧠</span> Frontier reasoning models from AIMO 3</span>
+    </div>
+    <div class="cta-group">
+        <a href="https://github.com/aimo-interp/getting-started" class="btn btn-primary" target="_blank">
+            &#9655; Join the Challenge
+        </a>
+        <a href="https://arxiv.org/abs/2607.13899" class="btn btn-outline" target="_blank" rel="noopener noreferrer">
+            📄 NeurIPS 2026 Proposal
+        </a>
+        <a href="#participate" class="btn btn-outline">How to participate</a>
+    </div>
+</section>
+
+<!-- BACKGROUND -->
+<section id="background">
+    <div class="section-inner">
+        <div class="section-label">Background</div>
+        <h2 class="section-title">Why Interpretability for AIMO?</h2>
+        <p>
+            <a href="https://www.fieldsmodel.org/" target="_blank">AIMO (AI Mathematical Olympiad)</a> is an annual competition of AI systems in solving unseen frontier mathematical problems.
+            Thanks to its importance and large prizes ($2.2M USD this year), AIMO attracts huge community attention — last year, the competition was covered by <strong>global media</strong>
+            <a href="https://www.wsj.com/tech/ai/ai-math-prize-imo-09a5852d" target="_blank">The Wall Street Journal</a> and
+            <a href="https://www.bloomberg.com/news/articles/2024-12-05/billionaire-gerko-s-xtx-gives-millions-to-make-ai-better-at-math" target="_blank">Bloomberg</a>,
+            and participated in by over <a href="https://www.kaggle.com/organizations/aimoprize" target="_blank"><strong>4,000+ teams</strong></a>.
+        </p>
+        <p>
+            Our ambition is to turn this tremendous <em>engineering</em> effort into <strong>scientific knowledge</strong> — laying robust stepping stones that will <strong>accelerate progress</strong> in mathematical reasoning and in AI as a whole.
+        </p>
+        <p>
+            We believe that <strong>interpretability research</strong> can play a key role in helping us achieve this goal — allowing us to <strong>understand the mechanisms</strong> of reasoning in SOTA AI systems and providing <strong>actionable knowledge</strong> for their future, open advancements.
+        </p>
+        <p>
+            More broadly, the competition <strong>connects interpretability and generalization research</strong> around one of the most important questions in AI today: to what extent is the decision-making of frontier AI models generalizable and thus, reliable?
+        </p>
+    </div>
+</section>
+
+<!-- THE CHALLENGE -->
+<section id="challenge" class="bg-light">
+    <div class="section-inner">
+        <div class="section-label">The Challenge</div>
+        <h2 class="section-title">Robust or Spurious?</h2>
+        <p>
+            The AIMO Interpretability Challenge requires participants to submit a <strong>system</strong>
+            that decides, for a single <strong>problem–model pair</strong>, whether that model answers
+            <em>that</em> problem <strong>robustly</strong>.
+            The full problem formulation, data collection, and evaluation protocol are described in our
+            <a href="https://arxiv.org/abs/2607.13899">competition proposal paper</a>.
+        </p>
+
+        <figure class="aimo-ch-fig">
+
+            <!-- wide layout (>720px) -->
+            <div class="aimo-ch-wide">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 320" role="img" aria-labelledby="ttl dsc">
+                <title id="ttl">One problem, one model, one verdict</title>
+                <desc id="dsc">An unseen olympiad problem and one AIMO 3 model are passed to the participant's system, which returns a single verdict: robust or spurious.</desc>
+
+                <defs>
+                <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#0B1E45"/>
+                    <stop offset="55%" stop-color="#081737"/>
+                    <stop offset="100%" stop-color="#050F26"/>
+                </linearGradient>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M40 0 V40 M0 40 H40" fill="none" stroke="#2B7FFF" stroke-width="0.5" opacity="0.10"/>
+                </pattern>
+                <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#2B7FFF" stop-opacity="0.28"/>
+                    <stop offset="100%" stop-color="#2B7FFF" stop-opacity="0"/>
+                </radialGradient>
+                <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M0 0 L10 5 L0 10 z" fill="#5B8DD6"/>
+                </marker>
+                <style>
+                    .cap  { font: 700 12.5px ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; fill: #F2B233; letter-spacing: .16em; }
+                    .box  { font: 800 21px ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; fill: #FFFFFF; }
+                    .sub  { font: 500 13.5px ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; fill: #9DB4D8; }
+                    .ask  { font: 700 15px ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; fill: #6FA8FF; letter-spacing: .03em; }
+                    .mark { font: 700 21px ui-sans-serif, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; }
+                </style>
+                </defs>
+
+                <rect width="960" height="320" rx="16" fill="url(#bg)"/>
+                <rect width="960" height="320" rx="16" fill="url(#grid)"/>
+                <ellipse cx="559" cy="155" rx="240" ry="135" fill="url(#glow)"/>
+
+                <!-- inputs -->
+                <rect x="40" y="40" width="270" height="100" rx="14" fill="#102A57" fill-opacity="0.75" stroke="#2B7FFF" stroke-opacity="0.35" stroke-width="1.5"/>
+                <text x="64" y="72" class="cap">PROBLEM</text>
+                <text x="64" y="102" class="box">Olympiad problem</text>
+                <text x="64" y="124" class="sub">unseen, from AIMO 3</text>
+
+                <rect x="40" y="170" width="270" height="100" rx="14" fill="#102A57" fill-opacity="0.75" stroke="#2B7FFF" stroke-opacity="0.35" stroke-width="1.5"/>
+                <text x="64" y="202" class="cap">MODEL</text>
+                <text x="64" y="232" class="box">One AIMO 3 model</text>
+                <text x="64" y="254" class="sub">weights · activations · CoT</text>
+
+                <!-- merge into a single instance -->
+                <path d="M310 90 H336 Q350 90 350 104 V141" fill="none" stroke="#5B8DD6" stroke-opacity="0.7" stroke-width="1.5"/>
+                <path d="M310 220 H336 Q350 220 350 206 V169" fill="none" stroke="#5B8DD6" stroke-opacity="0.7" stroke-width="1.5"/>
+                <circle cx="350" cy="155" r="4.5" fill="#F2B233"/>
+                <path d="M355 155 H 424" fill="none" stroke="#5B8DD6" stroke-width="1.5" marker-end="url(#arw)"/>
+
+                <!-- system -->
+                <rect x="434" y="105" width="250" height="100" rx="14" fill="#0C2149" fill-opacity="0.9" stroke="#F2B233" stroke-opacity="0.55" stroke-width="1.5"/>
+                <text x="559" y="149" text-anchor="middle" class="box">Your system</text>
+                <text x="559" y="176" text-anchor="middle" class="sub">white-box or black-box</text>
+                <text x="559" y="248" text-anchor="middle" class="ask">Is the model solving the problem robustly?</text>
+
+                <path d="M694 155 H 748" fill="none" stroke="#5B8DD6" stroke-width="1.5" marker-end="url(#arw)"/>
+
+                <!-- verdict -->
+                <rect x="758" y="91" width="180" height="56" rx="12" fill="#0D2A55" fill-opacity="0.85" stroke="#3B9EFF" stroke-width="1.5"/>
+                <text x="784" y="127" class="mark" fill="#3B9EFF">✓</text>
+                <text x="812" y="126" class="box">Robust</text>
+
+                <rect x="758" y="163" width="180" height="56" rx="12" fill="#2E2410" fill-opacity="0.85" stroke="#F2B233" stroke-width="1.5"/>
+                <text x="784" y="199" class="mark" fill="#F2B233">⚠</text>
+                <text x="812" y="198" class="box">Spurious</text>
+
+                <text x="848" y="248" text-anchor="middle" class="sub">one binary verdict</text>
+            </svg>
+            </div>
+
+            <!-- stacked layout (<=720px) -->
+            <div class="aimo-ch-stacked">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 572" role="img" aria-labelledby="ttlm dscm">
+                <title id="ttlm">One problem, one model, one verdict</title>
+                <desc id="dscm">An unseen olympiad problem and one AIMO 3 model are passed to the participant's system, which returns a single verdict: robust or spurious.</desc>
+                <defs>
+                <linearGradient id="bgm" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#0B1E45"/><stop offset="55%" stop-color="#081737"/><stop offset="100%" stop-color="#050F26"/>
+                </linearGradient>
+                <pattern id="gridm" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M40 0 V40 M0 40 H40" fill="none" stroke="#2B7FFF" stroke-width="0.5" opacity="0.10"/>
+                </pattern>
+                <marker id="arwm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M0 0 L10 5 L0 10 z" fill="#5B8DD6"/>
+                </marker>
+                <style>
+                    .capm{font:700 11px ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;fill:#F2B233;letter-spacing:.16em}
+                    .boxm{font:800 18px ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;fill:#fff}
+                    .subm{font:500 12.5px ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;fill:#9DB4D8}
+                    .askm{font:700 13.5px ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;fill:#6FA8FF}
+                    .markm{font:700 18px ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif}
+                </style>
+                </defs>
+                <rect width="380" height="572" rx="16" fill="url(#bgm)"/>
+                <rect width="380" height="572" rx="16" fill="url(#gridm)"/>
+
+                <rect x="20" y="20" width="340" height="86" rx="14" fill="#102A57" fill-opacity=".75" stroke="#2B7FFF" stroke-opacity=".35" stroke-width="1.5"/>
+                <text x="44" y="49" class="capm">PROBLEM</text>
+                <text x="44" y="76" class="boxm">Olympiad problem</text>
+                <text x="44" y="95" class="subm">incl. never published AIMO problems</text>
+
+                <rect x="20" y="120" width="340" height="86" rx="14" fill="#102A57" fill-opacity=".75" stroke="#2B7FFF" stroke-opacity=".35" stroke-width="1.5"/>
+                <text x="44" y="149" class="capm">MODEL</text>
+                <text x="44" y="176" class="boxm">One AIMO 3 model</text>
+                <text x="44" y="195" class="subm">weights · activations · CoT</text>
+
+                <circle cx="190" cy="222" r="4.5" fill="#F2B233"/>
+                <path d="M190 227 V 258" fill="none" stroke="#5B8DD6" stroke-width="1.5" marker-end="url(#arwm)"/>
+
+                <rect x="20" y="268" width="340" height="86" rx="14" fill="#0C2149" fill-opacity=".9" stroke="#F2B233" stroke-opacity=".55" stroke-width="1.5"/>
+                <text x="190" y="306" text-anchor="middle" class="boxm">Your system</text>
+                <text x="190" y="328" text-anchor="middle" class="subm">white-box or black-box</text>
+                <text x="190" y="378" text-anchor="middle" class="askm">Is this model robust on this problem?</text>
+
+                <path d="M190 392 V 420" fill="none" stroke="#5B8DD6" stroke-width="1.5" marker-end="url(#arwm)"/>
+
+                <rect x="20" y="430" width="163" height="56" rx="12" fill="#0D2A55" fill-opacity=".85" stroke="#3B9EFF" stroke-width="1.5"/>
+                <text x="46" y="465" class="markm" fill="#3B9EFF">✓</text>
+                <text x="70" y="464" class="boxm">Robust</text>
+
+                <rect x="197" y="430" width="163" height="56" rx="12" fill="#2E2410" fill-opacity=".85" stroke="#F2B233" stroke-width="1.5"/>
+                <text x="223" y="465" class="markm" fill="#F2B233">⚠</text>
+                <text x="247" y="464" class="boxm">Spurious</text>
+
+                <text x="190" y="516" text-anchor="middle" class="subm">one binary verdict</text>
+            </svg>
+            </div>
+
+        </figure>
+
+        <p>What do we mean by <strong>robust</strong> or <strong>spurious</strong>?</p>
+        <div class="submission-cards">
+
+            <div class="sub-card">
+            <h3>🛡️ Robust</h3>
+            <p>
+                The model's answer holds up under perturbations that leave the deductive chain of the problem unchanged.
+            </p>
+            </div>
+
+            <div class="sub-card">
+            <h3>⚠️ Spurious</h3>
+            <p>
+                Counterfactual evaluation with perturbations reveals that the model's answer relies on at least one spurious pattern.
+            </p>
+            </div>
+
+        </div>
+
+        <p>
+        Competition submissions take the form of <strong>Codabench submission bundles</strong> that comply
+        with the unified interface defined in the
+        <a href="https://github.com/aimo-interp/getting-started" target="_blank">getting-started repository</a>,
+        and are evaluated on our servers <strong>without internet access</strong>.
+        Methods are ranked by their <strong>accuracy</strong> in classifying whether a given model answers
+        a given problem <strong>robustly</strong>.
+        The provided validation set covers all types of models contained in the test set.
+        </p>
+                    <h3 class="section-subtitle">Submission Types</h3>
+
+        <div class="submission-cards">
+            <div class="sub-card main">
+                <div class="card-icon">🏆</div>
+                <h3>Main Track</h3>
+                <p>Includes the <em>full scale</em> of top-performing models from AIMO 3 — no restrictions on model size.</p>
+            </div>
+            <div class="sub-card small">
+                <div class="card-icon">🔬</div>
+                <h3>Small Models Track</h3>
+                <p>Subsets the evaluation to the best-performing models <em>below the 10-billion-parameter scale</em>, providing a comparable setup for compute-heavy methods such as Sparse Autoencoders or Transcoders.</p>
+            </div>
+        </div>
+
+        <h3 class="section-subtitle">Prizes</h3>
+
+        <div class="prize-cards">
+            <div class="prize-card main">
+                <h3>🏆 Main Track</h3>
+                <ul class="prize-list">
+                    <li><span class="place">🥇 1st place</span> <span class="amount">$3,000</span></li>
+                    <li><span class="place">🥈 2nd place</span> <span class="amount">$1,000</span></li>
+                    <li><span class="place">🥉 3rd place</span> <span class="amount">$600</span></li>
+                </ul>
+            </div>
+            <div class="prize-card small">
+                <h3>🔬 Small Models Track</h3>
+                <ul class="prize-list">
+                    <li><span class="place">🥇 1st place</span> <span class="amount">$2,000</span></li>
+                    <li><span class="place">🥈 2nd place</span> <span class="amount">$600</span></li>
+                    <li><span class="place">🥉 3rd place</span> <span class="amount">$300</span></li>
+                </ul>
+            </div>
+
+        </div>
+        <p class="section-note">
+            <strong>Ties</strong> in the ranking are broken by <strong>efficiency</strong>: preference is given to the submission with the faster average runtime over three repeated trials.
+        </p>
+
+        <div class="eval-box writeup-box" style="margin-top: 1.5rem;">
+            <div>
+                <h3>✍ Writeup Prizes</h3>
+                <p>
+                    <strong>$5,000</strong> will be awarded for selected <strong>technical reports</strong>, regardless of their ranking, judged on their <strong>scientific contribution</strong>.
+                    We are particularly interested in work on <strong>generalization of interpretability methods</strong>, <strong>actionable interpretability</strong>, <strong>negative results</strong> or <strong>efficient methods</strong>.
+                </p>
+            </div>
+        </div>
+
+        <h3 class="section-subtitle" id="rules">Competition Rules</h3>
+        <p>Submissions must follow these rules, designed to prevent overfitting and keep the competition fair:</p>
+        <ol class="rules-list">
+            <li><strong>Data</strong> [Clarification 19 Sep] We retired the rule that teams may not use extra labeled data. We disincentivise large-scale test-time perturbation generation through the inference time limit, but such approaches are not explicitly disallowed. Note that any attempts for leakage of evaluation data are still forbidden and will result in the disqualification.</li>
+            <li><strong>Signals:</strong> teams can use weights, activations, token probabilities, or any other model internal signals as inputs for their methods. While we encourage the development and submission of white-box methods, black-box behavioural analyses within the evaluation compute budget (eg based on models’ reasoning chains) are also permitted.</li>
+            <li><strong>Tracks:</strong> teams may submit to the Main or Small models track, but each submission will count only for the chosen submission track. Teams may choose to submit the same submission to both (Main and Small Models) tracks.</li>
+            <li><strong>Report:</strong> teams considered for awards must submit a technical report with details on their submission and its open-sourced implementation within two weeks of the final deadline (by November 15, 2026) for compliance checks.</li>
+            <li><strong>Transparency:</strong> teams considered for awards must enable the organizers to reproduce their score from the instructions in the technical report alone. The report must document the training data, the training codebase and the submission bundle, and the submission must depend solely on the documented resources.</li>
+            <li><strong>Reviewing:</strong> teams considered for awards commit to peer-review up to 3 technical reports of other teams during the reviewing period (November 15&ndash;30, 2026).</li>
+        </ol>
+
+        <h3 class="section-subtitle" id="participate">How to Participate</h3>
+        <div class="env-cards">
+            <div class="env-card">
+                <div class="env-icon">1️⃣</div>
+                <div>
+                    <h3>Register or Join our Discord for Updates</h3>
+                    <p>Fill in the <a href="https://forms.gle/EmvfJz2uSEQpbttB9" target="_blank" rel="noopener noreferrer">registration form</a> for email updates, or join our <a href="https://discord.gg/PaAMFmpsBQ" target="_blank" rel="noopener noreferrer">Discord channel</a>.</p>
+                </div>
+            </div>
+            <div class="env-card">
+                <div class="env-icon">2️⃣</div>
+                <div>
+                    <h3>Make your first submission</h3>
+                    <p>Clone the <a href="https://github.com/aimo-interp/getting-started" target="_blank">getting-started repository</a> and submit one of its example solutions as-is to see your submission in the <a href="https://www.codabench.org/competitions/16180/" target="_blank">Codabench leaderboard</a>.</p>
+                </div>
+            </div>
+            <div class="env-card">
+                <div class="env-icon">3️⃣</div>
+                <div>
+                    <h3>Implement and package your new shiny method</h3>
+                    <p>Wrap your method in the <strong>Codabench interface</strong> specified in the <a href="https://github.com/aimo-interp/getting-started" target="_blank">getting-started repository</a>, and draw on the <a href="https://github.com/aimo-interp/baselines" target="_blank">reference baselines</a> for worked implementations. No internet access is available at evaluation time.</p>
+                </div>
+            </div>
+            <div class="env-card">
+                <div class="env-icon">4️⃣</div>
+                <div>
+                    <h3>Compete for the prizes</h3>
+                    <p>Iterate on the leaderboard until the final deadline on <strong>November 1, 2026</strong> — with <strong>$12,500</strong> in prizes across the Main and Small Models tracks.</p>
+                </div>
+            </div>
+        </div>
+        <p class="section-note">
+            Need compute support? Submit a brief proposal in <a href="https://forms.gle/oYkYDN1EtSVeSfMd9" target="_blank">this form</a> to request access to compute for your participation.
+        </p>
+    </div>
+</section>
+
+<!-- LEADERBOARD -->
+<section id="leaderboard">
+    <div class="section-inner">
+        <div class="leaderboard-header">
+            <div class="section-label">Live Standings</div>
+            <h2 class="section-title">Leaderboard</h2>
+            <p>Current best submissions for each competition track, updated automatically from Codabench.</p>
+        </div>
+
+        <div class="leaderboard-notice" role="note">
+            <strong>These are not final results.</strong> Submissions will be evaluated on a private test set at the end of the competition, so the final rankings may change.
+        </div>
+
+        <div class="leaderboard-grid">
+            <article class="leaderboard-card main">
+                <h3 class="leaderboard-track-title">🏆 Main Track</h3>
+                <div class="leaderboard-state" id="leaderboard-main-state" role="status" aria-live="polite">
+                    <p>Loading the latest standings…</p>
+                </div>
+                <div class="leaderboard-table-wrap" id="leaderboard-main-table" hidden>
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th class="rank" scope="col">Rank</th>
+                                <th class="participant" scope="col">Participant</th>
+                                <th class="submitted" scope="col">Submitted</th>
+                                <th class="score" scope="col">Accuracy</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-main-body"></tbody>
+                    </table>
+                </div>
+            </article>
+
+            <article class="leaderboard-card small">
+                <h3 class="leaderboard-track-title">🔬 Small Models Track</h3>
+                <div class="leaderboard-state" id="leaderboard-small-state" role="status" aria-live="polite">
+                    <p>Loading the latest standings…</p>
+                </div>
+                <div class="leaderboard-table-wrap" id="leaderboard-small-table" hidden>
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th class="rank" scope="col">Rank</th>
+                                <th class="participant" scope="col">Participant</th>
+                                <th class="submitted" scope="col">Submitted</th>
+                                <th class="score" scope="col">Accuracy</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-small-body"></tbody>
+                    </table>
+                </div>
+            </article>
+        </div>
+
+        <div class="leaderboard-meta" id="leaderboard-meta" hidden>
+            <span id="leaderboard-updated"><span class="live-dot" aria-hidden="true"></span>Last updated: —</span>
+            <a href="https://www.codabench.org/competitions/16180/" target="_blank" rel="noopener noreferrer">View on Codabench ↗</a>
+        </div>
+
+        <noscript>
+            <div class="leaderboard-state">
+                <p>JavaScript is required to load the live standings. You can view them directly on <a href="https://www.codabench.org/competitions/16180/">Codabench</a>.</p>
+            </div>
+        </noscript>
+    </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline" class="bg-light">
+    <div class="section-inner">
+        <div class="section-label">Timeline</div>
+        <h2 class="section-title">Key Dates</h2>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-date">Early Aug: competition start &amp; warmup phase</div>
+                <div class="timeline-desc">Competition start: release of train+validation data and baseline submission bundles, two-week warm-up phase</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">Aug 15 – Nov 1, 2026</div>
+                <div class="timeline-desc">Main competition phase</div>
+            </div>
+            <div class="timeline-item gold">
+                <div class="timeline-date">Nov 1, 2026</div>
+                <div class="timeline-desc">Final submission deadline — closing of the submission interface</div>
+            </div>
+            <div class="timeline-item gold">
+                <div class="timeline-date">Nov 1 – Nov 15, 2026</div>
+                <div class="timeline-desc">Participant technical report submission window</div>
+            </div>
+            <div class="timeline-item gold">
+                <div class="timeline-date">November 15 – November 30, 2026</div>
+                <div class="timeline-desc">Validation of results, technical reports review and rules compliance check, result analysis</div>
+            </div>
+            <div class="timeline-item gold">
+                <div class="timeline-date">December 12, 2026</div>
+                <div class="timeline-desc">Competition workshop at NeurIPS 2026 in Paris</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="bg-light">
+    <div class="section-inner">
+        <div class="section-label">FAQ</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+
+        <h3 class="section-subtitle">1. Which materials should I follow?</h3>
+        <p>Use <strong>this website</strong> as the primary reference, the <a href="https://github.com/aimo-interp/getting-started" target="_blank">getting-started repository</a> for the submission interface and the evaluation environment, and the <a href="https://arxiv.org/abs/2607.13899" target="_blank">competition proposal paper</a> for background. Where the paper differs on specifics, the website and the repository are current.</p>
+
+        <h3 class="section-subtitle">2. Who can participate?</h3>
+        <p>The challenge is open to everyone — academic researchers, independent researchers, and industry practitioners alike. There are no restrictions on team size, affiliation, or career level. Students on all education levels are welcome!</p>
+
+        <h3 class="section-subtitle">3. Do I need to be a participant of AIMO to join?</h3>
+        <p>No. The AIMO Interpretability Challenge is a separate competition. You will be given access to AIMO model submissions as part of the provided environment — you do not need to submit to AIMO yourself.</p>
+
+        <h3 class="section-subtitle">4. What is the difference between the Main Track and the Small Models Track?</h3>
+        <p>The <strong>Main Track</strong> covers the full scale of top-performing models from AIMO 3 with no restriction on model size. The <strong>Small Models Track</strong> subsets the evaluation to the best-performing models below the <strong>10-billion-parameter</strong> scale, offering a comparable setup for methods that are more compute-heavy to train — such as Sparse Autoencoders or Transcoders — where analysing very large models may be infeasible.</p>
+
+        <h3 class="section-subtitle">5. What runtime environment does my submission need?</h3>
+        <p>Submissions must be packaged as Codabench <strong>submission bundle</strong> and must conform to the unified interface defined in the <a href="https://github.com/aimo-interp/getting-started" target="_blank">getting-started repository</a>. Containers are evaluated on our servers <strong>without internet access</strong>. Detailed technical documentation and a starter kit are available in the <a href="https://github.com/aimo-interp/getting-started" target="_blank">getting-started repository</a>.</p>
+
+        <h3 class="section-subtitle">6. Which models will my submission be asked to analyse?</h3>
+        <p>The <strong>Main Track</strong> evaluates <strong>Qwen/Qwen3.5-4B</strong>, <strong>Skywork/Skywork-OR1-Math-7B</strong>, <strong>allenai/Olmo-3-7B-Think</strong>, <strong>deepseek-ai/DeepSeek-R1-0528-Qwen3-8B</strong> and <strong>openai/gpt-oss-120b</strong>; the <strong>Small Models Track</strong> evaluates the same set without gpt-oss-120b. All are open-weights checkpoints cached on the evaluation workers, so any method can load the model it is asked to judge.</p>
+
+        <h3 class="section-subtitle">7. How is the robustness label defined?</h3>
+        <p>A case is robust when the model's accuracy holds up across every perturbation we apply, and non-robust when at least one degrades it clearly; the exact criterion differs from the outline in the proposal paper and is not published, because we want to disincentivise efforts to reconstruct the labels over label-agnostic methods. Every case in the validation sets is supported by a substantially large boundary betwen positives and negatives.</p>
+
+        <h3 class="section-subtitle">8. How much time does my submission get?</h3>
+        <p>Each submission has <strong>3600 seconds</strong> for the entire prediction run, covering all models and all problems together, with the scoring run limited separately; the <a href="https://github.com/aimo-interp/getting-started" target="_blank">getting-started repository</a> documents the environment in full.</p>
+
+        <h3 class="section-subtitle">9. Will there be tutorial material and a starter kit?</h3>
+        <p>Yes. A starter kit with worked examples and full documentation is available in the <a href="https://github.com/aimo-interp/getting-started" target="_blank">getting-started repository</a>, with baseline implementations in the <a href="https://github.com/aimo-interp/baselines" target="_blank">baselines repository</a>. The problem formulation and evaluation methodology are described in our <a href="https://arxiv.org/abs/2607.13899" target="_blank">competition proposal paper</a>, available now on arXiv.</p>
+
+        <h3 class="section-subtitle">10. Can I participate in both tracks?</h3>
+        <p>Yes, teams may submit to both the Main Track and the Small Models Track independently.</p>
+
+        <h3 class="section-subtitle">11. How is the winner determined?</h3>
+        <p>Submissions are ranked by accuracy in classifying each problem–model instance as robust or spurious on the held-out test set. The Main Track and Small Models Track are ranked separately.</p>
+
+        <h3 class="section-subtitle">12. What sampling/decoding settings were used to generate model predictions?</h3>
+        <p>We used <strong>temperature = 1.0</strong>, <strong>top_k = 40</strong>, and <strong>top_p = 0.95</strong> to keep the answers diverse.</p>
+
+        <h3 class="section-subtitle">13. What is the maximum generation length, and how are responses that run out of budget scored?</h3>
+        <p>The maximum generation length is <strong>100,000 tokens</strong>, including thinking. We also experimented with a thinking-budget approach that truncates the reasoning and issues a follow-up call to force a final answer. A response that reaches the limit without a parseable final answer is scored as incorrect, the same as any other wrong answer.</p>
+
+        <h3 class="section-subtitle">14. Do the evaluated models use extended reasoning ("thinking")?</h3>
+        <p>Yes — <strong>Qwen/Qwen3.5-4B</strong> uses thinking mode, and <strong>openai/gpt-oss-120b</strong> uses <strong>low</strong>, <strong>medium</strong>, and <strong>high</strong> reasoning efforts.</p>
+
+        <h3 class="section-subtitle">15. What if I have more questions?</h3>
+        <p>Reach out to us on <a href="https://discord.gg/PaAMFmpsBQ" target="_blank" rel="noopener noreferrer">AIMO-Interp Discord</a> or via <a href="mailto:aimo.interp@gmail.com">aimo.interp@gmail.com</a> or open an issue in the <a href="https://github.com/aimo-interp/getting-started" target="_blank">getting-started repository</a>. This FAQ will be updated regularly.</p>
+
+    </div>
+</section>
+
+<!-- ORGANIZING TEAM -->
+<section id="team">
+    <div class="section-inner">
+        <div class="section-label">Team</div>
+        <h2 class="section-title">List of Organizers</h2>
+        <p class="team-intro">
+            The organizing team combines expertise in <strong>AI evaluation, interpretability, and data collection</strong> with top-tier
+            <strong>olympiad-level mathematicians</strong> — a combination that lets us curate the high-quality robustness validation this challenge is built on.
+            Several of us are actively involved in related initiatives, including AIMO, bringing first-hand experience running competitions at scale.
+        </p>
+
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-avatar"><img src="team/michal-stefanik.jpg" alt="Michal Štefánik" onerror="this.remove()">MŠ</div>
+                <div class="team-name">Michal Štefánik</div>
+                <div class="team-affil">NII, Japan</div>
+                <div class="team-role"><strong>Lead organizer, website, communication.</strong> Researcher in evaluation, interpretability, and robustness of language models.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar"><img src="team/philipp-mondorf.jpg" alt="Philipp Mondorf" onerror="this.remove()">PM</div>
+                <div class="team-name">Philipp Mondorf</div>
+                <div class="team-affil">LMU Munich</div>
+                <div class="team-role"><strong>Core organizer, baselines, leaderboard.</strong> PhD researcher in reasoning and generalization of language models.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar"><img src="team/andreas-waldis.jpg" alt="Andreas Waldis" onerror="this.remove()">AW</div>
+                <div class="team-name">Andreas Waldis</div>
+                <div class="team-affil">Univ. of Tübingen</div>
+                <div class="team-role"><strong>Core organizer, baselines, beta testing.</strong> PostDoc and junior group lead researching the reliability and robustness of language models.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar"><img src="team/chuan-yang.jpg" alt="Chuan Yang" onerror="this.remove()">CY</div>
+                <div class="team-name">Chuan Yang</div>
+                <div class="team-affil">Fuzhou University</div>
+                <div class="team-role"><strong>Math expertise, problems validation.</strong> Associate Professor of mathematics and optimization, contributing olympiad-level math expertise.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar"><img src="team/robert-belanec.jpg" alt="Róbert Belanec" onerror="this.remove()">RB</div>
+                <div class="team-name">Róbert Belanec</div>
+                <div class="team-affil">KInIT, Slovakia</div>
+                <div class="team-role"><strong>Data curation, robustness labels.</strong> PhD researcher in efficient fine-tuning and generalization of language models.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar"><img src="team/qianying-liu.jpg" alt="Qianying Liu" onerror="this.remove()">QL</div>
+                <div class="team-name">Qianying Liu</div>
+                <div class="team-affil">NII, Japan</div>
+                <div class="team-role"><strong>Math expertise, evaluation.</strong> Researcher in the multilingual reasoning and interpretability of language models.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar"><img src="team/michal-spiegel.jpg" alt="Michal Spiegel" onerror="this.remove()">MS</div>
+                <div class="team-name">Michal Spiegel</div>
+                <div class="team-affil">Masaryk University</div>
+                <div class="team-role"><strong>Data curation coordination.</strong> Researcher in mechanistic interpretability of reasoning and length generalization.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar"><img src="team/josef-kuchar.jpg" alt="Josef Kuchař" onerror="this.remove()">JK</div>
+                <div class="team-name">Josef Kuchař</div>
+                <div class="team-affil">Masaryk University</div>
+                <div class="team-role"><strong>Infrastructure, Codabench.</strong> Software engineer focused on the development of machine learning systems.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar"><img src="team/marek-kadlcik.jpg" alt="Marek Kadlčík" onerror="this.remove()">MK</div>
+                <div class="team-name">Marek Kadlčík</div>
+                <div class="team-affil">Masaryk University</div>
+                <div class="team-role"><strong>Symbolic chains, permutations.</strong> PhD researcher in the reasoning and generalization of neural models.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar"><img src="team/adam-vawda-oomerjee.jpg" alt="Adam Vawda-Oomerjee" onerror="this.remove()">AV</div>
+                <div class="team-name">Adam Vawda-Oomerjee</div>
+                <div class="team-affil">NII / UCL</div>
+                <div class="team-role"><strong>Infrastructure, Codabench, beta testing.</strong> Researcher in reasoning, reinforcement learning, and world models.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar"><img src="team/chaoran-liu.jpg" alt="Chaoran Liu" onerror="this.remove()">CL</div>
+                <div class="team-name">Chaoran Liu</div>
+                <div class="team-affil">NII, Japan</div>
+                <div class="team-role"><strong>Infrastructure, participant support.</strong> Project Associate Professor researching architectures and training strategies of large language models.</div>
+            </div>
+            <div class="team-card advisor">
+                <div class="team-avatar"><img src="team/simon-frieder.jpg" alt="Simon Frieder" onerror="this.remove()">SF</div>
+                <div class="team-name">Simon Frieder</div>
+                <div class="team-affil">Oxford / AIMO</div>
+                <div class="team-role"><strong>Competition design, AIMO liaison.</strong> AIMO Prize Manager and founder of the Benchmarks &amp; Baselines non-profit, active leader in AI for Math community.</div>
+            </div>
+            <div class="team-card advisor">
+                <div class="team-avatar"><img src="team/barbara-plank.jpg" alt="Barbara Plank" onerror="this.remove()">BP</div>
+                <div class="team-name">Barbara Plank</div>
+                <div class="team-affil">LMU Munich</div>
+                <div class="team-role"><strong>Evaluation, data.</strong> Professor leading the MaiNLP lab and President of the Association for Computational Linguistics (ACL), focused on evaluation and reliability of language models.</div>
+            </div>
+            <div class="team-card advisor">
+                <div class="team-avatar"><img src="team/fazl-barez.jpg" alt="Fazl Barez" onerror="this.remove()">FB</div>
+                <div class="team-name">Fazl Barez</div>
+                <div class="team-affil">Univ. of Oxford</div>
+                <div class="team-role"><strong>Interpretability methods.</strong> Senior Researcher leading the Technical Safety &amp; Governance lab, bringing expertise in interpretability.</div>
+            </div>
+            <div class="team-card advisor">
+                <div class="team-avatar"><img src="team/pontus-stenetorp.jpg" alt="Pontus Stenetorp" onerror="this.remove()">PS</div>
+                <div class="team-name">Pontus Stenetorp</div>
+                <div class="team-affil">UCL / NII</div>
+                <div class="team-role"><strong>Evaluation, adversarial data, promotion.</strong> Professor of NLP and Deputy Director of the UCL Centre for AI, bringing expertise in data and evaluation.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+    <div class="section-inner">
+        <div class="section-label">Contact</div>
+        <h2 class="section-title">Get in Touch</h2>
+        <p>
+            For any questions about the challenge, compute access proposals, or technical issues, please reach out — we're happy to help.
+        </p>
+        <div class="eval-box" style="margin-top: 1.5rem;">
+            <div class="eval-icon">✉️</div>
+            <div>
+                <p>
+                    <strong>Primary contacts:</strong>
+                    <a href="https://discord.gg/PaAMFmpsBQ" target="_blank" rel="noopener noreferrer">AIMO-Interp Discord</a> and <a href="mailto:aimo.interp@gmail.com">aimo.interp@gmail.com</a>.
+                </p>
+                <p style="margin-top: 0.5rem;">
+                    For technical questions, please also consider opening an issue or discussion on the corresponding
+                    <a href="https://github.com/aimo-interp" target="_blank">GitHub repository</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>
+        AIMO Interpretability Challenge &middot;
+        <a href="https://arxiv.org/abs/2607.13899" target="_blank">Proposal paper</a> &middot;
+        <a href="https://github.com/aimo-interp/getting-started" target="_blank">Getting started</a> &middot;
+        <a href="mailto:aimo.interp@gmail.com">aimo.interp@gmail.com</a>
+    </p>
+</footer>
+
+<script>
+    const navLinks = document.querySelectorAll('nav ul li a[href^="#"]');
+    const sections = Array.from(navLinks)
+        .map(link => document.querySelector(link.getAttribute('href')))
+        .filter(Boolean);
+
+    function onScroll() {
+        const scrollY = window.scrollY + 80; // offset for fixed nav height
+        let current = sections[0];
+        for (const section of sections) {
+            if (section.offsetTop <= scrollY) {
+                current = section;
+            }
+        }
+        navLinks.forEach(link => {
+            link.classList.toggle(
+                'active',
+                link.getAttribute('href') === '#' + current.id
+            );
+        });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // set on page load
+
+    const LEADERBOARD_API = 'https://vps.josefkuchar.com/leaderboards';
+    const leaderboardTracks = ['main', 'small'];
+    const leaderboardBaselines = { main: 0.52, small: 0.5 };
+    const leaderboardViews = Object.fromEntries(leaderboardTracks.map(track => [track, {
+        state: document.getElementById(`leaderboard-${track}-state`),
+        table: document.getElementById(`leaderboard-${track}-table`),
+        body: document.getElementById(`leaderboard-${track}-body`)
+    }]));
+    const leaderboardMeta = document.getElementById('leaderboard-meta');
+    const leaderboardUpdated = document.getElementById('leaderboard-updated');
+    let leaderboardData = null;
+
+    const percentFormatter = new Intl.NumberFormat(undefined, {
+        style: 'percent',
+        maximumFractionDigits: 1
+    });
+
+    function formatSubmissionDateTime(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return null;
+        return {
+            date: date.toLocaleDateString(undefined, {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            }),
+            time: date.toLocaleTimeString(undefined, {
+                hour: '2-digit',
+                minute: '2-digit'
+            }),
+            exact: date.toLocaleString()
+        };
+    }
+
+    function safeProfileUrl(value) {
+        try {
+            const url = new URL(value);
+            return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
+        } catch {
+            return null;
+        }
+    }
+
+    function createBaselineRow(track) {
+        const row = document.createElement('tr');
+        row.className = `leaderboard-baseline ${track}`;
+        row.setAttribute('aria-label', `${track === 'main' ? 'Main Track' : 'Small Models Track'} baseline: ${percentFormatter.format(leaderboardBaselines[track])}`);
+
+        const rankCell = document.createElement('td');
+        rankCell.className = 'rank';
+        rankCell.textContent = '—';
+        row.appendChild(rankCell);
+
+        const labelCell = document.createElement('td');
+        labelCell.className = 'participant';
+        labelCell.textContent = 'Baseline';
+        row.appendChild(labelCell);
+
+        const referenceCell = document.createElement('td');
+        referenceCell.className = 'submitted';
+        referenceCell.textContent = 'Reference';
+        row.appendChild(referenceCell);
+
+        const scoreCell = document.createElement('td');
+        scoreCell.className = 'score';
+        scoreCell.textContent = percentFormatter.format(leaderboardBaselines[track]);
+        row.appendChild(scoreCell);
+
+        return row;
+    }
+
+    function renderLeaderboard(track) {
+        if (!leaderboardData) return;
+
+        const view = leaderboardViews[track];
+        const entries = leaderboardData.leaderboards[track] || [];
+        const fragment = document.createDocumentFragment();
+        const baseline = leaderboardBaselines[track];
+        let baselineInserted = false;
+
+        entries.forEach((entry, index) => {
+            const score = Number(entry.accuracy);
+            if (!baselineInserted && (!Number.isFinite(score) || score <= baseline)) {
+                fragment.appendChild(createBaselineRow(track));
+                baselineInserted = true;
+            }
+
+            const row = document.createElement('tr');
+
+            const rankCell = document.createElement('td');
+            rankCell.className = 'rank';
+            rankCell.textContent = String(index + 1);
+            row.appendChild(rankCell);
+
+            const participantCell = document.createElement('td');
+            participantCell.className = 'participant';
+            const profileUrl = safeProfileUrl(entry.owner_url);
+            if (profileUrl) {
+                const profileLink = document.createElement('a');
+                profileLink.href = profileUrl;
+                profileLink.target = '_blank';
+                profileLink.rel = 'noopener noreferrer';
+                profileLink.textContent = entry.owner_name || 'Unknown participant';
+                participantCell.appendChild(profileLink);
+            } else {
+                participantCell.textContent = entry.owner_name || 'Unknown participant';
+            }
+            row.appendChild(participantCell);
+
+            const submittedCell = document.createElement('td');
+            submittedCell.className = 'submitted';
+            const submitted = formatSubmissionDateTime(entry.submission_time);
+            if (submitted) {
+                const dateLine = document.createElement('span');
+                dateLine.textContent = submitted.date;
+                const timeLine = document.createElement('span');
+                timeLine.className = 'submission-time';
+                timeLine.textContent = submitted.time;
+                submittedCell.append(dateLine, timeLine);
+                submittedCell.title = submitted.exact;
+            } else {
+                submittedCell.textContent = '—';
+            }
+            row.appendChild(submittedCell);
+
+            const scoreCell = document.createElement('td');
+            scoreCell.className = 'score';
+            scoreCell.textContent = Number.isFinite(score) ? percentFormatter.format(score) : '—';
+            row.appendChild(scoreCell);
+
+            fragment.appendChild(row);
+        });
+
+        if (!baselineInserted) {
+            fragment.appendChild(createBaselineRow(track));
+        }
+
+        view.body.replaceChildren(fragment);
+        view.state.hidden = true;
+        view.table.hidden = false;
+
+        if (!entries.length) {
+            view.state.replaceChildren();
+            const emptyMessage = document.createElement('p');
+            emptyMessage.textContent = 'No ranked submissions yet. Be the first!';
+            view.state.appendChild(emptyMessage);
+            view.state.hidden = false;
+            view.table.hidden = true;
+        }
+    }
+
+    function renderLeaderboards() {
+        leaderboardTracks.forEach(renderLeaderboard);
+        leaderboardMeta.hidden = false;
+    }
+
+    function updateLastUpdated(value) {
+        const date = new Date(value);
+        const label = Number.isNaN(date.getTime())
+            ? 'just now'
+            : date.toLocaleString(undefined, {
+                dateStyle: 'medium',
+                timeStyle: 'short'
+            });
+        leaderboardUpdated.replaceChildren();
+        const liveDot = document.createElement('span');
+        liveDot.className = 'live-dot';
+        liveDot.setAttribute('aria-hidden', 'true');
+        leaderboardUpdated.append(liveDot, `Last updated: ${label}`);
+    }
+
+    async function loadLeaderboard() {
+        if (!leaderboardData) {
+            leaderboardTracks.forEach(track => {
+                const state = leaderboardViews[track].state;
+                state.hidden = false;
+                state.replaceChildren();
+                const loadingMessage = document.createElement('p');
+                loadingMessage.textContent = 'Loading the latest standings…';
+                state.appendChild(loadingMessage);
+            });
+        }
+
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 10000);
+
+        try {
+            const response = await fetch(LEADERBOARD_API, {
+                cache: 'no-store',
+                signal: controller.signal
+            });
+            if (!response.ok) throw new Error(`Leaderboard request failed (${response.status})`);
+
+            const data = await response.json();
+            if (!data.leaderboards || !Array.isArray(data.leaderboards.main) || !Array.isArray(data.leaderboards.small)) {
+                throw new Error('Unexpected leaderboard response');
+            }
+
+            leaderboardData = data;
+            renderLeaderboards();
+            updateLastUpdated(data.last_updated_at);
+        } catch (error) {
+            if (leaderboardData) {
+                leaderboardUpdated.textContent = 'Could not refresh — showing the last loaded standings';
+            } else {
+                leaderboardTracks.forEach(track => {
+                    const state = leaderboardViews[track].state;
+                    state.replaceChildren();
+                    const errorMessage = document.createElement('p');
+                    errorMessage.textContent = 'The live standings could not be loaded right now.';
+                    const fallbackMessage = document.createElement('p');
+                    const fallbackLink = document.createElement('a');
+                    fallbackLink.href = 'https://www.codabench.org/competitions/16180/';
+                    fallbackLink.target = '_blank';
+                    fallbackLink.rel = 'noopener noreferrer';
+                    fallbackLink.textContent = 'View the leaderboard on Codabench';
+                    fallbackMessage.appendChild(fallbackLink);
+                    state.append(errorMessage, fallbackMessage);
+                });
+            }
+            console.error('Unable to load leaderboard:', error);
+        } finally {
+            window.clearTimeout(timeout);
+        }
+    }
+
+    loadLeaderboard();
+    window.setInterval(() => {
+        if (!document.hidden) loadLeaderboard();
+    }, 5 * 60 * 1000);
+</script>
+
+</body>
+</html>

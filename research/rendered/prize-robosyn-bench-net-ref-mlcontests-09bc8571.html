@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RoboSynChallenge</title>
+    <meta
+      name="description"
+      content="RoboSynChallenge is a NeurIPS 2026 competition on sim-to-real robot manipulation with synthesized and real-world co-training."
+    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="static/css/site.css?v=20260909-leaderboard-faq">
+    <link rel="stylesheet" href="static/css/pages.css?v=20260906-success-faq">
+    <script defer src="static/assets/result-videos/baseline-results.js"></script>
+    <script defer src="static/assets/released-checkpoint-evals.js?v=20260903-smolvla-sample-sr"></script>
+    <script defer src="static/config.js"></script>
+    <script defer src="static/js/pages-app.js?v=20260926-deadline-oct11"></script>
+  </head>
+  <body>
+    <div class="site-chrome"></div>
+    <header class="site-header">
+      <div class="shell header-row">
+        <a class="brand" href="#/home">
+          <span class="brand-mark">RS</span>
+          <span class="brand-copy">
+            <strong>RoboSynChallenge</strong>
+            <small>NeurIPS 2026 Competition</small>
+          </span>
+          <img class="brand-event-logo" src="static/assets/neurips-logo.svg" alt="NeurIPS">
+        </a>
+        <button class="nav-toggle" type="button" data-nav-toggle aria-label="Toggle navigation">
+          Menu
+        </button>
+        <nav class="site-nav" data-nav-menu id="site-nav"></nav>
+        <div class="header-actions" id="header-actions"></div>
+      </div>
+    </header>
+
+    <section class="flash-zone shell" id="flash-zone"></section>
+    <main id="app"></main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <div>
+          <div class="footer-heading">RoboSynChallenge</div>
+          <p>
+            A public benchmark for studying how synthesized manipulation data improves real-world
+            generalization under scarce physical supervision.
+          </p>
+        </div>
+        <div>
+          <div class="footer-heading">Resources</div>
+          <a href="https://github.com/EDEM-AI/RoboSynChallenge/tree/main" target="_blank" rel="noreferrer">RoboSynChallenge GitHub</a>
+          <a href="https://huggingface.co/RoboSynChallenge/datasets" target="_blank" rel="noreferrer">Released data</a>
+          <a href="https://edem-ai.github.io/RoboSynChallenge/html/getting_started/overview.html" target="_blank" rel="noreferrer">Tutorial</a>
+          <a href="#/faq">Competition FAQ</a>
+          <a href="material/RoboSynChallenge-report.pdf" target="_blank" rel="noreferrer">Competition report</a>
+        </div>
+      </div>
+      <div class="shell footer-bottom">
+        <span>© 2026 RoboSynChallenge</span>
+        <span>Designed for open research evaluation</span>
+      </div>
+    </footer>
+  </body>
+</html>

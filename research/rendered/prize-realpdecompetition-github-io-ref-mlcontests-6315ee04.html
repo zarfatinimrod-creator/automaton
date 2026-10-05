@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RealPDE Competition — NeurIPS 2026</title>
+  <meta name="description" content="NeurIPS 2026 RealPDE Competition: Scientific ML for Real-world Physical Systems. Paired real-world and simulated fluid dynamics over the NACA4418 airfoil; Sim2Real and Long-Term Test-Time Adaptation tracks.">
+  <meta property="og:title" content="RealPDE Competition — NeurIPS 2026">
+  <meta property="og:description" content="The first NeurIPS Scientific ML competition centered on real physical-systems data, with paired real-world (PIV) and simulated (CFD) fluid dynamics over the NACA4418 airfoil.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://realpdecompetition.github.io/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="RealPDE Competition — NeurIPS 2026">
+  <meta name="twitter:description" content="The first NeurIPS Scientific ML competition centered on real physical-systems data, with paired real-world (PIV) and simulated (CFD) fluid dynamics over the NACA4418 airfoil.">
+
+  <!-- Fonts (self-hosted variable woff2 for guaranteed rendering on first paint) -->
+  <link rel="preload" as="font" type="font/woff2" href="fonts/fraunces.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="fonts/inter.woff2" crossorigin>
+  <style>
+    @font-face {
+      font-family: 'Fraunces';
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: swap;
+      src: url('fonts/fraunces.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: swap;
+      src: url('fonts/inter.woff2') format('woff2');
+    }
+  </style>
+
+  <!-- MathJax -->
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$','$'], ['\\(','\\)']] } };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ==================== NAVBAR ==================== -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <div class="navbar-brand-group">
+      <a href="#" class="navbar-brand">RealPDECompetition</a>
+      <span class="navbar-brand-sep" aria-hidden="true"></span>
+      <a class="navbar-conf-logo" href="https://neurips.cc/" target="_blank" rel="noopener" aria-label="NeurIPS">
+        <img src="img/neurips-logo.svg" alt="NeurIPS, Neural Information Processing Systems">
+      </a>
+    </div>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="nav-links">
+      <a href="#about">About</a>
+      <a href="#tracks">Tracks</a>
+      <a href="#data">Data</a>
+      <a href="#metrics">Metrics</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#prizes">Prizes</a>
+      <a href="#rules">Rules</a>
+      <a href="#resources">Resources</a>
+      <a href="#organizers">Organizers</a>
+      <a href="https://realpdebench.github.io" target="_blank">RealPDEBench</a>
+      <div class="nav-submit">
+        <button type="button" class="btn-nav nav-submit-toggle" aria-haspopup="true">Join <span class="nav-caret" aria-hidden="true">▾</span></button>
+        <div class="nav-submit-menu" role="menu">
+          <div class="nav-submit-group" role="presentation">Track 1 · Sim2Real</div>
+          <span class="nav-submit-closed" role="menuitem" aria-disabled="true">Registration closed</span>
+          <a href="https://www.codabench.org/competitions/17363/" target="_blank" rel="noopener" role="menuitem">Codabench</a>
+          <div class="nav-submit-divider" role="separator"></div>
+          <div class="nav-submit-group" role="presentation">Track 2 · LTTTA</div>
+          <span class="nav-submit-closed" role="menuitem" aria-disabled="true">Registration closed</span>
+          <a href="https://www.codabench.org/competitions/17385/" target="_blank" rel="noopener" role="menuitem">Codabench</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="rp-scale-outer">
+<div class="rp-scale-inner">
+
+<!-- ==================== HERO ==================== -->
+<section class="hero" id="hero">
+  <canvas id="hero-flow"></canvas>
+  <div class="hero-inner">
+    <div class="hero-badge">NeurIPS 2026 Competition</div>
+    <h1><span class="hero-gradient-mint" data-hero-pde>RealPDE</span><br>Competition</h1>
+    <p class="hero-sub">
+      <span class="hero-sub-text">Scientific ML for Real-world Physical Systems. The first NeurIPS Scientific ML competition centered on data from real physical systems.</span>
+    </p>
+    <p class="hero-sub">
+      <span class="hero-sub-text">NeurIPS 2026 session: Friday, December 11, 1:00–3:15 p.m. AEDT, International Convention Centre Sydney, Room MR C4.3.</span>
+    </p>
+
+    <p class="countdown-target">Competition launches in:</p>
+    <div class="countdown-wrap" id="countdown">
+      <div class="countdown-item"><div class="countdown-num" id="cd-days">--</div><div class="countdown-label">Days</div></div>
+      <div class="countdown-item"><div class="countdown-num" id="cd-hours">--</div><div class="countdown-label">Hours</div></div>
+      <div class="countdown-item"><div class="countdown-num" id="cd-mins">--</div><div class="countdown-label">Minutes</div></div>
+      <div class="countdown-item"><div class="countdown-num" id="cd-secs">--</div><div class="countdown-label">Seconds</div></div>
+    </div>
+
+    <div class="hero-actions">
+      <div class="cta-cascade">
+        <button type="button" class="btn btn-primary cta-toggle" aria-haspopup="true" aria-expanded="false">Track 1 · Sim2Real <span class="cta-caret" aria-hidden="true">▾</span></button>
+        <div class="cta-menu">
+          <span class="cta-soon cta-closed" aria-disabled="true">Registration closed</span>
+          <a href="https://www.codabench.org/competitions/17363/" target="_blank" rel="noopener">Submit on Codabench</a>
+        </div>
+      </div>
+      <div class="cta-cascade">
+        <button type="button" class="btn btn-primary cta-toggle" aria-haspopup="true" aria-expanded="false">Track 2 · LTTTA <span class="cta-caret" aria-hidden="true">▾</span></button>
+        <div class="cta-menu">
+          <span class="cta-soon cta-closed" aria-disabled="true">Registration closed</span>
+          <a href="https://www.codabench.org/competitions/17385/" target="_blank" rel="noopener">Submit on Codabench</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== ABOUT ==================== -->
+<section class="section" id="about">
+  <div class="section-inner">
+    <div class="section-label">About</div>
+    <h2 class="section-title">Bridging the <em>Sim-to-Real</em> Gap<br>for Deployable Scientific ML</h2>
+    <p class="section-subtitle">
+      A new competition centered on paired real-world and simulated data, targeting the core capabilities needed for Scientific ML in real physical systems.
+    </p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3>Paired Real &amp; Simulated Data</h3>
+        <p>A new dataset of paired real-world trajectories (PIV measurements) and 3D CFD simulations of cross-sectional flow over the NACA4418 airfoil, spanning diverse angles of attack and Reynolds numbers.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Two Complementary Tracks</h3>
+        <p>Sim2Real transfer learning and Long-Term Test-Time Adaptation (LTTTA), targeting the two core capabilities needed for deployable Scientific ML in real physical systems.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Physics-aware Metrics</h3>
+        <p>Beyond point-wise errors: physics-meaningful evaluation including TKE, mean velocity profile, efficiency scoring, and a novel Safe Prediction Score for reliability.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Real↔Sim comparison: two side-by-side sliders (REAL-base / SIM-base) at native 86/64 aspect (ported from realpdebench) -->
+  <div class="hero-compare-band" aria-label="Real PIV vs CFD vorticity comparison">
+    <div class="rp-compare-grid">
+      <!-- Left card: REAL base, SIM overlay (drag right → reveals SIM) -->
+      <div class="rp-compare" data-rp-compare data-split="95">
+        <img class="rp-compare-base" src="img/compare/train_real_5025_5_vort1000.gif" alt="Real PIV vorticity field, NACA4418, Re 5025, AoA 5 degrees">
+        <div class="rp-compare-label rp-compare-label--base" aria-hidden="true">REAL · PIV</div>
+        <div class="rp-compare-overlay" aria-hidden="true">
+          <img class="rp-compare-over" src="img/compare/train_sim_5025_5_vort1000.gif" alt="CFD simulated vorticity field, NACA4418, Re 5025, AoA 5 degrees">
+          <div class="rp-compare-label rp-compare-label--overlay" aria-hidden="true">SIM · CFD</div>
+        </div>
+        <div class="rp-compare-handle" role="slider" tabindex="0" aria-label="Drag to reveal CFD simulation" aria-valuemin="0" aria-valuemax="100" aria-valuenow="95"></div>
+      </div>
+
+      <!-- Right card: SIM base, REAL overlay (drag right → reveals REAL) -->
+      <div class="rp-compare rp-compare--mirror" data-rp-compare data-split="95">
+        <img class="rp-compare-base" src="img/compare/train_sim_5025_5_vort1000.gif" alt="CFD simulated vorticity field, NACA4418, Re 5025, AoA 5 degrees">
+        <div class="rp-compare-label rp-compare-label--base" aria-hidden="true">SIM · CFD</div>
+        <div class="rp-compare-overlay" aria-hidden="true">
+          <img class="rp-compare-over" src="img/compare/train_real_5025_5_vort1000.gif" alt="Real PIV vorticity field, NACA4418, Re 5025, AoA 5 degrees">
+          <div class="rp-compare-label rp-compare-label--overlay" aria-hidden="true">REAL · PIV</div>
+        </div>
+        <div class="rp-compare-handle" role="slider" tabindex="0" aria-label="Drag to reveal real PIV" aria-valuemin="0" aria-valuemax="100" aria-valuenow="95"></div>
+      </div>
+    </div>
+    <p class="hero-compare-meta">
+      <span>NACA4418</span>
+      <span class="hero-compare-meta__sep">·</span>
+      <span>Re = 5025</span>
+      <span class="hero-compare-meta__sep">·</span>
+      <span>AoA = 5°</span>
+    </p>
+  </div>
+</section>
+
+<!-- ==================== TRACKS ==================== -->
+<section class="section section-alt" id="tracks">
+  <div class="section-inner">
+    <div class="section-label">Competition Tracks</div>
+    <h2 class="section-title">Two <em>Independent</em> Tracks</h2>
+    <p class="section-subtitle">Running simultaneously. Participate in one or both.</p>
+    <p class="tracks-register-note"><strong>Registration is closed.</strong> Codabench join requests closed at 00:00 UTC on August 21, 2026, and the team registration form closed at 23:59 AoE the same day. Teams that registered in time continue to submit as normal.</p>
+    <div class="tracks-grid">
+      <!-- Track 1: Sim2Real -->
+      <div class="track-card track-card--sim2real">
+        <span class="track-tag track-tag--purple">Track 1</span>
+        <h3>Sim-to-Real Transfer Learning</h3>
+        <p>Bridge the gap between simulated and real-world fluid dynamics data for foil systems. Develop models that fuse rich simulated data with noisy, partially-observed real-world measurements.</p>
+        <ul>
+          <li>Leverage complete modalities from CFD simulations (velocity fields $u, v$ and pressure $p$)</li>
+          <li>Adapt to noise, limited observability, and distribution shifts in real-world PIV data</li>
+          <li>Directly addresses industrial applications: aircraft foil aerodynamics, wind turbine blade optimization</li>
+        </ul>
+      </div>
+      <!-- Track 2: LTTTA -->
+      <div class="track-card track-card--lttta">
+        <span class="track-tag track-tag--mint">Track 2</span>
+        <h3>Long-Term Test-Time Adaptation</h3>
+        <p>Tackle long-horizon predictive modeling with continuous online adaptation to streaming real-world observations, mimicking real operational deployment scenarios.</p>
+        <ul>
+          <li>Iterative N-step autoregressive prediction with real-time observation integration</li>
+          <li>Counteract error accumulation over extended time horizons</li>
+          <li>Allows agent-augmented adaptation (e.g., LLM-based controllers for adaptive update scheduling, memory retrieval, module selection)</li>
+          <li>Models real-world scenarios: sensor monitoring during flight, wind turbine performance tracking</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== DATA ==================== -->
+<section class="section" id="data">
+  <div class="section-inner">
+    <div class="section-label">Dataset</div>
+    <h2 class="section-title">NACA4418 Airfoil<br><em>Paired</em> Real &amp; Simulated Data</h2>
+    <p class="section-subtitle">
+      A canonical geometry in aerodynamics and hydrodynamics, with matched experimental PIV measurements and high-fidelity 3D CFD simulations.
+    </p>
+    <div class="features-grid">
+      <div class="feature-card feature-card--no-icon">
+        <h3>Real-World Data (PIV)</h3>
+        <p>A 3D airfoil installed in a circulating water tunnel. Cross-sectional velocity fields measured using time-resolved Particle Image Velocimetry with laser-sheet illumination and high-speed cameras.</p>
+      </div>
+      <div class="feature-card feature-card--no-icon">
+        <h3>Simulated Data (CFD)</h3>
+        <p>Matched 3D CFD simulations under identical geometric and operating conditions, providing complete modalities (velocity $u, v$ and pressure $p$) with dense parameter coverage.</p>
+      </div>
+      <div class="feature-card feature-card--no-icon">
+        <h3>Operating Conditions</h3>
+        <p>Angles of attack: 0°, 5°, 10°, 15°, 20°. Reynolds number range: 2968–27975. 100 paired trajectories, ~600 time steps each, at $64\times128$ resolution.</p>
+      </div>
+    </div>
+
+    <figure class="regime-figure">
+      <figcaption class="regime-title">Operating <em>Regimes</em></figcaption>
+      <div class="regime-plot">
+        <div class="regime-yaxis-label">Reynolds Number</div>
+        <div class="regime-yaxis">
+          <span>20325</span>
+          <span>16500</span>
+          <span>10125</span>
+          <span>8850</span>
+          <span>5025</span>
+        </div>
+        <div class="regime-grid">
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_20325_0.gif" alt="Real PIV, Re 20325, AoA 0 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_20325_5.gif" alt="Real PIV, Re 20325, AoA 5 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_20325_10.gif" alt="Real PIV, Re 20325, AoA 10 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_20325_15.gif" alt="Real PIV, Re 20325, AoA 15 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_20325_20.gif" alt="Real PIV, Re 20325, AoA 20 degrees" loading="lazy"></div>
+
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_16500_0.gif" alt="Real PIV, Re 16500, AoA 0 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_16500_5.gif" alt="Real PIV, Re 16500, AoA 5 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_16500_10.gif" alt="Real PIV, Re 16500, AoA 10 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_16500_15.gif" alt="Real PIV, Re 16500, AoA 15 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_16500_20.gif" alt="Real PIV, Re 16500, AoA 20 degrees" loading="lazy"></div>
+
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_10125_0.gif" alt="Real PIV, Re 10125, AoA 0 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_10125_5.gif" alt="Real PIV, Re 10125, AoA 5 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_10125_10.gif" alt="Real PIV, Re 10125, AoA 10 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_10125_15.gif" alt="Real PIV, Re 10125, AoA 15 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_10125_20.gif" alt="Real PIV, Re 10125, AoA 20 degrees" loading="lazy"></div>
+
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_8850_0.gif" alt="Real PIV, Re 8850, AoA 0 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_8850_5.gif" alt="Real PIV, Re 8850, AoA 5 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_8850_10.gif" alt="Real PIV, Re 8850, AoA 10 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_8850_15.gif" alt="Real PIV, Re 8850, AoA 15 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_8850_20.gif" alt="Real PIV, Re 8850, AoA 20 degrees" loading="lazy"></div>
+
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_5025_0.gif" alt="Real PIV, Re 5025, AoA 0 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_5025_5.gif" alt="Real PIV, Re 5025, AoA 5 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_5025_10.gif" alt="Real PIV, Re 5025, AoA 10 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_5025_15.gif" alt="Real PIV, Re 5025, AoA 15 degrees" loading="lazy"></div>
+          <div class="regime-cell regime-cell--gif"><img src="img/regime/train_real_5025_20.gif" alt="Real PIV, Re 5025, AoA 20 degrees" loading="lazy"></div>
+        </div>
+      </div>
+      <div class="regime-xaxis">
+        <span>0°</span>
+        <span>5°</span>
+        <span>10°</span>
+        <span>15°</span>
+        <span>20°</span>
+      </div>
+      <div class="regime-xaxis-label">Angle of Attack</div>
+      <p class="regime-caption">Real PIV vorticity fields across the full operating envelope. Diverging red/blue colormap for $\omega_z$ (red: positive, blue: negative). Resolution reflects the native PIV grid.</p>
+    </figure>
+  </div>
+</section>
+
+<!-- ==================== METRICS ==================== -->
+<section class="section section-alt" id="metrics">
+  <div class="section-inner">
+    <div class="section-label">Evaluation</div>
+    <h2 class="section-title"><em>Physics-Aware</em> Metrics</h2>
+    <p class="section-subtitle">A deployment-oriented evaluation protocol with three dimensions: accuracy, efficiency, and safety.</p>
+    <div class="metrics-list">
+      <div class="metric-item">
+        <h4>Relative $L_2$ Error</h4>
+        <p>Standard pixel-wise error between predicted and ground-truth physical fields. The core data-fidelity metric.</p>
+      </div>
+      <div class="metric-item">
+        <h4>Turbulent Kinetic Energy (TKE)</h4>
+        <p>Relative $L_2$ error of TKE. Measures how well a model captures velocity-fluctuation energy, a physically interpretable quantity for validating fluid models against real flow behavior.</p>
+      </div>
+      <div class="metric-item">
+        <h4>Mean Velocity Profile Error (MVPE)</h4>
+        <p>Long-horizon evaluation: relative $L_2$ error between time-averaged velocity profiles at probe points (e.g., near the wake region behind the foil).</p>
+      </div>
+      <div class="metric-item">
+        <h4>Time Score (Efficiency)</h4>
+        <p>Sigmoid-shaped normalized runtime relative to numerical solvers ($r = t_{\text{neural}} / t_{\text{numerical}}$). Stays high below a runtime threshold, then smoothly penalizes slower models.</p>
+      </div>
+      <div class="metric-item">
+        <h4>Safe Prediction Score (SPS)</h4>
+        <p>Jointly evaluates physical accuracy, uncertainty coverage, and interval tightness, penalizing intervals that miss the ground truth and rewarding accurate, tight intervals.</p>
+      </div>
+      <div class="metric-item">
+        <h4>Composite Score</h4>
+        <p>Each metric is mapped to a 0–100 scale (higher is better) and combined as a weighted sum across metrics for the final ranking.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== TIMELINE ==================== -->
+<section class="section" id="timeline">
+  <div class="section-inner">
+    <div class="section-label">Schedule</div>
+    <h2 class="section-title">Timeline</h2>
+    <p class="section-subtitle">16 weeks across three phases, culminating at the associated NeurIPS 2026 workshop.</p>
+    <div style="max-width: 640px;">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">July 5, 2026 (UTC)</div>
+          <div class="timeline-title">Competition Launch</div>
+          <div class="timeline-desc">Dataset, starting kit, and Codabench platform open for submissions.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">July 19, 2026 (UTC)</div>
+          <div class="timeline-title">Warm-up Phase Ends</div>
+          <div class="timeline-desc">2 weeks. Familiarize with data, test submissions, provide feedback on evaluation criteria.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">September 27, 2026 (UTC)</div>
+          <div class="timeline-title">Main Development Phase Ends</div>
+          <div class="timeline-desc">10 weeks. Core development period; iterate on models using the leaderboard.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">October 25, 2026 (UTC)</div>
+          <div class="timeline-title">Decision Phase Ends</div>
+          <div class="timeline-desc">4 weeks. Top models validated and re-trained on organizer GPU clusters; private test set evaluation.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">November 10, 2026</div>
+          <div class="timeline-title">Final Results Announced</div>
+          <div class="timeline-desc">Rankings published. Winners notified via email and competition website.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">November 25, 2026</div>
+          <div class="timeline-title">Code &amp; Fact Sheet Deadline</div>
+          <div class="timeline-desc">Winning teams open-source their solutions (2 weeks before NeurIPS presentation).</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">December 11, 2026</div>
+          <div class="timeline-title">NeurIPS 2026 Session</div>
+          <div class="timeline-desc">1:00–3:15 p.m. AEDT (02:00–04:15 UTC), International Convention Centre Sydney, Room MR C4.3. Invited talks, talks by the competition winners, and posters by the top 10 teams in each track.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PRIZES ==================== -->
+<section class="section section-alt" id="prizes">
+  <div class="section-inner">
+    <div class="section-label text-center">Rewards</div>
+    <h2 class="section-title text-center">Prizes</h2>
+    <p class="section-subtitle" style="margin-left:auto;margin-right:auto;">Awarded independently per track. Compete in both for double the opportunity.</p>
+    <div class="prizes-grid">
+      <div class="prize-card">
+        <div class="prize-rank">01</div>
+        <div class="prize-place">1st Place</div>
+        <div class="prize-amount prize-amount--gold">$6,000</div>
+        <div class="prize-note">per track</div>
+      </div>
+      <div class="prize-card">
+        <div class="prize-rank">02</div>
+        <div class="prize-place">2nd Place</div>
+        <div class="prize-amount prize-amount--silver">$3,000</div>
+        <div class="prize-note">per track</div>
+      </div>
+      <div class="prize-card">
+        <div class="prize-rank">03</div>
+        <div class="prize-place">3rd Place</div>
+        <div class="prize-amount prize-amount--bronze">$1,500</div>
+        <div class="prize-note">per track</div>
+      </div>
+    </div>
+    <p style="text-align:center; margin-top: 24px; font-size: 0.9rem; color: var(--slate);">
+      Cash prizes funded by Uniforce AI Ltd. The top 3 teams in each track will be invited to deliver oral presentations at the competition workshop. The top 5 teams in each track will be invited to co-author a joint paper summarizing the competition results, and each of these teams may nominate one advisor of their own (for example, a faculty supervisor) as a co-author. Certificates are awarded to the top 5 teams in each track and may optionally name one advisor.
+    </p>
+  </div>
+</section>
+
+<!-- ==================== RULES ==================== -->
+<section class="section" id="rules">
+  <div class="section-inner">
+    <div class="section-label">Regulations</div>
+    <h2 class="section-title">Rules</h2>
+    <p class="section-subtitle">Key rules for fair and transparent competition.</p>
+    <table class="rules-table">
+      <thead>
+        <tr><th style="width:35%">Rule</th><th>Details</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Eligibility</strong></td><td>Open to all individuals and academic/industrial teams worldwide.</td></tr>
+        <tr><td><strong>Registration</strong></td><td>Registration closed on <strong>August 21, 2026</strong> (Codabench join at 00:00 UTC, team form at 23:59 AoE). Every team had to complete the registration form; Codabench join requests without a matching form response are denied. Registered teams continue to submit as normal.</td></tr>
+        <tr><td><strong>Team Size</strong></td><td>Maximum of 3 members per team.</td></tr>
+        <tr><td><strong>Submissions</strong></td><td>1 submission per day; 100 total per phase across all participating tracks.</td></tr>
+        <tr><td><strong>LTTTA Agent Use</strong></td><td>Agent-augmented adaptation (e.g., LLM controllers) is permitted in Track 2. Number of agent interaction steps must be explicitly bounded by the protocol, and all agent computation is included in the runtime evaluation.</td></tr>
+        <tr><td><strong>Accounts</strong></td><td>One account per team (shared email). Multiple accounts are strictly prohibited and will result in disqualification.</td></tr>
+        <tr><td><strong>Platform</strong></td><td>All submissions via Codabench (link goes live at competition launch). Code must be compatible with PyTorch and follow the starting kit interface.</td></tr>
+        <tr><td><strong>Evaluation</strong></td><td>Public validation set + private test set (unseen parameters, novel angles-of-attack / Reynolds numbers).</td></tr>
+        <tr><td><strong>Open Source</strong></td><td>Winners must open-source their complete solution (architecture, training scripts, hyperparameters) no later than 2 weeks before NeurIPS presentation.</td></tr>
+        <tr><td><strong>Final Ranking</strong></td><td>Determined solely by the global composite score on all weighted metrics.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ==================== RESOURCES ==================== -->
+<section class="section section-alt" id="resources">
+  <div class="section-inner">
+    <div class="section-label">Resources</div>
+    <h2 class="section-title">Getting Started</h2>
+    <p class="section-subtitle">Everything you need to start competing.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3>Starting Kit</h3>
+        <p>Submission templates, baseline loaders (CNO, FNO, Transolver), and the official scoring program. Download it from the <strong>Files</strong> tab on each track's Codabench page, visible after you sign in and your participation request is approved.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Tutorial Webinars</h3>
+        <p>Interactive webinars on competition design, airfoil simulation, and the Codabench submission process. Recordings will be posted here.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Community</h3>
+        <p>Codabench has a built-in forum for Q&A, team formation, and technical discussions. For anything else, reach the organizing team at <a href="mailto:realpde-competition@googlegroups.com">realpde-competition@googlegroups.com</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== ORGANIZERS ==================== -->
+<section class="section" id="organizers">
+  <div class="section-inner">
+    <div class="section-label text-center">Team</div>
+    <h2 class="section-title text-center">Organizers</h2>
+    <p class="section-subtitle" style="margin-left:auto; margin-right:auto; text-align:center;">
+      An interdisciplinary team of 15 organizers from 11 institutions across 6 countries, spanning AI, fluid dynamics, applied mathematics, and Scientific ML, with 1600+ publications in venues such as NeurIPS, ICML, ICLR, and leading fluid dynamics journals.
+    </p>
+
+    <h3 class="organizer-group-title">Lead Organizer</h3>
+    <div class="organizer-featured">
+      <div class="organizer-card organizer-card--featured">
+        <img src="img/tailin.png" alt="Tailin Wu" class="organizer-photo organizer-photo--xl">
+        <div class="organizer-body">
+          <div class="organizer-name organizer-name--lg">Tailin Wu</div>
+          <div class="organizer-affil organizer-affil--lg">Westlake University · Founder, Uniforce AI Ltd</div>
+          <p class="organizer-bio">Assistant Professor and PI of the AI for Scientific Simulation and Discovery Lab at Westlake University. Ph.D. from MIT (2019), postdoc at Stanford CS. His work on ML for scientific simulation, design, and generative models has been featured by MIT Technology Review three times.</p>
+          <div class="organizer-role organizer-role--lead">Lead organizer</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="organizer-group-title">Contributors</h3>
+    <div class="organizer-grid organizer-grid--contrib">
+      <div class="organizer-card">
+        <img src="img/haodong.jpg" alt="Haodong Feng" class="organizer-photo">
+        <div class="organizer-name">Haodong Feng</div>
+        <div class="organizer-affil">Westlake University · Zhongguancun Institute of AI</div>
+        <div class="organizer-role">Dataset · Evaluation design · Baselines</div>
+      </div>
+      <div class="organizer-card">
+        <img src="img/peiyan.jpeg" alt="Peiyan Hu" class="organizer-photo">
+        <div class="organizer-name">Peiyan Hu</div>
+        <div class="organizer-affil">AMSS, CAS · Westlake University</div>
+        <div class="organizer-role">Coordination · Data · Evaluation · Proposal</div>
+      </div>
+      <div class="organizer-card">
+        <img src="img/hongyuan.jpg" alt="Hongyuan Liu" class="organizer-photo">
+        <div class="organizer-name">Hongyuan Liu</div>
+        <div class="organizer-affil">Westlake University</div>
+        <div class="organizer-role">Data measurement and preparation</div>
+      </div>
+      <div class="organizer-card">
+        <img src="img/tianrun.jpg" alt="Tianrun Gao" class="organizer-photo">
+        <div class="organizer-name">Tianrun Gao</div>
+        <div class="organizer-affil">Tongji University · Fudan University</div>
+        <div class="organizer-role">Evaluation pipelines · Baselines</div>
+      </div>
+      <div class="organizer-card">
+        <img src="img/ruiqi.jpeg" alt="Ruiqi Feng" class="organizer-photo">
+        <div class="organizer-name">Ruiqi Feng</div>
+        <div class="organizer-affil">Westlake University</div>
+        <div class="organizer-role">Evaluation pipeline · Baselines</div>
+      </div>
+      <div class="organizer-card">
+        <img src="img/wenhao.jpg" alt="Wenhao Deng" class="organizer-photo">
+        <div class="organizer-name">Wenhao Deng</div>
+        <div class="organizer-affil">University of Glasgow · Westlake University</div>
+        <div class="organizer-role">Website · Codabench platform</div>
+      </div>
+      <div class="organizer-card">
+        <img src="img/tengfei.jpg" alt="Tengfei Xu" class="organizer-photo">
+        <div class="organizer-name">Tengfei Xu</div>
+        <div class="organizer-affil">Westlake University</div>
+        <div class="organizer-role">Safe metrics design · Evaluation pipeline</div>
+      </div>
+    </div>
+
+    <h3 class="organizer-group-title">Scientific Advisors</h3>
+    <div class="organizer-grid organizer-grid--advisor">
+      <div class="organizer-card">
+        <img src="img/xinyu.jpeg" alt="Xinyu Yang" class="organizer-photo organizer-photo--lg">
+        <div class="organizer-name">Xinyu Yang</div>
+        <div class="organizer-affil">IHPC, A*STAR</div>
+        <p class="organizer-bio organizer-bio--sm">Research Scientist; physics foundation models and agentic AI for scientific workflows. Designs the agent-enhanced adaptation strategies for Track 2.</p>
+      </div>
+      <div class="organizer-card">
+        <img src="img/leibai2.jpg" alt="Lei Bai" class="organizer-photo organizer-photo--lg">
+        <div class="organizer-name">Lei Bai</div>
+        <div class="organizer-affil">Shanghai AI Laboratory</div>
+        <p class="organizer-bio organizer-bio--sm">Leads the AI for Science Center; builds research agents for autonomous discovery and the FengWu weather forecasting series.</p>
+      </div>
+      <div class="organizer-card">
+        <img src="img/zongyi.jpg" alt="Zongyi Li" class="organizer-photo organizer-photo--lg">
+        <div class="organizer-name">Zongyi Li</div>
+        <div class="organizer-affil">New York University</div>
+        <p class="organizer-bio organizer-bio--sm">Assistant Professor of Mathematics and Data Science. Co-creator of the Fourier Neural Operator. Schmidt Science AI2050 Fellow; postdoc at MIT CSAIL with Kaiming He.</p>
+      </div>
+      <div class="organizer-card">
+        <img src="img/johannes.jpg" alt="Johannes Brandstetter" class="organizer-photo organizer-photo--lg">
+        <div class="organizer-name">Johannes Brandstetter</div>
+        <div class="organizer-affil">Emmi AI · JKU Linz</div>
+        <p class="organizer-bio organizer-bio--sm">Co-founder and Chief Scientist at Emmi AI; Professor at JKU Linz. AI-driven physics surrogates for weather and climate at scale.</p>
+      </div>
+      <div class="organizer-card">
+        <img src="img/nils.jpg" alt="Nils Thuerey" class="organizer-photo organizer-photo--lg">
+        <div class="organizer-name">Nils Thuerey</div>
+        <div class="organizer-affil">Technical University of Munich (TUM)</div>
+        <p class="organizer-bio organizer-bio--sm">Associate Professor. AI for fluids: diffusion modeling, foundation models, and tightly-integrated differentiable numerical simulation.</p>
+      </div>
+      <div class="organizer-card">
+        <img src="img/roseyu.png" alt="Rose Yu" class="organizer-photo organizer-photo--lg">
+        <div class="organizer-name">Rose Yu</div>
+        <div class="organizer-affil">UC San Diego · Amazon Scholar</div>
+        <p class="organizer-bio organizer-bio--sm">Associate Professor at UCSD CSE. 2025 Samsung AI Researcher of the Year; PECASE and NSF CAREER awardee; MIT Technology Review Innovators Under 35. Spatiotemporal ML for science.</p>
+      </div>
+      <div class="organizer-card">
+        <img src="img/anima.jpeg" alt="Anima Anandkumar" class="organizer-photo organizer-photo--lg">
+        <div class="organizer-name">Anima Anandkumar</div>
+        <div class="organizer-affil">Caltech</div>
+        <p class="organizer-bio organizer-bio--sm">Bren Professor at Caltech. Previously Senior Director of AI Research at NVIDIA and Principal Scientist at AWS. Sloan Fellow, IEEE Fellow, NSF CAREER awardee.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== CITATION ==================== -->
+<section class="section section-alt" id="citation">
+  <div class="section-inner">
+    <div class="section-label">Citation</div>
+    <h2 class="section-title">How to <em>Cite</em></h2>
+    <p class="section-subtitle">If the competition or the underlying benchmark contributes to your research, please cite:</p>
+    <div class="cite-grid">
+      <div class="cite-card">
+        <div class="cite-card-head">
+          <div>
+            <h3>RealPDE Competition</h3>
+            <span class="cite-venue">NeurIPS 2026 Competition Track</span>
+          </div>
+          <button type="button" class="cite-copy" data-target="bib-competition">Copy</button>
+        </div>
+        <pre class="cite-bib" id="bib-competition">@inproceedings{wu2026neurips,
+  title={Neur{IPS} 2026 Real{PDE} Competition: Scientific {ML} for Real-world Physical Systems},
+  author={Tailin Wu and Wenhao Deng and Haodong Feng and Ruiqi Feng and Tianrun Gao and Peiyan Hu and Hongyuan Liu and Tengfei Xu and Xinyu Yang and Lei Bai and Zongyi Li and Johannes Brandstetter and Nils Thuerey and Rose Yu and Anima Anandkumar},
+  booktitle={The Fortieth Annual Conference on Neural Information Processing Systems Competition Track},
+  year={2026},
+  url={https://openreview.net/forum?id=2FqmnAyc0G}
+}</pre>
+      </div>
+      <div class="cite-card">
+        <div class="cite-card-head">
+          <div>
+            <h3>RealPDEBench</h3>
+            <span class="cite-venue">ICLR 2026 · Oral</span>
+          </div>
+          <div class="cite-actions">
+            <a class="cite-repo" href="https://github.com/AI4Science-WestlakeU/RealPDEBench" target="_blank" rel="noopener" title="RealPDEBench benchmark code on GitHub">
+              <svg class="cite-repo-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+              </svg>
+              GitHub
+            </a>
+            <button type="button" class="cite-copy" data-target="bib-benchmark">Copy</button>
+          </div>
+        </div>
+        <pre class="cite-bib" id="bib-benchmark">@inproceedings{hu2026realpdebench,
+  title={RealPDEBench: A Benchmark for Complex Physical Systems with Real-World Data},
+  author={Peiyan Hu and Haodong Feng and Hongyuan Liu and Tongtong Yan and Wenhao Deng and Tianrun Gao and Rong Zheng and Haoren Zheng and Chenglei Yu and Chuanrui Wang and Kaiwen Li and Zhi-Ming Ma and Dezhi Zhou and Xingcai Lu and Dixia Fan and Tailin Wu},
+  booktitle={The Fourteenth International Conference on Learning Representations},
+  year={2026},
+  url={https://openreview.net/forum?id=y3oHMcoItR},
+  note={Oral Presentation}
+}</pre>
+      </div>
+    </div>
+    <div class="lab-badge-row">
+      <a class="lab-badge" href="https://ai4s.lab.westlake.edu.cn/" target="_blank" rel="noopener" title="Visit AI for Scientific Simulation and Discovery Lab">
+        <img src="img/ai4s_lab.png" alt="AI for Scientific Simulation and Discovery Lab logo">
+        <span>AI for Scientific Simulation and Discovery Lab</span>
+      </a>
+    </div>
+    <p class="lab-credit">
+      Compute infrastructure: 8× NVIDIA A800 GPUs sponsored by the organizers for Codabench evaluation.
+    </p>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="https://realpdebench.github.io" target="_blank">RealPDEBench</a>
+      <a href="https://huggingface.co/datasets/AI4Science-WestlakeU/RealPDEBench" target="_blank">Hugging Face</a>
+      <a href="mailto:realpde-competition@googlegroups.com">Contact</a>
+    </div>
+    <p>&copy; 2026 RealPDE Competition &middot; NeurIPS 2026 Competition Track</p>
+    <p style="margin-top: 4px;">
+      <a href="https://ai4s.lab.westlake.edu.cn/" target="_blank" rel="noopener">AI for Scientific Simulation and Discovery Lab</a>, Westlake University
+    </p>
+  </div>
+</footer>
+
+</div>
+</div>
+
+<!-- Scripts -->
+<script src="script.js"></script>
+
+</body>
+</html>

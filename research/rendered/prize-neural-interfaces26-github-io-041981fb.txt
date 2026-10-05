@@ -1,0 +1,124 @@
+EEG/EMG Foundation Challenge 2026 | Brain and Body Workshop at NeurIPS
+
+Skip to content
+
+EEG/EMG Foundation Challenge 2026
+
+Open navigation
+
+Home
+Tracks & Data
+Participant guide
+Prizes
+Leaderboard
+Rules
+Organizers
+Ecosystem
+Discord ↗
+Register
+
+Competition is open · Warm-up phase
+Registration stays open through October 24
+Use the Warm-Up phase to explore the data and tasks, develop with NeuralBench, Benchopt, or your own pipeline, test submissions, and ask questions. Leaderboard scores use public data and are indicative only. Final ranking begins in the sealed phase on October 28.
+
+EEG/EMG Foundation Challenge · Brain and Body Workshop at NeurIPS 2026
+
+Decode biosignals.
+Generalize across conditions.
+
+Four decoding tracks test models across new stimuli, sessions, and people. Registration is open now. The competition runs from Sep 21 to Nov 21, 2026.
+
+Explore the tracks →
+Register →
+
+Save the dates
+
+Competition timeline.
+
+Registration
+Open now
+Register →
+
+Registration open
+
+Sep 21 Competition opened
+Datasets, baselines, and the scoring environment are ready for submissions.
+
+Sep 21 → Oct 25 Warm-up phase
+Test on public data with indicative leaderboard feedback. Registration stays open through Oct 24.
+
+Oct 28 → Nov 21 Sealed final phase
+Submit for evaluation on private 2026 data. Only sealed scores determine the final ranking.
+
+Dec 11/12 Winners’ ceremony
+Winners are celebrated at the NeurIPS Brain & Body Workshop in Sydney.
+
+Your competition path
+Everything you need to enter.
+
+01 Tracks & Data Compare tasks, datasets, metrics, and shifts. Explore →
+02 Participant guide Understand the workflow, choose your tools, and prepare a submission. Open the guide →
+03 Prizes Review the $20,000 prize pool and internships. See prizes →
+04 Register Choose one or more Codabench tracks. Register →
+
+Before entering, review the Rules & FAQ . Submission caps, data use, eligibility, and reproducibility requirements apply to every track.
+
+Backed by
+Sponsors & organizing institutions
+
+The 2026 challenge is hosted and operated by Yneuro, Inria, and UC San Diego. Track leadership brings together Meta FAIR Brain & AI, Inria, Meta Reality Labs, Muse, Alljoined, Imperial College London, and a wider academic network. Sponsors support the datasets, evaluation, compute, and $20,000 prize program .
+
+Across the challenge, 31 organizers from 15 institutions and 8 countries contribute datasets, scientific leadership, evaluation infrastructure, and senior advice.
+
+Meet the organizing team →
+
+Core organizers
+
+Track sponsors
+
+Compute partner
+
+Participating institutions
+
+Built on open source
+See the open-source stack →
+
+NeuralBench
+
+Benchopt
+
+Codabench
+
+braindecode
+
+MOABB
+
+EEGDash
+
+NEMAR
+
+2025 challenge · historical
+1,197 teams
+
+247 institutions
+
+50+ countries
+
+8,622 submissions
+
+Promoted via EEGLAB, MNE-Python, and NeuroTechX.
+
+EEG/EMG Foundation Challenge 2026
+
+Home
+Tracks & Data
+Participant guide
+Prizes
+Leaderboard
+Rules
+Ethics
+Organizers
+Ecosystem
+GitHub
+
+Contact us on Discord

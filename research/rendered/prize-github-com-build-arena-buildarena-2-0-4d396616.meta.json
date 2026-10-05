@@ -1,0 +1,19 @@
+{
+  "url": "https://github.com/build-arena/BuildArena-2.0",
+  "slug": "prize-github-com-build-arena-buildarena-2-0-4d396616",
+  "fetchedAt": "2026-10-05T13:19:05.655Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 337628,
+  "sha256": "ec87043a850ec715004ce3bcde52263a8daa41bf70ef4ae6d797d9d6ad954323",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/prize-github-com-build-arena-buildarena-2-0-4d396616.html",
+  "textPath": "research/rendered/prize-github-com-build-arena-buildarena-2-0-4d396616.txt",
+  "robots": "allowed",
+  "robotsUrl": "https://github.com/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

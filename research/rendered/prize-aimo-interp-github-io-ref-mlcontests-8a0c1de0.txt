@@ -1,0 +1,440 @@
+AIMO Interpretability Challenge at NeurIPS 2026
+
+AIMO Interpretability
+
+Background
+
+Challenge
+
+Leaderboard
+
+Timeline
+
+FAQ
+
+Team
+
+Contact
+
+NeurIPS 2026 Competition
+
+AIMO Interpretability Challenge
+
+Can your method tell when AI genuinely solves the problem and when it is faking it?
+
+Distinguish robust from spurious reasoning in frontier AI.
+
+Starting August 2026 -- Join our discord or register for updates!
+
+💰 $12,500 in prizes
+📐 Unseen olympiad problems
+🧠 Frontier reasoning models from AIMO 3
+
+▷ Join the Challenge
+
+📄 NeurIPS 2026 Proposal
+
+How to participate
+
+Background
+
+Why Interpretability for AIMO?
+
+AIMO (AI Mathematical Olympiad) is an annual competition of AI systems in solving unseen frontier mathematical problems.
+Thanks to its importance and large prizes ($2.2M USD this year), AIMO attracts huge community attention — last year, the competition was covered by global media
+The Wall Street Journal and
+Bloomberg ,
+and participated in by over 4,000+ teams .
+
+Our ambition is to turn this tremendous engineering effort into scientific knowledge — laying robust stepping stones that will accelerate progress in mathematical reasoning and in AI as a whole.
+
+We believe that interpretability research can play a key role in helping us achieve this goal — allowing us to understand the mechanisms of reasoning in SOTA AI systems and providing actionable knowledge for their future, open advancements.
+
+More broadly, the competition connects interpretability and generalization research around one of the most important questions in AI today: to what extent is the decision-making of frontier AI models generalizable and thus, reliable?
+
+The Challenge
+
+Robust or Spurious?
+
+The AIMO Interpretability Challenge requires participants to submit a system
+that decides, for a single problem–model pair , whether that model answers
+that problem robustly .
+The full problem formulation, data collection, and evaluation protocol are described in our
+competition proposal paper .
+
+What do we mean by robust or spurious ?
+
+🛡️ Robust
+
+The model's answer holds up under perturbations that leave the deductive chain of the problem unchanged.
+
+⚠️ Spurious
+
+Counterfactual evaluation with perturbations reveals that the model's answer relies on at least one spurious pattern.
+
+Competition submissions take the form of Codabench submission bundles that comply
+with the unified interface defined in the
+getting-started repository ,
+and are evaluated on our servers without internet access .
+Methods are ranked by their accuracy in classifying whether a given model answers
+a given problem robustly .
+The provided validation set covers all types of models contained in the test set.
+
+Submission Types
+
+🏆
+
+Main Track
+
+Includes the full scale of top-performing models from AIMO 3 — no restrictions on model size.
+
+🔬
+
+Small Models Track
+
+Subsets the evaluation to the best-performing models below the 10-billion-parameter scale , providing a comparable setup for compute-heavy methods such as Sparse Autoencoders or Transcoders.
+
+Prizes
+
+🏆 Main Track
+
+🥇 1st place $3,000
+
+🥈 2nd place $1,000
+
+🥉 3rd place $600
+
+🔬 Small Models Track
+
+🥇 1st place $2,000
+
+🥈 2nd place $600
+
+🥉 3rd place $300
+
+Ties in the ranking are broken by efficiency : preference is given to the submission with the faster average runtime over three repeated trials.
+
+✍ Writeup Prizes
+
+$5,000 will be awarded for selected technical reports , regardless of their ranking, judged on their scientific contribution .
+We are particularly interested in work on generalization of interpretability methods , actionable interpretability , negative results or efficient methods .
+
+Competition Rules
+
+Submissions must follow these rules, designed to prevent overfitting and keep the competition fair:
+
+Data [Clarification 19 Sep] We retired the rule that teams may not use extra labeled data. We disincentivise large-scale test-time perturbation generation through the inference time limit, but such approaches are not explicitly disallowed. Note that any attempts for leakage of evaluation data are still forbidden and will result in the disqualification.
+
+Signals: teams can use weights, activations, token probabilities, or any other model internal signals as inputs for their methods. While we encourage the development and submission of white-box methods, black-box behavioural analyses within the evaluation compute budget (eg based on models’ reasoning chains) are also permitted.
+
+Tracks: teams may submit to the Main or Small models track, but each submission will count only for the chosen submission track. Teams may choose to submit the same submission to both (Main and Small Models) tracks.
+
+Report: teams considered for awards must submit a technical report with details on their submission and its open-sourced implementation within two weeks of the final deadline (by November 15, 2026) for compliance checks.
+
+Transparency: teams considered for awards must enable the organizers to reproduce their score from the instructions in the technical report alone. The report must document the training data, the training codebase and the submission bundle, and the submission must depend solely on the documented resources.
+
+Reviewing: teams considered for awards commit to peer-review up to 3 technical reports of other teams during the reviewing period (November 15–30, 2026).
+
+How to Participate
+
+1️⃣
+
+Register or Join our Discord for Updates
+
+Fill in the registration form for email updates, or join our Discord channel .
+
+2️⃣
+
+Make your first submission
+
+Clone the getting-started repository and submit one of its example solutions as-is to see your submission in the Codabench leaderboard .
+
+3️⃣
+
+Implement and package your new shiny method
+
+Wrap your method in the Codabench interface specified in the getting-started repository , and draw on the reference baselines for worked implementations. No internet access is available at evaluation time.
+
+4️⃣
+
+Compete for the prizes
+
+Iterate on the leaderboard until the final deadline on November 1, 2026 — with $12,500 in prizes across the Main and Small Models tracks.
+
+Need compute support? Submit a brief proposal in this form to request access to compute for your participation.
+
+Live Standings
+
+Leaderboard
+
+Current best submissions for each competition track, updated automatically from Codabench.
+
+These are not final results. Submissions will be evaluated on a private test set at the end of the competition, so the final rankings may change.
+
+🏆 Main Track
+
+Loading the latest standings…
+
+Rank
+
+Participant
+
+Submitted
+
+Accuracy
+
+🔬 Small Models Track
+
+Loading the latest standings…
+
+Rank
+
+Participant
+
+Submitted
+
+Accuracy
+
+Last updated: —
+View on Codabench ↗
+
+JavaScript is required to load the live standings. You can view them directly on Codabench .
+
+Timeline
+
+Key Dates
+
+Early Aug: competition start & warmup phase
+
+Competition start: release of train+validation data and baseline submission bundles, two-week warm-up phase
+
+Aug 15 – Nov 1, 2026
+
+Main competition phase
+
+Nov 1, 2026
+
+Final submission deadline — closing of the submission interface
+
+Nov 1 – Nov 15, 2026
+
+Participant technical report submission window
+
+November 15 – November 30, 2026
+
+Validation of results, technical reports review and rules compliance check, result analysis
+
+December 12, 2026
+
+Competition workshop at NeurIPS 2026 in Paris
+
+FAQ
+
+Frequently Asked Questions
+
+1. Which materials should I follow?
+
+Use this website as the primary reference, the getting-started repository for the submission interface and the evaluation environment, and the competition proposal paper for background. Where the paper differs on specifics, the website and the repository are current.
+
+2. Who can participate?
+
+The challenge is open to everyone — academic researchers, independent researchers, and industry practitioners alike. There are no restrictions on team size, affiliation, or career level. Students on all education levels are welcome!
+
+3. Do I need to be a participant of AIMO to join?
+
+No. The AIMO Interpretability Challenge is a separate competition. You will be given access to AIMO model submissions as part of the provided environment — you do not need to submit to AIMO yourself.
+
+4. What is the difference between the Main Track and the Small Models Track?
+
+The Main Track covers the full scale of top-performing models from AIMO 3 with no restriction on model size. The Small Models Track subsets the evaluation to the best-performing models below the 10-billion-parameter scale, offering a comparable setup for methods that are more compute-heavy to train — such as Sparse Autoencoders or Transcoders — where analysing very large models may be infeasible.
+
+5. What runtime environment does my submission need?
+
+Submissions must be packaged as Codabench submission bundle and must conform to the unified interface defined in the getting-started repository . Containers are evaluated on our servers without internet access . Detailed technical documentation and a starter kit are available in the getting-started repository .
+
+6. Which models will my submission be asked to analyse?
+
+The Main Track evaluates Qwen/Qwen3.5-4B , Skywork/Skywork-OR1-Math-7B , allenai/Olmo-3-7B-Think , deepseek-ai/DeepSeek-R1-0528-Qwen3-8B and openai/gpt-oss-120b ; the Small Models Track evaluates the same set without gpt-oss-120b. All are open-weights checkpoints cached on the evaluation workers, so any method can load the model it is asked to judge.
+
+7. How is the robustness label defined?
+
+A case is robust when the model's accuracy holds up across every perturbation we apply, and non-robust when at least one degrades it clearly; the exact criterion differs from the outline in the proposal paper and is not published, because we want to disincentivise efforts to reconstruct the labels over label-agnostic methods. Every case in the validation sets is supported by a substantially large boundary betwen positives and negatives.
+
+8. How much time does my submission get?
+
+Each submission has 3600 seconds for the entire prediction run, covering all models and all problems together, with the scoring run limited separately; the getting-started repository documents the environment in full.
+
+9. Will there be tutorial material and a starter kit?
+
+Yes. A starter kit with worked examples and full documentation is available in the getting-started repository , with baseline implementations in the baselines repository . The problem formulation and evaluation methodology are described in our competition proposal paper , available now on arXiv.
+
+10. Can I participate in both tracks?
+
+Yes, teams may submit to both the Main Track and the Small Models Track independently.
+
+11. How is the winner determined?
+
+Submissions are ranked by accuracy in classifying each problem–model instance as robust or spurious on the held-out test set. The Main Track and Small Models Track are ranked separately.
+
+12. What sampling/decoding settings were used to generate model predictions?
+
+We used temperature = 1.0 , top_k = 40 , and top_p = 0.95 to keep the answers diverse.
+
+13. What is the maximum generation length, and how are responses that run out of budget scored?
+
+The maximum generation length is 100,000 tokens , including thinking. We also experimented with a thinking-budget approach that truncates the reasoning and issues a follow-up call to force a final answer. A response that reaches the limit without a parseable final answer is scored as incorrect, the same as any other wrong answer.
+
+14. Do the evaluated models use extended reasoning ("thinking")?
+
+Yes — Qwen/Qwen3.5-4B uses thinking mode, and openai/gpt-oss-120b uses low , medium , and high reasoning efforts.
+
+15. What if I have more questions?
+
+Reach out to us on AIMO-Interp Discord or via aimo.interp@gmail.com or open an issue in the getting-started repository . This FAQ will be updated regularly.
+
+Team
+
+List of Organizers
+
+The organizing team combines expertise in AI evaluation, interpretability, and data collection with top-tier
+olympiad-level mathematicians — a combination that lets us curate the high-quality robustness validation this challenge is built on.
+Several of us are actively involved in related initiatives, including AIMO, bringing first-hand experience running competitions at scale.
+
+MŠ
+
+Michal Štefánik
+
+NII, Japan
+
+Lead organizer, website, communication. Researcher in evaluation, interpretability, and robustness of language models.
+
+PM
+
+Philipp Mondorf
+
+LMU Munich
+
+Core organizer, baselines, leaderboard. PhD researcher in reasoning and generalization of language models.
+
+AW
+
+Andreas Waldis
+
+Univ. of Tübingen
+
+Core organizer, baselines, beta testing. PostDoc and junior group lead researching the reliability and robustness of language models.
+
+CY
+
+Chuan Yang
+
+Fuzhou University
+
+Math expertise, problems validation. Associate Professor of mathematics and optimization, contributing olympiad-level math expertise.
+
+RB
+
+Róbert Belanec
+
+KInIT, Slovakia
+
+Data curation, robustness labels. PhD researcher in efficient fine-tuning and generalization of language models.
+
+QL
+
+Qianying Liu
+
+NII, Japan
+
+Math expertise, evaluation. Researcher in the multilingual reasoning and interpretability of language models.
+
+MS
+
+Michal Spiegel
+
+Masaryk University
+
+Data curation coordination. Researcher in mechanistic interpretability of reasoning and length generalization.
+
+JK
+
+Josef Kuchař
+
+Masaryk University
+
+Infrastructure, Codabench. Software engineer focused on the development of machine learning systems.
+
+MK
+
+Marek Kadlčík
+
+Masaryk University
+
+Symbolic chains, permutations. PhD researcher in the reasoning and generalization of neural models.
+
+AV
+
+Adam Vawda-Oomerjee
+
+NII / UCL
+
+Infrastructure, Codabench, beta testing. Researcher in reasoning, reinforcement learning, and world models.
+
+CL
+
+Chaoran Liu
+
+NII, Japan
+
+Infrastructure, participant support. Project Associate Professor researching architectures and training strategies of large language models.
+
+SF
+
+Simon Frieder
+
+Oxford / AIMO
+
+Competition design, AIMO liaison. AIMO Prize Manager and founder of the Benchmarks & Baselines non-profit, active leader in AI for Math community.
+
+BP
+
+Barbara Plank
+
+LMU Munich
+
+Evaluation, data. Professor leading the MaiNLP lab and President of the Association for Computational Linguistics (ACL), focused on evaluation and reliability of language models.
+
+FB
+
+Fazl Barez
+
+Univ. of Oxford
+
+Interpretability methods. Senior Researcher leading the Technical Safety & Governance lab, bringing expertise in interpretability.
+
+PS
+
+Pontus Stenetorp
+
+UCL / NII
+
+Evaluation, adversarial data, promotion. Professor of NLP and Deputy Director of the UCL Centre for AI, bringing expertise in data and evaluation.
+
+Contact
+
+Get in Touch
+
+For any questions about the challenge, compute access proposals, or technical issues, please reach out — we're happy to help.
+
+✉️
+
+Primary contacts:
+AIMO-Interp Discord and aimo.interp@gmail.com .
+
+For technical questions, please also consider opening an issue or discussion on the corresponding
+GitHub repository .
+
+AIMO Interpretability Challenge &middot;
+Proposal paper &middot;
+Getting started &middot;
+aimo.interp@gmail.com

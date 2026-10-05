@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>FOMO26 - Foundation Model Challenge for Brain MRI</title>
+  <meta name="description"
+    content="FOMO26 at MICCAI 2026: Foundation model challenge for brain MRI with FOMO300K and expanded tasks." />
+  <link rel="canonical" href="https://fomo26.github.io/" />
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="FOMO26" />
+  <meta property="og:title" content="FOMO26 - Foundation Model Challenge for Brain MRI" />
+  <meta property="og:description"
+    content="FOMO26 at MICCAI 2026: final challenge results across seven downstream brain MRI tasks." />
+  <meta property="og:url" content="https://fomo26.github.io/" />
+  <meta property="og:image" content="https://fomo26.github.io/images/fomo26.png" />
+  <meta property="og:image:width" content="1320" />
+  <meta property="og:image:height" content="611" />
+  <meta property="og:image:alt" content="Overview of the FOMO26 brain MRI challenge" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="FOMO26 - Foundation Model Challenge for Brain MRI" />
+  <meta name="twitter:description"
+    content="Final FOMO26 challenge results across seven downstream brain MRI tasks." />
+  <meta name="twitter:image" content="https://fomo26.github.io/images/fomo26.png" />
+  <meta name="twitter:image:alt" content="Overview of the FOMO26 brain MRI challenge" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="javascript/p5.js"></script>
+  <script src="javascript/sketch.js"></script>
+  <style>
+    .logo-fomo {
+      background: linear-gradient(to right, #2563eb, #db2777);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-26 {
+      color: #db2777;
+    }
+
+    .logo-link {
+      transition: filter 0.3s ease;
+      will-change: filter;
+      transform: translateZ(0);
+    }
+
+    .logo-link:hover {
+      filter: drop-shadow(0 0 10px rgba(219, 39, 119, 0.65));
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      z-index: -1;
+    }
+
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      height: auto;
+    }
+
+    .p5Canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .animate-gradient {
+      background-size: 200% 200%;
+      animation: gradientShift 6s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0 50%;
+      }
+    }
+
+    .results-sparkle-button {
+      background: linear-gradient(110deg, #4f46e5, #7c3aed 45%, #db2777);
+      background-size: 180% 100%;
+      isolation: isolate;
+      overflow: visible;
+      position: relative;
+      transition: box-shadow 180ms ease, filter 180ms ease, transform 180ms ease;
+    }
+
+    .results-sparkle-button::before {
+      background: linear-gradient(110deg, rgba(79, 70, 229, 0.8), rgba(219, 39, 119, 0.8));
+      border-radius: inherit;
+      content: "";
+      filter: blur(13px);
+      inset: -5px;
+      opacity: 0;
+      position: absolute;
+      transition: opacity 180ms ease;
+      z-index: -1;
+    }
+
+    .results-sparkle-button:hover,
+    .results-sparkle-button:focus-visible {
+      animation: results-button-shimmer 900ms ease infinite alternate;
+      box-shadow: 0 12px 28px rgba(124, 58, 237, 0.38);
+      filter: saturate(1.2);
+      transform: translateY(-2px) scale(1.045);
+    }
+
+    .results-sparkle-button:hover::before,
+    .results-sparkle-button:focus-visible::before { opacity: 0.72; }
+
+    .result-sparkle {
+      color: #fbbf24;
+      font-size: 1.05rem;
+      line-height: 1;
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      text-shadow: 0 0 7px rgba(255, 255, 255, 0.95);
+      z-index: 2;
+    }
+
+    .results-sparkle-button:hover .result-sparkle,
+    .results-sparkle-button:focus-visible .result-sparkle {
+      animation: result-sparkle-pop 850ms ease-out infinite;
+    }
+
+    .result-sparkle:nth-of-type(1) { left: 10%; top: -12px; --sparkle-x: -9px; --sparkle-y: -13px; }
+    .result-sparkle:nth-of-type(2) { right: 12%; top: -11px; --sparkle-x: 8px; --sparkle-y: -15px; animation-delay: 130ms !important; color: #f9a8d4; }
+    .result-sparkle:nth-of-type(3) { bottom: -12px; left: 21%; --sparkle-x: -7px; --sparkle-y: 13px; animation-delay: 260ms !important; color: #67e8f9; }
+    .result-sparkle:nth-of-type(4) { bottom: -11px; right: 18%; --sparkle-x: 9px; --sparkle-y: 14px; animation-delay: 390ms !important; }
+    .result-sparkle:nth-of-type(5) { left: -15px; top: 35%; --sparkle-x: -13px; --sparkle-y: -4px; animation-delay: 190ms !important; color: #c4b5fd; }
+    .result-sparkle:nth-of-type(6) { right: -15px; top: 28%; --sparkle-x: 14px; --sparkle-y: -5px; animation-delay: 320ms !important; color: #f9a8d4; }
+
+    @keyframes results-button-shimmer {
+      from { background-position: 0 50%; }
+      to { background-position: 100% 50%; }
+    }
+
+    @keyframes result-sparkle-pop {
+      0% { opacity: 0; transform: translate(0, 0) rotate(0) scale(0.2); }
+      35% { opacity: 1; }
+      100% {
+        opacity: 0;
+        transform: translate(var(--sparkle-x), var(--sparkle-y)) rotate(100deg) scale(1.25);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .results-sparkle-button:hover,
+      .results-sparkle-button:focus-visible {
+        animation: none;
+        transform: none;
+      }
+
+      .results-sparkle-button:hover .result-sparkle,
+      .results-sparkle-button:focus-visible .result-sparkle { animation: none; }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 text-gray-900 overflow-x-hidden">
+  <header class="bg-white shadow sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
+      <h1 class="text-3xl font-bold tracking-tight"><a href="https://fomo26.github.io" class="logo-link" title=" "><span
+            class="logo-fomo">FOMO</span><span class="logo-26">26</span></a></h1>
+
+      <button id="menu-toggle" class="focus:outline-none block md:hidden" aria-label="Open menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+
+      <nav class="hidden md:block">
+        <ul class="flex space-x-4 justify-center items-center">
+          <li><a href="#setup" class="text-gray-900 hover:text-gray-600">Setup</a></li>
+          <li><a href="#timeline" class="text-gray-900 hover:text-gray-600">Timeline</a></li>
+          <li><a href="#rules" class="text-gray-900 hover:text-gray-600">Rules</a></li>
+          <li><a href="#team" class="text-gray-900 hover:text-gray-600">Team</a></li>
+          <li class="relative">
+            <button id="editions-toggle" onclick="document.getElementById('editions-menu').classList.toggle('hidden')"
+              class="text-gray-900 hover:text-gray-600 flex items-center gap-1">
+              Previous editions
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <ul id="editions-menu"
+              class="hidden absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+              <li><a href="https://fomo25.github.io" target="_blank" rel="noopener noreferrer"
+                  class="block px-4 py-2 text-gray-900 hover:bg-gray-100 rounded-lg">FOMO25</a></li>
+            </ul>
+          </li>
+          <li><a href="/results/" class="text-pink-600 font-semibold hover:text-pink-700">Results</a></li>
+          <li><a href="/event/" class="text-pink-600 font-semibold hover:text-pink-700">Event</a></li>
+        </ul>
+      </nav>
+
+      <div id="mobile-menu"
+        class="fixed top-0 left-0 h-full w-64 bg-white shadow transform -translate-x-full transition-transform duration-300 ease-in-out z-50 md:hidden p-6">
+        <button id="close-menu" class="mb-4 focus:outline-none" aria-label="Close menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+        <ul class="flex flex-col space-y-4">
+          <li><a href="#setup" class="text-gray-900 hover:text-gray-600">Setup</a></li>
+          <li><a href="#timeline" class="text-gray-900 hover:text-gray-600">Timeline</a></li>
+          <li><a href="#rules" class="text-gray-900 hover:text-gray-600">Rules</a></li>
+          <li><a href="#team" class="text-gray-900 hover:text-gray-600">Team</a></li>
+          <li>
+            <p class="text-gray-500 text-sm font-medium mb-1">Previous editions</p>
+            <a href="https://fomo25.github.io" target="_blank" rel="noopener noreferrer"
+              class="text-gray-900 hover:text-gray-600 pl-2">FOMO25</a>
+          </li>
+          <li><a href="/results/" class="text-pink-600 font-semibold hover:text-pink-700">Results</a></li>
+          <li><a href="/event/" class="text-pink-600 font-semibold hover:text-pink-700">Event</a></li>
+        </ul>
+      </div>
+
+      <a href="https://conferences.miccai.org/2026/en/" target="_blank" rel="noopener noreferrer">
+        <img src="images/miccai.png" alt="MICCAI Logo" class="h-12 w-auto object-contain" />
+      </a>
+    </div>
+  </header>
+
+  <main id="top" class="pb-10">
+    <section class="relative text-gray-900 py-24" id="brains">
+      <div class="relative max-w-4xl mx-auto text-center px-4 py-3 rounded-lg">
+        <h2 class="text-5xl font-extrabold mb-6">
+          Welcome to
+          <span
+            class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-pink-600 to-red-700 animate-gradient">FOMO26</span>
+        </h2>
+        <p class="text-xl mb-6">The Foundation Model Challenge for Brain MRI at MICCAI 2026</p>
+        <p class="text-lg text-gray-700 max-w-3xl mx-auto">
+          Same core philosophy as FOMO25, now expanded with <span class="font-semibold">306,207 brain MRI scans</span>
+          for pretraining and <span class="font-semibold">seven downstream tasks</span> evaluating generalization in
+          realistic clinical settings.
+        </p>
+      </div>
+    </section>
+
+    <section class="mt-12">
+      <div class="max-w-5xl mx-auto text-center bg-opacity-90 bg-white py-6 px-4 rounded-lg shadow-sm">
+        <div class="flex justify-center flex-wrap gap-4">
+          <a href="https://www.di.ku.dk" target="_blank" rel="noopener noreferrer"><img src="images/ucph.png"
+              alt="University of Copenhagen" class="h-8 w-auto object-contain" /></a>
+          <a href="https://hms.harvard.edu" target="_blank" rel="noopener noreferrer"><img src="images/hms.png"
+              alt="Harvard Medical School" class="h-8 w-auto object-contain" /></a>
+          <a href="https://aicentre.dk" target="_blank" rel="noopener noreferrer"><img src="images/p1.png"
+              alt="Pioneer Centre for AI" class="h-8 w-auto object-contain" /></a>
+          <a href="https://www.martinos.org" target="_blank" rel="noopener noreferrer"><img src="images/martinos.png"
+              alt="A. A. Martinos Center" class="h-8 w-auto object-contain" /></a>
+          <a href="https://www.massgeneral.org" target="_blank" rel="noopener noreferrer"><img src="images/mgh.png"
+              alt="Mass General Hospital" class="h-8 w-auto object-contain" /></a>
+          <a href="https://www.jhu.edu" target="_blank" rel="noopener noreferrer"><img src="images/JHU.png"
+              alt="Johns Hopkins University" class="h-8 w-auto object-contain" /></a>
+          <a href="https://www.rait.dk" target="_blank" rel="noopener noreferrer"><img src="images/rait.png"
+              alt="Radiological AI Testcenter" class="h-8 w-auto object-contain" /></a>
+          <a href="https://www.bispebjerghospital.dk/forskning/Sider/default.aspx" target="_blank"
+            rel="noopener noreferrer"><img src="images/bispebjerg.png" alt="Bispebjerg Hospital"
+              class="h-8 w-auto object-contain" /></a>
+          <a href="https://www.gentoftehospital.dk/english-/research/Pages/default.aspx" target="_blank"
+            rel="noopener noreferrer"><img src="images/gentofte.png" alt="Gentofte Hospital"
+              class="h-8 w-auto object-contain" /></a>
+          <a href="https://dk.linkedin.com/company/copenhagen-biological-and-precision-psychiatry" target="_blank"
+            rel="noopener noreferrer"><img src="images/precision_psyk.jpeg"
+              alt="Copenhagen Research Centre for Biological and Precision Psychiatry"
+              class="h-10 w-auto object-contain" /></a>
+          <a href="https://www.cerebriu.com" target="_blank" rel="noopener noreferrer"><img src="images/cerebriu.svg"
+              alt="Cerebriu" class="h-8 w-auto object-contain" /></a>
+          <img src="images/NRUlogo.png" alt="Neurobiology Research Unit" class="h-8 w-auto object-contain" />
+          <img src="images/rh.jpg" alt="Rigshospitalet" class="h-8 w-auto object-contain" />
+        </div>
+        <div class="flex justify-center items-center gap-2 mt-7 mb-6 text-gray-600 text-sm">
+          <a href="https://huggingface.co/datasets/FOMO-MRI/FOMO300K" target="_blank" rel="noopener noreferrer"
+            class="font-semibold text-gray-800 hover:underline">FOMO300K</a>
+          <span>hosted with support from</span>
+          <a href="https://huggingface.co" target="_blank" rel="noopener noreferrer"><img
+              src="images/hf-logo-with-title.svg" alt="Hugging Face" class="h-8 w-auto object-contain" /></a>
+        </div>
+        <div class="flex justify-center items-center gap-3 mt-4 mb-6 text-gray-600 text-sm">
+          <span>Prize money generously sponsored by</span>
+          <a href="https://www.siemens-healthineers.com" target="_blank" rel="noopener noreferrer"><img
+              src="images/Siemens_Healthineers_logo.svg" alt="Siemens Healthineers"
+              class="h-6 w-auto object-contain" /></a>
+        </div>
+        <div class="flex justify-center items-center flex-wrap mt-4 text-gray-700">
+          <a href="/results/"
+            class="results-sparkle-button inline-block text-white font-semibold py-2 px-6 rounded-md shadow">
+            See the Results!
+            <span class="result-sparkle" aria-hidden="true">✦</span>
+            <span class="result-sparkle" aria-hidden="true">✦</span>
+            <span class="result-sparkle" aria-hidden="true">✦</span>
+            <span class="result-sparkle" aria-hidden="true">✦</span>
+            <span class="result-sparkle" aria-hidden="true">✦</span>
+            <span class="result-sparkle" aria-hidden="true">✦</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="setup" class="max-w-4xl mx-auto px-4 mt-10 mb-8">
+      <h2 class="text-3xl font-bold text-gray-900 mb-2">Towards Clinical-Grade Foundation Models:</h2>
+      <h2 class="text-3xl text-gray-900 mb-8">The FOMO26 Challenge Setup</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-gray-800 text-white p-8 rounded-lg shadow-lg aspect-square flex flex-col">
+          <h3 class="text-2xl font-bold mb-4 text-pink-400">Track 1: Methods</h3>
+          <h4 class="text-lg mb-3">Pretrain on <span class="font-semibold">FOMO300K</span>.</h4>
+          <p class="mt-auto mb-4">
+            Participants pretrain using the official FOMO26 large-scale dataset to compare methods under a shared data
+            regime.
+          </p>
+          <p class="mt-auto">
+            <span class="text-sm text-gray-400">Comprehensive code-release.</span><br>
+            <span class="text-sm text-gray-400">$1000 prize money.</span>
+          </p>
+        </div>
+
+        <div class="bg-gray-800 text-white p-8 rounded-lg shadow-lg aspect-square flex flex-col">
+          <h3 class="text-2xl font-bold mb-4 text-pink-400">Track 2: Open</h3>
+          <h4 class="text-lg mb-3">Pretrain on <span class="font-semibold">Any Data</span>.</h4>
+          <p class="mt-auto mb-4">
+            Participants may use additional public/private data and custom pipelines to maximize generalization.
+          </p>
+          <p class="mt-auto">
+            <span class="text-sm text-gray-400">Open-data and proprietary pipelines allowed.</span><br>
+            <span class="text-sm text-gray-400">$1000 prize money.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-gray-800 text-white p-8 mt-4 rounded-lg shadow-lg flex flex-col">
+        <h3 class="text-2xl font-bold mb-4 text-pink-400">Evaluation</h3>
+        <h4 class="text-xl font-semibold mb-3">Few-shot and out-of-domain clinical benchmarks.</h4>
+        <p class="mt-auto mb-4">
+          As in FOMO25, all methods are evaluated on clinically relevant downstream tasks; FOMO26 expands the suite with
+          additional tasks and broader scanner/domain coverage.
+        </p>
+        <p class="mt-auto">No restrictions on finetuning strategy unless explicitly stated in task rules.</p>
+      </div>
+
+      <div class="flex justify-center items-center flex-wrap mt-8 text-center">
+        <a href="https://huggingface.co/datasets/FOMO-MRI/FOMO300K" target="_blank" rel="noopener noreferrer"
+          class="font-medium hover:border-pink-500 hover:text-pink-500 transition-colors mx-2">FOMO300K</a>
+        is available on Hugging Face.
+      </div>
+    </section>
+
+    <section class="bg-white text-gray-900 max-w-4xl mx-auto px-8 py-12 my-8 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-6">News</h2>
+      <div class="mb-6 pb-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold">The MICCAI 2026 event program is finalized</h3>
+        <p class="text-sm text-gray-700">September 9, 2026</p>
+        <p class="mt-2">
+          The full schedule is now available.
+          <a href="/event/" class="text-indigo-600 hover:underline">See the event page</a>.
+        </p>
+      </div>
+      <div class="mb-6 pb-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold">FOMO26 Results are Out!</h3>
+        <p class="text-sm text-gray-700">September 4, 2026</p>
+        <p class="mt-2">
+          The final FOMO26 rankings are now available for the Methods and Open tracks across all seven tasks.
+          <a href="/results/" class="text-indigo-600 hover:underline">See the results</a>.
+        </p>
+      </div>
+      <div class="mb-6 pb-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold">Container Validation Available</h3>
+        <p class="text-sm text-gray-700">June 24, 2026</p>
+        <p class="mt-2">
+          We have created templates and a local container validator, ensuring that your submission can be evaluated.
+          Check it out on
+          <a href="https://github.com/fomo26/container-validator" class="text-indigo-600 hover:underline"
+            target="_blank" rel="noopener noreferrer">Github</a>.
+        </p>
+      </div>
+      <div class="mb-6 pb-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold">Model Submission Now Available</h3>
+        <p class="text-sm text-gray-700">June 15, 2026</p>
+        <p class="mt-2">
+          You can now submit your model to the challenge via Synapse. Please follow the
+          <a href="https://www.synapse.org/Synapse:syn72120565/wiki/640839" class="text-indigo-600 hover:underline"
+            target="_blank" rel="noopener noreferrer">instructions on Synapse</a> to submit your model.
+        </p>
+      </div>
+      <div class="mb-6 pb-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold">Signup Is Now Open</h3>
+        <p class="text-sm text-gray-700">April 20, 2026</p>
+        <p class="mt-2">
+          Registration for FOMO26 is now open! <a href="/signup.html" class="text-indigo-600 hover:underline">Sign up</a> to
+          participate and get access to the pretraining dataset and finetuning data.
+        </p>
+      </div>
+      <div class="mb-6 pb-6 border-b border-gray-200">
+        <h3 class="text-xl font-semibold">FOMO25 Paper Is now Available</h3>
+        <p class="text-sm text-gray-700">April 13, 2026</p>
+        <p class="mt-2">The <a href="https://arxiv.org/abs/2604.11679" class="text-indigo-600 hover:underline"
+            target="_blank" rel="noopener noreferrer">FOMO25 paper</a> summarizing the results from last year's challenge is now on arXiv!</p>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold">Announcing FOMO26</h3>
+        <p class="text-sm text-gray-700">April 3, 2026</p>
+        <p class="mt-2">
+          We are excited to announce FOMO26, the Foundation Model Challenge for Brain MRI at MICCAI 2026. Full
+          documentation and registration details will be published soon.
+        </p>
+      </div>
+    </section>
+
+    <section id="timeline" class="bg-white text-gray-900 max-w-4xl mx-auto px-8 py-12 my-8 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-left mb-8">Timeline</h2>
+      <div class="border-l-4 border-pink-700 pl-4">
+        <div class="mb-6">
+          <h3 class="text-lg font-bold text-gray-400">April 2026</h3>
+          <p class="text-gray-400">Challenge registration opens. Access to pretraining dataset and finetuning data.
+            Public GitHub repo with example pretraining and finetuning code (MAE + U-Net) released.</p>
+        </div>
+        <div class="mb-6">
+          <h3 class="text-lg font-bold text-gray-400">15 May 2026</h3>
+          <p class="text-gray-400">Sanity-check pipeline on Synapse opens — technical validation to confirm containers
+            are correctly configured.</p>
+        </div>
+        <div class="mb-6">
+          <h3 class="text-lg font-bold text-gray-400">15 June 2026</h3>
+          <p class="text-gray-400">Validation leaderboard opens. Final submission pipeline opens.</p>
+        </div>
+        <div class="mb-6">
+          <h3 class="text-lg font-bold text-gray-400">21 August 2026 — 11:59 PM PST</h3>
+          <p class="text-gray-400">Validation submission deadline.</p>
+        </div>
+        <div class="mb-6">
+          <h3 class="text-lg font-bold text-gray-400">30 August 2026 — 11:59 PM PST</h3>
+          <p class="text-gray-400">Test submission deadline.</p>
+        </div>
+        <div class="mb-6">
+          <h3 class="text-lg font-bold text-pink-700">4 September 2026</h3>
+          <p class="text-gray-700">Results announced. <a href="/results/"
+              class="text-indigo-600 hover:underline">See the final rankings</a>.</p>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">MICCAI 2026 — 1 October</h3>
+          <p class="text-gray-700">Half-day event in Strasbourg.
+            <a href="/event/" class="text-indigo-600 hover:underline">See the event page</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="tasks" class="bg-white text-gray-900 max-w-4xl mx-auto px-8 py-12 my-8 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold text-left mb-2">Tasks</h2>
+      <p class="text-gray-600 mb-8">Seven downstream tasks spanning classification, segmentation, regression, and
+        representation quality. Tasks 1–3 continue from FOMO25; Tasks 4–7 are new.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm">
+          <div class="flex items-start gap-3 mb-2">
+            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded shrink-0">Task 1</span>
+            <h3 class="text-base font-bold text-gray-900">Infarct Classification</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Few-shot binary classification of acute ischemic infarcts from clinical
+            MRI acquired in Denmark and India.</p>
+          <div class="text-xs text-gray-500 space-y-1">
+            <div><span class="font-medium">Type:</span> Classification (few-shot)</div>
+            <div><span class="font-medium">Modality:</span> Clinical MRI (multi-sequence)</div>
+            <div><span class="font-medium">Metric:</span> AUROC</div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm">
+          <div class="flex items-start gap-3 mb-2">
+            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded shrink-0">Task 2</span>
+            <h3 class="text-base font-bold text-gray-900">Meningioma Segmentation</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Few-shot segmentation of meningioma tumors from clinical brain MRI.</p>
+          <div class="text-xs text-gray-500 space-y-1">
+            <div><span class="font-medium">Type:</span> Segmentation (few-shot)</div>
+            <div><span class="font-medium">Modality:</span> Clinical MRI</div>
+            <div><span class="font-medium">Metric:</span> DSC + NSD</div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm">
+          <div class="flex items-start gap-3 mb-2">
+            <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded shrink-0">Task 3</span>
+            <h3 class="text-base font-bold text-gray-900">Brain Age Estimation</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Regression of chronological brain age from T1w MRI scans across
+            a broad age range.</p>
+          <div class="text-xs text-gray-500 space-y-1">
+            <div><span class="font-medium">Type:</span> Regression</div>
+            <div><span class="font-medium">Modality:</span> T1w MRI</div>
+            <div><span class="font-medium">Metric:</span> MAE + Correlation coefficient</div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm">
+          <div class="flex items-start gap-3 mb-2">
+            <span
+              class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded shrink-0 whitespace-nowrap whitespace-nowrap">Task
+              4 — New</span>
+            <h3 class="text-base font-bold text-gray-900">Trigeminal Neuralgia Segmentation</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Multiclass segmentation of the trigeminal nerve and surrounding vessels,
+            relevant to surgical planning.</p>
+          <div class="text-xs text-gray-500 space-y-1">
+            <div><span class="font-medium">Type:</span> Segmentation (multiclass)</div>
+            <div><span class="font-medium">Modality:</span> T2w MRI</div>
+            <div><span class="font-medium">Metric:</span> DSC + NSD</div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm">
+          <div class="flex items-start gap-3 mb-2">
+            <span
+              class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded shrink-0 whitespace-nowrap">Task
+              5 — New</span>
+            <h3 class="text-base font-bold text-gray-900">Polymicrogyria Classification</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Few-shot binary classification of polymicrogyria, a rare cortical
+            malformation, from T1w MRI.</p>
+          <div class="text-xs text-gray-500 space-y-1">
+            <div><span class="font-medium">Type:</span> Classification (few-shot)</div>
+            <div><span class="font-medium">Modality:</span> T1w MRI</div>
+            <div><span class="font-medium">Metric:</span> AUROC</div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm">
+          <div class="flex items-start gap-3 mb-2">
+            <span
+              class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded shrink-0 whitespace-nowrap">Task
+              6 — New</span>
+            <h3 class="text-base font-bold text-gray-900">Linear Probing</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Embedding quality assessment via linear separability — no finetuning
+            allowed. Measures what the model learned during pretraining.</p>
+          <div class="text-xs text-gray-500 space-y-1">
+            <div><span class="font-medium">Type:</span> Representation quality</div>
+            <div><span class="font-medium">Constraint:</span> No finetuning</div>
+            <div><span class="font-medium">Metric:</span> OvR AUROC + F1</div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg col-span-1 md:col-span-2 shadow-sm">
+          <div class="flex items-start gap-3 mb-2">
+            <span
+              class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded shrink-0 whitespace-nowrap">Task
+              7 — New</span>
+            <h3 class="text-base font-bold text-gray-900">Bias and Fairness</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Group fairness evaluation using the same linear probing setup as Task 6.
+            Assesses whether embeddings encode or suppress demographic and acquisition biases.</p>
+          <div class="text-xs text-gray-500 space-y-1">
+            <div><span class="font-medium">Type:</span> Fairness evaluation</div>
+            <div><span class="font-medium">Constraint:</span> No finetuning (same setup as Task 6)</div>
+            <div><span class="font-medium">Metric:</span> OvR AUROC + F1 across demographic groups</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="bg-white text-gray-900 max-w-4xl mx-auto px-8 py-12 my-8 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-4">Challenge Overview</h2>
+      <p class="text-gray-700 mb-6">
+        The goal is to pretrain a foundation model and evaluate it on 7 downstream tasks, of which 5 require finetuning.
+        Tasks 5 and 6 are linear probing tasks — participants only need to provide a container that produces an
+        embedding per input; no finetuning is necessary.
+        We provide boilerplate code for all tasks, including how to build the submission containers, to minimize
+        workload.
+      </p>
+      <img src="images/fomo26.png" alt="FOMO26 challenge overview" class="w-full rounded-lg" />
+    </section>
+
+    <section id="rules" class="bg-white text-gray-900 max-w-4xl mx-auto px-8 py-12 my-8 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-8">Challenge Rules</h2>
+
+      <p class="text-gray-700 mb-6">Failure to comply with any of the rules below will result in
+        disqualification. Edge cases or ambiguities will be reviewed by the organizing committee on a
+        case-by-case basis.</p>
+
+      <h3 class="text-xl font-bold text-gray-900 mb-2">Tracks</h3>
+      <p class="text-gray-700 mb-4">For all tasks, the challenge will have two tracks:</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm">
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Methods Track</h3>
+          <p class="text-sm text-gray-700">No additional data allowed. Challenge participants can only use
+            the large-scale <span class="font-semibold">FOMO300K</span> dataset. This track is intended to
+            provide insights into methods development for pretraining, finetuning, and model architectures.</p>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm">
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Open Track</h3>
+          <p class="text-sm text-gray-700">Any data allowed for pretraining. Challenge participants can use
+            any data, including private data, for their submissions. This includes submissions using any form
+            of segmentation maps obtained through manual labor or disease diagnosis information during
+            pretraining. All data used must be specified and properly cited. The track is intended to allow
+            participants to showcase and compare brain MRI Foundation Models.</p>
+        </div>
+      </div>
+
+      <h3 class="text-xl font-bold text-gray-900 mb-4">Submission Rules</h3>
+
+      <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm mb-6">
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Single Pretrained Model Across Tasks</h3>
+        <p class="text-sm text-gray-700">Each submission must use the <span class="font-semibold">same
+            pretrained checkpoint across all downstream tasks</span>. Submitting different pretrained
+          checkpoints for different tasks is not allowed.</p>
+      </div>
+
+      <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm mb-6">
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Finetuning Data</h3>
+        <p class="text-sm text-gray-700">For both tracks, additional data is <span class="font-semibold">not
+            allowed for finetuning</span>. The premise of the challenge is to evaluate model performance in the
+          context of few-shot generalization on clinical data. Allowing participants to use their own data
+          for finetuning would meaningfully divert from this and is thus not allowed.</p>
+      </div>
+
+      <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm mb-6">
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Validation Attempts</h3>
+        <p class="text-sm text-gray-700">Each team is allowed a <span class="font-semibold">maximum of 3
+            valid attempts per task per track</span> on the validation leaderboard.</p>
+      </div>
+
+      <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm">
+        <h3 class="text-lg font-bold text-gray-900 mb-2">Runtime Constraint</h3>
+        <p class="text-sm text-gray-700">Submissions are subject to a runtime limit of
+          <span class="font-semibold">120 seconds per case</span> on a compute node with an 80&nbsp;GB VRAM
+          H100 GPU and 32 CPUs.
+        </p>
+      </div>
+    </section>
+
+    <section id="leaderboard" class="bg-white text-gray-900 max-w-4xl mx-auto px-8 py-12 my-8 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-2">Leaderboard &amp; Evaluation</h2>
+      <p class="text-gray-600 mb-8">For each task, all test cases are assigned a uniform weight, and each
+        metric is averaged over all cases in the test set.</p>
+
+      <div class="space-y-6">
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm">
+          <h3 class="text-lg font-bold text-gray-900 mb-2">Per-Task Leaderboard</h3>
+          <p class="text-sm text-gray-700">For each task, a per-task summary statistic is computed as the
+            average of the ranks across metrics (or the rank itself if the task has only one metric).
+            Submissions are then ranked based on this summary statistic.</p>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm">
+          <h3 class="text-lg font-bold text-gray-900 mb-3">Unified Leaderboard</h3>
+          <p class="text-sm text-gray-700 mb-4">The overall rank is computed as a weighted average of
+            per-task ranks.</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <div class="bg-white border border-gray-200 p-3 rounded">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-0.5 rounded">10% each</span>
+                <span class="text-sm font-semibold text-gray-900">Image-level tasks</span>
+              </div>
+              <p class="text-xs text-gray-600">Tasks 1, 3, 5, 6, and 7</p>
+            </div>
+            <div class="bg-white border border-gray-200 p-3 rounded">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="bg-pink-100 text-pink-800 text-xs font-semibold px-2 py-0.5 rounded">25% each</span>
+                <span class="text-sm font-semibold text-gray-900">Voxel-level tasks</span>
+              </div>
+              <p class="text-xs text-gray-600">Tasks 2 and 4</p>
+            </div>
+          </div>
+
+          <p class="text-sm text-gray-700">For tasks not included in a submission, the worst possible rank
+            for that task is used.</p>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-lg shadow-sm">
+          <h3 class="text-lg font-bold text-gray-900 mb-3">Prizes</h3>
+          <p class="text-sm text-gray-700 mb-3">A cash prize of <span class="font-semibold">$1,000 per
+              track</span>, distributed among the top three teams on the unified leaderboard:</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="bg-white border border-gray-200 p-3 rounded text-center">
+              <div class="text-xs font-semibold text-gray-500 mb-1">1st place</div>
+              <div class="text-lg font-bold text-pink-600">$500</div>
+            </div>
+            <div class="bg-white border border-gray-200 p-3 rounded text-center">
+              <div class="text-xs font-semibold text-gray-500 mb-1">2nd place</div>
+              <div class="text-lg font-bold text-pink-600">$300</div>
+            </div>
+            <div class="bg-white border border-gray-200 p-3 rounded text-center">
+              <div class="text-xs font-semibold text-gray-500 mb-1">3rd place</div>
+              <div class="text-lg font-bold text-pink-600">$200</div>
+            </div>
+          </div>
+          <div class="flex items-center justify-center gap-3 mt-4 text-sm text-gray-600">
+            <span>Prize money generously sponsored by</span>
+            <a href="https://www.siemens-healthineers.com" target="_blank" rel="noopener noreferrer"><img
+                src="images/Siemens_Healthineers_logo.svg" alt="Siemens Healthineers"
+                class="h-6 w-auto object-contain" /></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="publication" class="bg-white text-gray-900 max-w-4xl mx-auto px-8 py-12 my-8 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-4">Publication Policy</h2>
+      <p class="text-gray-700 mb-4">The aim is a publication in a journal such as <span class="font-medium">Nature
+          Methods</span>, <span class="font-medium">Medical Image Analysis</span>,
+        <span class="font-medium">npj Digital Medicine</span>, or <span class="font-medium">IEEE Transactions
+          on Medical Imaging</span>.
+      </p>
+      <p class="text-gray-700">All participating teams that have made substantial submissions
+        <span class="font-semibold">to all tasks</span> — excluding trivial approaches such as zero-output
+        predictions, random guessing, or unmodified baseline use — will be invited to contribute to the
+        manuscript. Each team can have at most <span class="font-semibold">five authors</span> on the
+        publication. Exemptions will be considered on a case-by-case basis.
+      </p>
+    </section>
+
+    <section id="participation" class="bg-white text-gray-900 max-w-4xl mx-auto px-8 py-12 my-8 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-4">Participation Policy</h2>
+      <p class="text-gray-700 mb-4">Due to the large number of members in the institutes of the organizers, these
+        are divided into two groups:</p>
+      <ol class="list-decimal pl-6 space-y-2 text-gray-700">
+        <li>Participants who have active working relations with any of the organizers are
+          <span class="font-semibold">not allowed to participate</span> and will not be listed on the leaderboard.
+        </li>
+        <li>Other members of the institutes may participate, but are
+          <span class="font-semibold">not eligible for awards</span> and listed with a clearly visible disclaimer
+          in the leaderboard.
+        </li>
+      </ol>
+    </section>
+
+    <section id="team" class="bg-white text-gray-900 max-w-4xl mx-auto px-8 py-12 my-8 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-8">Team</h2>
+
+      <div class="space-y-8">
+        <section>
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">Organising Committee</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-gray-700">
+            <div><span class="font-semibold">Stefano Cerri</span> <span class="text-pink-600 text-xs font-medium">Lead
+                Organizer</span><br><span class="text-sm text-gray-500">University of Copenhagen &amp; Pioneer Centre
+                For AI</span></div>
+            <div><span class="font-semibold">Jakob Ambsdorf</span> <span class="text-pink-600 text-xs font-medium">Lead
+                Organizer</span><br><span class="text-sm text-gray-500">University of
+                Copenhagen &amp; Pioneer Centre For AI</span></div>
+            <div><span class="font-semibold">Asbjørn Munk</span> <span class="text-pink-600 text-xs font-medium">Lead
+                Organizer</span><br><span class="text-sm text-gray-500">University of Copenhagen &amp; Pioneer Centre
+                For AI</span></div>
+            <div><span class="font-semibold">Sebastian Nørgaard Llambias</span><br><span
+                class="text-sm text-gray-500">University of Copenhagen &amp; Pioneer Centre For AI</span></div>
+            <div><span class="font-semibold">Julia Machnio</span><br><span class="text-sm text-gray-500">University of
+                Copenhagen &amp; Pioneer Centre For AI</span></div>
+            <div><span class="font-semibold">Pablo Rocamora García</span><br><span
+                class="text-sm text-gray-500">University of Copenhagen &amp; Pioneer Centre For AI</span></div>
+            <div><span class="font-semibold">Zahra Sobhaninia</span><br><span class="text-sm text-gray-500">University
+                of Copenhagen &amp; Pioneer Centre For AI</span></div>
+            <div><span class="font-semibold">Alice Schiavone</span><br><span class="text-sm text-gray-500">University of
+                Copenhagen</span></div>
+            <div><span class="font-semibold">Leila Khaertdinova</span><br><span class="text-sm text-gray-500">University
+                of Copenhagen</span></div>
+            <div><span class="font-semibold">Simon Winther Albertsen</span><br><span
+                class="text-sm text-gray-500">University of Copenhagen</span></div>
+            <div><span class="font-semibold">Said Djafar Said</span><br><span class="text-sm text-gray-500">University
+                of Copenhagen</span></div>
+            <div><span class="font-semibold">Llucia Coll</span><br><span class="text-sm text-gray-500">Copenhagen
+                University Hospital, Rigshospitalet</span></div>
+            <div><span class="font-semibold">Christian Hedeager Krag</span><br><span
+                class="text-sm text-gray-500">Radiological AI Testcenter, Denmark</span></div>
+            <div><span class="font-semibold">Vardan Nersesjan</span><br><span class="text-sm text-gray-500">Copenhagen
+                University Hospital, Rigshospitalet</span></div>
+            <div><span class="font-semibold">Xupeng Zhang</span><br><span class="text-sm text-gray-500">Johns Hopkins
+                University</span></div>
+            <div><span class="font-semibold">Jingwei Zhou</span><br><span class="text-sm text-gray-500">Johns Hopkins
+                University</span></div>
+          </div>
+        </section>
+
+        <section>
+          <h3 class="text-xl font-semibold text-gray-800 mb-4">Scientific Committee</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-gray-700">
+            <div><span class="font-semibold">Bulat Ibragimov</span><br><span class="text-sm text-gray-500">University of
+                Copenhagen</span></div>
+            <div><span class="font-semibold">Mostafa Mehdipour Ghazi</span><br><span
+                class="text-sm text-gray-500">University of Copenhagen &amp; Pioneer Centre For AI</span></div>
+            <div><span class="font-semibold">Mikael Ploug Boesen</span><br><span
+                class="text-sm text-gray-500">Radiological
+                AI Testcenter &amp; Copenhagen University Hospital</span>
+            </div>
+            <div><span class="font-semibold">Espen Jimenez Solem</span><br><span
+                class="text-sm text-gray-500">Copenhagen
+                University Hospital</span></div>
+            <div><span class="font-semibold">Michael Eriksen Benros</span><br><span class="text-sm text-gray-500">Mental
+                Health Centre Copenhagen &amp; University of Copenhagen</span></div>
+            <div><span class="font-semibold">Juan Eugenio Iglesias</span><br><span class="text-sm text-gray-500">MGH /
+                Harvard Medical School &amp; MIT</span></div>
+            <div><span class="font-semibold">Peirong Liu</span><br><span class="text-sm text-gray-500">Johns Hopkins
+                University</span></div>
+            <div><span class="font-semibold">Melanie Ganz-Benjaminsen</span><br><span
+                class="text-sm text-gray-500">University
+                of Copenhagen &amp; Copenhagen University Hospital,
+                Rigshospitalet</span></div>
+            <div><span class="font-semibold">Risheng Xu</span><br><span class="text-sm text-gray-500">Johns Hopkins
+                University</span></div>
+            <div><span class="font-semibold">Mads Nielsen</span><br><span class="text-sm text-gray-500">University of
+                Copenhagen &amp; Pioneer Centre For AI</span></div>
+          </div>
+        </section>
+
+      </div>
+    </section>
+
+    <section id="faq" class="bg-white text-gray-900 max-w-4xl mx-auto px-8 py-12 my-8 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-8">FAQ</h2>
+      <div class="space-y-3">
+        <details class="border border-gray-200 rounded-lg">
+          <summary
+            class="cursor-pointer px-5 py-4 text-lg font-semibold text-gray-900 select-none list-none flex justify-between items-center">
+            What preprocessing is allowed on FOMO300K in the Methods Track?
+            <span class="text-gray-400 text-xl leading-none">+</span>
+          </summary>
+          <div class="px-5 pb-4 text-gray-700">
+            <p>You are free to apply any preprocessing you'd like to FOMO300K, including
+              skull-stripping, bias field correction, and registration to a common space.</p>
+            <p class="mt-2">You are restricted from using additional data and models trained on additional data to
+              enrich the dataset with additional supervision. This includes, for example, using pretrained models to
+              generate segmentation labels or other derived annotations. Further, manual annotations are not allowed.</p>
+            <p class="mt-2">Standard preprocessing tools are allowed. This includes the following non-exhaustive list:</p>
+            <ul class="list-disc pl-6 mt-1 space-y-1">
+              <li>Skull-stripping: SynthStrip, HD-BET, ROBEX, BET</li>
+              <li>Bias field correction: N4 (ANTs / SimpleITK)</li>
+              <li>Registration: ANTs, FLIRT, NiftyReg, Elastix, SynthMorph; MNI152 or similar standard templates</li>
+              <li>Reorientation, resampling, and intensity normalization</li>
+            </ul>
+            <p class="mt-2">If you're uncertain whether a specific step or tool falls within the rules, please send us
+              the explicit list of preprocessing steps and tools you intend to use at
+              <a href="mailto:fomo26@di.ku.dk" class="text-pink-600 hover:underline">fomo26@di.ku.dk</a> and we'll
+              confirm.</p>
+          </div>
+        </details>
+        <details class="border border-gray-200 rounded-lg">
+          <summary
+            class="cursor-pointer px-5 py-4 text-lg font-semibold text-gray-900 select-none list-none flex justify-between items-center">
+            What preprocessing have we applied to the challenge data?
+            <span class="text-gray-400 text-xl leading-none">+</span>
+          </summary>
+          <div class="px-5 pb-5 text-gray-700">
+            <h3 class="font-semibold text-gray-900 mb-1">Pretraining data (FOMO300K)</h3>
+            <p>See the <a href="https://arxiv.org/abs/2506.14432" class="text-pink-600 hover:underline"
+                target="_blank" rel="noopener noreferrer">FOMO300K paper</a> for preprocessing details.</p>
+
+            <h3 class="font-semibold text-gray-900 mt-4 mb-2">Finetuning, validation &amp; test data</h3>
+            <div class="overflow-x-auto -mx-1 px-1">
+              <table class="min-w-full text-sm border-collapse">
+                <thead>
+                  <tr class="border-b border-gray-300 text-left">
+                    <th class="py-2 pr-4 font-semibold text-gray-900 whitespace-nowrap align-bottom">Task</th>
+                    <th class="py-2 pr-4 font-semibold text-gray-900 align-bottom">Finetuning</th>
+                    <th class="py-2 font-semibold text-gray-900 align-bottom">Validation &amp; test</th>
+                  </tr>
+                </thead>
+                <tbody class="align-top">
+                  <tr class="border-b border-gray-200">
+                    <td class="py-2 pr-4 font-medium whitespace-nowrap">Task 1 &mdash; Infarct</td>
+                    <td class="py-2 pr-4">RAS + skull-strip with SynthSeg (FreeSurfer 7.4.1) + coregistration
+                      (FreeSurfer 7.4.1) to the highest-resolution scan.</td>
+                    <td class="py-2">RAS + skull-strip with SynthSeg (FreeSurfer 7.4.1) + coregistration
+                      (FreeSurfer 7.4.1) to the highest-resolution scan.</td>
+                  </tr>
+                  <tr class="border-b border-gray-200">
+                    <td class="py-2 pr-4 font-medium whitespace-nowrap">Task 2 &mdash; Meningioma</td>
+                    <td class="py-2 pr-4">RAS + defacing with mideface (FreeSurfer 7.4.1) + coregistration
+                      (FreeSurfer 7.4.1) to FLAIR.</td>
+                    <td class="py-2">RAS + defacing with mideface (FreeSurfer 7.4.1) + coregistration
+                      (FreeSurfer 7.4.1) to FLAIR.</td>
+                  </tr>
+                  <tr class="border-b border-gray-200">
+                    <td class="py-2 pr-4 font-medium whitespace-nowrap">Task 3 &mdash; Brain Age</td>
+                    <td class="py-2 pr-4"><a href="https://fcon_1000.projects.nitrc.org/indi/retro/sald.html"
+                        class="text-pink-600 hover:underline" target="_blank" rel="noopener noreferrer">Source</a> + RAS +
+                      skull-strip with SynthSeg (FreeSurfer 7.4.1).</td>
+                    <td class="py-2">RAS + skull-strip with SynthSeg (FreeSurfer 7.4.1).</td>
+                  </tr>
+                  <tr class="border-b border-gray-200">
+                    <td class="py-2 pr-4 font-medium whitespace-nowrap">Task 4 &mdash; Trigeminal Neuralgia</td>
+                    <td class="py-2 pr-4"><a href="https://openneuro.org/datasets/ds005713/versions/2.0.2"
+                        class="text-pink-600 hover:underline" target="_blank" rel="noopener noreferrer">Source</a> + RAS</td>
+                    <td class="py-2">None</td>
+                  </tr>
+                  <tr class="border-b border-gray-200">
+                    <td class="py-2 pr-4 font-medium whitespace-nowrap">Task 5 &mdash; Polymicrogyria</td>
+                    <td class="py-2 pr-4"><a
+                        href="https://ruor.uottawa.ca/items/298d789f-e390-43c7-a657-a823701b18b6"
+                        class="text-pink-600 hover:underline" target="_blank" rel="noopener noreferrer">Source</a> + RAS</td>
+                    <td class="py-2">Defacing (pydeface v2.0.2).</td>
+                  </tr>
+                  <tr class="border-b border-gray-200">
+                    <td class="py-2 pr-4 font-medium whitespace-nowrap">Task 6 &mdash; Linear Probing</td>
+                    <td class="py-2 pr-4">No finetuning data.</td>
+                    <td class="py-2">RAS</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-4 font-medium whitespace-nowrap">Task 7 &mdash; Bias &amp; Fairness</td>
+                    <td class="py-2 pr-4">No finetuning data.</td>
+                    <td class="py-2">RAS</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+        <details class="border border-gray-200 rounded-lg">
+          <summary
+            class="cursor-pointer px-5 py-4 text-lg font-semibold text-gray-900 select-none list-none flex justify-between items-center">
+            How will you process my models?
+            <span class="text-gray-400 text-xl leading-none">+</span>
+          </summary>
+          <p class="px-5 pb-4 text-gray-700">Models will only be used for purposes of the challenge and subsequently
+            deleted. The challenge organizers are able to sign confidentiality agreements when necessary. Please contact
+            us for more info.</p>
+        </details>
+        <details class="border border-gray-200 rounded-lg">
+          <summary
+            class="cursor-pointer px-5 py-4 text-lg font-semibold text-gray-900 select-none list-none flex justify-between items-center">
+            How can I learn from last year's challenge?
+            <span class="text-gray-400 text-xl leading-none">+</span>
+          </summary>
+          <div class="px-5 pb-4 text-gray-700">
+            <p>Read the challenge paper from last year! The <a href="https://arxiv.org/abs/2604.11679"
+                class="text-pink-600 hover:underline" target="_blank" rel="noopener noreferrer">FOMO25 paper</a> summarizes the challenge and
+              includes detailed descriptions of all 19 submitted foundation models from 16 teams. In particular we find:
+            </p>
+            <ul class="list-disc pl-6 mt-2 space-y-1">
+              <li>Self-supervised pretraining improves generalization on clinical data under domain shift, with the
+                strongest models trained out-of-domain surpassing supervised baselines trained in-domain.</li>
+              <li>Different pretraining objectives suit different tasks — masked autoencoders favor segmentation while
+                hybrid reconstruction-contrastive methods excel at classification.</li>
+              <li>Smaller pretrained models achieved strong performance, and increasing model size or training duration
+                did not consistently improve results.</li>
+            </ul>
+          </div>
+        </details>
+        <details class="border border-gray-200 rounded-lg">
+          <summary
+            class="cursor-pointer px-5 py-4 text-lg font-semibold text-gray-900 select-none list-none flex justify-between items-center">
+            Am I required to make my code publicly available?
+            <span class="text-gray-400 text-xl leading-none">+</span>
+          </summary>
+          <p class="px-5 pb-4 text-gray-700">Publishing code is not mandatory. However, participants must provide
+            sufficient methodological detail in their submission to allow reproducibility if they wish to be included in
+            the follow-up publication. We of course highly encourage all participants to publish their code.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="bg-white text-gray-900 max-w-4xl mx-auto px-8 py-12 my-8 rounded-lg shadow-md text-center">
+      <h2 class="text-3xl font-bold mb-6 text-gray-900">FOMO26 Challenge Results</h2>
+      <p class="text-gray-700 mb-6">
+        Explore the final rankings for both tracks and compare performance across all seven tasks.
+      </p>
+      <a href="/results/"
+        class="results-sparkle-button inline-block text-white font-semibold py-2 px-6 rounded-md shadow">
+        See the Results!
+        <span class="result-sparkle" aria-hidden="true">✦</span>
+        <span class="result-sparkle" aria-hidden="true">✦</span>
+        <span class="result-sparkle" aria-hidden="true">✦</span>
+        <span class="result-sparkle" aria-hidden="true">✦</span>
+        <span class="result-sparkle" aria-hidden="true">✦</span>
+        <span class="result-sparkle" aria-hidden="true">✦</span>
+      </a>
+      <p class="text-gray-500 mt-6">Or contact us at <a href="mailto:fomo26@di.ku.dk"
+          class="text-pink-600 hover:underline">fomo26@di.ku.dk</a></p>
+    </section>
+  </main>
+
+  <footer class="bg-gray-200 py-6 mt-0 w-full">
+    <div class="max-w-7xl mx-auto text-center text-sm text-gray-600">
+      &copy; 2026 FOMO Challenge. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    const toggleBtn = document.getElementById("menu-toggle");
+    const closeBtn = document.getElementById("close-menu");
+    const mobileMenu = document.getElementById("mobile-menu");
+
+    document.addEventListener("click", (e) => {
+      const toggle = document.getElementById("editions-toggle");
+      const menu = document.getElementById("editions-menu");
+      if (toggle && menu && !toggle.contains(e.target)) {
+        menu.classList.add("hidden");
+      }
+    });
+
+    if (toggleBtn && closeBtn && mobileMenu) {
+      toggleBtn.addEventListener("click", () => {
+        mobileMenu.classList.remove("-translate-x-full");
+      });
+
+      closeBtn.addEventListener("click", () => {
+        mobileMenu.classList.add("-translate-x-full");
+      });
+
+      mobileMenu.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+          mobileMenu.classList.add("-translate-x-full");
+        });
+      });
+    }
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+        var script = document.createElement("script");
+        script.src = "https://cdn.counter.dev/script.js";
+        script.setAttribute("data-id", "b3dc771d-812f-4e64-9ff1-986190e73657");
+        script.setAttribute("data-utcoffset", "1");
+        document.head.appendChild(script);
+      }
+    });
+  </script>
+</body>
+
+</html>

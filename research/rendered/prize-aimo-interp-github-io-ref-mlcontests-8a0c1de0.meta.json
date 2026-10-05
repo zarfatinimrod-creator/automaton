@@ -1,0 +1,19 @@
+{
+  "url": "https://aimo-interp.github.io/?ref=mlcontests",
+  "slug": "prize-aimo-interp-github-io-ref-mlcontests-8a0c1de0",
+  "fetchedAt": "2026-10-05T13:19:13.872Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 88912,
+  "sha256": "c852521b27765ef95da8153d78a85da07bfd233c685a4377ab2c0e735d568e0d",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/prize-aimo-interp-github-io-ref-mlcontests-8a0c1de0.html",
+  "textPath": "research/rendered/prize-aimo-interp-github-io-ref-mlcontests-8a0c1de0.txt",
+  "robots": "none",
+  "robotsUrl": "https://aimo-interp.github.io/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}

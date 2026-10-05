@@ -1,0 +1,19 @@
+{
+  "url": "https://fair-universe.lbl.gov/?ref=mlcontests",
+  "slug": "prize-fair-universe-lbl-gov-ref-mlcontests-0704eef5",
+  "fetchedAt": "2026-10-05T13:19:12.795Z",
+  "status": 200,
+  "contentType": "text/html; charset=utf-8",
+  "byteLength": 31305,
+  "sha256": "9a7d0a8f74b3bc0e49f2a4e19c0a6fccbb4704afe957ba921d554548682cb4bd",
+  "truncated": false,
+  "error": null,
+  "bodyPath": "research/rendered/prize-fair-universe-lbl-gov-ref-mlcontests-0704eef5.html",
+  "textPath": "research/rendered/prize-fair-universe-lbl-gov-ref-mlcontests-0704eef5.txt",
+  "robots": "none",
+  "robotsUrl": "https://fair-universe.lbl.gov/robots.txt",
+  "changed": true,
+  "firstFetch": true,
+  "previousSha256": null,
+  "note": "Third-party content, fetched by .github/workflows/render-watch.yml and stored for citation only. fetchedAt is when this stored content was captured, i.e. the last time the page changed - not the last time it was checked; an unchanged page rewrites nothing. Storing bytes is not reading them: a claim becomes [RENDERED] only when a session reads the text and writes the finding into the research file."
+}
