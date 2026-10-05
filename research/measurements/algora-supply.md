@@ -1,26 +1,27 @@
 # Algora bounty supply — the weekly claimable count
 
-**Status: MEASURED 2026-09-29T09:24:19.235Z by `.github/workflows/algora-supply.yml` (`scripts/algora-supply.ts`).** Regenerated on every run — do not edit by hand. Ordered by `research/colony-sweep/BOARD-2.md §2.2` as the first build step of `oss-bounties`.
+**Status: MEASURED 2026-10-05T15:03:27.835Z by `.github/workflows/algora-supply.yml` (`scripts/algora-supply.ts`).** Regenerated on every run — do not edit by hand. Ordered by `research/colony-sweep/BOARD-2.md §2.2` as the first build step of `oss-bounties`.
 
 ## The number
 
-**18 claimable bounties** ($35,580 in visible amounts) out of 551 open issues carrying Algora's `💎 Bounty` label across 66 repositories.
+**18 claimable bounties** ($35,580 in visible amounts) out of 550 open issues carrying Algora's `💎 Bounty` label across 65 repositories.
 
 Freshness, not gated: **1** of them created within the last 365 days. The rest are older issues; the week-4 reader sees whether a small count is stale supply or no supply.
 
 Stricter reading, not gated: **18** once the 0 bounties whose claimed pull request Algora already saw merged are left out — funded and unpaid, but promised to that solver. The board's thresholds read the number above, on its own definition; this one is shown so the week-4 reader can weigh both.
 
-**GitHub counted 3 issues it did not serve; the claimable count could be up to 3 higher.** Search reported 554; each query that stayed short was read twice in full and served the identical issues both times, so the gap is index entries GitHub counts and will not show (hidden, deleted or transferred issues, or repositories no longer available). It is within the allowance of 5 (max(5, 1% of the reported total)). The count above is of what was served; the gap is carried here, not added to it or read as a zero.
+**GitHub counted 3 issues it did not serve; the claimable count could be up to 3 higher.** Search reported 553; each query that stayed short was read twice in full and served the identical issues both times, so the gap is index entries GitHub counts and will not show (hidden, deleted or transferred issues, or repositories no longer available). It is within the allowance of 5 (max(5, 1% of the reported total)). The count above is of what was served; the gap is carried here, not added to it or read as a zero.
 
 A count of jobs a payer has posted, not revenue: money counts only in `revenue_ledger` with a platform transaction id (MISSION rule 2).
 
-## The board's reading — week 1 of 4
+## The board's reading — week 2 of 4
 
 | ISO week | Measured at | Claimable |
 |---|---|---:|
 | 2026-W40 | 2026-09-29T09:24:19.235Z | 18 |
+| 2026-W41 | 2026-10-05T15:03:27.835Z | 18 |
 
-Week 1 of 4. The board reads the mean of 4 weekly readings: ≥ 10 keeps ₪300; 3-9 retargets to ₪100 (grade contradicted); under 3 kills the line. Until then the owner is not asked for step 4b (the Stripe form, which begins with the Algora sign-in) on this line's account.
+Week 2 of 4. The board reads the mean of 4 weekly readings: ≥ 10 keeps ₪300; 3-9 retargets to ₪100 (grade contradicted); under 3 kills the line. Until then the owner is not asked for step 4b (the Stripe form, which begins with the Algora sign-in) on this line's account.
 
 This file reads the rule; it does not apply it. The ₪300 target changes only when the main thread records the ruling in `src/revenue/portfolio.ts`.
 
@@ -36,14 +37,14 @@ Instrument faults: recorded so they are never lost, and never averaged into the 
 
 | Filter | Dropped | Left | Why |
 |---|---:|---:|---|
-| (labelled, open) | — | 551 | GitHub search `is:issue is:open label:"💎 Bounty"` |
-| `not-an-open-labelled-issue` — not an open issue carrying the label | 0 | 551 | The search result was a pull request, closed, or missing the `💎 Bounty` label. GitHub search should never return one; it is counted rather than trusted. |
-| `rewarded-label` — carries `💰 Rewarded` | 31 | 520 | Algora adds this label when it pays (notify_transfer.ex). The `💎 Bounty` label stays on a paid issue, which is why labelled supply is a ceiling, not a count. |
-| `archived-repo` — repository archived | 37 | 483 | Archived repositories keep their bounty labels and cannot take a pull request — the census's second method finding (BOARD-2 §2.2). |
-| `payout-comment` — Algora's bot already announced the payout | 0 | 483 | "has been awarded" by algora-pbc[bot] (notify_transfer.ex): the bounty is paid even where the label was not added. |
-| `no-algora-bounty-comment` — no bounty comment from algora-pbc[bot] | 242 | 241 | The line's channel is the payer's own comment; a dollar sign from anybody else is not evidence of a funded bounty (intake.ts rule 5). |
-| `amount-unparseable` — no amount readable from the bot comment | 0 | 241 | BOARD-2 §2.2 requires a parseable amount. An unreadable amount is an unknown, not a zero, so it is not counted either way. |
-| `amount-under-minimum` — amount under $50 | 128 | 113 | BOARD-2 §2.2: "a parseable amount ≥ $50". The census's accessible long tail was $3-$245 tickets with a median of 8 competing comments. |
+| (labelled, open) | — | 550 | GitHub search `is:issue is:open label:"💎 Bounty"` |
+| `not-an-open-labelled-issue` — not an open issue carrying the label | 0 | 550 | The search result was a pull request, closed, or missing the `💎 Bounty` label. GitHub search should never return one; it is counted rather than trusted. |
+| `rewarded-label` — carries `💰 Rewarded` | 31 | 519 | Algora adds this label when it pays (notify_transfer.ex). The `💎 Bounty` label stays on a paid issue, which is why labelled supply is a ceiling, not a count. |
+| `archived-repo` — repository archived | 37 | 482 | Archived repositories keep their bounty labels and cannot take a pull request — the census's second method finding (BOARD-2 §2.2). |
+| `payout-comment` — Algora's bot already announced the payout | 0 | 482 | "has been awarded" by algora-pbc[bot] (notify_transfer.ex): the bounty is paid even where the label was not added. |
+| `no-algora-bounty-comment` — no bounty comment from algora-pbc[bot] | 242 | 240 | The line's channel is the payer's own comment; a dollar sign from anybody else is not evidence of a funded bounty (intake.ts rule 5). |
+| `amount-unparseable` — no amount readable from the bot comment | 0 | 240 | BOARD-2 §2.2 requires a parseable amount. An unreadable amount is an unknown, not a zero, so it is not counted either way. |
+| `amount-under-minimum` — amount under $50 | 127 | 113 | BOARD-2 §2.2: "a parseable amount ≥ $50". The census's accessible long tail was $3-$245 tickets with a median of 8 competing comments. |
 | `policy-forbidden` — repository or issue bans AI-authored work | 5 | 108 | assessRepoPolicy (policy.ts) graded it `forbidden` from CONTRIBUTING, CODE_OF_CONDUCT, the pull-request template, the README or the issue itself. `unknown` is counted: silence is not a ban, and the colony discloses on every PR anyway. |
 | `not-a-payer` — the repository or issue says its bounties are not money | 90 | 18 | assessRepoPolicy graded it `not-a-payer`: the bounties are symbolic or for research, nothing merges, it is "not the right repo" for paid work, starring or following is a condition of contributing, or the contributor's system prompt, session text or environment is demanded (RULING-2026-09-28-bounty-rail.md §3.3). A label with no payer behind it is not a bounty. |
 
@@ -153,7 +154,6 @@ Examples, up to three per filter, so each can be checked by hand:
 | `tryabby/abby` | 1 | 0 | $0 | no | — | amount-under-minimum 1 |
 | `tscircuit/autorouting` | 1 | 0 | $0 | yes | — | archived-repo 1 |
 | `tscircuit/file-server` | 1 | 0 | $0 | — | — | rewarded-label 1 |
-| `tscircuit/jlcsearch` | 1 | 0 | $0 | no | — | amount-under-minimum 1 |
 | `tscircuit/pcb-viewer` | 1 | 0 | $0 | no | — | amount-under-minimum 1 |
 | `tscircuit/template-api-fake` | 1 | 0 | $0 | — | — | rewarded-label 1 |
 | `UnsafeLabs/RFC-5322` | 1 | 0 | $0 | no | — | no-algora-bounty-comment 1 |
@@ -171,4 +171,4 @@ Examples, up to three per filter, so each can be checked by hand:
 - Policy: assessRepoPolicy over CONTRIBUTING, CODE_OF_CONDUCT, the pull-request template and the README, located in .github/, the root and docs/ in GitHub's own precedence, plus the issue body. Read only for repositories with a bounty that passed every cheaper filter. `unknown` is counted. Permission counts only from visible text (HTML comments are blanked); a ban or a `not-a-payer` statement counts anywhere (counter version 2, 28.9.2026).
 - Failure: any API error, an exhausted rate-limit budget, or a search that returns fewer issues than it reports (past the one exception below) writes nothing and fails the job — an unmeasured week is a missing reading, never a zero.
 - Search gaps: GitHub's reported total can include index entries it never shows (hidden, deleted or transferred issues, unavailable repositories). A query that falls short is read a second full time. Only if both passes serve the identical issues, and the gap to the larger reported total is at most max(5, 1% of that total) per query and over the whole search, is the run accepted, with the gap recorded as `searchUnserved` beside the count, never in it. Passes that differ fail the run as above, even when the second pass is complete on its own (an issue that left the results between page fetches): the short first pass is not overruled by a pass that disagrees with it. A larger gap fails the run too.
-- This run: authenticated (GITHUB_TOKEN), 12 search and 645 REST requests, 0s spent waiting on rate limits; search reported 554 and served 551 (3 unserved).
+- This run: authenticated (GITHUB_TOKEN), 12 search and 642 REST requests, 0s spent waiting on rate limits; search reported 553 and served 550 (3 unserved).

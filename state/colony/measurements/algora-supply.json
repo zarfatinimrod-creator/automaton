@@ -1,11 +1,11 @@
 {
-  "measuredAt": "2026-09-29T09:24:19.235Z",
+  "measuredAt": "2026-10-05T15:03:27.835Z",
   "claimableBounties": 18,
   "claimableWithoutMergedSolution": 18,
   "claimableFresh365": 1,
   "claimableUsd": 35580,
-  "labelledOpenIssues": 551,
-  "repositories": 66,
+  "labelledOpenIssues": 550,
+  "repositories": 65,
   "minAmountUsd": 50,
   "funnel": [
     {
@@ -13,48 +13,48 @@
       "stage": "search",
       "what": "not an open issue carrying the label",
       "dropped": 0,
-      "remaining": 551
+      "remaining": 550
     },
     {
       "filter": "rewarded-label",
       "stage": "search",
       "what": "carries `💰 Rewarded`",
       "dropped": 31,
-      "remaining": 520
+      "remaining": 519
     },
     {
       "filter": "archived-repo",
       "stage": "repo",
       "what": "repository archived",
       "dropped": 37,
-      "remaining": 483
+      "remaining": 482
     },
     {
       "filter": "payout-comment",
       "stage": "comments",
       "what": "Algora's bot already announced the payout",
       "dropped": 0,
-      "remaining": 483
+      "remaining": 482
     },
     {
       "filter": "no-algora-bounty-comment",
       "stage": "comments",
       "what": "no bounty comment from algora-pbc[bot]",
       "dropped": 242,
-      "remaining": 241
+      "remaining": 240
     },
     {
       "filter": "amount-unparseable",
       "stage": "comments",
       "what": "no amount readable from the bot comment",
       "dropped": 0,
-      "remaining": 241
+      "remaining": 240
     },
     {
       "filter": "amount-under-minimum",
       "stage": "comments",
       "what": "amount under $50",
-      "dropped": 128,
+      "dropped": 127,
       "remaining": 113
     },
     {
@@ -79,7 +79,7 @@
     "payout-comment": 0,
     "no-algora-bounty-comment": 242,
     "amount-unparseable": 0,
-    "amount-under-minimum": 128,
+    "amount-under-minimum": 127,
     "policy-forbidden": 5,
     "not-a-payer": 90
   },
@@ -804,17 +804,6 @@
       }
     },
     {
-      "repo": "tscircuit/jlcsearch",
-      "labelledOpen": 1,
-      "claimable": 0,
-      "claimableUsd": 0,
-      "archived": false,
-      "policy": null,
-      "dropped": {
-        "amount-under-minimum": 1
-      }
-    },
-    {
       "repo": "tscircuit/pcb-viewer",
       "labelledOpen": 1,
       "claimable": 0,
@@ -1080,6 +1069,12 @@
       "measuredAt": "2026-09-29T09:24:19.235Z",
       "claimable": 18,
       "counter": 2
+    },
+    {
+      "week": "2026-W41",
+      "measuredAt": "2026-10-05T15:03:27.835Z",
+      "claimable": 18,
+      "counter": 2
     }
   ],
   "instrumentFaults": [
@@ -1091,11 +1086,17 @@
     }
   ],
   "boardReading": {
-    "weeksRead": 1,
+    "weeksRead": 2,
     "readings": [
       {
         "week": "2026-W40",
         "measuredAt": "2026-09-29T09:24:19.235Z",
+        "claimable": 18,
+        "counter": 2
+      },
+      {
+        "week": "2026-W41",
+        "measuredAt": "2026-10-05T15:03:27.835Z",
         "claimable": 18,
         "counter": 2
       }
@@ -1103,16 +1104,16 @@
     "mean": null,
     "consecutive": null,
     "verdict": "pending",
-    "text": "Week 1 of 4. The board reads the mean of 4 weekly readings: ≥ 10 keeps ₪300; 3-9 retargets to ₪100 (grade contradicted); under 3 kills the line. Until then the owner is not asked for step 4b (the Stripe form, which begins with the Algora sign-in) on this line's account."
+    "text": "Week 2 of 4. The board reads the mean of 4 weekly readings: ≥ 10 keeps ₪300; 3-9 retargets to ₪100 (grade contradicted); under 3 kills the line. Until then the owner is not asked for step 4b (the Stripe form, which begins with the Algora sign-in) on this line's account."
   },
   "method": {
     "query": "is:issue is:open label:\"💎 Bounty\"",
-    "searchTotalCount": 554,
+    "searchTotalCount": 553,
     "searchUnserved": 3,
     "authenticated": true,
     "requests": {
       "search": 12,
-      "core": 645
+      "core": 642
     },
     "rateLimitWaitSeconds": 0,
     "notes": [
