@@ -728,7 +728,9 @@ alone and names the sale; the responder then sends one holding reply (facts only
 state. Nothing about the buyer is written to a file or committed, no sale id is printed (the responder redacts them),
 and its job holds `contents: read` only. A second request for a sale already waiting is marked answered, with no
 second holding reply and no second flag. At the start of every run the responder searches the flagged requests, with
-no date bound, and runs the first lookup again: `refund --email <the sender> --requested-at <the request's receipt
+no date bound - flagged and answered, since it sets the flag only together with `\Answered`: a star a person puts on
+mail nobody has answered yet is not a waiting request, and it comes off when that request is answered for good - and
+runs the first lookup again: `refund --email <the sender> --requested-at <the request's receipt
 time>`. When nothing is eligible any more but the most recent sale of this product to that address inside the window
 is wholly refunded, `refund` says `already-refunded`. Only a refund that happened (`refunded`, or
 `already-refunded`) answers, with the usual reply in the request's thread, once per sender per run, and takes the

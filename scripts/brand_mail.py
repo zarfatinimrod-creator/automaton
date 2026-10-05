@@ -45,9 +45,9 @@ COMMANDS
   respond-refunds [--apply] [--questions <file>] [--sent <file>]
       The Pro refund responder. A DRY RUN unless --apply (the schedule passes it; a manual dispatch does only when
       really_refund is ticked), and --apply runs only from refs/heads/main. Reads first the waiting requests (UID
-      SEARCH FLAGGED, no date bound: BALANCE, below), then the unanswered INBOX mail of the last REFUND_LOOKBACK_DAYS
-      days (UID SEARCH NOT ANSWERED SINCE, FETCH BODY.PEEK[]: reading never sets \\Seen; a dry run
-      opens the inbox with EXAMINE) - and none at all while products/il-biz-tools/src/config/site.json has no
+      SEARCH FLAGGED ANSWERED, no date bound: BALANCE, below), then the unanswered INBOX mail of the last
+      REFUND_LOOKBACK_DAYS days (UID SEARCH NOT ANSWERED SINCE, FETCH BODY.PEEK[]: reading never sets \\Seen; a dry
+      run opens the inbox with EXAMINE) - and none at all while products/il-biz-tools/src/config/site.json has no
       gumroad.productId: then nothing can have been sold, and it prints {"configured": false} and exits 0. It acts on
       a message only when all of these hold:
         - it is not the brand's own mail, not accessibility mail, not mail that may belong to a venue question's
@@ -79,9 +79,13 @@ COMMANDS
       date promised) and then ONE STORE +FLAGS (\\Answered \\Flagged). The request itself, flagged, is the waiting
       state (WAITING_FLAG): no file, no commit, and no sale id kept beyond the run; its requestedAt is its own
       INTERNALDATE, read back from the server every run. A second request for a sale already waiting is marked
-      \\Answered only: no second holding reply, no second flag. At the START of every run UID SEARCH FLAGGED - no SINCE:
-      a promised refund is retried until it happens - finds the waiting requests, within the same per-run bound as the
-      new ones. Each must pass every rule a new request passes; a flagged mail that does not is left untouched and
+      \\Answered only: no second holding reply, no second flag. At the START of every run UID SEARCH FLAGGED ANSWERED -
+      no SINCE: a promised refund is retried until it happens - finds the waiting requests, within the same per-run bound
+      as the new ones. ANSWERED, because this command sets \\Flagged only together with \\Answered: a star a person put
+      on mail nobody has answered yet is not a waiting request, and such a request is read with the new ones; when it is
+      answered for good (anything but the holding reply) the star comes off first (STORE -FLAGS, then +FLAGS
+      \\Answered), or every later run would retry a request that waits for nothing (reviewer of 5.10, defect 2). Each
+      waiting request must pass every rule a new request passes; a flagged mail that does not is left untouched and
       counted (flaggedIgnored), never answered and never unflagged. For one that does, the first lookup runs again:
       refund --email <its sender> --requested-at <its INTERNALDATE> [--apply]. Only a refund that happened -
       "refunded", or "already-refunded" for a sale Gumroad reports wholly refunded - sends REFUND_REPLY in the
@@ -196,11 +200,13 @@ REFUND_COMMAND_TIMEOUT_SECONDS = 180
 # RULING-2026-10-05-refund-state (a): where a refund Gumroad refused for balance waits - the request itself, in the brand
 # mailbox, carrying the IMAP system flag \Flagged (a star in Gmail). Only this command sets it, together with
 # \Answered in ONE STORE right after the holding reply, so a failure between the send and the STORE can repeat the
-# holding reply but never lose the refund. Every run searches FLAGGED with no date bound and re-runs the first lookup
-# for each one; a refund that happened answers the sender and takes the flag off; "none" or a stop keeps it and fails
-# the run. A flagged mail that is not a verified refund request (a stray star) is left alone and counted, never
-# answered or unflagged. A system flag, not a keyword: a keyword the server silently dropped would drop a promised
-# refund without a trace. Nothing about a buyer is written to disk or committed.
+# holding reply but never lose the refund. Every run searches FLAGGED ANSWERED with no date bound and re-runs the first
+# lookup for each one; a refund that happened answers the sender and takes the flag off; "none" or a stop keeps it and
+# fails the run. A flagged and answered mail that is not a verified refund request (a stray star) is left alone and
+# counted, never answered or unflagged. A star on mail nobody has answered is not the waiting state either: that mail is
+# read as a new request, and a request answered for good loses the star before it gets \Answered. A system flag, not a
+# keyword: a keyword the server silently dropped would drop a promised refund without a trace. Nothing about a buyer is
+# written to disk or committed.
 WAITING_FLAG = "\\Flagged"
 # The refund command's exit code for Gumroad's balance refusal alone ("Your balance is insufficient to process this
 # refund.", antiwork/gumroad app/modules/purchase/refundable.rb:99-100), and the line that names the sale.
@@ -1382,7 +1388,9 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
         # first lookup again - its sender, its own INTERNALDATE - so nothing about it is stored anywhere. A refund that
         # happened answers the sender and takes the flag off; the balance again keeps it quietly; anything else, a quiet
         # "none" included, keeps it and fails the run, because the holding reply said the refund will be issued.
-        typ, data = imap.uid("SEARCH", "FLAGGED")
+        # ANSWERED: this command sets the flag only with \Answered, so a star a person put on unanswered mail is not a
+        # waiting request - that mail is a new request below (reviewer of 5.10, defect 2).
+        typ, data = imap.uid("SEARCH", "FLAGGED", "ANSWERED")
         if typ != "OK":
             raise ProbeError("SEARCH failed")
         for uid in (data[0] or b"").split() if data else []:
@@ -1435,7 +1443,23 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
         typ, data = imap.uid("SEARCH", "NOT", "ANSWERED", "SINCE", since)
         if typ != "OK":
             raise ProbeError("SEARCH failed")
-        for uid in (data[0] or b"").split() if data else []:
+        unanswered = (data[0] or b"").split() if data else []
+        # The unanswered mail a person starred: once such a request is answered for good, the star comes off.
+        typ, data = imap.uid("SEARCH", "FLAGGED", "NOT", "ANSWERED", "SINCE", since)
+        if typ != "OK":
+            raise ProbeError("SEARCH failed")
+        starred = {uid.decode("ascii") for uid in ((data[0] or b"").split() if data else [])}
+
+        def answered_for_good(uid):
+            """\\Answered on a request that waits for nothing, and a person's star off FIRST: \\Flagged on an answered
+            request is the waiting state, so left on, every later run would retry it - a second answer, or a red run
+            every run. Off first, so a failure between the two STOREs can repeat an answer, never invent a wait."""
+            if uid in starred:
+                imap.uid("STORE", uid, "-FLAGS", "(%s)" % WAITING_FLAG)
+            imap.uid("STORE", uid, "+FLAGS", "(\\Answered)")
+            return "; the star a person put on it taken off" if uid in starred else ""
+
+        for uid in unanswered:
             uid = uid.decode("ascii")
             received, msg = fetch_whole(imap, uid)
             if msg is None or is_own(msg, cfg["address"], set()) or is_accessibility_mail(msg) or not names_refund(msg):
@@ -1453,8 +1477,9 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
             if sender in answered_senders:
                 # Already answered in this run: one answer per sender per run; this one is covered by it.
                 if args.apply:
-                    imap.uid("STORE", uid, "+FLAGS", "(\\Answered)")
-                entry["outcome"] = "covered by this run's answer to the same sender" if args.apply else "dry run: covered by this run's answer"
+                    entry["outcome"] = "covered by this run's answer to the same sender" + answered_for_good(uid)
+                else:
+                    entry["outcome"] = "dry run: covered by this run's answer"
                 report["handled"].append(entry)
                 continue
             if attempts >= MAX_REFUND_REQUESTS_PER_RUN:  # bounded even when every attempt fails
@@ -1465,7 +1490,8 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
             code, lines = refund_runner(sender, requested, args.apply, env)
             entry["refundExit"] = code
             sale = balance_sale(code, lines)
-            entry["refundLog"] = redact_sale_ids(redacted(lines, sender))
+            # Every address, not only the sender's: the command may echo anyone's (reviewer of 5.10, defect 3).
+            entry["refundLog"] = redact_sale_ids(redact_addresses(redacted(lines, sender)))
             if sale is not None:
                 # Gumroad refused for balance alone (RULING-2026-09-30-documents (d)): one holding reply, then ONE STORE
                 # of \Answered and WAITING_FLAG - the request itself is the waiting state, retried every run
@@ -1475,8 +1501,8 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
                 if not args.apply:
                     entry["outcome"] = "dry run: refused for balance; would send the holding reply and flag request %s to retry it every run" % uid
                 elif sale in waiting:
-                    imap.uid("STORE", uid, "+FLAGS", "(\\Answered)")
-                    entry["outcome"] = "refused for balance; its sale is already waiting on an earlier flagged request: marked answered, request %s not flagged" % uid
+                    entry["outcome"] = ("refused for balance; its sale is already waiting on an earlier flagged request: marked answered, request %s not flagged" % uid
+                                        + answered_for_good(uid))
                 else:
                     try:
                         send(build_refund_reply(msg, sender, cfg["address"], now, HOLDING_REPLY))
@@ -1510,8 +1536,7 @@ def cmd_respond_refunds(args, env, out, now, smtp_factory, imap_factory, refund_
                 report["handled"].append(entry)
                 answered_senders.discard(sender)
                 continue
-            imap.uid("STORE", uid, "+FLAGS", "(\\Answered)")
-            entry["outcome"] = "answered"
+            entry["outcome"] = "answered" + answered_for_good(uid)
             report["handled"].append(entry)
     except (OSError, imaplib.IMAP4.error, ProbeError) as exc:
         report["error"] = type(exc).__name__
