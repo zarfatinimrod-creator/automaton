@@ -9,6 +9,8 @@
 # is invented, guessed, or extrapolated from a pattern — including "the same site
 # probably has a /pricing page". A URL nobody wrote down is a URL nobody can cite.
 #
+# Exception (ruling 5.10.2026, tick 45, TERMS-AUDIT-2026-10-05-prize-events.md): a terms- line of a TERMS_PENDING site may carry a URL derived from the site's own source code at a pinned commit when its comment cites the template line and the domain line; a 404, or a redirect to another host, retires the line. Never a rules page.
+#
 # Adding one: quote the sentence that names it. Removing one: the question it was
 # going to settle has been answered, or the line it belonged to is closed for good.
 
@@ -739,8 +741,8 @@ https://cms-static-pages-assets.displate.com/DISPLATE_TERMS_OF_USE_US_26_06clean
 https://www.kaggle.com/terms	terms-kaggle
 # research/channel-loop/ZERO-TESTS.md row 236 — devpost.com TERMS_PENDING (tick 45 prize-terms audit): URL from challengepost/reimagine app/views/reimagine2/devpost/_footer.html.erb:101 at abc3b7d, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
 https://info.devpost.com/legal/terms-of-service	terms-devpost
-# research/channel-loop/ZERO-TESTS.md row 237 — grand-challenge.org TERMS_PENDING (tick 45 prize-terms audit): URL from DIAGNijmegen/rse-grand-challenge app/config/settings.py:767 (the platform's own terms-URL template) on the domain README.md:1 and app/grandchallenge/subdomains/utils.py:24 fix, at ff2fb5c, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026). Paused 5.10 (tick 45 review): the URL is assembled from that template, whose domain is an environment variable (settings.py:302-303), and is written verbatim in no file, which this file's one rule forbids; it waits for a verbatim occurrence at github grade or a main-thread ruling on the exception (research/channel-loop/terms-verdicts.json, grand-challenge.org).
-# paused (held for a main-thread ruling, 5.10.2026): grand-challenge.org is TERMS_PENDING in research/channel-loop/terms-verdicts.json — https://grand-challenge.org/policies/terms-of-service/	terms-grand-challenge
+# research/channel-loop/ZERO-TESTS.md row 237 — grand-challenge.org TERMS_PENDING (tick 45 prize-terms audit): URL derived from the platform's own source (exception, ruling R2, 5.10.2026): DIAGNijmegen/rse-grand-challenge app/config/settings.py:767 (the platform's own terms-URL template) on the domain README.md:1 and app/grandchallenge/subdomains/utils.py:24 fix, at ff2fb5c, github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)); a 404, or a redirect to another host, retires the line (5.10.2026).
+https://grand-challenge.org/policies/terms-of-service/	terms-grand-challenge
 # research/channel-loop/ZERO-TESTS.md row 238 — zindi.africa TERMS_PENDING (tick 45 prize-terms audit): URL from research/colony-sweep/scouts/bounties-grants--data-challenges.md:67 (a scout's to-do, weak); Zindi's own rules name a Terms of Use (ZindiAfrica/AI-for-Equity-Challenges-Getting-Started-with-AWS-Resources SUAOutsmartingOutbreaksChallenge.md:166 at 12deb40, github grade); plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
 https://zindi.africa/terms	terms-zindi
 # research/channel-loop/ZERO-TESTS.md row 239 — stanford.edu TERMS_PENDING (tick 45 prize-terms audit): URL from SU-SWS/decanter core/src/templates/components/global-footer/global-footer.twig:34-35 at 63cda9d (Stanford's universal footer), github grade; plain once-fetch (ruling 30.9 16(d) D2(iii)) (5.10.2026).
@@ -755,24 +757,24 @@ https://www.eurocontrol.int/info/privacy-and-website-terms-use	terms-eurocontrol
 https://opensky-network.org/about/terms-of-use	terms-opensky
 # research/channel-loop/ZERO-TESTS.md row 244 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
 https://hub.crunchdao.com/robots.txt	robots-crunchdao
-# research/channel-loop/ZERO-TESTS.md row 245 — NO_TERMS site; the probe scripts/robots-verdict.mjs would read; no rules page is fetched before it (5.10.2026). Paused 5.10 (tick 45 review): the site's own verified record says its search was not exhaustive (GitHub code search not run), so its note does not open exhaustive-negative until the main thread rules whether code search is required (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md).
-# paused (terms unread, 5.10.2026): flagos.io is NO_TERMS in research/channel-loop/terms-verdicts.json — https://flagos.io/robots.txt	robots-flagos
+# research/channel-loop/ZERO-TESTS.md row 245 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://flagos.io/robots.txt	robots-flagos
 # research/channel-loop/ZERO-TESTS.md row 246 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
 https://wundernn.io/robots.txt	robots-wundernn
-# research/channel-loop/ZERO-TESTS.md row 247 — NO_TERMS site; the probe scripts/robots-verdict.mjs would read; no rules page is fetched before it (5.10.2026). Paused 5.10 (tick 45 review): the site's own verified record says its search was not exhaustive (GitHub code search not run), so its note does not open exhaustive-negative until the main thread rules whether code search is required (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md).
-# paused (terms unread, 5.10.2026): agenthon.net is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.agenthon.net/robots.txt	robots-agenthon
+# research/channel-loop/ZERO-TESTS.md row 247 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://www.agenthon.net/robots.txt	robots-agenthon
 # research/channel-loop/ZERO-TESTS.md row 248 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
 https://www.aicrowd.com/robots.txt	robots-aicrowd
-# research/channel-loop/ZERO-TESTS.md row 249 — NO_TERMS site; the probe scripts/robots-verdict.mjs would read; no rules page is fetched before it (5.10.2026). Paused 5.10 (tick 45 review): the site's own verified record says its search was not exhaustive (GitHub code search not run), so its note does not open exhaustive-negative until the main thread rules whether code search is required (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md).
-# paused (terms unread, 5.10.2026): alignmentforum.org is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.alignmentforum.org/robots.txt	robots-alignmentforum
-# research/channel-loop/ZERO-TESTS.md row 250 — NO_TERMS site; the probe scripts/robots-verdict.mjs would read; no rules page is fetched before it (5.10.2026). Paused 5.10 (tick 45 review): the site's own verified record says its search was not exhaustive (GitHub code search not run), so its note does not open exhaustive-negative until the main thread rules whether code search is required (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md).
-# paused (terms unread, 5.10.2026): bcamlc.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://competition.bcamlc.com/robots.txt	robots-bcamlc
+# research/channel-loop/ZERO-TESTS.md row 249 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://www.alignmentforum.org/robots.txt	robots-alignmentforum
+# research/channel-loop/ZERO-TESTS.md row 250 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://competition.bcamlc.com/robots.txt	robots-bcamlc
 # research/channel-loop/ZERO-TESTS.md row 251 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
 https://www.drivendata.org/robots.txt	robots-drivendata
-# research/channel-loop/ZERO-TESTS.md row 252 — NO_TERMS site; the probe scripts/robots-verdict.mjs would read; no rules page is fetched before it (5.10.2026). Paused 5.10 (tick 45 review): the site's own verified record says its search was not exhaustive (GitHub code search not run), so its note does not open exhaustive-negative until the main thread rules whether code search is required (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md).
-# paused (terms unread, 5.10.2026): geminixprize.com is NO_TERMS in research/channel-loop/terms-verdicts.json — https://www.geminixprize.com/robots.txt	robots-geminixprize
-# research/channel-loop/ZERO-TESTS.md row 253 — NO_TERMS site; the probe scripts/robots-verdict.mjs would read; no rules page is fetched before it (5.10.2026). Paused 5.10 (tick 45 review): the site's own verified record says its search was not exhaustive (GitHub code search not run), so its note does not open exhaustive-negative until the main thread rules whether code search is required (research/channel-loop/TERMS-AUDIT-2026-10-05-prize-events.md).
-# paused (terms unread, 5.10.2026): k12-ai-infrastructure.org is NO_TERMS in research/channel-loop/terms-verdicts.json — https://platform.k12-ai-infrastructure.org/robots.txt	robots-k12-ai-infrastructure
+# research/channel-loop/ZERO-TESTS.md row 252 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://www.geminixprize.com/robots.txt	robots-geminixprize
+# research/channel-loop/ZERO-TESTS.md row 253 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://platform.k12-ai-infrastructure.org/robots.txt	robots-k12-ai-infrastructure
 # research/channel-loop/ZERO-TESTS.md row 254 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
 https://www.learn2design2026.com/robots.txt	robots-learn2design2026
 # research/channel-loop/ZERO-TESTS.md row 255 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
@@ -789,3 +791,9 @@ https://fusion-equilibrium-challenge.sophelio.io/robots.txt	robots-sophelio
 https://theemailgame.com/robots.txt	robots-theemailgame
 # research/channel-loop/ZERO-TESTS.md row 261 — exhaustive-negative NO_TERMS site; the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
 https://thinkonward.com/robots.txt	robots-thinkonward
+# research/channel-loop/ZERO-TESTS.md row 262 — exhaustive-negative NO_TERMS site (ruling R1, 5.10); the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://www.health-data-hub.fr/robots.txt	robots-health-data-hub
+# research/channel-loop/ZERO-TESTS.md row 263 — exhaustive-negative NO_TERMS site (ruling R1, 5.10); the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://2026.ijcai.org/robots.txt	robots-ijcai-2026
+# research/channel-loop/ZERO-TESTS.md row 264 — exhaustive-negative NO_TERMS site (ruling R1, 5.10); the probe scripts/robots-verdict.mjs reads; no rules page is fetched before it (5.10.2026).
+https://competitions.mozilladatacollective.com/robots.txt	robots-mozilladatacollective
