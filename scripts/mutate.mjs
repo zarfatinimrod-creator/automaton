@@ -21,7 +21,8 @@
  *                      command, whether its test paths exist; under --cmd they are the command's own arguments). Prints
  *                      "<id>  ok" or "<id>  would not apply: <why>" and exits 0 when every one would apply, 1 when any
  *                      would not. It takes no lock and runs no test: CI runs it over the plans in
- *                      src/__tests__/revenue/mutations/ so a plan whose find text has moved fails there.
+ *                      src/__tests__/revenue/mutations/ so a plan whose find text has moved fails there. It writes no
+ *                      --json: the two together are a usage error (exit 2), not a path silently ignored.
  * Run it from the repository root: paths are relative to the working directory, and the commands run there. A text
  * that starts with "-" needs the = form: --find=-1. Example plan entry:
  *   {"file": "scripts/capture-check.mjs", "find": "< WEAK_SIGN_TEXT", "replace": "<= WEAK_SIGN_TEXT",
@@ -170,6 +171,7 @@ function parseCli(argv) {
   const isDefaultCmd = sameCmd(cmd, DEFAULT_CMD);
   const tail = values.tail === undefined ? 6 : positiveInt(values.tail, "--tail");
   const timeoutMs = values.timeout === undefined ? undefined : positiveInt(values.timeout, "--timeout") * 1000;
+  if (values.check === true && values.json !== undefined) usage("--check writes no --json (its report is the lines it prints); drop --json");
   if (values.json !== undefined) checkWritable(values.json);
   const globalTests = values.test ?? [];
   mutations = mutations.map((m, i) => {

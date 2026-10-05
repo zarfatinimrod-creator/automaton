@@ -1,5 +1,5 @@
-import { spawnSync } from "node:child_process";
-import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { spawn, spawnSync } from "node:child_process";
+import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -71,14 +71,26 @@ function makeRepo(opts: { noModules?: boolean } = {}) {
   return { repo, tmp, v1, v2 };
 }
 
-function sim(cwd: string, tmp: string, args: string[]) {
-  const r = spawnSync("bash", [SCRIPT, ...args], { cwd, env: { ...process.env, ...gitEnv, TMPDIR: tmp }, encoding: "utf8" });
+function sim(cwd: string, tmp: string, args: string[], env: Record<string, string> = {}) {
+  const r = spawnSync("bash", [SCRIPT, ...args], { cwd, env: { ...process.env, ...gitEnv, TMPDIR: tmp, ...env }, encoding: "utf8" });
   return { code: r.status, stdout: r.stdout, stderr: r.stderr };
 }
 
-/** The tree path sim-tree printed before the command. */
+/** The same, without waiting: two of them run at once. */
+function simAsync(cwd: string, tmp: string, args: string[]): Promise<{ code: number | null; stdout: string; stderr: string }> {
+  return new Promise((done) => {
+    const c = spawn("bash", [SCRIPT, ...args], { cwd, env: { ...process.env, ...gitEnv, TMPDIR: tmp } });
+    let stdout = "";
+    let stderr = "";
+    c.stdout.on("data", (d) => (stdout += d));
+    c.stderr.on("data", (d) => (stderr += d));
+    c.on("close", (code) => done({ code, stdout, stderr }));
+  });
+}
+
+/** The tree path sim-tree printed before the command (it may hold spaces). */
 function treeOf(stderr: string): string {
-  const m = /^sim-tree: tree (\/\S+)$/m.exec(stderr);
+  const m = /^sim-tree: tree (\/.*)$/m.exec(stderr);
   if (!m) throw new Error(`no "sim-tree: tree <path>" line in:\n${stderr}`);
   return m[1];
 }
@@ -264,6 +276,159 @@ describe("scripts/sim-tree.sh: refusals exit 2 and create nothing", () => {
     refused(sim(repo, tmp, []), /no command after --/, tmp);
     refused(sim(repo, tmp, ["--bogus", "--", "true"]), /unknown option: --bogus/, tmp);
     refused(sim(repo, tmp, ["--ref"]), /--ref needs a value/, tmp);
+  });
+
+  it("an empty --dir (not the default temp dir in its place)", () => {
+    const { repo, tmp } = makeRepo();
+    refused(sim(repo, tmp, ["--dir", "", "--", "true"]), /--dir is empty/, tmp);
+  });
+
+  it("a --dir that is a dangling symlink (the link, and its missing target, are left as they were)", () => {
+    const { repo, tmp } = makeRepo();
+    const target = join(dirname(repo), "nowhere");
+    const link = join(dirname(repo), "dangling");
+    symlinkSync(target, link);
+    refused(sim(repo, tmp, ["--dir", link, "--", "true"]), /already exists/, tmp);
+    expect(lstatSync(link).isSymbolicLink()).toBe(true);
+    expect(readlinkSync(link)).toBe(target);
+    expect(existsSync(target)).toBe(false);
+  });
+
+  it("a --dir whose parent does not exist (no directory chain is created and left behind)", () => {
+    const { repo, tmp } = makeRepo();
+    const parent = join(dirname(repo), "p1");
+    refused(sim(repo, tmp, ["--dir", join(parent, "p2", "tree"), "--", "true"]), /cannot create --dir .*\/p1\/p2\/tree/, tmp);
+    expect(existsSync(parent)).toBe(false);
+  });
+
+  it("a TMPDIR that is the repository root itself, by its path or as `.` from the root", () => {
+    const { repo, tmp } = makeRepo();
+    const before = status(repo);
+    for (const t of [repo, "."]) {
+      const r = sim(repo, t, ["--", "true"]);
+      expect(r.code, r.stderr).toBe(2);
+      expect(r.stderr).toMatch(/the temp dir .* is inside the repository/);
+      expect(r.stderr).not.toMatch(/^sim-tree: tree /m);
+    }
+    expect(readdirSync(repo).filter((f) => f.startsWith("sim-tree."))).toEqual([]);
+    expect(status(repo)).toBe(before);
+    expect(readdirSync(tmp)).toEqual([]);
+  });
+});
+
+describe("scripts/sim-tree.sh: two runs given one --dir", () => {
+  it("the tree is created atomically: a --dir made between the existence check and the creation is refused and left alone", () => {
+    // Deterministic stand-in for the other run: a realpath that creates the --dir (with a file of its own) after the
+    // existence check and before sim-tree creates the tree. `mkdir -p` would accept it, build the tree into it, run the
+    // command and then rm -rf it, theirs.txt with it: the other run's tree deleted under its command.
+    const { repo, tmp } = makeRepo();
+    const bin = join(dirname(tmp), "fakebin");
+    mkdirSync(bin);
+    const dir = join(dirname(repo), "shared");
+    const realRealpath = spawnSync("sh", ["-c", "command -v realpath"], { encoding: "utf8" }).stdout.trim();
+    writeFileSync(join(bin, "realpath"), `#!/usr/bin/env bash\n[ "$1" = -m ] && mkdir -p "${dir}" && echo theirs > "${dir}/theirs.txt"\nexec "${realRealpath}" "$@"\n`);
+    chmodSync(join(bin, "realpath"), 0o755);
+    const marker = join(dirname(tmp), "ran");
+    const r = sim(repo, tmp, ["--dir", dir, "--", "touch", marker], { PATH: `${bin}:${process.env.PATH}` });
+    expect(r.code, r.stderr).toBe(2);
+    expect(r.stderr).toMatch(/already exists/);
+    expect(r.stderr).not.toMatch(/^sim-tree: tree /m);
+    expect(readdirSync(dir)).toEqual(["theirs.txt"]);
+    expect(readFileSync(join(dir, "theirs.txt"), "utf8")).toBe("theirs\n");
+    expect(existsSync(marker)).toBe(false);
+    expect(readdirSync(tmp)).toEqual([]);
+  });
+
+  it("run at once: exactly one is refused (exit 2), and the other's command sees its own tree to the end", async () => {
+    const { repo, tmp } = makeRepo();
+    for (let i = 0; i < 3; i++) {
+      const dir = join(dirname(repo), `race-${i}`);
+      const args = ["--dir", dir, ...sh("sleep 1; cat file.txt")];
+      const [a, b] = await Promise.all([simAsync(repo, tmp, args), simAsync(repo, tmp, args)]);
+      expect([a.code, b.code].sort(), `${a.stderr}\n${b.stderr}`).toEqual([0, 2]);
+      const [won, lost] = a.code === 0 ? [a, b] : [b, a];
+      expect(won.stdout).toBe("v2\n");
+      expect(won.stderr).toMatch(/the command exited 0/);
+      expect(lost.stderr).toMatch(/already exists/);
+      expect(lost.stderr).not.toMatch(/^sim-tree: tree /m);
+      expect(existsSync(dir)).toBe(false);
+    }
+    expect(readdirSync(tmp)).toEqual([]);
+  }, 60_000);
+});
+
+describe("scripts/sim-tree.sh: the hint printed for a kept tree", () => {
+  it("is one shell word for the path, spaces included: pasted, it removes the tree and nothing else", () => {
+    const { repo, tmp } = makeRepo();
+    const base = dirname(repo);
+    // Unquoted, `rm -rf <base>/x y/kept tree` run from <base> removes <base>/x, ./y/kept and ./tree.
+    mkdirSync(join(base, "x"));
+    writeFileSync(join(base, "x", "keep.txt"), "mine\n");
+    mkdirSync(join(base, "x y"));
+    const dir = join(base, "x y", "kept tree");
+    const runs: Array<{ args: string[]; code: number }> = [
+      { args: ["--dir", dir, ...sh("exit 5")], code: 5 },
+      { args: ["--keep", "--dir", dir, "--", "true"], code: 0 },
+    ];
+    for (const run of runs) {
+      const r = sim(repo, tmp, run.args);
+      expect(r.code, r.stderr).toBe(run.code);
+      expect(treeOf(r.stderr)).toBe(dir);
+      const hint = /remove it with: (.*)$/m.exec(r.stderr)?.[1] ?? "";
+      expect(hint.startsWith("rm -rf -- "), hint).toBe(true);
+      // The words the shell makes of it are exactly the tree's path; only then is it run.
+      const words = spawnSync("bash", ["-c", hint.replace(/^rm -rf -- /, "printf '%s\\0' ")], { cwd: base, encoding: "utf8" }).stdout;
+      expect(words.split("\0").filter(Boolean)).toEqual([dir]);
+      expect(spawnSync("bash", ["-c", hint], { cwd: base }).status).toBe(0);
+      expect(existsSync(dir)).toBe(false);
+      expect(readFileSync(join(base, "x", "keep.txt"), "utf8")).toBe("mine\n");
+      expect(readdirSync(join(base, "x y"))).toEqual([]);
+    }
+  });
+});
+
+describe("scripts/sim-tree.sh: a caller's git environment", () => {
+  it("GIT_DIR, GIT_WORK_TREE and GIT_INDEX_FILE (as a git hook has them) point neither the tree's git nor the command's at the checkout", () => {
+    const { repo, tmp } = makeRepo();
+    const dotgit = join(repo, ".git");
+    const log = git(repo, "log", "--format=%H %s");
+    const refs = git(repo, "show-ref");
+    const before = status(repo);
+    const index = readFileSync(join(dotgit, "index"));
+    const envs: Array<Record<string, string>> = [
+      { GIT_DIR: dotgit },
+      { GIT_DIR: dotgit, GIT_WORK_TREE: repo, GIT_INDEX_FILE: join(dotgit, "index") },
+    ];
+    for (const env of envs) {
+      const r = sim(repo, tmp, sh("git log --format=%s; git rev-parse --show-toplevel"), env);
+      expect(r.code, r.stderr).toBe(0);
+      const [subject, top] = r.stdout.split("\n");
+      expect(subject).toMatch(/^sim-tree: HEAD at [0-9a-f]{40}$/);
+      expect(top).toBe(treeOf(r.stderr));
+      expect(git(repo, "log", "--format=%H %s")).toBe(log);
+      expect(git(repo, "show-ref")).toBe(refs);
+      expect(status(repo)).toBe(before);
+      expect(readFileSync(join(dotgit, "index")).equals(index)).toBe(true);
+    }
+    expect(readdirSync(tmp)).toEqual([]);
+  });
+
+  it("a global commit.gpgsign=true, with a signing program that fails, does not stop the tree's commit", () => {
+    const { repo, tmp } = makeRepo();
+    const cfg = join(dirname(repo), "gitconfig-signing");
+    writeFileSync(cfg, "[commit]\n\tgpgsign = true\n[gpg]\n\tprogram = false\n");
+    const r = sim(repo, tmp, sh("git log --format=%s"), { GIT_CONFIG_GLOBAL: cfg });
+    expect(r.code, r.stderr).toBe(0);
+    expect(r.stdout).toMatch(/^sim-tree: HEAD at [0-9a-f]{40}\n$/);
+  });
+});
+
+describe("scripts/sim-tree.sh: node_modules is shared, not copied", () => {
+  it("a write under node_modules lands in the checkout's own node_modules (the header and the README say so)", () => {
+    const { repo, tmp } = makeRepo();
+    const r = sim(repo, tmp, sh("echo through > node_modules/fake-dep/written.txt"));
+    expect(r.code).toBe(0);
+    expect(readFileSync(join(repo, "node_modules", "fake-dep", "written.txt"), "utf8")).toBe("through\n");
   });
 });
 

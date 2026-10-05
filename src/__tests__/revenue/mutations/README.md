@@ -48,8 +48,27 @@ reviewed with, kept here so a reviewer or a fixer runs the same list again inste
 - `src/__tests__/revenue/mutation-plans.test.ts` runs `--check --allow-dirty` over every plan here on every test run
   (CI included): a refactor that moves a find text fails it until the plan follows the code. `--allow-dirty` because
   the question there is whether each plan still fits the code on disk, also while a script is being edited.
-- A full run (every mutation, the baseline before and after) is for a build's review: one plan takes from about a
-  minute (`render-watch.json`, `prize-dispatch.json`) to about fifteen (`capture-check.json`, whose test file takes
-  18 s); the build log records the counts and the time.
-- To simulate a command that writes for real (`remask-captures.mjs --apply`, `freeze-capture.mjs --apply`) before
-  anyone runs it on the repository, use `scripts/sim-tree.sh -- <command>`: a throwaway copy of the checkout at a ref.
+- A full run (every mutation, the baseline before and after) is for a build's review; the build log records the
+  counts and the time. Measured in tick 51 (one full run each, seconds; two numbers where the plan ran twice):
+
+  | Plan | Entries | Full run |
+  | --- | --- | --- |
+  | `prize-dispatch.json` | 28 | 69 |
+  | `render-watch.json` | 53 | 117 |
+  | `freeze-capture.json` | 23 | 171 |
+  | `loop-edit.json` | 46 | 188, 191 |
+  | `sim-tree.json` | see the file | 182-184 before the fixer's entries; the fixer's run is in the tick-51 log |
+  | `mutate.json` | see the file | 243-249 before the fixer's entries; the fixer's run is in the tick-51 log |
+  | `remask-captures.json` | 45 | 523 |
+  | `capture-check.json` | 42 | 785, 827 (its test file alone takes about 18 s) |
+
+- A long plan can run in a throwaway copy of the checkout, so the worktree stays free (mutate.mjs holds the
+  checkout's lock for the whole run and stops with exit 4 when the checkout changes under it):
+  `scripts/sim-tree.sh -- node scripts/mutate.mjs --plan src/__tests__/revenue/mutations/<script>.json`. The copy is
+  the last commit, so commit first. When a mutation survives, mutate.mjs exits non-zero and sim-tree keeps the copy
+  and prints a removal command for it.
+- `scripts/sim-tree.sh -- <command>` is also how a command that writes for real (`remask-captures.mjs --apply`,
+  `freeze-capture.mjs --apply`) is simulated before anyone runs it on the repository.
+- In a sim tree, node_modules is a link to the checkout's own: whatever the command writes there lands in the
+  checkout (vitest's results cache in node_modules/.vite is written through it on every run). Never install into it
+  or delete from it from inside a sim tree; `git status` would not show the damage.

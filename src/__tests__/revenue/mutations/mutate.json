@@ -46,5 +46,45 @@
     "replace": "console.log(`${m.id}  ok  ${m.file}`);",
     "test": "src/__tests__/revenue/mutate.test.ts",
     "note": "tick 51: --check prints ok for a mutation that would not apply (and names no reason)"
+  },
+  {
+    "id": "R6-bad-not-counted",
+    "file": "scripts/mutate.mjs",
+    "find": "if (reason) bad += 1;",
+    "replace": "if (reason) bad += 0;",
+    "test": "src/__tests__/revenue/mutate.test.ts",
+    "note": "tick 51 reviewer R6: --check counts no mutation as one that would not apply, so it exits 0 on a stale plan"
+  },
+  {
+    "id": "R7-check-after-lock",
+    "file": "scripts/mutate.mjs",
+    "find": "  if (opts.check) return check(opts, root);\n  for (const sig of [\"SIGINT\", \"SIGTERM\", \"SIGHUP\", \"SIGQUIT\"]) process.on(sig, () => onSignal(sig));\n  takeLock(root);\n",
+    "replace": "  for (const sig of [\"SIGINT\", \"SIGTERM\", \"SIGHUP\", \"SIGQUIT\"]) process.on(sig, () => onSignal(sig));\n  takeLock(root);\n  if (opts.check) return check(opts, root);\n",
+    "test": "src/__tests__/revenue/mutate.test.ts",
+    "note": "tick 51 reviewer R7: --check takes the checkout's lock, so it is refused while a real run holds it (and leaves the lock behind)"
+  },
+  {
+    "id": "R8-first-test-path-only",
+    "file": "scripts/mutate.mjs",
+    "find": "m.tests.filter((t) => !existsSync(resolve(t)))",
+    "replace": "m.tests.slice(0, 1).filter((t) => !existsSync(resolve(t)))",
+    "test": "src/__tests__/revenue/mutate.test.ts",
+    "note": "tick 51 reviewer R8: --check looks only at a mutation's first test path; a missing second one passes"
+  },
+  {
+    "id": "R18-exit-2",
+    "file": "scripts/mutate.mjs",
+    "find": "  return bad ? 1 : 0;",
+    "replace": "  return bad ? 2 : 0;",
+    "test": "src/__tests__/revenue/mutate.test.ts",
+    "note": "tick 51 reviewer R18: a plan that would not apply exits 2 (a usage error's code) instead of 1"
+  },
+  {
+    "id": "K7-json-ignored",
+    "file": "scripts/mutate.mjs",
+    "find": "  if (values.check === true && values.json !== undefined) usage(\"--check writes no --json (its report is the lines it prints); drop --json\");\n",
+    "replace": "",
+    "test": "src/__tests__/revenue/mutate.test.ts",
+    "note": "tick 51 fixer K7: --check accepts --json and writes nothing to it"
   }
 ]

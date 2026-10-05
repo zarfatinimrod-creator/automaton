@@ -1041,6 +1041,17 @@ describe("scripts/mutate.mjs: --check runs the checks and nothing else", () => {
     expect(r.code).toBe(0);
     expect(line(r.stdout, "M1")).toMatch(/^M1\s+ok\b/);
   });
+
+  it("--json with --check is a usage error (exit 2): --check writes no JSON, so a path given is refused, not ignored", () => {
+    const repo = makeRepo();
+    const out = join(scratch, "check-out.json");
+    const r = harness(repo, ["--check", ...one("a + b", "a - b"), "--json", out]);
+    expect(r.code).toBe(2);
+    expect(r.stderr).toMatch(/usage error: --check writes no --json/);
+    expect(r.stdout).not.toMatch(/--check:/);
+    expect(existsSync(out)).toBe(false);
+    expect(runs(repo)).toEqual([]);
+  });
 });
 
 describe("scripts/mutate.mjs: usage errors exit 2 and run nothing", () => {
