@@ -9,7 +9,7 @@
 # research/rendered/<slug>.txt, the pointer a session cites in the table.
 # This is NOT research/rendered/urls.txt, and nothing here is ever appended to it.
 #
-# Every URL is verbatim from the mlcontests list (read 2026-10-05T14:23:35.777Z, sha256 ef0065f792832de1…)
+# Every URL is verbatim from the mlcontests list (read 2026-10-05T16:47:06.499Z, sha256 ef0065f792832de1…)
 # and appears verbatim in its event's row of the table. No rules-page URL is guessed.
 # tiktok.com URLs are refused (logs/CHANNEL_LOOP.md §9: no tiktok.com URL in any render list or override).
 
@@ -188,9 +188,6 @@ https://platform.k12-ai-infrastructure.org/competitions/3/tutoring-outcomes/?ref
 
 # 2026-Q3 · 2026-08-29 · Identify Reef Fish Species with Computer Vision Models
 https://zindi.africa/competitions/wishlist-hackathon-2026-marine-vision-challenge?utm_source=mlcontest&utm_medium=referral&utm_campaign=compupdates	prize-zindi-africa-competitions-wishlist-hackathon-202-143ee082
-
-# 2026-Q3 · 2026-08-31 · Automated Speech Recognition Under Diverse Speech Patterns
-https://xiuwenz2.github.io/SAPC2-website/?ref=mlcontests	prize-xiuwenz2-github-io-sapc2-website-ref-mlcontests-45cc80f5
 
 # 2026-Q3 · 2026-08-31 · Build Useful End-to-End Differentiable Systems
 https://pasteurlabs.ai/tesseract-hackathon-2026/?ref=mlcontests	prize-pasteurlabs-ai-tesseract-hackathon-2026-ref-mlco-ab132ac0

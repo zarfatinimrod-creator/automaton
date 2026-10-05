@@ -1,5 +1,5 @@
 {
-  "measuredAt": "2026-10-05T14:23:35.777Z",
+  "measuredAt": "2026-10-05T16:47:06.499Z",
   "measuredOn": "2026-10-05",
   "source": "https://raw.githubusercontent.com/mlcontests/mlcontests.github.io/master/competitions.json",
   "sourceSha256": "ef0065f792832de1745f3656e40fb44ef996168a84c686cd4feea5d38a19d4d3",
@@ -31,9 +31,9 @@
         "quarter": "2026-Q3",
         "position": "closed",
         "eventsInWindow": 39,
-        "rowsGraded": 2,
+        "rowsGraded": 3,
         "qualifying": 0,
-        "awaiting": 37,
+        "awaiting": 36,
         "unsettled": 0
       },
       {
@@ -59,7 +59,7 @@
     "untabled": 0,
     "relisted": 0,
     "sameEvent": 0,
-    "urlsAwaiting": 97,
+    "urlsAwaiting": 96,
     "urlsRefused": 0,
     "kill": {
       "fired": null,
