@@ -954,6 +954,95 @@ describe("scripts/mutate.mjs: --plan", () => {
   });
 });
 
+/**
+ * --check (tick 51): the plans kept under src/__tests__/revenue/mutations/ are checked in CI without running a single
+ * mutation, so a refactor that moves a find text fails until the plan is updated. It is step 2 alone: the file
+ * tracked and unmodified, the find exactly once (or at nth), a replacement that differs, and the test paths present.
+ * No lock, no baseline, no run.
+ */
+describe("scripts/mutate.mjs: --check runs the checks and nothing else", () => {
+  const T = "t.test.ts";
+
+  it("a plan whose every mutation would apply: exit 0, each id ok; no test runs, and no lock is taken", () => {
+    const repo = makeRepo({ [T]: "" });
+    // A live process holds the lock: a real run would be refused (exit 2); --check does not take it.
+    writeFileSync(lockOf(repo), `${process.pid}\n`);
+    const plan = writePlan(repo, [
+      { file: "src/toy.mjs", find: "a + b", replace: "a - b", test: T, id: "add" },
+      { file: "src/toy.mjs", find: "return ", replace: "return !", nth: 2, test: [T], id: "second" },
+    ]);
+    const r = harness(repo, ["--check", "--plan", plan]);
+    expect(r.code).toBe(0);
+    expect(line(r.stdout, "add")).toMatch(/^add\s+ok\b.*src\/toy\.mjs/);
+    expect(line(r.stdout, "second")).toMatch(/^second\s+ok\b/);
+    expect(r.stdout).toMatch(/--check: 2 of 2 would apply/);
+    expect(runs(repo)).toEqual([]);
+    expect(readFileSync(lockOf(repo), "utf8")).toBe(`${process.pid}\n`);
+    expect(toyBytes(repo).equals(Buffer.from(TOY))).toBe(true);
+    expect(clean(repo)).toBe("");
+  });
+
+  it("a stale find: exit 1, naming the id and why; the other entries are still checked; nothing runs", () => {
+    const repo = makeRepo({ [T]: "" });
+    const plan = writePlan(repo, [
+      { file: "src/toy.mjs", find: "a + b", replace: "a - b", test: T, id: "fine" },
+      { file: "src/toy.mjs", find: "a * b", replace: "a / b", test: T, id: "moved" },
+    ]);
+    const r = harness(repo, ["--check", "--plan", plan]);
+    expect(r.code).toBe(1);
+    expect(line(r.stdout, "fine")).toMatch(/^fine\s+ok\b/);
+    expect(line(r.stdout, "moved")).toMatch(/^moved\s+would not apply: --find text not found in src\/toy\.mjs/);
+    expect(r.stdout).toMatch(/--check: 1 of 2 would apply; 1 would not/);
+    expect(runs(repo)).toEqual([]);
+  });
+
+  it("each step-2 check fails on its own: a missing test path, two matches, an identical replacement, a dirty file", () => {
+    const repo = makeRepo({ [T]: "" });
+    writeFileSync(join(repo, "src/toy2.mjs"), `${TOY2}// a local edit\n`);
+    const plan = writePlan(repo, [
+      { file: "src/toy.mjs", find: "a + b", replace: "a - b", test: [T, "gone.test.ts"], id: "notest" },
+      { file: "src/toy.mjs", find: "return ", replace: "return !", test: T, id: "twice" },
+      { file: "src/toy.mjs", find: "n > 0", replace: "n > 0", test: T, id: "same" },
+      { file: "src/toy2.mjs", find: '"hi "', replace: '"yo "', test: T, id: "dirty" },
+      { file: "src/toy.mjs", find: "n > 0", replace: "n >= 0", test: T, id: "good" },
+    ]);
+    const r = harness(repo, ["--check", "--plan", plan]);
+    expect(r.code).toBe(1);
+    expect(line(r.stdout, "notest")).toMatch(/would not apply: no such test path: gone\.test\.ts$/);
+    expect(line(r.stdout, "twice")).toMatch(/would not apply: .*found 2 times/);
+    expect(line(r.stdout, "same")).toMatch(/would not apply: .*identical/);
+    expect(line(r.stdout, "dirty")).toMatch(/would not apply: .*uncommitted changes/);
+    expect(line(r.stdout, "good")).toMatch(/^good\s+ok\b/);
+    expect(r.stdout).toMatch(/--check: 1 of 5 would apply; 4 would not/);
+    expect(runs(repo)).toEqual([]);
+    // --allow-dirty is honoured as a real run would honour it.
+    const dirtyOnly = writePlan(repo, [{ file: "src/toy2.mjs", find: '"hi "', replace: '"yo "', test: T, id: "dirty" }]);
+    expect(harness(repo, ["--check", "--allow-dirty", "--plan", dirtyOnly]).code).toBe(0);
+  });
+
+  it("never runs the test command, even one whose baseline would fail; the single-mutation form too", () => {
+    const repo = makeRepo();
+    const real = harness(repo, one("a + b", "a - b"), { RUNNER_FAILS: "1" });
+    expect(real.code).toBe(2); // the failing baseline a real run meets
+    const before = runs(repo).length;
+    const r = harness(repo, ["--check", ...one("a + b", "a - b")], { RUNNER_FAILS: "1" });
+    expect(r.code).toBe(0);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+ok\b/);
+    expect(runs(repo)).toHaveLength(before);
+    const stale = harness(repo, ["--check", ...one("a * b", "a / b")], { RUNNER_FAILS: "1" });
+    expect(stale.code).toBe(1);
+    expect(line(stale.stdout, "M1")).toMatch(/would not apply/);
+    expect(runs(repo)).toHaveLength(before);
+  });
+
+  it("under --cmd the test paths are the command's own arguments (pytest-product.sh reads them from the product), not checked", () => {
+    const repo = makeRepo();
+    const r = harness(repo, ["--check", ...one("a + b", "a - b", "--test", "tests/test_from_the_product.py")]);
+    expect(r.code).toBe(0);
+    expect(line(r.stdout, "M1")).toMatch(/^M1\s+ok\b/);
+  });
+});
+
 describe("scripts/mutate.mjs: usage errors exit 2 and run nothing", () => {
   it.each([
     ["no arguments", []],

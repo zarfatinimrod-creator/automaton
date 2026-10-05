@@ -17,6 +17,11 @@
  *                      memory, but `git checkout -- <file>` is then no way back)
  *   --json <out>       write the baselines and the results as JSON (checked writable before anything runs)
  *   --tail <n>         lines of output kept per run (default 6)
+ *   --check            step 2 below and nothing else: for each mutation, whether it would apply (and, under the default
+ *                      command, whether its test paths exist; under --cmd they are the command's own arguments). Prints
+ *                      "<id>  ok" or "<id>  would not apply: <why>" and exits 0 when every one would apply, 1 when any
+ *                      would not. It takes no lock and runs no test: CI runs it over the plans in
+ *                      src/__tests__/revenue/mutations/ so a plan whose find text has moved fails there.
  * Run it from the repository root: paths are relative to the working directory, and the commands run there. A text
  * that starts with "-" needs the = form: --find=-1. Example plan entry:
  *   {"file": "scripts/capture-check.mjs", "find": "< WEAK_SIGN_TEXT", "replace": "<= WEAK_SIGN_TEXT",
@@ -59,7 +64,8 @@
  * held, a failing baseline (first or again) or any mutation not applied (the others still run); 4 a restore that did
  * not bring the original back, or a checkout changed by a run (it stops at once and says where the bytes are and
  * `git checkout -- <file>`). When several apply, the highest wins in the order 4 > 2 > 1 > 0: a plan with a survivor
- * and a mutation not applied exits 2, so read the report, not only the code.
+ * and a mutation not applied exits 2, so read the report, not only the code. With --check: 0 every mutation would
+ * apply, 1 any would not, 2 a usage error.
  */
 import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -140,6 +146,7 @@ function parseCli(argv) {
         "allow-dirty": { type: "boolean" },
         json: { type: "string" },
         tail: { type: "string" },
+        check: { type: "boolean" },
       },
     }));
   } catch (e) {
@@ -172,7 +179,7 @@ function parseCli(argv) {
     }
     return { ...m, id: m.id ?? `M${i + 1}`, nth: m.nth === undefined ? undefined : positiveInt(m.nth, "--nth"), tests, argv: [...cmd, ...tests] };
   });
-  return { mutations, isDefaultCmd, allowDirty: values["allow-dirty"] === true, json: values.json, tail, timeoutMs };
+  return { mutations, isDefaultCmd, allowDirty: values["allow-dirty"] === true, json: values.json, tail, timeoutMs, check: values.check === true };
 }
 
 function positiveInt(value, name) {
@@ -380,6 +387,20 @@ function prepare(m, root, allowDirty) {
   const pos = at[(m.nth ?? 1) - 1];
   const mutated = Buffer.concat([original.subarray(0, pos), Buffer.from(m.replace, "utf8"), original.subarray(pos + needle.length)]);
   return { real, rel, dir: dirname(real), original, hash: sha256(original), mutated, mode };
+}
+
+/** --check: step 2 alone for every mutation, plus its test paths under the default command. No lock, no run. */
+function check(opts, root) {
+  let bad = 0;
+  for (const m of opts.mutations) {
+    const missing = opts.isDefaultCmd ? m.tests.filter((t) => !existsSync(resolve(t))) : [];
+    const reason = prepare(m, root, opts.allowDirty).reason ?? (missing.length ? `no such test path: ${missing.join(", ")}` : null);
+    if (reason) bad += 1;
+    console.log(reason ? `${m.id}  would not apply: ${reason}` : `${m.id}  ok  ${m.file}`);
+  }
+  const n = opts.mutations.length;
+  console.log(`mutate: --check: ${n - bad} of ${n} would apply${bad ? `; ${bad} would not` : ""}`);
+  return bad ? 1 : 0;
 }
 
 /** What is at a mutation's path now: its directory moved, nothing, a link, something else, or a file and its bytes. */
@@ -885,6 +906,7 @@ async function main() {
   }
   const opts = parseCli(process.argv.slice(2));
   const root = repoRoot();
+  if (opts.check) return check(opts, root);
   for (const sig of ["SIGINT", "SIGTERM", "SIGHUP", "SIGQUIT"]) process.on(sig, () => onSignal(sig));
   takeLock(root);
   try {
@@ -907,7 +929,7 @@ main().then(
       console.error(`mutate: usage error: ${e.message}`);
       console.error(
         "usage: node scripts/mutate.mjs --file <path> --find <text> --replace <text> [--nth N] --test <path> [--test <path>...] | " +
-          '--plan <plan.json>  [--cmd "<command>"] [--timeout <s>] [--allow-dirty] [--json <out>] [--tail N]',
+          '--plan <plan.json>  [--cmd "<command>"] [--timeout <s>] [--allow-dirty] [--json <out>] [--tail N] [--check]',
       );
       process.exitCode = 2;
       return;
